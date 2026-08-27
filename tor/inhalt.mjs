@@ -247,7 +247,8 @@ console.log('\n  Tor `marken`');
 const MARKEN_ALLES = fs.readFileSync('src/marken/marken.css','utf8');
 const MARKEN = MARKEN_ALLES.slice(MARKEN_ALLES.indexOf(':root {'),
                                  MARKEN_ALLES.indexOf(':root[data-abend'));
-const QUELLEN = ['entwuerfe/koerper.html','entwuerfe/skript.html'];
+const QUELLEN = ['entwuerfe/koerper.html','entwuerfe/skript.html',
+                'prototyp/spiel.js','prototyp/vorlage.html'];
 const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
 let verstoesse = 0;
 for (const q of QUELLEN) {
@@ -255,9 +256,37 @@ for (const q of QUELLEN) {
   const t = fs.readFileSync(q,'utf8');
   if (EMOJI.test(t)) { fehler.push(`${q}: Emoji im Oberflächentext`); verstoesse++; }
   if (/filter:\s*drop-shadow/.test(t)) { fehler.push(`${q}: filter auf einem Pfad`); verstoesse++; }
-  const layout = t.match(/transition:[^;]*\b(width|height|top|left|margin|padding)\b/g);
+  // `[^;}]*` statt `[^;]*`: die letzte Erklaerung einer Regel hat kein
+  // Semikolon, also lief die Suche ueber die schliessende Klammer hinaus in
+  // die naechste Regel - und meldete ein sauberes `transition:transform`
+  // rot, weil zwei Zeilen weiter irgendwo `width` stand.
+  const layout = t.match(/transition:[^;}]*\b(width|height|top|left|margin|padding)\b/g);
   if (layout) { fehler.push(`${q}: Animation auf Layouteigenschaft — ${layout[0]}`); verstoesse++; }
 }
+// Festgenagelte Masse IM MARKUP.
+//
+// `style="min-width:200px"` an einer Kachel hat die halbe Ebenenwahl aus
+// dem Fenster geschoben - und war nicht zu finden, weil inline jede
+// Stilregel schlaegt. Vier Groessen waren rot, waehrend im Stylesheet ein
+// sauberes Raster stand, das gegen eine Zahl im Markup arbeitete.
+//
+// Erlaubt bleibt, was gerechnet wird (`${...}`) oder aus einer Marke kommt
+// (`var(--r4)`). Verboten ist die nackte Zahl.
+let inlineMasse = 0;
+for (const q of ['prototyp/spiel.js', 'prototyp/vorlage.html']) {
+  if (!fs.existsSync(q)) continue;
+  for (const m of fs.readFileSync(q, 'utf8').matchAll(/style="([^"]*)"/g)) {
+    const ohneRechnung = m[1].replace(/\$\{[^}]*\}/g, '');
+    const zahlen = ohneRechnung.match(/-?\d*\.?\d+(px|rem|em|pt)/g);
+    if (zahlen) {
+      fehler.push(`${q}: festgenagelte Maße im Markup — style="${m[1]}" `
+        + `(${zahlen.join(', ')}). Solche Werte gehören nach marken.css; `
+        + `inline schlagen sie jede Stilregel und sind dort nicht zu finden.`);
+      inlineMasse++;
+    }
+  }
+}
+
 pruefe(/--f1:\s*oklch/.test(MARKEN), 'Palette steht nicht in OKLCH');
 // Der Abendmodus muss ebenfalls in sich gleich hell sein.
 const abend = [...MARKEN_ALLES.slice(MARKEN_ALLES.indexOf(':root[data-abend'))
@@ -268,7 +297,8 @@ const ls = [...MARKEN.matchAll(/--f[1-7]:\s*oklch\(([\d.]+)/g)].map(m=>+m[1]);
 pruefe(ls.length === 7, `${ls.length} Flächenfarben gefunden, erwartet 7`);
 pruefe(new Set(ls).size === 1, `Flächenfarben haben unterschiedliche Helligkeit: ${[...new Set(ls)].join(', ')}`);
 console.log(`    ${ls.length} Flächenfarben, alle mit L = ${ls[0]} — derselbe Textton ist auf allen lesbar`);
-console.log(`    ${verstoesse} Markenverstöße in ${QUELLEN.length} Quellen`);
+console.log(`    ${verstoesse} Markenverstöße in ${QUELLEN.length} Quellen, `
+  + `${inlineMasse} festgenagelte Maße im Markup`);
 
 /* ===================================================== Tor `schrift` === */
 console.log('\n  Tor `schrift`');

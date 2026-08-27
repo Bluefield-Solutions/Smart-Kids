@@ -152,10 +152,10 @@ async function ebenenwahl(){
     <div class="mitte">
       <div class="titel">Was möchtest du üben?</div>
       <div class="wahl">${balken.map(b=>`
-        <button class="kachel" data-ebene="${b.id}" style="min-width:200px">
+        <button class="kachel" data-ebene="${b.id}">
           <div class="name" style="font-size:var(--s1)">${b.titel}</div>
           <div class="rolle">${b.gesammelt} von ${b.gesamt} gesammelt${b.gekonnt?` · ${b.gekonnt} sicher`:''}</div>
-          <div class="balken"><i style="width:${Math.round(b.anteil*100)}%"></i></div>
+          <div class="balken"><i style="transform:scaleX(${(b.anteil).toFixed(3)})"></i></div>
         </button>`).join('')}</div>
     </div>`;
   s.querySelector('#zur').onclick=()=>zeige(profilwahl);
@@ -179,9 +179,9 @@ function stadtstaaten(danach){
       <div class="unter">Berlin, Hamburg und Bremen sind <strong>Stadtstaaten</strong>:
         die Stadt ist das ganze Bundesland. Sie haben keine eigene Hauptstadt —
         sie <em>sind</em> ihre Hauptstadt.</div>
-      <div class="wahl">${drei.map((b,i)=>`
-        <button class="kachel" data-lesen="${b.name}" style="min-width:150px">
-          <svg viewBox="${D.vbD}" style="width:96px;height:96px" aria-hidden="true">
+      <div class="wahl eng">${drei.map((b,i)=>`
+        <button class="kachel" data-lesen="${b.name}">
+          <svg class="umriss" viewBox="${D.vbD}" aria-hidden="true">
             <path d="${b.pfad}" fill-rule="evenodd" fill="var(${VIER[i%4]})"
                   stroke="var(--tinte)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
           <div class="name" style="font-size:var(--s1)">${b.name}</div>
@@ -291,7 +291,7 @@ function spielschirm(){
   const vb = polar ? D.vbA : art==='kontinente' ? D.vbK : art==='laender' ? D.vbL[kont] : D.vbD;
   const farbeVon=(g,i)=> (art==='bundeslaender'||istHaupt) ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const umgebung = (art==='laender' && D.umgebung[kont])
-    ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--app-linie)" opacity=".55"/>`).join('') : '';
+    ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
   const flaechen = formen.map((g,i)=>`<path class="geb ${g.id===ziel.id?'ziel':'ruhig'}" data-id="${g.id}"
       d="${g.pfad}" fill-rule="evenodd" fill="${farbeVon(g,i)}"/>`).join('');
   const konturen = formen.map(g=>`<path d="${g.pfad}" fill-rule="evenodd"/>`).join('');
@@ -502,6 +502,15 @@ function spielschirm(){
       vorlesen(ergebnis==='fast' ? text : ziel.name);
       standSichern(st.ebeneId);
     } else {
+      // Das Etikett sagt selbst, dass es abgelehnt wurde. Vorher kam nur
+      // ein Satz darunter - fuer eine Sechsjaehrige passierte nichts.
+      if (ctx.etikett) {
+        const e = ctx.etikett;
+        e.classList.remove('falsch');
+        void e.offsetWidth;               // Neustart der Animation erzwingen
+        e.classList.add('falsch');
+        setTimeout(()=>e.classList.remove('falsch'), 900);
+      }
       if (ctx.hin){ ctx.hin.className='hinweis nochmal'; ctx.hin.textContent=text; }
       else if (ctx.status) ctx.status.textContent=text;
       else { let h=liste.querySelector('.hinweis');
@@ -562,8 +571,8 @@ function belohnung(s, ziel, fastText, zeigeStadt){
   }
   const frage=s.querySelector('#frage');
   if (frage) frage.innerHTML = fastText
-    ? `<span style="color:var(--app-warn)">${fastText}</span>`
-    : `<span style="color:var(--app-gut)">Richtig — ${ziel.name}!</span>`;
+    ? `<span style="color:var(--warn)">${fastText}</span>`
+    : `<span style="color:var(--gut)">Richtig — ${ziel.name}!</span>`;
 }
 
 /* ---------- Ende ---------------------------------------------------------- */
@@ -578,7 +587,7 @@ function endschirm(){
       <div class="unter">${Math.round(st.richtig)} von ${st.liste.length} richtig,
         ${st.versuche} Versuche.<br>Du hast <strong>${f.gesammelt} von ${f.gesamt}</strong> Aufklebern${
         f.gekonnt?`, ${f.gekonnt} davon sicher`:''}.</div>
-      <div class="balken" style="width:min(340px,70vw)"><i style="width:${Math.round(f.anteil*100)}%"></i></div>
+      <div class="balken breit"><i style="transform:scaleX(${(f.anteil).toFixed(3)})"></i></div>
       <div class="reihe" style="margin-top:var(--r6)">
         <button class="knopf" id="nochmal">Noch einmal</button>
         <button class="knopf" id="buch">Forscherbuch</button>
@@ -616,7 +625,7 @@ async function forscherbuch(){
           <button class="aufkleber ${x.gesammelt?'da':''} ${x.gekonnt?'sicher':''}"
                   data-lesen="${x.name}" title="Fach ${x.fach||'—'}">
             <svg viewBox="${g.vb}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
-              fill="${x.gesammelt?`var(${FL[x.i%7]})`:'var(--app-linie)'}"
+              fill="${x.gesammelt?`var(${FL[x.i%7]})`:'var(--linie)'}"
               stroke="var(--tinte)" stroke-opacity="${x.gesammelt?.6:.25}" stroke-width="1.6"
               vector-effect="non-scaling-stroke"/></svg>
             <span>${x.gesammelt?x.name:'?'}</span>
@@ -641,7 +650,7 @@ function elternTor(){
       <div class="pin" id="pin">${'<i></i>'.repeat(4)}</div>
       <div class="ziffern">${[1,2,3,4,5,6,7,8,9,0].map(z=>`<button class="knopf zi" data-z="${z}">${z}</button>`).join('')}
         <button class="knopf zi" data-z="x" aria-label="löschen">${LOESCHEN}</button></div>
-      <div class="unter" id="fehl" style="color:var(--app-warn)"></div>
+      <div class="unter" id="fehl" style="color:var(--warn)"></div>
     </div>`;
   // Punkte und Pfeil sind gezeichnet, nicht getippt. Als Schriftzeichen
   // (●, ○, ←) lagen sie ausserhalb des Schnitts `latin` und waeren aus der
@@ -676,7 +685,7 @@ async function elternbereich(){
     <td class="num">${Math.round(z.quote*100)} %</td>
     <td class="num">${(z.schnitt/1000).toFixed(1)} s</td>
     <td><div class="balken klein"><i style="width:${Math.round(z.quote*100)}%;
-      background:${z.quote>.7?'var(--app-gut)':z.quote>.4?'oklch(.75 .13 85)':'var(--app-warn)'}"></i></div></td></tr>`;
+      background:${z.quote>.7?'var(--gut)':z.quote>.4?'oklch(.75 .13 85)':'var(--warn)'}"></i></div></td></tr>`;
 
   s.innerHTML = `<div class="kopf">
       <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button>
@@ -725,7 +734,7 @@ async function elternbereich(){
       <div class="reihe" style="justify-content:flex-start">
         <button class="knopf" id="csv">Als CSV sichern</button>
         <button class="knopf" id="json">Als JSON sichern</button>
-        <button class="knopf" id="weg" style="color:var(--app-warn)">Alles von ${P.name} löschen</button>
+        <button class="knopf" id="weg" style="color:var(--warn)">Alles von ${P.name} löschen</button>
       </div>
       <div id="ausgabe"></div>
 

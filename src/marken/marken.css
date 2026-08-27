@@ -17,6 +17,7 @@
   --s0: 20px; --s1: 25px; --s2: 31px; --s3: 39px; --s4: 49px; --s5: 61px;
   --f-lesen: "Andika", "Comic Sans MS", sans-serif;   /* was das Kind liest */
   --f-ui: "Plus Jakarta Sans", system-ui, sans-serif; /* alles andere */
+  --f-mono: ui-monospace, SFMono-Regular, Menlo, monospace;  /* Ausfuhr */
 
   /* --- Strich --------------------------------------------------------- */
   --strich-fein: 0.75px; --strich: 1.5px; --strich-kueste: 3px;
@@ -43,9 +44,21 @@
   --gut-h:    oklch(0.93  0.055 155);
   --warn:     oklch(0.65  0.130  40);
 
-  /* --- Tiefe. Als VERSETZTE FLAECHE, nie als Filter. ------------------ */
+  /* --- Tiefe. Als KANTE, nie als Filter. ------------------------------
+     Frueher eine versetzte Flaeche (`box-shadow: 0 4px 0`). Die sieht aus
+     wie ein Aufkleber, nicht wie ein Knopf. Jetzt zwei Kanten: eine helle
+     Linie oben INNEN (das Licht faellt von oben) und eine dunklere Kante
+     unten. Derselbe Trick, dasselbe Budget - aber es wirkt wie Material.
+     Filter bleiben verboten (Regel 11, die Safari-Falle). */
   --tiefe-1: 2px; --tiefe-2: 4px; --tiefe-3: 6px;
   --tiefe-farbe: oklch(0.80 0.020 250);
+  --knopf-licht:   oklch(0.995 0.003 250);
+  --knopf-rand:    oklch(0.885 0.014 250);
+  --knopf-kante:   oklch(0.825 0.022 250);
+  /* Die Antwort ist der wichtigste Knopf der App und darf das zeigen. */
+  --primaer:       oklch(0.975 0.014 250);
+  --primaer-rand:  oklch(0.855 0.045 250);
+  --primaer-kante: oklch(0.760 0.075 250);
 
   /* --- Bewegung ------------------------------------------------------- */
   --d-tipp: 120ms; --d-zustand: 200ms; --d-schirm: 320ms; --d-belohnung: 500ms;

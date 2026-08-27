@@ -109,8 +109,11 @@ const rumpf = '<script>' + module + '\n'
   + fs.readFileSync(new URL('./spiel.js', import.meta.url), 'utf8') + '</script>\n</body></html>';
 
 /** Zwei Fassungen aus EINER Quelle - der Unterschied steckt nur im Kopf. */
+const marken = fs.readFileSync(new URL('../src/marken/marken.css', import.meta.url), 'utf8');
+
 function bauen(kopf) {
-  return vorlage.replace('__DATEN__', JSON.stringify(D))
+  return vorlage.replace('__MARKEN__', marken)
+                .replace('__DATEN__', JSON.stringify(D))
                 .replace('__BAU__', JSON.stringify(BAU))
                 .replace('__KOPF__', kopf) + rumpf;
 }

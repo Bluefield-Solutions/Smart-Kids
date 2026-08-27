@@ -11,29 +11,18 @@
 <title>Smart Kids</title>
 __KOPF__
 <style>
-/* === Marken. Identisch zu src/marken/marken.css. ====================== */
-:root{
-  --r1:4px;--r2:8px;--r3:12px;--r4:16px;--r6:24px;--r8:32px;--r12:48px;
-  --rund-klein:8px;--rund-karte:16px;--rund-flaeche:24px;--rund-voll:999px;
-  --s-klein:16px;--s0:20px;--s1:25px;--s2:31px;--s3:39px;--s4:49px;--s5:61px;
-  --f-lesen:"Andika","Comic Sans MS",sans-serif;
-  --f-ui:"Plus Jakarta Sans",system-ui,sans-serif;
-  --f1:oklch(.88 .055 25);--f2:oklch(.88 .055 75);--f3:oklch(.88 .055 130);
-  --f4:oklch(.88 .055 175);--f5:oklch(.88 .055 230);--f6:oklch(.88 .055 285);
-  --f7:oklch(.88 .055 330);--auf-flaeche:oklch(.25 .03 250);
-  --grund:oklch(.965 .008 85);--papier:oklch(1 0 0);--tinte:oklch(.27 .03 250);
-  --tinte2:oklch(.5 .025 250);--tinte3:oklch(.68 .02 250);--linie:oklch(.88 .01 250);
-  --akzent:oklch(.55 .15 250);--akzent-h:oklch(.94 .035 250);
-  --gut:oklch(.62 .14 155);--gut-h:oklch(.93 .055 155);--warn:oklch(.65 .13 40);
-  --tiefe:oklch(.80 .02 250);
-  --d-tipp:120ms;--d-zustand:200ms;--d-schirm:320ms;--d-belohnung:500ms;
-  --k-standard:cubic-bezier(.2,0,0,1);
-}
-:root[data-abend="an"]{
-  --grund:oklch(.86 .01 85);--papier:oklch(.90 .006 85);
-  --f1:oklch(.78 .05 25);--f2:oklch(.78 .05 75);--f3:oklch(.78 .05 130);
-  --f4:oklch(.78 .05 175);--f5:oklch(.78 .05 230);--f6:oklch(.78 .05 285);--f7:oklch(.78 .05 330);
-}
+/* === Marken. Hier steht KEINE Kopie mehr. ==============================
+   Bis eben stand src/marken/marken.css hier ein zweites Mal, von Hand
+   gepflegt - und die beiden waren laengst auseinander: die App fuehrte
+   --tinte2, das System --tinte-2; die App --tiefe, das System
+   --tiefe-farbe. Vier Marken (--app-gut, --app-warn, --app-linie,
+   --f-mono) benutzte die App, ohne dass sie IRGENDWO definiert waren -
+   deshalb hat sich kein Fortschrittsbalken je gefuellt und "Richtig -
+   Thueringen!" stand nie in Gruen.
+
+   Der Bau setzt die Datei jetzt hier ein. Was zweimal dasteht, veraltet
+   einmal (Regel 15). */
+__MARKEN__
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
 body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-height:1.3;
@@ -46,28 +35,92 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 .schirm.da{opacity:1;pointer-events:auto}
 
 .kopf{display:flex;align-items:center;justify-content:space-between;gap:var(--r3);
-  padding:var(--r3) var(--r4);flex:none}
-.knopf{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte2);
-  background:var(--papier);border:1px solid var(--linie);border-radius:var(--rund-voll);
-  padding:var(--r2) var(--r4);min-height:44px;display:flex;align-items:center;gap:var(--r2);cursor:pointer}
-.knopf:active{transform:scale(.97)}
+  padding:var(--r3) var(--r4);flex:none;flex-wrap:wrap}
+/* --- Die drei Knopfklassen ------------------------------------------
+   Vorher war JEDER Knopf dieselbe weisse Pille: die Antwort, die
+   Ebenenkachel, "Zurueck", "Eltern". Deshalb wirkte nichts gestaltet - es
+   gab keine Rangfolge. Jetzt drei Gewichte:
+
+     .knopf    LEISE      Werkzeug am Rand. Kein Fuellton, keine Tiefe.
+     .kachel   MITTEL     Etwas zum Aussuchen. Papier mit Kante.
+     .etikett  LAUT       Die Antwort. Der wichtigste Knopf der App.
+
+   Die Tiefe ist bei allen dieselbe Mechanik: helle Linie oben INNEN,
+   dunklere Kante unten. Beim Druecken faehrt der Knopf um genau die
+   Kantenhoehe nach unten - dann sieht es aus, als gaebe er nach. */
+.knopf{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);
+  background:transparent;border:1.5px solid var(--knopf-rand);border-radius:var(--rund-voll);
+  padding:var(--r2) var(--r4);min-height:44px;display:flex;align-items:center;gap:var(--r2);
+  cursor:pointer;transition:background var(--d-tipp) var(--k-standard),
+    border-color var(--d-tipp) var(--k-standard),color var(--d-tipp) var(--k-standard)}
+.knopf:active{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}
+@media (hover:hover){.knopf:hover{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}}
 .sterne{display:flex;gap:var(--r1)}
-.fortschritt{font-family:var(--f-ui);font-size:var(--s0);font-weight:600;color:var(--tinte2);
+.fortschritt{font-family:var(--f-ui);font-size:var(--s0);font-weight:600;color:var(--tinte-2);
   font-variant-numeric:tabular-nums}
 
-.mitte{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+/* `safe center` statt `center`, aus demselben Grund wie bei .seite: bei
+   Ueberlauf schiebt zentrierter Inhalt nach OBEN UND UNTEN gleichzeitig
+   hinaus. Auf dem iPhone hochkant lag die Ueberschrift deshalb ueber
+   "Zurueck" und "Eltern" - beide sichtbar, beide nicht zu treffen. Die
+   Regel stand seit v109 bei .seite und war hier nie nachgezogen: was
+   zweimal dasteht, veraltet einmal. */
+.mitte{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;justify-content:safe center;
   gap:var(--r4);padding:var(--r4);min-height:0}
 .titel{font-family:var(--f-ui);font-size:var(--s3);font-weight:800;letter-spacing:-.02em;text-align:center}
-.unter{font-family:var(--f-ui);font-size:var(--s0);color:var(--tinte2);text-align:center;max-width:34ch}
+.unter{font-family:var(--f-ui);font-size:var(--s0);color:var(--tinte-2);text-align:center;max-width:34ch}
 
-.wahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}
-.kachel{background:var(--papier);border:none;border-radius:var(--rund-flaeche);
-  box-shadow:0 3px 0 var(--tiefe);padding:var(--r6) var(--r8);min-width:150px;cursor:pointer;
+/* Raster statt umbrechender Reihe. Als Reihe stapelten sich die fuenf
+   Ebenen auf dem iPhone hochkant untereinander - 734 Punkte in einem
+   Kasten von 724, die letzte Ebene war nicht erreichbar. `auto-fit` legt
+   so viele Spalten an, wie hineinpassen: zwei auf dem Telefon hochkant,
+   fuenf auf dem Telefon quer. */
+/* Die Untergrenze der Spalte ist die BREITE DES LAENGSTEN NAMENS, nicht
+   eine runde Zahl. Bei 140 Punkten passten fuenf Ebenen nebeneinander -
+   und "Bundeslaender" brach als "Bundeslaend/e/r" um, mit einem einzelnen
+   r in der zweiten Zeile. Bei 240 waehlt das Raster lieber drei Spalten
+   und zwei Reihen; dann steht jeder Name auf einer Zeile.
+   `auto-fit` rechnet das je Bildschirm selbst aus - auf dem Telefon
+   hochkant wird daraus eine Spalte. */
+.wahl{display:grid;gap:var(--r4);justify-content:center;width:100%;max-width:1100px;
+  grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+/* Kurze Namen brauchen keine 240 Punkte. Die drei Stadtstaaten heissen
+   "Berlin", "Hamburg", "Bremen" - mit dem grossen Mass rutschten sie in
+   zwei Reihen und schoben den "Verstanden"-Knopf aus dem Bild. Ein Mass
+   fuer alle waere hier das Bequeme, nicht das Richtige. */
+.wahl.eng{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+/* `min-width:0` ist hier kein Schoenheitsfehler, sondern noetig: ein
+   Rasterfeld ist von sich aus mindestens so breit wie sein laengstes Wort,
+   und "Landeshauptstaedte" sprengte damit die Spalte - auf vier von sechs
+   Groessen stand die Kachel bis zu 36 Punkte ausserhalb des Fensters.
+   Die Untergrenze kommt jetzt von der Spalte (minmax), nicht vom Wort;
+   `hyphens:auto` trennt es sauber, statt es abzuschneiden.
+   `max-width` haelt die Kacheln auf grossen Schirmen beisammen - ohne das
+   werden aus zwei Profilen zwei 550 Punkte breite Balken. */
+.kachel{background:var(--papier);border:1.5px solid var(--knopf-rand);
+  border-radius:var(--rund-flaeche);
+  box-shadow:0 3px 0 var(--knopf-kante),inset 0 1.5px 0 var(--knopf-licht);
+  padding:var(--r6) var(--r8);
+  min-width:0;width:100%;max-width:280px;justify-self:center;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:var(--r2);
-  transition:transform var(--d-tipp) var(--k-standard),box-shadow var(--d-tipp) var(--k-standard)}
-.kachel:active{transform:translateY(2px);box-shadow:0 1px 0 var(--tiefe)}
-.kachel .name{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;color:var(--auf-flaeche)}
-.kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte3)}
+  transition:transform var(--d-tipp) var(--k-standard),box-shadow var(--d-tipp) var(--k-standard),
+    border-color var(--d-tipp) var(--k-standard)}
+.kachel:active{transform:translateY(3px);
+  box-shadow:0 0 0 var(--knopf-kante),inset 0 1.5px 0 var(--knopf-licht)}
+@media (hover:hover){.kachel:hover{border-color:var(--primaer-rand);
+  box-shadow:0 3px 0 var(--knopf-kante),inset 0 1.5px 0 var(--knopf-licht),0 0 0 4px var(--akzent-h)}}
+/* Ohne `min-width:0` ist ein Flex-Kind mindestens so breit wie sein
+   laengstes Wort - "Landeshauptstaedte" stand dann quer ueber den Rand
+   der eigenen Kachel hinaus. Die Kachel selbst sass richtig, ihr Inhalt
+   nicht: das Tor `passt` mass Kaesten und hat es durchgelassen. Es misst
+   jetzt auch, ob der Text in seinen Knopf passt. */
+.kachel>*{min-width:0;max-width:100%}
+.kachel .name{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;
+  color:var(--auf-flaeche);hyphens:auto;overflow-wrap:break-word;text-align:center;
+  line-height:1.15}
+.kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-3)}
+.kachel .umriss{width:96px;height:96px}
 .kachel .kreis{width:64px;height:64px;border-radius:var(--rund-voll);display:flex;
   align-items:center;justify-content:center;font-family:var(--f-lesen);font-size:var(--s2);
   font-weight:700;color:var(--auf-flaeche)}
@@ -98,18 +151,52 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
      unter der Kopfleiste, und der Finger traf die Leiste statt das Etikett. */
   justify-content:center;justify-content:safe center}
 @media (orientation:landscape){.seite{width:min(38vw,300px)}}
-@media (orientation:portrait){.seite{width:100%;max-height:44vh;overflow:auto}}
+/* Im kurzen Querformat steht das Mikrofon NEBEN der Liste statt darunter.
+   Es kostete 68 der 210 Punkte, die den Antworten ueberhaupt blieben -
+   deshalb war die vierte abgeschnitten. Die Breite dafuer kommt aus der
+   Karte, die dort 44 % ihrer Flaeche ungenutzt liess. */
+@media (orientation:landscape) and (max-height:440px){
+  .seite{width:min(46vw,392px);flex-direction:row;align-items:stretch;gap:var(--r2)}
+  .wahlliste{flex:1;min-width:0}
+  .werkzeug{flex:none;flex-direction:column;justify-content:center;padding-top:0}
+}
+@media (orientation:portrait){.seite{width:100%;max-height:44vh;overflow:auto}
+  /* Sonst wird aus "Berlin" ein 784 Punkte breiter Balken mit einem Wort
+     in der Mitte. Gleich breite Antworten sind richtig - beliebig breite
+     nicht. */
+  .wahlliste{max-width:560px;width:100%;margin-inline:auto}}
 
 .frage{font-family:var(--f-ui);font-size:var(--s1);font-weight:700;text-align:center;
   padding:0 var(--r4) var(--r2)}
 .etikett{position:relative;font-family:var(--f-lesen);font-size:var(--s1);font-weight:700;
-  color:var(--auf-flaeche);background:var(--papier);border:none;border-radius:var(--rund-karte);
+  color:var(--auf-flaeche);background:var(--primaer);
+  border:1.5px solid var(--primaer-rand);border-radius:var(--rund-karte);
   padding:var(--r3) var(--r4);min-height:56px;display:flex;align-items:center;justify-content:center;
-  text-align:center;box-shadow:0 2px 0 var(--tiefe);cursor:grab;touch-action:none;
+  text-align:center;hyphens:auto;overflow-wrap:break-word;
+  box-shadow:0 3px 0 var(--primaer-kante),inset 0 1.5px 0 var(--knopf-licht);
+  cursor:grab;touch-action:none;
   transition:transform var(--d-tipp) var(--k-standard),box-shadow var(--d-tipp) var(--k-standard),
+             background var(--d-zustand) var(--k-standard),
+             border-color var(--d-zustand) var(--k-standard),
              opacity var(--d-zustand) var(--k-standard)}
-.etikett.zieht{box-shadow:0 6px 0 var(--tiefe);z-index:50;cursor:grabbing;transition:none}
+.etikett:active{transform:translateY(3px);
+  box-shadow:0 0 0 var(--primaer-kante),inset 0 1.5px 0 var(--knopf-licht)}
+@media (hover:hover){.etikett:hover{box-shadow:0 3px 0 var(--primaer-kante),
+  inset 0 1.5px 0 var(--knopf-licht),0 0 0 4px var(--akzent-h)}}
+/* Beim Ziehen haengt das Etikett am Finger: hoehere Kante, kein Uebergang. */
+.etikett.zieht{transform:none;box-shadow:0 7px 0 var(--primaer-kante),
+  inset 0 1.5px 0 var(--knopf-licht);z-index:50;cursor:grabbing;transition:none}
 .etikett.weg{visibility:hidden;pointer-events:none}
+/* Falsch: das Etikett faehrt zurueck und WACKELT. Vorher passierte am
+   Etikett gar nichts - es kam nur ein Satz darunter, und das Kind sah
+   nicht, dass seine Antwort abgelehnt worden war. */
+.etikett.falsch{background:oklch(.96 .04 40);border-color:var(--warn);
+  animation:wackeln 400ms var(--k-standard)}
+@keyframes wackeln{
+  0%,100%{translate:0}
+  15%{translate:-7px} 35%{translate:6px} 55%{translate:-4px} 75%{translate:2px}
+}
+@media (prefers-reduced-motion:reduce){.etikett.falsch{animation:none}}
 .wahlliste{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;
   gap:var(--r3);justify-content:center;justify-content:safe center;padding:2px}
 .werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
@@ -127,25 +214,24 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 .mikro::after{content:"";position:absolute;inset:-8px;border-radius:var(--rund-voll);
   border:3px solid var(--akzent);opacity:.3;animation:atmen 2.4s ease-in-out infinite}
 @keyframes atmen{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.08);opacity:.1}}
-.tonaus{background:var(--tinte3)}
+.tonaus{background:var(--tinte-3)}
 .tonaus::after{display:none}
 
 .gross{font-family:var(--f-ui);font-size:var(--s5);font-weight:800;letter-spacing:-.03em}
 .bandhinweis{position:absolute;left:0;right:0;bottom:0;background:var(--tinte);color:var(--papier);
   font-family:var(--f-ui);font-size:var(--s-klein);padding:var(--r2) var(--r4);text-align:center}
-/* Kurze Querformate: iPhone quer hat 390 Punkte Hoehe fuer alles. */
-@media (max-height:440px){
-  .etikett{font-size:var(--s0);min-height:48px;padding:var(--r2) var(--r3)}
-  .kopf{padding:var(--r2) var(--r4)}
-  .frage{font-size:var(--s0);padding:0 var(--r4) var(--r1)}
-  .mikro{width:60px;height:60px}
-}
 /* --- M3 bis M6: Fortschritt, Forscherbuch, Elternbereich --- */
+.balken.breit{width:min(340px,70vw)}
 .balken{width:100%;height:8px;border-radius:var(--rund-voll);background:var(--linie);overflow:hidden}
-.balken i{display:block;height:100%;background:var(--app-gut);border-radius:var(--rund-voll);
-  transition:width var(--d-zustand) var(--k-standard)}
+/* `transform:scaleX` statt `width`: eine Animation auf einer
+   Layouteigenschaft laesst den Browser bei JEDEM Bild neu umbrechen. Die
+   Regel steht im Projekt seit dem Grafik-Audit; hier stand sie trotzdem,
+   weil das Tor `marken` nur die Entwuerfe las und nicht die App. */
+.balken i{display:block;height:100%;width:100%;background:var(--gut);
+  border-radius:var(--rund-voll);transform-origin:left center;
+  transition:transform var(--d-zustand) var(--k-standard)}
 .balken.klein{height:6px;min-width:60px}
-.fach{font-size:var(--s-klein);color:var(--tinte3);font-weight:600;margin-left:var(--r2)}
+.fach{font-size:var(--s-klein);color:var(--tinte-3);font-weight:600;margin-left:var(--r2)}
 
 .rollen{flex:1;min-height:0;overflow:auto;padding:0 var(--r4) var(--r8);
   -webkit-overflow-scrolling:touch;touch-action:pan-y}
@@ -156,12 +242,12 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   letter-spacing:-.01em}
 .kleber{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:var(--r3)}
 .aufkleber{background:var(--papier);border:none;border-radius:var(--rund-karte);padding:var(--r2);
-  box-shadow:0 2px 0 var(--tiefe);display:flex;flex-direction:column;align-items:center;
+  box-shadow:0 2px 0 var(--tiefe-farbe);display:flex;flex-direction:column;align-items:center;
   gap:var(--r1);cursor:pointer;opacity:.45}
 .aufkleber.da{opacity:1}
 .aufkleber{position:relative}
 .aufkleber .siegel{position:absolute;top:6px;right:6px;width:12px;height:12px;border-radius:50%;
-  background:var(--app-gut);border:2px solid var(--papier)}
+  background:var(--gut);border:2px solid var(--papier)}
 .aufkleber svg{width:100%;height:64px}
 .aufkleber span{font-family:var(--f-lesen);font-size:var(--s-klein);font-weight:700;
   color:var(--auf-flaeche);text-align:center;line-height:1.15;
@@ -176,17 +262,17 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 
 .kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--r3)}
 .wert{background:var(--papier);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
-  box-shadow:0 2px 0 var(--tiefe)}
+  box-shadow:0 2px 0 var(--tiefe-farbe)}
 .wert b{display:block;font-size:var(--s2);font-weight:800;letter-spacing:-.02em}
-.wert span{display:block;font-size:var(--s-klein);color:var(--tinte3)}
+.wert span{display:block;font-size:var(--s-klein);color:var(--tinte-3)}
 
 .tab{width:100%;border-collapse:collapse;background:var(--papier);border-radius:var(--rund-karte);
   overflow:hidden;font-size:var(--s-klein)}
 .tab th,.tab td{text-align:left;padding:var(--r2) var(--r3);border-bottom:1px solid var(--linie)}
-.tab th{font-weight:700;color:var(--tinte3);font-size:13px}
+.tab th{font-weight:700;color:var(--tinte-3);font-size:13px}
 .tab tr:last-child td{border-bottom:0}
 .tab .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.ausgabefeld{width:100%;height:180px;font-family:var(--f-mono,monospace);font-size:12px;
+.ausgabefeld{width:100%;height:180px;font-family:var(--f-mono);font-size:12px;
   border:1px solid var(--linie);border-radius:var(--rund-klein);padding:var(--r2)}
 code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   padding:.1em .35em;border-radius:4px}
@@ -196,6 +282,51 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   /* Ohne Bewegung muss der Rand allein tragen - also dauerhaft dick. */
   .karte .zielpuls{stroke-width:7;stroke-opacity:.55}
 }
+/* --- Kurze Bildschirme (ganz am Ende, siehe unten) ------------------------------------------------
+   Das Zielgeraet hat quer 390 Punkte Hoehe fuer ALLES. Vorher stand hier
+   eine Handvoll Einzelausnahmen; die haben je einen Bildschirm gerettet
+   und die anderen sechs uebersehen. Auf dem iPhone waren zuletzt SECHZEHN
+   Elemente nicht erreichbar - die vierte Antwort, die Ebene
+   "Landeshauptstaedte", der "Verstanden"-Knopf ihrer Einweisung und drei
+   Tasten der Eltern-PIN.
+
+   Deshalb jetzt EIN Hebel: das ganze Raster wird enger, Schrift und
+   Abstaende zusammen. Was NICHT mitschrumpft, sind die Trefferflaechen -
+   44 Punkte bleiben 44 Punkte, egal wie klein der Bildschirm ist.
+
+   Und der Block steht AM ENDE der Stilvorlage. Beim ersten Anlauf stand er
+   in der Mitte, vor `.ziffern` und `.zi` - und war fuer die wirkungslos:
+   eine Medienabfrage erhoeht die Spezifitaet nicht, bei gleichem Gewicht
+   gewinnt die spaetere Regel. Das Tor meldete daraufhin drei Tasten der
+   Eltern-PIN weiter als nicht erreichbar, obwohl die Regel dastand. */
+@media (max-height:440px), (max-width:430px){
+  :root{
+    --s-klein:14px; --s0:17px; --s1:20px; --s2:24px; --s3:28px; --s4:34px; --s5:40px;
+    --r3:8px; --r4:12px; --r6:14px; --r8:18px; --r12:28px; --r16:36px; --r24:48px;
+  }
+  .kopf{padding:var(--r2) var(--r4)}
+  .frage{padding:0 var(--r4) var(--r1)}
+  .etikett{min-height:44px}
+  .titel{font-size:var(--s2)}
+  /* Auf dem kleinsten Geraet (iPhone SE quer, 667x375) zaehlt jeder
+     Punkt: die 1,5-Punkt-Raender der neuen Knoepfe haben die fuenfte
+     Ebene wieder 4 Punkte unter den Rand geschoben. Statt genau diese 4
+     zurueckzuholen, ruecken hier die INNEREN Abstaende enger - das gibt
+     rund 30 Punkte Luft, und die naechste Schriftaenderung kippt es nicht
+     gleich wieder. */
+  .kachel{padding:var(--r3) var(--r4);max-width:300px;gap:var(--r1)}
+  .mitte{gap:var(--r3)}
+  .wahl{gap:var(--r3)}
+  .kachel .kreis{width:44px;height:44px}
+  .kachel .umriss{width:60px;height:60px}
+  .unter{max-width:52ch}
+  .mikro{width:56px;height:56px}
+  .mikro::after{inset:-5px;border-width:2px}
+  /* Der Zifferblock der Eltern-PIN in ZWEI Reihen statt drei. */
+  .ziffern{grid-template-columns:repeat(6,52px)}
+  .zi{min-height:48px}
+}
+
 </style></head>
 <body><div id="buehne"></div>
 <script id="daten" type="application/json">__DATEN__</script>
