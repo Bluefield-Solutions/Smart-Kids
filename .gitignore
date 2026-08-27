@@ -1,0 +1,18 @@
+node_modules/
+
+# Das Gebaute. Entsteht bei jedem Lauf neu aus src/ - eingecheckt waere es
+# eine zweite Wahrheit, die irgendwann von der ersten abweicht.
+dist/
+
+# Rohdaten gehoeren nicht ins Repository (79 MB gegen 1,2 MB gepackt).
+# Sie werden mit tools/geo-holen.mjs beschafft; eingecheckt wird nur das
+# gebackene Ergebnis in src/geo/.
+roh/
+
+# Ausschuss der Gegenprobe - entsteht bei jedem roten Lauf neu.
+tor/abweichungen/
+
+# Ebenfalls gebaut: die eine Datei zum Ansehen und die Daten der Entwuerfe.
+# `npm run bauen` legt beide neu an.
+prototyp/spiel.html
+entwuerfe/daten.json

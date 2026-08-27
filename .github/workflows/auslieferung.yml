@@ -1,0 +1,66 @@
+# Auslieferung nach GitHub Pages.
+#
+# Der Ablauf hat ZWEI Stufen, und das ist der Punkt: erst die Torkette,
+# dann erst der Versand. Was rot ist, geht nicht auf das iPad der Kinder.
+# Ein Bau ohne Tore davor waere kein Auslieferungsablauf, sondern eine
+# Rutsche.
+name: Auslieferung
+
+on:
+  push:
+    branches: [main]
+  # Von Hand ausloesbar, ohne etwas zu aendern - fuer den Fall, dass
+  # Pages neu eingerichtet wurde und einmal frisch gebaut werden muss.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Zwei Auslieferungen gleichzeitig wuerden sich gegenseitig ueberschreiben.
+# cancel-in-progress steht bewusst auf false: eine begonnene Auslieferung
+# wird zu Ende gefuehrt, sonst steht am Ende eine halbe Seite im Netz.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  tore:
+    name: Torkette
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # Playwright braucht seinen eigenen Chromium. --with-deps holt die
+      # Systembibliotheken dazu; ohne sie startet er auf dem Runner nicht.
+      - run: npx playwright install --with-deps chromium
+      - name: Alle Tore
+        run: npm run tor
+      # Bei Rot bleibt sichtbar, WAS sich geaendert hat - sonst steht da
+      # nur eine Prozentzahl und niemand kann sie beurteilen.
+      - name: Abweichungen sichern
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: abweichungen
+          path: tor/abweichungen/
+          if-no-files-found: ignore
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  ausliefern:
+    name: Nach Pages
+    needs: tore
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4
