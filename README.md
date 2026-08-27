@@ -4,7 +4,7 @@ Erdkunde für Fiona und Lea. Vier Ebenen, 64 Gebiete, drei Eingabewege.
 Läuft im Browser, lässt sich über Safari auf den Startbildschirm legen und
 startet von dort auch ohne Netz.
 
-**Im Netz:** https://bluefield-solutions.github.io/smart-kids/
+**Im Netz:** https://bluefield-solutions.github.io/Smart-Kids/
 
 ---
 
@@ -40,6 +40,11 @@ npm run symbol     das App-Symbol neu backen
 Die Torkette: `inhalt` · `topologie` · `beruehrung` · `marken` · `schrift` ·
 `symbol` · `doku` → `vergleich` → `bauen` → `ansicht` → `pwa` · `offline`
 → `smoke`.
+
+`ansicht` läuft **nur ortsfest**. Ein Bildpunktvergleich gilt nur bei
+gleicher Zeichenumgebung; der Runner hat einen anderen Chromium-Bau und
+andere Ersatzschriften. Auf dem Runner läuft `npm run tor:runner` — dieselbe
+Kette ohne dieses eine Tor, und es meldet den Verzicht im Protokoll.
 
 ---
 

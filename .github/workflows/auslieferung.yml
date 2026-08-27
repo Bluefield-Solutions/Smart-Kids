@@ -39,8 +39,13 @@ jobs:
       # Playwright braucht seinen eigenen Chromium. --with-deps holt die
       # Systembibliotheken dazu; ohne sie startet er auf dem Runner nicht.
       - run: npx playwright install --with-deps chromium
-      - name: Alle Tore
-        run: npm run tor
+      # `tor:runner` ist die volle Kette OHNE das Tor `ansicht`. Das ist
+      # kein stiller Verzicht: das Tor meldet den Verzicht im Protokoll
+      # samt Grund. Bildpunktvergleiche gelten nur bei gleicher
+      # Zeichenumgebung, und der Runner hat einen anderen Chromium-Bau
+      # und andere Ersatzschriften. `ansicht` gehoert an den Arbeitsplatz.
+      - name: Alle Tore (ohne ansicht — siehe Protokoll)
+        run: npm run tor:runner
       # Bei Rot bleibt sichtbar, WAS sich geaendert hat - sonst steht da
       # nur eine Prozentzahl und niemand kann sie beurteilen.
       - name: Abweichungen sichern

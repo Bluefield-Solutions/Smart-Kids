@@ -39,6 +39,28 @@ const server = http.createServer((q, a) => {
 await new Promise(r => server.listen(0, r));
 const SPIEL = `http://127.0.0.1:${server.address().port}/`;
 
+// Dieses Tor laeuft NUR ORTSFEST, nicht auf dem Runner.
+//
+// Ein Bildpunktvergleich gilt nur bei gleicher Zeichenumgebung. Der Runner
+// hat einen anderen Chromium-Bau, andere Ersatzschriften und andere
+// Kantenglaettung; beim ersten Lauf dort waren alle sieben Aufnahmen rot,
+// zwei davon mit GEAENDERTEN MASSEN - also anderem Umbruch, nicht nur
+// anderen Bildpunkten. Das ist kein Befund ueber die App, sondern einer
+// ueber die Maschine.
+//
+// Es wird ausdruecklich uebersprungen und laut gemeldet, nicht still: ein
+// Tor, das sich unbemerkt ueberspringt, ist schlimmer als keines. Wer die
+// Aufnahmen auf dem Runner haben will, muss die Umgebung festnageln - im
+// Playwright-Abbild bauen UND die Vorbilder darin aufnehmen. Steht als
+// offener Punkt im STAND.
+if (process.env.SMARTKIDS_OHNE_ANSICHT === '1') {
+  console.log('\n  Tor `ansicht`: ÜBERSPRUNGEN.');
+  console.log('    Grund: Bildpunktvergleiche gelten nur bei gleicher Zeichenumgebung.');
+  console.log('    Der Runner hat einen anderen Chromium-Bau und andere Ersatzschriften.');
+  console.log('    Dieses Tor gehört an den Arbeitsplatz: `npm run ansicht`.');
+  process.exit(0);
+}
+
 const VORBILDER = path.join(process.cwd(), 'tor/vorbilder');
 const ABWEICHUNGEN = path.join(process.cwd(), 'tor/abweichungen');
 const AKTUALISIEREN = process.argv.includes('--aktualisieren');
