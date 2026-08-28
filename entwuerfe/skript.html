@@ -31,7 +31,7 @@ for (const id of ['s-ok','s-ok-g']) {
 const ICON = {
   zurueck:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
   mikro:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg>',
-  stern:(f)=>`<svg width="26" height="26" viewBox="-14 -14 28 28"><path d="M0 -12 L3.7 -4 L12 -2.8 L6 3.2 L7.4 12 L0 7.8 L-7.4 12 L-6 3.2 L-12 -2.8 L-3.7 -4 Z" fill="${f}" stroke="var(--app-tinte)" stroke-width="1.4" stroke-linejoin="round"/></svg>`,
+  stern:(f)=>`<svg width="26" height="26" viewBox="-14 -14 28 28"><path d="M0 -12 L3.7 -4 L12 -2.8 L6 3.2 L7.4 12 L0 7.8 L-7.4 12 L-6 3.2 L-12 -2.8 L-3.7 -4 Z" fill="${f}" stroke="var(--tinte)" stroke-width="1.4" stroke-linejoin="round"/></svg>`,
 };
 const sterne = (n)=>`<div class="sterne">${[0,1,2].map(i=>ICON.stern(i<n?'oklch(.80 .14 85)':'oklch(.93 .01 250)')).join('')}</div>`;
 const kopfleiste = (n)=>`<div class="kopfleiste">
@@ -47,7 +47,7 @@ function weltkarte(zielId){
   }).join('');
   return `<svg viewBox="${D.vbK}" style="width:100%;height:100%" aria-hidden="true">
     <g>${p}</g>
-    <g fill="none" stroke="var(--app-tinte)" stroke-opacity=".55" stroke-width="1.2"
+    <g fill="none" stroke="var(--tinte)" stroke-opacity=".55" stroke-width="1.2"
        vector-effect="non-scaling-stroke">${D.kontinente.map(k=>`<path d="${k.pfad}"/>`).join('')}</g>
   </svg>`;
 }
@@ -60,7 +60,7 @@ function deutschlandkarte(zielId){
   }).join('');
   return `<svg viewBox="${D.vbD}" style="width:100%;height:100%" aria-hidden="true">
     <g>${fl}</g>
-    <g fill="none" stroke="var(--app-tinte)" stroke-opacity=".5" stroke-width="1.2"
+    <g fill="none" stroke="var(--tinte)" stroke-opacity=".5" stroke-width="1.2"
        vector-effect="non-scaling-stroke">${D.deutschland.map(b=>`<path d="${b.pfad}" fill-rule="evenodd"/>`).join('')}</g>
   </svg>`;
 }
@@ -88,12 +88,12 @@ document.getElementById('schirm-2').innerHTML = `
       <div class="frage" style="font-size:var(--s2)">Wie heißt dieses Bundesland?</div>
       <div class="feld">Hessen<span class="karett"></span></div>
       <div style="display:flex;gap:var(--r3);align-items:center">
-        <span style="font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--app-gut)">Richtig!</span>
+        <span style="font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--gut)">Richtig!</span>
         <span class="tipp">3 von 8</span>
       </div>
-      <div style="height:1px;background:var(--app-linie)"></div>
-      <div class="frage" style="font-size:var(--s1);color:var(--app-tinte2)">Und die Hauptstadt?</div>
-      <div class="feld" style="border-color:var(--app-linie);color:var(--app-tinte3)">Frankfurt<span class="karett"></span></div>
+      <div style="height:1px;background:var(--linie)"></div>
+      <div class="frage" style="font-size:var(--s1);color:var(--tinte-2)">Und die Hauptstadt?</div>
+      <div class="feld" style="border-color:var(--linie);color:var(--tinte-3)">Frankfurt<span class="karett"></span></div>
       <div style="background:var(--gut-h);border-radius:var(--rund-karte);padding:var(--r4) var(--r6);
                   font-family:var(--f-ui);font-size:var(--s0);line-height:1.45;color:var(--auf-flaeche)">
         <strong>Fast!</strong> Frankfurt ist die größte Stadt in Hessen —
@@ -113,7 +113,7 @@ document.getElementById('schirm-3').innerHTML = `
           style="transform-box:fill-box;transform-origin:center"/></clipPath></defs>
         ${D.kontinente.map((k,i)=>`<path d="${k.pfad}" fill="var(${FL[i]})" opacity=".38"/>`).join('')}
         <path id="euFuell" d="${eu.pfad}" fill="oklch(.80 .12 230)" clip-path="url(#wasch)"/>
-        <path id="euKontur" d="${eu.pfad}" fill="none" stroke="var(--app-tinte)" stroke-width="2"
+        <path id="euKontur" d="${eu.pfad}" fill="none" stroke="var(--tinte)" stroke-width="2"
               vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
       </svg>
     </div>

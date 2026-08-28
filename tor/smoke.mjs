@@ -148,6 +148,8 @@ async function loese(p) {
 /* --- Durchgang 1: spielen und ablegen --------------------------------- */
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
+const sternVerlauf = [], bandVerlauf = [];
+let endSterne = null, kleberMoment = 0;
 const fahnenArten = new Set();
 let durchgespielt = 0;
 try {
@@ -163,6 +165,19 @@ try {
     for (let n = 0; n < 6; n++) {
       if (!(await p.$('.schirm.da .karte svg'))) break;
       geloest.push(await loese(p));
+      // Der Kopf muss auf die Antwort REAGIEREN, nicht erst beim naechsten
+      // Bild. Vorher wurde der Bildschirm je Aufgabe einmal gebaut und
+      // zeigte damit den Stand VOR der laufenden Antwort - bei vier von
+      // vier richtig stand der Kopf auf einem Stern, der Endbildschirm auf
+      // drei. Zwei Formeln, zwei Wahrheiten.
+      const kopf = await p.evaluate(() => {
+        const s = document.querySelector('.schirm.da');
+        return { sterne: [...s.querySelectorAll('.sterne svg')]
+                   .filter(x => !/stern-aus/.test(x.innerHTML)).length,
+                 band: [...s.querySelectorAll('.band i')].map(x => x.className) };
+      });
+      sternVerlauf.push({ runde, n: kopf.sterne });
+      bandVerlauf.push(kopf.band.join(' '));
       await p.waitForTimeout(700);
       const art = await fahnePruefen(p, geloest[geloest.length - 1]);
       if (art) fahnenArten.add(art);
@@ -174,7 +189,11 @@ try {
       else await p.waitForTimeout(1100);
     }
     const nochmal = await p.$('.schirm.da #nochmal');
-    if (nochmal) { await nochmal.click(); await p.waitForSelector('.schirm.da .karte svg'); }
+    if (nochmal) {
+      endSterne = await p.evaluate(() => [...document.querySelectorAll('.schirm.da .sterne svg')]
+        .filter(x => !/stern-aus/.test(x.innerHTML)).length);
+      await nochmal.click(); await p.waitForSelector('.schirm.da .karte svg');
+    }
   }
   // Gemessen wird in der ZWEITEN Sitzung: dort muss stehen, was in der
   // ersten gelernt wurde. Beim ersten Anlauf hing der Fortschritt an der
@@ -184,17 +203,18 @@ try {
   // bleibt in voller Farbe stehen und traegt einen Haken - und zwar ueber
   // den Aufgabenwechsel hinweg, denn der baut den Bildschirm neu.
   const gefuellt = await p.evaluate(() => ({
-    gekonnt: document.querySelectorAll('.schirm.da path.geb.gekonnt').length,
+    gesessen: document.querySelectorAll('.schirm.da path.geb.gesessen').length,
     haken:   document.querySelectorAll('.schirm.da .haken').length,
     ruhig:   document.querySelectorAll('.schirm.da path.geb.ruhig').length,
   }));
-  console.log(`  Karte nach zwei Sitzungen: ${gefuellt.gekonnt} Gebiete in voller Farbe, `
+  console.log(`  Karte nach zwei Sitzungen: ${gefuellt.gesessen} Gebiete in voller Farbe, `
     + `${gefuellt.haken} Haken, ${gefuellt.ruhig} noch gedämpft`);
-  if (gefuellt.gekonnt < 2)
-    merke('gekonnt', new Error(`nur ${gefuellt.gekonnt} Gebiete stehen in voller Farbe — `
+  if (gefuellt.gesessen < 2)
+    merke('gesessen', new Error(`nur ${gefuellt.gesessen} Gebiete stehen in voller Farbe — `
       + `der Fortschritt überlebt den Aufgabenwechsel nicht`));
-  if (gefuellt.haken !== gefuellt.gekonnt)
-    merke('gekonnt', new Error(`${gefuellt.gekonnt} gekonnte Gebiete, aber ${gefuellt.haken} Haken`));
+  if (gefuellt.haken !== gefuellt.gesessen)
+    merke('gesessen', new Error(`${gefuellt.gesessen} Gebiete in voller Farbe, `
+      + `aber ${gefuellt.haken} Haken`));
   await p.screenshot({ path: '/tmp/smoke-spiel.png' });
   await p.close();
 } catch (e) { merke('spielen', e); }
@@ -205,7 +225,50 @@ try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
   await p.click('[data-profil="fiona"]');
   await p.waitForSelector('.schirm.da [data-ebene="bundeslaender"]');
-  fortschritt = await p.$eval('[data-ebene="bundeslaender"] .rolle', e => e.textContent.trim());
+  /* Die Ebenenwahl trägt jetzt Sterne, Aufkleber und einen Balken statt
+   * der Zeile „0 von 16". Auf dem Zielgerät war von dieser Zeile ohnehin
+   * nur die Zahl übrig: Balken und Überzeile sind im kurzen Querformat
+   * ausgeblendet, und Fiona liest keine Zahlen.
+   *
+   * Geprüft wird nicht, dass die drei DA sind - das wäre eine Zusage über
+   * Markup. Geprüft wird, dass sie DASSELBE sagen: der gefüllte Streifen
+   * des Balkens muss dem Verhältnis entsprechen, das die Zahl daneben
+   * nennt. Genau das stimmte auf dem Endbildschirm nicht (Balken auf einem
+   * Viertel, Zahl auf null), und genau das kann wieder auseinanderlaufen.
+   */
+  const kachel = await p.evaluate(() => {
+    const k = document.querySelector('[data-ebene="bundeslaender"]');
+    if (!k) return null;
+    const marke = k.querySelector('.klebermarke');
+    const fest  = k.querySelector('.balken i.fest');
+    const zahl  = (x) => { const m = (x || '').match(/-?[\d.]+/); return m ? +m[0] : null; };
+    return {
+      sterne: k.querySelectorAll('.sterne svg').length,
+      voll:   [...k.querySelectorAll('.sterne svg')]
+                .filter(x => !/stern-aus/.test(x.innerHTML)).length,
+      kleber: marke ? zahl(marke.textContent) : null,
+      gesamt: marke ? zahl((marke.getAttribute('aria-label') || '').split('von')[1]) : null,
+      fest:   fest ? zahl(fest.style.transform) : null,
+    };
+  });
+  if (!kachel) merke('ebenenwahl', new Error('die Kachel „Bundesländer" ist verschwunden'));
+  else {
+    fortschritt = `${kachel.voll}/3 Sterne, ${kachel.kleber} von ${kachel.gesamt} Aufkleber, `
+      + `Balken ${kachel.fest}`;
+    if (kachel.sterne !== 3)
+      merke('ebenenwahl', new Error(`die Kachel zeigt ${kachel.sterne} Sterne statt drei — `
+        + 'ohne sie steht dort für ein Kind, das nicht liest, gar nichts'));
+    if (kachel.kleber === null || kachel.gesamt === null)
+      merke('ebenenwahl', new Error('die Kachel nennt die Aufkleber nicht'));
+    else if (kachel.kleber < 1)
+      merke('ebenenwahl', new Error('nach zwei Sitzungen steht die Kachel auf null Aufklebern'));
+    else if (kachel.fest === null)
+      merke('ebenenwahl', new Error('die Kachel hat keinen gefüllten Balkenstreifen'));
+    else if (Math.abs(kachel.fest - kachel.kleber / kachel.gesamt) > 0.01)
+      merke('ebenenwahl', new Error(`der Balken steht auf ${kachel.fest}, `
+        + `die Zahl daneben auf ${kachel.kleber} von ${kachel.gesamt} `
+        + `(${(kachel.kleber / kachel.gesamt).toFixed(3)}) — zwei Größen, eine Anzeige`));
+  }
   // Der Beweis ist die ABLAGE, nicht der Text. Ein Regex auf "0 von 16"
   // trifft die 16 und meldet gruen - genau das ist beim ersten Lauf passiert.
   const abgelegt = await p.evaluate(() => new Promise(ja => {
@@ -280,6 +343,50 @@ try {
   console.log(`  Forscherbuch:               ${kleber} von ${alleKleber} Aufklebern`);
   console.log(`  Elternbereich:              ${antworten} Antworten protokolliert`);
   console.log(`  Fassungsstempel:            ${fassung.join(' · ')}`);
+
+  /* --- Die PIN muss sich ändern lassen -------------------------------
+   *
+   * Gefunden beim Audit: `Einst.pin` wurde gelesen und NIRGENDS
+   * geschrieben. Auf dem Eingabeschirm stand „Voreingestellt ist 0000" -
+   * und „voreingestellt" heisst, man kann es ändern. Man konnte nicht.
+   * Damit stand der Elternbereich jedem Kind offen, das lesen kann - also
+   * genau dem, vor dem er schützen soll.
+   */
+  {
+    const knopf = await p.$('.schirm.da #pinneu');
+    if (!knopf) merke('pin', new Error('im Elternbereich gibt es keine Möglichkeit, '
+      + 'die PIN zu ändern — sie steht für immer auf 0000'));
+    else {
+      await knopf.click(); await p.waitForTimeout(200);
+      for (const z of ['1', '9', '8', '4'])
+        await p.click(`.schirm.da #pinstand [data-neu="${z}"]`);
+      await p.waitForTimeout(400);
+      await p.reload();
+      await p.waitForSelector('[data-profil="fiona"]');
+      await p.click('[data-profil="fiona"]');
+      await p.waitForSelector('.schirm.da [data-ebene]');
+      await p.click('#eltern'); await p.waitForSelector('.schirm.da .ziffern');
+      for (let i = 0; i < 4; i++) await p.click('.schirm.da [data-z="0"]');
+      await p.waitForTimeout(500);
+      const altRein = !!(await p.$('.schirm.da #pinneu'));
+      // Kommt man mit der ALTEN PIN hinein, steht man jetzt IM
+      // Elternbereich - dort gibt es kein Ziffernfeld mehr. Die neue PIN
+      // hier trotzdem einzutippen liess den Rauchtest mit einer
+      // Playwright-Zeitueberschreitung sterben, statt zu sagen, was los
+      // ist: die Gegenprobe wurde rot, aber aus dem falschen Grund.
+      let neuRein = null;
+      if (!altRein) {
+        for (const z of ['1', '9', '8', '4']) await p.click(`.schirm.da [data-z="${z}"]`);
+        await p.waitForTimeout(600);
+        neuRein = !!(await p.$('.schirm.da #pinneu'));
+      }
+      console.log(`  PIN geändert:               mit 0000 rein: ${altRein ? 'JA' : 'nein'}, `
+        + `mit 1984 rein: ${neuRein === null ? '—' : neuRein ? 'ja' : 'NEIN'}`);
+      if (altRein) merke('pin', new Error('nach dem Ändern kommt man immer noch mit 0000 hinein'));
+      else if (!neuRein) merke('pin', new Error('mit der neuen PIN kommt man nicht hinein'));
+    }
+  }
+
 
   /* --- „Von vorne": das Kind kommt selbst wieder an die Aufgaben ------
    *
@@ -591,5 +698,30 @@ if (fahnenArten.size < 2)
   fehler.push(`fahne: in zwölf Aufgaben nur die Sorte „${[...fahnenArten][0] || '—'}" — `
     + `die Entscheidung „passt hinein" wird nicht wirklich gemessen`);
 console.log(`  Gelöst im ersten Durchgang: ${geloest.join(', ')}`);
+const jeRunde = [...new Set(sternVerlauf.map(x => x.runde))]
+  .map(r => sternVerlauf.filter(x => x.runde === r).map(x => x.n));
+console.log(`  Sterne im Kopf:             ${jeRunde.map(r => r.join('→')).join('   |   ')}`
+  + `   Endbildschirm: ${endSterne === null ? '—' : endSterne}`);
+/* EINE Formel, zwei Anzeigen - und der Kopf zieht sofort nach.
+ *
+ * Geprueft wird das Verhaeltnis, nicht eine feste Zahl: die Sternzahl im
+ * Kopf darf nie SINKEN, und der Endbildschirm darf nie mehr zeigen, als
+ * der Kopf zuletzt hatte. Der Fehler, den das faengt: zwei verschiedene
+ * Formeln, gemessen als 1 Stern im Kopf gegen 3 am Ende. */
+// INNERHALB einer Runde. Zwischen zwei Sitzungen faengt die Zaehlung zu
+// Recht wieder bei null an - der erste Anlauf dieser Pruefung kannte die
+// Rundengrenze nicht und meldete genau das als Fehler.
+for (const r of jeRunde)
+  for (let i = 1; i < r.length; i++)
+    if (r[i] < r[i - 1])
+      fehler.push(`Die Sterne im Kopf sinken innerhalb einer Runde (${r.join(' → ')}) — `
+        + 'ein Fortschritt, der zurückgeht, ist keiner');
+const hoechste = jeRunde.length ? Math.max(...jeRunde.flat()) : 0;
+if (endSterne !== null && jeRunde.length && endSterne > hoechste)
+  fehler.push(`Der Endbildschirm zeigt ${endSterne} Sterne, im Kopf standen höchstens `
+    + `${hoechste} — zwei verschiedene Formeln für dieselbe Sache`);
+console.log(`  Fortschrittsband:           ${bandVerlauf[bandVerlauf.length-1] || 'KEINES'}`);
+if (!bandVerlauf.some(b => /glatt|geschafft|gezeigt/.test(b)))
+  fehler.push('Das Fortschrittsband färbt sich nie — es zeigt nicht, wie die Runde lief');
 if (fehler.length) { console.log(`\n  ${fehler.length} FEHLER:`); fehler.forEach(f => console.log('    ✗ ' + f)); process.exit(1); }
 console.log('\n  Rauchtest grün: gespielt, abgelegt, Neustart überstanden, Buch gefüllt, Eltern gelesen, getippt.');

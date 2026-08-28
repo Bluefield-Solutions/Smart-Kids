@@ -35,6 +35,8 @@ const ZEICHEN = {
   tonAus:'<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>',
   tag:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>',
   abend:'<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
+  // Ein Aufkleber: rundes Blatt mit umgeschlagener Ecke.
+  kleber:'<path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 0-4 4v5a9 9 0 0 1 0-18z"/><path d="M12 21c2.4 0 8.6-6.2 9-9"/>',
   zu:'<path d="M6 6l12 12M18 6L6 18"/>',
 };
 const ZEI = (n, g=24)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none"
@@ -62,6 +64,60 @@ const schliessenKnopf = (was='Schließen')=>
 
 const MIKRO='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg>';
 const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'var(--stern-an)':'var(--stern-aus)',g)).join('')}</div>`;
+
+/**
+ * Wieviele Sterne? EINE Formel, an EINER Stelle.
+ *
+ * Vorher gab es zwei: der Kopf rechnete `floor(richtig / ceil(Aufgaben/3))`,
+ * der Endbildschirm `round(richtig/Aufgaben * 3)`. Nachgespielt mit vier von
+ * vier richtig: der Kopf zeigte **einen** Stern, der Endbildschirm **drei**.
+ * Ein Fortschritt, der unterwegs etwas anderes sagt als am Ende, ist keiner.
+ *
+ * Gezaehlt wird jetzt, wie ANTON es tut: nicht wieviel richtig war, sondern
+ * wieviel **glatt** war - beim ersten Versuch, ohne Hilfe. Drei Sterne
+ * heissen fehlerfrei, und das muss auch etwas heissen.
+ *
+ * `bisher` ist die Zahl der schon beantworteten Aufgaben: im Kopf waechst
+ * die Anzeige damit waehrend der Runde mit, statt am Ende zu springen.
+ */
+function sterneFuer(glatt, gesamt){
+  if (!gesamt) return 0;
+  const anteil = glatt / gesamt;
+  return anteil >= 1 ? 3 : anteil >= 2/3 ? 2 : anteil >= 1/3 ? 1 : 0;
+}
+
+/**
+ * Der Fortschrittsbalken - EIN Balken, zwei Aussagen, auf jedem Bildschirm
+ * derselbe.
+ *
+ * Vorher zeigte er die mittlere Fachhoehe, und direkt darueber stand eine
+ * ANDERE Zahl: die der Aufkleber. Nach einer fehlerfreien Runde stand da
+ * "Im Buch: 0 von 4" und darunter ein Balken auf einem Viertel. Zwei
+ * richtige Zahlen, die sich widersprechen, weil sie uebereinanderstehen -
+ * und ein Kind liest den Balken, nicht die Zahl.
+ *
+ * Jetzt sind es zwei Streifen mit je einer Bedeutung:
+ *   fest      hat einen Aufkleber - genau die Zahl, die danebensteht
+ *   unterwegs wie weit die Gebiete im Schnitt sind - was sich JEDE Runde
+ *             bewegt, auch wenn noch kein Aufkleber dazugekommen ist
+ *
+ * `unterwegs` wird auf `fest` hochgezogen: ein Gebiet in Fach 3 zaehlt als
+ * Aufkleber, traegt zum Mittel aber nur die Haelfte bei - der helle
+ * Streifen waere sonst kuerzer als der dunkle und sae unter ihm.
+ */
+const fortschrittBalken = (f, klasse='') => {
+  const fest = f.gesamt ? f.gesammelt / f.gesamt : 0;
+  const unterwegs = Math.max(f.anteil, fest);
+  return `<div class="balken ${klasse}" role="img" aria-label="${f.gesammelt} von `
+    + `${f.gesamt} im Buch"><i class="unterwegs" style="transform:scaleX(${
+      unterwegs.toFixed(3)})"></i><i class="fest" style="transform:scaleX(${
+      fest.toFixed(3)})"></i></div>`;
+};
+
+/** Die Zahl der Aufkleber mit ihrem Zeichen davor. */
+const kleberMarke = (n, gesamt) => `<span class="klebermarke"${
+  n ? '' : ' data-leer="ja"'} aria-label="${n} von ${gesamt} Aufklebern">${
+  ZEI('kleber', 20)}${n}</span>`;
 
 /* ---------- Vorlesen ----------------------------------------------------
  *
@@ -185,9 +241,25 @@ const LOB = ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
              'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'];
 const FAST_LOB = ['Fast!', 'Ganz nah dran!', 'Beinahe!'];
 let letztesLob = -1;
+/* EIN Griff, nicht Wuerfeln bis es passt.
+ *
+ * Vorher stand hier `do { i = zufall } while (i === letztesLob)`. Das
+ * terminiert nur, solange der Wuerfel sich AENDERT - und im Tor `ansicht`
+ * ist `Math.random` festgenagelt, damit ein Vorbild reproduzierbar ist.
+ * Ergebnis: nach der zweiten richtigen Antwort stand die Schleife, der
+ * Hauptfaden mit ihr, und die Seite antwortete auf gar nichts mehr. Zwanzig
+ * Minuten Torlauf ohne eine Zeile Ausgabe.
+ *
+ * Im Spiel wuerfelt niemand festgenagelt, der Fehler war also nie zu sehen.
+ * Eine unbegrenzte Wiederholschleife im Anzeigefaden bleibt trotzdem eine:
+ * sie hat keine obere Schranke, nur eine Wahrscheinlichkeit. Gezogen wird
+ * jetzt aus allen AUSSER dem zuletzt gezogenen - ein Griff, immer fertig,
+ * gleiche Verteilung.
+ */
 function lob(vorrat = LOB){
-  let i; do { i = Math.floor(Math.random()*vorrat.length); }
-  while (vorrat.length > 1 && i === letztesLob);
+  if (vorrat.length < 2) { letztesLob = 0; return vorrat[0]; }
+  const andere = vorrat.map((_, i) => i).filter(i => i !== letztesLob);
+  const i = andere[Math.floor(Math.random() * andere.length)];
   letztesLob = i; return vorrat[i];
 }
 
@@ -260,7 +332,7 @@ function kontinentRunde(stand){
   let r = 1;
   while (r < RUNDEN) {
     const bisher = D.kontinente.filter(k => k.runde <= r);
-    if (!bisher.every(k => (stand[k.id]?.fach ?? 1) >= 2)) break;
+    if (!bisher.every(k => Leitner.istGesessen(stand, k.id))) break;
     r++;
   }
   return r;
@@ -379,8 +451,11 @@ async function ebenenwahl(){
         <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
-          <div class="rolle">${b.gesammelt} von ${b.gesamt}${b.gekonnt?` · ${b.gekonnt} sicher`:''}</div>
-          <div class="balken"><i style="transform:scaleX(${(b.anteil).toFixed(3)})"></i></div>
+          <div class="kachelfuss">
+            <div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${
+              kleberMarke(b.gesammelt, b.gesamt)}</div>
+            ${fortschrittBalken(b)}
+          </div>
         </button>${b.gesammelt ? `
         <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}</div>`).join('')}</div>
     </div>`;
@@ -521,7 +596,18 @@ async function starten(ebeneId){
   try { await Ablage.setze('einstellungen', nrSchluessel, nr); } catch(e){}
   const keim = keimAus(`${P.id}|${ebeneId}|${nr}`);
   const liste = Leitner.sitzung(alle, Stand, P.sitzung, Date.now(), keim);
-  Sitzung = { ebeneId, alle, liste, i:0, richtig:0, versuche:0, keim, begonnen:Date.now() };
+  // `glatt`: beim ERSTEN Versuch richtig, ohne Hilfe. Das ist die Zahl,
+  // aus der die Sterne kommen - „richtig" allein waere auch die Aufgabe,
+  // die nach zwei Fehlversuchen saß.
+  // `wie[i]` haelt fest, WIE die i-te Aufgabe ausging - das Fortschrittsband
+  // zeigt damit nicht nur wieviel geschafft ist, sondern wie es lief.
+  // `richtig` und `versuche` standen hier auch noch, wurden bei jeder
+  // Antwort hochgezaehlt und NIRGENDS gelesen - Reste der alten Sternformel.
+  // Ein Zaehler, den niemand liest, ist kein Zustand, sondern eine Einladung
+  // an die naechste Formel, sich an ihm zu bedienen: genau so kamen die zwei
+  // Sternformeln zustande, die der Audit gefunden hat.
+  Sitzung = { ebeneId, alle, liste, i:0, glatt:0, wie:[],
+              aufkleber:0, keim, begonnen:Date.now() };
   zeige(spielschirm);
 }
 
@@ -603,22 +689,26 @@ function spielschirm(){
   const farbeVon=(g,i)=> (art==='bundeslaender'||istHaupt) ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const umgebung = (art==='laender' && D.umgebung[kont])
     ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
-  // Drei Zustaende statt zwei: das gesuchte Gebiet, die schon gekonnten
+  // Drei Zustaende statt zwei: das gesuchte Gebiet, die schon gesessenen
   // (volle Farbe, sie bleiben stehen) und der Rest (gedaempft).
   //
-  // "Gekonnt" kommt aus dem LEITNER-STAND, nicht aus der laufenden Sitzung.
+  // Es kommt aus dem LEITNER-STAND, nicht aus der laufenden Sitzung.
   // Erst hatte es an der Sitzung gehangen - dann war die Karte nach jedem
   // Neustart wieder leer, und der Rauchtest hat es sofort gemeldet. Aus dem
   // Stand ueberlebt es das Schliessen der App, und es faellt auch wieder
   // zurueck, wenn ein Gebiet spaeter danebengeht. Genau das soll es.
-  const gekonnt = (id) => (Stand[id]?.fach ?? 1) >= 2;
+  // „Sass schon einmal" - NICHT dasselbe wie „sicher" im Buch (Fach 5) und
+  // nicht dasselbe wie „hat einen Aufkleber" (Fach 3). Die Schwelle steht
+  // in src/kern/leitner.js neben den beiden anderen; hier stand sie als
+  // nackte Zwei unter dem Namen `gekonnt`, den das Buch fuer Fach 5 benutzt.
+  const gesessen = (id) => Leitner.istGesessen(Stand, id);
   const flaechen = formen.map((g,i)=>`<path class="geb ${
-      g.id===ziel.id ? 'ziel' : gekonnt(g.id) ? 'gekonnt' : 'ruhig'}" data-id="${g.id}"
+      g.id===ziel.id ? 'ziel' : gesessen(g.id) ? 'gesessen' : 'ruhig'}" data-id="${g.id}"
       d="${g.pfad}" fill-rule="evenodd" fill="${farbeVon(g,i)}"/>`).join('');
-  // Ein Haken auf jedem gekonnten Gebiet. Farbe allein sagt "anders",
+  // Ein Haken auf jedem Gebiet, das schon einmal sass. Farbe allein sagt "anders",
   // ein Haken sagt "geschafft" - und er trifft auch die, die Farben
   // schlecht unterscheiden.
-  const haken = formen.filter(g=>g.anker && gekonnt(g.id) && g.id!==ziel.id)
+  const haken = formen.filter(g=>g.anker && gesessen(g.id) && g.id!==ziel.id)
     .map(g=>`<g class="haken" data-x="${g.anker[0]}" data-y="${g.anker[1]}">
         <circle r="13" fill="var(--gut)" stroke="var(--papier)" stroke-width="2.5"/>
         <path d="M-6 0 L-2 4.5 L6.5 -4.5" fill="none" stroke="var(--papier)"
@@ -659,8 +749,11 @@ function spielschirm(){
 
   s.innerHTML = `
     ${kopf({ links: schliessenKnopf('Übung beenden'),
-      mitte:`<span class="zaehler">${st.i+1}<i>/</i>${st.liste.length}</span>`,
-      rechts: sterne(Math.min(3, Math.floor(st.richtig/Math.max(1,Math.ceil(st.liste.length/3))))) })}
+      mitte:`<div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
+        st.liste.map((_,i)=>`<i class="${
+          i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"></i>`).join('')
+      }</div>`,
+      rechts: sterne(sterneFuer(st.glatt, st.liste.length)) })}
     <div class="frage" id="frage">${frageText}</div>
     <div class="feld">
       <div class="karte" id="karte" style="--karte-ar:${(()=>{const v=vb.split(' ').map(Number);
@@ -712,6 +805,8 @@ function spielschirm(){
     if (erledigt) return;
     erledigt = true;
     Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehen();
     Protokoll.schreiben(Protokoll.eintrag({
       zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
       eingabeart: grund, ergebnis: 'gezeigt', roheingabe: '', sicherheit: null,
@@ -1090,10 +1185,26 @@ function spielschirm(){
       { duration: 260, easing:'cubic-bezier(.2,0,0,1)' });
   }
 
+  /**
+   * Kopf nachziehen, sobald geantwortet wurde.
+   *
+   * Der Bildschirm wird je Aufgabe EINMAL gebaut - der Kopf zeigte damit
+   * immer den Stand VOR der laufenden Antwort. Nachgespielt: vier von vier
+   * richtig, und der Kopf stand bei zwei Sternen, waehrend der
+   * Endbildschirm drei zeigte. Ein Fortschritt, der erst beim naechsten
+   * Bild nachkommt, ist keine Rueckmeldung, sondern eine Verzoegerung.
+   */
+  function kopfNachziehen(){
+    const st1 = s.querySelector('.sterne');
+    if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));
+    const punkt = s.querySelectorAll('.band i')[st.i];
+    if (punkt) punkt.className = st.wie[st.i] || 'weiter';
+  }
+
   /* --- Bewertung. EIN Ort, egal welcher Eingabeweg. --- */
   async function bewerte(roh, eingabeart, ctx){
     if (erledigt) return;
-    versuch++; st.versuche++;
+    versuch++;
     let ergebnis='falsch', text='', sicherheit=null, nebenbei='';
 
     if (eingabeart==='antippen') {
@@ -1127,14 +1238,27 @@ function spielschirm(){
     if (ergebnis!=='falsch') {
       erledigt = true;
       Stand = Leitner.verschieben(Stand, ziel.id, ergebnis==='richtig', Date.now());
-      st.richtig += ergebnis==='richtig' ? 1 : 0.5;
+      if (ergebnis==='richtig' && versuch===1) st.glatt++;
+      st.wie[st.i] = (ergebnis==='richtig' && versuch===1) ? 'glatt' : 'geschafft';
+      kopfNachziehen();
       if (ctx.etikett) ctx.etikett.classList.add('weg');
       // Gelobt wird nur, was ganz richtig war. Ein "Super gemacht!" auf eine
       // fast richtige Antwort nimmt dem Wort seinen Wert - und dem Kind den
       // Hinweis, dass noch etwas zu holen ist.
       const spruch = ergebnis==='richtig' ? lob() : null;
-      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch);
-      vorlesen(ergebnis==='fast' ? text : `${spruch} Das ist ${ziel.name}.`);
+      // Ein Aufkleber entsteht, wenn das Gebiet Fach 3 erreicht - also beim
+      // ZWEITEN Mal richtig. Vorher war das unsichtbar: der Endbildschirm
+      // sagte „4 von 4 richtig" und im selben Atemzug „0 von 4 Aufklebern",
+      // und ein Kind konnte daraus nicht schliessen, dass es beim naechsten
+      // Mal soweit ist. Jetzt hat der Aufkleber einen Augenblick.
+      const fachDanach = Stand[ziel.id]?.fach ?? fachVorher;
+      const neuerAufkleber = fachVorher < Leitner.HAT_AUFKLEBER
+                          && fachDanach >= Leitner.HAT_AUFKLEBER;
+      if (neuerAufkleber) st.aufkleber++;
+      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
+                neuerAufkleber);
+      vorlesen(ergebnis==='fast' ? text
+        : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
       standSichern(st.ebeneId);
     } else if (versuch >= 3) {
       // Nach dem dritten Fehlversuch wird aufgeloest. Ein Kind, das
@@ -1199,7 +1323,7 @@ function spielschirm(){
 }
 
 /* ---------- Belohnungsmoment --------------------------------------------- */
-function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch){
+function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleber){
   // Beim Belohnen wird die Hervorhebung still - sonst blinkt es weiter,
   // waehrend sich der Umriss nachzeichnet.
   const kontur=s.querySelector('#kontur'), fuell=s.querySelector('#belohn'),
@@ -1240,6 +1364,7 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch){
     ? `<span class="fastText">${fastText}</span>`
     : `<span class="richtigText"><b class="jubel">${spruch || 'Richtig!'}</b>`
       + ` Das ist ${ziel.name}.</span>`
+      + (neuerAufkleber ? `<span class="neuerkleber">Neuer Aufkleber!</span>` : '')
       // Anders geschrieben, aber gemeint war es richtig: der Haken kommt
       // zuerst, der Hinweis daneben. Nicht statt seiner.
       + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
@@ -1298,22 +1423,45 @@ function nameAufDieKarte(s, ziel){
     width:b+luft*2, height:h+luft*1.4, rx:(h/2+luft*0.7), class:'fahnenrand' });
   g.insertBefore(rand, text);
 
-  let dx = 0;
+  let dx = 0, dy = 0;
   if (!passt) {
-    // Die Fahne steht NEBEN dem Gebiet, auf der Seite mit mehr Platz, und
-    // eine Leitlinie zeigt darauf. Ohne sie schwebt ein Name im Meer.
+    /* Die Fahne steht NEBEN dem Gebiet, und eine Leitlinie zeigt darauf.
+     * Ohne sie schwebt ein Name im Meer.
+     *
+     * „Neben" hiess bis zum Audit: LINKS oder RECHTS, und zwar um die halbe
+     * Gebietsbreite PLUS die halbe Fahnenbreite. Bei einem langen Namen an
+     * einem breiten Gebiet ist das sehr weit: „Australien und Ozeanien"
+     * landete auf dem iPhone quer mitten auf SÜDAMERIKA. Die Leitlinie war
+     * da, aber wer sie nicht verfolgt, liest den Namen als Beschriftung des
+     * Kontinents, unter dem er liegt - also genau falsch herum.
+     *
+     * Die Fahne ist breit und flach. Der Platz, den sie braucht, ist unter
+     * oder ueber dem Gebiet fast immer da, und dort bleibt sie in
+     * Sichtweite. Reihenfolge: unten, oben, dann erst daneben.
+     */
     const vb = svg.viewBox.baseVal;
-    const nachRechts = ziel.anker[0] < vb.x + vb.width/2;
-    const weg = Math.max(fb.width, fb.height)/2 + b/2 + luft*2.5;
-    dx = nachRechts ? weg : -weg;
-    const links  = ziel.anker[0] + dx - b/2 - luft;
-    const rechts = ziel.anker[0] + dx + b/2 + luft;
+    const halbB = b/2 + luft, halbH = h/2 + luft*0.7;
+    const senkrecht = fb.height/2 + halbH + luft*0.6;
+    const drin = (v) => ziel.anker[1] + v - halbH >= vb.y
+                     && ziel.anker[1] + v + halbH <= vb.y + vb.height;
+    if (drin(senkrecht)) dy = senkrecht;
+    else if (drin(-senkrecht)) dy = -senkrecht;
+    else {
+      const nachRechts = ziel.anker[0] < vb.x + vb.width/2;
+      dx = (nachRechts ? 1 : -1) * (Math.max(fb.width, fb.height)/2 + halbB + luft*1.5);
+    }
+    // Waagerecht in die Karte klemmen - so nah am Gebiet wie moeglich.
+    const links  = ziel.anker[0] + dx - halbB;
+    const rechts = ziel.anker[0] + dx + halbB;
     if (links  < vb.x)             dx += vb.x - links;
     if (rechts > vb.x + vb.width)  dx -= rechts - (vb.x + vb.width);
-    rand.setAttribute('x', dx - b/2 - luft);
+    rand.setAttribute('x', dx - halbB);
+    rand.setAttribute('y', dy - halbH);
     text.setAttribute('x', dx);
-    g.insertBefore(knoten('line', { x1:0, y1:0,
-      x2: dx + (dx > 0 ? -b/2 - luft : b/2 + luft), y2:0, class:'fahnenlinie' }), rand);
+    text.setAttribute('y', dy);
+    // Die Linie darf bis in die Fahnenmitte laufen: der Rand wird DANACH
+    // eingehaengt und deckt das innere Stueck ab.
+    g.insertBefore(knoten('line', { x1:0, y1:0, x2:dx, y2:dy, class:'fahnenlinie' }), rand);
     g.insertBefore(knoten('circle', { cx:0, cy:0, r:4/k, class:'fahnenpunkt' }), rand);
   }
   g.setAttribute('transform', `translate(${ziel.anker[0]} ${ziel.anker[1]})`);
@@ -1323,18 +1471,23 @@ function nameAufDieKarte(s, ziel){
 /* ---------- Ende ---------------------------------------------------------- */
 function endschirm(){
   const st=Sitzung, s=el('div');
-  const n=Math.max(1,Math.min(3,Math.round(st.richtig/st.liste.length*3)));
+  const n=sterneFuer(st.glatt, st.liste.length);
   const f=Leitner.fortschritt(st.alle, Stand);
   s.innerHTML=kopf({}) + `
     <div class="mitte">
-      <div>${sterne(n,56)}</div>
+      <div class="siegsterne">${sterne(n,56)}</div>
       <div class="gross">Geschafft!</div>
-      <div class="unter">${Math.round(st.richtig)} von ${st.liste.length} richtig,
-        ${st.versuche} Versuche.<br>Du hast <strong>${f.gesammelt} von ${f.gesamt}</strong> Aufklebern${
-        f.gekonnt?`, ${f.gekonnt} davon sicher`:''}.</div>
-      <div class="balken breit"><i style="transform:scaleX(${(f.anteil).toFixed(3)})"></i></div>
-      <div class="reihe" style="margin-top:var(--r6)">
-        <button class="knopf" id="nochmal">Noch einmal</button>
+      <div class="unter">${st.glatt} von ${st.liste.length} auf Anhieb richtig.</div>
+      ${fortschrittBalken(f, 'breit')}
+      <div class="buchstand">${kleberMarke(f.gesammelt, f.gesamt)}<span>${
+        st.aufkleber ? `${st.aufkleber} neu${st.aufkleber===1?'':'e'}!`
+        : `von ${f.gesamt} im Buch`}</span></div>${
+        /* Warum noch keiner da ist - aber nur, solange noch keiner da ist.
+           Danach ist der Satz eine Erklaerung fuer etwas, das man sieht. */
+        !st.aufkleber && !f.gesammelt
+          ? '<div class="leiser">Beim zweiten Mal richtig gibt es einen Aufkleber.</div>' : ''}
+      <div class="reihe siegwahl">
+        <button class="knopf haupt" id="nochmal">Noch einmal</button>
         <button class="knopf" id="buch">Forscherbuch</button>
         <button class="knopf" id="andere">Etwas anderes</button>
       </div>
@@ -1343,7 +1496,9 @@ function endschirm(){
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
   s.querySelector('#andere').onclick=()=>zeige(ebenenwahl);
   vorlesen('Geschafft!');
-  ansagen(`Du hast ${Math.round(st.richtig)} von ${st.liste.length} richtig. `
+  ansagen(`Du hast ${st.glatt} von ${st.liste.length} auf Anhieb richtig. `
+    + (st.aufkleber ? `${st.aufkleber} neue Aufkleber! `
+       : f.gesammelt ? '' : 'Beim zweiten Mal richtig gibt es einen Aufkleber. ')
     + 'Noch einmal, Forscherbuch oder etwas anderes?');
   return s;
 }
@@ -1455,7 +1610,8 @@ function elternTor(){
   s.innerHTML = kopf({ links: zurueckKnopf() }) + `
     <div class="mitte">
       <div class="titel">Elternbereich</div>
-      <div class="unter">Vier Ziffern. Voreingestellt ist <code>0000</code>.</div>
+      <div class="unter">Vier Ziffern.${Einst.pin==='0000'
+        ? ' Voreingestellt ist <code>0000</code> — im Elternbereich änderbar.' : ''}</div>
       <div class="pin" id="pin">${'<i></i>'.repeat(4)}</div>
       <div class="ziffern">${[1,2,3,4,5,6,7,8,9,0].map(z=>`<button class="knopf zi" data-z="${z}">${z}</button>`).join('')}
         <button class="knopf zi" data-z="x" aria-label="löschen">${LOESCHEN}</button></div>
@@ -1547,6 +1703,16 @@ async function elternbereich(){
         <button class="knopf" id="hsw">${Einst.hauptstadtAuswahl?'Auswahl abschalten, tippen lassen':'Auswahl einschalten'}</button>
       </div>
 
+      <h3 class="gruppe">PIN</h3>
+      <p class="unter">Vier Ziffern vor diesem Bereich. Sie ist eine Türklinke,
+        kein Schloss — sie hält eine neugierige Achtjährige ab, nicht mehr.
+        Umso wichtiger, dass sie nicht <code>0000</code> bleibt: das steht auf
+        dem Eingabeschirm.</p>
+      <div class="reihe" style="justify-content:flex-start">
+        <button class="knopf" id="pinneu">PIN ändern</button>
+        <span class="unter" id="pinstand"></span>
+      </div>
+
       <h3 class="gruppe">Ausfuhr und Löschen</h3>
       <div class="reihe" style="justify-content:flex-start">
         <button class="knopf" id="csv">Als CSV sichern</button>
@@ -1629,6 +1795,45 @@ async function elternbereich(){
   stimmenZeichnen();
   if ('speechSynthesis' in window)
     speechSynthesis.addEventListener('voiceschanged', stimmenZeichnen, { once:false });
+
+  /* Die PIN war NICHT zu aendern.
+   *
+   * `Einst.pin` wurde gelesen und nirgends geschrieben - gefunden beim
+   * Audit. Auf dem Eingabeschirm stand „Voreingestellt ist 0000", und
+   * „voreingestellt" heisst: man kann es aendern. Man konnte nicht. Damit
+   * war der Elternbereich fuer jedes Kind offen, das lesen kann - also
+   * genau fuer die, vor der er schuetzen soll. */
+  {
+    const knopf = s.querySelector('#pinneu'), stand = s.querySelector('#pinstand');
+    let neue = '';
+    // Gezeichnete Punkte, keine Schriftzeichen. Zwanzig Zeilen weiter oben
+    // steht, WARUM - und diese Stelle hat es beim ersten Anlauf trotzdem
+    // wieder mit ● und ○ gemacht. Das Tor `schrift` hat es gefunden.
+    const zeigen = ()=>{ stand.innerHTML = neue
+      ? `<span class="pin klein">${'<i class="voll"></i>'.repeat(neue.length)}${
+          '<i></i>'.repeat(4-neue.length)}</span>`
+      : (Einst.pin==='0000' ? 'steht auf 0000' : 'geändert'); };
+    zeigen();
+    knopf.onclick = ()=>{
+      if (knopf.dataset.an!=='ja'){
+        knopf.dataset.an='ja'; knopf.textContent='Abbrechen'; neue='';
+        stand.innerHTML = `<span class="ziffern klein">${
+          [1,2,3,4,5,6,7,8,9,0].map(z=>`<button class="zi" data-neu="${z}">${z}</button>`).join('')
+        }</span>`;
+        stand.querySelectorAll('[data-neu]').forEach(b=>b.onclick=async()=>{
+          neue += b.dataset.neu;
+          if (neue.length===4){
+            Einst.pin = neue; await einstSichern();
+            knopf.dataset.an=''; knopf.textContent='PIN ändern';
+            neue=''; zeigen();
+            stand.textContent = 'geändert';
+          }
+        });
+        return;
+      }
+      knopf.dataset.an=''; knopf.textContent='PIN ändern'; neue=''; zeigen();
+    };
+  }
 
   s.querySelector('#csv').onclick=()=>sichern(Protokoll.alsCsv(eintraege,NAMEN),
     `lernkiste-${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');

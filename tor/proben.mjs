@@ -81,6 +81,27 @@ const PROBEN = [
     ersatz:'.frage .richtigText{color:#c0392b}',
     an:{ datei:V, text:'#c0392b' }, sagt:'am System vorbei' },
 
+  // Eine benutzte Marke, die es nicht gibt. Der Originalfehler: `--r5` stand
+  // im `padding` des gezogenen Schilds und war nie definiert. Eine
+  // ungueltige var() macht die GANZE Deklaration ungueltig - das Schild
+  // hatte gar keine Polsterung mehr, und drei Tore sahen nichts davon.
+  { n:'eine benutzte Marke gibt es nicht', tor:'inhalt', deckt:'marken', datei:V,
+    such:'.sterne{display:flex;gap:var(--r1)}',
+    ersatz:'.sterne{display:flex;gap:var(--gibtsnicht)}',
+    an:{ datei:V, text:'var(--gibtsnicht)' },
+    sagt:'nirgends gesetzt' },
+
+  // Eine der sieben Flaechenfarben wieder festnageln. Sie leiten sich aus
+  // --flaeche-l/--flaeche-c ab; wer eine einzelne festschreibt, haengt sie
+  // still vom System ab - und genau so standen die Werte vorher, siebenmal
+  // ausgeschrieben neben zwei Marken, die nie jemand las.
+  { n:'eine Flächenfarbe hängt sich vom System ab', tor:'inhalt', deckt:'marken',
+    datei:'src/marken/marken.css',
+    such:'  --f3: oklch(var(--flaeche-l) var(--flaeche-c) 130);',
+    ersatz:'  --f3: oklch(0.74 0.135 130);',
+    an:{ datei:'src/marken/marken.css', text:'--f3: oklch(0.74 0.135 130);' },
+    sagt:'leiten sich aus' },
+
   /* --- schrift ------------------------------------------------------ */
   { n:'ein Zeichen außerhalb des geladenen Schnitts', tor:'inhalt', deckt:'schrift', datei:D,
     such:"'Lass es auf dem Land los.'", ersatz:"'Lass es auf dem Land los. ☞'",
@@ -99,6 +120,16 @@ const PROBEN = [
     suchRegex:/Gebiete gesamt \| \*\*(\d+)\*\*/, ersatzFn:(m)=>`Gebiete gesamt | **${+m[1]+7}**`,
     an:{ datei:'docs/Lernkiste-KONZEPT.md', regex:/Gebiete gesamt \| \*\*\d+\*\*/ },
     sagt:'Konzept sagt' },
+
+  // Die Kette in CLAUDE.md gegen die Kette in package.json. Der
+  // Originalfehler: die Datei lag sechs Tore zurueck - und sie wird zu
+  // Beginn JEDER Sitzung gelesen.
+  { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
+    datei:'CLAUDE.md',
+    such:'`schrift` · `symbol` · `doku` → `spielprobe` → `vergleich` → `bauen` →',
+    ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
+    an:{ datei:'CLAUDE.md', fehlt:'`doku` → `spielprobe`' },
+    sagt:'Tore der Kette nicht' },
 
   /* --- spielprobe --------------------------------------------------- */
   // Nicht "einen Alias aus den Daten nehmen" - das ist eine erlaubte
@@ -216,9 +247,15 @@ const PROBEN = [
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
 
   /* --- ansicht ------------------------------------------------------ */
+  // Gedreht wird jetzt an der MARKE, nicht an einer ausgeschriebenen Farbe:
+  // die sieben leiten sich seit der Audit-Runde aus --flaeche-c ab, und die
+  // alte Probe suchte einen Text, den es nicht mehr gibt. Sie ist damit auch
+  // die Gegenprobe auf die Ableitung selbst - greift sie nicht durch,
+  // haengen die Farben doch nicht an der Marke.
   { n:'die Karte wechselt die Farbe', tor:'ansicht', bauen:true, datei:'src/marken/marken.css',
-    such:'--f1: oklch(0.74 0.135  25)', ersatz:'--f1: oklch(0.74 0.135 195)',
-    an:{ ...DIST, text:'oklch(0.74 0.135 195)' }, sagt:'rot' },
+    such:'  --flaeche-l: 0.74; --flaeche-c: 0.135;',
+    ersatz:'  --flaeche-l: 0.74; --flaeche-c: 0.020;',
+    an:{ ...DIST, text:'--flaeche-c: 0.020' }, sagt:'rot' },
 
   /* --- pwa ---------------------------------------------------------- */
   { n:'ein Symbol im Manifest gibt es nicht', tor:'pwa', bauen:true, datei:'prototyp/bauen.mjs',
@@ -291,6 +328,77 @@ const PROBEN = [
     ersatz:'      da: stuecke, offen: [] });',
     an:{ ...DIST, text:'da: stuecke, offen: []' },
     sagt:'die Wand' },
+
+  // Der Audit-Befund: zwei Sternformeln, im Kopf 1 und am Ende 3.
+  // Nachgestellt wird der ORIGINALFEHLER, nicht irgendeiner: die alte
+  // Formel im Kopf, die neue am Ende. Ein einfaches `sterne(0)` haette
+  // nichts bewiesen - `kopfNachziehen()` schreibt gleich darauf den
+  // richtigen Wert hinein, und die Probe waere gruen geblieben.
+  // Und die Formel muss NIEDRIGER rechnen als die am Ende. Der erste
+  // Anlauf teilte durch ein Drittel der Liste und kam damit am Rundenende
+  // ebenfalls auf drei Sterne - der Rauchtest blieb gruen, obwohl der
+  // Fehler drin war. Geteilt wird jetzt durch die ganze Liste: ein Stern
+  // im Kopf gegen drei am Ende, genau die gemessene Urfassung.
+  { n:'Kopf und Endbildschirm rechnen wieder verschieden', tor:'smoke', bauen:true, datei:D,
+    such:'    if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));',
+    ersatz:'    if (st1) st1.outerHTML = sterne(Math.min(3, Math.floor('
+      + 'st.glatt/Math.max(1,st.liste.length))));',
+    an:{ ...DIST, text:'st.glatt/Math.max(1,st.liste.length)' },
+    sagt:'zwei verschiedene Formeln' },
+  // Und: der Kopf muss auf die Antwort reagieren, nicht erst beim naechsten Bild.
+  { n:'das Fortschrittsband färbt sich nicht mehr', tor:'smoke', bauen:true, datei:D,
+    such:"      st.wie[st.i] = (ergebnis==='richtig' && versuch===1) ? 'glatt' : 'geschafft';",
+    ersatz:'',
+    an:{ ...DIST, fehlt:"st.wie[st.i] = (ergebnis==='richtig'" },
+    sagt:'färbt sich nie' },
+  // Die PIN, die keine war.
+  // Nicht den Knopf entfernen - das gaebe nur einen Seitenfehler. Der
+  // Originalfehler war, dass die Aenderung NICHT ANKAM: `Einst.pin` wurde
+  // gelesen und nie geschrieben.
+  { n:'die geänderte PIN wird nicht gespeichert', tor:'smoke', bauen:true, datei:D,
+    such:'            Einst.pin = neue; await einstSichern();',
+    ersatz:'            await einstSichern();',
+    an:{ ...DIST, fehlt:'Einst.pin = neue;' },
+    sagt:'immer noch mit 0000' },
+
+  // Die Schwelle, ab der ein Gebiet auf der Karte in voller Farbe steht.
+  // Sie stand als nackte Zwei zweimal in spiel.js, unter dem Namen
+  // `gekonnt` - den das Forscherbuch fuer Fach 5 benutzt. Jetzt steht sie
+  // einmal in leitner.js; wer sie dort verstellt, muss die Karte aendern.
+  { n:'die Karte zeigt den Fortschritt erst viel später', tor:'smoke',
+    bauen:true, datei:'src/kern/leitner.js',
+    such:'export const SITZT = 2;', ersatz:'export const SITZT = 5;',
+    an:{ ...DIST, text:'const SITZT = 5' },
+    sagt:'in voller Farbe' },
+
+  // Die Ebenenwahl ohne Sterne und Aufkleber. Auf dem Zielgeraet blieb
+  // dann GAR NICHTS uebrig: Balken und Ueberzeile sind im kurzen
+  // Querformat ausgeblendet, und die Zahl daneben liest Fiona nicht.
+  { n:'die Ebenenwahl zeigt keine Sterne und Aufkleber mehr', tor:'smoke',
+    bauen:true, datei:D,
+    such:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${',
+    ersatz:'<div class="stand">${\'\'}${',
+    an:{ ...DIST, fehlt:'sterne(sterneFuer(b.gesammelt, b.gesamt), 20)' },
+    sagt:'Sterne statt drei' },
+
+  // Der Balken sagt wieder etwas anderes als die Zahl daneben - der
+  // Originalbefund vom Endbildschirm, nachgestellt an der Ebenenwahl.
+  { n:'Balken und Aufkleberzahl laufen wieder auseinander', tor:'smoke',
+    bauen:true, datei:D,
+    such:'  const fest = f.gesamt ? f.gesammelt / f.gesamt : 0;',
+    ersatz:'  const fest = f.anteil;',
+    an:{ ...DIST, text:'const fest = f.anteil;' },
+    sagt:'zwei Größen, eine Anzeige' },
+
+  // Die Aufnahmen vom Zielgeraet. Geaendert wird etwas, das NUR im kurzen
+  // Querformat sichtbar ist - bei 1240 x 1000 greift die Regel gar nicht.
+  // Bleibt `ansicht` dabei gruen, fotografiert es das Zielgeraet nicht.
+  { n:'auf dem Zielgerät verschwindet der Kachelbalken', tor:'ansicht',
+    bauen:true, datei:V,
+    such:'  .kachel .balken{height:5px;flex:1;min-width:40px}',
+    ersatz:'  .kachel .balken{display:none}',
+    an:{ ...DIST, text:'.kachel .balken{display:none}' },
+    sagt:'quer-ebenen' },
 
   { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",

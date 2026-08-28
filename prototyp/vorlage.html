@@ -90,6 +90,23 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Zwischenraum - "Fiona" sass bei 844 Punkten Breite auf 366 statt 422.
    Und nichts bricht mehr um: im Hochformat rutschten "Forscherbuch" und
    "Eltern" unter "Zurueck", der Kopf war 112 Punkte hoch und schief. */
+/* Das Fortschrittsband.
+   Statt „3/8" - eine Zahl, die ein Kind erst lesen und dann verrechnen
+   muss - steht dort eine Reihe Punkte: was war, was gerade dran ist, was
+   kommt. Und sie sagen zusaetzlich, WIE es lief: glatt beim ersten
+   Versuch, geschafft mit Hilfe, oder gezeigt. Das ist derselbe
+   Fortschritt, nur ohne Lesen. */
+.band{display:flex;gap:var(--r2);align-items:center}
+.band i{width:12px;height:12px;border-radius:50%;background:var(--linie-2);
+  transition:background var(--d-zustand) var(--k-standard),
+             transform var(--d-zustand) var(--k-standard)}
+.band i.glatt{background:var(--gut)}
+.band i.geschafft{background:var(--treffer);opacity:.75}
+.band i.gezeigt{background:var(--warn)}
+.band i.weiter{background:var(--linie)}
+.band i.jetzt{background:var(--ziel);transform:scale(1.5)}
+@media (max-width:420px){ .band i{width:9px;height:9px} .band{gap:var(--r1)} }
+
 .kopf{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
   gap:var(--r3);padding:var(--r3) var(--r4);flex:none;min-height:68px}
 .kopf-links{justify-self:start;display:flex;gap:var(--r2);min-width:0}
@@ -123,6 +140,20 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
     border-color var(--d-tipp) var(--k-standard),color var(--d-tipp) var(--k-standard)}
 .knopf:active{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}
 @media (hover:hover){.knopf:hover{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}}
+/* Genau EIN lauter Knopf je Bildschirm - dieselbe Tiefe wie am Etikett.
+   Auf dem Endbildschirm standen drei gleich leise Knoepfe nebeneinander:
+   "Noch einmal", "Forscherbuch", "Etwas anderes". Was als naechstes
+   passieren soll, war daran nicht zu sehen - und wer nicht liest, sieht
+   nur drei graue Kapseln. */
+.knopf.haupt{color:var(--auf-flaeche);background:var(--primaer);
+  border-color:var(--primaer-rand);
+  box-shadow:0 var(--kante) 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht);
+  padding:var(--r3) var(--r8);min-height:56px;font-size:var(--s1)}
+.knopf.haupt:active{transform:translateY(3px);background:var(--primaer);
+  color:var(--auf-flaeche);border-color:var(--primaer-rand);
+  box-shadow:0 0 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
+@media (hover:hover){.knopf.haupt:hover{background:var(--primaer);
+  color:var(--auf-flaeche);border-color:var(--primaer-kante)}}
 .sterne{display:flex;gap:var(--r1)}
 .fortschritt{font-family:var(--f-ui);font-size:var(--s0);font-weight:600;color:var(--tinte-2);
   font-variant-numeric:tabular-nums}
@@ -188,6 +219,23 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   color:var(--auf-flaeche);hyphens:auto;overflow-wrap:break-word;text-align:center;
   line-height:1.15}
 .kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-2)}
+/* Statt "0 von 4": drei Sterne und die Zahl der Aufkleber.
+   Fiona liest keine Zahlen - aber sie sieht, ob ein Stern voll ist. */
+.kachel .kachelfuss{display:flex;flex-direction:column;align-items:stretch;
+  gap:var(--r1);width:100%}
+.kachel .stand{display:flex;align-items:center;gap:var(--r3);min-height:22px}
+.klebermarke{display:inline-flex;align-items:center;gap:var(--r1);font-family:var(--f-ui);
+  font-size:var(--s-klein);font-weight:700;color:var(--tinte-2)}
+/* Der leere Aufkleber muss noch zu SEHEN sein - mit --stern-aus war er auf
+   der Kachel praktisch unsichtbar, und damit stand da eine nackte Null. */
+.klebermarke svg{stroke:var(--tinte-3);fill:none}
+.klebermarke:not([data-leer]) svg{stroke:var(--tinte);
+  fill:color-mix(in oklab, var(--stern-an) 80%, var(--papier))}
+/* Die Null steht in --tinte-2 wie jede andere Zahl auch. Mit --tinte-3
+   kam sie auf 3,8:1 gegen die bunten Kacheln - das Tor `lesbarkeit` hat
+   sie sechzehnmal gemeldet, in Tag und Abend. Der Unterschied zwischen
+   „schon welche" und „noch keine" steckt im Zeichen, nicht in der
+   Lesbarkeit der Zahl. */
 /* Jede Ebene traegt ihre eigene Farbe. Acht weisse Karten nebeneinander
    sehen aus wie eine Tabelle; acht farbige sehen aus wie ein Spiel.
    Der Ton kommt als `--ton` aus dem Markup und wird hier nur GEMISCHT -
@@ -262,7 +310,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Was schon sass, bleibt in voller Farbe stehen. Die Karte fuellt sich,
    waehrend gespielt wird - das ist der Fortschritt, den ein Kind sieht,
    ohne eine Zahl lesen zu muessen. */
-.karte path.geb.gekonnt{opacity:1;filter:none}
+.karte path.geb.gesessen{opacity:1;filter:none}
 /* Was gerade unter dem Finger liegt, leuchtet auf.
    Die Nachsicht beim Ziehen (60 Bildpunkte Umkreis) darf keine Zauberei
    sein: das Kind muss VOR dem Loslassen sehen, was gelten wird. Ohne diese
@@ -386,6 +434,15 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
    Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */
 .frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1}
+/* Der Aufkleber bekommt einen eigenen Augenblick - er ist das einzige,
+   was ueber diese Aufgabe hinaus bleibt. */
+.frage .neuerkleber{display:inline-block;margin-top:var(--r2);
+  font-family:var(--f-lesen);font-size:var(--s0);font-weight:800;
+  color:var(--auf-flaeche);background:var(--f2);
+  border-radius:var(--rund-flaeche);padding:var(--r1) var(--r4);
+  animation:kleber-auf var(--d-belohnung) var(--k-standard) both}
+@keyframes kleber-auf{from{opacity:0;transform:scale(.4) rotate(-8deg)}
+  to{opacity:1;transform:none}}
 .frage .fastText{color:var(--warn)}
 .frage .loesung{color:var(--akzent)}
 /* Der Nebenbei-Hinweis steht UNTER dem Haken, kleiner und leiser. */
@@ -412,15 +469,28 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   font-family:var(--f-ui);font-size:var(--s-klein);padding:var(--r2) var(--r4);text-align:center}
 /* --- M3 bis M6: Fortschritt, Forscherbuch, Elternbereich --- */
 .balken.breit{width:min(340px,70vw)}
-.balken{width:100%;height:8px;border-radius:var(--rund-voll);background:var(--linie);overflow:hidden}
+.balken{position:relative;width:100%;height:8px;border-radius:var(--rund-voll);
+  background:var(--linie);overflow:hidden}
 /* `transform:scaleX` statt `width`: eine Animation auf einer
    Layouteigenschaft laesst den Browser bei JEDEM Bild neu umbrechen. Die
    Regel steht im Projekt seit dem Grafik-Audit; hier stand sie trotzdem,
    weil das Tor `marken` nur die Entwuerfe las und nicht die App. */
-.balken i{display:block;height:100%;width:100%;background:var(--gut);
+.balken i{position:absolute;inset:0;display:block;height:100%;width:100%;background:var(--gut);
   border-radius:var(--rund-voll);transform-origin:left center;
   transition:transform var(--d-zustand) var(--k-standard)}
+/* Zwei Streifen, zwei Bedeutungen - der helle liegt unten und ist der
+   laengere: "unterwegs" schliesst "hat einen Aufkleber" mit ein. */
+.balken i.unterwegs{background:color-mix(in oklab, var(--gut) 38%, var(--papier))}
+.balken i.fest{background:var(--gut)}
 .balken.klein{height:6px;min-width:60px}
+/* Die Zeile unter dem Balken auf dem Endbildschirm: Zeichen und Zahl gross
+   genug, um sie ohne Lesen zu erfassen. */
+.buchstand{display:flex;align-items:center;gap:var(--r2);font-family:var(--f-ui);
+  font-size:var(--s0);font-weight:700;color:var(--tinte-2)}
+.buchstand .klebermarke{font-size:var(--s1)}
+.buchstand .klebermarke svg{width:26px;height:26px}
+.leiser{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-3);max-width:44ch}
+.siegwahl{margin-top:var(--r6)}
 .fach{font-size:var(--s-klein);color:var(--tinte-3);font-weight:600;margin-left:var(--r2)}
 
 .rollen{flex:1;min-height:0;overflow:auto;padding:0 var(--r4) var(--r8);
@@ -456,8 +526,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .pin i{width:16px;height:16px;border-radius:var(--rund-voll);border:var(--strich-stark) solid var(--akzent);
   transition:background var(--d-tipp) var(--k-standard)}
 .pin i.voll{background:var(--akzent)}
+/* Dieselben Punkte, kleiner: im Elternbereich stehen sie in einer Zeile Text. */
+.pin.klein{display:inline-flex;gap:var(--r2);min-height:0;vertical-align:middle}
+.pin.klein i{width:11px;height:11px}
 .ziffern{display:grid;grid-template-columns:repeat(4,64px);gap:var(--r2);justify-content:center}
 .zi{justify-content:center;font-size:var(--s1);min-height:56px}
+/* Der Ziffernblock im Elternbereich ist kleiner: dort tippt ein
+   Erwachsener, nicht ein Kind mit dem Daumen. 44 Punkte bleiben. */
+.ziffern.klein{grid-template-columns:repeat(5,48px);gap:var(--r1);justify-content:start;
+  margin-top:var(--r2)}
+.ziffern.klein .zi{min-height:44px;font-size:var(--s0)}
 
 .kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--r3)}
 .wert{background:var(--papier);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
@@ -513,20 +591,48 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      zurueckzuholen, ruecken hier die INNEREN Abstaende enger - das gibt
      rund 30 Punkte Luft, und die naechste Schriftaenderung kippt es nicht
      gleich wieder. */
-  /* Sieben Ebenen statt fuenf passen auf dem kleinsten Geraet (667x375)
-     nicht mehr mit Balken. Der Balken sagt dasselbe wie die Zahl direkt
-     darueber - bei knapper Hoehe faellt die Wiederholung weg, nicht die
-     Auskunft. */
-  .kachel{padding:var(--r3) var(--r4);max-width:300px;gap:var(--r1)}
-  .kachel .balken{display:none}
+  /* Der Balken BLEIBT jetzt auch hier stehen.
+     Vorher fiel er weg, "weil er dasselbe sagt wie die Zahl darueber" -
+     und weil die Zahl da war, kostete das nichts. Seit die Zahl durch
+     Sterne und Aufkleber ersetzt ist, war auf dem Zielgeraet - iPhone
+     quer, genau dieses Fenster - GAR KEIN Fortschritt mehr zu sehen:
+     acht gleich aussehende Kacheln. Er wird schmaler statt unsichtbar. */
+  /* Mit den seitlichen Aussparungen des iPhone (je 59 Punkte) bleiben von
+     844 nur 726 - dort passen DREI Kacheln nebeneinander, nicht vier, also
+     drei Reihen statt zwei. Bei 72 Punkten je Kachel lag die letzte Reihe
+     3 Punkte im unteren Streifen. Die Polsterung gibt sie her. */
+  .kachel{padding:var(--r2) var(--r4);max-width:300px;gap:var(--r1)}
+  /* `.kachel.bunt` setzt die Polsterung mit ZWEI Klassen; die Zeile
+     darueber hat sie nie erreicht. Sie stand seit der Einfuehrung dieses
+     Fensters da und tat nichts - gemessen, nicht vermutet: die Kachel blieb
+     bei 16/24 Punkten, egal was hier stand. */
+  .kachel.bunt{padding:var(--r2) var(--r4)}
+  /* Sterne, Aufkleber und Balken in EINE Zeile - sonst ist die Kachel um
+     zwei Zeilen hoeher als vorher, und acht davon passen nicht mehr in
+     390 Punkte. Das Tor `passt` hat genau das gemeldet. */
+  .kachel .kachelfuss{flex-direction:row;align-items:center;gap:var(--r2)}
+  .kachel .balken{height:5px;flex:1;min-width:40px}
+  .kachel .stand{min-height:0;gap:var(--r2);flex:none}
+  .kachel .stand .sterne svg{width:17px;height:17px}
+  /* Der Endbildschirm hat mit Balken, Aufkleberzeile und Hinweis drei
+     Zeilen mehr bekommen. Auf 844x390 stand die Knopfreihe danach unter
+     dem Rand - die Sterne geben den Platz her, nicht die Auskunft. */
+  .siegsterne svg{width:40px;height:40px}
+  .siegwahl{margin-top:var(--r3)}
+  .buchstand{font-size:var(--s-klein)}
+  .buchstand .klebermarke{font-size:var(--s0)}
+  .buchstand .klebermarke svg{width:22px;height:22px}
   /* Auf 667x375 passen acht Kacheln nur ohne die Ueberzeile. Sie traegt
      die Einordnung ("LÄNDER IN"), aber die Farbe tut das auch - und eine
      Ebene, die man nicht erreicht, traegt gar nichts. */
   .kachel .ueber{display:none}
   .kachel .name{font-size:var(--s1)}
   .wahl{grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr))}
+  /* Die letzte Kachelreihe lag 3 Punkte im Streifen des iPhone. Die vier
+     Punkte kommen aus dem Abstand ZWISCHEN den Kacheln, nicht aus der
+     Auskunft in ihnen. */
   .mitte{gap:var(--r3)}
-  .wahl{gap:var(--r3)}
+  .wahl{gap:var(--r2)}
   .kachel .kreis{width:44px;height:44px}
   .kachel .umriss{width:60px;height:60px}
   .unter{max-width:52ch}

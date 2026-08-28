@@ -6,8 +6,8 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
 Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-,
-der Budget-, der Übergangs-, der Geräte-, der Umschalter- und der
-**Vorleserunde**.
+der Budget-, der Übergangs-, der Geräte-, der Umschalter-, der Vorlese- und
+der **Audit-Runde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -18,12 +18,13 @@ der Budget-, der Übergangs-, der Geräte-, der Umschalter- und der
 ## Was läuft
 
 ```
-npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
-                    Antarktika, Städte
+npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder, Städte
+npm run ansicht     Bildvergleich, 13 Aufnahmen — vier davon auf dem
+                    Zielgerät (iPhone quer). Nur ortsfest.
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 36 stehenden Gegenproben (Baum muss sauber sein,
-                    dauert 3,5 Minuten, höchstens drei Runden alt)
+npm run proben      die 42 stehenden Gegenproben (Baum muss sauber sein,
+                    höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
 ```
@@ -36,9 +37,13 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
   → ansicht → pwa · offline → smoke
 ```
 
-**Die Torkette ist grün.** Siebzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **36 Gegenproben, alle schlagen
+**Die Torkette ist grün.** Neunzehn Prüfungen — und „mit Gegenprobe belegt"
+ist keine Behauptung mehr, sondern ein Lauf: **42 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
+
+Seit der Audit-Runde vergleicht sich die Aufzählung darüber selbst: das Tor
+`doku` legt die Kette in `CLAUDE.md` neben `npm run tor` in `package.json`.
+Sie lag einmal sechs Tore zurück — und `inhalt` war zur selben Zeit **tot**.
 
 ---
 
@@ -979,7 +984,7 @@ Drei Fallen, die dabei zu umgehen waren:
   stillschweigend überspringen — das ist genau die Lücke, die dieses
   Werkzeug aufdecken soll.
 
-### Sechs neue Gegenproben, zwei davon lehrreich
+### Sieben neue Gegenproben, zwei davon lehrreich
 
 25 stehende Proben, alle schlagen an. Alle vier Fehlerpfade von `rhythmus`
 sind belegt — auch „der Lauf liegt zu lange zurück", und das ging nicht
@@ -1397,3 +1402,171 @@ sie maßen, was leichter zu messen war:
 | — | M1: Vite und Svelte. PWA, Service Worker und Ablage stehen bereits. | ich |
 | D28 | `ansicht` auf dem Runner: nur im festgenagelten Playwright-Abbild sinnvoll, samt dort aufgenommener Vorbilder | ich |
 | — | Leitner, Elternbereich, Protokoll | ich |
+
+---
+
+## Die Audit-Runde
+
+> Auftrag: *„eine echte Schleife, ob wir irgendwo noch Fehler, Lücken oder
+> Inkonsistenzen haben … Wir möchten einen Fortschritt sehen. Wir möchten
+> Sterne sehen, vielleicht ein paar Sticker."*
+
+Zwei Hälften, und die erste hat die zweite gerettet: **das Tor `inhalt` war
+tot**, seit Antarktika gestrichen wurde. Hätte diese Runde nur gebaut und
+nicht gesucht, wären sieben Prüfungen weiter stumm geblieben.
+
+### Wie gesucht wurde
+
+Nicht durch Lesen. Vier Durchgänge, jeder mit einem Werkzeug, das etwas
+zählt, das ein Blick nicht zählt:
+
+| Durchgang | Was gemessen wurde | Was gefunden wurde |
+|---|---|---|
+| Zustandsfelder | Welches Feld an `Sitzung`, `Einst`, `P` wird gelesen, welches nur geschrieben | F2 |
+| Tote Verweise | Funktionen ohne Aufruf, CSS-Klassen ohne Markup, `var(--x)` ohne Definition, Marken ohne Verwendung | F1, F5 |
+| Die Tore selbst | Jedes Tor einzeln fahren, statt sich auf den letzten grünen Lauf zu verlassen | F6, F7, F8 |
+| Der Blick aufs Zielgerät | Bildschirmfotos bei 844 × 390, dem Fenster, auf dem geurteilt wird | F3, F4, F9, L1 |
+
+### Neun Befunde
+
+| | Befund | Wie er durchgekommen ist |
+|---|---|---|
+| **F1** | `--r5` war nie definiert und wurde benutzt: `padding: var(--r3) var(--r5)` am gezogenen Schild. Eine ungültige `var()` macht die **ganze** Deklaration ungültig, und weil `padding` nicht erbt, blieb null übrig — der Name klebte an beiden Rundungen. | Kein Tor misst Polsterung. `passt` misst Überlauf, `lesbarkeit` Kontrast, und das Vorbild im Bildvergleich hielt den Fehler **fest**. |
+| **F2** | `st.richtig` und `st.versuche` wurden bei jeder Antwort hochgezählt und nirgends gelesen — Reste der alten Sternformel. | Ein toter Zähler tut nichts Falsches. Er lädt nur die nächste Formel ein, sich an ihm zu bedienen: genau so entstanden die zwei Sternformeln. |
+| **F3** | Endbildschirm: der Balken zeigte die mittlere Fachhöhe (25 %), der Satz direkt darüber „Im Buch: **0** von 4". Zwei richtige Zahlen, die sich widersprechen, weil sie übereinanderstehen — und ein Kind liest den Balken. | Beide Zahlen waren für sich korrekt. |
+| **F4** | Die Namensfahne stand „neben" dem Gebiet — um die halbe Gebiets**breite** plus die halbe Fahnenbreite. „Australien und Ozeanien" landete im Querformat mitten auf **Südamerika**. | Die Leitlinie war da. Wer sie nicht verfolgt, liest den Namen als Beschriftung des Kontinents darunter. |
+| **F5** | `--flaeche-l` und `--flaeche-c` standen im Markensystem und wurden **nie benutzt**; ihre Werte waren siebenmal daneben ausgeschrieben. Wer an der Marke drehte, änderte nichts. | Das Tor `marken` verglich die sieben Zahlen **miteinander** — gleich waren sie. |
+| **F6** | `tor/inhalt.mjs` importierte `src/geo/antarktika.fein.js`, gelöscht beim Streichen von Antarktika. **Sieben Prüfungen** — inhalt, topologie, beruehrung, marken, schrift, symbol, doku — stürzten vor ihrer ersten Zeile ab. | Ein abgestürztes Tor erfüllt jede Gegenprobe, die „muss rot werden" verlangt. `proben` fängt das (es fragt bei jedem roten Tor nach dem gesunden Stand) — aber seit dem Löschen war kein voller Probenlauf mehr gefahren. |
+| **F7** | `●` und `○` in der neuen PIN-Anzeige, beide außerhalb des Schriftschnitts `latin`. **Zwanzig Zeilen darüber** stand, warum genau diese Zeichen gezeichnet und nicht getippt gehören. | Sie kamen aus der Systemschrift und sahen fast richtig aus. Gefunden hat es das Tor `schrift` — in derselben Minute, in der es wieder lief. |
+| **F8** | `CLAUDE.md` nannte die Kette mit **zwölf** Toren, gefahren wurden **achtzehn**. `rhythmus`, `spielprobe`, `budget`, `passt`, `lesbarkeit` und `ziehen` fehlten. | Die Datei wird zu Beginn jeder Sitzung gelesen. Wer sie las, hielt sechs Tore für nicht vorhanden. |
+| **F9** | Im kurzen Querformat stand `.kachel{padding:…}` — und tat **nichts**: `.kachel.bunt` setzt dieselbe Eigenschaft mit zwei Klassen. | Die Regel war zur Platzersparnis geschrieben worden. Gemessen: die Kachel blieb bei 16/24 Punkten, egal was dort stand. Genau diese 16 Punkte haben jetzt die dritte Kachelreihe wieder ins Bild geholt. |
+| **F10** | `lob()` würfelte, **bis es passt**: `do { i = Math.random… } while (i === letztesLob)`. Das terminiert nur, solange der Würfel sich ändert. Im Tor `ansicht` ist `Math.random` festgenagelt — nach der zweiten richtigen Antwort stand die Schleife, der Anzeigefaden mit ihr, und die Seite antwortete auf gar nichts mehr. | Im Spiel würfelt niemand festgenagelt, der Fehler war nie zu sehen. Eine unbegrenzte Wiederholschleife im Anzeigefaden bleibt trotzdem eine: sie hat keine obere Schranke, nur eine Wahrscheinlichkeit. Gefunden hat ihn erst die neue Aufnahme, die den ganzen Bildschirm durchspielt — **zwanzig Minuten Torlauf ohne eine Zeile Ausgabe**. |
+| **F12** | Dieselbe Schwelle an **vier** Stellen mit **drei** Namen. `istGekonnt` = Fach 5 und `HAT_AUFKLEBER` = 3 standen im Leitner-Modul; Fach 2 stand **zweimal als nackte Zwei** in `prototyp/spiel.js` — unter dem Namen `gekonnt`, den das Forscherbuch für Fach 5 benutzt. Und der Haken, den diese Zwei auf die Karte malt, sieht aus wie das Siegel, das im Buch „sicher" heißt. | Jede Stelle war für sich richtig. Erst nebeneinander gelegt fällt auf, dass ein Wort drei Zahlen bedeutet. Gefunden beim Nachrechnen einer neuen Aufnahme: zwei Kontinente trugen einen Haken, deren Fach 2 und 3 war. |
+| **F11** | Sieben Marken in den Entwürfen (`--app-tinte`, `--app-gut`, `--app-linie`, `--app-tinte2`, `--app-tinte3`, `--tinte-leise`, `--tinte-weich`) gab es nicht mehr — Reste einer Umbenennung. | Bei `color:` fällt eine ungültige `var()` auf den geerbten Wert zurück, und der war hier zufällig derselbe. Der Bildvergleich meldete nach der Reparatur **null** geänderte Bildpunkte: der Fehler war unsichtbar, aber die nächste Änderung an einer dieser Marken wäre wirkungslos geblieben. |
+
+Und eine, die die alte Fassung mitgenommen hat: `die Karte wechselt die
+Farbe` suchte die ausgeschriebene Farbe `--f1: oklch(0.74 0.135 25)`, die es
+seit F5 nicht mehr gibt. Sie dreht jetzt an `--flaeche-c` — und ist damit
+zugleich die Gegenprobe auf die Ableitung selbst: greift sie nicht durch,
+hängen die sieben Farben doch nicht an der Marke.
+
+**Nicht bestätigt**: der Verdacht, `proben` prüfe den gesunden Stand zu spät.
+Nachgesehen — `istGesund` läuft bei **jedem** roten Tor, also auch bei einem
+abgestürzten. Keine Lücke, und der Verdacht steht hier, damit ihn niemand
+ein zweites Mal hat.
+
+### Drei neue Tore, aus drei Befunden
+
+**Jede benutzte Marke muss es geben** (in `marken`). Der Fehler, der das
+ausgelöst hat, ist F1 — und er ist die ganze Begründung: eine ungültige
+`var()` macht nicht einen Wert ungültig, sondern die **ganze Deklaration**.
+Bei `padding` (erbt nicht) bleibt null übrig, bei `color` (erbt) der
+geerbte Wert. Beides sieht im Browser nach nichts aus. Das Tor sammelt jetzt
+alle gesetzten Marken (auch die aus `setProperty`) und legt sie neben alle
+benutzten; gerechnete Namen wie `var(--f${…})` werden übersprungen. Beim
+ersten Lauf fand es **acht** — `--r5` und die sieben aus F11.
+
+
+**Die Kette vergleicht sich selbst** (in `doku`). `CLAUDE.md` wird neben
+`npm run tor` in `package.json` gelegt — und neben die Überschriften der
+Tore, die weitere in sich tragen (`inhalt` fährt sieben, `pwa` zwei). Gezählt
+wird dort, wo die Tore sich melden, nicht in einer dritten Liste, die wieder
+veralten kann. Verglichen werden Mengen, keine Reihenfolgen: die Reihenfolge
+steht in `package.json` und braucht keine zweite Fassung.
+
+**Die Flächenfarben leiten sich ab** (in `marken`). Die alte Prüfung verglich
+sieben ausgeschriebene Helligkeiten miteinander; nach der Ableitung hätte sie
+null Farben gefunden und wäre rot geworden, ohne dass etwas kaputt war. Sie
+prüft jetzt die **Form**, die die Gleichheit trägt: jede der sieben muss
+dieselbe Marke benutzen, die Marke steht je Modus genau einmal, ihre
+Helligkeit liegt zwischen 0,60 und 0,86 (darüber trägt der dunkle Textton
+nicht mehr), und der Abendmodus ist dunkler als der Tag. Wer eine einzelne
+Farbe wieder festnagelt, fällt durch.
+
+### Fortschritt, Sterne, Aufkleber — dort, wo das Kind hinsieht
+
+Der Wunsch war nicht „mehr Grafik", sondern **etwas zu sehen bekommen**. Drei
+Stellen:
+
+**Die Ebenenwahl.** Auf dem Zielgerät stand je Kachel „0 von 4" — und sonst
+nichts: der Balken und die Überzeile waren im kurzen Querformat ausgeblendet,
+damit acht Kacheln passen. Fiona liest keine Zahlen. Jetzt trägt jede Kachel
+eine **Sternreihe**, die Zahl der **Aufkleber** mit ihrem Zeichen und einen
+**Balken** — im kurzen Querformat alles drei in *einer* Zeile, damit die
+Kachel nicht höher wird als vorher. Die Sterne kommen aus derselben Formel
+wie im Spiel (`sterneFuer`), nur mit einer anderen Grundgesamtheit: nicht
+„glatt in dieser Runde", sondern „im Buch von dieser Ebene". Eine Formel,
+drei Anzeigen.
+
+**Der Balken, überall derselbe.** Zwei Streifen mit je einer Bedeutung:
+*fest* = hat einen Aufkleber (genau die Zahl daneben), *unterwegs* = wie weit
+die Gebiete im Schnitt sind. `unterwegs` wird auf `fest` hochgezogen — ein
+Gebiet in Fach 3 zählt als Aufkleber, trägt zum Mittel aber nur die Hälfte
+bei, und der helle Streifen säße sonst unter dem dunklen. Damit ist F3
+geschlossen: der Balken sagt dasselbe wie der Satz darüber.
+
+**Der Endbildschirm.** Ein **Hauptknopf** statt drei gleich leiser
+(„Noch einmal" trägt jetzt dieselbe Tiefe wie ein Antwort-Etikett — genau ein
+lauter Knopf je Bildschirm), der Aufkleberstand als **Zeichen mit Zahl**
+statt als Nebensatz, und der Erklärsatz „Beim zweiten Mal richtig gibt es
+einen Aufkleber" nur noch, **solange** noch keiner da ist.
+
+### Das Tor `ansicht` sieht endlich das Zielgerät
+
+Bis zu dieser Runde entstanden alle Vorbilder bei **1240 × 1000** — kein
+Gerät, das jemand benutzt, sondern die Größe, bei der zufällig die erste
+Aufnahme entstand. Das Fenster, auf dem geurteilt wird (iPhone quer,
+844 × 390), hat **eigene Regeln** (`max-height:440px`), und die hatten kein
+Bild gesehen. Eine davon war überdies wirkungslos (F9).
+
+Vier neue Aufnahmen, alle bei 844 × 390: **Ebenenwahl, Spielbildschirm,
+Endbildschirm, Forscherbuch** — also genau die drei Bildschirme, auf denen
+Fortschritt, Sterne und Aufkleber leben und die vorher **überhaupt kein**
+Vorbild hatten.
+
+Der Lernstand dafür wird **gesetzt, nicht erspielt**: vier Kontinente in vier
+verschiedenen Fächern. Ein Bildschirm mit lauter Nullen zeigt von Sternen und
+Aufklebern nichts — wer eine Wirkung abbilden will, muss sie einschalten.
+
+Der Endbildschirm brauchte zwei Umwege, und beide sagen etwas über die App:
+Fiona **zieht**, und ein Antippen ist dort ausdrücklich keine Antwort — der
+Durchlauf kam nach vierzig Aufgaben nicht ans Ende. Lea **tippt** die
+Kontinente, dort gibt es gar keine Auswahl zum Anklicken. Also wird Fionas
+Antwortweise gesetzt: dieselbe Einstellung, die im Spiel unter „Lieber
+antippen" steht.
+
+Und dieser eine Durchlauf hat F10 gefunden — die Endlosschleife im Lob. Kein
+anderes Tor spielt eine Runde bis zum Schluss **mit festgenageltem Würfel**.
+
+### Sieben neue Gegenproben
+
+Wer ein Tor ändert, trägt dort eine Probe nach. Sechs kamen dazu, damit die
+Runde nicht nur behauptet, geprüft worden zu sein:
+
+| Probe | Tor | Was sie nachstellt |
+|---|---|---|
+| eine benutzte Marke gibt es nicht | `marken` | F1, wörtlich: `gap:var(--gibtsnicht)` |
+| die Karte zeigt den Fortschritt erst viel später | `smoke` | F12: `SITZT` von 2 auf 5 — die eine Stelle, an der die Schwelle noch steht |
+| eine Flächenfarbe hängt sich vom System ab | `marken` | F5: eine der sieben wieder festgenagelt |
+| CLAUDE.md verschweigt ein Tor der Kette | `doku` | F8: `spielprobe` aus der Aufzählung gestrichen |
+| die Ebenenwahl zeigt keine Sterne und Aufkleber mehr | `smoke` | die Kachel ohne Sternreihe |
+| Balken und Aufkleberzahl laufen wieder auseinander | `smoke` | F3: der Balken zeigt wieder die mittlere Fachhöhe |
+| auf dem Zielgerät verschwindet der Kachelbalken | `ansicht` | L1: geändert wird etwas, das **nur** im kurzen Querformat gilt — bleibt `ansicht` grün, fotografiert es das Zielgerät nicht |
+
+Die letzte ist die wichtigste: sie prüft nicht die Anzeige, sondern **das
+Tor**. Bei 1240 × 1000 greift die geänderte Regel gar nicht — wer die neuen
+Aufnahmen wieder herausnimmt, fällt hier durch.
+
+### Was das Fotografieren des Zielgeräts sonst noch gekostet hat
+
+Zwei Nebenbefunde, beide aus derselben Ecke:
+
+`.klebermarke` stand zuerst in `--tinte-3`. Das Tor `lesbarkeit` meldete sie
+**sechzehnmal** — 3,8:1 gegen die bunten Kacheln am Tag, 3,1:1 am Abend, nötig
+sind 4,5:1. Der Unterschied zwischen „schon welche" und „noch keine" steckt
+jetzt im Zeichen, nicht in der Lesbarkeit der Zahl.
+
+Und das Startbündel ist von 131,7 auf 140,2 KB gewachsen (von 400 erlaubt) —
+die Ratsche hat es gemeldet, und die Antwort ist ja: Vorlesen, Umschalter,
+Forscherbuch, Fortschrittsband, Sterne und Aufkleber sind seit dem letzten
+Stand dazugekommen. Neu festgehalten.

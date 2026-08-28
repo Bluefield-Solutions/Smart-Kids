@@ -6,8 +6,15 @@
  */
 :root {
   /* --- Raster. Alle Abstaende sind Vielfache von 4. ------------------- */
-  --r1: 4px;   --r2: 8px;   --r3: 12px;  --r4: 16px;
+  --r1: 4px;   --r2: 8px;   --r3: 12px;  --r4: 16px;  --r5: 20px;
   --r6: 24px;  --r8: 32px;  --r12: 48px; --r16: 64px; --r24: 96px;
+  /* --r5 hat gefehlt und wurde trotzdem benutzt: `padding: var(--r3)
+     var(--r5)` am gezogenen Schild. Eine ungueltige var() macht die GANZE
+     Deklaration ungueltig - nicht nur den einen Wert -, und weil `padding`
+     nicht erbt, blieb null uebrig. Das Schild am Finger hatte seit
+     Einfuehrung KEINE Polsterung; der Name klebte an beiden Rundungen.
+     Kein Tor hat das gesehen: `passt` misst Ueberlauf, `lesbarkeit` misst
+     Kontrast, und der Bildvergleich hielt den Fehler als Vorbild fest. */
 
   /* --- Radien --------------------------------------------------------- */
   /* Groessere Radien - der schnellste Hebel fuer "moderner". */
@@ -42,10 +49,17 @@
      Das ist 2,45-mal so bunt wie vorher, und der dunkle Textton hat auf
      der schlechtesten der sieben Flaechen noch 6,1:1 (WCAG AA ist 4,5:1). */
   --flaeche-l: 0.74; --flaeche-c: 0.135;
-  --f1: oklch(0.74 0.135  25);  --f2: oklch(0.74 0.135  75);
-  --f3: oklch(0.74 0.135 130);  --f4: oklch(0.74 0.135 175);
-  --f5: oklch(0.74 0.135 230);  --f6: oklch(0.74 0.135 285);
-  --f7: oklch(0.74 0.135 330);
+  /* Abgeleitet, nicht abgeschrieben: --flaeche-l und --flaeche-c standen
+     hier und wurden nie benutzt, waehrend 0.74 und 0.135 siebenmal
+     ausgeschrieben danebenstanden. Wer die zwei Werte aendert, aendert
+     jetzt die sieben Farben - vorher aenderte er gar nichts. Regel 15. */
+  --f1: oklch(var(--flaeche-l) var(--flaeche-c)  25);
+  --f2: oklch(var(--flaeche-l) var(--flaeche-c)  75);
+  --f3: oklch(var(--flaeche-l) var(--flaeche-c) 130);
+  --f4: oklch(var(--flaeche-l) var(--flaeche-c) 175);
+  --f5: oklch(var(--flaeche-l) var(--flaeche-c) 230);
+  --f6: oklch(var(--flaeche-l) var(--flaeche-c) 285);
+  --f7: oklch(var(--flaeche-l) var(--flaeche-c) 330);
   --auf-flaeche: oklch(0.24 0.04 250);   /* auf allen sieben lesbar, 6,1:1 */
 
   /* Der Grund ist nicht mehr fast-weiss, sondern ein kuehler heller Ton
@@ -118,9 +132,6 @@
   --d-puls:   1500ms;   /* der Ring um das gesuchte Gebiet */
   --d-atmen:  2400ms;   /* der Hof um das Mikrofon */
   --k-standard: cubic-bezier(.2, 0, 0, 1);
-  --k-feder: linear(0,.006,.025 2.8%,.101 6.1%,.539 18.9%,.721 25.3%,.849 31.5%,
-             .937 38.1%,.968 41.8%,.991 45.7%,1.006 50.1%,1.015 55%,1.017 63.9%,
-             1.001 82.4%,1);
 }
 
 /* Abendmodus: nicht umkehren, sondern die Gesamthelligkeit senken.
@@ -129,10 +140,8 @@
   --grund:   oklch(0.88 0.020 255);
   --grund-2: oklch(0.83 0.035 258);
   --papier:  oklch(0.94 0.010 255);
-  --f1: oklch(0.66 0.115  25); --f2: oklch(0.66 0.115  75);
-  --f3: oklch(0.66 0.115 130); --f4: oklch(0.66 0.115 175);
-  --f5: oklch(0.66 0.115 230); --f6: oklch(0.66 0.115 285);
-  --f7: oklch(0.66 0.115 330);
+  /* Nur zwei Zahlen, nicht sieben Farben: die sieben leiten sich ab. */
+  --flaeche-l: 0.66; --flaeche-c: 0.115;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -19,15 +19,28 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 
 ```
 npm run tor        die ganze Kette. Muss vor jedem Push auf main grün sein.
+npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
+                   Verlangt einen sauberen Baum — sie arbeitet mit
+                   `git checkout` und löschte sonst die frische Arbeit.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html (zum Ansehen)
+npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
+                   `--aktualisieren` erneuert die Vorbilder — bewusst, und
+                   im SELBEN Commit einchecken.
 npm run backen     Karten neu rechnen
 npm run schrift    Andika und Plus Jakarta Sans holen
 npm run symbol     App-Symbol neu backen
 ```
 
-Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `schrift` ·
-`symbol` · `doku` → `vergleich` → `bauen` → `ansicht` → `pwa` · `offline`
-→ `smoke`.
+Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` ·
+`schrift` · `symbol` · `doku` → `spielprobe` → `vergleich` → `bauen` →
+`budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
+`offline` → `smoke`.
+
+Diese Aufzählung wird **verglichen, nicht geglaubt**: das Tor `doku` legt
+sie neben `npm run tor` in `package.json` und neben die Überschriften der
+Tore, die weitere in sich tragen. Sie stand einmal sechs Tore im Rückstand,
+und wer diese Datei las — sie wird zu Beginn jeder Sitzung gelesen —, hielt
+sechs Tore für nicht vorhanden.
 
 ---
 
@@ -54,6 +67,15 @@ Jede hat mindestens eine Runde gekostet.
 8. **Ein Zufallsgenerator ist erst dann einer, wenn es gemessen ist.** Ein
    einfacher LCG legte die richtige Antwort zehnmal hintereinander auf Platz
    2 oder 3. Jede Einzelprüfung war grün.
+9. **Erst einchecken, dann gegenproben.** `npm run proben` arbeitet mit
+   `git checkout` und verweigert deshalb den Dienst bei schmutzigem Baum.
+10. **Jede Probe prüft zuerst, ob ihr Eingriff angekommen ist.** Ein nicht
+   angekommener Eingriff sieht aus wie ein bestandenes Tor.
+11. **Ein abgestürztes Tor besteht jede Gegenprobe.** `tor/inhalt.mjs`
+   importierte nach dem Streichen von Antarktika eine gelöschte Datei;
+   sieben Prüfungen starben vor ihrer ersten Zeile. „Muss rot werden" ist
+   erfüllt, wenn ein Tor immer rot ist — deshalb fragt `proben` bei jedem
+   roten Tor nach, ob es OHNE Eingriff grün gewesen wäre.
 
 ---
 

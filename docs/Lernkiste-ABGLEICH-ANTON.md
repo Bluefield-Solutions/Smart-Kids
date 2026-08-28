@@ -157,6 +157,16 @@ macht den Unterschied zwischen „geschafft" und „gekonnt" sofort greifbar —
 und wir haben ihn im Leitner schon (`fach`), er ist nur nicht zu sehen.
 *Klein. Sichtbar an: die Runde zeigt hinterher, welche Aufgabe glatt lief.*
 
+> **Umgesetzt in der Audit-Runde.** Das Fortschrittsband im Kopf färbt jede
+> beantwortete Aufgabe ein — `glatt` (auf Anhieb), `geschafft` (nach einem
+> zweiten Versuch), `gezeigt` (Lösung angesehen) —, und die Sternzahl im Kopf
+> zieht bei jeder Antwort nach, statt am Ende zu springen. **Eine** Formel
+> (`sterneFuer`) speist Kopf, Endbildschirm und Ebenenwahl; vorher waren es
+> zwei, und bei vier von vier richtig zeigte der Kopf **einen** Stern und der
+> Endbildschirm **drei**. Die Ebenenwahl trägt dieselben Sterne, dazu die Zahl
+> der Aufkleber und einen zweiteiligen Balken. Siehe `docs/Lernkiste-STAND.md`,
+> Abschnitt *Die Audit-Runde*.
+
 **A2 · Ton für richtig und falsch.** Wir haben Sprache, aber keinen Klang.
 Zwei kurze Töne — einer steigend, einer weich fallend — sind das, was ein
 Kind zuerst wahrnimmt. Gebacken, nicht geladen (Budget). Sparsam nach S4.
@@ -178,6 +188,11 @@ gemacht."* Zieht ohne zu drohen.
 fehlen die kleinen Zwischentöne — bei drei richtigen hintereinander eine
 andere Reaktion als bei der ersten.
 *Klein.*
+
+> Der Vorrat ist unverändert, seine **Auswahl** aber repariert: sie würfelte,
+> bis ein anderer Spruch als der letzte herauskam — eine Schleife ohne obere
+> Schranke im Anzeigefaden. Sie greift jetzt in einem Zug aus allen außer dem
+> zuletzt gezogenen (F10 im Stand).
 
 ### Reihe B — die Dramaturgie (das eigentliche Vorbild)
 

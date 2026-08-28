@@ -43,6 +43,22 @@ export function verschieben(stand, id, richtig, jetzt) {
 }
 
 export const istFaellig = (stand, id, jetzt) => !stand[id] || stand[id].faellig <= jetzt;
+
+/* Drei Schwellen, drei Bedeutungen - und alle drei stehen HIER.
+ *
+ * Der Audit fand sie an vier Stellen mit drei Namen: Fach 5 hiess
+ * `istGekonnt` und stand hier, Fach 3 hiess `HAT_AUFKLEBER` und stand hier,
+ * Fach 2 hiess ebenfalls `gekonnt` und stand ZWEIMAL als nackte Zahl in
+ * `prototyp/spiel.js`. Derselbe Name fuer zwei verschiedene Zahlen, und die
+ * kleinere davon zeichnete auf der Karte einen Haken, der im Forscherbuch
+ * "sicher" bedeutet.
+ *
+ *   Fach 2  sass schon einmal  ->  volle Farbe und Haken auf der Karte
+ *   Fach 3  Aufkleber          ->  steht im Forscherbuch
+ *   Fach 5  sicher             ->  Siegel im Buch, zaehlt als gekonnt
+ */
+export const SITZT = 2;
+export const istGesessen = (stand, id) => (stand[id]?.fach ?? 1) >= SITZT;
 export const istGekonnt = (stand, id) => (stand[id]?.fach ?? 1) >= 5;
 
 /**

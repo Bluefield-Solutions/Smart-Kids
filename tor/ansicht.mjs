@@ -99,7 +99,51 @@ const AUFNAHMEN = [
   // stehen dort untereinander; ob sie passen, sagt kein Zahlenwert.
   { name:'spiel-zug', spiel:'kontinente', wahl:'.schirm.da', tun:'ziehen' },
   { name:'spiel-lob', spiel:'kontinente', wahl:'.schirm.da', tun:'loesen' },
+
+  /* Das ZIELGERAET - iPhone quer, 844 x 390.
+   *
+   * Bis zum Audit entstanden alle Aufnahmen bei 1240 x 1000. Das ist kein
+   * Geraet, das jemand benutzt; es ist die Groesse, bei der zufaellig die
+   * erste Aufnahme entstand. Auf dem Fenster, auf dem geurteilt wird,
+   * greifen andere Regeln (`max-height:440px`) - und genau die haben kein
+   * Bild gesehen. Eine davon, `.kachel{padding:…}`, war ueberdies wirkungslos:
+   * `.kachel.bunt` setzt dieselbe Eigenschaft mit zwei Klassen. Sie stand
+   * seit der Einfuehrung des Fensters da und tat nichts.
+   *
+   * Und: Ebenenwahl, Endbildschirm und Forscherbuch hatten UEBERHAUPT kein
+   * Vorbild - also genau die drei Bildschirme, auf denen Fortschritt,
+   * Sterne und Aufkleber leben.
+   *
+   * Der Stand wird GESETZT, nicht erspielt: ein Bildschirm mit lauter
+   * Nullen zeigt von Sternen und Aufklebern nichts. Wer eine Wirkung
+   * abbilden will, muss sie einschalten.
+   */
+  { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
+  { name:'quer-spiel',  spiel:'kontinente', quer:true, stand:true, wahl:'.schirm.da' },
+  // Der Endbildschirm wird im ANTIPPEN-Modus aufgenommen.
+  //
+  // Zwei Umwege waren noetig, und beide sagen etwas ueber die App:
+  // Fiona ZIEHT, und ein Antippen ist dort ausdruecklich keine Antwort -
+  // der Durchlauf kam nach vierzig Aufgaben nicht ans Ende. Und Lea TIPPT
+  // die Kontinente, es gibt dort gar keine Auswahl zum Anklicken. Also
+  // wird Fionas Antwortweise gesetzt - dieselbe Einstellung, die im Spiel
+  // unter „Lieber antippen" steht.
+  { name:'quer-ende',   spiel:'kontinente', quer:true, stand:true, antippen:true,
+    wahl:'.schirm.da', tun:'durch' },
+  { name:'quer-buch',   spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'buch' },
 ];
+
+/**
+ * Ein gesetzter Lernstand: vier Kontinente in vier verschiedenen Faechern.
+ * Damit stehen auf der Ebenenwahl zwei von sechs Aufklebern und ein Stern,
+ * im Buch zwei Umrisse - und der Balken zeigt beide Streifen.
+ */
+const STAND = {
+  afrika:       { fach:5, richtig:5, falsch:0, faellig:0 },
+  europa:       { fach:3, richtig:3, falsch:1, faellig:0 },
+  asien:        { fach:2, richtig:1, falsch:0, faellig:0 },
+  nordamerika:  { fach:1, richtig:0, falsch:2, faellig:0 },
+};
 
 /**
  * Bringt den Spielbildschirm in einen Zustand, den es sonst nur mit dem
@@ -123,7 +167,40 @@ const AUFNAHMEN = [
     await seite.waitForTimeout(150);
   };
 
+/**
+ * Bis zum Endbildschirm durchspielen - durch ANTIPPEN, nicht durch Ziehen.
+ *
+ * Das Ziehen braucht je Aufgabe eine Mausbahn und ein Wiederfinden des
+ * Ankers; sechs davon hintereinander sind sechs Gelegenheiten, dass die
+ * Aufnahme an einer anderen Stelle steht als beim letzten Lauf. Das
+ * Antippen ist derselbe Weg durch dieselbe Bewertung - `bewerte()` kennt
+ * nur EINEN Ort - und es ist deterministisch.
+ */
+async function durchspielen(seite) {
+  for (let n = 0; n < 40; n++) {
+    if (await seite.$('.schirm.da #nochmal')) return;
+    await karteSteht(seite);
+    const idx = await seite.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const z = s.querySelector('path.ziel'); if (!z) return -1;
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const g = D.kontinente.find(x => x.id === z.dataset.id); if (!g) return -1;
+      return [...s.querySelectorAll('.etikett')].map(e => e.textContent.trim())
+        .indexOf(g.name);
+    });
+    if (idx < 0) throw new Error('quer-ende: die richtige Antwort steht nicht in der Liste');
+    // `$$eval` statt `click()`: waehrend der Einblendung gilt das Etikett
+    // als „nicht stabil", und Playwright wartete es tot. Der Klick muss
+    // hier nicht die Bedienbarkeit beweisen - das tut der Rauchtest -,
+    // sondern den Bildschirm weiterschalten.
+    await seite.$$eval('.schirm.da .etikett', (els, i) => els[i].click(), idx);
+    await seite.waitForTimeout(1800);
+  }
+  throw new Error('quer-ende: der Endbildschirm kam nach 40 Aufgaben nicht');
+}
+
 async function vorfuehren(seite, was) {
+  if (was === 'durch') return durchspielen(seite);
   await karteSteht(seite);
   const i = await seite.evaluate(() => {
     const s = document.querySelector('.schirm.da');
@@ -192,8 +269,29 @@ fs.mkdirSync(ABWEICHUNGEN, { recursive:true });
 
 let rot = 0, neu = 0, gruen = 0;
 let letzteSeite = null;
+
+/* Zwei Fenster: der Schreibtisch, an dem die alten Vorbilder haengen, und
+ * das Zielgeraet. Die Seite wird gewechselt, nicht die Groesse veraendert -
+ * `setViewportSize` laesst Bildpunkte stehen, die zur alten Groesse
+ * gehoerten, und der Vergleich haette sie mitfotografiert. */
+const QUER = { width: 844, height: 390 };
+let querSeite = null;
+const holeSeite = async (a) => {
+  if (!a.quer) return seite;
+  if (!querSeite) {
+    querSeite = await browser.newPage({
+      viewport: QUER, deviceScaleFactor: 2, hasTouch: true, isMobile: true,
+      reducedMotion: 'reduce', colorScheme: 'light',
+      locale: 'de-DE', timezoneId: 'Europe/Berlin',
+    });
+    await querSeite.addInitScript(() => { Math.random = () => 0.42; });
+  }
+  return querSeite;
+};
+
 for (const a of AUFNAHMEN) {
-  if (a.spiel) {
+  const seite = await holeSeite(a);
+  if (a.spiel || a.quer) {
     // Frische Ablage je Aufnahme: der Keim kommt aus dem gespeicherten
     // Sitzungszaehler, ein Rest von vorher wuerde eine andere Aufgabe
     // ziehen und das Vorbild bei jedem Lauf verschieben.
@@ -219,11 +317,40 @@ for (const a of AUFNAHMEN) {
           && document.fonts.check('400 20px "Andika"');
     });
     if (!daSchrift) { console.log(`  FEHLT   ${a.name}  (die eigene Schrift wurde nicht geladen)`); rot++; continue; }
-    await seite.click('[data-profil="fiona"]');
+    // Einen Lernstand SETZEN, wo einer gebraucht wird. Ohne ihn steht auf
+    // jeder Kachel dieselbe Null, und die Aufnahme bezeugt von Sternen,
+    // Aufklebern und Balken genau nichts (Regel: wer eine Wirkung misst,
+    // schaltet sie zuerst ein).
+    if (a.stand) {
+      await seite.evaluate((stand) => new Promise((ja, nein) => {
+        const auf = indexedDB.open('lernkiste', 1);
+        auf.onupgradeneeded = () => {
+          for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+            if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+        };
+        auf.onsuccess = () => {
+          const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+          t.objectStore('fortschritt').put(stand.was, stand.wo);
+          if (stand.antippen)
+            t.objectStore('einstellungen').put({ antwortweise:{ fiona:'antippen' } }, 'alles');
+          t.oncomplete = ja; t.onerror = () => nein(t.error);
+        };
+        auf.onerror = () => nein(auf.error);
+      }), { was: STAND, wo: `${a.kind || 'fiona'}:kontinente`, antippen: !!a.antippen });
+      await seite.reload({ waitUntil:'domcontentloaded' });
+      await seite.waitForSelector('[data-profil="fiona"]');
+    }
+    await seite.click(`[data-profil="${a.kind || 'fiona'}"]`);
     await seite.waitForSelector('.schirm.da [data-ebene]');
-    await seite.click(`[data-ebene="${a.spiel}"]`);
-    await seite.waitForSelector('.schirm.da .karte svg path.ziel');
-    if (a.tun) await vorfuehren(seite, a.tun);
+    if (a.tun === 'buch') {
+      await seite.click('#buch');
+      await seite.waitForSelector('.schirm.da .rollen');
+      await seite.waitForTimeout(400);
+    } else if (a.spiel) {
+      await seite.click(`[data-ebene="${a.spiel}"]`);
+      await seite.waitForSelector('.schirm.da .karte svg path.ziel');
+      if (a.tun) await vorfuehren(seite, a.tun);
+    }
     letzteSeite = null;
   } else if (letzteSeite !== a.seite) {
     await seite.goto('file://' + path.join(process.cwd(), a.seite), { waitUntil:'networkidle' });

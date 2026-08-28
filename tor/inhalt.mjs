@@ -10,7 +10,6 @@ import * as I from '../src/inhalt/erdkunde.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import { KONTINENTE_FEIN } from '../src/geo/kontinente.fein.js';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
-import { ANTARKTIKA_FEIN } from '../src/geo/antarktika.fein.js';
 import { LAENDER_AFRIKA_FEIN } from '../src/geo/laender-afrika.fein.js';
 import { LAENDER_ASIEN_FEIN } from '../src/geo/laender-asien.fein.js';
 import { LAENDER_EUROPA_FEIN } from '../src/geo/laender-europa.fein.js';
@@ -21,7 +20,14 @@ import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js
 const GEBACKEN = {
   kontinente:   KONTINENTE_FEIN,
   deutschland:  DEUTSCHLAND_FEIN,
-  antarktika:   ANTARKTIKA_FEIN,
+  // Antarktika ist raus - nachgefragt und entschieden. Die drei gebackenen
+  // Dateien wurden geloescht, dieser Zeiger blieb stehen, und damit STARB
+  // das ganze Tor: ein fehlender Import ist kein roter Befund, sondern ein
+  // Absturz vor der ersten Pruefung. Sieben Pruefungen - inhalt,
+  // topologie, beruehrung, marken, schrift, symbol, doku - haben seitdem
+  // nichts mehr gesagt, und keine einzige Gegenprobe hat es gemerkt: ein
+  // abgestuerztes Tor erfuellt jede Probe, die „muss rot werden" verlangt.
+  // Deshalb prueft `proben` jetzt VOR jeder Probe den gesunden Stand.
   afrika:       LAENDER_AFRIKA_FEIN,
   asien:        LAENDER_ASIEN_FEIN,
   europa:       LAENDER_EUROPA_FEIN,
@@ -359,16 +365,69 @@ for (const q of ['prototyp/vorlage.html', 'prototyp/spiel.js']) {
   }
 }
 
+/* Jede benutzte Marke muss es geben.
+ *
+ * Der Audit fand `padding: var(--r3) var(--r5)` am gezogenen Schild - und
+ * `--r5` gab es nicht. Das ist kein stiller Ausfall EINES Wertes: eine
+ * ungueltige `var()` macht die GANZE Deklaration ungueltig, und weil
+ * `padding` nicht erbt, blieb null uebrig. Der Name klebte an beiden
+ * Rundungen des Schilds, seit die Regel geschrieben wurde.
+ *
+ * Kein Tor konnte das sehen: `passt` misst Ueberlauf, `lesbarkeit` misst
+ * Kontrast, und das Vorbild im Bildvergleich hielt den Fehler als SOLL
+ * fest. Ein Schreibfehler in einem Markennamen ist im Browser lautlos -
+ * hier ist er es nicht mehr.
+ *
+ * Ausgenommen sind Marken, die im Markup gesetzt werden (`--ton`, `--rang`,
+ * `--karte-ar`): sie kommen aus dem Programm, nicht aus dem System. Sie
+ * muessen dort aber wirklich gesetzt werden, und genau das wird geprueft.
+ */
+{
+  const alleQuellen = [MARKEN_ALLES, ...QUELLEN.filter(q => fs.existsSync(q))
+    .map(q => fs.readFileSync(q, 'utf8'))].join('\n');
+  const gesetzt = new Set([...alleQuellen.matchAll(/(--[\w-]+)\s*:/g)].map(m => m[1]));
+  // setProperty('--rang', …) definiert die Marke ebenfalls, nur ohne Doppelpunkt.
+  for (const m of alleQuellen.matchAll(/setProperty\(\s*['"`](--[\w-]+)/g)) gesetzt.add(m[1]);
+  // `var(--f${b.farbe})` ist ein gerechneter Name, kein fester. Solche
+  // Stellen werden uebersprungen - der Name entsteht erst beim Zeichnen.
+  const benutzt = [...new Set([...alleQuellen.matchAll(/var\(\s*(--[\w-]+)(\$\{)?/g)]
+    .filter(m => !m[2]).map(m => m[1]))];
+  const ohne = benutzt.filter(v => !gesetzt.has(v));
+  pruefe(ohne.length === 0, `benutzt, aber nirgends gesetzt: ${ohne.join(', ')} — `
+    + 'eine ungültige var() macht die ganze Deklaration ungültig, nicht nur den einen Wert');
+  console.log(`    ${benutzt.length} benutzte Marken, alle gesetzt`);
+}
+
 pruefe(/--f1:\s*oklch/.test(MARKEN), 'Palette steht nicht in OKLCH');
-// Der Abendmodus muss ebenfalls in sich gleich hell sein.
-const abend = [...MARKEN_ALLES.slice(MARKEN_ALLES.indexOf(':root[data-abend'))
-  .matchAll(/--f[1-7]:\s*oklch\(([\d.]+)/g)].map(m=>+m[1]);
-pruefe(abend.length === 7 && new Set(abend).size === 1,
-  `Abendmodus: ${abend.length} Farben mit Helligkeiten ${[...new Set(abend)].join(', ')}`);
-const ls = [...MARKEN.matchAll(/--f[1-7]:\s*oklch\(([\d.]+)/g)].map(m=>+m[1]);
-pruefe(ls.length === 7, `${ls.length} Flächenfarben gefunden, erwartet 7`);
-pruefe(new Set(ls).size === 1, `Flächenfarben haben unterschiedliche Helligkeit: ${[...new Set(ls)].join(', ')}`);
-console.log(`    ${ls.length} Flächenfarben, alle mit L = ${ls[0]} — derselbe Textton ist auf allen lesbar`);
+// Gleiche Helligkeit auf allen sieben Flaechen - sonst ist derselbe
+// Textton nicht auf allen lesbar.
+//
+// Bis zum Audit stand die Helligkeit siebenmal als Zahl da, und dieses Tor
+// verglich die sieben Zahlen miteinander. Jetzt leiten sich die sieben aus
+// EINER Marke ab; die alte Pruefung fand danach null Farben und waere rot
+// geworden, ohne dass etwas kaputt war. Geprueft wird deshalb die Form,
+// die die Gleichheit traegt: jede der sieben muss dieselbe Marke benutzen.
+// Wer eine einzelne Farbe wieder festnagelt, faellt hier durch.
+// `[^)]*` haette hier nicht gereicht: der Wert enthaelt selbst Klammern -
+// oklch(var(--flaeche-l) var(--flaeche-c) 25). Der erste Anlauf zaehlte
+// deshalb null von sieben und meldete einen Fehler, den es nicht gab.
+const abgeleitet = (text) => [...text.matchAll(
+  /--f([1-7]):\s*oklch\(\s*var\(--flaeche-l\)\s+var\(--flaeche-c\)\s+[\d.]+\s*\)/g)].length;
+const helligkeit = (text) => [...text.matchAll(/--flaeche-l:\s*([\d.]+)/g)].map(m => +m[1]);
+const abendTeil = MARKEN_ALLES.slice(MARKEN_ALLES.indexOf(':root[data-abend'));
+const lTag = helligkeit(MARKEN), lAbend = helligkeit(abendTeil);
+pruefe(abgeleitet(MARKEN) === 7,
+  `nur ${abgeleitet(MARKEN)} von 7 Flächenfarben leiten sich aus --flaeche-l/--flaeche-c ab — `
+  + 'eine festgenagelte Farbe fällt beim nächsten Griff an der Marke vorbei');
+pruefe(lTag.length === 1, `--flaeche-l steht ${lTag.length}-mal im Tagmodus, erwartet einmal`);
+pruefe(lAbend.length === 1, `--flaeche-l steht ${lAbend.length}-mal im Abendmodus, erwartet einmal`);
+// Und die eine Zahl muss dunkel genug bleiben: der Textton --auf-flaeche
+// liegt bei L 0,24, gemessen sind 6,1:1 bei L 0,74. Ueber 0,86 kippt das.
+pruefe(lTag[0] >= 0.60 && lTag[0] <= 0.86,
+  `Flächenhelligkeit ${lTag[0]} liegt außerhalb von 0,60 bis 0,86 — der dunkle Textton trägt dort nicht mehr`);
+pruefe(lAbend[0] < lTag[0],
+  `Abendmodus ist mit L ${lAbend[0]} nicht dunkler als der Tagmodus mit ${lTag[0]}`);
+console.log(`    7 Flächenfarben aus einer Marke: L ${lTag[0]} am Tag, ${lAbend[0]} am Abend`);
 console.log(`    ${verstoesse} Markenverstöße in ${QUELLEN.length} Quellen, `
   + `${inlineMasse} festgenagelte Maße im Markup, `
   + `${amSystemVorbei} Werte am System vorbei`);
@@ -512,6 +571,51 @@ if (!fs.existsSync(KONZEPT)) {
     fehler.push(`Konzept sagt ${m[1]} Gebiete, gezählt sind ${ZAHL.gesamt} `
       + `(${ZAHL.kontinente}+${ZAHL.laender}+${ZAHL.bundeslaender}+${ZAHL.staedte})`);
   else console.log(`    Gebietszahl stimmt: ${ZAHL.gesamt}`);
+}
+
+/* Die Kette in CLAUDE.md gegen die Kette in package.json.
+ *
+ * Beim Audit standen in CLAUDE.md zwölf Tore und in `npm run tor` liefen
+ * vierzehn: `rhythmus`, `spielprobe`, `budget`, `passt`, `lesbarkeit` und
+ * `ziehen` sind dazugekommen, ohne dass die Datei es erfahren haette. Wer
+ * die Datei liest - und sie wird zu Beginn JEDER Sitzung gelesen - haelt
+ * sechs Tore fuer nicht vorhanden.
+ *
+ * Verglichen werden Mengen, nicht Reihenfolgen: die Reihenfolge steht in
+ * package.json und braucht keine zweite Fassung. Was zaehlt, ist, dass
+ * kein Tor fehlt und keines erfunden ist. Regel 6.
+ */
+const ANWEISUNG = 'CLAUDE.md';
+if (!fs.existsSync(ANWEISUNG)) {
+  fehler.push(`${ANWEISUNG} nicht gefunden — die Kette lässt sich nicht vergleichen`);
+} else {
+  const paket = JSON.parse(fs.readFileSync('package.json','utf8'));
+  const echt = new Set((paket.scripts.tor || '').split('&&')
+    .map(x => x.trim().replace(/^npm run /,'')).filter(Boolean));
+  // Manche Tore tragen weitere in sich: `inhalt` faehrt sieben, `pwa` zwei.
+  // Sie stehen zu Recht in CLAUDE.md, aber in keiner Zeile von package.json.
+  // Gezaehlt werden sie da, wo sie sich melden - an ihrer eigenen
+  // Ueberschrift -, nicht in einer dritten Liste, die wieder veralten kann.
+  for (const t of [...echt]) {
+    const datei = `tor/${t}.mjs`;
+    if (!fs.existsSync(datei)) continue;
+    for (const m of fs.readFileSync(datei,'utf8')
+      .matchAll(/console\.log\('\\n  Tor `([a-zäöüß-]+)`/g)) echt.add(m[1]);
+  }
+  const text = fs.readFileSync(ANWEISUNG,'utf8');
+  const zeile = text.match(/^Kette:[\s\S]*?\n\n/m);
+  if (!zeile) fehler.push(`${ANWEISUNG} nennt keine Kette (Zeile „Kette: …")`);
+  else {
+    const genannt = new Set([...zeile[0].matchAll(/`([a-zäöüß-]+)`/g)].map(m => m[1]));
+    const fehlt = [...echt].filter(t => !genannt.has(t));
+    const zuviel = [...genannt].filter(t => !echt.has(t));
+    if (fehlt.length) fehler.push(`${ANWEISUNG} kennt ${fehlt.length} Tore der Kette nicht: `
+      + `${fehlt.join(', ')} — die Datei wird zu Beginn jeder Sitzung gelesen`);
+    if (zuviel.length) fehler.push(`${ANWEISUNG} nennt ${zuviel.length} Tore, `
+      + '`npm run tor` nicht fährt: ' + zuviel.join(', '));
+    if (!fehlt.length && !zuviel.length)
+      console.log(`    Kette stimmt: ${echt.size} Tore in CLAUDE.md und in package.json`);
+  }
 }
 
 /* ------------------------------------------------------------- Ergebnis */
