@@ -6,7 +6,7 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
 Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-,
-der Budget-, der Übergangs- und der **Geräterunde**.
+der Budget-, der Übergangs-, der Geräte- und der **Umschalterrunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -21,7 +21,7 @@ npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
                     Antarktika, Städte
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 31 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 33 stehenden Gegenproben (Baum muss sauber sein,
                     dauert 3,5 Minuten, höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
@@ -36,7 +36,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Siebzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **31 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **33 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 ---
@@ -1250,6 +1250,65 @@ das erst, weil `proben` beim nächsten Start den schmutzigen Baum meldete.
 „Ein Werkzeug, das den Baum schlechter zurücklässt, als es ihn vorgefunden
 hat, ist gefährlicher als keines" stand schon da. Es galt nur für den
 geordneten Fall. Jetzt hängt es an `SIGINT`, `SIGTERM` und `SIGHUP`.
+
+---
+
+## Antippen oder Ziehen
+
+Für Lea war das Ziehen ein Umweg: sie weiß, welches Bundesland das ist, und
+will es sagen können. Für Fiona ist genau dieser Zug der Lerninhalt — sie
+verbindet einen Namen mit einem **Ort** auf der Karte.
+
+Beides ist richtig, nur nicht für dasselbe Kind. Also beides, und ein
+Umschalter dazwischen:
+
+| | voreingestellt | was ein Tipper bedeutet |
+|---|---|---|
+| Fiona | **ziehen** | den Namen vorlesen |
+| Lea | **antippen** | die Antwort geben |
+
+**Gezogen werden kann immer.** Die Weise entscheidet nur, was ein *Tipper*
+bedeutet — wer im Antipp-Modus trotzdem zieht, soll nicht ins Leere greifen.
+
+Der Umschalter steht dort, wo er etwas zu schalten hat: unter den Antworten,
+neben „Weiß ich nicht", und nur bei einer Auswahl mit Etiketten. Beim
+Tippfeld gibt es nichts umzuschalten. Er heißt, was er tut — „Lieber
+ziehen" beziehungsweise „Lieber antippen" —, wirkt **mitten in der Aufgabe**
+(ein Neuaufbau würde die begonnene Aufgabe zurücksetzen) und merkt sich die
+Wahl **je Kind**, nicht je Gerät: sonst stellt die eine der anderen das
+Spiel um.
+
+### Der Rauchtest spielt jetzt so, wie das Kind spielt
+
+Er zog bisher immer — auch dort, wo ein Kind antippt. Damit hätte er den
+neuen Weg nie berührt. Die Weise steht als **Datenfeld** am Umschalter, und
+der Test liest sie dort ab, statt einen deutschen Satz zu zerlegen. Am Ende
+steht eine Zeile, die zeigt, welche Wege wirklich gegangen wurden:
+
+```
+Antwortwege:   fiona: ziehen · lea: antippen
+```
+
+Fehlt einer der beiden, ist der Umschalter entweder weg oder wirkungslos —
+und die Hälfte der Bedienung ungeprüft. Genau das prüfen die beiden neuen
+Gegenproben nach.
+
+### Ein Vorbild flackerte
+
+`proben` meldete `ansicht` als *schon ohne Eingriff rot* — die Prüfung, die
+es seit der Übergangsrunde gibt. Vier Spielbilder waren schlicht veraltet
+(der neue Umschalter), aber eines nicht: **`mg-belohnung`** wich um 0,94 %
+ab und war danach dreimal grün.
+
+Der Entwurf spielt die Belohnung ab, wenn sie ins Bild **scrollt**
+(`IntersectionObserver`, Schwelle 0,4) — und die Aufnahme scrollt sie selbst
+hinein. Ob der Stern beim Auslösen schon da war, entschied das Rennen
+zwischen beidem.
+
+Ein Vorbild, das gelegentlich rot wird, ist schlimmer als keines: es erzieht
+dazu, Rot zu übersehen. Die Aufnahme holt das Abgebildete jetzt erst ins
+Bild und wartet, bis es **wirklich fertig** ist. Vier Läufe hintereinander:
+neun von neun grün.
 
 ---
 

@@ -196,7 +196,22 @@ const EBENEN = [
   // lange Wort trug hier nichts bei ausser einem Zeilenumbruch.
   { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2 },
 ];
+/**
+ * Wie beantwortet man eine Auswahl - durch ANTIPPEN oder durch ZIEHEN?
+ *
+ * Beides ist richtig, nur nicht fuer beide Kinder. Fuer Fiona ist das
+ * Ziehen der eigentliche Lerninhalt: sie verbindet einen Namen mit einem
+ * ORT auf der Karte. Lea kann das laengst - fuer sie ist derselbe Zug nur
+ * ein Umweg, sie weiss die Antwort und will sie sagen koennen.
+ *
+ * Voreingestellt also: Lea tippt an, Fiona zieht. Umschalten laesst es sich
+ * dort, wo es auffaellt - unter den Antworten, neben „Weiss ich nicht".
+ * Und es gilt je KIND, nicht je Gerät: sonst stellt die eine der anderen
+ * das Spiel um.
+ */
+const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
 let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',
+  antwortweise:{ ...WEISE_VOREINSTELLUNG },
   stadtstaatenGezeigt:false, hauptstadtAuswahl:true };
 
 /* ---------- Aufgabenvorrat ---------------------------------------------- */
@@ -605,6 +620,12 @@ function spielschirm(){
   // hier wieder.
   const tippt = P.eingabe.includes('tippen') && !(istAuswahl && Einst.hauptstadtAuswahl);
   const spricht = P.eingabe.includes('sprechen');
+  // Antippen oder Ziehen - je Kind gemerkt, mit der Voreinstellung als
+  // Rueckfall. `let`, weil der Umschalter sie mitten in der Aufgabe aendern
+  // koennen muss, ohne den Bildschirm neu zu bauen: ein Neuaufbau wuerde
+  // die begonnene Aufgabe zuruecksetzen.
+  let weise = Einst.antwortweise?.[P.id]
+    || WEISE_VOREINSTELLUNG[P.id] || 'ziehen';
   const frageText = istHaupt ? `Wie heißt die Hauptstadt von ${ziel.gebiet}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
     : art==='laender' ? 'Wie heißt dieses Land?' : 'Wie heißt dieses Bundesland?';
@@ -784,7 +805,13 @@ function spielschirm(){
       // alle auf einmal: das Auge folgt der Liste von oben nach unten,
       // statt vier Kaesten gleichzeitig aufblitzen zu sehen.
       b.style.setProperty('--rang', i + 1);
-      b.onclick=()=>vorlesen(k.name); ziehbar(b,k); liste.appendChild(b); });
+      // Antippen ANTWORTET oder liest vor - je nach Weise. Gezogen werden
+      // kann in beiden: das Ziehen bleibt immer da, die Weise entscheidet
+      // nur, was ein Tipper bedeutet. Wer im Antipp-Modus trotzdem zieht,
+      // soll nicht ins Leere greifen.
+      b.onclick=()=>{ if (weise==='antippen' && !erledigt) bewerte(k.name,'antippen',{ etikett:b });
+                      else vorlesen(k.name); };
+      ziehbar(b,k); liste.appendChild(b); });
   }
 
   // Der leise Ausweg. Er steht bewusst klein und ohne Farbe da: er soll
@@ -794,6 +821,29 @@ function spielschirm(){
   weiter.textContent = 'Weiß ich nicht';
   weiter.onclick = ()=>aufloesen('uebersprungen');
   werkzeug.appendChild(weiter);
+
+  // Der Umschalter steht nur dort, wo er etwas zu schalten hat: bei einer
+  // Auswahl mit Etiketten. Beim Tippfeld gibt es nichts umzuschalten.
+  if (!tippt) {
+    const um = el('button','leise');
+    um.id = 'weise';
+    // Die WEISE steht als Datenfeld dran, nicht nur als Beschriftung. Der
+    // Rauchtest spielt jede Ebene so durch, wie das Kind sie spielt - und
+    // dafuer muss er die Weise ablesen koennen, ohne einen deutschen Satz
+    // zu zerlegen.
+    const beschriften = ()=>{ um.dataset.weise = weise;
+      um.textContent = weise==='antippen' ? 'Lieber ziehen' : 'Lieber antippen';
+      um.setAttribute('aria-label', um.textContent); };
+    beschriften();
+    um.onclick = async ()=>{
+      weise = weise==='antippen' ? 'ziehen' : 'antippen';
+      Einst.antwortweise = { ...(Einst.antwortweise||{}), [P.id]: weise };
+      await einstSichern();
+      beschriften();
+      vorlesen(weise==='antippen' ? 'Jetzt kannst du antippen.' : 'Jetzt kannst du ziehen.');
+    };
+    werkzeug.appendChild(um);
+  }
 
   // Das Mikrofon wird nur gezeigt, wenn es auch etwas TUT.
   //
@@ -1020,7 +1070,13 @@ function spielschirm(){
     versuch++; st.versuche++;
     let ergebnis='falsch', text='', sicherheit=null, nebenbei='';
 
-    if (eingabeart==='ziehen') {
+    if (eingabeart==='antippen') {
+      // Angetippt heisst: „DAS ist der Name." Wohin gezogen wurde, gibt es
+      // hier nicht - das gesuchte Gebiet steht schon hervorgehoben auf der
+      // Karte, die Frage ist nur, wie es heisst.
+      if (roh===ziel.name) ergebnis='richtig';
+      else text='Nicht ganz — probier es noch einmal.';
+    } else if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
       else if (roh===ziel.name) text='Fast! Der Name stimmt — aber das ist ein anderes Gebiet.';
       else text='Nicht ganz — probier es noch einmal.';

@@ -259,6 +259,19 @@ const PROBEN = [
     an:{ ...DIST, text:'if (false){' },
     sagt:'fragt nicht nach' },
 
+  // Der Umschalter: ohne ihn spielen beide Kinder denselben Weg, und die
+  // Haelfte der Bedienung ist ungeprueft.
+  { n:'Antippen antwortet nicht mehr', tor:'smoke', bauen:true, datei:D,
+    such:"      b.onclick=()=>{ if (weise==='antippen' && !erledigt) bewerte(k.name,'antippen',{ etikett:b });\n                      else vorlesen(k.name); };",
+    ersatz:"      b.onclick=()=>vorlesen(k.name);",
+    an:{ ...DIST, fehlt:"bewerte(k.name,'antippen'" },
+    sagt:'angetippt' },
+  { n:'beide Kinder bekommen dieselbe Antwortweise', tor:'smoke', bauen:true, datei:D,
+    such:"const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };",
+    ersatz:"const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'ziehen' };",
+    an:{ ...DIST, text:"fiona:'ziehen', lea:'ziehen'" },
+    sagt:'der Umschalter greift nicht' },
+
   { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",

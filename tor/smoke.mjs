@@ -403,6 +403,10 @@ console.log(`  Ebene 4:                    ${ebene4} Aufgaben, immer 4 Städte, 
 // Gezogen wird bewusst NICHT auf den Anker aus den Daten, sondern auf einen
 // Punkt, den ein Kind sieht: die Probe sucht selbst eine Stelle, an der das
 // Gebiet obenauf liegt.
+// Welche Antwortwege wirklich gegangen wurden. Eine Zeile am Ende, die
+// zeigt, ob beide Kinder auf IHRE Art gespielt haben - und nicht beide auf
+// dieselbe.
+const wege = new Set();
 const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
   'bundeslaender', 'hauptstaedte'];
@@ -443,6 +447,7 @@ for (const wer of ['fiona', 'lea']) {
         return { name: istHaupt ? g.hauptstadt : g.name,
                  alias: (!istHaupt && g.aliasse && g.aliasse.length) ? g.aliasse[0] : null,
                  ...punkt, tippfeld: !!s.querySelector('input.eingabe'),
+                 weise: s.querySelector('#weise')?.dataset.weise || null,
                  etiketten: [...s.querySelectorAll('.etikett')].map(x => x.textContent.trim()) };
       });
       // Beim Tippen den ALIAS nehmen, wenn es einen gibt - dort war der Fehler.
@@ -455,11 +460,20 @@ for (const wer of ['fiona', 'lea']) {
         if (i < 0) { merke('durchgang', new Error(`${wer}/${ebene}: „${z.name}" fehlt unter `
           + `${z.etiketten.join(', ')}`)); continue; }
         const et = (await p.$$('.schirm.da .etikett'))[i];
-        const bb = await et.boundingBox();
-        await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2);
-        await p.mouse.down();
-        await p.mouse.move(z.x, z.y, { steps: 8 });
-        await p.mouse.up();
+        // Gespielt wird so, wie das Kind es spielt. Lea tippt an, Fiona
+        // zieht - das steht am Umschalter, und der Test liest es dort ab
+        // statt es zu wissen. Sonst prueft er einen Weg, den niemand geht.
+        if (z.weise === 'antippen') {
+          await et.click();
+          wege.add(`${wer}: antippen`);
+        } else {
+          const bb = await et.boundingBox();
+          await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2);
+          await p.mouse.down();
+          await p.mouse.move(z.x, z.y, { steps: 8 });
+          await p.mouse.up();
+          wege.add(`${wer}: ziehen`);
+        }
       }
       await p.waitForTimeout(900);
       const r = await p.evaluate(() => {
@@ -468,7 +482,7 @@ for (const wer of ['fiona', 'lea']) {
       });
       if (!/^✓ /.test(r || ''))
         merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
-          + `${z.tippfeld ? 'getippt' : 'gezogen'} → „${r}"`));
+          + `${z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'} → „${r}"`));
       durchgespielt++;
       await p.waitForTimeout(1500);
       const zur = await p.$('.schirm.da #zur');
@@ -480,6 +494,14 @@ for (const wer of ['fiona', 'lea']) {
   await eigen.close();
 }
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
+console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
+// Voreingestellt zieht Fiona und tippt Lea an. Wird nur EIN Weg gegangen,
+// ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
+// Bedienung ungeprueft.
+for (const soll of ['fiona: ziehen', 'lea: antippen'])
+  if (!wege.has(soll))
+    fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
+      + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);
 
 await ctx.close(); await b.close(); server.close();
 

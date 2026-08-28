@@ -69,7 +69,13 @@ const AKTUALISIEREN = process.argv.includes('--aktualisieren');
 const AUFNAHMEN = [
   { name:'mg-fiona-kontinente', seite:'entwuerfe/mg.html', wahl:'#schirm1 .geraet' },
   { name:'mg-lea-deutschland',  seite:'entwuerfe/mg.html', wahl:'#schirm2 .geraet' },
-  { name:'mg-belohnung',        seite:'entwuerfe/mg.html', wahl:'#schirm3 .geraet' },
+  // Der Entwurf spielt die Belohnung ab, wenn sie ins Bild SCROLLT
+  // (IntersectionObserver, Schwelle 0,4) - und die Aufnahme scrollt sie
+  // selbst hinein. Ob der Stern schon da ist, war damit ein Rennen: einmal
+  // rot, dreimal gruen, ohne dass sich etwas geaendert hatte. Ein Vorbild,
+  // das gelegentlich rot wird, erzieht dazu, Rot zu uebersehen.
+  { name:'mg-belohnung', seite:'entwuerfe/mg.html', wahl:'#schirm3 .geraet',
+    fertig:'#sternchen' },
   { name:'mg-farbstreifen',     seite:'entwuerfe/mg.html', wahl:'#s-ok' },
   { name:'karte-deutschland',   seite:'entwuerfe/mg.html', wahl:'#schirm2 .geraet svg' },
   // Der LEBENDE Prototyp, nicht der Entwurf.
@@ -226,6 +232,16 @@ for (const a of AUFNAHMEN) {
   }
   const el = await seite.$(a.wahl);
   if (!el) { console.log(`  FEHLT   ${a.name}  (${a.wahl} nicht gefunden)`); rot++; continue; }
+  // Erst ins Bild holen, dann warten, bis das Abgebildete WIRKLICH fertig
+  // ist - sonst haelt das Vorbild einen halben Zustand fest.
+  if (a.fertig) {
+    await el.scrollIntoViewIfNeeded();
+    await seite.waitForFunction((w) => {
+      const x = document.querySelector(w);
+      return !!x && +getComputedStyle(x).opacity >= 0.99;
+    }, a.fertig, { timeout: 5000 });
+    await seite.waitForTimeout(120);
+  }
   // `animations: 'disabled'` haelt laufende Animationen an und spult sie ans
   // Ende. Ohne das bleibt eine ENDLOSE Animation - der atmende Ring am
   // Mikrofonknopf - auch bei 1 ms Dauer irgendwo stehen, und das Tor meldet
