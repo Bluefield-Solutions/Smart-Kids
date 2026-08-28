@@ -202,12 +202,15 @@ try {
   const p = await neueSeite({ width: 390, height: 844 }, ctx);
   await p.click('[data-profil="lea"]');
   await p.waitForSelector('.schirm.da [data-ebene]');
-  await p.click('[data-ebene="bundeslaender"]');
-  await p.waitForSelector('.schirm.da .eingabe');
+  // Auf einer Ebene, auf der Lea WIRKLICH tippt. Die Bundeslaender sind
+  // seit der Farbrunde eine Auswahl mit vier Moeglichkeiten - dort gibt es
+  // kein Eingabefeld mehr, und der Rauchtest lief in einen Zeitablauf.
+  await p.click('[data-ebene="laender:europa"]');
+  await p.waitForSelector('.schirm.da .eingabe', { timeout: 15000 });
   const name = await p.evaluate(() => {
     const id = document.querySelector('.schirm.da path.ziel').dataset.id;
     const D = JSON.parse(document.getElementById('daten').textContent);
-    return D.deutschland.find(x => x.id === id).name;
+    return Object.values(D.laender).flat().find(x => x.a3 === id).name;
   });
   await p.fill('.schirm.da .eingabe', name.toLowerCase());
   await p.click('.schirm.da .knopf:has-text("Prüfen")');

@@ -170,52 +170,58 @@ export function rechtschreibung(eingabe, ziel) {
   const namen = typeof ziel === 'string'
     ? [ziel]
     : [ziel.name, ...(ziel.aliasse || [])].filter(Boolean);
-  if (!namen.length) return { urteil: 'falsch' };
-  if (namen.length === 1) return gegenEinen(eingabe, namen[0]);
-
-  // Mehrere zulaessige Schreibweisen: der beste Befund gewinnt. "richtig"
-  // schlaegt "fast" schlaegt "falsch" - und unter den "fast" der Hinweis
-  // zu dem Namen, den das Kind am ehesten gemeint hat.
-  const RANG = { richtig: 0, fast: 1, leer: 2, falsch: 3 };
-  let best = null, bestAbstand = Infinity;
-  for (const n of namen) {
-    const r = gegenEinen(eingabe, n);
-    if (r.urteil === 'richtig') return r;
-    const d = levenshtein((eingabe || '').trim().toLowerCase(), n.toLowerCase());
-    if (!best || RANG[r.urteil] < RANG[best.urteil]
-             || (RANG[r.urteil] === RANG[best.urteil] && d < bestAbstand)) {
-      best = r; bestAbstand = d;
-    }
-  }
-  return best;
-}
-
-function gegenEinen(eingabe, name) {
   const e = (eingabe || '').trim();
   if (!e) return { urteil: 'leer' };
-  if (e === name) return { urteil: 'richtig' };
-  if (e.toLowerCase() === name.toLowerCase())
+  if (!namen.length) return { urteil: 'falsch' };
+  const haupt = namen[0];
+
+  /* 1. Zeichen fuer Zeichen gleich - mit dem Namen oder einem Alias. */
+  if (namen.includes(e)) return { urteil: 'richtig' };
+
+  /* 2. Nur die Grossschreibung daneben.
+     Das bleibt ein Hinweis und wird NICHT durchgewunken: dass Namen gross
+     geschrieben werden, ist Lerninhalt und kein Tippfehler. Diese Pruefung
+     steht bewusst VOR der lockeren unten - sonst rutschte "nordamerika"
+     ueber den Alias "Nord Amerika" als richtig durch. */
+  if (namen.some(n => n.toLowerCase() === e.toLowerCase()))
     return { urteil: 'fast', hinweis: 'Fast! Namen schreibt man groß.' };
 
-  const ohneStrich = (x) => x.replace(/[- ]/g, '');
-  if (ohneStrich(e).toLowerCase() === ohneStrich(name).toLowerCase()) {
-    if (name.includes('-') && !e.includes('-'))
-      return { urteil: 'fast', hinweis: 'Fast! Da fehlt ein Bindestrich.' };
-    if (!name.includes('-') && e.includes('-'))
-      return { urteil: 'fast', hinweis: 'Fast! Da gehört kein Bindestrich hin.' };
-    return { urteil: 'fast', hinweis: 'Fast! Achte auf die Leerzeichen.' };
+  /* 3. Bindestrich, Leerzeichen, Umlautumschrift: RICHTIG.
+     "Nord-Amerika", "Nord Amerika" und "Nordamerika" sind derselbe Name;
+     "Aegypten" ist die uebliche Umschrift von "Ägypten". Wer einem Kind
+     dafuer "fast" sagt, bringt ihm bei, dass es sich geirrt hat.
+     Der Hinweis geht trotzdem mit - neben dem Haken, nicht statt seiner,
+     und er nennt immer die HAUPTSCHREIBWEISE, nie den Alias. */
+  const locker = (x) => normalisieren(x.replace(/[-\s]/g, ''));
+  if (namen.some(n => locker(n) === locker(e))) {
+    // Die Grossschreibung wird auch hier geprueft, nicht nur bei exakter
+    // Uebereinstimmung: sonst gibt "baden-württemberg" einen Hinweis und
+    // "badenwürttemberg" nicht - dieselbe Sache, zwei Antworten.
+    if (e[0] === e[0].toLowerCase() && haupt[0] !== haupt[0].toLowerCase())
+      return { urteil: 'fast', hinweis: 'Fast! Namen schreibt man groß.' };
+    const fehlt = [...'äöüß'].find(u => haupt.toLowerCase().includes(u)
+                                     && !e.toLowerCase().includes(u));
+    if (fehlt) return { urteil: 'richtig',
+      nebenbei: `Mit ${fehlt.toUpperCase()} ist es noch schöner: ${haupt}.` };
+    if (haupt.replace(/\s/g, '') !== haupt.replace(/[-\s]/g, '')
+        || e.includes('-') !== haupt.includes('-')
+        || /\s/.test(e) !== /\s/.test(haupt))
+      return { urteil: 'richtig', nebenbei: `Man schreibt es so: ${haupt}.` };
+    return { urteil: 'richtig', nebenbei: `Man schreibt es so: ${haupt}.` };
   }
-  if (normalisieren(e) === normalisieren(name)) {
-    const fehlt = [...'äöüß'].find(u => name.toLowerCase().includes(u) && !e.toLowerCase().includes(u));
-    return { urteil: 'fast',
-      hinweis: fehlt ? `Fast! Da gehört ein ${fehlt.toUpperCase()} hin.` : 'Fast! Achte auf die Umlaute.' };
+
+  /* 4. Ein Buchstabe daneben - die Stelle zeigen, nicht die Loesung.
+     Gemessen gegen den AEHNLICHSTEN der zulaessigen Namen. */
+  let nah = haupt, dNah = Infinity;
+  for (const n of namen) {
+    const d = levenshtein(e.toLowerCase(), n.toLowerCase());
+    if (d < dNah) { dNah = d; nah = n; }
   }
-  // Ein einziger Buchstabe daneben: die Stelle zeigen, nicht die Lösung.
-  const d = levenshtein(e.toLowerCase(), name.toLowerCase());
-  if (d <= Math.max(1, Math.floor(name.length / 8))) {
-    let i = 0; while (i < e.length && e[i].toLowerCase() === name[i]?.toLowerCase()) i++;
+  if (dNah <= Math.max(1, Math.floor(nah.length / 8))) {
+    let i = 0; while (i < e.length && e[i].toLowerCase() === nah[i]?.toLowerCase()) i++;
     return { urteil: 'fast', stelle: i,
       hinweis: `Fast! Schau noch mal ab dem ${i + 1}. Buchstaben.` };
   }
   return { urteil: 'falsch' };
 }
+

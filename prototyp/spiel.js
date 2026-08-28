@@ -14,6 +14,52 @@ const el = (t,k,i)=>{ const e=document.createElement(t); if(k)e.className=k; if(
 const STERN = (f,g=24)=>`<svg width="${g}" height="${g}" viewBox="-14 -14 28 28"><path d="M0 -12 3.7 -4 12 -2.8 6 3.2 7.4 12 0 7.8 -7.4 12 -6 3.2 -12 -2.8 -3.7 -4Z" fill="${f}" stroke="var(--tinte)" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
 const LOESCHEN='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H9L3 12l6 6h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M17 10l-4 4M13 10l4 4"/></svg>';
 const ZURUECK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>';
+/* ---------- Zeichen und der Kopf ------------------------------------------
+ *
+ * Der Kopf war auf jedem Bildschirm anders gebaut: mal zwei leere `span`
+ * als Platzhalter, mal `space-between` mit drei ungleichen Bloecken. Die
+ * Mitte stand dadurch nie wirklich mittig ("Fiona" sass bei 844 Punkten
+ * Breite auf 366 statt 422), und im Hochformat brach die rechte Gruppe
+ * unter "Zurueck" um - zwei Zeilen, alles schief.
+ *
+ * Jetzt gibt es EINE Bauanleitung: drei Felder in einem Raster
+ * (1fr | auto | 1fr). Die Mitte ist damit immer mittig, egal wie breit
+ * links und rechts sind, und nichts bricht um. Die Knoepfe rechts sind
+ * Zeichen statt Woerter - "Forscherbuch" und "Eltern" brauchten zusammen
+ * 223 Punkte, die beiden Zeichen brauchen 96.
+ */
+const ZEICHEN = {
+  buch:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H10a3 3 0 0 1 2 5.2V20a3 3 0 0 0-2-.8H5.5A1.5 1.5 0 0 1 4 17.7z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H14a3 3 0 0 0-2 5.2V20a3 3 0 0 1 2-.8h4.5a1.5 1.5 0 0 0 1.5-1.5z"/>',
+  eltern:'<rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+  tonAn:'<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.5 7.5 0 0 1 0 10.8"/>',
+  tonAus:'<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>',
+  tag:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>',
+  abend:'<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
+  zu:'<path d="M6 6l12 12M18 6L6 18"/>',
+};
+const ZEI = (n, g=24)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none"
+  stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"
+  aria-hidden="true">${ZEICHEN[n]}</svg>`;
+
+/** Ein Zeichenknopf: rund, 44 Punkte, mit Namen fuer alle, die ihn nicht sehen. */
+const zeichenKnopf = (id, zeichen, name)=>
+  `<button class="knopf rund" id="${id}" aria-label="${name}" title="${name}">${ZEI(zeichen)}</button>`;
+
+/**
+ * Der Kopf. `zurueck` ist entweder null, 'zurueck' oder 'schliessen' -
+ * ein Pfeil fuehrt eine Ebene hoeher, ein Kreuz macht etwas zu. Beides
+ * durcheinander zu benutzen ist der haeufigste Grund, warum ein Kind sich
+ * in einer App verirrt.
+ */
+const kopf = ({ links='', mitte='', rechts='' })=>
+  `<div class="kopf"><div class="kopf-links">${links}</div>
+    <div class="kopf-mitte">${mitte}</div>
+    <div class="kopf-rechts">${rechts}</div></div>`;
+const zurueckKnopf = (wohin='Zurück')=>
+  `<button class="knopf" id="zur"><span class="zei">${ZURUECK}</span><span class="wort">${wohin}</span></button>`;
+const schliessenKnopf = (was='Schließen')=>
+  `<button class="knopf rund" id="zur" aria-label="${was}" title="${was}">${ZEI('zu')}</button>`;
+
 const MIKRO='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg>';
 const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'var(--stern-an)':'var(--stern-aus)',g)).join('')}</div>`;
 
@@ -43,12 +89,20 @@ const PROFILE = {
 // waren fuenf Kontinente, in der Ebenenwahl standen zwei.
 const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
   nordamerika:'Nordamerika', suedamerika:'Südamerika' };
+// `ueber` ist die Zeile ueber dem Namen. Damit heisst die Kachel
+// "Südamerika" statt "Länder in Südamerika" - das passt in eine Zeile,
+// bricht nicht mitten im Wort ("Landeshauptstä/dte") und sagt trotzdem,
+// worum es geht. `farbe` gibt jeder Ebene ihren eigenen Ton.
 const EBENEN = [
-  { id:'kontinente', titel:'Kontinente', unter:'die sieben' },
-  ...Object.keys(D.laender).map(k=>({ id:`laender:${k}`,
-    titel:`Länder in ${KONT_TITEL[k] || k}`, unter:'die größten' })),
-  { id:'bundeslaender', titel:'Bundesländer',      unter:'alle sechzehn' },
-  { id:'hauptstaedte',  titel:'Landeshauptstädte', unter:'dreizehn Rätsel' },
+  { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
+  ...Object.keys(D.laender).map((k,i)=>({ id:`laender:${k}`, ueber:'Länder in',
+    titel: KONT_TITEL[k] || k, farbe:[3,2,4,7,6][i%5] })),
+  { id:'bundeslaender', ueber:'Deutschland', titel:'Bundesländer',      farbe:1 },
+    // "Hauptstädte" statt "Landeshauptstädte": das Wort passt nicht in die
+  // Kachel und brach als "Landeshauptstäd/te" um. Die Ueberzeile sagt
+  // schon "Deutschland", die Frage sagt "Hauptstadt von Hessen" - das
+  // lange Wort trug hier nichts bei ausser einem Zeilenumbruch.
+  { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2 },
 ];
 let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',
   stadtstaatenGezeigt:false, hauptstadtAuswahl:true };
@@ -144,11 +198,9 @@ function zeige(bau){
 /* ---------- Profilwahl --------------------------------------------------- */
 function profilwahl(){
   const s = el('div');
-  s.innerHTML = `<div class="kopf"><span></span>
-      <div class="reihe">
-        <button class="knopf" id="ton">${tonAn?'Ton an':'Ton aus'}</button>
-        <button class="knopf" id="abend">${Einst.abend?'Abend':'Tag'}</button>
-      </div></div>
+  s.innerHTML = kopf({ mitte:'<span class="marke">Smart Kids</span>', rechts:
+      zeichenKnopf('ton', tonAn?'tonAn':'tonAus', tonAn?'Ton ausschalten':'Ton einschalten')
+    + zeichenKnopf('abend', Einst.abend?'abend':'tag', Einst.abend?'Heller machen':'Dunkler machen') }) + `
     <div class="mitte">
       <div class="titel">Wer spielt?</div>
       <div class="wahl">${Object.values(PROFILE).map(p=>`
@@ -180,19 +232,16 @@ async function ebenenwahl(){
     const alle = vorrat(e.id, st);
     balken.push({ ...e, ...Leitner.fortschritt(alle, st) });
   }
-  s.innerHTML = `<div class="kopf">
-      <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button>
-      <span class="fortschritt">${P.name}</span>
-      <div class="reihe">
-        <button class="knopf" id="buch">Forscherbuch</button>
-        <button class="knopf" id="eltern">Eltern</button>
-      </div></div>
+  s.innerHTML = kopf({ links: zurueckKnopf(), mitte:`<span class="marke">${P.name}</span>`,
+    rechts: zeichenKnopf('buch','buch','Forscherbuch')
+          + zeichenKnopf('eltern','eltern','Elternbereich') }) + `
     <div class="mitte">
       <div class="titel">Was möchtest du üben?</div>
       <div class="wahl">${balken.map(b=>`
-        <button class="kachel" data-ebene="${b.id}">
-          <div class="name" style="font-size:var(--s1)">${b.titel}</div>
-          <div class="rolle">${b.gesammelt} von ${b.gesamt} gesammelt${b.gekonnt?` · ${b.gekonnt} sicher`:''}</div>
+        <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
+          <div class="ueber">${b.ueber}</div>
+          <div class="name">${b.titel}</div>
+          <div class="rolle">${b.gesammelt} von ${b.gesamt}${b.gekonnt?` · ${b.gekonnt} sicher`:''}</div>
           <div class="balken"><i style="transform:scaleX(${(b.anteil).toFixed(3)})"></i></div>
         </button>`).join('')}</div>
     </div>`;
@@ -210,8 +259,7 @@ async function ebenenwahl(){
 function stadtstaaten(danach){
   const s = el('div');
   const drei = D.deutschland.filter(b=>b.stadtstaat);
-  s.innerHTML = `<div class="kopf">
-      <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button><span></span></div>
+  s.innerHTML = kopf({ links: zurueckKnopf() }) + `
     <div class="mitte">
       <div class="titel">Drei sind anders</div>
       <div class="unter">Berlin, Hamburg und Bremen sind <strong>Stadtstaaten</strong>:
@@ -262,8 +310,7 @@ async function ebeneLaden(ebeneId){
 async function starten(ebeneId){
   if (!(await ebeneLaden(ebeneId))) {
     zeige(()=>{ const s=el('div');
-      s.innerHTML = `<div class="kopf">
-          <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button><span></span></div>
+      s.innerHTML = kopf({ links: zurueckKnopf() }) + `
         <div class="mitte"><div class="titel">Diese Karte fehlt noch</div>
         <div class="unter">Sie wird beim ersten Mal aus dem Netz geholt.
           Probier es noch einmal, wenn du wieder Verbindung hast.</div></div>`;
@@ -291,6 +338,10 @@ function spielschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const [art, kont] = st.ebeneId.split(':');
   const istHaupt = art==='hauptstaedte';
+  // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
+  // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
+  // Namen gleichzeitig zu lesen ist eine andere.
+  const istAuswahl = istHaupt || art==='bundeslaender';
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
@@ -343,7 +394,9 @@ function spielschirm(){
     const fremd = misch(st.alle.filter(x=>x.id!==ziel.id), r1).slice(0, 3 - falle.length);
     kand = misch([ziel, ...falle, ...fremd], r1);
   } else {
-    const n = Math.min(P.kandidaten, st.alle.length) - 1;
+    // Bei den Bundeslaendern immer vier, sonst nach Profil.
+    const wieviel = art==='bundeslaender' ? 4 : Math.min(P.kandidaten, st.alle.length);
+    const n = Math.min(wieviel, st.alle.length) - 1;
     kand = misch([ziel, ...misch(st.alle.filter(x=>x.id!==ziel.id), r1).slice(0, Math.max(1,n))], r1);
   }
 
@@ -406,7 +459,7 @@ function spielschirm(){
   // das Wissen, um das es hier geht. Deshalb ist diese Ebene fuer BEIDE
   // Profile eine Auswahl. Im Elternbereich abschaltbar, dann tippt Lea auch
   // hier wieder.
-  const tippt = P.eingabe.includes('tippen') && !(istHaupt && Einst.hauptstadtAuswahl);
+  const tippt = P.eingabe.includes('tippen') && !(istAuswahl && Einst.hauptstadtAuswahl);
   const spricht = P.eingabe.includes('sprechen');
   const frageText = istHaupt ? `Wie heißt die Hauptstadt von ${ziel.gebiet}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
@@ -414,12 +467,9 @@ function spielschirm(){
   const fach = Stand[ziel.id]?.fach ?? 1;
 
   s.innerHTML = `
-    <div class="kopf">
-      <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button>
-      <span class="fortschritt">${st.i+1} von ${st.liste.length}
-        <span class="fach" title="Leitner-Fach">Fach ${fach}</span></span>
-      ${sterne(Math.min(3, Math.floor(st.richtig/Math.max(1,Math.ceil(st.liste.length/3)))))}
-    </div>
+    ${kopf({ links: schliessenKnopf('Übung beenden'),
+      mitte:`<span class="zaehler">${st.i+1}<i>/</i>${st.liste.length}</span>`,
+      rechts: sterne(Math.min(3, Math.floor(st.richtig/Math.max(1,Math.ceil(st.liste.length/3))))) })}
     <div class="frage" id="frage">${frageText}</div>
     <div class="feld">
       <div class="karte" id="karte" style="--karte-ar:${(()=>{const v=vb.split(' ').map(Number);
@@ -454,6 +504,38 @@ function spielschirm(){
   const seite = s.querySelector('#seite');
   const liste = el('div','wahlliste'), werkzeug = el('div','werkzeug');
   seite.append(liste, werkzeug);
+
+  /**
+   * Zeigt die Loesung und geht weiter.
+   *
+   * Zwei Wege fuehren hierher: das Kind gibt auf (der leise Knopf), oder es
+   * hat DREIMAL danebengelegen. Beides endet gleich - der Name erscheint am
+   * Ort, wird vorgelesen, und die naechste Aufgabe kommt. Haengenbleiben
+   * ist das Schlimmste, was einem Sechsjaehrigen an einer Uebung passieren
+   * kann.
+   *
+   * Fuer den Leitner-Stand zaehlt es als NICHT gekonnt: gezeigt bekommen
+   * ist nicht gewusst. Das Gebiet kommt bald wieder.
+   */
+  function aufloesen(grund){
+    if (erledigt) return;
+    erledigt = true;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    Protokoll.schreiben(Protokoll.eintrag({
+      zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
+      eingabeart: grund, ergebnis: 'gezeigt', roheingabe: '', sicherheit: null,
+      dauerMs: Date.now()-beginn, versuch,
+      fachVorher: Stand[ziel.id]?.fach ?? 1, fachNachher: Stand[ziel.id]?.fach ?? 1,
+    }));
+    s.querySelectorAll('.zielpuls,.zielrand,.zeiger').forEach(x=>x.style.display='none');
+    nameAufDieKarte(s, ziel);
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">Das ist ${ziel.name}.</span>`;
+    vorlesen(`Das ist ${ziel.name}.`);
+    standSichern(st.ebeneId);
+    setTimeout(()=>{ st.i++;
+      if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm); }, 2600);
+  }
   s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
 
   /**
@@ -552,6 +634,14 @@ function spielschirm(){
       b.onclick=()=>vorlesen(k.name); ziehbar(b,k); liste.appendChild(b); });
   }
 
+  // Der leise Ausweg. Er steht bewusst klein und ohne Farbe da: er soll
+  // erreichbar sein, aber nicht einladen.
+  const weiter = el('button','leise');
+  weiter.id = 'ueberspringen';
+  weiter.textContent = 'Weiß ich nicht';
+  weiter.onclick = ()=>aufloesen('uebersprungen');
+  werkzeug.appendChild(weiter);
+
   // Das Mikrofon wird nur gezeigt, wenn es auch etwas TUT.
   //
   // Vorher stand es immer da, grau, mit dem Satz "Sprachmodus ist aus. Im
@@ -616,7 +706,7 @@ function spielschirm(){
   async function bewerte(roh, eingabeart, ctx){
     if (erledigt) return;
     versuch++; st.versuche++;
-    let ergebnis='falsch', text='', sicherheit=null;
+    let ergebnis='falsch', text='', sicherheit=null, nebenbei='';
 
     if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
@@ -625,7 +715,7 @@ function spielschirm(){
     } else if (eingabeart==='tippen') {
       // Das ganze Gebiet, nicht nur sein Name - sonst zaehlt kein Alias.
       const r = Vergleich.rechtschreibung(roh, ziel);
-      if (r.urteil==='richtig') ergebnis='richtig';
+      if (r.urteil==='richtig') { ergebnis='richtig'; nebenbei = r.nebenbei || ''; }
       else if (r.urteil==='fast'){ ergebnis='fast'; text=r.hinweis; }
       else { const t=Vergleich.abgleich(roh,kand);
         text = t.art==='nochmal' ? 'Das kenne ich nicht.'
@@ -645,9 +735,13 @@ function spielschirm(){
       Stand = Leitner.verschieben(Stand, ziel.id, ergebnis==='richtig', Date.now());
       st.richtig += ergebnis==='richtig' ? 1 : 0.5;
       if (ctx.etikett) ctx.etikett.classList.add('weg');
-      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt);
+      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei);
       vorlesen(ergebnis==='fast' ? text : ziel.name);
       standSichern(st.ebeneId);
+    } else if (versuch >= 3) {
+      // Nach dem dritten Fehlversuch wird aufgeloest. Ein Kind, das
+      // dreimal daneben lag, raet ab jetzt nur noch.
+      aufloesen('dreimal');
     } else {
       // Das Etikett sagt selbst, dass es abgelehnt wurde. Vorher kam nur
       // ein Satz darunter - fuer eine Sechsjaehrige passierte nichts.
@@ -686,7 +780,7 @@ function spielschirm(){
 }
 
 /* ---------- Belohnungsmoment --------------------------------------------- */
-function belohnung(s, ziel, fastText, zeigeStadt){
+function belohnung(s, ziel, fastText, zeigeStadt, nebenbei){
   // Beim Belohnen wird die Hervorhebung still - sonst blinkt es weiter,
   // waehrend sich der Umriss nachzeichnet.
   const kontur=s.querySelector('#kontur'), fuell=s.querySelector('#belohn'),
@@ -722,8 +816,11 @@ function belohnung(s, ziel, fastText, zeigeStadt){
   nameAufDieKarte(s, ziel);
   const frage=s.querySelector('#frage');
   if (frage) frage.innerHTML = fastText
-    ? `<span style="color:var(--warn)">${fastText}</span>`
-    : `<span style="color:var(--gut)">Richtig — ${ziel.name}!</span>`;
+    ? `<span class="fastText">${fastText}</span>`
+    : `<span class="richtigText">Richtig — ${ziel.name}!</span>`
+      // Anders geschrieben, aber gemeint war es richtig: der Haken kommt
+      // zuerst, der Hinweis daneben. Nicht statt seiner.
+      + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
 }
 
 /**
@@ -806,7 +903,7 @@ function endschirm(){
   const st=Sitzung, s=el('div');
   const n=Math.max(1,Math.min(3,Math.round(st.richtig/st.liste.length*3)));
   const f=Leitner.fortschritt(st.alle, Stand);
-  s.innerHTML=`<div class="kopf"><span></span><span></span></div>
+  s.innerHTML=kopf({}) + `
     <div class="mitte">
       <div>${sterne(n,56)}</div>
       <div class="gross">Geschafft!</div>
@@ -841,9 +938,8 @@ async function forscherbuch(){
       fach: st[g.id]?.fach ?? 0, i })) });
   }
   const gesamt = gruppen.reduce((a,g)=>a+g.stuecke.filter(x=>x.gesammelt).length,0);
-  s.innerHTML = `<div class="kopf">
-      <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button>
-      <span class="fortschritt">${gesamt} Aufkleber</span><span></span></div>
+  s.innerHTML = kopf({ links: zurueckKnopf(),
+    mitte:`<span class="marke">${gesamt} Aufkleber</span>` }) + `
     <div class="rollen">
       ${gruppen.map(g=>`
         <h3 class="gruppe">${g.titel}</h3>
@@ -868,8 +964,7 @@ async function forscherbuch(){
    der Ablage und haelt neugierige Achtjaehrige ab, nicht Angreifer. */
 function elternTor(){
   const s = el('div'); let eingabe='';
-  s.innerHTML = `<div class="kopf">
-      <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button><span></span></div>
+  s.innerHTML = kopf({ links: zurueckKnopf() }) + `
     <div class="mitte">
       <div class="titel">Elternbereich</div>
       <div class="unter">Vier Ziffern. Voreingestellt ist <code>0000</code>.</div>
@@ -913,9 +1008,8 @@ async function elternbereich(){
     <td><div class="balken klein"><i style="width:${Math.round(z.quote*100)}%;
       background:${z.quote>.7?'var(--gut)':z.quote>.4?'var(--achtung)':'var(--warn)'}"></i></div></td></tr>`;
 
-  s.innerHTML = `<div class="kopf">
-      <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button>
-      <span class="fortschritt">Elternbereich</span><span></span></div>
+  s.innerHTML = kopf({ links: zurueckKnopf(),
+    mitte:'<span class="marke">Elternbereich</span>' }) + `
     <div class="rollen eltern">
       <h3 class="gruppe">Überblick</h3>
       <div class="kacheln">

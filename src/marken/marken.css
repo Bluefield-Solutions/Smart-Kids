@@ -10,7 +10,8 @@
   --r6: 24px;  --r8: 32px;  --r12: 48px; --r16: 64px; --r24: 96px;
 
   /* --- Radien --------------------------------------------------------- */
-  --rund-klein: 8px; --rund-karte: 16px; --rund-flaeche: 24px; --rund-voll: 999px;
+  /* Groessere Radien - der schnellste Hebel fuer "moderner". */
+  --rund-klein: 10px; --rund-karte: 20px; --rund-flaeche: 28px; --rund-voll: 999px;
 
   /* --- Schrift. Grundgroesse 20, Verhaeltnis 1,25. --------------------- */
   --s-klein: 16px;   /* nur Elternbereich */
@@ -27,21 +28,46 @@
   /* --- Farbe. OKLCH, weil L dort der wahrgenommenen Helligkeit
          entspricht. Alle sieben Flaechen sind exakt gleich hell -
          deshalb ist derselbe Textton auf allen sieben lesbar. ---------- */
-  --flaeche-l: 0.88; --flaeche-c: 0.055;
-  --f1: oklch(0.88 0.055  25);  --f2: oklch(0.88 0.055  75);
-  --f3: oklch(0.88 0.055 130);  --f4: oklch(0.88 0.055 175);
-  --f5: oklch(0.88 0.055 230);  --f6: oklch(0.88 0.055 285);
-  --f7: oklch(0.88 0.055 330);
-  --auf-flaeche: oklch(0.25 0.03 250);   /* auf allen sieben lesbar */
+  /* Die Buntheit ist GEMESSEN, nicht geschaetzt.
+     Bedingung bleibt: alle sieben exakt gleich hell, damit derselbe
+     Textton auf allen lesbar ist und keine Flaeche herausspringt. Unter
+     dieser Bedingung gibt es ein Optimum - bei L 0.88 war bei C 0.060
+     Schluss, bei L 0.74 sind C 0.135 moeglich. Gemessen ueber alle sieben
+     Farbtoene im sRGB-Raum:
 
-  --grund:    oklch(0.965 0.008  85);
+       L 0.90 → C 0.045      L 0.78 → C 0.115
+       L 0.86 → C 0.070      L 0.74 → C 0.135   ← hier
+       L 0.82 → C 0.090      L 0.70 → C 0.130
+
+     Das ist 2,45-mal so bunt wie vorher, und der dunkle Textton hat auf
+     der schlechtesten der sieben Flaechen noch 6,1:1 (WCAG AA ist 4,5:1). */
+  --flaeche-l: 0.74; --flaeche-c: 0.135;
+  --f1: oklch(0.74 0.135  25);  --f2: oklch(0.74 0.135  75);
+  --f3: oklch(0.74 0.135 130);  --f4: oklch(0.74 0.135 175);
+  --f5: oklch(0.74 0.135 230);  --f6: oklch(0.74 0.135 285);
+  --f7: oklch(0.74 0.135 330);
+  --auf-flaeche: oklch(0.24 0.04 250);   /* auf allen sieben lesbar, 6,1:1 */
+
+  /* Der Grund ist nicht mehr fast-weiss, sondern ein kuehler heller Ton
+     mit einem Hauch Farbe - und er bekommt einen Verlauf (siehe
+     --grund-2). Eine flache weisse Flaeche ist der schnellste Weg,
+     eine App aelter aussehen zu lassen, als sie ist. */
+  --grund:    oklch(0.970 0.014 250);
+  --grund-2:  oklch(0.935 0.030 255);
   --papier:   oklch(1     0      0);
   --tinte:    oklch(0.27  0.030 250);
-  --tinte-2:  oklch(0.50  0.025 250);
-  --tinte-3:  oklch(0.68  0.020 250);
+  /* 0.50 reichte auf den getoenten Kacheln nicht (3,1:1). Kleiner Text
+     braucht 4,5:1, und die Kachel ist der Ort, an dem er steht. */
+  --tinte-2:  oklch(0.46  0.030 250);
+  /* 0.68 war als TEXTFARBE zu hell: auf Weiss 2,86:1, auf einer getoenten
+     Kachel 2,3:1 - beides unter der WCAG-Grenze von 4,5:1. Gefunden hat
+     das das Tor `lesbarkeit`, nicht das Auge; hell-auf-hell sieht
+     absichtlich zurueckhaltend aus und nicht kaputt. */
+  --tinte-3:  oklch(0.56  0.025 250);
+  --linie-2:  oklch(0.80  0.015 250);   /* fuer Striche, nicht fuer Text */
   --linie:    oklch(0.88  0.010 250);
-  --akzent:   oklch(0.55  0.150 250);
-  --akzent-h: oklch(0.94  0.035 250);
+  --akzent:   oklch(0.55  0.190 258);
+  --akzent-h: oklch(0.92  0.060 258);
   --gut:      oklch(0.62  0.140 155);
   --gut-h:    oklch(0.93  0.055 155);
   --warn:     oklch(0.65  0.130  40);
@@ -50,8 +76,8 @@
   --nochmal-h:oklch(0.95  0.040  85);   /* Grund eines Hinweises */
 
   /* --- Was auf der Karte passiert -------------------------------------- */
-  --ziel:     oklch(0.80  0.120 250);   /* das gesuchte Gebiet */
-  --treffer:  oklch(0.86  0.100 155);   /* geschafft */
+  --ziel:     oklch(0.68  0.185 258);   /* das gesuchte Gebiet */
+  --treffer:  oklch(0.74  0.150 155);   /* geschafft */
   --wasch:    oklch(0.80  0.120 155);   /* die Welle beim Richtig */
   --stern-an: oklch(0.80  0.140  85);
   --stern-aus:oklch(0.93  0.010 250);
@@ -70,9 +96,9 @@
   --knopf-rand:    oklch(0.885 0.014 250);
   --knopf-kante:   oklch(0.825 0.022 250);
   /* Die Antwort ist der wichtigste Knopf der App und darf das zeigen. */
-  --primaer:       oklch(0.975 0.014 250);
-  --primaer-rand:  oklch(0.855 0.045 250);
-  --primaer-kante: oklch(0.760 0.075 250);
+  --primaer:       oklch(0.965 0.035 258);
+  --primaer-rand:  oklch(0.800 0.090 258);
+  --primaer-kante: oklch(0.690 0.130 258);
 
   /* --- Bewegung ------------------------------------------------------- */
   --d-tipp: 120ms; --d-zustand: 200ms; --d-schirm: 320ms; --d-belohnung: 500ms;
@@ -88,12 +114,13 @@
 /* Abendmodus: nicht umkehren, sondern die Gesamthelligkeit senken.
    In OKLCH ist das ein Griff. */
 :root[data-abend="an"] {
-  --grund:  oklch(0.86 0.010  85);
-  --papier: oklch(0.90 0.006  85);
-  --f1: oklch(0.78 0.050  25); --f2: oklch(0.78 0.050  75);
-  --f3: oklch(0.78 0.050 130); --f4: oklch(0.78 0.050 175);
-  --f5: oklch(0.78 0.050 230); --f6: oklch(0.78 0.050 285);
-  --f7: oklch(0.78 0.050 330);
+  --grund:   oklch(0.88 0.020 255);
+  --grund-2: oklch(0.83 0.035 258);
+  --papier:  oklch(0.94 0.010 255);
+  --f1: oklch(0.66 0.115  25); --f2: oklch(0.66 0.115  75);
+  --f3: oklch(0.66 0.115 130); --f4: oklch(0.66 0.115 175);
+  --f5: oklch(0.66 0.115 230); --f6: oklch(0.66 0.115 285);
+  --f7: oklch(0.66 0.115 330);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -25,7 +25,9 @@ __KOPF__
 __MARKEN__
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
-body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-height:1.3;
+body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
+  background-attachment:fixed;
+  color:var(--tinte);font-family:var(--f-ui);line-height:1.3;
   -webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;
   -webkit-touch-callout:none;touch-action:manipulation;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
@@ -44,8 +46,25 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
    Bundeslaendern. */
 .schirm:not(.da) *{pointer-events:none!important}
 
-.kopf{display:flex;align-items:center;justify-content:space-between;gap:var(--r3);
-  padding:var(--r3) var(--r4);flex:none;flex-wrap:wrap}
+/* Drei Felder, festes Raster: die Mitte ist damit WIRKLICH mittig, egal
+   wie breit links und rechts sind. `space-between` verteilte nur den
+   Zwischenraum - "Fiona" sass bei 844 Punkten Breite auf 366 statt 422.
+   Und nichts bricht mehr um: im Hochformat rutschten "Forscherbuch" und
+   "Eltern" unter "Zurueck", der Kopf war 112 Punkte hoch und schief. */
+.kopf{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  gap:var(--r3);padding:var(--r3) var(--r4);flex:none;min-height:68px}
+.kopf-links{justify-self:start;display:flex;gap:var(--r2);min-width:0}
+.kopf-mitte{justify-self:center;display:flex;align-items:center;gap:var(--r2);min-width:0}
+.kopf-rechts{justify-self:end;display:flex;gap:var(--r2);min-width:0}
+.marke{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Der Zaehler ist eine Zahl, kein Satz: gross, mit Ziffern gleicher Breite. */
+.zaehler{font-family:var(--f-ui);font-size:var(--s1);font-weight:800;color:var(--tinte);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.zaehler i{font-style:normal;color:var(--tinte-2);margin:0 .1em;font-weight:600}
+/* Zeichenknoepfe: rund, genau 44 Punkte - die Untergrenze fuer einen Daumen. */
+.knopf.rund{width:44px;height:44px;padding:0;justify-content:center;flex:none}
+@media (max-width:520px){ .knopf .wort{display:none} .knopf{padding:var(--r2)} }
 /* --- Die drei Knopfklassen ------------------------------------------
    Vorher war JEDER Knopf dieselbe weisse Pille: die Antwort, die
    Ebenenkachel, "Zurueck", "Eltern". Deshalb wirkte nichts gestaltet - es
@@ -129,7 +148,31 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 .kachel .name{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;
   color:var(--auf-flaeche);hyphens:auto;overflow-wrap:break-word;text-align:center;
   line-height:1.15}
-.kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-3)}
+.kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-2)}
+/* Jede Ebene traegt ihre eigene Farbe. Acht weisse Karten nebeneinander
+   sehen aus wie eine Tabelle; acht farbige sehen aus wie ein Spiel.
+   Der Ton kommt als `--ton` aus dem Markup und wird hier nur GEMISCHT -
+   damit steht kein Farbwert ausserhalb von marken.css.
+
+   Gemischt wird in **oklab**, nicht in oklch. In oklch hat Weiss den
+   Farbton 0 (Rot), und der wird mitgemischt: aus 26 % Gruen in Weiss wurde
+   ein Pfirsichton. Alle acht Kacheln sahen rosa aus, waehrend die
+   Ueberzeile daneben ihre richtige Farbe trug. oklab hat keinen
+   Farbtonkanal und mischt deshalb das, was man meint. */
+.kachel.bunt{padding:var(--r4) var(--r6);
+  background:color-mix(in oklab, var(--ton) 26%, var(--papier));
+  border-color:color-mix(in oklab, var(--ton) 55%, var(--papier));
+  box-shadow:0 var(--kante) 0 color-mix(in oklab, var(--ton) 62%, var(--tinte-3)),
+             inset 0 var(--strich) 0 var(--knopf-licht);
+  align-items:flex-start;text-align:left;gap:var(--r1)}
+.kachel.bunt:active{box-shadow:0 0 0 color-mix(in oklab, var(--ton) 62%, var(--tinte-3)),
+             inset 0 var(--strich) 0 var(--knopf-licht)}
+.kachel .ueber{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:color-mix(in oklab, var(--ton) 42%, var(--tinte))}
+.kachel.bunt .name{text-align:left;line-height:1.1;font-size:var(--s1)}
+.kachel.bunt .balken{background:color-mix(in oklab, var(--ton) 45%, var(--papier))}
+.kachel.bunt .balken i{background:color-mix(in oklab, var(--ton) 75%, var(--tinte))}
 .kachel .umriss{width:96px;height:96px}
 .kachel .kreis{width:64px;height:64px;border-radius:var(--rund-voll);display:flex;
   align-items:center;justify-content:center;font-family:var(--f-lesen);font-size:var(--s2);
@@ -172,7 +215,11 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 .karte path.ziel{fill:var(--ziel)}
 /* Alles ausser dem gesuchten Gebiet tritt zurueck. Bei sieben gleich hellen
    Pastellflaechen ist sonst nicht zu erkennen, welche gemeint ist. */
-.karte path.geb.ruhig{opacity:.42;filter:saturate(.35)}
+/* Die Nachbarn treten zurueck - aber nur so weit, dass die Karte noch
+   nach Karte aussieht. Bei 0,42 Deckkraft und 0,35 Saettigung war die
+   ganze neue Farbigkeit wieder weg; das Ziel traegt seine Auffaelligkeit
+   inzwischen selbst (kraeftiges Blau, dunkler Rand, Puls, Zeiger). */
+.karte path.geb.ruhig{opacity:.78;filter:saturate(.72)}
 /* Was schon sass, bleibt in voller Farbe stehen. Die Karte fuellt sich,
    waehrend gespielt wird - das ist der Fortschritt, den ein Kind sieht,
    ohne eine Zahl lesen zu muessen. */
@@ -255,6 +302,22 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   gap:var(--r3);justify-content:center;justify-content:safe center;padding:var(--r1)}
 .werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
   padding-top:var(--r2)}
+/* Der leise Ausweg. Er soll erreichbar sein, aber nicht einladen: kein
+   Fuellton, kein Rand, nur Text - und trotzdem 44 Punkte hoch, damit ein
+   Daumen ihn trifft. */
+.leise{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
+  color:var(--tinte-2);background:none;border:none;cursor:pointer;
+  min-height:44px;padding:0 var(--r3);border-radius:var(--rund-voll);
+  text-decoration:underline;text-underline-offset:3px;
+  transition:color var(--d-tipp) var(--k-standard),background var(--d-tipp) var(--k-standard)}
+.leise:active{color:var(--tinte);background:var(--akzent-h)}
+@media (hover:hover){.leise:hover{color:var(--tinte)}}
+.frage .richtigText{color:var(--gut)}
+.frage .fastText{color:var(--warn)}
+.frage .loesung{color:var(--akzent)}
+/* Der Nebenbei-Hinweis steht UNTER dem Haken, kleiner und leiser. */
+.frage .nebenbei{display:block;font-size:var(--s-klein);font-weight:600;
+  color:var(--tinte-2);margin-top:var(--r1)}
 .eingabe{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;background:var(--papier);
   border:var(--strich-stark) solid var(--akzent);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
   min-height:64px;width:100%;color:var(--auf-flaeche);text-align:center}
@@ -374,6 +437,10 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Auskunft. */
   .kachel{padding:var(--r3) var(--r4);max-width:300px;gap:var(--r1)}
   .kachel .balken{display:none}
+  /* Auf 667x375 passen acht Kacheln nur ohne die Ueberzeile. Sie traegt
+     die Einordnung ("LÄNDER IN"), aber die Farbe tut das auch - und eine
+     Ebene, die man nicht erreicht, traegt gar nichts. */
+  .kachel .ueber{display:none}
   .kachel .name{font-size:var(--s1)}
   .wahl{grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr))}
   .mitte{gap:var(--r3)}
