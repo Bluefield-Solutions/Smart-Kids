@@ -63,18 +63,59 @@ const schliessenKnopf = (was='Schließen')=>
 const MIKRO='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg>';
 const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'var(--stern-an)':'var(--stern-aus)',g)).join('')}</div>`;
 
-/* ---------- Vorlesen ---------------------------------------------------- */
+/* ---------- Vorlesen ----------------------------------------------------
+ *
+ * Die Stimme spricht zu einer Sechsjaehrigen, nicht zu einem Fahrplan.
+ *
+ * Drei Stellschrauben, und alle drei waren vorher auf "neutral":
+ *   - WELCHE Stimme. `getVoices()` liefert auf iOS ein knappes Dutzend
+ *     deutscher Stimmen. Die erste ist irgendeine. Gesucht wird jetzt
+ *     nach Namen, die Apple und Google fuer ihre freundlichen, weiblichen
+ *     Ansagestimmen vergeben (Anna, Petra, Helena, Marlene) - und erst
+ *     wenn keine da ist, faellt es auf "irgendeine deutsche" zurueck.
+ *   - Wie SCHNELL. 0,92 war schon langsam; 0,88 gibt einem Kind Zeit,
+ *     "Australien und Ozeanien" zu Ende zu hoeren.
+ *   - Wie HOCH. `pitch` stand auf 1 (Voreinstellung). 1,15 klingt
+ *     zugewandt statt vorlesend. Darueber wird es schrill.
+ */
 let stimme=null, tonAn=true, entsperrt=false;
-function stimmeSuchen(){ const s=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('de'));
-  stimme=s.find(v=>v.localService)||s[0]||null; }
+const LIEBLINGE = ['anna','petra','helena','marlene','katja','vicki','google deutsch'];
+function stimmeSuchen(){
+  const s=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('de'));
+  stimme = LIEBLINGE.map(n=>s.find(v=>v.name.toLowerCase().includes(n))).find(Boolean)
+        || s.find(v=>v.localService) || s[0] || null;
+}
 if ('speechSynthesis' in window){ stimmeSuchen(); speechSynthesis.addEventListener('voiceschanged',stimmeSuchen); }
 function vorlesen(text){
   if(!tonAn||!('speechSynthesis' in window)||!text) return;
   try{ if(!entsperrt){ speechSynthesis.speak(new SpeechSynthesisUtterance('')); entsperrt=true; }
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text); u.lang='de-DE'; u.rate=.92;
+    const u=new SpeechSynthesisUtterance(text); u.lang='de-DE';
+    u.rate=.88; u.pitch=1.15;
     if(stimme)u.voice=stimme; speechSynthesis.speak(u);
   }catch(e){}
+}
+
+/* ---------- Lob ---------------------------------------------------------
+ *
+ * "Richtig - Australien und Ozeanien!" ist eine Feststellung. Ein Kind,
+ * das etwas geschafft hat, will gelobt werden, und zwar nicht jedes Mal
+ * mit demselben Wort: das dritte "Richtig!" hintereinander hoert sich
+ * niemand mehr an.
+ *
+ * Deshalb ein kleiner Vorrat, und dieselbe Zeile wird nie zweimal
+ * hintereinander gezogen. Gewuerfelt wird ausdruecklich NICHT mit dem
+ * Sitzungswuerfel: der ist gesaet, damit eine Sitzung wiederholbar ist -
+ * das Lob soll gerade nicht vorhersagbar sein.
+ */
+const LOB = ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
+             'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'];
+const FAST_LOB = ['Fast!', 'Ganz nah dran!', 'Beinahe!'];
+let letztesLob = -1;
+function lob(vorrat = LOB){
+  let i; do { i = Math.floor(Math.random()*vorrat.length); }
+  while (vorrat.length > 1 && i === letztesLob);
+  letztesLob = i; return vorrat[i];
 }
 
 /* ---------- Profile und Ebenen ------------------------------------------ */
@@ -529,9 +570,14 @@ function spielschirm(){
     }));
     s.querySelectorAll('.zielpuls,.zielrand,.zeiger').forEach(x=>x.style.display='none');
     nameAufDieKarte(s, ziel);
+    // Aufgeloest wird ohne Tadel. Wer dreimal danebenlag oder aufgegeben
+    // hat, hat schon genug Rueckmeldung bekommen; hier steht nur noch die
+    // Antwort - mit einem Satz davor, der sie nicht wie ein Versagen
+    // aussehen laesst.
     const f = s.querySelector('#frage');
-    if (f) f.innerHTML = `<span class="loesung">Das ist ${ziel.name}.</span>`;
-    vorlesen(`Das ist ${ziel.name}.`);
+    const satz = `Kein Problem. Das ist ${ziel.name}.`;
+    if (f) f.innerHTML = `<span class="loesung">${satz}</span>`;
+    vorlesen(satz);
     standSichern(st.ebeneId);
     setTimeout(()=>{ st.i++;
       if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm); }, 2600);
@@ -676,30 +722,178 @@ function spielschirm(){
     werkzeug.appendChild(mik); liste.appendChild(status);
   }
 
-  function ziehbar(b,k){
-    let start=null;
-    b.addEventListener('pointerdown',ev=>{
-      if(b.classList.contains('weg')) return;
-      b.setPointerCapture(ev.pointerId);
-      const r=b.getBoundingClientRect(); start={x:ev.clientX,y:ev.clientY};
-      b.classList.add('zieht'); b.style.position='fixed'; b.style.left=r.left+'px';
-      b.style.top=r.top+'px'; b.style.width=r.width+'px'; b.style.margin='0';
-      b.style.transform='scale(1.06) rotate(-1.5deg)'; vorlesen(k.name);
-    });
-    b.addEventListener('pointermove',ev=>{ if(!start) return;
-      b.style.transform=`translate3d(${ev.clientX-start.x}px,${ev.clientY-start.y}px,0) scale(1.06) rotate(-1.5deg)`; });
-    const los=(ev)=>{ if(!start) return;
-      b.style.transform=''; b.classList.remove('zieht'); b.style.position='';
-      b.style.left=''; b.style.top=''; b.style.width=''; b.style.margin='';
-      const unten=document.elementFromPoint(ev.clientX,ev.clientY); start=null;
-      const kreis=unten&&unten.closest&&unten.closest('#treffer circle');
-      const pfad =unten&&unten.closest&&unten.closest('path.geb');
-      const id = kreis?kreis.dataset.id : (pfad?pfad.dataset.id:null);
-      if (id) bewerte(k.name,'ziehen',{ etikett:b, getroffen:id });
+  /**
+   * Wohin zeigt der Finger? MIT Nachsicht.
+   *
+   * Gemessen am gebauten Spiel: wer mehr als **16 Bildpunkte** neben
+   * Australien losliess, loeste gar nichts aus - kein Hinweis, kein
+   * Protokolleintrag, keine Bewegung. Fuer eine Sechsjaehrige mit dem
+   * Daumen auf einem Telefon ist das der Normalfall, nicht die Ausnahme,
+   * und sie erfaehrt nie warum.
+   *
+   * Nachsicht heisst hier NICHT "die Flaeche wird groesser gerechnet".
+   * Getestet wird weiter mit echtem Treffertest an echten Umrissen - nur
+   * eben nicht an einem Punkt, sondern auf Ringen um ihn herum, von innen
+   * nach aussen. Der erste Treffer gewinnt, also gewinnt immer das
+   * naechstgelegene Gebiet. Die Form bleibt die Form; nur der Finger darf
+   * dicker sein als ein Bildpunkt.
+   *
+   * Der Ring hoert bei NACHSICHT auf. Ohne Grenze traefe jeder Wurf
+   * irgendetwas, und ein Fehlgriff mitten im Meer wuerde als falsche
+   * Antwort gewertet - das kostet einen der drei Versuche fuer etwas, das
+   * gar keine Antwort war.
+   */
+  const NACHSICHT = 60;                      // Bildpunkte
+  function zielUnter(x, y){
+    const treffer = (px, py) => {
+      const e = document.elementFromPoint(px, py);
+      if (!e || !e.closest) return null;
+      // Der Trefferkreis zuerst: er existiert genau fuer die Gebiete, die
+      // zu klein sind, um sie zu treffen. Er darf nicht vom Nachbarland
+      // ueberstimmt werden, ueber dem er liegt.
+      const kreis = e.closest('#treffer circle');
+      if (kreis) return kreis.dataset.id;
+      const pfad = e.closest('path.geb');
+      return pfad ? pfad.dataset.id : null;
     };
-    b.addEventListener('pointerup',los);
-    b.addEventListener('pointercancel',()=>{ start=null; b.style.transform='';
-      b.classList.remove('zieht'); b.style.position=''; });
+    const genau = treffer(x, y);
+    if (genau) return { id: genau, genau: true };
+    for (let r = 10; r <= NACHSICHT; r += 10) {
+      for (let i = 0; i < 16; i++) {
+        const w = i * Math.PI / 8;
+        const id = treffer(x + Math.cos(w) * r, y + Math.sin(w) * r);
+        if (id) return { id, genau: false };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Was unter dem Finger liegt, leuchtet auf.
+   *
+   * Nachsicht ohne Anzeige waere Zauberei: das Kind laesst los und die App
+   * entscheidet etwas, das es nicht gesehen hat. Mit Anzeige ist es nur
+   * eine groessere Zielscheibe - man SIEHT vor dem Loslassen, was gilt.
+   */
+  let drueber = null;
+  function drueberSetzen(id){
+    if (drueber === id) return;
+    const alt = drueber && s.querySelector(`path.geb[data-id="${drueber}"]`);
+    if (alt) alt.classList.remove('drueber');
+    drueber = id;
+    const neu = id && s.querySelector(`path.geb[data-id="${id}"]`);
+    if (neu) neu.classList.add('drueber');
+  }
+
+  /**
+   * Wo haengt das Etikett, waehrend es gezogen wird?
+   *
+   * NICHT unter dem Finger. Ein Bildschirmfoto vom iPhone quer zeigt den
+   * Grund: das Etikett "Australien und Ozeanien" ist 240 x 160 Punkte
+   * gross, Australien auf der Weltkarte 60 x 50 - mittig am Finger deckt
+   * das Etikett sein eigenes Ziel VOLLSTAENDIG zu. Das Aufleuchten nuetzt
+   * dann nichts, weil niemand es sieht.
+   *
+   * Es haengt deshalb UNTER dem Finger, waagerecht mittig. Oben bleibt
+   * frei, und genau dort liegt die Karte. Passt es unten nicht mehr hin,
+   * klappt es nach oben; seitlich wird es ins Fenster geschoben.
+   */
+  const LUFT = 22;
+  function haengen(basis, gross, x, y){
+    let dy = y + LUFT - basis.top;
+    if (basis.top + dy + gross.h > innerHeight - 4) dy = y - LUFT - gross.h - basis.top;
+    const links = Math.max(4, Math.min(x - gross.b/2, innerWidth - gross.b - 4));
+    return `translate3d(${(links - basis.left).toFixed(1)}px,${dy.toFixed(1)}px,0) rotate(-1.5deg)`;
+  }
+
+  function ziehbar(b,k){
+    // Nicht `setPointerCapture`: das Etikett klebt am Finger und faengt
+    // damit jeden Treffertest ab. Es hoert waehrend des Zuges auf,
+    // anfassbar zu sein (`.zieht{pointer-events:none}`) - und dann liefe
+    // der Fang ins Leere. Das Fenster hoert stattdessen zu; das haelt den
+    // Zug auch, wenn der Finger das Etikett verlaesst.
+    //
+    // Aufgehoben wird erst nach 6 Punkten Weg. Vorher ist es ein Tippen,
+    // und Tippen soll den Namen vorlesen, nicht das Etikett verschieben -
+    // sonst zuckt es bei jeder Beruehrung.
+    let start=null, heim=null, zeiger=null, auf=false, zug=null;
+    // Das Etikett folgt dem Finger in JEDEM Ereignis - das ist billig und
+    // darf nicht ruckeln. Die Umkreissuche dagegen kostet ueber dem Meer
+    // bis zu 96 Treffertests, und jeder davon erzwingt einen Durchlauf des
+    // Stylings. Einmal je Bild reicht: schneller als das Auge ist ohnehin
+    // keine Anzeige.
+    let angemeldet=false, zuletzt=null;
+    // Beim Aufheben wird aus der Antwortkachel ein SCHILD.
+    //
+    // Die Kachel ist 240 x 160 Punkte gross ("Australien und Ozeanien"
+    // bricht auf zwei Zeilen), Australien auf der Weltkarte 60 x 50 - am
+    // Finger deckt sie mehrere Gebiete auf einmal zu. Als einzeiliges
+    // Schild ist sie rund ein Drittel so gross. Die Breite wird deshalb
+    // NICHT festgehalten: ohne Breite schrumpft ein `position:fixed`
+    // Kasten auf seinen Inhalt.
+    const aufheben=()=>{ auf=true;
+      b.classList.add('zieht'); b.style.position='fixed';
+      b.style.left=heim.left+'px'; b.style.top=heim.top+'px'; b.style.margin='0';
+      const z=b.getBoundingClientRect(); zug={b:z.width,h:z.height};
+      vorlesen(k.name); };
+    const bewegen=(ev)=>{ if(!start||ev.pointerId!==zeiger) return;
+      if(!auf){ if(Math.hypot(ev.clientX-start.x, ev.clientY-start.y) < 6) return; aufheben(); }
+      b.style.transform = haengen(heim, zug, ev.clientX, ev.clientY);
+      zuletzt={x:ev.clientX,y:ev.clientY};
+      if (angemeldet) return;
+      angemeldet=true;
+      requestAnimationFrame(()=>{ angemeldet=false;
+        if(!start||!zuletzt) return;
+        const t = zielUnter(zuletzt.x, zuletzt.y);
+        drueberSetzen(t ? t.id : null);
+      });
+    };
+    const aufraeumen=()=>{
+      b.classList.remove('zieht'); b.style.position=''; b.style.left='';
+      b.style.top=''; b.style.width=''; b.style.margin=''; b.style.transform='';
+      drueberSetzen(null); start=null; zeiger=null; auf=false; zug=null;
+      removeEventListener('pointermove',bewegen);
+      removeEventListener('pointerup',los);
+      removeEventListener('pointercancel',abbruch);
+    };
+    const abbruch=()=>aufraeumen();
+    const los=(ev)=>{ if(!start||ev.pointerId!==zeiger) return;
+      // Nie aufgehoben: das war ein Tippen. Der Klickhandler liest vor.
+      if(!auf){ aufraeumen(); return; }
+      const t = zielUnter(ev.clientX, ev.clientY);
+      const von = b.getBoundingClientRect();
+      aufraeumen();
+      if (t) { bewerte(k.name,'ziehen',{ etikett:b, getroffen:t.id }); return; }
+      // Ins Leere gezogen. Das ist keine falsche Antwort - es war gar
+      // keine. Es kostet keinen Versuch, aber es bleibt sichtbar: das
+      // Etikett fliegt an seinen Platz zurueck und sagt, was fehlt.
+      zurueckFliegen(b, von);
+      const h = liste.querySelector('.hinweis') || liste.appendChild(el('div','hinweis'));
+      h.className='hinweis nochmal';
+      // Kurz genug fuer eine Zeile: der Satz stand auf dem iPhone quer
+      // zweizeilig am unteren Rand und schob die Antwortliste hoch.
+      h.textContent='Lass es auf dem Land los.';
+      vorlesen('Lass es auf dem Land los.');
+    };
+    b.addEventListener('pointerdown',ev=>{
+      if(b.classList.contains('weg')||start) return;
+      start={x:ev.clientX,y:ev.clientY};
+      zeiger=ev.pointerId; heim=b.getBoundingClientRect(); auf=false;
+      addEventListener('pointermove',bewegen);
+      addEventListener('pointerup',los);
+      addEventListener('pointercancel',abbruch);
+    });
+  }
+
+  /** Das Etikett fliegt sichtbar an seinen Platz zurueck statt zu blinken. */
+  function zurueckFliegen(b, von){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const nach = b.getBoundingClientRect();
+    const dx = von.left - nach.left, dy = von.top - nach.top;
+    if (!dx && !dy) return;
+    b.animate([{ transform:`translate3d(${dx}px,${dy}px,0) scale(1.06)` },
+               { transform:'none' }],
+      { duration: 260, easing:'cubic-bezier(.2,0,0,1)' });
   }
 
   /* --- Bewertung. EIN Ort, egal welcher Eingabeweg. --- */
@@ -710,20 +904,20 @@ function spielschirm(){
 
     if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
-      else if (roh===ziel.name) text='Fast! Das ist das falsche Gebiet.';
-      else text='Das ist ein anderer Name.';
+      else if (roh===ziel.name) text='Fast! Der Name stimmt — aber das ist ein anderes Gebiet.';
+      else text='Nicht ganz — probier es noch einmal.';
     } else if (eingabeart==='tippen') {
       // Das ganze Gebiet, nicht nur sein Name - sonst zaehlt kein Alias.
       const r = Vergleich.rechtschreibung(roh, ziel);
       if (r.urteil==='richtig') { ergebnis='richtig'; nebenbei = r.nebenbei || ''; }
       else if (r.urteil==='fast'){ ergebnis='fast'; text=r.hinweis; }
       else { const t=Vergleich.abgleich(roh,kand);
-        text = t.art==='nochmal' ? 'Das kenne ich nicht.'
-             : t.id===ziel.id ? 'Fast! Schau noch mal genau hin.' : `Das wäre ${t.name}.`; }
+        text = t.art==='nochmal' ? 'Das kenne ich noch nicht — schau noch mal hin.'
+             : t.id===ziel.id ? 'Fast! Schau noch mal ganz genau hin.' : `Das wäre ${t.name}.`; }
     } else {
       const t = Vergleich.abgleich(roh, kand);
       sicherheit = t.abstand!==undefined ? +(1-t.abstand).toFixed(2) : null;
-      if (t.art==='nochmal') text='Sag es noch einmal.';
+      if (t.art==='nochmal') text='Das habe ich nicht verstanden — sag es noch einmal.';
       else if (t.id!==ziel.id) text=`Das wäre ${t.name}.`;
       else if (t.art==='rueckfrage'){ text=`Meintest du ${t.name}?`; ergebnis='fast'; }
       else ergebnis='richtig';
@@ -735,8 +929,12 @@ function spielschirm(){
       Stand = Leitner.verschieben(Stand, ziel.id, ergebnis==='richtig', Date.now());
       st.richtig += ergebnis==='richtig' ? 1 : 0.5;
       if (ctx.etikett) ctx.etikett.classList.add('weg');
-      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei);
-      vorlesen(ergebnis==='fast' ? text : ziel.name);
+      // Gelobt wird nur, was ganz richtig war. Ein "Super gemacht!" auf eine
+      // fast richtige Antwort nimmt dem Wort seinen Wert - und dem Kind den
+      // Hinweis, dass noch etwas zu holen ist.
+      const spruch = ergebnis==='richtig' ? lob() : null;
+      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch);
+      vorlesen(ergebnis==='fast' ? text : `${spruch} Das ist ${ziel.name}.`);
       standSichern(st.ebeneId);
     } else if (versuch >= 3) {
       // Nach dem dritten Fehlversuch wird aufgeloest. Ein Kind, das
@@ -780,7 +978,7 @@ function spielschirm(){
 }
 
 /* ---------- Belohnungsmoment --------------------------------------------- */
-function belohnung(s, ziel, fastText, zeigeStadt, nebenbei){
+function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch){
   // Beim Belohnen wird die Hervorhebung still - sonst blinkt es weiter,
   // waehrend sich der Umriss nachzeichnet.
   const kontur=s.querySelector('#kontur'), fuell=s.querySelector('#belohn'),
@@ -815,9 +1013,12 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei){
   }
   nameAufDieKarte(s, ziel);
   const frage=s.querySelector('#frage');
+  // Das Lob kommt zuerst und steht fuer sich. Der Name danach ist die
+  // Sache, die gelernt wird - nicht der Applaus.
   if (frage) frage.innerHTML = fastText
     ? `<span class="fastText">${fastText}</span>`
-    : `<span class="richtigText">Richtig — ${ziel.name}!</span>`
+    : `<span class="richtigText"><b class="jubel">${spruch || 'Richtig!'}</b>`
+      + ` Das ist ${ziel.name}.</span>`
       // Anders geschrieben, aber gemeint war es richtig: der Haken kommt
       // zuerst, der Hinweis daneben. Nicht statt seiner.
       + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');

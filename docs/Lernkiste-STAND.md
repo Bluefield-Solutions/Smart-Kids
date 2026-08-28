@@ -5,7 +5,7 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
-Auslieferung, der Ausbau-, der Spieler- und der **Gestaltungsrunde**.
+Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs- und der **Ziehrunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -26,11 +26,11 @@ Die Kette, in dieser Reihenfolge:
 
 ```
 inhalt · topologie · beruehrung · marken · schrift · symbol · doku
-  → spielprobe → vergleich → bauen → passt → lesbarkeit → ansicht
-  → pwa · offline → smoke
+  → spielprobe → vergleich → bauen → passt → lesbarkeit → ziehen
+  → ansicht → pwa · offline → smoke
 ```
 
-**Die Torkette ist grün.** Vierzehn Prüfungen, jede mit mindestens einer
+**Die Torkette ist grün.** Fünfzehn Prüfungen, jede mit mindestens einer
 Gegenprobe belegt.
 
 ---
@@ -670,6 +670,126 @@ Wie die Hauptstädte: vier Namen, einer richtig, die Reihenfolge je Aufgabe neu
 gewürfelt. Das Tippen entfällt dort für beide Profile — sechzehn Bundesländer
 mit Bindestrich und Umlaut sind für eine Achtjährige eine Rechtschreibprüfung,
 keine Erdkundeaufgabe. Getippt wird weiter bei den Ländern.
+
+---
+
+## Die Ziehrunde
+
+Der Anlass, wörtlich: *„im Fiona-Profil, wenn man die einzelnen
+Möglichkeiten reinschiebt, kommen die nicht richtig an."*
+
+### Was wirklich los war
+
+Nachgemessen am gebauten Spiel, iPhone quer, Ebene „Kontinente":
+
+| daneben | vorher | jetzt |
+|---|---|---|
+| 0–8 px | getroffen | getroffen |
+| 16 px | **nichts passiert** | getroffen |
+| 20–80 px | **nichts passiert** | getroffen |
+| ab 100 px | nichts passiert | „Lass es auf dem Land los." |
+
+**Ab 16 Bildpunkten daneben geschah gar nichts** — kein Hinweis, kein
+Protokolleintrag, keine Bewegung. Das Etikett sprang zurück, und das Kind
+erfuhr nie, warum. Australien misst auf der Weltkarte 60 × 50 Punkte; ein
+Daumen ist breiter als das.
+
+Warum kein Tor das gesehen hat: der Rauchtest zieht auf den **Anker**, also
+auf den einen Punkt, der immer trifft. Er beweist, dass Ziehen
+*funktioniert* — nicht, dass es *benutzbar* ist.
+
+### Nachsicht, aber keine Zauberei
+
+Die Umkreissuche testet nicht mit einer größer gerechneten Fläche, sondern
+mit **echtem Treffertest an echten Umrissen** — nur eben auf Ringen um den
+Finger statt an einem Punkt, von innen nach außen. Der erste Treffer
+gewinnt, also gewinnt das nächstgelegene Gebiet. Die Form bleibt die Form.
+
+Der Ring hört bei 60 Punkten auf. Ohne Deckel träfe jeder Wurf irgendetwas,
+und ein Fehlgriff im Meer würde als **falsche Antwort** gewertet — das
+kostet einen der drei Versuche für etwas, das gar keine Antwort war.
+
+### Und man sieht, was gelten wird
+
+Nachsicht ohne Anzeige wäre ein Würfel, den niemand sieht. Was unter dem
+Finger liegt, **leuchtet auf**, bevor man loslässt. Dazu brauchte es
+`pointer-events:none` am gezogenen Etikett: solange es anfassbar war, stand
+es bei jedem Treffertest im Weg.
+
+### Was nur das Bild gezeigt hat
+
+Und dann war es trotzdem falsch. Das erste Bildschirmfoto zeigt: **das
+Etikett deckte sein eigenes Ziel vollständig zu.** Die Antwortkachel
+„Australien und Ozeanien" ist 240 × 160 Punkte groß und hing mittig am
+Finger. Das Tor meldete grün — es prüft, *dass* etwas aufleuchtet, nicht,
+ob man es sehen kann.
+
+Jetzt wird aus der Kachel beim Aufheben ein **Schild**: einzeilig, ohne
+feste Breite (ein `position:fixed`-Kasten schrumpft dann auf seinen
+Inhalt), und es hängt **unter** dem Finger. Oben bleibt frei — dort liegt
+die Karte.
+
+Deshalb hält `ansicht` jetzt zwei Aufnahmen mehr: `spiel-zug` (mitten im
+Zug, 22 Punkte daneben) und `spiel-lob`. Beides Zustände, die es sonst nur
+mit dem Finger gibt.
+
+### Aufgehoben wird erst nach 6 Punkten Weg
+
+Vorher sprang das Etikett bei der leisesten Berührung auf `position:fixed`
+unter den Finger und wieder zurück. Getippt wird aber viel: ein Etikett
+liest sich selbst vor.
+
+### Eine freundlichere Stimme
+
+Drei Stellschrauben, alle drei standen auf „neutral": **welche** Stimme
+(gesucht wird jetzt nach Namen — Anna, Petra, Helena, Marlene —, statt die
+erstbeste deutsche zu nehmen), **wie schnell** (0,92 → 0,88) und **wie
+hoch** (`pitch` 1 → 1,15; darüber wird es schrill).
+
+### Gelobt statt festgestellt
+
+„Richtig — Australien und Ozeanien!" ist eine Feststellung. Jetzt steht das
+Lob in einer eigenen Zeile darüber, aus einem Vorrat von acht, und nie
+zweimal hintereinander dasselbe: *Super gemacht! · Ganz genau! · Richtig! ·
+Klasse! · Das stimmt! · Toll gemacht! · Perfekt! · Prima!*
+
+Gelobt wird nur, was **ganz** richtig war — ein „Super gemacht!" auf eine
+fast richtige Antwort nimmt dem Wort seinen Wert. Auch die Ablehnungen sind
+freundlicher („Nicht ganz — probier es noch einmal." statt „Das ist ein
+anderer Name."), und die Auflösung nach drei Fehlversuchen beginnt mit
+„Kein Problem."
+
+**Der Rauchtest hat das sofort gefangen** — und zwar mit 21 Fehlern, obwohl
+jede Antwort korrekt gewertet wurde: er wartete auf das Wort „Richtig".
+Er hängt jetzt an der **Klasse** `.richtigText`, nicht am Wortlaut. Eine
+Klasse ist eine Zusage des Programms; ein Satz ist Text, den jemand ändern
+darf.
+
+### Neues Tor `ziehen`, fünf Gegenproben
+
+Vier Zusagen: Nachsicht mindestens 40 Punkte · ein Wurf ins offene Meer
+erzeugt **keinen** Protokolleintrag (das ist zugleich der Deckel) · während
+des Zuges leuchtet das Ziel auf · Antippen ist kein Ziehen.
+
+Zwei der fünf Gegenproben haben zuerst das **Tor** widerlegt, nicht den
+Code:
+
+- Der Deckel-Test maß über die Trefferreihe. 200 Punkte neben Australien
+  liegt aber ein anderer Kontinent, und den zu treffen ist eine falsche
+  *Antwort* — von außen sieht das aus wie „nichts gefunden". Er misst jetzt
+  am offenen Meer, wo der Unterschied messbar ist.
+- Der Antipp-Test maß nach dem Loslassen. Da hat die App längst aufgeräumt,
+  und ein Zucken sieht aus wie keines. Er misst jetzt bei gedrücktem Finger.
+
+Und die Messreihe selbst war zuerst wertlos: alle zehn Weiten liefen im
+selben Browser-Kontext, also schaltete der Fortschritt weiter und **jede
+Weite traf ein anderes Gebiet**. „Getroffen bis 80 px" war ein Mittelwert
+über Australien, Europa und Afrika. Jeder Wurf bekommt jetzt einen frischen
+Kontext.
+
+Dazu prüft `passt` neu auch den **Hinweis**: er ist nicht bedienbar, aber er
+ist die einzige Auskunft bei einem Fehlversuch — und er stand auf dem iPhone
+quer zweizeilig am unteren Rand.
 
 ---
 

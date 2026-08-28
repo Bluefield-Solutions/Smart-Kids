@@ -81,7 +81,51 @@ const AUFNAHMEN = [
   // aenderte. Genau die Luecke, vor der Regel 8 warnt.
   { name:'spiel-kontinent',  spiel:'kontinente',    wahl:'.schirm.da' },
   { name:'spiel-bundesland', spiel:'bundeslaender', wahl:'.schirm.da' },
+  // Zwei Zustaende, die nur der Blick beurteilen kann - und in beiden
+  // steckte ein Fehler, den kein Tor gemeldet hat.
+  //
+  // `spiel-zug`: waehrend des Ziehens. Das Tor `ziehen` prueft, DASS das
+  // Ziel aufleuchtet - es kann nicht sehen, dass das gezogene Etikett
+  // genau dieses Ziel zudeckte. 240 x 160 Punkte Kachel ueber 60 x 50
+  // Punkten Australien: gemessen gruen, in Wirklichkeit blind.
+  //
+  // `spiel-lob`: nach der richtigen Antwort. Der Lobsatz und der Name
+  // stehen dort untereinander; ob sie passen, sagt kein Zahlenwert.
+  { name:'spiel-zug', spiel:'kontinente', wahl:'.schirm.da', tun:'ziehen' },
+  { name:'spiel-lob', spiel:'kontinente', wahl:'.schirm.da', tun:'loesen' },
 ];
+
+/**
+ * Bringt den Spielbildschirm in einen Zustand, den es sonst nur mit dem
+ * Finger gibt. Gibt die Stelle zurueck, an der der Zeiger stehenbleiben
+ * soll - beim Ziehen bleibt die Maus unten, sonst waere kein Zug zu sehen.
+ */
+async function vorfuehren(seite, was) {
+  const i = await seite.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const z = s.querySelector('path.ziel');
+    const svg = s.querySelector('.karte svg');
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    const g = D.kontinente.find(x => x.id === z.dataset.id);
+    const pt = svg.createSVGPoint(); pt.x = g.anker[0]; pt.y = g.anker[1];
+    const q = pt.matrixTransform(svg.getScreenCTM());
+    const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent);
+    return { x:q.x, y:q.y, idx:namen.indexOf(g.name) };
+  });
+  const et = (await seite.$$('.schirm.da .etikett'))[i.idx];
+  const a = await et.boundingBox();
+  await seite.mouse.move(a.x + a.width/2, a.y + a.height/2);
+  await seite.mouse.down();
+  // 22 Punkte daneben: mitten in der Nachsicht. Genau der Fall, den ein
+  // Kind trifft - und der Fall, in dem die Anzeige gebraucht wird.
+  await seite.mouse.move(i.x - 22, i.y + 22, { steps: 12 });
+  await seite.waitForTimeout(160);
+  if (was === 'ziehen') return;
+  await seite.mouse.up();
+  await seite.waitForFunction(() => !!document.querySelector('.schirm.da .frage .richtigText'),
+    null, { timeout: 4000 });
+  await seite.waitForTimeout(600);
+}
 
 /** Zulaessige Abweichung: eine Handvoll Bildpunkte fuer Kantenglaettung. */
 const GRENZE_ANTEIL = 0.0008;   // 0,08 % der Bildpunkte
@@ -155,6 +199,7 @@ for (const a of AUFNAHMEN) {
     await seite.waitForSelector('.schirm.da [data-ebene]');
     await seite.click(`[data-ebene="${a.spiel}"]`);
     await seite.waitForSelector('.schirm.da .karte svg path.ziel');
+    if (a.tun) await vorfuehren(seite, a.tun);
     letzteSeite = null;
   } else if (letzteSeite !== a.seite) {
     await seite.goto('file://' + path.join(process.cwd(), a.seite), { waitUntil:'networkidle' });

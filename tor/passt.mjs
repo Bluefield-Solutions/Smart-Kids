@@ -47,8 +47,14 @@ const MIN_PT = 44;
  */
 const SUCHE = () => {
   const raus = [], klein = [], zu = [];
+  // `.hinweis` ist nicht bedienbar, aber er ist die einzige Auskunft, die
+  // das Kind bei einem Fehlversuch bekommt - und er WAECHST die Liste. Der
+  // Satz "Fast! Lass es mitten auf dem Land los." stand auf dem iPhone quer
+  // zweizeilig am unteren Rand. Ein Hinweis, den man nicht lesen kann, ist
+  // schlimmer als keiner: das Kind sieht, dass etwas passiert ist, und
+  // erfaehrt trotzdem nicht was.
   const bedienbar = '.schirm.da .kachel, .schirm.da .etikett, .schirm.da .knopf, '
-    + '.schirm.da .mikro, .schirm.da .zi, .schirm.da .eingabe';
+    + '.schirm.da .mikro, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis';
   for (const el of document.querySelectorAll(bedienbar)) {
     const eb = el.getBoundingClientRect();
     if (eb.width === 0 && eb.height === 0) continue;         // nicht sichtbar
@@ -85,7 +91,9 @@ const SUCHE = () => {
         + `über den Rand des eigenen Knopfes`);
       continue;
     }
-    if (Math.min(eb.width, eb.height) < 44 - 0.5)
+    // Der Hinweis ist Text, kein Ziel fuer den Finger - fuer ihn gilt die
+    // 44-Punkt-Regel nicht.
+    if (!el.classList.contains('hinweis') && Math.min(eb.width, eb.height) < 44 - 0.5)
       klein.push(`„${text}" — ${Math.min(eb.width, eb.height).toFixed(0)} pt`);
 
     // VERDECKT: liegt in der Mitte des Knopfes wirklich der Knopf?

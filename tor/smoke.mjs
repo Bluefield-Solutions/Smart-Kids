@@ -93,7 +93,12 @@ async function loese(p) {
   await p.mouse.down();
   await p.mouse.move(info.x, info.y, { steps: 10 });
   await p.mouse.up();
-  await p.waitForFunction(() => /Richtig/.test(document.querySelector('.schirm.da .frage')?.textContent || ''),
+  // Erkannt wird der richtige Ausgang an der KLASSE, nicht am Wortlaut.
+  // Vorher stand hier /Richtig/ - und als das Lob abwechslungsreich wurde
+  // ("Klasse! Das ist Thueringen."), meldete der Rauchtest einundzwanzig
+  // Fehler, obwohl jede Antwort gewertet worden war. Eine Klasse ist eine
+  // Zusage des Programms; ein Satz ist Text, den jemand aendern darf.
+  await p.waitForFunction(() => !!document.querySelector('.schirm.da .frage .richtigText'),
     null, { timeout: 4000 });
   return info.name;
 }
@@ -362,8 +367,11 @@ for (const wer of ['fiona', 'lea']) {
         await p.mouse.up();
       }
       await p.waitForTimeout(900);
-      const r = await p.evaluate(() => document.querySelector('.schirm.da .frage')?.textContent.trim());
-      if (!/^Richtig/.test(r || ''))
+      const r = await p.evaluate(() => {
+        const f = document.querySelector('.schirm.da .frage');
+        return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
+      });
+      if (!/^✓ /.test(r || ''))
         merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
           + `${z.tippfeld ? 'getippt' : 'gezogen'} → „${r}"`));
       durchgespielt++;

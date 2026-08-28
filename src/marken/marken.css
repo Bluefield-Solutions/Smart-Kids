@@ -78,6 +78,8 @@
   /* --- Was auf der Karte passiert -------------------------------------- */
   --ziel:     oklch(0.68  0.185 258);   /* das gesuchte Gebiet */
   --treffer:  oklch(0.74  0.150 155);   /* geschafft */
+  --drueber:  oklch(0.80  0.170 95);    /* liegt gerade unter dem Finger */
+  --drueber-rand: oklch(0.55 0.150 75);
   --wasch:    oklch(0.80  0.120 155);   /* die Welle beim Richtig */
   --stern-an: oklch(0.80  0.140  85);
   --stern-aus:oklch(0.93  0.010 250);

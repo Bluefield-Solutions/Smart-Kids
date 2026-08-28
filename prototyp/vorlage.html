@@ -224,6 +224,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    waehrend gespielt wird - das ist der Fortschritt, den ein Kind sieht,
    ohne eine Zahl lesen zu muessen. */
 .karte path.geb.gekonnt{opacity:1;filter:none}
+/* Was gerade unter dem Finger liegt, leuchtet auf.
+   Die Nachsicht beim Ziehen (60 Bildpunkte Umkreis) darf keine Zauberei
+   sein: das Kind muss VOR dem Loslassen sehen, was gelten wird. Ohne diese
+   Anzeige waere die Nachsicht nur ein Wuerfel, den niemand sieht. Der
+   Rahmen liegt aussen an (`paint-order`), damit er die Flaeche nicht
+   verkleinert, und er wird NICHT mitskaliert - sonst ist er auf der
+   Weltkarte ein Haar und auf Bremen ein Balken. */
+.karte path.geb.drueber{fill:var(--drueber);opacity:1;filter:none;
+  stroke:var(--drueber-rand);stroke-width:var(--strich-stark);
+  vector-effect:non-scaling-stroke;paint-order:stroke fill}
 .karte .haken{pointer-events:none;animation:haken-auf var(--d-belohnung) var(--k-standard)}
 /* Der Name am Ort. Erscheint erst NACH der richtigen Antwort - vorher waere
    er die Antwort. */
@@ -285,8 +295,18 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 @media (hover:hover){.etikett:hover{box-shadow:0 var(--kante) 0 var(--primaer-kante),
   inset 0 var(--strich) 0 var(--knopf-licht),0 0 0 var(--ring) var(--akzent-h)}}
 /* Beim Ziehen haengt das Etikett am Finger: hoehere Kante, kein Uebergang. */
+/* `pointer-events:none` ist hier die halbe Reparatur: das Etikett haengt
+   am Finger und stand damit bei JEDEM Treffertest im Weg. Solange es
+   anfassbar war, konnte waehrend des Zuges nichts unter dem Finger
+   gefunden werden - also gab es auch nichts aufzuleuchten. */
+/* Am Finger ist es ein SCHILD, keine Kachel: einzeilig, enger gesetzt,
+   kleinere Schrift. Es haengt unter dem Finger, und darueber muss die
+   Karte zu sehen bleiben - sonst zieht das Kind blind. */
 .etikett.zieht{transform:none;box-shadow:0 var(--kante-hoch) 0 var(--primaer-kante),
-  inset 0 var(--strich) 0 var(--knopf-licht);z-index:50;cursor:grabbing;transition:none}
+  inset 0 var(--strich) 0 var(--knopf-licht);z-index:50;cursor:grabbing;
+  transition:none;pointer-events:none;
+  white-space:nowrap;font-size:var(--s0);padding:var(--r3) var(--r5);
+  min-height:0;width:auto;justify-content:center}
 .etikett.weg{visibility:hidden;pointer-events:none}
 /* Falsch: das Etikett faehrt zurueck und WACKELT. Vorher passierte am
    Etikett gar nichts - es kam nur ein Satz darunter, und das Kind sah
@@ -313,6 +333,9 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .leise:active{color:var(--tinte);background:var(--akzent-h)}
 @media (hover:hover){.leise:hover{color:var(--tinte)}}
 .frage .richtigText{color:var(--gut)}
+/* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
+   Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */
+.frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1}
 .frage .fastText{color:var(--warn)}
 .frage .loesung{color:var(--akzent)}
 /* Der Nebenbei-Hinweis steht UNTER dem Haken, kleiner und leiser. */
