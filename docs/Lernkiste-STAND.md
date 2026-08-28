@@ -5,8 +5,8 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
-Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh- und der
-**Probenrunde**.
+Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-
+und der **Budgetrunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -21,20 +21,22 @@ npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
                     Antarktika, Städte
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 19 stehenden Gegenproben (Baum muss sauber sein)
+npm run proben      die 25 stehenden Gegenproben (Baum muss sauber sein,
+                    dauert rund zwölf Minuten, höchstens drei Runden alt)
+npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
 ```
 
 Die Kette, in dieser Reihenfolge:
 
 ```
-inhalt · topologie · beruehrung · marken · schrift · symbol · doku
-  → spielprobe → vergleich → bauen → passt → lesbarkeit → ziehen
+rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol · doku
+  → spielprobe → vergleich → bauen → budget → passt → lesbarkeit → ziehen
   → ansicht → pwa · offline → smoke
 ```
 
-**Die Torkette ist grün.** Fünfzehn Prüfungen — und seit `npm run proben`
-ist „mit Gegenprobe belegt" keine Behauptung mehr, sondern ein Lauf:
-**19 Gegenproben, alle schlagen an.**
+**Die Torkette ist grün.** Siebzehn Prüfungen — und „mit Gegenprobe belegt"
+ist keine Behauptung mehr, sondern ein Lauf: **25 Gegenproben, alle schlagen
+an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 ---
 
@@ -877,6 +879,117 @@ Zwei Deckungsprüfungen, beide aus dem Baum gelesen statt hingeschrieben:
   und alles bleibt grün.
 - **Hat jede der sieben Prüfungen in `inhalt.mjs` eine?** Die Liste wird aus
   der Datei selbst gelesen. Genau so ist `beruehrung` aufgefallen.
+
+---
+
+## Die Budgetrunde
+
+Zwei Tore: eines, das die Größenzusagen hält, und eines, das dafür sorgt,
+dass die Gegenproben überhaupt noch gefahren werden.
+
+### `budget` — die Zusagen standen im Konzept, ohne dass sie jemand hielt
+
+Kapitel 8 des Konzepts nennt fünf Größengrenzen und schreibt hinter drei
+davon „Tor `budget`". Das Tor gab es nicht. Und die Startgröße ist hier
+schon zweimal unbemerkt gewandert — von 297 auf 537 KB, als fünf Kontinente
+verdrahtet wurden, und zurück auf 132, als sie nachgeladen statt eingebacken
+wurden. Beide Male hat es niemand *gemessen*, sondern jemand *gemerkt*.
+
+**Die Grenzen stehen nicht im Tor, sie werden aus dem Konzept gelesen.** Zwei
+Zahlen an zwei Orten veralten getrennt voneinander: die eine wird gepflegt,
+die andere gilt, und niemand sieht den Unterschied.
+
+### Der erste Lauf fand eine echte Überschreitung
+
+| | vorher | jetzt | Zusage |
+|---|---|---|---|
+| Startbündel gesamt | 194,0 KB | **138,2 KB** | < 400 |
+| davon Geometrie | **94,8 KB** | **38,7 KB** | < 90 |
+| davon Schriften | 51,7 KB | 51,7 KB | < 60 |
+| größte nachgeladene Ebene | 107,4 KB | 107,4 KB | < 250 |
+
+94,8 gegen 90 — fünf Prozent drüber. Und aufgeschlüsselt lag der Grund
+offen: **56 der 94 KB waren Deutschland**, gebraucht für *zwei von sechzehn*
+Ebenen. Ein Kind, das Kontinente übt, hatte sechzehn Bundesländer im
+Gepäck.
+
+Deutschland hängt jetzt in derselben Nachladestrecke wie die Länder.
+Herausgenommen wird nur `pfad` — Name, Hauptstadt, Anker, Ort und
+Stadtstaat-Kennzeichen bleiben im Startbündel, zusammen unter einem
+Kilobyte, weil die Ebenenwahl den Fortschritt ausrechnet, bevor eine Ebene
+offen ist. Ersetzt wird **eintragsweise**, nicht als neue Liste: sonst
+blieben die Verweise, die anderswo längst auf die alten Einträge zeigen, ohne
+Umriss zurück.
+
+**Die Messstelle, weil die Zahl sonst nichts bedeutet:** gemessen wird der
+*Anteil* der Geometrie, nicht ihre Summe — also gzip(Seite) minus
+gzip(dieselbe Seite mit leeren Pfaden). Der erste Anlauf packte die Umrisse
+für sich allein und kam auf 91,7 KB. Das ist die Größe, die sie *hätten*,
+nicht die, die sie in der Seite *kosten*.
+
+### Und eine Ratsche unterhalb der Grenze
+
+Zwischen 138 und 400 KB liegt viel Platz. Eine Zahl, die sich in acht Runden
+verdoppelt, ohne je anzuschlagen, ist genau der Verfall, den keine Grenze
+fängt. Der festgehaltene Stand (`tor/budget-stand.json`) meldet deshalb
+jedes Wachstum über 5 % — nicht als Verbot, sondern als Frage: war das
+Absicht? Neu festhalten mit `npm run budget -- --neu`, von Hand, so wie die
+Vorbilder in `ansicht`.
+
+### `rhythmus` — eine Regel, die nur dasteht, wird gebrochen
+
+`npm run proben` dauert rund zwölf Minuten. Zu lang für jede Runde, zu kurz,
+um es sich zu sparen. Also braucht es einen Rhythmus — und der darf nicht in
+einem Dokument stehen, sondern muss erzwungen sein. Dieses Verzeichnis hatte
+schon einmal 61 Fassungen lang eine falsche Zahl im Stand, ohne dass es
+jemandem auffiel.
+
+`rhythmus` steht **vorn in der Kette**, kostet Millisekunden und schlägt an,
+wenn der letzte volle Probenlauf mehr als **drei Runden** zurückliegt.
+Gezählt werden nur Commits, die Code anfassen — wer eine Zeile im Konzept
+ändert, verbraucht keine Frist.
+
+Es prüft außerdem zwei Dinge, über die das Datum nichts sagt: ob **so viele
+Proben** im Baum stehen wie festgehalten (wer eine dazuschreibt, hat einen
+anderen Lauf vor sich), und ob **alle Tore der Kette** schon beim letzten
+Lauf dabei waren.
+
+Drei Fallen, die dabei zu umgehen waren:
+
+- **Ohne Historie kann es nichts zählen.** `actions/checkout` holt
+  voreingestellt nur den letzten Commit. Der Ablauf fährt jetzt
+  `fetch-depth: 0`, und fehlt die Historie trotzdem, sagt es das laut,
+  statt sich zu überspringen.
+- **Gezählt wird ab der Standdatei, nicht ab dem notierten Commit.** Das
+  kostete einen Anlauf: `proben` läuft *vor* dem Commit (der Baum muss
+  sauber sein) und notiert sich den damaligen Kopf. Wird die Runde danach
+  zusammengefasst, gibt es diesen Commit nicht mehr — lokal findet `git` ihn
+  noch im Objektspeicher, auf dem Runner nach einem frischen Klon nicht. Das
+  Tor wäre genau dort rot geworden, wo alles in Ordnung ist. Die Standdatei
+  dagegen steht immer in der Historie.
+- **Ein abgebrochener Probenlauf soll nicht durchwinken.** Der Stand trägt
+  `lauf: vollständig`; alles andere ist rot.
+- **Henne und Ei.** Zwei Proben prüfen, ob `rhythmus` einen veralteten Stand
+  erkennt — und brauchen dafür einen Stand, den erst dieser Lauf erzeugt.
+  Aufgelöst wird das **einmal und laut**: beim Erstlauf werden die beiden
+  übersprungen, es steht in der Ausgabe, und weil danach ein Stand
+  existiert, kann der Fall nie wieder eintreten. Was nicht passiert: sie
+  stillschweigend überspringen — das ist genau die Lücke, die dieses
+  Werkzeug aufdecken soll.
+
+### Sechs neue Gegenproben, zwei davon lehrreich
+
+25 stehende Proben, alle schlagen an. Alle vier Fehlerpfade von `rhythmus`
+sind belegt — auch „der Lauf liegt zu lange zurück", und das ging nicht
+ohne Weiteres: *wie lange* er zurückliegt, steht in der Historie und nicht
+in einer Datei, die man anfassen kann. Das Tor hat dafür eine Schraube
+bekommen, die nur **strenger** stellen kann (`Math.min`) — eine, die auch
+lockern könnte, wäre ein Schalter zum Abstellen des Tors, und der hat in
+einer Kette nichts verloren. Die Füllung für „die Seite wächst
+unbemerkt" musste beim zweiten Anlauf **unkomprimierbar** werden: 40 000
+gleiche Buchstaben schrumpfen im Packer auf ein paar Dutzend Byte, und die
+Probe wäre an der Grenze gescheitert, ohne dass jemand den Grund gesehen
+hätte. Gemessen wird gzip — also muss die Füllung wie Rauschen aussehen.
 
 ---
 

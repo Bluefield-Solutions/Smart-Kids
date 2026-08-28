@@ -30,7 +30,16 @@ jobs:
     name: Torkette
     runs-on: ubuntu-latest
     steps:
+      # Die ganze Historie, nicht nur der letzte Commit.
+      #
+      # `rhythmus` zaehlt, wieviele Runden seit dem letzten vollen
+      # Probenlauf ins Verzeichnis gegangen sind. In einem flachen Klon gibt
+      # es den festgehaltenen Commit nicht, und das Tor kann nichts zaehlen.
+      # Es meldet das dann laut und faellt durch - richtig so, aber
+      # vermeidbar: der Baum hat ein paar Dutzend Commits.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

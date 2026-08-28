@@ -26,6 +26,7 @@ import path from 'node:path';
 import { execFileSync, execSync } from 'node:child_process';
 
 const NUR = process.argv.slice(2).filter(a => !a.startsWith('-'));
+const STAND = 'tor/proben-stand.json';
 const LAUT = process.argv.includes('--laut');
 
 /* ---------------------------------------------------------------------- *
@@ -39,6 +40,18 @@ const LAUT = process.argv.includes('--laut');
  * `sagt`     ein Stueck der Meldung, die das Tor bringen soll
  * ---------------------------------------------------------------------- */
 const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inhalt/erdkunde.js';
+/** Rauschen, das kein Packer kleinbekommt - aber bei jedem Lauf dasselbe. */
+function rauschen(n) {
+  const z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let x = 1234567, aus = '';
+  for (let i = 0; i < n; i++) { x = (x * 1103515245 + 12345) & 0x7fffffff;
+    aus += z[(x >>> 7) % z.length]; }
+  return aus;
+}
+
+/** Der aelteste Commit im Baum - weiter zurueck geht es nicht. */
+const wurzelCommit = () => execSync('git rev-list --max-parents=0 HEAD', { encoding:'utf8' })
+  .trim().split('\n')[0];
 const DIST = { datei: 'dist/index.html' };
 
 const PROBEN = [
@@ -119,6 +132,54 @@ const PROBEN = [
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },
 
+  /* --- budget ------------------------------------------------------- */
+  // Die Grenze steht im Konzept, nicht im Tor - also wird sie dort gedreht.
+  // Das prueft zugleich, dass das Tor sie wirklich VON DORT liest und nicht
+  // insgeheim eine eigene Zahl mitbringt.
+  { n:'das Startbündel überschreitet seine Grenze', tor:'budget', bauen:true,
+    datei:'docs/Lernkiste-KONZEPT.md',
+    such:'| **Startbündel** gesamt, gzip | **< 400 KB** |',
+    ersatz:'| **Startbündel** gesamt, gzip | **< 100 KB** |',
+    an:{ datei:'docs/Lernkiste-KONZEPT.md', text:'**< 100 KB**' },
+    sagt:'erlaubt sind 100' },
+  // Und die Ratsche: waechst etwas um mehr als 5 %, ohne dass jemand
+  // hingesehen hat, ist das eine Frage - auch weit unterhalb der Grenze.
+  //
+  // Die Fuellung muss UNKOMPRIMIERBAR sein: 40 000 gleiche Buchstaben
+  // schrumpfen im Packer auf ein paar Dutzend Byte, und die Probe waere an
+  // der Grenze gescheitert, ohne dass jemand den Grund gesehen haette.
+  // Gemessen wird gzip, also muss die Fuellung wie Rauschen aussehen.
+  { n:'die Seite wächst unbemerkt', tor:'budget', bauen:true, datei:D,
+    such:"const LOB = [", ersatz:"const FUELL = '" + rauschen(24000) + "';\nconst LOB = [",
+    an:{ ...DIST, text:'const FUELL' }, sagt:'gewachsen' },
+
+  /* --- rhythmus ----------------------------------------------------- */
+  // Wie lange der Lauf zurueckliegt, steht in der HISTORIE - an einer Datei
+  // ist das nicht zu drehen. Deshalb bekommt das Tor eine Schraube, die nur
+  // strenger stellen kann: bei -1 ist jeder Stand zu alt.
+  { n:'der letzte Probenlauf liegt zu lange zurück', tor:'rhythmus', brauchtStand:true,
+    umgebung:{ SMARTKIDS_RHYTHMUS_MAX:'-1' },
+    datei:'tor/proben-stand.json',
+    suchRegex:/"zeit": "([\d-]+)"/, ersatzFn:(m)=>`"zeit": "${m[1]}"`,   // unveraendert
+    an:{ datei:'tor/proben-stand.json', regex:/"zeit": "[\d-]+"/ },
+    sagt:'Runden zurück' },
+  { n:'ein abgebrochener Probenlauf winkt durch', tor:'rhythmus', brauchtStand:true,
+    datei:'tor/proben-stand.json',
+    such:'"lauf": "vollständig"', ersatz:'"lauf": "abgebrochen"',
+    an:{ datei:'tor/proben-stand.json', text:'"lauf": "abgebrochen"' },
+    sagt:'nicht durchgelaufen' },
+  { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus',
+    brauchtStand:true, datei:'package.json',
+    such:'npm run rhythmus && npm run inhalt',
+    ersatz:'npm run rhythmus && npm run neuestor && npm run inhalt',
+    an:{ datei:'package.json', text:'npm run neuestor' },
+    sagt:'noch nicht in der Kette' },
+  { n:'eine Probe kam dazu, ohne dass geprobt wurde', tor:'rhythmus', brauchtStand:true,
+    datei:'tor/proben-stand.json',
+    suchRegex:/"proben": \d+/, ersatzFn:()=>'"proben": 1',
+    an:{ datei:'tor/proben-stand.json', text:'"proben": 1' },
+    sagt:'ein anderer' },
+
   /* --- ziehen (fünf) ------------------------------------------------ */
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 0;',
@@ -172,10 +233,11 @@ if (schmutzig && !process.argv.includes('--trotzdem')) {
   process.exit(2);
 }
 
-const lauf = (befehl) => {
+const lauf = (befehl, umgebung) => {
   try {
     return { code:0, aus: execFileSync('npm', ['run', befehl],
-      { encoding:'utf8', stdio:['ignore','pipe','pipe'] }) };
+      { encoding:'utf8', stdio:['ignore','pipe','pipe'],
+        env: umgebung ? { ...process.env, ...umgebung } : process.env }) };
   } catch (e) {
     return { code: e.status ?? 1, aus: (e.stdout || '') + (e.stderr || '') };
   }
@@ -195,11 +257,38 @@ const wiederherstellen = (gebaut) => {
   if (gebaut) execFileSync('npm', ['run', 'bauen'], { stdio:'ignore' });
 };
 
-const auswahl = NUR.length
-  ? PROBEN.filter(p => NUR.some(n => p.tor === n || p.n.includes(n)))
-  : PROBEN;
+/**
+ * Der Erstlauf.
+ *
+ * Zwei Proben pruefen, ob `rhythmus` einen VERALTETEN Stand erkennt - und
+ * dafuer muss es einen Stand geben. Beim allerersten Lauf gibt es keinen,
+ * und den erzeugt genau dieser Lauf. Ein Henne-Ei.
+ *
+ * Aufgeloest wird es EINMAL und laut: die beiden Proben werden uebersprungen,
+ * es steht in der Ausgabe, und weil danach ein Stand existiert, kann dieser
+ * Fall nie wieder eintreten. Was hier NICHT passiert: sie stillschweigend
+ * ueberspringen. Ein uebersprungener Test, den niemand meldet, ist genau die
+ * Sorte Luecke, die dieses Werkzeug aufdecken soll.
+ */
+const vollerLauf = NUR.length === 0;
+const erstlauf = !fs.existsSync(STAND);
+if (vollerLauf && erstlauf) {
+  console.log('  ERSTLAUF: es gibt noch keinen festgehaltenen Stand. Die beiden Proben,');
+  console.log('  die einen brauchen, werden übersprungen — der nächste Lauf prüft sie.\n');
+}
 
-console.log(`\n  proben — ${auswahl.length} stehende Gegenproben\n`);
+const auswahl = (NUR.length
+  ? PROBEN.filter(p => NUR.some(n => p.tor === n || p.n.includes(n)))
+  : PROBEN).filter(p => !(p.brauchtStand && !fs.existsSync(STAND)));
+
+console.log(`\n  proben — ${auswahl.length} stehende Gegenproben`
+  + (vollerLauf ? '' : '  (Auswahl — schreibt keinen Stand)') + '\n');
+
+/* Beim allerersten Lauf gibt es die Standdatei noch nicht, und zwei Proben
+ * brauchen sie zum Anfassen. Sie wird deshalb hier angelegt - ausdruecklich
+ * als UNVOLLSTAENDIG. `rhythmus` erkennt das und bleibt rot, bis ein Lauf
+ * wirklich durchgegangen ist. Ein halber Probenlauf soll die Kette
+ * aufhalten, nicht sie durchwinken. */
 
 let ok = 0, blind = 0, nichtAngekommen = 0;
 const befunde = [];
@@ -255,7 +344,7 @@ for (const p of auswahl) {
   }
 
   /* --- Schlägt das Tor an? ---------------------------------------- */
-  const r = lauf(p.tor);
+  const r = lauf(p.tor, p.umgebung);
   wiederherstellen(p.bauen);
 
   if (r.code === 0) {
@@ -318,4 +407,29 @@ console.log(`\n  ${ok} schlagen an, ${blind} beweisen nichts, `
   + `${nichtAngekommen} kamen nicht an.\n`);
 for (const b of befunde) console.log(`  ✗ ${b}`);
 if (befunde.length) { console.log(''); process.exit(1); }
-console.log(`  proben grün: jedes Tor der Kette hat eine Gegenprobe, und jede schlägt an.\n`);
+/* --- Den Lauf festhalten ----------------------------------------------
+ *
+ * Nur bei einem sauber gruenen Lauf. Die Datei ist die einzige Stelle, an
+ * der spaeter noch steht, DASS geprobt wurde - `npm run rhythmus` liest sie
+ * und schlaegt an, wenn der letzte volle Lauf zu lange zurueckliegt.
+ *
+ * Warum das noetig ist: eine Regel, die nur in einem Dokument steht, wird
+ * gebrochen. In Towerfront hat genau das sechsmal eine Runde gekostet, und
+ * dort steht sie seit Fassung 40 in der ersten Datei, die jede Sitzung
+ * liest.
+ */
+console.log(`  proben grün: jedes Tor der Kette hat eine Gegenprobe, und jede schlägt an.`);
+if (!vollerLauf) {
+  console.log(`  Nur eine Auswahl gelaufen — ${STAND} bleibt, wie er war.\n`);
+  process.exit(0);
+}
+const kopf = execSync('git rev-parse HEAD', { encoding:'utf8' }).trim();
+fs.writeFileSync(STAND, JSON.stringify({
+  zeit: new Date().toISOString().slice(0, 10),
+  fassung: kopf,
+  proben: PROBEN.length,
+  tore: [...new Set(PROBEN.map(p => p.tor))].sort(),
+  unterTore: unterTore.sort(),
+  lauf: 'vollständig',
+}, null, 2) + '\n');
+console.log(`  Festgehalten in ${STAND} auf ${kopf.slice(0, 7)}.\n`);

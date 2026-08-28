@@ -152,6 +152,21 @@ const HEX = { grund: '#f6f3ee', tinte: '#1b2835' };
 function teilen(D) {
   const leicht = { ...D, laender: {}, umgebung: {}, nachladen: true };
   const teile = {};
+
+  // Deutschland gehoert genauso nachgeladen wie die Laender.
+  //
+  // Gemessen vom Tor `budget`: die eingebackene Geometrie lag bei 94,8 KB
+  // gegen 90 KB, die das Konzept zusagt - und **56 davon waren
+  // Deutschland**, gebraucht fuer zwei von sechzehn Ebenen. Ein Kind, das
+  // Kontinente uebt, hat sechzehn Bundeslaender im Gepaeck.
+  //
+  // Herausgenommen wird NUR `pfad`. Der Rest - Name, Hauptstadt, Anker,
+  // Ort, Stadtstaat - ist zusammen unter einem Kilobyte und wird frueh
+  // gebraucht: die Ebenenwahl rechnet den Fortschritt aus, bevor eine
+  // Ebene offen ist.
+  teile.deutschland = { deutschland: D.deutschland, vbD: D.vbD };
+  leicht.deutschland = D.deutschland.map(({ pfad, ...rest }) => rest);
+
   for (const k of Object.keys(D.laender)) {
     teile[k] = { laender: D.laender[k], umgebung: D.umgebung[k], vbL: D.vbL[k] };
     // Ein leichtes Verzeichnis bleibt drin: die Ebenenwahl rechnet den
@@ -214,7 +229,8 @@ const kopf = [
 const { leicht, teile } = teilen(D);
 fs.mkdirSync(new URL('daten/', DIST), { recursive: true });
 for (const [k, t] of Object.entries(teile))
-  fs.writeFileSync(new URL(`daten/laender-${k}.json`, DIST), JSON.stringify(t));
+  fs.writeFileSync(new URL(`daten/${k === 'deutschland' ? k : 'laender-' + k}.json`, DIST),
+    JSON.stringify(t));
 
 const verteilt = bauen(kopf, leicht).replace('</body></html>',
   `<script>
@@ -264,7 +280,7 @@ const vorrat = ['./', './index.html', './manifest.webmanifest', './schrift.css',
   ...schriftDateien.map(f => `./schrift/${f}`),
   // Die nachgeladenen Ebenen gehoeren ins Lager, sonst ist die App ohne
   // Netz zwar da, aber ohne Laenderkarten.
-  ...Object.keys(teile).map(k => `./daten/laender-${k}.json`)];
+  ...Object.keys(teile).map(k => `./daten/${k === 'deutschland' ? k : 'laender-' + k}.json`)];
 fs.writeFileSync(new URL('sw.js', DIST),
   fs.readFileSync(new URL('./pwa/sw.js', import.meta.url), 'utf8')
     .replace('__FASSUNG__', BAU.fassung + '-' + BAU.datum.replace(/[^0-9]/g, ''))

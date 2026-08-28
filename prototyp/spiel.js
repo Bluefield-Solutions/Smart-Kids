@@ -339,7 +339,28 @@ function keimAus(text){
 const geholt = new Set();
 async function ebeneLaden(ebeneId){
   const [art, kont] = ebeneId.split(':');
-  if (art!=='laender' || !D.nachladen || geholt.has(kont)) return true;
+  if (!D.nachladen) return true;
+
+  // Deutschland liegt seit dem Tor `budget` ebenfalls draussen: 56 der 94 KB
+  // eingebackener Geometrie gehoerten ihm, gebraucht fuer zwei von sechzehn
+  // Ebenen. Beide holen dieselbe Datei; die zweite kommt aus dem Lager.
+  if (art==='bundeslaender' || art==='hauptstaedte') {
+    if (geholt.has('deutschland')) return true;
+    try {
+      const t = await (await fetch('./daten/deutschland.json')).json();
+      // Ersetzt wird EINTRAGSWEISE, nicht die ganze Liste: der leichte
+      // Stand haelt Name, Anker und Ort, und irgendwo steht laengst ein
+      // Verweis darauf (NAMEN, die Ebenenwahl). Eine neue Liste liesse die
+      // alten Eintraege ohne Umriss zurueck.
+      const nach = new Map(t.deutschland.map(b => [b.id, b]));
+      for (const b of D.deutschland) Object.assign(b, nach.get(b.id));
+      D.vbD = t.vbD;
+      geholt.add('deutschland');
+      return true;
+    } catch(e){ return false; }
+  }
+
+  if (art!=='laender' || geholt.has(kont)) return true;
   try {
     const t = await (await fetch(`./daten/laender-${kont}.json`)).json();
     D.laender[kont] = t.laender; D.umgebung[kont] = t.umgebung; D.vbL[kont] = t.vbL;

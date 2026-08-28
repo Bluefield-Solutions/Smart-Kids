@@ -1,0 +1,28 @@
+{
+  "zeit": "2026-08-28",
+  "fassung": "a1e5f0c0c93619b4045309dd1306fb1aaf863513",
+  "proben": 25,
+  "tore": [
+    "ansicht",
+    "budget",
+    "inhalt",
+    "lesbarkeit",
+    "passt",
+    "pwa",
+    "rhythmus",
+    "smoke",
+    "spielprobe",
+    "vergleich",
+    "ziehen"
+  ],
+  "unterTore": [
+    "beruehrung",
+    "doku",
+    "inhalt",
+    "marken",
+    "schrift",
+    "symbol",
+    "topologie"
+  ],
+  "lauf": "vollständig"
+}
