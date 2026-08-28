@@ -28,6 +28,7 @@ import { execFileSync, execSync } from 'node:child_process';
 const NUR = process.argv.slice(2).filter(a => !a.startsWith('-'));
 const STAND = 'tor/proben-stand.json';
 const LAUT = process.argv.includes('--laut');
+const GEAENDERT = process.argv.includes('--geaendert');
 
 /* ---------------------------------------------------------------------- *
  * Die Proben.
@@ -130,6 +131,33 @@ const PROBEN = [
     ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `spielprobe`' },
     sagt:'Tore der Kette nicht' },
+
+  // Die Vorschau verschweigt ein Tor, das sie nicht faehrt. Der gefaehrlichste
+  // Fall an der ganzen Abkuerzung: wer eine Vorschau ansieht, in der `smoke`
+  // nicht genannt ist, haelt sie fuer durchgespielt.
+  { n:'die Vorschau verschweigt ein Tor, das sie nicht fährt', tor:'inhalt', deckt:'doku',
+    datei:'.github/workflows/vorschau.yml',
+    such:'#     smoke        spielt die App wirklich durch',
+    ersatz:'#',
+    an:{ datei:'.github/workflows/vorschau.yml', fehlt:'smoke        spielt' },
+    sagt:'verschweigt' },
+
+  // Und der Fall darunter: die Vorschau laeuft auf `main`. Dann geht
+  // Ungeprueftes dorthin, wo die Kinder spielen.
+  { n:'die Vorschau läuft auf main', tor:'inhalt', deckt:'doku',
+    datei:'.github/workflows/vorschau.yml',
+    such:'    branches: [vorschau]', ersatz:'    branches: [vorschau, main]',
+    an:{ datei:'.github/workflows/vorschau.yml', text:'[vorschau, main]' },
+    sagt:'läuft auf `main`' },
+
+  /* --- pwa: der Lagername ------------------------------------------- */
+  // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
+  // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.
+  { n:'der Lagername vergisst den Ort', tor:'pwa', bauen:true, datei:'prototyp/pwa/sw.js',
+    such:"const SIPPE = 'smart-kids' + new URL('./', self.location).pathname.replace(/\\//g, '-');",
+    ersatz:"const SIPPE = 'smart-kids-';",
+    an:{ datei:'prototyp/pwa/sw.js', text:"const SIPPE = 'smart-kids-';" },
+    sagt:'self.location' },
 
   /* --- spielprobe --------------------------------------------------- */
   // Nicht "einen Alias aus den Daten nehmen" - das ist eine erlaubte
@@ -496,16 +524,87 @@ const wiederherstellen = (gebaut) => {
  * ueberspringen. Ein uebersprungener Test, den niemand meldet, ist genau die
  * Sorte Luecke, die dieses Werkzeug aufdecken soll.
  */
-const vollerLauf = NUR.length === 0;
+/* Ein Lauf ist nur dann VOLL, wenn wirklich jede Probe gefahren wurde.
+ *
+ * `--geaendert` gehoert deshalb hierher, nicht nur in die Auswahl: schriebe
+ * die Abkuerzung den Stand fort, waere `rhythmus` gruen, ohne dass je ein
+ * vollstaendiger Beweis stattgefunden haette - und die Regel „alle drei
+ * Runden" waere still ausgehebelt. Genau die Sorte Loch, die dieses
+ * Werkzeug aufdecken soll. */
+const vollerLauf = NUR.length === 0 && !GEAENDERT;
 const erstlauf = !fs.existsSync(STAND);
 if (vollerLauf && erstlauf) {
   console.log('  ERSTLAUF: es gibt noch keinen festgehaltenen Stand. Die beiden Proben,');
   console.log('  die einen brauchen, werden übersprungen — der nächste Lauf prüft sie.\n');
 }
 
+/**
+ * `--geaendert`: nur die Proben, die sich ueberhaupt geaendert haben KOENNEN.
+ *
+ * Der volle Lauf dauert 35,6 Minuten, davon 30 im Rauchtest. In einer Runde,
+ * die zwei Dateien anfasst, haben aber die meisten Proben nichts zu pruefen,
+ * was sich geaendert haette. Gefahren wird deshalb eine Probe, wenn
+ *
+ *   - die Datei, in die sie eingreift, seit dem letzten vollen Lauf
+ *     angefasst wurde, ODER
+ *   - das Tor, das sie fahrt, selbst angefasst wurde (auch als Unter-Tor:
+ *     `inhalt.mjs` traegt sieben).
+ *
+ * Die Grundlinie ist der Commit, der im Stand steht - also genau „was ist
+ * seit dem letzten vollstaendigen Beweis passiert".
+ *
+ * WAS DAS NICHT FAENGT, und das ist der Preis: die mittelbare Kopplung. Wer
+ * `prototyp/spiel.js` aendert, kann eine Probe brechen, die in
+ * `src/marken/marken.css` eingreift - der Rauchtest verhaelt sich dann
+ * anders, und der Eingriff kommt zwar an, das Tor meldet aber etwas
+ * anderes. Genau dafuer bleibt der volle Lauf alle drei Runden Pflicht;
+ * `rhythmus` setzt ihn durch, und diese Abkuerzung schreibt deshalb KEINEN
+ * Stand. Eine Abkuerzung, die den vollen Lauf ersetzen koennte, waere keine
+ * Abkuerzung, sondern ihr Ende.
+ */
+const seitDemStand = () => {
+  if (!fs.existsSync(STAND)) return null;
+  const basis = JSON.parse(fs.readFileSync(STAND, 'utf8')).fassung;
+  if (!basis) return null;
+  try {
+    return new Set(execSync(`git diff --name-only ${basis} HEAD`, { encoding:'utf8' })
+      .split('\n').map(x => x.trim()).filter(Boolean));
+  } catch (e) { return null; }
+};
+
+let geaendertGrund = '';
+let vorauswahl = PROBEN;
+if (GEAENDERT) {
+  const dateien = seitDemStand();
+  if (!dateien) {
+    console.log('\n  --geaendert braucht einen festgehaltenen Stand mit Commit und die');
+    console.log('  Historie dazu. Beides fehlt — es läuft der volle Satz.\n');
+  } else if (dateien.size === 0) {
+    console.log('\n  --geaendert: seit dem letzten vollen Lauf hat sich keine Datei');
+    console.log('  geändert. Es gibt nichts nachzuweisen.\n');
+    vorauswahl = [];
+    geaendertGrund = 'nichts geändert';
+  } else {
+    // Ein Tor gilt als angefasst, wenn seine Datei im Diff steht. Unter-Tore
+    // (`deckt`) haengen an derselben Datei wie ihr Traeger.
+    const torBeruehrt = (p) => dateien.has(`tor/${p.tor}.mjs`);
+    const dateiBeruehrt = (p) => {
+      const alle = [p.datei, ...(p.kopie || [])].filter(Boolean);
+      return alle.some(d => dateien.has(d));
+    };
+    vorauswahl = PROBEN.filter(p => torBeruehrt(p) || dateiBeruehrt(p));
+    geaendertGrund = `${dateien.size} geänderte Datei${dateien.size === 1 ? '' : 'en'}`;
+    console.log(`\n  --geaendert: ${dateien.size} Datei${dateien.size === 1 ? '' : 'en'} seit dem `
+      + `letzten vollen Lauf.`);
+    console.log(`  ${vorauswahl.length} von ${PROBEN.length} Proben greifen dort ein oder fahren`);
+    console.log('  ein Tor, das angefasst wurde. Der Rest kann sich nicht geändert haben —');
+    console.log('  ausser mittelbar, und dafür ist der volle Lauf alle drei Runden da.');
+  }
+}
+
 const auswahl = (NUR.length
-  ? PROBEN.filter(p => NUR.some(n => p.tor === n || p.n.includes(n)))
-  : PROBEN).filter(p => !(p.brauchtStand && !fs.existsSync(STAND)));
+  ? vorauswahl.filter(p => NUR.some(n => p.tor === n || p.n.includes(n)))
+  : vorauswahl).filter(p => !(p.brauchtStand && !fs.existsSync(STAND)));
 
 console.log(`\n  proben — ${auswahl.length} stehende Gegenproben`
   + (vollerLauf ? '' : '  (Auswahl — schreibt keinen Stand)') + '\n');

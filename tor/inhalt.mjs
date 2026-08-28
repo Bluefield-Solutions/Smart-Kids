@@ -616,6 +616,52 @@ if (!fs.existsSync(ANWEISUNG)) {
     if (!fehlt.length && !zuviel.length)
       console.log(`    Kette stimmt: ${echt.size} Tore in CLAUDE.md und in package.json`);
   }
+
+  /* Die Vorschau darf nicht zur Auslieferung werden.
+   *
+   * `vorschau.yml` fährt nur die Tore ohne Browser - das ist der ganze
+   * Sinn, anderthalb Minuten statt vier. Genau deshalb ist sie die
+   * gefährlichste Datei im Baum: eine Abkürzung, die man versehentlich
+   * nimmt, wäre keine Abkürzung, sondern das Ende der Torkette.
+   *
+   * Drei Zusagen werden hier festgehalten:
+   *   1. Die Auslieferung fährt weiterhin die VOLLE Kette.
+   *   2. Die Vorschau läuft nicht auf `main`.
+   *   3. Was sie NICHT prüft, steht in ihr drin - namentlich, jedes Tor.
+   *
+   * Die dritte ist die wichtigste und die, die sonst verrottet: kommt ein
+   * Tor dazu, fährt die Vorschau es nicht und verschweigt es. Wer dann
+   * eine Vorschau ansieht, hält sie für geprüft.
+   */
+  const AUSL = '.github/workflows/auslieferung.yml';
+  const VORS = '.github/workflows/vorschau.yml';
+  if (fs.existsSync(VORS)) {
+    const v = fs.readFileSync(VORS, 'utf8');
+    const a = fs.existsSync(AUSL) ? fs.readFileSync(AUSL, 'utf8') : '';
+    pruefe(/npm run tor:runner/.test(a),
+      `${AUSL} fährt nicht mehr die volle Kette (\`npm run tor:runner\`)`);
+    pruefe(!/branches:\s*\[[^\]]*\bmain\b/.test(v),
+      `${VORS} läuft auf \`main\` — dann geht Ungeprüftes dorthin, wo die Kinder spielen`);
+    pruefe(/--rolle=vorschau/.test(v) && /--rolle=haupt/.test(a),
+      'die beiden Abläufe stellen die Seite nicht mehr in ihren Rollen zusammen — '
+      + 'einer von beiden löscht die Hälfte des anderen');
+
+    // Welche Tore fährt die Vorschau wirklich? Aus ihr gelesen, nicht geraten.
+    const gefahren = new Set([...v.matchAll(/node tor\/([a-zäöüß-]+)\.mjs/g)].map(m => m[1]));
+    for (const t of [...gefahren]) {
+      const datei = `tor/${t}.mjs`;
+      if (!fs.existsSync(datei)) continue;
+      for (const m of fs.readFileSync(datei, 'utf8')
+        .matchAll(/console\.log\('\\n  Tor `([a-zäöüß-]+)`/g)) gefahren.add(m[1]);
+    }
+    const ungeprueft = [...echt].filter(t => t !== 'bauen' && !gefahren.has(t));
+    const verschwiegen = ungeprueft.filter(t => !new RegExp(`\\b${t}\\b`).test(v));
+    pruefe(verschwiegen.length === 0,
+      `${VORS} verschweigt ${verschwiegen.length} Tore, die sie nicht fährt: `
+      + `${verschwiegen.join(', ')} — wer die Vorschau ansieht, hält sie für geprüft`);
+    console.log(`    Vorschau: ${gefahren.size} Tore gefahren, `
+      + `${ungeprueft.length} ausdrücklich genannt und ausgelassen`);
+  }
 }
 
 /* ------------------------------------------------------------- Ergebnis */

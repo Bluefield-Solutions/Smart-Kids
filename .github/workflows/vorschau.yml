@@ -1,0 +1,84 @@
+# Vorschau-Auslieferung.
+#
+# Damit man etwas ANSEHEN kann, bevor es durch die volle Kette geht. Von
+# „mach das" bis „schau es dir an" rund anderthalb Minuten statt vier.
+#
+# Sie fährt NUR die Tore ohne Browser — inhalt (mit topologie, beruehrung,
+# marken, schrift, symbol, doku), spielprobe, vergleich, budget. Zusammen
+# unter drei Sekunden. Was fehlt, fehlt ausdrücklich:
+#
+#     rhythmus     ob die Gegenproben nicht veraltet sind
+#     passt        läuft nicht über den Rand
+#     lesbarkeit   Kontrast
+#     ziehen       Nachsicht beim Ziehen
+#     ansicht      Bildvergleich
+#     pwa/offline  startet ohne Netz
+#     smoke        spielt die App wirklich durch
+#
+# Eine Vorschau kann also auf dem Gerät kaputt sein. Deshalb steht unten
+# links das Wort „Vorschau" im Bild, und deshalb liegt sie unter /vorschau/
+# und nicht dort, wo die Kinder spielen.
+#
+# Diese Liste wird VERGLICHEN, nicht geglaubt: das Tor `doku` legt sie neben
+# die Kette in package.json und schlägt an, wenn ein Tor dazukommt, das hier
+# weder gefahren noch genannt ist. Beim ersten Lauf fehlte `rhythmus`.
+name: Vorschau
+
+on:
+  push:
+    branches: [vorschau]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Dieselbe Gruppe wie die Auslieferung: zwei Pages-Versände gleichzeitig
+# überschreiben einander. Nacheinander ist beides richtig, weil BEIDE
+# Abläufe beide Hälften zusammenstellen.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  vorschau:
+    name: Schnelle Tore
+    runs-on: ubuntu-latest
+    steps:
+      # Volle Historie: `seite-zusammenstellen.mjs` holt sich origin/main
+      # in einen Nebenbaum, damit das ausgelieferte Spiel unter / stehen
+      # bleibt. Ein flacher Klon hat den Zweig nicht.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # Kein `npx playwright install` — genau das ist die eingesparte
+      # Dreiviertelminute. Die Tore hier brauchen keinen Browser.
+      - name: Die schnellen Tore
+        run: |
+          node tor/inhalt.mjs
+          node tor/spielprobe.mjs
+          node tor/vergleich.mjs
+          node prototyp/bauen.mjs
+          node tor/budget.mjs
+      - name: Seite zusammenstellen (Vorschau + ausgeliefertes Spiel)
+        run: node tools/seite-zusammenstellen.mjs --rolle=vorschau
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: seite
+
+  ausliefern:
+    name: Nach Pages
+    needs: vorschau
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4

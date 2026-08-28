@@ -16,7 +16,17 @@
 //     Lager zuerst, ohne Umweg. Bei einer neuen Fassung heisst das Lager
 //     anders, und alles wird einmal neu geholt.
 const FASSUNG = '__FASSUNG__';
-const LAGER = 'smart-kids-' + FASSUNG;
+// Der Lagername traegt den ORT mit, an dem dieser Service Worker sitzt.
+//
+// Sonst raeumen zwei Installationen einander ab: `activate` loescht JEDES
+// Lager, das mit dem Namen anfaengt und nicht das eigene ist - und mit der
+// Vorschau unter /vorschau/ gibt es zum ersten Mal zwei. Wer die Vorschau
+// oeffnete, haette dem ausgelieferten Spiel den Offline-Vorrat geloescht,
+// und beim naechsten Start ohne Netz waere es nicht mehr da gewesen.
+// Cache Storage gilt je HERKUNFT, nicht je Geltungsbereich; der Name muss
+// den Unterschied also selbst tragen.
+const SIPPE = 'smart-kids' + new URL('./', self.location).pathname.replace(/\//g, '-');
+const LAGER = SIPPE + FASSUNG;
 const VORRAT = __VORRAT__;
 const ZU_LANGSAM = 2500;
 
@@ -29,7 +39,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
     for (const name of await caches.keys())
-      if (name.startsWith('smart-kids-') && name !== LAGER) await caches.delete(name);
+      if (name.startsWith(SIPPE) && name !== LAGER) await caches.delete(name);
     await self.clients.claim();
   })());
 });

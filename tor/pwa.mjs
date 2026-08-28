@@ -83,6 +83,33 @@ if (vorrat) {
   console.log(`    Service Worker: ${liste.length} Dateien im Vorrat, alle vorhanden`);
 } else pruefe(false, 'sw.js: VORRAT nicht gefunden');
 
+/* Der Lagername muss den ORT tragen, an dem der Service Worker sitzt.
+ *
+ * `activate` loescht JEDES Lager, dessen Name mit der eigenen Sippe
+ * anfaengt und nicht das eigene ist. Solange es nur eine Installation gab,
+ * war das richtig: aufraeumen, was von aelteren Fassungen uebrig ist. Mit
+ * der Vorschau unter /vorschau/ gibt es zum ersten Mal ZWEI, und Cache
+ * Storage gilt je Herkunft, nicht je Geltungsbereich. Ohne den Ort im Namen
+ * haette jeder Blick in die Vorschau dem ausgelieferten Spiel den
+ * Offline-Vorrat geloescht - und umgekehrt.
+ *
+ * WAS DAS HIER BEWEIST, und was nicht: geprueft wird die FORM des Namens,
+ * nicht seine Wirkung. Der Beweis waere, zwei Installationen an zwei Pfaden
+ * in denselben Browser zu setzen und nach der zweiten die erste ohne Netz
+ * zu starten. Das steht als offener Punkt im STAND; bis dahin faengt diese
+ * Pruefung wenigstens den Rueckfall auf einen festen Namen.
+ */
+{
+  const q = fs.readFileSync('prototyp/pwa/sw.js', 'utf8');
+  const sippe = q.match(/const SIPPE\s*=\s*([^;]+);/);
+  pruefe(!!sippe && /self\.location/.test(sippe[1]),
+    'sw.js leitet den Lagernamen nicht aus `self.location` ab — zwei Installationen '
+    + 'an zwei Pfaden räumen dann einander den Offline-Vorrat ab');
+  pruefe(/name\.startsWith\(SIPPE\)/.test(q),
+    'sw.js räumt nach einem anderen Namen auf als dem, den es selbst vergibt');
+  console.log('    Lagername trägt den Ort — zwei Installationen stören einander nicht');
+}
+
 /* ===================================================== Tor `offline` ==== */
 console.log('\n  Tor `offline`');
 

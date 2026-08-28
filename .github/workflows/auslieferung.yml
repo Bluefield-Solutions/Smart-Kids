@@ -64,9 +64,17 @@ jobs:
           name: abweichungen
           path: tor/abweichungen/
           if-no-files-found: ignore
+      # Die Vorschau wird MITGENOMMEN, nicht weggeräumt.
+      #
+      # Pages kennt eine Seite je Verzeichnis. Stellte nur der eine Ablauf
+      # zusammen, löschte jede Auslieferung die Vorschau, während jemand
+      # sie gerade ansieht - und jede Vorschau das ausgelieferte Spiel.
+      # Deshalb stellen BEIDE beide Hälften zusammen.
+      - name: Seite zusammenstellen (Spiel + Vorschau, falls es eine gibt)
+        run: node tools/seite-zusammenstellen.mjs --rolle=haupt
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: seite
 
   ausliefern:
     name: Nach Pages
