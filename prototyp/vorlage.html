@@ -46,6 +46,35 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Bundeslaendern. */
 .schirm:not(.da) *{pointer-events:none!important}
 
+/* Der Übergang von Aufgabe zu Aufgabe.
+   Zwei Bildschirme, die gleichzeitig ineinander blenden, ergeben zwischen
+   zwei Aufgaben derselben Ebene ein Blinzeln: die Karte ist identisch,
+   also sieht man nur, wie sie kurz dunkler wird. Was sich wirklich
+   ändert, sind Frage und Antworten - und die KOMMEN jetzt herein, leicht
+   von unten und nacheinander. Der gehende Bildschirm geht dafür schneller
+   (halbe Dauer), damit sich die beiden weniger überlagern.
+   Bewegt wird nur `opacity` und `transform`: beides kostet kein neues
+   Layout, und die Antwortliste steht auch währenddessen schon an ihrem
+   endgültigen Platz. */
+.schirm{transition-duration:calc(var(--d-schirm) / 2)}
+/* Das Neue wartet einen Takt.
+   Ohne den Versatz überlagern sich beide Bildschirme halbdurchsichtig:
+   auf dem Bild aus der Mitte des Übergangs standen die alte Lobzeile und
+   die neue Frage übereinander, und hinter der neuen Karte lag die alte
+   mit ihrem grün gefärbten Treffer. Ein Doppelbild ist nicht besser als
+   ein Blinzeln. Der gehende Bildschirm braucht `--d-schirm / 2`; genau so
+   lange wartet das Neue. */
+.schirm.da{transition-duration:var(--d-schirm);
+  transition-delay:calc(var(--d-schirm) / 2)}
+@keyframes herein{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.schirm.da .frage,
+.schirm.da .karte,
+.schirm.da .etikett,
+.schirm.da .eingabe{animation:herein var(--d-schirm) var(--k-standard) both;
+  animation-delay:calc(var(--d-schirm) / 2)}
+.schirm.da .etikett{animation-delay:calc(var(--d-schirm) / 2
+  + var(--rang, 0) * var(--d-staffel))}
+
 /* Drei Felder, festes Raster: die Mitte ist damit WIRKLICH mittig, egal
    wie breit links und rechts sind. `space-between` verteilte nur den
    Zwischenraum - "Fiona" sass bei 844 Punkten Breite auf 366 statt 422.

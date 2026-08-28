@@ -105,6 +105,7 @@
   /* --- Bewegung ------------------------------------------------------- */
   --d-tipp: 120ms; --d-zustand: 200ms; --d-schirm: 320ms; --d-belohnung: 500ms;
   --d-wackeln: 400ms;   /* das Nein eines abgelehnten Etiketts */
+  --d-staffel:  45ms;   /* Abstand, in dem die Antworten hereinkommen */
   --d-puls:   1500ms;   /* der Ring um das gesuchte Gebiet */
   --d-atmen:  2400ms;   /* der Hof um das Mikrofon */
   --k-standard: cubic-bezier(.2, 0, 0, 1);
@@ -127,7 +128,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   :root { --d-tipp: 1ms; --d-zustand: 1ms; --d-schirm: 1ms; --d-belohnung: 1ms;
-          --d-wackeln: 1ms; --d-puls: 1ms; --d-atmen: 1ms; }
+          --d-wackeln: 1ms; --d-puls: 1ms; --d-atmen: 1ms; --d-staffel: 0ms; }
   /* Die Marken allein reichen nicht: eine @keyframes-Animation mit fester
      Dauer hoert nicht auf sie. Deshalb zusaetzlich der grobe Hammer -
      er stand bisher in vorlage.html und damit ausserhalb des Systems. */

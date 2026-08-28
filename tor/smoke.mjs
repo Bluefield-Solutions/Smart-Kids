@@ -67,6 +67,38 @@ async function fahnePruefen(p, wo) {
   return f.art;
 }
 
+/**
+ * Wie stark ueberlagern sich zwei Bildschirme beim Wechsel?
+ *
+ * Der Wechsel von Aufgabe zu Aufgabe war ein Blinzeln: beide Bildschirme
+ * blendeten gleichzeitig, und weil die Karte dieselbe ist, sah man nur, wie
+ * sie kurz dunkler wurde. Der erste Anlauf machte daraus ein DOPPELBILD -
+ * auf einem Bild aus der Mitte des Uebergangs standen die alte Lobzeile und
+ * die neue Frage uebereinander, und hinter der neuen Karte lag die alte mit
+ * ihrem gruen gefaerbten Treffer.
+ *
+ * Gesehen hat das ein Auge, kein Tor. Gemessen wird es jetzt: waehrend des
+ * ganzen Wechsels darf nie mehr als EIN Bildschirm deutlich sichtbar sein.
+ * Der schwaechere der beiden ist das Mass - liegt er hoch, sieht man beide.
+ */
+async function ueberblendungMessen(p) {
+  return p.evaluate(() => new Promise(ja => {
+    let schlimmste = 0;
+    const bis = performance.now() + 1500;   // der Wechsel kommt 1600 ms nach der Antwort,
+                                            // gemessen wird ab rund 800 ms danach
+    const tick = () => {
+      const s = [...document.querySelectorAll('#buehne .schirm')];
+      if (s.length > 1) {
+        const o = s.map(x => +getComputedStyle(x).opacity).sort((a, b) => b - a);
+        schlimmste = Math.max(schlimmste, Math.min(o[0], o[1]));
+      }
+      if (performance.now() < bis) requestAnimationFrame(tick); else ja(schlimmste);
+    };
+    requestAnimationFrame(tick);
+  }));
+}
+let ueberblendung = null;
+
 /** Eine Aufgabe loesen: das passende Etikett auf den Anker des Ziels ziehen. */
 async function loese(p) {
   // Warten, bis der Bildschirmwechsel wirklich durch ist - sonst greift der
@@ -124,7 +156,12 @@ try {
       await p.waitForTimeout(700);
       const art = await fahnePruefen(p, geloest[geloest.length - 1]);
       if (art) fahnenArten.add(art);
-      await p.waitForTimeout(1100);
+      // Die Messung ersetzt die Wartezeit, sie kommt nicht dazu. Beim
+      // ersten Anlauf stand sie VOR der Fahnenpruefung, verbrauchte 2,6 s
+      // und ueberholte damit den Bildschirmwechsel - danach meldete das
+      // Tor „kein Name auf der Karte", obwohl der Name dagewesen war.
+      if (ueberblendung === null) ueberblendung = await ueberblendungMessen(p);
+      else await p.waitForTimeout(1100);
     }
     const nochmal = await p.$('.schirm.da #nochmal');
     if (nochmal) { await nochmal.click(); await p.waitForSelector('.schirm.da .karte svg'); }
@@ -389,6 +426,19 @@ console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, j
 await ctx.close(); await b.close(); server.close();
 
 console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`);
+// Der schwaechere der beiden Bildschirme, im schlimmsten Bild des Wechsels.
+// 0,20 laesst den Rand der Ueberblendung zu und faengt das Doppelbild:
+// blenden beide gleichzeitig, treffen sie sich bei etwa 0,5.
+const UEBERBLENDUNG_MAX = 0.20;
+console.log(`  Übergang zur nächsten:      zweiter Bildschirm höchstens `
+  + `${ueberblendung === null ? '—' : ueberblendung.toFixed(2)} sichtbar `
+  + `(erlaubt ${UEBERBLENDUNG_MAX})`);
+if (ueberblendung === null)
+  fehler.push('Der Übergang wurde nicht gemessen — die Prüfung lief nicht');
+else if (ueberblendung > UEBERBLENDUNG_MAX)
+  fehler.push(`Beim Wechsel sind beide Bildschirme gleichzeitig zu sehen `
+    + `(der schwächere bei ${ueberblendung.toFixed(2)}) — ein Doppelbild: `
+    + 'die alte Antwort steht über der neuen Frage');
 // Faellt die Entscheidung IMMER gleich aus, ist sie keine Messung, sondern
 // eine feste Einstellung - und der halbe Sinn der Fahne waere weg.
 if (fahnenArten.size < 2)

@@ -86,7 +86,28 @@ if (vorrat) {
 /* ===================================================== Tor `offline` ==== */
 console.log('\n  Tor `offline`');
 
+/**
+ * „Ohne Netz" wird am SERVER abgeschaltet, nicht im Browser.
+ *
+ * `context.setOffline(true)` deckt die Anfragen des Service Workers NICHT
+ * zuverlaessig ab. Nachgemessen mit einem mitschreibenden Server: waehrend
+ * der Kontext auf offline stand, hat der Server `/daten/deutschland.json`
+ * und `/sw.js` ausgeliefert - der Service Worker holte munter weiter, und
+ * das Tor meldete „ohne Netz kommt die App bis zu den Bundeslaendern".
+ *
+ * Aufgefallen ist es nur durch eine Gegenprobe: die Datei wurde aus dem
+ * Vorrat des Service Workers genommen, und das Tor blieb gruen. Genau der
+ * Fall, vor dem Regel 13 warnt - die Pruefung mass etwas anderes, das
+ * lauter war, und bezeugte die Sache, ohne sie je geprueft zu haben.
+ *
+ * Jetzt wird die Verbindung am Server ABGERISSEN, nicht hoeflich mit einem
+ * Fehlercode beantwortet: eine Antwort ist Netz, auch eine mit 503.
+ * `setOffline` bleibt trotzdem stehen - zwei Schloesser sind besser als
+ * eines, und im Browser sieht die App dann auch `navigator.onLine === false`.
+ */
+let netz = true;
 const server = http.createServer((q, a) => {
+  if (!netz) { q.socket.destroy(); return; }
   const f = path.join(DIST, q.url === '/' ? '/index.html' : q.url.split('?')[0]);
   if (!f.startsWith(DIST) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) {
     a.statusCode = 404; return a.end();
@@ -116,6 +137,24 @@ async function laeuft(ctx, bisEbene) {
       await p.waitForSelector(`.schirm.da [data-ebene="${bisEbene}"]`, { timeout: 8000 });
       await p.click(`.schirm.da [data-ebene="${bisEbene}"]`);
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
+      // Auf das ELEMENT zu warten reicht nicht.
+      //
+      // Die App baut ihre Pfade aus dem leichten Verzeichnis, das im
+      // Startbündel bleibt - Name, Anker, Ort, aber kein Umriss. Fehlt die
+      // nachgeladene Geometrie, steht `path.ziel` trotzdem da, nur mit
+      // leerem `d`. Die Karte ist unsichtbar und das Tor meldet grün.
+      //
+      // Gefunden hat das die Gegenprobe „Deutschland fehlt im Lager": sie
+      // nahm die Datei aus dem Vorrat, und hier blieb alles grün. Geprüft
+      // wird jetzt die FLÄCHE.
+      const flaeche = await p.evaluate(() => {
+        const z = document.querySelector('.schirm.da .karte svg path.ziel');
+        const b = z && z.getBBox ? z.getBBox() : null;
+        return b ? Math.min(b.width, b.height) : 0;
+      });
+      if (!(flaeche > 0)) throw new Error(
+        `die Karte ist leer — das gesuchte Gebiet hat keine Fläche `
+        + `(die nachgeladenen Umrisse fehlen)`);
     }
     // Nicht nur "die Seite kam" - auch die Schrift muss da sein, sonst
     // stuende das Kind vor einer App in Times New Roman.
@@ -142,14 +181,34 @@ pruefe(bereit, 'der Service Worker wurde nicht aktiv');
 await p.goto(ADRESSE, { waitUntil: 'load' });
 await p.close();
 
+netz = false;
 await ctx.setOffline(true);
-const ohneNetz = await laeuft(ctx, 'laender:asien');
-pruefe(ohneNetz.da, `ohne Netz kommt die App nicht bis zu einer nachgeladenen `
-  + `Länderebene: ${ohneNetz.grund || ''}`);
-pruefe(ohneNetz.schrift, 'ohne Netz fehlt die Schrift — sie liegt nicht im Lager');
+
+// ZWEI nachgeladene Ebenen, nicht eine.
+//
+// Bis zur Budgetrunde lag Deutschland eingebacken in der Seite - ohne Netz
+// war es also immer da, ganz gleich was der Service Worker tat. Seit es 56
+// von 94 KB Geometrie gespart hat, indem es nachgeladen wird, ist es
+// genauso auf das Lager angewiesen wie Asien. Eine Pruefung, die nur die
+// Laenderebenen abgeht, haette den Ausfall der halben App nicht bemerkt:
+// Bundeslaender und Hauptstaedte sind zwei von sechzehn Ebenen und die
+// beiden, um die es bei diesen Kindern eigentlich geht.
+const WEGE = [
+  { ebene: 'laender:asien',  wie: 'Länder in Asien' },
+  { ebene: 'bundeslaender',  wie: 'Bundesländer' },
+];
+const ohneNetz = { da: true, schrift: true, grund: '' };
+for (const w of WEGE) {
+  const r = await laeuft(ctx, w.ebene);
+  pruefe(r.da, `ohne Netz kommt die App nicht bis zur nachgeladenen Ebene `
+    + `„${w.wie}": ${r.grund || ''}`);
+  pruefe(r.schrift, `ohne Netz fehlt bei „${w.wie}" die Schrift — sie liegt nicht im Lager`);
+  console.log(`    Mit Lager, ohne Netz: ${r.da ? 'startet bis' : 'STARTET NICHT bis'} `
+    + `„${w.wie}", Schrift ${r.schrift ? 'da' : 'FEHLT'}`);
+  ohneNetz.da &&= r.da; ohneNetz.schrift &&= r.schrift;
+}
+netz = true;
 await ctx.setOffline(false);
-console.log(`    Mit Lager, ohne Netz: ${ohneNetz.da ? 'startet bis Ebene „Länder in Asien"' : 'STARTET NICHT'}`
-  + `, Schrift ${ohneNetz.schrift ? 'da' : 'FEHLT'}`);
 
 /* --- Gegenprobe: OHNE Service Worker muss dasselbe scheitern ---------- */
 //
@@ -160,8 +219,10 @@ const ohne = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE
 const p2 = await ohne.newPage({ viewport: { width: 844, height: 390 } });
 await p2.goto(ADRESSE, { waitUntil: 'load' });
 await p2.close();
+netz = false;
 await ohne.setOffline(true);
-const ohneSw = await laeuft(ohne, 'laender:asien');
+const ohneSw = await laeuft(ohne, 'bundeslaender');
+netz = true;
 pruefe(!ohneSw.da,
   'ohne Service Worker startet die App AUCH ohne Netz — dann misst das Tor '
   + 'den Browser-Cache und nicht den Service Worker');

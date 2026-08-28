@@ -5,8 +5,8 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
-Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-
-und der **Budgetrunde**.
+Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-,
+der Budget- und der **Übergangsrunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -21,8 +21,9 @@ npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
                     Antarktika, Städte
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 25 stehenden Gegenproben (Baum muss sauber sein,
-                    dauert rund zwölf Minuten, höchstens drei Runden alt)
+npm run proben      die 28 stehenden Gegenproben (Baum muss sauber sein,
+                    dauert 3,5 Minuten, höchstens drei Runden alt)
+                    `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
 ```
 
@@ -35,7 +36,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Siebzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **25 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **28 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 ---
@@ -990,6 +991,136 @@ unbemerkt" musste beim zweiten Anlauf **unkomprimierbar** werden: 40 000
 gleiche Buchstaben schrumpfen im Packer auf ein paar Dutzend Byte, und die
 Probe wäre an der Grenze gescheitert, ohne dass jemand den Grund gesehen
 hätte. Gemessen wird gzip — also muss die Füllung wie Rauschen aussehen.
+
+---
+
+## Die Übergangsrunde
+
+Drei Punkte, und zwei davon haben unterwegs Fehler in den **Toren**
+gefunden, nicht im Spiel.
+
+### Erst eine Korrektur an mir selbst
+
+Ich hatte geschrieben, `npm run proben` dauere zwölf Minuten. Gemessen sind
+es **4,8** — ich hatte die Wanduhr meiner ganzen Arbeit dafür gehalten. Der
+Lauf sagt jetzt selbst, wo die Zeit liegt:
+
+| Tor | vorher | jetzt |
+|---|---|---|
+| ziehen (5 Proben) | 129 s | **48 s** |
+| smoke | 79 s | 79 s |
+| passt | 29 s | 29 s |
+| ansicht | 25 s | 25 s |
+| *alle 27* | *4,8 min* | *3,5 min* |
+
+`ziehen` war der lohnende Posten: jede seiner fünf Proben fuhr das ganze Tor
+durch — zehn Wurfweiten, vier von oben, die Meersuche, das Antippen —,
+obwohl jede sich für genau einen Abschnitt interessierte. Es kennt jetzt
+`--nur=nachsicht,oben,meer,anzeige,tippen`. Voreingestellt läuft alles, und
+die Kette ruft es ohne Argument auf: eine Abkürzung, die man versehentlich
+nimmt, wäre keine.
+
+### Das Offline-Tor hat nur die halbe Wahrheit gemessen
+
+Deutschland wird seit der Budgetrunde nachgeladen. Also musste das
+Offline-Tor auch dorthin laufen, nicht nur bis „Länder in Asien". Die
+Gegenprobe dazu — Deutschland aus dem Vorrat des Service Workers nehmen —
+**blieb grün**. Zwei Befunde dahinter:
+
+**1. Auf ein Element zu warten ist nicht dasselbe wie eine Karte zu sehen.**
+Die App baut ihre Pfade aus dem leichten Verzeichnis, das im Startbündel
+bleibt: Name, Anker, Ort — aber kein Umriss. Fehlt die nachgeladene
+Geometrie, steht `path.ziel` trotzdem da, nur mit leerem `d`. Geprüft wird
+jetzt die **Fläche**.
+
+**2. `context.setOffline(true)` deckt den Service Worker nicht ab.** Mit
+einem mitschreibenden Server nachgemessen: während der Kontext auf offline
+stand, hat der Server `/daten/deutschland.json` und `/sw.js` ausgeliefert.
+Der Service Worker holte munter weiter — und das Tor meldete „ohne Netz
+kommt die App bis zu den Bundesländern". Genau der Fall, vor dem Regel 13
+warnt: die Prüfung maß etwas anderes, das lauter war.
+
+Das Netz wird jetzt am **Server** abgeschaltet, und zwar durch Abreißen der
+Verbindung, nicht durch einen Fehlercode — eine Antwort ist Netz, auch eine
+mit 503. `setOffline` bleibt daneben stehen: zwei Schlösser sind besser als
+eines, und im Browser sieht die App dann auch `navigator.onLine === false`.
+
+### Der Übergang von Aufgabe zu Aufgabe
+
+Es war kein harter Schnitt — eine 320-ms-Überblendung gab es schon. Nur
+blenden beide Bildschirme *gleichzeitig*, und weil die Karte zwischen zwei
+Aufgaben derselben Ebene identisch ist, sah man nur, wie sie kurz dunkler
+wird: ein **Blinzeln**.
+
+Jetzt kommt das Neue herein — Frage, Karte und Antworten steigen leicht von
+unten auf, die Antworten nacheinander im Abstand `--d-staffel` (45 ms). Das
+Auge folgt der Liste, statt vier Kästen gleichzeitig aufblitzen zu sehen.
+
+**Der erste Anlauf war schlechter als vorher.** Das Bild aus der Mitte des
+Übergangs zeigte ein **Doppelbild**: die alte Lobzeile stand über der neuen
+Frage, und hinter der neuen Karte lag die alte mit ihrem grün gefärbten
+Treffer. Der gehende Bildschirm braucht `--d-schirm / 2`; genau so lange
+wartet das Neue jetzt.
+
+Gesehen hat das ein Auge, kein Tor — deshalb misst der Rauchtest es jetzt:
+während des ganzen Wechsels darf nie mehr als **ein** Bildschirm deutlich
+sichtbar sein. Gemessen wird der schwächere der beiden im schlimmsten Bild;
+er liegt bei **0,00**, erlaubt sind 0,20. Blenden beide gleichzeitig,
+treffen sie sich bei etwa 0,5.
+
+Und noch eine Falle: die Messung stand zuerst *vor* der Fahnenprüfung,
+verbrauchte 2,6 s und überholte damit den Bildschirmwechsel — danach meldete
+das Tor „kein Name auf der Karte", obwohl der Name dagewesen war. Sie
+ersetzt jetzt die Wartezeit, statt dazuzukommen.
+
+### Und dann hat der Übergang das Ziehen kaputtgemacht
+
+Drei Aufnahmen wurden rot. Bei zweien war es wirklich nur Kantenglättung:
+die Geometrie ist auf den Zehntelpunkt identisch, und eine
+`animation`-Eigenschaft hebt ein Element auf eine eigene Ebene, wo Text
+anders geglättet wird. Byte-identisch bei drei Läufen, also kein Rennen.
+
+**Bei der dritten war es ein echter Regress, und ich habe ihn zuerst
+übersehen.** Ich habe den Befund von `spiel-lob` auf alle drei übertragen
+und die Vorbilder erneuert — mit dem Fehler drin. Aufgefallen ist es erst,
+als eine Gegenprobe grün blieb, die vorher angeschlagen hatte.
+
+Der Fehler: **eine CSS-Animation steht in der Kaskade über dem Inline-Stil**
+— auch wenn sie längst abgelaufen ist und nur noch ihren Endzustand hält
+(`both`). `herein` endet auf `transform: none`, und genau das ist die
+Eigenschaft, mit der das gezogene Schild am Finger hängt. Das Schild blieb
+in der Antwortliste stehen.
+
+Und es sah harmlos aus: das Ziel leuchtete richtig auf, weil die
+Umkreissuche am **Finger** hängt und nicht am Schild. Kein Tor hat es
+gesehen. Jetzt misst `ziehen` den **Abstand vom Finger** (19 px) und fragt
+direkt, was mitten unter dem Schild liegt — die Karte oder das Schild
+selbst.
+
+Zwei Anläufe dieser Prüfung waren daneben, beide aus demselben Grund: bei
+55 Punkten über Australiens Anker steht der Finger schon über Indonesien,
+und das gehört zu Asien. Eine Reihe, die so weit misst, misst einen
+Nachbarn statt das Schild — dieselbe Falle wie beim Deckel der Nachsicht.
+
+### `proben` hat nie gefragt, ob das Tor vorher grün war
+
+Genau daran ist die Probe vorbeigelaufen: sie meldete „schlägt an", während
+das Tor in **beiden** Zuständen dieselbe Zeile schrieb. „Schlägt an" heißt
+seither wirklich, was es sagt — vor jedem Urteil wird das Tor einmal ohne
+Eingriff gefahren.
+
+Das kostet ungefähr einen Kettenlauf, aber nur dort, wo es zählt: gefragt
+wird erst, **nachdem** das Tor unter dem Eingriff rot war. Bleibt es grün,
+ist die Antwort ohnehin belanglos.
+
+Dabei kam ein Widerspruch heraus: **während eines Probenlaufs ist
+`rhythmus` per Definition rot** — der festgehaltene Stand ist veraltet,
+genau deshalb läuft man ja. Seine vier Proben laufen jetzt in einem zweiten
+Durchgang, nach dem Schreiben des Standes. Schlägt dort eine fehl, wird der
+eben geschriebene Stand als `abgebrochen` markiert: er darf keinen Lauf
+bezeugen, der etwas offen gelassen hat. Und weil `git checkout` nach jeder
+Probe die *eingecheckte* Fassung zurückholt, wird der frische Stand danach
+neu gesetzt — ohne diese Zeile war `rhythmus` sofort wieder rot.
 
 ---
 

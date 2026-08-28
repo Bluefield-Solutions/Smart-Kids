@@ -697,7 +697,11 @@ function spielschirm(){
     ok.onclick=p; eing.addEventListener('keydown',e=>{ if(e.key==='Enter')p(); });
     setTimeout(()=>eing.focus(),360);
   } else {
-    kand.forEach(k=>{ const b=el('div','etikett'); b.textContent=k.name; b.dataset.id=k.id;
+    kand.forEach((k,i)=>{ const b=el('div','etikett'); b.textContent=k.name; b.dataset.id=k.id;
+      // Der Rang steuert, wann das Etikett hereinkommt. Nacheinander statt
+      // alle auf einmal: das Auge folgt der Liste von oben nach unten,
+      // statt vier Kaesten gleichzeitig aufblitzen zu sehen.
+      b.style.setProperty('--rang', i + 1);
       b.onclick=()=>vorlesen(k.name); ziehbar(b,k); liste.appendChild(b); });
   }
 
@@ -853,6 +857,16 @@ function spielschirm(){
     // NICHT festgehalten: ohne Breite schrumpft ein `position:fixed`
     // Kasten auf seinen Inhalt.
     const aufheben=()=>{ auf=true;
+      // Die Einlauf-Animation muss WEG, bevor das Schild dem Finger folgt.
+      //
+      // Eine CSS-Animation steht in der Kaskade ueber dem Inline-Stil - auch
+      // wenn sie laengst abgelaufen ist und nur noch ihren Endzustand haelt
+      // (`both`). `herein` endet auf `transform: none`, und genau das ist
+      // die Eigenschaft, mit der das Schild am Finger haengt. Das Ergebnis
+      // sah harmlos aus: das Ziel leuchtete richtig auf (die Suche haengt am
+      // Finger, nicht am Schild), nur das Schild blieb in der Liste stehen.
+      // Kein Tor hat es gesehen, und im erneuerten Vorbild stand es drin.
+      b.style.animation='none';
       b.classList.add('zieht'); b.style.position='fixed';
       b.style.left=heim.left+'px'; b.style.top=heim.top+'px'; b.style.margin='0';
       const z=b.getBoundingClientRect(); zug={b:z.width,h:z.height};
@@ -872,6 +886,7 @@ function spielschirm(){
     const aufraeumen=()=>{
       b.classList.remove('zieht'); b.style.position=''; b.style.left='';
       b.style.top=''; b.style.width=''; b.style.margin=''; b.style.transform='';
+      b.style.animation='';
       drueberSetzen(null); start=null; zeiger=null; auf=false; zug=null;
       removeEventListener('pointermove',bewegen);
       removeEventListener('pointerup',los);

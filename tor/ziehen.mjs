@@ -30,6 +30,28 @@ const TYP = { '.html':'text/html', '.js':'text/javascript', '.json':'application
 
 /** Soll: so weit darf der Daumen einer Sechsjaehrigen danebenliegen. */
 const GRENZE = 40;
+
+/**
+ * Abschnitte.
+ *
+ * Voll gefahren dauert dieses Tor rund 26 Sekunden - es oeffnet fuer jeden
+ * Wurf einen frischen Browserkontext, und die Messreihe allein sind zehn.
+ * In der Kette laeuft es einmal, das ist in Ordnung; in `npm run proben`
+ * lief es FUENFMAL, und jede der fuenf Proben interessierte sich fuer genau
+ * einen Abschnitt. 129 von 288 Sekunden gingen dafuer drauf.
+ *
+ * `--nur=nachsicht` faehrt nur diesen Abschnitt. Voreingestellt laeuft
+ * alles, und die Kette ruft es ohne Argument auf - eine Abkuerzung, die man
+ * versehentlich nimmt, waere keine.
+ */
+const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest'];
+const gewaehlt = (process.argv.find(a => a.startsWith('--nur=')) || '').slice(6)
+  .split(',').filter(Boolean);
+if (gewaehlt.some(a => !ABSCHNITTE.includes(a))) {
+  console.log(`\n  ziehen: „${gewaehlt.join(',')}" — bekannt sind ${ABSCHNITTE.join(', ')}\n`);
+  process.exit(2);
+}
+const laeuft = (a) => gewaehlt.length === 0 || gewaehlt.includes(a);
 /** Und so weit darf die Nachsicht NICHT reichen - sonst trifft jeder Wurf. */
 const DECKEL = 140;
 
@@ -102,6 +124,29 @@ async function ziehe(d, richtung = [-1, 1], festesZiel = null) {
   await p.waitForTimeout(60);
   const leuchtet = await p.evaluate(() =>
     document.querySelector('.schirm.da path.geb.drueber')?.dataset.id || null);
+  // Und haengt das Schild ueberhaupt am Finger?
+  //
+  // Es sah einmal so aus, als taete es das: das Ziel leuchtete richtig auf,
+  // weil die Umkreissuche am FINGER haengt und nicht am Schild. Das Schild
+  // selbst blieb in der Antwortliste stehen - eine abgelaufene
+  // CSS-Animation hielt `transform: none` fest und schlug damit den
+  // Inline-Stil. Gemessen wird deshalb der Abstand vom Finger.
+  const amFinger = await p.evaluate(([x, y]) => {
+    const e = document.querySelector('.schirm.da .etikett.zieht');
+    if (!e) return -1;
+    const r = e.getBoundingClientRect();
+    const dx = Math.max(r.left - x, x - r.right, 0);
+    const dy = Math.max(r.top - y, y - r.bottom, 0);
+    return Math.round(Math.hypot(dx, dy));
+  }, [zx, zy]);
+  // Was liegt mitten unter dem Schild? Die Karte - oder das Schild selbst?
+  const durchSchild = await p.evaluate(([x, y]) => {
+    const e = document.querySelector('.schirm.da .etikett.zieht');
+    if (!e) return null;
+    const r = e.getBoundingClientRect();
+    const oben = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
+    return !(oben === e || e.contains(oben));
+  }, [zx, zy]);
   await p.mouse.up();
   await p.waitForTimeout(600);
   const r = await p.evaluate(() => ({
@@ -119,13 +164,14 @@ async function ziehe(d, richtung = [-1, 1], festesZiel = null) {
     a.onerror = () => ja(-1);
   }));
   await schliesse(p);
-  return { ...r, leuchtet, eintraege, ziel: info.id, richtig: /Das ist /.test(r.frage) };
+  return { ...r, leuchtet, amFinger, durchSchild, eintraege, ziel: info.id, richtig: /Das ist /.test(r.frage) };
 }
 
 console.log('\n  Tor `ziehen`');
 
 /* --- 1. Wie weit darf man danebenliegen? ------------------------------- */
 let weiteste = 0, engste = null, welches = '';
+if (laeuft('nachsicht')) {
 for (const d of [0, 10, 20, 30, 40, 60, 80, 100, 140, 200]) {
   const r = await ziehe(d);
   welches = r.ziel;
@@ -136,6 +182,7 @@ console.log(`    „${welches}": getroffen bis ${weiteste} px daneben, `
   + `ab ${engste ?? '—'} px nicht mehr`);
 if (weiteste < GRENZE)
   fehler.push(`Nachsicht nur ${weiteste} px — ein Daumen braucht ${GRENZE}`);
+}
 // Ein Deckel-Test ueber diese Reihe waere unbrauchbar: 200 px neben
 // Australien liegt ein anderer Kontinent, und den zu treffen ist eine
 // falsche ANTWORT. Von aussen sieht das aus wie "nichts gefunden". Der
@@ -156,6 +203,7 @@ if (weiteste < GRENZE)
  * `pointer-events:none` heraus, und das Tor blieb gruen.
  */
 let vonOben = 0;
+if (laeuft('oben')) {
 for (const d of [10, 20, 30, 40]) {
   const r = await ziehe(d, [0, -1]);      // Finger ueber dem Ziel, Ziel unter dem Schild
   if (r.richtig) vonOben = d;
@@ -164,6 +212,11 @@ console.log(`    von oben (Schild liegt über dem Ziel): getroffen bis ${vonOben
 if (vonOben < GRENZE)
   fehler.push(`Von oben trifft man nur bis ${vonOben} px — das gezogene Schild `
     + 'verdeckt sein eigenes Ziel für die Trefferprüfung (fehlt `pointer-events:none`?)');
+// Weiter als 40 wird hier NICHT gemessen: bei 55 Punkten über Australiens
+// Anker steht der Finger schon über Indonesien, und das gehört zu Asien.
+// Die Reihe würde dann einen Nachbarn messen statt das Schild - dieselbe
+// Falle wie beim Deckel weiter unten.
+}
 
 /* --- 2. Ein Fehlwurf ist nie stumm -------------------------------------
  *
@@ -174,6 +227,7 @@ if (vonOben < GRENZE)
  * gesucht, nicht abgeschrieben: bei einer neuen Karte gaebe es ihn sonst
  * vielleicht gar nicht mehr, und die Pruefung wuerde still bedeutungslos.
  */
+if (laeuft('meer')) {
 const { p: pm, info: im } = await aufgabe();
 const meer = await pm.evaluate(() => {
   const k = document.querySelector('.schirm.da .karte').getBoundingClientRect();
@@ -212,13 +266,37 @@ if (weit.eintraege > 0)
   fehler.push(`Ein Wurf ins offene Meer hat ${weit.eintraege} Protokolleintrag/-einträge `
     + 'erzeugt — er kostet damit einen der drei Versuche, obwohl er keine Antwort war '
     + `(Nachsicht reicht zu weit; der Deckel liegt bei ${DECKEL} px)`);
+}
 
 /* --- 3. Man sieht, was gelten wird -------------------------------------- */
+if (laeuft('anzeige')) {
 const nah = await ziehe(20);
 console.log(`    beim Ziehen leuchtet auf: ${nah.leuchtet || 'NICHTS'}`);
+// Das Schild haengt `LUFT` Punkte unter dem Finger; mehr als 60 waere es
+// nicht mehr am Finger, sondern irgendwo.
+console.log(`    beim Ziehen hängt das Schild ${nah.amFinger} px vom Finger entfernt`);
+if (nah.amFinger < 0)
+  fehler.push('Während des Zuges gibt es gar kein aufgehobenes Schild');
+else if (nah.amFinger > 60)
+  fehler.push(`Das gezogene Schild liegt ${nah.amFinger} px vom Finger entfernt — `
+    + 'es folgt ihm nicht (überschreibt eine CSS-Animation den Inline-Stil?)');
+// Nimmt die Karte den Finger auch DURCH das Schild hindurch an?
+//
+// Das ist die Frage, die `pointer-events:none` beantwortet, und sie laesst
+// sich nicht am Ergebnis messen: das Schild haengt 22 Punkte unter dem
+// Finger, das Ziel liegt meist schon oberhalb davon, und weiter unten
+// stehen Nachbargebiete im Weg. Gefragt wird deshalb direkt: was liegt an
+// einem Punkt MITTEN im Schild? Ist es das Schild selbst, ist die untere
+// Haelfte des Suchradius blind.
+if (nah.durchSchild === false)
+  fehler.push('Ein Punkt mitten im Schild liefert das Schild statt der Karte — '
+    + 'damit ist die untere Hälfte des Suchradius blind (fehlt `pointer-events:none`?)');
+console.log(`    unter dem Schild liegt: ${nah.durchSchild === null ? '—'
+  : nah.durchSchild ? 'die Karte' : 'DAS SCHILD'}`);
 if (nah.leuchtet !== nah.ziel)
   fehler.push(`Während des Zuges leuchtet ${nah.leuchtet || 'nichts'} auf, `
     + `erwartet war ${nah.ziel} — Nachsicht ohne Anzeige ist ein Würfel, den niemand sieht`);
+}
 
 /* --- 4. Antippen ist kein Ziehen ---------------------------------------
  *
@@ -228,7 +306,7 @@ if (nah.leuchtet !== nah.ziel)
  * Name klingt, bekam ein Zucken. Getippt wird viel: das Etikett liest sich
  * selbst vor.
  */
-{
+if (laeuft('tippen')) {
   const { p: pt, info: it } = await aufgabe();
   const et = (await pt.$$('.schirm.da .etikett'))[it.idx];
   const a = await et.boundingBox();
@@ -257,10 +335,12 @@ if (nah.leuchtet !== nah.ziel)
 }
 
 /* --- 5. Das Aufleuchten verschwindet wieder ----------------------------- */
-const { p: p4 } = await aufgabe();
-const rest = await p4.evaluate(() => document.querySelectorAll('path.geb.drueber').length);
-await schliesse(p4);
-if (rest) fehler.push(`${rest} Gebiete leuchten, ohne dass jemand zieht`);
+if (laeuft('rest')) {
+  const { p: p4 } = await aufgabe();
+  const rest = await p4.evaluate(() => document.querySelectorAll('path.geb.drueber').length);
+  await schliesse(p4);
+  if (rest) fehler.push(`${rest} Gebiete leuchten, ohne dass jemand zieht`);
+}
 
 await b.close(); srv.close();
 
@@ -270,4 +350,5 @@ if (fehler.length) {
   console.log(`\n  ziehen ROT: ${fehler.length} Befund${fehler.length > 1 ? 'e' : ''}.\n`);
   process.exit(1);
 }
-console.log(`\n  ziehen grün: bis ${weiteste} px Nachsicht, sichtbar, und nie stumm.\n`);
+console.log(`\n  ziehen grün${gewaehlt.length ? ` (nur ${gewaehlt.join(', ')})` : ''}: `
+  + `${laeuft('nachsicht') ? `bis ${weiteste} px Nachsicht, ` : ''}sichtbar, und nie stumm.\n`);

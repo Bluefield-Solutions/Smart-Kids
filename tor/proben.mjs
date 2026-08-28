@@ -157,44 +157,51 @@ const PROBEN = [
   // Wie lange der Lauf zurueckliegt, steht in der HISTORIE - an einer Datei
   // ist das nicht zu drehen. Deshalb bekommt das Tor eine Schraube, die nur
   // strenger stellen kann: bei -1 ist jeder Stand zu alt.
-  { n:'der letzte Probenlauf liegt zu lange zurück', tor:'rhythmus', brauchtStand:true,
+  { n:'der letzte Probenlauf liegt zu lange zurück', tor:'rhythmus', brauchtStand:true, nachStand:true,
     umgebung:{ SMARTKIDS_RHYTHMUS_MAX:'-1' },
     datei:'tor/proben-stand.json',
     suchRegex:/"zeit": "([\d-]+)"/, ersatzFn:(m)=>`"zeit": "${m[1]}"`,   // unveraendert
     an:{ datei:'tor/proben-stand.json', regex:/"zeit": "[\d-]+"/ },
     sagt:'Runden zurück' },
-  { n:'ein abgebrochener Probenlauf winkt durch', tor:'rhythmus', brauchtStand:true,
+  { n:'ein abgebrochener Probenlauf winkt durch', tor:'rhythmus', brauchtStand:true, nachStand:true,
     datei:'tor/proben-stand.json',
     such:'"lauf": "vollständig"', ersatz:'"lauf": "abgebrochen"',
     an:{ datei:'tor/proben-stand.json', text:'"lauf": "abgebrochen"' },
     sagt:'nicht durchgelaufen' },
   { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus',
-    brauchtStand:true, datei:'package.json',
+    brauchtStand:true, nachStand:true, datei:'package.json',
     such:'npm run rhythmus && npm run inhalt',
     ersatz:'npm run rhythmus && npm run neuestor && npm run inhalt',
     an:{ datei:'package.json', text:'npm run neuestor' },
     sagt:'noch nicht in der Kette' },
-  { n:'eine Probe kam dazu, ohne dass geprobt wurde', tor:'rhythmus', brauchtStand:true,
+  { n:'eine Probe kam dazu, ohne dass geprobt wurde', tor:'rhythmus', brauchtStand:true, nachStand:true,
     datei:'tor/proben-stand.json',
     suchRegex:/"proben": \d+/, ersatzFn:()=>'"proben": 1',
     an:{ datei:'tor/proben-stand.json', text:'"proben": 1' },
     sagt:'ein anderer' },
 
   /* --- ziehen (fünf) ------------------------------------------------ */
-  { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, datei:D,
+  { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 0;',
     an:{ ...DIST, text:'NACHSICHT = 0' }, sagt:'Nachsicht nur' },
-  { n:'die Nachsicht reicht zu weit — jeder Wurf trifft', tor:'ziehen', bauen:true, datei:D,
+  { n:'die Nachsicht reicht zu weit — jeder Wurf trifft', tor:'ziehen', bauen:true, args:['--nur=meer'], datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 400;',
     an:{ ...DIST, text:'NACHSICHT = 400' }, sagt:'Protokolleintrag' },
-  { n:'das gezogene Schild bleibt anfassbar', tor:'ziehen', bauen:true, datei:V,
+  { n:'das gezogene Schild bleibt anfassbar', tor:'ziehen', bauen:true,
+    args:['--nur=anzeige'], datei:V,
     such:'transition:none;pointer-events:none;', ersatz:'transition:none;',
-    an:{ ...DIST, fehlt:'transition:none;pointer-events:none;' }, sagt:'Von oben' },
-  { n:'ein Fehlwurf bleibt stumm', tor:'ziehen', bauen:true, datei:D,
+    an:{ ...DIST, fehlt:'transition:none;pointer-events:none;' },
+    sagt:'untere Hälfte des Suchradius' },
+  { n:'das gezogene Schild folgt dem Finger nicht mehr', tor:'ziehen', bauen:true,
+    args:['--nur=anzeige'], datei:D,
+    such:"      b.style.animation='none';", ersatz:'',
+    an:{ ...DIST, fehlt:"b.style.animation='none';" },
+    sagt:'folgt ihm nicht' },
+  { n:'ein Fehlwurf bleibt stumm', tor:'ziehen', bauen:true, args:['--nur=meer'], datei:D,
     suchRegex:/      const h = liste\.querySelector[\s\S]*?vorlesen\('Lass es auf dem Land los\.'\);\n/,
     ersatzFn:()=>'',
     an:{ ...DIST, fehlt:"Lass es auf dem Land los." }, sagt:'ohne jede Rückmeldung' },
-  { n:'schon ein Antippen hebt das Etikett auf', tor:'ziehen', bauen:true, datei:D,
+  { n:'schon ein Antippen hebt das Etikett auf', tor:'ziehen', bauen:true, args:['--nur=tippen'], datei:D,
     such:'if(!auf){ if(Math.hypot(ev.clientX-start.x, ev.clientY-start.y) < 6) return; aufheben(); }',
     ersatz:'if(!auf){ aufheben(); }',
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
@@ -210,7 +217,26 @@ const PROBEN = [
     ersatz:"{ src:'./symbol-999.png',  sizes:'999x999',   type:'image/png', purpose:'any' },",
     an:{ datei:'dist/manifest.webmanifest', text:'symbol-999.png' }, sagt:'symbol-999' },
 
+  // Und die zweite Haelfte des Versprechens: nicht nur „das Manifest nennt
+  // eine Datei, die es gibt", sondern „ohne Netz ist die Ebene wirklich da".
+  // Deutschland faellt hier aus dem Vorrat des Service Workers - die App
+  // startet dann weiterhin, aber die Bundeslaender bleiben leer.
+  { n:'Deutschland fehlt im Lager des Service Workers', tor:'pwa', bauen:true,
+    datei:'prototyp/bauen.mjs',
+    such:"...Object.keys(teile).map(k => `./daten/${k === 'deutschland' ? k : 'laender-' + k}.json`)]",
+    ersatz:"...Object.keys(teile).filter(k => k !== 'deutschland')"
+      + ".map(k => `./daten/laender-${k}.json`)]",
+    an:{ datei:'dist/sw.js', fehlt:'./daten/deutschland.json' },
+    sagt:'Bundesländer' },
+
   /* --- smoke -------------------------------------------------------- */
+  // Das Doppelbild: nimmt man dem neuen Bildschirm seinen Takt Vorsprung,
+  // blenden beide gleichzeitig und treffen sich bei etwa 0,5.
+  { n:'beide Bildschirme blenden gleichzeitig', tor:'smoke', bauen:true, datei:V,
+    such:'  transition-delay:calc(var(--d-schirm) / 2)}', ersatz:'}',
+    an:{ ...DIST, fehlt:'transition-delay:calc(var(--d-schirm) / 2)}' },
+    sagt:'Doppelbild' },
+
   { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",
@@ -233,9 +259,9 @@ if (schmutzig && !process.argv.includes('--trotzdem')) {
   process.exit(2);
 }
 
-const lauf = (befehl, umgebung) => {
+const lauf = (befehl, umgebung, args) => {
   try {
-    return { code:0, aus: execFileSync('npm', ['run', befehl],
+    return { code:0, aus: execFileSync('npm', ['run', befehl, ...(args ? ['--', ...args] : [])],
       { encoding:'utf8', stdio:['ignore','pipe','pipe'],
         env: umgebung ? { ...process.env, ...umgebung } : process.env }) };
   } catch (e) {
@@ -252,8 +278,18 @@ const lauf = (befehl, umgebung) => {
  * schlechter zuruecklaesst als es ihn vorgefunden hat, ist gefaehrlicher
  * als keines.
  */
+/**
+ * ... und im zweiten Durchgang muss der frische Stand danach zurueck.
+ *
+ * `git checkout` holt die EINGECHECKTE Fassung zurueck - also den alten
+ * Stand, nicht den, den dieser Lauf gerade geschrieben hat. Ohne diese
+ * Zeile war `rhythmus` nach der ersten Wiederherstellung wieder rot, und
+ * alle vier Proben meldeten „war schon vorher rot".
+ */
+let nachRestore = null;
 const wiederherstellen = (gebaut) => {
   execSync('git checkout -- .', { stdio:'ignore' });
+  if (nachRestore) nachRestore();
   if (gebaut) execFileSync('npm', ['run', 'bauen'], { stdio:'ignore' });
 };
 
@@ -293,7 +329,45 @@ console.log(`\n  proben — ${auswahl.length} stehende Gegenproben`
 let ok = 0, blind = 0, nichtAngekommen = 0;
 const befunde = [];
 
-for (const p of auswahl) {
+/**
+ * Ist das Tor OHNE Eingriff ueberhaupt gruen?
+ *
+ * Ohne diese Frage beweist „schlaegt an" weniger, als es aussieht: ein Tor,
+ * das schon vorher rot war, wird auch mit Eingriff rot - und mit derselben
+ * Meldung, wenn der Eingriff genau die Pruefung trifft, die ohnehin
+ * scheitert. Genau so ist eine Probe heute durchgerutscht: sie meldete
+ * „schlaegt an", waehrend das Tor in beiden Zustaenden dieselbe Zeile
+ * schrieb.
+ *
+ * Gefahren wird das einmal je Tor, beim ersten Mal, mit denselben
+ * Argumenten wie die Probe. Das kostet ungefaehr einen Kettenlauf - und ist
+ * der Preis dafuer, dass „schlaegt an" wirklich heisst, was es sagt.
+ */
+const gesund = new Map();
+const istGesund = (p) => {
+  const schluessel = p.tor + ' ' + (p.args || []).join(' ');
+  if (!gesund.has(schluessel)) gesund.set(schluessel, lauf(p.tor, undefined, p.args).code === 0);
+  return gesund.get(schluessel);
+};
+
+/**
+ * Zwei Durchgaenge, und `rhythmus` kommt in den zweiten.
+ *
+ * Waehrend eines Probenlaufs ist `rhythmus` per Definition rot: der
+ * festgehaltene Stand ist veraltet - genau deshalb laeuft man ja. Seine
+ * Proben wuerden also immer „war schon vorher rot" melden. Sie kommen
+ * deshalb NACH dem Schreiben des Standes, wenn der gesunde Zustand
+ * wirklich gruen ist. Schlaegt dann eine fehl, wird der eben geschriebene
+ * Stand als abgebrochen markiert - er darf keinen Lauf bezeugen, der etwas
+ * offen gelassen hat.
+ */
+const zeiten = [];
+const durchgang = (welche) => {
+for (const p of welche) {
+  const t0 = Date.now();
+  const fertig = (wie) => { const s = (Date.now() - t0) / 1000;
+    zeiten.push({ n: p.n, tor: p.tor, s });
+    console.log(`${wie}  ${s.toFixed(0)} s`); };
   process.stdout.write(`  ${p.tor.padEnd(11)} ${p.n} … `);
 
   /* --- Eingriff --------------------------------------------------- */
@@ -303,7 +377,7 @@ for (const p of auswahl) {
     let neu;
     if (p.suchRegex) {
       const m = alt.match(p.suchRegex);
-      if (!m) { console.log(rot('Suchtext nicht gefunden')); nichtAngekommen++;
+      if (!m) { fertig(rot('Suchtext nicht gefunden')); nichtAngekommen++;
         befunde.push(`${p.n}: der Suchtext steht nicht mehr in ${p.datei} — die Probe zielt ins Leere`);
         wiederherstellen(p.bauen); continue; }
       neu = alt.replace(p.suchRegex, p.ersatzFn(m));
@@ -318,7 +392,7 @@ for (const p of auswahl) {
 
   if (p.bauen) {
     const b = lauf('bauen');
-    if (b.code) { console.log(rot('Bau gescheitert')); nichtAngekommen++;
+    if (b.code) { fertig(rot('Bau gescheitert')); nichtAngekommen++;
       befunde.push(`${p.n}: der Bau lief nicht durch — die Probe beweist nichts`);
       wiederherstellen(p.bauen); continue; }
   }
@@ -336,7 +410,7 @@ for (const p of auswahl) {
     else { da = t.includes(p.an.text); warum = `„${p.an.text}" fehlt in ${p.an.datei}`; }
   }
   if (!da) {
-    console.log(rot('Eingriff NICHT angekommen'));
+    fertig(rot('Eingriff NICHT angekommen'));
     nichtAngekommen++;
     befunde.push(`${p.n}: ${warum}. Ein Eingriff, der nicht ankommt, sieht aus `
       + 'wie ein bestandenes Tor — diese Probe beweist nichts.');
@@ -344,11 +418,23 @@ for (const p of auswahl) {
   }
 
   /* --- Schlägt das Tor an? ---------------------------------------- */
-  const r = lauf(p.tor, p.umgebung);
+  const r = lauf(p.tor, p.umgebung, p.args);
   wiederherstellen(p.bauen);
 
+  // Erst jetzt fragen, ob es ohne Eingriff gruen gewesen waere: der Baum
+  // ist wiederhergestellt, und bei den meisten Proben erspart das den
+  // gesunden Lauf ganz - denn wenn das Tor gruen BLEIBT, ist die Antwort
+  // ohnehin belanglos.
+  if (r.code !== 0 && !istGesund(p)) {
+    fertig(rot('war schon vorher rot'));
+    blind++;
+    befunde.push(`${p.n}: \`${p.tor}\` ist schon OHNE Eingriff rot — `
+      + 'diese Probe beweist nichts, sie stellt nur einen bestehenden Fehler nach.');
+    continue;
+  }
+
   if (r.code === 0) {
-    console.log(rot('TOR BLEIBT GRÜN'));
+    fertig(rot('TOR BLEIBT GRÜN'));
     blind++;
     befunde.push(`${p.n}: \`${p.tor}\` bleibt grün, obwohl der Fehler drin ist — `
       + 'das Tor beweist an dieser Stelle nichts.');
@@ -356,16 +442,18 @@ for (const p of auswahl) {
     continue;
   }
   if (p.sagt && !r.aus.includes(p.sagt)) {
-    console.log(rot(`rot, aber nicht deswegen`));
+    fertig(rot('rot, aber nicht deswegen'));
     blind++;
     befunde.push(`${p.n}: \`${p.tor}\` wird rot, meldet aber nicht „${p.sagt}" — `
       + 'es fällt vielleicht aus einem anderen Grund durch.');
     if (LAUT) console.log(r.aus.split('\n').slice(-14).map(z => '      ' + z).join('\n'));
     continue;
   }
-  console.log(gruen('schlägt an'));
+  fertig(gruen('schlägt an'));
   ok++;
 }
+};
+durchgang(auswahl.filter(p => !p.nachStand));
 
 /* --- Hat jedes Tor der Kette überhaupt eine Probe? -------------------- *
  *
@@ -403,6 +491,15 @@ if (unbewacht.length) {
     + unterTore.join(' · '));
 }
 
+/* Wo die Zeit liegt. Ohne diese Zahl waere jede Beschleunigung geraten. */
+const gesamt = zeiten.reduce((a, z) => a + z.s, 0);
+const jeTor = {};
+for (const z of zeiten) jeTor[z.tor] = (jeTor[z.tor] || 0) + z.s;
+console.log(`\n  ${(gesamt/60).toFixed(1)} min für ${zeiten.length} Proben:`);
+for (const [t, s] of Object.entries(jeTor).sort((a,b)=>b[1]-a[1]))
+  console.log(`    ${t.padEnd(12)} ${s.toFixed(0).padStart(4)} s`
+    + `  ${'█'.repeat(Math.round(s/gesamt*40))}`);
+
 console.log(`\n  ${ok} schlagen an, ${blind} beweisen nichts, `
   + `${nichtAngekommen} kamen nicht an.\n`);
 for (const b of befunde) console.log(`  ✗ ${b}`);
@@ -418,18 +515,39 @@ if (befunde.length) { console.log(''); process.exit(1); }
  * dort steht sie seit Fassung 40 in der ersten Datei, die jede Sitzung
  * liest.
  */
-console.log(`  proben grün: jedes Tor der Kette hat eine Gegenprobe, und jede schlägt an.`);
 if (!vollerLauf) {
+  console.log(`  proben grün: ${ok} Gegenproben, alle schlagen an.`);
   console.log(`  Nur eine Auswahl gelaufen — ${STAND} bleibt, wie er war.\n`);
   process.exit(0);
 }
 const kopf = execSync('git rev-parse HEAD', { encoding:'utf8' }).trim();
-fs.writeFileSync(STAND, JSON.stringify({
+const standSchreiben = (wie) => fs.writeFileSync(STAND, JSON.stringify({
   zeit: new Date().toISOString().slice(0, 10),
   fassung: kopf,
   proben: PROBEN.length,
   tore: [...new Set(PROBEN.map(p => p.tor))].sort(),
   unterTore: unterTore.sort(),
-  lauf: 'vollständig',
+  lauf: wie,
 }, null, 2) + '\n');
-console.log(`  Festgehalten in ${STAND} auf ${kopf.slice(0, 7)}.\n`);
+
+standSchreiben('vollständig');
+console.log(`  Festgehalten in ${STAND} auf ${kopf.slice(0, 7)}.`);
+
+// Und jetzt erst die Proben, die einen frischen Stand brauchen.
+const spaeter = auswahl.filter(p => p.nachStand);
+if (spaeter.length) {
+  console.log(`\n  Zweiter Durchgang — ${spaeter.length} Proben am frischen Stand:\n`);
+  const vorher = befunde.length;
+  gesund.clear();
+  nachRestore = () => standSchreiben('vollständig');
+  durchgang(spaeter);
+  nachRestore = null;
+  if (befunde.length > vorher) {
+    standSchreiben('abgebrochen');
+    console.log('');
+    for (const b of befunde.slice(vorher)) console.log(`  ✗ ${b}`);
+    console.log(`\n  proben ROT im zweiten Durchgang — ${STAND} als abgebrochen markiert.\n`);
+    process.exit(1);
+  }
+}
+console.log(`\n  proben grün: ${ok} Gegenproben, alle schlagen an.\n`);
