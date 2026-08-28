@@ -281,7 +281,15 @@ function inselnFiltern(geo, proj, minPx = 4) {
     const g = f.geometry;
     if (g.type === 'Polygon') {
       const p = polyFiltern(g.coordinates);
-      return { ...f, geometry: p ? { type: 'Polygon', coordinates: p } : null };
+      // Ein Gebiet darf NIE ganz verschwinden - hier war eine Unsymmetrie:
+      // ein MultiPolygon behielt unten immer seine groesste Flaeche, ein
+      // einfaches Polygon fiel ersatzlos weg. Guatemala ist ein einfaches
+      // Polygon und misst auf der groben Stufe rund anderthalb Bildpunkte;
+      // es wurde weggefiltert, stand aber weiter in den Daten. Damit war
+      // ein Zielland gebacken, gezaehlt - und nie zu sehen.
+      if (!p) { behalten++; weg--; return { ...f, geometry: { type:'Polygon',
+        coordinates: [g.coordinates[0]] } }; }
+      return { ...f, geometry: { type: 'Polygon', coordinates: p } };
     }
     if (g.type === 'MultiPolygon') {
       const ps = g.coordinates.map(polyFiltern).filter(Boolean);

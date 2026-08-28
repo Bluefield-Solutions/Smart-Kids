@@ -17,24 +17,24 @@
       "stufen": [
         {
           "stufe": "grob",
-          "laender": 49,
+          "laender": 59,
           "hausdorffPx": 0.685,
-          "punkte": 24701,
-          "gzip": 98145
+          "punkte": 25199,
+          "gzip": 100085
         },
         {
           "stufe": "mittel",
-          "laender": 54,
+          "laender": 59,
           "hausdorffPx": 0.658,
-          "punkte": 56190,
-          "gzip": 198923
+          "punkte": 56326,
+          "gzip": 199390
         },
         {
           "stufe": "fein",
-          "laender": 56,
+          "laender": 59,
           "hausdorffPx": 0.663,
-          "punkte": 86256,
-          "gzip": 274508
+          "punkte": 86387,
+          "gzip": 274842
         }
       ]
     },
@@ -51,10 +51,10 @@
       "stufen": [
         {
           "stufe": "grob",
-          "laender": 50,
+          "laender": 55,
           "hausdorffPx": 0.66,
-          "punkte": 16101,
-          "gzip": 67771
+          "punkte": 16469,
+          "gzip": 69212
         },
         {
           "stufe": "mittel",
@@ -85,24 +85,24 @@
       "stufen": [
         {
           "stufe": "grob",
-          "laender": 40,
+          "laender": 51,
           "hausdorffPx": 0.68,
-          "punkte": 26799,
-          "gzip": 108084
+          "punkte": 27060,
+          "gzip": 109097
         },
         {
           "stufe": "mittel",
-          "laender": 43,
+          "laender": 51,
           "hausdorffPx": 0.728,
-          "punkte": 51979,
-          "gzip": 190976
+          "punkte": 52175,
+          "gzip": 191755
         },
         {
           "stufe": "fein",
-          "laender": 45,
+          "laender": 51,
           "hausdorffPx": 0.65,
-          "punkte": 68489,
-          "gzip": 225807
+          "punkte": 68327,
+          "gzip": 225614
         }
       ]
     },
@@ -119,24 +119,24 @@
       "stufen": [
         {
           "stufe": "grob",
-          "laender": 29,
-          "hausdorffPx": 0.633,
-          "punkte": 19646,
-          "gzip": 75953
+          "laender": 42,
+          "hausdorffPx": 0.629,
+          "punkte": 19929,
+          "gzip": 76929
         },
         {
           "stufe": "mittel",
-          "laender": 30,
-          "hausdorffPx": 0.74,
-          "punkte": 60012,
-          "gzip": 193415
+          "laender": 42,
+          "hausdorffPx": 0.736,
+          "punkte": 60763,
+          "gzip": 195626
         },
         {
           "stufe": "fein",
-          "laender": 31,
-          "hausdorffPx": 0.698,
-          "punkte": 88465,
-          "gzip": 259474
+          "laender": 42,
+          "hausdorffPx": 0.694,
+          "punkte": 88710,
+          "gzip": 259767
         }
       ]
     },
@@ -153,24 +153,24 @@
       "stufen": [
         {
           "stufe": "grob",
-          "laender": 13,
+          "laender": 15,
           "hausdorffPx": 0.738,
-          "punkte": 14771,
-          "gzip": 63483
+          "punkte": 14798,
+          "gzip": 63617
         },
         {
           "stufe": "mittel",
-          "laender": 13,
+          "laender": 15,
           "hausdorffPx": 0.592,
-          "punkte": 29365,
-          "gzip": 111278
+          "punkte": 29406,
+          "gzip": 111470
         },
         {
           "stufe": "fein",
-          "laender": 14,
+          "laender": 15,
           "hausdorffPx": 0.743,
-          "punkte": 39190,
-          "gzip": 141207
+          "punkte": 39195,
+          "gzip": 141221
         }
       ]
     }

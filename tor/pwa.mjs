@@ -104,11 +104,19 @@ const ADRESSE = `http://127.0.0.1:${server.address().port}/`;
 const b = await starte();
 
 /** Startet die App und sagt, ob wirklich etwas Spielbares dasteht. */
-async function laeuft(ctx) {
+async function laeuft(ctx, bisEbene) {
   const p = await ctx.newPage({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2 });
   try {
     await p.goto(ADRESSE, { waitUntil: 'domcontentloaded', timeout: 8000 });
     await p.waitForSelector('[data-profil="fiona"]', { timeout: 8000 });
+    // Die Laenderebenen werden NACHGELADEN. Ohne Netz muessen sie aus dem
+    // Lager kommen - sonst startet die App zwar, aber die halbe App fehlt.
+    if (bisEbene) {
+      await p.click('[data-profil="fiona"]');
+      await p.waitForSelector(`.schirm.da [data-ebene="${bisEbene}"]`, { timeout: 8000 });
+      await p.click(`.schirm.da [data-ebene="${bisEbene}"]`);
+      await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
+    }
     // Nicht nur "die Seite kam" - auch die Schrift muss da sein, sonst
     // stuende das Kind vor einer App in Times New Roman.
     const schrift = await p.evaluate(async () => {
@@ -135,11 +143,12 @@ await p.goto(ADRESSE, { waitUntil: 'load' });
 await p.close();
 
 await ctx.setOffline(true);
-const ohneNetz = await laeuft(ctx);
-pruefe(ohneNetz.da, `ohne Netz startet die App nicht: ${ohneNetz.grund || ''}`);
+const ohneNetz = await laeuft(ctx, 'laender:asien');
+pruefe(ohneNetz.da, `ohne Netz kommt die App nicht bis zu einer nachgeladenen `
+  + `Länderebene: ${ohneNetz.grund || ''}`);
 pruefe(ohneNetz.schrift, 'ohne Netz fehlt die Schrift — sie liegt nicht im Lager');
 await ctx.setOffline(false);
-console.log(`    Mit Lager, ohne Netz: ${ohneNetz.da ? 'startet' : 'STARTET NICHT'}`
+console.log(`    Mit Lager, ohne Netz: ${ohneNetz.da ? 'startet bis Ebene „Länder in Asien"' : 'STARTET NICHT'}`
   + `, Schrift ${ohneNetz.schrift ? 'da' : 'FEHLT'}`);
 
 /* --- Gegenprobe: OHNE Service Worker muss dasselbe scheitern ---------- */
@@ -152,7 +161,7 @@ const p2 = await ohne.newPage({ viewport: { width: 844, height: 390 } });
 await p2.goto(ADRESSE, { waitUntil: 'load' });
 await p2.close();
 await ohne.setOffline(true);
-const ohneSw = await laeuft(ohne);
+const ohneSw = await laeuft(ohne, 'laender:asien');
 pruefe(!ohneSw.da,
   'ohne Service Worker startet die App AUCH ohne Netz — dann misst das Tor '
   + 'den Browser-Cache und nicht den Service Worker');

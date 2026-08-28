@@ -33,6 +33,16 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 .schirm{position:absolute;inset:0;display:flex;flex-direction:column;
   opacity:0;pointer-events:none;transition:opacity var(--d-schirm) var(--k-standard)}
 .schirm.da{opacity:1;pointer-events:auto}
+/* Ein Bildschirm, der geht, darf nichts mehr annehmen - AUCH NICHT ueber
+   ein Kind, das sich `pointer-events` selbst setzt.
+   Genau das ist passiert: die unsichtbaren Trefferkreise (`pointer-events:
+   all`, damit man kleine Gebiete ueberhaupt treffen kann) hoben das `none`
+   ihres ausgeblendeten Bildschirms auf und blieben die 340 ms der
+   Ueberblendung aktiv. Wer in dieser Zeit ein Etikett losliess, traf einen
+   Kreis der VORIGEN Aufgabe - die Antwort war richtig und wurde als falsch
+   gewertet. Reproduzierbar bei Fiona, Ebene 4, direkt nach den
+   Bundeslaendern. */
+.schirm:not(.da) *{pointer-events:none!important}
 
 .kopf{display:flex;align-items:center;justify-content:space-between;gap:var(--r3);
   padding:var(--r3) var(--r4);flex:none;flex-wrap:wrap}
@@ -145,6 +155,19 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   aspect-ratio:var(--karte-ar,1);
   display:flex;align-items:center;justify-content:center;touch-action:none}
 .karte svg{width:100%;height:100%;overflow:visible}
+/* NUR die Gebiete und ihre Trefferkreise nehmen den Finger an. Alles
+   andere in der Karte ist Schmuck.
+   Ohne diese Regel lag der pulsierende Ring um das gesuchte Gebiet
+   (`fill:none`, aber ein bis zu 9 Punkte breiter Strich) UEBER der Flaeche
+   und fing den Zug ab: `elementFromPoint` lieferte `path.zielpuls`, das ist
+   weder ein Gebiet noch ein Kreis, und `bewerte()` lief gar nicht erst an.
+   Die richtige Antwort wurde nicht als falsch gewertet - es passierte
+   ueberhaupt nichts. Kein Protokolleintrag, kein Hinweis, keine Bewegung.
+   Ausgerechnet die Hervorhebung, die zeigen soll, wohin man ziehen muss,
+   hat das Ziel bewacht. */
+.karte svg *{pointer-events:none}
+.karte svg path.geb,
+.karte svg #treffer circle{pointer-events:all}
 .karte path.geb{transition:fill var(--d-zustand) var(--k-standard)}
 .karte path.ziel{fill:var(--ziel)}
 /* Alles ausser dem gesuchten Gebiet tritt zurueck. Bei sieben gleich hellen
@@ -345,7 +368,14 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      zurueckzuholen, ruecken hier die INNEREN Abstaende enger - das gibt
      rund 30 Punkte Luft, und die naechste Schriftaenderung kippt es nicht
      gleich wieder. */
+  /* Sieben Ebenen statt fuenf passen auf dem kleinsten Geraet (667x375)
+     nicht mehr mit Balken. Der Balken sagt dasselbe wie die Zahl direkt
+     darueber - bei knapper Hoehe faellt die Wiederholung weg, nicht die
+     Auskunft. */
   .kachel{padding:var(--r3) var(--r4);max-width:300px;gap:var(--r1)}
+  .kachel .balken{display:none}
+  .kachel .name{font-size:var(--s1)}
+  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr))}
   .mitte{gap:var(--r3)}
   .wahl{gap:var(--r3)}
   .kachel .kreis{width:44px;height:44px}

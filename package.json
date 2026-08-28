@@ -17,9 +17,10 @@
     "ansicht": "node tor/ansicht.mjs",
     "pwa": "node tor/pwa.mjs",
     "smoke": "node tor/smoke.mjs",
-    "tor": "npm run inhalt && npm run vergleich && npm run bauen && npm run passt && npm run ansicht && npm run pwa && npm run smoke",
+    "tor": "npm run inhalt && npm run spielprobe && npm run vergleich && npm run bauen && npm run passt && npm run ansicht && npm run pwa && npm run smoke",
     "tor:runner": "SMARTKIDS_OHNE_ANSICHT=1 npm run tor",
-    "passt": "node tor/passt.mjs"
+    "passt": "node tor/passt.mjs",
+    "spielprobe": "node tor/spielprobe.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",

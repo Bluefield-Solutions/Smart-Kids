@@ -102,6 +102,7 @@ async function loese(p) {
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
 const fahnenArten = new Set();
+let durchgespielt = 0;
 try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   await p.click('[data-profil="fiona"]');
@@ -284,6 +285,95 @@ if (ebene4 && plaetze.size < 3)
     + `${plaetze.size} verschiedenen Plätzen (${[...plaetze].map(x=>x+1).sort().join(', ')})`));
 console.log(`  Ebene 4:                    ${ebene4} Aufgaben, immer 4 Städte, `
   + `richtige auf Platz ${[...plaetze].map(x=>x+1).sort().join('/')}`);
+
+/* --- Durchgang 5: jede Ebene, beide Profile, eine richtige Antwort ----- */
+//
+// Der einfachste Test, den es gibt - und der, der gefehlt hat. Ein Kind
+// gibt eine richtige Antwort; wird sie als richtig gewertet?
+//
+// Zwei Fehler waren hier: ein getippter Alias ("Australien" fuer den
+// Kontinent "Australien und Ozeanien") wurde abgelehnt, weil die
+// Rechtschreibpruefung nur den kanonischen Namen bekam. Und ein gezogenes
+// Etikett landete auf dem pulsierenden Ring um das Ziel statt auf dem Ziel -
+// dann passierte gar nichts.
+//
+// Gezogen wird bewusst NICHT auf den Anker aus den Daten, sondern auf einen
+// Punkt, den ein Kind sieht: die Probe sucht selbst eine Stelle, an der das
+// Gebiet obenauf liegt.
+const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
+  'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
+  'bundeslaender', 'hauptstaedte'];
+for (const wer of ['fiona', 'lea']) {
+  const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
+  try {
+    const p = await neueSeite({ width: 1180, height: 820 }, eigen);
+    await p.click(`[data-profil="${wer}"]`);
+    await p.waitForSelector('.schirm.da [data-ebene]');
+    const da = await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene));
+    for (const e of EBENEN_ALLE)
+      if (!da.includes(e)) merke('durchgang', new Error(`${wer}: Ebene „${e}" fehlt in der Auswahl`));
+    for (const ebene of da) {
+      await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
+      await p.waitForTimeout(400);
+      const w = await p.$('.schirm.da #weiter');
+      if (w) await p.$eval('.schirm.da #weiter', x => x.click());
+      await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
+      await p.waitForTimeout(400);
+      const z = await p.evaluate(() => {
+        const s = document.querySelector('.schirm.da');
+        const ziel = s.querySelector('path.ziel');
+        const frage = s.querySelector('.frage').textContent;
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        const alle = [...D.kontinente, ...Object.values(D.laender).flat(), ...D.deutschland];
+        const g = alle.find(x => (x.id || x.a3) === ziel.dataset.id) || {};
+        const istHaupt = /Hauptstadt/.test(frage);
+        // Eine Stelle suchen, an der das Ziel wirklich obenauf liegt.
+        const bb = ziel.getBoundingClientRect();
+        let punkt = { x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 };
+        const kreis = s.querySelector(`#treffer circle[data-id="${ziel.dataset.id}"]`);
+        if (kreis) { const k = kreis.getBoundingClientRect();
+          punkt = { x: k.left + k.width / 2, y: k.top + k.height / 2 }; }
+        else for (let n = 0; n <= 8 && !punkt.gefunden; n++) for (let m = 0; m <= 8; m++) {
+          const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
+          if (document.elementFromPoint(x, y) === ziel) { punkt = { x, y, gefunden: true }; break; }
+        }
+        return { name: istHaupt ? g.hauptstadt : g.name,
+                 alias: (!istHaupt && g.aliasse && g.aliasse.length) ? g.aliasse[0] : null,
+                 ...punkt, tippfeld: !!s.querySelector('input.eingabe'),
+                 etiketten: [...s.querySelectorAll('.etikett')].map(x => x.textContent.trim()) };
+      });
+      // Beim Tippen den ALIAS nehmen, wenn es einen gibt - dort war der Fehler.
+      const eingabe = z.tippfeld && z.alias ? z.alias : z.name;
+      if (z.tippfeld) {
+        await p.fill('.schirm.da .eingabe', eingabe);
+        await p.$eval('.schirm.da .wahlliste .knopf', x => x.click());
+      } else {
+        const i = z.etiketten.indexOf(z.name);
+        if (i < 0) { merke('durchgang', new Error(`${wer}/${ebene}: „${z.name}" fehlt unter `
+          + `${z.etiketten.join(', ')}`)); continue; }
+        const et = (await p.$$('.schirm.da .etikett'))[i];
+        const bb = await et.boundingBox();
+        await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2);
+        await p.mouse.down();
+        await p.mouse.move(z.x, z.y, { steps: 8 });
+        await p.mouse.up();
+      }
+      await p.waitForTimeout(900);
+      const r = await p.evaluate(() => document.querySelector('.schirm.da .frage')?.textContent.trim());
+      if (!/^Richtig/.test(r || ''))
+        merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
+          + `${z.tippfeld ? 'getippt' : 'gezogen'} → „${r}"`));
+      durchgespielt++;
+      await p.waitForTimeout(1500);
+      const zur = await p.$('.schirm.da #zur');
+      if (zur) await p.$eval('.schirm.da #zur', x => x.click());
+      await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 8000 }).catch(() => {});
+    }
+    await p.close();
+  } catch (e) { merke('durchgang', e); }
+  await eigen.close();
+}
+console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 
 await ctx.close(); await b.close(); server.close();
 

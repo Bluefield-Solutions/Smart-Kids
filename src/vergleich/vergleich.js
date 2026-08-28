@@ -157,8 +157,40 @@ export function abgleich(eingabe, kandidaten) {
 /**
  * Rechtschreibbewertung. Die Rechtschreibung IST der Lerninhalt - deshalb
  * sagt die Rueckmeldung, WAS falsch war, nicht nur DASS.
+ *
+ * Nimmt das GEBIET, nicht nur seinen Namen: sonst sind alle Aliasse beim
+ * Tippen tot. Genau das ist passiert - ein Kind tippte "Australien", der
+ * Kontinent heisst im Vorrat "Australien und Ozeanien", und "Australien"
+ * stand als Alias da, wurde aber nie gelesen. Mit ihm fielen England,
+ * Kongo, Amerika, Canada, Mexico, Tanzania und Bangladesh durch.
+ *
+ * Ein String wird weiterhin angenommen - dann gibt es eben nur einen Namen.
  */
-export function rechtschreibung(eingabe, name) {
+export function rechtschreibung(eingabe, ziel) {
+  const namen = typeof ziel === 'string'
+    ? [ziel]
+    : [ziel.name, ...(ziel.aliasse || [])].filter(Boolean);
+  if (!namen.length) return { urteil: 'falsch' };
+  if (namen.length === 1) return gegenEinen(eingabe, namen[0]);
+
+  // Mehrere zulaessige Schreibweisen: der beste Befund gewinnt. "richtig"
+  // schlaegt "fast" schlaegt "falsch" - und unter den "fast" der Hinweis
+  // zu dem Namen, den das Kind am ehesten gemeint hat.
+  const RANG = { richtig: 0, fast: 1, leer: 2, falsch: 3 };
+  let best = null, bestAbstand = Infinity;
+  for (const n of namen) {
+    const r = gegenEinen(eingabe, n);
+    if (r.urteil === 'richtig') return r;
+    const d = levenshtein((eingabe || '').trim().toLowerCase(), n.toLowerCase());
+    if (!best || RANG[r.urteil] < RANG[best.urteil]
+             || (RANG[r.urteil] === RANG[best.urteil] && d < bestAbstand)) {
+      best = r; bestAbstand = d;
+    }
+  }
+  return best;
+}
+
+function gegenEinen(eingabe, name) {
   const e = (eingabe || '').trim();
   if (!e) return { urteil: 'leer' };
   if (e === name) return { urteil: 'richtig' };

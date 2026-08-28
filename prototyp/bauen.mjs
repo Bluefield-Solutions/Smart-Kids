@@ -4,6 +4,9 @@ import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
 import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
+import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
+import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js';
+import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { inline } from './inline.mjs';
@@ -44,6 +47,15 @@ const bbox = (l)=>{ const xs=[],ys=[];
   return `${x0-8} ${y0-8} ${Math.max(...xs)-x0+16} ${Math.max(...ys)-y0+16}`; };
 
 const kont = new Map(I.KONTINENTE.map(k=>[k.id,k]));
+/** Die fuenf Kontinente mit Laenderebene. Australien hat keine. */
+const KONT_LAENDER = [
+  ['europa',      LAENDER_EUROPA_GROB],
+  ['afrika',      LAENDER_AFRIKA_GROB],
+  ['asien',       LAENDER_ASIEN_GROB],
+  ['nordamerika', LAENDER_NORDAMERIKA_GROB],
+  ['suedamerika', LAENDER_SUEDAMERIKA_GROB],
+];
+
 const laenderMeta = {};
 for (const [k, l] of Object.entries(I.LAENDER)) for (const x of l) laenderMeta[x.a3] = x;
 
@@ -52,10 +64,12 @@ const D = {
   // Antarktika bekommt eine EIGENE, polare Ansicht. In der Weltkarte liegt es
   // als Sockel am unteren Rand - Befund F4, und im Prototyp deutlich sichtbar.
   antarktika: ankerFuer(ANTARKTIKA_GROB.map(a=>({ ...a, ...kont.get('antarktika') })))[0],
-  laender: {
-    europa: ankerFuer(LAENDER_EUROPA_GROB.filter(l=>l.rang).map(l=>({ ...l, ...laenderMeta[l.a3] }))),
-    afrika: ankerFuer(LAENDER_AFRIKA_GROB.filter(l=>l.rang).map(l=>({ ...l, ...laenderMeta[l.a3] }))),
-  },
+  // ALLE fuenf Kontinente mit Laendern. Vorher waren nur Europa und Afrika
+  // verdrahtet: die Torkette zaehlte 25 Laender, spielbar waren 10. Asien,
+  // Nord- und Suedamerika lagen gebacken im Baum und waren nicht zu
+  // erreichen. (Australien hat keine Laenderebene - so vereinbart.)
+  laender: Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
+    [id, ankerFuer(roh.filter(l=>l.rang).map(l=>({ ...l, ...laenderMeta[l.a3] })))])),
   deutschland: DEUTSCHLAND_MITTEL.map(b=>{
     const s = STAEDTE.find(x=>x.id===b.id);
     return { id:b.id, name:b.name, pfad:b.pfad, hauptstadt:s.hauptstadt,
@@ -78,14 +92,12 @@ const antOben = (()=>{ const m=antTeil.pfad.match(/-?\d+\.?\d*/g).map(Number); c
   for(let i=1;i<m.length;i+=2) ys.push(m[i]); return Math.min(...ys); })();
 D.vbK = `${bK.x0-8} ${bK.y0-8} ${bK.x1-bK.x0+16} ${(antOben + 26) - (bK.y0-8)}`;
 D.vbD = bbox(D.deutschland);
-D.vbL = { europa: bbox(LAENDER_EUROPA_GROB), afrika: bbox(LAENDER_AFRIKA_GROB) };
+D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, bbox(roh)]));
 D.vbA = bbox([D.antarktika]);
 // Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
 // nicht nur die Ziele - sonst kann man durch Ausschluss raten.
-D.umgebung = {
-  europa: LAENDER_EUROPA_GROB.filter(l=>!l.rang).map(l=>l.pfad),
-  afrika: LAENDER_AFRIKA_GROB.filter(l=>!l.rang).map(l=>l.pfad),
-};
+D.umgebung = Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
+  [id, roh.filter(l=>!l.rang).map(l=>l.pfad)]));
 
 // Die Kernmodule werden eingebettet - eine Datei, kein Buendler.
 const module = [
@@ -122,10 +134,40 @@ const marken = fs.readFileSync(new URL('../src/marken/marken.css', import.meta.u
  */
 const HEX = { grund: '#f6f3ee', tinte: '#1b2835' };
 
-function bauen(kopf) {
+/**
+ * Die Laenderebenen werden NACHGELADEN, nicht mitgeliefert.
+ *
+ * Mit allen fuenf Kontinenten im Bau sprang die Seite von 297 auf 537 KB
+ * gzip - fast die Haelfte davon die Umgebungskarten, also die Laender, die
+ * nur als Hintergrund dienen (G8: ohne sie kann man durch Ausschluss raten).
+ *
+ * Gebraucht wird immer nur EIN Kontinent: wer Laender in Europa uebt,
+ * braucht Asien nicht. Also liegt je Kontinent eine eigene Datei daneben,
+ * und die Ebene holt sich ihre beim Start. Der Service Worker legt sie ins
+ * Lager, damit es ohne Netz weiter geht.
+ *
+ * Im Bau als EINE Datei (zum Verschicken) bleibt alles drin - dort gibt es
+ * nichts zum Nachladen.
+ */
+function teilen(D) {
+  const leicht = { ...D, laender: {}, umgebung: {}, nachladen: true };
+  const teile = {};
+  for (const k of Object.keys(D.laender)) {
+    teile[k] = { laender: D.laender[k], umgebung: D.umgebung[k], vbL: D.vbL[k] };
+    // Ein leichtes Verzeichnis bleibt drin: die Ebenenwahl rechnet den
+    // Fortschritt aller Ebenen aus, bevor eine davon geladen ist. Dafuer
+    // braucht sie die Kennungen - nicht die Umrisse.
+    leicht.laender[k] = D.laender[k].map(l => ({ a3:l.a3, name:l.name, rang:l.rang,
+      aliasse:l.aliasse, aussprache:l.aussprache }));
+    leicht.umgebung[k] = [];
+  }
+  return { leicht, teile };
+}
+
+function bauen(kopf, daten = D) {
   return vorlage.replace('__MARKEN__', marken)
                 .replace('__THEMECOLOR__', HEX.tinte)
-                .replace('__DATEN__', JSON.stringify(D))
+                .replace('__DATEN__', JSON.stringify(daten))
                 .replace('__BAU__', JSON.stringify(BAU))
                 .replace('__KOPF__', kopf) + rumpf;
 }
@@ -169,7 +211,12 @@ const kopf = [
     + `href="./schrift/${f}" crossorigin>`),
   `<link rel="stylesheet" href="./schrift.css">`,
 ].join('\n');
-const verteilt = bauen(kopf).replace('</body></html>',
+const { leicht, teile } = teilen(D);
+fs.mkdirSync(new URL('daten/', DIST), { recursive: true });
+for (const [k, t] of Object.entries(teile))
+  fs.writeFileSync(new URL(`daten/laender-${k}.json`, DIST), JSON.stringify(t));
+
+const verteilt = bauen(kopf, leicht).replace('</body></html>',
   `<script>
 // Der Service Worker haelt die App offline lauffaehig und holt trotzdem bei
 // jedem Start die neueste Fassung. Faellt er aus, laeuft alles wie vorher -
@@ -214,7 +261,10 @@ fs.writeFileSync(new URL('manifest.webmanifest', DIST), JSON.stringify({
 
 const vorrat = ['./', './index.html', './manifest.webmanifest', './schrift.css',
   ...symbole.map(g => `./symbol-${g}.png`),
-  ...schriftDateien.map(f => `./schrift/${f}`)];
+  ...schriftDateien.map(f => `./schrift/${f}`),
+  // Die nachgeladenen Ebenen gehoeren ins Lager, sonst ist die App ohne
+  // Netz zwar da, aber ohne Laenderkarten.
+  ...Object.keys(teile).map(k => `./daten/laender-${k}.json`)];
 fs.writeFileSync(new URL('sw.js', DIST),
   fs.readFileSync(new URL('./pwa/sw.js', import.meta.url), 'utf8')
     .replace('__FASSUNG__', BAU.fassung + '-' + BAU.datum.replace(/[^0-9]/g, ''))
@@ -227,5 +277,8 @@ console.log(`  dist/                ${(verteilt.length/1024).toFixed(0)} KB Seit
   + `  →  ${(zlib.gzipSync(Buffer.from(verteilt)).length/1024).toFixed(0)} KB gzip`
   + `,  ${(distGroesse/1024).toFixed(0)} KB gesamt mit Schrift und Symbolen`);
 const html = verteilt;
-console.log(`  ${D.kontinente.length} Kontinente, ${D.laender.europa.length}+${D.laender.afrika.length} Länder, `
+console.log(`  ${D.kontinente.length} Kontinente, ${Object.values(D.laender).reduce((a,l)=>a+l.length,0)} Länder in ${Object.keys(D.laender).length} Kontinenten, `
   + `${D.deutschland.length} Bundesländer, ${D.deutschland.filter(b=>!b.stadtstaat).length} Hauptstadt-Rätsel`);
+console.log('  ' + Object.entries(teile).map(([k,t]) =>
+  `${k} ${(zlib.gzipSync(Buffer.from(JSON.stringify(t))).length/1024).toFixed(0)} KB`).join(' · ')
+  + '  (wird nachgeladen)');

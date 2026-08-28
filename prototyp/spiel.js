@@ -38,10 +38,15 @@ const PROFILE = {
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
           kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, farbe:'--f5' },
 };
+// Die Laenderebenen kommen aus den Daten, nicht aus dieser Liste: sonst
+// laufen sie auseinander. Genau das war passiert - gebacken und gezaehlt
+// waren fuenf Kontinente, in der Ebenenwahl standen zwei.
+const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
+  nordamerika:'Nordamerika', suedamerika:'Südamerika' };
 const EBENEN = [
-  { id:'kontinente',    titel:'Kontinente',        unter:'die sieben' },
-  { id:'laender:europa',titel:'Länder in Europa',  unter:'die größten' },
-  { id:'laender:afrika',titel:'Länder in Afrika',  unter:'die größten' },
+  { id:'kontinente', titel:'Kontinente', unter:'die sieben' },
+  ...Object.keys(D.laender).map(k=>({ id:`laender:${k}`,
+    titel:`Länder in ${KONT_TITEL[k] || k}`, unter:'die größten' })),
   { id:'bundeslaender', titel:'Bundesländer',      unter:'alle sechzehn' },
   { id:'hauptstaedte',  titel:'Landeshauptstädte', unter:'dreizehn Rätsel' },
 ];
@@ -49,12 +54,45 @@ let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:f
   stadtstaatenGezeigt:false, hauptstadtAuswahl:true };
 
 /* ---------- Aufgabenvorrat ---------------------------------------------- */
-function vorrat(ebeneId){
+/**
+ * In welcher Runde Fiona bei den Kontinenten steht.
+ *
+ * Das Konzept (Kapitel 4.1) gibt ihr drei aufeinander aufbauende Runden:
+ * erst vier klar unterscheidbare Formen, dann der Nord/Sued-Gegensatz, zum
+ * Schluss Antarktika mit seinem eigenen Satz. Im Code stand dafuer
+ * `k.runde<=3` - und das ist IMMER wahr. Sie bekam von Anfang an alle
+ * sieben; das Feld `runde` war Dekoration, und der Aufbau, der begruendet
+ * ist, fand nicht statt.
+ *
+ * Die naechste Runde oeffnet, wenn jeder Kontinent der bisherigen mindestens
+ * EINMAL richtig war (Fach 2). Nicht erst beim Aufkleber (Fach 3): der
+ * braucht einen Tag Pause, und so lange soll niemand vor vier Kontinenten
+ * sitzen.
+ */
+function kontinentRunde(stand){
+  let r = 1;
+  while (r < 3) {
+    const bisher = D.kontinente.filter(k => k.runde <= r);
+    if (!bisher.every(k => (stand[k.id]?.fach ?? 1) >= 2)) break;
+    r++;
+  }
+  return r;
+}
+
+/**
+ * Der Stand muss MITGEGEBEN werden koennen: die Ebenenwahl rechnet den
+ * Fortschritt aller vier Ebenen aus, bevor eine davon geladen ist. Ohne das
+ * las `kontinentRunde` den Stand der zuletzt gespielten Ebene und zeigte auf
+ * der Kachel eine falsche Zahl.
+ */
+function vorrat(ebeneId, stand = Stand){
   const [art, kont] = ebeneId.split(':');
-  if (art==='kontinente')
-    return D.kontinente.filter(k=>P.id==='fiona' ? k.runde<=3 : true)
+  if (art==='kontinente') {
+    const bis = P.id==='fiona' ? kontinentRunde(stand) : 3;
+    return D.kontinente.filter(k=>k.runde<=bis)
       .map(k=>({ id:k.id, name:k.name, aliasse:k.aliasse, aussprache:k.aussprache,
                  pfad:k.pfad, anker:k.anker }));
+  }
   if (art==='laender')
     return D.laender[kont].filter(l=>l.rang<=P.laenderTiefe)
       .map(l=>({ id:l.a3, name:l.name, aliasse:l.aliasse, aussprache:l.aussprache,
@@ -139,7 +177,7 @@ async function ebenenwahl(){
   for (const e of EBENEN) {
     let st = {};
     try { st = (await Ablage.hole('fortschritt', `${P.id}:${e.id}`)) || {}; } catch(err){}
-    const alle = vorrat(e.id);
+    const alle = vorrat(e.id, st);
     balken.push({ ...e, ...Leitner.fortschritt(alle, st) });
   }
   s.innerHTML = `<div class="kopf">
@@ -202,7 +240,36 @@ function keimAus(text){
   for (let i=0;i<text.length;i++){ h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
   return h >>> 0;
 }
+/**
+ * Holt die Umrisse einer Laenderebene nach, falls sie noch fehlen.
+ *
+ * Im Bau als eine Datei ist alles schon da (`D.nachladen` fehlt dann) - die
+ * Vorschau soll ohne Server laufen. Schlaegt das Holen fehl, sagt es das
+ * statt still eine leere Karte zu zeigen.
+ */
+const geholt = new Set();
+async function ebeneLaden(ebeneId){
+  const [art, kont] = ebeneId.split(':');
+  if (art!=='laender' || !D.nachladen || geholt.has(kont)) return true;
+  try {
+    const t = await (await fetch(`./daten/laender-${kont}.json`)).json();
+    D.laender[kont] = t.laender; D.umgebung[kont] = t.umgebung; D.vbL[kont] = t.vbL;
+    geholt.add(kont);
+    return true;
+  } catch(e){ return false; }
+}
+
 async function starten(ebeneId){
+  if (!(await ebeneLaden(ebeneId))) {
+    zeige(()=>{ const s=el('div');
+      s.innerHTML = `<div class="kopf">
+          <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button><span></span></div>
+        <div class="mitte"><div class="titel">Diese Karte fehlt noch</div>
+        <div class="unter">Sie wird beim ersten Mal aus dem Netz geholt.
+          Probier es noch einmal, wenn du wieder Verbindung hast.</div></div>`;
+      s.querySelector('#zur').onclick=()=>zeige(ebenenwahl); return s; });
+    return;
+  }
   await standLaden(ebeneId);
   const alle = vorrat(ebeneId);
   // Die Sitzungsnummer waechst, die Uhr nicht: gleicher Fortschritt +
@@ -286,8 +353,14 @@ function spielschirm(){
   // Antarktika kommt in der Weltkarte GAR NICHT vor. Es hat seine eigene
   // Ansicht; in der Weltkarte bleibt sonst ein grauer Sockel am unteren Rand
   // stehen, der wie ein Fehler aussieht.
+  // Die Karte zeigt IMMER die ganze Welt - auch die Kontinente, die in
+  // Fionas Runde noch nicht drankommen. Sonst fehlen auf ihrer Weltkarte
+  // Asien und Nordamerika, und was uebrig bleibt, sieht nach kaputter Karte
+  // aus statt nach einer Auswahl. Die Runde begrenzt, WONACH gefragt wird -
+  // nicht, was es auf der Welt gibt.
+  const alleKontinente = D.kontinente.map(k=>({ id:k.id, name:k.name, pfad:k.pfad, anker:k.anker }));
   const formen = polar ? [D.antarktika]
-    : art==='kontinente' ? st.alle.filter(g=>g.id!=='antarktika') : st.alle;
+    : art==='kontinente' ? alleKontinente.filter(g=>g.id!=='antarktika') : st.alle;
   const vb = polar ? D.vbA : art==='kontinente' ? D.vbK : art==='laender' ? D.vbL[kont] : D.vbD;
   const farbeVon=(g,i)=> (art==='bundeslaender'||istHaupt) ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const umgebung = (art==='laender' && D.umgebung[kont])
@@ -550,7 +623,8 @@ function spielschirm(){
       else if (roh===ziel.name) text='Fast! Das ist das falsche Gebiet.';
       else text='Das ist ein anderer Name.';
     } else if (eingabeart==='tippen') {
-      const r = Vergleich.rechtschreibung(roh, ziel.name);
+      // Das ganze Gebiet, nicht nur sein Name - sonst zaehlt kein Alias.
+      const r = Vergleich.rechtschreibung(roh, ziel);
       if (r.urteil==='richtig') ergebnis='richtig';
       else if (r.urteil==='fast'){ ergebnis='fast'; text=r.hinweis; }
       else { const t=Vergleich.abgleich(roh,kand);

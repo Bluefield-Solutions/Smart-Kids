@@ -115,6 +115,48 @@ const SUCHE = () => {
   // Geprueft wird nicht "die Karte fuellt den Bildschirm" - das kann sie
   // geometrisch gar nicht -, sondern "die Karte fuellt IHREN KASTEN".
   // Das ist die Zusage, die man halten kann.
+  // Nimmt das gesuchte Gebiet den Finger UEBERALL an, wo man es sieht?
+  //
+  // Der Anlass: der pulsierende Ring um das Ziel (`fill:none`, Strich bis
+  // 9 Punkte) lag ueber der Flaeche und fing den Zug ab. `elementFromPoint`
+  // lieferte den Ring - weder Gebiet noch Trefferkreis -, und die Bewertung
+  // lief gar nicht erst an: die richtige Antwort wurde nicht als falsch
+  // gewertet, es passierte ueberhaupt nichts. Ausgerechnet die
+  // Hervorhebung, die zeigen soll wohin man ziehen muss, bewachte das Ziel.
+  //
+  // Geprueft wird deshalb nicht "der Pfad ist da", sondern: an jedem Punkt,
+  // an dem das Gebiet zu SEHEN ist, muss auch das Gebiet angefasst werden.
+  let bewacht = null;
+  const zielPfad = document.querySelector('.schirm.da path.geb.ziel');
+  if (zielPfad) {
+    const b = zielPfad.getBoundingClientRect();
+    let sichtbar = 0, gefangen = 0; const wer = new Set();
+    for (let n = 0; n < 12; n++) for (let m = 0; m < 12; m++) {
+      const x = b.left + b.width * (n + .5) / 12, y = b.top + b.height * (m + .5) / 12;
+      if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) continue;
+      // Der ganze Stapel, nicht nur das oberste Element: nur so ist zu
+      // sehen, ob das Ziel DA ist und trotzdem nicht drankommt.
+      const stapel = document.elementsFromPoint(x, y);
+      const i = stapel.indexOf(zielPfad);
+      if (i < 0) continue;                      // hier ist das Ziel nicht gemalt
+      sichtbar++;
+      // Ein NACHBARGEBIET, das an der gemeinsamen Grenze obenauf liegt, ist
+      // in Ordnung - dort gehoert der Punkt wirklich dem Nachbarn, und das
+      // Kind bekommt "Das ist das falsche Gebiet" zu hoeren. Ebenso ein
+      // Trefferkreis: der ist genau dafuer da. Gemeint ist der SCHMUCK -
+      // Ringe, Zeiger, Fahnen, Haken.
+      const drueber = stapel.slice(0, i).find(e =>
+        e.closest && e.closest('.karte svg')
+        && !e.classList.contains('geb')
+        && !e.closest('#treffer circle'));
+      if (drueber) {
+        gefangen++;
+        wer.add('.' + (drueber.getAttribute('class') || drueber.tagName));
+      }
+    }
+    bewacht = { sichtbar, gefangen, wer: [...wer].slice(0, 3) };
+  }
+
   let karte = null;
   const svg = document.querySelector('.schirm.da .karte svg');
   if (svg) {
@@ -128,7 +170,7 @@ const SUCHE = () => {
       gez: [Math.round(gez.b), Math.round(gez.h)],
     };
   }
-  return { raus, klein, zu, karte };
+  return { raus, klein, zu, karte, bewacht };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -172,6 +214,11 @@ for (const g of GERAETE) {
     zuKlein += r.klein.length;
     for (const x of r.raus) meldungen.push(`${name}: ${x}`);
     for (const x of r.zu) meldungen.push(`${name}: ${x}`);
+    if (r.bewacht && r.bewacht.gefangen > 0)
+      meldungen.push(`${name}: ${r.bewacht.gefangen} von `
+        + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `
+        + `werden von Schmuck abgefangen (${r.bewacht.wer.join(', ')}) — `
+        + `dort landet ein Etikett auf nichts`);
     if (r.karte && r.karte.anteil < KARTE_MIN)
       meldungen.push(`${name}: die Karte füllt nur `
         + `${(r.karte.anteil * 100).toFixed(0)} % ihres Kastens `
