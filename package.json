@@ -22,7 +22,8 @@
     "passt": "node tor/passt.mjs",
     "spielprobe": "node tor/spielprobe.mjs",
     "lesbarkeit": "node tor/lesbarkeit.mjs",
-    "ziehen": "node tor/ziehen.mjs"
+    "ziehen": "node tor/ziehen.mjs",
+    "proben": "node tor/proben.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",

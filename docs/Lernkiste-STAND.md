@@ -5,7 +5,8 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
-Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs- und der **Ziehrunde**.
+Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh- und der
+**Probenrunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -20,6 +21,7 @@ npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
                     Antarktika, Städte
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
+npm run proben      die 19 stehenden Gegenproben (Baum muss sauber sein)
 ```
 
 Die Kette, in dieser Reihenfolge:
@@ -30,8 +32,9 @@ inhalt · topologie · beruehrung · marken · schrift · symbol · doku
   → ansicht → pwa · offline → smoke
 ```
 
-**Die Torkette ist grün.** Fünfzehn Prüfungen, jede mit mindestens einer
-Gegenprobe belegt.
+**Die Torkette ist grün.** Fünfzehn Prüfungen — und seit `npm run proben`
+ist „mit Gegenprobe belegt" keine Behauptung mehr, sondern ein Lauf:
+**19 Gegenproben, alle schlagen an.**
 
 ---
 
@@ -790,6 +793,90 @@ Kontext.
 Dazu prüft `passt` neu auch den **Hinweis**: er ist nicht bedienbar, aber er
 ist die einzige Auskunft bei einem Fehlversuch — und er stand auf dem iPhone
 quer zweizeilig am unteren Rand.
+
+---
+
+## Die Probenrunde
+
+`npm run proben` — **19 stehende Gegenproben**, jede baut einen Fehler ein
+und schaut nach, ob das zuständige Tor rot wird.
+
+### Warum das nötig war
+
+Ein Tor, das nie etwas meldet, sieht von außen genauso aus wie eines, das
+alles durchlässt: **grün**. Bis hierher lagen die Gegenproben in meinem
+Kopf. In der Ziehrunde habe ich fünf von Hand gefahren, zwei davon haben
+nicht den Code widerlegt, sondern das Tor — und beim nächsten Mal wären sie
+vergessen gewesen.
+
+Zwei Regeln, erzwungen statt aufgeschrieben:
+
+- **Erst einchecken, dann proben.** Wiederhergestellt wird mit `git
+  checkout`. Der Lauf verweigert bei schmutzigem Baum den Dienst.
+- **Prüfen, ob der Eingriff angekommen ist.** Jede Probe sagt, *worin* die
+  Änderung zu finden sein muss — bei Toren, die `dist/` lesen, im gebauten
+  Stand, nicht in der Quelle. Ein Eingriff, der nicht ankommt, sieht aus wie
+  ein bestandenes Tor.
+
+### Der erste Lauf hat vier Löcher gefunden
+
+Vierzehn von achtzehn schlugen an. Die anderen vier waren die Ausbeute:
+
+**1. `doku` lief seit dem Umzug überhaupt nicht.** Der Pfad lautete
+`../docs/Lernkiste-KONZEPT.md` — ein Rest aus der Zeit unter
+`towerfront/lernkiste/`. Seit dem Umzug zeigt er *aus* dem Verzeichnis
+heraus, `existsSync` war falsch, und die ganze Prüfung übersprang sich
+**still**. Still ist grün. Eine fehlende Konzeptdatei ist jetzt ein Fehler,
+kein Achselzucken.
+
+**2. `beruehrung` konnte gar nicht rot werden.** Es hatte keinen einzigen
+Fehlerpfad — es berichtete, es bewachte nicht. Es hat jetzt eine harte
+Zusage: die App baut die entkoppelte Trefferfläche aus dem **Anker**. Ein
+Gebiet, das zu klein ist und keinen Anker hat, bekommt keinen Kreis und ist
+mit dem Finger an *keiner* Stelle zu treffen — es stünde in den Daten, wäre
+gezählt, läge auf der Karte und ließe sich nicht spielen.
+
+**3. Das Tor stürzte ab, statt zu urteilen.** Die Gegenprobe dazu (Bremen
+verliert seinen Anker, 9,4 pt, das kleinste Gebiet überhaupt) brachte einen
+`TypeError` an zwei Stellen. Ein Absturz ist rot, aber er sagt nichts: dort
+steht ein Stapelabzug statt eines Satzes, und beim nächsten Mal sucht
+jemand den Fehler im Tor statt in den Daten. Ein Tor muss auch **kaputte**
+Eingaben beurteilen können.
+
+**4. `proben` selbst ließ den Baum schlechter zurück, als es ihn vorfand.**
+Es stellte die Quellen mit `git checkout` wieder her — aber `dist/` steht
+nicht in Git. Der letzte Eingriff blieb im gebauten Stand stehen, und das
+nächste Tor prüfte ihn mit. Es baut jetzt nach jeder Probe neu.
+
+Dazu zwei Proben, die *selbst* falsch gezielt hatten: „einen Alias aus den
+Daten nehmen" ist eine erlaubte Datenänderung und kein Fehler — gemeint war
+der Fehler aus der Spielerrunde, dass die Rechtschreibprüfung Aliasse gar
+nicht erst bekommt. Und der Manifest-Pfad hieß `manifest.webmanifest`,
+nicht `app.webmanifest`.
+
+### Und das `ziehen`-Tor war zu schwach
+
+Die Gegenprobe „das gezogene Schild bleibt anfassbar" blieb grün. Der Grund
+ist lehrreich: das Schild hängt seit der Ziehrunde **unter** dem Finger,
+also liegt es beim exakten Treffertest gar nicht mehr im Weg. Aber die
+Umkreissuche testet bis 60 Punkte in **alle** Richtungen, und
+`elementFromPoint` liefert immer nur das oberste Element — ein anfassbares
+Schild verdeckt damit die ganze untere Hälfte des Suchradius.
+
+Das Tor zieht deshalb jetzt auch **von oben** heran, wo das Schild über dem
+Ziel hängt. Gemessen: mit `pointer-events:none` trifft man bis 40 Punkte,
+ohne es bis 0.
+
+### Was `proben` außerdem zählt
+
+Zwei Deckungsprüfungen, beide aus dem Baum gelesen statt hingeschrieben:
+
+- **Hat jedes Tor der Kette eine Probe?** Die Kette kommt aus
+  `package.json`. Die häufigste Verfallsart ist nicht die falsche Probe,
+  sondern die fehlende: ein neues Tor kommt dazu, niemand trägt eine nach,
+  und alles bleibt grün.
+- **Hat jede der sieben Prüfungen in `inhalt.mjs` eine?** Die Liste wird aus
+  der Datei selbst gelesen. Genau so ist `beruehrung` aufgefallen.
 
 ---
 

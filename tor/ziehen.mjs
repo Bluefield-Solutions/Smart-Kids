@@ -142,6 +142,29 @@ if (weiteste < GRENZE)
 // Deckel wird deshalb weiter unten am offenen Meer geprueft, wo der
 // Unterschied messbar ist.
 
+/* --- 1b. Auch von OBEN, wo das Schild im Weg haengt ---------------------
+ *
+ * Das Schild haengt UNTER dem Finger. Zieht man von oben heran, liegt das
+ * gesuchte Gebiet also genau dort, wo das Schild ist - und die
+ * Umkreissuche testet mit `elementFromPoint`, das immer nur das OBERSTE
+ * Element liefert. Ist das Schild anfassbar, verdeckt es damit jeden
+ * Punkt unter sich: bis zu 60 Bildpunkte Suchradius, von denen die untere
+ * Haelfte blind ist.
+ *
+ * Die Reihe oben zieht nach links unten und merkt davon nichts. Genau so
+ * ist `npm run proben` auf die Luecke gestossen: die Gegenprobe nahm
+ * `pointer-events:none` heraus, und das Tor blieb gruen.
+ */
+let vonOben = 0;
+for (const d of [10, 20, 30, 40]) {
+  const r = await ziehe(d, [0, -1]);      // Finger ueber dem Ziel, Ziel unter dem Schild
+  if (r.richtig) vonOben = d;
+}
+console.log(`    von oben (Schild liegt über dem Ziel): getroffen bis ${vonOben} px`);
+if (vonOben < GRENZE)
+  fehler.push(`Von oben trifft man nur bis ${vonOben} px — das gezogene Schild `
+    + 'verdeckt sein eigenes Ziel für die Trefferprüfung (fehlt `pointer-events:none`?)');
+
 /* --- 2. Ein Fehlwurf ist nie stumm -------------------------------------
  *
  * Nicht "weit daneben": 260 Bildpunkte neben Australien liegt ein anderer

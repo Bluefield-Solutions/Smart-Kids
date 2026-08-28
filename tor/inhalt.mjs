@@ -130,16 +130,28 @@ pruefe(falscheRichtung === 0,
 pruefe(entartet === 0, `${entartet} Gebiete mit Fläche 0`);
 console.log(`    ${KONTINENTE_FEIN.length + DEUTSCHLAND_FEIN.length} Umrisse geprüft, `
   + `${falscheRichtung} falsch herum, ${entartet} entartet`);
-// Anker liegt IM Gebiet
-let ankerDraussen = 0;
+// Anker liegt IM Gebiet.
+//
+// Ein FEHLENDER Anker liess das Tor hier mit einem TypeError abstuerzen -
+// gefunden von `npm run proben`. Ein Absturz ist zwar rot, aber er sagt
+// nichts: an der Stelle steht ein Stapelabzug statt eines Satzes, und das
+// naechste Mal sucht jemand den Fehler im Tor statt in den Daten. Ein Tor
+// muss auch kaputte Eingaben BEURTEILEN koennen, nicht nur richtige.
+let ankerDraussen = 0, ankerFehlt = 0;
 for (const s of STAEDTE) {
+  if (!Array.isArray(s.anker) || s.anker.length !== 2
+      || !Number.isFinite(s.anker[0]) || !Number.isFinite(s.anker[1])) {
+    ankerFehlt++; continue;
+  }
   const b = DEUTSCHLAND_FEIN.find(x=>x.id===s.id);
+  if (!b) { ankerFehlt++; continue; }
   const polys = pfadZuPolys(b.pfad);
   const groesster = polys.reduce((a,c)=>ringFlaeche(a)>ringFlaeche(c)?a:c);
   if (!imPolygon(s.anker[0], s.anker[1], [groesster])) ankerDraussen++;
 }
+pruefe(ankerFehlt === 0, `${ankerFehlt} Gebiete haben keinen brauchbaren Anker`);
 pruefe(ankerDraussen === 0, `${ankerDraussen} Anker liegen außerhalb ihres Gebiets`);
-console.log(`    ${STAEDTE.length} Anker geprüft, ${ankerDraussen} außerhalb`);
+console.log(`    ${STAEDTE.length} Anker geprüft, ${ankerDraussen} außerhalb, ${ankerFehlt} fehlen`);
 
 // Nadeln: Schnitte ohne Flaeche.
 //
@@ -231,12 +243,34 @@ zuKlein.sort((a,b)=>a.px-b.px).forEach(z=>console.log(`      ${z.name.padEnd(24)
 hinweise.push(`${zuKlein.length} Gebiete brauchen eine entkoppelte Trefferfläche (Konzept 5.4)`);
 // Ueberlappen sich zwei 44-pt-Kreise, gewinnt das kleinere.
 let paare = 0;
-for (let i=0;i<STAEDTE.length;i++) for (let j=i+1;j<STAEDTE.length;j++) {
-  const a=STAEDTE[i], b=STAEDTE[j];
+const mitAnker = STAEDTE.filter(s => Array.isArray(s.anker) && s.anker.length === 2
+  && Number.isFinite(s.anker[0]) && Number.isFinite(s.anker[1]));
+for (let i=0;i<mitAnker.length;i++) for (let j=i+1;j<mitAnker.length;j++) {
+  const a=mitAnker[i], b=mitAnker[j];
   const d = Math.hypot(a.anker[0]-b.anker[0], a.anker[1]-b.anker[1]) * (KARTE_PX/1000);
   if (d < MIN_PT) { paare++; hinweise.push(`Trefferkreise überlappen: ${a.name} / ${b.name} (${d.toFixed(0)} pt)`); }
 }
 console.log(`    ${paare} Paare mit überlappenden Trefferkreisen — dort gewinnt das kleinere Gebiet`);
+
+// Bis hierher hat `beruehrung` nur BERICHTET. `npm run proben` hat das
+// gemeldet: ein Tor ohne einen einzigen Fehlerpfad kann nicht rot werden,
+// und von aussen sieht das aus wie eines, das alles bestanden hat.
+//
+// Die harte Zusage, die es zu bewachen gibt: die App baut die entkoppelte
+// Trefferflaeche aus dem ANKER (`formen.filter(x => x.anker)`). Ein Gebiet,
+// das zu klein ist und keinen Anker hat, bekommt keinen Kreis - und ist mit
+// dem Finger dann an KEINER Stelle zu treffen. Es steht in den Daten, wird
+// gezaehlt, erscheint auf der Karte und laesst sich nicht spielen.
+{
+  const ohneAnker = zuKlein
+    .map(z => STAEDTE.find(x => x.name === z.name))
+    .filter(s => !s || !Array.isArray(s.anker) || s.anker.length !== 2
+      || !Number.isFinite(s.anker[0]) || !Number.isFinite(s.anker[1]));
+  pruefe(ohneAnker.length === 0,
+    `${ohneAnker.length} zu kleine Gebiete haben keinen Anker und damit keine `
+    + `Trefferfläche — sie sind mit dem Finger nicht zu treffen`
+    + (ohneAnker[0] ? ` (${ohneAnker.map(s => s?.name ?? '?').join(', ')})` : ''));
+}
 
 /* ====================================================== Tor `marken` ==== */
 console.log('\n  Tor `marken`');
@@ -456,8 +490,21 @@ console.log('\n  Tor `symbol`');
 
 /* ======================================================== Tor `doku` ==== */
 console.log('\n  Tor `doku`');
-const KONZEPT = '../docs/Lernkiste-KONZEPT.md';
-if (fs.existsSync(KONZEPT)) {
+// `../docs/…` war ein Rest aus der Zeit, als der Baum unter
+// `towerfront/lernkiste/` lag. Seit dem Umzug zeigt der Pfad AUS dem
+// Verzeichnis heraus, die Datei ist dort nicht, und `existsSync` war
+// falsch - also lief die ganze Pruefung nicht mehr. Gemeldet hat das
+// niemand: sie uebersprang sich still, und still ist gruen.
+//
+// Gefunden hat es `npm run proben`: die Gegenprobe drehte die Gebietszahl
+// im Konzept um sieben, und das Tor blieb gruen.
+//
+// Ein fehlendes Konzept ist deshalb jetzt ein FEHLER, kein Achselzucken.
+const KONZEPT = 'docs/Lernkiste-KONZEPT.md';
+if (!fs.existsSync(KONZEPT)) {
+  fehler.push(`${KONZEPT} nicht gefunden — die Doku-Prüfung kann nicht laufen `
+    + '(ein Tor, das sich still überspringt, ist schlimmer als keines)');
+} else {
   const t = fs.readFileSync(KONZEPT,'utf8');
   const m = t.match(/Gebiete gesamt \| \*\*(\d+)\*\*/);
   if (!m) hinweise.push('Konzept nennt keine Gebietszahl');
