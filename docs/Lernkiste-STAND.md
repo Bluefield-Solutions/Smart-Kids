@@ -23,7 +23,7 @@ npm run ansicht     Bildvergleich, 13 Aufnahmen — vier davon auf dem
                     Zielgerät (iPhone quer). Nur ortsfest.
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 42 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 46 stehenden Gegenproben (Baum muss sauber sein,
                     höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
@@ -38,7 +38,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Neunzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **42 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **46 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 Seit der Audit-Runde vergleicht sich die Aufzählung darüber selbst: das Tor
@@ -1538,10 +1538,12 @@ antippen" steht.
 Und dieser eine Durchlauf hat F10 gefunden — die Endlosschleife im Lob. Kein
 anderes Tor spielt eine Runde bis zum Schluss **mit festgenageltem Würfel**.
 
-### Sieben neue Gegenproben
+### Zehn neue Gegenproben
 
-Wer ein Tor ändert, trägt dort eine Probe nach. Sechs kamen dazu, damit die
-Runde nicht nur behauptet, geprüft worden zu sein:
+Wer ein Tor ändert, trägt dort eine Probe nach. Aus 36 sind **46** geworden,
+und der volle Lauf braucht dafür 35,6 Minuten — smoke allein 30 davon.
+Drei stammen aus dem ersten Teil der Runde (Sterne im Kopf, Fortschrittsband,
+PIN), sieben aus dem zweiten:
 
 | Probe | Tor | Was sie nachstellt |
 |---|---|---|
