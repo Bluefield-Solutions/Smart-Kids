@@ -132,7 +132,13 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
 
 // Ebene 1: die Runden bauen aufeinander auf, und jede bringt etwas Neues.
 {
-  const proRunde = [1, 2, 3].map(r => I.KONTINENTE.filter(k => k.runde === r).length);
+  // Wieviele Runden es gibt, steht in den DATEN. [1,2,3] stand hier fest -
+  // und als Antarktika herausfiel, meldete das Tor „Runde 3 ist leer", obwohl
+  // es sie schlicht nicht mehr gibt. Eine Zahl im Tor, die die Daten nicht
+  // kennen, prueft irgendwann etwas anderes als das, was es gibt.
+  const runden = Math.max(...I.KONTINENTE.map(k => k.runde));
+  const proRunde = Array.from({ length: runden }, (_, i) =>
+    I.KONTINENTE.filter(k => k.runde === i + 1).length);
   if (proRunde.some(n => n === 0))
     fehler.push(`Kontinente: Runde ${proRunde.indexOf(0) + 1} ist leer — `
       + `Fionas Aufbau überspringt sie stumm`);

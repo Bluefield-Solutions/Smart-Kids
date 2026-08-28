@@ -33,6 +33,11 @@ const GERAETE = [
   { n:'iPad quer',        w:1180, h:820,  touch:true  },
   { n:'iPad hoch',        w:820,  h:1180, touch:true  },
   { n:'Fenster schmal',   w:700,  h:850,  touch:false },   // Schreibtisch
+  // Das Zielgeraet MIT dem, was das Telefon selbst belegt: Uhr und Akku
+  // oben, der Streifen unten, die abgerundeten Ecken seitlich. Die Zahlen
+  // sind die eines iPhone 14 Pro im Querformat.
+  { n:'iPhone quer, Leiste', w:844, h:390, touch:true,
+    sicher:{ oben:21, rechts:59, unten:21, links:59 } },
 ];
 
 /** Kleinste Kante einer Trefferflaeche, Apple HIG. */
@@ -207,6 +212,22 @@ for (const g of GERAETE) {
   const ctx = await b.newContext({ hasTouch: g.touch, isMobile: g.touch, locale: 'de-DE',
     viewport: { width: g.w, height: g.h }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const p = await ctx.newPage();
+  // `env(safe-area-inset-*)` laesst sich von aussen nicht setzen - kein
+  // Browser bietet das an. Die VERKABELUNG dahinter schon: die App liest
+  // die Werte über Marken, und die sind zu setzen. Geprueft wird damit
+  // nicht, ob iOS die richtigen Zahlen liefert, sondern ob die App sie
+  // ueberhaupt beachtet. Genau das tat sie nicht: das Polster stand auf
+  // `body`, waehrend die Buehne absolut am FENSTER hing - der
+  // Schliessen-Knopf lag unter der Uhr und nahm den Finger nicht an.
+  if (g.sicher) await p.addInitScript((si) => {
+    addEventListener('DOMContentLoaded', () => {
+      const r = document.documentElement.style;
+      r.setProperty('--sicher-oben', si.oben + 'px');
+      r.setProperty('--sicher-rechts', si.rechts + 'px');
+      r.setProperty('--sicher-unten', si.unten + 'px');
+      r.setProperty('--sicher-links', si.links + 'px');
+    });
+  }, g.sicher);
   await p.goto(ADRESSE, { waitUntil: 'load' });
   await p.evaluate(async () => {
     await document.fonts.ready;
@@ -218,6 +239,25 @@ for (const g of GERAETE) {
   const schau = async (name) => {
     await p.waitForTimeout(450);   // der Bildschirmwechsel muss durch sein
     const r = await p.evaluate(SUCHE);
+    // Liegt etwas Bedienbares im Bereich, den das Telefon fuer sich
+    // beansprucht? Dort sitzen Uhr, Akku und der Streifen zum Wischen - ein
+    // Knopf darunter ist zu sehen und nicht zu treffen.
+    if (g.sicher) {
+      const drin = await p.evaluate((si) => {
+        const raus = [];
+        for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .knopf, '
+          + '.schirm.da .etikett, .schirm.da .zi, .schirm.da .mikro, .schirm.da .sterne')) {
+          const b = el.getBoundingClientRect();
+          if (b.width === 0 && b.height === 0) continue;
+          const fehlt = Math.max(si.oben - b.top, si.links - b.left,
+            b.right - (innerWidth - si.rechts), b.bottom - (innerHeight - si.unten));
+          if (fehlt > 1) raus.push(`„${(el.textContent.trim() || el.className).slice(0, 22)}" `
+            + `${fehlt.toFixed(0)} px im Bereich des Telefons`);
+        }
+        return raus;
+      }, g.sicher);
+      for (const x of drin) meldungen.push(`${name}: ${x}`);
+    }
     gesehen++;
     zuKlein += r.klein.length;
     for (const x of r.raus) meldungen.push(`${name}: ${x}`);
@@ -297,4 +337,4 @@ if (fehler.length) {
   console.log('  Knopf ist sichtbar und trotzdem nicht zu treffen.');
   process.exit(1);
 }
-console.log('\n  passt grün: auf allen sechs Größen ist alles im Bild.');
+console.log(`\n  passt grün: auf allen ${GERAETE.length} Größen ist alles im Bild.`);

@@ -46,7 +46,7 @@ blockiert M0.
 | | |
 |---|---|
 | Ebenen | 4 |
-| Gebiete gesamt | **64** (7 Kontinente + 25 Länder + 16 Bundesländer + 16 Städte) |
+| Gebiete gesamt | **63** (6 Kontinente + 25 Länder + 16 Bundesländer + 16 Städte) |
 | Eingabewege | 3 (Ziehen · Sprechen · Tippen) |
 | Tore in der Kette | **22** |
 
@@ -337,31 +337,38 @@ offen gelassen.
 
 ## 4. Die vier Ebenen
 
-### 4.1 Ebene 1 — Kontinente (7)
+### 4.1 Ebene 1 — Kontinente (6)
 
-Afrika · Antarktika · Asien · Australien und Ozeanien · Europa ·
-Nordamerika · Südamerika. Das ist die Schulzahl; ein Kind, das „sechs
-Kontinente" lernt, lernt etwas Falsches.
+Afrika · Asien · Australien und Ozeanien · Europa · Nordamerika ·
+Südamerika.
 
-**Lea:** alle sieben, freies Schreibfeld.
+**Lea:** alle sechs, freies Schreibfeld.
 
-**Fiona: drei Runden, aufeinander aufbauend.**
+**Fiona: zwei Runden, aufeinander aufbauend.**
 
 | Runde | Kandidaten | warum diese |
 |---|---|---|
 | 1 | Europa · Afrika · Australien · Südamerika | vier klar unterscheidbare Formen, alle bewohnt und im Alltag präsent |
 | 2 | + Nordamerika · Asien | jetzt ist der **Nord/Süd-Kontrast** der Lerninhalt — er wird als Gegensatz eingeführt, nicht nebenbei |
-| 3 | + Antarktika | mit eigenem Satz: *„Hier wohnt niemand — nur Eis."* |
 
-Das ersetzt die Einstiegsrunde aus K1. Deren Begründung war falsch (Befund F4):
-Antarktika hat in den üblichen Weltkarten gerade **keinen** unverwechselbaren
-Umriss, sondern wird zu einem verzerrten Band am unteren Rand. Es ist die am
-schwersten wiederzuerkennende Fläche, nicht die leichteste — und gehört
-deshalb ans Ende, nicht an den Anfang.
+Wieviele Runden es gibt, steht in den **Daten** (`runde` je Kontinent), nicht
+im Code: mit Antarktika fiel die dritte weg, und eine festgeschriebene Drei
+hätte danach eine Runde gemeldet, die nichts Neues mehr bringt.
 
-Antarktika bleibt trotzdem drin: Die sieben Kontinente sind eine geschlossene
-Menge, und der Satz *„Hier wohnt niemand"* ist für ein Kind ein besserer
-Merksatz als jede Form.
+**Antarktika ist ausgenommen** — nachgefragt und entschieden, nicht
+vergessen. Es hatte hier zwei Sonderrollen, und beide waren teuer:
+
+- Auf der Weltkarte (Natural Earth) wird die Antarktis zu einem breiten Band
+  am unteren Rand, das über die ganze Kartenbreite läuft. Als Umriss
+  unkenntlich, beim Ziehen kaum vom Kartenrand zu unterscheiden — Befund F4.
+- Deshalb bekam sie eine eigene **polare Aufsicht**: eine zweite Kartenart
+  für ein einziges Gebiet. Ein Kind, das gerade sechs Umrisse nebeneinander
+  gelernt hat, sah bei der siebten plötzlich die Welt von oben.
+
+Sechs Kontinente, eine Karte. Dass die Schulzahl sieben ist, bleibt richtig —
+es ist eine Aussage über die Welt, keine über diese Übung. Die polare
+Aufsicht liegt weiter in `tools/backen-antarktika.mjs`, falls sie einmal
+gebraucht wird.
 
 ### 4.2 Ebene 2 — die einwohnerstärksten Länder je Kontinent
 
@@ -379,7 +386,7 @@ geläufigen.
 | **Nordamerika** | USA | Mexiko | Kanada | Guatemala | Haiti |
 | **Südamerika** | Brasilien | Kolumbien | Argentinien | Peru | Venezuela |
 
-Australien/Ozeanien ist beauftragt ausgenommen, Antarktika hat keine Länder.
+Australien/Ozeanien ist beauftragt ausgenommen, Antarktika ist nicht dabei.
 **25 Länder** für Lea, 15 für Fiona.
 
 Wie gut die Aufteilung greift, zeigt Nordamerika: Fiona bekommt USA, Mexiko
@@ -405,10 +412,9 @@ gezeichnet, alle Länder mit ihren Grenzen; die Ziele sind hervorgehoben, der
 Rest liegt ruhig daneben. Zeigte man nur die fünf, lernte das Kind eine Karte,
 die es nicht gibt — und könnte durch Ausschluss raten statt zu wissen.
 
-**Australien und Antarktika sind keine Sackgasse.** Beide sind auf Ebene 2
-sichtbar und erkennbar kein Ziel. Wer hintippt, bekommt einen gesprochenen
-Satz statt nichts: *„In der Antarktis wohnt niemand — hier gibt es keine
-Länder."* Für eine Sechsjährige ist ein toter Tipp das Ende der Sitzung.
+**Australien ist keine Sackgasse.** Es ist auf Ebene 2 sichtbar und
+erkennbar kein Ziel. Wer hintippt, bekommt einen gesprochenen Satz statt
+nichts. Für eine Sechsjährige ist ein toter Tipp das Ende der Sitzung.
 
 ### 4.3 Ebene 3 — die 16 Bundesländer
 
@@ -472,13 +478,13 @@ Ländern, die Ebene wäre also überall sonst leer.
 
 ### 4.5 Wo die Zahl 69 herkommt
 
-7 Kontinente + **25** Länder + 16 Bundesländer + 16 Städte = **64 Gebiete**.
-Fiona sieht davon 54 (15 statt 25 Länder).
+6 Kontinente + **25** Länder + 16 Bundesländer + 16 Städte = **63 Gebiete**.
+Fiona sieht davon 53 (15 statt 25 Länder).
 
 **Diese Zahl war zweimal falsch, und beide Male hat sie niemand gerechnet.**
 In K1 stand „53", das zählte nur drei Ebenen (Befund I2). K2 und K3 sagten
 „69" und rechneten mit **30** Ländern — als gäbe es sechs Kontinente mit
-Ländern. Es sind fünf: Australien ist beauftragt ausgenommen, Antarktika hat
+Ländern. Es sind fünf: Australien ist beauftragt ausgenommen, Antarktika ist
 keine. Fünf mal fünf ist fünfundzwanzig.
 
 Gefunden hat es das Tor `inhalt`, beim ersten Lauf, gegen die echten Daten.
@@ -1598,13 +1604,24 @@ Tiefen: Lea die fünf größten, Fiona die drei größten (Kapitel 4.2). Damit
 sieht Fiona in Nordamerika genau USA, Mexiko und Kanada; Guatemala und Haiti
 erreichen nur Lea.
 
-**O2 · Antarktika.** Geprüft, wie gewünscht. Ergebnis: Meine Begründung in K1
-war falsch (Kapitel 4.1), das Ergebnis bleibt aber — **Antarktika gehört zu
-den sieben Kontinenten, und ein Kind, das sechs lernt, lernt etwas Falsches.**
-Neu ist die Reihenfolge: Fiona bekommt es erst in der dritten Runde, mit einem
-eigenen Satz. Auf Ebene 2 taucht es ohnehin nie auf, weil es keine Länder
-hat. Wenn ihr es trotzdem ganz herausnehmen wollt, ist das eine Zeile in den
-Daten — ich rate davon ab.
+**O2 · Antarktika — HERAUSGENOMMEN, gegen meinen damaligen Rat.**
+
+Was hier stand: *„Antarktika gehört zu den sieben Kontinenten, und ein Kind,
+das sechs lernt, lernt etwas Falsches. Wenn ihr es trotzdem ganz herausnehmen
+wollt, ist das eine Zeile in den Daten — ich rate davon ab."*
+
+Nach dem Spielen am iPhone kam die Frage zurück, und die Entscheidung ist
+gefallen: Antarktika ist raus. Der Einwand war gut — auf der großen Karte
+lässt es sich nicht verbinden. Genau das war der Preis, den mein Rat nicht
+mitgerechnet hatte: um es überhaupt zeigen zu können, brauchte es eine
+zweite Kartenart für ein einziges Gebiet (die polare Aufsicht), und damit
+lernt das Kind bei sieben von sieben Fragen eine Karte — und bei der
+siebten eine andere.
+
+Was richtig bleibt: es *gibt* sieben Kontinente. Das ist eine Aussage über
+die Welt, keine über diese Übung. Was hier fehlt, kann ein Satz sagen; was
+hier falsch aussieht, kann kein Satz retten. Es waren zwei Zeilen in den
+Daten, nicht eine.
 
 **O3 · Russland in Europas Fünferliste.** Es steht dort, weil die Datenquelle
 es Europa zuordnet und die Regel damit ohne Sonderfall auskommt. Wer es

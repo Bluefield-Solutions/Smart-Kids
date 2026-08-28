@@ -127,6 +127,15 @@ const PROBEN = [
     ersatz:"const weiter = el('button','leise'); weiter.style.minWidth='900px';",
     an:{ ...DIST, text:"minWidth='900px'" }, sagt:'über den Rand' },
 
+  // Der sichere Bereich. Der Fehler war nicht „zu wenig Abstand", sondern
+  // dass das Polster GAR NICHT wirkte: es stand auf `body`, waehrend die
+  // Buehne absolut am Fenster hing. Genau das wird hier nachgestellt.
+  { n:'die Bühne beachtet den sicheren Bereich nicht', tor:'passt', bauen:true, datei:V,
+    such:'  top:var(--sicher-oben); right:var(--sicher-rechts);\n  bottom:var(--sicher-unten); left:var(--sicher-links)}',
+    ersatz:'  inset:0}',
+    an:{ ...DIST, fehlt:'top:var(--sicher-oben)' },
+    sagt:'im Bereich des Telefons' },
+
   /* --- lesbarkeit --------------------------------------------------- */
   { n:'kleiner Text wird zu hell', tor:'lesbarkeit', bauen:true, datei:'src/marken/marken.css',
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
@@ -237,6 +246,19 @@ const PROBEN = [
     an:{ ...DIST, fehlt:'transition-delay:calc(var(--d-schirm) / 2)}' },
     sagt:'Doppelbild' },
 
+  // „Von vorne" muss WIRKLICH loeschen - ein Knopf, der dasteht und nichts
+  // tut, ist schlimmer als keiner.
+  { n:'„von vorne" löscht nichts', tor:'smoke', bauen:true, datei:D,
+    such:"    await Ablage.loesche('fortschritt', `${P.id}:${id}`).catch(()=>{});",
+    ersatz:'',
+    an:{ ...DIST, fehlt:"await Ablage.loesche('fortschritt', `${P.id}:${id}`)" },
+    sagt:'Gegenstände im Leitner-Stand' },
+  // Und es muss nachfragen: ein Fehlgriff raeumt eine Woche Uebung weg.
+  { n:'„von vorne" löscht schon beim ersten Tipper', tor:'smoke', bauen:true, datei:D,
+    such:"    if (b.dataset.sicher!=='ja'){", ersatz:'    if (false){',
+    an:{ ...DIST, text:'if (false){' },
+    sagt:'fragt nicht nach' },
+
   { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",
@@ -287,6 +309,33 @@ const lauf = (befehl, umgebung, args) => {
  * alle vier Proben meldeten „war schon vorher rot".
  */
 let nachRestore = null;
+
+/**
+ * Auch beim ABBRUCH wird aufgeraeumt.
+ *
+ * Der Lauf dauert Minuten, und wer ihn mit Strg-C beendet - oder wessen
+ * Zeitgrenze zuschlaegt -, laesst sonst den letzten Eingriff im Baum
+ * stehen. Genau das ist passiert: nach einem abgebrochenen Lauf stand
+ * `if (false){` in der Bestaetigungsabfrage, der naechste Bau uebernahm es,
+ * und die Bildschirmfotos danach zeigten einen beschaedigten Stand.
+ *
+ * Ein Werkzeug, das den Baum schlechter zuruecklaesst, als es ihn
+ * vorgefunden hat, ist gefaehrlicher als keines - das stand schon einmal
+ * hier, und es galt nur fuer den geordneten Fall.
+ */
+let amRaeumen = false;
+for (const zeichen of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+  process.on(zeichen, () => {
+    if (amRaeumen) process.exit(130);
+    amRaeumen = true;
+    console.log(`\n\n  Abbruch (${zeichen}) — der Baum wird zurückgesetzt …`);
+    try { execSync('git checkout -- .', { stdio:'ignore' });
+          execFileSync('npm', ['run', 'bauen'], { stdio:'ignore' }); } catch {}
+    console.log('  … zurückgesetzt. Der festgehaltene Stand bleibt, wie er war.\n');
+    process.exit(130);
+  });
+}
+
 const wiederherstellen = (gebaut) => {
   execSync('git checkout -- .', { stdio:'ignore' });
   if (nachRestore) nachRestore();

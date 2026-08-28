@@ -11,7 +11,6 @@ import { STAEDTE } from '../src/geo/staedte.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { inline } from './inline.mjs';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
-import { ANTARKTIKA_GROB } from '../src/geo/antarktika.grob.js';
 
 const NACHBARN = JSON.parse(fs.readFileSync(new URL('./nachbarn.json', import.meta.url)));
 function vierfaerben(ids){
@@ -60,10 +59,13 @@ const laenderMeta = {};
 for (const [k, l] of Object.entries(I.LAENDER)) for (const x of l) laenderMeta[x.a3] = x;
 
 const D = {
-  kontinente: ankerFuer(KONTINENTE_GROB.map(k=>({ ...k, ...kont.get(k.id) }))),
-  // Antarktika bekommt eine EIGENE, polare Ansicht. In der Weltkarte liegt es
-  // als Sockel am unteren Rand - Befund F4, und im Prototyp deutlich sichtbar.
-  antarktika: ankerFuer(ANTARKTIKA_GROB.map(a=>({ ...a, ...kont.get('antarktika') })))[0],
+  // Welche Kontinente es gibt, steht in `src/inhalt/erdkunde.js` - nicht in
+  // den Geodaten. Der Bildvorrat haelt sieben Umrisse, gespielt werden
+  // sechs: Antarktika ist ausgenommen (siehe dort). Gefiltert wird hier,
+  // damit ein Umriss ohne Eintrag nicht stillschweigend mit leerem Namen
+  // durchrutscht.
+  kontinente: ankerFuer(KONTINENTE_GROB.filter(k=>kont.has(k.id))
+    .map(k=>({ ...k, ...kont.get(k.id) }))),
   // ALLE fuenf Kontinente mit Laendern. Vorher waren nur Europa und Afrika
   // verdrahtet: die Torkette zaehlte 25 Laender, spielbar waren 10. Asien,
   // Nord- und Suedamerika lagen gebacken im Baum und waren nicht zu
@@ -79,21 +81,20 @@ const D = {
   }),
   farben: vierfaerben(DEUTSCHLAND_MITTEL.map(b=>b.id)),
 };
-// Die Weltkarte wird UNTEN BESCHNITTEN. Natural Earth zieht Antarktikas
-// Suedkante als gerade Linie bei -90 Grad; nach der Projektion steht dort ein
-// Rechteck mit harter Unterkante, breiter als Afrika. Wir schneiden knapp
-// unterhalb der Eiskante ab - so wie es Schulatlanten tun.
-const antTeil = D.kontinente.find(k=>k.id==='antarktika');
+// Die Weltkarte wird auf das GERAHMT, was gespielt wird.
+//
+// Frueher wurde sie knapp unterhalb von Antarktikas Eiskante beschnitten -
+// Natural Earth zieht deren Suedkante als gerade Linie bei -90 Grad, und
+// nach der Projektion stand dort ein Rechteck mit harter Unterkante,
+// breiter als Afrika. Mit Antarktika ist auch dieser Sonderfall weg: acht
+// Punkte Luft rundherum, wie an jedem anderen Rand auch.
 const bK = (()=>{ const xs=[],ys=[];
-  D.kontinente.filter(k=>k.id!=='antarktika').forEach(o=>{ const m=o.pfad.match(/-?\d+\.?\d*/g).map(Number);
+  D.kontinente.forEach(o=>{ const m=o.pfad.match(/-?\d+\.?\d*/g).map(Number);
     for(let i=0;i<m.length;i+=2){xs.push(m[i]);ys.push(m[i+1]);} });
   return { x0:Math.min(...xs), y0:Math.min(...ys), x1:Math.max(...xs), y1:Math.max(...ys) }; })();
-const antOben = (()=>{ const m=antTeil.pfad.match(/-?\d+\.?\d*/g).map(Number); const ys=[];
-  for(let i=1;i<m.length;i+=2) ys.push(m[i]); return Math.min(...ys); })();
-D.vbK = `${bK.x0-8} ${bK.y0-8} ${bK.x1-bK.x0+16} ${(antOben + 26) - (bK.y0-8)}`;
+D.vbK = `${bK.x0-8} ${bK.y0-8} ${bK.x1-bK.x0+16} ${bK.y1-bK.y0+16}`;
 D.vbD = bbox(D.deutschland);
 D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, bbox(roh)]));
-D.vbA = bbox([D.antarktika]);
 // Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
 // nicht nur die Ziele - sonst kann man durch Ausschluss raten.
 D.umgebung = Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>

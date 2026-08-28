@@ -100,7 +100,25 @@ const AUFNAHMEN = [
  * Finger gibt. Gibt die Stelle zurueck, an der der Zeiger stehenbleiben
  * soll - beim Ziehen bleibt die Maus unten, sonst waere kein Zug zu sehen.
  */
+  // Erst messen, wenn die Karte WIRKLICH steht.
+  //
+  // `kartenGroesse()` setzt Breite und Hoehe der Karte in zwei
+  // aufeinanderfolgenden Bildern. Wer die Bildschirmkoordinaten eines
+  // Ankers vorher liest, bekommt sie aus der noch ungesetzten Karte - und
+  // zieht dann irgendwohin. Genau das ist passiert: zwei Laeufe
+  // hintereinander endeten einmal ueber Australien und einmal ueber
+  // AFRIKA, und die Bildabnahme meldete 3,6 % Unterschied bei
+  // unveraendertem Code.
+  const karteSteht = async (seite) => {
+    await seite.waitForFunction(() => {
+      const k = document.querySelector('.schirm.da .karte');
+      return !!(k && k.style.width && parseFloat(k.style.width) > 0);
+    }, null, { timeout: 5000 });
+    await seite.waitForTimeout(150);
+  };
+
 async function vorfuehren(seite, was) {
+  await karteSteht(seite);
   const i = await seite.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     const z = s.querySelector('path.ziel');

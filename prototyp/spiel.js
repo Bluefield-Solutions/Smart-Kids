@@ -79,20 +79,71 @@ const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'var(--stern
  *     zugewandt statt vorlesend. Darueber wird es schrill.
  */
 let stimme=null, tonAn=true, entsperrt=false;
-const LIEBLINGE = ['anna','petra','helena','marlene','katja','vicki','google deutsch'];
+
+/**
+ * Welche Stimme?
+ *
+ * Auf jedem Geraet stehen ANDERE. Ein iPhone bringt je nach Fassung und
+ * heruntergeladenen Stimmen ein knappes Dutzend deutscher mit, ein
+ * Schreibtischbrowser oft nur eine. Eine feste Namensliste ist deshalb
+ * nur eine Voreinstellung und kein Ergebnis - deswegen kann man die
+ * Stimme im Elternbereich aussuchen UND vorher anhoeren. Die Wahl steht
+ * in `Einst.stimme` und schlaegt die Liste.
+ *
+ * Die Reihenfolge hier ist keine Rangliste des Klangs, sondern der
+ * Wahrscheinlichkeit: oben stehen die Namen, unter denen Apple und Google
+ * ihre hellen, zugewandten Ansagestimmen fuehren.
+ */
+const LIEBLINGE = ['sandy','shelley','helena','anna','petra','marlene','katja',
+                   'vicki','google deutsch'];
+function alleStimmen(){
+  return ('speechSynthesis' in window)
+    ? speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de')) : [];
+}
+// Der Name der gewaehlten Stimme steht hier und NICHT in `Einst`.
+//
+// Die Stimmensuche laeuft beim Laden - `voiceschanged` kann sofort feuern -,
+// und `Einst` wird erst weiter unten deklariert. Ein `let` ist bis dahin
+// nicht lesbar (temporale tote Zone), und die App startete mit
+// „Cannot access 'Einst' before initialization" gar nicht mehr. Gefunden
+// hat das der Rauchtest, sechzehnmal auf einmal.
+let stimmenWunsch = null;
 function stimmeSuchen(){
-  const s=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('de'));
-  stimme = LIEBLINGE.map(n=>s.find(v=>v.name.toLowerCase().includes(n))).find(Boolean)
+  const s = alleStimmen();
+  stimme = (stimmenWunsch && s.find(v=>v.name===stimmenWunsch))
+        || LIEBLINGE.map(n=>s.find(v=>v.name.toLowerCase().includes(n))).find(Boolean)
         || s.find(v=>v.localService) || s[0] || null;
 }
 if ('speechSynthesis' in window){ stimmeSuchen(); speechSynthesis.addEventListener('voiceschanged',stimmeSuchen); }
+/**
+ * Vorlesen - satzweise, nicht am Stueck.
+ *
+ * „Klasse! Das ist Australien und Ozeanien." als EINE Ausgabe klingt
+ * heruntergelesen: die Sprachausgabe zieht ueber den Punkt hinweg. Als zwei
+ * Ausgaben hintereinander entsteht die Pause von selbst, weil die
+ * Warteschlange zwischen ihnen atmet - und genau diese Pause ist der
+ * Unterschied zwischen einem Ansagetext und jemandem, der einen lobt.
+ *
+ * Die Tonhoehe stand auf 1,15. Das klang jung, aber gepresst; 1,06 traegt
+ * die Freundlichkeit, ohne die Stimme zu verbiegen. Das Tempo bleibt
+ * langsam - „Australien und Ozeanien" muss zu Ende gehoert werden koennen.
+ */
+const TEMPO = 0.9, HOEHE = 1.06;
+function sprich(satz, hoehe = HOEHE){
+  const u = new SpeechSynthesisUtterance(satz);
+  u.lang='de-DE'; u.rate=TEMPO; u.pitch=hoehe;
+  if (stimme) u.voice = stimme;
+  speechSynthesis.speak(u);
+}
 function vorlesen(text){
   if(!tonAn||!('speechSynthesis' in window)||!text) return;
   try{ if(!entsperrt){ speechSynthesis.speak(new SpeechSynthesisUtterance('')); entsperrt=true; }
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text); u.lang='de-DE';
-    u.rate=.88; u.pitch=1.15;
-    if(stimme)u.voice=stimme; speechSynthesis.speak(u);
+    // Der Jubel darf eine Spur hoeher liegen als die Sache danach. Das ist
+    // der Unterschied zwischen „Klasse!" und „Klasse."
+    const saetze = String(text).split(/(?<=[.!?])\s+/).filter(Boolean);
+    saetze.forEach((satz, i) => sprich(satz,
+      i === 0 && /!$/.test(satz) ? HOEHE + 0.08 : HOEHE));
   }catch(e){}
 }
 
@@ -164,9 +215,13 @@ let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:f
  * braucht einen Tag Pause, und so lange soll niemand vor vier Kontinenten
  * sitzen.
  */
+// Wieviele Runden es gibt, steht in den DATEN, nicht hier. Mit Antarktika
+// fiel die dritte Runde weg; eine festgeschriebene 3 haette danach eine
+// Runde gemeldet, die nichts Neues mehr bringt.
+const RUNDEN = Math.max(...D.kontinente.map(k => k.runde));
 function kontinentRunde(stand){
   let r = 1;
-  while (r < 3) {
+  while (r < RUNDEN) {
     const bisher = D.kontinente.filter(k => k.runde <= r);
     if (!bisher.every(k => (stand[k.id]?.fach ?? 1) >= 2)) break;
     r++;
@@ -183,7 +238,7 @@ function kontinentRunde(stand){
 function vorrat(ebeneId, stand = Stand){
   const [art, kont] = ebeneId.split(':');
   if (art==='kontinente') {
-    const bis = P.id==='fiona' ? kontinentRunde(stand) : 3;
+    const bis = P.id==='fiona' ? kontinentRunde(stand) : RUNDEN;
     return D.kontinente.filter(k=>k.runde<=bis)
       .map(k=>({ id:k.id, name:k.name, aliasse:k.aliasse, aussprache:k.aussprache,
                  pfad:k.pfad, anker:k.anker }));
@@ -217,6 +272,7 @@ async function standSichern(ebeneId){
 async function einstLaden(){
   try { Einst = { ...Einst, ...(await Ablage.hole('einstellungen','alles') || {}) }; } catch(e){}
   tonAn = Einst.ton;
+  stimmenWunsch = Einst.stimme || null; stimmeSuchen();
   document.documentElement.setAttribute('data-abend', Einst.abend ? 'an' : 'aus');
 }
 async function einstSichern(){ try{ await Ablage.setze('einstellungen','alles',Einst); }catch(e){} }
@@ -279,12 +335,14 @@ async function ebenenwahl(){
     <div class="mitte">
       <div class="titel">Was möchtest du üben?</div>
       <div class="wahl">${balken.map(b=>`
+        <div class="kachelpaar">
         <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
           <div class="rolle">${b.gesammelt} von ${b.gesamt}${b.gekonnt?` · ${b.gekonnt} sicher`:''}</div>
           <div class="balken"><i style="transform:scaleX(${(b.anteil).toFixed(3)})"></i></div>
-        </button>`).join('')}</div>
+        </button>${b.gesammelt ? `
+        <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}</div>`).join('')}</div>
     </div>`;
   s.querySelector('#zur').onclick=()=>zeige(profilwahl);
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
@@ -293,6 +351,37 @@ async function ebenenwahl(){
     const id=b.dataset.ebene;
     if (id==='hauptstaedte' && !Einst.stadtstaatenGezeigt) zeige(()=>stadtstaaten(id));
     else starten(id); });
+
+  // „Von vorne" - und zwar fuer das Kind, nicht hinter der Eltern-PIN.
+  //
+  // Wer alles gekonnt hat, kommt sonst nicht mehr an die Aufgaben heran:
+  // die Ebene ist voll, und der einzige Weg zurueck ging ueber „Alles von
+  // Fiona loeschen" im Elternbereich - das loescht das ganze Profil.
+  //
+  // Zwei Tipper, nicht einer: der Knopf steht direkt neben der Kachel, und
+  // ein Fehlgriff wuerde eine Woche Uebung wegraeumen. Der zweite Tipper
+  // sagt ausdruecklich, was verschwindet.
+  s.querySelectorAll('[data-neu]').forEach(b=>b.onclick=async(ev)=>{
+    ev.stopPropagation();
+    const id = b.dataset.neu;
+    const titel = balken.find(x=>x.id===id)?.titel || 'diese Ebene';
+    if (b.dataset.sicher!=='ja'){
+      s.querySelectorAll('[data-neu]').forEach(x=>{
+        if (x!==b){ delete x.dataset.sicher; x.textContent='von vorne'; } });
+      b.dataset.sicher='ja';
+      // Kurz genug fuer EINE Zeile. „Wirklich? Kontinente von vorne" brach
+      // auf dem iPhone quer um und schob die zweite Kachelreihe nach unten -
+      // eine Nachfrage, die das Raster zerreisst, sieht aus wie ein Fehler.
+      // Um WAS es geht, steht in der Kachel direkt darueber.
+      b.textContent='Wirklich löschen?';
+      vorlesen(`Soll ${titel} wirklich von vorne losgehen?`);
+      return;
+    }
+    await Ablage.loesche('fortschritt', `${P.id}:${id}`).catch(()=>{});
+    if (Sitzung && Sitzung.ebeneId===id) Stand = {};
+    vorlesen(`${titel} fängt wieder von vorne an.`);
+    zeige(ebenenwahl);
+  });
   return s;
 }
 
@@ -462,21 +551,14 @@ function spielschirm(){
     kand = misch([ziel, ...misch(st.alle.filter(x=>x.id!==ziel.id), r1).slice(0, Math.max(1,n))], r1);
   }
 
-  // Antarktika bekommt seine EIGENE, polare Ansicht. In der Weltkarte liegt
-  // es als Sockel am unteren Rand und ist dort gerade nicht formtypisch.
-  const polar = art==='kontinente' && ziel.id==='antarktika';
-  // Antarktika kommt in der Weltkarte GAR NICHT vor. Es hat seine eigene
-  // Ansicht; in der Weltkarte bleibt sonst ein grauer Sockel am unteren Rand
-  // stehen, der wie ein Fehler aussieht.
   // Die Karte zeigt IMMER die ganze Welt - auch die Kontinente, die in
   // Fionas Runde noch nicht drankommen. Sonst fehlen auf ihrer Weltkarte
   // Asien und Nordamerika, und was uebrig bleibt, sieht nach kaputter Karte
   // aus statt nach einer Auswahl. Die Runde begrenzt, WONACH gefragt wird -
   // nicht, was es auf der Welt gibt.
   const alleKontinente = D.kontinente.map(k=>({ id:k.id, name:k.name, pfad:k.pfad, anker:k.anker }));
-  const formen = polar ? [D.antarktika]
-    : art==='kontinente' ? alleKontinente.filter(g=>g.id!=='antarktika') : st.alle;
-  const vb = polar ? D.vbA : art==='kontinente' ? D.vbK : art==='laender' ? D.vbL[kont] : D.vbD;
+  const formen = art==='kontinente' ? alleKontinente : st.alle;
+  const vb = art==='kontinente' ? D.vbK : art==='laender' ? D.vbL[kont] : D.vbD;
   const farbeVon=(g,i)=> (art==='bundeslaender'||istHaupt) ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const umgebung = (art==='laender' && D.umgebung[kont])
     ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
@@ -1270,6 +1352,15 @@ async function elternbereich(){
         : `<p class="unter">Noch nichts gesprochen. Der Sprachmodus ist
            <strong>${Einst.sprachmodus?'an':'aus'}</strong>.</p>`}
 
+      <h3 class="gruppe">Stimme</h3>
+      <p class="unter">Welche Stimmen es gibt, entscheidet das Gerät — auf einem iPhone
+        andere als auf dem iPad. Hier steht, was <em>dieses</em> Gerät anbietet.
+        Antippen zum Anhören, die gewählte bleibt gespeichert.
+        <br>Mehr Auswahl gibt es unter <em>Einstellungen › Bedienungshilfen ›
+        Gesprochene Inhalte › Stimmen › Deutsch</em> — dort lassen sich bessere
+        Stimmen laden, die dann auch hier erscheinen.</p>
+      <div class="reihe stimmen" style="justify-content:flex-start" id="stimmwahl"></div>
+
       <h3 class="gruppe">Sprachmodus</h3>
       <p class="unter">Die Spracherkennung läuft <strong>nicht auf dem Gerät</strong>.
         Was das Kind sagt, geht zur Erkennung an Apple beziehungsweise den Browserhersteller.
@@ -1335,6 +1426,41 @@ async function elternbereich(){
         <textarea class="ausgabefeld" readonly>${text.replace(/</g,'&lt;')}</textarea>`;
     }
   };
+  // Die Stimmenliste wird ERST GEBAUT, wenn sie da ist.
+  //
+  // `getVoices()` liefert beim ersten Aufruf oft eine leere Liste; die
+  // Stimmen kommen nach und melden sich mit `voiceschanged`. Wer die Liste
+  // einmal beim Aufbau des Bildschirms zeichnet, zeigt auf dem iPhone
+  // regelmaessig gar nichts an - und das sieht aus wie „keine Stimmen".
+  const stimmwahl = s.querySelector('#stimmwahl');
+  const stimmenZeichnen = ()=>{
+    if (!stimmwahl) return;
+    const liste = alleStimmen();
+    if (!liste.length) {
+      stimmwahl.innerHTML = `<p class="unter">Dieses Gerät meldet keine deutsche
+        Stimme. Vorgelesen wird dann nichts.</p>`;
+      return;
+    }
+    stimmeSuchen();
+    stimmwahl.innerHTML = liste.map(v=>`
+      <button class="knopf${v.name===stimme?.name?' gewaehlt':''}" data-stimme="${v.name}">
+        ${v.name}${v.localService?'':' <span class="unter">(aus dem Netz)</span>'}</button>`).join('');
+    stimmwahl.querySelectorAll('[data-stimme]').forEach(b=>b.onclick=async()=>{
+      Einst.stimme = b.dataset.stimme; stimmenWunsch = Einst.stimme;
+      await einstSichern(); stimmeSuchen();
+      stimmwahl.querySelectorAll('[data-stimme]').forEach(x=>
+        x.classList.toggle('gewaehlt', x.dataset.stimme===stimmenWunsch));
+      // Angehoert wird ein Satz aus dem Spiel, nicht „Test 1 2 3": man
+      // waehlt eine Stimme fuer das, was sie wirklich sagen wird.
+      const alterTon = tonAn; tonAn = true;
+      vorlesen('Super gemacht! Das ist Australien und Ozeanien.');
+      tonAn = alterTon;
+    });
+  };
+  stimmenZeichnen();
+  if ('speechSynthesis' in window)
+    speechSynthesis.addEventListener('voiceschanged', stimmenZeichnen, { once:false });
+
   s.querySelector('#csv').onclick=()=>sichern(Protokoll.alsCsv(eintraege,NAMEN),
     `lernkiste-${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');
   s.querySelector('#json').onclick=()=>sichern(Protokoll.alsJson(eintraege),

@@ -30,8 +30,18 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   color:var(--tinte);font-family:var(--f-ui);line-height:1.3;
   -webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;
   -webkit-touch-callout:none;touch-action:manipulation;
-  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-#buehne{position:absolute;inset:0;display:flex;flex-direction:column}
+}
+/* Der sichere Bereich gehoert an die BUEHNE, nicht an den Rumpf.
+   Das Polster stand auf `body` - und hatte keinerlei Wirkung: `#buehne` ist
+   `position:absolute`, `body` ist nicht positioniert, also bezieht sich
+   `inset:0` auf das FENSTER und nicht auf das Polster. Nachgemessen: mit 44
+   Punkten Polster am Rumpf blieb der Schliessen-Knopf exakt dort, wo er
+   vorher war, 12 Punkte von der Ecke. Auf dem iPhone sitzt dort die Uhr,
+   rechts daneben der Akku - der Knopf war nicht schlecht gebaut, er war
+   unter der Statusleiste begraben und nahm den Finger nicht an. */
+#buehne{position:absolute;display:flex;flex-direction:column;
+  top:var(--sicher-oben); right:var(--sicher-rechts);
+  bottom:var(--sicher-unten); left:var(--sicher-links)}
 .schirm{position:absolute;inset:0;display:flex;flex-direction:column;
   opacity:0;pointer-events:none;transition:opacity var(--d-schirm) var(--k-standard)}
 .schirm.da{opacity:1;pointer-events:auto}
@@ -354,6 +364,17 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Der leise Ausweg. Er soll erreichbar sein, aber nicht einladen: kein
    Fuellton, kein Rand, nur Text - und trotzdem 44 Punkte hoch, damit ein
    Daumen ihn trifft. */
+/* Kachel und ihr „von vorne" gehoeren zusammen - das Raster sieht das Paar
+   als EIN Feld, sonst rutscht der kleine Knopf in die naechste Spalte. */
+.kachelpaar{display:flex;flex-direction:column;align-items:stretch;gap:var(--r1);min-width:0}
+.kachelpaar .kachel{width:100%}
+/* Die gewaehlte Stimme traegt denselben Rahmen wie ein aktiver Zustand
+   sonst auch - kein neues Zeichen, nur der bekannte Ring. */
+.stimmen{flex-wrap:wrap;gap:var(--r2)}
+.knopf.gewaehlt{border-color:var(--akzent);
+  box-shadow:0 0 0 var(--ring) var(--akzent-h),0 var(--kante-flach) 0 var(--linie-2)}
+.leise.mini{min-height:32px;font-size:var(--s-klein);padding:var(--r1) var(--r2);
+  align-self:center}
 .leise{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
   color:var(--tinte-2);background:none;border:none;cursor:pointer;
   min-height:44px;padding:0 var(--r3);border-radius:var(--rund-voll);

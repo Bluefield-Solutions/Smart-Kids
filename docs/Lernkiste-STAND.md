@@ -6,7 +6,7 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
 Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-,
-der Budget- und der **Übergangsrunde**.
+der Budget-, der Übergangs- und der **Geräterunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -21,7 +21,7 @@ npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
                     Antarktika, Städte
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 28 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 31 stehenden Gegenproben (Baum muss sauber sein,
                     dauert 3,5 Minuten, höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
@@ -36,7 +36,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Siebzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **28 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **31 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 ---
@@ -1121,6 +1121,135 @@ eben geschriebene Stand als `abgebrochen` markiert: er darf keinen Lauf
 bezeugen, der etwas offen gelassen hat. Und weil `git checkout` nach jeder
 Probe die *eingecheckte* Fassung zurückholt, wird der frische Stand danach
 neu gesetzt — ohne diese Zeile war `rhythmus` sofort wieder rot.
+
+---
+
+## Die Geräterunde
+
+Nach dem Spielen am iPhone. Vier Punkte, und zwei davon hatten **dieselbe**
+Ursache.
+
+### Der X-Knopf und die Sterne lagen unter der Statusleiste
+
+Nicht schlecht gebaut — begraben. `body` trug das Polster
+`env(safe-area-inset-*)`, aber `#buehne` ist `position:absolute` und `body`
+ist nicht positioniert: `inset:0` bezieht sich damit auf das **Fenster**,
+nicht auf das Polster.
+
+Nachgemessen: mit 44 Punkten Polster am Rumpf blieb der Schließen-Knopf
+exakt dort, wo er vorher war — 12 Punkte von der Ecke. Dort sitzt auf dem
+iPhone die Uhr, rechts daneben der Akku. Der Knopf war zu sehen und nahm den
+Finger nicht an.
+
+Der sichere Bereich hängt jetzt an der Bühne, über Marken
+(`--sicher-oben` …). Nach der Reparatur wandert der X mit 44/20 Punkten
+Einzug von (12,12) auf (56,32), die Sterne von 22 auf 66.
+
+**Und `passt` hat eine siebte Größe:** *iPhone quer, Leiste* — dasselbe
+Gerät mit dem, was das Telefon selbst belegt (21 oben und unten, 59 an den
+Seiten). `env()` lässt sich von außen in keinem Browser vorgeben; die
+Verkabelung dahinter schon. Geprüft wird damit nicht, ob iOS die richtigen
+Zahlen liefert, sondern ob die App sie überhaupt beachtet — und genau das
+tat sie nicht.
+
+### Antarktika ist raus — gegen meinen eigenen früheren Rat
+
+Die Frage war: *warum wird Antarktika immer als einzelner Kontinent gezeigt,
+auf der großen Karte kann man das nicht verbinden?* Sie trifft genau den
+Punkt. Antarktika hatte hier **zwei** Sonderrollen, und beide waren teuer:
+
+- Auf der Weltkarte wird die Antarktis zu einem breiten Band am unteren
+  Rand, das über die ganze Kartenbreite läuft. Als Umriss unkenntlich, beim
+  Ziehen kaum vom Kartenrand zu unterscheiden.
+- Deshalb bekam sie eine eigene **polare Aufsicht** — eine zweite Kartenart
+  für ein einziges Gebiet. Ein Kind, das gerade sechs Umrisse nebeneinander
+  gelernt hat, sah bei der siebten plötzlich die Welt von oben.
+
+Im Konzept stand mein Rat von damals: *„ich rate davon ab."* Er steht dort
+weiter, mit dem Ausgang daneben. Was er nicht mitgerechnet hatte, ist der
+Preis der zweiten Kartenart.
+
+Damit fällt einiges mit weg: der Sonderschnitt der Weltkarte (sie wurde
+knapp unterhalb der Eiskante beschnitten, jetzt sind es acht Punkte Luft wie
+an jedem anderen Rand), die polare Ansicht im Spiel, `vbA`, und Fionas
+dritte Runde. **63 Gebiete statt 64, Startbündel 138,2 → 131,7 KB.**
+
+Zwei Tore trugen die Drei fest verdrahtet und meldeten es sofort:
+`spielprobe` prüfte `[1,2,3]` auf leere Runden, die App las
+`kontinentRunde` bis 3. Beide lesen die Rundenzahl jetzt aus den Daten.
+Und der Sprachkorpus hielt Antarktika-Zeilen; das Tor `vergleich` brach
+darüber ab.
+
+### „Von vorne", und zwar für das Kind
+
+Wer eine Ebene gekonnt hatte, kam nicht mehr an sie heran: der einzige Weg
+zurück ging über *„Alles von Fiona löschen"* im Elternbereich — und das
+löscht das ganze Profil.
+
+Unter jeder Kachel mit Fortschritt steht jetzt ein kleines **„von vorne"**.
+Zwei Tipper, nicht einer: der Knopf steht direkt neben der Kachel, und ein
+Fehlgriff würde eine Woche Übung wegräumen. Der zweite Tipper sagt
+ausdrücklich, was verschwindet.
+
+Der Rauchtest geht die ganze Kette ab — Knopf da, erster Tipper fragt nach,
+zweiter löscht wirklich, danach ist der Knopf weg. Er steht **zuletzt** in
+der Sitzung: der erste Anlauf stand davor und meldete prompt „kein einziger
+Aufkleber" — der Test hatte sich selbst die Grundlage entzogen.
+
+### Die Stimme
+
+Drei Änderungen, und die wichtigste ist keine Einstellung, sondern eine
+Auswahl:
+
+**Satzweise statt am Stück.** „Klasse! Das ist Australien und Ozeanien." als
+*eine* Ausgabe klingt heruntergelesen — die Sprachausgabe zieht über den
+Punkt hinweg. Als zwei Ausgaben hintereinander entsteht die Pause von
+selbst, und genau diese Pause ist der Unterschied zwischen einem Ansagetext
+und jemandem, der einen lobt. Der Jubel liegt dabei eine Spur höher als die
+Sache danach: der Unterschied zwischen „Klasse!" und „Klasse."
+
+**Tonhöhe 1,15 → 1,06.** 1,15 klang jung, aber gepresst.
+
+**Die Stimme ist wählbar.** Welche es gibt, entscheidet das Gerät — ein
+iPhone bringt je nach Fassung ein knappes Dutzend deutscher mit, ein
+Schreibtischbrowser oft nur eine. Eine feste Namensliste ist deshalb eine
+Voreinstellung und kein Ergebnis. Im Elternbereich steht jetzt, was *dieses*
+Gerät anbietet; Antippen spielt einen Satz aus dem Spiel vor, nicht „Test
+1 2 3" — man wählt eine Stimme für das, was sie wirklich sagen wird. Dazu
+der Hinweis, wo iOS bessere Stimmen nachlädt.
+
+Ein Fehler unterwegs, den der Rauchtest sechzehnmal auf einmal meldete: die
+Stimmensuche läuft beim Laden und griff auf `Einst`, das erst weiter unten
+deklariert wird. Ein `let` ist bis dahin nicht lesbar, und die App startete
+gar nicht mehr. Der Wunsch steht jetzt in einer eigenen Variablen.
+
+### Zwei Tore maßen, bevor die Karte stand
+
+Ausgelöst hat es eine Gegenprobe, die „aus einem anderen Grund" durchfiel.
+Dahinter lag ein Rennen — und zwar im **Tor**, nicht in der App: zwei Läufe
+der Bildabnahme endeten der eine über Australien, der andere über
+**Afrika**.
+
+`kartenGroesse()` setzt Breite und Höhe der Karte in zwei aufeinander
+folgenden Bildern. Wer die Bildschirmkoordinaten eines Ankers vorher liest,
+bekommt sie aus der noch ungesetzten Karte und zieht dann irgendwohin.
+`ansicht` meldete so 3,6 % Unterschied bei unverändertem Code, und dieselbe
+Falle steckte in `ziehen` — sie erklärt, warum die gemessene Nachsicht
+zwischen Läufen zwischen 60 und 80 Punkten schwankte.
+
+Beide warten jetzt, bis die Karte wirklich steht. Drei Läufe hintereinander:
+**null Bildpunkte Unterschied**, Nachsicht stabil bei 60.
+
+### Und `proben` räumt jetzt auch beim Abbruch auf
+
+Ein Lauf, der von der Zeitgrenze beendet wurde, ließ `if (false){` in der
+Bestätigungsabfrage stehen. Der nächste Bau übernahm es, und die
+Bildschirmfotos danach zeigten einen beschädigten Stand — gesehen habe ich
+das erst, weil `proben` beim nächsten Start den schmutzigen Baum meldete.
+
+„Ein Werkzeug, das den Baum schlechter zurücklässt, als es ihn vorgefunden
+hat, ist gefährlicher als keines" stand schon da. Es galt nur für den
+geordneten Fall. Jetzt hängt es an `SIGINT`, `SIGTERM` und `SIGHUP`.
 
 ---
 

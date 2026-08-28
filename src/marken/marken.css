@@ -106,6 +106,15 @@
   --d-tipp: 120ms; --d-zustand: 200ms; --d-schirm: 320ms; --d-belohnung: 500ms;
   --d-wackeln: 400ms;   /* das Nein eines abgelehnten Etiketts */
   --d-staffel:  45ms;   /* Abstand, in dem die Antworten hereinkommen */
+
+  /* --- Der sichere Bereich ---------------------------------------------
+   * Was das Telefon selbst belegt: Uhr, Akku, Kamerainsel, Streifen unten.
+   * Als Marken, damit ein Tor sie setzen kann - `env()` laesst sich in
+   * keinem Browser von aussen vorgeben, die Verkabelung dahinter schon. */
+  --sicher-oben:   env(safe-area-inset-top, 0px);
+  --sicher-rechts: env(safe-area-inset-right, 0px);
+  --sicher-unten:  env(safe-area-inset-bottom, 0px);
+  --sicher-links:  env(safe-area-inset-left, 0px);
   --d-puls:   1500ms;   /* der Ring um das gesuchte Gebiet */
   --d-atmen:  2400ms;   /* der Hof um das Mikrofon */
   --k-standard: cubic-bezier(.2, 0, 0, 1);

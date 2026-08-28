@@ -11,6 +11,18 @@
 
 export const STAND = { jahr: 2025, quelle: 'Natural Earth 1:10m / 1:50m, Einwohnerzahlen 2025' };
 
+// Antarktika ist KEIN Kontinent in diesem Spiel - nachgefragt und
+// entschieden, nicht vergessen.
+//
+// Auf der Weltkarte (Natural-Earth-Projektion) wird die Antarktis zu einem
+// breiten Band am unteren Rand, das ueber die ganze Kartenbreite laeuft: als
+// Umriss unkenntlich, und beim Ziehen kaum vom Kartenrand zu unterscheiden.
+// Sie bekam deshalb eine eigene polare Aufsicht - eine zweite Kartenart fuer
+// ein einziges Gebiet, und ein Kind, das gerade sechs Umrisse nebeneinander
+// gelernt hat, sah bei der siebten ploetzlich die Welt von oben.
+//
+// Sechs Kontinente, eine Karte. Die polare Aufsicht liegt weiter in
+// `tools/backen-antarktika.mjs`, falls sie einmal gebraucht wird.
 export const KONTINENTE = [
   { id:'europa', name:'Europa', aliasse:['Europäa'],
     aussprache:['euopa','oiropa','europa','eropa'], runde:1 },
@@ -24,9 +36,6 @@ export const KONTINENTE = [
     aussprache:['nord amerika','amerika','nordamerka'], runde:2 },
   { id:'asien', name:'Asien', aliasse:[],
     aussprache:['asjen','aasien','asien'], runde:2 },
-  { id:'antarktika', name:'Antarktika', aliasse:['Antarktis','Südpol'],
-    aussprache:['antarktis','antaktika','antarktika'], runde:3,
-    satz:'Hier wohnt niemand — nur Eis.' },
 ];
 
 /** Ebene 2. rang 1..5; Fiona sieht 1..3, Lea 1..5. */

@@ -88,6 +88,15 @@ async function aufgabe() {
   await p.waitForSelector('.schirm.da [data-ebene]');
   await p.click('[data-ebene="kontinente"]');
   await p.waitForFunction(() => document.querySelector('.schirm.da path.ziel'), null, { timeout: 5000 });
+  // Dieselbe Falle wie in `ansicht`: `kartenGroesse()` setzt die Karte in
+  // zwei Bildern, und ein Anker, der vorher gelesen wird, zeigt woanders
+  // hin. Das erklaert vermutlich auch, warum die gemessene Nachsicht
+  // zwischen Laeufen zwischen 60 und 80 Punkten schwankte.
+  await p.waitForFunction(() => {
+    const k = document.querySelector('.schirm.da .karte');
+    return !!(k && k.style.width && parseFloat(k.style.width) > 0);
+  }, null, { timeout: 5000 });
+  await p.waitForTimeout(150);
   const info = await p.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     const z = s.querySelector('path.ziel');

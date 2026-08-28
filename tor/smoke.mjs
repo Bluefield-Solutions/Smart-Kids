@@ -235,6 +235,64 @@ try {
   console.log(`  Elternbereich:              ${antworten} Antworten protokolliert`);
   console.log(`  Fassungsstempel:            ${fassung.join(' · ')}`);
 
+  /* --- „Von vorne": das Kind kommt selbst wieder an die Aufgaben ------
+   *
+   * Der Anlass: wer eine Ebene gekonnt hat, kam nicht mehr an sie heran.
+   * Der einzige Weg zurueck ging ueber „Alles von Fiona loeschen" im
+   * Elternbereich - und das loescht das ganze Profil.
+   *
+   * Geprueft wird die ganze Kette, nicht das Vorhandensein eines Knopfes:
+   * ist Fortschritt da, steht der Knopf da; ein Tipper fragt nach; der
+   * zweite loescht; danach ist die Ebene wirklich leer. Ein Knopf, der
+   * dasteht und nichts tut, waere schlimmer als keiner.
+   */
+  // ZULETZT, denn es raeumt weg, was Forscherbuch und Elternbereich
+  // brauchen. Der erste Anlauf stand davor und meldete prompt
+  // „kein einziger Aufkleber" - der Test hatte sich selbst die
+  // Grundlage entzogen.
+  {
+    // Zurueck aus dem Elternbereich in die Ebenenwahl - dort steht der Knopf.
+    await p.click('.schirm.da #zur');
+    await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 5000 });
+    await p.waitForTimeout(400);
+    const knopf = await p.$('.schirm.da [data-neu="bundeslaender"]');
+    if (!knopf) merke('vonvorne', new Error(
+      'nach zwei Sitzungen steht kein „von vorne" an den Bundesländern'));
+    else {
+      const erst = await knopf.textContent();
+      await knopf.click(); await p.waitForTimeout(150);
+      // Der Knopf kann nach dem ersten Tipper VERSCHWUNDEN sein - naemlich
+      // genau dann, wenn er schon geloescht hat. Das ist der Befund, nicht
+      // ein Fehler im Test: der erste Anlauf stuerzte hier ab, statt ihn zu
+      // melden, und die Gegenprobe schlug „aus einem anderen Grund" an.
+      const zweiter = await p.$('.schirm.da [data-neu="bundeslaender"]');
+      const nachfrage = zweiter ? (await zweiter.textContent()) : '(weg)';
+      if (!/Wirklich/.test(nachfrage)) merke('vonvorne', new Error(
+        `der erste Tipper löscht sofort — er fragt nicht nach (steht: „${nachfrage.trim()}")`));
+      if (zweiter) await zweiter.click();
+      await p.waitForTimeout(500);
+      const rest = await p.evaluate(() => new Promise(ja => {
+        const a = indexedDB.open('lernkiste');
+        a.onsuccess = () => { const d = a.result;
+          const g = d.transaction('fortschritt', 'readonly').objectStore('fortschritt')
+            .get('fiona:bundeslaender');
+          g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
+          g.onerror = () => ja(-1); };
+        a.onerror = () => ja(-1);
+      }));
+      console.log(`  „Von vorne":                „${erst.trim()}" → nachgefragt → `
+        + `${rest} Gegenstände übrig`);
+      if (rest !== 0) merke('vonvorne', new Error(
+        `nach „von vorne" stehen noch ${rest} Gegenstände im Leitner-Stand`));
+      const weg = await p.$('.schirm.da [data-neu="bundeslaender"]');
+      if (weg) merke('vonvorne', new Error(
+        'der Knopf steht noch da, obwohl es keinen Fortschritt mehr gibt'));
+      // Das Forscherbuch braucht Aufkleber - die Bundeslaender sind jetzt
+      // leer, aber die Kontinente aus der ersten Sitzung stehen noch.
+    }
+  }
+
+
   if (+antworten < 3) merke('protokoll', new Error(`nur ${antworten} Einträge`));
   await p.close();
 } catch (e) { merke('ablage/eltern', e); }
