@@ -15,7 +15,7 @@ const STERN = (f,g=24)=>`<svg width="${g}" height="${g}" viewBox="-14 -14 28 28"
 const LOESCHEN='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H9L3 12l6 6h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M17 10l-4 4M13 10l4 4"/></svg>';
 const ZURUECK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>';
 const MIKRO='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg>';
-const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'oklch(.80 .14 85)':'oklch(.93 .01 250)',g)).join('')}</div>`;
+const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'var(--stern-an)':'var(--stern-aus)',g)).join('')}</div>`;
 
 /* ---------- Vorlesen ---------------------------------------------------- */
 let stimme=null, tonAn=true, entsperrt=false;
@@ -292,8 +292,27 @@ function spielschirm(){
   const farbeVon=(g,i)=> (art==='bundeslaender'||istHaupt) ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const umgebung = (art==='laender' && D.umgebung[kont])
     ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
-  const flaechen = formen.map((g,i)=>`<path class="geb ${g.id===ziel.id?'ziel':'ruhig'}" data-id="${g.id}"
+  // Drei Zustaende statt zwei: das gesuchte Gebiet, die schon gekonnten
+  // (volle Farbe, sie bleiben stehen) und der Rest (gedaempft).
+  //
+  // "Gekonnt" kommt aus dem LEITNER-STAND, nicht aus der laufenden Sitzung.
+  // Erst hatte es an der Sitzung gehangen - dann war die Karte nach jedem
+  // Neustart wieder leer, und der Rauchtest hat es sofort gemeldet. Aus dem
+  // Stand ueberlebt es das Schliessen der App, und es faellt auch wieder
+  // zurueck, wenn ein Gebiet spaeter danebengeht. Genau das soll es.
+  const gekonnt = (id) => (Stand[id]?.fach ?? 1) >= 2;
+  const flaechen = formen.map((g,i)=>`<path class="geb ${
+      g.id===ziel.id ? 'ziel' : gekonnt(g.id) ? 'gekonnt' : 'ruhig'}" data-id="${g.id}"
       d="${g.pfad}" fill-rule="evenodd" fill="${farbeVon(g,i)}"/>`).join('');
+  // Ein Haken auf jedem gekonnten Gebiet. Farbe allein sagt "anders",
+  // ein Haken sagt "geschafft" - und er trifft auch die, die Farben
+  // schlecht unterscheiden.
+  const haken = formen.filter(g=>g.anker && gekonnt(g.id) && g.id!==ziel.id)
+    .map(g=>`<g class="haken" data-x="${g.anker[0]}" data-y="${g.anker[1]}">
+        <circle r="13" fill="var(--gut)" stroke="var(--papier)" stroke-width="2.5"/>
+        <path d="M-6 0 L-2 4.5 L6.5 -4.5" fill="none" stroke="var(--papier)"
+              stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>`).join('');
   const konturen = formen.map(g=>`<path d="${g.pfad}" fill-rule="evenodd"/>`).join('');
   // Der Umriss des gesuchten Gebiets, zweimal: ein ruhiger dicker Rand und
   // darueber ein pulsierender. Ohne das ist bei sieben Pastellflaechen nicht
@@ -330,14 +349,17 @@ function spielschirm(){
     </div>
     <div class="frage" id="frage">${frageText}</div>
     <div class="feld">
-      <div class="karte" id="karte">
+      <div class="karte" id="karte" style="--karte-ar:${(()=>{const v=vb.split(' ').map(Number);
+        return (v[2]/v[3]).toFixed(4);})()}">
         <svg viewBox="${vb}" preserveAspectRatio="xMidYMid meet">
           <defs><clipPath id="wasch"><circle id="waschKreis" cx="0" cy="0" r="900"
             style="transform-box:fill-box;transform-origin:center"/></clipPath></defs>
           <g id="umg">${umgebung}</g>
           <g id="fl">${flaechen}</g>
+          <g id="haken">${haken}</g>
+          <g id="fahne"></g>
           <g id="treffer"></g>
-          <path id="belohn" d="" fill="oklch(.80 .12 155)" clip-path="url(#wasch)" style="display:none"/>
+          <path id="belohn" d="" fill="var(--wasch)" clip-path="url(#wasch)" style="display:none"/>
           <g fill="none" stroke="var(--tinte)" stroke-opacity=".5" stroke-width="1.1"
              vector-effect="non-scaling-stroke">${konturen}</g>
           <path class="zielrand" d="${zielForm.pfad}" fill="none" fill-rule="evenodd"
@@ -360,6 +382,39 @@ function spielschirm(){
   const liste = el('div','wahlliste'), werkzeug = el('div','werkzeug');
   seite.append(liste, werkzeug);
   s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
+
+  /**
+   * Die Karte auf die groesste Flaeche setzen, die in den freien Platz passt.
+   *
+   * Das ist bewusst KEINE Stilregel: CSS kann die eine Achse nicht gegen die
+   * andere abwaegen. `aspect-ratio` mit `width:100%` macht die Hoehe richtig
+   * und laesst die Breite stehen; mit `height:100%` genau andersherum. Beides
+   * hinterlaesst ein Loch neben der Karte - gemessen war der Kasten auf dem
+   * iPhone quer 420 Punkte breit, gezeichnet wurden 213.
+   *
+   * Hier ist beides bekannt: der freie Platz und das Seitenverhaeltnis der
+   * Karte. Ein `Math.min` genuegt, und die Karte fuellt ihren Kasten immer
+   * ganz - Deutschland (0,74) wie die Weltkarte (1,67).
+   */
+  function kartenGroesse(){
+    const feld = s.querySelector('.feld'), kasten = s.querySelector('.karte');
+    const svg = kasten && kasten.querySelector('svg');
+    if (!feld || !svg) return;
+    const vb = svg.viewBox.baseVal;
+    if (!vb.width || !vb.height) return;
+    const fb = feld.getBoundingClientRect();
+    const sb = s.querySelector('.seite').getBoundingClientRect();
+    const quer = getComputedStyle(feld).flexDirection === 'row';
+    const luecke = parseFloat(getComputedStyle(feld).columnGap) || 0;
+    const frei = {
+      b: quer ? fb.width - sb.width - luecke : fb.width,
+      h: quer ? fb.height : fb.height - sb.height - luecke,
+    };
+    if (frei.b <= 0 || frei.h <= 0) return;
+    const k = Math.min(frei.b / vb.width, frei.h / vb.height);
+    kasten.style.width  = (vb.width  * k).toFixed(1) + 'px';
+    kasten.style.height = (vb.height * k).toFixed(1) + 'px';
+  }
 
   const MIN_PT = 44, MIN_REST = 20;
   function trefferflaechen(){
@@ -388,6 +443,13 @@ function spielschirm(){
       const oben = (zb.height * k < 44) ? -zb.height/2 - 4*px : 0;   // ueber winzigen Flaechen
       zg.setAttribute('transform', `translate(${x} ${y + oben}) scale(${px.toFixed(3)})`);
     }
+    // Haken in fester Bildschirmgroesse, wie der Zeiger: sonst sind sie auf
+    // der Weltkarte winzig und auf Bremen riesig.
+    s.querySelectorAll('.haken').forEach(h=>{
+      h.setAttribute('transform',
+        `translate(${h.dataset.x} ${h.dataset.y}) scale(${(1/k).toFixed(3)})`);
+    });
+
     g.innerHTML = mit.filter(n=>n.gross*k<MIN_PT).map(n=>{
       let rPx = MIN_PT/2;
       for (const m of mit) {
@@ -417,17 +479,28 @@ function spielschirm(){
       b.onclick=()=>vorlesen(k.name); ziehbar(b,k); liste.appendChild(b); });
   }
 
-  if (spricht) {
+  // Das Mikrofon wird nur gezeigt, wenn es auch etwas TUT.
+  //
+  // Vorher stand es immer da, grau, mit dem Satz "Sprachmodus ist aus. Im
+  // Elternbereich einschalten." darunter - eine Anweisung an die Eltern,
+  // auf dem Spielbildschirm des Kindes. Zusammen kosteten die beiden bis
+  // zu 120 Punkte Hoehe, und die Karte hatte sie noetig: sie fuellte im
+  // Hochformat nur 16 bis 45 Prozent des Feldes.
+  //
+  // Ein dauerhaft abgeschalteter Knopf ist kein Hinweis, sondern ein
+  // Hindernis. Wo es wirklich nicht geht - der Browser kann es nicht -,
+  // bleibt der Hinweis stehen; das ist eine Auskunft und keine Aufforderung.
+  const Erk = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const kannSprechen = spricht && Einst.sprachmodus;
+  if (spricht && !Erk && Einst.sprachmodus) {
+    const status=el('div','unter'); status.style.fontSize='var(--s-klein)';
+    status.textContent='Sprechen geht in diesem Browser nicht — sag es laut, dann zieh.';
+    werkzeug.appendChild(status);
+  }
+  if (kannSprechen && Erk) {
     const mik=el('button','mikro',MIKRO);
     const status=el('div','unter'); status.style.fontSize='var(--s-klein)';
-    const Erk = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!Erk || !Einst.sprachmodus) {
-      mik.classList.add('tonaus');
-      status.textContent = !Erk
-        ? 'Sprechen geht in diesem Browser nicht — Stufe C: sag es laut, dann zieh.'
-        : 'Sprachmodus ist aus. Im Elternbereich einschalten.';
-      mik.onclick=()=>vorlesen('Sag es laut!');
-    } else {
+    {
       mik.onclick=()=>{
         const e=new Erk(); e.lang='de-DE'; e.interimResults=false; e.maxAlternatives=3;
         status.textContent='… ich höre';
@@ -530,8 +603,11 @@ function spielschirm(){
     }, ergebnis==='fast' ? 2400 : 1600);
   }
 
-  requestAnimationFrame(()=>requestAnimationFrame(trefferflaechen));
-  addEventListener('resize', trefferflaechen);
+  // Erst die Karte messen, dann die Trefferflaechen - die haengen an ihrem
+  // Massstab. Andersherum stimmten sie fuer ein Bild lang nicht.
+  const neuMessen = ()=>{ kartenGroesse(); trefferflaechen(); };
+  requestAnimationFrame(()=>requestAnimationFrame(neuMessen));
+  addEventListener('resize', neuMessen);
   return s;
 }
 
@@ -569,10 +645,86 @@ function belohnung(s, ziel, fastText, zeigeStadt){
     punkt.style.display='';
     punkt.animate([{r:0},{r:7}],{duration:300,delay:600,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'forwards'});
   }
+  nameAufDieKarte(s, ziel);
   const frage=s.querySelector('#frage');
   if (frage) frage.innerHTML = fastText
     ? `<span style="color:var(--warn)">${fastText}</span>`
     : `<span style="color:var(--gut)">Richtig — ${ziel.name}!</span>`;
+}
+
+/**
+ * Schreibt den Namen bei richtiger Antwort auf die Karte.
+ *
+ * Der Grund: gehoert hat das Kind den Namen, gelesen hat es ihn auf einem
+ * Etikett - aber nicht AM ORT. Genau diese Verbindung soll haengenbleiben.
+ *
+ * Warum das nicht einfach ein `<text>` in der Mitte ist: **14 von 16
+ * Bundeslaendernamen passen nicht in ihr Gebiet** (gemessen am Pol der
+ * Unzugaenglichkeit gegen die Textbreite, Befund G10). "Nordrhein-Westfalen"
+ * ueber Nordrhein-Westfalen gelegt reicht bis nach Polen. Die Fahne ist der
+ * Normalfall, nicht die Ausnahme.
+ *
+ * Entschieden wird GEMESSEN, nicht nach Liste: der Text wird gesetzt,
+ * ausgemessen und mit dem Gebiet verglichen. Damit gilt es auch fuer
+ * Kontinente, Laender und jede Karte, die noch dazukommt.
+ *
+ * Gerechnet wird durchgehend in WELTPUNKTEN. Die Schriftgroesse wird dafuer
+ * mit 1/k vorgerechnet, damit sie auf dem Schirm ueberall gleich gross
+ * ankommt - auf der Weltkarte wie auf Bremen.
+ */
+function nameAufDieKarte(s, ziel){
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = s.querySelector('.karte svg');
+  const g   = s.querySelector('#fahne');
+  const flaeche = s.querySelector(`path.geb[data-id="${ziel.id}"]`);
+  if (!svg || !g || !flaeche || !ziel.anker) return;
+  const ctm = svg.getScreenCTM(); if (!ctm) return;
+  const k = Math.abs(ctm.a) || 1;              // Bildschirmpunkte je Weltpunkt
+  g.innerHTML = '';
+
+  const knoten = (name, attr, inhalt) => {
+    const n = document.createElementNS(NS, name);
+    for (const [a, v] of Object.entries(attr)) n.setAttribute(a, v);
+    if (inhalt !== undefined) n.textContent = inhalt;
+    return n;
+  };
+  const SCHRIFT = 21 / k;                      // 21 Bildschirmpunkte
+  const luft    = 9  / k;
+
+  const text = knoten('text', { x:0, y:0, 'text-anchor':'middle',
+    'dominant-baseline':'central', 'font-size':SCHRIFT, class:'fahnentext' },
+    ziel.name);
+  g.appendChild(text);
+  const tb = text.getBBox();
+  const b = tb.width, h = tb.height;
+
+  const fb = flaeche.getBBox();
+  const passt = b + luft*2 <= fb.width * 0.92 && h + luft*1.4 <= fb.height * 0.7;
+
+  const rand = knoten('rect', { x:-b/2-luft, y:-h/2-luft*0.7,
+    width:b+luft*2, height:h+luft*1.4, rx:(h/2+luft*0.7), class:'fahnenrand' });
+  g.insertBefore(rand, text);
+
+  let dx = 0;
+  if (!passt) {
+    // Die Fahne steht NEBEN dem Gebiet, auf der Seite mit mehr Platz, und
+    // eine Leitlinie zeigt darauf. Ohne sie schwebt ein Name im Meer.
+    const vb = svg.viewBox.baseVal;
+    const nachRechts = ziel.anker[0] < vb.x + vb.width/2;
+    const weg = Math.max(fb.width, fb.height)/2 + b/2 + luft*2.5;
+    dx = nachRechts ? weg : -weg;
+    const links  = ziel.anker[0] + dx - b/2 - luft;
+    const rechts = ziel.anker[0] + dx + b/2 + luft;
+    if (links  < vb.x)             dx += vb.x - links;
+    if (rechts > vb.x + vb.width)  dx -= rechts - (vb.x + vb.width);
+    rand.setAttribute('x', dx - b/2 - luft);
+    text.setAttribute('x', dx);
+    g.insertBefore(knoten('line', { x1:0, y1:0,
+      x2: dx + (dx > 0 ? -b/2 - luft : b/2 + luft), y2:0, class:'fahnenlinie' }), rand);
+    g.insertBefore(knoten('circle', { cx:0, cy:0, r:4/k, class:'fahnenpunkt' }), rand);
+  }
+  g.setAttribute('transform', `translate(${ziel.anker[0]} ${ziel.anker[1]})`);
+  g.dataset.fahne = passt ? 'innen' : 'daneben';
 }
 
 /* ---------- Ende ---------------------------------------------------------- */
@@ -685,7 +837,7 @@ async function elternbereich(){
     <td class="num">${Math.round(z.quote*100)} %</td>
     <td class="num">${(z.schnitt/1000).toFixed(1)} s</td>
     <td><div class="balken klein"><i style="width:${Math.round(z.quote*100)}%;
-      background:${z.quote>.7?'var(--gut)':z.quote>.4?'oklch(.75 .13 85)':'var(--warn)'}"></i></div></td></tr>`;
+      background:${z.quote>.7?'var(--gut)':z.quote>.4?'var(--achtung)':'var(--warn)'}"></i></div></td></tr>`;
 
   s.innerHTML = `<div class="kopf">
       <button class="knopf" id="zur">${ZURUECK}<span>Zurück</span></button>

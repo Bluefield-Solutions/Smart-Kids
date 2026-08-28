@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Smart Kids">
-<meta name="theme-color" content="#1b2835">
+<meta name="theme-color" content="__THEMECOLOR__">
 <meta name="description" content="Erdkunde für Fiona und Lea: Kontinente, Länder, Bundesländer, Landeshauptstädte.">
 <title>Smart Kids</title>
 __KOPF__
@@ -49,7 +49,7 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
    dunklere Kante unten. Beim Druecken faehrt der Knopf um genau die
    Kantenhoehe nach unten - dann sieht es aus, als gaebe er nach. */
 .knopf{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);
-  background:transparent;border:1.5px solid var(--knopf-rand);border-radius:var(--rund-voll);
+  background:transparent;border:var(--strich) solid var(--knopf-rand);border-radius:var(--rund-voll);
   padding:var(--r2) var(--r4);min-height:44px;display:flex;align-items:center;gap:var(--r2);
   cursor:pointer;transition:background var(--d-tipp) var(--k-standard),
     border-color var(--d-tipp) var(--k-standard),color var(--d-tipp) var(--k-standard)}
@@ -98,18 +98,18 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
    `hyphens:auto` trennt es sauber, statt es abzuschneiden.
    `max-width` haelt die Kacheln auf grossen Schirmen beisammen - ohne das
    werden aus zwei Profilen zwei 550 Punkte breite Balken. */
-.kachel{background:var(--papier);border:1.5px solid var(--knopf-rand);
+.kachel{background:var(--papier);border:var(--strich) solid var(--knopf-rand);
   border-radius:var(--rund-flaeche);
-  box-shadow:0 3px 0 var(--knopf-kante),inset 0 1.5px 0 var(--knopf-licht);
+  box-shadow:0 var(--kante) 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht);
   padding:var(--r6) var(--r8);
   min-width:0;width:100%;max-width:280px;justify-self:center;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:var(--r2);
   transition:transform var(--d-tipp) var(--k-standard),box-shadow var(--d-tipp) var(--k-standard),
     border-color var(--d-tipp) var(--k-standard)}
 .kachel:active{transform:translateY(3px);
-  box-shadow:0 0 0 var(--knopf-kante),inset 0 1.5px 0 var(--knopf-licht)}
+  box-shadow:0 0 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
 @media (hover:hover){.kachel:hover{border-color:var(--primaer-rand);
-  box-shadow:0 3px 0 var(--knopf-kante),inset 0 1.5px 0 var(--knopf-licht),0 0 0 4px var(--akzent-h)}}
+  box-shadow:0 var(--kante) 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht),0 0 0 var(--ring) var(--akzent-h)}}
 /* Ohne `min-width:0` ist ein Flex-Kind mindestens so breit wie sein
    laengstes Wort - "Landeshauptstaedte" stand dann quer ueber den Rand
    der eigenen Kachel hinaus. Die Kachel selbst sass richtig, ihr Inhalt
@@ -126,24 +126,55 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   font-weight:700;color:var(--auf-flaeche)}
 
 /* --- Spielfeld --- */
-.feld{flex:1;display:flex;gap:var(--r4);padding:0 var(--r4) var(--r4);min-height:0}
+.feld{flex:1;display:flex;gap:var(--r4);padding:0 var(--r4) var(--r4);min-height:0;
+  align-items:center;justify-content:center}
 @media (orientation:portrait){.feld{flex-direction:column}}
-.karte{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;
-  touch-action:none}
+/* Die Karte nimmt genau den Platz, den sie BRAUCHT - nicht den, den ein
+   `flex:1` ihr zuteilt.
+   Gemessen vorher: der Kasten war auf dem iPhone quer 420 Punkte breit,
+   gezeichnet wurden 213. Deutschland ist hochformatig (Verhaeltnis 0,74),
+   die Weltkarte querformatig (1,67) - ein Kasten fuer beide verschenkt
+   immer bei einer von beiden. `--karte-ar` kommt aus der viewBox der
+   gerade gezeigten Karte, wird also je Ebene richtig gesetzt.
+   Der frei werdende Platz geht an die Antworten und an den Rand, statt
+   als Loch neben der Karte zu stehen. */
+/* Breite und Hoehe setzt `kartenGroesse()` in spiel.js - siehe dort, warum
+   es in CSS nicht geht. Hier stehen nur die Grenzen, damit vor der ersten
+   Messung nichts ueberlaeuft. */
+.karte{flex:0 0 auto;min-width:0;min-height:0;max-width:100%;max-height:100%;
+  aspect-ratio:var(--karte-ar,1);
+  display:flex;align-items:center;justify-content:center;touch-action:none}
 .karte svg{width:100%;height:100%;overflow:visible}
 .karte path.geb{transition:fill var(--d-zustand) var(--k-standard)}
-.karte path.ziel{fill:oklch(.80 .12 250)}
+.karte path.ziel{fill:var(--ziel)}
 /* Alles ausser dem gesuchten Gebiet tritt zurueck. Bei sieben gleich hellen
    Pastellflaechen ist sonst nicht zu erkennen, welche gemeint ist. */
 .karte path.geb.ruhig{opacity:.42;filter:saturate(.35)}
-.karte path.treffer{fill:oklch(.86 .10 155);opacity:1;filter:none}
+/* Was schon sass, bleibt in voller Farbe stehen. Die Karte fuellt sich,
+   waehrend gespielt wird - das ist der Fortschritt, den ein Kind sieht,
+   ohne eine Zahl lesen zu muessen. */
+.karte path.geb.gekonnt{opacity:1;filter:none}
+.karte .haken{pointer-events:none;animation:haken-auf var(--d-belohnung) var(--k-standard)}
+/* Der Name am Ort. Erscheint erst NACH der richtigen Antwort - vorher waere
+   er die Antwort. */
+.karte #fahne{pointer-events:none;animation:fahne-auf var(--d-belohnung) var(--k-standard) both}
+@keyframes fahne-auf{0%{opacity:0}40%{opacity:0}100%{opacity:1}}
+.karte .fahnentext{font-family:var(--f-lesen);font-weight:700;fill:var(--papier)}
+.karte .fahnenrand{fill:var(--tinte);stroke:var(--papier);
+  stroke-width:var(--strich-stark);vector-effect:non-scaling-stroke;paint-order:stroke fill}
+.karte .fahnenlinie{stroke:var(--tinte);stroke-width:var(--strich-kueste);
+  vector-effect:non-scaling-stroke;stroke-linecap:round}
+.karte .fahnenpunkt{fill:var(--tinte);stroke:var(--papier);
+  stroke-width:var(--strich);vector-effect:non-scaling-stroke}
+@keyframes haken-auf{from{opacity:0;scale:.4}to{opacity:1;scale:1}}
+.karte path.treffer{fill:var(--treffer);opacity:1;filter:none}
 .karte .zielrand{opacity:.9}
-.karte .zielpuls{animation:pulsrand 1.5s ease-in-out infinite}
+.karte .zielpuls{animation:pulsrand var(--d-puls) ease-in-out infinite}
 @keyframes pulsrand{
   0%,100%{stroke-width:3;stroke-opacity:.95}
   50%    {stroke-width:9;stroke-opacity:.15}
 }
-.karte .zeiger{animation:huepfen 1.5s ease-in-out infinite;pointer-events:none}
+.karte .zeiger{animation:huepfen var(--d-puls) ease-in-out infinite;pointer-events:none}
 @keyframes huepfen{0%,100%{translate:0 0}50%{translate:0 -6px}}
 .seite{flex:none;display:flex;flex-direction:column;gap:var(--r2);min-height:0;
   /* "safe center" statt "center": laeuft der Inhalt ueber, rutscht er sonst
@@ -160,7 +191,7 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   .wahlliste{flex:1;min-width:0}
   .werkzeug{flex:none;flex-direction:column;justify-content:center;padding-top:0}
 }
-@media (orientation:portrait){.seite{width:100%;max-height:44vh;overflow:auto}
+@media (orientation:portrait){.seite{width:100%;flex:0 0 auto;max-height:56vh;overflow:auto}
   /* Sonst wird aus "Berlin" ein 784 Punkte breiter Balken mit einem Wort
      in der Mitte. Gleich breite Antworten sind richtig - beliebig breite
      nicht. */
@@ -170,49 +201,49 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   padding:0 var(--r4) var(--r2)}
 .etikett{position:relative;font-family:var(--f-lesen);font-size:var(--s1);font-weight:700;
   color:var(--auf-flaeche);background:var(--primaer);
-  border:1.5px solid var(--primaer-rand);border-radius:var(--rund-karte);
+  border:var(--strich) solid var(--primaer-rand);border-radius:var(--rund-karte);
   padding:var(--r3) var(--r4);min-height:56px;display:flex;align-items:center;justify-content:center;
   text-align:center;hyphens:auto;overflow-wrap:break-word;
-  box-shadow:0 3px 0 var(--primaer-kante),inset 0 1.5px 0 var(--knopf-licht);
+  box-shadow:0 var(--kante) 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht);
   cursor:grab;touch-action:none;
   transition:transform var(--d-tipp) var(--k-standard),box-shadow var(--d-tipp) var(--k-standard),
              background var(--d-zustand) var(--k-standard),
              border-color var(--d-zustand) var(--k-standard),
              opacity var(--d-zustand) var(--k-standard)}
 .etikett:active{transform:translateY(3px);
-  box-shadow:0 0 0 var(--primaer-kante),inset 0 1.5px 0 var(--knopf-licht)}
-@media (hover:hover){.etikett:hover{box-shadow:0 3px 0 var(--primaer-kante),
-  inset 0 1.5px 0 var(--knopf-licht),0 0 0 4px var(--akzent-h)}}
+  box-shadow:0 0 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
+@media (hover:hover){.etikett:hover{box-shadow:0 var(--kante) 0 var(--primaer-kante),
+  inset 0 var(--strich) 0 var(--knopf-licht),0 0 0 var(--ring) var(--akzent-h)}}
 /* Beim Ziehen haengt das Etikett am Finger: hoehere Kante, kein Uebergang. */
-.etikett.zieht{transform:none;box-shadow:0 7px 0 var(--primaer-kante),
-  inset 0 1.5px 0 var(--knopf-licht);z-index:50;cursor:grabbing;transition:none}
+.etikett.zieht{transform:none;box-shadow:0 var(--kante-hoch) 0 var(--primaer-kante),
+  inset 0 var(--strich) 0 var(--knopf-licht);z-index:50;cursor:grabbing;transition:none}
 .etikett.weg{visibility:hidden;pointer-events:none}
 /* Falsch: das Etikett faehrt zurueck und WACKELT. Vorher passierte am
    Etikett gar nichts - es kam nur ein Satz darunter, und das Kind sah
    nicht, dass seine Antwort abgelehnt worden war. */
-.etikett.falsch{background:oklch(.96 .04 40);border-color:var(--warn);
-  animation:wackeln 400ms var(--k-standard)}
+.etikett.falsch{background:var(--warn-h);border-color:var(--warn);
+  animation:wackeln var(--d-wackeln) var(--k-standard)}
 @keyframes wackeln{
   0%,100%{translate:0}
   15%{translate:-7px} 35%{translate:6px} 55%{translate:-4px} 75%{translate:2px}
 }
 @media (prefers-reduced-motion:reduce){.etikett.falsch{animation:none}}
 .wahlliste{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;
-  gap:var(--r3);justify-content:center;justify-content:safe center;padding:2px}
+  gap:var(--r3);justify-content:center;justify-content:safe center;padding:var(--r1)}
 .werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
   padding-top:var(--r2)}
 .eingabe{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;background:var(--papier);
-  border:2px solid var(--akzent);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
+  border:var(--strich-stark) solid var(--akzent);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
   min-height:64px;width:100%;color:var(--auf-flaeche);text-align:center}
-.eingabe:focus{outline:none;border-color:var(--akzent);box-shadow:0 0 0 4px var(--akzent-h)}
+.eingabe:focus{outline:none;border-color:var(--akzent);box-shadow:0 0 0 var(--ring) var(--akzent-h)}
 .hinweis{font-family:var(--f-ui);font-size:var(--s0);line-height:1.4;border-radius:var(--rund-karte);
   padding:var(--r3) var(--r4);background:var(--gut-h);color:var(--auf-flaeche)}
-.hinweis.nochmal{background:oklch(.95 .04 85)}
+.hinweis.nochmal{background:var(--nochmal-h)}
 .reihe{display:flex;gap:var(--r2);align-items:center;justify-content:center;flex-wrap:wrap}
 .mikro{width:76px;height:76px;border-radius:var(--rund-voll);background:var(--akzent);border:none;
   display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;position:relative}
 .mikro::after{content:"";position:absolute;inset:-8px;border-radius:var(--rund-voll);
-  border:3px solid var(--akzent);opacity:.3;animation:atmen 2.4s ease-in-out infinite}
+  border:var(--strich-kueste) solid var(--akzent);opacity:.3;animation:atmen var(--d-atmen) ease-in-out infinite}
 @keyframes atmen{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.08);opacity:.1}}
 .tonaus{background:var(--tinte-3)}
 .tonaus::after{display:none}
@@ -242,19 +273,19 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
   letter-spacing:-.01em}
 .kleber{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:var(--r3)}
 .aufkleber{background:var(--papier);border:none;border-radius:var(--rund-karte);padding:var(--r2);
-  box-shadow:0 2px 0 var(--tiefe-farbe);display:flex;flex-direction:column;align-items:center;
+  box-shadow:0 var(--kante-flach) 0 var(--tiefe-farbe);display:flex;flex-direction:column;align-items:center;
   gap:var(--r1);cursor:pointer;opacity:.45}
 .aufkleber.da{opacity:1}
 .aufkleber{position:relative}
 .aufkleber .siegel{position:absolute;top:6px;right:6px;width:12px;height:12px;border-radius:50%;
-  background:var(--gut);border:2px solid var(--papier)}
+  background:var(--gut);border:var(--strich-stark) solid var(--papier)}
 .aufkleber svg{width:100%;height:64px}
 .aufkleber span{font-family:var(--f-lesen);font-size:var(--s-klein);font-weight:700;
   color:var(--auf-flaeche);text-align:center;line-height:1.15;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 
 .pin{display:flex;gap:var(--r3);justify-content:center;align-items:center;min-height:34px}
-.pin i{width:16px;height:16px;border-radius:var(--rund-voll);border:2.5px solid var(--akzent);
+.pin i{width:16px;height:16px;border-radius:var(--rund-voll);border:var(--strich-stark) solid var(--akzent);
   transition:background var(--d-tipp) var(--k-standard)}
 .pin i.voll{background:var(--akzent)}
 .ziffern{display:grid;grid-template-columns:repeat(4,64px);gap:var(--r2);justify-content:center}
@@ -262,24 +293,24 @@ body{background:var(--grund);color:var(--tinte);font-family:var(--f-ui);line-hei
 
 .kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--r3)}
 .wert{background:var(--papier);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
-  box-shadow:0 2px 0 var(--tiefe-farbe)}
+  box-shadow:0 var(--kante-flach) 0 var(--tiefe-farbe)}
 .wert b{display:block;font-size:var(--s2);font-weight:800;letter-spacing:-.02em}
 .wert span{display:block;font-size:var(--s-klein);color:var(--tinte-3)}
 
 .tab{width:100%;border-collapse:collapse;background:var(--papier);border-radius:var(--rund-karte);
   overflow:hidden;font-size:var(--s-klein)}
-.tab th,.tab td{text-align:left;padding:var(--r2) var(--r3);border-bottom:1px solid var(--linie)}
+.tab th,.tab td{text-align:left;padding:var(--r2) var(--r3);border-bottom:var(--strich-fein) solid var(--linie)}
 .tab th{font-weight:700;color:var(--tinte-3);font-size:13px}
 .tab tr:last-child td{border-bottom:0}
 .tab .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .ausgabefeld{width:100%;height:180px;font-family:var(--f-mono);font-size:12px;
-  border:1px solid var(--linie);border-radius:var(--rund-klein);padding:var(--r2)}
+  border:var(--strich) solid var(--linie);border-radius:var(--rund-klein);padding:var(--r2)}
 code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
-  padding:.1em .35em;border-radius:4px}
+  padding:.1em .35em;border-radius:var(--rund-klein)}
 
 @media (prefers-reduced-motion:reduce){
-  *{animation-duration:1ms!important;transition-duration:1ms!important}
-  /* Ohne Bewegung muss der Rand allein tragen - also dauerhaft dick. */
+  /* Der `*`-Hammer steht jetzt in marken.css, wo er hingehoert.
+     Ohne Bewegung muss der Rand allein tragen - also dauerhaft dick. */
   .karte .zielpuls{stroke-width:7;stroke-opacity:.55}
 }
 /* --- Kurze Bildschirme (ganz am Ende, siehe unten) ------------------------------------------------
@@ -321,7 +352,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .kachel .umriss{width:60px;height:60px}
   .unter{max-width:52ch}
   .mikro{width:56px;height:56px}
-  .mikro::after{inset:-5px;border-width:2px}
+  .mikro::after{inset:-5px;border-width:var(--strich-stark)}
   /* Der Zifferblock der Eltern-PIN in ZWEI Reihen statt drei. */
   .ziffern{grid-template-columns:repeat(6,52px)}
   .zi{min-height:48px}

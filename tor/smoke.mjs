@@ -39,6 +39,34 @@ async function neueSeite(viewport, ctx) {
   return p;
 }
 
+/**
+ * Nach einer richtigen Antwort: steht der Name auf der Karte, und steht er
+ * im Bild?
+ *
+ * Die Zusage aus G10: 14 von 16 Bundeslaendernamen passen nicht in ihr
+ * Gebiet, also ist die Fahne der Normalfall. Geprueft wird deshalb beides -
+ * dass ueberhaupt ein Name erscheint, dass er vollstaendig im Kartenfeld
+ * liegt, und dass die Entscheidung "innen oder daneben" wirklich gemessen
+ * wird und nicht immer gleich ausfaellt.
+ */
+async function fahnePruefen(p, wo) {
+  const f = await p.evaluate(() => {
+    const g = document.querySelector('.schirm.da #fahne');
+    const t = g && g.querySelector('.fahnentext');
+    if (!t) return null;
+    const b = t.getBoundingClientRect();
+    const svg = document.querySelector('.schirm.da .karte svg').getBoundingClientRect();
+    return { art: g.dataset.fahne, text: t.textContent,
+             drin: b.left >= svg.left - 1 && b.right <= svg.right + 1
+                && b.top >= svg.top - 1 && b.bottom <= svg.bottom + 1,
+             hoch: +b.height.toFixed(0) };
+  });
+  if (!f) { merke('fahne', new Error(`${wo}: kein Name auf der Karte`)); return null; }
+  if (!f.drin) merke('fahne', new Error(`${wo}: „${f.text}" steht außerhalb des Kartenfelds`));
+  if (f.hoch < 14) merke('fahne', new Error(`${wo}: „${f.text}" nur ${f.hoch} pt hoch`));
+  return f.art;
+}
+
 /** Eine Aufgabe loesen: das passende Etikett auf den Anker des Ziels ziehen. */
 async function loese(p) {
   // Warten, bis der Bildschirmwechsel wirklich durch ist - sonst greift der
@@ -73,6 +101,7 @@ async function loese(p) {
 /* --- Durchgang 1: spielen und ablegen --------------------------------- */
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
+const fahnenArten = new Set();
 try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   await p.click('[data-profil="fiona"]');
@@ -86,11 +115,33 @@ try {
     for (let n = 0; n < 6; n++) {
       if (!(await p.$('.schirm.da .karte svg'))) break;
       geloest.push(await loese(p));
-      await p.waitForTimeout(1800);
+      await p.waitForTimeout(700);
+      const art = await fahnePruefen(p, geloest[geloest.length - 1]);
+      if (art) fahnenArten.add(art);
+      await p.waitForTimeout(1100);
     }
     const nochmal = await p.$('.schirm.da #nochmal');
     if (nochmal) { await nochmal.click(); await p.waitForSelector('.schirm.da .karte svg'); }
   }
+  // Gemessen wird in der ZWEITEN Sitzung: dort muss stehen, was in der
+  // ersten gelernt wurde. Beim ersten Anlauf hing der Fortschritt an der
+  // Sitzung und war nach dem Neustart weg - der Rauchtest meldete null
+  // gekonnte Gebiete, und das war richtig.
+  // Fuellt sich die Karte wirklich? Die Zusage lautet: was schon sass,
+  // bleibt in voller Farbe stehen und traegt einen Haken - und zwar ueber
+  // den Aufgabenwechsel hinweg, denn der baut den Bildschirm neu.
+  const gefuellt = await p.evaluate(() => ({
+    gekonnt: document.querySelectorAll('.schirm.da path.geb.gekonnt').length,
+    haken:   document.querySelectorAll('.schirm.da .haken').length,
+    ruhig:   document.querySelectorAll('.schirm.da path.geb.ruhig').length,
+  }));
+  console.log(`  Karte nach zwei Sitzungen: ${gefuellt.gekonnt} Gebiete in voller Farbe, `
+    + `${gefuellt.haken} Haken, ${gefuellt.ruhig} noch gedämpft`);
+  if (gefuellt.gekonnt < 2)
+    merke('gekonnt', new Error(`nur ${gefuellt.gekonnt} Gebiete stehen in voller Farbe — `
+      + `der Fortschritt überlebt den Aufgabenwechsel nicht`));
+  if (gefuellt.haken !== gefuellt.gekonnt)
+    merke('gekonnt', new Error(`${gefuellt.gekonnt} gekonnte Gebiete, aber ${gefuellt.haken} Haken`));
   await p.screenshot({ path: '/tmp/smoke-spiel.png' });
   await p.close();
 } catch (e) { merke('spielen', e); }
@@ -236,6 +287,12 @@ console.log(`  Ebene 4:                    ${ebene4} Aufgaben, immer 4 Städte, 
 
 await ctx.close(); await b.close(); server.close();
 
+console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`);
+// Faellt die Entscheidung IMMER gleich aus, ist sie keine Messung, sondern
+// eine feste Einstellung - und der halbe Sinn der Fahne waere weg.
+if (fahnenArten.size < 2)
+  fehler.push(`fahne: in zwölf Aufgaben nur die Sorte „${[...fahnenArten][0] || '—'}" — `
+    + `die Entscheidung „passt hinein" wird nicht wirklich gemessen`);
 console.log(`  Gelöst im ersten Durchgang: ${geloest.join(', ')}`);
 if (fehler.length) { console.log(`\n  ${fehler.length} FEHLER:`); fehler.forEach(f => console.log('    ✗ ' + f)); process.exit(1); }
 console.log('\n  Rauchtest grün: gespielt, abgelegt, Neustart überstanden, Buch gefüllt, Eltern gelesen, getippt.');

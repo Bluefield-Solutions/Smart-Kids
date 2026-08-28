@@ -111,8 +111,20 @@ const rumpf = '<script>' + module + '\n'
 /** Zwei Fassungen aus EINER Quelle - der Unterschied steckt nur im Kopf. */
 const marken = fs.readFileSync(new URL('../src/marken/marken.css', import.meta.url), 'utf8');
 
+/**
+ * Die zwei Farben, die als HEX gebraucht werden.
+ *
+ * Das Manifest und das theme-color-Meta verstehen kein oklch() - jedenfalls
+ * nicht ueberall, und ein System, das die Farbe nicht liest, blitzt beim
+ * Start weiss auf. Sie stehen deshalb EINMAL hier und werden an beide
+ * Stellen gesetzt; vorher stand `#1b2835` zweimal im Baum.
+ * Ausgerechnet in Chromium aus --grund und --tinte.
+ */
+const HEX = { grund: '#f6f3ee', tinte: '#1b2835' };
+
 function bauen(kopf) {
   return vorlage.replace('__MARKEN__', marken)
+                .replace('__THEMECOLOR__', HEX.tinte)
                 .replace('__DATEN__', JSON.stringify(D))
                 .replace('__BAU__', JSON.stringify(BAU))
                 .replace('__KOPF__', kopf) + rumpf;
@@ -188,8 +200,8 @@ fs.writeFileSync(new URL('manifest.webmanifest', DIST), JSON.stringify({
   start_url: './', scope: './', id: './',
   display: 'standalone',
   orientation: 'any',
-  background_color: '#f6f3ee',   // = --grund, in Chromium ausgerechnet
-  theme_color: '#1b2835',        // = --tinte
+  background_color: HEX.grund,
+  theme_color: HEX.tinte,
   icons: [
     { src:'./symbol-192.png',  sizes:'192x192',   type:'image/png', purpose:'any' },
     { src:'./symbol-512.png',  sizes:'512x512',   type:'image/png', purpose:'any' },

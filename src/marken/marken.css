@@ -20,7 +20,9 @@
   --f-mono: ui-monospace, SFMono-Regular, Menlo, monospace;  /* Ausfuhr */
 
   /* --- Strich --------------------------------------------------------- */
-  --strich-fein: 0.75px; --strich: 1.5px; --strich-kueste: 3px;
+  --strich-fein: 0.75px; --strich: 1.5px; --strich-stark: 2.5px;
+  --strich-kueste: 3px;
+  --ring: 4px;              /* der Hof um einen Knopf unter dem Zeiger */
 
   /* --- Farbe. OKLCH, weil L dort der wahrgenommenen Helligkeit
          entspricht. Alle sieben Flaechen sind exakt gleich hell -
@@ -43,6 +45,16 @@
   --gut:      oklch(0.62  0.140 155);
   --gut-h:    oklch(0.93  0.055 155);
   --warn:     oklch(0.65  0.130  40);
+  --warn-h:   oklch(0.96  0.040  40);   /* Grund eines abgelehnten Etiketts */
+  --achtung:  oklch(0.75  0.130  85);   /* zwischen gut und warn */
+  --nochmal-h:oklch(0.95  0.040  85);   /* Grund eines Hinweises */
+
+  /* --- Was auf der Karte passiert -------------------------------------- */
+  --ziel:     oklch(0.80  0.120 250);   /* das gesuchte Gebiet */
+  --treffer:  oklch(0.86  0.100 155);   /* geschafft */
+  --wasch:    oklch(0.80  0.120 155);   /* die Welle beim Richtig */
+  --stern-an: oklch(0.80  0.140  85);
+  --stern-aus:oklch(0.93  0.010 250);
 
   /* --- Tiefe. Als KANTE, nie als Filter. ------------------------------
      Frueher eine versetzte Flaeche (`box-shadow: 0 4px 0`). Die sieht aus
@@ -50,8 +62,10 @@
      Linie oben INNEN (das Licht faellt von oben) und eine dunklere Kante
      unten. Derselbe Trick, dasselbe Budget - aber es wirkt wie Material.
      Filter bleiben verboten (Regel 11, die Safari-Falle). */
-  --tiefe-1: 2px; --tiefe-2: 4px; --tiefe-3: 6px;
   --tiefe-farbe: oklch(0.80 0.020 250);
+  --kante-flach: 2px;  /* leichte Karten: Aufkleber, Wertekacheln */
+  --kante:      3px;   /* Knopftiefe in Ruhe */
+  --kante-hoch: 7px;   /* am Finger, waehrend gezogen wird */
   --knopf-licht:   oklch(0.995 0.003 250);
   --knopf-rand:    oklch(0.885 0.014 250);
   --knopf-kante:   oklch(0.825 0.022 250);
@@ -62,6 +76,9 @@
 
   /* --- Bewegung ------------------------------------------------------- */
   --d-tipp: 120ms; --d-zustand: 200ms; --d-schirm: 320ms; --d-belohnung: 500ms;
+  --d-wackeln: 400ms;   /* das Nein eines abgelehnten Etiketts */
+  --d-puls:   1500ms;   /* der Ring um das gesuchte Gebiet */
+  --d-atmen:  2400ms;   /* der Hof um das Mikrofon */
   --k-standard: cubic-bezier(.2, 0, 0, 1);
   --k-feder: linear(0,.006,.025 2.8%,.101 6.1%,.539 18.9%,.721 25.3%,.849 31.5%,
              .937 38.1%,.968 41.8%,.991 45.7%,1.006 50.1%,1.015 55%,1.017 63.9%,
@@ -80,5 +97,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root { --d-tipp: 1ms; --d-zustand: 1ms; --d-schirm: 1ms; --d-belohnung: 1ms; }
+  :root { --d-tipp: 1ms; --d-zustand: 1ms; --d-schirm: 1ms; --d-belohnung: 1ms;
+          --d-wackeln: 1ms; --d-puls: 1ms; --d-atmen: 1ms; }
+  /* Die Marken allein reichen nicht: eine @keyframes-Animation mit fester
+     Dauer hoert nicht auf sie. Deshalb zusaetzlich der grobe Hammer -
+     er stand bisher in vorlage.html und damit ausserhalb des Systems. */
+  * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 }

@@ -104,8 +104,35 @@ const SUCHE = () => {
       zu.push(`„${text}" — verdeckt von ${stoerer} „${oben.textContent.trim().slice(0,22)}"`);
     }
   }
-  return { raus, klein, zu };
+  // Sitzt die Karte satt in ihrem Kasten?
+  //
+  // Eine Karte behaelt ihr Seitenverhaeltnis. Ist der Kasten anders
+  // geschnitten, bleibt daneben ein Loch - und zwar eines, das NIEMAND
+  // nutzt: gemessen war der Kasten auf dem iPhone quer 420 Punkte breit,
+  // gezeichnet wurden 213. Deutschland ist hochformatig (0,74), die
+  // Weltkarte quer (1,67); ein Kasten fuer beide verschenkt immer bei einer.
+  //
+  // Geprueft wird nicht "die Karte fuellt den Bildschirm" - das kann sie
+  // geometrisch gar nicht -, sondern "die Karte fuellt IHREN KASTEN".
+  // Das ist die Zusage, die man halten kann.
+  let karte = null;
+  const svg = document.querySelector('.schirm.da .karte svg');
+  if (svg) {
+    const kasten = svg.parentElement.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const k = Math.min(kasten.width / vb.width, kasten.height / vb.height);
+    const gez = { b: vb.width * k, h: vb.height * k };
+    karte = {
+      anteil: (gez.b * gez.h) / (kasten.width * kasten.height),
+      kasten: [Math.round(kasten.width), Math.round(kasten.height)],
+      gez: [Math.round(gez.b), Math.round(gez.h)],
+    };
+  }
+  return { raus, klein, zu, karte };
 };
+
+/** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
+const KARTE_MIN = 0.92;
 
 const server = http.createServer((q, a) => {
   const f = path.join(DIST, q.url === '/' ? '/index.html' : q.url.split('?')[0]);
@@ -145,6 +172,11 @@ for (const g of GERAETE) {
     zuKlein += r.klein.length;
     for (const x of r.raus) meldungen.push(`${name}: ${x}`);
     for (const x of r.zu) meldungen.push(`${name}: ${x}`);
+    if (r.karte && r.karte.anteil < KARTE_MIN)
+      meldungen.push(`${name}: die Karte füllt nur `
+        + `${(r.karte.anteil * 100).toFixed(0)} % ihres Kastens `
+        + `(Kasten ${r.karte.kasten.join('×')}, gezeichnet ${r.karte.gez.join('×')}) — `
+        + `daneben steht ein Loch, das niemand nutzt`);
     // Zu kleine Trefferflaechen sind ein Hinweis, kein Fehler: manche
     // Knoepfe sind bewusst schmal (der Zurueck-Pfeil ist 44 hoch, aber
     // nicht 44 breit - er ist trotzdem gut zu treffen).
@@ -161,7 +193,11 @@ for (const g of GERAETE) {
   await p.waitForSelector('.schirm.da [data-ebene]');
   await schau('Ebenenwahl');
 
-  for (const [ebene, warte] of [['bundeslaender', null], ['hauptstaedte', '#weiter']]) {
+  // Auch die WELTKARTE: sie ist querformatig, Deutschland hochformatig -
+  // ein Grundriss, der nur mit einer von beiden geprueft wird, ist halb
+  // geprueft.
+  for (const [ebene, warte] of [['kontinente', null], ['bundeslaender', null],
+                                ['hauptstaedte', '#weiter']]) {
     await tipp(`[data-ebene="${ebene}"]`);
     if (warte) {
       await p.waitForSelector(`.schirm.da ${warte}, .schirm.da .karte svg path.ziel`);
@@ -195,7 +231,8 @@ for (const g of GERAETE) {
 }
 await b.close(); server.close();
 
-console.log(`    ${GERAETE.length} Größen × ${gesehen / GERAETE.length} Bildschirme geprüft`
+console.log(`    ${GERAETE.length} Größen × ${gesehen / GERAETE.length} Bildschirme geprüft, `
+  + `Karten füllen mindestens ${(KARTE_MIN*100).toFixed(0)} % ihres Kastens`
   + (zuKlein ? `, ${zuKlein} Trefferflächen unter ${MIN_PT} pt (Hinweis)` : ''));
 
 if (fehler.length) {

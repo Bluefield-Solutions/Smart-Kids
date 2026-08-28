@@ -287,6 +287,44 @@ for (const q of ['prototyp/spiel.js', 'prototyp/vorlage.html']) {
   }
 }
 
+// Farben, Dauern und Kanten NUR in marken.css.
+//
+// Das Tor pruefte bisher nur das Markup. Im Stylesheet standen vier Farben,
+// eine Dauer und ein Dutzend Strichstaerken frei herum - und in spiel.js
+// noch vier weitere Farben, unter anderem die der Sterne. Ein
+// Gestaltungssystem, an dem man vorbeigreifen kann, ist keins.
+//
+// Bauteilmasse (44 pt Trefferflaeche, 76 px Mikrofon, 440 px Grenze) bleiben
+// erlaubt: das sind Groessen, keine Marken. Die Grenze verlaeuft bei dem,
+// was das Projekt sich vorgenommen hat - Farbe, Abstand, Radius, Strich,
+// Dauer.
+const SYSTEM = [
+  { was:'Farbe',    muster:/oklch\([^)]*\)|#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)/g },
+  { was:'Dauer',    muster:/(?<![\w-])\d+m?s(?![\w-])/g },
+  { was:'Radius',   muster:/border-radius:\s*[^;}]*(?<![\w-])\d*\.?\d+(px|rem|em)/g },
+  { was:'Strich',   muster:/border(-\w+)?:\s*[^;}]*(?<![\w-])\d*\.?\d+(px|rem|em)\s+(solid|dashed|dotted)/g },
+  { was:'Abstand',  muster:/(?:^|[;{])\s*(?:gap|padding|margin)(-\w+)?:\s*[^;}]*(?<![\w-])\d*\.?\d+(px|rem)/g },
+];
+let amSystemVorbei = 0;
+for (const q of ['prototyp/vorlage.html', 'prototyp/spiel.js']) {
+  if (!fs.existsSync(q)) continue;
+  let t = fs.readFileSync(q, 'utf8');
+  // Der eingesetzte Markenblock ist die Quelle selbst - er darf alles.
+  t = t.replace('__MARKEN__', '');
+  // Kommentare zaehlen nicht.
+  t = t.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/<!--[\s\S]*?-->/g, ' ')
+       .replace(/^\s*\/\/.*$/gm, ' ');
+  for (const { was, muster } of SYSTEM) {
+    const treffer = [...new Set(t.match(muster) || [])];
+    if (treffer.length) {
+      fehler.push(`${q}: ${treffer.length} ${was}-Werte am System vorbei — `
+        + `${treffer.slice(0, 4).map(x => x.trim().slice(0, 44)).join(' · ')}`
+        + `${treffer.length > 4 ? ' …' : ''}. Gehört nach src/marken/marken.css.`);
+      amSystemVorbei += treffer.length;
+    }
+  }
+}
+
 pruefe(/--f1:\s*oklch/.test(MARKEN), 'Palette steht nicht in OKLCH');
 // Der Abendmodus muss ebenfalls in sich gleich hell sein.
 const abend = [...MARKEN_ALLES.slice(MARKEN_ALLES.indexOf(':root[data-abend'))
@@ -298,7 +336,8 @@ pruefe(ls.length === 7, `${ls.length} Flächenfarben gefunden, erwartet 7`);
 pruefe(new Set(ls).size === 1, `Flächenfarben haben unterschiedliche Helligkeit: ${[...new Set(ls)].join(', ')}`);
 console.log(`    ${ls.length} Flächenfarben, alle mit L = ${ls[0]} — derselbe Textton ist auf allen lesbar`);
 console.log(`    ${verstoesse} Markenverstöße in ${QUELLEN.length} Quellen, `
-  + `${inlineMasse} festgenagelte Maße im Markup`);
+  + `${inlineMasse} festgenagelte Maße im Markup, `
+  + `${amSystemVorbei} Werte am System vorbei`);
 
 /* ===================================================== Tor `schrift` === */
 console.log('\n  Tor `schrift`');
