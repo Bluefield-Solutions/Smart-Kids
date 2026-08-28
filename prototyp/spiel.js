@@ -147,6 +147,28 @@ function vorlesen(text){
   }catch(e){}
 }
 
+/**
+ * Ansagen - fuer das Kind, das noch nicht liest.
+ *
+ * Fionas Profil traegt seit dem ersten Entwurf `vorlesen: true`, und es
+ * wurde an KEINER Stelle abgefragt. Sie sah „Wie heisst dieses
+ * Bundesland?" und vier Namen, und nichts davon sprach. Fuer eine
+ * Sechsjaehrige, die noch nicht liest, war die App damit nicht zu bedienen -
+ * sie konnte raten, welche Kachel wohin fuehrt.
+ *
+ * Unterschied zu `vorlesen()`: das hier gilt NUR fuer Kinder, die es
+ * brauchen. Rueckmeldungen („Klasse!", der Name eines Gebiets) hoeren beide;
+ * die Vorlesung eines ganzen Bildschirms will Lea nicht.
+ *
+ * Vor der Profilwahl ist noch kein Kind bekannt - dort wird angesagt, weil
+ * gerade das Kind vor dem Bildschirm sitzt, das lesen koennte oder nicht.
+ */
+function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }
+
+/** Eine Aufzaehlung, wie man sie spricht: „A, B, C oder D". */
+const aufzaehlen = (namen) => namen.length < 2 ? (namen[0] || '')
+  : namen.slice(0, -1).join(', ') + ' oder ' + namen[namen.length - 1];
+
 /* ---------- Lob ---------------------------------------------------------
  *
  * "Richtig - Australien und Ozeanien!" ist eine Feststellung. Ein Kind,
@@ -331,6 +353,9 @@ function profilwahl(){
   s.querySelectorAll('[data-profil]').forEach(b=>b.onclick=()=>{
     P=PROFILE[b.dataset.profil]; Ablage.setze('profile',P.id,{ id:P.id, zuletzt:Date.now() }).catch(()=>{});
     vorlesen(P.name); zeige(ebenenwahl); });
+  // Hier ist noch kein Kind gewaehlt - also wird immer angesagt. Wer lesen
+  // kann, hoert einen Satz zuviel; wer nicht liest, kaeme sonst nicht los.
+  ansagen(`Wer möchte spielen? ${aufzaehlen(Object.values(PROFILE).map(x=>x.name))}?`);
   return s;
 }
 
@@ -397,6 +422,7 @@ async function ebenenwahl(){
     vorlesen(`${titel} fängt wieder von vorne an.`);
     zeige(ebenenwahl);
   });
+  ansagen(`Was möchtest du üben? ${aufzaehlen(balken.map(b=>b.titel))}?`);
   return s;
 }
 
@@ -1148,6 +1174,27 @@ function spielschirm(){
   const neuMessen = ()=>{ kartenGroesse(); trefferflaechen(); };
   requestAnimationFrame(()=>requestAnimationFrame(neuMessen));
   addEventListener('resize', neuMessen);
+
+  /* --- Die Aufgabe wird angesagt ------------------------------------
+   *
+   * Die Frage ALLEIN reicht nicht. „Wie heisst dieses Bundesland?" hilft
+   * einem Kind, das die vier Antworten nicht lesen kann, kein Stueck
+   * weiter - es wuesste dann, was gefragt ist, aber nicht, was zur Wahl
+   * steht. Also beides, so wie ein Mensch fragen wuerde:
+   *
+   *   „Wie heisst dieses Bundesland?  Niedersachsen, Rheinland-Pfalz,
+   *    Hamburg oder Saarland?"
+   *
+   * Beim Tippfeld gibt es nichts aufzuzaehlen; dort bleibt die Frage.
+   * Und die Ansage kommt NACH dem Bildwechsel: `zeige()` blendet 320 ms
+   * lang, und eine Stimme, die waehrend des Uebergangs anfaengt, gehoert
+   * hoerbar noch zum vorigen Bildschirm.
+   */
+  setTimeout(()=>{
+    const teile = [frageText];
+    if (!tippt) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
+    ansagen(teile.join(' '));
+  }, 500);
   return s;
 }
 
@@ -1296,10 +1343,27 @@ function endschirm(){
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
   s.querySelector('#andere').onclick=()=>zeige(ebenenwahl);
   vorlesen('Geschafft!');
+  ansagen(`Du hast ${Math.round(st.richtig)} von ${st.liste.length} richtig. `
+    + 'Noch einmal, Forscherbuch oder etwas anderes?');
   return s;
 }
 
 /* ---------- Forscherbuch: der Aufkleber IST der Umriss ------------------- */
+/* ---------- Forscherbuch: was du schon gefunden hast --------------------
+ *
+ * Vorher standen hier ALLE rund sechzig Gebiete nebeneinander, die noch
+ * nicht gesammelten grau mit einem Fragezeichen. Am Anfang war die Seite
+ * also fast leer - sechzig leere Kaesten.
+ *
+ * Rueckmeldung der Kinder: es sieht nach ARBEIT aus. Und genau das war es:
+ * eine To-do-Liste, die man nie schafft, an einem Ort, der belohnen sollte.
+ * Ein Aufkleberalbum, in dem neunundfuenfzig Plaetze leer sind, macht nicht
+ * stolz, sondern klein.
+ *
+ * Jetzt steht hier, was DA IST - groesser, mit Namen. Was fehlt, kommt als
+ * kurze Vorschau ans Ende: drei Stueck aus der Ebene, an der gerade
+ * gearbeitet wird. Nicht als Mahnung, sondern als naechster Schritt.
+ */
 async function forscherbuch(){
   const s = el('div');
   const gruppen = [];
@@ -1308,29 +1372,78 @@ async function forscherbuch(){
     const alle = vorrat(e.id);
     const vb = e.id.startsWith('kontinente') ? D.vbK
              : e.id.startsWith('laender') ? D.vbL[e.id.split(':')[1]] : D.vbD;
-    gruppen.push({ titel:e.titel, vb, stuecke: alle.map((g,i)=>({
+    const stuecke = alle.map((g,i)=>({
       ...g, gesammelt: Leitner.istGesammelt(st, g.id), gekonnt: Leitner.istGekonnt(st, g.id),
-      fach: st[g.id]?.fach ?? 0, i })) });
+      fach: st[g.id]?.fach ?? 0, i }));
+    gruppen.push({ id:e.id, titel:e.titel, vb,
+      da: stuecke.filter(x=>x.gesammelt), offen: stuecke.filter(x=>!x.gesammelt) });
   }
-  const gesamt = gruppen.reduce((a,g)=>a+g.stuecke.filter(x=>x.gesammelt).length,0);
+  const gesamt = gruppen.reduce((a,g)=>a+g.da.length,0);
+  const gekonnt = gruppen.reduce((a,g)=>a+g.da.filter(x=>x.gekonnt).length,0);
+  const vollen = gruppen.filter(g=>g.da.length);
+
+  // Die Vorschau kommt aus der Ebene, an der GERADE gearbeitet wird - der
+  // mit den meisten Aufklebern, die noch nicht fertig ist. Wer noch gar
+  // nichts hat, bekommt die erste Ebene gezeigt.
+  const dran = vollen.filter(g=>g.offen.length).sort((a,b)=>b.da.length-a.da.length)[0]
+            || gruppen.find(g=>g.offen.length);
+  const vorschau = dran ? dran.offen.slice(0, 3) : [];
+
+  /**
+   * Jeder Aufkleber wird auf SEINE eigene Form gerahmt.
+   *
+   * Vorher trugen alle den Ausschnitt ihrer Karte: ein Kontinent stand im
+   * Massstab der ganzen Weltkarte in seinem Kaestchen. Afrika fuellte es
+   * knapp, Europa war ein gruener Fleck von zwoelf Bildpunkten - und
+   * Bremen auf der Deutschlandkarte praktisch unsichtbar. Ein Aufkleber,
+   * auf dem man die Form nicht erkennt, ist kein Aufkleber.
+   *
+   * Gerechnet wird aus dem Pfad selbst, mit acht Prozent Luft ringsum.
+   */
+  const eigenerRahmen = (pfad) => {
+    const z = String(pfad).match(/-?\d+\.?\d*/g);
+    if (!z || z.length < 4) return null;
+    let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+    for (let i=0;i+1<z.length;i+=2){ const x=+z[i], y=+z[i+1];
+      if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    const b=x1-x0, h=y1-y0; if(!(b>0)||!(h>0)) return null;
+    const luft = Math.max(b,h)*0.08;
+    return `${x0-luft} ${y0-luft} ${b+2*luft} ${h+2*luft}`;
+  };
+
+  const kleber = (g, x, offen) => `
+    <button class="aufkleber ${offen?'':'da'} ${x.gekonnt?'sicher':''}"
+            data-lesen="${offen?'Das kennst du noch nicht.':x.name}" title="Fach ${x.fach||'—'}">
+      <svg viewBox="${eigenerRahmen(x.pfad) || g.vb}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
+        fill="${offen?'var(--linie)':`var(${FL[x.i%7]})`}"
+        stroke="var(--tinte)" stroke-opacity="${offen?.25:.6}" stroke-width="1.6"
+        vector-effect="non-scaling-stroke"/></svg>
+      <span>${offen?'?':x.name}</span>
+      ${x.gekonnt?'<i class="siegel"></i>':''}
+    </button>`;
+
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${gesamt} Aufkleber</span>` }) + `
     <div class="rollen">
-      ${gruppen.map(g=>`
+      ${gesamt ? vollen.map(g=>`
         <h3 class="gruppe">${g.titel}</h3>
-        <div class="kleber">${g.stuecke.map(x=>`
-          <button class="aufkleber ${x.gesammelt?'da':''} ${x.gekonnt?'sicher':''}"
-                  data-lesen="${x.name}" title="Fach ${x.fach||'—'}">
-            <svg viewBox="${g.vb}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
-              fill="${x.gesammelt?`var(${FL[x.i%7]})`:'var(--linie)'}"
-              stroke="var(--tinte)" stroke-opacity="${x.gesammelt?.6:.25}" stroke-width="1.6"
-              vector-effect="non-scaling-stroke"/></svg>
-            <span>${x.gesammelt?x.name:'?'}</span>
-            ${x.gekonnt?'<i class="siegel"></i>':''}
-          </button>`).join('')}</div>`).join('')}
+        <div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`).join('')
+      : `<div class="mitte">
+           <div class="titel">Hier kommen deine Aufkleber hin</div>
+           <div class="unter">Für jedes Gebiet, das du zweimal richtig hattest,
+             kommt einer dazu. Such dir eine Karte aus — der erste ist schnell da.</div>
+         </div>`}
+      ${vorschau.length ? `
+        <h3 class="gruppe">Als Nächstes: ${dran.titel}</h3>
+        <div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`
+      : gesamt ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : ''}
     </div>`;
   s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
   s.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
+  ansagen(gesamt
+    ? `Dein Forscherbuch. Du hast ${gesamt} Aufkleber${gekonnt?`, ${gekonnt} davon sicher`:''}. `
+      + `Tipp einen an, dann sage ich dir, wie er heißt.`
+    : 'Dein Forscherbuch ist noch leer. Such dir eine Karte aus — der erste Aufkleber ist schnell da.');
   return s;
 }
 

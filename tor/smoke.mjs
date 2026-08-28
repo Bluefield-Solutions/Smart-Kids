@@ -34,6 +34,16 @@ const merke = (was, e) => fehler.push(`${was}: ${e.message || e}`);
 async function neueSeite(viewport, ctx) {
   const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
+  // Was gesprochen wird, mitschreiben statt es zu hoeren.
+  //
+  // Fiona liest noch nicht. Ob die App ihr die Aufgabe VORLIEST, ist damit
+  // kein Schoenheitsmerkmal, sondern die Frage, ob sie das Spiel ueberhaupt
+  // bedienen kann - und das laesst sich nur hier messen: `speechSynthesis`
+  // gibt nichts zurueck, was man ansehen koennte.
+  await p.addInitScript(() => {
+    window.__gesagt = [];
+    speechSynthesis.speak = (u) => { if (u && u.text) window.__gesagt.push(u.text); };
+  });
   await p.goto(ADRESSE, { waitUntil: 'domcontentloaded' });
   await p.evaluate(() => document.fonts.ready);
   return p;
@@ -210,11 +220,47 @@ try {
   console.log(`  In der Ablage:              ${abgelegt} Gegenstände im Leitner-Stand`);
   if (abgelegt < 3) merke('ablage', new Error(`nur ${abgelegt} Gegenstände abgelegt, erwartet mindestens 3`));
   // Forscherbuch
+  await p.evaluate(() => { window.__gesagt = []; });
   await p.click('#buch');
   await p.waitForSelector('.schirm.da .aufkleber');
+  await p.waitForTimeout(300);
   const kleber = await p.$$eval('.schirm.da .aufkleber.da', e => e.length);
   if (kleber < 1) merke('forscherbuch', new Error('kein einziger Aufkleber nach zwei Sitzungen'));
   const alleKleber = await p.$$eval('.schirm.da .aufkleber', e => e.length);
+  /* --- Das Buch zeigt nicht mehr die ganze Wand ----------------------
+   *
+   * Rueckmeldung der Kinder: es sieht nach ARBEIT aus. Vorher standen hier
+   * ALLE rund sechzig Gebiete, am Anfang fast alle grau mit Fragezeichen -
+   * eine To-do-Liste an einem Ort, der belohnen soll.
+   *
+   * Die Zusage: gezeigt wird, was DA ist, plus hoechstens drei als
+   * Vorschau. Geprueft wird sie gegen die Gesamtzahl, nicht gegen eine
+   * hingeschriebene Obergrenze - sonst hiesse „Wand" irgendwann etwas
+   * anderes als heute.
+   */
+  // Gezaehlt wird gegen die ABLAGE, nicht gegen das, was der Bildschirm
+  // behauptet. Der erste Anlauf zaehlte die Kaesten mit der Klasse `da` -
+  // und die Gegenprobe, die einfach ALLE als gesammelt zeichnete, kam damit
+  // durch: sie faelschte genau die Zahl, gegen die geprueft wurde.
+  // Fach 3 ist die Schwelle (`HAT_AUFKLEBER` in src/kern/leitner.js).
+  const wirklich = await p.evaluate(() => new Promise(ja => {
+    const a = indexedDB.open('lernkiste');
+    a.onsuccess = () => { const d = a.result;
+      if (!d.objectStoreNames.contains('fortschritt')) return ja(0);
+      const q = d.transaction('fortschritt', 'readonly').objectStore('fortschritt').getAll();
+      q.onsuccess = () => ja(q.result.reduce((n, st) =>
+        n + Object.values(st || {}).filter(x => (x?.fach ?? 1) >= 3).length, 0));
+      q.onerror = () => ja(-1); };
+    a.onerror = () => ja(-1);
+  }));
+  if (alleKleber > wirklich + 3)
+    merke('forscherbuch', new Error(`das Buch zeigt ${alleKleber} Aufkleber, `
+      + `wirklich gesammelt sind ${wirklich} — mehr als drei Vorschau, das ist wieder die Wand`));
+  // Und es sagt Fiona, was drin ist.
+  const buchGesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+  if (!/Forscherbuch/.test(buchGesagt))
+    merke('forscherbuch', new Error('das Buch sagt Fiona nicht, was drin ist — '
+      + `sie kann es nicht lesen (gesagt: „${buchGesagt.slice(-80)}")`));
   await p.screenshot({ path: '/tmp/smoke-buch.png' });
   // Elternbereich
   await p.click('#zur'); await p.waitForSelector('.schirm.da #eltern');
@@ -407,6 +453,8 @@ console.log(`  Ebene 4:                    ${ebene4} Aufgaben, immer 4 Städte, 
 // zeigt, ob beide Kinder auf IHRE Art gespielt haben - und nicht beide auf
 // dieselbe.
 const wege = new Set();
+// Wieviele Aufgaben hat das Kind ANGESAGT bekommen?
+const gehoert = {};
 const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
   'bundeslaender', 'hauptstaedte'];
@@ -420,12 +468,20 @@ for (const wer of ['fiona', 'lea']) {
     for (const e of EBENEN_ALLE)
       if (!da.includes(e)) merke('durchgang', new Error(`${wer}: Ebene „${e}" fehlt in der Auswahl`));
     for (const ebene of da) {
+      // Den Mitschnitt leeren, BEVOR die Ebene aufgeht: sonst zaehlt das Lob
+      // der vorigen Aufgabe mit, und das hoeren beide Kinder. Der erste
+      // Anlauf meldete deshalb „Lea bekam 8 Aufgaben vorgelesen" - gemessen
+      // war irgendeine Sprachausgabe, nicht die ANSAGE.
+      await p.evaluate(() => { window.__gesagt = []; });
       await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
       await p.waitForTimeout(400);
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
-      await p.waitForTimeout(400);
+      await p.waitForTimeout(900);   // die Ansage kommt 500 ms nach dem Wechsel
+      // Gezaehlt wird die FRAGE, nicht irgendein Ton.
+      const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+      if (/Wie heißt/.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
       const z = await p.evaluate(() => {
         const s = document.querySelector('.schirm.da');
         const ziel = s.querySelector('path.ziel');
@@ -495,6 +551,16 @@ for (const wer of ['fiona', 'lea']) {
 }
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
+console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0}, Lea ${gehoert.lea||0} `
+  + `(von je 8 Ebenen)`);
+// Fiona liest noch nicht: JEDE Aufgabe muss angesagt werden. Lea liest -
+// bei ihr waere dieselbe Ansage nur Laerm, und das steht in ihrem Profil.
+if ((gehoert.fiona || 0) < 8)
+  fehler.push(`Fiona bekam nur ${gehoert.fiona||0} von 8 Aufgaben vorgelesen — `
+    + 'sie kann noch nicht lesen, ohne Ansage ist die Ebene für sie nicht spielbar');
+if ((gehoert.lea || 0) > 0)
+  fehler.push(`Lea bekam ${gehoert.lea} Aufgaben vorgelesen, obwohl ihr Profil `
+    + '`vorlesen: false` sagt — die Ansage hängt nicht am Kind');
 // Voreingestellt zieht Fiona und tippt Lea an. Wird nur EIN Weg gegangen,
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
 // Bedienung ungeprueft.

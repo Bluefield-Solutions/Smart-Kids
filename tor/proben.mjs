@@ -272,6 +272,26 @@ const PROBEN = [
     an:{ ...DIST, text:"fiona:'ziehen', lea:'ziehen'" },
     sagt:'der Umschalter greift nicht' },
 
+  // Fiona liest noch nicht. Ohne Ansage ist keine Ebene fuer sie spielbar -
+  // und genau das war der Zustand, bis jemand es beim Spielen gemerkt hat.
+  { n:'die Aufgabe wird nicht mehr vorgelesen', tor:'smoke', bauen:true, datei:D,
+    suchRegex:/  setTimeout\(\(\)=>\{\n    const teile = \[frageText\];[\s\S]*?\}, 500\);\n/,
+    ersatzFn:()=>'',
+    an:{ ...DIST, fehlt:'const teile = [frageText]' },
+    sagt:'vorgelesen' },
+  // Und sie haengt am KIND: Lea liest, fuer sie waere dieselbe Ansage Laerm.
+  { n:'die Ansage hängt nicht mehr am Kind', tor:'smoke', bauen:true, datei:D,
+    such:'function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }',
+    ersatz:'function ansagen(text){ vorlesen(text); }',
+    an:{ ...DIST, fehlt:'if (!P || P.vorlesen) vorlesen(text)' },
+    sagt:'hängt nicht am Kind' },
+  // Das Forscherbuch soll nicht wieder zur Wand werden.
+  { n:'das Forscherbuch zeigt wieder alles', tor:'smoke', bauen:true, datei:D,
+    such:'      da: stuecke.filter(x=>x.gesammelt), offen: stuecke.filter(x=>!x.gesammelt) });',
+    ersatz:'      da: stuecke, offen: [] });',
+    an:{ ...DIST, text:'da: stuecke, offen: []' },
+    sagt:'die Wand' },
+
   { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",

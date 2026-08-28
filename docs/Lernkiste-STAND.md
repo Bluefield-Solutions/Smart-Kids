@@ -6,7 +6,8 @@ Prüfbericht und das Grafik-Audit; ersetzt keines davon.
 Stand: nach M0-Vorarbeit, M2, MG, dem Tor `ansicht`, **M3 bis M6**, der
 Sichtrunde, dem **Umzug nach `Bluefield-Solutions/Smart-Kids`** samt PWA und
 Auslieferung, der Ausbau-, der Spieler-, der Gestaltungs-, der Zieh-, der Proben-,
-der Budget-, der Übergangs-, der Geräte- und der **Umschalterrunde**.
+der Budget-, der Übergangs-, der Geräte-, der Umschalter- und der
+**Vorleserunde**.
 
 > **Der Baum ist umgezogen.** Gearbeitet wird in
 > `Bluefield-Solutions/Smart-Kids`, nicht mehr in `towerfront/lernkiste`.
@@ -21,7 +22,7 @@ npm run backen      Kartenpipeline: Kontinente, Deutschland, Länder,
                     Antarktika, Städte
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 33 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 36 stehenden Gegenproben (Baum muss sauber sein,
                     dauert 3,5 Minuten, höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
@@ -36,7 +37,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Siebzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **33 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **36 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 ---
@@ -1309,6 +1310,79 @@ Ein Vorbild, das gelegentlich rot wird, ist schlimmer als keines: es erzieht
 dazu, Rot zu übersehen. Die Aufnahme holt das Abgebildete jetzt erst ins
 Bild und wartet, bis es **wirklich fertig** ist. Vier Läufe hintereinander:
 neun von neun grün.
+
+---
+
+## Die Vorleserunde
+
+Zwei Rückmeldungen von den Kindern, und die erste war ein Befund über die
+ganze App.
+
+### Fiona konnte sie nicht bedienen
+
+Ihr Profil trägt seit dem ersten Entwurf `vorlesen: true` — *liest noch
+nicht*. Abgefragt wurde es an **keiner einzigen Stelle**. Sie sah „Wie heißt
+dieses Bundesland?" und vier Namen, und nichts davon sprach. Sie konnte
+raten, welche Kachel wohin führt.
+
+Jetzt sagt jeder Bildschirm beim Öffnen, was er ist, und die Aufgabe wird
+mit ihren Möglichkeiten vorgelesen — so, wie ein Mensch fragen würde:
+
+> „Wie heißt dieses Bundesland? Thüringen, Mecklenburg-Vorpommern, Berlin
+> oder Rheinland-Pfalz?"
+
+**Die Frage allein hätte nicht gereicht.** Ein Kind, das die vier Antworten
+nicht lesen kann, wüsste dann, was gefragt ist, aber nicht, was zur Wahl
+steht.
+
+Zwei Details, die es braucht: die Ansage kommt **nach** dem Bildwechsel
+(`zeige()` blendet 320 ms, und eine Stimme, die während des Übergangs
+anfängt, gehört hörbar noch zum vorigen Bildschirm), und sie hängt am
+**Kind**, nicht am Gerät — für Lea wäre dieselbe Ansage nur Lärm. Vor der
+Profilwahl wird immer angesagt: dort ist noch nicht bekannt, wer davorsitzt.
+
+### Das Forscherbuch sah nach Arbeit aus
+
+Vorher standen dort alle rund sechzig Gebiete nebeneinander, die noch nicht
+gesammelten grau mit einem Fragezeichen. Am Anfang war die Seite also fast
+leer — sechzig leere Kästen. Ein Aufkleberalbum, in dem neunundfünfzig
+Plätze leer sind, macht nicht stolz, sondern klein.
+
+Jetzt steht dort, **was da ist** — größer, mit Namen. Was fehlt, kommt als
+kurze Vorschau ans Ende: drei Stück aus der Ebene, an der gerade gearbeitet
+wird. Nicht als Mahnung, sondern als nächster Schritt. Wer noch nichts hat,
+bekommt einen Satz und drei Formen statt sechzig grauer Kästen.
+
+**Und die Aufkleber sind jetzt Aufkleber.** Vorher trug jeder den Ausschnitt
+seiner Karte: ein Kontinent stand im Maßstab der ganzen Weltkarte in seinem
+Kästchen. Afrika füllte es knapp, **Europa war ein grüner Fleck von zwölf
+Bildpunkten**. Jeder wird jetzt auf seine eigene Form gerahmt, aus dem Pfad
+gerechnet, mit acht Prozent Luft.
+
+### Drei neue Zusagen im Rauchtest
+
+Ob eine App vorliest, lässt sich nicht ansehen — `speechSynthesis` gibt
+nichts zurück. Der Rauchtest schreibt deshalb mit, was gesprochen wird:
+
+```
+Aufgaben vorgelesen:   Fiona 8, Lea 0  (von je 8 Ebenen)
+Forscherbuch:          5 von 8 Aufklebern
+```
+
+Fehlt Fiona eine Ansage, ist die Ebene für sie nicht spielbar. Bekommt Lea
+eine, hängt die Ansage nicht am Kind. Und das Buch darf höchstens drei mehr
+zeigen, als wirklich gesammelt sind.
+
+Zwei Anläufe dieser Prüfungen waren selbst falsch, beide auf dieselbe Art —
+sie maßen, was leichter zu messen war:
+
+- Der erste zählte *irgendeine* Sprachausgabe und meldete „Lea bekam 8
+  Aufgaben vorgelesen". Gemessen war das **Lob** der vorigen Aufgabe, das
+  beide Kinder hören. Der Mitschnitt wird jetzt geleert, bevor die Ebene
+  aufgeht, und gezählt wird die Frage.
+- Der zweite zählte die Aufkleber mit der Klasse `da`. Die Gegenprobe, die
+  einfach alle als gesammelt zeichnete, kam damit durch: sie fälschte genau
+  die Zahl, gegen die geprüft wurde. Gezählt wird jetzt gegen die **Ablage**.
 
 ---
 
