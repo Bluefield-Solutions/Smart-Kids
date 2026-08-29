@@ -171,6 +171,58 @@ const PROBEN = [
     an:{ datei:'.github/workflows/vorschau-versand.yml', fehlt:'head_sha=' },
     sagt:'die Kette bestanden hat' },
 
+  /* --- Rechnen ------------------------------------------------------ */
+  // Der Vorrat und der Abgleich laufen auseinander. Genau dafuer stehen die
+  // Zahlen im Dokument und nicht im Code.
+  { n:'der Zahlenraum im Code stimmt nicht mehr mit dem Abgleich', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'export const BIS = 10;', ersatz:'export const BIS = 12;',
+    an:{ datei:'src/inhalt/rechnen.js', text:'export const BIS = 12;' },
+    sagt:'der Abgleich sagt' },
+
+  // Die Null als Summand. „Wenig mit 0" ist zu einer Regel geworden - wer
+  // sie aufweicht, bekommt 21 von 66 Additionen mit einer Null.
+  { n:'die Null wird wieder Summand', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'    for (let b = 1; a + b <= bis; b++) aus.push(aufgabe(\'plus\', a, b));',
+    ersatz:'    for (let b = 0; a + b <= bis; b++) aus.push(aufgabe(\'plus\', a, b));',
+    an:{ datei:'src/inhalt/rechnen.js', text:'for (let b = 0; a + b <= bis' },
+    sagt:'nur als Ergebnis' },
+
+  // Ein Ablenker, der zufaellig die richtige Antwort ist. Vier
+  // Moeglichkeiten, zwei davon richtig - und das Kind bekommt „falsch" auf
+  // eine Zahl, die stimmt.
+  // Angefasst wird der Riegel im AUFFUELLEN, nicht der in der ersten
+  // Schleife. Der erste greift bei b >= 1 nie: ±1 und ±2 sind nie das
+  // Ergebnis, und die Gegenrechnung ist es nur bei b = 0 - was der Vorrat
+  // ausschliesst. Er steht trotzdem zu Recht dort (die Probe darueber
+  // laesst die Null wieder als Summanden zu, und dann greift er sofort) -
+  // aber probieren laesst er sich nur zusammen mit ihr. Der zweite Riegel
+  // ist unbedingt lebendig: bei `10 - 10 = 0` bleiben nach ±1, ±2 und der
+  // Gegenrechnung nur zwei Zahlen uebrig, und aufgefuellt wird ab 0 - also
+  // genau mit der richtigen Antwort.
+  { n:'eine falsche Möglichkeit ist die richtige Antwort', tor:'spielprobe',
+    datei:'src/inhalt/rechnen.js',
+    such:'    if (k !== auf.wert && !aus.includes(k)) aus.push(k);',
+    ersatz:'    if (!aus.includes(k)) aus.push(k);',
+    an:{ datei:'src/inhalt/rechnen.js', fehlt:'if (k !== auf.wert && !aus.includes(k))' },
+    sagt:'ist die richtige' },
+
+  // Fionas Rechenkachel steht auch bei Lea. Eine davon ist die falsche.
+  { n:'die Rechenebene gehört plötzlich beiden Kindern', tor:'smoke', bauen:true, datei:D,
+    such:"    art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },",
+    ersatz:"    art:'rechnen', mischung: Rechnen.MISCHUNG_FIONA },",
+    an:{ ...DIST, fehlt:"wer:['fiona']" },
+    sagt:'gehört fiona' },
+
+  // Und die Weiche selbst: ohne sie landet die Rechenaufgabe auf dem
+  // Kartenbildschirm, und der sucht eine Karte, die es nicht gibt.
+  { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', bauen:true, datei:D,
+    such:"  zeige(ebeneArt(ebeneId) === 'rechnen' ? rechenschirm : spielschirm);",
+    ersatz:'  zeige(spielschirm);',
+    an:{ ...DIST, fehlt:"ebeneArt(ebeneId) === 'rechnen' ? rechenschirm" },
+    sagt:'durchgang' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.
@@ -389,16 +441,22 @@ const PROBEN = [
   // Fehler drin war. Geteilt wird jetzt durch die ganze Liste: ein Stern
   // im Kopf gegen drei am Ende, genau die gemessene Urfassung.
   { n:'Kopf und Endbildschirm rechnen wieder verschieden', tor:'smoke', bauen:true, datei:D,
-    such:'    if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));',
-    ersatz:'    if (st1) st1.outerHTML = sterne(Math.min(3, Math.floor('
+    // Die Zeile ist in der Mathe-Runde nach `kopfNachziehenIn()` gewandert -
+    // eine Einrückung weniger. Der Eingriff kam nicht mehr an, und `proben`
+    // hat genau das gemeldet, statt grün zu bleiben. Die Probe gilt jetzt
+    // für BEIDE Bildschirme auf einmal: sie fassen denselben Kopf an.
+    such:'  if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));',
+    ersatz:'  if (st1) st1.outerHTML = sterne(Math.min(3, Math.floor('
       + 'st.glatt/Math.max(1,st.liste.length))));',
     an:{ ...DIST, text:'st.glatt/Math.max(1,st.liste.length)' },
     sagt:'zwei verschiedene Formeln' },
   // Und: der Kopf muss auf die Antwort reagieren, nicht erst beim naechsten Bild.
+  // Ebenfalls gewandert - nach `werten()`, dem einen Ort, an dem eine
+  // Antwort etwas bewirkt. Damit trifft die Probe jetzt Karte UND Rechnen.
   { n:'das Fortschrittsband färbt sich nicht mehr', tor:'smoke', bauen:true, datei:D,
-    such:"      st.wie[st.i] = (ergebnis==='richtig' && versuch===1) ? 'glatt' : 'geschafft';",
+    such:"  st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';",
     ersatz:'',
-    an:{ ...DIST, fehlt:"st.wie[st.i] = (ergebnis==='richtig'" },
+    an:{ ...DIST, fehlt:"st.wie[st.i] = (ergebnis === 'richtig'" },
     sagt:'färbt sich nie' },
   // Die PIN, die keine war.
   // Nicht den Knopf entfernen - das gaebe nur einen Seitenfehler. Der

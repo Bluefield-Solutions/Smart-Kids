@@ -289,7 +289,27 @@ const EBENEN = [
   // schon "Deutschland", die Frage sagt "Hauptstadt von Hessen" - das
   // lange Wort trug hier nichts bei ausser einem Zeilenumbruch.
   { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2 },
+  /* Das zweite Fach.
+   *
+   * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
+   * es nur die eine Sorte, und der Spielbildschirm war um eine Karte herum
+   * gebaut. Eine Rechenaufgabe hat keine.
+   *
+   * `wer` sagt, WEM die Ebene gehört. Fiona rechnet Plus und Minus bis 10;
+   * Leas Reihen sind die nächste Runde. Ohne das stünde auf beiden
+   * Ebenenwahlen dieselbe Kachel, und eine davon wäre die falsche.
+   *
+   * `mischung` steht in `docs/Lernkiste-ABGLEICH-ANTON.md`, Reihe C, und
+   * das Tor `doku` legt beides nebeneinander.
+   */
+  { id:'rechnen:plusminus', ueber:'Rechnen', titel:'Plus und Minus', farbe:4,
+    art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },
 ];
+
+/** Die Ebenen, die DIESEM Kind gehören. */
+const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
+/** Wie wird auf dieser Ebene gefragt? Karte, wenn nichts anderes dasteht. */
+const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
 /**
  * Wie beantwortet man eine Auswahl - durch ANTIPPEN oder durch ZIEHEN?
  *
@@ -359,6 +379,10 @@ function vorrat(ebeneId, stand = Stand){
   if (art==='bundeslaender')
     return D.deutschland.map(b=>({ id:b.id, name:b.name, aliasse:[], aussprache:[b.name.toLowerCase()],
       pfad:b.pfad, anker:b.anker }));
+  // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
+  // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
+  // Leitner-Stand über Sitzungen trägt.
+  if (art==='rechnen') return Rechnen.vorrat();
   if (art==='hauptstaedte')
     return D.deutschland.filter(b=>!b.stadtstaat).map(b=>({ id:b.id, name:b.hauptstadt,
       aliasse:[], aussprache:[b.hauptstadt.toLowerCase()], pfad:b.pfad, anker:b.anker,
@@ -369,6 +393,9 @@ const NAMEN = {};
 D.kontinente.forEach(k=>NAMEN[k.id]=k.name);
 Object.values(D.laender).flat().forEach(l=>NAMEN[l.a3]=l.name);
 D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
+// Auch die Rechenaufgaben: sonst steht im Elternprotokoll `p3+4` statt
+// „3 + 4". Das Protokoll ist das eine, was Eltern wirklich lesen.
+Rechnen.vorrat().forEach(r=>NAMEN[r.id]=r.frage);
 
 const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
 async function standLaden(ebeneId){
@@ -435,7 +462,7 @@ function profilwahl(){
 async function ebenenwahl(){
   const s = el('div');
   const balken = [];
-  for (const e of EBENEN) {
+  for (const e of meineEbenen()) {
     let st = {};
     try { st = (await Ablage.hole('fortschritt', `${P.id}:${e.id}`)) || {}; } catch(err){}
     const alle = vorrat(e.id, st);
@@ -595,7 +622,27 @@ async function starten(ebeneId){
   nr++;
   try { await Ablage.setze('einstellungen', nrSchluessel, nr); } catch(e){}
   const keim = keimAus(`${P.id}|${ebeneId}|${nr}`);
-  const liste = Leitner.sitzung(alle, Stand, P.sitzung, Date.now(), keim);
+  const eb = EBENEN.find(e => e.id === ebeneId);
+  /* Eine Sitzung je Rechenart, im vorgegebenen Verhältnis.
+   *
+   * Der Abgleich verlangt 80 % Addition. Der Leitner wählt aber nach
+   * Fälligkeit, nicht nach Rechenart - liefe er einmal über den ganzen
+   * Vorrat, käme das Verhältnis des VORRATS heraus (45 zu 55), nicht das
+   * gewünschte. Also wird er je Art einmal gefragt, mit der Länge, die auf
+   * sie entfällt, und danach gemischt: sonst kämen erst fünf Plus- und dann
+   * eine Minusaufgabe, und die Reihenfolge wäre die Antwort.
+   */
+  const liste = eb?.mischung ? (() => {
+    const arten = Object.entries(eb.mischung);
+    let rest = P.sitzung, aus = [];
+    arten.forEach(([rechenart, anteil], i) => {
+      const n = i === arten.length - 1 ? rest : Math.round(P.sitzung * anteil);
+      rest -= n;
+      aus = aus.concat(Leitner.sitzung(alle.filter(x => x.rechenart === rechenart),
+        Stand, n, Date.now(), keim + i));
+    });
+    return mischenMit(aus, keim);
+  })() : Leitner.sitzung(alle, Stand, P.sitzung, Date.now(), keim);
   // `glatt`: beim ERSTEN Versuch richtig, ohne Hilfe. Das ist die Zahl,
   // aus der die Sterne kommen - „richtig" allein waere auch die Aufgabe,
   // die nach zwei Fehlversuchen saß.
@@ -608,7 +655,201 @@ async function starten(ebeneId){
   // Sternformeln zustande, die der Audit gefunden hat.
   Sitzung = { ebeneId, alle, liste, i:0, glatt:0, wie:[],
               aufkleber:0, keim, begonnen:Date.now() };
-  zeige(spielschirm);
+  zeige(ebeneArt(ebeneId) === 'rechnen' ? rechenschirm : spielschirm);
+}
+
+/** Gemischt, aber wiederholbar: derselbe Keim gibt dieselbe Reihenfolge. */
+function mischenMit(liste, keim){
+  let x = keim >>> 0;
+  const r = () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; };
+  const b = liste.slice();
+  for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+  return b;
+}
+
+/* ---------- Was eine Antwort BEWIRKT ------------------------------------
+ *
+ * EIN Ort, für jede Aufgabenart. Die Aufgabenart entscheidet, OB die
+ * Antwort richtig war - das ist ihre Sache, eine Karte fragt anders als ein
+ * Rechenblatt. Was daraus FOLGT, entscheidet niemand mehr selbst: Leitner,
+ * „glatt", das Fortschrittsband, der Aufkleber, die Ablage.
+ *
+ * Warum das eine eigene Funktion ist, obwohl es bisher gut in `bewerte()`
+ * lag: weil es jetzt zwei Bildschirme gibt. Genau so sind in diesem
+ * Verzeichnis schon einmal zwei Sternformeln entstanden - dieselbe Sache,
+ * an zwei Stellen gerechnet, und bei vier von vier richtig zeigte der Kopf
+ * einen Stern und der Endbildschirm drei.
+ */
+function werten(ziel, ergebnis, versuch){
+  const st = Sitzung;
+  const fachVorher = Stand[ziel.id]?.fach ?? 1;
+  Stand = Leitner.verschieben(Stand, ziel.id, ergebnis === 'richtig', Date.now());
+  if (ergebnis === 'richtig' && versuch === 1) st.glatt++;
+  st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
+  const fachDanach = Stand[ziel.id]?.fach ?? fachVorher;
+  const neuerAufkleber = fachVorher < Leitner.HAT_AUFKLEBER
+                      && fachDanach >= Leitner.HAT_AUFKLEBER;
+  if (neuerAufkleber) st.aufkleber++;
+  standSichern(st.ebeneId);
+  return neuerAufkleber;
+}
+
+/** Kopf nachziehen: Sterne und Fortschrittsband, auf jedem Bildschirm. */
+function kopfNachziehenIn(s){
+  const st = Sitzung;
+  const st1 = s.querySelector('.sterne');
+  if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));
+  const punkt = s.querySelectorAll('.band i')[st.i];
+  if (punkt) punkt.className = st.wie[st.i] || 'weiter';
+}
+
+/** Der Kopf, den jede Aufgabe trägt - Band und Sterne aus einer Hand. */
+const aufgabenKopf = (st) => kopf({
+  links: schliessenKnopf('Übung beenden'),
+  mitte:`<div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
+    st.liste.map((_,i)=>`<i class="${
+      i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"></i>`).join('')
+  }</div>`,
+  rechts: sterne(sterneFuer(st.glatt, st.liste.length)) });
+
+/**
+ * Der Satz nach der Antwort. Auch der steht an EINER Stelle.
+ *
+ * Das Lob kommt zuerst und steht für sich. Die Sache danach - der Name oder
+ * die Rechnung - ist das, was gelernt wird, nicht der Applaus.
+ */
+function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
+  const frage = s.querySelector('#frage');
+  if (!frage) return;
+  frage.innerHTML = fastText
+    ? `<span class="fastText">${fastText}</span>`
+    : `<span class="richtigText"><b class="jubel">${spruch || 'Richtig!'}</b> ${sache}</span>`
+      + (neuerAufkleber ? `<span class="neuerkleber">Neuer Aufkleber!</span>` : '')
+      + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
+}
+
+/* ---------- Der Rechenbildschirm ----------------------------------------
+ *
+ * Die Aufgabe OHNE Karte - der erste Bildschirm dieser App, der keine hat.
+ *
+ * Was er mit dem Kartenbildschirm teilt, teilt er wirklich: den Kopf mit
+ * Band und Sternen (`aufgabenKopf`), die Wertung (`werten`), den Lobsatz
+ * (`lobsatz`), das Nachziehen (`kopfNachziehenIn`), den Endbildschirm. Was
+ * er selbst entscheidet, ist nur das eine, was hier anders ist: OB die
+ * Antwort stimmt.
+ *
+ * ANGETIPPT, nicht gezogen — und das ist keine Bequemlichkeit. Auf der
+ * Karte lernt das Ziehen etwas: dieser Name gehört an DIESEN Ort. `3 + 4`
+ * hat keinen Ort. Eine Zahl in ein Kästchen zu schieben wäre Motorik ohne
+ * Lehre, und der Abgleich sagt für Fionas Profil ausdrücklich „vier
+ * Möglichkeiten zum Antippen". Der Umschalter „Lieber ziehen" erscheint
+ * hier deshalb nicht.
+ */
+function rechenschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+
+  // Derselbe Mulberry32 wie bei den Hauptstädten, aus demselben Grund: ein
+  // einfacher LCG legte die richtige Antwort zehnmal hintereinander auf
+  // Platz 2 oder 3.
+  const rnd = (k)=>{ let x=k>>>0; return ()=>{
+    x=(x+0x6D2B79F5)>>>0;
+    let t=Math.imul(x^(x>>>15), 1|x);
+    t=(t+Math.imul(t^(t>>>7), 61|t))^t;
+    return ((t^(t>>>14))>>>0)/4294967296; }; };
+  const r1 = rnd(st.keim + st.i*7919);
+  const zahlen = mischenMit([ziel.wert, ...Rechnen.ablenker(ziel, r1)], st.keim + st.i*7919);
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Wie viel ist das?</div>
+    <div class="rechenfeld">
+      <div class="rechnung">${ziel.frage} = <span class="luecke" id="luecke">?</span></div>
+      <div class="zahlen">${zahlen.map(z=>
+        `<button class="zahl" data-zahl="${z}">${z}</button>`).join('')}</div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">Weiß ich nicht</button></div>
+    </div>`;
+
+  const luecke = s.querySelector('#luecke');
+  const ausschalten = ()=> s.querySelectorAll('.zahl').forEach(z=>z.disabled=true);
+
+  function protokollieren(ergebnis, roh, fachVorher){
+    Protokoll.schreiben(Protokoll.eintrag({
+      zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
+      eingabeart: 'antippen', ergebnis, roheingabe: String(roh), sicherheit: null,
+      dauerMs: Date.now()-beginn, versuch,
+      fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
+    }));
+  }
+
+  function weiter(){
+    st.i++;
+    if (st.i>=st.liste.length) zeige(endschirm);
+    else zeige(ebeneArt(st.ebeneId)==='rechnen' ? rechenschirm : spielschirm);
+  }
+
+  function aufloesen(grund){
+    if (erledigt) return;
+    erledigt = true;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten();
+    luecke.textContent = ziel.wert; luecke.classList.add('gefuellt');
+    // Aufgelöst wird ohne Tadel — wie auf der Karte.
+    const satz = `Kein Problem. ${ziel.frage} = ${ziel.wert}.`;
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">${satz}</span>`;
+    vorlesen(`Kein Problem. ${ziel.geloest}.`);
+    standSichern(st.ebeneId);
+    setTimeout(weiter, 2600);
+  }
+
+  function bewerte(zahl, knopf){
+    if (erledigt) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (zahl === ziel.wert) {
+      erledigt = true;
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', zahl, fachVorher);
+      ausschalten();
+      luecke.textContent = ziel.wert; luecke.classList.add('gefuellt');
+      if (knopf) knopf.classList.add('stimmt');
+      const spruch = lob();
+      lobsatz(s, `${ziel.frage} = ${ziel.wert}.`, null, spruch, '', neuerAufkleber);
+      vorlesen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      setTimeout(weiter, 2600);
+      return;
+    }
+    protokollieren('falsch', zahl, fachVorher);
+    if (versuch >= 3) return aufloesen('dreimal');
+    // Die Zahl sagt selbst, dass sie abgelehnt wurde - wie das Etikett auf
+    // der Karte. Ein Satz allein reicht einer Sechsjährigen nicht.
+    if (knopf) {
+      knopf.classList.remove('falsch'); void knopf.offsetWidth;
+      knopf.classList.add('falsch');
+      setTimeout(()=>knopf.classList.remove('falsch'), 900);
+    }
+    const f = s.querySelector('#frage');
+    const satz = 'Nicht ganz — probier es noch einmal.';
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    vorlesen(satz);
+  }
+
+  s.querySelectorAll('.zahl').forEach(k=>
+    k.onclick = ()=> bewerte(+k.dataset.zahl, k));
+  s.querySelector('#weissnicht').onclick = ()=> aufloesen('aufgegeben');
+  s.querySelector('#zur').onclick = ()=> zeige(ebenenwahl);
+
+  // Fiona liest noch nicht. Die Aufgabe UND die vier Möglichkeiten werden
+  // gesagt - ohne die Möglichkeiten wüsste sie nicht, wonach sie greifen
+  // kann. So steht es auch im Abgleich, Reihe C1.
+  ansagen(`${ziel.gesagt} ${aufzaehlen(zahlen.map(z=>Rechnen.gesprochen(z)))}?`);
+  return s;
 }
 
 /* ---------- Der Spielbildschirm ------------------------------------------ */
@@ -748,12 +989,7 @@ function spielschirm(){
   const fach = Stand[ziel.id]?.fach ?? 1;
 
   s.innerHTML = `
-    ${kopf({ links: schliessenKnopf('Übung beenden'),
-      mitte:`<div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
-        st.liste.map((_,i)=>`<i class="${
-          i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"></i>`).join('')
-      }</div>`,
-      rechts: sterne(sterneFuer(st.glatt, st.liste.length)) })}
+    ${aufgabenKopf(st)}
     <div class="frage" id="frage">${frageText}</div>
     <div class="feld">
       <div class="karte" id="karte" style="--karte-ar:${(()=>{const v=vb.split(' ').map(Number);
@@ -1194,18 +1430,19 @@ function spielschirm(){
    * Endbildschirm drei zeigte. Ein Fortschritt, der erst beim naechsten
    * Bild nachkommt, ist keine Rueckmeldung, sondern eine Verzoegerung.
    */
-  function kopfNachziehen(){
-    const st1 = s.querySelector('.sterne');
-    if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));
-    const punkt = s.querySelectorAll('.band i')[st.i];
-    if (punkt) punkt.className = st.wie[st.i] || 'weiter';
-  }
+  const kopfNachziehen = () => kopfNachziehenIn(s);
 
   /* --- Bewertung. EIN Ort, egal welcher Eingabeweg. --- */
   async function bewerte(roh, eingabeart, ctx){
     if (erledigt) return;
     versuch++;
     let ergebnis='falsch', text='', sicherheit=null, nebenbei='';
+    // Vor der Wertung gelesen: `werten()` verschiebt das Fach, und das
+    // Protokoll will beide Stände. Die Zeile stand früher weiter unten,
+    // mitten in der Wertung - beim Herauslösen ist sie mitgegangen, und
+    // der Rauchtest hat den Fehler in derselben Minute gemeldet:
+    // „ReferenceError: fachVorher is not defined", zwölfmal.
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
 
     if (eingabeart==='antippen') {
       // Angetippt heisst: „DAS ist der Name." Wohin gezogen wurde, gibt es
@@ -1234,12 +1471,9 @@ function spielschirm(){
       else ergebnis='richtig';
     }
 
-    const fachVorher = Stand[ziel.id]?.fach ?? 1;
     if (ergebnis!=='falsch') {
       erledigt = true;
-      Stand = Leitner.verschieben(Stand, ziel.id, ergebnis==='richtig', Date.now());
-      if (ergebnis==='richtig' && versuch===1) st.glatt++;
-      st.wie[st.i] = (ergebnis==='richtig' && versuch===1) ? 'glatt' : 'geschafft';
+      const neuerAufkleber = werten(ziel, ergebnis, versuch);
       kopfNachziehen();
       if (ctx.etikett) ctx.etikett.classList.add('weg');
       // Gelobt wird nur, was ganz richtig war. Ein "Super gemacht!" auf eine
@@ -1251,15 +1485,10 @@ function spielschirm(){
       // sagte „4 von 4 richtig" und im selben Atemzug „0 von 4 Aufklebern",
       // und ein Kind konnte daraus nicht schliessen, dass es beim naechsten
       // Mal soweit ist. Jetzt hat der Aufkleber einen Augenblick.
-      const fachDanach = Stand[ziel.id]?.fach ?? fachVorher;
-      const neuerAufkleber = fachVorher < Leitner.HAT_AUFKLEBER
-                          && fachDanach >= Leitner.HAT_AUFKLEBER;
-      if (neuerAufkleber) st.aufkleber++;
       belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
                 neuerAufkleber);
       vorlesen(ergebnis==='fast' ? text
         : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
-      standSichern(st.ebeneId);
     } else if (versuch >= 3) {
       // Nach dem dritten Fehlversuch wird aufgeloest. Ein Kind, das
       // dreimal daneben lag, raet ab jetzt nur noch.
@@ -1357,17 +1586,7 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleb
     punkt.animate([{r:0},{r:7}],{duration:300,delay:600,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'forwards'});
   }
   nameAufDieKarte(s, ziel);
-  const frage=s.querySelector('#frage');
-  // Das Lob kommt zuerst und steht fuer sich. Der Name danach ist die
-  // Sache, die gelernt wird - nicht der Applaus.
-  if (frage) frage.innerHTML = fastText
-    ? `<span class="fastText">${fastText}</span>`
-    : `<span class="richtigText"><b class="jubel">${spruch || 'Richtig!'}</b>`
-      + ` Das ist ${ziel.name}.</span>`
-      + (neuerAufkleber ? `<span class="neuerkleber">Neuer Aufkleber!</span>` : '')
-      // Anders geschrieben, aber gemeint war es richtig: der Haken kommt
-      // zuerst, der Hinweis daneben. Nicht statt seiner.
-      + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
+  lobsatz(s, `Das ist ${ziel.name}.`, fastText, spruch, nebenbei, neuerAufkleber);
 }
 
 /**
@@ -1522,7 +1741,7 @@ function endschirm(){
 async function forscherbuch(){
   const s = el('div');
   const gruppen = [];
-  for (const e of EBENEN) {
+  for (const e of meineEbenen()) {
     let st={}; try{ st=(await Ablage.hole('fortschritt',`${P.id}:${e.id}`))||{}; }catch(err){}
     const alle = vorrat(e.id);
     const vb = e.id.startsWith('kontinente') ? D.vbK
@@ -1566,14 +1785,31 @@ async function forscherbuch(){
     return `${x0-luft} ${y0-luft} ${b+2*luft} ${h+2*luft}`;
   };
 
+  /* Der Aufkleber IST der Umriss - bei einer Karte.
+   *
+   * Eine Rechenaufgabe hat keinen. Das ist der zweite Punkt aus C3 des
+   * Abgleichs, und er wird hier ohne ein einziges neues Bild gelöst: was
+   * gesammelt wird, ist die AUFGABE selbst, gross und in der Kinderschrift.
+   * `3 + 4` in einem Kästchen ist genauso wiedererkennbar wie der Umriss
+   * von Afrika - und ehrlicher als ein erfundenes Symbol, das mit dem
+   * Gelernten nichts zu tun hätte.
+   *
+   * Verdeckt wird bei einer offenen Aufgabe die ANTWORT, nicht die
+   * Rechnung: „3 + 4" darf dastehen, sonst wäre die Vorschau ein Kästchen
+   * mit einem Fragezeichen und sagte nichts darüber, was als Nächstes
+   * kommt.
+   */
   const kleber = (g, x, offen) => `
-    <button class="aufkleber ${offen?'':'da'} ${x.gekonnt?'sicher':''}"
-            data-lesen="${offen?'Das kennst du noch nicht.':x.name}" title="Fach ${x.fach||'—'}">
-      <svg viewBox="${eigenerRahmen(x.pfad) || g.vb}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
-        fill="${offen?'var(--linie)':`var(${FL[x.i%7]})`}"
-        stroke="var(--tinte)" stroke-opacity="${offen?.25:.6}" stroke-width="1.6"
-        vector-effect="non-scaling-stroke"/></svg>
-      <span>${offen?'?':x.name}</span>
+    <button class="aufkleber ${offen?'':'da'} ${x.gekonnt?'sicher':''} ${x.pfad?'':'rechnen'}"
+            data-lesen="${offen?'Das kennst du noch nicht.':(x.frage ? `${x.frage} = ${x.name}` : x.name)}"
+            title="Fach ${x.fach||'—'}">
+      ${x.pfad
+        ? `<svg viewBox="${eigenerRahmen(x.pfad) || g.vb}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
+            fill="${offen?'var(--linie)':`var(${FL[x.i%7]})`}"
+            stroke="var(--tinte)" stroke-opacity="${offen?.25:.6}" stroke-width="1.6"
+            vector-effect="non-scaling-stroke"/></svg>`
+        : `<div class="rechenkleber" style="--ton:var(${FL[x.i%7]})">${x.frage}</div>`}
+      <span>${offen ? '?' : (x.pfad ? x.name : `= ${x.name}`)}</span>
       ${x.gekonnt?'<i class="siegel"></i>':''}
     </button>`;
 

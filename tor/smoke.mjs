@@ -565,6 +565,9 @@ const gehoert = {};
 const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
   'bundeslaender', 'hauptstaedte'];
+// Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
+// stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
+const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: [] };
 for (const wer of ['fiona', 'lea']) {
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
@@ -572,8 +575,14 @@ for (const wer of ['fiona', 'lea']) {
     await p.click(`[data-profil="${wer}"]`);
     await p.waitForSelector('.schirm.da [data-ebene]');
     const da = await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene));
-    for (const e of EBENEN_ALLE)
+    for (const e of [...EBENEN_ALLE, ...EBENEN_EIGEN[wer]])
       if (!da.includes(e)) merke('durchgang', new Error(`${wer}: Ebene „${e}" fehlt in der Auswahl`));
+    // Und umgekehrt: keine fremde Ebene. Sonst stünde Fionas Rechnen auch
+    // bei Lea, und der Umbau „je Kind" wäre nur behauptet.
+    for (const [anderes, eigene] of Object.entries(EBENEN_EIGEN))
+      if (anderes !== wer) for (const e of eigene)
+        if (da.includes(e)) merke('durchgang',
+          new Error(`${wer}: Ebene „${e}" gehört ${anderes}, steht aber in ${wer}s Auswahl`));
     for (const ebene of da) {
       // Den Mitschnitt leeren, BEVOR die Ebene aufgeht: sonst zaehlt das Lob
       // der vorigen Aufgabe mit, und das hoeren beide Kinder. Der erste
@@ -584,6 +593,47 @@ for (const wer of ['fiona', 'lea']) {
       await p.waitForTimeout(400);
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
+      /* Rechnen: die Aufgabe OHNE Karte.
+       *
+       * Hier wartet nichts auf `path.ziel` - es gibt keinen. Gespielt wird
+       * derselbe Weg, den das Kind geht: die Rechnung lesen, ausrechnen,
+       * die Zahl antippen. Kommt die Wertung durch, gilt für diesen
+       * Bildschirm dasselbe wie für die Karte: Band, Sterne, Aufkleber.
+       */
+      if (await p.$('.schirm.da .rechnung')) {
+        await p.waitForTimeout(900);
+        const gesagtR = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+        if (/Was ist/.test(gesagtR)) gehoert[wer] = (gehoert[wer] || 0) + 1;
+        const r = await p.evaluate(() => {
+          const s = document.querySelector('.schirm.da');
+          const t = s.querySelector('.rechnung').textContent;
+          const m = t.match(/(\d+)\s*([+−])\s*(\d+)/);
+          if (!m) return null;
+          const soll = m[2] === '+' ? +m[1] + +m[3] : +m[1] - +m[3];
+          return { soll, i: [...s.querySelectorAll('.zahl')].map(z => +z.textContent).indexOf(soll),
+                   zahlen: [...s.querySelectorAll('.zahl')].map(z => z.textContent) };
+        });
+        if (!r || r.i < 0) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die richtige Antwort `
+            + `${r ? r.soll : '?'} steht nicht unter ${r ? r.zahlen.join(', ') : '—'}`));
+          continue;
+        }
+        await p.$$eval('.schirm.da .zahl', (els, i) => els[i].click(), r.i);
+        wege.add(`${wer}: rechnen`);
+        await p.waitForTimeout(900);
+        const rr = await p.evaluate(() => {
+          const f = document.querySelector('.schirm.da .frage');
+          return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
+        });
+        if (!/^✓ /.test(rr || ''))
+          merke('durchgang', new Error(`${wer}/${ebene}: ${r.soll} angetippt → „${rr}"`));
+        durchgespielt++;
+        await p.waitForTimeout(1500);
+        const zurR = await p.$('.schirm.da #zur');
+        if (zurR) await p.$eval('.schirm.da #zur', x => x.click());
+        await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 8000 }).catch(() => {});
+        continue;
+      }
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
       await p.waitForTimeout(900);   // die Ansage kommt 500 ms nach dem Wechsel
       // Gezaehlt wird die FRAGE, nicht irgendein Ton.
@@ -658,20 +708,24 @@ for (const wer of ['fiona', 'lea']) {
 }
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
-console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0}, Lea ${gehoert.lea||0} `
-  + `(von je 8 Ebenen)`);
+const EBENEN_JE = (wer) => EBENEN_ALLE.length + EBENEN_EIGEN[wer].length;
+console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0} von ${EBENEN_JE('fiona')}, `
+  + `Lea ${gehoert.lea||0} von ${EBENEN_JE('lea')}`);
 // Fiona liest noch nicht: JEDE Aufgabe muss angesagt werden. Lea liest -
 // bei ihr waere dieselbe Ansage nur Laerm, und das steht in ihrem Profil.
-if ((gehoert.fiona || 0) < 8)
-  fehler.push(`Fiona bekam nur ${gehoert.fiona||0} von 8 Aufgaben vorgelesen — `
-    + 'sie kann noch nicht lesen, ohne Ansage ist die Ebene für sie nicht spielbar');
+// Die Acht war hier festgenagelt und wurde mit der neunten Ebene falsch.
+// Gezaehlt wird jetzt, was Fiona wirklich hat - Erdkunde plus ihr Rechnen.
+if ((gehoert.fiona || 0) < EBENEN_JE('fiona'))
+  fehler.push(`Fiona bekam nur ${gehoert.fiona||0} von ${EBENEN_JE('fiona')} Aufgaben `
+    + 'vorgelesen — sie kann noch nicht lesen, ohne Ansage ist die Ebene für sie '
+    + 'nicht spielbar');
 if ((gehoert.lea || 0) > 0)
   fehler.push(`Lea bekam ${gehoert.lea} Aufgaben vorgelesen, obwohl ihr Profil `
     + '`vorlesen: false` sagt — die Ansage hängt nicht am Kind');
 // Voreingestellt zieht Fiona und tippt Lea an. Wird nur EIN Weg gegangen,
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
 // Bedienung ungeprueft.
-for (const soll of ['fiona: ziehen', 'lea: antippen'])
+for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen'])
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);

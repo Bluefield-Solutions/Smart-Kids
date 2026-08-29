@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
 import * as I from '../src/inhalt/erdkunde.js';
+import * as R from '../src/inhalt/rechnen.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import { KONTINENTE_FEIN } from '../src/geo/kontinente.fein.js';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
@@ -571,6 +572,66 @@ if (!fs.existsSync(KONZEPT)) {
     fehler.push(`Konzept sagt ${m[1]} Gebiete, gezählt sind ${ZAHL.gesamt} `
       + `(${ZAHL.kontinente}+${ZAHL.laender}+${ZAHL.bundeslaender}+${ZAHL.staedte})`);
   else console.log(`    Gebietszahl stimmt: ${ZAHL.gesamt}`);
+}
+
+/* Fionas Rechnen: der Code gegen den Abgleich.
+ *
+ * Die Verteilungen stehen im Dokument und nicht im Programm - dieselbe
+ * Mechanik wie beim Tor `budget`, das seine Grenzen aus dem Konzept liest.
+ * Zwei Zahlen an zwei Orten veralten getrennt: die eine wird gepflegt, die
+ * andere gilt. Hier wird die gepflegte zur geltenden gemacht.
+ *
+ * Geprüft wird gegen den ERZEUGTEN Vorrat, nicht gegen eine dritte Liste:
+ * `rechnen.js` rechnet die hundert Aufgaben aus, dieses Tor zählt sie.
+ */
+{
+  const ABGLEICH = 'docs/Lernkiste-ABGLEICH-ANTON.md';
+  if (!fs.existsSync(ABGLEICH)) {
+    fehler.push(`${ABGLEICH} nicht gefunden — Fionas Rechnen lässt sich nicht prüfen`);
+  } else {
+    const t = fs.readFileSync(ABGLEICH, 'utf8');
+    const zahl = (zeile) => {
+      const m = t.match(new RegExp(`\\|\\s*${zeile}\\s*\\|\\s*(\\d+)`));
+      return m ? +m[1] : null;
+    };
+    const soll = {
+      raum:  zahl('Zahlenraum'),
+      plus:  zahl('Anteil Addition'),
+      minus: zahl('Anteil Subtraktion'),
+      nPlus: zahl('Aufgaben mit Plus'),
+      nMinus:zahl('Aufgaben mit Minus'),
+    };
+    const fehlend = Object.entries(soll).filter(([, v]) => v === null).map(([k]) => k);
+    if (fehlend.length) {
+      fehler.push(`${ABGLEICH} nennt ${fehlend.length} Werte für Fionas Rechnen nicht: `
+        + `${fehlend.join(', ')} — dann prüft dieses Tor nichts`);
+    } else {
+      const v = R.vorrat();
+      const ist = {
+        raum:  R.BIS,
+        plus:  Math.round(R.MISCHUNG_FIONA.plus * 100),
+        minus: Math.round(R.MISCHUNG_FIONA.minus * 100),
+        nPlus: v.filter(x => x.rechenart === 'plus').length,
+        nMinus:v.filter(x => x.rechenart === 'minus').length,
+      };
+      for (const k of Object.keys(soll))
+        pruefe(soll[k] === ist[k],
+          `Fionas Rechnen, ${k}: der Abgleich sagt ${soll[k]}, gerechnet sind ${ist[k]}`);
+      pruefe(ist.plus + ist.minus === 100,
+        `Die Anteile ergeben ${ist.plus + ist.minus} statt 100 Prozent`);
+      // Die Regel, die aus „wenig mit 0" geworden ist: nur als Ergebnis.
+      const mitNull = v.filter(x => x.a === 0 || x.b === 0).length;
+      pruefe(mitNull === 0,
+        `${mitNull} Aufgaben haben die Null als Summand oder Subtrahend — `
+        + 'sie soll nur als Ergebnis vorkommen');
+      pruefe(v.every(x => x.wert >= 0 && x.wert <= R.BIS),
+        'eine Aufgabe verlässt den Zahlenraum');
+      pruefe(new Set(v.map(x => x.id)).size === v.length,
+        'zwei Rechenaufgaben haben dieselbe Kennung — dann teilen sie sich einen Leitner-Stand');
+      console.log(`    Fionas Rechnen: ${v.length} Aufgaben, `
+        + `${ist.plus}/${ist.minus} Prozent, Zahlenraum ${ist.raum} — wie im Abgleich`);
+    }
+  }
 }
 
 /* Die Kette in CLAUDE.md gegen die Kette in package.json.

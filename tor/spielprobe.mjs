@@ -13,6 +13,7 @@
 // Zwoelf Tore waren gruen. Keines hat je eine Antwort gegeben.
 import fs from 'node:fs';
 import * as I from '../src/inhalt/erdkunde.js';
+import * as R from '../src/inhalt/rechnen.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as V from '../src/vergleich/vergleich.js';
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
@@ -230,6 +231,50 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     geprueft++;
     if (!bl.has(b.id)) fehler.push(`${b.name} hat keine Fläche auf der Deutschlandkarte`);
   }
+}
+
+/* Rechnen: JEDE Aufgabe, JEDE angebotene Zahl.
+ *
+ * Hundert Aufgaben mal vier Möglichkeiten sind vierhundert Antworten, und
+ * genau drei Dinge müssen für jede gelten: die richtige Zahl steht unter
+ * den vieren, sie ist die einzige richtige, und keine der drei falschen
+ * ist es zufällig auch. Das ist derselbe Anspruch wie bei den
+ * Hauptstädten - vier Namen, genau einer richtig -, nur nachrechenbar.
+ *
+ * Der Fehler, den das fangen soll: ein Ablenker, der aus Versehen dasselbe
+ * Ergebnis hat. Bei `4 + 4` ist die Gegenrechnung 0, bei `5 − 5` wäre sie
+ * 10 - solche Fälle fallen nicht auf, wenn man drei Aufgaben von Hand
+ * durchsieht.
+ */
+{
+  // Ein Würfel, der bei jedem Lauf denselben Weg nimmt: sonst wäre grün
+  // heute und rot morgen dieselbe Aussage.
+  let x = 20260829;
+  const wuerfel = () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; };
+  const alle = R.vorrat();
+  let vier = 0;
+  for (const auf of alle) {
+    geprueft++;
+    const falsche = R.ablenker(auf, wuerfel);
+    const angeboten = [auf.wert, ...falsche];
+    if (angeboten.length !== 4)
+      fehler.push(`${auf.frage}: ${angeboten.length} Möglichkeiten statt vier`);
+    else vier++;
+    if (new Set(angeboten).size !== angeboten.length)
+      fehler.push(`${auf.frage}: eine Zahl steht doppelt (${angeboten.join(', ')})`);
+    for (const z of falsche) {
+      geprueft++;
+      if (z === auf.wert)
+        fehler.push(`${auf.frage} = ${auf.wert}: die falsche Antwort ${z} ist die richtige`);
+      if (z < 0 || z > R.BIS)
+        fehler.push(`${auf.frage}: die Möglichkeit ${z} liegt außerhalb des Zahlenraums`);
+    }
+    // Und die Rechnung selbst, gegen die zweite Meinung von JavaScript.
+    const soll = auf.rechenart === 'plus' ? auf.a + auf.b : auf.a - auf.b;
+    if (auf.wert !== soll) fehler.push(`${auf.frage} ergibt ${auf.wert}, gerechnet ${soll}`);
+    if (auf.name !== String(soll)) fehler.push(`${auf.frage}: Anzeige „${auf.name}" statt ${soll}`);
+  }
+  console.log(`    ${alle.length} Rechenaufgaben, ${vier} mit genau vier Möglichkeiten`);
 }
 
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);

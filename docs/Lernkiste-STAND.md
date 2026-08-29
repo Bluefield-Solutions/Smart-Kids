@@ -23,7 +23,7 @@ npm run ansicht     Bildvergleich, 13 Aufnahmen — vier davon auf dem
                     Zielgerät (iPhone quer). Nur ortsfest.
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 51 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 56 stehenden Gegenproben (Baum muss sauber sein,
                     höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
@@ -41,7 +41,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Neunzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **51 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **56 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 Seit der Audit-Runde vergleicht sich die Aufzählung darüber selbst: das Tor
@@ -1748,6 +1748,124 @@ zusammengestellt haben — sonst löscht sie die andere Hälfte.
 | die Vorschau schiebt einen ungeprüften Stand unter / | `doku` |
 | der Lagername vergisst den Ort | `pwa` |
 
-**51 Gegenproben, alle schlagen an.** Und die Regel hat sofort zugebissen:
+**56 Gegenproben, alle schlagen an.** Und die Regel hat sofort zugebissen:
 nach dem Hinzufügen war die Kette rot — *„Es stehen 49 Proben im Baum,
 festgehalten sind 46"*. Neue Proben dürfen nicht ungefahren mitlaufen.
+
+---
+
+## Die Mathe-Runde (Runde 2 des ANTON-Fahrplans)
+
+> *„Wie weiter?"* — und die Antwort war nicht die spaßigste Runde, sondern
+> die tragfähigste: bis heute war eine „Aufgabe" in dieser App immer **ein
+> Gebiet auf einer Karte**. Ein Rechenblatt hat keine.
+
+### Was sich an der Architektur geändert hat (C3)
+
+Weniger, als es aussah — weil `starten()` schon fast allgemein war. Es lädt
+den Stand, baut den Vorrat, macht eine Leitner-Sitzung. Kartenspezifisch war
+genau eine Zeile: welcher Bildschirm kommt.
+
+```
+EBENEN   { id:'rechnen:plusminus', art:'rechnen', wer:['fiona'], mischung }
+vorrat() erzeugt statt aufzulisten
+starten() zeige(ebeneArt(id) === 'rechnen' ? rechenschirm : spielschirm)
+```
+
+`wer` ist neu und trägt weiter: Fiona rechnet Plus und Minus, Leas Reihen
+sind die nächste Runde. Ohne das stünde bei beiden dieselbe Kachel, und eine
+davon wäre die falsche.
+
+**Was jetzt an EINER Stelle steht**, weil es zwei Bildschirme gibt:
+
+| | |
+|---|---|
+| `werten()` | was eine Antwort BEWIRKT — Leitner, „glatt", Band, Aufkleber, Ablage |
+| `kopfNachziehenIn()` | Sterne und Fortschrittsband nachziehen |
+| `aufgabenKopf()` | der Kopf mit Band und Sternen |
+| `lobsatz()` | der Satz nach der Antwort |
+
+Die Aufgabenart entscheidet nur noch das eine, was bei ihr wirklich anders
+ist: **ob** die Antwort stimmt. Genau so sind hier schon einmal zwei
+Sternformeln entstanden — dieselbe Sache, an zwei Stellen gerechnet.
+
+Und das Herauslösen hat sofort einen Fehler gemacht: `fachVorher` wanderte
+mit in die neue Funktion, wurde im Protokolleintrag aber weiter gebraucht.
+`ReferenceError: fachVorher is not defined`, zwölfmal — vom Rauchtest in
+derselben Minute gemeldet.
+
+### Fionas Plus und Minus (C1)
+
+100 Aufgaben: **45 Additionen** (a, b ≥ 1, a + b ≤ 10) und **55
+Subtraktionen** (1 ≤ b ≤ a ≤ 10). Gefragt wird im Verhältnis **80 zu 20** —
+und das ist die Mischung der SITZUNG, nicht die des Vorrats: der Leitner
+wählt nach Fälligkeit, nicht nach Rechenart. Er wird deshalb je Art einmal
+gefragt, mit der Länge, die auf sie entfällt, und danach wird gemischt —
+sonst kämen erst fünf Plus- und dann eine Minusaufgabe, und die Reihenfolge
+wäre die Antwort.
+
+**„Wenig mit 0" ist zu einer Regel geworden**, weil „wenig" keine Zahl ist:
+die Null kommt **nur als Ergebnis** vor. `6 − 6 = 0` bleibt — was übrig
+bleibt, wenn man alles wegnimmt, ist eine Aufgabe. `7 + 0` fällt weg. Wäre
+die Null als Summand erlaubt, wären es 21 von 66 Additionen, ein knappes
+Drittel; das ist nicht „wenig". Die Entscheidung steht im ANTON-Abgleich,
+nicht nur hier.
+
+**Die drei falschen Antworten sind die, die ein Kind wirklich gibt:** ±1
+(verzählt beim Weiterzählen), ±2, und die Gegenrechnung (`a − b` statt
+`a + b`). Wer zufällig wählt, macht die Aufgabe leichter, weil die falschen
+Antworten offensichtlich sind.
+
+### Angetippt, nicht gezogen — und warum das kein Sparen ist
+
+Auf der Karte lernt das Ziehen etwas: dieser Name gehört an DIESEN Ort.
+`3 + 4` hat keinen Ort. Eine Zahl in ein Kästchen zu schieben wäre Motorik
+ohne Lehre. Der Abgleich sagt für Fionas Profil ausdrücklich „vier
+Möglichkeiten zum Antippen"; der Umschalter „Lieber ziehen" erscheint auf
+Rechenebenen deshalb gar nicht. Nebenbei bleibt damit die Ziehmechanik
+unangetastet, und dort liegen sechs Gegenproben.
+
+### Das Forscherbuch sammelt etwas ohne Umriss (C3c)
+
+Heute IST der Aufkleber der Umriss. Gelöst **ohne ein einziges neues Bild**:
+gesammelt wird die **Aufgabe selbst**, groß und in der Kinderschrift.
+`3 + 4` in einem Kästchen ist so wiedererkennbar wie die Form von Afrika —
+und ehrlicher als ein erfundenes Symbol, das mit dem Gelernten nichts zu tun
+hätte. Verdeckt wird bei einer offenen Aufgabe die **Antwort**, nicht die
+Rechnung: sonst stünde in der Vorschau ein Fragezeichen, das nichts darüber
+sagt, was als Nächstes kommt.
+
+### Die Zahlen stehen im Dokument, nicht im Code
+
+Zahlenraum, die 80/20 und die Vorratsgrößen stehen im ANTON-Abgleich, und
+das Tor `doku` legt sie neben das, was `rechnen.js` wirklich erzeugt.
+Dieselbe Mechanik wie beim Tor `budget`, das seine Grenzen aus dem Konzept
+liest: zwei Zahlen an zwei Orten veralten getrennt, die eine wird gepflegt,
+die andere gilt.
+
+### Was die Tore dazugelernt haben
+
+| Tor | neu |
+|---|---|
+| `doku` | Zahlenraum, Anteile und Vorratsgrößen gegen den Abgleich; Null nur als Ergebnis; keine zwei Aufgaben mit derselben Kennung |
+| `spielprobe` | alle 100 Aufgaben × 4 Möglichkeiten — 843 statt 443 Antworten. Jede Rechnung gegen die zweite Meinung von JavaScript |
+| `smoke` | spielt die Rechenebene wirklich; prüft, dass sie bei Fiona steht und bei Lea NICHT; „Fiona 9 von 9 vorgelesen" (die feste Acht war mit der neunten Ebene falsch geworden) |
+| `ansicht` | `quer-rechnen` — der erste Bildschirm ohne Karte, auf dem Zielgerät |
+| `passt` | neun Kacheln auf sieben Größen, grün |
+
+**Fünf neue Gegenproben, 56 insgesamt.** Eine davon hat zuerst nichts
+bewiesen und dabei etwas gezeigt: der erste Riegel gegen „ein Ablenker ist
+die richtige Antwort" greift bei b ≥ 1 nie — ±1 und ±2 sind nie das
+Ergebnis, und die Gegenrechnung nur bei b = 0, was der Vorrat ausschließt.
+Er steht trotzdem zu Recht dort, weil die Probe daneben die Null wieder als
+Summanden zulässt. Geprobt wird jetzt der zweite Riegel, im Auffüllen: bei
+`10 − 10 = 0` bleiben nach ±1, ±2 und Gegenrechnung nur zwei Zahlen übrig,
+und aufgefüllt wird ab 0 — also genau mit der richtigen Antwort.
+
+### Offen aus dieser Runde
+
+Die Ebenenwahl hat jetzt **neun** Kacheln, und die neunte steht allein in
+der dritten Reihe. `passt` ist grün, aber schön ist es nicht. Das ist genau
+der Punkt, an dem D4 aus dem Abgleich fällig wird: **Fachwelten** — Erdkunde
+und Mathe als zwei Welten mit eigenem Gesicht, statt einer Liste, die immer
+länger wird. Mit Leas Reihen kommt die zehnte Kachel.

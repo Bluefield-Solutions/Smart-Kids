@@ -230,6 +230,29 @@ Was fehlt, sind **Daten und ein Aufgabentyp** — keine neue Architektur.
 - Eingabe: **vier Möglichkeiten zum Antippen** (ihr Profil)
 - vorgelesen: *„Was ist drei plus vier? Fünf, sechs, sieben oder acht?"*
 
+> **Umgesetzt.** Und „wenig mit 0" ist dabei zu einer Regel geworden, weil
+> „wenig" keine Zahl ist: **die Null kommt nur als ERGEBNIS vor**, nie als
+> Summand und nie als Subtrahend. `6 − 6 = 0` bleibt drin — was übrig
+> bleibt, wenn man alles wegnimmt, ist eine Aufgabe. `7 + 0` fällt weg.
+> Wäre die Null als Summand erlaubt, wären es 21 von 66 Additionen, also
+> ein knappes Drittel; das ist nicht „wenig".
+
+Die Zahlen, gegen die das Tor `doku` den Code legt:
+
+| Fionas Rechnen | Soll |
+|---|---|
+| Zahlenraum | 10 |
+| Anteil Addition | 80 % |
+| Anteil Subtraktion | 20 % |
+| Aufgaben mit Plus | 45 |
+| Aufgaben mit Minus | 55 |
+
+Sie stehen hier und nicht im Code: zwei Zahlen an zwei Orten veralten
+getrennt, die eine wird gepflegt, die andere gilt. Wer den Zahlenraum
+ändert, ändert ihn hier — und `doku` sagt, wenn der Code nicht mitgekommen
+ist. Dieselbe Mechanik wie beim Tor `budget`, das seine Grenzen aus dem
+Konzept liest.
+
 **C2 · Lea: die Reihen 6 bis 10.**
 - **6er- bis 10er-Reihe**, also 6 × …, 7 × …, 8 × …, 9 × …, 10 × …
 - **90 % Multiplikation, 10 % Division** — und ein **Regler im

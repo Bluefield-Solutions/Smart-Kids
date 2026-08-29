@@ -131,6 +131,9 @@ const AUFNAHMEN = [
   { name:'quer-ende',   spiel:'kontinente', quer:true, stand:true, antippen:true,
     wahl:'.schirm.da', tun:'durch' },
   { name:'quer-buch',   spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'buch' },
+  // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
+  // hatten in der Audit-Runde die Fehler.
+  { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
 ];
 
 /**
@@ -348,7 +351,10 @@ for (const a of AUFNAHMEN) {
       await seite.waitForTimeout(400);
     } else if (a.spiel) {
       await seite.click(`[data-ebene="${a.spiel}"]`);
-      await seite.waitForSelector('.schirm.da .karte svg path.ziel');
+      // Eine Rechenebene hat keine Karte, auf die man warten könnte.
+      await seite.waitForSelector(a.spiel.startsWith('rechnen')
+        ? '.schirm.da .rechnung' : '.schirm.da .karte svg path.ziel');
+      await seite.waitForTimeout(a.spiel.startsWith('rechnen') ? 300 : 0);
       if (a.tun) await vorfuehren(seite, a.tun);
     }
     letzteSeite = null;

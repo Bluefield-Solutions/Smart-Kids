@@ -405,6 +405,46 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   15%{translate:-7px} 35%{translate:6px} 55%{translate:-4px} 75%{translate:2px}
 }
 @media (prefers-reduced-motion:reduce){.etikett.falsch{animation:none}}
+
+/* --- Rechnen: die Aufgabe ohne Karte ---------------------------------
+   Die Rechnung steht in der Kinderschrift und so gross, wie der Platz es
+   hergibt - sie IST der Bildschirm, nicht seine Ueberschrift. Die vier
+   Zahlen darunter tragen dieselbe Tiefe wie ein Antwort-Etikett auf der
+   Karte: es ist derselbe Griff, nur ohne Ort. */
+.rechenfeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r6);padding:0 var(--r4) var(--r4);min-height:0}
+.rechnung{font-family:var(--f-lesen);font-weight:700;font-size:var(--s5);
+  line-height:1;color:var(--tinte);display:flex;align-items:center;gap:var(--r3);
+  font-variant-numeric:tabular-nums}
+.luecke{display:inline-flex;align-items:center;justify-content:center;
+  min-width:1.4em;padding:0 var(--r2);border-radius:var(--rund-karte);
+  border:var(--strich-stark) dashed var(--primaer-rand);color:var(--tinte-3)}
+.luecke.gefuellt{border-style:solid;border-color:var(--gut);
+  background:var(--gut-h);color:var(--tinte)}
+.zahlen{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}
+.zahl{font-family:var(--f-lesen);font-size:var(--s3);font-weight:700;
+  color:var(--auf-flaeche);background:var(--primaer);
+  border:var(--strich) solid var(--primaer-rand);border-radius:var(--rund-karte);
+  min-width:88px;min-height:72px;padding:var(--r3) var(--r4);cursor:pointer;
+  font-variant-numeric:tabular-nums;
+  box-shadow:0 var(--kante) 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht);
+  transition:transform var(--d-tipp) var(--k-standard),
+             box-shadow var(--d-tipp) var(--k-standard),
+             background var(--d-zustand) var(--k-standard)}
+.zahl:active{transform:translateY(3px);
+  box-shadow:0 0 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
+.zahl[disabled]{opacity:.45;cursor:default}
+.zahl.stimmt{background:var(--gut-h);border-color:var(--gut);opacity:1}
+.zahl.falsch{background:var(--warn-h);border-color:var(--warn);
+  animation:wackeln var(--d-wackeln) var(--k-standard)}
+@media (prefers-reduced-motion:reduce){.zahl.falsch{animation:none}}
+/* Der Aufkleber einer Rechenaufgabe: die Aufgabe selbst, dort wo bei einer
+   Karte der Umriss steht. Kein neues Bild, und wiedererkennbar. */
+.rechenkleber{display:flex;align-items:center;justify-content:center;width:100%;height:100%;
+  font-family:var(--f-lesen);font-weight:700;font-size:var(--s1);
+  color:var(--auf-flaeche);background:color-mix(in oklab, var(--ton) 34%, var(--papier));
+  border-radius:var(--rund-klein);font-variant-numeric:tabular-nums}
+.aufkleber:not(.da) .rechenkleber{background:var(--linie);color:var(--tinte-3)}
 .wahlliste{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;
   gap:var(--r3);justify-content:center;justify-content:safe center;padding:var(--r1)}
 .werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
@@ -617,6 +657,11 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   /* Der Endbildschirm hat mit Balken, Aufkleberzeile und Hinweis drei
      Zeilen mehr bekommen. Auf 844x390 stand die Knopfreihe danach unter
      dem Rand - die Sterne geben den Platz her, nicht die Auskunft. */
+  /* Auf 844x390 ist die Rechnung in --s5 (61 px) zu hoch: Kopf, Frage,
+     Rechnung, vier Zahlen und der Ausweg passen sonst nicht uebereinander. */
+  .rechnung{font-size:var(--s4)}
+  .rechenfeld{gap:var(--r4)}
+  .zahl{min-height:64px;min-width:76px;font-size:var(--s2);padding:var(--r2) var(--r3)}
   .siegsterne svg{width:40px;height:40px}
   .siegwahl{margin-top:var(--r3)}
   .buchstand{font-size:var(--s-klein)}
