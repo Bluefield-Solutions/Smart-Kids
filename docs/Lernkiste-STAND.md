@@ -2252,3 +2252,111 @@ das Entfernen der Sperre nichts, was zu sehen wäre. Regel 13, wieder —
 **Ob sie gut klingen, sagt das alles nicht.** Das hört man auf dem iPhone
 und nirgends sonst; im Abgleich steht dafür seit der ersten Fassung: *„Für
 A2: einmal Hören auf dem iPhone."*
+
+---
+
+## Der Prozess selbst auf dem Prüfstand
+
+> *„Für solche kleinen Anpassungen kann es nicht sein, dass wir über 20
+> Minuten Proben- und Testläufe am Ende haben. Das steht in keinem
+> Verhältnis."*
+
+Stimmt. Und die Ursache war kein Preis für Sicherheit, sondern ein
+Konstruktionsfehler — einer, der sich nicht als Fehler zeigte, sondern als
+Geduld.
+
+### Wo die Zeit lag
+
+Gemessen am vollen Lauf vor dem Umbau, 1513 s:
+
+| Tor | Zeit | Anteil | Proben |
+|---|---|---|---|
+| `smoke` | 1141 s | **75 %** | 25 |
+| `ansicht` | 111 s | 7 % | 2 |
+| `passt` | 99 s | 7 % | 2 |
+| `ziehen` | 86 s | 6 % | 6 |
+| `pwa` | 33 s | | 3 |
+| `inhalt` | 18 s | | **20** |
+| Rest | 25 s | | 11 |
+
+Zwanzig Proben in `inhalt` kosten 18 Sekunden, fünfundzwanzig in `smoke`
+kosten 1141. Faktor 63 je Probe.
+
+### Der Befund: der volle Lauf war gar nicht „alle drei Runden"
+
+Die Frist, auf die sich alle verlassen haben, hat **nie gegriffen**. Was
+griff, stand in `tor/rhythmus.mjs`:
+
+```js
+const zahl = (jetzt.match(/\{ n:'/g) || []).length;
+if (zahl !== stand.proben) fehler.push(`Es stehen ${zahl} Proben im Baum …`);
+```
+
+`proben-stand.json` war **ein einziger Datensatz für alle**: ein Datum, ein
+Commit, eine Zahl. Wer eine Gegenprobe dazuschrieb, entwertete damit den
+Nachweis für die anderen achtundsechzig — und musste alles neu fahren.
+
+Und eine Runde, die etwas Neues baut, schreibt fast immer eine Gegenprobe
+dazu. Das ist ja die Hausregel. Also lief in der Praxis **jede** Runde der
+volle Satz: in einer einzigen Sitzung viermal, rund hundert Minuten. Die
+Frist kam nie an die Reihe, weil die Zahl vorher rot wurde.
+
+### Hebel 1: der Nachweis gehört zur Probe, nicht zum Satz
+
+`proben-stand.json` hält jetzt je Probe fest, wann sie zuletzt angeschlagen
+hat:
+
+```json
+"eine Division geht nicht mehr auf": { "commit": "49061e7", "zeit": "2026-08-29" }
+```
+
+`rhythmus` prüft daraus dreierlei: jede Probe im Baum hat einen Nachweis,
+keiner ist älter als drei Code-Runden, und keiner zeigt auf einen Commit,
+den es nicht mehr gibt. Eine neue Probe kostet damit **diese** Probe.
+
+Und `--geaendert` rechnet ab jetzt gegen den **eigenen** Nachweis jeder
+Probe statt gegen einen gemeinsamen Commit: gefahren wird, was keinen
+Nachweis hat oder dessen Datei oder Tor sich seither bewegt hat. Deshalb
+darf es jetzt auch Stand schreiben — unter einem Datensatz für alle wäre
+das eine stille Aushebelung gewesen, unter einem je Probe ist es genau die
+Wahrheit.
+
+Drei Dinge sind dabei weggefallen, weil sie ihren Gegenstand verloren
+haben: die Marke `"lauf": "abgebrochen"` (ein abgebrochener Lauf
+hinterlässt jetzt Lücken, und die fängt dieselbe Prüfung wie eine neue
+Probe), die Zahl `"proben": 69`, und der gemeinsame Commit `"fassung"`.
+
+Ein Henne-Ei blieb: die vier `rhythmus`-Proben prüfen `rhythmus`, und
+`rhythmus` verlangt, dass jede Probe einen Nachweis hat — auch sie selbst.
+Ohne Vorschuss wäre das Tor schon **ohne** Eingriff rot, nämlich wegen
+dieser vier, und alle vier meldeten „war schon vorher rot" statt zu
+beweisen. Sie bekommen ihren Eintrag deshalb vor dem Lauf und verlieren ihn
+wieder, wenn sie nicht anschlagen. Genau das leistete früher die Marke
+„vollständig", die bei einem Fehlschlag auf „abgebrochen" zurückgesetzt
+wurde.
+
+### Hebel 3: `proben` fasst den Arbeitsbaum nicht mehr an
+
+Geprobt wird in einer Wegwerf-Kopie — `git worktree` auf denselben HEAD,
+und was im Arbeitsbaum anders ist, wird hineinkopiert. Geprüft ist damit,
+was du **siehst**, und gerechnet wird wie zu Hause: `rhythmus` zählt mit
+`git rev-list`, und ein Stash-Commit hätte neben der Historie gehangen
+statt in ihr.
+
+Das erledigt drei Dinge auf einmal:
+
+- **Die Gefahr ist weg.** Der Befehl, der dieser Sitzung eine halbe Stunde
+  gekostet hat — `git checkout -- .` —, läuft jetzt in der Kopie und kann
+  nichts mehr treffen als sich selbst. Nachgewiesen: eine angehängte Zeile
+  in `prototyp/spiel.js` und eine unverfolgte neue Datei haben einen
+  vollständigen Probenlauf überlebt. Unter dem alten Code wären beide weg.
+- **Die Regel ist weg.** „Erst einchecken, dann gegenproben" stand seit
+  vier Verlusten in `CLAUDE.md` und hat den fünften nicht verhindert. Sie
+  war ein Verbot, und ein Verbot hilft nicht, wenn jemand es umgeht.
+  *Weggefallen ist nicht die Umgehung, sondern der Grund.* Mit ihr fällt
+  die Zeremonie „commit, proben, nachbessern, nochmal committen" weg — ein
+  Umweg pro Runde.
+- **Die Proben sind unabhängig geworden.** Sie teilten sich genau eine
+  Sache: den Arbeitsbaum. Alle sechs Browser-Tore binden ohnehin schon
+  `server.listen(0)`, also einen freien Port. Damit ist der Weg frei, sie
+  nebeneinander zu fahren — das ist Hebel 4 und noch nicht gebaut.

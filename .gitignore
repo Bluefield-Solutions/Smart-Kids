@@ -21,3 +21,4 @@ entwuerfe/daten.json
 # tools/seite-zusammenstellen.mjs bei jeder Auslieferung neu gebaut.
 seite/
 .zweigbaum/
+.probenbaum/

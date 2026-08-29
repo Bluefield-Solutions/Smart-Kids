@@ -303,23 +303,44 @@ const PROBEN = [
     datei:'tor/proben-stand.json',
     suchRegex:/"zeit": "([\d-]+)"/, ersatzFn:(m)=>`"zeit": "${m[1]}"`,   // unveraendert
     an:{ datei:'tor/proben-stand.json', regex:/"zeit": "[\d-]+"/ },
-    sagt:'Runden zurück' },
-  { n:'ein abgebrochener Probenlauf winkt durch', tor:'rhythmus', brauchtStand:true, nachStand:true,
-    datei:'tor/proben-stand.json',
-    such:'"lauf": "vollständig"', ersatz:'"lauf": "abgebrochen"',
-    an:{ datei:'tor/proben-stand.json', text:'"lauf": "abgebrochen"' },
-    sagt:'nicht durchgelaufen' },
+    sagt:'älter als' },
+  // Frueher gab es eine Marke „abgebrochen" fuer den ganzen Satz. Es gibt
+  // sie nicht mehr: eine Probe bekommt ihren Eintrag genau dann, wenn sie
+  // angeschlagen hat. Ein abgebrochener Lauf hinterlaesst also LUECKEN,
+  // und die faengt dieselbe Pruefung wie eine ganz neue Probe. Geprobt
+  // wird deshalb die Luecke selbst.
+  { n:'eine Probe hat keinen Nachweis, und es faellt nicht auf', tor:'rhythmus',
+    brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
+    suchRegex:/"([^"]+)": \{\n      "commit"/,
+    ersatzFn:(m)=>`"${m[1]} (weg)": {\n      "commit"`,
+    an:{ datei:'tor/proben-stand.json', regex:/ \(weg\)": \{/ },
+    sagt:'nie angeschlagen' },
   { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus',
     brauchtStand:true, nachStand:true, datei:'package.json',
     such:'npm run rhythmus && npm run inhalt',
     ersatz:'npm run rhythmus && npm run neuestor && npm run inhalt',
     an:{ datei:'package.json', text:'npm run neuestor' },
     sagt:'noch nicht in der Kette' },
-  { n:'eine Probe kam dazu, ohne dass geprobt wurde', tor:'rhythmus', brauchtStand:true, nachStand:true,
-    datei:'tor/proben-stand.json',
-    suchRegex:/"proben": \d+/, ersatzFn:()=>'"proben": 1',
-    an:{ datei:'tor/proben-stand.json', text:'"proben": 1' },
-    sagt:'ein anderer' },
+  /* Ein Nachweis zeigt auf einen Commit, den es nicht mehr gibt.
+   *
+   * Das passiert wirklich: wird eine Runde nachtraeglich zusammengefasst,
+   * findet `git` den alten Commit lokal noch im Objektspeicher, auf einem
+   * frischen Klon aber nicht mehr. Ein Tor, das dann still gruen bliebe,
+   * bezeugte einen Beweis, den niemand mehr nachsehen kann.
+   *
+   * Diese Probe stand hier zuerst als „eine Probe kam dazu, ohne dass
+   * geprobt wurde" — und war damit dieselbe Pruefung wie die daneben, nur
+   * von der anderen Seite. Schlimmer noch: ihr Eingriff schrieb den Text
+   * `{ n:'…'` in `proben.mjs`, und genau daran liest `rhythmus` die Namen
+   * ab. Sie zaehlte sich selbst mit, auch ohne Eingriff — das Tor meldete
+   * siebzig Proben, wo neunundsechzig stehen. Eine Gegenprobe, die den
+   * Prüfling schon im Ruhezustand verstellt, ist keine.
+   */
+  { n:'ein Nachweis zeigt auf einen Commit, den es nicht gibt', tor:'rhythmus',
+    brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
+    suchRegex:/"commit": "[0-9a-f]{40}"/, ersatzFn:()=>'"commit": "0000000000000000000000000000000000000000"',
+    an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
+    sagt:'nicht mehr auffindbar' },
 
   /* --- ziehen (fünf) ------------------------------------------------ */
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
@@ -649,90 +670,92 @@ const PROBEN = [
 
 const rot = (s) => `\x1b[31m${s}\x1b[0m`, gruen = (s) => `\x1b[32m${s}\x1b[0m`;
 
-/* Regel 1, erzwungen statt aufgeschrieben. */
+/* Regel 1 ist weg — weil der Grund weg ist.
+ *
+ * „Erst einchecken, dann gegenproben" stand hier, seit dieser Lauf viermal
+ * frische Arbeit geloescht hatte: er griff in den ARBEITSBAUM ein und
+ * raeumte mit `git checkout -- .` wieder auf. Die Regel hat den Schaden
+ * nicht verhindert - beim fuenften Mal wurde sie mit `--trotzdem` umgangen,
+ * und eine ganze Runde war weg.
+ *
+ * Eine Regel, die nur verbietet, hilft nicht, wenn jemand das Verbot
+ * umgeht. Also faellt nicht die Umgehung weg, sondern die GEFAHR: geprobt
+ * wird ab jetzt in einer Wegwerf-Kopie. Der Arbeitsbaum wird nicht mehr
+ * angefasst, es gibt nichts mehr zu verlieren, und die Regel hat sich
+ * erledigt.
+ *
+ * Drei Dinge fallen damit zusammen weg: die Weigerung, das Netz aus
+ * `git stash create` (ein Netz fuer einen Sturz, den es nicht mehr gibt)
+ * und die Zeremonie „commit, dann proben, dann nachbessern, dann nochmal
+ * committen" - jede Runde ein Umweg.
+ *
+ * Und die Kopie kann noch etwas, das der Arbeitsbaum nie konnte: es darf
+ * mehrere davon geben. Proben, die einander nicht in die Quere kommen,
+ * lassen sich nebeneinander fahren.
+ */
+const HAUPT = process.cwd();
+const KOPIE = path.join(HAUPT, '.probenbaum');
 const schmutzig = execSync('git status --porcelain', { encoding:'utf8' }).trim();
-if (schmutzig && !process.argv.includes('--trotzdem')) {
-  console.log('\n  proben verweigert den Dienst: der Baum ist schmutzig.\n');
-  console.log('  Wiederhergestellt wird mit `git checkout` — das löscht, was hier');
-  console.log('  noch nicht eingecheckt ist. Genau das ist in diesem Projekt schon');
-  console.log('  passiert, obwohl die Regel danebenstand.\n');
-  for (const z of schmutzig.split('\n').slice(0, 12)) console.log('    ' + z);
-  console.log('\n  Erst einchecken, dann proben.\n');
-  process.exit(2);
+
+/**
+ * Die Kopie aufbauen: HEAD auschecken, dann den Arbeitsbaum daruebermalen.
+ *
+ * Warum nicht `git stash create` als Grundlage: `rhythmus` rechnet mit
+ * `git rev-list <standCommit>..HEAD`, und ein Stash-Commit haengt neben
+ * der Historie statt in ihr - die Zahl waere eine andere als im
+ * Arbeitsbaum. Die Kopie steht deshalb auf demselben HEAD, und was du
+ * geaendert hast, wird HINEINKOPIERT. Damit ist geprueft, was du siehst,
+ * und gerechnet wird wie zu Hause.
+ */
+function kopieAufbauen() {
+  fs.rmSync(KOPIE, { recursive:true, force:true });
+  try { execSync('git worktree prune', { stdio:'ignore' }); } catch { /* egal */ }
+  execSync(`git worktree add --detach ${KOPIE} HEAD`, { stdio:'ignore' });
+  // Die Abhaengigkeiten stehen schon nebenan. Ein zweites `npm ci` kostet
+  // mehr als der ganze Lauf.
+  fs.symlinkSync(path.join(HAUPT, 'node_modules'), path.join(KOPIE, 'node_modules'), 'dir');
+  uebermalen();
 }
 
-/* Und wenn doch `--trotzdem`: ein Netz spannen, bevor gesprungen wird.
- *
- * `--trotzdem` hebt die Weigerung oben auf. Das ist gelegentlich richtig -
- * und einmal in dieser Sitzung war es falsch: der Lauf hat mit
- * `git checkout -- .` eine ganze Runde Arbeit geloescht, die noch nicht
- * eingecheckt war. Regel 1 stand danebem, und sie wurde trotzdem
- * gebrochen; die Weigerung greift ja nur ohne die Fahne.
- *
- * Deshalb wird der schmutzige Baum jetzt VORHER weggelegt, als echtes
- * Git-Objekt. `git stash create` schreibt einen Commit, ohne den Baum
- * anzufassen - er haengt an keinem Zweig, aber er ist da, und die Zeile
- * unten sagt, wie man ihn zurueckholt. Aus einem unwiderruflichen Griff
- * wird damit ein aergerlicher.
- */
-if (schmutzig) {
-  let sicherung = '';
-  try { sicherung = execSync('git stash create', { encoding:'utf8' }).trim(); } catch { /* egal */ }
-  if (sicherung) {
-    try { execSync(`git tag proben-sicherung-${Date.now()} ${sicherung}`, { stdio:'ignore' }); } catch {}
-    console.log(`\n  Der Baum ist schmutzig, und \`--trotzdem\` steht dabei.`);
-    console.log(`  Weggelegt als ${sicherung.slice(0, 10)} — zurueckholen mit:`);
-    console.log(`      git stash apply ${sicherung}\n`);
-  } else {
-    console.log('\n  ACHTUNG: schmutziger Baum, und die Sicherung ist nicht gelungen.');
-    console.log('  Was hier nicht eingecheckt ist, ueberlebt diesen Lauf nicht.\n');
+/** Was im Arbeitsbaum anders ist, in die Kopie tragen. */
+function uebermalen() {
+  if (!schmutzig) return [];
+  const dazu = [];
+  for (const z of schmutzig.split('\n')) {
+    const zustand = z.slice(0, 2), datei = z.slice(3).replace(/^"|"$/g, '');
+    const ziel = path.join(KOPIE, datei);
+    if (zustand.includes('D')) { fs.rmSync(ziel, { force:true }); dazu.push(datei); continue; }
+    if (!fs.existsSync(datei)) continue;
+    fs.mkdirSync(path.dirname(ziel), { recursive:true });
+    fs.copyFileSync(datei, ziel);
+    dazu.push(datei);
   }
+  return dazu;
 }
 
-/* Kein fremder Browser im Haus.
- *
- * Ein Probenlauf wurde per Zeitueberschreitung hart abgeschossen; sein
- * Chromium lief vermutlich weiter. Im naechsten Lauf meldeten zwei
- * Rauchtest-Proben „beweist nichts", einzeln gefahren aber schlugen beide
- * an - und im uebernaechsten Lauf alle siebzehn. Beweisen laesst sich das
- * nachtraeglich nicht mehr, und genau das ist das Problem: eine
- * Gegenprobe, die zweimal Verschiedenes sagt, ist schlimmer als eine
- * fehlende, weil man ihr danach nicht mehr glaubt.
- *
- * Also wird aus dem unsichtbaren Verdacht eine laute Weigerung. Ob ein
- * uebriggebliebener Browser wirklich stoert, ist damit immer noch nicht
- * bewiesen - aber er kann es kein zweites Mal unbemerkt gewesen sein.
- */
-const fremdeBrowser = (() => {
-  try {
-    // Gesucht wird am PROGRAMMNAMEN, nicht an der Befehlszeile. Der erste
-    // Entwurf las `ps -eo pid,args` und suchte darin nach „chrome" - und
-    // verweigerte prompt den Dienst, obwohl kein Browser lief: gefunden
-    // hatte er die eigene Shell-Zeile, in der das Wort vorkam. Eine
-    // Weigerung, die immer anschlaegt, ist so wertlos wie ein Tor, das nie
-    // etwas meldet.
-    return execSync('ps -eo pid=,comm=,args=', { encoding:'utf8' })
-      .split('\n')
-      .map(z => z.trim().match(/^(\d+)\s+(\S+)\s*(.*)$/))
-      .filter(m => m && /^(chrome|chromium|headless_shell)/i.test(m[2]))
-      .map(m => `${m[1]}  ${m[3] || m[2]}`);
-  } catch { return []; }   // kein `ps` (Windows) — dann eben ohne diese Pruefung
-})();
-if (fremdeBrowser.length && !process.argv.includes('--trotzdem')) {
-  console.log('\n  proben verweigert den Dienst: es laeuft schon ein Browser.\n');
-  console.log('  Die Rauchtest-Proben starten Chromium selbst. Ein uebriggebliebener');
-  console.log('  aus einem abgebrochenen Lauf teilt sich Speicher und Anschluesse mit');
-  console.log('  ihnen — und eine Probe, die daran scheitert, meldet „beweist nichts"');
-  console.log('  statt „hier stimmt etwas nicht". Genau so ist es einmal passiert.\n');
-  for (const z of fremdeBrowser.slice(0, 6)) console.log('    ' + z.slice(0, 100));
-  console.log('\n  Aufraeumen: pkill -f chrome     Trotzdem fahren: --trotzdem\n');
-  process.exit(2);
+function kopieAbbauen() {
+  fs.rmSync(KOPIE, { recursive:true, force:true });
+  try { execSync('git worktree prune', { stdio:'ignore' }); } catch { /* egal */ }
+}
+
+kopieAufbauen();
+const BAUM = KOPIE;
+const imBaum = (datei) => path.join(BAUM, datei);
+process.on('exit', kopieAbbauen);
+for (const s of ['SIGINT', 'SIGTERM']) process.on(s, () => { kopieAbbauen(); process.exit(130); });
+
+console.log(`\n  Geprobt wird in einer Wegwerf-Kopie (${path.basename(KOPIE)}).`);
+console.log('  Der Arbeitsbaum wird nicht angefasst.');
+if (schmutzig) {
+  const n = schmutzig.split('\n').length;
+  console.log(`  ${n} geänderte Datei${n === 1 ? '' : 'en'} aus dem Arbeitsbaum sind mitkopiert —`);
+  console.log('  geprüft wird also, was du siehst, nicht der letzte Commit.');
 }
 
 const lauf = (befehl, umgebung, args) => {
   try {
     return { code:0, aus: execFileSync('npm', ['run', befehl, ...(args ? ['--', ...args] : [])],
-      { encoding:'utf8', stdio:['ignore','pipe','pipe'],
+      { encoding:'utf8', stdio:['ignore','pipe','pipe'], cwd: BAUM,
         env: umgebung ? { ...process.env, ...umgebung } : process.env }) };
   } catch (e) {
     return { code: e.status ?? 1, aus: (e.stdout || '') + (e.stderr || '') };
@@ -785,9 +808,12 @@ for (const zeichen of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
 }
 
 const wiederherstellen = (gebaut) => {
-  execSync('git checkout -- .', { stdio:'ignore' });
+  // In der KOPIE. Derselbe Befehl, der diesem Verzeichnis viermal Arbeit
+  // gekostet hat - hier kann er nichts mehr treffen als sich selbst.
+  execSync('git checkout -- .', { stdio:'ignore', cwd: BAUM });
+  uebermalen();
   if (nachRestore) nachRestore();
-  if (gebaut) execFileSync('npm', ['run', 'bauen'], { stdio:'ignore' });
+  if (gebaut) execFileSync('npm', ['run', 'bauen'], { stdio:'ignore', cwd: BAUM });
 };
 
 /**
@@ -841,44 +867,76 @@ if (vollerLauf && erstlauf) {
  * Stand. Eine Abkuerzung, die den vollen Lauf ersetzen koennte, waere keine
  * Abkuerzung, sondern ihr Ende.
  */
-const seitDemStand = () => {
-  if (!fs.existsSync(STAND)) return null;
-  const basis = JSON.parse(fs.readFileSync(STAND, 'utf8')).fassung;
-  if (!basis) return null;
-  try {
-    return new Set(execSync(`git diff --name-only ${basis} HEAD`, { encoding:'utf8' })
-      .split('\n').map(x => x.trim()).filter(Boolean));
-  } catch (e) { return null; }
-};
+const seitCommit = (() => {
+  const merker = new Map();
+  return (commit) => {
+    if (merker.has(commit)) return merker.get(commit);
+    let s;
+    try {
+      /* Verglichen wird gegen den ARBEITSBAUM, nicht gegen HEAD.
+       *
+       * `git diff <commit> HEAD` sieht nur, was schon eingecheckt ist —
+       * und seit `proben` in einer Kopie laeuft, ist der Normalfall
+       * gerade, dass man NICHT vorher committet. Die Abkuerzung haette
+       * dann genau die Aenderung uebersehen, an der man arbeitet, und
+       * waere gruen geblieben. Ein `HEAD` weniger.
+       *
+       * Unverfolgte Dateien kommen dazu: eine neue Datei ist in keinem
+       * Diff, aber sehr wohl eine Aenderung. */
+      s = new Set(execSync(`git diff --name-only ${commit}`,
+        { encoding:'utf8', stdio:['ignore','pipe','ignore'] })
+        .split('\n').map(x => x.trim()).filter(Boolean));
+      for (const f of execSync('git ls-files --others --exclude-standard',
+        { encoding:'utf8' }).split('\n').map(x => x.trim()).filter(Boolean)) s.add(f);
+    } catch { s = null; }
+    merker.set(commit, s);
+    return s;
+  };
+})();
+
+/** Der Nachweis, den eine Probe mitbringt — oder keiner. */
+const nachweisVon = (() => {
+  const stand = fs.existsSync(STAND)
+    ? (JSON.parse(fs.readFileSync(STAND, 'utf8')).proben || {}) : {};
+  return (p) => stand[p.n] || null;
+})();
 
 let geaendertGrund = '';
 let vorauswahl = PROBEN;
 if (GEAENDERT) {
-  const dateien = seitDemStand();
-  if (!dateien) {
-    console.log('\n  --geaendert braucht einen festgehaltenen Stand mit Commit und die');
-    console.log('  Historie dazu. Beides fehlt — es läuft der volle Satz.\n');
-  } else if (dateien.size === 0) {
-    console.log('\n  --geaendert: seit dem letzten vollen Lauf hat sich keine Datei');
-    console.log('  geändert. Es gibt nichts nachzuweisen.\n');
-    vorauswahl = [];
-    geaendertGrund = 'nichts geändert';
-  } else {
-    // Ein Tor gilt als angefasst, wenn seine Datei im Diff steht. Unter-Tore
-    // (`deckt`) haengen an derselben Datei wie ihr Traeger.
-    const torBeruehrt = (p) => dateien.has(`tor/${p.tor}.mjs`);
-    const dateiBeruehrt = (p) => {
-      const alle = [p.datei, ...(p.kopie || [])].filter(Boolean);
-      return alle.some(d => dateien.has(d));
-    };
-    vorauswahl = PROBEN.filter(p => torBeruehrt(p) || dateiBeruehrt(p));
-    geaendertGrund = `${dateien.size} geänderte Datei${dateien.size === 1 ? '' : 'en'}`;
-    console.log(`\n  --geaendert: ${dateien.size} Datei${dateien.size === 1 ? '' : 'en'} seit dem `
-      + `letzten vollen Lauf.`);
-    console.log(`  ${vorauswahl.length} von ${PROBEN.length} Proben greifen dort ein oder fahren`);
-    console.log('  ein Tor, das angefasst wurde. Der Rest kann sich nicht geändert haben —');
-    console.log('  ausser mittelbar, und dafür ist der volle Lauf alle drei Runden da.');
+  /* Was ist NACHZUWEISEN?
+   *
+   * Zwei Faelle, und jede Probe wird gegen ihren EIGENEN Nachweis
+   * gerechnet — nicht gegen einen gemeinsamen Commit:
+   *
+   *   ohne Nachweis   sie ist neu und hat nie angeschlagen
+   *   veraltet        ihre Datei oder ihr Tor wurde angefasst, seit sie
+   *                   zuletzt angeschlagen hat
+   *
+   * Damit ist `--geaendert` das, was eine normale Runde braucht: die
+   * neuen Proben und die, deren Gegenstand sich bewegt hat. Alles andere
+   * kann sich nicht geaendert haben — ausser mittelbar, und dafuer sorgt
+   * die Frist in `rhythmus` fuer den vollen Lauf.
+   */
+  const ohneNachweis = [], veraltet = [];
+  for (const p of PROBEN) {
+    const nw = nachweisVon(p);
+    if (!nw) { ohneNachweis.push(p); continue; }
+    const dateien = seitCommit(nw.commit);
+    if (!dateien) { veraltet.push(p); continue; }   // Commit weg → sicherheitshalber fahren
+    const alle = [p.datei, ...(p.kopie || [])].filter(Boolean);
+    if (dateien.has(`tor/${p.tor}.mjs`) || alle.some(d => dateien.has(d))) veraltet.push(p);
   }
+  vorauswahl = [...ohneNachweis, ...veraltet];
+  geaendertGrund = `${ohneNachweis.length} neu, ${veraltet.length} veraltet`;
+  console.log(`\n  --geaendert: ${ohneNachweis.length} Probe`
+    + `${ohneNachweis.length === 1 ? '' : 'n'} ohne Nachweis, ${veraltet.length} mit einem, `
+    + 'der überholt ist.');
+  if (!vorauswahl.length)
+    console.log('  Es gibt nichts nachzuweisen.');
+  else
+    console.log(`  ${vorauswahl.length} von ${PROBEN.length} werden gefahren. Der Rest kann sich `
+      + 'nicht geändert haben —\n  ausser mittelbar, und dafür ist die Frist in `rhythmus` da.');
 }
 
 const auswahl = (NUR.length
@@ -886,7 +944,7 @@ const auswahl = (NUR.length
   : vorauswahl).filter(p => !(p.brauchtStand && !fs.existsSync(STAND)));
 
 console.log(`\n  proben — ${auswahl.length} stehende Gegenproben`
-  + (vollerLauf ? '' : '  (Auswahl — schreibt keinen Stand)') + '\n');
+  + (vollerLauf ? '' : '  (Auswahl)') + '\n');
 
 /* Beim allerersten Lauf gibt es die Standdatei noch nicht, und zwei Proben
  * brauchen sie zum Anfassen. Sie wird deshalb hier angelegt - ausdruecklich
@@ -896,6 +954,12 @@ console.log(`\n  proben — ${auswahl.length} stehende Gegenproben`
 
 let ok = 0, blind = 0, nichtAngekommen = 0;
 const befunde = [];
+/* WELCHE Proben angeschlagen haben - nicht wieviele.
+ *
+ * Das ist der ganze Unterschied zum alten Stand. Er hielt eine Zahl fest,
+ * und eine Zahl kann nicht sagen, WAS bewiesen ist: kam eine Probe dazu,
+ * war der Nachweis fuer alle anderen mit entwertet. */
+const angeschlagen = new Set();
 
 /**
  * Ist das Tor OHNE Eingriff ueberhaupt gruen?
@@ -939,9 +1003,9 @@ for (const p of welche) {
   process.stdout.write(`  ${p.tor.padEnd(11)} ${p.n} … `);
 
   /* --- Eingriff --------------------------------------------------- */
-  if (p.kopie) fs.copyFileSync(p.kopie[0], p.kopie[1]);
+  if (p.kopie) fs.copyFileSync(imBaum(p.kopie[0]), imBaum(p.kopie[1]));
   else {
-    const alt = fs.readFileSync(p.datei, 'utf8');
+    const alt = fs.readFileSync(imBaum(p.datei), 'utf8');
     let neu;
     if (p.suchRegex) {
       const m = alt.match(p.suchRegex);
@@ -955,7 +1019,7 @@ for (const p of welche) {
         wiederherstellen(p.bauen); continue; }
       neu = alt.replace(p.such, p.ersatz);
     }
-    fs.writeFileSync(p.datei, neu);
+    fs.writeFileSync(imBaum(p.datei), neu);
   }
 
   if (p.bauen) {
@@ -969,10 +1033,11 @@ for (const p of welche) {
   let da = true, warum = '';
   if (p.an.gleichWie) {
     const [a, b] = p.an.gleichWie;
-    da = fs.readFileSync(a).equals(fs.readFileSync(b));
+    da = fs.readFileSync(imBaum(a)).equals(fs.readFileSync(imBaum(b)));
     warum = 'die beiden Symbole sind nicht gleich';
   } else if (p.an.datei) {
-    const t = fs.existsSync(p.an.datei) ? fs.readFileSync(p.an.datei, 'utf8') : '';
+    const wo = imBaum(p.an.datei);
+    const t = fs.existsSync(wo) ? fs.readFileSync(wo, 'utf8') : '';
     if (p.an.fehlt) { da = !t.includes(p.an.fehlt); warum = `„${p.an.fehlt}" steht noch in ${p.an.datei}`; }
     else if (p.an.regex) { da = p.an.regex.test(t); warum = `nichts passt in ${p.an.datei}`; }
     else { da = t.includes(p.an.text); warum = `„${p.an.text}" fehlt in ${p.an.datei}`; }
@@ -1018,6 +1083,7 @@ for (const p of welche) {
     continue;
   }
   fertig(gruen('schlägt an'));
+  angeschlagen.add(p.n);
   ok++;
 }
 };
@@ -1083,35 +1149,93 @@ if (befunde.length) { console.log(''); process.exit(1); }
  * dort steht sie seit Fassung 40 in der ersten Datei, die jede Sitzung
  * liest.
  */
-if (!vollerLauf) {
-  console.log(`  proben grün: ${ok} Gegenproben, alle schlagen an.`);
-  console.log(`  Nur eine Auswahl gelaufen — ${STAND} bleibt, wie er war.\n`);
-  process.exit(0);
-}
+/* Festgehalten wird JE PROBE — und deshalb auch bei einer Auswahl.
+ *
+ * Frueher schrieb nur der volle Lauf, und er schrieb eine ZAHL. Wer eine
+ * Probe dazuschrieb, entwertete damit den Nachweis fuer alle anderen: die
+ * Zahl stimmte nicht mehr, `rhythmus` wurde rot, und es half nur, alle
+ * neunundsechzig noch einmal zu fahren. In einer einzigen Sitzung waren
+ * das vier volle Laeufe und hundert Minuten — waehrend die Frist „alle
+ * drei Runden", die das eigentlich regeln sollte, nie zum Zug kam.
+ *
+ * Jetzt traegt jede Probe ihren eigenen Nachweis: Commit und Datum. Eine
+ * neue Probe kostet diese Probe. Eine Auswahl erneuert genau die, die sie
+ * gefahren hat — die anderen altern weiter, bis die Frist sie faellig
+ * macht. Damit loest erst die Frist den vollen Lauf aus, so wie gedacht.
+ *
+ * Eintraege zu Proben, die es nicht mehr gibt, fallen weg: ein Nachweis
+ * fuer etwas, das niemand mehr faehrt, ist Ballast.
+ */
 const kopf = execSync('git rev-parse HEAD', { encoding:'utf8' }).trim();
-const standSchreiben = (wie) => fs.writeFileSync(STAND, JSON.stringify({
-  zeit: new Date().toISOString().slice(0, 10),
-  fassung: kopf,
-  proben: PROBEN.length,
-  tore: [...new Set(PROBEN.map(p => p.tor))].sort(),
-  unterTore: unterTore.sort(),
-  lauf: wie,
-}, null, 2) + '\n');
+const heute = new Date().toISOString().slice(0, 10);
+const bisher = fs.existsSync(STAND)
+  ? (JSON.parse(fs.readFileSync(STAND, 'utf8')).proben || {}) : {};
+/* `aufVorschuss`: die Proben des ZWEITEN Durchgangs bekommen ihren Eintrag,
+ * bevor sie gelaufen sind.
+ *
+ * Das ist kein Schummeln, sondern ein Henne-Ei. Die vier `rhythmus`-Proben
+ * pruefen `rhythmus` — und `rhythmus` verlangt, dass jede Probe einen
+ * Nachweis hat. Ohne Vorschuss waere das Tor schon OHNE Eingriff rot,
+ * naemlich wegen dieser vier, und alle vier meldeten „war schon vorher
+ * rot" statt zu beweisen.
+ *
+ * Genau das leistete frueher die Marke „lauf": "vollständig", die vor dem
+ * zweiten Durchgang geschrieben und bei einem Fehlschlag auf
+ * „abgebrochen" zurueckgesetzt wurde. Dasselbe passiert hier, nur je
+ * Probe: schlaegt eine nicht an, wird ihr Eintrag unten wieder
+ * weggenommen und der Lauf ist rot. Ein Vorschuss, der zurueckgefordert
+ * wird, ist kein Beweis auf Kredit.
+ */
+const standSchreiben = (aufVorschuss = []) => {
+  const vorschuss = new Set(aufVorschuss.map(p => p.n));
+  const proben = {};
+  for (const p of PROBEN) {
+    if (angeschlagen.has(p.n) || vorschuss.has(p.n)) proben[p.n] = { commit: kopf, zeit: heute };
+    else if (bisher[p.n]) proben[p.n] = bisher[p.n];
+  }
+  schreibeStand(JSON.stringify({
+    form: 2, zeit: heute,
+    tore: [...new Set(PROBEN.map(p => p.tor))].sort(),
+    unterTore: unterTore.sort(),
+    proben,
+  }, null, 2) + '\n');
+  return proben;
+};
 
-standSchreiben('vollständig');
-console.log(`  Festgehalten in ${STAND} auf ${kopf.slice(0, 7)}.`);
+/* Der Stand gehört in den ARBEITSBAUM — er ist das Ergebnis des Laufs und
+ * wird eingecheckt. In die Kopie kommt er trotzdem: die vier
+ * `rhythmus`-Proben laufen dort und sollen den FRISCHEN Stand vorfinden,
+ * nicht den, mit dem die Kopie ausgecheckt wurde. */
+function schreibeStand(text) {
+  fs.writeFileSync(STAND, text);
+  fs.writeFileSync(imBaum(STAND), text);
+}
+
+const spaeter = auswahl.filter(p => p.nachStand);
+{
+  const geschrieben = standSchreiben(spaeter);
+  console.log(`  Festgehalten in ${STAND}: ${angeschlagen.size} Probe`
+    + `${angeschlagen.size === 1 ? '' : 'n'} frisch auf ${kopf.slice(0, 7)}, `
+    + `${Object.keys(geschrieben).length} von ${PROBEN.length} mit Nachweis.`);
+}
 
 // Und jetzt erst die Proben, die einen frischen Stand brauchen.
-const spaeter = auswahl.filter(p => p.nachStand);
 if (spaeter.length) {
   console.log(`\n  Zweiter Durchgang — ${spaeter.length} Proben am frischen Stand:\n`);
   const vorher = befunde.length;
   gesund.clear();
-  nachRestore = () => standSchreiben('vollständig');
+  nachRestore = () => standSchreiben(spaeter);
   durchgang(spaeter);
   nachRestore = null;
   if (befunde.length > vorher) {
-    standSchreiben('abgebrochen');
+    // Die Proben des zweiten Durchgangs haben nicht angeschlagen - also
+    // bekommen sie auch keinen frischen Eintrag. Eine eigene Marke
+    // „abgebrochen" braucht es dafuer nicht mehr.
+    // Der Vorschuss wird zurueckgefordert: was nicht angeschlagen hat,
+    // bekommt keinen Nachweis — auch keinen alten.
+    for (const p of spaeter) if (!angeschlagen.has(p.n)) delete bisher[p.n];
+    nachRestore = null;
+    standSchreiben();
     console.log('');
     for (const b of befunde.slice(vorher)) console.log(`  ✗ ${b}`);
     console.log(`\n  proben ROT im zweiten Durchgang — ${STAND} als abgebrochen markiert.\n`);

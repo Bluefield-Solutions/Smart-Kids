@@ -20,14 +20,19 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 ```
 npm run tor        die ganze Kette. Muss vor jedem Push auf main grün sein.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
-                   Verlangt einen sauberen Baum — sie arbeitet mit
-                   `git checkout` und löschte sonst die frische Arbeit.
-                   Voll 22,3 min (56 Proben; vor der Abschnitts-Teilung
-                   des Rauchtests 35,6); `-- --geaendert` fährt nur die Proben,
-                   deren Datei oder Tor seit dem letzten vollen Lauf
-                   angefasst wurde — meist unter einer Minute. Die
-                   Abkürzung schreibt KEINEN Stand, sonst wäre die Regel
-                   „alle drei Runden" still ausgehebelt.
+                   Läuft in einer Wegwerf-Kopie (`.probenbaum`) — der
+                   Arbeitsbaum wird nicht angefasst, ein sauberer Baum ist
+                   nicht mehr nötig, und was du gerade änderst, ist
+                   mitgeprüft.
+                   `-- --geaendert` fährt genau das, was nachzuweisen ist:
+                   Proben ohne Nachweis und solche, deren Datei oder Tor
+                   sich seit IHREM letzten Anschlagen bewegt hat. Das ist
+                   die normale Runde.
+                   Der Stand steht je Probe (Commit + Datum), nicht als
+                   eine Zahl für alle — sonst entwertet jede neue Probe den
+                   Nachweis der anderen und erzwingt den vollen Satz.
+                   Auch eine Auswahl schreibt Stand, für genau das, was sie
+                   gefahren hat.
 npm run smoke      spielt die App im Browser durch. `-- --nur=spielen,tippen`
                    fährt nur einzelne Abschnitte (spielen · ablage · tippen ·
                    ebene4 · durchgang) — dasselbe Mittel wie bei `ziehen`, und
@@ -104,8 +109,15 @@ Jede hat mindestens eine Runde gekostet.
 8. **Ein Zufallsgenerator ist erst dann einer, wenn es gemessen ist.** Ein
    einfacher LCG legte die richtige Antwort zehnmal hintereinander auf Platz
    2 oder 3. Jede Einzelprüfung war grün.
-9. **Erst einchecken, dann gegenproben.** `npm run proben` arbeitet mit
-   `git checkout` und verweigert deshalb den Dienst bei schmutzigem Baum.
+9. **Eine Regel, die nur verbietet, hilft nicht, wenn jemand das Verbot
+   umgeht.** Hier stand „erst einchecken, dann gegenproben": `npm run
+   proben` griff in den Arbeitsbaum ein und räumte mit `git checkout` auf.
+   Die Regel hat den Schaden nicht verhindert — beim fünften Mal wurde sie
+   mit `--trotzdem` umgangen, und eine ganze Runde war weg. Weggefallen ist
+   deshalb nicht die Umgehung, sondern die **Gefahr**: geprobt wird in einer
+   Wegwerf-Kopie, der Arbeitsbaum wird nicht mehr angefasst. Mit der Gefahr
+   ist die Regel verschwunden — und die Zeremonie „commit, proben,
+   nachbessern, nochmal committen" gleich mit.
 10. **Jede Probe prüft zuerst, ob ihr Eingriff angekommen ist.** Ein nicht
    angekommener Eingriff sieht aus wie ein bestandenes Tor.
 11. **Ein abgestürztes Tor besteht jede Gegenprobe.** `tor/inhalt.mjs`
