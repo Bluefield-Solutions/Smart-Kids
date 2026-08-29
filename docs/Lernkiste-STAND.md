@@ -2916,3 +2916,45 @@ Offline-Test — eine 404 wäre eine **Antwort**, und der Service Worker
 verhält sich dann anders. Das Tor wurde rot und hat es gemeldet. Sechs
 Kopien sind nicht sechsmal dasselbe; eine davon trägt immer etwas
 Besonderes, und das findet man erst beim Zusammenlegen.
+
+## Der Vorlauf auf dem Zielgerät — angesehen, nicht gemessen
+
+`passt` war grün. Der Blick war es nicht.
+
+**Ein Drittel der Karte war leer.** Die Zeilenhöhe des Gitters richtet sich
+nach der höchsten Karte — „Mecklenburg-Vorpommern" braucht zwei Zeilen, also
+sind alle so hoch —, und unter „Sachsen" stand deshalb eine leere Fläche,
+mit dem Umriss als Fleck darüber.
+
+Der erste Schluss war falsch: den Umriss mit `flex:1` in den Rest wachsen
+lassen. Dann wachsen die **Karten**, und die zweite Reihe fiel unten heraus.
+Das Loch war nie zu wenig Bild, sondern schlecht verteilter Platz — dagegen
+hilft Zentrieren, nicht Wachsen.
+
+**Vier Namen brachen mitten im Wort:** „Niedersachs / en",
+„Brandenbur / g", „Baden-Württembe / rg". Auf einem Bildschirm, dessen
+einziger Zweck es ist, diese Namen beizubringen. Die Karten waren mit 76
+Punkten zu schmal; bei **88** nimmt der Umbruch die Fugen —
+„Rheinland- / Pfalz", „Mecklenburg- / Vorpommern" — und es kostet **keine
+Reihe**: sechzehn Karten stehen auf dem Zielgerät so oder so in zweien.
+
+Wie breit sie sein dürfen, hat `passt` gesagt, nicht ich: 88 grün, und bei
+den Paarkarten 96.
+
+### Und der Vorlauf hatte kein Vorbild
+
+Dieselbe Lücke wie beim Forscherbuch eine Runde zuvor: der Bildschirm mit
+den meisten Kästen, der schwierigsten Typografie und einer auf zwei Punkte
+ausgemessenen Bildhöhe — und **kein Tor sah ihn an**. `passt` sagt, ob
+alles im Bild ist; ob „Brandenbur / g" dasteht, sagt es nicht.
+`quer-vorlauf` ist die siebzehnte Aufnahme.
+
+### Ein blindes `sed` und das Tor, das es gefangen hat
+
+Beim Durchprobieren der Kartenbreite (88 · 84 · 80) hat mein Suchmuster
+**auch das Forscherbuch** getroffen: `.kleber.vorschau` endet auf dieselbe
+Zeichenfolge und stand danach auf 80 statt 120 Punkten. Gemerkt habe ich
+es nicht — `quer-buch` wurde rot, 1,8 % der Bildpunkte anders.
+
+Das ist genau der Fall, für den der Bildvergleich da ist: eine Änderung,
+die niemand wollte, an einer Stelle, an die niemand gedacht hat.

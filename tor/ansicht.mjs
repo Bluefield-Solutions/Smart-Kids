@@ -140,6 +140,16 @@ const AUFNAHMEN = [
   { name:'quer-profile', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'profile' },
   { name:'quer-welten', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'welten' },
   { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
+  /* Der Vorlauf (R3) — die engste Stelle der App.
+   *
+   * Sechzehn Kaesten auf einmal, Namen, die an Fugen umbrechen muessen,
+   * und eine Bildhoehe, die auf zwei Punkte genau ausgemessen ist. Genau
+   * so ein Bildschirm gehoert fotografiert: `passt` sagt, ob alles im
+   * Bild ist, aber nicht, ob „Brandenbur / g" dasteht.
+   *
+   * `tun:'vorlauf'` heisst: NICHT auf „Jetzt starten" tippen. */
+  { name:'quer-vorlauf', spiel:'bundeslaender', quer:true, stand:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
   { name:'quer-spiel',  spiel:'kontinente', quer:true, stand:true, wahl:'.schirm.da' },
   // Der Endbildschirm wird im ANTIPPEN-Modus aufgenommen.
   //
@@ -392,12 +402,18 @@ for (const a of MEINE) {
       // Seit R3 steht der Vorlauf beim ersten Betreten davor.
       await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
         + '.schirm.da .rechnung', { timeout: 25000 });
+      // `tun:'vorlauf'` heisst: HIER bleiben. Kein `continue` - das
+      // uebersprang die Aufnahme selbst und liess die naechste auf einer
+      // halb gewanderten Seite landen (`quer-buch` wurde davon rot).
+      if (a.tun === 'vorlauf') { await seite.waitForTimeout(400); }
+      else {
       await durchVorlauf(seite);
       // Eine Rechenebene hat keine Karte, auf die man warten könnte.
       await seite.waitForSelector(a.spiel.startsWith('rechnen')
         ? '.schirm.da .rechnung' : '.schirm.da .karte svg path.ziel');
       await seite.waitForTimeout(a.spiel.startsWith('rechnen') ? 300 : 0);
       if (a.tun) await vorfuehren(seite, a.tun);
+      }
     }
     }
     letzteSeite = null;
