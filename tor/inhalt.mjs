@@ -83,8 +83,16 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   `Datenstand ${I.STAND.jahr} ist älter als drei Jahre`);
 
 // Die Gebietszahl wird GEZAEHLT, nicht geschrieben.
+/* Die Bundeslaender werden an der BUNDESLAENDER-Liste gezaehlt.
+ *
+ * Hier stand `STAEDTE.length` — fuer beides. Das Ergebnis war zufaellig
+ * richtig, weil es sechzehn Bundeslaender und sechzehn Staedte gibt; ein
+ * Zaehler, dessen Richtigkeit auf einem Zufall beruht, zaehlt aber nicht,
+ * er trifft. Wer eine Stadt ergaenzt, ohne ein Bundesland zu ergaenzen,
+ * haette ab dann eine falsche Gesamtzahl — und genau diese Zahl ist es,
+ * die `doku` gegen das Konzept legt. */
 const ZAHL = { kontinente:I.KONTINENTE.length, laender:laender.length,
-               bundeslaender:STAEDTE.length, staedte:STAEDTE.length };
+               bundeslaender:DEUTSCHLAND_FEIN.length, staedte:STAEDTE.length };
 ZAHL.gesamt = ZAHL.kontinente + ZAHL.laender + ZAHL.bundeslaender + ZAHL.staedte;
 console.log(`    ${ZAHL.kontinente} Kontinente + ${ZAHL.laender} Länder + `
   + `${ZAHL.bundeslaender} Bundesländer + ${ZAHL.staedte} Städte = ${ZAHL.gesamt} Gebiete`);

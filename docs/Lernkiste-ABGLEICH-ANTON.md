@@ -359,7 +359,7 @@ jede Runde soll auf der vorigen stehen können.
 | Runde | Inhalt | warum hier |
 |---|---|---|
 | 1 | **A1, A5** — *gefahren*, **A2** — *gefahren*, A4 offen | kleine Griffe, sofort spürbar, ändern nichts am Aufbau |
-| 2 | **C1 + C3** (Fionas Mathe, Aufgabentyp ohne Karte) | die Architekturfrage einmal lösen, am einfacheren Fall |
+| 2 | **C1 + C3** (Fionas Mathe, Aufgabentyp ohne Karte) — *gefahren* | die Architekturfrage einmal lösen, am einfacheren Fall |
 | 3 | **C2** (Leas Reihen, Regler im Elternbereich) — *gefahren* | steht auf Runde 2 |
 | 4 | **B1 + B2** (Erklärung und Test) | die Dramaturgie, jetzt für zwei Fächer auf einmal |
 | 5 | **D4** — *gefahren* + **D2** (Abzeichen) | erst sinnvoll, wenn es zwei Fächer gibt |

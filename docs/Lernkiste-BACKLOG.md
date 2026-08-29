@@ -9,6 +9,22 @@ steht es dabei; wo etwas an Daten hängt, ist die Quelle nachgesehen.
 
 ---
 
+## Entschieden
+
+| Frage | Antwort | steht in |
+|---|---|---|
+| Welche Kacheln? | **alle drei** Wahlbildschirme — Profilwahl, Weltenwahl, Ebenenwahl | R2 |
+| Überlappen wirklich gesehen? | nicht sicher → **Prüfung bauen**, statt zu raten | R2 |
+| Wo steht das Elternprofil? | **dritte Kachel bei den Kindern**, ohne PIN | R4 |
+| Ein Profil oder zwei? | **eins** — ihr spielt es beide | R4 |
+| Erst Entwürfe? | **ja**, zwei bis drei Aufnahmen vor dem Umbau | R2 |
+
+Offen ist nur noch der **Name** des dritten Profils. „Eltern" ist ein
+Platzhalter; in eurer Nachricht stand „Adam-Profil" — wenn es so heißen
+soll, ändert das eine Zeile.
+
+---
+
 ## Was schon dasteht — damit niemand zweimal baut
 
 | Anforderung | schon da | was wirklich fehlt |
@@ -29,7 +45,8 @@ Lea nutzt mit `laenderTiefe: 5` bereits jedes davon.
 
 Ein schwierigeres Erdkunde-Profil ist damit **kein Gestaltungsthema,
 sondern ein Datenthema**. Ohne neue Daten bliebe als „schwerer" nur:
-dieselben 47 Gebiete, aber ohne Auswahl und ohne Hilfen — für einen
+dieselben **63 Gebiete** (6 Kontinente + 25 Länder + 16 Bundesländer +
+16 Städte), aber ohne Auswahl und ohne Hilfen — für einen
 Erwachsenen, der alle 25 Länder kennt, ist das nicht schwer, sondern nur
 lästig.
 
@@ -70,27 +87,59 @@ und ohne die Hilfen für Kinder.
 Mechanisch ist das billig — ein Profil wird an acht Stellen gelesen. Teuer
 ist der Inhalt, und der zerfällt in zwei sehr verschiedene Hälften.
 
-### Mathe für Erwachsene — erzeugt, nicht gesammelt
+### Mathe für Erwachsene — erzeugt, und vor allem: BEGRENZT
 
-Dieselbe Maschinerie wie bei Fiona und Lea (`src/inhalt/rechnen.js`
-erzeugt Aufgaben samt Kennung), nur andere Sorten:
+Der erste Entwurf dieses Abschnitts hatte einen Fehler, der erst beim
+Nachrechnen auffiel, und er ist lehrreich genug, um stehenzubleiben.
 
-| Sorte | Beispiel | Anzahl |
-|---|---|---|
-| `gross-plus` / `gross-minus` | 347 + 268 | erzeugt, Zahlenraum 1000 |
-| `zweistellig-mal` | 47 × 8 | 90 × 9 |
-| `gross-geteilt` | 851 : 23 | geht auf, dreistellig |
-| `quadrat` | 17² | 12 bis 25 |
+Er lautete: „Plus und Minus im Zahlenraum 1000, zweistellig × einstellig,
+dreistellige Division, Quadratzahlen." Klingt vernünftig. **Gezählt sind
+das 321 200 Aufgaben allein für die Addition.**
 
-**Zwei Dinge sind dabei neu und nicht geschenkt:**
+Das ist nicht bloß viel, es bricht drei Dinge auf einmal:
 
-1. `gesprochen()` geht heute bis **100** („sechsundfünfzig"). Für 347
-   braucht es die nächste Stufe — und die deutschen Zahlwörter sind ab
-   Hundert unangenehm („dreihundertsiebenundvierzig").
+- Das **Forscherbuch** zeichnet jeden Gegenstand einer Ebene. Es wären
+  dreihunderttausend Kästchen.
+- **`spielprobe`** rechnet jede Aufgabe und jede angebotene Zahl nach —
+  heute 240 Aufgaben in einer Sekunde.
+- Und der **Leitner** braucht Wiederholung. Bei 321 200 Aufgaben sieht man
+  dieselbe nie zweimal; ein Verfahren gegen das Vergessen, dem man nie
+  begegnet, ist keins.
+
+Ein Vorrat muss also **von Natur aus begrenzt** sein — so wie Fionas 100
+(alle Summen bis 10) und Leas 140 (die Reihen 6 bis 10). Nicht künstlich
+gekürzt, sondern durch die Regel selbst.
+
+Deshalb nicht der Zahlenraum, sondern die **Sorte** von Aufgabe:
+
+| Sorte | Regel | Beispiel | Anzahl |
+|---|---|---|---|
+| `mal-gross` | 11…19 × 11…19, ohne die Quadrate | 13 × 17 | 72 |
+| `quadrat` | 12² bis 25² | 17² | 14 |
+| `geteilt-gross` | die Umkehrung von `mal-gross` | 221 : 13 | 72 |
+| | | **gesamt** | **158** |
+
+Nachgerechnet: 158 Aufgaben, **158 eindeutige Kennungen**, keine
+Überschneidung zwischen `mal-gross` und `quadrat`, größter Wert 625. Die
+Größenordnung von Lea (140) — und 13 × 17 ist für einen Erwachsenen eine
+echte Aufgabe, 347 + 268 dagegen nur Fleißarbeit.
+
+**Was damit bewusst NICHT kommt:** dreistellige Addition. Sie lässt sich
+nicht begrenzen, ohne willkürlich auszudünnen, und eine willkürliche
+Auswahl wäre kein Vorrat, sondern eine Stichprobe. Wenn ihr sie wollt,
+wird sie eine eigene Ebene mit einer eigenen, tragenden Regel — das ist
+eine Entscheidung, keine Zeile Code.
+
+**Zwei Dinge bleiben neu und nicht geschenkt:**
+
+1. `gesprochen()` geht heute bis **100** („sechsundfünfzig"). Der größte
+   Wert hier ist 625 — die nächste Stufe braucht es also trotzdem, und die
+   deutschen Zahlwörter sind ab Hundert unangenehm
+   („sechshundertfünfundzwanzig").
 2. Die **Ablenker**. Bei Fiona sind es ±1 und die Gegenrechnung, bei Lea
-   die Nachbarn in der Reihe. Für 47 × 8 wäre ±1 lächerlich — dort greift
-   man nach dem vergessenen Übertrag (376 statt 376… also 326) oder nach
-   der falschen Stelle. Das ist eigene Denkarbeit, keine Zeile Code.
+   die Nachbarn in der Reihe. Bei 13 × 17 greift man nach 13 × 16 oder
+   nach dem vergessenen Kreuzprodukt — das ist eigene Denkarbeit, keine
+   Zeile Code.
 
 Die Zahlen stehen — wie bei C1 und C2 — **im Abgleichdokument**, und das
 Tor `doku` legt sie neben den Code.
@@ -142,6 +191,10 @@ gegen den Rand und findet mit `elementFromPoint` verdeckte Texte — zwei
 Kacheln, die sich um wenige Punkte überschneiden, sieht es nicht. Das ist
 die blinde Stelle, nach der ihr gefragt habt.
 
+**Zuerst Entwürfe.** Zwei bis drei Fassungen als echte Aufnahmen auf
+844 × 390, nebeneinander — dann wird eine gewählt und nur die gebaut. Eine
+halbe Runde mehr, die eine ganze spart, wenn ich danebenliege.
+
 **Abnahme:** Das neue Tor ist rot, wenn sich zwei Geschwister überlappen
 (Gegenprobe: eine Kachel um 4 px verschieben). `passt` bleibt auf allen 7
 Größen grün. Und die Aufnahmen der drei Bildschirme liegen nebeneinander —
@@ -155,7 +208,17 @@ antippen liest vor. Unten „Jetzt starten".
 
 Erreichbar über die Kachel, und beim **ersten** Betreten einer Ebene von
 selbst. Das deckt zugleich **B1** aus dem ANTON-Abgleich („Erklärung vor
-dem Test"), das dort seit Runde 4 offen steht.
+der Übung"), das dort seit Runde 4 offen steht — der Abgleich beschreibt
+genau das: *„Bei uns gibt es sie einmal (Stadtstaaten). Jede Ebene bräuchte
+ihre."*
+
+> **Kollision, die vorher zu klären ist:** die Stadtstaaten-Lerneinheit
+> geht heute schon beim ersten Betreten von `hauptstaedte` auf
+> (`Einst.stadtstaatenGezeigt`). Zwei Vorschaltbildschirme hintereinander
+> sind einer zuviel. Entweder der Vorlauf **enthält** die Stadtstaaten-
+> Erklärung als eigene Karte, oder die Lerneinheit weicht ihm. Ich halte
+> das Erste für richtig — dann gibt es eine Form statt zweier —, aber es
+> ist eine Entscheidung und keine Nebensache.
 
 **Abnahme:** Der Rauchtest geht für beide Kinder über den Vorlauf ins
 Spiel; für Fiona wird jeder Name **angesagt** (sie liest nicht). `passt`
@@ -164,8 +227,12 @@ die engste Stelle.
 
 ### R4 · Elternprofil, erste Hälfte: Profil und Mathe  ·  mittel
 
-**Ziel:** Die dritte Kachel steht und ist spielbar — mit den vier neuen
-Rechensorten. Ohne neue Daten, also ohne Wartezeit.
+**Ziel:** Die dritte Kachel steht und ist spielbar — mit den **drei** neuen
+Rechensorten (158 Aufgaben). Ohne neue Daten, also ohne Wartezeit.
+
+**Enthält außerdem:** die Auswahl zu einer Eigenschaft des Profils machen
+(siehe Konzept). Ohne das spielen die Eltern die Bundesländer mit vier
+Möglichkeiten — oder die Kinder verlieren ihre.
 
 **Abnahme:** `spielprobe` rechnet **jede** erzeugte Aufgabe gegen JavaScript
 nach und prüft jede angebotene Zahl (so wie heute für 240 Aufgaben). `doku`
@@ -197,9 +264,14 @@ unter 44 pt braucht eine entkoppelte Trefferfläche).
 
 ## Was dadurch liegen bleibt
 
-Aus dem ANTON-Fahrplan bleiben offen: **D2** (Abzeichen), **A4** („heute
-schon geübt"), **B2** (Test ohne Hilfen), **B3** und **D3**. **B1** wird
-von R3 miterledigt.
+Aus dem ANTON-Fahrplan bleiben offen: **A3** (der Fehler wird auch beim
+Ziehen benannt), **A4** („heute schon geübt"), **B2** (Test ohne Hilfen),
+**B3** (mehr Formen), **D1** (ein Begleiter — braucht Bilder und damit
+euch), **D2** (Abzeichen) und **D3** (Sätze). **B1** wird von R3
+miterledigt.
+
+*Die erste Fassung dieser Liste vergaß A3 und D1 — nachgezählt statt
+erinnert.*
 
 Und aus der Prozessrunde: die **festen Wartezeiten im Rauchtest** — der
 nächste und riskanteste Hebel gegen die Laufzeit. Er gehört zwischen zwei
