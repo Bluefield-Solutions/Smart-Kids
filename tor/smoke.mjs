@@ -643,7 +643,7 @@ if (laeuft('ablage')) try {
       if (nachher !== 0) merke('pause', new Error(
         `nach „von vorne" stehen noch ${nachher} Gegenstände im Leitner-Stand`));
       if (band.erster !== 'jetzt' || band.erledigt !== 0) merke('pause', new Error(
-        `die Sitzung zaehlt weiter statt neu anzufangen — erster Punkt „${band.erster}", `
+        `die Sitzung zählt weiter statt neu anzufangen — erster Punkt „${band.erster}", `
         + `${band.erledigt} schon erledigt`));
       if (haken !== 0) merke('pause', new Error(
         `auf der Karte stehen noch ${haken} Häkchen`));
