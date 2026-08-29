@@ -579,11 +579,22 @@ if (laeuft('ablage')) try {
     // oder so auf Punkt eins. Der Eingriff war drin, das Tor blieb gruen
     // (Regel 3).
     await loese(p); await loese(p);
-    await p.waitForFunction(() => [...document.querySelectorAll('.schirm.da .band i')]
-      .some(x => x.className !== 'offen' && x.className !== 'jetzt'),
-      null, { timeout: 10000 }).catch(() => merke('pause', new Error(
-        'nach zwei gelösten Aufgaben zeigt das Fortschrittsband keinen Fortschritt — '
-        + 'die Probe könnte nicht unterscheiden, ob die Sitzung neu anfängt')));
+    // Gewartet wird darauf, dass der LAUFENDE Punkt weitergerueckt ist -
+    // nicht darauf, dass irgendein Punkt gefaerbt ist.
+    //
+    // Der Unterschied hat eine Probe gekostet: nach der ersten richtigen
+    // Antwort faerbt sich Punkt eins sofort, weitergerueckt wird aber erst
+    // 2,6 s spaeter. Die Sitzung stand beim Kreuz also noch auf Aufgabe
+    // eins - und dann sieht ein Neuanfang genauso aus wie ein
+    // Weiterzaehlen. Die Probe „nach von vorne laeuft die alte Sitzung
+    // weiter" blieb gruen, obwohl der Fehler drin war (Regel 3).
+    const weiter = await p.waitForFunction(() =>
+      [...document.querySelectorAll('.schirm.da .band i')]
+        .findIndex(x => x.className === 'jetzt') >= 1,
+      null, { timeout: 12000 }).then(() => true).catch(() => false);
+    if (!weiter) merke('pause', new Error(
+      'die Sitzung steht nach zwei gelösten Aufgaben immer noch bei der ersten — '
+      + 'die Probe könnte nicht unterscheiden, ob nach „von vorne" neu angefangen wird'));
     const vorher = await p.evaluate(() => new Promise(ja => {
       const a = indexedDB.open('lernkiste');
       a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
