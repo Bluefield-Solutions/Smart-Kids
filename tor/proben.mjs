@@ -439,7 +439,11 @@ const PROBEN = [
     args:['--nur=durchgang'], datei:D,
     such:"  const istAuswahl = (istHaupt || art==='bundeslaender') && P.kandidaten > 0;",
     ersatz:"  const istAuswahl = (istHaupt || art==='bundeslaender');",
-    an:{ ...DIST, fehlt: 'P.kandidaten > 0' },
+    // NICHT `fehlt: 'P.kandidaten > 0'` - der Ausdruck steht zwoelf Zeilen
+    // weiter noch einmal (in `wieviel`), also fehlt er nie, und die Probe
+    // meldete seit R4 „Eingriff nicht angekommen". Gesucht wird jetzt der
+    // eingesetzte Text selbst; der kommt nur einmal vor (Regel 3).
+    an:{ ...DIST, text: "istAuswahl = (istHaupt || art==='bundeslaender');" },
     sagt:'Eltern hat eine Auswahl bekommen' },
 
   /* --- Zwölf Länder (R4, zweite Hälfte) -------------------------------- */
