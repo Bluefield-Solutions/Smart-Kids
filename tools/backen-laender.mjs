@@ -21,7 +21,7 @@ fs.writeFileSync('/tmp/europa-maske.json', JSON.stringify(
     geometry:{ type:'Polygon', coordinates:EUROPA_MASKE } }] }));
 
 // Stand 2025. Reihenfolge = Rang. Die ersten DREI sind Fionas Menge.
-/* Zwölf Länder je Kontinent, seit Adam dazukam (R4).
+/* Zwölf Länder je Kontinent, seit Eltern dazukam (R4).
  *
  * Die ersten FÜNF stehen unverändert und in unveränderter Reihenfolge:
  * Fiona spielt Rang 1 bis 3, Lea 1 bis 5. Wer sie umsortiert, ändert,

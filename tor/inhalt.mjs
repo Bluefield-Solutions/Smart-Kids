@@ -73,7 +73,7 @@ laender.forEach(l => {
 /* Die Raenge sind LUECKENLOS 1 bis TIEFSTE.
  *
  * `TIEFSTE` steht nicht hier, sondern kommt aus dem tiefsten Profil -
- * seit R4 ist das Adam mit zwoelf. Schriebe man die Zahl hierhin, gaebe
+ * seit R4 ist das Eltern mit zwoelf. Schriebe man die Zahl hierhin, gaebe
  * es sie zweimal, und beim naechsten Profil veraltet eine davon
  * (Regel 15). Und die Luecke ist kein Schoenheitsfehler: `laenderTiefe`
  * filtert `rang <= n`, ein fehlender Rang 7 heisst also stillschweigend
@@ -759,7 +759,7 @@ if (!fs.existsSync(KONZEPT)) {
   }
 }
 
-/* Adams Vorrat gegen die Tabelle im Backlog (R4).
+/* Der Vorrat der Eltern gegen die Tabelle im Backlog (R4).
  *
  * Die Zahlen 72 · 14 · 72 stehen an ZWEI Orten: in `rechnen.js` als Regel
  * und im Konzept als Tabelle. Genau dafuer ist dieses Tor da - was zweimal
@@ -783,27 +783,27 @@ if (!fs.existsSync(KONZEPT)) {
         /\|\s*`(mal-gross|quadrat|geteilt-gross)`\s*\|[^|]*\|[^|]*\|\s*(\d+)\s*\|/g))
       ausDoc[sorte] = +n;
     pruefe(Object.keys(ausDoc).length === 3,
-      `${BACKLOG}: die Tabelle mit Adams drei Sorten ist nicht zu finden — `
+      `${BACKLOG}: die Tabelle mit den drei Sorten ist nicht zu finden — `
       + 'dann vergleicht dieses Tor nichts');
     for (const [sorte, soll] of Object.entries(ausDoc))
       pruefe(ist[sorte] === soll,
-        `Adam: ${ist[sorte] ?? 0} Aufgaben der Sorte „${sorte}", im Abgleich stehen ${soll}`);
+        `Eltern: ${ist[sorte] ?? 0} Aufgaben der Sorte „${sorte}", im Abgleich stehen ${soll}`);
     const gesamt = Object.values(ausDoc).reduce((a, b) => a + b, 0);
     pruefe(v.length === gesamt,
-      `Adam: ${v.length} Aufgaben insgesamt, im Abgleich stehen ${gesamt}`);
+      `Eltern: ${v.length} Aufgaben insgesamt, im Abgleich stehen ${gesamt}`);
     pruefe(new Set(v.map(x => x.id)).size === v.length,
-      'zwei von Adams Aufgaben haben dieselbe Kennung');
+      'zwei Aufgaben der Eltern haben dieselbe Kennung');
     // Und gegen die anderen beiden Faecher: eine geteilte Kennung teilt
     // einen Leitner-Stand.
     const fremd = new Set([...R.vorrat(), ...R.reihenVorrat()].map(x => x.id));
     const doppelt2 = v.filter(x => fremd.has(x.id));
     pruefe(doppelt2.length === 0,
-      `${doppelt2.length} von Adams Kennungen kommen in einem anderen Fach vor `
+      `${doppelt2.length} Kennungen der Eltern kommen in einem anderen Fach vor `
       + `(${doppelt2[0]?.id})`);
     // Die Division muss aufgehen - sie entsteht als Umkehrung.
     pruefe(v.filter(x => x.rechenart === 'geteilt-gross').every(x => Number.isInteger(x.wert)),
-      'eine von Adams Divisionen geht nicht auf');
-    if (gesamt) console.log(`    Adams Rechnen: ${v.length} Aufgaben `
+      'eine der Divisionen der Eltern geht nicht auf');
+    if (gesamt) console.log(`    Rechnen für Eltern: ${v.length} Aufgaben `
       + Object.entries(ist).map(([s, n]) => `(${n} ${s})`).join(' ')
       + ' — wie im Abgleich');
   }

@@ -21,9 +21,8 @@ steht es dabei; wo etwas an Daten hängt, ist die Quelle nachgesehen.
 | Welcher Entwurf? | **B · Bild** — jede Kachel zeigt ihren echten Umriss | R2 |
 | Welcher Grund? | **weiß** statt des hellen Blaus — Fassung offen (W1/W2/W3) | R2 |
 
-Offen ist nur noch der **Name** des dritten Profils. „Eltern" ist ein
-Platzhalter; in eurer Nachricht stand „Adam-Profil" — wenn es so heißen
-soll, ändert das eine Zeile.
+Der **Name** des dritten Profils ist entschieden: **Eltern**. R4 hatte es
+„Adam" getauft (Begründung unten), der Nutzer hat das aufgehoben.
 
 ---
 
@@ -79,18 +78,22 @@ Ebene auf einem Telefon nachladen.
 
 ## Konzept: das Elternprofil
 
-### Wie es heißt: **Adam**
+### Wie es heißt: **Eltern**
 
-Nicht „Eltern". Das war ein Platzhalter aus der Konzeptrunde, und er ist
-falsch: die Kachel steht neben Fiona und Lea, und die tragen ihre Namen.
-Eine Kachel „Eltern" neben zwei Vornamen liest sich wie eine Einstellung,
-nicht wie ein Mitspieler — und sie ist einer. Entschieden nach der
-Formulierung des Nutzers („das Adam-Profil spielen wir beide").
+R4 hatte die Kachel „Adam" genannt, mit dieser Begründung: sie steht neben
+Fiona und Lea, und die tragen ihre Namen; eine Kachel „Eltern" daneben
+liest sich wie eine Einstellung statt wie ein Mitspieler. Der Nutzer hat
+das aufgehoben — sie heißt **Eltern**, samt Kennung (`adam` → `eltern`).
+Das kostete den einen gespeicherten Fortschritt unter der alten Kennung;
+er war eine Stunde alt und das war der Preis wert.
 
-Der Name steht ab R4 an genau **einer** Stelle: im Profil selbst
-(`PROFILE.adam.name`). Überall sonst wird er von dort gelesen. „Elternprofil"
-bleibt in diesem Dokument als Gattungsbegriff stehen — im Programm und auf
-dem Bildschirm heißt es Adam.
+Damit heißen zwei Dinge ähnlich: dieses **Profil** und der Bereich hinter
+der PIN. Der Bereich heißt deshalb auf dem Bildschirm **„Für Eltern"** —
+im Quelltext bleibt er `elternbereich`, weil dort kein Kind mitliest.
+
+Beide Namen stehen an genau **einer** Stelle: `PROFILE.eltern.name` und
+`BEREICH_ELTERN` in `prototyp/spiel.js`. Überall sonst werden sie von dort
+gelesen.
 
 ### Was es ist
 
@@ -98,7 +101,7 @@ Eine **dritte Kachel neben Fiona und Lea**, ohne PIN. Es spielt dieselben
 Bildschirme, dieselbe Wertung, denselben Leitner — nur mit anderem Inhalt
 und ohne die Hilfen für Kinder.
 
-| | Fiona (6) | Lea (8) | Adam |
+| | Fiona (6) | Lea (8) | Eltern |
 |---|---|---|---|
 | Eingabe | ziehen, sprechen | ziehen, tippen | **nur tippen** |
 | Vorlesen | ja | nein | nein |
@@ -294,7 +297,7 @@ Größe** statt 9. Die engste Stelle war wie erwartet der Vorlauf: er meldete
 zunächst bis zu 98 Punkte Überlauf, und die Karten sind daraufhin
 gemessen kleiner geworden — nicht geschätzt.
 
-### R4 · Adam, erste Hälfte: Profil und Mathe  ·  ERLEDIGT
+### R4 · Eltern, erste Hälfte: Profil und Mathe  ·  ERLEDIGT
 
 **Ziel:** Die dritte Kachel steht und ist spielbar — mit den **drei** neuen
 Rechensorten (158 Aufgaben). Ohne neue Daten, also ohne Wartezeit.
@@ -309,7 +312,7 @@ legt die Verteilungen neben die Abgleichtabelle. Der Rauchtest spielt das
 Profil durch. Und `gesprochen()` sagt 347 richtig — mit Gegenprobe.
 
 **Erledigt.** `spielprobe` rechnet jetzt **398** Aufgaben nach (100 Fiona,
-140 Lea, 158 Adam), `doku` liest die Tabelle oben aus diesem Dokument und
+140 Lea, 158 Eltern), `doku` liest die Tabelle oben aus diesem Dokument und
 vergleicht sie mit dem gebauten Vorrat, der Rauchtest spielt 27 Ebenen ×
 Profile durch, und `gesprochen(347)` sagt „dreihundertsiebenundvierzig".
 
@@ -332,6 +335,21 @@ entscheidet den Zuschnitt der ganzen Runde.
 
 **Abnahme:** `budget` grün ohne angehobene Grenze. `inhalt`/`topologie`
 grün für alle neuen Gebiete. Die Gebietszahl im Konzept stimmt wieder.
+
+### R7 · Der Elternbereich kennt drei Profile  ·  ERLEDIGT
+
+Vorgezogen vor R6 — er hängt an keiner Datenrunde, und R4 hatte ihn
+schuldig gelassen: ein drittes Profil dazuzustellen, ohne den einen
+Bildschirm anzufassen, der Profile *auswertet*.
+
+**Ziel:** Die Abnahme aus dem Konzept (M6) beantworten — *„Was kann Lea
+noch nicht?"*. Sie war nicht zu beantworten: Zahlen, Wackelkandidaten und
+der Löschknopf warfen alle Profile in einen Topf.
+
+**Abnahme:** Der Rauchtest liest die drei Profilnamen aus der Tabelle oben
+und findet jeden in der Übersicht wieder; die Wackelkandidaten stehen unter
+einem Namen; es gibt einen Löschknopf je Profil; und die Rechenaufgaben
+der Eltern stehen im Protokoll als Aufgabe, nicht als Kennung.
 
 ### R6 · Erdkunde für Erwachsene  ·  mittel
 

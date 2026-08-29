@@ -124,7 +124,7 @@ sechs Tore für nicht vorhanden.
 
 ## Was als Nächstes kommt
 
-`docs/Lernkiste-BACKLOG.md` — sechs Runden aus vier Anforderungen, in der
+`docs/Lernkiste-BACKLOG.md` — sieben Runden aus vier Anforderungen, in der
 Reihenfolge ihrer **Tragfähigkeit**, jede mit Ziel und Abnahmekriterium.
 Zwei Zwänge stehen darin fest: die Kachelsprache (R2) trägt den
 Memory-Vorlauf (R3) und das Elternprofil (R4), und die Länderdaten (R5)

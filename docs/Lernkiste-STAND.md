@@ -3076,3 +3076,91 @@ Rechnen. Seit die Ländertiefe je Profil verschieden ist, ist eine
 Länderebene eine **eigene Art**. Sie steht jetzt in der Auswahl.
 
 Beim vierten Anlauf schlug sie an.
+
+## Der dritte Name heißt „Eltern" — und der Bereich heißt anders
+
+R4 hatte die dritte Kachel **Adam** getauft, mit einem Argument, das ich
+weiterhin für richtig halte: sie steht neben Fiona und Lea, und eine Kachel
+„Eltern" zwischen zwei Vornamen liest sich wie eine Einstellung, nicht wie
+ein Mitspieler. Der Nutzer hat anders entschieden. Damit ist es entschieden.
+
+Umbenannt wurde **samt Kennung** (`adam` → `eltern`) — nicht nur die
+Beschriftung. Das kostet den einen gespeicherten Fortschritt unter der
+alten Kennung; er war eine Stunde alt. Eine Kennung, die anders heißt als
+das, was sie bezeichnet, kostet dagegen jedes Mal wieder etwas, wenn jemand
+sie liest.
+
+Dadurch hießen zwei verschiedene Dinge gleich: das **Profil** und der
+Bereich hinter der PIN. Auf dem Bildschirm heißt der Bereich jetzt
+**„Für Eltern"** — an einer Stelle (`BEREICH_ELTERN`), von der Türschild,
+PIN-Schirm und Kopfzeile lesen. Vorher stand das Wort dreimal ausgeschrieben
+da, und einmal in einem Satz, der es gar nicht brauchte: „Voreingestellt ist
+0000 — im Elternbereich änderbar" steht **auf der Tür** dieses Bereichs. Es
+heißt jetzt „drinnen änderbar".
+
+Im Quelltext heißt die Funktion weiter `elternbereich`. Dort liest kein Kind
+mit, und ein Bezeichner, der mit einer Beschriftung mitwandert, ist die
+nächste Umbenennung.
+
+## R7 · Der Elternbereich kennt drei Profile
+
+Die Abnahme steht seit M6 im Konzept: *Der Elternbereich beantwortet ohne
+Nachfrage: Was kann Lea noch nicht?* Er konnte es nicht — und zwar nicht
+seit R4, sondern seit immer. R4 hat es nur unübersehbar gemacht.
+
+Was er tat: alle Protokolleinträge in einen Topf werfen. Fionas Polen und
+Leas Polen standen in **derselben** Zeile der Wackelkandidaten. Zwölf
+Antworten waren zwölf Antworten, egal von wem. Und der Löschknopf hieß
+„Alles von Fiona löschen", weil man als Fiona hereingekommen war — wer als
+Lea hereinkam, wurde Fionas Daten nicht los.
+
+### Drei Stellen, eine Liste
+
+Übersicht, Wackelkandidaten und Löschen lesen jetzt `PROFILE`, nicht die
+Einträge. Der Unterschied ist nicht Geschmack: ein Profil, das noch nie
+gespielt hat, **muss** dastehen. Sonst sieht „hat noch nicht gespielt" aus
+wie „gibt es nicht" — und genau das ist die Frage, die ein Elternteil hier
+stellt.
+
+Ein viertes Profil steht damit von selbst auf allen drei Listen.
+
+### Ein Fehler, den kein einziges Tor gesehen hätte
+
+`NAMEN` — die Tabelle, die aus einer Kennung einen lesbaren Namen macht —
+war aus **zwei** Rechenvorräten aufgezählt. Seit R4 gibt es **drei**. Die
+158 Aufgaben der Eltern standen im Elternbereich also als `g12*13` da statt
+als „12 × 13" — im Protokoll und in der CSV-Ausfuhr genauso.
+
+Nichts wurde davon rot. Das Protokoll ist das eine, was Eltern wirklich
+lesen, und es log sie an.
+
+Gebaut wird die Tabelle jetzt aus der **Ebenenliste**: alle Ebenen mit
+`art:'rechnen'`, was immer das für welche sind. Eine Liste neben einer Liste
+veraltet (Regel 15) — diese kann es nicht mehr.
+
+### „Zuletzt geübt"
+
+Zehn Zeilen: wann, wer, welche Aufgabe, wie ausgegangen. Der Anlass war ein
+Prüfproblem — die falschen Namen wurden erst in den Wackelkandidaten
+sichtbar, und dorthin kommt ein Gegenstand erst nach zwei Versuchen. Der
+Nutzen ist der eigentliche Grund, sie zu behalten: „was hat sie gerade
+gemacht" ist die Frage, die man nach dem Aufschließen zuerst stellt.
+
+### Was die Prüfung dieser Runde gekostet hat
+
+Vier Anläufe, jeder aus einem anderen Grund — und alle vier hat das Tor
+selbst gemeldet, keiner kam aus dem Nachdenken:
+
+1. `PROFILNAMEN` stand tausend Zeilen **unter** seinem Gebrauch. Der
+   Abschnitt `ablage` läuft lange vor dem Abschnitt `durchgang`; JavaScript
+   meldet das als „Cannot access before initialization". Beide Leser der
+   Backlog-Tabelle stehen jetzt zusammen ganz oben.
+2. Der Namensleser baute `'Fiona' + rest` statt `'Fiona|' + rest` und
+   erwartete daraufhin ein Profil namens „Fiona Lea".
+3. Die Prüfung „steht die Aufgabe mit ihrem Namen da" las **alle** zehn
+   Zeilen und meldete „Mecklenburg-Vorpommern" als Kennung. Sie hätte nie
+   grün werden können. Gefiltert wird jetzt auf Ziffern — kein Land trägt
+   eine, jede Rechenaufgabe schon.
+4. Und weil damit eine leere Liste möglich wurde: eine leere Liste ist
+   **rot**, nicht grün. Eine Prüfung, die nichts zu prüfen fand, hat nichts
+   bewiesen (Regel 5).

@@ -55,13 +55,13 @@ const zehnerWort = ['','','zwanzig','dreißig','vierzig','fünfzig','sechzig',
 export function gesprochen(n) {
   if (n < 20) return wort[n] ?? String(n);
   if (n % 1) return String(n);
-  /* Bis 999, seit Adam dazukam.
+  /* Bis 999, seit Eltern dazukam.
    *
    * Vorher hoerte es bei 100 auf, und alles darueber wurde als Ziffernkette
    * zurueckgegeben - „13 mal 17 ist 221" haette die Stimme als „zwei zwei
-   * eins" gelesen. Fuer Adam ist das gleichgueltig (er laesst sich nichts
-   * vorlesen), fuer den Nachweis nicht: `gesagt` und `geloest` stehen im
-   * Protokoll, das die Eltern lesen.
+   * eins" gelesen. Beim Vorlesen ist das gleichgueltig - das Profil
+   * „Eltern" laesst sich nichts vorlesen -, fuer den Nachweis nicht:
+   * `gesagt` und `geloest` stehen im Protokoll, und das lesen sie.
    *
    * Deutsch setzt Hunderter voran und Zehner NACH der Einerstelle:
    * 221 = „zweihunderteinundzwanzig". Genau in dieser Reihenfolge. */
@@ -296,7 +296,7 @@ export function ablenkerFuer(auf, wuerfel) {
 }
 
 
-/* ---------- Adams Rechnen (R4) -------------------------------------------
+/* ---------- Rechnen für Eltern (R4) -------------------------------------------
  *
  * Drei Sorten, und alle drei sind VON NATUR AUS begrenzt - nicht
  * kuenstlich gekuerzt.
@@ -323,7 +323,7 @@ export function ablenkerFuer(auf, wuerfel) {
 export const GROSS_VON = 11, GROSS_BIS = 19;
 export const QUADRAT_VON = 12, QUADRAT_BIS = 25;
 
-/** Adams ganzer Vorrat: 158 Aufgaben, gezaehlt und nicht geschaetzt. */
+/** Der ganze Vorrat der Eltern: 158 Aufgaben, gezaehlt und nicht geschaetzt. */
 export function grossVorrat() {
   const aus = [];
   for (let a = GROSS_VON; a <= GROSS_BIS; a++)
@@ -370,7 +370,7 @@ function grossGeteilt(p, a) {
   };
 }
 
-/* Ablenker fuer Adam.
+/* Ablenker fuer Eltern.
  *
  * Er tippt - Ablenker braucht er nur, wenn jemand die Auswahl doch
  * einschaltet. Genommen wird trotzdem das, wonach ein Erwachsener

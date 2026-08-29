@@ -57,6 +57,53 @@ const abbruch = () => SOFORT && fehler.length > 0;
  */
 const KURZ = process.argv.includes('--kurz');
 
+/* ---------------------------------------------------------------------
+ * Was dieser Test ERWARTET, steht im Backlog, nicht in `spiel.js`.
+ *
+ * Beides liest dieselbe Tabelle („Was es ist", Konzept des Elternprofils):
+ * die Kopfzeile nennt die Profile, die Zeile „Ländertiefe" ihre Zahlen.
+ * Der Grund ist Regel 4 - eine Gegenprobe faelscht `spiel.js`, und ein
+ * Tor, das sein Soll aus der gefaelschten Datei liest, bleibt gruen.
+ * Beide stehen hier oben und nicht bei ihrem Gebrauch: der Elternbereich
+ * braucht die Namen schon im Abschnitt `ablage`, tausend Zeilen frueher.
+ * ------------------------------------------------------------------- */
+/* Wie heissen die drei Profile?
+ *
+ * Aus derselben Tabelle wie die Tiefe, und aus demselben Grund: das
+ * Erwartete darf nicht aus der Datei kommen, die eine Gegenprobe
+ * anfasst (Regel 4). Steht in der Kopfzeile „Fiona (6)", zaehlt „Fiona". */
+const PROFILNAMEN = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*\|\s*Fiona[^|]*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Kopfzeile der Profiltabelle fehlt im Backlog — '
+    + 'dann prüft der Rauchtest die Profile gegen nichts'); return []; }
+  return ('Fiona|' + z[1]).split('|').map(t => t.replace(/\(.*/, '').trim()).filter(Boolean);
+})();
+
+/* Wie tief geht jedes Profil? Aus dem KONZEPT, nicht aus dem Programm.
+ *
+ * Der erste Anlauf las `laenderTiefe` aus `prototyp/spiel.js` - und war
+ * damit wertlos. Die Gegenprobe baut den Fehler genau dort ein: setzt man
+ * Fionas Tiefe auf zwoelf, wandert die Erwartung mit, und der Test bleibt
+ * gruen. Ein Test, der sein Soll aus dem Prueflig holt, prueft nichts
+ * (Regel 4).
+ *
+ * Gelesen wird deshalb die Tabelle im Backlog - dieselbe Stelle, an der
+ * der Nutzer die Zahl entschieden hat. Was daraus WIRKLICH auf dem
+ * Bildschirm landet, sieht man nur hier: der teuerste denkbare Fehler
+ * dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor einem
+ * Sechsjaehrigen ploetzlich zwoelf Laender stehen.
+ */
+const TIEFE = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*Ländertiefe\s*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Zeile „Ländertiefe" fehlt im Backlog — '
+    + 'dann prüft der Rauchtest die Tiefe gegen nichts'); return {}; }
+  const zahlen = z[1].split('|').map(s => +(s.match(/\d+/) || [])[0]).filter(Number.isFinite);
+  return { fiona: zahlen[0], lea: zahlen[1], eltern: zahlen[2] };
+})();
+
+
 async function neueSeite(viewport, ctx) {
   const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
@@ -534,6 +581,51 @@ if (laeuft('ablage')) try {
     const t = h && h.nextElementSibling;
     return t ? [...t.querySelectorAll('tr')].map(r => [...r.cells].map(c => c.textContent).join(': ')) : [];
   });
+  /* --- Der Elternbereich kennt DREI Profile (R7) --------------------
+   *
+   * Er warf bis hierher alles in einen Topf. Die Abnahme im Konzept (M6)
+   * lautet „Was kann LEA noch nicht?" - und solange Fionas und Leas
+   * Fehlversuche in derselben Zeile stehen, ist sie nicht zu beantworten.
+   * Geprueft wird an den drei Stellen, an denen es sichtbar wird: die
+   * Uebersicht nennt jedes Profil, die Wackelkandidaten stehen unter
+   * seinem Namen, und loeschen laesst sich jedes - nicht nur das, mit dem
+   * man hereingekommen ist. */
+  {
+    const gesehen = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const kopf = [...s.querySelectorAll('.gruppe')];
+      const nach = (t) => { const h = kopf.find(x => new RegExp(t).test(x.textContent));
+        const raus = []; let n = h && h.nextElementSibling;
+        while (n && !n.classList.contains('gruppe')) { raus.push(n); n = n.nextElementSibling; }
+        return raus; };
+      const tab = s.querySelector('.kacheln')?.nextElementSibling;
+      return {
+        uebersicht: tab && tab.tagName === 'TABLE'
+          ? [...tab.querySelectorAll('tbody tr')].map(r => r.cells[0].textContent.trim()) : [],
+        wackel: nach('Wackelkandidaten').filter(e => e.querySelector('strong'))
+          .map(e => e.textContent.trim()),
+        loeschen: [...s.querySelectorAll('[data-weg]')].map(e => e.dataset.weg),
+      };
+    });
+    for (const name of PROFILNAMEN)
+      if (!gesehen.uebersicht.includes(name))
+        merke('eltern', new Error(`in der Übersicht des Elternbereichs fehlt „${name}" `
+          + `(da stehen: ${gesehen.uebersicht.join(', ') || 'nichts'})`));
+    if (gesehen.loeschen.length !== PROFILNAMEN.length)
+      merke('eltern', new Error(`${gesehen.loeschen.length} Löschknöpfe für `
+        + `${PROFILNAMEN.length} Profile — wer als Lea hereinkommt, wird Fionas Daten nicht los `
+        + `(da stehen: ${gesehen.loeschen.join(', ') || 'keine'})`));
+    // Fiona hat in diesem Lauf gespielt, also MUSS sie einen eigenen
+    // Block bei den Wackelkandidaten haben. Steht dort kein einziger
+    // Name, sind die Zahlen wieder zusammengeworfen.
+    if (!gesehen.wackel.some(t => t.includes('Fiona')))
+      merke('eltern', new Error('die Wackelkandidaten stehen unter keinem Profilnamen — '
+        + `„Was kann Lea noch nicht?" ist so nicht zu beantworten (da steht: ${
+          gesehen.wackel.join(' · ') || 'nichts'})`));
+    console.log(`  Elternbereich je Profil:    ${gesehen.uebersicht.join(' · ')} `
+      + `· ${gesehen.loeschen.length} Löschknöpfe`);
+  }
+
   await p.screenshot({ path: '/tmp/smoke-eltern.png', fullPage: true });
   console.log(`  Fortschritt nach Neustart:  ${fortschritt}`);
   console.log(`  Forscherbuch:               ${kleber} von ${alleKleber} Aufklebern`);
@@ -1037,35 +1129,14 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'bundeslaender', 'hauptstaedte'];
 // Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
-/* Seit R4 spielt auch Adam mit. Er kommt in denselben Durchgang - der
+/* Seit R4 spielt auch das Profil „Eltern" mit. Es kommt in denselben
+ * Durchgang - der
  * prueft, dass jede Ebene fuer jedes Profil wirklich spielbar ist, und
  * ein drittes Profil, das dort fehlt, waere ungeprueft. */
-/* Wie tief geht jedes Profil? Aus dem KONZEPT, nicht aus dem Programm.
- *
- * Der erste Anlauf las `laenderTiefe` aus `prototyp/spiel.js` - und war
- * damit wertlos. Die Gegenprobe baut den Fehler genau dort ein: setzt man
- * Fionas Tiefe auf zwoelf, wandert die Erwartung mit, und der Test bleibt
- * gruen. Ein Test, der sein Soll aus dem Prueflig holt, prueft nichts
- * (Regel 4).
- *
- * Gelesen wird deshalb die Tabelle im Backlog - dieselbe Stelle, an der
- * der Nutzer die Zahl entschieden hat. Was daraus WIRKLICH auf dem
- * Bildschirm landet, sieht man nur hier: der teuerste denkbare Fehler
- * dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor einem
- * Sechsjaehrigen ploetzlich zwoelf Laender stehen.
- */
-const TIEFE = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*Ländertiefe\s*\|(.+)\|\s*$/m);
-  if (!z) { fehler.push('Die Zeile „Ländertiefe" fehlt im Backlog — '
-    + 'dann prüft der Rauchtest die Tiefe gegen nichts'); return {}; }
-  const zahlen = z[1].split('|').map(s => +(s.match(/\d+/) || [])[0]).filter(Number.isFinite);
-  return { fiona: zahlen[0], lea: zahlen[1], adam: zahlen[2] };
-})();
 
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'],
-                       adam: ['rechnen:gross'] };
-if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
+                       eltern: ['rechnen:gross'] };
+if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
   if (abbruch()) break;
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
@@ -1112,7 +1183,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
      * Die Länderebene kam mit R4 dazu, und zwar nicht aus Gründlichkeit:
      * seit die Tiefe je Profil verschieden ist (3 · 5 · 12), ist sie eine
      * eigene Art von Bildschirm. Ohne sie lief die Gegenprobe „Fiona
-     * bekommt Adams Länder zu sehen" ins Leere - der Eingriff war drin,
+     * bekommt die Länder der Eltern zu sehen" ins Leere - der Eingriff war drin,
      * das Tor blieb grün, weil es die Ebene gar nicht aufschlug. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e === 'hauptstaedte'
@@ -1276,6 +1347,48 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
       await weitergegangen(p);
       await raus(p);
     }
+    /* --- Steht die Aufgabe im Protokoll mit ihrem Namen? (R7) --------
+     *
+     * `NAMEN` war aus ZWEI Vorraeten gebaut, seit R4 gibt es drei: fuer
+     * die 158 Aufgaben der Eltern standen im Elternbereich als `g12*13`
+     * statt „12 × 13".
+     * Nichts wurde rot davon - das Protokoll ist das eine, was Eltern
+     * wirklich lesen, und es log sie an.
+     *
+     * Geprueft wird am sichtbaren Ende, im Durchgang der Eltern: die
+     * Kennungen (`g12*13`, `q12`, `t144:12`) haben kein Leerzeichen, die
+     * Fragen (`12 × 13`, `12²`, `144 : 12`) tragen ein Rechenzeichen. */
+    if (wer === 'eltern' && durchgespielt) {
+      if (!(await p.$('.schirm.da [data-welt]')) && await p.$('.schirm.da #zur'))
+        await p.click('.schirm.da #zur');
+      await p.waitForSelector('.schirm.da #eltern', { timeout: 10000 });
+      await p.click('.schirm.da #eltern');
+      await p.waitForSelector('.schirm.da .ziffern');
+      for (let i = 0; i < 4; i++) await p.click('.schirm.da [data-z="0"]');
+      await p.waitForSelector('.schirm.da .kacheln', { timeout: 10000 });
+      const meine = await p.$$eval('.schirm.da #zuletzt tbody tr',
+        rs => rs.map(r => [...r.cells].map(c => c.textContent.trim()))
+                .filter(z => z[1] === 'Eltern').map(z => z[2]));
+      /* Nur die Rechenaufgaben, und die erkennt man an der Ziffer: kein
+       * Land und kein Bundesland traegt eine. Der erste Anlauf pruefte
+       * ALLE zehn Zeilen und meldete „Mecklenburg-Vorpommern" als
+       * Kennung - er haette nie gruen werden koennen.
+       *
+       * Und wenn keine dabei ist, hat der Test nichts geprueft. Das ist
+       * hier kein Sonderfall, sondern der Normalfall, gegen den er da
+       * ist (Regel 5): eine leere Liste ist rot, nicht gruen. */
+      const rechen = meine.filter(t => /\d/.test(t));
+      if (!rechen.length)
+        merke('durchgang', new Error('unter „Zuletzt geübt" steht keine Rechenaufgabe von '
+          + `Eltern, obwohl gerade eine gespielt wurde (da steht: ${meine.slice(0, 3).join(' · ') || 'nichts'})`));
+      // Kennungen (`g12*13`, `q12`, `t144:12`) haben kein Leerzeichen,
+      // Fragen („12 × 13", „144 : 12", „12²") tragen eines oder ein Hoch-Zwei.
+      const roh = rechen.filter(t => !/\s|²/.test(t));
+      if (roh.length) merke('durchgang', new Error(
+        `im Elternbereich stehen Kennungen statt Aufgaben: „${roh.slice(0, 3).join('", „')}" `
+        + '— das Protokoll kennt den Vorrat der Eltern nicht'));
+      console.log(`  Aufgaben der Eltern:        ${rechen.slice(0, 3).join(' · ') || 'KEINE'}`);
+    }
     await p.close();
   } catch (e) { merke('durchgang', e); }
   await eigen.close();
@@ -1305,20 +1418,20 @@ if ((gehoert.lea || 0) > 0)
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
 // Bedienung ungeprueft.
 for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt',
-                    'lea: rechnen geschrieben', 'adam: rechnen geschrieben'])
+                    'lea: rechnen geschrieben', 'eltern: rechnen geschrieben'])
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);
-/* Und Adam bekommt NIE eine Auswahl (R4).
+/* Und Eltern bekommt NIE eine Auswahl (R4).
  *
  * Das ist der Teil, den man leicht falsch herum baut: die feste Vier bei
  * den Bundeslaendern zu loeschen gab Lea sechzehn Moeglichkeiten statt
  * vier. Die Vier ist eine Eigenschaft der EBENE, das Verbot eine des
  * PROFILS - und wenn das Verbot ausfaellt, sieht man es nur hier.
  */
-for (const nie of ['adam: antippen'])
+for (const nie of ['eltern: antippen'])
   if (wege.has(nie))
-    fehler.push(`Adam hat eine Auswahl bekommen („${nie}") — `
+    fehler.push(`Eltern hat eine Auswahl bekommen („${nie}") — `
       + 'sein Profil sagt `kandidaten:0`, er soll tippen');
 }
 

@@ -37,6 +37,12 @@ export function auswerten(eintraege, namen) {
   return {
     gesamt: eintraege.length,
     richtig: eintraege.filter(e => e.ergebnis === 'richtig').length,
+    /* Die mittlere Antwortzeit ueber ALLE Eintraege - dieselbe Rechnung wie
+     * je Gebiet, nur eine Ebene hoeher. Sie steht hier und nicht beim
+     * Aufrufer, damit die Uebersicht je Profil nicht ihre eigene
+     * Mittelung mitbringt und die beiden Zahlen auseinanderlaufen. */
+    schnitt: eintraege.length
+      ? Math.round(eintraege.reduce((n, e) => n + (e.dauerMs || 0), 0) / eintraege.length) : 0,
     jeGebiet: liste.sort((a, b) => a.quote - b.quote),
     /** Die fuenf mit den meisten Fehlversuchen. */
     wackelkandidaten: liste.filter(z => z.n >= 2).sort((a, b) =>

@@ -421,26 +421,26 @@ const PROBEN = [
     an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
     sagt:'lässt sich das Alter nicht bestimmen' },
 
-  /* --- Adam (R4) ------------------------------------------------------ */
+  /* --- Eltern (R4) ------------------------------------------------------ */
   // Der Vorrat waechst still.
   //
   // Ohne `if (a === b) continue;` kommen die neun Quadrate aus 11…19 in
   // `mal-gross` dazu - 81 statt 72. Das ist genau die Verfallsart, gegen
   // die die Zaehlung da ist: ein Vorrat, der waechst, bricht das
   // Forscherbuch und den Leitner, und von aussen sieht nichts anders aus.
-  { n:'Adams Vorrat wächst still', tor:'inhalt', deckt:'doku',
+  { n:'Der Vorrat der Eltern wächst still', tor:'inhalt', deckt:'doku',
     datei:'src/inhalt/rechnen.js',
     such:'      if (a === b) continue;                 // die Quadrate sind eigene Sorte',
     ersatz:'      // (Quadrate nicht mehr ausgelassen)',
     an:{ datei:'src/inhalt/rechnen.js', fehlt:'die Quadrate sind eigene Sorte' },
     sagt:'im Abgleich stehen' },
-  // Adams Verbot faellt aus.
-  { n:'Adam bekommt doch eine Auswahl', tor:'smoke', bauen:true,
+  // Das Verbot im Profil „Eltern“ faellt aus.
+  { n:'Eltern bekommt doch eine Auswahl', tor:'smoke', bauen:true,
     args:['--nur=durchgang'], datei:D,
     such:"  const istAuswahl = (istHaupt || art==='bundeslaender') && P.kandidaten > 0;",
     ersatz:"  const istAuswahl = (istHaupt || art==='bundeslaender');",
     an:{ ...DIST, fehlt: 'P.kandidaten > 0' },
-    sagt:'Adam hat eine Auswahl bekommen' },
+    sagt:'Eltern hat eine Auswahl bekommen' },
 
   /* --- Zwölf Länder (R4, zweite Hälfte) -------------------------------- */
   // Eine Luecke im Rang.
@@ -458,14 +458,49 @@ const PROBEN = [
   // Und die Kinder bekommen still mehr zu sehen.
   //
   // Der teuerste denkbare Fehler dieser Runde: die Raenge 6 bis 12 sind
-  // fuer Adam da. Rutschte Fionas oder Leas Tiefe mit, stuenden vor einem
+  // fuer Eltern da. Rutschte Fionas oder Leas Tiefe mit, stuenden vor einem
   // Sechsjaehrigen ploetzlich zwoelf Laender.
-  { n:'Fiona bekommt Adams Länder zu sehen', tor:'smoke', bauen:true,
+  { n:'Fiona bekommt die Länder der Eltern zu sehen', tor:'smoke', bauen:true,
     args:['--nur=durchgang'], datei:D,
     such:"          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },",
     ersatz:"          kandidaten:4, laenderTiefe:12, sitzung:6, streng:false, farbe:'--f7' },",
     an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
     sagt:'Länder im Vorlauf' },
+
+  /* --- Der Elternbereich kennt drei Profile (R7) ----------------------- */
+  // Das Protokoll kennt den Vorrat der Eltern nicht.
+  //
+  // `NAMEN` war aus ZWEI Vorraeten aufgezaehlt, seit R4 gibt es drei.
+  // Im Elternbereich standen die 158 Aufgaben der Eltern als `g12*13` statt
+  // „12 × 13" - und nichts wurde rot davon.
+  { n:'das Protokoll kennt die Aufgaben der Eltern nicht', tor:'smoke', bauen:true,
+    args:['--nur=durchgang'], datei:D,
+    such:"for (const e of EBENEN.filter(e=>e.art==='rechnen'))\n  for (const r of vorrat(e.id)) NAMEN[r.id]=r.frage;",
+    ersatz:'Rechnen.vorrat().forEach(r=>NAMEN[r.id]=r.frage);\n'
+         + 'Rechnen.reihenVorrat().forEach(r=>NAMEN[r.id]=r.frage);',
+    an:{ ...DIST, fehlt:"EBENEN.filter(e=>e.art==='rechnen')" },
+    sagt:'Kennungen statt Aufgaben' },
+  // Die Wackelkandidaten liegen wieder in einem Topf.
+  //
+  // Die Abnahme im Konzept (M6) lautet „Was kann LEA noch nicht?".
+  // Zusammengezaehlt ueber alle Profile ist sie nicht zu beantworten -
+  // und von aussen sieht die Liste genauso aus wie vorher.
+  { n:'die Wackelkandidaten stehen unter keinem Namen', tor:'smoke', bauen:true,
+    args:['--nur=ablage'], datei:D,
+    such:'  const gespielt = profile.filter(x => x.n);',
+    ersatz:'  const gespielt = [];',
+    an:{ ...DIST, text:'const gespielt = []' },
+    sagt:'unter keinem Profilnamen' },
+  // Loeschen geht wieder nur fuer eins.
+  //
+  // Wer als Lea hereinkam, wurde Fionas Daten nicht los: der Knopf hing
+  // am aktiven Profil statt an der Liste.
+  { n:'es gibt nur einen Löschknopf', tor:'smoke', bauen:true,
+    args:['--nur=ablage'], datei:D,
+    such:'        ${profile.map(({ pr })=>`<button class="knopf" data-weg="${pr.id}"',
+    ersatz:'        ${profile.slice(0,1).map(({ pr })=>`<button class="knopf" data-weg="${pr.id}"',
+    an:{ ...DIST, text:'profile.slice(0,1).map' },
+    sagt:'Löschknöpfe für' },
 
   /* --- Der Vorlauf (R3) ----------------------------------------------- */
   // Er kommt gar nicht mehr.

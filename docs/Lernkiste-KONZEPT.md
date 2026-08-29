@@ -481,7 +481,7 @@ Ländern, die Ebene wäre also überall sonst leer.
 6 Kontinente + **60** Länder + 16 Bundesländer + 16 Städte = **98 Gebiete**.
 
 Zwölf Länder je Kontinent seit R4: Rang 1 bis 5 sind unverändert (Fiona
-spielt 1–3, Lea 1–5), 6 bis 12 kamen für Adam dazu, geordnet nach
+spielt 1–3, Lea 1–5), 6 bis 12 kamen für „Eltern" dazu, geordnet nach
 Einwohnerzahl. Das kostet **keine** Geometrie — jedes Land des Kontinents
 wird ohnehin ausgeliefert, die namenlosen als `umgebung`. Gemessen: das
 größte Bündel wuchs von 107,4 auf 107,5 KB.
@@ -1443,7 +1443,9 @@ gegen neugierige Achtjährige; sie liegt unverschlüsselt in der Ablage und ist
 eine Türklinke, kein Schloss:
 
 - Trefferquote je Gebiet, farbig, sofort lesbar
-- „Wackelkandidaten": die fünf Gebiete mit den meisten Fehlversuchen
+- „Wackelkandidaten": die fünf Gebiete mit den meisten Fehlversuchen —
+  **je Profil**, denn zusammengezählt beantworten sie die Frage nicht
+- „Zuletzt geübt": die letzten zehn Antworten mit Zeit, Profil und Aufgabe
 - Verlauf über Wochen, je Profil
 - **Ausspracheliste**: was gesagt wurde vs. was verstanden wurde
 - Ausfuhr als CSV und JSON, ein Tipp
@@ -1775,7 +1777,9 @@ keiner.
 ### M6 · Elternbereich und Audit
 
 *Stand: M3 bis M6 sind als Prototyp gebaut und vom Rauchtest gefahren
-(`Lernkiste-STAND.md`). Was fehlt, ist bei allen vieren dasselbe: die
+(`Lernkiste-STAND.md`). Die Auswertung je Profil kam mit R7 nach — bis
+dahin lag alles in einem Topf, und die Abnahmefrage unten war nicht zu
+beantworten. Was fehlt, ist bei allen vieren dasselbe: die
 **Gerätesichtung**. Kein Tor läuft auf iOS.*
 
 Protokollauswertung, PIN, Ausfuhr, Löschen, Fassungsanzeige,

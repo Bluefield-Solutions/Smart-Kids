@@ -269,19 +269,25 @@ const PROFILE = {
           kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
           kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, farbe:'--f5' },
-  /* Adam (R4) — die dritte Kachel, ohne PIN.
+  /* Eltern (R4) — die dritte Kachel, ohne PIN.
    *
-   * Nicht „Eltern": die Kachel steht neben zwei Vornamen, und eine
-   * Kachel „Eltern" daneben liest sich wie eine Einstellung statt wie ein
-   * Mitspieler. Der Name steht hier und nur hier.
+   * Die Kachel hiess bis v.. „Adam", damit sie neben zwei Vornamen wie ein
+   * Mitspieler aussieht und nicht wie eine Einstellung. Der Nutzer hat
+   * anders entschieden: sie heisst „Eltern". Damit heissen zwei Dinge
+   * aehnlich - dieses Profil und der PIN-Bereich; der Bereich heisst
+   * deshalb „Fuer Eltern". Der Name steht hier und nur hier.
    *
    * `kandidaten:0` heisst „nie eine Auswahl". Bis R4 war die Zahl der
    * Moeglichkeiten bei den Bundeslaendern fest verdrahtet (`? 4 :`) und
-   * das Profil wurde dort gar nicht gefragt - Adam haette also mit vier
-   * Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
-  adam: { id:'adam', name:'Adam', alter:null, eingabe:['tippen'], vorlesen:false,
+   * das Profil wurde dort gar nicht gefragt - „Eltern" haette also mit
+   * vier Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
+  eltern: { id:'eltern', name:'Eltern', alter:null, eingabe:['tippen'], vorlesen:false,
           kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, farbe:'--f3' },
 };
+/* Der geschuetzte Bereich heisst auf dem Bildschirm anders als das Profil,
+ * sonst stuenden zwei verschiedene Dinge unter demselben Wort. Er steht
+ * hier einmal - Tuerschild, PIN-Schirm und Kopfzeile lesen von hier. */
+const BEREICH_ELTERN = 'Für Eltern';
 // Die Laenderebenen kommen aus den Daten, nicht aus dieser Liste: sonst
 // laufen sie auseinander. Genau das war passiert - gebacken und gezaehlt
 // waren fuenf Kontinente, in der Ebenenwahl standen zwei.
@@ -326,14 +332,14 @@ const EBENEN = [
    */
   { id:'rechnen:reihen', ueber:'Rechnen', titel:'Reihen 6 bis 10', farbe:6,
     art:'rechnen', wer:['lea'], mischung: () => Rechnen.mischungLea(Einst.reihenGeteilt) },
-  /* Adams Rechnen (R4): 158 Aufgaben in drei Sorten.
+  /* Rechnen für Eltern (R4): 158 Aufgaben in drei Sorten.
    *
    * Ohne `mischung`: die drei Sorten stehen im Vorrat nebeneinander und
    * werden vom Leitner gezogen wie die Gebiete einer Karte. Eine Mischung
    * waere hier eine Zahl ohne Grund - bei Lea haengt sie am Regler, hier
    * gibt es keinen. */
   { id:'rechnen:gross', ueber:'Rechnen', titel:'Großes Einmaleins', farbe:2,
-    art:'rechnen', wer:['adam'] },
+    art:'rechnen', wer:['eltern'] },
 ];
 
 /* Die Fachwelten (D4).
@@ -570,8 +576,18 @@ Object.values(D.laender).flat().forEach(l=>NAMEN[l.a3]=l.name);
 D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
 // Auch die Rechenaufgaben: sonst steht im Elternprotokoll `p3+4` statt
 // „3 + 4". Das Protokoll ist das eine, was Eltern wirklich lesen.
-Rechnen.vorrat().forEach(r=>NAMEN[r.id]=r.frage);
-Rechnen.reihenVorrat().forEach(r=>NAMEN[r.id]=r.frage);
+//
+// Abgeleitet aus der EBENENLISTE, nicht aus einer Aufzaehlung der
+// Vorraete daneben. Hier standen zwei Aufrufe, seit R4 gibt es drei
+// Rechenebenen - die 158 Aufgaben der Eltern fehlten still, und im Protokoll
+// stand fuer sie `g12*13` statt „12 × 13". Eine Liste neben einer Liste
+// veraltet; diese kann es nicht mehr (Regel 15).
+//
+// `vorrat` haengt fuer Karten am Profil, fuer `art:'rechnen'` nicht -
+// deshalb nur diese Ebenen. Die Gebietsnamen kommen drei Zeilen weiter
+// oben aus den Daten selbst und decken damit schon jedes Profil ab.
+for (const e of EBENEN.filter(e=>e.art==='rechnen'))
+  for (const r of vorrat(e.id)) NAMEN[r.id]=r.frage;
 
 const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
 async function standLaden(ebeneId){
@@ -608,7 +624,7 @@ function zeige(bau){
  *
  * Hier stand `${p.alter} Jahre · ${p.eingabe.includes('sprechen') ? 'sprechen
  * und ziehen' : 'tippen und ziehen'}`. Zwei Annahmen in einer Zeile, und
- * beide brachen, sowie ein drittes Profil dazukam: Adam hat kein Alter
+ * beide brachen, sowie ein drittes Profil dazukam: Eltern hat kein Alter
  * („null Jahre") und zieht nicht („tippen und ziehen").
  *
  * Eine Verzweigung mit zwei Aesten beschreibt zwei Profile. Sie ist keine
@@ -670,7 +686,7 @@ async function staende(){
 /** Der Kopf, den beide Wahlbildschirme tragen. Einmal geschrieben. */
 const wahlKopf = (mitte) => kopf({ links: zurueckKnopf(), mitte:`<span class="marke">${mitte}</span>`,
   rechts: zeichenKnopf('buch','buch','Forscherbuch')
-        + zeichenKnopf('eltern','eltern','Elternbereich') });
+        + zeichenKnopf('eltern','eltern',BEREICH_ELTERN) });
 
 /* ---------- Weltenwahl: das Fach, bevor die Übung kommt ------------------ */
 async function weltenwahl(){
@@ -1377,7 +1393,7 @@ function spielschirm(){
   // Namen gleichzeitig zu lesen ist eine andere.
   /* Die Ebene schlaegt eine Auswahl vor, das Profil kann sie verbieten.
    *
-   * `kandidaten:0` heisst „nie eine Auswahl" - das ist Adams Eigenschaft
+   * `kandidaten:0` heisst „nie eine Auswahl" - das ist eine Eigenschaft
    * (R4). Der erste Anlauf hat stattdessen die feste Vier bei den
    * Bundeslaendern GELOESCHT und alles dem Profil ueberlassen; damit bekam
    * Lea (`kandidaten:99`) sechzehn Moeglichkeiten statt vier, und der
@@ -2370,9 +2386,9 @@ function elternTor(){
   const s = el('div'); let eingabe='';
   s.innerHTML = kopf({ links: zurueckKnopf() }) + `
     <div class="mitte">
-      <div class="titel">Elternbereich</div>
+      <div class="titel">${BEREICH_ELTERN}</div>
       <div class="unter">Vier Ziffern.${Einst.pin==='0000'
-        ? ' Voreingestellt ist <code>0000</code> — im Elternbereich änderbar.' : ''}</div>
+        ? ' Voreingestellt ist <code>0000</code> — drinnen änderbar.' : ''}</div>
       <div class="pin" id="pin">${'<i></i>'.repeat(4)}</div>
       <div class="ziffern">${[1,2,3,4,5,6,7,8,9,0].map(z=>`<button class="knopf zi" data-z="${z}">${z}</button>`).join('')}
         <button class="knopf zi" data-z="x" aria-label="löschen">${LOESCHEN}</button></div>
@@ -2403,8 +2419,26 @@ async function elternbereich(){
   const eintraege = await Protokoll.lesen();
   const a = Protokoll.auswerten(eintraege, NAMEN);
   const speicher = await Ablage.dauerhaft();
-  const jeProfil = {};
-  for (const e of eintraege) jeProfil[e.profil] = (jeProfil[e.profil]||0)+1;
+
+  /* Der Bereich kennt DREI Profile (R7).
+   *
+   * Bis hierher warf er alles in einen Topf: eine Zahl „Antworten", eine
+   * Liste Wackelkandidaten ueber alle Profile hinweg, ein Loeschknopf fuer
+   * genau das Profil, mit dem man hereingekommen war. Die Abnahme im
+   * Konzept (M6) lautet aber „Was kann LEA noch nicht?" - und die war so
+   * nicht zu beantworten: Fionas Polen und Leas Polen standen in
+   * derselben Zeile, und wer als Lea hereinkam, konnte Fionas Daten weder
+   * sehen noch loeschen.
+   *
+   * Die Liste kommt aus PROFILE, nicht aus den Eintraegen: ein Profil,
+   * das noch nie gespielt hat, muss sichtbar sein (sonst sieht „noch
+   * nichts gespielt" aus wie „gibt es nicht"), und ein viertes Profil
+   * steht hier von selbst, ohne dass jemand diese Stelle anfasst. */
+  const profile = Object.values(PROFILE).map(pr => {
+    const meine = eintraege.filter(e => e.profil === pr.id);
+    return { pr, n: meine.length, a: Protokoll.auswerten(meine, NAMEN) };
+  });
+  const gespielt = profile.filter(x => x.n);
 
   const zeile = (z)=>`<tr><td>${z.name}</td>
     <td class="num">${z.n}</td>
@@ -2414,26 +2448,53 @@ async function elternbereich(){
       background:${z.quote>.7?'var(--gut)':z.quote>.4?'var(--achtung)':'var(--warn)'}"></i></div></td></tr>`;
 
   s.innerHTML = kopf({ links: zurueckKnopf(),
-    mitte:'<span class="marke">Elternbereich</span>' }) + `
+    mitte:`<span class="marke">${BEREICH_ELTERN}</span>` }) + `
     <div class="rollen eltern">
       <h3 class="gruppe">Überblick</h3>
       <div class="kacheln">
         <div class="wert"><b>${a.gesamt}</b><span>Antworten</span></div>
         <div class="wert"><b>${a.gesamt?Math.round(a.richtig/a.gesamt*100):0} %</b><span>richtig</span></div>
         <div class="wert"><b>${a.tage.length}</b><span>Tage gespielt</span></div>
-        <div class="wert"><b>${Object.keys(jeProfil).length}</b><span>Profile</span></div>
+        <div class="wert"><b>${gespielt.length}</b><span>Profile</span></div>
       </div>
 
+      <table class="tab" style="margin-top:var(--r3)"><thead><tr><th>Profil</th>
+        <th class="num">Antworten</th><th class="num">richtig</th>
+        <th class="num">Ø Zeit</th><th class="num">Tage</th></tr></thead>
+        <tbody>${profile.map(({ pr, n, a:e })=>`<tr><td>${pr.name}</td>
+          <td class="num">${n}</td>
+          <td class="num">${n ? Math.round(e.richtig/n*100)+' %' : '—'}</td>
+          <td class="num">${n ? (e.schnitt/1000).toFixed(1)+' s' : '—'}</td>
+          <td class="num">${e.tage.length || '—'}</td></tr>`).join('')}</tbody></table>
+
+      <h3 class="gruppe">Zuletzt geübt</h3>
+      ${eintraege.length ? `<table class="tab" id="zuletzt"><thead><tr><th class="num">Wann</th>
+        <th>Profil</th><th>Aufgabe</th><th class="num">Ergebnis</th></tr></thead><tbody>
+        ${eintraege.slice(-10).reverse().map(e=>`<tr>
+          <td class="num">${new Date(e.zeit).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</td>
+          <td>${PROFILE[e.profil]?.name || e.profil}</td>
+          <td>${NAMEN[e.gebietId] || e.gebietId}</td>
+          <td class="num">${e.ergebnis}</td></tr>`).join('')}</tbody></table>`
+        : `<p class="unter">Noch nichts geübt.</p>`}
+
       <h3 class="gruppe">Wackelkandidaten</h3>
-      ${a.wackelkandidaten.length ? `<table class="tab"><thead><tr><th>Gebiet</th>
-        <th class="num">Versuche</th><th class="num">richtig</th><th class="num">Ø Zeit</th><th></th></tr></thead>
-        <tbody>${a.wackelkandidaten.map(zeile).join('')}</tbody></table>`
+      <p class="unter">Die fünf mit den meisten Fehlversuchen — <strong>je Profil</strong>.
+        Zusammengezählt beantworten sie die Frage nicht, um die es hier geht.</p>
+      ${gespielt.length ? gespielt.map(({ pr, a:e })=>`
+        <p class="unter"><strong>${pr.name}</strong></p>
+        ${e.wackelkandidaten.length ? `<table class="tab"><thead><tr><th>Gebiet</th>
+          <th class="num">Versuche</th><th class="num">richtig</th><th class="num">Ø Zeit</th><th></th></tr></thead>
+          <tbody>${e.wackelkandidaten.map(zeile).join('')}</tbody></table>`
+          : `<p class="unter">Noch zu wenig gespielt.</p>`}`).join('')
         : `<p class="unter">Noch zu wenig gespielt.</p>`}
 
       <h3 class="gruppe">Ausspracheliste — was gesagt, was verstanden</h3>
-      ${a.aussprache.length ? `<table class="tab"><thead><tr><th>gesagt</th><th>gemeint</th>
+      ${gespielt.some(x=>x.a.aussprache.length) ? `<table class="tab"><thead><tr><th>Profil</th>
+        <th>gesagt</th><th>gemeint</th>
         <th class="num">Ergebnis</th></tr></thead><tbody>
-        ${a.aussprache.slice(-25).reverse().map(x=>`<tr><td><em>„${x.gesagt}“</em></td>
+        ${gespielt.flatMap(({ pr, a:e })=>e.aussprache.map(x=>({ ...x, wer:pr.name })))
+          .sort((x,y)=>x.zeit-y.zeit).slice(-25).reverse()
+          .map(x=>`<tr><td>${x.wer}</td><td><em>„${x.gesagt}“</em></td>
           <td>${x.gemeint}</td><td class="num">${x.ergebnis}</td></tr>`).join('')}</tbody></table>`
         : `<p class="unter">Noch nichts gesprochen. Der Sprachmodus ist
            <strong>${Einst.sprachmodus?'an':'aus'}</strong>.</p>`}
@@ -2491,7 +2552,13 @@ async function elternbereich(){
       <div class="reihe" style="justify-content:flex-start">
         <button class="knopf" id="csv">Als CSV sichern</button>
         <button class="knopf" id="json">Als JSON sichern</button>
-        <button class="knopf" id="weg" style="color:var(--warn)">Alles von ${P.name} löschen</button>
+      </div>
+      <p class="unter">Löschen geht <strong>je Profil</strong> und ist nicht
+        zurückzunehmen: Fortschritt, Protokoll und Aufkleber sind dann weg.
+        Zweimal tippen.</p>
+      <div class="reihe" style="justify-content:flex-start">
+        ${profile.map(({ pr })=>`<button class="knopf" data-weg="${pr.id}"
+          style="color:var(--warn)">Alles von ${pr.name} löschen</button>`).join('')}
       </div>
       <div id="ausgabe"></div>
 
@@ -2623,14 +2690,21 @@ async function elternbereich(){
     `lernkiste-${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');
   s.querySelector('#json').onclick=()=>sichern(Protokoll.alsJson(eintraege),
     `lernkiste-${new Date().toISOString().slice(0,10)}.json`,'application/json');
-  s.querySelector('#weg').onclick=async(e)=>{
-    if (e.target.dataset.sicher!=='ja'){ e.target.dataset.sicher='ja';
-      e.target.textContent=`Wirklich? Alles von ${P.name} löschen`; return; }
-    await Ablage.profilLoeschen(P.id);
-    for (const eb of EBENEN) await Ablage.loesche('fortschritt',`${P.id}:${eb.id}`).catch(()=>{});
-    s.querySelector('#ausgabe').innerHTML=`<p class="unter">Gelöscht.</p>`;
-    setTimeout(()=>zeige(profilwahl),900);
-  };
+  /* Ein Griff fuer alle Loeschknoepfe. Die Nachfrage sitzt am Knopf
+   * selbst (`data-sicher`), damit zwei Knoepfe nebeneinander sich nicht
+   * gegenseitig scharf machen. */
+  s.querySelectorAll('[data-weg]').forEach(k=>k.onclick=async()=>{
+    const id = k.dataset.weg, name = PROFILE[id].name;
+    if (k.dataset.sicher!=='ja'){ k.dataset.sicher='ja';
+      k.textContent=`Wirklich? Alles von ${name} löschen`; return; }
+    await Ablage.profilLoeschen(id);
+    for (const eb of EBENEN) await Ablage.loesche('fortschritt',`${id}:${eb.id}`).catch(()=>{});
+    s.querySelector('#ausgabe').innerHTML=`<p class="unter">${name}: gelöscht.</p>`;
+    // Wer sich selbst geloescht hat, kann hier nicht stehen bleiben - der
+    // Kopf traegt den eigenen Namen und der Stand ist fort. Wer ein
+    // ANDERES Profil geloescht hat, will die Zahlen daneben weiter sehen.
+    setTimeout(()=>zeige(id===P.id ? profilwahl : elternbereich),900);
+  });
   return s;
 }
 

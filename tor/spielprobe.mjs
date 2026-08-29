@@ -139,7 +139,7 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   const r = liste.map(l => l.rang).sort((a, b) => a - b);
   if (r.join() !== SOLLRAENGE)
     fehler.push(`Länder in ${kont}: Ränge ${r.join(',')}, erwartet ${SOLLRAENGE} — `
-      + `Fiona sieht Rang 1–3, Lea 1–5, Adam 1–${TIEFSTE}; `
+      + `Fiona sieht Rang 1–3, Lea 1–5, Eltern 1–${TIEFSTE}; `
       + 'eine Lücke macht ihre Auswahl unbestimmt');
   geprueft++;
 }
@@ -268,13 +268,13 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   // und Leas hundertvierzig wären mit demselben Recht ungeprüft geblieben,
   // obwohl dort die Ablenker die schwierigeren sind (die Nachbarn in der
   // Reihe, nicht ±1).
-  // Und seit R4 Adams 158. Derselbe Grund wie oben: ein Vorrat, den
+  // Und seit R4 die 158 der Eltern. Derselbe Grund wie oben: ein Vorrat, den
   // niemand nachrechnet, ist ein Vorrat, dem man glaubt.
   const alle = [...R.vorrat(), ...R.reihenVorrat(), ...R.grossVorrat()];
   /* Der Zahlenraum je Sorte.
    *
    * Frueher stand hier `?? 100` als Auffangwert - fuer Leas Reihen
-   * richtig, fuer Adam falsch: 19 x 19 ist 361, und jede seiner
+   * richtig, fuer Eltern falsch: 19 x 19 ist 361, und jede ihrer
    * Moeglichkeiten waere als „ausserhalb des Zahlenraums" gemeldet
    * worden. Eine Grenze, die fuer alles gilt, gilt fuer nichts. */
   const HOECHSTENS = { plus: R.BIS, minus: R.BIS,
@@ -324,7 +324,7 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     if (auf.wert !== soll) fehler.push(`${auf.frage} ergibt ${auf.wert}, gerechnet ${soll}`);
     if (auf.name !== String(soll)) fehler.push(`${auf.frage}: Anzeige „${auf.name}" statt ${soll}`);
   }
-  /* Adams Vorrat wird auch GEZAEHLT, nicht nur nachgerechnet.
+  /* Der Vorrat der Eltern wird auch GEZAEHLT, nicht nur nachgerechnet.
    *
    * Die drei Sorten sind von Natur aus begrenzt - 72 · 14 · 72 - und
    * genau das ist die Zusage, an der alles haengt: das Forscherbuch
@@ -336,11 +336,11 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   const SOLL = { 'mal-gross': 72, 'quadrat': 14, 'geteilt-gross': 72 };
   for (const [sorte, n] of Object.entries(SOLL))
     if (zaehlung[sorte] !== n)
-      fehler.push(`Adam: ${zaehlung[sorte] ?? 0} Aufgaben der Sorte „${sorte}" statt ${n}`);
+      fehler.push(`Eltern: ${zaehlung[sorte] ?? 0} Aufgaben der Sorte „${sorte}" statt ${n}`);
   console.log(`    ${alle.length} Rechenaufgaben (${R.vorrat().length} Fiona, `
-    + `${R.reihenVorrat().length} Lea, ${R.grossVorrat().length} Adam), `
+    + `${R.reihenVorrat().length} Lea, ${R.grossVorrat().length} Eltern), `
     + `${vier} mit genau vier Möglichkeiten`);
-  console.log(`    Adams Sorten: `
+  console.log(`    Sorten für Eltern: `
     + Object.entries(zaehlung).map(([s, n]) => `${s} ${n}`).join(' · '));
 }
 
