@@ -109,7 +109,7 @@
           "laender": 51,
           "hausdorffPx": 0.68,
           "punkte": 27060,
-          "gzip": 109235
+          "gzip": 109647
         },
         {
           "stufe": "mittel",
@@ -209,5 +209,12 @@
         }
       ]
     }
-  ]
+  ],
+  "hauptstaedte": {
+    "stufe": "grob",
+    "anzahl": 12,
+    "regierungssitze": [
+      "Niederlande: Den Haag"
+    ]
+  }
 }

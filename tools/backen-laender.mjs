@@ -52,7 +52,13 @@ const EBENEN = [
     ziele:[['NGA','Nigeria'],['ETH','Äthiopien'],['EGY','Ägypten'],['COD','DR Kongo'],['TZA','Tansania'],
            ['ZAF','Südafrika'],['KEN','Kenia'],['UGA','Uganda'],['DZA','Algerien'],['SDN','Sudan'],
            ['MAR','Marokko'],['AGO','Angola']] },
+  /* `hauptstaedte` backt zusaetzlich die Lage der Hauptstadt je Zielland
+   * (R6). Nur hier, nicht ueberall: es sind zwoelf Punkte zu je rund
+   * 45 Byte, und fuer die vier anderen Kontinente gibt es keine Ebene,
+   * die sie braucht. Ein Vorrat, den niemand liest, ist Ballast im
+   * Nachladepaket. */
   { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true,
+    hauptstaedte:true,
     ziele:[['RUS','Russland'],['DEU','Deutschland'],['GBR','Vereinigtes Königreich'],['FRA','Frankreich'],['ITA','Italien'],
            ['ESP','Spanien'],['UKR','Ukraine'],['POL','Polen'],['ROU','Rumänien'],['NLD','Niederlande'],
            ['BEL','Belgien'],['GRC','Griechenland']] },
@@ -67,6 +73,29 @@ const EBENEN = [
 ];
 
 const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_admin_0_countries.geojson'),'utf8'));
+
+/* Die Hauptstaedte - aus den Daten, nicht aus meinem Kopf.
+ *
+ * Natural Earth fuehrt sie als `Admin-0 capital` und traegt den deutschen
+ * Namen selbst (`NAME_DE`): Moskau, Kiew, Bukarest, Bruessel. Das ist
+ * dieselbe Quelle, aus der die sechzehn Landeshauptstaedte kommen - und
+ * dieselbe Regel wie ueberall: das Soll kommt aus der Referenz.
+ *
+ * `Admin-0 capital alt` ist der REGIERUNGSSITZ, wo er nicht in der
+ * Hauptstadt liegt. In Europa trifft das genau ein Land: die
+ * Niederlande, Den Haag gegen Amsterdam. Das ist die eine echte Falle
+ * dieser Ebene, und die Daten sagen sie an - ich musste sie nicht
+ * behaupten. */
+const orte = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_populated_places.geojson'),'utf8'));
+const hauptstadtVon = new Map();
+const sitzVon = new Map();
+for (const f of orte.features) {
+  const q = f.properties;
+  const ziel = q.FEATURECLA === 'Admin-0 capital' ? hauptstadtVon
+             : q.FEATURECLA === 'Admin-0 capital alt' ? sitzVon : null;
+  if (!ziel || ziel.has(q.ADM0_A3)) continue;
+  ziel.set(q.ADM0_A3, { name: q.NAME_DE || q.NAME, lonlat: f.geometry.coordinates });
+}
 
 /** G7: Standardparallelen bei 1/6 und 5/6 der Breitenausdehnung. */
 function projektionFuer(art, geo) {
@@ -83,6 +112,7 @@ const bericht = { ebene:'laender', quelle:'Natural Earth 1:10m admin_0', standJa
                   grenze:HAUSDORFF_GRENZE, kontinente:[] };
 const ausgabe = {};
 let gesamtGz = 0;
+const fehlendeStaedte = [];
 
 for (const k of EBENEN) {
   const ziele = new Map(k.ziele);
@@ -113,6 +143,25 @@ for (const k of EBENEN) {
                teile:tl.teile, loecher:tl.loecher,
                pfad: svgPfad({type:'FeatureCollection',features:[f]}, proj, skala) };
     }).filter(s => s.pfad);
+    /* Die Stadtlage entsteht in DERSELBEN Projektion wie die Umrisse
+     * dieser Stufe - sonst laege der Punkt neben dem Land (Regel 12: jede
+     * Zahl traegt ihre Messstelle).
+     *
+     * Nur `grob`: das ist die Stufe, die `prototyp/bauen.mjs` ins Buendel
+     * legt und die das Spiel zeichnet. Die anderen beiden werden hier
+     * gebacken und nirgends gelesen; ein Punkt darin waere ein Vorrat
+     * ohne Leser. */
+    if (k.hauptstaedte && st.name === 'grob') for (const stueck of stuecke) {
+      if (!stueck.rang) continue;
+      const hs = hauptstadtVon.get(stueck.a3);
+      if (!hs) { fehlendeStaedte.push(stueck.a3); continue; }
+      const punkt = proj(hs.lonlat);
+      if (!punkt) { fehlendeStaedte.push(stueck.a3); continue; }
+      stueck.hauptstadt = hs.name;
+      stueck.ort = [+(punkt[0]*skala).toFixed(1), +(punkt[1]*skala).toFixed(1)];
+      const sitz = sitzVon.get(stueck.a3);
+      if (sitz) stueck.regierungssitz = sitz.name;
+    }
     zeilen[st.name] = stuecke;
     const j = JSON.stringify(stuecke);
     const gz = zlib.gzipSync(Buffer.from(j)).length;
@@ -133,5 +182,17 @@ for (const [id, zeilen] of Object.entries(ausgabe))
     fs.writeFileSync(path.join(AUS,`laender-${id}.${stufe}.js`),
       `// ERZEUGT von tools/backen-laender.mjs - nicht von Hand aendern.\n`+
       `export const LAENDER_${id.toUpperCase()}_${stufe.toUpperCase()} = ${JSON.stringify(s)};\n`);
+if (fehlendeStaedte.length)
+  throw new Error(`Keine Hauptstadt gefunden fuer: ${fehlendeStaedte.join(', ')} — `
+    + 'die Ebene „Hauptstädte in Europa" haette dort eine leere Antwort.');
+{
+  const mit = ausgabe.europa?.grob?.filter(x => x.hauptstadt) || [];
+  bericht.hauptstaedte = { stufe:'grob', anzahl:mit.length,
+    regierungssitze: mit.filter(x=>x.regierungssitz).map(x=>`${x.name}: ${x.regierungssitz}`) };
+  console.log(`\n  Hauptstädte in Europa: ${mit.length} Lagen (Stufe grob, die das Spiel zeichnet)`);
+  console.log(`    ${mit.map(x=>x.hauptstadt).join(' · ')}`);
+  for (const x of mit.filter(x=>x.regierungssitz))
+    console.log(`    Regierungssitz abweichend: ${x.name} — ${x.regierungssitz} statt ${x.hauptstadt}`);
+}
 fs.writeFileSync(path.join(AUS,'bericht-laender.json'), JSON.stringify(bericht,null,2));
 console.log(`\n  Summe mittlere Stufe über alle fünf Kontinente: ${(gesamtGz/1024).toFixed(1)} KB gzip`);

@@ -14,6 +14,10 @@ import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
 import { LAENDER_AFRIKA_FEIN } from '../src/geo/laender-afrika.fein.js';
 import { LAENDER_ASIEN_FEIN } from '../src/geo/laender-asien.fein.js';
 import { LAENDER_EUROPA_FEIN } from '../src/geo/laender-europa.fein.js';
+// Die GROBE Stufe, weil die Ebene „Hauptstädte in Europa" sie zeichnet -
+// und weil nur dort die Stadtlagen gebacken sind (Regel 12: die Zahl und
+// ihre Messstelle gehoeren zusammen).
+import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
@@ -97,6 +101,61 @@ I.ECHTE_FALLEN.forEach(id => {
   const a = I.HAUPTSTADT_ABLENKER[id] || [];
   pruefe(a.length >= 1, `${id} ist als echte Falle geführt, hat aber keinen Ablenker`);
 });
+
+/* Ebene „Hauptstädte in Europa" (R6).
+ *
+ * Geprueft wird das, was diese Ebene kaputt machen kann, ohne dass es
+ * auffaellt:
+ *
+ *   1. Ein Land ohne Hauptstadt oder ohne Stadtlage - die Aufgabe haette
+ *      dann keine Antwort oder keinen Punkt.
+ *   2. Eine Stadtlage NEBEN ihrem Land. Das ist der teure Fall: der Punkt
+ *      erscheint erst nach der richtigen Antwort, faellt also im
+ *      Rauchtest nicht auf, und ein Kind lernte die falsche Lage. Er
+ *      entsteht schon durch eine andere Projektion oder eine andere
+ *      Stufe - beides sieht man dem Zahlenpaar nicht an.
+ *   3. Ein Ablenker, der die Hauptstadt selbst ist: dann waeren zwei von
+ *      vier Antworten richtig.
+ *   4. Der Regierungssitz nicht an erster Stelle. Er ist die eine echte
+ *      Falle dieser Ebene, und er steht in den Daten (`Admin-0 capital
+ *      alt`) - hier wird die Liste von Hand gegen die Referenz gelegt.
+ */
+{
+  const zieleEU = LAENDER_EUROPA_GROB.filter(l => l.rang);
+  const meta = new Map(I.LAENDER.europa.map(l => [l.a3, l]));
+  let drin = 0;
+  for (const l of zieleEU) {
+    pruefe(l.hauptstadt, `${l.a3}: keine Hauptstadt gebacken`);
+    pruefe(l.ort, `${l.a3}: keine Stadtlage gebacken`);
+    if (l.ort) {
+      const polys = pfadZuPolys(l.pfad);
+      // `imPolygon` will ein Polygon (Aussenring plus Loecher), `pfadZuPolys`
+      // liefert die Ringe flach. Jeder Ring wird deshalb einzeln gefragt.
+      const trifft = polys.some(r => imPolygon(l.ort[0], l.ort[1], [r]));
+      pruefe(trifft, `${l.hauptstadt} liegt nicht in ${meta.get(l.a3)?.name || l.a3} `
+        + `(${l.ort.join(', ')}) — der Stadtpunkt erschiene neben dem Land`);
+      if (trifft) drin++;
+    }
+    const ab = I.HAUPTSTADT_ABLENKER_EUROPA[l.a3] || [];
+    pruefe(ab.length >= 2, `${l.a3}: weniger als zwei Ablenker — die Ebene hätte `
+      + 'dort nicht vier Möglichkeiten');
+    pruefe(!ab.includes(l.hauptstadt),
+      `${l.a3}: „${l.hauptstadt}" steht auch unter den Ablenkern — zwei richtige Antworten`);
+    pruefe(new Set(ab).size === ab.length, `${l.a3}: ein Ablenker steht zweimal`);
+    if (l.regierungssitz)
+      pruefe(ab[0] === l.regierungssitz,
+        `${l.a3}: Natural Earth kennt „${l.regierungssitz}" als Regierungssitz, `
+        + `unter den Ablenkern steht vorn aber „${ab[0]}" — die eigentliche Falle fiele aus`);
+  }
+  const fremd = Object.keys(I.HAUPTSTADT_ABLENKER_EUROPA)
+    .filter(a3 => !zieleEU.some(l => l.a3 === a3));
+  pruefe(!fremd.length, `Ablenker für Länder, die es auf der Ebene nicht gibt: ${fremd.join(', ')}`);
+  for (const l of I.LAENDER.europa)
+    if (l.wovon) pruefe(/^vo[nm] /.test(l.wovon),
+      `${l.a3}: \`wovon\` ist „${l.wovon}" — die Frage lautet „Wie heißt die Hauptstadt …?"`);
+  console.log(`    Hauptstädte in Europa: ${zieleEU.length} Länder, ${drin} Stadtlagen im `
+    + `eigenen Land, ${zieleEU.filter(l=>l.regierungssitz).length} abweichender Regierungssitz`);
+}
 pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   `Datenstand ${I.STAND.jahr} ist älter als drei Jahre`);
 

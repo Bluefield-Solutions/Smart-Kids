@@ -471,6 +471,28 @@ Teil des Spiels. `ablenker: string[]` gehört deshalb zum Datensatz, und das
 Tor `inhalt` verlangt für jedes Gebiet auf Ebene 4 mindestens einen — für die
 fünf Fallen namentlich den richtigen.
 
+**Dieselbe Ebene noch einmal, auf einer anderen Karte** (R6):
+`hauptstaedte:europa`, die zwölf Hauptstädte der zwölf einwohnerstärksten
+Länder Europas — für Lea (Tiefe 5) und die Eltern (Tiefe 12), nicht für
+Fiona. Gebaut ist sie als *dieselbe* Ebene mit anderem `kont`, nicht als
+zweite Mechanik: Karte, Rahmen, Umgebung, Farbkreis und Kachelumriss
+leiten sich aus der Kennung ab.
+
+Zwei Unterschiede zu Deutschland, beide aus der Wirklichkeit:
+
+- **Nur EINE echte Falle.** In Deutschland liegt bei fünf von sechzehn
+  Ländern die größte Stadt nicht in der Hauptstadt. In Europas Top 12 ist
+  es genau ein Land: die Niederlande, Den Haag gegen Amsterdam. Natural
+  Earth führt Den Haag selbst als `Admin-0 capital alt` — die Falle steht
+  in den Daten, sie musste nicht behauptet werden. Für einen Erwachsenen
+  ist diese Ebene deshalb leicht; ihr Wert liegt bei Lea und bei den
+  Rängen 6 bis 12.
+- **Die Ablenker sind von Hand.** „Die zwei größten Städte außer der
+  Hauptstadt" wäre aus denselben Daten zu rechnen und liefert Unsinn:
+  `POP_MAX` ist die Ballungsraumzahl (Katowice steht damit vor Warschau),
+  und `NAME_DE` trägt Exonyme, die heute niemand sagt („Klausenburg",
+  „Galatz", „Lüttich").
+
 **Regierungsbezirke sind gestrichen.** In K1 standen sie als optionale
 Erweiterung; auf Ansage entfallen sie. Sie sind auch inhaltlich der schwächere
 Kandidat: Bayerns Regierungsbezirke haben keine Entsprechung in den anderen

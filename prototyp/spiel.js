@@ -307,6 +307,21 @@ const EBENEN = [
   // schon "Deutschland", die Frage sagt "Hauptstadt von Hessen" - das
   // lange Wort trug hier nichts bei ausser einem Zeilenumbruch.
   { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2 },
+  /* Hauptstädte in Europa (R6).
+   *
+   * Dieselbe Frage auf einer anderen Karte, und deshalb dieselbe
+   * Kennungsform wie bei den Ländern: `hauptstaedte:europa`. Der Teil vor
+   * dem Doppelpunkt sagt, WIE gefragt wird, der dahinter, WO — und alles
+   * andere (Karte, Umgebung, Rahmen, Umriss auf der Kachel) leitet sich
+   * daraus ab, statt an fünf Stellen einzeln nachgetragen zu werden.
+   *
+   * `wer`: Lea und die Eltern. Fiona nicht — sie liest noch nicht, und
+   * eine Stadt hat keinen Umriss, den man ziehen könnte. Für Lea sind es
+   * mit `laenderTiefe:5` fünf Städte (Moskau, Berlin, London, Paris,
+   * Rom), für die Eltern zwölf. Dieselbe Tiefe wie die Länderebene, und
+   * aus demselben Wert. */
+  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,
+    wer:['lea','eltern'] },
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
@@ -386,6 +401,19 @@ let Welt = WELTEN[0].id;
 const SILHOUETTE = { erdkunde:'kontinente', kontinente:'kontinente',
                      bundeslaender:'deutschland', hauptstaedte:'deutschland' };
 
+/* Welchen Rahmen trägt die Karte dieser Ebene?
+ *
+ * Stand an DREI Stellen einzeln da, jedes Mal als `art==='laender' ?
+ * D.vbL[kont] : D.vbD`. Mit „Hauptstädte in Europa" (R6) wurde daraus
+ * dreimal derselbe Fehler: die Ebene heißt `hauptstaedte:europa`, ist
+ * also nicht `laender`, und hätte den Rahmen von Deutschland um eine
+ * Europakarte gelegt. Der Kontinent hinter dem Doppelpunkt entscheidet,
+ * nicht die Art davor (Regel 15). */
+const vbVon = (ebeneId) => {
+  const [art, kont] = String(ebeneId).split(':');
+  return art === 'kontinente' ? D.vbK : kont ? D.vbL[kont] : D.vbD;
+};
+
 /* Die Rechenwelt hat keinen Umriss. Sie bekommt ihre ZEICHEN - sonst waere
    die halbe App bebildert und die andere Haelfte leer, und genau das sah
    im ersten Bauversuch nach einem Fehler aus.
@@ -422,7 +450,9 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="5" stroke-linecap="round">${teile}</svg>`;
   }
   const [art, kont] = ebeneId.split(':');
-  const k = art === 'laender' ? kont : SILHOUETTE[art];
+  // Der Kontinent, wenn die Kennung einen nennt - „Hauptstädte in Europa"
+  // zeigt Europa, nicht Deutschland.
+  const k = kont || SILHOUETTE[art];
   const s = k && D.silhouetten && D.silhouetten[k];
   if (!s) return '';
   return `<svg class="silhouette" viewBox="${s.vb}" preserveAspectRatio="xMidYMid meet"
@@ -564,10 +594,20 @@ function vorrat(ebeneId, stand = Stand){
     return kont==='reihen' ? Rechnen.reihenVorrat()
          : kont==='gross'  ? Rechnen.grossVorrat()
          : Rechnen.vorrat();
-  if (art==='hauptstaedte')
+  if (art==='hauptstaedte') {
+    // Europa: dieselben Länder wie `laender:europa`, dieselbe Tiefe je
+    // Profil - gefragt wird nur nach etwas anderem. `hauptstadt` und `ort`
+    // stehen an den Ländern selbst (gebacken), `ablenker` und `falle`
+    // kommen aus den Fakten.
+    if (kont)
+      return D.laender[kont].filter(l=>l.rang<=P.laenderTiefe && l.hauptstadt)
+        .map(l=>({ id:l.a3, name:l.hauptstadt,
+          aliasse:[], aussprache:[l.hauptstadt.toLowerCase()], pfad:l.pfad, anker:l.anker,
+          ort:l.ort, gebiet:l.name, wovon:l.wovon, ablenker:l.ablenker||[], falle:l.falle }));
     return D.deutschland.filter(b=>!b.stadtstaat).map(b=>({ id:b.id, name:b.hauptstadt,
       aliasse:[], aussprache:[b.hauptstadt.toLowerCase()], pfad:b.pfad, anker:b.anker,
-      gebiet:b.name, ablenker:b.ablenker||[], falle:b.falle }));
+      ort:b.ort, gebiet:b.name, ablenker:b.ablenker||[], falle:b.falle }));
+  }
   return [];
 }
 const NAMEN = {};
@@ -832,7 +872,10 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
 
 /** Der eine Satz, den dieser Vorlauf mitgibt. Abgeleitet, nicht gesammelt. */
 function vorlaufSatz(ebeneId){
-  const [art] = ebeneId.split(':');
+  const [art, kont] = ebeneId.split(':');
+  if (art === 'hauptstaedte' && kont)
+    return 'Gesucht ist die <strong>Hauptstadt</strong> — nicht die größte Stadt. '
+      + 'Bei einem Land hier sind das zwei verschiedene.';
   if (art === 'hauptstaedte')
     return 'Berlin, Hamburg und Bremen fehlen hier: sie sind <strong>Stadtstaaten</strong>, '
       + 'die Stadt ist das ganze Bundesland. Sie <em>sind</em> ihre Hauptstadt.';
@@ -864,9 +907,7 @@ async function vorlauf(ebeneId){
   // Der eigene Rahmen zeigt das Stueck gross; nur wenn er sich aus dem
   // Pfad nicht rechnen laesst, faellt es auf den Rahmen der ganzen Karte
   // zurueck - dieselbe Regel wie im Spielbildschirm.
-  const [art, kont] = ebeneId.split(':');
-  const ganzeKarte = art === 'kontinente' ? D.vbK
-    : art === 'laender' ? D.vbL[kont] : D.vbD;
+  const ganzeKarte = vbVon(ebeneId);
   const rahmen = (x) => eigenerRahmen(x.pfad) || ganzeKarte;
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${ebene ? ebene.titel : 'Anschauen'}</span>` }) + `
@@ -932,7 +973,9 @@ async function ebeneLaden(ebeneId){
   // Deutschland liegt seit dem Tor `budget` ebenfalls draussen: 56 der 94 KB
   // eingebackener Geometrie gehoerten ihm, gebraucht fuer zwei von sechzehn
   // Ebenen. Beide holen dieselbe Datei; die zweite kommt aus dem Lager.
-  if (art==='bundeslaender' || art==='hauptstaedte') {
+  // Deutschland nur, wenn die Kennung KEINEN Kontinent nennt:
+  // `hauptstaedte:europa` braucht Europa, nicht Deutschland.
+  if (art==='bundeslaender' || (art==='hauptstaedte' && !kont)) {
     if (geholt.has('deutschland')) return true;
     try {
       const t = await (await fetch('./daten/deutschland.json')).json();
@@ -948,7 +991,11 @@ async function ebeneLaden(ebeneId){
     } catch(e){ return false; }
   }
 
-  if (art!=='laender' || geholt.has(kont)) return true;
+  // Nur Karten-Ebenen holen eine Karte nach. `rechnen:plusminus` hat auch
+  // etwas hinter dem Doppelpunkt - der erste Anlauf zog daraufhin
+  // `daten/laender-plusminus.json`, bekam 404, und die Rechenebene ging
+  // gar nicht mehr auf.
+  if ((art!=='laender' && art!=='hauptstaedte') || !kont || geholt.has(kont)) return true;
   try {
     const t = await (await fetch(`./daten/laender-${kont}.json`)).json();
     D.laender[kont] = t.laender; D.umgebung[kont] = t.umgebung; D.vbL[kont] = t.vbL;
@@ -1478,9 +1525,13 @@ function spielschirm(){
   // nicht, was es auf der Welt gibt.
   const alleKontinente = D.kontinente.map(k=>({ id:k.id, name:k.name, pfad:k.pfad, anker:k.anker }));
   const formen = art==='kontinente' ? alleKontinente : st.alle;
-  const vb = art==='kontinente' ? D.vbK : art==='laender' ? D.vbL[kont] : D.vbD;
-  const farbeVon=(g,i)=> (art==='bundeslaender'||istHaupt) ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
-  const umgebung = (art==='laender' && D.umgebung[kont])
+  const vb = vbVon(st.ebeneId);
+  // Die Vierfaerbung gilt fuer die deutsche Karte - `D.farben` kennt nur
+  // Bundeslaender. Auf der Europakarte gilt derselbe Farbkreis wie bei
+  // den Laendern, sonst saehe dieselbe Karte in zwei Ebenen verschieden aus.
+  const farbeVon=(g,i)=> (art==='bundeslaender'||(istHaupt && !kont))
+    ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
+  const umgebung = (kont && D.umgebung[kont])
     ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
   // Drei Zustaende statt zwei: das gesuchte Gebiet, die schon gesessenen
   // (volle Farbe, sie bleiben stehen) und der Rest (gedaempft).
@@ -1535,7 +1586,9 @@ function spielschirm(){
   // die begonnene Aufgabe zuruecksetzen.
   let weise = Einst.antwortweise?.[P.id]
     || WEISE_VOREINSTELLUNG[P.id] || 'ziehen';
-  const frageText = istHaupt ? `Wie heißt die Hauptstadt von ${ziel.gebiet}?`
+  // „von Polen", aber „vom Vereinigten Königreich" - die drei Ausnahmen
+  // stehen als `wovon` bei den Fakten, der Rest wird abgeleitet.
+  const frageText = istHaupt ? `Wie heißt die Hauptstadt ${ziel.wovon || `von ${ziel.gebiet}`}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
     : art==='laender' ? 'Wie heißt dieses Land?' : 'Wie heißt dieses Bundesland?';
   const fach = Stand[ziel.id]?.fach ?? 1;
@@ -2133,10 +2186,13 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleb
     kreis.animate([{transform:'scale(0)'},{transform:'scale(1)'}],
       {duration:400,delay:360,easing:'cubic-bezier(.2,0,0,1)',fill:'forwards'});
   }
-  // Ebene 4: der Stadtpunkt erscheint NACH der richtigen Antwort - als Zugabe.
-  const stadt = zeigeStadt && D.deutschland.find(x=>x.id===ziel.id);
-  if (stadt && stadt.ort && punkt) {
-    punkt.setAttribute('cx',stadt.ort[0]); punkt.setAttribute('cy',stadt.ort[1]);
+  // Der Stadtpunkt erscheint NACH der richtigen Antwort - als Zugabe.
+  //
+  // Die Lage steht am Gegenstand selbst, nicht in `D.deutschland`: seit es
+  // die Ebene „Hauptstädte in Europa" gibt (R6), liegt die Hälfte der
+  // Städte gar nicht in Deutschland. `vorrat()` gibt `ort` mit.
+  if (zeigeStadt && ziel.ort && punkt) {
+    punkt.setAttribute('cx',ziel.ort[0]); punkt.setAttribute('cy',ziel.ort[1]);
     punkt.style.display='';
     punkt.animate([{r:0},{r:7}],{duration:300,delay:600,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'forwards'});
   }
@@ -2304,8 +2360,7 @@ async function forscherbuch(){
   for (const e of meineEbenen()) {
     let st={}; try{ st=(await Ablage.hole('fortschritt',`${P.id}:${e.id}`))||{}; }catch(err){}
     const alle = vorrat(e.id);
-    const vb = e.id.startsWith('kontinente') ? D.vbK
-             : e.id.startsWith('laender') ? D.vbL[e.id.split(':')[1]] : D.vbD;
+    const vb = vbVon(e.id);
     const stuecke = alle.map((g,i)=>({
       ...g, gesammelt: Leitner.istGesammelt(st, g.id), gekonnt: Leitner.istGekonnt(st, g.id),
       fach: st[g.id]?.fach ?? 0, i }));

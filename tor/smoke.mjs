@@ -1154,8 +1154,9 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
  * prueft, dass jede Ebene fuer jedes Profil wirklich spielbar ist, und
  * ein drittes Profil, das dort fehlt, waere ungeprueft. */
 
-const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'],
-                       eltern: ['rechnen:gross'] };
+const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'],
+                       lea: ['rechnen:reihen', 'hauptstaedte:europa'],
+                       eltern: ['rechnen:gross', 'hauptstaedte:europa'] };
 if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
   if (abbruch()) break;
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
@@ -1189,11 +1190,16 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
     }
     for (const e of [...EBENEN_ALLE, ...EBENEN_EIGEN[wer]])
       if (!da.includes(e)) merke('durchgang', new Error(`${wer}: Ebene „${e}" fehlt in der Auswahl`));
-    // Und umgekehrt: keine fremde Ebene. Sonst stünde Fionas Rechnen auch
-    // bei Lea, und der Umbau „je Kind" wäre nur behauptet.
+    /* Und umgekehrt: keine fremde Ebene. Sonst stünde Fionas Rechnen auch
+     * bei Lea, und der Umbau „je Kind" wäre nur behauptet.
+     *
+     * FREMD heisst „gehoert einem anderen UND nicht mir". Seit es eine
+     * Ebene gibt, die zwei Profilen gehoert (`hauptstaedte:europa`, Lea
+     * und die Eltern), reicht „gehoert einem anderen" nicht mehr - der
+     * erste Anlauf meldete sie bei beiden als fremd. */
     for (const [anderes, eigene] of Object.entries(EBENEN_EIGEN))
       if (anderes !== wer) for (const e of eigene)
-        if (da.includes(e)) merke('durchgang',
+        if (!EBENEN_EIGEN[wer].includes(e) && da.includes(e)) merke('durchgang',
           new Error(`${wer}: Ebene „${e}" gehört ${anderes}, steht aber in ${wer}s Auswahl`));
     /* Bei `--kurz` eine Auswahl statt aller: die erste Karte, die
      * Auswahl-Ebene, das Rechnen — und EINE Länderebene. Damit ist jede
@@ -1206,7 +1212,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
      * bekommt die Länder der Eltern zu sehen" ins Leere - der Eingriff war drin,
      * das Tor blieb grün, weil es die Ebene gar nicht aufschlug. */
     const zuSpielen = KURZ
-      ? da.filter(e => e === 'kontinente' || e === 'hauptstaedte'
+      ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'laender:europa' || e.startsWith('rechnen'))
       : da;
     gespielt[wer] = zuSpielen.length;

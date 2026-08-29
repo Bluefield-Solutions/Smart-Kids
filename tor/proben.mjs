@@ -473,6 +473,54 @@ const PROBEN = [
     an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
     sagt:'Länder im Vorlauf' },
 
+  /* --- Hauptstädte in Europa (R6) -------------------------------------- */
+  // Die Stadtlage liegt neben ihrem Land.
+  //
+  // Der teuerste Fehler dieser Ebene, weil er still ist: der Punkt
+  // erscheint erst NACH der richtigen Antwort. Kein Rauchtest sieht ihn,
+  // kein Bildvergleich - und ein Kind lernte die falsche Lage. Er
+  // entsteht schon dadurch, dass die Lage in einer anderen Stufe oder
+  // Projektion gerechnet wird als die Umrisse.
+  { n:'eine Hauptstadt liegt neben ihrem Land', tor:'inhalt', deckt:'inhalt',
+    datei:'src/geo/laender-europa.grob.js',
+    such:'"hauptstadt":"Warschau","ort":[536.9,489.4]',
+    ersatz:'"hauptstadt":"Warschau","ort":[136.9,889.4]',
+    an:{ datei:'src/geo/laender-europa.grob.js', text:'"ort":[136.9,889.4]' },
+    sagt:'liegt nicht in' },
+  // Die eine echte Falle faellt aus.
+  //
+  // Natural Earth fuehrt Den Haag als Regierungssitz; steht er nicht vorn
+  // unter den Ablenkern, ist die Frage nach Amsterdam so schwer wie die
+  // nach Berlin. Geprueft wird die Liste von Hand gegen die Referenz.
+  { n:'der Regierungssitz steht nicht mehr vorn', tor:'inhalt', deckt:'inhalt',
+    datei:'src/inhalt/erdkunde.js',
+    such:"  NLD:['Den Haag','Rotterdam'],",
+    ersatz:"  NLD:['Rotterdam','Den Haag'],",
+    an:{ datei:'src/inhalt/erdkunde.js', text:"NLD:['Rotterdam','Den Haag']" },
+    sagt:'die eigentliche Falle fiele aus' },
+  // Die Ebene zeigt die falsche Karte.
+  //
+  // `hauptstaedte:europa` ist nicht `laender`, und drei Stellen im
+  // Programm haben den Rahmen frueher an genau dieser Art festgemacht.
+  // Faellt die Ableitung aus, liegt der Deutschland-Rahmen um eine
+  // Europakarte - und KEIN anderes Tor sagt etwas dazu: gespielt wird sie
+  // weiter, sie sieht nur falsch aus.
+  { n:'die Hauptstädte-Ebene bekommt den falschen Rahmen', tor:'ansicht',
+    bauen:true, datei:D,
+    such:"  return art === 'kontinente' ? D.vbK : kont ? D.vbL[kont] : D.vbD;",
+    ersatz:"  return art === 'kontinente' ? D.vbK : art === 'laender' ? D.vbL[kont] : D.vbD;",
+    an:{ ...DIST, text:"art === 'laender' ? D.vbL[kont] : D.vbD" },
+    sagt:'quer-hauptstaedte-eu' },
+  // Und Fiona bekommt sie doch zu sehen.
+  //
+  // Sie liest noch nicht, und eine Stadt hat keinen Umriss zum Ziehen.
+  { n:'Fiona bekommt die Hauptstädte Europas', tor:'smoke', bauen:true,
+    args:['--nur=durchgang', '--kurz'], datei:D,
+    such:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,\n    wer:['lea','eltern'] },",
+    ersatz:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3 },",
+    an:{ ...DIST, fehlt:"wer:['lea','eltern']" },
+    sagt:'steht aber in fionas Auswahl' },
+
   /* --- Der Elternbereich kennt drei Profile (R7) ----------------------- */
   // Das Protokoll kennt den Vorrat der Eltern nicht.
   //

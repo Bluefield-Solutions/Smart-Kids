@@ -165,6 +165,16 @@ const AUFNAHMEN = [
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
+  /* Hauptstädte in Europa (R6).
+   *
+   * Die einzige Ebene, die eine KONTINENTKARTE mit einer Stadtfrage
+   * verbindet - Rahmen, Umgebung, Farbkreis und Umriss auf der Kachel
+   * werden dort aus der Kennung abgeleitet, und jede dieser vier
+   * Ableitungen kann danebengehen, ohne dass ein anderes Tor etwas sagt:
+   * die Karte waere dann einfach die falsche. Gespielt wird sie von Lea,
+   * Fiona hat sie nicht. */
+  { name:'quer-hauptstaedte-eu', spiel:'hauptstaedte:europa', kind:'lea',
+    quer:true, wahl:'.schirm.da' },
 ];
 
 /**

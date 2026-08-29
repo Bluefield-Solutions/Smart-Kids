@@ -72,7 +72,14 @@ const D = {
   // Nord- und Suedamerika lagen gebacken im Baum und waren nicht zu
   // erreichen. (Australien hat keine Laenderebene - so vereinbart.)
   laender: Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
-    [id, ankerFuer(roh.filter(l=>l.rang).map(l=>({ ...l, ...laenderMeta[l.a3] })))])),
+    [id, ankerFuer(roh.filter(l=>l.rang).map(l=>({ ...l, ...laenderMeta[l.a3],
+      // Ebene „Hauptstädte in Europa" (R6). `hauptstadt`, `ort` und
+      // `regierungssitz` kommen gebacken aus `roh`; hier kommen nur die
+      // Ablenker dazu - und `falle` wird ABGELEITET, nicht behauptet:
+      // wahr genau dort, wo Natural Earth einen abweichenden
+      // Regierungssitz kennt.
+      ablenker: I.HAUPTSTADT_ABLENKER_EUROPA[l.a3] || [],
+      falle: !!l.regierungssitz })))])),
   deutschland: DEUTSCHLAND_MITTEL.map(b=>{
     const s = STAEDTE.find(x=>x.id===b.id);
     return { id:b.id, name:b.name, pfad:b.pfad, hauptstadt:s.hauptstadt,
@@ -225,8 +232,14 @@ function teilen(D) {
     // Ein leichtes Verzeichnis bleibt drin: die Ebenenwahl rechnet den
     // Fortschritt aller Ebenen aus, bevor eine davon geladen ist. Dafuer
     // braucht sie die Kennungen - nicht die Umrisse.
+    // `hauptstadt` bleibt im leichten Verzeichnis, obwohl der Umriss
+    // herausfaellt: es ist der Name, den die Ebene „Hauptstädte in Europa"
+    // ABFRAGT, und ohne ihn steht im eingebetteten Datensatz eine Aufgabe
+    // ohne Antwort. Zwoelf Namen, rund 150 Byte. Nur wo es einen gibt -
+    // die anderen vier Kontinente haben keine Hauptstadtebene.
     leicht.laender[k] = D.laender[k].map(l => ({ a3:l.a3, name:l.name, rang:l.rang,
-      aliasse:l.aliasse, aussprache:l.aussprache }));
+      aliasse:l.aliasse, aussprache:l.aussprache,
+      ...(l.hauptstadt ? { hauptstadt:l.hauptstadt } : {}) }));
     leicht.umgebung[k] = [];
   }
   return { leicht, teile };

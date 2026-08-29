@@ -351,13 +351,30 @@ und findet jeden in der Übersicht wieder; die Wackelkandidaten stehen unter
 einem Namen; es gibt einen Löschknopf je Profil; und die Rechenaufgaben
 der Eltern stehen im Protokoll als Aufgabe, nicht als Kennung.
 
-### R6 · Erdkunde für Erwachsene  ·  mittel
+### R6 · Erdkunde für Erwachsene  ·  ERLEDIGT
 
 **Ziel:** Die schweren Ebenen auf den neuen Daten — Länder in Tiefe 12,
 und Hauptstädte Europas.
 
-**Abnahme:** wie R4, plus `beruehrung` für die neuen Städte (ein Gebiet
-unter 44 pt braucht eine entkoppelte Trefferfläche).
+Die erste Hälfte war mit R5 schon da: Eltern spielen `laender:europa` in
+Tiefe 12. Gebaut wurde die zweite: **`hauptstaedte:europa`**, für Lea
+(fünf Städte) und die Eltern (zwölf). Fiona nicht — sie liest noch nicht,
+und eine Stadt hat keinen Umriss zum Ziehen.
+
+**Abnahme, gefahren:** `inhalt` prüft, dass jede der zwölf Stadtlagen im
+eigenen Land liegt (Punkt-in-Polygon gegen den gezeichneten Umriss), dass
+jedes Land zwei Ablenker hat, dass keiner die Hauptstadt selbst ist und
+dass der abweichende Regierungssitz vorn steht. `spielprobe` fährt die
+zwölf Namen durch die Schreibtoleranz — die Eltern *tippen* sie.
+`ansicht` hält die Ebene als `quer-hauptstaedte-eu` fest. Der Rauchtest
+spielt sie für Lea und die Eltern und prüft, dass Fiona sie nicht sieht.
+
+**`beruehrung` brauchte nichts.** Die Abnahme im Konzept hatte eine
+entkoppelte Trefferfläche für „die neuen Städte" verlangt. Es gibt keine:
+die Stadt ist nie ein Ziel, das man trifft — geantwortet wird über vier
+Knöpfe oder ein Tippfeld, und der Stadtpunkt erscheint erst nach der
+richtigen Antwort. Angefasst werden die Länder, und die sind über
+`laender:europa` längst gemessen.
 
 ---
 

@@ -3199,3 +3199,98 @@ Drei Anläufe für eine einzige Zusage. Der Wert der stehenden Gegenproben
 liegt genau hier: die Zusage *stand* im Programm, sie war sogar richtig
 umgesetzt — nur bewiesen war sie nicht, und das sieht von außen identisch
 aus.
+
+## R6 · Hauptstädte in Europa
+
+Die zweite Hälfte von R6. Die erste war mit R5 schon erledigt — die Eltern
+spielen `laender:europa` in Tiefe 12 —, offen war die Ebene, die auf diesen
+Daten aufsetzt: `hauptstaedte:europa`. Zwölf Länder, zwölf Hauptstädte, für
+Lea die ersten fünf, für die Eltern alle zwölf. Fiona nicht: sie liest noch
+nicht, und eine Stadt hat keinen Umriss, den man ziehen könnte.
+
+### Nicht eine zweite Mechanik, sondern dieselbe mit anderem `kont`
+
+Die Kennung sagt beides: `hauptstaedte` **wie** gefragt wird, `europa`
+**wo**. Alles andere leitet sich daraus ab — Rahmen, Umgebung, Farbkreis,
+der Umriss auf der Kachel, welche Karte nachgeladen wird.
+
+Das war nicht der erste Entwurf, sondern das Ergebnis eines Fundes: der
+Bezug „welche Karte trägt diese Ebene" stand **an vier Stellen einzeln** da,
+jedes Mal als `art === 'laender' ? D.vbL[kont] : D.vbD`. Eine Ebene, die
+`hauptstaedte:europa` heißt, ist nicht `laender` — sie hätte an allen vier
+Stellen den Deutschland-Rahmen um eine Europakarte gelegt. Es gibt jetzt
+eine Ableitung (`vbVon`), und die drei Fundstellen lesen von dort.
+
+### Die Fakten kommen aus den Daten, die Ablenker nicht — und das ist gemessen
+
+Die **Hauptstädte** stehen nirgends im Quelltext: Natural Earth führt sie
+als `Admin-0 capital` und trägt den deutschen Namen selbst mit (`NAME_DE` —
+Moskau, Kiew, Bukarest, Brüssel). Dieselbe Quelle wie bei den sechzehn
+Landeshauptstädten.
+
+Die **Ablenker** wären aus denselben Daten zu rechnen — „die zwei größten
+Städte außer der Hauptstadt". Nachgesehen, bevor es gebaut wurde, und das
+Ergebnis ist Unsinn:
+
+- `POP_MAX` ist die **Ballungsraum**-Zahl. In Polen steht damit Katowice
+  (2,7 Mio) vor Warschau (1,7 Mio); in Deutschland Stuttgart und Frankfurt
+  vor Hamburg.
+- `NAME_DE` trägt historische **Exonyme**, die heute niemand mehr sagt:
+  „Klausenburg" für Cluj-Napoca, „Galatz" für Galați, „Lüttich" für Liège.
+  Als Ablenker wären sie nicht schwer, sondern rätselhaft.
+
+Also von Hand, mit dem Grund daneben. Fünfzehn Minuten Nachsehen gegen eine
+Ebene, die sich richtig anfühlt und falsch ist.
+
+### Die eine echte Falle steht in den Daten
+
+In Deutschland liegt bei **fünf** von sechzehn Ländern die größte Stadt
+nicht in der Hauptstadt — dort sitzt der ganze Lernwert von Ebene 4. In
+Europas Top 12 ist es **eines**: die Niederlande, Den Haag gegen Amsterdam.
+Und Natural Earth sagt es selbst: Den Haag steht dort als
+`Admin-0 capital alt`, der abweichende Regierungssitz.
+
+Deshalb wird `falle` nicht behauptet, sondern **abgeleitet** — wahr genau
+dort, wo die Daten einen abweichenden Regierungssitz kennen. Und das Tor
+`inhalt` legt beides nebeneinander: steht der Regierungssitz nicht vorn
+unter den Ablenkern, ist die Frage nach Amsterdam so leicht wie die nach
+Berlin, und das Tor sagt es.
+
+**Ehrlich dazu:** für einen Erwachsenen ist diese Ebene leicht. Zwölf
+europäische Hauptstädte sind kein Rätsel, und eine einzige Falle trägt keine
+Ebene „für Erwachsene". Ihr Wert liegt bei **Lea** — fünf Städte, und die
+Karte, auf der sie schon Länder gelernt hat — und bei den Rängen 6 bis 12,
+wo Bukarest und Charkiw stehen.
+
+### „Wie heißt die Hauptstadt von Vereinigtes Königreich?"
+
+So stand die Frage im ersten Lauf auf dem Bildschirm. Deutsche Ländernamen
+sind meist artikellos — „die Hauptstadt von Polen" stimmt einfach —, drei
+sind es nicht: das Vereinigte Königreich, die Ukraine, die Niederlande.
+Sie tragen jetzt `wovon` bei den Fakten (`vom Vereinigten Königreich`,
+`von der Ukraine`, `von den Niederlanden`); überall sonst wird die Form aus
+dem Namen abgeleitet. Gefunden hat das kein Tor, sondern der Blick auf die
+Aufnahme (Regel 7).
+
+### Zwei Fehler, die die schnelle Bahn gefangen hat
+
+**`rechnen:plusminus` ging gar nicht mehr auf.** Beim Nachladen hatte ich
+`art !== 'laender'` durch „hat etwas hinter dem Doppelpunkt" ersetzt — und
+`rechnen:plusminus` hat das auch. Die App zog `daten/laender-plusminus.json`,
+bekam 404 und blieb stehen. Der Bildvergleich meldete es nach vierzig
+Sekunden.
+
+**Die Ebene gehört zwei Profilen, und der Rauchtest kannte das nicht.** Seine
+Prüfung „keine fremde Ebene" hieß „gehört einem anderen" — bei einer Ebene,
+die Lea *und* den Eltern gehört, meldete sie beide. Sie heißt jetzt „gehört
+einem anderen **und nicht mir**".
+
+### Und einer, den erst die volle Kette gefunden hat
+
+Der Rauchtest liest das Ziel aus dem **eingebetteten** Datensatz, nicht aus
+dem laufenden Programm. Dort stand die Hauptstadt nicht: `teilen()` schneidet
+für das Startbündel alles heraus außer Kennung, Name, Rang und Aussprache —
+die Hauptstadt kam erst mit der nachgeladenen Karte. Der Test suchte nach
+„undefined" unter vier Städtenamen. Die zwölf Namen bleiben jetzt im leichten
+Verzeichnis: rund 150 Byte, und der eingebettete Datensatz enthält keine
+Aufgabe mehr, zu der die Antwort fehlt.

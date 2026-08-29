@@ -73,14 +73,25 @@ export const LAENDER = {
       satz:'So groß, dass es auf zwei Kontinente passt.' },
     { a3:'DEU', name:'Deutschland', rang:2, aussprache:['deutschland','doitschland'] },
     { a3:'GBR', name:'Vereinigtes Königreich', rang:3, aliasse:['England','Großbritannien','Britannien'],
-      aussprache:['england','großbritannien','vereinigtes königreich'] },
+      aussprache:['england','großbritannien','vereinigtes königreich'],
+      /* `wovon` ist die Praepositionalform fuer die Hauptstadtfrage.
+       *
+       * Die meisten Laendernamen sind im Deutschen artikellos - „die
+       * Hauptstadt von Polen" stimmt einfach. Drei nicht, und der erste
+       * Anlauf fragte prompt nach der „Hauptstadt von Vereinigtes
+       * Koenigreich". Deshalb steht die Form dort, wo sie eine
+       * Eigenschaft des Landes ist, und nur bei den dreien; ueberall
+       * sonst wird sie aus dem Namen abgeleitet. */
+      wovon:'vom Vereinigten Königreich' },
     { a3:'FRA', name:'Frankreich', rang:4, aussprache:['frankreich','frangreich'] },
     { a3:'ITA', name:'Italien', rang:5, aussprache:['italien','italjen'] },
     { a3:'ESP', name:'Spanien', rang:6, aussprache:['spanien','spanjen'] },
-    { a3:'UKR', name:'Ukraine', rang:7, aussprache:['ukraine','ukrajine'] },
+    { a3:'UKR', name:'Ukraine', rang:7, aussprache:['ukraine','ukrajine'],
+      wovon:'von der Ukraine' },
     { a3:'POL', name:'Polen', rang:8, aussprache:['polen','pohlen'] },
     { a3:'ROU', name:'Rumänien', rang:9, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
-    { a3:'NLD', name:'Niederlande', rang:10, aliasse:['Holland'], aussprache:['niederlande','holland'] },
+    { a3:'NLD', name:'Niederlande', rang:10, aliasse:['Holland'], aussprache:['niederlande','holland'],
+      wovon:'von den Niederlanden' },
     { a3:'BEL', name:'Belgien', rang:11, aussprache:['belgien','belgjen'] },
     { a3:'GRC', name:'Griechenland', rang:12, aussprache:['griechenland','griechnland'] },
   ],
@@ -136,3 +147,46 @@ export const HAUPTSTADT_ABLENKER = {
 };
 /** Die fuenf, bei denen der Ablenker die GROESSTE Stadt ist. */
 export const ECHTE_FALLEN = ['DE-HE','DE-NW','DE-SN','DE-ST','DE-MV'];
+
+/**
+ * Ebene „Hauptstädte in Europa" (R6). Zwei falsche Staedte je Land.
+ *
+ * Die HAUPTSTADT steht hier nicht: sie kommt aus Natural Earth
+ * (`Admin-0 capital`, deutscher Name aus `NAME_DE`) und wird in
+ * `tools/backen-laender.mjs` an das Land gebacken - dieselbe Quelle wie
+ * bei den sechzehn Landeshauptstaedten.
+ *
+ * Die ABLENKER stehen hier, von Hand, und das ist eine Entscheidung
+ * gegen eine naheliegende Ableitung. „Die zwei groessten Staedte ausser
+ * der Hauptstadt" waere aus denselben Daten zu rechnen - gemessen liefert
+ * das aber Unsinn:
+ *
+ *   - `POP_MAX` ist die BALLUNGSRAUM-Zahl. In Polen steht damit Katowice
+ *     (2,7 Mio) vor Warschau (1,7 Mio); in Deutschland Stuttgart und
+ *     Frankfurt vor Hamburg.
+ *   - `NAME_DE` traegt historische Exonyme, die heute niemand mehr sagt:
+ *     „Klausenburg" fuer Cluj-Napoca, „Galatz" fuer Galați, „Luettich"
+ *     fuer Liege. Als Ablenker waeren sie nicht schwer, sondern raetselhaft.
+ *
+ * Ein Ablenker, auf den niemand hereinfaellt, ist keiner - und einer, den
+ * niemand kennt, erst recht nicht.
+ *
+ * Wo ein REGIERUNGSSITZ von der Hauptstadt abweicht, steht er VORN. Das
+ * ist die eine echte Falle dieser Ebene, und sie kommt aus den Daten:
+ * Natural Earth fuehrt Den Haag als `Admin-0 capital alt`. Das Tor
+ * `inhalt` prueft, dass die Liste hier und die Daten dort uebereinstimmen.
+ */
+export const HAUPTSTADT_ABLENKER_EUROPA = {
+  RUS:['Sankt Petersburg','Nowosibirsk'],
+  DEU:['Hamburg','München'],
+  GBR:['Manchester','Birmingham'],
+  FRA:['Marseille','Lyon'],
+  ITA:['Mailand','Neapel'],
+  ESP:['Barcelona','Sevilla'],
+  UKR:['Charkiw','Odessa'],
+  POL:['Krakau','Danzig'],
+  ROU:['Cluj-Napoca','Konstanza'],
+  NLD:['Den Haag','Rotterdam'],
+  BEL:['Antwerpen','Gent'],
+  GRC:['Thessaloniki','Patras'],
+};

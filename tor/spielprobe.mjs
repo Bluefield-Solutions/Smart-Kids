@@ -44,6 +44,16 @@ function saetze() {
   s.push({ was: 'Landeshauptstädte',
     liste: STAEDTE.filter(x => !x.stadtstaat).map(x => ({ id: x.id, name: x.hauptstadt,
       aliasse: [], aussprache: [x.hauptstadt.toLowerCase()] })) });
+  /* Hauptstädte in Europa (R6).
+   *
+   * Hier ist die Schreibprobe keine Formsache: das Profil „Eltern"
+   * bekommt nie eine Auswahl, es TIPPT diese zwoelf Namen. Moskau,
+   * Bukarest, Kiew - jede Schreibtoleranz, die einen davon einem falschen
+   * Gegenstand zuschlaegt, wertet eine richtige Antwort falsch. */
+  s.push({ was: 'Hauptstädte in Europa',
+    liste: LAENDER_EUROPA_GROB.filter(l => l.rang && l.hauptstadt)
+      .map(x => ({ id: x.a3, name: x.hauptstadt,
+        aliasse: [], aussprache: [x.hauptstadt.toLowerCase()] })) });
   return s;
 }
 
