@@ -182,7 +182,7 @@ stehen können. Zwei Zwänge gibt es wirklich:
 
 Alles andere ist frei, und deshalb steht die kleinste Runde vorn.
 
-### R1 · Von vorne, mitten im Spiel  ·  klein
+### R1 · Von vorne, mitten im Spiel  ·  ERLEDIGT
 
 **Ziel:** Aus einer laufenden Runde heraus alles auf null setzen — die
 Häkchen weg, die Farben zurück, die nächste Aufgabe fängt bei Fach 1 an.
@@ -195,6 +195,17 @@ Ebenenwahl, denn ein Fehlgriff räumt eine Woche Übung weg.
 **Abnahme:** Der Rauchtest spielt eine Runde, setzt mitten darin zurück und
 weist nach: null Gegenstände in der Ablage, keine Häkchen auf der Karte,
 und die laufende Sitzung beginnt neu statt weiterzuzählen.
+
+**Erledigt.** Das Kreuz im Spiel führt jetzt auf einen **Pausenbildschirm**
+mit drei Wegen: Weiterspielen · Übung beenden · Von vorne anfangen. Kein
+vierter Knopf im Kopf — dort ist im Querformat kein Platz, und eine Taste,
+die eine Woche Übung wegräumt, gehört nicht neben das Kreuz.
+
+Der Rauchtest weist alle drei Teile der Abnahme nach und meldet
+`1 → 0 Gegenstände, Band jetzt (0 erledigt), 0 Häkchen`. Zwei stehende
+Gegenproben; die zweite hat drei Anläufe gebraucht, weil der Test den
+Unterschied zwischen „fängt neu an" und „zählt weiter" zunächst gar nicht
+sehen konnte — siehe `docs/Lernkiste-STAND.md`.
 
 ### R2 · Eine Kachelsprache für alle drei Wahlbildschirme  ·  ERLEDIGT
 

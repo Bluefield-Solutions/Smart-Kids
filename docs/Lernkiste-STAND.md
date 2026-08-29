@@ -2631,3 +2631,120 @@ Vorschau kann keine Prüfung mehr abwürgen.
 Zwei der drei Fehler waren **Lärm, der wie ein Befund aussah**. Solange sie
 dastanden, war der echte Fehler nicht zu finden: sechs identische E-Mails,
 eine davon berechtigt. Ein Alarm, der bei jedem Lauf angeht, ist kein Alarm.
+
+---
+
+## Das Forscherbuch, R1, und drei Tore, die weniger gesehen haben als gedacht
+
+### Der Endbildschirm braucht die Kachelsprache nicht
+
+Geplant war, R2 auf Endbildschirm und Forscherbuch auszudehnen. Der Blick
+auf die Aufnahmen (Regel 7) hat die Hälfte davon erledigt: der
+Endbildschirm ist typografisch geführt, hat keine Karten und liest sich auf
+Weiß gut. Ihm Kacheln aufzuzwingen wäre schlechter als ihn zu lassen. Eine
+geplante Arbeit nicht zu tun ist auch ein Ergebnis.
+
+### Das Forscherbuch war für `passt` unsichtbar
+
+`.aufkleber` stand nicht in seiner Auswahl. Der Bildschirm mit den **meisten**
+Kästen — anklickbar, in einem scrollenden Behälter — wurde von dem Tor, das
+Überlauf prüft, überhaupt nicht angesehen. Es meldete grün, weil es dort
+nichts zu sehen hatte.
+
+Auf Weiß war die Karte selbst dann noch unsichtbar: `background:var(--papier)`
+plus `border:none`. Zu sehen war nur der Schatten an der Unterkante, und die
+Umrisse schwebten frei im Raum. Jetzt trägt auch hier der Rand.
+
+### `lesbarkeit` sah vier von neun Bildschirmen
+
+`passt` fährt neun Bildschirme ab, `lesbarkeit` fuhr vier. Forscherbuch,
+Elternbereich und Endbildschirm wurden nie auf Kontrast gemessen —
+ausgerechnet das Forscherbuch, in dem die einzige absichtlich
+zurückgenommene Schrift der App steht.
+
+Der erweiterte Rundgang fand sofort **drei Fehler** (4,41:1 im Abendmodus)
+und misst jetzt **160 statt 104** Texte. Der Endbildschirm fehlt weiter, und
+zwar ausdrücklich: dorthin kommt man nur durch ein ganzes Spiel.
+
+### Und `lesbarkeit` rechnete die Deckung der Vorfahren nicht mit
+
+`opacity` wirkt auf den ganzen Teilbaum, steht im `computedStyle` des Kindes
+aber als `1`. Ein Etikett in einer Karte mit `opacity:.45` wurde deshalb
+gemessen, als stünde es voll da — 7,4:1 für eine Schrift, die das Auge bei
+3,3:1 sieht. Dieselbe Verwechslung wie beim Wasserzeichen, nur andersherum:
+dort fehlte der Grund, hier die Farbe darüber.
+
+Der Ausschluss „unter 0,5 gar nicht erst ansehen" bleibt daneben stehen — er
+meint das Element **selbst**, das dann absichtlich verborgen ist.
+
+## R1 · Von vorne, mitten im Spiel
+
+Das Kreuz im Spiel führte wortlos zur Ebenenwahl. Es führt jetzt auf einen
+**Pausenbildschirm**: Weiterspielen · Übung beenden · Von vorne anfangen.
+
+Kein vierter Knopf im Kopf: links das Kreuz, in der Mitte das
+Fortschrittsband, rechts die Sterne — im Querformat ist die Zeile voll. Und
+eine Taste, die eine Woche Übung wegräumt, gehört nicht neben das Kreuz. Der
+Umweg über diesen Bildschirm **ist** der Schutz; das Löschen selbst braucht
+danach noch einen zweiten Tipper.
+
+Der neue Bildschirm steht sofort in beiden Rundgängen — `passt` und
+`lesbarkeit`. Ein neuer Bildschirm, den kein Tor ansieht, ist genau die
+Lücke, die das Forscherbuch eine Runde lang hatte. `lesbarkeit` hat den
+Warnknopf dann auch prompt gemeldet: 2,92:1, nötig 3:1.
+
+### Die Gegenprobe, die dreimal nichts bewies
+
+Zwei Dinge können brechen, und nur eines davon ist von außen zu sehen:
+
+1. Das Löschen löscht nicht. → Sofort gefangen.
+2. Es löscht, aber die Sitzung **zählt weiter**. `starten()` liest den
+   Leitner-Stand neu; ohne `Stand = {}` begänne die neue Runde mit den alten
+   Fächern — dieselben Aufgaben, dasselbe Fach, nur ohne Häkchen. Von außen
+   sieht das aus wie ein sauberer Neuanfang.
+
+Die zweite Gegenprobe blieb grün, obwohl der Fehler drin war — dreimal, aus
+zwei verschiedenen Gründen:
+
+**Erstens:** der Test öffnete die Pause, während die Sitzung noch bei
+Aufgabe eins stand. Dann sieht ein Neuanfang genauso aus wie ein
+Weiterzählen. Der Test wartete auf „irgendein Punkt ist gefärbt" — aber der
+erste Punkt färbt sich **sofort** nach der richtigen Antwort, weitergerückt
+wird erst 2,6 s später. Er wartet jetzt darauf, dass der **laufende** Punkt
+weitergerückt ist, und sagt es laut, wenn das nicht passiert.
+
+**Zweitens:** die Gegenprobe suchte „zählt weiter", der Test schrieb
+„zaehlt weiter". In diesem Verzeichnis ist der Quelltext deutsch und die
+**Ausgabe** trägt Umlaute; die Kommentare nicht. Ein Tor, das rot wird und
+das Falsche sagt, ist kein bestandener Beweis — `proben` hat genau das
+gemeldet: „wird rot, meldet aber nicht … — es fällt vielleicht aus einem
+anderen Grund durch."
+
+### `proben` warf einundzwanzig Minuten Arbeit weg
+
+Ein `process.exit(1)` stand **vor** dem Festhalten. Beim vollen Lauf
+schlugen 65 von 67 Proben an, zwei bewiesen nichts — und weil der Lauf damit
+rot war, wurde **kein einziger** Nachweis geschrieben.
+
+Das ist nicht nur teuer, es ist eine Falle mit Rückkopplung: ohne Nachweise
+altern alle Proben weiter, `rhythmus` wird rot, und die Antwort darauf ist
+wieder ein voller Lauf — der am selben Befund wieder nichts schreibt. Genau
+so sind 66 Nachweise fünf Runden alt geworden.
+
+`rhythmus` liest den Stand **je Probe**. Eine Probe, die angeschlagen hat,
+hat angeschlagen — unabhängig von ihrer Nachbarin. Was nicht angeschlagen
+hat, bekommt weiterhin keinen Eintrag und fällt als „hat noch nie
+angeschlagen" auf. Der Befund bleibt sichtbar, der Beweis bleibt erhalten.
+
+### Und ein Vorbild, das sich von selbst änderte
+
+`quer-profile` — die Aufnahme, die in dieser Runde neu dazukam — enthielt
+den **Baustempel mit Uhrzeit**. Im Arbeitsbaum fiel das nicht auf, weil dort
+die Zeitstempel der Quelldateien stehenbleiben; in einem frischen Auschecken
+sind sie neu, und damit ist es die Uhr auch: `15:59` gegen `16:52`, 2556
+Bildpunkte Unterschied.
+
+Gefunden hat es `npm run proben`. Die Aufnahme friert die Zeile jetzt auf
+einen festen Satz **derselben Bauart** ein — nicht auf einen leeren: Lage und
+Größe bleiben geprüft, nur der Inhalt nicht. Dass Fassung und Datum stimmen,
+prüft `doku`.

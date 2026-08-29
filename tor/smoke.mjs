@@ -167,6 +167,25 @@ async function ueberblendungMessen(p) {
 }
 let ueberblendung = null;
 
+/* Aus einer laufenden Aufgabe zurueck in die Ebenenwahl.
+ *
+ * Seit R1 fuehrt das Kreuz im Spiel nicht mehr direkt dorthin, sondern in
+ * die PAUSE. Drei Stellen im Rauchtest gingen davon aus, dass ein Klick
+ * genuegt, und liefen danach in einen Zeitablauf - neun Gegenproben
+ * meldeten daraufhin "smoke ist schon OHNE Eingriff rot".
+ *
+ * Deshalb EIN Weg hinaus, an einer Stelle: Kreuz, und wenn die Pause
+ * kommt, durch sie hindurch. Wer den Ausgang an drei Stellen
+ * nachbaut, pflegt ihn an zweien nicht.
+ */
+async function raus(p) {
+  const zur = await p.$('.schirm.da #zur');
+  if (zur) await p.$eval('.schirm.da #zur', x => x.click());
+  const pause = await p.waitForSelector('.schirm.da #raus', { timeout: 2000 }).catch(() => null);
+  if (pause) await p.$eval('.schirm.da #raus', x => x.click());
+  await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 8000 }).catch(() => {});
+}
+
 /** Eine Aufgabe loesen: das passende Etikett auf den Anker des Ziels ziehen. */
 async function loese(p) {
   // Warten, bis der Bildschirmwechsel wirklich durch ist - sonst greift der
@@ -1055,9 +1074,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
           merke('durchgang', new Error(`${wer}/${ebene}: ${r.soll} angetippt → „${rr}"`));
         durchgespielt++;
         await p.waitForTimeout(1500);
-        const zurR = await p.$('.schirm.da #zur');
-        if (zurR) await p.$eval('.schirm.da #zur', x => x.click());
-        await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 8000 }).catch(() => {});
+        await raus(p);
         continue;
       }
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
@@ -1124,9 +1141,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
           + `${z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'} → „${r}"`));
       durchgespielt++;
       await p.waitForTimeout(1500);
-      const zur = await p.$('.schirm.da #zur');
-      if (zur) await p.$eval('.schirm.da #zur', x => x.click());
-      await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 8000 }).catch(() => {});
+      await raus(p);
     }
     await p.close();
   } catch (e) { merke('durchgang', e); }
