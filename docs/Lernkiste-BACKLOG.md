@@ -71,13 +71,26 @@ Ebene auf einem Telefon nachladen.
 
 ## Konzept: das Elternprofil
 
+### Wie es heißt: **Adam**
+
+Nicht „Eltern". Das war ein Platzhalter aus der Konzeptrunde, und er ist
+falsch: die Kachel steht neben Fiona und Lea, und die tragen ihre Namen.
+Eine Kachel „Eltern" neben zwei Vornamen liest sich wie eine Einstellung,
+nicht wie ein Mitspieler — und sie ist einer. Entschieden nach der
+Formulierung des Nutzers („das Adam-Profil spielen wir beide").
+
+Der Name steht ab R4 an genau **einer** Stelle: im Profil selbst
+(`PROFILE.adam.name`). Überall sonst wird er von dort gelesen. „Elternprofil"
+bleibt in diesem Dokument als Gattungsbegriff stehen — im Programm und auf
+dem Bildschirm heißt es Adam.
+
 ### Was es ist
 
 Eine **dritte Kachel neben Fiona und Lea**, ohne PIN. Es spielt dieselben
 Bildschirme, dieselbe Wertung, denselben Leitner — nur mit anderem Inhalt
 und ohne die Hilfen für Kinder.
 
-| | Fiona (6) | Lea (8) | Eltern |
+| | Fiona (6) | Lea (8) | Adam |
 |---|---|---|---|
 | Eingabe | ziehen, sprechen | ziehen, tippen | **nur tippen** |
 | Vorlesen | ja | nein | nein |

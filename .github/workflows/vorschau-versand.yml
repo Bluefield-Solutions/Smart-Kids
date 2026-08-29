@@ -58,29 +58,65 @@ jobs:
       # NACHGESEHEN, ob genau dieser Stand schon einmal durchgegangen ist.
       # Ohne diesen Schritt könnte eine Vorschau einen roten `main`-Stand
       # unter `/` schieben, und niemand würde es merken.
-      - name: Hat dieser Stand von `main` die Kette bestanden?
+      # WARTEN, nicht einmal nachsehen.
+      #
+      # Der erste Entwurf hat genau einmal nachgesehen und ist sonst
+      # durchgefallen. Das ging fast immer schief, und zwar ohne dass
+      # irgendetwas kaputt war: werden `main` und `vorschau` zusammen
+      # gestossen, ist die Vorschaupruefung nach drei Sekunden fertig und
+      # die Torkette braucht vier Minuten. Sechs rote Laeufe an einem
+      # Nachmittag, sechs E-Mails, kein einziger echter Befund.
+      #
+      # Also: bis zu zehn Minuten warten, bis die Auslieferung dieses
+      # Standes eine Entscheidung hat.
+      - name: Auf die Torkette dieses Standes warten
+        id: kette
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           sha=$(git rev-parse HEAD)
-          n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/auslieferung.yml/runs?head_sha=${sha}&status=success" --jq '.total_count')
-          echo "  ${sha:0:7}: ${n} erfolgreiche Auslieferung(en)"
-          if [ "$n" -lt 1 ]; then
-            echo "::error::Der Stand ${sha:0:7} von main hat die Torkette nicht (oder noch nicht) bestanden. Die Vorschau wird nicht versandt — sonst käme Ungeprüftes unter /."
-            exit 1
-          fi
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          for i in $(seq 1 40); do
+            lauf=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/auslieferung.yml/runs?head_sha=${sha}" \
+                     --jq '[.workflow_runs[]][0] | "\(.status) \(.conclusion)"' 2>/dev/null || echo "none none")
+            echo "  ${sha:0:7}: ${lauf}"
+            case "${lauf}" in
+              "completed success") echo "gruen=ja"   >> "$GITHUB_OUTPUT"; exit 0 ;;
+              "completed "*)       echo "gruen=nein" >> "$GITHUB_OUTPUT"; exit 0 ;;
+            esac
+            sleep 15
+          done
+          echo "gruen=nein" >> "$GITHUB_OUTPUT"
+
+      # STEHENBLEIBEN, nicht durchfallen.
+      #
+      # Wenn die Torkette rot ist, hat sie das bereits gemeldet. Ein
+      # zweiter roter Lauf fuer dieselbe Ursache sagt nichts Neues - er
+      # verdoppelt nur die E-Mail und verdeckt beim naechsten Mal die
+      # Frage, welcher der beiden gemeint war. Die Vorschau geht dann
+      # eben nicht raus, und das steht hier.
+      - name: Nichts zu versenden
+        if: steps.kette.outputs.gruen != 'ja'
+        run: |
+          echo "::notice::Der Stand ${{ steps.kette.outputs.sha }} von main ist nicht (oder noch nicht) durch die Torkette. Die Vorschau wird nicht versandt — sonst käme Ungeprüftes unter /. Der Befund steht im Ablauf 'Auslieferung'."
 
       - uses: actions/setup-node@v4
+        if: steps.kette.outputs.gruen == 'ja'
         with:
           node-version: '22'
           cache: npm
       - run: npm ci
+        if: steps.kette.outputs.gruen == 'ja'
       - run: node prototyp/bauen.mjs
+        if: steps.kette.outputs.gruen == 'ja'
       - name: Seite zusammenstellen (Spiel + Vorschau)
+        if: steps.kette.outputs.gruen == 'ja'
         run: node tools/seite-zusammenstellen.mjs
       - uses: actions/upload-pages-artifact@v3
+        if: steps.kette.outputs.gruen == 'ja'
         with:
           path: seite
       - id: pages
+        if: steps.kette.outputs.gruen == 'ja'
         uses: actions/deploy-pages@v4

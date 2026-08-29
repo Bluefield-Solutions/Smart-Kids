@@ -389,6 +389,27 @@ for (const a of AUFNAHMEN) {
     }, a.fertig, { timeout: 5000 });
     await seite.waitForTimeout(120);
   }
+  // Die BAUUHR aus dem Bild nehmen.
+  //
+  // Der Baustempel traegt Datum und Uhrzeit des Baus. In einem Vorbild ist
+  // das Gift: die Aufnahme `quer-profile` war beim ersten Lauf gruen und
+  // im naechsten frischen Baum rot, um 2556 Bildpunkte - `15:59` gegen
+  // `16:52`. Im Arbeitsbaum faellt das nicht auf, weil dort die
+  // Zeitstempel der Quelldateien stehenbleiben; in einem frischen
+  // Auschecken sind sie neu, und damit ist es die Uhr auch.
+  //
+  // Gefunden hat es `npm run proben`: zwei Gegenproben meldeten "war schon
+  // vorher rot". Ein Vorbild, das sich von selbst aendert, beweist nichts
+  // und blockiert jede kommende Runde.
+  //
+  // Gesetzt wird ein FESTER Satz derselben Bauart, nicht ein leerer: die
+  // Zeile soll weiter auf ihre Lage und ihre Groesse geprueft werden, nur
+  // eben nicht auf ihren Inhalt (Regel 13 - was man wegnimmt, prueft man
+  // nicht mehr). Dass Fassung und Datum stimmen, prueft `doku`.
+  await seite.evaluate(() => {
+    for (const b of document.querySelectorAll('.bauzeile'))
+      b.textContent = 'Prototyp · Fassung p0.0 · 2000-01-01 00:00';
+  });
   // `animations: 'disabled'` haelt laufende Animationen an und spult sie ans
   // Ende. Ohne das bleibt eine ENDLOSE Animation - der atmende Ring am
   // Mikrofonknopf - auch bei 1 ms Dauer irgendwo stehen, und das Tor meldet

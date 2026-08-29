@@ -18,13 +18,6 @@ permissions:
   pages: write
   id-token: write
 
-# Zwei Auslieferungen gleichzeitig wuerden sich gegenseitig ueberschreiben.
-# cancel-in-progress steht bewusst auf false: eine begonnene Auslieferung
-# wird zu Ende gefuehrt, sonst steht am Ende eine halbe Seite im Netz.
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   tore:
     name: Torkette
@@ -81,6 +74,19 @@ jobs:
     name: Nach Pages
     needs: tore
     runs-on: ubuntu-latest
+    # Die Schlange gehoert an den VERSAND, nicht an den ganzen Ablauf.
+    #
+    # Solange sie am Ablauf hing, lagen Torkette und Vorschau-Versand in
+    # derselben Gruppe - und ein Versand, der waehrend einer laufenden
+    # Kette eintraf, hat sie abgebrochen. Genau das ist am 29.08. passiert:
+    # die Auslieferung von 96d21d5 steht als "cancelled" im Protokoll,
+    # ohne dass irgendetwas an ihr falsch war.
+    #
+    # cancel-in-progress bleibt false: eine begonnene Auslieferung wird zu
+    # Ende gefuehrt, sonst steht am Ende eine halbe Seite im Netz.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.pages.outputs.page_url }}

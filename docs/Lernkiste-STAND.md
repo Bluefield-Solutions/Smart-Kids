@@ -2555,3 +2555,79 @@ Farbe ist, sondern Deckung 1.
 
 19 Tore grün, 16 Vorbilder erneuert, **71** stehende Gegenproben (zwei
 neue, beide schlagen an). Startbündel 162,7 von 400 KB.
+
+---
+
+## Die Auslieferung war fünf Runden rot — aus drei Gründen
+
+Gemeldet wurde: „Run, Fail, jedes Mal." Es waren **drei voneinander
+unabhängige Fehler**, und zwei davon konnten den dritten nicht einmal
+erreichen.
+
+### 1. `rhythmus` maß etwas, das es nur auf diesem Rechner gibt
+
+Der Runner meldete: *„Für 66 Proben ist der notierte Commit nicht mehr
+auffindbar."* Hier war dasselbe Tor grün.
+
+Der Grund: 66 der 71 Nachweise zeigten auf zwei Commits namens
+`wip Hebel 2+4` und `wip Hebel 5 kurz` — sie hingen **an keinem Zweig**
+und wurden nie gestoßen. Lokal findet `git` sie noch im Objektspeicher,
+auf einem frischen Klon nicht.
+
+Und das ist nicht der schlimmere Teil. Der schlimmere ist das **Grün hier**:
+für einen Commit, der kein Vorfahr von `HEAD` ist, rechnet
+`git rev-list --count X..HEAD` klaglos eine Zahl aus. Sie bedeutet nur
+nichts. Das Tor hat fünf Runden lang eine Zahl gemeldet, die keine
+Messstelle hatte (Regel 12).
+
+Der Kommentar an genau dieser Stelle **hat den Fall beschrieben und die
+Lösung genannt** — „gezählt wird an der Standdatei" — und umgesetzt war sie
+nicht. Ein Kommentar, der eine Absicht statt des Codes beschreibt, ist eine
+Lüge mit Vorlaufzeit.
+
+Jetzt zwei Wege, und der erste zählt nur, wenn er zählen darf:
+
+1. Der notierte Commit ist ein Vorfahr von `HEAD` → genau abzählen.
+2. Sonst: den Commit suchen, in dem die **Standdatei** diesen Eintrag zum
+   ersten Mal trägt. Die steht immer in der Historie, weil sie zu dem
+   Commit gehört, der die Runde trägt.
+
+Geprüft wurde das nicht durch Nachdenken, sondern durch einen **frischen
+Klon** (`git clone --no-local`). Der sagt jetzt Wort für Wort dasselbe wie
+der Arbeitsplatz — vorher das eine grün, das andere rot.
+
+### 2. `Vorschau versenden` fiel durch, wenn alles in Ordnung war
+
+Der Ablauf sah **einmal** nach, ob der Stand von `main` eine erfolgreiche
+Torkette hat, und fiel sonst durch. Werden `main` und `vorschau` zusammen
+gestoßen, ist die Vorschauprüfung nach drei Sekunden fertig und die
+Torkette braucht vier Minuten. Das Rennen war nicht zu gewinnen.
+
+Sechs rote Läufe an einem Nachmittag, sechs E-Mails, **kein einziger echter
+Befund** — und dann noch einmal dieselbe E-Mail für den echten Fehler aus
+Punkt 1, ununterscheidbar von den fünf falschen.
+
+Jetzt **wartet** er bis zu zehn Minuten auf die Entscheidung, und wenn die
+Kette rot ist, bleibt er **stehen statt durchzufallen**: mit einer Notiz,
+warum nichts versandt wurde. Die Torkette hat den Befund bereits gemeldet.
+Ein zweiter roter Lauf für dieselbe Ursache sagt nichts Neues — er
+verdoppelt die E-Mail und verdeckt beim nächsten Mal, welcher der beiden
+gemeint war.
+
+### 3. Ein Vorschau-Versand konnte die laufende Torkette abbrechen
+
+`concurrency: group: pages` stand am **Ablauf**, nicht am Versand-Job. Damit
+lagen Torkette und Vorschau-Versand in derselben Schlange, und ein Versand,
+der während einer laufenden Kette eintraf, hat sie abgeräumt. Die
+Auslieferung von `96d21d5` steht als `cancelled` im Protokoll, ohne dass an
+ihr irgendetwas falsch war.
+
+Die Schlange sitzt jetzt am Job `ausliefern`. Zwei Auslieferungen können
+sich immer noch nicht überschreiben — das war ihr Zweck —, aber eine
+Vorschau kann keine Prüfung mehr abwürgen.
+
+### Was daran lehrreich ist
+
+Zwei der drei Fehler waren **Lärm, der wie ein Befund aussah**. Solange sie
+dastanden, war der echte Fehler nicht zu finden: sechs identische E-Mails,
+eine davon berechtigt. Ein Alarm, der bei jedem Lauf angeht, ist kein Alarm.
