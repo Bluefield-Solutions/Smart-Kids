@@ -72,7 +72,7 @@ const MESSEN = () => {
   const kontrast = (a, b) => { const l1 = lum(a), l2 = lum(b);
     return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
 
-  const grundVon = (el) => {
+  const flaecheVon = (el) => {
     let p = el;
     while (p && p !== document.documentElement) {
       const cs = getComputedStyle(p);
@@ -87,6 +87,57 @@ const MESSEN = () => {
       p = p.parentElement;
     }
     return [[255, 255, 255]];
+  };
+
+  /**
+   * Was zwischen Flaeche und Schrift noch liegt.
+   *
+   * Der Elternbaum findet nur, was UEBER dem Text steht - ein
+   * Wasserzeichen ist sein GESCHWISTER und wird dabei uebersehen. Mit R2
+   * liegt unter jeder Kachel ein Umriss in `var(--ton)`, und dieses Tor
+   * haette den Text weiter gegen die nackte Fuellung gemessen: gruen
+   * gemeldet, ohne je geprueft zu haben, worauf die Schrift wirklich
+   * steht (Regel 13).
+   *
+   * Gesucht wird deshalb jedes absolut liegende Geschwister, das den
+   * Textkasten schneidet, und seine Farbe wird auf die Flaeche gemischt.
+   * Gemessen wird danach gegen BEIDES - Flaeche und Mischung -, also im
+   * schlechteren Fall.
+   */
+  const grundVon = (el) => {
+    const flaechen = flaecheVon(el);
+    const kasten = el.getBoundingClientRect();
+    const dazu = [];
+    // Nur bis zum naechsten Kasten hochlaufen, der selbst eine Flaeche
+    // hat: weiter oben liegt nichts mehr, was NUR unter diesem Text sitzt.
+    let p = el.parentElement, tiefe = 0;
+    while (p && tiefe++ < 4) {
+      for (const g of p.children) {
+        if (g === el || g.contains(el)) continue;
+        const cs = getComputedStyle(g);
+        if (cs.position !== 'absolute' && cs.position !== 'fixed') continue;
+        if (cs.visibility === 'hidden') continue;
+        const a2 = +cs.opacity;
+        if (!(a2 > 0.02)) continue;
+        const gb = g.getBoundingClientRect();
+        if (Math.min(gb.right, kasten.right) - Math.max(gb.left, kasten.left) <= 0) continue;
+        if (Math.min(gb.bottom, kasten.bottom) - Math.max(gb.top, kasten.top) <= 0) continue;
+        // Ein SVG malt mit `fill:currentColor`; ein Kasten mit seinem
+        // Hintergrund. Beides ist `color` bzw. `backgroundColor`.
+        const farbe = zuRgb(cs.backgroundColor) || zuRgb(cs.color);
+        if (farbe) dazu.push([farbe, a2]);
+      }
+      p = p.parentElement;
+    }
+    if (!dazu.length) return flaechen;
+    const gemischt = [];
+    for (const f of flaechen) {
+      let m = f.slice(0, 3);
+      for (const [farbe, a2] of dazu)
+        m = [0, 1, 2].map(i => m[i] * (1 - a2) + farbe[i] * a2);
+      gemischt.push(m);
+    }
+    return [...flaechen, ...gemischt];
   };
 
   const raus = [];

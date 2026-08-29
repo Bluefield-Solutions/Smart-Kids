@@ -121,6 +121,7 @@ const AUFNAHMEN = [
   /* Die Weltenwahl (D4) — der erste Bildschirm, den das Kind nach seinem
      Namen sieht. Sie hatte kein Vorbild, und genau die hatten in der
      Audit-Runde die Fehler. `tun:'welten'` heisst: NICHT weiterklicken. */
+  { name:'quer-profile', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'profile' },
   { name:'quer-welten', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'welten' },
   { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
   { name:'quer-spiel',  spiel:'kontinente', quer:true, stand:true, wahl:'.schirm.da' },
@@ -347,6 +348,11 @@ for (const a of AUFNAHMEN) {
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
     }
+    // Die Profilwahl ist der erste Bildschirm ueberhaupt und hatte bis R2
+    // kein Vorbild - ausgerechnet der, den beide Kinder als erstes sehen.
+    // `tun:'profile'` heisst: hier stehenbleiben.
+    if (a.tun === 'profile') { await seite.waitForSelector('.schirm.da .kachel.wer'); }
+    else {
     await seite.click(`[data-profil="${a.kind || 'fiona'}"]`);
     // Die Weltenwahl ist selbst eine Aufnahme wert; wer weiter will,
     // geht durch sie hindurch.
@@ -363,6 +369,7 @@ for (const a of AUFNAHMEN) {
         ? '.schirm.da .rechnung' : '.schirm.da .karte svg path.ziel');
       await seite.waitForTimeout(a.spiel.startsWith('rechnen') ? 300 : 0);
       if (a.tun) await vorfuehren(seite, a.tun);
+    }
     }
     letzteSeite = null;
   } else if (letzteSeite !== a.seite) {

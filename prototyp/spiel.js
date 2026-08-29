@@ -38,9 +38,6 @@ const ZEICHEN = {
   // Ein Aufkleber: rundes Blatt mit umgeschlagener Ecke.
   kleber:'<path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 0-4 4v5a9 9 0 0 1 0-18z"/><path d="M12 21c2.4 0 8.6-6.2 9-9"/>',
   zu:'<path d="M6 6l12 12M18 6L6 18"/>',
-  // Die Fachwelten: eine Kugel mit Meridian, und Plus neben Mal.
-  welt:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18a13 13 0 0 1 0-18z"/>',
-  rechnen:'<path d="M4 8h7M7.5 4.5v7"/><path d="M13 12.5l7 7M20 12.5l-7 7"/>',
 };
 const ZEI = (n, g=24)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none"
   stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"
@@ -338,12 +335,72 @@ const EBENEN = [
  * Auskunft an zwei Orten, und eines von beiden veraltet.
  */
 const WELTEN = [
-  { id:'erdkunde', name:'Erdkunde', zeichen:'welt',    farbe:5 },
-  { id:'rechnen',  name:'Rechnen',  zeichen:'rechnen', farbe:4 },
+  { id:'erdkunde', name:'Erdkunde', farbe:5 },
+  { id:'rechnen',  name:'Rechnen',  farbe:4 },
 ];
 const weltVon = (e) => e.art === 'rechnen' ? 'rechnen' : 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
 let Welt = WELTEN[0].id;
+
+/**
+ * Der Umriss, den eine Kachel zeigt.
+ *
+ * Abgeleitet aus der Kennung, nicht je Ebene hingeschrieben — dieselbe
+ * Regel wie bei den Welten. Und es ist der AEUSSERE Umriss: „Länder in
+ * Afrika" zeigt Afrika, nicht fünf Länderflecken. Das ist nicht nur
+ * kleiner, sondern richtiger — und der einzige Weg, der trägt: eine
+ * Gruppe von Nachbarflächen zerfällt beim Ausdünnen in Scherben, weil
+ * jede ihre gemeinsame Grenze anders verliert. Ein Kontinent ist EINE
+ * Fläche und hält.
+ *
+ * Gebacken wird das in `prototyp/bauen.mjs`; die vollen Umrisse stehen
+ * hier gar nicht zur Verfügung, weil `teilen()` sie aus dem Startbündel
+ * herausschneidet.
+ */
+const SILHOUETTE = { erdkunde:'kontinente', kontinente:'kontinente',
+                     bundeslaender:'deutschland', hauptstaedte:'deutschland' };
+
+/* Die Rechenwelt hat keinen Umriss. Sie bekommt ihre ZEICHEN - sonst waere
+   die halbe App bebildert und die andere Haelfte leer, und genau das sah
+   im ersten Bauversuch nach einem Fehler aus.
+   Gezeichnet statt gefuellt: deshalb eine eigene Klasse. */
+const MATHESTRICH = {
+  plus:  'M4 20h32M20 4v32',
+  minus: 'M4 20h32',
+  mal:   'M7 7l26 26M33 7L7 33',
+  durch: 'M4 20h32M20 9.5v.01M20 30.4v.01',
+};
+const MATHEBILD = {
+  'rechnen':           ['plus','mal'],
+  'rechnen:plusminus': ['plus','minus'],
+  'rechnen:reihen':    ['mal','durch'],
+};
+
+/**
+ * Das Wasserzeichen einer Kachel - Umriss oder Rechenzeichen.
+ *
+ * Die GROESSE steht hier nicht: sie kommt aus dem Stylesheet, je
+ * Kachelart einmal. Vorher stand sie als Prozentzahl am Aufruf, und der
+ * Umriss lief bei 150 % ueber den Rand hinaus - Afrika war ein Fleck,
+ * Deutschland ein Schmier. Ein Wasserzeichen, das man nicht erkennt, ist
+ * Dekoration und keine Auskunft.
+ */
+function silhouette(ebeneId) {
+  const zeichen = MATHEBILD[ebeneId];
+  if (zeichen) {
+    const teile = zeichen.map((n, i) =>
+      `<path transform="translate(${i * 48} 0)" d="${MATHESTRICH[n]}"/>`).join('');
+    return `<svg class="silhouette gezeichnet" viewBox="-4 -4 96 48"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="5" stroke-linecap="round">${teile}</svg>`;
+  }
+  const [art, kont] = ebeneId.split(':');
+  const k = art === 'laender' ? kont : SILHOUETTE[art];
+  const s = k && D.silhouetten && D.silhouetten[k];
+  if (!s) return '';
+  return `<svg class="silhouette" viewBox="${s.vb}" preserveAspectRatio="xMidYMid meet"
+    aria-hidden="true"><path d="${s.d}"/></svg>`;
+}
 
 /** Die Ebenen, die DIESEM Kind gehören. */
 const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
@@ -481,12 +538,12 @@ function profilwahl(){
     <div class="mitte">
       <div class="titel">Wer spielt?</div>
       <div class="wahl">${Object.values(PROFILE).map(p=>`
-        <button class="kachel" data-profil="${p.id}">
+        <button class="kachel wer" data-profil="${p.id}" style="--ton:var(${p.farbe})">
           <div class="kreis" style="background:var(${p.farbe})">${p.name[0]}</div>
           <div class="name">${p.name}</div>
           <div class="rolle">${p.alter} Jahre · ${p.eingabe.includes('sprechen')?'sprechen und ziehen':'tippen und ziehen'}</div>
         </button>`).join('')}</div>
-      <div class="unter">Prototyp · Fassung ${BAU.fassung} · ${BAU.datum}</div>
+      <div class="bauzeile">Prototyp · Fassung ${BAU.fassung} · ${BAU.datum}</div>
     </div>`;
   s.querySelector('#ton').onclick=(e)=>{ tonAn=!tonAn; Einst.ton=tonAn; einstSichern();
     e.target.textContent=tonAn?'Ton an':'Ton aus'; };
@@ -547,7 +604,7 @@ async function weltenwahl(){
         const anteil    = gesamt ? meine.reduce((n, b) => n + b.anteil * b.gesamt, 0) / gesamt : 0;
         return `
         <button class="kachel bunt welt" data-welt="${w.id}" style="--ton:var(--f${w.farbe})">
-          <div class="weltzeichen">${ZEI(w.zeichen, 44)}</div>
+          ${silhouette(w.id)}
           <div class="name">${w.name}</div>
           <div class="ueber">${meine.length} ${meine.length === 1 ? 'Übung' : 'Übungen'}</div>
           <div class="kachelfuss">
@@ -580,6 +637,7 @@ async function ebenenwahl(){
       <div class="wahl">${balken.map(b=>`
         <div class="kachelpaar">
         <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
+          ${silhouette(b.id)}
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
           <div class="kachelfuss">

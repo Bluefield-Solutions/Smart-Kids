@@ -169,6 +169,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   gap:var(--r4);padding:var(--r4);min-height:0}
 .titel{font-family:var(--f-ui);font-size:var(--s3);font-weight:800;letter-spacing:-.02em;text-align:center}
 .unter{font-family:var(--f-ui);font-size:var(--s0);color:var(--tinte-2);text-align:center;max-width:34ch}
+/* Der Baustempel ist kein Erklaertext. Er trug bis R2 die Klasse
+   `.unter` und stand damit GROESSER da als „6 Jahre · sprechen und
+   ziehen" - auf dem ersten Bildschirm, den die Kinder sehen. */
+.bauzeile{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-3);
+  text-align:center;margin-top:var(--r6)}
 
 /* Raster statt umbrechender Reihe. Als Reihe stapelten sich die fuenf
    Ebenen auf dem iPhone hochkant untereinander - 734 Punkte in einem
@@ -189,6 +194,36 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    zwei Reihen und schoben den "Verstanden"-Knopf aus dem Bild. Ein Mass
    fuer alle waere hier das Bequeme, nicht das Richtige. */
 .wahl.eng{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+/* ---- Die Kachelsprache (R2, Fassung „B · Bild" auf Weiss) -------------
+   Auf weissem Grund traegt nicht mehr die Flaeche, sondern der RAND: 26 %
+   Fuellung aus dem eigenen Ton, 52 % Rand daraus. Und jede Kachel zeigt
+   IHREN Umriss als Wasserzeichen - ein Kind, das noch nicht liest,
+   erkennt Afrika am Bild und nicht am Wort.
+   Der Umriss sitzt rechts und wird nach links ausgeblendet; ohne diese
+   Maske lief er im Entwurf mitten durch das Wort „Bundeslaender". */
+.kachel.bunt,.kachel.welt,.kachel.wer{
+  background:color-mix(in oklab, var(--ton) 26%, var(--papier));
+  border:var(--strich) solid color-mix(in oklab, var(--ton) 52%, var(--papier))}
+/* Das Wasserzeichen liegt GANZ in der Kachel. Bei 150 % Hoehe lief es
+   oben und unten heraus: Afrika war ein Fleck, Deutschland ein Schmier -
+   erkennbar war keins von beiden. Die Hoehe steht hier und nur hier, je
+   Kachelart einmal; am Aufruf steht keine Zahl mehr. */
+.kachel .silhouette{position:absolute;right:0;top:50%;translate:0 -50%;
+  height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}
+.kachel.welt .silhouette{height:80%;max-width:76%}
+.kachel .silhouette path{fill:currentColor}
+/* Die Rechenzeichen werden gezogen, nicht gefuellt. */
+.kachel .silhouette.gezeichnet path{fill:none}
+.kachel .silhouette.gezeichnet{opacity:.26;max-width:44%}
+.kachel.welt .silhouette.gezeichnet{max-width:56%}
+.kachel.bunt,.kachel.welt,.kachel.wer{position:relative;overflow:hidden}
+/* Der Inhalt liegt UEBER dem Wasserzeichen — aber das Wasserzeichen ist
+   selbst ein Kind und darf nicht mitgenommen werden. Ohne `:not()` hat
+   diese Zeile es aus der absoluten Lage geholt (hoehere Spezifitaet als
+   `.kachel .silhouette`), es wurde zum Flex-Element in seiner
+   Eigengroesse, und die Kacheln wuchsen auf das Vierfache. */
+.kachel.bunt>*:not(.silhouette),.kachel.welt>*:not(.silhouette),
+.kachel.wer>*:not(.silhouette){position:relative}
 /* Die Fachwelten (D4). Zwei grosse Karten statt neun Kacheln: das Kind
    waehlt erst das Fach. Sie duerfen breiter sein als eine Ebenenkachel -
    es sind zwei, und sie sollen unverwechselbar sein. */
@@ -199,15 +234,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Ebenenkachel - auf dem Zielgeraet standen dann zwei breite Balken unter
    einer halbleeren Flaeche. `passt` war gruen; gesehen hat es erst der
    Blick auf die Aufnahme (Regel 7). Sie bekommen deshalb eine Mindesthoehe
-   und ein grosses Zeichen: es ist das einzige, was ein Kind, das nicht
-   liest, auf diesem Bildschirm unterscheiden kann. */
+   und ein grosses Bild: der Umriss ist das einzige, was ein Kind, das
+   nicht liest, auf diesem Bildschirm unterscheiden kann. Das kleine
+   Eckzeichen stand daneben und sagte dasselbe noch einmal, nur kleiner -
+   es ist mit R2 weggefallen. */
 .kachel.welt{gap:var(--r2);align-items:flex-start;justify-content:flex-end;
   min-height:210px}
-.kachel.welt .weltzeichen{display:flex;color:var(--auf-flaeche);opacity:.9;
-  margin-bottom:auto}
-.kachel.welt .weltzeichen svg{width:56px;height:56px}
 .kachel.welt .name{font-size:var(--s3)}
-.kachel.welt .ueber{opacity:.85}
 /* `min-width:0` ist hier kein Schoenheitsfehler, sondern noetig: ein
    Rasterfeld ist von sich aus mindestens so breit wie sein laengstes Wort,
    und "Landeshauptstaedte" sprengte damit die Spalte - auf vier von sechs
@@ -247,6 +280,9 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   font-size:var(--s-klein);font-weight:700;color:var(--tinte-2)}
 /* Der leere Aufkleber muss noch zu SEHEN sein - mit --stern-aus war er auf
    der Kachel praktisch unsichtbar, und damit stand da eine nackte Null. */
+/* Auf einer Kachel steht die Zahl auf dem Wasserzeichen, nicht auf der
+   nackten Fuellung - `--tinte-2` reichte dort nicht mehr. */
+.kachel .klebermarke{color:var(--tinte)}
 .klebermarke svg{stroke:var(--tinte-3);fill:none}
 .klebermarke:not([data-leer]) svg{stroke:var(--tinte);
   fill:color-mix(in oklab, var(--stern-an) 80%, var(--papier))}
@@ -275,7 +311,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
              inset 0 var(--strich) 0 var(--knopf-licht)}
 .kachel .ueber{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:700;
   letter-spacing:.08em;text-transform:uppercase;
-  color:color-mix(in oklab, var(--ton) 42%, var(--tinte))}
+  color:color-mix(in oklab, var(--ton) 28%, var(--tinte))}
 .kachel.bunt .name{text-align:left;line-height:1.1;font-size:var(--s1)}
 .kachel.bunt .balken{background:color-mix(in oklab, var(--ton) 45%, var(--papier))}
 .kachel.bunt .balken i{background:color-mix(in oklab, var(--ton) 75%, var(--tinte))}
@@ -655,6 +691,11 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    eine Medienabfrage erhoeht die Spezifitaet nicht, bei gleichem Gewicht
    gewinnt die spaetere Regel. Das Tor meldete daraufhin drei Tasten der
    Eltern-PIN weiter als nicht erreichbar, obwohl die Regel dastand. */
+/* Die Maske sitzt auf dem UMRISS, nicht auf der Kachel - seit der
+   Umriss in die rechte Haelfte passt, braucht sie nur noch seine linke
+   Kante weichzuzeichnen. Bei 58 % fraß sie das halbe Bild. */
+.kachel .silhouette{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%);
+  mask-image:linear-gradient(to right,transparent 0,#000 30%)}
 @media (max-height:440px), (max-width:430px){
   :root{
     --s-klein:14px; --s0:17px; --s1:20px; --s2:24px; --s3:28px; --s4:34px; --s5:40px;
@@ -699,7 +740,6 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      wie gross eine Welt ist. */
   .kachel.welt{min-height:170px}
   .kachel.welt .ueber{display:block}
-  .kachel.welt .weltzeichen svg{width:40px;height:40px}
   .kachel.welt .name{font-size:var(--s2)}
   .kachel .stand .sterne svg{width:17px;height:17px}
   /* Der Endbildschirm hat mit Balken, Aufkleberzeile und Hinweis drei

@@ -183,7 +183,50 @@ const SUCHE = () => {
       gez: [Math.round(gez.b), Math.round(gez.h)],
     };
   }
-  return { raus, klein, zu, karte, bewacht };
+  // UEBERLAPPEN: liegt Sichtbares auf Sichtbarem?
+  //
+  // `elementFromPoint` oben findet nur, was die MITTE eines Knopfes
+  // zudeckt. Ein Kasten, der zur Haelfte auf dem Nachbarn liegt, hat freie
+  // Mitten - und war damit kein Befund. Genau das war die Sorge des
+  // Nutzers bei R2 („sicherstellen, dass nichts ueberlappt"), und genau
+  // das konnte kein Tor sagen.
+  //
+  // Geprueft werden nur Elemente IM FLUSS. Was absolut liegt, liegt
+  // absichtlich uebereinander: das Wasserzeichen unter seiner Kachel, der
+  // Kopf ueber der Buehne. Deren Fall ist `elementFromPoint` und, fuer
+  // das Wasserzeichen, das Tor `lesbarkeit`.
+  const ueber = [];
+  {
+    const kasten = [];
+    for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
+      + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
+      + '.schirm.da .titel, .schirm.da .frage, .schirm.da .bauzeile, .schirm.da .kachelpaar')) {
+      const cs = getComputedStyle(el);
+      if (cs.position === 'absolute' || cs.position === 'fixed') continue;
+      if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
+      const b = el.getBoundingClientRect();
+      if (b.width < 2 || b.height < 2) continue;
+      kasten.push({ el, b, text: (el.textContent.trim() || el.className).slice(0, 22)
+        .replace(/\s+/g, ' ') });
+    }
+    // Nur die INNERSTEN Kaesten. Sonst meldet ein Ueberlappen vierfach:
+    // Huelle gegen Huelle, Huelle gegen Kachel, Kachel gegen Huelle,
+    // Kachel gegen Kachel. Vier Zeilen fuer einen Befund lesen sich wie
+    // vier Befunde.
+    for (let i = kasten.length - 1; i >= 0; i--)
+      if (kasten.some(y => y !== kasten[i] && kasten[i].el.contains(y.el)))
+        kasten.splice(i, 1);
+    for (let i = 0; i < kasten.length; i++) for (let j = i + 1; j < kasten.length; j++) {
+      const x = kasten[i], y = kasten[j];
+      if (x.el.contains(y.el) || y.el.contains(x.el)) continue;
+      const breit = Math.min(x.b.right, y.b.right) - Math.max(x.b.left, y.b.left);
+      const hoch  = Math.min(x.b.bottom, y.b.bottom) - Math.max(x.b.top, y.b.top);
+      if (breit > 1 && hoch > 1)
+        ueber.push(`„${x.text}" und „${y.text}" ueberlappen sich um `
+          + `${breit.toFixed(0)}×${hoch.toFixed(0)} px`);
+    }
+  }
+  return { raus, klein, zu, ueber, karte, bewacht };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -262,6 +305,7 @@ for (const g of GERAETE) {
     zuKlein += r.klein.length;
     for (const x of r.raus) meldungen.push(`${name}: ${x}`);
     for (const x of r.zu) meldungen.push(`${name}: ${x}`);
+    for (const x of r.ueber) meldungen.push(`${name}: ${x}`);
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
         + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `

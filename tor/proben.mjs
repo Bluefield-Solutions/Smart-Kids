@@ -291,7 +291,30 @@ const PROBEN = [
     an:{ ...DIST, fehlt:'top:var(--sicher-oben)' },
     sagt:'im Bereich des Telefons' },
 
+  // Zwei Kacheln liegen aufeinander.
+  //
+  // Der erste Anlauf schob die Kachel um 4 px - und das Tor blieb gruen,
+  // ZU RECHT: die Luecke zwischen den Reihen ist groesser als 4 px, es
+  // ueberlappte gar nichts. Ein Eingriff, der nichts bewirkt, sieht aus
+  // wie ein bestandenes Tor (Regel 3). 60 px liegen sicher drueber.
+  { n:'zwei Kacheln liegen aufeinander', tor:'passt', bauen:true, datei:V,
+    such:'.kachel.welt .name{font-size:var(--s3)}',
+    ersatz:'.kachel.welt .name{font-size:var(--s3)}\n.wahl .kachelpaar:first-child{translate:0 60px}',
+    an:{ ...DIST, text:'translate:0 60px' }, sagt:'ueberlappen sich' },
+
   /* --- lesbarkeit --------------------------------------------------- */
+  // Das Wasserzeichen unter der Schrift.
+  //
+  // `lesbarkeit` lief den ELTERNBAUM hoch und sah damit nie, was als
+  // GESCHWISTER hinter dem Text liegt. Diese Probe faerbt den Umriss
+  // schwarz und deckend: steht er nicht in der Rechnung, aendert sich am
+  // gemeldeten Kontrast nichts - und das Tor bezeugt etwas, das es nie
+  // geprueft hat (Regel 13).
+  { n:'das Wasserzeichen unter der Schrift zählt nicht', tor:'lesbarkeit', bauen:true, datei:V,
+    such:'  height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}',
+    ersatz:'  height:86%;max-width:52%;opacity:1;pointer-events:none;color:#000}',
+    an:{ ...DIST, text:'opacity:1;pointer-events:none;color:#000' }, sagt:':1' },
+
   { n:'kleiner Text wird zu hell', tor:'lesbarkeit', bauen:true, datei:'src/marken/marken.css',
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },

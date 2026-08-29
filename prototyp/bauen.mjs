@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
+import { DEUTSCHLAND_GROB } from '../src/geo/deutschland.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
 import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
@@ -94,6 +95,55 @@ const bK = (()=>{ const xs=[],ys=[];
   return { x0:Math.min(...xs), y0:Math.min(...ys), x1:Math.max(...xs), y1:Math.max(...ys) }; })();
 D.vbK = `${bK.x0-8} ${bK.y0-8} ${bK.x1-bK.x0+16} ${bK.y1-bK.y0+16}`;
 D.vbD = bbox(D.deutschland);
+
+/* Silhouetten fuer die Kacheln (R2).
+ *
+ * Jede Ebenenkachel zeigt ihren eigenen Umriss als Wasserzeichen — ein
+ * Kind, das noch nicht liest, erkennt Afrika am Bild und nicht am Wort.
+ * Dafuer stehen die echten Umrisse aber NICHT zur Verfuegung: `teilen()`
+ * schneidet `pfad` aus dem Startbuendel heraus, fuer Deutschland und alle
+ * Laender. Auf der Ebenenwahl waeren sieben von acht Kacheln leer.
+ *
+ * Also eine eigene, sehr grobe Fassung — und zwar der AEUSSERE Umriss,
+ * nicht die Innenzeichnung:
+ *
+ *   „Laender in Afrika"  ->  Afrika, nicht fuenf Laenderflecken
+ *
+ * Das ist nicht nur kleiner, sondern richtiger. Und es ist der einzige
+ * Weg, der ueberhaupt funktioniert: gemessen zerfaellt eine Gruppe von
+ * Nachbarflaechen beim Ausduennen in Scherben, weil jede ihre gemeinsame
+ * Grenze anders verliert (jeder 32. Punkt: Afrika in Splittern). Ein
+ * Kontinent ist EINE Flaeche und haelt.
+ *
+ * Gemessen: alle sechs Kontinente zusammen 5,8 KB, Deutschland 15 KB —
+ * gegen 1 370 KB, die die vollen Umrisse kosten wuerden.
+ */
+const silhouette = (pfad, n) => {
+  const stuecke = [];
+  for (const t of pfad.split('M').filter(Boolean)) {
+    const pk = [...t.matchAll(/(-?[\d.]+),(-?[\d.]+)/g)].map(m => [+m[1], +m[2]]);
+    const k = pk.filter((_, i) => i % n === 0);
+    if (k.length < 4) continue;                    // zu wenig fuer eine Flaeche
+    stuecke.push('M' + k.map(([x, y]) => Math.round(x) + ',' + Math.round(y)).join('L') + 'Z');
+  }
+  return stuecke.join('');
+};
+{
+  const roh = Object.fromEntries(KONTINENTE_GROB.map(k => [k.id, k.pfad]));
+  const welt = KONTINENTE_GROB.filter(k => k.id !== 'antarktika').map(k => k.pfad).join(' ');
+  const d = DEUTSCHLAND_GROB.map(b => b.pfad).join(' ');
+  D.silhouetten = {
+    kontinente:  { d: silhouette(welt, 16),             vb: bbox([{ pfad: welt }]) },
+    europa:      { d: silhouette(roh.europa, 16),       vb: bbox([{ pfad: roh.europa }]) },
+    afrika:      { d: silhouette(roh.afrika, 16),       vb: bbox([{ pfad: roh.afrika }]) },
+    asien:       { d: silhouette(roh.asien, 16),        vb: bbox([{ pfad: roh.asien }]) },
+    nordamerika: { d: silhouette(roh.nordamerika, 16),  vb: bbox([{ pfad: roh.nordamerika }]) },
+    suedamerika: { d: silhouette(roh.suedamerika, 16),  vb: bbox([{ pfad: roh.suedamerika }]) },
+    deutschland: { d: silhouette(d, 8),                 vb: bbox([{ pfad: d }]) },
+  };
+  const kb = Object.values(D.silhouetten).reduce((a, s) => a + s.d.length, 0) / 1024;
+  console.log(`  Silhouetten fuer die Kacheln: ${kb.toFixed(1)} KB`);
+}
 D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, bbox(roh)]));
 // Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
 // nicht nur die Ziele - sonst kann man durch Ausschluss raten.
