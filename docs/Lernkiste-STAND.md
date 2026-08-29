@@ -3164,3 +3164,38 @@ selbst gemeldet, keiner kam aus dem Nachdenken:
 4. Und weil damit eine leere Liste möglich wurde: eine leere Liste ist
    **rot**, nicht grün. Eine Prüfung, die nichts zu prüfen fand, hat nichts
    bewiesen (Regel 5).
+
+### Nachtrag: zwei Gegenproben, die seit R4 nichts bewiesen haben
+
+Beim Nachziehen der Nachweise für die umbenannten Proben schlug eine nicht
+an — und dann noch zweimal nicht. Sie hieß *„Eltern bekommt doch eine
+Auswahl"* und war seit R4 grün, ohne je etwas geprüft zu haben.
+
+**Erstens kam der Eingriff nicht an.** Sie prüfte, ob `P.kandidaten > 0`
+aus dem Bündel **verschwunden** ist. Der Ausdruck stand aber zweimal in
+`spiel.js` — bei `istAuswahl` und zwölf Zeilen weiter bei `wieviel`. Er
+fehlte also nie. Regel 3, und die Probe meldete es selbst.
+
+**Zweitens fing die zweite Sperre den Eingriff auf.** Genau dieselbe
+Doppelung: `istAuswahl` auszuhebeln half nichts, weil `wieviel` für
+`kandidaten:0` immer noch null Möglichkeiten ausrechnete. Zwei Sperren für
+eine Sache sehen nach Sorgfalt aus und sind das Gegenteil — die zweite
+rettet still, was die erste durchlässt, und niemand erfährt, dass die
+erste kaputt ist. Es gibt jetzt eine: `const darfWaehlen = P.kandidaten > 0`.
+
+**Drittens konnte die Prüfung im Tor gar nicht anschlagen.** Sie führte
+eine Verbotsliste `['eltern: antippen']` über die vermerkten Antwortwege.
+„Antippen" wird aber nur vermerkt, wenn der Umschalter `#weise` auf dem
+Bildschirm steht — und den bekommt nur, wer **zwei** Eingabewege hat. Das
+Profil „Eltern" hat einen. Die Liste hätte nie einen Eintrag gesehen.
+
+Geprüft wird jetzt an der Stelle, an der ein ausgefallenes Verbot wirklich
+sichtbar wird: auf dem Kartenbildschirm steht dann eine Auswahl statt eines
+Tippfelds. Und *wer* nie eine Auswahl bekommt, liest das Tor aus der Zeile
+„Auswahl statt Tippen" im Backlog — nicht aus `spiel.js`, das die Gegenprobe
+fälscht.
+
+Drei Anläufe für eine einzige Zusage. Der Wert der stehenden Gegenproben
+liegt genau hier: die Zusage *stand* im Programm, sie war sogar richtig
+umgesetzt — nur bewiesen war sie nicht, und das sieht von außen identisch
+aus.
