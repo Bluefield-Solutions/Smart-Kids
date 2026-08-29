@@ -1403,6 +1403,7 @@ sie maßen, was leichter zu messen war:
 | — | **Die Entwürfe und den Prototyp auf dem iPad ansehen.** Kein Tor läuft auf iOS. | ihr |
 | — | Schriftentscheidung: Plus Jakarta Sans oder Nunito, am Gerät | ihr |
 | — | M1: Vite und Svelte. PWA, Service Worker und Ablage stehen bereits. | ich |
+| — | **Die Vorschau freischalten**: Settings → Environments → `github-pages` → Deployment branches → `vorschau` erlauben. Ein Klick, und die Vorschau liefert selbst aus statt auf die nächste `main`-Auslieferung zu warten. | ihr |
 | D31 | Der Beweis für den Lagernamen (F13): zwei Installationen an zwei Pfaden in denselben Browser setzen und nach der zweiten die erste ohne Netz starten. Heute prüft `pwa` nur die Form des Namens. | ich |
 | D28 | `ansicht` auf dem Runner: nur im festgenagelten Playwright-Abbild sinnvoll, samt dort aufgenommener Vorbilder | ich |
 | — | Leitner, Elternbereich, Protokoll | ich |
@@ -1670,6 +1671,34 @@ Das Tor `pwa` prüft die **Form** des Namens — und sagt in seinem Kommentar
 ausdrücklich, dass es die Form prüft und nicht die Wirkung. Der Beweis wäre,
 zwei Installationen an zwei Pfaden in denselben Browser zu setzen und nach
 der zweiten die erste ohne Netz zu starten. Steht unten als offener Punkt.
+
+### Was noch fehlt: ein Klick in den Einstellungen
+
+Der erste Lauf auf dem Zweig `vorschau`:
+
+```
+Schnelle Tore   ✓ erfolgreich   23 s   (npm ci, die Tore, das Zusammenstellen)
+Nach Pages      ✗ fehlgeschlagen 1 s   ohne Runner, ohne einen einzigen Schritt
+```
+
+Die schnelle Hälfte stimmt und ist gemessen: **23 Sekunden**, besser als die
+anderthalb Minuten, mit denen ich gerechnet hatte. Der Versand fällt durch,
+und zwar bevor er anfängt — die Umgebung `github-pages` lässt Auslieferungen
+nur vom Standardzweig zu. Das ist eine Schutzregel, keine Panne, und sie
+gehört nicht umgangen, sondern entschieden:
+
+> **Settings → Environments → `github-pages` → Deployment branches:**
+> `vorschau` zu den erlaubten Zweigen hinzufügen.
+
+Bis dahin erscheint `/vorschau/` trotzdem — nur nicht sofort, sondern bei
+der **nächsten Auslieferung von `main`**: `--rolle=haupt` holt sich den
+Zweig `vorschau` und nimmt ihn mit. Das ist die halbe Ersparnis, aber es ist
+kein toter Weg.
+
+Der Umweg ohne Einstellung wäre ein zweiter Ablauf mit `on: workflow_run` —
+der läuft im Zusammenhang des Standardzweigs und dürfte damit versenden. Er
+kostet einen weiteren Ablauf und muss den Anhang der auslösenden Ausführung
+von Hand durchreichen. Erst bauen, wenn ihr den Klick nicht wollt.
 
 ### Drei neue Gegenproben
 
