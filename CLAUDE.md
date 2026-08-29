@@ -27,6 +27,11 @@ npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    angefasst wurde — meist unter einer Minute. Die
                    Abkürzung schreibt KEINEN Stand, sonst wäre die Regel
                    „alle drei Runden" still ausgehebelt.
+npm run smoke      spielt die App im Browser durch. `-- --nur=spielen,tippen`
+                   fährt nur einzelne Abschnitte (spielen · ablage · tippen ·
+                   ebene4 · durchgang) — dasselbe Mittel wie bei `ziehen`, und
+                   der Grund, warum ein voller Probenlauf nicht mehr eine
+                   halbe Stunde dauert.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html (zum Ansehen)
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und

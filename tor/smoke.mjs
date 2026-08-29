@@ -145,6 +145,47 @@ async function loese(p) {
   return info.name;
 }
 
+/* ---------- Abschnitte --------------------------------------------------
+ *
+ * Der Rauchtest ist der teuerste Posten im Probenlauf: 1850 von 2100
+ * Sekunden, weil JEDE seiner zwanzig Gegenproben ihn ganz durchfährt -
+ * obwohl jede sich für einen Abschnitt interessiert. Bei `ziehen` ist
+ * dasselbe längst zerlegt (129 s auf 48 s).
+ *
+ *     spielen    zwei Runden Bundesländer: Sterne, Band, Fahne, Übergang
+ *     ablage     Neustart, Ebenenwahl, Forscherbuch, Eltern, „von vorne"
+ *     tippen     Hochformat, Lea tippt
+ *     ebene4     vier Städte, eine richtig
+ *     durchgang  jede Ebene mit beiden Profilen
+ *
+ * `ablage` braucht, was `spielen` abgelegt hat - deshalb zieht es den
+ * Abschnitt mit. Alles andere steht für sich.
+ *
+ * OHNE Argument läuft alles, und die Kette ruft ihn ohne Argument auf: eine
+ * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
+ */
+const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'ebene4', 'durchgang'];
+const BRAUCHT = { ablage: ['spielen'] };
+const gewaehlt = (() => {
+  const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
+  if (!roh) return null;
+  const m = new Set(roh.split(',').map(x => x.trim()).filter(Boolean));
+  for (const t of [...m]) for (const v of (BRAUCHT[t] || [])) m.add(v);
+  return m;
+})();
+// Ein Tippfehler im Namen würde sonst ALLES überspringen und grün melden -
+// die stillste Art, einen Test abzuschalten.
+for (const t of (gewaehlt || []))
+  if (!ABSCHNITTE.includes(t)) {
+    console.error(`\n  smoke: den Abschnitt „${t}" gibt es nicht. `
+      + `Bekannt sind: ${ABSCHNITTE.join(', ')}.\n`);
+    process.exit(2);
+  }
+const laeuft = (t) => !gewaehlt || gewaehlt.has(t);
+if (gewaehlt)
+  console.log(`  (nur ${[...gewaehlt].sort().join(', ')} — `
+    + `${ABSCHNITTE.filter(t => !gewaehlt.has(t)).join(', ')} übersprungen)`);
+
 /* --- Durchgang 1: spielen und ablegen --------------------------------- */
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
@@ -152,7 +193,7 @@ const sternVerlauf = [], bandVerlauf = [];
 let endSterne = null, kleberMoment = 0;
 const fahnenArten = new Set();
 let durchgespielt = 0;
-try {
+if (laeuft('spielen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   await p.click('[data-profil="fiona"]');
   await p.waitForSelector('.schirm.da [data-ebene]');
@@ -221,7 +262,7 @@ try {
 
 /* --- Durchgang 2: NEUE Seite, gleiche Herkunft. Traegt die Ablage? ---- */
 let fortschritt = null;
-try {
+if (laeuft('ablage')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
   await p.click('[data-profil="fiona"]');
   await p.waitForSelector('.schirm.da [data-ebene="bundeslaender"]');
@@ -451,7 +492,7 @@ try {
 } catch (e) { merke('ablage/eltern', e); }
 
 /* --- Durchgang 3: Hochformat, Lea tippt ------------------------------- */
-try {
+if (laeuft('tippen')) try {
   const p = await neueSeite({ width: 390, height: 844 }, ctx);
   await p.click('[data-profil="lea"]');
   await p.waitForSelector('.schirm.da [data-ebene]');
@@ -482,7 +523,7 @@ try {
 // auch bei Lea eine Auswahl ist.
 const plaetze = new Set();
 let ebene4 = 0;
-for (const wer of ['fiona', 'lea']) {
+if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
   try {
     const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
     const p = await neueSeite({ width: 844, height: 390 }, eigen);
@@ -536,11 +577,13 @@ for (const wer of ['fiona', 'lea']) {
 }
 // Eine Mischung, die die richtige Antwort immer auf denselben Platz legt,
 // besteht jede Einzelpruefung oben - und ist trotzdem kaputt.
-if (ebene4 && plaetze.size < 3)
-  merke('ebene4', new Error(`die richtige Stadt lag in ${ebene4} Aufgaben nur auf `
-    + `${plaetze.size} verschiedenen Plätzen (${[...plaetze].map(x=>x+1).sort().join(', ')})`));
-console.log(`  Ebene 4:                    ${ebene4} Aufgaben, immer 4 Städte, `
-  + `richtige auf Platz ${[...plaetze].map(x=>x+1).sort().join('/')}`);
+if (laeuft('ebene4')) {
+  if (ebene4 && plaetze.size < 3)
+    merke('ebene4', new Error(`die richtige Stadt lag in ${ebene4} Aufgaben nur auf `
+      + `${plaetze.size} verschiedenen Plätzen (${[...plaetze].map(x=>x+1).sort().join(', ')})`));
+  console.log(`  Ebene 4:                    ${ebene4} Aufgaben, immer 4 Städte, `
+    + `richtige auf Platz ${[...plaetze].map(x=>x+1).sort().join('/')}`);
+}
 
 /* --- Durchgang 5: jede Ebene, beide Profile, eine richtige Antwort ----- */
 //
@@ -568,7 +611,7 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
 // Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: [] };
-for (const wer of ['fiona', 'lea']) {
+if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
     const p = await neueSeite({ width: 1180, height: 820 }, eigen);
@@ -706,9 +749,14 @@ for (const wer of ['fiona', 'lea']) {
   } catch (e) { merke('durchgang', e); }
   await eigen.close();
 }
+/* Ab hier wird geurteilt - und ein Urteil über einen Abschnitt, der nicht
+ * gelaufen ist, wäre kein Urteil, sondern ein Fehlalarm. Genau daran ist
+ * die erste Fassung dieser Zerlegung gescheitert: „Der Übergang wurde
+ * nicht gemessen" bei einem Lauf, der ihn gar nicht messen sollte. */
+const EBENEN_JE = (wer) => EBENEN_ALLE.length + EBENEN_EIGEN[wer].length;
+if (laeuft('durchgang')) {
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
-const EBENEN_JE = (wer) => EBENEN_ALLE.length + EBENEN_EIGEN[wer].length;
 console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0} von ${EBENEN_JE('fiona')}, `
   + `Lea ${gehoert.lea||0} von ${EBENEN_JE('lea')}`);
 // Fiona liest noch nicht: JEDE Aufgabe muss angesagt werden. Lea liest -
@@ -729,9 +777,11 @@ for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen'])
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);
+}
 
 await ctx.close(); await b.close(); server.close();
 
+if (laeuft('spielen')) {
 console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`);
 // Der schwaechere der beiden Bildschirme, im schlimmsten Bild des Wechsels.
 // 0,20 laesst den Rand der Ueberblendung zu und faengt das Doppelbild:
@@ -777,5 +827,6 @@ if (endSterne !== null && jeRunde.length && endSterne > hoechste)
 console.log(`  Fortschrittsband:           ${bandVerlauf[bandVerlauf.length-1] || 'KEINES'}`);
 if (!bandVerlauf.some(b => /glatt|geschafft|gezeigt/.test(b)))
   fehler.push('Das Fortschrittsband färbt sich nie — es zeigt nicht, wie die Runde lief');
+}
 if (fehler.length) { console.log(`\n  ${fehler.length} FEHLER:`); fehler.forEach(f => console.log('    ✗ ' + f)); process.exit(1); }
 console.log('\n  Rauchtest grün: gespielt, abgelegt, Neustart überstanden, Buch gefüllt, Eltern gelesen, getippt.');

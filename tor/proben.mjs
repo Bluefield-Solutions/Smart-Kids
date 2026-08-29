@@ -209,7 +209,7 @@ const PROBEN = [
     sagt:'ist die richtige' },
 
   // Fionas Rechenkachel steht auch bei Lea. Eine davon ist die falsche.
-  { n:'die Rechenebene gehört plötzlich beiden Kindern', tor:'smoke', bauen:true, datei:D,
+  { n:'die Rechenebene gehört plötzlich beiden Kindern', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"    art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },",
     ersatz:"    art:'rechnen', mischung: Rechnen.MISCHUNG_FIONA },",
     an:{ ...DIST, fehlt:"wer:['fiona']" },
@@ -217,7 +217,7 @@ const PROBEN = [
 
   // Und die Weiche selbst: ohne sie landet die Rechenaufgabe auf dem
   // Kartenbildschirm, und der sucht eine Karte, die es nicht gibt.
-  { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', bauen:true, datei:D,
+  { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"  zeige(ebeneArt(ebeneId) === 'rechnen' ? rechenschirm : spielschirm);",
     ersatz:'  zeige(spielschirm);',
     an:{ ...DIST, fehlt:"ebeneArt(ebeneId) === 'rechnen' ? rechenschirm" },
@@ -379,32 +379,32 @@ const PROBEN = [
   /* --- smoke -------------------------------------------------------- */
   // Das Doppelbild: nimmt man dem neuen Bildschirm seinen Takt Vorsprung,
   // blenden beide gleichzeitig und treffen sich bei etwa 0,5.
-  { n:'beide Bildschirme blenden gleichzeitig', tor:'smoke', bauen:true, datei:V,
+  { n:'beide Bildschirme blenden gleichzeitig', tor:'smoke', args:['--nur=spielen'], bauen:true, datei:V,
     such:'  transition-delay:calc(var(--d-schirm) / 2)}', ersatz:'}',
     an:{ ...DIST, fehlt:'transition-delay:calc(var(--d-schirm) / 2)}' },
     sagt:'Doppelbild' },
 
   // „Von vorne" muss WIRKLICH loeschen - ein Knopf, der dasteht und nichts
   // tut, ist schlimmer als keiner.
-  { n:'„von vorne" löscht nichts', tor:'smoke', bauen:true, datei:D,
+  { n:'„von vorne" löscht nichts', tor:'smoke', args:['--nur=ablage'], bauen:true, datei:D,
     such:"    await Ablage.loesche('fortschritt', `${P.id}:${id}`).catch(()=>{});",
     ersatz:'',
     an:{ ...DIST, fehlt:"await Ablage.loesche('fortschritt', `${P.id}:${id}`)" },
     sagt:'Gegenstände im Leitner-Stand' },
   // Und es muss nachfragen: ein Fehlgriff raeumt eine Woche Uebung weg.
-  { n:'„von vorne" löscht schon beim ersten Tipper', tor:'smoke', bauen:true, datei:D,
+  { n:'„von vorne" löscht schon beim ersten Tipper', tor:'smoke', args:['--nur=ablage'], bauen:true, datei:D,
     such:"    if (b.dataset.sicher!=='ja'){", ersatz:'    if (false){',
     an:{ ...DIST, text:'if (false){' },
     sagt:'fragt nicht nach' },
 
   // Der Umschalter: ohne ihn spielen beide Kinder denselben Weg, und die
   // Haelfte der Bedienung ist ungeprueft.
-  { n:'Antippen antwortet nicht mehr', tor:'smoke', bauen:true, datei:D,
+  { n:'Antippen antwortet nicht mehr', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"      b.onclick=()=>{ if (weise==='antippen' && !erledigt) bewerte(k.name,'antippen',{ etikett:b });\n                      else vorlesen(k.name); };",
     ersatz:"      b.onclick=()=>vorlesen(k.name);",
     an:{ ...DIST, fehlt:"bewerte(k.name,'antippen'" },
     sagt:'angetippt' },
-  { n:'beide Kinder bekommen dieselbe Antwortweise', tor:'smoke', bauen:true, datei:D,
+  { n:'beide Kinder bekommen dieselbe Antwortweise', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };",
     ersatz:"const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'ziehen' };",
     an:{ ...DIST, text:"fiona:'ziehen', lea:'ziehen'" },
@@ -412,19 +412,19 @@ const PROBEN = [
 
   // Fiona liest noch nicht. Ohne Ansage ist keine Ebene fuer sie spielbar -
   // und genau das war der Zustand, bis jemand es beim Spielen gemerkt hat.
-  { n:'die Aufgabe wird nicht mehr vorgelesen', tor:'smoke', bauen:true, datei:D,
+  { n:'die Aufgabe wird nicht mehr vorgelesen', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     suchRegex:/  setTimeout\(\(\)=>\{\n    const teile = \[frageText\];[\s\S]*?\}, 500\);\n/,
     ersatzFn:()=>'',
     an:{ ...DIST, fehlt:'const teile = [frageText]' },
     sagt:'vorgelesen' },
   // Und sie haengt am KIND: Lea liest, fuer sie waere dieselbe Ansage Laerm.
-  { n:'die Ansage hängt nicht mehr am Kind', tor:'smoke', bauen:true, datei:D,
+  { n:'die Ansage hängt nicht mehr am Kind', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:'function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }',
     ersatz:'function ansagen(text){ vorlesen(text); }',
     an:{ ...DIST, fehlt:'if (!P || P.vorlesen) vorlesen(text)' },
     sagt:'hängt nicht am Kind' },
   // Das Forscherbuch soll nicht wieder zur Wand werden.
-  { n:'das Forscherbuch zeigt wieder alles', tor:'smoke', bauen:true, datei:D,
+  { n:'das Forscherbuch zeigt wieder alles', tor:'smoke', args:['--nur=ablage'], bauen:true, datei:D,
     such:'      da: stuecke.filter(x=>x.gesammelt), offen: stuecke.filter(x=>!x.gesammelt) });',
     ersatz:'      da: stuecke, offen: [] });',
     an:{ ...DIST, text:'da: stuecke, offen: []' },
@@ -440,7 +440,7 @@ const PROBEN = [
   // ebenfalls auf drei Sterne - der Rauchtest blieb gruen, obwohl der
   // Fehler drin war. Geteilt wird jetzt durch die ganze Liste: ein Stern
   // im Kopf gegen drei am Ende, genau die gemessene Urfassung.
-  { n:'Kopf und Endbildschirm rechnen wieder verschieden', tor:'smoke', bauen:true, datei:D,
+  { n:'Kopf und Endbildschirm rechnen wieder verschieden', tor:'smoke', args:['--nur=spielen'], bauen:true, datei:D,
     // Die Zeile ist in der Mathe-Runde nach `kopfNachziehenIn()` gewandert -
     // eine Einrückung weniger. Der Eingriff kam nicht mehr an, und `proben`
     // hat genau das gemeldet, statt grün zu bleiben. Die Probe gilt jetzt
@@ -453,7 +453,7 @@ const PROBEN = [
   // Und: der Kopf muss auf die Antwort reagieren, nicht erst beim naechsten Bild.
   // Ebenfalls gewandert - nach `werten()`, dem einen Ort, an dem eine
   // Antwort etwas bewirkt. Damit trifft die Probe jetzt Karte UND Rechnen.
-  { n:'das Fortschrittsband färbt sich nicht mehr', tor:'smoke', bauen:true, datei:D,
+  { n:'das Fortschrittsband färbt sich nicht mehr', tor:'smoke', args:['--nur=spielen'], bauen:true, datei:D,
     such:"  st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';",
     ersatz:'',
     an:{ ...DIST, fehlt:"st.wie[st.i] = (ergebnis === 'richtig'" },
@@ -462,7 +462,7 @@ const PROBEN = [
   // Nicht den Knopf entfernen - das gaebe nur einen Seitenfehler. Der
   // Originalfehler war, dass die Aenderung NICHT ANKAM: `Einst.pin` wurde
   // gelesen und nie geschrieben.
-  { n:'die geänderte PIN wird nicht gespeichert', tor:'smoke', bauen:true, datei:D,
+  { n:'die geänderte PIN wird nicht gespeichert', tor:'smoke', args:['--nur=ablage'], bauen:true, datei:D,
     such:'            Einst.pin = neue; await einstSichern();',
     ersatz:'            await einstSichern();',
     an:{ ...DIST, fehlt:'Einst.pin = neue;' },
@@ -472,7 +472,7 @@ const PROBEN = [
   // Sie stand als nackte Zwei zweimal in spiel.js, unter dem Namen
   // `gekonnt` - den das Forscherbuch fuer Fach 5 benutzt. Jetzt steht sie
   // einmal in leitner.js; wer sie dort verstellt, muss die Karte aendern.
-  { n:'die Karte zeigt den Fortschritt erst viel später', tor:'smoke',
+  { n:'die Karte zeigt den Fortschritt erst viel später', tor:'smoke', args:['--nur=spielen'],
     bauen:true, datei:'src/kern/leitner.js',
     such:'export const SITZT = 2;', ersatz:'export const SITZT = 5;',
     an:{ ...DIST, text:'const SITZT = 5' },
@@ -481,7 +481,7 @@ const PROBEN = [
   // Die Ebenenwahl ohne Sterne und Aufkleber. Auf dem Zielgeraet blieb
   // dann GAR NICHTS uebrig: Balken und Ueberzeile sind im kurzen
   // Querformat ausgeblendet, und die Zahl daneben liest Fiona nicht.
-  { n:'die Ebenenwahl zeigt keine Sterne und Aufkleber mehr', tor:'smoke',
+  { n:'die Ebenenwahl zeigt keine Sterne und Aufkleber mehr', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
     such:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${',
     ersatz:'<div class="stand">${\'\'}${',
@@ -490,7 +490,7 @@ const PROBEN = [
 
   // Der Balken sagt wieder etwas anderes als die Zahl daneben - der
   // Originalbefund vom Endbildschirm, nachgestellt an der Ebenenwahl.
-  { n:'Balken und Aufkleberzahl laufen wieder auseinander', tor:'smoke',
+  { n:'Balken und Aufkleberzahl laufen wieder auseinander', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
     such:'  const fest = f.gesamt ? f.gesammelt / f.gesamt : 0;',
     ersatz:'  const fest = f.anteil;',
@@ -507,7 +507,7 @@ const PROBEN = [
     an:{ ...DIST, text:'.kachel .balken{display:none}' },
     sagt:'quer-ebenen' },
 
-  { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', bauen:true, datei:D,
+  { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",
     an:{ ...DIST, text:"if (false) ergebnis='richtig';" }, sagt:'' },
@@ -526,6 +526,46 @@ if (schmutzig && !process.argv.includes('--trotzdem')) {
   console.log('  passiert, obwohl die Regel danebenstand.\n');
   for (const z of schmutzig.split('\n').slice(0, 12)) console.log('    ' + z);
   console.log('\n  Erst einchecken, dann proben.\n');
+  process.exit(2);
+}
+
+/* Kein fremder Browser im Haus.
+ *
+ * Ein Probenlauf wurde per Zeitueberschreitung hart abgeschossen; sein
+ * Chromium lief vermutlich weiter. Im naechsten Lauf meldeten zwei
+ * Rauchtest-Proben „beweist nichts", einzeln gefahren aber schlugen beide
+ * an - und im uebernaechsten Lauf alle siebzehn. Beweisen laesst sich das
+ * nachtraeglich nicht mehr, und genau das ist das Problem: eine
+ * Gegenprobe, die zweimal Verschiedenes sagt, ist schlimmer als eine
+ * fehlende, weil man ihr danach nicht mehr glaubt.
+ *
+ * Also wird aus dem unsichtbaren Verdacht eine laute Weigerung. Ob ein
+ * uebriggebliebener Browser wirklich stoert, ist damit immer noch nicht
+ * bewiesen - aber er kann es kein zweites Mal unbemerkt gewesen sein.
+ */
+const fremdeBrowser = (() => {
+  try {
+    // Gesucht wird am PROGRAMMNAMEN, nicht an der Befehlszeile. Der erste
+    // Entwurf las `ps -eo pid,args` und suchte darin nach „chrome" - und
+    // verweigerte prompt den Dienst, obwohl kein Browser lief: gefunden
+    // hatte er die eigene Shell-Zeile, in der das Wort vorkam. Eine
+    // Weigerung, die immer anschlaegt, ist so wertlos wie ein Tor, das nie
+    // etwas meldet.
+    return execSync('ps -eo pid=,comm=,args=', { encoding:'utf8' })
+      .split('\n')
+      .map(z => z.trim().match(/^(\d+)\s+(\S+)\s*(.*)$/))
+      .filter(m => m && /^(chrome|chromium|headless_shell)/i.test(m[2]))
+      .map(m => `${m[1]}  ${m[3] || m[2]}`);
+  } catch { return []; }   // kein `ps` (Windows) — dann eben ohne diese Pruefung
+})();
+if (fremdeBrowser.length && !process.argv.includes('--trotzdem')) {
+  console.log('\n  proben verweigert den Dienst: es laeuft schon ein Browser.\n');
+  console.log('  Die Rauchtest-Proben starten Chromium selbst. Ein uebriggebliebener');
+  console.log('  aus einem abgebrochenen Lauf teilt sich Speicher und Anschluesse mit');
+  console.log('  ihnen — und eine Probe, die daran scheitert, meldet „beweist nichts"');
+  console.log('  statt „hier stimmt etwas nicht". Genau so ist es einmal passiert.\n');
+  for (const z of fremdeBrowser.slice(0, 6)) console.log('    ' + z.slice(0, 100));
+  console.log('\n  Aufraeumen: pkill -f chrome     Trotzdem fahren: --trotzdem\n');
   process.exit(2);
 }
 
