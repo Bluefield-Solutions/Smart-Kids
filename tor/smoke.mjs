@@ -164,7 +164,7 @@ async function loese(p) {
  * OHNE Argument läuft alles, und die Kette ruft ihn ohne Argument auf: eine
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
-const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'ebene4', 'durchgang'];
+const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
   const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
@@ -514,6 +514,71 @@ if (laeuft('tippen')) try {
   await p.close();
 } catch (e) { merke('tippen', e); }
 
+/* --- Der Regler: kommt er bis in die Sitzung? -------------------------
+ *
+ * Regel 13 — wer eine Wirkung misst, schaltet sie zuerst ab. Ein Regler im
+ * Elternbereich, der sich schieben lässt und sich beschriftet, sieht von
+ * aussen genauso aus wie einer, der wirkt. Dazwischen liegen vier
+ * Stationen: Regler → `Einst.reihenGeteilt` → `EBENEN.mischung()` → die
+ * Sitzung. Jede einzelne davon kann still ausfallen.
+ *
+ * Gemessen wird deshalb am ENDE der Kette, an dem, was Lea wirklich
+ * vorgelegt bekommt: acht Aufgaben, und bei 50 % müssen genau vier davon
+ * Geteilt-Aufgaben sein. Die Zahl ist keine Schätzung - die Sitzung teilt
+ * jeder Sorte `Math.round(sitzung * anteil)` zu.
+ *
+ * Ein eigener Abschnitt, weil er als einziger eine ganze Sitzung
+ * durchspielt: so bezahlt ihn nur die Gegenprobe, die ihn braucht.
+ */
+if (laeuft('regler')) try {
+  const p = await neueSeite({ width: 1180, height: 820 }, ctx);
+  await p.evaluate(() => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onupgradeneeded = () => {
+      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+    };
+    auf.onsuccess = () => {
+      const t = auf.result.transaction(['einstellungen'], 'readwrite');
+      t.objectStore('einstellungen').put({ reihenGeteilt: 0.5 }, 'alles');
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }));
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('[data-profil="lea"]');
+  await p.click('[data-profil="lea"]');
+  await p.waitForSelector('.schirm.da [data-ebene="rechnen:reihen"]');
+  await p.click('[data-ebene="rechnen:reihen"]');
+  await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
+  const arten = [];
+  for (let n = 0; n < 20; n++) {
+    const r = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const el = s && s.querySelector('.rechnung');
+      if (!el) return null;
+      const m = el.textContent.match(/(\d+)\s*([+−×:])\s*(\d+)/);
+      if (!m) return null;
+      const a = +m[1], b = +m[3];
+      return { art: m[2], soll: m[2] === '×' ? a * b : a / b };
+    });
+    if (!r) break;                       // die Sitzung ist zu Ende
+    arten.push(r.art);
+    await p.fill('.schirm.da #rein', String(r.soll));
+    await p.click('.schirm.da #pruef');
+    await p.waitForTimeout(2800);
+  }
+  const geteilt = arten.filter(a => a === ':').length;
+  console.log(`  Regler bei 50 %:            ${arten.length} Aufgaben, ${geteilt} geteilt`
+    + `  (${arten.join(' ')})`);
+  if (arten.length !== 8)
+    merke('regler', new Error(`Leas Sitzung hatte ${arten.length} Aufgaben statt acht`));
+  if (geteilt !== 4)
+    merke('regler', new Error(`Der Regler stand auf 50 Prozent Division, gespielt wurden `
+      + `${geteilt} von ${arten.length} — er kommt nicht bis in die Sitzung`));
+  await p.close();
+} catch (e) { merke('regler', e); }
+
 /* --- Durchgang 4: Ebene 4 - vier Staedte, eine richtig ---------------- */
 //
 // Die Zusage lautet: IMMER genau vier Staedte, genau eine davon richtig,
@@ -610,7 +675,7 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'bundeslaender', 'hauptstaedte'];
 // Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
-const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: [] };
+const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'] };
 if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
@@ -650,19 +715,33 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
         const r = await p.evaluate(() => {
           const s = document.querySelector('.schirm.da');
           const t = s.querySelector('.rechnung').textContent;
-          const m = t.match(/(\d+)\s*([+−])\s*(\d+)/);
+          // Vier Zeichen, weil es vier Rechenarten gibt. Stünde hier
+          // weiter nur [+−], liefe Leas Ebene durch, ohne dass irgendetwas
+          // gerechnet würde - und der Rauchtest wäre grün.
+          const m = t.match(/(\d+)\s*([+−×:])\s*(\d+)/);
           if (!m) return null;
-          const soll = m[2] === '+' ? +m[1] + +m[3] : +m[1] - +m[3];
-          return { soll, i: [...s.querySelectorAll('.zahl')].map(z => +z.textContent).indexOf(soll),
-                   zahlen: [...s.querySelectorAll('.zahl')].map(z => z.textContent) };
+          const a = +m[1], b = +m[3];
+          const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
+                     : m[2] === '×' ? a * b : a / b;
+          // Lea SCHREIBT das Ergebnis. Die vier Zahlen stehen zwar im
+          // Papier, sind aber versteckt - wer sie hier anklickt, klickt
+          // ins Nichts.
+          const tippt = !!s.querySelector('#tippfeld:not([hidden])');
+          const zahlen = [...s.querySelectorAll('#auswahl .zahl')].map(z => z.textContent);
+          return { soll, tippt, zahlen, i: zahlen.map(Number).indexOf(soll) };
         });
-        if (!r || r.i < 0) {
+        if (!r || (!r.tippt && r.i < 0)) {
           merke('durchgang', new Error(`${wer}/${ebene}: die richtige Antwort `
             + `${r ? r.soll : '?'} steht nicht unter ${r ? r.zahlen.join(', ') : '—'}`));
           continue;
         }
-        await p.$$eval('.schirm.da .zahl', (els, i) => els[i].click(), r.i);
-        wege.add(`${wer}: rechnen`);
+        if (r.tippt) {
+          await p.fill('.schirm.da #rein', String(r.soll));
+          await p.click('.schirm.da #pruef');
+        } else {
+          await p.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
+        }
+        wege.add(`${wer}: rechnen ${r.tippt ? 'geschrieben' : 'angetippt'}`);
         await p.waitForTimeout(900);
         const rr = await p.evaluate(() => {
           const f = document.querySelector('.schirm.da .frage');
@@ -773,7 +852,7 @@ if ((gehoert.lea || 0) > 0)
 // Voreingestellt zieht Fiona und tippt Lea an. Wird nur EIN Weg gegangen,
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
 // Bedienung ungeprueft.
-for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen'])
+for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt', 'lea: rechnen geschrieben'])
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);

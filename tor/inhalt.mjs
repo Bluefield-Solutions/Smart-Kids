@@ -634,6 +634,105 @@ if (!fs.existsSync(KONZEPT)) {
   }
 }
 
+/* Leas Reihen: derselbe Griff, andere Zahlen.
+ *
+ * Getrennt von Fionas Block, obwohl das halbe Gerüst dasselbe ist. Der
+ * Grund steht in der Ausgabe: fällt hier etwas um, soll dastehen, WESSEN
+ * Fach kaputt ist. Ein gemeinsamer Block hätte „Rechnen, nMinus: der
+ * Abgleich sagt 55" gemeldet, und man müsste raten, welches Kind gemeint
+ * ist.
+ */
+{
+  const ABGLEICH = 'docs/Lernkiste-ABGLEICH-ANTON.md';
+  if (fs.existsSync(ABGLEICH)) {
+    const t = fs.readFileSync(ABGLEICH, 'utf8');
+    const zahl = (zeile) => {
+      const m = t.match(new RegExp(`\\|\\s*${zeile}\\s*\\|\\s*(\\d+)`));
+      return m ? +m[1] : null;
+    };
+    const soll = {
+      von:        zahl('Reihen von'),
+      bis:        zahl('Reihen bis'),
+      geteilt:    zahl('Anteil Division'),
+      geteiltMax: zahl('Anteil Division höchstens'),
+      nMal:       zahl('Aufgaben mit Mal'),
+      nZehner:    zahl('Aufgaben mit Zehn'),
+      nGeteilt:   zahl('Aufgaben mit Geteilt'),
+      nLeicht:    zahl('Leichtere Aufgaben'),
+    };
+    const fehlend = Object.entries(soll).filter(([, v]) => v === null).map(([k]) => k);
+    if (fehlend.length) {
+      fehler.push(`${ABGLEICH} nennt ${fehlend.length} Werte für Leas Reihen nicht: `
+        + `${fehlend.join(', ')} — dann prüft dieses Tor nichts`);
+    } else {
+      const v = R.reihenVorrat();
+      const zaehl = (a) => v.filter(x => x.rechenart === a).length;
+      const ist = {
+        von:        R.REIHEN[0],
+        bis:        R.REIHEN[R.REIHEN.length - 1],
+        geteilt:    Math.round(R.GETEILT_STANDARD * 100),
+        geteiltMax: Math.round(R.GETEILT_HOECHSTENS * 100),
+        nMal:       zaehl('mal'),
+        nZehner:    zaehl('zehner'),
+        nGeteilt:   zaehl('geteilt'),
+        nLeicht:    zaehl('leicht'),
+      };
+      for (const k of Object.keys(soll))
+        pruefe(soll[k] === ist[k],
+          `Leas Reihen, ${k}: der Abgleich sagt ${soll[k]}, gerechnet sind ${ist[k]}`);
+
+      /* Die Mischung muss an JEDER Reglerstellung aufgehen.
+       *
+       * Vier Anteile, die zusammen 1 ergeben müssen, ergeben irgendwann
+       * nicht mehr 1 — deshalb sind drei davon abgeleitet. Geprüft wird
+       * es trotzdem: eine Ableitung, die niemand nachrechnet, ist eine
+       * Behauptung.
+       */
+      for (let g = 0; g <= 100; g += 5) {
+        const m = R.mischungLea(g / 100);
+        const summe = Object.values(m).reduce((a, b) => a + b, 0);
+        pruefe(Math.abs(summe - 1) < 1e-9,
+          `Leas Mischung bei ${g} % Division ergibt ${summe.toFixed(4)} statt 1`);
+        pruefe(m.geteilt <= R.GETEILT_HOECHSTENS + 1e-9,
+          `Der Regler lässt bei ${g} % ${Math.round(m.geteilt * 100)} % Division zu — `
+          + `höchstens sind ${Math.round(R.GETEILT_HOECHSTENS * 100)} %`);
+        pruefe(Object.values(m).every(x => x >= 0),
+          `Leas Mischung bei ${g} % hat einen negativen Anteil`);
+      }
+
+      // „weniger × 10" — und zwar nachgerechnet, nicht behauptet. Von
+      // Natur aus steckt in 14 der 50 Reihenaufgaben eine Zehn; ein Anteil,
+      // der nicht darunter liegt, hat nichts verringert.
+      const natuerlich = ist.nZehner / (ist.nMal + ist.nZehner);
+      pruefe(R.ANTEIL_ZEHNER < natuerlich,
+        `Die Zehnerreihe soll seltener drankommen: von Natur aus `
+        + `${Math.round(natuerlich * 100)} %, eingestellt sind `
+        + `${Math.round(R.ANTEIL_ZEHNER * 100)} %`);
+
+      // Jede Division geht auf, jede Zahl bleibt sagbar.
+      const krumm = v.filter(x => !Number.isInteger(x.wert));
+      pruefe(krumm.length === 0,
+        `${krumm.length} Aufgaben gehen nicht auf, z. B. ${krumm[0]?.frage}`);
+      pruefe(v.every(x => x.wert >= 0 && x.wert <= 100),
+        'eine Aufgabe verlässt den Zahlenraum bis 100');
+
+      // Kennungen: innerhalb Leas Vorrat und gegen Fionas.
+      pruefe(new Set(v.map(x => x.id)).size === v.length,
+        'zwei von Leas Aufgaben haben dieselbe Kennung');
+      const fionaIds = new Set(R.vorrat().map(x => x.id));
+      const doppelt = v.filter(x => fionaIds.has(x.id));
+      pruefe(doppelt.length === 0,
+        `${doppelt.length} Kennungen kommen in beiden Fächern vor (${doppelt[0]?.id}) — `
+        + 'im Elternprotokoll stünde dann die falsche Aufgabe');
+
+      console.log(`    Leas Reihen: ${v.length} Aufgaben `
+        + `(${ist.nMal} mal, ${ist.nZehner} mit Zehn, ${ist.nGeteilt} geteilt, `
+        + `${ist.nLeicht} leicht), Reihen ${ist.von} bis ${ist.bis}, `
+        + `${100 - ist.geteilt}/${ist.geteilt} Prozent — wie im Abgleich`);
+    }
+  }
+}
+
 /* Die Kette in CLAUDE.md gegen die Kette in package.json.
  *
  * Beim Audit standen in CLAUDE.md zwölf Tore und in `npm run tor` liefen

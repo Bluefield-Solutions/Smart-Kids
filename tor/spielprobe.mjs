@@ -14,6 +14,7 @@
 import fs from 'node:fs';
 import * as I from '../src/inhalt/erdkunde.js';
 import * as R from '../src/inhalt/rechnen.js';
+import * as L from '../src/kern/leitner.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as V from '../src/vergleich/vergleich.js';
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
@@ -251,11 +252,17 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   // heute und rot morgen dieselbe Aussage.
   let x = 20260829;
   const wuerfel = () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; };
-  const alle = R.vorrat();
+  // BEIDE Vorräte. Der erste Anlauf prüfte nur Fionas hundert Aufgaben —
+  // und Leas hundertvierzig wären mit demselben Recht ungeprüft geblieben,
+  // obwohl dort die Ablenker die schwierigeren sind (die Nachbarn in der
+  // Reihe, nicht ±1).
+  const alle = [...R.vorrat(), ...R.reihenVorrat()];
+  const HOECHSTENS = { plus: R.BIS, minus: R.BIS };
   let vier = 0;
   for (const auf of alle) {
     geprueft++;
-    const falsche = R.ablenker(auf, wuerfel);
+    const grenze = HOECHSTENS[auf.rechenart] ?? 100;
+    const falsche = R.ablenkerFuer(auf, wuerfel);
     const angeboten = [auf.wert, ...falsche];
     if (angeboten.length !== 4)
       fehler.push(`${auf.frage}: ${angeboten.length} Möglichkeiten statt vier`);
@@ -266,15 +273,71 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
       geprueft++;
       if (z === auf.wert)
         fehler.push(`${auf.frage} = ${auf.wert}: die falsche Antwort ${z} ist die richtige`);
-      if (z < 0 || z > R.BIS)
+      if (z < 0 || z > grenze)
         fehler.push(`${auf.frage}: die Möglichkeit ${z} liegt außerhalb des Zahlenraums`);
+      if (!Number.isInteger(z))
+        fehler.push(`${auf.frage}: die Möglichkeit ${z} ist keine ganze Zahl`);
     }
     // Und die Rechnung selbst, gegen die zweite Meinung von JavaScript.
-    const soll = auf.rechenart === 'plus' ? auf.a + auf.b : auf.a - auf.b;
+    const soll = auf.rechenart === 'plus' ? auf.a + auf.b
+      : auf.rechenart === 'minus' ? auf.a - auf.b
+      : auf.rechenart === 'geteilt' ? auf.a / auf.b : auf.a * auf.b;
+    // Eine Division, die nicht aufgeht, hat in Leas Reihen nichts zu
+    // suchen: sie entstehen als Umkehrung einer Malaufgabe, also MUSS das
+    // Ergebnis ganz sein. Geht es das nicht, ist der Vorrat falsch gebaut
+    // und nicht die Aufgabe schwer.
+    if (!Number.isInteger(soll))
+      fehler.push(`${auf.frage} geht nicht auf — Ergebnis ${soll}`);
     if (auf.wert !== soll) fehler.push(`${auf.frage} ergibt ${auf.wert}, gerechnet ${soll}`);
     if (auf.name !== String(soll)) fehler.push(`${auf.frage}: Anzeige „${auf.name}" statt ${soll}`);
   }
-  console.log(`    ${alle.length} Rechenaufgaben, ${vier} mit genau vier Möglichkeiten`);
+  console.log(`    ${alle.length} Rechenaufgaben (${R.vorrat().length} Fiona, `
+    + `${R.reihenVorrat().length} Lea), ${vier} mit genau vier Möglichkeiten`);
+}
+
+/* Die Verteilung einer gemischten Sitzung.
+ *
+ * Der Fehler, den das fangen soll, hat schon einmal zugeschlagen: jeden
+ * Anteil einzeln runden und den Rest auf die letzte Sorte legen. Bei Leas
+ * vier Sorten bekam sie an der VOREINSTELLUNG null Divisionsaufgaben —
+ * und nichts daran sah kaputt aus. Die Sitzung hatte acht Aufgaben, alle
+ * rechenbar, alle richtig gewertet.
+ *
+ * Geprüft wird gegen die einzige Zusage, die eine Verteilung geben kann:
+ * die Summe stimmt, keine Sorte wird negativ, und keine Sorte, auf die
+ * ein voller Platz entfällt, geht leer aus.
+ */
+{
+  for (const laenge of [4, 6, 8, 10, 12]) {
+    for (let g = 0; g <= 50; g += 5) {
+      const m = R.mischungLea(g / 100);
+      const anteile = Object.values(m), namen = Object.keys(m);
+      const n = L.verteilen(laenge, anteile);
+      geprueft++;
+      const summe = n.reduce((a, b) => a + b, 0);
+      if (summe !== laenge)
+        fehler.push(`Verteilung auf ${laenge} bei ${g} % Division ergibt ${summe}`);
+      if (n.some(x => x < 0))
+        fehler.push(`Verteilung auf ${laenge} bei ${g} % hat einen negativen Posten`);
+      anteile.forEach((a, i) => {
+        // Wem ein ganzer Platz zusteht, der bekommt auch einen. Genau das
+        // war verletzt: 0,8 von 8 Plaetzen sind kein ganzer, aber 10 % von
+        // acht Aufgaben sind die Zusage - und der groesste Rest holt sie.
+        if (laenge * a >= 1 && n[i] === 0)
+          fehler.push(`Verteilung auf ${laenge} bei ${g} %: „${namen[i]}" steht `
+            + `${(laenge * a).toFixed(2)} Plätze zu und bekommt keinen`);
+        if (Math.abs(n[i] - laenge * a) >= 1)
+          fehler.push(`Verteilung auf ${laenge} bei ${g} %: „${namen[i]}" bekommt `
+            + `${n[i]} statt ${(laenge * a).toFixed(2)} — mehr als ein ganzer Platz daneben`);
+      });
+    }
+  }
+  // Und Fionas zwei Sorten, an ihrer wirklichen Sitzungslänge.
+  const f = L.verteilen(6, [R.MISCHUNG_FIONA.plus, R.MISCHUNG_FIONA.minus]);
+  geprueft++;
+  if (f[0] !== 5 || f[1] !== 1)
+    fehler.push(`Fionas Sitzung: ${f[0]} Plus und ${f[1]} Minus statt 5 und 1`);
+  console.log(`    Sitzungsverteilung: 5 Längen × 11 Reglerstellungen, Summe und Anspruch stimmen`);
 }
 
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);

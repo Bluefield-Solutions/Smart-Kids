@@ -507,6 +507,77 @@ const PROBEN = [
     an:{ ...DIST, text:'.kachel .balken{display:none}' },
     sagt:'quer-ebenen' },
 
+  // Der Fehler, den diese Runde wirklich gefunden hat: den Rundungsrest
+  // auf die letzte Sorte legen. Bei Leas vier Sorten bekam sie an der
+  // Voreinstellung NULL Divisionsaufgaben - und die Sitzung sah dabei
+  // vollkommen gesund aus.
+  { n:'der Rundungsrest fällt wieder auf die letzte Sorte', tor:'spielprobe', deckt:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:'  for (let k = 0; rest > 0; k++, rest--) aus[reihen[k % reihen.length].i]++;',
+    ersatz:'  for (; rest > 0; rest--) aus[aus.length - 1]++;',
+    an:{ datei:'src/kern/leitner.js', text:'aus[aus.length - 1]++;' },
+    sagt:'ganzer Platz daneben' },
+
+  /* --- Leas Reihen (C2) --------------------------------------------- */
+
+  // „Weniger × 10" ist eine Zahl geworden, nicht ein Wort. Wer sie auf den
+  // natürlichen Anteil hochdreht, hat nichts verringert - und das Tor
+  // rechnet den natürlichen Anteil selbst aus, statt ihn zu glauben.
+  { n:'die Zehnerreihe kommt so oft dran wie von selbst', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'export const ANTEIL_ZEHNER = 0.10, ANTEIL_LEICHT = 0.10;',
+    ersatz:'export const ANTEIL_ZEHNER = 0.30, ANTEIL_LEICHT = 0.10;',
+    an:{ datei:'src/inhalt/rechnen.js', text:'ANTEIL_ZEHNER = 0.30' },
+    sagt:'Zehnerreihe' },
+
+  // Der Regler soll bis zur Hälfte gehen, nicht weiter. Ein Kind, das
+  // neun von zehn Divisionen bekommt, übt keine Reihen mehr.
+  { n:'der Regler lässt fast nur noch Division zu', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'export const GETEILT_STANDARD = 0.10, GETEILT_HOECHSTENS = 0.50;',
+    ersatz:'export const GETEILT_STANDARD = 0.10, GETEILT_HOECHSTENS = 0.90;',
+    an:{ datei:'src/inhalt/rechnen.js', text:'GETEILT_HOECHSTENS = 0.90' },
+    sagt:'geteiltMax' },
+
+  // Vier Anteile, die zusammen 1 ergeben müssen. Drei davon sind
+  // abgeleitet - genau damit das immer stimmt. Eine Ableitung, die
+  // niemand nachrechnet, ist eine Behauptung.
+  { n:'die Mischung ergibt nicht mehr eins', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'    mal:     m * (1 - ANTEIL_ZEHNER - ANTEIL_LEICHT),',
+    ersatz:'    mal:     m,',
+    an:{ datei:'src/inhalt/rechnen.js', text:'    mal:     m,' },
+    sagt:'statt 1' },
+
+  // Eine Division, die nicht aufgeht, ist keine schwere Aufgabe, sondern
+  // ein falsch gebauter Vorrat: sie entsteht als Umkehrung einer
+  // Malaufgabe und MUSS ganz aufgehen.
+  { n:'eine Division geht nicht mehr auf', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'    aus.push(teilAufgabe(a * b, a));',
+    ersatz:'    aus.push(teilAufgabe(a * b + 1, a));',
+    an:{ datei:'src/inhalt/rechnen.js', text:'teilAufgabe(a * b + 1, a)' },
+    sagt:'gehen nicht auf' },
+
+  // Lea SCHREIBT das Ergebnis - das ist ihr Profil, und der Abgleich sagt
+  // es so. Bekäme sie vier Zahlen vorgesetzt, wäre die Aufgabe eine
+  // andere: aus „rechne" würde „erkenne".
+  { n:'Lea bekommt die Zahlen vorgesetzt statt zu schreiben', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  let weise = kannTippen ? (Einst.rechenweise?.[P.id] || 'tippen') : 'auswahl';",
+    ersatz:"  let weise = 'auswahl';",
+    an:{ ...DIST, text:"let weise = 'auswahl';" },
+    sagt:'rechnen geschrieben' },
+
+  // Und der Regler selbst, am ENDE der Kette gemessen: nicht ob er sich
+  // schieben lässt, sondern ob Lea davon andere Aufgaben bekommt.
+  { n:'der Regler kommt nicht bis in die Sitzung', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:'mischung: () => Rechnen.mischungLea(Einst.reihenGeteilt) },',
+    ersatz:'mischung: () => Rechnen.mischungLea(Rechnen.GETEILT_STANDARD) },',
+    an:{ ...DIST, text:'Rechnen.mischungLea(Rechnen.GETEILT_STANDARD)' },
+    sagt:'nicht bis in die Sitzung' },
+
   { n:'eine richtige Antwort wird nicht mehr gewertet', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",

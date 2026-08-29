@@ -304,6 +304,16 @@ const EBENEN = [
    */
   { id:'rechnen:plusminus', ueber:'Rechnen', titel:'Plus und Minus', farbe:4,
     art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },
+  /* Leas Reihen.
+   *
+   * `mischung` ist hier eine FUNKTION, nicht eine Tabelle: das Verhältnis
+   * von Mal zu Geteilt hängt am Regler im Elternbereich und steht erst
+   * beim Start der Sitzung fest. Eine Tabelle würde einmal beim Laden der
+   * Datei gelesen — der Regler hätte dann bis zum nächsten Neustart der
+   * App keine Wirkung, und niemand würde es merken.
+   */
+  { id:'rechnen:reihen', ueber:'Rechnen', titel:'Reihen 6 bis 10', farbe:6,
+    art:'rechnen', wer:['lea'], mischung: () => Rechnen.mischungLea(Einst.reihenGeteilt) },
 ];
 
 /** Die Ebenen, die DIESEM Kind gehören. */
@@ -326,7 +336,11 @@ const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
 const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
 let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',
   antwortweise:{ ...WEISE_VOREINSTELLUNG },
-  stadtstaatenGezeigt:false, hauptstadtAuswahl:true };
+  stadtstaatenGezeigt:false, hauptstadtAuswahl:true,
+  // Leas Regler und ihre Eingabeweise beim Rechnen. Beide gehören in die
+  // Einstellungen und nicht ins Profil: das Profil sagt, WER spielt, die
+  // Einstellung, wie es gerade eingestellt ist.
+  reihenGeteilt: Rechnen.GETEILT_STANDARD, rechenweise:{} };
 
 /* ---------- Aufgabenvorrat ---------------------------------------------- */
 /**
@@ -382,7 +396,7 @@ function vorrat(ebeneId, stand = Stand){
   // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
   // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
   // Leitner-Stand über Sitzungen trägt.
-  if (art==='rechnen') return Rechnen.vorrat();
+  if (art==='rechnen') return kont==='reihen' ? Rechnen.reihenVorrat() : Rechnen.vorrat();
   if (art==='hauptstaedte')
     return D.deutschland.filter(b=>!b.stadtstaat).map(b=>({ id:b.id, name:b.hauptstadt,
       aliasse:[], aussprache:[b.hauptstadt.toLowerCase()], pfad:b.pfad, anker:b.anker,
@@ -396,6 +410,7 @@ D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
 // Auch die Rechenaufgaben: sonst steht im Elternprotokoll `p3+4` statt
 // „3 + 4". Das Protokoll ist das eine, was Eltern wirklich lesen.
 Rechnen.vorrat().forEach(r=>NAMEN[r.id]=r.frage);
+Rechnen.reihenVorrat().forEach(r=>NAMEN[r.id]=r.frage);
 
 const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
 async function standLaden(ebeneId){
@@ -632,14 +647,20 @@ async function starten(ebeneId){
    * sie entfällt, und danach gemischt: sonst kämen erst fünf Plus- und dann
    * eine Minusaufgabe, und die Reihenfolge wäre die Antwort.
    */
-  const liste = eb?.mischung ? (() => {
-    const arten = Object.entries(eb.mischung);
-    let rest = P.sitzung, aus = [];
-    arten.forEach(([rechenart, anteil], i) => {
-      const n = i === arten.length - 1 ? rest : Math.round(P.sitzung * anteil);
-      rest -= n;
+  // Eine Tabelle oder eine Funktion: Fionas Verhältnis steht fest, Leas
+  // hängt am Regler und wird deshalb JETZT gerechnet, nicht beim Laden.
+  const mischung = typeof eb?.mischung === 'function' ? eb.mischung() : eb?.mischung;
+  const liste = mischung ? (() => {
+    const arten = Object.entries(mischung);
+    // Wieviele je Sorte: nach dem groessten Rest, nicht einzeln gerundet.
+    // Der erste Entwurf legte den Rundungsrest auf die LETZTE Sorte - bei
+    // Leas vier Sorten bekam sie damit an der Voreinstellung null
+    // Divisionsaufgaben. Warum das so geloest ist, steht bei `verteilen`.
+    const wieviel = Leitner.verteilen(P.sitzung, arten.map(([, a]) => a));
+    let aus = [];
+    arten.forEach(([rechenart], i) => {
       aus = aus.concat(Leitner.sitzung(alle.filter(x => x.rechenart === rechenart),
-        Stand, n, Date.now(), keim + i));
+        Stand, wieviel[i], Date.now(), keim + i));
     });
     return mischenMit(aus, keim);
   })() : Leitner.sitzung(alle, Stand, P.sitzung, Date.now(), keim);
@@ -750,6 +771,20 @@ function rechenschirm(){
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
+  /* Schreiben oder auswählen.
+   *
+   * Der Abgleich sagt es je Kind verschieden: Fiona tippt eine von vier
+   * Zahlen an, Lea SCHREIBT das Ergebnis — „umschaltbar auf Auswahl".
+   * Voreingestellt ist also das Profil, gemerkt wird je Kind.
+   *
+   * Beide Felder werden gebaut und eines versteckt, statt beim Umschalten
+   * den Bildschirm neu zu bauen. Ein Neuaufbau setzte `versuch` zurück:
+   * wer nach dem zweiten Fehlversuch umschaltet, bekäme drei neue
+   * geschenkt — und die Auflösung nach drei Fehlern wäre nie erreichbar.
+   */
+  const kannTippen = P.eingabe.includes('tippen');
+  let weise = kannTippen ? (Einst.rechenweise?.[P.id] || 'tippen') : 'auswahl';
+
   // Derselbe Mulberry32 wie bei den Hauptstädten, aus demselben Grund: ein
   // einfacher LCG legte die richtige Antwort zehnmal hintereinander auf
   // Platz 2 oder 3.
@@ -759,24 +794,38 @@ function rechenschirm(){
     t=(t+Math.imul(t^(t>>>7), 61|t))^t;
     return ((t^(t>>>14))>>>0)/4294967296; }; };
   const r1 = rnd(st.keim + st.i*7919);
-  const zahlen = mischenMit([ziel.wert, ...Rechnen.ablenker(ziel, r1)], st.keim + st.i*7919);
+  // `ablenkerFuer` entscheidet, nicht dieser Bildschirm: Plus und Minus
+  // haben andere Versuchungen als das Einmaleins, aber das ist eine
+  // Eigenschaft der Aufgabe, nicht der Anzeige.
+  const zahlen = mischenMit([ziel.wert, ...Rechnen.ablenkerFuer(ziel, r1)], st.keim + st.i*7919);
 
   s.innerHTML = aufgabenKopf(st) + `
     <div class="frage" id="frage">Wie viel ist das?</div>
     <div class="rechenfeld">
       <div class="rechnung">${ziel.frage} = <span class="luecke" id="luecke">?</span></div>
-      <div class="zahlen">${zahlen.map(z=>
+      <div class="zahlen" id="auswahl"${weise==='tippen'?' hidden':''}>${zahlen.map(z=>
         `<button class="zahl" data-zahl="${z}">${z}</button>`).join('')}</div>
+      ${kannTippen ? `<div class="tippfeld" id="tippfeld"${weise==='tippen'?'':' hidden'}>
+        <input class="eingabe zahl-eingabe" id="rein" inputmode="numeric"
+               autocomplete="off" autocorrect="off" spellcheck="false"
+               placeholder="?" aria-label="Ergebnis">
+        <button class="knopf haupt" id="pruef">Prüfen</button>
+      </div>` : ''}
       <div class="werkzeug"><button class="leise" id="weissnicht">Weiß ich nicht</button></div>
     </div>`;
 
   const luecke = s.querySelector('#luecke');
-  const ausschalten = ()=> s.querySelectorAll('.zahl').forEach(z=>z.disabled=true);
+  const rein = s.querySelector('#rein');
+  const ausschalten = ()=>{
+    s.querySelectorAll('.zahl').forEach(z=>z.disabled=true);
+    if (rein) { rein.disabled = true; s.querySelector('#pruef').disabled = true; }
+  };
 
   function protokollieren(ergebnis, roh, fachVorher){
     Protokoll.schreiben(Protokoll.eintrag({
       zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
-      eingabeart: 'antippen', ergebnis, roheingabe: String(roh), sicherheit: null,
+      eingabeart: weise==='tippen' ? 'tippen' : 'antippen',
+      ergebnis, roheingabe: String(roh), sicherheit: null,
       dauerMs: Date.now()-beginn, versuch,
       fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
     }));
@@ -807,6 +856,20 @@ function rechenschirm(){
     setTimeout(weiter, 2600);
   }
 
+  /** Das Geschriebene zu einer Zahl — oder zu nichts. */
+  function gelesen(roh){
+    const t = String(roh).trim().replace(/\s/g, '');
+    if (!/^-?\d+$/.test(t)) return null;
+    return +t;
+  }
+
+  function wackeln(k){
+    if (!k) return;
+    k.classList.remove('falsch'); void k.offsetWidth;
+    k.classList.add('falsch');
+    setTimeout(()=>k.classList.remove('falsch'), 900);
+  }
+
   function bewerte(zahl, knopf){
     if (erledigt) return;
     versuch++;
@@ -829,11 +892,7 @@ function rechenschirm(){
     if (versuch >= 3) return aufloesen('dreimal');
     // Die Zahl sagt selbst, dass sie abgelehnt wurde - wie das Etikett auf
     // der Karte. Ein Satz allein reicht einer Sechsjährigen nicht.
-    if (knopf) {
-      knopf.classList.remove('falsch'); void knopf.offsetWidth;
-      knopf.classList.add('falsch');
-      setTimeout(()=>knopf.classList.remove('falsch'), 900);
-    }
+    wackeln(knopf);
     const f = s.querySelector('#frage');
     const satz = 'Nicht ganz — probier es noch einmal.';
     if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
@@ -842,13 +901,61 @@ function rechenschirm(){
 
   s.querySelectorAll('.zahl').forEach(k=>
     k.onclick = ()=> bewerte(+k.dataset.zahl, k));
+
+  if (rein) {
+    const pruefen = ()=>{
+      const z = gelesen(rein.value);
+      // Leer oder keine Zahl ist KEIN Fehlversuch. Ein Kind, das auf
+      // „Prüfen" tippt, bevor es etwas geschrieben hat, hat sich nicht
+      // verrechnet - es hätte sonst einen seiner drei Versuche an einem
+      // Fehlgriff verloren.
+      if (z === null) { wackeln(rein); rein.focus(); return; }
+      bewerte(z, rein);
+      rein.value = '';
+    };
+    s.querySelector('#pruef').onclick = pruefen;
+    rein.addEventListener('keydown', e=>{ if (e.key==='Enter') pruefen(); });
+    if (weise==='tippen') setTimeout(()=>rein.focus(), 360);
+  }
+
   s.querySelector('#weissnicht').onclick = ()=> aufloesen('aufgegeben');
   s.querySelector('#zur').onclick = ()=> zeige(ebenenwahl);
 
+  /* Der Umschalter steht nur da, wo er etwas zu schalten hat.
+   *
+   * Fiona kann nicht schreiben; für sie gäbe es nichts umzustellen, und
+   * ein Knopf, der ihr das Zahlenfeld wegnimmt, wäre eine Falle. Er hängt
+   * deshalb an `kannTippen`, nicht an der Ebene.
+   *
+   * Die WEISE steht als Datenfeld dran, nicht nur als Beschriftung —
+   * derselbe Grund wie beim Umschalter auf der Karte: der Rauchtest muss
+   * sie ablesen können, ohne einen deutschen Satz zu zerlegen.
+   */
+  if (kannTippen) {
+    const um = el('button','leise');
+    um.id = 'rechenweise';
+    const beschriften = ()=>{ um.dataset.weise = weise;
+      um.textContent = weise==='tippen' ? 'Lieber auswählen' : 'Lieber schreiben';
+      um.setAttribute('aria-label', um.textContent); };
+    beschriften();
+    um.onclick = async ()=>{
+      weise = weise==='tippen' ? 'auswahl' : 'tippen';
+      Einst.rechenweise = { ...(Einst.rechenweise||{}), [P.id]: weise };
+      await einstSichern();
+      beschriften();
+      s.querySelector('#auswahl').hidden = weise==='tippen';
+      s.querySelector('#tippfeld').hidden = weise!=='tippen';
+      if (weise==='tippen') rein.focus();
+    };
+    s.querySelector('.werkzeug').appendChild(um);
+  }
+
   // Fiona liest noch nicht. Die Aufgabe UND die vier Möglichkeiten werden
   // gesagt - ohne die Möglichkeiten wüsste sie nicht, wonach sie greifen
-  // kann. So steht es auch im Abgleich, Reihe C1.
-  ansagen(`${ziel.gesagt} ${aufzaehlen(zahlen.map(z=>Rechnen.gesprochen(z)))}?`);
+  // kann. So steht es auch im Abgleich, Reihe C1. Wer schreibt, bekommt
+  // keine Aufzählung vorgesagt: sie wäre die Antwort.
+  ansagen(weise==='tippen' ? ziel.gesagt
+    : `${ziel.gesagt} ${aufzaehlen(zahlen.map(z=>Rechnen.gesprochen(z)))}?`);
   return s;
 }
 
@@ -1939,6 +2046,19 @@ async function elternbereich(){
         <button class="knopf" id="hsw">${Einst.hauptstadtAuswahl?'Auswahl abschalten, tippen lassen':'Auswahl einschalten'}</button>
       </div>
 
+      <h3 class="gruppe">Leas Reihen — Mal und Geteilt</h3>
+      <p class="unter">Voreingestellt sind <strong>90 % Malaufgaben</strong> und
+        10 % Geteilt-Aufgaben; der Regler geht bis zur Hälfte. Die Zehnerreihe
+        bleibt im Vorrat, kommt aber selten dran — sie ist zu leicht, um eine
+        Sitzung zu füllen. Und ungefähr jede zehnte Aufgabe stammt aus den
+        kleinen Reihen: nicht jede soll eine Hürde sein.</p>
+      <div class="reihe regler" style="justify-content:flex-start">
+        <input type="range" id="teiler" min="10" max="50" step="10"
+               value="${Math.round((Einst.reihenGeteilt ?? 0.1) * 100)}"
+               aria-label="Anteil Geteilt-Aufgaben">
+        <span class="unter" id="teilerstand"></span>
+      </div>
+
       <h3 class="gruppe">PIN</h3>
       <p class="unter">Vier Ziffern vor diesem Bereich. Sie ist eine Türklinke,
         kein Schloss — sie hält eine neugierige Achtjährige ab, nicht mehr.
@@ -1978,6 +2098,16 @@ async function elternbereich(){
   s.querySelector('#sprach').onclick=async(e)=>{
     Einst.sprachmodus=!Einst.sprachmodus; await einstSichern();
     e.target.textContent=Einst.sprachmodus?'Sprachmodus ausschalten':'Sprachmodus einschalten'; };
+  {
+    const r = s.querySelector('#teiler'), stand = s.querySelector('#teilerstand');
+    // EIN Ort, der die Beschriftung schreibt — beim Aufbau und beim
+    // Schieben. Zwei Stellen, die dieselbe Zeile bauen, sagen irgendwann
+    // Verschiedenes; genau so sind hier schon zwei Sternformeln entstanden.
+    const schreiben = ()=>{ stand.textContent = `${100 - +r.value} % Mal · ${+r.value} % Geteilt`; };
+    schreiben();
+    r.oninput = schreiben;
+    r.onchange = async ()=>{ Einst.reihenGeteilt = +r.value / 100; await einstSichern(); };
+  }
   s.querySelector('#hsw').onclick=async(e)=>{
     Einst.hauptstadtAuswahl=!Einst.hauptstadtAuswahl; await einstSichern();
     e.target.textContent=Einst.hauptstadtAuswahl?'Auswahl abschalten, tippen lassen':'Auswahl einschalten'; };

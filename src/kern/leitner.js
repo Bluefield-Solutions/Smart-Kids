@@ -146,3 +146,36 @@ export function fortschritt(alle, stand) {
   return { gesammelt, gekonnt, gesamt: alle.length,
            anteil: alle.length ? summe / (alle.length * 4) : 0 };
 }
+
+/**
+ * Wieviele Aufgaben je Sorte, wenn eine Sitzung nach Anteilen gemischt wird.
+ *
+ * Der erste Entwurf rundete jeden Anteil einzeln und legte den ganzen Rest
+ * auf die LETZTE Sorte. Bei zwei Sorten war das harmlos (Fionas 80/20 auf
+ * sechs Aufgaben gibt so wie so 5 und 1). Bei Leas vier Sorten war es
+ * falsch, und zwar still:
+ *
+ *   Regler 10 %   mal 6 · zehner 1 · leicht 1 · geteilt 0   ← KEINE Division
+ *   Regler 50 %   mal 3 · zehner 0 · leicht 0 · geteilt 5   ← statt vier
+ *
+ * Bei der Voreinstellung wurden aus den zugesagten 10 % Division also
+ * null. Kein Tor hätte das gemeldet: die Sitzung hatte acht Aufgaben, alle
+ * rechenbar, alle richtig gewertet.
+ *
+ * Verteilt wird deshalb nach dem größten Rest: erst bekommt jede Sorte
+ * ihren ganzen Anteil, dann gehen die übrigen Plätze der Reihe nach an
+ * die Sorten mit dem größten abgeschnittenen Rest. Das ist dieselbe
+ * Rechnung, mit der Sitze auf Stimmen verteilt werden - und sie hat
+ * dieselbe Zusage: die Summe stimmt immer, und niemand wird bevorzugt,
+ * weil er zufällig hinten steht.
+ */
+export function verteilen(gesamt, anteile) {
+  const genau = anteile.map(a => gesamt * a);
+  const aus = genau.map(x => Math.floor(x));
+  let rest = gesamt - aus.reduce((a, b) => a + b, 0);
+  const reihen = genau
+    .map((x, i) => ({ i, r: x - Math.floor(x) }))
+    .sort((a, b) => b.r - a.r || a.i - b.i);
+  for (let k = 0; rest > 0; k++, rest--) aus[reihen[k % reihen.length].i]++;
+  return aus;
+}

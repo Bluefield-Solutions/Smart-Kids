@@ -1964,3 +1964,118 @@ Der volle Lauf bleibt das, was er ist: das Ritual alle drei Runden, das nie
 zwischen „fertig" und dem iPhone steht. Er dauert jetzt nur noch halb so
 lange — und das ist der Unterschied zwischen einer Regel, die man befolgt,
 und einer, die man abkürzt.
+
+---
+
+## Leas Reihen (C2)
+
+Runde 3 des ANTON-Fahrplans, und sie steht auf Runde 2: der Aufgabentyp
+ohne Karte war schon da, der Leitner konnte schon erzeugte Gegenstände,
+und der Rechenschirm gab es. Neu sind **die Zahlen, eine zweite
+Eingabeweise und ein Regler**.
+
+### Vier Sorten, damit sich eine steuern lässt
+
+| Sorte | was | wieviele |
+|---|---|---|
+| `mal` | 6 × 1 … 9 × 9 | 36 |
+| `zehner` | alles, worin eine 10 steckt | 14 |
+| `geteilt` | 56 : 7 — die Umkehrung der Reihe | 50 |
+| `leicht` | 2 × 1 … 5 × 10, die Verschnaufpause | 40 |
+
+**140 Aufgaben.** Lea sieht zwischen den ersten dreien keinen Unterschied
+— getrennt sind sie, weil die *Mischung* sie trennen muss: der Leitner
+wählt nach Fälligkeit, nicht nach Sorte.
+
+Und damit ist aus „weniger × 10" eine **Zahl** geworden, so wie bei Fiona
+aus „wenig mit 0" eine Regel wurde. Von Natur aus steckt in 14 der 50
+Reihenaufgaben eine Zehn, also 28 %; eingestellt sind 10 % der
+Multiplikationen. Weggenommen wird sie nicht: eine Aufgabe, die nicht im
+Vorrat steht, kann das Kind nie lernen. Das Tor rechnet den natürlichen
+Anteil **selbst** aus und verlangt, dass der eingestellte darunterliegt —
+sonst hätte „weniger" nichts verringert.
+
+### Der Regler hat genau eine Stellschraube
+
+Im Elternbereich verschiebt er Multiplikation gegen Division, von 90/10
+bis 50/50. Alles andere folgt daraus: von dem, was der Multiplikation
+bleibt, geht je ein Zehntel an `zehner` und an `leicht`. Vier Zahlen, die
+zusammen 1 ergeben müssen, ergeben irgendwann nicht mehr 1.
+
+### Der Fund: an der Voreinstellung gab es keine Division
+
+Das ist der Grund, warum der Regler eine eigene Gegenprobe bekommen hat —
+und sie hat beim ersten Lauf sofort zugeschlagen, nicht am Regler, sondern
+an der Sitzung dahinter.
+
+Eine gemischte Sitzung wurde bisher so aufgeteilt: jeden Anteil einzeln
+runden, den Rest auf die **letzte** Sorte legen. Bei Fionas zwei Sorten
+war das harmlos. Bei Leas vier:
+
+```
+Regler 10 %   mal 6 · zehner 1 · leicht 1 · geteilt 0     ← KEINE Division
+Regler 50 %   mal 3 · zehner 0 · leicht 0 · geteilt 5     ← statt vier
+```
+
+**An der Voreinstellung wurden aus den zugesagten 10 % Division null.**
+Kein bestehendes Tor hätte das gemeldet: die Sitzung hatte acht Aufgaben,
+alle rechenbar, alle richtig gewertet. Von aussen war nichts zu sehen.
+
+Verteilt wird jetzt nach dem **größten Rest** (`Leitner.verteilen`) — die
+Rechnung, mit der Sitze auf Stimmen verteilt werden. Die Summe stimmt
+immer, und niemand wird bevorzugt, weil er zufällig hinten steht:
+
+```
+Regler 10 %   mal 6 · zehner 1 · leicht 0 · geteilt 1
+Regler 50 %   mal 3 · zehner 1 · leicht 0 · geteilt 4
+Fiona (6)     plus 5 · minus 1                            ← unverändert
+```
+
+### Gemessen wird am Ende der Kette
+
+Zwischen dem Regler und dem, was Lea vorgelegt bekommt, liegen vier
+Stationen: Regler → `Einst.reihenGeteilt` → `EBENEN.mischung()` → die
+Sitzung. Jede kann still ausfallen, und ein Regler, der sich schieben
+lässt und sich beschriftet, sieht dabei genauso aus wie einer, der wirkt.
+
+Der neue Rauchtest-Abschnitt `regler` stellt ihn deshalb auf 50 %, spielt
+**acht Aufgaben durch** und zählt: genau vier müssen Divisionen sein. Das
+ist keine Schätzung — die Verteilung ist rechenbar. Ein eigener Abschnitt,
+weil er als einziger eine ganze Sitzung spielt: so bezahlt ihn nur die
+Gegenprobe, die ihn braucht.
+
+Daneben prüft `spielprobe` die Verteilung **ohne Browser**, in einer
+Sekunde: fünf Sitzungslängen × elf Reglerstellungen, und die Zusage
+lautet, dass keine Sorte leer ausgeht, der ein ganzer Platz zusteht.
+
+### Schreiben statt antippen
+
+Lea schreibt das Ergebnis, Fiona tippt eine von vier Zahlen an — so steht
+es im Abgleich, und es hängt am **Profil**, nicht an der Ebene. Umschalten
+lässt es sich unter der Aufgabe, neben „Weiß ich nicht", mit demselben
+leisen Knopf wie auf der Karte.
+
+Beide Felder werden gebaut und eines versteckt, statt beim Umschalten den
+Bildschirm neu zu bauen. Ein Neuaufbau setzte `versuch` zurück: wer nach
+dem zweiten Fehlversuch umschaltet, bekäme drei neue geschenkt — und die
+Auflösung nach drei Fehlern wäre nie erreichbar.
+
+Leer auf „Prüfen" zu tippen ist **kein** Fehlversuch. Ein Kind, das den
+Knopf sucht, hat sich nicht verrechnet.
+
+### Die Ablenker sind andere als bei Fiona
+
+Bei Plus und Minus greift ein Kind nach ±1 und nach der Gegenrechnung.
+Beim Einmaleins nach den **Nachbarn in der Reihe**: wer 7 × 8 nicht weiß,
+sagt 49 oder 63, nicht 57. Also ±a und ±b, und erst danach die kleinen
+Verzähler. Bei der Division sind die Nachbarn im *Ergebnis* die
+Versuchung, nicht im Dividenden.
+
+Welcher Satz gilt, entscheidet `ablenkerFuer` — nicht der Bildschirm.
+Sonst wüsste die Anzeige, was eine Zehnerreihe ist.
+
+### Zahlwörter bis 100
+
+`gesprochen(56)` sagt jetzt „sechsundfünfzig". Die Eins heißt im Verbund
+„ein", nicht „eins" — „einsundzwanzig" wäre der klassische Schnitzer.
+Über 100 kommt nichts vor: der größte Wert im ganzen Vorrat ist 10 × 10.

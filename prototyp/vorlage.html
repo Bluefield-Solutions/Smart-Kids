@@ -438,6 +438,26 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .zahl.falsch{background:var(--warn-h);border-color:var(--warn);
   animation:wackeln var(--d-wackeln) var(--k-standard)}
 @media (prefers-reduced-motion:reduce){.zahl.falsch{animation:none}}
+/* Wer das Ergebnis SCHREIBT, braucht kein Feld über die ganze Zeile: die
+   Antwort ist höchstens dreistellig. Ein breites Feld lädt zu einem Satz
+   ein, und die Zahl steht dann verloren darin — deshalb hier `width:auto`
+   gegen das `width:100%` des allgemeinen Eingabefelds. */
+.tippfeld{display:flex;gap:var(--r4);align-items:stretch;justify-content:center;flex-wrap:wrap}
+.tippfeld .eingabe{width:auto;min-width:150px;min-height:72px;font-size:var(--s3);
+  font-variant-numeric:tabular-nums}
+.tippfeld .knopf{min-height:72px}
+/* Dasselbe Wackeln wie bei der falschen Zahl. Eine geschriebene Antwort,
+   die nur mit einem Satz abgelehnt wird, sieht aus, als sei sie gar nicht
+   angekommen. */
+.eingabe.falsch{border-color:var(--warn);background:var(--warn-h);
+  animation:wackeln var(--d-wackeln) var(--k-standard)}
+@media (prefers-reduced-motion:reduce){.eingabe.falsch{animation:none}}
+/* Der Regler im Elternbereich. Er ist erst dann einer, wenn man ihn mit
+   dem Daumen trifft: 44 Punkte hoch, dieselbe Grenze wie bei den
+   Trefferflächen auf der Karte. */
+.reihe.regler{gap:var(--r4);align-items:center}
+.reihe.regler input[type=range]{flex:1;min-width:160px;max-width:280px;height:44px;
+  accent-color:var(--akzent);cursor:pointer}
 /* Der Aufkleber einer Rechenaufgabe: die Aufgabe selbst, dort wo bei einer
    Karte der Umriss steht. Kein neues Bild, und wiedererkennbar. */
 .rechenkleber{display:flex;align-items:center;justify-content:center;width:100%;height:100%;
@@ -662,6 +682,8 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .rechnung{font-size:var(--s4)}
   .rechenfeld{gap:var(--r4)}
   .zahl{min-height:64px;min-width:76px;font-size:var(--s2);padding:var(--r2) var(--r3)}
+  .tippfeld .eingabe{min-height:64px;font-size:var(--s2);min-width:130px}
+  .tippfeld .knopf{min-height:64px}
   .siegsterne svg{width:40px;height:40px}
   .siegwahl{margin-top:var(--r3)}
   .buchstand{font-size:var(--s-klein)}

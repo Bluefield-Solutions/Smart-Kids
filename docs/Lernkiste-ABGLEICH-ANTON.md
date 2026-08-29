@@ -264,6 +264,36 @@ Konzept liest.
 - Division passend zur Reihe: 56 : 7, also die Umkehrung dessen, was sie
   gerade übt
 
+> **Umgesetzt.** Und wie bei „wenig mit 0" ist aus einem Wort eine Regel
+> geworden, weil „weniger × 10" keine Zahl ist: die Zehnerreihe ist eine
+> eigene **Sorte** und bekommt einen festen, kleinen Anteil. Von Natur aus
+> steckt in 14 der 50 Reihenaufgaben eine Zehn — 28 %. Eingestellt sind
+> 10 % der Multiplikationen. Weggenommen wird sie nicht: eine Aufgabe, die
+> nicht im Vorrat steht, kann das Kind auch nie lernen.
+>
+> Die vier Sorten sind `mal`, `zehner`, `geteilt` und `leicht`. Lea sieht
+> keinen Unterschied zwischen den ersten dreien; getrennt sind sie, weil
+> die **Mischung** sie trennen muss — der Leitner wählt nach Fälligkeit,
+> nicht nach Sorte.
+>
+> Der Regler kennt nur **eine** Stellschraube: den Anteil Division. Alles
+> andere folgt daraus (je ein Zehntel der Multiplikationen an `zehner` und
+> an `leicht`). Vier Zahlen, die zusammen 1 ergeben müssen, ergeben
+> irgendwann nicht mehr 1.
+
+Die Zahlen, gegen die das Tor `doku` den Code legt:
+
+| Leas Reihen | Soll |
+|---|---|
+| Reihen von | 6 |
+| Reihen bis | 10 |
+| Anteil Division | 10 % |
+| Anteil Division höchstens | 50 % |
+| Aufgaben mit Mal | 36 |
+| Aufgaben mit Zehn | 14 |
+| Aufgaben mit Geteilt | 50 |
+| Leichtere Aufgaben | 40 |
+
 **C3 · Was Mathe an der Architektur ändert.** Drei Stellen:
 1. Ein Aufgabentyp **ohne Karte** — der Bildschirm ist heute um eine Karte
    herum gebaut.
@@ -310,7 +340,7 @@ jede Runde soll auf der vorigen stehen können.
 |---|---|---|
 | 1 | **A1, A2, A4, A5** | kleine Griffe, sofort spürbar, ändern nichts am Aufbau |
 | 2 | **C1 + C3** (Fionas Mathe, Aufgabentyp ohne Karte) | die Architekturfrage einmal lösen, am einfacheren Fall |
-| 3 | **C2** (Leas Reihen, Regler im Elternbereich) | steht auf Runde 2 |
+| 3 | **C2** (Leas Reihen, Regler im Elternbereich) — *gefahren* | steht auf Runde 2 |
 | 4 | **B1 + B2** (Erklärung und Test) | die Dramaturgie, jetzt für zwei Fächer auf einmal |
 | 5 | **D4 + D2** (Fachwelten, Abzeichen) | erst sinnvoll, wenn es zwei Fächer gibt |
 | 6 | **B3, D3** (mehr Formen, Sätze) | Tiefe, wenn die Breite steht |
