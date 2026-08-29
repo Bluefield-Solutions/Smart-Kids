@@ -1040,16 +1040,28 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
 /* Seit R4 spielt auch Adam mit. Er kommt in denselben Durchgang - der
  * prueft, dass jede Ebene fuer jedes Profil wirklich spielbar ist, und
  * ein drittes Profil, das dort fehlt, waere ungeprueft. */
-/* Wie tief geht jedes Profil? Gelesen, nicht hingeschrieben.
+/* Wie tief geht jedes Profil? Aus dem KONZEPT, nicht aus dem Programm.
  *
- * `laenderTiefe` filtert `rang <= n`. Was daraus WIRKLICH auf dem
- * Bildschirm landet, sieht man nur hier - und der teuerste denkbare
- * Fehler dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor
- * einem Sechsjaehrigen ploetzlich zwoelf Laender stehen.
+ * Der erste Anlauf las `laenderTiefe` aus `prototyp/spiel.js` - und war
+ * damit wertlos. Die Gegenprobe baut den Fehler genau dort ein: setzt man
+ * Fionas Tiefe auf zwoelf, wandert die Erwartung mit, und der Test bleibt
+ * gruen. Ein Test, der sein Soll aus dem Prueflig holt, prueft nichts
+ * (Regel 4).
+ *
+ * Gelesen wird deshalb die Tabelle im Backlog - dieselbe Stelle, an der
+ * der Nutzer die Zahl entschieden hat. Was daraus WIRKLICH auf dem
+ * Bildschirm landet, sieht man nur hier: der teuerste denkbare Fehler
+ * dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor einem
+ * Sechsjaehrigen ploetzlich zwoelf Laender stehen.
  */
-const TIEFE = Object.fromEntries([...fs.readFileSync('prototyp/spiel.js', 'utf8')
-  .matchAll(/(\w+):\s*\{\s*id:'(\w+)'[\s\S]{0,400}?laenderTiefe:\s*(\d+)/g)]
-  .map(m => [m[2], +m[3]]));
+const TIEFE = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*Ländertiefe\s*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Zeile „Ländertiefe" fehlt im Backlog — '
+    + 'dann prüft der Rauchtest die Tiefe gegen nichts'); return {}; }
+  const zahlen = z[1].split('|').map(s => +(s.match(/\d+/) || [])[0]).filter(Number.isFinite);
+  return { fiona: zahlen[0], lea: zahlen[1], adam: zahlen[2] };
+})();
 
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'],
                        adam: ['rechnen:gross'] };
