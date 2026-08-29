@@ -243,7 +243,7 @@ blieb zu Recht grün. Vier Befunde kamen erst vom Blick auf die Aufnahmen,
 und `lesbarkeit` musste erst lernen, das Wasserzeichen zu sehen — es fand
 dann zehn Kontrastfehler. Alles in `docs/Lernkiste-STAND.md`.
 
-### R3 · Memory-Vorlauf  ·  mittel
+### R3 · Memory-Vorlauf  ·  ERLEDIGT
 
 **Ziel:** Vor jeder Ebene ein Blättern statt eines Rätsels. Alle Gebiete
 der Ebene mit Namen, Umriss und — bei den Hauptstädten — der Zuordnung;
@@ -267,6 +267,24 @@ ihre."*
 Spiel; für Fiona wird jeder Name **angesagt** (sie liest nicht). `passt`
 grün auf 7 Größen — der Vorlauf zeigt bis zu 16 Gebiete auf einmal, das ist
 die engste Stelle.
+
+**Erledigt.** Die Kollision ist wie vorgeschlagen aufgelöst: der Vorlauf
+**ersetzt** die Stadtstaaten-Lerneinheit. Deren Form war ohnehin schon die
+richtige — Titel, ein erklärender Satz, ein Gitter aus antippbaren
+Umrissen, ein Knopf —, der Vorlauf ist ihre Verallgemeinerung. Der Satz
+wird abgeleitet, nicht je Ebene geschrieben; bei den Hauptstädten ist es
+der Stadtstaaten-Satz, und er erklärt jetzt zugleich, **warum** Berlin,
+Hamburg und Bremen im Gitter fehlen.
+
+Zur Abnahme, präzisiert: **nicht** alle sechzehn Namen werden beim Öffnen
+vorgelesen — das wäre ein Monolog und kein Blättern. Angesagt wird der
+Satz, und **jede** Karte spricht beim Antippen; für Fiona ist damit jeder
+Name erreichbar, ohne dass sie liest. Der Rauchtest weist beides nach.
+
+`passt` ist grün auf allen 7 Größen und prüft jetzt **14 Bildschirme je
+Größe** statt 9. Die engste Stelle war wie erwartet der Vorlauf: er meldete
+zunächst bis zu 98 Punkte Überlauf, und die Karten sind daraufhin
+gemessen kleiner geworden — nicht geschätzt.
 
 ### R4 · Elternprofil, erste Hälfte: Profil und Mathe  ·  mittel
 

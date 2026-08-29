@@ -2748,3 +2748,78 @@ Gefunden hat es `npm run proben`. Die Aufnahme friert die Zeile jetzt auf
 einen festen Satz **derselben Bauart** ein — nicht auf einen leeren: Lage und
 Größe bleiben geprüft, nur der Inhalt nicht. Dass Fassung und Datum stimmen,
 prüft `doku`.
+
+---
+
+## R3 · Der Vorlauf: anschauen, bevor man rät
+
+Vor jeder Ebene ein Blättern statt eines Rätsels — alle Gegenstände mit
+Bild und Namen, antippen liest vor, unten „Jetzt starten". Beim **ersten**
+Betreten je Kind und Ebene von selbst, danach über „anschauen" an der
+Kachel.
+
+### Er ersetzt die Stadtstaaten-Einheit, statt neben sie zu treten
+
+Das war die Frage, die im Backlog ausdrücklich offen stand. Beim Hinsehen
+war sie leichter als gedacht: die Stadtstaaten-Lerneinheit hatte **schon
+die richtige Form** — Titel, ein erklärender Satz, ein Gitter aus
+antippbaren Umrissen, ein Knopf. Der Vorlauf ist ihre Verallgemeinerung.
+Es kommt also eine Form dazu und eine fällt weg, statt dass zwei
+nebeneinander stehen.
+
+Der Satz wird **abgeleitet**, nicht je Ebene hingeschrieben — dieselbe
+Regel wie beim Kartenhinweis. Sonst hätte die vierte Karte keinen. Bei den
+Hauptstädten ist es der Stadtstaaten-Satz, und er erklärt dort jetzt
+zugleich, warum Berlin, Hamburg und Bremen im Gitter fehlen: `vorrat()`
+lässt sie aus, weil sie ihre eigene Hauptstadt sind.
+
+Die Karten sind die des Forscherbuchs. Das ist kein Sparen: es ist
+derselbe Gegenstand in derselben Sprache, und ein Kind, das im Buch
+geblättert hat, erkennt ihn hier wieder.
+
+### Was der Blick gefunden hat, bevor ein Tor etwas sagen konnte
+
+**Sechzehn Kästen mit dem Wort „undefined".** `teilen()` schneidet die
+Pfade aus dem Startbündel heraus; ohne `ebeneLaden` hat jedes Stück ein
+leeres `pfad`, und der Vorlauf malte die Rechenaufgaben-Variante mit
+`undefined`. Genau die Falle, die R2 schon einmal gestellt hatte — und ich
+bin ein zweites Mal hineingelaufen. `starten()` lädt in derselben
+Reihenfolge; wer den Vorrat anfasst, muss vorher laden.
+
+**Der Erklärsatz stand halb über dem oberen Rand.** `justify-content:center`
+in einem Behälter, der überläuft, schneidet an **beiden** Enden ab — und
+nach oben kann man nicht scrollen. `safe center` fällt in dem Fall auf
+`flex-start` zurück.
+
+**Und die Namen waren abgeschnitten.** Im Forscherbuch sind drei Punkte in
+Ordnung: dort steht, was man schon kennt. Hier soll das Kind den Namen
+**lernen**, und „Sachsen…" neben einem echten „Sachsen" ist schlimmer als
+kein Name. Der erste Versuch mit `overflow-wrap:anywhere` schrieb dann
+„Brandenbur / g" — ein einzelner Buchstabe auf einer Zeile. `break-word`
+trennt erst, wenn das Wort allein nicht auf eine Zeile passt, und nimmt
+vorher jede Fuge: „Rheinland- / Pfalz", „Mecklenburg- / Vorpommern".
+
+### Die engste Stelle wurde gemessen, nicht geschätzt
+
+`passt` meldete beim ersten Lauf **elf bis achtundneunzig Punkte**
+Überlauf: auf dem iPhone SE quer im Vorlauf der Bundesländer, auf dem
+Zielgerät bei den Hauptstädten, und — nicht erwartet — auf der
+**Ebenenwahl**, weil der neue Knopf „anschauen" dort eine Zeile kostet.
+
+Geholt wurden die Punkte in vier Runden am Stylesheet, jede gegen eine
+neue Messung. Die Karten sind im kurzen Querformat kleiner, die zweite
+Zeile schmaler, die Kachelpolsterung enger; die Schrift blieb, wo sie war.
+Ein Vorlauf mit Zuordnung bekommt **breitere** Karten als einer ohne — er
+trägt zwei Namen je Karte statt einem.
+
+### Ein Zwischenschritt, fünf Tore
+
+Der Vorlauf steht jetzt zwischen Ebenenwahl und Aufgabe, und **fünf Tore**
+klickten sich daran vorbei: `smoke` (an neun Stellen), `passt`,
+`lesbarkeit`, `ziehen`, `ansicht`. Dieselbe Geschichte wie bei der
+Weltenwahl in D4 — und dieselbe Antwort: **ein** Weg, in
+`tor/chromium.mjs`. Wer ihn an neun Stellen nachbaut, pflegt ihn an acht
+nicht.
+
+`passt` prüft damit jetzt **14 Bildschirme je Größe** statt 9,
+`lesbarkeit` misst **216 Texte** statt 104 vor dieser Sitzung.
