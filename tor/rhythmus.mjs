@@ -99,26 +99,88 @@ if (!stand.proben || typeof stand.proben !== 'object' || Array.isArray(stand.pro
  * `fetch-depth: 0`. */
 /* Wie alt ist ein Eintrag? Gezaehlt in Runden am CODE, nicht in Tagen.
  *
- * Gemessen wird ab dem Commit, den die Probe sich notiert hat. Der kann
- * spaeter zusammengefasst worden sein und dann lokal noch im Objektspeicher
- * liegen, auf einem frischen Klon aber nicht mehr - deshalb faengt der
- * `catch` das ab und meldet „nicht mehr auffindbar" statt gruen zu bleiben.
+ * Der Commit, den eine Probe sich notiert, ist ein schlechter Anker. Er
+ * entsteht VOR dem Commit, der die Runde traegt (der Baum muss sauber
+ * sein), und wird danach oft zusammengefasst oder verworfen. Lokal liegt
+ * er dann noch im Objektspeicher, auf einem frischen Klon nicht mehr.
  *
- * Gezaehlt wird je Commit EINMAL: neunundsechzig Proben teilen sich in der
- * Regel eine Handvoll Commits. */
-const alterVon = (() => {
+ * Genau das ist passiert, und es hat die Auslieferung fuenf Runden lang
+ * rot gehalten: 66 von 71 Proben zeigten auf zwei wip-Commits, die nie an
+ * einem Zweig hingen. Der Kommentar, der frueher hier stand, hat den Fall
+ * beschrieben UND die Loesung genannt - umgesetzt war sie nicht.
+ *
+ * Schlimmer als das Rot auf dem Runner war das Gruen hier: fuer einen
+ * Commit, der KEIN Vorfahr von HEAD ist, rechnet
+ * "git rev-list --count X..HEAD" klaglos eine Zahl aus. Sie bedeutet nur
+ * nichts. Eine Zahl ohne ihre Messstelle (Regel 12).
+ *
+ * Deshalb zwei Wege, und der erste zaehlt nur, wenn er zaehlen darf:
+ *
+ *   1. Der notierte Commit ist ein Vorfahr von HEAD  ->  genau abzaehlen.
+ *   2. Sonst: den Commit suchen, in dem die STANDDATEI diesen Eintrag zum
+ *      ersten Mal traegt. Die Standdatei steht immer in der Historie - sie
+ *      gehoert zu dem Commit, der die Runde traegt. Das ist auf jedem
+ *      Klon dieselbe Antwort.
+ *
+ * Findet auch das nichts, ist der Eintrag noch gar nicht eingecheckt: er
+ * gehoert zur laufenden Runde und ist null Runden alt. */
+const git = (b) => execSync(b, { encoding:'utf8', stdio:['ignore','pipe','ignore'] }).trim();
+
+const rundenSeit = (() => {
   const merker = new Map();
   return (commit) => {
     if (merker.has(commit)) return merker.get(commit);
-    let n;
-    try {
-      n = +execSync(`git rev-list --count ${commit}..HEAD -- ${CODE.join(' ')}`,
-        { encoding:'utf8', stdio:['ignore','pipe','ignore'] }).trim();
-    } catch { n = null; }
+    let n = null;
+    try { n = +git(`git rev-list --count ${commit}..HEAD -- ${CODE.join(' ')}`); }
+    catch { n = null; }
     merker.set(commit, n);
     return n;
   };
 })();
+
+const istVorfahr = (() => {
+  const merker = new Map();
+  return (commit) => {
+    if (merker.has(commit)) return merker.get(commit);
+    let ja = false;
+    try { git(`git merge-base --is-ancestor ${commit} HEAD`); ja = true; } catch { ja = false; }
+    merker.set(commit, ja);
+    return ja;
+  };
+})();
+
+/* Wo taucht ein Eintrag in der Historie der Standdatei zum ersten Mal auf?
+ *
+ * Einmal gelesen, fuer alle Proben zusammen: die Datei hat ein gutes
+ * Dutzend Fassungen, und sie je Probe einzeln zu holen waere Arbeit ohne
+ * Erkenntnis. Gelaufen wird von HEAD nach hinten; die AELTESTE Fassung,
+ * die den Eintrag unveraendert traegt, gewinnt. */
+const ersteFassung = (() => {
+  let karte = null;
+  return (name, eintrag) => {
+    if (!karte) {
+      karte = new Map();
+      let liste = [];
+      try { liste = git(`git log --format=%H -- ${STAND}`).split('\n').filter(Boolean); }
+      catch { liste = []; }
+      for (const c of liste) {
+        let alt;
+        try { alt = JSON.parse(git(`git show ${c}:${STAND}`)); } catch { continue; }
+        for (const [n, e] of Object.entries(alt.proben || {}))
+          karte.set(`${n}|${e.commit}|${e.zeit}`, c);   // aeltere ueberschreiben juengere
+      }
+    }
+    return karte.get(`${name}|${eintrag.commit}|${eintrag.zeit}`) || null;
+  };
+})();
+
+/** Wieviele Code-Runden liegt der Nachweis dieser Probe zurueck? */
+const alterVon = (name, eintrag) => {
+  if (istVorfahr(eintrag.commit)) return rundenSeit(eintrag.commit);
+  const traeger = ersteFassung(name, eintrag);
+  if (traeger) return rundenSeit(traeger);
+  return 0;                       // noch nicht eingecheckt: die laufende Runde
+};
 
 /* Welche Proben stehen im Baum?
  *
@@ -144,12 +206,13 @@ const verschollen = [];
 for (const n of namen) {
   const e = stand.proben[n];
   if (!e) continue;
-  const alter = alterVon(e.commit);
+  const alter = alterVon(n, e);
   if (alter === null) { verschollen.push(n); continue; }
   if (alter > GRENZE) zuAlt.push({ n, alter });
 }
 const frisch = namen.length - nie.length - zuAlt.length - verschollen.length;
-const aeltester = Math.max(0, ...namen.map(n => stand.proben[n] ? (alterVon(stand.proben[n].commit) ?? 0) : 0));
+const aeltester = Math.max(0, ...namen.map(n =>
+  stand.proben[n] ? (alterVon(n, stand.proben[n]) ?? 0) : 0));
 
 console.log(`    ${namen.length} Proben im Baum, ${frisch} mit frischem Nachweis`);
 console.log(`    ältester Nachweis: ${aeltester} Runde${aeltester === 1 ? '' : 'n'} `
@@ -162,10 +225,10 @@ if (nie.length)
   fehler.push(`${nie.length} Probe${nie.length === 1 ? ' hat' : 'n haben'} noch nie angeschlagen: `
     + `${nenne(nie)}. (\`npm run proben -- --geaendert\`)`);
 if (verschollen.length)
-  fehler.push(`Für ${verschollen.length} Probe${verschollen.length === 1 ? '' : 'n'} ist der `
-    + `notierte Commit nicht mehr auffindbar: ${nenne(verschollen)}. Entweder wurde die `
-    + 'Historie umgeschrieben, oder der Klon ist flach — `actions/checkout` braucht '
-    + '`fetch-depth: 0`.');
+  fehler.push(`Für ${verschollen.length} Probe${verschollen.length === 1 ? '' : 'n'} lässt sich `
+    + `das Alter nicht bestimmen: ${nenne(verschollen)}. Weder ist der notierte Commit ein `
+    + 'Vorfahr von HEAD, noch findet sich der Eintrag in der Historie der Standdatei. '
+    + 'Ohne Historie geht beides nicht — `actions/checkout` braucht `fetch-depth: 0`.');
 if (zuAlt.length)
   fehler.push(`${zuAlt.length} Nachweis${zuAlt.length === 1 ? '' : 'e'} sind älter als `
     + `${GRENZE} Runden (bis zu ${Math.max(...zuAlt.map(x => x.alter))}): `

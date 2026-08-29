@@ -367,11 +367,16 @@ const PROBEN = [
     ersatz:'npm run rhythmus && npm run neuestor && npm run inhalt',
     an:{ datei:'package.json', text:'npm run neuestor' },
     sagt:'noch nicht in der Kette' },
-  /* Ein Nachweis zeigt auf einen Commit, den es nicht mehr gibt.
+  /* Ein Nachweis, dessen Alter sich nicht bestimmen laesst.
    *
-   * Das passiert wirklich: wird eine Runde nachtraeglich zusammengefasst,
-   * findet `git` den alten Commit lokal noch im Objektspeicher, auf einem
-   * frischen Klon aber nicht mehr. Ein Tor, das dann still gruen bliebe,
+   * Das ist der Fall, der die Auslieferung fuenf Runden rot gehalten hat -
+   * nur andersherum, als er hier stand: 66 Nachweise zeigten auf zwei
+   * `wip`-Commits, die nie an einem Zweig hingen. Lokal fand `git` sie
+   * noch im Objektspeicher, auf dem frischen Klon des Runners nicht. Das
+   * Tor liest jetzt zuerst, ob der Commit ein VORFAHR ist, und faellt
+   * sonst auf die Historie der Standdatei zurueck. Beide Wege scheitern
+   * nur noch, wenn der Eintrag nirgends steht - und ein Tor, das dann
+   * still gruen bliebe,
    * bezeugte einen Beweis, den niemand mehr nachsehen kann.
    *
    * Diese Probe stand hier zuerst als „eine Probe kam dazu, ohne dass
@@ -382,11 +387,11 @@ const PROBEN = [
    * siebzig Proben, wo neunundsechzig stehen. Eine Gegenprobe, die den
    * Prüfling schon im Ruhezustand verstellt, ist keine.
    */
-  { n:'ein Nachweis zeigt auf einen Commit, den es nicht gibt', tor:'rhythmus',
+  { n:'ein Nachweis, dessen Alter sich nicht bestimmen lässt', tor:'rhythmus',
     brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
     suchRegex:/"commit": "[0-9a-f]{40}"/, ersatzFn:()=>'"commit": "0000000000000000000000000000000000000000"',
     an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
-    sagt:'nicht mehr auffindbar' },
+    sagt:'lässt sich das Alter nicht bestimmen' },
 
   /* --- ziehen (fünf) ------------------------------------------------ */
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
