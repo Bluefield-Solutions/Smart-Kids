@@ -154,6 +154,23 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   box-shadow:0 0 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
 @media (hover:hover){.knopf.haupt:hover{background:var(--primaer);
   color:var(--auf-flaeche);border-color:var(--primaer-kante)}}
+/* Der eine Knopf, der etwas WEGNIMMT (R1).
+   Kein voller Warnton als Fläche - das wäre ein Alarm, und der Knopf ist
+   keiner: er steht neben zwei harmlosen und soll nur nicht mit ihnen
+   verwechselt werden. Also die Schrift und der Rand in `--warn`, die
+   Fläche hell. */
+/* Die SCHRIFT ist dunkler als der Rand. `--warn` pur auf `--warn-h` kam
+   auf 2,92:1 - das Tor `lesbarkeit` hat den Knopf gemeldet, sowie es ihn
+   das erste Mal zu sehen bekam. Der Rand darf den vollen Warnton tragen,
+   er ist keine Schrift. */
+.knopf.warnend{color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
+  border-color:var(--warn);background:var(--warn-h)}
+.knopf.warnend:active{transform:translateY(3px);
+  color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
+  border-color:var(--warn);background:var(--warn-h)}
+@media (hover:hover){.knopf.warnend:hover{
+  color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
+  border-color:var(--warn);background:var(--warn-h)}}
 .sterne{display:flex;gap:var(--r1)}
 .fortschritt{font-family:var(--f-ui);font-size:var(--s0);font-weight:600;color:var(--tinte-2);
   font-variant-numeric:tabular-nums}

@@ -548,6 +548,86 @@ if (laeuft('ablage')) try {
 
 
   if (+antworten < 3) merke('protokoll', new Error(`nur ${antworten} Einträge`));
+
+  /* --- Die Pause: von vorne MITTEN im Spiel (R1) ----------------------
+   *
+   * Der Knopf auf der Ebenenwahl oben raeumt eine Ebene weg, bevor sie
+   * losgeht. Gefragt war der andere Fall: mittendrin.
+   *
+   * Geprueft wird die ganze Kette und nicht der Knopf: das Kreuz fuehrt in
+   * die Pause, der erste Tipper fragt nach, der zweite loescht - und
+   * danach steht die Sitzung wirklich wieder bei der ERSTEN Aufgabe. Der
+   * letzte Teil ist der, der leicht kaputtgeht: `starten()` liest den
+   * Leitner-Stand neu, und ohne `Stand = {}` begaenne die neue Runde mit
+   * den alten Faechern - dieselbe Aufgabe, dasselbe Fach, nur ohne
+   * Haekchen. Das saehe von aussen richtig aus.
+   */
+  {
+    // Gespielt wird auf den BUNDESLAENDERN, nicht auf den Kontinenten:
+    // `loese()` schlaegt den Anker in `D.deutschland` nach und kann nur
+    // diese Ebene. Und es trifft sich gut - der Block darueber hat sie
+    // gerade leergeraeumt, also ist der Fortschritt, den diese Probe
+    // gleich loescht, garantiert IHRER.
+    await p.click('[data-ebene="bundeslaender"]');
+    await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    // Zwei Aufgaben loesen, damit es ueberhaupt etwas zu loeschen gibt.
+    await loese(p); await loese(p);
+    await p.waitForTimeout(400);
+    const vorher = await p.evaluate(() => new Promise(ja => {
+      const a = indexedDB.open('lernkiste');
+      a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
+        .objectStore('fortschritt').get('fiona:bundeslaender');
+        g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
+        g.onerror = () => ja(-1); };
+      a.onerror = () => ja(-1);
+    }));
+    if (vorher < 1) merke('pause', new Error(
+      'vor der Pausenprobe steht kein Fortschritt in den Bundeslaendern — '
+      + 'die Probe koennte nichts loeschen und saehe trotzdem gruen aus'));
+
+    await p.click('.schirm.da #zur');
+    const pause = await p.waitForSelector('.schirm.da #null', { timeout: 5000 }).catch(() => null);
+    if (!pause) merke('pause', new Error('das Kreuz im Spiel fuehrt nicht in die Pause'));
+    else {
+      const erst = (await pause.textContent()).trim();
+      await pause.click(); await p.waitForTimeout(200);
+      const nachfrage = (await p.textContent('.schirm.da #null')).trim();
+      if (!/Wirklich/.test(nachfrage)) merke('pause', new Error(
+        `der erste Tipper loescht sofort — er fragt nicht nach (steht: „${nachfrage}")`));
+      await p.click('.schirm.da #null');
+      await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+      await p.waitForTimeout(400);
+      const nachher = await p.evaluate(() => new Promise(ja => {
+        const a = indexedDB.open('lernkiste');
+        a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
+          .objectStore('fortschritt').get('fiona:bundeslaender');
+          g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
+          g.onerror = () => ja(-1); };
+        a.onerror = () => ja(-1);
+      }));
+      // Steht die Sitzung wieder am Anfang? Das Fortschrittsband sagt es:
+      // der erste Punkt ist `jetzt`, keiner davor ist erledigt.
+      const band = await p.evaluate(() => {
+        const i = [...document.querySelectorAll('.schirm.da .band i')];
+        return { n: i.length, erster: i[0] ? i[0].className : '(keins)',
+                 erledigt: i.filter(x => x.className !== 'offen' && x.className !== 'jetzt').length };
+      });
+      // Und: keine Haekchen mehr auf der Karte.
+      const haken = await p.evaluate(() =>
+        document.querySelectorAll('.schirm.da .karte svg .haken, .schirm.da .karte svg path.gesessen').length);
+      console.log(`  Pause, von vorne:           „${erst}" → nachgefragt → `
+        + `${vorher} → ${nachher} Gegenstände, Band ${band.erster} `
+        + `(${band.erledigt} erledigt), ${haken} Häkchen`);
+      if (nachher !== 0) merke('pause', new Error(
+        `nach „von vorne" stehen noch ${nachher} Gegenstände im Leitner-Stand`));
+      if (band.erster !== 'jetzt' || band.erledigt !== 0) merke('pause', new Error(
+        `die Sitzung zaehlt weiter statt neu anzufangen — erster Punkt „${band.erster}", `
+        + `${band.erledigt} schon erledigt`));
+      if (haken !== 0) merke('pause', new Error(
+        `auf der Karte stehen noch ${haken} Häkchen`));
+    }
+  }
+
   await p.close();
 } catch (e) { merke('ablage/eltern', e); }
 

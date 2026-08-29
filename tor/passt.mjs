@@ -354,7 +354,13 @@ for (const g of GERAETE) {
     }
     await p.waitForSelector('.schirm.da .karte svg path.ziel');
     await schau(`Spiel ${ebene}`);
+    // Das Kreuz fuehrt seit R1 in die PAUSE, nicht mehr direkt zurueck.
+    // Ein neuer Bildschirm, den kein Tor ansieht, ist genau die Luecke,
+    // die das Forscherbuch eine Runde lang hatte - deshalb steht er hier.
     await tipp('.schirm.da #zur');
+    await p.waitForSelector('.schirm.da #null');
+    await schau('Pause');
+    await tipp('.schirm.da #raus');
     await p.waitForSelector('.schirm.da [data-ebene]');
   }
 

@@ -903,6 +903,68 @@ const aufgabenKopf = (st) => kopf({
   }</div>`,
   rechts: sterne(sterneFuer(st.glatt, st.liste.length)) });
 
+/* ---------- Die Pause (R1) ----------------------------------------------
+ *
+ * Das Kreuz im Spiel fuehrte bis hierher wortlos zur Ebenenwahl. Es fuehrt
+ * jetzt auf einen Bildschirm mit drei Wegen - und einer davon ist der, um
+ * den der Nutzer gebeten hat: mitten in einer Runde alles auf null setzen.
+ *
+ * Warum ein ganzer Bildschirm und keine kleine Blase am Kreuz:
+ *
+ *   - Im Kopf ist kein Platz. Links das Kreuz, in der Mitte das
+ *     Fortschrittsband, rechts die Sterne - auf dem iPhone quer ist die
+ *     Zeile voll. Ein vierter Knopf haette eines der drei verdraengt.
+ *   - Ein Kind, das nicht liest, braucht grosse Ziele. Diese Knoepfe sind
+ *     so gross wie die auf dem Endbildschirm, und der ist der einzige
+ *     andere Ort, an dem es etwas zu entscheiden gibt.
+ *   - Und: neben dem Kreuz stuende sonst eine Taste, die eine Woche Uebung
+ *     wegraeumt. Genau daneben. Der Umweg ueber diesen Bildschirm IST der
+ *     Schutz.
+ *
+ * Zwei Tipper fuer das Loeschen, wie auf der Ebenenwahl: der erste sagt,
+ * was verschwindet, der zweite tut es.
+ */
+function pauseSchirm(){
+  const s = el('div');
+  const ebene = EBENEN.find(e => e.id === Sitzung.ebeneId);
+  const titel = ebene ? ebene.titel : 'diese Übung';
+  s.innerHTML = kopf({}) + `
+    <div class="mitte">
+      <div class="titel">Pause</div>
+      <div class="reihe siegwahl">
+        <button class="knopf haupt" id="weiter">Weiterspielen</button>
+        <button class="knopf" id="raus">Übung beenden</button>
+        <button class="knopf warnend" id="null">Von vorne anfangen</button>
+      </div>
+      <div class="unter" id="was">Bei „von vorne" verschwindet alles, was du
+        in <strong>${titel}</strong> schon gesammelt hast.</div>
+    </div>`;
+  s.querySelector('#weiter').onclick = () =>
+    zeige(ebeneArt(Sitzung.ebeneId) === 'rechnen' ? rechenschirm : spielschirm);
+  s.querySelector('#raus').onclick = () => zeige(ebenenwahl);
+  const knopf = s.querySelector('#null');
+  knopf.onclick = async () => {
+    if (knopf.dataset.sicher !== 'ja') {
+      knopf.dataset.sicher = 'ja';
+      knopf.textContent = 'Wirklich löschen?';
+      s.querySelector('#was').textContent =
+        `Alle Häkchen in ${titel} sind dann weg, und es geht bei der ersten Aufgabe los.`;
+      vorlesen(`Soll ${titel} wirklich von vorne losgehen?`);
+      return;
+    }
+    // Der Fortschritt liegt in der Ablage, die Haekchen haengen am
+    // Leitner-Stand. Beides gehoert weg - und `Stand = {}` ist nicht
+    // Kosmetik: `starten()` liest ihn gleich wieder, und ohne das Leeren
+    // begaenne die neue Runde mit den alten Faechern.
+    await Ablage.loesche('fortschritt', `${P.id}:${Sitzung.ebeneId}`).catch(()=>{});
+    Stand = {};
+    vorlesen(`${titel} fängt wieder von vorne an.`);
+    starten(Sitzung.ebeneId);
+  };
+  ansagen('Pause. Weiterspielen, Übung beenden, oder von vorne anfangen?');
+  return s;
+}
+
 /**
  * Der Satz nach der Antwort. Auch der steht an EINER Stelle.
  *
@@ -1090,7 +1152,7 @@ function rechenschirm(){
   }
 
   s.querySelector('#weissnicht').onclick = ()=> aufloesen('aufgegeben');
-  s.querySelector('#zur').onclick = ()=> zeige(ebenenwahl);
+  s.querySelector('#zur').onclick = ()=> zeige(pauseSchirm);
 
   /* Der Umschalter steht nur da, wo er etwas zu schalten hat.
    *
@@ -1341,7 +1403,7 @@ function spielschirm(){
     setTimeout(()=>{ st.i++;
       if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm); }, 2600);
   }
-  s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
+  s.querySelector('#zur').onclick=()=>zeige(pauseSchirm);
 
   /**
    * Die Karte auf die groesste Flaeche setzen, die in den freien Platz passt.

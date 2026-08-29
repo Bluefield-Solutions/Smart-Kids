@@ -124,6 +124,14 @@
       "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
       "zeit": "2026-08-29"
     },
+    "eine Aufkleberkarte liegt außerhalb des Fensters": {
+      "commit": "9e81c3b099fb3eda34a2041a99d81751fdfad274",
+      "zeit": "2026-08-29"
+    },
+    "die Deckung der Vorfahren zählt beim Kontrast nicht": {
+      "commit": "9e81c3b099fb3eda34a2041a99d81751fdfad274",
+      "zeit": "2026-08-29"
+    },
     "das Wasserzeichen unter der Schrift zählt nicht": {
       "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
       "zeit": "2026-08-29"

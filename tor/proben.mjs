@@ -413,6 +413,27 @@ const PROBEN = [
     an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
     sagt:'lässt sich das Alter nicht bestimmen' },
 
+  /* --- Die Pause (R1) ------------------------------------------------ */
+  // Zwei Proben, weil zwei Dinge kaputtgehen koennen und nur eines davon
+  // von aussen zu sehen ist.
+  //
+  // Die erste: das Loeschen loescht nicht.
+  { n:'„von vorne" in der Pause löscht nichts', tor:'smoke', bauen:true, args:['--nur=ablage'],
+    datei:D, such:"    await Ablage.loesche('fortschritt', `${P.id}:${Sitzung.ebeneId}`).catch(()=>{});",
+    ersatz:"    /* geloescht wird nichts */",
+    an:{ ...DIST, fehlt:'${P.id}:${Sitzung.ebeneId}`).catch' }, sagt:'Gegenstände im Leitner-Stand' },
+  // Die zweite: es loescht, aber die Sitzung zaehlt weiter.
+  //
+  // Das ist der Fall, den man NICHT sieht. `starten()` liest den
+  // Leitner-Stand neu; ohne `Stand = {}` begaenne die neue Runde mit den
+  // alten Faechern - dieselben Aufgaben, dasselbe Fach, nur ohne Haekchen.
+  // Von aussen sieht das aus wie ein sauberer Neuanfang.
+  { n:'nach „von vorne" läuft die alte Sitzung weiter', tor:'smoke', bauen:true, args:['--nur=ablage'],
+    datei:D, such:"    Stand = {};\n    vorlesen(`${titel} fängt wieder von vorne an.`);\n    starten(Sitzung.ebeneId);",
+    ersatz:"    vorlesen(`${titel} fängt wieder von vorne an.`);\n    zeige(spielschirm);",
+    an:{ ...DIST, text:'von vorne an.`);\n    zeige(spielschirm)' },
+    sagt:'zählt weiter statt neu anzufangen' },
+
   /* --- ziehen (fünf) ------------------------------------------------ */
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 0;',

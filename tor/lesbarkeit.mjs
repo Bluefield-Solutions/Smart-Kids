@@ -214,6 +214,10 @@ for (const abend of [false, true]) {
   await zurEbenenwahl(p, 'bundeslaender'); await schau('Ebenenwahl');
   await p.$eval('[data-ebene="bundeslaender"]', e => e.click());
   await p.waitForSelector('.schirm.da .karte svg path.ziel'); await schau('Spiel');
+  await p.$eval('.schirm.da #zur', e => e.click());
+  await p.waitForSelector('.schirm.da #null'); await schau('Pause');
+  await p.$eval('.schirm.da #raus', e => e.click());
+  await p.waitForSelector('.schirm.da [data-ebene]');
 
   /* Der Rundgang endete bis hierher nach VIER Bildschirmen.
    *
@@ -227,8 +231,6 @@ for (const abend of [false, true]) {
    * Der Endbildschirm fehlt weiterhin, und zwar ausdruecklich: dorthin
    * kommt man nur durch ein ganzes Spiel. Was das kostet, misst der
    * Rauchtest; hier waere es die Haelfte der Laufzeit fuer zwei Zeilen. */
-  await p.$eval('.schirm.da #zur', e => e.click());
-  await p.waitForSelector('.schirm.da [data-ebene]');
   await p.$eval('.schirm.da #buch', e => e.click());
   await p.waitForSelector('.schirm.da .rollen'); await schau('Forscherbuch');
   await p.$eval('.schirm.da #zur', e => e.click());
