@@ -286,7 +286,7 @@ Größe** statt 9. Die engste Stelle war wie erwartet der Vorlauf: er meldete
 zunächst bis zu 98 Punkte Überlauf, und die Karten sind daraufhin
 gemessen kleiner geworden — nicht geschätzt.
 
-### R4 · Elternprofil, erste Hälfte: Profil und Mathe  ·  mittel
+### R4 · Adam, erste Hälfte: Profil und Mathe  ·  ERLEDIGT
 
 **Ziel:** Die dritte Kachel steht und ist spielbar — mit den **drei** neuen
 Rechensorten (158 Aufgaben). Ohne neue Daten, also ohne Wartezeit.
@@ -299,6 +299,18 @@ Möglichkeiten — oder die Kinder verlieren ihre.
 nach und prüft jede angebotene Zahl (so wie heute für 240 Aufgaben). `doku`
 legt die Verteilungen neben die Abgleichtabelle. Der Rauchtest spielt das
 Profil durch. Und `gesprochen()` sagt 347 richtig — mit Gegenprobe.
+
+**Erledigt.** `spielprobe` rechnet jetzt **398** Aufgaben nach (100 Fiona,
+140 Lea, 158 Adam), `doku` liest die Tabelle oben aus diesem Dokument und
+vergleicht sie mit dem gebauten Vorrat, der Rauchtest spielt 27 Ebenen ×
+Profile durch, und `gesprochen(347)` sagt „dreihundertsiebenundvierzig".
+
+Die Auswahl ist wie geplant eine Eigenschaft geworden — aber **anders
+herum**, als ich zuerst gebaut habe: die feste Vier bei den Bundesländern
+zu löschen und alles dem Profil zu überlassen gab Lea sechzehn
+Möglichkeiten statt vier. Die Vier ist eine Eigenschaft der **Ebene**
+(Bundesländer schreibt man nicht, man erkennt sie), das Verbot eine des
+**Profils** (`kandidaten:0`). Zwei verschiedene Dinge.
 
 ### R5 · Mehr Länder  ·  Datenrunde, eigenes Risiko
 

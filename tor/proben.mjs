@@ -421,6 +421,27 @@ const PROBEN = [
     an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
     sagt:'lässt sich das Alter nicht bestimmen' },
 
+  /* --- Adam (R4) ------------------------------------------------------ */
+  // Der Vorrat waechst still.
+  //
+  // Ohne `if (a === b) continue;` kommen die neun Quadrate aus 11…19 in
+  // `mal-gross` dazu - 81 statt 72. Das ist genau die Verfallsart, gegen
+  // die die Zaehlung da ist: ein Vorrat, der waechst, bricht das
+  // Forscherbuch und den Leitner, und von aussen sieht nichts anders aus.
+  { n:'Adams Vorrat wächst still', tor:'inhalt', deckt:'doku',
+    datei:'src/inhalt/rechnen.js',
+    such:'      if (a === b) continue;                 // die Quadrate sind eigene Sorte',
+    ersatz:'      // (Quadrate nicht mehr ausgelassen)',
+    an:{ datei:'src/inhalt/rechnen.js', fehlt:'die Quadrate sind eigene Sorte' },
+    sagt:'im Abgleich stehen' },
+  // Adams Verbot faellt aus.
+  { n:'Adam bekommt doch eine Auswahl', tor:'smoke', bauen:true,
+    args:['--nur=durchgang'], datei:D,
+    such:"  const istAuswahl = (istHaupt || art==='bundeslaender') && P.kandidaten > 0;",
+    ersatz:"  const istAuswahl = (istHaupt || art==='bundeslaender');",
+    an:{ ...DIST, fehlt: 'P.kandidaten > 0' },
+    sagt:'Adam hat eine Auswahl bekommen' },
+
   /* --- Der Vorlauf (R3) ----------------------------------------------- */
   // Er kommt gar nicht mehr.
   { n:'der Vorlauf erscheint beim ersten Betreten nicht', tor:'smoke', bauen:true,

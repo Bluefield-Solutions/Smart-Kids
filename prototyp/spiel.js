@@ -269,6 +269,18 @@ const PROFILE = {
           kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
           kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, farbe:'--f5' },
+  /* Adam (R4) — die dritte Kachel, ohne PIN.
+   *
+   * Nicht „Eltern": die Kachel steht neben zwei Vornamen, und eine
+   * Kachel „Eltern" daneben liest sich wie eine Einstellung statt wie ein
+   * Mitspieler. Der Name steht hier und nur hier.
+   *
+   * `kandidaten:0` heisst „nie eine Auswahl". Bis R4 war die Zahl der
+   * Moeglichkeiten bei den Bundeslaendern fest verdrahtet (`? 4 :`) und
+   * das Profil wurde dort gar nicht gefragt - Adam haette also mit vier
+   * Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
+  adam: { id:'adam', name:'Adam', alter:null, eingabe:['tippen'], vorlesen:false,
+          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, farbe:'--f3' },
 };
 // Die Laenderebenen kommen aus den Daten, nicht aus dieser Liste: sonst
 // laufen sie auseinander. Genau das war passiert - gebacken und gezaehlt
@@ -314,6 +326,14 @@ const EBENEN = [
    */
   { id:'rechnen:reihen', ueber:'Rechnen', titel:'Reihen 6 bis 10', farbe:6,
     art:'rechnen', wer:['lea'], mischung: () => Rechnen.mischungLea(Einst.reihenGeteilt) },
+  /* Adams Rechnen (R4): 158 Aufgaben in drei Sorten.
+   *
+   * Ohne `mischung`: die drei Sorten stehen im Vorrat nebeneinander und
+   * werden vom Leitner gezogen wie die Gebiete einer Karte. Eine Mischung
+   * waere hier eine Zahl ohne Grund - bei Lea haengt sie am Regler, hier
+   * gibt es keinen. */
+  { id:'rechnen:gross', ueber:'Rechnen', titel:'Großes Einmaleins', farbe:2,
+    art:'rechnen', wer:['adam'] },
 ];
 
 /* Die Fachwelten (D4).
@@ -374,6 +394,7 @@ const MATHEBILD = {
   'rechnen':           ['plus','mal'],
   'rechnen:plusminus': ['plus','minus'],
   'rechnen:reihen':    ['mal','durch'],
+  'rechnen:gross':     ['mal','plus'],
 };
 
 /**
@@ -533,7 +554,10 @@ function vorrat(ebeneId, stand = Stand){
   // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
   // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
   // Leitner-Stand über Sitzungen trägt.
-  if (art==='rechnen') return kont==='reihen' ? Rechnen.reihenVorrat() : Rechnen.vorrat();
+  if (art==='rechnen')
+    return kont==='reihen' ? Rechnen.reihenVorrat()
+         : kont==='gross'  ? Rechnen.grossVorrat()
+         : Rechnen.vorrat();
   if (art==='hauptstaedte')
     return D.deutschland.filter(b=>!b.stadtstaat).map(b=>({ id:b.id, name:b.hauptstadt,
       aliasse:[], aussprache:[b.hauptstadt.toLowerCase()], pfad:b.pfad, anker:b.anker,
@@ -580,6 +604,21 @@ function zeige(bau){
   });
 }
 
+/* Die Zeile unter dem Namen — ABGELEITET, nicht geraten.
+ *
+ * Hier stand `${p.alter} Jahre · ${p.eingabe.includes('sprechen') ? 'sprechen
+ * und ziehen' : 'tippen und ziehen'}`. Zwei Annahmen in einer Zeile, und
+ * beide brachen, sowie ein drittes Profil dazukam: Adam hat kein Alter
+ * („null Jahre") und zieht nicht („tippen und ziehen").
+ *
+ * Eine Verzweigung mit zwei Aesten beschreibt zwei Profile. Sie ist keine
+ * Regel, sondern eine Aufzaehlung mit anderen Mitteln.
+ */
+const profilzeile = (p) => [
+  p.alter ? `${p.alter} Jahre` : null,
+  p.eingabe.join(' und '),
+].filter(Boolean).join(' · ');
+
 /* ---------- Profilwahl --------------------------------------------------- */
 function profilwahl(){
   const s = el('div');
@@ -592,7 +631,7 @@ function profilwahl(){
         <button class="kachel wer" data-profil="${p.id}" style="--ton:var(${p.farbe})">
           <div class="kreis" style="background:var(${p.farbe})">${p.name[0]}</div>
           <div class="name">${p.name}</div>
-          <div class="rolle">${p.alter} Jahre · ${p.eingabe.includes('sprechen')?'sprechen und ziehen':'tippen und ziehen'}</div>
+          <div class="rolle">${profilzeile(p)}</div>
         </button>`).join('')}</div>
       <div class="bauzeile">Prototyp · Fassung ${BAU.fassung} · ${BAU.datum}</div>
     </div>`;
@@ -1336,7 +1375,16 @@ function spielschirm(){
   // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
   // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
   // Namen gleichzeitig zu lesen ist eine andere.
-  const istAuswahl = istHaupt || art==='bundeslaender';
+  /* Die Ebene schlaegt eine Auswahl vor, das Profil kann sie verbieten.
+   *
+   * `kandidaten:0` heisst „nie eine Auswahl" - das ist Adams Eigenschaft
+   * (R4). Der erste Anlauf hat stattdessen die feste Vier bei den
+   * Bundeslaendern GELOESCHT und alles dem Profil ueberlassen; damit bekam
+   * Lea (`kandidaten:99`) sechzehn Moeglichkeiten statt vier, und der
+   * Rauchtest lief in einen Zeitablauf. Die Vier ist eine Eigenschaft der
+   * EBENE - Bundeslaender schreibt man nicht, man erkennt sie -, das
+   * Verbot eine des Profils. Zwei verschiedene Dinge. */
+  const istAuswahl = (istHaupt || art==='bundeslaender') && P.kandidaten > 0;
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
@@ -1389,8 +1437,11 @@ function spielschirm(){
     const fremd = misch(st.alle.filter(x=>x.id!==ziel.id), r1).slice(0, 3 - falle.length);
     kand = misch([ziel, ...falle, ...fremd], r1);
   } else {
-    // Bei den Bundeslaendern immer vier, sonst nach Profil.
-    const wieviel = art==='bundeslaender' ? 4 : Math.min(P.kandidaten, st.alle.length);
+    // Bei den Bundeslaendern immer vier, sonst nach Profil - und bei
+    // `kandidaten:0` gar keine (dann steht oben `istAuswahl` auf falsch
+    // und es wird getippt).
+    const wieviel = art==='bundeslaender' && P.kandidaten > 0
+      ? 4 : Math.min(P.kandidaten, st.alle.length);
     const n = Math.min(wieviel, st.alle.length) - 1;
     kand = misch([ziel, ...misch(st.alle.filter(x=>x.id!==ziel.id), r1).slice(0, Math.max(1,n))], r1);
   }

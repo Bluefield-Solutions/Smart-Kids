@@ -1037,8 +1037,12 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'bundeslaender', 'hauptstaedte'];
 // Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
-const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'] };
-if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
+/* Seit R4 spielt auch Adam mit. Er kommt in denselben Durchgang - der
+ * prueft, dass jede Ebene fuer jedes Profil wirklich spielbar ist, und
+ * ein drittes Profil, das dort fehlt, waere ungeprueft. */
+const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'],
+                       adam: ['rechnen:gross'] };
+if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
   if (abbruch()) break;
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
@@ -1256,10 +1260,22 @@ if ((gehoert.lea || 0) > 0)
 // Voreingestellt zieht Fiona und tippt Lea an. Wird nur EIN Weg gegangen,
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
 // Bedienung ungeprueft.
-for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt', 'lea: rechnen geschrieben'])
+for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt',
+                    'lea: rechnen geschrieben', 'adam: rechnen geschrieben'])
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);
+/* Und Adam bekommt NIE eine Auswahl (R4).
+ *
+ * Das ist der Teil, den man leicht falsch herum baut: die feste Vier bei
+ * den Bundeslaendern zu loeschen gab Lea sechzehn Moeglichkeiten statt
+ * vier. Die Vier ist eine Eigenschaft der EBENE, das Verbot eine des
+ * PROFILS - und wenn das Verbot ausfaellt, sieht man es nur hier.
+ */
+for (const nie of ['adam: antippen'])
+  if (wege.has(nie))
+    fehler.push(`Adam hat eine Auswahl bekommen („${nie}") — `
+      + 'sein Profil sagt `kandidaten:0`, er soll tippen');
 }
 
 await ctx.close(); await b.close(); server.close();

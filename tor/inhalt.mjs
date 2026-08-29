@@ -741,6 +741,56 @@ if (!fs.existsSync(KONZEPT)) {
   }
 }
 
+/* Adams Vorrat gegen die Tabelle im Backlog (R4).
+ *
+ * Die Zahlen 72 · 14 · 72 stehen an ZWEI Orten: in `rechnen.js` als Regel
+ * und im Konzept als Tabelle. Genau dafuer ist dieses Tor da - was zweimal
+ * dasteht, veraltet einmal (Regel 15).
+ *
+ * Und die Begrenzung ist keine Schoenheit, sondern die Zusage, an der drei
+ * Dinge haengen: das Forscherbuch zeichnet jeden Gegenstand einer Ebene,
+ * `spielprobe` rechnet jeden nach, und der Leitner braucht Wiederholung.
+ * Ein Vorrat, der still auf Zehntausende waechst, bricht alle drei.
+ */
+{
+  const BACKLOG = 'docs/Lernkiste-BACKLOG.md';
+  if (fs.existsSync(BACKLOG)) {
+    const doc = fs.readFileSync(BACKLOG, 'utf8');
+    const v = R.grossVorrat();
+    const ist = {};
+    for (const x of v) ist[x.rechenart] = (ist[x.rechenart] || 0) + 1;
+    // Die Tabelle im Dokument lesen, nicht die Zahlen hier hinschreiben.
+    const ausDoc = {};
+    for (const [, sorte, n] of doc.matchAll(
+        /\|\s*`(mal-gross|quadrat|geteilt-gross)`\s*\|[^|]*\|[^|]*\|\s*(\d+)\s*\|/g))
+      ausDoc[sorte] = +n;
+    pruefe(Object.keys(ausDoc).length === 3,
+      `${BACKLOG}: die Tabelle mit Adams drei Sorten ist nicht zu finden — `
+      + 'dann vergleicht dieses Tor nichts');
+    for (const [sorte, soll] of Object.entries(ausDoc))
+      pruefe(ist[sorte] === soll,
+        `Adam: ${ist[sorte] ?? 0} Aufgaben der Sorte „${sorte}", im Abgleich stehen ${soll}`);
+    const gesamt = Object.values(ausDoc).reduce((a, b) => a + b, 0);
+    pruefe(v.length === gesamt,
+      `Adam: ${v.length} Aufgaben insgesamt, im Abgleich stehen ${gesamt}`);
+    pruefe(new Set(v.map(x => x.id)).size === v.length,
+      'zwei von Adams Aufgaben haben dieselbe Kennung');
+    // Und gegen die anderen beiden Faecher: eine geteilte Kennung teilt
+    // einen Leitner-Stand.
+    const fremd = new Set([...R.vorrat(), ...R.reihenVorrat()].map(x => x.id));
+    const doppelt2 = v.filter(x => fremd.has(x.id));
+    pruefe(doppelt2.length === 0,
+      `${doppelt2.length} von Adams Kennungen kommen in einem anderen Fach vor `
+      + `(${doppelt2[0]?.id})`);
+    // Die Division muss aufgehen - sie entsteht als Umkehrung.
+    pruefe(v.filter(x => x.rechenart === 'geteilt-gross').every(x => Number.isInteger(x.wert)),
+      'eine von Adams Divisionen geht nicht auf');
+    if (gesamt) console.log(`    Adams Rechnen: ${v.length} Aufgaben `
+      + Object.entries(ist).map(([s, n]) => `(${n} ${s})`).join(' ')
+      + ' — wie im Abgleich');
+  }
+}
+
 /* Die Kette in CLAUDE.md gegen die Kette in package.json.
  *
  * Beim Audit standen in CLAUDE.md zwölf Tore und in `npm run tor` liefen

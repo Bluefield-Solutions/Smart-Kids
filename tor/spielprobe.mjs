@@ -256,8 +256,28 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   // und Leas hundertvierzig wären mit demselben Recht ungeprüft geblieben,
   // obwohl dort die Ablenker die schwierigeren sind (die Nachbarn in der
   // Reihe, nicht ±1).
-  const alle = [...R.vorrat(), ...R.reihenVorrat()];
-  const HOECHSTENS = { plus: R.BIS, minus: R.BIS };
+  // Und seit R4 Adams 158. Derselbe Grund wie oben: ein Vorrat, den
+  // niemand nachrechnet, ist ein Vorrat, dem man glaubt.
+  const alle = [...R.vorrat(), ...R.reihenVorrat(), ...R.grossVorrat()];
+  /* Der Zahlenraum je Sorte.
+   *
+   * Frueher stand hier `?? 100` als Auffangwert - fuer Leas Reihen
+   * richtig, fuer Adam falsch: 19 x 19 ist 361, und jede seiner
+   * Moeglichkeiten waere als „ausserhalb des Zahlenraums" gemeldet
+   * worden. Eine Grenze, die fuer alles gilt, gilt fuer nichts. */
+  const HOECHSTENS = { plus: R.BIS, minus: R.BIS,
+    'mal-gross': R.GROSS_BIS * R.GROSS_BIS,
+    /* 25² ist 625, und das Nachbarquadrat 26² = 676 ist genau der
+     * Fehler, den jemand macht. Dasselbe wie unten bei der Division:
+     * die Grenze meint die plausible Nachbarschaft, nicht den Vorrat. */
+    'quadrat': (R.QUADRAT_BIS + 1) * (R.QUADRAT_BIS + 1),
+    /* Bei der Division sind die Antworten 11 bis 19 - die NACHBARN
+     * davon, 20 und 21, sind aber genau die Versuchung, um die es geht.
+     * Die Grenze sagt „was noch plausibel danebengegriffen ist", nicht
+     * „welche Antworten es gibt". Fuer Fionas geschlossenen Raum bis 10
+     * war beides dasselbe; hier ist es das nicht mehr, und das Tor hat
+     * mich zu Recht darauf gestossen. */
+    'geteilt-gross': R.GROSS_BIS + 2 };
   let vier = 0;
   for (const auf of alle) {
     geprueft++;
@@ -281,7 +301,8 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     // Und die Rechnung selbst, gegen die zweite Meinung von JavaScript.
     const soll = auf.rechenart === 'plus' ? auf.a + auf.b
       : auf.rechenart === 'minus' ? auf.a - auf.b
-      : auf.rechenart === 'geteilt' ? auf.a / auf.b : auf.a * auf.b;
+      : (auf.rechenart === 'geteilt' || auf.rechenart === 'geteilt-gross') ? auf.a / auf.b
+      : auf.a * auf.b;
     // Eine Division, die nicht aufgeht, hat in Leas Reihen nichts zu
     // suchen: sie entstehen als Umkehrung einer Malaufgabe, also MUSS das
     // Ergebnis ganz sein. Geht es das nicht, ist der Vorrat falsch gebaut
@@ -291,8 +312,24 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     if (auf.wert !== soll) fehler.push(`${auf.frage} ergibt ${auf.wert}, gerechnet ${soll}`);
     if (auf.name !== String(soll)) fehler.push(`${auf.frage}: Anzeige „${auf.name}" statt ${soll}`);
   }
+  /* Adams Vorrat wird auch GEZAEHLT, nicht nur nachgerechnet.
+   *
+   * Die drei Sorten sind von Natur aus begrenzt - 72 · 14 · 72 - und
+   * genau das ist die Zusage, an der alles haengt: das Forscherbuch
+   * zeichnet jeden Gegenstand, und der Leitner braucht Wiederholung. Ein
+   * Vorrat, der still waechst, bricht beides, ohne dass jemand etwas
+   * merkt. */
+  const zaehlung = {};
+  for (const x of R.grossVorrat()) zaehlung[x.rechenart] = (zaehlung[x.rechenart] || 0) + 1;
+  const SOLL = { 'mal-gross': 72, 'quadrat': 14, 'geteilt-gross': 72 };
+  for (const [sorte, n] of Object.entries(SOLL))
+    if (zaehlung[sorte] !== n)
+      fehler.push(`Adam: ${zaehlung[sorte] ?? 0} Aufgaben der Sorte „${sorte}" statt ${n}`);
   console.log(`    ${alle.length} Rechenaufgaben (${R.vorrat().length} Fiona, `
-    + `${R.reihenVorrat().length} Lea), ${vier} mit genau vier Möglichkeiten`);
+    + `${R.reihenVorrat().length} Lea, ${R.grossVorrat().length} Adam), `
+    + `${vier} mit genau vier Möglichkeiten`);
+  console.log(`    Adams Sorten: `
+    + Object.entries(zaehlung).map(([s, n]) => `${s} ${n}`).join(' · '));
 }
 
 /* Die Verteilung einer gemischten Sitzung.

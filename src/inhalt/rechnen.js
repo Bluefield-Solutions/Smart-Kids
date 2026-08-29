@@ -54,8 +54,23 @@ const zehnerWort = ['','','zwanzig','dreißig','vierzig','fünfzig','sechzig',
  */
 export function gesprochen(n) {
   if (n < 20) return wort[n] ?? String(n);
-  if (n === 100) return 'hundert';
-  if (n > 100 || n % 1) return String(n);
+  if (n % 1) return String(n);
+  /* Bis 999, seit Adam dazukam.
+   *
+   * Vorher hoerte es bei 100 auf, und alles darueber wurde als Ziffernkette
+   * zurueckgegeben - „13 mal 17 ist 221" haette die Stimme als „zwei zwei
+   * eins" gelesen. Fuer Adam ist das gleichgueltig (er laesst sich nichts
+   * vorlesen), fuer den Nachweis nicht: `gesagt` und `geloest` stehen im
+   * Protokoll, das die Eltern lesen.
+   *
+   * Deutsch setzt Hunderter voran und Zehner NACH der Einerstelle:
+   * 221 = „zweihunderteinundzwanzig". Genau in dieser Reihenfolge. */
+  if (n > 999) return String(n);
+  if (n >= 100) {
+    const h = Math.floor(n / 100), rest = n % 100;
+    const vorn = (h === 1 ? '' : wort[h]) + 'hundert';
+    return rest ? vorn + gesprochen(rest) : vorn;
+  }
   const z = Math.floor(n / 10), e = n % 10;
   if (e === 0) return zehnerWort[z];
   return (e === 1 ? 'ein' : wort[e]) + 'und' + zehnerWort[z];
@@ -272,7 +287,116 @@ export function ablenkerReihen(auf, wuerfel) {
  * Zehnerreihe ist.
  */
 export function ablenkerFuer(auf, wuerfel) {
-  return (auf.rechenart === 'plus' || auf.rechenart === 'minus')
-    ? ablenker(auf, wuerfel)
-    : ablenkerReihen(auf, wuerfel);
+  if (auf.rechenart === 'plus' || auf.rechenart === 'minus')
+    return ablenker(auf, wuerfel);
+  if (auf.rechenart === 'mal-gross' || auf.rechenart === 'quadrat'
+      || auf.rechenart === 'geteilt-gross')
+    return ablenkerGross(auf, wuerfel);
+  return ablenkerReihen(auf, wuerfel);
+}
+
+
+/* ---------- Adams Rechnen (R4) -------------------------------------------
+ *
+ * Drei Sorten, und alle drei sind VON NATUR AUS begrenzt - nicht
+ * kuenstlich gekuerzt.
+ *
+ * Der erste Entwurf lautete „Plus und Minus im Zahlenraum 1000,
+ * zweistellig mal einstellig, dreistellige Division". Klingt vernuenftig
+ * und sind allein fuer die Addition 321 200 Aufgaben. Das bricht drei
+ * Dinge auf einmal: das Forscherbuch zeichnet JEDEN Gegenstand einer
+ * Ebene (dreihunderttausend Kaestchen), `spielprobe` rechnet jede Aufgabe
+ * und jede angebotene Zahl nach, und der Leitner braucht Wiederholung -
+ * bei 321 200 Aufgaben sieht man dieselbe nie zweimal.
+ *
+ * Deshalb nicht der Zahlenraum, sondern die SORTE:
+ *
+ *     mal-gross      11…19 x 11…19, ohne die Quadrate      72
+ *     quadrat        12² bis 25²                           14
+ *     geteilt-gross  die Umkehrung von `mal-gross`         72
+ *                                                   gesamt 158
+ *
+ * `mal-gross` laesst die Quadrate aus, weil sie ihre eigene Sorte sind:
+ * 13 x 13 zu koennen ist etwas anderes, als 13 x 17 zu rechnen, und wer
+ * beides mischt, uebt das eine im Schatten des anderen.
+ */
+export const GROSS_VON = 11, GROSS_BIS = 19;
+export const QUADRAT_VON = 12, QUADRAT_BIS = 25;
+
+/** Adams ganzer Vorrat: 158 Aufgaben, gezaehlt und nicht geschaetzt. */
+export function grossVorrat() {
+  const aus = [];
+  for (let a = GROSS_VON; a <= GROSS_BIS; a++)
+    for (let b = GROSS_VON; b <= GROSS_BIS; b++) {
+      if (a === b) continue;                 // die Quadrate sind eigene Sorte
+      aus.push(grossMal(a, b));
+    }
+  for (let a = QUADRAT_VON; a <= QUADRAT_BIS; a++) aus.push(grossQuadrat(a));
+  for (let a = GROSS_VON; a <= GROSS_BIS; a++)
+    for (let b = GROSS_VON; b <= GROSS_BIS; b++) {
+      if (a === b) continue;
+      aus.push(grossGeteilt(a * b, b));
+    }
+  return aus;
+}
+
+function grossMal(a, b) {
+  return {
+    id: `g${a}*${b}`, rechenart: 'mal-gross', a, b, wert: a * b,
+    frage: `${a} × ${b}`, name: String(a * b),
+    gesagt: `Was ist ${gesprochen(a)} mal ${gesprochen(b)}?`,
+    geloest: `${gesprochen(a)} mal ${gesprochen(b)} ist ${gesprochen(a * b)}`,
+  };
+}
+
+function grossQuadrat(a) {
+  return {
+    id: `q${a}`, rechenart: 'quadrat', a, b: a, wert: a * a,
+    // Das Hochzeichen steht im Schriftschnitt (das Tor `schrift` prueft
+    // jedes Zeichen); „a hoch 2" waere eine Kruecke.
+    frage: `${a}²`, name: String(a * a),
+    gesagt: `Was ist ${gesprochen(a)} zum Quadrat?`,
+    geloest: `${gesprochen(a)} zum Quadrat ist ${gesprochen(a * a)}`,
+  };
+}
+
+function grossGeteilt(p, a) {
+  return {
+    id: `t${p}:${a}`, rechenart: 'geteilt-gross', a: p, b: a, wert: p / a,
+    frage: `${p} : ${a}`, name: String(p / a),
+    gesagt: `Was ist ${gesprochen(p)} geteilt durch ${gesprochen(a)}?`,
+    geloest: `${gesprochen(p)} geteilt durch ${gesprochen(a)}`
+           + ` ist ${gesprochen(p / a)}`,
+  };
+}
+
+/* Ablenker fuer Adam.
+ *
+ * Er tippt - Ablenker braucht er nur, wenn jemand die Auswahl doch
+ * einschaltet. Genommen wird trotzdem das, wonach ein Erwachsener
+ * WIRKLICH danebengreift, und das ist etwas anderes als bei einem Kind:
+ * nicht ±1, sondern die verrechnete Teilrechnung. 13 x 17 = 221 wird zu
+ * 211 (Zehner vergessen) oder 231, und ein Quadrat zum Nachbarquadrat.
+ */
+export function ablenkerGross(auf, wuerfel) {
+  const w = auf.wert;
+  const kandidaten = auf.rechenart === 'geteilt-gross'
+    ? [w + 1, w - 1, w + 2, w - 2]
+    : auf.rechenart === 'quadrat'
+      ? [(auf.a - 1) * (auf.a - 1), (auf.a + 1) * (auf.a + 1), w + 10, w - 10]
+      : [w - 10, w + 10, w - auf.a, w + auf.b];
+  const aus = [];
+  for (const k of kandidaten) {
+    if (k === w || k < 1 || k % 1) continue;
+    if (!aus.includes(k)) aus.push(k);
+    if (aus.length === 3) break;
+  }
+  // Aufgefuellt wird gewuerfelt, aber im Umfeld - eine Zahl, die weit weg
+  // liegt, ist keine Versuchung.
+  let schutz = 0;
+  while (aus.length < 3 && schutz++ < 60) {
+    const k = w + Math.round((wuerfel() - 0.5) * 40);
+    if (k !== w && k > 0 && !aus.includes(k)) aus.push(k);
+  }
+  return aus.slice(0, 3);
 }

@@ -2958,3 +2958,66 @@ es nicht — `quer-buch` wurde rot, 1,8 % der Bildpunkte anders.
 
 Das ist genau der Fall, für den der Bildvergleich da ist: eine Änderung,
 die niemand wollte, an einer Stelle, an die niemand gedacht hat.
+
+---
+
+## R4 · Adam
+
+Die dritte Kachel steht und ist spielbar: **158 Aufgaben** in drei Sorten,
+ohne PIN, ohne neue Daten.
+
+### Der Vorrat ist durch die Regel begrenzt, nicht durch einen Deckel
+
+| Sorte | Regel | Anzahl |
+|---|---|---|
+| `mal-gross` | 11…19 × 11…19, **ohne** die Quadrate | 72 |
+| `quadrat` | 12² bis 25² | 14 |
+| `geteilt-gross` | die Umkehrung von `mal-gross` | 72 |
+| | | **158** |
+
+Der erste Entwurf im Konzept lautete „Zahlenraum 1000, zweistellig ×
+einstellig, dreistellige Division" — **321 200 Aufgaben allein für die
+Addition**. Das bricht drei Dinge auf einmal: das Forscherbuch zeichnet
+jeden Gegenstand einer Ebene, `spielprobe` rechnet jeden nach, und der
+Leitner braucht Wiederholung — bei 321 200 Aufgaben sieht man dieselbe nie
+zweimal.
+
+`mal-gross` lässt die Quadrate aus, weil sie ihre eigene Sorte sind: 13 × 13
+zu können ist etwas anderes, als 13 × 17 zu rechnen.
+
+### Zwei Fehler, beide vom selben Muster
+
+**„null Jahre · tippen und ziehen".** Die Zeile unter dem Namen war
+`${p.alter} Jahre · ${p.eingabe.includes('sprechen') ? … : …}` — zwei
+Annahmen in einer Zeile, und beide brachen, sowie ein drittes Profil
+dazukam. Adam hat kein Alter und zieht nicht. Eine Verzweigung mit zwei
+Ästen beschreibt zwei Profile; sie ist keine Regel, sondern eine
+Aufzählung mit anderen Mitteln.
+
+**Und Leas sechzehn Möglichkeiten.** Die Aufgabe lautete, die Auswahl zu
+einer Eigenschaft des Profils zu machen. Ich habe dafür die feste Vier bei
+den Bundesländern gelöscht — und Lea (`kandidaten:99`) bekam prompt
+sechzehn Möglichkeiten statt vier. Der Rauchtest lief in einen Zeitablauf.
+
+Richtig ist die Trennung: die **Ebene** schlägt eine Auswahl vor
+(Bundesländer schreibt man nicht, man erkennt sie), das **Profil** kann sie
+verbieten (`kandidaten:0`). Zwei verschiedene Dinge, die zufällig beide
+eine Zahl sind.
+
+### Was die Tore dazu gelernt haben
+
+`spielprobe` rechnet **398** Aufgaben nach statt 240 — und hat dabei zwei
+eigene Grenzen als falsch entlarvt: `?? 100` als Auffangwert für den
+Zahlenraum (19 × 19 ist 361), und die Annahme, eine Möglichkeit außerhalb
+des Antwortbereichs sei keine Versuchung. Für Fionas geschlossenen Raum bis
+10 stimmte das; bei einer Division mit Antworten 11…19 sind **20 und 21
+genau die Versuchung**. Die Grenze meint die plausible Nachbarschaft, nicht
+den Vorrat.
+
+`doku` liest die Tabelle **aus dem Backlog** und vergleicht sie mit dem
+gebauten Vorrat. Die Zahlen 72 · 14 · 72 stehen an zwei Orten; genau dafür
+ist das Tor da.
+
+Der Rauchtest spielt **27** Ebenen × Profile statt 18 — und prüft
+zusätzlich, dass Adam **nie** eine Auswahl bekommt. Das ist der Teil, den
+man nur dort sieht.
