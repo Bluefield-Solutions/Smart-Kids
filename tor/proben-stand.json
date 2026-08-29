@@ -149,15 +149,19 @@
       "zeit": "2026-08-29"
     },
     "der letzte Probenlauf liegt zu lange zurück": {
-      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
+      "commit": "a526cf7208df3d39d3a99057bc352635d6ae9cd8",
       "zeit": "2026-08-29"
     },
     "eine Probe hat keinen Nachweis, und es faellt nicht auf": {
-      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
+      "commit": "a526cf7208df3d39d3a99057bc352635d6ae9cd8",
       "zeit": "2026-08-29"
     },
     "ein neues Tor steht in der Kette, aber nicht im Stand": {
-      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
+      "commit": "a526cf7208df3d39d3a99057bc352635d6ae9cd8",
+      "zeit": "2026-08-29"
+    },
+    "ein Nachweis, dessen Alter sich nicht bestimmen lässt": {
+      "commit": "a526cf7208df3d39d3a99057bc352635d6ae9cd8",
       "zeit": "2026-08-29"
     },
     "„von vorne\" in der Pause löscht nichts": {
