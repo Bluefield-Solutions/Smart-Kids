@@ -54,17 +54,35 @@ I.KONTINENTE.forEach(k => {
     `Kontinent ${k.id}: mindestens zwei Aussprachevarianten nötig`);
   pruefe([1,2,3].includes(k.runde), `Kontinent ${k.id}: Runde fehlt oder ungültig`);
 });
+/* Wie tief geht das tiefste Profil? Gelesen, nicht hingeschrieben.
+ *
+ * `laenderTiefe` steht in `prototyp/spiel.js` an den Profilen. Dieses Tor
+ * liest sie von dort - eine zweite Zahl hier waere genau die Doppelung,
+ * die es sonst anprangert. */
+const TIEFSTE = Math.max(...[...fs.readFileSync('prototyp/spiel.js', 'utf8')
+  .matchAll(/laenderTiefe:\s*(\d+)/g)].map(m => +m[1]));
+
 const laender = Object.entries(I.LAENDER).flatMap(([k,l])=>l.map(x=>({...x, kontinent:k})));
 laender.forEach(l => {
   eindeutig(l.a3, 'Land');
   pruefe(l.name, `Land ${l.a3} ohne Namen`);
-  pruefe(l.rang >= 1 && l.rang <= 5, `Land ${l.a3}: Rang außerhalb 1..5`);
+  pruefe(l.rang >= 1 && l.rang <= TIEFSTE, `Land ${l.a3}: Rang außerhalb 1..${TIEFSTE}`);
   pruefe(l.aussprache && l.aussprache.length >= 2, `Land ${l.a3}: zu wenige Aussprachevarianten`);
   pruefe(I.KONTINENTE.some(k=>k.id===l.kontinent), `Land ${l.a3}: Elternknoten ${l.kontinent} fehlt`);
 });
+/* Die Raenge sind LUECKENLOS 1 bis TIEFSTE.
+ *
+ * `TIEFSTE` steht nicht hier, sondern kommt aus dem tiefsten Profil -
+ * seit R4 ist das Adam mit zwoelf. Schriebe man die Zahl hierhin, gaebe
+ * es sie zweimal, und beim naechsten Profil veraltet eine davon
+ * (Regel 15). Und die Luecke ist kein Schoenheitsfehler: `laenderTiefe`
+ * filtert `rang <= n`, ein fehlender Rang 7 heisst also stillschweigend
+ * ein Land weniger fuer alle, die tiefer spielen.
+ */
 Object.entries(I.LAENDER).forEach(([k, l]) => {
-  const raenge = l.map(x=>x.rang).sort().join(',');
-  pruefe(raenge === '1,2,3,4,5', `${k}: Ränge sind ${raenge}, erwartet 1,2,3,4,5`);
+  const raenge = l.map(x=>x.rang).sort((a,b)=>a-b).join(',');
+  const soll = Array.from({length: TIEFSTE}, (_, i) => i + 1).join(',');
+  pruefe(raenge === soll, `${k}: Ränge sind ${raenge}, erwartet ${soll}`);
 });
 STAEDTE.forEach(s => {
   eindeutig(s.id, 'Bundesland');

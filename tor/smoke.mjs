@@ -1040,6 +1040,17 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
 /* Seit R4 spielt auch Adam mit. Er kommt in denselben Durchgang - der
  * prueft, dass jede Ebene fuer jedes Profil wirklich spielbar ist, und
  * ein drittes Profil, das dort fehlt, waere ungeprueft. */
+/* Wie tief geht jedes Profil? Gelesen, nicht hingeschrieben.
+ *
+ * `laenderTiefe` filtert `rang <= n`. Was daraus WIRKLICH auf dem
+ * Bildschirm landet, sieht man nur hier - und der teuerste denkbare
+ * Fehler dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor
+ * einem Sechsjaehrigen ploetzlich zwoelf Laender stehen.
+ */
+const TIEFE = Object.fromEntries([...fs.readFileSync('prototyp/spiel.js', 'utf8')
+  .matchAll(/(\w+):\s*\{\s*id:'(\w+)'[\s\S]{0,400}?laenderTiefe:\s*(\d+)/g)]
+  .map(m => [m[2], +m[3]]));
+
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'],
                        adam: ['rechnen:gross'] };
 if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
@@ -1109,6 +1120,20 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
         await zurEbenenwahl(p, ebene);
       }
       await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
+      /* Wieviele Laender sieht DIESES Kind wirklich?
+       *
+       * Der Vorlauf zeigt genau den Vorrat der Ebene - eine Karte je
+       * Gegenstand. Gezaehlt wird also das, was das Profil zusagt, an dem
+       * Ort, an dem es sichtbar wird. */
+      if (ebene.startsWith('laender:') && TIEFE[wer]) {
+        const da2 = await p.waitForSelector('.schirm.da #los', { timeout: 20000 })
+          .then(() => true).catch(() => false);
+        if (da2) {
+          const n = await p.$$eval('.schirm.da .aufkleber', es => es.length);
+          if (n !== TIEFE[wer]) merke('durchgang', new Error(
+            `${wer}/${ebene}: ${n} Länder im Vorlauf, das Profil sagt ${TIEFE[wer]}`));
+        }
+      }
       await durchVorlaufWenn(p);
       await p.waitForTimeout(400);
       const w = await p.$('.schirm.da #weiter');

@@ -1,14 +1,14 @@
 {
   "zeit": "2026-08-29",
-  "start": 162.6,
-  "geometrie": 27.4,
+  "start": 170.9,
+  "geometrie": 27.2,
   "schrift": 51.7,
   "ebenen": {
-    "laender-europa.json": 107.4,
-    "laender-asien.json": 97.9,
-    "laender-nordamerika.json": 75.2,
-    "laender-afrika.json": 68.3,
-    "laender-suedamerika.json": 63.4,
+    "laender-europa.json": 107.6,
+    "laender-asien.json": 98.6,
+    "laender-nordamerika.json": 75.5,
+    "laender-afrika.json": 68.6,
+    "laender-suedamerika.json": 62.6,
     "deutschland.json": 56.3
   }
 }

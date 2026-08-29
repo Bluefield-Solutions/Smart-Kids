@@ -46,7 +46,7 @@ blockiert M0.
 | | |
 |---|---|
 | Ebenen | 4 |
-| Gebiete gesamt | **63** (6 Kontinente + 25 Länder + 16 Bundesländer + 16 Städte) |
+| Gebiete gesamt | **98** (6 Kontinente + 60 Länder + 16 Bundesländer + 16 Städte) |
 | Eingabewege | 3 (Ziehen · Sprechen · Tippen) |
 | Tore in der Kette | **22** |
 
@@ -478,7 +478,13 @@ Ländern, die Ebene wäre also überall sonst leer.
 
 ### 4.5 Wo die Zahl 69 herkommt
 
-6 Kontinente + **25** Länder + 16 Bundesländer + 16 Städte = **63 Gebiete**.
+6 Kontinente + **60** Länder + 16 Bundesländer + 16 Städte = **98 Gebiete**.
+
+Zwölf Länder je Kontinent seit R4: Rang 1 bis 5 sind unverändert (Fiona
+spielt 1–3, Lea 1–5), 6 bis 12 kamen für Adam dazu, geordnet nach
+Einwohnerzahl. Das kostet **keine** Geometrie — jedes Land des Kontinents
+wird ohnehin ausgeliefert, die namenlosen als `umgebung`. Gemessen: das
+größte Bündel wuchs von 107,4 auf 107,5 KB.
 Fiona sieht davon 53 (15 statt 25 Länder).
 
 **Diese Zahl war zweimal falsch, und beide Male hat sie niemand gerechnet.**

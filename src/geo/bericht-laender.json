@@ -12,7 +12,14 @@
         "China",
         "Indonesien",
         "Pakistan",
-        "Bangladesch"
+        "Bangladesch",
+        "Japan",
+        "Philippinen",
+        "Vietnam",
+        "Türkei",
+        "Iran",
+        "Thailand",
+        "Myanmar"
       ],
       "stufen": [
         {
@@ -20,21 +27,21 @@
           "laender": 59,
           "hausdorffPx": 0.685,
           "punkte": 25199,
-          "gzip": 100085
+          "gzip": 100214
         },
         {
           "stufe": "mittel",
           "laender": 59,
           "hausdorffPx": 0.658,
           "punkte": 56326,
-          "gzip": 199390
+          "gzip": 199568
         },
         {
           "stufe": "fein",
           "laender": 59,
           "hausdorffPx": 0.663,
           "punkte": 86387,
-          "gzip": 274842
+          "gzip": 275008
         }
       ]
     },
@@ -46,7 +53,14 @@
         "Äthiopien",
         "Ägypten",
         "DR Kongo",
-        "Tansania"
+        "Tansania",
+        "Südafrika",
+        "Kenia",
+        "Uganda",
+        "Algerien",
+        "Sudan",
+        "Marokko",
+        "Angola"
       ],
       "stufen": [
         {
@@ -54,21 +68,21 @@
           "laender": 55,
           "hausdorffPx": 0.66,
           "punkte": 16469,
-          "gzip": 69212
+          "gzip": 69331
         },
         {
           "stufe": "mittel",
           "laender": 55,
           "hausdorffPx": 0.691,
           "punkte": 35529,
-          "gzip": 135181
+          "gzip": 135322
         },
         {
           "stufe": "fein",
           "laender": 55,
           "hausdorffPx": 0.628,
           "punkte": 43806,
-          "gzip": 158564
+          "gzip": 158716
         }
       ]
     },
@@ -80,7 +94,14 @@
         "Deutschland",
         "Vereinigtes Königreich",
         "Frankreich",
-        "Italien"
+        "Italien",
+        "Spanien",
+        "Ukraine",
+        "Polen",
+        "Rumänien",
+        "Niederlande",
+        "Belgien",
+        "Griechenland"
       ],
       "stufen": [
         {
@@ -88,21 +109,21 @@
           "laender": 51,
           "hausdorffPx": 0.68,
           "punkte": 27060,
-          "gzip": 109097
+          "gzip": 109235
         },
         {
           "stufe": "mittel",
           "laender": 51,
           "hausdorffPx": 0.728,
           "punkte": 52175,
-          "gzip": 191755
+          "gzip": 191935
         },
         {
           "stufe": "fein",
           "laender": 51,
           "hausdorffPx": 0.65,
           "punkte": 68327,
-          "gzip": 225614
+          "gzip": 225797
         }
       ]
     },
@@ -114,7 +135,14 @@
         "Mexiko",
         "Kanada",
         "Guatemala",
-        "Haiti"
+        "Haiti",
+        "Kuba",
+        "Dominikanische Republik",
+        "Honduras",
+        "Nicaragua",
+        "El Salvador",
+        "Costa Rica",
+        "Panama"
       ],
       "stufen": [
         {
@@ -122,21 +150,21 @@
           "laender": 42,
           "hausdorffPx": 0.629,
           "punkte": 19929,
-          "gzip": 76929
+          "gzip": 77081
         },
         {
           "stufe": "mittel",
           "laender": 42,
           "hausdorffPx": 0.736,
           "punkte": 60763,
-          "gzip": 195626
+          "gzip": 195779
         },
         {
           "stufe": "fein",
           "laender": 42,
           "hausdorffPx": 0.694,
           "punkte": 88710,
-          "gzip": 259767
+          "gzip": 259918
         }
       ]
     },
@@ -148,7 +176,14 @@
         "Kolumbien",
         "Argentinien",
         "Peru",
-        "Venezuela"
+        "Venezuela",
+        "Chile",
+        "Ecuador",
+        "Bolivien",
+        "Paraguay",
+        "Uruguay",
+        "Guyana",
+        "Suriname"
       ],
       "stufen": [
         {
@@ -156,21 +191,21 @@
           "laender": 15,
           "hausdorffPx": 0.738,
           "punkte": 14798,
-          "gzip": 63617
+          "gzip": 63681
         },
         {
           "stufe": "mittel",
           "laender": 15,
           "hausdorffPx": 0.592,
           "punkte": 29406,
-          "gzip": 111470
+          "gzip": 111529
         },
         {
           "stufe": "fein",
           "laender": 15,
           "hausdorffPx": 0.743,
           "punkte": 39195,
-          "gzip": 141221
+          "gzip": 141271
         }
       ]
     }

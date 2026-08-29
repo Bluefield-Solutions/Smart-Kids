@@ -442,6 +442,31 @@ const PROBEN = [
     an:{ ...DIST, fehlt: 'P.kandidaten > 0' },
     sagt:'Adam hat eine Auswahl bekommen' },
 
+  /* --- Zwölf Länder (R4, zweite Hälfte) -------------------------------- */
+  // Eine Luecke im Rang.
+  //
+  // `laenderTiefe` filtert `rang <= n`. Faellt ein Rang aus, spielt jeder,
+  // der tiefer geht, still ein Land weniger - und von aussen sieht die
+  // Ebene normal aus. Beide Tore lesen die Tiefe aus den PROFILEN; bis R4
+  // stand die Fuenf zweimal fest hingeschrieben da.
+  { n:'ein Rang fehlt in der Länderliste', tor:'inhalt', deckt:'inhalt',
+    datei:'src/inhalt/erdkunde.js',
+    such:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','pohlen'] },",
+    ersatz:"    { a3:'POL', name:'Polen', rang:99, aussprache:['polen','pohlen'] },",
+    an:{ datei:'src/inhalt/erdkunde.js', text:"name:'Polen', rang:99" },
+    sagt:'Rang außerhalb' },
+  // Und die Kinder bekommen still mehr zu sehen.
+  //
+  // Der teuerste denkbare Fehler dieser Runde: die Raenge 6 bis 12 sind
+  // fuer Adam da. Rutschte Fionas oder Leas Tiefe mit, stuenden vor einem
+  // Sechsjaehrigen ploetzlich zwoelf Laender.
+  { n:'Fiona bekommt Adams Länder zu sehen', tor:'smoke', bauen:true,
+    args:['--nur=durchgang'], datei:D,
+    such:"          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },",
+    ersatz:"          kandidaten:4, laenderTiefe:12, sitzung:6, streng:false, farbe:'--f7' },",
+    an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
+    sagt:'Fiona' },
+
   /* --- Der Vorlauf (R3) ----------------------------------------------- */
   // Er kommt gar nicht mehr.
   { n:'der Vorlauf erscheint beim ersten Betreten nicht', tor:'smoke', bauen:true,

@@ -123,12 +123,24 @@ for (const { was, liste } of saetze()) {
 // Fakten kann kein Programm nachschlagen. Ihre INNEREN Zusammenhaenge schon -
 // und dort sitzen die Fehler, die beim Ergaenzen entstehen.
 
-// Ebene 2: die Raenge muessen je Kontinent 1..5 sein, jeder genau einmal.
+/* Ebene 2: die Raenge sind je Kontinent LUECKENLOS 1 bis zur tiefsten
+ * Profilstufe, jeder genau einmal.
+ *
+ * Die Zahl kommt aus den Profilen, nicht von hier: `laenderTiefe` filtert
+ * `rang <= n`, und ein fehlender Rang 7 waere still ein Land weniger fuer
+ * jeden, der tiefer spielt. Bis R4 stand hier die Fuenf fest - dieselbe
+ * Zahl wie in `tor/inhalt.mjs`, und beide haetten beim dritten Profil
+ * gleichzeitig veraltet.
+ */
+const TIEFSTE = Math.max(...[...fs.readFileSync('prototyp/spiel.js', 'utf8')
+  .matchAll(/laenderTiefe:\s*(\d+)/g)].map(m => +m[1]));
+const SOLLRAENGE = Array.from({ length: TIEFSTE }, (_, i) => i + 1).join(',');
 for (const [kont, liste] of Object.entries(I.LAENDER)) {
   const r = liste.map(l => l.rang).sort((a, b) => a - b);
-  if (r.join() !== '1,2,3,4,5')
-    fehler.push(`Länder in ${kont}: Ränge ${r.join(',')}, erwartet 1,2,3,4,5 — `
-      + `Fiona sieht Rang 1–3, Lea 1–5; eine Lücke macht ihre Auswahl unbestimmt`);
+  if (r.join() !== SOLLRAENGE)
+    fehler.push(`Länder in ${kont}: Ränge ${r.join(',')}, erwartet ${SOLLRAENGE} — `
+      + `Fiona sieht Rang 1–3, Lea 1–5, Adam 1–${TIEFSTE}; `
+      + 'eine Lücke macht ihre Auswahl unbestimmt');
   geprueft++;
 }
 

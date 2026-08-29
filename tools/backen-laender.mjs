@@ -21,17 +21,49 @@ fs.writeFileSync('/tmp/europa-maske.json', JSON.stringify(
     geometry:{ type:'Polygon', coordinates:EUROPA_MASKE } }] }));
 
 // Stand 2025. Reihenfolge = Rang. Die ersten DREI sind Fionas Menge.
+/* Zwölf Länder je Kontinent, seit Adam dazukam (R4).
+ *
+ * Die ersten FÜNF stehen unverändert und in unveränderter Reihenfolge:
+ * Fiona spielt Rang 1 bis 3, Lea 1 bis 5. Wer sie umsortiert, ändert,
+ * was die Kinder üben - und zwar unbemerkt, weil ihr Leitner-Stand an
+ * der Kennung hängt und nicht am Rang.
+ *
+ * Die Ränge 6 bis 12 kommen nach EINWOHNERZAHL dazu. Das ist keine
+ * Bequemlichkeit, sondern die einzige Ordnung, die sich begründen lässt:
+ * bekannter heißt leichter, und die Reihenfolge muss steigen, sonst ist
+ * `laenderTiefe` keine Schwierigkeitsstufe, sondern eine Zufallsauswahl.
+ *
+ * Was das kostet: NICHTS an Geometrie. Jedes Land des Kontinents wird
+ * ohnehin gebacken und ausgeliefert - die namenlosen als `umgebung`,
+ * damit die Karte vollständig aussieht. Bei Europa sind das 220 von 314
+ * KB. Sieben Länder mehr benennen heißt, sieben Formen von `umgebung`
+ * nach `laender` zu schieben; dazu kommen nur Name, Rang und Anker.
+ *
+ * Das Konzept hatte das Gegenteil vermutet („zwölf Länder sprengen das
+ * Budget voraussichtlich"). Gemessen stimmt es nicht - und die Messung
+ * stand die ganze Zeit im gebauten Bündel.
+ */
 const EBENEN = [
   { id:'asien', name:'Asien', ne:'Asia', projektion:'kegel',
-    ziele:[['IND','Indien'],['CHN','China'],['IDN','Indonesien'],['PAK','Pakistan'],['BGD','Bangladesch']] },
+    ziele:[['IND','Indien'],['CHN','China'],['IDN','Indonesien'],['PAK','Pakistan'],['BGD','Bangladesch'],
+           ['JPN','Japan'],['PHL','Philippinen'],['VNM','Vietnam'],['TUR','Türkei'],['IRN','Iran'],
+           ['THA','Thailand'],['MMR','Myanmar']] },
   { id:'afrika', name:'Afrika', ne:'Africa', projektion:'azimutal',
-    ziele:[['NGA','Nigeria'],['ETH','Äthiopien'],['EGY','Ägypten'],['COD','DR Kongo'],['TZA','Tansania']] },
+    ziele:[['NGA','Nigeria'],['ETH','Äthiopien'],['EGY','Ägypten'],['COD','DR Kongo'],['TZA','Tansania'],
+           ['ZAF','Südafrika'],['KEN','Kenia'],['UGA','Uganda'],['DZA','Algerien'],['SDN','Sudan'],
+           ['MAR','Marokko'],['AGO','Angola']] },
   { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true,
-    ziele:[['RUS','Russland'],['DEU','Deutschland'],['GBR','Vereinigtes Königreich'],['FRA','Frankreich'],['ITA','Italien']] },
+    ziele:[['RUS','Russland'],['DEU','Deutschland'],['GBR','Vereinigtes Königreich'],['FRA','Frankreich'],['ITA','Italien'],
+           ['ESP','Spanien'],['UKR','Ukraine'],['POL','Polen'],['ROU','Rumänien'],['NLD','Niederlande'],
+           ['BEL','Belgien'],['GRC','Griechenland']] },
   { id:'nordamerika', name:'Nordamerika', ne:'North America', projektion:'kegel',
-    ziele:[['USA','USA'],['MEX','Mexiko'],['CAN','Kanada'],['GTM','Guatemala'],['HTI','Haiti']] },
+    ziele:[['USA','USA'],['MEX','Mexiko'],['CAN','Kanada'],['GTM','Guatemala'],['HTI','Haiti'],
+           ['CUB','Kuba'],['DOM','Dominikanische Republik'],['HND','Honduras'],['NIC','Nicaragua'],
+           ['SLV','El Salvador'],['CRI','Costa Rica'],['PAN','Panama']] },
   { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal',
-    ziele:[['BRA','Brasilien'],['COL','Kolumbien'],['ARG','Argentinien'],['PER','Peru'],['VEN','Venezuela']] },
+    ziele:[['BRA','Brasilien'],['COL','Kolumbien'],['ARG','Argentinien'],['PER','Peru'],['VEN','Venezuela'],
+           ['CHL','Chile'],['ECU','Ecuador'],['BOL','Bolivien'],['PRY','Paraguay'],['URY','Uruguay'],
+           ['GUY','Guyana'],['SUR','Suriname']] },
 ];
 
 const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_admin_0_countries.geojson'),'utf8'));
