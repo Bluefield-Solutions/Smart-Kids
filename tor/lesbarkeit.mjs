@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte } from './chromium.mjs';
+import { starte, zurEbenenwahl } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [], hinweise = [];
@@ -140,7 +140,8 @@ for (const abend of [false, true]) {
 
   await schau('Profilwahl');
   await p.$eval('[data-profil="fiona"]', e => e.click());
-  await p.waitForSelector('.schirm.da [data-ebene]'); await schau('Ebenenwahl');
+  await p.waitForSelector('.schirm.da [data-welt]'); await schau('Weltenwahl');
+  await zurEbenenwahl(p, 'bundeslaender'); await schau('Ebenenwahl');
   await p.$eval('[data-ebene="bundeslaender"]', e => e.click());
   await p.waitForSelector('.schirm.da .karte svg path.ziel'); await schau('Spiel');
   await ctx.close();

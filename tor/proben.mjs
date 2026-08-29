@@ -518,6 +518,28 @@ const PROBEN = [
     an:{ datei:'src/kern/leitner.js', text:'aus[aus.length - 1]++;' },
     sagt:'ganzer Platz daneben' },
 
+  /* --- Fachwelten (D4) ------------------------------------------------ */
+
+  // Die Zuordnung wird aus `art` abgeleitet. Geht die Ableitung daneben,
+  // steht die Rechenkachel bei der Erdkunde - und das sieht auf einem
+  // Bildschirmfoto aus wie ein Gestaltungseinfall, nicht wie ein Fehler.
+  { n:'alle Ebenen landen in derselben Welt', tor:'smoke', args:['--nur=durchgang'],
+    bauen:true, datei:D,
+    such:"const weltVon = (e) => e.art === 'rechnen' ? 'rechnen' : 'erdkunde';",
+    ersatz:"const weltVon = (e) => 'erdkunde';",
+    an:{ ...DIST, text:"const weltVon = (e) => 'erdkunde';" },
+    sagt:'die Welt' },
+
+  // Und der Filter selbst: ohne ihn zeigt jede Welt wieder ALLE Ebenen,
+  // und die Weltenwahl waere eine Zwischentuer, die nichts zutut. Sie
+  // saehe dabei genauso aus wie eine, die wirkt.
+  { n:'jede Welt zeigt wieder alle Ebenen', tor:'smoke', args:['--nur=durchgang'],
+    bauen:true, datei:D,
+    such:'  const balken = (await staende()).filter(b => weltVon(b) === welt.id);',
+    ersatz:'  const balken = await staende();',
+    an:{ ...DIST, fehlt:'filter(b => weltVon(b) === welt.id)' },
+    sagt:'steht in der Welt' },
+
   /* --- Leas Reihen (C2) --------------------------------------------- */
 
   // „Weniger × 10" ist eine Zahl geworden, nicht ein Wort. Wer sie auf den
@@ -598,6 +620,34 @@ if (schmutzig && !process.argv.includes('--trotzdem')) {
   for (const z of schmutzig.split('\n').slice(0, 12)) console.log('    ' + z);
   console.log('\n  Erst einchecken, dann proben.\n');
   process.exit(2);
+}
+
+/* Und wenn doch `--trotzdem`: ein Netz spannen, bevor gesprungen wird.
+ *
+ * `--trotzdem` hebt die Weigerung oben auf. Das ist gelegentlich richtig -
+ * und einmal in dieser Sitzung war es falsch: der Lauf hat mit
+ * `git checkout -- .` eine ganze Runde Arbeit geloescht, die noch nicht
+ * eingecheckt war. Regel 1 stand danebem, und sie wurde trotzdem
+ * gebrochen; die Weigerung greift ja nur ohne die Fahne.
+ *
+ * Deshalb wird der schmutzige Baum jetzt VORHER weggelegt, als echtes
+ * Git-Objekt. `git stash create` schreibt einen Commit, ohne den Baum
+ * anzufassen - er haengt an keinem Zweig, aber er ist da, und die Zeile
+ * unten sagt, wie man ihn zurueckholt. Aus einem unwiderruflichen Griff
+ * wird damit ein aergerlicher.
+ */
+if (schmutzig) {
+  let sicherung = '';
+  try { sicherung = execSync('git stash create', { encoding:'utf8' }).trim(); } catch { /* egal */ }
+  if (sicherung) {
+    try { execSync(`git tag proben-sicherung-${Date.now()} ${sicherung}`, { stdio:'ignore' }); } catch {}
+    console.log(`\n  Der Baum ist schmutzig, und \`--trotzdem\` steht dabei.`);
+    console.log(`  Weggelegt als ${sicherung.slice(0, 10)} — zurueckholen mit:`);
+    console.log(`      git stash apply ${sicherung}\n`);
+  } else {
+    console.log('\n  ACHTUNG: schmutziger Baum, und die Sicherung ist nicht gelungen.');
+    console.log('  Was hier nicht eingecheckt ist, ueberlebt diesen Lauf nicht.\n');
+  }
 }
 
 /* Kein fremder Browser im Haus.

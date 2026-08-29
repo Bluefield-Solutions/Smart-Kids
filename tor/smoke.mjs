@@ -1,7 +1,7 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { starte } from './chromium.mjs';
+import { starte, zurEbenenwahl, WELT_VON } from './chromium.mjs';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -196,7 +196,7 @@ let durchgespielt = 0;
 if (laeuft('spielen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   await p.click('[data-profil="fiona"]');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  await zurEbenenwahl(p, 'bundeslaender');
   await p.click('[data-ebene="bundeslaender"]');
   await p.waitForSelector('.schirm.da .karte svg');
   // ZWEI Sitzungen. Ein Aufkleber braucht Fach 3, also zweimal richtig -
@@ -265,7 +265,7 @@ let fortschritt = null;
 if (laeuft('ablage')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
   await p.click('[data-profil="fiona"]');
-  await p.waitForSelector('.schirm.da [data-ebene="bundeslaender"]');
+  await zurEbenenwahl(p, 'bundeslaender');
   /* Die Ebenenwahl trägt jetzt Sterne, Aufkleber und einen Balken statt
    * der Zeile „0 von 16". Auf dem Zielgerät war von dieser Zeile ohnehin
    * nur die Zahl übrig: Balken und Überzeile sind im kurzen Querformat
@@ -405,7 +405,9 @@ if (laeuft('ablage')) try {
       await p.reload();
       await p.waitForSelector('[data-profil="fiona"]');
       await p.click('[data-profil="fiona"]');
-      await p.waitForSelector('.schirm.da [data-ebene]');
+      // `#eltern` steht seit D4 schon auf der Weltenwahl - dorthin gehoert er,
+      // er haengt am Kind und nicht an einem Fach.
+      await p.waitForSelector('.schirm.da [data-welt]');
       await p.click('#eltern'); await p.waitForSelector('.schirm.da .ziffern');
       for (let i = 0; i < 4; i++) await p.click('.schirm.da [data-z="0"]');
       await p.waitForTimeout(500);
@@ -447,7 +449,7 @@ if (laeuft('ablage')) try {
   {
     // Zurueck aus dem Elternbereich in die Ebenenwahl - dort steht der Knopf.
     await p.click('.schirm.da #zur');
-    await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 5000 });
+    await zurEbenenwahl(p, 'bundeslaender');
     await p.waitForTimeout(400);
     const knopf = await p.$('.schirm.da [data-neu="bundeslaender"]');
     if (!knopf) merke('vonvorne', new Error(
@@ -495,7 +497,7 @@ if (laeuft('ablage')) try {
 if (laeuft('tippen')) try {
   const p = await neueSeite({ width: 390, height: 844 }, ctx);
   await p.click('[data-profil="lea"]');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  await zurEbenenwahl(p, 'laender:europa');
   // Auf einer Ebene, auf der Lea WIRKLICH tippt. Die Bundeslaender sind
   // seit der Farbrunde eine Auswahl mit vier Moeglichkeiten - dort gibt es
   // kein Eingabefeld mehr, und der Rauchtest lief in einen Zeitablauf.
@@ -548,7 +550,7 @@ if (laeuft('regler')) try {
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="lea"]');
   await p.click('[data-profil="lea"]');
-  await p.waitForSelector('.schirm.da [data-ebene="rechnen:reihen"]');
+  await zurEbenenwahl(p, 'rechnen:reihen');
   await p.click('[data-ebene="rechnen:reihen"]');
   await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
   const arten = [];
@@ -593,7 +595,7 @@ if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
     const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
     const p = await neueSeite({ width: 844, height: 390 }, eigen);
     await p.click(`[data-profil="${wer}"]`);
-    await p.waitForSelector('.schirm.da [data-ebene]');
+    await zurEbenenwahl(p, 'hauptstaedte');
     await p.click('[data-ebene="hauptstaedte"]');
     // Die Einweisung zu den Stadtstaaten steht beim ersten Mal davor.
     await p.waitForSelector('.schirm.da #weiter, .schirm.da .karte svg path.ziel', { timeout: 6000 });
@@ -681,8 +683,31 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
   try {
     const p = await neueSeite({ width: 1180, height: 820 }, eigen);
     await p.click(`[data-profil="${wer}"]`);
-    await p.waitForSelector('.schirm.da [data-ebene]');
-    const da = await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene));
+    /* Seit D4 steht nicht mehr alles auf einem Bildschirm.
+     *
+     * Gesammelt wird deshalb je Welt - und dabei gleich geprueft, ob keine
+     * Kachel in der falschen Welt liegt. Die Zuordnung wird in der App aus
+     * `art` abgeleitet; eine Ableitung, die danebengeht, macht keinen
+     * Laerm: die Kachel steht dann einfach woanders, und das sieht auf
+     * einem Bildschirmfoto aus wie ein Gestaltungseinfall.
+     */
+    await p.waitForSelector('.schirm.da [data-welt]');
+    const welten = await p.$$eval('.schirm.da [data-welt]', es => es.map(e => e.dataset.welt));
+    for (const w of ['erdkunde', 'rechnen'])
+      if (!welten.includes(w))
+        merke('durchgang', new Error(`${wer}: die Welt „${w}" fehlt auf der Weltenwahl`));
+    const da = [];
+    for (const w of welten) {
+      await p.click(`.schirm.da [data-welt="${w}"]`);
+      await p.waitForSelector('.schirm.da [data-ebene]');
+      const hier = await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene));
+      const fremd = hier.filter(e => WELT_VON(e) !== w);
+      if (fremd.length) merke('durchgang',
+        new Error(`${wer}: „${fremd.join(', ')}" steht in der Welt „${w}"`));
+      da.push(...hier);
+      await p.click('.schirm.da #zur');
+      await p.waitForSelector('.schirm.da [data-welt]');
+    }
     for (const e of [...EBENEN_ALLE, ...EBENEN_EIGEN[wer]])
       if (!da.includes(e)) merke('durchgang', new Error(`${wer}: Ebene „${e}" fehlt in der Auswahl`));
     // Und umgekehrt: keine fremde Ebene. Sonst stünde Fionas Rechnen auch
@@ -697,6 +722,16 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
       // Anlauf meldete deshalb „Lea bekam 8 Aufgaben vorgelesen" - gemessen
       // war irgendeine Sprachausgabe, nicht die ANSAGE.
       await p.evaluate(() => { window.__gesagt = []; });
+      // Auf der Ebenenwahl der richtigen Welt landen - egal, wo der vorige
+      // Durchgang geendet hat. Und nur von einer EBENENWAHL aus
+      // zurueckgehen: auf der Weltenwahl fuehrt `#zur` zur Profilwahl, der
+      // erste Anlauf landete genau dort und wartete dreissig Sekunden auf
+      // eine Weltenkarte.
+      if (!(await p.$(`.schirm.da [data-ebene="${ebene}"]`))) {
+        if (!(await p.$('.schirm.da [data-welt]')) && await p.$('.schirm.da #zur'))
+          await p.click('.schirm.da #zur');
+        await zurEbenenwahl(p, ebene);
+      }
       await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
       await p.waitForTimeout(400);
       const w = await p.$('.schirm.da #weiter');

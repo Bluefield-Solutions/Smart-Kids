@@ -189,6 +189,25 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    zwei Reihen und schoben den "Verstanden"-Knopf aus dem Bild. Ein Mass
    fuer alle waere hier das Bequeme, nicht das Richtige. */
 .wahl.eng{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+/* Die Fachwelten (D4). Zwei grosse Karten statt neun Kacheln: das Kind
+   waehlt erst das Fach. Sie duerfen breiter sein als eine Ebenenkachel -
+   es sind zwei, und sie sollen unverwechselbar sein. */
+.wahl.weltwahl{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
+  max-width:760px}
+/* Eine Welt ist keine Zeile.
+   Der erste Entwurf gab den beiden Karten dieselbe Hoehe wie einer
+   Ebenenkachel - auf dem Zielgeraet standen dann zwei breite Balken unter
+   einer halbleeren Flaeche. `passt` war gruen; gesehen hat es erst der
+   Blick auf die Aufnahme (Regel 7). Sie bekommen deshalb eine Mindesthoehe
+   und ein grosses Zeichen: es ist das einzige, was ein Kind, das nicht
+   liest, auf diesem Bildschirm unterscheiden kann. */
+.kachel.welt{gap:var(--r2);align-items:flex-start;justify-content:flex-end;
+  min-height:210px}
+.kachel.welt .weltzeichen{display:flex;color:var(--auf-flaeche);opacity:.9;
+  margin-bottom:auto}
+.kachel.welt .weltzeichen svg{width:56px;height:56px}
+.kachel.welt .name{font-size:var(--s3)}
+.kachel.welt .ueber{opacity:.85}
 /* `min-width:0` ist hier kein Schoenheitsfehler, sondern noetig: ein
    Rasterfeld ist von sich aus mindestens so breit wie sein laengstes Wort,
    und "Landeshauptstaedte" sprengte damit die Spalte - auf vier von sechs
@@ -673,6 +692,15 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .kachel .kachelfuss{flex-direction:row;align-items:center;gap:var(--r2)}
   .kachel .balken{height:5px;flex:1;min-width:40px}
   .kachel .stand{min-height:0;gap:var(--r2);flex:none}
+  /* Auf 844x390 bleibt fuer die Karten rund 280 Punkte Hoehe: Kopfzeile
+     und Frage nehmen den Rest. Und die Ueberzeile bleibt HIER stehen,
+     obwohl sie auf einer Ebenenkachel ausgeblendet ist - dort sind es
+     acht Kacheln, hier zwei, und „2 Uebungen" ist das einzige, was sagt,
+     wie gross eine Welt ist. */
+  .kachel.welt{min-height:170px}
+  .kachel.welt .ueber{display:block}
+  .kachel.welt .weltzeichen svg{width:40px;height:40px}
+  .kachel.welt .name{font-size:var(--s2)}
   .kachel .stand .sterne svg{width:17px;height:17px}
   /* Der Endbildschirm hat mit Balken, Aufkleberzeile und Hinweis drei
      Zeilen mehr bekommen. Auf 844x390 stand die Knopfreihe danach unter

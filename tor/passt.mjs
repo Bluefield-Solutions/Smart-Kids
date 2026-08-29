@@ -20,7 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte } from './chromium.mjs';
+import { starte, zurEbenenwahl } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -285,7 +285,9 @@ for (const g of GERAETE) {
 
   await schau('Profilwahl');
   await tipp('[data-profil="fiona"]');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  await p.waitForSelector('.schirm.da [data-welt]');
+  await schau('Weltenwahl');
+  await zurEbenenwahl(p);
   await schau('Ebenenwahl');
 
   // Auch die WELTKARTE: sie ist querformatig, Deutschland hochformatig -

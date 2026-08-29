@@ -21,7 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte } from './chromium.mjs';
+import { starte, zurEbenenwahl } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const TYP = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json',
@@ -85,7 +85,7 @@ async function aufgabe() {
   await p.goto(`http://localhost:${port}/`);
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  await zurEbenenwahl(p, 'kontinente');
   await p.click('[data-ebene="kontinente"]');
   await p.waitForFunction(() => document.querySelector('.schirm.da path.ziel'), null, { timeout: 5000 });
   // Dieselbe Falle wie in `ansicht`: `kartenGroesse()` setzt die Karte in

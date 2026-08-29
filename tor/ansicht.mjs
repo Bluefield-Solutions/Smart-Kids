@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
 import http from 'node:http';
-import { starte } from './chromium.mjs';
+import { starte, zurEbenenwahl } from './chromium.mjs';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
 // nichts zurueck und der Prototyp startet jedesmal anders. Also derselbe
@@ -118,6 +118,10 @@ const AUFNAHMEN = [
    * Nullen zeigt von Sternen und Aufklebern nichts. Wer eine Wirkung
    * abbilden will, muss sie einschalten.
    */
+  /* Die Weltenwahl (D4) — der erste Bildschirm, den das Kind nach seinem
+     Namen sieht. Sie hatte kein Vorbild, und genau die hatten in der
+     Audit-Runde die Fehler. `tun:'welten'` heisst: NICHT weiterklicken. */
+  { name:'quer-welten', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'welten' },
   { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
   { name:'quer-spiel',  spiel:'kontinente', quer:true, stand:true, wahl:'.schirm.da' },
   // Der Endbildschirm wird im ANTIPPEN-Modus aufgenommen.
@@ -344,7 +348,10 @@ for (const a of AUFNAHMEN) {
       await seite.waitForSelector('[data-profil="fiona"]');
     }
     await seite.click(`[data-profil="${a.kind || 'fiona'}"]`);
-    await seite.waitForSelector('.schirm.da [data-ebene]');
+    // Die Weltenwahl ist selbst eine Aufnahme wert; wer weiter will,
+    // geht durch sie hindurch.
+    await seite.waitForSelector('.schirm.da [data-welt]');
+    if (a.tun !== 'welten') await zurEbenenwahl(seite, a.spiel || 'kontinente');
     if (a.tun === 'buch') {
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen');

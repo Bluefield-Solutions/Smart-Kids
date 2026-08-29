@@ -38,6 +38,9 @@ const ZEICHEN = {
   // Ein Aufkleber: rundes Blatt mit umgeschlagener Ecke.
   kleber:'<path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 0-4 4v5a9 9 0 0 1 0-18z"/><path d="M12 21c2.4 0 8.6-6.2 9-9"/>',
   zu:'<path d="M6 6l12 12M18 6L6 18"/>',
+  // Die Fachwelten: eine Kugel mit Meridian, und Plus neben Mal.
+  welt:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18a13 13 0 0 1 0-18z"/>',
+  rechnen:'<path d="M4 8h7M7.5 4.5v7"/><path d="M13 12.5l7 7M20 12.5l-7 7"/>',
 };
 const ZEI = (n, g=24)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none"
   stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"
@@ -316,6 +319,32 @@ const EBENEN = [
     art:'rechnen', wer:['lea'], mischung: () => Rechnen.mischungLea(Einst.reihenGeteilt) },
 ];
 
+/* Die Fachwelten (D4).
+ *
+ * Erdkunde und Rechnen als zwei Welten mit eigenem Gesicht — und zwar als
+ * eigene Ebene DARÜBER, so wie der Abgleich es sagt.
+ *
+ * Der erste Entwurf hat sie stattdessen auf EINEM Bildschirm gruppiert:
+ * zwei getönte Gründe mit Überschrift, die Kacheln darin. Das Argument
+ * dafür war, dass „Rechnen" je Kind nur eine Kachel hält und ein Tipper
+ * zu einer einzigen Kachel keine Reise ist. `passt` hat widersprochen,
+ * und zwar mit Zahlen: 14 Überläufe auf dem Zielgerät, bis zu 195 Punkte.
+ * Zwei Weltenköpfe plus zwei Gründe kosten rund hundert Punkte Höhe, und
+ * 844 × 390 hat sie nicht. Das Soll kommt aus der Referenz, nicht aus mir
+ * — und das Maß vom Gerät, nicht aus meiner Vorstellung.
+ *
+ * Die Zuordnung wird ABGELEITET, nicht je Ebene hingeschrieben: `art`
+ * sagt schon, wie gefragt wird. Ein zweites Feld daneben wäre dieselbe
+ * Auskunft an zwei Orten, und eines von beiden veraltet.
+ */
+const WELTEN = [
+  { id:'erdkunde', name:'Erdkunde', zeichen:'welt',    farbe:5 },
+  { id:'rechnen',  name:'Rechnen',  zeichen:'rechnen', farbe:4 },
+];
+const weltVon = (e) => e.art === 'rechnen' ? 'rechnen' : 'erdkunde';
+/** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
+let Welt = WELTEN[0].id;
+
 /** Die Ebenen, die DIESEM Kind gehören. */
 const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
 /** Wie wird auf dieser Ebene gefragt? Karte, wenn nichts anderes dasteht. */
@@ -466,28 +495,88 @@ function profilwahl(){
     e.target.textContent=Einst.abend?'Abend':'Tag'; };
   s.querySelectorAll('[data-profil]').forEach(b=>b.onclick=()=>{
     P=PROFILE[b.dataset.profil]; Ablage.setze('profile',P.id,{ id:P.id, zuletzt:Date.now() }).catch(()=>{});
-    vorlesen(P.name); zeige(ebenenwahl); });
+    vorlesen(P.name); zeige(weltenwahl); });
   // Hier ist noch kein Kind gewaehlt - also wird immer angesagt. Wer lesen
   // kann, hoert einen Satz zuviel; wer nicht liest, kaeme sonst nicht los.
   ansagen(`Wer möchte spielen? ${aufzaehlen(Object.values(PROFILE).map(x=>x.name))}?`);
   return s;
 }
 
-/* ---------- Ebenenwahl mit Fortschritt ----------------------------------- */
-async function ebenenwahl(){
-  const s = el('div');
-  const balken = [];
+/**
+ * Der Stand jeder Ebene dieses Kindes.
+ *
+ * EIN Ort, weil ihn zwei Bildschirme brauchen: die Weltenwahl summiert
+ * ihn je Welt, die Ebenenwahl zeigt ihn je Kachel. Zweimal gerechnet
+ * hiesse zweimal anders gerechnet - genau so sind in diesem Verzeichnis
+ * schon zwei Sternformeln entstanden.
+ */
+async function staende(){
+  const aus = [];
   for (const e of meineEbenen()) {
     let st = {};
     try { st = (await Ablage.hole('fortschritt', `${P.id}:${e.id}`)) || {}; } catch(err){}
-    const alle = vorrat(e.id, st);
-    balken.push({ ...e, ...Leitner.fortschritt(alle, st) });
+    aus.push({ ...e, ...Leitner.fortschritt(vorrat(e.id, st), st) });
   }
-  s.innerHTML = kopf({ links: zurueckKnopf(), mitte:`<span class="marke">${P.name}</span>`,
-    rechts: zeichenKnopf('buch','buch','Forscherbuch')
-          + zeichenKnopf('eltern','eltern','Elternbereich') }) + `
+  return aus;
+}
+
+/** Der Kopf, den beide Wahlbildschirme tragen. Einmal geschrieben. */
+const wahlKopf = (mitte) => kopf({ links: zurueckKnopf(), mitte:`<span class="marke">${mitte}</span>`,
+  rechts: zeichenKnopf('buch','buch','Forscherbuch')
+        + zeichenKnopf('eltern','eltern','Elternbereich') });
+
+/* ---------- Weltenwahl: das Fach, bevor die Übung kommt ------------------ */
+async function weltenwahl(){
+  const s = el('div');
+  const alle = await staende();
+  const welten = WELTEN
+    .map(w => ({ w, meine: alle.filter(b => weltVon(b) === w.id) }))
+    .filter(x => x.meine.length);
+
+  s.innerHTML = wahlKopf(P.name) + `
     <div class="mitte">
       <div class="titel">Was möchtest du üben?</div>
+      <div class="wahl weltwahl">${welten.map(({ w, meine })=>{
+        // Der Stand einer Welt ist die SUMME ihrer Ebenen, kein zweiter
+        // Zähler. Der Balken braucht denselben Anteil wie eine Kachel,
+        // also gewichtet mit der Größe der Ebene - sonst zählte eine
+        // Ebene mit sechs Kontinenten so schwer wie eine mit hundert
+        // Aufgaben.
+        const gesamt    = meine.reduce((n, b) => n + b.gesamt, 0);
+        const gesammelt = meine.reduce((n, b) => n + b.gesammelt, 0);
+        const anteil    = gesamt ? meine.reduce((n, b) => n + b.anteil * b.gesamt, 0) / gesamt : 0;
+        return `
+        <button class="kachel bunt welt" data-welt="${w.id}" style="--ton:var(--f${w.farbe})">
+          <div class="weltzeichen">${ZEI(w.zeichen, 44)}</div>
+          <div class="name">${w.name}</div>
+          <div class="ueber">${meine.length} ${meine.length === 1 ? 'Übung' : 'Übungen'}</div>
+          <div class="kachelfuss">
+            <div class="stand">${kleberMarke(gesammelt, gesamt)}</div>
+            ${fortschrittBalken({ gesammelt, gesamt, anteil })}
+          </div>
+        </button>`; }).join('')}</div>
+    </div>`;
+
+  s.querySelector('#zur').onclick=()=>zeige(profilwahl);
+  s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
+  s.querySelector('#eltern').onclick=()=>zeige(elternTor);
+  s.querySelectorAll('[data-welt]').forEach(b=>b.onclick=()=>{
+    Welt = b.dataset.welt; zeige(ebenenwahl); });
+  ansagen(`Was möchtest du üben? ${aufzaehlen(welten.map(x=>x.w.name))}?`);
+  return s;
+}
+
+/* ---------- Ebenenwahl mit Fortschritt ----------------------------------- */
+async function ebenenwahl(){
+  const s = el('div');
+  // Nur die Ebenen DIESER Welt. Ohne den Filter wäre die Weltenwahl eine
+  // Zwischentür, die nichts zutut - und drei Runden später hätte niemand
+  // mehr gewusst, wozu sie da war.
+  const welt = WELTEN.find(w => w.id === Welt) || WELTEN[0];
+  const balken = (await staende()).filter(b => weltVon(b) === welt.id);
+  s.innerHTML = wahlKopf(welt.name) + `
+    <div class="mitte">
+      <div class="titel">Womit möchtest du anfangen?</div>
       <div class="wahl">${balken.map(b=>`
         <div class="kachelpaar">
         <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
@@ -501,7 +590,9 @@ async function ebenenwahl(){
         </button>${b.gesammelt ? `
         <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}</div>`).join('')}</div>
     </div>`;
-  s.querySelector('#zur').onclick=()=>zeige(profilwahl);
+  // Zurück führt in die Welt, nicht bis zur Profilwahl: sonst wäre die
+  // Weltenwahl eine Tür, die nur in eine Richtung aufgeht.
+  s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
   s.querySelector('#eltern').onclick=()=>zeige(elternTor);
   s.querySelectorAll('[data-ebene]').forEach(b=>b.onclick=()=>{
@@ -539,7 +630,8 @@ async function ebenenwahl(){
     vorlesen(`${titel} fängt wieder von vorne an.`);
     zeige(ebenenwahl);
   });
-  ansagen(`Was möchtest du üben? ${aufzaehlen(balken.map(b=>b.titel))}?`);
+  ansagen(`${welt.name}. Womit möchtest du anfangen? `
+    + `${aufzaehlen(balken.map(b=>b.titel))}?`);
   return s;
 }
 
@@ -1829,6 +1921,11 @@ function endschirm(){
   return s;
 }
 
+/* Buch, PIN und Elternbereich fuehren in die WELTENWAHL zurueck, nicht in
+ * eine Ebenenliste: sie haengen am Kind, nicht an einem Fach. Wer das Buch
+ * aus der Erdkunde heraus oeffnet, kaeme sonst dort wieder an - obwohl
+ * darin seit C3c auch die Rechenaufgaben kleben.
+ */
 /* ---------- Forscherbuch: der Aufkleber IST der Umriss ------------------- */
 /* ---------- Forscherbuch: was du schon gefunden hast --------------------
  *
@@ -1936,7 +2033,7 @@ async function forscherbuch(){
         <div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`
       : gesamt ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : ''}
     </div>`;
-  s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
+  s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
   s.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
   ansagen(gesamt
     ? `Dein Forscherbuch. Du hast ${gesamt} Aufkleber${gekonnt?`, ${gekonnt} davon sicher`:''}. `
@@ -1966,7 +2063,7 @@ function elternTor(){
   // Gefunden hat das Tor `schrift`.
   const anzeige=()=>s.querySelectorAll('#pin i')
     .forEach((p,i)=>p.classList.toggle('voll', i<eingabe.length));
-  s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
+  s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
   s.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{
     const z=b.dataset.z;
     if (z==='x') eingabe=eingabe.slice(0,-1);
@@ -2094,7 +2191,7 @@ async function elternbereich(){
         (© GeoBasis-DE / BKG). Einwohnerzahlen: Stand ${BAU.standJahr}.</p>
     </div>`;
 
-  s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
+  s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
   s.querySelector('#sprach').onclick=async(e)=>{
     Einst.sprachmodus=!Einst.sprachmodus; await einstSichern();
     e.target.textContent=Einst.sprachmodus?'Sprachmodus ausschalten':'Sprachmodus einschalten'; };

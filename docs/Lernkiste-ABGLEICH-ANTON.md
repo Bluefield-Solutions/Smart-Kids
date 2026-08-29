@@ -329,6 +329,14 @@ Ertrag.
 Ebene darüber: Erdkunde und Mathe als zwei Welten mit eigenem Gesicht.
 *Mittel — und erst nötig, wenn C steht.*
 
+> **Umgesetzt.** Als eigener Bildschirm zwischen Profilwahl und
+> Ebenenwahl, mit zwei grossen Karten. Der erste Entwurf hat es
+> stattdessen auf einem Bildschirm gruppiert — mit dem Argument, dass
+> „Rechnen" je Kind nur eine Kachel hält. `passt` hat das mit 14
+> Überläufen auf dem Zielgerät widerlegt; zwei Weltenköpfe kosten Höhe,
+> die 844 × 390 nicht hat. Die Zuordnung wird aus `art` abgeleitet, nicht
+> je Ebene hingeschrieben.
+
 ---
 
 ## 5. Wie ich vorgehen würde
@@ -342,7 +350,7 @@ jede Runde soll auf der vorigen stehen können.
 | 2 | **C1 + C3** (Fionas Mathe, Aufgabentyp ohne Karte) | die Architekturfrage einmal lösen, am einfacheren Fall |
 | 3 | **C2** (Leas Reihen, Regler im Elternbereich) — *gefahren* | steht auf Runde 2 |
 | 4 | **B1 + B2** (Erklärung und Test) | die Dramaturgie, jetzt für zwei Fächer auf einmal |
-| 5 | **D4 + D2** (Fachwelten, Abzeichen) | erst sinnvoll, wenn es zwei Fächer gibt |
+| 5 | **D4** — *gefahren* + **D2** (Abzeichen) | erst sinnvoll, wenn es zwei Fächer gibt |
 | 6 | **B3, D3** (mehr Formen, Sätze) | Tiefe, wenn die Breite steht |
 | — | **A3, D1** | A3 nebenbei in Runde 4; D1 braucht Bilder und damit dich |
 

@@ -12,7 +12,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte } from './chromium.mjs';
+import { starte, zurEbenenwahl } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -161,6 +161,7 @@ async function laeuft(ctx, bisEbene) {
     // Lager kommen - sonst startet die App zwar, aber die halbe App fehlt.
     if (bisEbene) {
       await p.click('[data-profil="fiona"]');
+      await zurEbenenwahl(p, bisEbene);
       await p.waitForSelector(`.schirm.da [data-ebene="${bisEbene}"]`, { timeout: 8000 });
       await p.click(`.schirm.da [data-ebene="${bisEbene}"]`);
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
