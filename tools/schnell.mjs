@@ -74,12 +74,47 @@ for (const [name, datei] of [['inhalt (7 Prüfungen)', 'tor/inhalt.mjs'],
 //    zwei Chromium sättigen ihn nicht, drei schon (gemessen in der
 //    Temporunde: die Parallelität brachte 1,5x, nicht 3x).
 const a3 = Date.now();
-const [rauch, bild] = await Promise.all([
-  lauf('tor/smoke.mjs', ['--nur=spielen']),
-  lauf('tor/ansicht.mjs'),
+/* Jedes Tor misst SEINE Dauer, nicht die der Gruppe.
+ *
+ * Im ersten Anlauf stand hier zweimal `Date.now() - a3` - beide Tore
+ * meldeten damit dieselbe Zahl, naemlich die des langsameren. Ich haette
+ * das kuerzere optimiert und es nicht gemerkt. Eine Zahl, die fuer zwei
+ * Dinge gilt, gilt fuer keines (Regel 12). */
+const mitZeit = async (name, datei, args) => {
+  const a = Date.now(); const r = await lauf(datei, args); return { name, r, ms: Date.now() - a };
+};
+/* Drei Browser, nicht zwei.
+ *
+ * Der Bildvergleich war mit 42 s der Engpass - der Rauchtest brauchte 28
+ * und wartete danach. Sechzehn Aufnahmen wissen nichts voneinander, also
+ * laufen sie in zwei Haelften. Vier Kerne, drei Chromium: die Temporunde
+ * hatte gemessen, dass das die Grenze ist. */
+const beide = await Promise.all([
+  mitZeit('Rauchtest (Hauptweg)', 'tor/smoke.mjs', ['--nur=spielen']),
+  mitZeit('Bildvergleich (1/2)', 'tor/ansicht.mjs', ['--teil=0/2']),
+  mitZeit('Bildvergleich (2/2)', 'tor/ansicht.mjs', ['--teil=1/2']),
 ]);
-melde('Rauchtest (Hauptweg)', rauch, Date.now() - a3);
-melde('Bildvergleich', bild, Date.now() - a3);
+for (const x of beide) melde(x.name, x.r, x.ms);
+/* Die zwei Haelften muessen ZUSAMMEN alle Aufnahmen abdecken.
+ *
+ * Ein Teillauf, der die Haelfte vergisst, meldet „gruen" - und niemand
+ * sieht, worueber. Deshalb wird nachgezaehlt, statt es zu glauben. */
+{
+  const gezaehlt = beide.filter(x => /Bildvergleich/.test(x.name))
+    .map(x => (x.r.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || []).slice(1, 4)
+      .reduce((n, z) => n + (+z || 0), 0))
+    .reduce((n, z) => n + z, 0);
+  const soll = +((beide.find(x => /1\/2/.test(x.name))?.r.aus
+    .match(/der (\d+) Aufnahmen/) || [])[1] || 0);
+  if (soll && gezaehlt !== soll) {
+    console.log(`\n  ${rot('✗')} Bildvergleich: ${gezaehlt} von ${soll} Aufnahmen geprüft — `
+      + 'die Teile decken zusammen nicht alles ab.');
+    process.exit(1);
+  }
+  if (soll) console.log(`    ${''.padEnd(6)}${'geprüfte Aufnahmen'.padEnd(22)} ${gezaehlt} von ${soll}`);
+}
+console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(22)} ${s(Date.now() - a3)} statt `
+  + `${s(beide.reduce((n, x) => n + x.ms, 0))} nacheinander`);
 
 console.log('');
 if (befunde.length) {

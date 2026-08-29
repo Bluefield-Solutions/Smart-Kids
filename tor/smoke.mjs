@@ -91,7 +91,7 @@ async function neueSeite(viewport, ctx) {
     }
     window.AudioContext = Nachbau; window.webkitAudioContext = Nachbau;
   });
-  await p.goto(ADRESSE, { waitUntil: 'domcontentloaded' });
+  await p.goto(ADRESSE + '?flott', { waitUntil: 'domcontentloaded' });
   await p.evaluate(() => document.fonts.ready);
   return p;
 }
@@ -189,6 +189,45 @@ async function raus(p) {
   const pause = await p.waitForSelector('.schirm.da #raus', { timeout: 2000 }).catch(() => null);
   if (pause) await p.$eval('.schirm.da #raus', x => x.click());
   await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 8000 }).catch(() => {});
+}
+
+/* Warten, bis die Antwort BEWERTET ist - vor dem Lesen.
+ *
+ * Das Gegenstueck zu `weitergegangen`: dort wartet man, bis das Lob WEG
+ * ist, hier, bis es DA ist. Beides sind Bedingungen; eine Frist dazwischen
+ * ist entweder zu lang oder zu kurz. Seit die App mit `?flott` nach 900 ms
+ * weitergeht, lag die alte Frist von 900 ms genau auf der Kippe - der
+ * Rauchtest las die naechste Frage und meldete „6 angetippt -> Wie viel
+ * ist das?".
+ */
+async function bewertet(p, ms = 6000) {
+  return p.waitForFunction(() => {
+    const f = document.querySelector('.schirm.da .frage');
+    return !!(f && (f.querySelector('.richtigText') || f.querySelector('.fastText')
+                    || f.querySelector('.loesung')));
+  }, null, { timeout: ms }).then(() => true).catch(() => false);
+}
+
+/* Warten, bis die App weitergegangen ist - nicht eine Frist lang.
+ *
+ * Nach einer richtigen Antwort bleibt das Lob `LOBPAUSE` stehen, dann
+ * kommt die naechste Aufgabe oder der Endbildschirm. Der erste Versuch,
+ * das zu beschleunigen, hat feste Fristen gekuerzt und den Rauchtest an
+ * elf Stellen rot gemacht: eine Frist ist entweder zu lang (dann kostet
+ * sie) oder zu kurz (dann liest der Test die Frage statt der Antwort).
+ *
+ * Gewartet wird deshalb auf das, was WIRKLICH den Fortschritt anzeigt:
+ * das Lob ist weg UND es steht wieder etwas da, das man bedienen kann.
+ * Das ist schneller als jede Frist und kann nicht zu kurz sein.
+ */
+async function weitergegangen(p, ms = 8000) {
+  return p.waitForFunction(() => {
+    const s = document.querySelector('.schirm.da');
+    if (!s) return false;
+    if (s.querySelector('.frage .richtigText, .frage .fastText, .frage .loesung')) return false;
+    return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
+              || s.querySelector('#nochmal'));
+  }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
 /** Eine Aufgabe loesen: das passende Etikett auf den Anker des Ziels ziehen. */
@@ -331,7 +370,11 @@ if (laeuft('spielen')) try {
       });
       sternVerlauf.push({ runde, n: kopf.sterne });
       bandVerlauf.push(kopf.band.join(' '));
-      await p.waitForTimeout(700);
+      // Die Fahne wird MIT dem Lob gezeichnet, aber nicht im selben
+      // Bild: `loese()` wartet auf das Lob, die Fahne kommt einen
+      // Anzeigeschritt spaeter. Ohne dieses kurze Warten meldete das Tor
+      // „in zwoelf Aufgaben nur die Sorte daneben".
+      await p.waitForTimeout(250);
       const art = await fahnePruefen(p, geloest[geloest.length - 1]);
       if (art) fahnenArten.add(art);
       // Die Messung ersetzt die Wartezeit, sie kommt nicht dazu. Beim
@@ -339,7 +382,7 @@ if (laeuft('spielen')) try {
       // und ueberholte damit den Bildschirmwechsel - danach meldete das
       // Tor „kein Name auf der Karte", obwohl der Name dagewesen war.
       if (ueberblendung === null) ueberblendung = await ueberblendungMessen(p);
-      else await p.waitForTimeout(1100);
+      else await weitergegangen(p);
     }
     const nochmal = await p.$('.schirm.da #nochmal');
     if (nochmal) {
@@ -816,7 +859,7 @@ if (laeuft('regler')) try {
       merke('regler', new Error('der Ton fuer „richtig" steigt nicht'));
     if (daneben.length && !(daneben[0].bis < daneben[0].von))
       merke('regler', new Error('der Ton fuer „falsch" faellt nicht'));
-    await p.waitForTimeout(2600);
+    await weitergegangen(p);
   }
   for (let n = 0; n < 20; n++) {
     if (abbruch()) break;
@@ -833,7 +876,8 @@ if (laeuft('regler')) try {
     arten.push(r.art);
     await p.fill('.schirm.da #rein', String(r.soll));
     await p.click('.schirm.da #pruef');
-    await p.waitForTimeout(2800);
+    await bewertet(p);
+    await weitergegangen(p);
   }
   const geteilt = arten.filter(a => a === ':').length;
   console.log(`  Regler bei 50 %:            ${arten.length} Aufgaben, ${geteilt} geteilt`
@@ -945,7 +989,7 @@ if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
       const et = (await p.$$('.schirm.da .etikett'))[ok.idx]; const bb = await et.boundingBox();
       await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await p.mouse.down();
       await p.mouse.move(ok.x, ok.y, { steps: 8 }); await p.mouse.up();
-      await p.waitForTimeout(1100);
+      await bewertet(p); await weitergegangen(p);
     }
     await eigen.close();
   } catch (e) { merke('ebene4', e); }
@@ -1106,7 +1150,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
           await p.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
         }
         wege.add(`${wer}: rechnen ${r.tippt ? 'geschrieben' : 'angetippt'}`);
-        await p.waitForTimeout(900);
+        await bewertet(p);
         const rr = await p.evaluate(() => {
           const f = document.querySelector('.schirm.da .frage');
           return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
@@ -1114,7 +1158,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
         if (!/^✓ /.test(rr || ''))
           merke('durchgang', new Error(`${wer}/${ebene}: ${r.soll} angetippt → „${rr}"`));
         durchgespielt++;
-        await p.waitForTimeout(1500);
+        await weitergegangen(p);
         await raus(p);
         continue;
       }
@@ -1172,7 +1216,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
           wege.add(`${wer}: ziehen`);
         }
       }
-      await p.waitForTimeout(900);
+      await bewertet(p);
       const r = await p.evaluate(() => {
         const f = document.querySelector('.schirm.da .frage');
         return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
@@ -1181,7 +1225,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
         merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
           + `${z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'} → „${r}"`));
       durchgespielt++;
-      await p.waitForTimeout(1500);
+      await weitergegangen(p);
       await raus(p);
     }
     await p.close();

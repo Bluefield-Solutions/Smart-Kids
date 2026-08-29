@@ -437,7 +437,15 @@ const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
  * man nicht mehr).
  */
 const FLOTT = new URLSearchParams(location.search).has('flott');
-const LOBPAUSE = FLOTT ? 250 : 2600;
+const LOBPAUSE = FLOTT ? 900 : 2600;
+/* 900 ms, nicht 250.
+ *
+ * Bei 250 war das Lob weg, bevor der Rauchtest es ansehen konnte - er
+ * meldete „Timeout" beim Warten auf `.richtigText`, obwohl die Antwort
+ * gewertet worden war. Eine Pause, die kuerzer ist als der Blick des
+ * Beobachters, macht die Beobachtung unmoeglich; das ist kein schnellerer
+ * Test, sondern ein blinder. 900 ms sind knapp ein Drittel der echten
+ * Pause und reichen dem Test bequem. */
 
 const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
 let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',

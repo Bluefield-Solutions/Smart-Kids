@@ -22,7 +22,7 @@ Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run schnell`** | bei **jeder** Änderung | **~45 s** | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und Bildvergleich **nebeneinander** |
+| **`npm run schnell`** | bei **jeder** Änderung | **~36 s** | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
 | `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
@@ -49,7 +49,7 @@ ausgelöst hat. Die Frist ist richtig; falsch war, **wer sie bezahlt**.
 ## Befehle
 
 ```
-npm run schnell    DIE NORMALE RUNDE. ~45 s. Siehe oben.
+npm run schnell    DIE NORMALE RUNDE. ~36 s. Siehe oben.
 npm run tor        die ganze Kette. Der Runner fährt sie ohnehin bei jedem
                    Push; hier nur, wenn du sie vorher sehen willst.
 npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
@@ -64,11 +64,18 @@ npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Lauf rot ist: sonst wirft ein einziger Befund die
                    Nachweise von siebzig anderen weg.
 npm run smoke      spielt die App im Browser durch. `-- --nur=spielen`
-                   fährt nur den Hauptweg (29 s statt 163 s).
+                   fährt nur den Hauptweg (28 s statt 138 s).
+                   Läuft mit `?flott`: die Jubelpause der App ist dann
+                   900 ms statt 2600. Gewartet wird auf BEDINGUNGEN
+                   (`bewertet`, `weitergegangen`), nicht auf Fristen —
+                   eine Frist ist entweder zu lang oder zu kurz.
                    Abschnitte: spielen · ablage · tippen · regler ·
                    ebene4 · durchgang.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
+                   `-- --teil=0/2` faehrt jede zweite Aufnahme; `schnell`
+                   fuehrt beide Haelften nebeneinander und zaehlt nach,
+                   dass zusammen alle sechzehn geprueft sind.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
                    im SELBEN Commit einchecken.
 npm run backen     Karten neu rechnen

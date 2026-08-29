@@ -64,6 +64,22 @@ if (process.env.SMARTKIDS_OHNE_ANSICHT === '1') {
 const VORBILDER = path.join(process.cwd(), 'tor/vorbilder');
 const ABWEICHUNGEN = path.join(process.cwd(), 'tor/abweichungen');
 const AKTUALISIEREN = process.argv.includes('--aktualisieren');
+/* `--teil=i/n`: nur jede n-te Aufnahme, ab der i-ten.
+ *
+ * Der Bildvergleich war mit 42 s das langsamste Tor der schnellen Bahn -
+ * und er ist das einzige, das sich trivial teilen laesst: sechzehn
+ * Aufnahmen, die nichts voneinander wissen. Zwei Teile nebeneinander
+ * halbieren ihn.
+ *
+ * Geteilt wird REIHUM (i, i+n, i+2n …) und nicht in Bloecke: die teuren
+ * Aufnahmen stehen beieinander (alles mit `spiel:` spielt sich erst hin),
+ * ein Blockschnitt gaebe einem Teil die ganze Arbeit. */
+const TEIL = (() => {
+  const f = process.argv.find(x => x.startsWith('--teil='));
+  if (!f) return null;
+  const [i, n] = f.slice(7).split('/').map(Number);
+  return (i >= 0 && n > 0) ? { i, n } : null;
+})();
 
 /** Was aufgenommen wird. Jede Aufnahme ist EINE Zeile hier. */
 const AUFNAHMEN = [
@@ -297,7 +313,16 @@ const holeSeite = async (a) => {
   return querSeite;
 };
 
-for (const a of AUFNAHMEN) {
+const MEINE = TEIL ? AUFNAHMEN.filter((_, k) => k % TEIL.n === TEIL.i) : AUFNAHMEN;
+if (TEIL) console.log(`  (Teil ${TEIL.i + 1} von ${TEIL.n}: `
+  + `${MEINE.length} der ${AUFNAHMEN.length} Aufnahmen)`);
+/* Ein Teillauf, der ins Leere greift, ist gefaehrlicher als gar keiner:
+   er meldet „alles gruen" ueber nichts. */
+if (TEIL && !MEINE.length) {
+  console.log('\n  ansicht ROT: dieser Teil hat keine einzige Aufnahme.\n');
+  process.exit(1);
+}
+for (const a of MEINE) {
   const seite = await holeSeite(a);
   if (a.spiel || a.quer) {
     // Frische Ablage je Aufnahme: der Keim kommt aus dem gespeicherten
