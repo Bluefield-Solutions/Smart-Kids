@@ -3021,3 +3021,58 @@ ist das Tor da.
 Der Rauchtest spielt **27** Ebenen × Profile statt 18 — und prüft
 zusätzlich, dass Adam **nie** eine Auswahl bekommt. Das ist der Teil, den
 man nur dort sieht.
+
+## R4, zweite Hälfte · Zwölf Länder je Kontinent
+
+Adams Profil versprach `laenderTiefe:12` und bekam **fünf** — die Daten
+gingen nicht tiefer. Das war die einzige Zusage seines Profils, die nicht
+eingelöst war.
+
+### Die Befürchtung im Konzept war falsch, und die Messung lag bereit
+
+Das Backlog sagte: *„107 KB. Zwölf Länder sprengen das voraussichtlich."*
+
+Gemessen: **107,4 → 107,6 KB**, bei 25 → 60 Ländern. Zwei Zehntel.
+
+Der Grund stand die ganze Zeit im gebauten Bündel, man musste nur
+hineinsehen: Europas Bündel ist 314 KB, davon **220 KB `umgebung`** — 46
+namenlose Hintergrundformen. `backen-laender.mjs` backt **jedes** Land des
+Kontinents in derselben Stufe; der Unterschied zwischen Spielziel und
+Kulisse ist `name` und `rang`, sonst nichts. Sieben Länder mehr zu benennen
+heißt, sieben Formen von der einen Liste in die andere zu schieben.
+
+Eine Schätzung, die zwei Zehntel Kilobyte für „sprengt das Budget" hält,
+ist keine Schätzung, sondern eine Vermutung — und drei Zeilen Messung
+hätten sie jederzeit widerlegt.
+
+### Die Reihenfolge der ersten fünf bleibt
+
+Fiona spielt Rang 1–3, Lea 1–5. Wer die fünf umsortiert, ändert unbemerkt,
+was die Kinder üben — ihr Leitner-Stand hängt an der Kennung, nicht am
+Rang, also fiele es nirgends auf. Die Ränge 6 bis 12 kommen nach
+**Einwohnerzahl** dazu: bekannter heißt leichter, und die Reihenfolge muss
+steigen, sonst ist `laenderTiefe` keine Schwierigkeitsstufe.
+
+### Drei Anläufe für eine Gegenprobe
+
+Der teuerste denkbare Fehler dieser Runde wäre, dass die Ränge 6–12
+mitrutschen und vor einem Sechsjährigen zwölf Länder stehen. Die Gegenprobe
+dafür hat dreimal nichts bewiesen, jedes Mal aus einem anderen Grund:
+
+**Erstens gab es die Prüfung gar nicht.** Der Rauchtest zählte nie, wie
+viele Länder ein Profil sieht. Jetzt zählt er die Karten im Vorlauf — dort
+steht genau der Vorrat der Ebene.
+
+**Zweitens las die Prüfung ihr Soll aus dem Prüfling.** Ich hatte
+`laenderTiefe` aus `prototyp/spiel.js` gelesen — und die Gegenprobe baut den
+Fehler genau dort ein. Beide Seiten wanderten mit, der Test blieb grün.
+Regel 4 in Reinform: *das Modell darf nicht vom Gemessenen abhängen.* Das
+Soll kommt jetzt aus der Tabelle im Backlog, also von dort, wo die Zahl
+entschieden wurde.
+
+**Drittens schlug `--kurz` die Ebene gar nicht auf.** Die Abkürzung des
+Rauchtests spielt „jede Art von Bildschirm" — Kontinente, Auswahl-Ebene,
+Rechnen. Seit die Ländertiefe je Profil verschieden ist, ist eine
+Länderebene eine **eigene Art**. Sie steht jetzt in der Auswahl.
+
+Beim vierten Anlauf schlug sie an.

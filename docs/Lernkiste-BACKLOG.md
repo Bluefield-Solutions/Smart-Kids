@@ -63,6 +63,14 @@ Die Quelle ist von hier aus erreichbar. Das Risiko ist keins mehr.
 
 **Aber ein zweites steht daneben:** `budget` erlaubt **250 KB je
 nachgeladener Ebene**, und Europa liegt mit fünf Ländern schon bei
+> **Nachtrag (R4, zweite Hälfte): die Befürchtung war falsch.** Gemessen
+> wuchs das größte Bündel von **107,4 auf 107,6 KB** — bei 25 → 60
+> Ländern. Der Grund stand die ganze Zeit im gebauten Bündel: **jedes**
+> Land eines Kontinents wird ohnehin ausgeliefert, die namenlosen als
+> `umgebung` (bei Europa 220 von 314 KB). Sieben Länder mehr zu benennen
+> heißt, sieben Formen von `umgebung` nach `laender` zu schieben. Es
+> kostet Name, Rang und Anker — sonst nichts.
+
 **107 KB**. Zwölf Länder sprengen das voraussichtlich. Das ist in R5 zu
 klären, nicht zu übergehen — die Grenze steht dort, weil die Kinder die
 Ebene auf einem Telefon nachladen.
@@ -312,7 +320,7 @@ Möglichkeiten statt vier. Die Vier ist eine Eigenschaft der **Ebene**
 (Bundesländer schreibt man nicht, man erkennt sie), das Verbot eine des
 **Profils** (`kandidaten:0`). Zwei verschiedene Dinge.
 
-### R5 · Mehr Länder  ·  Datenrunde, eigenes Risiko
+### R5 · Mehr Länder  ·  ERLEDIGT (und billiger als befürchtet)
 
 **Ziel:** 12 Länder je Kontinent statt 5. Liste erweitern, neu backen,
 Berichte und Gebietszahl nachziehen.
