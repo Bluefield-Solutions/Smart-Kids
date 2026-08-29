@@ -1105,11 +1105,18 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'adam']) {
         if (da.includes(e)) merke('durchgang',
           new Error(`${wer}: Ebene „${e}" gehört ${anderes}, steht aber in ${wer}s Auswahl`));
     /* Bei `--kurz` eine Auswahl statt aller: die erste Karte, die
-     * Auswahl-Ebene und das Rechnen. Damit ist jede ART von Bildschirm
-     * dabei, beide Welten und beide Antwortweisen — nur eben nicht jede
-     * einzelne Länderebene. */
+     * Auswahl-Ebene, das Rechnen — und EINE Länderebene. Damit ist jede
+     * ART von Bildschirm dabei, beide Welten und beide Antwortweisen —
+     * nur eben nicht jede einzelne Länderebene.
+     *
+     * Die Länderebene kam mit R4 dazu, und zwar nicht aus Gründlichkeit:
+     * seit die Tiefe je Profil verschieden ist (3 · 5 · 12), ist sie eine
+     * eigene Art von Bildschirm. Ohne sie lief die Gegenprobe „Fiona
+     * bekommt Adams Länder zu sehen" ins Leere - der Eingriff war drin,
+     * das Tor blieb grün, weil es die Ebene gar nicht aufschlug. */
     const zuSpielen = KURZ
-      ? da.filter(e => e === 'kontinente' || e === 'hauptstaedte' || e.startsWith('rechnen'))
+      ? da.filter(e => e === 'kontinente' || e === 'hauptstaedte'
+                    || e === 'laender:europa' || e.startsWith('rechnen'))
       : da;
     gespielt[wer] = zuSpielen.length;
     for (const ebene of zuSpielen) {
