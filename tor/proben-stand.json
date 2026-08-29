@@ -77,7 +77,7 @@
       "zeit": "2026-08-29"
     },
     "die Vorschau schiebt einen ungeprüften Stand unter /": {
-      "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
+      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
       "zeit": "2026-08-29"
     },
     "der Zahlenraum im Code stimmt nicht mehr mit dem Abgleich": {
@@ -146,6 +146,18 @@
     },
     "die Seite wächst unbemerkt": {
       "commit": "bb74325750d60e892a60258d663bae32d4660cd2",
+      "zeit": "2026-08-29"
+    },
+    "der letzte Probenlauf liegt zu lange zurück": {
+      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
+      "zeit": "2026-08-29"
+    },
+    "eine Probe hat keinen Nachweis, und es faellt nicht auf": {
+      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
+      "zeit": "2026-08-29"
+    },
+    "ein neues Tor steht in der Kette, aber nicht im Stand": {
+      "commit": "338c829e7841c24a441970c21e6354ee6f775d64",
       "zeit": "2026-08-29"
     },
     "„von vorne\" in der Pause löscht nichts": {

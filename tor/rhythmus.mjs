@@ -179,7 +179,17 @@ const alterVon = (name, eintrag) => {
   if (istVorfahr(eintrag.commit)) return rundenSeit(eintrag.commit);
   const traeger = ersteFassung(name, eintrag);
   if (traeger) return rundenSeit(traeger);
-  return 0;                       // noch nicht eingecheckt: die laufende Runde
+  /* Weder noch: das Alter ist NICHT bestimmbar, und das ist rot.
+   *
+   * Hier stand `return 0` - "noch nicht eingecheckt, gehoert zur laufenden
+   * Runde". Der Gedanke war falsch, und die Gegenprobe hat ihn sofort
+   * gefangen: ein frisch geschriebener Nachweis traegt den AKTUELLEN Kopf,
+   * und der ist ein Vorfahr von HEAD - er kommt also gar nicht bis
+   * hierher. Wer hier ankommt, zeigt ins Leere.
+   *
+   * Eine Ausnahme, die den einzigen Fall verschluckt, fuer den die
+   * Pruefung da ist, ist keine Ausnahme, sondern das Loch. */
+  return null;
 };
 
 /* Welche Proben stehen im Baum?
