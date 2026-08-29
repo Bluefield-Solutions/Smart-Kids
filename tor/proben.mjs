@@ -518,6 +518,45 @@ const PROBEN = [
     an:{ datei:'src/kern/leitner.js', text:'aus[aus.length - 1]++;' },
     sagt:'ganzer Platz daneben' },
 
+  /* --- Der Ton (A2) --------------------------------------------------- */
+
+  // Ein Ton, den niemand ausloest, ist keiner. Geprueft wird am ENDE der
+  // Kette: was das Kind wirklich zu hoeren bekaeme.
+  { n:'eine falsche Antwort bleibt stumm', tor:'smoke', args:['--nur=regler'],
+    bauen:true, datei:D,
+    such:"    klangZu('falsch');\n    if (versuch >= 3) return aufloesen('dreimal');",
+    ersatz:"    if (versuch >= 3) return aufloesen('dreimal');",
+    an:{ ...DIST, fehlt:"klangZu('falsch');\n    if (versuch >= 3)" },
+    sagt:'stumm' },
+
+  // Und der wichtigere Fall: EIN Ton fuer beides. Er ist nicht still, er
+  // klingt nur nichtssagend - und in jedem Mitschnitt sieht das aus wie
+  // zwei Toene.
+  { n:'richtig und falsch klingen gleich', tor:'smoke', args:['--nur=regler'],
+    bauen:true, datei:'src/kern/klang.js',
+    such:"  ton(k, { von: 330, bis: 247, ab: 0, dauer: 0.22, laut: 0.13, form: 'sine' });",
+    ersatz:"  ton(k, { von: 660, bis: 660, ab: 0, dauer: 0.10, laut: 0.20, form: 'triangle' });\n"
+      + "  ton(k, { von: 990, bis: 990, ab: 0.09, dauer: 0.16, laut: 0.20, form: 'triangle' });",
+    an:{ ...DIST, fehlt: "von: 330, bis: 247" },
+    sagt:'klingen gleich' },
+
+  // Die Richtung traegt die Bedeutung: das Lob geht hinauf, der Hinweis
+  // hinunter. Ein steigender „Fehler"-Ton klaenge wie ein zweites Lob.
+  { n:'der Ton für „falsch" steigt statt zu fallen', tor:'smoke', args:['--nur=regler'],
+    bauen:true, datei:'src/kern/klang.js',
+    such:"von: 330, bis: 247",
+    ersatz:"von: 247, bis: 330",
+    an:{ ...DIST, text:"von: 247, bis: 330" },
+    sagt:'faellt nicht' },
+
+  // Und der Schalter: „Ton aus" heisst nicht „nur die Stimme aus".
+  { n:'der Ton spielt auch bei abgeschaltetem Ton', tor:'smoke', args:['--nur=regler'],
+    bauen:true, datei:D,
+    such:"function klangZu(ergebnis){\n  if (!tonAn) return;",
+    ersatz:"function klangZu(ergebnis){",
+    an:{ ...DIST, fehlt:"function klangZu(ergebnis){\n  if (!tonAn) return;" },
+    sagt:'Ton aus' },
+
   /* --- Fachwelten (D4) ------------------------------------------------ */
 
   // Die Zuordnung wird aus `art` abgeleitet. Geht die Ableitung daneben,

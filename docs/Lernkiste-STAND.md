@@ -2182,3 +2182,73 @@ zurückholt. Aus einem unwiderruflichen Griff wird ein ärgerlicher.
 
 *Eine Regel, die nur aufgeschrieben ist, wird gebrochen — und eine, die
 nur verbietet, hilft nicht, wenn jemand das Verbot umgeht.*
+
+---
+
+## Der Ton (A2)
+
+Der letzte offene Punkt aus Reihe A — und laut Abgleich das, was ein Kind
+**zuerst** wahrnimmt: vor dem Satz, vor der Farbe, vor dem Haken.
+
+### Gerechnet, nicht geladen
+
+`src/kern/klang.js` erzeugt zwei Hüllkurven über `AudioContext`. Zwei
+Klangdateien wären je nach Format 5 bis 30 KB im Startbündel, das bei
+400 KB gedeckelt ist; die beiden Kurven sind zusammen unter einem
+Kilobyte — das Bündel wuchs von 151,6 auf **155,2 KB**. Und sie lassen
+sich stimmen, ohne ein Werkzeug zu öffnen.
+
+| | |
+|---|---|
+| richtig | 660 Hz, dann 990 Hz — zwei kurze Töne aufwärts, eine Quinte |
+| falsch | 330 Hz weich fallend auf 247 Hz, um ein Drittel leiser |
+
+Der Fehlerton ist **kein Summer**. Ein Kind, das eine Aufgabe übt, macht
+Fehler — das ist der Zweck der Übung —, und ein Geräusch, das sich wie eine
+Niederlage anhört, macht aus jedem Fehler ein Ereignis. Aufgelöste Aufgaben
+(„Weiß ich nicht") bleiben ganz stumm: die App sagt dazu schon „Kein
+Problem", ein Ton obendrauf machte aus dem Ausweg eine Niederlage.
+
+Der Kontext wird **spät** angelegt, beim ersten Ton. iOS gibt Ton erst nach
+einer Berührung frei, und ein Kontext, der vorher entsteht, bleibt
+„suspended" — er spielt dann den Rest der Sitzung nichts, ohne einen Fehler
+zu werfen. Der erste Ton ist immer eine Antwort, also immer nach einer
+Berührung.
+
+### Eine Stelle entscheidet, wie eine Antwort klingt
+
+`klangZu(ergebnis)` — ausgelöst dort, wo die App ohnehin schon entscheidet,
+wie die Antwort ausging. Der richtige Ton steht **in `werten()`**, durch das
+beide Bildschirme laufen; der falsche an den zwei Fehlerzweigen. Und er
+hängt am selben Schalter wie die Sprache: wer „Ton aus" sagt, meint nicht
+„nur die Stimme aus".
+
+### Ein Tor kann nicht hören — aber es kann anderes
+
+Chromium hier hat kein Tongerät, und `AudioContext` gibt nichts zurück, was
+man ansehen könnte. Der Rauchtest baut es deshalb nach und schreibt mit,
+**welche** Schwingungen angelegt wurden — dasselbe Mittel wie bei
+`speechSynthesis.speak`. Geprüft wird an einer falschen und einer richtigen
+Antwort hintereinander an derselben Aufgabe:
+
+```
+Ton bei falsch/richtig:     330→247  |  660→660 990→990
+Mit „Ton aus":              0 Schwingungen (erwartet 0)
+```
+
+- Es kommt überhaupt einer.
+- Die beiden sind **verschieden**. Ein Ton, der bei richtig und falsch
+  derselbe ist, sagt dem Kind nichts — und sieht in jedem Mitschnitt aus
+  wie zwei.
+- Die **Richtung** stimmt: das Lob steigt, der Hinweis fällt. Ein
+  steigender Fehlerton klänge wie ein zweites Lob.
+- Bei „Ton aus" bleibt es still.
+
+Die vierte Prüfung ist nachträglich dazugekommen, und zwar weil ihre
+Gegenprobe sonst **nichts bewiesen hätte**: bei eingeschaltetem Ton ändert
+das Entfernen der Sperre nichts, was zu sehen wäre. Regel 13, wieder —
+*wer eine Wirkung misst, schaltet sie zuerst ab.*
+
+**Ob sie gut klingen, sagt das alles nicht.** Das hört man auf dem iPhone
+und nirgends sonst; im Abgleich steht dafür seit der ersten Fassung: *„Für
+A2: einmal Hören auf dem iPhone."*

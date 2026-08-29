@@ -173,6 +173,18 @@ Kind zuerst wahrnimmt. Gebacken, nicht geladen (Budget). Sparsam nach S4.
 *Klein. Sichtbar an: das Kind schaut nicht mehr auf den Text, um zu wissen,
 ob es stimmte.*
 
+> **Umgesetzt.** `src/kern/klang.js`, gerechnet statt geladen: unter einem
+> Kilobyte gegen 5 bis 30 KB für zwei Klangdateien. Richtig 660 → 990 Hz
+> (zwei kurze Töne aufwärts), falsch 330 → 247 Hz weich fallend und um ein
+> Drittel leiser — **kein Summer**: ein Kind, das übt, macht Fehler, und
+> ein Geräusch wie eine Niederlage macht aus jedem Fehler ein Ereignis.
+> Aufgelöste Aufgaben bleiben stumm.
+>
+> Der Rauchtest baut `AudioContext` nach und prüft, dass überhaupt einer
+> kommt, dass die beiden verschieden sind, dass die Richtung stimmt und
+> dass „Ton aus" wirklich still ist. **Wie sie klingen, sagt er nicht** —
+> dafür steht unten weiterhin: einmal Hören auf dem iPhone.
+
 **A3 · Der Fehler wird benannt, auch beim Ziehen.** Heute: „Nicht ganz —
 probier es noch einmal." Möglich wäre: „Das ist Bayern. Thüringen liegt
 weiter oben." Das ist genau der Vorwurf, den ANTON sich einfängt, und wir
@@ -346,7 +358,7 @@ jede Runde soll auf der vorigen stehen können.
 
 | Runde | Inhalt | warum hier |
 |---|---|---|
-| 1 | **A1, A2, A4, A5** | kleine Griffe, sofort spürbar, ändern nichts am Aufbau |
+| 1 | **A1, A5** — *gefahren*, **A2** — *gefahren*, A4 offen | kleine Griffe, sofort spürbar, ändern nichts am Aufbau |
 | 2 | **C1 + C3** (Fionas Mathe, Aufgabentyp ohne Karte) | die Architekturfrage einmal lösen, am einfacheren Fall |
 | 3 | **C2** (Leas Reihen, Regler im Elternbereich) — *gefahren* | steht auf Runde 2 |
 | 4 | **B1 + B2** (Erklärung und Test) | die Dramaturgie, jetzt für zwei Fächer auf einmal |

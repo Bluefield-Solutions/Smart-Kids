@@ -43,6 +43,27 @@ async function neueSeite(viewport, ctx) {
   await p.addInitScript(() => {
     window.__gesagt = [];
     speechSynthesis.speak = (u) => { if (u && u.text) window.__gesagt.push(u.text); };
+    /* Und die Toene (A2) - mitschreiben statt hoeren.
+     *
+     * Chromium hier hat kein Tongeraet, und `AudioContext` gibt nichts
+     * zurueck, was man ansehen koennte. Der Nachbau merkt sich, WELCHE
+     * Schwingungen angelegt wurden; ob sie gut klingen, hoert man auf dem
+     * iPhone und nirgends sonst. */
+    window.__toene = [];
+    class Nachbau {
+      constructor(){ this.currentTime = 0; this.destination = {}; this.state = 'running'; }
+      resume(){ return Promise.resolve(); }
+      createGain(){ return { gain: { setValueAtTime(){}, exponentialRampToValueAtTime(){} },
+                             connect(){} }; }
+      createOscillator(){
+        const t = { type:'', von:null, bis:null,
+          frequency: { setValueAtTime(v){ t.von = v; },
+                       exponentialRampToValueAtTime(v){ t.bis = v; } },
+          connect(){}, start(){}, stop(){} };
+        window.__toene.push(t); return t;
+      }
+    }
+    window.AudioContext = Nachbau; window.webkitAudioContext = Nachbau;
   });
   await p.goto(ADRESSE, { waitUntil: 'domcontentloaded' });
   await p.evaluate(() => document.fonts.ready);
@@ -553,7 +574,54 @@ if (laeuft('regler')) try {
   await zurEbenenwahl(p, 'rechnen:reihen');
   await p.click('[data-ebene="rechnen:reihen"]');
   await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
+
+  /* Die Toene (A2) — und zwar an EINER falschen und EINER richtigen
+   * Antwort, hintereinander an derselben Aufgabe.
+   *
+   * Geprueft wird nicht, ob es gut klingt: das hoert man auf dem iPhone.
+   * Geprueft wird, dass ueberhaupt einer kommt und dass die beiden
+   * VERSCHIEDEN sind. Ein Ton, der bei richtig und falsch derselbe ist,
+   * sagt dem Kind nichts - und sieht in jedem Mitschnitt aus wie zwei.
+   *
+   * Absichtlich vor der Zaehlschleife: ein Fehlversuch laesst dieselbe
+   * Aufgabe stehen, und die Schleife wuerde sie sonst doppelt zaehlen.
+   */
   const arten = [];
+  {
+    const eins = await p.evaluate(() => {
+      const m = document.querySelector('.schirm.da .rechnung').textContent
+        .match(/(\d+)\s*([+−×:])\s*(\d+)/);
+      const a = +m[1], b = +m[3];
+      return { art: m[2], soll: m[2] === '×' ? a * b : a / b };
+    });
+    const erste = eins.soll;
+    // Die erste Aufgabe wird hier BEANTWORTET - also zaehlt sie hier auch.
+    // Sonst faende die Schleife unten nur noch sieben und meldete eine
+    // Sitzungslaenge, die es nie gab.
+    arten.push(eins.art);
+    await p.evaluate(() => { window.__toene = []; });
+    await p.fill('.schirm.da #rein', String(erste + 1 > 100 ? erste - 1 : erste + 1));
+    await p.click('.schirm.da #pruef');
+    await p.waitForTimeout(300);
+    const daneben = await p.evaluate(() => window.__toene.map(t => ({ von: t.von, bis: t.bis })));
+    await p.evaluate(() => { window.__toene = []; });
+    await p.fill('.schirm.da #rein', String(erste));
+    await p.click('.schirm.da #pruef');
+    await p.waitForTimeout(300);
+    const treffer = await p.evaluate(() => window.__toene.map(t => ({ von: t.von, bis: t.bis })));
+    const zeig = (x) => x.map(t => `${t.von}→${t.bis ?? t.von}`).join(' ') || 'STILL';
+    console.log(`  Ton bei falsch/richtig:     ${zeig(daneben)}  |  ${zeig(treffer)}`);
+    if (!daneben.length) merke('regler', new Error('eine falsche Antwort bleibt stumm'));
+    if (!treffer.length) merke('regler', new Error('eine richtige Antwort bleibt stumm'));
+    if (JSON.stringify(daneben) === JSON.stringify(treffer))
+      merke('regler', new Error('richtig und falsch klingen gleich — dann sagt der Ton nichts'));
+    // Und die Richtung: das Lob geht hinauf, der Hinweis hinunter.
+    if (treffer.length && !(treffer[treffer.length - 1].von > treffer[0].von))
+      merke('regler', new Error('der Ton fuer „richtig" steigt nicht'));
+    if (daneben.length && !(daneben[0].bis < daneben[0].von))
+      merke('regler', new Error('der Ton fuer „falsch" faellt nicht'));
+    await p.waitForTimeout(2600);
+  }
   for (let n = 0; n < 20; n++) {
     const r = await p.evaluate(() => {
       const s = document.querySelector('.schirm.da');
@@ -578,6 +646,46 @@ if (laeuft('regler')) try {
   if (geteilt !== 4)
     merke('regler', new Error(`Der Regler stand auf 50 Prozent Division, gespielt wurden `
       + `${geteilt} von ${arten.length} — er kommt nicht bis in die Sitzung`));
+
+  /* Und der Schalter (A2): „Ton aus" heisst nicht „nur die Stimme aus".
+   *
+   * Regel 13 — wer eine Wirkung misst, schaltet sie zuerst ab. Ohne diesen
+   * zweiten Durchgang haette die Gegenprobe „der Ton spielt auch bei
+   * abgeschaltetem Ton" gar keinen Gegenstand: bei eingeschaltetem Ton
+   * aendert das Entfernen der Sperre nichts, was zu sehen waere.
+   */
+  {
+    await p.evaluate(() => new Promise((ja, nein) => {
+      const auf = indexedDB.open('lernkiste', 1);
+      auf.onsuccess = () => {
+        const t = auf.result.transaction(['einstellungen'], 'readwrite');
+        t.objectStore('einstellungen').put({ reihenGeteilt: 0.5, ton: false }, 'alles');
+        t.oncomplete = ja; t.onerror = () => nein(t.error);
+      };
+      auf.onerror = () => nein(auf.error);
+    }));
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    await p.click('[data-profil="lea"]');
+    await zurEbenenwahl(p, 'rechnen:reihen');
+    await p.click('[data-ebene="rechnen:reihen"]');
+    await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
+    await p.evaluate(() => { window.__toene = []; });
+    const falschZahl = await p.evaluate(() => {
+      const m = document.querySelector('.schirm.da .rechnung').textContent
+        .match(/(\d+)\s*([+−×:])\s*(\d+)/);
+      const a = +m[1], b = +m[3];
+      const soll = m[2] === '×' ? a * b : a / b;
+      return soll + 1 > 100 ? soll - 1 : soll + 1;
+    });
+    await p.fill('.schirm.da #rein', String(falschZahl));
+    await p.click('.schirm.da #pruef');
+    await p.waitForTimeout(300);
+    const trotzdem = await p.evaluate(() => window.__toene.length);
+    console.log(`  Mit „Ton aus":              ${trotzdem} Schwingungen (erwartet 0)`);
+    if (trotzdem > 0) merke('regler',
+      new Error(`„Ton aus" ist gesetzt, und es kamen trotzdem ${trotzdem} Schwingungen`));
+  }
   await p.close();
 } catch (e) { merke('regler', e); }
 

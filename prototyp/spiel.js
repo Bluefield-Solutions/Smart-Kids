@@ -793,8 +793,28 @@ function mischenMit(liste, keim){
  * an zwei Stellen gerechnet, und bei vier von vier richtig zeigte der Kopf
  * einen Stern und der Endbildschirm drei.
  */
+/* Der Ton zur Antwort (A2).
+ *
+ * EINE Stelle entscheidet, WIE eine Antwort klingt - ausgeloest wird sie
+ * dort, wo die App ohnehin schon entscheidet, wie die Antwort ausging.
+ * Der Ton haengt am selben Schalter wie die Sprache: wer „Ton aus" sagt,
+ * meint nicht „nur die Stimme aus".
+ *
+ * Aufgeloeste Aufgaben bleiben STUMM. „Weiss ich nicht" ist kein Fehler,
+ * und die App sagt dazu schon „Kein Problem" - ein Geraeusch obendrauf
+ * machte aus dem Ausweg eine Niederlage. Eine „fast" richtige Antwort
+ * ebenso: sie bekommt eine Rueckfrage, keine Wertung.
+ */
+function klangZu(ergebnis){
+  if (!tonAn) return;
+  if (ergebnis === 'richtig') Klang.richtig();
+  else if (ergebnis === 'falsch') Klang.falsch();
+}
+
 function werten(ziel, ergebnis, versuch){
   const st = Sitzung;
+  // Der richtige Ton fuer BEIDE Bildschirme, weil hier beide durchkommen.
+  klangZu(ergebnis);
   const fachVorher = Stand[ziel.id]?.fach ?? 1;
   Stand = Leitner.verschieben(Stand, ziel.id, ergebnis === 'richtig', Date.now());
   if (ergebnis === 'richtig' && versuch === 1) st.glatt++;
@@ -981,6 +1001,7 @@ function rechenschirm(){
       return;
     }
     protokollieren('falsch', zahl, fachVorher);
+    klangZu('falsch');
     if (versuch >= 3) return aufloesen('dreimal');
     // Die Zahl sagt selbst, dass sie abgelehnt wurde - wie das Etikett auf
     // der Karte. Ein Satz allein reicht einer Sechsjährigen nicht.
@@ -1693,6 +1714,7 @@ function spielschirm(){
       // dreimal daneben lag, raet ab jetzt nur noch.
       aufloesen('dreimal');
     } else {
+      klangZu('falsch');
       // Das Etikett sagt selbst, dass es abgelehnt wurde. Vorher kam nur
       // ein Satz darunter - fuer eine Sechsjaehrige passierte nichts.
       if (ctx.etikett) {
