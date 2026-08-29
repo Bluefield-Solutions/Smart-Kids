@@ -302,7 +302,27 @@ const PROBEN = [
     ersatz:'.kachel.welt .name{font-size:var(--s3)}\n.wahl .kachelpaar:first-child{translate:0 60px}',
     an:{ ...DIST, text:'translate:0 60px' }, sagt:'ueberlappen sich' },
 
+  // Das Forscherbuch war fuer `passt` unsichtbar: `.aufkleber` stand nicht
+  // in seiner Auswahl. Diese Probe schiebt eine Aufkleberkarte aus dem
+  // Fenster - ohne den Eintrag in der Auswahl bleibt das Tor gruen.
+  { n:'eine Aufkleberkarte liegt außerhalb des Fensters', tor:'passt', bauen:true, datei:V,
+    such:'.aufkleber.da{opacity:1}',
+    ersatz:'.aufkleber.da{opacity:1}\n.rollen .aufkleber:first-child{position:relative;left:-500px}',
+    an:{ ...DIST, text:'left:-500px' }, sagt:'über den Rand' },
+
   /* --- lesbarkeit --------------------------------------------------- */
+  // Die DECKUNG der Vorfahren gehoert in die Kontrastrechnung.
+  //
+  // `opacity` wirkt auf den Teilbaum, steht im `computedStyle` des Kindes
+  // aber als 1. Ohne diese Rechnung meldete das Tor 7,4:1 fuer eine
+  // Schrift, die das Auge bei 3,3:1 sieht. Und die Probe prueft zugleich,
+  // dass der Rundgang das FORSCHERBUCH ueberhaupt erreicht - bis R2 endete
+  // er nach vier von neun Bildschirmen.
+  { n:'die Deckung der Vorfahren zählt beim Kontrast nicht', tor:'lesbarkeit', bauen:true, datei:V,
+    such:'  gap:var(--r1);cursor:pointer;opacity:.72}',
+    ersatz:'  gap:var(--r1);cursor:pointer;opacity:.12}',
+    an:{ ...DIST, text:'cursor:pointer;opacity:.12' }, sagt:':1' },
+
   // Das Wasserzeichen unter der Schrift.
   //
   // `lesbarkeit` lief den ELTERNBAUM hoch und sah damit nie, was als

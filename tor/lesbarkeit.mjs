@@ -154,8 +154,27 @@ const MESSEN = () => {
     if (!vorn) continue;
     const gross = parseFloat(cs.fontSize) >= 24
       || (parseFloat(cs.fontSize) >= 18.7 && +cs.fontWeight >= 700);
+    /* Die DECKUNG der Vorfahren gehoert in die Rechnung.
+     *
+     * `opacity` wirkt auf den ganzen Teilbaum, steht aber im
+     * `computedStyle` des Kindes als 1. Ein Etikett in einer Karte mit
+     * `opacity:.45` wurde deshalb gemessen, als stuende es voll da - das
+     * Tor meldete 7,4:1 fuer eine Schrift, die das Auge bei 3,3:1 sieht.
+     * Dieselbe Verwechslung wie beim Wasserzeichen, nur andersherum
+     * (Regel 13): dort fehlte der Grund, hier die Farbe darueber.
+     *
+     * Der Ausschluss "unter 0,5 gar nicht erst ansehen" bleibt daneben
+     * stehen - er meint das Element SELBST, das dann absichtlich
+     * verborgen ist. */
+    let deckung = 1;
+    for (let q = el; q && q !== document.documentElement; q = q.parentElement)
+      deckung *= +getComputedStyle(q).opacity;
     let schlechteste = Infinity;
-    for (const g of grundVon(el)) schlechteste = Math.min(schlechteste, kontrast(vorn, g));
+    for (const g of grundVon(el)) {
+      const gesehen = deckung >= 0.999 ? vorn
+        : [0, 1, 2].map(i => vorn[i] * deckung + g[i] * (1 - deckung));
+      schlechteste = Math.min(schlechteste, kontrast(gesehen, g));
+    }
     raus.push({ text: text.slice(0, 30).replace(/\s+/g, ' '),
                 klasse: (el.className || el.tagName).toString().split(' ')[0],
                 px: Math.round(parseFloat(cs.fontSize)), gross,
@@ -195,6 +214,27 @@ for (const abend of [false, true]) {
   await zurEbenenwahl(p, 'bundeslaender'); await schau('Ebenenwahl');
   await p.$eval('[data-ebene="bundeslaender"]', e => e.click());
   await p.waitForSelector('.schirm.da .karte svg path.ziel'); await schau('Spiel');
+
+  /* Der Rundgang endete bis hierher nach VIER Bildschirmen.
+   *
+   * `passt` faehrt neun ab, `lesbarkeit` vier - und niemandem ist
+   * aufgefallen, dass damit das Forscherbuch, der Elternbereich und der
+   * Endbildschirm nie auf Kontrast gemessen wurden. Ausgerechnet das
+   * Forscherbuch: dort steht die einzige Schrift der App, die absichtlich
+   * zurueckgenommen ist ("Als Naechstes", `opacity` unter 1), also genau
+   * die, bei der es knapp wird.
+   *
+   * Der Endbildschirm fehlt weiterhin, und zwar ausdruecklich: dorthin
+   * kommt man nur durch ein ganzes Spiel. Was das kostet, misst der
+   * Rauchtest; hier waere es die Haelfte der Laufzeit fuer zwei Zeilen. */
+  await p.$eval('.schirm.da #zur', e => e.click());
+  await p.waitForSelector('.schirm.da [data-ebene]');
+  await p.$eval('.schirm.da #buch', e => e.click());
+  await p.waitForSelector('.schirm.da .rollen'); await schau('Forscherbuch');
+  await p.$eval('.schirm.da #zur', e => e.click());
+  await p.waitForSelector('.schirm.da #eltern');
+  await p.$eval('.schirm.da #eltern', e => e.click());
+  await p.waitForSelector('.schirm.da .ziffern'); await schau('Eltern-Tor');
   await ctx.close();
 }
 await b.close(); server.close();
