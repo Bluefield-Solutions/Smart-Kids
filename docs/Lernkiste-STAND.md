@@ -23,7 +23,7 @@ npm run ansicht     Bildvergleich, 13 Aufnahmen — vier davon auf dem
                     Zielgerät (iPhone quer). Nur ortsfest.
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 49 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 51 stehenden Gegenproben (Baum muss sauber sein,
                     höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
@@ -41,7 +41,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Neunzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **49 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **51 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 Seit der Audit-Runde vergleicht sich die Aufzählung darüber selbst: das Tor
@@ -1403,7 +1403,6 @@ sie maßen, was leichter zu messen war:
 | — | **Die Entwürfe und den Prototyp auf dem iPad ansehen.** Kein Tor läuft auf iOS. | ihr |
 | — | Schriftentscheidung: Plus Jakarta Sans oder Nunito, am Gerät | ihr |
 | — | M1: Vite und Svelte. PWA, Service Worker und Ablage stehen bereits. | ich |
-| — | **Die Vorschau freischalten**: Settings → Environments → `github-pages` → Deployment branches → `vorschau` erlauben. Ein Klick, und die Vorschau liefert selbst aus statt auf die nächste `main`-Auslieferung zu warten. | ihr |
 | D31 | Der Beweis für den Lagernamen (F13): zwei Installationen an zwei Pfaden in denselben Browser setzen und nach der zweiten die erste ohne Netz starten. Heute prüft `pwa` nur die Form des Namens. | ich |
 | D28 | `ansicht` auf dem Runner: nur im festgenagelten Playwright-Abbild sinnvoll, samt dort aufgenommener Vorbilder | ich |
 | — | Leitner, Elternbereich, Protokoll | ich |
@@ -1672,33 +1671,54 @@ ausdrücklich, dass es die Form prüft und nicht die Wirkung. Der Beweis wäre,
 zwei Installationen an zwei Pfaden in denselben Browser zu setzen und nach
 der zweiten die erste ohne Netz zu starten. Steht unten als offener Punkt.
 
-### Was noch fehlt: ein Klick in den Einstellungen
+### Der Versand geht nicht aus dem Zweig heraus — und braucht trotzdem keine Einstellung
 
 Der erste Lauf auf dem Zweig `vorschau`:
 
 ```
-Schnelle Tore   ✓ erfolgreich   23 s   (npm ci, die Tore, das Zusammenstellen)
-Nach Pages      ✗ fehlgeschlagen 1 s   ohne Runner, ohne einen einzigen Schritt
+Schnelle Tore   ✓ erfolgreich   23 s
+Nach Pages      ✗ fehlgeschlagen 1 s   ohne Runner, ohne einen Schritt, ohne Protokoll
 ```
 
 Die schnelle Hälfte stimmt und ist gemessen: **23 Sekunden**, besser als die
 anderthalb Minuten, mit denen ich gerechnet hatte. Der Versand fällt durch,
-und zwar bevor er anfängt — die Umgebung `github-pages` lässt Auslieferungen
-nur vom Standardzweig zu. Das ist eine Schutzregel, keine Panne, und sie
-gehört nicht umgangen, sondern entschieden:
+bevor er anfängt.
 
-> **Settings → Environments → `github-pages` → Deployment branches:**
-> `vorschau` zu den erlaubten Zweigen hinzufügen.
+**Zur Ursache, ehrlich:** null Schritte, kein Runner, leeres `output` über
+die API — das ist die Signatur der Umgebungsregel, die Auslieferungen auf
+den Standardzweig beschränkt. **Belegt ist sie nicht**; das Protokoll eines
+Jobs, der nie lief, gibt es nicht, und ich habe sie zuerst als Tatsache
+hingeschrieben. Der Umbau unten ist deshalb auch der Beweisversuch: greift
+er, war die Diagnose richtig.
 
-Bis dahin erscheint `/vorschau/` trotzdem — nur nicht sofort, sondern bei
-der **nächsten Auslieferung von `main`**: `--rolle=haupt` holt sich den
-Zweig `vorschau` und nimmt ihn mit. Das ist die halbe Ersparnis, aber es ist
-kein toter Weg.
+Statt einer Einstellung ein zweiter Ablauf. `workflow_run` löst das ohne
+jeden Klick: ein so ausgelöster Ablauf läuft **im Zusammenhang des
+Standardzweigs**, darf also versenden.
 
-Der Umweg ohne Einstellung wäre ein zweiter Ablauf mit `on: workflow_run` —
-der läuft im Zusammenhang des Standardzweigs und dürfte damit versenden. Er
-kostet einen weiteren Ablauf und muss den Anhang der auslösenden Ausführung
-von Hand durchreichen. Erst bauen, wenn ihr den Klick nicht wollt.
+```
+vorschau.yml           Push auf `vorschau` → nur die schnellen Tore. Prüft, versendet nicht.
+vorschau-versand.yml   workflow_run "Vorschau" → baut main, stellt beide
+                       Hälften zusammen, liefert aus. Läuft auf main.
+```
+
+Damit fällt auch `--rolle` weg: beide Abläufe stellen jetzt aus demselben
+Zweig heraus dasselbe zusammen. Eine Verzweigung, die niemand nimmt, ist
+eine Verzweigung, die niemand prüft.
+
+**Das Loch, das dabei aufging.** Der Versand baut `main` neu, ohne die Kette
+zu fahren — das ist ja die eingesparte Zeit. Damit könnte eine Vorschau
+einen **roten** `main`-Stand unter `/` schieben, dorthin, wo die Kinder
+spielen. Zwei Riegel:
+
+- Der Ablauf fragt bei GitHub nach, ob es für genau diesen Commit eine
+  **erfolgreiche Auslieferung** gibt (`head_sha=…&status=success`). Sonst
+  bricht er ab.
+- `seite-zusammenstellen.mjs` weigert sich, wenn `HEAD` nicht auf `main`
+  liegt (`git merge-base --is-ancestor`).
+
+Und das Tor `doku` prüft die Eigenschaft statt der Zuständigkeit: **jede**
+Ablaufdatei, die einen Pages-Anhang hochlädt, muss vorher die Seite
+zusammengestellt haben — sonst löscht sie die andere Hälfte.
 
 ### Drei neue Gegenproben
 
@@ -1706,8 +1726,10 @@ von Hand durchreichen. Erst bauen, wenn ihr den Klick nicht wollt.
 |---|---|
 | die Vorschau verschweigt ein Tor, das sie nicht fährt | `doku` |
 | die Vorschau läuft auf main | `doku` |
+| ein Ablauf schickt nur seine halbe Seite nach Pages | `doku` |
+| die Vorschau schiebt einen ungeprüften Stand unter / | `doku` |
 | der Lagername vergisst den Ort | `pwa` |
 
-**49 Gegenproben, alle schlagen an.** Und die Regel hat sofort zugebissen:
+**51 Gegenproben, alle schlagen an.** Und die Regel hat sofort zugebissen:
 nach dem Hinzufügen war die Kette rot — *„Es stehen 49 Proben im Baum,
 festgehalten sind 46"*. Neue Proben dürfen nicht ungefahren mitlaufen.

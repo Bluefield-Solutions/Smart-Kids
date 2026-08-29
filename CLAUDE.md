@@ -45,8 +45,15 @@ Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` ·
 
 | Zweig | Was läuft | Wohin | Dauer |
 |---|---|---|---|
-| `main` | die volle Kette | `/` — dort spielen die Kinder | 4,2 min |
-| `vorschau` | nur die Tore ohne Browser | `/vorschau/`, mit Marke im Bild | ~1,5 min |
+| `main` | die volle Kette (`auslieferung.yml`) | `/` — dort spielen die Kinder | 4,2 min |
+| `vorschau` | nur die Tore ohne Browser (`vorschau.yml`), dann `vorschau-versand.yml` | `/vorschau/`, mit Marke im Bild | 23 s + Versand |
+
+Versandt wird **immer vom Standardzweig aus**: die Umgebung `github-pages`
+nimmt Auslieferungen nur von dort an. `vorschau-versand.yml` hängt deshalb
+an `workflow_run` — so läuft es im Zusammenhang von `main`. Es baut `main`
+neu, ohne die Kette zu fahren, und fragt deshalb vorher bei GitHub nach, ob
+genau dieser Commit schon einmal ausgeliefert wurde. Sonst käme Ungeprüftes
+unter `/`.
 
 Die Vorschau ist zum **Ansehen**, nicht zum Ausliefern: `passt`,
 `lesbarkeit`, `ziehen`, `ansicht`, `pwa`/`offline` und `smoke` laufen dort
@@ -56,8 +63,9 @@ genannt ist.
 
 Beide Abläufe stellen **beide** Hälften zusammen
 (`tools/seite-zusammenstellen.mjs`). Täte es nur einer, löschte jede
-Auslieferung die Vorschau — und jede Vorschau setzte das ausgelieferte
-Spiel zurück.
+Auslieferung die Vorschau — und jeder Versand der Vorschau das ausgelieferte
+Spiel. Das Tor `doku` prüft genau das: jede Ablaufdatei, die einen
+Pages-Anhang hochlädt, muss vorher zusammengestellt haben.
 
 Diese Aufzählung wird **verglichen, nicht geglaubt**: das Tor `doku` legt
 sie neben `npm run tor` in `package.json` und neben die Überschriften der

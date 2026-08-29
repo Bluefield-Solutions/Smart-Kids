@@ -1,11 +1,13 @@
-# Vorschau-Auslieferung.
+# Vorschau — die PRÜFUNG.
 #
-# Damit man etwas ANSEHEN kann, bevor es durch die volle Kette geht. Von
-# „mach das" bis „schau es dir an" rund anderthalb Minuten statt vier.
+# Damit man etwas ansehen kann, bevor es durch die volle Kette geht. Dieser
+# Ablauf prüft nur; versandt wird von `vorschau-versand.yml` aus, und zwar
+# vom Standardzweig aus. Warum getrennt, steht dort.
 #
-# Sie fährt NUR die Tore ohne Browser — inhalt (mit topologie, beruehrung,
+# Er fährt NUR die Tore ohne Browser — inhalt (mit topologie, beruehrung,
 # marken, schrift, symbol, doku), spielprobe, vergleich, budget. Zusammen
-# unter drei Sekunden. Was fehlt, fehlt ausdrücklich:
+# unter drei Sekunden, und kein `playwright install` (das allein sind 39 s).
+# Was fehlt, fehlt ausdrücklich:
 #
 #     rhythmus     ob die Gegenproben nicht veraltet sind
 #     passt        läuft nicht über den Rand
@@ -31,34 +33,18 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-# Dieselbe Gruppe wie die Auslieferung: zwei Pages-Versände gleichzeitig
-# überschreiben einander. Nacheinander ist beides richtig, weil BEIDE
-# Abläufe beide Hälften zusammenstellen.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
-  vorschau:
+  pruefen:
     name: Schnelle Tore
     runs-on: ubuntu-latest
     steps:
-      # Volle Historie: `seite-zusammenstellen.mjs` holt sich origin/main
-      # in einen Nebenbaum, damit das ausgelieferte Spiel unter / stehen
-      # bleibt. Ein flacher Klon hat den Zweig nicht.
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
       - run: npm ci
-      # Kein `npx playwright install` — genau das ist die eingesparte
-      # Dreiviertelminute. Die Tore hier brauchen keinen Browser.
       - name: Die schnellen Tore
         run: |
           node tor/inhalt.mjs
@@ -66,19 +52,3 @@ jobs:
           node tor/vergleich.mjs
           node prototyp/bauen.mjs
           node tor/budget.mjs
-      - name: Seite zusammenstellen (Vorschau + ausgeliefertes Spiel)
-        run: node tools/seite-zusammenstellen.mjs --rolle=vorschau
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: seite
-
-  ausliefern:
-    name: Nach Pages
-    needs: vorschau
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.pages.outputs.page_url }}
-    steps:
-      - id: pages
-        uses: actions/deploy-pages@v4

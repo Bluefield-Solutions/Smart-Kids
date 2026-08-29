@@ -635,6 +635,7 @@ if (!fs.existsSync(ANWEISUNG)) {
    */
   const AUSL = '.github/workflows/auslieferung.yml';
   const VORS = '.github/workflows/vorschau.yml';
+  const VERS = '.github/workflows/vorschau-versand.yml';
   if (fs.existsSync(VORS)) {
     const v = fs.readFileSync(VORS, 'utf8');
     const a = fs.existsSync(AUSL) ? fs.readFileSync(AUSL, 'utf8') : '';
@@ -642,9 +643,43 @@ if (!fs.existsSync(ANWEISUNG)) {
       `${AUSL} fährt nicht mehr die volle Kette (\`npm run tor:runner\`)`);
     pruefe(!/branches:\s*\[[^\]]*\bmain\b/.test(v),
       `${VORS} läuft auf \`main\` — dann geht Ungeprüftes dorthin, wo die Kinder spielen`);
-    pruefe(/--rolle=vorschau/.test(v) && /--rolle=haupt/.test(a),
-      'die beiden Abläufe stellen die Seite nicht mehr in ihren Rollen zusammen — '
-      + 'einer von beiden löscht die Hälfte des anderen');
+
+    /* Wer nach Pages schickt, schickt BEIDE Hälften.
+     *
+     * Pages kennt eine Seite je Verzeichnis. Ein Ablauf, der nur seine
+     * eigene Hälfte hochlädt, löscht die andere - die Auslieferung die
+     * Vorschau, während jemand sie ansieht, oder der Versand der Vorschau
+     * das Spiel der Kinder. Geprüft wird deshalb nicht, WER was tut,
+     * sondern die Eigenschaft, die das verhindert: jede Datei, die einen
+     * Pages-Anhang hochlädt, muss vorher `seite-zusammenstellen.mjs`
+     * gerufen haben.
+     */
+    const ablaeufe = fs.readdirSync('.github/workflows')
+      .filter(f => f.endsWith('.yml')).map(f => ['.github/workflows/' + f]);
+    for (const [datei] of ablaeufe) {
+      const t = fs.readFileSync(datei, 'utf8');
+      if (!/upload-pages-artifact/.test(t)) continue;
+      pruefe(/tools\/seite-zusammenstellen\.mjs/.test(t),
+        `${datei} lädt einen Pages-Anhang hoch, ohne die Seite zusammenzustellen — `
+        + 'das löscht die andere Hälfte');
+    }
+
+    /* Und der Versand der Vorschau darf `/` nicht ungeprüft überschreiben.
+     *
+     * Er baut `main` neu, ohne die Kette zu fahren - das ist die
+     * eingesparte Zeit. Also muss er NACHSEHEN, ob genau dieser Stand
+     * schon einmal durchgegangen ist. Ohne den Schritt könnte eine
+     * Vorschau einen roten `main`-Stand unter `/` schieben.
+     */
+    if (fs.existsSync(VERS)) {
+      const w = fs.readFileSync(VERS, 'utf8');
+      pruefe(/head_sha=/.test(w) && /auslieferung\.yml\/runs/.test(w),
+        `${VERS} sieht nicht nach, ob dieser Stand von main die Kette bestanden hat — `
+        + 'dann kann eine Vorschau Ungeprüftes unter `/` schieben');
+      pruefe(/workflow_run/.test(w),
+        `${VERS} wird nicht mehr durch \`workflow_run\` ausgelöst — nur so läuft er `
+        + 'im Zusammenhang des Standardzweigs und darf überhaupt versenden');
+    }
 
     // Welche Tore fährt die Vorschau wirklich? Aus ihr gelesen, nicht geraten.
     const gefahren = new Set([...v.matchAll(/node tor\/([a-zäöüß-]+)\.mjs/g)].map(m => m[1]));

@@ -150,6 +150,27 @@ const PROBEN = [
     an:{ datei:'.github/workflows/vorschau.yml', text:'[vorschau, main]' },
     sagt:'läuft auf `main`' },
 
+  // Ein Ablauf laedt nach Pages hoch, ohne die Seite zusammenzustellen.
+  // Pages kennt eine Seite je Verzeichnis: er loescht damit die andere
+  // Haelfte - die Auslieferung die Vorschau, oder umgekehrt.
+  { n:'ein Ablauf schickt nur seine halbe Seite nach Pages', tor:'inhalt', deckt:'doku',
+    datei:'.github/workflows/auslieferung.yml',
+    such:'        run: node tools/seite-zusammenstellen.mjs',
+    ersatz:'        run: echo uebersprungen',
+    an:{ datei:'.github/workflows/auslieferung.yml', fehlt:'run: node tools/seite-zusammenstellen.mjs' },
+    sagt:'ohne die Seite zusammenzustellen' },
+
+  // Der Versand der Vorschau sieht nicht mehr nach, ob dieser Stand von
+  // main die Kette bestanden hat. Er baut main neu, ohne sie zu fahren -
+  // ohne die Nachfrage koennte eine Vorschau einen roten Stand unter `/`
+  // schieben, und niemand wuerde es merken.
+  { n:'die Vorschau schiebt einen ungeprüften Stand unter /', tor:'inhalt', deckt:'doku',
+    datei:'.github/workflows/vorschau-versand.yml',
+    such:'          n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/auslieferung.yml/runs?head_sha=${sha}&status=success" --jq \'.total_count\')',
+    ersatz:'          n=1',
+    an:{ datei:'.github/workflows/vorschau-versand.yml', fehlt:'head_sha=' },
+    sagt:'die Kette bestanden hat' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.

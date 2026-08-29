@@ -3,56 +3,57 @@
  * Pages kennt EINE Seite je Verzeichnis. Ausgeliefert wird trotzdem
  * zweierlei:
  *
- *     /            das, was durch die volle Torkette gegangen ist
- *     /vorschau/   der Zweig `vorschau`, nur durch die schnellen Tore
+ *     /            der Standardzweig - das, was durch die volle Torkette
+ *                  gegangen ist. Dort spielen die Kinder.
+ *     /vorschau/   der Zweig `vorschau`, nur durch die schnellen Tore,
+ *                  mit dem Wort „Vorschau" unten links im Bild.
  *
- * Der springende Punkt ist, dass BEIDE Abläufe beides zusammenstellen. Täte
- * es nur einer, würde die jeweils andere Auslieferung die fremde Hälfte
- * löschen - die Vorschau setzte das Spiel der Kinder auf einen älteren
- * Stand zurück, oder die nächste Auslieferung räumte die Vorschau weg,
- * während jemand sie gerade ansieht.
+ * Aufgerufen wird das IMMER aus dem Standardzweig heraus, von beiden
+ * Abläufen: von der Auslieferung und vom Versand der Vorschau. Deshalb
+ * braucht es keine Rolle mehr - die eine Hälfte liegt im Baum, die andere
+ * wird aus ihrem Zweig geholt und in einem Nebenbaum gebaut.
  *
- * Aufruf:
- *   node tools/seite-zusammenstellen.mjs --rolle=haupt
- *   node tools/seite-zusammenstellen.mjs --rolle=vorschau
- *
- * `--rolle` sagt, welche Hälfte im aktuellen Baum schon gebaut ist. Die
- * andere wird aus dem Zweig geholt und dort gebaut. Fehlt der andere Zweig,
- * fehlt eben diese Hälfte - laut gemeldet, nicht still.
+ * Der erste Entwurf hatte `--rolle=haupt|vorschau`, weil der Versand der
+ * Vorschau aus IHREM Zweig heraus laufen sollte. Das ging nicht: die
+ * Umgebung `github-pages` nimmt Auslieferungen nur aus dem Standardzweig
+ * an. Der Zweig `vorschau` wird jetzt nur noch GEPRÜFT, versandt wird von
+ * main aus - und damit gibt es die zweite Rolle nicht mehr. Eine
+ * Verzweigung, die niemand nimmt, ist eine Verzweigung, die niemand prüft.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-
-const ROLLE = (process.argv.find(a => a.startsWith('--rolle=')) || '').split('=')[1];
-if (ROLLE !== 'haupt' && ROLLE !== 'vorschau') {
-  console.error('  --rolle=haupt oder --rolle=vorschau');
-  process.exit(2);
-}
 
 const WURZEL = process.cwd();
 const SEITE = path.join(WURZEL, 'seite');
 const DIST = path.join(WURZEL, 'dist');
 
 const git = (...a) => execFileSync('git', a, { encoding: 'utf8' }).trim();
-// `stdio: pipe` auch fuer stderr: `rev-parse --verify` auf einen Zweig, den
-// es nicht gibt, schreibt „fatal: Needed a single revision" ins Protokoll.
-// Das ist hier kein Fehler, sondern die Antwort - und im Ablaufprotokoll
-// sieht es aus wie einer.
-const gibtZweig = (name) => {
+const still = (...a) => {
   try {
-    execFileSync('git', ['rev-parse', '--verify', `origin/${name}`],
-      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    execFileSync('git', a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     return true;
   } catch { return false; }
 };
+
+/* Unter `/` darf nur, was auf dem Standardzweig steht.
+ *
+ * Das ist die Zusage, an der die ganze Auslieferung hängt: was rot ist,
+ * geht nicht auf das iPhone der Kinder. Der Versand der Vorschau stellt
+ * dieselbe Seite noch einmal zusammen - liefe er aus einem anderen Zweig,
+ * käme Ungeprüftes unter `/`, ohne dass jemand es bemerkt.
+ */
+if (!still('rev-parse', '--verify', 'origin/main'))
+  throw new Error('origin/main fehlt — ohne den Standardzweig lässt sich `/` nicht füllen');
+if (!still('merge-base', '--is-ancestor', 'HEAD', 'origin/main'))
+  throw new Error('HEAD liegt nicht auf `main` — unter `/` darf nur, was den '
+    + 'Standardzweig passiert hat. Die Vorschau wird von `main` aus versandt.');
 
 /* Die Marke auf der Vorschau.
  *
  * Sie wird in die GEBAUTE Seite gesetzt, nicht in die App. Ein Zweig im
  * Programm, den nur die Vorschau nimmt, wäre ein Stück Code, das kein Tor
- * je sieht - und das ausgelieferte Spiel trüge ihn ungenutzt mit. So ist
- * die Marke genau dort, wo die Vorschau liegt, und nirgends sonst.
+ * je sieht - und das ausgelieferte Spiel trüge ihn ungenutzt mit.
  *
  * `pointer-events:none`, damit sie nichts abfängt, und unten links: oben
  * links sitzt der Schließen-Knopf, oben rechts die Sterne.
@@ -76,7 +77,7 @@ function kopieren(von, nach, marke) {
   fs.writeFileSync(seite, t.replace('</body>', MARKE + '</body>'));
 }
 
-/** Den anderen Zweig in einen Nebenbaum holen und dort bauen. */
+/** Den Vorschauzweig in einen Nebenbaum holen und dort bauen. */
 function ausZweig(zweig) {
   const baum = path.join(WURZEL, '.zweigbaum');
   fs.rmSync(baum, { recursive: true, force: true });
@@ -92,24 +93,14 @@ function ausZweig(zweig) {
 fs.rmSync(SEITE, { recursive: true, force: true });
 fs.mkdirSync(SEITE, { recursive: true });
 
-if (ROLLE === 'haupt') {
-  kopieren(DIST, SEITE, false);
-  console.log('  /            aus diesem Baum (volle Torkette)');
-  if (gibtZweig('vorschau')) {
-    kopieren(ausZweig('vorschau'), path.join(SEITE, 'vorschau'), true);
-    console.log('  /vorschau/   aus origin/vorschau, mitgenommen');
-  } else {
-    console.log('  /vorschau/   entfällt — den Zweig `vorschau` gibt es nicht');
-  }
+kopieren(DIST, SEITE, false);
+console.log('  /            aus diesem Baum (volle Torkette)');
+
+if (still('rev-parse', '--verify', 'origin/vorschau')) {
+  kopieren(ausZweig('vorschau'), path.join(SEITE, 'vorschau'), true);
+  console.log('  /vorschau/   aus origin/vorschau, mit Marke');
 } else {
-  kopieren(DIST, path.join(SEITE, 'vorschau'), true);
-  console.log('  /vorschau/   aus diesem Baum (nur die schnellen Tore)');
-  if (gibtZweig('main')) {
-    kopieren(ausZweig('main'), SEITE, false);
-    console.log('  /            aus origin/main, unverändert mitgenommen');
-  } else {
-    throw new Error('origin/main fehlt — die Vorschau würde das ausgelieferte Spiel löschen');
-  }
+  console.log('  /vorschau/   entfällt — den Zweig `vorschau` gibt es nicht');
 }
 
 fs.rmSync(path.join(WURZEL, '.zweigbaum'), { recursive: true, force: true });

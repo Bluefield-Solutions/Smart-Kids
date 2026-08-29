@@ -68,10 +68,11 @@ jobs:
       #
       # Pages kennt eine Seite je Verzeichnis. Stellte nur der eine Ablauf
       # zusammen, löschte jede Auslieferung die Vorschau, während jemand
-      # sie gerade ansieht - und jede Vorschau das ausgelieferte Spiel.
-      # Deshalb stellen BEIDE beide Hälften zusammen.
+      # sie gerade ansieht - und jeder Versand der Vorschau das
+      # ausgelieferte Spiel. Deshalb stellen BEIDE beide Hälften zusammen,
+      # mit demselben Werkzeug und beide vom Standardzweig aus.
       - name: Seite zusammenstellen (Spiel + Vorschau, falls es eine gibt)
-        run: node tools/seite-zusammenstellen.mjs --rolle=haupt
+        run: node tools/seite-zusammenstellen.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: seite

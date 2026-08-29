@@ -1,0 +1,86 @@
+# Vorschau — der VERSAND.
+#
+# Warum das ein zweiter Ablauf ist, und nicht einfach ein Job in
+# `vorschau.yml`:
+#
+# Die Umgebung `github-pages` nimmt Auslieferungen nur aus dem
+# Standardzweig an. Der erste Anlauf hat den Versand aus dem Zweig
+# `vorschau` heraus versucht — der Job fiel nach einer Sekunde durch, ohne
+# Runner, ohne einen einzigen Schritt und ohne Protokoll. Das ist keine
+# Panne, sondern die Schutzregel, die verhindert, dass irgendein Zweig auf
+# die Seite schreiben kann.
+#
+# `workflow_run` löst das ohne eine einzige Einstellung: ein so
+# ausgelöster Ablauf läuft im Zusammenhang des STANDARDZWEIGS. Er darf
+# also versenden, und er stellt dabei dieselbe Seite zusammen wie die
+# Auslieferung — `/` aus `main`, `/vorschau/` aus dem Zweig.
+#
+# Was hier NICHT passiert: die Vorschau prüfen. Das hat `vorschau.yml`
+# schon getan, und dieser Ablauf startet nur, wenn sie durchgegangen ist.
+name: Vorschau versenden
+
+on:
+  workflow_run:
+    workflows: ["Vorschau"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  versenden:
+    name: Nach Pages
+    # Nur wenn die schnellen Tore grün waren. Eine Vorschau, die schon an
+    # `inhalt` scheitert, gehört nicht ins Netz.
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      # Volle Historie: `seite-zusammenstellen.mjs` holt den Zweig
+      # `vorschau` in einen Nebenbaum und prüft, dass HEAD auf `main` liegt.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Die Zusage, an der die ganze Auslieferung hängt: unter `/` steht
+      # nur, was die volle Kette passiert hat.
+      #
+      # Dieser Ablauf baut `main` neu, ohne die Kette zu fahren - das wäre
+      # die dritte Minute, die wir gerade einsparen. Also wird
+      # NACHGESEHEN, ob genau dieser Stand schon einmal durchgegangen ist.
+      # Ohne diesen Schritt könnte eine Vorschau einen roten `main`-Stand
+      # unter `/` schieben, und niemand würde es merken.
+      - name: Hat dieser Stand von `main` die Kette bestanden?
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha=$(git rev-parse HEAD)
+          n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/auslieferung.yml/runs?head_sha=${sha}&status=success" --jq '.total_count')
+          echo "  ${sha:0:7}: ${n} erfolgreiche Auslieferung(en)"
+          if [ "$n" -lt 1 ]; then
+            echo "::error::Der Stand ${sha:0:7} von main hat die Torkette nicht (oder noch nicht) bestanden. Die Vorschau wird nicht versandt — sonst käme Ungeprüftes unter /."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node prototyp/bauen.mjs
+      - name: Seite zusammenstellen (Spiel + Vorschau)
+        run: node tools/seite-zusammenstellen.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: seite
+      - id: pages
+        uses: actions/deploy-pages@v4
