@@ -187,12 +187,20 @@ const PROBEN = [
   // main die Kette bestanden hat. Er baut main neu, ohne sie zu fahren -
   // ohne die Nachfrage koennte eine Vorschau einen roten Stand unter `/`
   // schieben, und niemand wuerde es merken.
+  // Der Eingriff zielt auf die WIRKUNG, nicht mehr auf den Blick.
+  //
+  // Frueher stand hier eine Zeile aus dem alten Pruefschritt (`n=$(gh api
+  // ...)`). Als der Ablauf umgebaut wurde - er wartet jetzt und bleibt bei
+  // rotem `main` still stehen, statt durchzufallen -, gab es diese Zeile
+  // nicht mehr, und die Probe kam zwoelf Runden lang gar nicht an. Genau
+  // das ist Regel 5: wer ein Tor aendert, traegt seine Gegenprobe nach.
   { n:'die Vorschau schiebt einen ungeprüften Stand unter /', tor:'inhalt', deckt:'doku',
     datei:'.github/workflows/vorschau-versand.yml',
-    such:'          n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/auslieferung.yml/runs?head_sha=${sha}&status=success" --jq \'.total_count\')',
-    ersatz:'          n=1',
-    an:{ datei:'.github/workflows/vorschau-versand.yml', fehlt:'head_sha=' },
-    sagt:'die Kette bestanden hat' },
+    such:"      - id: pages\n        if: steps.kette.outputs.gruen == 'ja'\n        uses: actions/deploy-pages@v4",
+    ersatz:'      - id: pages\n        uses: actions/deploy-pages@v4',
+    an:{ datei:'.github/workflows/vorschau-versand.yml',
+         regex:/- id: pages\n        uses: actions\/deploy-pages/ },
+    sagt:'hängt nicht am Ergebnis der Torkette' },
 
   /* --- Rechnen ------------------------------------------------------ */
   // Der Vorrat und der Abgleich laufen auseinander. Genau dafuer stehen die

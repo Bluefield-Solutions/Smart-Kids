@@ -847,6 +847,26 @@ if (!fs.existsSync(ANWEISUNG)) {
       pruefe(/workflow_run/.test(w),
         `${VERS} wird nicht mehr durch \`workflow_run\` ausgelöst — nur so läuft er `
         + 'im Zusammenhang des Standardzweigs und darf überhaupt versenden');
+      /* Nachsehen allein genügt nicht: das Ergebnis muss auch WIRKEN.
+       *
+       * Bis hierher prüfte dieses Tor nur, dass der Ablauf nachsieht. Seit
+       * er wartet und bei rotem `main` still stehenbleibt, statt
+       * durchzufallen, ist der Blick allein Zierrat: wer die Bedingung an
+       * den Versandschritten löscht, schiebt Ungeprüftes unter `/`, und
+       * die Suche nach `head_sha=` stünde weiter unschuldig daneben.
+       *
+       * Geprüft wird deshalb die Eigenschaft, auf die es ankommt: JEDER
+       * Schritt, der nach Pages schickt, hängt an dem Ergebnis. */
+      for (const [was, muster] of [['upload-pages-artifact', /upload-pages-artifact/],
+                                   ['deploy-pages', /deploy-pages/]]) {
+        if (!muster.test(w)) continue;
+        const zeilen = w.split('\n');
+        const i = zeilen.findIndex(z => muster.test(z));
+        const umfeld = zeilen.slice(Math.max(0, i - 3), i + 4).join('\n');
+        pruefe(/if:\s*steps\.kette\.outputs\.gruen/.test(umfeld),
+          `${VERS}: der Schritt \`${was}\` hängt nicht am Ergebnis der Torkette — `
+          + 'dann versendet er auch, wenn `main` rot ist');
+      }
     }
 
     // Welche Tore fährt die Vorschau wirklich? Aus ihr gelesen, nicht geraten.
