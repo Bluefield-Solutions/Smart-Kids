@@ -33,6 +33,13 @@ npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Nachweis der anderen und erzwingt den vollen Satz.
                    Auch eine Auswahl schreibt Stand, für genau das, was sie
                    gefahren hat.
+                   Fährt drei Teilläufe nebeneinander (`-- --arbeiter=1`
+                   schaltet das ab) und kürzt den Rauchtest für die
+                   Gegenproben ab (`--sofort`, `--kurz`) — in der KETTE
+                   läuft er weiterhin vollständig.
+                   Gemessen: Runde an Dokumenten 2,7 s · Runde an
+                   `prototyp/spiel.js` (29 Proben) 7,2 min · voller Lauf
+                   17,1 min. Vier Kerne, Chromium unter SwiftShader.
 npm run smoke      spielt die App im Browser durch. `-- --nur=spielen,tippen`
                    fährt nur einzelne Abschnitte (spielen · ablage · tippen ·
                    ebene4 · durchgang) — dasselbe Mittel wie bei `ziehen`, und

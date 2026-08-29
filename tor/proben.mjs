@@ -23,12 +23,35 @@
 //     wenn noetig im gebauten `dist/`, nicht in der Quelle.
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync, execSync } from 'node:child_process';
+import { execFileSync, execSync, spawn } from 'node:child_process';
 
 const NUR = process.argv.slice(2).filter(a => !a.startsWith('-'));
 const STAND = 'tor/proben-stand.json';
 const LAUT = process.argv.includes('--laut');
 const GEAENDERT = process.argv.includes('--geaendert');
+const fahne = (name, weg) => (process.argv.find(a => a.startsWith(`--${name}=`)) || '').slice(name.length + 3) || weg;
+
+/* Nebeneinander statt hintereinander.
+ *
+ * Die Proben teilten sich genau eine Sache: den Arbeitsbaum. Seit sie in
+ * einer Wegwerf-Kopie laufen, teilen sie gar nichts mehr — alle sechs
+ * Browser-Tore binden ohnehin `server.listen(0)`, also einen freien Port.
+ *
+ * NICHT umgebaut wird die Maschinerie: ein Nebenlaeufigkeits-Umbau mitten
+ * in dem Werkzeug, das die Beweise fuehrt, waere die Sorte Aenderung, bei
+ * der ein Fehler still bleibt. Stattdessen startet dieser Lauf sich
+ * SELBST mehrmals — jedes Kind mit einem Teil der Arbeit und einer
+ * eigenen Kopie. Innen bleibt alles, wie es war.
+ *
+ * Geteilt wird nach GRUPPEN, nicht nach Proben: alle Proben mit demselben
+ * Tor und denselben Argumenten gehoeren zusammen, weil sie sich den
+ * gesunden Lauf teilen (`istGesund`). Auseinandergerissen wuerde der
+ * mehrfach gefahren, und der ist beim Rauchtest so teuer wie eine Probe.
+ */
+const ARBEITER = Math.max(1, Math.min(4, +fahne('arbeiter', '3')));
+const TEIL = fahne('teil', '');                  // „i/n" — nur im Kind gesetzt
+const ERGEBNIS = fahne('ergebnis', '');          // wohin das Kind sein Ergebnis schreibt
+const KOPIE_NAME = fahne('kopie', '.probenbaum');
 
 /* ---------------------------------------------------------------------- *
  * Die Proben.
@@ -694,7 +717,7 @@ const rot = (s) => `\x1b[31m${s}\x1b[0m`, gruen = (s) => `\x1b[32m${s}\x1b[0m`;
  * lassen sich nebeneinander fahren.
  */
 const HAUPT = process.cwd();
-const KOPIE = path.join(HAUPT, '.probenbaum');
+const KOPIE = path.join(HAUPT, KOPIE_NAME);
 const schmutzig = execSync('git status --porcelain', { encoding:'utf8' }).trim();
 
 /**
@@ -744,6 +767,7 @@ const imBaum = (datei) => path.join(BAUM, datei);
 process.on('exit', kopieAbbauen);
 for (const s of ['SIGINT', 'SIGTERM']) process.on(s, () => { kopieAbbauen(); process.exit(130); });
 
+if (!TEIL) {
 console.log(`\n  Geprobt wird in einer Wegwerf-Kopie (${path.basename(KOPIE)}).`);
 console.log('  Der Arbeitsbaum wird nicht angefasst.');
 if (schmutzig) {
@@ -751,10 +775,38 @@ if (schmutzig) {
   console.log(`  ${n} geänderte Datei${n === 1 ? '' : 'en'} aus dem Arbeitsbaum sind mitkopiert —`);
   console.log('  geprüft wird also, was du siehst, nicht der letzte Commit.');
 }
+}
 
+/* `--sofort` fuer jedes Tor, das damit umgehen kann.
+ *
+ * Eine Gegenprobe will EINE Aussage: schlaegt das Tor an, und mit welcher
+ * Meldung. Ob es danach noch dreissig weitere Pruefungen faehrt, aendert
+ * daran nichts — kostet aber beim Rauchtest den Loewenanteil.
+ *
+ * Auch der GESUNDE Lauf bekommt die Fahne (`istGesund` ruft dieselbe
+ * Funktion): er soll ja gruen sein, und bei gruen bricht nichts ab. Waere
+ * er rot, gilt genau dasselbe wie oben.
+ *
+ * Die Kette (`npm run tor`) setzt sie NICHT — dort will man alle Fehler
+ * auf einmal sehen.
+ */
+const KANN_SOFORT = new Set(['smoke']);
+/* `--kurz` dazu: der Durchgang spielt drei Ebenen statt neun je Profil.
+ *
+ * Eine Gegenprobe will wissen, ob das Tor anschlaegt — nicht, ob jede
+ * einzelne Laenderebene spielbar ist. Die Frage gehoert in die KETTE, und
+ * dort wird der Durchgang weiterhin vollstaendig gefahren.
+ *
+ * Bleibt eine Probe dadurch gruen, meldet der Lauf „TOR BLEIBT GRÜN" —
+ * laut und nicht still. Die Abkuerzung kann also nichts verstecken, sie
+ * kann nur auffallen. */
+const KANN_KURZ = new Set(['smoke']);
 const lauf = (befehl, umgebung, args) => {
+  const mit = [...(args || []),
+    ...(KANN_SOFORT.has(befehl) ? ['--sofort'] : []),
+    ...(KANN_KURZ.has(befehl) ? ['--kurz'] : [])];
   try {
-    return { code:0, aus: execFileSync('npm', ['run', befehl, ...(args ? ['--', ...args] : [])],
+    return { code:0, aus: execFileSync('npm', ['run', befehl, ...(mit.length ? ['--', ...mit] : [])],
       { encoding:'utf8', stdio:['ignore','pipe','pipe'], cwd: BAUM,
         env: umgebung ? { ...process.env, ...umgebung } : process.env }) };
   } catch (e) {
@@ -918,6 +970,7 @@ if (GEAENDERT) {
    * kann sich nicht geaendert haben — ausser mittelbar, und dafuer sorgt
    * die Frist in `rhythmus` fuer den vollen Lauf.
    */
+  const still = !!TEIL;
   const ohneNachweis = [], veraltet = [];
   for (const p of PROBEN) {
     const nw = nachweisVon(p);
@@ -929,22 +982,41 @@ if (GEAENDERT) {
   }
   vorauswahl = [...ohneNachweis, ...veraltet];
   geaendertGrund = `${ohneNachweis.length} neu, ${veraltet.length} veraltet`;
-  console.log(`\n  --geaendert: ${ohneNachweis.length} Probe`
+  if (!still) console.log(`\n  --geaendert: ${ohneNachweis.length} Probe`
     + `${ohneNachweis.length === 1 ? '' : 'n'} ohne Nachweis, ${veraltet.length} mit einem, `
     + 'der überholt ist.');
-  if (!vorauswahl.length)
+  if (still) { /* still */ }
+  else if (!vorauswahl.length)
     console.log('  Es gibt nichts nachzuweisen.');
   else
     console.log(`  ${vorauswahl.length} von ${PROBEN.length} werden gefahren. Der Rest kann sich `
       + 'nicht geändert haben —\n  ausser mittelbar, und dafür ist die Frist in `rhythmus` da.');
 }
 
-const auswahl = (NUR.length
+const alleGewaehlt = (NUR.length
   ? vorauswahl.filter(p => NUR.some(n => p.tor === n || p.n.includes(n)))
   : vorauswahl).filter(p => !(p.brauchtStand && !fs.existsSync(STAND)));
 
-console.log(`\n  proben — ${auswahl.length} stehende Gegenproben`
-  + (vollerLauf ? '' : '  (Auswahl)') + '\n');
+/** Alle Proben mit demselben Tor UND denselben Argumenten — sie teilen
+ *  sich den gesunden Lauf und gehoeren deshalb zusammen. */
+const gruppeVon = (p) => p.tor + ' ' + (p.args || []).join(' ');
+const gruppen = [...new Set(alleGewaehlt.filter(p => !p.nachStand).map(gruppeVon))];
+
+/* Im Kind: nur der eigene Teil. Reihum nach Gruppen, damit die Arbeit
+ * ungefaehr gleich faellt — die Gruppen sind sehr unterschiedlich gross,
+ * aber die teuren (`smoke`) sind auch die zahlreichen. */
+const auswahl = (() => {
+  if (!TEIL) return alleGewaehlt;
+  const [i, n] = TEIL.split('/').map(Number);
+  const meine = new Set(gruppen.filter((_, k) => k % n === i));
+  return alleGewaehlt.filter(p => !p.nachStand && meine.has(gruppeVon(p)));
+})();
+
+if (!TEIL)
+  console.log(`\n  proben — ${alleGewaehlt.length} stehende Gegenproben`
+    + (vollerLauf ? '' : '  (Auswahl)')
+    + (ARBEITER > 1 && gruppen.length > 1 ? `, ${Math.min(ARBEITER, gruppen.length)} nebeneinander` : '')
+    + '\n');
 
 /* Beim allerersten Lauf gibt es die Standdatei noch nicht, und zwei Proben
  * brauchen sie zum Anfassen. Sie wird deshalb hier angelegt - ausdruecklich
@@ -997,10 +1069,16 @@ const zeiten = [];
 const durchgang = (welche) => {
 for (const p of welche) {
   const t0 = Date.now();
+  /* EINE Zeile in EINEM Stueck.
+   *
+   * Frueher schrieb der Lauf erst den Namen und spaeter das Ergebnis
+   * dahinter. Sobald mehrere Kinder nebeneinander laufen, schiebt sich
+   * das eine in die halbe Zeile des anderen — und uebrig bleibt ein
+   * „schlaegt an  15 s" ohne Namen. Ein Protokoll, aus dem man nicht mehr
+   * ablesen kann, WAS bewiesen wurde, ist keines. */
   const fertig = (wie) => { const s = (Date.now() - t0) / 1000;
     zeiten.push({ n: p.n, tor: p.tor, s });
-    console.log(`${wie}  ${s.toFixed(0)} s`); };
-  process.stdout.write(`  ${p.tor.padEnd(11)} ${p.n} … `);
+    console.log(`  ${p.tor.padEnd(11)} ${p.n} … ${wie}  ${s.toFixed(0)} s`); };
 
   /* --- Eingriff --------------------------------------------------- */
   if (p.kopie) fs.copyFileSync(imBaum(p.kopie[0]), imBaum(p.kopie[1]));
@@ -1087,7 +1165,61 @@ for (const p of welche) {
   ok++;
 }
 };
-durchgang(auswahl.filter(p => !p.nachStand));
+/* Erst die Kinder, dann — falls es keine gibt — selbst.
+ *
+ * Der Elternteil faehrt keine einzige Probe, wenn er Kinder hat: sonst
+ * haette er die Kopie am Hals, die er gerade verteilt. Er sammelt nur
+ * ein, schreibt den Stand und faehrt den zweiten Durchgang.
+ */
+const nebenlaeufig = !TEIL && ARBEITER > 1 && gruppen.length > 1
+  && auswahl.filter(p => !p.nachStand).length > 1;
+
+if (nebenlaeufig) {
+  const wieviele = Math.min(ARBEITER, gruppen.length);
+  const kinder = [];
+  const ablagen = [];
+  for (let i = 0; i < wieviele; i++) {
+    const ablage = path.join(HAUPT, `.probenbaum-${i}.json`);
+    ablagen.push(ablage);
+    const args = [...process.argv.slice(2).filter(a =>
+      !a.startsWith('--teil=') && !a.startsWith('--ergebnis=') && !a.startsWith('--kopie=')),
+      `--teil=${i}/${wieviele}`, `--ergebnis=${ablage}`, `--kopie=.probenbaum-${i}`];
+    kinder.push(new Promise((fertig) => {
+      const k = spawn(process.execPath, ['tor/proben.mjs', ...args],
+        { cwd: HAUPT, stdio: ['ignore', 'inherit', 'inherit'] });
+      k.on('close', (code) => fertig(code));
+    }));
+  }
+  const anteile = await Promise.all(kinder);
+  for (const ablage of ablagen) {
+    if (!fs.existsSync(ablage)) {
+      befunde.push(`Ein Teillauf hat kein Ergebnis hinterlassen (${path.basename(ablage)}) — `
+        + 'was er fahren sollte, ist ungeprüft.');
+      continue;
+    }
+    const teil = JSON.parse(fs.readFileSync(ablage, 'utf8'));
+    ok += teil.ok; blind += teil.blind; nichtAngekommen += teil.nichtAngekommen;
+    for (const n of teil.angeschlagen) angeschlagen.add(n);
+    befunde.push(...teil.befunde);
+    zeiten.push(...teil.zeiten);
+    fs.rmSync(ablage, { force:true });
+  }
+  const abgestuerzt = anteile.filter(c => c !== 0 && c !== 1).length;
+  if (abgestuerzt)
+    befunde.push(`${abgestuerzt} Teillauf${abgestuerzt === 1 ? '' : 'e'} ist abgestürzt — `
+      + 'seine Proben sind ungeprüft.');
+} else {
+  durchgang(auswahl.filter(p => !p.nachStand));
+}
+
+/* Das Kind ist hier fertig: es legt sein Ergebnis ab und schweigt zum
+ * Rest. Stand schreiben, Tore zaehlen und der zweite Durchgang gehoeren
+ * dem Elternteil — sonst taeten es alle drei gleichzeitig. */
+if (TEIL) {
+  fs.writeFileSync(ERGEBNIS, JSON.stringify({
+    ok, blind, nichtAngekommen, befunde, zeiten, angeschlagen: [...angeschlagen] }));
+  process.exit(befunde.length ? 1 : 0);
+}
 
 /* --- Hat jedes Tor der Kette überhaupt eine Probe? -------------------- *
  *

@@ -2360,3 +2360,79 @@ Das erledigt drei Dinge auf einmal:
   Sache: den Arbeitsbaum. Alle sechs Browser-Tore binden ohnehin schon
   `server.listen(0)`, also einen freien Port. Damit ist der Weg frei, sie
   nebeneinander zu fahren — das ist Hebel 4 und noch nicht gebaut.
+
+### Hebel 2 und 4: abkürzen und nebeneinander
+
+**`--sofort`** — aufhören, sobald der erste Fehler feststeht. Eine
+Gegenprobe will eine einzige Auskunft: schlägt das Tor an, und mit welcher
+Meldung. Die Richtung ist sicher: abgebrochen wird **erst**, wenn schon ein
+Fehler in der Liste steht — grün werden kann dadurch nichts.
+
+Der Gewinn ist ungleich verteilt, und das ist der interessante Teil:
+
+| Probe | vorher | mit `--sofort` |
+|---|---|---|
+| „eine richtige Antwort wird nicht mehr gewertet" | 71 s | **9 s** |
+| „Antippen antwortet nicht mehr" | 71 s | 78 s |
+
+Der erste Fehler fällt **während** des Spiels auf, der zweite erst in der
+Schlussrechnung („kein einziger Zug über…"). Manche Aussagen sind ihrer
+Natur nach Summen — dort kann nichts abgekürzt werden, und ein Werkzeug,
+das so täte, würde lügen.
+
+**`--kurz`** — der Durchgang spielt je Profil drei Ebenen statt neun: die
+erste Karte, die Auswahl-Ebene und das Rechnen. Damit ist jede *Art* von
+Bildschirm dabei, beide Welten und alle vier Antwortwege — nur nicht jede
+einzelne Länderebene. Dass die spielbar sind, prüft die **Kette**, und dort
+läuft der Durchgang weiterhin vollständig. Bliebe eine Probe dadurch grün,
+meldete der Lauf „TOR BLEIBT GRÜN": die Abkürzung kann nichts verstecken,
+sie kann nur auffallen.
+
+Nachgewiesen: **alle 25 Rauchtest-Gegenproben schlagen weiter an**, in
+6 min statt 12.
+
+**Nebenläufig.** Nicht die Maschinerie wurde umgebaut — ein
+Nebenläufigkeits-Umbau mitten in dem Werkzeug, das die Beweise führt, wäre
+die Sorte Änderung, bei der ein Fehler still bleibt. Stattdessen startet
+der Lauf sich **selbst** dreimal, jedes Kind mit einem Teil der Arbeit und
+einer eigenen Kopie. Innen bleibt alles, wie es war.
+
+Geteilt wird nach **Gruppen** — alle Proben mit demselben Tor und denselben
+Argumenten —, weil sie sich den gesunden Lauf teilen. Auseinandergerissen
+würde der mehrfach gefahren, und beim Rauchtest ist er so teuer wie eine
+Probe.
+
+Eine Kleinigkeit fiel dabei sofort auf: die Ausgabe schrieb erst den Namen
+und später das Ergebnis dahinter. Sobald drei Kinder nebeneinander laufen,
+schiebt sich das eine in die halbe Zeile des anderen, und übrig bleibt ein
+„schlägt an 15 s" ohne Namen. Eine Zeile fällt jetzt in einem Stück.
+
+### Was es gebracht hat — und was nicht
+
+Alles auf diesem Rechner: vier Kerne, Chromium unter SwiftShader.
+
+| | vorher | nachher |
+|---|---|---|
+| Runde, die Dokumente und Werkzeuge anfasst | 25 min | **2,7 s** |
+| Runde, die `prototyp/spiel.js` anfasst (29 Proben) | ~25 min | **7 min 11 s** |
+| voller Lauf, alle 69 | 25–31 min | **17 min 8 s** |
+| Verlust ungesicherter Arbeit | vier Mal passiert | **strukturell unmöglich** |
+
+**Das Ziel waren zwei bis drei Minuten für die gewöhnliche Runde. Erreicht
+sind sieben.** Die Wahrheit dazu, damit niemand später rät:
+
+Die Parallelität bringt nur **1,5×**, nicht 3×. Der Rechner hat vier Kerne,
+und drei Chromium-Instanzen unter Software-Rasterung sättigen ihn. Auf mehr
+Kernen skaliert es besser — das ist eine Eigenschaft der Messstelle, nicht
+des Entwurfs.
+
+Und der Boden liegt woanders: jede Rauchtest-Probe zahlt noch rund 25
+Sekunden, davon ein großer Teil **feste Wartezeiten** — nach jeder Antwort
+`waitForTimeout(2600)`, dazu 900 und 1500 ms an anderen Stellen. Das sind
+bei sechs Durchläufen je Probe rund dreißig Sekunden reines Schlafen. Sie
+durch echte Bedingungen zu ersetzen (`waitForFunction` auf den nächsten
+Bildschirm) wäre der nächste Hebel — und zugleich der riskanteste: genau
+diese Wartezeiten stehen dort, weil Übergänge animiert sind, und eine
+Gegenprobe, die zweimal Verschiedenes sagt, ist schlimmer als eine
+fehlende. Das wäre eine eigene Runde mit eigener Messung, nicht ein
+Nebenbei.

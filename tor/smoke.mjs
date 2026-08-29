@@ -31,6 +31,43 @@ const b = await starte();
 const fehler = [];
 const merke = (was, e) => fehler.push(`${was}: ${e.message || e}`);
 
+/* `--sofort`: aufhoeren, sobald der erste Fehler feststeht.
+ *
+ * NUR fuer `npm run proben`. Eine Gegenprobe braucht, dass das Tor rot
+ * wird — nicht, dass es die uebrigen dreissig Pruefungen noch zu Ende
+ * fuehrt. Der `durchgang` spielt achtzehn Ebenen mit zwei Profilen; ein
+ * eingebauter Fehler faellt fast immer beim ersten auf, und die restlichen
+ * fuenfunddreissig Durchlaeufe beweisen nichts mehr.
+ *
+ * Die Richtung ist sicher: abgebrochen wird ERST, wenn schon ein Fehler
+ * in der Liste steht. Gruen werden kann dadurch nichts — nur die Zahl der
+ * gemeldeten Fehler wird kleiner, und die Reihenfolge entscheidet, welcher
+ * gemeldet wird. Genau das prueft jede Gegenprobe ohnehin mit `sagt`.
+ *
+ * In der Kette (`npm run tor`) steht die Fahne NICHT: dort will man alle
+ * Fehler auf einmal sehen, nicht den ersten. */
+const SOFORT = process.argv.includes('--sofort');
+const abbruch = () => SOFORT && fehler.length > 0;
+
+/* `--kurz`: den Durchgang mit WENIGER Ebenen fahren.
+ *
+ * Auch das nur fuer `npm run proben`. Der Durchgang spielt achtzehn
+ * Ebenen mit zwei Profilen — sechsunddreissig Durchlaeufe, siebzig
+ * Sekunden, und er ist damit der teuerste Posten im ganzen Probenlauf.
+ *
+ * Fuer eine GEGENPROBE ist das Verschwendung: sie will wissen, ob das Tor
+ * anschlaegt, und ein eingebauter Fehler schlaegt bei der ersten Ebene zu.
+ * Gefahren wird deshalb je Profil die erste Karte, die erste Auswahl und
+ * das Rechnen — drei statt neun, und trotzdem jede ART von Bildschirm,
+ * jede Antwortweise und beide Welten.
+ *
+ * Was das NICHT abdeckt: dass jede EINZELNE Ebene spielbar ist. Genau
+ * dafuer laeuft der Durchgang in der Kette (`npm run tor`) weiterhin
+ * vollstaendig — und dort, nicht in der Gegenprobe, gehoert diese Frage
+ * auch hin.
+ */
+const KURZ = process.argv.includes('--kurz');
+
 async function neueSeite(viewport, ctx) {
   const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
@@ -202,7 +239,7 @@ for (const t of (gewaehlt || []))
       + `Bekannt sind: ${ABSCHNITTE.join(', ')}.\n`);
     process.exit(2);
   }
-const laeuft = (t) => !gewaehlt || gewaehlt.has(t);
+const laeuft = (t) => (!gewaehlt || gewaehlt.has(t)) && !abbruch();
 if (gewaehlt)
   console.log(`  (nur ${[...gewaehlt].sort().join(', ')} — `
     + `${ABSCHNITTE.filter(t => !gewaehlt.has(t)).join(', ')} übersprungen)`);
@@ -623,6 +660,7 @@ if (laeuft('regler')) try {
     await p.waitForTimeout(2600);
   }
   for (let n = 0; n < 20; n++) {
+    if (abbruch()) break;
     const r = await p.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       const el = s && s.querySelector('.rechnung');
@@ -699,6 +737,7 @@ if (laeuft('regler')) try {
 const plaetze = new Set();
 let ebene4 = 0;
 if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
+  if (abbruch()) break;
   try {
     const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
     const p = await neueSeite({ width: 844, height: 390 }, eigen);
@@ -780,6 +819,14 @@ if (laeuft('ebene4')) {
 const wege = new Set();
 // Wieviele Aufgaben hat das Kind ANGESAGT bekommen?
 const gehoert = {};
+/* Und wieviele Ebenen wurden ihm ueberhaupt VORGELEGT?
+ *
+ * Frueher stand hier die Gesamtzahl der Ebenen als Sollwert. Das war
+ * dieselbe Zahl, solange immer alle gespielt wurden — mit `--kurz` sind
+ * es weniger, und der Vergleich waere gegen eine Zahl gelaufen, die es
+ * in diesem Lauf gar nicht gab. Verglichen wird jetzt Gleiches mit
+ * Gleichem: was angesagt wurde, gegen das, was vorgelegt wurde. */
+const gespielt = {};
 const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
   'bundeslaender', 'hauptstaedte'];
@@ -787,6 +834,7 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'], lea: ['rechnen:reihen'] };
 if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
+  if (abbruch()) break;
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
     const p = await neueSeite({ width: 1180, height: 820 }, eigen);
@@ -824,7 +872,18 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
       if (anderes !== wer) for (const e of eigene)
         if (da.includes(e)) merke('durchgang',
           new Error(`${wer}: Ebene „${e}" gehört ${anderes}, steht aber in ${wer}s Auswahl`));
-    for (const ebene of da) {
+    /* Bei `--kurz` eine Auswahl statt aller: die erste Karte, die
+     * Auswahl-Ebene und das Rechnen. Damit ist jede ART von Bildschirm
+     * dabei, beide Welten und beide Antwortweisen — nur eben nicht jede
+     * einzelne Länderebene. */
+    const zuSpielen = KURZ
+      ? da.filter(e => e === 'kontinente' || e === 'hauptstaedte' || e.startsWith('rechnen'))
+      : da;
+    gespielt[wer] = zuSpielen.length;
+    for (const ebene of zuSpielen) {
+      // Der teuerste Posten ueberhaupt: achtzehn Ebenen mal zwei Profile.
+      // Steht der Fehler schon fest, beweisen die restlichen nichts mehr.
+      if (abbruch()) break;
       // Den Mitschnitt leeren, BEVOR die Ebene aufgeht: sonst zaehlt das Lob
       // der vorigen Aufgabe mit, und das hoeren beide Kinder. Der erste
       // Anlauf meldete deshalb „Lea bekam 8 Aufgaben vorgelesen" - gemessen
@@ -975,7 +1034,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
  * gelaufen ist, wäre kein Urteil, sondern ein Fehlalarm. Genau daran ist
  * die erste Fassung dieser Zerlegung gescheitert: „Der Übergang wurde
  * nicht gemessen" bei einem Lauf, der ihn gar nicht messen sollte. */
-const EBENEN_JE = (wer) => EBENEN_ALLE.length + EBENEN_EIGEN[wer].length;
+const EBENEN_JE = (wer) => gespielt[wer] ?? (EBENEN_ALLE.length + EBENEN_EIGEN[wer].length);
 if (laeuft('durchgang')) {
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
