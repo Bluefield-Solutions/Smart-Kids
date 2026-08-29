@@ -1869,3 +1869,98 @@ der dritten Reihe. `passt` ist grün, aber schön ist es nicht. Das ist genau
 der Punkt, an dem D4 aus dem Abgleich fällig wird: **Fachwelten** — Erdkunde
 und Mathe als zwei Welten mit eigenem Gesicht, statt einer Liste, die immer
 länger wird. Mit Leas Reihen kommt die zehnte Kachel.
+
+---
+
+## Der Wal im Rauchtest
+
+> *„Weiter und voller Lauf dauert viel zu lange"*
+
+Die Temporunde hatte den Weg **live** verkürzt — vier Minuten bis aufs
+iPhone, 45 Sekunden für die Vorschau. Was sie nicht angefasst hat, war das
+**Ritual**: der volle Probenlauf, alle drei Runden fällig, 35,6 Minuten.
+
+Die Messung von damals sagt schon, wo sie liegen:
+
+| | |
+|---|---|
+| `proben` voll | 35,6 min |
+| davon `smoke` | 30,0 min |
+
+Ein Tor, siebzehn Proben, 84 % der Zeit. Und der Grund ist nicht, dass der
+Rauchtest langsam wäre — er ist es nicht, 109 Sekunden für die ganze App —,
+sondern dass **jede** dieser siebzehn Proben ihn **ganz** fuhr, um einen
+seiner fünf Durchgänge rot zu sehen. Wer prüft, ob die PIN-Sperre hält,
+lässt vorher die Erdkunde, die Ablage, das Tippen und vier Ebenen laufen.
+
+### Dasselbe Mittel, das `ziehen` schon hat
+
+```
+npm run smoke -- --nur=spielen,tippen
+```
+
+Fünf Abschnitte: `spielen` · `ablage` · `tippen` · `ebene4` · `durchgang`.
+Zwei Dinge waren dabei nicht offensichtlich:
+
+- **`ablage` braucht `spielen`.** Die Ablage prüft, was ein gespielter
+  Durchgang hinterlassen hat — allein gefahren prüft sie eine leere Ablage
+  und ist grün. Also zieht der Wähler die Voraussetzung selbst nach
+  (`BRAUCHT`), statt sie in siebzehn Probenzeilen zu wiederholen.
+- **Ein unbekannter Abschnittsname bricht ab.** Ohne das wäre ein Tippfehler
+  in einer Probe ein Rauchtest, der gar nichts fährt und grün meldet — also
+  genau die Verfallsart, gegen die dieses ganze Werkzeug gebaut ist.
+
+Gemessen, je Abschnitt einzeln:
+
+| Abschnitt | Dauer |
+|---|---|
+| `spielen` | 28 s |
+| `ablage` | 32 s |
+| `tippen` | 1 s |
+| `ebene4` | 15 s |
+| `durchgang` | 67 s |
+
+### Die Gegenprobe, die zweimal Verschiedenes sagte
+
+Erster Lauf über die siebzehn: **fünfzehn schlugen an, zwei meldeten
+„beweist nichts"** — die Rechenebene, die plötzlich beiden Kindern gehört,
+und „von vorne", das nichts löscht. Einzeln gefahren schlugen beide an, 142 s
+und 69 s. Ein zweiter voller Durchgang: **17 von 17.**
+
+Die Zuordnung stimmt also. Was der Grund war, weiß ich nicht — und das ist
+der wichtigere Befund. **Eine Gegenprobe, die zweimal Verschiedenes sagt,
+ist schlimmer als eine fehlende**, weil man ihr danach nicht mehr glaubt und
+sie trotzdem stehen lässt.
+
+Der Verdacht: kurz zuvor war ein Probenlauf per Zeitüberschreitung **hart**
+abgeschossen worden, und sein Chromium lief vermutlich weiter. Nachträglich
+beweisen lässt sich das nicht mehr. Also wird aus dem unsichtbaren Verdacht
+eine **laute Weigerung** — `proben` sieht vor dem ersten Eingriff nach, ob
+schon ein Browser läuft, und verweigert dann den Dienst, mit `--trotzdem`
+als Ausweg. Das beweist den Zusammenhang immer noch nicht. Aber er kann kein
+zweites Mal unbemerkt gewesen sein.
+
+**Und die Weigerung selbst brauchte sofort ihre eigene Gegenprobe.** Der
+erste Entwurf las `ps -eo pid,args` und suchte darin nach „chrome" — und
+verweigerte prompt den Dienst, obwohl kein Browser lief: gefunden hatte er
+die **eigene Shell-Zeile**, in der das Wort vorkam. Eine Weigerung, die
+immer anschlägt, ist so wertlos wie ein Tor, das nie etwas meldet. Gesucht
+wird jetzt am Programmnamen (`comm`), nicht an der Befehlszeile, und beide
+Richtungen sind gemessen: still ohne Browser, laut mit einem.
+
+### Was es gebracht hat
+
+| | vorher | nachher |
+|---|---|---|
+| die 17 Rauchtest-Proben | ~31 min | **16,3 min** |
+| `proben` voll | 35,6 min | **22,3 min** |
+
+Gemessen am vollen Lauf, nicht gerechnet: **52 Proben in 22,3 Minuten**,
+dazu die vier `rhythmus`-Proben am frischen Stand — **56 von 56 schlagen
+an, keine beweist nichts.** Der Rauchtest steht darin mit 981 s, also
+16,3 min; die zweitgrößte Last ist `ansicht` mit 111 s.
+
+Der volle Lauf bleibt das, was er ist: das Ritual alle drei Runden, das nie
+zwischen „fertig" und dem iPhone steht. Er dauert jetzt nur noch halb so
+lange — und das ist der Unterschied zwischen einer Regel, die man befolgt,
+und einer, die man abkürzt.

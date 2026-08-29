@@ -22,7 +22,8 @@ npm run tor        die ganze Kette. Muss vor jedem Push auf main grün sein.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Verlangt einen sauberen Baum — sie arbeitet mit
                    `git checkout` und löschte sonst die frische Arbeit.
-                   Voll 35,6 min; `-- --geaendert` fährt nur die Proben,
+                   Voll 22,3 min (56 Proben; vor der Abschnitts-Teilung
+                   des Rauchtests 35,6); `-- --geaendert` fährt nur die Proben,
                    deren Datei oder Tor seit dem letzten vollen Lauf
                    angefasst wurde — meist unter einer Minute. Die
                    Abkürzung schreibt KEINEN Stand, sonst wäre die Regel
