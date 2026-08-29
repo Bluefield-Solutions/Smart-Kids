@@ -103,6 +103,26 @@ const TIEFE = (() => {
   return { fiona: zahlen[0], lea: zahlen[1], eltern: zahlen[2] };
 })();
 
+/* Wer bekommt NIE eine Auswahl, sondern tippt immer?
+ *
+ * Dieselbe Tabelle, Zeile „Auswahl statt Tippen". Wo dort „nie" steht,
+ * darf auf einem Kartenbildschirm kein Etikett stehen, sondern muss ein
+ * Tippfeld kommen - und genau DAS ist die sichtbare Wirkung.
+ *
+ * Vorher stand hier eine Verbotsliste `['eltern: antippen']`, gefuehrt
+ * ueber `wege`. Sie konnte gar nicht anschlagen: „antippen" wird nur
+ * vermerkt, wenn der Umschalter `#weise` dasteht, und den bekommt nur,
+ * wer ZWEI Eingabewege hat. Das Profil „Eltern" hat einen. Die Gegenprobe
+ * lief zweimal durch und bewies beide Male nichts. */
+const OHNE_AUSWAHL = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*Auswahl statt Tippen\s*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Zeile „Auswahl statt Tippen" fehlt im Backlog — '
+    + 'dann prüft der Rauchtest das Verbot gegen nichts'); return new Set(); }
+  const ids = ['fiona', 'lea', 'eltern'];
+  return new Set(z[1].split('|').map((t, i) => /\bnie\b/i.test(t) ? ids[i] : null).filter(Boolean));
+})();
+
 
 async function neueSeite(viewport, ctx) {
   const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
@@ -1310,6 +1330,14 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
                  weise: s.querySelector('#weise')?.dataset.weise || null,
                  etiketten: [...s.querySelectorAll('.etikett')].map(x => x.textContent.trim()) };
       });
+      /* Wer nie eine Auswahl bekommt, muss hier ein Tippfeld sehen.
+       *
+       * Das ist die Stelle, an der ein ausgefallenes Verbot WIRKLICH
+       * sichtbar wird: statt des Feldes stuenden vier Etiketten da, und
+       * ein Erwachsener raet dann, statt zu schreiben. */
+      if (OHNE_AUSWAHL.has(wer) && !z.tippfeld)
+        merke('durchgang', new Error(`${wer}/${ebene}: eine Auswahl statt eines Tippfelds `
+          + `(${z.etiketten.join(', ')}) — das Profil sagt „nie eine Auswahl"`));
       // Beim Tippen den ALIAS nehmen, wenn es einen gibt - dort war der Fehler.
       const eingabe = z.tippfeld && z.alias ? z.alias : z.name;
       if (z.tippfeld) {
@@ -1422,17 +1450,9 @@ for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt'
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);
-/* Und Eltern bekommt NIE eine Auswahl (R4).
- *
- * Das ist der Teil, den man leicht falsch herum baut: die feste Vier bei
- * den Bundeslaendern zu loeschen gab Lea sechzehn Moeglichkeiten statt
- * vier. Die Vier ist eine Eigenschaft der EBENE, das Verbot eine des
- * PROFILS - und wenn das Verbot ausfaellt, sieht man es nur hier.
- */
-for (const nie of ['eltern: antippen'])
-  if (wege.has(nie))
-    fehler.push(`Eltern hat eine Auswahl bekommen („${nie}") — `
-      + 'sein Profil sagt `kandidaten:0`, er soll tippen');
+/* „Eltern bekommt nie eine Auswahl" wird oben am Kartenbildschirm
+ * geprueft, nicht hier: siehe OHNE_AUSWAHL. Hier stand dafuer eine
+ * Verbotsliste ueber `wege`, die nicht anschlagen KONNTE. */
 }
 
 await ctx.close(); await b.close(); server.close();

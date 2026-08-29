@@ -446,7 +446,7 @@ const PROBEN = [
     such:'  const darfWaehlen = P.kandidaten > 0;',
     ersatz:'  const darfWaehlen = true;',
     an:{ ...DIST, text: 'const darfWaehlen = true;' },
-    sagt:'Eltern hat eine Auswahl bekommen' },
+    sagt:'eine Auswahl statt eines Tippfelds' },
 
   /* --- Zwölf Länder (R4, zweite Hälfte) -------------------------------- */
   // Eine Luecke im Rang.
