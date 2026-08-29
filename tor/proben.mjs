@@ -465,7 +465,7 @@ const PROBEN = [
     such:"          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },",
     ersatz:"          kandidaten:4, laenderTiefe:12, sitzung:6, streng:false, farbe:'--f7' },",
     an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
-    sagt:'Fiona' },
+    sagt:'Länder im Vorlauf' },
 
   /* --- Der Vorlauf (R3) ----------------------------------------------- */
   // Er kommt gar nicht mehr.
