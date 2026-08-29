@@ -1684,12 +1684,17 @@ Die schnelle Hälfte stimmt und ist gemessen: **23 Sekunden**, besser als die
 anderthalb Minuten, mit denen ich gerechnet hatte. Der Versand fällt durch,
 bevor er anfängt.
 
-**Zur Ursache, ehrlich:** null Schritte, kein Runner, leeres `output` über
-die API — das ist die Signatur der Umgebungsregel, die Auslieferungen auf
-den Standardzweig beschränkt. **Belegt ist sie nicht**; das Protokoll eines
-Jobs, der nie lief, gibt es nicht, und ich habe sie zuerst als Tatsache
-hingeschrieben. Der Umbau unten ist deshalb auch der Beweisversuch: greift
-er, war die Diagnose richtig.
+**Zur Ursache:** null Schritte, kein Runner, leeres `output` über die API —
+die Signatur der Umgebungsregel, die Auslieferungen auf den Standardzweig
+beschränkt. Belegt war sie zunächst **nicht**; das Protokoll eines Jobs, der
+nie lief, gibt es nicht, und ich hatte sie trotzdem als Tatsache
+hingeschrieben. Der Umbau unten war deshalb zugleich der Beweisversuch.
+
+**Er ist gelungen, und damit ist die Diagnose belegt:** derselbe
+`deploy-pages`-Schritt, der aus dem Zweig `vorschau` nach einer Sekunde
+ohne Runner durchfiel, läuft aus dem Zusammenhang von `main` in sechs
+Sekunden durch. Am Schritt hat sich nichts geändert, nur am Zweig, in dem
+er läuft.
 
 Statt einer Einstellung ein zweiter Ablauf. `workflow_run` löst das ohne
 jeden Klick: ein so ausgelöster Ablauf läuft **im Zusammenhang des
@@ -1704,6 +1709,19 @@ vorschau-versand.yml   workflow_run "Vorschau" → baut main, stellt beide
 Damit fällt auch `--rolle` weg: beide Abläufe stellen jetzt aus demselben
 Zweig heraus dasselbe zusammen. Eine Verzweigung, die niemand nimmt, ist
 eine Verzweigung, die niemand prüft.
+
+**Gemessen am fertigen Weg** (Lauf vom 29.08.):
+
+```
+Vorschau            23 s   npm ci, die vier Tore ohne Browser, bauen
+Vorschau versenden  22 s   Nachfrage 0 s · npm ci 6 · bauen 2 ·
+                           zusammenstellen 1 · hochladen 1 · deploy-pages 6
+────────────────────────
+zusammen            45 s   von `git push` bis im Netz
+```
+
+Gegen 4,2 Minuten über `main`. Und die Nachfrage, ob dieser Stand die Kette
+bestanden hat, kostet **null Sekunden** — sie ist ein API-Aufruf.
 
 **Das Loch, das dabei aufging.** Der Versand baut `main` neu, ohne die Kette
 zu fahren — das ist ja die eingesparte Zeit. Damit könnte eine Vorschau

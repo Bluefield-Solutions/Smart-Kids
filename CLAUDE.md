@@ -46,7 +46,7 @@ Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` ·
 | Zweig | Was läuft | Wohin | Dauer |
 |---|---|---|---|
 | `main` | die volle Kette (`auslieferung.yml`) | `/` — dort spielen die Kinder | 4,2 min |
-| `vorschau` | nur die Tore ohne Browser (`vorschau.yml`), dann `vorschau-versand.yml` | `/vorschau/`, mit Marke im Bild | 23 s + Versand |
+| `vorschau` | nur die Tore ohne Browser (`vorschau.yml`), dann `vorschau-versand.yml` | `/vorschau/`, mit Marke im Bild | 45 s (23 + 22) |
 
 Versandt wird **immer vom Standardzweig aus**: die Umgebung `github-pages`
 nimmt Auslieferungen nur von dort an. `vorschau-versand.yml` hängt deshalb
