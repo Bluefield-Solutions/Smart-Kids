@@ -1400,7 +1400,16 @@ function spielschirm(){
    * Rauchtest lief in einen Zeitablauf. Die Vier ist eine Eigenschaft der
    * EBENE - Bundeslaender schreibt man nicht, man erkennt sie -, das
    * Verbot eine des Profils. Zwei verschiedene Dinge. */
-  const istAuswahl = (istHaupt || art==='bundeslaender') && P.kandidaten > 0;
+  /* Das Verbot steht EINMAL da.
+   *
+   * `P.kandidaten > 0` stand zweimal: hier und unten bei `wieviel`. Zwei
+   * Sperren fuer eine Sache sehen nach Sorgfalt aus und sind das
+   * Gegenteil - die zweite rettete still, was die erste durchliess, und
+   * die Gegenprobe „Eltern bekommt doch eine Auswahl" konnte deshalb seit
+   * R4 nichts beweisen: Eingriff angekommen, Tor gruen. Gefunden hat das
+   * nicht der Blick auf den Quelltext, sondern die Probe selbst. */
+  const darfWaehlen = P.kandidaten > 0;
+  const istAuswahl = (istHaupt || art==='bundeslaender') && darfWaehlen;
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
@@ -1456,7 +1465,7 @@ function spielschirm(){
     // Bei den Bundeslaendern immer vier, sonst nach Profil - und bei
     // `kandidaten:0` gar keine (dann steht oben `istAuswahl` auf falsch
     // und es wird getippt).
-    const wieviel = art==='bundeslaender' && P.kandidaten > 0
+    const wieviel = art==='bundeslaender' && darfWaehlen
       ? 4 : Math.min(P.kandidaten, st.alle.length);
     const n = Math.min(wieviel, st.alle.length) - 1;
     kand = misch([ziel, ...misch(st.alle.filter(x=>x.id!==ziel.id), r1).slice(0, Math.max(1,n))], r1);

@@ -437,13 +437,15 @@ const PROBEN = [
   // Das Verbot im Profil „Eltern“ faellt aus.
   { n:'Eltern bekommt doch eine Auswahl', tor:'smoke', bauen:true,
     args:['--nur=durchgang'], datei:D,
-    such:"  const istAuswahl = (istHaupt || art==='bundeslaender') && P.kandidaten > 0;",
-    ersatz:"  const istAuswahl = (istHaupt || art==='bundeslaender');",
-    // NICHT `fehlt: 'P.kandidaten > 0'` - der Ausdruck steht zwoelf Zeilen
-    // weiter noch einmal (in `wieviel`), also fehlt er nie, und die Probe
-    // meldete seit R4 „Eingriff nicht angekommen". Gesucht wird jetzt der
-    // eingesetzte Text selbst; der kommt nur einmal vor (Regel 3).
-    an:{ ...DIST, text: "istAuswahl = (istHaupt || art==='bundeslaender');" },
+    // Gezielt wird auf `darfWaehlen` - die EINE Stelle, an der das Profil
+    // verbietet. Zwei fruehere Fassungen dieser Probe bewiesen nichts:
+    // die erste pruefte auf das FEHLEN von `P.kandidaten > 0`, das
+    // zweimal dastand und deshalb nie fehlte (Regel 3); die zweite kam an
+    // und liess das Tor gruen, weil die zweite Sperre bei `wieviel` den
+    // Eingriff auffing. Seitdem gibt es nur noch eine Sperre.
+    such:'  const darfWaehlen = P.kandidaten > 0;',
+    ersatz:'  const darfWaehlen = true;',
+    an:{ ...DIST, text: 'const darfWaehlen = true;' },
     sagt:'Eltern hat eine Auswahl bekommen' },
 
   /* --- Zwölf Länder (R4, zweite Hälfte) -------------------------------- */
