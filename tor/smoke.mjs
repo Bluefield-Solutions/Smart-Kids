@@ -570,9 +570,20 @@ if (laeuft('ablage')) try {
     // gleich loescht, garantiert IHRER.
     await p.click('[data-ebene="bundeslaender"]');
     await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
-    // Zwei Aufgaben loesen, damit es ueberhaupt etwas zu loeschen gibt.
+    // Zwei Aufgaben loesen, damit es ueberhaupt etwas zu loeschen gibt -
+    // und WARTEN, bis das Fortschrittsband es zeigt.
+    //
+    // Ohne dieses Warten war die Sitzung beim Kreuz noch bei Aufgabe eins,
+    // und die Probe „nach von vorne laeuft die alte Sitzung weiter" bewies
+    // nichts: ob neu angefangen oder weitergezaehlt - das Band stand so
+    // oder so auf Punkt eins. Der Eingriff war drin, das Tor blieb gruen
+    // (Regel 3).
     await loese(p); await loese(p);
-    await p.waitForTimeout(400);
+    await p.waitForFunction(() => [...document.querySelectorAll('.schirm.da .band i')]
+      .some(x => x.className !== 'offen' && x.className !== 'jetzt'),
+      null, { timeout: 10000 }).catch(() => merke('pause', new Error(
+        'nach zwei gelösten Aufgaben zeigt das Fortschrittsband keinen Fortschritt — '
+        + 'die Probe könnte nicht unterscheiden, ob die Sitzung neu anfängt')));
     const vorher = await p.evaluate(() => new Promise(ja => {
       const a = indexedDB.open('lernkiste');
       a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')

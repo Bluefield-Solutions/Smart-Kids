@@ -125,7 +125,7 @@
       "zeit": "2026-08-29"
     },
     "eine Aufkleberkarte liegt außerhalb des Fensters": {
-      "commit": "9e81c3b099fb3eda34a2041a99d81751fdfad274",
+      "commit": "8b52fa6aef7e52db0d678e395e3cef9fd60ad278",
       "zeit": "2026-08-29"
     },
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
@@ -158,6 +158,10 @@
     },
     "ein neues Tor steht in der Kette, aber nicht im Stand": {
       "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
+      "zeit": "2026-08-29"
+    },
+    "„von vorne\" in der Pause löscht nichts": {
+      "commit": "8b52fa6aef7e52db0d678e395e3cef9fd60ad278",
       "zeit": "2026-08-29"
     },
     "keine Nachsicht — nur der exakte Punkt zählt": {
