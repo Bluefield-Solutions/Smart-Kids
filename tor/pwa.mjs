@@ -12,7 +12,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl } from './chromium.mjs';
+import { starte, zurEbenenwahl, serviere, durchVorlauf } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -133,21 +133,7 @@ console.log('\n  Tor `offline`');
  * eines, und im Browser sieht die App dann auch `navigator.onLine === false`.
  */
 let netz = true;
-const server = http.createServer((q, a) => {
-  if (!netz) { q.socket.destroy(); return; }
-  const f = path.join(DIST, q.url === '/' ? '/index.html' : q.url.split('?')[0]);
-  if (!f.startsWith(DIST) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) {
-    a.statusCode = 404; return a.end();
-  }
-  const typ = f.endsWith('.html') ? 'text/html; charset=utf-8'
-    : f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'text/javascript'
-    : f.endsWith('.png') ? 'image/png' : f.endsWith('.woff2') ? 'font/woff2'
-    : f.endsWith('.webmanifest') ? 'application/manifest+json' : 'text/plain';
-  a.setHeader('content-type', typ);
-  a.end(fs.readFileSync(f));
-});
-await new Promise(r => server.listen(0, r));
-const ADRESSE = `http://127.0.0.1:${server.address().port}/`;
+const { server, adresse: ADRESSE } = await serviere(DIST, () => netz);
 
 const b = await starte();
 
@@ -164,7 +150,14 @@ async function laeuft(ctx, bisEbene) {
       await zurEbenenwahl(p, bisEbene);
       await p.waitForSelector(`.schirm.da [data-ebene="${bisEbene}"]`, { timeout: 8000 });
       await p.click(`.schirm.da [data-ebene="${bisEbene}"]`);
-      await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
+      // Seit R3 steht der Vorlauf beim ersten Betreten davor - und OHNE
+      // NETZ ist das der interessantere Fall: er laedt die Karte selbst
+      // nach. Kommt sie aus dem Lager, steht er da; kommt sie nicht, ist
+      // das genau der Befund, den dieses Tor sucht.
+      await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel',
+        { timeout: 12000 });
+      await durchVorlauf(p);
+      await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 12000 });
       // Auf das ELEMENT zu warten reicht nicht.
       //
       // Die App baut ihre Pfade aus dem leichten Verzeichnis, das im

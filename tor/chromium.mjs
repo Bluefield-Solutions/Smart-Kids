@@ -30,6 +30,45 @@ export async function starte(opt = {}) {
   }
 }
 
+/* Der kleine Server, der `dist/` ausliefert.
+ *
+ * Stand SECHSMAL im Verzeichnis - in jedem Tor, das einen Browser
+ * startet, Zeile fuer Zeile dieselbe. Und er hatte sechsmal denselben
+ * Fehler: `q.url === '/' ? '/index.html' : q.url.split('?')[0]` liefert
+ * fuer `/?flott` den Pfad `/` - ein Verzeichnis, also 404. Aufgefallen
+ * ist das erst, als die Adresse zum ersten Mal eine Frage trug.
+ *
+ * Erst zerlegen, DANN auf `/` pruefen. Und einmal, nicht sechsmal.
+ */
+export async function serviere(wurzel, erreichbar = () => true) {
+  const { default: fs2 } = await import('node:fs');
+  const { default: path2 } = await import('node:path');
+  const { default: http2 } = await import('node:http');
+  const TYP = { '.html':'text/html; charset=utf-8', '.css':'text/css',
+    '.js':'text/javascript', '.png':'image/png', '.woff2':'font/woff2',
+    '.json':'application/json', '.webmanifest':'application/manifest+json' };
+  const server = http2.createServer((q, a) => {
+    /* Das Netz kann weg sein.
+     *
+     * `erreichbar()` ist kein Beiwerk: das Tor `offline` prueft, ob die
+     * App aus ihrem Lager startet, und dafuer muss die Leitung wirklich
+     * abreissen - eine 404 waere eine ANTWORT, und der Service Worker
+     * verhaelt sich dann anders. Beim Zusammenlegen der sechs Server ist
+     * genau diese Zeile fast verlorengegangen; `offline` wurde rot und
+     * hat es gemeldet. */
+    if (!erreichbar()) { q.socket.destroy(); return; }
+    const ohneFrage = String(q.url).split('?')[0];
+    const datei = path2.join(wurzel, ohneFrage === '/' ? '/index.html' : ohneFrage);
+    if (!datei.startsWith(wurzel) || !fs2.existsSync(datei) || fs2.statSync(datei).isDirectory()) {
+      a.statusCode = 404; return a.end();
+    }
+    a.setHeader('content-type', TYP[path2.extname(datei)] || 'text/plain');
+    a.end(fs2.readFileSync(datei));
+  });
+  await new Promise(r => server.listen(0, r));
+  return { server, adresse: `http://127.0.0.1:${server.address().port}/` };
+}
+
 /* Der Weg zur Ebenenwahl — seit D4 fuehrt er ueber die Weltenwahl.
  *
  * Sechs Tore klicken sich nach der Profilwahl in eine Ebene. Stuende der

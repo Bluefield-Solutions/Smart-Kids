@@ -817,7 +817,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      breitere Karten; die Zeilenzahl aendert das nicht, denn dreizehn
      Paare passen auch bei 92 Punkten in zwei Reihen. */
   .rollen.vorlauf .kleber:has(.dazu){grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
-  .rollen.vorlauf .aufkleber{padding:2px;gap:0}
+  .rollen.vorlauf .aufkleber{padding:var(--r0);gap:0}
   .rollen.vorlauf .aufkleber svg{height:20px}
   .rollen.vorlauf .mitte-satz{font-size:calc(var(--s-klein) * 0.95)}
   .rollen.vorlauf .aufkleber span{font-size:calc(var(--s-klein) * 0.86)}
@@ -831,7 +831,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .kachelknoepfe .leise.mini{padding:0 var(--r2);min-height:0;
     font-size:calc(var(--s-klein) * 0.9)}
   .wahl{gap:var(--r2)}
-  .kachelpaar{gap:2px}
+  .kachelpaar{gap:var(--r0)}
   /* Die letzten fuenfzehn Punkte fuer den sicheren Bereich.
      Auf dem iPhone quer MIT Uhr, Akku und Wischstreifen bleiben von 390
      Punkten noch 348 - und genau dort lag die Ebenenwahl mit dem neuen

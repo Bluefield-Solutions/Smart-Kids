@@ -2823,3 +2823,96 @@ nicht.
 
 `passt` prüft damit jetzt **14 Bildschirme je Größe** statt 9,
 `lesbarkeit` misst **216 Texte** statt 104 vor dieser Sitzung.
+
+---
+
+## Der Prozess, zum zweiten Mal auf dem Prüfstand — und diesmal richtig
+
+Der erste Anlauf hat den **Probenlauf** beschleunigt: 25 min → 17 min voll,
+7 min für die gewöhnliche Runde. Das Ziel waren zwei bis drei Minuten, und
+es wurde nicht erreicht. Der Grund, rückblickend: ich habe das Falsche
+optimiert. Schneller machen, was man nicht braucht, ist nicht dasselbe wie
+es weglassen.
+
+### Erst messen
+
+| | |
+|---|---|
+| ganze Kette | **336 s** |
+| davon im Browser | **335 s** |
+| ohne Browser (inhalt · spielprobe · vergleich · budget) | **0,8 s** |
+
+Und im Rauchtest, der allein 163 s davon ausmacht:
+
+| Abschnitt | Dauer |
+|---|---|
+| `durchgang` — jede Ebene für beide Kinder | **83 s** |
+| `ablage` | 38 s |
+| `spielen` — spielt, legt ab, übersteht Neustart | 29 s |
+| `regler` | 27 s |
+| `ebene4` | 16 s |
+| `tippen` | 2 s |
+
+Damit ist die Frage nicht mehr „wie machen wir das schneller", sondern
+**„was davon muss ich vor dem Stoßen sehen"**.
+
+### Drei Bahnen
+
+| Bahn | Wann | Dauer | Wer bezahlt |
+|---|---|---|---|
+| **`npm run schnell`** | jede Änderung | **44,7 s** | ich |
+| `npm run tor` | auf Wunsch | ~5 min | ich, freiwillig |
+| Runner bei jedem Push | automatisch | 3–4 min | niemand |
+| Runner nachts | automatisch | ~20 min | niemand |
+
+`schnell` fährt alles, was nichts kostet (0,8 s), und dann die **zwei**
+Browser-Tore mit der größten Ausbeute **nebeneinander**: den Rauchtest auf
+dem Hauptweg und den Bildvergleich. Zwei Chromium auf vier Kernen — die
+Temporunde hatte gemessen, dass drei den Rechner sättigen.
+
+**336 s → 44,7 s.** Das Ziel ist erreicht, und zwar nicht durch schnellere
+Prüfungen, sondern durch die Frage, wer wartet.
+
+### Die Gegenproben laufen nachts
+
+Sie prüfen die **Tore**, nicht die App. Das ist wertvoll — sie haben in
+dieser Sitzung ein Vorbild gefunden, das sich von selbst änderte, und eine
+Kontrastrechnung, die ein Wasserzeichen nicht sah. Und sie dauern zwanzig
+Minuten.
+
+`rhythmus` stand vorn in der Kette und verlangte, dass kein Nachweis älter
+als drei Runden ist. Das hat in **einer** Sitzung dreimal einen vollen Lauf
+mitten in der Arbeit ausgelöst. Die Frist ist richtig; falsch war, **wer
+sie bezahlt**. Sie steht jetzt in `.github/workflows/proben.yml`, läuft um
+drei Uhr nachts und schreibt den Stand zurück.
+
+### Was es gekostet hat, und was nicht
+
+**Was `schnell` nicht sieht:** Überlauf auf sieben Gerätegrößen, Kontrast,
+die Nachsicht beim Ziehen, PWA und Offline, und den gründlichsten
+Rauchtest-Abschnitt. Ein Layoutfehler auf dem iPhone SE fällt damit nicht
+mehr sofort auf, sondern drei Minuten später im Ablauf.
+
+**Was trotzdem nicht passieren kann:** dass Ungeprüftes bei den Kindern
+landet. Die Auslieferung fährt die volle Kette und schickt nur bei Grün.
+Die Prüfung ist nicht weniger geworden — sie ist nur nicht mehr im Weg.
+
+### Zwei Dinge, die dabei nebenbei herauskamen
+
+**`LOBPAUSE`.** Die 2,6 s nach jeder richtigen Antwort standen **dreimal**
+als nackte Zahl im Quelltext. Jetzt einmal — und mit `?flott` auf 250 ms
+kürzbar. Der Schalter ist noch ungenutzt: der Versuch, den Rauchtest damit
+zu beschleunigen, hat ihn rot gemacht, und ich habe zurückgebaut statt an
+elf Wartestellen zu raten. Er liegt bereit für die nächste Runde, in der
+das mit Bedingungen statt mit Fristen gemacht wird.
+
+**`serviere()`.** Der kleine Testserver stand **sechsmal** im Verzeichnis,
+Zeile für Zeile derselbe — und sechsmal mit demselben Fehler: `/?flott`
+wurde zum Verzeichnispfad `/` und damit 404. Jetzt einmal.
+
+Und dabei hat das Zusammenlegen fast etwas verloren, das die Kopie in
+`pwa.mjs` allein hatte: `if (!netz) q.socket.destroy()`. Das ist der ganze
+Offline-Test — eine 404 wäre eine **Antwort**, und der Service Worker
+verhält sich dann anders. Das Tor wurde rot und hat es gemeldet. Sechs
+Kopien sind nicht sechsmal dasselbe; eine davon trägt immer etwas
+Besonderes, und das findet man erst beim Zusammenlegen.

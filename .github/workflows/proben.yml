@@ -1,0 +1,65 @@
+# Die Gegenproben — NACHTS, nicht in der Runde.
+#
+# Sie prüfen die TORE, nicht die App: jede baut einen Fehler ein und sieht
+# nach, ob das zuständige Tor rot wird und dabei das Richtige sagt. Das ist
+# wertvoll und dauert zwanzig Minuten — und beides zusammen heißt: es
+# gehört nicht auf die Uhr desjenigen, der gerade etwas ändert.
+#
+# Vorher lief `rhythmus` vorn in der Torkette und verlangte, dass kein
+# Nachweis älter als drei Runden ist. Das hat in einer einzigen Sitzung
+# dreimal einen vollen Lauf ausgelöst, mitten in der Arbeit. Die Frist ist
+# richtig; falsch war, wer sie bezahlt.
+#
+# Jetzt bezahlt sie der Runner. Schlägt etwas an, steht es hier im
+# Protokoll und der Stand wird zurückgeschrieben — die Runde am nächsten
+# Morgen fängt mit frischen Nachweisen an.
+name: Gegenproben
+
+on:
+  schedule:
+    - cron: '0 2 * * *'      # 03:00 bzw. 04:00 deutscher Zeit
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  proben:
+    name: Alle Gegenproben
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      # Volle Historie: `rhythmus` zählt Runden am Code.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Alle Gegenproben
+        id: proben
+        continue-on-error: true
+        run: npm run proben
+      # Der Stand wird zurückgeschrieben, AUCH wenn eine Probe nicht
+      # angeschlagen hat: was angeschlagen hat, hat angeschlagen. Die
+      # Nachweise gehen nicht verloren, weil eine andere Probe scheitert.
+      - name: Stand zurückschreiben
+        run: |
+          set -euo pipefail
+          if git diff --quiet tor/proben-stand.json; then
+            echo "  Kein neuer Nachweis."
+            exit 0
+          fi
+          git config user.name  "Gegenproben"
+          git config user.email "noreply@github.com"
+          git add tor/proben-stand.json
+          git commit -m "Probenstand (nächtlicher Lauf)"
+          git push
+      - name: Was nicht angeschlagen hat
+        if: steps.proben.outcome != 'success'
+        run: |
+          echo "::warning::Nicht jede Gegenprobe hat angeschlagen — siehe Protokoll oben."
+          exit 1

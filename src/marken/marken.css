@@ -6,6 +6,10 @@
  */
 :root {
   /* --- Raster. Alle Abstaende sind Vielfache von 4. ------------------- */
+  /* `--r0` kam mit R3 dazu: im kurzen Querformat ist der Vorlauf so eng,
+     dass 4 px schon zu viel waren. Es ist die kleinste Stufe, die es
+     geben darf - alles darunter ist kein Abstand mehr, sondern Zufall. */
+  --r0: 2px;
   --r1: 4px;   --r2: 8px;   --r3: 12px;  --r4: 16px;  --r5: 20px;
   --r6: 24px;  --r8: 32px;  --r12: 48px; --r16: 64px; --r24: 96px;
   /* --r5 hat gefehlt und wurde trotzdem benutzt: `padding: var(--r3)

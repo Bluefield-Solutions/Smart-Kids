@@ -1,7 +1,7 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { starte, zurEbenenwahl, WELT_VON, durchVorlauf } from './chromium.mjs';
+import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere } from './chromium.mjs';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,18 +14,7 @@ import path from 'node:path';
 // noch Service Worker, also beweist ein gruener Lauf auf ihr nichts ueber
 // die App auf dem Startbildschirm.
 const wurzel = path.join(process.cwd(), 'dist');
-const server = http.createServer((q, a) => {
-  const f = path.join(wurzel, q.url === '/' ? '/index.html' : q.url);
-  if (!f.startsWith(wurzel) || !fs.existsSync(f)) { a.statusCode = 404; return a.end(); }
-  const typ = f.endsWith('.html') ? 'text/html; charset=utf-8'
-    : f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'text/javascript'
-    : f.endsWith('.png') ? 'image/png' : f.endsWith('.woff2') ? 'font/woff2'
-    : f.endsWith('.webmanifest') ? 'application/manifest+json' : 'text/plain';
-  a.setHeader('content-type', typ);
-  a.end(fs.readFileSync(f));
-});
-await new Promise(r => server.listen(0, r));
-const ADRESSE = `http://127.0.0.1:${server.address().port}/`;
+const { server, adresse: ADRESSE } = await serviere(wurzel);
 
 const b = await starte();
 const fehler = [];

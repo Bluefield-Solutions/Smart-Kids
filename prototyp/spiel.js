@@ -419,6 +419,26 @@ const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
  * Und es gilt je KIND, nicht je Gerät: sonst stellt die eine der anderen
  * das Spiel um.
  */
+/* Wie lange das Lob stehenbleibt, bevor die naechste Aufgabe kommt.
+ *
+ * Stand dreimal als nackte `2600` im Quelltext - und war damit sowohl eine
+ * Doppelung als auch der teuerste einzelne Posten der ganzen Pruefkette:
+ * der Rauchtest spielt rund fuenfunddreissig Aufgaben und hat allein hier
+ * anderthalb Minuten gewartet.
+ *
+ * `?flott` kuerzt sie auf 250 ms. Das ist KEIN Schalter fuer das Spiel:
+ * die Adresse der ausgelieferten App traegt ihn nicht, und ein Kind kommt
+ * nicht an ihn heran. Er ist fuer die Tore da, und was er aendert, ist
+ * ausdruecklich keine Logik, sondern eine Wartezeit.
+ *
+ * Was damit NICHT mehr geprueft wird, wenn er gesetzt ist: dass die Pause
+ * wirklich 2,6 s dauert. Genau dafuer laesst der Rauchtest einen
+ * Durchgang ohne den Schalter laufen (Regel 13 - was man wegnimmt, prueft
+ * man nicht mehr).
+ */
+const FLOTT = new URLSearchParams(location.search).has('flott');
+const LOBPAUSE = FLOTT ? 250 : 2600;
+
 const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
 let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',
   antwortweise:{ ...WEISE_VOREINSTELLUNG },
@@ -1193,7 +1213,7 @@ function rechenschirm(){
     if (f) f.innerHTML = `<span class="loesung">${satz}</span>`;
     vorlesen(`Kein Problem. ${ziel.geloest}.`);
     standSichern(st.ebeneId);
-    setTimeout(weiter, 2600);
+    setTimeout(weiter, LOBPAUSE);
   }
 
   /** Das Geschriebene zu einer Zahl — oder zu nichts. */
@@ -1225,7 +1245,7 @@ function rechenschirm(){
       const spruch = lob();
       lobsatz(s, `${ziel.frage} = ${ziel.wert}.`, null, spruch, '', neuerAufkleber);
       vorlesen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
-      setTimeout(weiter, 2600);
+      setTimeout(weiter, LOBPAUSE);
       return;
     }
     protokollieren('falsch', zahl, fachVorher);
@@ -1509,7 +1529,7 @@ function spielschirm(){
     vorlesen(satz);
     standSichern(st.ebeneId);
     setTimeout(()=>{ st.i++;
-      if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm); }, 2600);
+      if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm); }, LOBPAUSE);
   }
   s.querySelector('#zur').onclick=()=>zeige(pauseSchirm);
 
@@ -1992,11 +2012,13 @@ function spielschirm(){
    * lang, und eine Stimme, die waehrend des Uebergangs anfaengt, gehoert
    * hoerbar noch zum vorigen Bildschirm.
    */
+  // 500 ms, und `?flott` kuerzt sie mit: sonst wartete der Rauchtest an
+  // fuenf Stellen 900 ms auf eine Ansage, die es noch gar nicht gab.
   setTimeout(()=>{
     const teile = [frageText];
     if (!tippt) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
     ansagen(teile.join(' '));
-  }, 500);
+  }, FLOTT ? 60 : 500);
   return s;
 }
 

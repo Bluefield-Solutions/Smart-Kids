@@ -20,7 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -239,20 +239,7 @@ const SUCHE = () => {
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
 const KARTE_MIN = 0.92;
 
-const server = http.createServer((q, a) => {
-  const f = path.join(DIST, q.url === '/' ? '/index.html' : q.url.split('?')[0]);
-  if (!f.startsWith(DIST) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) {
-    a.statusCode = 404; return a.end();
-  }
-  const typ = f.endsWith('.html') ? 'text/html; charset=utf-8'
-    : f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'text/javascript'
-    : f.endsWith('.png') ? 'image/png' : f.endsWith('.woff2') ? 'font/woff2'
-    : f.endsWith('.webmanifest') ? 'application/manifest+json' : 'text/plain';
-  a.setHeader('content-type', typ);
-  a.end(fs.readFileSync(f));
-});
-await new Promise(r => server.listen(0, r));
-const ADRESSE = `http://127.0.0.1:${server.address().port}/`;
+const { server, adresse: ADRESSE } = await serviere(DIST);
 
 console.log('\n  Tor `passt`');
 const b = await starte();

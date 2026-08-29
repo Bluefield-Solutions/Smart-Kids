@@ -15,37 +15,59 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 
 ---
 
+## Wie hier gearbeitet wird: drei Bahnen
+
+Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
+— die ganze Kette dauerte 336 s, und 335 davon lagen im Browser.
+
+| Bahn | Wann | Dauer | Was |
+|---|---|---|---|
+| **`npm run schnell`** | bei **jeder** Änderung | **~45 s** | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und Bildvergleich **nebeneinander** |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min | die volle Kette, alle Größen, alle Bildschirme |
+| Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
+| Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
+
+**Die Regel ist einfach: du fährst `schnell`, der Runner fährt den Rest.**
+
+Der Preis, ausgesprochen: ein Layoutfehler auf dem iPhone SE fällt dir nicht
+sofort auf, sondern drei Minuten später im Ablauf. Auf dem Gerät der Kinder
+landet er trotzdem nie — die Auslieferung fährt die volle Kette und schickt
+nur bei Grün.
+
+**Was `schnell` NICHT fährt und warum:** `passt` (54 s, nur bei
+Layoutänderungen interessant) · `ziehen` (48 s, ändert sich fast nie) ·
+`lesbarkeit`, `pwa`, `offline` (hängen an Marken und Manifest) · den
+Rauchtest-Abschnitt `durchgang` (83 s — jede Ebene für beide Kinder, der
+gründlichste und teuerste Teil). Alles davon läuft auf dem Runner.
+
+**Die Gegenproben laufen nachts.** Sie prüfen die TORE, nicht die App, und
+sie dauern zwanzig Minuten. `rhythmus` stand deshalb bis hierher vorn in der
+Kette und verlangte, dass kein Nachweis älter als drei Runden ist — was in
+einer einzigen Sitzung dreimal einen vollen Lauf mitten in der Arbeit
+ausgelöst hat. Die Frist ist richtig; falsch war, **wer sie bezahlt**.
+
 ## Befehle
 
 ```
-npm run tor        die ganze Kette. Muss vor jedem Push auf main grün sein.
+npm run schnell    DIE NORMALE RUNDE. ~45 s. Siehe oben.
+npm run tor        die ganze Kette. Der Runner fährt sie ohnehin bei jedem
+                   Push; hier nur, wenn du sie vorher sehen willst.
+npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
+                   der nächtliche Lauf hält sie frisch.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
-                   Läuft in einer Wegwerf-Kopie (`.probenbaum`) — der
-                   Arbeitsbaum wird nicht angefasst, ein sauberer Baum ist
-                   nicht mehr nötig, und was du gerade änderst, ist
-                   mitgeprüft.
-                   `-- --geaendert` fährt genau das, was nachzuweisen ist:
-                   Proben ohne Nachweis und solche, deren Datei oder Tor
-                   sich seit IHREM letzten Anschlagen bewegt hat. Das ist
-                   die normale Runde.
-                   Der Stand steht je Probe (Commit + Datum), nicht als
-                   eine Zahl für alle — sonst entwertet jede neue Probe den
-                   Nachweis der anderen und erzwingt den vollen Satz.
-                   Auch eine Auswahl schreibt Stand, für genau das, was sie
-                   gefahren hat.
-                   Fährt drei Teilläufe nebeneinander (`-- --arbeiter=1`
-                   schaltet das ab) und kürzt den Rauchtest für die
-                   Gegenproben ab (`--sofort`, `--kurz`) — in der KETTE
-                   läuft er weiterhin vollständig.
-                   Gemessen: Runde an Dokumenten 2,7 s · Runde an
-                   `prototyp/spiel.js` (29 Proben) 7,2 min · voller Lauf
-                   17,1 min. Vier Kerne, Chromium unter SwiftShader.
-npm run smoke      spielt die App im Browser durch. `-- --nur=spielen,tippen`
-                   fährt nur einzelne Abschnitte (spielen · ablage · tippen ·
-                   ebene4 · durchgang) — dasselbe Mittel wie bei `ziehen`, und
-                   der Grund, warum ein voller Probenlauf nicht mehr eine
-                   halbe Stunde dauert.
-npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html (zum Ansehen)
+                   Läuft nachts auf dem Runner; hier nur, wenn du ein Tor
+                   geändert hast: `-- --tor passt` fährt genau dessen
+                   Proben, `-- --nur "..."` eine einzelne.
+                   Arbeitet in einer Wegwerf-Kopie (`.probenbaum`) — der
+                   Arbeitsbaum wird nicht angefasst.
+                   Was ANGESCHLAGEN hat, wird festgehalten, auch wenn der
+                   Lauf rot ist: sonst wirft ein einziger Befund die
+                   Nachweise von siebzig anderen weg.
+npm run smoke      spielt die App im Browser durch. `-- --nur=spielen`
+                   fährt nur den Hauptweg (29 s statt 163 s).
+                   Abschnitte: spielen · ablage · tippen · regler ·
+                   ebene4 · durchgang.
+npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
                    im SELBEN Commit einchecken.
@@ -54,7 +76,7 @@ npm run schrift    Andika und Plus Jakarta Sans holen
 npm run symbol     App-Symbol neu backen
 ```
 
-Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` ·
+Kette: `inhalt` · `topologie` · `beruehrung` · `marken` ·
 `schrift` · `symbol` · `doku` → `spielprobe` → `vergleich` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
