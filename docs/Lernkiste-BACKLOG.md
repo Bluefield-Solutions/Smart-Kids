@@ -183,7 +183,7 @@ Ebenenwahl, denn ein Fehlgriff räumt eine Woche Übung weg.
 weist nach: null Gegenstände in der Ablage, keine Häkchen auf der Karte,
 und die laufende Sitzung beginnt neu statt weiterzuzählen.
 
-### R2 · Eine Kachelsprache für alle drei Wahlbildschirme  ·  mittel
+### R2 · Eine Kachelsprache für alle drei Wahlbildschirme  ·  ERLEDIGT
 
 **Ziel:** Profilwahl, Weltenwahl und Ebenenwahl sehen aus wie **eine**
 Familie. Heute sind es drei Entwürfe aus drei Runden.
@@ -210,6 +210,14 @@ sie darf nicht stillschweigend verschwinden.
 (Gegenprobe: eine Kachel um 4 px verschieben). `passt` bleibt auf allen 7
 Größen grün. Und die Aufnahmen der drei Bildschirme liegen nebeneinander —
 **angesehen**, nicht nur gemessen: Regel 7.
+
+**Erledigt.** Gebaut als W2. Das Tor sitzt in `passt` statt daneben — die
+Tour über 7 Größen × 9 Bildschirme steht dort schon, ein zweites Werkzeug
+wäre auseinandergelaufen. Die Gegenprobe verschiebt um **60 px**, nicht um
+4: bei 4 px überlappt gar nichts, die Reihenlücke ist größer, und das Tor
+blieb zu Recht grün. Vier Befunde kamen erst vom Blick auf die Aufnahmen,
+und `lesbarkeit` musste erst lernen, das Wasserzeichen zu sehen — es fand
+dann zehn Kontrastfehler. Alles in `docs/Lernkiste-STAND.md`.
 
 ### R3 · Memory-Vorlauf  ·  mittel
 

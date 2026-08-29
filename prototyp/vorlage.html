@@ -694,8 +694,8 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 /* Die Maske sitzt auf dem UMRISS, nicht auf der Kachel - seit der
    Umriss in die rechte Haelfte passt, braucht sie nur noch seine linke
    Kante weichzuzeichnen. Bei 58 % fraß sie das halbe Bild. */
-.kachel .silhouette{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%);
-  mask-image:linear-gradient(to right,transparent 0,#000 30%)}
+.kachel .silhouette{-webkit-mask-image:var(--blende-umriss);
+  mask-image:var(--blende-umriss)}
 @media (max-height:440px), (max-width:430px){
   :root{
     --s-klein:14px; --s0:17px; --s1:20px; --s2:24px; --s3:28px; --s4:34px; --s5:40px;

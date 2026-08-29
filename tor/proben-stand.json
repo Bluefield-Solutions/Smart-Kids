@@ -113,15 +113,23 @@
       "zeit": "2026-08-29"
     },
     "ein Knopf ist breiter als das Fenster": {
-      "commit": "f479a9ffeceecbbbe40457385d451de905de024d",
+      "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
       "zeit": "2026-08-29"
     },
     "die Bühne beachtet den sicheren Bereich nicht": {
-      "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
+      "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
+      "zeit": "2026-08-29"
+    },
+    "zwei Kacheln liegen aufeinander": {
+      "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
+      "zeit": "2026-08-29"
+    },
+    "das Wasserzeichen unter der Schrift zählt nicht": {
+      "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
       "zeit": "2026-08-29"
     },
     "kleiner Text wird zu hell": {
-      "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
+      "commit": "c037d7f5915a321a79df08c685a6d3a2e58073ad",
       "zeit": "2026-08-29"
     },
     "das Startbündel überschreitet seine Grenze": {

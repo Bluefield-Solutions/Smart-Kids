@@ -85,6 +85,14 @@
   --grund:    oklch(1 0 0);
   --grund-2:  oklch(1 0 0);
   --papier:   oklch(1     0      0);
+
+  /* Die Blende des Wasserzeichens (R2).
+     Sie steht hier und nicht im Stylesheet, weil sie ZWEIMAL gebraucht
+     wird (`mask-image` und `-webkit-mask-image`) - und was zweimal
+     dasteht, veraltet einmal. Das `#000` darin ist keine Farbe, sondern
+     Deckung 1; als Wert im Stylesheet hat das Tor `marken` es zu Recht
+     als Farbe am System vorbei gemeldet. */
+  --blende-umriss: linear-gradient(to right, transparent 0, #000 30%);
   --tinte:    oklch(0.27  0.030 250);
   /* 0.50 reichte auf den getoenten Kacheln nicht (3,1:1). Kleiner Text
      braucht 4,5:1, und die Kachel ist der Ort, an dem er steht. */

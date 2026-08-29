@@ -2436,3 +2436,122 @@ diese Wartezeiten stehen dort, weil Übergänge animiert sind, und eine
 Gegenprobe, die zweimal Verschiedenes sagt, ist schlimmer als eine
 fehlende. Das wäre eine eigene Runde mit eigener Messung, nicht ein
 Nebenbei.
+
+---
+
+## R2 · Eine Kachelsprache für alle drei Wahlbildschirme
+
+Gewählt war Entwurf **B · Bild** auf **W2** — reinweißer Grund, kräftigere
+Kachel. Umgesetzt ist genau das, plus vier Dinge, die erst der Blick auf die
+Aufnahmen gezeigt hat.
+
+### Der Grund ist weiß, und das steht jetzt so da
+
+`--grund` und `--grund-2` sind `oklch(1 0 0)`. Die alte Begründung
+(„Eine flache weiße Fläche ist der schnellste Weg, eine App älter aussehen
+zu lassen, als sie ist") steht weiter in `marken.css` — zitiert und
+ausdrücklich als überstimmt gekennzeichnet. Eine Begründung, die
+stillschweigend verschwindet, wird in drei Runden erneut erfunden.
+
+Auf Weiß trägt nicht mehr die Fläche, sondern der **Rand**: 26 % Füllung aus
+dem eigenen Ton, 52 % Rand daraus.
+
+### Jede Kachel zeigt ihren Umriss
+
+Die Umrisse kommen nicht aus dem Netz. `bauen.mjs` backt sie beim Bauen aus
+denselben Natural-Earth-Daten in `D.silhouetten` — Kontinente auf 16 Punkte
+vereinfacht, Deutschland auf 8. **13,4 KB**, Startbündel 151,6 → 162,7 von
+400 KB.
+
+Der Weg dahin war nicht gerade. `teilen()` schneidet `pfad` aus dem
+Startbündel heraus — die Umrisse, die der Entwurf zeigte, waren zur Bauzeit
+gar nicht da. Naives Ausdünnen („jeder 32. Punkt") zerlegte Afrika in
+Splitter, und ein gleichfarbiger Strich schloss die Lücken nicht. Getragen
+hat erst der **äußere** Umriss: ein Kontinent ist ein einziges Polygon und
+dünnt sauber aus.
+
+### Vier Befunde, die kein Tor hatte — nur der Blick (Regel 7)
+
+**1. Das Wasserzeichen lief aus der Kachel heraus.** Bei 150 % Höhe war
+Afrika ein Fleck und Deutschland ein Schmier; erkennbar war keins von
+beiden. Ein Wasserzeichen, das man nicht erkennt, ist Dekoration und keine
+Auskunft. Es sitzt jetzt ganz in der Kachel (86 % Höhe, höchstens 52 %
+Breite), und die **Höhe steht im Stylesheet, je Kachelart einmal** — am
+Aufruf steht keine Zahl mehr.
+
+**2. Die Rechenwelt hatte kein Bild.** Erdkunde bekam eine Weltkarte,
+Rechnen eine leere Fläche — das sah nach einem Fehler aus. Die Rechenwelt
+und ihre Ebenen zeigen jetzt ihre **Zeichen** (`+ ×`, `+ −`, `× ÷`),
+gezogen statt gefüllt.
+
+**3. Das kleine Eckzeichen sagte dasselbe noch einmal, nur kleiner.** Ein
+Globus auf einer Weltkarte, ein `+×` über einem `+ ×`. Es ist weggefallen —
+mitsamt seinen zwei Symbolen und dem Feld `zeichen` in `WELTEN`, das damit
+tot gewesen wäre.
+
+**4. Der Baustempel stand größer da als „6 Jahre · sprechen und ziehen".**
+Er trug die Klasse `.unter`, und die ist für Erklärtexte gemacht. Er hat
+jetzt seine eigene, leise Klasse — auf dem ersten Bildschirm, den die Kinder
+sehen.
+
+Damit das nächste Mal nicht wieder der Zufall entscheidet: die **Profilwahl
+hat ein Vorbild bekommen** (`quer-profile`). Ausgerechnet der Bildschirm,
+den beide Kinder als erstes sehen, war bis hierher unfotografiert — 15
+Aufnahmen, 16 jetzt.
+
+### Das Überlappungs-Tor sitzt in `passt`, nicht daneben
+
+`passt` fährt bereits 7 Größen × 9 Bildschirme ab. Ein zweites Werkzeug
+hätte dieselbe Tour ein zweites Mal beschrieben und wäre auseinandergelaufen
+(Regel 15). Die Prüfung ist deshalb ein zweiter Ausgang desselben Sammlers:
+jedes Paar von Elementen **im Fluss**, deren Rechtecke sich um mehr als 1 px
+schneiden, ist ein Befund. Was absolut liegt, liegt absichtlich übereinander
+und hat seine eigene Prüfung.
+
+Gemeldet wird nur der **innerste** Kasten. Ohne das erschien ein Befund
+vierfach — Hülle gegen Hülle, Hülle gegen Kachel, Kachel gegen Hülle,
+Kachel gegen Kachel.
+
+**Die Abnahme sagte „eine Kachel um 4 px verschieben". Das ist falsch, und
+zwar aus einem lehrreichen Grund:** die Lücke zwischen den Reihen ist
+größer als 4 px, es überlappte gar nichts. Das Tor blieb zu Recht grün.
+Ein Eingriff, der nichts bewirkt, sieht aus wie ein bestandenes Tor
+(Regel 3). Die stehende Gegenprobe verschiebt jetzt um **60 px** und meldet
+`199×52 px`.
+
+### `lesbarkeit` bezeugte etwas, das es nie geprüft hatte (Regel 13)
+
+Das Tor läuft den **Elternbaum** hoch, um den Grund zu finden. Ein
+Wasserzeichen ist aber ein **Geschwister** — es lag ab R2 unter jeder
+Kachelschrift, und das Tor hätte weiter gegen die nackte Füllung gemessen
+und grün gemeldet.
+
+`grundVon` sammelt jetzt zusätzlich jedes absolut liegende Geschwister, das
+den Textkasten schneidet, mischt seine Farbe mit seiner Deckung auf die
+Fläche und misst gegen **beides**. Beim ersten Lauf schlug es sofort an —
+**zehn Fehler**, die es vorher nicht gab und die trotzdem schon da waren:
+
+| | war | ist |
+|---|---|---|
+| `.ueber` „8 Übungen", Tag | 4,08:1 | grün |
+| `.klebermarke` „0", Abend | 3,22:1 | grün |
+
+Drei Ursachen, alle drei Gestaltung, die sich am Kontrast bediente:
+`.kachel.welt .ueber{opacity:.85}` (Text dimmen, damit es hübsch aussieht),
+42 % Ton in der Schriftfarbe, und `--tinte-2` für eine Zahl, die auf dem
+Wasserzeichen steht. Dazu ist das Wasserzeichen selbst leiser geworden
+(0,50 → 0,34). Alle vier Werte sind **gemessen** eingestellt, nicht geraten.
+
+### Und ein Wert, der sich vor dem System versteckt hatte
+
+Die Blende des Wasserzeichens stand zweimal im Stylesheet
+(`mask-image` und `-webkit-mask-image`) und enthielt `#000`. Das Tor
+`marken` hat es als Farbe am System vorbei gemeldet — zu Recht, denn als
+Wert im Stylesheet ist es eine. Sie steht jetzt als `--blende-umriss` in
+`marken.css`: einmal, und mit dem Vermerk, dass das `#000` darin keine
+Farbe ist, sondern Deckung 1.
+
+### Stand
+
+19 Tore grün, 16 Vorbilder erneuert, **71** stehende Gegenproben (zwei
+neue, beide schlagen an). Startbündel 162,7 von 400 KB.
