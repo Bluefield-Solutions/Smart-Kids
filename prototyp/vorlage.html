@@ -171,6 +171,54 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 @media (hover:hover){.knopf.warnend:hover{
   color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
   border-color:var(--warn);background:var(--warn-h)}}
+/* Der Vorlauf (R3).
+
+   Er borgt sich das Gitter des Forscherbuchs, aber nicht dessen Groesse:
+   dort stehen die paar Stuecke, die schon gesammelt sind, hier ALLE
+   sechzehn eines Bundeslandes auf einmal. Bei 148 Punkten je Karte
+   scrollte das auf dem kleinsten Geraet (iPhone SE quer, 667 x 375) - und
+   `passt` sagt zu Recht, dass ein Kind nicht in einer Liste scrollt, von
+   der es nicht weiss, dass sie weitergeht.
+
+   Also kleiner, aber nicht beliebig klein: 84 Punkte ist die Breite, bei
+   der 16 Stuecke auf dem kleinsten Geraet in drei Reihen stehen. */
+/* `safe center`, nicht `center`.
+   Zentriert man den Inhalt eines Behaelters, der ueberlaeuft, wird er an
+   BEIDEN Enden abgeschnitten - und nach oben kann man nicht scrollen. Der
+   Stadtstaaten-Satz stand bei den Hauptstaedten halb ueber dem oberen
+   Rand. `safe` faellt in dem Fall auf `flex-start` zurueck. */
+.rollen.vorlauf{display:flex;flex-direction:column;gap:var(--r3);
+  align-items:center;justify-content:safe center}
+.rollen.vorlauf .mitte-satz{text-align:center;max-width:52ch}
+.rollen.vorlauf .kleber{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));
+  gap:var(--r2);width:100%;max-width:900px}
+.rollen.vorlauf .aufkleber{padding:var(--r1)}
+.rollen.vorlauf .aufkleber svg{height:34px}
+.rollen.vorlauf .aufkleber .rechenkleber{font-size:var(--s0)}
+/* Der Name wird hier UMGEBROCHEN, nicht abgeschnitten.
+   Im Forscherbuch sind drei Punkte in Ordnung: dort steht, was man schon
+   kennt. Hier soll das Kind den Namen LERNEN, und „Sachsen…" neben einem
+   echten „Sachsen" ist schlimmer als kein Name. */
+.rollen.vorlauf .aufkleber span{white-space:normal;overflow:visible;
+  text-overflow:clip;hyphens:auto;overflow-wrap:break-word;line-height:1.1}
+/* `break-word` und nicht `anywhere`.
+   `anywhere` trennt, sobald es eng wird, und schrieb „Brandenbur / g" -
+   ein einzelner Buchstabe auf einer Zeile. Auf einem Bildschirm, der
+   Namen BEIBRINGEN soll, ist das schlimmer als eng. `break-word` trennt
+   erst, wenn das Wort allein nicht auf eine Zeile passt, und nimmt
+   vorher jede Fuge - „Mecklenburg-" vor „Vorpommern".
+   Damit diese Fuge ueberhaupt in die Karte passt, ist die zweite Zeile
+   kleiner und die Karte im Querformat etwas breiter. */
+.rollen.vorlauf .aufkleber .dazu{font-size:calc(var(--s-klein) * 0.86)}
+/* Das Bundesland unter der Hauptstadt: die ZUORDNUNG ist der Lernstoff
+   dieser Ebene, nicht der Stadtname allein. */
+.aufkleber .dazu{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
+  color:var(--tinte-2);text-align:center;line-height:1.1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.vorlauffuss{padding:var(--r3) var(--r4) var(--r4)}
+/* Die zwei kleinen Knoepfe unter einer Kachel. Nebeneinander, damit sie
+   die naechste Reihe nicht nach unten schieben. */
+.kachelknoepfe{display:flex;gap:var(--r2);justify-content:center;flex-wrap:wrap}
 .sterne{display:flex;gap:var(--r1)}
 .fortschritt{font-family:var(--f-ui);font-size:var(--s0);font-weight:600;color:var(--tinte-2);
   font-variant-numeric:tabular-nums}
@@ -756,6 +804,41 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   /* Sterne, Aufkleber und Balken in EINE Zeile - sonst ist die Kachel um
      zwei Zeilen hoeher als vorher, und acht davon passen nicht mehr in
      390 Punkte. Das Tor `passt` hat genau das gemeldet. */
+  /* Der Vorlauf (R3) im kurzen Querformat.
+     Gemessen, nicht geschaetzt: `passt` meldete auf dem iPhone SE quer
+     (667 x 375) elf bis achtundneunzig Punkte Ueberlauf, auf dem
+     Zielgeraet achtundvierzig bei den Hauptstaedten. Die Karten werden
+     deshalb hier kleiner - und nur hier. */
+  .rollen.vorlauf{gap:var(--r1)}
+  .rollen.vorlauf .kleber{gap:var(--r1);
+    grid-template-columns:repeat(auto-fill,minmax(76px,1fr))}
+  /* Ein Vorlauf mit Zuordnung traegt zwei Namen je Karte statt einem -
+     „Mecklenburg-Vorpommern" unter „Schwerin". Er bekommt deshalb
+     breitere Karten; die Zeilenzahl aendert das nicht, denn dreizehn
+     Paare passen auch bei 92 Punkten in zwei Reihen. */
+  .rollen.vorlauf .kleber:has(.dazu){grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+  .rollen.vorlauf .aufkleber{padding:2px;gap:0}
+  .rollen.vorlauf .aufkleber svg{height:20px}
+  .rollen.vorlauf .mitte-satz{font-size:calc(var(--s-klein) * 0.95)}
+  .rollen.vorlauf .aufkleber span{font-size:calc(var(--s-klein) * 0.86)}
+  .rollen.vorlauf .aufkleber .dazu{font-size:calc(var(--s-klein) * 0.78)}
+  .vorlauffuss{padding:var(--r2) var(--r4) var(--r3)}
+  /* Die zwei Kachelknoepfe kosten eine Zeile, die es hier nicht gibt:
+     mit „anschauen" lief die Ebenenwahl 24 Punkte ueber den Fensterrand.
+     Kleiner, statt einen der beiden wegzulassen - beides sind Wege, die
+     das Kind sonst nicht hat. */
+  .kachelknoepfe{gap:var(--r1)}
+  .kachelknoepfe .leise.mini{padding:0 var(--r2);min-height:0;
+    font-size:calc(var(--s-klein) * 0.9)}
+  .wahl{gap:var(--r2)}
+  .kachelpaar{gap:2px}
+  /* Die letzten fuenfzehn Punkte fuer den sicheren Bereich.
+     Auf dem iPhone quer MIT Uhr, Akku und Wischstreifen bleiben von 390
+     Punkten noch 348 - und genau dort lag die Ebenenwahl mit dem neuen
+     Knopf „anschauen" 15 Punkte drueber. Geholt werden sie an der
+     Kachelpolsterung, nicht an der Schrift: lesbar muss sie bleiben. */
+  .kachel.bunt{padding:var(--r1) var(--r4)}
+  .kachel .name{line-height:1.05}
   .kachel .kachelfuss{flex-direction:row;align-items:center;gap:var(--r2)}
   .kachel .balken{height:5px;flex:1;min-width:40px}
   .kachel .stand{min-height:0;gap:var(--r2);flex:none}

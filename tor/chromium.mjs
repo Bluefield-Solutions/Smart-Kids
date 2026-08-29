@@ -54,6 +54,37 @@ export async function zurEbenenwahl(seite, ebene = 'kontinente') {
   await alleinIm(seite);
 }
 
+/* Von der Ebenenwahl in die AUFGABE — seit R3 fuehrt er ueber den Vorlauf.
+ *
+ * Dieselbe Geschichte wie bei `zurEbenenwahl`: ein neuer Zwischenschritt,
+ * und fuenf Tore klicken sich daran vorbei. Stuende er in jedem einzeln,
+ * waere er fuenfmal aufgeschrieben und beim naechsten Umbau viermal
+ * gepflegt.
+ *
+ * Der Vorlauf erscheint beim ERSTEN Betreten einer Ebene je Kind. Ein Tor
+ * faengt fast immer frisch an, sieht ihn also - aber eben nicht immer
+ * (der Rauchtest spielt eine Ebene mehrfach). Deshalb wird nachgesehen und
+ * nicht angenommen.
+ */
+export async function durchVorlauf(seite) {
+  const los = await seite.$('.schirm.da #los');
+  if (!los) return false;
+  await seite.$eval('.schirm.da #los', x => x.click());
+  await alleinIm(seite);
+  return true;
+}
+
+/** Eine Ebene oeffnen und bis zur ersten Aufgabe durchgehen. */
+export async function zurAufgabe(seite, ebene) {
+  await seite.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
+  // Der Vorlauf braucht einen Augenblick: er laedt die Karte nach.
+  await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
+    + '.schirm.da .rechnung', { timeout: 20000 });
+  await durchVorlauf(seite);
+  await seite.waitForSelector(String(ebene).startsWith('rechnen')
+    ? '.schirm.da .rechnung' : '.schirm.da .karte svg path.ziel', { timeout: 20000 });
+}
+
 /* Warten, bis der VORIGE Bildschirm weg ist.
  *
  * `zeige()` blendet ueber: der alte Bildschirm bleibt rund 340 ms liegen

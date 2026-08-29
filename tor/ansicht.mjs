@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
 import http from 'node:http';
-import { starte, zurEbenenwahl } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
 // nichts zurueck und der Prototyp startet jedesmal anders. Also derselbe
@@ -364,6 +364,10 @@ for (const a of AUFNAHMEN) {
       await seite.waitForTimeout(400);
     } else if (a.spiel) {
       await seite.click(`[data-ebene="${a.spiel}"]`);
+      // Seit R3 steht der Vorlauf beim ersten Betreten davor.
+      await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
+        + '.schirm.da .rechnung', { timeout: 25000 });
+      await durchVorlauf(seite);
       // Eine Rechenebene hat keine Karte, auf die man warten könnte.
       await seite.waitForSelector(a.spiel.startsWith('rechnen')
         ? '.schirm.da .rechnung' : '.schirm.da .karte svg path.ziel');

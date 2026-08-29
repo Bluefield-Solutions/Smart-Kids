@@ -421,6 +421,28 @@ const PROBEN = [
     an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
     sagt:'lässt sich das Alter nicht bestimmen' },
 
+  /* --- Der Vorlauf (R3) ----------------------------------------------- */
+  // Er kommt gar nicht mehr.
+  { n:'der Vorlauf erscheint beim ersten Betreten nicht', tor:'smoke', bauen:true,
+    args:['--nur=spielen'], datei:D,
+    such:'    if (!Einst.vorlaufGezeigt[`${P.id}:${id}`]) zeige(()=>vorlauf(id));',
+    ersatz:'    if (false) zeige(()=>vorlauf(id));',
+    an:{ ...DIST, text:'if (false) zeige' }, sagt:'kommt kein Vorlauf' },
+  // Er kommt, aber er ist stumm - und damit fuer Fiona leer.
+  { n:'die Karten im Vorlauf sagen nichts', tor:'smoke', bauen:true,
+    args:['--nur=spielen'], datei:D,
+    such:"  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));",
+    ersatz:"  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => {});",
+    an:{ ...DIST, text:"forEach(b => b.onclick = () => {})" },
+    sagt:'sagt nichts' },
+  // Er zeigt nicht, was die Ebene enthaelt.
+  { n:'der Vorlauf zeigt die falsche Zahl an Gebieten', tor:'smoke', bauen:true,
+    args:['--nur=spielen'], datei:D,
+    such:'  const stuecke = vorrat(ebeneId);',
+    ersatz:'  const stuecke = vorrat(ebeneId).slice(0, 4);',
+    an:{ ...DIST, text:'vorrat(ebeneId).slice(0, 4)' },
+    sagt:'statt 16' },
+
   /* --- Die Pause (R1) ------------------------------------------------ */
   // Zwei Proben, weil zwei Dinge kaputtgehen koennen und nur eines davon
   // von aussen zu sehen ist.

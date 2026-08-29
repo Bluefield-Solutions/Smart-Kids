@@ -1,7 +1,7 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { starte, zurEbenenwahl, WELT_VON } from './chromium.mjs';
+import { starte, zurEbenenwahl, WELT_VON, durchVorlauf } from './chromium.mjs';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -167,6 +167,22 @@ async function ueberblendungMessen(p) {
 }
 let ueberblendung = null;
 
+/* Durch den Vorlauf (R3), wenn er kommt.
+ *
+ * Er steht seit R3 beim ERSTEN Betreten einer Ebene je Kind davor. Der
+ * Rauchtest spielt manche Ebene mehrfach - dann kommt er nicht mehr.
+ * Deshalb wird nachgesehen und nicht angenommen.
+ *
+ * Gewartet wird auf das ODER: Vorlauf ODER Aufgabe. Wer nur auf den
+ * Vorlauf wartet, laeuft beim zweiten Besuch in einen Zeitablauf; wer nur
+ * auf die Aufgabe wartet, beim ersten.
+ */
+async function durchVorlaufWenn(p) {
+  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
+    + '.schirm.da .rechnung, .schirm.da .eingabe', { timeout: 25000 }).catch(() => {});
+  await durchVorlauf(p);
+}
+
 /* Aus einer laufenden Aufgabe zurueck in die Ebenenwahl.
  *
  * Seit R1 fuehrt das Kreuz im Spiel nicht mehr direkt dorthin, sondern in
@@ -274,7 +290,37 @@ if (laeuft('spielen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'bundeslaender');
+  /* --- Der Vorlauf beim ERSTEN Betreten (R3) --------------------------
+   *
+   * Geprueft wird, dass er DA IST - nicht nur, dass er funktioniert, wenn
+   * er da ist. Der Unterschied ist der ganze Punkt: `durchVorlaufWenn`
+   * geht durch ihn hindurch, wenn er kommt, und schweigt sonst. Ohne die
+   * Pruefung hier waere ein Vorlauf, der nie erscheint, fuer den
+   * Rauchtest ununterscheidbar von einem, der erscheint.
+   *
+   * Und: fuer Fiona muss jeder Name zu HOEREN sein. Sie liest nicht - ein
+   * Bildschirm zum Anschauen, der nur Text zeigt, ist fuer sie leer.
+   */
   await p.click('[data-ebene="bundeslaender"]');
+  const vorlaufDa = await p.waitForSelector('.schirm.da #los', { timeout: 25000 })
+    .then(() => true).catch(() => false);
+  if (!vorlaufDa) merke('vorlauf', new Error(
+    'beim ersten Betreten der Bundesländer kommt kein Vorlauf'));
+  else {
+    const karten = await p.$$eval('.schirm.da .aufkleber', es => es.length);
+    if (karten !== 16) merke('vorlauf', new Error(
+      `der Vorlauf zeigt ${karten} Bundesländer statt 16`));
+    // Antippen muss sprechen — sonst ist der Bildschirm fuer Fiona leer.
+    await p.evaluate(() => { window.__gesagt = []; });
+    await p.$eval('.schirm.da .aufkleber', x => x.click());
+    await p.waitForTimeout(300);
+    const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+    if (!gesagt.trim()) merke('vorlauf', new Error(
+      'eine angetippte Karte im Vorlauf sagt nichts — für Fiona ist der Bildschirm damit leer'));
+    console.log(`  Vorlauf:                    ${karten} Karten, angetippt → „${
+      gesagt.slice(0, 40)}"`);
+  }
+  await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .karte svg');
   // ZWEI Sitzungen. Ein Aufkleber braucht Fach 3, also zweimal richtig -
   // mit einer Sitzung waere das Forscherbuch immer leer, und das Tor
@@ -588,6 +634,7 @@ if (laeuft('ablage')) try {
     // gerade leergeraeumt, also ist der Fortschritt, den diese Probe
     // gleich loescht, garantiert IHRER.
     await p.click('[data-ebene="bundeslaender"]');
+  await durchVorlaufWenn(p);
     await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
     // Zwei Aufgaben loesen, damit es ueberhaupt etwas zu loeschen gibt -
     // und WARTEN, bis das Fortschrittsband es zeigt.
@@ -681,6 +728,7 @@ if (laeuft('tippen')) try {
   // seit der Farbrunde eine Auswahl mit vier Moeglichkeiten - dort gibt es
   // kein Eingabefeld mehr, und der Rauchtest lief in einen Zeitablauf.
   await p.click('[data-ebene="laender:europa"]');
+  await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .eingabe', { timeout: 15000 });
   const name = await p.evaluate(() => {
     const id = document.querySelector('.schirm.da path.ziel').dataset.id;
@@ -731,6 +779,7 @@ if (laeuft('regler')) try {
   await p.click('[data-profil="lea"]');
   await zurEbenenwahl(p, 'rechnen:reihen');
   await p.click('[data-ebene="rechnen:reihen"]');
+  await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
 
   /* Die Toene (A2) — und zwar an EINER falschen und EINER richtigen
@@ -828,6 +877,7 @@ if (laeuft('regler')) try {
     await p.click('[data-profil="lea"]');
     await zurEbenenwahl(p, 'rechnen:reihen');
     await p.click('[data-ebene="rechnen:reihen"]');
+  await durchVorlaufWenn(p);
     await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
     await p.evaluate(() => { window.__toene = []; });
     const falschZahl = await p.evaluate(() => {
@@ -865,6 +915,7 @@ if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
     await p.click(`[data-profil="${wer}"]`);
     await zurEbenenwahl(p, 'hauptstaedte');
     await p.click('[data-ebene="hauptstaedte"]');
+  await durchVorlaufWenn(p);
     // Die Einweisung zu den Stadtstaaten steht beim ersten Mal davor.
     await p.waitForSelector('.schirm.da #weiter, .schirm.da .karte svg path.ziel', { timeout: 6000 });
     const weiter = await p.$('.schirm.da #weiter');
@@ -1021,6 +1072,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea']) {
         await zurEbenenwahl(p, ebene);
       }
       await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
+      await durchVorlaufWenn(p);
       await p.waitForTimeout(400);
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());

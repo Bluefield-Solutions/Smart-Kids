@@ -21,7 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const TYP = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json',
@@ -87,6 +87,9 @@ async function aufgabe() {
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'kontinente');
   await p.click('[data-ebene="kontinente"]');
+  // Seit R3 steht der Vorlauf beim ersten Betreten davor.
+  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
+  await durchVorlauf(p);
   await p.waitForFunction(() => document.querySelector('.schirm.da path.ziel'), null, { timeout: 5000 });
   // Dieselbe Falle wie in `ansicht`: `kartenGroesse()` setzt die Karte in
   // zwei Bildern, und ein Anker, der vorher gelesen wird, zeigt woanders

@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [], hinweise = [];
@@ -213,6 +213,8 @@ for (const abend of [false, true]) {
   await p.waitForSelector('.schirm.da [data-welt]'); await schau('Weltenwahl');
   await zurEbenenwahl(p, 'bundeslaender'); await schau('Ebenenwahl');
   await p.$eval('[data-ebene="bundeslaender"]', e => e.click());
+  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 20000 });
+  if (await p.$('.schirm.da #los')) { await schau('Vorlauf'); await durchVorlauf(p); }
   await p.waitForSelector('.schirm.da .karte svg path.ziel'); await schau('Spiel');
   await p.$eval('.schirm.da #zur', e => e.click());
   await p.waitForSelector('.schirm.da #null'); await schau('Pause');

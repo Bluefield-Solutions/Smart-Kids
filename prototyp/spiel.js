@@ -422,7 +422,11 @@ const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
 const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
 let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',
   antwortweise:{ ...WEISE_VOREINSTELLUNG },
-  stadtstaatenGezeigt:false, hauptstadtAuswahl:true,
+  // Je Kind UND Ebene, nicht ein Schalter fuer alle: der Vorlauf gehoert
+  // zu der Ebene, die er erklaert. `stadtstaatenGezeigt` war der eine
+  // Schalter, den es dafuer gab, und er ist mit der Lerneinheit
+  // weggefallen.
+  vorlaufGezeigt:{}, hauptstadtAuswahl:true,
   // Leas Regler und ihre Eingabeweise beim Rechnen. Beide gehören in die
   // Einstellungen und nicht ins Profil: das Profil sagt, WER spielt, die
   // Einstellung, wie es gerade eingestellt ist.
@@ -464,6 +468,25 @@ function kontinentRunde(stand){
  * las `kontinentRunde` den Stand der zuletzt gespielten Ebene und zeigte auf
  * der Kachel eine falsche Zahl.
  */
+/* Ein Rahmen, der NUR dieses eine Stueck zeigt.
+ *
+ * Stand bis R3 im Forscherbuch und wird seit dem Vorlauf an zwei Stellen
+ * gebraucht - also gehoert er an eine. Gerechnet aus dem Pfad selbst, mit
+ * acht Prozent Luft ringsum: im Rahmen der ganzen Karte ist Bremen
+ * praktisch unsichtbar, und ein Bild, auf dem man die Form nicht erkennt,
+ * ist keins.
+ */
+const eigenerRahmen = (pfad) => {
+  const z = String(pfad).match(/-?\d+\.?\d*/g);
+  if (!z || z.length < 4) return null;
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for (let i=0;i+1<z.length;i+=2){ const x=+z[i], y=+z[i+1];
+    if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+  const b=x1-x0, h=y1-y0; if(!(b>0)||!(h>0)) return null;
+  const luft = Math.max(b,h)*0.08;
+  return `${x0-luft} ${y0-luft} ${b+2*luft} ${h+2*luft}`;
+};
+
 function vorrat(ebeneId, stand = Stand){
   const [art, kont] = ebeneId.split(':');
   if (art==='kontinente') {
@@ -645,8 +668,11 @@ async function ebenenwahl(){
               kleberMarke(b.gesammelt, b.gesamt)}</div>
             ${fortschrittBalken(b)}
           </div>
-        </button>${b.gesammelt ? `
-        <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}</div>`).join('')}</div>
+        </button>
+        <div class="kachelknoepfe">
+          <button class="leise mini" data-schau="${b.id}">anschauen</button>${b.gesammelt ? `
+          <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}
+        </div></div>`).join('')}</div>
     </div>`;
   // Zurück führt in die Welt, nicht bis zur Profilwahl: sonst wäre die
   // Weltenwahl eine Tür, die nur in eine Richtung aufgeht.
@@ -655,8 +681,13 @@ async function ebenenwahl(){
   s.querySelector('#eltern').onclick=()=>zeige(elternTor);
   s.querySelectorAll('[data-ebene]').forEach(b=>b.onclick=()=>{
     const id=b.dataset.ebene;
-    if (id==='hauptstaedte' && !Einst.stadtstaatenGezeigt) zeige(()=>stadtstaaten(id));
+    // Beim ERSTEN Mal auf dieser Ebene: erst anschauen, dann raten (R3).
+    // Danach nur noch auf Wunsch, ueber den Knopf „anschauen" an der
+    // Kachel - wer eine Ebene kennt, will nicht jedes Mal blaettern.
+    if (!Einst.vorlaufGezeigt[`${P.id}:${id}`]) zeige(()=>vorlauf(id));
     else starten(id); });
+  s.querySelectorAll('[data-schau]').forEach(b=>b.onclick=(ev)=>{
+    ev.stopPropagation(); zeige(()=>vorlauf(b.dataset.schau)); });
 
   // „Von vorne" - und zwar fuer das Kind, nicht hinter der Eltern-PIN.
   //
@@ -693,31 +724,108 @@ async function ebenenwahl(){
   return s;
 }
 
-/* ---------- Die Stadtstaaten-Lerneinheit --------------------------------- */
-function stadtstaaten(danach){
+/* ---------- Der Vorlauf (R3) ---------------------------------------------
+ *
+ * Vor jeder Ebene ein Blättern statt eines Rätsels: alle Gegenstände der
+ * Ebene mit Bild und Namen, antippen liest vor, unten „Jetzt starten".
+ *
+ * Er ERSETZT die Stadtstaaten-Lerneinheit, statt neben sie zu treten.
+ * Die stand bisher allein vor `hauptstaedte`, und zwei
+ * Vorschaltbildschirme hintereinander wären einer zuviel gewesen. Ihre
+ * Form war ohnehin schon die richtige - Titel, ein Satz, ein Gitter aus
+ * Umrissen zum Antippen, ein Knopf. Der Vorlauf ist ihre
+ * Verallgemeinerung, und der erklärende Satz bleibt: er steht jetzt als
+ * der Satz DIESER Ebene da.
+ *
+ * Der Satz wird abgeleitet, nicht je Ebene hingeschrieben — dieselbe
+ * Regel wie beim Kartenhinweis (B15). Sonst hätte die vierte Karte
+ * keinen.
+ *
+ * Die Karten sind die des Forscherbuchs (`.kleber`, `.aufkleber`). Das
+ * ist kein Sparen: es ist derselbe Gegenstand in derselben Sprache, und
+ * ein Kind, das im Buch geblättert hat, erkennt ihn hier wieder.
+ */
+const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
+
+/** Der eine Satz, den dieser Vorlauf mitgibt. Abgeleitet, nicht gesammelt. */
+function vorlaufSatz(ebeneId){
+  const [art] = ebeneId.split(':');
+  if (art === 'hauptstaedte')
+    return 'Berlin, Hamburg und Bremen fehlen hier: sie sind <strong>Stadtstaaten</strong>, '
+      + 'die Stadt ist das ganze Bundesland. Sie <em>sind</em> ihre Hauptstadt.';
+  if (art === 'rechnen')
+    return 'Schau sie dir in Ruhe an. Antippen sagt dir die Aufgabe und das Ergebnis.';
+  return 'Tippe auf ein Bild, dann sage ich dir, wie es heißt.';
+}
+
+async function vorlauf(ebeneId){
   const s = el('div');
-  const drei = D.deutschland.filter(b=>b.stadtstaat);
-  s.innerHTML = kopf({ links: zurueckKnopf() }) + `
-    <div class="mitte">
-      <div class="titel">Drei sind anders</div>
-      <div class="unter">Berlin, Hamburg und Bremen sind <strong>Stadtstaaten</strong>:
-        die Stadt ist das ganze Bundesland. Sie haben keine eigene Hauptstadt —
-        sie <em>sind</em> ihre Hauptstadt.</div>
-      <div class="wahl eng">${drei.map((b,i)=>`
-        <button class="kachel" data-lesen="${b.name}">
-          <svg class="umriss" viewBox="${D.vbD}" aria-hidden="true">
-            <path d="${b.pfad}" fill-rule="evenodd" fill="var(${VIER[i%4]})"
-                  stroke="var(--tinte)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
-          <div class="name" style="font-size:var(--s1)">${b.name}</div>
+  // Erst die Karte holen, DANN den Vorrat lesen.
+  //
+  // `teilen()` schneidet die Pfade aus dem Startbuendel heraus - ohne
+  // `ebeneLaden` hat jedes Stueck ein leeres `pfad`, und der Vorlauf malte
+  // sechzehn Kaesten mit dem Wort „undefined". `starten()` macht dasselbe
+  // in derselben Reihenfolge; wer den Vorrat anfasst, muss vorher laden.
+  if (!(await ebeneLaden(ebeneId))) {
+    s.innerHTML = kopf({ links: zurueckKnopf() }) + `
+      <div class="mitte"><div class="titel">Diese Karte fehlt noch</div>
+      <div class="unter">Sie wird beim ersten Mal aus dem Netz geholt.
+        Probier es noch einmal, wenn du wieder Verbindung hast.</div></div>`;
+    s.querySelector('#zur').onclick = () => zeige(ebenenwahl);
+    return s;
+  }
+  await standLaden(ebeneId);
+  const ebene = EBENEN.find(e => e.id === ebeneId);
+  const stuecke = vorrat(ebeneId);
+  const satz = vorlaufSatz(ebeneId);
+  // Der eigene Rahmen zeigt das Stueck gross; nur wenn er sich aus dem
+  // Pfad nicht rechnen laesst, faellt es auf den Rahmen der ganzen Karte
+  // zurueck - dieselbe Regel wie im Spielbildschirm.
+  const [art, kont] = ebeneId.split(':');
+  const ganzeKarte = art === 'kontinente' ? D.vbK
+    : art === 'laender' ? D.vbL[kont] : D.vbD;
+  const rahmen = (x) => eigenerRahmen(x.pfad) || ganzeKarte;
+  s.innerHTML = kopf({ links: zurueckKnopf(),
+    mitte:`<span class="marke">${ebene ? ebene.titel : 'Anschauen'}</span>` }) + `
+    <div class="rollen vorlauf">
+      <div class="unter mitte-satz">${satz}</div>
+      <div class="kleber">${stuecke.map((x, i) => `
+        <button class="aufkleber da" data-lesen="${vorlaufAnsage(x, ebeneId)}"
+                title="${x.gebiet ? `${x.gebiet}: ${x.name}` : x.name}">
+          ${x.pfad
+            ? `<svg viewBox="${rahmen(x)}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
+                fill="var(${FL[i%7]})" stroke="var(--tinte)" stroke-opacity=".6" stroke-width="1.6"
+                vector-effect="non-scaling-stroke"/></svg>`
+            : `<div class="rechenkleber" style="--ton:var(${FL[i%7]})">${x.frage}</div>`}
+          <span>${x.pfad ? x.name : `= ${x.name}`}</span>
+          ${x.gebiet ? `<span class="dazu">${x.gebiet}</span>` : ''}
         </button>`).join('')}</div>
-      <button class="knopf" id="weiter" style="font-size:var(--s1);padding:var(--r3) var(--r8)">Verstanden</button>
+    </div>
+    <div class="reihe vorlauffuss">
+      <button class="knopf haupt" id="los">Jetzt starten</button>
     </div>`;
-  s.querySelector('#zur').onclick=()=>zeige(ebenenwahl);
-  s.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
-  s.querySelector('#weiter').onclick=()=>{ Einst.stadtstaatenGezeigt=true; einstSichern(); starten(danach); };
-  vorlesen('Drei sind anders. Berlin, Hamburg und Bremen sind Stadtstaaten.');
+  s.querySelector('#zur').onclick = () => zeige(ebenenwahl);
+  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));
+  s.querySelector('#los').onclick = () => {
+    Einst.vorlaufGezeigt[vorlaufSchluessel(ebeneId)] = true;
+    einstSichern();
+    starten(ebeneId);
+  };
+  // Der Satz wird ANGESAGT, nicht nur hingeschrieben: Fiona liest nicht.
+  // Die Namen selbst kommen beim Antippen - alle sechzehn am Stück
+  // vorzulesen wäre ein Monolog, kein Blättern.
+  ansagen(`${ebene ? ebene.titel : 'Anschauen'}. ${satz.replace(/<[^>]+>/g, '')} `
+    + 'Wenn du fertig bist, tippe auf „Jetzt starten".');
   return s;
 }
+
+/** Was beim Antippen gesagt wird. Bei den Hauptstädten das PAAR. */
+function vorlaufAnsage(x, ebeneId){
+  if (x.gebiet) return `Die Hauptstadt von ${x.gebiet} ist ${x.name}.`;
+  if (x.frage)  return `${x.frage} ist ${x.name}.`;
+  return x.name;
+}
+
 
 /* ---------- Sitzung starten ---------------------------------------------- */
 /** Ein Keim, der sich reproduzieren laesst. Aus der Uhr geht das nicht. */
@@ -2120,16 +2228,6 @@ async function forscherbuch(){
    *
    * Gerechnet wird aus dem Pfad selbst, mit acht Prozent Luft ringsum.
    */
-  const eigenerRahmen = (pfad) => {
-    const z = String(pfad).match(/-?\d+\.?\d*/g);
-    if (!z || z.length < 4) return null;
-    let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
-    for (let i=0;i+1<z.length;i+=2){ const x=+z[i], y=+z[i+1];
-      if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
-    const b=x1-x0, h=y1-y0; if(!(b>0)||!(h>0)) return null;
-    const luft = Math.max(b,h)*0.08;
-    return `${x0-luft} ${y0-luft} ${b+2*luft} ${h+2*luft}`;
-  };
 
   /* Der Aufkleber IST der Umriss - bei einer Karte.
    *

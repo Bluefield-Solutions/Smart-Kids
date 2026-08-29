@@ -20,7 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -344,13 +344,16 @@ for (const g of GERAETE) {
   // Auch die WELTKARTE: sie ist querformatig, Deutschland hochformatig -
   // ein Grundriss, der nur mit einer von beiden geprueft wird, ist halb
   // geprueft.
-  for (const [ebene, warte] of [['kontinente', null], ['bundeslaender', null],
-                                ['hauptstaedte', '#weiter']]) {
+  for (const ebene of ['kontinente', 'bundeslaender', 'hauptstaedte']) {
     await tipp(`[data-ebene="${ebene}"]`);
-    if (warte) {
-      await p.waitForSelector(`.schirm.da ${warte}, .schirm.da .karte svg path.ziel`);
-      const w = await p.$(`.schirm.da ${warte}`);
-      if (w) { await schau('Stadtstaaten-Einweisung'); await p.$eval('.schirm.da #weiter', el=>el.click()); }
+    // Der Vorlauf (R3) ist die engste Stelle der ganzen App: bis zu
+    // sechzehn Kaesten auf einmal, auf dem kleinsten Geraet. Er wird
+    // deshalb ANGESEHEN und nicht nur durchlaufen.
+    await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel',
+      { timeout: 20000 });
+    if (await p.$('.schirm.da #los')) {
+      await schau(`Vorlauf ${ebene}`);
+      await durchVorlauf(p);
     }
     await p.waitForSelector('.schirm.da .karte svg path.ziel');
     await schau(`Spiel ${ebene}`);
