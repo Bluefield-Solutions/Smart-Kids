@@ -152,10 +152,6 @@
       "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
       "zeit": "2026-08-29"
     },
-    "ein Nachweis zeigt auf einen Commit, den es nicht gibt": {
-      "commit": "f479a9ffeceecbbbe40457385d451de905de024d",
-      "zeit": "2026-08-29"
-    },
     "keine Nachsicht — nur der exakte Punkt zählt": {
       "commit": "f479a9ffeceecbbbe40457385d451de905de024d",
       "zeit": "2026-08-29"
@@ -181,7 +177,7 @@
       "zeit": "2026-08-29"
     },
     "die Karte wechselt die Farbe": {
-      "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
+      "commit": "b362c2ff48d67a1c9d45563e3266520180387dc9",
       "zeit": "2026-08-29"
     },
     "ein Symbol im Manifest gibt es nicht": {
@@ -249,7 +245,7 @@
       "zeit": "2026-08-29"
     },
     "auf dem Zielgerät verschwindet der Kachelbalken": {
-      "commit": "c9dd563dcb115feebaef4a1a79f6aa1a1aaaa9eb",
+      "commit": "b362c2ff48d67a1c9d45563e3266520180387dc9",
       "zeit": "2026-08-29"
     },
     "der Rundungsrest fällt wieder auf die letzte Sorte": {

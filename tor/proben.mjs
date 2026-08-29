@@ -1297,7 +1297,28 @@ for (const [t, s] of Object.entries(jeTor).sort((a,b)=>b[1]-a[1]))
 console.log(`\n  ${ok} schlagen an, ${blind} beweisen nichts, `
   + `${nichtAngekommen} kamen nicht an.\n`);
 for (const b of befunde) console.log(`  ✗ ${b}`);
-if (befunde.length) { console.log(''); process.exit(1); }
+
+/* Was angeschlagen HAT, wird festgehalten - auch wenn der Lauf rot ist.
+ *
+ * Hier stand ein `process.exit(1)`, und es hat einundzwanzig Minuten
+ * Arbeit weggeworfen: 65 von 67 Proben schlugen an, zwei bewiesen nichts
+ * (ein Vorbild aenderte sich von selbst), und weil der Lauf damit rot war,
+ * wurde KEIN einziger Nachweis geschrieben.
+ *
+ * Das ist nicht nur teuer, es ist eine Falle mit Rueckkopplung: ohne
+ * Nachweise altern alle 71 Proben weiter, `rhythmus` wird rot, und die
+ * Antwort darauf ist wieder ein voller Lauf - der am selben Befund wieder
+ * nichts schreibt. Genau so sind 66 Nachweise fuenf Runden alt geworden.
+ *
+ * `rhythmus` liest den Stand JE PROBE. Eine Probe, die angeschlagen hat,
+ * hat angeschlagen - unabhaengig von ihrer Nachbarin. Ihren Nachweis zu
+ * verschweigen ist keine Vorsicht, sondern ein Verlust. Was nicht
+ * angeschlagen hat, bekommt weiterhin keinen Eintrag und faellt `rhythmus`
+ * als "hat noch nie angeschlagen" auf - der Befund bleibt also sichtbar.
+ *
+ * Rot bleibt der Lauf trotzdem: das entscheidet der Schluss weiter unten.
+ */
+const ersterDurchgangRot = befunde.length > 0;
 /* --- Den Lauf festhalten ----------------------------------------------
  *
  * Nur bei einem sauber gruenen Lauf. Die Datei ist die einzige Stelle, an
@@ -1401,5 +1422,11 @@ if (spaeter.length) {
     console.log(`\n  proben ROT im zweiten Durchgang — ${STAND} als abgebrochen markiert.\n`);
     process.exit(1);
   }
+}
+if (ersterDurchgangRot) {
+  console.log(`\n  proben ROT: ${ok} Gegenproben schlagen an, ${blind + nichtAngekommen} nicht.`);
+  console.log(`  Die ${ok}, die angeschlagen haben, sind in ${STAND} festgehalten —`);
+  console.log('  ihr Nachweis geht nicht verloren, weil eine andere Probe scheitert.\n');
+  process.exit(1);
 }
 console.log(`\n  proben grün: ${ok} Gegenproben, alle schlagen an.\n`);
