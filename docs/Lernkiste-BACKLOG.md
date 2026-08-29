@@ -18,6 +18,8 @@ steht es dabei; wo etwas an Daten hängt, ist die Quelle nachgesehen.
 | Wo steht das Elternprofil? | **dritte Kachel bei den Kindern**, ohne PIN | R4 |
 | Ein Profil oder zwei? | **eins** — ihr spielt es beide | R4 |
 | Erst Entwürfe? | **ja**, zwei bis drei Aufnahmen vor dem Umbau | R2 |
+| Welcher Entwurf? | **B · Bild** — jede Kachel zeigt ihren echten Umriss | R2 |
+| Welcher Grund? | **weiß** statt des hellen Blaus — Fassung offen (W1/W2/W3) | R2 |
 
 Offen ist nur noch der **Name** des dritten Profils. „Eltern" ist ein
 Platzhalter; in eurer Nachricht stand „Adam-Profil" — wenn es so heißen
@@ -191,9 +193,18 @@ gegen den Rand und findet mit `elementFromPoint` verdeckte Texte — zwei
 Kacheln, die sich um wenige Punkte überschneiden, sieht es nicht. Das ist
 die blinde Stelle, nach der ihr gefragt habt.
 
-**Zuerst Entwürfe.** Zwei bis drei Fassungen als echte Aufnahmen auf
-844 × 390, nebeneinander — dann wird eine gewählt und nur die gebaut. Eine
-halbe Runde mehr, die eine ganze spart, wenn ich danebenliege.
+**Entwürfe liegen vor und sind entschieden:** `docs/entwuerfe/` — gewählt
+ist **B · Bild** (jede Kachel zeigt ihren echten Umriss) mit **weißem
+Grund** statt des hellen Blaus. Offen ist nur noch, welche der drei
+Weiß-Fassungen (W1 reinweiß · W2 reinweiß mit kräftigerer Kachel · W3 fast
+weiß).
+
+**Der weiße Grund ist kein Detail dieser Runde, sondern ihr Kern.**
+`--grund` ist eine globale Marke: jeder Bildschirm ändert sich mit, weiße
+Karten auf weißem Grund brauchen ihre Trennung aus Rand statt Fläche, und
+alle 15 Vorbilder in `tor/vorbilder/` werden neu. Die Begründung des alten
+Blautons steht in `marken.css` und wird mit dieser Runde bewusst gedreht —
+sie darf nicht stillschweigend verschwinden.
 
 **Abnahme:** Das neue Tor ist rot, wenn sich zwei Geschwister überlappen
 (Gegenprobe: eine Kachel um 4 px verschieben). `passt` bleibt auf allen 7

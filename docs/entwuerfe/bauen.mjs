@@ -206,7 +206,7 @@ const schirm = (inhalt, titel, marke) => `
 function seite(E) {
   const ebenen = EBENEN.map(([u,n,f,st,ganz,ges]) =>
     E.kachel(u, n, f, st, ges, ganz, n === 'Bundesländer')).join('');
-  return `${KOPF}<body class="${E.name[0]}">
+  return `${KOPF}<body class="B">
   <style>
     body{margin:0;background:var(--grund);font-family:var(--f-ui)}
     .rahmen{width:844px;margin:0 auto;padding:14px 0 22px}
@@ -232,11 +232,47 @@ function seite(E) {
 }
 
 /* --------------- Aufnehmen -------------------------------------------- */
-const ZIEL = '/tmp/claude-0/-home-user-towerfront/4a4d3588-76df-54c7-9810-611a84f37cef/scratchpad/entwuerfe';
+/* --------------- Weiss-Fassungen von B --------------------------------
+ *
+ * „Nicht das helle Blau, am besten weiss." Der Grund ist heute ein kuehler
+ * heller Ton mit Verlauf, und das ist eine BEGRUENDETE Entscheidung — in
+ * `marken.css` steht daneben: „Eine flache weisse Flaeche ist der
+ * schnellste Weg, eine App aelter aussehen zu lassen, als sie ist."
+ *
+ * Weiss hat ausserdem eine Folge, die man sehen muss: `--papier` IST
+ * schon Weiss. Auf weissem Grund verlieren weisse Karten ihre Trennung —
+ * ueberall in der App, nicht nur hier. Diese drei Fassungen loesen das
+ * verschieden, damit die Entscheidung am Bild faellt und nicht im Text.
+ */
+const weiss = (E, kuerzel, name, satz, extra) => ({
+  ...E, name: kuerzel + ' · ' + name, satz, css: E.css + extra,
+});
+
+const W1 = weiss(B, 'W1', 'Reinweiß',
+  'Grund reines Weiß, Kacheln unverändert — die Tönung trägt allein.',
+  `\n  body,.geraet{background:#fff !important}`);
+
+const W2 = weiss(B, 'W2', 'Reinweiß, kräftigere Kachel',
+  'Grund reines Weiß, Kacheln stärker getönt und klarer umrandet.',
+  `\n  body,.geraet{background:#fff !important}
+  .B .k{background:color-mix(in oklab, var(--ton) 26%, #fff);
+    border:1.5px solid color-mix(in oklab, var(--ton) 52%, #fff)}
+  .B .wk{background:color-mix(in oklab, var(--ton) 26%, #fff);
+    border:1.5px solid color-mix(in oklab, var(--ton) 52%, #fff)}
+  .B .pk{background:color-mix(in oklab, var(--ton) 26%, #fff);
+    border:1.5px solid color-mix(in oklab, var(--ton) 52%, #fff)}
+  .B .k svg.bild{opacity:.42}`);
+
+const W3 = weiss(B, 'W3', 'Fast weiß',
+  'Ein Hauch Ton und ein kaum sichtbarer Verlauf — liest sich als Weiß, behält Tiefe.',
+  `\n  body{background:linear-gradient(168deg,oklch(0.995 0.002 250) 0%,oklch(0.972 0.007 250) 100%) !important}
+  .geraet{background:linear-gradient(168deg,oklch(0.995 0.002 250) 0%,oklch(0.978 0.006 250) 100%) !important}`);
+
+const ZIEL = '/home/user/smart-kids/docs/entwuerfe';
 const b = await starte();
 const ctx = await b.newContext({ deviceScaleFactor: 2 });
-for (const E of [A, B, C]) {
-  const datei = path.join(ZIEL, `entwurf-${E.name[0]}.html`);
+for (const E of [W1, W2, W3]) {
+  const datei = path.join(ZIEL, `entwurf-${E.name.slice(0,2)}.html`);
   fs.writeFileSync(datei, seite(E));
   const p = await ctx.newPage({ viewport:{ width: 880, height: 1400 } });
   await p.goto('file://' + datei, { waitUntil:'domcontentloaded' });
@@ -247,7 +283,7 @@ for (const E of [A, B, C]) {
   const hoch = await p.evaluate(() => document.querySelector('.rahmen').scrollHeight);
   await p.setViewportSize({ width: 880, height: Math.ceil(hoch) + 30 });
   await p.waitForTimeout(150);
-  await p.screenshot({ path: path.join(ZIEL, `entwurf-${E.name[0]}.png`), fullPage: true });
+  await p.screenshot({ path: path.join(ZIEL, `entwurf-${E.name.slice(0,2)}.png`), fullPage: true });
   console.log('  ' + E.name);
   await p.close();
 }
