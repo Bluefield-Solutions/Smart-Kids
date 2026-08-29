@@ -23,10 +23,13 @@ npm run ansicht     Bildvergleich, 13 Aufnahmen — vier davon auf dem
                     Zielgerät (iPhone quer). Nur ortsfest.
 npm run bauen       baut prototyp/spiel.html und dist/
 npm run tor         die ganze Kette
-npm run proben      die 46 stehenden Gegenproben (Baum muss sauber sein,
+npm run proben      die 49 stehenden Gegenproben (Baum muss sauber sein,
                     höchstens drei Runden alt)
                     `npm run proben ziehen` fährt nur eines
 npm run budget      Größenzusagen aus Konzept K3, plus Ratsche
+npm run proben -- --geaendert
+                    nur die Proben, deren Datei oder Tor seit dem
+                    letzten vollen Lauf angefasst wurde
 ```
 
 Die Kette, in dieser Reihenfolge:
@@ -38,7 +41,7 @@ rhythmus → inhalt · topologie · beruehrung · marken · schrift · symbol ·
 ```
 
 **Die Torkette ist grün.** Neunzehn Prüfungen — und „mit Gegenprobe belegt"
-ist keine Behauptung mehr, sondern ein Lauf: **46 Gegenproben, alle schlagen
+ist keine Behauptung mehr, sondern ein Lauf: **49 Gegenproben, alle schlagen
 an**, und `rhythmus` lässt sie nicht älter als drei Runden werden.
 
 Seit der Audit-Runde vergleicht sich die Aufzählung darüber selbst: das Tor
@@ -1400,6 +1403,7 @@ sie maßen, was leichter zu messen war:
 | — | **Die Entwürfe und den Prototyp auf dem iPad ansehen.** Kein Tor läuft auf iOS. | ihr |
 | — | Schriftentscheidung: Plus Jakarta Sans oder Nunito, am Gerät | ihr |
 | — | M1: Vite und Svelte. PWA, Service Worker und Ablage stehen bereits. | ich |
+| D31 | Der Beweis für den Lagernamen (F13): zwei Installationen an zwei Pfaden in denselben Browser setzen und nach der zweiten die erste ohne Netz starten. Heute prüft `pwa` nur die Form des Namens. | ich |
 | D28 | `ansicht` auf dem Runner: nur im festgenagelten Playwright-Abbild sinnvoll, samt dort aufgenommener Vorbilder | ich |
 | — | Leitner, Elternbereich, Protokoll | ich |
 
@@ -1572,3 +1576,109 @@ Und das Startbündel ist von 131,7 auf 140,2 KB gewachsen (von 400 erlaubt) —
 die Ratsche hat es gemeldet, und die Antwort ist ja: Vorlesen, Umschalter,
 Forscherbuch, Fortschrittsband, Sterne und Aufkleber sind seit dem letzten
 Stand dazugekommen. Neu festgehalten.
+
+
+---
+
+## Die Temporunde
+
+> *„Was sind denn die ganzen Gegenproben und warum dauert das so lange? Ich
+> möchte gerne schneller Anforderungen live schalten."*
+
+Die Frage hat zwei Dinge zusammengefasst, die getrennt gehören. Gemessen,
+nicht geschätzt — jede Zahl aus einem Lauf auf diesem Rechner:
+
+| Bis LIVE, jede Auslieferung | | Das Ritual, jede 3. Runde | |
+|---|---|---|---|
+| `smoke` | 109 s | `proben` voll | **35,6 min** |
+| `ansicht` | 33 s | davon `smoke` | 30,0 min |
+| `passt` | 30 s | | (16 Proben × 110 s) |
+| `ziehen` | 26 s | | |
+| `lesbarkeit` | 4 s | | |
+| `pwa` + `bauen` | 3 s | | |
+| `inhalt` und der Rest | 1 s | | |
+| **lokal** | **3,5 min** | | |
+| **auf dem Runner** | **4,2 min** | | |
+
+**Die 36 Minuten stehen nie im Weg.** `proben` läuft weder bei der
+Auslieferung noch auf dem Runner — der fährt `tor:runner`. Zwischen „fertig"
+und dem iPhone liegen vier Minuten.
+
+### `proben --geaendert`
+
+Der volle Lauf beweist etwas, das sich in einer Runde mit zwei geänderten
+Dateien meist gar nicht ändern **kann**. Die Grundlinie ist der Commit, der
+im Stand steht — also „was ist seit dem letzten vollständigen Beweis
+passiert". Eine Probe läuft, wenn die Datei, in die sie eingreift, oder das
+Tor, das sie fährt, seither angefasst wurde.
+
+Erster Lauf: **15 von 49 Proben, 36 Sekunden.**
+
+Was sie **nicht** fängt, und das steht als Kommentar daneben: die mittelbare
+Kopplung. Wer `prototyp/spiel.js` ändert, kann eine Probe brechen, die in
+`src/marken/marken.css` eingreift — der Rauchtest verhält sich anders, der
+Eingriff kommt an, und das Tor meldet etwas anderes als erwartet.
+
+Deshalb schreibt die Abkürzung **keinen Stand**: `vollerLauf` ist jetzt
+`NUR.length === 0 && !GEAENDERT`. Täte sie es, wäre `rhythmus` grün, ohne
+dass je ein vollständiger Beweis stattgefunden hätte — die Regel „alle drei
+Runden" wäre still ausgehebelt, und das ist genau die Sorte Loch, die dieses
+Werkzeug aufdecken soll.
+
+### Die Vorschau-Auslieferung
+
+Ein eigener Ablauf auf dem Zweig `vorschau`: nur die Tore **ohne Browser**
+(`inhalt` mit seinen sieben, `spielprobe`, `vergleich`, `budget` — zusammen
+unter drei Sekunden), kein `playwright install` (allein 39 s), Ziel
+`/vorschau/`. Rund anderthalb Minuten von „mach das" bis „schau es dir an".
+
+Drei Dinge, die daran nicht offensichtlich waren:
+
+**Beide Abläufe stellen beide Hälften zusammen.** Pages kennt eine Seite je
+Verzeichnis. Täte es nur einer, löschte jede Auslieferung die Vorschau,
+während jemand sie ansieht — und jede Vorschau setzte das Spiel der Kinder
+auf einen älteren Stand zurück. `tools/seite-zusammenstellen.mjs` holt die
+jeweils andere Hälfte aus ihrem Zweig in einen Nebenbaum und baut sie dort.
+
+**Die Marke steht in der gebauten Seite, nicht in der App.** Ein Zweig im
+Programm, den nur die Vorschau nimmt, wäre Code, den kein Tor je sieht — und
+das ausgelieferte Spiel trüge ihn ungenutzt mit.
+
+**Das Tor `doku` hält die Abkürzung kurz.** Die Auslieferung muss weiter die
+volle Kette fahren, die Vorschau darf nicht auf `main` laufen, und was sie
+nicht prüft, muss namentlich in ihr stehen. Beim ersten Lauf fehlte
+`rhythmus` in der Liste.
+
+### F13: der Service Worker räumte fremde Lager ab
+
+Ein echter Fehler, den es ohne die Vorschau nie gegeben hätte — und der mit
+ihr beim ersten Blick auf `activate` sichtbar wurde:
+
+```js
+if (name.startsWith('smart-kids-') && name !== LAGER) await caches.delete(name);
+```
+
+Solange es **eine** Installation gab, war das richtig: aufräumen, was von
+älteren Fassungen übrig ist. Cache Storage gilt aber je **Herkunft**, nicht
+je Geltungsbereich. Mit `/` und `/vorschau/` gibt es zum ersten Mal zwei —
+und jeder Blick in die Vorschau hätte dem ausgelieferten Spiel den
+Offline-Vorrat gelöscht. Beim nächsten Start im Zug wäre es nicht mehr da
+gewesen.
+
+Der Lagername trägt jetzt den Pfad (`smart-kids-Smart-Kids-vorschau-`…).
+Das Tor `pwa` prüft die **Form** des Namens — und sagt in seinem Kommentar
+ausdrücklich, dass es die Form prüft und nicht die Wirkung. Der Beweis wäre,
+zwei Installationen an zwei Pfaden in denselben Browser zu setzen und nach
+der zweiten die erste ohne Netz zu starten. Steht unten als offener Punkt.
+
+### Drei neue Gegenproben
+
+| Probe | Tor |
+|---|---|
+| die Vorschau verschweigt ein Tor, das sie nicht fährt | `doku` |
+| die Vorschau läuft auf main | `doku` |
+| der Lagername vergisst den Ort | `pwa` |
+
+**49 Gegenproben, alle schlagen an.** Und die Regel hat sofort zugebissen:
+nach dem Hinzufügen war die Kette rot — *„Es stehen 49 Proben im Baum,
+festgehalten sind 46"*. Neue Proben dürfen nicht ungefahren mitlaufen.

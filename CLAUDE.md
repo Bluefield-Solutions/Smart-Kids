@@ -22,6 +22,11 @@ npm run tor        die ganze Kette. Muss vor jedem Push auf main grün sein.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Verlangt einen sauberen Baum — sie arbeitet mit
                    `git checkout` und löschte sonst die frische Arbeit.
+                   Voll 35,6 min; `-- --geaendert` fährt nur die Proben,
+                   deren Datei oder Tor seit dem letzten vollen Lauf
+                   angefasst wurde — meist unter einer Minute. Die
+                   Abkürzung schreibt KEINEN Stand, sonst wäre die Regel
+                   „alle drei Runden" still ausgehebelt.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html (zum Ansehen)
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
@@ -35,6 +40,24 @@ Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` ·
 `schrift` · `symbol` · `doku` → `spielprobe` → `vergleich` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
+
+### Zwei Wege ins Netz
+
+| Zweig | Was läuft | Wohin | Dauer |
+|---|---|---|---|
+| `main` | die volle Kette | `/` — dort spielen die Kinder | 4,2 min |
+| `vorschau` | nur die Tore ohne Browser | `/vorschau/`, mit Marke im Bild | ~1,5 min |
+
+Die Vorschau ist zum **Ansehen**, nicht zum Ausliefern: `passt`,
+`lesbarkeit`, `ziehen`, `ansicht`, `pwa`/`offline` und `smoke` laufen dort
+nicht. Was sie nicht prüft, steht namentlich in `vorschau.yml`, und das Tor
+`doku` schlägt an, wenn ein Tor dazukommt, das dort weder gefahren noch
+genannt ist.
+
+Beide Abläufe stellen **beide** Hälften zusammen
+(`tools/seite-zusammenstellen.mjs`). Täte es nur einer, löschte jede
+Auslieferung die Vorschau — und jede Vorschau setzte das ausgelieferte
+Spiel zurück.
 
 Diese Aufzählung wird **verglichen, nicht geglaubt**: das Tor `doku` legt
 sie neben `npm run tor` in `package.json` und neben die Überschriften der
