@@ -252,6 +252,52 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   }
 }
 
+/* Jede Pause, die einen Bildschirm weiterschaltet, geht durch `schauPause`.
+ *
+ * Der Anlass ist gemessen, nicht ausgedacht: der Kartenweg hatte seine
+ * beiden Pausen als nackte `1600` und `2400` im Rumpf stehen. `?flott`
+ * kuerzte die eine Pause des Rechenwegs und keine der beiden hier -
+ * `quer-ende-eltern` brauchte mit und ohne Schalter dieselben 15,2 s, und
+ * der Rauchtest wartete auf jeder Kartenaufgabe 1,6 s, die er nicht prueft.
+ * Aufgefallen ist es erst, als jemand die Zeit MASS.
+ *
+ * Ein Schalter, der die Haelfte seiner Zusage haelt, sieht von aussen aus
+ * wie einer, der sie ganz haelt. Deshalb wird hier nicht die Zahl geprueft,
+ * sondern die TUER: wer einen Bildschirm nach einer Wartezeit wechselt,
+ * nimmt sie.
+ */
+{
+  const quelle = fs.readFileSync('prototyp/spiel.js', 'utf8');
+  /* Jedes `setTimeout(` samt SEINEN GANZEN Argumenten - also bis zur
+   * zugehoerigen Klammer, nicht bis zur ersten. Der erste Anlauf nahm
+   * `[\s\S]*?\);` und hoerte mitten im Rueckruf auf: die Verzoegerung, um
+   * die es geht, stand gar nicht mehr im Treffer, und die Pruefung meldete
+   * zwei Fehler ueber eine Stelle, die in Ordnung war. */
+  const rufe = [];
+  for (let i = quelle.indexOf('setTimeout('); i >= 0;
+           i = quelle.indexOf('setTimeout(', i + 1)) {
+    let tiefe = 0, j = i + 'setTimeout'.length;
+    for (; j < quelle.length; j++) {
+      if (quelle[j] === '(') tiefe++;
+      else if (quelle[j] === ')' && --tiefe === 0) break;
+    }
+    rufe.push(quelle.slice(i + 'setTimeout('.length, j));
+  }
+  // Die, die einen Bildschirm wechseln: `zeige(` im Rueckruf oder der
+  // Fortschaltruf `weiter` als Rueckruf selbst.
+  const treffer = rufe.filter(t => /\bzeige\(|^\s*weiter\s*,/.test(t));
+  pruefe(treffer.length >= 3, `Nur ${treffer.length} Bildschirmwechsel nach einer Pause `
+    + 'gefunden — der Ausdruck greift ins Leere, die Prüfung beweist nichts');
+  const nackt = treffer.filter(t => !/schauPause\(|LOBPAUSE/.test(t));
+  for (const t of nackt)
+    pruefe(false, 'Ein Bildschirmwechsel wartet an `schauPause` vorbei: '
+      + `„${t.replace(/\s+/g, ' ').slice(0, 90)}…" — `
+      + '`?flott` kürzt ihn dann nicht, und kein Tor sagt etwas');
+  pruefe(/const schauPause = \(ms\) => FLOTT/.test(quelle),
+    '`schauPause` steht nicht mehr in spiel.js — dann hängt keine Pause mehr am Schalter');
+  console.log(`    Schaupausen: ${treffer.length} Bildschirmwechsel, alle über \`schauPause\``);
+}
+
 // Die Gebietszahl wird GEZAEHLT, nicht geschrieben.
 /* Die Bundeslaender werden an der BUNDESLAENDER-Liste gezaehlt.
  *

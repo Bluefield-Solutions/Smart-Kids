@@ -552,13 +552,31 @@ const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
  * nicht an ihn heran. Er ist fuer die Tore da, und was er aendert, ist
  * ausdruecklich keine Logik, sondern eine Wartezeit.
  *
- * Was damit NICHT mehr geprueft wird, wenn er gesetzt ist: dass die Pause
- * wirklich 2,6 s dauert. Genau dafuer laesst der Rauchtest einen
- * Durchgang ohne den Schalter laufen (Regel 13 - was man wegnimmt, prueft
- * man nicht mehr).
+ * Was damit NICHT geprueft wird: wie LANG eine Pause ist. Hier stand, der
+ * Rauchtest lasse dafuer einen Durchgang ohne den Schalter laufen - das
+ * stimmt nicht, er setzt ihn auf jeder Seite. Kein Tor misst diese Zahlen;
+ * sie werden angesehen, nicht gemessen. Ein Kommentar, der eine Pruefung
+ * behauptet, die es nicht gibt, ist schlimmer als keiner: er haelt genau
+ * die Frage fuer erledigt, die offen ist.
  */
 const FLOTT = new URLSearchParams(location.search).has('flott');
-const LOBPAUSE = FLOTT ? 900 : 2600;
+/* Jede Pause, in der nur ANGESEHEN wird, kommt hier durch.
+ *
+ * Drei Stueck, drei Laengen, ein Sinn: das Kind soll das Lob oder die
+ * Aufloesung lesen, bevor der naechste Bildschirm kommt. `?flott` deckelt
+ * sie alle auf 900 ms.
+ *
+ * Dass das eine Funktion ist und keine drei Zahlen, hat einen GEMESSENEN
+ * Grund. Der Kartenweg hatte seine beiden Pausen als nackte `1600` und
+ * `2400` im Rumpf stehen und war dem Schalter damit entgangen -
+ * `quer-ende-eltern` brauchte mit und ohne `?flott` dieselben 15,2 s.
+ * Gemerkt hat es niemand, weil der Rechenweg brav kuerzer wurde: ein
+ * Schalter, der die Haelfte seiner Zusage haelt, sieht aus wie einer, der
+ * sie ganz haelt. Wer eine neue Schaupause braucht, holt sie hier - und
+ * `npm run inhalt` schlaegt an, wenn doch wieder eine Zahl danebenfaellt.
+ */
+const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;
+const LOBPAUSE = schauPause(2600);
 /* 900 ms, nicht 250.
  *
  * Bei 250 war das Lob weg, bevor der Rauchtest es ansehen konnte - er
@@ -2246,9 +2264,11 @@ function spielschirm(){
       fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
     }));
 
+    // Der Kartenweg zeigt sein Lob auf dem Spielschirm selbst, also kuerzer
+    // als der Rechenweg - aber durch dieselbe Tuer (siehe `schauPause`).
     if (erledigt) setTimeout(()=>{ st.i++;
       if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm);
-    }, ergebnis==='fast' ? 2400 : 1600);
+    }, schauPause(ergebnis==='fast' ? 2400 : 1600));
   }
 
   // Erst die Karte messen, dann die Trefferflaechen - die haengen an ihrem
@@ -2966,7 +2986,7 @@ async function elternbereich(){
     // Wer sich selbst geloescht hat, kann hier nicht stehen bleiben - der
     // Kopf traegt den eigenen Namen und der Stand ist fort. Wer ein
     // ANDERES Profil geloescht hat, will die Zahlen daneben weiter sehen.
-    setTimeout(()=>zeige(id===P.id ? profilwahl : elternbereich),900);
+    setTimeout(()=>zeige(id===P.id ? profilwahl : elternbereich),schauPause(900));
   });
   return s;
 }

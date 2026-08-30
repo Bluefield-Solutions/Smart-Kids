@@ -14,30 +14,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
-import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere } from './chromium.mjs';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
 // nichts zurueck und der Prototyp startet jedesmal anders. Also derselbe
-// winzige Server wie im Rauchtest.
+// winzige Server wie im Rauchtest -- und zwar WIRKLICH derselbe.
+//
+// Hier stand die siebte Abschrift, mit genau dem Fehler, den der Kommentar
+// ueber `serviere` beschreibt: `q.url === '/' ? '/index.html' :
+// q.url.split('?')[0]` liefert fuer `/?flott` den Pfad `/`, also ein
+// Verzeichnis, also 404. Sechs Abschriften waren zusammengelegt worden,
+// diese eine nicht -- und sie ist erst aufgefallen, als die Adresse zum
+// ersten Mal eine Frage trug. Regel 15.
 // Fotografiert wird dist/ - das, was ausgeliefert wird, samt eigener
 // Schrift. Solange die Aufnahmen an prototyp/spiel.html hingen, hielten sie
 // eine Fassung fest, die niemand bekommt.
-const wurzel = path.join(process.cwd(), 'dist');
-const server = http.createServer((q, a) => {
-  const f = path.join(wurzel, q.url === '/' ? '/index.html' : q.url.split('?')[0]);
-  if (!f.startsWith(wurzel) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) {
-    a.statusCode = 404; return a.end();
-  }
-  const typ = f.endsWith('.html') ? 'text/html; charset=utf-8'
-    : f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'text/javascript'
-    : f.endsWith('.png') ? 'image/png' : f.endsWith('.woff2') ? 'font/woff2'
-    : f.endsWith('.webmanifest') ? 'application/manifest+json' : 'text/plain';
-  a.setHeader('content-type', typ);
-  a.end(fs.readFileSync(f));
-});
-await new Promise(r => server.listen(0, r));
-const SPIEL = `http://127.0.0.1:${server.address().port}/`;
+const { server, adresse: SPIEL } = await serviere(path.join(process.cwd(), 'dist'));
 
 // Dieses Tor laeuft NUR ORTSFEST, nicht auf dem Runner.
 //
@@ -467,12 +459,28 @@ for (const a of MEINE) {
     // Frische Ablage je Aufnahme: der Keim kommt aus dem gespeicherten
     // Sitzungszaehler, ein Rest von vorher wuerde eine andere Aufgabe
     // ziehen und das Vorbild bei jedem Lauf verschieben.
-    await seite.goto(SPIEL, { waitUntil:'domcontentloaded' });
+    /* Wer eine ganze Sitzung durchspielt, spielt sie mit `?flott`.
+     *
+     * Gemessen: `quer-ende` brauchte 25,5 s und `quer-ende-eltern` 21,2 s,
+     * alle zwanzig anderen Aufnahmen zusammen 8 s. Der Posten ist die
+     * Lobpause der App — 2,6 s nach jeder richtigen Antwort, sechs
+     * Aufgaben je Durchlauf, zweimal.
+     *
+     * `?flott` kuerzt genau diese Pause auf 900 ms und sonst nichts (siehe
+     * `LOBPAUSE` in spiel.js). Abgebildet wird der ENDbildschirm, also ein
+     * Zustand, der nach der letzten Pause anfaengt — was die Pause dauert,
+     * steht auf keinem dieser Vorbilder. Fuer die anderen Aufnahmen bleibt
+     * der Schalter aus: `quer-spiel` haelt das Lob selbst fest.
+     *
+     * Abgeleitet aus `tun:'durch'`, nicht als eigene Spalte: sonst waere es
+     * bei der naechsten Sitzungsaufnahme wieder zu vergessen. */
+    const adresse = SPIEL + (a.tun === 'durch' ? '?flott' : '');
+    await seite.goto(adresse, { waitUntil:'domcontentloaded' });
     await seite.evaluate(async () => {
       for (const d of await indexedDB.databases()) indexedDB.deleteDatabase(d.name);
       localStorage.clear();
     });
-    await seite.goto(SPIEL, { waitUntil:'domcontentloaded' });
+    await seite.goto(adresse, { waitUntil:'domcontentloaded' });
     await seite.waitForSelector('[data-profil="fiona"]');
     // Ohne diese Pruefung haelt das Vorbild irgendwann die Systemschrift
     // fest, und niemand merkt es - genau so ist die erste Fassung dieser
