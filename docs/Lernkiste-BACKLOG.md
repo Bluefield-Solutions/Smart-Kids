@@ -381,6 +381,11 @@ richtigen Antwort. Angefasst werden die Länder, und die sind über
 
 ## Offen aus der Ton-Runde
 
+**Erledigt** (letzte Runde): „aussen → asien" ist behoben — die Kölner
+Phonetik gibt Diphthongen einen eigenen Code, Falsch-Positiv 2,3 → 0,0 %.
+Der Endbildschirm der Eltern hat ein Vorbild. Und die beiden Hälften des
+Bildvergleichs werden nach **Aufwand** geteilt statt reihum.
+
 **Erledigt:** die Siegsterne sind bei sachlichem Ton weg — wegen
 Redundanz, nicht wegen Geschmack: „12 von 12 auf Anhieb richtig" steht eine
 Zeile tiefer und sagt dasselbe genauer. Im Kopf während der Sitzung bleiben

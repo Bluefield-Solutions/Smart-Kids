@@ -3666,3 +3666,79 @@ namentlich da — „aussen → asien", seit K1 — und alles andere ist rot.
 
 Der Korpus hat jetzt 92 Treffer- und 70 Nichttreffer-Eingaben (vorher 61
 und 43).
+
+## „aussen" ist nicht mehr „Asien"
+
+Die letzte bekannte Fehlannahme, seit K1 im Tor vermerkt: ein Kind sagt
+„aussen", das Spiel wertet **Asien** als richtig. Bisher stand sie als
+geduldete Ausnahme in der Ratsche. Nachgerechnet, statt sie weiter zu
+dulden:
+
+| | Kölner Code |
+|---|---|
+| `aussen` | **086** |
+| `asien` | **086** |
+| `aasien` (Variante) | **086** |
+
+Die Kölner Phonetik gibt jedem Vokal die 0 und streicht sie danach bis auf
+die erste. **„au" wird damit zu nichts.** Und weil die Variante „aasien"
+auch noch genau so lang ist wie „aussen", fiel die Längenstrafe weg — der
+Abstand landete bei 0,1167 und damit unter der Grenze für einen *sicheren*
+Treffer (0,12). Nicht knapp daneben: knapp darunter.
+
+### Ein Diphthong ist ein Laut, kein Vokalpaar
+
+Er bekommt jetzt einen Code, der die Nullstreichung überlebt:
+
+| | Code | warum |
+|---|---|---|
+| `au` | **A** | „aussen" ist nicht „Asien" |
+| `eu`, `aeu`, `oi` | **9** | „Europa" **ist** „Oiropa" — derselbe Laut, dieselbe Zeile |
+
+Das zweite ist kein Beiwerk: genau dafür ist eine Phonetik da. „Oiropa"
+steht als Aussprachevariante in den Daten, weil ein Kind es so sagt, und
+sie muss weiter passen.
+
+**„ei" und „ai" bleiben absichtlich draußen.** Im Deutschen stehen sie oft
+*nicht* für einen Diphthong — „Uk-ra-i-ne" —, und die Variante „ukrajine"
+hängt daran. Gemessen: mit ihnen fällt sie durch. Eine Regel, die
+sprachlich stimmt und die Daten bricht, ist die falsche Regel.
+
+### Gemessen
+
+**Falsch-Positiv 2,3 % → 0,0 %** (0 von 70). Trefferquote bleibt bei
+100 %, drei Rückfragen wie vorher. Die Paare, die gleich bleiben mussten,
+bleiben gleich: `australien`/`austraaljen`, `europa`/`oiropa`,
+`deutschland`/`doitschland`. Alle 213 Formen aus den Daten fallen weiter
+auf ihr eigenes Gebiet.
+
+Die Ausnahmeliste im Tor steht damit **leer** da — sichtbar leer, nicht
+gelöscht. Wer wieder etwas einträgt, soll sehen, dass er eine Ausnahme
+*macht*.
+
+## Der Endbildschirm der Eltern — und was er die schnelle Bahn gekostet hat
+
+Er ist ein anderer als der der Kinder (keine Siegsterne, „Sitzung
+beendet.") und hatte kein Vorbild. Jetzt schon: gespielt werden die
+**Kontinente**, weil das sechs Aufgaben sind und nicht zwölf wie beim
+großen Einmaleins — und **getippt**, weil das Profil nie eine Auswahl
+bekommt. `durchspielen` antwortet dafür so, wie das Profil antwortet.
+
+### Und dann war die schnelle Bahn 13 Sekunden langsamer
+
+56 s statt 43. Der Grund war die Aufteilung: reihum geschnitten standen
+**beide** Aufnahmen, die eine ganze Sitzung durchspielen, in derselben
+Hälfte — 52,7 gegen 30,8 Sekunden. Die Kommentarzeile am Schnitt sagte,
+reihum sei besser als ein Blockschnitt, „weil die teuren Aufnahmen
+beieinander stehen". Das stimmt. Es verteilt sie aber auch nur zufällig,
+und der Zufall kippte mit der einundzwanzigsten Aufnahme.
+
+Geteilt wird jetzt **nach Aufwand**: gierig, die schwerste zuerst, immer
+in die Hälfte, die gerade am leichtesten ist. Der Aufwand steht der
+Aufnahme an und braucht keine Stoppuhr, die veraltet — `tun:'durch'` spielt
+eine Sitzung, eine `spiel`-Aufnahme spielt sich einmal hin, der Rest ist
+ein Bildschirm.
+
+**46 s bei 39,4 gegen 43,1.** Gegenüber dem Stand vor dieser Runde (43 s
+bei 20 Aufnahmen) kostet die neue Aufnahme damit drei Sekunden statt
+dreizehn.

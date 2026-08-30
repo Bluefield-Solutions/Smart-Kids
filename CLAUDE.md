@@ -22,7 +22,7 @@ Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run schnell`** | bei **jeder** Änderung | **~36 s** | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
+| **`npm run schnell`** | bei **jeder** Änderung | **~46 s** (gemessen, 21 Aufnahmen) | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
 | `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 5:04) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
@@ -56,7 +56,7 @@ ausgelöst hat. Die Frist ist richtig; falsch war, **wer sie bezahlt**.
 ## Befehle
 
 ```
-npm run schnell    DIE NORMALE RUNDE. ~36 s. Siehe oben.
+npm run schnell    DIE NORMALE RUNDE. ~46 s. Siehe oben.
 npm run tor        die ganze Kette. Der Runner fährt sie ohnehin bei jedem
                    Push; hier nur, wenn du sie vorher sehen willst.
 npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
@@ -85,9 +85,12 @@ npm run smoke      spielt die App im Browser durch. `-- --nur=spielen`
                    ebene4 · durchgang.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
-                   `-- --teil=0/2` faehrt jede zweite Aufnahme; `schnell`
+                   `-- --teil=0/2` faehrt die eine Haelfte - geteilt nach
+                   AUFWAND, nicht reihum; `schnell`
                    fuehrt beide Haelften nebeneinander und zaehlt nach,
-                   dass zusammen alle sechzehn geprueft sind.
+                   dass zusammen ALLE geprueft sind (die Zahl steht nicht hier -
+                   sie stand als „sechzehn" da, waehrend es einundzwanzig
+                   waren; `schnell` zaehlt sie selbst nach).
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
                    im SELBEN Commit einchecken.
 npm run backen     Karten neu rechnen
