@@ -3900,3 +3900,57 @@ Zwei Fehlversuche unterwegs, beide gemessen und nicht geraten:
 Dazu ein Werkzeug, das gefehlt hat: `node tor/ansicht.mjs --nur=quer-vorlauf`
 nimmt nur die genannten Bildschirme auf. Am Bildschirm zu arbeiten heißt, ihn
 oft anzusehen — fünf Sekunden statt einer Minute.
+
+---
+
+## Runde: das Buch braucht keinen dritten Zustand — aber sein Band ist zu klein
+
+Die Frage war: seit `hoechstes` zeigt das Forscherbuch Aufkleber, deren
+Gegenstand heute wieder in Fach 1 steht, genauso wie sichere. Braucht es
+einen dritten, leisen Zustand?
+
+### Gemessen: nein
+
+Ein Jahr Spiel, vier Sitzungen die Woche, 85 % richtig:
+
+| Ebene | Aufkleber im Schnitt | davon wackelt | davon **sicher** |
+|---|---|---|---|
+| Kontinente | 6 | 2 (28 %) | 3 |
+| Bundesländer | 16 | 2 (16 %) | 10 |
+| Plus und Minus | 73 | 9 (14 %) | 50 |
+| Leas Reihen | 111 | 9 (9 %) | 86 |
+
+Zwei Zahlen entscheiden. Erstens: **das Siegel gibt es schon.** Zwischen
+50 und 86 % der Aufkleber tragen es, und es sagt genau das, was ein
+dritter Zustand sagen würde — nur andersherum und ohne Vorwurf. Ein
+Aufkleber ohne Siegel ist noch nicht sicher; ob er auf dem Weg nach oben
+oder gerade zurückgefallen ist, ändert für ein Kind nichts.
+
+Zweitens: **die Eltern haben die Liste bereits.** Der Verdacht war, ihre
+„Wackelkandidaten" (die fünf mit den meisten Fehlversuchen, aus dem
+Protokoll) sagten etwas anderes als der Leitner-Stand (was heute
+zurückgefallen ist). Nachgespielt über ein Jahr, mit Gegenständen
+unterschiedlicher Schwierigkeit: **4 von 5** stehen auf beiden Listen. Wer
+oft danebenliegt, fällt auch zurück.
+
+Ein Zeichen, das nichts ändert, ist Dekoration — und aus dem Buch war die
+graue To-do-Wand schon einmal bewusst entfernt worden. Also bleibt es bei
+zwei Zuständen: **Aufkleber** (hast du gefunden) und **Siegel** (sitzt).
+
+### Was das Messen stattdessen gefunden hat
+
+Beim Nachsehen auf 844 × 390: das Buch rollte mit **zwei** Aufklebern
+schon — 358 Punkte Inhalt bei 322 sichtbaren. Die Vorschau unter „Als
+Nächstes" stand zur Hälfte unter dem Rand: zwei graue Halbkarten, von
+denen ein Kind nicht weiß, dass darunter noch etwas ist.
+
+Die Bildhöhen (96 und 72 Punkte) sind für den Schreibtisch gewählt. Im
+kurzen Querformat sind es jetzt 64 und 48; damit passt das fast leere Buch
+in einen Bildschirm. Dass ein **volles** Buch rollt, bleibt richtig — ein
+Album wächst.
+
+`passt` konnte das nicht melden: dort darf `.rollen` rollen. Geprüft wird
+es jetzt im Rauchtest, und zwar als Regel und nicht als Punktzahl —
+*solange höchstens acht Karten drin sind, steht nichts unter dem Rand*.
+Die Prüfung meldet auch, wenn es mehr als acht werden: dann prüft sie
+nicht mehr, was sie zu prüfen behauptet.

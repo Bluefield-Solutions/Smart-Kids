@@ -852,6 +852,20 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     --r3:8px; --r4:12px; --r6:14px; --r8:18px; --r12:28px; --r16:36px; --r24:48px;
   }
   .kopf{padding:var(--r2) var(--r4)}
+  /* Das Forscherbuch auf dem kurzen Querformat.
+   *
+   * Gemessen auf 844 x 390 mit ZWEI Aufklebern und zwei Vorschaukarten:
+   * 358 Punkte Inhalt in 322 sichtbaren. Das Buch rollte also schon beim
+   * zweiten Aufkleber, und die Vorschau unter „Als Nächstes" stand zur
+   * Haelfte unter dem Rand - zwei graue Halbkarten, von denen ein Kind
+   * nicht weiss, dass darunter noch etwas ist.
+   *
+   * Dass ein VOLLES Buch rollt, ist richtig; ein Album waechst. Dass ein
+   * fast leeres rollt, ist es nicht. Die Bildhoehen sind hier fuer den
+   * Schreibtisch gewaehlt (96 und 72 Punkte) und auf dem Telefon zu gross;
+   * `passt` misst den Ueberlauf nicht, weil `.rollen` rollen DARF. */
+  .kleber.gross .aufkleber svg{height:64px}
+  .kleber.gross.vorschau .aufkleber svg{height:48px}
   .frage{padding:0 var(--r4) var(--r1)}
   .etikett{min-height:44px}
   .titel{font-size:var(--s2)}

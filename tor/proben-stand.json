@@ -264,6 +264,14 @@
       "commit": "cd25a1263d4c5ac7e289e00ee32122a8ed92b1ff",
       "zeit": "2026-08-30"
     },
+    "der leere Kopf nimmt wieder Platz weg": {
+      "commit": "db56d119fcee8225e673668588dd2a1b5265a938",
+      "zeit": "2026-08-30"
+    },
+    "die Pause warnt nicht mehr vor „von vorne\"": {
+      "commit": "db56d119fcee8225e673668588dd2a1b5265a938",
+      "zeit": "2026-08-30"
+    },
     "der Vorlauf verteilt die Karten wieder auf acht Spuren": {
       "commit": "d94c21924d599e617598cbaa10912114ddbaaf09",
       "zeit": "2026-08-30"

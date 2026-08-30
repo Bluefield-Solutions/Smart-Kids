@@ -1057,6 +1057,44 @@ if (laeuft('ablage')) try {
     }
   }
 
+  /* --- Ein fast leeres Forscherbuch rollt nicht ----------------------
+   *
+   * Auf dem Zielgeraet (844 x 390) stand das Buch mit ZWEI Aufklebern
+   * schon auf 358 Punkten Inhalt bei 322 sichtbaren: die Vorschau unter
+   * „Als Nächstes" war zur Haelfte abgeschnitten - zwei graue Halbkarten,
+   * von denen ein Kind nicht weiss, dass darunter noch etwas ist.
+   *
+   * Dass ein VOLLES Buch rollt, ist richtig; ein Album waechst. Geprueft
+   * wird deshalb nicht „rollt nie", sondern „rollt nicht, solange wenig
+   * drin ist". `passt` kann das nicht sagen: dort darf `.rollen` rollen.
+   */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.click('[data-profil="fiona"]');
+    await zurEbenenwahl(q, 'bundeslaender');
+    await q.click('#buch');
+    await q.waitForSelector('.schirm.da .aufkleber');
+    await bis(q, () => !!document.querySelector('.schirm.da .rollen'), 4000);
+    const b = await q.evaluate(() => {
+      const r = document.querySelector('.schirm.da .rollen');
+      return { da: document.querySelectorAll('.schirm.da .aufkleber').length,
+               sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight) };
+    });
+    console.log(`  Buch auf dem Zielgerät:     ${b.da} Karten, ${b.ganz} Punkte Inhalt `
+      + `in ${b.sichtbar} sichtbaren`);
+    // Die Grenze ist die Zahl der Karten, nicht eine Punktzahl: acht Karten
+    // passen auf 844 x 390 in zwei Reihen, und so lange soll nichts unter
+    // dem Rand stehen.
+    if (b.da <= 8 && b.ganz > b.sichtbar + 2)
+      merke('forscherbuch', new Error(`das Buch rollt schon bei ${b.da} Karten `
+        + `(${b.ganz} Punkte Inhalt, ${b.sichtbar} sichtbar) — die Vorschau steht halb `
+        + 'unter dem Rand'));
+    if (b.da > 8)
+      merke('forscherbuch', new Error(`${b.da} Karten im Buch — die Prüfung greift `
+        + 'nicht mehr, sie prüft nur ein fast leeres Buch'));
+    await q.close();
+  }
+
   /* --- Eine offene Kontinentrunde geht nicht wieder zu ----------------
    *
    * Fionas Kontinente kommen in zwei Runden: vier zuerst, zwei weitere,
