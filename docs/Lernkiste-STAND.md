@@ -3503,3 +3503,69 @@ verschiebt sich etwas darüber, zeigt die Aufnahme weiter dasselbe.
 Auf `quer-eltern-tabellen` steht unter „Zuletzt geübt" die Zeile
 *Eltern · 12 × 13 · richtig*. Das ist der Fund aus R7, jetzt in einem
 Vorbild festgehalten: vorher stand dort `g12*13`.
+
+## Die Fahne bricht um — und die App redet nicht mehr an jedem Profil vorbei
+
+Beides folgt aus der letzten Runde: seit der Rauchtest die Größe misst, die
+er nennt, war die Fahne sichtbar zu breit; und seit der Endbildschirm einen
+Ton hat, war die Frage offen, wer sonst noch angesprochen wird.
+
+### Der Umbruch
+
+Auf dem Zielgerät ist die Deutschlandkarte rund **170 Bildschirmpunkte
+breit**, „Mecklenburg-Vorpommern" bei 21 px Schrift **260**. Die Fahne ließ
+sich dann nicht mehr in die Karte klemmen: die Korrektur nach rechts und die
+nach links schoben gegeneinander, die letzte gewann, und der Name hing links
+heraus. Kein Rundungsfehler — eine Klemmung, die zwei widersprüchliche
+Bedingungen nacheinander erfüllt, erfüllt am Ende nur eine.
+
+Umgebrochen wird am **Bindestrich** oder an einer **Lücke**, und zwar an der
+Stelle, die der Mitte am nächsten liegt: „Mecklenburg-" / „Vorpommern", nicht
+„Mecklenburg-Vorpom-" / „mern". Der Bindestrich bleibt am Ende der ersten
+Zeile, wie es sich gehört.
+
+**Ein einzelnes langes Wort wird nicht getrennt.** Dafür bräuchte es ein
+Wörterbuch, und eine falsche Trennfuge liest sich schlimmer als eine breite
+Fahne. Für diesen Fall steht die Fahne jetzt **mittig über** statt auf einer
+Seite heraus — auf jeder Seite gleich viel ist das kleinere Übel.
+
+Gemessen wird gegen die **Karte**, nicht gegen den Bildschirm: neben der
+Karte stehen die Antwortknöpfe.
+
+Von den sechzehn Bundesländern brechen zwei um (Schleswig-Holstein,
+Mecklenburg-Vorpommern). Auf der Weltkarte keines — sie ist breit genug, und
+alle zwanzig Vorbilder blieben ohne eine Änderung grün. Der Umbruch greift
+genau dort, wo er muss.
+
+Aus der Auskunft *„1 davon neben der Karte"* ist eine **Zusage** geworden:
+verlässt eine Fahne die Karte, meldet es der Rauchtest mit Foto. Kommt
+irgendwann ein Name dazu, der sich nicht trennen lässt, fällt das dort auf —
+Schweigen wäre die schlechtere Antwort.
+
+### Zwei Achsen
+
+Dreizehn Stellen riefen `vorlesen` unbedingt und damit an jedem Profil
+vorbei. Sie rufen jetzt `sagen`, und die beiden Eigenschaften meinen
+Verschiedenes:
+
+| | was es heißt | Wirkung |
+|---|---|---|
+| `vorlesen` | „lies mir die **Aufgabe** vor, ich kann noch nicht lesen" | eine Hilfe — nur Fiona braucht sie |
+| `ton` | „wie redet die App mit mir, wenn sie **von sich aus** redet" | kindlich darf jubeln, sachlich schweigt |
+
+Fiona hört alles. Lea hört Lob und Hinweise, aber keine Aufgabenansage — sie
+liest. Die Eltern hören nichts.
+
+**Was ausdrücklich nicht dazugehört:** was jemand angetippt hat, um es zu
+hören — die Karten im Vorlauf, die Aufkleber im Buch, die Stimmprobe im
+Elternbereich. Drei Stellen, und sie bleiben unbedingt. Eine Bitte wird
+nicht vom Profil beantwortet.
+
+Geprüft wird beides am Bildschirm: nach einer richtigen Antwort darf bei
+„sachlich" weder ein Ausrufezeichen stehen noch überhaupt etwas gesprochen
+worden sein. Gelesen wird nach der Antwort — auf ein Ausbleiben kann man
+nicht warten.
+
+**Die Entscheidung kam vom Nutzer.** Ich hatte gefragt, weil beide Lesarten
+vertretbar sind und die falsche Lea das Lob genommen hätte, das sie heute
+hört.

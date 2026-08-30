@@ -381,27 +381,24 @@ richtigen Antwort. Angefasst werden die Länder, und die sind über
 
 ## Offen aus der Ton-Runde
 
-**Die Fahne bricht nicht um.** Auf dem Zielgerät (844 × 390) ist die
-Deutschlandkarte rund 170 px breit; „Mecklenburg-Vorpommern" ist bei 21 px
-Schrift 260 px lang. Die Fahne steht dann neben der Karte — sichtbar,
-lesbar, mit Linie zum Gebiet, und der Rauchtest ist damit einverstanden.
-Schöner wäre ein Umbruch (`Mecklenburg-` / `Vorpommern`, rund 140 px) oder
-eine Schrift, die mitschrumpft. Das ist eine eigene Runde und eine
-Gestaltungsfrage, keine Reparatur.
-
 **Der Endbildschirm der Eltern trägt weiter drei goldene Sterne** und einen
 Knopf „Forscherbuch". Die Sterne sind die Wertung der Sitzung, das Buch der
 Name der Sammlung in der ganzen App — beides je Profil umzubenennen hieße,
 das Vokabular zu spalten. Zur Entscheidung, nicht zur Reparatur.
 
-**Dreizehn Stellen sprechen an jedem Profil vorbei.** Gezählt, nicht
-geschätzt: `vorlesen(...)` wird dreizehnmal unbedingt gerufen, wo
-`ansagen(...)` das Profil fragen würde —
-die Bestätigung des Namens, die Nachfrage vor dem Löschen, der Hinweis beim
-Ziehen, das Lob nach jeder Antwort. Drei weitere sind RICHTIG unbedingt —
-dort hat jemand ausdrücklich auf etwas getippt, um es zu hören. Eine der
-dreizehn (der Endbildschirm) ist in dieser Runde umgestellt. Der Rest ist eine Entscheidung: Lea trägt
-`vorlesen: false`, hört aber jedes Lob. Ist das gewollt?
+**Erledigt:** der Umbruch der Namensfahne und die dreizehn Sprechstellen.
+Die Fahne bricht am Bindestrich oder an einer Lücke um, an der Stelle, die
+der Mitte am nächsten liegt. Das Sprechen läuft über **zwei Achsen**, vom
+Nutzer so entschieden:
+
+| | was es heißt | wer |
+|---|---|---|
+| `vorlesen` | „lies mir die **Aufgabe** vor, ich kann noch nicht lesen" | nur Fiona |
+| `ton` | „wie redet die App mit mir, wenn sie **von sich aus** redet" | kindlich jubelt, sachlich schweigt |
+
+Fiona hört alles, Lea Lob und Hinweise aber keine Aufgabenansage, die
+Eltern nichts. Was jemand ausdrücklich angetippt hat, um es zu hören,
+bleibt unbedingt: eine Bitte wird nicht vom Profil beantwortet.
 
 ---
 
