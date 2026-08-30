@@ -381,10 +381,11 @@ richtigen Antwort. Angefasst werden die Länder, und die sind über
 
 ## Offen aus der Ton-Runde
 
-**Der Endbildschirm der Eltern trägt weiter drei goldene Sterne** und einen
-Knopf „Forscherbuch". Die Sterne sind die Wertung der Sitzung, das Buch der
-Name der Sammlung in der ganzen App — beides je Profil umzubenennen hieße,
-das Vokabular zu spalten. Zur Entscheidung, nicht zur Reparatur.
+**Erledigt:** die Siegsterne sind bei sachlichem Ton weg — wegen
+Redundanz, nicht wegen Geschmack: „12 von 12 auf Anhieb richtig" steht eine
+Zeile tiefer und sagt dasselbe genauer. Im Kopf während der Sitzung bleiben
+sie, dort sind sie der einzige laufende Punktestand. „Forscherbuch" bleibt,
+wie es heißt.
 
 **Erledigt:** der Umbruch der Namensfahne und die dreizehn Sprechstellen.
 Die Fahne bricht am Bindestrich oder an einer Lücke um, an der Stelle, die

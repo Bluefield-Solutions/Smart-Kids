@@ -3569,3 +3569,100 @@ nicht warten.
 **Die Entscheidung kam vom Nutzer.** Ich hatte gefragt, weil beide Lesarten
 vertretbar sind und die falsche Lea das Lob genommen hätte, das sie heute
 hört.
+
+## Die Aussprache gegengehört — und „Irak" wurde als Iran gewertet
+
+Zwei Schritte: die Siegsterne auf dem Endbildschirm der Eltern, und die
+35 Aussprachevarianten, die seit R5 nie durch den Abgleich gelaufen sind.
+Der zweite hat einen echten Fehler zutage gefördert.
+
+### Die Sterne
+
+Auf dem Endbildschirm zeigt der sachliche Ton keine Siegsterne mehr. Nicht
+aus Geschmack, sondern wegen **Redundanz**: drei Sterne heißen „alles auf
+Anhieb richtig", und genau das steht eine Zeile tiefer als „12 von 12 auf
+Anhieb richtig" — nur genauer. Was zweimal dasteht, veraltet einmal
+(Regel 15), und von den beiden ist die Zahl die haltbarere.
+
+Im **Kopf während der Sitzung** bleiben sie: dort sind sie der einzige
+laufende Punktestand, also nicht doppelt. Dieselbe Regel, zwei Ergebnisse —
+das ist kein Widerspruch, sondern der Unterschied zwischen „doppelt" und
+„einzig".
+
+**„Forscherbuch" bleibt.** Es ist der Name der Sammlung in der ganzen App;
+je Profil umbenannt wären es zwei Namen für eine Sache.
+
+Und weil ein fehlender Schlüssel in einem der beiden Töne `undefined`
+ergäbe — und `undefined` ist falsch, nicht laut, die Sterne wären dann für
+**alle** weg —, prüft `inhalt` jetzt, dass beide Töne dieselben Schlüssel
+tragen. Ein Tippfehler im Schlüssel sähe sonst aus wie eine Entscheidung.
+
+### 213 Formen, und keine war je gelaufen
+
+R5 legte 35 Länder dazu (Rang 6 bis 12), jedes mit zwei erfundenen
+Aussprachevarianten. Im Korpus stand davon **nichts** — der deckte 16 Ziele
+ab, darunter sechs Länder. Keine der neuen Varianten war je durch den
+Abgleich gelaufen.
+
+Das ließ sich ohne Aufnahmen prüfen, weil es aus den Daten selbst folgt:
+**jede Form eines Gebiets — Name, Alias, Variante — muss in der Menge ihres
+Kontinents auf ihr eigenes Gebiet fallen.** Eine Variante, die der Abgleich
+nicht annimmt, ist umsonst erfunden; eine, die er dem falschen Land
+zuschlägt, ist schlimmer als keine.
+
+213 Formen, alle richtig. Der erfundene Korpus bleibt daneben stehen: er
+prüft das Misslingen, diese Stelle das Gelingen.
+
+### Der Fund
+
+Geprüft wurden auch **Nahfälle** — echte Nachbarländer, die es im Spiel
+nicht gibt. Uruguay gegen Paraguay: sauber getrennt. Sudan gegen Südafrika:
+sauber. Dominica, Taiwan, Süd-Sudan: alle abgelehnt. Einer rutschte durch:
+
+> **„Irak" wurde glatt als IRAN angenommen.**
+
+Zwei echte Länder, ein Buchstabe Unterschied bei vier. Der Grund steckt in
+der Regel für „sicher": *nah genug **oder** Vorsprung vor dem Zweitbesten*.
+Der Vorsprung sagt aber nur „kein anderer Kandidat ist nah" — nicht „dieser
+ist nah genug". In einer geschlossenen Menge ist das meistens dasselbe;
+nicht, wenn jemand ein **anderes echtes Wort** sagt, das zufällig neben
+einem Kandidaten liegt. Der Rest Asiens ist von „Irak" weit weg, also war
+der Vorsprung groß — und ein falsches Land wurde als richtig gewertet.
+
+`GRENZE_NAH` deckelt das: der Vorsprung zählt nur, solange der Abstand
+selbst noch anständig ist.
+
+**Der Wert ist gemessen, nicht gesetzt.** Durchprobiert von 0,12 bis 0,34:
+
+| Grenze | Trefferquote | davon Rückfrage | Falsch-Positiv | „Irak" |
+|---|---|---|---|---|
+| 0,12 | 100 % | 8 | 2,3 % | gefangen |
+| 0,18 | 100 % | 5 | 2,3 % | gefangen |
+| **0,22** | **100 %** | **3** | **2,3 %** | **gefangen** |
+| 0,25 | 100 % | 3 | 2,3 % | rutscht durch |
+| 0,34 (vorher) | 100 % | 3 | 2,3 % | rutscht durch |
+
+Die Trefferquote bleibt überall bei 100 % — es geht nichts verloren, nur
+manches wird zur Rückfrage. **0,22 ist der größte Wert, der „Irak" noch
+fängt**, kostet also die wenigsten Rückfragen. Auf „Irak" heißt die Antwort
+jetzt *„Meintest du Iran?"* statt „richtig" — und genau dafür gibt es die
+Rückfrage.
+
+### Zwei Reparaturen am Tor selbst
+
+**Die Kandidatenmenge war nicht die des Spiels.** Sie hieß „das Ziel plus
+die ersten sechs Geschwister aus der Gesamtliste" — für ein Land oft sechs
+Länder von anderen Kontinenten. Im Spiel stehen die Länder **desselben**
+Kontinents zur Wahl, und genau dort sitzen die gefährlichen Paare. Eine
+Messung an einer Menge, die es nicht gibt, misst die falsche Aufgabe
+(Regel 12).
+
+**Eine Ratsche statt einer Zielzahl.** Auf der erfundenen Hälfte gilt kein
+Prozentsatz — wer den Korpus schreibt und den Abgleich einstellt, ist
+Prüfling und Prüfer zugleich. Was aber gilt: es darf nicht *mehr*
+durchrutschen als heute. Ein Prozentsatz taugt dafür nicht, er sinkt schon
+dadurch, dass der Korpus wächst. Also steht die eine bekannte Ausnahme
+namentlich da — „aussen → asien", seit K1 — und alles andere ist rot.
+
+Der Korpus hat jetzt 92 Treffer- und 70 Nichttreffer-Eingaben (vorher 61
+und 43).
