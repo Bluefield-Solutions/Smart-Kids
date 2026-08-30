@@ -5097,3 +5097,85 @@ offen, und drei Ebenen hängen daran.
 Startbündel **208,2 von 400 KB** (der festgehaltene Stand lag noch bei
 197,1 und war seit der Schreibwelt nicht nachgezogen). 139 Gegenproben,
 alle mit Nachweis.
+
+---
+
+## F14 · Ein Satz ist kein Wort
+
+Der Sprachmodus ließ sich beenden (F13) — und verstand trotzdem nichts.
+Wieder kam der Befund vom Gerät, nicht von einem Tor. Und wieder waren es
+mehrere Fehler auf einmal.
+
+**Der erste ist der lehrreichste.** Ein Diktiergerät liefert „Ich glaube das
+ist Asien", nicht „Asien". Der Abgleich fiel darüber — an seiner
+**Längenstrafe**, also an genau der Vorrichtung, die ihn davor bewahrt,
+„euro" für Europa und „bayer" für Bayern zu nehmen. Sie war nicht der
+Fehler; der Fehler war, ihr eine ganze Äußerung vorzuwerfen. Jetzt bekommt
+jede zusammenhängende Wortgruppe ihre Chance, und die Strafe bleibt
+Wächter: „amerika" allein wird gegen „nordamerika" weiterhin abgelehnt.
+
+Vorher stand da eine **Füllwortliste**. Sie zählte auf, was weggelassen
+werden darf — und war damit immer unvollständig, weil niemand alle
+Redewendungen eines Kindes kennt. Gemessen fielen 4 von 18
+wirklichkeitsnahen Äußerungen durch: „Ich glaube das ist Asien", „Afrika,
+glaube ich", „Ähm Europa", „äh, Afrika".
+
+**Der zweite ist der peinlichste.** `maxAlternatives = 3` stand seit dem
+ersten Tag da, und drei Zeilen weiter wurde nur die erste Lesart gelesen.
+Die Erkennung liefert ihre eigene Unsicherheit frei Haus. Wir müssen gar
+nicht raten, welche Lesart stimmt — die Antwortmenge ist geschlossen, wir
+können alle fragen.
+
+**Der dritte hat diese Fehlersuche fast verhindert.** „Das habe ich nicht
+verstanden" sagt niemandem, ob das Mikrofon nichts gehört hat oder der
+Abgleich nichts zuordnen konnte. Jetzt steht da, was angekommen ist.
+
+**Der vierte ist der, der wehtut.** Nicht verstanden zählte als
+Fehlversuch. Nach drei Verständnisfehlern löste die App die Aufgabe auf —
+das Kind hatte kein einziges Mal falsch geraten. „Ich habe dich nicht
+gehört" ist eine Aussage über mich, nicht über das Kind.
+
+### Der Rückschritt, den der Korpus in derselben Minute gemeldet hat
+
+Ausschnitte sind gefährlich: sie werfen Wörter weg. Beim ersten Lauf mit
+der neuen Rechnung stand im Bericht:
+
+```
+✗ süd sudan → SDN
+```
+
+Ein echtes Nachbarland, das es im Spiel nicht gibt, glatt als **Sudan**
+gewertet. Ein Fenster darf deshalb kein **Bestimmungswort** abschneiden,
+das direkt daneben steht — nord, süd, ost, west, neu, alt. Das ist die
+Umkehrung der alten Liste, und daran liegt es: die zählte auf, was
+weggelassen werden darf (offen, unvollständig), diese zählt auf, was nicht
+weggelassen werden darf (klein, fest, aus der Erdkunde selbst).
+
+### Und warum das Tor 100 % meldete, während nichts ging
+
+Es maß `abgleich` mit nackten Wörtern. Die App rechnet `hoerAbgleich` mit
+ganzen Äußerungen. Ein Tor, das die Stufe **darunter** misst, bezeugt eine
+Rechnung, die niemand fährt — Regel 12, wieder einmal, und diesmal hat es
+einen Fehler gedeckt, den das Zielgerät in dreißig Sekunden fand.
+
+Der Korpus kennt jetzt beide Formen: **121 Treffer, 91 Nichttreffer**, in
+beiden Hälften ganze Sätze — auch solche, in denen ein *falscher* Name
+steht („ich glaube das ist Afrika", gefragt war Asien). Gemessen:
+**100 % Treffer, 0 % falsch-positiv.**
+
+### Zwei Funde in meinen eigenen Prüfungen
+
+Beide kamen von den Gegenproben, nicht von mir.
+
+**Der geprüfte Satz war der falsche.** Der Rauchtest sprach „Das ist X"
+hinein — genau die Wendung, die in der alten Füllwortliste stand und auch
+vorher schon durchkam. Die Gegenprobe stellte den alten Zustand her, und
+der Rauchtest blieb grün. Jetzt heißt der Satz „Ich glaube das ist X": die
+Liste streicht genau ein Füllwort, danach steht immer noch „das ist X" da.
+
+**Die Prüfung sah ihren eigenen Gegenstand nicht.** „Ist die Aufgabe noch
+offen?" suchte nach der Marke des *Treffers*. Aufgelöst wird aber mit
+`.loesung`, und die stand da unverändert — die Prüfung konnte nicht
+anschlagen, auch wenn der Fehler drin war.
+
+144 Gegenproben, alle mit Nachweis.

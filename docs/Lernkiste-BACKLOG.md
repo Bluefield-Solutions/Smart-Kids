@@ -166,6 +166,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~5~~ | ~~**S1** Drei Sterne bedeuten zwei Dinge~~ | Fiona, Lea | hoch | klein | **gefahren** |
 | ~~6~~ | ~~**A3** Der Fehler wird auch beim Ziehen benannt~~ | Fiona, Lea | hoch | mittel | **gefahren** |
 | ~~7~~ | ~~**F13** Der Sprachmodus hatte keinen Ausgang~~ | Fiona | hoch | klein | **gefahren** |
+| ~~8~~ | ~~**F14** Gesprochenes als Satz verstehen~~ | Fiona | hoch | mittel | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
 | 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
@@ -522,6 +523,59 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 ---
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+### F14 · Gesprochenes wurde als Wort verstanden, nicht als Satz  ·  ERLEDIGT
+
+**Gemeldet vom Zielgerät, direkt nach F13.** Die Aufnahme ließ sich beenden —
+aber das Gesagte wurde nie erkannt, es kam immer „sag es noch einmal".
+
+**Vier Fehler auf einem Weg**, jeder für sich schon ausreichend:
+
+1. **Es kommt ein Satz an, kein Wort.** Ein Diktiergerät liefert „Ich glaube
+   das ist Asien", nicht „Asien". Der Abgleich fiel darüber — und zwar an
+   seiner **Längenstrafe**, genau der Strafe, die ihn davor bewahrt, „euro"
+   für Europa zu nehmen. Sie ist richtig und durfte nicht weg. Stattdessen
+   bekommt jetzt **jede zusammenhängende Wortgruppe** ihre Chance.
+   Die Füllwortliste war der alte Versuch, dasselbe mit einer Liste zu
+   lösen. Gemessen: von 18 wirklichkeitsnahen Äußerungen fielen **4** durch.
+   Eine Liste kennt immer nur die Redewendungen, an die jemand gedacht hat.
+2. **`maxAlternatives = 3` wurde angefordert und weggeworfen.** Drei Zeilen
+   weiter wurde nur `r[0]` gelesen. Die Erkennung liefert ihre Unsicherheit
+   frei Haus — und die Antwortmenge ist geschlossen, wir müssen gar nicht
+   raten, welche Lesart stimmt: wir können alle fragen.
+3. **Die Meldung verschwieg das Gehörte.** „Das habe ich nicht verstanden"
+   sagt niemandem, ob das Mikrofon nichts gehört hat oder der Abgleich nichts
+   zuordnen konnte. Genau daran ist diese Fehlersuche fast gescheitert.
+   Jetzt steht da: *Ich habe „…" verstanden. Sag es noch einmal.*
+4. **Nicht verstanden kostete einen von drei Versuchen.** Nach drei
+   Verständnisfehlern löste die App die Aufgabe auf — ohne dass das Kind ein
+   einziges Mal falsch geraten hätte. „Ich habe dich nicht gehört" ist eine
+   Aussage über **mich**, nicht über das Kind. Protokolliert wird es
+   trotzdem: genau diese Zeilen sind das Rohmaterial für M4r.
+
+**Der Wächter des Ausschnitts.** Ein Fenster darf kein **Bestimmungswort**
+abschneiden, das direkt daneben steht (nord, süd, ost, west, neu, alt, …).
+Ohne diese Sperre nahm der Abgleich „süd sudan" als **Sudan** an — ein echtes
+Nachbarland, das es im Spiel nicht gibt, glatt als ein anderes gewertet. Der
+Korpus hat es in demselben Lauf gemeldet, in dem der Ausschnitt entstand.
+Der Unterschied zur alten Füllwortliste ist der Punkt: die zählte auf, was
+weggelassen werden **darf**, und war deshalb immer unvollständig; diese zählt
+auf, was **nicht** weggelassen werden darf — eine kleine, feste Klasse.
+
+**Warum das Tor 100 % meldete, während nichts ging.** Es maß `abgleich` mit
+nackten Wörtern; die App rechnet `hoerAbgleich` mit ganzen Äußerungen. Ein
+Tor, das die Stufe darunter misst, bezeugt eine Rechnung, die niemand fährt
+(Regel 12). Der Korpus hat jetzt beide Formen: **121 Treffer, 91
+Nichttreffer**, davon ganze Sätze in beiden Hälften — auch solche, in denen
+ein **falscher** Name steht. Gemessen: **100 % Treffer, 0 % falsch-positiv**.
+
+**Fünf stehende Gegenproben**, und zwei davon haben Fehler in meinen eigenen
+Prüfungen gefunden, bevor sie halfen: der geprüfte Satz „Das ist X" kam schon
+durch die alte Liste (die Prüfung hätte nichts bewiesen), und die Prüfung auf
+„die Aufgabe ist noch offen" suchte die Marke des Treffers statt die der
+Auflösung — sie konnte gar nicht anschlagen.
+
+---
 
 ### F13 · Der Sprachmodus hatte keinen Ausgang  ·  ERLEDIGT
 
