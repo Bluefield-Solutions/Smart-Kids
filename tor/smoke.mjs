@@ -1076,32 +1076,54 @@ if (laeuft('ablage')) try {
      * oben reicht nicht - er ergibt EINEN Aufkleber, und damit passt auch
      * eine viel zu grosse Karte noch. Eine Pruefung, die nur den
      * guenstigsten Fall sieht, meldet gruen ueber nichts. */
+    /* Gestellt wird auf den BUNDESLAENDERN, nicht auf den Kontinenten.
+     *
+     * Deren Umrisse liegen nicht im Startbuendel - sie werden geholt, wenn
+     * die Ebene betreten wird. Das Buch hat das nie getan und zeigte auf
+     * jeder Karte „undefined": ohne `pfad` faellt der Kasten auf die
+     * Rechen-Darstellung zurueck. Gemerkt hat es niemand, weil dieser Test
+     * das Buch bisher NACH dem Spielen oeffnete - da ist die Geometrie
+     * laengst da. Hier wird es davor geoeffnet, so wie ein Kind es tut,
+     * das gestern gespielt hat.
+     */
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
-    const zwei = KONTINENTE.slice(0, 2).map(k => k.id);
-    await q.evaluate((ids) => new Promise(ja => {
+    await q.evaluate(() => new Promise(ja => {
       const a = indexedDB.open('lernkiste');
       a.onsuccess = () => { const st = {};
-        ids.forEach((id, i) => st[id] = { fach: i ? 3 : 5, hoechstes: i ? 3 : 5,
-          faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        D.deutschland.slice(0, 2).forEach((x, i) => st[x.id] = { fach: i ? 3 : 5,
+          hoechstes: i ? 3 : 5, faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
         const t = a.result.transaction('fortschritt', 'readwrite');
-        t.objectStore('fortschritt').put(st, 'fiona:kontinente');
+        t.objectStore('fortschritt').put(st, 'fiona:bundeslaender');
         t.oncomplete = () => ja(1); t.onerror = () => ja(0); };
       a.onerror = () => ja(0);
-    }), zwei);
+    }));
     await q.reload();
     await q.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
     await q.click('[data-profil="fiona"]');
-    await zurEbenenwahl(q, 'kontinente');
+    // Auf die Ebenenwahl, aber NICHT in die Ebene: genau der Weg, auf dem
+    // die Umrisse noch nicht geholt sind.
+    await zurEbenenwahl(q, 'bundeslaender');
     await q.click('#buch');
     await q.waitForSelector('.schirm.da .aufkleber');
     await bis(q, () => !!document.querySelector('.schirm.da .rollen'), 4000);
     const b = await q.evaluate(() => {
       const r = document.querySelector('.schirm.da .rollen');
-      return { da: document.querySelectorAll('.schirm.da .aufkleber').length,
+      const karten = [...document.querySelectorAll('.schirm.da .aufkleber')];
+      return { da: karten.length,
+               // Ein Gebiet MUSS einen Umriss zeigen. Der Rechenkasten ist
+               // die Notdarstellung, und sein Inhalt war hier „undefined".
+               ohneUmriss: karten.filter(k => !k.querySelector('svg path')).length,
+               undef: karten.filter(k => /undefined/.test(k.textContent)).length,
                sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight) };
     });
-    console.log(`  Buch auf dem Zielgerät:     ${b.da} Karten, ${b.ganz} Punkte Inhalt `
-      + `in ${b.sichtbar} sichtbaren`);
+    if (b.ohneUmriss)
+      merke('forscherbuch', new Error(`${b.ohneUmriss} von ${b.da} Karten im Buch zeigen `
+        + 'keinen Umriss — das Buch wurde geöffnet, bevor die Geometrie geladen war'));
+    if (b.undef)
+      merke('forscherbuch', new Error(`auf ${b.undef} Karten im Buch steht „undefined"`));
+    console.log(`  Buch auf dem Zielgerät:     ${b.da} Karten mit Umriss, ${b.ganz} Punkte `
+      + `Inhalt in ${b.sichtbar} sichtbaren`);
     // Die Grenze ist die Zahl der Karten, nicht eine Punktzahl: acht Karten
     // passen auf 844 x 390 in zwei Reihen, und so lange soll nichts unter
     // dem Rand stehen.

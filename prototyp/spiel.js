@@ -2588,11 +2588,50 @@ function endschirm(){
  * kurze Vorschau ans Ende: drei Stueck aus der Ebene, an der gerade
  * gearbeitet wird. Nicht als Mahnung, sondern als naechster Schritt.
  */
+/* Das Buch holt die Umrisse NACH, die es zeigen will.
+ *
+ * Der Umriss eines Bundeslands oder eines Landes liegt nicht im
+ * Startbuendel - er wird geholt, wenn die Ebene betreten wird (`budget`:
+ * 56 von 94 KB Geometrie gehoerten allein Deutschland). Das Buch hat das
+ * nie getan: es rief `vorrat()` fuer jede Ebene und nahm, was gerade da
+ * war.
+ *
+ * Wer die Bundeslaender gestern gespielt hat und heute das Buch aufmacht,
+ * ohne die Ebene vorher zu betreten, sah deshalb auf JEDER Karte das Wort
+ * „undefined" - der Kasten faellt ohne `pfad` auf die Rechen-Darstellung
+ * zurueck und setzt `x.frage`, die es bei einem Gebiet nicht gibt.
+ *
+ * Kein Tor hat es gemeldet, und keines konnte: der Rauchtest oeffnet das
+ * Buch, NACHDEM er die Ebene gespielt hat, und das Vorbild `quer-buch`
+ * zeigt Kontinente - die liegen im Startbuendel.
+ *
+ * Geholt wird nur, was gezeigt wird: die Ebenen mit Aufklebern und die
+ * eine, aus der die Vorschau kommt. Wer alles hoelte, zoege sechs
+ * Kontinente und Deutschland nach, um drei Aufkleber zu zeigen.
+ */
 async function forscherbuch(){
   const s = el('div');
-  const gruppen = [];
+  // Erster Durchgang: die Staende lesen und zaehlen. Das geht OHNE Umrisse -
+  // der leichte Stand haelt Kennung, Name und Anker.
+  const staende = [];
   for (const e of meineEbenen()) {
     let st={}; try{ st=(await Ablage.hole('fortschritt',`${P.id}:${e.id}`))||{}; }catch(err){}
+    const alle = vorrat(e.id);
+    staende.push({ e, st,
+      da: alle.filter(g => Leitner.istGesammelt(st, g.id)).length,
+      offen: alle.filter(g => !Leitner.istGesammelt(st, g.id)).length });
+  }
+  // Welche Ebene die Vorschau stellt, entscheidet sich schon hier - sonst
+  // waere ihr Umriss der eine, der wieder fehlt.
+  const dranStand = staende.filter(x => x.da && x.offen).sort((a,b)=>b.da-a.da)[0]
+                 || staende.find(x => x.offen);
+  await Promise.all(staende
+    .filter(x => x.da || x === dranStand)
+    .map(x => ebeneLaden(x.e.id).catch(()=>false)));
+
+  // Zweiter Durchgang: jetzt mit Umrissen.
+  const gruppen = [];
+  for (const { e, st } of staende) {
     const alle = vorrat(e.id);
     const vb = vbVon(e.id);
     const stuecke = alle.map((g,i)=>({
@@ -2607,9 +2646,9 @@ async function forscherbuch(){
 
   // Die Vorschau kommt aus der Ebene, an der GERADE gearbeitet wird - der
   // mit den meisten Aufklebern, die noch nicht fertig ist. Wer noch gar
-  // nichts hat, bekommt die erste Ebene gezeigt.
-  const dran = vollen.filter(g=>g.offen.length).sort((a,b)=>b.da.length-a.da.length)[0]
-            || gruppen.find(g=>g.offen.length);
+  // nichts hat, bekommt die erste Ebene gezeigt. Dieselbe Wahl wie oben,
+  // nur an den fertigen Gruppen.
+  const dran = gruppen.find(g => g.id === (dranStand && dranStand.e.id));
   const vorschau = dran ? dran.offen.slice(0, 3) : [];
 
   /**

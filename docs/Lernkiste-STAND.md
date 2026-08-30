@@ -4100,3 +4100,58 @@ es nicht klappt, merkt es niemand: der Lauf ist grün, der Stand veraltet
 weiter, und `rhythmus` steht in keiner Kette, die jemand fährt. Ein
 Handstart (`workflow_dispatch` ist eingeschaltet) würde es in einer
 Dreiviertelstunde beantworten.
+
+---
+
+## Runde: „undefined" auf jedem Aufkleber
+
+Gesucht war etwas anderes — ob die Vorschau im Forscherbuch zu weit links
+hängt. Beim Messen mit gesetztem Lernstand stand auf **jeder Karte** das
+Wort `undefined`.
+
+### Der Fehler
+
+Die Umrisse der Bundesländer und der Länder liegen **nicht im
+Startbündel**. Sie werden geholt, wenn die Ebene betreten wird — `budget`
+hat sie ausgelagert, 56 von 94 KB Geometrie gehörten allein Deutschland.
+
+`forscherbuch()` rief `vorrat()` für jede Ebene und nahm, was gerade da
+war. Ohne `pfad` fällt der Kasten auf die **Rechen-Darstellung** zurück und
+setzt `x.frage` — die es bei einem Gebiet nicht gibt.
+
+Der Weg dorthin ist der normale: gestern Bundesländer gespielt, heute die
+App öffnen, auf „Deutschland", dann aufs Forscherbuch. Sechzehn
+Länderebenen und die Bundesländer sind betroffen; die Kontinente nicht, die
+liegen im Startbündel.
+
+**Warum kein Tor es gemeldet hat**, und warum keines es konnte: der
+Rauchtest öffnet das Buch, *nachdem* er die Ebene gespielt hat — da ist die
+Geometrie längst geladen. Und das Vorbild `quer-buch` zeigt Kontinente.
+Beide Prüfungen gehen genau an dem Weg vorbei, auf dem der Fehler liegt.
+
+### Was jetzt dasteht
+
+Das Buch holt nach, was es zeigt — und nur das: die Ebenen mit Aufklebern
+plus die eine, aus der die Vorschau kommt. Wer alles holte, zöge sechs
+Kontinente und Deutschland nach, um drei Aufkleber zu zeigen. Dafür läuft
+die Funktion jetzt in zwei Durchgängen: erst die Stände zählen (das geht
+ohne Umrisse — der leichte Stand hält Kennung, Name und Anker), dann laden,
+dann bauen.
+
+Geprüft wird es dort, wo es hingehört: der Rauchtest öffnet das Buch **auf
+dem Weg über die Ebenenwahl, ohne die Ebene zu betreten**, und verlangt,
+dass jede Karte eines Gebiets einen Umriss trägt.
+
+### Und die Frage, mit der die Runde anfing
+
+Die Vorschau steht links, mit 416 bis 555 Punkten Leere rechts — und sie
+kann sich nie füllen, es sind höchstens drei Karten. Angesehen: das ist
+**kein** Fehler. Sie steht bündig unter derselben linken Kante wie die
+Sammlung darüber und wie die Überschrift; ein Album füllt sich von links.
+Zentriert wäre sie der einzige zentrierte Block auf einer sonst linksbündig
+gesetzten Seite.
+
+Die Sammlung selbst füllt die Breite ab sechs Aufklebern vollständig
+(gemessen: 2 → 499 px rechts leer, 6 → 0, 14 → 0). Das ist der Unterschied
+zum Vorlauf, wo `auto-fill` acht Spuren für sechs Karten anlegte und der
+Rest **nie** dazukam.
