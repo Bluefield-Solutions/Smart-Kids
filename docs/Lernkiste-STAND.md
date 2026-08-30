@@ -4917,3 +4917,60 @@ Forscherbuch vierzig Punkte auseinander — „1 0" statt „10". Eine Zahl ist
 ein Wort, keine zwei Bilder.
 
 Startbündel **202,1 von 400 KB**. `passt` sieht 21 Bildschirme je Größe.
+
+---
+
+## Runde N1: Stephan und Violeta
+
+Aus einer Kachel „Eltern" werden zwei. Gleiche Aufgaben, gleiche Tiefe,
+gleicher Ton — verschieden ist nur, wer gespielt hat. Und im Elternbereich
+ein Bildschirm, der beides nebeneinanderstellt.
+
+### Verglichen wird, was ohnehin gezählt wird
+
+**Auf Anhieb richtig** und die Zeit. Keine erfundene Punktzahl — die wäre
+`glatt` noch einmal, nur mit einem Faktor davor, und in diesem Verzeichnis
+steht keine Zahl an zwei Stellen. Eine Aufgabe ist dabei ein Eintrag, der
+sie *beendet* (`richtig` oder `gezeigt`); die Fehlversuche dazwischen
+stehen als eigene Zeilen im Protokoll und dürfen nicht mitzählen, sonst
+hätte der Ungeduldigere mehr „Aufgaben" als der Gründliche.
+
+Gleichstand ist ein Ergebnis und wird als solcher angezeigt. Ihn zu einem
+Sieger zu runden wäre die einzige Stelle, an der dieser Vergleich etwas
+behaupten könnte, was nicht gemessen ist.
+
+### Der Umbau lag woanders, als er aussah
+
+Ein zweites Profil hinzuzufügen ist eine Zeile. Die Arbeit lag in den
+Toren: **vier von ihnen lasen die Spalten der Backlog-Tabelle der Reihe
+nach** — `['fiona','lea','eltern']`, fest hingeschrieben. Eine vierte
+Spalte hätte jede Zeile um eins verschoben, und Violetas Ländertiefe,
+Sitzungslänge und Ton wären als Stephans geprüft worden. Rot geworden wäre
+nichts.
+
+Die Kennungen kommen jetzt aus der **Kopfzeile** der Tabelle: das erste
+Wort einer Spalte, klein geschrieben. Eine fünfte Spalte würde von selbst
+mitgeprüft.
+
+### Und die Lücke, die dabei sichtbar wurde
+
+Fällt eine Spalte *weg*, prüft jedes Tor stillschweigend ein Profil
+weniger — und **keines wird rot**, weil ihnen allen dasselbe Soll fehlt.
+Das ist die gefährlichste Sorte Lücke: sie macht die Kette leiser, nicht
+roter.
+
+Der Rauchtest vergleicht deshalb die Zahl der Profile, die die App kennt,
+mit der Zahl der Spalten in der Tabelle. Die zugehörige Gegenprobe nimmt
+der Tabelle eine Spalte — und schlägt an.
+
+### Der alte Stand geht nicht verloren
+
+Er lag unter `eltern:<ebene>` und wäre nach der Umbenennung unerreichbar
+gewesen: vorhanden, aber von nichts mehr gelesen — die unangenehmste Sorte
+Datenverlust, weil nichts weg ist und trotzdem nichts wiederkommt. Er zieht
+beim ersten Start zu **Stephan** um. Das Protokoll wird dagegen beim
+**Lesen** umgeschrieben, nicht in der Ablage: ein Mitschnitt wird nicht
+rückwirkend geändert.
+
+Startbündel **204,6 von 400 KB**. Vier Profilkacheln passen auf 844 × 390
+in eine Reihe; `passt` ist auf allen sieben Größen grün.
