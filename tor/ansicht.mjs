@@ -655,7 +655,7 @@ for (const a of MEINE) {
       // Schreibfeld oder das Zielgebiet auf der Karte.
       const ohneKarte = a.spiel.startsWith('rechnen') || a.spiel.startsWith('schreiben');
       await seite.waitForSelector(a.spiel.startsWith('rechnen') ? '.schirm.da .rechnung'
-        : a.spiel.startsWith('schreiben') ? '.schirm.da .feld'
+        : a.spiel.startsWith('schreiben') ? '.schirm.da .schreibblatt'
         : '.schirm.da .karte svg path.ziel');
       await seite.waitForTimeout(ohneKarte ? 300 : 0);
       if (a.tun) await vorfuehren(seite, a.tun);

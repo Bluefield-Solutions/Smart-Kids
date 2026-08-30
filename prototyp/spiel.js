@@ -745,11 +745,17 @@ const buchstabenBild = (x, ton) => `
        stroke-linecap="round" stroke-linejoin="round">${
     x.zuege.map(d => `<path d="${d}"/>`).join('')}</svg>`;
 
-/** Das Bild EINES Stuecks - Umriss, Rechnung oder Buchstabe. */
-const stueckBild = (x, ton, rahmen) =>
+/** Das Bild EINES Stuecks - Umriss, Rechnung oder Buchstabe.
+ *
+ * `offen` heisst „noch nicht gesammelt". Ein offener Umriss ist blass, und
+ * das ist kein Schmuck: im Forscherbuch stehen gesammelte und offene
+ * nebeneinander, und der Unterschied ist die ganze Auskunft. Der erste
+ * Entwurf dieser Zusammenfassung hat ihn verloren - die Strichdeckung
+ * stand fest auf .6 statt .25 -, und gemerkt hat es der Bildvergleich. */
+const stueckBild = (x, ton, rahmen, offen = false) =>
     x.pfad  ? `<svg viewBox="${rahmen}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
-                fill="${ton}" stroke="var(--tinte)" stroke-opacity=".6" stroke-width="1.6"
-                vector-effect="non-scaling-stroke"/></svg>`
+                fill="${ton}" stroke="var(--tinte)" stroke-opacity="${offen ? .25 : .6}"
+                stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`
   : x.zuege ? buchstabenBild(x, ton)
   :           `<div class="rechenkleber" style="--ton:${ton}">${x.frage}</div>`;
 
@@ -1151,8 +1157,20 @@ function vorlaufVorrat(ebeneId){
  * vierhundert Punkten, und darueber und darunter je ein Drittel leeres
  * Band. Das sah nicht nach Auswahl aus, sondern nach vergessenem Inhalt.
  */
+/* Und HOECHSTENS drei Reihen.
+ *
+ * Gemessen auf dem Zielgeraet mit Leiste: dem Gitter bleiben zwischen
+ * Satz und Knopf 172 Punkte, eine Karte braucht mindestens 41 und die
+ * Luecke 8. Vier Reihen sind 188 - die letzte lag acht Punkte im
+ * Streifen des iPhone. Aufgefallen ist das erst beim Abc: sechzehn
+ * Bundeslaender ergaben zwei Reihen, sechsundzwanzig Buchstaben vier.
+ *
+ * Die Breite gibt dafuer nach: aus acht Spalten werden neun, und die
+ * Karte wird 85 statt 96 Punkte breit. Das traegt auch das laengste
+ * Merkwort („Xylofon"). Hoehe ist hier die knappe Groesse, nicht Breite. */
+const REIHEN_MAX = 3;
 const vorlaufGitter = (n) => {
-  const reihen = n <= 3 ? 1 : Math.max(2, Math.ceil(n / 8));
+  const reihen = n <= 3 ? 1 : Math.min(REIHEN_MAX, Math.max(2, Math.ceil(n / 8)));
   return { reihen, spalten: Math.max(1, Math.ceil(n / reihen)) };
 };
 
@@ -1204,7 +1222,8 @@ async function vorlauf(ebeneId){
     mitte:`<span class="marke">${ebene ? ebene.titel : 'Anschauen'}</span>` }) + `
     <div class="rollen vorlauf">
       <div class="unter mitte-satz">${satz}</div>
-      <div class="kleber" style="--spalten:${gitter.spalten};--reihen:${gitter.reihen}">${stuecke.map((x, i) => `
+      <div class="kleber${gitter.spalten > 8 ? ' viel' : ''}" style="--spalten:${
+        gitter.spalten};--reihen:${gitter.reihen}">${stuecke.map((x, i) => `
         <button class="aufkleber da" data-lesen="${vorlaufAnsage(x, ebeneId)}"
                 title="${x.gebiet ? `${x.gebiet}: ${x.name}` : x.name}">
           ${stueckBild(x, `var(${FL[i%7]})`, rahmen(x))}
@@ -1756,7 +1775,7 @@ function schreibschirm(){
     <div class="schreibraum">
     <div class="frage" id="frage">Fahre das <strong>${ziel.zeichen}</strong> nach.</div>
     <div class="schreibfeld"><div class="feldkasten">
-      <svg id="feld" class="feld" viewBox="0 0 100 100" role="application"
+      <svg id="blatt" class="schreibblatt" viewBox="0 0 100 100" role="application"
            aria-label="Schreibfläche für den Buchstaben ${ziel.zeichen}">
         <g class="linien" aria-hidden="true">
           <line x1="0" y1="10" x2="100" y2="10"/>
@@ -1774,7 +1793,7 @@ function schreibschirm(){
       <button class="leise" id="weissnicht">Weiß ich nicht</button>
     </div></div>`;
 
-  const feld = s.querySelector('#feld');
+  const feld = s.querySelector('#blatt');
   const zugEl = s.querySelector('#zug');
   const anfangEl = s.querySelector('#anfang');
   /* Der Anfangspunkt wird GEZEICHNET oder nicht - nicht versteckt.
@@ -3077,7 +3096,7 @@ async function forscherbuch(){
               :(x.zuege ? `${x.zeichen} wie ${x.wort}` : x.frage ? `${x.frage} = ${x.name}` : x.name)}"
             title="Fach ${x.fach||'—'}">
       ${stueckBild(x, offen && x.pfad ? 'var(--linie)' : `var(${FL[x.i%7]})`,
-                   eigenerRahmen(x.pfad) || g.vb)}
+                   eigenerRahmen(x.pfad) || g.vb, offen)}
       <span>${offen ? '?' : stueckFuss(x)}</span>
       ${x.gekonnt?'<i class="siegel"></i>':''}
     </button>`;

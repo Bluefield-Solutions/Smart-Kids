@@ -4621,3 +4621,136 @@ läuft auf `glatt` und die Zeit — beides wird längst gezählt, es entsteht
 keine neue Zahl —, und die Strenge wird nicht geschätzt, sondern eingestellt:
 an absichtlich krummen Zügen, die das Tor selbst erzeugt, bis echte Züge von
 Fiona vorliegen.
+
+---
+
+## Runde N2a: Fiona schreibt
+
+Die größte neue Sache seit Mathe, und die erste, die einem Kind etwas
+beibringt statt es abzufragen: eine dritte Welt, **nur für Fiona**, in der
+sie Buchstaben nachfährt und dann selbst schreibt.
+
+### Eine Quelle für die Form und für die Messung
+
+Ein Zug steht als Pfadzeichenkette da — `M20 90 L50 10`. Dieselbe
+Zeichenkette zeichnet das SVG auf dem Bildschirm **und** wird abgetastet,
+wenn gemessen wird, ob der Finger auf ihr geblieben ist.
+
+Der erste Entwurf hatte zwei Fassungen: Punktlisten zum Messen, Pfade zum
+Zeichnen. Das ist genau die Falle „was zweimal dasteht, veraltet einmal" —
+und sie wäre unsichtbar gewesen: die Vorlage auf dem Bildschirm liefe
+langsam von der Vorlage weg, gegen die geprüft wird, und das Kind bekäme
+gesagt, es sei danebengefahren, obwohl es genau auf der Linie war.
+
+Der Preis ist ein eigener Abtaster, weil `getPointAtLength` einen Browser
+braucht und das Tor in Node läuft. Er kann M, L und Q — mehr braucht kein
+Druckbuchstabe.
+
+### Die Schwellen sind gemessen, nicht gegriffen
+
+Erkennung heißt hier: Form (ein symmetrischer Punktabstand) plus Zug gegen
+Zug mit Richtung, Reihenfolge und Anzahl. Zwei Schwellen entscheiden —
+wie weit darf es weg sein, und wieviel Vorsprung braucht der Beste vor dem
+Zweiten.
+
+Der erste Entwurf setzte 13 und 1,2. Dann wurde der **Raum durchprobiert**:
+1040 künstlich verkrummte Fassungen der 26 Vorlagen gegen 400 Gekritzel.
+
+```
+  Abstand  Vorsprung |  richtig erkannt  |  Gekritzel angenommen
+     10       1,2    |       97 %        |       0,0 %
+     11       1,6    |       97 %        |       0,0 %
+     13       1,2    |       97 %        |       7,0 %
+     14       1,2    |       97 %        |      10,0 %
+```
+
+Von 13 auf 11 herunter kostet **keinen einzigen** richtig erkannten
+Buchstaben und drückt das angenommene Gekritzel von 7 % auf null. Blind
+nachjustieren heißt, durch ein Schlüsselloch zu schauen — das hat T15 im
+anderen Verzeichnis drei Runden gekostet, und hier eine Viertelstunde
+gespart.
+
+Das **Soll** steht dabei nicht in `schreiben.js`, sondern im Backlog,
+Abschnitt 2.3. Stünde es im Prüfling, würden die Schwellen so lange
+verschoben, bis das Tor grün ist.
+
+### Drei Fehler, die nur der Blick gefunden hat
+
+**1. `hidden` bedeutete nicht hidden.** Die Regel des Browsers für
+`[hidden]` ist eine Vorgabe, und jede eigene Regel mit `display` schlägt
+sie. `.zahlen{display:flex}` tat genau das: **Lea sah beim Rechnen die vier
+Antwortknöpfe UND das Tippfeld**, obwohl das Feld ordentlich `hidden`
+gesetzt war. Ein alter Fehler, und kein Tor konnte ihn sehen — `passt`
+misst Überlauf, der Rauchtest tippt ins Eingabefeld und kommt damit durch,
+und die einzige Aufnahme eines Rechenbildschirms ist Fionas, die gar kein
+Tippfeld hat. Gefunden beim Bau von etwas ganz anderem.
+
+**2. `aspect-ratio` auf einem SVG tut nicht, was man denkt.** Gemessen kamen
+820 × 180 Punkte heraus statt eines Quadrats: ein SVG ohne eigene Breite
+fällt auf 100 % zurück, und das Verhältnis kommt nicht mehr zum Zug. Die
+Folge war unsichtbar — gezeichnet wurde an der richtigen Stelle, gemessen
+an der falschen, und nichts galt. Jetzt hält ein gewöhnlicher Kasten das
+Verhältnis, und die Umrechnung Finger → Vorlage läuft über
+`getScreenCTM()` statt über den Rahmen. Damit hängt die Richtigkeit nicht
+mehr am Stilblatt.
+
+**3. `hidden` gibt es auf einem SVG-Element gar nicht.** Der grüne
+Anfangspunkt stand auch dann noch da, als die Vorlage längst weg war — er
+zeigte auf einen Zug, den es nicht mehr gab.
+
+### Und einer, den `passt` mit 59 Meldungen auf einmal gefunden hat
+
+Meine Schreibfläche hieß `.feld`. So heißt der **Kartenbereich des
+Spielbildschirms** auch. `.feld{display:block}` hat dessen `display:flex`
+überschrieben: die Antwortliste stand danach unter der Karte statt neben
+ihr und lief auf allen vier Querformaten aus dem Bild.
+
+Bemerkenswert daran ist nicht der Fehler, sondern der Weg dorthin: 59
+Meldungen, und **keine einzige nannte den Schreibschirm**. Der Schaden lag
+woanders als die Ursache. Zu finden war das nur, indem der Stand von vorher
+noch einmal gefahren wurde — ein Arbeitsbaum an der alten Fassung, dieselbe
+Prüfung, grün. Erst damit stand fest, dass es an dieser Runde lag und nicht
+schon vorher rot war.
+
+### Was das Tor selbst gefunden hat
+
+**O und Q waren überhaupt nicht nachzufahren.** Die Richtungsprüfung fragte,
+ob der erste Punkt näher am Anfang der Vorlage liegt als an ihrem Ende. Bei
+einem geschlossenen Kreis ist der Anfang das Ende — „näher" ist nie wahr.
+Jetzt wird der ganze Zug gegen die Vorlage gelegt, einmal vorwärts und
+einmal rückwärts.
+
+**Ein halb gezogener kurzer Strich galt als fertig.** Die Deckung zählt,
+wieviel der Vorlage in Reichweite eines Fingers liegt, und bei einem kurzen
+Zug reicht die Toleranz weit: der Querbalken des A ist 36 Kastenpunkte
+lang, wer die Hälfte fährt, deckt mit 14 Punkten Nachsicht 89 Prozent ab.
+Vier Züge verhielten sich so. Jetzt muss der Finger auch dort ankommen, wo
+der Zug endet.
+
+### Was jetzt dasteht
+
+- **`npm run schreiben`**: 26 von 26 Vorlagen erkennen sich selbst, 96,9 %
+  der krumm geschriebenen werden richtig gelesen, 0,7 % werden verwechselt,
+  **0 von 400** Gekritzeln gelten als Buchstabe. Und die Gegenprobe im Tor
+  selbst: bei drei Punkten mehr Nachsicht kämen 40 durch — der Vorrat kann
+  also überhaupt etwas beweisen.
+- **Vier stehende Gegenproben**, alle schlagen an. Drei davon zielen auf
+  die Hälfte, die zählt: dass etwas ABGELEHNT wird.
+- Der Rauchtest spielt einen Buchstaben ganz durch — nachfahren, zweimal
+  Unsinn (der nicht gelten darf), dann richtig — und prüft, dass der
+  Fortschritt im Leitner ankommt.
+- `passt` sieht 17 Bildschirme je Größe statt 14, darunter die
+  **Weltenwahl in beiden Fassungen**: drei Karten für Fiona, zwei für Lea.
+- Drei neue Vorbilder, `quer-welten` erneuert.
+
+### Zwei Zahlen, die dazugehören
+
+Das Startbündel wächst von 180,3 auf **197,2 von 400 KB** (gzip) — die
+ganze Schreibwelt kostet 17 KB. Für N2b, den Klassifikator als Auffangnetz,
+bleiben damit gut 200 KB Luft.
+
+Und der Vorlauf: das Abc steht in **drei Reihen zu neun**. Vier Reihen
+passten nicht — die letzte lag acht Punkte im Streifen des iPhone. Die
+Breite gibt dafür nach: 85 statt 96 Punkte je Karte, und das trägt auch
+„Xylofon". Offen bleibt ein Hinweis: die Karten sind 42 statt 44 Punkte
+hoch (S3 im Backlog).

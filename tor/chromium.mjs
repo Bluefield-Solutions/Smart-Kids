@@ -156,7 +156,7 @@ export const schreibVorlage = (seite) =>
 
 export async function zeichneZug(seite, punkte) {
   const auf = await seite.evaluate((pts) => {
-    const svg = document.querySelector('.schirm.da .feld');
+    const svg = document.querySelector('.schirm.da .schreibblatt');
     if (!svg) return null;
     const m = svg.getScreenCTM();
     return pts.map(([x, y]) => {

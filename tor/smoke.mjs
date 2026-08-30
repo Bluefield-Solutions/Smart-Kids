@@ -1658,6 +1658,8 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
      */
     await p.waitForSelector('.schirm.da [data-welt]');
     const welten = await p.$$eval('.schirm.da [data-welt]', es => es.map(e => e.dataset.welt));
+    // Erdkunde und Rechnen hat JEDER. „Schreiben" gehoert nur Fiona - das
+    // steht am Profil der Ebene und wird im Abschnitt `schreiben` geprueft.
     for (const w of ['erdkunde', 'rechnen'])
       if (!welten.includes(w))
         merke('durchgang', new Error(`${wer}: die Welt „${w}" fehlt auf der Weltenwahl`));
@@ -1755,7 +1757,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
       // der Zwischenschirm mit „Weiter". Vorher stand hier eine feste
       // Pause; sie lief 27 Mal, einmal je Ebene und Profil.
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
-        + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
+        + '.schirm.da .schreibblatt, .schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       /* Rechnen: die Aufgabe OHNE Karte.
@@ -1765,6 +1767,43 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
        * die Zahl antippen. Kommt die Wertung durch, gilt für diesen
        * Bildschirm dasselbe wie für die Karte: Band, Sterne, Aufkleber.
        */
+      /* Schreiben: die Aufgabe ohne Karte UND ohne Antwortliste.
+       *
+       * Gespielt wird derselbe Weg, den Fiona geht - erst die Vorlage
+       * nachfahren, dann denselben Buchstaben frei schreiben. Der
+       * Abschnitt `schreiben` sieht dasselbe genauer an; hier gehoert es
+       * her, weil `durchgang` beweist, dass JEDE Ebene eines Kindes
+       * spielbar ist. Ohne diesen Zweig lief er in eine
+       * Zeitueberschreitung und meldete nebenbei, Fiona bekomme eine
+       * Aufgabe nicht vorgelesen - beides derselbe fehlende Zweig. */
+      if (await p.$('.schirm.da .schreibblatt')) {
+        if (VORLESEN[wer])
+          await bis(p, () => (window.__gesagt || []).some(t => /nach\.?$/.test(t.trim())), 4000);
+        const zuege = await schreibVorlage(p);
+        if (!zuege.length) {
+          merke('durchgang', new Error(`${wer}/${ebene}: keine Vorlage zum Nachfahren`));
+          continue;
+        }
+        for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
+        for (const d of zuege)
+          await zeichneZug(p, Schreiben.abtasten(d, 26)
+            .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
+        wege.add(`${wer}: geschrieben`);
+        await bewertet(p);
+        const gesagtS = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+        if (/Fahre den Buchstaben nach/.test(gesagtS)) gehoert[wer] = (gehoert[wer] || 0) + 1;
+        const rs = await p.evaluate(() => {
+          const f = document.querySelector('.schirm.da .frage');
+          return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
+        });
+        if (!/^✓ /.test(rs || ''))
+          merke('durchgang', new Error(`${wer}/${ebene}: nachgefahren und geschrieben → „${rs}"`));
+        lobPruefen(wer, ebene, rs, gesagtS);
+        durchgespielt++;
+        await weitergegangen(p);
+        await raus(p);
+        continue;
+      }
       if (await p.$('.schirm.da .rechnung')) {
         /* Auf die Ansage warten - aber nur, wo eine kommen MUSS.
          *
@@ -2100,12 +2139,12 @@ if (laeuft('schreiben')) try {
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'schreiben:buchstaben');
   await p.click('[data-ebene="schreiben:buchstaben"]');
-  await p.waitForSelector('.schirm.da #los, .schirm.da .feld', { timeout: 25000 });
+  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 25000 });
   await durchVorlaufWenn(p);
-  await p.waitForSelector('.schirm.da .feld', { timeout: 15000 });
+  await p.waitForSelector('.schirm.da .schreibblatt', { timeout: 15000 });
 
   // Das Feld muss QUADRATISCH sein - daran hing der Fehler oben.
-  const kasten = await p.$eval('.schirm.da .feld', e => {
+  const kasten = await p.$eval('.schirm.da .schreibblatt', e => {
     const r = e.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)];
   });
   if (Math.abs(kasten[0] - kasten[1]) > 2)

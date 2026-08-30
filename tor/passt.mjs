@@ -365,12 +365,12 @@ for (const g of GERAETE) {
   await p.waitForSelector('.schirm.da [data-welt="schreiben"]');
   await zurEbenenwahl(p, 'schreiben:buchstaben');
   await tipp('[data-ebene="schreiben:buchstaben"]');
-  await p.waitForSelector('.schirm.da #los, .schirm.da .feld', { timeout: 20000 });
+  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 20000 });
   if (await p.$('.schirm.da #los')) {
     await schau('Vorlauf schreiben');
     await durchVorlauf(p);
   }
-  await p.waitForSelector('.schirm.da .feld');
+  await p.waitForSelector('.schirm.da .schreibblatt');
   await schau('Schreiben');
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da #null');
@@ -402,6 +402,8 @@ for (const g of GERAETE) {
   await schau('Weltenwahl (Lea)');
 
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
+  if (process.argv.includes('--hinweise'))
+    meldungen.filter(m => m.includes('HINWEIS')).forEach(m => console.log(`            ${m}`));
   if (echte.length) {
     console.log(`    ROT   ${g.n.padEnd(16)} ${g.w}×${g.h} — ${echte.length} nicht erreichbar`);
     echte.forEach(m => console.log(`            ${m}`));

@@ -145,11 +145,11 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **N2a** Buchstaben nachfahren, Striche vergleichen | Fiona | hoch | groß | — |
-| 2 | **N3** Buchstabe vorgelesen, selbst schreiben | Fiona | hoch | mittel | N2a |
-| 3 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | N2a |
-| 4 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
-| 4a | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | N2a |
+| ~~1~~ | ~~**N2a** Buchstaben nachfahren~~ | Fiona | hoch | groß | **gefahren** |
+| 1 | **N3** Buchstabe vorgelesen, selbst schreiben | Fiona | hoch | mittel | — |
+| 2 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | — |
+| 3 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
+| 4 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 5 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
 | 6 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
 | 7 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
@@ -164,6 +164,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 16 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
 | 17 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
 | 18 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
+| 19 | **S3** Die Buchstabenkarten im Vorlauf sind 42 statt 44 pt hoch | Fiona | gering | klein | — |
 
 ---
 
@@ -205,7 +206,7 @@ auf denselben Ablageschlüssel legen — dann muss die Prüfung rot werden.
 
 ---
 
-### N2a · Buchstaben nachfahren — das große neue Spiel, nur für Fiona
+### N2a · Buchstaben nachfahren  ·  ERLEDIGT
 
 **Ziel.** Ein Buchstabe steht groß auf dem Bildschirm, zum Beispiel ein A.
 Fiona fährt ihn mit dem Finger nach. Danach — weiter unten oder auf einem
@@ -243,13 +244,35 @@ gäbe es keinen Maßstab, an dem man messen könnte, ob das Netz überhaupt
 etwas fängt. Die Strenge kommt aus W-B: nachfahren locker, frei schreiben
 mittel, nach drei Fehlversuchen wird vorgemacht.
 
-**Abnahme (Entwurf).** Ein Tor `schreiben` spielt gezeichnete Züge ein —
+**Erledigt.** Die dritte Welt steht (nur Fiona sieht sie), 26 Buchstaben in
+einer kleinen Pfadsprache, Nachfahren Zug für Zug und freies Schreiben mit
+Erkennung. Die Schwellen sind **gemessen**, nicht gegriffen: der Raum wurde
+durchprobiert (siehe die Tabelle in `src/inhalt/schreiben.js`), und der
+erste Entwurf hätte jedes vierzehnte Gekritzel zum Buchstaben erklärt, ohne
+dafür einen Buchstaben mehr zu erkennen.
+
+Drei Fehler fand nur der **Blick**, keiner ein Tor: `hidden` wurde von
+`.zahlen{display:flex}` überstimmt (Lea sah beim Rechnen die Auswahl UND
+das Tippfeld), `aspect-ratio` auf einem SVG tut nichts (das Schreibfeld war
+820 × 180 statt quadratisch), und `hidden` gibt es auf einem SVG-Element
+gar nicht (der grüne Anfangspunkt blieb stehen). Zwei weitere fand das neue
+Tor selbst: O und Q waren überhaupt nicht nachzufahren, und ein halb
+gezogener kurzer Strich galt als fertig.
+
+**Abnahme, gefahren.** Ein Tor `schreiben` spielt gezeichnete Züge ein —
 also echte Punktfolgen, keine Bilder — und prüft: ein sauber nachgefahrenes
 A wird angenommen; ein A, das die Vorlage um mehr als die erlaubte Breite
 verlässt, nicht; ein frei geschriebenes A wird als A erkannt; ein O wird
 **nicht** als A erkannt (das ist die Hälfte, die zählt — Regel 1). Und
 `passt` nimmt den Schreibbildschirm auf allen 7 Größen mit: eine
 Schreibfläche, die auf 844 × 390 zu klein ist, ist keine.
+
+Gemessen ist das jetzt: 26 von 26 Vorlagen erkennen sich selbst, **96,9 %**
+der krumm geschriebenen werden richtig gelesen, **0,7 %** werden für einen
+anderen Buchstaben gehalten, **0 von 400** Gekritzeln gelten als Buchstabe.
+Die Schreibfläche ist auf dem Zielgerät **262 × 262** Punkte — quadratisch,
+weil das Werkzeug im kurzen Querformat daneben statt darunter steht (180
+gegen 270 Punkte Höhe, gemessen). Vier stehende Gegenproben.
 
 ---
 
@@ -415,6 +438,13 @@ hinein.
 **P3 · Der Größenwächter in `vergleich`** (mindestens 100 Treffer, 50
 Nicht-Treffer im eingefrorenen Korpus) ist die einzige Prüfung ohne
 Gegenprobe — weil ihr Gegenstand noch nicht existiert. Fällt mit M4r.
+
+**S3 · Die Buchstabenkarten im Vorlauf sind zwei Punkte zu klein.**
+Gemessen mit `npm run passt -- --hinweise` auf dem iPhone quer mit Leiste:
+die 26 Karten des Abc sind **42 pt** hoch, die Zielmarke ist 44. `passt`
+führt das als Hinweis, nicht als Fehler — zu Recht, es sind zwei Punkte.
+Es steht hier, weil ausgerechnet diese Karten das sind, was Fiona antippt,
+um „A wie Affe" zu hören.
 
 **P4 · Die Regelnummern im Quelltext zeigen in eine andere Regelliste.**
 Gemessen am 30.08.2026: **92 Verweise der Form „Regel N"** stehen in `tor/`,

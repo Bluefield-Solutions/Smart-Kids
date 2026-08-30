@@ -60,6 +60,12 @@ const melde = (name, r, ms) => {
 // 1. Alles, was ohne Browser auskommt. Zusammen unter einer Sekunde.
 for (const [name, datei] of [['inhalt (7 Prüfungen)', 'tor/inhalt.mjs'],
                              ['spielprobe', 'tor/spielprobe.mjs'],
+                             // Die Buchstabenerkennung: 1040 verkrummte
+                             // Vorlagen und 400 Gekritzel, in rund vier
+                             // Sekunden. Billig genug fuer jede Aenderung -
+                             // und sie haengt an zwei Schwellen, die man
+                             // beim Justieren leicht zu weit schiebt.
+                             ['schreiben', 'tor/schreiben.mjs'],
                              ['vergleich', 'tor/vergleich.mjs']]) {
   const a = Date.now(); const r = await lauf(datei); melde(name, r, Date.now() - a);
   if (r.code !== 0) { console.log(r.aus.split('\n').slice(-14).join('\n')); process.exit(1); }
