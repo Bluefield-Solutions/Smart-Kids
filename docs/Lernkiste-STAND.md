@@ -4166,3 +4166,78 @@ Die Sammlung selbst füllt die Breite ab sechs Aufklebern vollständig
 (gemessen: 2 → 499 px rechts leer, 6 → 0, 14 → 0). Das ist der Unterschied
 zum Vorlauf, wo `auto-fill` acht Spuren für sechs Karten anlegte und der
 Rest **nie** dazukam.
+
+---
+
+## Runde: `rhythmus` zählte Commits, wo es Tage messen sollte
+
+Nach der letzten Sitzung stand das Tor auf **47 Runden Rückstand** — obwohl
+jede Probe am selben Tag bezeugt worden war. Ein Tor, das nach jeder
+Arbeitssitzung rot ist, ist auf dem Weg, ignoriert zu werden. Und genau das
+ist die Verfallsart, die es abfangen soll.
+
+### Die Größe war falsch, nicht die Grenze
+
+Gezählt wurden „Runden am Code": Commits, die `src`, `prototyp`, `tor`,
+`tools` oder `package.json` anfassen. Ein Commit ist aber **kein Maß für
+Veränderung** — ich mache viele kleine, jemand anders macht einen großen.
+Die Zahl hing an der Commit-Gewohnheit, nicht an der Sache.
+
+Was das Tor laut seinem eigenen Kopf abfangen soll, steht dort seit jeher:
+*dass der volle Lauf nicht mehr stattfindet*. **Das misst man in Tagen.**
+Der Runner fährt ihn jede Nacht, also ist alles null oder einen Tag alt,
+solange er fährt. Drei Tage lassen ein verpasstes Wochenende durch.
+
+Damit fallen **achtzig Zeilen Git** weg: `rev-list --count`, `merge-base
+--is-ancestor`, ein Durchgang durch alle Fassungen der Standdatei, um zu
+finden, wo ein Eintrag zuerst auftaucht. Jede Zeile hatte ihren Grund, und
+alle Gründe hingen daran, dass in Commits gezählt wurde. Diese Rechnerei hat
+die Auslieferung einmal fünf Runden rot gehalten und verlangte
+`fetch-depth: 0` in zwei Arbeitsabläufen. Ein Datum steht in der Datei.
+
+### Die Frage, für die in Commits gezählt wurde, ist damit offen — und besser beantwortet
+
+„Ist eine Probe seit ihrem Nachweis durch eine Änderung stumm geworden?" —
+dafür war das Zählen gedacht, und dafür hat es nie funktioniert.
+
+`inhalt` beantwortet sie jetzt **in einer Millisekunde, bei jeder
+Änderung**: findet jede Gegenprobe ihren Suchtext noch? **Fünf der sieben
+stummen Proben** aus dem letzten vollen Lauf hätten genau daran
+angeschlagen — am Tag ihres Todes statt sechs Wochen später.
+
+Das ersetzt den vollen Lauf nicht: ob ein Tor *wirklich* anschlägt und dabei
+das Richtige meldet, sagt nur er. Aber die häufigste Verfallsart ist jetzt
+in der Kette, und zwar zum Nulltarif.
+
+Dafür steht die Probenliste in **`tor/proben-liste.mjs`** und wird gelesen
+statt aus dem Quelltext geklaubt. Der alte Ausdruck in `rhythmus`
+(`/^\s*\{ n:'([^']+)'/gm`) hat schon einmal einen Namen aus einem *Kommentar*
+mitgezählt und siebzig Proben gemeldet, wo neunundsechzig standen.
+
+### Drei Anläufe für eine Gegenprobe — jedes Mal Selbstbezug
+
+Die neue Prüfung braucht eine Gegenprobe: *eine Gegenprobe greift ins
+Leere*. Sie ist dreimal danebengegangen, und jedes Mal unauffällig:
+
+1. Sie nahm den Suchtext einer anderen Probe wörtlich — und traf damit als
+   erstes **ihre eigene Zeile** in derselben Liste. Verstellt wurde die
+   Gegenprobe, das Ziel blieb unberührt, `inhalt` meldete grün.
+2. Umgangen mit `SITZ[T]` im Ausdruck (trifft `SITZT`, aber nicht sich
+   selbst) — und traf dann die **`fehlt`-Zeile**, in der derselbe Text noch
+   einmal steht.
+3. Erst der dritte Anlauf ließ den schlaueren Ausdruck weg und wechselte das
+   **Ziel**: eine Zeile in `spiel.js` ändern, die zwei Proben als Suchtext
+   tragen. Der Eingriff sitzt jetzt dort, wo im Ernstfall auch gearbeitet
+   wird, und die Liste bleibt unberührt.
+
+Eine Gegenprobe, die in die Liste greift, in der sie selbst steht, ist ein
+Sonderfall von Regel 13 — und einer, den man nur sieht, wenn man den
+Eingriff nachrechnet statt ihm zu glauben.
+
+### Und eine, die das Falsche traf
+
+*„ein Nachweis, dessen Alter sich nicht bestimmen lässt"* setzte ein
+ungültiges Datum — und traf das `"zeit"` **ganz oben** in der Standdatei,
+das des Laufs statt das eines Eintrags. `rhythmus` liest es gar nicht. Der
+Eingriff kam an und traf das Falsche: die unauffälligste Art,
+danebenzugreifen, denn „angekommen" meldet der Lauf brav.
