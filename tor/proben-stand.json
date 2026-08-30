@@ -580,6 +580,10 @@
     "endet die Erkennung von selbst, merkt die App es nicht": {
       "commit": "6c30fc66abc0b2c11d038d400eb1c08a3129a7fe",
       "zeit": "2026-08-30"
+    },
+    "der Ausschnitt schneidet wieder Bestimmungswörter ab": {
+      "commit": "48a79ad16d9bf9d11c8e56fdccde26e23a91ef40",
+      "zeit": "2026-08-30"
     }
   }
 }

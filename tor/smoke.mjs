@@ -2943,15 +2943,26 @@ if (laeuft('sprechen')) try {
         + 'aufgelöst — nicht verstanden ist kein Fehlversuch, das Kind hat nicht ein '
         + 'einziges Mal falsch geraten'));
 
-    // b) Der ganze Satz - der gemeldete Fall.
+    /* b) Der ganze Satz - der gemeldete Fall.
+     *
+     * NICHT „Das ist X": genau diese Wendung stand in der alten
+     * Fuellwortliste und kam auch vorher schon durch. Die Gegenprobe hat
+     * das gemeldet - sie stellte den alten Zustand her, und der Rauchtest
+     * blieb gruen. Eine Pruefung, die der Fehler passieren kann, prueft
+     * ihn nicht (Regel 13).
+     *
+     * „Ich glaube das ist X" faellt durch die alte Liste: sie streicht
+     * genau EIN Fuellwort am Anfang, und danach steht immer noch „das ist
+     * X" da. */
+    const SATZ = (n) => `Ich glaube das ist ${n}`;
     await p.click('.schirm.da #mikro');
-    await p.evaluate((n) => window.__sprich(`Das ist ${n}`, false), name);
+    await p.evaluate((t) => window.__sprich(t, false), SATZ(name));
     const zwischen = (await zustand()).satz;
-    await p.evaluate((n) => window.__sprich(`Das ist ${n}.`, true), name);
+    await p.evaluate((t) => window.__sprich(t, true), SATZ(name) + '.');
     const gewertet = await bis(p,
       () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
     if (!gewertet)
-      merke('sprechen', new Error(`„Das ist ${name}." gesprochen und nichts gewertet — `
+      merke('sprechen', new Error(`„${SATZ(name)}." gesprochen und nichts gewertet — `
         + `auf dem Bildschirm steht „${(await zustand()).satz}". Genau das war der Befund`));
 
     // c) Die zweite Lesart. Neue Aufgabe abwarten, sonst ist `erledigt` gesetzt.
@@ -2976,7 +2987,7 @@ if (laeuft('sprechen')) try {
       }
     }
     if (gewertet) console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
-      + `3× nicht verstanden ohne Versuch, „Das ist ${name}." gewertet `
+      + `3× nicht verstanden ohne Versuch, „${SATZ(name)}." gewertet `
       + `(zwischendurch: „${zwischen}"), ${zweite}`);
   }
   await p.close();
