@@ -17,6 +17,7 @@ import * as R from '../src/inhalt/rechnen.js';
 import * as L from '../src/kern/leitner.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as V from '../src/vergleich/vergleich.js';
+import * as Ri from '../src/kern/richtung.js';
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
 import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
 import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
@@ -487,6 +488,49 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   console.log(`    Was geschafft war, bleibt: ${gelegenheiten} falsche Antworten auf `
     + `Gegenstände mit Aufkleber, ${verluste} verlorene Aufkleber, `
     + `${rundeZu}× eine offene Runde wieder zu`);
+}
+
+/* ---- Jede Ablehnung nennt einen Grund (A3) ---------------------------
+ *
+ * Beim Ziehen sagte die App bis hierher „Nicht ganz - probier es noch
+ * einmal." Jetzt nennt sie das Gebiet unter dem Finger und die Richtung
+ * zum gesuchten. Die Richtung ist eine Rechnung und wird hier gepruefet -
+ * ohne Browser, an allen acht Himmelsrichtungen und an der Naehe.
+ *
+ * Warum ueberhaupt geprueft: ein Hinweis, der in die FALSCHE Richtung
+ * zeigt, ist schlimmer als keiner. Er schickt ein Kind weg von der
+ * Stelle, an der es fast richtig lag.
+ */
+{
+  const w = 200;
+  const soll = [
+    [ 0, -w, 'weiter oben'],        [ 0,  w, 'weiter unten'],
+    [-w,  0, 'weiter links'],       [ w,  0, 'weiter rechts'],
+    [ w, -w, 'weiter oben rechts'], [-w, -w, 'weiter oben links'],
+    [ w,  w, 'weiter unten rechts'],[-w,  w, 'weiter unten links'],
+  ];
+  for (const [dx, dy, wort] of soll) {
+    const ist = Ri.richtungswort(dx, dy);
+    if (ist !== wort) fehler.push(`Richtung (${dx}|${dy}): „${ist}" statt „${wort}" — `
+      + 'ein Hinweis in die falsche Richtung schickt ein Kind weg vom Ziel');
+    geprueft++;
+  }
+  // Und die HAELFTE, die zaehlt: ganz nah gibt es keine Richtung. „Weiter
+  // oben" waere dort falscher als nichts.
+  for (const [dx, dy] of [[0, 0], [10, -12], [-25, 20]]) {
+    if (Ri.richtungswort(dx, dy) !== null)
+      fehler.push(`Richtung (${dx}|${dy}): „${Ri.richtungswort(dx, dy)}" statt keiner — `
+        + `wer weniger als ${Ri.NAH} Punkte danebenliegt, hat nicht in die falsche `
+        + 'Richtung gedacht, sondern den Finger nicht genau genug gesetzt');
+    geprueft++;
+  }
+  // Und dass die Naehe ueberhaupt eine Grenze IST: knapp darueber muss ein
+  // Wort kommen, sonst prueft die Zeile darueber eine Selbstverstaendlichkeit.
+  if (Ri.richtungswort(0, -(Ri.NAH + 5)) === null)
+    fehler.push(`Knapp über ${Ri.NAH} Punkten kommt immer noch keine Richtung — `
+      + 'dann ist die Grenze keine Grenze, sondern ein Deckel');
+  geprueft++;
+  console.log(`    Richtungen: 8 Himmelsrichtungen und die Nähe (${Ri.NAH} px) geprüft`);
 }
 
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);

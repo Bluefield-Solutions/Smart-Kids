@@ -1232,15 +1232,28 @@ export const PROBEN = [
     an:{ ...DIST, text:'const SITZT = 5' },
     sagt:'in voller Farbe' },
 
-  // Die Ebenenwahl ohne Sterne und Aufkleber. Auf dem Zielgeraet blieb
-  // dann GAR NICHTS uebrig: Balken und Ueberzeile sind im kurzen
-  // Querformat ausgeblendet, und die Zahl daneben liest Fiona nicht.
-  { n:'die Ebenenwahl zeigt keine Sterne und Aufkleber mehr', tor:'smoke', args:['--nur=ablage'],
+  // Die Ebenenwahl ohne Aufkleber. Auf dem Zielgeraet bliebe dann GAR
+  // NICHTS uebrig: Balken und Ueberzeile sind im kurzen Querformat
+  // ausgeblendet, und die Zahl daneben liest Fiona nicht.
+  { n:'die Ebenenwahl zeigt keine Aufkleber mehr', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
-    such:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${',
-    ersatz:'<div class="stand">${\'\'}${',
-    an:{ ...DIST, fehlt:'sterne(sterneFuer(b.gesammelt, b.gesamt), 20)' },
-    sagt:'Sterne statt drei' },
+    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}</div>',
+    ersatz:'<div class="stand"></div>',
+    an:{ ...DIST, fehlt:'<div class="stand">${kleberMarke(b.gesammelt' },
+    sagt:'nennt die Aufkleber nicht' },
+
+  /* Und die Sterne kommen auf die Kachel zurueck (S1).
+   *
+   * Das ist der Originalbefund: dieselbe Form meinte im Kopf die Sitzung
+   * und auf der Kachel den Lebensfortschritt. Ein Kind spielt fehlerfrei,
+   * sieht drei Sterne, tippt auf „Weiter" - und sieht einen. Der Rueckweg
+   * ist eine Zeile, und niemand wuerde ihn bemerken. */
+  { n:'die Sterne kommen auf die Ebenenkachel zurueck', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:D,
+    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}</div>',
+    ersatz:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${kleberMarke(b.gesammelt, b.gesamt)}</div>',
+    an:{ ...DIST, text:'sterne(sterneFuer(b.gesammelt, b.gesamt), 20)' },
+    sagt:'zeigt wieder' },
 
   // Der Balken sagt wieder etwas anderes als die Zahl daneben - der
   // Originalbefund vom Endbildschirm, nachgestellt an der Ebenenwahl.
@@ -1436,6 +1449,30 @@ export const PROBEN = [
     ersatz:'| | Fiona (6) | Lea (8) | Stephan |',
     an:{ datei:'docs/Lernkiste-BACKLOG.md', fehlt:'| Stephan | Violeta |' },
     sagt:'nimmt jedem Tor ein Profil' },
+
+  /* --- Der Fehler wird benannt (A3) ------------------------------------ *
+   *
+   * Zwei Proben, und die zweite ist die unangenehme: ein Hinweis, der in
+   * die FALSCHE Richtung zeigt, sieht aus wie ein Hinweis. Er schickt ein
+   * Kind weg von der Stelle, an der es fast richtig lag, und niemandem
+   * faellt es auf - der Satz ist ja da. */
+
+  // 1. Zurueck zur Ablehnung ohne Auskunft.
+  { n:'der Fehlgriff auf der Karte wird nicht mehr benannt', tor:'smoke',
+    args:['--nur=hinweis'], bauen:true, datei:D,
+    such:"      else text = zugHinweis(roh, ctx);",
+    ersatz:"      else text = 'Nicht ganz — probier es noch einmal.';",
+    an:{ ...DIST, fehlt:'else text = zugHinweis(roh, ctx);' },
+    sagt:'nennt nicht' },
+
+  // 2. Die Richtung zeigt weg. Oben und unten vertauscht - im Browser
+  //    waechst y nach UNTEN, und genau diese Umkehr vergisst man.
+  { n:'der Hinweis zeigt in die falsche Richtung', tor:'smoke',
+    args:['--nur=hinweis'], bauen:true, datei:'src/kern/richtung.js',
+    such:"  const senk = dy < 0 ? 'oben' : 'unten';",
+    ersatz:"  const senk = dy < 0 ? 'unten' : 'oben';",
+    an:{ ...DIST, text:"dy < 0 ? 'unten' : 'oben'" },
+    sagt:'der Hinweis sagt' },
 
   /* --- Fachwelten (D4) ------------------------------------------------ */
 

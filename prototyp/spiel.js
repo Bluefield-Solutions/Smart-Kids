@@ -95,6 +95,31 @@ const sterne=(n,g)=>`<div class="sterne">${[0,1,2].map(i=>STERN(i<n?'var(--stern
  * `bisher` ist die Zahl der schon beantworteten Aufgaben: im Kopf waechst
  * die Anzeige damit waehrend der Runde mit, statt am Ende zu springen.
  */
+/* ---- Sterne heissen EINE Sache: wie die Sitzung lief (S1) -------------
+ *
+ * Bis hierher stand dieselbe Sternform an zwei Orten und meinte zweierlei:
+ * im Kopf und auf dem Endbildschirm die SITZUNG (drei Sterne = fehlerfrei),
+ * auf der Ebenenkachel den LEBENSFORTSCHRITT. Ein Kind spielte also
+ * fehlerfrei, sah drei Sterne, tippte auf „Weiter" - und sah auf der
+ * Kachel einen. Dieselbe Form, dieselbe Farbe, zwei Bedeutungen. Fuer eine
+ * Sechsjaehrige ist das nicht differenziert, sondern ein Wortbruch.
+ *
+ * Und daneben lag S2: auf der Kachel standen Sterne und Balken als
+ * ANTEIL, die Aufkleberzahl als ANZAHL. Auf einer Aufnahme sah man
+ * „Bundeslaender: 1 Stern, 9 Aufkleber" neben „Asien: 2 Sterne, 2
+ * Aufkleber" - wer die Kacheln vergleicht, und Kinder vergleichen sie,
+ * liest das Gegenteil dessen, was dasteht.
+ *
+ * Beides ist mit EINER Entscheidung erledigt: die Sterne gehoeren der
+ * Sitzung. Auf der Kachel steht, wie weit die Ebene ist - die
+ * Aufkleberzahl (Anzahl, mit anteilig gefuelltem Zeichen) und der
+ * zweiteilige Balken. Zwei Aussagen statt vier, und keine widerspricht
+ * einer anderen.
+ *
+ * `tor/inhalt.mjs` setzt das durch: jeder Aufruf von `sterneFuer` muss
+ * `st.glatt` bekommen. Eine Regel, die nur hier stuende, waere beim
+ * naechsten Bildschirm wieder vergessen.
+ */
 function sterneFuer(glatt, gesamt){
   if (!gesamt) return 0;
   const anteil = glatt / gesamt;
@@ -1100,8 +1125,7 @@ async function ebenenwahl(){
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
           <div class="kachelfuss">
-            <div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${
-              kleberMarke(b.gesammelt, b.gesamt)}</div>
+            <div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}</div>
             ${fortschrittBalken(b)}
           </div>
         </button>
@@ -2711,7 +2735,10 @@ function spielschirm(){
       const t = zielUnter(ev.clientX, ev.clientY);
       const von = b.getBoundingClientRect();
       aufraeumen();
-      if (t) { bewerte(k.name,'ziehen',{ etikett:b, getroffen:t.id }); return; }
+      // Der Ablegepunkt wandert mit: aus ihm und dem Anker des gesuchten
+      // Gebiets wird der Hinweis „liegt weiter oben" (A3).
+      if (t) { bewerte(k.name,'ziehen',
+        { etikett:b, getroffen:t.id, punkt:{ x:ev.clientX, y:ev.clientY } }); return; }
       // Ins Leere gezogen. Das ist keine falsche Antwort - es war gar
       // keine. Es kostet keinen Versuch, aber es bleibt sichtbar: das
       // Etikett fliegt an seinen Platz zurueck und sagt, was fehlt.
@@ -2755,6 +2782,48 @@ function spielschirm(){
    */
   const kopfNachziehen = () => kopfNachziehenIn(s);
 
+  /**
+   * Der Fehler wird BENANNT, nicht nur abgelehnt (A3).
+   *
+   * Bis hierher stand bei jedem Fehlgriff auf der Karte „Nicht ganz -
+   * probier es noch einmal." Das ist der Vorwurf, den sich ANTON
+   * einfaengt: eine Ablehnung ohne Auskunft. Die Daten fuer eine bessere
+   * Antwort liegen laengst da - jedes Gebiet hat einen Anker.
+   *
+   * Zwei Auskuenfte, und beide nur, wenn sie stimmen:
+   *
+   *   WAS DA IST   der Name des Gebiets unter dem Finger. Ihn gibt es
+   *                nur fuer Gebiete dieser Ebene; auf einer Kontinent-
+   *                karte liegt ringsum Umgebung ohne Namen.
+   *   WO ES HIN MUSS  die Richtung vom Ablegepunkt zum Anker des
+   *                gesuchten Gebiets - in BILDSCHIRMpunkten, denn der
+   *                Satz beschreibt, was das Kind sieht.
+   *
+   * Wer nur ein paar Punkte danebenliegt, bekommt KEINE Richtung: „weiter
+   * oben" waere dort falscher als nichts - es schickte ihn weg von der
+   * Stelle, an der er fast richtig lag. Dann sagt der Satz genau das.
+   */
+  function zugHinweis(roh, ctx){
+    const wo = NAMEN[ctx.getroffen];
+    const fremd = wo && ctx.getroffen !== ziel.id;
+    // Der Anker des gesuchten Gebiets auf dem Schirm - dieselbe Rechnung
+    // wie beim Namensschild und beim Schreibblatt.
+    let richtung = null;
+    const svg = s.querySelector('.karte svg');
+    if (svg && ziel.anker && ctx.punkt) {
+      const pt = svg.createSVGPoint();
+      pt.x = ziel.anker[0]; pt.y = ziel.anker[1];
+      const q = pt.matrixTransform(svg.getScreenCTM());
+      richtung = Richtung.richtungswort(q.x - ctx.punkt.x, q.y - ctx.punkt.y);
+    }
+    const teile = [];
+    if (fremd) teile.push(`Das ist ${wo}.`);
+    if (roh === ziel.name && !fremd) teile.push('Der Name stimmt.');
+    teile.push(richtung ? `${ziel.name} liegt ${richtung}.`
+                        : `${ziel.name} ist ganz nah — schau noch mal genau hin.`);
+    return teile.join(' ');
+  }
+
   /* --- Bewertung. EIN Ort, egal welcher Eingabeweg. --- */
   async function bewerte(roh, eingabeart, ctx){
     if (erledigt) return;
@@ -2775,8 +2844,7 @@ function spielschirm(){
       else text='Nicht ganz — probier es noch einmal.';
     } else if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
-      else if (roh===ziel.name) text='Fast! Der Name stimmt — aber das ist ein anderes Gebiet.';
-      else text='Nicht ganz — probier es noch einmal.';
+      else text = zugHinweis(roh, ctx);
     } else if (eingabeart==='tippen') {
       // Das ganze Gebiet, nicht nur sein Name - sonst zaehlt kein Alias.
       const r = Vergleich.rechtschreibung(roh, ziel);

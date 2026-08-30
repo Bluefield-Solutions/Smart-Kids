@@ -345,6 +345,33 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
     + `in ihre Datei (${mehrfach} ausdrücklich mehrfach)`);
 }
 
+/* Sterne heissen EINE Sache: wie die Sitzung lief (S1).
+ *
+ * Dieselbe Form stand an zwei Orten und meinte zweierlei - im Kopf und auf
+ * dem Endbildschirm die Sitzung, auf der Ebenenkachel den
+ * Lebensfortschritt. Ein Kind spielte fehlerfrei, sah drei Sterne, tippte
+ * auf „Weiter" und sah auf der Kachel einen.
+ *
+ * Geprueft wird an der ZAHL, die hineingeht, nicht an der Stelle, an der
+ * gezeichnet wird: `sterneFuer` bekommt ueberall `st.glatt`. Wer die
+ * Sterne kuenftig woanders hinsetzen will, darf das - solange sie
+ * dieselbe Zahl meinen.
+ */
+{
+  const quelle = fs.readFileSync('prototyp/spiel.js', 'utf8');
+  // Die DEFINITION zaehlt nicht als Aufruf - `function sterneFuer(glatt,
+  // gesamt)` hat den Ausdruck beim ersten Anlauf prompt rot gemacht.
+  const rufe = [...quelle.matchAll(/(?<!function )sterneFuer\(([^)]*)\)/g)]
+    .map(m => m[1].trim());
+  pruefe(rufe.length >= 3, `nur ${rufe.length} Sternstellen gefunden — `
+    + 'der Ausdruck greift ins Leere, die Prüfung beweist nichts');
+  const fremd = rufe.filter(r => !/^st\.glatt\b/.test(r));
+  pruefe(!fremd.length, `Sterne aus einer anderen Zahl als der Sitzung: `
+    + `${fremd.map(r => `sterneFuer(${r})`).join(', ')} — dieselbe Form für zwei `
+    + 'Bedeutungen, und ein Kind liest sie als dieselbe Aussage');
+  console.log(`    Sterne: ${rufe.length} Stellen, alle aus \`st.glatt\``);
+}
+
 /* Jede Pause, die einen Bildschirm weiterschaltet, geht durch `schauPause`.
  *
  * Der Anlass ist gemessen, nicht ausgedacht: der Kartenweg hatte seine

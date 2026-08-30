@@ -527,7 +527,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang',
-                    'pausen', 'schreiben'];
+                    'pausen', 'schreiben', 'hinweis'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
   const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
@@ -673,16 +673,22 @@ if (laeuft('ablage')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'bundeslaender');
-  /* Die Ebenenwahl trägt jetzt Sterne, Aufkleber und einen Balken statt
-   * der Zeile „0 von 16". Auf dem Zielgerät war von dieser Zeile ohnehin
-   * nur die Zahl übrig: Balken und Überzeile sind im kurzen Querformat
+  /* Die Ebenenwahl trägt Aufkleber und einen Balken statt der Zeile
+   * „0 von 16". Auf dem Zielgerät war von dieser Zeile ohnehin nur die
+   * Zahl übrig: Balken und Überzeile sind im kurzen Querformat
    * ausgeblendet, und Fiona liest keine Zahlen.
    *
-   * Geprüft wird nicht, dass die drei DA sind - das wäre eine Zusage über
+   * Geprüft wird nicht, dass sie DA sind - das wäre eine Zusage über
    * Markup. Geprüft wird, dass sie DASSELBE sagen: der gefüllte Streifen
    * des Balkens muss dem Verhältnis entsprechen, das die Zahl daneben
    * nennt. Genau das stimmte auf dem Endbildschirm nicht (Balken auf einem
    * Viertel, Zahl auf null), und genau das kann wieder auseinanderlaufen.
+   *
+   * STERNE stehen hier seit S1 nicht mehr. Sie meinten auf der Kachel den
+   * Lebensfortschritt und im Kopf die Sitzung - dieselbe Form für zwei
+   * Aussagen. Geprüft wird jetzt, dass sie WEG sind: eine Anzeige, die
+   * zurückkommt, ohne dass es jemand merkt, ist derselbe Fehler noch
+   * einmal.
    */
   const kachel = await p.evaluate(() => {
     const k = document.querySelector('[data-ebene="bundeslaender"]');
@@ -701,11 +707,12 @@ if (laeuft('ablage')) try {
   });
   if (!kachel) merke('ebenenwahl', new Error('die Kachel „Bundesländer" ist verschwunden'));
   else {
-    fortschritt = `${kachel.voll}/3 Sterne, ${kachel.kleber} von ${kachel.gesamt} Aufkleber, `
-      + `Balken ${kachel.fest}`;
-    if (kachel.sterne !== 3)
-      merke('ebenenwahl', new Error(`die Kachel zeigt ${kachel.sterne} Sterne statt drei — `
-        + 'ohne sie steht dort für ein Kind, das nicht liest, gar nichts'));
+    fortschritt = `${kachel.kleber} von ${kachel.gesamt} Aufkleber, `
+      + `Balken ${kachel.fest}, keine Sterne`;
+    if (kachel.sterne)
+      merke('ebenenwahl', new Error(`die Kachel zeigt wieder ${kachel.sterne} Sterne — `
+        + 'sie meinen dort den Lebensfortschritt, im Kopf aber die Sitzung. '
+        + 'Ein Kind spielt fehlerfrei, sieht drei, tippt auf „Weiter" und sieht einen'));
     if (kachel.kleber === null || kachel.gesamt === null)
       merke('ebenenwahl', new Error('die Kachel nennt die Aufkleber nicht'));
     else if (kachel.kleber < 1)
@@ -2643,6 +2650,83 @@ if (laeuft('schreiben')) try {
 
   await eigenerCtx.close();
 } catch (e) { merke('schreiben', e); }
+
+
+/* --- Der Fehler wird benannt, auch beim Ziehen (A3) --------------------
+ *
+ * Bis hierher sagte die App bei jedem Fehlgriff auf der Karte „Nicht ganz
+ * - probier es noch einmal." Jetzt nennt sie das Gebiet unter dem Finger
+ * und die Richtung zum gesuchten: „Das ist Schleswig-Holstein. Thüringen
+ * liegt weiter unten."
+ *
+ * Geprueft wird im BROWSER, weil die Richtung an der gezeichneten Karte
+ * haengt: `spielprobe` prueft das Wort, hier steht der Satz. Und er wird
+ * an einem Fall geprueft, bei dem die Antwort feststeht - abgelegt wird
+ * auf dem am weitesten entfernten Bundesland, damit die Richtung
+ * eindeutig ist und der Satz nicht vom Zufall der Aufgabe abhaengt.
+ */
+if (laeuft('hinweis')) try {
+  const p = await neueSeite({ width: 1180, height: 820 }, ctx);
+  await p.click('[data-profil="fiona"]');
+  await zurEbenenwahl(p, 'bundeslaender');
+  await p.click('[data-ebene="bundeslaender"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
+  await durchVorlaufWenn(p);
+  await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+  await bis(p, () => !!document.querySelector('.schirm.da .karte')?.style.width, 5000);
+
+  const plan = await p.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const ziel = s.querySelector('path.ziel');
+    const svg = s.querySelector('.karte svg');
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    const g = D.deutschland.find(x => x.id === ziel.dataset.id);
+    const auf = (a) => { const pt = svg.createSVGPoint(); pt.x = a[0]; pt.y = a[1];
+      const q = pt.matrixTransform(svg.getScreenCTM()); return { x:q.x, y:q.y }; };
+    const hier = auf(g.anker);
+    let weit = null, best = -1;
+    for (const x of D.deutschland) {
+      if (x.id === g.id || !x.anker) continue;
+      const q = auf(x.anker), d = Math.hypot(q.x - hier.x, q.y - hier.y);
+      if (d > best) { best = d; weit = { name:x.name, ...q }; }
+    }
+    const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent.trim());
+    return { name:g.name, idx:namen.indexOf(g.name), weit,
+             obenDrunter: weit && weit.y > hier.y };
+  });
+  if (!plan || plan.idx < 0) {
+    merke('hinweis', new Error('das gesuchte Bundesland steht nicht in der Liste'));
+  } else {
+    const et = (await p.$$('.schirm.da .etikett'))[plan.idx];
+    const a = await et.boundingBox();
+    await p.mouse.move(a.x + a.width/2, a.y + a.height/2);
+    await p.mouse.down();
+    await p.mouse.move(plan.weit.x, plan.weit.y, { steps: 12 });
+    await p.mouse.up();
+    const kam = await bis(p, () => !!document.querySelector('.schirm.da .hinweis'), 5000);
+    const satz = kam ? (await p.$eval('.schirm.da .hinweis', e => e.textContent.trim())) : '';
+    // Drei Ansprueche, und jeder einzeln pruefbar.
+    if (!satz.includes(plan.weit.name))
+      merke('hinweis', new Error(`der Hinweis nennt nicht, WAS unter dem Finger lag `
+        + `(${plan.weit.name}): „${satz}"`));
+    if (!satz.includes(plan.name))
+      merke('hinweis', new Error(`der Hinweis nennt nicht das gesuchte Gebiet `
+        + `(${plan.name}): „${satz}"`));
+    const richtung = (satz.match(/weiter (oben|unten)( (links|rechts))?/) || [])[0];
+    if (!richtung)
+      merke('hinweis', new Error(`der Hinweis nennt keine Richtung: „${satz}"`));
+    // Und die Richtung muss STIMMEN. Ein Hinweis, der wegzeigt, ist
+    // schlimmer als keiner - und genau das faellt sonst niemandem auf.
+    else if (plan.obenDrunter && !/oben/.test(richtung))
+      merke('hinweis', new Error(`abgelegt wurde UNTER dem gesuchten Gebiet, `
+        + `der Hinweis sagt „${richtung}": „${satz}"`));
+    else if (!plan.obenDrunter && !/unten/.test(richtung))
+      merke('hinweis', new Error(`abgelegt wurde ÜBER dem gesuchten Gebiet, `
+        + `der Hinweis sagt „${richtung}": „${satz}"`));
+    else console.log(`  Fehler beim Ziehen benannt:  „${satz}"`);
+  }
+  await p.close();
+} catch (e) { merke('hinweis', e); }
 
 await ctx.close(); await b.close(); server.close();
 
