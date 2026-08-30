@@ -1371,6 +1371,16 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'Schreib den Buchstaben, den du hörst.' },
     sagt:'im Text' },
 
+  /* 3. Und die Sackgasse: mit abgeschaltetem Ton existiert die Aufgabe des
+   *    Diktats gar nicht. Ohne den Hinweis bekaeme ein Kind ein leeres
+   *    Blatt und keine Auskunft, worauf es wartet. */
+  { n:'das Diktat sagt nicht, dass der Ton fehlt', tor:'smoke',
+    args:['--nur=schreiben'], bauen:true, datei:D,
+    such:"      ? (tonAn ? 'Schreib den Buchstaben, den du hörst.'",
+    ersatz:"      ? (true ? 'Schreib den Buchstaben, den du hörst.'",
+    an:{ ...DIST, text:"? (true ? 'Schreib den Buchstaben" },
+    sagt:'nur gesprochen existiert' },
+
   /* --- Fachwelten (D4) ------------------------------------------------ */
 
   // Die Zuordnung wird aus `art` abgeleitet. Geht die Ableitung daneben,

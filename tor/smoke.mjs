@@ -1783,20 +1783,40 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
        * Aufgabe nicht vorgelesen - beides derselbe fehlende Zweig. */
       if (await p.$('.schirm.da .schreibblatt')) {
         if (VORLESEN[wer])
-          await bis(p, () => (window.__gesagt || []).some(t => /nach\.?$/.test(t.trim())), 4000);
-        const zuege = await schreibVorlage(p);
+          await bis(p, () => (window.__gesagt || [])
+            .some(t => /Fahre den Buchstaben nach|^Schreib ein /.test(t.trim())), 4000);
+        /* Zwei Ebenen, zwei Wege an die Vorlage.
+         *
+         * `schreiben:buchstaben` zeigt sie - dann wird sie erst
+         * nachgefahren. `schreiben:diktat` zeigt sie nicht; dort kommt
+         * der Buchstabe aus der ANSAGE, so wie bei Fiona auch. Ohne
+         * diesen Zweig lief der Durchgang in eine Zeitueberschreitung
+         * und meldete nebenbei, sie bekomme eine Aufgabe nicht
+         * vorgelesen - beides derselbe fehlende Zweig. */
+        const gezeigt = await schreibVorlage(p);
+        let zuege = gezeigt;
         if (!zuege.length) {
-          merke('durchgang', new Error(`${wer}/${ebene}: keine Vorlage zum Nachfahren`));
-          continue;
+          const satz = await p.evaluate(() => (window.__gesagt || [])
+            .find(t => /^Schreib ein /.test(t)) || '');
+          const z = (satz.match(/^Schreib ein ([A-ZÄÖÜ])/) || [])[1];
+          const b = z && Schreiben.BUCHSTABEN.find(x => x.zeichen === z);
+          if (!b) {
+            merke('durchgang', new Error(`${wer}/${ebene}: weder Vorlage noch Ansage — `
+              + `gehört wurde „${satz || 'nichts'}"`));
+            continue;
+          }
+          zuege = b.zuege;
+        } else {
+          for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
         }
-        for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
         for (const d of zuege)
           await zeichneZug(p, Schreiben.abtasten(d, 26)
             .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
-        wege.add(`${wer}: geschrieben`);
+        wege.add(`${wer}: ${gezeigt.length ? 'nachgefahren' : 'nach Ansage'} geschrieben`);
         await bewertet(p);
         const gesagtS = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-        if (/Fahre den Buchstaben nach/.test(gesagtS)) gehoert[wer] = (gehoert[wer] || 0) + 1;
+        if (/Fahre den Buchstaben nach|Schreib ein /.test(gesagtS))
+          gehoert[wer] = (gehoert[wer] || 0) + 1;
         const rs = await p.evaluate(() => {
           const f = document.querySelector('.schirm.da .frage');
           return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
@@ -2126,6 +2146,21 @@ if (laeuft('pausen')) try {
  * Zielgeraets.
  */
 if (laeuft('schreiben')) try {
+  /* Ein EIGENER Zusammenhang, nicht der geteilte.
+   *
+   * Der Abschnitt `regler` schaltet den Ton ab und legt das in der Ablage
+   * ab - und die gehoert dem Zusammenhang, nicht der Seite. Wer danach im
+   * selben Zusammenhang eine neue Seite aufmacht, bekommt „Ton aus" mit,
+   * und `vorlesen()` schweigt. Einzeln gefahren war der Abschnitt gruen,
+   * im vollen Lauf meldete er „im Diktat wird kein Buchstabe angesagt".
+   *
+   * Das ist keine Kleinigkeit der Testerei: es ist dieselbe Kopplung, die
+   * ein Kind traefe, das den Ton einmal ausgeschaltet hat und danach eine
+   * Ebene bekommt, deren Aufgabe NUR gesprochen existiert. Der Befund
+   * steht als offener Punkt im Backlog. */
+  const eigenerCtx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
+  const ctx = eigenerCtx;
+
   // 1. Die Welt gehoert Fiona - und nur ihr.
   for (const [wer, soll] of [['fiona', true], ['lea', false]]) {
     const p = await neueSeite({ width: 844, height: 390 }, ctx);
@@ -2329,6 +2364,40 @@ if (laeuft('schreiben')) try {
       + `${stand.diktat.join(',') || '—'} diktiert`);
     await q.close();
   }
+  /* Und die Sackgasse: Ton aus, und die Aufgabe existiert nur gesprochen.
+   *
+   * Geprueft wird nicht, dass die App den Ton eigenmaechtig anschaltet -
+   * das darf sie nicht -, sondern dass sie SAGT, woran es liegt, und
+   * einen Weg zurueck anbietet. Ein leeres Blatt ohne Hinweis ist fuer
+   * ein Kind nicht von einem kaputten Spiel zu unterscheiden. */
+  {
+    const t = await neueSeite({ width: 844, height: 390 }, eigenerCtx);
+    await t.click('[data-profil="fiona"]');
+    // Den Ton abschalten - dort, wo das Kind es auch tut.
+    await t.click('.schirm.da #zur');
+    await t.waitForSelector('.schirm.da #ton');
+    await t.click('.schirm.da #ton');
+    await t.click('[data-profil="fiona"]');
+    await zurEbenenwahl(t, 'schreiben:diktat');
+    await t.click('[data-ebene="schreiben:diktat"]');
+    await t.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 25000 });
+    await durchVorlaufWenn(t);
+    await t.waitForSelector('.schirm.da .schreibblatt', { timeout: 15000 });
+    const zustand = await t.evaluate(() => ({
+      frage: document.querySelector('.schirm.da #frage')?.textContent.trim() || '',
+      knopf: document.querySelector('.schirm.da #hoeren')?.textContent.trim() || '',
+    }));
+    if (!/Ton/.test(zustand.frage))
+      merke('schreiben', new Error(`mit abgeschaltetem Ton steht im Diktat „${zustand.frage}" `
+        + '— kein Hinweis, dass die Aufgabe nur gesprochen existiert'));
+    if (!/einschalten/i.test(zustand.knopf))
+      merke('schreiben', new Error(`mit abgeschaltetem Ton bietet der Knopf „${zustand.knopf}" `
+        + '— es gibt keinen Weg zurück zum Ton'));
+    if (/Ton/.test(zustand.frage) && /einschalten/i.test(zustand.knopf))
+      console.log('  Ton aus im Diktat:          Hinweis und Weg zurück');
+    await t.close();
+  }
+  await eigenerCtx.close();
 } catch (e) { merke('schreiben', e); }
 
 await ctx.close(); await b.close(); server.close();

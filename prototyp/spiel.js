@@ -1812,7 +1812,8 @@ function schreibschirm(){
   s.innerHTML = aufgabenKopf(st) + `
     <div class="schreibraum">
     <div class="frage" id="frage">${diktat
-      ? 'Schreib den Buchstaben, den du hörst.'
+      ? (tonAn ? 'Schreib den Buchstaben, den du hörst.'
+               : '<span class="fastText">Für diese Übung brauchst du den Ton.</span>')
       : `Fahre das <strong>${ziel.zeichen}</strong> nach.`}</div>
     <div class="schreibfeld"><div class="feldkasten">
       <svg id="blatt" class="schreibblatt" viewBox="0 0 100 100" role="application"
@@ -1830,7 +1831,8 @@ function schreibschirm(){
     </div></div>
     <div class="werkzeug">
       <button class="knopf haupt" id="fertigknopf" hidden>Fertig</button>${diktat ? `
-      <button class="knopf" id="hoeren">Noch mal hören</button>` : ''}
+      <button class="knopf" id="hoeren">${
+        tonAn ? 'Noch mal hören' : 'Ton einschalten'}</button>` : ''}
       <button class="leise" id="nochmal">Noch mal</button>
       <button class="leise" id="weissnicht">Weiß ich nicht</button>
     </div></div>`;
@@ -2035,9 +2037,26 @@ function schreibschirm(){
   fertigKnopf.onclick = pruefen;
   /* „Noch mal hören" spricht IMMER - auch wenn das Profil sonst nichts
      vorgelesen bekaeme. Wer ausdruecklich darauf tippt, hat gebeten, und
-     eine Bitte wird nicht vom Profil beantwortet. */
+     eine Bitte wird nicht vom Profil beantwortet.
+
+     Und wenn der Ton AUS ist, schaltet derselbe Knopf ihn an.
+
+     Das ist kein Sonderfall, sondern eine Sackgasse: auf dieser Ebene
+     existiert die Aufgabe NUR gesprochen. Wer den Ton einmal ausgeschaltet
+     hat - der Knopf steht auf der Profilwahl -, bekaeme hier ein leeres
+     Blatt und keinen Hinweis, worauf er wartet. Gefunden hat das der
+     Rauchtest, aber nicht als Fehler: sein Regler-Abschnitt schaltet den
+     Ton ab, und der naechste Abschnitt erbte ihn. Ein Kind erbt ihn auch. */
   const hoeren = s.querySelector('#hoeren');
-  if (hoeren) hoeren.onclick = ()=> vorlesen(ziel.gesagt);
+  if (hoeren) hoeren.onclick = async ()=>{
+    if (!tonAn) {
+      tonAn = true; Einst.ton = true; await einstSichern();
+      hoeren.textContent = 'Noch mal hören';
+      const f = s.querySelector('#frage');
+      if (f) f.textContent = 'Schreib den Buchstaben, den du hörst.';
+    }
+    vorlesen(ziel.gesagt);
+  };
   s.querySelector('#nochmal').onclick = ()=>{
     if (erledigt) return;
     laeuft = null;
