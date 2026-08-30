@@ -171,3 +171,41 @@ export async function zeichneZug(seite, punkte, feld = 0) {
   for (const b of auf.slice(1)) await seite.mouse.move(...b);
   await seite.mouse.up();
 }
+
+/* Die umgekehrte Frage (B3): „Wo liegt Bayern?"
+ *
+ * Sie steht bei jeder dritten Aufgabe fuer alle, die lesen - und sie sieht
+ * anders aus als jede andere: kein hervorgehobenes Gebiet, kein Etikett,
+ * kein Tippfeld. Wer eine Sitzung durchspielt, muss sie deshalb erkennen
+ * UND beantworten koennen, sonst bleibt er an der dritten Aufgabe stehen.
+ *
+ * Beides steht hier und nicht in jedem Tor einzeln: `ansicht` und `smoke`
+ * spielen dieselbe Sitzung, und zwei Fassungen derselben Antwort waeren
+ * zwei Stellen, an denen sie auseinanderlaufen.
+ */
+export async function istUmgekehrt(seite) {
+  return seite.evaluate(() => {
+    const f = document.querySelector('.schirm.da #frage');
+    return !!f && /^Wo liegt /.test(f.textContent.trim());
+  });
+}
+
+/** Beantwortet die umgekehrte Frage: auf das gesuchte Gebiet tippen. */
+export async function zeigeAufKarte(seite) {
+  const punkt = await seite.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const name = s.querySelector('#frage').textContent.trim()
+      .replace(/^Wo liegt /, '').replace(/\?$/, '').trim();
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    const geb = [].concat(...Object.values(D).filter(Array.isArray))
+      .find(x => x && x.name === name && x.anker);
+    if (!geb) return null;
+    const svg = s.querySelector('.karte svg');
+    const pt = svg.createSVGPoint(); pt.x = geb.anker[0]; pt.y = geb.anker[1];
+    const q = pt.matrixTransform(svg.getScreenCTM());
+    return { name, x: q.x, y: q.y };
+  });
+  if (!punkt) throw new Error('umgekehrte Frage: das gesuchte Gebiet steht nicht in den Daten');
+  await seite.mouse.click(punkt.x, punkt.y);
+  return punkt.name;
+}

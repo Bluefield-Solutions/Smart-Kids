@@ -616,6 +616,10 @@
     "die Rückfrage ist wieder eine Sackgasse": {
       "commit": "9450f77dd038900e30f4d4597f199251b936b04f",
       "zeit": "2026-08-30"
+    },
+    "die Buchstabenkarten rutschen wieder zusammen": {
+      "commit": "bf4a6b2a84827d595d1e6c4ec0a4f8f930d632e6",
+      "zeit": "2026-08-30"
     }
   }
 }

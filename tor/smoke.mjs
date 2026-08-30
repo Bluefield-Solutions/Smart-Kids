@@ -1,6 +1,7 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
+import { istUmgekehrt, zeigeAufKarte } from './chromium.mjs';
 import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
          schreibVorlage, zeichneZug } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
@@ -527,6 +528,23 @@ async function weitergegangen(p, ms = 8000) {
 
 /** Eine Aufgabe loesen: das passende Etikett auf den Anker des Ziels ziehen. */
 async function loese(p) {
+  /* Die umgekehrte Frage (B3) hat kein hervorgehobenes Gebiet und keine
+   * Etiketten - auf sie wird getippt, nicht gezogen. Sie kommt bei jeder
+   * dritten Aufgabe, und wer sie nicht kennt, wartet unten vergeblich auf
+   * ein `path.ziel`, das es nicht gibt. */
+  await p.waitForFunction(() => document.querySelectorAll('.schirm').length === 1
+    && (document.querySelector('.schirm.da path.ziel')
+        || /^Wo liegt /.test(document.querySelector('.schirm.da #frage')?.textContent || '')),
+    null, { timeout: 5000 });
+  if (await istUmgekehrt(p)) {
+    const vorher = await p.evaluate(() =>
+      document.querySelector('.schirm.da #frage').textContent);
+    await zeigeAufKarte(p);
+    await p.waitForFunction((v) =>
+      document.querySelector('.schirm.da #frage')?.textContent !== v,
+      vorher, { timeout: 6000 });
+    return;
+  }
   // Warten, bis der Bildschirmwechsel wirklich durch ist - sonst greift der
   // Test in die alte Aufgabe.
   await p.waitForFunction(() => document.querySelectorAll('.schirm').length === 1
@@ -580,7 +598,7 @@ async function loese(p) {
  * OHNE Argument läuft alles, und die Kette ruft ihn ohne Argument auf: eine
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
-const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang',
+const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
                     'pausen', 'schreiben', 'hinweis', 'sprechen'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
@@ -2085,6 +2103,27 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
         await raus(p);
         continue;
       }
+      /* Die umgekehrte Frage (B3) - und sie wird HIER auch gezaehlt.
+       *
+       * Sie ist ein eigener Antwortweg: kein Etikett, kein Feld, sondern
+       * ein Tipp auf die Karte. Am Ende des Abschnitts steht die Liste der
+       * gelaufenen Wege gegen ein Soll - ohne diesen Zweig waere die
+       * Aufgabenform gespielt, aber nicht bezeugt: sie kaeme im Bericht
+       * nicht vor, und niemand saehe es, wenn sie eines Tages ausbleibt. */
+      if (await istUmgekehrt(p)) {
+        const gesucht = await zeigeAufKarte(p);
+        wege.add(`${wer}: umgekehrt gezeigt`);
+        await bewertet(p);
+        const rU = await p.evaluate(() => ({
+          richtig: !!document.querySelector('.schirm.da .frage .richtigText'),
+          satz: document.querySelector('.schirm.da .frage').textContent.trim() }));
+        if (!rU.richtig)
+          merke('durchgang', new Error(`${wer}/${ebene}: „Wo liegt ${gesucht}?" auf `
+            + `${gesucht} getippt und nicht gewertet — auf dem Schirm steht „${rU.satz}"`));
+        durchgespielt++;
+        await weitergegangen(p);
+        continue;
+      }
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
       // Wie im Rechenzweig: warten nur, wo eine Ansage kommen muss.
       if (VORLESEN[wer])
@@ -2835,6 +2874,110 @@ if (laeuft('hinweis')) try {
  * etwas versteht, geht nur auf dem Gerät (M4r); dass man aus dem Zuhören
  * wieder herauskommt, geht hier — und genau das hat gefehlt.
  */
+/* Die umgekehrte Frage (B3) - „Wo liegt Bayern?"
+ *
+ * Sie braucht einen eigenen Abschnitt, weil sie erst bei der DRITTEN
+ * Aufgabe kommt und die anderen Abschnitte je Ebene nur eine spielen. Ein
+ * Weg, den keine Pruefung je betritt, ist kein geprueter Weg.
+ *
+ * Vier Dinge, und das erste ist das wichtigste: die Karte darf die Antwort
+ * nicht verraten. Beim ersten Anlauf tat sie es - das gesuchte Gebiet trug
+ * weiterhin die Klasse `ziel` und damit die Akzentfarbe.
+ */
+if (laeuft('umgekehrt')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.waitForSelector('[data-profil="lea"]');
+  await p.click('[data-profil="lea"]');
+  await zurEbenenwahl(p, 'bundeslaender');
+  await p.click('[data-ebene="bundeslaender"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout: 20000 });
+  await durchVorlaufWenn(p);
+
+  // Zwei normale Aufgabe loesen - Lea tippt das Etikett an.
+  const normal = async () => {
+    await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
+    const z = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const id = s.querySelector('path.ziel').dataset.id;
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const name = D.deutschland.find(x => x.id === id).name;
+      return { name, i: [...s.querySelectorAll('.etikett')].map(e => e.textContent.trim())
+        .indexOf(name) };
+    });
+    if (z.i < 0) throw new Error(`„${z.name}" steht nicht in der Auswahl`);
+    await (await p.$$('.schirm.da .etikett'))[z.i].click();
+    await bis(p, () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+    await bis(p, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000);
+  };
+  await normal(); await normal();
+
+  const st = await p.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    return {
+      frage: s.querySelector('#frage').textContent.trim(),
+      puls: !!s.querySelector('.zielpuls'), zeiger: !!s.querySelector('.zeiger'),
+      angemalt: !!s.querySelector('path.geb.ziel'),
+      etiketten: s.querySelectorAll('.etikett').length,
+      feld: !!s.querySelector('input.eingabe'),
+      umschalter: !!s.querySelector('#weise'),
+      satz: s.querySelector('.wahlliste .hinweis')?.textContent.trim() || '',
+    };
+  });
+  if (!/^Wo liegt /.test(st.frage))
+    merke('umgekehrt', new Error(`die dritte Aufgabe fragt „${st.frage}" statt „Wo liegt …?" `
+      + '— die umgekehrte Frage kommt gar nicht vor'));
+  else {
+    // DIE ANTWORT DARF NICHT AUF DER KARTE STEHEN.
+    if (st.puls || st.zeiger || st.angemalt)
+      merke('umgekehrt', new Error(`bei „${st.frage}" ist das gesuchte Gebiet markiert `
+        + `(${[st.puls && 'Puls', st.zeiger && 'Zeiger', st.angemalt && 'angemalt']
+             .filter(Boolean).join(', ')}) — die Frage beantwortet sich selbst`));
+    if (st.etiketten || st.feld)
+      merke('umgekehrt', new Error('bei der umgekehrten Frage stehen trotzdem Antworten da '
+        + `(${st.etiketten} Etiketten${st.feld ? ' und ein Tippfeld' : ''})`));
+    if (st.umschalter)
+      merke('umgekehrt', new Error('der Umschalter „Lieber ziehen" steht da und hat '
+        + 'nichts zu schalten — es gibt kein Etikett'));
+    if (!/Tippe auf die Karte/.test(st.satz))
+      merke('umgekehrt', new Error(`neben der Frage steht „${st.satz}" — ohne den Satz `
+        + 'sieht das Kind eine Frage und nichts, was nach Antwort aussieht'));
+
+    // Erst DANEBEN tippen: das muss den Fehler benennen (A3).
+    const daneben = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const name = s.querySelector('#frage').textContent.replace(/^Wo liegt |\?$/g, '').trim();
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const ziel = D.deutschland.find(x => x.name === name);
+      const svg = s.querySelector('.karte svg');
+      const punkt = (g) => { const pt = svg.createSVGPoint();
+        pt.x = g.anker[0]; pt.y = g.anker[1];
+        const q = pt.matrixTransform(svg.getScreenCTM()); return { x: q.x, y: q.y }; };
+      const weit = D.deutschland.filter(g => g.anker && g.id !== ziel.id)
+        .sort((a, b) => Math.hypot(b.anker[0]-ziel.anker[0], b.anker[1]-ziel.anker[1])
+                      - Math.hypot(a.anker[0]-ziel.anker[0], a.anker[1]-ziel.anker[1]))[0];
+      return { gesucht: name, falsch: weit.name, ...punkt(weit) };
+    });
+    await p.mouse.click(daneben.x, daneben.y);
+    await p.waitForTimeout(400);
+    const hin = await p.evaluate(() =>
+      document.querySelector('.schirm.da .wahlliste .hinweis')?.textContent.trim() || '');
+    if (!hin.includes(daneben.falsch) || !/liegt weiter/.test(hin))
+      merke('umgekehrt', new Error(`auf ${daneben.falsch} getippt, gesucht war `
+        + `${daneben.gesucht} — der Hinweis lautet „${hin}" und nennt nicht beides `
+        + '(was da ist und wo es hin muss)'));
+
+    // Und dann richtig.
+    const gesucht = await zeigeAufKarte(p);
+    const ok = await bis(p,
+      () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+    if (!ok)
+      merke('umgekehrt', new Error(`auf ${gesucht} getippt und nicht gewertet`));
+    else console.log(`  Umgekehrte Frage:           „${st.frage}" ohne Markierung, `
+      + `daneben → „${hin}", richtig gewertet`);
+  }
+  await p.close();
+} catch (e) { merke('umgekehrt', e); }
+
 if (laeuft('sprechen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   // Der Sprachmodus steht im Elternbereich. Hier wird er gesetzt, wo er

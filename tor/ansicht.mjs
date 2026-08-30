@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
 import { starte, zurEbenenwahl, durchVorlauf, serviere,
-         schreibVorlage, zeichneZug } from './chromium.mjs';
+         schreibVorlage, zeichneZug, istUmgekehrt, zeigeAufKarte } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
@@ -341,6 +341,20 @@ async function durchspielen(seite) {
      *
      * Kontinente sind die billige Ebene dafuer: sechs Aufgaben, nicht
      * zwoelf wie beim grossen Einmaleins. */
+    /* Jede dritte Aufgabe ist die umgekehrte Frage (B3) - sie hat keine
+     * Etiketten und kein Tippfeld, die Karte selbst ist die Antwort. Wer
+     * sie nicht kennt, bleibt an ihr stehen: genau das hat dieses Tor
+     * gemeldet, als die Form dazukam. */
+    if (await istUmgekehrt(seite)) {
+      const vorher = await seite.evaluate(() =>
+        document.querySelector('.schirm.da #frage').textContent);
+      await zeigeAufKarte(seite);
+      await seite.waitForFunction((v) =>
+        document.querySelector('.schirm.da #frage')?.textContent !== v,
+        vorher, { timeout: 8000 });
+      await seite.waitForTimeout(1800);
+      continue;
+    }
     const z = await seite.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       const z = s.querySelector('path.ziel'); if (!z) return null;
@@ -374,6 +388,11 @@ async function durchspielen(seite) {
     await seite.waitForFunction((alt) => {
       if (document.querySelector('.schirm.da #nochmal')) return true;
       if (document.querySelectorAll('#buehne .schirm').length !== 1) return false;
+      // Die naechste Aufgabe kann die UMGEKEHRTE sein - die hat gar kein
+      // hervorgehobenes Gebiet. Auf `path.ziel` zu warten hiesse, auf
+      // etwas zu warten, das es bei jeder dritten Aufgabe nicht gibt.
+      if (/^Wo liegt /.test(document.querySelector('.schirm.da #frage')?.textContent || ''))
+        return true;
       const z = document.querySelector('.schirm.da path.ziel');
       return !!z && z.dataset.id !== alt;
     }, altesZiel, { timeout: 10000 });

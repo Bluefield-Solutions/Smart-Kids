@@ -2201,6 +2201,15 @@ function spielschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const [art, kont] = st.ebeneId.split(':');
   const istHaupt = art==='hauptstaedte';
+  /* Der Schalter steht HIER, weil die Flaechen ihn schon brauchen.
+   *
+   * Er stand zuerst weiter unten bei den Antwortwegen - dort, wo er
+   * inhaltlich hingehoert. Dann warf der Bildschirm eine
+   * ReferenceError, noch bevor er gebaut war: `const` gilt erst ab
+   * seiner Zeile, und die Flaechen werden sechzig Zeilen frueher
+   * gerechnet. Der Rauchtest meldete nur „Karte nicht da". */
+  const kannLesen = P.eingabe.includes('tippen');
+  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2;
   // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
   // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
   // Namen gleichzeitig zu lesen ist eine andere.
@@ -2312,13 +2321,24 @@ function spielschirm(){
   // in src/kern/leitner.js neben den beiden anderen; hier stand sie als
   // nackte Zwei unter dem Namen `gekonnt`, den das Buch fuer Fach 5 benutzt.
   const gesessen = (id) => Leitner.istGesessen(Stand, id);
+  /* Bei der umgekehrten Frage ist das gesuchte Gebiet eine Flaeche wie
+   * jede andere - sonst steht die Antwort auf der Karte.
+   *
+   * Das war beim ersten Blick auf das Bild zu sehen und in keinem Tor:
+   * `path.ziel` bekommt `fill:var(--ziel)`, also die Akzentfarbe. Die
+   * Frage „Wo liegt Berlin?" haette Berlin angemalt. Kein Tor haette das
+   * gemeldet - sie messen Groessen und Zustaende, nicht den Sinn. */
   const flaechen = formen.map((g,i)=>`<path class="geb ${
-      g.id===ziel.id ? 'ziel' : gesessen(g.id) ? 'gesessen' : 'ruhig'}" data-id="${g.id}"
+      g.id===ziel.id && !umgekehrt ? 'ziel'
+        : gesessen(g.id) ? 'gesessen' : 'ruhig'}" data-id="${g.id}"
       d="${g.pfad}" fill-rule="evenodd" fill="${farbeVon(g,i)}"/>`).join('');
   // Ein Haken auf jedem Gebiet, das schon einmal sass. Farbe allein sagt "anders",
   // ein Haken sagt "geschafft" - und er trifft auch die, die Farben
   // schlecht unterscheiden.
-  const haken = formen.filter(g=>g.anker && gesessen(g.id) && g.id!==ziel.id)
+  // Und der Haken auch: fehlte er nur beim gesuchten Gebiet, waere GENAU
+  // DAS der Hinweis - unter lauter abgehakten Nachbarn.
+  const haken = formen.filter(g=>g.anker && gesessen(g.id)
+      && (umgekehrt || g.id!==ziel.id))
     .map(g=>`<g class="haken" data-x="${g.anker[0]}" data-y="${g.anker[1]}">
         <circle r="13" fill="var(--gut)" stroke="var(--papier)" stroke-width="2.5"/>
         <path d="M-6 0 L-2 4.5 L6.5 -4.5" fill="none" stroke="var(--papier)"
@@ -2344,7 +2364,34 @@ function spielschirm(){
   // das Wissen, um das es hier geht. Deshalb ist diese Ebene fuer BEIDE
   // Profile eine Auswahl. Im Elternbereich abschaltbar, dann tippt Lea auch
   // hier wieder.
-  const tippt = P.eingabe.includes('tippen') && !(istAuswahl && Einst.hauptstadtAuswahl);
+  /* DIE UMGEKEHRTE FRAGE (B3).
+   *
+   * Dieselbe Karte, andersherum gelesen: nicht „wie heisst dieses Gebiet"
+   * mit hervorgehobenem Umriss, sondern „WO LIEGT Bayern" auf einer Karte
+   * ohne jede Markierung. Das ist die billigste neue Aufgabenform - sie
+   * braucht keine neuen Daten - und die mit dem groessten Zugewinn: einen
+   * Namen wiedererkennen und ein Gebiet FINDEN sind zwei verschiedene
+   * Faehigkeiten, und bisher wurde nur die erste geuebt.
+   *
+   * WER: nur wer liest. Fiona bekaeme die Frage vorgelesen, aber ihr
+   * Weg ist das Ziehen eines Etiketts auf ein hervorgehobenes Gebiet -
+   * ohne Hervorhebung faende sie auf einer Weltkarte nichts, woran sie
+   * sich festhalten koennte. Das ist eine eigene Runde wert, keine
+   * Nebenbemerkung.
+   *
+   * WANN: jede dritte Aufgabe, und zwar an der LAUFENDEN NUMMER, nicht am
+   * Wuerfel. Eine gewuerfelte Mischung waere nicht nachstellbar - der
+   * Rauchtest und die Bildabnahme muessten raten, welche Aufgabe gerade
+   * welche Form hat. Vorhersagbar heisst hier auch: das Kind merkt das
+   * Muster nicht, weil zwischen zwei umgekehrten Fragen immer zwei
+   * normale liegen.
+   *
+   * NICHT bei den Hauptstaedten: dort ist die Antwort ein Punkt, kein
+   * Gebiet - „Wo liegt Berlin" waere ein Tippen auf einen Kreis von acht
+   * Punkten Durchmesser.
+   */
+  const tippt = !umgekehrt && P.eingabe.includes('tippen')
+    && !(istAuswahl && Einst.hauptstadtAuswahl);
   const spricht = P.eingabe.includes('sprechen');
   // Antippen oder Ziehen - je Kind gemerkt, mit der Voreinstellung als
   // Rueckfall. `let`, weil der Umschalter sie mitten in der Aufgabe aendern
@@ -2354,7 +2401,8 @@ function spielschirm(){
     || WEISE_VOREINSTELLUNG[P.id] || 'ziehen';
   // „von Polen", aber „vom Vereinigten Königreich" - die drei Ausnahmen
   // stehen als `wovon` bei den Fakten, der Rest wird abgeleitet.
-  const frageText = istHaupt ? `Wie heißt die Hauptstadt ${ziel.wovon || `von ${ziel.gebiet}`}?`
+  const frageText = umgekehrt ? `Wo liegt ${ziel.name}?`
+    : istHaupt ? `Wie heißt die Hauptstadt ${ziel.wovon || `von ${ziel.gebiet}`}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
     : art==='laender' ? 'Wie heißt dieses Land?' : 'Wie heißt dieses Bundesland?';
   const fach = Stand[ziel.id]?.fach ?? 1;
@@ -2376,13 +2424,14 @@ function spielschirm(){
           <path id="belohn" d="" fill="var(--wasch)" clip-path="url(#wasch)" style="display:none"/>
           <g fill="none" stroke="var(--tinte)" stroke-opacity=".5" stroke-width="1.1"
              vector-effect="non-scaling-stroke">${konturen}</g>
+          ${umgekehrt ? '' : `
           <path class="zielrand" d="${zielForm.pfad}" fill="none" fill-rule="evenodd"
                 stroke="var(--tinte)" stroke-width="3.5" stroke-linejoin="round"
                 vector-effect="non-scaling-stroke"/>
           <path class="zielpuls" d="${zielForm.pfad}" fill="none" fill-rule="evenodd"
                 stroke="var(--akzent)" stroke-width="3" stroke-linejoin="round"
                 vector-effect="non-scaling-stroke"/>
-          ${zeiger}
+          ${zeiger}`}
           <path id="kontur" d="" fill="none" stroke="var(--tinte)" stroke-width="2.4"
                 vector-effect="non-scaling-stroke" stroke-linejoin="round" style="display:none"/>
           <circle id="stadtpunkt" r="0" fill="var(--akzent)" stroke="white" stroke-width="2"
@@ -2516,7 +2565,35 @@ function spielschirm(){
     }).join('');
   }
 
-  if (tippt) {
+  if (umgekehrt) {
+    /* Die Karte IST die Antwortliste.
+     *
+     * Kein Etikett, kein Feld, kein Mikrofon - wer „Wo liegt Bayern?"
+     * beantwortet, tippt auf die Karte. Gemessen wird mit demselben
+     * `zielUnter`, das auch ein abgelegtes Etikett auffaengt: derselbe
+     * Treffertest, dieselbe Nachsicht fuer den Daumen. Zwei Rechnungen
+     * fuer dieselbe Frage waeren zwei Stellen, an denen sie
+     * auseinanderlaufen koennen.
+     *
+     * Der Satz daneben sagt, was zu tun ist. Ohne ihn steht auf dem
+     * Schirm eine Frage und nichts, was nach Antwort aussieht. */
+    const sag = el('div','hinweis');
+    sag.textContent = 'Tippe auf die Karte.';
+    liste.append(sag);
+    const karte = s.querySelector('.karte svg');
+    karte.style.cursor = 'pointer';
+    karte.addEventListener('click', (ev) => {
+      if (erledigt) return;
+      const t = zielUnter(ev.clientX, ev.clientY);
+      // Ins Meer getippt ist keine falsche Antwort, sondern gar keine -
+      // dieselbe Regel wie beim Ziehen ins Leere.
+      if (!t) { sag.className = 'hinweis nochmal';
+        sag.textContent = 'Tippe auf ein Land, nicht ins Meer.';
+        sagen('Tippe auf ein Land, nicht ins Meer.'); return; }
+      bewerte(NAMEN[t.id] || '', 'zeigen',
+        { getroffen: t.id, punkt: { x: ev.clientX, y: ev.clientY }, hin: sag });
+    });
+  } else if (tippt) {
     const eing=el('input','eingabe'); eing.type='text'; eing.autocapitalize='off';
     eing.autocorrect='off'; eing.spellcheck=false; eing.placeholder='hier schreiben';
     eing.setAttribute('inputmode','text');
@@ -2550,9 +2627,13 @@ function spielschirm(){
   weiter.onclick = ()=>aufloesen('uebersprungen');
   werkzeug.appendChild(weiter);
 
-  // Der Umschalter steht nur dort, wo er etwas zu schalten hat: bei einer
-  // Auswahl mit Etiketten. Beim Tippfeld gibt es nichts umzuschalten.
-  if (!tippt) {
+  /* Der Umschalter steht nur dort, wo er etwas zu schalten hat: bei einer
+   * Auswahl mit Etiketten. Beim Tippfeld gibt es nichts umzuschalten - und
+   * bei der umgekehrten Frage erst recht nicht: dort ist die Karte die
+   * Antwort, es gibt kein Etikett, das man ziehen oder antippen koennte.
+   * Gesehen auf dem Bild: „Lieber ziehen" stand neben „Wo liegt Berlin?"
+   * und haette nichts getan. */
+  if (!tippt && !umgekehrt) {
     const um = el('button','leise');
     um.id = 'weise';
     // Die WEISE steht als Datenfeld dran, nicht nur als Beschriftung. Der
@@ -3099,6 +3180,19 @@ function spielschirm(){
       // Karte, die Frage ist nur, wie es heisst.
       if (roh===ziel.name) ergebnis='richtig';
       else text='Nicht ganz — probier es noch einmal.';
+    } else if (eingabeart==='zeigen') {
+      /* Die umgekehrte Frage (B3): getippt wird auf die Karte.
+       *
+       * Gewertet wird NUR, wo der Finger lag - der Name spielt keine
+       * Rolle, denn er stand ja in der Frage. Beim Ziehen ist das anders:
+       * dort muss BEIDES stimmen, das Etikett und der Ort.
+       *
+       * Der Hinweis ist derselbe wie beim Ziehen (A3): er nennt das
+       * getroffene Gebiet und die Richtung zum gesuchten. Genau dafuer
+       * ist er gebaut, und er passt hier sogar besser - beim Ziehen weiss
+       * das Kind schon, wie das Gebiet heisst; hier sucht es danach. */
+      if (ctx.getroffen===ziel.id) ergebnis='richtig';
+      else text = zugHinweis('', ctx);
     } else if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
       else text = zugHinweis(roh, ctx);
@@ -3199,7 +3293,9 @@ function spielschirm(){
   // fuenf Stellen 900 ms auf eine Ansage, die es noch gar nicht gab.
   setTimeout(()=>{
     const teile = [frageText];
-    if (!tippt) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
+    // Bei der umgekehrten Frage waere die Aufzaehlung der Kandidaten die
+    // halbe Antwort - gefragt ist ja gerade, WO eines davon liegt.
+    if (!tippt && !umgekehrt) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
     ansagen(teile.join(' '));
   }, FLOTT ? 60 : 500);
   return s;
