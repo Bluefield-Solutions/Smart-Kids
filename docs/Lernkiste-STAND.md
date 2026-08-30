@@ -4754,3 +4754,60 @@ passten nicht — die letzte lag acht Punkte im Streifen des iPhone. Die
 Breite gibt dafür nach: 85 statt 96 Punkte je Karte, und das trägt auch
 „Xylofon". Offen bleibt ein Hinweis: die Karten sind 42 statt 44 Punkte
 hoch (S3 im Backlog).
+
+---
+
+## Runde N3: Fiona schreibt, was sie hört
+
+Der nächste Schritt: kein Vorbild mehr. Das Spiel sagt *„Schreib ein Q. Q
+wie Quelle."*, und Fiona schreibt es mit dem Finger.
+
+### Eine eigene Ebene, kein Schalter
+
+Der erste Plan war ein Modus an der Nachfahr-Ebene. Beim Bauen kippte das,
+und der Grund ist einer, den man dem Bildschirm nicht ansieht: **einen
+Buchstaben nachfahren zu können heißt nicht, ihn aus dem Gehör schreiben
+zu können.** Wären es dieselben Gegenstände, würde das eine Können für das
+andere gutgeschrieben — der Leitner hätte einen Stand, den es nicht gibt,
+und niemand sähe es, weil er einfach weiterrechnet.
+
+Deshalb `bu:A` und `di:A`, zwei Ebenen, zwei Stände. Der Rauchtest weist
+nach, dass sie sich nicht berühren; das Tor `schreiben` prüft, dass keine
+Kennung in beiden Vorräten steht.
+
+### Die Eigenschaft, die diese Ebene ausmacht, ist eine negative
+
+Der Buchstabe steht **nirgends**. Nicht im Blatt, nicht in der Frage, nicht
+in einer Beschriftung. Solche Eigenschaften verschwinden lautlos: man sieht
+einem Bildschirm nicht an, dass er zuviel zeigt, wenn man nicht weiß, dass
+er weniger zeigen sollte.
+
+Geprüft wird sie deshalb so, wie Fiona sie erlebt — der gesuchte Buchstabe
+wird aus der **Ansage** gelesen, nicht vom Bildschirm. Wer ihn vom
+Bildschirm liest, kann anschließend nicht mehr behaupten, dass er dort
+nicht steht. Zwei stehende Gegenproben zielen genau darauf: eine lässt die
+Vorlage stehen, eine schreibt den Buchstaben in die Frage. Beide schlagen an.
+
+### Drei Entscheidungen im Kleinen
+
+- **Die Ansage nennt Buchstaben und Merkwort.** „Q" allein heißt gesprochen
+  /kuː/, und ein Kind hört „Kuh". „Q wie Quelle" hängt den Laut an etwas auf
+  — dasselbe Merkwort, das im Vorlauf unter dem Buchstaben steht.
+- **„Noch mal hören" spricht immer**, auch wo ein Profil sonst nichts
+  vorgelesen bekäme. Wer ausdrücklich darauf tippt, hat gebeten, und eine
+  Bitte wird nicht vom Profil beantwortet.
+- **Im Tadel wird der gesuchte Buchstabe nicht genannt.** *„Das sieht aus
+  wie ein O. Versuch es noch einmal."* — was falsch gelesen wurde, ist eine
+  Auskunft; den gesuchten nachzuliefern wäre die Lösung nach dem ersten
+  Fehlversuch. Beim Nachfahren, wo er ohnehin dasteht, wird er weiter genannt.
+
+### Und einer im Bild
+
+Auf dem Diktat-Bildschirm stand das leere Blatt links und die Knöpfe rechts
+am Rand — dazwischen bis zu 200 Punkte Leere, und der Bildschirm sah aus,
+als fehle etwas. Feld und Werkzeug stehen jetzt als **Paar in der Mitte**.
+Aufgefallen ist das an der Aufnahme, nicht an einer Zahl: `passt` war grün,
+weil nichts überlief.
+
+Das ist der Bildschirm, auf dem am wenigsten steht — und deshalb der, bei
+dem das Wenige stimmen muss.

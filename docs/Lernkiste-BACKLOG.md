@@ -146,10 +146,10 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
 | ~~1~~ | ~~**N2a** Buchstaben nachfahren~~ | Fiona | hoch | groß | **gefahren** |
-| 1 | **N3** Buchstabe vorgelesen, selbst schreiben | Fiona | hoch | mittel | — |
-| 2 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | — |
-| 3 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
-| 4 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| ~~2~~ | ~~**N3** Buchstabe angesagt, selbst geschrieben~~ | Fiona | hoch | mittel | **gefahren** |
+| 1 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | — |
+| 2 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
+| 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 5 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
 | 6 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
 | 7 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
@@ -299,7 +299,7 @@ Gegenprobe schaltet das Netz ab — die erste Zahl muss dann messbar fallen.
 
 ---
 
-### N3 · Der Buchstabe wird vorgelesen, Fiona schreibt ihn
+### N3 · Der Buchstabe wird vorgelesen, Fiona schreibt ihn  ·  ERLEDIGT
 
 **Ziel.** Kein Vorbild mehr auf dem Bildschirm. Das Spiel sagt „Q", Fiona
 schreibt ein Q, das Spiel prüft, ob es eines ist.
@@ -314,9 +314,32 @@ Zweifel „Kuh". Die Ansage braucht vermutlich beides: den Buchstabennamen
 und ein Wort dazu („Q wie Quelle"). Das ist eine Entscheidung über den
 Inhalt, keine Zeile Code — sie gehört in die Runde, nicht davor.
 
-**Abnahme.** Der Rauchtest hört die Ansage (wie heute bei Fionas
-Aufgabenansage) und weist nach, dass **kein** Vorbild auf dem Bildschirm
-steht — sonst ist es N2a mit Ton. Nach drei Fehlversuchen erscheint es.
+**Erledigt.** Als **eigene Ebene** („Buchstaben hören") neben dem
+Nachfahren, nicht als Schalter daran — aus einem Grund, der sich erst beim
+Bauen zeigte: einen Buchstaben nachfahren zu können heißt nicht, ihn aus
+dem Gehör schreiben zu können. Wären es dieselben Gegenstände, würde das
+eine Können für das andere gutgeschrieben, und der Leitner hätte einen
+Stand, den es nicht gibt. Die Kennungen sind deshalb `bu:A` und `di:A`,
+und der Rauchtest weist nach, dass die beiden Stände sich nicht berühren.
+
+Die Namensfrage aus dem Entwurf („Q heißt gesprochen /kuː/, aber Fiona
+hört im Zweifel ‚Kuh'") ist entschieden: die Ansage sagt **beides** —
+*„Schreib ein Q. Q wie Quelle."* Dasselbe Merkwort, das schon im Vorlauf
+steht. Und „Noch mal hören" spricht **immer**, auch wenn ein Profil sonst
+nichts vorgelesen bekäme: wer ausdrücklich darauf tippt, hat gebeten.
+
+Die Kachel zeigt einen **Lautsprecher** statt eines zweiten Buchstabens —
+Fiona liest die Überschrift nicht, und der Unterschied zur Nachbarkachel
+ist genau, dass man den Buchstaben hört.
+
+**Abnahme, gefahren.** Der Rauchtest liest den gesuchten Buchstaben aus der
+**Ansage**, nicht vom Bildschirm — wer ihn vom Bildschirm liest, kann
+danach nicht mehr behaupten, dass er dort nicht steht. Und dann weist er
+nach: keine Vorlage auf dem Blatt, der Buchstabe in keinem Text und in
+keiner Beschriftung, ein sauber geschriebener wird angenommen, und nach
+drei Fehlversuchen wird er vorgemacht. Zwei stehende Gegenproben, beide
+auf die negative Eigenschaft: eine lässt die Vorlage stehen, eine schreibt
+den Buchstaben in die Frage.
 
 ---
 

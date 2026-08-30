@@ -376,6 +376,22 @@ for (const g of GERAETE) {
   await p.waitForSelector('.schirm.da #null');
   await tipp('.schirm.da #raus');
   await p.waitForSelector('.schirm.da [data-ebene]');
+
+  /* Und das Diktat (N3): derselbe Bildschirm ohne Vorlage, dafuer mit
+     einem vierten Knopf („Noch mal hören"). Vier Knoepfe neben einem
+     quadratischen Feld sind auf 844 x 390 nicht selbstverstaendlich. */
+  await tipp('[data-ebene="schreiben:diktat"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 20000 });
+  if (await p.$('.schirm.da #los')) {
+    await schau('Vorlauf diktat');
+    await durchVorlauf(p);
+  }
+  await p.waitForSelector('.schirm.da .schreibblatt');
+  await schau('Diktat');
+  await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da #null');
+  await tipp('.schirm.da #raus');
+  await p.waitForSelector('.schirm.da [data-ebene]');
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da [data-welt]');
 

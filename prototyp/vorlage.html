@@ -759,8 +759,14 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    dieselbe Bewegung wie beim Mikrofon neben der Antwortliste. Gemessen:
    darunter blieben dem Feld 180 Punkte Hoehe, daneben sind es 270. */
 @media (orientation:landscape) and (max-height:440px){
-  .schreibraum{display:grid;grid-template-columns:1fr minmax(0,auto);
-    grid-template-rows:auto minmax(0,1fr);
+  /* Feld und Werkzeug stehen als PAAR in der Mitte, nicht das Feld links
+     und die Knoepfe rechts am Rand. Mit `1fr` fuer die Feldspalte lagen
+     zwischen beiden bis zu 200 Punkte Leere - der Bildschirm sah aus, als
+     fehle etwas. Beide Spalten nehmen sich jetzt, was sie brauchen, und
+     das Ganze wird zentriert. */
+  .schreibraum{display:grid;grid-template-columns:auto auto;
+    grid-template-rows:auto minmax(0,1fr);justify-content:center;
+    column-gap:var(--r6);
     grid-template-areas:"frage frage" "feld werkzeug";align-items:center}
   .schreibraum .frage{grid-area:frage}
   /* Unten bleibt mehr Luft als die uebliche kleine: auf dem iPhone quer

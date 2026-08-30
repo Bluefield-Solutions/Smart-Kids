@@ -222,6 +222,14 @@ const AUFNAHMEN = [
     wahl:'.schirm.da', tun:'vorlauf' },
   { name:'quer-schreiben', spiel:'schreiben:buchstaben', quer:true,
     wahl:'.schirm.da', tun:'schreiben' },
+  /* Das Diktat (N3) - der einzige Bildschirm der App, auf dem die Aufgabe
+   * NICHT zu sehen ist. Genau deshalb gehoert er fotografiert: dass dort
+   * nichts steht, prueft der Rauchtest; ob das leere Blatt mit vier
+   * Knoepfen daneben noch nach einer Aufgabe aussieht, sagt nur das Bild.
+   *
+   * Und er ist von sich aus stabil: welcher Buchstabe gerade dran ist,
+   * steht nirgends - die Aufnahme sieht bei jedem Keim gleich aus. */
+  { name:'quer-diktat', spiel:'schreiben:diktat', quer:true, wahl:'.schirm.da' },
 ];
 
 /**
