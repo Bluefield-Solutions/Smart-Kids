@@ -163,11 +163,12 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~2~~ | ~~**N3** Buchstabe angesagt, selbst geschrieben~~ | Fiona | hoch | mittel | **gefahren** |
 | ~~3~~ | ~~**N4** Zahlen 1 bis 20~~ | Fiona | hoch | klein | **gefahren** |
 | ~~4~~ | ~~**N1** Stephan und Violeta, mit Vergleich~~ | ihr beide | hoch | mittel | **gefahren** |
-| 1 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
-| 2 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
+| ~~5~~ | ~~**S1** Drei Sterne bedeuten zwei Dinge~~ | Fiona, Lea | hoch | klein | **gefahren** |
+| ~~6~~ | ~~**A3** Der Fehler wird auch beim Ziehen benannt~~ | Fiona, Lea | hoch | mittel | **gefahren** |
+| 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
+| 2 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
 | 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 7 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
-| 8 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
+| 4 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
 | 9 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
 | 10 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
 | 11 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
@@ -426,7 +427,7 @@ die Buchstaben.
 
 ---
 
-### S1 · Drei Sterne bedeuten zwei verschiedene Dinge
+### S1 · Drei Sterne bedeuten zwei verschiedene Dinge  ·  ERLEDIGT
 
 **Der Befund.** Am Ende einer Sitzung zeigt der Endbildschirm Sterne für
 die **Sitzung** (`sterneFuer(st.glatt, st.liste.length)`). Auf der
@@ -442,9 +443,22 @@ Farbe, zwei Bedeutungen. Für ein sechsjähriges Kind ist das nicht
 und nicht bei den Kleinigkeiten. Zu entscheiden ist nur, welche der beiden
 Bedeutungen die Sterne behalten und was die andere bekommt.
 
-**Abnahme.** Ein Tor findet die zwei Aufrufe und weist nach, dass sie
-verschiedene Formen speisen. Gegenprobe: beide wieder auf dieselbe Form
-legen — muss rot werden.
+**Erledigt — und S2 gleich mit.** Die Sterne gehören der **Sitzung**. Auf
+der Kachel stehen nur noch die Aufkleberzahl (mit anteilig gefülltem
+Zeichen) und der zweiteilige Balken; die Sterne sind dort weg.
+
+Das löst beide Befunde mit einer Entscheidung: dieselbe Form meint nicht
+mehr zweierlei, und auf der Kachel steht nicht mehr ein Anteil neben einer
+Anzahl. Auf der Aufnahme davor stand „Bundesländer: 1 Stern, 9 Aufkleber"
+neben „Asien: 2 Sterne, 2 Aufkleber" — wer die Kacheln vergleicht, und
+Kinder vergleichen sie, las das Gegenteil dessen, was dastand.
+
+**Abnahme, gefahren.** `inhalt` prüft an der ZAHL, die hineingeht, nicht an
+der Stelle, an der gezeichnet wird: jeder Aufruf von `sterneFuer` bekommt
+`st.glatt`. Wer die Sterne künftig woanders hinsetzen will, darf das —
+solange sie dieselbe Zahl meinen. Der Rauchtest prüft, dass auf der Kachel
+keine mehr stehen. Zwei stehende Gegenproben; eine setzt die Sterne genau
+so zurück, wie sie waren.
 
 ---
 
@@ -463,12 +477,22 @@ informiert, nur schlecht.
 
 ### Aus dem ANTON-Katalog, offen
 
-**A3 · Der Fehler wird auch beim Ziehen benannt** *(Rang 6, Nutzen hoch)*
-Heute: „Nicht ganz — probier es noch einmal." Möglich: *„Das ist Bayern.
-Thüringen liegt weiter oben."* Die Daten dafür sind da (Nachbarschaft,
-Himmelsrichtung aus den Ankerpunkten). Das ist der Unterschied zwischen
-Raten und Lernen, und er trifft **beide** Kinder in **jeder** Erdkunderunde.
-*Abnahme: `spielprobe` prüft, dass jede Ablehnung einen Grund nennt.*
+**A3 · Der Fehler wird auch beim Ziehen benannt**  ·  **ERLEDIGT**
+Statt „Nicht ganz — probier es noch einmal." steht dort jetzt *„Das ist
+Schleswig-Holstein. Thüringen liegt weiter unten."* — das Gebiet unter dem
+Finger und die Richtung zum gesuchten.
+
+Gerechnet wird in **Bildschirmpunkten**, nicht in Kartenkoordinaten: der
+Satz beschreibt, was das Kind sieht. Und wer weniger als 40 Punkte
+danebenliegt, bekommt **keine** Richtung — „weiter oben" wäre dort falscher
+als nichts, es schickte ihn weg von der Stelle, an der er fast richtig lag.
+
+*Abnahme, gefahren:* `spielprobe` prüft das Richtungswort an allen acht
+Himmelsrichtungen und an der Nähe — ohne Browser, denn die Richtung ist
+eine Rechnung. Der Rauchtest zieht zweimal daneben, einmal je Achse, und
+prüft **das Vorzeichen** jeder genannten Richtung; die Schwelle selbst
+gehört der App, sonst prüfte die Rechnung sich gegen sich selbst. Zwei
+stehende Gegenproben, eine davon vertauscht oben und unten.
 
 **B3 · Mehr Aufgabenformen** *(Rang 8)* — ohne neue Daten möglich:
 umgekehrt („Wo liegt Bayern?"), Nachbarn, größer/kleiner, Puzzle,

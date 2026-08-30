@@ -4974,3 +4974,77 @@ rückwirkend geändert.
 
 Startbündel **204,6 von 400 KB**. Vier Profilkacheln passen auf 844 × 390
 in eine Reihe; `passt` ist auf allen sieben Größen grün.
+
+---
+
+## Runde S1 und A3: was die Kinder jeden Tag sehen
+
+Zwei alte Befunde, beide aus dem Audit, beide mit hohem Nutzen und kleinem
+Aufwand — und beide an Stellen, an denen ein Kind jeden Tag vorbeikommt.
+
+### S1: Die Sterne gehören der Sitzung
+
+Dieselbe Sternform stand an zwei Orten und meinte zweierlei: im Kopf und auf
+dem Endbildschirm die **Sitzung** (drei Sterne = fehlerfrei), auf der
+Ebenenkachel den **Lebensfortschritt**. Ein Kind spielte fehlerfrei, sah
+drei Sterne, tippte auf „Weiter" — und sah auf der Kachel einen.
+
+Daneben lag S2, und die Aufnahme zeigte beide auf einmal:
+
+```
+Bundesländer   ★☆☆   9 Aufkleber
+Asien          ★★☆   2 Aufkleber
+```
+
+Anteil neben Anzahl. Wer die Kacheln vergleicht — und Kinder vergleichen
+sie —, liest daraus das Gegenteil dessen, was dasteht.
+
+**Eine Entscheidung löst beides:** die Sterne gehören der Sitzung. Auf der
+Kachel bleiben die Aufkleberzahl (mit anteilig gefülltem Zeichen) und der
+zweiteilige Balken. Zwei Aussagen statt vier, und keine widerspricht einer
+anderen.
+
+Geprüft wird an der **Zahl**, die hineingeht, nicht an der Stelle, an der
+gezeichnet wird: jeder Aufruf von `sterneFuer` bekommt `st.glatt`. Wer die
+Sterne künftig woanders hinsetzen will, darf das — solange sie dasselbe
+meinen. Der erste Anlauf dieser Prüfung wurde prompt rot, weil er die
+Funktionsdefinition für einen Aufruf hielt.
+
+### A3: Der Fehler wird benannt
+
+*„Das ist Schleswig-Holstein. Thüringen liegt weiter unten."*
+
+Zwei Auskünfte, und beide nur, wenn sie stimmen: der Name des Gebiets unter
+dem Finger (den gibt es nur für Gebiete dieser Ebene — auf einer
+Kontinentkarte liegt ringsum Umgebung ohne Namen) und die Richtung vom
+Ablegepunkt zum Anker des gesuchten.
+
+Gerechnet wird in **Bildschirmpunkten**, nicht in Kartenkoordinaten: der
+Satz beschreibt, was das Kind sieht. Auf einer anders ausgeschnittenen
+Karte wäre „oben" in Kartenkoordinaten etwas anderes als oben auf dem
+Schirm.
+
+Und wer **weniger als 40 Punkte** danebenliegt, bekommt keine Richtung. Er
+hat nicht in die falsche Richtung gedacht, sondern den Finger nicht genau
+genug gesetzt; „weiter oben" wäre dort falscher als nichts.
+
+### Zwei Funde in den Prüfungen selbst
+
+**Mein Ausdruck war zu eng.** Die volle Kette meldete „der Hinweis nennt
+keine Richtung" — bei „Das ist Saarland. Sachsen liegt weiter rechts." Eine
+waagerechte Richtung allein kam im Suchmuster gar nicht vor. Die App war
+richtig, die Prüfung falsch.
+
+**Und die Gegenprobe war so gut wie die Würfel des Leitners.** Der erste
+Anlauf zog das am weitesten entfernte Bundesland — welche Achse dabei
+herauskommt, hängt an der Aufgabe. Bei Thüringen war es senkrecht, bei
+Saarland waagerecht. Die Gegenprobe, die oben und unten vertauscht, hätte
+im zweiten Fall gar nicht anschlagen können. Jetzt wird **je Achse** das
+Gebiet mit dem größten Abstand in dieser Achse genommen, und es wird
+zweimal danebengezogen — einmal senkrecht, einmal waagerecht.
+
+Geprüft wird dabei das **Vorzeichen** jeder genannten Richtung, nicht das
+Wort: die Schwelle, ab der eine Achse genannt wird, gehört der App. Wer sie
+im Tor nachrechnete, prüfte die Rechnung gegen sich selbst.
+
+Startbündel **206,5 von 400 KB**. 137 Gegenproben, alle mit Nachweis.
