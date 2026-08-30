@@ -4524,3 +4524,73 @@ beweist nichts über die spätere. Und den erwarteten Satz auf „Timeout"
 umzustellen hieße, eine Zufallsmeldung zum Nachweis zu erklären. Also
 gestrichen, mit der Begründung an ihrer Stelle — die Zusage wird im
 Rauchtest geprüft und hier nicht noch einmal behauptet.
+
+---
+
+## Runde: das Backlog neu geordnet — nach Nutzen statt nach Tragfähigkeit
+
+Vier neue Anforderungen kamen dazu (Eltern aufteilen, Buchstaben schreiben,
+Buchstaben nach Ansage schreiben, Zahlen 1 bis 20), und mit ihnen eine
+Änderung, die größer ist als sie klingt: **die Liste wird ab jetzt nach
+Nutzen für die Spieler sortiert, nicht mehr nach Tragfähigkeit.**
+
+### Warum das keine Kosmetik ist
+
+Tragfähigkeit war das richtige Maß, solange das Gerüst gebaut wurde — jede
+Runde sollte auf der vorigen stehen können. Der Preis fällt erst auf, wenn
+man das Ergebnis anschaut: eine Reihenfolge nach Tragfähigkeit schiebt das,
+was ein Kind *merkt*, immer wieder nach hinten. A3 („der Fehler wird auch
+beim Ziehen benannt") steht seit dem ANTON-Abgleich offen und trifft
+**beide** Kinder in **jeder** Erdkunderunde; vor ihm lagen sieben Runden
+Gerüst.
+
+Nutzen ist jetzt eine einzige Frage: *wer merkt was davon, in der nächsten
+Sitzung, ohne dass es ihm jemand erklärt?* Drei Stufen, mehr nicht.
+
+Tragfähigkeit ist damit nicht verschwunden, sondern vom Sortierkriterium
+zum **Zwang** geworden. Es gibt genau drei echte, und sie stehen in § 0.
+
+### Der Fund, den das Umschreiben gebracht hat
+
+Das Backlog ist nicht nur Text. `tor/smoke.mjs` liest daraus die
+Profilnamen, die Ländertiefe, die Sitzungslänge, das Auswahlverbot, den Ton
+und das Vorlesen; `tor/inhalt.mjs` liest den Ton je Profil und zählt die
+158 Rechenaufgaben der Eltern nach. **Beide lesen die Spalten der Reihe
+nach** (`fiona`, `lea`, `eltern`).
+
+Damit hat die neue Anforderung „Elternprofil aufteilen" eine technische
+Kante, die man ihr nicht ansieht: eine vierte Spalte in dieser Tabelle
+verschiebt `eltern` von Index 2 auf Index 3, und die Tore prüfen dann
+lautlos das Falsche. Die Tabelle und `PROFILE` in `spiel.js` müssen in
+**einem** Schritt geändert werden. Das steht jetzt als Zwang in § 0 und als
+Kern der Runde N1.
+
+Geprüft, nicht angenommen: nach dem Umbau wurden alle sechs Ausdrücke gegen
+die neue Datei laufen gelassen, bevor ein Tor lief — Namen, Vorlesen, Ton,
+Auswahl, Tiefe, Sitzung, dazu die drei Rechensorten mit Summe 158. `npm run
+schnell` ist grün.
+
+### Und ein Fund, der nichts mit dem Auftrag zu tun hatte
+
+Beim Nachschlagen einer Regelnummer fiel auf, dass sie nicht stimmte. Also
+gezählt statt geschätzt:
+
+```
+92 Verweise „Regel N" in tor/, tools/, src/, prototyp/, docs/
+11 Eiserne Regeln in CLAUDE.md
+47 Verweise auf Regel 12, 13 oder 15
+```
+
+**Mehr als die Hälfte der Verweise zeigt auf nichts.** Die gemeinten Regeln
+gibt es alle — sie stehen nur unter anderen Nummern: die Messstelle ist
+hier Regel 5 und nicht 12, „erst abschalten, dann messen" steckt in Regel 1
+und nicht in 13, „was zweimal dasteht" ist Regel 6 und nicht 15. Die
+Verweise folgen der Nummerierung eines anderen Verzeichnisses; sie sind aus
+dem Gedächtnis geschrieben, und das Gedächtnis hatte die falsche Liste
+offen.
+
+Das ist genau der Schaden, vor dem Regel 6 warnt. Eine Begründung, die man
+nicht nachschlagen kann, ist keine. Steht als P4 im Backlog — mit dem
+Vorschlag, nicht 47 Kommentare zu korrigieren, sondern ein Tor zu bauen,
+das jede Nummer gegen `CLAUDE.md` prüft. Zehn Zeilen, und der Fehler kann
+nicht wiederkommen.

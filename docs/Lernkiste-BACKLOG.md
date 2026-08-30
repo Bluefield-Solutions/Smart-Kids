@@ -1,105 +1,88 @@
 # Backlog
 
-Vier Anforderungen vom 29.08.2026, aufgenommen und in Runden geschnitten.
-Jede Runde hat ein **Ziel** und ein **Abnahmekriterium** — so, wie in diesem
-Verzeichnis gearbeitet wird.
+Diese Datei ist **zweierlei**, und das muss man wissen, bevor man sie
+anfasst:
+
+1. Die Liste dessen, was noch zu tun ist — sortiert nach **Nutzen für
+   euch**, seit dem 30.08.2026 (vorher: nach Tragfähigkeit; siehe § 0).
+2. Eine **Quelle, aus der Tore lesen**. Abschnitt § 2 ist kein Text,
+   sondern Eingabe für `tor/smoke.mjs` und `tor/inhalt.mjs`. Wer dort eine
+   Zeile umbenennt, macht ein Tor blind — die Tore melden das zwar
+   ausdrücklich („Die Zeile ‚Ländertiefe' fehlt im Backlog"), aber sie
+   melden es erst, wenn jemand sie fährt.
 
 Was hier steht, ist geprüft und nicht geschätzt: wo etwas schon da ist,
-steht es dabei; wo etwas an Daten hängt, ist die Quelle nachgesehen.
+steht es dabei; wo etwas an Daten hängt, ist die Quelle nachgesehen; jede
+Zahl trägt ihre Messstelle.
 
 ---
 
-## Entschieden
+## § 0 · Wonach hier sortiert wird — und was sich daran geändert hat
 
-| Frage | Antwort | steht in |
+Bis zum 30.08.2026 stand oben, was am **tragfähigsten** war: jede Runde
+sollte auf der vorigen stehen können. Das war richtig, solange das Gerüst
+gebaut wurde — und es hat einen Preis, den man erst am Ergebnis sieht:
+eine Reihenfolge nach Tragfähigkeit schiebt das, was ein Kind *merkt*,
+immer wieder nach hinten.
+
+**Ab jetzt wird nach Nutzen sortiert.** Nutzen heißt hier genau eine
+Frage, und keine andere:
+
+> *Wer merkt was davon — in der nächsten Sitzung, ohne dass es ihm jemand
+> erklärt?*
+
+Drei Stufen, mehr braucht es nicht:
+
+| Stufe | heißt |
+|---|---|
+| **hoch** | Fiona, Lea oder ihr merkt es beim nächsten Spielen von selbst |
+| **mittel** | fällt auf, wenn man es sucht, oder wirkt erst über Wochen |
+| **gering** | merkt nur, wer am Code sitzt (Laufzeit, Prüfbarkeit, Ordnung) |
+
+Der Aufwand steht daneben, aber er sortiert nicht. Er sagt nur, wie eine
+Runde geschnitten werden muss.
+
+**Tragfähigkeit ist damit nicht weg — sie ist vom Sortierkriterium zum
+Zwang geworden.** Es gibt genau drei echte:
+
+- **N2 vor N3.** Ohne Erkennung kein Diktat.
+- **N2 vor N4.** Zahlen sind dieselbe Maschine mit anderen Vorlagen; wer
+  sie vorher baut, baut sie zweimal.
+- **§ 2 und der Code gemeinsam.** Die Profiltabelle unten und `PROFILE` in
+  `prototyp/spiel.js` müssen in *einem* Schritt geändert werden, sonst ist
+  der Rauchtest rot (siehe N1).
+
+Alles andere ist frei, und deshalb steht ab hier der Nutzen vorn.
+
+---
+
+## § 1 · Entschieden — damit es nicht zweimal verhandelt wird
+
+| Frage | Antwort | seit |
 |---|---|---|
-| Welche Kacheln? | **alle drei** Wahlbildschirme — Profilwahl, Weltenwahl, Ebenenwahl | R2 |
-| Überlappen wirklich gesehen? | nicht sicher → **Prüfung bauen**, statt zu raten | R2 |
-| Wo steht das Elternprofil? | **dritte Kachel bei den Kindern**, ohne PIN | R4 |
-| Ein Profil oder zwei? | **eins** — ihr spielt es beide | R4 |
-| Erst Entwürfe? | **ja**, zwei bis drei Aufnahmen vor dem Umbau | R2 |
+| Welche Kacheln in einer Sprache? | **alle drei** Wahlbildschirme — Profil, Welt, Ebene | R2 |
 | Welcher Entwurf? | **B · Bild** — jede Kachel zeigt ihren echten Umriss | R2 |
-| Welcher Grund? | **weiß** statt des hellen Blaus — Fassung offen (W1/W2/W3) | R2 |
-
-Der **Name** des dritten Profils ist entschieden: **Eltern**. R4 hatte es
-„Adam" getauft (Begründung unten), der Nutzer hat das aufgehoben.
-
----
-
-## Was schon dasteht — damit niemand zweimal baut
-
-| Anforderung | schon da | was wirklich fehlt |
-|---|---|---|
-| **2** Zurücksetzen | „von vorne" je Ebene auf der Ebenenwahl, mit Nachfrage; „Alles löschen" im Elternbereich. Der Rauchtest prüft: danach 0 Gegenstände. | der Weg **aus dem laufenden Spiel** heraus |
-| **3** Memory-Vorlauf | die Stadtstaaten-Lerneinheit (drei Umrisse, antippbar, vorgelesen) — die Form gibt es also | ein Blättermodus **je Ebene**, mit „Jetzt starten" |
-| **4** Elternprofil | ein Profil ist acht Zeilen: `eingabe`, `vorlesen`, `kandidaten`, `laenderTiefe`, `sitzung`, `streng` | **Inhalt.** Siehe unten — das ist die eigentliche Arbeit |
-| **1** Kacheln | `passt` prüft auf 7 Größen, dass nichts über den **Rand** läuft, und findet mit `elementFromPoint` **verdeckte** Texte | Element gegen Element: zwei Kacheln, die sich um 3 px überlappen, sieht heute niemand |
+| Welcher Grund? | **weiß** (Fassung W2) statt des hellen Blaus | R2 |
+| Wie heißt das dritte Profil? | **Eltern** (nicht „Adam") — jetzt aufgelöst durch N1 | R4 |
+| Wie heißt der PIN-Bereich? | **„Für Eltern"** — anderer Name als das Profil | R4 |
+| Vorlauf oder Lerneinheit? | der **Vorlauf ersetzt** die Stadtstaaten-Einheit | R3 |
+| Was steuert die Auswahl? | die **Ebene** sagt „vier Möglichkeiten", das **Profil** sagt „nie" | R4 |
+| Ein Vorrat darf wie groß sein? | **von Natur aus begrenzt** — siehe § 5.2 | R4 |
+| Wonach wird sortiert? | **Nutzen**, nicht Tragfähigkeit | 30.08.2026 |
 
 ---
 
-## Der Fund, der #4 bestimmt
+## § 2 · Die Tabellen, aus denen Tore lesen
 
-**Die Länderdaten enthalten fünf Länder je Kontinent. Fünfundzwanzig
-insgesamt.** Sie stehen als handverlesene Liste (`ziele`) in
-`tools/backen-laender.mjs`; die Rohdaten von Natural Earth enthalten alle.
-Lea nutzt mit `laenderTiefe: 5` bereits jedes davon.
+**Nicht Prosa. Eingabe.** Gelesen von `tor/smoke.mjs` (Profilnamen, Tiefe,
+Sitzungslänge, Auswahlverbot, Ton, Vorlesen) und `tor/inhalt.mjs` (Ton je
+Profil, die drei Rechensorten). Der Grund ist Regel 3 (das Soll kommt aus der
+Referenz, nicht aus mir): das Erwartete darf
+nicht aus der Datei kommen, die geprüft wird. Setzt man Fionas Tiefe in
+`spiel.js` auf zwölf und stünde das Soll auch dort, wanderte die Erwartung
+mit — und vor einer Sechsjährigen stünden zwölf Länder.
 
-Ein schwierigeres Erdkunde-Profil ist damit **kein Gestaltungsthema,
-sondern ein Datenthema**. Ohne neue Daten bliebe als „schwerer" nur:
-dieselben **63 Gebiete** (6 Kontinente + 25 Länder + 16 Bundesländer +
-16 Städte), aber ohne Auswahl und ohne Hilfen — für einen
-Erwachsenen, der alle 25 Länder kennt, ist das nicht schwer, sondern nur
-lästig.
-
-Geprüft, damit die Runde nicht am Anfang steckenbleibt:
-
-```
-https://raw.githubusercontent.com/nvkelso/.../ne_10m_admin_0_countries.geojson
-→ 200, 13 287 234 B
-```
-
-Die Quelle ist von hier aus erreichbar. Das Risiko ist keins mehr.
-
-**Aber ein zweites steht daneben:** `budget` erlaubt **250 KB je
-nachgeladener Ebene**, und Europa liegt mit fünf Ländern schon bei
-> **Nachtrag (R4, zweite Hälfte): die Befürchtung war falsch.** Gemessen
-> wuchs das größte Bündel von **107,4 auf 107,6 KB** — bei 25 → 60
-> Ländern. Der Grund stand die ganze Zeit im gebauten Bündel: **jedes**
-> Land eines Kontinents wird ohnehin ausgeliefert, die namenlosen als
-> `umgebung` (bei Europa 220 von 314 KB). Sieben Länder mehr zu benennen
-> heißt, sieben Formen von `umgebung` nach `laender` zu schieben. Es
-> kostet Name, Rang und Anker — sonst nichts.
-
-**107 KB**. Zwölf Länder sprengen das voraussichtlich. Das ist in R5 zu
-klären, nicht zu übergehen — die Grenze steht dort, weil die Kinder die
-Ebene auf einem Telefon nachladen.
-
----
-
-## Konzept: das Elternprofil
-
-### Wie es heißt: **Eltern**
-
-R4 hatte die Kachel „Adam" genannt, mit dieser Begründung: sie steht neben
-Fiona und Lea, und die tragen ihre Namen; eine Kachel „Eltern" daneben
-liest sich wie eine Einstellung statt wie ein Mitspieler. Der Nutzer hat
-das aufgehoben — sie heißt **Eltern**, samt Kennung (`adam` → `eltern`).
-Das kostete den einen gespeicherten Fortschritt unter der alten Kennung;
-er war eine Stunde alt und das war der Preis wert.
-
-Damit heißen zwei Dinge ähnlich: dieses **Profil** und der Bereich hinter
-der PIN. Der Bereich heißt deshalb auf dem Bildschirm **„Für Eltern"** —
-im Quelltext bleibt er `elternbereich`, weil dort kein Kind mitliest.
-
-Beide Namen stehen an genau **einer** Stelle: `PROFILE.eltern.name` und
-`BEREICH_ELTERN` in `prototyp/spiel.js`. Überall sonst werden sie von dort
-gelesen.
-
-### Was es ist
-
-Eine **dritte Kachel neben Fiona und Lea**, ohne PIN. Es spielt dieselben
-Bildschirme, dieselbe Wertung, denselben Leitner — nur mit anderem Inhalt
-und ohne die Hilfen für Kinder.
+### 2.1 Die drei Profile
 
 | | Fiona (6) | Lea (8) | Eltern |
 |---|---|---|---|
@@ -111,33 +94,11 @@ und ohne die Hilfen für Kinder.
 | Aufgaben je Sitzung | 6 | 8 | **12** |
 | streng | nein | ja | ja |
 
-Mechanisch ist das billig — ein Profil wird an acht Stellen gelesen. Teuer
-ist der Inhalt, und der zerfällt in zwei sehr verschiedene Hälften.
+Die Spalten werden **der Reihe nach** gelesen (`fiona`, `lea`, `eltern`).
+Eine vierte Spalte einzufügen, ohne die Tore mitzuziehen, macht sie still
+falsch — das ist der eigentliche Kern von N1.
 
-### Mathe für Erwachsene — erzeugt, und vor allem: BEGRENZT
-
-Der erste Entwurf dieses Abschnitts hatte einen Fehler, der erst beim
-Nachrechnen auffiel, und er ist lehrreich genug, um stehenzubleiben.
-
-Er lautete: „Plus und Minus im Zahlenraum 1000, zweistellig × einstellig,
-dreistellige Division, Quadratzahlen." Klingt vernünftig. **Gezählt sind
-das 321 200 Aufgaben allein für die Addition.**
-
-Das ist nicht bloß viel, es bricht drei Dinge auf einmal:
-
-- Das **Forscherbuch** zeichnet jeden Gegenstand einer Ebene. Es wären
-  dreihunderttausend Kästchen.
-- **`spielprobe`** rechnet jede Aufgabe und jede angebotene Zahl nach —
-  heute 240 Aufgaben in einer Sekunde.
-- Und der **Leitner** braucht Wiederholung. Bei 321 200 Aufgaben sieht man
-  dieselbe nie zweimal; ein Verfahren gegen das Vergessen, dem man nie
-  begegnet, ist keins.
-
-Ein Vorrat muss also **von Natur aus begrenzt** sein — so wie Fionas 100
-(alle Summen bis 10) und Leas 140 (die Reihen 6 bis 10). Nicht künstlich
-gekürzt, sondern durch die Regel selbst.
-
-Deshalb nicht der Zahlenraum, sondern die **Sorte** von Aufgabe:
+### 2.2 Der Rechenvorrat der Eltern
 
 | Sorte | Regel | Beispiel | Anzahl |
 |---|---|---|---|
@@ -146,279 +107,408 @@ Deshalb nicht der Zahlenraum, sondern die **Sorte** von Aufgabe:
 | `geteilt-gross` | die Umkehrung von `mal-gross` | 221 : 13 | 72 |
 | | | **gesamt** | **158** |
 
-Nachgerechnet: 158 Aufgaben, **158 eindeutige Kennungen**, keine
-Überschneidung zwischen `mal-gross` und `quadrat`, größter Wert 625. Die
-Größenordnung von Lea (140) — und 13 × 17 ist für einen Erwachsenen eine
-echte Aufgabe, 347 + 268 dagegen nur Fleißarbeit.
-
-**Was damit bewusst NICHT kommt:** dreistellige Addition. Sie lässt sich
-nicht begrenzen, ohne willkürlich auszudünnen, und eine willkürliche
-Auswahl wäre kein Vorrat, sondern eine Stichprobe. Wenn ihr sie wollt,
-wird sie eine eigene Ebene mit einer eigenen, tragenden Regel — das ist
-eine Entscheidung, keine Zeile Code.
-
-**Zwei Dinge bleiben neu und nicht geschenkt:**
-
-1. `gesprochen()` geht heute bis **100** („sechsundfünfzig"). Der größte
-   Wert hier ist 625 — die nächste Stufe braucht es also trotzdem, und die
-   deutschen Zahlwörter sind ab Hundert unangenehm
-   („sechshundertfünfundzwanzig").
-2. Die **Ablenker**. Bei Fiona sind es ±1 und die Gegenrechnung, bei Lea
-   die Nachbarn in der Reihe. Bei 13 × 17 greift man nach 13 × 16 oder
-   nach dem vergessenen Kreuzprodukt — das ist eigene Denkarbeit, keine
-   Zeile Code.
-
-Die Zahlen stehen — wie bei C1 und C2 — **im Abgleichdokument**, und das
-Tor `doku` legt sie neben den Code.
-
-### Erdkunde für Erwachsene — hängt an Daten
-
-- **Länder:** von 5 auf 12 je Kontinent, also 25 → 60. Natural Earth
-  liefert `NAME_DE`, die deutschen Namen müssen also nicht von Hand
-  geschrieben werden. Neu backen, Budget prüfen (siehe oben).
-- **Hauptstädte Europas:** braucht Stadtdaten, die es heute nur für
-  Deutschland gibt. `ne_10m_populated_places` führt Hauptstädte mit
-  Koordinaten; `tools/backen-staedte.mjs` ist die Vorlage.
+Fionas Vorrat ist 100 (alle Summen bis 10), Leas 140 (die Reihen 6 bis 10);
+deren Sollzahlen stehen im ANTON-Abgleich (C1, C2), aus demselben Grund.
 
 ---
 
-## Die Runden, in dieser Reihenfolge
+## § 3 · Offen — die Rangliste
 
-Die Reihenfolge ist **nicht die Wichtigkeit, sondern die Tragfähigkeit** —
-dieselbe Regel wie im ANTON-Fahrplan: jede Runde soll auf der vorigen
-stehen können. Zwei Zwänge gibt es wirklich:
+Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
-- **R2 vor R3 und R4**, weil beide neue Kacheln bauen. Wer sie vorher baut,
-  gestaltet sie zweimal.
-- **R5 vor R6**, weil man auf Daten, die es nicht gibt, nichts prüfen kann.
-
-Alles andere ist frei, und deshalb steht die kleinste Runde vorn.
-
-### R1 · Von vorne, mitten im Spiel  ·  ERLEDIGT
-
-**Ziel:** Aus einer laufenden Runde heraus alles auf null setzen — die
-Häkchen weg, die Farben zurück, die nächste Aufgabe fängt bei Fach 1 an.
-
-Der Weg dafür gibt es schon (`Ablage.loesche('fortschritt', …)`), und die
-Häkchen hängen am Leitner-Stand (`gesessen()`), fallen also von selbst weg.
-Was fehlt, ist der Knopf und die Nachfrage — zwei Tipper, wie auf der
-Ebenenwahl, denn ein Fehlgriff räumt eine Woche Übung weg.
-
-**Abnahme:** Der Rauchtest spielt eine Runde, setzt mitten darin zurück und
-weist nach: null Gegenstände in der Ablage, keine Häkchen auf der Karte,
-und die laufende Sitzung beginnt neu statt weiterzuzählen.
-
-**Erledigt.** Das Kreuz im Spiel führt jetzt auf einen **Pausenbildschirm**
-mit drei Wegen: Weiterspielen · Übung beenden · Von vorne anfangen. Kein
-vierter Knopf im Kopf — dort ist im Querformat kein Platz, und eine Taste,
-die eine Woche Übung wegräumt, gehört nicht neben das Kreuz.
-
-Der Rauchtest weist alle drei Teile der Abnahme nach und meldet
-`1 → 0 Gegenstände, Band jetzt (0 erledigt), 0 Häkchen`. Zwei stehende
-Gegenproben; die zweite hat drei Anläufe gebraucht, weil der Test den
-Unterschied zwischen „fängt neu an" und „zählt weiter" zunächst gar nicht
-sehen konnte — siehe `docs/Lernkiste-STAND.md`.
-
-### R2 · Eine Kachelsprache für alle drei Wahlbildschirme  ·  ERLEDIGT
-
-**Ziel:** Profilwahl, Weltenwahl und Ebenenwahl sehen aus wie **eine**
-Familie. Heute sind es drei Entwürfe aus drei Runden.
-
-Dazu das Tor, das heute fehlt: **Element gegen Element.** `passt` misst
-gegen den Rand und findet mit `elementFromPoint` verdeckte Texte — zwei
-Kacheln, die sich um wenige Punkte überschneiden, sieht es nicht. Das ist
-die blinde Stelle, nach der ihr gefragt habt.
-
-**Entwürfe liegen vor und sind entschieden:** `docs/entwuerfe/` — gewählt
-ist **B · Bild** (jede Kachel zeigt ihren echten Umriss) mit **weißem
-Grund** statt des hellen Blaus. Offen ist nur noch, welche der drei
-Weiß-Fassungen (W1 reinweiß · W2 reinweiß mit kräftigerer Kachel · W3 fast
-weiß).
-
-**Der weiße Grund ist kein Detail dieser Runde, sondern ihr Kern.**
-`--grund` ist eine globale Marke: jeder Bildschirm ändert sich mit, weiße
-Karten auf weißem Grund brauchen ihre Trennung aus Rand statt Fläche, und
-alle 15 Vorbilder in `tor/vorbilder/` werden neu. Die Begründung des alten
-Blautons steht in `marken.css` und wird mit dieser Runde bewusst gedreht —
-sie darf nicht stillschweigend verschwinden.
-
-**Abnahme:** Das neue Tor ist rot, wenn sich zwei Geschwister überlappen
-(Gegenprobe: eine Kachel um 4 px verschieben). `passt` bleibt auf allen 7
-Größen grün. Und die Aufnahmen der drei Bildschirme liegen nebeneinander —
-**angesehen**, nicht nur gemessen: Regel 7.
-
-**Erledigt.** Gebaut als W2. Das Tor sitzt in `passt` statt daneben — die
-Tour über 7 Größen × 9 Bildschirme steht dort schon, ein zweites Werkzeug
-wäre auseinandergelaufen. Die Gegenprobe verschiebt um **60 px**, nicht um
-4: bei 4 px überlappt gar nichts, die Reihenlücke ist größer, und das Tor
-blieb zu Recht grün. Vier Befunde kamen erst vom Blick auf die Aufnahmen,
-und `lesbarkeit` musste erst lernen, das Wasserzeichen zu sehen — es fand
-dann zehn Kontrastfehler. Alles in `docs/Lernkiste-STAND.md`.
-
-### R3 · Memory-Vorlauf  ·  ERLEDIGT
-
-**Ziel:** Vor jeder Ebene ein Blättern statt eines Rätsels. Alle Gebiete
-der Ebene mit Namen, Umriss und — bei den Hauptstädten — der Zuordnung;
-antippen liest vor. Unten „Jetzt starten".
-
-Erreichbar über die Kachel, und beim **ersten** Betreten einer Ebene von
-selbst. Das deckt zugleich **B1** aus dem ANTON-Abgleich („Erklärung vor
-der Übung"), das dort seit Runde 4 offen steht — der Abgleich beschreibt
-genau das: *„Bei uns gibt es sie einmal (Stadtstaaten). Jede Ebene bräuchte
-ihre."*
-
-> **Kollision, die vorher zu klären ist:** die Stadtstaaten-Lerneinheit
-> geht heute schon beim ersten Betreten von `hauptstaedte` auf
-> (`Einst.stadtstaatenGezeigt`). Zwei Vorschaltbildschirme hintereinander
-> sind einer zuviel. Entweder der Vorlauf **enthält** die Stadtstaaten-
-> Erklärung als eigene Karte, oder die Lerneinheit weicht ihm. Ich halte
-> das Erste für richtig — dann gibt es eine Form statt zweier —, aber es
-> ist eine Entscheidung und keine Nebensache.
-
-**Abnahme:** Der Rauchtest geht für beide Kinder über den Vorlauf ins
-Spiel; für Fiona wird jeder Name **angesagt** (sie liest nicht). `passt`
-grün auf 7 Größen — der Vorlauf zeigt bis zu 16 Gebiete auf einmal, das ist
-die engste Stelle.
-
-**Erledigt.** Die Kollision ist wie vorgeschlagen aufgelöst: der Vorlauf
-**ersetzt** die Stadtstaaten-Lerneinheit. Deren Form war ohnehin schon die
-richtige — Titel, ein erklärender Satz, ein Gitter aus antippbaren
-Umrissen, ein Knopf —, der Vorlauf ist ihre Verallgemeinerung. Der Satz
-wird abgeleitet, nicht je Ebene geschrieben; bei den Hauptstädten ist es
-der Stadtstaaten-Satz, und er erklärt jetzt zugleich, **warum** Berlin,
-Hamburg und Bremen im Gitter fehlen.
-
-Zur Abnahme, präzisiert: **nicht** alle sechzehn Namen werden beim Öffnen
-vorgelesen — das wäre ein Monolog und kein Blättern. Angesagt wird der
-Satz, und **jede** Karte spricht beim Antippen; für Fiona ist damit jeder
-Name erreichbar, ohne dass sie liest. Der Rauchtest weist beides nach.
-
-`passt` ist grün auf allen 7 Größen und prüft jetzt **14 Bildschirme je
-Größe** statt 9. Die engste Stelle war wie erwartet der Vorlauf: er meldete
-zunächst bis zu 98 Punkte Überlauf, und die Karten sind daraufhin
-gemessen kleiner geworden — nicht geschätzt.
-
-### R4 · Eltern, erste Hälfte: Profil und Mathe  ·  ERLEDIGT
-
-**Ziel:** Die dritte Kachel steht und ist spielbar — mit den **drei** neuen
-Rechensorten (158 Aufgaben). Ohne neue Daten, also ohne Wartezeit.
-
-**Enthält außerdem:** die Auswahl zu einer Eigenschaft des Profils machen
-(siehe Konzept). Ohne das spielen die Eltern die Bundesländer mit vier
-Möglichkeiten — oder die Kinder verlieren ihre.
-
-**Abnahme:** `spielprobe` rechnet **jede** erzeugte Aufgabe gegen JavaScript
-nach und prüft jede angebotene Zahl (so wie heute für 240 Aufgaben). `doku`
-legt die Verteilungen neben die Abgleichtabelle. Der Rauchtest spielt das
-Profil durch. Und `gesprochen()` sagt 347 richtig — mit Gegenprobe.
-
-**Erledigt.** `spielprobe` rechnet jetzt **398** Aufgaben nach (100 Fiona,
-140 Lea, 158 Eltern), `doku` liest die Tabelle oben aus diesem Dokument und
-vergleicht sie mit dem gebauten Vorrat, der Rauchtest spielt 27 Ebenen ×
-Profile durch, und `gesprochen(347)` sagt „dreihundertsiebenundvierzig".
-
-Die Auswahl ist wie geplant eine Eigenschaft geworden — aber **anders
-herum**, als ich zuerst gebaut habe: die feste Vier bei den Bundesländern
-zu löschen und alles dem Profil zu überlassen gab Lea sechzehn
-Möglichkeiten statt vier. Die Vier ist eine Eigenschaft der **Ebene**
-(Bundesländer schreibt man nicht, man erkennt sie), das Verbot eine des
-**Profils** (`kandidaten:0`). Zwei verschiedene Dinge.
-
-### R5 · Mehr Länder  ·  ERLEDIGT (und billiger als befürchtet)
-
-**Ziel:** 12 Länder je Kontinent statt 5. Liste erweitern, neu backen,
-Berichte und Gebietszahl nachziehen.
-
-**Zu klären, bevor gebaut wird:** Europa liegt mit 5 Ländern bei 107 von
-250 KB. Passt 12? Wenn nicht: gröbere Geometrie für die schwere Ebene, oder
-die Ebene teilen. Das ist eine Messung von einer Viertelstunde und
-entscheidet den Zuschnitt der ganzen Runde.
-
-**Abnahme:** `budget` grün ohne angehobene Grenze. `inhalt`/`topologie`
-grün für alle neuen Gebiete. Die Gebietszahl im Konzept stimmt wieder.
-
-### R7 · Der Elternbereich kennt drei Profile  ·  ERLEDIGT
-
-Vorgezogen vor R6 — er hängt an keiner Datenrunde, und R4 hatte ihn
-schuldig gelassen: ein drittes Profil dazuzustellen, ohne den einen
-Bildschirm anzufassen, der Profile *auswertet*.
-
-**Ziel:** Die Abnahme aus dem Konzept (M6) beantworten — *„Was kann Lea
-noch nicht?"*. Sie war nicht zu beantworten: Zahlen, Wackelkandidaten und
-der Löschknopf warfen alle Profile in einen Topf.
-
-**Abnahme:** Der Rauchtest liest die drei Profilnamen aus der Tabelle oben
-und findet jeden in der Übersicht wieder; die Wackelkandidaten stehen unter
-einem Namen; es gibt einen Löschknopf je Profil; und die Rechenaufgaben
-der Eltern stehen im Protokoll als Aufgabe, nicht als Kennung.
-
-### R6 · Erdkunde für Erwachsene  ·  ERLEDIGT
-
-**Ziel:** Die schweren Ebenen auf den neuen Daten — Länder in Tiefe 12,
-und Hauptstädte Europas.
-
-Die erste Hälfte war mit R5 schon da: Eltern spielen `laender:europa` in
-Tiefe 12. Gebaut wurde die zweite: **`hauptstaedte:europa`**, für Lea
-(fünf Städte) und die Eltern (zwölf). Fiona nicht — sie liest noch nicht,
-und eine Stadt hat keinen Umriss zum Ziehen.
-
-**Abnahme, gefahren:** `inhalt` prüft, dass jede der zwölf Stadtlagen im
-eigenen Land liegt (Punkt-in-Polygon gegen den gezeichneten Umriss), dass
-jedes Land zwei Ablenker hat, dass keiner die Hauptstadt selbst ist und
-dass der abweichende Regierungssitz vorn steht. `spielprobe` fährt die
-zwölf Namen durch die Schreibtoleranz — die Eltern *tippen* sie.
-`ansicht` hält die Ebene als `quer-hauptstaedte-eu` fest. Der Rauchtest
-spielt sie für Lea und die Eltern und prüft, dass Fiona sie nicht sieht.
-
-**`beruehrung` brauchte nichts.** Die Abnahme im Konzept hatte eine
-entkoppelte Trefferfläche für „die neuen Städte" verlangt. Es gibt keine:
-die Stadt ist nie ein Ziel, das man trifft — geantwortet wird über vier
-Knöpfe oder ein Tippfeld, und der Stadtpunkt erscheint erst nach der
-richtigen Antwort. Angefasst werden die Länder, und die sind über
-`laender:europa` längst gemessen.
+| # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
+|---|---|---|---|---|---|
+| 1 | **N2** Buchstaben nachfahren | Fiona | hoch | groß | Rückfrage R-A/R-B |
+| 2 | **N3** Buchstabe vorgelesen, selbst schreiben | Fiona | hoch | mittel | N2 |
+| 3 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | N2 |
+| 4 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | Rückfrage R-C/R-D |
+| 5 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
+| 6 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
+| 7 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
+| 8 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
+| 9 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
+| 10 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
+| 11 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
+| 12 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
+| 13 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 14 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
+| 15 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
+| 16 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 17 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| 18 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
 
 ---
 
-## Offen aus der Ton-Runde
+### N1 · Stephan und Violeta — zwei Elternprofile, die sich vergleichen
 
-**Erledigt** (letzte Runde): „aussen → asien" ist behoben — die Kölner
-Phonetik gibt Diphthongen einen eigenen Code, Falsch-Positiv 2,3 → 0,0 %.
-Der Endbildschirm der Eltern hat ein Vorbild. Und die beiden Hälften des
-Bildvergleichs werden nach **Aufwand** geteilt statt reihum.
+**Ziel.** Aus der einen Kachel „Eltern" werden zwei: **Stephan** (mit PH)
+und **Violeta** (mit einem T). Gleiche Aufgaben, gleiche Schwierigkeit,
+gleicher Ton — verschieden ist nur, **wer** gespielt hat. Und am Ende ein
+Bildschirm, auf dem das nebeneinander steht: wer hat bei welcher Aufgabe
+wie viele Punkte.
 
-**Erledigt:** die Siegsterne sind bei sachlichem Ton weg — wegen
-Redundanz, nicht wegen Geschmack: „12 von 12 auf Anhieb richtig" steht eine
-Zeile tiefer und sagt dasselbe genauer. Im Kopf während der Sitzung bleiben
-sie, dort sind sie der einzige laufende Punktestand. „Forscherbuch" bleibt,
-wie es heißt.
+**Was schon dasteht.** Der Fortschritt wird bereits **je Profil** abgelegt
+(`fortschritt` unter `${P.id}:${ebene}`, `spiel.js:740`). Ein zweites
+Elternprofil speichert also von selbst getrennt; nichts muss umgezogen
+werden. Auch der Elternbereich kennt seit R7 drei Profile statt eines und
+zeigt Zahlen, Wackelkandidaten und einen Löschknopf **je Profil**.
 
-**Erledigt:** der Umbruch der Namensfahne und die dreizehn Sprechstellen.
-Die Fahne bricht am Bindestrich oder an einer Lücke um, an der Stelle, die
-der Mitte am nächsten liegt. Das Sprechen läuft über **zwei Achsen**, vom
-Nutzer so entschieden:
+**Was wirklich fehlt.** Drei Dinge:
+
+1. Die Spalte in § 2.1 — und im selben Schritt die Tore, die sie der Reihe
+   nach lesen. Vier Profile, vier Spalten, und `smoke.mjs` liest heute
+   `['fiona','lea','eltern']` fest. Das ist die Stelle, an der diese Runde
+   *technisch* stattfindet.
+2. Der **Vergleich**. Zwei Fortschrittsstände nebeneinander sind noch kein
+   Wettkampf: es braucht eine Größe, die man vergleichen kann, und die
+   darf nicht neu erfunden werden (siehe Rückfrage R-C).
+3. Der alte Stand unter der Kennung `eltern`. Er gehört einem von euch —
+   nur weiß niemand, wem. Vorschlag: er wird **Stephan** zugeschlagen und
+   das steht dabei, statt ihn stillschweigend zu verlieren oder zu
+   verdoppeln.
+
+**Abnahme.** Der Rauchtest liest **vier** Profilnamen aus § 2.1 und findet
+jeden auf der Profilwahl und in der Übersicht wieder; er spielt eine
+Aufgabe als Stephan und eine als Violeta und weist nach, dass der
+Fortschritt des einen den des anderen nicht bewegt; der Vergleichsbildschirm
+zeigt beide Zahlen und benennt, wer vorn liegt. Gegenprobe: beide Profile
+auf denselben Ablageschlüssel legen — dann muss die Prüfung rot werden.
+
+---
+
+### N2 · Buchstaben nachfahren — das große neue Spiel, nur für Fiona
+
+**Ziel.** Ein Buchstabe steht groß auf dem Bildschirm, zum Beispiel ein A.
+Fiona fährt ihn mit dem Finger nach. Danach — weiter unten oder auf einem
+zweiten Schritt — schreibt sie ihn **frei**, und das Spiel sagt ihr, ob es
+ein A geworden ist, und macht es richtig vor, wenn nicht.
+
+Das ist der Punkt mit dem größten Nutzen im ganzen Verzeichnis, und zwar
+aus einem Grund: **Fiona kann noch nicht lesen.** Alles andere hier macht
+ihr das Abfragen leichter. Das hier bringt ihr etwas bei, das sie danach
+überall braucht — auch in diesem Spiel selbst.
+
+**Was das an der Architektur ändert — drei Stellen, wie damals bei Mathe:**
+
+1. Ein **vierter Eingabeweg**. Heute gibt es ziehen, sprechen, tippen. Ein
+   Strichzug ist keiner davon: er hat eine Richtung, eine Reihenfolge und
+   eine Zahl von Zügen, und er wird nicht beantwortet, sondern *gemacht*.
+2. Eine **dritte Welt** neben Erdkunde und Rechnen — sichtbar nur für
+   Fiona (siehe Rückfrage R-D).
+3. Ein **Vorrat aus Vorlagen** statt aus Gebieten oder erzeugten Aufgaben:
+   26 Buchstaben, jeder mit seinen Zügen. Das ist von Natur aus begrenzt
+   (§ 5.2 ist damit erfüllt) — aber die Züge muss jemand hinschreiben.
+
+**Der Nachfahr-Teil ist der billige.** Ob ein Finger auf einer Vorlage
+bleibt, ist eine Abstandsmessung: Punkt für Punkt gegen den Pfad, dazu die
+Reihenfolge. Das ist Rechnen, kein Erkennen — und es braucht nichts, was
+nicht schon da ist (SVG-Pfade, `getPointAtLength`, Zeigerereignisse).
+
+**Der Erkennungs-Teil ist der teure**, und er ist die eigentliche
+Entscheidung dieser Runde: siehe Rückfrage **R-A** und **R-B**.
+
+**Abnahme (Entwurf).** Ein Tor `schreiben` spielt gezeichnete Züge ein —
+also echte Punktfolgen, keine Bilder — und prüft: ein sauber nachgefahrenes
+A wird angenommen; ein A, das die Vorlage um mehr als die erlaubte Breite
+verlässt, nicht; ein frei geschriebenes A wird als A erkannt; ein O wird
+**nicht** als A erkannt (das ist die Hälfte, die zählt — Regel 1). Und
+`passt` nimmt den Schreibbildschirm auf allen 7 Größen mit: eine
+Schreibfläche, die auf 844 × 390 zu klein ist, ist keine.
+
+---
+
+### N3 · Der Buchstabe wird vorgelesen, Fiona schreibt ihn
+
+**Ziel.** Kein Vorbild mehr auf dem Bildschirm. Das Spiel sagt „Q", Fiona
+schreibt ein Q, das Spiel prüft, ob es eines ist.
+
+Das ist die Stufe, an der aus Nachfahren **Können** wird — und sie ist
+klein, *wenn* N2 die Erkennung mitbringt. Neu ist nur die Aufgabe selbst:
+ansagen statt zeigen, und ein Weg zurück zum Vorbild, wenn es dreimal
+nicht klappt (dieselbe Regel wie „Lösung nach drei Fehlern").
+
+**Vorsicht bei den Namen.** „Q" heißt gesprochen /kuː/, aber Fiona hört im
+Zweifel „Kuh". Die Ansage braucht vermutlich beides: den Buchstabennamen
+und ein Wort dazu („Q wie Quelle"). Das ist eine Entscheidung über den
+Inhalt, keine Zeile Code — sie gehört in die Runde, nicht davor.
+
+**Abnahme.** Der Rauchtest hört die Ansage (wie heute bei Fionas
+Aufgabenansage) und weist nach, dass **kein** Vorbild auf dem Bildschirm
+steht — sonst ist es N2 mit Ton. Nach drei Fehlversuchen erscheint es.
+
+---
+
+### N4 · Zahlen 1 bis 20
+
+**Ziel.** Dasselbe wie N2 und N3, mit den Ziffern. 1 bis 20 heißt: die
+zehn Ziffern schreiben können, und die Zahl als Ganzes lesen und schreiben.
+
+**Das ist absichtlich nicht dasselbe wie „20 Vorlagen".** Zwanzig ist
+zweimal etwas: die Zahl *zwanzig* (die man hört und meint) und die zwei
+Zeichen 2 und 0 (die man schreibt). Der Vorrat sind **zehn** Ziffern-
+Vorlagen; die Zahlen 1 bis 20 sind Aufgaben darauf. Das hält den Vorrat
+begrenzt (§ 5.2) und macht die zweistelligen Zahlen zur Aufgabe, die sie
+sind.
+
+**Und hier hängt es mit Mathe zusammen:** Fiona rechnet bereits bis 10 und
+tippt die Antwort aus vier Möglichkeiten. Wenn sie Ziffern schreiben kann,
+könnte sie das Ergebnis irgendwann *schreiben* statt es auszuwählen. Das
+ist keine Anforderung, sondern eine Tür, die N4 aufmacht.
+
+**Abnahme.** Wie N2/N3, dazu: die Ansage sagt „vierzehn" und nicht „eins
+vier" (`gesprochen()` kann das längst), und eine zweistellige Zahl wird nur
+angenommen, wenn **beide** Ziffern stimmen und in der richtigen Reihenfolge
+stehen.
+
+---
+
+### S1 · Drei Sterne bedeuten zwei verschiedene Dinge
+
+**Der Befund.** Am Ende einer Sitzung zeigt der Endbildschirm Sterne für
+die **Sitzung** (`sterneFuer(st.glatt, st.liste.length)`). Auf der
+Ebenenwahl zeigt dieselbe Sternform den **Lebensfortschritt** derselben
+Ebene (`sterneFuer(b.gesammelt, b.gesamt)`).
+
+Ein Kind spielt also fehlerfrei, sieht **drei** Sterne, tippt auf
+„Weiter" — und sieht auf der Kachel **einen**. Dieselbe Form, dieselbe
+Farbe, zwei Bedeutungen. Für ein sechsjähriges Kind ist das nicht
+„differenziert", das ist ein Wortbruch.
+
+**Der Nutzen ist hoch und der Aufwand klein**, deshalb steht es auf Platz 5
+und nicht bei den Kleinigkeiten. Zu entscheiden ist nur, welche der beiden
+Bedeutungen die Sterne behalten und was die andere bekommt.
+
+**Abnahme.** Ein Tor findet die zwei Aufrufe und weist nach, dass sie
+verschiedene Formen speisen. Gegenprobe: beide wieder auf dieselbe Form
+legen — muss rot werden.
+
+---
+
+### S2 · Auf der Kachel steht Anteil neben Anzahl
+
+Sterne und Balken zeigen einen **Anteil**, die Aufklebernummer eine
+**Anzahl**. Nebeneinander heißt das: neun Aufkleber und ein Stern (Länder
+Asien, 9 von 60) stehen neben zwei Aufklebern und zwei Sternen
+(Kontinente, 2 von 6). Wer die Kacheln vergleicht — und Kinder vergleichen
+sie —, liest daraus das Gegenteil dessen, was dasteht.
+
+Gehört zu S1, ist aber die kleinere Hälfte: hier ist niemand *falsch*
+informiert, nur schlecht.
+
+---
+
+### Aus dem ANTON-Katalog, offen
+
+**A3 · Der Fehler wird auch beim Ziehen benannt** *(Rang 6, Nutzen hoch)*
+Heute: „Nicht ganz — probier es noch einmal." Möglich: *„Das ist Bayern.
+Thüringen liegt weiter oben."* Die Daten dafür sind da (Nachbarschaft,
+Himmelsrichtung aus den Ankerpunkten). Das ist der Unterschied zwischen
+Raten und Lernen, und er trifft **beide** Kinder in **jeder** Erdkunderunde.
+*Abnahme: `spielprobe` prüft, dass jede Ablehnung einen Grund nennt.*
+
+**B3 · Mehr Aufgabenformen** *(Rang 8)* — ohne neue Daten möglich:
+umgekehrt („Wo liegt Bayern?"), Nachbarn, größer/kleiner, Puzzle,
+Steckbrief. **Teilbar: jede Form einzeln.** Die umgekehrte Frage ist die
+billigste und die mit dem größten Zugewinn, weil sie dieselbe Karte in die
+andere Richtung liest.
+
+**B2 · Test am Ende, ohne Hilfen** *(Rang 9)* — keine Auswahl, keine Lösung
+nach drei Fehlern, kein Zeiger. Wer besteht, bekommt den **Pokal** der
+Ebene. Der einzige Ort, an dem ein Pokal etwas bedeutet.
+
+**A4 · „Heute schon geübt"** *(Rang 10)* — eine ruhige Zeile auf dem
+Startbildschirm, kein Streak-Zwang. *Abnahme: die Zeile stimmt nach einem
+Neustart.*
+
+**D3 · Etwas erzählen können** *(Rang 11)* — nach einer Runde ein Satz zum
+Mitnehmen. *„In Ägypten fließt der längste Fluss der Welt."* Klein je Satz,
+groß in der Summe: 63 Gebiete wollen ihren Satz.
+
+**D2 · Abzeichen, die etwas über das Kind sagen** *(Rang 12)* — nicht „50
+Aufgaben", sondern *„Du kennst alle Nachbarn von Deutschland"*.
+
+**D1 · Ein Begleiter** *(Rang 13)* — die Figur, die durch die App führt.
+Sie wird nicht gekauft, sie ist da. **Braucht Bilder, und die entstehen
+nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
+
+---
+
+### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+**M4r · Sprechen, ein Mal wirklich auf dem iPhone** *(Rang 7 — die
+Ausnahme in diesem Block, Nutzen hoch)*
+Der Sprachweg ist **Fionas zweiter Eingabeweg** und wurde nie auf dem
+Zielgerät geprüft. Das Werkzeug für die eingefrorene Korpushälfte steht
+seit dieser Woche (`npm run korpus`, mit Selbstprüfung); die Abnahme aus M6
+verlangt zehn gesprochene Kontinentnamen von Fiona, mindestens acht richtig
+zugeordnet, keiner falsch angenommen. **Bevor sie hundert Formen spricht,
+muss klar sein, dass das Mikrofon auf dem iPhone im Querformat überhaupt
+zuverlässig auslöst.** Das ist eine halbe Stunde mit dem Gerät in der Hand
+und kann nicht von mir kommen.
+
+**P1 · `passt` (54 s) und `ziehen` (48 s) laufen hintereinander**, obwohl
+beide unabhängige Browsertore sind. Spart etwa 45 s je vollem Lauf.
+
+**P2 · Die festen Wartezeiten im Rauchtest** — der nächste und riskanteste
+Hebel gegen die Laufzeit. Gehört zwischen zwei Inhaltsrunden, nicht in eine
+hinein.
+
+**P3 · Der Größenwächter in `vergleich`** (mindestens 100 Treffer, 50
+Nicht-Treffer im eingefrorenen Korpus) ist die einzige Prüfung ohne
+Gegenprobe — weil ihr Gegenstand noch nicht existiert. Fällt mit M4r.
+
+**P4 · Die Regelnummern im Quelltext zeigen in eine andere Regelliste.**
+Gemessen am 30.08.2026: **92 Verweise der Form „Regel N"** stehen in `tor/`,
+`tools/`, `src/`, `prototyp/spiel.js` und `docs/`. Die Eisernen Regeln in
+`CLAUDE.md` sind **elf**. Also zeigen allein die 47 Verweise auf Regel 12,
+13 und 15 auf nichts.
+
+Die Diagnose ist nicht „falsch gezählt": die gemeinten Regeln gibt es alle,
+sie stehen nur unter anderen Nummern (Messstelle ist hier 5 und nicht 12,
+„erst abschalten, dann messen" steckt hier in 1 und nicht in 13, „was
+zweimal dasteht" ist 6 und nicht 15). Die Verweise folgen der Nummerierung
+eines **anderen** Verzeichnisses. Sie sind beim Schreiben aus dem Gedächtnis
+entstanden, und das Gedächtnis hatte die falsche Liste offen.
+
+Das ist genau der Schaden, vor dem Regel 6 warnt — eine Regel, auf die man
+sich per Nummer beruft, die es unter dieser Nummer nicht gibt, ist eine
+Begründung, die niemand nachschlagen kann. Der Ausweg ist entweder die
+Nummer abzuschaffen (die Regel mit ihren Worten zitieren) oder ein Tor, das
+jede Nummer gegen `CLAUDE.md` prüft. **Ich halte das Tor für richtig** — es
+ist zehn Zeilen und hält die Verweise für immer ehrlich.
+
+---
+
+## § 4 · Was bewusst nicht kommt
+
+- **Dreistellige Addition für die Eltern.** Sie lässt sich nicht begrenzen,
+  ohne willkürlich auszudünnen — und eine willkürliche Auswahl ist kein
+  Vorrat, sondern eine Stichprobe. Wenn ihr sie wollt, wird sie eine eigene
+  Ebene mit einer eigenen, tragenden Regel.
+- **Gekaufter Schmuck, Avatare, Währungen.** Der Begleiter (D1) ist da, er
+  wird nicht verdient.
+- **Streaks, die man verliert.** A4 zieht, ohne zu drohen.
+
+---
+
+## § 5 · Das Archiv — erledigt, aber die Begründungen gelten weiter
+
+Die Runden R1 bis R7 sind gefahren. Was hier steht, ist nicht ihr Verlauf
+(der steht in `docs/Lernkiste-STAND.md`), sondern das, was **weiter gilt**.
+
+### 5.1 Die Runden in einer Zeile
+
+| | Ziel | Ergebnis |
+|---|---|---|
+| **R1** | Von vorne, mitten im Spiel | Pausenbildschirm mit drei Wegen; zwei Gegenproben |
+| **R2** | Eine Kachelsprache für alle drei Wahlbildschirme | B · Bild auf Weiß (W2); Überlappungstor sitzt **in** `passt` |
+| **R3** | Memory-Vorlauf je Ebene | ersetzt die Stadtstaaten-Einheit; deckt B1 mit ab |
+| **R4** | Elternprofil und Mathe für Erwachsene | 158 Aufgaben; `spielprobe` rechnet 398 nach |
+| **R5** | 12 Länder je Kontinent statt 5 | billiger als befürchtet: 107,4 → 107,6 KB |
+| **R6** | Erdkunde für Erwachsene | `hauptstaedte:europa` für Lea und Eltern |
+| **R7** | Der Elternbereich kennt drei Profile | „Was kann Lea noch nicht?" ist beantwortbar |
+
+### 5.2 Die Regel, die aus R4 kam und alles Weitere bindet
+
+Der erste Entwurf des Elternvorrats lautete „Plus und Minus im Zahlenraum
+1000, zweistellig × einstellig, dreistellige Division". Klingt vernünftig.
+**Gezählt sind das 321 200 Aufgaben allein für die Addition.**
+
+Das bricht drei Dinge auf einmal: das Forscherbuch zeichnet jeden
+Gegenstand einer Ebene (dreihunderttausend Kästchen), `spielprobe` rechnet
+jede Aufgabe nach, und der Leitner braucht **Wiederholung** — bei 321 200
+Aufgaben sieht man dieselbe nie zweimal, und ein Verfahren gegen das
+Vergessen, dem man nie begegnet, ist keins.
+
+> **Ein Vorrat muss von Natur aus begrenzt sein — durch die Regel selbst,
+> nicht durch nachträgliches Kürzen.**
+
+Deshalb 158 statt 321 200. Deshalb sind es in N4 **zehn Ziffern** und nicht
+zwanzig Zahlen. Und deshalb ist die erste Frage an jede neue Ebene: *wie
+viele Gegenstände hat sie, gezählt?*
+
+### 5.3 Der Budgetbefund, der sich als falsch erwiesen hat
+
+Vor R5 stand hier die Befürchtung, zwölf Länder je Kontinent sprengten die
+250 KB je nachgeladener Ebene. Gemessen wuchs das größte Bündel von
+**107,4 auf 107,6 KB**. Der Grund stand die ganze Zeit im gebauten Bündel:
+**jedes** Land eines Kontinents wird ohnehin ausgeliefert, die namenlosen
+als `umgebung`. Sieben Länder mehr zu benennen heißt, sieben Formen von
+`umgebung` nach `laender` zu schieben — es kostet Name, Rang und Anker,
+sonst nichts.
+
+*Die Lehre ist nicht „Budgets sind egal", sondern: die Befürchtung war eine
+Schätzung, und die Messung dauerte eine Viertelstunde.*
+
+**Der Stand heute** (gemessen 30.08.2026, gzip, `npm run budget`):
+Startbündel **183 von 400 KB**, größte nachgeladene Ebene **108,3 von
+250 KB**. Für N2 heißt das: **217 KB Luft im Start** — genug für Vorlagen
+und einen kleinen Erkenner, nicht genug für ein geladenes Modell.
+
+### 5.4 Die zwei Achsen des Sprechens
 
 | | was es heißt | wer |
 |---|---|---|
 | `vorlesen` | „lies mir die **Aufgabe** vor, ich kann noch nicht lesen" | nur Fiona |
-| `ton` | „wie redet die App mit mir, wenn sie **von sich aus** redet" | kindlich jubelt, sachlich schweigt |
+| `ton` | „wie redet die App, wenn sie **von sich aus** redet" | kindlich jubelt, sachlich schweigt |
 
-Fiona hört alles, Lea Lob und Hinweise aber keine Aufgabenansage, die
-Eltern nichts. Was jemand ausdrücklich angetippt hat, um es zu hören,
-bleibt unbedingt: eine Bitte wird nicht vom Profil beantwortet.
+Was jemand ausdrücklich angetippt hat, um es zu hören, bleibt unbedingt:
+**eine Bitte wird nicht vom Profil beantwortet.** Diese Regel gilt für N3
+weiter — Fiona darf sich den Buchstaben so oft ansagen lassen, wie sie
+will.
+
+### 5.5 Kleines, das erledigt ist — steht hier, damit es nicht wieder aufgemacht wird
+
+- „aussen → asien" ist behoben (Kölner Phonetik mit eigenem Diphthong-Code,
+  Falsch-Positiv 2,3 → 0,0 %).
+- Die Siegsterne sind bei sachlichem Ton weg — wegen Redundanz, nicht wegen
+  Geschmack. Im Kopf während der Sitzung bleiben sie.
+- Die Namensfahne bricht am Bindestrich oder an der Lücke, die der Mitte am
+  nächsten liegt.
+- „Forscherbuch" bleibt, wie es heißt.
+- Was einmal geschafft war, bleibt geschafft: der Leitner führt eine
+  monotone Höchstmarke (`hoechstes`), Aufkleber fallen nicht mehr aus dem
+  Buch.
+- `beruehrung` brauchte für die Städte nichts: eine Stadt ist nie ein Ziel,
+  das man trifft.
 
 ---
 
-## Was dadurch liegen bleibt
+## § 6 · Die Rückfragen, die vor N1 und N2 zu beantworten sind
 
-Aus dem ANTON-Fahrplan bleiben offen: **A3** (der Fehler wird auch beim
-Ziehen benannt), **A4** („heute schon geübt"), **B2** (Test ohne Hilfen),
-**B3** (mehr Formen), **D1** (ein Begleiter — braucht Bilder und damit
-euch), **D2** (Abzeichen) und **D3** (Sätze). **B1** wird von R3
-miterledigt.
+Vier Stellen, an denen die Antwort die Arbeit **verändert** — nicht nur
+verschönert. Alles andere entscheide ich selbst.
 
-*Die erste Fassung dieser Liste vergaß A3 und D1 — nachgezählt statt
-erinnert.*
+**R-A · Wie soll erkannt werden, ob es ein A ist?**
+Die App ist eine einzige Datei, offline, ohne Netz zur Laufzeit. Ein
+Erkenner muss also **mitgeliefert** werden. Zwei Wege, beide gangbar:
+*(a)* Vergleich der Strichzüge gegen die Vorlagen — Richtung, Reihenfolge,
+Anzahl, Lage. Klein (wenige KB), gutmütig, verlangt aber, dass Fiona
+ungefähr *in der gedachten Reihenfolge* schreibt. *(b)* Ein kleiner
+mitgebackener Klassifikator über das gezeichnete Bild. Erkennt auch
+krumme Wege, kostet mehr Platz und ist schwerer zu prüfen. — Ich halte
+**(a)** für richtig, weil es zum Nachfahren ohnehin gebraucht wird und weil
+ein Tor es prüfen kann; aber es ist eine Entscheidung.
 
-Und aus der Prozessrunde: die **festen Wartezeiten im Rauchtest** — der
-nächste und riskanteste Hebel gegen die Laufzeit. Er gehört zwischen zwei
-Inhaltsrunden, nicht in eine hinein.
+**R-B · Wie streng darf es sein?**
+Ein sechsjähriges A ist krumm. Zu streng heißt: sie hört auf. Zu lasch
+heißt: alles ist ein A, und N3 wird sinnlos. Vorschlag: **beim Nachfahren
+großzügig, beim freien Schreiben mittel** — und nach drei Fehlversuchen
+wird es vorgemacht statt abgelehnt.
+
+**R-C · Was sind „Punkte" beim Elternvergleich?**
+Es gibt schon vier Größen: fehlerfreie Aufgaben (`glatt`), Sterne,
+Aufkleber und die Zeit. In diesem Verzeichnis gilt: **keine Zahl steht an
+zwei Stellen**. Ich würde deshalb keine neue Punktzahl erfinden, sondern
+den Vergleich auf *fehlerfrei beim ersten Versuch* stellen und die Zeit
+danebenstellen. Wenn ihr eine echte Punktzahl wollt (schnell = mehr), ist
+das eine neue Größe und braucht ihre eigene Regel.
+
+**R-D · Wo stehen Stephan und Violeta, und wo steht das Schreibspiel?**
+Zwei Fragen, eine Gestalt: die Profilwahl hat heute drei Kacheln und wird
+mit N1 vierspaltig. Und die Weltenwahl hat zwei Karten (Erdkunde, Rechnen)
+und bekäme mit N2 eine dritte, die **nur Fiona** sieht. Beides ist
+gemessen eng auf 844 × 390 — `passt` hat schon einmal 14 Überläufe
+gefunden, als zwei Weltenköpfe auf einen Bildschirm sollten. Deshalb: soll
+das Schreiben eine **eigene Welt** sein, oder eine Ebene **innerhalb**
+einer der beiden?

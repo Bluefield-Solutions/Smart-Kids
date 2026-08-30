@@ -161,11 +161,20 @@ sechs Tore für nicht vorhanden.
 
 ## Was als Nächstes kommt
 
-`docs/Lernkiste-BACKLOG.md` — sieben Runden aus vier Anforderungen, in der
-Reihenfolge ihrer **Tragfähigkeit**, jede mit Ziel und Abnahmekriterium.
-Zwei Zwänge stehen darin fest: die Kachelsprache (R2) trägt den
-Memory-Vorlauf (R3) und das Elternprofil (R4), und die Länderdaten (R5)
-tragen die schwere Erdkunde (R6).
+`docs/Lernkiste-BACKLOG.md`. Seit dem 30.08.2026 ist es **nach Nutzen für
+die Spieler sortiert**, nicht mehr nach Tragfähigkeit: oben steht, was
+Fiona, Lea oder die Eltern in der nächsten Sitzung von selbst merken. Die
+sieben gefahrenen Runden R1 bis R7 stehen im Archiv (§ 5), die Zwänge
+zwischen den offenen Punkten in § 0.
+
+**Zwei Abschnitte darin sind kein Text, sondern Eingabe für Tore** (§ 2):
+die Tabelle der drei Profile — `tor/smoke.mjs` liest daraus Namen, Tiefe,
+Sitzungslänge, Auswahlverbot, Ton und Vorlesen — und die Tabelle der drei
+Rechensorten, aus der `tor/inhalt.mjs` die 158 Aufgaben der Eltern
+nachzählt. Beide werden **der Reihe nach** gelesen. Wer dort eine Zeile
+umbenennt oder eine Spalte einfügt, ohne die Tore mitzuziehen, nimmt ihnen
+ihr Soll — der Grund ist Regel 3: das Erwartete darf nicht aus der Datei
+kommen, die geprüft wird.
 
 ---
 
