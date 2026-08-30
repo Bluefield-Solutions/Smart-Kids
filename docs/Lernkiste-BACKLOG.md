@@ -332,14 +332,20 @@ Die Kachel zeigt einen **Lautsprecher** statt eines zweiten Buchstabens —
 Fiona liest die Überschrift nicht, und der Unterschied zur Nachbarkachel
 ist genau, dass man den Buchstaben hört.
 
+**Und ein Befund, der nicht aus der Anforderung kam:** mit abgeschaltetem
+Ton hat diese Ebene **gar keine Aufgabe**. Die App schaltet ihn nicht
+eigenmächtig an — das wäre eine Entscheidung des Kindes, die man ihm nicht
+wegnimmt —, sondern sagt, woran es liegt, und derselbe Knopf heißt dann
+„Ton einschalten". Drei stehende Gegenproben statt zwei.
+
 **Abnahme, gefahren.** Der Rauchtest liest den gesuchten Buchstaben aus der
 **Ansage**, nicht vom Bildschirm — wer ihn vom Bildschirm liest, kann
 danach nicht mehr behaupten, dass er dort nicht steht. Und dann weist er
 nach: keine Vorlage auf dem Blatt, der Buchstabe in keinem Text und in
 keiner Beschriftung, ein sauber geschriebener wird angenommen, und nach
-drei Fehlversuchen wird er vorgemacht. Zwei stehende Gegenproben, beide
-auf die negative Eigenschaft: eine lässt die Vorlage stehen, eine schreibt
-den Buchstaben in die Frage.
+drei Fehlversuchen wird er vorgemacht. **Drei** stehende Gegenproben: eine
+lässt die Vorlage stehen, eine schreibt den Buchstaben in die Frage, eine
+nimmt den Hinweis auf den fehlenden Ton weg.
 
 ---
 

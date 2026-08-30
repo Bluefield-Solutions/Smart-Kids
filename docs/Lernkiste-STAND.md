@@ -4811,3 +4811,32 @@ weil nichts überlief.
 
 Das ist der Bildschirm, auf dem am wenigsten steht — und deshalb der, bei
 dem das Wenige stimmen muss.
+
+### Nachtrag: die Sackgasse, die aus dem Torlauf fiel
+
+Einzeln gefahren war der neue Rauchtest-Abschnitt grün, im vollen Lauf
+meldete er *„im Diktat wird kein Buchstabe angesagt"*. Die Ursache war
+eine Kopplung zwischen zwei Abschnitten: `regler` schaltet den Ton ab und
+legt das in der Ablage ab — und die gehört dem **Zusammenhang**, nicht der
+Seite. Wer danach im selben Zusammenhang eine neue Seite aufmacht, erbt
+„Ton aus".
+
+Der Abschnitt bekommt jetzt seinen eigenen Zusammenhang. Aber das ist die
+kleinere Hälfte des Befunds, und die größere gehört nicht in die Testerei:
+
+> **Mit abgeschaltetem Ton hat das Diktat gar keine Aufgabe.**
+
+Ein Kind, das den Ton einmal ausgeschaltet hat — der Knopf steht auf der
+Profilwahl —, bekäme ein leeres Blatt und keine Auskunft, worauf es wartet.
+Von einem kaputten Spiel ist das nicht zu unterscheiden.
+
+Die App schaltet den Ton **nicht** eigenmächtig wieder an; das wäre eine
+Entscheidung des Kindes, die man ihm nicht wegnimmt. Sie sagt stattdessen,
+woran es liegt (*„Für diese Übung brauchst du den Ton."*), und derselbe
+Knopf, der sonst „Noch mal hören" heißt, heißt dann „Ton einschalten".
+
+Der Rauchtest prüft beides, und eine stehende Gegenprobe nimmt den Hinweis
+weg. Aus derselben Runde kam noch eine kleine Schuld: der Diktat-Satz stand
+nach dem Ton-Fix an zwei Stellen — und die erste Gegenprobe fiel prompt
+darauf herein („Eingriff nicht angekommen", weil die zweite Abschrift
+stehenblieb). Er steht jetzt einmal.
