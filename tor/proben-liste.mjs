@@ -338,19 +338,24 @@ export const PROBEN = [
    *
    * Der haeufigste Verfall, und bis zu dieser Runde nur im vollen Lauf zu
    * sehen — zweiundvierzig Minuten, einmal am Tag. Jetzt in der Kette. */
-  { n:'eine Gegenprobe greift ins Leere', tor:'inhalt', deckt:'inhalt',
-    datei:'tor/proben-liste.mjs',
-    /* Der Ausdruck ist so geschrieben, dass er SICH SELBST nicht trifft:
-     * hier steht `SITZ[T]`, in der Probe darunter steht `SITZT`.
-     *
-     * Der erste Anlauf nahm den Suchtext einer anderen Probe woertlich —
-     * und traf damit als erstes DIESE Zeile. Verstellt wurde die
-     * Gegenprobe selbst, das Ziel blieb unberuehrt, und `inhalt` meldete
-     * gruen. Eine Gegenprobe, die den Pruefling im Ruhezustand schon
-     * verstellt, ist keine; hier hat sie sogar nur sich selbst verstellt. */
-    suchRegex:/such:'export const SITZ[T] = 2;',/,
-    ersatzFn:()=>"such:'diesen Text gibt es nirgends;',",
-    an:{ datei:'tor/proben-liste.mjs', fehlt:"such:'export const SITZT = 2;'," },
+  /* Angefasst wird der GEPRUEFTE Code, nicht die Probenliste.
+   *
+   * Zwei Anlaeufe sind daran gescheitert, dass die Probe in die Liste
+   * griff, in der sie selbst steht. Der erste nahm den Suchtext einer
+   * anderen Probe woertlich und traf damit als erstes seine eigene Zeile.
+   * Der zweite umging das mit `SITZ[T]` - und traf dann die `fehlt`-Zeile,
+   * in der derselbe Text noch einmal steht. Beide Male wurde die
+   * Gegenprobe verstellt und das Ziel blieb unberuehrt; `inhalt` meldete
+   * gruen.
+   *
+   * Der Ausweg ist nicht ein schlauerer Ausdruck, sondern ein anderes
+   * Ziel: die eine Zeile in spiel.js aendern, die ZWEI Proben als
+   * Suchtext tragen. Damit ist der Eingriff dort, wo im Ernstfall auch
+   * gearbeitet wird - und die Liste bleibt unberuehrt. */
+  { n:'eine Gegenprobe greift ins Leere', tor:'inhalt', deckt:'inhalt', datei:D,
+    such:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',
+    ersatz:'const schauPause = (ms) => FLOTT ? Math.min(ms, 901) : ms;',
+    an:{ datei:D, text:'Math.min(ms, 901)' },
     sagt:'steht nicht mehr in' },
   /* Und die Pruefung selbst darf nicht ins Leere greifen: liest sie keine
    * Liste mehr, ist ihr Gruen geschenkt (Regel 5). */
