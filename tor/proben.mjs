@@ -691,7 +691,16 @@ const PROBEN = [
   // Fiona liest noch nicht. Ohne Ansage ist keine Ebene fuer sie spielbar -
   // und genau das war der Zustand, bis jemand es beim Spielen gemerkt hat.
   { n:'die Aufgabe wird nicht mehr vorgelesen', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    suchRegex:/  setTimeout\(\(\)=>\{\n    const teile = \[frageText\];[\s\S]*?\}, 500\);\n/,
+    /* Die Frist am Ende steht NICHT mehr im Suchtext.
+     *
+     * Hier stand `}, 500);`. Seit `?flott` die Ansage verkuerzt, heisst es
+     * `}, FLOTT ? 60 : 500);` - und die Probe fand ihren Text nicht mehr.
+     * Sie hat seitdem nichts bewiesen, und niemandem ist es aufgefallen,
+     * weil der volle Satz seit der Umstellung auf den naechtlichen Lauf
+     * hier nie wieder gefahren wurde. Genau die Verfallsart, gegen die
+     * `rhythmus` da ist. Gesucht wird jetzt bis zur schliessenden
+     * Klammer, egal was als Frist drinsteht. */
+    suchRegex:/  setTimeout\(\(\)=>\{\n    const teile = \[frageText\];[\s\S]*?\n  \}, [^;]*\);\n/,
     ersatzFn:()=>'',
     an:{ ...DIST, fehlt:'const teile = [frageText]' },
     sagt:'vorgelesen' },

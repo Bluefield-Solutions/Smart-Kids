@@ -237,8 +237,21 @@ async function durchspielen(seite) {
     // als „nicht stabil", und Playwright wartete es tot. Der Klick muss
     // hier nicht die Bedienbarkeit beweisen - das tut der Rauchtest -,
     // sondern den Bildschirm weiterschalten.
+    const altesZiel = await seite.evaluate(() =>
+      document.querySelector('.schirm.da path.ziel')?.dataset.id || '');
     await seite.$$eval('.schirm.da .etikett', (els, i) => els[i].click(), idx);
-    await seite.waitForTimeout(1800);
+    /* Gewartet wird, bis der Bildschirm WIRKLICH weiter ist - nicht 1800 ms.
+     *
+     * Das war die teuerste feste Pause der ganzen Kette: sechs Aufgaben
+     * je Lauf, zweimal (beide Haelften des Bildvergleichs). „Weiter"
+     * heisst: der Endbildschirm steht da, oder es liegt ein ANDERES Ziel
+     * an und der Wechsel ist durch (ein Bildschirm, nicht zwei). */
+    await seite.waitForFunction((alt) => {
+      if (document.querySelector('.schirm.da #nochmal')) return true;
+      if (document.querySelectorAll('#buehne .schirm').length !== 1) return false;
+      const z = document.querySelector('.schirm.da path.ziel');
+      return !!z && z.dataset.id !== alt;
+    }, altesZiel, { timeout: 10000 });
   }
   throw new Error('quer-ende: der Endbildschirm kam nach 40 Aufgaben nicht');
 }

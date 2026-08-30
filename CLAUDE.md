@@ -56,8 +56,13 @@ npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
                    der nächtliche Lauf hält sie frisch.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Läuft nachts auf dem Runner; hier nur, wenn du ein Tor
-                   geändert hast: `-- --tor passt` fährt genau dessen
-                   Proben, `-- --nur "..."` eine einzelne.
+                   geändert hast. Ausgewählt wird mit ARGUMENTEN, ohne
+                   Strich: `-- smoke` fährt alle Proben dieses Tors,
+                   `-- "der Ton spielt auch"` eine einzelne (Teilwort
+                   des Namens genügt). Hier stand `--tor passt` und
+                   `--nur "..."` — beide Schalter gibt es nicht, sie
+                   wären als unbekannte Flags stillschweigend ignoriert
+                   worden und hätten den vollen Satz gefahren.
                    Arbeitet in einer Wegwerf-Kopie (`.probenbaum`) — der
                    Arbeitsbaum wird nicht angefasst.
                    Was ANGESCHLAGEN hat, wird festgehalten, auch wenn der
