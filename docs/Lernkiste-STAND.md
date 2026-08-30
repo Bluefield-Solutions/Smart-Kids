@@ -5179,3 +5179,81 @@ offen?" suchte nach der Marke des *Treffers*. Aufgelöst wird aber mit
 anschlagen, auch wenn der Fehler drin war.
 
 144 Gegenproben, alle mit Nachweis.
+
+---
+
+## F15 · Vier Hebel für die Sprachqualität
+
+Diesmal kein Fehlerbericht, sondern ein Bauchgefühl — „funktioniert
+halbwegs, aber noch nicht ganz" — und eine klare Forderung: beim Sprechen
+muss der Lautsprecher aus sein.
+
+**Die Forderung war die richtige, und sie war größer als sie klingt.** Das
+Mikrofon hörte den eigenen Lautsprecher mit: die Aufgabe wird angesagt, das
+Kind tippt währenddessen auf das Mikrofon, und die Erkennung bekommt „Wie
+heißt dieser Kontinent" ins Ohr statt Fionas Antwort. Darin findet niemand
+einen Kontinent — und die App sagt dann „sag es noch einmal", obwohl das
+Kind alles richtig gemacht hat.
+
+Umgesetzt als **ein Riegel an einer Stelle**, nicht als Aufräumen an
+dreizehn Aufrufstellen. Jede Stimme läuft durch `vorlesen`, jeder Ton durch
+`klangZu`; wer eine vierzehnte Stelle dazubaut, ist automatisch abgedeckt.
+Das ist dieselbe Überlegung wie bei der Regel, dass im Menü keine
+Spielbedienung sichtbar sein darf: eine Ableitung, kein Schalter, den man
+vergessen kann.
+
+### Was ich beim Nachsehen noch gefunden habe
+
+**Das Gerät schneidet eine Äußerung an der Atempause** — `ev.results` hat
+dann mehrere Abschnitte, und gelesen wurde nur der letzte. Wer „Ich glaube |
+das ist Asien" sagte, verlor die eine Hälfte; wer „Asien | glaube ich"
+sagte, die andere. Welche, hing an der Atempause.
+
+**Zwischenergebnisse wurden weggeworfen.** Endet die Erkennung ohne
+Endergebnis — bei Stille auf dem Telefon der Normalfall —, war alles weg,
+obwohl das letzte Zwischenergebnis oft schon der volle Satz ist. Das Kind
+wurde gebeten, noch einmal zu sagen, was es gerade gesagt hatte.
+
+### Der größte Hebel stand seit Monaten als Kommentar da
+
+Der Abgleich kennt drei Ausgänge, und über den mittleren steht in seinem
+eigenen Quelltext: er „verwandelt eine Erkennungsschwäche in eine
+Bestätigungsfrage — und die kann ein Kind beantworten".
+
+**Konnte es aber nicht.** „Meintest du Hessen?" stand auf dem Schirm, und im
+selben Augenblick war die Aufgabe vorbei und als nicht gekonnt verbucht. Die
+Frage war rhetorisch, und sie ging zulasten des Kindes.
+
+Gemessen am Korpus: **3 von 121 richtigen Äußerungen** enden so — „hessn",
+„hesen", „chiena". Das Kind hat den Namen gesagt. Unsicher war das Gerät.
+Bezahlt hat das Kind.
+
+Jetzt stehen zwei Knöpfe da. **Ja** wertet, was bestätigt wurde; **Nein**
+kostet keinen Versuch, denn der Irrtum lag beim Gerät. Und „Ja" auf einen
+*fremden* Namen zählt weiterhin falsch — sonst wäre die Rückfrage ein
+Freifahrtschein.
+
+### Drei Messungen, die zu einem Nein geführt haben
+
+**Die Annahmegrenze lockern**, damit mehr Äußerungen als beantwortbare
+Rückfrage statt als „nicht verstanden" enden: die Trefferquote liegt schon
+bei 100 %. Es wäre nichts zu holen — nur mehr falsche Vorschläge.
+
+**Nach „nicht verstanden" automatisch weiterhören**: das war F13. Ein
+Zustand, der sich selbst neu startet, ist wieder einer, aus dem man nicht
+herauskommt.
+
+**`SpeechGrammarList`** — der Erkennung die sechs möglichen Wörter nennen —
+wäre der größte Hebel überhaupt. Safari auf iOS ignoriert sie. Eine Zeile,
+die nichts tut, gehört nicht in den Quelltext, und schon gar nicht mit dem
+Kommentar „hilft der Erkennung".
+
+### Und ein Fund in meiner eigenen Prüfung
+
+Der Rauchtest sprach den Namen der *vorigen* Aufgabe in die neue, weil eine
+neue Prüfung dazwischen eine Aufgabe verbraucht. Er meldete „nichts
+gewertet", obwohl die App richtig lag. Eine Probe, die ihre eigene
+Reihenfolge nicht kennt, misst die falsche Aufgabe.
+
+Der Abschnitt `sprechen` prüft jetzt sieben Dinge; vier neue Gegenproben
+halten die vier Eingriffe fest. 148 Gegenproben, alle mit Nachweis.

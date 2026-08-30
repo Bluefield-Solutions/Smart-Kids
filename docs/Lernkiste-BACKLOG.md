@@ -167,6 +167,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~6~~ | ~~**A3** Der Fehler wird auch beim Ziehen benannt~~ | Fiona, Lea | hoch | mittel | **gefahren** |
 | ~~7~~ | ~~**F13** Der Sprachmodus hatte keinen Ausgang~~ | Fiona | hoch | klein | **gefahren** |
 | ~~8~~ | ~~**F14** Gesprochenes als Satz verstehen~~ | Fiona | hoch | mittel | **gefahren** |
+| ~~9~~ | ~~**F15** Vier Hebel für die Sprachqualität~~ | Fiona | hoch | mittel | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
 | 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
@@ -523,6 +524,60 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 ---
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+### F15 · Vier Hebel für die Sprachqualität  ·  ERLEDIGT
+
+**Der Befund war diesmal ein Bauchgefühl** („funktioniert halbwegs, aber noch
+nicht ganz") plus **eine klare Forderung**: beim Sprechen muss der Lautsprecher
+aus sein. Beides zusammen ergab vier Eingriffe.
+
+**1. Die App schweigt, solange sie zuhört.** Das Mikrofon hörte den eigenen
+Lautsprecher mit: die Aufgabe wird angesagt, das Kind tippt währenddessen auf
+das Mikrofon — und die Erkennung bekommt „Wie heißt dieser Kontinent" ins Ohr
+statt Fionas Antwort. Darin findet niemand einen Kontinent.
+Umgesetzt als **ein Riegel an einer Stelle**, nicht als Aufräumen an dreizehn
+Aufrufstellen: jede Stimme läuft durch `vorlesen`, jeder Ton durch `klangZu`.
+Wer eine vierzehnte Stelle dazubaut, ist automatisch abgedeckt — dieselbe
+Überlegung wie bei Regel 6. Dazu `speechSynthesis.cancel()` beim Anschalten:
+der Riegel hält, was danach kommt, das Abschneiden erwischt den laufenden Satz.
+
+**2. Alle Abschnitte, nicht nur der letzte.** `ev.results` kann mehrere
+Abschnitte haben — das Gerät schneidet eine Äußerung an einer Atempause.
+Gelesen wurde nur der letzte. Wer „Ich glaube | das ist Asien" sagte, verlor
+die eine Hälfte; wer „Asien | glaube ich" sagte, die andere — und welche, hing
+an der Atempause.
+
+**3. Zwischenergebnisse werden gerettet.** Endet die Erkennung ohne
+Endergebnis — auf dem Telefon bei Stille der **Normalfall** —, war alles weg,
+obwohl das letzte Zwischenergebnis oft der volle Satz ist. Das Kind wurde
+gebeten, noch einmal zu sagen, was es gerade gesagt hatte.
+
+**4. Die Rückfrage ist beantwortbar.** Der Abgleich kennt drei Ausgänge, und
+laut seinem eigenen Kommentar ist der mittlere der wichtigste: er „verwandelt
+eine Erkennungsschwäche in eine Bestätigungsfrage — und die kann ein Kind
+beantworten". **Konnte es aber nicht.** „Meintest du Hessen?" stand auf dem
+Schirm, und im selben Augenblick war die Aufgabe vorbei und als nicht gekonnt
+verbucht. Gemessen: **3 von 121 richtigen Äußerungen** enden so („hessn",
+„hesen", „chiena") — das Kind hat den Namen gesagt, unsicher war das Gerät,
+bezahlt hat das Kind. Jetzt: **Ja** wertet, was bestätigt wurde; **Nein**
+kostet keinen Versuch. „Ja" auf einen *fremden* Namen zählt weiterhin falsch,
+sonst wäre die Rückfrage ein Freifahrtschein.
+
+**Gemessen und bewusst NICHT geändert:**
+- **`GRENZE_ANNAHME` lockern**, damit mehr Äußerungen als beantwortbare
+  Rückfrage statt als „nicht verstanden" enden: die Trefferquote liegt schon
+  bei 100 %, es wäre also nichts zu holen — nur mehr falsche Vorschläge.
+- **Nach „nicht verstanden" automatisch weiterhören**: genau das war F13. Ein
+  Zustand, der sich selbst neu startet, ist wieder einer, aus dem das Kind
+  nicht herauskommt.
+- **`SpeechGrammarList`** (der Erkennung die sechs möglichen Wörter nennen)
+  wäre der größte Hebel überhaupt — Safari auf iOS ignoriert sie. Eine Zeile,
+  die nichts tut, gehört nicht in den Quelltext.
+
+Der Rauchtest-Abschnitt `sprechen` prüft jetzt **sieben** Dinge, vier
+Gegenproben halten die vier Eingriffe fest.
+
+---
 
 ### F14 · Gesprochenes wurde als Wort verstanden, nicht als Satz  ·  ERLEDIGT
 

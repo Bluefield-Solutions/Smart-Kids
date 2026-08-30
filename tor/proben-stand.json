@@ -600,6 +600,22 @@
     "der Ausschnitt schneidet wieder Bestimmungswörter ab": {
       "commit": "48a79ad16d9bf9d11c8e56fdccde26e23a91ef40",
       "zeit": "2026-08-30"
+    },
+    "die App redet weiter, während sie zuhört": {
+      "commit": "9450f77dd038900e30f4d4597f199251b936b04f",
+      "zeit": "2026-08-30"
+    },
+    "die laufende Ansage läuft ins Mikrofon weiter": {
+      "commit": "9450f77dd038900e30f4d4597f199251b936b04f",
+      "zeit": "2026-08-30"
+    },
+    "das Zwischenergebnis wird wieder weggeworfen": {
+      "commit": "9450f77dd038900e30f4d4597f199251b936b04f",
+      "zeit": "2026-08-30"
+    },
+    "die Rückfrage ist wieder eine Sackgasse": {
+      "commit": "9450f77dd038900e30f4d4597f199251b936b04f",
+      "zeit": "2026-08-30"
     }
   }
 }
