@@ -2930,11 +2930,16 @@ if (laeuft('sprechen')) try {
       await p.evaluate((w) => window.__sprich(w, true), k);
       await p.waitForTimeout(120);
     }
+    /* Der ZAEHLER zuerst, dann der Satz - in dieser Reihenfolge, und das
+     * ist kein Geschmack.
+     *
+     * Wer den Ausstieg herausnimmt, laesst die Aeusserung in die normale
+     * Wertung laufen; die schreibt ihren eigenen Satz ueber den guten.
+     * Beide Pruefungen schlagen dann an, und mit `--sofort` gewinnt die
+     * erste. Stuende der Satz vorn, bezeugte die Gegenprobe fuer den
+     * Zaehler den Satz - und niemand haette je gemessen, ob der Zaehler
+     * gehalten wird. */
     const nachKauderwelsch = await zustand();
-    if (!nachKauderwelsch.satz.includes(KAUDERWELSCH[2]))
-      merke('sprechen', new Error(`nach „${KAUDERWELSCH[2]}" steht „${nachKauderwelsch.satz}" da `
-        + '— die Meldung nennt nicht, was angekommen ist. Dann sieht niemand, ob das '
-        + 'Mikrofon nichts gehört hat oder der Abgleich nichts zuordnen konnte'));
     const nochOffen = await p.evaluate(() =>
       !document.querySelector('.schirm.da .frage .richtigText')
       && !!document.querySelector('.schirm.da path.ziel'));
@@ -2942,6 +2947,10 @@ if (laeuft('sprechen')) try {
       merke('sprechen', new Error('drei nicht verstandene Äußerungen haben die Aufgabe '
         + 'aufgelöst — nicht verstanden ist kein Fehlversuch, das Kind hat nicht ein '
         + 'einziges Mal falsch geraten'));
+    if (!nachKauderwelsch.satz.includes(KAUDERWELSCH[2]))
+      merke('sprechen', new Error(`nach „${KAUDERWELSCH[2]}" steht „${nachKauderwelsch.satz}" da `
+        + '— die Meldung nennt nicht, was angekommen ist. Dann sieht niemand, ob das '
+        + 'Mikrofon nichts gehört hat oder der Abgleich nichts zuordnen konnte'));
 
     /* b) Der ganze Satz - der gemeldete Fall.
      *
