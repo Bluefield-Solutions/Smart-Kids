@@ -154,8 +154,8 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 |---|---|---|---|---|---|
 | ~~1~~ | ~~**N2a** Buchstaben nachfahren~~ | Fiona | hoch | groß | **gefahren** |
 | ~~2~~ | ~~**N3** Buchstabe angesagt, selbst geschrieben~~ | Fiona | hoch | mittel | **gefahren** |
-| 1 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | — |
-| 2 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
+| ~~3~~ | ~~**N4** Zahlen 1 bis 20~~ | Fiona | hoch | klein | **gefahren** |
+| 1 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
 | 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 5 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
 | 6 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
@@ -356,7 +356,7 @@ nimmt den Hinweis auf den fehlenden Ton weg.
 
 ---
 
-### N4 · Zahlen 1 bis 20
+### N4 · Zahlen 1 bis 20  ·  ERLEDIGT
 
 **Ziel.** Dasselbe wie N2a und N3, mit den Ziffern. 1 bis 20 heißt: die
 zehn Ziffern schreiben können, und die Zahl als Ganzes lesen und schreiben.
@@ -373,10 +373,27 @@ tippt die Antwort aus vier Möglichkeiten. Wenn sie Ziffern schreiben kann,
 könnte sie das Ergebnis irgendwann *schreiben* statt es auszuwählen. Das
 ist keine Anforderung, sondern eine Tür, die N4 aufmacht.
 
-**Abnahme.** Wie N2a/N3, dazu: die Ansage sagt „vierzehn" und nicht „eins
-vier" (`gesprochen()` kann das längst), und eine zweistellige Zahl wird nur
-angenommen, wenn **beide** Ziffern stimmen und in der richtigen Reihenfolge
-stehen.
+**Erledigt.** Zwei Ebenen wie bei den Buchstaben: *Zahlen nachfahren* (die
+zehn Ziffern) und *Zahlen hören* (die zwanzig Zahlen, angesagt).
+
+Aus „beide Ziffern, richtige Reihenfolge" ist ein **Aufbau** geworden statt
+einer Prüfung: der Bildschirm stellt so viele Schreibfelder hin, wie die
+Zahl Ziffern hat. Die 14 wird links als 1 und rechts als 4 geschrieben, und
+jedes Feld wird für sich erkannt. Vertauscht gilt nicht — der Rauchtest
+weist das an einer echten Zahl nach (51 statt 15 abgelehnt).
+
+Erkannt wird gegen **die Ziffern**, nicht gegen alle 36 Zeichen. Das ist
+kein Beiwerk: eine 0 und ein O sind dieselbe Form, eine 1 und ein I auch.
+Gemessen kostet der gemeinsame Vergleich fast einen Prozentpunkt richtig
+erkannter Ziffern und macht aus jeder sauberen 0 ein „bin mir nicht sicher".
+
+**Abnahme, gefahren.** Die Ansage sagt „vierzehn" und nicht „eins vier";
+`gesprochen()` aus dem Rechenmodul liefert das Zahlwort — dieselbe Auskunft
+ein zweites Mal hinzuschreiben hieße, dass eines von beiden veraltet.
+`passt` prüft den Zwei-Felder-Bildschirm auf allen 7 Größen und blättert
+dafür weiter, bis wirklich eine zweistellige Zahl kommt. Zwei stehende
+Gegenproben: eine lässt die Reihenfolge fallen, eine hält die Ziffern gegen
+die Buchstaben.
 
 ---
 

@@ -4840,3 +4840,80 @@ weg. Aus derselben Runde kam noch eine kleine Schuld: der Diktat-Satz stand
 nach dem Ton-Fix an zwei Stellen — und die erste Gegenprobe fiel prompt
 darauf herein („Eingriff nicht angekommen", weil die zweite Abschrift
 stehenblieb). Er steht jetzt einmal.
+
+---
+
+## Runde N4: Zahlen — und eine Messung, die sich selbst betrogen hat
+
+Zehn Ziffern zum Nachfahren, zwanzig Zahlen zum Hören. Damit ist die letzte
+der vier Anforderungen vom 30.08. gefahren.
+
+### Der Aufbau ersetzt die Prüfung
+
+„Vierzehn" ist zweimal etwas: die Zahl, die man hört, und die zwei Zeichen
+1 und 4, die man schreibt. Der Bildschirm stellt deshalb **so viele Felder
+hin, wie die Zahl Ziffern hat** — links die 1, rechts die 4. Damit ist
+„beide Ziffern, in der richtigen Reihenfolge" keine Prüfung mehr, sondern
+die Form des Bildschirms. Der Rauchtest weist trotzdem nach, dass
+vertauscht nicht gilt: 51 statt 15 wird abgelehnt.
+
+Der Vorrat sind **zehn** Vorlagen, nicht zwanzig — die Regel aus R4. Die
+Zahlen sind Aufgaben darauf.
+
+### Erkannt wird gegen die Ziffern, nicht gegen alle 36 Zeichen
+
+Eine 0 und ein O sind dieselbe Form. Eine 1 und ein I auch. Gemessen:
+gegen alle 36 Zeichen fallen die Ziffern von 92,0 auf 91,3 Prozent, und die
+Ausfälle sind fast alle „unsicher" statt „falsch" — der Vorsprung vor dem
+Zweiten fällt auf null, weil der Zweite dieselbe Form ist. Der Satz, gegen
+den verglichen wird, ist deshalb eine Eigenschaft der Aufgabe.
+
+### Die Messung, die den Preis nicht sehen konnte
+
+Der Zug-Aufschlag (`STRAFE_ZUGZAHL`) bestraft, wenn jemand mehr oder
+weniger Striche macht als die Vorlage. Die Tabelle sagte klar: ein
+Aufschlag von 8 statt 5 ist in **jeder** Spalte besser — mehr richtig
+erkannt, kein Gekritzel mehr angenommen.
+
+Das war falsch, und der Fehler lag nicht in der Tabelle, sondern im
+Vorrat: er verzerrte Lage, Größe, Drehung und Zittern — aber er **änderte
+nie die Zahl der Züge**. Genau daran hängt der Aufschlag. Eine Messung, die
+den Preis einer Sache nicht abbilden kann, empfiehlt sie immer.
+
+Mit verbundenen und geteilten Zügen im Vorrat — ein Kind setzt den Finger
+nicht immer ab — kostet der Aufschlag von 8 **neun Prozentpunkte**:
+
+```
+Strafe |  Buchstaben richtig  |  Gekritzel angenommen
+     3 |        89,5 %        |   154/400
+     5 |        89,6 %        |    11/400
+     8 |        80,9 %        |     0/400
+```
+
+Die Fünf bleibt. Und im selben Zug wanderte der beste Punkt der beiden
+Schwellen: von 11 / 1,6 auf **10 / 1,2** — zwei Punkte mehr richtig
+erkannte Buchstaben (89,6 → 91,7 %) und kein angenommenes Gekritzel mehr,
+in beiden Sätzen. Die alte Einstellung stammte aus dem blinden Vorrat.
+
+Das Soll im Backlog ist entsprechend neu abgeleitet und nennt jetzt seinen
+Vorrat mit.
+
+### Drei Fehler dieser Runde
+
+- **Der Absturz bei einstelligen Zahlen.** Eine Zahl hat keine eigenen
+  Züge — sie besteht aus ihren Ziffern. Der erste Anlauf griff auf
+  `ziel.zuege.length` zu; der Bildschirm stand da und nahm nichts an.
+- **`#vorlage` war eine Kennung, jetzt ist es eine Klasse** — mit zwei
+  Feldern kann es die Kennung nicht mehr geben. Drei Tore suchten weiter
+  nach `#vorlage` und fanden nichts; der Durchgang meldete daraufhin
+  „weder Vorlage noch Ansage".
+- **Der Ton-aus-Test nahm den Zahlen die Ansage.** Derselbe Fehler wie eine
+  Runde zuvor, eine Ebene tiefer: er schaltet den Ton ab und legt das in
+  der Ablage ab. Ein Test, der etwas ABSCHALTET, gehört ans Ende seiner
+  Reihe — jetzt steht er dort, mit dem Grund daneben.
+
+Und einer, den nur der Blick fand: die Ziffern einer Zahl standen im
+Forscherbuch vierzig Punkte auseinander — „1 0" statt „10". Eine Zahl ist
+ein Wort, keine zwei Bilder.
+
+Startbündel **202,1 von 400 KB**. `passt` sieht 21 Bildschirme je Größe.

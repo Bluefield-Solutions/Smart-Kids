@@ -509,6 +509,10 @@
       "commit": "831956003ca72ae75fe21117bda5be55cfb022c7",
       "zeit": "2026-08-30"
     },
+    "die Reihenfolge der Ziffern zaehlt nicht": {
+      "commit": "5a7b4b7a783c8cc8b3711990b91cd57af14a98bf",
+      "zeit": "2026-08-30"
+    },
     "die Ziffern werden gegen die Buchstaben gehalten": {
       "commit": "b24c24ace0c13329891ee37c0df815764478d9ea",
       "zeit": "2026-08-30"
