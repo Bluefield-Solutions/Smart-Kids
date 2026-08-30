@@ -357,6 +357,24 @@ export const PROBEN = [
     an:{ datei:'entwuerfe/mg.html', text:'fonts.googleapis.com' },
     sagt:'die eigene Schrift wurde nicht geladen' },
 
+  /* Ein Tippen, das dauert, sagt es nicht mehr.
+   *
+   * Ohne Lager und auf 3G stand der alte Bildschirm bis zu 7,5 s da,
+   * nachdem ein Kind auf „Forscherbuch" getippt hatte. */
+  { n:'ein langes Warten bleibt stumm', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:D,
+    such:'const WARTEZEICHEN_AB = 300;',
+    ersatz:'const WARTEZEICHEN_AB = 999999;',
+    an:{ ...DIST, text:'WARTEZEICHEN_AB = 999999' },
+    sagt:'kein Wartezeichen' },
+  /* Und das Zeichen darf nicht stehenbleiben, wenn der Bildschirm da ist. */
+  { n:'das Wartezeichen bleibt stehen', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:D,
+    such:'    if (uhr) clearTimeout(uhr);',
+    ersatz:'    if (false) clearTimeout(uhr);',
+    an:{ ...DIST, text:'if (false) clearTimeout(uhr)' },
+    sagt:'bleibt stehen' },
+
   /* Ein Suchtext wird zweideutig.
    *
    * Der Fall, den „steht der Text noch da" NICHT faengt: er steht noch da,
