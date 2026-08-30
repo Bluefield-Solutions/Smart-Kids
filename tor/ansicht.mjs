@@ -594,14 +594,37 @@ for (const a of MEINE) {
    * SYSTEMSCHRIFT fest. Eine Pruefung, die nur den halben Satz sieht,
    * bezeugt den anderen nicht.
    *
-   * `load()` statt nur `check()`: eine Schrift wird erst geholt, wenn Text
-   * mit ihr gesetzt wird. */
+   * GEMESSEN wird die gesetzte BREITE, nicht `document.fonts.check()`.
+   *
+   * Der erste Anlauf fragte `check()`. Der meldet aber „alles da", wenn es
+   * gar keine `@font-face` gibt - er sagt nur, ob die angemeldeten Faces
+   * geladen sind, und ohne Anmeldung ist die Menge leer. Genau der Fall,
+   * um den es hier geht: die Entwuerfe holten ihre Schrift ueber einen
+   * `<link>`, der ins Leere lief, es wurde nie ein Face angemeldet - und
+   * die Pruefung sagte gruen. Nachgestellt und nachgemessen: sie liess den
+   * Fehler durch, gegen den sie geschrieben war (Regel 5).
+   *
+   * Ein Wort in der gesuchten Schrift ist anders breit als dasselbe Wort
+   * in einer Schrift, die es NICHT gibt. Sind beide gleich breit, wird die
+   * Ersatzschrift gesetzt - egal, was der Lader meint. */
   const daSchrift = await seite.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all([document.fonts.load('700 20px "Plus Jakarta Sans"'),
                        document.fonts.load('400 20px "Andika"')]);
-    return document.fonts.check('700 20px "Plus Jakarta Sans"')
-        && document.fonts.check('400 20px "Andika"');
+    const messen = (fam) => {
+      const e = document.createElement('span');
+      e.textContent = 'Hamburgefonstiv 123';
+      e.style.cssText = `position:absolute;visibility:hidden;white-space:pre;`
+        + `font-size:40px;font-family:${fam}`;
+      document.body.appendChild(e);
+      const b = e.getBoundingClientRect().width;
+      e.remove();
+      return b;
+    };
+    // Eine Sippe, die es sicher nicht gibt - sie liefert die Ersatzschrift.
+    const ersatz = messen('"gibtesnicht-4711", sans-serif');
+    return messen('"Plus Jakarta Sans", "gibtesnicht-4711", sans-serif') !== ersatz
+        && messen('"Andika", "gibtesnicht-4711", sans-serif') !== ersatz;
   });
   if (!daSchrift) {
     console.log(`  FEHLT   ${a.name}  (die eigene Schrift wurde nicht geladen)`); rot++; continue;
