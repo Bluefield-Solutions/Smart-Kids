@@ -396,10 +396,20 @@ const PROBEN = [
   // wird deshalb die Luecke selbst.
   { n:'eine Probe hat keinen Nachweis, und es faellt nicht auf', tor:'rhythmus', auchWennRot:true,
     brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
-    suchRegex:/"([^"]+)": \{\n      "commit"/,
-    ersatzFn:(m)=>`"${m[1]} (weg)": {\n      "commit"`,
-    an:{ datei:'tor/proben-stand.json', regex:/ \(weg\)": \{/ },
-    sagt:'nie angeschlagen' },
+    /* Es verschwindet der Eintrag EINER BENANNTEN Probe, nicht der erste,
+     * den ein Ausdruck findet.
+     *
+     * Vorher hiess die Erwartung „nie angeschlagen" - ein Satz, der auch
+     * dann dasteht, wenn irgendeine andere Probe keinen Nachweis hat. Genau
+     * das ist bei den vier Proben dieses Tors der Normalfall, solange sie
+     * sich selbst noch nicht bezeugt haben: die Probe stellte einen
+     * bestehenden Fehler nach und bewies nichts. Jetzt haengt die Erwartung
+     * am NAMEN, und der steht nur in der Liste, wenn dieser Eingriff
+     * angekommen ist. */
+    such:'"zwei Gebiete mit derselben ID": {',
+    ersatz:'"zwei Gebiete mit derselben ID (weg)": {',
+    an:{ datei:'tor/proben-stand.json', text:'derselben ID (weg)": {' },
+    sagt:'zwei Gebiete mit derselben ID' },
   /* Der Eingriff haengt am ANFANG der Kette, nicht an zwei bestimmten Toren.
    *
    * Hier stand `npm run rhythmus && npm run inhalt` - die Kette, wie sie
