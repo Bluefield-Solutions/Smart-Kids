@@ -105,6 +105,7 @@ und ohne die Hilfen für Kinder.
 |---|---|---|---|
 | Eingabe | ziehen, sprechen | ziehen, tippen | **nur tippen** |
 | Vorlesen | ja | nein | nein |
+| Ton | kindlich | kindlich | **sachlich** |
 | Auswahl statt Tippen | 4 Möglichkeiten | nur Ebene 4 | **nie** |
 | Ländertiefe | 3 | 5 | **12** |
 | Aufgaben je Sitzung | 6 | 8 | **12** |

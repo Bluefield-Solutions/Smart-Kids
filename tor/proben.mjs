@@ -521,6 +521,61 @@ const PROBEN = [
     an:{ ...DIST, fehlt:"wer:['lea','eltern']" },
     sagt:'steht aber in fionas Auswahl' },
 
+  /* --- Ton je Profil und der Elternbereich als Bild -------------------- */
+  // Die Eltern werden wieder angefeuert.
+  //
+  // „Super gemacht!" zu einem Erwachsenen, der das grosse Einmaleins
+  // uebt. Der Ton ist eine Eigenschaft des Profils, und das Soll steht in
+  // der Zeile „Ton" im Backlog - nicht in `spiel.js`, das diese Probe
+  // faelscht.
+  { n:'die Eltern bekommen den kindlichen Ton', tor:'inhalt', deckt:'inhalt',
+    datei:D,
+    such:"          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',",
+    ersatz:"          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'kind',",
+    an:{ datei:D, text:"streng:true, ton:'kind'" },
+    sagt:'im Backlog steht' },
+  // Und der sachliche Ton ruft doch.
+  //
+  // Am Bildschirm gemessen, nicht an der Liste: nach einer richtigen
+  // Antwort steht das Lob in der Frage-Zeile, und ein Ausrufezeichen
+  // darin ist der ganze Unterschied.
+  { n:'der sachliche Ton ruft doch', tor:'smoke', bauen:true,
+    args:['--nur=durchgang', '--kurz'], datei:D,
+    such:"    lob:  ['Richtig.', 'Stimmt.', 'Korrekt.', 'Sitzt.'],",
+    ersatz:"    lob:  ['Richtig!', 'Stimmt!', 'Korrekt!', 'Sitzt!'],",
+    an:{ ...DIST, text:"['Richtig!', 'Stimmt!'" },
+    sagt:'das Lob ruft' },
+  // Der Rauchtest misst wieder eine andere Groesse, als er behauptet.
+  //
+  // `ctx.newPage()` nimmt keine Optionen; sechs Aufrufstellen nannten
+  // 844x390 und liefen auf 1280x720. Eine verworfene Option wirft nicht,
+  // sie tut nichts - deshalb sagt es der Test jetzt selbst.
+  { n:'der Bildausschnitt wird wieder verworfen', tor:'smoke',
+    args:['--nur=spielen'], datei:'tor/smoke.mjs',
+    such:'  await p.setViewportSize(viewport);',
+    ersatz:'  // (Bildausschnitt nicht gesetzt)',
+    an:{ datei:'tor/smoke.mjs', fehlt:'await p.setViewportSize(viewport);' },
+    sagt:'misst eine andere Größe' },
+  // Die Uebersicht im Elternbereich verschwindet.
+  //
+  // Der Bereich hatte bis hierher gar kein Vorbild - ausgerechnet der,
+  // der zuletzt um zwei Tabellen gewachsen ist.
+  { n:'die Übersicht im Elternbereich fällt weg', tor:'ansicht', bauen:true, datei:D,
+    such:'      <table class="tab" style="margin-top:var(--r3)"><thead><tr><th>Profil</th>',
+    ersatz:'      <table class="tab" hidden><thead><tr><th>Profil</th>',
+    an:{ ...DIST, text:'<table class="tab" hidden>' },
+    sagt:'quer-eltern' },
+  // Und die Beschriftung faellt immer gleich aus.
+  //
+  // „innen oder daneben" muss gerechnet werden. Kommt nur eine Sorte vor,
+  // ist es keine Messung, sondern eine feste Einstellung.
+  { n:'die Beschriftung fällt immer gleich aus', tor:'inhalt', deckt:'inhalt',
+    datei:'src/geo/staedte.js',
+    suchRegex:/"beschriftung":"innen"/g,
+    ersatzFn:()=>'"beschriftung":"fahne"',
+    an:{ datei:'src/geo/staedte.js', fehlt:'"beschriftung":"innen"' },
+    sagt:'nur die Sorte' },
+
   /* --- Der Elternbereich kennt drei Profile (R7) ----------------------- */
   // Das Protokoll kennt den Vorrat der Eltern nicht.
   //

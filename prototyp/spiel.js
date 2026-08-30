@@ -237,9 +237,38 @@ const aufzaehlen = (namen) => namen.length < 2 ? (namen[0] || '')
  * Sitzungswuerfel: der ist gesaet, damit eine Sitzung wiederholbar ist -
  * das Lob soll gerade nicht vorhersagbar sein.
  */
-const LOB = ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
-             'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'];
-const FAST_LOB = ['Fast!', 'Ganz nah dran!', 'Beinahe!'];
+/* Zwei Toene, und die Regel dahinter steht in EINEM Satz:
+ *   kindlich ruft, sachlich stellt fest.
+ *
+ * Am Ausrufezeichen ist das mechanisch zu erkennen, und darauf pruefen die
+ * Tore - „Super gemacht!" gegen „Richtig.". Ein Erwachsener, der das
+ * grosse Einmaleins uebt, will nicht gelobt werden wie eine Sechsjaehrige;
+ * ein Kind schon, und zwar nicht jedes Mal mit demselben Wort.
+ *
+ * Welcher Ton gilt, steht am Profil (`ton`) - eine Eigenschaft wie
+ * `vorlesen` oder `streng`, nicht eine Abfrage auf den Namen. */
+const TON = {
+  kind: {
+    lob:  ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
+           'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'],
+    ende: 'Geschafft!',
+    ersterKleber: 'Beim zweiten Mal richtig gibt es einen Aufkleber.',
+    neueKleber: (n) => `${n} neu${n === 1 ? '' : 'e'}!`,
+  },
+  sachlich: {
+    lob:  ['Richtig.', 'Stimmt.', 'Korrekt.', 'Sitzt.'],
+    ende: 'Sitzung beendet.',
+    ersterKleber: 'Ab dem zweiten Mal richtig kommt ein Gebiet ins Buch.',
+    neueKleber: (n) => `${n} neu`,
+  },
+};
+/** Der Ton des laufenden Profils. Vor der Profilwahl gilt der kindliche. */
+const ton = () => TON[P?.ton] || TON.kind;
+/* Hier stand ausserdem `FAST_LOB = ['Fast!', 'Ganz nah dran!', 'Beinahe!']`.
+ * Es wurde nie gelesen - die fast richtige Antwort bekommt ihren Satz aus
+ * der Bewertung, nicht aus einem Vorrat. Ein Vorrat, den niemand zieht,
+ * sieht wie eine Zusage aus und ist keine; deshalb ist er weg statt
+ * mitgewandert. */
 let letztesLob = -1;
 /* EIN Griff, nicht Wuerfeln bis es passt.
  *
@@ -256,7 +285,7 @@ let letztesLob = -1;
  * jetzt aus allen AUSSER dem zuletzt gezogenen - ein Griff, immer fertig,
  * gleiche Verteilung.
  */
-function lob(vorrat = LOB){
+function lob(vorrat = ton().lob){
   if (vorrat.length < 2) { letztesLob = 0; return vorrat[0]; }
   const andere = vorrat.map((_, i) => i).filter(i => i !== letztesLob);
   const i = andere[Math.floor(Math.random() * andere.length)];
@@ -266,9 +295,9 @@ function lob(vorrat = LOB){
 /* ---------- Profile und Ebenen ------------------------------------------ */
 const PROFILE = {
   fiona:{ id:'fiona', name:'Fiona', alter:6, eingabe:['ziehen','sprechen'], vorlesen:true,
-          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },
+          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, ton:'kind', farbe:'--f7' },
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
-          kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, farbe:'--f5' },
+          kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f5' },
   /* Eltern (R4) — die dritte Kachel, ohne PIN.
    *
    * Die Kachel hiess bis v.. „Adam", damit sie neben zwei Vornamen wie ein
@@ -282,7 +311,8 @@ const PROFILE = {
    * das Profil wurde dort gar nicht gefragt - „Eltern" haette also mit
    * vier Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
   eltern: { id:'eltern', name:'Eltern', alter:null, eingabe:['tippen'], vorlesen:false,
-          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, farbe:'--f3' },
+          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
+          farbe:'--f3' },
 };
 /* Der geschuetzte Bereich heisst auf dem Bildschirm anders als das Profil,
  * sonst stuenden zwei verschiedene Dinge unter demselben Wort. Er steht
@@ -2306,16 +2336,16 @@ function endschirm(){
   s.innerHTML=kopf({}) + `
     <div class="mitte">
       <div class="siegsterne">${sterne(n,56)}</div>
-      <div class="gross">Geschafft!</div>
+      <div class="gross">${ton().ende}</div>
       <div class="unter">${st.glatt} von ${st.liste.length} auf Anhieb richtig.</div>
       ${fortschrittBalken(f, 'breit')}
       <div class="buchstand">${kleberMarke(f.gesammelt, f.gesamt)}<span>${
-        st.aufkleber ? `${st.aufkleber} neu${st.aufkleber===1?'':'e'}!`
+        st.aufkleber ? ton().neueKleber(st.aufkleber)
         : `von ${f.gesamt} im Buch`}</span></div>${
         /* Warum noch keiner da ist - aber nur, solange noch keiner da ist.
            Danach ist der Satz eine Erklaerung fuer etwas, das man sieht. */
         !st.aufkleber && !f.gesammelt
-          ? '<div class="leiser">Beim zweiten Mal richtig gibt es einen Aufkleber.</div>' : ''}
+          ? `<div class="leiser">${ton().ersterKleber}</div>` : ''}
       <div class="reihe siegwahl">
         <button class="knopf haupt" id="nochmal">Noch einmal</button>
         <button class="knopf" id="buch">Forscherbuch</button>
@@ -2325,10 +2355,17 @@ function endschirm(){
   s.querySelector('#nochmal').onclick=()=>starten(st.ebeneId);
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
   s.querySelector('#andere').onclick=()=>zeige(ebenenwahl);
-  vorlesen('Geschafft!');
+  /* `ansagen`, nicht `vorlesen`.
+   *
+   * Hier stand `vorlesen('Geschafft!')` - also unbedingt, an jedem Profil
+   * vorbei. Der Endbildschirm rief damit auch Lea und den Eltern
+   * „Geschafft!" hinterher, obwohl beide Profile `vorlesen:false` tragen.
+   * Aufgefallen ist es nie: der Rauchtest zaehlt nur die ANSAGE der
+   * Aufgabe (`Wie heißt` / `Was ist`), und dieser Satz ist keine. */
+  ansagen(ton().ende);
   ansagen(`Du hast ${st.glatt} von ${st.liste.length} auf Anhieb richtig. `
     + (st.aufkleber ? `${st.aufkleber} neue Aufkleber! `
-       : f.gesammelt ? '' : 'Beim zweiten Mal richtig gibt es einen Aufkleber. ')
+       : f.gesammelt ? '' : `${ton().ersterKleber} `)
     + 'Noch einmal, Forscherbuch oder etwas anderes?');
   return s;
 }

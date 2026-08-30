@@ -175,6 +175,16 @@ const AUFNAHMEN = [
    * Fiona hat sie nicht. */
   { name:'quer-hauptstaedte-eu', spiel:'hauptstaedte:europa', kind:'lea',
     quer:true, wahl:'.schirm.da' },
+  /* Der Elternbereich — der einzige Bildschirm ohne Vorbild, und
+   * ausgerechnet der ist zuletzt um zwei Tabellen gewachsen (Übersicht je
+   * Profil, „Zuletzt geübt"). Mit gesetztem Protokoll, sonst stünden dort
+   * nur Striche und die Aufnahme bezeugte die Tabellen nicht. */
+  { name:'quer-eltern', spiel:null, quer:true, stand:true, protokoll:true,
+    wahl:'.schirm.da', tun:'eltern' },
+  // Und der Teil, der nicht mehr auf den Bildschirm passt: die beiden
+  // Tabellen, um die der Bereich zuletzt gewachsen ist.
+  { name:'quer-eltern-tabellen', spiel:null, quer:true, stand:true, protokoll:true,
+    wahl:'.schirm.da', tun:'eltern', roll:'Zuletzt geübt' },
 ];
 
 /**
@@ -188,6 +198,31 @@ const STAND = {
   asien:        { fach:2, richtig:1, falsch:0, faellig:0 },
   nordamerika:  { fach:1, richtig:0, falsch:2, faellig:0 },
 };
+
+/* Ein Protokoll fuer den Elternbereich.
+ *
+ * Ohne Eintraege zeigt er drei Zeilen Striche - das ist ein gueltiger
+ * Zustand, aber er bezeugt von den Tabellen nichts (Regel 13: wer eine
+ * Wirkung abbildet, schaltet sie zuerst ein). Also ein kleiner Satz mit
+ * allem, was die Tabellen unterscheiden muessen: zwei Profile, ein Gebiet
+ * zweimal falsch (damit es unter die Wackelkandidaten kommt), eine
+ * Rechenaufgabe der Eltern (damit „Zuletzt geübt" auch eine Kennung
+ * aufloesen muss).
+ *
+ * Die Zeiten sind FEST. Sie stehen in „Zuletzt geübt" auf dem Bild, und
+ * die Seite laeuft ausdruecklich in `Europe/Berlin` - sonst waere die
+ * Aufnahme auf jedem Rechner eine andere. */
+const T0 = Date.UTC(2026, 0, 15, 15, 30, 0);
+const PROTOKOLL = [
+  { profil:'fiona', ebene:'kontinente',    gebietId:'afrika',  ergebnis:'richtig', dauerMs:2400 },
+  { profil:'fiona', ebene:'kontinente',    gebietId:'asien',   ergebnis:'falsch',  dauerMs:5100 },
+  { profil:'fiona', ebene:'kontinente',    gebietId:'asien',   ergebnis:'richtig', dauerMs:3800 },
+  { profil:'lea',   ebene:'laender:europa',gebietId:'POL',     ergebnis:'falsch',  dauerMs:6200 },
+  { profil:'lea',   ebene:'laender:europa',gebietId:'POL',     ergebnis:'richtig', dauerMs:2900 },
+  { profil:'eltern',ebene:'rechnen:gross', gebietId:'g12*13',  ergebnis:'richtig', dauerMs:4300 },
+].map((e, i) => ({ zeit: T0 + i * 60000, modul:'erdkunde', eingabeart:'ziehen',
+                   roheingabe:'', sicherheit:null, versuch:1,
+                   fachVorher:1, fachNachher:2, ...e }));
 
 /**
  * Bringt den Spielbildschirm in einen Zustand, den es sonst nur mit dem
@@ -395,14 +430,17 @@ for (const a of MEINE) {
             if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
         };
         auf.onsuccess = () => {
-          const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+          const t = auf.result.transaction(
+            ['fortschritt','einstellungen','protokoll'], 'readwrite');
           t.objectStore('fortschritt').put(stand.was, stand.wo);
           if (stand.antippen)
             t.objectStore('einstellungen').put({ antwortweise:{ fiona:'antippen' } }, 'alles');
+          (stand.protokoll || []).forEach((e, i) => t.objectStore('protokoll').put(e, `p${i}`));
           t.oncomplete = ja; t.onerror = () => nein(t.error);
         };
         auf.onerror = () => nein(auf.error);
-      }), { was: STAND, wo: `${a.kind || 'fiona'}:kontinente`, antippen: !!a.antippen });
+      }), { was: STAND, wo: `${a.kind || 'fiona'}:kontinente`, antippen: !!a.antippen,
+            protokoll: a.protokoll ? PROTOKOLL : null });
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
     }
@@ -420,6 +458,23 @@ for (const a of MEINE) {
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen');
       await seite.waitForTimeout(400);
+    } else if (a.tun === 'eltern') {
+      // Durch die Tuer: vier Nullen, dann steht der Bereich da.
+      await seite.click('#eltern');
+      await seite.waitForSelector('.schirm.da .ziffern');
+      for (let i = 0; i < 4; i++) await seite.click('.schirm.da [data-z="0"]');
+      await seite.waitForSelector('.schirm.da .kacheln', { timeout: 8000 });
+      /* Der Elternbereich ist laenger als der Bildschirm. Gerollt wird zu
+       * einer UEBERSCHRIFT, nicht um eine Zahl von Punkten: verschiebt
+       * sich etwas darueber, zeigt die Aufnahme weiter dasselbe. */
+      if (a.roll) {
+        await seite.evaluate((t) => {
+          const h = [...document.querySelectorAll('.schirm.da .gruppe')]
+            .find(x => x.textContent.includes(t));
+          if (h) h.scrollIntoView({ block: 'start' });
+        }, a.roll);
+        await seite.waitForTimeout(200);
+      }
     } else if (a.spiel) {
       await seite.click(`[data-ebene="${a.spiel}"]`);
       // Seit R3 steht der Vorlauf beim ersten Betreten davor.

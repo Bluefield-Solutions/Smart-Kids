@@ -156,6 +156,22 @@ const bis = (p, fn, ms = 5000, arg = null) =>
  * soll, nicht. Wer nichts hoert, wird deshalb erst gelesen, wenn die
  * Aufgabe gespielt ist - dann sind laengst mehr als die 500 ms vergangen,
  * nach denen die App ansagen wuerde. */
+/* Wer wird sachlich angesprochen? Zeile „Ton" aus derselben Tabelle.
+ *
+ * Geprueft wird am Ausrufezeichen, nicht am Wortlaut: „Super gemacht!"
+ * gegen „Richtig." Das ist die Regel, die der Ton IST - eine Liste der
+ * erlaubten Saetze waere eine Abschrift aus `spiel.js`, und die faelscht
+ * die Gegenprobe (Regel 4). */
+const SACHLICH = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Zeile „Ton" fehlt im Backlog — dann prüft der '
+    + 'Rauchtest den Ton gegen nichts'); return new Set(); }
+  const ids = ['fiona', 'lea', 'eltern'];
+  return new Set(z[1].split('|')
+    .map((t, i) => /sachlich/i.test(t) ? ids[i] : null).filter(Boolean));
+})();
+
 const VORLESEN = (() => {
   const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
   const z = doc.match(/^\|\s*Vorlesen\s*\|(.+)\|\s*$/m);
@@ -166,7 +182,26 @@ const VORLESEN = (() => {
 })();
 
 async function neueSeite(viewport, ctx) {
-  const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
+  /* `ctx.newPage()` nimmt KEINE Optionen.
+   *
+   * Hier stand `ctx.newPage({ viewport, deviceScaleFactor: 2 })`. Beides
+   * wurde stillschweigend verworfen - ein Kontext gibt seine Groesse an
+   * jede Seite weiter, und die war die Voreinstellung 1280x720. An sechs
+   * Aufrufstellen stehen 844x390, 1180x820 und 390x844; gelaufen ist
+   * jedes Mal 1280x720.
+   *
+   * Der Rauchtest hat damit nie auf dem Zielgeraet gemessen, und die
+   * Hochkant-Pruefung nie hochkant. Kein Tor konnte das melden: eine
+   * ignorierte Option wirft nicht, sie tut nur nichts.
+   *
+   * `setViewportSize` wirkt auf die Seite und wird nicht verworfen. */
+  const p = await ctx.newPage();
+  await p.setViewportSize(viewport);
+  const ist = p.viewportSize();
+  if (ist.width !== viewport.width || ist.height !== viewport.height)
+    fehler.push(`Der Bildausschnitt ist ${ist.width}×${ist.height} statt `
+      + `${viewport.width}×${viewport.height} — der Test misst eine andere Größe, `
+      + 'als er behauptet');
   const festWarten = p.waitForTimeout.bind(p);
   p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
@@ -222,14 +257,32 @@ async function fahnePruefen(p, wo) {
     const t = g && g.querySelector('.fahnentext');
     if (!t) return null;
     const b = t.getBoundingClientRect();
+    /* Gemessen wird gegen den BILDSCHIRM, nicht gegen das Kartenfeld.
+     *
+     * Vorher stand hier der Kasten des SVG. Auf 1280x720 - der Groesse,
+     * die dieser Test bis heute versehentlich gefahren hat - war das
+     * fast dasselbe: die Karte fuellt dort viel Platz. Auf dem Zielgeraet
+     * (844x390) ist die Karte rund 170 px breit, und „Mecklenburg-
+     * Vorpommern" ist bei 21 px Schrift 260 px lang. Die Fahne steht dann
+     * NEBEN der Karte, vollstaendig sichtbar, mit einer Linie zum Gebiet -
+     * genau wofuer die Fahne gebaut wurde. Ueber den Bildschirmrand hinaus
+     * darf sie nie, und DAS ist die Zusage. */
     const svg = document.querySelector('.schirm.da .karte svg').getBoundingClientRect();
     return { art: g.dataset.fahne, text: t.textContent,
-             drin: b.left >= svg.left - 1 && b.right <= svg.right + 1
-                && b.top >= svg.top - 1 && b.bottom <= svg.bottom + 1,
+             drin: b.left >= -1 && b.right <= innerWidth + 1
+                && b.top >= -1 && b.bottom <= innerHeight + 1,
+             nebenKarte: !(b.left >= svg.left - 1 && b.right <= svg.right + 1),
              hoch: +b.height.toFixed(0) };
   });
   if (!f) { merke('fahne', new Error(`${wo}: kein Name auf der Karte`)); return null; }
-  if (!f.drin) merke('fahne', new Error(`${wo}: „${f.text}" steht außerhalb des Kartenfelds`));
+  if (!f.drin) {
+    // Bei genau diesem Befund hilft ein Bild mehr als jede Zahl: wo genau
+    // haengt der Name heraus, und um wieviel? Das Foto steht im Bericht.
+    await p.screenshot({ path: '/tmp/smoke-fahne-raus.png' }).catch(() => {});
+    merke('fahne', new Error(`${wo}: „${f.text}" steht außerhalb des Bildschirms `
+      + '(Foto: /tmp/smoke-fahne-raus.png)'));
+  }
+  if (f.nebenKarte) nebenKarte.add(f.text);
   if (f.hoch < 14) merke('fahne', new Error(`${wo}: „${f.text}" nur ${f.hoch} pt hoch`));
   return f.art;
 }
@@ -441,6 +494,8 @@ let geloest = [];
 const sternVerlauf = [], bandVerlauf = [];
 let endSterne = null, kleberMoment = 0;
 const fahnenArten = new Set();
+/** Namen, die neben der Karte stehen statt darin. Auskunft, kein Befund. */
+const nebenKarte = new Set();
 let durchgespielt = 0;
 if (laeuft('spielen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
@@ -1265,6 +1320,19 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
  * prueft, dass jede Ebene fuer jedes Profil wirklich spielbar ist, und
  * ein drittes Profil, das dort fehlt, waere ungeprueft. */
 
+/* Ruft das Lob jemanden an, der nicht angefeuert werden will?
+ *
+ * Das Lob steht in der Frage-Zeile, sobald gewertet ist - dieselbe Zeile,
+ * aus der der Test schon liest, ob die Antwort ueberhaupt durchkam. Es
+ * kostet also nichts extra, und es prueft die eine Eigenschaft, die den
+ * Ton ausmacht. */
+function lobPruefen(wer, ebene, satz) {
+  if (!SACHLICH.has(wer) || !satz) return;
+  if (/!/.test(satz)) merke('durchgang', new Error(
+    `${wer}/${ebene}: das Lob ruft — „${satz.replace(/^✓ /, '')}". `
+    + 'Das Profil steht im Backlog auf „sachlich"'));
+}
+
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'],
                        lea: ['rechnen:reihen', 'hauptstaedte:europa'],
                        eltern: ['rechnen:gross', 'hauptstaedte:europa'] };
@@ -1427,6 +1495,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
         });
         if (!/^✓ /.test(rr || ''))
           merke('durchgang', new Error(`${wer}/${ebene}: ${r.soll} angetippt → „${rr}"`));
+        lobPruefen(wer, ebene, rr);
         durchgespielt++;
         await weitergegangen(p);
         await raus(p);
@@ -1505,6 +1574,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
       if (!/^✓ /.test(r || ''))
         merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
           + `${z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'} → „${r}"`));
+      lobPruefen(wer, ebene, r);
       durchgespielt++;
       await weitergegangen(p);
       await raus(p);
@@ -1594,7 +1664,8 @@ await ctx.close(); await b.close(); server.close();
 console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${blind.n} festen Pausen`);
 
 if (laeuft('spielen')) {
-console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`);
+console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`
+  + (nebenKarte.size ? `, ${nebenKarte.size} davon neben der Karte` : ''));
 // Der schwaechere der beiden Bildschirme, im schlimmsten Bild des Wechsels.
 // 0,20 laesst den Rand der Ueberblendung zu und faengt das Doppelbild:
 // blenden beide gleichzeitig, treffen sie sich bei etwa 0,5.
@@ -1613,11 +1684,13 @@ else if (ueberblendung > UEBERBLENDUNG_MAX)
   fehler.push(`Beim Wechsel sind beide Bildschirme gleichzeitig zu sehen `
     + `(der schwächere bei ${ueberblendung.toFixed(2)}) — ein Doppelbild: `
     + 'die alte Antwort steht über der neuen Frage');
-// Faellt die Entscheidung IMMER gleich aus, ist sie keine Messung, sondern
-// eine feste Einstellung - und der halbe Sinn der Fahne waere weg.
-if (fahnenArten.size < 2)
-  fehler.push(`fahne: in zwölf Aufgaben nur die Sorte „${[...fahnenArten][0] || '—'}" — `
-    + `die Entscheidung „passt hinein" wird nicht wirklich gemessen`);
+/* Dass die Entscheidung „innen oder daneben" wirklich gerechnet und nicht
+ * fest eingestellt ist, prueft `inhalt` - dort, wo sie eine MESSSTELLE hat
+ * (Karte 470 px breit, Befund G10). Hier stand dieselbe Forderung ohne
+ * eine, und auf dem Zielgeraet ist sie nicht erfuellbar: bei 170 px
+ * Kartenbreite passt kein einziger Landesname in sein Gebiet. Die
+ * Forderung war nicht falsch, sie gehoerte nur woandershin (Regel 12).
+ */
 console.log(`  Gelöst im ersten Durchgang: ${geloest.join(', ')}`);
 const jeRunde = [...new Set(sternVerlauf.map(x => x.runde))]
   .map(r => sternVerlauf.filter(x => x.runde === r).map(x => x.n));

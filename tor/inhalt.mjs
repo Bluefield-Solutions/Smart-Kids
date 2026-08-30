@@ -88,6 +88,23 @@ Object.entries(I.LAENDER).forEach(([k, l]) => {
   const soll = Array.from({length: TIEFSTE}, (_, i) => i + 1).join(',');
   pruefe(raenge === soll, `${k}: Ränge sind ${raenge}, erwartet ${soll}`);
 });
+/* Befund G10: passt der Name ins Gebiet, oder braucht er eine Fahne?
+ *
+ * Die Entscheidung wird gerechnet (`platzPx >= textPx`, Karte 470 px
+ * breit) - und dass sie WIRKLICH gerechnet und nicht fest eingestellt
+ * ist, sieht man nur daran, dass beide Antworten vorkommen. Die Forderung
+ * stand bis heute im Rauchtest, wo sie keine Messstelle hatte: dort haengt
+ * die Kartenbreite an der Fenstergroesse, und auf dem Zielgeraet (170 px)
+ * passt kein einziger Name hinein. Hier hat sie eine (Regel 12). */
+{
+  const arten = new Set(STAEDTE.map(x => x.beschriftung));
+  pruefe(arten.has('innen') && arten.has('fahne'),
+    `Beschriftung: nur die Sorte „${[...arten].join(', ')}" — bei 470 px Kartenbreite `
+    + 'muss beides vorkommen, sonst ist die Entscheidung keine Messung');
+  const innen = STAEDTE.filter(x => x.beschriftung === 'innen').length;
+  console.log(`    Beschriftung (G10, Karte 470 px): ${innen} innen, `
+    + `${STAEDTE.length - innen} als Fahne daneben`);
+}
 STAEDTE.forEach(s => {
   eindeutig(s.id, 'Bundesland');
   pruefe(s.hauptstadt, `${s.id} ohne Hauptstadt`);
@@ -158,6 +175,66 @@ I.ECHTE_FALLEN.forEach(id => {
 }
 pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   `Datenstand ${I.STAND.jahr} ist älter als drei Jahre`);
+
+/* Der Ton je Profil.
+ *
+ * Die Regel steht in einem Satz: kindlich ruft, sachlich stellt fest -
+ * und am Ausrufezeichen ist das mechanisch zu erkennen. Geprueft wird
+ * deshalb genau das, nicht der Wortlaut: was in `TON.sachlich` steht,
+ * darf nicht rufen, und was in `TON.kind` steht, muss es.
+ *
+ * Gelesen wird aus `prototyp/spiel.js`, weil die Texte dort stehen und
+ * nirgends sonst - eine zweite Liste hier waere die naechste, die
+ * veraltet (Regel 15). Das SOLL kommt trotzdem nicht von dort: welches
+ * Profil welchen Ton bekommt, steht in der Zeile „Ton" im Backlog.
+ */
+{
+  const quelle = fs.readFileSync('prototyp/spiel.js', 'utf8');
+  const bloecke = {};
+  for (const name of ['kind', 'sachlich']) {
+    const m = quelle.match(new RegExp(`\\n  ${name}: \\{([\\s\\S]*?)\\n  \\},`));
+    bloecke[name] = m ? m[1] : null;
+    pruefe(m, `TON.${name} steht nicht in prototyp/spiel.js — der Ton je Profil fehlt`);
+  }
+  /* Geprueft wird das LOB und der Schlusssatz, nicht jede Zeichenkette im
+   * Block. Der erste Anlauf nahm alles, was in Anfuehrungszeichen stand -
+   * und meldete das Endungs-„e" aus einer Zeichenkettenschablone als
+   * Lobspruch, der nicht ruft. */
+  const rufer = (b) => {
+    const lob = (b || '').match(/lob:\s*\[([\s\S]*?)\]/);
+    const ende = (b || '').match(/ende:\s*'([^']+)'/);
+    return [...(lob ? [...lob[1].matchAll(/'([^']+)'/g)].map(x => x[1]) : []),
+            ...(ende ? [ende[1]] : [])];
+  };
+  const ruft = (t) => /!/.test(t);
+  pruefe(rufer(bloecke.kind).length >= 5,
+    'TON.kind: weniger als fünf Sprüche gefunden — der Leser greift ins Leere');
+  pruefe(rufer(bloecke.sachlich).length >= 3,
+    'TON.sachlich: weniger als drei Sprüche gefunden — der Leser greift ins Leere');
+  for (const t of rufer(bloecke.kind))
+    pruefe(ruft(t), `TON.kind: „${t}" ruft nicht — der kindliche Ton lebt vom Ausrufezeichen`);
+  for (const t of rufer(bloecke.sachlich))
+    pruefe(!ruft(t), `TON.sachlich: „${t}" ruft — Erwachsene werden nicht angefeuert`);
+  const gleich = rufer(bloecke.kind).filter(t => rufer(bloecke.sachlich).includes(t));
+  pruefe(!gleich.length, `Beide Töne sagen dasselbe: ${gleich.join(', ')} — `
+    + 'dann ist die Unterscheidung nur behauptet');
+
+  // Und jedes Profil muss einen Ton haben, den es gibt.
+  const zeile = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8')
+    .match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
+  pruefe(zeile, 'Die Zeile „Ton" fehlt im Backlog — dann steht das Soll nirgends');
+  if (zeile) {
+    const soll = zeile[1].split('|').map(t => t.replace(/\*/g, '').trim());
+    const ids = ['fiona', 'lea', 'eltern'];
+    ids.forEach((id, i) => {
+      const kurz = { kindlich: 'kind', sachlich: 'sachlich' }[soll[i]] || soll[i];
+      const hat = quelle.match(new RegExp(`id:'${id}'[\\s\\S]{0,400}?ton:'([a-z]+)'`));
+      pruefe(hat && hat[1] === kurz,
+        `${id}: Ton ist „${hat ? hat[1] : 'keiner'}", im Backlog steht „${soll[i]}"`);
+    });
+    console.log(`    Ton je Profil: ${ids.map((id, i) => `${id} ${soll[i]}`).join(' · ')}`);
+  }
+}
 
 // Die Gebietszahl wird GEZAEHLT, nicht geschrieben.
 /* Die Bundeslaender werden an der BUNDESLAENDER-Liste gezaehlt.
