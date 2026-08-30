@@ -188,10 +188,54 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Stadtstaaten-Satz stand bei den Hauptstaedten halb ueber dem oberen
    Rand. `safe` faellt in dem Fall auf `flex-start` zurueck. */
 .rollen.vorlauf{display:flex;flex-direction:column;gap:var(--r3);
-  align-items:center;justify-content:safe center}
+  align-items:center;justify-content:safe center;
+  /* Die Hoechstmasse EINER Beispielkarte - ungefaehr quadratisch, die Form
+     eines Aufklebers. Das Gitter rechnet daraus seine eigenen
+     Hoechstmasse; gedeckelt wird also das Gitter, nicht die Karte. Der
+     Versuch, die Karte selbst zu deckeln, hat sie zum Einsturz gebracht:
+     mit `max-height` und `align-self:center` bemisst sich ein
+     Gitterkind an seinem Inhalt, und der Inhalt darf hier auf null
+     schrumpfen (`flex:1 1 0`). Uebrig blieben sechs flache Striche mit
+     uebereinanderliegender Schrift. */
+  --kleber-breit:180px;--kleber-hoch:168px}
 .rollen.vorlauf .mitte-satz{text-align:center;max-width:52ch}
-.rollen.vorlauf .kleber{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));
-  gap:var(--r2);width:100%;max-width:900px}
+/* Wieviele Karten NEBENEINANDER, und wie hoch sie werden.
+ *
+ * Vorher stand hier eine feste kleinste Spaltenbreite und `auto-fill`. Das
+ * ist fuer sechzehn Bundeslaender richtig - sie fuellen die Breite in zwei
+ * Reihen - und fuer die sechs Beispielaufgaben einer Rechenebene falsch,
+ * gleich doppelt: `auto-fill` legt acht Spuren an, sechs davon werden
+ * belegt, und die Reihe stand LINKS mit einem Loch von vierhundert Punkten
+ * rechts. Darueber und darunter noch einmal je ein Drittel des Bandes leer.
+ * Es sah nicht nach Auswahl aus, sondern nach vergessenem Inhalt.
+ *
+ * Jetzt kommen beide Zahlen aus der Zahl der Karten:
+ *   `--spalten`  setzt der Bildschirm, abgeleitet aus `stuecke.length`
+ *                (zwei Reihen, hoechstens acht nebeneinander)
+ *   die Hoehe    teilt sich das Gitter selbst: `1fr` je Reihe, und das
+ *                Gitter nimmt sich den Rest des Bandes
+ *
+ * `max(88px, …)` ist die Notbremse fuer schmale Fenster: passen die
+ * gewuenschten Spalten nicht, legt `auto-fit` weniger an, statt
+ * ueberzulaufen. Was am Ende wirklich passt, sagt `passt`, nicht diese
+ * Rechnung. */
+.rollen.vorlauf .kleber{
+  grid-template-columns:repeat(auto-fit,minmax(max(88px,
+    calc(100% / var(--spalten,8) - var(--r2))),1fr));
+  /* `minmax(min-content,1fr)` und nicht `1fr`.
+     Die Spaltenzahl ist ein WUNSCH - auf einem schmalen Geraet legt
+     `auto-fit` weniger an, und dann gibt es mehr Reihen als `--reihen`
+     sagt. Mit nacktem `1fr` teilen sich diese Reihen trotzdem die Hoehe
+     fuer zwei: auf dem iPhone SE quer standen die dreizehn
+     Hauptstadtkarten in drei gequetschten Reihen, und der Name lag zwei
+     Punkte ausserhalb seiner Karte - `passt` hat es gemeldet. Mit
+     `min-content` als Untergrenze wird eine Reihe nie kleiner als ihr
+     Inhalt; uebrige Hoehe teilen sie sich weiterhin. */
+  grid-auto-rows:minmax(min-content,1fr);justify-content:center;
+  gap:var(--r2);width:100%;flex:1 1 auto;min-height:0;
+  max-width:min(900px, calc(var(--spalten,8) * var(--kleber-breit)));
+  max-height:calc(var(--reihen,2) * var(--kleber-hoch)
+                + (var(--reihen,2) - 1) * var(--r2))}
 /* Der Umriss nimmt sich den Platz, der uebrig ist.
  *
  * Die Zeilenhoehe des Gitters richtet sich nach der HOECHSTEN Karte -
@@ -209,9 +253,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * war der falsche Schluss: dann wachsen die KARTEN, und die zweite Reihe
  * fiel unten heraus. Das Loch war nie zu wenig Bild, sondern schlecht
  * verteilter Platz - und dagegen hilft Zentrieren, nicht Wachsen. */
-.rollen.vorlauf .aufkleber{padding:var(--r1);justify-content:center}
-.rollen.vorlauf .aufkleber svg{height:38px}
-.rollen.vorlauf .aufkleber .rechenkleber{font-size:var(--s0)}
+/* Die Karte fuellt ihre Zeile, der Umriss fuellt die Karte.
+ *
+ * `min-height:0` an beiden: ohne das ist ein Flex-Kind mindestens so hoch
+ * wie sein Inhalt, und die zweite Reihe faellt unten heraus - genau der
+ * Fehlschlag, an dem der erste Versuch mit `flex:1` gescheitert ist. Der
+ * Unterschied ist, dass die Hoehe jetzt vom GITTER kommt (`1fr` je Reihe)
+ * und nicht vom Inhalt: sie kann das Band nicht ueberschreiten. */
+/* `min-height:0`, aber KEIN `overflow:hidden`.
+   Der Umriss darf mit der Zeile wachsen, dafuer ist `min-height:0` da.
+   Beschnitten werden darf hier aber nichts: „Sachsen-Anhalt" ist zwei
+   Punkte breiter als seine Karte und stand mit `overflow:hidden` als
+   „Sachsen-Anhal" da - auf einem Bildschirm, der genau diese Namen
+   beibringen soll. Der Name darf ueber den Rand ragen; abgeschnitten
+   lernt ihn niemand. */
+.rollen.vorlauf .aufkleber{padding:var(--r1);justify-content:center;
+  min-height:0}
+.rollen.vorlauf .aufkleber svg{flex:1 1 0;min-height:22px;height:auto}
+.rollen.vorlauf .aufkleber .rechenkleber{font-size:var(--s1);flex:1 1 0;min-height:0}
 /* Der Name wird hier UMGEBROCHEN, nicht abgeschnitten.
    Im Forscherbuch sind drei Punkte in Ordnung: dort steht, was man schon
    kennt. Hier soll das Kind den Namen LERNEN, und „Sachsen…" neben einem
@@ -835,12 +894,14 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      sechzehn Karten stehen auf dem Zielgeraet so wie so in zweien. Wie
      breit es sein darf, hat `passt` gesagt, nicht ich. */
   .rollen.vorlauf .kleber{gap:var(--r1);
-    grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}
+    grid-template-columns:repeat(auto-fit,minmax(max(88px,
+      calc(100% / var(--spalten,8) - var(--r1))),1fr))}
   /* Ein Vorlauf mit Zuordnung traegt zwei Namen je Karte statt einem -
      „Mecklenburg-Vorpommern" unter „Schwerin". */
-  .rollen.vorlauf .kleber:has(.dazu){grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+  .rollen.vorlauf .kleber:has(.dazu){grid-template-columns:repeat(auto-fit,minmax(max(96px,
+    calc(100% / var(--spalten,8) - var(--r1))),1fr))}
   .rollen.vorlauf .aufkleber{padding:var(--r0);gap:0;justify-content:center}
-  .rollen.vorlauf .aufkleber svg{height:22px}
+  .rollen.vorlauf .aufkleber svg{min-height:22px}
   .rollen.vorlauf .mitte-satz{font-size:calc(var(--s-klein) * 0.95)}
   .rollen.vorlauf .aufkleber span{font-size:calc(var(--s-klein) * 0.86)}
   .rollen.vorlauf .aufkleber .dazu{font-size:calc(var(--s-klein) * 0.78)}

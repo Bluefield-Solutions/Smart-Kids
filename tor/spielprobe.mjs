@@ -399,6 +399,96 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   console.log(`    Sitzungsverteilung: 5 Längen × 11 Reglerstellungen, Summe und Anspruch stimmen`);
 }
 
+/* ================= Was einmal geschafft war, bleibt geschafft ========== */
+/*
+ * Ein Jahr Spiel, gespielt statt behauptet.
+ *
+ * Der Anlass: das Forscherbuch, der Fortschrittsbalken, die Sterne und
+ * Fionas zweite Kontinentrunde lasen alle das LAUFENDE Leitner-Fach. Das
+ * faellt bei jeder falschen Antwort auf 1 zurueck - das ist die
+ * Wiederholungslogik und richtig. Aber damit lief auch alles rueckwaerts,
+ * was ueber die Vergangenheit spricht: Aufkleber fielen wieder aus dem Buch
+ * (gemessen 122 bis 251 je Ebene und Jahr), und Runde 2 war an 47 von 208
+ * Sitzungen wieder zu.
+ *
+ * Diese Probe spielt ein Jahr durch und zaehlt zweierlei:
+ *   GELEGENHEITEN  wie oft eine falsche Antwort einen Gegenstand traf, der
+ *                  schon einen Aufkleber hatte
+ *   VERLUSTE       wie oft der Aufkleber daraufhin weg war
+ *
+ * Ohne die Gelegenheiten waere die Null bei den Verlusten kein Beweis,
+ * sondern ein Zufall der Wuerfel - deshalb steht sie hier als eigene
+ * Bedingung.
+ */
+{
+  const TAG = 24 * 60 * 60000;
+  const wuerfel = (k) => { let x = (k * 2654435761) >>> 0;
+    x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; };
+
+  const ebenen = [
+    ['Fionas Plus und Minus', R.vorrat(),       6],
+    ['Leas Reihen',           R.reihenVorrat(), 8],
+    ['Kontinente',            I.KONTINENTE.map(k => ({ id: k.id })), 6],
+  ];
+  let gelegenheiten = 0, verluste = 0, rundeZu = 0;
+
+  for (const [was, alle, laenge] of ebenen) {
+    let stand = L.neuerStand(), keim = 1;
+    for (let t = 0; t < 208; t++) {           // vier Sitzungen die Woche, ein Jahr
+      const jetzt = Date.UTC(2026, 0, 1, 15, 0, 0) + t * TAG;
+      for (const g of L.sitzung(alle, stand, laenge, jetzt, keim++)) {
+        const richtig = wuerfel(keim++) < 0.85;
+        const hatte = L.istGesammelt(stand, g.id);
+        stand = L.verschieben(stand, g.id, richtig, jetzt);
+        if (hatte && !richtig) gelegenheiten++;
+        if (hatte && !L.istGesammelt(stand, g.id)) {
+          verluste++;
+          if (verluste <= 3)
+            fehler.push(`${was}: „${g.id}" hatte einen Aufkleber und hat ihn nach `
+              + `einer falschen Antwort wieder verloren`);
+        }
+      }
+    }
+    geprueft += 208 * laenge;
+  }
+
+  // Und dasselbe fuer die Kontinentrunden: eine Runde, die offen war, bleibt
+  // offen. Gerechnet wie `kontinentRunde` in spiel.js - mit `warGesessen`.
+  {
+    const K = I.KONTINENTE, RUNDEN = Math.max(...K.map(k => k.runde));
+    const runde = (stand) => { let r = 1;
+      while (r < RUNDEN && K.filter(k => k.runde <= r)
+        .every(k => L.warGesessen(stand, k.id))) r++;
+      return r; };
+    let stand = L.neuerStand(), keim = 1, hoechste = 1;
+    for (let t = 0; t < 208; t++) {
+      const jetzt = Date.UTC(2026, 0, 1, 15, 0, 0) + t * TAG;
+      const offen = K.filter(k => k.runde <= runde(stand));
+      for (const g of L.sitzung(offen, stand, 6, jetzt, keim++))
+        stand = L.verschieben(stand, g.id, wuerfel(keim++) < 0.85, jetzt);
+      const r = runde(stand);
+      if (r < hoechste) rundeZu++;
+      hoechste = Math.max(hoechste, r);
+    }
+    geprueft += 208;
+    if (hoechste < RUNDEN)
+      fehler.push(`Kontinentrunden: in einem Jahr Spiel wurde Runde ${RUNDEN} nie `
+        + `geoeffnet — die Probe beweist nichts`);
+    if (rundeZu)
+      fehler.push(`Kontinentrunden: eine schon offene Runde war an ${rundeZu} von 208 `
+        + `Sitzungen wieder zu`);
+  }
+
+  if (!gelegenheiten)
+    fehler.push('Aufkleber: in einem Jahr Spiel traf keine falsche Antwort einen '
+      + 'Gegenstand mit Aufkleber — die Probe beweist nichts');
+  if (verluste > 3)
+    fehler.push(`Aufkleber: ${verluste} verlorene Aufkleber in einem Jahr Spiel`);
+  console.log(`    Was geschafft war, bleibt: ${gelegenheiten} falsche Antworten auf `
+    + `Gegenstände mit Aufkleber, ${verluste} verlorene Aufkleber, `
+    + `${rundeZu}× eine offene Runde wieder zu`);
+}
+
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);
 if (hinweise.length) {
   console.log(`    ${hinweise.length} nur mit Rückfrage:`);

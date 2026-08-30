@@ -427,7 +427,18 @@ const holeSeite = async (a) => {
  * Aufgabe und braucht keine Stoppuhr, die veraltet.
  */
 const gewicht = (a) => a.tun === 'durch' ? 8 : a.spiel ? 2 : 1;
+/* `--nur=teil,vom,namen`: nur die Aufnahmen, deren Name einen dieser
+ * Textteile enthaelt. Nichts fuer die Torkette - dafuer gibt es `--teil=`,
+ * das jede Aufnahme genau einmal fahrt. Das hier ist fuer die HAND: wer an
+ * einem Bildschirm arbeitet, will ihn in fuenf Sekunden sehen und nicht in
+ * einer Minute. Ein `--nur=`, das nichts trifft, ist rot, aus demselben
+ * Grund wie ein leerer Teillauf. */
+const NUR = (() => {
+  const f = process.argv.find(x => x.startsWith('--nur='));
+  return f ? f.slice(6).split(',').filter(Boolean) : null;
+})();
 const MEINE = (() => {
+  if (NUR) return AUFNAHMEN.filter(a => NUR.some(n => a.name.includes(n)));
   if (!TEIL) return AUFNAHMEN;
   const koerbe = Array.from({ length: TEIL.n }, () => ({ last: 0, drin: [] }));
   for (const a of [...AUFNAHMEN].sort((x, y) => gewicht(y) - gewicht(x))) {
@@ -445,8 +456,9 @@ if (TEIL) console.log(`  (Teil ${TEIL.i + 1} von ${TEIL.n}, Aufwand `
   + `${MEINE.length} der ${AUFNAHMEN.length} Aufnahmen)`);
 /* Ein Teillauf, der ins Leere greift, ist gefaehrlicher als gar keiner:
    er meldet „alles gruen" ueber nichts. */
-if (TEIL && !MEINE.length) {
-  console.log('\n  ansicht ROT: dieser Teil hat keine einzige Aufnahme.\n');
+if ((TEIL || NUR) && !MEINE.length) {
+  console.log(`\n  ansicht ROT: ${NUR ? '`--nur=' + NUR.join(',') + '` trifft keine Aufnahme'
+    : 'dieser Teil hat keine einzige Aufnahme'}.\n`);
   process.exit(1);
 }
 for (const a of MEINE) {

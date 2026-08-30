@@ -605,7 +605,12 @@ function kontinentRunde(stand){
   let r = 1;
   while (r < RUNDEN) {
     const bisher = D.kontinente.filter(k => k.runde <= r);
-    if (!bisher.every(k => Leitner.istGesessen(stand, k.id))) break;
+    // `warGesessen`, nicht `istGesessen`: eine Runde, die einmal offen war,
+    // geht nicht wieder zu. Gemessen ueber ein Jahr Spiel war Runde 2 an 47
+    // von 208 Sitzungen wieder verschlossen - Fiona setzte sich hin, und
+    // Asien und Nordamerika waren weg, weil sie eines davon zuletzt
+    // danebengeraten hatte.
+    if (!bisher.every(k => Leitner.warGesessen(stand, k.id))) break;
     r++;
   }
   return r;
@@ -961,6 +966,29 @@ function vorlaufVorrat(ebeneId){
   return alle.filter((_, i) => i % schritt === 0).slice(0, P.sitzung);
 }
 
+/* Wieviele Beispielkarten NEBENEINANDER stehen.
+ *
+ * Zwei Saetze, und der Rest folgt:
+ *   hoechstens ACHT in einer Reihe - mehr wird auf dem Zielgeraet zu schmal
+ *   ab vier Karten ZWEI Reihen, gleich lang - das Band ueber dem Knopf ist
+ *   hoch genug fuer zwei, und eine Reihe mit zwei Karten unter einer mit
+ *   acht sieht aus wie ein Rest, nicht wie eine zweite Reihe
+ *
+ * Sechzehn Bundeslaender stehen damit wie bisher acht und acht, sechs
+ * Rechenaufgaben drei und drei. Wie BREIT und HOCH eine Karte dabei werden
+ * darf, steht im Stilblatt; von hier bekommt es nur die beiden Zahlen, aus
+ * denen es die Hoechstmasse des Gitters rechnet.
+ *
+ * Vorher legte `auto-fill` immer acht Spuren an. Sechs Karten belegten
+ * sechs davon: die Reihe stand links, rechts blieb ein Loch von
+ * vierhundert Punkten, und darueber und darunter je ein Drittel leeres
+ * Band. Das sah nicht nach Auswahl aus, sondern nach vergessenem Inhalt.
+ */
+const vorlaufGitter = (n) => {
+  const reihen = n <= 3 ? 1 : Math.max(2, Math.ceil(n / 8));
+  return { reihen, spalten: Math.max(1, Math.ceil(n / reihen)) };
+};
+
 /** Der eine Satz, den dieser Vorlauf mitgibt. Abgeleitet, nicht gesammelt. */
 function vorlaufSatz(ebeneId){
   const [art, kont] = ebeneId.split(':');
@@ -995,6 +1023,7 @@ async function vorlauf(ebeneId){
   await standLaden(ebeneId);
   const ebene = EBENEN.find(e => e.id === ebeneId);
   const stuecke = vorlaufVorrat(ebeneId);
+  const gitter = vorlaufGitter(stuecke.length);
   const satz = vorlaufSatz(ebeneId);
   // Der eigene Rahmen zeigt das Stueck gross; nur wenn er sich aus dem
   // Pfad nicht rechnen laesst, faellt es auf den Rahmen der ganzen Karte
@@ -1005,7 +1034,7 @@ async function vorlauf(ebeneId){
     mitte:`<span class="marke">${ebene ? ebene.titel : 'Anschauen'}</span>` }) + `
     <div class="rollen vorlauf">
       <div class="unter mitte-satz">${satz}</div>
-      <div class="kleber">${stuecke.map((x, i) => `
+      <div class="kleber" style="--spalten:${gitter.spalten};--reihen:${gitter.reihen}">${stuecke.map((x, i) => `
         <button class="aufkleber da" data-lesen="${vorlaufAnsage(x, ebeneId)}"
                 title="${x.gebiet ? `${x.gebiet}: ${x.name}` : x.name}">
           ${x.pfad
@@ -1203,13 +1232,15 @@ function werten(ziel, ergebnis, versuch){
   const st = Sitzung;
   // Der richtige Ton fuer BEIDE Bildschirme, weil hier beide durchkommen.
   klangZu(ergebnis);
-  const fachVorher = Stand[ziel.id]?.fach ?? 1;
+  // Gefragt wird, ob der Gegenstand seinen Aufkleber HIER BEKOMMT - also am
+  // selben Mass, an dem das Buch ihn zeigt. Vorher stand hier das laufende
+  // Fach, und weil das zurueckfaellt, meldete der Endbildschirm denselben
+  // Aufkleber ein zweites und drittes Mal als "neu".
+  const hatteVorher = Leitner.istGesammelt(Stand, ziel.id);
   Stand = Leitner.verschieben(Stand, ziel.id, ergebnis === 'richtig', Date.now());
   if (ergebnis === 'richtig' && versuch === 1) st.glatt++;
   st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
-  const fachDanach = Stand[ziel.id]?.fach ?? fachVorher;
-  const neuerAufkleber = fachVorher < Leitner.HAT_AUFKLEBER
-                      && fachDanach >= Leitner.HAT_AUFKLEBER;
+  const neuerAufkleber = !hatteVorher && Leitner.istGesammelt(Stand, ziel.id);
   if (neuerAufkleber) st.aufkleber++;
   standSichern(st.ebeneId);
   return neuerAufkleber;

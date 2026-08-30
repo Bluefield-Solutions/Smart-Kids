@@ -646,6 +646,61 @@ const PROBEN = [
     an:{ ...DIST, text:'.rechenkleber{display:none;' },
     sagt:'quer-vorlauf-rechnen' },
 
+  /* Der Aufkleber haengt wieder am LAUFENDEN Fach.
+   *
+   * Dann faellt er bei jeder falschen Antwort aus dem Buch - gemessen 122
+   * bis 251 Verluste je Ebene in einem Jahr Spiel. `spielprobe` spielt das
+   * Jahr durch und zaehlt mit. */
+  { n:'Aufkleber fallen wieder aus dem Buch', tor:'spielprobe', deckt:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:'export const istGesammelt = (stand, id) => hoechstes(stand, id) >= HAT_AUFKLEBER;',
+    ersatz:'export const istGesammelt = (stand, id) => (stand[id]?.fach ?? 1) >= HAT_AUFKLEBER;',
+    an:{ datei:'src/kern/leitner.js', fehlt:'istGesammelt = (stand, id) => hoechstes' },
+    sagt:'verlorene Aufkleber' },
+
+  /* Die zweite Kontinentrunde geht wieder ZU.
+   *
+   * `warGesessen` fragt den Hoechststand, `istGesessen` das heutige Fach.
+   * Mit dem heutigen Fach war Runde 2 an 47 von 208 Sitzungen wieder
+   * verschlossen: Fiona setzte sich hin, und Asien war weg. */
+  { n:'eine offene Kontinentrunde geht wieder zu', tor:'spielprobe', deckt:'spielprobe',
+    datei:D,
+    such:'    if (!bisher.every(k => Leitner.warGesessen(stand, k.id))) break;',
+    ersatz:'    if (!bisher.every(k => Leitner.istGesessen(stand, k.id))) break;',
+    an:{ datei:D, fehlt:'Leitner.warGesessen(stand, k.id)' },
+    sagt:'wieder zu' },
+  /* Und die Probe selbst darf nicht leerlaufen: haelt der Hoechststand
+   * NIE, was er verspricht, muessen die Gelegenheiten trotzdem gezaehlt
+   * werden. Faellt die Zaehlung aus, meldet `spielprobe` das - eine Null
+   * ohne Gelegenheit beweist nichts (Regel 5). */
+  { n:'die Aufkleberprobe zählt keine Gelegenheiten mehr', tor:'spielprobe', deckt:'spielprobe',
+    datei:'tor/spielprobe.mjs',
+    such:'        if (hatte && !richtig) gelegenheiten++;',
+    ersatz:'        if (false) gelegenheiten++;',
+    an:{ datei:'tor/spielprobe.mjs', text:'if (false) gelegenheiten++;' },
+    sagt:'beweist nichts' },
+
+  /* Der Vorlauf legt wieder acht Spuren an, egal wieviele Karten es sind.
+   *
+   * Dann stehen sechs Rechenaufgaben linksbuendig in einer Reihe von acht,
+   * mit einem Loch von vierhundert Punkten rechts. */
+  { n:'der Vorlauf verteilt die Karten wieder auf acht Spuren', tor:'ansicht',
+    bauen:true, datei:D,
+    such:'  const gitter = vorlaufGitter(stuecke.length);',
+    ersatz:'  const gitter = { reihen: 2, spalten: 8 };',
+    an:{ ...DIST, fehlt:'vorlaufGitter(stuecke.length)' },
+    sagt:'quer-vorlauf-rechnen' },
+
+  /* Die Reihen teilen sich die Hoehe des Bandes nicht mehr.
+   *
+   * Dann haengen die Karten wieder oben, der Knopf unten, und dazwischen
+   * steht ein Drittel leeres Band. */
+  { n:'die Beispielkarten füllen das Band nicht mehr', tor:'ansicht', bauen:true, datei:V,
+    such:'  grid-auto-rows:minmax(min-content,1fr);justify-content:center;',
+    ersatz:'  grid-auto-rows:min-content;justify-content:center;',
+    an:{ ...DIST, text:'grid-auto-rows:min-content;' },
+    sagt:'quer-vorlauf' },
+
   // Die Diphthonge verlieren ihren eigenen Code.
   //
   // Dann heisst „aussen" wieder wie „Asien": die Koelner Phonetik gibt

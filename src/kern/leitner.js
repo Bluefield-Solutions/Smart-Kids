@@ -35,12 +35,45 @@ export function verschieben(stand, id, richtig, jetzt) {
   const fach = richtig ? Math.min(5, alt.fach + 1) : 1;
   return { ...stand, [id]: {
     fach,
+    // Die HOECHSTE je erreichte Fachhoehe. Sie faellt nie.
+    hoechstes: Math.max(hoechstes(stand, id), fach),
     faellig: jetzt + FAECHER[fach - 1].minuten * MINUTE,
     richtig: alt.richtig + (richtig ? 1 : 0),
     falsch: alt.falsch + (richtig ? 0 : 1),
     zuletzt: jetzt,
   }};
 }
+
+/* Zwei Zeitformen, nicht eine Zahl.
+ *
+ * `fach` ist der Stand VON JETZT: er faellt bei jeder falschen Antwort auf 1
+ * zurueck, und das ist die Wiederholungslogik selbst - daran wird nichts
+ * geaendert.
+ *
+ * Daraus wurde bis hierher aber auch alles abgeleitet, was ueber die
+ * VERGANGENHEIT spricht. Und das lief mit rueckwaerts. Gemessen an einem
+ * Jahr Spiel (208 Sitzungen, vier die Woche, 85 % richtig):
+ *
+ *   Aufkleber, die wieder aus dem Buch verschwanden   122 bis 251 je Ebene
+ *   Sitzungen, in denen mindestens einer verschwand   47 bis 74 von 208
+ *   Sitzungen, in denen Fionas zweite Kontinentrunde
+ *   wieder ZU war, obwohl sie schon offen gewesen war 47 von 208
+ *
+ * Ein Aufkleberalbum, aus dem Aufkleber wieder herausfallen, ist keins - und
+ * eine Sechsjaehrige, der Asien nach einer falschen Antwort wieder
+ * weggenommen wird, versteht das nicht als Wiederholung, sondern als Strafe.
+ * Obendrein meldete der Endbildschirm denselben Aufkleber ein zweites Mal
+ * als "neu".
+ *
+ * Deshalb `hoechstes`: die hoechste je erreichte Fachhoehe, die nie faellt.
+ * Was einmal geschafft war, bleibt geschafft.
+ *
+ * Alte Staende in der Ablage haben das Feld nicht. Fuer sie gilt das
+ * heutige Fach als Hoechststand - mehr ist aus dem Gespeicherten nicht zu
+ * holen, und es ist die vorsichtige Richtung: es nimmt niemandem etwas weg,
+ * was er heute sieht.
+ */
+const hoechstes = (stand, id) => stand[id]?.hoechstes ?? stand[id]?.fach ?? 1;
 
 export const istFaellig = (stand, id, jetzt) => !stand[id] || stand[id].faellig <= jetzt;
 
@@ -53,12 +86,20 @@ export const istFaellig = (stand, id, jetzt) => !stand[id] || stand[id].faellig 
  * kleinere davon zeichnete auf der Karte einen Haken, der im Forscherbuch
  * "sicher" bedeutet.
  *
- *   Fach 2  sass schon einmal  ->  volle Farbe und Haken auf der Karte
+ *   Fach 2  sitzt gerade      ->  volle Farbe und Haken auf der Karte
+ *   Fach 2  sass schon einmal  ->  die naechste Kontinentrunde ist offen
  *   Fach 3  Aufkleber          ->  steht im Forscherbuch
  *   Fach 5  sicher             ->  Siegel im Buch, zaehlt als gekonnt
+ *
+ * Und zwei Zeitformen: `ist...` fragt das heutige Fach, `war...` den
+ * Hoechststand. Der Haken auf der Karte sagt "sitzt", also jetzt - er darf
+ * verschwinden, das ist die Rueckmeldung. Alles, was etwas SCHENKT
+ * (Aufkleber, offene Runde), fragt den Hoechststand und nimmt nichts
+ * zurueck.
  */
 export const SITZT = 2;
 export const istGesessen = (stand, id) => (stand[id]?.fach ?? 1) >= SITZT;
+export const warGesessen = (stand, id) => hoechstes(stand, id) >= SITZT;
 export const istGekonnt = (stand, id) => (stand[id]?.fach ?? 1) >= 5;
 
 /**
@@ -73,7 +114,7 @@ export const istGekonnt = (stand, id) => (stand[id]?.fach ?? 1) >= 5;
  * oder zwei Sitzungen zu erreichen und bedeutet trotzdem etwas.
  */
 export const HAT_AUFKLEBER = 3;
-export const istGesammelt = (stand, id) => (stand[id]?.fach ?? 1) >= HAT_AUFKLEBER;
+export const istGesammelt = (stand, id) => hoechstes(stand, id) >= HAT_AUFKLEBER;
 
 function keimZufall(keim) {
   let s = keim >>> 0;
