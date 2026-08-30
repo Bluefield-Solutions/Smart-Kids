@@ -45,8 +45,8 @@ Runde geschnitten werden muss.
 **Tragfähigkeit ist damit nicht weg — sie ist vom Sortierkriterium zum
 Zwang geworden.** Es gibt genau drei echte:
 
-- **N2 vor N3.** Ohne Erkennung kein Diktat.
-- **N2 vor N4.** Zahlen sind dieselbe Maschine mit anderen Vorlagen; wer
+- **N2a vor N3.** Ohne Erkennung kein Diktat.
+- **N2a vor N4.** Zahlen sind dieselbe Maschine mit anderen Vorlagen; wer
   sie vorher baut, baut sie zweimal.
 - **§ 2 und der Code gemeinsam.** Die Profiltabelle unten und `PROFILE` in
   `prototyp/spiel.js` müssen in *einem* Schritt geändert werden, sonst ist
@@ -69,6 +69,10 @@ Alles andere ist frei, und deshalb steht ab hier der Nutzen vorn.
 | Was steuert die Auswahl? | die **Ebene** sagt „vier Möglichkeiten", das **Profil** sagt „nie" | R4 |
 | Ein Vorrat darf wie groß sein? | **von Natur aus begrenzt** — siehe § 5.2 | R4 |
 | Wonach wird sortiert? | **Nutzen**, nicht Tragfähigkeit | 30.08.2026 |
+| Wie wird ein Buchstabe erkannt? | **beides, gestuft** — Striche zuerst, Klassifikator als Netz (W-A) | 30.08.2026 |
+| Wie streng? | Nachfahren **locker**, freies Schreiben **mittel**, nach drei Fehlern vormachen (W-B) | 30.08.2026 |
+| Was vergleichen die Eltern? | **fehlerfrei beim ersten Versuch**, Zeit daneben — keine neue Zahl (W-C) | 30.08.2026 |
+| Wo steht das Schreibspiel? | **dritte Welt**, nur für Fiona sichtbar (W-D) | 30.08.2026 |
 
 ---
 
@@ -118,10 +122,11 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **N2** Buchstaben nachfahren | Fiona | hoch | groß | Rückfrage R-A/R-B |
-| 2 | **N3** Buchstabe vorgelesen, selbst schreiben | Fiona | hoch | mittel | N2 |
-| 3 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | N2 |
-| 4 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | Rückfrage R-C/R-D |
+| 1 | **N2a** Buchstaben nachfahren, Striche vergleichen | Fiona | hoch | groß | — |
+| 2 | **N3** Buchstabe vorgelesen, selbst schreiben | Fiona | hoch | mittel | N2a |
+| 3 | **N4** Zahlen 1 bis 20 | Fiona | hoch | klein | N2a |
+| 4 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
+| 4a | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | N2a |
 | 5 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
 | 6 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
 | 7 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
@@ -160,8 +165,9 @@ zeigt Zahlen, Wackelkandidaten und einen Löschknopf **je Profil**.
    `['fiona','lea','eltern']` fest. Das ist die Stelle, an der diese Runde
    *technisch* stattfindet.
 2. Der **Vergleich**. Zwei Fortschrittsstände nebeneinander sind noch kein
-   Wettkampf: es braucht eine Größe, die man vergleichen kann, und die
-   darf nicht neu erfunden werden (siehe Rückfrage R-C).
+   Wettkampf: es braucht eine Größe, die man vergleichen kann. Entschieden
+   ist **fehlerfrei beim ersten Versuch, Zeit daneben** (W-C) — beides wird
+   längst gezählt, keine neue Zahl entsteht.
 3. Der alte Stand unter der Kennung `eltern`. Er gehört einem von euch —
    nur weiß niemand, wem. Vorschlag: er wird **Stephan** zugeschlagen und
    das steht dabei, statt ihn stillschweigend zu verlieren oder zu
@@ -176,7 +182,7 @@ auf denselben Ablageschlüssel legen — dann muss die Prüfung rot werden.
 
 ---
 
-### N2 · Buchstaben nachfahren — das große neue Spiel, nur für Fiona
+### N2a · Buchstaben nachfahren — das große neue Spiel, nur für Fiona
 
 **Ziel.** Ein Buchstabe steht groß auf dem Bildschirm, zum Beispiel ein A.
 Fiona fährt ihn mit dem Finger nach. Danach — weiter unten oder auf einem
@@ -193,8 +199,11 @@ ihr das Abfragen leichter. Das hier bringt ihr etwas bei, das sie danach
 1. Ein **vierter Eingabeweg**. Heute gibt es ziehen, sprechen, tippen. Ein
    Strichzug ist keiner davon: er hat eine Richtung, eine Reihenfolge und
    eine Zahl von Zügen, und er wird nicht beantwortet, sondern *gemacht*.
-2. Eine **dritte Welt** neben Erdkunde und Rechnen — sichtbar nur für
-   Fiona (siehe Rückfrage R-D).
+2. Eine **dritte Welt** neben Erdkunde und Rechnen, sichtbar nur für Fiona
+   (W-D). Das ist kein Zusatz, sondern ein Umbau der Weltenwahl: sie trägt
+   heute zwei Karten und ist auf 844 × 390 gemessen eng. `passt` muss sie in
+   **beiden** Fassungen sehen — mit drei Karten für Fiona, mit zwei für die
+   anderen.
 3. Ein **Vorrat aus Vorlagen** statt aus Gebieten oder erzeugten Aufgaben:
    26 Buchstaben, jeder mit seinen Zügen. Das ist von Natur aus begrenzt
    (§ 5.2 ist damit erfüllt) — aber die Züge muss jemand hinschreiben.
@@ -204,8 +213,12 @@ bleibt, ist eine Abstandsmessung: Punkt für Punkt gegen den Pfad, dazu die
 Reihenfolge. Das ist Rechnen, kein Erkennen — und es braucht nichts, was
 nicht schon da ist (SVG-Pfade, `getPointAtLength`, Zeigerereignisse).
 
-**Der Erkennungs-Teil ist der teure**, und er ist die eigentliche
-Entscheidung dieser Runde: siehe Rückfrage **R-A** und **R-B**.
+**Der Erkennungs-Teil ist der teure.** Entschieden ist der gestufte Weg
+(W-A): erst die Striche, dann ein kleiner Klassifikator als Auffangnetz.
+Hier steht nur die erste Stufe — sie trägt das Spiel allein, und ohne sie
+gäbe es keinen Maßstab, an dem man messen könnte, ob das Netz überhaupt
+etwas fängt. Die Strenge kommt aus W-B: nachfahren locker, frei schreiben
+mittel, nach drei Fehlversuchen wird vorgemacht.
 
 **Abnahme (Entwurf).** Ein Tor `schreiben` spielt gezeichnete Züge ein —
 also echte Punktfolgen, keine Bilder — und prüft: ein sauber nachgefahrenes
@@ -217,13 +230,36 @@ Schreibfläche, die auf 844 × 390 zu klein ist, ist keine.
 
 ---
 
+### N2b · Der Klassifikator als Auffangnetz
+
+**Ziel.** Was der Strichvergleich ablehnt, bekommt eine zweite Meinung: ein
+kleiner mitgebackener Klassifikator über das gezeichnete Bild — ohne
+Reihenfolge, ohne Richtung, nur die Form.
+
+**Warum überhaupt.** Der Strichvergleich verlangt, dass Fiona ungefähr in
+der gedachten Reihenfolge schreibt. Sechsjährige tun das nicht zuverlässig:
+ein A von unten links nach oben und wieder herunter ist ein A, auch wenn es
+in drei Zügen und in der falschen Ordnung entsteht. Das Netz fängt genau
+diese Fälle.
+
+**Warum erst danach.** Ein Auffangnetz kann man nur prüfen, wenn man weiß,
+was durchfällt. Vor N2a gibt es diese Menge nicht — und eine Prüfung, die
+nie etwas meldet, ist kein Beweis (Regel 1).
+
+**Abnahme.** Gemessen wird an dem, was N2a abgelehnt hat: wie viele davon
+sind in Wahrheit richtig, und wie viele falsche kommen durch? Beide Zahlen
+müssen dastehen, sonst ist es kein Netz, sondern ein Nachgeben. Und die
+Gegenprobe schaltet das Netz ab — die erste Zahl muss dann messbar fallen.
+
+---
+
 ### N3 · Der Buchstabe wird vorgelesen, Fiona schreibt ihn
 
 **Ziel.** Kein Vorbild mehr auf dem Bildschirm. Das Spiel sagt „Q", Fiona
 schreibt ein Q, das Spiel prüft, ob es eines ist.
 
 Das ist die Stufe, an der aus Nachfahren **Können** wird — und sie ist
-klein, *wenn* N2 die Erkennung mitbringt. Neu ist nur die Aufgabe selbst:
+klein, *wenn* N2a die Erkennung mitbringt. Neu ist nur die Aufgabe selbst:
 ansagen statt zeigen, und ein Weg zurück zum Vorbild, wenn es dreimal
 nicht klappt (dieselbe Regel wie „Lösung nach drei Fehlern").
 
@@ -234,13 +270,13 @@ Inhalt, keine Zeile Code — sie gehört in die Runde, nicht davor.
 
 **Abnahme.** Der Rauchtest hört die Ansage (wie heute bei Fionas
 Aufgabenansage) und weist nach, dass **kein** Vorbild auf dem Bildschirm
-steht — sonst ist es N2 mit Ton. Nach drei Fehlversuchen erscheint es.
+steht — sonst ist es N2a mit Ton. Nach drei Fehlversuchen erscheint es.
 
 ---
 
 ### N4 · Zahlen 1 bis 20
 
-**Ziel.** Dasselbe wie N2 und N3, mit den Ziffern. 1 bis 20 heißt: die
+**Ziel.** Dasselbe wie N2a und N3, mit den Ziffern. 1 bis 20 heißt: die
 zehn Ziffern schreiben können, und die Zahl als Ganzes lesen und schreiben.
 
 **Das ist absichtlich nicht dasselbe wie „20 Vorlagen".** Zwanzig ist
@@ -255,7 +291,7 @@ tippt die Antwort aus vier Möglichkeiten. Wenn sie Ziffern schreiben kann,
 könnte sie das Ergebnis irgendwann *schreiben* statt es auszuwählen. Das
 ist keine Anforderung, sondern eine Tür, die N4 aufmacht.
 
-**Abnahme.** Wie N2/N3, dazu: die Ansage sagt „vierzehn" und nicht „eins
+**Abnahme.** Wie N2a/N3, dazu: die Ansage sagt „vierzehn" und nicht „eins
 vier" (`gesprochen()` kann das längst), und eine zweistellige Zahl wird nur
 angenommen, wenn **beide** Ziffern stimmen und in der richtigen Reihenfolge
 stehen.
@@ -442,7 +478,7 @@ Schätzung, und die Messung dauerte eine Viertelstunde.*
 
 **Der Stand heute** (gemessen 30.08.2026, gzip, `npm run budget`):
 Startbündel **183 von 400 KB**, größte nachgeladene Ebene **108,3 von
-250 KB**. Für N2 heißt das: **217 KB Luft im Start** — genug für Vorlagen
+250 KB**. Für das Schreibspiel heißt das: **217 KB Luft im Start** — genug für Vorlagen
 und einen kleinen Erkenner, nicht genug für ein geladenes Modell.
 
 ### 5.4 Die zwei Achsen des Sprechens
@@ -474,41 +510,53 @@ will.
 
 ---
 
-## § 6 · Die Rückfragen, die vor N1 und N2 zu beantworten sind
+## § 6 · Die vier Weichen — gestellt am 30.08.2026
 
-Vier Stellen, an denen die Antwort die Arbeit **verändert** — nicht nur
-verschönert. Alles andere entscheide ich selbst.
+Vier Stellen, an denen die Antwort die Arbeit verändert. Sie sind
+beantwortet; hier steht die Antwort **und** was sie kostet, damit später
+niemand raten muss, warum es so gebaut ist.
 
-**R-A · Wie soll erkannt werden, ob es ein A ist?**
-Die App ist eine einzige Datei, offline, ohne Netz zur Laufzeit. Ein
-Erkenner muss also **mitgeliefert** werden. Zwei Wege, beide gangbar:
-*(a)* Vergleich der Strichzüge gegen die Vorlagen — Richtung, Reihenfolge,
-Anzahl, Lage. Klein (wenige KB), gutmütig, verlangt aber, dass Fiona
-ungefähr *in der gedachten Reihenfolge* schreibt. *(b)* Ein kleiner
-mitgebackener Klassifikator über das gezeichnete Bild. Erkennt auch
-krumme Wege, kostet mehr Platz und ist schwerer zu prüfen. — Ich halte
-**(a)** für richtig, weil es zum Nachfahren ohnehin gebraucht wird und weil
-ein Tor es prüfen kann; aber es ist eine Entscheidung.
+**W-A · Erkennung: beides, gestuft.**
+Zuerst der Vergleich der Strichzüge gegen die Vorlage (Richtung,
+Reihenfolge, Anzahl, Lage), und was dort durchfällt, geht an einen kleinen
+mitgebackenen Klassifikator über das gezeichnete Bild.
 
-**R-B · Wie streng darf es sein?**
-Ein sechsjähriges A ist krumm. Zu streng heißt: sie hört auf. Zu lasch
-heißt: alles ist ein A, und N3 wird sinnlos. Vorschlag: **beim Nachfahren
-großzügig, beim freien Schreiben mittel** — und nach drei Fehlversuchen
-wird es vorgemacht statt abgelehnt.
+*Was das heißt:* das ist der sicherste, aber auch der einzige Weg mit zwei
+Verfahren. Er zerfällt deshalb in zwei Runden — **N2a** baut das Nachfahren
+und den Strichvergleich (der zum Nachfahren ohnehin gebraucht wird), **N2b**
+setzt den Klassifikator als Auffangnetz darunter. Nach N2a ist das Spiel
+spielbar; N2b macht es nachsichtig gegen Fionas eigene Schreibwege. Die
+Reihenfolge ist keine Bequemlichkeit: ohne N2a gibt es keinen Maßstab, an
+dem man messen könnte, ob das Auffangnetz überhaupt etwas fängt (Regel 1 —
+eine Prüfung, die nie etwas meldet, ist kein Beweis). Und der Platz ist da:
+217 KB Luft im Startbündel (§ 5.3).
 
-**R-C · Was sind „Punkte" beim Elternvergleich?**
-Es gibt schon vier Größen: fehlerfreie Aufgaben (`glatt`), Sterne,
-Aufkleber und die Zeit. In diesem Verzeichnis gilt: **keine Zahl steht an
-zwei Stellen**. Ich würde deshalb keine neue Punktzahl erfinden, sondern
-den Vergleich auf *fehlerfrei beim ersten Versuch* stellen und die Zeit
-danebenstellen. Wenn ihr eine echte Punktzahl wollt (schnell = mehr), ist
-das eine neue Größe und braucht ihre eigene Regel.
+**W-B · Strenge: beim Nachfahren locker, beim freien Schreiben mittel.**
+Nach drei Fehlversuchen wird der Buchstabe **vorgemacht** statt abgelehnt —
+dieselbe Regel wie „Lösung nach drei Fehlern" bei den Gebieten.
 
-**R-D · Wo stehen Stephan und Violeta, und wo steht das Schreibspiel?**
-Zwei Fragen, eine Gestalt: die Profilwahl hat heute drei Kacheln und wird
-mit N1 vierspaltig. Und die Weltenwahl hat zwei Karten (Erdkunde, Rechnen)
-und bekäme mit N2 eine dritte, die **nur Fiona** sieht. Beides ist
-gemessen eng auf 844 × 390 — `passt` hat schon einmal 14 Überläufe
-gefunden, als zwei Weltenköpfe auf einen Bildschirm sollten. Deshalb: soll
-das Schreiben eine **eigene Welt** sein, oder eine Ebene **innerhalb**
-einer der beiden?
+*Was das heißt:* „locker" und „mittel" sind keine Zahlen, und Zahlen aus dem
+Bauch sind in diesem Verzeichnis schon dreimal teuer geworden. Die
+Toleranzen werden deshalb **gemessen eingestellt**: an echten Zügen, die
+Fiona einmal macht — und bis die vorliegen, an absichtlich krummen Zügen,
+die das Tor selbst erzeugt. Die Zahl kommt aus der Messung, nicht aus mir.
+
+**W-C · Punkte beim Elternvergleich: fehlerfrei beim ersten Versuch, Zeit
+daneben.**
+Keine neue Größe. `glatt` wird bereits gezählt, die Zeit ebenfalls.
+
+*Was das heißt:* der Vergleich gilt sofort für **alle** Ebenen, auch für die,
+die es noch nicht gibt, und keine Zahl steht an zwei Stellen. Was er nicht
+kann: knapp geschafft und mühsam geschafft unterscheiden. Wenn euch das
+fehlt, ist das später eine eigene, kleine Entscheidung — keine, die N1
+aufhält.
+
+**W-D · Das Schreibspiel ist eine dritte Welt, und nur Fiona sieht sie.**
+
+*Was das heißt:* die Weltenwahl trägt heute zwei Karten und ist auf
+844 × 390 gemessen eng — als zwei Weltenköpfe auf einen Bildschirm sollten,
+fand `passt` **14 Überläufe**. Eine dritte Karte ist deshalb kein Zusatz,
+sondern ein Umbau dieses Bildschirms, und er gehört in N2a hinein statt
+hinterher. Für Lea und euch bleibt die Weltenwahl bei zwei Karten: der
+Bildschirm sieht je nach Profil verschieden aus, und das muss `passt` in
+**beiden** Fassungen sehen.

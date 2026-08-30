@@ -4594,3 +4594,30 @@ nicht nachschlagen kann, ist keine. Steht als P4 im Backlog — mit dem
 Vorschlag, nicht 47 Kommentare zu korrigieren, sondern ein Tor zu bauen,
 das jede Nummer gegen `CLAUDE.md` prüft. Zehn Zeilen, und der Fehler kann
 nicht wiederkommen.
+
+### Nachtrag derselben Runde: die vier Weichen sind gestellt
+
+Auf die vier Rückfragen kamen vier Antworten, und sie stehen jetzt als § 6
+im Backlog — mit dem, was sie **kosten**, nicht nur mit dem, was sie sagen.
+Zwei davon haben den Zuschnitt der nächsten Runde verändert:
+
+**„Beides gestuft" teilt das Schreibspiel in zwei Runden.** Erst der
+Strichvergleich (N2a), dann der Klassifikator als Auffangnetz (N2b) — nicht
+aus Bequemlichkeit, sondern weil ein Auffangnetz nur prüfbar ist, wenn man
+weiß, was durchfällt. Vor N2a gibt es diese Menge nicht, und eine Prüfung,
+die nie etwas meldet, ist kein Beweis. Die Abnahme von N2b nennt deshalb
+zwei Zahlen (wieviel zu Unrecht Abgelehntes wird gerettet, wieviel Falsches
+kommt durch) und schaltet für die Gegenprobe das Netz ab.
+
+**„Dritte Welt, nur für Fiona" ist ein Umbau, kein Zusatz.** Die
+Weltenwahl trägt zwei Karten und ist auf 844 × 390 gemessen eng — als zwei
+Weltenköpfe auf einen Bildschirm sollten, fand `passt` vierzehn Überläufe.
+Der Bildschirm sieht ab N2a **je Profil verschieden** aus: drei Karten für
+Fiona, zwei für Lea und die Eltern. `passt` muss beide Fassungen sehen,
+sonst prüft es die halbe Wahrheit.
+
+Die anderen beiden sind billiger, als sie klingen: der Elternvergleich
+läuft auf `glatt` und die Zeit — beides wird längst gezählt, es entsteht
+keine neue Zahl —, und die Strenge wird nicht geschätzt, sondern eingestellt:
+an absichtlich krummen Zügen, die das Tor selbst erzeugt, bis echte Züge von
+Fiona vorliegen.
