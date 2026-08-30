@@ -3796,3 +3796,107 @@ Gegenprobe fälscht.
 Dazu das Vorbild, das gefehlt hat: `quer-vorlauf-rechnen`. Zweiundzwanzig
 Aufnahmen, und die schnelle Bahn bleibt bei 46 s — die Aufteilung nach
 Aufwand fängt die neue ab.
+
+---
+
+## Runde: was einmal geschafft war, bleibt geschafft
+
+Die Frage, mit der die Runde anfing, war eine andere: *das Forscherbuch
+sammelt bei den Rechenebenen 100 bis 158 Aufkleber — ist eine Sammlung, die
+man nie vollbekommt, noch eine Sammlung?*
+
+### Die Antwort auf die Frage: doch, sie ist vollzubekommen
+
+Ein Jahr Spiel durchgerechnet, vier Sitzungen die Woche, 85 % richtig
+(`src/kern/leitner.js` gegen die echten Vorräte, nicht geschätzt):
+
+| Ebene | Vorrat | 1. Stern | 2 Sterne | voll |
+|---|---|---|---|---|
+| Fionas Plus und Minus | 100 | Woche 11 | Woche 22 | Woche 50 |
+| Leas Reihen | 140 | Woche 8 | Woche 17 | Woche 37 |
+| Große Zahlen (Eltern) | 158 | Woche 9 | Woche 19 | Woche 41 |
+
+Ein Schuljahr für hundert Rechenaufgaben ist kein „nie". Die Prämisse der
+Frage war falsch — **und das Messen hat etwas Schlimmeres gefunden.**
+
+### Aufkleber fielen wieder aus dem Buch
+
+`istGesammelt` las das **laufende** Leitner-Fach. Das fällt bei jeder
+falschen Antwort auf 1 zurück — das ist die Wiederholungslogik, und daran
+ist nichts falsch. Falsch war, dass daraus auch alles abgeleitet wurde, was
+über die **Vergangenheit** spricht. Im selben Jahr Spiel:
+
+| | |
+|---|---|
+| Aufkleber, die wieder verschwanden | 122 bis 251 je Ebene |
+| Sitzungen, in denen mindestens einer verschwand | 47 bis 74 von 208 |
+| Sitzungen, in denen Fionas zweite Kontinentrunde wieder **zu** war | 47 von 208 |
+
+Bei den sieben Kontinenten hieß das: Höchststand 7 Aufkleber, Stand nach
+einem Jahr **2**. Ein Aufkleberalbum, aus dem Aufkleber herausfallen, ist
+keins. Und einer Sechsjährigen Asien wieder wegzunehmen, weil sie es einmal
+falsch geraten hat, ist keine Wiederholung, sondern eine Strafe.
+
+Obendrein meldete der Endbildschirm denselben Aufkleber ein zweites und
+drittes Mal als „neu" — dieselbe Wurzel.
+
+### Zwei Zeitformen statt einer Zahl
+
+Der Leitner-Stand trägt jetzt `hoechstes`: die höchste je erreichte
+Fachhöhe, die nie fällt.
+
+| | fragt | |
+|---|---|---|
+| Haken auf der Karte | heutiges Fach | „sitzt **gerade**" — darf verschwinden, das ist die Rückmeldung |
+| Aufkleber im Buch | Höchststand | „hast du gefunden" — bleibt |
+| offene Kontinentrunde | Höchststand | einmal offen, immer offen |
+| Siegel „sicher" (Fach 5) | heutiges Fach | eine Aussage über heute |
+
+Alte Stände in der Ablage haben das Feld nicht; für sie gilt das heutige
+Fach als Höchststand. Das ist die vorsichtige Richtung — es nimmt niemandem
+etwas weg, was er heute sieht.
+
+### Und die Gegenprobe, die nichts bewiesen hat
+
+Die erste Fassung der Kontinentrunden-Probe hing an `spielprobe`. Sie blieb
+**grün**, obwohl der Fehler drin war: `spielprobe` rechnet die Runden-Regel
+selbst nach und befragt die App nicht — sie bezeugte damit nur, dass
+`warGesessen` monoton ist. Jetzt stellt der **Rauchtest** den Rückfall in der
+Ablage (alle vier der ersten Runde schon einmal in Fach 3, heute wieder in
+Fach 1) und zählt, wie viele Kontinente die Ebene danach kennt: 6 von 6.
+
+Das ist Regel 13 in Reinform — wer eine Wirkung misst, schaltet sie zuerst
+ab. Die Probe, die ihre eigene Abschrift prüft, ist der häufigste Weg, wie
+eine Prüfung leise aufhört zu beweisen.
+
+## Und der Vorlauf füllt sein Band
+
+Sechs Beispielkarten standen **linksbündig** in einer Reihe von acht Spuren:
+`auto-fill` legt die Spuren nach einer festen Mindestbreite an, sechs davon
+wurden belegt, rechts blieb ein Loch von vierhundert Punkten — und darüber
+und darunter je ein Drittel leeres Band.
+
+Jetzt kommen beide Zahlen aus der Zahl der Karten: höchstens acht
+nebeneinander, ab vier Karten zwei gleich lange Reihen. Die Reihen teilen
+sich die Höhe des Bandes (`1fr`), gedeckelt durch das Höchstmaß einer Karte
+— ungefähr quadratisch, die Form eines Aufklebers.
+
+Sechzehn Bundesländer stehen wie bisher acht und acht, aber die Umrisse sind
+jetzt so groß, dass man sie erkennt statt sie zu erahnen. Sechs
+Rechenaufgaben stehen drei und drei, zentriert.
+
+Zwei Fehlversuche unterwegs, beide gemessen und nicht geraten:
+
+- Die Karte selbst zu deckeln (`max-height` + `align-self:center`) hat sie
+  **zum Einsturz** gebracht — ein Gitterkind bemisst sich dann an seinem
+  Inhalt, und der darf hier auf null schrumpfen. Übrig blieben sechs flache
+  Striche mit übereinanderliegender Schrift.
+- Nacktes `1fr` für die Reihen: die Spaltenzahl ist ein **Wunsch**, auf
+  schmalen Geräten legt `auto-fit` weniger an. Auf dem iPhone SE quer
+  standen die dreizehn Hauptstadtkarten dann in drei gequetschten Reihen —
+  `passt` hat es gemeldet, 2 px über den Rand. `minmax(min-content,1fr)`
+  löst es.
+
+Dazu ein Werkzeug, das gefehlt hat: `node tor/ansicht.mjs --nur=quer-vorlauf`
+nimmt nur die genannten Bildschirme auf. Am Bildschirm zu arbeiten heißt, ihn
+oft anzusehen — fünf Sekunden statt einer Minute.

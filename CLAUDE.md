@@ -91,6 +91,9 @@ npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    dass zusammen ALLE geprueft sind (die Zahl steht nicht hier -
                    sie stand als „sechzehn" da, waehrend es einundzwanzig
                    waren; `schnell` zaehlt sie selbst nach).
+                   `-- --nur=quer-vorlauf` nimmt nur die Bildschirme auf,
+                   deren Name den Text enthaelt — fuer die Hand, wenn du an
+                   einem davon arbeitest. Trifft nichts, ist es rot.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
                    im SELBEN Commit einchecken.
 npm run backen     Karten neu rechnen
