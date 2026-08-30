@@ -1648,4 +1648,47 @@ export const PROBEN = [
     ersatz:'',
     an:{ datei:'src/vergleich/vergleich.js', fehlt:'BESTIMMEND.has(w[i - 1])' },
     sagt:'sudan' },
+
+  /* --- F15: Qualitaet im Sprachweg -----------------------------------
+   *
+   * Vier Verbesserungen, vier Proben. Jede schaltet genau eine ab.
+   */
+
+  // 1. Der Riegel faellt: die App redet weiter, waehrend sie zuhoert -
+  //    und das Mikrofon hoert den eigenen Lautsprecher mit.
+  { n:'die App redet weiter, während sie zuhört', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:'function vorlesen(text){\n  if(hoertZu) return;\n',
+    ersatz:'function vorlesen(text){\n',
+    an:{ ...DIST, fehlt:'function vorlesen(text){\n  if(hoertZu) return;' },
+    sagt:'hört den eigenen Lautsprecher mit' },
+
+  // 2. Die laufende Ansage wird nicht mehr abgeschnitten. Der Riegel
+  //    haelt nur, was DANACH kommt - der Satz, der schon spricht,
+  //    spricht weiter.
+  { n:'die laufende Ansage läuft ins Mikrofon weiter', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"  try{ if ('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}\n",
+    ersatz:'',
+    an:{ ...DIST, fehlt:"if ('speechSynthesis' in window) speechSynthesis.cancel()" },
+    sagt:'nicht abgeschnitten' },
+
+  // 3. Das Zwischenergebnis wird wieder weggeworfen. Auf dem Telefon
+  //    endet die Erkennung bei Stille von selbst - und das Kind soll
+  //    noch einmal sagen, was es gerade gesagt hat.
+  { n:'das Zwischenergebnis wird wieder weggeworfen', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:'          if (roh) zwischen = { roh, varianten };\n',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'if (roh) zwischen = { roh, varianten };' },
+    sagt:'weggeworfen' },
+
+  // 4. Die Rueckfrage wird wieder zur Sackgasse: gestellt und im selben
+  //    Augenblick als nicht gekonnt verbucht.
+  { n:'die Rückfrage ist wieder eine Sackgasse', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"      if (vorurteil.art==='rueckfrage') { nachfragen(vorurteil, roh, ctx); return; }\n",
+    ersatz:'',
+    an:{ ...DIST, fehlt:'nachfragen(vorurteil, roh, ctx); return;' },
+    sagt:'keine Rückfrage bekommen' },
 ];
