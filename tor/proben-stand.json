@@ -49,7 +49,7 @@
       "zeit": "2026-08-30"
     },
     "ein Zeichen außerhalb des geladenen Schnitts": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+      "commit": "b657ca2b5abb2408b6a8fd5747ae6ee2844184f0",
       "zeit": "2026-08-30"
     },
     "das App-Symbol hat die falsche Größe": {
@@ -146,6 +146,10 @@
     },
     "die Seite wächst unbemerkt": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+      "zeit": "2026-08-30"
+    },
+    "ein Suchtext wird zweideutig": {
+      "commit": "b657ca2b5abb2408b6a8fd5747ae6ee2844184f0",
       "zeit": "2026-08-30"
     },
     "eine Gegenprobe greift ins Leere": {
