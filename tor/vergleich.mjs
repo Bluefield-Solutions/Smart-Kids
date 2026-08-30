@@ -82,8 +82,30 @@ const eingefrorenPfad = new URL('./korpus/eingefroren.json', import.meta.url);
 const hatEingefroren = fs.existsSync(eingefrorenPfad);
 
 const laeufe = [pruefe(erfunden, 'erfunden')];
-if (hatEingefroren)
-  laeufe.push(pruefe(JSON.parse(fs.readFileSync(eingefrorenPfad)), 'eingefroren'));
+if (hatEingefroren) {
+  /* Ein eingefrorener Korpus muss GROSS GENUG sein, um seine Zielzahlen zu
+   * tragen. Sonst gilt ab dem Tag, an dem die Datei entsteht, eine
+   * 90-Prozent-Grenze fuer eine Zahl, die wuerfelt: bei fuenfundzwanzig
+   * Formen liegt eine gemessene Quote gut und gern zwoelf Punkte daneben.
+   * Die Grenzen stehen in `tools/korpus.mjs`, das die Datei baut - hier
+   * wird nur nachgesehen, ob sie eingehalten sind. Von Hand geschrieben
+   * kaeme sie sonst durch.
+   *
+   * EHRLICH DAZU: das ist die einzige Pruefung im Verzeichnis ohne
+   * Gegenprobe. Ihr Gegenstand gibt es noch nicht - sobald die Datei da
+   * ist, gehoert eine nachgetragen. */
+  const gefroren = JSON.parse(fs.readFileSync(eingefrorenPfad));
+  const zt = (gefroren.treffer || []).reduce((n, [, f]) => n + f.length, 0);
+  const zn = (gefroren.nichttreffer || []).reduce((n, [, f]) => n + f.length, 0);
+  if (zt < 100 || zn < 50) {
+    console.log(`\n  ROT: der eingefrorene Korpus ist zu klein — ${zt} Treffer `
+      + `(nötig 100), ${zn} Nichttreffer (nötig 50). Eine Zielzahl über so wenigen`);
+    console.log('  Formen wackelt stärker als der Abstand, um den es geht.');
+    console.log('  Weiter sammeln: `npm run korpus`.');
+    rot++;
+  }
+  laeufe.push(pruefe(gefroren, 'eingefroren'));
+}
 
 let rot = 0;
 for (const r of laeufe) {

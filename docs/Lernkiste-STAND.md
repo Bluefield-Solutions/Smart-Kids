@@ -4241,3 +4241,93 @@ ungültiges Datum — und traf das `"zeit"` **ganz oben** in der Standdatei,
 das des Laufs statt das eines Eintrags. `rhythmus` liest es gar nicht. Der
 Eingriff kam an und traf das Falsche: die unauffälligste Art,
 danebenzugreifen, denn „angekommen" meldet der Lauf brav.
+
+---
+
+## Runde: ein Suchtext trifft genau einmal — und der Weg zum Sprachkorpus
+
+### 1 · Was „steht der Text noch da" nicht fängt
+
+Die Suchtext-Prüfung von gestern fängt den Text, der **weg** ist. Sie fängt
+nicht den, der noch da ist und ab jetzt **woanders** steht: `replace` nimmt
+die erste Fundstelle, und bei zwei Fundstellen entscheidet ihre Reihenfolge,
+welche verstellt wird.
+
+Das ist an einem einzigen Tag dreimal passiert — `.rechenkleber{` traf zwei
+CSS-Zeilen, und die Gegenprobe zur Suchtext-Prüfung traf zweimal **sich
+selbst** statt ihres Ziels. Beide Male sah der Lauf einen angekommenen
+Eingriff.
+
+Gemessen über alle 120 Proben: **vier** treffen nicht genau einmal.
+
+| Probe | wie oft | Urteil |
+|---|---|---|
+| ein Zeichen außerhalb des geladenen Schnitts | 2× | **echt** — „Lass es auf dem Land los." steht zweimal in `spiel.js`, als Text und als Ansage |
+| der letzte Probenlauf liegt zu lange zurück | 121× | Absicht — der Eingriff ändert nichts, er sitzt in der Umgebung |
+| ein Nachweis, dessen Alter sich nicht bestimmen lässt | 120× | Absicht — einer von hundertzwanzig Einträgen genügt |
+| die Beschriftung fällt immer gleich aus | 2× | Absicht — das `g` **ist** der Eingriff |
+
+Die drei tragen jetzt `mehrfach:true` und schreiben dazu, warum. Die vierte
+ist eng gefasst. Und die Regel steht in `inhalt`: **genau einmal, oder sag,
+dass du es anders meinst.**
+
+### 2 · M4: der Engpass ist kleiner als „Aufnahmen"
+
+`vergleich` sagt in jedem Lauf, dass seine Zahlen nichts bezeugen — die
+erfundene Hälfte des Korpus ist von derselben Hand wie der Abgleich, den sie
+prüft. Bis hierher stand dagegen „braucht echte Aufnahmen", und das klang
+nach Tonstudio.
+
+Nachgesehen: **die App schreibt es längst mit.** Bei jeder gesprochenen
+Antwort hält das Protokoll fest, was ankam (`roheingabe`) und wonach gefragt
+war (`gebietId`); der Elternbereich gibt das als JSON aus. Was fehlte, war
+der Weg vom Export zum Korpus.
+
+Den gibt es jetzt: `npm run korpus`. Drei Schritte, und der mittlere ist
+Handarbeit — **absichtlich**:
+
+```
+1.  npm run korpus -- <export.json>     Urteilsliste anlegen
+2.  je Zeile "ja" / "nein" / "weg"      von Hand
+3.  npm run korpus -- --einfrieren      Korpus bauen
+```
+
+**Warum Schritt 2 nicht automatisch geht**, und das ist der ganze Punkt: der
+naheliegende Weg wäre, `ergebnis: 'richtig'` als Treffer zu nehmen. Genau
+das ist verboten — `ergebnis` ist die Entscheidung des Abgleichs, und ein
+Korpus, der sie übernimmt, kann ihm nicht widersprechen. Er würde 100 %
+Trefferquote messen, immer, und nichts beweisen. Regel 4 in Reinform.
+
+**Wieviel gesammelt werden muss, und warum diese Zahl.** Gezählt werden
+*verschiedene Formen*, nicht Äußerungen: wer vierzigmal sauber „Europa"
+sagt, hat den Abgleich einmal geprüft. Im Versuchslauf wurden aus 146
+Äußerungen **zwölf Formen** — es braucht also viele Sitzungen, nicht eine.
+
+| Formen | eine Standardabweichung |
+|---|---|
+| 25 | 6,0 Prozentpunkte |
+| 50 | 4,2 |
+| 100 | 3,0 |
+| 200 | 2,1 |
+
+Bei fünfundzwanzig Formen liegt ein Lauf zwölf Punkte daneben — eine solche
+Zahl kann eine 90-Prozent-Grenze weder halten noch reißen, sie würfelt.
+Deshalb: **100 Treffer, 50 Nichttreffer**, und das Werkzeug verweigert
+darunter den Dienst. Für die Falsch-Positiv-Zahl reicht auch das noch nicht
+(2 % von fünfzig ist ein einziger Fall); das steht dort, statt so zu tun,
+als wäre es anders.
+
+Der ganze Weg ist mit einem erfundenen Export durchgespielt: Urteilsliste,
+Größengrenze, Bau — und danach schaltet `vergleich` von „keine Zielzahl" auf
+`ROT: unter 90 % Trefferquote` um. Die Prüfdateien sind wieder gelöscht.
+
+**Was jetzt fehlt, ist eine Sache:** Fiona muss mit dem **Mikrofon** spielen
+statt zu ziehen. Ihr Profil kann es (`eingabe: ['ziehen','sprechen']`).
+Danach im Elternbereich „Als JSON sichern" und die Datei an
+`npm run korpus` geben.
+
+Zwei Kleinigkeiten am Rand: die Urteilsliste trägt **keinen Zeitstempel** —
+der Korpus braucht ihn nicht, und er würde daraus eine Spur machen, wann ein
+Kind was geübt hat. Und die Größengrenze in `vergleich` ist die **einzige
+Prüfung im Verzeichnis ohne Gegenprobe**: ihren Gegenstand gibt es noch
+nicht. Sobald die Datei da ist, gehört eine nachgetragen.

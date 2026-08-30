@@ -26,6 +26,7 @@
     "proben": "node tor/proben.mjs",
     "budget": "node tor/budget.mjs",
     "rhythmus": "node tor/rhythmus.mjs",
+    "korpus": "node tools/korpus.mjs",
     "schnell": "node tools/schnell.mjs"
   },
   "devDependencies": {

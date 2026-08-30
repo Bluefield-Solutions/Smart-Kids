@@ -68,6 +68,13 @@ Proben hätten genau daran angeschlagen.
 npm run schnell    DIE NORMALE RUNDE. ~46 s. Siehe oben.
 npm run tor        die ganze Kette. Der Runner fährt sie ohnehin bei jedem
                    Push; hier nur, wenn du sie vorher sehen willst.
+npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
+                   `-- <export.json>` legt eine Urteilsliste an (der Export
+                   kommt aus dem Elternbereich, „Als JSON sichern"),
+                   `-- --einfrieren` baut daraus den Korpus. Dazwischen
+                   liegt Handarbeit, und die ist der Punkt: das Urteil darf
+                   NICHT aus `ergebnis` kommen — das ist die Entscheidung
+                   des Abgleichs, den der Korpus prüfen soll.
 npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
                    der nächtliche Lauf hält sie frisch.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
