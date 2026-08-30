@@ -9,6 +9,7 @@
     "passt",
     "pwa",
     "rhythmus",
+    "schreiben",
     "smoke",
     "spielprobe",
     "vergleich",
@@ -478,6 +479,22 @@
     },
     "der Ton spielt auch bei abgeschaltetem Ton": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+      "zeit": "2026-08-30"
+    },
+    "die Buchstabenerkennung nimmt alles an": {
+      "commit": "3d0fa5a90f1c0626ff75d7909804fedadf4aa988",
+      "zeit": "2026-08-30"
+    },
+    "beim Nachfahren zaehlt die Richtung nicht mehr": {
+      "commit": "3d0fa5a90f1c0626ff75d7909804fedadf4aa988",
+      "zeit": "2026-08-30"
+    },
+    "ein halb gefahrener Zug gilt als nachgefahren": {
+      "commit": "3d0fa5a90f1c0626ff75d7909804fedadf4aa988",
+      "zeit": "2026-08-30"
+    },
+    "das Soll der Buchstabenerkennung fehlt im Backlog": {
+      "commit": "3d0fa5a90f1c0626ff75d7909804fedadf4aa988",
       "zeit": "2026-08-30"
     },
     "alle Ebenen landen in derselben Welt": {

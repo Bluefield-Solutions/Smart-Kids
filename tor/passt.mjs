@@ -354,6 +354,31 @@ for (const g of GERAETE) {
     await p.waitForSelector('.schirm.da [data-ebene]');
   }
 
+  /* Die dritte Welt (N2a) - zwei Bildschirme, die es sonst nirgends gibt.
+   *
+   * Der Vorlauf zeigt hier ALLE sechsundzwanzig Buchstaben und ist damit
+   * die dichteste Kachelwand der App; der Schreibschirm haelt ein
+   * quadratisches Feld, einen Fragesatz und drei Knoepfe auf einmal.
+   * Beides auf 844 x 390 unterzubringen war nicht selbstverstaendlich:
+   * das Werkzeug musste dafuer NEBEN das Feld. */
+  await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da [data-welt="schreiben"]');
+  await zurEbenenwahl(p, 'schreiben:buchstaben');
+  await tipp('[data-ebene="schreiben:buchstaben"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .feld', { timeout: 20000 });
+  if (await p.$('.schirm.da #los')) {
+    await schau('Vorlauf schreiben');
+    await durchVorlauf(p);
+  }
+  await p.waitForSelector('.schirm.da .feld');
+  await schau('Schreiben');
+  await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da #null');
+  await tipp('.schirm.da #raus');
+  await p.waitForSelector('.schirm.da [data-ebene]');
+  await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da [data-welt]');
+
   await tipp('.schirm.da #buch');
   await p.waitForSelector('.schirm.da .aufkleber');
   await schau('Forscherbuch');
@@ -362,6 +387,19 @@ for (const g of GERAETE) {
   await tipp('.schirm.da #eltern');
   await p.waitForSelector('.schirm.da .ziffern');
   await schau('Eltern-Tor');
+
+  /* Und die Weltenwahl noch einmal - als LEA.
+   *
+   * Seit N2a haengt die Zahl der Karten am Profil: Fiona hat drei, Lea und
+   * die Eltern zwei. Ein Bildschirm, dessen Gestalt vom Kind abhaengt,
+   * ist mit einem Kind halb geprueft - und ausgerechnet die kleinere
+   * Fassung ist die, die niemand mehr ansieht. Ein Seitenwechsel statt
+   * eines zweiten Durchlaufs: es geht um diesen einen Bildschirm. */
+  await p.goto(ADRESSE, { waitUntil: 'load' });
+  await p.waitForSelector('[data-profil="lea"]');
+  await tipp('[data-profil="lea"]');
+  await p.waitForSelector('.schirm.da [data-welt]');
+  await schau('Weltenwahl (Lea)');
 
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
   if (echte.length) {

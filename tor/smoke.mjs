@@ -1,7 +1,9 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere } from './chromium.mjs';
+import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
+         schreibVorlage, zeichneZug } from './chromium.mjs';
+import * as Schreiben from '../src/inhalt/schreiben.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE } from '../src/inhalt/erdkunde.js';
 import http from 'node:http';
@@ -501,7 +503,8 @@ async function loese(p) {
  * OHNE Argument läuft alles, und die Kette ruft ihn ohne Argument auf: eine
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
-const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'pausen'];
+const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang',
+                    'pausen', 'schreiben'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
   const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
@@ -2065,6 +2068,109 @@ if (laeuft('pausen')) try {
         + 'Genau so ist der Kartenweg an ihm vorbeigelaufen'));
   }
 } catch (e) { merke('pausen', e); }
+
+/* --- Schreiben: nachfahren und frei schreiben (N2a) -------------------- *
+ *
+ * Das Tor `schreiben` misst die Erkennung an Zahlen. Was es NICHT sehen
+ * kann: ob ein Finger auf dem Zielgeraet ueberhaupt bei der Vorlage
+ * ankommt. Genau dort war der Fehler - `aspect-ratio` auf einem SVG tat
+ * nichts, das Feld war 820 x 180 statt quadratisch, und die Umrechnung
+ * Finger->Kasten lag systematisch daneben. Gezeichnet wurde trotzdem an
+ * der richtigen Stelle; zu sehen war es nur daran, dass nichts galt.
+ *
+ * Deshalb hier: mit dem ZEIGER auf dem gebauten Stand, in der Groesse des
+ * Zielgeraets.
+ */
+if (laeuft('schreiben')) try {
+  // 1. Die Welt gehoert Fiona - und nur ihr.
+  for (const [wer, soll] of [['fiona', true], ['lea', false]]) {
+    const p = await neueSeite({ width: 844, height: 390 }, ctx);
+    await p.click(`[data-profil="${wer}"]`);
+    await p.waitForSelector('.schirm.da [data-welt]');
+    const welten = await p.$$eval('.schirm.da [data-welt]', b => b.map(x => x.dataset.welt));
+    const hat = welten.includes('schreiben');
+    if (hat !== soll)
+      merke('schreiben', new Error(`${wer} sieht die Welt „Schreiben" ${hat ? '' : 'NICHT '}`
+        + `— erwartet war ${soll ? 'sichtbar' : 'unsichtbar'} (gefunden: ${welten.join(', ')})`));
+    await p.close();
+  }
+  console.log('  Schreibwelt:                nur bei Fiona');
+
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.click('[data-profil="fiona"]');
+  await zurEbenenwahl(p, 'schreiben:buchstaben');
+  await p.click('[data-ebene="schreiben:buchstaben"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .feld', { timeout: 25000 });
+  await durchVorlaufWenn(p);
+  await p.waitForSelector('.schirm.da .feld', { timeout: 15000 });
+
+  // Das Feld muss QUADRATISCH sein - daran hing der Fehler oben.
+  const kasten = await p.$eval('.schirm.da .feld', e => {
+    const r = e.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)];
+  });
+  if (Math.abs(kasten[0] - kasten[1]) > 2)
+    merke('schreiben', new Error(`das Schreibfeld ist ${kasten[0]} x ${kasten[1]} Punkte `
+      + 'und damit nicht quadratisch — dann trifft der Finger die Vorlage nicht'));
+
+  const zuege = await schreibVorlage(p);
+  if (!zuege.length) throw new Error('keine Vorlage auf dem Schreibschirm');
+  const zeichen = await p.$eval('.schirm.da #frage strong', e => e.textContent);
+
+  // 2. Nachfahren, Zug fuer Zug. Nach dem letzten muss die Vorlage WEG sein -
+  //    sonst waere das freie Schreiben ein Abmalen.
+  for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
+  await p.waitForFunction(() => document.querySelectorAll('.schirm.da #vorlage path').length === 0,
+    null, { timeout: 5000 }).catch(() => {
+      merke('schreiben', new Error('nach dem letzten Zug steht die Vorlage noch da — '
+        + 'dann malt das Kind sie ab, statt den Buchstaben zu schreiben')); });
+  console.log(`  Nachgefahren:               ${zeichen} in ${zuege.length} Zügen`);
+
+  // 3. Zweimal Unsinn: das darf NICHT gelten. Ohne diese Haelfte waere ein
+  //    Erkenner, der alles annimmt, hier gruen.
+  for (let i = 0; i < 2; i++) {
+    await zeichneZug(p, [[20, 80], [50, 30], [80, 80], [30, 40]]);
+    await p.click('.schirm.da #fertigknopf');
+    await p.waitForTimeout(250);
+  }
+  const nachUnsinn = await p.$eval('.schirm.da #frage', e => e.textContent);
+  if (!/noch einmal/i.test(nachUnsinn))
+    merke('schreiben', new Error(`nach zwei Kritzeleien steht „${nachUnsinn.trim()}" da — `
+      + 'erwartet war eine Aufforderung, es noch einmal zu versuchen'));
+
+  // 4. Und jetzt richtig. Leicht verzogen, so wie ein Kind schreibt.
+  for (const d of zuege)
+    await zeichneZug(p, Schreiben.abtasten(d, 26)
+      .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
+  const gut = await p.waitForFunction(
+    () => !!document.querySelector('.schirm.da .frage .richtigText'),
+    null, { timeout: 6000 }).then(() => true).catch(() => false);
+  if (!gut) {
+    const jetzt = await p.$eval('.schirm.da #frage', e => e.textContent);
+    merke('schreiben', new Error(`ein sauber geschriebenes ${zeichen} wurde nicht angenommen `
+      + `— auf dem Bildschirm steht „${jetzt.trim()}"`));
+  } else {
+    console.log(`  Frei geschrieben:           ${zeichen} angenommen`);
+  }
+
+  // 5. Der Fortschritt muss ANKOMMEN. Ein Buchstabe, der richtig war und
+  //    im Leitner nicht steigt, ist eine Uebung ohne Gedaechtnis.
+  await p.waitForTimeout(400);
+  const fach = await p.evaluate((id) => new Promise((ja) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onsuccess = () => {
+      const t = auf.result.transaction(['fortschritt'], 'readonly')
+        .objectStore('fortschritt').get('fiona:schreiben:buchstaben');
+      t.onsuccess = () => ja((t.result || {})[id]?.fach ?? 0);
+      t.onerror = () => ja(-1);
+    };
+    auf.onerror = () => ja(-1);
+  }), `bu:${zeichen}`);
+  if (!(fach >= 2))
+    merke('schreiben', new Error(`nach einem richtigen ${zeichen} steht der Buchstabe `
+      + `in Fach ${fach} — erwartet mindestens 2`));
+  else console.log(`  Im Leitner angekommen:      bu:${zeichen} in Fach ${fach}`);
+  await p.close();
+} catch (e) { merke('schreiben', e); }
 
 await ctx.close(); await b.close(); server.close();
 
