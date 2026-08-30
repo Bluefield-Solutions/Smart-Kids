@@ -278,6 +278,49 @@ async function neueSeite(viewport, ctx, flott = true) {
       }
     }
     window.AudioContext = Nachbau; window.webkitAudioContext = Nachbau;
+
+    /* Und der Spracherkenner - nachgebaut, nicht gehoert.
+     *
+     * Was hier NICHT geprueft wird: ob ein Mikrofon etwas versteht. Das
+     * geht nur auf dem Geraet, und genau das ist M4r. Geprueft wird der
+     * ZUSTAND drumherum: dass man das Zuhoeren wieder beenden kann, dass
+     * ein Ende ohne Ergebnis sichtbar wird und dass ein zweiter Erkenner
+     * nicht neben dem ersten laeuft.
+     *
+     * Genau daran lag der Fehler vom Zielgeraet (F13): der Knopf startete
+     * und vergass. `start()` wirft hier deshalb absichtlich, wenn schon
+     * einer laeuft - wie es die Browser tun. */
+    window.__erk = { gestartet: 0, gestoppt: 0, laeuft: null };
+    class ErkNachbau {
+      start(){
+        if (window.__erk.laeuft) throw new Error('recognition already started');
+        window.__erk.gestartet++; window.__erk.laeuft = this;
+      }
+      stop(){
+        if (window.__erk.laeuft !== this) return;
+        window.__erk.gestoppt++; window.__erk.laeuft = null;
+        if (this.onend) this.onend();
+      }
+      abort(){ this.stop(); }
+    }
+    window.SpeechRecognition = ErkNachbau;
+    /** Etwas sagen. `final:false` ist ein Zwischenergebnis. */
+    window.__sprich = (text, final = true) => {
+      const e = window.__erk.laeuft;
+      if (!e || !e.onresult) return false;
+      const treffer = [{ transcript: text, confidence: 0.9 }];
+      treffer.isFinal = final;
+      e.onresult({ results: [treffer] });
+      return true;
+    };
+    /** Das Betriebssystem beendet die Erkennung von selbst - ohne Ergebnis. */
+    window.__endeVonSelbst = () => {
+      const e = window.__erk.laeuft;
+      if (!e) return false;
+      window.__erk.laeuft = null;
+      if (e.onend) e.onend();
+      return true;
+    };
   });
   // `?flott` kuerzt die Schaupausen. Der Abschnitt `pausen` braucht die
   // Seite OHNE den Schalter - sonst misst er die Abkuerzung statt der Sache.
@@ -527,7 +570,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang',
-                    'pausen', 'schreiben', 'hinweis'];
+                    'pausen', 'schreiben', 'hinweis', 'sprechen'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
   const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
@@ -2765,6 +2808,114 @@ if (laeuft('hinweis')) try {
   }
   await p.close();
 } catch (e) { merke('hinweis', e); }
+
+
+/* --- Sprechen: der Weg heraus (F13) ------------------------------------
+ *
+ * Gemeldet vom Zielgerät: „Sprachmodus an, im Spiel auf das Mikrofon
+ * getippt, es ging los, reingesprochen — und ich konnte den Modus nicht
+ * beenden. Es kam keine Auswertung."
+ *
+ * Der Knopf war ein Einwegschalter: er baute einen Erkenner, startete ihn
+ * und vergaß ihn. Kein `stop()`, kein `onend`, keine Frist — und der
+ * atmende Ring lief immer, auch wenn gar nicht zugehört wurde.
+ *
+ * Geprüft wird hier der ZUSTAND, nicht das Verstehen. Ob ein Mikrofon
+ * etwas versteht, geht nur auf dem Gerät (M4r); dass man aus dem Zuhören
+ * wieder herauskommt, geht hier — und genau das hat gefehlt.
+ */
+if (laeuft('sprechen')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  // Der Sprachmodus steht im Elternbereich. Hier wird er gesetzt, wo er
+  // liegt - sonst kostet jede Prüfung vier Ziffern und drei Bildschirme.
+  await p.evaluate(() => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onupgradeneeded = () => {
+      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+    };
+    auf.onsuccess = () => {
+      const t = auf.result.transaction(['einstellungen'], 'readwrite');
+      t.objectStore('einstellungen').put({ sprachmodus: true }, 'alles');
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }));
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('[data-profil="fiona"]');
+  await p.click('[data-profil="fiona"]');
+  await zurEbenenwahl(p, 'kontinente');
+  await p.click('[data-ebene="kontinente"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
+  await durchVorlaufWenn(p);
+  await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+
+  const mikro = await p.$('.schirm.da #mikro');
+  if (!mikro) {
+    merke('sprechen', new Error('bei eingeschaltetem Sprachmodus steht kein Mikrofon '
+      + 'auf dem Spielbildschirm — dann ist Fionas zweiter Eingabeweg gar nicht da'));
+  } else {
+    const zustand = () => p.evaluate(() => ({
+      hoert: !!document.querySelector('.schirm.da #mikro.hoert'),
+      satz: document.querySelector('.schirm.da #sprachstand')?.textContent.trim() || '',
+      erk: window.__erk,
+    }));
+
+    // 1. Antippen: es geht los, und man SIEHT es.
+    await p.click('.schirm.da #mikro');
+    let z = await zustand();
+    if (!z.hoert)
+      merke('sprechen', new Error('nach dem Antippen sieht man dem Mikrofon nicht an, '
+        + 'dass zugehört wird — der Ring atmete vorher immer, auch wenn nichts lief'));
+    if (z.erk.gestartet !== 1)
+      merke('sprechen', new Error(`${z.erk.gestartet} Erkenner gestartet statt einem`));
+    if (!/höre/.test(z.satz))
+      merke('sprechen', new Error(`beim Zuhören steht „${z.satz}" da`));
+
+    // 2. NOCH EINMAL antippen: das ist „fertig". Genau das fehlte.
+    await p.click('.schirm.da #mikro');
+    z = await zustand();
+    if (z.erk.gestoppt !== 1)
+      merke('sprechen', new Error('ein zweiter Tipp auf das Mikrofon beendet das Zuhören '
+        + 'nicht — man kommt aus dem Modus nicht mehr heraus. Genau das war der Befund'));
+    if (z.hoert)
+      merke('sprechen', new Error('nach dem Beenden atmet der Ring weiter — '
+        + 'die App sieht aus, als hörte sie zu, während sie es nicht tut'));
+    if (/… ich höre/.test(z.satz))
+      merke('sprechen', new Error(`nach dem Beenden steht immer noch „${z.satz}" da`));
+
+    // 3. Das Betriebssystem beendet von selbst, ohne Ergebnis. Auf iOS ist
+    //    das der Normalfall bei Stille - und vorher blieb die Zeile stehen.
+    await p.click('.schirm.da #mikro');
+    const vonSelbst = await p.evaluate(() => window.__endeVonSelbst());
+    z = await zustand();
+    if (!vonSelbst)
+      merke('sprechen', new Error('der zweite Anlauf hat gar nicht erst zugehört — '
+        + 'ein zweiter Erkenner neben dem ersten'));
+    if (z.hoert || /… ich höre/.test(z.satz))
+      merke('sprechen', new Error(`endet die Erkennung ohne Ergebnis, bleibt „${z.satz}" `
+        + 'stehen — ein Zustand, aus dem es keinen Ausgang gibt'));
+
+    // 4. Und der Weg, um den es eigentlich geht: gesprochen, ausgewertet.
+    const name = await p.evaluate(() => {
+      const z = document.querySelector('.schirm.da path.ziel');
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
+    });
+    await p.click('.schirm.da #mikro');
+    await p.evaluate((n) => window.__sprich(n, false), name);
+    const zwischen = (await zustand()).satz;
+    await p.evaluate((n) => window.__sprich(n, true), name);
+    const gewertet = await bis(p,
+      () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+    if (!gewertet)
+      merke('sprechen', new Error(`„${name}" gesprochen und nichts gewertet — `
+        + `auf dem Bildschirm steht „${(await zustand()).satz}"`));
+    else console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
+      + `„${name}" gewertet (zwischendurch: „${zwischen}")`);
+  }
+  await p.close();
+} catch (e) { merke('sprechen', e); }
 
 await ctx.close(); await b.close(); server.close();
 

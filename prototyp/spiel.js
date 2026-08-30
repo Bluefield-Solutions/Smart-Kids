@@ -2567,19 +2567,104 @@ function spielschirm(){
     status.textContent='Sprechen geht in diesem Browser nicht — sag es laut, dann zieh.';
     werkzeug.appendChild(status);
   }
+  /* Der Sprachweg - und warum er einen Zustand braucht (F13).
+   *
+   * Gemeldet vom Zielgeraet, gefunden von keinem Tor: „Ich habe den
+   * Sprachmodus angeschaltet, im Spiel auf das Mikrofon getippt, es ging
+   * los, ich habe reingesprochen - und konnte den Modus nicht mehr
+   * beenden. Es kam keine Auswertung."
+   *
+   * Nachgesehen: der Knopf war ein EINWEG-Schalter. Er baute bei jedem
+   * Tipp einen neuen Erkenner, startete ihn und vergass ihn sofort. Damit
+   * fehlten drei Dinge auf einmal, und jedes einzelne haette gereicht:
+   *
+   *   1. KEIN AUSSTIEG. Es gab nirgends ein `stop()`. Wer fertig
+   *      gesprochen hatte, konnte das der App nicht sagen. Ein zweiter
+   *      Tipp baute einen ZWEITEN Erkenner neben den ersten - auf iOS
+   *      wirft das, und der Fang war weg.
+   *   2. KEIN `onend`. Endet die Erkennung ohne Ergebnis - Stille, ein
+   *      Abbruch durch das Betriebssystem, ein Wechsel in eine andere
+   *      App -, dann feuert `onresult` nie. Die Zeile „… ich hoere" blieb
+   *      stehen, fuer immer. Genau das war zu sehen.
+   *   3. KEINE FRIST. Ohne Ergebnis und ohne Ende wartete die Anzeige
+   *      unbegrenzt.
+   *
+   * Dazu ein vierter, den man nur sieht: der atmende Ring am Mikrofon lief
+   * IMMER, auch wenn gar nicht zugehoert wurde. Die App sah also aus, als
+   * hoerte sie zu, waehrend sie es nicht tat - und als hoerte sie weiter
+   * zu, nachdem sie aufgehoert hatte. Der Ring atmet jetzt nur noch
+   * waehrend des Zuhoerens.
+   *
+   * Der Knopf ist deshalb ein SCHALTER: der erste Tipp hoert zu, der
+   * zweite sagt „fertig". Und jeder Weg heraus - Ergebnis, Fehler, Ende,
+   * Frist - fuehrt durch `aufhoeren()`, damit es keinen Zustand gibt, aus
+   * dem man nicht herauskommt.
+   */
   if (kannSprechen && Erk) {
     const mik=el('button','mikro',MIKRO);
-    const status=el('div','unter'); status.style.fontSize='var(--s-klein)';
-    {
-      mik.onclick=()=>{
-        const e=new Erk(); e.lang='de-DE'; e.interimResults=false; e.maxAlternatives=3;
-        status.textContent='… ich höre';
-        e.onresult=(ev)=>{ const roh=ev.results[0][0].transcript;
-          status.textContent=`gehört: „${roh}“`; bewerte(roh,'sprechen',{status}); };
-        e.onerror=()=>{ status.textContent='Das hat nicht geklappt — sag es noch einmal.'; };
-        try{ e.start(); }catch(err){ status.textContent='Mikrofon nicht verfügbar.'; }
+    mik.id = 'mikro';
+    mik.setAttribute('aria-label','Antwort sprechen');
+    const status=el('div','unter'); status.id='sprachstand';
+    status.style.fontSize='var(--s-klein)';
+    /* Wie lange hoechstens zugehoert wird.
+     *
+     * Nicht laenger: ein Kind spricht einen Landesnamen in zwei Sekunden.
+     * Nicht kuerzer: „Australien und Ozeanien" mit einer Denkpause davor
+     * braucht seine Zeit, und ein Fenster, das mitten im Wort zufaellt,
+     * ist schlimmer als eines, das zu lange offen steht. */
+    const HOERDAUER = 8000;
+    let laeuft = null, uhr = null, gehoert = false;
+    /** Der EINE Weg heraus. Jeder Ausgang geht hier durch. */
+    const aufhoeren = (satz) => {
+      if (uhr) { clearTimeout(uhr); uhr = null; }
+      laeuft = null;
+      mik.classList.remove('hoert');
+      mik.setAttribute('aria-label','Antwort sprechen');
+      if (satz) status.textContent = satz;
+    };
+    mik.onclick=()=>{
+      // Zweiter Tipp heisst „fertig". `stop()` liefert das, was bis hierher
+      // verstanden wurde - anders als `abort()`, das es wegwirft.
+      if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }
+      const e=new Erk();
+      e.lang='de-DE'; e.maxAlternatives=3; e.continuous=false;
+      // Zwischenergebnisse: sie beweisen dem Kind, dass etwas ankommt.
+      // Wo der Browser sie nicht kann, aendert die Zeile nichts.
+      e.interimResults=true;
+      gehoert = false;
+      e.onresult=(ev)=>{
+        const r = ev.results[ev.results.length-1];
+        const roh = String(r[0].transcript).trim();
+        if (!r.isFinal) { status.textContent = `… ${roh}`; return; }
+        gehoert = true;
+        status.textContent=`gehört: „${roh}“`;
+        try{ e.stop(); }catch(err){}
+        aufhoeren();
+        bewerte(roh,'sprechen',{status});
       };
-    }
+      e.onerror=(ev)=>{
+        const was = ev && ev.error;
+        aufhoeren(
+          was==='not-allowed' || was==='service-not-allowed'
+            ? 'Das Mikrofon ist nicht erlaubt. Bitte in den Einstellungen freigeben.'
+          : was==='no-speech'
+            ? 'Ich habe nichts gehört — tipp noch mal und sag es laut.'
+            : 'Das hat nicht geklappt — tipp noch mal auf das Mikrofon.');
+      };
+      // Der Ausgang, der gefehlt hat. Er kommt IMMER - auch wenn das
+      // Betriebssystem die Erkennung von sich aus beendet.
+      e.onend=()=>{ if (gehoert) aufhoeren();
+        else aufhoeren('Fertig. Ich habe nichts verstanden — tipp noch mal auf das Mikrofon.'); };
+      try{
+        e.start();
+        laeuft = e;
+        mik.classList.add('hoert');
+        mik.setAttribute('aria-label','Fertig — das Gesagte prüfen');
+        status.textContent='… ich höre. Tipp noch mal, wenn du fertig bist.';
+        uhr = setTimeout(()=>{ if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } } },
+          HOERDAUER);
+      }catch(err){ aufhoeren('Mikrofon nicht verfügbar.'); }
+    };
     werkzeug.appendChild(mik); liste.appendChild(status);
   }
 

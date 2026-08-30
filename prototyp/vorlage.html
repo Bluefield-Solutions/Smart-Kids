@@ -848,8 +848,18 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .reihe{display:flex;gap:var(--r2);align-items:center;justify-content:center;flex-wrap:wrap}
 .mikro{width:76px;height:76px;border-radius:var(--rund-voll);background:var(--akzent);border:none;
   display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;position:relative}
+/* Der Ring atmet NUR, waehrend wirklich zugehoert wird (F13).
+   Vorher lief er immer. Die App sah damit aus, als hoerte sie zu, waehrend
+   sie es nicht tat - und als hoerte sie weiter zu, nachdem sie aufgehoert
+   hatte. Ein Zustand, den man sieht und der nicht stimmt, ist schlimmer
+   als keiner: der Nutzer wartet auf etwas, das nicht kommt. */
 .mikro::after{content:"";position:absolute;inset:-8px;border-radius:var(--rund-voll);
-  border:var(--strich-kueste) solid var(--akzent);opacity:.3;animation:atmen var(--d-atmen) ease-in-out infinite}
+  border:var(--strich-kueste) solid var(--akzent);opacity:.18}
+.mikro.hoert::after{opacity:.3;animation:atmen var(--d-atmen) ease-in-out infinite}
+/* Und waehrend des Zuhoerens ist der Knopf ein anderer: er sagt jetzt
+   „fertig", nicht mehr „sprich". */
+.mikro.hoert{background:var(--gut)}
+@media (prefers-reduced-motion:reduce){.mikro.hoert::after{animation:none;opacity:.45}}
 @keyframes atmen{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.08);opacity:.1}}
 .tonaus{background:var(--tinte-3)}
 .tonaus::after{display:none}

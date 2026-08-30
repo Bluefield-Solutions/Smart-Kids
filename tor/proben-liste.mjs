@@ -1560,4 +1560,31 @@ export const PROBEN = [
     such:"if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';",
     ersatz:"if (false) ergebnis='richtig';",
     an:{ ...DIST, text:"if (false) ergebnis='richtig';" }, sagt:'' },
+
+  /* --- F13: der Sprachmodus hatte keinen Ausgang ---------------------
+   *
+   * Gemeldet vom Zielgeraet: Mikrofon angetippt, hineingesprochen - und
+   * dann ging es nicht mehr weiter. Drei Ausgaenge fehlten auf einmal;
+   * die beiden, die der Rauchtest nachstellen kann, stehen hier.
+   */
+
+  // 1. Der zweite Tipp heisst „fertig". Ohne ihn baut ein zweiter Tipp
+  //    einen ZWEITEN Erkenner neben den ersten - auf iOS wirft das, und
+  //    das Gesagte ist weg. Genau der gemeldete Zustand.
+  { n:'aus dem Sprachmodus kommt man nicht mehr heraus', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"      if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }\n",
+    ersatz:'',
+    an:{ ...DIST, fehlt:"if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }" },
+    sagt:'' },
+
+  // 2. Endet die Erkennung von selbst - Stille, ein Abbruch durch das
+  //    Betriebssystem -, feuert `onresult` nie. Ohne `onend` bleibt
+  //    „… ich hoere" fuer immer stehen.
+  { n:'endet die Erkennung von selbst, merkt die App es nicht', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"      e.onend=()=>{ if (gehoert) aufhoeren();\n        else aufhoeren('Fertig. Ich habe nichts verstanden \u2014 tipp noch mal auf das Mikrofon.'); };\n",
+    ersatz:'      e.onend=()=>{};\n',
+    an:{ ...DIST, text:'e.onend=()=>{};' },
+    sagt:'' },
 ];
