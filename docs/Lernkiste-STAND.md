@@ -4086,20 +4086,31 @@ Stelle, an der diese Fehlerklasse überhaupt auffällt. Läuft er nicht, oder
 schaut niemand ins Protokoll, verfällt der Beweiswert schleichend — genau
 das, was `rhythmus` messen soll und was ihm hier selbst passiert ist.
 
-**Nachgesehen statt vermutet:** der Arbeitsablauf `Gegenproben`
-(`.github/workflows/proben.yml`) ist angelegt und aktiv, aber
-**`total_count: 0`** — er hat noch **kein einziges Mal** gelaufen. Er wurde
-am 29.08. abends eingerichtet, seine erste planmäßige Zündung (`0 2 * * *`)
-steht also noch aus. Das erklärt den Rückstand vollständig und ohne
-Verschwörung: die Regelung ist einen Tag alt.
+**Nachgesehen statt vermutet — und die erste Antwort war falsch.** Beim
+ersten Blick meldete die Liste der Läufe `total_count: 0`; daraus stand hier
+„hat noch nie gelaufen". Eine Stunde später standen dort **zwei** Läufe, und
+der erste war der **planmäßige** von 08:02 UTC. Eine Zahl aus einer Liste,
+die noch nicht vollständig ist, sieht aus wie ein Befund.
 
-Offen bleibt damit aber, ob sie **funktioniert** — vor allem das
-Zurückschreiben des Stands (`git push` aus dem Lauf heraus, mit
-`permissions: contents: write`). Das zeigt sich beim ersten Lauf, und wenn
-es nicht klappt, merkt es niemand: der Lauf ist grün, der Stand veraltet
-weiter, und `rhythmus` steht in keiner Kette, die jemand fährt. Ein
-Handstart (`workflow_dispatch` ist eingeschaltet) würde es in einer
-Dreiviertelstunde beantworten.
+Was der planmäßige Lauf wirklich sagt, Schritt für Schritt:
+
+| Schritt | Ergebnis |
+|---|---|
+| Alle Gegenproben (28 min) | rot — genau die sieben stummen Proben von oben |
+| **Stand zurückschreiben** | **grün**, Commit „Probenstand (nächtlicher Lauf)" |
+| Was nicht angeschlagen hat | rot, wie vorgesehen |
+
+Damit ist die offene Frage beantwortet: **das Zurückschreiben funktioniert**
+(`git push` aus dem Lauf heraus, `permissions: contents: write`). Und die
+Regelung hat beim allerersten Mal genau das getan, wofür sie da ist — sie
+hat die sieben stummen Gegenproben gemeldet, in derselben Nacht, in der sie
+zum ersten Mal lief.
+
+Eine Feinheit im Protokoll, die täuschen kann: der Schritt „Alle
+Gegenproben" trägt `continue-on-error: true`. Seine **conclusion** ist
+deshalb `success`, auch wenn er rot war — der rohe Ausgang steht in
+**outcome**, und nur der letzte Schritt macht den Lauf rot. Wer auf die
+conclusion sieht, liest grün, wo rot steht.
 
 ---
 
