@@ -272,6 +272,7 @@ async function fahnePruefen(p, wo) {
              drin: b.left >= -1 && b.right <= innerWidth + 1
                 && b.top >= -1 && b.bottom <= innerHeight + 1,
              nebenKarte: !(b.left >= svg.left - 1 && b.right <= svg.right + 1),
+             zeilen: t.querySelectorAll('tspan').length || 1,
              hoch: +b.height.toFixed(0) };
   });
   if (!f) { merke('fahne', new Error(`${wo}: kein Name auf der Karte`)); return null; }
@@ -282,7 +283,21 @@ async function fahnePruefen(p, wo) {
     merke('fahne', new Error(`${wo}: „${f.text}" steht außerhalb des Bildschirms `
       + '(Foto: /tmp/smoke-fahne-raus.png)'));
   }
-  if (f.nebenKarte) nebenKarte.add(f.text);
+  /* Seit die Fahne umbricht, hat sie im Kartenfeld Platz - auch auf dem
+   * Zielgeraet, wo die Deutschlandkarte 170 Punkte breit ist. Vorher war
+   * das eine Auskunft („1 davon neben der Karte"), jetzt ist es eine
+   * Zusage.
+   *
+   * Sie gilt nicht unbedingt: ein einzelnes langes Wort laesst sich nicht
+   * trennen, und dafuer steht die Fahne mittig ueber. Kommt so ein Name
+   * dazu, meldet es sich HIER - und dann ist zu entscheiden, ob getrennt
+   * oder verkleinert wird. Schweigen waere die schlechtere Antwort. */
+  if (f.nebenKarte) {
+    await p.screenshot({ path: '/tmp/smoke-fahne-neben.png' }).catch(() => {});
+    merke('fahne', new Error(`${wo}: „${f.text}" steht neben der Karte statt darin — `
+      + 'der Umbruch hat nicht gereicht (Foto: /tmp/smoke-fahne-neben.png)'));
+  }
+  if (f.zeilen > 1) umgebrochen.add(f.text);
   if (f.hoch < 14) merke('fahne', new Error(`${wo}: „${f.text}" nur ${f.hoch} pt hoch`));
   return f.art;
 }
@@ -494,8 +509,8 @@ let geloest = [];
 const sternVerlauf = [], bandVerlauf = [];
 let endSterne = null, kleberMoment = 0;
 const fahnenArten = new Set();
-/** Namen, die neben der Karte stehen statt darin. Auskunft, kein Befund. */
-const nebenKarte = new Set();
+/** Namen, die auf zwei Zeilen umbrechen mussten. Auskunft. */
+const umgebrochen = new Set();
 let durchgespielt = 0;
 if (laeuft('spielen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
@@ -1326,11 +1341,20 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
  * aus der der Test schon liest, ob die Antwort ueberhaupt durchkam. Es
  * kostet also nichts extra, und es prueft die eine Eigenschaft, die den
  * Ton ausmacht. */
-function lobPruefen(wer, ebene, satz) {
-  if (!SACHLICH.has(wer) || !satz) return;
-  if (/!/.test(satz)) merke('durchgang', new Error(
+function lobPruefen(wer, ebene, satz, gesprochen) {
+  if (!SACHLICH.has(wer)) return;
+  if (satz && /!/.test(satz)) merke('durchgang', new Error(
     `${wer}/${ebene}: das Lob ruft — „${satz.replace(/^✓ /, '')}". `
     + 'Das Profil steht im Backlog auf „sachlich"'));
+  /* Und es wird ueberhaupt nichts gesagt.
+   *
+   * Zwei Achsen: `vorlesen` gilt der ANSAGE der Aufgabe, der `ton` allem,
+   * was die App von sich aus sagt. Bei „sachlich" schweigt sie ganz -
+   * kein Lob, kein Hinweis, keine Nachfrage. Gelesen wird NACH der
+   * Antwort, denn auf ein Ausbleiben kann man nicht warten. */
+  if (gesprochen) merke('durchgang', new Error(
+    `${wer}/${ebene}: die App spricht — „${gesprochen.slice(0, 60)}". `
+    + 'Bei „sachlich" sagt sie von sich aus nichts'));
 }
 
 const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'],
@@ -1495,7 +1519,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
         });
         if (!/^✓ /.test(rr || ''))
           merke('durchgang', new Error(`${wer}/${ebene}: ${r.soll} angetippt → „${rr}"`));
-        lobPruefen(wer, ebene, rr);
+        lobPruefen(wer, ebene, rr, gesagtR);
         durchgespielt++;
         await weitergegangen(p);
         await raus(p);
@@ -1574,7 +1598,7 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
       if (!/^✓ /.test(r || ''))
         merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
           + `${z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'} → „${r}"`));
-      lobPruefen(wer, ebene, r);
+      lobPruefen(wer, ebene, r, gesagt);
       durchgespielt++;
       await weitergegangen(p);
       await raus(p);
@@ -1665,7 +1689,7 @@ console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${
 
 if (laeuft('spielen')) {
 console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`
-  + (nebenKarte.size ? `, ${nebenKarte.size} davon neben der Karte` : ''));
+  + (umgebrochen.size ? `, ${umgebrochen.size} umgebrochen (${[...umgebrochen].join(', ')})` : ''));
 // Der schwaechere der beiden Bildschirme, im schlimmsten Bild des Wechsels.
 // 0,20 laesst den Rand der Ueberblendung zu und faengt das Doppelbild:
 // blenden beide gleichzeitig, treffen sie sich bei etwa 0,5.

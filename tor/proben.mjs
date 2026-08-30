@@ -581,6 +581,32 @@ const PROBEN = [
     an:{ datei:'src/geo/staedte.js', fehlt:'"beschriftung":"innen"' },
     sagt:'nur die Sorte' },
 
+  /* --- Umbruch der Fahne und die zwei Achsen des Sprechens ------------- */
+  // Die Fahne bricht nicht mehr um.
+  //
+  // Auf dem Zielgeraet ist die Deutschlandkarte 170 Punkte breit,
+  // „Mecklenburg-Vorpommern" bei 21 px Schrift 260. Ohne Umbruch laesst
+  // sie sich nicht mehr in die Karte klemmen und haengt heraus. Gesehen
+  // hat das erst der Rauchtest, seit er die Groesse misst, die er nennt.
+  { n:'die Namensfahne bricht nicht mehr um', tor:'smoke', bauen:true,
+    args:['--nur=spielen'], datei:D,
+    such:'  if (!passt && tb.width + luft*2 > vbB.width * 0.98) {',
+    ersatz:'  if (false) {',
+    an:{ ...DIST, fehlt:'vbB.width * 0.98' },
+    sagt:'steht neben der Karte' },
+  // Und die App redet wieder an jedem Profil vorbei.
+  //
+  // Zwei Achsen: `vorlesen` gilt der Ansage der Aufgabe, der `ton` allem,
+  // was die App von sich aus sagt. Faellt die zweite aus, bekommen die
+  // Eltern „Super gemacht!" ins Ohr - und Lea auch, obwohl ihr Profil
+  // `vorlesen: false` sagt.
+  { n:'die App spricht an jedem Profil vorbei', tor:'smoke', bauen:true,
+    args:['--nur=durchgang', '--kurz'], datei:D,
+    such:'function sagen(text){ if (!P || ton().spricht) vorlesen(text); }',
+    ersatz:'function sagen(text){ vorlesen(text); }',
+    an:{ ...DIST, fehlt:'if (!P || ton().spricht) vorlesen(text)' },
+    sagt:'die App spricht' },
+
   /* --- Der Elternbereich kennt drei Profile (R7) ----------------------- */
   // Das Protokoll kennt den Vorrat der Eltern nicht.
   //

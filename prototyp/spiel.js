@@ -221,6 +221,26 @@ function vorlesen(text){
  */
 function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }
 
+/* Was die App VON SICH AUS sagt: das Lob, die Hinweise beim Ziehen, die
+ * Nachfrage vor dem Loeschen, die Bestaetigung des Namens.
+ *
+ * Zwei Achsen, und sie meinen Verschiedenes:
+ *
+ *   `vorlesen`  „lies mir die AUFGABE vor, ich kann noch nicht lesen"
+ *               - eine Hilfe. Nur Fiona braucht sie.
+ *   `ton`       „wie redet die App mit mir, wenn sie von sich aus redet"
+ *               - kindlich darf jubeln, sachlich schweigt.
+ *
+ * Dreizehn Stellen riefen bis hierher `vorlesen` unbedingt und damit an
+ * jedem Profil vorbei. Lea traegt `vorlesen: false` und hoerte trotzdem
+ * jedes Lob; die Eltern bekamen „Super gemacht!" ins Ohr. Aufgefallen ist
+ * das nie, weil der Rauchtest nur die ANSAGE der Aufgabe zaehlt.
+ *
+ * Was NICHT hierhergehoert: was jemand ausdruecklich angetippt hat, um es
+ * zu hoeren (die Karten im Vorlauf, die Aufkleber im Buch, die Stimmprobe
+ * im Elternbereich). Eine Bitte wird nicht vom Profil beantwortet. */
+function sagen(text){ if (!P || ton().spricht) vorlesen(text); }
+
 /** Eine Aufzaehlung, wie man sie spricht: „A, B, C oder D". */
 const aufzaehlen = (namen) => namen.length < 2 ? (namen[0] || '')
   : namen.slice(0, -1).join(', ') + ' oder ' + namen[namen.length - 1];
@@ -249,6 +269,7 @@ const aufzaehlen = (namen) => namen.length < 2 ? (namen[0] || '')
  * `vorlesen` oder `streng`, nicht eine Abfrage auf den Namen. */
 const TON = {
   kind: {
+    spricht: true,
     lob:  ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
            'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'],
     ende: 'Geschafft!',
@@ -256,6 +277,7 @@ const TON = {
     neueKleber: (n) => `${n} neu${n === 1 ? '' : 'e'}!`,
   },
   sachlich: {
+    spricht: false,
     lob:  ['Richtig.', 'Stimmt.', 'Korrekt.', 'Sitzt.'],
     ende: 'Sitzung beendet.',
     ersterKleber: 'Ab dem zweiten Mal richtig kommt ein Gebiet ins Buch.',
@@ -728,7 +750,7 @@ function profilwahl(){
     e.target.textContent=Einst.abend?'Abend':'Tag'; };
   s.querySelectorAll('[data-profil]').forEach(b=>b.onclick=()=>{
     P=PROFILE[b.dataset.profil]; Ablage.setze('profile',P.id,{ id:P.id, zuletzt:Date.now() }).catch(()=>{});
-    vorlesen(P.name); zeige(weltenwahl); });
+    sagen(P.name); zeige(weltenwahl); });
   // Hier ist noch kein Kind gewaehlt - also wird immer angesagt. Wer lesen
   // kann, hoert einen Satz zuviel; wer nicht liest, kaeme sonst nicht los.
   ansagen(`Wer möchte spielen? ${aufzaehlen(Object.values(PROFILE).map(x=>x.name))}?`);
@@ -864,12 +886,12 @@ async function ebenenwahl(){
       // eine Nachfrage, die das Raster zerreisst, sieht aus wie ein Fehler.
       // Um WAS es geht, steht in der Kachel direkt darueber.
       b.textContent='Wirklich löschen?';
-      vorlesen(`Soll ${titel} wirklich von vorne losgehen?`);
+      sagen(`Soll ${titel} wirklich von vorne losgehen?`);
       return;
     }
     await Ablage.loesche('fortschritt', `${P.id}:${id}`).catch(()=>{});
     if (Sitzung && Sitzung.ebeneId===id) Stand = {};
-    vorlesen(`${titel} fängt wieder von vorne an.`);
+    sagen(`${titel} fängt wieder von vorne an.`);
     zeige(ebenenwahl);
   });
   ansagen(`${welt.name}. Womit möchtest du anfangen? `
@@ -1217,7 +1239,7 @@ function pauseSchirm(){
       knopf.textContent = 'Wirklich löschen?';
       s.querySelector('#was').textContent =
         `Alle Häkchen in ${titel} sind dann weg, und es geht bei der ersten Aufgabe los.`;
-      vorlesen(`Soll ${titel} wirklich von vorne losgehen?`);
+      sagen(`Soll ${titel} wirklich von vorne losgehen?`);
       return;
     }
     // Der Fortschritt liegt in der Ablage, die Haekchen haengen am
@@ -1226,7 +1248,7 @@ function pauseSchirm(){
     // begaenne die neue Runde mit den alten Faechern.
     await Ablage.loesche('fortschritt', `${P.id}:${Sitzung.ebeneId}`).catch(()=>{});
     Stand = {};
-    vorlesen(`${titel} fängt wieder von vorne an.`);
+    sagen(`${titel} fängt wieder von vorne an.`);
     starten(Sitzung.ebeneId);
   };
   ansagen('Pause. Weiterspielen, Übung beenden, oder von vorne anfangen?');
@@ -1351,7 +1373,7 @@ function rechenschirm(){
     const satz = `Kein Problem. ${ziel.frage} = ${ziel.wert}.`;
     const f = s.querySelector('#frage');
     if (f) f.innerHTML = `<span class="loesung">${satz}</span>`;
-    vorlesen(`Kein Problem. ${ziel.geloest}.`);
+    sagen(`Kein Problem. ${ziel.geloest}.`);
     standSichern(st.ebeneId);
     setTimeout(weiter, LOBPAUSE);
   }
@@ -1384,7 +1406,7 @@ function rechenschirm(){
       if (knopf) knopf.classList.add('stimmt');
       const spruch = lob();
       lobsatz(s, `${ziel.frage} = ${ziel.wert}.`, null, spruch, '', neuerAufkleber);
-      vorlesen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      sagen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
       setTimeout(weiter, LOBPAUSE);
       return;
     }
@@ -1397,7 +1419,7 @@ function rechenschirm(){
     const f = s.querySelector('#frage');
     const satz = 'Nicht ganz — probier es noch einmal.';
     if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
-    vorlesen(satz);
+    sagen(satz);
   }
 
   s.querySelectorAll('.zahl').forEach(k=>
@@ -1693,7 +1715,7 @@ function spielschirm(){
     const f = s.querySelector('#frage');
     const satz = `Kein Problem. Das ist ${ziel.name}.`;
     if (f) f.innerHTML = `<span class="loesung">${satz}</span>`;
-    vorlesen(satz);
+    sagen(satz);
     standSichern(st.ebeneId);
     setTimeout(()=>{ st.i++;
       if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm); }, LOBPAUSE);
@@ -1832,7 +1854,7 @@ function spielschirm(){
       Einst.antwortweise = { ...(Einst.antwortweise||{}), [P.id]: weise };
       await einstSichern();
       beschriften();
-      vorlesen(weise==='antippen' ? 'Jetzt kannst du antippen.' : 'Jetzt kannst du ziehen.');
+      sagen(weise==='antippen' ? 'Jetzt kannst du antippen.' : 'Jetzt kannst du ziehen.');
     };
     werkzeug.appendChild(um);
   }
@@ -2033,7 +2055,7 @@ function spielschirm(){
       // Kurz genug fuer eine Zeile: der Satz stand auf dem iPhone quer
       // zweizeilig am unteren Rand und schob die Antwortliste hoch.
       h.textContent='Lass es auf dem Land los.';
-      vorlesen('Lass es auf dem Land los.');
+      sagen('Lass es auf dem Land los.');
     };
     b.addEventListener('pointerdown',ev=>{
       if(b.classList.contains('weg')||start) return;
@@ -2122,7 +2144,7 @@ function spielschirm(){
       // Mal soweit ist. Jetzt hat der Aufkleber einen Augenblick.
       belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
                 neuerAufkleber);
-      vorlesen(ergebnis==='fast' ? text
+      sagen(ergebnis==='fast' ? text
         : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
     } else if (versuch >= 3) {
       // Nach dem dritten Fehlversuch wird aufgeloest. Ein Kind, das
@@ -2143,7 +2165,7 @@ function spielschirm(){
       else if (ctx.status) ctx.status.textContent=text;
       else { let h=liste.querySelector('.hinweis');
         if(!h){ h=el('div','hinweis nochmal'); liste.appendChild(h); } h.textContent=text; }
-      vorlesen(text);
+      sagen(text);
     }
 
     Protokoll.schreiben(Protokoll.eintrag({
@@ -2270,14 +2292,72 @@ function nameAufDieKarte(s, ziel){
   const luft    = 9  / k;
 
   const text = knoten('text', { x:0, y:0, 'text-anchor':'middle',
-    'dominant-baseline':'central', 'font-size':SCHRIFT, class:'fahnentext' },
-    ziel.name);
+    'dominant-baseline':'central', 'font-size':SCHRIFT, class:'fahnentext' });
   g.appendChild(text);
-  const tb = text.getBBox();
-  const b = tb.width, h = tb.height;
 
+  /* Der Name wird gesetzt - einzeilig oder in zwei Zeilen.
+   *
+   * Jede Zeile ist ein eigenes `tspan` mit eigenem `x`; sonst zoege das
+   * `x` des Textknotens die zweite Zeile nicht mit, wenn die Fahne
+   * spaeter verschoben wird. */
+  const setzen = (zeilen, x = 0) => {
+    text.textContent = '';
+    text.setAttribute('x', x);
+    if (zeilen.length === 1) { text.textContent = zeilen[0]; return; }
+    zeilen.forEach((z, i) => text.appendChild(knoten('tspan',
+      { x, dy: i === 0 ? -SCHRIFT * 0.55 : SCHRIFT * 1.1 }, z)));
+  };
+
+  /* Wo bricht ein Name um?
+   *
+   * Am BINDESTRICH oder an einer LUECKE, und zwar an der Stelle, die der
+   * Mitte am naechsten liegt - „Mecklenburg-" / „Vorpommern", nicht
+   * „Mecklenburg-Vorpom-" / „mern". Ein einzelnes langes Wort wird NICHT
+   * getrennt: dafuer braeuchte es ein Woerterbuch, und eine falsche
+   * Trennfuge liest sich schlimmer als eine breite Fahne.
+   *
+   * Der Bindestrich bleibt am Ende der ersten Zeile stehen, wie es sich
+   * gehoert: „Nordrhein-" / „Westfalen".
+   */
+  const umbrechen = (name) => {
+    const mitte = name.length / 2;
+    let beste = null, abstand = Infinity;
+    for (let i = 0; i < name.length; i++) {
+      if (name[i] !== '-' && name[i] !== ' ') continue;
+      const d = Math.abs(i - mitte);
+      if (d < abstand) { abstand = d; beste = i; }
+    }
+    if (beste === null) return [name];
+    return name[beste] === '-'
+      ? [name.slice(0, beste + 1), name.slice(beste + 1)]
+      : [name.slice(0, beste), name.slice(beste + 1)];
+  };
+
+  let zeilen = [ziel.name];
+  setzen(zeilen);
+  let tb = text.getBBox();
   const fb = flaeche.getBBox();
-  const passt = b + luft*2 <= fb.width * 0.92 && h + luft*1.4 <= fb.height * 0.7;
+  const passt = tb.width + luft*2 <= fb.width * 0.92
+             && tb.height + luft*1.4 <= fb.height * 0.7;
+
+  /* Passt der Name nicht ins Gebiet UND ist die Fahne breiter als die
+   * ganze Karte, wird umgebrochen.
+   *
+   * Der Anlass steht im Bericht der Ton-Runde: auf dem Zielgeraet
+   * (844x390) ist die Deutschlandkarte rund 170 Bildschirmpunkte breit,
+   * „Mecklenburg-Vorpommern" bei 21 px Schrift 260. Die Fahne liess sich
+   * dann nicht mehr in die Karte klemmen - beide Seiten schoben
+   * gegeneinander, und der Name hing links heraus. Zweizeilig sind es
+   * rund 150 Punkte, und er passt.
+   *
+   * Gemessen wird gegen die Karte, nicht gegen den Bildschirm: neben der
+   * Karte stehen die Antwortknoepfe. */
+  const vbB = svg.viewBox.baseVal;
+  if (!passt && tb.width + luft*2 > vbB.width * 0.98) {
+    const zwei = umbrechen(ziel.name);
+    if (zwei.length === 2) { zeilen = zwei; setzen(zeilen); tb = text.getBBox(); }
+  }
+  const b = tb.width, h = tb.height;
 
   const rand = knoten('rect', { x:-b/2-luft, y:-h/2-luft*0.7,
     width:b+luft*2, height:h+luft*1.4, rx:(h/2+luft*0.7), class:'fahnenrand' });
@@ -2299,7 +2379,7 @@ function nameAufDieKarte(s, ziel){
      * oder ueber dem Gebiet fast immer da, und dort bleibt sie in
      * Sichtweite. Reihenfolge: unten, oben, dann erst daneben.
      */
-    const vb = svg.viewBox.baseVal;
+    const vb = vbB;
     const halbB = b/2 + luft, halbH = h/2 + luft*0.7;
     const senkrecht = fb.height/2 + halbH + luft*0.6;
     const drin = (v) => ziel.anker[1] + v - halbH >= vb.y
@@ -2310,14 +2390,25 @@ function nameAufDieKarte(s, ziel){
       const nachRechts = ziel.anker[0] < vb.x + vb.width/2;
       dx = (nachRechts ? 1 : -1) * (Math.max(fb.width, fb.height)/2 + halbB + luft*1.5);
     }
-    // Waagerecht in die Karte klemmen - so nah am Gebiet wie moeglich.
-    const links  = ziel.anker[0] + dx - halbB;
-    const rechts = ziel.anker[0] + dx + halbB;
-    if (links  < vb.x)             dx += vb.x - links;
-    if (rechts > vb.x + vb.width)  dx -= rechts - (vb.x + vb.width);
+    /* Waagerecht in die Karte klemmen - so nah am Gebiet wie moeglich.
+     *
+     * Ist die Fahne trotz Umbruch breiter als die Karte, schieben beide
+     * Klemmungen gegeneinander und die letzte gewinnt: der Name haengt
+     * dann auf EINER Seite heraus. Mittig ueberstehen ist in dem Fall das
+     * kleinere Uebel - und es ist auf jeder Seite gleich viel. */
+    if (2 * halbB > vb.width) {
+      dx = vb.x + vb.width / 2 - ziel.anker[0];
+    } else {
+      const links  = ziel.anker[0] + dx - halbB;
+      const rechts = ziel.anker[0] + dx + halbB;
+      if (links  < vb.x)             dx += vb.x - links;
+      if (rechts > vb.x + vb.width)  dx -= rechts - (vb.x + vb.width);
+    }
     rand.setAttribute('x', dx - halbB);
     rand.setAttribute('y', dy - halbH);
-    text.setAttribute('x', dx);
+    // Neu setzen mit verschobenem `x` - die Zeilen stehen in `zeilen`,
+    // nicht im DOM: `textContent` wuerde zwei Zeilen zu einer verkleben.
+    setzen(zeilen, dx);
     text.setAttribute('y', dy);
     // Die Linie darf bis in die Fahnenmitte laufen: der Rand wird DANACH
     // eingehaengt und deckt das innere Stueck ab.
