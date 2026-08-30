@@ -86,8 +86,14 @@ export const PROBEN = [
     sagt:'leiten sich aus' },
 
   /* --- schrift ------------------------------------------------------ */
+  /* Eindeutig: der Satz steht ZWEIMAL in spiel.js - einmal als Text im
+     Hinweis, einmal als Ansage. Welcher der beiden getroffen wurde, hing
+     an ihrer Reihenfolge. Fuer diese Probe ist es einerlei, welcher das
+     Zeichen bekommt - aber ein Suchtext, der zwei Stellen trifft, ist
+     genau die Sorte, die beim naechsten Umbau lautlos die andere trifft. */
   { n:'ein Zeichen außerhalb des geladenen Schnitts', tor:'inhalt', deckt:'schrift', datei:D,
-    such:"'Lass es auf dem Land los.'", ersatz:"'Lass es auf dem Land los. ☞'",
+    such:"h.textContent='Lass es auf dem Land los.'",
+    ersatz:"h.textContent='Lass es auf dem Land los. ☞'",
     an:{ datei:D, text:'☞' }, sagt:'ohne Schrift' },
 
   /* --- symbol ------------------------------------------------------- */
@@ -338,6 +344,20 @@ export const PROBEN = [
    *
    * Der haeufigste Verfall, und bis zu dieser Runde nur im vollen Lauf zu
    * sehen — zweiundvierzig Minuten, einmal am Tag. Jetzt in der Kette. */
+  /* Ein Suchtext wird zweideutig.
+   *
+   * Der Fall, den „steht der Text noch da" NICHT faengt: er steht noch da,
+   * aber jetzt zweimal. Welche Stelle `replace` verstellt, entscheidet ab
+   * dann ihre Reihenfolge. Der Eingriff hier legt eine zweite Fundstelle
+   * an - als Kommentarzeile, damit das Spiel selbst unveraendert bleibt
+   * und wirklich nur die Zweideutigkeit geprueft wird. */
+  { n:'ein Suchtext wird zweideutig', tor:'inhalt', deckt:'inhalt', datei:D,
+    such:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',
+    ersatz:'// const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;\n'
+         + 'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',
+    an:{ datei:D, text:'// const schauPause' },
+    sagt:'entscheidet ihre Reihenfolge' },
+
   /* Angefasst wird der GEPRUEFTE Code, nicht die Probenliste.
    *
    * Zwei Anlaeufe sind daran gescheitert, dass die Probe in die Liste
@@ -373,6 +393,11 @@ export const PROBEN = [
   { n:'der letzte Probenlauf liegt zu lange zurück', tor:'rhythmus', auchWennRot:true, brauchtStand:true, nachStand:true,
     umgebung:{ SMARTKIDS_RHYTHMUS_MAX:'-1' },
     datei:'tor/proben-stand.json',
+    // `mehrfach`: der Ausdruck trifft jeden Eintrag im Stand. Das ist hier
+    // egal, weil er NICHTS aendert - der Eingriff ist die Schraube in der
+    // Umgebung. Die Ersetzung steht nur da, damit der Lauf einen Eingriff
+    // sieht.
+    mehrfach:true,
     suchRegex:/"zeit": "([\d-]+)"/, ersatzFn:(m)=>`"zeit": "${m[1]}"`,   // unveraendert
     an:{ datei:'tor/proben-stand.json', regex:/"zeit": "[\d-]+"/ },
     // „älter als -1 Tage" und nicht nur „älter als": die Schraube auf -1
@@ -460,6 +485,9 @@ export const PROBEN = [
      * nicht, das Alter blieb bestimmbar, und die Probe meldete „rot, aber
      * nicht deswegen". Der Eingriff kam an und traf das Falsche - die
      * unauffaelligste Art, danebenzugreifen. */
+    // `mehrfach`: es gibt hundertzwanzig Eintraege, und EINER ohne
+    // gueltiges Datum genuegt. Welcher, ist gleichgueltig.
+    mehrfach:true,
     suchRegex:/"commit": "[0-9a-f]+",\n(\s*)"zeit": "\d{4}-\d{2}-\d{2}"/,
     ersatzFn:(m)=>`"commit": "0",\n${m[1]}"zeit": "irgendwann"`,
     an:{ datei:'tor/proben-stand.json', text:'"zeit": "irgendwann"' },
@@ -624,6 +652,9 @@ export const PROBEN = [
   // ist es keine Messung, sondern eine feste Einstellung.
   { n:'die Beschriftung fällt immer gleich aus', tor:'inhalt', deckt:'inhalt',
     datei:'src/geo/staedte.js',
+    // `mehrfach`: das `g` ist der Eingriff. Aus ALLEN „innen" wird
+    // „fahne" - eine einzelne Stelle waere keine gleiche Beschriftung.
+    mehrfach:true,
     suchRegex:/"beschriftung":"innen"/g,
     ersatzFn:()=>'"beschriftung":"fahne"',
     an:{ datei:'src/geo/staedte.js', fehlt:'"beschriftung":"innen"' },

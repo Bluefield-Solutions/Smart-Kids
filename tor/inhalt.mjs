@@ -286,15 +286,33 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
     // ueber eine andere gelegt. Geprueft ist dann, dass es beide gibt.
     if (p.kopie) { for (const k of p.kopie)
       pruefe(fs.existsSync(k), `Gegenprobe „${p.n}": die Datei ${k} gibt es nicht`); }
-    else if (p.such !== undefined)
-      pruefe(inhalt.includes(p.such),
-        `Gegenprobe „${p.n}": ihr Suchtext steht nicht mehr in ${p.datei} — `
-        + `der Eingriff käme nicht an, das Tor bliebe grün „${
-          String(p.such).replace(/\s+/g, ' ').slice(0, 60)}…"`);
-    else if (p.suchRegex !== undefined)
-      pruefe(p.suchRegex.test(inhalt),
-        `Gegenprobe „${p.n}": ihr Ausdruck greift nicht mehr in ${p.datei} — `
-        + 'der Eingriff käme nicht an, das Tor bliebe grün');
+    else {
+      /* Gezaehlt, nicht nur gesucht.
+       *
+       * „Steht der Text noch da" faengt den Text, der WEG ist. Es faengt
+       * nicht den, der noch da ist und ab jetzt woanders steht: `replace`
+       * nimmt die erste Fundstelle, und bei zwei Fundstellen entscheidet
+       * ihre Reihenfolge, welche verstellt wird. Dreimal an einem Tag
+       * passiert - `.rechenkleber{` traf zwei CSS-Zeilen, und die
+       * Gegenprobe zur Suchtext-Pruefung traf zweimal SICH SELBST statt
+       * ihres Ziels. Beide Male sah der Lauf einen angekommenen Eingriff.
+       *
+       * Wer es anders meint, sagt `mehrfach:true` und schreibt dazu,
+       * warum - drei Proben tun das mit Grund. */
+      const wieoft = p.such !== undefined
+        ? inhalt.split(p.such).length - 1
+        : (inhalt.match(new RegExp(p.suchRegex.source,
+            p.suchRegex.flags.includes('g') ? p.suchRegex.flags
+              : p.suchRegex.flags + 'g')) || []).length;
+      if (wieoft === 0)
+        pruefe(false, `Gegenprobe „${p.n}": ihr Suchtext steht nicht mehr in ${p.datei} — `
+          + `der Eingriff käme nicht an, das Tor bliebe grün „${
+            String(p.such ?? p.suchRegex).replace(/\s+/g, ' ').slice(0, 60)}…"`);
+      else if (wieoft > 1 && !p.mehrfach)
+        pruefe(false, `Gegenprobe „${p.n}": ihr Suchtext steht ${wieoft}× in ${p.datei} — `
+          + 'welche Stelle verstellt wird, entscheidet ihre Reihenfolge. Entweder enger '
+          + 'fassen oder `mehrfach:true` setzen und dazuschreiben, warum');
+    }
   }
   /* Eine Probe OHNE Eingriff waere hier unsichtbar: nichts zu pruefen,
      also immer gruen. `kopie` zaehlt mit — die Symbolprobe legt eine Datei
@@ -314,7 +332,9 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   const mitDatei = PROBEN.filter(p => p.datei).length;
   pruefe(geprueftD === mitDatei, `Nur ${geprueftD} von ${mitDatei} Gegenproben mit Datei `
     + 'wurden angesehen — die Prüfung greift ins Leere und beweist nichts');
-  console.log(`    Gegenproben: ${geprueftD} von ${PROBEN.length} greifen noch in ihre Datei`);
+  const mehrfach = PROBEN.filter(p => p.mehrfach).length;
+  console.log(`    Gegenproben: ${geprueftD} von ${PROBEN.length} greifen genau einmal `
+    + `in ihre Datei (${mehrfach} ausdrücklich mehrfach)`);
 }
 
 /* Jede Pause, die einen Bildschirm weiterschaltet, geht durch `schauPause`.
