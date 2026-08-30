@@ -1691,4 +1691,17 @@ export const PROBEN = [
     ersatz:'',
     an:{ ...DIST, fehlt:'nachfragen(vorurteil, roh, ctx); return;' },
     sagt:'keine Rückfrage bekommen' },
+
+  /* --- S3: die Untergrenze ueberstimmt den Wunsch ---------------------
+   *
+   * Die alte Zahl zurueck. Dann legt das Gitter auf dem Zielgeraet acht
+   * Spalten an statt neun, die 26 Buchstabenkarten fallen in vier Reihen,
+   * und jede ist 42 statt 62 Punkte hoch.
+   */
+  { n:'die Buchstabenkarten rutschen wieder zusammen', tor:'passt',
+    bauen:true, datei:V,
+    such:'  --kleber-eng-min:56px}',
+    ersatz:'  --kleber-eng-min:72px}',
+    an:{ ...DIST, text:'--kleber-eng-min:72px' },
+    sagt:'ein Aufkleber muss 44 messen' },
 ];
