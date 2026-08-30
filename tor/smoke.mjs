@@ -124,8 +124,51 @@ const OHNE_AUSWAHL = (() => {
 })();
 
 
+/* Wieviel wartet dieser Test BLIND?
+ *
+ * `waitForTimeout` wartet eine feste Zeit, egal ob das Erwartete schon da
+ * ist. Das ist doppelt teuer: auf einem schnellen Rechner verschenkt es
+ * Sekunden, auf einem langsamen reicht es trotzdem nicht - dann wird der
+ * Test flatterhaft statt langsam.
+ *
+ * Gezaehlt wird hier, damit die Zahl nicht geschaetzt werden muss und
+ * damit sie nicht unbemerkt wieder waechst. Der Bericht am Ende nennt sie.
+ */
+const blind = { ms: 0, n: 0 };
+
+/* Auf eine BEDINGUNG warten, nicht auf eine Frist.
+ *
+ * Gibt `true` zurueck, wenn sie eingetreten ist, `false` bei Ablauf - und
+ * wirft nie. Der Aufrufer entscheidet, ob ein Ablauf ein Befund ist: bei
+ * den meisten Stellen ist er einer, aber die Meldung soll dann von der
+ * Pruefung kommen und nicht als Playwright-Zeitueberschreitung.
+ *
+ * Die Grenze ist absichtlich grosszuegig. Sie kostet nichts, solange die
+ * Bedingung eintritt - anders als eine feste Pause, die IMMER kostet. */
+const bis = (p, fn, ms = 5000, arg = null) =>
+  p.waitForFunction(fn, arg, { timeout: ms }).then(() => true).catch(() => false);
+
+/* Wer bekommt die Aufgabe vorgelesen? Aus der Backlog-Tabelle, Zeile
+ * „Vorlesen" - dieselbe Quelle wie Tiefe, Namen und Auswahlverbot.
+ *
+ * Gebraucht wird das hier fuer die WARTEZEIT, nicht fuer das Urteil: auf
+ * eine Ansage, die kommen MUSS, kann man warten; auf eine, die ausbleiben
+ * soll, nicht. Wer nichts hoert, wird deshalb erst gelesen, wenn die
+ * Aufgabe gespielt ist - dann sind laengst mehr als die 500 ms vergangen,
+ * nach denen die App ansagen wuerde. */
+const VORLESEN = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*Vorlesen\s*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Zeile „Vorlesen" fehlt im Backlog — dann weiß der '
+    + 'Rauchtest nicht, auf welche Ansage er warten darf'); return {}; }
+  const ids = ['fiona', 'lea', 'eltern'];
+  return Object.fromEntries(z[1].split('|').map((t, i) => [ids[i], /\bja\b/i.test(t)]));
+})();
+
 async function neueSeite(viewport, ctx) {
   const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
+  const festWarten = p.waitForTimeout.bind(p);
+  p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
   // Was gesprochen wird, mitschreiben statt es zu hoeren.
   //
@@ -205,21 +248,39 @@ async function fahnePruefen(p, wo) {
  * ganzen Wechsels darf nie mehr als EIN Bildschirm deutlich sichtbar sein.
  * Der schwaechere der beiden ist das Mass - liegt er hoch, sieht man beide.
  */
-async function ueberblendungMessen(p) {
-  return p.evaluate(() => new Promise(ja => {
-    let schlimmste = 0;
-    const bis = performance.now() + 1500;   // der Wechsel kommt 1600 ms nach der Antwort,
-                                            // gemessen wird ab rund 800 ms danach
+/* Gemessen wird der WECHSEL, nicht ein Zeitfenster.
+ *
+ * Hier stand `performance.now() + 1500` mit dem Kommentar „der Wechsel
+ * kommt 1600 ms nach der Antwort, gemessen wird ab rund 800 ms danach".
+ * Diese 800 ms waren keine Zusage, sondern das, was die Schritte davor
+ * zufaellig gebraucht haben - eine feste Pause von 250 ms war davon der
+ * groesste Posten. Als sie wegfiel, begann die Messung frueher, endete
+ * frueher und sah den Wechsel gar nicht mehr: sie meldete 0.00 (also
+ * „kein Doppelbild") und liess den Test ausserdem in die alte Aufgabe
+ * greifen. Ein Fenster, das an fremden Wartezeiten haengt, misst
+ * irgendwann etwas anderes (Regel 12).
+ *
+ * Jetzt laeuft die Messung, BIS sie zwei Bildschirme gesehen hat und
+ * wieder einen - das ist der Wechsel, an welcher Stelle er auch kommt.
+ * Sieht sie gar keinen, gibt sie -1 zurueck: eine Messung, die nichts
+ * gemessen hat, darf nicht wie ein guter Wert aussehen (Regel 5).
+ */
+async function ueberblendungMessen(p, grenze = 6000) {
+  return p.evaluate((g) => new Promise(ja => {
+    let schlimmste = 0, gesehen = false;
+    const start = performance.now();
     const tick = () => {
       const s = [...document.querySelectorAll('#buehne .schirm')];
       if (s.length > 1) {
+        gesehen = true;
         const o = s.map(x => +getComputedStyle(x).opacity).sort((a, b) => b - a);
         schlimmste = Math.max(schlimmste, Math.min(o[0], o[1]));
-      }
-      if (performance.now() < bis) requestAnimationFrame(tick); else ja(schlimmste);
+      } else if (gesehen) return ja(schlimmste);
+      if (performance.now() - start < g) requestAnimationFrame(tick);
+      else ja(gesehen ? schlimmste : -1);
     };
     requestAnimationFrame(tick);
-  }));
+  }), grenze);
 }
 let ueberblendung = null;
 
@@ -408,7 +469,8 @@ if (laeuft('spielen')) try {
     // Antippen muss sprechen — sonst ist der Bildschirm fuer Fiona leer.
     await p.evaluate(() => { window.__gesagt = []; });
     await p.$eval('.schirm.da .aufkleber', x => x.click());
-    await p.waitForTimeout(300);
+    // Gewartet wird auf die Ansage selbst, nicht auf eine Frist.
+    await bis(p, () => (window.__gesagt || []).length > 0, 4000);
     const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
     if (!gesagt.trim()) merke('vorlauf', new Error(
       'eine angetippte Karte im Vorlauf sagt nichts — für Fiona ist der Bildschirm damit leer'));
@@ -437,11 +499,18 @@ if (laeuft('spielen')) try {
       });
       sternVerlauf.push({ runde, n: kopf.sterne });
       bandVerlauf.push(kopf.band.join(' '));
-      // Die Fahne wird MIT dem Lob gezeichnet, aber nicht im selben
-      // Bild: `loese()` wartet auf das Lob, die Fahne kommt einen
-      // Anzeigeschritt spaeter. Ohne dieses kurze Warten meldete das Tor
-      // „in zwoelf Aufgaben nur die Sorte daneben".
-      await p.waitForTimeout(250);
+      /* Die Fahne wird MIT dem Lob gezeichnet, aber nicht im selben Bild:
+       * `loese()` wartet auf das Lob, die Fahne kommt einen Anzeigeschritt
+       * spaeter. Gewartet wird auf DIESE Fahne, nicht auf irgendeine.
+       *
+       * Der erste Anlauf fragte nur, ob `#fahne .fahnentext` da ist - und
+       * die Fahne der VORIGEN Aufgabe steht noch. Die Bedingung war damit
+       * sofort wahr, die Messung las die alte Fahne, und das Tor meldete
+       * genau den Befund, gegen den das Warten da ist: „in zwoelf Aufgaben
+       * nur die Sorte daneben". Ein Warten auf etwas, das schon dasteht,
+       * ist kein Warten. */
+      await bis(p, (n) => document.querySelector('.schirm.da #fahne .fahnentext')
+        ?.textContent.trim() === n, 3000, geloest[geloest.length - 1]);
       const art = await fahnePruefen(p, geloest[geloest.length - 1]);
       if (art) fahnenArten.add(art);
       // Die Messung ersetzt die Wartezeit, sie kommt nicht dazu. Beim
@@ -549,7 +618,7 @@ if (laeuft('ablage')) try {
   await p.evaluate(() => { window.__gesagt = []; });
   await p.click('#buch');
   await p.waitForSelector('.schirm.da .aufkleber');
-  await p.waitForTimeout(300);
+  await bis(p, () => (window.__gesagt || []).length > 0, 4000);
   const kleber = await p.$$eval('.schirm.da .aufkleber.da', e => e.length);
   if (kleber < 1) merke('forscherbuch', new Error('kein einziger Aufkleber nach zwei Sitzungen'));
   const alleKleber = await p.$$eval('.schirm.da .aufkleber', e => e.length);
@@ -665,10 +734,14 @@ if (laeuft('ablage')) try {
     if (!knopf) merke('pin', new Error('im Elternbereich gibt es keine Möglichkeit, '
       + 'die PIN zu ändern — sie steht für immer auf 0000'));
     else {
-      await knopf.click(); await p.waitForTimeout(200);
+      await knopf.click();
+      await p.waitForSelector('.schirm.da #pinstand [data-neu="1"]', { timeout: 4000 });
       for (const z of ['1', '9', '8', '4'])
         await p.click(`.schirm.da #pinstand [data-neu="${z}"]`);
-      await p.waitForTimeout(400);
+      // Nach der vierten Ziffer raeumt die App das Ziffernfeld weg und
+      // setzt den Knopf zurueck - das ist das Zeichen, dass gespeichert
+      // ist, und darauf laesst sich warten.
+      await bis(p, () => !document.querySelector('.schirm.da #pinstand [data-neu]'), 4000);
       await p.reload();
       await p.waitForSelector('[data-profil="fiona"]');
       await p.click('[data-profil="fiona"]');
@@ -677,7 +750,10 @@ if (laeuft('ablage')) try {
       await p.waitForSelector('.schirm.da [data-welt]');
       await p.click('#eltern'); await p.waitForSelector('.schirm.da .ziffern');
       for (let i = 0; i < 4; i++) await p.click('.schirm.da [data-z="0"]');
-      await p.waitForTimeout(500);
+      // Zwei moegliche Ausgaenge, und beide sind sichtbar: entweder steht
+      // man drinnen (`#pinneu`), oder die Fehlerzeile ist gefuellt.
+      await bis(p, () => !!document.querySelector('.schirm.da #pinneu')
+        || (document.querySelector('.schirm.da #fehl')?.textContent || '').length > 0, 4000);
       const altRein = !!(await p.$('.schirm.da #pinneu'));
       // Kommt man mit der ALTEN PIN hinein, steht man jetzt IM
       // Elternbereich - dort gibt es kein Ziffernfeld mehr. Die neue PIN
@@ -687,7 +763,13 @@ if (laeuft('ablage')) try {
       let neuRein = null;
       if (!altRein) {
         for (const z of ['1', '9', '8', '4']) await p.click(`.schirm.da [data-z="${z}"]`);
-        await p.waitForTimeout(600);
+        /* Hier wird nur auf `#pinneu` gewartet, nicht auch auf die
+         * Fehlerzeile: die steht vom vorigen Versuch mit 0000 noch da,
+         * und die Bedingung waere damit sofort wahr gewesen - der erste
+         * Anlauf meldete prompt „mit der neuen PIN kommt man nicht
+         * hinein". Geht es schief, laeuft die Grenze ab und die Pruefung
+         * darunter meldet es richtig. */
+        await bis(p, () => !!document.querySelector('.schirm.da #pinneu'), 4000);
         neuRein = !!(await p.$('.schirm.da #pinneu'));
       }
       console.log(`  PIN geändert:               mit 0000 rein: ${altRein ? 'JA' : 'nein'}, `
@@ -717,13 +799,21 @@ if (laeuft('ablage')) try {
     // Zurueck aus dem Elternbereich in die Ebenenwahl - dort steht der Knopf.
     await p.click('.schirm.da #zur');
     await zurEbenenwahl(p, 'bundeslaender');
-    await p.waitForTimeout(400);
+    // Die Kacheln kommen sofort, ihr Fortschritt kommt aus der Ablage und
+    // damit einen Schritt spaeter. Gewartet wird auf den Balken - er ist
+    // das Zeichen, dass der Stand gelesen ist. Der „von vorne"-Knopf
+    // taugt dafuer nicht: dass er FEHLT, ist ja der Befund.
+    await bis(p, () => !!document.querySelector('.schirm.da .kachel .balken'), 4000);
     const knopf = await p.$('.schirm.da [data-neu="bundeslaender"]');
     if (!knopf) merke('vonvorne', new Error(
       'nach zwei Sitzungen steht kein „von vorne" an den Bundesländern'));
     else {
       const erst = await knopf.textContent();
-      await knopf.click(); await p.waitForTimeout(150);
+      await knopf.click();
+      // Der Knopf fragt nach ODER ist weg (dann hat er sofort geloescht -
+      // genau der Befund, den die Pruefung gleich meldet).
+      await bis(p, () => { const k = document.querySelector('.schirm.da [data-neu="bundeslaender"]');
+        return !k || /Wirklich/.test(k.textContent); }, 3000);
       // Der Knopf kann nach dem ersten Tipper VERSCHWUNDEN sein - naemlich
       // genau dann, wenn er schon geloescht hat. Das ist der Befund, nicht
       // ein Fehler im Test: der erste Anlauf stuerzte hier ab, statt ihn zu
@@ -733,7 +823,10 @@ if (laeuft('ablage')) try {
       if (!/Wirklich/.test(nachfrage)) merke('vonvorne', new Error(
         `der erste Tipper löscht sofort — er fragt nicht nach (steht: „${nachfrage.trim()}")`));
       if (zweiter) await zweiter.click();
-      await p.waitForTimeout(500);
+      // Ist wirklich geloescht, verschwindet der Knopf - es gibt dann
+      // keinen Fortschritt mehr, den man zuruecksetzen koennte. Bleibt er
+      // stehen, laeuft die Grenze ab und die Zaehlung unten meldet es.
+      await bis(p, () => !document.querySelector('.schirm.da [data-neu="bundeslaender"]'), 4000);
       const rest = await p.evaluate(() => new Promise(ja => {
         const a = indexedDB.open('lernkiste');
         a.onsuccess = () => { const d = a.result;
@@ -822,13 +915,26 @@ if (laeuft('ablage')) try {
     if (!pause) merke('pause', new Error('das Kreuz im Spiel fuehrt nicht in die Pause'));
     else {
       const erst = (await pause.textContent()).trim();
-      await pause.click(); await p.waitForTimeout(200);
+      await pause.click();
+      await bis(p, () => /Wirklich/.test(
+        document.querySelector('.schirm.da #null')?.textContent || ''), 3000);
       const nachfrage = (await p.textContent('.schirm.da #null')).trim();
       if (!/Wirklich/.test(nachfrage)) merke('pause', new Error(
         `der erste Tipper loescht sofort — er fragt nicht nach (steht: „${nachfrage}")`));
       await p.click('.schirm.da #null');
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
-      await p.waitForTimeout(400);
+      // Gewartet wird auf die ABLAGE, nicht auf eine Frist: das Loeschen
+      // laeuft asynchron weiter, nachdem der Bildschirm schon steht.
+      // Bleibt etwas stehen, laeuft die Grenze ab - und die Zaehlung
+      // gleich darunter meldet genau das.
+      await bis(p, () => new Promise(ja => {
+        const a = indexedDB.open('lernkiste');
+        a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
+          .objectStore('fortschritt').get('fiona:bundeslaender');
+          g.onsuccess = () => ja(Object.keys(g.result || {}).length === 0);
+          g.onerror = () => ja(false); };
+        a.onerror = () => ja(false);
+      }), 4000);
       const nachher = await p.evaluate(() => new Promise(ja => {
         const a = indexedDB.open('lernkiste');
         a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
@@ -953,12 +1059,12 @@ if (laeuft('regler')) try {
     await p.evaluate(() => { window.__toene = []; });
     await p.fill('.schirm.da #rein', String(erste + 1 > 100 ? erste - 1 : erste + 1));
     await p.click('.schirm.da #pruef');
-    await p.waitForTimeout(300);
+    await bis(p, () => (window.__toene || []).length > 0, 4000);
     const daneben = await p.evaluate(() => window.__toene.map(t => ({ von: t.von, bis: t.bis })));
     await p.evaluate(() => { window.__toene = []; });
     await p.fill('.schirm.da #rein', String(erste));
     await p.click('.schirm.da #pruef');
-    await p.waitForTimeout(300);
+    await bis(p, () => (window.__toene || []).length > 0, 4000);
     const treffer = await p.evaluate(() => window.__toene.map(t => ({ von: t.von, bis: t.bis })));
     const zeig = (x) => x.map(t => `${t.von}→${t.bis ?? t.von}`).join(' ') || 'STILL';
     console.log(`  Ton bei falsch/richtig:     ${zeig(daneben)}  |  ${zeig(treffer)}`);
@@ -1034,7 +1140,12 @@ if (laeuft('regler')) try {
     });
     await p.fill('.schirm.da #rein', String(falschZahl));
     await p.click('.schirm.da #pruef');
-    await p.waitForTimeout(300);
+    /* Hier wird ein AUSBLEIBEN geprueft, und darauf kann man nicht warten.
+     * Gewartet wird stattdessen auf die Wertung: der Ton wird gespielt,
+     * wenn bewertet wird - steht die Wertung, ist er entweder gekommen
+     * oder er kommt nicht mehr. Das ist dieselbe Aussage wie vorher,
+     * nur ohne Frist. */
+    await bewertet(p);
     const trotzdem = await p.evaluate(() => window.__toene.length);
     console.log(`  Mit „Ton aus":              ${trotzdem} Schwingungen (erwartet 0)`);
     if (trotzdem > 0) merke('regler',
@@ -1251,7 +1362,11 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
         }
       }
       await durchVorlaufWenn(p);
-      await p.waitForTimeout(400);
+      // Auf den Bildschirm warten, der jetzt kommt - Karte, Rechnung oder
+      // der Zwischenschirm mit „Weiter". Vorher stand hier eine feste
+      // Pause; sie lief 27 Mal, einmal je Ebene und Profil.
+      await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
+        + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       /* Rechnen: die Aufgabe OHNE Karte.
@@ -1262,9 +1377,16 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
        * Bildschirm dasselbe wie für die Karte: Band, Sterne, Aufkleber.
        */
       if (await p.$('.schirm.da .rechnung')) {
-        await p.waitForTimeout(900);
-        const gesagtR = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-        if (/Was ist/.test(gesagtR)) gehoert[wer] = (gehoert[wer] || 0) + 1;
+        /* Auf die Ansage warten - aber nur, wo eine kommen MUSS.
+         *
+         * Die App sagt 500 ms nach dem Wechsel an. Wer nichts hoert
+         * (Lea, die Eltern), liesse jede Wartebedingung ablaufen; bei
+         * ihnen wird `__gesagt` deshalb erst NACH der Antwort gelesen,
+         * unten. Dann ist die halbe Sekunde laengst vorbei, und ein
+         * Ausbleiben ist genauso beweisbar wie vorher - nur ohne dass
+         * jede der 27 Runden 900 ms dafuer bezahlt. */
+        if (VORLESEN[wer])
+          await bis(p, () => (window.__gesagt || []).some(t => /Was ist/.test(t)), 4000);
         const r = await p.evaluate(() => {
           const s = document.querySelector('.schirm.da');
           const t = s.querySelector('.rechnung').textContent;
@@ -1296,6 +1418,9 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
         }
         wege.add(`${wer}: rechnen ${r.tippt ? 'geschrieben' : 'angetippt'}`);
         await bewertet(p);
+        // Gezaehlt wird die ANSAGE der Aufgabe, nicht das Lob danach.
+        const gesagtR = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+        if (/Was ist/.test(gesagtR)) gehoert[wer] = (gehoert[wer] || 0) + 1;
         const rr = await p.evaluate(() => {
           const f = document.querySelector('.schirm.da .frage');
           return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
@@ -1308,10 +1433,9 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
         continue;
       }
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
-      await p.waitForTimeout(900);   // die Ansage kommt 500 ms nach dem Wechsel
-      // Gezaehlt wird die FRAGE, nicht irgendein Ton.
-      const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-      if (/Wie heißt/.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
+      // Wie im Rechenzweig: warten nur, wo eine Ansage kommen muss.
+      if (VORLESEN[wer])
+        await bis(p, () => (window.__gesagt || []).some(t => /Wie heißt/.test(t)), 4000);
       const z = await p.evaluate(() => {
         const s = document.querySelector('.schirm.da');
         const ziel = s.querySelector('path.ziel');
@@ -1370,6 +1494,10 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
         }
       }
       await bewertet(p);
+      // Gezaehlt wird die FRAGE, nicht irgendein Ton - und erst hier, weil
+      // ein Ausbleiben sich nicht erwarten laesst.
+      const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+      if (/Wie heißt/.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
       const r = await p.evaluate(() => {
         const f = document.querySelector('.schirm.da .frage');
         return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
@@ -1463,6 +1591,8 @@ for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt'
 
 await ctx.close(); await b.close(); server.close();
 
+console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${blind.n} festen Pausen`);
+
 if (laeuft('spielen')) {
 console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`);
 // Der schwaechere der beiden Bildschirme, im schlimmsten Bild des Wechsels.
@@ -1470,10 +1600,15 @@ console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || '
 // blenden beide gleichzeitig, treffen sie sich bei etwa 0,5.
 const UEBERBLENDUNG_MAX = 0.20;
 console.log(`  Übergang zur nächsten:      zweiter Bildschirm höchstens `
-  + `${ueberblendung === null ? '—' : ueberblendung.toFixed(2)} sichtbar `
+  + `${ueberblendung === null ? '—' : ueberblendung < 0 ? 'NICHT GEMESSEN'
+       : ueberblendung.toFixed(2)} sichtbar `
   + `(erlaubt ${UEBERBLENDUNG_MAX})`);
 if (ueberblendung === null)
   fehler.push('Der Übergang wurde nicht gemessen — die Prüfung lief nicht');
+else if (ueberblendung < 0)
+  fehler.push('Der Übergang wurde nicht gemessen: in sechs Sekunden nach der Antwort '
+    + 'standen nie zwei Bildschirme gleichzeitig da. Entweder wechselt die App nicht '
+    + 'mehr, oder die Messung sitzt an der falschen Stelle — grün wäre hier eine Lüge');
 else if (ueberblendung > UEBERBLENDUNG_MAX)
   fehler.push(`Beim Wechsel sind beide Bildschirme gleichzeitig zu sehen `
     + `(der schwächere bei ${ueberblendung.toFixed(2)}) — ein Doppelbild: `
