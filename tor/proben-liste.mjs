@@ -1392,7 +1392,10 @@ export const PROBEN = [
     args:['--nur=schreiben'], bauen:true, datei:D,
     such:"    const stimmt = gelesen.every((e, i) => e.sicher && e.zeichen === folge[i]);",
     ersatz:'    const stimmt = gelesen.every((e) => e.sicher);',
-    an:{ ...DIST, fehlt:"e.zeichen === folge[i]" },
+    // Am eingesetzten Text erkannt, nicht am fehlenden: `e.zeichen ===
+    // folge[i]` steht zwei Zeilen tiefer noch einmal (dort wird gesucht,
+    // WELCHES Feld daneben lag), und ein `fehlt` waere nie erfuellt.
+    an:{ ...DIST, text:'const stimmt = gelesen.every((e) => e.sicher);' },
     sagt:'VERTAUSCHT als richtig' },
 
   /* 2. Die Ziffern werden gegen die 26 Buchstaben gehalten. Eine 0 ist
