@@ -632,6 +632,26 @@
     "der Tipp auf die Karte wird nicht mehr gewertet": {
       "commit": "bf7704b6012eb3b89a0b128c4a4c1bd7958ebd65",
       "zeit": "2026-08-30"
+    },
+    "im Test steht wieder „Weiß ich nicht\"": {
+      "commit": "e2c2d26e11ab40729dc9c2b434662b473d765fa6",
+      "zeit": "2026-08-30"
+    },
+    "im Test steht wieder der Zeiger auf der Karte": {
+      "commit": "e2c2d26e11ab40729dc9c2b434662b473d765fa6",
+      "zeit": "2026-08-30"
+    },
+    "im Test gibt es wieder eine Auswahl": {
+      "commit": "e2c2d26e11ab40729dc9c2b434662b473d765fa6",
+      "zeit": "2026-08-30"
+    },
+    "im Test hat man wieder drei Versuche": {
+      "commit": "e2c2d26e11ab40729dc9c2b434662b473d765fa6",
+      "zeit": "2026-08-30"
+    },
+    "der bestandene Test bringt keinen Pokal mehr": {
+      "commit": "e2c2d26e11ab40729dc9c2b434662b473d765fa6",
+      "zeit": "2026-08-30"
     }
   }
 }

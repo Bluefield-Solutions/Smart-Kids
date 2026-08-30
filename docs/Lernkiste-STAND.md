@@ -5328,3 +5328,77 @@ zusammengerutscht. Für ihn ist die 44-Punkt-Grenze jetzt ein Fehler.
 Ein Hinweis, den niemand liest, ist dasselbe wie keiner.
 
 Sieben neue Gegenproben (drei für B3, eine für S3, dazu die drei aus F15).
+
+---
+
+## B2 · Der Test ohne Hilfen
+
+Das Spiel konnte bis hierher nur eines: helfen. Vier Möglichkeiten statt
+sechzehn, ein Zeiger auf die gesuchte Fläche, „Weiß ich nicht", und nach
+drei Fehlversuchen die Antwort. Alles richtig — beim Üben. Nur konnte
+niemand zeigen, dass er es **ohne** kann.
+
+Der Test lässt alles davon weg. Er ist damit die erste Runde, in der eine
+falsche Antwort etwas kostet — und die erste, in der ein richtige etwas
+beweist.
+
+### Sechs Entscheidungen
+
+**Offen erst, wenn die Ebene ganz gesammelt ist.** Vorher wäre es kein
+„Test am Ende", sondern eine zweite Art zu üben.
+
+**Nur wer liest.** Das ist die einzige Entscheidung, bei der ich gegen den
+ersten Impuls entschieden habe: Fiona *könnte* den Test bekommen, die Frage
+wird ihr ja vorgelesen. Aber ihre Auswahl aus vier Möglichkeiten ist ihr
+**Eingabeweg**, nicht ihre Hilfe. Nimmt man sie weg, bleibt für sie nichts
+übrig, womit sie antworten könnte. Ein Test, den ein Kind nicht bestehen
+*kann*, ist kein Test, sondern eine Sperre.
+
+**Alle Gegenstände, einmal, gemischt — nicht der Leitner.** Der wählt nach
+Fälligkeit. Ein Test, der nur die wackeligen Gegenstände abfragt, misst
+nicht, was jemand kann; er misst, was der Leitner gerade für wackelig hält.
+
+**Ein Versuch je Aufgabe.** „Keine Lösung nach drei Fehlern" allein wäre zu
+wenig gedacht gewesen: ohne Auflösung könnte man beliebig oft raten, und
+bei vier Möglichkeiten hat man nach dreimal Raten recht.
+
+**Bestanden ab vier Fünfteln.** Nicht alles richtig — bei sechzehn
+Bundesländern hinge der Pokal sonst an einem einzigen Verrutscher, und der
+Test würde zu einer Sache, die man wieder und wieder anfängt. Nicht die
+Hälfte — dann steht der Pokal für etwas, das man auch raten kann.
+
+**Der Pokal liegt bei den Einstellungen, nicht im Fortschritt.** „Von
+vorne" löscht eine Ebene. Einen bestandenen Test löscht es nicht: was man
+gezeigt hat, hat man gezeigt.
+
+### Was der Test nicht tut
+
+Er macht nichts vor. Ein Fehlversuch beendet die Aufgabe, und die Antwort
+bleibt weg — was hier fehlt, gehört in die nächste Übungsrunde, nicht in
+die Prüfung. Der Leitner erfährt es trotzdem; sonst wäre ein Test eine
+Runde, die den Lernstand nicht anfasst, und ausgerechnet die Gegenstände,
+die durchfallen, kämen nicht wieder.
+
+### Ein Platzhalter, der sich als Prüfung ausgab
+
+Beim Schreiben des Rauchtests stand da eine Weile:
+
+```js
+const beiFiona = await p.evaluate(() => { ... return !!D; });
+void beiFiona;   // „die eigentliche Pruefung steht unten"
+```
+
+Sie stand nicht unten. Der Abschnitt wäre grün gewesen und hätte für
+„Fiona bekommt keinen Test" nichts bezeugt. Jetzt wechselt er wirklich das
+Profil — und füllt vorher **auch Fionas Ebene**, sonst bewiese das Fehlen
+des Knopfes nur, dass sie noch nichts gesammelt hat.
+
+### Und beim Hinsehen
+
+Der Pokal war tintenfarben wie ein Bedienzeichen und wurde auch so gelesen.
+Jetzt ist er golden mit Tintenkontur — dieselbe Sprache wie die Sterne.
+Und er stand absolut positioniert über der Kachel, mitten auf der Zahl der
+Aufkleber; jetzt steht er daneben, wo er hingehört: beide sagen dasselbe,
+nämlich was du hier hast.
+
+157 Gegenproben, alle mit Nachweis.

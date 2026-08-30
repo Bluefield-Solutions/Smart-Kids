@@ -170,18 +170,18 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~9~~ | ~~**F15** Vier Hebel für die Sprachqualität~~ | Fiona | hoch | mittel | **gefahren** |
 | ~~10~~ | ~~**B3** Die umgekehrte Frage~~ | Lea | mittel | mittel | **gefahren** |
 | ~~11~~ | ~~**S3** Die Buchstabenkarten im Vorlauf~~ | Fiona | gering | klein | **gefahren** |
+| ~~12~~ | ~~**B2** Test ohne Hilfen, mit Pokal~~ | Lea | mittel | mittel | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 3 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
-| 4 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
-| 5 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
-| 6 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
-| 7 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
-| 8 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 9 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
-| 10 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 11 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
-| 12 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
+| 3 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
+| 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
+| 5 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
+| 6 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 7 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
+| 8 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
+| 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| 11 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
 
 ---
 
@@ -524,6 +524,37 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 ---
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+### B2 · Der Test ohne Hilfen, mit Pokal  ·  ERLEDIGT
+
+Nach den Übungsrunden eine Runde **ohne Auswahl, ohne „Weiß ich nicht", ohne
+Zeiger** — und mit **einem** Versuch je Aufgabe. Wer besteht, bekommt den
+**Pokal** der Ebene. Der einzige Ort, an dem ein Pokal etwas bedeutet, weil er
+für etwas steht, das man wirklich gezeigt hat.
+
+**Sechs Entscheidungen und warum:**
+
+| | |
+|---|---|
+| **offen ab** | die Ebene ist ganz gesammelt. Vorher wäre es kein „Test am Ende", sondern eine zweite Art zu üben — und der Pokal wäre nichts wert. |
+| **wer** | nur wer liest. Fionas Auswahl aus vier Möglichkeiten ist ihr **Eingabeweg**, keine Hilfe; ohne sie wäre der Test für sie keine Prüfung, sondern eine Sperre. Ein Test, den ein Kind nicht bestehen *kann*, ist keiner. |
+| **Umfang** | **alle** Gegenstände, einmal, gemischt — nicht der Leitner. Der wählt nach Fälligkeit und würde messen, was **er** für wackelig hält. |
+| **Versuche** | **einer**. „Keine Lösung nach drei Fehlern" allein wäre zu wenig gedacht: bei vier Möglichkeiten hat man nach dreimal Raten recht. |
+| **bestanden ab** | **vier Fünfteln**. Nicht alles richtig — dann hängt der Pokal an einem einzigen Verrutscher. Nicht die Hälfte — dann steht er für etwas, das man raten kann. Bei 16 Bundesländern sind es 13. |
+| **wo er liegt** | bei den Einstellungen, nicht im Fortschritt. „Von vorne" löscht eine Ebene; einen bestandenen Test löscht es **nicht**. Was man gezeigt hat, hat man gezeigt. |
+
+Ein Fehlversuch beendet die Aufgabe, aber die Antwort steht **nicht** da: was
+im Test fehlt, gehört in die nächste Übungsrunde, nicht in die Prüfung. Der
+Leitner erfährt es trotzdem — sonst wäre ein Test eine Runde, die den Lernstand
+nicht anfasst, und genau die Gegenstände, die durchfallen, kämen nicht wieder.
+
+**Abnahme** (aus dem ANTON-Abgleich, wörtlich): *„der Rauchtest spielt einen
+Test durch und prüft, dass die Hilfen fehlen"*. Der Abschnitt `test` prüft alle
+drei Hilfen **einzeln**, den einen Versuch, die 16 Aufgaben, den Pokal am Ende
+und an der Kachel — und dass Fiona bei **gefüllter** Ebene keinen angeboten
+bekommt (sonst bezeugte die Prüfung nur, dass sie noch nichts gesammelt hat).
+
+---
 
 ### B3 · Die umgekehrte Frage  ·  ERLEDIGT (erste Form)
 
