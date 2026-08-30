@@ -735,6 +735,17 @@ const PROBEN = [
     an:{ datei:'tor/spielprobe.mjs', text:'if (false) gelegenheiten++;' },
     sagt:'beweist nichts' },
 
+  /* Das Buch holt die Umrisse nicht mehr nach.
+   *
+   * Dann steht auf jeder Karte eines nachgeladenen Gebiets „undefined" -
+   * der Kasten faellt ohne `pfad` auf die Rechen-Darstellung zurueck. */
+  { n:'das Buch zeigt Karten ohne Umriss', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:D,
+    such:'    .map(x => ebeneLaden(x.e.id).catch(()=>false)));',
+    ersatz:'    .map(x => Promise.resolve(false)));',
+    an:{ ...DIST, fehlt:'ebeneLaden(x.e.id)' },
+    sagt:'keinen Umriss' },
+
   /* Und jetzt MISST es auch jemand.
    *
    * `inhalt` prueft die Tuer (jedes `setTimeout`, das einen Bildschirm
