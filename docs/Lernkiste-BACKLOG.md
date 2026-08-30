@@ -165,21 +165,21 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~4~~ | ~~**N1** Stephan und Violeta, mit Vergleich~~ | ihr beide | hoch | mittel | **gefahren** |
 | ~~5~~ | ~~**S1** Drei Sterne bedeuten zwei Dinge~~ | Fiona, Lea | hoch | klein | **gefahren** |
 | ~~6~~ | ~~**A3** Der Fehler wird auch beim Ziehen benannt~~ | Fiona, Lea | hoch | mittel | **gefahren** |
+| ~~7~~ | ~~**F13** Der Sprachmodus hatte keinen Ausgang~~ | Fiona | hoch | klein | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
 | 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 4 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
-| 9 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
-| 10 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
-| 11 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
-| 12 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
-| 13 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
-| 14 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 15 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
-| 16 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 17 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
-| 18 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
-| 19 | **S3** Die Buchstabenkarten im Vorlauf sind 42 statt 44 pt hoch | Fiona | gering | klein | — |
+| 5 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
+| 6 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
+| 7 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
+| 8 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 9 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
+| 10 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
+| 11 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 12 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| 13 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
+| 14 | **S3** Die Buchstabenkarten im Vorlauf sind 42 statt 44 pt hoch | Fiona | gering | klein | — |
 
 ---
 
@@ -494,28 +494,28 @@ prüft **das Vorzeichen** jeder genannten Richtung; die Schwelle selbst
 gehört der App, sonst prüfte die Rechnung sich gegen sich selbst. Zwei
 stehende Gegenproben, eine davon vertauscht oben und unten.
 
-**B3 · Mehr Aufgabenformen** *(Rang 8)* — ohne neue Daten möglich:
+**B3 · Mehr Aufgabenformen** *(Rang 2)* — ohne neue Daten möglich:
 umgekehrt („Wo liegt Bayern?"), Nachbarn, größer/kleiner, Puzzle,
 Steckbrief. **Teilbar: jede Form einzeln.** Die umgekehrte Frage ist die
 billigste und die mit dem größten Zugewinn, weil sie dieselbe Karte in die
 andere Richtung liest.
 
-**B2 · Test am Ende, ohne Hilfen** *(Rang 9)* — keine Auswahl, keine Lösung
+**B2 · Test am Ende, ohne Hilfen** *(Rang 4)* — keine Auswahl, keine Lösung
 nach drei Fehlern, kein Zeiger. Wer besteht, bekommt den **Pokal** der
 Ebene. Der einzige Ort, an dem ein Pokal etwas bedeutet.
 
-**A4 · „Heute schon geübt"** *(Rang 10)* — eine ruhige Zeile auf dem
+**A4 · „Heute schon geübt"** *(Rang 5)* — eine ruhige Zeile auf dem
 Startbildschirm, kein Streak-Zwang. *Abnahme: die Zeile stimmt nach einem
 Neustart.*
 
-**D3 · Etwas erzählen können** *(Rang 11)* — nach einer Runde ein Satz zum
+**D3 · Etwas erzählen können** *(Rang 6)* — nach einer Runde ein Satz zum
 Mitnehmen. *„In Ägypten fließt der längste Fluss der Welt."* Klein je Satz,
 groß in der Summe: 63 Gebiete wollen ihren Satz.
 
-**D2 · Abzeichen, die etwas über das Kind sagen** *(Rang 12)* — nicht „50
+**D2 · Abzeichen, die etwas über das Kind sagen** *(Rang 7)* — nicht „50
 Aufgaben", sondern *„Du kennst alle Nachbarn von Deutschland"*.
 
-**D1 · Ein Begleiter** *(Rang 13)* — die Figur, die durch die App führt.
+**D1 · Ein Begleiter** *(Rang 8)* — die Figur, die durch die App führt.
 Sie wird nicht gekauft, sie ist da. **Braucht Bilder, und die entstehen
 nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 
@@ -523,7 +523,55 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
 
-**M4r · Sprechen, ein Mal wirklich auf dem iPhone** *(Rang 7 — die
+### F13 · Der Sprachmodus hatte keinen Ausgang  ·  ERLEDIGT
+
+**Gemeldet vom Zielgerät.** Sprachmodus im Elternbereich eingeschaltet, im
+Spiel auf das Mikrofon getippt, „ich höre" erschienen, hineingesprochen —
+und dann ging es nicht weiter. Kein Beenden, keine Auswertung.
+
+**Nachgestellt und bestätigt.** Es waren drei Fehler auf einmal, und jeder
+allein hätte gereicht:
+
+1. **Kein `stop()`.** Wer fertig gesprochen hatte, konnte es der App nicht
+   sagen. Ein zweiter Tipp baute einen **zweiten** Erkenner neben den
+   ersten; auf iOS wirft das, und das Gesagte war weg.
+2. **Kein `onend`.** Endet die Erkennung ohne Ergebnis — Stille, ein
+   Abbruch durch das Betriebssystem, ein Wechsel in eine andere App —,
+   dann feuert `onresult` nie. Die Zeile „… ich höre" blieb stehen, für
+   immer. Genau das war zu sehen.
+3. **Keine Frist.** Ohne Ergebnis und ohne Ende wartete die Anzeige
+   unbegrenzt.
+
+Dazu ein vierter, den man nur **sieht**: der atmende Ring am Mikrofon lief
+immer, auch wenn gar nicht zugehört wurde. Die App sah aus, als hörte sie
+zu, während sie es nicht tat — und als hörte sie weiter zu, nachdem sie
+aufgehört hatte.
+
+**Behoben.** Der Knopf ist ein **Schalter**: erster Tipp hört zu, zweiter
+sagt „fertig" (`stop()`, nicht `abort()` — `stop()` liefert das bis dahin
+Verstandene, `abort()` wirft es weg). Jeder Weg heraus — Ergebnis, Fehler,
+Ende, Frist von 8 s — führt durch **ein einziges** `aufhoeren()`; es gibt
+keinen Zustand mehr, aus dem man nicht herauskommt. Fehler bekommen eigene
+Sätze (`not-allowed` nennt die Einstellungen, `no-speech` bittet lauter zu
+sprechen), Zwischenergebnisse zeigen dem Kind, dass etwas ankommt, und der
+Ring atmet nur noch während des Zuhörens.
+
+**Warum kein Tor das gefunden hat.** Es gab keins, das den Sprachweg
+angefasst hätte — die Spracherkennung existiert im Prüfbrowser nicht. Jetzt
+gibt es einen Nachbau von `SpeechRecognition` im Rauchtest (er zählt
+Starts und Stopps und wirft beim zweiten Start, wie iOS es tut) und den
+Abschnitt `sprechen`, der vier Dinge prüft: Antippen beginnt und man
+**sieht** es · ein zweiter Tipp beendet es · ein Ende ohne Ergebnis
+hinterlässt keine Sackgasse · ein gesprochener Name wird wirklich
+gewertet. Zwei stehende Gegenproben halten die beiden ersten Fehler fest.
+
+**Was das nicht ersetzt: M4r.** Der Nachbau beweist die *Logik*, nicht das
+Mikrofon. Ob Safari im Querformat auf dem iPhone auslöst, sagt weiterhin
+nur das Gerät.
+
+---
+
+**M4r · Sprechen, ein Mal wirklich auf dem iPhone** *(Rang 1 — die
 Ausnahme in diesem Block, Nutzen hoch)*
 Der Sprachweg ist **Fionas zweiter Eingabeweg** und wurde nie auf dem
 Zielgerät geprüft. Das Werkzeug für die eingefrorene Korpushälfte steht

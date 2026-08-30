@@ -5048,3 +5048,52 @@ Wort: die Schwelle, ab der eine Achse genannt wird, gehört der App. Wer sie
 im Tor nachrechnete, prüfte die Rechnung gegen sich selbst.
 
 Startbündel **206,5 von 400 KB**. 137 Gegenproben, alle mit Nachweis.
+
+---
+
+## F13 · Der Sprachmodus hatte keinen Ausgang
+
+**Der Befund kam vom Gerät, nicht von einem Tor.** Sprachmodus an,
+Mikrofon angetippt, „ich höre", hineingesprochen — und dann nichts mehr:
+kein Beenden, keine Auswertung.
+
+Nachgestellt: es waren **drei** Fehler auf einmal. Es gab nirgends ein
+`stop()`, also konnte niemand „fertig" sagen — ein zweiter Tipp baute
+einen zweiten Erkenner neben den ersten, und auf iOS wirft das. Es gab
+kein `onend`, also blieb „… ich höre" stehen, wenn die Erkennung von
+selbst endete — bei Stille ist das auf iOS der Normalfall. Und es gab
+keine Frist.
+
+Der vierte war nur zu **sehen**: der Ring am Mikrofon atmete immer, auch
+wenn nichts lief. Die App sah aus, als hörte sie zu, während sie es nicht
+tat — und als hörte sie weiter zu, nachdem sie aufgehört hatte. Ein
+Zustand, den man nicht erschließen kann, wenn man nur den Code liest.
+
+Der Knopf ist jetzt ein **Schalter**, und jeder Ausgang — Ergebnis,
+Fehler, Ende, Frist — führt durch ein einziges `aufhoeren()`. Genommen
+wird `stop()`, nicht `abort()`: `stop()` liefert das bis dahin
+Verstandene, `abort()` wirft es weg. Wer mitten im Wort abbricht, soll
+nicht auch noch das Wort verlieren.
+
+### Ein Weg, den kein Tor je angefasst hat
+
+Der Sprachweg war ungeprüft, weil es im Prüfbrowser keine
+Spracherkennung gibt. Das ist kein Grund, es zu lassen — es ist ein
+Grund, sie **nachzubauen**. `neueSeite` installiert jetzt ein
+`SpeechRecognition`, das Starts und Stopps zählt und beim zweiten Start
+wirft, so wie iOS es tut; `window.__sprich(text, final)` spricht hinein,
+`window.__endeVonSelbst()` lässt die Erkennung von selbst enden.
+
+Damit prüft der Abschnitt `sprechen` vier Dinge: Antippen beginnt und man
+sieht es · **ein zweiter Tipp beendet es** — der gemeldete Fehler · ein
+Ende ohne Ergebnis hinterlässt keine Sackgasse · ein gesprochener Name
+wird gewertet. Zwei stehende Gegenproben halten die beiden ersten Fehler
+fest; beide schlagen mit der Meldung an, auf die es ankommt.
+
+Was der Nachbau **nicht** beweist: dass das Mikrofon auf dem iPhone im
+Querformat auslöst. Er prüft die Logik, nicht das Gerät. M4r bleibt
+offen, und drei Ebenen hängen daran.
+
+Startbündel **208,2 von 400 KB** (der festgehaltene Stand lag noch bei
+197,1 und war seit der Schreibwelt nicht nachgezogen). 139 Gegenproben,
+alle mit Nachweis.

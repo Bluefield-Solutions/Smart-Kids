@@ -572,6 +572,14 @@
     "eine richtige Antwort wird nicht mehr gewertet": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
       "zeit": "2026-08-30"
+    },
+    "aus dem Sprachmodus kommt man nicht mehr heraus": {
+      "commit": "6c30fc66abc0b2c11d038d400eb1c08a3129a7fe",
+      "zeit": "2026-08-30"
+    },
+    "endet die Erkennung von selbst, merkt die App es nicht": {
+      "commit": "6c30fc66abc0b2c11d038d400eb1c08a3129a7fe",
+      "zeit": "2026-08-30"
     }
   }
 }

@@ -1576,7 +1576,7 @@ export const PROBEN = [
     such:"      if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }\n",
     ersatz:'',
     an:{ ...DIST, fehlt:"if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }" },
-    sagt:'' },
+    sagt:'beendet das Zuhören' },
 
   // 2. Endet die Erkennung von selbst - Stille, ein Abbruch durch das
   //    Betriebssystem -, feuert `onresult` nie. Ohne `onend` bleibt
@@ -1585,6 +1585,9 @@ export const PROBEN = [
     args:['--nur=sprechen'], bauen:true, datei:D,
     such:"      e.onend=()=>{ if (gehoert) aufhoeren();\n        else aufhoeren('Fertig. Ich habe nichts verstanden \u2014 tipp noch mal auf das Mikrofon.'); };\n",
     ersatz:'      e.onend=()=>{};\n',
+    // Der Rauchtest schlaegt schon eine Stufe frueher an: ohne `onend`
+    // raeumt auch der zweite Tipp den Zustand nicht ab, und der Ring
+    // atmet weiter. Das ist dieselbe Sache, nur die sichtbare Seite.
     an:{ ...DIST, text:'e.onend=()=>{};' },
-    sagt:'' },
+    sagt:'atmet der Ring weiter' },
 ];
