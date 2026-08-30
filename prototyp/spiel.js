@@ -53,10 +53,25 @@ const zeichenKnopf = (id, zeichen, name)=>
  * durcheinander zu benutzen ist der haeufigste Grund, warum ein Kind sich
  * in einer App verirrt.
  */
+/* Ein LEERER Kopf ist kein Kopf.
+ *
+ * Der Endbildschirm und die Pause riefen `kopf({})` - drei leere Faecher,
+ * und `min-height:68px` machte daraus ein Band von 68 Punkten, in dem
+ * nichts steht. Auf dem Zielgeraet sind das 17 % der Bildschirmhoehe, und
+ * weil der Rest darunter mittig sitzt, stand der ganze Block 68 Punkte
+ * unter der Mitte: viel Luft oben, wenig unten. Gemessen, nicht geschaetzt
+ * - 92 Punkte ueber den Sternen, 24 unter den Knoepfen.
+ *
+ * Die Entscheidung faellt HIER und nicht an den zwei Aufrufstellen: wer
+ * den naechsten Bildschirm ohne Kopfzeile baut, soll nicht daran denken
+ * muessen.
+ */
 const kopf = ({ links='', mitte='', rechts='' })=>
-  `<div class="kopf"><div class="kopf-links">${links}</div>
+  (links || mitte || rechts)
+  ? `<div class="kopf"><div class="kopf-links">${links}</div>
     <div class="kopf-mitte">${mitte}</div>
-    <div class="kopf-rechts">${rechts}</div></div>`;
+    <div class="kopf-rechts">${rechts}</div></div>`
+  : '';
 const zurueckKnopf = (wohin='Zurück')=>
   `<button class="knopf" id="zur"><span class="zei">${ZURUECK}</span><span class="wort">${wohin}</span></button>`;
 const schliessenKnopf = (was='Schließen')=>

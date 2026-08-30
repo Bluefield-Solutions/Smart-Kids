@@ -189,6 +189,10 @@ const AUFNAHMEN = [
    * Karten, wie gleich kommen. `quer-vorlauf` zeigt die Bundeslaender. */
   { name:'quer-vorlauf-rechnen', spiel:'rechnen:plusminus', quer:true,
     wahl:'.schirm.da', tun:'vorlauf' },
+  /* Die Pause — der zweite Bildschirm, der eine leere Kopfzeile trug, und
+   * bis hierher der einzige mit einem Knopf, der ALLES loescht, ohne
+   * Vorbild. Genau solche hatten in der Audit-Runde die Fehler. */
+  { name:'quer-pause', spiel:'kontinente', quer:true, wahl:'.schirm.da', tun:'pause' },
 ];
 
 /**
@@ -314,6 +318,14 @@ async function durchspielen(seite) {
 
 async function vorfuehren(seite, was) {
   if (was === 'durch') return durchspielen(seite);
+  /* Die Pause: aus der laufenden Aufgabe ueber den Zurueck-Knopf. */
+  if (was === 'pause') {
+    await karteSteht(seite);
+    await seite.$eval('.schirm.da #zur', x => x.click());
+    await seite.waitForSelector('.schirm.da #null', { timeout: 5000 });
+    await seite.waitForTimeout(400);
+    return;
+  }
   await karteSteht(seite);
   const i = await seite.evaluate(() => {
     const s = document.querySelector('.schirm.da');

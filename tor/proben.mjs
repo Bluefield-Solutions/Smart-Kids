@@ -713,6 +713,23 @@ const PROBEN = [
     an:{ datei:'tor/inhalt.mjs', text:'rufe.filter(() => false)' },
     sagt:'greift ins Leere' },
 
+  /* Der leere Kopf nimmt wieder 68 Punkte weg.
+   *
+   * Auf dem Zielgeraet sind das 17 % der Bildschirmhoehe, und der ganze
+   * Block darunter steht dann wieder unter der Mitte. */
+  { n:'der leere Kopf nimmt wieder Platz weg', tor:'ansicht', bauen:true, datei:D,
+    such:'  (links || mitte || rechts)\n  ?',
+    ersatz:'  true\n  ?',
+    an:{ ...DIST, fehlt:'(links||mitte||rechts)' },
+    sagt:'quer-ende' },
+  /* Und die Pause verliert ihre Warnung. Der Knopf daneben loescht alles,
+   * was das Kind in dieser Uebung gesammelt hat. */
+  { n:'die Pause warnt nicht mehr vor „von vorne"', tor:'ansicht', bauen:true, datei:D,
+    such:'      <div class="unter" id="was">Bei „von vorne" verschwindet alles, was du',
+    ersatz:'      <div class="unter" id="was">Bei „von vorne" geht es weiter, was du',
+    an:{ ...DIST, fehlt:'von vorne" verschwindet alles' },
+    sagt:'quer-pause' },
+
   /* Der Vorlauf legt wieder acht Spuren an, egal wieviele Karten es sind.
    *
    * Dann stehen sechs Rechenaufgaben linksbuendig in einer Reihe von acht,
