@@ -5257,3 +5257,74 @@ Reihenfolge nicht kennt, misst die falsche Aufgabe.
 
 Der Abschnitt `sprechen` prüft jetzt sieben Dinge; vier neue Gegenproben
 halten die vier Eingriffe fest. 148 Gegenproben, alle mit Nachweis.
+
+---
+
+## B3 · Die umgekehrte Frage — und S3, wo der Backlog sich verschätzt hatte
+
+### „Wo liegt Bayern?"
+
+Dieselbe Karte, andersherum gelesen. Bis hierher stand das gesuchte Gebiet
+hervorgehoben da und die Frage war „wie heißt das?". Jetzt steht bei jeder
+dritten Aufgabe der Name in der Frage und die Karte ist **leer** — kein
+Puls, kein Zeiger, keine Farbe.
+
+Das ist die billigste neue Aufgabenform (sie braucht keine neuen Daten) und
+die mit dem größten Zugewinn: einen Namen wiedererkennen und ein Gebiet
+**finden** sind zwei verschiedene Fähigkeiten, und geübt wurde bisher nur
+die erste.
+
+Geantwortet wird mit einem Tipp auf die Karte — mit **demselben**
+Treffertest, der auch ein abgelegtes Etikett auffängt. Zwei Rechnungen für
+dieselbe Frage wären zwei Stellen, an denen sie auseinanderlaufen können.
+Und der Hinweis bei einem Fehlgriff ist der aus A3, der hier sogar besser
+passt als dort, wo er entstanden ist: beim Ziehen kennt das Kind den Namen
+schon, hier sucht es ihn.
+
+```
+„Wo liegt Berlin?" ohne Markierung
+daneben getippt → „Das ist Saarland. Berlin liegt weiter oben rechts."
+```
+
+### Zwei eigene Fehler, beide vom Hinsehen gefunden
+
+**Die Frage beantwortete sich selbst.** Das gesuchte Gebiet trug weiterhin
+die Klasse `ziel` — und die bekommt in der Stilvorlage die Akzentfarbe. Auf
+dem ersten Bild war Berlin angemalt, während danebenstand „Wo liegt
+Berlin?". Kein Tor hätte das je gemeldet: sie messen Größen und Zustände,
+nicht den Sinn. Dasselbe galt für den Haken auf schon gekonnten Gebieten —
+fehlte er ausgerechnet beim gesuchten, wäre **das** der Hinweis gewesen.
+
+**Und „Lieber ziehen" stand daneben**, ohne etwas zu schalten zu haben.
+
+Dazu ein dritter, den die Sprache selbst gefunden hat: der Schalter stand
+erst weiter unten bei den Antwortwegen — dort, wo er inhaltlich hingehört.
+Die Flächen werden aber sechzig Zeilen früher gerechnet, und `const` gilt
+erst ab seiner Zeile. Der Bildschirm baute sich gar nicht mehr, und der
+Rauchtest meldete nur „Karte nicht da".
+
+### S3 · Der Backlog hatte sich um mehr als zwei Punkte verschätzt
+
+Dort stand „die 26 Karten des Abc sind 42 pt hoch, die Zielmarke ist 44".
+Nachgemessen war es kein Feinschliff: das Gitter legte **acht** Spalten an
+statt neun, die Karten fielen in **vier** Reihen statt drei, und jede war
+**77 × 42** statt **88 × 62**.
+
+Die Ursache ist der alte Bekannte aus Regel 2 — eine **absolute** Grenze
+neben einer **gerechneten**: `max(72px, 100 % / 9 − Abstand)`. Auf dem
+Zielgerät ergibt die Rechnung 68, die 72 gewinnen, und neun Spalten zu 72
+brauchen 680 Punkte, wo 644 sind. Der Notnagel überstimmte den Wunsch.
+
+Und er stand **zweimal** — im Grundsatz und im kurzen Querformat. Gepflegt
+wurde die obere Fassung, gegolten hat auf dem iPhone die untere. Regel 15,
+zum wiederholten Mal. Jetzt ist es eine Marke an einer Stelle.
+
+**Warum es überhaupt so lange lag:** `passt` führte zu kleine Flächen als
+HINWEIS, nicht als Fehler — und das aus gutem Grund, denn der Zurück-Pfeil
+ist absichtlich schmal. Ein **Aufkleber** ist es nie: er ist eine Karte mit
+Bild und Wort, und wenn er unter das Maß fällt, ist ein Gitter
+zusammengerutscht. Für ihn ist die 44-Punkt-Grenze jetzt ein Fehler.
+
+Ein Hinweis, den niemand liest, ist dasselbe wie keiner.
+
+Sieben neue Gegenproben (drei für B3, eine für S3, dazu die drei aus F15).

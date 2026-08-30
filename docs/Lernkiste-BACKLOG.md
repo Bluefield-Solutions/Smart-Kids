@@ -168,20 +168,20 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~7~~ | ~~**F13** Der Sprachmodus hatte keinen Ausgang~~ | Fiona | hoch | klein | **gefahren** |
 | ~~8~~ | ~~**F14** Gesprochenes als Satz verstehen~~ | Fiona | hoch | mittel | **gefahren** |
 | ~~9~~ | ~~**F15** Vier Hebel für die Sprachqualität~~ | Fiona | hoch | mittel | **gefahren** |
+| ~~10~~ | ~~**B3** Die umgekehrte Frage~~ | Lea | mittel | mittel | **gefahren** |
+| ~~11~~ | ~~**S3** Die Buchstabenkarten im Vorlauf~~ | Fiona | gering | klein | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
-| 2 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
-| 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 4 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
-| 5 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
-| 6 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
-| 7 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
-| 8 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
-| 9 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 10 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
-| 11 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 12 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
-| 13 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
-| 14 | **S3** Die Buchstabenkarten im Vorlauf sind 42 statt 44 pt hoch | Fiona | gering | klein | — |
+| 2 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| 3 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
+| 4 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
+| 5 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
+| 6 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
+| 7 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 8 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
+| 9 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
+| 10 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 11 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| 12 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
 
 ---
 
@@ -524,6 +524,62 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 ---
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+### B3 · Die umgekehrte Frage  ·  ERLEDIGT (erste Form)
+
+**„Wo liegt Bayern?"** — dieselbe Karte, andersherum gelesen. Nicht „wie heißt
+dieses Gebiet" mit hervorgehobenem Umriss, sondern der Name in der Frage und
+eine Karte **ohne jede Markierung**. Einen Namen wiedererkennen und ein Gebiet
+*finden* sind zwei Fähigkeiten; geübt wurde bisher nur die erste.
+
+**Wer:** alle, die lesen — Lea, Stephan, Violeta. Fiona bekäme die Frage
+vorgelesen, aber ihr Weg ist das Ziehen eines Etiketts auf ein hervorgehobenes
+Gebiet; ohne Hervorhebung fände sie auf einer Weltkarte keinen Halt. Das ist
+eine eigene Runde wert, keine Nebenbemerkung.
+
+**Wann:** jede dritte Aufgabe, an der laufenden Nummer und nicht am Würfel —
+eine gewürfelte Mischung wäre nicht nachstellbar, und Rauchtest wie Bildabnahme
+müssten raten, welche Aufgabe gerade welche Form hat. Nicht bei den
+Hauptstädten: dort ist die Antwort ein Punkt, kein Gebiet.
+
+**Wie geantwortet wird:** ein Tipp auf die Karte, gemessen mit demselben
+`zielUnter`, das auch ein abgelegtes Etikett auffängt — derselbe Treffertest,
+dieselbe Nachsicht für den Daumen. Ein Fehlgriff bekommt den Hinweis aus A3:
+*„Das ist Saarland. Berlin liegt weiter oben rechts."* Er passt hier sogar
+besser als beim Ziehen — dort kennt das Kind den Namen schon, hier sucht es ihn.
+
+**Zwei Fehler in der eigenen Änderung, beide beim Hinsehen gefunden:**
+das gesuchte Gebiet trug weiterhin die Klasse `ziel` und damit die
+Akzentfarbe — **die Frage beantwortete sich selbst**; und der Umschalter
+„Lieber ziehen" stand daneben, ohne etwas zu schalten zu haben. Kein Tor
+hätte das gemeldet: sie messen Größen und Zustände, nicht den Sinn.
+
+**Offen bleiben die anderen Formen** (Nachbarn, größer/kleiner, Puzzle,
+Steckbrief) — jede einzeln machbar, keine so billig wie diese.
+
+---
+
+### S3 · Die Buchstabenkarten im Vorlauf  ·  ERLEDIGT
+
+Der Backlog sagte „zwei Punkte zu klein". **Gemessen war es mehr:** das Gitter
+legte auf dem Zielgerät **acht** Spalten an statt neun, die 26 Karten fielen in
+**vier** Reihen statt drei, und jede Karte war **77 × 42** statt 88 × 62.
+
+Die Ursache ist ein alter Bekannter: eine **absolute** Untergrenze (72 px) stand
+neben einem **gerechneten** Wert (`100 % / 9 − Abstand` = 68) und überstimmte
+ihn — neun Spalten zu 72 brauchen 680 Punkte, das Gitter hat 644. Und die Regel
+stand **zweimal**: im Grundsatz und im kurzen Querformat. Gepflegt wurde die
+obere, gegolten hat auf dem Zielgerät die untere.
+
+Jetzt ist die Untergrenze eine **Marke** (`--kleber-eng-min: 56px`) an einer
+Stelle, und sie liegt **unter** dem gerechneten Wert statt darüber.
+
+**Und der eigentliche Grund, warum es liegen blieb:** `passt` führte zu kleine
+Flächen als **Hinweis**, nicht als Fehler. Für einen Aufkleber ist das jetzt ein
+Fehler — er ist nie aus gutem Grund schmal, im Gegensatz zum Zurück-Pfeil. Ein
+Hinweis, den niemand liest, ist dasselbe wie keiner.
+
+---
 
 ### F15 · Vier Hebel für die Sprachqualität  ·  ERLEDIGT
 

@@ -620,6 +620,18 @@
     "die Buchstabenkarten rutschen wieder zusammen": {
       "commit": "bf4a6b2a84827d595d1e6c4ec0a4f8f930d632e6",
       "zeit": "2026-08-30"
+    },
+    "die umgekehrte Frage kommt nicht mehr vor": {
+      "commit": "bf7704b6012eb3b89a0b128c4a4c1bd7958ebd65",
+      "zeit": "2026-08-30"
+    },
+    "die umgekehrte Frage verrät ihre Antwort": {
+      "commit": "bf7704b6012eb3b89a0b128c4a4c1bd7958ebd65",
+      "zeit": "2026-08-30"
+    },
+    "der Tipp auf die Karte wird nicht mehr gewertet": {
+      "commit": "bf7704b6012eb3b89a0b128c4a4c1bd7958ebd65",
+      "zeit": "2026-08-30"
     }
   }
 }
