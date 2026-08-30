@@ -599,6 +599,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
+  'test',
                     'pausen', 'schreiben', 'hinweis', 'sprechen'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
@@ -2874,6 +2875,170 @@ if (laeuft('hinweis')) try {
  * etwas versteht, geht nur auf dem Gerät (M4r); dass man aus dem Zuhören
  * wieder herauskommt, geht hier — und genau das hat gefehlt.
  */
+/* Der Test ohne Hilfen (B2).
+ *
+ * Die Abnahme steht im Abgleich mit ANTON und ist woertlich: „der
+ * Rauchtest spielt einen Test durch und prueft, dass die Hilfen fehlen".
+ * Drei Hilfen sind es, und jede einzeln:
+ *   - die Auswahl aus vier Moeglichkeiten
+ *   - „Weiss ich nicht"
+ *   - der Zeiger auf der Karte
+ * Dazu das, was den Pokal traegt: EIN Versuch je Aufgabe, alle
+ * Gegenstaende der Ebene, und der Pokal erscheint nur bei Bestehen.
+ *
+ * Der Stand wird vorgegeben statt erspielt: sechzehn Bundeslaender bis in
+ * Fach 3 zu ueben dauert im Rauchtest laenger als die ganze uebrige Kette,
+ * und geprueft wird hier der TEST, nicht der Weg dorthin.
+ */
+if (laeuft('test')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.evaluate(() => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onupgradeneeded = () => {
+      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+    };
+    auf.onsuccess = () => {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const st = {};
+      for (const g of D.deutschland) st[g.id] = { fach: 5, faellig: 0, hoch: 5 };
+      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+      t.objectStore('fortschritt').put(st, 'lea:bundeslaender');
+      // Fionas Ebene wird MIT gefuellt - sonst prueft „Fiona bekommt keinen
+      // Test" nur, dass sie noch nichts gesammelt hat.
+      t.objectStore('fortschritt').put(st, 'fiona:bundeslaender');
+      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+        'lea:bundeslaender': true, 'fiona:bundeslaender': true } }, 'alles');
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }));
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('[data-profil="lea"]');
+  await p.click('[data-profil="lea"]');
+  await zurEbenenwahl(p, 'bundeslaender');
+
+  // Der Test steht erst da, wenn alles gesammelt ist - und bei Fiona nie.
+  const knopf = await p.$('[data-test="bundeslaender"]');
+  if (!knopf)
+    merke('test', new Error('die Ebene ist ganz gesammelt und es gibt keinen Test — '
+      + 'dann ist der Pokal unerreichbar'));
+  else {
+    await knopf.click();
+    await p.waitForSelector('.schirm.da .karte svg', { timeout: 20000 });
+    const t = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      return {
+        weissnicht: !!s.querySelector('#ueberspringen'),
+        zeiger: !!s.querySelector('.zeiger'),
+        etiketten: s.querySelectorAll('.etikett').length,
+        feld: !!s.querySelector('input.eingabe'),
+        aufgaben: s.querySelectorAll('.band i').length,
+      };
+    });
+    if (t.weissnicht)
+      merke('test', new Error('im Test steht „Weiß ich nicht" da — der Knopf zeigt die '
+        + 'Lösung, und damit ist es keine Prüfung mehr'));
+    if (t.zeiger)
+      merke('test', new Error('im Test steht der Zeiger auf der Karte — er sagt, wo das '
+        + 'gesuchte Gebiet liegt'));
+    if (t.etiketten || !t.feld)
+      merke('test', new Error(`im Test stehen ${t.etiketten} Etiketten statt eines `
+        + 'Schreibfelds — vier Möglichkeiten sind die größte Hilfe, die das Spiel kennt'));
+    if (t.aufgaben !== 16)
+      merke('test', new Error(`der Test hat ${t.aufgaben} Aufgaben statt 16 — er fragt `
+        + 'nicht die ganze Ebene ab, sondern eine Auswahl'));
+
+    /* EIN Versuch je Aufgabe: absichtlich danebenschreiben, dann muss die
+     * Aufgabe vorbei sein - ohne dass die Antwort dasteht. */
+    await p.fill('.schirm.da .eingabe', 'Quatschhausen');
+    await p.$eval('.schirm.da .wahlliste .knopf', x => x.click());
+    await p.waitForTimeout(500);
+    const nachFalsch = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      return { satz: s.querySelector('#frage')?.textContent.trim() || '',
+               loesung: !!s.querySelector('#frage .loesung'),
+               band: [...s.querySelectorAll('.band i')].map(i => i.className).join(' ') };
+    });
+    if (nachFalsch.loesung)
+      merke('test', new Error(`nach einem Fehlversuch steht die Lösung da `
+        + `(„${nachFalsch.satz}") — im Test wird nichts vorgemacht`));
+    if (!/daneben/.test(nachFalsch.band))
+      merke('test', new Error(`nach einem Fehlversuch ist die Aufgabe nicht vorbei `
+        + `(Band: ${nachFalsch.band}) — ein Versuch je Aufgabe, sonst rät man sich durch`));
+
+    // Und den Rest richtig: der Pokal muss kommen und an der Kachel bleiben.
+    for (let n = 0; n < 20; n++) {
+      if (await p.$('.schirm.da #nochmal')) break;
+      await p.waitForFunction(() =>
+        document.querySelectorAll('#buehne .schirm').length === 1, null, { timeout: 8000 });
+      if (await istUmgekehrt(p)) await zeigeAufKarte(p);
+      else {
+        const name = await p.evaluate(() => {
+          const z = document.querySelector('.schirm.da path.ziel');
+          if (!z) return null;
+          const D = JSON.parse(document.getElementById('daten').textContent);
+          return (D.deutschland.find(x => x.id === z.dataset.id) || {}).name || null;
+        });
+        if (!name) break;
+        await p.fill('.schirm.da .eingabe', name);
+        await p.$eval('.schirm.da .wahlliste .knopf', x => x.click());
+      }
+      await p.waitForTimeout(1900);
+    }
+    const ende = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      return { gross: s.querySelector('.gross')?.textContent.trim() || '',
+               unter: s.querySelector('.unter')?.textContent.trim() || '',
+               pokal: !!s.querySelector('.siegsterne svg') };
+    });
+    if (!/bestanden/.test(ende.gross) || !ende.pokal)
+      merke('test', new Error(`fünfzehn von sechzehn richtig und der Endbildschirm sagt `
+        + `„${ende.gross}"${ende.pokal ? '' : ' ohne Pokal'} — bestanden wird ab 80 %`));
+    else {
+      await p.click('.schirm.da #andere');
+      await p.waitForTimeout(600);
+      const bleibt = await p.evaluate(() => !!document.querySelector('.schirm.da .pokal'));
+      if (!bleibt)
+        merke('test', new Error('der Pokal steht nach dem Test nicht an der Kachel — '
+          + 'dann sieht niemand, dass er ihn hat'));
+      else {
+        /* UND FIONA BEKOMMT KEINEN TEST.
+         *
+         * Ihre Auswahl aus vier Moeglichkeiten ist ihr Eingabeweg, keine
+         * Hilfe - ohne sie waere der Test fuer sie keine Pruefung, sondern
+         * eine Sperre. Geprueft wird das bei GEFUELLTER Ebene, sonst
+         * bezeugte es nur, dass sie noch nichts gesammelt hat. */
+        await p.click('.schirm.da #zur');
+        await p.waitForSelector('.schirm.da [data-welt], .schirm.da [data-profil]',
+          { timeout: 8000 });
+        while (!(await p.$('.schirm.da [data-profil="fiona"]'))) {
+          const zur = await p.$('.schirm.da #zur');
+          if (!zur) break;
+          await zur.click(); await p.waitForTimeout(400);
+        }
+        await p.click('[data-profil="fiona"]');
+        await zurEbenenwahl(p, 'bundeslaender');
+        const f = await p.evaluate(() => ({
+          test: !!document.querySelector('[data-test="bundeslaender"]'),
+          gesammelt: (document.querySelector('[data-ebene="bundeslaender"] .stand')
+            ?.textContent || '').trim() }));
+        if (f.test)
+          merke('test', new Error('Fiona bekommt einen Test angeboten — ihre Auswahl aus '
+            + 'vier Möglichkeiten ist ihr Eingabeweg, keine Hilfe. Ohne sie ist der Test '
+            + 'für sie keine Prüfung, sondern eine Sperre'));
+        else if (!/16/.test(f.gesammelt))
+          merke('test', new Error(`Fionas Ebene ist nicht gefüllt (Stand „${f.gesammelt}") `
+            + '— dann bezeugt „kein Test bei Fiona" nur, dass sie noch nichts gesammelt hat'));
+        else console.log(`  Test ohne Hilfen:           16 Aufgaben, keine Auswahl, kein `
+          + `„Weiß ich nicht", kein Zeiger, ein Versuch — „${ende.gross}", Pokal bleibt, `
+          + `bei Fiona kein Test (Stand ${f.gesammelt})`);
+      }
+    }
+  }
+  await p.close();
+} catch (e) { merke('test', e); }
+
 /* Die umgekehrte Frage (B3) - „Wo liegt Bayern?"
  *
  * Sie braucht einen eigenen Abschnitt, weil sie erst bei der DRITTEN

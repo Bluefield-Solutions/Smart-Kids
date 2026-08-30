@@ -718,8 +718,10 @@ export const PROBEN = [
   // eine Zeile tiefer, nur genauer. Auf dem Endbildschirm der Kinder sind
   // sie richtig, bei den Eltern doppelt.
   { n:'die Siegsterne kommen bei den Eltern zurück', tor:'ansicht', bauen:true, datei:D,
-    such:"      ${ton().siegsterne ? `<div class=\"siegsterne\">${sterne(n,56)}</div>` : ''}",
-    ersatz:'      <div class="siegsterne">${sterne(n,56)}</div>',
+    // Seit B2 steht davor die Weiche „Test oder Uebung"; getauscht wird
+    // nur der Uebungszweig.
+    such:": ton().siegsterne ? `<div class=\"siegsterne\">${sterne(n,56)}</div>` : ''}",
+    ersatz:': `<div class="siegsterne">${sterne(n,56)}</div>`}',
     an:{ ...DIST, fehlt:'ton().siegsterne ?' },
     sagt:'quer-ende-eltern' },
   // Ein Schluessel fehlt in einem der beiden Toene.
@@ -1237,8 +1239,8 @@ export const PROBEN = [
   // ausgeblendet, und die Zahl daneben liest Fiona nicht.
   { n:'die Ebenenwahl zeigt keine Aufkleber mehr', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
-    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}</div>',
-    ersatz:'<div class="stand"></div>',
+    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}${',
+    ersatz:'<div class="stand">${\'\'}${',
     an:{ ...DIST, fehlt:'<div class="stand">${kleberMarke(b.gesammelt' },
     sagt:'nennt die Aufkleber nicht' },
 
@@ -1250,8 +1252,8 @@ export const PROBEN = [
    * ist eine Zeile, und niemand wuerde ihn bemerken. */
   { n:'die Sterne kommen auf die Ebenenkachel zurueck', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
-    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}</div>',
-    ersatz:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${kleberMarke(b.gesammelt, b.gesamt)}</div>',
+    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}${',
+    ersatz:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${kleberMarke(b.gesammelt, b.gesamt)}${',
     an:{ ...DIST, text:'sterne(sterneFuer(b.gesammelt, b.gesamt), 20)' },
     sagt:'zeigt wieder' },
 

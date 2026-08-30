@@ -103,6 +103,17 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .band i.glatt{background:var(--gut)}
 .band i.geschafft{background:var(--treffer);opacity:.75}
 .band i.gezeigt{background:var(--warn)}
+/* Im Test danebengelegen (B2).
+   Dieselbe Farbe wie „vorgemacht bekommen" - und das ist kein Versehen:
+   die beiden koennen im selben Band nie zusammen vorkommen. Im Test wird
+   nichts vorgemacht, in der Uebung gibt es kein Daneben ohne Aufloesung.
+   Zwei Farben fuer zwei Dinge, die sich nie begegnen, waeren eine
+   Unterscheidung, die niemand je sieht. */
+.band i.daneben{background:var(--warn)}
+/* Der Pokal auf der Kachel (B2) - in derselben Zeile wie der
+   Aufkleberstand, weil beide dasselbe sagen: was du hier hast. */
+.kachel .pokal{display:inline-flex;line-height:0;margin-left:var(--r1)}
+.kachel .pokal svg{width:22px;height:22px}
 .band i.weiter{background:var(--linie)}
 .band i.jetzt{background:var(--ziel);transform:scale(1.5)}
 @media (max-width:420px){ .band i{width:9px;height:9px} .band{gap:var(--r1)} }

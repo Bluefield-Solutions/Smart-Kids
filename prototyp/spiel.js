@@ -13,6 +13,19 @@ const VIER = ['--f1','--f3','--f5','--f6'];
 const el = (t,k,i)=>{ const e=document.createElement(t); if(k)e.className=k; if(i!==undefined)e.innerHTML=i; return e; };
 const STERN = (f,g=24)=>`<svg width="${g}" height="${g}" viewBox="-14 -14 28 28"><path d="M0 -12 3.7 -4 12 -2.8 6 3.2 7.4 12 0 7.8 -7.4 12 -6 3.2 -12 -2.8 -3.7 -4Z" fill="${f}" stroke="var(--tinte)" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
 const LOESCHEN='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H9L3 12l6 6h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M17 10l-4 4M13 10l4 4"/></svg>';
+/* Der Pokal (B2). Gezeichnet und nicht als Schriftzeichen: ein Emoji sieht
+   auf jedem Geraet anders aus, und das Tor `schrift` kennt es nicht. */
+/* Gold mit Tintenkontur - genau die Sprache der Sterne (`STERN`). Ein
+   Pokal, der wie ein Bedienzeichen aussieht, wird auch wie eines gelesen. */
+const POKAL='<svg width="26" height="26" viewBox="0 0 24 24" fill="none"'
+  + ' stroke="var(--tinte)" stroke-width="1.8" stroke-linecap="round"'
+  + ' stroke-linejoin="round">'
+  + '<path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="var(--stern-an)"/>'
+  + '<path d="M8 21h8M12 17v4"/>'
+  + '<path d="M17 5h2.5a2.5 2.5 0 0 1 0 5H17M7 5H4.5a2.5 2.5 0 0 0 0 5H7"/></svg>';
+/* Derselbe Pokal, gross - fuer den Endbildschirm. Eine Marke, kein
+   zweites Zeichen: sonst veraltet eines von beiden (Regel 15). */
+const POKALGROSS = POKAL.replace('width="26" height="26"', 'width="72" height="72"');
 const ZURUECK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>';
 /* ---------- Zeichen und der Kopf ------------------------------------------
  *
@@ -1080,10 +1093,55 @@ async function staende(){
   for (const e of meineEbenen()) {
     let st = {};
     try { st = (await Ablage.hole('fortschritt', `${P.id}:${e.id}`)) || {}; } catch(err){}
-    aus.push({ ...e, ...Leitner.fortschritt(vorrat(e.id, st), st) });
+    aus.push({ ...e, ...Leitner.fortschritt(vorrat(e.id, st), st),
+               pokal: await pokalStand(e.id) });
   }
   return aus;
 }
+
+/* ---------- Der Pokal (B2) ----------------------------------------------
+ *
+ * Ein Pokal steht fuer einen bestandenen TEST, nicht fuer eine Sammlung.
+ * Das ist der ganze Unterschied zu den Sternen und den Aufklebern: die
+ * bekommt man fuers Ueben, den Pokal nur dafuer, dass man es einmal OHNE
+ * Hilfen gezeigt hat.
+ *
+ * Er liegt bei den Einstellungen und nicht im Fortschritt, weil er kein
+ * Lernstand ist: „von vorne" loescht den Fortschritt einer Ebene - einen
+ * bestandenen Test loescht es nicht. Was man gezeigt hat, hat man gezeigt.
+ */
+const pokalSchluessel = (ebeneId) => `pokal:${P.id}:${ebeneId}`;
+async function pokalStand(ebeneId){
+  try { return (await Ablage.hole('einstellungen', pokalSchluessel(ebeneId))) || null; }
+  catch(e){ return null; }
+}
+async function pokalSetzen(ebeneId, wert){
+  try { await Ablage.setze('einstellungen', pokalSchluessel(ebeneId), wert); } catch(e){}
+}
+
+/* Wer darf einen Test machen?
+ *
+ * NUR WER LIEST. Fionas Auswahl aus vier Moeglichkeiten ist ihr
+ * Eingabeweg, keine Hilfe - ohne sie waere der Test fuer sie keine
+ * Pruefung, sondern eine Sperre. Ein Test, den ein Kind nicht bestehen
+ * KANN, ist kein Test.
+ *
+ * Und nur auf Kartenebenen: beim Rechnen gibt es keinen Vorrat, der
+ * einmal „durch" ist, und damit auch kein Ende, an dem ein Test staende.
+ */
+const testErlaubt = (b) => P.eingabe.includes('tippen')
+  && ebeneArt(b.id) === 'karte' && b.gesamt > 0;
+/** Offen ist der Test erst, wenn die Ebene GANZ gesammelt ist. */
+const testOffen = (b) => testErlaubt(b) && b.gesammelt >= b.gesamt;
+
+/* Bestanden ab vier Fuenfteln.
+ *
+ * Nicht „alles richtig": bei sechzehn Bundeslaendern haengt ein Pokal
+ * sonst an einem einzigen Verrutscher, und der Test wird zu einer Sache,
+ * die man wieder und wieder anfaengt. Nicht die Haelfte: dann steht der
+ * Pokal fuer etwas, das man auch raten kann. Vier Fuenftel sind bei
+ * sechzehn Gegenstaenden dreizehn - man darf dreimal danebenliegen. */
+const BESTANDEN_AB = 0.8;
 
 /** Der Kopf, den beide Wahlbildschirme tragen. Einmal geschrieben. */
 const wahlKopf = (mitte) => kopf({ links: zurueckKnopf(), mitte:`<span class="marke">${mitte}</span>`,
@@ -1149,13 +1207,23 @@ async function ebenenwahl(){
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
           <div class="kachelfuss">
-            <div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}</div>
+            <div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}${
+              /* Der Pokal steht NEBEN dem Aufkleberstand, nicht darueber:
+                 beide sagen „was du hier hast", und beide gehoeren damit in
+                 dieselbe Zeile. Der erste Anlauf legte ihn absolut ueber die
+                 Kachel - dort lag er auf der Zahl. */
+              b.pokal ? `<span class="pokal" title="Test bestanden">${POKAL}</span>` : ''}</div>
             ${fortschrittBalken(b)}
           </div>
         </button>
         <div class="kachelknoepfe">
           <button class="leise mini" data-schau="${b.id}">anschauen</button>${b.gesammelt ? `
-          <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}
+          <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}${
+          /* Der Test steht erst da, wenn die Ebene ganz gesammelt ist (B2).
+             Vorher waere er kein „Test am Ende", sondern eine zweite Art
+             zu ueben - und der Pokal waere nichts wert. */
+          testOffen(b) ? `
+          <button class="leise mini" data-test="${b.id}">Test</button>` : ''}
         </div></div>`).join('')}</div>
     </div>`;
   // Zurück führt in die Welt, nicht bis zur Profilwahl: sonst wäre die
@@ -1172,6 +1240,10 @@ async function ebenenwahl(){
     else starten(id); });
   s.querySelectorAll('[data-schau]').forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); zeige(()=>vorlauf(b.dataset.schau)); });
+  // In den Test geht es OHNE Vorlauf: wer geprueft wird, schaut sich die
+  // Antworten nicht vorher an.
+  s.querySelectorAll('[data-test]').forEach(b=>b.onclick=(ev)=>{
+    ev.stopPropagation(); starten(b.dataset.test, true); });
 
   // „Von vorne" - und zwar fuer das Kind, nicht hinter der Eltern-PIN.
   //
@@ -1441,7 +1513,7 @@ async function ebeneLaden(ebeneId){
   } catch(e){ return false; }
 }
 
-async function starten(ebeneId){
+async function starten(ebeneId, alsTest = false){
   if (!(await ebeneLaden(ebeneId))) {
     zeige(()=>{ const s=el('div');
       s.innerHTML = kopf({ links: zurueckKnopf() }) + `
@@ -1499,8 +1571,15 @@ async function starten(ebeneId){
   // Ein Zaehler, den niemand liest, ist kein Zustand, sondern eine Einladung
   // an die naechste Formel, sich an ihm zu bedienen: genau so kamen die zwei
   // Sternformeln zustande, die der Audit gefunden hat.
-  Sitzung = { ebeneId, alle, liste, i:0, glatt:0, wie:[],
-              aufkleber:0, keim, begonnen:Date.now() };
+  /* Ein TEST fragt ALLES, einmal (B2).
+   *
+   * Nicht der Leitner: der waehlt nach Faelligkeit und wuerde ein Gebiet
+   * zweimal bringen und ein anderes gar nicht. Ein Test, der nur die
+   * wackeligen Gegenstaende abfragt, misst nicht, was jemand kann - er
+   * misst, was der Leitner gerade fuer wackelig haelt. */
+  const testListe = alsTest ? mischenMit(alle, keim) : null;
+  Sitzung = { ebeneId, alle, liste: testListe || liste, i:0, glatt:0, wie:[],
+              aufkleber:0, keim, begonnen:Date.now(), test: alsTest };
   zeige(schirmZu(ebeneId));
 }
 
@@ -2231,7 +2310,12 @@ function spielschirm(){
    * R4 nichts beweisen: Eingriff angekommen, Tor gruen. Gefunden hat das
    * nicht der Blick auf den Quelltext, sondern die Probe selbst. */
   const darfWaehlen = P.kandidaten > 0;
-  const istAuswahl = (istHaupt || art==='bundeslaender') && darfWaehlen;
+  /* Im TEST gibt es keine Auswahl (B2).
+   *
+   * Vier Moeglichkeiten sind die groesste Hilfe, die das Spiel kennt: sie
+   * machen aus „wie heisst das" ein „welches von diesen vieren". Genau
+   * darum geht der Test ohne sie. */
+  const istAuswahl = (istHaupt || art==='bundeslaender') && darfWaehlen && !st.test;
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
@@ -2352,7 +2436,9 @@ function spielschirm(){
   // Der Zeiger wird in BILDSCHIRMPUNKTEN gezeichnet, nicht in
   // Kartenkoordinaten: sonst schrumpft er mit dem Massstab und ist auf
   // Thueringen nur noch ein blauer Fleck.
-  const zeiger = zielForm.anker
+  // Und kein Zeiger: er sagt, WO das gesuchte Gebiet liegt - im Test ist
+  // genau das die Frage.
+  const zeiger = zielForm.anker && !st.test
     ? `<g class="zeiger" data-x="${zielForm.anker[0]}" data-y="${zielForm.anker[1]}">
          <path d="M0 -2 L-9 -17 L9 -17 Z" fill="var(--akzent)"/>
          <circle cy="-26" r="11" fill="var(--akzent)" stroke="white" stroke-width="2.5"/>
@@ -2619,13 +2705,18 @@ function spielschirm(){
       ziehbar(b,k); liste.appendChild(b); });
   }
 
-  // Der leise Ausweg. Er steht bewusst klein und ohne Farbe da: er soll
-  // erreichbar sein, aber nicht einladen.
-  const weiter = el('button','leise');
-  weiter.id = 'ueberspringen';
-  weiter.textContent = 'Weiß ich nicht';
-  weiter.onclick = ()=>aufloesen('uebersprungen');
-  werkzeug.appendChild(weiter);
+  /* Der leise Ausweg. Er steht bewusst klein und ohne Farbe da: er soll
+   * erreichbar sein, aber nicht einladen.
+   *
+   * Im TEST steht er gar nicht da (B2). Er zeigt die Loesung - in einer
+   * Pruefung ist das kein Ausweg, sondern die Antwort. */
+  if (!st.test) {
+    const weiter = el('button','leise');
+    weiter.id = 'ueberspringen';
+    weiter.textContent = 'Weiß ich nicht';
+    weiter.onclick = ()=>aufloesen('uebersprungen');
+    werkzeug.appendChild(weiter);
+  }
 
   /* Der Umschalter steht nur dort, wo er etwas zu schalten hat: bei einer
    * Auswahl mit Etiketten. Beim Tippfeld gibt es nichts umzuschalten - und
@@ -3232,6 +3323,30 @@ function spielschirm(){
                 neuerAufkleber);
       sagen(ergebnis==='fast' ? text
         : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    } else if (st.test) {
+      /* Im Test ist EIN Versuch alles (B2).
+       *
+       * „Keine Loesung nach drei Fehlern" allein waere zu wenig gedacht:
+       * ohne Aufloesung koennte man beliebig oft raten, und bei vier
+       * Moeglichkeiten hat man nach dreimal Raten recht. Ein Versuch je
+       * Aufgabe ist die einzige Fassung, die den Pokal etwas wert laesst.
+       *
+       * Die Aufgabe endet, aber die Antwort steht NICHT da: was hier
+       * fehlt, gehoert in die naechste Uebungsrunde, nicht in die
+       * Pruefung. */
+      erledigt = true;
+      // Der Leitner erfaehrt es: nicht gekonnt ist nicht gekonnt, ob mit
+      // oder ohne Hilfen. Sonst waere ein Test eine Runde, die den
+      // Lernstand nicht anfasst - und genau die Gegenstaende, die im Test
+      // durchfallen, kaemen nicht wieder.
+      Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+      st.wie[st.i] = 'daneben';
+      kopfNachziehen();
+      standSichern(st.ebeneId);
+      klangZu('falsch');
+      const f = s.querySelector('#frage');
+      if (f) f.innerHTML = `<span class="fastText">Das war nicht richtig.</span>`;
+      sagen('Das war nicht richtig.');
     } else if (versuch >= 3) {
       // Nach dem dritten Fehlversuch wird aufgeloest. Ein Kind, das
       // dreimal daneben lag, raet ab jetzt nur noch.
@@ -3514,11 +3629,26 @@ function endschirm(){
   const st=Sitzung, s=el('div');
   const n=sterneFuer(st.glatt, st.liste.length);
   const f=Leitner.fortschritt(st.alle, Stand);
+  /* Der Test hat ein Urteil, die Uebung hat einen Fortschritt (B2).
+   *
+   * Gezaehlt wird `glatt` - beim ERSTEN Versuch richtig. Im Test gibt es
+   * ohnehin nur einen, aber die Zahl kommt aus derselben Stelle wie
+   * ueberall sonst: zwei Zaehler fuer dieselbe Sache waeren zwei Zahlen,
+   * die eines Tages auseinanderlaufen (F2 und F3 im Stand, beide genau so
+   * entstanden). */
+  const bestanden = st.test && st.glatt >= Math.ceil(st.liste.length * BESTANDEN_AB);
+  if (st.test && bestanden) pokalSetzen(st.ebeneId,
+    { zeit: Date.now(), richtig: st.glatt, von: st.liste.length });
   s.innerHTML=kopf({}) + `
     <div class="mitte">
-      ${ton().siegsterne ? `<div class="siegsterne">${sterne(n,56)}</div>` : ''}
-      <div class="gross">${ton().ende}</div>
-      <div class="unter">${st.glatt} von ${st.liste.length} auf Anhieb richtig.</div>
+      ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
+        : ton().siegsterne ? `<div class="siegsterne">${sterne(n,56)}</div>` : ''}
+      <div class="gross">${st.test
+        ? (bestanden ? 'Test bestanden!' : 'Noch nicht ganz.') : ton().ende}</div>
+      <div class="unter">${st.test
+        ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
+          + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
+        : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
       ${fortschrittBalken(f, 'breit')}
       <div class="buchstand">${kleberMarke(f.gesammelt, f.gesamt)}<span>${
         st.aufkleber ? ton().neueKleber(st.aufkleber)
@@ -3528,11 +3658,16 @@ function endschirm(){
         !st.aufkleber && !f.gesammelt
           ? `<div class="leiser">${ton().ersterKleber}</div>` : ''}
       <div class="reihe siegwahl">
-        <button class="knopf haupt" id="nochmal">Noch einmal</button>
+        <button class="knopf haupt" id="nochmal">${
+          st.test ? (bestanden ? 'Weiter üben' : 'Noch einmal üben') : 'Noch einmal'}</button>
         <button class="knopf" id="buch">Forscherbuch</button>
         <button class="knopf" id="andere">Etwas anderes</button>
       </div>
     </div>`;
+  /* Nach einem Test fuehrt der Hauptknopf ins UEBEN, nicht in den naechsten
+   * Test - auch wenn er bestanden wurde. Wer durchgefallen ist, soll nicht
+   * gleich noch einmal geprueft werden, und wer bestanden hat, hat hier
+   * nichts mehr zu holen. Der Test steht weiter an der Kachel. */
   s.querySelector('#nochmal').onclick=()=>starten(st.ebeneId);
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
   s.querySelector('#andere').onclick=()=>zeige(ebenenwahl);
