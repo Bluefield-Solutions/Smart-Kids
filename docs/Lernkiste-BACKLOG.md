@@ -162,10 +162,10 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~1~~ | ~~**N2a** Buchstaben nachfahren~~ | Fiona | hoch | groß | **gefahren** |
 | ~~2~~ | ~~**N3** Buchstabe angesagt, selbst geschrieben~~ | Fiona | hoch | mittel | **gefahren** |
 | ~~3~~ | ~~**N4** Zahlen 1 bis 20~~ | Fiona | hoch | klein | **gefahren** |
-| 1 | **N1** Stephan und Violeta, mit Vergleich | ihr beide | hoch | mittel | — |
+| ~~4~~ | ~~**N1** Stephan und Violeta, mit Vergleich~~ | ihr beide | hoch | mittel | **gefahren** |
+| 1 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
+| 2 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
 | 3 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 5 | **S1** Drei Sterne bedeuten zwei Dinge | Fiona, Lea | hoch | klein | — |
-| 6 | **A3** Der Fehler wird auch beim Ziehen benannt | Fiona, Lea | hoch | mittel | — |
 | 7 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 8 | **B3** „Wo liegt Bayern?" — die umgekehrte Frage | Lea | mittel | mittel | — |
 | 9 | **B2** Test ohne Hilfen, mit Pokal | Lea | mittel | mittel | — |
@@ -182,7 +182,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 ---
 
-### N1 · Stephan und Violeta — zwei Elternprofile, die sich vergleichen
+### N1 · Stephan und Violeta  ·  ERLEDIGT
 
 **Ziel.** Aus der einen Kachel „Eltern" werden zwei: **Stephan** (mit PH)
 und **Violeta** (mit einem T). Gleiche Aufgaben, gleiche Schwierigkeit,
@@ -211,12 +211,34 @@ zeigt Zahlen, Wackelkandidaten und einen Löschknopf **je Profil**.
    das steht dabei, statt ihn stillschweigend zu verlieren oder zu
    verdoppeln.
 
-**Abnahme.** Der Rauchtest liest **vier** Profilnamen aus § 2.1 und findet
-jeden auf der Profilwahl und in der Übersicht wieder; er spielt eine
-Aufgabe als Stephan und eine als Violeta und weist nach, dass der
-Fortschritt des einen den des anderen nicht bewegt; der Vergleichsbildschirm
-zeigt beide Zahlen und benennt, wer vorn liegt. Gegenprobe: beide Profile
-auf denselben Ablageschlüssel legen — dann muss die Prüfung rot werden.
+**Erledigt.** Vier Kacheln auf der Profilwahl, Spalte für Spalte gleiche
+Werte für die beiden Erwachsenen, und im Elternbereich ein Bildschirm
+**Stephan gegen Violeta**: je Übung und zusammen, wie viele Aufgaben *auf
+Anhieb richtig* waren, die Zeit klein daneben. Wer in einer Zeile vorn
+liegt, ist markiert — sonst müsste man zwei Zahlen im Kopf vergleichen.
+
+Der eigentliche Umbau lag woanders, als er aussah: **vier Tore lasen die
+Spalten der Reihe nach** (`['fiona','lea','eltern']`). Eine vierte Spalte
+hätte jede Zeile um eins verschoben, und Violetas Werte wären als Stephans
+geprüft worden — lautlos. Die Kennungen kommen jetzt aus der **Kopfzeile**
+der Tabelle; eine fünfte Spalte würde von selbst mitgeprüft.
+
+Und die Lücke, die dabei sichtbar wurde: fällt eine Spalte *weg*, prüft
+jedes Tor stillschweigend ein Profil weniger — keines wird rot, weil ihnen
+allen dasselbe Soll fehlt. Der Rauchtest vergleicht deshalb jetzt die Zahl
+der Profile in der App mit der Zahl der Spalten.
+
+Der alte Stand unter der Kennung `eltern` ist **Stephan zugeschlagen** und
+zieht beim ersten Start um; das Protokoll wird beim Lesen umgeschrieben,
+nicht in der Ablage — ein Mitschnitt wird nicht rückwirkend geändert.
+
+**Abnahme, gefahren.** Der Rauchtest liest vier Profilnamen aus § 2.1,
+findet jeden in der Übersicht und je einen Löschknopf, spielt **alle vier**
+Profile durch, und setzt einen Mitschnitt mit bekanntem Ausgang: die
+Erwartung (2 von 3 gegen 1 von 2, Stephan vorn) steht im Tor
+ausgeschrieben, nicht als zweiter Aufruf derselben Rechnung. Zwei stehende
+Gegenproben: eine lässt „auf Anhieb" zu „richtig" werden, eine nimmt der
+Tabelle eine Spalte.
 
 ---
 
