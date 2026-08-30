@@ -1590,4 +1590,54 @@ export const PROBEN = [
     // atmet weiter. Das ist dieselbe Sache, nur die sichtbare Seite.
     an:{ ...DIST, text:'e.onend=()=>{};' },
     sagt:'atmet der Ring weiter' },
+
+  /* --- F14: Gesprochenes ist ein Satz, kein Wort ----------------------
+   *
+   * Der Sprachweg liess sich beenden (F13) und verstand trotzdem nichts.
+   * Vier Fehler, vier Proben - jede haelt einen davon fest.
+   */
+
+  // 1. Der Abgleich bekommt wieder nur das ganze Wort. Ein Satz faellt
+  //    dann an der Laengenstrafe durch - genau der gemeldete Zustand.
+  { n:'ein ganzer Satz wird nicht mehr verstanden', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:'      vorurteil = Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);',
+    ersatz:'      vorurteil = Vergleich.abgleich(roh, kand);',
+    an:{ ...DIST, text:'vorurteil = Vergleich.abgleich(roh, kand);' },
+    sagt:'gesprochen und nichts gewertet' },
+
+  // 2. Nicht verstanden zaehlt wieder als Fehlversuch. Nach drei
+  //    Verstaendnisfehlern loest die App die Aufgabe auf.
+  { n:'nicht verstanden kostet wieder einen Versuch', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"      if (vorurteil.art==='nochmal') {",
+    ersatz:'      if (false) {',
+    an:{ ...DIST, fehlt:"if (vorurteil.art==='nochmal') {" },
+    sagt:'' },
+
+  // 3. Nur die erste Lesart wird gelesen - die anderen beiden holt sich
+  //    die App und wirft sie weg.
+  { n:'von drei Lesarten zaehlt wieder nur die erste', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:'        for (let i = 0; i < r.length; i++) {',
+    ersatz:'        for (let i = 0; i < 1; i++) {',
+    an:{ ...DIST, text:'for (let i = 0; i < 1; i++) {' },
+    sagt:'zweite Lesart' },
+
+  // 4. Die Meldung verschweigt wieder, was angekommen ist.
+  { n:'die Meldung sagt nicht mehr, was angekommen ist', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:'        const satz = roh ? `Ich habe \u201e${roh}\u201c verstanden. Sag es noch einmal.`',
+    ersatz:"        const satz = roh ? 'Das habe ich nicht verstanden.'",
+    an:{ ...DIST, text:"const satz = roh ? 'Das habe ich nicht verstanden.'" },
+    sagt:'nennt nicht, was angekommen ist' },
+
+  // 5. Und der Waechter des Ausschnitts. Ohne ihn wird „sued sudan" zu
+  //    SUDAN - ein echtes Nachbarland als ein anderes gewertet.
+  { n:'der Ausschnitt schneidet wieder Bestimmungswörter ab', tor:'vergleich',
+    datei:'src/vergleich/vergleich.js',
+    such:'      if (BESTIMMEND.has(w[i - 1]) || BESTIMMEND.has(w[i + n])) continue;\n',
+    ersatz:'',
+    an:{ datei:'src/vergleich/vergleich.js', fehlt:'BESTIMMEND.has(w[i - 1])' },
+    sagt:'sudan' },
 ];
