@@ -3742,3 +3742,57 @@ ein Bildschirm.
 **46 s bei 39,4 gegen 43,1.** Gegenüber dem Stand vor dieser Runde (43 s
 bei 20 Aufnahmen) kostet die neue Aufnahme damit drei Sekunden statt
 dreizehn.
+
+## Der Vorlauf einer Rechenebene war die Einmaleins-Tafel
+
+Bestellt war ein **Vorbild** für den Vorlauf der Rechenebenen — der
+einzige Bildschirm dieser Art ohne eines. Beim Fotografieren fiel auf,
+warum ihn noch niemand angesehen hatte: er passt nicht auf ein Bild.
+
+**Gemessen auf dem Zielgerät (844 × 390):**
+
+| Ebene | Karten | Bildschirme |
+|---|---|---|
+| Fiona · Plus und Minus | **100** | **2,8** |
+| Lea · Reihen 6 bis 10 | 140 | — |
+| Eltern · Großes Einmaleins | **158** | **4,2** |
+
+Das ist kein Blättern mehr, das ist die Einmaleins-Tafel — und sie stand
+vor der **ersten** Sitzung einer Sechsjährigen.
+
+### Eine Regel, die für Gebiete gedacht war
+
+R3 sagte: *„Alle Gebiete der Ebene mit Namen, Umriss; antippen liest vor."*
+Für sechzehn Bundesländer ist das ein Bildschirm, und danach kennt man sie.
+Die Rechenebenen haben die Regel still geerbt — nur ist ihr Vorrat
+**erzeugt**. Eine Zahl, die für eine Liste stimmt, stimmt nicht für einen
+Generator.
+
+Kein Tor hat das gemeldet, und keines hätte es können: der Bildschirm war
+vollständig, bedienbar und im Rahmen. Er war nur sinnlos. Das ist genau der
+Fall, für den Regel 8 dasteht — *kein Tor ersetzt den Blick*.
+
+### Was jetzt dasteht
+
+So viele Beispiele, wie gleich kommen: **`P.sitzung`** — 6 für Fiona, 8 für
+Lea, 12 für die Eltern. Die Zahl steht schon im Profil und wird nicht neu
+erfunden.
+
+Genommen wird **jede n-te**, nicht der Anfang. Bei „Plus und Minus" stünden
+sonst acht Mal `1 + irgendwas` da und kein einziges Minus; mit dem Schritt
+sind es drei Plus und drei Minus. Ein Beispiel, das nur eine Sorte zeigt,
+erklärt die Ebene falsch.
+
+Der Satz sagt es mit: *„So sehen die Aufgaben aus — hier ein paar davon,
+gleich kommen 6."*
+
+### Und die Zusage steht im Rauchtest
+
+Die Zahl der Karten muss die **Sitzungslänge** sein, und die liest der Test
+aus der Zeile „Aufgaben je Sitzung" derselben Backlog-Tabelle, aus der schon
+Tiefe, Namen, Ton und Auswahlverbot kommen — nicht aus `spiel.js`, das die
+Gegenprobe fälscht.
+
+Dazu das Vorbild, das gefehlt hat: `quer-vorlauf-rechnen`. Zweiundzwanzig
+Aufnahmen, und die schnelle Bahn bleibt bei 46 s — die Aufteilung nach
+Aufwand fängt die neue ab.
