@@ -550,7 +550,12 @@ const PROBEN = [
   // `ctx.newPage()` nimmt keine Optionen; sechs Aufrufstellen nannten
   // 844x390 und liefen auf 1280x720. Eine verworfene Option wirft nicht,
   // sie tut nichts - deshalb sagt es der Test jetzt selbst.
-  { n:'der Bildausschnitt wird wieder verworfen', tor:'smoke',
+  /* `bauen:true`, obwohl der Eingriff im TOR steht und nicht in der App.
+   * Die Wegwerf-Kopie ist ein frischer Auschecker, und `dist/` steht
+   * nicht in Git - ohne Bau faehrt der Rauchtest gegen nichts und ist
+   * schon vor dem Eingriff rot. Die Probe meldete das selbst: „ist schon
+   * OHNE Eingriff rot". */
+  { n:'der Bildausschnitt wird wieder verworfen', tor:'smoke', bauen:true,
     args:['--nur=spielen'], datei:'tor/smoke.mjs',
     such:'  await p.setViewportSize(viewport);',
     ersatz:'  // (Bildausschnitt nicht gesetzt)',
