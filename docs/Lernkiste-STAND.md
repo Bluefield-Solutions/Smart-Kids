@@ -4510,3 +4510,17 @@ Nebenbei hat das **Markentor** die drei Animationsdauern gefangen, die ich
 frei in die Stilvorlage geschrieben hatte — sie stehen jetzt als
 `--d-warten` und `--d-warten-versatz` im Markensystem, mit Werten für
 `prefers-reduced-motion` dazu.
+
+### Eine Gegenprobe, die wieder gestrichen wurde
+
+Zur Aufräum-Zusage („das Zeichen bleibt nicht stehen") stand hier eine
+zweite Gegenprobe: die Uhr nicht abbestellen. Ihr Schatten ist viel größer
+als gedacht — die Wartezeichen stapeln sich über der Bedienung, **jeder**
+Klick läuft auf, und der Rauchtest wird schon im ersten Abschnitt rot, mit
+„page.click: Timeout". Der erwartete Satz kam nie.
+
+Eine Gegenprobe, deren Wirkung das Tor an einer früheren Stelle umbringt,
+beweist nichts über die spätere. Und den erwarteten Satz auf „Timeout"
+umzustellen hieße, eine Zufallsmeldung zum Nachweis zu erklären. Also
+gestrichen, mit der Begründung an ihrer Stelle — die Zusage wird im
+Rauchtest geprüft und hier nicht noch einmal behauptet.

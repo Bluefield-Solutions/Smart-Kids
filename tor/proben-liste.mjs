@@ -367,13 +367,22 @@ export const PROBEN = [
     ersatz:'const WARTEZEICHEN_AB = 999999;',
     an:{ ...DIST, text:'WARTEZEICHEN_AB = 999999' },
     sagt:'kein Wartezeichen' },
-  /* Und das Zeichen darf nicht stehenbleiben, wenn der Bildschirm da ist. */
-  { n:'das Wartezeichen bleibt stehen', tor:'smoke', args:['--nur=ablage'],
-    bauen:true, datei:D,
-    such:'    if (uhr) clearTimeout(uhr);',
-    ersatz:'    if (false) clearTimeout(uhr);',
-    an:{ ...DIST, text:'if (false) clearTimeout(uhr)' },
-    sagt:'bleibt stehen' },
+  /* KEINE zweite Probe fuer „das Zeichen bleibt stehen".
+   *
+   * Sie stand hier und wurde wieder gestrichen. Der Eingriff (die Uhr
+   * nicht abbestellen) hat einen viel groesseren Schatten als gedacht:
+   * die Wartezeichen stapeln sich ueber der Bedienung, und JEDER Klick
+   * laeuft auf. Der Rauchtest wird rot - schon im ersten Abschnitt, mit
+   * „page.click: Timeout" -, also lange bevor die eigene Pruefung
+   * drankaeme. Ihr erwarteter Satz kam nie.
+   *
+   * Eine Gegenprobe, deren Wirkung das Tor an einer frueheren Stelle
+   * umbringt, beweist nichts ueber die spaetere. Und einen erwarteten Satz
+   * auf „Timeout" umzustellen hiesse, eine Zufallsmeldung zum Nachweis zu
+   * erklaeren. Die Aufraeum-Zusage wird deshalb im Rauchtest geprueft
+   * (nach einem schnellen Wechsel darf kein Zeichen auftauchen) und hier
+   * nicht noch einmal behauptet.
+   */
 
   /* Ein Suchtext wird zweideutig.
    *
