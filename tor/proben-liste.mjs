@@ -1319,9 +1319,11 @@ export const PROBEN = [
   // Und der Schalter: „Ton aus" heisst nicht „nur die Stimme aus".
   { n:'der Ton spielt auch bei abgeschaltetem Ton', tor:'smoke', args:['--nur=regler'],
     bauen:true, datei:D,
-    such:"function klangZu(ergebnis){\n  if (!tonAn) return;",
-    ersatz:"function klangZu(ergebnis){",
-    an:{ ...DIST, fehlt:"function klangZu(ergebnis){\n  if (!tonAn) return;" },
+    // Der Riegel `hoertZu` steht seit F15 in derselben Zeile - er bleibt
+    // stehen, herausgenommen wird nur die Tonabschaltung.
+    such:"function klangZu(ergebnis){\n  if (hoertZu || !tonAn) return;",
+    ersatz:"function klangZu(ergebnis){\n  if (hoertZu) return;",
+    an:{ ...DIST, fehlt:"if (hoertZu || !tonAn) return;" },
     sagt:'Ton aus' },
 
   /* --- Schreiben (N2a) ------------------------------------------------ *
@@ -1583,8 +1585,8 @@ export const PROBEN = [
   //    „… ich hoere" fuer immer stehen.
   { n:'endet die Erkennung von selbst, merkt die App es nicht', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:"      e.onend=()=>{ if (gehoert) aufhoeren();\n        else aufhoeren('Fertig. Ich habe nichts verstanden \u2014 tipp noch mal auf das Mikrofon.'); };\n",
-    ersatz:'      e.onend=()=>{};\n',
+    suchRegex:/      e\.onend=\(\)=>\{\n[\s\S]*?\n      \};\n/,
+    ersatzFn:()=>'      e.onend=()=>{};\n',
     // Der Rauchtest schlaegt schon eine Stufe frueher an: ohne `onend`
     // raeumt auch der zweite Tipp den Zustand nicht ab, und der Ring
     // atmet weiter. Das ist dieselbe Sache, nur die sichtbare Seite.
@@ -1601,9 +1603,11 @@ export const PROBEN = [
   //    dann an der Laengenstrafe durch - genau der gemeldete Zustand.
   { n:'ein ganzer Satz wird nicht mehr verstanden', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:'      vorurteil = Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);',
-    ersatz:'      vorurteil = Vergleich.abgleich(roh, kand);',
-    an:{ ...DIST, text:'vorurteil = Vergleich.abgleich(roh, kand);' },
+    // Seit F15 steht davor die Abkuerzung fuer eine bestaetigte
+    // Rueckfrage; getauscht wird nur das Erhoeren selbst.
+    such:'        : Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);',
+    ersatz:'        : Vergleich.abgleich(roh, kand);',
+    an:{ ...DIST, text:': Vergleich.abgleich(roh, kand);' },
     sagt:'gesprochen und nichts gewertet' },
 
   // 2. Nicht verstanden zaehlt wieder als Fehlversuch. Nach drei

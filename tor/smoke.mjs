@@ -7,6 +7,7 @@ import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE } from '../src/inhalt/erdkunde.js';
+import { hoerAbgleich, GRENZE_NAH } from '../src/vergleich/vergleich.js';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -256,7 +257,11 @@ async function neueSeite(viewport, ctx, flott = true) {
   // gibt nichts zurueck, was man ansehen koennte.
   await p.addInitScript(() => {
     window.__gesagt = [];
+    window.__abgebrochen = 0;
     speechSynthesis.speak = (u) => { if (u && u.text) window.__gesagt.push(u.text); };
+    // `cancel` gehoert mitgeschrieben, seit die App beim Zuhoeren schweigen
+    // muss (F15): das Mikrofon hoert sonst den eigenen Lautsprecher mit.
+    speechSynthesis.cancel = () => { window.__abgebrochen++; };
     /* Und die Toene (A2) - mitschreiben statt hoeren.
      *
      * Chromium hier hat kein Tongeraet, und `AudioContext` gibt nichts
@@ -2867,8 +2872,58 @@ if (laeuft('sprechen')) try {
       erk: window.__erk,
     }));
 
-    // 1. Antippen: es geht los, und man SIEHT es.
+    /* 1. Antippen: es geht los, man SIEHT es - und die App SCHWEIGT.
+     *
+     * Der Lautsprecher ist kein Beiwerk: die Aufgabe wird angesagt, das
+     * Kind tippt waehrenddessen auf das Mikrofon, und die Erkennung
+     * bekommt die Stimme der App ins Ohr statt die des Kindes. Gemessen
+     * wird beides - dass das Laufende abgeschnitten wird (`cancel`) und
+     * dass danach nichts Neues mehr kommt. */
+    const vorher = await p.evaluate(() => ({
+      gesagt: window.__gesagt.length, abgebrochen: window.__abgebrochen }));
     await p.click('.schirm.da #mikro');
+    const beimHoeren = await p.evaluate(() => ({
+      gesagt: window.__gesagt.length, abgebrochen: window.__abgebrochen }));
+    if (beimHoeren.abgebrochen === vorher.abgebrochen)
+      merke('sprechen', new Error('beim Anschalten des Mikrofons wird die laufende Ansage '
+        + 'nicht abgeschnitten — das Mikrofon hört den eigenen Lautsprecher mit'));
+    /* Und waehrend des Zuhoerens darf nichts NEUES kommen.
+     *
+     * Gebraucht wird ein Ausloeser, der sonst sicher Ton macht: ein Etikett
+     * auf das falsche Gebiet ziehen. Das gibt normalerweise einen Klang und
+     * einen gesprochenen Hinweis - waehrend des Zuhoerens muss beides
+     * ausbleiben. Ohne diesen zweiten Teil bezeugte die Pruefung nur, dass
+     * einmal abgeschnitten wurde, nicht dass danach Ruhe ist. */
+    const zielDaneben = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const ziel = s.querySelector('path.ziel');
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const fremd = D.kontinente.find(k => k.id !== ziel.dataset.id && k.anker);
+      const svg = s.querySelector('.karte svg');
+      const pt = svg.createSVGPoint(); pt.x = fremd.anker[0]; pt.y = fremd.anker[1];
+      const q = pt.matrixTransform(svg.getScreenCTM());
+      const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent);
+      const eigen = D.kontinente.find(k => k.id === ziel.dataset.id);
+      return { x: q.x, y: q.y, idx: namen.indexOf(eigen.name) };
+    });
+    if (zielDaneben.idx >= 0) {
+      const et = (await p.$$('.schirm.da .etikett'))[zielDaneben.idx];
+      const bb = await et.boundingBox();
+      await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2);
+      await p.mouse.down();
+      await p.mouse.move(zielDaneben.x, zielDaneben.y, { steps: 8 });
+      await p.mouse.up();
+      await p.waitForTimeout(200);
+      const dabei = await p.evaluate(() => ({
+        gesagt: window.__gesagt.length, toene: window.__toene.length }));
+      if (dabei.gesagt > beimHoeren.gesagt)
+        merke('sprechen', new Error(`während des Zuhörens hat die App `
+          + `„${(await p.evaluate(() => window.__gesagt[window.__gesagt.length-1]))}" gesagt `
+          + '— das Mikrofon hört den eigenen Lautsprecher mit'));
+      if (dabei.toene > 0)
+        merke('sprechen', new Error(`während des Zuhörens hat die App ${dabei.toene} `
+          + 'Töne gespielt — dasselbe Problem, nur ohne Worte'));
+    }
     let z = await zustand();
     if (!z.hoert)
       merke('sprechen', new Error('nach dem Antippen sieht man dem Mikrofon nicht an, '
@@ -2916,8 +2971,44 @@ if (laeuft('sprechen')) try {
      *   b) ein ganzer Satz: muss gewertet werden
      *   c) nur die ZWEITE Lesart stimmt: muss auch gewertet werden
      */
+    /* 3b) Ein Zwischenergebnis, dann bricht die Erkennung ab.
+     *
+     * Auf dem Telefon der Normalfall: das Kind spricht, die Erkennung
+     * schickt Zwischenergebnisse, und bei der ersten Stille endet sie -
+     * ohne Endergebnis. Das Zwischenergebnis war der volle Satz und wurde
+     * weggeworfen; das Kind wurde gebeten, noch einmal zu sagen, was es
+     * gerade gesagt hatte. */
+    const nameZ = await p.evaluate(() => {
+      const z = document.querySelector('.schirm.da path.ziel');
+      if (!z) return null;
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
+    });
+    let gerettet = 'übersprungen';
+    if (nameZ) {
+      await p.click('.schirm.da #mikro');
+      await p.evaluate((n) => window.__sprich(n, false), nameZ);
+      await p.evaluate(() => window.__endeVonSelbst());
+      const ok = await bis(p,
+        () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+      if (!ok)
+        merke('sprechen', new Error(`„${nameZ}" kam als Zwischenergebnis an, dann brach die `
+          + 'Erkennung ab — und es wurde weggeworfen. Auf dem Telefon ist das der Normalfall '
+          + 'bei Stille; das Kind soll noch einmal sagen, was es gerade gesagt hat'));
+      else { gerettet = 'Zwischenergebnis gerettet';
+        await bis(p, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000); }
+    }
+
+    /* Der Name der JETZT offenen Aufgabe.
+     *
+     * Er wird hier gelesen und nicht weiter oben: 3b beantwortet eine
+     * Aufgabe, danach steht eine andere da. Der Rauchtest sprach sonst den
+     * Namen der vorigen Aufgabe in die neue und meldete „nichts gewertet",
+     * obwohl die App richtig lag - eine Probe, die ihre eigene Reihenfolge
+     * nicht kennt, misst die falsche Aufgabe. */
     const name = await p.evaluate(() => {
       const z = document.querySelector('.schirm.da path.ziel');
+      if (!z) return null;
       const D = JSON.parse(document.getElementById('daten').textContent);
       return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
     });
@@ -3002,9 +3093,85 @@ if (laeuft('sprechen')) try {
         else zweite = `„${name2}" als zweite Lesart`;
       }
     }
+    /* d) DIE RUECKFRAGE - und ob man sie beantworten kann.
+     *
+     * Gesucht wird eine Aussprache, die SICHER im Rueckfrage-Band landet:
+     * Abstand groesser als GRENZE_NAH. Darunter haengt das Urteil an der
+     * Zahl der Mitbewerber - auf dem Schirm stehen vier Kontinente, im
+     * Vorrat sechs -, und die Probe pruefte mal das eine, mal das andere.
+     * Gefunden wird sie hier, nicht abgeschrieben: das Tor rechnet mit
+     * demselben Modul wie die App und weiss deshalb, dass sein Eingriff
+     * ankommt (Regel 3). */
+    let rueck = 'übersprungen';
+    if (gewertet) {
+      await bis(p, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000);
+      const name3 = await p.evaluate(() => {
+        const z = document.querySelector('.schirm.da path.ziel');
+        if (!z) return null;
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
+      });
+      const satz = KONTINENTE.map(k => ({ id:k.id, name:k.name,
+        aliasse:k.aliasse, aussprache:k.aussprache }));
+      const ziel3 = satz.find(k => k.name === name3);
+      /* Genuschelt wird auf vier Arten, weil EINE nicht reicht: bei
+       * „Südamerika" genügt Kürzen, bei „Afrika" nicht - dort liegt jede
+       * gekürzte Form entweder noch im sicheren Bereich oder schon
+       * ausserhalb. Gesucht wird deshalb über eine kleine Familie von
+       * Verhaspelungen, und genommen wird die erste, die WIRKLICH im Band
+       * liegt (Abstand > GRENZE_NAH, also unabhängig davon, wie viele
+       * Mitbewerber gerade auf dem Schirm stehen). */
+      let genuschelt = null;
+      if (ziel3) {
+        const wort = name3.split(' ')[0], kandidaten = [];
+        for (let n = 1; n < wort.length - 1; n++) kandidaten.push(wort.slice(0, -n));
+        for (let i = 1; i < wort.length; i++) kandidaten.push(wort.slice(0,i) + wort.slice(i+1));
+        for (let i = 0; i < wort.length - 1; i++)
+          kandidaten.push(wort.slice(0,i) + wort[i+1] + wort[i] + wort.slice(i+2));
+        genuschelt = kandidaten.find(f => {
+          const r = hoerAbgleich([f], satz);
+          return r.art === 'rueckfrage' && r.id === ziel3.id && r.abstand > GRENZE_NAH;
+        }) || null;
+      }
+      if (!genuschelt) {
+        merke('sprechen', new Error(`für „${name3}" ließ sich keine Aussprache im `
+          + 'Rückfrage-Band finden — die Prüfung hätte nichts geprüft'));
+      } else {
+        await p.click('.schirm.da #mikro');
+        await p.evaluate((w) => window.__sprich(w, true), genuschelt);
+        const gefragt = await bis(p, () => !!document.querySelector('.schirm.da #jaSicher'), 4000);
+        if (!gefragt)
+          merke('sprechen', new Error(`„${genuschelt}" statt „${name3}" gesagt und keine `
+            + 'Rückfrage bekommen — dann endet eine unsichere Erkennung wieder als Urteil '
+            + 'über das Kind'));
+        else {
+          // „Nein" kostet nichts: die Aufgabe muss offen bleiben.
+          await p.click('.schirm.da #neinNochmal');
+          const offenDanach = await p.evaluate(() =>
+            !document.querySelector('.schirm.da .frage .loesung')
+            && !document.querySelector('.schirm.da .frage .richtigText')
+            && !document.querySelector('.schirm.da #nachfrage'));
+          if (!offenDanach)
+            merke('sprechen', new Error('nach „Nein" ist die Aufgabe nicht mehr offen — '
+              + 'die Rückfrage hat einen Versuch gekostet, obwohl das Gerät unsicher war'));
+          // Und „Ja" wertet, was das Kind bestätigt hat.
+          await p.click('.schirm.da #mikro');
+          await p.evaluate((w) => window.__sprich(w, true), genuschelt);
+          await bis(p, () => !!document.querySelector('.schirm.da #jaSicher'), 4000);
+          await p.click('.schirm.da #jaSicher');
+          const bestaetigt = await bis(p,
+            () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+          if (!bestaetigt)
+            merke('sprechen', new Error(`„Ja" auf „Meintest du ${name3}?" hat nichts `
+              + 'gewertet — dann ist die Rückfrage eine Sackgasse mit zwei Knöpfen'));
+          else rueck = `„${genuschelt}" → Rückfrage, Nein folgenlos, Ja gewertet`;
+        }
+      }
+    }
+
     if (gewertet) console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
       + `3× nicht verstanden ohne Versuch, „${SATZ(name)}." gewertet `
-      + `(zwischendurch: „${zwischen}"), ${zweite}`);
+      + `(zwischendurch: „${zwischen}"), ${zweite}, ${rueck}, ${gerettet}`);
   }
   await p.close();
 } catch (e) { merke('sprechen', e); }

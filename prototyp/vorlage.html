@@ -856,6 +856,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .mikro::after{content:"";position:absolute;inset:-8px;border-radius:var(--rund-voll);
   border:var(--strich-kueste) solid var(--akzent);opacity:.18}
 .mikro.hoert::after{opacity:.3;animation:atmen var(--d-atmen) ease-in-out infinite}
+/* Die beiden Knoepfe der Rueckfrage (F15).
+   Sie stehen unter der Sprachzeile und muessen mit dem Daumen zu treffen
+   sein wie alles andere - deshalb dieselbe Mindesthoehe wie ein Knopf und
+   nicht die Groesse eines Textlinks. `flex-wrap`, weil die Werkzeugspalte
+   im schmalen Querformat keine zwei Knoepfe nebeneinander fasst. */
+.nachfrage{display:flex;gap:var(--r2);flex-wrap:wrap;justify-content:center;margin-top:var(--r2)}
+.nachfrage button{min-height:44px;min-width:64px}
 /* Und waehrend des Zuhoerens ist der Knopf ein anderer: er sagt jetzt
    „fertig", nicht mehr „sprich". */
 .mikro.hoert{background:var(--gut)}
