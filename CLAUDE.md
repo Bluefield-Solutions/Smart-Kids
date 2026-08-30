@@ -23,7 +23,7 @@ Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
 | **`npm run schnell`** | bei **jeder** Änderung | **~36 s** | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 5:04) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
@@ -33,6 +33,13 @@ Der Preis, ausgesprochen: ein Layoutfehler auf dem iPhone SE fällt dir nicht
 sofort auf, sondern drei Minuten später im Ablauf. Auf dem Gerät der Kinder
 landet er trotzdem nie — die Auslieferung fährt die volle Kette und schickt
 nur bei Grün.
+
+**Der Rauchtest wartet auf Bedingungen, nicht auf Fristen.** Er hatte
+45,5 s in 84 festen Pausen verbracht — ein Viertel seiner Laufzeit. Jetzt
+sind es null, und der Bericht nennt die Zahl selbst (*„Blind gewartet"*).
+Wer eine feste Pause einbaut, sieht sie dort sofort. Für ein AUSBLEIBEN
+(„Lea hört nichts") geht das nicht: dort wird nicht gewartet, sondern
+später gelesen.
 
 **Was `schnell` NICHT fährt und warum:** `passt` (54 s, nur bei
 Layoutänderungen interessant) · `ziehen` (48 s, ändert sich fast nie) ·

@@ -3294,3 +3294,110 @@ die Hauptstadt kam erst mit der nachgeladenen Karte. Der Test suchte nach
 „undefined" unter vier Städtenamen. Die zwölf Namen bleiben jetzt im leichten
 Verzeichnis: rund 150 Byte, und der eingebettete Datensatz enthält keine
 Aufgabe mehr, zu der die Antwort fehlt.
+
+## Der Rauchtest wartet nicht mehr blind
+
+**Gemessen vorher:** 180 s Laufzeit, davon **45,5 s in 84 festen Pausen** aus
+18 Aufrufstellen — ein Viertel des Laufs verbracht mit Warten auf etwas, das
+längst da war. **Nachher:** 138 s, null feste Pausen.
+
+Die Zahl steht jetzt im Bericht (*„Blind gewartet: 0,0 s in 0 festen
+Pausen"*). Nicht aus Stolz: eine Frist schleicht sich beim nächsten
+schwierigen Fall wieder ein, und dann soll sie sichtbar sein.
+
+### Jede Pause hatte eine Bedingung, auf die sie eigentlich gewartet hat
+
+Die Ansage im Mitschnitt. Der Ton. Das Ziffernfeld nach dem Tipp auf „PIN
+ändern". Die Nachfrage am Löschknopf. Der Balken auf der Kachel, der sagt,
+dass der Stand aus der Ablage gelesen ist. Der Eintrag in der Ablage selbst.
+Achtzehn Stellen, achtzehn Bedingungen.
+
+Die Grenzen darin sind großzügig (drei bis vier Sekunden). Das kostet
+nichts, solange die Bedingung eintritt — anders als eine feste Pause, die
+**immer** kostet.
+
+### Zwei Stellen prüfen ein AUSBLEIBEN, und darauf kann man nicht warten
+
+**Die Ansage.** Fiona muss sie hören, Lea nicht. Gewartet wird jetzt nur bei
+den Profilen, die sie hören *müssen* — welche das sind, steht in der Zeile
+„Vorlesen" derselben Backlog-Tabelle, aus der schon Tiefe, Namen und
+Auswahlverbot kommen. Wer nichts hört, wird erst **nach** der Antwort
+gelesen; dann ist die halbe Sekunde, nach der die App ansagen würde, längst
+vorbei, und ein Ausbleiben ist genauso beweisbar wie vorher. Die Gegenprobe
+*„die Ansage hängt nicht mehr am Kind"* schlägt weiter an — das ist der
+Beweis, dass die Verschiebung nichts gekostet hat.
+
+**„Ton aus".** Hier wird auf die Wertung gewartet. Steht sie, ist der Ton
+entweder gekommen oder er kommt nicht mehr.
+
+### Drei Fehler dabei — alle drei hat das Tor selbst gemeldet
+
+**Die Fahne.** Gewartet wurde darauf, *dass* eine da ist. Die Fahne der
+vorigen Aufgabe stand aber noch: die Bedingung war sofort wahr, die Messung
+las die alte Fahne, und das Tor meldete genau den Befund, gegen den das
+Warten da ist — *„in zwölf Aufgaben nur die Sorte daneben"*. **Ein Warten
+auf etwas, das schon dasteht, ist kein Warten.** Jetzt wird auf die Fahne
+*dieser* Aufgabe gewartet.
+
+**Die neue PIN.** Gewartet wurde auf „drinnen ODER Fehlerzeile". Die
+Fehlerzeile stand vom Versuch mit 0000 noch da — dieselbe Falle, eine Zeile
+tiefer.
+
+**Und der teuerste: `ueberblendungMessen`.** Es maß ein Fenster von 1500 ms
+ab Aufruf, mit dem Kommentar *„der Wechsel kommt 1600 ms nach der Antwort,
+gemessen wird ab rund 800 ms danach"*. Diese 800 ms waren **keine Zusage**,
+sondern die zufällige Summe der Wartezeiten davor — die weggefallene
+250-ms-Pause war ihr größter Posten. Ohne sie begann die Messung früher,
+endete früher und sah den Wechsel **gar nicht mehr**. Sie meldete 0.00, also
+„kein Doppelbild", und war grün. Regel 12 in Reinform: eine Zahl, deren
+Messstelle an fremden Wartezeiten hängt, misst irgendwann etwas anderes.
+
+Sie läuft jetzt, *bis* sie zwei Bildschirme gesehen hat und wieder einen —
+das ist der Wechsel, an welcher Stelle er auch kommt. Und sie gibt **-1**
+zurück, wenn sie gar keinen gesehen hat: eine Messung, die nichts gemessen
+hat, darf nicht wie ein guter Wert aussehen (Regel 5).
+
+### Der Bildvergleich: 12 s geschenkt, und die Bilder sind identisch
+
+`durchspielen` wartete nach jeder Antwort 1800 ms. Ersetzt durch „der
+Endbildschirm steht da, oder es liegt ein anderes Ziel an und der Wechsel
+ist durch". `ansicht` fällt von 63 auf 51 s — und alle **18 Vorbilder
+bleiben bitgleich**, ohne dass eines neu gesetzt wurde. Das ist der Beweis,
+dass dort nur gewartet und nichts abgebildet wurde.
+
+### Was das für die tägliche Runde bringt: nichts
+
+Ehrlich gemessen: `npm run schnell` liegt weiter bei **39 s**. Der Grund ist
+die Aufteilung, nicht die Wartezeit — die schnelle Bahn fährt drei Browser
+nebeneinander, und ihr längster ist eine **Hälfte des Bildvergleichs mit
+35,5 s**, nicht der Rauchtest mit 28. Die 42 gesparten Sekunden liegen in
+den Abschnitten, die `schnell` gar nicht fährt (`durchgang`, `ablage`,
+`ebene4`) — also auf dem Runner und im nächtlichen Probenlauf.
+
+Der nächste Hebel für die tägliche Runde ist deshalb die **Balance der
+beiden Hälften**: 35,5 gegen 27,0 Sekunden. Vier Kerne tragen keinen
+vierten Browser; was hilft, ist eine Aufteilung nach Aufwand statt reihum.
+
+Und für die volle Kette: sie steht jetzt bei **5:04**. Ein Vorher-Wert für
+genau diesen Stand existiert nicht — R6 und R7 haben im selben Zeitraum
+Arbeit dazugelegt (eine Ebene mehr im Durchgang, eine Aufnahme mehr, zwei
+gewachsene Bildschirme in `passt` und `lesbarkeit`). Was gemessen ist, sind
+die beiden Bausteine: Rauchtest 180 → 138 s, Bildvergleich 63 → 51 s. Die
+Kettenzahl daraus zu rechnen wäre eine Schätzung, und die steht hier nicht
+neben gemessenen Zahlen (Regel 12).
+
+### Eine Gegenprobe hat seit Wochen nichts bewiesen
+
+Beim Nachfahren aller 36 Proben des Rauchtests fiel eine durch: *„die
+Aufgabe wird nicht mehr vorgelesen"* — **Suchtext nicht gefunden**. Ihr
+Muster endete auf `}, 500);`. Seit `?flott` die Ansage verkürzt, heißt es
+`}, FLOTT ? 60 : 500);`.
+
+Sie hat seitdem nichts geprüft, und aufgefallen ist es erst jetzt: seit die
+Proben nachts laufen, wurde der volle Satz hier nie wieder gefahren. Genau
+die Verfallsart, gegen die `rhythmus` da ist — nur dass `rhythmus` das Alter
+des Nachweises misst und nicht, ob er noch trifft.
+
+Und dabei noch etwas: `CLAUDE.md` nannte für `proben` die Schalter `--tor`
+und `--nur`. Beide gibt es nicht. Wer sie benutzt hätte, hätte den vollen
+Satz gefahren — zwanzig Minuten statt einer Probe, und keine Fehlermeldung.
