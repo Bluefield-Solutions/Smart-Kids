@@ -2940,9 +2940,16 @@ if (laeuft('sprechen')) try {
      * Zaehler den Satz - und niemand haette je gemessen, ob der Zaehler
      * gehalten wird. */
     const nachKauderwelsch = await zustand();
+    /* Gesucht wird die MARKE DER AUFLOESUNG, nicht die des Treffers.
+     *
+     * Hier stand `.richtigText` und `path.ziel` - beides bleibt beim
+     * Aufloesen stehen, die Pruefung konnte also gar nicht anschlagen.
+     * Gemerkt hat es die Gegenprobe: sie stellte den Fehler her, der
+     * Rauchtest wurde rot, aber an einer anderen Stelle. Eine Pruefung,
+     * die ihren eigenen Gegenstand nicht sieht, ist kein Beweis. */
     const nochOffen = await p.evaluate(() =>
-      !document.querySelector('.schirm.da .frage .richtigText')
-      && !!document.querySelector('.schirm.da path.ziel'));
+      !document.querySelector('.schirm.da .frage .loesung')
+      && !document.querySelector('.schirm.da .frage .richtigText'));
     if (!nochOffen)
       merke('sprechen', new Error('drei nicht verstandene Äußerungen haben die Aufgabe '
         + 'aufgelöst — nicht verstanden ist kein Fehlversuch, das Kind hat nicht ein '
