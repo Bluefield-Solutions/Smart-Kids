@@ -713,6 +713,17 @@ const PROBEN = [
     an:{ datei:'tor/inhalt.mjs', text:'rufe.filter(() => false)' },
     sagt:'greift ins Leere' },
 
+  /* Die Aufkleber im Buch bekommen wieder ihre Schreibtischgroesse.
+   *
+   * Dann rollt das Buch auf dem Zielgeraet schon beim zweiten Aufkleber,
+   * und die Vorschau steht halb unter dem Rand. */
+  { n:'das Buch rollt wieder beim zweiten Aufkleber', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:V,
+    such:'  .kleber.gross .aufkleber svg{height:64px}',
+    ersatz:'  .kleber.gross .aufkleber svg{height:112px}',
+    an:{ ...DIST, text:'.kleber.gross .aufkleber svg{height:112px}' },
+    sagt:'unter dem Rand' },
+
   /* Der leere Kopf nimmt wieder 68 Punkte weg.
    *
    * Auf dem Zielgeraet sind das 17 % der Bildschirmhoehe, und der ganze
