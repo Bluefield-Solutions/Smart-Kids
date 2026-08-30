@@ -199,7 +199,7 @@ const VORLESEN = (() => {
   return Object.fromEntries(z[1].split('|').map((t, i) => [ids[i], /\bja\b/i.test(t)]));
 })();
 
-async function neueSeite(viewport, ctx) {
+async function neueSeite(viewport, ctx, flott = true) {
   /* `ctx.newPage()` nimmt KEINE Optionen.
    *
    * Hier stand `ctx.newPage({ viewport, deviceScaleFactor: 2 })`. Beides
@@ -254,7 +254,9 @@ async function neueSeite(viewport, ctx) {
     }
     window.AudioContext = Nachbau; window.webkitAudioContext = Nachbau;
   });
-  await p.goto(ADRESSE + '?flott', { waitUntil: 'domcontentloaded' });
+  // `?flott` kuerzt die Schaupausen. Der Abschnitt `pausen` braucht die
+  // Seite OHNE den Schalter - sonst misst er die Abkuerzung statt der Sache.
+  await p.goto(ADRESSE + (flott ? '?flott' : ''), { waitUntil: 'domcontentloaded' });
   await p.evaluate(() => document.fonts.ready);
   return p;
 }
@@ -499,7 +501,7 @@ async function loese(p) {
  * OHNE Argument läuft alles, und die Kette ruft ihn ohne Argument auf: eine
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
-const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang'];
+const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'pausen'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
   const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
@@ -1832,6 +1834,95 @@ for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt'
  * geprueft, nicht hier: siehe OHNE_AUSWAHL. Hier stand dafuer eine
  * Verbotsliste ueber `wege`, die nicht anschlagen KONNTE. */
 }
+
+/* --- Wie lange steht das Lob wirklich? -------------------------------
+ *
+ * Bis hierher hat KEIN Tor je gemessen, wie lang eine Schaupause ist. Der
+ * Kommentar an `LOBPAUSE` behauptete es (ein Durchgang ohne den Schalter),
+ * und der fand nicht statt: jede Seite dieses Tests laeuft mit `?flott`.
+ *
+ * Was das gekostet hat, steht in derselben Runde: der Kartenweg wartete an
+ * zwei nackten Zahlen im Rumpf, `?flott` griff dort gar nicht, und keines
+ * von zwanzig Toren hat es gesagt.
+ *
+ * Gemessen wird deshalb BEIDES und auf BEIDEN Wegen — Karte und Rechnen:
+ *
+ *   ohne Schalter   die Pause muss lang genug sein, um das Lob zu LESEN
+ *   mit Schalter    sie muss deutlich kuerzer sein — sonst haelt der
+ *                   Schalter seine Zusage auf diesem Weg nicht
+ *
+ * Die Untergrenze ist eine Anforderung, keine Abschrift: ein Kind soll
+ * „Super! Das ist Sachsen." lesen koennen. Deshalb steht sie hier und nicht
+ * in spiel.js (Regel 4 — das Soll kommt nicht aus dem Gemessenen).
+ */
+if (laeuft('pausen')) try {
+  const LESEZEIT_MIN = 1200;    // was ein Kind zum Lesen braucht
+  const KUERZER_UM   = 1.5;     // der Schalter muss mindestens so viel bringen
+
+  /** Eine Aufgabe loesen und messen, wie lange das Lob danach stehenbleibt. */
+  async function pauseMessen(ebene, flott) {
+    const p = await neueSeite({ width: 1180, height: 820 }, ctx, flott);
+    await p.click('[data-profil="fiona"]');
+    await zurEbenenwahl(p, ebene);
+    await p.click(`[data-ebene="${ebene}"]`);
+    await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
+      + '.schirm.da .rechnung', { timeout: 25000 });
+    await durchVorlauf(p);
+    const rechnen = ebene.startsWith('rechnen');
+    await p.waitForSelector(rechnen ? '.schirm.da .rechnung'
+      : '.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    // Richtig antworten — auf dem Weg, den dieses Profil hier hat.
+    if (rechnen) {
+      // Die richtige Zahl wird AUSGERECHNET, nicht abgelesen: an der
+      // Aufgabe steht sie nicht, und die Loesung erst nach der Antwort.
+      const i = await p.evaluate(() => {
+        const s = document.querySelector('.schirm.da');
+        const t = s.querySelector('.rechnung').textContent
+          .replace(/[−–]/g, '-').replace(/[·×]/g, '*').replace(/[:÷]/g, '/');
+        const m = t.match(/(-?\d+)\s*([-+*/])\s*(-?\d+)/);
+        if (!m) return -1;
+        const [a, op, bb] = [+m[1], m[2], +m[3]];
+        const soll = op === '+' ? a + bb : op === '-' ? a - bb
+                   : op === '*' ? a * bb : a / bb;
+        // `.zahl` mit `data-zahl` — die Rechenebene hat keine Wahlliste wie
+        // die Karte, sondern vier Zahlenknoepfe.
+        return [...s.querySelectorAll('#auswahl .zahl')]
+          .findIndex(k => +k.dataset.zahl === soll);
+      });
+      if (i < 0) throw new Error('die richtige Zahl steht nicht zur Wahl');
+      await p.$$eval('.schirm.da #auswahl .zahl', (e, k) => e[k].click(), i);
+    } else {
+      await loese(p);
+    }
+    // Von „das Lob steht da" bis „die naechste Aufgabe steht da".
+    await p.waitForFunction(() => !!document.querySelector(
+      '.schirm.da .frage .richtigText, .schirm.da .frage .fastText'), null, { timeout: 8000 });
+    const t0 = Date.now();
+    await p.waitForFunction(() => {
+      const s = document.querySelector('.schirm.da');
+      if (!s || s.querySelector('.frage .richtigText, .frage .fastText')) return false;
+      return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
+                || s.querySelector('#nochmal'));
+    }, null, { timeout: 15000 });
+    const dauer = Date.now() - t0;
+    await p.close();
+    return dauer;
+  }
+
+  for (const [was, ebene] of [['Karte', 'bundeslaender'], ['Rechnen', 'rechnen:plusminus']]) {
+    const normal = await pauseMessen(ebene, false);
+    const kurz   = await pauseMessen(ebene, true);
+    console.log(`  Schaupause ${was.padEnd(8)}       ${normal} ms normal, ${kurz} ms mit `
+      + `\`?flott\` (${(normal / Math.max(1, kurz)).toFixed(1)}×)`);
+    if (normal < LESEZEIT_MIN)
+      merke('pausen', new Error(`${was}: das Lob steht nur ${normal} ms — unter ${LESEZEIT_MIN} ms `
+        + 'kann ein Kind es nicht lesen'));
+    if (normal < kurz * KUERZER_UM)
+      merke('pausen', new Error(`${was}: mit \`?flott\` ${kurz} ms, ohne ${normal} ms — `
+        + `der Schalter kürzt diesen Weg nicht (erwartet mindestens ${KUERZER_UM}×). `
+        + 'Genau so ist der Kartenweg an ihm vorbeigelaufen'));
+  }
+} catch (e) { merke('pausen', e); }
 
 await ctx.close(); await b.close(); server.close();
 

@@ -735,6 +735,26 @@ const PROBEN = [
     an:{ datei:'tor/spielprobe.mjs', text:'if (false) gelegenheiten++;' },
     sagt:'beweist nichts' },
 
+  /* Und jetzt MISST es auch jemand.
+   *
+   * `inhalt` prueft die Tuer (jedes `setTimeout`, das einen Bildschirm
+   * wechselt, nimmt `schauPause`). Das faengt die Form, nicht die Wirkung:
+   * eine `schauPause`, die nichts kuerzt, kaeme durch. Der Rauchtest misst
+   * deshalb die Pause auf BEIDEN Wegen, mit und ohne Schalter. */
+  { n:'der Schalter kürzt keine Schaupause mehr', tor:'smoke', args:['--nur=pausen'],
+    bauen:true, datei:D,
+    such:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',
+    ersatz:'const schauPause = (ms) => ms;',
+    an:{ ...DIST, text:'const schauPause = (ms) => ms;' },
+    sagt:'kürzt diesen Weg nicht' },
+  /* Und die Pause selbst wird zu kurz, um sie zu lesen. */
+  { n:'das Lob ist weg, bevor ein Kind es gelesen hat', tor:'smoke', args:['--nur=pausen'],
+    bauen:true, datei:D,
+    such:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',
+    ersatz:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : 300;',
+    an:{ ...DIST, text:'Math.min(ms, 900) : 300;' },
+    sagt:'kann ein Kind es nicht lesen' },
+
   /* Eine Schaupause faellt wieder neben den Schalter.
    *
    * Genau der Fall, der 1,6 s je Kartenaufgabe gekostet hat, ohne dass
