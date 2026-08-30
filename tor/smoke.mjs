@@ -1069,9 +1069,27 @@ if (laeuft('ablage')) try {
    * drin ist". `passt` kann das nicht sagen: dort darf `.rollen` rollen.
    */
   {
+    /* Gestellt wird ein Buch, wie es nach ein paar Sitzungen aussieht:
+     * zwei Aufkleber, einer davon sicher. Der Stand aus dem Spieldurchgang
+     * oben reicht nicht - er ergibt EINEN Aufkleber, und damit passt auch
+     * eine viel zu grosse Karte noch. Eine Pruefung, die nur den
+     * guenstigsten Fall sieht, meldet gruen ueber nichts. */
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    const zwei = KONTINENTE.slice(0, 2).map(k => k.id);
+    await q.evaluate((ids) => new Promise(ja => {
+      const a = indexedDB.open('lernkiste');
+      a.onsuccess = () => { const st = {};
+        ids.forEach((id, i) => st[id] = { fach: i ? 3 : 5, hoechstes: i ? 3 : 5,
+          faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
+        const t = a.result.transaction('fortschritt', 'readwrite');
+        t.objectStore('fortschritt').put(st, 'fiona:kontinente');
+        t.oncomplete = () => ja(1); t.onerror = () => ja(0); };
+      a.onerror = () => ja(0);
+    }), zwei);
+    await q.reload();
+    await q.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
     await q.click('[data-profil="fiona"]');
-    await zurEbenenwahl(q, 'bundeslaender');
+    await zurEbenenwahl(q, 'kontinente');
     await q.click('#buch');
     await q.waitForSelector('.schirm.da .aufkleber');
     await bis(q, () => !!document.querySelector('.schirm.da .rollen'), 4000);
