@@ -2634,13 +2634,26 @@ function spielschirm(){
       gehoert = false;
       e.onresult=(ev)=>{
         const r = ev.results[ev.results.length-1];
-        const roh = String(r[0].transcript).trim();
+        /* ALLE Lesarten, nicht nur die erste.
+         *
+         * `maxAlternatives = 3` steht seit dem ersten Tag da - und drei
+         * Zeilen weiter wurde nur `r[0]` gelesen. Die Erkennung liefert
+         * ihre Unsicherheit frei Haus, und wir haben sie weggeworfen.
+         * Dabei ist die Menge der moeglichen Antworten geschlossen: wir
+         * muessen nicht raten, welche Lesart stimmt, wir koennen alle
+         * fragen. */
+        const varianten = [];
+        for (let i = 0; i < r.length; i++) {
+          const t = String(r[i].transcript).trim();
+          if (t) varianten.push(t);
+        }
+        const roh = varianten[0] || '';
         if (!r.isFinal) { status.textContent = `… ${roh}`; return; }
         gehoert = true;
         status.textContent=`gehört: „${roh}“`;
         try{ e.stop(); }catch(err){}
         aufhoeren();
-        bewerte(roh,'sprechen',{status});
+        bewerte(roh,'sprechen',{status, varianten});
       };
       e.onerror=(ev)=>{
         const was = ev && ev.error;
@@ -2912,6 +2925,45 @@ function spielschirm(){
   /* --- Bewertung. EIN Ort, egal welcher Eingabeweg. --- */
   async function bewerte(roh, eingabeart, ctx){
     if (erledigt) return;
+
+    /* NICHT VERSTANDEN IST KEIN FEHLVERSUCH.
+     *
+     * Der Abgleich stand bis hierher unter dem Zaehler: eine Aeusserung,
+     * die die Erkennung verschluckt hat, kostete einen der drei Versuche -
+     * und nach dreien loeste die App die Aufgabe auf. Wer dreimal
+     * hintereinander undeutlich verstanden wurde, bekam die Antwort
+     * gezeigt, ohne ein einziges Mal falsch geraten zu haben.
+     *
+     * Das ist nicht dasselbe wie eine falsche Antwort: „ich habe dich
+     * nicht gehoert" ist eine Aussage ueber MICH, nicht ueber das Kind.
+     * Es steht deshalb VOR dem Zaehler und geht ohne Wertung wieder
+     * heraus - protokolliert wird es trotzdem, denn genau diese Zeilen
+     * sind das Rohmaterial fuer den eingefrorenen Korpus (M4r).
+     *
+     * Und der Satz nennt, WAS angekommen ist. „Das habe ich nicht
+     * verstanden" sagt niemandem, ob das Mikrofon nichts gehoert hat oder
+     * ob der Abgleich das Gehoerte nicht zuordnen konnte - genau daran
+     * ist die Fehlersuche vom Zielgeraet haengengeblieben.
+     */
+    let vorurteil = null;
+    if (eingabeart==='sprechen') {
+      vorurteil = Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);
+      if (vorurteil.art==='nochmal') {
+        const satz = roh ? `Ich habe „${roh}“ verstanden. Sag es noch einmal.`
+                         : 'Ich habe nichts gehört. Sag es noch einmal.';
+        if (ctx.status) ctx.status.textContent = satz;
+        sagen(satz);
+        Protokoll.schreiben(Protokoll.eintrag({
+          zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
+          eingabeart, ergebnis: 'unverstanden', roheingabe: roh,
+          sicherheit: null, dauerMs: Date.now()-beginn, versuch,
+          fachVorher: Stand[ziel.id]?.fach ?? 1,
+          fachNachher: Stand[ziel.id]?.fach ?? 1,
+        }));
+        return;
+      }
+    }
+
     versuch++;
     let ergebnis='falsch', text='', sicherheit=null, nebenbei='';
     // Vor der Wertung gelesen: `werten()` verschiebt das Fach, und das
@@ -2939,10 +2991,10 @@ function spielschirm(){
         text = t.art==='nochmal' ? 'Das kenne ich noch nicht — schau noch mal hin.'
              : t.id===ziel.id ? 'Fast! Schau noch mal ganz genau hin.' : `Das wäre ${t.name}.`; }
     } else {
-      const t = Vergleich.abgleich(roh, kand);
+      // Schon oben gerechnet - „nicht verstanden" ist dort hinausgegangen.
+      const t = vorurteil;
       sicherheit = t.abstand!==undefined ? +(1-t.abstand).toFixed(2) : null;
-      if (t.art==='nochmal') text='Das habe ich nicht verstanden — sag es noch einmal.';
-      else if (t.id!==ziel.id) text=`Das wäre ${t.name}.`;
+      if (t.id!==ziel.id) text=`Das wäre ${t.name}.`;
       else if (t.art==='rueckfrage'){ text=`Meintest du ${t.name}?`; ergebnis='fast'; }
       else ergebnis='richtig';
     }

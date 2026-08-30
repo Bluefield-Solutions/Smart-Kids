@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Die ERFUNDENE Haelfte. Sie dient dem EINSTELLEN des Abgleichs, nicht dem Beweis. Wer den Korpus schreibt und den Abgleich einstellt, ist Pruefling und Pruefer zugleich - deshalb zaehlt erst die eingefrorene Haelfte aus echten Aufnahmen (M4).  Antarktika ist seit der iPhone-Runde kein Kontinent mehr in diesem Spiel; seine Zeilen sind hier entfallen.  Seit R5 gibt es zwoelf Laender je Kontinent statt fuenf; die Raenge 6 bis 12 standen bis dahin mit ihren Aussprachevarianten hier NICHT drin - sie waren nie gegengehoert. Nachgetragen sind die, bei denen sich zwei Laender WIRKLICH aehneln, und als Nichttreffer echte Nachbarlaender, die es im Spiel nicht gibt (Irak, Sued-Sudan, Taiwan, Dominica). Genau dort faellt eine zu weiche Grenze auf.",
+  "_hinweis": "Die ERFUNDENE Haelfte. Sie dient dem EINSTELLEN des Abgleichs, nicht dem Beweis. Wer den Korpus schreibt und den Abgleich einstellt, ist Pruefling und Pruefer zugleich - deshalb zaehlt erst die eingefrorene Haelfte aus echten Aufnahmen (M4).  Antarktika ist seit der iPhone-Runde kein Kontinent mehr in diesem Spiel; seine Zeilen sind hier entfallen.  Seit R5 gibt es zwoelf Laender je Kontinent statt fuenf; die Raenge 6 bis 12 standen bis dahin mit ihren Aussprachevarianten hier NICHT drin - sie waren nie gegengehoert. Nachgetragen sind die, bei denen sich zwei Laender WIRKLICH aehneln, und als Nichttreffer echte Nachbarlaender, die es im Spiel nicht gibt (Irak, Sued-Sudan, Taiwan, Dominica). Genau dort faellt eine zu weiche Grenze auf.  Seit F14 stehen hier auch GANZE AEUSSERUNGEN, nicht nur nackte Woerter: ein Diktiergeraet liefert „Ich glaube das ist Asien\", nicht „Asien\". Der Korpus kannte diesen Fall nicht, das Tor meldete 100 % - und auf dem Zielgeraet fiel jede Antwort durch, die mehr als ein Wort hatte. Die Nichttreffer tragen dieselbe Form: ein falscher Name IN einem Satz muss weiterhin abgelehnt werden, und ein Satz ganz ohne Namen erst recht.",
   "treffer": [
     [
       "australien",
@@ -222,6 +222,75 @@
         "griechnland",
         "griechenlant"
       ]
+    ],
+    [
+      "asien",
+      [
+        "Das ist Asien",
+        "Das ist Asien.",
+        "Ich glaube das ist Asien",
+        "Asien.",
+        "ähm Asien",
+        "das hier ist Asien"
+      ]
+    ],
+    [
+      "europa",
+      [
+        "Das ist Europa.",
+        "Europa!",
+        "Ähm Europa",
+        "ich glaube Europa",
+        "das ist glaube ich Europa"
+      ]
+    ],
+    [
+      "afrika",
+      [
+        "Das ist Afrika",
+        "Afrika, glaube ich",
+        "äh, Afrika",
+        "das ist doch Afrika"
+      ]
+    ],
+    [
+      "australien",
+      [
+        "Das ist Australien",
+        "ich glaube das ist Australien",
+        "Australien!"
+      ]
+    ],
+    [
+      "nordamerika",
+      [
+        "Das ist Nordamerika.",
+        "ich glaube Nordamerika",
+        "Nord Amerika"
+      ]
+    ],
+    [
+      "suedamerika",
+      [
+        "Das ist Südamerika",
+        "ähm Südamerika",
+        "Süd Amerika"
+      ]
+    ],
+    [
+      "DE-BY",
+      [
+        "Das ist Bayern",
+        "ich glaube das ist Bayern",
+        "Bayern!"
+      ]
+    ],
+    [
+      "DE-NW",
+      [
+        "Das ist Nordrhein-Westfalen",
+        "ähm Nordrhein Westfalen"
+      ]
     ]
   ],
   "nichttreffer": [
@@ -398,6 +467,47 @@
         "taiwan",
         "tansania",
         "thailänder"
+      ]
+    ],
+    [
+      "asien",
+      [
+        "ich glaube das ist Afrika",
+        "das ist Australien",
+        "ich weiß es nicht",
+        "keine Ahnung",
+        "Mama ich will nicht mehr",
+        "was ist das denn",
+        "ich möchte ein Eis",
+        "das ist aussen"
+      ]
+    ],
+    [
+      "europa",
+      [
+        "das ist Afrika",
+        "ich glaube das ist Asien",
+        "ich weiß es nicht",
+        "kann ich einen Keks haben",
+        "das ist der Euro"
+      ]
+    ],
+    [
+      "afrika",
+      [
+        "ich glaube das ist Amerika",
+        "das ist Asien",
+        "weiß ich nicht",
+        "ich mag das Spiel"
+      ]
+    ],
+    [
+      "DE-BY",
+      [
+        "ich glaube das ist Hessen",
+        "das ist Sachsen",
+        "ich weiß es nicht",
+        "Mama guck mal"
       ]
     ]
   ]

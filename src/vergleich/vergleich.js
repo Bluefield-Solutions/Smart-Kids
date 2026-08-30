@@ -201,6 +201,100 @@ export function abgleich(eingabe, kandidaten) {
   };
 }
 
+/* ------------------------------------------------ Gehoertes (Fiona) ----- */
+
+/* Wieviele Woerter ein Ausschnitt hoechstens hat.
+ *
+ * Der laengste Name im Vorrat ist „Australien und Ozeanien" - drei Woerter.
+ * Vier laesst Luft fuer „Nordrhein Westfalen" mit einem verschluckten
+ * Bindestrich, ohne dass halbe Saetze zu Kandidaten werden. */
+export const FENSTER_MAX = 4;
+
+/* Woerter, die NIE weggelassen werden duerfen.
+ *
+ * Sie sind keine Fuellwoerter, sondern das Gegenteil: die kleine, geschlossene
+ * Klasse deutscher Erdkunde-Bestimmungswoerter. Genau sie trennen ein Gebiet
+ * vom naechsten - Nordamerika von Suedamerika, Sudan von Sued-Sudan,
+ * Afrika von Suedafrika, Korea von Nordkorea.
+ *
+ * Diese Liste ist der Waechter des Ausschnitts, und sie ist gemessen:
+ * ohne sie nahm der Abgleich „sued sudan" als SUDAN an - ein echtes
+ * Nachbarland, das es im Spiel nicht gibt, glatt als ein anderes gewertet.
+ * Der Korpus hat es in demselben Lauf gemeldet, in dem der Ausschnitt
+ * eingebaut wurde.
+ *
+ * Der Unterschied zur alten Fuellwortliste ist wichtig: DIE zaehlte auf,
+ * was weggelassen werden darf - und war damit immer unvollstaendig, weil
+ * niemand alle Redewendungen eines Kindes kennt. DIESE zaehlt auf, was
+ * NICHT weggelassen werden darf, und diese Klasse ist klein und steht fest. */
+const BESTIMMEND = new Set(['nord','noerdlich','sued','suedlich','ost','oestlich',
+  'west','westlich','mittel','zentral','neu','alt','gross','klein','sankt','sant','san']);
+
+/** Alle zusammenhaengenden Wortgruppen einer Aeusserung, laengste zuerst.
+ *
+ * Ein Ausschnitt faellt weg, sobald er ein bestimmendes Wort ABSCHNEIDET,
+ * das direkt daneben steht: „sued | sudan" darf nicht zu „sudan" werden.
+ * Weiter weg im Satz stoert es nicht - „im sueden ist das Afrika" soll
+ * weiterhin gehen. */
+function fenster(satz) {
+  const w = normalisieren(satz).split(' ').filter(Boolean);
+  const aus = [];
+  for (let n = Math.min(FENSTER_MAX, w.length); n >= 1; n--)
+    for (let i = 0; i + n <= w.length; i++) {
+      if (BESTIMMEND.has(w[i - 1]) || BESTIMMEND.has(w[i + n])) continue;
+      aus.push(w.slice(i, i + n).join(' '));
+    }
+  return aus;
+}
+
+const RANG = { angenommen: 0, rueckfrage: 1, nochmal: 2 };
+const besser = (a, b) => RANG[a.art] !== RANG[b.art]
+  ? RANG[a.art] < RANG[b.art]
+  : (a.abstand ?? 1) < (b.abstand ?? 1);
+
+/**
+ * Der Abgleich fuer GESPROCHENES. Zwei Dinge, die `abgleich` nicht kann:
+ *
+ * 1. ES KOMMT EIN SATZ AN, KEIN WORT. Ein Diktiergeraet liefert „Ich glaube
+ *    das ist Asien", nicht „Asien". `abgleich` faellt darueber, und zwar an
+ *    seiner Laengenstrafe - genau der Strafe, die ihn sonst davor bewahrt,
+ *    „euro" fuer Europa zu nehmen. Sie ist richtig und darf nicht weg;
+ *    stattdessen bekommt jede zusammenhaengende Wortgruppe ihre Chance.
+ *
+ *    Die Fuellwortliste war der Versuch, dasselbe mit einer Liste zu loesen.
+ *    Gemessen: von achtzehn wirklichkeitsnahen Aeusserungen fielen vier
+ *    durch - „Ich glaube das ist Asien", „Afrika, glaube ich", „Ähm Europa",
+ *    „äh, Afrika". Eine Liste kennt immer nur die Fuellwoerter, an die
+ *    jemand gedacht hat; ein Ausschnitt braucht sie gar nicht zu kennen.
+ *
+ * 2. ES KOMMT MEHR ALS EINE LESART AN. Die Erkennung liefert bis zu drei
+ *    Alternativen. Sie wurden angefordert und weggeworfen - dabei ist die
+ *    zweite oft die richtige: die Menge ist geschlossen, wir muessen nicht
+ *    raten, welche stimmt, wir koennen alle fragen.
+ *
+ * Die Laengenstrafe bleibt der Waechter: „amerika" allein wird gegen
+ * „nordamerika" NICHT angenommen (Abstand 0,66 gegen die Grenze 0,34), und
+ * genau deshalb macht ein Ausschnitt aus einem Satz keinen Treffer, den es
+ * nicht gibt.
+ *
+ * Gibt zusaetzlich `gehoert` zurueck: den Ausschnitt, der gewonnen hat.
+ * Ohne ihn kann niemand sehen, WARUM etwas angenommen wurde.
+ */
+export function hoerAbgleich(varianten, kandidaten) {
+  const liste = (Array.isArray(varianten) ? varianten : [varianten])
+    .map(v => (v || '').trim()).filter(Boolean);
+  let best = { art: 'nochmal', grund: 'leer' }, gehoert = '';
+  const gesehen = new Set();
+  for (const v of liste)
+    for (const stueck of fenster(v)) {
+      if (!stueck || gesehen.has(stueck)) continue;
+      gesehen.add(stueck);
+      const r = abgleich(stueck, kandidaten);
+      if (besser(r, best)) { best = r; gehoert = stueck; }
+    }
+  return { ...best, gehoert };
+}
+
 /* -------------------------------------------------- Tippen (Lea) -------- */
 
 /**

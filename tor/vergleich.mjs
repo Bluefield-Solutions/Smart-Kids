@@ -14,11 +14,25 @@
 // Zahl zu melden, die nichts bezeugt.
 import fs from 'node:fs';
 import path from 'node:path';
-import { abgleich } from '../src/vergleich/vergleich.js';
+import { hoerAbgleich } from '../src/vergleich/vergleich.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 
 const ZIEL_TREFFER = 0.90, ZIEL_FALSCH = 0.02;
+
+/* Gemessen wird `hoerAbgleich`, nicht `abgleich`.
+ *
+ * Das Spiel ruft seit F14 `hoerAbgleich` - der kennt ganze Aeusserungen und
+ * mehrere Lesarten. Ein Tor, das die Stufe DARUNTER misst, bezeugt eine
+ * Rechnung, die niemand fährt (Regel 12: jede Zahl traegt ihre Messstelle).
+ * Genau daran lag der Befund vom Zielgeraet: hier stand 100 %, waehrend auf
+ * dem Telefon jede Antwort mit mehr als einem Wort durchfiel.
+ *
+ * Gemessen wird mit EINER Lesart je Zeile, obwohl die App bis zu drei
+ * bekommt. Das ist Absicht: der Korpus haelt fest, was ein Mensch gehoert
+ * hat, nicht was ein Geraet an Alternativen mitschickt. Die Messung ist
+ * damit strenger als das Spiel - und eine Quote, die hier steht, steht dort
+ * auch. */
 
 /** Alle Gebiete als Kandidaten, mit Aliassen und Aussprachevarianten. */
 const ALLE = [
@@ -57,7 +71,7 @@ function pruefe(korpus, name) {
     const kand = menge(zielId);
     for (const e of eingaben) {
       trefferGes++;
-      const r = abgleich(e, kand);
+      const r = hoerAbgleich([e], kand);
       if (r.id === zielId && r.art === 'angenommen') treffer++;
       else if (r.id === zielId && r.art === 'rueckfrage') { treffer++; rueckfragen++; }
       else verfehlt.push(`${e} → ${r.art}${r.name ? ' ('+r.name+')' : ''}, erwartet ${zielId}`);
@@ -69,7 +83,7 @@ function pruefe(korpus, name) {
     const kand = menge(zielId);
     for (const e of eingaben) {
       falschGes++;
-      const r = abgleich(e, kand);
+      const r = hoerAbgleich([e], kand);
       if (r.id === zielId && r.art === 'angenommen') { falsch++; durchgerutscht.push(`${e} → ${zielId}`); }
     }
   }
@@ -166,7 +180,7 @@ for (const r of laeufe) {
     for (const l of liste)
       for (const f of [l.name, ...(l.aliasse||[]), ...(l.aussprache||[])]) {
         n++;
-        const r = abgleich(f, kand);
+        const r = hoerAbgleich([f], kand);
         if (r.id === l.a3 && r.art !== 'nochmal') continue;
         falsch.push(r.id && r.id !== l.a3
           ? `${kont}: „${f}" gehört zu ${l.name}, angenommen wurde ${r.name}`

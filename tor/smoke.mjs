@@ -304,11 +304,17 @@ async function neueSeite(viewport, ctx, flott = true) {
       abort(){ this.stop(); }
     }
     window.SpeechRecognition = ErkNachbau;
-    /** Etwas sagen. `final:false` ist ein Zwischenergebnis. */
+    /* Etwas sagen. `final:false` ist ein Zwischenergebnis.
+     *
+     * Ein Text oder MEHRERE: die Erkennung liefert bis zu drei Lesarten,
+     * und welche davon stimmt, weiss sie selbst nicht. Der Nachbau kann
+     * das deshalb auch - sonst waere die zweite Lesart im Rauchtest nie
+     * zu sehen, und genau sie ist auf dem Geraet oft die richtige. */
     window.__sprich = (text, final = true) => {
       const e = window.__erk.laeuft;
       if (!e || !e.onresult) return false;
-      const treffer = [{ transcript: text, confidence: 0.9 }];
+      const treffer = (Array.isArray(text) ? text : [text])
+        .map((t, i) => ({ transcript: t, confidence: 0.9 - i * 0.2 }));
       treffer.isFinal = final;
       e.onresult({ results: [treffer] });
       return true;
@@ -2896,23 +2902,82 @@ if (laeuft('sprechen')) try {
       merke('sprechen', new Error(`endet die Erkennung ohne Ergebnis, bleibt „${z.satz}" `
         + 'stehen — ein Zustand, aus dem es keinen Ausgang gibt'));
 
-    // 4. Und der Weg, um den es eigentlich geht: gesprochen, ausgewertet.
+    /* 4. Was ankommt, ist ein SATZ - und drei Lesarten davon.
+     *
+     * Der Befund vom Zielgeraet: gesprochen, verstanden, und trotzdem
+     * „sag es noch einmal". Die Erkennung liefert „Das ist Asien", der
+     * Abgleich bekam einen Namen erwartet und fiel an seiner Laengenstrafe
+     * durch. Hier stand vorher nur das nackte Wort - der Rauchtest hat den
+     * Fall also nie gesehen.
+     *
+     * Drei Dinge nacheinander, ohne die Aufgabe zu wechseln:
+     *   a) ein Kauderwelsch: es darf KEINEN Versuch kosten und muss
+     *      nennen, was angekommen ist
+     *   b) ein ganzer Satz: muss gewertet werden
+     *   c) nur die ZWEITE Lesart stimmt: muss auch gewertet werden
+     */
     const name = await p.evaluate(() => {
       const z = document.querySelector('.schirm.da path.ziel');
       const D = JSON.parse(document.getElementById('daten').textContent);
       return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
     });
+
+    // a) Dreimal Kauderwelsch. Vorher loeste die App danach die Aufgabe auf:
+    //    drei Verstaendnisfehler zaehlten wie drei falsche Antworten.
+    const KAUDERWELSCH = ['ratzefummel', 'schnurpsel', 'kladderadatsch'];
+    for (const k of KAUDERWELSCH) {
+      await p.click('.schirm.da #mikro');
+      await p.evaluate((w) => window.__sprich(w, true), k);
+      await p.waitForTimeout(120);
+    }
+    const nachKauderwelsch = await zustand();
+    if (!nachKauderwelsch.satz.includes(KAUDERWELSCH[2]))
+      merke('sprechen', new Error(`nach „${KAUDERWELSCH[2]}" steht „${nachKauderwelsch.satz}" da `
+        + '— die Meldung nennt nicht, was angekommen ist. Dann sieht niemand, ob das '
+        + 'Mikrofon nichts gehört hat oder der Abgleich nichts zuordnen konnte'));
+    const nochOffen = await p.evaluate(() =>
+      !document.querySelector('.schirm.da .frage .richtigText')
+      && !!document.querySelector('.schirm.da path.ziel'));
+    if (!nochOffen)
+      merke('sprechen', new Error('drei nicht verstandene Äußerungen haben die Aufgabe '
+        + 'aufgelöst — nicht verstanden ist kein Fehlversuch, das Kind hat nicht ein '
+        + 'einziges Mal falsch geraten'));
+
+    // b) Der ganze Satz - der gemeldete Fall.
     await p.click('.schirm.da #mikro');
-    await p.evaluate((n) => window.__sprich(n, false), name);
+    await p.evaluate((n) => window.__sprich(`Das ist ${n}`, false), name);
     const zwischen = (await zustand()).satz;
-    await p.evaluate((n) => window.__sprich(n, true), name);
+    await p.evaluate((n) => window.__sprich(`Das ist ${n}.`, true), name);
     const gewertet = await bis(p,
       () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
     if (!gewertet)
-      merke('sprechen', new Error(`„${name}" gesprochen und nichts gewertet — `
-        + `auf dem Bildschirm steht „${(await zustand()).satz}"`));
-    else console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
-      + `„${name}" gewertet (zwischendurch: „${zwischen}")`);
+      merke('sprechen', new Error(`„Das ist ${name}." gesprochen und nichts gewertet — `
+        + `auf dem Bildschirm steht „${(await zustand()).satz}". Genau das war der Befund`));
+
+    // c) Die zweite Lesart. Neue Aufgabe abwarten, sonst ist `erledigt` gesetzt.
+    let zweite = 'übersprungen';
+    if (gewertet) {
+      await bis(p, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000);
+      const name2 = await p.evaluate(() => {
+        const z = document.querySelector('.schirm.da path.ziel');
+        if (!z) return null;
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
+      });
+      if (name2) {
+        await p.click('.schirm.da #mikro');
+        await p.evaluate((n) => window.__sprich(['Anna Lena', n, 'Banane'], true), name2);
+        const auchGewertet = await bis(p,
+          () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+        if (!auchGewertet)
+          merke('sprechen', new Error(`„${name2}" stand als zweite Lesart da und wurde nicht `
+            + 'gewertet — die Erkennung liefert drei, gelesen wird nur die erste'));
+        else zweite = `„${name2}" als zweite Lesart`;
+      }
+    }
+    if (gewertet) console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
+      + `3× nicht verstanden ohne Versuch, „Das ist ${name}." gewertet `
+      + `(zwischendurch: „${zwischen}"), ${zweite}`);
   }
   await p.close();
 } catch (e) { merke('sprechen', e); }
