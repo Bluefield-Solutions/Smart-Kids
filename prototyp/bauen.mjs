@@ -162,6 +162,7 @@ const module = [
   inline(new URL('../src/vergleich/vergleich.js', import.meta.url), 'Vergleich'),
   inline(new URL('../src/kern/leitner.js', import.meta.url), 'Leitner'),
   inline(new URL('../src/inhalt/rechnen.js', import.meta.url), 'Rechnen'),
+  inline(new URL('../src/inhalt/schreiben.js', import.meta.url), 'Schreiben'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),
   inline(new URL('../src/profil/ablage.js', import.meta.url), 'Ablage'),
   inline(new URL('../src/protokoll/protokoll.js', import.meta.url), 'Protokoll',

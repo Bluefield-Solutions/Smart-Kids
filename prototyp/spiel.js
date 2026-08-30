@@ -434,6 +434,18 @@ const EBENEN = [
    * gibt es keinen. */
   { id:'rechnen:gross', ueber:'Rechnen', titel:'Großes Einmaleins', farbe:2,
     art:'rechnen', wer:['eltern'] },
+  /* Schreiben - nur fuer Fiona (N2a).
+   *
+   * Sie ist sechs und liest noch nicht. Alles andere in dieser App macht
+   * ihr das Abfragen leichter; das hier bringt ihr etwas bei, das sie
+   * danach ueberall braucht - auch in dieser App.
+   *
+   * `wer:['fiona']` ist die EINE Stelle, an der das steht. Die Welt
+   * darueber verschwindet fuer die anderen von selbst, weil sie dann
+   * keine Ebene mehr haelt.
+   */
+  { id:'schreiben:buchstaben', ueber:'Schreiben', titel:'Große Buchstaben', farbe:7,
+    art:'schreiben', wer:['fiona'] },
 ];
 
 /* Die Fachwelten (D4).
@@ -455,10 +467,24 @@ const EBENEN = [
  * Auskunft an zwei Orten, und eines von beiden veraltet.
  */
 const WELTEN = [
-  { id:'erdkunde', name:'Erdkunde', farbe:5 },
-  { id:'rechnen',  name:'Rechnen',  farbe:4 },
+  { id:'erdkunde',  name:'Erdkunde', farbe:5 },
+  { id:'rechnen',   name:'Rechnen',  farbe:4 },
+  /* Die dritte Welt (N2a) - und sie steht nicht fuer alle da.
+   *
+   * Sichtbar ist eine Welt nur, wenn dieses Kind Ebenen darin hat; die
+   * Weltenwahl filtert ohnehin schon so (`.filter(x => x.meine.length)`).
+   * Weil `schreiben:buchstaben` nur Fiona gehoert, verschwindet die Welt
+   * fuer Lea und die Eltern von selbst - es braucht keine zweite Regel
+   * daneben, die dasselbe noch einmal sagt.
+   *
+   * Damit sieht dieser Bildschirm je Profil VERSCHIEDEN aus: drei Karten
+   * fuer Fiona, zwei fuer die anderen. Beide Fassungen muessen gemessen
+   * werden - `passt` prueft sie einzeln, weil eine dritte Karte auf
+   * 844 x 390 nicht selbstverstaendlich ist. */
+  { id:'schreiben', name:'Schreiben', farbe:6 },
 ];
-const weltVon = (e) => e.art === 'rechnen' ? 'rechnen' : 'erdkunde';
+const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'
+                     : e.art === 'schreiben' ? 'schreiben' : 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
 let Welt = WELTEN[0].id;
 
@@ -503,6 +529,12 @@ const MATHESTRICH = {
   mal:   'M7 7l26 26M33 7L7 33',
   durch: 'M4 20h32M20 9.5v.01M20 30.4v.01',
 };
+/* Welche Buchstaben auf der Kachel stehen. Zwei, nicht das ganze Abc:
+   drei passen auf 844 x 390 nicht mehr lesbar in ein Wasserzeichen. */
+const SCHREIBBILD = {
+  'schreiben':             ['A','B'],
+  'schreiben:buchstaben':  ['A','B'],
+};
 const MATHEBILD = {
   'rechnen':           ['plus','mal'],
   'rechnen:plusminus': ['plus','minus'],
@@ -520,6 +552,24 @@ const MATHEBILD = {
  * Dekoration und keine Auskunft.
  */
 function silhouette(ebeneId) {
+  /* Die Schreibwelt zeigt Buchstaben - und zwar DIE Buchstaben.
+   *
+   * Gezeichnet aus `Schreiben.BUCHSTABEN`, nicht aus einem zweiten,
+   * huebscheren Satz: was auf der Kachel steht, ist genau der Zug, den
+   * Fiona gleich nachfaehrt. Ein eigener Schmuckbuchstabe waere schoener
+   * zu malen und eine Luege (Regel 6). */
+  if (SCHREIBBILD[ebeneId]) {
+    const teile = SCHREIBBILD[ebeneId].map((z, i) => {
+      const b = Schreiben.BUCHSTABEN.find(x => x.zeichen === z);
+      return b.zuege.map(d =>
+        `<path transform="translate(${i * 110} 0)" d="${d}"/>`).join('');
+    }).join('');
+    const breit = SCHREIBBILD[ebeneId].length * 110 - 10;
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 ${breit} 100"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="9" stroke-linecap="round"
+      stroke-linejoin="round">${teile}</svg>`;
+  }
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
     const teile = zeichen.map((n, i) =>
@@ -537,6 +587,17 @@ function silhouette(ebeneId) {
   return `<svg class="silhouette" viewBox="${s.vb}" preserveAspectRatio="xMidYMid meet"
     aria-hidden="true"><path d="${s.d}"/></svg>`;
 }
+
+/**
+ * Welcher Bildschirm spielt diese Ebene?
+ *
+ * Stand an drei Stellen als `ebeneArt(...)==='rechnen' ? a : b`. Mit der
+ * dritten Sorte waeren daraus drei Ketten geworden, die getrennt
+ * veralten - und eine davon haette Fionas Schreibebene auf dem
+ * Kartenbildschirm geoeffnet, wo es nichts zu ziehen gibt.
+ */
+const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm }
+  [ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören. */
 const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
@@ -592,6 +653,13 @@ const FLOTT = new URLSearchParams(location.search).has('flott');
  */
 const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;
 const LOBPAUSE = schauPause(2600);
+/* Wie lange EIN Zug beim Vormachen braucht.
+ *
+ * Steht hier und nicht im Stilblatt, weil zwei Dinge daran haengen, die
+ * zusammenpassen muessen: die Malzeit des Strichs (im Markup gesetzt) und
+ * die Wartezeit, bis der naechste Buchstabe kommt. Zwei Zahlen an zwei
+ * Orten waeren dieselbe Auskunft doppelt - und eine davon veraltet. */
+const VORMACHEN_JE_ZUG = 750;
 /* 900 ms, nicht 250.
  *
  * Bei 250 war das Lob weg, bevor der Rauchtest es ansehen konnte - er
@@ -663,6 +731,31 @@ function kontinentRunde(stand){
  * praktisch unsichtbar, und ein Bild, auf dem man die Form nicht erkennt,
  * ist keins.
  */
+/**
+ * Ein Buchstabe als Bild - dieselben Zuege, die gleich nachgefahren werden.
+ *
+ * Steht hier einmal und wird von drei Stellen gelesen: Vorlauf,
+ * Forscherbuch und Schreibschirm. Vorher stand die Fallunterscheidung
+ * „Umriss oder Rechenkleber" an zwei Stellen abgeschrieben - eine dritte
+ * Sorte haette sie zu einer dritten Abschrift gemacht.
+ */
+const buchstabenBild = (x, ton) => `
+  <svg class="zeichenbild" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"
+       aria-hidden="true" fill="none" stroke="${ton}" stroke-width="9"
+       stroke-linecap="round" stroke-linejoin="round">${
+    x.zuege.map(d => `<path d="${d}"/>`).join('')}</svg>`;
+
+/** Das Bild EINES Stuecks - Umriss, Rechnung oder Buchstabe. */
+const stueckBild = (x, ton, rahmen) =>
+    x.pfad  ? `<svg viewBox="${rahmen}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
+                fill="${ton}" stroke="var(--tinte)" stroke-opacity=".6" stroke-width="1.6"
+                vector-effect="non-scaling-stroke"/></svg>`
+  : x.zuege ? buchstabenBild(x, ton)
+  :           `<div class="rechenkleber" style="--ton:${ton}">${x.frage}</div>`;
+
+/** Was unter dem Bild steht. Beim Buchstaben sein Merkwort. */
+const stueckFuss = (x) => x.pfad ? x.name : x.zuege ? x.wort : `= ${x.name}`;
+
 const eigenerRahmen = (pfad) => {
   const z = String(pfad).match(/-?\d+\.?\d*/g);
   if (!z || z.length < 4) return null;
@@ -696,6 +789,9 @@ function vorrat(ebeneId, stand = Stand){
     return kont==='reihen' ? Rechnen.reihenVorrat()
          : kont==='gross'  ? Rechnen.grossVorrat()
          : Rechnen.vorrat();
+  // Sechsundzwanzig, gezaehlt und von Natur aus begrenzt - dieselbe Regel
+  // wie beim Rechenvorrat (Backlog Paragraf 5.2).
+  if (art==='schreiben') return Schreiben.vorrat();
   if (art==='hauptstaedte') {
     // Europa: dieselben Länder wie `laender:europa`, dieselbe Tiefe je
     // Profil - gefragt wird nur nach etwas anderem. `hauptstadt` und `ort`
@@ -730,6 +826,8 @@ D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
 // oben aus den Daten selbst und decken damit schon jedes Profil ab.
 for (const e of EBENEN.filter(e=>e.art==='rechnen'))
   for (const r of vorrat(e.id)) NAMEN[r.id]=r.frage;
+// Und die Buchstaben: im Protokoll steht sonst `bu:A` statt „A".
+for (const r of Schreiben.vorrat()) NAMEN[r.id]=r.zeichen;
 
 const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
 async function standLaden(ebeneId){
@@ -1070,6 +1168,9 @@ function vorlaufSatz(ebeneId){
   if (art === 'rechnen')
     return `So sehen die Aufgaben aus — hier ein paar davon, `
       + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
+  if (art === 'schreiben')
+    return 'Das sind die Buchstaben, die du schreiben lernst. Tippe einen an, '
+      + 'dann sage ich dir, wie er heißt.';
   return 'Tippe auf ein Bild, dann sage ich dir, wie es heißt.';
 }
 
@@ -1106,12 +1207,8 @@ async function vorlauf(ebeneId){
       <div class="kleber" style="--spalten:${gitter.spalten};--reihen:${gitter.reihen}">${stuecke.map((x, i) => `
         <button class="aufkleber da" data-lesen="${vorlaufAnsage(x, ebeneId)}"
                 title="${x.gebiet ? `${x.gebiet}: ${x.name}` : x.name}">
-          ${x.pfad
-            ? `<svg viewBox="${rahmen(x)}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
-                fill="var(${FL[i%7]})" stroke="var(--tinte)" stroke-opacity=".6" stroke-width="1.6"
-                vector-effect="non-scaling-stroke"/></svg>`
-            : `<div class="rechenkleber" style="--ton:var(${FL[i%7]})">${x.frage}</div>`}
-          <span>${x.pfad ? x.name : `= ${x.name}`}</span>
+          ${stueckBild(x, `var(${FL[i%7]})`, rahmen(x))}
+          <span>${stueckFuss(x)}</span>
           ${x.gebiet ? `<span class="dazu">${x.gebiet}</span>` : ''}
         </button>`).join('')}</div>
     </div>
@@ -1135,6 +1232,7 @@ async function vorlauf(ebeneId){
 
 /** Was beim Antippen gesagt wird. Bei den Hauptstädten das PAAR. */
 function vorlaufAnsage(x, ebeneId){
+  if (x.zuege) return `${x.zeichen} wie ${x.wort}.`;
   if (x.gebiet) return `Die Hauptstadt von ${x.gebiet} ist ${x.name}.`;
   if (x.frage)  return `${x.frage} ist ${x.name}.`;
   return x.name;
@@ -1254,7 +1352,7 @@ async function starten(ebeneId){
   // Sternformeln zustande, die der Audit gefunden hat.
   Sitzung = { ebeneId, alle, liste, i:0, glatt:0, wie:[],
               aufkleber:0, keim, begonnen:Date.now() };
-  zeige(ebeneArt(ebeneId) === 'rechnen' ? rechenschirm : spielschirm);
+  zeige(schirmZu(ebeneId));
 }
 
 /** Gemischt, aber wiederholbar: derselbe Keim gibt dieselbe Reihenfolge. */
@@ -1369,8 +1467,7 @@ function pauseSchirm(){
       <div class="unter" id="was">Bei „von vorne" verschwindet alles, was du
         in <strong>${titel}</strong> schon gesammelt hast.</div>
     </div>`;
-  s.querySelector('#weiter').onclick = () =>
-    zeige(ebeneArt(Sitzung.ebeneId) === 'rechnen' ? rechenschirm : spielschirm);
+  s.querySelector('#weiter').onclick = () => zeige(schirmZu(Sitzung.ebeneId));
   s.querySelector('#raus').onclick = () => zeige(ebenenwahl);
   const knopf = s.querySelector('#null');
   knopf.onclick = async () => {
@@ -1496,7 +1593,7 @@ function rechenschirm(){
   function weiter(){
     st.i++;
     if (st.i>=st.liste.length) zeige(endschirm);
-    else zeige(ebeneArt(st.ebeneId)==='rechnen' ? rechenschirm : spielschirm);
+    else zeige(schirmZu(st.ebeneId));
   }
 
   function aufloesen(grund){
@@ -1619,6 +1716,267 @@ function rechenschirm(){
   // keine Aufzählung vorgesagt: sie wäre die Antwort.
   ansagen(weise==='tippen' ? ziel.gesagt
     : `${ziel.gesagt} ${aufzaehlen(zahlen.map(z=>Rechnen.gesprochen(z)))}?`);
+  return s;
+}
+
+/* ---------- Der Schreibschirm (N2a) --------------------------------------
+ *
+ * Zwei Schritte je Buchstabe, und das ist die Anforderung selbst:
+ * erst NACHFAHREN (die Vorlage steht da, der Finger folgt ihr Zug fuer
+ * Zug), dann FREI SCHREIBEN (die Vorlage ist weg, es wird erkannt).
+ *
+ * Warum in dieser Reihenfolge und nicht als zwei Ebenen: das Nachfahren
+ * ist die Anleitung, das freie Schreiben die Frage. Zwischen beiden liegen
+ * fuenf Sekunden - lange genug, dass sie sich die Bewegung merken muss,
+ * kurz genug, dass sie es noch kann.
+ *
+ * Was NICHT gezaehlt wird: Fehlversuche beim Nachfahren. Wer auf der
+ * Linie abrutscht, hat nichts falsch gemacht, sondern geuebt - er darf
+ * denselben Zug so oft wiederholen, wie er will. Die drei Versuche
+ * gehoeren dem freien Schreiben, so wie bei jeder anderen Aufgabe auch.
+ */
+function schreibschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+  let phase = 'nach';   // 'nach' -> 'frei'
+  let zugNr = 0;        // welcher Zug der Vorlage jetzt dran ist
+  let fertig = [];      // die schon nachgefahrenen Zuege
+  let meine = [];       // die frei geschriebenen Zuege
+  let laeuft = null;    // was gerade unter dem Finger entsteht
+
+  /* Frage, Feld und Werkzeug in EINEM Kasten.
+   *
+   * Im kurzen Querformat stellt das Stilblatt sie nebeneinander statt
+   * untereinander - dieselbe Bewegung wie beim Mikrofon neben der
+   * Antwortliste. Gemessen: darunter blieben dem Feld 180 Punkte Hoehe,
+   * daneben sind es 270. Ein Schreibfeld, in das die Hand nicht passt, ist
+   * kein Schreibfeld. */
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="schreibraum">
+    <div class="frage" id="frage">Fahre das <strong>${ziel.zeichen}</strong> nach.</div>
+    <div class="schreibfeld"><div class="feldkasten">
+      <svg id="feld" class="feld" viewBox="0 0 100 100" role="application"
+           aria-label="Schreibfläche für den Buchstaben ${ziel.zeichen}">
+        <g class="linien" aria-hidden="true">
+          <line x1="0" y1="10" x2="100" y2="10"/>
+          <line x1="0" y1="90" x2="100" y2="90"/>
+        </g>
+        <g id="vorlage" class="vorlage" aria-hidden="true"></g>
+        <g id="gemalt" class="gemalt" aria-hidden="true"></g>
+        <path id="zug" class="zug" aria-hidden="true"/>
+        <g id="anfang" aria-hidden="true"></g>
+      </svg>
+    </div></div>
+    <div class="werkzeug">
+      <button class="knopf haupt" id="fertigknopf" hidden>Fertig</button>
+      <button class="leise" id="nochmal">Noch mal</button>
+      <button class="leise" id="weissnicht">Weiß ich nicht</button>
+    </div></div>`;
+
+  const feld = s.querySelector('#feld');
+  const zugEl = s.querySelector('#zug');
+  const anfangEl = s.querySelector('#anfang');
+  /* Der Anfangspunkt wird GEZEICHNET oder nicht - nicht versteckt.
+   *
+   * Der erste Anlauf setzte `kreis.hidden = true`. Das tut nichts: `hidden`
+   * ist eine Eigenschaft von HTML-Elementen, ein `<circle>` ist keines. Der
+   * gruene Punkt stand deshalb auch noch da, als die Vorlage laengst weg
+   * war und Fiona frei schreiben sollte - er zeigte auf einen Zug, den es
+   * nicht mehr gab. Gesehen auf der Aufnahme, nicht gemessen. */
+  const fertigKnopf = s.querySelector('#fertigknopf');
+  const sagFrage = (html, klasse='') => {
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = klasse ? `<span class="${klasse}">${html}</span>` : html;
+  };
+  const alsPfad = (punkte) => punkte.length < 2 ? ''
+    : 'M' + punkte.map(p => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' L');
+
+  /** Alles neu zeichnen. Eine Stelle, damit kein Zustand zweimal gilt. */
+  function malen(){
+    s.querySelector('#vorlage').innerHTML = phase !== 'nach' ? '' :
+      ziel.zuege.map((d, i) => `<path d="${d}" class="${
+        i < zugNr ? 'schon' : i === zugNr ? 'dran' : 'spaeter'}"/>`).join('');
+    s.querySelector('#gemalt').innerHTML =
+      (phase === 'nach' ? fertig : meine).map(z => `<path d="${alsPfad(z)}"/>`).join('');
+    zugEl.setAttribute('d', laeuft ? alsPfad(laeuft) : '');
+    // Der Anfangspunkt sagt, WO der naechste Zug losgeht. Ohne ihn faengt
+    // ein Kind unten an und bekommt gesagt, die Richtung stimme nicht -
+    // ohne je erfahren zu haben, welche gemeint war.
+    const zeigAnfang = phase === 'nach' && !laeuft && zugNr < ziel.zuege.length;
+    const p = zeigAnfang ? Schreiben.abtasten(ziel.zuege[zugNr], 2)[0] : null;
+    anfangEl.innerHTML = p
+      ? `<circle class="anfang" cx="${p[0]}" cy="${p[1]}" r="5"/>` : '';
+    fertigKnopf.hidden = phase !== 'frei' || !meine.length;
+  }
+
+  /* Vom Finger in den Kasten - ueber die Matrix des SVG, nicht ueber
+   * seinen Rahmen.
+   *
+   * Der erste Anlauf rechnete `getBoundingClientRect` gegen 100 und setzte
+   * dabei voraus, dass das Feld quadratisch ist. Es war es nicht: ein SVG
+   * ist von sich aus 100 % breit, und `aspect-ratio` allein aendert daran
+   * nichts. Der Buchstabe stand mittig und klein in einem breiten Kasten,
+   * der Finger landete daneben - und zwar unsichtbar, denn gezeichnet
+   * wurde ja an der richtigen Stelle, nur gemessen an der falschen.
+   *
+   * `getScreenCTM()` ist genau die Abbildung, die der Browser selbst
+   * benutzt. Damit haengt die Richtigkeit nicht mehr am Stilblatt.
+   */
+  const zuKasten = (ev) => {
+    const p = feld.createSVGPoint();
+    p.x = ev.clientX; p.y = ev.clientY;
+    const q = p.matrixTransform(feld.getScreenCTM().inverse());
+    return [q.x, q.y];
+  };
+
+  function anfangen(ev){
+    if (erledigt) return;
+    ev.preventDefault();
+    try { feld.setPointerCapture(ev.pointerId); } catch(e){}
+    laeuft = [zuKasten(ev)];
+    malen();
+  }
+  function ziehen(ev){
+    if (!laeuft) return;
+    ev.preventDefault();
+    const p = zuKasten(ev);
+    const letzt = laeuft[laeuft.length-1];
+    // Punkte, die praktisch aufeinanderliegen, bringen nichts und machen
+    // die Messung langsam: bei 26 Vorlagen x 48 Punkten zaehlt das.
+    if (Math.hypot(p[0]-letzt[0], p[1]-letzt[1]) > 0.8) { laeuft.push(p); malen(); }
+  }
+  function loslassen(){
+    if (!laeuft) return;
+    const zug = laeuft; laeuft = null;
+    if (zug.length < 3) { malen(); return; }   // ein Tipper ist kein Zug
+    if (phase === 'nach') nachfahrenWerten(zug);
+    else { meine.push(zug); malen();
+           if (meine.length >= ziel.zuege.length) setTimeout(pruefen, 500); }
+  }
+
+  /** Ein nachgefahrener Zug - und wenn er nicht sass, WORAN es lag. */
+  function nachfahrenWerten(zug){
+    const r = Schreiben.nachgefahren(ziel.zuege[zugNr], zug);
+    if (!r.gut) {
+      klangZu('falsch');
+      // Der Grund wird benannt, nicht nur die Ablehnung. Genau das ist der
+      // Unterschied zwischen „nicht ganz" und einer Hilfe (A3 im ANTON-
+      // Abgleich, hier von Anfang an eingebaut).
+      const satz = !r.richtig ? 'Fang beim Punkt an.'
+                 : r.deckung < Schreiben.DECKUNG_MIN ? 'Fahre die ganze Linie nach.'
+                 : 'Bleib auf der Linie.';
+      sagFrage(satz, 'fastText'); sagen(satz);
+      malen();
+      return;
+    }
+    fertig.push(zug); zugNr++;
+    klangZu('richtig');
+    if (zugNr < ziel.zuege.length) {
+      const satz = `Gut. Jetzt der ${zugNr === 1 ? 'zweite' : zugNr === 2 ? 'dritte' : 'nächste'} Strich.`;
+      sagFrage(satz); sagen(satz);
+      malen();
+      return;
+    }
+    // Alle Zuege sitzen: die Vorlage geht weg, jetzt schreibt sie selbst.
+    phase = 'frei'; meine = [];
+    const satz = `Genau! Jetzt schreib das <strong>${ziel.zeichen}</strong> selbst.`;
+    sagFrage(satz);
+    sagen(`Genau! Jetzt schreib das ${ziel.zeichen} selbst.`);
+    malen();
+  }
+
+  function protokollieren(ergebnis, roh, fachVorher){
+    Protokoll.schreiben(Protokoll.eintrag({
+      zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
+      eingabeart: 'schreiben',
+      ergebnis, roheingabe: String(roh), sicherheit: null,
+      dauerMs: Date.now()-beginn, versuch,
+      fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
+    }));
+  }
+
+  function weiter(){
+    st.i++;
+    if (st.i>=st.liste.length) zeige(endschirm);
+    else zeige(schirmZu(st.ebeneId));
+  }
+
+  /** Vormachen statt ablehnen - nach drei Fehlversuchen oder auf Wunsch. */
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = true;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    phase = 'zeigen'; meine = []; laeuft = null;
+    malen();
+    // Jeder Zug wird nacheinander gemalt. `pathLength` macht die
+    // Strichlaenge unabhaengig von der echten Laenge - sonst liefe der
+    // lange Zug eines S genauso schnell wie der kurze Balken eines A.
+    s.querySelector('#vorlage').innerHTML = ziel.zuege.map((d, i) =>
+      `<path d="${d}" class="dran malt" pathLength="100" style="animation-duration:${
+        VORMACHEN_JE_ZUG}ms;animation-delay:${i * VORMACHEN_JE_ZUG}ms"/>`).join('');
+    sagFrage(`Kein Problem. So geht das <strong>${ziel.zeichen}</strong>.`, 'loesung');
+    sagen(`Kein Problem. ${ziel.geloest}.`);
+    standSichern(st.ebeneId);
+    // Auch das Vormachen geht durch `schauPause`: sonst wartet der
+    // Rauchtest bei jedem Buchstaben drei Sekunden, die er nicht prueft -
+    // genau der Fall, den der Kartenweg schon einmal gekostet hat.
+    setTimeout(weiter, LOBPAUSE + schauPause(ziel.zuege.length * VORMACHEN_JE_ZUG));
+  }
+
+  /** Das frei Geschriebene beurteilen. */
+  function pruefen(){
+    if (erledigt || phase !== 'frei' || !meine.length) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    const e = Schreiben.erkennen(meine);
+    if (e.sicher && e.zeichen === ziel.zeichen) {
+      erledigt = true;
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', e.zeichen, fachVorher);
+      const spruch = lob();
+      lobsatz(s, `Das ist ein ${ziel.zeichen}.`, null, spruch, '', neuerAufkleber);
+      sagen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      setTimeout(weiter, LOBPAUSE);
+      return;
+    }
+    protokollieren('falsch', e.zeichen || '', fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    // Auch hier wird der Fehler BENANNT, wo das ehrlich geht: wenn etwas
+    // sicher erkannt wurde, nur eben das Falsche, ist das eine Auskunft.
+    // Bei „unsicher" waere sie geraten - dann sagt sie es lieber.
+    const satz = e.sicher && e.zeichen !== ziel.zeichen
+      ? `Das sieht aus wie ein ${e.zeichen}. Probier das ${ziel.zeichen} noch einmal.`
+      : `Das kann ich noch nicht lesen. Probier das ${ziel.zeichen} noch einmal.`;
+    sagFrage(satz, 'fastText'); sagen(satz);
+    meine = []; malen();
+  }
+
+  feld.addEventListener('pointerdown', anfangen);
+  feld.addEventListener('pointermove', ziehen);
+  feld.addEventListener('pointerup', loslassen);
+  feld.addEventListener('pointercancel', loslassen);
+  feld.addEventListener('pointerleave', loslassen);
+
+  fertigKnopf.onclick = pruefen;
+  s.querySelector('#nochmal').onclick = ()=>{
+    if (erledigt) return;
+    laeuft = null;
+    if (phase === 'frei') meine = [];
+    else { fertig = []; zugNr = 0; }
+    malen();
+  };
+  s.querySelector('#weissnicht').onclick = ()=> aufloesen();
+  s.querySelector('#zur').onclick = ()=> zeige(pauseSchirm);
+
+  malen();
+  ansagen(ziel.gesagt);
   return s;
 }
 
@@ -2715,15 +3073,12 @@ async function forscherbuch(){
    */
   const kleber = (g, x, offen) => `
     <button class="aufkleber ${offen?'':'da'} ${x.gekonnt?'sicher':''} ${x.pfad?'':'rechnen'}"
-            data-lesen="${offen?'Das kennst du noch nicht.':(x.frage ? `${x.frage} = ${x.name}` : x.name)}"
+            data-lesen="${offen?'Das kennst du noch nicht.'
+              :(x.zuege ? `${x.zeichen} wie ${x.wort}` : x.frage ? `${x.frage} = ${x.name}` : x.name)}"
             title="Fach ${x.fach||'—'}">
-      ${x.pfad
-        ? `<svg viewBox="${eigenerRahmen(x.pfad) || g.vb}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
-            fill="${offen?'var(--linie)':`var(${FL[x.i%7]})`}"
-            stroke="var(--tinte)" stroke-opacity="${offen?.25:.6}" stroke-width="1.6"
-            vector-effect="non-scaling-stroke"/></svg>`
-        : `<div class="rechenkleber" style="--ton:var(${FL[x.i%7]})">${x.frage}</div>`}
-      <span>${offen ? '?' : (x.pfad ? x.name : `= ${x.name}`)}</span>
+      ${stueckBild(x, offen && x.pfad ? 'var(--linie)' : `var(${FL[x.i%7]})`,
+                   eigenerRahmen(x.pfad) || g.vb)}
+      <span>${offen ? '?' : stueckFuss(x)}</span>
       ${x.gekonnt?'<i class="siegel"></i>':''}
     </button>`;
 

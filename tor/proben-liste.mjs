@@ -211,12 +211,17 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:"wer:['fiona']" },
     sagt:'gehört fiona' },
 
-  // Und die Weiche selbst: ohne sie landet die Rechenaufgabe auf dem
-  // Kartenbildschirm, und der sucht eine Karte, die es nicht gibt.
+  /* Und die Weiche selbst: ohne sie landet die Rechenaufgabe auf dem
+   * Kartenbildschirm, und der sucht eine Karte, die es nicht gibt.
+   *
+   * Der Eingriff sass frueher an der Stelle in `starten()`. Mit der
+   * dritten Sorte (Schreiben, N2a) steht die Weiche als `schirmZu` an
+   * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
+   * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"  zeige(ebeneArt(ebeneId) === 'rechnen' ? rechenschirm : spielschirm);",
-    ersatz:'  zeige(spielschirm);',
-    an:{ ...DIST, fehlt:"ebeneArt(ebeneId) === 'rechnen' ? rechenschirm" },
+    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm }",
+    ersatz:"const schirmZu = (ebeneId) => ({ }",
+    an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
 
   /* --- pwa: der Lagername ------------------------------------------- */
@@ -1306,7 +1311,7 @@ export const PROBEN = [
   // Bildschirmfoto aus wie ein Gestaltungseinfall, nicht wie ein Fehler.
   { n:'alle Ebenen landen in derselben Welt', tor:'smoke', args:['--nur=durchgang'],
     bauen:true, datei:D,
-    such:"const weltVon = (e) => e.art === 'rechnen' ? 'rechnen' : 'erdkunde';",
+    such:"const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'\n                     : e.art === 'schreiben' ? 'schreiben' : 'erdkunde';",
     ersatz:"const weltVon = (e) => 'erdkunde';",
     an:{ ...DIST, text:"const weltVon = (e) => 'erdkunde';" },
     sagt:'die Welt' },

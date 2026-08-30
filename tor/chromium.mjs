@@ -82,7 +82,8 @@ export async function serviere(wurzel, erreichbar = () => true) {
  * Rauchtest sieht deshalb zusaetzlich nach, dass keine Kachel in der
  * falschen Welt steht und dass es beide Welten gibt.
  */
-export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen' : 'erdkunde';
+export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
+                                : String(ebene).startsWith('schreiben') ? 'schreiben' : 'erdkunde';
 
 /** Von der Weltenwahl in die Ebenenwahl der Welt, in der `ebene` liegt. */
 export async function zurEbenenwahl(seite, ebene = 'kontinente') {
@@ -138,4 +139,34 @@ export async function zurAufgabe(seite, ebene) {
 async function alleinIm(seite) {
   await seite.waitForFunction(() => document.querySelectorAll('.schirm').length === 1,
     null, { timeout: 5000 }).catch(() => {});
+}
+
+/* ---- Schreiben (N2a) ---------------------------------------------------
+ *
+ * Zwei Tore und ein Blickwerkzeug muessen einen Zug mit dem Zeiger
+ * nachfahren. Der Weg dorthin ist derselbe wie beim Ziehen auf der Karte:
+ * die Punkte stehen in KASTENPUNKTEN (0..100), und die Abbildung auf den
+ * Bildschirm macht `getScreenCTM` - dieselbe Matrix, die die App benutzt.
+ * Wer stattdessen den Rahmen des Feldes gegen 100 rechnet, setzt voraus,
+ * dass es quadratisch IST; das war es einmal nicht, und der Zeiger landete
+ * lautlos daneben.
+ */
+export const schreibVorlage = (seite) =>
+  seite.$$eval('.schirm.da #vorlage path', p => p.map(x => x.getAttribute('d')));
+
+export async function zeichneZug(seite, punkte) {
+  const auf = await seite.evaluate((pts) => {
+    const svg = document.querySelector('.schirm.da .feld');
+    if (!svg) return null;
+    const m = svg.getScreenCTM();
+    return pts.map(([x, y]) => {
+      const p = svg.createSVGPoint(); p.x = x; p.y = y;
+      const q = p.matrixTransform(m); return [q.x, q.y];
+    });
+  }, punkte);
+  if (!auf) throw new Error('zeichneZug: kein Schreibfeld auf dem Bildschirm');
+  await seite.mouse.move(...auf[0]);
+  await seite.mouse.down();
+  for (const b of auf.slice(1)) await seite.mouse.move(...b);
+  await seite.mouse.up();
 }

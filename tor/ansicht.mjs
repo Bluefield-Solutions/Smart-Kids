@@ -14,7 +14,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
-import { starte, zurEbenenwahl, durchVorlauf, serviere } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere,
+         schreibVorlage, zeichneZug } from './chromium.mjs';
+import * as Schreiben from '../src/inhalt/schreiben.js';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
 // nichts zurueck und der Prototyp startet jedesmal anders. Also derselbe
@@ -131,6 +133,14 @@ const AUFNAHMEN = [
      Audit-Runde die Fehler. `tun:'welten'` heisst: NICHT weiterklicken. */
   { name:'quer-profile', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'profile' },
   { name:'quer-welten', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'welten' },
+  /* Dieselbe Weltenwahl fuer LEA - und sie sieht anders aus.
+   *
+   * Seit N2a haengt die Zahl der Karten am Profil: Fiona hat drei Welten,
+   * Lea und die Eltern zwei. Ein Bildschirm, der je nach Kind eine andere
+   * Gestalt hat, braucht beide Vorbilder - sonst haelt die Sammlung nur
+   * die Haelfte fest und die andere aendert sich unbemerkt. */
+  { name:'quer-welten-lea', spiel:null, kind:'lea', quer:true, wahl:'.schirm.da',
+    tun:'welten' },
   { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
   /* Dieselbe Ebenenwahl, aber VOLL — acht Kacheln mit Sternen,
      Aufkleberzahlen und Balken nebeneinander. Der Fall nach ein paar
@@ -197,6 +207,21 @@ const AUFNAHMEN = [
    * bis hierher der einzige mit einem Knopf, der ALLES loescht, ohne
    * Vorbild. Genau solche hatten in der Audit-Runde die Fehler. */
   { name:'quer-pause', spiel:'kontinente', quer:true, wahl:'.schirm.da', tun:'pause' },
+  /* Schreiben (N2a) - zwei Bildschirme, die es vorher nicht gab.
+   *
+   * Der Vorlauf zeigt hier ALLE sechsundzwanzig Buchstaben mit ihrem
+   * Merkwort; das ist die dichteste Kachelwand der App und damit die
+   * engste Stelle nach dem Vorlauf der Bundeslaender.
+   *
+   * Und der Schreibschirm selbst, mit EINEM nachgefahrenen Zug: er zeigt
+   * die drei Zustaende der Vorlage nebeneinander (schon, dran, spaeter),
+   * den gezogenen Strich und den gruenen Anfangspunkt am naechsten Zug.
+   * Genau dieser Punkt stand einmal auch dann noch da, als die Vorlage
+   * laengst weg war - gesehen auf einer Aufnahme, von keinem Tor. */
+  { name:'quer-schreiben-vorlauf', spiel:'schreiben:buchstaben', quer:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
+  { name:'quer-schreiben', spiel:'schreiben:buchstaben', quer:true,
+    wahl:'.schirm.da', tun:'schreiben' },
 ];
 
 /**
@@ -322,6 +347,16 @@ async function durchspielen(seite) {
 
 async function vorfuehren(seite, was) {
   if (was === 'durch') return durchspielen(seite);
+  /* Schreiben: den ERSTEN Zug der Vorlage nachfahren und dort stehen
+   * bleiben. Die Punkte kommen aus derselben Vorlage, die die App
+   * zeichnet - abgelesen am Bildschirm, nicht aus einer Liste hier. */
+  if (was === 'schreiben') {
+    const zuege = await schreibVorlage(seite);
+    if (!zuege.length) throw new Error('quer-schreiben: keine Vorlage auf dem Bildschirm');
+    await zeichneZug(seite, Schreiben.abtasten(zuege[0], 26));
+    await seite.waitForTimeout(400);
+    return;
+  }
   /* Die Pause: aus der laufenden Aufgabe ueber den Zurueck-Knopf. */
   if (was === 'pause') {
     await karteSteht(seite);
@@ -616,9 +651,13 @@ for (const a of MEINE) {
       else {
       await durchVorlauf(seite);
       // Eine Rechenebene hat keine Karte, auf die man warten könnte.
-      await seite.waitForSelector(a.spiel.startsWith('rechnen')
-        ? '.schirm.da .rechnung' : '.schirm.da .karte svg path.ziel');
-      await seite.waitForTimeout(a.spiel.startsWith('rechnen') ? 300 : 0);
+      // Jede Sorte hat ihr eigenes Kennzeichen: die Rechnung, das
+      // Schreibfeld oder das Zielgebiet auf der Karte.
+      const ohneKarte = a.spiel.startsWith('rechnen') || a.spiel.startsWith('schreiben');
+      await seite.waitForSelector(a.spiel.startsWith('rechnen') ? '.schirm.da .rechnung'
+        : a.spiel.startsWith('schreiben') ? '.schirm.da .feld'
+        : '.schirm.da .karte svg path.ziel');
+      await seite.waitForTimeout(ohneKarte ? 300 : 0);
       if (a.tun) await vorfuehren(seite, a.tun);
       }
     }

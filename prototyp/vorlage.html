@@ -370,6 +370,17 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    es sind zwei, und sie sollen unverwechselbar sein. */
 .wahl.weltwahl{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
   max-width:760px}
+/* Seit der dritten Welt (N2a) sind es bei Fiona DREI Karten, bei Lea und
+   den Eltern zwei. Mit 260 Punkten Mindestbreite passten drei nicht mehr
+   nebeneinander: die dritte rutschte in eine zweite Reihe und stand halb
+   unter dem Bildrand - gesehen auf der Aufnahme, nicht gemessen.
+   Ab drei Karten wird die Mindestbreite deshalb kleiner und die Kachel
+   flacher. `:has()` statt eines Merkmals im Markup: die Zahl der Karten
+   ist eine Eigenschaft dieses Bildschirms, keine Auskunft, die das
+   Programm mitschicken muesste. */
+.wahl.weltwahl:has(> :nth-child(3)){
+  grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));max-width:1000px}
+.wahl.weltwahl:has(> :nth-child(3)) .kachel.welt{min-height:180px}
 /* Eine Welt ist keine Zeile.
    Der erste Entwurf gab den beiden Karten dieselbe Hoehe wie einer
    Ebenenkachel - auf dem Zielgeraet standen dann zwei breite Balken unter
@@ -661,6 +672,83 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   color:var(--auf-flaeche);background:color-mix(in oklab, var(--ton) 34%, var(--papier));
   border-radius:var(--rund-klein);font-variant-numeric:tabular-nums}
 .aufkleber:not(.da) .rechenkleber{background:var(--linie);color:var(--tinte-3)}
+/* ---- Schreiben (N2a) --------------------------------------------------
+   Die Schreibflaeche ist QUADRATISCH, und das ist keine Geschmacksfrage:
+   der Kasten der Vorlage ist 100 x 100, und der Finger wird ueber
+   `getBoundingClientRect` in ihn umgerechnet. Bei einem nicht
+   quadratischen Feld muesste dort `preserveAspectRatio` nachgerechnet
+   werden - und der Finger laege systematisch daneben, ohne dass man es
+   dem Bild ansieht.
+   `touch-action:none` ist ebenso Pflicht: sonst scrollt das Telefon die
+   Seite, waehrend das Kind schreibt. */
+.schreibraum{flex:1;min-height:0;display:flex;flex-direction:column;gap:var(--r2)}
+.schreibfeld{flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:0;padding:0 var(--r4) var(--r2)}
+/* Der Rahmen ist ein DIV, nicht das SVG.
+   `aspect-ratio` auf einem SVG mit viewBox tut in Chromium nicht, was man
+   denkt: gemessen kamen 820 x 180 Punkte heraus statt eines Quadrats - ein
+   SVG ohne eigene Breite faellt auf 100 % zurueck, und das Verhaeltnis
+   kommt nicht mehr zum Zug. Ein gewoehnlicher Kasten haelt es zuverlaessig,
+   und das SVG fuellt ihn. */
+.feldkasten{height:100%;aspect-ratio:1;max-width:100%;touch-action:none;
+  background:var(--papier);border:var(--strich) solid var(--linie);
+  border-radius:var(--rund-karte);overflow:hidden}
+.feld{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;
+  overscroll-behavior:none}
+/* Ober- und Grundlinie wie im Schreibheft - sie sagen, wie hoch der
+   Buchstabe wird, bevor der erste Strich da ist. */
+.feld .linien line{stroke:var(--linie);stroke-width:.8;stroke-dasharray:2 3}
+.vorlage path,.gemalt path,.zug{fill:none;stroke-width:9;
+  stroke-linecap:round;stroke-linejoin:round}
+.vorlage .spaeter{stroke:var(--linie);opacity:.55}
+.vorlage .schon{stroke:var(--linie);opacity:.35}
+.vorlage .dran{stroke:var(--linie-2)}
+.gemalt path,.zug{stroke:var(--primaer-kante)}
+/* Der Punkt, an dem der naechste Zug anfaengt. Ohne ihn faengt ein Kind
+   unten an und bekommt gesagt, die Richtung stimme nicht - ohne je
+   erfahren zu haben, welche gemeint war. */
+.anfang{fill:var(--gut)}
+/* `hidden` muss hidden BEDEUTEN.
+   Gefunden beim Bau des Schreibschirms, aber aelter: die Regel des
+   Browsers fuer `[hidden]` ist eine Vorgabe, und JEDE eigene Regel mit
+   `display` schlaegt sie. `.zahlen{display:flex}` tat genau das - Lea
+   bekam beim Rechnen die vier Antwortknoepfe UND das Tippfeld zu sehen,
+   obwohl das Feld ordentlich `hidden` gesetzt war.
+   Kein Tor konnte das sehen: `passt` misst Ueberlauf, der Rauchtest tippt
+   ins Eingabefeld und kommt damit durch, und die einzige Aufnahme eines
+   Rechenbildschirms ist Fionas - sie hat gar kein Tippfeld.
+   Deshalb hier, einmal und mit Nachdruck, fuer alles. */
+[hidden]{display:none!important}
+/* Vormachen: jeder Zug wird gemalt, einer nach dem anderen. `pathLength`
+   im Markup macht die Strichlaenge unabhaengig von der echten Laenge -
+   sonst liefe der lange Zug eines S genauso schnell wie der Balken eines A.
+   Dauer und Versatz kommen aus dem Programm (VORMACHEN_JE_ZUG), damit die
+   Wartezeit danach und die Malzeit nicht getrennt veralten. */
+.vorlage .malt{stroke:var(--primaer-kante);stroke-dasharray:100;stroke-dashoffset:100;
+  animation-name:malen;animation-timing-function:var(--k-standard);
+  animation-fill-mode:forwards}
+@keyframes malen{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){
+  .vorlage .malt{animation-name:none;stroke-dashoffset:0}}
+/* Der Buchstabe als Aufkleber und im Vorlauf - dieselben Zuege. */
+.zeichenbild{display:block}
+/* Im kurzen Querformat steht das Werkzeug NEBEN dem Feld statt darunter -
+   dieselbe Bewegung wie beim Mikrofon neben der Antwortliste. Gemessen:
+   darunter blieben dem Feld 180 Punkte Hoehe, daneben sind es 270. */
+@media (orientation:landscape) and (max-height:440px){
+  .schreibraum{display:grid;grid-template-columns:1fr minmax(0,auto);
+    grid-template-rows:auto minmax(0,1fr);
+    grid-template-areas:"frage frage" "feld werkzeug";align-items:center}
+  .schreibraum .frage{grid-area:frage}
+  /* Unten bleibt mehr Luft als die uebliche kleine: auf dem iPhone quer
+     liegen dort Wischstreifen und sicherer Bereich, und ein Feld, das
+     `touch-action:none` traegt, faengt genau die Geste ab, mit der man
+     die App verlaesst. Gemessen: 9 Punkte Abstand waren zu wenig. */
+  .schreibraum .schreibfeld{grid-area:feld;min-height:0;height:100%;
+    padding-bottom:var(--r5)}
+  .schreibraum .werkzeug{grid-area:werkzeug;flex-direction:column;
+    justify-content:center;padding-top:0;padding-right:var(--r4)}
+}
 .wahlliste{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;
   gap:var(--r3);justify-content:center;justify-content:safe center;padding:var(--r1)}
 .werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
