@@ -4331,3 +4331,34 @@ der Korpus braucht ihn nicht, und er würde daraus eine Spur machen, wann ein
 Kind was geübt hat. Und die Größengrenze in `vergleich` ist die **einzige
 Prüfung im Verzeichnis ohne Gegenprobe**: ihren Gegenstand gibt es noch
 nicht. Sobald die Datei da ist, gehört eine nachgetragen.
+
+### Nachtrag: das Werkzeug wird jetzt selbst durchgespielt
+
+Ein Werkzeug, das darüber entscheidet, ob die Zahlen eines Tors etwas
+bezeugen, darf nicht das einzige sein, das niemand prüft. `vergleich` fährt
+es deshalb in einem **Wegwerf-Verzeichnis** sechsmal durch — Export ohne
+gesprochene Antwort, offene Urteile, erfundenes Urteil, Größengrenze,
+zweiter Export, und die eine, um die es geht:
+
+> Ein Eintrag, den der Abgleich für richtig hält (`ergebnis: 'richtig'`),
+> aber ein Mensch für falsch (`urteil: 'nein'`), **muss bei den Nichttreffern
+> landen.** Käme er bei den Treffern an, hätte das Werkzeug `ergebnis`
+> abgeschrieben — und der Korpus könnte dem Abgleich nie widersprechen.
+
+Vier Eingriffe von Hand gegengeprobt, jeder mit geprüfter Ankunft, jeder mit
+der richtigen Meldung.
+
+**Und die Gegenprobe hat die Probe selbst verbessert**, zweimal:
+
+- Der erste Anlauf schlug scheinbar *nicht* an — bis auffiel, dass ich nicht
+  nachgesehen hatte, ob der Eingriff überhaupt ankam (Regel 3). Er kam an;
+  die Probe hatte recht und meldete es als **Stapelabzug**: das Werkzeug
+  verweigerte aus einem anderen Grund, die Korpusdatei entstand nicht, das
+  Lesen warf `ENOENT`. Jetzt wird jede Probe eingewickelt — ein Wurf ist ein
+  Befund, kein Absturz.
+- Dabei blieb auch das Wegwerf-Verzeichnis liegen, weil das Aufräumen nach
+  dem Wurf nie drankam. Jetzt räumt es immer auf; nachgemessen an einem
+  grünen und einem roten Lauf: null Reste unter `/tmp`.
+- Und der Eingriff ließ das Werkzeug wegen der **Größe** verweigern statt
+  wegen der Sache — die Probe schlug an, aber mit der falschen Auskunft.
+  Ein Nichttreffer mehr in den Prüfdaten, und der Grund bleibt der Grund.

@@ -194,4 +194,158 @@ if (!hatEingefroren) {
   if (r.rate > 0.20) { console.log(`\n  ROT: ${(r.rate*100).toFixed(0)} % Falsch-Positiv schon auf der erfundenen Hälfte.`); rot++; }
   if (r.quote < 0.60) { console.log(`\n  ROT: ${(r.quote*100).toFixed(0)} % Trefferquote schon auf der erfundenen Hälfte.`); rot++; }
 }
+/* ============ Der Weg zum Korpus wird selbst durchgespielt ============ *
+ *
+ * `npm run korpus` entscheidet darueber, ob die Zahlen dieses Tors etwas
+ * bezeugen. Ein Werkzeug mit dieser Aufgabe darf nicht das einzige im
+ * Verzeichnis sein, das niemand prueft.
+ *
+ * Gefahren wird es in einem WEGWERF-VERZEICHNIS - es liest und schreibt
+ * unter `process.cwd()`, also faellt kein Blick auf den echten Korpus.
+ *
+ * Die wichtigste der sechs Proben ist die vorletzte: ein Eintrag, den der
+ * Abgleich fuer richtig haelt (`ergebnis: 'richtig'`), aber ein Mensch fuer
+ * falsch (`urteil: 'nein'`), muss bei den NICHTTREFFERN landen. Kaeme er
+ * bei den Treffern an, haette das Werkzeug `ergebnis` abgeschrieben - und
+ * der Korpus koennte dem Abgleich nie widersprechen (Regel 4).
+ */
+{
+  const { execFileSync } = await import('node:child_process');
+  const os = await import('node:os');
+  const WERKZEUG = path.join(process.cwd(), 'tools/korpus.mjs');
+  const raum = fs.mkdtempSync(path.join(os.tmpdir(), 'korpus-probe-'));
+  fs.mkdirSync(path.join(raum, 'tor/korpus'), { recursive: true });
+
+  const fahre = (...args) => {
+    try {
+      return { code: 0, aus: execFileSync('node', [WERKZEUG, ...args],
+        { cwd: raum, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) };
+    } catch (e) { return { code: e.status ?? 1, aus: (e.stdout || '') + (e.stderr || '') }; }
+  };
+  const export_ = (name, eintraege) => {
+    const w = path.join(raum, name);
+    fs.writeFileSync(w, JSON.stringify(eintraege, null, 2));
+    return w;
+  };
+  const liste = () => JSON.parse(fs.readFileSync(path.join(raum, 'tor/korpus/urteile.json'), 'utf8'));
+  const schreibListe = (u) => fs.writeFileSync(
+    path.join(raum, 'tor/korpus/urteile.json'), JSON.stringify({ urteile: u }, null, 2));
+
+  const befunde = [];
+  const soll = (bedingung, was) => { if (!bedingung) befunde.push(was); };
+  /* Eine Probe, die WIRFT, ist auch ein Befund - kein Stapelabzug.
+   *
+   * Beim Gegenprobieren ist genau das passiert: der Eingriff „das Urteil
+   * kommt aus `ergebnis`" liess das Werkzeug aus einem anderen Grund
+   * verweigern, die Korpusdatei entstand nicht, und das Lesen warf ENOENT.
+   * Die Probe hatte recht und sah aus wie ein Absturz - und das
+   * Wegwerf-Verzeichnis blieb liegen, weil das Aufraeumen nie drankam. */
+  const probe = (name, fn) => {
+    try { fn(); }
+    catch (e) { befunde.push(`${name}: ${String(e.message || e).slice(0, 120)}`); }
+  };
+
+  // 1. Ein Export ohne gesprochene Antwort taugt nicht.
+  probe('ohne gesprochene Antwort', () => {
+    const w = export_('nurgezogen.json', [
+      { gebietId:'europa', eingabeart:'ziehen', roheingabe:'', ergebnis:'richtig' }]);
+    const r = fahre(w);
+    soll(r.code !== 0 && /keine einzige GESPROCHENE/.test(r.aus),
+      'ein Export ohne gesprochene Antwort wird angenommen — der Korpus bekäme nichts');
+  });
+
+  // 2. Offene Urteile lassen sich nicht einfrieren.
+  probe('offene Urteile', () => {
+    const w = export_('gesprochen.json', [
+      { gebietId:'europa', eingabeart:'sprechen', roheingabe:'oiropa', ergebnis:'richtig' },
+      { gebietId:'afrika', eingabeart:'sprechen', roheingabe:'affrika', ergebnis:'falsch' }]);
+    const r1 = fahre(w);
+    soll(r1.code === 0 && liste().urteile.length === 2,
+      'die Urteilsliste entsteht nicht aus einem Export mit zwei Äußerungen');
+    soll(liste().urteile.every(z => z.urteil === null),
+      'die Urteilsliste kommt mit vorgefertigten Urteilen — sie muss LEER anfangen');
+    soll(liste().urteile.every(z => !('zeit' in z)),
+      'die Urteilsliste trägt einen Zeitstempel — der gehört nicht in eine Datei, '
+      + 'die eingecheckt wird');
+    const r2 = fahre('--einfrieren');
+    soll(r2.code !== 0 && /kein Urteil/.test(r2.aus),
+      'ein Korpus mit offenen Urteilen lässt sich einfrieren');
+  });
+
+  // 3. Ein Urteil, das es nicht gibt.
+  probe('erfundenes Urteil', () => {
+    schreibListe([{ gemeint:'europa', gesagt:'oiropa', urteil:'vielleicht' }]);
+    const r = fahre('--einfrieren');
+    soll(r.code !== 0 && /Urteil, das es nicht gibt/.test(r.aus),
+      'ein erfundenes Urteil („vielleicht") kommt durch');
+  });
+
+  // 4. Zu wenig, um etwas zu beweisen.
+  probe('Größengrenze', () => {
+    schreibListe([...Array(20)].map((_, i) => ({ gemeint:'europa', gesagt:'f'+i, urteil:'ja' })));
+    const r = fahre('--einfrieren');
+    soll(r.code !== 0 && /Zu wenig/.test(r.aus),
+      'zwanzig Formen reichen dem Werkzeug — eine 90-Prozent-Grenze über zwanzig '
+      + 'Formen würfelt');
+  });
+
+  // 5. Das Urteil schlaegt `ergebnis` — sonst schreibt der Korpus ab.
+  probe('das Urteil schlägt `ergebnis`', () => {
+    const u = [
+      ...[...Array(100)].map((_, i) => ({ gemeint:'europa', gesagt:'ja'+i, urteil:'ja' })),
+      /* FUENFZIG, nicht neunundvierzig. Beim Gegenprobieren hat ein
+         Eingriff („das Urteil kommt aus `ergebnis`") den einen Satz aus den
+         Nichttreffern gezogen - und das Werkzeug verweigerte dann wegen der
+         GROESSE statt wegen der Sache. Die Probe schlug an, aber mit der
+         falschen Auskunft. Mit einem Nichttreffer Luft bleibt der Grund der
+         Grund. */
+      ...[...Array(50)].map((_, i) => ({ gemeint:'afrika', gesagt:'nein'+i, urteil:'nein' })),
+      // Der Abgleich sagt richtig, der Mensch sagt nein.
+      { gemeint:'asien', gesagt:'aussen', urteil:'nein', ergebnis:'richtig' },
+      { gemeint:'asien', gesagt:'weg-damit', urteil:'weg' },
+    ];
+    schreibListe(u);
+    const r = fahre('--einfrieren');
+    const k = JSON.parse(fs.readFileSync(path.join(raum, 'tor/korpus/eingefroren.json'), 'utf8'));
+    const alleT = k.treffer.flatMap(([, f]) => f);
+    const alleN = k.nichttreffer.flatMap(([, f]) => f);
+    soll(r.code === 0, 'ein vollständiger, großer Satz lässt sich nicht einfrieren');
+    soll(alleN.includes('aussen'),
+      'eine Äußerung mit `ergebnis: richtig` und Urteil „nein" landet NICHT bei den '
+      + 'Nichttreffern — das Werkzeug schreibt die Entscheidung des Abgleichs ab, '
+      + 'und der Korpus kann ihm nie widersprechen (Regel 4)');
+    soll(!alleT.includes('aussen'), 'dieselbe Äußerung steht auch bei den Treffern');
+    soll(!alleT.includes('weg-damit') && !alleN.includes('weg-damit'),
+      'eine als „weg" beurteilte Äußerung steht trotzdem im Korpus');
+    soll(k._zahlen && k._zahlen.treffer === 100 && k._zahlen.nichttreffer === 51,
+      `der Korpus zählt sich falsch: ${JSON.stringify(k._zahlen)}`);
+  });
+
+  // 6. Ein zweiter Export wirft die Handarbeit nicht weg.
+  probe('zweiter Export', () => {
+    schreibListe([{ gemeint:'europa', gesagt:'oiropa', urteil:'ja' }]);
+    const w = export_('zweiter.json', [
+      { gebietId:'europa', eingabeart:'sprechen', roheingabe:'oiropa', ergebnis:'richtig' },
+      { gebietId:'asien',  eingabeart:'sprechen', roheingabe:'aasien', ergebnis:'richtig' }]);
+    fahre(w);
+    const u = liste().urteile;
+    soll(u.length === 2, `ein zweiter Export ergibt ${u.length} statt 2 Zeilen`);
+    soll(u.find(z => z.gesagt === 'oiropa')?.urteil === 'ja',
+      'ein zweiter Export löscht das Urteil einer schon beurteilten Zeile — '
+      + 'wer das zweimal erlebt, beurteilt kein drittes Mal');
+  });
+
+  // Aufgeraeumt wird IMMER - auch wenn eine Probe geworfen hat. Beim
+  // Gegenprobieren blieb sonst je ein Verzeichnis unter /tmp liegen.
+  try { fs.rmSync(raum, { recursive: true, force: true }); } catch { /* egal */ }
+  if (befunde.length) {
+    console.log(`\n  ROT: der Weg zum Korpus (${befunde.length} Befunde):`);
+    befunde.forEach(b => console.log(`    ✗ ${b}`));
+    rot++;
+  } else {
+    console.log('\n  Der Weg zum Korpus: 6 Proben — Verweigerungen, Größengrenze,');
+    console.log('  und das Urteil schlägt `ergebnis`.');
+  }
+}
+
 if (rot) process.exit(1);
