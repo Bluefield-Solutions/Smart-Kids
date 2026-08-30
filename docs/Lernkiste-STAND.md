@@ -4085,3 +4085,18 @@ Der nächtliche Lauf auf dem Runner ist kein Komfort, sondern die einzige
 Stelle, an der diese Fehlerklasse überhaupt auffällt. Läuft er nicht, oder
 schaut niemand ins Protokoll, verfällt der Beweiswert schleichend — genau
 das, was `rhythmus` messen soll und was ihm hier selbst passiert ist.
+
+**Nachgesehen statt vermutet:** der Arbeitsablauf `Gegenproben`
+(`.github/workflows/proben.yml`) ist angelegt und aktiv, aber
+**`total_count: 0`** — er hat noch **kein einziges Mal** gelaufen. Er wurde
+am 29.08. abends eingerichtet, seine erste planmäßige Zündung (`0 2 * * *`)
+steht also noch aus. Das erklärt den Rückstand vollständig und ohne
+Verschwörung: die Regelung ist einen Tag alt.
+
+Offen bleibt damit aber, ob sie **funktioniert** — vor allem das
+Zurückschreiben des Stands (`git push` aus dem Lauf heraus, mit
+`permissions: contents: write`). Das zeigt sich beim ersten Lauf, und wenn
+es nicht klappt, merkt es niemand: der Lauf ist grün, der Stand veraltet
+weiter, und `rhythmus` steht in keiner Kette, die jemand fährt. Ein
+Handstart (`workflow_dispatch` ist eingeschaltet) würde es in einer
+Dreiviertelstunde beantworten.
