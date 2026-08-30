@@ -1149,6 +1149,10 @@ if (laeuft('ablage')) try {
    * gedrosselt und ohne Service Worker, also beim allerersten Besuch.
    */
   {
+    /* Wie lange nach einem SCHNELLEN Wechsel nachgesehen wird, ob doch noch
+       ein Wartezeichen auftaucht. Muss ueber der Schwelle in `zeige()`
+       liegen (300 ms), sonst kaeme es erst nach dem Hinsehen. */
+    const WARTEZEICHEN_LUFT = 600;
     /* Ein EIGENER Kontext, und der Service Worker wird dort GESPERRT.
      *
      * Der gemeinsame Kontext hat laengst einen registrierten Service
@@ -1224,6 +1228,23 @@ if (laeuft('ablage')) try {
     const bisBuch = Date.now() - t0;
     // Und es muss auch wieder WEG sein.
     const weg = await bis(q, () => !document.querySelector('.schirm.warten'), 3000);
+    /* Und jetzt der SCHNELLE Weg zurueck.
+     *
+     * Ein Wartezeichen, dessen Uhr nicht abbestellt wird, faellt hier auf
+     * und nicht oben: bei einem Bildschirm, der in Millisekunden steht,
+     * kommt es 300 ms SPAETER dazu und bleibt liegen, bis der naechste
+     * Wechsel es wegraeumt. Beim langsamen Weg wird es dagegen ohnehin
+     * zusammen mit dem alten Bildschirm entfernt - dort ist nichts zu
+     * sehen. Die erste Fassung dieser Probe hat genau daneben gemessen. */
+    await q.$eval('.schirm.da #zur', x => x.click());
+    // Wohin der Weg zurueck fuehrt, ist hier gleichgueltig - gebraucht wird
+    // nur EIN Wechsel, der sofort steht. Deshalb auf „das Buch ist weg"
+    // warten und nicht auf einen bestimmten Bildschirm.
+    await bis(q, () => !document.querySelector('.schirm.da .aufkleber'), 10000);
+    await q.waitForTimeout(WARTEZEICHEN_LUFT);
+    const spaet = await q.evaluate(() => !!document.querySelector('.schirm.warten'));
+    if (spaet) merke('warten', new Error('nach einem Bildschirm, der sofort da war, '
+      + 'taucht das Wartezeichen trotzdem noch auf — seine Uhr wird nicht abbestellt'));
     await kalt.close();
     console.log(`  Warten sichtbar:            nach ${bisZeichen} ms, Buch nach ${bisBuch} ms `
       + `(3G, ohne Lager)`);
