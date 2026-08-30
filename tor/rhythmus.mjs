@@ -21,7 +21,7 @@
 //
 // Deshalb ist die Frist ERZWUNGEN und nicht aufgeschrieben. Dieses Tor
 // kostet Millisekunden und schlaegt an, wenn der letzte volle Probenlauf
-// mehr als GRENZE Runden zurueckliegt. Es ersetzt den Probenlauf nicht -
+// mehr als GRENZE Tage zurueckliegt. Es ersetzt den Probenlauf nicht -
 // es faengt seine haeufigste Verfallsart, naemlich dass er einfach nicht
 // mehr stattfindet.
 //
@@ -34,29 +34,51 @@
 // `npm run rhythmus && npm run inhalt` in package.json, fand es nicht mehr
 // und bewies seitdem nichts (Regel 3, und Regel 15 gleich mit).
 //
-// Gezaehlt werden nur Commits, die CODE anfassen. Wer eine Zeile im
-// Konzept aendert, verbraucht keine Frist.
+// Gezaehlt wird in TAGEN, nicht in Commits.
+//
+// Bis hierher zaehlte dieses Tor „Runden am Code": Commits, die src,
+// prototyp, tor, tools oder package.json anfassen, seit dem Nachweis. Die
+// Grenze war drei. Das klingt vernuenftig und war die falsche Groesse:
+// eine einzige Arbeitssitzung macht zwanzig solche Commits, und danach
+// stand das Tor auf 47 Runden Rueckstand — obwohl jede Probe am selben Tag
+// bezeugt worden war. Ein Tor, das nach jeder Sitzung rot ist, ist auf dem
+// Weg, ignoriert zu werden.
+//
+// Ein Commit ist auch kein Mass fuer Veraenderung: ich mache viele kleine,
+// jemand anders macht einen grossen. Was dieses Tor WIRKLICH abfangen
+// soll, steht oben — dass der volle Lauf nicht mehr stattfindet. Und das
+// misst man in Tagen, nicht in Commits: der Runner faehrt ihn jede Nacht,
+// also ist alles hoechstens einen Tag alt, solange er faehrt.
+//
+// Was es dadurch NICHT mehr misst: ob eine Probe seit ihrem Nachweis durch
+// eine Code-Aenderung stumm geworden ist. Das war der einzige Grund, in
+// Commits zu zaehlen — und es hat nie funktioniert, weil die Zahl an der
+// Commit-Gewohnheit hing statt an der Aenderung. Diese Frage beantwortet
+// jetzt `inhalt`, in einer Millisekunde und bei JEDER Aenderung: findet
+// jede Probe ihren Suchtext noch? Fuenf der sieben stummen Proben, die der
+// erste volle Lauf fand, haetten genau daran angeschlagen.
+//
+// Und die ganze Git-Rechnerei faellt damit weg. Sie hat die Auslieferung
+// einmal fuenf Runden rot gehalten (notierte Commits, die nach einem
+// frischen Klon nicht mehr existierten) und brauchte `fetch-depth: 0`. Ein
+// Datum steht in der Datei und braucht keine Historie.
 import fs from 'node:fs';
-import { execSync } from 'node:child_process';
 
 const STAND = 'tor/proben-stand.json';
-const CODE = ['src', 'prototyp', 'tor', 'tools', 'package.json'];
 
 /**
- * Wieviele Runden duerfen zwischen zwei Probenlaeufen liegen?
+ * Wieviele Tage duerfen zwischen zwei Probenlaeufen liegen?
  *
- * Drei. Die Runde, IN der geprobt wurde, ist die erste davon - der Lauf
- * findet vor dem Commit statt (der Baum muss sauber sein), also traegt der
- * Commit den festgehaltenen Stand mit sich.
+ * Drei TAGE. Der Runner faehrt den vollen Satz jede Nacht; im Normalfall
+ * ist also alles null oder einen Tag alt. Drei laesst ein verpasstes
+ * Wochenende durch und schlaegt an, wenn der Lauf wirklich stehengeblieben
+ * ist — oder wenn eine Probe drei Naechte hintereinander nicht angeschlagen
+ * hat, was dasselbe Rot verdient.
  *
- * Warum nicht oefter: zehn Minuten je Runde sind zehn Minuten, in denen
- * nichts entsteht, und bei einer Runde mit zwei geaenderten Toren haben
- * siebzehn von neunzehn Proben nichts zu pruefen, was sich geaendert haette.
- * Warum nicht seltener: eine Probe hoert LEISE auf zu beweisen, und je mehr
- * Runden dazwischenliegen, desto schwerer ist der Tag zu finden, an dem es
- * passiert ist.
+ * Die Zahl heisst jetzt Tage und hiess vorher Runden. Wer das verwechselt,
+ * liest dieselbe Drei und meint etwas anderes.
  */
-const GRENZE = Math.min(3, Number(process.env.SMARTKIDS_RHYTHMUS_MAX ?? 3));
+const GRENZE = Math.min(3, Number(process.env.SMARTKIDS_RHYTHMUS_MAX ?? 3));   // Tage
 // `Math.min` und nicht einfach der Wert: die Schraube darf nur STRENGER
 // stellen, nie lockerer. Sie ist fuer die Gegenprobe da - anders liesse
 // sich „der Lauf liegt zu lange zurueck" gar nicht ausloesen, denn wie
@@ -89,116 +111,18 @@ if (!stand.proben || typeof stand.proben !== 'object' || Array.isArray(stand.pro
  * Eintraege der Proben, die nicht mehr drankamen, und das faellt unten von
  * selbst auf. Ein Zustand weniger, der falsch sein kann. */
 
-/* Gezaehlt wird ab dem Commit, in dem die STANDDATEI zuletzt anders wurde -
- * nicht ab dem Commit, den der Lauf sich notiert hat.
+/* Wie alt ist ein Nachweis? In Tagen, aus dem Datum in der Datei.
  *
- * Der Unterschied kostete einen Anlauf: `proben` laeuft VOR dem Commit (der
- * Baum muss sauber sein), notiert sich also den damaligen Kopf. Wird die
- * Runde danach zusammengefasst oder nachgebessert, gibt es diesen Commit
- * nicht mehr - lokal findet ihn `git` noch im Objektspeicher, auf dem
- * Runner nach einem frischen Klon nicht. Das Tor waere genau dort rot
- * geworden, wo alles in Ordnung ist.
- *
- * Die Standdatei dagegen steht immer in der Historie: sie ist Teil des
- * Commits, der die Runde traegt. `fassung` bleibt als Auskunft stehen,
- * gezaehlt wird an der Datei.
- *
- * Ohne Historie geht beides nicht - und ein Tor, das sich dann still
- * ueberspringt, ist schlimmer als keines. `actions/checkout` braucht dafuer
- * `fetch-depth: 0`. */
-/* Wie alt ist ein Eintrag? Gezaehlt in Runden am CODE, nicht in Tagen.
- *
- * Der Commit, den eine Probe sich notiert, ist ein schlechter Anker. Er
- * entsteht VOR dem Commit, der die Runde traegt (der Baum muss sauber
- * sein), und wird danach oft zusammengefasst oder verworfen. Lokal liegt
- * er dann noch im Objektspeicher, auf einem frischen Klon nicht mehr.
- *
- * Genau das ist passiert, und es hat die Auslieferung fuenf Runden lang
- * rot gehalten: 66 von 71 Proben zeigten auf zwei wip-Commits, die nie an
- * einem Zweig hingen. Der Kommentar, der frueher hier stand, hat den Fall
- * beschrieben UND die Loesung genannt - umgesetzt war sie nicht.
- *
- * Schlimmer als das Rot auf dem Runner war das Gruen hier: fuer einen
- * Commit, der KEIN Vorfahr von HEAD ist, rechnet
- * "git rev-list --count X..HEAD" klaglos eine Zahl aus. Sie bedeutet nur
- * nichts. Eine Zahl ohne ihre Messstelle (Regel 12).
- *
- * Deshalb zwei Wege, und der erste zaehlt nur, wenn er zaehlen darf:
- *
- *   1. Der notierte Commit ist ein Vorfahr von HEAD  ->  genau abzaehlen.
- *   2. Sonst: den Commit suchen, in dem die STANDDATEI diesen Eintrag zum
- *      ersten Mal traegt. Die Standdatei steht immer in der Historie - sie
- *      gehoert zu dem Commit, der die Runde traegt. Das ist auf jedem
- *      Klon dieselbe Antwort.
- *
- * Findet auch das nichts, ist der Eintrag noch gar nicht eingecheckt: er
- * gehoert zur laufenden Runde und ist null Runden alt. */
-const git = (b) => execSync(b, { encoding:'utf8', stdio:['ignore','pipe','ignore'] }).trim();
-
-const rundenSeit = (() => {
-  const merker = new Map();
-  return (commit) => {
-    if (merker.has(commit)) return merker.get(commit);
-    let n = null;
-    try { n = +git(`git rev-list --count ${commit}..HEAD -- ${CODE.join(' ')}`); }
-    catch { n = null; }
-    merker.set(commit, n);
-    return n;
-  };
-})();
-
-const istVorfahr = (() => {
-  const merker = new Map();
-  return (commit) => {
-    if (merker.has(commit)) return merker.get(commit);
-    let ja = false;
-    try { git(`git merge-base --is-ancestor ${commit} HEAD`); ja = true; } catch { ja = false; }
-    merker.set(commit, ja);
-    return ja;
-  };
-})();
-
-/* Wo taucht ein Eintrag in der Historie der Standdatei zum ersten Mal auf?
- *
- * Einmal gelesen, fuer alle Proben zusammen: die Datei hat ein gutes
- * Dutzend Fassungen, und sie je Probe einzeln zu holen waere Arbeit ohne
- * Erkenntnis. Gelaufen wird von HEAD nach hinten; die AELTESTE Fassung,
- * die den Eintrag unveraendert traegt, gewinnt. */
-const ersteFassung = (() => {
-  let karte = null;
-  return (name, eintrag) => {
-    if (!karte) {
-      karte = new Map();
-      let liste = [];
-      try { liste = git(`git log --format=%H -- ${STAND}`).split('\n').filter(Boolean); }
-      catch { liste = []; }
-      for (const c of liste) {
-        let alt;
-        try { alt = JSON.parse(git(`git show ${c}:${STAND}`)); } catch { continue; }
-        for (const [n, e] of Object.entries(alt.proben || {}))
-          karte.set(`${n}|${e.commit}|${e.zeit}`, c);   // aeltere ueberschreiben juengere
-      }
-    }
-    return karte.get(`${name}|${eintrag.commit}|${eintrag.zeit}`) || null;
-  };
-})();
-
-/** Wieviele Code-Runden liegt der Nachweis dieser Probe zurueck? */
+ * Hier standen achtzig Zeilen Git: `rev-list --count`, `merge-base
+ * --is-ancestor`, ein Durchgang durch alle Fassungen der Standdatei, um zu
+ * finden, wo ein Eintrag zum ersten Mal auftaucht. Jede dieser Zeilen hatte
+ * ihren Grund, und alle Gruende hingen daran, dass in COMMITS gezaehlt
+ * wurde. Ein Datum braucht davon nichts.
+ */
+const HEUTE = new Date(new Date().toISOString().slice(0, 10));
 const alterVon = (name, eintrag) => {
-  if (istVorfahr(eintrag.commit)) return rundenSeit(eintrag.commit);
-  const traeger = ersteFassung(name, eintrag);
-  if (traeger) return rundenSeit(traeger);
-  /* Weder noch: das Alter ist NICHT bestimmbar, und das ist rot.
-   *
-   * Hier stand `return 0` - "noch nicht eingecheckt, gehoert zur laufenden
-   * Runde". Der Gedanke war falsch, und die Gegenprobe hat ihn sofort
-   * gefangen: ein frisch geschriebener Nachweis traegt den AKTUELLEN Kopf,
-   * und der ist ein Vorfahr von HEAD - er kommt also gar nicht bis
-   * hierher. Wer hier ankommt, zeigt ins Leere.
-   *
-   * Eine Ausnahme, die den einzigen Fall verschluckt, fuer den die
-   * Pruefung da ist, ist keine Ausnahme, sondern das Loch. */
-  return null;
+  if (!eintrag || !/^\d{4}-\d{2}-\d{2}$/.test(String(eintrag.zeit || ''))) return null;
+  return Math.round((HEUTE - new Date(eintrag.zeit)) / 86400000);
 };
 
 /* Welche Proben stehen im Baum?
@@ -211,13 +135,13 @@ const alterVon = (name, eintrag) => {
  * Faende dieser Ausdruck einen Namen nicht, meldete das Tor „nie gefahren"
  * — also rot. Ein Parser, der scheitert, faellt hier in die sichere
  * Richtung. */
-const jetzt = fs.readFileSync('tor/proben.mjs', 'utf8');
-// Am ZEILENANFANG verankert. Ohne den Anker hat dieser Leser einen Namen
-// aus einem KOMMENTAR mitgezaehlt - aus dem Kommentar, der genau diese
-// Falle erklaert. Er meldete siebzig Proben, wo neunundsechzig stehen.
-// Eintraege stehen eingerueckt am Zeilenanfang, Prosa steht hinter `*`
-// oder `//`.
-const namen = [...jetzt.matchAll(/^\s*\{ n:'([^']+)'/gm)].map(m => m[1]);
+// Gelesen als DATEN, nicht als Text. Hier stand ein Ausdruck auf den
+// Quelltext von `proben.mjs`; ohne Anker am Zeilenanfang zaehlte er einen
+// Namen aus einem Kommentar mit und meldete siebzig Proben, wo
+// neunundsechzig standen. Seit die Liste ein eigenes Modul ist, gibt es
+// nichts mehr zu klauben.
+const { PROBEN } = await import('./proben-liste.mjs');
+const namen = PROBEN.map(p => p.n);
 
 const nie = namen.filter(n => !stand.proben[n]);
 const zuAlt = [];
@@ -234,8 +158,8 @@ const aeltester = Math.max(0, ...namen.map(n =>
   stand.proben[n] ? (alterVon(n, stand.proben[n]) ?? 0) : 0));
 
 console.log(`    ${namen.length} Proben im Baum, ${frisch} mit frischem Nachweis`);
-console.log(`    ältester Nachweis: ${aeltester} Runde${aeltester === 1 ? '' : 'n'} `
-  + `am Code (erlaubt sind ${GRENZE})`);
+console.log(`    ältester Nachweis: ${aeltester} Tag${aeltester === 1 ? '' : 'e'} `
+  + `(erlaubt sind ${GRENZE})`);
 
 const nenne = (liste, n = 4) => liste.slice(0, n).join(' · ')
   + (liste.length > n ? ` … und ${liste.length - n} weitere` : '');
@@ -245,12 +169,11 @@ if (nie.length)
     + `${nenne(nie)}. (\`npm run proben -- --geaendert\`)`);
 if (verschollen.length)
   fehler.push(`Für ${verschollen.length} Probe${verschollen.length === 1 ? '' : 'n'} lässt sich `
-    + `das Alter nicht bestimmen: ${nenne(verschollen)}. Weder ist der notierte Commit ein `
-    + 'Vorfahr von HEAD, noch findet sich der Eintrag in der Historie der Standdatei. '
-    + 'Ohne Historie geht beides nicht — `actions/checkout` braucht `fetch-depth: 0`.');
+    + `das Alter nicht bestimmen: ${nenne(verschollen)}. Im Stand fehlt ein gültiges `
+    + 'Datum (`zeit`) — ohne das ist „wie alt" keine Frage, die sich beantworten lässt.');
 if (zuAlt.length)
   fehler.push(`${zuAlt.length} Nachweis${zuAlt.length === 1 ? '' : 'e'} sind älter als `
-    + `${GRENZE} Runden (bis zu ${Math.max(...zuAlt.map(x => x.alter))}): `
+    + `${GRENZE} Tage (bis zu ${Math.max(...zuAlt.map(x => x.alter))}): `
     + `${nenne(zuAlt.map(x => x.n))}. Eine Probe hört leise auf zu beweisen — je länger es `
     + 'her ist, desto schwerer ist der Tag zu finden, an dem es passiert ist. '
     + '(`npm run proben`)');
@@ -270,4 +193,4 @@ if (fehler.length) {
   console.log('');
   process.exit(1);
 }
-console.log('  rhythmus grün: die Gegenproben sind nicht älter als drei Runden.\n');
+console.log(`  rhythmus grün: kein Nachweis ist älter als ${GRENZE} Tage.\n`);

@@ -49,9 +49,18 @@ gründlichste und teuerste Teil). Alles davon läuft auf dem Runner.
 
 **Die Gegenproben laufen nachts.** Sie prüfen die TORE, nicht die App, und
 sie dauern zwanzig Minuten. `rhythmus` stand deshalb bis hierher vorn in der
-Kette und verlangte, dass kein Nachweis älter als drei Runden ist — was in
-einer einzigen Sitzung dreimal einen vollen Lauf mitten in der Arbeit
-ausgelöst hat. Die Frist ist richtig; falsch war, **wer sie bezahlt**.
+Kette und verlangte, dass kein Nachweis älter als drei **Runden am Code**
+ist — was in einer einzigen Sitzung dreimal einen vollen Lauf mitten in der
+Arbeit ausgelöst hat. Die Frist ist richtig; falsch war, **wer sie bezahlt**.
+
+Und falsch war auch die **Größe**: ein Commit ist kein Maß für Veränderung.
+Nach einer Arbeitssitzung stand das Tor auf 47 Runden Rückstand, obwohl jede
+Probe am selben Tag bezeugt worden war. Es zählt jetzt in **Tagen** — das
+misst, was es abfangen soll (dass der Lauf nicht mehr stattfindet), und
+hängt nicht an der Commit-Gewohnheit. Ob eine Probe durch eine Änderung
+stumm geworden ist, beantwortet dafür `inhalt` in einer Millisekunde:
+**findet jede Gegenprobe ihren Suchtext noch?** Fünf der sieben stummen
+Proben hätten genau daran angeschlagen.
 
 ## Befehle
 

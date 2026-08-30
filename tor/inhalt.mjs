@@ -252,6 +252,71 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   }
 }
 
+/* Findet jede Gegenprobe ihren Suchtext noch?
+ *
+ * Der teuerste Befund dieser Sitzung, und der billigste zu fangen: von
+ * sieben stumm gewordenen Gegenproben trafen FUENF ihren Suchtext nicht
+ * mehr. `vorlesen` war zu `sagen` geworden, `vorrat` zu `vorlaufVorrat`,
+ * die Profilzeile hatte ein Feld dazubekommen. Der Eingriff kam nicht an,
+ * das Tor blieb gruen, und die Probe bewies nichts.
+ *
+ * Aufgefallen ist das erst im vollen Probenlauf — zweiundvierzig Minuten,
+ * einmal am Tag auf dem Runner. Dabei steht die Antwort in einer
+ * Millisekunde da: der Text ist in der Datei, oder er ist es nicht.
+ *
+ * Deshalb hier, in der Kette, bei jeder Aenderung. Das ersetzt den vollen
+ * Lauf nicht — ob ein Tor auch WIRKLICH anschlaegt und dabei das Richtige
+ * meldet, sagt nur er. Aber die haeufigste Verfallsart faengt es sofort,
+ * und zwar an dem Tag, an dem sie entsteht.
+ */
+{
+  const { PROBEN } = await import('./proben-liste.mjs');
+  pruefe(PROBEN.length > 50, `Nur ${PROBEN.length} Gegenproben gefunden — `
+    + 'die Liste ist nicht die, die gemeint war');
+  let geprueftD = 0;
+  for (const p of PROBEN) {
+    if (!p.datei) continue;
+    if (!fs.existsSync(p.datei)) {
+      pruefe(false, `Gegenprobe „${p.n}": die Datei ${p.datei} gibt es nicht`);
+      continue;
+    }
+    const inhalt = fs.readFileSync(p.datei, 'utf8');
+    geprueftD++;
+    // Bei `kopie` gibt es keinen Suchtext — dort wird eine ganze Datei
+    // ueber eine andere gelegt. Geprueft ist dann, dass es beide gibt.
+    if (p.kopie) { for (const k of p.kopie)
+      pruefe(fs.existsSync(k), `Gegenprobe „${p.n}": die Datei ${k} gibt es nicht`); }
+    else if (p.such !== undefined)
+      pruefe(inhalt.includes(p.such),
+        `Gegenprobe „${p.n}": ihr Suchtext steht nicht mehr in ${p.datei} — `
+        + `der Eingriff käme nicht an, das Tor bliebe grün „${
+          String(p.such).replace(/\s+/g, ' ').slice(0, 60)}…"`);
+    else if (p.suchRegex !== undefined)
+      pruefe(p.suchRegex.test(inhalt),
+        `Gegenprobe „${p.n}": ihr Ausdruck greift nicht mehr in ${p.datei} — `
+        + 'der Eingriff käme nicht an, das Tor bliebe grün');
+  }
+  /* Eine Probe OHNE Eingriff waere hier unsichtbar: nichts zu pruefen,
+     also immer gruen. `kopie` zaehlt mit — die Symbolprobe legt eine Datei
+     ueber eine andere, statt Text zu ersetzen. */
+  const ohne = PROBEN.filter(p => p.datei && p.such === undefined
+    && p.suchRegex === undefined && !p.kopie);
+  pruefe(!ohne.length, `${ohne.length} Gegenprobe${ohne.length === 1 ? '' : 'n'} nennt eine `
+    + 'Datei, aber keinen Eingriff — sie kann nichts beweisen: '
+    + ohne.slice(0, 3).map(p => `„${p.n}"`).join(', '));
+  /* Und die Pruefung selbst muss etwas geprueft haben.
+   *
+   * Ohne das ist sie mit einem `continue` an der falschen Stelle
+   * abzuschalten: die Schleife laeuft leer, es meldet niemand etwas, und
+   * die Zeile unten schreibt eine Null, die wie eine Auskunft aussieht.
+   * Gezaehlt wird gegen die Zahl der Proben, die eine Datei NENNEN - eine
+   * feste Zahl waere die naechste, die veraltet. */
+  const mitDatei = PROBEN.filter(p => p.datei).length;
+  pruefe(geprueftD === mitDatei, `Nur ${geprueftD} von ${mitDatei} Gegenproben mit Datei `
+    + 'wurden angesehen — die Prüfung greift ins Leere und beweist nichts');
+  console.log(`    Gegenproben: ${geprueftD} von ${PROBEN.length} greifen noch in ihre Datei`);
+}
+
 /* Jede Pause, die einen Bildschirm weiterschaltet, geht durch `schauPause`.
  *
  * Der Anlass ist gemessen, nicht ausgedacht: der Kartenweg hatte seine

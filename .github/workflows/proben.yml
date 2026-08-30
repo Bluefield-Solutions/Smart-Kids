@@ -6,9 +6,12 @@
 # gehört nicht auf die Uhr desjenigen, der gerade etwas ändert.
 #
 # Vorher lief `rhythmus` vorn in der Torkette und verlangte, dass kein
-# Nachweis älter als drei Runden ist. Das hat in einer einzigen Sitzung
-# dreimal einen vollen Lauf ausgelöst, mitten in der Arbeit. Die Frist ist
-# richtig; falsch war, wer sie bezahlt.
+# Nachweis älter als drei RUNDEN AM CODE ist. Das hat in einer einzigen
+# Sitzung dreimal einen vollen Lauf ausgelöst, mitten in der Arbeit — und
+# war obendrein die falsche Größe: eine Arbeitssitzung macht zwanzig
+# Commits, das Tor stand danach auf 47 Runden Rückstand, obwohl jede Probe
+# am selben Tag bezeugt worden war. Es zählt jetzt in TAGEN, und der
+# Runner hier hält sie frisch.
 #
 # Jetzt bezahlt sie der Runner. Schlägt etwas an, steht es hier im
 # Protokoll und der Stand wird zurückgeschrieben — die Runde am nächsten
@@ -29,7 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      # Volle Historie: `rhythmus` zählt Runden am Code.
+      # Volle Historie: der Lauf schreibt den Stand zurück und braucht
+      # dafür einen Zweig, auf den er pushen kann. (`rhythmus` braucht sie
+      # nicht mehr — es zählt seit dem Umbau in Tagen.)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
