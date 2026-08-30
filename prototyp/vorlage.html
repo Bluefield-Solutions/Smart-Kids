@@ -199,7 +199,12 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
      uebereinanderliegender Schrift. */
   --kleber-breit:180px;--kleber-hoch:168px;
   /* Fuer Gitter mit mehr als acht Spalten - siehe `.kleber.viel`. */
-  --kleber-breit-eng:120px}
+  --kleber-breit-eng:120px;
+  /* Die Untergrenze einer engen Spalte - EINMAL, weil die Regel darueber
+     zweimal dasteht (im Grundsatz und im kurzen Querformat). Genau das
+     ist schiefgegangen: gepflegt wurde die obere, gegolten hat auf dem
+     Zielgeraet die untere. */
+  --kleber-eng-min:56px}
 .rollen.vorlauf .mitte-satz{text-align:center;max-width:52ch}
 /* Wieviele Karten NEBENEINANDER, und wie hoch sie werden.
  *
@@ -248,8 +253,27 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * Gemessen auf 844 x 390 MIT Leiste: nutzbar bleiben 756 Punkte, neun
  * Karten brauchen also hoechstens 76. Die 72 sind die naechste runde Zahl
  * darunter - und ein Wort wie „Xylofon" traegt sie noch. */
+/* Die Untergrenze darf den WUNSCH nicht aufheben (S3).
+ *
+ * Hier standen 72px. Gemessen auf dem Zielgeraet: das Gitter ist dort rund
+ * 644 Punkte breit, `calc(100% / 9 - 4)` ergibt 68 - und `max(72px, 68px)`
+ * nimmt die 72. Neun Spalten zu 72 brauchen aber 680 Punkte. `auto-fit`
+ * legte deshalb ACHT an, die 26 Karten fielen in VIER Reihen statt drei,
+ * und jede Karte war 77 x 42 statt 88 x 62 - unter der 44-Punkt-Grenze,
+ * ausgerechnet bei den Karten, die Fiona antippt, um „A wie Affe" zu
+ * hoeren.
+ *
+ * Die Untergrenze ist ein Notnagel fuer sehr schmale Geraete, kein
+ * Sollwert. Sie gehoert deshalb UNTER den gerechneten Wert, sonst
+ * ueberstimmt der Notnagel die Rechnung. 56 Punkte greifen erst unterhalb
+ * von rund 540 Punkten Gitterbreite - dort ist ohnehin nichts mehr in
+ * neun Spalten unterzubringen.
+ *
+ * Das Muster ist dasselbe wie bei Regel 2: eine absolute Grenze neben
+ * einer gerechneten macht die Rechnung still bedeutungslos. Und es fiel
+ * nicht auf, weil `passt` zu kleine Flaechen nur als HINWEIS fuehrte. */
 .rollen.vorlauf .kleber.viel{
-  grid-template-columns:repeat(auto-fit,minmax(max(72px,
+  grid-template-columns:repeat(auto-fit,minmax(max(var(--kleber-eng-min),
     calc(100% / var(--spalten,9) - var(--r2))),1fr));
   max-width:min(900px, calc(var(--spalten,9) * var(--kleber-breit-eng)))}
 /* Der Umriss nimmt sich den Platz, der uebrig ist.
@@ -1075,7 +1099,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     grid-template-columns:repeat(auto-fit,minmax(max(88px,
       calc(100% / var(--spalten,8) - var(--r1))),1fr))}
   .rollen.vorlauf .kleber.viel{
-    grid-template-columns:repeat(auto-fit,minmax(max(72px,
+    grid-template-columns:repeat(auto-fit,minmax(max(var(--kleber-eng-min),
       calc(100% / var(--spalten,9) - var(--r1))),1fr))}
   /* Ein Vorlauf mit Zuordnung traegt zwei Namen je Karte statt einem -
      „Mecklenburg-Vorpommern" unter „Schwerin". */

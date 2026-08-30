@@ -103,10 +103,28 @@ const SUCHE = () => {
         + `über den Rand des eigenen Knopfes`);
       continue;
     }
+    /* Ein AUFKLEBER ist immer ein Ziel fuer den Finger - fuer ihn ist die
+     * 44-Punkt-Grenze ein FEHLER, kein Hinweis.
+     *
+     * Der Unterschied ist gemessen und nicht gesetzt: die anderen Kaesten
+     * in dieser Liste duerfen schmal sein (der Zurueck-Pfeil ist 44 hoch
+     * und nicht 44 breit, und das ist in Ordnung). Ein Aufkleber ist nie
+     * schmal aus gutem Grund - er ist eine Karte mit Bild und Wort, und
+     * wenn er unter das Mass faellt, ist ein Gitter zusammengerutscht.
+     *
+     * Genau das ist passiert (S3): die Karten des Abc standen auf dem
+     * Zielgeraet 77 x 42 statt 88 x 62, weil eine Untergrenze im
+     * Stylesheet die gewuenschte Spaltenzahl ueberstimmte. Ein Jahr lang
+     * stand es als HINWEIS im Bericht - und ein Hinweis, den niemand
+     * liest, ist dasselbe wie keiner. */
+    const schmal = Math.min(eb.width, eb.height);
+    if (el.classList.contains('aufkleber') && schmal < 44 - 0.5)
+      raus.push(`„${text}" — nur ${schmal.toFixed(0)} pt, ein Aufkleber muss `
+        + `44 messen (Gitter zusammengerutscht?)`);
     // Der Hinweis ist Text, kein Ziel fuer den Finger - fuer ihn gilt die
     // 44-Punkt-Regel nicht.
-    if (!el.classList.contains('hinweis') && Math.min(eb.width, eb.height) < 44 - 0.5)
-      klein.push(`„${text}" — ${Math.min(eb.width, eb.height).toFixed(0)} pt`);
+    else if (!el.classList.contains('hinweis') && schmal < 44 - 0.5)
+      klein.push(`„${text}" — ${schmal.toFixed(0)} pt`);
 
     // VERDECKT: liegt in der Mitte des Knopfes wirklich der Knopf?
     //
