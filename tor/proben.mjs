@@ -713,6 +713,17 @@ const PROBEN = [
     an:{ datei:'tor/inhalt.mjs', text:'rufe.filter(() => false)' },
     sagt:'greift ins Leere' },
 
+  /* Der Rohdatenpfad zeigt wieder irgendwohin.
+   *
+   * Er gilt dann nur auf einem Rechner, und `npm run backen` laeuft
+   * ueberall sonst ins Leere - mit einem ENOENT, nicht mit einer Auskunft. */
+  { n:'der Rohdatenpfad wird wieder absolut', tor:'inhalt', deckt:'inhalt',
+    datei:'tools/geo-backen.mjs',
+    such:"const ROH = process.env.LERNKISTE_ROH || path.join(process.cwd(), 'roh');",
+    ersatz:"const ROH = process.env.LERNKISTE_ROH || '/tmp/roh';",
+    an:{ datei:'tools/geo-backen.mjs', text:"|| '/tmp/roh'" },
+    sagt:'relativ zum' },
+
   /* Die Aufkleber im Buch bekommen wieder ihre Schreibtischgroesse.
    *
    * Dann rollt das Buch auf dem Zielgeraet schon beim zweiten Aufkleber,

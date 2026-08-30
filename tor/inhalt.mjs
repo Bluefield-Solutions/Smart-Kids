@@ -784,6 +784,34 @@ console.log('\n  Tor `doku`');
 // im Konzept um sieben, und das Tor blieb gruen.
 //
 // Ein fehlendes Konzept ist deshalb jetzt ein FEHLER, kein Achselzucken.
+/* Wo die Rohdaten liegen, sagen DREI Stellen - sie muessen sich einig sein.
+ *
+ * `.gitignore` nannte `roh/`, die README „braucht roh/", und
+ * `tools/geo-backen.mjs` einen festen Pfad in ein Sitzungsverzeichnis unter
+ * /tmp. Zwei von drei waren einig, und die dritte war die, die zaehlt: wer
+ * `npm run backen` aufrief, bekam ein nacktes ENOENT auf einen Pfad, den er
+ * nie gesetzt hatte.
+ *
+ * Geprueft wird der Ordnername, nicht der ganze Pfad - er muss RELATIV zum
+ * Arbeitsverzeichnis stehen und in `.gitignore` auftauchen.
+ */
+{
+  const quelle = fs.readFileSync('tools/geo-backen.mjs', 'utf8');
+  const m = quelle.match(/LERNKISTE_ROH \|\| path\.join\(process\.cwd\(\), '([^']+)'\)/);
+  pruefe(m, 'tools/geo-backen.mjs setzt die Rohdaten nicht mehr relativ zum '
+    + 'Arbeitsverzeichnis — ein fester Pfad gilt nur auf einem Rechner');
+  if (m) {
+    const ordner = m[1];
+    pruefe(new RegExp(`^${ordner}/?$`, 'm').test(fs.readFileSync('.gitignore', 'utf8')),
+      `„${ordner}" steht nicht in .gitignore — die Rohdaten landen im Repository `
+      + '(79 MB gegen 1,2 MB gepackt)');
+    pruefe(fs.readFileSync('README.md', 'utf8').includes(`${ordner}/`),
+      `Die README nennt „${ordner}/" nicht — dann steht der Weg nirgends, wo ihn `
+      + 'jemand sucht');
+    console.log(`    Rohdaten: „${ordner}/", in .gitignore und in der README`);
+  }
+}
+
 const KONZEPT = 'docs/Lernkiste-KONZEPT.md';
 if (!fs.existsSync(KONZEPT)) {
   fehler.push(`${KONZEPT} nicht gefunden — die Doku-Prüfung kann nicht laufen `

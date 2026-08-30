@@ -18,9 +18,41 @@ import path from 'node:path';
 import mapshaper from 'mapshaper';
 import * as d3 from 'd3-geo';
 
-const ROH = process.env.LERNKISTE_ROH
-  || '/tmp/claude-0/-home-user-towerfront/4a4d3588-76df-54c7-9810-611a84f37cef/scratchpad/roh';
+/* Wo die Rohdaten liegen.
+ *
+ * Hier stand ein fester Pfad in ein SITZUNGSVERZEICHNIS unter /tmp. Er hat
+ * funktioniert, solange die Sitzung lief, in der er entstanden ist, und
+ * danach nie wieder - waehrend `.gitignore` und die README beide `roh/` im
+ * Arbeitsverzeichnis nennen. Drei Angaben, zwei davon einig, und die
+ * dritte war die, die zaehlt.
+ *
+ * Zum Bauen und Spielen wird davon nichts gebraucht; eingecheckt ist das
+ * gebackene Ergebnis in `src/geo/`. Gebraucht wird es nur, wer die Karten
+ * neu rechnet.
+ */
+const ROH = process.env.LERNKISTE_ROH || path.join(process.cwd(), 'roh');
 const AUS = path.join(process.cwd(), 'src/geo');
+
+/** Eine Rohdatei lesen - oder sagen, wie man sie bekommt.
+ *
+ * Ohne das war der Fehler ein nacktes ENOENT auf einen Pfad, den niemand
+ * gesetzt hat: die haeufigste Art, wie ein Werkzeug jemanden stehen laesst,
+ * der es zum ersten Mal aufruft. */
+export function rohLesen(name) {
+  const datei = path.join(ROH, `${name}.geojson`);
+  if (!fs.existsSync(datei)) {
+    // Gedruckt und beendet, nicht geworfen: das hier ist ein Werkzeug, und
+    // ein Stapelabzug ueber acht Zeilen verdeckt die Auskunft, um die es
+    // geht.
+    console.error(`\n  Die Rohdatei „${name}.geojson" fehlt in ${ROH}.\n`);
+    console.error('  Holen:     npm run geo-holen   (rund 400 MB, Natural Earth, Public Domain)');
+    console.error('  Anderswo:  LERNKISTE_ROH=<verzeichnis> npm run backen\n');
+    console.error('  Zum Bauen und Spielen wird sie NICHT gebraucht — nur zum Neurechnen');
+    console.error('  der Karten. Das Ergebnis liegt eingecheckt in src/geo/.\n');
+    process.exit(1);
+  }
+  return JSON.parse(fs.readFileSync(datei, 'utf8'));
+}
 
 /** Die Stufen aus Konzept K3, Kapitel 5.3b. Breite = groesste Darstellung. */
 export const STUFEN = [

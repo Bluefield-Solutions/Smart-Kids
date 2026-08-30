@@ -3954,3 +3954,44 @@ es jetzt im Rauchtest, und zwar als Regel und nicht als Punktzahl —
 *solange höchstens acht Karten drin sind, steht nichts unter dem Rand*.
 Die Prüfung meldet auch, wenn es mehr als acht werden: dann prüft sie
 nicht mehr, was sie zu prüfen behauptet.
+
+---
+
+## Runde: der Rohdatenpfad zeigte in ein Sitzungsverzeichnis
+
+`tools/geo-backen.mjs` setzte die Rohdaten fest auf
+`/tmp/claude-…/scratchpad/roh`. Das hat funktioniert, solange die Sitzung
+lief, in der der Pfad entstanden ist, und danach nie wieder.
+
+Interessant ist nicht der Pfad, sondern dass **zwei andere Stellen es
+richtig sagten**: `.gitignore` nennt `roh/`, die README schreibt „braucht
+`roh/`". Zwei von drei waren einig — und die dritte war die, die zählt. Wer
+`npm run backen` aufrief, bekam ein nacktes `ENOENT` auf ein Verzeichnis,
+das er nie gesetzt hatte.
+
+Jetzt: `process.env.LERNKISTE_ROH || path.join(process.cwd(), 'roh')`, und
+statt des `ENOENT` eine Auskunft —
+
+```
+  Die Rohdatei „ne_50m_admin_0_countries.geojson" fehlt in <repo>/roh.
+
+  Holen:     npm run geo-holen   (rund 400 MB, Natural Earth, Public Domain)
+  Anderswo:  LERNKISTE_ROH=<verzeichnis> npm run backen
+
+  Zum Bauen und Spielen wird sie NICHT gebraucht — nur zum Neurechnen
+  der Karten. Das Ergebnis liegt eingecheckt in src/geo/.
+```
+
+Gedruckt und beendet, nicht geworfen: ein Stapelabzug über acht Zeilen
+verdeckt genau die Auskunft, um die es geht. Sieben Lesestellen in sechs
+Werkzeugen gehen jetzt durch **eine** Funktion, also gibt es die Meldung
+einmal.
+
+Nachgewiesen, dass der Umbau nichts kaputt gemacht hat: mit gesetztem
+`LERNKISTE_ROH` läuft `backen-kontinente` durch und schreibt **dieselben
+Dateien** — Hausdorff 0,72 / 0,71 / 0,74 px, `git status src/geo` leer.
+
+Und weil genau die Uneinigkeit der drei Stellen der Fehler war, prüft
+`inhalt` sie jetzt gegeneinander: der Ordnername muss relativ zum
+Arbeitsverzeichnis stehen, in `.gitignore` auftauchen und in der README
+genannt sein.

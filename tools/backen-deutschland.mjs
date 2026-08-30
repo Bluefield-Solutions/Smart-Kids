@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as d3 from 'd3-geo';
-import { STUFEN, ROH, AUS, HAUSDORFF_GRENZE, ringe, projiziere, hausdorff,
+import { STUFEN, rohLesen, AUS, HAUSDORFF_GRENZE, ringe, projiziere, hausdorff,
          shaper, bisAufGrenze, passe, svgPfad, teileUndLoecher,
          inselnFiltern } from './geo-backen.mjs';
 import zlib from 'node:zlib';
@@ -24,7 +24,7 @@ const HAUPTSTADT = {
 // G9, zweite Stufe: namentlich behaltene Inseln, die die Silhouette ausmachen.
 const INSELN = ['Sylt','Föhr','Amrum','Fehmarn','Rügen','Usedom','Helgoland','Pellworm','Norderney'];
 
-const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_admin_1_states_provinces.geojson'),'utf8'));
+const roh = rohLesen('ne_10m_admin_1_states_provinces');
 const de = { type:'FeatureCollection', features: roh.features
   .filter(f => f.properties.adm0_a3 === 'DEU')
   .map(f => ({ type:'Feature',

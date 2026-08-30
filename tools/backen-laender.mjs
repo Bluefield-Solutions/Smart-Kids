@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import * as d3 from 'd3-geo';
-import { STUFEN, ROH, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze,
+import { STUFEN, rohLesen, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze,
          passe, svgPfad, teileUndLoecher, inselnFiltern } from './geo-backen.mjs';
 
 const EUROPA_MASKE = [[
@@ -72,7 +72,7 @@ const EBENEN = [
            ['GUY','Guyana'],['SUR','Suriname']] },
 ];
 
-const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_admin_0_countries.geojson'),'utf8'));
+const roh = rohLesen('ne_10m_admin_0_countries');
 
 /* Die Hauptstaedte - aus den Daten, nicht aus meinem Kopf.
  *
@@ -86,7 +86,7 @@ const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_admin_0_countries.g
  * Niederlande, Den Haag gegen Amsterdam. Das ist die eine echte Falle
  * dieser Ebene, und die Daten sagen sie an - ich musste sie nicht
  * behaupten. */
-const orte = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_populated_places.geojson'),'utf8'));
+const orte = rohLesen('ne_10m_populated_places');
 const hauptstadtVon = new Map();
 const sitzVon = new Map();
 for (const f of orte.features) {

@@ -7,13 +7,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as d3 from 'd3-geo';
-import { ROH, AUS, polDerUnzugaenglichkeit } from './geo-backen.mjs';
+import { rohLesen, AUS, polDerUnzugaenglichkeit } from './geo-backen.mjs';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
 
 const STADTSTAATEN = ['DE-BE','DE-HH','DE-HB'];
 const NAME_IN_NE = { 'München':'Munich', 'Köln':'Cologne', 'Nürnberg':'Nuremberg' };
 
-const orte = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_populated_places.geojson'),'utf8'));
+const orte = rohLesen('ne_10m_populated_places');
 const deOrte = orte.features.filter(f => f.properties.ADM0_A3 === 'DEU');
 
 // Die Deutschland-Projektion aus tools/backen-deutschland.mjs, feine Stufe.
@@ -24,7 +24,7 @@ const alleGeo = { type:'FeatureCollection', features: DEUTSCHLAND_FEIN.map(b=>({
 
 // Einfacher: die Lage aus dem bereits normierten Pfadraum ableiten, indem
 // wir die Projektion mit denselben Parametern auf die Rohgeometrie fitten.
-const rohDe = JSON.parse(fs.readFileSync(path.join(ROH,'ne_10m_admin_1_states_provinces.geojson'),'utf8'));
+const rohDe = rohLesen('ne_10m_admin_1_states_provinces');
 const deRoh = { type:'FeatureCollection', features: rohDe.features
   .filter(f=>f.properties.adm0_a3==='DEU')
   .map(f=>({type:'Feature',properties:{id:f.properties.iso_3166_2},geometry:f.geometry})) };

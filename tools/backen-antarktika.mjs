@@ -9,10 +9,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import * as d3 from 'd3-geo';
-import { ROH, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze, passe,
+import { rohLesen, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze, passe,
          svgPfad, inselnFiltern, STUFEN } from './geo-backen.mjs';
 
-const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_50m_admin_0_countries.geojson'),'utf8'));
+const roh = rohLesen('ne_50m_admin_0_countries');
 
 /**
  * Entfernt die kuenstliche Naht aus dem Umriss.

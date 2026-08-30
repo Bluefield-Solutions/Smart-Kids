@@ -14,12 +14,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as d3 from 'd3-geo';
-import { ROH, shaper, bisAufGrenze, inselnFiltern, ringe } from './geo-backen.mjs';
+import { rohLesen, shaper, bisAufGrenze, inselnFiltern, ringe } from './geo-backen.mjs';
 
 const AUS = path.join(process.cwd(), 'src/symbol');
 fs.mkdirSync(AUS, { recursive: true });
 
-const roh = JSON.parse(fs.readFileSync(path.join(ROH, 'ne_50m_admin_0_countries.geojson'), 'utf8'));
+const roh = rohLesen('ne_50m_admin_0_countries');
 // Antarktika bleibt draussen: in dieser Aufsicht liegt es am unteren Rand
 // und wird zum Streifen. Dieselbe Entscheidung wie auf der Weltkarte.
 const land = await shaper({ type:'FeatureCollection', features: roh.features

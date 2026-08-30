@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import * as d3 from 'd3-geo';
-import { STUFEN, ROH, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze,
+import { STUFEN, rohLesen, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze,
          passe, svgPfad, teileUndLoecher, inselnFiltern } from './geo-backen.mjs';
 
 /**
@@ -31,7 +31,7 @@ const KONTINENTE = [
   { id:'suedamerika', name:'Südamerika',            ne:'South America' },
 ];
 
-const roh = JSON.parse(fs.readFileSync(path.join(ROH,'ne_50m_admin_0_countries.geojson'),'utf8'));
+const roh = rohLesen('ne_50m_admin_0_countries');
 const maske = { type:'FeatureCollection', features:[
   { type:'Feature', properties:{}, geometry:{ type:'Polygon', coordinates: EUROPA_MASKE } } ] };
 fs.writeFileSync('/tmp/europa-maske.json', JSON.stringify(maske));
