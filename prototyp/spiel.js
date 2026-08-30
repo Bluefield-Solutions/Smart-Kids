@@ -934,6 +934,33 @@ async function ebenenwahl(){
  */
 const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
 
+/* Was der Vorlauf zeigt - und warum das bei Rechenaufgaben etwas anderes
+ * ist als bei Gebieten.
+ *
+ * R3 sagte „alle Gegenstaende der Ebene". Das war fuer GEBIETE gedacht:
+ * sechzehn Bundeslaender, ein Bildschirm, und danach kennt man sie. Die
+ * Rechenebenen haben die Regel still geerbt - und ihr Vorrat ist
+ * ERZEUGT: 100 Aufgaben bei Fiona, 140 bei Lea, 158 bei den Eltern.
+ *
+ * Gemessen auf dem Zielgeraet: 100 Karten sind 2,8 Bildschirme, 158 sind
+ * 4,2. Das ist kein Blaettern mehr, das ist die Einmaleins-Tafel - und
+ * sie steht vor der ERSTEN Sitzung einer Sechsjaehrigen.
+ *
+ * Der Vorlauf soll erklaeren, was kommt (B1 aus dem ANTON-Abgleich), und
+ * dafuer braucht es Beispiele, keinen Vorrat. Wieviele? So viele, wie
+ * gleich kommen - `P.sitzung`. Die Zahl steht schon im Profil und wird
+ * hier nicht neu erfunden.
+ *
+ * Genommen wird nicht der Anfang, sondern jede n-te: sonst stuenden bei
+ * „Plus und Minus" acht Mal `1 + irgendwas` da und kein einziges Minus.
+ */
+function vorlaufVorrat(ebeneId){
+  const alle = vorrat(ebeneId);
+  if (ebeneArt(ebeneId) !== 'rechnen' || alle.length <= P.sitzung) return alle;
+  const schritt = Math.floor(alle.length / P.sitzung);
+  return alle.filter((_, i) => i % schritt === 0).slice(0, P.sitzung);
+}
+
 /** Der eine Satz, den dieser Vorlauf mitgibt. Abgeleitet, nicht gesammelt. */
 function vorlaufSatz(ebeneId){
   const [art, kont] = ebeneId.split(':');
@@ -944,7 +971,8 @@ function vorlaufSatz(ebeneId){
     return 'Berlin, Hamburg und Bremen fehlen hier: sie sind <strong>Stadtstaaten</strong>, '
       + 'die Stadt ist das ganze Bundesland. Sie <em>sind</em> ihre Hauptstadt.';
   if (art === 'rechnen')
-    return 'Schau sie dir in Ruhe an. Antippen sagt dir die Aufgabe und das Ergebnis.';
+    return `So sehen die Aufgaben aus — hier ein paar davon, `
+      + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
   return 'Tippe auf ein Bild, dann sage ich dir, wie es heißt.';
 }
 
@@ -966,7 +994,7 @@ async function vorlauf(ebeneId){
   }
   await standLaden(ebeneId);
   const ebene = EBENEN.find(e => e.id === ebeneId);
-  const stuecke = vorrat(ebeneId);
+  const stuecke = vorlaufVorrat(ebeneId);
   const satz = vorlaufSatz(ebeneId);
   // Der eigene Rahmen zeigt das Stueck gross; nur wenn er sich aus dem
   // Pfad nicht rechnen laesst, faellt es auf den Rahmen der ganzen Karte

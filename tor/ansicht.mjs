@@ -192,6 +192,11 @@ const AUFNAHMEN = [
    * getippt, weil das Profil nie eine Auswahl bekommt. */
   { name:'quer-ende-eltern', spiel:'kontinente', kind:'eltern', quer:true,
     wahl:'.schirm.da', tun:'durch' },
+  /* Der Vorlauf einer RECHENEBENE - ein anderer Bildschirm als der der
+   * Gebiete: keine Umrisse, sondern die Aufgabe selbst, und nur so viele
+   * Karten, wie gleich kommen. `quer-vorlauf` zeigt die Bundeslaender. */
+  { name:'quer-vorlauf-rechnen', spiel:'rechnen:plusminus', quer:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
 ];
 
 /**

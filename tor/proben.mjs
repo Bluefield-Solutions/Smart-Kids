@@ -624,6 +624,28 @@ const PROBEN = [
     an:{ datei:'src/inhalt/erdkunde.js', text:"aussprache:['polen','griechenland']" },
     sagt:'angenommen wurde' },
 
+  // Der Vorlauf zeigt wieder den ganzen Rechenvorrat.
+  //
+  // Hundert Karten fuer Fiona, 158 fuer die Eltern - gemessen 2,8 bis
+  // 4,2 Bildschirme. R3 sagte „alle Gegenstaende der Ebene", und das war
+  // fuer Gebiete gedacht; ein erzeugter Vorrat hat keine Zahl, die auf
+  // einen Bildschirm passt.
+  { n:'der Vorlauf zeigt wieder die ganze Tafel', tor:'smoke', bauen:true,
+    args:['--nur=durchgang', '--kurz'], datei:D,
+    such:'  const stuecke = vorlaufVorrat(ebeneId);',
+    ersatz:'  const stuecke = vorrat(ebeneId);',
+    an:{ ...DIST, fehlt:'const stuecke = vorlaufVorrat(ebeneId)' },
+    sagt:'kein Blättern' },
+  // Und der Vorlauf einer Rechenebene sieht anders aus.
+  { n:'die Beispielkarten verlieren ihre Form', tor:'ansicht', bauen:true, datei:V,
+    // Eindeutig, nicht `.rechenkleber{`: das steht auch als Nachfahren-
+    // Regel im Vorlauf-Abschnitt, und ein zweideutiger Suchtext trifft
+    // die falsche Zeile.
+    such:'.rechenkleber{display:flex;',
+    ersatz:'.rechenkleber{display:none;',
+    an:{ ...DIST, text:'.rechenkleber{display:none;' },
+    sagt:'quer-vorlauf-rechnen' },
+
   // Die Diphthonge verlieren ihren eigenen Code.
   //
   // Dann heisst „aussen" wieder wie „Asien": die Koelner Phonetik gibt

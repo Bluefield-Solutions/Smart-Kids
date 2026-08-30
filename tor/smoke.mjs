@@ -94,6 +94,22 @@ const PROFILNAMEN = (() => {
  * dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor einem
  * Sechsjaehrigen ploetzlich zwoelf Laender stehen.
  */
+/* Wieviele Aufgaben hat eine Sitzung? Dieselbe Tabelle, Zeile „Aufgaben
+ * je Sitzung".
+ *
+ * Gebraucht fuer den Vorlauf: bei einer Rechenebene zeigt er BEISPIELE,
+ * nicht den Vorrat - und zwar so viele, wie gleich kommen. Der Vorrat ist
+ * erzeugt (100, 140, 158); ihn zu zeigen hiesse, einer Sechsjaehrigen vor
+ * ihrer ersten Sitzung 2,8 Bildschirme Einmaleins-Tafel hinzulegen. */
+const SITZUNG = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*Aufgaben je Sitzung\s*\|(.+)\|\s*$/m);
+  if (!z) { fehler.push('Die Zeile „Aufgaben je Sitzung" fehlt im Backlog — '
+    + 'dann prüft der Rauchtest den Vorlauf gegen nichts'); return {}; }
+  const n = z[1].split('|').map(t => +(t.match(/\d+/) || [])[0]).filter(Number.isFinite);
+  return { fiona: n[0], lea: n[1], eltern: n[2] };
+})();
+
 const TIEFE = (() => {
   const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
   const z = doc.match(/^\|\s*Ländertiefe\s*\|(.+)\|\s*$/m);
@@ -1444,6 +1460,21 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
        * Der Vorlauf zeigt genau den Vorrat der Ebene - eine Karte je
        * Gegenstand. Gezaehlt wird also das, was das Profil zusagt, an dem
        * Ort, an dem es sichtbar wird. */
+      /* Der Vorlauf einer RECHENEBENE zeigt Beispiele, nicht den Vorrat.
+       *
+       * So viele, wie gleich kommen. Zeigte er wieder alle, waeren es
+       * hundert Karten und mehr - gemessen 2,8 bis 4,2 Bildschirme. */
+      if (ebene.startsWith('rechnen') && SITZUNG[wer]) {
+        const da2 = await p.waitForSelector('.schirm.da #los', { timeout: 20000 })
+          .then(() => true).catch(() => false);
+        if (da2) {
+          const n = await p.$$eval('.schirm.da .aufkleber', es => es.length);
+          if (n !== SITZUNG[wer]) merke('durchgang', new Error(
+            `${wer}/${ebene}: der Vorlauf zeigt ${n} Aufgaben, eine Sitzung hat `
+            + `${SITZUNG[wer]} — bei einem erzeugten Vorrat ist das die Tafel, `
+            + 'kein Blättern'));
+        }
+      }
       if (ebene.startsWith('laender:') && TIEFE[wer]) {
         const da2 = await p.waitForSelector('.schirm.da #los', { timeout: 20000 })
           .then(() => true).catch(() => false);
