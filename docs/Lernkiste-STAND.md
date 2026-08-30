@@ -3401,3 +3401,105 @@ des Nachweises misst und nicht, ob er noch trifft.
 Und dabei noch etwas: `CLAUDE.md` nannte für `proben` die Schalter `--tor`
 und `--nur`. Beide gibt es nicht. Wer sie benutzt hätte, hätte den vollen
 Satz gefahren — zwanzig Minuten statt einer Probe, und keine Fehlermeldung.
+
+## Ton je Profil — und ein Tor, das nie gemessen hat, was es behauptet
+
+Zwei Schritte waren bestellt: der Endbildschirm soll Eltern nicht wie ein
+Kind ansprechen, und der Elternbereich soll endlich eine Aufnahme bekommen.
+Beides ist da. Dazwischen lag ein Fund, der größer ist als beide.
+
+### Der Ton
+
+`ton: 'kind' | 'sachlich'` steht am Profil — eine Eigenschaft wie
+`vorlesen` oder `streng`, keine Abfrage auf den Namen. Die Texte stehen an
+**einer** Stelle (`TON`), und die Regel dahinter passt in einen Satz:
+
+> **kindlich ruft, sachlich stellt fest.**
+
+Am Ausrufezeichen ist das mechanisch zu erkennen, und genau darauf prüfen
+beide Tore — `inhalt` an den Listen, der Rauchtest am Bildschirm nach einer
+richtigen Antwort. Geprüft wird die *Eigenschaft*, nicht der Wortlaut; eine
+Liste erlaubter Sätze im Tor wäre eine Abschrift aus `spiel.js`, und die
+fälscht die Gegenprobe (Regel 4). Welches Profil welchen Ton trägt, steht
+in der Zeile „Ton" der Backlog-Tabelle.
+
+Sachlich heißt: „Sitzung beendet." statt „Geschafft!", „Richtig." /
+„Stimmt." / „Korrekt." / „Sitzt." statt „Super gemacht!", und „Ab dem
+zweiten Mal richtig kommt ein Gebiet ins Buch." statt „Beim zweiten Mal
+richtig gibt es einen Aufkleber."
+
+**Zwei Nebenfunde beim Anfassen:**
+
+`vorlesen('Geschafft!')` lief **unbedingt**, an jedem Profil vorbei. Der
+Endbildschirm rief auch Lea und den Eltern hinterher, obwohl beide
+`vorlesen: false` tragen. Aufgefallen ist es nie, weil der Rauchtest nur
+die *Ansage der Aufgabe* zählt und dieser Satz keine ist. Und `FAST_LOB`
+— ein Vorrat aus drei Sprüchen — wurde seit dem Tag, an dem er geschrieben
+wurde, **nie gelesen**. Er ist weg statt mitgewandert.
+
+**Offen, und keine Entscheidung, die ich allein treffe:** auf dem
+Endbildschirm stehen für die Eltern weiter drei goldene Sterne und der
+Knopf „Forscherbuch". Die Sterne sind die Wertung der Sitzung, das Buch ist
+der Name der Sammlung in der ganzen App. Beides umzubenennen hieße, das
+Vokabular je Profil zu spalten.
+
+### Der Fund: `ctx.newPage()` nimmt keine Optionen
+
+Beim Nachmessen für die Aufnahme fiel auf, dass ein Bildschirmfoto
+1280 × 720 groß war, wo 844 × 390 stehen sollte. Nachgesehen:
+
+```js
+const p = await ctx.newPage({ viewport, deviceScaleFactor: 2 });
+```
+
+`BrowserContext.newPage()` nimmt **keine** Optionen. Beide Werte wurden
+stillschweigend verworfen; die Seite bekam die Größe des Kontexts, also die
+Voreinstellung **1280 × 720**. An sechs Aufrufstellen stehen 844 × 390,
+1180 × 820 und 390 × 844.
+
+**Der Rauchtest hat nie auf dem Zielgerät gemessen.** Die Hochkant-Prüfung
+lief nie hochkant. Kein Tor konnte das melden: eine verworfene Option wirft
+nicht, sie tut nichts. Der Test prüft die Größe jetzt selbst nach — was er
+misst, muss er auch bekommen.
+
+### Was dabei sichtbar wurde, und was daran wirklich ein Fehler war
+
+Auf 844 × 390 ist die Deutschlandkarte rund **170 px breit**;
+„Mecklenburg-Vorpommern" ist bei 21 px Schrift **260 px lang**. Der erste
+Lauf auf der echten Größe meldete prompt zwei Befunde. Angesehen (Regel 7),
+und beide waren **Fehler der Prüfung**, nicht der App:
+
+**„steht außerhalb des Kartenfelds".** Die Fahne steht neben der kleinen
+Karte, vollständig sichtbar, mit einer Linie zum Gebiet — genau wofür die
+Fahne gebaut wurde. Gemessen wurde gegen den Kasten der Karte; gemeint ist
+der **Bildschirm**. Über den Rand hinaus darf sie nie, und das ist die
+Zusage, die jetzt geprüft wird. Wie oft eine Fahne neben der Karte steht,
+sagt der Bericht als Auskunft.
+
+**„nur die Sorte daneben".** Die Forderung, dass beide
+Beschriftungssorten vorkommen, ist bei 170 px Kartenbreite nicht
+erfüllbar — kein Landesname passt dort in sein Gebiet. Die Forderung war
+nicht falsch, sie hatte nur **keine Messstelle**: im Browser hängt die
+Kartenbreite an der Fenstergröße. Sie steht jetzt in `inhalt`, wo sie eine
+hat (Karte 470 px, Befund G10): 2 innen, 14 als Fahne.
+
+Beides ist Regel 12 — eine Zahl ohne ihre Messstelle. Und beides war
+zwanzig Runden lang unsichtbar, weil das Tor auf einer Größe lief, die
+niemand gewählt hatte.
+
+### Die Aufnahmen
+
+Zwei: `quer-eltern` (der Bereich, wie er aufgeht) und
+`quer-eltern-tabellen` (die beiden Tabellen darunter, zu denen der
+Bildschirm gerollt wird). Beide mit **gesetztem Protokoll** — ohne
+Einträge stünden dort drei Zeilen Striche, und die Aufnahme bezeugte von
+den Tabellen nichts.
+
+Die Zeiten im Protokoll sind fest, und die Seite läuft ausdrücklich in
+`Europe/Berlin`: sonst wäre die Aufnahme auf jedem Rechner eine andere.
+Gerollt wird zu einer **Überschrift**, nicht um eine Zahl von Punkten —
+verschiebt sich etwas darüber, zeigt die Aufnahme weiter dasselbe.
+
+Auf `quer-eltern-tabellen` steht unter „Zuletzt geübt" die Zeile
+*Eltern · 12 × 13 · richtig*. Das ist der Fund aus R7, jetzt in einem
+Vorbild festgehalten: vorher stand dort `g12*13`.
