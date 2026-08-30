@@ -749,6 +749,19 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .siegwahl{margin-top:var(--r6)}
 .fach{font-size:var(--s-klein);color:var(--tinte-3);font-weight:600;margin-left:var(--r2)}
 
+/* Das Wartezeichen. Drei Punkte, die der Reihe nach atmen.
+   Kein Wort: es erscheint fuer ein Kind, das nicht liest. */
+.warten .mitte{align-items:center;justify-content:center}
+.punkte{display:flex;gap:var(--r3)}
+.punkte i{width:14px;height:14px;border-radius:var(--rund-voll);background:var(--akzent);
+  opacity:.25;animation:atmen var(--d-warten) ease-in-out infinite}
+.punkte i:nth-child(2){animation-delay:var(--d-warten-versatz)}
+.punkte i:nth-child(3){animation-delay:calc(var(--d-warten-versatz) * 2)}
+@keyframes atmen{0%,70%,100%{opacity:.25;transform:scale(.85)}35%{opacity:1;transform:scale(1)}}
+/* Wer Bewegung abbestellt hat, bekommt sie nicht - die Punkte stehen dann
+   einfach da. Sichtbar bleiben sie trotzdem, darum geht es. */
+@media (prefers-reduced-motion:reduce){ .punkte i{animation:none;opacity:.6} }
+
 .rollen{flex:1;min-height:0;overflow:auto;padding:0 var(--r4) var(--r8);
   -webkit-overflow-scrolling:touch;touch-action:pan-y}
 .rollen.eltern{max-width:760px;margin:0 auto;width:100%;text-align:left}

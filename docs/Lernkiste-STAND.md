@@ -4447,3 +4447,66 @@ Gemessen sind alle Zahlen in sich stimmig:
 Sterne und Balken sind **Anteile**, die Zahl ist **absolut**. Nebeneinander
 liest sich das als Widerspruch: neun Aufkleber und ein Stern, daneben zwei
 Aufkleber und zwei Sterne.
+
+---
+
+## Runde: sieben Sekunden, in denen nichts passiert
+
+Die Frage war, was das Nachladen des Forscherbuchs kostet. Gemessen auf
+844 × 390, einmal mit und einmal ohne das Lager des Service Workers:
+
+| | 1 Ebene | 3 Ebenen | 5 Ebenen |
+|---|---|---|---|
+| mit Lager | 662 ms | 664 ms | 662 ms |
+| mit Lager, 3G gedrosselt | 691 ms | 663 ms | 709 ms |
+| **ohne Lager, 3G** | **2 986 ms** | **4 468 ms** | **7 477 ms** |
+
+Die erste Sorge war unbegründet: **die Drossel ändert nichts**, weil der
+Service Worker alle Ebenendaten vorsorglich ins Lager legt (`vorrat` in
+`prototyp/bauen.mjs`, mit genau dieser Begründung). Nach dem ersten Besuch
+liegt alles auf dem Gerät.
+
+Der Fall davor ist der Fund: beim **allerersten** Besuch, bevor das Lager
+steht, dauert es bis zu siebeneinhalb Sekunden — und die ganze Zeit steht
+der **alte** Bildschirm da. Ein Kind tippt auf „Forscherbuch", und nichts
+passiert. Dasselbe gilt nach jeder neuen Fassung, solange das Lager neu
+aufgebaut wird.
+
+### Ein Wartezeichen, aber erst nach einem Augenblick
+
+Die Entscheidung fällt in **`zeige()`** und nicht an den Aufrufstellen:
+jeder Bildschirm, der je auf etwas wartet, ist damit versorgt — auch der
+nächste, an den heute niemand denkt.
+
+Nach 300 ms erscheinen drei atmende Punkte. Kein Wort: es erscheint für ein
+Kind, das nicht liest. Ein Zeichen, das *sofort* käme, blitzte im Normalfall
+nur auf und machte die App unruhig.
+
+Gemessen danach: **Wartezeichen nach 321 ms, Buch nach 4 126 ms.**
+
+### Vier Anläufe für die Prüfung, und jeder war eine eigene Lehre
+
+Der Rauchtest sollte den schlimmsten Fall stellen. Er meldete dreimal rot
+über etwas, das in Ordnung war:
+
+1. `t0` lag **vor** `q.click()` — und Playwrights `click()` wartet erst auf
+   Erreichbarkeit und Ruhe. 2,7 s davon landeten in der gemessenen Spanne.
+2. Verdacht auf `requestAnimationFrame` im Hintergrund. Falsch, aber die
+   Lehre bleibt: gemessen wird jetzt mit einer `evaluate`-Schleife, die in
+   jedem Fall läuft, statt mit `waitForFunction`.
+3. Der eigentliche Grund: der **gemeinsame Kontext hat längst einen
+   Service Worker** — die früheren Abschnitte haben ihn registriert. Ein
+   `delete navigator.serviceWorker` im Seitenskript hilft dagegen nicht;
+   ein aktiver Worker übernimmt die Seite beim Navigieren, ganz ohne die
+   JS-Schnittstelle. Die Daten kamen also aus dem Lager, es gab nichts
+   nachzuladen, und die Probe suchte ein Wartezeichen für eine Wartezeit,
+   die es nicht gab.
+
+Der Ausweg ist ein eigener Kontext mit `serviceWorkers: 'block'`. Und die
+Prüfung sagt selbst, wenn sie nichts mehr prüft: dauert das Buch unter
+600 ms, meldet sie „die Drossel greift nicht" statt grün.
+
+Nebenbei hat das **Markentor** die drei Animationsdauern gefangen, die ich
+frei in die Stilvorlage geschrieben hatte — sie stehen jetzt als
+`--d-warten` und `--d-warten-versatz` im Markensystem, mit Werten für
+`prefers-reduced-motion` dazu.

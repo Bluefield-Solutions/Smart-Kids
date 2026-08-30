@@ -159,6 +159,8 @@
   --sicher-links:  env(safe-area-inset-left, 0px);
   --d-puls:   1500ms;   /* der Ring um das gesuchte Gebiet */
   --d-atmen:  2400ms;   /* der Hof um das Mikrofon */
+  --d-warten: 1100ms;   /* die drei Punkte, wenn ein Bildschirm laedt */
+  --d-warten-versatz: 180ms;   /* Abstand, in dem sie nacheinander atmen */
   --k-standard: cubic-bezier(.2, 0, 0, 1);
 }
 
@@ -174,7 +176,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   :root { --d-tipp: 1ms; --d-zustand: 1ms; --d-schirm: 1ms; --d-belohnung: 1ms;
-          --d-wackeln: 1ms; --d-puls: 1ms; --d-atmen: 1ms; --d-staffel: 0ms; }
+          --d-wackeln: 1ms; --d-puls: 1ms; --d-atmen: 1ms; --d-staffel: 0ms;
+          --d-warten: 1ms; --d-warten-versatz: 0ms; }
   /* Die Marken allein reichen nicht: eine @keyframes-Animation mit fester
      Dauer hoert nicht auf sie. Deshalb zusaetzlich der grobe Hammer -
      er stand bisher in vorlage.html und damit ausserhalb des Systems. */

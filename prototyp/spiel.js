@@ -748,8 +748,44 @@ async function einstLaden(){
 async function einstSichern(){ try{ await Ablage.setze('einstellungen','alles',Einst); }catch(e){} }
 
 /* ---------- Bildschirmwechsel ------------------------------------------- */
+/* Ein Bildschirm, der auf Daten wartet, sagt das - aber erst nach einem
+ * Augenblick.
+ *
+ * Gemessen auf 3G und OHNE Lager (also beim allerersten Besuch, bevor der
+ * Service Worker die Ebenendaten hat): das Forscherbuch braucht 3,0 s bei
+ * einer nachzuladenden Ebene und 7,5 s bei fuenf. So lange stand der ALTE
+ * Bildschirm da - ein Kind tippt auf „Forscherbuch", und sieben Sekunden
+ * lang passiert nichts. Mit Lager sind es 0,66 s, und die Drossel aendert
+ * daran nichts: der Service Worker legt alle Ebenendaten ins Lager.
+ *
+ * Ein Wartezeichen, das SOFORT kaeme, blitzte im Normalfall nur auf und
+ * machte die App unruhig. Deshalb erst nach `WARTEZEICHEN_AB`; darunter
+ * merkt niemand etwas.
+ *
+ * Die Entscheidung faellt HIER und nicht an den Aufrufstellen: jeder
+ * Bildschirm, der je auf etwas wartet, ist damit versorgt - auch der
+ * naechste, an den heute niemand denkt.
+ */
+const WARTEZEICHEN_AB = 300;
+const wartezeichen = () => {
+  const w = el('div', 'schirm warten');
+  // Drei Punkte, kein Wort: Fiona liest nicht. Die Ansage sagt es ihr.
+  w.innerHTML = `<div class="mitte"><div class="punkte" role="status"
+    aria-label="Wird geladen"><i></i><i></i><i></i></div></div>`;
+  return w;
+};
 function zeige(bau){
-  Promise.resolve(bau()).then(neu=>{
+  const fertig = Promise.resolve(bau());
+  /* Das Wartezeichen ist selbst ein `.schirm` - damit raeumt der Code
+     unten es weg wie jeden anderen, und es kann nicht haengenbleiben. */
+  let uhr = setTimeout(()=>{
+    uhr = null;
+    const w = wartezeichen();
+    buehne.appendChild(w);
+    requestAnimationFrame(()=>w.classList.add('da'));
+  }, WARTEZEICHEN_AB);
+  fertig.then(neu=>{
+    if (uhr) clearTimeout(uhr);
     // ALLE bisherigen Bildschirme, nicht nur den sichtbaren. Wird zeige()
     // zweimal kurz hintereinander gerufen, bleibt sonst einer haengen -
     // im Elternbereich schimmerten drei Bildschirme uebereinander.

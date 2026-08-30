@@ -1137,6 +1137,105 @@ if (laeuft('ablage')) try {
     await q.close();
   }
 
+  /* --- Ein Tippen, das dauert, sagt das auch -------------------------
+   *
+   * Das Forscherbuch holt die Umrisse nach, die es zeigt. Mit Lager kostet
+   * das 0,66 s; OHNE Lager und auf 3G wurden 3,0 s bei einer und 7,5 s bei
+   * fuenf nachzuladenden Ebenen gemessen - und so lange stand der ALTE
+   * Bildschirm da. Ein Kind tippt auf „Forscherbuch" und sieben Sekunden
+   * lang passiert nichts.
+   *
+   * Geprueft wird der schlimmste Fall, weil nur dort etwas zu sehen ist:
+   * gedrosselt und ohne Service Worker, also beim allerersten Besuch.
+   */
+  {
+    /* Ein EIGENER Kontext, und der Service Worker wird dort GESPERRT.
+     *
+     * Der gemeinsame Kontext hat laengst einen registrierten Service
+     * Worker - die frueheren Abschnitte haben ihn angelegt. Ein
+     * `delete navigator.serviceWorker` im Seitenskript hilft dagegen
+     * nicht: ein aktiver Worker uebernimmt die Seite beim Navigieren,
+     * ganz ohne die JS-Schnittstelle. Die Ebenendaten kamen also aus dem
+     * Lager, es gab nichts nachzuladen, und die Probe suchte ein
+     * Wartezeichen fuer eine Wartezeit, die es nicht gab. Sie meldete rot
+     * ueber etwas, das in Ordnung war.
+     *
+     * `serviceWorkers: 'block'` sperrt ihn fuer diesen Kontext. */
+    const kalt = await b.newContext({ viewport: { width: 844, height: 390 },
+      locale: 'de-DE', serviceWorkers: 'block' });
+    const q = await kalt.newPage();
+    await q.setViewportSize({ width: 844, height: 390 });
+    const cdp = await kalt.newCDPSession(q);
+    await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 100,
+      downloadThroughput: 750 * 1024 / 8, uploadThroughput: 250 * 1024 / 8 });
+    await q.goto(ADRESSE + '?flott', { waitUntil: 'domcontentloaded' });
+    await q.waitForSelector('[data-profil="fiona"]', { timeout: 30000 });
+    await q.evaluate(() => new Promise(ja => {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const a = indexedDB.open('lernkiste', 1);
+      a.onupgradeneeded = () => { for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+        if (!a.result.objectStoreNames.contains(l)) a.result.createObjectStore(l); };
+      a.onsuccess = () => { const t = a.result.transaction(['fortschritt'], 'readwrite');
+        // Aufkleber in DREI Ebenen — drei Dateien zum Nachladen.
+        const ebenen = [['bundeslaender', D.deutschland.map(x => x.id)],
+          ...Object.entries(D.laender).map(([k, l]) => [`laender:${k}`, l.map(x => x.a3)])].slice(0, 3);
+        for (const [id, ids] of ebenen) { const st = {};
+          ids.slice(0, 2).forEach(g => st[g] = { fach: 4, hoechstes: 4, faellig: 0,
+            richtig: 3, falsch: 0, zuletzt: 0 });
+          t.objectStore('fortschritt').put(st, `fiona:${id}`); }
+        t.oncomplete = ja; };
+    }));
+    await q.reload({ waitUntil: 'domcontentloaded' });
+    await q.waitForSelector('[data-profil="fiona"]', { timeout: 30000 });
+    await q.click('[data-profil="fiona"]');
+    await zurEbenenwahl(q, 'bundeslaender');
+    /* `$eval(...click())` statt `click()`, und die Uhr DANACH.
+     *
+     * Playwrights `click()` wartet erst auf Erreichbarkeit und Ruhe der
+     * Seite - im ersten Anlauf lagen dadurch 2,7 s zwischen `t0` und dem
+     * wirklichen Klick, und die Probe meldete das Wartezeichen als „erst
+     * nach 3045 ms". Es stand laengst da; gemessen wurde nur von zu weit
+     * vorn. Eine Zahl ohne ihre Messstelle (Regel 12). */
+    /* Die Seite MUSS vorn sein.
+     *
+     * `bis()` pollt ueber `requestAnimationFrame`, und das laeuft in einer
+     * Seite im Hintergrund nicht. Der Kontext hat hier mehrere Seiten
+     * offen; die Probe sah das Wartezeichen deshalb erst, als der Poller
+     * zufaellig wieder lief - sie meldete „erst nach 3009 ms" fuer etwas,
+     * das nach 457 ms dastand. Nachgemessen mit einer Schleife aus
+     * `evaluate` (die laeuft auch im Hintergrund), und der Unterschied war
+     * eindeutig. */
+    await q.bringToFront();
+    await q.waitForSelector('.schirm.da #buch');
+    const t0 = Date.now();
+    await q.$eval('.schirm.da #buch', x => x.click());
+    /* Gepollt mit `evaluate`, nicht mit `waitForFunction`.
+     *
+     * Gemessen wird eine Zeitspanne, also darf der Poller sie nicht selbst
+     * verzerren. `waitForFunction` pollt ueber `requestAnimationFrame`;
+     * eine `evaluate`-Schleife laeuft in jedem Fall. */
+    let zeichen = false, bisZeichen = 0;
+    for (let i = 0; i < 80 && !zeichen; i++) {
+      zeichen = await q.evaluate(() => !!document.querySelector('.schirm.warten.da'));
+      bisZeichen = Date.now() - t0;
+      if (!zeichen) await q.waitForTimeout(60);
+    }
+    await q.waitForSelector('.schirm.da .aufkleber', { timeout: 30000 });
+    const bisBuch = Date.now() - t0;
+    // Und es muss auch wieder WEG sein.
+    const weg = await bis(q, () => !document.querySelector('.schirm.warten'), 3000);
+    await kalt.close();
+    console.log(`  Warten sichtbar:            nach ${bisZeichen} ms, Buch nach ${bisBuch} ms `
+      + `(3G, ohne Lager)`);
+    if (bisBuch < 600)
+      merke('warten', new Error(`das Buch stand schon nach ${bisBuch} ms — die Drossel greift `
+        + 'nicht, und damit prüft dieser Abschnitt nichts'));
+    else if (!zeichen)
+      merke('warten', new Error(`nach dem Tippen auf „Forscherbuch" passiert ${bisBuch} ms lang `
+        + 'nichts — kein Wartezeichen'));
+    if (!weg) merke('warten', new Error('das Wartezeichen bleibt stehen, nachdem das Buch da ist'));
+  }
+
   /* --- Eine offene Kontinentrunde geht nicht wieder zu ----------------
    *
    * Fionas Kontinente kommen in zwei Runden: vier zuerst, zwei weitere,
