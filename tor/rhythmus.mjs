@@ -20,10 +20,19 @@
 // Stand stehen gehabt, ohne dass es jemandem auffiel.
 //
 // Deshalb ist die Frist ERZWUNGEN und nicht aufgeschrieben. Dieses Tor
-// steht vorn in der Kette, kostet Millisekunden und schlaegt an, wenn der
-// letzte volle Probenlauf mehr als GRENZE Runden zurueckliegt. Es ersetzt
-// den Probenlauf nicht - es faengt seine haeufigste Verfallsart, naemlich
-// dass er einfach nicht mehr stattfindet.
+// kostet Millisekunden und schlaegt an, wenn der letzte volle Probenlauf
+// mehr als GRENZE Runden zurueckliegt. Es ersetzt den Probenlauf nicht -
+// es faengt seine haeufigste Verfallsart, naemlich dass er einfach nicht
+// mehr stattfindet.
+//
+// WO es laeuft: nachts auf dem Runner, vor `npm run proben`, und in
+// `.github/workflows/vorschau.yml`. NICHT in `npm run tor` - hier stand
+// „dieses Tor steht vorn in der Kette", und das galt bis zu dem Tag, an
+// dem die Gegenproben auf den Runner umgezogen sind. Danach hat der Satz
+// weiter dagestanden. Er hat mehr gekostet als eine falsche Auskunft: die
+// Gegenprobe „ein neues Tor steht in der Kette" suchte
+// `npm run rhythmus && npm run inhalt` in package.json, fand es nicht mehr
+// und bewies seitdem nichts (Regel 3, und Regel 15 gleich mit).
 //
 // Gezaehlt werden nur Commits, die CODE anfassen. Wer eine Zeile im
 // Konzept aendert, verbraucht keine Frist.

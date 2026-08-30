@@ -389,10 +389,23 @@ const PROBEN = [
     ersatzFn:(m)=>`"${m[1]} (weg)": {\n      "commit"`,
     an:{ datei:'tor/proben-stand.json', regex:/ \(weg\)": \{/ },
     sagt:'nie angeschlagen' },
+  /* Der Eingriff haengt am ANFANG der Kette, nicht an zwei bestimmten Toren.
+   *
+   * Hier stand `npm run rhythmus && npm run inhalt` - die Kette, wie sie
+   * aussah, als `rhythmus` noch vorn darin stand. Er ist seitdem
+   * herausgenommen worden (die Gegenproben bezahlt der Runner, nicht die
+   * Runde), und damit fand der Suchtext nichts mehr: die Probe kam nicht
+   * an und hat seitdem nichts bewiesen. Gemerkt hat es niemand, weil sie
+   * nur im VOLLEN Lauf drankommt - und der lief zuletzt nachts, wo die
+   * Meldung im Protokoll steht und nicht auf einem Bildschirm.
+   *
+   * Jetzt am `"tor": "npm run ` verankert. Das ueberlebt jede Umsortierung
+   * der Kette; nur ihr Wegfall wuerde es brechen, und dann gibt es nichts
+   * mehr zu pruefen. */
   { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus',
     brauchtStand:true, nachStand:true, datei:'package.json',
-    such:'npm run rhythmus && npm run inhalt',
-    ersatz:'npm run rhythmus && npm run neuestor && npm run inhalt',
+    such:'"tor": "npm run ',
+    ersatz:'"tor": "npm run neuestor && npm run ',
     an:{ datei:'package.json', text:'npm run neuestor' },
     sagt:'noch nicht in der Kette' },
   /* Ein Nachweis, dessen Alter sich nicht bestimmen laesst.
