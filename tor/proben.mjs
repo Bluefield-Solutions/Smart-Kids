@@ -663,11 +663,24 @@ const PROBEN = [
    * `warGesessen` fragt den Hoechststand, `istGesessen` das heutige Fach.
    * Mit dem heutigen Fach war Runde 2 an 47 von 208 Sitzungen wieder
    * verschlossen: Fiona setzte sich hin, und Asien war weg. */
-  { n:'eine offene Kontinentrunde geht wieder zu', tor:'spielprobe', deckt:'spielprobe',
-    datei:D,
+  /* Am RAUCHTEST, nicht an `spielprobe`: die Regel steht in spiel.js, und
+   * `spielprobe` rechnet sie nach - also bezeugt sie dort nur, dass
+   * `warGesessen` monoton ist, nicht dass die App es benutzt. Der
+   * Rauchtest stellt den Stand in der Ablage und schaut nach, wieviele
+   * Kontinente die Ebene danach kennt. */
+  { n:'eine offene Kontinentrunde geht wieder zu', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:D,
     such:'    if (!bisher.every(k => Leitner.warGesessen(stand, k.id))) break;',
     ersatz:'    if (!bisher.every(k => Leitner.istGesessen(stand, k.id))) break;',
-    an:{ datei:D, fehlt:'Leitner.warGesessen(stand, k.id)' },
+    an:{ ...DIST, fehlt:'Leitner.warGesessen(stand, k.id)' },
+    sagt:'wieder zu' },
+  /* Und die Prüfung selbst darf nicht ins Leere greifen: stellt sie den
+   * Rückfall gar nicht mehr her, ist ihre Zusage geschenkt. */
+  { n:'der Rückfall wird gar nicht mehr gestellt', tor:'smoke', args:['--nur=ablage'],
+    bauen:true, datei:'tor/smoke.mjs',
+    such:'        for (const id of ids) st[id] = { fach: 1, hoechstes: 3, faellig: 0,',
+    ersatz:'        for (const id of []) st[id] = { fach: 1, hoechstes: 3, faellig: 0,',
+    an:{ datei:'tor/smoke.mjs', text:'for (const id of []) st[id]' },
     sagt:'wieder zu' },
   /* Und die Probe selbst darf nicht leerlaufen: haelt der Hoechststand
    * NIE, was er verspricht, muessen die Gelegenheiten trotzdem gezaehlt

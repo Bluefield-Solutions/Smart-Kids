@@ -2,6 +2,8 @@
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
 import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere } from './chromium.mjs';
+// Welche Kontinente in welcher Runde kommen, steht in den Daten.
+import { KONTINENTE } from '../src/inhalt/erdkunde.js';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -729,8 +731,11 @@ if (laeuft('ablage')) try {
     a.onsuccess = () => { const d = a.result;
       if (!d.objectStoreNames.contains('fortschritt')) return ja(0);
       const q = d.transaction('fortschritt', 'readonly').objectStore('fortschritt').getAll();
+      // Gezaehlt wird am HOECHSTSTAND, so wie `istGesammelt` es tut. Mit
+      // dem laufenden Fach zaehlte diese Zeile nach jeder falschen Antwort
+      // weniger als das Buch zeigt - und meldete das Buch als Wand.
       q.onsuccess = () => ja(q.result.reduce((n, st) =>
-        n + Object.values(st || {}).filter(x => (x?.fach ?? 1) >= 3).length, 0));
+        n + Object.values(st || {}).filter(x => (x?.hoechstes ?? x?.fach ?? 1) >= 3).length, 0));
       q.onerror = () => ja(-1); };
     a.onerror = () => ja(-1);
   }));
@@ -1051,6 +1056,64 @@ if (laeuft('ablage')) try {
         `auf der Karte stehen noch ${haken} Häkchen`));
     }
   }
+
+  /* --- Eine offene Kontinentrunde geht nicht wieder zu ----------------
+   *
+   * Fionas Kontinente kommen in zwei Runden: vier zuerst, zwei weitere,
+   * sobald jeder der ersten vier einmal gesessen hat. „Einmal gesessen"
+   * las bis hierher das LAUFENDE Leitner-Fach - und das faellt bei jeder
+   * falschen Antwort auf 1 zurueck. Gemessen an einem Jahr Spiel war
+   * Runde 2 damit an 47 von 208 Sitzungen wieder verschlossen: Fiona
+   * setzte sich hin, und Asien und Nordamerika waren weg.
+   *
+   * Gestellt wird genau dieser Stand: alle vier der ersten Runde waren
+   * schon einmal in Fach 3 und stehen heute wieder auf 1. Danach muss die
+   * Ebene alle SECHS Kontinente kennen.
+   *
+   * Welche Kontinente zur ersten Runde gehoeren, steht in den DATEN, nicht
+   * hier - sonst prueft der Rauchtest seine eigene Abschrift.
+   */
+  {
+    const ersteRunde = KONTINENTE.filter(k => k.runde === 1).map(k => k.id);
+    const alle = KONTINENTE.length;
+    if (ersteRunde.length >= alle)
+      merke('runden', new Error('alle Kontinente stehen in Runde 1 — '
+        + 'diese Prüfung kann nichts mehr zeigen'));
+    await p.evaluate((ids) => new Promise(ja => {
+      const a = indexedDB.open('lernkiste');
+      a.onsuccess = () => { const d = a.result;
+        const st = {};
+        // Hoechststand 3 (hatte einen Aufkleber), heute wieder Fach 1.
+        for (const id of ids) st[id] = { fach: 1, hoechstes: 3, faellig: 0,
+          richtig: 2, falsch: 1, zuletzt: 0 };
+        const t = d.transaction('fortschritt', 'readwrite');
+        t.objectStore('fortschritt').put(st, 'fiona:kontinente');
+        t.oncomplete = () => ja(1); t.onerror = () => ja(0); };
+      a.onerror = () => ja(0);
+    }), ersteRunde);
+    // Eine EIGENE Seite: der gestellte Stand soll die Wege nicht
+    // durcheinanderbringen, die danach noch geprueft werden. Sie sieht
+    // dieselbe Ablage - die haengt an der Herkunft, nicht am Fenster.
+    const q = await neueSeite({ width: 1180, height: 820 }, ctx);
+    await q.click('[data-profil="fiona"]');
+    await zurEbenenwahl(q, 'kontinente');
+    const wieviele = await q.evaluate(() => {
+      const k = document.querySelector('[data-ebene="kontinente"]');
+      const m = k && k.querySelector('.klebermarke');
+      const s = m && (m.getAttribute('aria-label') || '').split('von')[1];
+      const z = s && s.match(/\d+/);
+      return z ? +z[0] : null;
+    });
+    console.log(`  Kontinentrunden:            ${wieviele} von ${alle} Kontinenten, `
+      + `nachdem alle ${ersteRunde.length} der ersten Runde zurückgefallen sind`);
+    if (wieviele === null)
+      merke('runden', new Error('die Kachel „Kontinente" nennt ihre Gesamtzahl nicht'));
+    else if (wieviele < alle)
+      merke('runden', new Error(`nach dem Rückfall stehen nur noch ${wieviele} von ${alle} `
+        + 'Kontinenten zur Verfügung — eine schon offene Runde ist wieder zu'));
+    await q.close();
+  }
+
 
   await p.close();
 } catch (e) { merke('ablage/eltern', e); }
