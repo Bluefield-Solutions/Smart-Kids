@@ -1366,9 +1366,9 @@ export const PROBEN = [
   //    lernt spaeter lesen, waehrend diese Ebene stehen bleibt.
   { n:'die Diktat-Frage nennt den gesuchten Buchstaben', tor:'smoke',
     args:['--nur=schreiben'], bauen:true, datei:D,
-    such:"      ? (tonAn ? 'Schreib den Buchstaben, den du hörst.'",
-    ersatz:"      ? (tonAn ? `Schreib ein ${ziel.zeichen}.`",
-    an:{ ...DIST, fehlt:'Schreib den Buchstaben, den du hörst.' },
+    such:"  const DIKTATFRAGE = 'Schreib den Buchstaben, den du hörst.';",
+    ersatz:"  const DIKTATFRAGE = `Schreib ein ${ziel.zeichen}.`;",
+    an:{ ...DIST, fehlt:"const DIKTATFRAGE = 'Schreib den Buchstaben" },
     sagt:'im Text' },
 
   /* 3. Und die Sackgasse: mit abgeschaltetem Ton existiert die Aufgabe des
@@ -1376,9 +1376,9 @@ export const PROBEN = [
    *    Blatt und keine Auskunft, worauf es wartet. */
   { n:'das Diktat sagt nicht, dass der Ton fehlt', tor:'smoke',
     args:['--nur=schreiben'], bauen:true, datei:D,
-    such:"      ? (tonAn ? 'Schreib den Buchstaben, den du hörst.'",
-    ersatz:"      ? (true ? 'Schreib den Buchstaben, den du hörst.'",
-    an:{ ...DIST, text:"? (true ? 'Schreib den Buchstaben" },
+    such:"      ? (tonAn ? DIKTATFRAGE",
+    ersatz:"      ? (true ? DIKTATFRAGE",
+    an:{ ...DIST, text:'? (true ? DIKTATFRAGE' },
     sagt:'nur gesprochen existiert' },
 
   /* --- Fachwelten (D4) ------------------------------------------------ */

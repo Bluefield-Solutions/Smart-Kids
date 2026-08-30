@@ -1796,6 +1796,12 @@ function schreibschirm(){
    * Weder in der Frage noch in der Beschriftung der Flaeche: sonst waere
    * das Diktat ein Abmalen mit Ton. Der Rauchtest prueft genau das. */
   const diktat = st.ebeneId.endsWith(':diktat');
+  /* Der Satz steht EINMAL. Er wird an zwei Stellen gebraucht - beim Aufbau
+     und noch einmal, wenn der Ton nachtraeglich angeht -, und zwei
+     Abschriften desselben Satzes sind zwei Saetze, sobald einer geaendert
+     wird. Er darf ausserdem den gesuchten Buchstaben NICHT nennen; eine
+     stehende Gegenprobe greift genau diese Zeile an. */
+  const DIKTATFRAGE = 'Schreib den Buchstaben, den du hörst.';
   let phase = diktat ? 'frei' : 'nach';   // 'nach' -> 'frei'
   let zugNr = 0;        // welcher Zug der Vorlage jetzt dran ist
   let fertig = [];      // die schon nachgefahrenen Zuege
@@ -1812,7 +1818,7 @@ function schreibschirm(){
   s.innerHTML = aufgabenKopf(st) + `
     <div class="schreibraum">
     <div class="frage" id="frage">${diktat
-      ? (tonAn ? 'Schreib den Buchstaben, den du hörst.'
+      ? (tonAn ? DIKTATFRAGE
                : '<span class="fastText">Für diese Übung brauchst du den Ton.</span>')
       : `Fahre das <strong>${ziel.zeichen}</strong> nach.`}</div>
     <div class="schreibfeld"><div class="feldkasten">
@@ -2053,7 +2059,7 @@ function schreibschirm(){
       tonAn = true; Einst.ton = true; await einstSichern();
       hoeren.textContent = 'Noch mal hören';
       const f = s.querySelector('#frage');
-      if (f) f.textContent = 'Schreib den Buchstaben, den du hörst.';
+      if (f) f.textContent = DIKTATFRAGE;
     }
     vorlesen(ziel.gesagt);
   };
