@@ -4011,3 +4011,77 @@ Rechner:
 Der Gewinn aus `schauPause` ist größer als die Tabelle zeigt: er hat die
 zwei neuen Aufnahmen (`quer-pause`, und `quer-vorlauf-rechnen` aus der
 Runde davor) und die Buchprüfung mitbezahlt.
+
+---
+
+## Nachtrag: der erste volle Probenlauf seit langem — sieben stumme Gegenproben
+
+Alle vier Runden oben sind mit **ausgewählten** Gegenproben abgesichert
+worden (`node tor/proben.mjs "<name>"`). Das ist die richtige Arbeitsweise
+in der Runde — und sie kommt an eine ganze Klasse von Fehlern nie heran:
+eine Probe, die man nicht anfasst, wird nicht gefahren, und eine Probe, die
+nicht gefahren wird, kann **still aufhören zu beweisen**.
+
+Der volle Lauf am Ende der Sitzung (41,9 min, 115 Proben):
+
+```
+104 schlagen an, 2 beweisen nichts, 5 kamen nicht an.
+```
+
+### Fünf trafen ihren Suchtext nicht mehr
+
+| Probe | was sich geändert hatte |
+|---|---|
+| die Seite wächst unbemerkt | `const LOB = [` gibt es seit der Ton-Runde nicht mehr |
+| ein Fehlwurf bleibt stumm | `vorlesen` → `sagen` (Ton-Runde) |
+| nach „von vorne" läuft die alte Sitzung weiter | dasselbe, zweite Stelle |
+| Fiona bekommt die Länder der Eltern zu sehen | die Profilzeile hat ein Feld mehr bekommen |
+| der Vorlauf zeigt die falsche Zahl an Gebieten | `vorrat` → `vorlaufVorrat` |
+
+**Drei davon habe ich in dieser und der letzten Sitzung selbst entwaffnet** —
+mit Änderungen, deren eigene Gegenproben grün waren. Das Muster ist immer
+dasselbe: ein Suchtext hält mehr fest, als er braucht. Die Fiona-Probe
+schrieb die ganze Profilzeile ab, obwohl es ihr um ein einziges Feld geht;
+sie ging kaputt, als ein anderes Feld dazukam.
+
+### Zwei meldeten das Falsche
+
+*„ein Vorsprung allein genügt wieder"* erwartete **„ist neu"**. Der
+gelockerte Wert lässt aber **zwei** durchrutschen, also schreibt das Tor
+„sind neu". Eine Erwartung, die die Einzahl mitfesthält, geht kaputt, sobald
+der Eingriff einen Fall mehr öffnet.
+
+*„die Ansage hängt nicht mehr am Kind"* lief in `--sofort`. Der Eingriff
+lässt auch das Elternprofil sprechen — der Rauchtest meldet das zehnmal und
+bricht ab, **bevor** er die vorgelesenen Aufgaben zählt. Die Probe sah ein
+rotes Tor mit der falschen Meldung. Dafür gibt es jetzt `ohneSofort`: eine
+Abkürzung, die den ersten Fehler zum einzigen macht, taugt nicht für eine
+Probe, deren Fehler der elfte ist.
+
+### Und ein Kreis, aus dem vier Proben nicht mehr herauskamen
+
+`rhythmus` schlägt an, wenn eine Probe keinen frischen Nachweis hat — und
+seine **eigenen vier** Proben sind genau solche Proben, solange sie nicht
+angeschlagen haben. Sie konnten nicht anschlagen, weil das Tor rot war, und
+das Tor war rot, weil sie nicht angeschlagen hatten. Einmal aus dem Fenster
+von drei Runden gefallen, kamen sie nie wieder hinein.
+
+Aufgelöst mit einem **schärferen** Maß statt eines schwächeren
+(`auchWennRot`): die erwartete Meldung muss ohne den Eingriff **fehlen** und
+mit ihm **da sein**. Das zeigt mehr als „grün wird rot" — nämlich dass genau
+dieser Satz an genau diesem Eingriff hängt.
+
+Zwei der vier brauchten dafür eine schärfere Erwartung. „älter als" steht
+auch da, wenn irgendein anderer Nachweis veraltet ist; jetzt „älter als
+**-1** Runden" — die Zahl, die nur die Schraube der Gegenprobe erzeugt.
+„nie angeschlagen" ebenso; jetzt hängt die Erwartung am **Namen** der Probe,
+deren Eintrag der Eingriff entfernt.
+
+Stand danach: **115 von 115 mit frischem Nachweis**, `rhythmus` grün.
+
+### Was daraus folgt
+
+Der nächtliche Lauf auf dem Runner ist kein Komfort, sondern die einzige
+Stelle, an der diese Fehlerklasse überhaupt auffällt. Läuft er nicht, oder
+schaut niemand ins Protokoll, verfällt der Beweiswert schleichend — genau
+das, was `rhythmus` messen soll und was ihm hier selbst passiert ist.
