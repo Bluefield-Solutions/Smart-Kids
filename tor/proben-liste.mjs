@@ -340,9 +340,17 @@ export const PROBEN = [
    * sehen — zweiundvierzig Minuten, einmal am Tag. Jetzt in der Kette. */
   { n:'eine Gegenprobe greift ins Leere', tor:'inhalt', deckt:'inhalt',
     datei:'tor/proben-liste.mjs',
-    such:"such:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',",
-    ersatz:"such:'const schauPause = (ms) => es gibt mich nicht;',",
-    an:{ datei:'tor/proben-liste.mjs', text:'es gibt mich nicht' },
+    /* Der Ausdruck ist so geschrieben, dass er SICH SELBST nicht trifft:
+     * hier steht `SITZ[T]`, in der Probe darunter steht `SITZT`.
+     *
+     * Der erste Anlauf nahm den Suchtext einer anderen Probe woertlich —
+     * und traf damit als erstes DIESE Zeile. Verstellt wurde die
+     * Gegenprobe selbst, das Ziel blieb unberuehrt, und `inhalt` meldete
+     * gruen. Eine Gegenprobe, die den Pruefling im Ruhezustand schon
+     * verstellt, ist keine; hier hat sie sogar nur sich selbst verstellt. */
+    suchRegex:/such:'export const SITZ[T] = 2;',/,
+    ersatzFn:()=>"such:'diesen Text gibt es nirgends;',",
+    an:{ datei:'tor/proben-liste.mjs', fehlt:"such:'export const SITZT = 2;'," },
     sagt:'steht nicht mehr in' },
   /* Und die Pruefung selbst darf nicht ins Leere greifen: liest sie keine
    * Liste mehr, ist ihr Gruen geschenkt (Regel 5). */
@@ -440,7 +448,15 @@ export const PROBEN = [
    * ist?"), nur ihre Ursache ist eine andere. */
   { n:'ein Nachweis, dessen Alter sich nicht bestimmen lässt', tor:'rhythmus', auchWennRot:true,
     brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
-    suchRegex:/"zeit": "\d{4}-\d{2}-\d{2}"/, ersatzFn:()=>'"zeit": "irgendwann"',
+    /* Getroffen wird das Datum EINES EINTRAGS, nicht das der Datei.
+     *
+     * Ganz oben in der Standdatei steht auch ein `"zeit"` - fuer den Lauf
+     * als Ganzes. Der erste Anlauf traf genau das: `rhythmus` liest es gar
+     * nicht, das Alter blieb bestimmbar, und die Probe meldete „rot, aber
+     * nicht deswegen". Der Eingriff kam an und traf das Falsche - die
+     * unauffaelligste Art, danebenzugreifen. */
+    suchRegex:/"commit": "[0-9a-f]+",\n(\s*)"zeit": "\d{4}-\d{2}-\d{2}"/,
+    ersatzFn:(m)=>`"commit": "0",\n${m[1]}"zeit": "irgendwann"`,
     an:{ datei:'tor/proben-stand.json', text:'"zeit": "irgendwann"' },
     sagt:'lässt sich das Alter nicht bestimmen' },
 

@@ -148,20 +148,20 @@
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
       "zeit": "2026-08-30"
     },
+    "die Suchtext-Prüfung liest keine Proben mehr": {
+      "commit": "3a810655c9c9c3e0876b94f41e39662d33dc5c3f",
+      "zeit": "2026-08-30"
+    },
     "der letzte Probenlauf liegt zu lange zurück": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+      "commit": "3a810655c9c9c3e0876b94f41e39662d33dc5c3f",
       "zeit": "2026-08-30"
     },
     "eine Probe hat keinen Nachweis, und es faellt nicht auf": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+      "commit": "3a810655c9c9c3e0876b94f41e39662d33dc5c3f",
       "zeit": "2026-08-30"
     },
     "ein neues Tor steht in der Kette, aber nicht im Stand": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
-      "zeit": "2026-08-30"
-    },
-    "ein Nachweis, dessen Alter sich nicht bestimmen lässt": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+      "commit": "3a810655c9c9c3e0876b94f41e39662d33dc5c3f",
       "zeit": "2026-08-30"
     },
     "Der Vorrat der Eltern wächst still": {
