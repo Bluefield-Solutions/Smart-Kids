@@ -4362,3 +4362,88 @@ der richtigen Meldung.
 - Und der Eingriff ließ das Werkzeug wegen der **Größe** verweigern statt
   wegen der Sache — die Probe schlug an, aber mit der falschen Auskunft.
   Ein Nichttreffer mehr in den Prüfdaten, und der Grund bleibt der Grund.
+
+---
+
+## Runde: die Entwürfe holten ihre Schrift aus dem Netz
+
+Gesucht war, ob der Bildvergleich in mehr Teile zerfallen sollte. Die
+Messung fand etwas anderes: **eine einzige Aufnahme kostete 13,5 s**, alle
+zweiundzwanzig anderen zusammen 22.
+
+### Der Fund
+
+`entwuerfe/mg.html` trug im Kopf einen `<link>` auf
+`fonts.googleapis.com`. Ohne freies Netz läuft die Anfrage in die
+Zeitüberschreitung: **12,5 s bei jedem Seitenaufbau**, und der
+Bildvergleich baut die Seite bei jedem Lauf auf.
+
+Das war der kleinere Schaden. Danach steht die Seite in der
+**Ersatzschrift** da — die Vorbilder `mg-fiona-kontinente` und
+`mg-lea-deutschland` zeigten seit jeher eine Systemschrift statt Plus
+Jakarta Sans. Ein Entwurf, der die Typografie zeigen soll, zeigte eine
+fremde.
+
+`ansicht` hat gegen genau das eine Prüfung — sie lief nur für die
+App-Bildschirme. Jetzt für jede Aufnahme.
+
+### Und die Prüfung war leer
+
+Beim Gegenproben blieb sie grün, obwohl der Google-Link wieder drin war.
+`document.fonts.check()` sagt nur, ob die **angemeldeten** Faces geladen
+sind; gibt es gar keine `@font-face`, ist die Menge leer und die Antwort
+lautet grün. Also genau im Fall, für den sie geschrieben wurde.
+
+Gemessen wird jetzt die **gesetzte Breite**: ein Wort in der gesuchten
+Schrift gegen dasselbe Wort in einer Sippe, die es sicher nicht gibt. Sind
+beide gleich breit, wird die Ersatzschrift gesetzt — egal, was der Lader
+meint.
+
+### Was es gebracht hat
+
+| | vorher | nachher |
+|---|---|---|
+| Aufbau von `mg.html` | 12 500 ms | **620 ms** |
+| `npm run schnell` | 46 s | **23,8 s** |
+| `npm run tor` | 4:48 | **4:41** |
+
+### Und die Ausgangsfrage beantwortet sich selbst
+
+Mit den 12,5 s ist der Bildvergleich nicht mehr der Engpass. Gemessen, alle
+am selben Tag, Wanduhr der ganzen Gruppe:
+
+| Teile | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|
+| Wanduhr | 27,1 s | **20,1 s** | 20,7 s | 21,0 s | 22,5 s |
+
+Ab drei Teilen bestimmt der **Rauchtest** mit seinen zwanzig Sekunden den
+Boden. Ein vierter Chromium teilt nur noch Arbeit auf, die ohnehin früher
+fertig wäre. Also drei.
+
+Der alte Kommentar sagte „drei Chromium sind die Grenze, gemessen" — das
+galt, bis die Zusammensetzung sich änderte. Eine gemessene Zahl gilt für
+den Tag, an dem sie gemessen wurde; wer sie erbt, erbt ihre
+Voraussetzungen mit (Regel 12).
+
+`npm run ansicht -- --zeiten` sagt jetzt, was jede Aufnahme kostet — damit
+die Gewichte der Aufteilung eine Messstelle haben statt einer Schätzung.
+
+## Die Ebenenwahl bei vollem Lernstand
+
+Das Vorbild dafür fehlte: `quer-ebenen` zeigt **eine** Kachel mit
+Fortschritt und sieben auf null. Jetzt gibt es `quer-ebenen-voll` — acht
+Kacheln mit Sternen, Aufkleberzahlen und Balken nebeneinander, der Fall
+nach ein paar Wochen. Der Stand wird aus den **Daten der Seite** gestellt,
+nicht aus einer Liste im Tor, damit die nächste Ebene nicht fehlt.
+
+Gemessen sind alle Zahlen in sich stimmig:
+
+| Ebene | Sterne | Aufkleber | von | Balken |
+|---|---|---|---|---|
+| Asien | 2 | 2 | 3 | 0,67 |
+| Bundesländer | 1 | 9 | 16 | 0,56 |
+| Hauptstädte | 1 | 7 | 13 | 0,54 |
+
+Sterne und Balken sind **Anteile**, die Zahl ist **absolut**. Nebeneinander
+liest sich das als Widerspruch: neun Aufkleber und ein Stern, daneben zwei
+Aufkleber und zwei Sterne.

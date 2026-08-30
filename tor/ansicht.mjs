@@ -132,6 +132,10 @@ const AUFNAHMEN = [
   { name:'quer-profile', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'profile' },
   { name:'quer-welten', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'welten' },
   { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
+  /* Dieselbe Ebenenwahl, aber VOLL — acht Kacheln mit Sternen,
+     Aufkleberzahlen und Balken nebeneinander. Der Fall nach ein paar
+     Wochen, und bis hierher ohne Vorbild. */
+  { name:'quer-ebenen-voll', spiel:null, quer:true, stand:'voll', wahl:'.schirm.da' },
   /* Der Vorlauf (R3) — die engste Stelle der App.
    *
    * Sechzehn Kaesten auf einmal, Namen, die an Fugen umbrechen muessen,
@@ -506,7 +510,48 @@ for (const a of MEINE) {
     // jeder Kachel dieselbe Null, und die Aufnahme bezeugt von Sternen,
     // Aufklebern und Balken genau nichts (Regel: wer eine Wirkung misst,
     // schaltet sie zuerst ein).
-    if (a.stand) {
+    /* `stand:'voll'` — ein Lernstand auf ALLEN Erdkunde-Ebenen.
+     *
+     * Die Ebenenwahl zeigt je Kachel Sterne, Aufkleberzahl und einen
+     * Balken. Mit dem gewoehnlichen `stand:true` traegt genau EINE Kachel
+     * etwas und sieben stehen auf null - der Fall, den ein Kind nach ein
+     * paar Wochen sieht, hatte nie ein Vorbild. Gestellt wird er hier: je
+     * Ebene ein anderer Fuellgrad, damit null, halb und voll nebeneinander
+     * stehen.
+     *
+     * Die Kennungen kommen aus den DATEN der Seite, nicht aus einer Liste
+     * hier - sonst waere die naechste Ebene wieder nicht dabei. */
+    if (a.stand === 'voll') {
+      await seite.evaluate((wer) => new Promise((ja, nein) => {
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        const ebenen = [['kontinente', D.kontinente.map(k => k.id)],
+          ...Object.entries(D.laender).map(([k, l]) => [`laender:${k}`, l.map(x => x.a3)]),
+          ['bundeslaender', D.deutschland.map(b => b.id)],
+          ['hauptstaedte',  D.deutschland.map(b => b.id)]];
+        const auf = indexedDB.open('lernkiste', 1);
+        auf.onupgradeneeded = () => {
+          for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+            if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+        };
+        auf.onsuccess = () => {
+          const t = auf.result.transaction(['fortschritt'], 'readwrite');
+          // Anteil und Fachhoehe wandern von Ebene zu Ebene: 0, 1/7, 2/7 …
+          ebenen.forEach(([id, ids], i) => {
+            const anteil = i / (ebenen.length - 1);
+            const st = {};
+            ids.slice(0, Math.round(ids.length * anteil)).forEach((g, j) => {
+              const fach = 1 + ((i + j) % 5);
+              st[g] = { fach, hoechstes: fach, faellig: 0, richtig: fach, falsch: 0, zuletzt: 0 };
+            });
+            t.objectStore('fortschritt').put(st, `${wer}:${id}`);
+          });
+          t.oncomplete = ja; t.onerror = () => nein(t.error);
+        };
+        auf.onerror = () => nein(auf.error);
+      }), a.kind || 'fiona');
+      await seite.reload({ waitUntil:'domcontentloaded' });
+      await seite.waitForSelector('[data-profil="fiona"]');
+    } else if (a.stand) {
       await seite.evaluate((stand) => new Promise((ja, nein) => {
         const auf = indexedDB.open('lernkiste', 1);
         auf.onupgradeneeded = () => {
