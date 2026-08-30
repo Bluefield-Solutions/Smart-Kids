@@ -693,6 +693,26 @@ const PROBEN = [
     an:{ datei:'tor/spielprobe.mjs', text:'if (false) gelegenheiten++;' },
     sagt:'beweist nichts' },
 
+  /* Eine Schaupause faellt wieder neben den Schalter.
+   *
+   * Genau der Fall, der 1,6 s je Kartenaufgabe gekostet hat, ohne dass
+   * eines von zwanzig Toren etwas gesagt haette. */
+  { n:'eine Schaupause geht wieder an `?flott` vorbei', tor:'inhalt', deckt:'inhalt',
+    datei:D,
+    such:'    }, schauPause(ergebnis===\'fast\' ? 2400 : 1600));',
+    ersatz:'    }, ergebnis===\'fast\' ? 2400 : 1600);',
+    an:{ datei:D, fehlt:'schauPause(ergebnis===' },
+    sagt:'an `schauPause` vorbei' },
+  /* Und die Prüfung selbst darf nicht ins Leere greifen: findet der
+   * Ausdruck keinen einzigen Bildschirmwechsel mehr, ist ihr Grün
+   * geschenkt (Regel 5). */
+  { n:'die Schaupausen-Prüfung findet nichts mehr', tor:'inhalt', deckt:'inhalt',
+    datei:'tor/inhalt.mjs',
+    such:"  const treffer = rufe.filter(t => /\\bzeige\\(|^\\s*weiter\\s*,/.test(t));",
+    ersatz:"  const treffer = rufe.filter(() => false);",
+    an:{ datei:'tor/inhalt.mjs', text:'rufe.filter(() => false)' },
+    sagt:'greift ins Leere' },
+
   /* Der Vorlauf legt wieder acht Spuren an, egal wieviele Karten es sind.
    *
    * Dann stehen sechs Rechenaufgaben linksbuendig in einer Reihe von acht,
