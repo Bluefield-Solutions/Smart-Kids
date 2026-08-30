@@ -152,19 +152,20 @@ async function alleinIm(seite) {
  * lautlos daneben.
  */
 export const schreibVorlage = (seite) =>
-  seite.$$eval('.schirm.da #vorlage path', p => p.map(x => x.getAttribute('d')));
+  seite.$$eval('.schirm.da .vorlage path', p => p.map(x => x.getAttribute('d')));
 
-export async function zeichneZug(seite, punkte) {
-  const auf = await seite.evaluate((pts) => {
-    const svg = document.querySelector('.schirm.da .schreibblatt');
+export async function zeichneZug(seite, punkte, feld = 0) {
+  const auf = await seite.evaluate(({ pts, feld }) => {
+    // Seit N4 kann es ZWEI Schreibfelder geben - eines je Ziffer.
+    const svg = document.querySelectorAll('.schirm.da .schreibblatt')[feld];
     if (!svg) return null;
     const m = svg.getScreenCTM();
     return pts.map(([x, y]) => {
       const p = svg.createSVGPoint(); p.x = x; p.y = y;
       const q = p.matrixTransform(m); return [q.x, q.y];
     });
-  }, punkte);
-  if (!auf) throw new Error('zeichneZug: kein Schreibfeld auf dem Bildschirm');
+  }, { pts: punkte, feld });
+  if (!auf) throw new Error(`zeichneZug: kein Schreibfeld ${feld} auf dem Bildschirm`);
   await seite.mouse.move(...auf[0]);
   await seite.mouse.down();
   for (const b of auf.slice(1)) await seite.mouse.move(...b);

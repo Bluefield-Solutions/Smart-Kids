@@ -4,6 +4,7 @@
 import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
          schreibVorlage, zeichneZug } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
+import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE } from '../src/inhalt/erdkunde.js';
 import http from 'node:http';
@@ -1644,7 +1645,8 @@ const EBENEN_EIGEN = { fiona: ['rechnen:plusminus',
                                // Ohne diese beiden prueft `durchgang` zwar,
                                // dass keine FREMDE Ebene dasteht, aber nicht,
                                // dass die eigenen ueberhaupt da sind.
-                               'schreiben:buchstaben', 'schreiben:diktat'],
+                               'schreiben:buchstaben', 'schreiben:diktat',
+                               'schreiben:ziffern', 'schreiben:zahlen'],
                        lea: ['rechnen:reihen', 'hauptstaedte:europa'],
                        eltern: ['rechnen:gross', 'hauptstaedte:europa'] };
 if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
@@ -1784,7 +1786,8 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
       if (await p.$('.schirm.da .schreibblatt')) {
         if (VORLESEN[wer])
           await bis(p, () => (window.__gesagt || [])
-            .some(t => /Fahre den Buchstaben nach|^Schreib ein /.test(t.trim())), 4000);
+            .some(t => /Fahre den Buchstaben nach|Fahre sie nach|^Schreib ein |^Schreib die Zahl /
+              .test(t.trim())), 4000);
         /* Zwei Ebenen, zwei Wege an die Vorlage.
          *
          * `schreiben:buchstaben` zeigt sie - dann wird sie erst
@@ -1794,28 +1797,45 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
          * und meldete nebenbei, sie bekomme eine Aufgabe nicht
          * vorgelesen - beides derselbe fehlende Zweig. */
         const gezeigt = await schreibVorlage(p);
+        // Je FELD eine Liste von Zuegen. Bei allem ausser den zweistelligen
+        // Zahlen ist das genau ein Feld.
+        let felder = [gezeigt];
         let zuege = gezeigt;
         if (!zuege.length) {
+          /* Was gesucht ist, steht in der ANSAGE - beim Buchstaben als
+           * Zeichen, bei der Zahl als Zahlwort. Die Zahl wird dann in ihre
+           * Ziffern zerlegt: die 14 sind eine 1 und eine 4, jede in ihrem
+           * eigenen Feld. */
           const satz = await p.evaluate(() => (window.__gesagt || [])
-            .find(t => /^Schreib ein /.test(t)) || '');
-          const z = (satz.match(/^Schreib ein ([A-ZÄÖÜ])/) || [])[1];
-          const b = z && Schreiben.BUCHSTABEN.find(x => x.zeichen === z);
-          if (!b) {
+            .find(t => /^Schreib (ein|die Zahl) /.test(t)) || '');
+          const zB = (satz.match(/^Schreib ein ([A-ZÄÖÜ])/) || [])[1];
+          const zW = (satz.match(/^Schreib die Zahl ([a-zäöüß]+)/) || [])[1];
+          const zahl = zW && [...Array(21).keys()].find(n => n > 0 && Rechnen.gesprochen(n) === zW);
+          const folge = zB ? [zB] : zahl ? String(zahl).split('') : null;
+          if (!folge) {
             merke('durchgang', new Error(`${wer}/${ebene}: weder Vorlage noch Ansage — `
               + `gehört wurde „${satz || 'nichts'}"`));
             continue;
           }
-          zuege = b.zuege;
+          felder = folge.map(z => Schreiben.zuegeVon(z));
         } else {
           for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
         }
-        for (const d of zuege)
-          await zeichneZug(p, Schreiben.abtasten(d, 26)
-            .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
+        for (let f = 0; f < felder.length; f++)
+          for (const d of felder[f])
+            await zeichneZug(p, Schreiben.abtasten(d, 26)
+              .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]), f);
+        /* „Fertig" IMMER druecken, wenn er dasteht.
+         *
+         * Bei einem Feld prueft die App von selbst, sobald die erwartete
+         * Zahl von Zuegen da ist - bei zwei waere jeder Zeitpunkt geraten.
+         * Der Knopf ist der Weg, den ein Kind in beiden Faellen hat. */
+        if (await p.$('.schirm.da #fertigknopf:not([hidden])'))
+          await p.click('.schirm.da #fertigknopf');
         wege.add(`${wer}: ${gezeigt.length ? 'nachgefahren' : 'nach Ansage'} geschrieben`);
         await bewertet(p);
         const gesagtS = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-        if (/Fahre den Buchstaben nach|Schreib ein /.test(gesagtS))
+        if (/Fahre den Buchstaben nach|Fahre sie nach|Schreib ein |Schreib die Zahl /.test(gesagtS))
           gehoert[wer] = (gehoert[wer] || 0) + 1;
         const rs = await p.evaluate(() => {
           const f = document.querySelector('.schirm.da .frage');
@@ -2198,7 +2218,7 @@ if (laeuft('schreiben')) try {
   // 2. Nachfahren, Zug fuer Zug. Nach dem letzten muss die Vorlage WEG sein -
   //    sonst waere das freie Schreiben ein Abmalen.
   for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
-  await p.waitForFunction(() => document.querySelectorAll('.schirm.da #vorlage path').length === 0,
+  await p.waitForFunction(() => document.querySelectorAll('.schirm.da .vorlage path').length === 0,
     null, { timeout: 5000 }).catch(() => {
       merke('schreiben', new Error('nach dem letzten Zug steht die Vorlage noch da — '
         + 'dann malt das Kind sie ab, statt den Buchstaben zu schreiben')); });
@@ -2278,7 +2298,7 @@ if (laeuft('schreiben')) try {
   } else {
     // Und jetzt die negative Eigenschaft: nirgends zu sehen.
     const sichtbar = await d.evaluate(() => ({
-      vorlage: document.querySelectorAll('.schirm.da #vorlage path').length,
+      vorlage: document.querySelectorAll('.schirm.da .vorlage path').length,
       text: document.querySelector('.schirm.da').innerText,
       marken: [...document.querySelectorAll('.schirm.da [aria-label]')]
         .map(e => e.getAttribute('aria-label')).join(' | '),
@@ -2317,7 +2337,7 @@ if (laeuft('schreiben')) try {
     await weitergegangen(d);
     await d.waitForFunction(() => document.querySelectorAll('.schirm').length === 1
       && !!document.querySelector('.schirm.da .schreibblatt')
-      && !document.querySelector('.schirm.da #gemalt path'),
+      && !document.querySelector('.schirm.da .gemalt path'),
       null, { timeout: 8000 }).catch(() => {});
 
     // Und beim naechsten: dreimal daneben, dann wird VORGEMACHT statt abgelehnt.
@@ -2327,7 +2347,7 @@ if (laeuft('schreiben')) try {
       await d.waitForTimeout(300);
     }
     const vorgemacht = await d.waitForFunction(
-      () => document.querySelectorAll('.schirm.da #vorlage path.malt').length > 0,
+      () => document.querySelectorAll('.schirm.da .vorlage path.malt').length > 0,
       null, { timeout: 6000 }).then(() => true).catch(() => false);
     if (!vorgemacht)
       merke('schreiben', new Error('nach drei Fehlversuchen wird der Buchstabe nicht '
@@ -2364,7 +2384,106 @@ if (laeuft('schreiben')) try {
       + `${stand.diktat.join(',') || '—'} diktiert`);
     await q.close();
   }
+
+  /* --- Zahlen (N4): zwei Felder, und die Reihenfolge zaehlt ------------
+   *
+   * „Vierzehn" ist eine Zahl, die man hoert; geschrieben wird sie als 1
+   * und 4, in dieser Reihenfolge. Der Bildschirm stellt dafuer zwei Felder
+   * hin - damit ist „beide Ziffern, richtige Reihenfolge" ein Aufbau und
+   * keine Pruefung. Geprueft wird hier trotzdem, und zwar die HAELFTE, die
+   * zaehlt: dass vertauschte Ziffern NICHT gelten.
+   */
+  {
+    const z = await neueSeite({ width: 844, height: 390 }, eigenerCtx);
+    await z.click('[data-profil="fiona"]');
+    await zurEbenenwahl(z, 'schreiben:zahlen');
+    await z.click('[data-ebene="schreiben:zahlen"]');
+    await z.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 25000 });
+    await durchVorlaufWenn(z);
+    await z.waitForSelector('.schirm.da .schreibblatt', { timeout: 15000 });
+    /* Weiter, bis eine Zahl mit ZWEI VERSCHIEDENEN Ziffern kommt.
+     *
+     * Zweistellig allein reicht nicht: bei der 11 ist vertauscht dasselbe,
+     * und die Probe auf die Reihenfolge - der eigentliche Punkt dieser
+     * Ebene - liefe leer. Beim ersten Anlauf zog der Leitner genau die 11,
+     * und der Abschnitt meldete gruen, ohne die Reihenfolge geprüft zu
+     * haben. Welche Zahl dran ist, kommt aus der ANSAGE, nicht vom Blatt. */
+    const gesuchteZahl = async () => {
+      const satz = await bis(z, () => (window.__gesagt || [])
+        .some(t => /^Schreib die Zahl /.test(t)), 5000)
+        .then(() => z.evaluate(() => (window.__gesagt || [])
+          .find(t => /^Schreib die Zahl /.test(t)) || '')).catch(() => '');
+      const wort = (satz.match(/^Schreib die Zahl ([a-zäöüß]+)/) || [])[1];
+      return { satz, zahl: wort && [...Array(21).keys()]
+        .find(n => n > 0 && Rechnen.gesprochen(n) === wort) };
+    };
+    let gefunden = await gesuchteZahl();
+    for (let n = 0; n < 14 && !(gefunden.zahl >= 10
+         && String(gefunden.zahl)[0] !== String(gefunden.zahl)[1]); n++) {
+      await z.evaluate(() => { window.__gesagt = []; });
+      await z.click('.schirm.da #weissnicht');
+      await weitergegangen(z);
+      await z.waitForSelector('.schirm.da .schreibblatt', { timeout: 8000 }).catch(() => {});
+      gefunden = await gesuchteZahl();
+    }
+    const felder = (await z.$$('.schirm.da .feldkasten')).length;
+    if (felder < 2) {
+      merke('schreiben', new Error('nach vierzehn Aufgaben kam keine zweistellige Zahl mit '
+        + 'zwei verschiedenen Ziffern — dann ist die Reihenfolge ungeprüft'));
+    } else {
+      const { satz, zahl } = gefunden;
+      if (!zahl) {
+        merke('schreiben', new Error(`bei den Zahlen wird nichts angesagt — gehört wurde `
+          + `„${satz || 'nichts'}". Ohne Ansage gibt es keine Aufgabe`));
+      } else {
+        const ziffern = String(zahl).split('');
+        const sicht = await z.evaluate(() => document.querySelector('.schirm.da').innerText);
+        if (new RegExp(`\\b${zahl}\\b`).test(sicht))
+          merke('schreiben', new Error(`die gesuchte Zahl ${zahl} steht im Text: `
+            + `„${sicht.replace(/\s+/g, ' ').slice(0, 70)}"`));
+
+        /* Erst VERTAUSCHT. Das darf nicht gelten - sonst waere aus „14"
+         * und „41" dieselbe Antwort geworden, und die Reihenfolge, um die
+         * es bei zweistelligen Zahlen ueberhaupt geht, waere nicht geprueft. */
+        const malen = async (folge) => {
+          for (let f = 0; f < folge.length; f++)
+            for (const d of Schreiben.zuegeVon(folge[f]))
+              await zeichneZug(z, Schreiben.abtasten(d, 26)
+                .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]), f);
+          await z.click('.schirm.da #fertigknopf');
+          await z.waitForTimeout(400);
+        };
+        await malen([...ziffern].reverse());
+        const nachTausch = await z.evaluate(() =>
+          !!document.querySelector('.schirm.da .frage .richtigText'));
+        if (nachTausch)
+          merke('schreiben', new Error(`die Zahl ${zahl} wurde auch VERTAUSCHT als richtig `
+            + 'gewertet — dann ist die Reihenfolge der Ziffern nicht geprüft'));
+        else console.log(`  Zahl vertauscht:            ${[...ziffern].reverse().join('')} `
+          + `statt ${zahl} abgelehnt`);
+        // Und jetzt richtig herum.
+        await malen(ziffern);
+        const gut = await z.waitForFunction(
+          () => !!document.querySelector('.schirm.da .frage .richtigText'),
+          null, { timeout: 6000 }).then(() => true).catch(() => false);
+        if (!gut)
+          merke('schreiben', new Error(`die richtig geschriebene ${zahl} wurde nicht `
+            + `angenommen — auf dem Bildschirm steht „${
+              (await z.$eval('.schirm.da #frage', e => e.textContent)).trim()}"`));
+        else console.log(`  Zahl geschrieben:           ${zahl} in ${ziffern.length} Feldern angenommen`);
+      }
+    }
+    await z.close();
+  }
+
   /* Und die Sackgasse: Ton aus, und die Aufgabe existiert nur gesprochen.
+   *
+   * DIESER Abschnitt steht bewusst am Ende: er schaltet den Ton ab und
+   * legt das in der Ablage ab. Alles, was danach in demselben
+   * Zusammenhang eine Ansage braucht, bekaeme keine - und meldete
+   * „es wird nichts angesagt", obwohl die Ansage in Ordnung ist. Genau so
+   * ist der Zahlen-Abschnitt beim ersten Anlauf rot geworden.
+   * Ein Test, der etwas ABSCHALTET, gehoert ans Ende seiner Reihe.
    *
    * Geprueft wird nicht, dass die App den Ton eigenmaechtig anschaltet -
    * das darf sie nicht -, sondern dass sie SAGT, woran es liegt, und
@@ -2397,6 +2516,7 @@ if (laeuft('schreiben')) try {
       console.log('  Ton aus im Diktat:          Hinweis und Weg zurück');
     await t.close();
   }
+
   await eigenerCtx.close();
 } catch (e) { merke('schreiben', e); }
 

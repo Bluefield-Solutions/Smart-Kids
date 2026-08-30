@@ -121,17 +121,24 @@ in `src/inhalt/schreiben.js`, wuerden die beiden Schwellen (`ABSTAND_MAX`,
 `VORSPRUNG_MIN`) so lange verschoben, bis das Tor gruen ist — und das Tor
 pruefte sich selbst.
 
-Gemessen wird an 1040 kuenstlich verkrummten Fassungen der 26 Vorlagen
-(Versatz, Groesse, leichte Drehung, Zittern, jeder vierte Zug bricht zu
-frueh ab) und an 400 Gekritzeln aus zufaelligen Punktfolgen. Die Zahlen
+Gemessen wird an kuenstlich verkrummten Fassungen aller 36 Vorlagen — 26
+Buchstaben und 10 Ziffern — und an 800 Gekritzeln aus zufaelligen
+Punktfolgen. Verzerrt werden Lage, Groesse, Drehung und Zittern; jeder
+vierte Zug bricht zu frueh ab; und — seit N4 — werden Zuege **verbunden
+und geteilt**, weil ein Kind den Finger nicht immer absetzt. Die Zahlen
 sind fest gewuerfelt, also bei jedem Lauf dieselben.
+
+Der Nachtrag ist keine Feinheit: ohne verbundene Zuege konnte die Messung
+den Preis des Zug-Aufschlags nicht sehen und empfahl einen, der neun
+Prozentpunkte kostet. Eine Messung, die den Preis einer Sache nicht sehen
+kann, empfiehlt sie immer.
 
 | Was | Soll |
 |---|---|
-| Vorlage erkennt sich selbst | 26 von 26 |
-| Krumm geschrieben, richtig erkannt | mindestens 90 % |
-| Sicher erkannt, aber der falsche Buchstabe | höchstens 2 % |
-| Gekritzel als Buchstabe angenommen | höchstens 1 % |
+| Vorlage erkennt sich selbst | 36 von 36 |
+| Krumm geschrieben, richtig erkannt | mindestens 88 % |
+| Sicher erkannt, aber das falsche Zeichen | höchstens 2 % |
+| Gekritzel als Zeichen angenommen | höchstens 1 % |
 
 **Der letzte Wert ist der, auf den es ankommt.** Ein Erkenner, der alles
 annimmt, erkennt nichts — und N3 (Buchstabe nach Ansage) waere sinnlos,

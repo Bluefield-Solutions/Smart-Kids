@@ -86,6 +86,48 @@ export const BUCHSTABEN = [
   { zeichen:'Z', wort:'Zebra',     zuege:['M25 12 L75 12 L25 88 L75 88'] },
 ];
 
+/**
+ * Die zehn Ziffern (N4).
+ *
+ * ZEHN Vorlagen, nicht zwanzig Zahlen - das ist die Regel aus R4 (Backlog
+ * Paragraf 5.2): ein Vorrat muss von Natur aus begrenzt sein. „Zwanzig"
+ * ist zweimal etwas: die Zahl, die man hoert und meint, und die zwei
+ * Zeichen 2 und 0, die man schreibt. Geschrieben werden die Zeichen; die
+ * Zahlen 1 bis 20 sind Aufgaben darauf.
+ *
+ * `wort` ist hier kein Merkwort, sondern die gesprochene Ziffer - „6 wie
+ * sechs" waere albern. Es traegt trotzdem denselben Namen, weil es an
+ * derselben Stelle steht: unter dem Zeichen im Vorlauf und im Buch.
+ */
+export const ZIFFERN = [
+  { zeichen:'0', wort:'null',   zuege:['M50 10 Q28 10 28 50 Q28 90 50 90 Q72 90 72 50 Q72 10 50 10'] },
+  { zeichen:'1', wort:'eins',   zuege:['M33 26 L50 12 L50 90'] },
+  { zeichen:'2', wort:'zwei',   zuege:['M28 28 Q30 12 50 12 Q70 12 70 32 Q70 48 28 90 L74 90'] },
+  { zeichen:'3', wort:'drei',   zuege:['M28 22 Q35 10 52 12 Q72 14 70 32 Q68 48 48 50 '
+                                     + 'Q72 52 74 68 Q76 88 52 89 Q32 90 26 76'] },
+  { zeichen:'4', wort:'vier',   zuege:['M60 12 L24 64 L76 64', 'M60 12 L60 90'] },
+  { zeichen:'5', wort:'fünf',   zuege:['M70 12 L34 12 L30 44 Q52 34 66 48 '
+                                     + 'Q78 60 70 76 Q60 92 34 86'] },
+  { zeichen:'6', wort:'sechs',  zuege:['M66 14 Q46 8 36 30 Q26 52 30 68 Q34 90 52 90 '
+                                     + 'Q72 90 72 68 Q72 48 50 48 Q36 48 30 62'] },
+  { zeichen:'7', wort:'sieben', zuege:['M26 14 L74 14 L44 90'] },
+  { zeichen:'8', wort:'acht',   zuege:['M50 12 Q30 12 30 30 Q30 46 50 50 Q70 54 70 70 '
+                                     + 'Q70 89 50 89 Q30 89 30 70 Q30 54 50 50 '
+                                     + 'Q70 46 70 30 Q70 12 50 12'] },
+  { zeichen:'9', wort:'neun',   zuege:['M70 46 Q64 62 48 60 Q30 58 30 38 Q30 16 50 14 '
+                                     + 'Q72 12 72 40 Q72 70 62 90'] },
+];
+
+/** Alle Vorlagen unter ihrem Zeichen - Buchstaben und Ziffern. */
+const NACH_ZEICHEN = new Map([...BUCHSTABEN, ...ZIFFERN].map(x => [x.zeichen, x]));
+
+/** Die Zuege EINES Zeichens. Die eine Stelle, an der Zeichen zu Form wird. */
+export function zuegeVon(zeichen){
+  const x = NACH_ZEICHEN.get(zeichen);
+  if (!x) throw new Error(`Kein Zeichen „${zeichen}"`);
+  return x.zuege;
+}
+
 /* ---------------------------------------------------------------------
  * Der Abtaster: aus einer Pfadzeichenkette werden Punkte
  * ------------------------------------------------------------------ */
@@ -345,7 +387,7 @@ function abtasten2(punkte, n = 24){
 const vorlagen = new Map();
 export function vorlageZuege(zeichen){
   if (!vorlagen.has(zeichen)) {
-    const b = BUCHSTABEN.find(x => x.zeichen === zeichen);
+    const b = NACH_ZEICHEN.get(zeichen);
     if (!b) throw new Error(`Kein Zeichen „${zeichen}"`);
     vorlagen.set(zeichen, normieren(b.zuege.map(z => abtasten(z, 24))));
   }
@@ -353,55 +395,67 @@ export function vorlageZuege(zeichen){
 }
 
 /**
- * Bis hierher gilt es als derselbe Buchstabe - und soviel Vorsprung
- * braucht der Beste vor dem Zweiten.
+ * Bis hierher gilt es als dasselbe Zeichen - und soviel Vorsprung braucht
+ * der Beste vor dem Zweiten.
  *
  * Zwei Schwellen und nicht eine, aus demselben Grund wie beim
  * Wortvergleich (`src/vergleich/vergleich.js`): ein Gekritzel liegt von
- * ALLEN Buchstaben weit weg - das faengt `ABSTAND_MAX`. Ein O dagegen
- * liegt einem Q sehr nah; wenn zwei Vorlagen fast gleich gut passen, ist
- * die Antwort nicht „das Naehere", sondern „ich bin mir nicht sicher" -
- * das faengt `VORSPRUNG_MIN`.
+ * ALLEN Vorlagen weit weg - das faengt `ABSTAND_MAX`. Ein O dagegen liegt
+ * einem Q sehr nah; wenn zwei Vorlagen fast gleich gut passen, ist die
+ * Antwort nicht „das Naehere", sondern „ich bin mir nicht sicher" - das
+ * faengt `VORSPRUNG_MIN`.
  *
- * Beide Zahlen sind GEMESSEN, nicht gegriffen. Gemessen woran (Regel 5):
- * an 1040 kuenstlich verkrummten Fassungen der 26 Vorlagen - Versatz,
- * Groesse, leichte Drehung, Zittern, und jeder vierte Zug bricht zu frueh
- * ab - gegen 400 Gekritzel aus zufaelligen Punktfolgen. Der Raum wurde
- * durchprobiert, bevor eine Zahl feststand:
+ * GEMESSEN, nicht gegriffen. Und die Messstelle ist beim zweiten Mal eine
+ * andere geworden, was die Antwort geaendert hat:
  *
- *     Abstand  Vorsprung |  richtig erkannt  |  Gekritzel angenommen
- *        10       1.2    |       97 %        |       0,0 %
- *        11       1.2    |       97 %        |       0,3 %
- *        11       1.6    |       97 %        |       0,0 %
- *        13       1.2    |       97 %        |       7,0 %
- *        14       1.2    |       97 %        |      10,0 %
+ * Der erste Vorrat verzerrte Lage, Groesse, Drehung und Zittern und liess
+ * jeden vierten Zug zu frueh abbrechen. Er konnte eine Sache NICHT sehen -
+ * dass ein Kind zwei Striche verbindet, weil es den Finger nicht absetzt,
+ * oder einen Strich in zwei zerlegt. Genau daran haengt aber der
+ * Zug-Aufschlag (`STRAFE_ZUGZAHL`), und genau den wollte ich anhand jener
+ * Messung erhoehen: sie sagte, ein Aufschlag von 8 sei besser in JEDER
+ * Spalte. Mit verbundenen und geteilten Zuegen im Vorrat kostet er
+ * neun Prozentpunkte. Eine Messung, die den Preis einer Sache nicht sehen
+ * kann, empfiehlt sie immer.
  *
- * Der erste Entwurf stand bei 13 und 1,2 - und haette jedes vierzehnte
- * Gekritzel zu einem Buchstaben erklaert. Die Tabelle zeigt, dass das
- * nichts eingebracht haette: von 13 auf 11 herunter kostet KEINEN einzigen
- * richtig erkannten Buchstaben. Blind nachjustieren heisst, durch ein
- * Schluesselloch zu schauen.
+ * Mit dem ehrlichen Vorrat (1040 Buchstaben, 400 Ziffern, 800 Gekritzel):
  *
- * `npm run schreiben` faehrt dieselbe Messung bei jedem Lauf und meldet,
- * wie knapp der schlechteste Fall war. Das Soll steht nicht hier, sondern
- * im Backlog - sonst wuerde die Schwelle so lange verschoben, bis das Tor
- * gruen ist, und das Tor pruefte sich selbst (Regel 3).
+ *     Abstand Vorsprung | Buchstaben | Ziffern | Gekritzel Bu / Zi
+ *          9      1,2   |   89,6 %   |  90,8 % |    0/400   0/400
+ *         10      1,2   |   91,7 %   |  92,0 % |    0/400   0/400
+ *         11      1,6   |   89,6 %   |  92,3 % |    0/400  11/400
+ *         12      1,2   |   92,4 %   |  94,0 % |   18/400  79/400
+ *
+ * 10 und 1,2 ist der Knick: zwei Punkte MEHR richtig erkannte Buchstaben
+ * als die vorige Einstellung (11 / 1,6) und kein angenommenes Gekritzel
+ * mehr. Die vorige stammte aus dem blinden Vorrat.
+ *
+ * Das Soll steht nicht hier, sondern im Backlog - sonst wuerde die
+ * Schwelle so lange verschoben, bis das Tor gruen ist (Regel 3).
  */
-export const ABSTAND_MAX = 11;
-export const VORSPRUNG_MIN = 1.6;
+export const ABSTAND_MAX = 10;
+export const VORSPRUNG_MIN = 1.2;
 
 /**
- * Welcher Buchstabe wurde geschrieben?
+ * Welches Zeichen wurde geschrieben?
  *
  * `zuege` sind rohe Punktfolgen, so wie der Finger sie hinterlassen hat -
  * in beliebiger Groesse und an beliebiger Stelle. Zurueck kommt der beste
  * Treffer MIT seinen Zahlen, damit der Aufrufer (und das Tor) sehen, wie
  * sicher er ist.
+ *
+ * `satz` sagt, WOGEGEN verglichen wird - die Buchstaben oder die Ziffern.
+ * Das ist kein Beiwerk: eine 0 und ein O sind dieselbe Form, eine 1 und
+ * ein I auch. Wer bei einer Rechenaufgabe gegen alle 36 Zeichen vergleicht,
+ * bekommt fuer eine richtig geschriebene 0 ein „das ist ein O" - und der
+ * Vorsprung vor dem Zweiten faellt auf null, also gilt sie als unsicher.
+ * Mit zehn Kandidaten statt sechsunddreissig wird die Erkennung nicht nur
+ * richtiger, sondern auch sicherer.
  */
-export function erkennen(zuege){
+export function erkennen(zuege, satz = BUCHSTABEN){
   const meine = normieren((zuege || []).filter(z => z && z.length > 1).map(z => abtasten2(z)));
   if (!meine.length) return { zeichen:null, abstand:Infinity, vorsprung:0, sicher:false, liste:[] };
-  const liste = BUCHSTABEN
+  const liste = satz
     .map(b => ({ zeichen:b.zeichen, abstand: abstandZu(meine, vorlageZuege(b.zeichen)) }))
     .sort((a, b) => a.abstand - b.abstand);
   const vorsprung = liste.length > 1 ? liste[1].abstand - liste[0].abstand : Infinity;
@@ -432,6 +486,8 @@ export function vorrat(){
   return BUCHSTABEN.map(b => ({
     id: `bu:${b.zeichen}`,
     zeichen: b.zeichen,
+    zeichenFolge: [b.zeichen],
+    satz: 'buchstaben',
     name: b.zeichen,
     frage: b.zeichen,
     wort: b.wort,
@@ -464,6 +520,8 @@ export function vorratDiktat(){
   return BUCHSTABEN.map(b => ({
     id: `di:${b.zeichen}`,
     zeichen: b.zeichen,
+    zeichenFolge: [b.zeichen],
+    satz: 'buchstaben',
     name: b.zeichen,
     frage: b.zeichen,
     wort: b.wort,
@@ -472,4 +530,60 @@ export function vorratDiktat(){
     gesagt: `Schreib ein ${b.zeichen}. ${b.zeichen} wie ${b.wort}.`,
     geloest: `Das ist ein ${b.zeichen}, wie ${b.wort}`,
   }));
+}
+
+/* ---------------------------------------------------------------------
+ * Die Ziffern und die Zahlen (N4)
+ * ------------------------------------------------------------------ */
+
+/** Die zehn Ziffern zum Nachfahren. Zehn, gezaehlt. */
+export function vorratZiffern(){
+  return ZIFFERN.map(z => ({
+    id: `zi:${z.zeichen}`,
+    zeichen: z.zeichen,
+    zeichenFolge: [z.zeichen],
+    satz: 'ziffern',
+    name: z.zeichen,
+    frage: z.zeichen,
+    wort: z.wort,
+    zuege: z.zuege,
+    aussprache: [z.wort],
+    gesagt: `Die ${z.wort}. Fahre sie nach.`,
+    geloest: `Das ist die ${z.wort}`,
+  }));
+}
+
+/**
+ * Die Zahlen 1 bis 20, angesagt und geschrieben.
+ *
+ * ZWANZIG Aufgaben auf ZEHN Vorlagen - das ist der Unterschied, um den es
+ * hier geht. „Vierzehn" ist eine Zahl, die man hoert; geschrieben wird sie
+ * als 1 und 4, in dieser Reihenfolge. Deshalb traegt eine Aufgabe eine
+ * `zeichenFolge` und nicht ein Zeichen: der Bildschirm stellt so viele
+ * Felder hin, wie sie lang ist, und beide muessen stimmen. Aus „beide
+ * Ziffern, richtige Reihenfolge" wird damit ein Aufbau statt einer Pruefung.
+ *
+ * Das gesprochene Zahlwort kommt von AUSSEN (`alsWort`) - es steht schon
+ * in `src/inhalt/rechnen.js` (`gesprochen`), und dieselbe Auskunft ein
+ * zweites Mal hinzuschreiben hiesse, dass eines von beiden veraltet.
+ */
+export function vorratZahlen(alsWort, bis = 20){
+  const aus = [];
+  for (let n = 1; n <= bis; n++) {
+    const folge = String(n).split('');
+    aus.push({
+      id: `za:${n}`,
+      zahl: n,
+      zeichen: String(n),
+      zeichenFolge: folge,
+      satz: 'ziffern',
+      name: String(n),
+      frage: String(n),
+      wort: alsWort(n),
+      aussprache: [alsWort(n)],
+      gesagt: `Schreib die Zahl ${alsWort(n)}.`,
+      geloest: `Das ist die ${alsWort(n)}`,
+    });
+  }
+  return aus;
 }

@@ -36,8 +36,8 @@ const SOLL = (() => {
   return {
     selbst:      zahl('Vorlage erkennt sich selbst'),
     krumm:       zahl('Krumm geschrieben, richtig erkannt'),
-    verwechselt: zahl('Sicher erkannt, aber der falsche Buchstabe'),
-    kritzel:     zahl('Gekritzel als Buchstabe angenommen'),
+    verwechselt: zahl('Sicher erkannt, aber das falsche Zeichen'),
+    kritzel:     zahl('Gekritzel als Zeichen angenommen'),
   };
 })();
 for (const [k, v] of Object.entries(SOLL))
@@ -46,13 +46,20 @@ for (const [k, v] of Object.entries(SOLL))
 
 /* ---- Die Vorlagen selbst --------------------------------------------- */
 pruefe(S.BUCHSTABEN.length === 26, `${S.BUCHSTABEN.length} Buchstaben statt 26`);
+pruefe(S.ZIFFERN.length === 10, `${S.ZIFFERN.length} Ziffern statt 10`);
 {
   const gesehen = new Set();
-  for (const b of S.BUCHSTABEN) {
+  for (const b of [...S.BUCHSTABEN, ...S.ZIFFERN]) {
     pruefe(!gesehen.has(b.zeichen), `${b.zeichen} steht zweimal im Vorrat`);
     gesehen.add(b.zeichen);
-    pruefe(b.wort && b.wort[0].toUpperCase() === b.zeichen,
-      `${b.zeichen}: das Merkwort „${b.wort}" fängt nicht mit dem Buchstaben an`);
+    // Bei den Buchstaben ist `wort` ein MERKWORT und faengt mit ihnen an
+    // („A wie Affe"); bei den Ziffern ist es das gesprochene Zahlwort.
+    if (/[A-ZÄÖÜ]/.test(b.zeichen))
+      pruefe(b.wort && b.wort[0].toUpperCase() === b.zeichen,
+        `${b.zeichen}: das Merkwort „${b.wort}" fängt nicht mit dem Buchstaben an`);
+    else
+      pruefe(b.wort && /^[a-zäöü]+$/.test(b.wort),
+        `${b.zeichen}: „${b.wort}" ist kein gesprochenes Zahlwort`);
     pruefe(b.zuege.length >= 1 && b.zuege.length <= 4,
       `${b.zeichen}: ${b.zuege.length} Züge — mehr als vier schreibt kein Sechsjähriger`);
     for (const d of b.zuege) {
@@ -100,17 +107,19 @@ pruefe(S.BUCHSTABEN.length === 26, `${S.BUCHSTABEN.length} Buchstaben statt 26`)
 }
 
 /* ---- Jede Vorlage erkennt sich selbst -------------------------------- */
+const SAETZE = [['Buchstaben', S.BUCHSTABEN], ['Ziffern', S.ZIFFERN]];
 {
-  let gut = 0;
-  for (const b of S.BUCHSTABEN) {
-    const e = S.erkennen(b.zuege.map(d => S.abtasten(d, 24)));
+  let gut = 0, alle = 0;
+  for (const [, satz] of SAETZE) for (const b of satz) {
+    alle++;
+    const e = S.erkennen(b.zuege.map(d => S.abtasten(d, 24)), satz);
     if (e.zeichen === b.zeichen && e.sicher) gut++;
     else pruefe(false, `${b.zeichen} erkennt sich selbst nicht `
       + `(erkannt: ${e.zeichen}, Abstand ${e.abstand.toFixed(1)}, `
       + `Vorsprung ${e.vorsprung.toFixed(2)})`);
   }
-  pruefe(gut >= SOLL.selbst, `nur ${gut} von 26 Vorlagen erkennen sich selbst`);
-  console.log(`    Vorlagen: ${gut} von 26 erkennen sich selbst`);
+  pruefe(gut >= SOLL.selbst, `nur ${gut} von ${alle} Vorlagen erkennen sich selbst`);
+  console.log(`    Vorlagen: ${gut} von ${alle} erkennen sich selbst`);
 }
 
 /* ---- Ein Kind schreibt nicht die Vorlage ------------------------------
@@ -131,7 +140,7 @@ function verkrummen(zuege, r, staerke = 1){
   const dreh = (r()-0.5) * 0.22 * staerke, gross = 1 + (r()-0.5) * 0.5 * staerke;
   const vx = (r()-0.5) * 40 * staerke, vy = (r()-0.5) * 40 * staerke;
   const co = Math.cos(dreh), si = Math.sin(dreh);
-  return zuege.map(z => {
+  let aus = zuege.map(z => {
     const kurz = r() < 0.25 * staerke
       ? Math.max(3, Math.round(z.length * (0.82 + 0.15 * r()))) : z.length;
     return z.slice(0, kurz).map(p => {
@@ -140,16 +149,33 @@ function verkrummen(zuege, r, staerke = 1){
               50 + x*si + y*co + vy + (r()-0.5)*7*staerke];
     });
   });
+  /* Der Finger wird nicht abgesetzt - oder einmal zuviel.
+   *
+   * Ohne diese beiden Zeilen war der Vorrat blind fuer das, woran der
+   * Zug-Aufschlag haengt. Die Messung empfahl daraufhin einen Aufschlag,
+   * der neun Prozentpunkte kostet: sie konnte seinen Preis nicht sehen.
+   * Eine Pruefung, die eine Sache nicht abbilden kann, spricht sie frei. */
+  if (aus.length > 1 && r() < 0.25) {
+    const i = Math.floor(r() * (aus.length - 1));
+    aus = [...aus.slice(0, i), [...aus[i], ...aus[i+1]], ...aus.slice(i+2)];
+  } else if (r() < 0.15) {
+    const i = Math.floor(r() * aus.length), z = aus[i];
+    if (z.length > 7) {
+      const m = Math.floor(z.length / 2);
+      aus = [...aus.slice(0, i), z.slice(0, m), z.slice(m), ...aus.slice(i+1)];
+    }
+  }
+  return aus;
 }
 
-{
+for (const [name, satz] of SAETZE) {
   let richtig = 0, verwechselt = 0, unsicher = 0, n = 0;
   let groessterAbstand = 0, kleinsterVorsprung = Infinity;
   const woMit = {};
-  for (const b of S.BUCHSTABEN) {
+  for (const b of satz) {
     const rein = b.zuege.map(d => S.abtasten(d, 24));
     for (let k = 0; k < 40; k++) {
-      const e = S.erkennen(verkrummen(rein, wuerfel(k*7919 + b.zeichen.charCodeAt(0)))); n++;
+      const e = S.erkennen(verkrummen(rein, wuerfel(k*7919 + b.zeichen.charCodeAt(0))), satz); n++;
       /* Die Spanne wird ueber ALLE richtig gelesenen Faelle gefuehrt, auch
        * ueber die unsicheren. Der erste Anlauf nahm nur die angenommenen -
        * und damit konnte die Zahl gar nicht ausserhalb der Schwelle
@@ -159,32 +185,29 @@ function verkrummen(zuege, r, staerke = 1){
         groessterAbstand = Math.max(groessterAbstand, e.abstand);
         kleinsterVorsprung = Math.min(kleinsterVorsprung, e.vorsprung);
       }
-      if (e.zeichen === b.zeichen && e.sicher) {
-        richtig++;
-      } else if (e.sicher) {
+      if (e.zeichen === b.zeichen && e.sicher) richtig++;
+      else if (e.sicher) {
         verwechselt++;
-        const s = `${b.zeichen}→${e.zeichen}`; woMit[s] = (woMit[s] || 0) + 1;
+        const t = `${b.zeichen}\u2192${e.zeichen}`; woMit[t] = (woMit[t] || 0) + 1;
       } else unsicher++;
     }
   }
   const anteil = 100 * richtig / n, falschAnteil = 100 * verwechselt / n;
-  pruefe(anteil >= SOLL.krumm, `krumm geschrieben: nur ${anteil.toFixed(1)} % richtig erkannt, `
-    + `im Backlog stehen mindestens ${SOLL.krumm} %`);
+  pruefe(anteil >= SOLL.krumm, `${name} krumm geschrieben: nur ${anteil.toFixed(1)} % richtig `
+    + `erkannt, im Backlog stehen mindestens ${SOLL.krumm} %`);
   pruefe(falschAnteil <= SOLL.verwechselt,
-    `${falschAnteil.toFixed(1)} % werden sicher als der FALSCHE Buchstabe gelesen, `
+    `${name}: ${falschAnteil.toFixed(1)} % werden sicher als das FALSCHE Zeichen gelesen, `
     + `erlaubt sind ${SOLL.verwechselt} % — häufigste: `
     + Object.entries(woMit).sort((a,b)=>b[1]-a[1]).slice(0,3)
-        .map(([s,c])=>`${s} ${c}x`).join(', '));
-  console.log(`    Krumm geschrieben: ${anteil.toFixed(1)} % richtig, `
+        .map(([t,c])=>`${t} ${c}x`).join(', '));
+  console.log(`    ${name} krumm: ${anteil.toFixed(1)} % richtig, `
     + `${falschAnteil.toFixed(1)} % verwechselt, ${(100*unsicher/n).toFixed(1)} % „noch mal"`
-    + `  (${n} Fälle)`);
-  console.log(`    Knappster richtig gelesener Fall: Abstand `
-    + `${groessterAbstand.toFixed(1)} von ${S.ABSTAND_MAX} erlaubt, Vorsprung `
-    + `${kleinsterVorsprung.toFixed(2)} von ${S.VORSPRUNG_MIN} verlangt`);
+    + `  (${n} Fälle) — knappster richtiger: Abstand ${groessterAbstand.toFixed(1)} `
+    + `von ${S.ABSTAND_MAX}, Vorsprung ${kleinsterVorsprung.toFixed(2)} von ${S.VORSPRUNG_MIN}`);
 }
 
-/* ---- Gekritzel ist kein Buchstabe ------------------------------------ */
-{
+/* ---- Gekritzel ist kein Zeichen -------------------------------------- */
+for (const [name, satz] of SAETZE) {
   const kritzel = [];
   for (let k = 0; k < 400; k++) {
     const r = wuerfel(k * 104729);
@@ -192,32 +215,30 @@ function verkrummen(zuege, r, staerke = 1){
     kritzel.push(Array.from({ length:n }, () =>
       Array.from({ length:12 }, () => [10 + 80*r(), 10 + 80*r()])));
   }
-  const werte = kritzel.map(z => S.erkennen(z));
+  const werte = kritzel.map(z => S.erkennen(z, satz));
   const angenommen = werte.filter(e => e.sicher).length;
   const anteil = 100 * angenommen / kritzel.length;
-  pruefe(anteil <= SOLL.kritzel, `${angenommen} von 400 Gekritzeln werden als Buchstabe `
-    + `angenommen (${anteil.toFixed(1)} %), erlaubt ist ${SOLL.kritzel} %`);
+  pruefe(anteil <= SOLL.kritzel, `${name}: ${angenommen} von 400 Gekritzeln werden als `
+    + `Zeichen angenommen (${anteil.toFixed(1)} %), erlaubt ist ${SOLL.kritzel} %`);
   /* Und der Beweis, dass dieses Gekritzel ueberhaupt etwas beweisen KANN.
    *
-   * Wuerfelt man Punkte, die von jedem Buchstaben meilenweit entfernt
-   * liegen, ist „kein Gekritzel angenommen" keine Leistung, sondern eine
-   * Selbstverstaendlichkeit - und die Pruefung meldet nie etwas. Also
-   * wird nachgesehen, wie es bei einer LOCKEREN Schwelle aussieht: dort
-   * muessen welche durchkommen. Tun sie es nicht, ist der Vorrat zu
-   * leicht und die Zahl oben wertlos (Regel 1). */
+   * Wuerfelt man Punkte, die von jedem Zeichen meilenweit entfernt liegen,
+   * ist „kein Gekritzel angenommen" keine Leistung, sondern eine
+   * Selbstverstaendlichkeit - und die Pruefung meldet nie etwas. Also wird
+   * nachgesehen, wie es bei einer LOCKEREN Schwelle aussieht: dort muessen
+   * welche durchkommen (Regel 1). */
   const locker = werte.filter(e => e.abstand <= S.ABSTAND_MAX + 3
                                 && e.vorsprung >= S.VORSPRUNG_MIN - 0.4).length;
-  pruefe(locker > 0, 'Bei einer um 3 Punkte lockereren Schwelle käme KEIN einziges '
-    + 'Gekritzel durch — dann liegt der Vorrat zu weit weg und die Zahl darüber '
-    + 'beweist nichts');
-  console.log(`    Gekritzel: ${angenommen} von 400 angenommen (${anteil.toFixed(1)} %) — `
+  pruefe(locker > 0, `${name}: bei einer um 3 Punkte lockereren Schwelle käme KEIN einziges `
+    + 'Gekritzel durch — dann liegt der Vorrat zu weit weg und die Zahl darüber beweist nichts');
+  console.log(`    ${name} Gekritzel: ${angenommen} von 400 angenommen (${anteil.toFixed(1)} %) — `
     + `bei drei Punkten mehr Nachsicht wären es ${locker}`);
 }
 
 /* ---- Nachfahren ------------------------------------------------------ */
 {
   let angenommen = 0, abgelehnt = { halb:0, rueckwaerts:0, daneben:0 }, zuege = 0;
-  for (const b of S.BUCHSTABEN) {
+  for (const [, satz] of SAETZE) for (const b of satz) {
     for (const d of b.zuege) {
       zuege++;
       const genau = S.abtasten(d, 40);

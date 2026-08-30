@@ -230,6 +230,16 @@ const AUFNAHMEN = [
    * Und er ist von sich aus stabil: welcher Buchstabe gerade dran ist,
    * steht nirgends - die Aufnahme sieht bei jedem Keim gleich aus. */
   { name:'quer-diktat', spiel:'schreiben:diktat', quer:true, wahl:'.schirm.da' },
+  /* Die Zahlen (N4) - zwei Bildschirme, die es sonst nirgends gibt: der
+   * Vorlauf mit den zwanzig Zahlen und ihren Zahlwoertern, und der einzige
+   * Aufgabenbildschirm mit ZWEI Schreibfeldern. Welche Zahl drankommt,
+   * entscheidet der Leitner; fuer die Aufnahme wird weitergeblaettert, bis
+   * eine zweistellige kommt - sonst haelt sie mal ein Feld fest und mal
+   * zwei, je nach Keim. */
+  { name:'quer-zahlen-vorlauf', spiel:'schreiben:zahlen', quer:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
+  { name:'quer-zahlen', spiel:'schreiben:zahlen', quer:true,
+    wahl:'.schirm.da', tun:'zweistellig' },
 ];
 
 /**
@@ -358,6 +368,20 @@ async function vorfuehren(seite, was) {
   /* Schreiben: den ERSTEN Zug der Vorlage nachfahren und dort stehen
    * bleiben. Die Punkte kommen aus derselben Vorlage, die die App
    * zeichnet - abgelesen am Bildschirm, nicht aus einer Liste hier. */
+  /* Weiterblaettern, bis eine zweistellige Zahl kommt. „Weiss ich nicht"
+   * loest auf und geht weiter - derselbe Weg, den ein Kind nimmt. */
+  if (was === 'zweistellig') {
+    for (let n = 0; n < 12; n++) {
+      if ((await seite.$$('.schirm.da .feldkasten')).length > 1) break;
+      await seite.$eval('.schirm.da #weissnicht', x => x.click());
+      await seite.waitForTimeout(1500);
+      await seite.waitForSelector('.schirm.da .schreibblatt', { timeout: 8000 }).catch(() => {});
+    }
+    if ((await seite.$$('.schirm.da .feldkasten')).length < 2)
+      throw new Error('quer-zahlen: nach zwölf Aufgaben kam keine zweistellige');
+    await seite.waitForTimeout(400);
+    return;
+  }
   if (was === 'schreiben') {
     const zuege = await schreibVorlage(seite);
     if (!zuege.length) throw new Error('quer-schreiben: keine Vorlage auf dem Bildschirm');

@@ -1342,9 +1342,9 @@ export const PROBEN = [
   //    Tor gegen nichts - und meldet das laut, statt gruen zu werden.
   { n:'das Soll der Buchstabenerkennung fehlt im Backlog', tor:'schreiben',
     datei:'docs/Lernkiste-BACKLOG.md',
-    such:'| Gekritzel als Buchstabe angenommen | höchstens 1 % |',
-    ersatz:'| Gekritzel als Buchstabe irgendwie | höchstens 1 % |',
-    an:{ datei:'docs/Lernkiste-BACKLOG.md', fehlt:'| Gekritzel als Buchstabe angenommen |' },
+    such:'| Gekritzel als Zeichen angenommen | höchstens 1 % |',
+    ersatz:'| Gekritzel als Zeichen irgendwie | höchstens 1 % |',
+    an:{ datei:'docs/Lernkiste-BACKLOG.md', fehlt:'| Gekritzel als Zeichen angenommen |' },
     sagt:'prüft dieses Tor gegen nichts' },
 
   /* --- Diktat (N3) ---------------------------------------------------- *
@@ -1357,18 +1357,18 @@ export const PROBEN = [
   // 1. Die Vorlage bleibt stehen. Dann ist das Diktat ein Abmalen mit Ton.
   { n:'das Diktat zeigt die Vorlage doch', tor:'smoke', args:['--nur=schreiben'],
     bauen:true, datei:D,
-    such:"  let phase = diktat ? 'frei' : 'nach';   // 'nach' -> 'frei'",
+    such:"  let phase = ansage ? 'frei' : 'nach';   // 'nach' -> 'frei'",
     ersatz:"  let phase = 'nach';   // 'nach' -> 'frei'",
-    an:{ ...DIST, fehlt:"diktat ? 'frei' : 'nach'" },
+    an:{ ...DIST, fehlt:"ansage ? 'frei' : 'nach'" },
     sagt:'Vorlagenzüge auf dem Blatt' },
 
   // 2. Der Buchstabe steht in der Frage. Lea koennte ihn lesen - und Fiona
   //    lernt spaeter lesen, waehrend diese Ebene stehen bleibt.
   { n:'die Diktat-Frage nennt den gesuchten Buchstaben', tor:'smoke',
     args:['--nur=schreiben'], bauen:true, datei:D,
-    such:"  const DIKTATFRAGE = 'Schreib den Buchstaben, den du hörst.';",
-    ersatz:"  const DIKTATFRAGE = `Schreib ein ${ziel.zeichen}.`;",
-    an:{ ...DIST, fehlt:"const DIKTATFRAGE = 'Schreib den Buchstaben" },
+    such:"    : 'Schreib den Buchstaben, den du hörst.';",
+    ersatz:"    : `Schreib ein ${ziel.zeichen}.`;",
+    an:{ ...DIST, fehlt:"'Schreib den Buchstaben, den du hörst.'" },
     sagt:'im Text' },
 
   /* 3. Und die Sackgasse: mit abgeschaltetem Ton existiert die Aufgabe des
@@ -1380,6 +1380,30 @@ export const PROBEN = [
     ersatz:"      ? (true ? DIKTATFRAGE",
     an:{ ...DIST, text:'? (true ? DIKTATFRAGE' },
     sagt:'nur gesprochen existiert' },
+
+  /* --- Zahlen (N4) ---------------------------------------------------- *
+   *
+   * Zwei Eigenschaften, die man dem Bildschirm nicht ansieht: dass die
+   * REIHENFOLGE der Ziffern zaehlt, und dass gegen die ZIFFERN verglichen
+   * wird und nicht gegen die Buchstaben. Beide gehen lautlos verloren. */
+
+  // 1. Aus 14 und 41 wird dieselbe Antwort.
+  { n:'die Reihenfolge der Ziffern zaehlt nicht', tor:'smoke',
+    args:['--nur=schreiben'], bauen:true, datei:D,
+    such:"    const stimmt = gelesen.every((e, i) => e.sicher && e.zeichen === folge[i]);",
+    ersatz:'    const stimmt = gelesen.every((e) => e.sicher);',
+    an:{ ...DIST, fehlt:"e.zeichen === folge[i]" },
+    sagt:'VERTAUSCHT als richtig' },
+
+  /* 2. Die Ziffern werden gegen die 26 Buchstaben gehalten. Eine 0 ist
+   *    dann ein O, eine 1 ein I - und der Vorsprung vor dem Zweiten faellt
+   *    auf null, also gilt jede richtig geschriebene Ziffer als unsicher. */
+  { n:'die Ziffern werden gegen die Buchstaben gehalten', tor:'smoke',
+    args:['--nur=schreiben'], bauen:true, datei:D,
+    such:"  const satz = ziel.satz === 'ziffern' ? Schreiben.ZIFFERN : Schreiben.BUCHSTABEN;",
+    ersatz:'  const satz = Schreiben.BUCHSTABEN;',
+    an:{ ...DIST, fehlt:"ziel.satz === 'ziffern' ? Schreiben.ZIFFERN" },
+    sagt:'nicht angenommen' },
 
   /* --- Fachwelten (D4) ------------------------------------------------ */
 

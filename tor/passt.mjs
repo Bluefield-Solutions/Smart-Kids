@@ -392,6 +392,35 @@ for (const g of GERAETE) {
   await p.waitForSelector('.schirm.da #null');
   await tipp('.schirm.da #raus');
   await p.waitForSelector('.schirm.da [data-ebene]');
+
+  /* Und die Zahlen (N4) - der einzige Bildschirm mit ZWEI Schreibfeldern.
+   *
+   * Er ist die engste Stelle der Schreibwelt: zwei quadratische Kaesten
+   * nebeneinander und daneben vier Knoepfe. Welche Zahl gerade drankommt,
+   * entscheidet der Leitner; bei einer einstelligen steht nur ein Kasten
+   * da. Also wird weitergeblaettert, bis eine zweistellige kommt - der
+   * Fall, um den es geht, wird nicht dem Zufall ueberlassen. */
+  await tipp('[data-ebene="schreiben:zahlen"]');
+  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 20000 });
+  if (await p.$('.schirm.da #los')) {
+    await schau('Vorlauf zahlen');
+    await durchVorlauf(p);
+  }
+  await p.waitForSelector('.schirm.da .schreibblatt');
+  for (let n = 0; n < 12; n++) {
+    if ((await p.$$('.schirm.da .feldkasten')).length > 1) break;
+    await tipp('.schirm.da #weissnicht');
+    await p.waitForTimeout(1500);
+    await p.waitForSelector('.schirm.da .schreibblatt', { timeout: 8000 }).catch(() => {});
+  }
+  if ((await p.$$('.schirm.da .feldkasten')).length < 2)
+    meldungen.push('Zahlen: nach zwölf Aufgaben kam keine zweistellige — '
+      + 'dann ist der Bildschirm mit zwei Feldern ungeprüft');
+  await schau('Zahlen (zweistellig)');
+  await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da #null');
+  await tipp('.schirm.da #raus');
+  await p.waitForSelector('.schirm.da [data-ebene]');
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da [data-welt]');
 

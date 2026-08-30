@@ -706,7 +706,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    SVG ohne eigene Breite faellt auf 100 % zurueck, und das Verhaeltnis
    kommt nicht mehr zum Zug. Ein gewoehnlicher Kasten haelt es zuverlaessig,
    und das SVG fuellt ihn. */
-.feldkasten{height:100%;aspect-ratio:1;max-width:100%;touch-action:none;
+/* Ein oder ZWEI Blaetter nebeneinander (N4): die Zahl 14 wird als 1 und 4
+   geschrieben, jede Ziffer in ihr eigenes Feld. Damit ist „beide Ziffern,
+   richtige Reihenfolge" ein Aufbau und keine Pruefung.
+   Die Kaesten teilen sich die Breite und behalten ihr Quadrat; wird es
+   eng, gibt die Hoehe nach - `max-height` statt `height`, sonst haelt das
+   Verhaeltnis die Breite fest und zwei Kaesten laufen aus dem Bild. */
+.blaetter{display:flex;height:100%;gap:var(--r3);justify-content:center;
+  align-items:center;min-width:0;width:100%}
+.feldkasten{aspect-ratio:1;max-height:100%;max-width:100%;flex:0 1 auto;min-width:0;
+  height:100%;touch-action:none;
   background:var(--papier);border:var(--strich) solid var(--linie);
   border-radius:var(--rund-karte);overflow:hidden}
 /* `.schreibblatt` und nicht `.feld`.
