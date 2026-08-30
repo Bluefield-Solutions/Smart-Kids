@@ -3995,3 +3995,19 @@ Und weil genau die Uneinigkeit der drei Stellen der Fehler war, prüft
 `inhalt` sie jetzt gegeneinander: der Ordnername muss relativ zum
 Arbeitsverzeichnis stehen, in `.gitignore` auftauchen und in der README
 genannt sein.
+
+### Was die vier Runden zusammen an Laufzeit gekostet und gebracht haben
+
+Gemessen mit derselben Messstelle vorher und nachher, auf demselben
+Rechner:
+
+| | vorher | nachher |
+|---|---|---|
+| Rauchtest (Hauptweg) | 28,8 s | 20,1 s |
+| Bildvergleich, seriell | 114,9 s | 96,8 s |
+| `npm run schnell` | 48,4 s | **46 s** — bei 23 statt 21 Aufnahmen und einer Prüfung mehr im Rauchtest |
+| `npm run tor` | 5:04 | **4:48** |
+
+Der Gewinn aus `schauPause` ist größer als die Tabelle zeigt: er hat die
+zwei neuen Aufnahmen (`quer-pause`, und `quer-vorlauf-rechnen` aus der
+Runde davor) und die Buchprüfung mitbezahlt.

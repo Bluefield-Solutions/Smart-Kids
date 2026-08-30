@@ -22,8 +22,8 @@ Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run schnell`** | bei **jeder** Änderung | **~46 s** (gemessen, 21 Aufnahmen) | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 5:04) | die volle Kette, alle Größen, alle Bildschirme |
+| **`npm run schnell`** | bei **jeder** Änderung | **~46 s** (gemessen, 23 Aufnahmen) | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 4:48) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
