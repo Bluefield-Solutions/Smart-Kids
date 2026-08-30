@@ -1704,4 +1704,34 @@ export const PROBEN = [
     ersatz:'  --kleber-eng-min:72px}',
     an:{ ...DIST, text:'--kleber-eng-min:72px' },
     sagt:'ein Aufkleber muss 44 messen' },
+
+  /* --- B3: die umgekehrte Frage --------------------------------------
+   *
+   * Drei Proben: die Form selbst, die Markierung, die Wertung.
+   */
+
+  // 1. Es gibt sie nicht mehr - jede Aufgabe fragt wieder nach dem Namen.
+  { n:'die umgekehrte Frage kommt nicht mehr vor', tor:'smoke',
+    args:['--nur=umgekehrt'], bauen:true, datei:D,
+    such:"  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2;",
+    ersatz:'  const umgekehrt = false;',
+    an:{ ...DIST, text:'const umgekehrt = false;' },
+    sagt:'kommt gar nicht vor' },
+
+  // 2. Das gesuchte Gebiet ist wieder angemalt - dann beantwortet sich
+  //    „Wo liegt Berlin?" selbst.
+  { n:'die umgekehrte Frage verrät ihre Antwort', tor:'smoke',
+    args:['--nur=umgekehrt'], bauen:true, datei:D,
+    such:"      g.id===ziel.id && !umgekehrt ? 'ziel'",
+    ersatz:"      g.id===ziel.id ? 'ziel'",
+    an:{ ...DIST, fehlt:"g.id===ziel.id && !umgekehrt ? 'ziel'" },
+    sagt:'beantwortet sich selbst' },
+
+  // 3. Der Tipp auf das richtige Gebiet wird nicht mehr gewertet.
+  { n:'der Tipp auf die Karte wird nicht mehr gewertet', tor:'smoke',
+    args:['--nur=umgekehrt'], bauen:true, datei:D,
+    such:"      if (ctx.getroffen===ziel.id) ergebnis='richtig';\n      else text = zugHinweis('', ctx);",
+    ersatz:"      text = zugHinweis('', ctx);",
+    an:{ ...DIST, fehlt:"if (ctx.getroffen===ziel.id) ergebnis='richtig';" },
+    sagt:'nicht gewertet' },
 ];
