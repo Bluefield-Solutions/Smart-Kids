@@ -379,18 +379,22 @@ const PROBEN = [
   // Wie lange der Lauf zurueckliegt, steht in der HISTORIE - an einer Datei
   // ist das nicht zu drehen. Deshalb bekommt das Tor eine Schraube, die nur
   // strenger stellen kann: bei -1 ist jeder Stand zu alt.
-  { n:'der letzte Probenlauf liegt zu lange zurück', tor:'rhythmus', brauchtStand:true, nachStand:true,
+  { n:'der letzte Probenlauf liegt zu lange zurück', tor:'rhythmus', auchWennRot:true, brauchtStand:true, nachStand:true,
     umgebung:{ SMARTKIDS_RHYTHMUS_MAX:'-1' },
     datei:'tor/proben-stand.json',
     suchRegex:/"zeit": "([\d-]+)"/, ersatzFn:(m)=>`"zeit": "${m[1]}"`,   // unveraendert
     an:{ datei:'tor/proben-stand.json', regex:/"zeit": "[\d-]+"/ },
-    sagt:'älter als' },
+    // „älter als -1 Runden" und nicht nur „älter als": die Schraube auf -1
+    // macht JEDEN Nachweis zu alt, und diese Zahl steht in der Meldung. Der
+    // kurze Text stand auch dann da, wenn ohnehin ein Nachweis veraltet
+    // war - also genau in der Lage, in der die Probe nichts mehr zeigt.
+    sagt:'älter als -1 Runden' },
   // Frueher gab es eine Marke „abgebrochen" fuer den ganzen Satz. Es gibt
   // sie nicht mehr: eine Probe bekommt ihren Eintrag genau dann, wenn sie
   // angeschlagen hat. Ein abgebrochener Lauf hinterlaesst also LUECKEN,
   // und die faengt dieselbe Pruefung wie eine ganz neue Probe. Geprobt
   // wird deshalb die Luecke selbst.
-  { n:'eine Probe hat keinen Nachweis, und es faellt nicht auf', tor:'rhythmus',
+  { n:'eine Probe hat keinen Nachweis, und es faellt nicht auf', tor:'rhythmus', auchWennRot:true,
     brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
     suchRegex:/"([^"]+)": \{\n      "commit"/,
     ersatzFn:(m)=>`"${m[1]} (weg)": {\n      "commit"`,
@@ -409,7 +413,7 @@ const PROBEN = [
    * Jetzt am `"tor": "npm run ` verankert. Das ueberlebt jede Umsortierung
    * der Kette; nur ihr Wegfall wuerde es brechen, und dann gibt es nichts
    * mehr zu pruefen. */
-  { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus',
+  { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus', auchWennRot:true,
     brauchtStand:true, nachStand:true, datei:'package.json',
     such:'"tor": "npm run ',
     ersatz:'"tor": "npm run neuestor && npm run ',
@@ -435,7 +439,7 @@ const PROBEN = [
    * siebzig Proben, wo neunundsechzig stehen. Eine Gegenprobe, die den
    * Prüfling schon im Ruhezustand verstellt, ist keine.
    */
-  { n:'ein Nachweis, dessen Alter sich nicht bestimmen lässt', tor:'rhythmus',
+  { n:'ein Nachweis, dessen Alter sich nicht bestimmen lässt', tor:'rhythmus', auchWennRot:true,
     brauchtStand:true, nachStand:true, datei:'tor/proben-stand.json',
     suchRegex:/"commit": "[0-9a-f]{40}"/, ersatzFn:()=>'"commit": "0000000000000000000000000000000000000000"',
     an:{ datei:'tor/proben-stand.json', text:'"commit": "0000000000000000000000000000000000000000"' },
@@ -1724,7 +1728,31 @@ for (const p of welche) {
   // ist wiederhergestellt, und bei den meisten Proben erspart das den
   // gesunden Lauf ganz - denn wenn das Tor gruen BLEIBT, ist die Antwort
   // ohnehin belanglos.
-  if (r.code !== 0 && !istGesund(p)) {
+  /* Ein Tor, das seinen eigenen Nachweis prueft, kann nicht gruen sein.
+   *
+   * `rhythmus` schlaegt an, wenn eine Probe keinen frischen Nachweis hat -
+   * und seine EIGENEN vier Proben sind genau solche Proben, solange sie
+   * nicht angeschlagen haben. Damit schliesst sich der Kreis: sie koennen
+   * nicht anschlagen, weil das Tor rot ist, und das Tor ist rot, weil sie
+   * nicht angeschlagen haben. Einmal aus dem Fenster von drei Runden
+   * gefallen, kommen sie nie wieder hinein.
+   *
+   * Fuer sie gilt deshalb ein schaerferes Mass statt eines schwaecheren:
+   * die erwartete Meldung muss OHNE den Eingriff fehlen und MIT ihm da
+   * sein. Das ist mehr als „gruen wird rot" - es zeigt, dass genau dieser
+   * Satz an genau diesem Eingriff haengt. Teurer ist es auch: der gesunde
+   * Lauf faellt hier immer an.
+   */
+  if (r.code !== 0 && p.auchWennRot && p.sagt) {
+    const ohne = lauf(p.tor, undefined, p.args, p.ohneSofort);
+    if (ohne.aus.includes(p.sagt)) {
+      fertig(rot('sagt es auch ohne Eingriff'));
+      blind++;
+      befunde.push(`${p.n}: \`${p.tor}\` meldet „${p.sagt}" schon OHNE den Eingriff — `
+        + 'diese Probe beweist nichts, sie stellt nur einen bestehenden Fehler nach.');
+      continue;
+    }
+  } else if (r.code !== 0 && !istGesund(p)) {
     fertig(rot('war schon vorher rot'));
     blind++;
     befunde.push(`${p.n}: \`${p.tor}\` ist schon OHNE Eingriff rot — `
