@@ -1366,8 +1366,8 @@ export const PROBEN = [
   //    lernt spaeter lesen, waehrend diese Ebene stehen bleibt.
   { n:'die Diktat-Frage nennt den gesuchten Buchstaben', tor:'smoke',
     args:['--nur=schreiben'], bauen:true, datei:D,
-    such:"      ? 'Schreib den Buchstaben, den du hörst.'",
-    ersatz:"      ? `Schreib ein ${ziel.zeichen}.`",
+    such:"      ? (tonAn ? 'Schreib den Buchstaben, den du hörst.'",
+    ersatz:"      ? (tonAn ? `Schreib ein ${ziel.zeichen}.`",
     an:{ ...DIST, fehlt:'Schreib den Buchstaben, den du hörst.' },
     sagt:'im Text' },
 
