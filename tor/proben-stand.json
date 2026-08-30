@@ -232,6 +232,14 @@
       "commit": "f842f8ffe9b95966b35767bc88ef906d2e85be85",
       "zeit": "2026-08-30"
     },
+    "der Vorlauf zeigt wieder die ganze Tafel": {
+      "commit": "be3d5632b1991180c949846825c1fd44de2b5d45",
+      "zeit": "2026-08-30"
+    },
+    "die Beispielkarten verlieren ihre Form": {
+      "commit": "be3d5632b1991180c949846825c1fd44de2b5d45",
+      "zeit": "2026-08-30"
+    },
     "die Diphthonge verschwinden wieder": {
       "commit": "fc595e8ab8182aa0901bd7103f69ebd5dfc64049",
       "zeit": "2026-08-30"
