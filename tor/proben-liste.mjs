@@ -1608,12 +1608,16 @@ export const PROBEN = [
 
   // 2. Nicht verstanden zaehlt wieder als Fehlversuch. Nach drei
   //    Verstaendnisfehlern loest die App die Aufgabe auf.
+  //    Gezielt NUR der Ausstieg, nicht die ganze Verzweigung: die Meldung
+  //    soll stehenbleiben, damit die Probe den ZAEHLER trifft und nicht
+  //    den Satz - sonst schlaegt sie an derselben Stelle an wie Probe 4
+  //    und beide bezeugen dasselbe.
   { n:'nicht verstanden kostet wieder einen Versuch', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:"      if (vorurteil.art==='nochmal') {",
-    ersatz:'      if (false) {',
-    an:{ ...DIST, fehlt:"if (vorurteil.art==='nochmal') {" },
-    sagt:'' },
+    such:'          fachNachher: Stand[ziel.id]?.fach ?? 1,\n        }));\n        return;\n',
+    ersatz:'          fachNachher: Stand[ziel.id]?.fach ?? 1,\n        }));\n',
+    an:{ ...DIST, fehlt:'        }));\n        return;' },
+    sagt:'aufgelöst' },
 
   // 3. Nur die erste Lesart wird gelesen - die anderen beiden holt sich
   //    die App und wirft sie weg.

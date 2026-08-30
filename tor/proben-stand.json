@@ -581,6 +581,22 @@
       "commit": "6c30fc66abc0b2c11d038d400eb1c08a3129a7fe",
       "zeit": "2026-08-30"
     },
+    "ein ganzer Satz wird nicht mehr verstanden": {
+      "commit": "d090a770de88d1dd5e6b1aad75365e4258c8e2d6",
+      "zeit": "2026-08-30"
+    },
+    "nicht verstanden kostet wieder einen Versuch": {
+      "commit": "d090a770de88d1dd5e6b1aad75365e4258c8e2d6",
+      "zeit": "2026-08-30"
+    },
+    "von drei Lesarten zaehlt wieder nur die erste": {
+      "commit": "d090a770de88d1dd5e6b1aad75365e4258c8e2d6",
+      "zeit": "2026-08-30"
+    },
+    "die Meldung sagt nicht mehr, was angekommen ist": {
+      "commit": "d090a770de88d1dd5e6b1aad75365e4258c8e2d6",
+      "zeit": "2026-08-30"
+    },
     "der Ausschnitt schneidet wieder Bestimmungswörter ab": {
       "commit": "48a79ad16d9bf9d11c8e56fdccde26e23a91ef40",
       "zeit": "2026-08-30"
