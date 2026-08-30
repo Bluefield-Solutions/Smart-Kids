@@ -118,10 +118,13 @@ npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
 npm run backen     Karten neu rechnen
 npm run schrift    Andika und Plus Jakarta Sans holen
 npm run symbol     App-Symbol neu backen
+npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
+                   selbst, wird krumm Geschriebenes gelesen, wird Gekritzel
+                   abgelehnt, gilt ein halber Zug nicht als nachgefahren
 ```
 
 Kette: `inhalt` · `topologie` · `beruehrung` · `marken` ·
-`schrift` · `symbol` · `doku` → `spielprobe` → `vergleich` → `bauen` →
+`schrift` · `symbol` · `doku` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
 

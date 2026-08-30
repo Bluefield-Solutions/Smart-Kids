@@ -23,6 +23,8 @@ import { execSync } from 'node:child_process';
  * `sagt`     ein Stueck der Meldung, die das Tor bringen soll
  * ---------------------------------------------------------------------- */
 export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inhalt/erdkunde.js';
+/** Die Buchstabenvorlagen samt Erkennung (N2a). */
+export const S = 'src/inhalt/schreiben.js';
 /** Rauschen, das kein Packer kleinbekommt - aber bei jedem Lauf dasselbe. */
 function rauschen(n) {
   const z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -115,7 +117,7 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `doku` → `spielprobe` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `doku` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →',
     ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `spielprobe`' },
     sagt:'Tore der Kette nicht' },
@@ -1303,6 +1305,47 @@ export const PROBEN = [
     ersatz:"function klangZu(ergebnis){",
     an:{ ...DIST, fehlt:"function klangZu(ergebnis){\n  if (!tonAn) return;" },
     sagt:'Ton aus' },
+
+  /* --- Schreiben (N2a) ------------------------------------------------ *
+   *
+   * Vier Proben, und drei davon zielen auf die HAELFTE, die zaehlt: dass
+   * etwas ABGELEHNT wird. Ein Erkenner, der alles annimmt, besteht jede
+   * Pruefung, die nur nach Treffern fragt. */
+
+  // 1. Der Erkenner nimmt alles an. Dann ist jedes Gekritzel ein Buchstabe -
+  //    und N3 (Buchstabe nach Ansage) waere von Anfang an sinnlos.
+  { n:'die Buchstabenerkennung nimmt alles an', tor:'schreiben', datei:S,
+    such:"    sicher: liste[0].abstand <= ABSTAND_MAX && vorsprung >= VORSPRUNG_MIN,",
+    ersatz:'    sicher: true,',
+    an:{ datei:S, fehlt:'abstand <= ABSTAND_MAX' },
+    sagt:'Gekritzeln werden als Buchstabe angenommen' },
+
+  // 2. Die Schreibrichtung wird nicht mehr verlangt. Dann darf Fiona das A
+  //    von unten nach oben fahren - und lernt die Bewegung falsch.
+  { n:'beim Nachfahren zaehlt die Richtung nicht mehr', tor:'schreiben', datei:S,
+    such:"  return { gut: deckung >= DECKUNG_MIN && abweichung <= toleranz && richtig && ganz,",
+    ersatz:'  return { gut: deckung >= DECKUNG_MIN && abweichung <= toleranz && ganz,',
+    an:{ datei:S, fehlt:'&& richtig && ganz' },
+    sagt:'rückwärts' },
+
+  /* 3. Der Zug muss nicht mehr zu Ende gefahren werden. Genau dieser Fehler
+   *    war im ersten Entwurf drin und ist dem Tor aufgefallen: die Deckung
+   *    allein reicht bei einem KURZEN Zug nicht, weil die Toleranz weit
+   *    reicht - der Querbalken des A galt zur Haelfte gefahren als fertig. */
+  { n:'ein halb gefahrener Zug gilt als nachgefahren', tor:'schreiben', datei:S,
+    such:'  const ganz = weit(punkte[0], vorlage[0]) <= toleranz',
+    ersatz:'  const ganz = true || weit(punkte[0], vorlage[0]) <= toleranz',
+    an:{ datei:S, text:'const ganz = true ||' },
+    sagt:'halb nachgefahren' },
+
+  // 4. Und das Soll selbst: verschwindet die Zeile im Backlog, prueft das
+  //    Tor gegen nichts - und meldet das laut, statt gruen zu werden.
+  { n:'das Soll der Buchstabenerkennung fehlt im Backlog', tor:'schreiben',
+    datei:'docs/Lernkiste-BACKLOG.md',
+    such:'| Gekritzel als Buchstabe angenommen | höchstens 1 % |',
+    ersatz:'| Gekritzel als Buchstabe irgendwie | höchstens 1 % |',
+    an:{ datei:'docs/Lernkiste-BACKLOG.md', fehlt:'| Gekritzel als Buchstabe angenommen |' },
+    sagt:'prüft dieses Tor gegen nichts' },
 
   /* --- Fachwelten (D4) ------------------------------------------------ */
 

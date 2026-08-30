@@ -114,6 +114,29 @@ falsch — das ist der eigentliche Kern von N1.
 Fionas Vorrat ist 100 (alle Summen bis 10), Leas 140 (die Reihen 6 bis 10);
 deren Sollzahlen stehen im ANTON-Abgleich (C1, C2), aus demselben Grund.
 
+### 2.3 Was die Buchstabenerkennung leisten muss
+
+Gelesen von `tor/schreiben.mjs`. Auch hier gilt Regel 3: stuende das Soll
+in `src/inhalt/schreiben.js`, wuerden die beiden Schwellen (`ABSTAND_MAX`,
+`VORSPRUNG_MIN`) so lange verschoben, bis das Tor gruen ist — und das Tor
+pruefte sich selbst.
+
+Gemessen wird an 1040 kuenstlich verkrummten Fassungen der 26 Vorlagen
+(Versatz, Groesse, leichte Drehung, Zittern, jeder vierte Zug bricht zu
+frueh ab) und an 400 Gekritzeln aus zufaelligen Punktfolgen. Die Zahlen
+sind fest gewuerfelt, also bei jedem Lauf dieselben.
+
+| Was | Soll |
+|---|---|
+| Vorlage erkennt sich selbst | 26 von 26 |
+| Krumm geschrieben, richtig erkannt | mindestens 90 % |
+| Sicher erkannt, aber der falsche Buchstabe | höchstens 2 % |
+| Gekritzel als Buchstabe angenommen | höchstens 1 % |
+
+**Der letzte Wert ist der, auf den es ankommt.** Ein Erkenner, der alles
+annimmt, erkennt nichts — und N3 (Buchstabe nach Ansage) waere sinnlos,
+weil jede Kritzelei als Antwort durchginge.
+
 ---
 
 ## § 3 · Offen — die Rangliste

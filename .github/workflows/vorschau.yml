@@ -5,7 +5,8 @@
 # vom Standardzweig aus. Warum getrennt, steht dort.
 #
 # Er fährt NUR die Tore ohne Browser — inhalt (mit topologie, beruehrung,
-# marken, schrift, symbol, doku), spielprobe, vergleich, budget. Zusammen
+# marken, schrift, symbol, doku), spielprobe, schreiben, vergleich, budget.
+# Zusammen
 # unter drei Sekunden, und kein `playwright install` (das allein sind 39 s).
 # Was fehlt, fehlt ausdrücklich:
 #
@@ -49,6 +50,7 @@ jobs:
         run: |
           node tor/inhalt.mjs
           node tor/spielprobe.mjs
+          node tor/schreiben.mjs
           node tor/vergleich.mjs
           node prototyp/bauen.mjs
           node tor/budget.mjs

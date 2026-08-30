@@ -187,30 +187,46 @@ export const DECKUNG_MIN = 0.85;
 /**
  * Einen nachgefahrenen Zug bewerten.
  *
- * Drei Fragen, und alle drei muessen ja sagen:
- *  - DECKUNG: ist die ganze Vorlage beruehrt worden, nicht nur ihr Anfang?
+ * Vier Fragen, und alle vier muessen ja sagen:
+ *
+ *  - DECKUNG: ist die ganze Vorlage beruehrt worden?
  *  - ABWEICHUNG: ist der Finger auf der Linie geblieben?
+ *  - ANFANG UND ENDE: hat er dort angefangen und dort aufgehoert, wo der
+ *    Zug anfaengt und aufhoert?
  *  - RICHTUNG: ging es von vorn nach hinten? Beim Nachfahren ist das der
  *    Lerninhalt - ein A faengt oben an.
  *
- * Zurueck kommt nicht nur ja/nein, sondern die drei Zahlen. Ein Tor, das
- * nur „gut: false" bekommt, kann nicht sagen, wie knapp es war, und eine
- * Toleranz laesst sich dann nur raten statt einstellen.
+ * Die letzten beiden Fragen sind teuer erkauft; das Tor hat sie gefunden:
+ *
+ * Die RICHTUNG stand zuerst als „der erste Punkt liegt naeher am Anfang
+ * der Vorlage als an ihrem Ende". Bei O und Q ist der Anfang das Ende -
+ * beide Abstaende sind gleich, „naeher" ist nie wahr, und die beiden
+ * Buchstaben waren ueberhaupt nicht nachzufahren. Verglichen wird deshalb
+ * der ganze Zug gegen die Vorlage, einmal vorwaerts und einmal rueckwaerts.
+ *
+ * Und die DECKUNG allein reicht nicht: sie zaehlt, wieviel der Vorlage in
+ * Reichweite eines Fingers liegt, und bei einem KURZEN Zug reicht die
+ * Toleranz weit. Der Querbalken des A ist 36 Kastenpunkte lang; wer die
+ * Haelfte faehrt, deckt mit 14 Punkten Nachsicht 89 Prozent ab und war
+ * „fertig". Vier Zuege verhielten sich so. Also muss der Finger auch dort
+ * ankommen, wo der Zug endet.
  */
 export function nachgefahren(pfad, punkte, toleranz = TOLERANZ_NACH){
   const vorlage = abtasten(pfad, 48);
   if (!punkte || punkte.length < 2)
-    return { gut:false, deckung:0, abweichung:Infinity, richtig:false };
+    return { gut:false, deckung:0, abweichung:Infinity, richtig:false, ganz:false };
   const nah = (p, liste) => Math.min(...liste.map(q => weit(p, q)));
   const beruehrt = vorlage.filter(v => nah(v, punkte) <= toleranz).length;
   const deckung = beruehrt / vorlage.length;
   // Der GROESSTE Abstand, nicht der mittlere: ein Ausflug quer ueber das
   // Feld verschwindet im Mittel, ist aber genau das, was nicht gelten darf.
   const abweichung = Math.max(...punkte.map(p => nah(p, vorlage)));
-  const richtig = weit(punkte[0], vorlage[0])
-                < weit(punkte[0], vorlage[vorlage.length-1]);
-  return { gut: deckung >= DECKUNG_MIN && abweichung <= toleranz && richtig,
-           deckung, abweichung, richtig };
+  const meins = abtasten2(punkte, 24), soll = abtasten2(vorlage, 24);
+  const richtig = mittelPaar(meins, soll) <= mittelPaar(meins, soll.slice().reverse());
+  const ganz = weit(punkte[0], vorlage[0]) <= toleranz
+            && weit(punkte[punkte.length-1], vorlage[vorlage.length-1]) <= toleranz;
+  return { gut: deckung >= DECKUNG_MIN && abweichung <= toleranz && richtig && ganz,
+           deckung, abweichung, richtig, ganz };
 }
 
 /* ---------------------------------------------------------------------
