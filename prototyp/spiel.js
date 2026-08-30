@@ -347,22 +347,42 @@ const PROFILE = {
           kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, ton:'kind', farbe:'--f7' },
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
           kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f5' },
-  /* Eltern (R4) — die dritte Kachel, ohne PIN.
+  /* Die Eltern - seit N1 ZWEI Profile, Stephan und Violeta.
    *
-   * Die Kachel hiess bis v.. „Adam", damit sie neben zwei Vornamen wie ein
-   * Mitspieler aussieht und nicht wie eine Einstellung. Der Nutzer hat
-   * anders entschieden: sie heisst „Eltern". Damit heissen zwei Dinge
-   * aehnlich - dieses Profil und der PIN-Bereich; der Bereich heisst
-   * deshalb „Fuer Eltern". Der Name steht hier und nur hier.
+   * Bis dahin war es eines, „Eltern". Es hat sich als eine Kachel gut
+   * gespielt und schlecht verglichen: zwei Menschen, die sich messen
+   * wollen, teilten sich einen Leitner-Stand, und wer besser war, liess
+   * sich nicht sagen, weil beide dieselbe Spalte fuellten.
+   *
+   * Alles andere bleibt GLEICH - Eingabe, Tiefe, Sitzungslaenge, Ton,
+   * kein Auswahlverbot weniger. Das ist die Bedingung des Vergleichs: wer
+   * verschiedene Aufgaben bekaeme, koennte nicht verglichen werden.
+   * Verschieden ist nur der Name und die Farbe, damit die beiden Kacheln
+   * auseinanderzuhalten sind.
    *
    * `kandidaten:0` heisst „nie eine Auswahl". Bis R4 war die Zahl der
    * Moeglichkeiten bei den Bundeslaendern fest verdrahtet (`? 4 :`) und
-   * das Profil wurde dort gar nicht gefragt - „Eltern" haette also mit
+   * das Profil wurde dort gar nicht gefragt - die Eltern haetten also mit
    * vier Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
-  eltern: { id:'eltern', name:'Eltern', alter:null, eingabe:['tippen'], vorlesen:false,
+  stephan: { id:'stephan', name:'Stephan', alter:null, eingabe:['tippen'], vorlesen:false,
           kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
           farbe:'--f3' },
+  violeta: { id:'violeta', name:'Violeta', alter:null, eingabe:['tippen'], vorlesen:false,
+          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
+          farbe:'--f6' },
 };
+/** Wer sich vergleicht. Zwei, und die Reihenfolge ist die der Kacheln. */
+const VERGLEICH = ['stephan', 'violeta'];
+/* Wie das Elternprofil frueher hiess.
+ *
+ * Der Fortschritt lag unter `eltern:<ebene>`, das Protokoll unter
+ * `profil:'eltern'`. Beides ist echte Uebung und wird nicht weggeworfen,
+ * nur weil die Kachel einen Namen bekommen hat: es wird STEPHAN
+ * zugeschlagen, und dass es so ist, steht hier und im Backlog. Wer es
+ * anders will, loescht sein Profil im Elternbereich - das gibt es dort
+ * je Profil. */
+const ALTES_ELTERN = 'eltern';
+const alsProfil = (id) => id === ALTES_ELTERN ? VERGLEICH[0] : id;
 /* Der geschuetzte Bereich heisst auf dem Bildschirm anders als das Profil,
  * sonst stuenden zwei verschiedene Dinge unter demselben Wort. Er steht
  * hier einmal - Tuerschild, PIN-Schirm und Kopfzeile lesen von hier. */
@@ -400,7 +420,7 @@ const EBENEN = [
    * Rom), für die Eltern zwölf. Dieselbe Tiefe wie die Länderebene, und
    * aus demselben Wert. */
   { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,
-    wer:['lea','eltern'] },
+    wer:['lea','stephan','violeta'] },
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
@@ -433,7 +453,7 @@ const EBENEN = [
    * waere hier eine Zahl ohne Grund - bei Lea haengt sie am Regler, hier
    * gibt es keinen. */
   { id:'rechnen:gross', ueber:'Rechnen', titel:'Großes Einmaleins', farbe:2,
-    art:'rechnen', wer:['eltern'] },
+    art:'rechnen', wer:['stephan','violeta'] },
   /* Schreiben - nur fuer Fiona (N2a).
    *
    * Sie ist sechs und liest noch nicht. Alles andere in dieser App macht
@@ -3294,7 +3314,11 @@ function elternTor(){
 
 async function elternbereich(){
   const s = el('div');
-  const eintraege = await Protokoll.lesen();
+  /* Alte Eintraege trugen `profil:'eltern'`. Sie werden hier umgeschrieben
+     statt in der Ablage: ein Protokoll ist ein Mitschnitt, und einen
+     Mitschnitt aendert man nicht rueckwirkend - man liest ihn richtig. */
+  const eintraege = (await Protokoll.lesen())
+    .map(e => e.profil === ALTES_ELTERN ? { ...e, profil: alsProfil(e.profil) } : e);
   const a = Protokoll.auswerten(eintraege, NAMEN);
   const speicher = await Ablage.dauerhaft();
 
@@ -3344,6 +3368,45 @@ async function elternbereich(){
           <td class="num">${n ? Math.round(e.richtig/n*100)+' %' : '—'}</td>
           <td class="num">${n ? (e.schnitt/1000).toFixed(1)+' s' : '—'}</td>
           <td class="num">${e.tage.length || '—'}</td></tr>`).join('')}</tbody></table>
+
+      <h3 class="gruppe">${VERGLEICH.map(id=>PROFILE[id].name).join(' gegen ')}</h3>
+      ${(()=>{
+        /* Der Vergleich (N1).
+         *
+         * Verglichen wird, was ohnehin gezaehlt wird: auf Anhieb richtig
+         * und die Zeit. Keine erfundene Punktzahl - die waere `glatt` noch
+         * einmal, nur mit einem Faktor davor, und in diesem Verzeichnis
+         * steht keine Zahl an zwei Stellen.
+         *
+         * Gerechnet wird in `Protokoll.vergleich`, nicht hier: dieselbe
+         * Zaehlung soll das Tor pruefen koennen, ohne einen Browser zu
+         * starten. */
+        const v = Protokoll.vergleich(eintraege, VERGLEICH);
+        const zelle = (t, fuehrt)=>`<td class="num${fuehrt?' fuehrt':''}">${
+          t.aufgaben ? `${t.glatt} von ${t.aufgaben}<span class="dazu">${
+            (t.schnitt/1000).toFixed(1)} s</span>` : '—'}</td>`;
+        const reihe = (name, je, dick)=>{
+          const [x, y] = VERGLEICH.map(id=>je[id]);
+          return `<tr${dick?' class="summe"':''}><td>${name}</td>
+            ${zelle(x, x.glatt > y.glatt)}${zelle(y, y.glatt > x.glatt)}</tr>`;
+        };
+        if (!VERGLEICH.some(id=>v.summe[id].aufgaben))
+          return `<p class="unter">Noch nichts gespielt. Sobald ihr beide eine Übung
+            gemacht habt, steht hier, wer wie viele auf Anhieb richtig hatte.</p>`;
+        return `<p class="unter">Gezählt wird, was <strong>auf Anhieb richtig</strong>
+            war — beim ersten Versuch, ohne Hilfe. Die Zeit steht daneben, sie
+            entscheidet nichts.</p>
+          <table class="tab" id="duell"><thead><tr><th>Übung</th>
+            ${VERGLEICH.map(id=>`<th class="num">${PROFILE[id].name}</th>`).join('')}
+            </tr></thead><tbody>
+            ${v.reihen.map(r=>reihe(EBENEN.find(e=>e.id===r.ebene)?.titel || r.ebene, r.je)).join('')}
+            ${reihe('Zusammen', v.summe, true)}</tbody></table>
+          <p class="unter" id="duellsatz">${v.vorn
+            ? `<strong>${PROFILE[v.vorn].name}</strong> liegt vorn: ${
+                v.summe[v.vorn].glatt} auf Anhieb richtig gegen ${
+                v.summe[VERGLEICH.find(id=>id!==v.vorn)].glatt}.`
+            : 'Es steht gleich.'}</p>`;
+      })()}
 
       <h3 class="gruppe">Zuletzt geübt</h3>
       ${eintraege.length ? `<table class="tab" id="zuletzt"><thead><tr><th class="num">Wann</th>
@@ -3587,4 +3650,31 @@ async function elternbereich(){
 }
 
 /* ---------- Start --------------------------------------------------------- */
-(async ()=>{ await einstLaden(); zeige(profilwahl); })();
+
+/**
+ * Der alte Elternstand zieht zu Stephan um (N1).
+ *
+ * Er liegt unter `eltern:<ebene>` und waere nach der Umbenennung
+ * unerreichbar - vorhanden, aber von nichts mehr gelesen. Das ist die
+ * unangenehmste Sorte Datenverlust: nichts ist weg, es kommt nur nie
+ * wieder zum Vorschein.
+ *
+ * Die Schluessel lassen sich nicht auflisten (`alles` gibt Werte, keine
+ * Schluessel), also werden sie GEBAUT - aus `EBENEN`, die es ohnehin gibt.
+ * Umgezogen wird nur, was drueben noch nicht steht: wer schon als Stephan
+ * gespielt hat, verliert nichts.
+ */
+async function umzugEltern(){
+  for (const eb of EBENEN) {
+    const alt = `${ALTES_ELTERN}:${eb.id}`, neu = `${VERGLEICH[0]}:${eb.id}`;
+    try {
+      const stand = await Ablage.hole('fortschritt', alt);
+      if (!stand) continue;
+      if (!(await Ablage.hole('fortschritt', neu)))
+        await Ablage.setze('fortschritt', neu, stand);
+      await Ablage.loesche('fortschritt', alt);
+    } catch(e){}
+  }
+}
+
+(async ()=>{ await einstLaden(); await umzugEltern(); zeige(profilwahl); })();

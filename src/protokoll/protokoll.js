@@ -75,3 +75,56 @@ export function alsCsv(eintraege, namen) {
   return '﻿' + [kopf.join(';'), ...eintraege.map(zeile)].join('\r\n');
 }
 export const alsJson = (eintraege) => JSON.stringify(eintraege, null, 2);
+
+/**
+ * Zwei Profile nebeneinander (N1).
+ *
+ * Verglichen wird, was ohnehin gezaehlt wird: **auf Anhieb richtig** und
+ * die Zeit. Keine neue Groesse, keine Punkte, die sich jemand ausgedacht
+ * hat - in diesem Verzeichnis steht keine Zahl an zwei Stellen, und eine
+ * erfundene Punktzahl waere genau das: `glatt` noch einmal, nur mit einem
+ * Faktor davor.
+ *
+ * Was eine AUFGABE ist: ein Eintrag, der sie beendet - `richtig` oder
+ * `gezeigt`. Die Fehlversuche dazwischen stehen als eigene Eintraege im
+ * Protokoll und duerfen nicht mitgezaehlt werden, sonst haette der
+ * Ungeduldigere mehr „Aufgaben" als der Gruendliche.
+ *
+ * `glatt` heisst: beim ERSTEN Versuch richtig, ohne Hilfe. Dieselbe
+ * Bedeutung wie im Kopf waehrend der Sitzung und auf dem Endbildschirm.
+ */
+export function vergleich(eintraege, wer) {
+  const leer = () => ({ aufgaben: 0, glatt: 0, dauer: 0 });
+  const jeEbene = new Map();
+  const gesamt = Object.fromEntries(wer.map(id => [id, leer()]));
+  for (const e of eintraege) {
+    if (!wer.includes(e.profil)) continue;
+    if (e.ergebnis !== 'richtig' && e.ergebnis !== 'gezeigt') continue;
+    if (!jeEbene.has(e.ebene))
+      jeEbene.set(e.ebene, Object.fromEntries(wer.map(id => [id, leer()])));
+    for (const topf of [jeEbene.get(e.ebene)[e.profil], gesamt[e.profil]]) {
+      topf.aufgaben++;
+      topf.dauer += e.dauerMs || 0;
+      if (e.ergebnis === 'richtig' && e.versuch === 1) topf.glatt++;
+    }
+  }
+  const fertig = (t) => ({ ...t,
+    anteil: t.aufgaben ? t.glatt / t.aufgaben : 0,
+    schnitt: t.aufgaben ? Math.round(t.dauer / t.aufgaben) : 0 });
+  const reihen = [...jeEbene.entries()].map(([ebene, je]) => ({
+    ebene, je: Object.fromEntries(wer.map(id => [id, fertig(je[id])])) }))
+    .sort((a, b) => a.ebene.localeCompare(b.ebene));
+  const summe = Object.fromEntries(wer.map(id => [id, fertig(gesamt[id])]));
+  /* Wer vorn liegt - und `null`, wenn es gleich steht oder einer noch
+   * gar nicht gespielt hat. „Gleichstand" ist ein Ergebnis; ihn zu einem
+   * Sieger zu runden waere die einzige Stelle, an der dieser Vergleich
+   * etwas behaupten koennte, was nicht gemessen ist. */
+  const spieler = wer.filter(id => summe[id].aufgaben);
+  let vorn = null;
+  if (spieler.length === wer.length && wer.length === 2) {
+    const [a, b] = wer;
+    if (summe[a].glatt !== summe[b].glatt)
+      vorn = summe[a].glatt > summe[b].glatt ? a : b;
+  }
+  return { wer, reihen, summe, vorn };
+}

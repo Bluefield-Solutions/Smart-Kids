@@ -235,13 +235,21 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
     'TON.kind trägt keine Siegsterne — der Endbildschirm wäre für die Kinder ohne');
   console.log(`    Ton: ${kK.length} Schlüssel je Ton, in beiden dieselben`);
 
-  // Und jedes Profil muss einen Ton haben, den es gibt.
-  const zeile = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8')
-    .match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
+  /* Und jedes Profil muss einen Ton haben, den es gibt.
+   *
+   * Die Kennungen kommen aus der KOPFZEILE der Tabelle, nicht aus einer
+   * Liste hier: seit N1 sind es vier Spalten, und eine feste Dreierliste
+   * haette die vierte stillschweigend uebersprungen. */
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const kopf = doc.match(/^\|\s*\|\s*Fiona[^|]*\|.+\|\s*$/m);
+  pruefe(kopf, 'Die Kopfzeile der Profiltabelle fehlt im Backlog');
+  const PROFIL_IDS = kopf ? kopf[0].split('|').slice(2, -1)
+    .map(t => t.trim().split(/[\s(]/)[0].toLowerCase()).filter(Boolean) : [];
+  const zeile = doc.match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
   pruefe(zeile, 'Die Zeile „Ton" fehlt im Backlog — dann steht das Soll nirgends');
   if (zeile) {
     const soll = zeile[1].split('|').map(t => t.replace(/\*/g, '').trim());
-    const ids = ['fiona', 'lea', 'eltern'];
+    const ids = PROFIL_IDS;
     ids.forEach((id, i) => {
       const kurz = { kindlich: 'kind', sachlich: 'sachlich' }[soll[i]] || soll[i];
       const hat = quelle.match(new RegExp(`id:'${id}'[\\s\\S]{0,400}?ton:'([a-z]+)'`));

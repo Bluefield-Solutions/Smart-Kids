@@ -106,13 +106,35 @@ const PROFILNAMEN = (() => {
  * nicht den Vorrat - und zwar so viele, wie gleich kommen. Der Vorrat ist
  * erzeugt (100, 140, 158); ihn zu zeigen hiesse, einer Sechsjaehrigen vor
  * ihrer ersten Sitzung 2,8 Bildschirme Einmaleins-Tafel hinzulegen. */
+/* Die Kennungen der Profile - aus der KOPFZEILE der Tabelle, nicht aus
+ * einer Liste hier.
+ *
+ * Vor N1 stand in vier Toren `['fiona','lea','eltern']`. Die vierte Spalte
+ * (Violeta) haette sie alle still falsch gemacht: jede Zeile waere um eins
+ * verrutscht, und Violetas Werte waeren als Stephans geprueft worden.
+ * Eine Tabelle, die ihre eigenen Namen traegt, kann das nicht.
+ *
+ * Die Kennung ist das erste Wort der Spalte, klein: „Fiona (6)" -> `fiona`. */
+const PROFIL_IDS = (() => {
+  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+  const z = doc.match(/^\|\s*\|\s*Fiona[^|]*\|.+\|\s*$/m);
+  if (!z) { fehler.push('Die Kopfzeile der Profiltabelle fehlt im Backlog — '
+    + 'dann weiß der Rauchtest nicht, welche Spalte wem gehört'); return []; }
+  return z[0].split('|').slice(2, -1)
+    .map(t => t.trim().split(/[\s(]/)[0].toLowerCase()).filter(Boolean);
+})();
+
+/** Der angezeigte Name je Kennung - „stephan" steht als „Stephan" da. */
+const NAME_VON = Object.fromEntries(PROFIL_IDS.map(id =>
+  [id, id.charAt(0).toUpperCase() + id.slice(1)]));
+
 const SITZUNG = (() => {
   const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
   const z = doc.match(/^\|\s*Aufgaben je Sitzung\s*\|(.+)\|\s*$/m);
   if (!z) { fehler.push('Die Zeile „Aufgaben je Sitzung" fehlt im Backlog — '
     + 'dann prüft der Rauchtest den Vorlauf gegen nichts'); return {}; }
   const n = z[1].split('|').map(t => +(t.match(/\d+/) || [])[0]).filter(Number.isFinite);
-  return { fiona: n[0], lea: n[1], eltern: n[2] };
+  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, n[i]]));
 })();
 
 const TIEFE = (() => {
@@ -121,7 +143,7 @@ const TIEFE = (() => {
   if (!z) { fehler.push('Die Zeile „Ländertiefe" fehlt im Backlog — '
     + 'dann prüft der Rauchtest die Tiefe gegen nichts'); return {}; }
   const zahlen = z[1].split('|').map(s => +(s.match(/\d+/) || [])[0]).filter(Number.isFinite);
-  return { fiona: zahlen[0], lea: zahlen[1], eltern: zahlen[2] };
+  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, zahlen[i]]));
 })();
 
 /* Wer bekommt NIE eine Auswahl, sondern tippt immer?
@@ -140,7 +162,7 @@ const OHNE_AUSWAHL = (() => {
   const z = doc.match(/^\|\s*Auswahl statt Tippen\s*\|(.+)\|\s*$/m);
   if (!z) { fehler.push('Die Zeile „Auswahl statt Tippen" fehlt im Backlog — '
     + 'dann prüft der Rauchtest das Verbot gegen nichts'); return new Set(); }
-  const ids = ['fiona', 'lea', 'eltern'];
+  const ids = PROFIL_IDS;
   return new Set(z[1].split('|').map((t, i) => /\bnie\b/i.test(t) ? ids[i] : null).filter(Boolean));
 })();
 
@@ -188,7 +210,7 @@ const SACHLICH = (() => {
   const z = doc.match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
   if (!z) { fehler.push('Die Zeile „Ton" fehlt im Backlog — dann prüft der '
     + 'Rauchtest den Ton gegen nichts'); return new Set(); }
-  const ids = ['fiona', 'lea', 'eltern'];
+  const ids = PROFIL_IDS;
   return new Set(z[1].split('|')
     .map((t, i) => /sachlich/i.test(t) ? ids[i] : null).filter(Boolean));
 })();
@@ -198,7 +220,7 @@ const VORLESEN = (() => {
   const z = doc.match(/^\|\s*Vorlesen\s*\|(.+)\|\s*$/m);
   if (!z) { fehler.push('Die Zeile „Vorlesen" fehlt im Backlog — dann weiß der '
     + 'Rauchtest nicht, auf welche Ansage er warten darf'); return {}; }
-  const ids = ['fiona', 'lea', 'eltern'];
+  const ids = PROFIL_IDS;
   return Object.fromEntries(z[1].split('|').map((t, i) => [ids[i], /\bja\b/i.test(t)]));
 })();
 
@@ -793,6 +815,20 @@ if (laeuft('ablage')) try {
         loeschen: [...s.querySelectorAll('[data-weg]')].map(e => e.dataset.weg),
       };
     });
+    /* Und umgekehrt: KEIN Profil zuviel.
+     *
+     * Die Tabelle im Backlog ist das Soll, aber nur, solange sie
+     * vollstaendig ist. Faellt dort eine Spalte weg, prueft jedes Tor
+     * stillschweigend ein Profil weniger - und dieses eine wird nie
+     * gespielt, nie vorgelesen, nie auf Ueberlauf gemessen. Genau das
+     * kann kein anderer Test sehen, weil ihm dasselbe Soll fehlt.
+     * Deshalb hier, an der einzigen Stelle, die ALLE Profile der App
+     * auflistet. */
+    if (gesehen.uebersicht.length !== PROFILNAMEN.length)
+      merke('eltern', new Error(`die App kennt ${gesehen.uebersicht.length} Profile `
+        + `(${gesehen.uebersicht.join(', ')}), die Tabelle im Backlog nennt `
+        + `${PROFILNAMEN.length} (${PROFILNAMEN.join(', ')}) — eine fehlende Spalte `
+        + 'nimmt jedem Tor ein Profil, ohne dass eines rot wird'));
     for (const name of PROFILNAMEN)
       if (!gesehen.uebersicht.includes(name))
         merke('eltern', new Error(`in der Übersicht des Elternbereichs fehlt „${name}" `
@@ -810,6 +846,84 @@ if (laeuft('ablage')) try {
           gesehen.wackel.join(' · ') || 'nichts'})`));
     console.log(`  Elternbereich je Profil:    ${gesehen.uebersicht.join(' · ')} `
       + `· ${gesehen.loeschen.length} Löschknöpfe`);
+  }
+
+  /* Der Vergleich zweier Elternprofile (N1).
+   *
+   * Gepruefte Zahlen, nicht „eine Tabelle ist da": ein gesetzter
+   * Mitschnitt mit BEKANNTEM Ausgang, und die Erwartung steht hier
+   * ausgeschrieben - nicht als zweiter Aufruf derselben Rechnung. Sonst
+   * pruefte die Rechnung sich selbst (Regel 3).
+   *
+   *   Stephan: dreimal beendet, davon zweimal auf Anhieb richtig
+   *   Violeta: zweimal beendet, davon einmal auf Anhieb richtig
+   *
+   * Also 2 von 3 gegen 1 von 2, und Stephan liegt vorn. Ein Eintrag mit
+   * `versuch: 2` zaehlt als Aufgabe, aber nicht als „auf Anhieb" - genau
+   * daran haengt der ganze Vergleich. */
+  {
+    const T = Date.UTC(2026, 0, 15, 15, 30, 0);
+    const mitschnitt = [
+      { profil:'stephan', ebene:'rechnen:gross', gebietId:'g12*13', ergebnis:'richtig', versuch:1 },
+      { profil:'stephan', ebene:'rechnen:gross', gebietId:'q17',    ergebnis:'richtig', versuch:1 },
+      { profil:'stephan', ebene:'rechnen:gross', gebietId:'g13*17', ergebnis:'richtig', versuch:2 },
+      { profil:'violeta', ebene:'rechnen:gross', gebietId:'g12*13', ergebnis:'richtig', versuch:1 },
+      { profil:'violeta', ebene:'rechnen:gross', gebietId:'q17',    ergebnis:'gezeigt', versuch:3 },
+    ].map((e, i) => ({ zeit: T + i*1000, modul:'rechnen', eingabeart:'tippen',
+                       roheingabe:'', sicherheit:null, dauerMs:4000,
+                       fachVorher:1, fachNachher:2, ...e }));
+    const v = await neueSeite({ width: 1180, height: 820 }, ctx);
+    await v.evaluate((eintraege) => new Promise((ja, nein) => {
+      const auf = indexedDB.open('lernkiste', 1);
+      auf.onsuccess = () => {
+        const t = auf.result.transaction(['protokoll'], 'readwrite');
+        const l = t.objectStore('protokoll');
+        eintraege.forEach((e, i) => l.put(e, `n1-${i}`));
+        t.oncomplete = ja; t.onerror = () => nein(t.error);
+      };
+      auf.onerror = () => nein(auf.error);
+    }), mitschnitt);
+    await v.reload({ waitUntil: 'domcontentloaded' });
+    await v.waitForSelector('[data-profil="fiona"]');
+    await v.click('[data-profil="fiona"]');
+    await v.waitForSelector('.schirm.da #eltern');
+    await v.click('.schirm.da #eltern');
+    await v.waitForSelector('.schirm.da .ziffern');
+    for (let i = 0; i < 4; i++) await v.click('.schirm.da [data-z="0"]');
+    await v.waitForSelector('.schirm.da .kacheln', { timeout: 10000 });
+    const duell = await v.evaluate(() => {
+      const t = document.querySelector('.schirm.da #duell');
+      if (!t) return null;
+      const summe = [...t.querySelectorAll('tbody tr')].find(r => r.classList.contains('summe'));
+      return { kopf: [...t.querySelectorAll('thead th')].map(c => c.textContent.trim()),
+               summe: summe ? [...summe.cells].map(c => c.textContent.replace(/\s+/g, ' ').trim()) : null,
+               fuehrt: summe ? [...summe.cells].map(c => c.classList.contains('fuehrt')) : null,
+               satz: document.querySelector('.schirm.da #duellsatz')?.textContent.trim() || '' };
+    });
+    if (!duell) {
+      merke('eltern', new Error('es gibt keinen Vergleich der beiden Elternprofile — '
+        + 'dann steht der Fortschritt zwar getrennt da, ist aber nicht zu vergleichen'));
+    } else {
+      for (const name of ['Stephan', 'Violeta'])
+        if (!duell.kopf.includes(name))
+          merke('eltern', new Error(`im Vergleich fehlt die Spalte „${name}" `
+            + `(da stehen: ${duell.kopf.join(', ')})`));
+      if (!/2 von 3/.test(duell.summe?.[1] || ''))
+        merke('eltern', new Error(`Stephan steht mit „${duell.summe?.[1]}" da — `
+          + 'erwartet waren 2 von 3 (zwei auf Anhieb, einer erst im zweiten Versuch)'));
+      if (!/1 von 2/.test(duell.summe?.[2] || ''))
+        merke('eltern', new Error(`Violeta steht mit „${duell.summe?.[2]}" da — `
+          + 'erwartet waren 1 von 2 (eine gezeigte Aufgabe zählt, aber nicht als richtig)'));
+      if (!duell.fuehrt?.[1] || duell.fuehrt?.[2])
+        merke('eltern', new Error('die führende Spalte ist nicht die von Stephan — '
+          + 'dann muss man zwei Zahlen im Kopf vergleichen, und genau das soll die Tabelle abnehmen'));
+      if (!/Stephan/.test(duell.satz))
+        merke('eltern', new Error(`unter der Tabelle steht „${duell.satz}" — `
+          + 'erwartet war, dass Stephan vorn liegt'));
+      else console.log(`  Elternvergleich:            ${duell.summe?.[1]} gegen `
+        + `${duell.summe?.[2]}, ${duell.satz.split(':')[0]}`);
+    }
+    await v.close();
   }
 
   await p.screenshot({ path: '/tmp/smoke-eltern.png', fullPage: true });
@@ -1640,16 +1754,20 @@ function lobPruefen(wer, ebene, satz, gesprochen) {
     + 'Bei „sachlich" sagt sie von sich aus nichts'));
 }
 
-const EBENEN_EIGEN = { fiona: ['rechnen:plusminus',
+const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa'],
+                       violeta: ['rechnen:gross', 'hauptstaedte:europa'],
+                       fiona: ['rechnen:plusminus',
                                // Die Schreibwelt gehoert nur ihr (N2a, N3).
                                // Ohne diese beiden prueft `durchgang` zwar,
                                // dass keine FREMDE Ebene dasteht, aber nicht,
                                // dass die eigenen ueberhaupt da sind.
                                'schreiben:buchstaben', 'schreiben:diktat',
                                'schreiben:ziffern', 'schreiben:zahlen'],
-                       lea: ['rechnen:reihen', 'hauptstaedte:europa'],
-                       eltern: ['rechnen:gross', 'hauptstaedte:europa'] };
-if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
+                       lea: ['rechnen:reihen', 'hauptstaedte:europa'] };
+/* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
+ * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
+ * das nie gespielt wird, ist ein ungeprueftes Profil. */
+if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
   if (abbruch()) break;
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
@@ -1995,7 +2113,10 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
      * Geprueft wird am sichtbaren Ende, im Durchgang der Eltern: die
      * Kennungen (`g12*13`, `q12`, `t144:12`) haben kein Leerzeichen, die
      * Fragen (`12 × 13`, `12²`, `144 : 12`) tragen ein Rechenzeichen. */
-    if (wer === 'eltern' && durchgespielt) {
+    // Die Rechenaufgaben der Erwachsenen: geprueft am ERSTEN der beiden
+    // Elternprofile - beide spielen denselben Vorrat, und zweimal dasselbe
+    // Protokoll zu lesen kostet nur Zeit.
+    if (wer === PROFIL_IDS[2] && durchgespielt) {
       if (!(await p.$('.schirm.da [data-welt]')) && await p.$('.schirm.da #zur'))
         await p.click('.schirm.da #zur');
       await p.waitForSelector('.schirm.da #eltern', { timeout: 10000 });
@@ -2003,9 +2124,11 @@ if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
       await p.waitForSelector('.schirm.da .ziffern');
       for (let i = 0; i < 4; i++) await p.click('.schirm.da [data-z="0"]');
       await p.waitForSelector('.schirm.da .kacheln', { timeout: 10000 });
+      // Der Name muss MITGEGEBEN werden: was hier steht, laeuft im
+      // Browser und kennt die Namen des Tors nicht.
       const meine = await p.$$eval('.schirm.da #zuletzt tbody tr',
-        rs => rs.map(r => [...r.cells].map(c => c.textContent.trim()))
-                .filter(z => z[1] === 'Eltern').map(z => z[2]));
+        (rs, name) => rs.map(r => [...r.cells].map(c => c.textContent.trim()))
+                .filter(z => z[1] === name).map(z => z[2]), NAME_VON[wer]);
       /* Nur die Rechenaufgaben, und die erkennt man an der Ziffer: kein
        * Land und kein Bundesland traegt eine. Der erste Anlauf pruefte
        * ALLE zehn Zeilen und meldete „Mecklenburg-Vorpommern" als
@@ -2055,7 +2178,8 @@ if ((gehoert.lea || 0) > 0)
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
 // Bedienung ungeprueft.
 for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt',
-                    'lea: rechnen geschrieben', 'eltern: rechnen geschrieben'])
+                    'lea: rechnen geschrieben', `${PROFIL_IDS[2]}: rechnen geschrieben`,
+                    `${PROFIL_IDS[3]}: rechnen geschrieben`])
   if (!wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);

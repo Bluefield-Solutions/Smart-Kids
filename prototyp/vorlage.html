@@ -764,6 +764,14 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   .vorlage .malt{animation-name:none;stroke-dashoffset:0}}
 /* Der Buchstabe als Aufkleber und im Vorlauf - dieselben Zuege. */
 .zeichenbild{display:block}
+/* Der Elternvergleich (N1): wer in einer Zeile vorn liegt, wird markiert -
+   sonst muesste man zwei Zahlen im Kopf vergleichen, und genau das soll
+   die Tabelle einem abnehmen. Die Zeit steht klein darunter; sie
+   entscheidet nichts und darf deshalb nicht gleich laut sein. */
+#duell .fuehrt{font-weight:700;color:var(--gut)}
+#duell .summe td{border-top:var(--strich-stark) solid var(--linie);font-weight:700}
+#duell .dazu{display:block;font-family:var(--f-ui);font-size:var(--s-klein);
+  font-weight:400;color:var(--tinte-3)}
 /* Im kurzen Querformat steht das Werkzeug NEBEN dem Feld statt darunter -
    dieselbe Bewegung wie beim Mikrofon neben der Antwortliste. Gemessen:
    darunter blieben dem Feld 180 Punkte Hoehe, daneben sind es 270. */

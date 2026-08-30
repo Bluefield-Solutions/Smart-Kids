@@ -88,19 +88,26 @@ mit — und vor einer Sechsjährigen stünden zwölf Länder.
 
 ### 2.1 Die drei Profile
 
-| | Fiona (6) | Lea (8) | Eltern |
-|---|---|---|---|
-| Eingabe | ziehen, sprechen | ziehen, tippen | **nur tippen** |
-| Vorlesen | ja | nein | nein |
-| Ton | kindlich | kindlich | **sachlich** |
-| Auswahl statt Tippen | 4 Möglichkeiten | nur Ebene 4 | **nie** |
-| Ländertiefe | 3 | 5 | **12** |
-| Aufgaben je Sitzung | 6 | 8 | **12** |
-| streng | nein | ja | ja |
+| | Fiona (6) | Lea (8) | Stephan | Violeta |
+|---|---|---|---|---|
+| Eingabe | ziehen, sprechen | ziehen, tippen | **nur tippen** | **nur tippen** |
+| Vorlesen | ja | nein | nein | nein |
+| Ton | kindlich | kindlich | **sachlich** | **sachlich** |
+| Auswahl statt Tippen | 4 Möglichkeiten | nur Ebene 4 | **nie** | **nie** |
+| Ländertiefe | 3 | 5 | **12** | **12** |
+| Aufgaben je Sitzung | 6 | 8 | **12** | **12** |
+| streng | nein | ja | ja | ja |
 
-Die Spalten werden **der Reihe nach** gelesen (`fiona`, `lea`, `eltern`).
-Eine vierte Spalte einzufügen, ohne die Tore mitzuziehen, macht sie still
-falsch — das ist der eigentliche Kern von N1.
+**Stephan und Violeta sind Spalte für Spalte gleich.** Das ist keine
+Bequemlichkeit, sondern die Bedingung des Vergleichs: wer verschiedene
+Aufgaben bekäme, ließe sich nicht vergleichen. Verschieden ist nur der
+Name — und die Farbe der Kachel.
+
+Die **Kennungen kommen aus der Kopfzeile**, nicht aus einer Liste im Tor:
+das erste Wort einer Spalte, klein geschrieben. Vor N1 stand in vier Toren
+`['fiona','lea','eltern']`; eine vierte Spalte hätte sie still falsch
+gemacht — jede Zeile wäre um eins verrutscht, und Violetas Werte wären als
+Stephans geprüft worden. Jetzt trägt die Tabelle ihre eigenen Namen.
 
 ### 2.2 Der Rechenvorrat der Eltern
 

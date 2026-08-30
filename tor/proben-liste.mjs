@@ -639,9 +639,9 @@ export const PROBEN = [
   // Sie liest noch nicht, und eine Stadt hat keinen Umriss zum Ziehen.
   { n:'Fiona bekommt die Hauptstädte Europas', tor:'smoke', bauen:true,
     args:['--nur=durchgang', '--kurz'], datei:D,
-    such:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,\n    wer:['lea','eltern'] },",
+    such:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,\n    wer:['lea','stephan','violeta'] },",
     ersatz:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3 },",
-    an:{ ...DIST, fehlt:"wer:['lea','eltern']" },
+    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta']" },
     sagt:'steht aber in fionas Auswahl' },
 
   /* --- Ton je Profil und der Elternbereich als Bild -------------------- */
@@ -651,8 +651,13 @@ export const PROBEN = [
   // uebt. Der Ton ist eine Eigenschaft des Profils, und das Soll steht in
   // der Zeile „Ton" im Backlog - nicht in `spiel.js`, das diese Probe
   // faelscht.
+  /* Seit N1 gibt es ZWEI Elternprofile mit denselben Werten - die Zeile
+   * steht also zweimal, und die Probe verstellt beide. Genau das ist hier
+   * richtig: der Ton ist fuer beide derselbe, und ein Eingriff, der nur
+   * eines der beiden traefe, wuerde eine Ungleichheit erzeugen, die es
+   * nicht geben darf. */
   { n:'die Eltern bekommen den kindlichen Ton', tor:'inhalt', deckt:'inhalt',
-    datei:D,
+    datei:D, mehrfach:true,
     such:"          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',",
     ersatz:"          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'kind',",
     an:{ datei:D, text:"streng:true, ton:'kind'" },
@@ -1407,6 +1412,30 @@ export const PROBEN = [
     ersatz:'  const satz = Schreiben.BUCHSTABEN;',
     an:{ ...DIST, fehlt:"ziel.satz === 'ziffern' ? Schreiben.ZIFFERN" },
     sagt:'nicht angenommen' },
+
+  /* --- Zwei Elternprofile (N1) ----------------------------------------- *
+   *
+   * Der Vergleich lebt von einer einzigen Unterscheidung: „auf Anhieb
+   * richtig" ist nicht dasselbe wie „richtig". Faellt sie weg, sieht die
+   * Tabelle genauso aus - nur stehen andere Zahlen darin, und wer im
+   * zweiten Anlauf getroffen hat, gilt als sicher. */
+  { n:'auf Anhieb richtig heisst nur noch richtig', tor:'smoke',
+    args:['--nur=spielen,ablage'], bauen:true, datei:'src/protokoll/protokoll.js',
+    such:"      if (e.ergebnis === 'richtig' && e.versuch === 1) topf.glatt++;",
+    ersatz:"      if (e.ergebnis === 'richtig') topf.glatt++;",
+    an:{ ...DIST, fehlt:"e.ergebnis === 'richtig' && e.versuch === 1" },
+    sagt:'erwartet waren 2 von 3' },
+
+  /* Und die Tabelle selbst: faellt dort eine Spalte weg, prueft JEDES Tor
+   * ein Profil weniger - und keines wird rot, weil ihnen allen dasselbe
+   * Soll fehlt. Das ist die gefaehrlichste Sorte Luecke: sie macht die
+   * Kette leiser, nicht roter. */
+  { n:'eine Spalte fehlt in der Profiltabelle', tor:'smoke',
+    args:['--nur=spielen,ablage'], bauen:true, datei:'docs/Lernkiste-BACKLOG.md',
+    such:'| | Fiona (6) | Lea (8) | Stephan | Violeta |',
+    ersatz:'| | Fiona (6) | Lea (8) | Stephan |',
+    an:{ datei:'docs/Lernkiste-BACKLOG.md', fehlt:'| Stephan | Violeta |' },
+    sagt:'nimmt jedem Tor ein Profil' },
 
   /* --- Fachwelten (D4) ------------------------------------------------ */
 

@@ -191,12 +191,17 @@ const AUFNAHMEN = [
   // Tabellen, um die der Bereich zuletzt gewachsen ist.
   { name:'quer-eltern-tabellen', spiel:null, quer:true, stand:true, protokoll:true,
     wahl:'.schirm.da', tun:'eltern', roll:'Zuletzt geübt' },
+  /* Der Vergleich (N1) - der einzige Bildschirm, auf dem zwei Profile
+   * nebeneinander stehen. Ob er beantwortet, wer vorn liegt, sagt kein
+   * Tor: das sagt das Bild. */
+  { name:'quer-eltern-vergleich', spiel:null, quer:true, stand:true, protokoll:true,
+    wahl:'.schirm.da', tun:'eltern', roll:'Stephan gegen Violeta' },
   /* Der Endbildschirm der ELTERN - ein anderer als der der Kinder: keine
    * Siegsterne, „Sitzung beendet." statt „Geschafft!". Bis hierher hielt
    * ihn kein Vorbild; `quer-ende` zeigt Fionas. Gespielt werden die
    * Kontinente, weil das sechs Aufgaben sind und nicht zwoelf - und
    * getippt, weil das Profil nie eine Auswahl bekommt. */
-  { name:'quer-ende-eltern', spiel:'kontinente', kind:'eltern', quer:true,
+  { name:'quer-ende-eltern', spiel:'kontinente', kind:'stephan', quer:true,
     wahl:'.schirm.da', tun:'durch' },
   /* Der Vorlauf einer RECHENEBENE - ein anderer Bildschirm als der der
    * Gebiete: keine Umrisse, sondern die Aufgabe selbst, und nur so viele
@@ -274,7 +279,20 @@ const PROTOKOLL = [
   { profil:'fiona', ebene:'kontinente',    gebietId:'asien',   ergebnis:'richtig', dauerMs:3800 },
   { profil:'lea',   ebene:'laender:europa',gebietId:'POL',     ergebnis:'falsch',  dauerMs:6200 },
   { profil:'lea',   ebene:'laender:europa',gebietId:'POL',     ergebnis:'richtig', dauerMs:2900 },
-  { profil:'eltern',ebene:'rechnen:gross', gebietId:'g12*13',  ergebnis:'richtig', dauerMs:4300 },
+  /* Und die beiden Elternprofile (N1) - mit VERSCHIEDENEN Ergebnissen.
+   *
+   * Der Vergleichsbildschirm zaehlt, was beim ERSTEN Versuch richtig war.
+   * Traegen beide dieselben Zahlen, zeigt die Aufnahme zwar eine Tabelle,
+   * aber nicht, was sie kann: welche Zeile hervorgehoben wird und wer vorn
+   * liegt, waere auf jedem Bild dasselbe. Also: Stephan hat zwei glatt und
+   * eine nach dem zweiten Versuch, Violeta eine glatt und eine gezeigt. */
+  { profil:'stephan',ebene:'rechnen:gross', gebietId:'g12*13', ergebnis:'richtig', dauerMs:4300 },
+  { profil:'stephan',ebene:'rechnen:gross', gebietId:'q17',    ergebnis:'richtig', dauerMs:5100 },
+  { profil:'stephan',ebene:'laender:europa',gebietId:'POL',    ergebnis:'richtig',
+    versuch:2, dauerMs:8200 },
+  { profil:'violeta',ebene:'rechnen:gross', gebietId:'g13*17', ergebnis:'richtig', dauerMs:3600 },
+  { profil:'violeta',ebene:'laender:europa',gebietId:'ESP',    ergebnis:'gezeigt',
+    versuch:3, dauerMs:11400 },
 ].map((e, i) => ({ zeit: T0 + i * 60000, modul:'erdkunde', eingabeart:'ziehen',
                    roheingabe:'', sicherheit:null, versuch:1,
                    fachVorher:1, fachNachher:2, ...e }));
