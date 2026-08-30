@@ -2675,6 +2675,17 @@ if (laeuft('hinweis')) try {
   await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
   await bis(p, () => !!document.querySelector('.schirm.da .karte')?.style.width, 5000);
 
+  /* ZWEI Fehlgriffe, einer je Achse - und beide fest gewaehlt.
+   *
+   * Der erste Anlauf nahm das am weitesten entfernte Bundesland. Welche
+   * Achse dabei herauskommt, haengt an der Aufgabe: bei Thueringen war es
+   * senkrecht („weiter unten"), bei Saarland waagerecht („weiter rechts").
+   * Die Gegenprobe, die oben und unten vertauscht, haette im zweiten Fall
+   * gar nicht anschlagen koennen - sie war so gut wie die Wuerfel des
+   * Leitners. Jetzt wird je Achse das Gebiet mit dem groessten Abstand IN
+   * DIESER Achse genommen; damit kommt das Wort sicher vor.
+   *
+   * Zwei und nicht drei: nach dem dritten Fehlversuch loest die App auf. */
   const plan = await p.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     const ziel = s.querySelector('path.ziel');
@@ -2684,46 +2695,73 @@ if (laeuft('hinweis')) try {
     const auf = (a) => { const pt = svg.createSVGPoint(); pt.x = a[0]; pt.y = a[1];
       const q = pt.matrixTransform(svg.getScreenCTM()); return { x:q.x, y:q.y }; };
     const hier = auf(g.anker);
-    let weit = null, best = -1;
-    for (const x of D.deutschland) {
-      if (x.id === g.id || !x.anker) continue;
-      const q = auf(x.anker), d = Math.hypot(q.x - hier.x, q.y - hier.y);
-      if (d > best) { best = d; weit = { name:x.name, ...q }; }
-    }
+    const weitest = (achse) => {
+      let raus = null, best = -1;
+      for (const x of D.deutschland) {
+        if (x.id === g.id || !x.anker) continue;
+        const q = auf(x.anker), d = Math.abs(q[achse] - hier[achse]);
+        if (d > best) { best = d; raus = { name:x.name, ...q }; }
+      }
+      return raus;
+    };
     const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent.trim());
-    return { name:g.name, idx:namen.indexOf(g.name), weit,
-             obenDrunter: weit && weit.y > hier.y };
+    // dx/dy zeigen vom Ablegepunkt ZUM gesuchten Gebiet - dieselbe
+    // Richtung, die der Satz nennen muss.
+    const mit = (w) => w && ({ ...w, dx: hier.x - w.x, dy: hier.y - w.y });
+    return { name:g.name, idx:namen.indexOf(g.name),
+             senkrecht: mit(weitest('y')), waagerecht: mit(weitest('x')) };
   });
   if (!plan || plan.idx < 0) {
     merke('hinweis', new Error('das gesuchte Bundesland steht nicht in der Liste'));
   } else {
-    const et = (await p.$$('.schirm.da .etikett'))[plan.idx];
-    const a = await et.boundingBox();
-    await p.mouse.move(a.x + a.width/2, a.y + a.height/2);
-    await p.mouse.down();
-    await p.mouse.move(plan.weit.x, plan.weit.y, { steps: 12 });
-    await p.mouse.up();
-    const kam = await bis(p, () => !!document.querySelector('.schirm.da .hinweis'), 5000);
-    const satz = kam ? (await p.$eval('.schirm.da .hinweis', e => e.textContent.trim())) : '';
-    // Drei Ansprueche, und jeder einzeln pruefbar.
-    if (!satz.includes(plan.weit.name))
-      merke('hinweis', new Error(`der Hinweis nennt nicht, WAS unter dem Finger lag `
-        + `(${plan.weit.name}): „${satz}"`));
-    if (!satz.includes(plan.name))
-      merke('hinweis', new Error(`der Hinweis nennt nicht das gesuchte Gebiet `
-        + `(${plan.name}): „${satz}"`));
-    const richtung = (satz.match(/weiter (oben|unten)( (links|rechts))?/) || [])[0];
-    if (!richtung)
-      merke('hinweis', new Error(`der Hinweis nennt keine Richtung: „${satz}"`));
-    // Und die Richtung muss STIMMEN. Ein Hinweis, der wegzeigt, ist
-    // schlimmer als keiner - und genau das faellt sonst niemandem auf.
-    else if (plan.obenDrunter && !/oben/.test(richtung))
-      merke('hinweis', new Error(`abgelegt wurde UNTER dem gesuchten Gebiet, `
-        + `der Hinweis sagt „${richtung}": „${satz}"`));
-    else if (!plan.obenDrunter && !/unten/.test(richtung))
-      merke('hinweis', new Error(`abgelegt wurde ÜBER dem gesuchten Gebiet, `
-        + `der Hinweis sagt „${richtung}": „${satz}"`));
-    else console.log(`  Fehler beim Ziehen benannt:  „${satz}"`);
+    const ziehenAuf = async (wohin) => {
+      const et = (await p.$$('.schirm.da .etikett'))[plan.idx];
+      const a = await et.boundingBox();
+      await p.mouse.move(a.x + a.width/2, a.y + a.height/2);
+      await p.mouse.down();
+      await p.mouse.move(wohin.x, wohin.y, { steps: 12 });
+      await p.mouse.up();
+      const kam = await bis(p, () => !!document.querySelector('.schirm.da .hinweis'), 5000);
+      return kam ? (await p.$eval('.schirm.da .hinweis', e => e.textContent.trim())) : '';
+    };
+    for (const [achse, wohin] of [['senkrecht', plan.senkrecht],
+                                  ['waagerecht', plan.waagerecht]]) {
+      if (!wohin) continue;
+      // Zwischen den Versuchen muss der alte Hinweis weg sein, sonst
+      // liest der zweite Durchgang den ersten Satz.
+      await p.evaluate(() => document.querySelector('.schirm.da .hinweis')?.remove());
+      const satz = await ziehenAuf(wohin);
+      if (!satz.includes(wohin.name))
+        merke('hinweis', new Error(`${achse}: der Hinweis nennt nicht, WAS unter dem `
+          + `Finger lag (${wohin.name}): „${satz}"`));
+      if (!satz.includes(plan.name))
+        merke('hinweis', new Error(`${achse}: der Hinweis nennt nicht das gesuchte `
+          + `Gebiet (${plan.name}): „${satz}"`));
+      const richtung = (satz.match(/weiter (oben|unten|links|rechts)( (links|rechts))?/) || [])[0];
+      if (!richtung) {
+        merke('hinweis', new Error(`${achse}: der Hinweis nennt keine Richtung: „${satz}"`));
+        continue;
+      }
+      /* Die Richtung muss STIMMEN. Ein Hinweis, der wegzeigt, ist
+       * schlimmer als keiner: er schickt ein Kind weg von der Stelle, an
+       * der es fast richtig lag - und niemandem faellt es auf, der Satz
+       * ist ja da.
+       *
+       * Geprueft wird das VORZEICHEN je genannter Achse, nicht das Wort:
+       * die Schwelle, ab der eine Achse genannt wird, gehoert der App. Wer
+       * sie hier nachrechnete, pruefte die Rechnung gegen sich selbst. */
+      const falsch = [];
+      if (/oben/.test(richtung)   && !(wohin.dy < 0)) falsch.push('oben');
+      if (/unten/.test(richtung)  && !(wohin.dy > 0)) falsch.push('unten');
+      if (/links/.test(richtung)  && !(wohin.dx < 0)) falsch.push('links');
+      if (/rechts/.test(richtung) && !(wohin.dx > 0)) falsch.push('rechts');
+      if (falsch.length)
+        merke('hinweis', new Error(`${achse}: der Hinweis sagt „${richtung}", das Ziel `
+          + `liegt aber ${wohin.dx > 0 ? 'rechts' : 'links'} und `
+          + `${wohin.dy > 0 ? 'unter' : 'über'} dem Ablegepunkt `
+          + `(${falsch.join(', ')} zeigt weg): „${satz}"`));
+      else console.log(`  Fehler beim Ziehen (${achse.padEnd(10)}): „${satz}"`);
+    }
   }
   await p.close();
 } catch (e) { merke('hinweis', e); }

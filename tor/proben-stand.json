@@ -449,8 +449,12 @@
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
       "zeit": "2026-08-30"
     },
-    "die Ebenenwahl zeigt keine Sterne und Aufkleber mehr": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
+    "die Ebenenwahl zeigt keine Aufkleber mehr": {
+      "commit": "dae63f0fec495549532b309ffaa9d0405f7fa5d1",
+      "zeit": "2026-08-30"
+    },
+    "die Sterne kommen auf die Ebenenkachel zurueck": {
+      "commit": "dae63f0fec495549532b309ffaa9d0405f7fa5d1",
       "zeit": "2026-08-30"
     },
     "Balken und Aufkleberzahl laufen wieder auseinander": {
@@ -523,6 +527,14 @@
     },
     "eine Spalte fehlt in der Profiltabelle": {
       "commit": "2f1085368892ad6f39da874fe82e646395ae09a0",
+      "zeit": "2026-08-30"
+    },
+    "der Fehlgriff auf der Karte wird nicht mehr benannt": {
+      "commit": "dae63f0fec495549532b309ffaa9d0405f7fa5d1",
+      "zeit": "2026-08-30"
+    },
+    "der Hinweis zeigt in die falsche Richtung": {
+      "commit": "dae63f0fec495549532b309ffaa9d0405f7fa5d1",
       "zeit": "2026-08-30"
     },
     "alle Ebenen landen in derselben Welt": {
