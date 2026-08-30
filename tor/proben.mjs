@@ -364,8 +364,15 @@ const PROBEN = [
   // schrumpfen im Packer auf ein paar Dutzend Byte, und die Probe waere an
   // der Grenze gescheitert, ohne dass jemand den Grund gesehen haette.
   // Gemessen wird gzip, also muss die Fuellung wie Rauschen aussehen.
+  /* Der Fuellstoff haengt an der ERSTEN Zeile, nicht an einer Stelle im Rumpf.
+   *
+   * Hier stand `const LOB = [` - die Liste der Lobsprueche, die es seit der
+   * Ton-Runde nicht mehr gibt (sie steht in `TON`). Der Suchtext fand
+   * nichts mehr, und die Probe hat seitdem nichts bewiesen. Wo die 24 KB
+   * landen, ist dem Tor `budget` gleichgueltig; also an die Stelle, die es
+   * immer geben wird. */
   { n:'die Seite wächst unbemerkt', tor:'budget', bauen:true, datei:D,
-    such:"const LOB = [", ersatz:"const FUELL = '" + rauschen(24000) + "';\nconst LOB = [",
+    such:"const D = JSON.parse(", ersatz:"const FUELL = '" + rauschen(24000) + "';\nconst D = JSON.parse(",
     an:{ ...DIST, text:'const FUELL' }, sagt:'gewachsen' },
 
   /* --- rhythmus ----------------------------------------------------- */
@@ -481,8 +488,12 @@ const PROBEN = [
   // Sechsjaehrigen ploetzlich zwoelf Laender.
   { n:'Fiona bekommt die Länder der Eltern zu sehen', tor:'smoke', bauen:true,
     args:['--nur=durchgang'], datei:D,
-    such:"          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, farbe:'--f7' },",
-    ersatz:"          kandidaten:4, laenderTiefe:12, sitzung:6, streng:false, farbe:'--f7' },",
+    // Nur das eine Feld, nicht die ganze Zeile: die Profilzeile hat seit der
+    // Ton-Runde ein Feld mehr (`ton:'kind'`), und die abgeschriebene Zeile
+    // traf nichts mehr. Ein Suchtext, der mehr festhaelt als noetig, geht
+    // bei jeder Erweiterung kaputt.
+    such:"kandidaten:4, laenderTiefe:3,",
+    ersatz:"kandidaten:4, laenderTiefe:12,",
     an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
     sagt:'Länder im Vorlauf' },
 
@@ -624,7 +635,11 @@ const PROBEN = [
     such:'export const GRENZE_NAH     = 0.22;   // Vorsprung allein genuegt nur bis hier',
     ersatz:'export const GRENZE_NAH     = 0.99;   // Vorsprung allein genuegt nur bis hier',
     an:{ datei:'src/vergleich/vergleich.js', text:'GRENZE_NAH     = 0.99' },
-    sagt:'ist neu' },
+    // Nicht „ist neu": bei ZWEI Durchrutschern schreibt das Tor „sind
+    // neu", und genau zwei laesst der gelockerte Wert durch. Ein
+    // erwarteter Text, der die Einzahl mitfesthaelt, geht kaputt, sobald
+    // der Eingriff einen Fall mehr oeffnet.
+    sagt:'neu — bekannt war nur' },
   // Und eine Aussprachevariante faellt auf das falsche Land.
   //
   // Die 35 Laender aus R5 hatten je zwei erfundene Varianten, und keine
@@ -876,9 +891,12 @@ const PROBEN = [
   // Er zeigt nicht, was die Ebene enthaelt.
   { n:'der Vorlauf zeigt die falsche Zahl an Gebieten', tor:'smoke', bauen:true,
     args:['--nur=spielen'], datei:D,
-    such:'  const stuecke = vorrat(ebeneId);',
-    ersatz:'  const stuecke = vorrat(ebeneId).slice(0, 4);',
-    an:{ ...DIST, text:'vorrat(ebeneId).slice(0, 4)' },
+    // `vorlaufVorrat`, nicht `vorrat`: seit der Vorlauf bei den Rechenebenen
+    // nur noch Beispiele zeigt, geht er durch eine eigene Funktion. Der alte
+    // Suchtext fand nichts mehr.
+    such:'  const stuecke = vorlaufVorrat(ebeneId);',
+    ersatz:'  const stuecke = vorlaufVorrat(ebeneId).slice(0, 4);',
+    an:{ ...DIST, text:'vorlaufVorrat(ebeneId).slice(0, 4)' },
     sagt:'statt 16' },
 
   /* --- Die Pause (R1) ------------------------------------------------ */
@@ -897,8 +915,10 @@ const PROBEN = [
   // alten Faechern - dieselben Aufgaben, dasselbe Fach, nur ohne Haekchen.
   // Von aussen sieht das aus wie ein sauberer Neuanfang.
   { n:'nach „von vorne" läuft die alte Sitzung weiter', tor:'smoke', bauen:true, args:['--nur=ablage'],
-    datei:D, such:"    Stand = {};\n    vorlesen(`${titel} fängt wieder von vorne an.`);\n    starten(Sitzung.ebeneId);",
-    ersatz:"    vorlesen(`${titel} fängt wieder von vorne an.`);\n    zeige(spielschirm);",
+    // `sagen` statt `vorlesen` (Ton-Runde) - dieselbe Ursache wie beim
+    // Fehlwurf. Zwei Proben, ein Umbau, beide still gestorben.
+    datei:D, such:"    Stand = {};\n    sagen(`${titel} fängt wieder von vorne an.`);\n    starten(Sitzung.ebeneId);",
+    ersatz:"    sagen(`${titel} fängt wieder von vorne an.`);\n    zeige(spielschirm);",
     an:{ ...DIST, text:'von vorne an.`);\n    zeige(spielschirm)' },
     sagt:'zählt weiter statt neu anzufangen' },
 
@@ -920,7 +940,9 @@ const PROBEN = [
     an:{ ...DIST, fehlt:"b.style.animation='none';" },
     sagt:'folgt ihm nicht' },
   { n:'ein Fehlwurf bleibt stumm', tor:'ziehen', bauen:true, args:['--nur=meer'], datei:D,
-    suchRegex:/      const h = liste\.querySelector[\s\S]*?vorlesen\('Lass es auf dem Land los\.'\);\n/,
+    // `sagen`, nicht `vorlesen`: die dreizehn spontanen Ansagen haengen seit
+    // der Ton-Runde am Ton des Profils. Der alte Ausdruck traf nichts mehr.
+    suchRegex:/      const h = liste\.querySelector[\s\S]*?sagen\('Lass es auf dem Land los\.'\);\n/,
     ersatzFn:()=>'',
     an:{ ...DIST, fehlt:"Lass es auf dem Land los." }, sagt:'ohne jede Rückmeldung' },
   { n:'schon ein Antippen hebt das Etikett auf', tor:'ziehen', bauen:true, args:['--nur=tippen'], datei:D,
@@ -1008,7 +1030,11 @@ const PROBEN = [
     an:{ ...DIST, fehlt:'const teile = [frageText]' },
     sagt:'vorgelesen' },
   // Und sie haengt am KIND: Lea liest, fuer sie waere dieselbe Ansage Laerm.
-  { n:'die Ansage hängt nicht mehr am Kind', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
+  // `ohneSofort`: der Eingriff laesst auch die Eltern sprechen, und mit
+  // `--sofort` bricht der Rauchtest an dieser Meldung ab, bevor er die
+  // vorgelesenen Aufgaben ueberhaupt zaehlt.
+  { n:'die Ansage hängt nicht mehr am Kind', tor:'smoke', args:['--nur=durchgang'],
+    ohneSofort:true, bauen:true, datei:D,
     such:'function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }',
     ersatz:'function ansagen(text){ vorlesen(text); }',
     an:{ ...DIST, fehlt:'if (!P || P.vorlesen) vorlesen(text)' },
@@ -1336,6 +1362,18 @@ if (schmutzig) {
  * Die Kette (`npm run tor`) setzt sie NICHT — dort will man alle Fehler
  * auf einmal sehen.
  */
+/* …ausser dort, wo der Eingriff MEHRERE Pruefungen ausloest.
+ *
+ * `--sofort` bricht beim ERSTEN Fehler ab. Damit ist „mit welcher Meldung"
+ * die Meldung des ersten Fehlers - und die muss nicht die sein, um die es
+ * geht. Gemessen an „die Ansage haengt nicht mehr am Kind": der Eingriff
+ * laesst auch das Elternprofil sprechen, also meldet der Rauchtest zehnmal
+ * „bei ,sachlich' sagt sie von sich aus nichts" und bricht ab, BEVOR er die
+ * vorgelesenen Aufgaben zaehlt. Die Probe sah ein rotes Tor mit der
+ * falschen Meldung und bewies nichts.
+ *
+ * `ohneSofort:true` an der Probe laesst den ganzen Lauf durch. Es kostet
+ * Zeit, also nur dort, wo es noetig ist. */
 const KANN_SOFORT = new Set(['smoke']);
 /* `--kurz` dazu: der Durchgang spielt drei Ebenen statt neun je Profil.
  *
@@ -1347,9 +1385,9 @@ const KANN_SOFORT = new Set(['smoke']);
  * laut und nicht still. Die Abkuerzung kann also nichts verstecken, sie
  * kann nur auffallen. */
 const KANN_KURZ = new Set(['smoke']);
-const lauf = (befehl, umgebung, args) => {
+const lauf = (befehl, umgebung, args, ohneSofort) => {
   const mit = [...(args || []),
-    ...(KANN_SOFORT.has(befehl) ? ['--sofort'] : []),
+    ...(KANN_SOFORT.has(befehl) && !ohneSofort ? ['--sofort'] : []),
     ...(KANN_KURZ.has(befehl) ? ['--kurz'] : [])];
   try {
     return { code:0, aus: execFileSync('npm', ['run', befehl, ...(mit.length ? ['--', ...mit] : [])],
@@ -1595,8 +1633,12 @@ const angeschlagen = new Set();
  */
 const gesund = new Map();
 const istGesund = (p) => {
-  const schluessel = p.tor + ' ' + (p.args || []).join(' ');
-  if (!gesund.has(schluessel)) gesund.set(schluessel, lauf(p.tor, undefined, p.args).code === 0);
+  // `ohneSofort` gehoert in den Schluessel: der gesunde Lauf muss DIESELBEN
+  // Argumente haben wie die Probe, sonst vergleicht er zwei verschiedene
+  // Laeufe.
+  const schluessel = p.tor + ' ' + (p.args || []).join(' ') + (p.ohneSofort ? ' /voll' : '');
+  if (!gesund.has(schluessel))
+    gesund.set(schluessel, lauf(p.tor, undefined, p.args, p.ohneSofort).code === 0);
   return gesund.get(schluessel);
 };
 
@@ -1675,7 +1717,7 @@ for (const p of welche) {
   }
 
   /* --- Schlägt das Tor an? ---------------------------------------- */
-  const r = lauf(p.tor, p.umgebung, p.args);
+  const r = lauf(p.tor, p.umgebung, p.args, p.ohneSofort);
   wiederherstellen(p.bauen);
 
   // Erst jetzt fragen, ob es ohne Eingriff gruen gewesen waere: der Baum
