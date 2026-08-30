@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Die ERFUNDENE Haelfte. Sie dient dem EINSTELLEN des Abgleichs, nicht dem Beweis. Wer den Korpus schreibt und den Abgleich einstellt, ist Pruefling und Pruefer zugleich - deshalb zaehlt erst die eingefrorene Haelfte aus echten Aufnahmen (M4).  Antarktika ist seit der iPhone-Runde kein Kontinent mehr in diesem Spiel; seine Zeilen sind hier entfallen.",
+  "_hinweis": "Die ERFUNDENE Haelfte. Sie dient dem EINSTELLEN des Abgleichs, nicht dem Beweis. Wer den Korpus schreibt und den Abgleich einstellt, ist Pruefling und Pruefer zugleich - deshalb zaehlt erst die eingefrorene Haelfte aus echten Aufnahmen (M4).  Antarktika ist seit der iPhone-Runde kein Kontinent mehr in diesem Spiel; seine Zeilen sind hier entfallen.  Seit R5 gibt es zwoelf Laender je Kontinent statt fuenf; die Raenge 6 bis 12 standen bis dahin mit ihren Aussprachevarianten hier NICHT drin - sie waren nie gegengehoert. Nachgetragen sind die, bei denen sich zwei Laender WIRKLICH aehneln, und als Nichttreffer echte Nachbarlaender, die es im Spiel nicht gibt (Irak, Sued-Sudan, Taiwan, Dominica). Genau dort faellt eine zu weiche Grenze auf.",
   "treffer": [
     [
       "australien",
@@ -141,6 +141,87 @@
         "baden württemberg",
         "baden wuerttemberg"
       ]
+    ],
+    [
+      "POL",
+      [
+        "polen",
+        "pohlen",
+        "poolen",
+        "bolen"
+      ]
+    ],
+    [
+      "UKR",
+      [
+        "ukraine",
+        "ukrajine",
+        "ukraiene"
+      ]
+    ],
+    [
+      "IRN",
+      [
+        "iran",
+        "iiran",
+        "ihran"
+      ]
+    ],
+    [
+      "THA",
+      [
+        "thailand",
+        "tailand",
+        "tailant"
+      ]
+    ],
+    [
+      "ZAF",
+      [
+        "südafrika",
+        "suedafrika",
+        "süd afrika"
+      ]
+    ],
+    [
+      "SDN",
+      [
+        "sudan",
+        "suudan",
+        "sudaan"
+      ]
+    ],
+    [
+      "URY",
+      [
+        "uruguay",
+        "urugwai",
+        "uruguai"
+      ]
+    ],
+    [
+      "PRY",
+      [
+        "paraguay",
+        "paragwai",
+        "parakwai"
+      ]
+    ],
+    [
+      "NLD",
+      [
+        "niederlande",
+        "holland",
+        "niderlande"
+      ]
+    ],
+    [
+      "GRC",
+      [
+        "griechenland",
+        "griechnland",
+        "griechenlant"
+      ]
     ]
   ],
   "nichttreffer": [
@@ -245,6 +326,78 @@
         "brandenburg",
         "bremen",
         "baden"
+      ]
+    ],
+    [
+      "IRN",
+      [
+        "irak",
+        "israel",
+        "indien"
+      ]
+    ],
+    [
+      "ZAF",
+      [
+        "sudan",
+        "süd sudan",
+        "simbabwe"
+      ]
+    ],
+    [
+      "SDN",
+      [
+        "südafrika",
+        "süd sudan",
+        "somalia"
+      ]
+    ],
+    [
+      "URY",
+      [
+        "paraguay",
+        "guyana",
+        "peru"
+      ]
+    ],
+    [
+      "PRY",
+      [
+        "uruguay",
+        "peru",
+        "paraguayer"
+      ]
+    ],
+    [
+      "POL",
+      [
+        "portugal",
+        "pole",
+        "polnisch"
+      ]
+    ],
+    [
+      "NLD",
+      [
+        "neuseeland",
+        "niederländer",
+        "deutschland"
+      ]
+    ],
+    [
+      "GRC",
+      [
+        "grönland",
+        "grieche",
+        "griechisch"
+      ]
+    ],
+    [
+      "THA",
+      [
+        "taiwan",
+        "tansania",
+        "thailänder"
       ]
     ]
   ]

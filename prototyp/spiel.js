@@ -270,6 +270,7 @@ const aufzaehlen = (namen) => namen.length < 2 ? (namen[0] || '')
 const TON = {
   kind: {
     spricht: true,
+    siegsterne: true,
     lob:  ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
            'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'],
     ende: 'Geschafft!',
@@ -278,6 +279,17 @@ const TON = {
   },
   sachlich: {
     spricht: false,
+    /* Keine Sterne auf dem Endbildschirm.
+     *
+     * Nicht aus Geschmack: sie sagen dasselbe wie die Zeile darunter.
+     * Drei Sterne heissen „alles auf Anhieb richtig", und genau das steht
+     * eine Zeile tiefer als „12 von 12 auf Anhieb richtig" - nur genauer.
+     * Was zweimal dasteht, veraltet einmal (Regel 15), und von den beiden
+     * ist die Zahl die haltbarere.
+     *
+     * Im KOPF waehrend der Sitzung bleiben sie: dort sind sie der einzige
+     * laufende Punktestand, also nicht doppelt. */
+    siegsterne: false,
     lob:  ['Richtig.', 'Stimmt.', 'Korrekt.', 'Sitzt.'],
     ende: 'Sitzung beendet.',
     ersterKleber: 'Ab dem zweiten Mal richtig kommt ein Gebiet ins Buch.',
@@ -2426,7 +2438,7 @@ function endschirm(){
   const f=Leitner.fortschritt(st.alle, Stand);
   s.innerHTML=kopf({}) + `
     <div class="mitte">
-      <div class="siegsterne">${sterne(n,56)}</div>
+      ${ton().siegsterne ? `<div class="siegsterne">${sterne(n,56)}</div>` : ''}
       <div class="gross">${ton().ende}</div>
       <div class="unter">${st.glatt} von ${st.liste.length} auf Anhieb richtig.</div>
       ${fortschrittBalken(f, 'breit')}

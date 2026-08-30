@@ -581,6 +581,39 @@ const PROBEN = [
     an:{ datei:'src/geo/staedte.js', fehlt:'"beschriftung":"innen"' },
     sagt:'nur die Sorte' },
 
+  // Ein Schluessel fehlt in einem der beiden Toene.
+  //
+  // `undefined` ist falsch, nicht laut: die Siegsterne waeren fuer ALLE
+  // weg, und ein Tippfehler saehe aus wie eine Entscheidung.
+  { n:'ein Schlüssel fehlt im kindlichen Ton', tor:'inhalt', deckt:'inhalt', datei:D,
+    such:'    siegsterne: true,',
+    ersatz:'    siegsternee: true,',
+    an:{ datei:D, text:'siegsternee: true' },
+    sagt:'verschiedene Schlüssel' },
+
+  /* --- Aussprache: gegengehoert -------------------------------------- */
+  // Ein Vorsprung allein macht wieder einen sicheren Treffer.
+  //
+  // Dann wird „Irak" glatt als IRAN gewertet: zwei echte Nachbarlaender,
+  // ein Buchstabe Unterschied bei vier, und der Rest Asiens weit weg.
+  { n:'ein Vorsprung allein genügt wieder', tor:'vergleich', deckt:'vergleich',
+    datei:'src/vergleich/vergleich.js',
+    such:'export const GRENZE_NAH     = 0.22;   // Vorsprung allein genuegt nur bis hier',
+    ersatz:'export const GRENZE_NAH     = 0.99;   // Vorsprung allein genuegt nur bis hier',
+    an:{ datei:'src/vergleich/vergleich.js', text:'GRENZE_NAH     = 0.99' },
+    sagt:'ist neu' },
+  // Und eine Aussprachevariante faellt auf das falsche Land.
+  //
+  // Die 35 Laender aus R5 hatten je zwei erfundene Varianten, und keine
+  // davon war je durch den Abgleich gelaufen. Jetzt laufen ALLE - Name,
+  // Alias, Variante, 213 Formen.
+  { n:'eine Aussprachevariante zeigt aufs falsche Land', tor:'vergleich', deckt:'vergleich',
+    datei:'src/inhalt/erdkunde.js',
+    such:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','pohlen'] },",
+    ersatz:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','griechenland'] },",
+    an:{ datei:'src/inhalt/erdkunde.js', text:"aussprache:['polen','griechenland']" },
+    sagt:'angenommen wurde' },
+
   /* --- Umbruch der Fahne und die zwei Achsen des Sprechens ------------- */
   // Die Fahne bricht nicht mehr um.
   //

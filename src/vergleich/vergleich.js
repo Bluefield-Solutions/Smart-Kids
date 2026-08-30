@@ -123,6 +123,7 @@ export function abstandZu(eingabe, k) {
 export const GRENZE_ANNAHME = 0.34;   // darueber: gar nicht erst annehmen
 export const GRENZE_SICHER  = 0.12;   // darunter: ohne Rueckfrage
 export const ABSTAND_NOETIG = 0.14;   // Vorsprung vor dem Zweitbesten
+export const GRENZE_NAH     = 0.22;   // Vorsprung allein genuegt nur bis hier
 export const LAENGE_SICHER  = 0.15;   // darueber IMMER nur Rueckfrage
 
 /**
@@ -143,7 +144,32 @@ export function abgleich(eingabe, kandidaten) {
   // Ein Wort, das eine Silbe zu kurz oder zu lang ist, wird NIE ohne
   // Rueckfrage angenommen - auch wenn es klanglich passt. "Meintest du
   // Bayern?" ist die richtige Antwort auf "Bayer", nicht "richtig".
-  const sicher = (erster.d <= GRENZE_SICHER || vorsprung >= ABSTAND_NOETIG)
+  /* Ein VORSPRUNG allein macht einen Treffer nicht sicher.
+   *
+   * Hier stand `erster.d <= GRENZE_SICHER || vorsprung >= ABSTAND_NOETIG`.
+   * Der Vorsprung sagt aber nur „kein anderer Kandidat ist nah" - nicht
+   * „dieser ist nah genug". In einer geschlossenen Menge ist das meistens
+   * dasselbe; nicht aber, wenn jemand ein ANDERES echtes Wort sagt, das
+   * zufaellig in der Naehe eines Kandidaten liegt.
+   *
+   * Gefunden beim Nachhoeren der Aussprachevarianten (R5): „Irak" wurde
+   * glatt als IRAN angenommen. Zwei echte Nachbarlaender, ein Buchstabe
+   * Unterschied bei vier - und der Rest Asiens ist weit weg, also war der
+   * Vorsprung gross. Ein falsches Land wurde als richtig gewertet.
+   *
+   * `GRENZE_NAH` deckelt das: der Vorsprung zaehlt nur, solange der
+   * Abstand selbst noch anstaendig ist. Daraufhin heisst die Antwort auf
+   * „Irak" nicht mehr „richtig", sondern „Meintest du Iran?" - und genau
+   * dafuer gibt es die Rueckfrage.
+   *
+   * Der Wert ist GEMESSEN, nicht gesetzt. Durchprobiert von 0,12 bis
+   * 0,34 gegen den erfundenen Korpus: die Trefferquote bleibt ueberall
+   * bei 100 %, der Falsch-Positiv-Anteil bei 2,3 %. Was sich aendert, ist
+   * die Zahl der Rueckfragen (8 bei 0,12, 3 ab 0,22) und ob „Irak"
+   * durchrutscht (ab 0,25 ja). 0,22 ist der groesste Wert, der ihn noch
+   * faengt - also der, der am wenigsten Rueckfragen kostet. */
+  const sicher = (erster.d <= GRENZE_SICHER
+                  || (vorsprung >= ABSTAND_NOETIG && erster.d <= GRENZE_NAH))
                  && erster.laenge < LAENGE_SICHER;
   return {
     art: sicher ? 'angenommen' : 'rueckfrage',

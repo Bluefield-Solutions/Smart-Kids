@@ -219,6 +219,22 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   pruefe(!gleich.length, `Beide Töne sagen dasselbe: ${gleich.join(', ')} — `
     + 'dann ist die Unterscheidung nur behauptet');
 
+  /* Beide Toene muessen DIESELBEN Schluessel tragen.
+   *
+   * Der Endbildschirm liest `ton().siegsterne`, `ton().ende`,
+   * `ton().ersterKleber`. Fehlt einer in einem der beiden Bloecke, ist er
+   * `undefined` - und `undefined` ist falsch, nicht laut. Die Sterne
+   * waeren dann fuer ALLE weg, und kein Tor haette etwas gesagt: ein
+   * Tippfehler im Schluessel sieht aus wie eine Entscheidung. */
+  const schluessel = (b) => [...(b || '').matchAll(/^\s{4}(\w+):/gm)].map(x => x[1]).sort();
+  const kK = schluessel(bloecke.kind), kS = schluessel(bloecke.sachlich);
+  const fehlt = [...kK.filter(x => !kS.includes(x)).map(x => `sachlich fehlt „${x}"`),
+                 ...kS.filter(x => !kK.includes(x)).map(x => `kind fehlt „${x}"`)];
+  pruefe(!fehlt.length, `Die beiden Töne tragen verschiedene Schlüssel: ${fehlt.join(', ')}`);
+  pruefe(/siegsterne: true/.test(bloecke.kind || ''),
+    'TON.kind trägt keine Siegsterne — der Endbildschirm wäre für die Kinder ohne');
+  console.log(`    Ton: ${kK.length} Schlüssel je Ton, in beiden dieselben`);
+
   // Und jedes Profil muss einen Ton haben, den es gibt.
   const zeile = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8')
     .match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
