@@ -1736,4 +1736,49 @@ export const PROBEN = [
     ersatz:"      text = zugHinweis('', ctx);",
     an:{ ...DIST, fehlt:"if (ctx.getroffen===ziel.id) ergebnis='richtig';" },
     sagt:'nicht gewertet' },
+
+  /* --- B2: der Test ohne Hilfen --------------------------------------
+   *
+   * Vier Proben: die drei Hilfen einzeln und der eine Versuch. Jede
+   * schaltet genau eine Abschaltung wieder an - denn genau das ist es,
+   * was hier gebaut wurde: Weglassen.
+   */
+
+  { n:'im Test steht wieder „Weiß ich nicht"', tor:'smoke',
+    args:['--nur=test'], bauen:true, datei:D,
+    such:'  if (!st.test) {\n    const weiter = el(\'button\',\'leise\');',
+    ersatz:'  if (true) {\n    const weiter = el(\'button\',\'leise\');',
+    an:{ ...DIST, text:"if (true) {\n    const weiter = el('button','leise');" },
+    sagt:'Weiß ich nicht' },
+
+  { n:'im Test steht wieder der Zeiger auf der Karte', tor:'smoke',
+    args:['--nur=test'], bauen:true, datei:D,
+    such:'  const zeiger = zielForm.anker && !st.test',
+    ersatz:'  const zeiger = zielForm.anker',
+    an:{ ...DIST, fehlt:'zielForm.anker && !st.test' },
+    sagt:'Zeiger auf der Karte' },
+
+  { n:'im Test gibt es wieder eine Auswahl', tor:'smoke',
+    args:['--nur=test'], bauen:true, datei:D,
+    such:"  const istAuswahl = (istHaupt || art==='bundeslaender') && darfWaehlen && !st.test;",
+    ersatz:"  const istAuswahl = (istHaupt || art==='bundeslaender') && darfWaehlen;",
+    an:{ ...DIST, fehlt:'darfWaehlen && !st.test' },
+    sagt:'Etiketten statt eines Schreibfelds' },
+
+  // Der eine Versuch. Ohne ihn geht es zurueck auf drei - und bei vier
+  // Moeglichkeiten hat man nach dreimal Raten recht.
+  { n:'im Test hat man wieder drei Versuche', tor:'smoke',
+    args:['--nur=test'], bauen:true, datei:D,
+    such:'    } else if (st.test) {',
+    ersatz:'    } else if (false) {',
+    an:{ ...DIST, text:'} else if (false) {' },
+    sagt:'ein Versuch je Aufgabe' },
+
+  // Und der Pokal selbst: ohne ihn ist der Test eine Runde ohne Ertrag.
+  { n:'der bestandene Test bringt keinen Pokal mehr', tor:'smoke',
+    args:['--nur=test'], bauen:true, datei:D,
+    such:'  if (st.test && bestanden) pokalSetzen(st.ebeneId,',
+    ersatz:'  if (false) pokalSetzen(st.ebeneId,',
+    an:{ ...DIST, text:'if (false) pokalSetzen(st.ebeneId,' },
+    sagt:'Pokal' },
 ];
