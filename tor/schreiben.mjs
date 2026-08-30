@@ -71,6 +71,34 @@ pruefe(S.BUCHSTABEN.length === 26, `${S.BUCHSTABEN.length} Buchstaben statt 26`)
   }
 }
 
+/* ---- Der Diktat-Vorrat (N3) ------------------------------------------
+ *
+ * Dieselben Buchstaben, andere Frage - und ein EIGENER Leitner-Stand.
+ * Geprueft wird genau das: dass die Kennungen sich nicht ueberschneiden.
+ * Taeten sie es, waere ein nachgefahrener Buchstabe als aus dem Gehoer
+ * geschriebener gutgeschrieben - ein Koennen, das es nicht gibt, und
+ * niemand saehe es: der Leitner rechnet einfach weiter.
+ */
+{
+  const nach = S.vorrat(), diktat = S.vorratDiktat();
+  pruefe(diktat.length === nach.length,
+    `Diktat: ${diktat.length} Buchstaben, Nachfahren ${nach.length}`);
+  const doppelt = diktat.filter(d => nach.some(n => n.id === d.id));
+  pruefe(!doppelt.length, `Diktat und Nachfahren teilen sich Kennungen: `
+    + `${doppelt.map(x => x.id).join(', ')} — dann zählt ein nachgefahrener `
+    + 'Buchstabe als geschriebener');
+  for (const d of diktat) {
+    // Die Ansage MUSS den Buchstaben nennen - sie ist die ganze Aufgabe.
+    pruefe(new RegExp(`\\b${d.zeichen}\\b`).test(d.gesagt),
+      `Diktat ${d.zeichen}: die Ansage „${d.gesagt}" nennt den Buchstaben nicht — `
+      + 'dann gibt es keine Aufgabe');
+    pruefe(d.zuege && d.zuege.length,
+      `Diktat ${d.zeichen}: keine Züge — dann kann nach drei Fehlversuchen `
+      + 'nichts vorgemacht werden');
+  }
+  console.log(`    Diktat: ${diktat.length} Buchstaben, eigene Kennungen, jede Ansage nennt ihren`);
+}
+
 /* ---- Jede Vorlage erkennt sich selbst -------------------------------- */
 {
   let gut = 0;

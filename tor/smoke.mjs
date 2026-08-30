@@ -1639,7 +1639,12 @@ function lobPruefen(wer, ebene, satz, gesprochen) {
     + 'Bei „sachlich" sagt sie von sich aus nichts'));
 }
 
-const EBENEN_EIGEN = { fiona: ['rechnen:plusminus'],
+const EBENEN_EIGEN = { fiona: ['rechnen:plusminus',
+                               // Die Schreibwelt gehoert nur ihr (N2a, N3).
+                               // Ohne diese beiden prueft `durchgang` zwar,
+                               // dass keine FREMDE Ebene dasteht, aber nicht,
+                               // dass die eigenen ueberhaupt da sind.
+                               'schreiben:buchstaben', 'schreiben:diktat'],
                        lea: ['rechnen:reihen', 'hauptstaedte:europa'],
                        eltern: ['rechnen:gross', 'hauptstaedte:europa'] };
 if (laeuft('durchgang')) for (const wer of ['fiona', 'lea', 'eltern']) {
@@ -2209,6 +2214,121 @@ if (laeuft('schreiben')) try {
       + `in Fach ${fach} — erwartet mindestens 2`));
   else console.log(`  Im Leitner angekommen:      bu:${zeichen} in Fach ${fach}`);
   await p.close();
+
+  /* --- Diktat (N3): der Buchstabe wird angesagt, nicht gezeigt ---------
+   *
+   * Die eine Eigenschaft, die diese Ebene ausmacht, ist eine NEGATIVE:
+   * der Buchstabe steht nirgends. Sie laesst sich nur so pruefen - und
+   * genau deshalb wird der gesuchte Buchstabe hier aus der ANSAGE
+   * gelesen, nicht vom Bildschirm. Wer ihn vom Bildschirm liest, kann
+   * anschliessend nicht mehr behaupten, dass er dort nicht steht.
+   */
+  const d = await neueSeite({ width: 844, height: 390 }, ctx);
+  await d.click('[data-profil="fiona"]');
+  await zurEbenenwahl(d, 'schreiben:diktat');
+  await d.click('[data-ebene="schreiben:diktat"]');
+  await d.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 25000 });
+  await d.evaluate(() => { window.__gesagt = []; });
+  await durchVorlaufWenn(d);
+  await d.waitForSelector('.schirm.da .schreibblatt', { timeout: 15000 });
+
+  const angesagt = await bis(d, () => (window.__gesagt || [])
+    .some(t => /^Schreib ein /.test(t)), 5000)
+    .then(() => d.evaluate(() => (window.__gesagt || [])
+      .find(t => /^Schreib ein /.test(t)) || '')).catch(() => '');
+  const gesucht = (angesagt.match(/^Schreib ein ([A-ZÄÖÜ])/) || [])[1];
+  if (!gesucht) {
+    merke('schreiben', new Error('im Diktat wird kein Buchstabe angesagt — '
+      + `gehört wurde „${angesagt || 'nichts'}". Ohne Ansage gibt es keine Aufgabe`));
+  } else {
+    // Und jetzt die negative Eigenschaft: nirgends zu sehen.
+    const sichtbar = await d.evaluate(() => ({
+      vorlage: document.querySelectorAll('.schirm.da #vorlage path').length,
+      text: document.querySelector('.schirm.da').innerText,
+      marken: [...document.querySelectorAll('.schirm.da [aria-label]')]
+        .map(e => e.getAttribute('aria-label')).join(' | '),
+    }));
+    if (sichtbar.vorlage)
+      merke('schreiben', new Error(`im Diktat stehen ${sichtbar.vorlage} Vorlagenzüge `
+        + 'auf dem Blatt — dann ist es ein Abmalen mit Ton, kein Diktat'));
+    if (new RegExp(`\\b${gesucht}\\b`).test(sichtbar.text))
+      merke('schreiben', new Error(`im Diktat steht der gesuchte Buchstabe „${gesucht}" `
+        + `im Text: „${sichtbar.text.replace(/\s+/g, ' ').slice(0, 80)}"`));
+    if (new RegExp(`\\b${gesucht}\\b`).test(sichtbar.marken))
+      merke('schreiben', new Error(`im Diktat nennt eine Beschriftung den gesuchten `
+        + `Buchstaben „${gesucht}": „${sichtbar.marken.slice(0, 80)}"`));
+    console.log(`  Diktat angesagt:            ${gesucht}, und nirgends zu sehen`);
+
+    // Richtig geschrieben - aus dem Gehoer. Die Zuege kommen aus dem
+    // Vorrat, nicht vom Bildschirm: dort steht ja nichts.
+    const vorlage = Schreiben.BUCHSTABEN.find(x => x.zeichen === gesucht);
+    for (const dz of vorlage.zuege)
+      await zeichneZug(d, Schreiben.abtasten(dz, 26)
+        .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
+    const genommen = await d.waitForFunction(
+      () => !!document.querySelector('.schirm.da .frage .richtigText'),
+      null, { timeout: 6000 }).then(() => true).catch(() => false);
+    if (!genommen)
+      merke('schreiben', new Error(`ein sauber geschriebenes ${gesucht} wurde im Diktat `
+        + `nicht angenommen — auf dem Bildschirm steht „${
+          (await d.$eval('.schirm.da #frage', e => e.textContent)).trim()}"`));
+    else console.log(`  Diktat geschrieben:         ${gesucht} angenommen`);
+    /* Auf die NAECHSTE Aufgabe warten, nicht auf die Uhr.
+     *
+     * Der erste Anlauf wartete 600 ms - und zeichnete dann in den
+     * Bildschirm, der gerade weggeblendet wurde. Gewartet wird auf das,
+     * worauf es ankommt: das Lob ist weg, es steht genau EIN Bildschirm
+     * da, und auf ihm liegt ein leeres Blatt. */
+    await weitergegangen(d);
+    await d.waitForFunction(() => document.querySelectorAll('.schirm').length === 1
+      && !!document.querySelector('.schirm.da .schreibblatt')
+      && !document.querySelector('.schirm.da #gemalt path'),
+      null, { timeout: 8000 }).catch(() => {});
+
+    // Und beim naechsten: dreimal daneben, dann wird VORGEMACHT statt abgelehnt.
+    for (let i = 0; i < 3; i++) {
+      await zeichneZug(d, [[20, 80], [50, 30], [80, 80], [30, 40]]);
+      await d.click('.schirm.da #fertigknopf');
+      await d.waitForTimeout(300);
+    }
+    const vorgemacht = await d.waitForFunction(
+      () => document.querySelectorAll('.schirm.da #vorlage path.malt').length > 0,
+      null, { timeout: 6000 }).then(() => true).catch(() => false);
+    if (!vorgemacht)
+      merke('schreiben', new Error('nach drei Fehlversuchen wird der Buchstabe nicht '
+        + 'vorgemacht — dann bleibt ein Kind, das ihn nicht kann, ohne Ausweg'));
+    else console.log('  Nach drei Fehlversuchen:    vorgemacht');
+  }
+  await d.close();
+
+  /* Und die Trennung der beiden Ebenen: Nachfahren und Diktat teilen sich
+   * KEINEN Leitner-Stand. Sonst waere ein nachgefahrenes P als „aus dem
+   * Gehör geschrieben" gutgeschrieben - ein Können, das es nicht gibt. */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.click('[data-profil="fiona"]');
+    await q.waitForSelector('.schirm.da [data-welt]');
+    const stand = await q.evaluate(() => new Promise((ja) => {
+      const auf = indexedDB.open('lernkiste', 1);
+      auf.onsuccess = () => {
+        const l = auf.result.transaction(['fortschritt'], 'readonly').objectStore('fortschritt');
+        const a = l.get('fiona:schreiben:buchstaben'), b = l.get('fiona:schreiben:diktat');
+        a.onsuccess = () => { b.onsuccess = () => ja({
+          nach: Object.keys(a.result || {}), diktat: Object.keys(b.result || {}) }); };
+      };
+      auf.onerror = () => ja(null);
+    }));
+    if (!stand || !stand.nach.length)
+      merke('schreiben', new Error('der Nachfahr-Stand ist leer — dann beweist der '
+        + 'Vergleich der beiden Ebenen nichts'));
+    else if (stand.nach.some(k => stand.diktat.includes(k)))
+      merke('schreiben', new Error('Nachfahren und Diktat teilen sich eine Kennung '
+        + `(${stand.nach.filter(k => stand.diktat.includes(k)).join(', ')}) — `
+        + 'dann wird ein nachgefahrener Buchstabe als geschriebener gutgeschrieben'));
+    else console.log(`  Getrennte Stände:           ${stand.nach.join(',')} nachgefahren, `
+      + `${stand.diktat.join(',') || '—'} diktiert`);
+    await q.close();
+  }
 } catch (e) { merke('schreiben', e); }
 
 await ctx.close(); await b.close(); server.close();

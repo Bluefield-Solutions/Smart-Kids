@@ -1347,6 +1347,30 @@ export const PROBEN = [
     an:{ datei:'docs/Lernkiste-BACKLOG.md', fehlt:'| Gekritzel als Buchstabe angenommen |' },
     sagt:'prüft dieses Tor gegen nichts' },
 
+  /* --- Diktat (N3) ---------------------------------------------------- *
+   *
+   * Die Ebene besteht aus einer NEGATIVEN Eigenschaft: der Buchstabe steht
+   * nirgends. Solche Eigenschaften verschwinden lautlos - man sieht dem
+   * Bildschirm nicht an, dass er zuviel zeigt, wenn man nicht weiss, dass
+   * er weniger zeigen sollte. Zwei Proben, zwei Wege, ihn zu verraten. */
+
+  // 1. Die Vorlage bleibt stehen. Dann ist das Diktat ein Abmalen mit Ton.
+  { n:'das Diktat zeigt die Vorlage doch', tor:'smoke', args:['--nur=schreiben'],
+    bauen:true, datei:D,
+    such:"  let phase = diktat ? 'frei' : 'nach';   // 'nach' -> 'frei'",
+    ersatz:"  let phase = 'nach';   // 'nach' -> 'frei'",
+    an:{ ...DIST, fehlt:"diktat ? 'frei' : 'nach'" },
+    sagt:'Vorlagenzüge auf dem Blatt' },
+
+  // 2. Der Buchstabe steht in der Frage. Lea koennte ihn lesen - und Fiona
+  //    lernt spaeter lesen, waehrend diese Ebene stehen bleibt.
+  { n:'die Diktat-Frage nennt den gesuchten Buchstaben', tor:'smoke',
+    args:['--nur=schreiben'], bauen:true, datei:D,
+    such:"      ? 'Schreib den Buchstaben, den du hörst.'",
+    ersatz:"      ? `Schreib ein ${ziel.zeichen}.`",
+    an:{ ...DIST, fehlt:'Schreib den Buchstaben, den du hörst.' },
+    sagt:'im Text' },
+
   /* --- Fachwelten (D4) ------------------------------------------------ */
 
   // Die Zuordnung wird aus `art` abgeleitet. Geht die Ableitung daneben,

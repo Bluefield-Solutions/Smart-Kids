@@ -444,7 +444,15 @@ const EBENEN = [
    * darueber verschwindet fuer die anderen von selbst, weil sie dann
    * keine Ebene mehr haelt.
    */
-  { id:'schreiben:buchstaben', ueber:'Schreiben', titel:'Große Buchstaben', farbe:7,
+  { id:'schreiben:buchstaben', ueber:'Schreiben', titel:'Buchstaben nachfahren', farbe:7,
+    art:'schreiben', wer:['fiona'] },
+  /* Der naechste Schritt (N3): der Buchstabe wird ANGESAGT, nicht gezeigt.
+   *
+   * Eine eigene Ebene und kein Schalter an der ersten - aus dem Grund, der
+   * bei `vorratDiktat` steht: es ist ein anderes Koennen und braucht einen
+   * eigenen Leitner-Stand. Und weil es fuer ein Kind, das nicht liest, zwei
+   * Kacheln sein muessen: eine zum Nachfahren, eine zum Hoeren. */
+  { id:'schreiben:diktat', ueber:'Schreiben', titel:'Buchstaben hören', farbe:3,
     art:'schreiben', wer:['fiona'] },
 ];
 
@@ -534,6 +542,11 @@ const MATHESTRICH = {
 const SCHREIBBILD = {
   'schreiben':             ['A','B'],
   'schreiben:buchstaben':  ['A','B'],
+  /* Die Diktat-Ebene zeigt einen LAUTSPRECHER statt eines zweiten
+     Buchstabens. Der Unterschied zur Nachfahr-Ebene ist, dass man den
+     Buchstaben hoert - und genau das muss die Kachel sagen: Fiona liest
+     die Ueberschrift „Buchstaben hoeren" nicht. */
+  'schreiben:diktat':      ['ton','A'],
 };
 const MATHEBILD = {
   'rechnen':           ['plus','mal'],
@@ -560,6 +573,14 @@ function silhouette(ebeneId) {
    * zu malen und eine Luege (Regel 6). */
   if (SCHREIBBILD[ebeneId]) {
     const teile = SCHREIBBILD[ebeneId].map((z, i) => {
+      // `ton` ist kein Buchstabe, sondern das Lautsprecherzeichen aus dem
+      // Kopf - dasselbe Bild an zwei Stellen, nicht ein zweites daneben.
+      // Es lebt in einem 24er-Kasten und wird auf die 100 gezogen; die
+      // Strichstaerke wird dabei zurueckgenommen, sonst wuerde sie mit
+      // vergroessert und das Zeichen ein Klotz.
+      if (z === 'ton')
+        return `<g transform="translate(${i * 110 + 8} 12) scale(3.4)"
+                   stroke-width="2.4">${ZEICHEN.tonAn}</g>`;
       const b = Schreiben.BUCHSTABEN.find(x => x.zeichen === z);
       return b.zuege.map(d =>
         `<path transform="translate(${i * 110} 0)" d="${d}"/>`).join('');
@@ -797,7 +818,8 @@ function vorrat(ebeneId, stand = Stand){
          : Rechnen.vorrat();
   // Sechsundzwanzig, gezaehlt und von Natur aus begrenzt - dieselbe Regel
   // wie beim Rechenvorrat (Backlog Paragraf 5.2).
-  if (art==='schreiben') return Schreiben.vorrat();
+  if (art==='schreiben')
+    return kont==='diktat' ? Schreiben.vorratDiktat() : Schreiben.vorrat();
   if (art==='hauptstaedte') {
     // Europa: dieselben Länder wie `laender:europa`, dieselbe Tiefe je
     // Profil - gefragt wird nur nach etwas anderem. `hauptstadt` und `ort`
@@ -833,7 +855,8 @@ D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
 for (const e of EBENEN.filter(e=>e.art==='rechnen'))
   for (const r of vorrat(e.id)) NAMEN[r.id]=r.frage;
 // Und die Buchstaben: im Protokoll steht sonst `bu:A` statt „A".
-for (const r of Schreiben.vorrat()) NAMEN[r.id]=r.zeichen;
+for (const r of [...Schreiben.vorrat(), ...Schreiben.vorratDiktat()])
+  NAMEN[r.id]=r.zeichen;
 
 const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
 async function standLaden(ebeneId){
@@ -1186,6 +1209,9 @@ function vorlaufSatz(ebeneId){
   if (art === 'rechnen')
     return `So sehen die Aufgaben aus — hier ein paar davon, `
       + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
+  if (art === 'schreiben' && kont === 'diktat')
+    return 'Gleich sage ich dir einen Buchstaben, und du schreibst ihn — '
+      + 'ohne Vorlage. Tippe hier einen an, dann hörst du ihn schon mal.';
   if (art === 'schreiben')
     return 'Das sind die Buchstaben, die du schreiben lernst. Tippe einen an, '
       + 'dann sage ich dir, wie er heißt.';
@@ -1758,7 +1784,19 @@ function schreibschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
-  let phase = 'nach';   // 'nach' -> 'frei'
+  /* Zwei Ebenen, ein Bildschirm.
+   *
+   * `schreiben:buchstaben` faengt beim Nachfahren an; `schreiben:diktat`
+   * (N3) laesst das weg und beginnt sofort beim freien Schreiben - der
+   * Buchstabe wird nur ANGESAGT. Der Unterschied ist genau diese eine
+   * Zeile plus die Frage darueber; alles andere - Erkennung, drei
+   * Versuche, Vormachen, Wertung - ist dasselbe und darf es auch sein.
+   *
+   * Was auf dem Diktat-Bildschirm NICHT stehen darf, ist der Buchstabe.
+   * Weder in der Frage noch in der Beschriftung der Flaeche: sonst waere
+   * das Diktat ein Abmalen mit Ton. Der Rauchtest prueft genau das. */
+  const diktat = st.ebeneId.endsWith(':diktat');
+  let phase = diktat ? 'frei' : 'nach';   // 'nach' -> 'frei'
   let zugNr = 0;        // welcher Zug der Vorlage jetzt dran ist
   let fertig = [];      // die schon nachgefahrenen Zuege
   let meine = [];       // die frei geschriebenen Zuege
@@ -1773,10 +1811,13 @@ function schreibschirm(){
    * kein Schreibfeld. */
   s.innerHTML = aufgabenKopf(st) + `
     <div class="schreibraum">
-    <div class="frage" id="frage">Fahre das <strong>${ziel.zeichen}</strong> nach.</div>
+    <div class="frage" id="frage">${diktat
+      ? 'Schreib den Buchstaben, den du hörst.'
+      : `Fahre das <strong>${ziel.zeichen}</strong> nach.`}</div>
     <div class="schreibfeld"><div class="feldkasten">
       <svg id="blatt" class="schreibblatt" viewBox="0 0 100 100" role="application"
-           aria-label="Schreibfläche für den Buchstaben ${ziel.zeichen}">
+           aria-label="${diktat ? 'Schreibfläche'
+                                : `Schreibfläche für den Buchstaben ${ziel.zeichen}`}">
         <g class="linien" aria-hidden="true">
           <line x1="0" y1="10" x2="100" y2="10"/>
           <line x1="0" y1="90" x2="100" y2="90"/>
@@ -1788,7 +1829,8 @@ function schreibschirm(){
       </svg>
     </div></div>
     <div class="werkzeug">
-      <button class="knopf haupt" id="fertigknopf" hidden>Fertig</button>
+      <button class="knopf haupt" id="fertigknopf" hidden>Fertig</button>${diktat ? `
+      <button class="knopf" id="hoeren">Noch mal hören</button>` : ''}
       <button class="leise" id="nochmal">Noch mal</button>
       <button class="leise" id="weissnicht">Weiß ich nicht</button>
     </div></div>`;
@@ -1970,9 +2012,16 @@ function schreibschirm(){
     // Auch hier wird der Fehler BENANNT, wo das ehrlich geht: wenn etwas
     // sicher erkannt wurde, nur eben das Falsche, ist das eine Auskunft.
     // Bei „unsicher" waere sie geraten - dann sagt sie es lieber.
+    //
+    // Im Diktat wird der gesuchte Buchstabe NICHT genannt: er steht dort
+    // nirgends, und ihn im Tadel nachzuliefern hiesse, die Aufgabe nach
+    // dem ersten Fehlversuch zu verraten. Was falsch gelesen wurde, darf
+    // sie trotzdem erfahren - das ist eine Auskunft, keine Loesung.
+    const nochmal = diktat ? 'Versuch es noch einmal.'
+                           : `Probier das ${ziel.zeichen} noch einmal.`;
     const satz = e.sicher && e.zeichen !== ziel.zeichen
-      ? `Das sieht aus wie ein ${e.zeichen}. Probier das ${ziel.zeichen} noch einmal.`
-      : `Das kann ich noch nicht lesen. Probier das ${ziel.zeichen} noch einmal.`;
+      ? `Das sieht aus wie ein ${e.zeichen}. ${nochmal}`
+      : `Das kann ich noch nicht lesen. ${nochmal}`;
     sagFrage(satz, 'fastText'); sagen(satz);
     meine = []; malen();
   }
@@ -1984,6 +2033,11 @@ function schreibschirm(){
   feld.addEventListener('pointerleave', loslassen);
 
   fertigKnopf.onclick = pruefen;
+  /* „Noch mal hören" spricht IMMER - auch wenn das Profil sonst nichts
+     vorgelesen bekaeme. Wer ausdruecklich darauf tippt, hat gebeten, und
+     eine Bitte wird nicht vom Profil beantwortet. */
+  const hoeren = s.querySelector('#hoeren');
+  if (hoeren) hoeren.onclick = ()=> vorlesen(ziel.gesagt);
   s.querySelector('#nochmal').onclick = ()=>{
     if (erledigt) return;
     laeuft = null;

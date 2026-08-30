@@ -441,3 +441,35 @@ export function vorrat(){
     geloest: `Das ist ein ${b.zeichen}, wie ${b.wort}`,
   }));
 }
+
+/**
+ * Derselbe Buchstabe, andere Frage: er wird ANGESAGT, nicht gezeigt (N3).
+ *
+ * Eine eigene Kennung (`di:` statt `bu:`) und damit ein eigener
+ * Leitner-Stand - und das ist der ganze Grund, warum es eine zweite Ebene
+ * ist und kein Schalter an der ersten: einen Buchstaben nachfahren zu
+ * koennen heisst nicht, ihn aus dem Gehoer schreiben zu koennen. Waeren
+ * es dieselben Gegenstaende, wuerde das eine Koennen fuer das andere
+ * gutgeschrieben, und der Leitner haette einen Stand, den es nicht gibt.
+ *
+ * `zuege` bleibt dran, obwohl hier nichts nachgefahren wird: die Vorlage
+ * wird gebraucht, wenn nach drei Fehlversuchen VORGEMACHT wird - und im
+ * Forscherbuch ist der Aufkleber derselbe Buchstabe.
+ *
+ * Was in `gesagt` NICHT steht, ist so wichtig wie das, was dasteht: der
+ * Satz nennt den Buchstaben, aber auf dem Bildschirm erscheint er nicht.
+ * Sonst waere das Diktat ein Abmalen mit Ton.
+ */
+export function vorratDiktat(){
+  return BUCHSTABEN.map(b => ({
+    id: `di:${b.zeichen}`,
+    zeichen: b.zeichen,
+    name: b.zeichen,
+    frage: b.zeichen,
+    wort: b.wort,
+    zuege: b.zuege,
+    aussprache: [b.zeichen.toLowerCase()],
+    gesagt: `Schreib ein ${b.zeichen}. ${b.zeichen} wie ${b.wort}.`,
+    geloest: `Das ist ein ${b.zeichen}, wie ${b.wort}`,
+  }));
+}
