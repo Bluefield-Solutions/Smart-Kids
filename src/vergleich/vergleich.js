@@ -29,7 +29,28 @@ export function normalisieren(s) {
  * Regeln nach Postel 1969. Buchstaben ausserhalb A–Z werden uebersprungen.
  */
 export function koelnerPhonetik(wort) {
-  const w = normalisieren(wort).replace(/ /g, '').toUpperCase();
+  /* DIPHTHONGE zuerst - sonst verschwinden sie.
+   *
+   * Die Koelner Phonetik gibt jedem Vokal die 0 und streicht sie danach
+   * bis auf die erste. „au" wird damit zu nichts, und „aussen" bekommt
+   * denselben Code wie „Asien" (086). Genau diese Verwechslung rutscht
+   * seit K1 durch den Abgleich: ein Kind sagt „aussen", das Spiel wertet
+   * ASIEN als richtig.
+   *
+   * Ein Diphthong ist aber ein eigener Laut, kein Vokalpaar. Er bekommt
+   * deshalb einen eigenen Code, der die Nullstreichung ueberlebt:
+   *
+   *   au           -> A    „aussen" ist nicht „Asien"
+   *   eu, aeu, oi  -> 9    „Europa" IST „Oiropa" - dieselbe Zeile, weil
+   *                        derselbe Laut. Genau dafuer ist die Phonetik da.
+   *
+   * „ei" und „ai" bleiben absichtlich draussen: im Deutschen stehen sie
+   * oft NICHT fuer einen Diphthong („Uk-ra-i-ne"), und die Variante
+   * „ukrajine" haengt daran. Gemessen: mit ihnen faellt sie durch.
+   */
+  const w = normalisieren(wort).replace(/ /g, '').toUpperCase()
+    .replace(/AEU|EU|OI|OY/g, 'Ä')
+    .replace(/AU/g, 'Ö');
   if (!w) return '';
   const codes = [];
   for (let i = 0; i < w.length; i++) {
@@ -53,6 +74,8 @@ export function koelnerPhonetik(wort) {
       case 'R': c = '7'; break;
       case 'S': case 'Z': c = '8'; break;
       case 'H': c = null; break;   // H erzeugt keinen Code
+      case 'Ä': c = '9'; break;    // eu / aeu / oi - ein Laut, ein Code
+      case 'Ö': c = 'A'; break;    // au - ein anderer
       default: c = null;
     }
     if (c !== null) codes.push(c);

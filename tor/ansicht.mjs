@@ -185,6 +185,13 @@ const AUFNAHMEN = [
   // Tabellen, um die der Bereich zuletzt gewachsen ist.
   { name:'quer-eltern-tabellen', spiel:null, quer:true, stand:true, protokoll:true,
     wahl:'.schirm.da', tun:'eltern', roll:'Zuletzt geübt' },
+  /* Der Endbildschirm der ELTERN - ein anderer als der der Kinder: keine
+   * Siegsterne, „Sitzung beendet." statt „Geschafft!". Bis hierher hielt
+   * ihn kein Vorbild; `quer-ende` zeigt Fionas. Gespielt werden die
+   * Kontinente, weil das sechs Aufgaben sind und nicht zwoelf - und
+   * getippt, weil das Profil nie eine Auswahl bekommt. */
+  { name:'quer-ende-eltern', spiel:'kontinente', kind:'eltern', quer:true,
+    wahl:'.schirm.da', tun:'durch' },
 ];
 
 /**
@@ -259,22 +266,39 @@ async function durchspielen(seite) {
   for (let n = 0; n < 40; n++) {
     if (await seite.$('.schirm.da #nochmal')) return;
     await karteSteht(seite);
-    const idx = await seite.evaluate(() => {
+    /* Antworten, wie das PROFIL antwortet.
+     *
+     * Fiona und Lea tippen ein Etikett an, die Eltern schreiben - ihr
+     * Profil sagt `kandidaten:0`. Ohne diesen Zweig kaeme man mit ihnen
+     * nie zum Endbildschirm, und ausgerechnet der ist bei ihnen ein
+     * anderer (keine Siegsterne, „Sitzung beendet.").
+     *
+     * Kontinente sind die billige Ebene dafuer: sechs Aufgaben, nicht
+     * zwoelf wie beim grossen Einmaleins. */
+    const z = await seite.evaluate(() => {
       const s = document.querySelector('.schirm.da');
-      const z = s.querySelector('path.ziel'); if (!z) return -1;
+      const z = s.querySelector('path.ziel'); if (!z) return null;
       const D = JSON.parse(document.getElementById('daten').textContent);
-      const g = D.kontinente.find(x => x.id === z.dataset.id); if (!g) return -1;
-      return [...s.querySelectorAll('.etikett')].map(e => e.textContent.trim())
-        .indexOf(g.name);
+      const g = D.kontinente.find(x => x.id === z.dataset.id); if (!g) return null;
+      return { name: g.name, tippfeld: !!s.querySelector('input.eingabe'),
+        idx: [...s.querySelectorAll('.etikett')].map(e => e.textContent.trim())
+          .indexOf(g.name) };
     });
-    if (idx < 0) throw new Error('quer-ende: die richtige Antwort steht nicht in der Liste');
+    if (!z || (!z.tippfeld && z.idx < 0))
+      throw new Error('quer-ende: die richtige Antwort steht nicht in der Liste');
+    const idx = z.idx;
     // `$$eval` statt `click()`: waehrend der Einblendung gilt das Etikett
     // als „nicht stabil", und Playwright wartete es tot. Der Klick muss
     // hier nicht die Bedienbarkeit beweisen - das tut der Rauchtest -,
     // sondern den Bildschirm weiterschalten.
     const altesZiel = await seite.evaluate(() =>
       document.querySelector('.schirm.da path.ziel')?.dataset.id || '');
-    await seite.$$eval('.schirm.da .etikett', (els, i) => els[i].click(), idx);
+    if (z.tippfeld) {
+      await seite.fill('.schirm.da .eingabe', z.name);
+      await seite.$eval('.schirm.da .wahlliste .knopf', x => x.click());
+    } else {
+      await seite.$$eval('.schirm.da .etikett', (els, i) => els[i].click(), idx);
+    }
     /* Gewartet wird, bis der Bildschirm WIRKLICH weiter ist - nicht 1800 ms.
      *
      * Das war die teuerste feste Pause der ganzen Kette: sechs Aufgaben
@@ -381,8 +405,38 @@ const holeSeite = async (a) => {
   return querSeite;
 };
 
-const MEINE = TEIL ? AUFNAHMEN.filter((_, k) => k % TEIL.n === TEIL.i) : AUFNAHMEN;
-if (TEIL) console.log(`  (Teil ${TEIL.i + 1} von ${TEIL.n}: `
+/* Geteilt wird nach AUFWAND, nicht reihum.
+ *
+ * Reihum war die erste Fassung, mit dem Argument „die teuren Aufnahmen
+ * stehen beieinander, ein Blockschnitt gaebe einem Teil die ganze
+ * Arbeit". Das stimmt - aber reihum verteilt sie auch nur zufaellig.
+ * Gemessen: als der Endbildschirm der Eltern dazukam, standen beide
+ * Aufnahmen, die eine GANZE Sitzung durchspielen, in derselben Haelfte.
+ * Die schnelle Bahn stieg von 43 auf 56 s, bei 53 gegen 31 Sekunden.
+ *
+ * Der Aufwand steht der Aufnahme an, er muss nicht gestoppt werden:
+ * `tun:'durch'` spielt eine ganze Sitzung (sechs Aufgaben), eine
+ * `spiel`-Aufnahme spielt sich einmal hin, der Rest ist ein Bildschirm.
+ * Verteilt wird dann gierig: die schwerste zuerst, immer in die Haelfte,
+ * die gerade am leichtesten ist. Das ist die uebliche Loesung fuer diese
+ * Aufgabe und braucht keine Stoppuhr, die veraltet.
+ */
+const gewicht = (a) => a.tun === 'durch' ? 8 : a.spiel ? 2 : 1;
+const MEINE = (() => {
+  if (!TEIL) return AUFNAHMEN;
+  const koerbe = Array.from({ length: TEIL.n }, () => ({ last: 0, drin: [] }));
+  for (const a of [...AUFNAHMEN].sort((x, y) => gewicht(y) - gewicht(x))) {
+    const k = koerbe.reduce((m, x) => x.last < m.last ? x : m);
+    k.last += gewicht(a); k.drin.push(a);
+  }
+  // Innerhalb einer Haelfte die urspruengliche Reihenfolge behalten: die
+  // Aufnahmen bauen aufeinander auf (erst die Weltenwahl, dann tiefer).
+  const meins = new Set(koerbe[TEIL.i].drin);
+  return AUFNAHMEN.filter(a => meins.has(a));
+})();
+if (TEIL) console.log(`  (Teil ${TEIL.i + 1} von ${TEIL.n}, Aufwand `
+  + `${MEINE.reduce((n, a) => n + gewicht(a), 0)} von `
+  + `${AUFNAHMEN.reduce((n, a) => n + gewicht(a), 0)}: `
   + `${MEINE.length} der ${AUFNAHMEN.length} Aufnahmen)`);
 /* Ein Teillauf, der ins Leere greift, ist gefaehrlicher als gar keiner:
    er meldet „alles gruen" ueber nichts. */

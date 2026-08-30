@@ -581,6 +581,16 @@ const PROBEN = [
     an:{ datei:'src/geo/staedte.js', fehlt:'"beschriftung":"innen"' },
     sagt:'nur die Sorte' },
 
+  // Die Siegsterne kommen bei den Eltern zurueck.
+  //
+  // Drei Sterne heissen „alles auf Anhieb richtig" - und genau das steht
+  // eine Zeile tiefer, nur genauer. Auf dem Endbildschirm der Kinder sind
+  // sie richtig, bei den Eltern doppelt.
+  { n:'die Siegsterne kommen bei den Eltern zurück', tor:'ansicht', bauen:true, datei:D,
+    such:"      ${ton().siegsterne ? `<div class=\"siegsterne\">${sterne(n,56)}</div>` : ''}",
+    ersatz:'      <div class="siegsterne">${sterne(n,56)}</div>',
+    an:{ ...DIST, fehlt:'ton().siegsterne ?' },
+    sagt:'quer-ende-eltern' },
   // Ein Schluessel fehlt in einem der beiden Toene.
   //
   // `undefined` ist falsch, nicht laut: die Siegsterne waeren fuer ALLE
@@ -613,6 +623,18 @@ const PROBEN = [
     ersatz:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','griechenland'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"aussprache:['polen','griechenland']" },
     sagt:'angenommen wurde' },
+
+  // Die Diphthonge verlieren ihren eigenen Code.
+  //
+  // Dann heisst „aussen" wieder wie „Asien": die Koelner Phonetik gibt
+  // jedem Vokal die 0 und streicht sie danach. Genau diese Verwechslung
+  // rutschte seit K1 durch.
+  { n:'die Diphthonge verschwinden wieder', tor:'vergleich', deckt:'vergleich',
+    datei:'src/vergleich/vergleich.js',
+    such:"    .replace(/AEU|EU|OI|OY/g, 'Ä')\n    .replace(/AU/g, 'Ö');",
+    ersatz:"    ;",
+    an:{ datei:'src/vergleich/vergleich.js', fehlt:"replace(/AU/g, 'Ö')" },
+    sagt:'aussen' },
 
   /* --- Umbruch der Fahne und die zwei Achsen des Sprechens ------------- */
   // Die Fahne bricht nicht mehr um.

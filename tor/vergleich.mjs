@@ -103,10 +103,13 @@ for (const r of laeufe) {
    * Korpus waechst. Also steht die eine bekannte Ausnahme namentlich da,
    * und alles andere ist rot.
    *
-   * „aussen → asien" rutscht seit K1 durch: vier Buchstaben, gleicher
-   * Klang, gleiche Laenge. Sie steht hier, damit sie nicht vergessen
-   * wird - nicht, weil sie in Ordnung waere. */
-  const BEKANNT = ['aussen → asien'];
+   * Die Liste ist LEER. Sie hielt eine einzige Ausnahme - „aussen →
+   * asien", seit K1 -, und die ist behoben: die Koelner Phonetik gibt den
+   * Diphthongen jetzt einen eigenen Code, „aussen" ist damit nicht mehr
+   * „Asien". Eine Ausnahmeliste, aus der man nichts streicht, wird zur
+   * Erlaubnis; deshalb steht sie leer da statt zu verschwinden - wer
+   * wieder etwas eintraegt, sieht, dass er eine Ausnahme MACHT. */
+  const BEKANNT = [];
   const neuDurch = r.durchgerutscht.filter(v => !BEKANNT.includes(v));
   if (neuDurch.length) {
     console.log(`    ROT: ${neuDurch.length} davon ${neuDurch.length===1?'ist':'sind'} neu — `
