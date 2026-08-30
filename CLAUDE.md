@@ -22,8 +22,8 @@ Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run schnell`** | bei **jeder** Änderung | **~46 s** (gemessen, 23 Aufnahmen) | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und die zwei Hälften des Bildvergleichs — **drei Browser nebeneinander** |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 4:48) | die volle Kette, alle Größen, alle Bildschirme |
+| **`npm run schnell`** | bei **jeder** Änderung | **~24 s** (gemessen, 23 Aufnahmen) | inhalt · spielprobe · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 4:41) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
@@ -65,7 +65,7 @@ Proben hätten genau daran angeschlagen.
 ## Befehle
 
 ```
-npm run schnell    DIE NORMALE RUNDE. ~46 s. Siehe oben.
+npm run schnell    DIE NORMALE RUNDE. ~24 s. Siehe oben.
 npm run tor        die ganze Kette. Der Runner fährt sie ohnehin bei jedem
                    Push; hier nur, wenn du sie vorher sehen willst.
 npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
@@ -110,6 +110,9 @@ npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    `-- --nur=quer-vorlauf` nimmt nur die Bildschirme auf,
                    deren Name den Text enthaelt — fuer die Hand, wenn du an
                    einem davon arbeitest. Trifft nichts, ist es rot.
+                   `-- --zeiten` sagt, was jede einzelne Aufnahme kostet.
+                   Dafuer da: die Gewichte der Aufteilung sind eine
+                   Schaetzung, und eine Schaetzung ohne Messstelle veraltet.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
                    im SELBEN Commit einchecken.
 npm run backen     Karten neu rechnen

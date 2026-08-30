@@ -70,9 +70,7 @@ for (const [name, datei] of [['inhalt (7 Prüfungen)', 'tor/inhalt.mjs'],
   if (r.code !== 0) { console.log(r.aus.split('\n').slice(-14).join('\n')); process.exit(1); } }
 { const a = Date.now(); const r = await lauf('tor/budget.mjs'); melde('budget', r, Date.now() - a); }
 
-// 3. Die zwei Browser-Tore NEBENEINANDER. Der Rechner hat vier Kerne;
-//    zwei Chromium sättigen ihn nicht, drei schon (gemessen in der
-//    Temporunde: die Parallelität brachte 1,5x, nicht 3x).
+// 3. Die Browser-Tore NEBENEINANDER — vier Prozesse auf vier Kernen.
 const a3 = Date.now();
 /* Jedes Tor misst SEINE Dauer, nicht die der Gruppe.
  *
@@ -83,16 +81,33 @@ const a3 = Date.now();
 const mitZeit = async (name, datei, args) => {
   const a = Date.now(); const r = await lauf(datei, args); return { name, r, ms: Date.now() - a };
 };
-/* Drei Browser, nicht zwei.
+/* DREI Teile beim Bildvergleich, nicht zwei - und nicht vier.
  *
- * Der Bildvergleich war mit 42 s der Engpass - der Rauchtest brauchte 28
- * und wartete danach. Sechzehn Aufnahmen wissen nichts voneinander, also
- * laufen sie in zwei Haelften. Vier Kerne, drei Chromium: die Temporunde
- * hatte gemessen, dass das die Grenze ist. */
+ * Gemessen, an derselben Stelle und am selben Tag (Wanduhr der ganzen
+ * Gruppe, vier Kerne):
+ *
+ *     2 Teile   27,1 s
+ *     3 Teile   20,1 s   <- hier
+ *     4 Teile   20,7 s
+ *     5 Teile   21,0 s
+ *     6 Teile   22,5 s
+ *
+ * Ab drei Teilen ist nicht mehr der Bildvergleich der Engpass, sondern der
+ * RAUCHTEST mit seinen zwanzig Sekunden. Ein vierter Chromium teilt dann
+ * nur noch Arbeit auf, die ohnehin frueher fertig waere, und kostet einen
+ * Kern.
+ *
+ * Vorher stand hier „drei Chromium sind die Grenze, gemessen". Das galt -
+ * bis die Zusammensetzung sich aenderte: der Rauchtest wurde von 28 auf
+ * 20 s schneller, und der Bildvergleich verlor 12,5 s, weil die Entwuerfe
+ * ihre Schrift nicht mehr aus dem Netz holen. Eine gemessene Zahl gilt
+ * fuer den Tag, an dem sie gemessen wurde (Regel 12); wer sie erbt, erbt
+ * auch ihre Voraussetzungen. */
+const TEILE = 3;
 const beide = await Promise.all([
   mitZeit('Rauchtest (Hauptweg)', 'tor/smoke.mjs', ['--nur=spielen']),
-  mitZeit('Bildvergleich (1/2)', 'tor/ansicht.mjs', ['--teil=0/2']),
-  mitZeit('Bildvergleich (2/2)', 'tor/ansicht.mjs', ['--teil=1/2']),
+  ...[...Array(TEILE)].map((_, i) =>
+    mitZeit(`Bildvergleich (${i + 1}/${TEILE})`, 'tor/ansicht.mjs', [`--teil=${i}/${TEILE}`])),
 ]);
 for (const x of beide) melde(x.name, x.r, x.ms);
 /* Die zwei Haelften muessen ZUSAMMEN alle Aufnahmen abdecken.
@@ -104,7 +119,7 @@ for (const x of beide) melde(x.name, x.r, x.ms);
     .map(x => (x.r.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || []).slice(1, 4)
       .reduce((n, z) => n + (+z || 0), 0))
     .reduce((n, z) => n + z, 0);
-  const soll = +((beide.find(x => /1\/2/.test(x.name))?.r.aus
+  const soll = +((beide.find(x => /Bildvergleich \(1\//.test(x.name))?.r.aus
     .match(/der (\d+) Aufnahmen/) || [])[1] || 0);
   if (soll && gezaehlt !== soll) {
     console.log(`\n  ${rot('✗')} Bildvergleich: ${gezaehlt} von ${soll} Aufnahmen geprüft — `

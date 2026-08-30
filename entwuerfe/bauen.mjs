@@ -55,6 +55,34 @@ const daten = {
   vbD: `${bD.x0-12} ${bD.y0-12} ${bD.w+24} ${bD.h+24}`,
 };
 fs.writeFileSync('entwuerfe/daten.json', JSON.stringify(daten));
+
+/* Die Entwuerfe bekommen DIESELBE Schrift wie die App - selbst gehostet.
+ *
+ * Vorher hing im Kopf ein `<link>` auf fonts.googleapis.com. Das hat zwei
+ * Dinge gekostet, und das zweite ist schlimmer:
+ *
+ *   ZEIT   In einer Umgebung ohne freies Netz laeuft die Anfrage in die
+ *          Zeitueberschreitung: gemessen 12,5 s je Seitenaufbau, und der
+ *          Bildvergleich laedt die Seite bei jedem Lauf. Das war ein
+ *          Drittel seiner ganzen Dauer.
+ *   WAHRHEIT  Danach steht die Seite in der ERSATZSCHRIFT da. Die Vorbilder
+ *          `mg-fiona-kontinente` und `mg-lea-deutschland` zeigten seit
+ *          jeher eine Systemschrift statt Plus Jakarta Sans - ein Entwurf,
+ *          der die Typografie zeigen soll, zeigte eine fremde.
+ *
+ * Die vier Schriften des DOKUMENTS (Newsreader, Atkinson, IBM Plex Mono,
+ * Nunito) fallen jetzt auf ihre Systemstapel zurueck. Das ist der bewusste
+ * Preis: sie schmuecken die Prosa drumherum, nicht die Entwuerfe selbst.
+ * Die zwei, auf die es ankommt, sind die der App.
+ */
+{
+  const quelle = 'src/schrift/schrift.css';
+  const css = fs.readFileSync(quelle, 'utf8')
+    .replace(/url\(\.\/schrift\/([^)]+)\)/g, 'url(../src/schrift/$1)');
+  fs.writeFileSync('entwuerfe/schrift.css',
+    '/* Gebaut aus ' + quelle + ' — nicht von Hand aendern. */\n' + css);
+  console.log('  entwuerfe/schrift.css  aus ' + quelle);
+}
 console.log(`  Kontinente viewBox ${daten.vbK}`);
 console.log(`  Deutschland viewBox ${daten.vbD}`);
 console.log(`  daten.json ${(fs.statSync('entwuerfe/daten.json').size/1024).toFixed(0)} KB`);

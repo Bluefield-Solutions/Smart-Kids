@@ -16,6 +16,7 @@ tor/abweichungen/
 # `npm run bauen` legt beide neu an.
 prototyp/spiel.html
 entwuerfe/daten.json
+entwuerfe/schrift.css
 
 # Was nach Pages geht: dist/ plus die Vorschau, von
 # tools/seite-zusammenstellen.mjs bei jeder Auslieferung neu gebaut.

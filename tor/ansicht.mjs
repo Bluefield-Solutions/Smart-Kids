@@ -465,7 +465,15 @@ if ((TEIL || NUR) && !MEINE.length) {
     : 'dieser Teil hat keine einzige Aufnahme'}.\n`);
   process.exit(1);
 }
+/* `--zeiten`: was jede einzelne Aufnahme kostet.
+ *
+ * Nicht fuer die Kette, sondern fuer die Hand - die Gewichte der
+ * Aufteilung (`gewicht`) sind eine SCHAETZUNG, und eine Schaetzung ohne
+ * Messstelle veraltet. Wer sie nachzieht, faehrt das hier einmal. */
+const ZEITEN = process.argv.includes('--zeiten');
+const gemessen = [];
 for (const a of MEINE) {
+  const t0 = Date.now();
   const seite = await holeSeite(a);
   if (a.spiel || a.quer) {
     // Frische Ablage je Aufnahme: der Keim kommt aus dem gespeicherten
@@ -494,21 +502,6 @@ for (const a of MEINE) {
     });
     await seite.goto(adresse, { waitUntil:'domcontentloaded' });
     await seite.waitForSelector('[data-profil="fiona"]');
-    // Ohne diese Pruefung haelt das Vorbild irgendwann die Systemschrift
-    // fest, und niemand merkt es - genau so ist die erste Fassung dieser
-    // Aufnahmen entstanden. Sie steht NACH dem ersten Bildschirm, weil eine
-    // Schrift erst geladen wird, wenn wirklich Text mit ihr gesetzt wird.
-    const daSchrift = await seite.evaluate(async () => {
-      await document.fonts.ready;
-      // load() statt nur check(): eine Schrift wird erst geholt, wenn Text
-      // mit ihr gesetzt wird. Andika steht auf dem ersten Bildschirm nicht,
-      // also meldete check() sie als fehlend, obwohl sie nur ungefragt war.
-      await Promise.all([document.fonts.load('700 20px "Plus Jakarta Sans"'),
-                         document.fonts.load('400 20px "Andika"')]);
-      return document.fonts.check('700 20px "Plus Jakarta Sans"')
-          && document.fonts.check('400 20px "Andika"');
-    });
-    if (!daSchrift) { console.log(`  FEHLT   ${a.name}  (die eigene Schrift wurde nicht geladen)`); rot++; continue; }
     // Einen Lernstand SETZEN, wo einer gebraucht wird. Ohne ihn steht auf
     // jeder Kachel dieselbe Null, und die Aufnahme bezeugt von Sternen,
     // Aufklebern und Balken genau nichts (Regel: wer eine Wirkung misst,
@@ -591,6 +584,28 @@ for (const a of MEINE) {
     await seite.evaluate(() => document.fonts.ready);   // sonst wandert der Text
     letzteSeite = a.seite;
   }
+  /* Die eigene Schrift muss DA sein - bei JEDER Aufnahme.
+   *
+   * Diese Pruefung stand im Zweig fuer die App-Bildschirme. Die zwei
+   * Entwurfsaufnahmen liefen daran vorbei, und genau bei ihnen ist
+   * eingetreten, wogegen sie geschrieben wurde: die Entwuerfe holten ihre
+   * Schrift von fonts.googleapis.com, die Anfrage lief ohne freies Netz in
+   * die Zeitueberschreitung, und die Vorbilder hielten seit jeher die
+   * SYSTEMSCHRIFT fest. Eine Pruefung, die nur den halben Satz sieht,
+   * bezeugt den anderen nicht.
+   *
+   * `load()` statt nur `check()`: eine Schrift wird erst geholt, wenn Text
+   * mit ihr gesetzt wird. */
+  const daSchrift = await seite.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all([document.fonts.load('700 20px "Plus Jakarta Sans"'),
+                       document.fonts.load('400 20px "Andika"')]);
+    return document.fonts.check('700 20px "Plus Jakarta Sans"')
+        && document.fonts.check('400 20px "Andika"');
+  });
+  if (!daSchrift) {
+    console.log(`  FEHLT   ${a.name}  (die eigene Schrift wurde nicht geladen)`); rot++; continue;
+  }
   const el = await seite.$(a.wahl);
   if (!el) { console.log(`  FEHLT   ${a.name}  (${a.wahl} nicht gefunden)`); rot++; continue; }
   // Erst ins Bild holen, dann warten, bis das Abgebildete WIRKLICH fertig
@@ -650,10 +665,24 @@ for (const a of MEINE) {
     console.log(`  grün    ${a.name}  — ${v.anders} Bildpunkte anders (${(v.anteil*100).toFixed(4)} %)`);
     gruen++;
   }
+  gemessen.push({ name: a.name, ms: Date.now() - t0,
+    art: a.tun === 'durch' ? 'durch' : a.spiel ? 'spiel' : 'einfach' });
 }
 await browser.close();
 server.close();
 
+if (ZEITEN) {
+  console.log('\n  Was jede Aufnahme kostet (für die Gewichte der Aufteilung):');
+  for (const z of gemessen.sort((x, y) => y.ms - x.ms))
+    console.log(`    ${String((z.ms / 1000).toFixed(1)).padStart(5)} s  `
+      + `${z.name.padEnd(24)} ${z.art}`);
+  const je = {};
+  for (const z of gemessen) (je[z.art] = je[z.art] || []).push(z.ms);
+  console.log('\n  Im Mittel je Art:');
+  for (const [art, l] of Object.entries(je))
+    console.log(`    ${String((l.reduce((n, x) => n + x, 0) / l.length / 1000).toFixed(1))
+      .padStart(5)} s  ${art} (${l.length})`);
+}
 console.log(`\n  ${gruen} grün, ${neu} neu, ${rot} rot`);
 if (rot) {
   console.log('\n  Die Unterschiede liegen in tor/abweichungen/ — rot markiert, was sich');

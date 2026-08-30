@@ -344,6 +344,19 @@ export const PROBEN = [
    *
    * Der haeufigste Verfall, und bis zu dieser Runde nur im vollen Lauf zu
    * sehen — zweiundvierzig Minuten, einmal am Tag. Jetzt in der Kette. */
+  /* Die Entwuerfe holen ihre Schrift wieder aus dem Netz.
+   *
+   * Dann steht in den Vorbildern die Ersatzschrift - und der Aufbau
+   * kostet 12,5 s Zeitueberschreitung. Genau das war jahrelang so, ohne
+   * dass ein Tor etwas gesagt haette: die Schriftpruefung lief nur fuer
+   * die App-Bildschirme. */
+  { n:'die Entwürfe holen ihre Schrift aus dem Netz', tor:'ansicht', bauen:true,
+    datei:'entwuerfe/mg.html',
+    such:'<link rel="stylesheet" href="./schrift.css">',
+    ersatz:'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika">',
+    an:{ datei:'entwuerfe/mg.html', text:'fonts.googleapis.com' },
+    sagt:'die eigene Schrift wurde nicht geladen' },
+
   /* Ein Suchtext wird zweideutig.
    *
    * Der Fall, den „steht der Text noch da" NICHT faengt: er steht noch da,
