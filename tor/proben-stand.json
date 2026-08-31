@@ -260,14 +260,14 @@
       "s": 22
     },
     "die Nadelfäden sind länger geworden als bestätigt": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
+      "commit": "90197e73025d3669099df53a856cb028566dbb6a",
       "zeit": "2026-08-31",
-      "s": 32
+      "s": 25
     },
     "zwei Nadelköpfe rücken enger zusammen als bestätigt": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
+      "commit": "90197e73025d3669099df53a856cb028566dbb6a",
       "zeit": "2026-08-31",
-      "s": 21
+      "s": 15
     },
     "ein Teillauf urteilt über ein Profil, das er nicht gespielt hat": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",

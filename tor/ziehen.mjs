@@ -450,6 +450,31 @@ if (laeuft('treffer')) {
             Math.hypot(kpf[i].x - kpf[j].x, kpf[i].y - kpf[j].y));
       }
       const nadeln = kpf.length;
+
+      /* Die DREI STUFEN, je Gebiet - Kreis am Ort, Nadel, Verzicht.
+       *
+       * Die Regel steht in `nadelplanFuer`: eine Nadel bekommt, wer unter
+       * 44 pt liegt UND am Ort nicht einmal 20 pt zusammenbringt, weil
+       * der Nachbar zu nah ist. Von aussen war das bisher nicht zu sehen,
+       * und die Karten sahen deshalb aus, als griffe die Schwelle
+       * verschieden: Europa hat neun Gebiete unter 44 pt und nur zwei
+       * Nadeln, Nordamerika neun und sieben. Es ist aber dieselbe Regel -
+       * in Mittelamerika liegen sieben Laender so eng, dass auch die
+       * zwanzig nicht mehr reichen, in Europa nur Belgien und Luxemburg.
+       *
+       * Das steht jetzt in der Ausgabe, damit man es nachlesen kann, ohne
+       * `spiel.js` aufzuschlagen - und damit auffaellt, wenn eine Karte
+       * ploetzlich anders zerfaellt. */
+      const anNadel = new Set();
+      for (const k of kpf) {
+        let nah = null, d = Infinity;
+        for (const c of s.querySelectorAll('#treffer circle[data-id]')) {
+          const r = c.getBoundingClientRect();
+          const w = Math.hypot(r.left + r.width/2 - k.x, r.top + r.height/2 - k.y);
+          if (w < d) { d = w; nah = c.dataset.id; }
+        }
+        if (nah && d < 2) anNadel.add(nah);
+      }
       const flaechen = new Map([...s.querySelectorAll('path.geb')].map(pf => {
         const r = pf.getBoundingClientRect();
         return [pf.dataset.id, +Math.max(r.width, r.height).toFixed(1)];
@@ -555,6 +580,10 @@ if (laeuft('treffer')) {
                engsteNadel: Number.isFinite(engsteNadel) ? +engsteNadel.toFixed(1) : null,
                faden: +laengsterFaden.toFixed(1),
                kartenBreite: +kb.width.toFixed(1),
+               stufen: [...flaechen.entries()].filter(([, v]) => v < 44)
+                 .map(([id]) => ({ id, kreis: kreisVon.get(id)?.d ?? 0,
+                   wie: anNadel.has(id) ? 'Nadel'
+                      : (kreisVon.get(id)?.d ?? 0) >= 20 ? 'am Ort' : 'Verzicht' })),
                haken: hkn.length, hakenAuf,
                engste: Number.isFinite(engste) ? +engste.toFixed(1) : null,
                nichtTippbar: groessen.filter(k => klein.has(k.id)).map(k => `${k.id} ${k.d}`),
@@ -600,6 +629,14 @@ if (laeuft('treffer')) {
           + `(${(m.faden / m.kartenBreite * 100).toFixed(0)} % der Kartenbreite)` : '')
       + ` · ${m.haken} Haken, engster Abstand ${m.engste ?? '—'} pt`
       + (m.nichtTippbar.length ? ` · nicht antippbar: ${m.nichtTippbar.join(', ')}` : ''));
+    if (m.stufen?.length) {
+      const zahl = (w) => m.stufen.filter(x => x.wie === w);
+      zeilen.push('        '
+        + ['Nadel', 'am Ort', 'Verzicht'].map(w => `${w} ${zahl(w).length}`).join(' · ')
+        + `  —  am Ort: ${zahl('am Ort').map(x => `${x.id} ${x.kreis}`).join(', ') || '(keine)'}`
+        + (zahl('Verzicht').length
+            ? `  —  Verzicht: ${zahl('Verzicht').map(x => x.id).join(', ')}` : ''));
+    }
   }
   console.log('    Trefferflächen, gemessen im Browser auf 844 × 390:');
   zeilen.forEach(z => console.log(z));

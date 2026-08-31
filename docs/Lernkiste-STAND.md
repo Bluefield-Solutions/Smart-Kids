@@ -6434,3 +6434,79 @@ eigene Untersuchung am Tor, nicht am Läufer. Sie stehen hier, damit sie
 nicht als „schon bekannt" untergehen.
 
 196 von 200 Gegenproben schlagen an.
+
+---
+
+## P7 · Die Nadeln: dieselbe Regel, zwei sehr verschiedene Karten
+
+Zwei Fragen standen offen. Die eine: warum greift die Nadelschwelle in
+Europa anders als in Nordamerika — neun Gebiete unter 44 pt und nur **zwei**
+Nadeln dort, neun und **sieben** hier? Die andere: was ist mit dem Faden von
+154 pt, den die Ratsche seit P4 festhält?
+
+### Die Schwelle greift gar nicht anders
+
+Die Regel steht in `nadelplanFuer` und hat zwei Bedingungen, die **beide**
+zutreffen müssen:
+
+```
+n.gross * k < MIN_PT          die Form ist kleiner als 44 pt auf dem Schirm
+kreisAmOrt(n) * 2 < MIN_REST  und selbst am Ort kommen keine 20 pt zusammen
+```
+
+Die erste trifft in beiden Karten neunmal zu. Die zweite ist der
+Unterschied: in Mittelamerika liegen sieben Länder so eng, dass auch die
+zwanzig nicht mehr reichen; in Europa nur Belgien und Luxemburg. **Es ist
+dieselbe Regel — die Karten sind verschieden.**
+
+Von aussen war das nicht zu sehen. `ziehen --nur=treffer` schreibt die drei
+Stufen jetzt hin:
+
+```
+laender:europa        Nadel 2 · am Ort 7 · Verzicht 0
+                      am Ort: CZE 20, DNK 33.9, POL 30.9, GRC 44,
+                              AUT 20, CHE 24.9, NLD 20
+laender:nordamerika   Nadel 7 · am Ort 2 · Verzicht 0
+                      am Ort: CUB 20, PAN 20
+bundeslaender         Nadel 0 · am Ort 4 · Verzicht 0
+```
+
+Zwei Dinge fallen dabei auf, die vorher niemand sagen konnte. **Verzicht
+steht überall auf null** — kein Gebiet ist unerreichbar. Und **fünf Gebiete
+sitzen exakt auf dem Boden von 20 pt** (CZE, AUT, NLD, CUB, PAN): erreichbar
+nur nach der Definition der App, mit weniger als der halben Fingergrenze.
+
+### Der lange Faden — und eine Vermutung, die falsch war
+
+Meine Vermutung: die Nadeln werden von oben nach unten gelegt, wer zuletzt
+drankommt findet die nahen Plätze besetzt, also ist der 154er ein Artefakt
+der Reihenfolge. Gebaut, gemessen — **nichts geändert.** Und die Gegenprobe
+dazu (die Annahmebedingung abschalten, also *jeden* gefundenen Platz
+nehmen) ändert ebenfalls nichts: die Suche findet für jede Nadel exakt den
+Platz, den sie schon hat. Der Nachbesserungs-Durchgang ist deshalb wieder
+draussen — Code, der nie etwas ändert, ist kein Code, sondern Ballast.
+
+### Die wirkliche Ursache ist die Karte, nicht die Nadel
+
+Dieselbe Karte, drei Fenstergrössen:
+
+| Fenster | Karte | unter 44 pt | Nadeln | längster Faden |
+|---|---|---|---|---|
+| **844 × 390 (Zielgerät)** | 352 × 280 | 9 | **7** | **154 pt (44 %)** |
+| 1180 × 820 (iPad) | 857 × 696 | 6 | 2 | 44 pt (5 %) |
+| 1400 × 900 | 954 × 776 | 6 | **0** | — |
+
+Auf dem Zielgerät bekommt die Karte **352 von 844 Punkten Breite — 42 %**,
+den Rest hält die Antwortspalte. Auf dem iPad sind es 857 von 1180, also
+73 %, und dort braucht Mittelamerika zwei Nadeln statt sieben.
+
+Der Faden ist also kein Fehler der Nadelsuche, sondern ihre Folge: sie muss
+einen Kopf im Meer finden, 44 pt von jedem anderen Kopf entfernt, und bei
+352 Punkten Kartenbreite liegt der nächste freie Platz für Costa Rica
+154 Punkte weit weg.
+
+**Was daraus folgt, ist eine Layoutfrage und keine Nadelfrage** — und sie
+ist zu gross für diese Runde: die Antwortspalte schmaler zu machen berührt
+`passt` auf sieben Grössen, jede eingefrorene Aufnahme und den Grundriss
+selbst. Sie steht damit als nächster Schritt, aber mit einer Zahl davor:
+die Karte hat auf dem Gerät der Kinder weniger als die Hälfte der Breite.
