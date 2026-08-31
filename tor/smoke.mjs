@@ -7,7 +7,7 @@ import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
-import { KONTINENTE } from '../src/inhalt/erdkunde.js';
+import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
 // Die sechzehn Kennungen der Bundeslaender - gebraucht, um einen Stand zu
 // stellen, in dem ein Abzeichen verdient IST.
 import { STAEDTE } from '../src/geo/staedte.js';
@@ -1962,8 +1962,17 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
           .then(() => true).catch(() => false);
         if (da2) {
           const n = await p.$$eval('.schirm.da .aufkleber', es => es.length);
-          if (n !== TIEFE[wer]) merke('durchgang', new Error(
-            `${wer}/${ebene}: ${n} Länder im Vorlauf, das Profil sagt ${TIEFE[wer]}`));
+          /* Erwartet wird die Tiefe ODER die Liste - was kleiner ist.
+             Bis D2c hatten alle fuenf Kontinente genau zwoelf Laender, und
+             die Tiefe war hoechstens zwoelf; da war die Unterscheidung
+             unsichtbar. Seit Europa siebzehn hat und die Eltern bis
+             siebzehn spielen, sind es in Afrika trotzdem zwoelf - kein
+             Fehler, sondern das Ende der Liste. */
+          const vorhanden = (LAENDER[ebene.split(':')[1]] || []).length;
+          const soll = Math.min(TIEFE[wer], vorhanden || TIEFE[wer]);
+          if (n !== soll) merke('durchgang', new Error(
+            `${wer}/${ebene}: ${n} Länder im Vorlauf, erwartet ${soll} `
+            + `(Tiefe ${TIEFE[wer]}, ${vorhanden} in der Liste)`));
         }
       }
       await durchVorlaufWenn(p);

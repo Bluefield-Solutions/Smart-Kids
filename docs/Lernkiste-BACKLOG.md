@@ -94,7 +94,7 @@ mit — und vor einer Sechsjährigen stünden zwölf Länder.
 | Vorlesen | ja | nein | nein | nein |
 | Ton | kindlich | kindlich | **sachlich** | **sachlich** |
 | Auswahl statt Tippen | 4 Möglichkeiten | nur Ebene 4 | **nie** | **nie** |
-| Ländertiefe | 3 | 5 | **12** | **12** |
+| Ländertiefe | 3 | **13** | **17** | **17** |
 | Aufgaben je Sitzung | 6 | 8 | **12** | **12** |
 | streng | nein | ja | ja | ja |
 
