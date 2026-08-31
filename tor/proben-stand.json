@@ -299,6 +299,10 @@
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
       "zeit": "2026-08-31"
     },
+    "der Haken bleibt am Ort statt an der Nadel": {
+      "commit": "d3b7a5132265d2a907a95f3459afe762acc5b622",
+      "zeit": "2026-08-31"
+    },
     "die Sprechprobe zaehlt jeden Versuch als verstanden": {
       "commit": "1df3001521e657628cbc6ad3c45b01947fa98713",
       "zeit": "2026-08-31"
