@@ -31,6 +31,7 @@ import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js
 import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
+import { ALLE as KETTE } from './kette-liste.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
@@ -1386,7 +1387,7 @@ function gegenAbgleich(was, zeilen, rechne) {
   }
 }
 
-/* Die Kette in CLAUDE.md gegen die Kette in package.json.
+/* Die Kette in CLAUDE.md gegen die Kette, die wirklich gefahren wird.
  *
  * Beim Audit standen in CLAUDE.md zwölf Tore und in `npm run tor` liefen
  * vierzehn: `rhythmus`, `spielprobe`, `budget`, `passt`, `lesbarkeit` und
@@ -1395,16 +1396,20 @@ function gegenAbgleich(was, zeilen, rechne) {
  * sechs Tore fuer nicht vorhanden.
  *
  * Verglichen werden Mengen, nicht Reihenfolgen: die Reihenfolge steht in
- * package.json und braucht keine zweite Fassung. Was zaehlt, ist, dass
- * kein Tor fehlt und keines erfunden ist. Regel 6.
+ * `tor/kette-liste.mjs` und braucht keine zweite Fassung. Was zaehlt, ist,
+ * dass kein Tor fehlt und keines erfunden ist. Regel 6.
+ *
+ * Bis P1 stand die Kette als `&&`-Zeile in package.json und wurde hier
+ * daraus gelesen. Seit die Browsertore nebeneinander laufen, ist sie eine
+ * Liste - und diese Pruefung liest DIESELBE Liste, die `tools/kette.mjs`
+ * faehrt. Eine zweite Abschrift waere genau der Fehler, den dieses Tor
+ * fangen soll.
  */
 const ANWEISUNG = 'CLAUDE.md';
 if (!fs.existsSync(ANWEISUNG)) {
   fehler.push(`${ANWEISUNG} nicht gefunden — die Kette lässt sich nicht vergleichen`);
 } else {
-  const paket = JSON.parse(fs.readFileSync('package.json','utf8'));
-  const echt = new Set((paket.scripts.tor || '').split('&&')
-    .map(x => x.trim().replace(/^npm run /,'')).filter(Boolean));
+  const echt = new Set(KETTE);
   // Manche Tore tragen weitere in sich: `inhalt` faehrt sieben, `pwa` zwei.
   // Sie stehen zu Recht in CLAUDE.md, aber in keiner Zeile von package.json.
   // Gezaehlt werden sie da, wo sie sich melden - an ihrer eigenen
@@ -1427,7 +1432,7 @@ if (!fs.existsSync(ANWEISUNG)) {
     if (zuviel.length) fehler.push(`${ANWEISUNG} nennt ${zuviel.length} Tore, `
       + '`npm run tor` nicht fährt: ' + zuviel.join(', '));
     if (!fehlt.length && !zuviel.length)
-      console.log(`    Kette stimmt: ${echt.size} Tore in CLAUDE.md und in package.json`);
+      console.log(`    Kette stimmt: ${echt.size} Tore in CLAUDE.md und in tor/kette-liste.mjs`);
   }
 
   /* Die Vorschau darf nicht zur Auslieferung werden.

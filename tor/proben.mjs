@@ -24,6 +24,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, execSync, spawn } from 'node:child_process';
+import { ALLE as KETTE } from './kette-liste.mjs';
 
 const NUR = process.argv.slice(2).filter(a => !a.startsWith('-'));
 const STAND = 'tor/proben-stand.json';
@@ -639,9 +640,9 @@ if (TEIL) {
  * FEHLENDE: ein neues Tor kommt dazu, und niemand traegt eine nach. Das
  * faellt nie auf, weil alles gruen ist.
  */
-const kette = JSON.parse(fs.readFileSync('package.json', 'utf8')).scripts.tor
-  .split('&&').map(s => s.trim().replace(/^npm run /, ''))
-  .filter(t => t !== 'bauen');
+/* Aus `tor/kette-liste.mjs` - derselben Liste, die `tools/kette.mjs`
+ * faehrt. Bis P1 stand die Kette als `&&`-Zeile in package.json. */
+const kette = KETTE.filter(t => t !== 'bauen');
 const ohne = kette.filter(t => !PROBEN.some(p => p.tor === t));
 
 console.log('');

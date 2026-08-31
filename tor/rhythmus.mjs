@@ -63,6 +63,7 @@
 // frischen Klon nicht mehr existierten) und brauchte `fetch-depth: 0`. Ein
 // Datum steht in der Datei und braucht keine Historie.
 import fs from 'node:fs';
+import { ALLE as KETTE } from './kette-liste.mjs';
 
 const STAND = 'tor/proben-stand.json';
 
@@ -178,9 +179,11 @@ if (zuAlt.length)
     + 'her ist, desto schwerer ist der Tag zu finden, an dem es passiert ist. '
     + '(`npm run proben`)');
 
-const kette = JSON.parse(fs.readFileSync('package.json', 'utf8')).scripts.tor
-  .split('&&').map(s => s.trim().replace(/^npm run /, ''))
-  .filter(t => t !== 'bauen' && t !== 'rhythmus');
+/* Die Kette kommt aus `tor/kette-liste.mjs` - derselben Liste, die
+ * `tools/kette.mjs` faehrt und `tor/inhalt.mjs` gegen CLAUDE.md haelt.
+ * Bis P1 stand sie als `&&`-Zeile in package.json; seit die Browsertore
+ * nebeneinander laufen, gibt es diese Zeile nicht mehr. */
+const kette = KETTE.filter(t => t !== 'bauen' && t !== 'rhythmus');
 const neu = kette.filter(t => !stand.tore.includes(t));
 if (neu.length)
   fehler.push(`Diese Tore standen beim letzten Probenlauf noch nicht in der Kette: `

@@ -646,14 +646,40 @@ export const PROBEN = [
    * nur im VOLLEN Lauf drankommt - und der lief zuletzt nachts, wo die
    * Meldung im Protokoll steht und nicht auf einem Bildschirm.
    *
-   * Jetzt am `"tor": "npm run ` verankert. Das ueberlebt jede Umsortierung
-   * der Kette; nur ihr Wegfall wuerde es brechen, und dann gibt es nichts
-   * mehr zu pruefen. */
+   * Jetzt am Kopf der Liste verankert, nicht an einer Zeile in
+   * package.json: seit P1 steht die Kette in `tor/kette-liste.mjs`, und
+   * genau diese Umstellung hat den alten Suchtext entwertet - gemeldet von
+   * der Suchtext-Pruefung in `inhalt`, im selben Lauf. Das Anhaengsel
+   * ueberlebt jede Umsortierung der Kette. */
+  /* --- die Kette selbst ------------------------------------------------
+   *
+   * Solange die Kette eine `&&`-Zeile war, gab die Shell den Rueckgabewert
+   * weiter, und es gab nichts zu pruefen. Seit P1 faehrt `tools/kette.mjs`
+   * die sechs Browsertore NEBENEINANDER und sammelt ihre Rueckgabewerte
+   * selbst ein - ein `await` zu wenig, und ein rotes Tor waere still
+   * gruen. Das ist die teuerste Art, ein Tor abzuschalten: alle bleiben
+   * stehen, keines bezeugt noch etwas.
+   *
+   * Die Probe faehrt die Kette in ihrer KURZEN Fassung
+   * (`SMARTKIDS_KETTE_PROBE=1`, siehe tools/kette.mjs): `pwa` und
+   * `lesbarkeit` im selben Becken, zusammen elf Sekunden. `pwa` wird rot
+   * gemacht, `lesbarkeit` bleibt gruen - geprueft wird also nicht nur,
+   * dass ein Rot durchkommt, sondern dass es NEBEN einem Gruen durchkommt.
+   * Die volle Kette waere fuenf Minuten je Probe; die faehrt niemand, und
+   * eine Probe, die niemand faehrt, beweist nichts (Regel 1). */
+  { n:'das Becken verschluckt ein rotes Tor', tor:'tor', bauen:true,
+    umgebung:{ SMARTKIDS_KETTE_PROBE:'1' }, datei:'tor/pwa.mjs',
+    such:'const pruefe = (b, satz) => { if (!b) fehler.push(satz); };',
+    ersatz:'const pruefe = (b, satz) => { if (!b) fehler.push(satz); };\n'
+      + "pruefe(false, 'Gegenprobe: dieses Tor ist absichtlich rot');",
+    an:{ datei:'tor/pwa.mjs', text:'absichtlich rot' },
+    sagt:'Kette ROT' },
+
   { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus', auchWennRot:true,
-    brauchtStand:true, nachStand:true, datei:'package.json',
-    such:'"tor": "npm run ',
-    ersatz:'"tor": "npm run neuestor && npm run ',
-    an:{ datei:'package.json', text:'npm run neuestor' },
+    brauchtStand:true, nachStand:true, datei:'tor/kette-liste.mjs',
+    such:'export const OHNE_BROWSER = [',
+    ersatz:"export const OHNE_BROWSER = [\n  { name: 'neuestor', datei: 'tor/neuestor.mjs' },",
+    an:{ datei:'tor/kette-liste.mjs', text:"name: 'neuestor'" },
     sagt:'noch nicht in der Kette' },
   /* Ein Nachweis, dessen Alter sich nicht bestimmen laesst.
    *

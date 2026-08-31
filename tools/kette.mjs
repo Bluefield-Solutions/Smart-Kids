@@ -1,0 +1,183 @@
+// Die volle Torkette — `npm run tor`.
+//
+// Was sich gegenueber der `&&`-Zeile aendert, und warum:
+//
+//   1. Die sechs Browsertore laufen NEBENEINANDER. Jedes faehrt seinen
+//      eigenen Chromium auf einem eigenen Zufallsport (`serviere` bindet
+//      auf 0) und schreibt in keine Datei, die ein anderes liest -
+//      nachgesehen, nicht angenommen. Nacheinander waren sie 625 s.
+//   2. Ein rotes Tor beendet den Lauf nicht mehr. Vorher sah man beim
+//      ersten Rot keines der spaeteren; jetzt steht am Ende, was ALLES
+//      rot ist. Fuer dieselbe Wanduhrzeit.
+//
+// Was sich NICHT aendert: die billigen Tore laufen weiter zuerst und
+// weiter mit Abbruch beim ersten Rot. Ein Tippfehler im Inhalt soll keine
+// fuenf Browserminuten kosten.
+//
+// Die Liste steht in `tor/kette-liste.mjs`, nicht hier - `tor/inhalt.mjs`
+// liest sie ebenfalls, wenn es die Kette gegen CLAUDE.md haelt (Regel 6).
+import os from 'node:os';
+import { OHNE_BROWSER, BAU, NACH_DEM_BAU, MIT_BROWSER } from '../tor/kette-liste.mjs';
+import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
+
+/* Die kurze Kette fuer die Gegenprobe.
+ *
+ * Ein Becken, das ein rotes Tor verschluckt, ist genau der Fehler, den es
+ * hier zu fangen gilt: mit `&&` war die Weitergabe des Rueckgabewerts die
+ * Sache der Shell, jetzt ist sie meine. Eine Gegenprobe dafuer muesste
+ * `npm run tor` fahren - fuenf Minuten je Probe, das faehrt niemand.
+ *
+ * Deshalb dieser Schalter: er faehrt NUR die beiden billigsten
+ * Browsertore, und zwar nebeneinander im selben Becken wie sonst. Die
+ * Gegenprobe macht `pwa` rot und erwartet, dass die Kette rot wird,
+ * obwohl `lesbarkeit` daneben gruen bleibt.
+ *
+ * Er nimmt bewusst KEINE Liste entgegen. Ein Schalter, mit dem man sich
+ * Tore aussuchen kann, ist eine Art, die Kette still abzuschalten
+ * (Regel 9); dieser kann nur das eine, wofuer er da ist, und sagt es in
+ * jedem Lauf laut dazu. Die Auslieferung setzt ihn nirgends.
+ */
+const PROBE = process.env.SMARTKIDS_KETTE_PROBE === '1';
+
+const t0 = Date.now();
+const befunde = [];
+const melde = ({ name, code, aus, ms }) => {
+  console.log(`    ${code === 0 ? gruen('grün') : rot('ROT ')}  ${name.padEnd(24)} ${s(ms)}`);
+  if (code !== 0) befunde.push({ name, aus });
+};
+
+const abbruch = (r) => {
+  melde(r);
+  console.log('\n' + r.aus.split('\n').slice(-18).join('\n'));
+  console.log(`\n  Kette ROT nach ${s(Date.now() - t0)} — `
+    + 'die billigen Tore brechen ab, damit kein Browser umsonst läuft.\n');
+  process.exit(1);
+};
+
+console.log(PROBE
+  ? `\n  ${rot('Torkette — KURZE Fassung (SMARTKIDS_KETTE_PROBE=1)')}\n`
+    + '  Nur `pwa` und `lesbarkeit`, nur für die Gegenprobe. Kein grüner Lauf.\n'
+  : '\n  Torkette — die volle Runde\n');
+
+// 1. Ohne Browser. Beim ersten Rot ist Schluss.
+for (const t of (PROBE ? [] : OHNE_BROWSER)) {
+  const r = await mitZeit(t.name, t.datei);
+  if (r.code !== 0) abbruch(r);
+  melde(r);
+}
+
+// 2. Bauen. Ohne dist/ hat kein Browsertor etwas zu pruefen.
+{
+  let ms = 0, letzte = null;
+  for (const d of BAU.dateien) {
+    const r = await mitZeit(BAU.name, d); ms += r.ms; letzte = r;
+    if (r.code !== 0) abbruch({ ...r, name: `${BAU.name} (${d})`, ms });
+  }
+  melde({ ...letzte, name: BAU.name, ms });
+}
+for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
+  const r = await mitZeit(t.name, t.datei);
+  if (r.code !== 0) abbruch(r);
+  melde(r);
+}
+
+/* 3. Die Browsertore nebeneinander, in einem Becken fester Breite.
+ *
+ * Vier Kerne, sechs Tore, eines davon dreigeteilt - ohne Becken liefen
+ * acht Chromium gleichzeitig, und jeder waere langsamer als die Summe
+ * spart.
+ *
+ * DREI, gemessen an der vollen Kette auf demselben Rechner am selben Tag:
+ *
+ *     Becken 3   307,7 s   <- hier
+ *     Becken 4   308,4 s
+ *
+ * Das ist kein Gleichstand aus Zufall, sondern die Auskunft, wo der
+ * Engpass liegt: `smoke` allein braucht 295 s, die ganze Kette 308. Auf
+ * die zwei uebrigen Baender verteilen sich 337 s, also 222 auf dem
+ * laengeren - immer noch unter `smoke`. Ein viertes Chromium kann deshalb
+ * nichts mehr abkuerzen und kostet nur einen Kern. Und ein zweites reichte
+ * nicht: dann laegen 337 s auf einem Band.
+ *
+ * Der naechste Hebel ist also nicht die Breite, sondern `smoke` selbst -
+ * seine vierzehn Abschnitte in Teillaeufe zerlegen, so wie `ansicht`
+ * seine Aufnahmen. Das ist eine eigene Runde: `ablage` braucht `spielen`,
+ * die Abschnitte sind also nicht frei schneidbar.
+ *
+ * Laengstes zuerst: sonst startet `smoke` mit seinen fuenf Minuten als
+ * letztes, und alle anderen Kerne stehen still, waehrend es laeuft. */
+/* Auf dem Runner sind es zwei Kerne, nicht vier (`ubuntu-latest`). Drei
+ * Chromium auf zwei Kernen waeren nicht schneller, sondern nur enger -
+ * deshalb nie mehr Baender als Kerne. Nach oben bleibt es bei drei: das
+ * vierte hat nichts mehr abgekuerzt (Messung oben). */
+const KERNE = os.cpus().length;
+const BREITE = +(process.env.SMARTKIDS_BECKEN || Math.max(2, Math.min(3, KERNE)));
+
+const arbeit = [];
+for (const t of (PROBE ? MIT_BROWSER.filter(t => t.name === 'pwa' || t.name === 'lesbarkeit')
+                       : MIT_BROWSER)) {
+  if (!t.teile) { arbeit.push({ name: t.name, datei: t.datei, args: [], ms: t.ms }); continue; }
+  for (let i = 0; i < t.teile; i++)
+    arbeit.push({ name: `${t.name} (${i + 1}/${t.teile})`, datei: t.datei,
+      args: [`--teil=${i}/${t.teile}`], ms: t.ms / t.teile });
+}
+arbeit.sort((a, b) => b.ms - a.ms);
+
+console.log(grau(`\n    ${arbeit.length} Browserläufe, ${BREITE} nebeneinander `
+  + `(${KERNE} Kerne) — längster zuerst\n`));
+
+const a3 = Date.now();
+const ergebnisse = [];
+{
+  let naechste = 0;
+  const schluck = async () => {
+    while (naechste < arbeit.length) {
+      const w = arbeit[naechste++];
+      ergebnisse.push(await mitZeit(w.name, w.datei, w.args));
+    }
+  };
+  await Promise.all([...Array(Math.min(BREITE, arbeit.length))].map(schluck));
+}
+// In der Reihenfolge der Liste melden, nicht in der des Zieleinlaufs -
+// sonst steht in jedem Lauf etwas anderes da, und man sieht keinen
+// Unterschied mehr zum vorigen.
+for (const w of arbeit) melde(ergebnisse.find(e => e.name === w.name));
+
+const summe = ergebnisse.reduce((n, e) => n + e.ms, 0);
+console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(24)} ${s(Date.now() - a3)} statt `
+  + `${s(summe)} nacheinander`);
+
+/* Die Teile von `ansicht` muessen ZUSAMMEN alle Aufnahmen abdecken.
+ *
+ * Ein Teillauf, der die Haelfte vergisst, meldet „gruen" - und niemand
+ * sieht, worueber. Dieselbe Nachzaehlung wie in tools/schnell.mjs, aus
+ * demselben Grund: eine Aufteilung ist eine Gelegenheit, still etwas
+ * abzuschalten (Regel 1). */
+{
+  const teile = ergebnisse.filter(e => /^ansicht \(/.test(e.name));
+  const gezaehlt = teile.map(e => (e.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || [])
+    .slice(1, 4).reduce((n, z) => n + (+z || 0), 0)).reduce((n, z) => n + z, 0);
+  const soll = +((teile[0]?.aus.match(/der (\d+) Aufnahmen/) || [])[1] || 0);
+  if (soll && gezaehlt !== soll) {
+    console.log(`\n  ${rot('✗')} ansicht: ${gezaehlt} von ${soll} Aufnahmen geprüft — `
+      + 'die Teile decken zusammen nicht alles ab.');
+    process.exit(1);
+  }
+  if (soll) console.log(`    ${''.padEnd(6)}${'geprüfte Aufnahmen'.padEnd(24)} ${gezaehlt} von ${soll}`);
+}
+
+console.log('');
+if (befunde.length) {
+  for (const b of befunde) {
+    console.log(`  ${rot('✗')} ${b.name}:`);
+    console.log(b.aus.split('\n').filter(z => /✗|FEHLER|ROT|Timeout/.test(z))
+      .slice(0, 10).map(z => '      ' + z.trim()).join('\n')
+      || b.aus.split('\n').slice(-10).map(z => '      ' + z.trimEnd()).join('\n'));
+  }
+  console.log(`\n  Kette ROT nach ${s(Date.now() - t0)} — `
+    + `${befunde.length} von `
+    + `${(PROBE ? 1 : OHNE_BROWSER.length + 1 + NACH_DEM_BAU.length) + arbeit.length} `
+    + 'Läufen.\n');
+  process.exit(1);
+}
+console.log(`  Kette grün nach ${s(Date.now() - t0)}.\n`);

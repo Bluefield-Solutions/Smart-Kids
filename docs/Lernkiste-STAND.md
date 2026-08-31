@@ -5155,7 +5155,8 @@ weggelassen werden darf (klein, fest, aus der Erdkunde selbst).
 
 Es maß `abgleich` mit nackten Wörtern. Die App rechnet `hoerAbgleich` mit
 ganzen Äußerungen. Ein Tor, das die Stufe **darunter** misst, bezeugt eine
-Rechnung, die niemand fährt — Regel 5, wieder einmal, und diesmal hat es
+Rechnung, die niemand fährt — die Zahl trägt ihre Messstelle mit
+(Regel 5), wieder einmal, und diesmal hat es
 einen Fehler gedeckt, den das Zielgerät in dreißig Sekunden fand.
 
 Der Korpus kennt jetzt beide Formen: **121 Treffer, 91 Nichttreffer**, in
@@ -5435,8 +5436,8 @@ nach dunklem Grün und einen weißen Lichtpunkt.
 
 ### Drei Motive waren keine Motive
 
-Der erste Entwurf war fertig, grün und falsch. Auf der Aufnahme (Regel 8,
-und Regel 7: hinsehen vor der Lieferung) war zu sehen:
+Der erste Entwurf war fertig, grün und falsch. Auf der Aufnahme war zu
+sehen, was kein Tor gemeldet hatte — kein Tor ersetzt den Blick (Regel 4):
 
 - Die **Schildkröte** war ein Karo. Die Flossen lagen unter dem Panzer,
   und ein Gitter darauf machte aus dem Rest ein Muster. Jetzt stehen alle
@@ -5748,3 +5749,122 @@ Dieselbe Begründung, die in diesem Block schon für die Bildhöhen steht:
 die Maße sind für den Schreibtisch gewählt und auf dem Telefon zu groß.
 
 175 Gegenproben, alle mit Nachweis.
+
+---
+
+## P1 · Die Torkette ist kein `&&` mehr
+
+`npm run tor` war eine Zeile in `package.json`: vierzehn `npm run …`,
+verbunden mit `&&`. Das hat zwei Dinge erzwungen, die beide falsch sind.
+
+**Alles lief hintereinander.** Sechs der Tore fahren einen eigenen
+Chromium auf einem eigenen Zufallsport (`serviere` bindet auf `0`) und
+schreiben in keine Datei, die ein anderes liest — nachgesehen, nicht
+angenommen. Sie sind vollständig unabhängig und liefen trotzdem
+nacheinander, auf einem Rechner mit vier Kernen.
+
+**Beim ersten Rot war Schluss.** Wer `passt` rot bekam, sah `smoke` erst
+im nächsten Lauf — fünf Minuten später, und dann vielleicht auch rot.
+
+Jetzt steht die Kette als **Liste** in `tor/kette-liste.mjs`, und
+`tools/kette.mjs` fährt sie: die billigen Tore nacheinander und weiterhin
+mit Abbruch beim ersten Rot (ein Tippfehler im Inhalt soll keine fünf
+Browserminuten kosten), dann `bauen`, dann die sechs Browsertore in einem
+Becken.
+
+### Die Zahlen — und was an den alten falsch war
+
+Gemessen am 31.08.2026, jedes Tor **allein**, auf demselben Rechner
+(vier Kerne, `dist/` frisch gebaut):
+
+| Tor | in `schnell.mjs` stand | jetzt gemessen |
+|---|---|---|
+| `smoke` | 163 s | **293 s** |
+| `passt` | 54 s | **183 s** |
+| `ansicht` | 43 s | **79 s** |
+| `ziehen` | 48 s | **57 s** |
+| `lesbarkeit` | 9 s | 9 s |
+| `pwa` | 19 s | **4 s** |
+
+Die alte Zeile war nicht nur alt, sondern **irreführend**: `passt` misst
+seit P14 jeden Knopf statt einer Auswahl und ist dreimal so teuer,
+`smoke` hat vier Abschnitte dazubekommen — und `pwa` ist umgekehrt von 19
+auf 4 s gefallen. Genau nach dieser Zeile ist entschieden worden, was in
+die schnelle Bahn gehört und was nicht. Regel 5, wieder einmal: eine
+geerbte Zahl gilt für den Tag, an dem sie gemessen wurde, und wer sie
+erbt, erbt auch ihre Voraussetzungen.
+
+### Die Breite des Beckens ist gemessen, nicht geraten
+
+An der vollen Kette, derselbe Rechner, derselbe Tag:
+
+```
+Becken 3   307,7 s   <- eingestellt
+Becken 4   308,4 s
+nacheinander        633 s
+```
+
+Der Gleichstand ist kein Zufall, sondern die Auskunft, **wo der Engpass
+liegt**: `smoke` allein braucht 295 s, die ganze Kette 308. Auf die zwei
+übrigen Bänder verteilen sich 337 s, also 222 auf dem längeren — immer
+noch unter `smoke`. Ein viertes Chromium kann deshalb nichts mehr
+abkürzen und kostet nur einen Kern; ein zweites reichte nicht, dann lägen
+337 s auf einem Band.
+
+**Der nächste Hebel ist also nicht die Breite, sondern `smoke` selbst.**
+Seine vierzehn Abschnitte ließen sich in Teilläufe zerlegen, so wie
+`ansicht` seine Aufnahmen. Das ist eine eigene Runde: `ablage` braucht
+`spielen`, die Abschnitte sind nicht frei schneidbar.
+
+Auf dem Runner sind es zwei Kerne, nicht vier. Die Breite folgt deshalb
+der Kernzahl (`Math.max(2, Math.min(3, os.cpus().length))`) — nie mehr
+Bänder als Kerne, und nach oben bleibt es bei drei.
+
+### Die Kette stand dreimal da
+
+`tor/inhalt.mjs` hielt CLAUDE.md gegen `package.json`, `tor/rhythmus.mjs`
+prüfte, ob jedes Tor der Kette einen Probenstand hat, und `tor/proben.mjs`
+prüfte, ob jedes Tor eine Gegenprobe hat — alle drei lasen `scripts.tor`
+und spalteten an `&&`. Alle drei lesen jetzt `tor/kette-liste.mjs`
+(Regel 6). Ohne das wäre die Umstellung selbst der Fehler gewesen, den
+diese drei Prüfungen fangen sollen.
+
+### Was die Umstellung sofort gekostet und eingebracht hat
+
+Drei Tore haben im ersten Lauf der neuen Kette angeschlagen, alle drei zu
+Recht:
+
+- **`inhalt`** meldete, dass die Gegenprobe „ein neues Tor steht in der
+  Kette, aber nicht im Stand" ihren Suchtext (`"tor": "npm run `) nicht
+  mehr findet — sie wäre still wirkungslos geworden. Sie hängt jetzt am
+  Kopf der Liste.
+- **`regeln`** meldete drei neue Verweise ohne Stichwort. Zwei davon
+  waren echte Fehler: „Auf der Aufnahme (Regel 8, und Regel 7: hinsehen
+  vor der Lieferung)" — das ist die Nummerierung des *anderen*
+  Verzeichnisses, gemeint war Regel 4, kein Tor ersetzt den Blick.
+- **`doppelt`** meldete 118 Token, die in `tools/kette.mjs` und
+  `tools/schnell.mjs` gleichzeitig standen — der Prozessstarter und die
+  Zeitnahme. Sie stehen jetzt in `tools/laeufer.mjs`. Was *nicht*
+  dorthin gehört: Reihenfolge, Becken und Abbruch — das ist genau der
+  Unterschied zwischen der schnellen Bahn und der vollen Kette.
+
+### Die Gegenprobe für das Becken
+
+Mit `&&` gab die Shell den Rückgabewert weiter; jetzt sammelt der Läufer
+ihn selbst ein. Ein `await` zu wenig, und ein rotes Tor wäre still grün —
+die teuerste Art, Tore abzuschalten, weil alle stehen bleiben und keines
+mehr etwas bezeugt.
+
+Die Gegenprobe fährt die Kette in einer **kurzen Fassung**
+(`SMARTKIDS_KETTE_PROBE=1`): `pwa` und `lesbarkeit` im selben Becken,
+zusammen elf Sekunden. `pwa` wird rot gemacht, `lesbarkeit` bleibt grün —
+geprüft wird also nicht nur, dass ein Rot durchkommt, sondern dass es
+**neben einem Grün** durchkommt. Die volle Kette wären fünf Minuten je
+Probe, und eine Probe, die niemand fährt, beweist nichts (Regel 1).
+
+Der Schalter nimmt bewusst **keine Liste** entgegen. Ein Schalter, mit dem
+man sich Tore aussuchen kann, ist eine Art, die Kette still abzuschalten
+(Regel 9); dieser kann nur das eine, wofür er da ist, sagt es in jedem
+Lauf laut dazu, und die Auslieferung setzt ihn nirgends.
+
+194 Gegenproben.

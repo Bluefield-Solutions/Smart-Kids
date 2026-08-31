@@ -4,13 +4,21 @@
 // laeuft auf dem Runner, nachdem gestossen wurde - dort kostet es
 // niemandes Zeit.
 //
-// Die Aufteilung ist gemessen, nicht geraten. Die ganze Kette dauerte
-// 336 s, und 335 davon lagen im Browser:
+// Die Aufteilung ist gemessen, nicht geraten. Nachgemessen am 31.08.2026,
+// jedes Tor allein, auf demselben Rechner (vier Kerne):
 //
-//     smoke 163 · passt 54 · ziehen 48 · ansicht 43 · pwa 19 · lesbarkeit 9
-//     inhalt 0,5 · spielprobe 0,1 · vergleich 0,1 · budget 0,1
+//     smoke 293 · passt 183 · ansicht 79 · ziehen 57 · lesbarkeit 9 · pwa 4
+//     inhalt 2,4 · schreiben 5,2 · vergleich 0,8 · spielprobe 0,3 · budget 0,2
 //
-// Und im Rauchtest wiederum:
+// Hier stand bis P1 „smoke 163 · passt 54 · ziehen 48 · ansicht 43 · pwa 19",
+// von einem anderen Rechner und aus einer Zeit vor P13/P14. Zwei der
+// Zahlen waren nicht nur alt, sondern IRREFUEHREND: `passt` misst seit P14
+// jeden Knopf statt einer Auswahl und ist dreimal so teuer, `pwa` ist
+// umgekehrt von 19 auf 4 s gefallen. Wer nach der alten Zeile entschieden
+// haette, was in die schnelle Bahn gehoert, haette falsch entschieden. Eine
+// geerbte Zahl gilt fuer den Tag, an dem sie gemessen wurde (Regel 5).
+//
+// Und im Rauchtest wiederum (aeltere Messung, nicht nachgezogen):
 //
 //     durchgang 83 · ablage 38 · spielen 29 · regler 27 · ebene4 16 · tippen 2
 //
@@ -21,9 +29,9 @@
 //
 // Was ausdruecklich NICHT hier laeuft und warum:
 //
-//     passt        54 s. Faengt Ueberlauf auf sieben Groessen - wertvoll,
+//     passt       183 s. Faengt Ueberlauf auf sieben Groessen - wertvoll,
 //                  aber nur wenn sich das Layout geaendert hat. Runner.
-//     ziehen       48 s. Die Nachsicht beim Ziehen aendert sich fast nie.
+//     ziehen        57 s. Die Nachsicht beim Ziehen aendert sich fast nie.
 //     durchgang    83 s. Spielt JEDE Ebene fuer beide Kinder. Das ist der
 //                  gruendlichste Teil und der teuerste. Runner.
 //     lesbarkeit,  Kontrast und PWA aendern sich nur mit den Marken bzw.
@@ -35,19 +43,9 @@
 // hier nicht auf, sondern drei Minuten spaeter im Ablauf - nach dem
 // Stossen. Unter `/` kommt trotzdem nichts Ungeprueftes an: die
 // Auslieferung faehrt die volle Kette und schickt nur bei Gruen.
-import { spawn } from 'node:child_process';
+import { lauf, mitZeit, s, rot, gruen } from './laeufer.mjs';
 
 const t0 = Date.now();
-const lauf = (befehl, args = []) => new Promise((fertig) => {
-  const k = spawn(process.execPath, [befehl, ...args], { stdio: ['ignore', 'pipe', 'pipe'] });
-  let aus = '';
-  k.stdout.on('data', d => aus += d);
-  k.stderr.on('data', d => aus += d);
-  k.on('close', code => fertig({ code, aus }));
-});
-
-const s = (ms) => `${(ms / 1000).toFixed(1)} s`;
-const rot = (x) => `\x1b[31m${x}\x1b[0m`, gruen = (x) => `\x1b[32m${x}\x1b[0m`;
 
 console.log('\n  Schnelle Bahn — was bei jeder Änderung läuft\n');
 
@@ -78,15 +76,6 @@ for (const [name, datei] of [['inhalt (7 Prüfungen)', 'tor/inhalt.mjs'],
 
 // 3. Die Browser-Tore NEBENEINANDER — vier Prozesse auf vier Kernen.
 const a3 = Date.now();
-/* Jedes Tor misst SEINE Dauer, nicht die der Gruppe.
- *
- * Im ersten Anlauf stand hier zweimal `Date.now() - a3` - beide Tore
- * meldeten damit dieselbe Zahl, naemlich die des langsameren. Ich haette
- * das kuerzere optimiert und es nicht gemerkt. Eine Zahl, die fuer zwei
- * Dinge gilt, gilt fuer keines (Regel 5). */
-const mitZeit = async (name, datei, args) => {
-  const a = Date.now(); const r = await lauf(datei, args); return { name, r, ms: Date.now() - a };
-};
 /* DREI Teile beim Bildvergleich, nicht zwei - und nicht vier.
  *
  * Gemessen, an derselben Stelle und am selben Tag (Wanduhr der ganzen
@@ -115,17 +104,17 @@ const beide = await Promise.all([
   ...[...Array(TEILE)].map((_, i) =>
     mitZeit(`Bildvergleich (${i + 1}/${TEILE})`, 'tor/ansicht.mjs', [`--teil=${i}/${TEILE}`])),
 ]);
-for (const x of beide) melde(x.name, x.r, x.ms);
+for (const x of beide) melde(x.name, x, x.ms);
 /* Die zwei Haelften muessen ZUSAMMEN alle Aufnahmen abdecken.
  *
  * Ein Teillauf, der die Haelfte vergisst, meldet „gruen" - und niemand
  * sieht, worueber. Deshalb wird nachgezaehlt, statt es zu glauben. */
 {
   const gezaehlt = beide.filter(x => /Bildvergleich/.test(x.name))
-    .map(x => (x.r.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || []).slice(1, 4)
+    .map(x => (x.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || []).slice(1, 4)
       .reduce((n, z) => n + (+z || 0), 0))
     .reduce((n, z) => n + z, 0);
-  const soll = +((beide.find(x => /Bildvergleich \(1\//.test(x.name))?.r.aus
+  const soll = +((beide.find(x => /Bildvergleich \(1\//.test(x.name))?.aus
     .match(/der (\d+) Aufnahmen/) || [])[1] || 0);
   if (soll && gezaehlt !== soll) {
     console.log(`\n  ${rot('✗')} Bildvergleich: ${gezaehlt} von ${soll} Aufnahmen geprüft — `

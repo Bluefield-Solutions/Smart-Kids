@@ -18,12 +18,13 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 ## Wie hier gearbeitet wird: drei Bahnen
 
 Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
-— die ganze Kette dauerte 336 s, und 335 davon lagen im Browser.
+— die ganze Kette dauert 633 s, wenn alles nacheinander läuft, und 623 davon
+liegen im Browser. Seit P1 laufen die sechs Browsertore nebeneinander: 308 s.
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run schnell`** | bei **jeder** Änderung | **~32 s** (gemessen, 27 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 4:41) | die volle Kette, alle Größen, alle Bildschirme |
+| **`npm run schnell`** | bei **jeder** Änderung | **~54 s** (gemessen 53,5 s, 32 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 5:08; nacheinander wären es 10:33) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
@@ -41,8 +42,8 @@ Wer eine feste Pause einbaut, sieht sie dort sofort. Für ein AUSBLEIBEN
 („Lea hört nichts") geht das nicht: dort wird nicht gewartet, sondern
 später gelesen.
 
-**Was `schnell` NICHT fährt und warum:** `passt` (54 s, nur bei
-Layoutänderungen interessant) · `ziehen` (48 s, ändert sich fast nie) ·
+**Was `schnell` NICHT fährt und warum:** `passt` (183 s, nur bei
+Layoutänderungen interessant) · `ziehen` (57 s, ändert sich fast nie) ·
 `lesbarkeit`, `pwa`, `offline` (hängen an Marken und Manifest) · den
 Rauchtest-Abschnitt `durchgang` (83 s — jede Ebene für beide Kinder, der
 gründlichste und teuerste Teil). Alles davon läuft auf dem Runner.
@@ -65,9 +66,15 @@ Proben hätten genau daran angeschlagen.
 ## Befehle
 
 ```
-npm run schnell    DIE NORMALE RUNDE. ~32 s. Siehe oben.
-npm run tor        die ganze Kette. Der Runner fährt sie ohnehin bei jedem
-                   Push; hier nur, wenn du sie vorher sehen willst.
+npm run schnell    DIE NORMALE RUNDE. ~54 s. Siehe oben.
+npm run tor        die ganze Kette, rund 5 min. Der Runner fährt sie ohnehin
+                   bei jedem Push; hier nur, wenn du sie vorher sehen
+                   willst. Die billigen Tore laufen nacheinander und
+                   brechen beim ersten Rot ab; die sechs Browsertore laufen
+                   NEBENEINANDER, drei zur Zeit (308 s statt 633 s) — und
+                   sie brechen NICHT ab, man sieht also in einem Lauf, was
+                   alles rot ist. Die Liste steht in `tor/kette-liste.mjs`,
+                   der Läufer in `tools/kette.mjs`.
 npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
                    `-- <export.json>` legt eine Urteilsliste an (der Export
                    kommt aus dem Elternbereich, „Als JSON sichern"),

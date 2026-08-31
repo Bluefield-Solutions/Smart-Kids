@@ -24,16 +24,6 @@
     "warum": "Die fünf Länderlisten. Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben."
   },
   {
-    "dateien": "tools/backen-laender.mjs",
-    "token": 207,
-    "wo": [
-      "tools/backen-laender.mjs:47",
-      "tools/backen-laender.mjs:51",
-      "tools/backen-laender.mjs:65"
-    ],
-    "warum": "Die Zielliste je Kontinent — wieder Daten in Tabellenform, zwölf Länder je Zeile. Sie steht hier, weil sie beim Backen gebraucht wird, und sie sieht sich ähnlich, weil sie fünfmal dasselbe Format hat."
-  },
-  {
     "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",
     "token": 175,
     "wo": [
