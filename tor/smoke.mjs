@@ -3154,6 +3154,143 @@ if (laeuft('umgekehrt')) try {
       + `daneben → „${hin}", richtig gewertet`);
   }
   await p.close();
+
+  /* --- Und die Gegenrichtung: wo man nicht treffen KANN (P7) ---------
+   *
+   * Gemessen von `npm run ziehen --nur=treffer`: auf der Nordamerikakarte
+   * haben Haiti und die Dominikanische Republik 7,6 Bildpunkte
+   * Trefferflaeche - ihre Anker liegen 4,2 Punkte auseinander, dort passt
+   * kein Kreis mehr dazwischen. Die Fingergrenze ist 44.
+   *
+   * „Wo liegt Haiti?" waere dort keine Erdkundefrage mehr, sondern eine
+   * Fingeruebung. Sie wird deshalb nicht gestellt - das Kind lernt Haiti
+   * ueber den Namen. Gezoomt wird NICHT: eine auf Haiti gezoomte Karte
+   * beantwortet die Frage selbst.
+   *
+   * Gestellt wird ein Stand, in dem NUR die beiden faellig sind. Damit ist
+   * jede Aufgabe eine von beiden, und die dritte waere ohne die Regel die
+   * umgekehrte.
+   */
+  const r = await neueSeite({ width: 844, height: 390 }, ctx);
+  await r.evaluate(() => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onsuccess = () => {
+      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+      /* Die sieben kleinen faellig - und alle anderen ausdruecklich NICHT.
+       *
+       * Zwei Anlaeufe, zwei Mal nichts geprueft. Erst standen nur HTI und
+       * DOM faellig: dann hat die Sitzung genau zwei Aufgaben, und die
+       * dritte, an der die umgekehrte Frage stuende (`st.i % 3 === 2`),
+       * kam nie. Dann standen sieben faellig - und der Leitner fuellte die
+       * Sitzung mit NEUEN Laendern auf, so dass die dritte Aufgabe „Wo
+       * liegt Kanada?" hiess. Kanada ist gross, die Frage also richtig,
+       * und der Abschnitt gruen: er hat den Fall wieder nicht gesehen.
+       *
+       * Jetzt bekommt jedes andere Land Fach 5 und einen Termin in ferner
+       * Zukunft. Damit kann die Sitzung nur aus den sieben bestehen. */
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const kleine = new Set(['HTI','DOM','SLV','GTM','HND','NIC','CRI']);
+      const st = {};
+      for (const l of (D.laender.nordamerika || []))
+        st[l.a3] = kleine.has(l.a3) ? { fach:1, faellig:0 }
+                                    : { fach:5, faellig: Date.now() + 9e8 };
+      t.objectStore('fortschritt').put(st, 'stephan:laender:nordamerika');
+      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+        'stephan:laender:nordamerika': true } }, 'alles');
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }));
+  await r.reload({ waitUntil: 'domcontentloaded' });
+  await r.waitForSelector('[data-profil="stephan"]');
+  await r.click('[data-profil="stephan"]');
+  await zurEbenenwahl(r, 'laender:nordamerika');
+  await r.click('[data-ebene="laender:nordamerika"]');
+  await r.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout: 25000 });
+  await durchVorlaufWenn(r);
+  const fragen = [];
+  for (let i = 0; i < 9; i++) {
+    await r.waitForSelector('.schirm.da #frage', { timeout: 20000 });
+    await r.waitForTimeout(250);
+    const f = await r.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const z = s.querySelector('path.ziel');
+      return { text: s.querySelector('#frage').textContent.trim(),
+               ziel: z ? z.dataset.id : null,
+               feld: !!s.querySelector('.eingabe'),
+               klein: [...s.querySelectorAll('path.geb[data-klein="1"]')].map(x => x.dataset.id) };
+    });
+    if (!f.text) break;
+    fragen.push(f);
+    if (f.feld && f.ziel) {
+      const name = await r.evaluate((id) => {
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        const l = (D.laender.nordamerika || []).find(x => x.a3 === id);
+        return l ? l.name : null;
+      }, f.ziel);
+      if (!name) break;
+      await r.fill('.schirm.da .eingabe', name);
+      await r.$eval('.schirm.da .wahlliste .knopf', x => x.click());
+    } else {
+      // Die umgekehrte Frage wird hier nicht beantwortet, sondern
+      // uebersprungen: geprueft wird, WELCHE Fragen gestellt werden.
+      const weg = await r.$('.schirm.da #ueberspringen');
+      if (!weg) break;
+      await weg.click();
+    }
+    /* NICHT `weitergegangen()`: das wartet unter anderem auf `path.ziel`,
+       und bei der umgekehrten Frage gibt es den mit Absicht nicht - das
+       gesuchte Gebiet ist ja nicht markiert. Der Helfer lief dort in die
+       Zeitueberschreitung, die Schleife brach nach fuenf Aufgaben ab, und
+       der Abschnitt meldete „keine einzige Wo-liegt-Frage". Gewartet wird
+       hier auf das, was BEIDE Fragearten haben: das Lob ist weg, und es
+       steht wieder etwas da, das man bedienen kann. */
+    const weiter = await r.waitForFunction(() => {
+      const s = document.querySelector('.schirm.da');
+      if (!s) return false;
+      if (s.querySelector('.frage .richtigText, .frage .fastText, .frage .loesung')) return false;
+      return !!(s.querySelector('.eingabe') || s.querySelector('#ueberspringen')
+                || s.querySelector('#nochmal'));
+    }, null, { timeout: 8000 }).then(() => true).catch(() => false);
+    if (!weiter) break;
+  }
+  /* Und die Pruefung muss die Stelle ueberhaupt erreichen: die umgekehrte
+     Frage steht an jeder dritten Aufgabe. Weniger als drei gespielt heisst
+     „nichts geprueft" - und das darf nicht gruen aussehen. */
+  if (fragen.length < 3) merke('umgekehrt', new Error(
+    `nur ${fragen.length} Aufgaben gespielt — die umgekehrte Frage steht an der dritten, `
+    + 'dieser Abschnitt hat sie also gar nicht erreicht'));
+  const kleinDa = fragen[0] ? fragen[0].klein.length : 0;
+  if (!kleinDa) merke('umgekehrt', new Error(
+    'auf der Nordamerikakarte ist kein Gebiet als „zu klein zum Antippen" markiert — '
+    + 'dann prüft dieser Abschnitt nichts (gemessen sind es sieben)'));
+  const kleinSet = new Set(fragen[0] ? fragen[0].klein : []);
+  const verkehrt = fragen.filter(f => /^Wo liegt /.test(f.text));
+  const zuKlein = verkehrt.filter(f => kleinSet.has(f.ziel)
+    || fragen.some(g => g.text === f.text && kleinSet.has(g.ziel)));
+  /* Der Zielumriss ist bei der umgekehrten Frage NICHT markiert - das ist
+     ihr Sinn. Erkannt wird das gefragte Gebiet deshalb am Namen. */
+  const namen = await r.evaluate(() => {
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    return Object.fromEntries((D.laender.nordamerika || []).map(l => [l.name, l.a3]));
+  });
+  for (const f of verkehrt) {
+    const id = namen[f.text.replace(/^Wo liegt |\?$/g, '').trim()];
+    if (id && kleinSet.has(id)) merke('umgekehrt', new Error(
+      `„${f.text}" wurde gefragt, obwohl ${id} auf dieser Karte zu klein zum Antippen ist `
+      + '— dort ist das keine Erdkundefrage mehr, sondern eine Fingerübung (P7)'));
+  }
+  /* Und die Gegenrichtung: die Regel darf die umgekehrte Frage nicht
+     ABSCHALTEN, nur filtern. Kaeme hier gar keine mehr, waere der
+     Abschnitt gruen und die Frage waere aus dem Spiel verschwunden. */
+  if (!verkehrt.length) merke('umgekehrt', new Error(
+    `in ${fragen.length} Aufgaben auf der Nordamerikakarte kam keine einzige `
+    + '„Wo liegt …?" — die Regel filtert nicht, sie schaltet ab'));
+  console.log(`  Zu klein zum Antippen:      ${kleinDa} Gebiete auf der Nordamerikakarte · `
+    + `${fragen.length} Aufgaben, davon ${verkehrt.length} × „Wo liegt …?" `
+    + `(${verkehrt.map(f => f.text.replace(/^Wo liegt |\?$/g, '')).join(', ') || 'keine'}), `
+    + `keine davon zu klein`);
+  await r.close();
 } catch (e) { merke('umgekehrt', e); }
 
 /* --- Der Streu auf den Profilkacheln (G12) ---------------------------

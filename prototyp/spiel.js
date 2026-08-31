@@ -1196,6 +1196,30 @@ function erreichbar(ebeneId){
     return new Set(D.laender[kont].filter(l => l.rang <= P.laenderTiefe).map(l => l.a3));
   return null;
 }
+/* Die Fingergrenze und der Boden, den die App fuer eine noch brauchbare
+   Trefferflaeche setzt - samt dem, was zuletzt WIRKLICH gemessen wurde.
+
+   Sie stehen hier oben, ausserhalb des Aufgabenbildschirms, und das ist
+   keine Stilfrage: der erste Anlauf legte `kreisPx` in denselben Scope
+   wie die Aufgabe. Damit war die Karte bei JEDER Aufgabe wieder leer,
+   `tippbar()` sagte immer ja, und „Wo liegt Guatemala?" wurde gestellt,
+   obwohl Guatemala 11,9 Bildpunkte Trefferflaeche hat. Gruen war alles -
+   gefunden hat es der Rauchtest, der die Frage mitgelesen hat.
+
+   `kreisPx` haelt je Gebiet den Durchmesser seiner entkoppelten
+   Trefferflaeche in Bildpunkten, so wie `trefferflaechen()` ihn zuletzt
+   gerechnet hat. Kein Eintrag heisst: gross genug, es braucht keine. */
+const MIN_PT = 44, MIN_REST = 20;
+const kreisPx = new Map();
+/* Kann man dieses Gebiet ueberhaupt antippen?
+
+   `MIN_REST` ist der Boden, den die App selbst fuer eine noch brauchbare
+   Trefferflaeche setzt. Wer darunter liegt, liegt dort nicht aus
+   Nachlaessigkeit, sondern weil der Nachbar zu nah ist (siehe die Kappung
+   in `trefferflaechen`) - und dann ist „Wo liegt Haiti?" keine
+   Erdkundefrage mehr, sondern eine Fingeruebung. */
+const tippbar = (id) => !kreisPx.has(id) || kreisPx.get(id) >= MIN_REST;
+
 const NAMEN = {};
 D.kontinente.forEach(k=>NAMEN[k.id]=k.name);
 Object.values(D.laender).flat().forEach(l=>NAMEN[l.a3]=l.name);
@@ -2629,8 +2653,26 @@ function spielschirm(){
    * ReferenceError, noch bevor er gebaut war: `const` gilt erst ab
    * seiner Zeile, und die Flaechen werden sechzig Zeilen frueher
    * gerechnet. Der Rauchtest meldete nur „Karte nicht da". */
+
   const kannLesen = P.eingabe.includes('tippen');
-  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2;
+  /* ... und nur fuer Gebiete, die man auch treffen kann (P7).
+   *
+   * Gemessen am Bildschirm hat `npm run ziehen` (Abschnitt `treffer`)
+   * Trefferflaechen von 7,6 Bildpunkten gefunden - Haiti und die
+   * Dominikanische Republik liegen 4,2 Punkte auseinander, dort passt
+   * kein Kreis mehr zwischen zwei Anker. Die Fingergrenze ist 44.
+   *
+   * Der erste Gedanke war, die Karte fuer diese Frage zu ZOOMEN. Er ist
+   * falsch, und zwar an der Wurzel: „Wo liegt Luxemburg?" mit einer auf
+   * Luxemburg gezoomten Karte beantwortet sich selbst. Die umgekehrte
+   * Frage lebt davon, dass die ganze Karte dasteht.
+   *
+   * Also andersherum: sie wird fuer solche Gebiete nicht gestellt. Das
+   * Kind lernt Haiti weiter - ueber den Namen, nicht ueber einen
+   * Vier-Punkt-Treffer. `st.i % 3 === 2` sorgt dafuer, dass die
+   * umgekehrte Frage nie die erste ist; bis dahin hat `trefferflaechen`
+   * laengst gemessen, und `kreisPx` steht. */
+  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id);
   // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
   // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
   // Namen gleichzeitig zu lesen ist eine andere.
@@ -2946,7 +2988,6 @@ function spielschirm(){
     kasten.style.height = (vb.height * k).toFixed(1) + 'px';
   }
 
-  const MIN_PT = 44, MIN_REST = 20;
   function trefferflaechen(){
     const svg=s.querySelector('.karte svg'); if(!svg) return;
     const g=svg.querySelector('#treffer'); const ctm=svg.getScreenCTM(); if(!g||!ctm) return;
@@ -2980,6 +3021,7 @@ function spielschirm(){
         `translate(${h.dataset.x} ${h.dataset.y}) scale(${(1/k).toFixed(3)})`);
     });
 
+    kreisPx.clear();
     g.innerHTML = mit.filter(n=>n.gross*k<MIN_PT).map(n=>{
       let rPx = MIN_PT/2, naechster = Infinity;
       for (const m of mit) {
@@ -3014,6 +3056,13 @@ function spielschirm(){
        * liegen 4,2 Punkte auseinander -, hilft kein Kreis mehr, sondern
        * nur eine groessere Karte. Das ist P7. */
       if (Number.isFinite(naechster)) rPx = Math.min(rPx, naechster * 0.9);
+      kreisPx.set(n.x.id, +(rPx * 2).toFixed(1));
+      /* Und sichtbar fuer das Tor: `npm run ziehen --nur=treffer` liest
+         diese Marke und haelt sie gegen den gemessenen Kreis. Ohne sie
+         waere die Entscheidung „zu klein zum Antippen" eine Zahl, die nur
+         im Kopf des Programms steht. */
+      const pf = s.querySelector(`path.geb[data-id="${n.x.id}"]`);
+      if (pf) pf.dataset.klein = rPx * 2 < MIN_REST ? '1' : '';
       return `<circle data-id="${n.x.id}" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
         r="${(rPx/k).toFixed(1)}" fill="transparent" style="pointer-events:all"/>`;
     }).join('');

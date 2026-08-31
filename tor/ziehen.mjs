@@ -438,6 +438,9 @@ if (laeuft('treffer')) {
         const r = pf.getBoundingClientRect();
         return [pf.dataset.id, +Math.max(r.width, r.height).toFixed(1)];
       }));
+      // P7: welche Gebiete haelt die App selbst fuer zu klein zum Antippen?
+      const klein = new Set([...s.querySelectorAll('path.geb[data-klein="1"]')]
+        .map(pf => pf.dataset.id));
       /* Gelesen wird mit der Regel des SPIELS, nicht mit einer eigenen.
          `zielUnter` fragt `elementFromPoint`, nimmt einen Trefferkreis
          vor dem Umriss und liefert dessen Kennung. Eine zweite Rechnung
@@ -468,7 +471,17 @@ if (laeuft('treffer')) {
           ohneKreis.push({ name: g.name, gross: flaechen.get(g.id) });
       }
       const kb = s.querySelector('.karte').getBoundingClientRect();
-      return { verschluckt, ohneKreis,
+      /* Die Marke muss zum gemessenen Kreis passen - sonst entscheidet die
+         App nach einer Zahl, die es am Bildschirm nicht gibt. 20 ist
+         `MIN_REST`, der Boden, den sie selbst setzt. */
+      const marke = [];
+      for (const k of kreise) {
+        const zuKlein = k.d < 20;
+        if (zuKlein !== klein.has(k.id))
+          marke.push({ id: k.id, d: k.d, markiert: klein.has(k.id) });
+      }
+      return { verschluckt, ohneKreis, marke,
+               nichtTippbar: kreise.filter(k => klein.has(k.id)).map(k => `${k.id} ${k.d}`),
                kasten: `${Math.round(kb.width)}×${Math.round(kb.height)}`,
                kreise: kreise.sort((x, y) => x.d - y.d).slice(0, 3),
                n: flaechen.size, klein: [...flaechen.values()].filter(v => v < 44).length };
@@ -483,9 +496,15 @@ if (laeuft('treffer')) {
     for (const o of m.ohneKreis) fehler.push(
       `${ebene}: ${o.name} ist ${o.gross} pt groß und hat keine entkoppelte `
       + 'Trefferfläche — es ist mit dem Finger nirgends zu treffen');
+    for (const k of m.marke) fehler.push(
+      `${ebene}: ${k.id} hat ${k.d} pt Trefferfläche, ist aber `
+      + `${k.markiert ? 'als zu klein markiert' : 'NICHT als zu klein markiert'} — `
+      + 'die umgekehrte Frage entscheidet dann nach einer Zahl, die es am '
+      + 'Bildschirm nicht gibt (P7)');
     zeilen.push(`      ${ebene.padEnd(20)} Karte ${m.kasten.padStart(8)} · `
       + `${m.klein} von ${m.n} unter 44 pt · kleinste Kreise `
-      + (m.kreise.length ? m.kreise.map(k => `${k.id} ${k.d}`).join(', ') : '(keine)'));
+      + (m.kreise.length ? m.kreise.map(k => `${k.id} ${k.d}`).join(', ') : '(keine)')
+      + (m.nichtTippbar.length ? ` · nicht antippbar: ${m.nichtTippbar.join(', ')}` : ''));
   }
   console.log('    Trefferflächen, gemessen im Browser auf 844 × 390:');
   zeilen.forEach(z => console.log(z));

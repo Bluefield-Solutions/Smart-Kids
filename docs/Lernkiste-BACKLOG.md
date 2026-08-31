@@ -883,7 +883,7 @@ Node nicht.
 
 ---
 
-### P7 · Luxemburg braucht eine größere Karte, nicht einen größeren Kreis
+### P7 · Wo man nicht treffen kann, wird nicht gefragt  ·  ERLEDIGT
 
 Auf der Europakarte (iPhone quer) ist Luxemburgs Trefferkreis 20 pt groß —
 der Boden, den `MIN_REST` setzt, damit er nicht Belgiens Anker verschluckt.
@@ -892,10 +892,45 @@ Die Fingergrenze ist 44. Dasselbe gilt für Belgien, die Niederlande,
 und das Saarland (12–13 pt).
 
 Ein größerer Kreis ist keine Lösung — er nimmt dem Nachbarn seine Stelle,
-und genau das hat F16 gekostet. Die Lösung wäre, die Karte bei der
-umgekehrten Frage auf die Gegend zu **zoomen**, in der das gesuchte Gebiet
-liegt. Das ist eine eigene Runde: es betrifft Kartenaufbau, Zeiger,
-Häkchen und die Nachsicht beim Tippen.
+und genau das hat F16 gekostet.
+
+**Und der Zoom ist auch keine.** So stand es hier: „die Karte bei der
+umgekehrten Frage auf die Gegend zoomen, in der das gesuchte Gebiet liegt".
+Das ist an der Wurzel falsch. Die Frage lautet **„Wo liegt Luxemburg?"** —
+eine auf Luxemburg gezoomte Karte beantwortet sie selbst. Die umgekehrte
+Frage lebt davon, dass die ganze Karte dasteht.
+
+**Also andersherum: sie wird für solche Gebiete nicht gestellt.**
+
+`trefferflaechen()` schreibt jetzt mit, wie groß jede entkoppelte
+Trefferfläche wirklich geworden ist, und `umgekehrt` fragt dieselbe Zahl:
+liegt sie unter `MIN_REST` — dem Boden, den die App selbst für eine noch
+brauchbare Fläche setzt —, kommt die Frage nicht. Das Kind lernt Haiti
+weiter, über den Namen statt über einen Vier-Punkt-Treffer.
+
+Betroffen sind neun Gebiete: Belgien und Luxemburg (18,8 pt) sowie die
+sieben in Mittelamerika (7,6 bis 15,9). Auf allen anderen Karten ändert
+sich nichts.
+
+**Zwei eigene Fehler, beide vom Rauchtest gefunden.**
+
+Der erste war ein Scope-Fehler mit stiller Wirkung: die Karte der
+gemessenen Kreise lag im selben Gültigkeitsbereich wie der
+Aufgabenbildschirm und war deshalb bei **jeder** Aufgabe wieder leer.
+`tippbar()` sagte immer ja, alles war grün — und „Wo liegt Guatemala?"
+wurde weiter gestellt. Gefunden hat es der Rauchtest, weil er mitliest,
+*welche* Frage kommt.
+
+Der zweite: `weitergegangen()` wartet unter anderem auf `path.ziel` — den
+es bei der umgekehrten Frage mit Absicht nicht gibt, das gesuchte Gebiet
+ist ja nicht markiert. Der Helfer lief in die Zeitüberschreitung, die
+Schleife brach nach fünf Aufgaben ab, und der Abschnitt meldete „keine
+einzige Wo-liegt-Frage".
+
+**Und die Prüfung geht in beide Richtungen**, sonst wäre „nie fragen" auch
+grün: neun Aufgaben auf der Nordamerikakarte, genau eine davon „Wo liegt
+Mexiko?" — Mexiko ist groß —, keine für die sieben kleinen. Eine Regel,
+die filtert, nicht eine, die abschaltet.
 
 ---
 

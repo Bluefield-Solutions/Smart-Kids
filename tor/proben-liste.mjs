@@ -1202,6 +1202,22 @@ export const PROBEN = [
     an:{ ...DIST, text:'naechster * 99' },
     sagt:'wer auf den Anker von' },
 
+  /* P7: die umgekehrte Frage fuer ein Gebiet, das man nicht treffen kann.
+   *
+   * Gemessen: Guatemala hat auf der Nordamerikakarte 11,9 Bildpunkte
+   * Trefferflaeche, Haiti und die Dominikanische Republik 7,6. Die
+   * Fingergrenze ist 44. „Wo liegt Guatemala?" ist dort keine
+   * Erdkundefrage mehr, sondern eine Fingeruebung.
+   *
+   * Der Eingriff nimmt die Bedingung heraus - dann steht die Frage wieder
+   * da, und der Rauchtest muss es sagen. */
+  { n:'die umgekehrte Frage kommt auch für Winzlinge', tor:'smoke',
+    args:['--nur=umgekehrt'], bauen:true, datei:D,
+    such:"st.i % 3 === 2 && tippbar(ziel.id);",
+    ersatz:"st.i % 3 === 2;",
+    an:{ ...DIST, fehlt:'&& tippbar(ziel.id)' },
+    sagt:'zu klein zum Antippen' },
+
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 0;',
     an:{ ...DIST, text:'NACHSICHT = 0' }, sagt:'Nachsicht nur' },
@@ -1854,7 +1870,7 @@ export const PROBEN = [
   // 1. Es gibt sie nicht mehr - jede Aufgabe fragt wieder nach dem Namen.
   { n:'die umgekehrte Frage kommt nicht mehr vor', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2;",
+    such:"  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id);",
     ersatz:'  const umgekehrt = false;',
     an:{ ...DIST, text:'const umgekehrt = false;' },
     sagt:'kommt gar nicht vor' },
