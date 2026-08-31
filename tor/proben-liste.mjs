@@ -960,6 +960,28 @@ export const PROBEN = [
     sagt:'wieder zu' },
   /* Und die Prüfung selbst darf nicht ins Leere greifen: stellt sie den
    * Rückfall gar nicht mehr her, ist ihre Zusage geschenkt. */
+  /* --- Die Nadeln (P10) ------------------------------------------------
+   *
+   * Zwei Zusagen, zwei Gegenproben. Die erste gilt dem Platz: eine Nadel
+   * im Meer kostet nichts, dieselbe Scheibe auf Frankreich nimmt
+   * Frankreich seine Trefferflaeche. Die zweite gilt der Wirkung: ohne
+   * Nadel ist Guatemala wieder unerreichbar, und „Wo liegt Guatemala?"
+   * darf dann nicht gefragt werden. Faellt eine von beiden aus, ist die
+   * Nadel Zierat - gezeichnet, gemessen und ohne Folgen. */
+  { n:'die Nadel sucht sich keinen freien Platz mehr', tor:'ziehen',
+    args:['--nur=treffer'], bauen:true, datei:D,
+    such:'            if (!freiVonFlaeche(x, y)) continue;',
+    ersatz:'            if (false && !freiVonFlaeche(x, y)) continue;',
+    an:{ ...DIST, text:'if (false && !freiVonFlaeche' },
+    sagt:'liegt auf' },
+
+  { n:'es gibt gar keine Nadeln mehr', tor:'smoke', args:['--nur=umgekehrt'],
+    bauen:true, datei:D,
+    such:'        if (kreisAmOrt(n) * 2 < MIN_REST)',
+    ersatz:'        if (false)',
+    an:{ ...DIST, fehlt:'if (kreisAmOrt(n) * 2 < MIN_REST)' },
+    sagt:'hängt kein Gebiet an einer Nadel' },
+
   { n:'der Rückfall wird gar nicht mehr gestellt', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:'tor/smoke.mjs',
     such:'    const wiederFaellig = Object.fromEntries(ersteRunde.map(id =>',

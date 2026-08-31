@@ -807,6 +807,105 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
+### P10 · Die neun Gebiete, die man nicht treffen konnte  ·  ERLEDIGT
+
+P7 hat den Fall geschlossen, indem es die Frage weggelassen hat: wo man
+nicht treffen kann, wird nicht gefragt. Neun Gebiete waren betroffen —
+Belgien und Luxemburg auf der Europakarte (18,8 pt Trefferfläche) und die
+sieben in Mittelamerika (7,6 bis 15,9 pt). Für sie kam „Wo liegt …?" nie.
+
+Das war die richtige Notbremse und die falsche Lösung. **Das Konzept hatte
+die richtige seit K3 aufgeschrieben** und niemand hatte sie gebaut:
+
+> Die *Trefferfläche* ist ein unsichtbarer Kreis um den Anker, mindestens
+> 44 × 44 Punkte (Apple HIG), **bei Bedarf mit einer dünnen Leitlinie zum
+> echten Gebiet.**
+
+Gebaut war der Kreis. Die Leitlinie stand nur da.
+
+**Jetzt hängen die neun an einer Nadel.** Bleibt nach der Kappung am Ort
+weniger als `MIN_REST` übrig, wandert die Trefferfläche neben die Karte:
+volle 44 Punkte in freier Fläche, ein Faden zum Gebiet, ein Kopf in der
+Farbe des Gebiets. Gemessen im Browser auf 844 × 390:
+
+```
+laender:europa       9 von 17 unter 44 pt · kleinste Kreise AUT 20, CZE 20, NLD 20 · 2 an der Nadel
+laender:nordamerika  9 von 12 unter 44 pt · kleinste Kreise CUB 20, PAN 20, HND 44 · 7 an der Nadel
+```
+
+`nicht antippbar:` steht auf keiner der sieben Karten mehr.
+
+**Drei Entscheidungen, die nicht offensichtlich sind.**
+
+*Nadeln bekommen ALLE betroffenen Gebiete, nie nur das gefragte.* Eine
+Nadel, die erst bei „Wo liegt Luxemburg?" erschiene, wäre die Antwort. Neun
+Nadeln sagen nichts — wer die Frage beantworten will, muss trotzdem wissen,
+wo Luxemburg liegt, und dem Faden von dort folgen.
+
+*Der Platz wird am wirklichen Bildschirm gesucht, nicht gerechnet.* Die
+Suche geht vom Kartenmittelpunkt nach außen, in Ringen von 44 bis 170
+Punkten, und fragt für jeden Kandidaten `elementFromPoint` — Mitte und vier
+Punkte auf 0,7 des Radius. Frei heißt: kein gespieltes Gebiet darunter, kein
+fremder Anker in Reichweite, keine andere Nadel näher als 44 Punkte, alles
+innerhalb des Kartenkastens. Findet sich nichts, bleibt es beim Verzicht aus
+P7 — das ist jetzt der Ausnahmefall, nicht die Regel.
+
+*Der kleine Kreis am Ort bleibt trotzdem stehen.* Wer genau zielt, soll auch
+am Ort treffen dürfen. `kreisPx` trägt dann die Nadel, nicht den gekappten
+Kreis: sie ist die Stelle, an der ein Finger das Gebiet wirklich trifft.
+
+**Vier eigene Fehler, alle von einem Tor oder vom Bild gefunden.**
+
+1. *Der Faden schluckte den Tipp, für den er da ist.* Er beginnt am Anker
+   und liegt dort über dem kleinen Trefferkreis; ein Klick auf das Gebiet
+   traf danach weder Kreis noch Fläche. Faden, Fuß und Kopf sind seitdem
+   `pointer-events:none` — sie sind Bild, nicht Bedienung.
+2. *Die neue Prüfung im Tor konnte gar nicht anschlagen.* „Wer auf die Nadel
+   tippt, bekommt ihr Gebiet" liest den Trefferkreis, und der liegt selbst
+   obenauf. Geprüft wird jetzt **durch** ihn hindurch
+   (`elementsFromPoint`), ob ein gespieltes Gebiet darunter liegt. Die
+   Gegenprobe — die Platzsuche abgeschaltet — macht das Tor an fünf Stellen
+   rot; vorher blieb es grün.
+3. *Die Rechnung stand zweimal da.* Der Nadelplan braucht vor den Kreisen,
+   wer am Ort zu wenig bekommt — ich hatte die zehn Zeilen abgeschrieben.
+   Gemeldet hat es `inhalt`, weil eine stehende Gegenprobe ihren Suchtext
+   plötzlich **zweimal** fand. Jetzt eine Funktion, `kreisAmOrt`.
+4. *`zeigeAufKarte` fand auf keiner Länderkarte etwas.* Der eingebettete
+   Datenblock hält zu jedem Land Kennung und Name, aber weder Umriss noch
+   Anker — die kommen erst mit `daten/laender-<kontinent>.json`. Der Helfer
+   suchte den Anker und warf „steht nicht in den Daten". Aufgefallen ist es
+   erst, als die umgekehrte Frage dort überhaupt gestellt wurde.
+
+**Und der Rauchtest prüft jetzt die Gegenrichtung.** Er hat bisher gezeigt,
+dass die Frage AUSBLEIBT; das war nach dieser Runde falsch und wurde sofort
+rot („kein Gebiet als zu klein markiert — dann prüft dieser Abschnitt
+nichts"). Er zeigt jetzt, dass sie kommt und dass man sie beantworten kann:
+
+```
+An der Nadel:  7 Gebiete auf der Nordamerikakarte, 0 bleiben zu klein · 9 Aufgaben,
+               davon 3 × „Wo liegt …?" (Guatemala, Mexiko, Costa Rica),
+               2 davon an der Nadel — alle getippt und gewertet
+```
+
+Guatemala und Costa Rica sind genau die Länder, nach denen vorher nie
+gefragt wurde. Die umgekehrte Frage wird dabei nicht mehr übersprungen,
+sondern beantwortet — getippt wird dort, wo ein Kind tippt: auf die größte
+Trefferfläche.
+
+**Was kein Tor prüft**, und deshalb als Aufnahme festgehalten ist
+(`quer-nadeln`): wie es aussieht. Der erste Entwurf zog die Fäden mit 3
+Punkten in voller Deckung — über der Landenge lag ein Gitter. Jetzt 1,5
+Punkte bei 55 %. Ob zwei Köpfe übereinanderliegen oder ein Faden quer über
+die halbe Karte geht, sieht nur ein Mensch.
+
+Die beiden Zahlen `MIN_PT` und `MIN_REST` stehen jetzt auch im Konzept,
+Kapitel 5.4, samt der dreistufigen Mechanik und der Angabe, welches Tor sie
+wo misst. Sie standen vorher nur im Quelltext; das Konzept nannte 44 und
+sonst nichts, und in der Tabelle in Kapitel 11 stand als Tor noch
+`beruehrung` — das seit P6 keine Kartenpixel mehr rechnet.
+
+---
+
 ### P9 · Ein Tor, das doppelte Wahrheiten meldet  ·  ERLEDIGT
 
 Diese Sitzung hat Regel 15 **viermal** bezahlt: `pfadZuPolys` stand in vier

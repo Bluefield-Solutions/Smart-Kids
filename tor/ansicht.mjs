@@ -184,6 +184,15 @@ const AUFNAHMEN = [
    * Fiona hat sie nicht. */
   { name:'quer-hauptstaedte-eu', spiel:'hauptstaedte:europa', kind:'lea',
     quer:true, wahl:'.schirm.da' },
+  /* Die Nadeln (P10) — der einzige Bildschirm, auf dem eine Trefferflaeche
+   * zu SEHEN ist. Sieben Gebiete Mittelamerikas haengen hier neben der
+   * Karte, mit Faden und farbigem Kopf. Dass sie da sind, misst
+   * `ziehen --nur=treffer`; wie sie AUSSEHEN, misst nichts - ob zwei
+   * Koepfe uebereinanderliegen, ob ein Faden quer ueber die halbe Karte
+   * geht, ob das Bild noch zu lesen ist, sieht nur ein Mensch. Gespielt
+   * von Stephan: nur seine Tiefe hat die sieben ueberhaupt auf der Karte. */
+  { name:'quer-nadeln', spiel:'laender:nordamerika', kind:'stephan',
+    quer:true, wahl:'.schirm.da' },
   /* Der Elternbereich — der einzige Bildschirm ohne Vorbild, und
    * ausgerechnet der ist zuletzt um zwei Tabellen gewachsen (Übersicht je
    * Profil, „Zuletzt geübt"). Mit gesetztem Protokoll, sonst stünden dort

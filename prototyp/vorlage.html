@@ -693,6 +693,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   vector-effect:non-scaling-stroke;stroke-linecap:round}
 .karte .fahnenpunkt{fill:var(--tinte);stroke:var(--papier);
   stroke-width:var(--strich);vector-effect:non-scaling-stroke}
+/* Die Nadel: ein Gebiet, das kleiner ist als eine Fingerkuppe, bekommt
+   seine Trefferflaeche NEBEN der Karte, mit einem Faden dorthin. Das
+   Konzept sagt es seit K3, Kapitel 5.4: „mindestens 44 x 44 Punkte, bei
+   Bedarf mit einer duennen Leitlinie zum echten Gebiet." */
+/* Faden, Fuss und Kopf sind BILD, nicht Bedienung: `pointer-events:none`.
+   Ohne das schluckt der Faden genau den Tipp, fuer den er da ist - er
+   beginnt am Anker, liegt dort ueber dem kleinen Trefferkreis, und ein
+   Klick auf das Gebiet traf dann weder Kreis noch Flaeche. */
+/* Duenn und halb durchsichtig, nicht so kraeftig wie eine Kueste: sieben
+   Faeden treffen sich auf der Nordamerikakarte in Mittelamerika, und
+   genau dort steht auch die gesuchte Flaeche. Mit 3 px in voller Deckung
+   (der ersten Fassung) lag ueber der Landenge ein Gitter. */
+.karte .nadelfaden{stroke:var(--tinte);stroke-width:var(--strich);
+  vector-effect:non-scaling-stroke;stroke-linecap:round;opacity:.55;
+  pointer-events:none}
+.karte .nadelfuss{fill:var(--tinte);pointer-events:none}
+.karte .nadelkopf{stroke:var(--tinte);stroke-width:var(--strich);
+  vector-effect:non-scaling-stroke;pointer-events:none}
 @keyframes haken-auf{from{opacity:0;scale:.4}to{opacity:1;scale:1}}
 .karte path.treffer{fill:var(--treffer);opacity:1;filter:none}
 .karte .zielrand{opacity:.9}

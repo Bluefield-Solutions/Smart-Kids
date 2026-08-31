@@ -701,9 +701,50 @@ Die Lösung ist keine Lupe und kein Zoom, sondern **entkoppelte Trefferfläche**
   Berlin/Brandenburg, Hamburg/Schleswig-Holstein), gewinnt das **kleinere**
   Gebiet. Sonst kommt man an einen Stadtstaat nie heran.
 
-Das Tor `beruehrung` misst das und schlägt an, wenn irgendein Gebiet auf
-irgendeiner unterstützten Bildschirmgröße unter 44 Punkte fällt. Es muss
-vorhanden sein, **bevor** Ebene 3 gebaut wird — nicht danach.
+#### Die beiden Zahlen, und was zwischen ihnen passiert
+
+Sie stehen in `prototyp/spiel.js` auf Modulebene und heißen dort so:
+
+| | Wert | Was sie bedeutet |
+|---|---|---|
+| `MIN_PT` | **44 pt** | die Fingerkuppe (Apple HIG). So groß *soll* jede Trefferfläche sein. Wer schon von sich aus größer ist, bekommt gar keinen Kreis. |
+| `MIN_REST` | **20 pt** | der Boden. So klein *darf* eine Fläche am Ort werden, bevor die App sie nicht mehr für brauchbar hält. |
+
+Zwischen den beiden liegt die eigentliche Mechanik, und sie hat drei Stufen:
+
+1. **Der Kreis am Ort.** Er wird auf `MIN_PT/2` angelegt und dort gekappt,
+   wo er dem Nachbarn zu nahe kommt: höchstens 0,55 des Abstands zum
+   nächsten fremden Anker, und in keinem Fall über 0,9 dieses Abstands
+   hinaus. *Das kleinere Gebiet gewinnt* heißt nicht *das kleinere sperrt
+   aus* — ein Kreis, der den Anker des Nachbarn verschluckt, macht den
+   Nachbarn unerreichbar. Das war Befund F16.
+2. **Die Nadel.** Bleiben nach der Kappung weniger als `MIN_REST` übrig,
+   wandert die Trefferfläche **neben die Karte**: volle 44 Punkte in
+   freier Fläche, ein Faden zum Gebiet, ein Kopf in der Farbe des Gebiets.
+   Genau das meint der Satz oben mit „bei Bedarf mit einer dünnen
+   Leitlinie" — er stand von Anfang an im Konzept und war bis P10 der
+   einzige Teil, der nicht gebaut war.
+   Nadeln bekommen **alle** betroffenen Gebiete einer Karte, nie nur das
+   gefragte: eine Nadel, die nur beim gesuchten Land erschiene, wäre die
+   Antwort.
+3. **Der Verzicht.** Findet sich auch für die Nadel kein Platz — keine
+   freie Fläche, in der eine 44-Punkt-Scheibe niemandem etwas wegnimmt —,
+   bleibt das Gebiet markiert (`data-klein`), und die Frage „Wo liegt …?"
+   wird dafür **nicht gestellt**. Das Kind lernt es über den Namen. Das
+   war P7, und es ist seit P10 der Ausnahmefall, nicht die Regel.
+
+Gemessen wird das **im Browser**, auf 844 × 390: `npm run ziehen
+--nur=treffer` öffnet jede der sieben Karten, liest die Trefferflächen mit
+derselben Regel ab, nach der das Spiel entscheidet (`elementFromPoint`,
+Kreis vor Umriss), und prüft dreierlei — dass der Anker jedes Gebiets zu
+seinem eigenen Gebiet führt, dass keine Nadel auf einem gespielten Gebiet
+liegt, und dass die Marke `data-klein` zur wirklich gemessenen Größe passt.
+
+Das Tor `beruehrung` (in `tor/inhalt.mjs`) rechnet **keine Kartenpixel
+mehr**. Es hat das bis P6 getan, mit einem angenommenen Maßstab von
+`KARTE_PX/1000` — und lag damit für Europa um rund 35 % daneben, in
+beide Richtungen: Node sah Österreich nicht als zu klein, der Browser
+schon. Regel 12, wörtlich: die Zahl und ihre Messstelle gehören zusammen.
 
 ### 5.5 Klänge und Aufkleber werden erzeugt, nicht beschafft
 
@@ -1250,7 +1291,7 @@ Grundbedienung.
 
 | Regel | Grenze | Tor |
 |---|---|---|
-| Trefferflächen | ≥ 44 × 44 pt, ≥ 8 pt Abstand | `beruehrung` |
+| Trefferflächen | ≥ 44 × 44 pt (`MIN_PT`), am Ort nie unter 20 pt (`MIN_REST`) — sonst an die Nadel, siehe 5.4 | `ziehen --nur=treffer` (im Browser) |
 | Schriftgröße | ≥ 20 px, im Fiona-Profil ≥ 24 px | `lesbarkeit` |
 | Kontrast Text | ≥ 4,5 : 1 (WCAG AA) | `lesbarkeit` |
 | Kontrast benachbarter Flächen | messbar unterschiedlich, auch bei Deuteranopie | `lesbarkeit` |

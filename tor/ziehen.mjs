@@ -388,12 +388,23 @@ if (laeuft('treffer')) {
       const aufSchirm = (a) => { const pt = svg.createSVGPoint();
         pt.x = a[0]; pt.y = a[1]; const r = pt.matrixTransform(ctm);
         return { x: r.x, y: r.y }; };
-      const kreise = [...s.querySelectorAll('#treffer circle')].map(c => {
+      /* Nur die Kreise MIT Kennung sind Trefferflaechen. Im selben
+         Gruppe stehen seit den Nadeln auch Fuss und Kopf - sichtbare
+         Punkte ohne `data-id`, die niemand antippen soll. Der erste
+         Anlauf zaehlte sie mit und meldete siebenundzwanzig Mal
+         „undefined hat 4,8 pt". */
+      const kreise = [...s.querySelectorAll('#treffer circle[data-id]')].map(c => {
         const r = c.getBoundingClientRect();
         return { id: c.dataset.id, x: r.left + r.width / 2, y: r.top + r.height / 2,
                  d: +r.width.toFixed(1) };
       });
-      const kreisVon = new Map(kreise.map(k => [k.id, k]));
+      /* Ein Gebiet kann ZWEI Flaechen haben: den gekappten Kreis am Ort
+         und die Nadel daneben. Was zaehlt, ist die groessere - sie ist
+         die Stelle, an der ein Finger es trifft. */
+      const kreisVon = new Map();
+      for (const k of kreise)
+        if (!kreisVon.has(k.id) || kreisVon.get(k.id).d < k.d) kreisVon.set(k.id, k);
+      const nadeln = [...s.querySelectorAll('#treffer .nadelkopf')].length;
       const flaechen = new Map([...s.querySelectorAll('path.geb')].map(pf => {
         const r = pf.getBoundingClientRect();
         return [pf.dataset.id, +Math.max(r.width, r.height).toFixed(1)];
@@ -435,15 +446,44 @@ if (laeuft('treffer')) {
          App nach einer Zahl, die es am Bildschirm nicht gibt. 20 ist
          `MIN_REST`, der Boden, den sie selbst setzt. */
       const marke = [];
-      for (const k of kreise) {
+      for (const k of kreisVon.values()) {
         const zuKlein = k.d < 20;
         if (zuKlein !== klein.has(k.id))
           marke.push({ id: k.id, d: k.d, markiert: klein.has(k.id) });
       }
-      return { verschluckt, ohneKreis, marke,
-               nichtTippbar: kreise.filter(k => klein.has(k.id)).map(k => `${k.id} ${k.d}`),
+      /* Und die Nadel muss halten, was sie verspricht - zweierlei.
+       *
+       * ERSTENS: wer auf ihren Kopf tippt, bekommt IHR Gebiet. Gelesen
+       * mit der Regel des Spiels.
+       *
+       * ZWEITENS, und das ist die eigentliche Prüfung: unter ihr liegt
+       * kein gespieltes Gebiet. Eine 44-Punkt-Scheibe im Meer kostet
+       * nichts; dieselbe Scheibe auf Frankreich nimmt Frankreich seine
+       * Flaeche. Gesehen wird DURCH die Trefferkreise hindurch
+       * (`elementsFromPoint`) - die Nadel liegt ja selbst obenauf, und
+       * eine Prüfung, die nur sie findet, kann gar nicht anschlagen
+       * (Regel 13). Geprüft wird die Mitte und vier Punkte auf 0,7 des
+       * Radius: dieselbe Abtastung, mit der die App den Platz gesucht
+       * hat - aber von der anderen Seite gelesen. */
+      const nadelFehl = [], nadelAuf = [];
+      for (const [id, k] of kreisVon) {
+        if (k.d < 44) continue;                 // kein Nadelkopf
+        const wird = liest(k.x, k.y);
+        if (wird !== id) nadelFehl.push({ id, wird });
+        const r = k.d / 2 * 0.7;
+        const drunter = new Set();
+        for (const [dx, dy] of [[0,0],[r,0],[-r,0],[0,r],[0,-r]])
+          for (const e of document.elementsFromPoint(k.x + dx, k.y + dy)) {
+            const pf = e.closest && e.closest('path.geb');
+            if (pf && pf.dataset.id !== id) drunter.add(pf.dataset.id);
+          }
+        if (drunter.size) nadelAuf.push({ id, auf: [...drunter] });
+      }
+      const groessen = [...kreisVon.values()];
+      return { verschluckt, ohneKreis, marke, nadeln, nadelFehl, nadelAuf,
+               nichtTippbar: groessen.filter(k => klein.has(k.id)).map(k => `${k.id} ${k.d}`),
                kasten: `${Math.round(kb.width)}×${Math.round(kb.height)}`,
-               kreise: kreise.sort((x, y) => x.d - y.d).slice(0, 3),
+               kreise: groessen.sort((x, y) => x.d - y.d).slice(0, 3),
                n: flaechen.size, klein: [...flaechen.values()].filter(v => v < 44).length };
     }, gebiete);
     await q.close(); await ctx.close();
@@ -461,9 +501,17 @@ if (laeuft('treffer')) {
       + `${k.markiert ? 'als zu klein markiert' : 'NICHT als zu klein markiert'} — `
       + 'die umgekehrte Frage entscheidet dann nach einer Zahl, die es am '
       + 'Bildschirm nicht gibt (P7)');
+    for (const n of m.nadelAuf) fehler.push(
+      `${ebene}: die Nadel von ${n.id} liegt auf ${n.auf.join(', ')} — `
+      + 'eine Trefferfläche, die einem anderen Gebiet seine Fläche nimmt');
+    for (const n of m.nadelFehl) fehler.push(
+      `${ebene}: wer auf die Nadel von ${n.id} tippt, bekommt `
+      + `${n.wird || 'nichts'} — eine Nadel, die auf den Nachbarn zeigt, `
+      + 'ist schlimmer als gar keine');
     zeilen.push(`      ${ebene.padEnd(20)} Karte ${m.kasten.padStart(8)} · `
       + `${m.klein} von ${m.n} unter 44 pt · kleinste Kreise `
       + (m.kreise.length ? m.kreise.map(k => `${k.id} ${k.d}`).join(', ') : '(keine)')
+      + (m.nadeln ? ` · ${m.nadeln} an der Nadel` : '')
       + (m.nichtTippbar.length ? ` · nicht antippbar: ${m.nichtTippbar.join(', ')}` : ''));
   }
   console.log('    Trefferflächen, gemessen im Browser auf 844 × 390:');

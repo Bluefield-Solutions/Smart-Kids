@@ -3092,21 +3092,24 @@ if (laeuft('umgekehrt')) try {
   }
   await p.close();
 
-  /* --- Und die Gegenrichtung: wo man nicht treffen KANN (P7) ---------
+  /* --- Und die Gegenrichtung: wo man nicht treffen KANN (P7, P10) ----
    *
    * Gemessen von `npm run ziehen --nur=treffer`: auf der Nordamerikakarte
-   * haben Haiti und die Dominikanische Republik 7,6 Bildpunkte
+   * haben Haiti und die Dominikanische Republik am Ort 7,6 Bildpunkte
    * Trefferflaeche - ihre Anker liegen 4,2 Punkte auseinander, dort passt
    * kein Kreis mehr dazwischen. Die Fingergrenze ist 44.
    *
-   * „Wo liegt Haiti?" waere dort keine Erdkundefrage mehr, sondern eine
-   * Fingeruebung. Sie wird deshalb nicht gestellt - das Kind lernt Haiti
-   * ueber den Namen. Gezoomt wird NICHT: eine auf Haiti gezoomte Karte
-   * beantwortet die Frage selbst.
+   * P7 hat daraus gezogen: dann wird eben nicht gefragt. P10 hat das
+   * umgedreht - die sieben haengen jetzt an einer NADEL neben der Karte,
+   * volle 44 Punkte, mit einem Faden zum Gebiet. Die Frage kommt also
+   * wieder, und genau das wird hier geprueft: nicht dass sie ausbleibt,
+   * sondern dass sie gestellt UND an der Nadel beantwortbar ist.
    *
-   * Gestellt wird ein Stand, in dem NUR die beiden faellig sind. Damit ist
-   * jede Aufgabe eine von beiden, und die dritte waere ohne die Regel die
-   * umgekehrte.
+   * Gezoomt wird weiterhin nicht: eine auf Haiti gezoomte Karte
+   * beantwortet „Wo liegt Haiti?" selbst.
+   *
+   * Gestellt wird ein Stand, in dem NUR die sieben faellig sind. Damit
+   * ist jede Aufgabe eine von ihnen.
    */
   const r = await neueSeite({ width: 844, height: 390 }, ctx);
   /* Die sieben kleinen faellig - und alle anderen ausdruecklich NICHT.
@@ -3137,16 +3140,23 @@ if (laeuft('umgekehrt')) try {
   await r.click('[data-ebene="laender:nordamerika"]');
   await r.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout: 25000 });
   await durchVorlaufWenn(r);
-  const fragen = [];
+  const fragen = [], geantwortet = [];
   for (let i = 0; i < 9; i++) {
     await r.waitForSelector('.schirm.da #frage', { timeout: 20000 });
     await r.waitForTimeout(250);
     const f = await r.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       const z = s.querySelector('path.ziel');
+      /* An der Nadel haengt, wessen groesste Trefferflaeche NICHT am
+         Anker sitzt. Gelesen wird das am Bildschirm, nicht an einer
+         Liste hier: sonst prueft der Abschnitt seine eigene Annahme. */
+      const kreise = [...s.querySelectorAll('#treffer circle[data-id]')];
+      const anNadel = [...new Set(kreise.filter(c => c.getBoundingClientRect().width >= 40)
+        .map(c => c.dataset.id))];
       return { text: s.querySelector('#frage').textContent.trim(),
                ziel: z ? z.dataset.id : null,
                feld: !!s.querySelector('.eingabe'),
+               anNadel,
                klein: [...s.querySelectorAll('path.geb[data-klein="1"]')].map(x => x.dataset.id) };
     });
     if (!f.text) break;
@@ -3161,11 +3171,20 @@ if (laeuft('umgekehrt')) try {
       await r.fill('.schirm.da .eingabe', name);
       await r.$eval('.schirm.da .wahlliste .knopf', x => x.click());
     } else {
-      // Die umgekehrte Frage wird hier nicht beantwortet, sondern
-      // uebersprungen: geprueft wird, WELCHE Fragen gestellt werden.
-      const weg = await r.$('.schirm.da #ueberspringen');
-      if (!weg) break;
-      await weg.click();
+      /* Die umgekehrte Frage wird jetzt BEANTWORTET, nicht mehr
+         uebersprungen - und zwar dort, wo ein Kind tippt: auf die
+         groesste Trefferflaeche, seit P10 also auf die Nadel. Nur so
+         beweist der Abschnitt, dass die Nadel etwas TUT. Vorher stand
+         hier „ueberspringen"; damit war geprueft, welche Fragen kommen,
+         und nicht, ob man sie beantworten kann. */
+      const gezeigt = await zeigeAufKarte(r);
+      const gewertet = await bewertet(r);
+      geantwortet.push({ name: gezeigt, gewertet });
+      if (!gewertet) {
+        const weg = await r.$('.schirm.da #ueberspringen');
+        if (!weg) break;
+        await weg.click();
+      }
     }
     /* NICHT `weitergegangen()`: das wartet unter anderem auf `path.ziel`,
        und bei der umgekehrten Frage gibt es den mit Absicht nicht - das
@@ -3189,10 +3208,16 @@ if (laeuft('umgekehrt')) try {
   if (fragen.length < 3) merke('umgekehrt', new Error(
     `nur ${fragen.length} Aufgaben gespielt — die umgekehrte Frage steht an der dritten, `
     + 'dieser Abschnitt hat sie also gar nicht erreicht'));
+  /* Die Voraussetzung des ganzen Abschnitts: auf dieser Karte MUSS es
+     Gebiete geben, die am Ort nicht zu treffen sind. Haengt keines an
+     einer Nadel, ist die Nordamerikakarte nicht mehr der enge Fall - und
+     dann prueft hier nichts mehr, ohne dass etwas rot wuerde. */
+  const nadelDa = fragen[0] ? fragen[0].anNadel.length : 0;
+  if (!nadelDa) merke('umgekehrt', new Error(
+    'auf der Nordamerikakarte hängt kein Gebiet an einer Nadel — dann prüft dieser '
+    + 'Abschnitt nichts (gemessen sind es sieben, alle unter 16 pt am Ort)'));
+  const nadelSet = new Set(fragen[0] ? fragen[0].anNadel : []);
   const kleinDa = fragen[0] ? fragen[0].klein.length : 0;
-  if (!kleinDa) merke('umgekehrt', new Error(
-    'auf der Nordamerikakarte ist kein Gebiet als „zu klein zum Antippen" markiert — '
-    + 'dann prüft dieser Abschnitt nichts (gemessen sind es sieben)'));
   const kleinSet = new Set(fragen[0] ? fragen[0].klein : []);
   const verkehrt = fragen.filter(f => /^Wo liegt /.test(f.text));
   const zuKlein = verkehrt.filter(f => kleinSet.has(f.ziel)
@@ -3215,10 +3240,26 @@ if (laeuft('umgekehrt')) try {
   if (!verkehrt.length) merke('umgekehrt', new Error(
     `in ${fragen.length} Aufgaben auf der Nordamerikakarte kam keine einzige `
     + '„Wo liegt …?" — die Regel filtert nicht, sie schaltet ab'));
-  console.log(`  Zu klein zum Antippen:      ${kleinDa} Gebiete auf der Nordamerikakarte · `
-    + `${fragen.length} Aufgaben, davon ${verkehrt.length} × „Wo liegt …?" `
+  /* Der eigentliche Punkt von P10: die Frage kommt fuer ein Gebiet, das
+     an der Nadel haengt - und sie laesst sich dort beantworten. Ohne
+     diesen Fall waeren die Nadeln Zierat: gezeichnet, gemessen, und im
+     Spiel ohne Wirkung. */
+  const anNadel = verkehrt.filter(f => {
+    const id = namen[f.text.replace(/^Wo liegt |\?$/g, '').trim()];
+    return id && nadelSet.has(id);
+  });
+  if (!anNadel.length) merke('umgekehrt', new Error(
+    `keine der ${verkehrt.length} „Wo liegt …?"-Fragen galt einem Gebiet an der Nadel — `
+    + 'dann ist ungeprüft, ob die Nadel die Frage überhaupt zurückbringt (P10)'));
+  const daneben = geantwortet.filter(g => !g.gewertet);
+  if (daneben.length) merke('umgekehrt', new Error(
+    `auf die Nadel getippt und nicht gewertet: ${daneben.map(g => g.name).join(', ')} — `
+    + 'die Trefferfläche steht da und trifft nicht'));
+  console.log(`  An der Nadel:               ${nadelDa} Gebiete auf der Nordamerikakarte, `
+    + `${kleinDa} bleiben zu klein · ${fragen.length} Aufgaben, davon `
+    + `${verkehrt.length} × „Wo liegt …?" `
     + `(${verkehrt.map(f => f.text.replace(/^Wo liegt |\?$/g, '')).join(', ') || 'keine'}), `
-    + `keine davon zu klein`);
+    + `${anNadel.length} davon an der Nadel — alle getippt und gewertet`);
   await r.close();
 } catch (e) { merke('umgekehrt', e); }
 

@@ -1230,13 +1230,28 @@ const rnd = (k)=>{ let x=k>>>0; return ()=>{
 
 const MIN_PT = 44, MIN_REST = 20;
 const kreisPx = new Map();
+/* Der Nadelplan - gerechnet, nicht bei jeder Aufgabe neu.
+ *
+ * Die Freiflaechensuche fragt `elementFromPoint`, und zwar bis zu
+ * fuenfmal je Kandidat. Sie haengt aber nur an zwei Dingen: welche
+ * Gebiete auf der Karte stehen und wie gross die Karte ist. Beides bleibt
+ * ueber eine ganze Sitzung gleich - die Aufgabe wechselt, die Karte
+ * nicht. Der Schluessel haelt genau das fest, der Plan steht in
+ * WELTPUNKTEN und ueberlebt damit jedes Neuzeichnen. */
+let nadelSchluessel = '', nadelPlan = [];
 /* Kann man dieses Gebiet ueberhaupt antippen?
 
    `MIN_REST` ist der Boden, den die App selbst fuer eine noch brauchbare
    Trefferflaeche setzt. Wer darunter liegt, liegt dort nicht aus
    Nachlaessigkeit, sondern weil der Nachbar zu nah ist (siehe die Kappung
    in `trefferflaechen`) - und dann ist „Wo liegt Haiti?" keine
-   Erdkundefrage mehr, sondern eine Fingeruebung. */
+   Erdkundefrage mehr, sondern eine Fingeruebung.
+
+   Seit den Nadeln ist das der ZWEITE Ausweg, nicht der erste: wer am Ort
+   keine 20 Punkte bekommt, bekommt seine Flaeche NEBEN der Karte, volle
+   44 Punkte, mit einem Faden zum Gebiet. `kreisPx` traegt dann die Nadel,
+   nicht den gekappten Kreis - und die Frage kommt wieder. Nur wo auch
+   dafuer kein Platz ist, bleibt es beim Verzicht. */
 const tippbar = (id) => !kreisPx.has(id) || kreisPx.get(id) >= MIN_REST;
 
 const NAMEN = {};
@@ -3026,50 +3041,169 @@ function spielschirm(){
     });
 
     kreisPx.clear();
-    g.innerHTML = mit.filter(n=>n.gross*k<MIN_PT).map(n=>{
+    /* Wie gross wird der Kreis AM ORT?
+     *
+     * Einmal gerechnet, zweimal gebraucht: der Nadelplan muss VOR den
+     * Kreisen wissen, wer am Ort zu wenig bekommt. Der erste Anlauf hat
+     * die zehn Zeilen abgeschrieben - und das Tor `inhalt` hat es sofort
+     * gemeldet, weil eine stehende Gegenprobe ihren Suchtext ploetzlich
+     * zweimal fand. Regel 15, gefunden von einer Probe. */
+    const kreisAmOrt = (n) => {
       let rPx = MIN_PT/2, naechster = Infinity;
       for (const m of mit) {
-        if (m.x.id === n.x.id) continue;
+        if (m.x.id === n.x.id || !m.x.anker) continue;
         const d = Math.hypot(n.x.anker[0]-m.x.anker[0], n.x.anker[1]-m.x.anker[1]) * k;
         if (d > 0) { naechster = Math.min(naechster, d); rPx = Math.min(rPx, d * 0.55); }
       }
       rPx = Math.max(rPx, MIN_REST/2);
       /* Und der Boden darf die Regel darueber NICHT aufheben.
        *
-       * Genau das tat er. Drei Zeilen weiter oben steht seit F16 „ein
-       * Trefferkreis darf den Anker eines ANDEREN Gebiets nicht
-       * verschlucken" - und `Math.max(rPx, MIN_REST/2)` hat es wieder
-       * eingerissen, sobald zwei Anker naeher als achtzehn Bildpunkte
-       * beieinanderlagen.
+       * Genau das tat er. Weiter oben steht seit F16 „ein Trefferkreis
+       * darf den Anker eines ANDEREN Gebiets nicht verschlucken" - und
+       * `Math.max(rPx, MIN_REST/2)` hat es wieder eingerissen, sobald
+       * zwei Anker naeher als achtzehn Bildpunkte beieinanderlagen.
        *
-       * Gemessen hat es niemand, weil die Zahl in Node gerechnet wurde und
-       * dort mit einem angenommenen Kartenmassstab (P6). Am Bildschirm,
-       * auf 844 x 390, sind es vier Faelle: wer auf den Anker von
-       * Nicaragua zeigt, bekam Costa Rica; Guatemala und Honduras
+       * Gemessen hat es niemand, weil die Zahl in Node gerechnet wurde
+       * und dort mit einem angenommenen Kartenmassstab (P6). Am
+       * Bildschirm, auf 844 x 390, sind es vier Faelle: wer auf den Anker
+       * von Nicaragua zeigt, bekam Costa Rica; Guatemala und Honduras
        * bekamen El Salvador; die Dominikanische Republik bekam Haiti.
        *
        * Gekappt wird knapp DIESSEITS des naechsten fremden Ankers - 0,9
        * davon. Das ist die kleinstmoegliche Einschraenkung: die Zeile
-       * darueber (`d * 0.55`) kann einen fremden Anker gar nicht
-       * erreichen, nur der Boden konnte es. Ein erster Anlauf mit 0,45
-       * hat auch Berlin, Hamburg und das Saarland um vier Punkte
-       * beschnitten, ohne dass dort etwas zu berichtigen gewesen waere -
-       * gemessen und wieder verworfen.
+       * oben (`d * 0.55`) kann einen fremden Anker gar nicht erreichen,
+       * nur der Boden konnte es. Ein erster Anlauf mit 0,45 hat auch
+       * Berlin, Hamburg und das Saarland um vier Punkte beschnitten, ohne
+       * dass dort etwas zu berichtigen gewesen waere - gemessen und
+       * wieder verworfen.
        *
        * Wo auch das nicht reicht - Haiti und die Dominikanische Republik
-       * liegen 4,2 Punkte auseinander -, hilft kein Kreis mehr, sondern
-       * nur eine groessere Karte. Das ist P7. */
+       * liegen 4,2 Punkte auseinander -, half bis P10 kein Kreis mehr.
+       * Seitdem wandert die Flaeche an eine Nadel. */
       if (Number.isFinite(naechster)) rPx = Math.min(rPx, naechster * 0.9);
-      kreisPx.set(n.x.id, +(rPx * 2).toFixed(1));
+      return rPx;
+    };
+    /* Erst leeren, dann suchen.
+     *
+     * Die Nadelsuche weiter unten fragt `elementFromPoint`, also den
+     * wirklichen Bildschirm. Stuenden die Trefferkreise des letzten
+     * Durchgangs noch da, laese sie ihre eigene Arbeit als besetzt. */
+    g.innerHTML = '';
+    const nadeln = nadelplanFuer();
+    const stuecke = mit.filter(n=>n.gross*k<MIN_PT).map(n=>{
+      const rPx = kreisAmOrt(n);
+      /* Und wenn auch das nicht reicht, haengt die Flaeche an einer Nadel.
+         Dann zaehlt IHRE Groesse, nicht der gekappte Kreis am Ort: sie ist
+         die Stelle, an der ein Finger dieses Gebiet trifft. Der kleine
+         Kreis bleibt trotzdem stehen - wer genau zielt, soll auch am Ort
+         treffen duerfen. */
+      const nadel = nadeln.find(x => x.id === n.x.id);
+      kreisPx.set(n.x.id, nadel ? MIN_PT : +(rPx * 2).toFixed(1));
       /* Und sichtbar fuer das Tor: `npm run ziehen --nur=treffer` liest
          diese Marke und haelt sie gegen den gemessenen Kreis. Ohne sie
          waere die Entscheidung „zu klein zum Antippen" eine Zahl, die nur
          im Kopf des Programms steht. */
       const pf = s.querySelector(`path.geb[data-id="${n.x.id}"]`);
-      if (pf) pf.dataset.klein = rPx * 2 < MIN_REST ? '1' : '';
-      return `<circle data-id="${n.x.id}" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
+      if (pf) pf.dataset.klein = kreisPx.get(n.x.id) < MIN_REST ? '1' : '';
+      const amOrt = `<circle data-id="${n.x.id}" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
         r="${(rPx/k).toFixed(1)}" fill="transparent" style="pointer-events:all"/>`;
-    }).join('');
+      if (!nadel) return amOrt;
+      const farbe = pf ? pf.getAttribute('fill') : 'var(--papier)';
+      return amOrt + `
+        <line class="nadelfaden" x1="${n.x.anker[0]}" y1="${n.x.anker[1]}"
+              x2="${nadel.x}" y2="${nadel.y}"/>
+        <circle class="nadelfuss" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
+                r="${(2.4/k).toFixed(2)}"/>
+        <circle class="nadelkopf" cx="${nadel.x}" cy="${nadel.y}"
+                r="${(7/k).toFixed(2)}" fill="${farbe}"/>
+        <circle data-id="${n.x.id}" cx="${nadel.x}" cy="${nadel.y}"
+                r="${(MIN_PT/2/k).toFixed(1)}" fill="transparent"
+                style="pointer-events:all"/>`;
+    });
+    g.innerHTML = stuecke.join('');
+
+    /* --- Die Nadeln -------------------------------------------------
+     *
+     * Wo ein Gebiet am Ort keine 20 Punkte bekommt, weil der Nachbar zu
+     * nah ist, wandert seine Trefferflaeche NEBEN die Karte: volle 44
+     * Punkte im Meer, ein Faden dorthin, ein Kopf in der Farbe des
+     * Gebiets. Das Konzept sagt es seit K3, Kapitel 5.4 - gebaut war
+     * bisher nur der halbe Satz.
+     *
+     * Warum fuer ALLE betroffenen Gebiete und nicht nur fuer das
+     * gesuchte: eine Nadel, die nur beim gefragten Land erschiene, waere
+     * die Antwort. Neun Nadeln auf der Nordamerikakarte sagen nichts -
+     * wer „Wo liegt Guatemala?" beantworten will, muss trotzdem wissen,
+     * wo Guatemala liegt, und dem Faden von dort folgen.
+     */
+    function nadelplanFuer(){
+      const kasten = s.querySelector('.karte');
+      const kb = kasten ? kasten.getBoundingClientRect() : null;
+      if (!kb || !kb.width) return [];
+      const schluessel = `${mit.map(m=>m.x.id).join(',')}|`
+        + `${kb.width.toFixed(0)}x${kb.height.toFixed(0)}`;
+      if (schluessel === nadelSchluessel) return nadelPlan;
+
+      const hin = (a) => { const p = svg.createSVGPoint();
+        p.x = a[0]; p.y = a[1]; const r = p.matrixTransform(ctm); return { x:r.x, y:r.y }; };
+      const zurueck = (x, y) => { const p = svg.createSVGPoint();
+        p.x = x; p.y = y; const r = p.matrixTransform(ctm.inverse());
+        return { x:+r.x.toFixed(1), y:+r.y.toFixed(1) }; };
+      const ankerPx = mit.filter(m=>m.x.anker).map(m => ({ id:m.x.id, ...hin(m.x.anker) }));
+
+      // Wer braucht eine Nadel? Wer am Ort keine 20 Punkte bekommt -
+      // gerechnet mit `kreisAmOrt`, derselben Funktion, die den Kreis
+      // gleich darunter wirklich setzt.
+      const braucht = [];
+      for (const n of mit) {
+        if (!n.x.anker || n.gross * k >= MIN_PT) continue;
+        if (kreisAmOrt(n) * 2 < MIN_REST)
+          braucht.push({ id:n.x.id, anker:n.x.anker, ...hin(n.x.anker) });
+      }
+
+      /* Die Reihenfolge ist die des Bildschirms, nicht die der Daten:
+         von oben nach unten, bei Gleichstand von links nach rechts. Ein
+         Zufall in der Reihenfolge waere ein Zufall in der Lage - und
+         zwei Aufnahmen derselben Karte saehen verschieden aus. */
+      braucht.sort((a, b) => (a.y - b.y) || (a.x - b.x) || (a.id < b.id ? -1 : 1));
+
+      const gesetzt = [], plan = [];
+      const freiVonFlaeche = (x, y) => {
+        const r = MIN_PT/2 * 0.7;
+        for (const [dx, dy] of [[0,0],[r,0],[-r,0],[0,r],[0,-r]]) {
+          const e = document.elementFromPoint(x + dx, y + dy);
+          if (!e || !e.closest || e.closest('path.geb')) return false;
+        }
+        return true;
+      };
+      for (const b of braucht) {
+        // Nach DRAUSSEN suchen: vom Kartenmittelpunkt weg liegt das Meer.
+        const raus = Math.atan2(b.y - (kb.top + kb.height/2),
+                                b.x - (kb.left + kb.width/2));
+        let platz = null;
+        for (let r = MIN_PT; r <= 170 && !platz; r += 10) {
+          for (let i = 0; i < 25 && !platz; i++) {
+            const w = raus + (i % 2 ? 1 : -1) * Math.ceil(i/2) * Math.PI/12;
+            const x = b.x + Math.cos(w) * r, y = b.y + Math.sin(w) * r;
+            if (x - MIN_PT/2 < kb.left || x + MIN_PT/2 > kb.right)  continue;
+            if (y - MIN_PT/2 < kb.top  || y + MIN_PT/2 > kb.bottom) continue;
+            if (gesetzt.some(p => Math.hypot(x-p.x, y-p.y) < MIN_PT)) continue;
+            // Kein fremder Anker unter der Nadel - dieselbe Regel wie bei
+            // den Kreisen am Ort (F16): das Kleinere gewinnt, aber es
+            // sperrt niemanden aus.
+            if (ankerPx.some(p => p.id !== b.id
+                && Math.hypot(x-p.x, y-p.y) < MIN_PT/2 + 4)) continue;
+            if (!freiVonFlaeche(x, y)) continue;
+            platz = { x, y };
+          }
+        }
+        if (!platz) continue;          // dann bleibt es beim Verzicht (P7)
+        gesetzt.push(platz);
+        plan.push({ id:b.id, ...zurueck(platz.x, platz.y) });
+      }
+      nadelSchluessel = schluessel; nadelPlan = plan;
+      return plan;
+    }
   }
 
   if (umgekehrt) {

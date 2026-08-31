@@ -214,10 +214,14 @@ export async function zielPunkt(seite) {
     const s = document.querySelector('.schirm.da');
     const ziel = s.querySelector('path.ziel');
     if (!ziel) return null;
-    // 1. Der entkoppelte Trefferkreis. Den gibt es fuer die vier
-    //    kleinsten Gebiete, und er IST dort die Trefferflaeche.
-    const kreis = s.querySelector(`#treffer circle[data-id="${ziel.dataset.id}"]`);
-    if (kreis) { const k = kreis.getBoundingClientRect();
+    // 1. Der entkoppelte Trefferkreis. Den gibt es fuer die kleinen
+    //    Gebiete, und er IST dort die Trefferflaeche.
+    //    Seit den Nadeln koennen es ZWEI sein: der gekappte Kreis am Ort
+    //    und die Nadel daneben. Genommen wird die groessere - das ist die
+    //    Stelle, an der ein Kind wirklich zielt.
+    const kreise = [...s.querySelectorAll(`#treffer circle[data-id="${ziel.dataset.id}"]`)]
+      .map(c => c.getBoundingClientRect()).sort((a, b) => b.width - a.width);
+    if (kreise.length) { const k = kreise[0];
       return { x: k.left + k.width / 2, y: k.top + k.height / 2 }; }
     // 2. Der Anker. Er ist die Mitte der Trefferflaeche, nach der das
     //    Spiel entscheidet - nicht der Umriss. Ein Punkt weit aussen auf
@@ -411,14 +415,51 @@ export async function zeigeAufKarte(seite) {
     const s = document.querySelector('.schirm.da');
     const name = s.querySelector('#frage').textContent.trim()
       .replace(/^Wo liegt /, '').replace(/\?$/, '').trim();
+    /* Gesucht wird die KENNUNG, nicht der Anker.
+     *
+     * Der eingebettete Datenblock haelt zu jedem Land Kennung und Name,
+     * aber weder Umriss noch Anker - die kommen erst mit
+     * `daten/laender-<kontinent>.json` dazu, und zwar in ein Objekt, das
+     * dieser Helfer nicht sieht. Ein Anker aus `#daten` gibt es also nur
+     * fuer Kontinente und Bundeslaender; der erste Anlauf suchte genau
+     * ihn und warf auf jeder Laenderkarte „steht nicht in den Daten".
+     * Aufgefallen ist das erst, als die umgekehrte Frage dort ueberhaupt
+     * gestellt wurde (P10).
+     *
+     * Die Kennung reicht auch: alles Weitere steht am Bildschirm.
+     */
     const D = JSON.parse(document.getElementById('daten').textContent);
-    const geb = [].concat(...Object.values(D).filter(Array.isArray))
-      .find(x => x && x.name === name && x.anker);
+    const alle = [].concat(...Object.values(D).filter(Array.isArray),
+      ...Object.values(D.laender || {}).filter(Array.isArray));
+    const geb = alle.find(x => x && x.name === name);
     if (!geb) return null;
-    const svg = s.querySelector('.karte svg');
-    const pt = svg.createSVGPoint(); pt.x = geb.anker[0]; pt.y = geb.anker[1];
-    const q = pt.matrixTransform(svg.getScreenCTM());
-    return { name, x: q.x, y: q.y };
+    const id = geb.id || geb.a3;
+
+    /* Getippt wird dort, wo ein KIND tippt: auf die groesste
+       Trefferflaeche dieses Gebiets. Fuer die kleinen ist das seit den
+       Nadeln der Kopf neben der Karte - der Anker selbst ist vier
+       Bildpunkte gross, und ein Tor, das ihn punktgenau trifft, bewiese
+       etwas, das kein Finger kann. */
+    const kreise = [...s.querySelectorAll(`#treffer circle[data-id="${id}"]`)]
+      .map(c => c.getBoundingClientRect()).sort((a, b) => b.width - a.width);
+    if (kreise.length) { const k = kreise[0];
+      return { name, id, x: k.left + k.width / 2, y: k.top + k.height / 2,
+               breit: +k.width.toFixed(1) }; }
+
+    // Sonst eine Stelle IM Gebiet, an der das Spiel es auch erkennt.
+    const pf = s.querySelector(`path.geb[data-id="${id}"]`);
+    if (!pf) return null;
+    const bb = pf.getBoundingClientRect();
+    const trifft = (x, y) => {
+      const e = document.elementFromPoint(x, y);
+      const p = e && e.closest && e.closest('path.geb');
+      return !!p && p.dataset.id === id;
+    };
+    for (let n = 0; n <= 6; n++) for (let m = 0; m <= 6; m++) {
+      const x = bb.left + bb.width * (n + .5) / 7, y = bb.top + bb.height * (m + .5) / 7;
+      if (trifft(x, y)) return { name, id, x, y, breit: 0 };
+    }
+    return { name, id, x: bb.left + bb.width / 2, y: bb.top + bb.height / 2, breit: 0 };
   });
   if (!punkt) throw new Error('umgekehrte Frage: das gesuchte Gebiet steht nicht in den Daten');
   await seite.mouse.click(punkt.x, punkt.y);
