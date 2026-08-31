@@ -603,7 +603,81 @@ Gegenproben, alle anschlagend (174 insgesamt).
 
 ---
 
-### D2c · Fehlen Deutschlands Nachbarn im Spiel?
+### D2c · Deutschlands Nachbarn fehlten im Spiel  ·  ERLEDIGT
+
+**Entschieden: ja, sie kommen rein.** Dänemark, Luxemburg, die Schweiz,
+Österreich und Tschechien sind seit dieser Runde im Spiel — Europa hat
+statt zwölf jetzt **siebzehn** Länder, die App insgesamt 103 Gebiete statt
+98.
+
+**Die Reihenfolge ist die eigentliche Entscheidung.** `rang` ist keine
+Rangliste, sondern eine Lerntiefe: ein Profil spielt `rang <=
+laenderTiefe`. Bisher war die Reihenfolge die Einwohnerzahl — für ein Kind
+in Deutschland die falsche: die Ukraine ist größer als Österreich, aber
+Österreich ist nebenan. Auf **4 bis 12 stehen jetzt genau die neun
+Nachbarn**, nach Einwohnerzahl geordnet; davor bleiben Russland,
+Deutschland und das Vereinigte Königreich, damit Fiona mit ihrer Tiefe 3
+dieselben drei behält wie gestern; dahinter der Rest.
+
+**Niemand verliert etwas.** Lea steht jetzt auf Tiefe 13 statt 5. Damit hat
+sie alles, was sie hatte (Italien ist die 13), **plus die neun Nachbarn**.
+Auf der Ebene „Hauptstädte" bekommt sie drei dazu — Warschau, Amsterdam,
+Brüssel: acht statt fünf. Nachgezählt, nicht geschätzt; der erste Anlauf
+schrieb in den Quelltext „ändert sich für sie nichts", und das war falsch.
+Die Eltern gehen von 12 auf 17.
+
+**Die Hauptstädte der fünf Neuen fehlen noch.** `tools/backen-laender.mjs`
+backt sie nur für Länder mit `rang` (`if (!stueck.rang) continue;`), und
+ihre Lage kommt aus den Natural-Earth-Rohdaten — 400 MB, die zum Bauen und
+Spielen niemand braucht. Ein `npm run backen` mit den Rohdaten trägt sie
+nach. Bis dahin stehen die fünf nur auf der Länderebene, nicht auf der
+Hauptstädte-Ebene.
+
+**Dreimal dieselbe Zeile, dreimal derselbe Fehler.** `prototyp/bauen.mjs`,
+`tor/inhalt.mjs` und `tor/spielprobe.mjs` fragten alle nach dem **gebackenen**
+Rang (`filter(x => x.rang)`) statt nach dem aus `erdkunde.js`. Der
+gebackene stammt vom Tag des Backens: die fünf standen dort mit
+`rang: null`. Folge — der Bau lieferte stur 60 Länder statt 65, und
+`spielprobe` meldete für alle fünf „hat keine Fläche auf der Karte", obwohl
+die Fläche seit jeher da ist. Dieselbe Lehre wie bei den Nachbarn selbst:
+**die Geometrie ist der Vorrat, `erdkunde.js` ist die Ware.** Das Tor
+vergleicht die beiden Listen jetzt ausdrücklich.
+
+**Und eine Erwartung, die umfiel.** `inhalt` und `spielprobe` verlangten
+beide, dass **jeder** Kontinent genau so viele Länder hat wie das tiefste
+Profil spielt (`1..TIEFSTE`). Europa hat jetzt 17, die anderen vier haben
+12 — kein Fehler, sondern eine Entscheidung. Geprüft wird deshalb, was
+wirklich schiefgeht: die **Lücke** (lückenlos 1..n je Kontinent) und dazu,
+dass die tiefste Tiefe irgendwo eingelöst wird. Regel 2, in ihrer zweiten
+Form: eine absolute Erwartung an eine anteilige Sache.
+
+**Ist Luxemburg zu treffen?** Das war die Frage, wegen der F17 vor dieser
+Runde stand. Gemessen im Browser, iPhone quer 844 × 390, Länderebene
+Europa — die entkoppelten Trefferkreise:
+
+| | Kreis |
+|---|---|
+| Luxemburg, Belgien, Niederlande, Österreich, Tschechien | **20 pt** |
+| Schweiz | 24,9 pt |
+| Polen | 30,9 pt |
+| Dänemark | 33,9 pt |
+| *zum Vergleich: Berlin, Bremen, Hamburg, Saarland* | *12,3–13,4 pt* |
+
+20 pt liegt unter der Fingergrenze von 44 — aber es ist der **Boden**
+(`MIN_REST`), den die App bewusst setzt, damit ein Kreis nicht den Anker
+des Nachbarn verschluckt (siehe F16). Die vier kleinsten Bundesländer
+liegen seit Monaten bei 12 bis 13 pt und werden gespielt. Die fünf Neuen
+bringen also **keine neue Fehlerklasse**, sie stellen sich in eine
+bestehende Reihe. Wer 44 pt für Luxemburg will, braucht eine größere
+Karte — das ist eine eigene Sache und steht als **P7**.
+
+Wichtig auch: **gezogen wird hier gar nicht.** Lea und die Eltern
+*schreiben* den Ländernamen; die Karte zeigt nur, welches Land gefragt ist.
+Der Trefferkreis zählt nur bei der umgekehrten Frage („Wo liegt
+Luxemburg?"), und die kommt bei jeder dritten Aufgabe.
+
+---
+
 
 Von den neun Nachbarn Deutschlands sind **vier** in der App: Frankreich,
 Belgien, Polen, die Niederlande. Es fehlen **Dänemark, Luxemburg, die
@@ -676,6 +750,42 @@ dunkleren Text, nicht durch blasseren Streu.
 
 **Was es kostet:** das Startbündel wächst um **5,8 KB gzip** (170,0 statt
 164,2 KB für die Seite; 223,9 von 400 KB erlaubt).
+
+---
+
+### P6 · `beruehrung` rechnet mit einem angenommenen Kartenmaßstab
+
+Das Tor rechnet Trefferflächen mit `KARTE_PX/1000` — 470 Bildpunkte
+geteilt durch die viewBox-Breite, die es auf 1000 schätzt. Gemessen im
+Browser stimmt das nicht: auf 844 × 390 **bindet die Höhe**, nicht die
+Breite. Für Europa (viewBox 1015,7 × 876) sagt die Node-Rechnung 36,1 pt
+für die Schweiz, der Browser 24,9 — rund 35 % daneben, und die Vorzeichen
+kippen: Node sieht Österreich, Tschechien und Polen gar nicht als „zu
+klein", der Browser schon.
+
+Betroffen sind auch die Zahlen, die das Tor **heute schon** für Deutschland
+ausgibt. Regel 12, wörtlich: die Zahl und ihre Messstelle gehören zusammen
+— und diese Zahl entsteht am falschen Ort. Sie gehört in den Browser
+(`tor/pwa.mjs` oder ein eigener Abschnitt im Rauchtest), nicht in Node.
+
+Gefunden in D2c, als die Node-Rechnung gegen eine Browsermessung gehalten
+wurde, die es zufällig schon gab.
+
+---
+
+### P7 · Luxemburg braucht eine größere Karte, nicht einen größeren Kreis
+
+Auf der Europakarte (iPhone quer) ist Luxemburgs Trefferkreis 20 pt groß —
+der Boden, den `MIN_REST` setzt, damit er nicht Belgiens Anker verschluckt.
+Die Fingergrenze ist 44. Dasselbe gilt für Belgien, die Niederlande,
+Österreich und Tschechien, und seit Monaten für Berlin, Bremen, Hamburg
+und das Saarland (12–13 pt).
+
+Ein größerer Kreis ist keine Lösung — er nimmt dem Nachbarn seine Stelle,
+und genau das hat F16 gekostet. Die Lösung wäre, die Karte bei der
+umgekehrten Frage auf die Gegend zu **zoomen**, in der das gesuchte Gebiet
+liegt. Das ist eine eigene Runde: es betrifft Kartenaufbau, Zeiger,
+Häkchen und die Nachsicht beim Tippen.
 
 ---
 

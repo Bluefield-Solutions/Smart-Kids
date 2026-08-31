@@ -89,24 +89,36 @@ const laender = Object.entries(I.LAENDER).flatMap(([k,l])=>l.map(x=>({...x, kont
 laender.forEach(l => {
   eindeutig(l.a3, 'Land');
   pruefe(l.name, `Land ${l.a3} ohne Namen`);
-  pruefe(l.rang >= 1 && l.rang <= TIEFSTE, `Land ${l.a3}: Rang außerhalb 1..${TIEFSTE}`);
+  pruefe(l.rang >= 1, `Land ${l.a3}: Rang ${l.rang} ist kein Rang`);
   pruefe(l.aussprache && l.aussprache.length >= 2, `Land ${l.a3}: zu wenige Aussprachevarianten`);
   pruefe(I.KONTINENTE.some(k=>k.id===l.kontinent), `Land ${l.a3}: Elternknoten ${l.kontinent} fehlt`);
 });
-/* Die Raenge sind LUECKENLOS 1 bis TIEFSTE.
+/* Die Raenge sind LUECKENLOS 1 bis n - je Kontinent.
  *
- * `TIEFSTE` steht nicht hier, sondern kommt aus dem tiefsten Profil -
- * seit R4 ist das Eltern mit zwoelf. Schriebe man die Zahl hierhin, gaebe
- * es sie zweimal, und beim naechsten Profil veraltet eine davon
- * (Regel 15). Und die Luecke ist kein Schoenheitsfehler: `laenderTiefe`
- * filtert `rang <= n`, ein fehlender Rang 7 heisst also stillschweigend
- * ein Land weniger fuer alle, die tiefer spielen.
- */
-Object.entries(I.LAENDER).forEach(([k, l]) => {
-  const raenge = l.map(x=>x.rang).sort((a,b)=>a-b).join(',');
-  const soll = Array.from({length: TIEFSTE}, (_, i) => i + 1).join(',');
-  pruefe(raenge === soll, `${k}: Ränge sind ${raenge}, erwartet ${soll}`);
+ * Eine Luecke ist kein Schoenheitsfehler: `laenderTiefe` filtert
+ * `rang <= n`, ein fehlender Rang 7 heisst also stillschweigend ein Land
+ * weniger fuer alle, die tiefer spielen.
+ *
+ * Bis D2c stand hier `1 bis TIEFSTE` - also: JEDER Kontinent muss genau
+ * so viele Laender haben, wie das tiefste Profil spielt. Das war eine
+ * absolute Erwartung an eine anteilige Sache (Regel 2) und ist mit den
+ * fuenf Nachbarn umgefallen: Europa hat siebzehn, die anderen vier haben
+ * zwoelf, und das ist kein Fehler, sondern eine Entscheidung. Geprueft
+ * wird deshalb, was wirklich schiefgehen kann - die Luecke - und dazu,
+ * dass die tiefste Tiefe ueberhaupt irgendwo eingeloest wird. */
+const proKontinent = Object.entries(I.LAENDER).map(([k, l]) => {
+  const raenge = l.map(x => x.rang).sort((a, b) => a - b);
+  const soll = Array.from({ length: l.length }, (_, i) => i + 1);
+  pruefe(raenge.join(',') === soll.join(','),
+    `${k}: Ränge sind ${raenge.join(',')}, erwartet lückenlos ${soll.join(',')}`);
+  return { k, n: l.length };
 });
+const tiefsteListe = Math.max(...proKontinent.map(x => x.n));
+pruefe(TIEFSTE <= tiefsteListe, `ein Profil spielt bis Rang ${TIEFSTE}, aber der `
+  + `längste Kontinent hat nur ${tiefsteListe} Länder — die Tiefe verspricht mehr, `
+  + 'als es irgendwo gibt');
+console.log(`    Länder je Kontinent: ${proKontinent.map(x => `${x.k} ${x.n}`).join(' · ')} `
+  + `— tiefstes Profil bis Rang ${TIEFSTE}`);
 /* Befund G10: passt der Name ins Gebiet, oder braucht er eine Fahne?
  *
  * Die Entscheidung wird gerechnet (`platzPx >= textPx`, Karte 470 px
@@ -582,15 +594,41 @@ console.log(`    ${KONTINENTE_FEIN.length + DEUTSCHLAND_FEIN.length} Umrisse gep
  * Satzes, und das naechste Mal sucht jemand den Fehler im Tor statt in den
  * Daten. Ein Tor muss auch kaputte Eingaben BEURTEILEN koennen.
  */
+/* Gespielt wird, was in `erdkunde.js` einen Rang hat - nicht, was im
+ * gebackenen Umriss steht.
+ *
+ * Der erste Anlauf schrieb `filter(l => l.rang)` und meinte damit den
+ * GEBACKENEN Rang. Der stammt aus dem Tag, an dem gebacken wurde. Als
+ * D2c fuenf Nachbarn aufnahm, standen sie in `erdkunde.js` und im Umriss
+ * weiterhin mit `rang: null` - `prototyp/bauen.mjs` hatte dieselbe Zeile
+ * und baute stur sechzig statt fuenfundsechzig Laender. Die Geometrie ist
+ * der Vorrat, nicht die Ware. */
+const gespielteLaender = (roh, kont) => {
+  const rang = new Map((I.LAENDER[kont] || []).filter(x => x.rang).map(x => [x.a3, x.rang]));
+  return roh.filter(l => rang.has(l.a3)).map(l => ({ ...l, rang: rang.get(l.a3),
+    name: (I.LAENDER[kont].find(x => x.a3 === l.a3) || {}).name || l.name }));
+};
 const GESPIELT = [
   ['Kontinente', KONTINENTE_GROB.filter(k => I.KONTINENTE.some(x => x.id === k.id))],
-  ['Europa', LAENDER_EUROPA_GROB.filter(l => l.rang)],
-  ['Afrika', LAENDER_AFRIKA_GROB.filter(l => l.rang)],
-  ['Asien', LAENDER_ASIEN_GROB.filter(l => l.rang)],
-  ['Nordamerika', LAENDER_NORDAMERIKA_GROB.filter(l => l.rang)],
-  ['Südamerika', LAENDER_SUEDAMERIKA_GROB.filter(l => l.rang)],
+  ['Europa', gespielteLaender(LAENDER_EUROPA_GROB, 'europa')],
+  ['Afrika', gespielteLaender(LAENDER_AFRIKA_GROB, 'afrika')],
+  ['Asien', gespielteLaender(LAENDER_ASIEN_GROB, 'asien')],
+  ['Nordamerika', gespielteLaender(LAENDER_NORDAMERIKA_GROB, 'nordamerika')],
+  ['Südamerika', gespielteLaender(LAENDER_SUEDAMERIKA_GROB, 'suedamerika')],
   ['Bundesländer', DEUTSCHLAND_MITTEL],
 ];
+/* Und weil genau diese Verwechslung die Runde gekostet hat: das Tor
+ * vergleicht beide Listen. Was `erdkunde.js` spielt, MUSS es im Umriss
+ * geben - sonst steht ein Land in der Liste und hat keine Karte. */
+for (const [kont, liste] of Object.entries(I.LAENDER)) {
+  const roh = { europa: LAENDER_EUROPA_GROB, afrika: LAENDER_AFRIKA_GROB,
+                asien: LAENDER_ASIEN_GROB, nordamerika: LAENDER_NORDAMERIKA_GROB,
+                suedamerika: LAENDER_SUEDAMERIKA_GROB }[kont];
+  const da = new Set((roh || []).map(l => l.a3));
+  const ohne = liste.filter(x => x.rang && !da.has(x.a3)).map(x => x.name);
+  pruefe(ohne.length === 0, `${ohne.join(', ')} steht in erdkunde.js, hat aber `
+    + `keinen Umriss in der groben Stufe von ${kont}`);
+}
 let ankerDraussen = 0, ankerFehlt = 0, ankerGeprueft = 0, mitLoch = 0;
 const draussen = [], fehlen = [];
 for (const [ebene, liste] of GESPIELT) {

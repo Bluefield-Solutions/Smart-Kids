@@ -68,6 +68,33 @@ export const LAENDER = {
     { a3:'MAR', name:'Marokko', rang:11, aliasse:['Marocco'], aussprache:['marokko','marocco'] },
     { a3:'AGO', name:'Angola', rang:12, aussprache:['angola','anggola'] },
   ],
+  /* Europa: Deutschland und dann SEINE NACHBARN.
+   *
+   * `rang` ist keine Rangliste, sondern eine Lerntiefe: ein Profil spielt
+   * `rang <= laenderTiefe`. Bis D2c war die Reihenfolge die
+   * Einwohnerzahl, und fuenf der neun Nachbarn Deutschlands kamen ueber-
+   * haupt nicht vor - Daenemark, Luxemburg, die Schweiz, Oesterreich und
+   * Tschechien. Fuer ein Kind in Deutschland ist das die falsche
+   * Reihenfolge: die Ukraine ist groesser als Oesterreich, aber
+   * Oesterreich ist nebenan.
+   *
+   * Deshalb stehen auf 4 bis 12 GENAU die neun Nachbarn, nach
+   * Einwohnerzahl geordnet. Davor die drei, die schon vorher zuerst kamen
+   * (Russland, Deutschland, Vereinigtes Koenigreich) - sie bleiben, wo
+   * sie waren, damit Fiona mit ihrer Tiefe 3 dieselben drei behaelt wie
+   * gestern. Dahinter der Rest, ebenfalls nach Einwohnerzahl.
+   *
+   * Niemand verliert etwas: Lea steht jetzt auf 13 statt 5 und hat damit
+   * alles, was sie hatte (Italien ist die 13), plus die neun Nachbarn.
+   *
+   * HAUPTSTAEDTE: die fuenf Neuen haben keine. Sie werden in
+   * `tools/backen-laender.mjs` nur fuer Laender mit `rang` gebacken, und
+   * ihre Lage kommt aus den Natural-Earth-Rohdaten - 400 MB, die zum
+   * Bauen und Spielen niemand braucht. Ein `npm run backen` mit den
+   * Rohdaten traegt sie nach; bis dahin fehlen die fuenf auf der Ebene
+   * „Hauptstaedte in Europa" und stehen nur auf der Laenderebene. Das ist
+   * kein Zufall, sondern haengt an einer Zeile: `if (!stueck.rang)
+   * continue;`. */
   europa:[
     { a3:'RUS', name:'Russland', rang:1, aussprache:['russland','ruslant'],
       satz:'So groß, dass es auf zwei Kontinente passt.' },
@@ -77,25 +104,37 @@ export const LAENDER = {
       /* `wovon` ist die Praepositionalform fuer die Hauptstadtfrage.
        *
        * Die meisten Laendernamen sind im Deutschen artikellos - „die
-       * Hauptstadt von Polen" stimmt einfach. Drei nicht, und der erste
+       * Hauptstadt von Polen" stimmt einfach. Vier nicht, und der erste
        * Anlauf fragte prompt nach der „Hauptstadt von Vereinigtes
        * Koenigreich". Deshalb steht die Form dort, wo sie eine
-       * Eigenschaft des Landes ist, und nur bei den dreien; ueberall
+       * Eigenschaft des Landes ist, und nur bei den vieren; ueberall
        * sonst wird sie aus dem Namen abgeleitet. */
       wovon:'vom Vereinigten Königreich' },
+    /* --- Die neun Nachbarn, nach Einwohnerzahl (D2c) ----------------- */
     { a3:'FRA', name:'Frankreich', rang:4, aussprache:['frankreich','frangreich'] },
-    { a3:'ITA', name:'Italien', rang:5, aussprache:['italien','italjen'] },
-    { a3:'ESP', name:'Spanien', rang:6, aussprache:['spanien','spanjen'] },
-    { a3:'UKR', name:'Ukraine', rang:7, aussprache:['ukraine','ukrajine'],
-      wovon:'von der Ukraine' },
-    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','pohlen'] },
-    { a3:'ROU', name:'Rumänien', rang:9, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
-    { a3:'NLD', name:'Niederlande', rang:10, aliasse:['Holland'], aussprache:['niederlande','holland'],
+    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','pohlen'] },
+    { a3:'NLD', name:'Niederlande', rang:6, aliasse:['Holland'], aussprache:['niederlande','holland'],
       wovon:'von den Niederlanden' },
-    { a3:'BEL', name:'Belgien', rang:11, aussprache:['belgien','belgjen'] },
-    { a3:'GRC', name:'Griechenland', rang:12, aussprache:['griechenland','griechnland'] },
-  ],
-  nordamerika:[
+    { a3:'BEL', name:'Belgien', rang:7, aussprache:['belgien','belgjen'] },
+    { a3:'CZE', name:'Tschechien', rang:8, aliasse:['Tschechische Republik','Tschechei'],
+      aussprache:['tschechien','tschechjen','tschechei'] },
+    { a3:'AUT', name:'Österreich', rang:9, aliasse:['Oesterreich'],
+      aussprache:['österreich','oesterreich','östereich'] },
+    { a3:'CHE', name:'Schweiz', rang:10, aliasse:['Die Schweiz'],
+      aussprache:['schweiz','die schweiz','schwaiz'],
+      wovon:'von der Schweiz' },
+    { a3:'DNK', name:'Dänemark', rang:11, aliasse:['Daenemark'],
+      aussprache:['dänemark','daenemark','dehnemark'] },
+    { a3:'LUX', name:'Luxemburg', rang:12, aliasse:[],
+      aussprache:['luxemburg','luxemburch','luxenburg'] },
+    /* --- Und der Rest, ebenfalls nach Einwohnerzahl ------------------ */
+    { a3:'ITA', name:'Italien', rang:13, aussprache:['italien','italjen'] },
+    { a3:'ESP', name:'Spanien', rang:14, aussprache:['spanien','spanjen'] },
+    { a3:'UKR', name:'Ukraine', rang:15, aussprache:['ukraine','ukrajine'],
+      wovon:'von der Ukraine' },
+    { a3:'ROU', name:'Rumänien', rang:16, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
+    { a3:'GRC', name:'Griechenland', rang:17, aussprache:['griechenland','griechnland'] },
+  ],  nordamerika:[
     { a3:'USA', name:'USA', rang:1, aliasse:['Vereinigte Staaten','Amerika'], aussprache:['u es a','usa','amerika'] },
     { a3:'MEX', name:'Mexiko', rang:2, aliasse:['Mexico'], aussprache:['mexiko','mexico'] },
     { a3:'CAN', name:'Kanada', rang:3, aliasse:['Canada'], aussprache:['kanada','canada'] },

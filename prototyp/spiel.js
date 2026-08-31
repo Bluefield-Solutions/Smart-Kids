@@ -614,8 +614,20 @@ function streu(profilId){
 const PROFILE = {
   fiona:{ id:'fiona', name:'Fiona', alter:6, eingabe:['ziehen','sprechen'], vorlesen:true,
           kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, ton:'kind', farbe:'--f4' },
+  /* Leas Laendertiefe steht seit D2c auf 13 statt 5.
+     Europa hat die neun Nachbarn Deutschlands auf die Raenge 4 bis 12
+     bekommen; 13 ist Italien. Damit hat sie alles, was sie vorher hatte,
+     UND die Nachbarn - nichts faellt aus ihrem Vorrat heraus.
+
+     Auf der Ebene „Hauptstaedte" bekommt sie DREI dazu: Warschau,
+     Amsterdam, Bruessel. Dort zaehlt zusaetzlich `l.hauptstadt`, und die
+     haben Polen, die Niederlande und Belgien laengst - sie lagen nur
+     ausserhalb ihrer alten Tiefe. Die fuenf NEUEN Nachbarn haben noch
+     keine, also sind es acht statt fuenf und nicht dreizehn.
+     Nachgezaehlt, nicht geschaetzt: der erste Anlauf schrieb hier
+     „aendert sich fuer sie nichts". */
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
-          kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f3' },
+          kandidaten:99, laenderTiefe:13, sitzung:8, streng:true, ton:'kind', farbe:'--f3' },
   /* Die Eltern - seit N1 ZWEI Profile, Stephan und Violeta.
    *
    * Bis dahin war es eines, „Eltern". Es hat sich als eine Kachel gut
@@ -634,10 +646,10 @@ const PROFILE = {
    * das Profil wurde dort gar nicht gefragt - die Eltern haetten also mit
    * vier Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
   stephan: { id:'stephan', name:'Stephan', alter:null, eingabe:['tippen'], vorlesen:false,
-          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
+          kandidaten:0, laenderTiefe:17, sitzung:12, streng:true, ton:'sachlich',
           farbe:'--f5' },
   violeta: { id:'violeta', name:'Violeta', alter:null, eingabe:['tippen'], vorlesen:false,
-          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
+          kandidaten:0, laenderTiefe:17, sitzung:12, streng:true, ton:'sachlich',
           farbe:'--f6' },
 };
 /** Wer sich vergleicht. Zwei, und die Reihenfolge ist die der Kacheln. */
@@ -684,10 +696,14 @@ const EBENEN = [
    * daraus ab, statt an fünf Stellen einzeln nachgetragen zu werden.
    *
    * `wer`: Lea und die Eltern. Fiona nicht — sie liest noch nicht, und
-   * eine Stadt hat keinen Umriss, den man ziehen könnte. Für Lea sind es
-   * mit `laenderTiefe:5` fünf Städte (Moskau, Berlin, London, Paris,
-   * Rom), für die Eltern zwölf. Dieselbe Tiefe wie die Länderebene, und
-   * aus demselben Wert. */
+   * eine Stadt hat keinen Umriss, den man ziehen könnte. Dieselbe Tiefe
+   * wie die Länderebene, und aus demselben Wert — aber gefiltert wird
+   * zusätzlich nach `l.hauptstadt`, und die haben nur die zwölf Länder,
+   * für die sie gebacken wurde. Für Lea sind es seit D2c acht
+   * Städte (Moskau, Berlin, London, Paris, Warschau, Amsterdam, Brüssel,
+   * Rom) statt fünf, für die Eltern zwölf. Die fünf Nachbarn, die
+   * D2c hinzugefügt hat, kommen hier erst dazu, wenn `npm run backen`
+   * einmal mit den Rohdaten gelaufen ist. */
   { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,
     wer:['lea','stephan','violeta'] },
   /* Das zweite Fach.

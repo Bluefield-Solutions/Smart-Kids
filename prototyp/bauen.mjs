@@ -73,8 +73,22 @@ const D = {
   // verdrahtet: die Torkette zaehlte 25 Laender, spielbar waren 10. Asien,
   // Nord- und Suedamerika lagen gebacken im Baum und waren nicht zu
   // erreichen. (Australien hat keine Laenderebene - so vereinbart.)
+  /* Gefiltert wird nach dem Rang aus `erdkunde.js`, NICHT nach dem
+   * gebackenen.
+   *
+   * Hier stand `roh.filter(l => l.rang)` - und `l` ist das gebackene
+   * Stueck. Sein `rang` stammt aus dem Lauf von `backen-laender.mjs`,
+   * also aus dem Stand von `erdkunde.js` an jenem Tag. Als D2c fuenf
+   * Nachbarn einen Rang bekam, blieb der Bau bei sechzig Laendern: die
+   * fuenf standen in `erdkunde.js`, aber im gebackenen Umriss stand
+   * `rang: null`, und das Sieb war das alte.
+   *
+   * Dieselbe Falle wie bei den Nachbarn selbst, nur eine Ebene tiefer:
+   * die Geometrie ist der Vorrat, nicht die Ware. Was gespielt wird,
+   * entscheidet `erdkunde.js` - hier und nirgends sonst. */
   laender: Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
-    [id, ankerFuer(roh.filter(l=>l.rang).map(l=>({ ...l, ...laenderMeta[l.a3],
+    [id, ankerFuer(roh.filter(l => (laenderMeta[l.a3] || {}).rang)
+      .map(l=>({ ...l, ...laenderMeta[l.a3],
       // Ebene „Hauptstädte in Europa" (R6). `hauptstadt`, `ort` und
       // `regierungssitz` kommen gebacken aus `roh`; hier kommen nur die
       // Ablenker dazu - und `falle` wird ABGELEITET, nicht behauptet:

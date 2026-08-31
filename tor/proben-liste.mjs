@@ -691,10 +691,14 @@ export const PROBEN = [
   // stand die Fuenf zweimal fest hingeschrieben da.
   { n:'ein Rang fehlt in der Länderliste', tor:'inhalt', deckt:'inhalt',
     datei:'src/inhalt/erdkunde.js',
-    such:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','pohlen'] },",
+    such:"    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','pohlen'] },",
     ersatz:"    { a3:'POL', name:'Polen', rang:99, aussprache:['polen','pohlen'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"name:'Polen', rang:99" },
-    sagt:'Rang außerhalb' },
+    // Ein Rang 99 ist seit D2c keine Bereichsverletzung mehr, sondern
+    // eine LUECKE: die Raenge sind je Kontinent lueckenlos 1..n, und ein
+    // fehlender Rang 5 heisst still ein Land weniger fuer alle, die
+    // tiefer spielen. Das ist der Fehler, um den es geht.
+    sagt:'lückenlos' },
   // Und die Kinder bekommen still mehr zu sehen.
   //
   // Der teuerste denkbare Fehler dieser Runde: die Raenge 6 bis 12 sind
@@ -773,8 +777,8 @@ export const PROBEN = [
    * nicht geben darf. */
   { n:'die Eltern bekommen den kindlichen Ton', tor:'inhalt', deckt:'inhalt',
     datei:D, mehrfach:true,
-    such:"          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',",
-    ersatz:"          kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'kind',",
+    such:"          kandidaten:0, laenderTiefe:17, sitzung:12, streng:true, ton:'sachlich',",
+    ersatz:"          kandidaten:0, laenderTiefe:17, sitzung:12, streng:true, ton:'kind',",
     an:{ datei:D, text:"streng:true, ton:'kind'" },
     sagt:'im Backlog steht' },
   // Und der sachliche Ton ruft doch.
@@ -871,8 +875,8 @@ export const PROBEN = [
   // Alias, Variante, 213 Formen.
   { n:'eine Aussprachevariante zeigt aufs falsche Land', tor:'vergleich', deckt:'vergleich',
     datei:'src/inhalt/erdkunde.js',
-    such:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','pohlen'] },",
-    ersatz:"    { a3:'POL', name:'Polen', rang:8, aussprache:['polen','griechenland'] },",
+    such:"    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','pohlen'] },",
+    ersatz:"    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','griechenland'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"aussprache:['polen','griechenland']" },
     sagt:'angenommen wurde' },
 
@@ -1915,8 +1919,8 @@ export const PROBEN = [
   // sondern nur der Abstand zwischen den vieren.
   { n:'zwei Profile bekommen fast denselben Farbton', tor:'smoke',
     args:['--nur=streu'], bauen:true, datei:D,
-    such:"kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f3' }",
-    ersatz:"kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f4' }",
+    such:"kandidaten:99, laenderTiefe:13, sitzung:8, streng:true, ton:'kind', farbe:'--f3' }",
+    ersatz:"kandidaten:99, laenderTiefe:13, sitzung:8, streng:true, ton:'kind', farbe:'--f4' }",
     an:{ ...DIST, text:"streng:true, ton:'kind', farbe:'--f4' }" },
     sagt:'fast denselben Farbton' },
 

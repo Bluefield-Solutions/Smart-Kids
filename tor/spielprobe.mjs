@@ -145,13 +145,22 @@ for (const { was, liste } of saetze()) {
  */
 const TIEFSTE = Math.max(...[...fs.readFileSync('prototyp/spiel.js', 'utf8')
   .matchAll(/laenderTiefe:\s*(\d+)/g)].map(m => +m[1]));
-const SOLLRAENGE = Array.from({ length: TIEFSTE }, (_, i) => i + 1).join(',');
+/* Lueckenlos 1..n JE KONTINENT - nicht 1..TIEFSTE.
+ *
+ * Bis D2c stand hier (und in `tor/inhalt.mjs`, zweimal dieselbe Regel)
+ * die Erwartung, dass jeder Kontinent genau so viele Laender hat wie das
+ * tiefste Profil spielt. Mit den fuenf Nachbarn Deutschlands hat Europa
+ * siebzehn und die anderen vier haben zwoelf - das ist eine Entscheidung
+ * und kein Fehler. Was wirklich schiefgeht, ist die LUECKE: `laenderTiefe`
+ * filtert `rang <= n`, ein fehlender Rang 5 heisst still ein Land weniger
+ * fuer jeden, der tiefer spielt. */
 for (const [kont, liste] of Object.entries(I.LAENDER)) {
   const r = liste.map(l => l.rang).sort((a, b) => a - b);
-  if (r.join() !== SOLLRAENGE)
-    fehler.push(`Länder in ${kont}: Ränge ${r.join(',')}, erwartet ${SOLLRAENGE} — `
-      + `Fiona sieht Rang 1–3, Lea 1–5, Eltern 1–${TIEFSTE}; `
-      + 'eine Lücke macht ihre Auswahl unbestimmt');
+  const soll = Array.from({ length: liste.length }, (_, i) => i + 1).join(',');
+  if (r.join() !== soll)
+    fehler.push(`Länder in ${kont}: Ränge ${r.join(',')}, erwartet lückenlos ${soll} — `
+      + `das tiefste Profil spielt bis Rang ${TIEFSTE}; `
+      + 'eine Lücke macht seine Auswahl unbestimmt');
   geprueft++;
 }
 
@@ -234,7 +243,16 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     asien:LAENDER_ASIEN_GROB, nordamerika:LAENDER_NORDAMERIKA_GROB,
     suedamerika:LAENDER_SUEDAMERIKA_GROB };
   for (const [kont, liste] of Object.entries(I.LAENDER)) {
-    const gebacken = new Set((geo[kont] || []).filter(x => x.rang).map(x => x.a3));
+    /* Gefragt wird nach dem UMRISS, nicht nach dem gebackenen Rang.
+     *
+     * Hier stand `filter(x => x.rang)`. Dieser Rang stammt aus dem Tag,
+     * an dem gebacken wurde - als D2c fuenf Nachbarn aufnahm, standen sie
+     * mit `rang: null` im Umriss, und das Tor meldete fuer alle fuenf
+     * „hat keine Flaeche auf der Karte", obwohl die Flaeche seit jeher
+     * da ist. Dieselbe Zeile stand in `prototyp/bauen.mjs` und in
+     * `tor/inhalt.mjs`: die Geometrie ist der Vorrat, `erdkunde.js` ist
+     * die Ware. Was hier zaehlt, ist ein Pfad. */
+    const gebacken = new Set((geo[kont] || []).filter(x => x.pfad).map(x => x.a3));
     for (const l of liste) {
       geprueft++;
       if (!gebacken.has(l.a3))
