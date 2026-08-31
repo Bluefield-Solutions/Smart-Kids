@@ -3279,25 +3279,39 @@ if (laeuft('streu')) try {
 
      Geprueft wird stattdessen der Fehler, der in dieser Datei WIRKLICH
      schon passiert ist: das Wasserzeichen aus der absoluten Lage zu
-     holen. Steht `.streu` nicht in der `:not()`-Liste, wird es zum
-     Flex-Element in seiner Eigengroesse, und die Kachel waechst auf ein
-     Vielfaches. Gemessen wird gegen Stephans Kachel - die hat keinen
-     Streu und ist das Mass. */
-  const hoehen = await p.evaluate(() => Object.fromEntries(
-    ['fiona','lea','stephan','violeta'].map(id =>
-      [id, Math.round(document.querySelector(`[data-profil="${id}"]`)
-        .getBoundingClientRect().height)])));
-  const schief = Object.entries(hoehen).filter(([, h]) => h !== hoehen.stephan);
-  if (schief.length) merke('streu', new Error(
-    `die Kacheln sind verschieden hoch (${Object.entries(hoehen).map(([k, v]) => k+' '+v)
-      .join(', ')}) — der Streu ist aus seiner Lage gerutscht und schiebt die Kachel auf`));
+     holen. Steht `.streu` nicht in der `:not()`-Liste, gewinnt
+     `position:relative` (drei Klassen gegen zwei), und weil die Motive
+     selbst absolut liegen, faellt der Streukasten auf 0 x 0 zusammen.
+     Die Motive haengen dann an diesem Punkt statt an der Kachel: die
+     grosse Muschel sass 24 Punkte UEBER dem oberen Rand. Gemessen, nicht
+     vermutet.
+
+     Und ausdruecklich NICHT ueber die Kachelhoehe: die vier Kacheln
+     stehen in einem Raster, und ein Raster gleicht die Hoehen einer
+     Reihe an. Der erste Anlauf verglich Fionas Kachel mit Stephans und
+     blieb deshalb gruen, obwohl der Streu weg war - die Gegenprobe hat
+     auch das gefunden. */
+  const lage = await p.evaluate(() => {
+    const k = document.querySelector('[data-profil="fiona"]');
+    const a = k.getBoundingClientRect(), c = k.querySelector('.streu').getBoundingClientRect();
+    const raus = [...k.querySelectorAll('.streu i')].filter(e => {
+      const r = e.getBoundingClientRect();
+      return r.bottom < a.top || r.top > a.bottom || r.right < a.left || r.left > a.right;
+    }).length;
+    return { deckung: [+(c.width / a.width).toFixed(2), +(c.height / a.height).toFixed(2)], raus };
+  });
+  if (lage.deckung[0] < 0.9 || lage.deckung[1] < 0.9) merke('streu', new Error(
+    `der Streu deckt nur ${lage.deckung[0]} x ${lage.deckung[1]} der Kachel — `
+    + 'er ist aus seiner absoluten Lage gerutscht, und die Motive hängen im Nichts'));
+  if (lage.raus) merke('streu', new Error(
+    `${lage.raus} Motive liegen ganz außerhalb ihrer Kachel`));
 
   console.log('  Profilfarben:               '
     + Object.entries(SOLL_TON).map(([id, w]) => `${id} ${w[2]} (${toene[id]}°)`).join(' · '));
   console.log(`  Streu auf den Kacheln:      Fiona ${bild.fionaArten.length} Arten in `
     + `${bild.fionaFarben} Farben (Schildkröten in ${bild.kroetenFarben}), `
     + `Lea ${bild.leaZahl} Totenköpfe mit ${bild.augeStops}-stufigem Auge, `
-    + `Eltern ${bild.eltern.join('/')} — Name frei, alle Kacheln ${hoehen.stephan} hoch`);
+    + `Eltern ${bild.eltern.join('/')} — Name frei, Streu deckt ${lage.deckung.join(' × ')}`);
   await p.close();
 } catch (e) { merke('streu', e); }
 

@@ -418,9 +418,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .kachel.wer>*:not(.silhouette,.streu){position:relative}
 /* ---- Der Streu auf den Profilkacheln (G12) ---------------------------
    `.streu` muss in `:not()` stehen, genau wie `.silhouette` darueber -
-   sonst holt diese Zeile die Lage der Motive kaputt und die Kacheln
-   wachsen auf ein Vielfaches. Derselbe Fehler, zweite Auflage; er steht
-   im Kommentar darueber ausgeschrieben.
+   diese Zeile hat drei Klassen und schlaegt `.kachel .streu` mit zweien.
+   Anders als beim Wasserzeichen waechst die Kachel dann NICHT: die
+   Motive liegen selbst absolut, also faellt der Streukasten auf 0 x 0
+   zusammen und nimmt sie mit. Gemessen: die grosse Muschel sass 24
+   Punkte ueber dem oberen Rand der Kachel.
 
    Die Deckung: 0,58. Der Streu liegt UNTER Name und Zeile, und kein Tor
    sieht das - `lesbarkeit` sucht den Grund im Elternbaum, und der Streu
