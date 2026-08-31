@@ -269,8 +269,11 @@ const { server, adresse: ADRESSE } = await serviere(DIST);
 console.log('\n  Tor `passt`');
 const b = await starte();
 let gesehen = 0, zuKlein = 0;
+/** Was das Tor mit Warten verbringt. Sichtbar, damit es nicht nachwaechst. */
+const ruhe = { ms: 0, n: 0 }, blind = { ms: 0, n: 0 };
 
 for (const g of GERAETE) {
+  const angefangen = Date.now();
   const ctx = await b.newContext({ hasTouch: g.touch, isMobile: g.touch, locale: 'de-DE',
     viewport: { width: g.w, height: g.h }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const p = await ctx.newPage();
@@ -298,8 +301,35 @@ for (const g of GERAETE) {
   });
 
   const meldungen = [];
+  /* Warten, bis der Bildschirmwechsel wirklich durch ist.
+   *
+   * Hier stand `waitForTimeout(450)` mit der Begruendung „der
+   * Bildschirmwechsel muss durch sein". Nur: dieses Tor oeffnet JEDEN
+   * Kontext mit `reducedMotion: 'reduce'`, und die App setzt darunter
+   * `--d-schirm` auf 1 ms. Gewartet wurde also 450 ms auf einen Uebergang,
+   * den es in diesem Kontext gar nicht gibt - 21 Bildschirme mal sieben
+   * Groessen, 66 der 183 Sekunden des ganzen Tores.
+   *
+   * Jetzt eine Bedingung statt einer Zahl: keine laufende Animation mehr
+   * (die endlosen ausgenommen - der Zielpuls und das Huepfen des Zeigers
+   * hoeren nie auf, darauf zu warten hiesse, nie weiterzumachen), dann
+   * zwei Bilder Ruhe, damit der Grundriss steht. Unter `reduce` ist das
+   * sofort wahr, ohne `reduce` wartet es so lange wie noetig - und nicht
+   * eine feste Zahl, die zu kurz oder zu lang ist.
+   *
+   * Was dabei blind gewartet wird, steht am Ende in der Ausgabe. Eine
+   * feste Pause, die niemand sieht, waechst nach. */
   const schau = async (name) => {
-    await p.waitForTimeout(450);   // der Bildschirmwechsel muss durch sein
+    const angehalten = Date.now();
+    await p.waitForFunction(() => {
+      const s = document.querySelector('.schirm.da');
+      if (!s) return false;
+      return !document.getAnimations().some(a => a.playState === 'running'
+        && a.effect?.getTiming().iterations !== Infinity);
+    }, null, { timeout: 5000 }).catch(() => {});
+    await p.evaluate(() => new Promise(f =>
+      requestAnimationFrame(() => requestAnimationFrame(f))));
+    ruhe.ms += Date.now() - angehalten; ruhe.n++;
     const r = await p.evaluate(SUCHE);
     // Liegt etwas Bedienbares im Bereich, den das Telefon fuer sich
     // beansprucht? Dort sitzen Uhr, Akku und der Streifen zum Wischen - ein
@@ -435,8 +465,24 @@ for (const g of GERAETE) {
   for (let n = 0; n < 12; n++) {
     if ((await p.$$('.schirm.da .feldkasten')).length > 1) break;
     await tipp('.schirm.da #weissnicht');
-    await p.waitForTimeout(1500);
-    await p.waitForSelector('.schirm.da .schreibblatt', { timeout: 8000 }).catch(() => {});
+    /* Warten, bis die naechste Aufgabe steht - an einer Bedingung, nicht
+     * an einer Zahl.
+     *
+     * Hier stand `waitForTimeout(1500)`. Wonach die Zahl gewaehlt war,
+     * stand nirgends, und sie war entweder zu lang (dann kostet sie) oder
+     * zu kurz (dann laeuft die Schleife zwoelfmal durch und meldet
+     * „keine zweistellige gekommen", obwohl es sie gab). Ich habe es mit
+     * 600 ms ausprobiert: genau der zweite Fall, auf allen sieben
+     * Groessen.
+     *
+     * Die Sache selbst ist am DOM abzulesen. `aufloesen()` setzt die
+     * Frage auf `.loesung` und laesst sie stehen, bis die naechste
+     * Aufgabe den Bildschirm neu baut. Also: keine `.loesung` mehr und
+     * wieder ein Schreibblatt da. Das kann nicht zu kurz sein. */
+    await p.waitForFunction(() => {
+      const s = document.querySelector('.schirm.da');
+      return !!(s && !s.querySelector('.loesung') && s.querySelector('.schreibblatt'));
+    }, null, { timeout: 12000 }).catch(() => {});
   }
   if ((await p.$$('.schirm.da .feldkasten')).length < 2)
     meldungen.push('Zahlen: nach zwölf Aufgaben kam keine zweistellige — '
@@ -474,17 +520,23 @@ for (const g of GERAETE) {
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
   if (process.argv.includes('--hinweise'))
     meldungen.filter(m => m.includes('HINWEIS')).forEach(m => console.log(`            ${m}`));
+  // Die Dauer je Groesse steht mit da: sie ist die Zahl, nach der
+  // `--teil` verteilt, und ohne sie waere die Verteilung geraten.
+  const dauer = `${((Date.now() - angefangen) / 1000).toFixed(1)} s`;
   if (echte.length) {
-    console.log(`    ROT   ${g.n.padEnd(16)} ${g.w}×${g.h} — ${echte.length} nicht erreichbar`);
+    console.log(`    ROT   ${g.n.padEnd(16)} ${g.w}×${g.h} — ${echte.length} nicht erreichbar`
+      + `  ${dauer}`);
     echte.forEach(m => console.log(`            ${m}`));
     fehler.push(...echte.map(m => `${g.n}: ${m}`));
   } else {
-    console.log(`    grün  ${g.n.padEnd(16)} ${g.w}×${g.h}`);
+    console.log(`    grün  ${g.n.padEnd(16)} ${g.w}×${g.h}${' '.repeat(10)}${dauer}`);
   }
   await ctx.close();
 }
 await b.close(); server.close();
 
+console.log(`    Gewartet: ${(ruhe.ms / 1000).toFixed(1)} s auf Ruhe in ${ruhe.n} Aufnahmen, `
+  + `${(blind.ms / 1000).toFixed(1)} s blind in ${blind.n} festen Pausen`);
 console.log(`    ${GERAETE.length} Größen × ${gesehen / GERAETE.length} Bildschirme geprüft, `
   + `Karten füllen mindestens ${(KARTE_MIN*100).toFixed(0)} % ihres Kastens`
   + (zuKlein ? `, ${zuKlein} Trefferflächen unter ${MIN_PT} pt (Hinweis)` : ''));

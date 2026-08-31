@@ -7,8 +7,14 @@
 // Die Aufteilung ist gemessen, nicht geraten. Nachgemessen am 31.08.2026,
 // jedes Tor allein, auf demselben Rechner (vier Kerne):
 //
-//     smoke 293 · passt 183 · ansicht 79 · ziehen 57 · lesbarkeit 9 · pwa 4
+//     smoke 293 · passt 110 · ansicht 79 · ziehen 57 · lesbarkeit 9 · pwa 4
 //     inhalt 2,4 · schreiben 5,2 · vergleich 0,8 · spielprobe 0,3 · budget 0,2
+//
+// `passt` stand hier eine Runde lang mit 183 s. Davon waren 73 s Warten
+// auf nichts: es oeffnet jeden Kontext mit `reducedMotion: 'reduce'`, und
+// die App setzt darunter jede Dauer auf 1 ms - die feste Pause von 450 ms
+// je Bildschirm wartete auf einen Uebergang, den es in diesem Kontext gar
+// nicht gab (P3).
 //
 // Hier stand bis P1 „smoke 163 · passt 54 · ziehen 48 · ansicht 43 · pwa 19",
 // von einem anderen Rechner und aus einer Zeit vor P13/P14. Zwei der
@@ -29,7 +35,7 @@
 //
 // Was ausdruecklich NICHT hier laeuft und warum:
 //
-//     passt       183 s. Faengt Ueberlauf auf sieben Groessen - wertvoll,
+//     passt       110 s. Faengt Ueberlauf auf sieben Groessen - wertvoll,
 //                  aber nur wenn sich das Layout geaendert hat. Runner.
 //     ziehen        57 s. Die Nachsicht beim Ziehen aendert sich fast nie.
 //     durchgang    83 s. Spielt JEDE Ebene fuer beide Kinder. Das ist der

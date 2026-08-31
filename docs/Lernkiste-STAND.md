@@ -5960,3 +5960,108 @@ aufgeschrieben gehört es trotzdem, sonst hält es eines Tages jemand für
 bewiesen.
 
 195 Gegenproben.
+
+---
+
+## P3 · `passt` wartete 73 Sekunden auf etwas, das abgeschaltet war
+
+Nach P2 war `passt` der Engpass: 183 s bei 238 s Kettenzeit. Die erste
+Messung war die interessante — jede der sieben Größen kostete **gleich
+viel**, 25,4 bis 26,2 s. Kein Ausreißer, nichts zu optimieren, wo es weh
+tut. Also musste die Zeit woanders liegen als in der Arbeit.
+
+Sie lag in einer Zeile:
+
+```js
+await p.waitForTimeout(450);   // der Bildschirmwechsel muss durch sein
+```
+
+`passt` öffnet **jeden** Kontext mit `reducedMotion: 'reduce'`. Die App
+setzt darunter jede Dauer auf 1 ms — `--d-schirm` eingeschlossen. Gewartet
+wurde also 450 ms auf einen Übergang, den es in diesem Kontext gar nicht
+gibt: 21 Bildschirme × 7 Größen = 147 Pausen, **66 der 183 Sekunden**.
+
+Jetzt eine Bedingung statt einer Zahl: keine laufende Animation mehr — die
+endlosen ausgenommen, denn der Zielpuls und das Hüpfen des Zeigers hören
+nie auf —, dann zwei Bilder Ruhe, damit der Grundriss steht. Unter
+`reduce` ist das sofort wahr, ohne `reduce` wartet es so lange wie nötig.
+Dieselben 147 Aufnahmen kosten jetzt **5,1 s statt 66**.
+
+### Und die zweite Zahl, an der ich mich verrechnet habe
+
+Auf dem Zahlenbildschirm stand `waitForTimeout(1500)` zwischen zwei
+Aufgaben. Wonach die Zahl gewählt war, stand nirgends. Ich habe 600 ms
+eingesetzt — und alle sieben Größen meldeten „nach zwölf Aufgaben kam
+keine zweistellige". Die Pause war nicht großzügig, sie war **nötig**, nur
+eben nicht in dieser Höhe messbar.
+
+Der Fehler war, überhaupt eine Zahl zu wählen. `aufloesen()` setzt die
+Frage auf `.loesung` und lässt sie stehen, bis die nächste Aufgabe den
+Bildschirm neu baut. Also: **keine `.loesung` mehr und wieder ein
+Schreibblatt da**. Das kann nicht zu kurz sein — und es ist schneller als
+1500 ms.
+
+### Gemessen
+
+```
+passt vorher      183,0 s   (7 × 25,7 s)
+passt nachher     110,0 s   (7 × 15,7 s)
+davon Warten        5,1 s   auf Ruhe, in 147 Aufnahmen
+davon blind         0,0 s   in 0 festen Pausen
+```
+
+Die Zeile „blind gewartet" steht in der Ausgabe, obwohl sie null zeigt.
+Das ist Absicht: eine feste Pause, die niemand sieht, wächst nach. Der
+Rauchtest führt dasselbe Konto seit langem, und dort steht es aus
+demselben Grund.
+
+### Was daran nicht gemessen ist
+
+Dass die Prüfung noch dieselbe ist. Eine Wartezeit zu kürzen ist die
+bequemste Art, ein Tor blind zu machen: es sieht den Bildschirm dann vor
+dem Umbruch und findet nichts mehr. Dagegen stehen die fünf Gegenproben
+von `passt` — ein zu breiter Knopf, zwei Kacheln übereinander, eine Karte
+außerhalb des Fensters, die Bühne ohne sicheren Bereich, zusammengerutschte
+Buchstabenkarten. Sie sind mit der neuen Bedingung gelaufen und schlagen
+alle noch an.
+
+### Und damit war die Breite des Beckens wieder falsch
+
+In P1 stand im Läufer **drei**, und das war damals richtig gemessen: `smoke`
+brauchte am Stück 295 s und war der Boden, unter den kein Becken kam —
+Becken 3 und 4 lagen auf 0,7 s gleichauf.
+
+Nach P2 und P3 ist die Kette nicht mehr durch **einen** langen Lauf
+begrenzt, sondern durch den Durchsatz. Damit zählt jedes weitere Band.
+Nachgemessen, alles am selben Tag auf demselben Rechner:
+
+```
+Becken 3   209,5 s
+Becken 4   171,3 s
+Becken 5   151,0 s
+Becken 6   130,3 s   <- eingestellt
+Becken 8   133,1 s
+```
+
+Mehr Bänder als Kerne, und es hilft trotzdem — diese Tore **rechnen** kaum,
+sie warten: auf einen Bildschirmwechsel, auf einen Selektor, auf den eigenen
+Server. Ab acht kippt es.
+
+Auf dem Runner sind es zwei Kerne. Übernommen wird deshalb nicht die Zahl,
+sondern ihr Verhältnis: anderthalb Bänder je Kern, höchstens sechs. Auf vier
+Kernen kommt genau die gemessene Sechs heraus, auf zweien drei. **Das ist
+eine Schätzung**, und sie steht auch so im Quelltext — die Laufzeit des
+Runners sagt, ob sie stimmt.
+
+### Wo die Kette jetzt steht
+
+```
+vor P1              633 s   alles nacheinander
+nach P1             308 s   Browsertore nebeneinander, Becken 3
+nach P2             238 s   smoke in drei Teilen
+nach P3             209 s   passt ohne blinde Pausen
+mit Becken 6        130 s
+```
+
+Der Boden ist jetzt `passt` mit 117 s allein. Wer weiter will, teilt es
+nach Größen auf — sieben, die nichts voneinander wissen.

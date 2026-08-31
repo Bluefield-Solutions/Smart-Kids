@@ -25,6 +25,9 @@
 //
 //     smoke 293 · passt 183 · ansicht 79 · ziehen 57 · lesbarkeit 9 · pwa 4
 //
+// Seit P2 zerfaellt `smoke` in drei Teile zu rund 100 s, seit P3 braucht
+// `passt` 110 statt 183 s.
+//
 // Die Kopfzeile von tools/schnell.mjs nannte bis dahin „passt 54 · smoke
 // 163": beides von einem anderen Rechner und aus einer Zeit vor P13/P14.
 // `passt` misst seit P14 JEDEN Knopf statt einer Auswahl, `smoke` hat
@@ -66,7 +69,7 @@ export const NACH_DEM_BAU = [
  */
 export const MIT_BROWSER = [
   { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000, teile: 3 },
-  { name: 'passt',      datei: 'tor/passt.mjs',      ms: 183000 },
+  { name: 'passt',      datei: 'tor/passt.mjs',      ms: 110000 },
   { name: 'ansicht',    datei: 'tor/ansicht.mjs',    ms:  79000, teile: 3 },
   { name: 'ziehen',     datei: 'tor/ziehen.mjs',     ms:  57000 },
   { name: 'lesbarkeit', datei: 'tor/lesbarkeit.mjs', ms:   9000 },

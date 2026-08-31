@@ -87,31 +87,43 @@ for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
  * acht Chromium gleichzeitig, und jeder waere langsamer als die Summe
  * spart.
  *
- * DREI, gemessen an der vollen Kette auf demselben Rechner am selben Tag:
+ * SECHS, gemessen an der vollen Kette auf demselben Rechner am selben Tag
+ * (vier Kerne), nach P2 und P3:
  *
- *     Becken 3   307,7 s   <- hier
- *     Becken 4   308,4 s
+ *     Becken 3   209,5 s
+ *     Becken 4   171,3 s
+ *     Becken 5   151,0 s
+ *     Becken 6   130,3 s   <- hier
+ *     Becken 8   133,1 s
  *
- * Das ist kein Gleichstand aus Zufall, sondern die Auskunft, wo der
- * Engpass liegt: `smoke` allein braucht 295 s, die ganze Kette 308. Auf
- * die zwei uebrigen Baender verteilen sich 337 s, also 222 auf dem
- * laengeren - immer noch unter `smoke`. Ein viertes Chromium kann deshalb
- * nichts mehr abkuerzen und kostet nur einen Kern. Und ein zweites reichte
- * nicht: dann laegen 337 s auf einem Band.
+ * In P1 stand hier DREI, und das war damals richtig: `smoke` brauchte am
+ * Stueck 295 s und war der Boden, unter den kein Becken kam - Becken 3 und
+ * 4 lagen auf 0,7 s gleichauf. Seit `smoke` in drei Teile zerfaellt und
+ * `passt` nicht mehr blind wartet, ist die Kette nicht mehr durch EINEN
+ * langen Lauf begrenzt, sondern durch den Durchsatz. Damit zaehlt jedes
+ * weitere Band. Eine gemessene Zahl gilt fuer den Tag, an dem sie
+ * gemessen wurde, und ihre Voraussetzungen gehoeren dazu.
  *
- * Der naechste Hebel ist also nicht die Breite, sondern `smoke` selbst -
- * seine vierzehn Abschnitte in Teillaeufe zerlegen, so wie `ansicht`
- * seine Aufnahmen. Das ist eine eigene Runde: `ablage` braucht `spielen`,
- * die Abschnitte sind also nicht frei schneidbar.
+ * Mehr Baender als Kerne, und es hilft trotzdem: diese Tore RECHNEN kaum,
+ * sie warten - auf einen Bildschirmwechsel, auf einen Selektor, auf den
+ * eigenen Server. Ab acht kippt es, dort war es wieder langsamer.
  *
- * Laengstes zuerst: sonst startet `smoke` mit seinen fuenf Minuten als
- * letztes, und alle anderen Kerne stehen still, waehrend es laeuft. */
-/* Auf dem Runner sind es zwei Kerne, nicht vier (`ubuntu-latest`). Drei
- * Chromium auf zwei Kernen waeren nicht schneller, sondern nur enger -
- * deshalb nie mehr Baender als Kerne. Nach oben bleibt es bei drei: das
- * vierte hat nichts mehr abgekuerzt (Messung oben). */
+ * Der Boden ist jetzt `passt` mit rund 112 s allein. Wer weiter will,
+ * teilt es nach Groessen auf - sieben, die nichts voneinander wissen.
+ *
+ * Laengstes zuerst: sonst startet der laengste Lauf als letzter, und alle
+ * anderen Baender stehen still, waehrend er laeuft. */
+/* Auf dem Runner sind es zwei Kerne, nicht vier (`ubuntu-latest`).
+ *
+ * Die sechs oben sind auf VIER Kernen gemessen; was auf zweien richtig
+ * waere, ist hier nicht zu messen. Deshalb wird nicht die Zahl uebernommen,
+ * sondern ihr Verhaeltnis: anderthalb Baender je Kern, hoechstens sechs.
+ * Auf vier Kernen kommt genau die gemessene Sechs heraus, auf zweien drei.
+ * Das ist eine Schaetzung und als solche gekennzeichnet - die Laufzeit des
+ * Runners sagt, ob sie stimmt. */
 const KERNE = os.cpus().length;
-const BREITE = +(process.env.SMARTKIDS_BECKEN || Math.max(2, Math.min(3, KERNE)));
+const BREITE = +(process.env.SMARTKIDS_BECKEN
+  || Math.max(2, Math.min(6, Math.round(KERNE * 1.5))));
 
 const arbeit = [];
 for (const t of (PROBE ? MIT_BROWSER.filter(t => t.name === 'pwa' || t.name === 'lesbarkeit')
