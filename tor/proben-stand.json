@@ -31,12 +31,16 @@
       "zeit": "2026-08-30"
     },
     "ein Anker liegt außerhalb seines Gebiets": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
-      "zeit": "2026-08-30"
+      "commit": "f6b9fe08ae5ff5416e4a79bbad40354fd8d400ab",
+      "zeit": "2026-08-31"
+    },
+    "ein Anker liegt im Loch seines Gebiets": {
+      "commit": "f6b9fe08ae5ff5416e4a79bbad40354fd8d400ab",
+      "zeit": "2026-08-31"
     },
     "das kleinste Gebiet verliert seinen Anker": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
-      "zeit": "2026-08-30"
+      "commit": "f6b9fe08ae5ff5416e4a79bbad40354fd8d400ab",
+      "zeit": "2026-08-31"
     },
     "eine Farbe am Markensystem vorbei": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
