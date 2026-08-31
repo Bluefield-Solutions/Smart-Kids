@@ -700,6 +700,28 @@ export const PROBEN = [
     an:{ datei:'tor/nadeln-stand.json', text:'"eng": 60' },
     sagt:'trifft den falschen' },
 
+  /* Ein Teillauf sagt nicht mehr, was er geprüft hat.
+   *
+   * Die Nachzaehlung im Laeufer war bis P4 nachsichtig: fand sie keine
+   * Zahl, ging sie stillschweigend darueber hinweg. Streng gemacht,
+   * meldete sie sofort einen echten Fall - `ansicht` laeuft auf dem
+   * Runner ausdruecklich nicht. Das ist jetzt unterschieden: „hat sich
+   * ÜBERSPRUNGEN" ist in Ordnung, „hat nichts gesagt" nicht.
+   *
+   * Diese Probe nimmt das Wort aus der Meldung. Damit sieht der Laeufer
+   * drei Teillaeufe, die weder eine Zahl noch einen Grund nennen - und
+   * genau das darf er nicht durchwinken.
+   *
+   * In P2 stand diese Nachzaehlung noch als ungedeckt aufgeschrieben,
+   * weil sie die volle Kette gebraucht haette. Seit die kurze Fassung
+   * `ansicht` mitfaehrt (uebersprungen, eine halbe Sekunde), geht es. */
+  { n:'ein Teillauf nennt weder seine Zahl noch einen Grund', tor:'tor', bauen:true,
+    stets:{ SMARTKIDS_KETTE_PROBE:'1' }, datei:'tor/ansicht.mjs',
+    such:"console.log('\\n  Tor `ansicht`: ÜBERSPRUNGEN.');",
+    ersatz:"console.log('\\n  Tor `ansicht`: laeuft hier nicht.');",
+    an:{ datei:'tor/ansicht.mjs', fehlt:'ÜBERSPRUNGEN' },
+    sagt:'kein Teillauf nennt seine Zahl' },
+
   /* Ein geteiltes Tor ohne Deckungsart.
    *
    * Seit P4 teilen sich drei Tore auf, und der Laeufer zaehlt bei jedem

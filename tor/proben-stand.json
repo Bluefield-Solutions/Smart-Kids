@@ -221,6 +221,10 @@
       "commit": "d700d7b77716f162edf6b950f7c735cfe4303287",
       "zeit": "2026-08-31"
     },
+    "ein Teillauf nennt weder seine Zahl noch einen Grund": {
+      "commit": "8f94df7e122e32ef84e98507621346ae0e3216f2",
+      "zeit": "2026-08-31"
+    },
     "ein geteiltes Tor sagt nicht, wie seine Deckung gezählt wird": {
       "commit": "d700d7b77716f162edf6b950f7c735cfe4303287",
       "zeit": "2026-08-31"

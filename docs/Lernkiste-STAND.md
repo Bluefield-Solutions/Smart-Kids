@@ -6203,3 +6203,39 @@ Die Formel bleibt trotzdem eine Formel und keine feste Sechs: sie soll auch
 stimmen, wenn der Runner sich ändert oder jemand das Verzeichnis auf einer
 kleineren Maschine fährt. Nur ist sie für den heutigen Runner keine
 Schätzung mehr.
+
+### Und der Runner hat sofort einen echten Fehler gefunden — meinen
+
+Der erste Lauf nach P4 war **rot**:
+
+```
+✗ ansicht: kein Teillauf nennt seine Zahl („der N Aufnahmen")
+  — die Nachzählung prüft nichts mehr.
+```
+
+Das ist mein eigener neuer Wächter, und er hatte halb recht. `ansicht`
+läuft auf dem Runner **ausdrücklich nicht** (`SMARTKIDS_OHNE_ANSICHT=1`):
+Bildpunktvergleiche gelten nur bei gleicher Zeichenumgebung. Bis P4 war die
+Nachzählung nachsichtig (`if (soll && …)`) und ging still darüber hinweg;
+streng gemacht, meldete sie den Fall sofort.
+
+Die Unterscheidung, die gefehlt hat: **„hat sich übersprungen" ist etwas
+anderes als „hat nichts gesagt".** `ansicht` sagt seit jeher laut
+ÜBERSPRUNGEN — daran wird es jetzt erkannt, nicht am Fehlen einer Zeile.
+Denn „hat nichts gesagt" ist ja gerade der Fall, den die Nachzählung fangen
+soll.
+
+Zwei Dinge daran sind bemerkenswert. Erstens hat die Auslieferung getan,
+wofür sie da ist: der Fehler kam nicht auf das Gerät der Kinder, weil nur
+bei Grün etwas nach `/` geht. Zweitens ist die Lücke aus P2 damit
+geschlossen — dort stand die Nachzählung im Läufer als **ungedeckt**
+aufgeschrieben, weil eine Gegenprobe die volle Kette gebraucht hätte. Die
+kurze Fassung fährt jetzt `ansicht` mit (übersprungen, eine halbe Sekunde),
+und eine Gegenprobe nimmt das Wort ÜBERSPRUNGEN aus der Meldung.
+
+```
+Lauf 80   P4, Becken 6   115 s bis zum Abbruch am Ende
+          smoke  104,0 · 99,3 · 102,5     passt  51,9 · 36,1 · 33,3
+```
+
+199 Gegenproben.

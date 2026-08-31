@@ -27,10 +27,17 @@ import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
  * Sache der Shell, jetzt ist sie meine. Eine Gegenprobe dafuer muesste
  * `npm run tor` fahren - fuenf Minuten je Probe, das faehrt niemand.
  *
- * Deshalb dieser Schalter: er faehrt NUR die beiden billigsten
- * Browsertore, und zwar nebeneinander im selben Becken wie sonst. Die
- * Gegenprobe macht `pwa` rot und erwartet, dass die Kette rot wird,
- * obwohl `lesbarkeit` daneben gruen bleibt.
+ * Deshalb dieser Schalter: er faehrt NUR die drei billigsten Browsertore,
+ * und zwar nebeneinander im selben Becken wie sonst. Die Gegenprobe macht
+ * `pwa` rot und erwartet, dass die Kette rot wird, obwohl `lesbarkeit`
+ * daneben gruen bleibt.
+ *
+ * `ansicht` ist seit P4 dabei, und der Schalter setzt dafuer selbst
+ * `SMARTKIDS_OHNE_ANSICHT` - dann kosten seine drei Teile eine halbe
+ * Sekunde statt fuenfundsiebzig. Damit ist auch die Nachzaehlung geprobt,
+ * die in P2 noch als ungedeckt aufgeschrieben war: eine Gegenprobe nimmt
+ * das Wort ÜBERSPRUNGEN aus seiner Meldung, und die Kette muss melden,
+ * dass kein Teillauf mehr seine Zahl nennt.
  *
  * Er nimmt bewusst KEINE Liste entgegen. Ein Schalter, mit dem man sich
  * Tore aussuchen kann, ist eine Art, die Kette still abzuschalten
@@ -38,6 +45,7 @@ import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
  * jedem Lauf laut dazu. Die Auslieferung setzt ihn nirgends.
  */
 const PROBE = process.env.SMARTKIDS_KETTE_PROBE === '1';
+if (PROBE) process.env.SMARTKIDS_OHNE_ANSICHT = '1';
 
 const t0 = Date.now();
 const befunde = [];
@@ -56,7 +64,8 @@ const abbruch = (r) => {
 
 console.log(PROBE
   ? `\n  ${rot('Torkette — KURZE Fassung (SMARTKIDS_KETTE_PROBE=1)')}\n`
-    + '  Nur `pwa` und `lesbarkeit`, nur für die Gegenprobe. Kein grüner Lauf.\n'
+    + '  Nur `pwa`, `lesbarkeit` und `ansicht` (übersprungen), nur für die '
+    + 'Gegenprobe. Kein grüner Lauf.\n'
   : '\n  Torkette — die volle Runde\n');
 
 // 1. Ohne Browser. Beim ersten Rot ist Schluss.
@@ -134,8 +143,8 @@ const BREITE = +(process.env.SMARTKIDS_BECKEN
   || Math.max(2, Math.min(6, Math.round(KERNE * 1.5))));
 
 const arbeit = [];
-for (const t of (PROBE ? MIT_BROWSER.filter(t => t.name === 'pwa' || t.name === 'lesbarkeit')
-                       : MIT_BROWSER)) {
+const KURZ = ['pwa', 'lesbarkeit', 'ansicht'];
+for (const t of (PROBE ? MIT_BROWSER.filter(t => KURZ.includes(t.name)) : MIT_BROWSER)) {
   if (!t.teile) { arbeit.push({ name: t.name, datei: t.datei, args: [], ms: t.ms }); continue; }
   for (let i = 0; i < t.teile; i++)
     arbeit.push({ name: `${t.name} (${i + 1}/${t.teile})`, datei: t.datei,
@@ -191,6 +200,24 @@ console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(24)} ${s(Date.now() - a
 for (const t of MIT_BROWSER.filter(x => x.teile)) {
   const teile = ergebnisse.filter(e => e.name.startsWith(`${t.name} (`));
   if (!teile.length) continue;
+  /* Ein Tor, das sich AUSDRUECKLICH uebersprungen hat, ist etwas anderes
+   * als eines, das nichts gesagt hat.
+   *
+   * `ansicht` laeuft auf dem Runner nicht (`SMARTKIDS_OHNE_ANSICHT=1`) -
+   * Bildpunktvergleiche gelten nur bei gleicher Zeichenumgebung. Es sagt
+   * das laut, mit dem Wort ÜBERSPRUNGEN, und genau daran wird es erkannt:
+   * nicht am Fehlen einer Zeile, denn „hat nichts gesagt" ist der Fall,
+   * den die Nachzaehlung fangen soll.
+   *
+   * Gefunden hat das der Runner selbst, im ersten Lauf nach P4: die
+   * Nachzaehlung war vorher nachsichtig (`if (soll && ...)`) und hat den
+   * Fall stillschweigend uebergangen. Streng gemacht, meldete sie ihn -
+   * zu Recht als Frage, zu Unrecht als Fehler. */
+  if (teile.every(e => /ÜBERSPRUNGEN/.test(e.aus))) {
+    console.log(`    ${''.padEnd(6)}${`${t.name}: übersprungen`.padEnd(24)} `
+      + `${teile.length} Teile, ausdrücklich`);
+    continue;
+  }
   if (t.deckung === 'namen') {
     const gefahren = new Set(), alle = new Set();
     for (const e of teile) {
