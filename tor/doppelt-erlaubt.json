@@ -1,87 +1,24 @@
 [
   {
     "dateien": "tor/proben-liste.mjs",
-    "zeilen": 105,
+    "token": 423,
     "wo": [
-      "tor/proben-liste.mjs:1111",
-      "tor/proben-liste.mjs:1122",
-      "tor/proben-liste.mjs:1132",
-      "tor/proben-liste.mjs:1141",
-      "tor/proben-liste.mjs:1147",
-      "tor/proben-liste.mjs:1157",
-      "tor/proben-liste.mjs:1168",
-      "tor/proben-liste.mjs:1217",
-      "tor/proben-liste.mjs:1222",
-      "tor/proben-liste.mjs:1225"
+      "tor/proben-liste.mjs:1139",
+      "tor/proben-liste.mjs:1150",
+      "tor/proben-liste.mjs:1160",
+      "tor/proben-liste.mjs:1169",
+      "tor/proben-liste.mjs:1175",
+      "tor/proben-liste.mjs:1185",
+      "tor/proben-liste.mjs:1196",
+      "tor/proben-liste.mjs:1245",
+      "tor/proben-liste.mjs:1250",
+      "tor/proben-liste.mjs:1253"
     ],
     "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken."
   },
   {
-    "dateien": "tor/smoke.mjs",
-    "zeilen": 43,
-    "wo": [
-      "tor/smoke.mjs:134",
-      "tor/smoke.mjs:143"
-    ],
-    "warum": "Zwei Leser derselben Backlog-Tabelle (`Aufgaben je Sitzung` und `Ländertiefe`) — Zeile suchen, Zahlen ziehen, auf die Profile verteilen. Gehört zu einem Helfer. Steht als P8."
-  },
-  {
-    "dateien": "src/inhalt/rechnen.js",
-    "zeilen": 33,
-    "wo": [
-      "src/inhalt/rechnen.js:233",
-      "src/inhalt/rechnen.js:354"
-    ],
-    "warum": "Zwei Aufgabenbauer (kleines und grosses Einmaleins) mit demselben Bauplan für id/frage/gesagt/geloest. Zusammenlegen ginge, kostet aber eine Abstraktion über zwei Fälle. Steht als P8."
-  },
-  {
-    "dateien": "src/inhalt/abzeichen.js",
-    "zeilen": 32,
-    "wo": [
-      "src/inhalt/abzeichen.js:114",
-      "src/inhalt/abzeichen.js:146"
-    ],
-    "warum": "Dieselbe Sache: die Abzeichentafel ist eine Tabelle, elf Zeilen mit ebene/id/zeichen/titel/waehlt. Wer eine Zeile liest, soll das ganze Abzeichen sehen und nicht drei Stellen aufsuchen müssen."
-  },
-  {
-    "dateien": "tor/smoke.mjs · tor/ziehen.mjs",
-    "zeilen": 26,
-    "wo": [
-      "tor/smoke.mjs:829",
-      "tor/ziehen.mjs:155"
-    ],
-    "warum": "Der Aufbau einer Spielseite. Der grössere Teil davon steht seit dieser Runde als `inEbene` in `chromium.mjs`; was hier übrig ist, ist der Rest davor und danach. Steht als P8."
-  },
-  {
-    "dateien": "prototyp/spiel.js",
-    "zeilen": 24,
-    "wo": [
-      "prototyp/spiel.js:2139",
-      "prototyp/spiel.js:2704"
-    ],
-    "warum": "Der Antwortweg (Auswahl oder Tippen) samt Mischen der Möglichkeiten, einmal für die Karte und einmal fürs Rechnen. Die beiden Bildschirme sind verschieden gebaut; die Stelle ist der Rest, der sich deckt. Steht als P8."
-  },
-  {
-    "dateien": "tor/ansicht.mjs · tor/smoke.mjs",
-    "zeilen": 18,
-    "wo": [
-      "tor/ansicht.mjs:275",
-      "tor/smoke.mjs:954"
-    ],
-    "warum": "Der gestellte Protokollstand — dieselben zwölf Antworten in zwei Toren. DAS gehört zusammengelegt: laufen sie auseinander, messen die beiden Tore verschiedene Elternberichte und keiner merkt es. Steht als P8."
-  },
-  {
-    "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",
-    "zeilen": 16,
-    "wo": [
-      "tools/backen-kontinente.mjs:7",
-      "tools/backen-laender.mjs:7"
-    ],
-    "warum": "Der Importblock zweier Backwerkzeuge, die dieselben acht Helfer aus `geo-backen.mjs` holen. Die geteilte Wahrheit steht schon dort; doppelt ist nur die Liste der Namen, und die kann nicht auseinanderlaufen."
-  },
-  {
     "dateien": "src/inhalt/schreiben.js",
-    "zeilen": 15,
+    "token": 262,
     "wo": [
       "src/inhalt/schreiben.js:185",
       "src/inhalt/schreiben.js:370"
@@ -89,27 +26,8 @@
     "warum": "Zweimal dieselbe Neuabtastung eines Striches auf n Punkte — einmal für die Vorlage, einmal für den gezeichneten Zug. Gehört zusammengelegt: eine Fassung, die anders abtastet als die andere, verzerrt jeden Vergleich. Steht als P8."
   },
   {
-    "dateien": "tools/backen-laender.mjs",
-    "zeilen": 14,
-    "wo": [
-      "tools/backen-laender.mjs:47",
-      "tools/backen-laender.mjs:51",
-      "tools/backen-laender.mjs:65"
-    ],
-    "warum": "Die Zielliste je Kontinent — wieder Daten in Tabellenform, zwölf Länder je Zeile. Sie steht hier, weil sie beim Backen gebraucht wird, und sie sieht sich ähnlich, weil sie fünfmal dasselbe Format hat."
-  },
-  {
-    "dateien": "tor/inhalt.mjs",
-    "zeilen": 13,
-    "wo": [
-      "tor/inhalt.mjs:1161",
-      "tor/inhalt.mjs:1220"
-    ],
-    "warum": "Zwei Leser derselben Konzepttabelle (Fionas Rechnen und Leas Reihen), die je fünf Zahlen aus benannten Zeilen ziehen. Steht als P8."
-  },
-  {
     "dateien": "src/inhalt/erdkunde.js",
-    "zeilen": 11,
+    "token": 250,
     "wo": [
       "src/inhalt/erdkunde.js:45",
       "src/inhalt/erdkunde.js:65",
@@ -118,17 +36,63 @@
     "warum": "Die fünf Länderlisten. Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben."
   },
   {
-    "dateien": "tor/ansicht.mjs · tor/ziehen.mjs",
-    "zeilen": 11,
+    "dateien": "tor/smoke.mjs",
+    "token": 238,
     "wo": [
-      "tor/ansicht.mjs:437",
+      "tor/smoke.mjs:136",
+      "tor/smoke.mjs:145"
+    ],
+    "warum": "Zwei Leser derselben Backlog-Tabelle (`Aufgaben je Sitzung` und `Ländertiefe`) — Zeile suchen, Zahlen ziehen, auf die Profile verteilen. Gehört zu einem Helfer. Steht als P8."
+  },
+  {
+    "dateien": "tools/backen-laender.mjs",
+    "token": 207,
+    "wo": [
+      "tools/backen-laender.mjs:47",
+      "tools/backen-laender.mjs:51",
+      "tools/backen-laender.mjs:65"
+    ],
+    "warum": "Die Zielliste je Kontinent — wieder Daten in Tabellenform, zwölf Länder je Zeile. Sie steht hier, weil sie beim Backen gebraucht wird, und sie sieht sich ähnlich, weil sie fünfmal dasselbe Format hat."
+  },
+  {
+    "dateien": "tor/ansicht.mjs · tor/ziehen.mjs",
+    "token": 176,
+    "wo": [
+      "tor/ansicht.mjs:434",
       "tor/ziehen.mjs:90"
     ],
     "warum": "Ziel und Anker aus der laufenden Seite lesen. Gehört zu `chromium.mjs`, wo `zielPunkt` und `inEbene` schon stehen. Steht als P8."
   },
   {
+    "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",
+    "token": 175,
+    "wo": [
+      "tools/backen-kontinente.mjs:7",
+      "tools/backen-laender.mjs:7"
+    ],
+    "warum": "Der Importblock zweier Backwerkzeuge, die dieselben acht Helfer aus `geo-backen.mjs` holen. Die geteilte Wahrheit steht schon dort; doppelt ist nur die Liste der Namen, und die kann nicht auseinanderlaufen."
+  },
+  {
+    "dateien": "src/inhalt/rechnen.js",
+    "token": 135,
+    "wo": [
+      "src/inhalt/rechnen.js:233",
+      "src/inhalt/rechnen.js:354"
+    ],
+    "warum": "Zwei Aufgabenbauer (kleines und grosses Einmaleins) mit demselben Bauplan für id/frage/gesagt/geloest. Zusammenlegen ginge, kostet aber eine Abstraktion über zwei Fälle. Steht als P8."
+  },
+  {
+    "dateien": "prototyp/spiel.js",
+    "token": 125,
+    "wo": [
+      "prototyp/spiel.js:2299",
+      "prototyp/spiel.js:3148"
+    ],
+    "warum": "Der Antwortweg (Auswahl oder Tippen) samt Mischen der Möglichkeiten, einmal für die Karte und einmal fürs Rechnen. Die beiden Bildschirme sind verschieden gebaut; die Stelle ist der Rest, der sich deckt. Steht als P8."
+  },
+  {
     "dateien": "entwuerfe/bauen.mjs · prototyp/bauen.mjs",
-    "zeilen": 6,
+    "token": 116,
     "wo": [
       "prototyp/bauen.mjs:45",
       "entwuerfe/bauen.mjs:40"
@@ -137,12 +101,38 @@
   },
   {
     "dateien": "prototyp/spiel.js · tor/schreiben.mjs",
-    "zeilen": 5,
+    "token": 113,
     "wo": [
-      "tor/schreiben.mjs:133",
-      "prototyp/spiel.js:2144",
-      "prototyp/spiel.js:2722"
+      "tor/schreiben.mjs:122",
+      "prototyp/spiel.js:1197"
     ],
-    "warum": "Mulberry32, der Würfel mit Saat — im Spiel zweimal und im Tor noch einmal. Die Fassung im TOR ist Absicht: sie rechnet die Reihenfolge nach, die das Spiel erzeugt, und wäre wertlos, wenn sie dieselbe Funktion aufriefe. Die beiden im Spiel gehören zusammen. Steht als P8."
+    "warum": "Mulberry32, der Würfel mit Saat — im Spiel EINMAL (seit P8) und im Tor noch einmal. Die Fassung im Tor ist Absicht: sie rechnet die Reihenfolge nach, die das Spiel erzeugt, und wäre wertlos, wenn sie dieselbe Funktion aufriefe. Ein Nachrechner, der die geprüfte Funktion benutzt, prüft nichts."
+  },
+  {
+    "dateien": "src/inhalt/abzeichen.js",
+    "token": 110,
+    "wo": [
+      "src/inhalt/abzeichen.js:114",
+      "src/inhalt/abzeichen.js:146"
+    ],
+    "warum": "Dieselbe Sache: die Abzeichentafel ist eine Tabelle, elf Zeilen mit ebene/id/zeichen/titel/waehlt. Wer eine Zeile liest, soll das ganze Abzeichen sehen und nicht drei Stellen aufsuchen müssen."
+  },
+  {
+    "dateien": "tor/inhalt.mjs",
+    "token": 107,
+    "wo": [
+      "tor/inhalt.mjs:1161",
+      "tor/inhalt.mjs:1220"
+    ],
+    "warum": "Zwei Leser derselben Konzepttabelle (Fionas Rechnen und Leas Reihen), die je fünf Zahlen aus benannten Zeilen ziehen. Steht als P8."
+  },
+  {
+    "dateien": "tor/smoke.mjs · tor/ziehen.mjs",
+    "token": 101,
+    "wo": [
+      "tor/smoke.mjs:831",
+      "tor/ziehen.mjs:155"
+    ],
+    "warum": "Der Aufbau einer Spielseite. Der grössere Teil davon steht seit dieser Runde als `inEbene` in `chromium.mjs`; was hier übrig ist, ist der Rest davor und danach. Steht als P8."
   }
 ]

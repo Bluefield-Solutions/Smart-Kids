@@ -862,7 +862,7 @@ die dasselbe tun, aber verschieden geschrieben sind, entgehen ihm.
 
 ---
 
-### P8 · Elf Dopplungen, die zusammengehören
+### P8 · Elf Dopplungen, die zusammengehören  ·  DREI ERLEDIGT
 
 Der erste Lauf von `doppelt` hat fünfzehn gefunden. Vier davon sind
 Tabellen, die sich naturgemäß wiederholen — die Probenliste, die
@@ -886,6 +886,49 @@ Arbeit, nicht Beschluss:
 | `rechnen.js` ×2 | zwei Aufgabenbauer mit demselben Bauplan |
 | `spiel.js` ×2 | der Antwortweg samt Mischen, für Karte und Rechnen |
 | `backen-kontinente` · `backen-laender` | der Importblock — der harmloseste |
+
+**Drei davon sind weg — und einer meiner Sätze oben war falsch.**
+
+Ich hatte geschrieben, `ansicht` und `smoke` trügen *denselben* gestellten
+Protokollstand. Beim Hinsehen stimmte das nicht: die beiden Listen sind
+verschieden lang und haben verschiedene Zeilen. Doppelt war zweierlei —
+**die Vorgaben eines Protokolleintrags** und **der Elternvergleich**.
+
+**1. Die Vorgaben.** `src/protokoll/protokoll.js` hat eine `eintrag()`, die
+weiss, was ein Eintrag braucht. Beide Tore haben sie nachgebaut:
+`roheingabe: ''`, `sicherheit: null`, `fachVorher`, `fachNachher`. Wäre dort
+ein Feld dazugekommen, hätten beide einen Bildschirm gemessen, den es so
+nicht gibt. Beide rufen jetzt `eintrag()` auf.
+
+Dabei fiel `modul: 'erdkunde'` auf: geschrieben, **nie gelesen** — nicht im
+Elternbericht, nicht in der CSV-Ausfuhr — und seit C1 auch noch falsch, weil
+Fionas Rechenaufgaben damit als Erdkunde protokolliert wurden. Es ist raus.
+Wer das Modul braucht, liest es aus `ebene`; dort steht es richtig.
+
+**2. Der Elternvergleich.** *Das* war wirklich zweimal da: Stephan zwei von
+drei, Violeta eins von zwei. `ansicht` fotografiert die Tabelle, `smoke`
+rechnet sie nach — laufen die Zeilen auseinander, zeigt das Bild etwas, das
+niemand mehr prüft. Beide lesen jetzt `ELTERN_VERGLEICH` aus
+`tor/gestellt.mjs`.
+
+Beim Zusammenlegen kam sofort „0 von 3" heraus: `versuch` stand als Vorgabe
+im Tor, und das eine Tor setzte sie, das andere nicht. „Auf Anhieb oder
+nicht" **ist** der gestellte Fall — es steht jetzt an jeder Zeile der
+Vorlage, auch die Einsen.
+
+**3. Mulberry32 im Spiel.** Zweimal derselbe Würfel, und die eine Fassung
+sagte es sogar selbst: „derselbe Mulberry32 wie bei den Hauptstädten". Jetzt
+einmal. Die dritte Fassung im Tor `schreiben` bleibt mit Absicht: ein
+Nachrechner, der die geprüfte Funktion aufruft, prüft nichts.
+
+**Und das Tor hat dabei seine eigene Zahl korrigiert.** Es meldete
+„von 5 auf 33 Zeilen gewachsen", nachdem ich Mulberry32 zusammengelegt und
+einen erklärenden Absatz darüber geschrieben hatte — gewachsen war nur meine
+Erklärung. Gezählt werden jetzt **Token**, also das, was wirklich verglichen
+wurde. Eine Zahl, die auf Kommentare anschlägt, erzieht dazu, keine zu
+schreiben.
+
+Bleiben acht.
 
 ---
 

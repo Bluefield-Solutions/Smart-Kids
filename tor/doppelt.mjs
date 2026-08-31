@@ -165,18 +165,26 @@ for (const orte of roh.sort((a, b) => a[0].i - b[0].i)) {
 // doppelt, ist EIN Eintrag in der Liste - sonst pflegt sie niemand.
 const paare = new Map();
 for (const g of gruppen) {
-  const n = Math.max(...g.orte.map(o => o.bis - o.von + 1));
+  /* Gezaehlt werden TOKEN, nicht Zeilen.
+   *
+   * Der erste Anlauf meldete die Zeilenspanne - und die zaehlt Kommentare
+   * mit, die dazwischenstehen. Als ich Mulberry32 im Spiel zusammengelegt
+   * und einen erklaerenden Absatz darueber geschrieben habe, meldete das
+   * Tor prompt „von 5 auf 33 Zeilen gewachsen": es war nichts gewachsen
+   * ausser meiner Erklaerung. Eine Zahl, die auf Kommentare anschlaegt,
+   * erzieht dazu, keine zu schreiben. */
+  const n = Math.max(...g.orte.map(o => o.iBis - o.i + FENSTER));
   const da = paare.get(g.schluessel);
-  if (!da || n > da.zeilen) paare.set(g.schluessel, { ...g, zeilen: n });
+  if (!da || n > da.token) paare.set(g.schluessel, { ...g, token: n });
 }
-const befunde = [...paare.values()].sort((a, b) => b.zeilen - a.zeilen);
+const befunde = [...paare.values()].sort((a, b) => b.token - a.token);
 
 /* --- Urteilen --------------------------------------------------------- */
 console.log('\n  Tor `doppelt`   (was zweimal dasteht, veraltet einmal)\n');
 
 if (NEU) {
   fs.writeFileSync(ERLAUBT, JSON.stringify(befunde.map(g => ({
-    dateien: g.schluessel, zeilen: g.zeilen,
+    dateien: g.schluessel, token: g.token,
     wo: g.orte.map(o => `${o.datei}:${o.von}`),
     warum: 'NOCH NICHT BEGRÜNDET — hier hingehört ein Satz, warum es zweimal dastehen darf',
   })), null, 2) + '\n');
@@ -192,7 +200,7 @@ for (const g of befunde) {
   const e = nach.get(g.schluessel);
   const wo = g.orte.map(o => `${o.datei}:${o.von}`).join(' · ');
   if (!e) {
-    fehler.push(`${g.zeilen} Zeilen stehen zweimal — ${wo}. Entweder zusammenlegen, oder in `
+    fehler.push(`${g.token} Token stehen zweimal — ${wo}. Entweder zusammenlegen, oder in `
       + `${ERLAUBT} eintragen und HINSCHREIBEN, warum es zweimal dastehen darf`);
     continue;
   }
@@ -200,10 +208,10 @@ for (const g of befunde) {
   if (/NOCH NICHT BEGRÜNDET/.test(e.warum))
     fehler.push(`die Dopplung ${wo} steht in ${ERLAUBT}, aber ohne Begründung — `
       + 'ein Eintrag ohne Satz ist ein Freibrief, kein Beschluss');
-  else if (g.zeilen > e.zeilen + 2)
-    fehler.push(`die eingetragene Dopplung „${e.warum.slice(0, 48)}…" ist von ${e.zeilen} `
-      + `auf ${g.zeilen} Zeilen gewachsen — ${wo}`);
-  else console.log(`      ${String(g.zeilen).padStart(3)} Zeilen  ${wo}\n`
+  else if (g.token > e.token + 10)
+    fehler.push(`die eingetragene Dopplung „${e.warum.slice(0, 48)}…" ist von ${e.token} `
+      + `auf ${g.token} Token gewachsen — ${wo}`);
+  else console.log(`      ${String(g.token).padStart(4)} Token  ${wo}\n`
     + `                  ${e.warum}`);
 }
 for (const e of erlaubt)

@@ -5,6 +5,8 @@ import { istUmgekehrt, zeigeAufKarte, zielPunkt } from './chromium.mjs';
 import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
          schreibVorlage, zeichneZug } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
+import * as Protokoll from '../src/protokoll/protokoll.js';
+import { ELTERN_VERGLEICH } from './gestellt.mjs';
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
@@ -952,15 +954,13 @@ if (laeuft('ablage')) try {
    * daran haengt der ganze Vergleich. */
   {
     const T = Date.UTC(2026, 0, 15, 15, 30, 0);
-    const mitschnitt = [
-      { profil:'stephan', ebene:'rechnen:gross', gebietId:'g12*13', ergebnis:'richtig', versuch:1 },
-      { profil:'stephan', ebene:'rechnen:gross', gebietId:'q17',    ergebnis:'richtig', versuch:1 },
-      { profil:'stephan', ebene:'rechnen:gross', gebietId:'g13*17', ergebnis:'richtig', versuch:2 },
-      { profil:'violeta', ebene:'rechnen:gross', gebietId:'g12*13', ergebnis:'richtig', versuch:1 },
-      { profil:'violeta', ebene:'rechnen:gross', gebietId:'q17',    ergebnis:'gezeigt', versuch:3 },
-    ].map((e, i) => ({ zeit: T + i*1000, modul:'rechnen', eingabeart:'tippen',
-                       roheingabe:'', sicherheit:null, dauerMs:4000,
-                       fachVorher:1, fachNachher:2, ...e }));
+    /* Dieselben fuenf Zeilen, die `ansicht` fotografiert - aus
+       `gestellt.mjs`. Der Vergleich und sein Bild muessen dieselbe Sache
+       zeigen (P8). */
+    const mitschnitt = ELTERN_VERGLEICH
+      // Gebaut von `Protokoll.eintrag`, nicht daneben nachgebaut (P8).
+      .map((e, i) => Protokoll.eintrag({ zeit: T + i*1000, eingabeart:'tippen',
+                                         fachVorher:1, fachNachher:2, ...e }));
     const v = await neueSeite({ width: 1180, height: 820 }, ctx);
     await v.evaluate((eintraege) => new Promise((ja, nein) => {
       const auf = indexedDB.open('lernkiste', 1);

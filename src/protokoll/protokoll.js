@@ -7,9 +7,22 @@
  */
 import * as A from '../profil/ablage.js';
 
+/* Ein Eintrag - EINE Stelle, die weiss, was einer braucht.
+ *
+ * Bis P8 haben `tor/ansicht.mjs` und `tor/smoke.mjs` diese Vorgaben
+ * nachgebaut, statt sie zu benutzen: zweimal `roheingabe: ''`,
+ * `sicherheit: null`, `fachVorher`, `fachNachher`. Waere hier ein Feld
+ * dazugekommen, haetten beide Tore einen Bildschirm gemessen, den es so
+ * nie gibt. Gefunden hat es `npm run doppelt`.
+ *
+ * `modul: 'erdkunde'` ist raus. Es wurde geschrieben und NIE gelesen -
+ * nicht im Elternbericht, nicht in der CSV-Ausfuhr - und es stand seit
+ * C1 auch noch falsch da: Fionas Rechenaufgaben trugen `erdkunde`. Wer
+ * das Modul braucht, liest es aus `ebene`; dort steht es richtig.
+ */
 export function eintrag(x) {
   return {
-    zeit: x.zeit, profil: x.profil, modul: 'erdkunde', ebene: x.ebene, gebietId: x.gebietId,
+    zeit: x.zeit, profil: x.profil, ebene: x.ebene, gebietId: x.gebietId,
     eingabeart: x.eingabeart, ergebnis: x.ergebnis,
     roheingabe: x.roheingabe ?? '', sicherheit: x.sicherheit ?? null,
     dauerMs: x.dauerMs, versuch: x.versuch,

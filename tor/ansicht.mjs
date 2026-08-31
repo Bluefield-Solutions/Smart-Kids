@@ -17,6 +17,8 @@ import { PNG } from 'pngjs';
 import { starte, zurEbenenwahl, durchVorlauf, serviere,
          schreibVorlage, zeichneZug, istUmgekehrt, zeigeAufKarte } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
+import * as Protokoll from '../src/protokoll/protokoll.js';
+import { ELTERN_VERGLEICH } from './gestellt.mjs';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
 // nichts zurueck und der Prototyp startet jedesmal anders. Also derselbe
@@ -279,23 +281,18 @@ const PROTOKOLL = [
   { profil:'fiona', ebene:'kontinente',    gebietId:'asien',   ergebnis:'richtig', dauerMs:3800 },
   { profil:'lea',   ebene:'laender:europa',gebietId:'POL',     ergebnis:'falsch',  dauerMs:6200 },
   { profil:'lea',   ebene:'laender:europa',gebietId:'POL',     ergebnis:'richtig', dauerMs:2900 },
-  /* Und die beiden Elternprofile (N1) - mit VERSCHIEDENEN Ergebnissen.
-   *
-   * Der Vergleichsbildschirm zaehlt, was beim ERSTEN Versuch richtig war.
-   * Traegen beide dieselben Zahlen, zeigt die Aufnahme zwar eine Tabelle,
-   * aber nicht, was sie kann: welche Zeile hervorgehoben wird und wer vorn
-   * liegt, waere auf jedem Bild dasselbe. Also: Stephan hat zwei glatt und
-   * eine nach dem zweiten Versuch, Violeta eine glatt und eine gezeigt. */
-  { profil:'stephan',ebene:'rechnen:gross', gebietId:'g12*13', ergebnis:'richtig', dauerMs:4300 },
-  { profil:'stephan',ebene:'rechnen:gross', gebietId:'q17',    ergebnis:'richtig', dauerMs:5100 },
-  { profil:'stephan',ebene:'laender:europa',gebietId:'POL',    ergebnis:'richtig',
-    versuch:2, dauerMs:8200 },
-  { profil:'violeta',ebene:'rechnen:gross', gebietId:'g13*17', ergebnis:'richtig', dauerMs:3600 },
-  { profil:'violeta',ebene:'laender:europa',gebietId:'ESP',    ergebnis:'gezeigt',
-    versuch:3, dauerMs:11400 },
-].map((e, i) => ({ zeit: T0 + i * 60000, modul:'erdkunde', eingabeart:'ziehen',
-                   roheingabe:'', sicherheit:null, versuch:1,
-                   fachVorher:1, fachNachher:2, ...e }));
+  /* Und die beiden Elternprofile (N1): Stephan zwei von drei, Violeta eins
+     von zwei. Die fuenf Zeilen stehen in `gestellt.mjs`, weil der
+     Rauchtest genau diesen Vergleich NACHRECHNET - laufen sie
+     auseinander, zeigt dieses Bild etwas, das dort nicht mehr geprueft
+     wird (P8). */
+  ...ELTERN_VERGLEICH,
+/* Gebaut wird der Eintrag von `Protokoll.eintrag` - der Stelle, die im
+   SPIEL weiss, was einer braucht. Hier standen die Vorgaben ein zweites
+   Mal; waere dort ein Feld dazugekommen, haette diese Aufnahme einen
+   Bildschirm gezeigt, den es nicht gibt (P8). */
+].map((e, i) => Protokoll.eintrag({ zeit: T0 + i * 60000, eingabeart:'ziehen',
+                                    versuch:1, fachVorher:1, fachNachher:2, ...e }));
 
 /**
  * Bringt den Spielbildschirm in einen Zustand, den es sonst nur mit dem

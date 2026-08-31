@@ -1209,6 +1209,25 @@ function erreichbar(ebeneId){
    `kreisPx` haelt je Gebiet den Durchmesser seiner entkoppelten
    Trefferflaeche in Bildpunkten, so wie `trefferflaechen()` ihn zuletzt
    gerechnet hat. Kein Eintrag heisst: gross genug, es braucht keine. */
+/* Mulberry32: der Würfel mit Saat.
+ *
+ * Stand zweimal im Spiel, und die eine Fassung sagte es sogar selbst -
+ * „derselbe Mulberry32 wie bei den Hauptstädten". Das Tor `doppelt` hat
+ * beide gefunden.
+ *
+ * Warum nicht `Math.random`: die Reihenfolge der Möglichkeiten muss aus dem
+ * Keim der Sitzung folgen, sonst steht bei jedem Neuzeichnen etwas anderes
+ * da. Und warum nicht ein einfacher Kongruenzgenerator: der legte die
+ * richtige Antwort zehnmal hintereinander auf Platz 2 oder 3. Mulberry32
+ * verwürfelt den Keim, bevor er zählt. Gefunden hat das der Rauchtest,
+ * nicht das Auge.
+ */
+const rnd = (k)=>{ let x=k>>>0; return ()=>{
+  x=(x+0x6D2B79F5)>>>0;
+  let t=Math.imul(x^(x>>>15), 1|x);
+  t=(t+Math.imul(t^(t>>>7), 61|t))^t;
+  return ((t^(t>>>14))>>>0)/4294967296; }; };
+
 const MIN_PT = 44, MIN_REST = 20;
 const kreisPx = new Map();
 /* Kann man dieses Gebiet ueberhaupt antippen?
@@ -2138,14 +2157,6 @@ function rechenschirm(){
   const kannTippen = P.eingabe.includes('tippen');
   let weise = kannTippen ? (Einst.rechenweise?.[P.id] || 'tippen') : 'auswahl';
 
-  // Derselbe Mulberry32 wie bei den Hauptstädten, aus demselben Grund: ein
-  // einfacher LCG legte die richtige Antwort zehnmal hintereinander auf
-  // Platz 2 oder 3.
-  const rnd = (k)=>{ let x=k>>>0; return ()=>{
-    x=(x+0x6D2B79F5)>>>0;
-    let t=Math.imul(x^(x>>>15), 1|x);
-    t=(t+Math.imul(t^(t>>>7), 61|t))^t;
-    return ((t^(t>>>14))>>>0)/4294967296; }; };
   const r1 = rnd(st.keim + st.i*7919);
   // `ablenkerFuer` entscheidet, nicht dieser Bildschirm: Plus und Minus
   // haben andere Versuchungen als das Einmaleins, aber das ist eine
@@ -2717,13 +2728,6 @@ function spielschirm(){
   // gleichen Land -, und die Aufgabe war trotzdem kaputt: wer raet, raet
   // in der Mitte.
   //
-  // Mulberry32 verwuerfelt den Keim erst, bevor er zaehlt. Gefunden hat das
-  // der Rauchtest, nicht das Auge.
-  const rnd = (k)=>{ let x=k>>>0; return ()=>{
-    x=(x+0x6D2B79F5)>>>0;
-    let t=Math.imul(x^(x>>>15), 1|x);
-    t=(t+Math.imul(t^(t>>>7), 61|t))^t;
-    return ((t^(t>>>14))>>>0)/4294967296; }; };
   const misch=(a,r)=>{ const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; };
   const r1 = rnd(st.keim + st.i*7919);
   let kand;
