@@ -1781,4 +1781,81 @@ export const PROBEN = [
     ersatz:'  if (false) pokalSetzen(st.ebeneId,',
     an:{ ...DIST, text:'if (false) pokalSetzen(st.ebeneId,' },
     sagt:'Pokal' },
+
+  /* --- G12: die Profilfarben und der Streu ---------------------------
+   *
+   * Acht Proben, eine je Pruefung. Die erste ist die wichtigste: der
+   * WUNSCH war die Farbe. Alles andere ist Schmuck, den man beim
+   * Verschieben kaputtmacht, ohne es zu merken.
+   */
+
+  { n:'Fiona ist wieder pink statt türkis', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:"streng:false, ton:'kind', farbe:'--f4' }",
+    ersatz:"streng:false, ton:'kind', farbe:'--f7' }",
+    an:{ ...DIST, text:"streng:false, ton:'kind', farbe:'--f7' }" },
+    sagt:'nicht türkis' },
+
+  // Zwei Kinder mit fast derselben Farbe - das faengt kein Farbband,
+  // sondern nur der Abstand zwischen den vieren.
+  { n:'zwei Profile bekommen fast denselben Farbton', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:"kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f3' }",
+    ersatz:"kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f4' }",
+    an:{ ...DIST, text:"streng:true, ton:'kind', farbe:'--f4' }" },
+    sagt:'fast denselben Farbton' },
+
+  // Der Streu wandert auf die Elternkacheln. Ohne diese Probe bezeugt
+  // „Fiona hat einen" nur, dass irgendwo Markup steht.
+  { n:'auch die Eltern bekommen einen Streu', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:'  const tafel = STREU[profilId];',
+    ersatz:'  const tafel = STREU[profilId] || STREU.lea;',
+    an:{ ...DIST, text:'const tafel = STREU[profilId] || STREU.lea;' },
+    sagt:'der Streu gehört den Kindern' },
+
+  { n:'Fionas Streu hat nur noch eine Farbe', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:'color:var(${farbe})">`',
+    ersatz:'color:var(--streu-rot)">`',
+    an:{ ...DIST, text:'color:var(--streu-rot)">`' },
+    sagt:'verschiedene Farben' },
+
+  // Nur die Schildkroeten verlieren ihre Farben - die anderen Motive
+  // behalten ihre. Die Probe darueber wuerde das nicht bemerken.
+  { n:'die Schildkröten sind wieder alle gleich', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:"    ['schildkroete', 88, 27, 'k', -22, '--streu-orange'],\n    ['schildkroete', 66, 37, 'k',  10, '--streu-lila'],",
+    ersatz:"    ['schildkroete', 88, 27, 'k', -22, '--streu-leuchtgruen'],\n    ['schildkroete', 66, 37, 'k',  10, '--streu-leuchtgruen'],",
+    an:{ ...DIST, fehlt:"['schildkroete', 66, 37, 'k',  10, '--streu-lila']" },
+    sagt:'Schildkrötenfarbe' },
+
+  // Ein Motiv faellt aus der Tafel. Ohne die Liste der Sollmotive im
+  // Rauchtest waere das lautlos: acht statt neun Arten sieht niemand.
+  { n:'ein Motiv fällt aus Fionas Streu', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:"    ['wal',          21, 48, 'm',  -6, '--streu-blau'],\n",
+    ersatz:'',
+    an:{ ...DIST, fehlt:"['wal',          21, 48, 'm',  -6, '--streu-blau']" },
+    sagt:'fehlen Motive' },
+
+  // Die Augen verlieren ihren Verlauf. In Chromium werden sie dann
+  // SCHWARZ - und ein schwarzes Auge in einem Totenkopf sieht nicht nach
+  // einem Fehler aus, sondern nach Absicht.
+  { n:'die Augen der Totenköpfe verlieren ihren Verlauf', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:D,
+    such:"  const augeId = `auge-${profilId}`;",
+    ersatz:"  const augeId = `auge-${profilId}-x`;",
+    an:{ ...DIST, text:'auge-${profilId}-x' },
+    sagt:'Verlauf' },
+
+  // Und der Streu faengt den Finger. Das ist der eine Fehler, der nicht
+  // haesslich aussieht, sondern das Spiel unerreichbar macht: getippt
+  // wird auf das grosse bunte Bild.
+  { n:'der Streu fängt den Finger', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:V,
+    such:'.kachel .streu{position:absolute;inset:0;pointer-events:none;',
+    ersatz:'.kachel .streu{position:absolute;inset:0;pointer-events:auto;',
+    an:{ ...DIST, text:'.kachel .streu{position:absolute;inset:0;pointer-events:auto;' },
+    sagt:'fängt den Finger' },
 ];

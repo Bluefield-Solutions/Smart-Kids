@@ -599,7 +599,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
-  'test',
+  'test', 'streu',
                     'pausen', 'schreiben', 'hinweis', 'sprechen'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
@@ -3142,6 +3142,152 @@ if (laeuft('umgekehrt')) try {
   }
   await p.close();
 } catch (e) { merke('umgekehrt', e); }
+
+/* --- Der Streu auf den Profilkacheln (G12) ---------------------------
+ *
+ * Was hier wirklich geprueft wird, ist nicht „es sind Bilder da". Das
+ * waere in dem Moment gruen, in dem irgendwo irgendetwas steht.
+ *
+ * Geprueft wird VIERERLEI, und jedes davon hat einen Gegenfall:
+ *   - Fiona hat viele verschiedene Motive in vielen verschiedenen Farben,
+ *     die Schildkroeten allein in mehreren - danach war gefragt;
+ *   - Lea hat Totenkoepfe, und deren Augen haben wirklich den Verlauf
+ *     (eine `url(#...)`, die ins Leere zeigt, faerbt in Chromium
+ *     schwarz und faellt sonst niemandem auf);
+ *   - die ELTERN haben keinen. Ohne diesen Fall bezeugt „Fiona hat
+ *     einen" nur, dass irgendwo Markup steht;
+ *   - kein Motiv liegt auf dem NAMEN, und die Kachel bleibt ueberall
+ *     antippbar. Beides ist beim Hinsehen entschieden worden (drei
+ *     Motive sind dafuer umgezogen) - und beides waere beim naechsten
+ *     Verschieben still wieder kaputt.
+ */
+if (laeuft('streu')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.waitForSelector('.kachel.wer');
+
+  /* --- Die Profilfarben ------------------------------------------------
+   *
+   * Der eigentliche Wunsch war die FARBE, nicht der Streu: Fiona
+   * tuerkis, Lea hellgruen, Stephan blau. Ein Tausch von Marken ist eine
+   * Zeile, faellt beim Lesen des Diffs nicht auf und wird von keinem
+   * anderen Tor bemerkt - `lesbarkeit` misst Kontrast, und der ist bei
+   * allen sieben Flaechen derselbe.
+   *
+   * Gemessen wird am BILD, nicht an der Marke: `--f4` sagt nichts
+   * darueber, welche Farbe herauskommt. Der Farbton wird aus dem
+   * gerechneten Grund des Kreises gelesen.
+   *
+   * Die Baender sind eng, und das ist eine Auskunft: Fiona (169 Grad) und
+   * Stephan (197) liegen nur 28 Grad auseinander. Sie stehen nicht
+   * nebeneinander, und Fionas Kachel ist voller Meerestiere - aber wer
+   * die Baender das naechste Mal weitet, soll wissen, was er weitet.
+   */
+  const SOLL_TON = { fiona:[150,190,'türkis'], lea:[70,145,'hellgrün'],
+                     stephan:[190,228,'blau'], violeta:[228,290,'violett'] };
+  const toene = await p.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = c.height = 1;
+    const g = c.getContext('2d', { willReadFrequently: true });
+    // Den Farbton vom BROWSER rechnen lassen: `getComputedStyle` liefert
+    // bei einer oklch-Marke auch oklch zurueck, und ein Zahlenleser darauf
+    // laege daneben (derselbe Fehler hat in `lesbarkeit` 34 Fehler
+    // gemeldet, die es nicht gab).
+    const ton = (s) => {
+      g.fillStyle = '#000'; g.fillStyle = s; g.fillRect(0, 0, 1, 1);
+      const d = g.getImageData(0, 0, 1, 1).data;
+      const [r, gr, bl] = [d[0]/255, d[1]/255, d[2]/255];
+      const mx = Math.max(r, gr, bl), mn = Math.min(r, gr, bl);
+      if (mx === mn) return -1;
+      const dd = mx - mn;
+      const h = mx === r ? ((gr-bl)/dd + (gr<bl?6:0)) : mx === gr ? ((bl-r)/dd+2) : ((r-gr)/dd+4);
+      return Math.round(h * 60);
+    };
+    return Object.fromEntries(['fiona','lea','stephan','violeta'].map(id => [id,
+      ton(getComputedStyle(document.querySelector(`[data-profil="${id}"] .kreis`))
+        .backgroundColor)]));
+  });
+  for (const [id, [von, bis, wie]] of Object.entries(SOLL_TON))
+    if (!(toene[id] >= von && toene[id] <= bis)) merke('streu', new Error(
+      `${id} ist mit Farbton ${toene[id]} nicht ${wie} (erwartet ${von} bis ${bis} Grad)`));
+  // Und keine zwei duerfen sich aehneln - vier Kacheln, vier Farben.
+  const ids = Object.keys(SOLL_TON);
+  for (let i = 0; i < ids.length; i++) for (let j = i+1; j < ids.length; j++) {
+    const d = Math.abs(toene[ids[i]] - toene[ids[j]]);
+    if (Math.min(d, 360 - d) < 20) merke('streu', new Error(
+      `${ids[i]} und ${ids[j]} haben fast denselben Farbton (${toene[ids[i]]} und ${toene[ids[j]]})`));
+  }
+
+  const bild = await p.evaluate(() => {
+    const farbe = (e) => getComputedStyle(e).color;
+    const kachel = (id) => document.querySelector(`[data-profil="${id}"]`);
+    const motive = (id) => [...kachel(id).querySelectorAll('.streu i')]
+      .map(e => ({ art: e.dataset.motiv, farbe: farbe(e) }));
+    const auge = document.querySelector('#auge-lea');
+    // Liegt eine Motivmitte im Kasten des Namens?
+    const aufDemNamen = (id) => {
+      const n = kachel(id).querySelector('.name').getBoundingClientRect();
+      return [...kachel(id).querySelectorAll('.streu i')].filter(e => {
+        const r = e.getBoundingClientRect();
+        const mx = r.left + r.width / 2, my = r.top + r.height / 2;
+        return mx >= n.left && mx <= n.right && my >= n.top && my <= n.bottom;
+      }).map(e => e.dataset.motiv);
+    };
+    const f = motive('fiona'), l = motive('lea');
+    return {
+      fionaArten: [...new Set(f.map(x => x.art))].sort(),
+      fionaFarben: new Set(f.map(x => x.farbe)).size,
+      kroetenFarben: new Set(f.filter(x => x.art === 'schildkroete').map(x => x.farbe)).size,
+      leaArten: [...new Set(l.map(x => x.art))],
+      leaZahl: l.length,
+      augeStops: auge ? auge.querySelectorAll('stop').length : -1,
+      augeGefuellt: l.length
+        ? getComputedStyle(kachel('lea').querySelector('.streu ellipse')).fill : '',
+      eltern: ['stephan', 'violeta'].map(id => kachel(id).querySelectorAll('.streu i').length),
+      aufNamen: { fiona: aufDemNamen('fiona'), lea: aufDemNamen('lea') },
+    };
+  });
+
+  const sollFiona = ['fisch','herz','muschel','qualle','schildkroete','schnecke',
+                     'seestern','stern','wal'];
+  const fehlt = sollFiona.filter(x => !bild.fionaArten.includes(x));
+  if (fehlt.length) merke('streu', new Error(
+    `auf Fionas Kachel fehlen Motive: ${fehlt.join(', ')}`));
+  if (bild.fionaFarben < 6) merke('streu', new Error(
+    `Fionas Streu hat nur ${bild.fionaFarben} verschiedene Farben — gewünscht waren viele`));
+  if (bild.kroetenFarben < 3) merke('streu', new Error(
+    `nur ${bild.kroetenFarben} Schildkrötenfarbe(n) — gewünscht waren mehrere`));
+  if (bild.leaArten.join() !== 'totenkopf' || bild.leaZahl < 8) merke('streu', new Error(
+    `Leas Kachel trägt ${bild.leaZahl} × ${bild.leaArten.join('/') || 'nichts'}, `
+    + 'erwartet mindestens 8 Totenköpfe und nichts anderes'));
+  if (bild.augeStops < 2) merke('streu', new Error(
+    'der Verlauf für die Augen fehlt — sie wären einfarbig oder schwarz'));
+  if (!/url\(/.test(bild.augeGefuellt)) merke('streu', new Error(
+    `die Augen sind mit „${bild.augeGefuellt}" gefüllt, nicht mit dem Verlauf`));
+  if (bild.eltern.some(n => n > 0)) merke('streu', new Error(
+    `die Eltern haben ${bild.eltern.join(' und ')} Motive — der Streu gehört den Kindern`));
+  for (const [wer, drauf] of Object.entries(bild.aufNamen))
+    if (drauf.length) merke('streu', new Error(
+      `auf ${wer}s Namen liegt ${drauf.join(', ')} — der Name muss frei bleiben`));
+
+  /* Und die Kachel bleibt ueberall antippbar. Getippt wird MITTEN auf die
+     grosse Muschel: ohne `pointer-events:none` faengt sie den Finger, und
+     das Kind kommt an der einen Stelle nicht ins Spiel, an der es am
+     ehesten hintippt - auf das grosse bunte Bild. */
+  const muschel = await p.$('[data-profil="fiona"] [data-motiv="muschel"]');
+  const k = await muschel.boundingBox();
+  await p.mouse.click(k.x + k.width / 2, k.y + k.height / 2);
+  const durch = await p.waitForSelector('[data-welt]', { timeout: 8000 })
+    .then(() => true).catch(() => false);
+  if (!durch) merke('streu', new Error(
+    'ein Tipp auf die große Muschel kommt nicht ins Spiel — der Streu fängt den Finger'));
+
+  console.log('  Profilfarben:               '
+    + Object.entries(SOLL_TON).map(([id, w]) => `${id} ${w[2]} (${toene[id]}°)`).join(' · '));
+  console.log(`  Streu auf den Kacheln:      Fiona ${bild.fionaArten.length} Arten in `
+    + `${bild.fionaFarben} Farben (Schildkröten in ${bild.kroetenFarben}), `
+    + `Lea ${bild.leaZahl} Totenköpfe mit ${bild.augeStops}-stufigem Auge, `
+    + `Eltern ${bild.eltern.join('/')} — Name frei, Muschel durchlässig`);
+  await p.close();
+} catch (e) { merke('streu', e); }
 
 if (laeuft('sprechen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);

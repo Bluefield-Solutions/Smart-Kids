@@ -126,6 +126,37 @@
   --stern-an: oklch(0.80  0.140  85);
   --stern-aus:oklch(0.93  0.010 250);
 
+  /* --- Der Streu auf den Profilkacheln (G12) ---------------------------
+     Jedes Kind bekommt sein eigenes Muster auf die Kachel: Fiona Meer und
+     Himmel, Lea die Totenkoepfe aus Mexiko. Die Farben sind ABSICHTLICH
+     bunter als die sieben Flaechen - die sind auf gleiche Helligkeit
+     geeicht, damit Text darauf lesbar bleibt. Der Streu traegt keinen
+     Text, also darf er leuchten.
+
+     Und er traegt KEINE Tintenkontur. Stern und Pokal haben eine, weil
+     sie etwas bedeuten - erreicht, verdient, gezaehlt. Der Streu bedeutet
+     nichts; er ist Tapete. Bekaeme er dieselbe Kontur, sucht ein Kind
+     darin nach einer Bedeutung, die es nicht gibt. */
+  --streu-rot:         oklch(0.63 0.200  27);
+  --streu-blau:        oklch(0.60 0.165 245);
+  --streu-gelb:        oklch(0.84 0.150  92);
+  --streu-leuchtgelb:  oklch(0.92 0.185 108);
+  --streu-leuchtgruen: oklch(0.85 0.230 142);
+  --streu-pink:        oklch(0.68 0.230 350);
+  --streu-orange:      oklch(0.72 0.180  55);
+  --streu-lila:        oklch(0.60 0.200 300);
+  /* Die Totenkoepfe sind WEISS - heller als jede Kachel, sonst waeren sie
+     keine Knochen. Deshalb brauchen sie als einzige eine Kontur, sonst
+     verschwinden sie im Hellgruen. */
+  --knochen:        oklch(0.995 0.006  95);
+  --knochen-rand:   oklch(0.46  0.045 170);
+  /* Die Augen schillern: ein Verlauf von Blau nach dunklem Gruen. Zwei
+     Marken, ein Verlauf - „schillern" ist kein Farbwert, sondern ein
+     Uebergang. */
+  --auge-blau:      oklch(0.56 0.155 245);
+  --auge-gruen:     oklch(0.34 0.080 165);
+  --auge-licht:     oklch(0.98 0.010 220);
+
   /* --- Tiefe. Als KANTE, nie als Filter. ------------------------------
      Frueher eine versetzte Flaeche (`box-shadow: 0 4px 0`). Die sieht aus
      wie ein Aufkleber, nicht wie ein Knopf. Jetzt zwei Kanten: eine helle

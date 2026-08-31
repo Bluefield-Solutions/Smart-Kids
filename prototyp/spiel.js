@@ -11,7 +11,13 @@ const buehne = document.getElementById('buehne');
 const FL = ['--f1','--f2','--f3','--f4','--f5','--f6','--f7'];
 const VIER = ['--f1','--f3','--f5','--f6'];
 const el = (t,k,i)=>{ const e=document.createElement(t); if(k)e.className=k; if(i!==undefined)e.innerHTML=i; return e; };
-const STERN = (f,g=24)=>`<svg width="${g}" height="${g}" viewBox="-14 -14 28 28"><path d="M0 -12 3.7 -4 12 -2.8 6 3.2 7.4 12 0 7.8 -7.4 12 -6 3.2 -12 -2.8 -3.7 -4Z" fill="${f}" stroke="var(--tinte)" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+/* Der Zackenstern. EIN Pfad, zwei Verwendungen: der gezaehlte Stern im Kopf
+   (`STERN`, mit Tintenkontur) und der Streustern auf Fionas Kachel (`MOTIV`,
+   ohne). Regel 15 - was zweimal dasteht, veraltet einmal; hier waere es der
+   Tag, an dem die Zacken der einen Sorte laenger werden als die der anderen. */
+const STERN_VB = '-14 -14 28 28';
+const STERN_D = 'M0 -12 3.7 -4 12 -2.8 6 3.2 7.4 12 0 7.8 -7.4 12 -6 3.2 -12 -2.8 -3.7 -4Z';
+const STERN = (f,g=24)=>`<svg width="${g}" height="${g}" viewBox="${STERN_VB}"><path d="${STERN_D}" fill="${f}" stroke="var(--tinte)" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
 const LOESCHEN='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H9L3 12l6 6h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M17 10l-4 4M13 10l4 4"/></svg>';
 /* Der Pokal (B2). Gezeichnet und nicht als Schriftzeichen: ein Emoji sieht
    auf jedem Geraet anders aus, und das Tor `schrift` kennt es nicht. */
@@ -403,12 +409,213 @@ function lob(vorrat = ton().lob){
   letztesLob = i; return vorrat[i];
 }
 
+/* ---------- Der Streu auf den Profilkacheln (G12) ------------------------
+ *
+ * Jedes Kind bekommt sein eigenes Muster auf die Kachel: Fiona Meer und
+ * Himmel - Schildkroeten, Fische, Quallen, Seepferdchen, Muscheln, dazu
+ * Sterne und Herzen -, Lea die Totenkoepfe aus Mexiko.
+ *
+ * WOZU das gut ist und nicht nur huebsch: die Kachel war bisher nur an
+ * ihrer Farbe zu unterscheiden. Fiona liest nicht - fuer sie ist "Fiona"
+ * kein Wort, sondern ein Fleck, und der Buchstabe im Kreis ist auch nur
+ * einer. Blieb die Farbe. Mit Tuerkis neben Hellgruen liegen die beiden
+ * Kinderkacheln jetzt 45 Grad im Farbkreis auseinander - erkennbar, aber
+ * eng. Das Muster traegt den Unterschied, den die Farbe allein nicht mehr
+ * traegt: eine Kachel voller Meerestiere und eine voller Totenkoepfe
+ * verwechselt niemand.
+ *
+ * Drei Entscheidungen, die man sonst spaeter noch einmal treffen muss:
+ *
+ * KEINE TINTENKONTUR. Stern und Pokal haben eine, weil sie etwas
+ * bedeuten - erreicht, verdient, gezaehlt. Der Streu bedeutet nichts.
+ * Bekaeme er dieselbe Kontur, suchte ein Kind darin eine Bedeutung, die
+ * es nicht gibt. Ausnahme ist der Totenkopf: der ist WEISS und muesste
+ * sonst im Hellgruen verschwinden. Seine Kontur ist gruen, nicht Tinte -
+ * ein Umriss, kein Zeichen.
+ *
+ * FESTE PLAETZE, kein Zufall. Ein gewuerfelter Streu saehe bei jedem
+ * Laden anders aus - und `ansicht` vergleicht Bildpunkte. Ein Tor, das
+ * bei jedem Lauf etwas anderes sieht, ist keins mehr. Die Tafel unten
+ * IST das Bild.
+ *
+ * PROZENT, KEINE PUNKTE. Die Kachel ist auf dem Telefon quer rund
+ * 190 x 125 Punkte gross und auf dem Schreibtisch 240 x 250 - fast
+ * doppelt so hoch. Mit festen Punkten waere der Streu in einem der
+ * beiden Faelle ein Haufen in einer Ecke.
+ */
+const AUGE_VERLAUF = (id)=>`<linearGradient id="${id}" x1="0" y1="0" x2=".8" y2="1">`
+  + '<stop offset="0" stop-color="var(--auge-blau)"/>'
+  + '<stop offset=".55" stop-color="var(--auge-gruen)"/>'
+  + '<stop offset="1" stop-color="var(--auge-blau)"/></linearGradient>';
+
+/* Ein Motiv ist ein Ausschnitt und ein Stueck Markup. `currentColor` holt
+   die Farbe von aussen - deshalb genuegt EIN Fisch fuer sechs Farben. */
+const MOTIV = {
+  stern: { vb: STERN_VB, d: `<path d="${STERN_D}"/>` },
+  herz: { vb:'0 0 24 24', d:'<path d="M12 21.4C12 21.4 2.6 14.8 2.6 8.8c0-3.2 2.4-5.4 5.3-5.4 1.8 0 3.2.9 4.1 2.2.9-1.3 2.3-2.2 4.1-2.2 2.9 0 5.3 2.2 5.3 5.4 0 6-9.4 12.6-9.4 12.6Z"/>' },
+  /* Die Schildkroete von OBEN. Der erste Entwurf hatte die Flossen unter
+     dem Panzer und ein Gitter darauf - auf der Kachel war das ein Karo,
+     kein Tier. Jetzt stehen alle vier Flossen und der Kopf DEUTLICH ueber
+     den Panzerrand hinaus, und der Panzer traegt einen Ring statt eines
+     Gitters: das ist die Silhouette, an der man sie bei 21 Punkten
+     erkennt. */
+  schildkroete: { vb:'0 0 24 24', d:
+      '<ellipse cx="19.6" cy="12" rx="2.6" ry="2.3"/>'
+    + '<path d="M4.9 12 1.9 10.7v2.6Z"/>'
+    + '<ellipse cx="15.9" cy="6.2" rx="3" ry="1.5" transform="rotate(40 15.9 6.2)"/>'
+    + '<ellipse cx="15.9" cy="17.8" rx="3" ry="1.5" transform="rotate(-40 15.9 17.8)"/>'
+    + '<ellipse cx="6.6" cy="6.8" rx="2.8" ry="1.4" transform="rotate(-38 6.6 6.8)"/>'
+    + '<ellipse cx="6.6" cy="17.2" rx="2.8" ry="1.4" transform="rotate(38 6.6 17.2)"/>'
+    + '<ellipse cx="11.5" cy="12" rx="6.6" ry="5.5"/>'
+    + '<g fill="none" stroke="var(--papier)" stroke-width="1.1" opacity=".7">'
+    + '<ellipse cx="11.5" cy="12" rx="3.4" ry="2.8"/>'
+    + '<path d="M11.5 9.2V7M11.5 14.8V17M8.1 12H5.6M14.9 12h2.5"/></g>' },
+  fisch: { vb:'0 0 24 24', d:
+      '<path d="M8.8 12c0-3.5 3.1-6.2 6.6-6.2s6.4 2.7 6.4 6.2-2.9 6.2-6.4 6.2S8.8 15.5 8.8 12Z"/>'
+    + '<path d="M9.1 12 2.4 7.2v9.6Z"/>'
+    + '<circle cx="17.9" cy="10.2" r="1.05" fill="var(--papier)"/>' },
+  qualle: { vb:'0 0 24 24', d:
+      '<path d="M4.4 12.8a7.6 7.6 0 0 1 15.2 0c0 .9-.7 1.7-1.7 1.7H6.1c-1 0-1.7-.8-1.7-1.7Z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">'
+    + '<path d="M7.6 15c.3 2.2-1 3-.9 4.9M11.8 15c.2 2.4-.8 3.3-.6 5.2M15.8 15c-.3 2.2 1 3 .9 4.9"/></g>' },
+  /* Hier stand ein Seepferdchen. Auf der Kachel war es eine Drei - der
+     Hals, die Schnauze und der Ringelschwanz sind bei 21 Punkten kein
+     Tier mehr, sondern eine Ziffer. Ein Wal traegt seine ganze Auskunft
+     im Umriss und haelt jede Groesse aus. */
+  wal: { vb:'0 0 24 24', d:
+      '<path d="M2.8 13c0-3.7 3.7-6.6 8.3-6.6 4.5 0 8.2 2.6 9 6.1l2.5-2.9c.5-.6 1.4-.2 1.4.6'
+    + 'v6.2c0 .8-.9 1.2-1.4.6l-2.6-3c-1.1 2.9-4.4 4.9-8.3 4.9C6.4 19 2.8 16.2 2.8 13Z"/>'
+    + '<circle cx="6.6" cy="11.8" r="1.05" fill="var(--papier)"/>'
+    + '<path d="M8.6 6.6c-.2-1.5.5-2.8 1.9-3.4" fill="none" stroke="currentColor"'
+    + ' stroke-width="1.5" stroke-linecap="round"/>' },
+  seestern: { vb:'0 0 24 24', d:
+      '<path d="M12 2.6c.6 0 1.1.4 1.4 1.1l1.9 4.8 5.1.4c.8.1 1.3.5 1.5 1.1.2.6 0 1.2-.6 1.7l-3.9 3.3 1.2 5c.2.8 0 1.4-.5 1.7-.5.4-1.1.4-1.8 0L12 18.9l-4.3 2.8c-.7.4-1.3.4-1.8 0-.5-.3-.7-.9-.5-1.7l1.2-5-3.9-3.3c-.6-.5-.8-1.1-.6-1.7.2-.6.7-1 1.5-1.1l5.1-.4 1.9-4.8c.3-.7.8-1.1 1.4-1.1Z"/>'
+    + '<g fill="var(--papier)" opacity=".65"><circle cx="12" cy="9.8" r=".95"/>'
+    + '<circle cx="9.5" cy="13.2" r=".75"/><circle cx="14.5" cy="13.2" r=".75"/>'
+    + '<circle cx="12" cy="15.6" r=".65"/></g>' },
+  /* Die Jakobsmuschel. Sie war zuerst falsch herum - Dach oben, Schloss
+     obendrauf -, und dann sah sie aus wie ein Heissluftballon. Eine
+     Muschel haengt am SCHLOSS: unten schmal, nach oben auffaechernd, und
+     die obere Kante ist gewellt. Fuenf Wellen, fuenf Rippen. */
+  muschel: { vb:'0 0 24 24', d:
+      '<path d="M12 20.9c-.95 0-1.7-.6-1.7-1.35 0-.35.15-.68.42-.92'
+    + 'C6.35 16.15 2.5 11.6 2.5 7.4q1.9-2.6 3.8 0 1.9-2.6 3.8 0 1.9-2.6 3.8 0'
+    + ' 1.9-2.6 3.8 0 1.9-2.6 3.8 0c0 4.2-3.85 8.75-8.22 11.23'
+    + '.27.24.42.57.42.92 0 .75-.75 1.35-1.7 1.35Z"/>'
+    + '<g fill="none" stroke="var(--papier)" stroke-width="1" stroke-linecap="round" opacity=".65">'
+    + '<path d="M12 18.2V8.6M10.2 17.8 7 9.6M13.8 17.8 17 9.6M8.2 16.4 4.6 9.8M15.8 16.4 19.4 9.8"/></g>' },
+  schnecke: { vb:'0 0 24 24', d:
+      '<path d="M20.9 12.3c0 4.7-4 8.4-9 8.4-4.4 0-8-3.1-8-7 0-3.5 2.9-6.2 6.5-6.2 3.2 0 5.7 2.3 5.7 5.2 0 2.5-2 4.4-4.5 4.4-2.2 0-3.9-1.6-3.9-3.6 0-1.7 1.4-3.1 3.2-3.1"'
+    + ' fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>' },
+  /* Der Totenkopf. Zuckerschaedel, kein Knochenfund: runde Stirn, Blume
+     darauf, und die Augen sind das Auffaellige an ihm. */
+  totenkopf: { vb:'0 0 24 24', auge:true, d:
+      '<path d="M12 2.2c5.3 0 9 3.6 9 8.4 0 2.7-1.1 4.6-2.5 5.7-.6.5-.9 1-.9 1.8v1.1c0 1.7-1.3 2.6-2.9 2.6H9.3c-1.6 0-2.9-.9-2.9-2.6v-1.1c0-.8-.3-1.3-.9-1.8C4.1 15.2 3 13.3 3 10.6 3 5.8 6.7 2.2 12 2.2Z"'
+    + ' fill="var(--knochen)" stroke="var(--knochen-rand)" stroke-width="1"/>'
+    + '<ellipse cx="8.2" cy="10.6" rx="2.75" ry="3" fill="url(#@AUGE@)"/>'
+    + '<ellipse cx="15.8" cy="10.6" rx="2.75" ry="3" fill="url(#@AUGE@)"/>'
+    + '<circle cx="7.2" cy="9.4" r=".8" fill="var(--auge-licht)"/>'
+    + '<circle cx="14.8" cy="9.4" r=".8" fill="var(--auge-licht)"/>'
+    + '<circle cx="12" cy="5.3" r="1.25" fill="url(#@AUGE@)"/>'
+    + '<path d="M12 13.6c.85 0 1.5.65 1.5 1.4 0 .7-.65 1.25-1.5 1.25s-1.5-.55-1.5-1.25c0-.75.65-1.4 1.5-1.4Z"'
+    + ' fill="var(--knochen-rand)"/>'
+    + '<g stroke="var(--knochen-rand)" stroke-width=".9" stroke-linecap="round">'
+    + '<path d="M9.4 18.6v3M12 18.6v3.2M14.6 18.6v3"/></g>' },
+};
+
+/* Die Tafel. Je Eintrag: Motiv, links %, oben %, Groesse, Drehung, Farbe.
+ *
+ * Fiona: der Meeresgrund unten (Muscheln, Schnecke), die Tiere in der
+ * Mitte, Sterne und Herzen oben. Die Schildkroeten sind ausdruecklich in
+ * DREI Farben - danach war gefragt, und drei gleiche waeren ein Muster,
+ * keine Sammlung.
+ *
+ * Lea: nur Totenkoepfe, alle klein bis mittel, alle weiss. Eine einzige
+ * Sorte, dafuer viele - so sehen die Papierketten aus, an denen sie
+ * haengen.
+ *
+ * Frei bleibt, was der NAME braucht - das grosse fette Wort zwischen 47
+ * und 63 Prozent Hoehe, und der Kreis darueber. Die Zeile darunter ("6
+ * Jahre - ziehen und sprechen") darf ueberdeckt werden: sie ist klein,
+ * grau und steht ohnehin schon auf der grossen Muschel. Der Unterschied
+ * ist am Bild entschieden worden, nicht am Grundriss: drei Motive lagen
+ * im ersten Anlauf auf dem Namen, und genau die drei sind umgezogen.
+ *
+ * Die Zahlen sind Prozent der Kachel, gezaehlt von der MITTE des Motivs.
+ */
+const STREU = {
+  fiona: [
+    ['muschel',      85, 73, 'g',   8, '--streu-pink'],
+    ['schildkroete', 13, 25, 'm', -14, '--streu-leuchtgruen'],
+    ['schildkroete', 19, 86, 'k',  18, '--streu-blau'],
+    ['schildkroete', 88, 27, 'k', -22, '--streu-orange'],
+    ['schildkroete', 66, 37, 'k',  10, '--streu-lila'],
+    ['wal',          21, 48, 'm',  -6, '--streu-blau'],
+    ['fisch',         7, 66, 'k',   7, '--streu-gelb'],
+    ['fisch',        68, 92, 'k',  -9, '--streu-leuchtgelb'],
+    ['qualle',       69, 11, 'k',   0, '--streu-lila'],
+    ['seestern',     29, 36, 'k', -15, '--streu-rot'],
+    ['seestern',     78, 46, 'k',  11, '--streu-leuchtgelb'],
+    ['schnecke',      6, 90, 'k', -10, '--streu-orange'],
+    ['stern',        35,  6, 'k',   0, '--streu-leuchtgelb'],
+    ['stern',        94, 52, 'k',  13, '--streu-gelb'],
+    ['herz',         11,  8, 'k', -12, '--streu-pink'],
+    ['herz',         92,  9, 'k',   9, '--streu-rot'],
+  ],
+  lea: [
+    ['totenkopf', 13, 19, 'm', -11, '--knochen'],
+    ['totenkopf', 87, 25, 'm',  13, '--knochen'],
+    ['totenkopf', 30,  9, 'k',   0, '--knochen'],
+    ['totenkopf', 69,  9, 'k',   5, '--knochen'],
+    ['totenkopf',  9, 60, 'k',   9, '--knochen'],
+    ['totenkopf', 91, 64, 'k',  -9, '--knochen'],
+    ['totenkopf', 28, 88, 'k', -15, '--knochen'],
+    ['totenkopf', 72, 90, 'k',  12, '--knochen'],
+    ['totenkopf', 22, 41, 'k',  17, '--knochen'],
+    ['totenkopf', 78, 43, 'k', -17, '--knochen'],
+  ],
+};
+
+/**
+ * Die Bildseite einer Profilkachel. Leer, wenn das Profil keine hat -
+ * die Eltern bekommen keinen Streu, und `''` ist hier kein Sonderfall,
+ * sondern die Regel fuer alle, die nicht in der Tafel stehen.
+ */
+function streu(profilId){
+  const tafel = STREU[profilId];
+  if (!tafel) return '';
+  const augeId = `auge-${profilId}`;
+  /* Der Verlauf wird EINMAL je Kachel abgelegt, mit dem Profil im Namen.
+     Zwei gleiche Kennungen in einem Dokument sind ungueltig, und der
+     Browser nimmt dann irgendeine - meistens die falsche. */
+  const braucht = tafel.some(([m]) => MOTIV[m].auge);
+  const defs = braucht
+    ? `<svg class="streu-defs" aria-hidden="true"><defs>${AUGE_VERLAUF(augeId)}</defs></svg>` : '';
+  const teile = tafel.map(([m, x, y, gr, dreh, farbe])=>{
+    const { vb, d } = MOTIV[m];
+    return `<i class="${gr}" data-motiv="${m}"`
+      + ` style="left:${x}%;top:${y}%;--dreh:${dreh}deg;color:var(${farbe})">`
+      + `<svg viewBox="${vb}" fill="currentColor" aria-hidden="true">`
+      + `${d.split('@AUGE@').join(augeId)}</svg></i>`;
+  }).join('');
+  return `<div class="streu" aria-hidden="true">${defs}${teile}</div>`;
+}
+
 /* ---------- Profile und Ebenen ------------------------------------------ */
+/* Die Farben sind gewuenscht, nicht gewuerfelt: Fiona tuerkis, Lea
+   hellgruen, Stephan blau. Violeta behaelt ihr Violett - sie war nicht
+   gemeint, und eine Farbe, die niemand geaendert haben will, aendert man
+   nicht mit.
+   Genommen wird aus der VORHANDENEN Palette (`--f1` bis `--f7`), nicht neu
+   gemischt: die sieben sind auf gleiche Helligkeit geeicht, damit derselbe
+   Textton auf allen lesbar ist. Eine achte Farbe daneben waere die eine,
+   auf der der Name nicht mehr traegt. Es ist deshalb ein Tausch:
+   f7 -> f4 (Fiona), f5 -> f3 (Lea), f3 -> f5 (Stephan). */
 const PROFILE = {
   fiona:{ id:'fiona', name:'Fiona', alter:6, eingabe:['ziehen','sprechen'], vorlesen:true,
-          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, ton:'kind', farbe:'--f7' },
+          kandidaten:4, laenderTiefe:3, sitzung:6, streng:false, ton:'kind', farbe:'--f4' },
   lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
-          kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f5' },
+          kandidaten:99, laenderTiefe:5, sitzung:8, streng:true, ton:'kind', farbe:'--f3' },
   /* Die Eltern - seit N1 ZWEI Profile, Stephan und Violeta.
    *
    * Bis dahin war es eines, „Eltern". Es hat sich als eine Kachel gut
@@ -428,7 +635,7 @@ const PROFILE = {
    * vier Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
   stephan: { id:'stephan', name:'Stephan', alter:null, eingabe:['tippen'], vorlesen:false,
           kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
-          farbe:'--f3' },
+          farbe:'--f5' },
   violeta: { id:'violeta', name:'Violeta', alter:null, eingabe:['tippen'], vorlesen:false,
           kandidaten:0, laenderTiefe:12, sitzung:12, streng:true, ton:'sachlich',
           farbe:'--f6' },
@@ -1060,6 +1267,7 @@ function profilwahl(){
       <div class="titel">Wer spielt?</div>
       <div class="wahl">${Object.values(PROFILE).map(p=>`
         <button class="kachel wer" data-profil="${p.id}" style="--ton:var(${p.farbe})">
+          ${streu(p.id)}
           <div class="kreis" style="background:var(${p.farbe})">${p.name[0]}</div>
           <div class="name">${p.name}</div>
           <div class="rolle">${profilzeile(p)}</div>

@@ -415,7 +415,38 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    `.kachel .silhouette`), es wurde zum Flex-Element in seiner
    Eigengroesse, und die Kacheln wuchsen auf das Vierfache. */
 .kachel.bunt>*:not(.silhouette),.kachel.welt>*:not(.silhouette),
-.kachel.wer>*:not(.silhouette){position:relative}
+.kachel.wer>*:not(.silhouette,.streu){position:relative}
+/* ---- Der Streu auf den Profilkacheln (G12) ---------------------------
+   `.streu` muss in `:not()` stehen, genau wie `.silhouette` darueber -
+   sonst holt diese Zeile die Lage der Motive kaputt und die Kacheln
+   wachsen auf ein Vielfaches. Derselbe Fehler, zweite Auflage; er steht
+   im Kommentar darueber ausgeschrieben.
+
+   Die Deckung: 0,58. Der Streu liegt UNTER Name und Zeile, und kein Tor
+   sieht das - `lesbarkeit` sucht den Grund im Elternbaum, und der Streu
+   ist ein Geschwister, kein Vorfahr. Geprueft wird also mit dem Auge
+   (Regel 8). Bei 0,42 war er blass: Leuchtgelb leuchtete nicht mehr, und
+   danach war ausdruecklich gefragt. */
+.kachel .streu{position:absolute;inset:0;pointer-events:none;opacity:.58;
+  overflow:hidden;border-radius:inherit}
+.kachel .streu i{position:absolute;line-height:0;display:block;
+  transform:translate(-50%,-50%) rotate(var(--dreh,0deg))}
+.kachel .streu i>svg{width:100%;height:100%;display:block;overflow:visible}
+.kachel .streu .k{width:26px;height:26px}
+.kachel .streu .m{width:38px;height:38px}
+.kachel .streu .g{width:78px;height:78px}
+/* Der Verlauf fuer die Augen wird abgelegt, nicht gezeigt. `display:none`
+   ginge nicht: ein Verlauf in einem ausgeblendeten SVG wird in Safari
+   nicht aufgeloest, und die Augen waeren schwarz. */
+.streu-defs{position:absolute;width:0;height:0}
+/* Auf dem Telefon quer ist die Kachel rund 190 x 125 Punkte gross. Die
+   grosse Muschel mit 78 Punkten waere dort mehr als die halbe Hoehe -
+   sie ueberdeckte den Namen, statt hinter ihm zu liegen. */
+@media (max-height:440px){
+  .kachel .streu .k{width:21px;height:21px}
+  .kachel .streu .m{width:29px;height:29px}
+  .kachel .streu .g{width:58px;height:58px}
+}
 /* Die Fachwelten (D4). Zwei grosse Karten statt neun Kacheln: das Kind
    waehlt erst das Fach. Sie duerfen breiter sein als eine Ebenenkachel -
    es sind zwei, und sie sollen unverwechselbar sein. */
