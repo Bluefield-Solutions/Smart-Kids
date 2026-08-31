@@ -804,6 +804,41 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
+### P16 · Das Auge an der Kachel  ·  ERLEDIGT
+
+P14 hatte gemessen: **56 Trefferflächen unter 44 pt**, alle derselbe Knopf —
+„anschauen" unter jeder Kachel der Ebenenwahl, **16 Punkte hoch**. Geholt
+waren dort zehn Punkte Luft (16 → 26); die Rechnung sagte, dass 44 in einer
+Zeile *unter* der Kachel nicht zu haben sind.
+
+**Also nicht darunter, sondern darin.** „anschauen" ist jetzt ein **Auge in
+der Kachel** — 44 × 44, dieselbe runde Knopfform wie Buch und Elternbereich.
+Und es ist zugleich das bessere Zeichen: das Wort „anschauen" war für eine
+Sechsjährige, die nicht liest, ohnehin stumm.
+
+**Das Ergebnis ist mehr als der eine Knopf.** Die Zeile unter der Kachel
+trug in den meisten Fällen *nur* diesen einen Knopf; „von vorne" gibt es
+erst mit Fortschritt, „Test" erst mit einer vollen Ebene. Leer heißt jetzt
+weg (`:empty`), und damit fallen je Reihe 26 Punkte. Auf dem iPad passen
+statt drei Kacheln **vier** in eine Reihe.
+
+```
+passt --hinweise:  vorher 56 Trefferflächen unter 44 pt
+                   nachher 0
+```
+
+Auf **allen sieben Größen × 21 Bildschirmen** ist jetzt jedes Ziel für den
+Finger mindestens 44 Punkte groß — zum ersten Mal, seit das gemessen wird.
+
+**Geprüft wird beides**: dass das Auge in den Vorlauf führt, und dass es die
+Ebene **nicht startet**. Es liegt über der Kachel, und die Kachel ist selbst
+ein Knopf; ein Tipp, der durchschlägt, würde die Sitzung anfangen statt die
+Karten zu zeigen — und das fällt niemandem auf, weil beide Wege auf einen
+plausiblen Bildschirm führen. Unterschieden wird an dem, was nur der Vorlauf
+hat: das Gitter der Aufkleber und „Jetzt starten".
+
+---
+
 ### P15 · Der Zeiger steht im Pulk  ·  ERLEDIGT
 
 Gemessen auf der Nordamerikakarte, Guatemala als Ziel: der Zeiger („!")

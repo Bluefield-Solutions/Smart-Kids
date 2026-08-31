@@ -57,6 +57,11 @@ const ZEICHEN = {
   // Ein Aufkleber: rundes Blatt mit umgeschlagener Ecke.
   kleber:'<path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 0-4 4v5a9 9 0 0 1 0-18z"/><path d="M12 21c2.4 0 8.6-6.2 9-9"/>',
   zu:'<path d="M6 6l12 12M18 6L6 18"/>',
+  /* Anschauen: ein Auge. Es stand bis P16 als das WORT „anschauen" unter
+     jeder Kachel - sechzehn Punkte hoch und fuer eine Sechsjaehrige, die
+     nicht liest, ohnehin stumm. */
+  auge:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/>'
+     + '<circle cx="12" cy="12" r="3.1"/>',
 };
 const ZEI = (n, g=24)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none"
   stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"
@@ -1612,8 +1617,9 @@ async function ebenenwahl(){
             ${fortschrittBalken(b)}
           </div>
         </button>
-        <div class="kachelknoepfe">
-          <button class="leise mini" data-schau="${b.id}">anschauen</button>${b.gesammelt ? `
+        <button class="knopf rund schau" data-schau="${b.id}"
+                aria-label="${b.titel} anschauen" title="Anschauen">${ZEI('auge', 22)}</button>
+        <div class="kachelknoepfe">${b.gesammelt ? `
           <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}${
           /* Der Test steht erst da, wenn die Ebene ganz gesammelt ist (B2).
              Vorher waere er kein „Test am Ende", sondern eine zweite Art

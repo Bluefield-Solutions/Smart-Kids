@@ -346,6 +346,15 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Die zwei kleinen Knoepfe unter einer Kachel. Nebeneinander, damit sie
    die naechste Reihe nicht nach unten schieben. */
 .kachelknoepfe{display:flex;gap:var(--r2);justify-content:center;flex-wrap:wrap}
+/* Leer heisst weg. „anschauen" sitzt seit P16 als Auge IN der Kachel;
+   uebrig bleiben „von vorne" und „Test", und die gibt es meistens nicht.
+   Eine leere Zeile kostete auf dem kurzen Querformat 26 Punkte je Reihe. */
+.kachelknoepfe:empty{display:none}
+/* Das Auge in der Ecke der Kachel: volle 44 Punkte, ohne der Kachel viel
+   zu nehmen (die misst 229 x 56). Es liegt DARUEBER, nicht darin - ein
+   Knopf im Knopf waere kein gueltiges Markup. */
+.kachelpaar{position:relative}
+.kachelpaar .schau{position:absolute;top:var(--r0);right:var(--r0);z-index:2}
 .sterne{display:flex;gap:var(--r1)}
 .fortschritt{font-family:var(--f-ui);font-size:var(--s0);font-weight:600;color:var(--tinte-2);
   font-variant-numeric:tabular-nums}

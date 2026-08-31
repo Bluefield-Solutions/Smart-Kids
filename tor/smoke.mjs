@@ -1144,6 +1144,33 @@ if (laeuft('ablage')) try {
     // das Zeichen, dass der Stand gelesen ist. Der „von vorne"-Knopf
     // taugt dafuer nicht: dass er FEHLT, ist ja der Befund.
     await bis(p, () => !!document.querySelector('.schirm.da .kachel .balken'), 4000);
+
+    /* Das Auge an der Kachel (P16): es fuehrt in den Vorlauf und startet
+     * NICHT die Ebene.
+     *
+     * Beides gehoert geprueft. Es liegt ueber der Kachel, und die Kachel
+     * ist selbst ein Knopf - ein Tipp, der durchschlaegt, wuerde die
+     * Sitzung anfangen statt die Karten zu zeigen, und das faellt hier
+     * niemandem auf: beide Wege fuehren auf einen Bildschirm, der
+     * plausibel aussieht. Unterschieden wird an dem, was NUR der Vorlauf
+     * hat: das Gitter der Aufkleber und der Knopf „Jetzt starten". */
+    {
+      const auge = await p.$('.schirm.da [data-schau="bundeslaender"]');
+      if (!auge) merke('vonvorne', new Error(
+        'an der Kachel steht kein Auge — der Weg zurück in den Vorlauf fehlt'));
+      else {
+        await auge.click();
+        const drin = await bis(p, () => !!document.querySelector('.schirm.da .kleber .aufkleber')
+          && !!document.querySelector('.schirm.da #los'), 8000);
+        const gestartet = !!(await p.$('.schirm.da .karte svg path.ziel'));
+        if (!drin) merke('vonvorne', new Error(
+          'das Auge an der Kachel führt nicht in den Vorlauf'));
+        if (gestartet) merke('vonvorne', new Error(
+          'das Auge hat die Ebene gestartet — der Tipp schlägt auf die Kachel durch'));
+        await p.click('.schirm.da #zur');
+        await bis(p, () => !!document.querySelector('.schirm.da .kachel .balken'), 4000);
+      }
+    }
     const knopf = await p.$('.schirm.da [data-neu="bundeslaender"]');
     if (!knopf) merke('vonvorne', new Error(
       'nach zwei Sitzungen steht kein „von vorne" an den Bundesländern'));

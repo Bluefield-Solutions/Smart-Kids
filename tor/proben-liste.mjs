@@ -1001,6 +1001,19 @@ export const PROBEN = [
     an:{ datei:'CLAUDE.md', fehlt:'14. **Das Modell' },
     sagt:'diese Regel gibt es nicht' },
 
+  /* --- Das Auge an der Kachel (P16) -------------------------------------
+   *
+   * Es liegt UEBER der Kachel, und die Kachel ist selbst ein Knopf. Ein
+   * Tipp, der durchschlaegt, startet die Ebene statt die Karten zu zeigen
+   * - und beide Wege fuehren auf einen Bildschirm, der plausibel
+   * aussieht. Diese Probe laesst das Auge starten. */
+  { n:'das Auge startet die Ebene statt sie zu zeigen', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"    ev.stopPropagation(); zeige(()=>vorlauf(b.dataset.schau)); });",
+    ersatz:"    ev.stopPropagation(); starten(b.dataset.schau); });",
+    an:{ ...DIST, text:'ev.stopPropagation(); starten(b.dataset.schau)' },
+    sagt:'führt nicht in den Vorlauf' },
+
   /* --- Der Wegweiser (P15) ----------------------------------------------
    *
    * Zwei Zusagen, zwei Proben. Er MUSS da sein, wenn das gesuchte Gebiet
