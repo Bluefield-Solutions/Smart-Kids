@@ -5577,30 +5577,41 @@ das die drei stillen Ausfälle prüft: eine Menge, die nichts auswählt (das
 Abzeichen erscheint nie), eine, die alles auswählt (es steht beim ersten
 Aufkleber schon da und sagt nichts), und ein Bild, das es nicht gibt.
 
-**Ein Abzeichen hätte gelogen.** Die Menge kam aus dem Vorrat des Kindes.
-Fionas Ländertiefe ist drei; von den neun Nachbarn Deutschlands liegen
-sechs darin. Gegen ihren Vorrat gerechnet hieße „alle Nachbarn" also
-„alle sechs, die du sehen kannst" — und darüber stünde „Du kennst alle
-Nachbarn von Deutschland". Ein Abzeichen, dessen Satz nicht stimmt, ist
-schlimmer als keins: sein Satz ist das Einzige, was es hat. Jetzt kommt
-die Menge aus dem **vollen** Vorrat, und was ein Kind gar nicht erreichen
-kann, wird ihm nicht angeboten.
+**Das Abzeichen aus dem Abgleich kann niemand bekommen.** „Du kennst alle
+Nachbarn von Deutschland" ist der Satz, den der ANTON-Abgleich als
+Beispiel nennt, und er war der erste Eintrag der Tafel. Er ist wieder
+raus.
 
-Und hier steht der interessanteste Teil der Runde. Ich habe diese
-Änderung mit einer **falschen Begründung** gebaut: „sonst lässt sich ein
-Abzeichen wieder verlieren, weil Fionas Kontinentrunde wächst." Die
-Gegenprobe dazu hat nicht angeschlagen — und sie hatte recht. Die Runde
-wächst genau dann, wenn die Menge voll ist; bei den Kontinenten kommen
-beide Rechnungen *immer* zum selben Ergebnis. Verlieren kann man
-ohnehin nichts, weil `istGesammelt` den Höchststand liest, und der steigt
-nur. Ich hatte aus einer Aufnahme („Dir fehlen noch 2") auf einen Zustand
-geschlossen, den es nicht geben kann.
+Die App liefert **zwölf** europäische Länder. Die gebackene Geometrie hat
+einundfünfzig Umrisse, aber ins Spiel kommt nur, was in `erdkunde.js`
+einen Rang hat — Geometrie ist kein Vorrat. Von den neun Nachbarn
+Deutschlands sind vier dabei: Frankreich, Belgien, Polen, die
+Niederlande. **Dänemark, Luxemburg, die Schweiz, Österreich und
+Tschechien kommen im Spiel gar nicht vor.** Das Abzeichen wäre für jedes
+Profil ein Ziel gewesen, das ewig offen steht.
 
-Die Änderung war trotzdem richtig — nur aus einem anderen Grund, und der
-gilt nur für die Ebenen mit **fester** Tiefe. Die Gegenprobe steht jetzt
-auf einem Stand, den das Spiel selbst nie erzeugen würde: alle neun
-Nachbarn als gesammelt abgelegt, auch die drei außerhalb ihrer Tiefe.
-Genau der trennt die richtige Rechnung von den beiden falschen.
+Das ist genau die Verfallsart, gegen die ich in derselben Runde ein Tor
+geschrieben habe — und es hat sie nicht gefunden, weil es gegen
+`LAENDER_EUROPA_FEIN` maß statt gegen das, was gebaut wird. Regel 12,
+wörtlich: die Zahl und ihre Messstelle gehören zusammen. Gefunden hat es
+die **Gegenprobe**: sie schlug nicht an, dreimal hintereinander nicht,
+und jedes Mal hatte sie recht.
+
+**Und meine Begründung war zweimal falsch.** Ich habe „die Menge kommt
+aus dem vollen Vorrat" zuerst damit begründet, ein Abzeichen ließe sich
+sonst *verlieren*, weil Fionas Kontinentrunde wächst — die Gegenprobe
+schlug nicht an, und richtig: die Runde wächst genau dann, wenn die Menge
+voll ist, und verlieren kann man ohnehin nichts, weil `istGesammelt` den
+Höchststand liest. Dann habe ich sie damit begründet, sonst stimme der
+*Satz* bei den Nachbarn nicht — auch das fiel weg, mit dem Abzeichen.
+
+Übrig blieb ein dritter Grund, und der ist jetzt belegt: die **Zahl**
+neben einem offenen Abzeichen muss die ganze Menge zählen. Fiona mit drei
+von vier Kontinenten ihrer ersten Runde liest „Dir fehlen noch 3" — nicht
+„noch eins", was ihr Vorrat sagen würde, obwohl es sechs Kontinente sind.
+Mit dem Nachbarn-Abzeichen ist auch die Regel „nicht anbieten, was das
+Kind nicht erreichen kann" weggefallen: sie hatte keinen Fall mehr, und
+eine Regel ohne Fall prüft niemand.
 
 **Und `loese()` zog auf den Anker.** Der Rauchtest zieht das Etikett auf
 den Anker des Ziels; das ist die Stelle, an der die Beschriftung hängt.
@@ -5614,4 +5625,4 @@ den Anker weg und machte den Abschnitt `spielen` rot: das Spiel
 entscheidet nach dem **Trefferkreis**, nicht nach dem Umriss, und ein
 Punkt weit außen auf einem großen Land liegt schon im Kreis des Nachbarn.
 
-175 Gegenproben, alle mit Nachweis.
+174 Gegenproben, alle mit Nachweis.

@@ -698,16 +698,16 @@
       "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
       "zeit": "2026-08-31"
     },
+    "ein Abzeichen hängt an einer Ebene, die es nicht gibt": {
+      "commit": "8866c438b5bce6f4e46099ddea831dc653dcc52b",
+      "zeit": "2026-08-31"
+    },
     "ein Abzeichen will ein Bild, das es nicht gibt": {
       "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
       "zeit": "2026-08-31"
     },
-    "ein Nachbar Deutschlands steht nicht in den Daten": {
-      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
-      "zeit": "2026-08-31"
-    },
-    "ein unerreichbares Abzeichen wird trotzdem angeboten": {
-      "commit": "27bdd7f23901b283640455710c0fa96bcdceaeb1",
+    "ein Abzeichen zählt nur, was das Kind schon gesehen hat": {
+      "commit": "8866c438b5bce6f4e46099ddea831dc653dcc52b",
       "zeit": "2026-08-31"
     },
     "im Buch stehen wieder alle offenen Abzeichen": {

@@ -179,12 +179,13 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
 | 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 | 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 7 | **D2b** Mehr Abzeichen, wenn diese getragen haben | Fiona, Lea | mittel | klein | D2, einmal spielen |
-| 8 | **P5** Die Größenratsche fragt die falsche Runde | nur ich | mittel | klein | — |
-| 9 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
-| 10 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 11 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
-| 12 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
+| 7 | **D2c** Fehlen Deutschlands Nachbarn im Spiel? | Fiona, Lea | mittel | mittel | **eure Entscheidung** |
+| 8 | **D2b** Mehr Abzeichen, wenn diese getragen haben | Fiona, Lea | mittel | klein | D2, einmal spielen |
+| 9 | **P5** Die Größenratsche fragt die falsche Runde | nur ich | mittel | klein | — |
+| 10 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
+| 11 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 12 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| 13 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
 
 ---
 
@@ -543,19 +544,17 @@ Aufkleber (je Gegenstand) und den Pokal (je bestandenem Test) — drei
 Zählwerke über einen Gegenstand oder eine Sitzung. Keines nennt eine
 Menge, keines ergibt einen Satz.
 
-**Was gebaut wurde:** zwölf Abzeichen über fünf Ebenen, dazu „Einmal ganz
-ohne Fehler". Die Menge kommt aus einer **Regel über die Daten** —
-`stadtstaat` steht am Bundesland, die fünf Reihen entstehen aus einem
+**Was gebaut wurde:** elf Abzeichen über vier Ebenen, dazu „Einmal ganz
+ohne Fehler". Die Menge kommt **immer** aus einer Regel über die Daten —
+`stadtstaat` steht am Bundesland, die fünf Reihen entstehen aus **einem**
 Eintrag über `rechenart` und `a`, die Buchstaben des eigenen Namens aus
-dem Profilnamen. Der eine Eintrag von Hand sind die neun Nachbarn
-Deutschlands; Nachbarschaft ist Weltwissen und steht in keinem Datensatz.
+dem Profilnamen. Kein einziges Verzeichnis von Kennungen.
 
 | Entscheidung | warum |
 |---|---|
 | **dieselbe Schwelle wie der Aufkleber** | wer alle drei Stadtstaaten als Aufkleber hat und trotzdem kein Abzeichen bekäme, hätte recht mit „ich hab die doch alle". Ein Abzeichen ist eine Aussage über die MENGE, keine höhere Hürde je Stück. |
 | **genau ein offenes** | der Bildschirm hat diese Lehre schon einmal teuer bezahlt (sechzig leere Kästen). Eines ist der nächste Schritt, zehn sind eine Mahnung. |
-| **die Menge aus dem VOLLEN Vorrat** | sonst stimmt der Satz nicht — siehe unten. |
-| **nichts anbieten, was unerreichbar ist** | Fionas Ländertiefe ist 3; die neun Nachbarn liegen nicht alle darin. |
+| **die Menge aus dem VOLLEN Vorrat** | Fiona bekommt die Kontinente rundenweise. Mit drei von vier stünde neben „Du kennst alle Kontinente" sonst „Dir fehlt noch eins" — obwohl es sechs sind. Die Zahl muss die ganze Menge meinen. |
 | **Ansage am Endbildschirm** | Fiona liest nicht. Ein Abzeichen, das nur dasteht, bekommt sie nicht mit. |
 
 **Absichtlich NICHT gebaut: „Zehn Tage hintereinander".** Der
@@ -572,21 +571,25 @@ bedient als von einem Kalender.
    die Bildtafel kennt `karte`. Daraus wurde das achte Tor,
    **`abzeichen`**: leere Menge, ganze Menge, fehlendes Bild, und die neun
    Nachbarn gegen die Daten. Vier Gegenproben, alle anschlagend.
-2. Die Menge kam aus dem Vorrat des **Kindes**. Fionas Ländertiefe ist
-   drei; von den neun Nachbarn Deutschlands liegen sechs darin. Gegen
-   ihren Vorrat gerechnet hätte das Abzeichen „Du kennst alle Nachbarn von
-   Deutschland" behauptet, während sie drei davon nie gesehen hat. Ein
-   Abzeichen, dessen **Satz nicht stimmt**, ist schlimmer als keins: sein
-   Satz ist das Einzige, was es hat.
+2. **Das Abzeichen aus dem Abgleich kann niemand bekommen.** „Du kennst
+   alle Nachbarn von Deutschland" war der erste Eintrag der Tafel. Die App
+   liefert aber **zwölf** europäische Länder, nicht 51: ins Spiel kommt
+   nur, was in `erdkunde.js` einen Rang hat, die gebackenen Umrisse sind
+   Geometrie und kein Vorrat. Von den neun Nachbarn sind vier dabei —
+   **Dänemark, Luxemburg, die Schweiz, Österreich und Tschechien kommen im
+   Spiel gar nicht vor.** Das Abzeichen ist raus; lieber keins als eines,
+   das ewig offen steht. Ob die fünf ins Spiel sollen, ist eine
+   Entscheidung über den Inhalt und steht als **D2c**.
 
-   **Meine erste Begründung dafür war falsch** — ich hatte geschrieben,
-   sonst ließe sich ein Abzeichen wieder *verlieren*, weil Fionas
-   Kontinentrunde wächst. Die Gegenprobe hat nicht angeschlagen und hatte
-   recht: die Runde wächst genau dann, wenn die Menge voll ist, beide
-   Rechnungen kommen bei den Kontinenten immer zum selben Ergebnis. Und
-   verlieren kann man ohnehin nichts, weil `istGesammelt` den Höchststand
-   liest. Der Unterschied liegt allein bei den Ebenen mit **fester**
-   Tiefe.
+   Gefunden hat das die **Gegenprobe**, nicht das Tor: das Tor maß gegen
+   die gebackene Geometrie statt gegen den gelieferten Vorrat (Regel 12).
+   Jetzt misst es richtig. Und meine Begründung dafür, die Menge aus dem
+   vollen Vorrat zu nehmen, war zweimal hintereinander falsch — erst
+   „sonst lässt sich ein Abzeichen verlieren" (kann man nicht,
+   `istGesammelt` liest den Höchststand), dann „sonst stimmt der Satz bei
+   den Nachbarn nicht" (das Abzeichen gibt es nicht mehr). Der Grund, der
+   übrig blieb und belegt ist: die **Zahl** daneben muss die ganze Menge
+   zählen.
 
 **Und ein dritter, im Werkzeug:** `loese()` im Rauchtest zog das Etikett
 auf den **Anker** des Ziels. Bei Berlin (19 pt Radius, ringsum
@@ -595,8 +598,28 @@ nur so fein wie sein kleinstes Ziel. Die Punktsuche steht jetzt einmal als
 `zielPunkt` in `chromium.mjs` und wird von `loese` und `durchgang`
 benutzt: Trefferkreis, Anker, Raster, Kastenmitte, in dieser Reihenfolge.
 
-**Abnahme:** Rauchtestabschnitt `abzeichen` und Tor `abzeichen`. Neun
-Gegenproben, alle anschlagend (175 insgesamt).
+**Abnahme:** Rauchtestabschnitt `abzeichen` und Tor `abzeichen`. Acht
+Gegenproben, alle anschlagend (174 insgesamt).
+
+---
+
+### D2c · Fehlen Deutschlands Nachbarn im Spiel?
+
+Von den neun Nachbarn Deutschlands sind **vier** in der App: Frankreich,
+Belgien, Polen, die Niederlande. Es fehlen **Dänemark, Luxemburg, die
+Schweiz, Österreich, Tschechien** — Europa hat im Spiel zwölf Länder, und
+die fünf sind nicht darunter.
+
+Das ist eine Entscheidung über den **Inhalt**, nicht über den Code: sollen
+die fünf dazu? Dafür spricht, dass Kinder die Nachbarländer im Sachkunde-
+unterricht lernen und dass Österreich und die Schweiz für zwei
+deutschsprachige Kinder näher liegen als Rumänien. Dagegen spricht, dass
+die Reihenfolge nach Bekanntheit gebaut ist und fünf kleine Länder auf den
+vorderen Rängen sie verschieben. **Zwölf würden sechzehn.**
+
+Solange das offen ist, gibt es kein Abzeichen „alle Nachbarn von
+Deutschland" — obwohl der ANTON-Abgleich genau diesen Satz als Beispiel
+nennt.
 
 ---
 
