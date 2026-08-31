@@ -315,10 +315,17 @@ export const PROBEN = [
     sagt:'ist die richtige' },
 
   // Fionas Rechenkachel steht auch bei Lea. Eine davon ist die falsche.
+  /* Der Eingriff kam eine Weile lang NICHT an, und die Probe hat es
+   * selbst gemeldet: `fehlt: "wer:['fiona']"` konnte nie zutreffen, weil
+   * dieser Text seit der Schreibwelt SECHSMAL in `dist` steht - fuenf
+   * bleiben stehen, wenn man einen entfernt. Ein Eingriff, der nicht
+   * ankommt, sieht aus wie ein bestandenes Tor; hier hat nur der
+   * Ankunftstest davor bewahrt. Jetzt am ganzen Satz verankert, der genau
+   * einmal vorkommt. */
   { n:'die Rechenebene gehört plötzlich beiden Kindern', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"    art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },",
     ersatz:"    art:'rechnen', mischung: Rechnen.MISCHUNG_FIONA },",
-    an:{ ...DIST, fehlt:"wer:['fiona']" },
+    an:{ ...DIST, fehlt:"art:'rechnen', wer:['fiona']" },
     sagt:'gehört fiona' },
 
   /* Und die Weiche selbst: ohne sie landet die Rechenaufgabe auf dem

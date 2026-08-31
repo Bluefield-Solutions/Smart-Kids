@@ -28,7 +28,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run schnell`** | bei **jeder** Änderung | **~54 s** (gemessen 53,5 s, 32 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
 | `npm run tor` | wenn du unsicher bist, sonst gar nicht | **~100 s** (gemessen 99,9 s; nacheinander wären es 10:20) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
+| Runner, nachts | automatisch | **~19 min** (gemessen 1157 s), ohne dich | `npm run proben`: alle 200 Gegenproben, 6 nebeneinander |
 
 **Die Regel ist einfach: du fährst `schnell`, der Runner fährt den Rest.**
 
@@ -92,7 +92,11 @@ npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
                    der nächtliche Lauf hält sie frisch.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Läuft nachts auf dem Runner; hier nur, wenn du ein Tor
-                   geändert hast. Ausgewählt wird mit ARGUMENTEN, ohne
+                   geändert hast. Sechs Arbeiter, GEWICHTET verteilt: jede
+                   Probe trägt ihre gemessene Dauer im Stand, und der Läufer
+                   packt danach (`-- --arbeiter=N` setzt die Zahl).
+                   Vorher reihum und 39 min — dabei lief in den letzten
+                   zehn Minuten genau ein Prozess. Ausgewählt wird mit ARGUMENTEN, ohne
                    Strich: `-- smoke` fährt alle Proben dieses Tors,
                    `-- "der Ton spielt auch"` eine einzelne (Teilwort
                    des Namens genügt). Hier stand `--tor passt` und

@@ -49,7 +49,25 @@ const fahne = (name, weg) => (process.argv.find(a => a.startsWith(`--${name}=`))
  * gesunden Lauf teilen (`istGesund`). Auseinandergerissen wuerde der
  * mehrfach gefahren, und der ist beim Rauchtest so teuer wie eine Probe.
  */
-const ARBEITER = Math.max(1, Math.min(4, +fahne('arbeiter', '3')));
+/* SECHS, gerechnet aus den gemessenen Zeiten des Laufs vom 31.08.2026
+ * (200 Proben, 33 Gruppen, zusammen 5649 s). Vorhergesagte Wanduhr:
+ *
+ *      n    reihum   gewichtet
+ *      3      2355        1884
+ *      4      2053        1415
+ *      5      2268        1132
+ *      6      1642        1057   <- hier
+ *     10      1376        1057
+ *
+ * Die Vorhersage fuer „reihum, 3" lautete 2355 s, gemessen wurden 2348 -
+ * das Modell ist am echten Lauf geprueft und nicht geraten.
+ *
+ * Ab sechs bringt kein weiterer Arbeiter etwas: die schwerste EINZELNE
+ * Gruppe ist `ansicht` mit 1057 s, und eine Gruppe teilt sich nicht - ihre
+ * Proben teilen sich den gesunden Lauf, das ist ja der Sinn der Gruppe.
+ * Wer unter 1057 s will, muss die Gruppe aufbrechen und dafuer den
+ * gesunden Lauf mehrfach bezahlen; das ist eine eigene Runde. */
+const ARBEITER = Math.max(1, Math.min(8, +fahne('arbeiter', '6')));
 const TEIL = fahne('teil', '');                  // „i/n" — nur im Kind gesetzt
 const ERGEBNIS = fahne('ergebnis', '');          // wohin das Kind sein Ergebnis schreibt
 const KOPIE_NAME = fahne('kopie', '.probenbaum');
@@ -399,13 +417,60 @@ const umg = (p) => JSON.stringify(p.stets || {});
 const gruppeVon = (p) => p.tor + ' ' + (p.args || []).join(' ') + ' ' + umg(p);
 const gruppen = [...new Set(alleGewaehlt.filter(p => !p.nachStand).map(gruppeVon))];
 
-/* Im Kind: nur der eigene Teil. Reihum nach Gruppen, damit die Arbeit
- * ungefaehr gleich faellt — die Gruppen sind sehr unterschiedlich gross,
- * aber die teuren (`smoke`) sind auch die zahlreichen. */
+/* Im Kind: nur der eigene Teil — GEWICHTET verteilt, nicht reihum.
+ *
+ * Hier stand „reihum nach Gruppen, damit die Arbeit ungefaehr gleich
+ * faellt — die Gruppen sind sehr unterschiedlich gross, aber die teuren
+ * sind auch die zahlreichen". Der zweite Halbsatz stimmt nicht: gemessen
+ * (200 Proben, 33 Gruppen, zusammen 5649 s) traegt `ansicht` allein
+ * 1057 s und `smoke --nur=ablage` 974, waehrend zwoelf Gruppen unter
+ * zehn Sekunden liegen. Reihum bekam ein Kind 2355 s und die anderen
+ * standen still - der Lauf dauerte 2348 s, und in den letzten zehn
+ * Minuten arbeitete genau ein Prozess.
+ *
+ * Verteilt wird deshalb gierig nach GEWICHT: die schwerste Gruppe zuerst,
+ * immer in den bis dahin leichtesten Topf. Dasselbe Verfahren wie bei
+ * `smoke --teil` (P2), aus demselben Grund.
+ *
+ * Das Gewicht kommt aus dem STAND - `s` je Probe, beim letzten Lauf
+ * gemessen. Wer keinen Wert hat (neue Probe), bekommt den Mittelwert der
+ * anderen: das ist besser als null, denn eine neue Probe mit Gewicht null
+ * landete immer im vollsten Topf. Fehlt der Stand ganz, faellt es auf
+ * reihum zurueck - dann ist nichts gemessen, und Raten waere schlechter
+ * als die alte Ordnung.
+ */
+const gewichtVon = (() => {
+  // Der Stand wird HIER eigens gelesen: `bisher` entsteht erst weiter
+  // unten, und die Verteilung faellt weiter oben. Zwei Leser derselben
+  // Datei, kein zweiter Inhalt.
+  const stand = fs.existsSync(STAND)
+    ? (JSON.parse(fs.readFileSync(STAND, 'utf8')).proben || {}) : {};
+  const werte = PROBEN.map(p => stand[p.n]?.s).filter(x => typeof x === 'number');
+  if (!werte.length) return null;
+  const mittel = Math.round(werte.reduce((a, b) => a + b, 0) / werte.length);
+  return (p) => (typeof stand[p.n]?.s === 'number' ? stand[p.n].s : mittel);
+})();
+
 const auswahl = (() => {
   if (!TEIL) return alleGewaehlt;
   const [i, n] = TEIL.split('/').map(Number);
-  const meine = new Set(gruppen.filter((_, k) => k % n === i));
+  let meine;
+  if (!gewichtVon) {
+    meine = new Set(gruppen.filter((_, k) => k % n === i));
+  } else {
+    const last = new Map(gruppen.map(g => [g, 0]));
+    for (const p of alleGewaehlt) {
+      if (p.nachStand) continue;
+      const g = gruppeVon(p);
+      last.set(g, (last.get(g) || 0) + gewichtVon(p));
+    }
+    const toepfe = [...Array(n)].map(() => ({ s: 0, gruppen: [] }));
+    for (const [g] of [...last.entries()].sort((a, b) => b[1] - a[1])) {
+      const leichtester = toepfe.reduce((a, b) => (b.s < a.s ? b : a));
+      leichtester.s += last.get(g); leichtester.gruppen.push(g);
+    }
+    meine = new Set(toepfe[i].gruppen);
+  }
   return alleGewaehlt.filter(p => !p.nachStand && meine.has(gruppeVon(p)));
 })();
 
@@ -769,8 +834,16 @@ const standSchreiben = (aufVorschuss = []) => {
   const vorschuss = new Set(aufVorschuss.map(p => p.n));
   const proben = {};
   for (const p of PROBEN) {
-    if (angeschlagen.has(p.n) || vorschuss.has(p.n)) proben[p.n] = { commit: kopf, zeit: heute };
-    else if (bisher[p.n]) proben[p.n] = bisher[p.n];
+    /* `s` ist die gemessene Dauer dieser Probe - die Zahl, nach der der
+     * naechste Lauf die Arbeit verteilt. Sie wird nur ueberschrieben,
+     * wenn diese Probe wirklich gelaufen ist; ein Teillauf, der sie nicht
+     * gefahren hat, soll den alten Wert nicht mit einer Null ersetzen. */
+    const gemessen = zeiten.find(z => z.n === p.n);
+    if (angeschlagen.has(p.n) || vorschuss.has(p.n))
+      proben[p.n] = { commit: kopf, zeit: heute,
+                      s: gemessen ? Math.round(gemessen.s) : bisher[p.n]?.s };
+    else if (bisher[p.n]) proben[p.n] = { ...bisher[p.n],
+                      ...(gemessen ? { s: Math.round(gemessen.s) } : {}) };
   }
   schreibeStand(JSON.stringify({
     form: 2, zeit: heute,

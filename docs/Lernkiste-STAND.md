@@ -6332,3 +6332,105 @@ Dazu vergleicht die Nachzählung im Läufer jetzt **Stücke** statt Abschnitte
 vollständig, und niemand sähe, dass ein Profil in keinem Teil läuft.
 
 200 Gegenproben.
+
+---
+
+## P6 · Der Probenlauf: 39 Minuten auf 19
+
+Der Gegenprobenlauf war die letzte Bahn, die niemand vermessen hatte.
+Zuerst die Grundlinie, ganz gefahren:
+
+```
+200 Proben, 3 Arbeiter nebeneinander   2348 s = 39,1 min
+```
+
+Und beim Zusehen der eigentliche Befund: **nach 32 Minuten lief noch genau
+ein Prozess.** Die anderen zwei waren längst fertig.
+
+### Reihum ist keine Verteilung
+
+Im Läufer stand: „Reihum nach Gruppen, damit die Arbeit ungefähr gleich
+fällt — die Gruppen sind sehr unterschiedlich groß, aber die teuren sind
+auch die zahlreichen." Der zweite Halbsatz war eine Vermutung, und sie ist
+falsch. Aus dem Lauf gerechnet:
+
+```
+200 Proben · 33 Gruppen · zusammen 5649 s
+ansicht 1057 s · smoke --nur=ablage 974 · passt 702 · smoke --nur=durchgang 485
+… und zwölf Gruppen unter zehn Sekunden
+```
+
+### Erst rechnen, dann fahren
+
+Ein Versuch kostet 39 Minuten — zu teuer, um Einstellungen durchzuprobieren.
+Also aus den gemessenen Zeiten die Packung **durchgespielt**, statt sie zu
+raten:
+
+```
+ n    reihum   gewichtet     (vorhergesagte Wanduhr)
+ 3      2355        1884
+ 4      2053        1415
+ 5      2268        1132
+ 6      1642        1057
+10      1376        1057
+```
+
+Die Vorhersage für die heutige Einstellung lautete **2355 s**, gemessen
+waren **2348**. Damit ist das Modell am echten Lauf geprüft und nicht bloß
+plausibel — und die Zeile „reihum, 5 ist schlechter als reihum, 4" zeigt
+nebenbei, wie unberechenbar Reihum ist.
+
+Verteilt wird jetzt gierig nach Gewicht: die schwerste Gruppe zuerst, immer
+in den bis dahin leichtesten Topf. Dasselbe Verfahren wie bei `smoke --teil`
+(P2), aus demselben Grund.
+
+### Woher das Gewicht kommt
+
+Aus dem **Stand**: jede Probe trägt seit diesem Umbau ihre gemessene Dauer
+(`s`) neben ihrem Nachweis. Eine neue Probe ohne Wert bekommt den Mittelwert
+der anderen — nicht null, denn null landete immer im vollsten Topf. Fehlt
+der Stand ganz, fällt es auf reihum zurück: dann ist nichts gemessen, und
+Raten wäre schlechter als die alte Ordnung.
+
+Die 200 Werte aus der Grundlinie sind eingetragen, damit der erste Lauf nach
+dem Umbau schon gewichtet fährt statt erst der zweite.
+
+### Gemessen
+
+```
+vorher    3 Arbeiter, reihum       2348 s = 39,1 min
+nachher   6 Arbeiter, gewichtet    1157 s = 19,3 min
+vorhergesagt waren               1057 s
+```
+
+Die 100 s Unterschied zur Vorhersage sind die **Konkurrenz der Prozesse**:
+sechs Chromium auf vier Kernen machen jede einzelne Probe langsamer, und
+das kennt das Modell nicht. Es sagt die Packung voraus, nicht die Physik.
+
+Mehr als sechs Arbeiter bringen nichts: die schwerste **einzelne** Gruppe
+ist `ansicht` mit 1057 s, und eine Gruppe teilt sich nicht — ihre Proben
+teilen sich den gesunden Lauf, das ist ja ihr Sinn. Wer darunter will, muss
+die Gruppe aufbrechen und den gesunden Lauf mehrfach bezahlen.
+
+### Vier Proben, die nicht mehr beweisen
+
+Der Lauf hat ausserdem gemeldet, was sonst niemand fragt:
+
+- **die Rechenebene gehört plötzlich beiden Kindern** — der Eingriff kam
+  nicht an. `fehlt: "wer:['fiona']"` konnte nie zutreffen, weil dieser Text
+  seit der Schreibwelt **sechsmal** in `dist` steht; fünf bleiben stehen,
+  wenn man einen entfernt. Jetzt am ganzen Satz verankert, der genau einmal
+  vorkommt. **Behoben.**
+- **eine Spalte fehlt in der Profiltabelle** — `smoke` wird rot, aber mit
+  einer anderen Meldung.
+- **die umgekehrte Frage kommt auch für Winzlinge** — `smoke` bleibt grün,
+  obwohl der Fehler drin ist.
+- **die Buchstabenerkennung nimmt alles an** — `schreiben` wird rot, aber
+  nicht deswegen.
+- **eine falsche Antwort bleibt stumm** — der Suchtext trifft nicht mehr.
+
+Die vier offenen sind **nicht** in dieser Runde behoben: jede ist eine
+eigene Untersuchung am Tor, nicht am Läufer. Sie stehen hier, damit sie
+nicht als „schon bekannt" untergehen.
+
+196 von 200 Gegenproben schlagen an.
