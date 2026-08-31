@@ -554,7 +554,7 @@ Deutschlands; Nachbarschaft ist Weltwissen und steht in keinem Datensatz.
 |---|---|
 | **dieselbe Schwelle wie der Aufkleber** | wer alle drei Stadtstaaten als Aufkleber hat und trotzdem kein Abzeichen bekäme, hätte recht mit „ich hab die doch alle". Ein Abzeichen ist eine Aussage über die MENGE, keine höhere Hürde je Stück. |
 | **genau ein offenes** | der Bildschirm hat diese Lehre schon einmal teuer bezahlt (sechzig leere Kästen). Eines ist der nächste Schritt, zehn sind eine Mahnung. |
-| **die Menge aus dem VOLLEN Vorrat** | sonst ist sie verlierbar — siehe unten. |
+| **die Menge aus dem VOLLEN Vorrat** | sonst stimmt der Satz nicht — siehe unten. |
 | **nichts anbieten, was unerreichbar ist** | Fionas Ländertiefe ist 3; die neun Nachbarn liegen nicht alle darin. |
 | **Ansage am Endbildschirm** | Fiona liest nicht. Ein Abzeichen, das nur dasteht, bekommt sie nicht mit. |
 
@@ -572,10 +572,21 @@ bedient als von einem Kalender.
    die Bildtafel kennt `karte`. Daraus wurde das achte Tor,
    **`abzeichen`**: leere Menge, ganze Menge, fehlendes Bild, und die neun
    Nachbarn gegen die Daten. Vier Gegenproben, alle anschlagend.
-2. Die Menge kam aus dem Vorrat des **Kindes**. Fionas Kontinentvorrat
-   wächst — sie hätte „Du kennst alle Kontinente" mit vier von sechs
-   bekommen und beim nächsten Rundenwechsel wieder **verloren**. Ein
-   Abzeichen, das man verlieren kann, ist keins.
+2. Die Menge kam aus dem Vorrat des **Kindes**. Fionas Ländertiefe ist
+   drei; von den neun Nachbarn Deutschlands liegen sechs darin. Gegen
+   ihren Vorrat gerechnet hätte das Abzeichen „Du kennst alle Nachbarn von
+   Deutschland" behauptet, während sie drei davon nie gesehen hat. Ein
+   Abzeichen, dessen **Satz nicht stimmt**, ist schlimmer als keins: sein
+   Satz ist das Einzige, was es hat.
+
+   **Meine erste Begründung dafür war falsch** — ich hatte geschrieben,
+   sonst ließe sich ein Abzeichen wieder *verlieren*, weil Fionas
+   Kontinentrunde wächst. Die Gegenprobe hat nicht angeschlagen und hatte
+   recht: die Runde wächst genau dann, wenn die Menge voll ist, beide
+   Rechnungen kommen bei den Kontinenten immer zum selben Ergebnis. Und
+   verlieren kann man ohnehin nichts, weil `istGesammelt` den Höchststand
+   liest. Der Unterschied liegt allein bei den Ebenen mit **fester**
+   Tiefe.
 
 **Und ein dritter, im Werkzeug:** `loese()` im Rauchtest zog das Etikett
 auf den **Anker** des Ziels. Bei Berlin (19 pt Radius, ringsum

@@ -3382,6 +3382,20 @@ if (laeuft('abzeichen')) try {
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
+  /* Erst EINMAL nach Europa hinein - sonst sagt die Probe nichts.
+     Im Startbuendel liegen nur zwoelf europaeische Laender (die fuer die
+     Hauptstaedte); die vollen einundfuenfzig kommen erst, wenn die Ebene
+     betreten wird. Ohne diesen Umweg kennt das Buch von den neun Nachbarn
+     gar keinen, und ob die Menge aus dem vollen oder aus Fionas Vorrat
+     kommt, macht keinen Unterschied - beide waeren leer. Gemessen, nicht
+     vermutet: `D.laender.europa.length` war 12 statt 51. */
+  await zurEbenenwahl(p, 'laender:europa');
+  await p.click('[data-ebene="laender:europa"]');
+  await durchVorlaufWenn(p);
+  await p.waitForSelector('.schirm.da .karte svg', { timeout: 25000 });
+  await p.click('.schirm.da #zur');            // das Kreuz fuehrt auf die Pause
+  await p.click('.schirm.da #raus');           // „Übung beenden"
+  await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 25000 });
   await p.click('#buch');
   await p.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
   const beiFiona = await p.evaluate(() => {

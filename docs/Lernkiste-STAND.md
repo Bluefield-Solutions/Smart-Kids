@@ -5577,14 +5577,30 @@ das die drei stillen Ausfälle prüft: eine Menge, die nichts auswählt (das
 Abzeichen erscheint nie), eine, die alles auswählt (es steht beim ersten
 Aufkleber schon da und sagt nichts), und ein Bild, das es nicht gibt.
 
-**Ein Abzeichen ließ sich verlieren.** Die Menge kam aus dem Vorrat des
-Kindes, und Fionas Kontinentvorrat *wächst*: sie hätte „Du kennst alle
-Kontinente" mit vier von sechs bekommen und beim nächsten Rundenwechsel
-wieder verloren. Jetzt kommt die Menge aus dem **vollen** Vorrat der
-Ebene. Damit kann es nicht mehr passieren: die Menge steht fest, und
-`istGesammelt` liest den Höchststand, der nur steigt. Was ein Kind
-dagegen gar nicht erreichen kann — Fionas Ländertiefe ist 3, die neun
-Nachbarn liegen nicht alle darin —, wird ihm nicht angeboten.
+**Ein Abzeichen hätte gelogen.** Die Menge kam aus dem Vorrat des Kindes.
+Fionas Ländertiefe ist drei; von den neun Nachbarn Deutschlands liegen
+sechs darin. Gegen ihren Vorrat gerechnet hieße „alle Nachbarn" also
+„alle sechs, die du sehen kannst" — und darüber stünde „Du kennst alle
+Nachbarn von Deutschland". Ein Abzeichen, dessen Satz nicht stimmt, ist
+schlimmer als keins: sein Satz ist das Einzige, was es hat. Jetzt kommt
+die Menge aus dem **vollen** Vorrat, und was ein Kind gar nicht erreichen
+kann, wird ihm nicht angeboten.
+
+Und hier steht der interessanteste Teil der Runde. Ich habe diese
+Änderung mit einer **falschen Begründung** gebaut: „sonst lässt sich ein
+Abzeichen wieder verlieren, weil Fionas Kontinentrunde wächst." Die
+Gegenprobe dazu hat nicht angeschlagen — und sie hatte recht. Die Runde
+wächst genau dann, wenn die Menge voll ist; bei den Kontinenten kommen
+beide Rechnungen *immer* zum selben Ergebnis. Verlieren kann man
+ohnehin nichts, weil `istGesammelt` den Höchststand liest, und der steigt
+nur. Ich hatte aus einer Aufnahme („Dir fehlen noch 2") auf einen Zustand
+geschlossen, den es nicht geben kann.
+
+Die Änderung war trotzdem richtig — nur aus einem anderen Grund, und der
+gilt nur für die Ebenen mit **fester** Tiefe. Die Gegenprobe steht jetzt
+auf einem Stand, den das Spiel selbst nie erzeugen würde: alle neun
+Nachbarn als gesammelt abgelegt, auch die drei außerhalb ihrer Tiefe.
+Genau der trennt die richtige Rechnung von den beiden falschen.
 
 **Und `loese()` zog auf den Anker.** Der Rauchtest zieht das Etikett auf
 den Anker des Ziels; das ist die Stelle, an der die Beschriftung hängt.
