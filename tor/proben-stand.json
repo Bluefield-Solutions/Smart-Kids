@@ -39,8 +39,12 @@
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
       "zeit": "2026-08-31"
     },
+    "ein gespieltes Land ist gar nicht gebacken": {
+      "commit": "1df3001521e657628cbc6ad3c45b01947fa98713",
+      "zeit": "2026-08-31"
+    },
     "ein gespieltes Land verliert seinen Umriss": {
-      "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
+      "commit": "1df3001521e657628cbc6ad3c45b01947fa98713",
       "zeit": "2026-08-31"
     },
     "das kleinste Gebiet verliert seinen Anker": {
@@ -293,6 +297,10 @@
     },
     "eine offene Kontinentrunde geht wieder zu": {
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
+      "zeit": "2026-08-31"
+    },
+    "die Sprechprobe zaehlt jeden Versuch als verstanden": {
+      "commit": "1df3001521e657628cbc6ad3c45b01947fa98713",
       "zeit": "2026-08-31"
     },
     "die Nadel sucht sich keinen freien Platz mehr": {
