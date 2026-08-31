@@ -697,7 +697,61 @@ nennt.
 
 ---
 
-### D2b · Mehr Abzeichen, wenn diese getragen haben
+### D2b · Mehr Abzeichen, wenn diese getragen haben  ·  ERLEDIGT
+
+**Vier neue, elf zusammen.** Der Maßstab ist der aus D2: die Menge kommt
+aus den **Daten**, nicht aus einer Liste von Kennungen, und der Satz muss
+ohne Fußnote wahr sein.
+
+| Ebene | Abzeichen | Stücke |
+|---|---|---|
+| Länder in Europa | **„Du kennst alle Nachbarn von Deutschland."** | 9 |
+| Hauptstädte (Deutschland) | „Du kennst alle Landeshauptstädte." | 13 |
+| Plus und Minus | „Du kannst alle Minusaufgaben." | 55 |
+| Buchstaben | „Du kennst alle Vokale." | 5 |
+
+Der erste ist **der Satz aus dem ANTON-Abgleich**. Er war der erste Eintrag
+der Tafel, flog in D2 wieder heraus (fünf der neun Nachbarn gab es im Spiel
+nicht) und ist seit D2c erreichbar. `nachbarDE` steht an den Ländern
+selbst — wer ein zehntes Nachbarland einträgt, setzt die Fahne, und das
+Abzeichen zählt von allein weiter.
+
+**Was daran nicht gebaut wurde und warum:** „Du kennst alle Länder in
+Asien" wäre zwölf von achtundvierzig — eine Behauptung, die das Kind
+später als Lüge erlebt. Ein Abzeichen ist ein Satz, und ein Satz muss
+stimmen.
+
+**Die Erreichbarkeitsregel ist zurück.** „Was das Kind nie zu sehen
+bekommt, wird ihm nicht angeboten" stand in D2 schon einmal in
+`abzeichen.js`, fiel mangels Fall wieder heraus — und hat seit D2c genau
+einen: Fiona spielt Europa bis Rang 3, die Nachbarn stehen auf 4 bis 12.
+Ohne die Regel stünde bei ihr ein Ziel, das sie nie erreicht.
+
+Wichtig: das ist **nicht** dasselbe wie „steht heute nicht im Vorrat".
+Fionas Kontinentrunde *wächst* — ihre sechs Kontinente sind alle
+erreichbar, auch wenn heute nur vier drankommen. Die Ländertiefe wächst
+nicht. `erreichbar(ebeneId)` sagt deshalb, was ein Profil **je** zu sehen
+bekommt, und steht neben dem Vorrat, nicht an seiner Stelle.
+
+**Zwei Fehler, beide vom Tor gefunden.** Der `abzeichen`-Prüfstand aus D2
+meldete sofort: „nachbarn-de wählt nichts aus 17 Stücken" (sein eigener
+Vorrat trug die Fahne `nachbarDE` nicht mit) und „alle-landeshauptstaedte
+hängt an der Ebene *hauptstaedte*, die es nicht gibt" (sie fehlte in seiner
+Vorratstabelle). Beide Male hatte das Tor recht, und beide Male lag der
+Fehler an **seiner** Messstelle, nicht an der Tafel — Regel 12.
+
+**Und einer, den nur der Blick fand:** `minus` und `vokal` waren beide eine
+Kachel mit einem Zeichen darin und bei 28 Punkten — der Größe im kurzen
+Querformat — kaum auseinanderzuhalten. Das O steht jetzt frei; neben `abc`,
+dem A, liest es sich als Buchstabe.
+
+Nebenbei berichtigt: `vorrat('hauptstaedte:europa')` hat den Schalter
+`voll` stillschweigend übergangen und immer nach `laenderTiefe` gefiltert.
+Für Abzeichen wäre die Menge damit von der Tiefe des Profils abhängig
+gewesen — genau das, was D2 verhindern wollte.
+
+---
+
 
 Zwölf sind ein Anfang, kein Vorrat. Naheliegend und schon als Regel
 schreibbar: *„Du kennst alle Bundesländer im Osten"* (aus `ort`), *„Du

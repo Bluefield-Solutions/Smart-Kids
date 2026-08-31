@@ -8,6 +8,9 @@ import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE } from '../src/inhalt/erdkunde.js';
+// Die sechzehn Kennungen der Bundeslaender - gebraucht, um einen Stand zu
+// stellen, in dem ein Abzeichen verdient IST.
+import { STAEDTE } from '../src/geo/staedte.js';
 import { hoerAbgleich, GRENZE_NAH } from '../src/vergleich/vergleich.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -3499,9 +3502,74 @@ if (laeuft('abzeichen')) try {
   if (buch.bilder !== buch.knoepfe) merke('abzeichen', new Error(
     `${buch.knoepfe - buch.bilder} Abzeichen stehen ohne Bild da`));
 
+  /* --- D2b: das Nachbarn-Abzeichen, und wer es NICHT bekommt ---------
+   *
+   * Der Satz aus dem ANTON-Abgleich, seit D2c erreichbar: Deutschlands
+   * neun Nachbarn stehen in Europa auf den Raengen 4 bis 12.
+   *
+   * Und genau deshalb braucht es die Gegenrichtung im selben Abschnitt:
+   * Fiona spielt Europa nur bis Rang 3. Fuer sie waere das Abzeichen ein
+   * Ziel, das ewig offen steht - `umfeld.erreichbar` haelt es zurueck.
+   * Ohne diese zweite Haelfte pruefte der Abschnitt nur, DASS es
+   * erscheint, und nicht, dass es beim Falschen ausbleibt.
+   */
+  const buchVon = async (wer, staende) => {
+    const r = await neueSeite({ width: 844, height: 390 }, ctx);
+    await r.evaluate(({ wer, staende }) => new Promise((ja, nein) => {
+      const auf = indexedDB.open('lernkiste', 1);
+      auf.onsuccess = () => {
+        const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+        for (const [schluessel, ids] of Object.entries(staende)) {
+          const st = {};
+          for (const id of ids) st[id] = { fach:4, hoechstes:4, faellig:0 };
+          t.objectStore('fortschritt').put(st, `${wer}:${schluessel}`);
+        }
+        t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+          [`${wer}:bundeslaender`]: true, [`${wer}:laender:europa`]: true } }, 'alles');
+        t.oncomplete = ja; t.onerror = () => nein(t.error);
+      };
+      auf.onerror = () => nein(auf.error);
+    }), { wer, staende });
+    await r.reload({ waitUntil: 'domcontentloaded' });
+    await r.waitForSelector(`[data-profil="${wer}"]`);
+    await r.click(`[data-profil="${wer}"]`);
+    await zurEbenenwahl(r, 'bundeslaender');
+    await r.click('#buch');
+    await r.waitForSelector('.schirm.da .rollen', { timeout: 25000 });
+    const aus = await r.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      return { da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.replace(/\s+/g,' ').trim()),
+               offen: [...s.querySelectorAll('.abz.offen')].map(x => x.textContent.replace(/\s+/g,' ').trim()) };
+    });
+    await r.close();
+    return aus;
+  };
+  // Alle sechzehn Bundeslaender (damit es ueberhaupt ein verdientes gibt,
+  // neben dem das offene stehen darf) und acht der neun Nachbarn.
+  const NACHBARN = ['FRA','POL','NLD','BEL','CZE','AUT','CHE','DNK','LUX'];
+  const alleBL = STAEDTE.map(b => b.id);
+  const beiLea = await buchVon('lea',
+    { bundeslaender: alleBL, 'laender:europa': NACHBARN.slice(0, 8) });
+  if (!/alle Nachbarn von Deutschland/.test(beiLea.offen.join(' ')))
+    merke('abzeichen', new Error('bei Lea fehlt das Nachbarn-Abzeichen — offen steht '
+      + JSON.stringify(beiLea.offen)));
+  if (!/fehlt noch eins/.test(beiLea.offen.join(' ')))
+    merke('abzeichen', new Error('acht von neun Nachbarn, aber die Zahl daneben sagt '
+      + `nicht „fehlt noch eins": ${JSON.stringify(beiLea.offen)}`));
+  // Fiona: dieselbe Lage, nur mit Tiefe 3. Ihre drei erreichbaren Laender
+  // sind gesammelt - und trotzdem darf das Abzeichen nicht auftauchen.
+  const beiFionaEU = await buchVon('fiona',
+    { bundeslaender: alleBL, 'laender:europa': ['RUS','DEU','GBR'] });
+  if (/Nachbarn von Deutschland/.test((beiFionaEU.da.join(' ') + beiFionaEU.offen.join(' '))))
+    merke('abzeichen', new Error('Fiona bekommt „alle Nachbarn von Deutschland" angeboten — '
+      + 'sie spielt Europa nur bis Rang 3 und käme nie hin'));
+
   console.log(`  Abzeichen:                  Fiona ${beiFiona.da.length} verdient, 1 offen („${
     (beiFiona.offen[0] || '').replace(/\s+/g, ' ')}") · `
     + `nach der Runde ${buch.da.length} verdient, alle mit Bild`);
+  console.log(`  Nachbarn-Abzeichen:         Lea „${
+    (beiLea.offen[0] || '(keins)').replace(/\s+/g, ' ')}" · `
+    + `Fiona bekommt es nicht (${beiFionaEU.da.length} verdient, ${beiFionaEU.offen.length} offen)`);
   await p.close(); await q.close();
 } catch (e) { merke('abzeichen', e); }
 

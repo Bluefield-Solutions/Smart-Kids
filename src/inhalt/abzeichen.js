@@ -94,12 +94,21 @@ const REIHENWORT = { 2:'Zweier', 3:'Dreier', 4:'Vierer', 5:'Fünfer', 6:'Sechser
  * Verlieren kann man dadurch nichts: `istGesammelt` liest den
  * Hoechststand, und der steigt nur.
  *
- * Es gibt hier bewusst KEINE zweite Regel „was das Kind nicht erreichen
- * kann, wird ihm nicht angeboten". Sie stand hier eine Runde lang, fuer
- * das Nachbarn-Abzeichen - und mit dem ist sie weggefallen: jede Menge in
- * dieser Tafel liegt vollstaendig in jedem Vorrat, der die Ebene
- * ueberhaupt hat. Eine Regel ohne Fall ist eine Regel, die niemand mehr
- * prueft.
+ * Und es gibt eine zweite Regel: „was das Kind nie zu sehen bekommt,
+ * wird ihm nicht angeboten."
+ *
+ * Sie stand hier schon einmal, fiel mit dem Nachbarn-Abzeichen weg (eine
+ * Regel ohne Fall prueft niemand) - und kommt mit ihm zurueck. Denn seit
+ * D2c gibt es den Fall wieder, und zwar genau einen: Deutschlands neun
+ * Nachbarn liegen auf den Raengen 4 bis 12, und Fiona spielt Europa nur
+ * bis Rang 3. Fuer sie waere „Du kennst alle Nachbarn von Deutschland"
+ * ein Ziel, das ewig offen steht.
+ *
+ * Das ist NICHT dasselbe wie „steht heute nicht im Vorrat". Fionas
+ * Kontinentrunde WAECHST - ihre sechs Kontinente sind alle erreichbar,
+ * auch wenn heute nur vier drankommen. Die Laendertiefe waechst nicht.
+ * Deshalb reicht der Vorrat als Massstab nicht, und `umfeld.erreichbar`
+ * steht daneben: die Menge, die dieses Profil je zu sehen bekommt.
  */
 export const TAFEL = [
   { ebene:'kontinente', id:'alle-kontinente', zeichen:'welt',
@@ -137,6 +146,43 @@ export const TAFEL = [
   { ebene:'schreiben:buchstaben', id:'alphabet', zeichen:'abc',
     titel: () => 'Du kannst das ganze Alphabet.',
     waehlt: (v) => v },
+
+  /* --- D2b: vier weitere, jedes ein Satz ------------------------------ *
+   *
+   * Der Massstab ist derselbe wie in D2: die Menge muss aus den DATEN
+   * kommen, nicht aus einer Liste von Kennungen, und der Satz muss ohne
+   * Fussnote wahr sein. Was daran scheitert, steht nicht hier - „alle
+   * Laender in Asien" waere zwoelf von achtundvierzig und damit eine
+   * Behauptung, die das Kind spaeter als Luege erlebt.
+   */
+
+  /* Der Satz aus dem ANTON-Abgleich - seit D2c erreichbar.
+   *
+   * Er war der erste Eintrag dieser Tafel und flog in D2 wieder heraus:
+   * fuenf der neun Nachbarn kamen im Spiel gar nicht vor. Jetzt kommen
+   * sie vor. `nachbarDE` steht an den Laendern selbst, nicht als Liste
+   * von Kennungen hier - dieselbe Regel wie bei `stadtstaat`. */
+  { ebene:'laender:europa', id:'nachbarn-de', zeichen:'nachbarn',
+    titel: () => 'Du kennst alle Nachbarn von Deutschland.',
+    waehlt: (v) => v.filter(x => x.nachbarDE) },
+
+  { ebene:'hauptstaedte', id:'alle-landeshauptstaedte', zeichen:'krone',
+    titel: () => 'Du kennst alle Landeshauptstädte.',
+    waehlt: (v) => v },
+
+  /* Die andere Haelfte des Rechenvorrats - 55 von 100 Aufgaben.
+   * Ein weiter Weg, und das ist in Ordnung: im Buch steht immer nur EIN
+   * offenes Abzeichen, naemlich das mit den wenigsten fehlenden Stuecken.
+   * Ein fernes Ziel draengt sich also nicht vor. */
+  { ebene:'rechnen:plusminus', id:'minus', zeichen:'minus',
+    titel: () => 'Du kannst alle Minusaufgaben.',
+    waehlt: (v) => v.filter(x => x.rechenart === 'minus') },
+
+  /* Fuenf Stueck - das kleinste Abzeichen der Tafel, und mit Absicht:
+   * Fiona braucht eines, das sie erreicht, bevor das Alphabet voll ist. */
+  { ebene:'schreiben:buchstaben', id:'vokale', zeichen:'vokal',
+    titel: () => 'Du kennst alle Vokale.',
+    waehlt: (v) => v.filter(x => 'AEIOU'.includes(x.zeichen)) },
 ];
 
 /**
@@ -157,6 +203,10 @@ export function abzeichenDer(ebeneId, vorrat, umfeld = {}) {
       // verdient" - eine leere Menge ist immer vollstaendig, und genau so
       // haette jedes Kind sofort jedes Abzeichen.
       if (!teile.length) continue;
+      /* Und was das Kind nie zu sehen bekommt, wird ihm nicht angeboten.
+         `erreichbar` ist optional: fehlt es, gilt alles als erreichbar -
+         so kann dieses Modul weiterhin ohne Profil geprueft werden. */
+      if (umfeld.erreichbar && teile.some(id => !umfeld.erreichbar.has(id))) continue;
       aus.push({
         id: typeof e.id === 'function' ? e.id(wert) : e.id,
         ebene: ebeneId, zeichen: e.zeichen,

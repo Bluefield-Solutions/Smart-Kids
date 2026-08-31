@@ -110,22 +110,27 @@ export const LAENDER = {
        * Eigenschaft des Landes ist, und nur bei den vieren; ueberall
        * sonst wird sie aus dem Namen abgeleitet. */
       wovon:'vom Vereinigten Königreich' },
-    /* --- Die neun Nachbarn, nach Einwohnerzahl (D2c) ----------------- */
-    { a3:'FRA', name:'Frankreich', rang:4, aussprache:['frankreich','frangreich'] },
-    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','pohlen'] },
-    { a3:'NLD', name:'Niederlande', rang:6, aliasse:['Holland'], aussprache:['niederlande','holland'],
+    /* --- Die neun Nachbarn, nach Einwohnerzahl (D2c) ----------------- *
+     *
+     * `nachbarDE` steht an den Laendern selbst, nicht als Liste von
+     * Kennungen im Abzeichenmodul: dieselbe Regel wie `stadtstaat` bei
+     * den Bundeslaendern. Wer ein zehntes Nachbarland eintraegt, setzt
+     * die Fahne - und das Abzeichen zaehlt von allein weiter. */
+    { a3:'FRA', name:'Frankreich', rang:4, nachbarDE:true, aussprache:['frankreich','frangreich'] },
+    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','pohlen'] },
+    { a3:'NLD', name:'Niederlande', rang:6, nachbarDE:true, aliasse:['Holland'], aussprache:['niederlande','holland'],
       wovon:'von den Niederlanden' },
-    { a3:'BEL', name:'Belgien', rang:7, aussprache:['belgien','belgjen'] },
-    { a3:'CZE', name:'Tschechien', rang:8, aliasse:['Tschechische Republik','Tschechei'],
+    { a3:'BEL', name:'Belgien', rang:7, nachbarDE:true, aussprache:['belgien','belgjen'] },
+    { a3:'CZE', name:'Tschechien', rang:8, nachbarDE:true, aliasse:['Tschechische Republik','Tschechei'],
       aussprache:['tschechien','tschechjen','tschechei'] },
-    { a3:'AUT', name:'Österreich', rang:9, aliasse:['Oesterreich'],
+    { a3:'AUT', name:'Österreich', rang:9, nachbarDE:true, aliasse:['Oesterreich'],
       aussprache:['österreich','oesterreich','östereich'] },
-    { a3:'CHE', name:'Schweiz', rang:10, aliasse:['Die Schweiz'],
+    { a3:'CHE', name:'Schweiz', rang:10, nachbarDE:true, aliasse:['Die Schweiz'],
       aussprache:['schweiz','die schweiz','schwaiz'],
       wovon:'von der Schweiz' },
-    { a3:'DNK', name:'Dänemark', rang:11, aliasse:['Daenemark'],
+    { a3:'DNK', name:'Dänemark', rang:11, nachbarDE:true, aliasse:['Daenemark'],
       aussprache:['dänemark','daenemark','dehnemark'] },
-    { a3:'LUX', name:'Luxemburg', rang:12, aliasse:[],
+    { a3:'LUX', name:'Luxemburg', rang:12, nachbarDE:true, aliasse:[],
       aussprache:['luxemburg','luxemburch','luxenburg'] },
     /* --- Und der Rest, ebenfalls nach Einwohnerzahl ------------------ */
     { a3:'ITA', name:'Italien', rang:13, aussprache:['italien','italjen'] },

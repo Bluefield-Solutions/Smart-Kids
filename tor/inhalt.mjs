@@ -413,7 +413,15 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   const VORRAT = {
     kontinente: I.KONTINENTE.map(k => ({ id:k.id })),
     bundeslaender: STAEDTE.map(b => ({ id:b.id, stadtstaat:b.stadtstaat })),
-    'laender:europa': I.LAENDER.europa.map(l => ({ id:l.a3 })),
+    /* Mitgereicht wird, woran die Mengen haengen: `nachbarDE` fuer die
+       Nachbarn Deutschlands, `stadtstaat` fuer die Stadtstaaten. Der
+       erste Anlauf schrieb hier nur `{ id: l.a3 }` - und das Tor meldete
+       prompt, das Nachbarn-Abzeichen waehle nichts aus. Es hatte recht:
+       an SEINEM Vorrat war die Fahne nicht da. */
+    'laender:europa': I.LAENDER.europa.map(l => ({ id:l.a3, nachbarDE:l.nachbarDE })),
+    // Die Landeshauptstaedte: dieselbe Menge wie `vorrat('hauptstaedte')` -
+    // die drei Stadtstaaten haben keine eigene Frage.
+    hauptstaedte: STAEDTE.filter(b => !b.stadtstaat).map(b => ({ id:b.id })),
     'rechnen:reihen': R.reihenVorrat(),
     'rechnen:plusminus': R.vorrat(),
     'schreiben:buchstaben': SCHR.vorrat(),

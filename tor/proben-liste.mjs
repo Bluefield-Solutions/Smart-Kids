@@ -691,8 +691,8 @@ export const PROBEN = [
   // stand die Fuenf zweimal fest hingeschrieben da.
   { n:'ein Rang fehlt in der Länderliste', tor:'inhalt', deckt:'inhalt',
     datei:'src/inhalt/erdkunde.js',
-    such:"    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','pohlen'] },",
-    ersatz:"    { a3:'POL', name:'Polen', rang:99, aussprache:['polen','pohlen'] },",
+    such:"    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','pohlen'] },",
+    ersatz:"    { a3:'POL', name:'Polen', rang:99, nachbarDE:true, aussprache:['polen','pohlen'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"name:'Polen', rang:99" },
     // Ein Rang 99 ist seit D2c keine Bereichsverletzung mehr, sondern
     // eine LUECKE: die Raenge sind je Kontinent lueckenlos 1..n, und ein
@@ -875,8 +875,8 @@ export const PROBEN = [
   // Alias, Variante, 213 Formen.
   { n:'eine Aussprachevariante zeigt aufs falsche Land', tor:'vergleich', deckt:'vergleich',
     datei:'src/inhalt/erdkunde.js',
-    such:"    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','pohlen'] },",
-    ersatz:"    { a3:'POL', name:'Polen', rang:5, aussprache:['polen','griechenland'] },",
+    such:"    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','pohlen'] },",
+    ersatz:"    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','griechenland'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"aussprache:['polen','griechenland']" },
     sagt:'angenommen wurde' },
 
@@ -2055,4 +2055,34 @@ export const PROBEN = [
     ersatz:'  if (false) glattStand()',
     an:{ ...DIST, text:'if (false) glattStand()' },
     sagt:'ohne einen Fehlversuch' },
+
+  /* --- D2b ---------------------------------------------------------- */
+
+  /* Die Erreichbarkeitsregel. Sie stand in D2 schon einmal hier, fiel
+   * mangels Fall wieder heraus, und hat seit D2c wieder genau einen:
+   * Fiona spielt Europa bis Rang 3, Deutschlands Nachbarn stehen auf 4
+   * bis 12. Ohne die Regel bekommt sie ein Ziel angeboten, das sie nie
+   * erreicht - und das ist am Buch zu sehen, nicht am Modul. */
+  { n:'ein unerreichbares Abzeichen wird angeboten', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:A,
+    such:'      if (umfeld.erreichbar && teile.some(id => !umfeld.erreichbar.has(id))) continue;',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'umfeld.erreichbar && teile.some' },
+    sagt:'käme nie hin' },
+
+  /* Und die Menge selbst: sie kommt aus der Fahne `nachbarDE` an den
+   * Laendern, nicht aus einer Liste von Kennungen. Faellt eine Fahne weg,
+   * zaehlt das Abzeichen acht statt neun - und ist bei acht gesammelten
+   * Nachbarn schon VERDIENT statt offen. Ein Abzeichen, das zu frueh
+   * kommt, ist schlimmer als keines: es behauptet etwas Falsches. */
+  { n:'ein Nachbarland verliert seine Fahne', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:E,
+    such:"{ a3:'LUX', name:'Luxemburg', rang:12, nachbarDE:true,",
+    ersatz:"{ a3:'LUX', name:'Luxemburg', rang:12,",
+    /* Geprueft wird in der NACHGELADENEN Datei, nicht im Startbuendel:
+       dort wird `nachbarDE` weggeschnitten, weil im Buendel nur Name,
+       Rang und Aussprache stehen. Die Fahne reist mit der Geometrie. */
+    an:{ datei:'dist/daten/laender-europa.json',
+         fehlt:'"a3":"LUX","name":"Luxemburg","rang":12,"teile":1,"loecher":0,"nachbarDE":true' },
+    sagt:'fehlt noch eins' },
 ];

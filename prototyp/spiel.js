@@ -1135,9 +1135,12 @@ function vorrat(ebeneId, stand = Stand, voll = false){
                  pfad:k.pfad, anker:k.anker }));
   }
   if (art==='laender')
+    // `nachbarDE` wird mitgereicht, damit das Abzeichen „alle Nachbarn von
+    // Deutschland" seine Menge aus den DATEN nimmt (D2b) - wie
+    // `stadtstaat` bei den Bundesländern.
     return D.laender[kont].filter(l=>voll || l.rang<=P.laenderTiefe)
       .map(l=>({ id:l.a3, name:l.name, aliasse:l.aliasse, aussprache:l.aussprache,
-                 pfad:l.pfad, anker:l.anker }));
+                 pfad:l.pfad, anker:l.anker, nachbarDE:l.nachbarDE }));
   if (art==='bundeslaender')
     // `stadtstaat` wird mitgereicht, damit das Abzeichen „die drei
     // Stadtstaaten" seine Menge aus den DATEN nimmt und nicht aus einer
@@ -1164,7 +1167,10 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     // stehen an den Ländern selbst (gebacken), `ablenker` und `falle`
     // kommen aus den Fakten.
     if (kont)
-      return D.laender[kont].filter(l=>l.rang<=P.laenderTiefe && l.hauptstadt)
+      // `voll` gilt hier genauso wie bei den Ländern: die Menge eines
+      // Abzeichens darf nicht mit der Tiefe des Profils wackeln. Diese
+      // Zeile hat `voll` bis D2b stillschweigend übergangen.
+      return D.laender[kont].filter(l=>(voll || l.rang<=P.laenderTiefe) && l.hauptstadt)
         .map(l=>({ id:l.a3, name:l.hauptstadt,
           aliasse:[], aussprache:[l.hauptstadt.toLowerCase()], pfad:l.pfad, anker:l.anker,
           ort:l.ort, gebiet:l.name, wovon:l.wovon, ablenker:l.ablenker||[], falle:l.falle }));
@@ -1173,6 +1179,22 @@ function vorrat(ebeneId, stand = Stand, voll = false){
       ort:b.ort, gebiet:b.name, ablenker:b.ablenker||[], falle:b.falle }));
   }
   return [];
+}
+/**
+ * Was dieses Profil je zu sehen bekommt - oder `null` fuer „alles".
+ *
+ * Gebraucht von den Abzeichen (D2b). NICHT dasselbe wie
+ * `vorrat(id, stand, false)`: Fionas Kontinentrunde WAECHST, ihre sechs
+ * Kontinente sind also alle erreichbar, auch wenn heute nur vier
+ * drankommen. Die Laendertiefe waechst nicht - was ueber `laenderTiefe`
+ * liegt, sieht dieses Profil nie, und ein Abzeichen darauf waere ein
+ * Ziel, das ewig offen steht.
+ */
+function erreichbar(ebeneId){
+  const [art, kont] = ebeneId.split(':');
+  if ((art === 'laender' || art === 'hauptstaedte') && kont)
+    return new Set(D.laender[kont].filter(l => l.rang <= P.laenderTiefe).map(l => l.a3));
+  return null;
 }
 const NAMEN = {};
 D.kontinente.forEach(k=>NAMEN[k.id]=k.name);
@@ -1358,6 +1380,22 @@ const ABZEICHENBILD = {
         + '<path d="M6.6 15.6h10.8M9 4v3.2h6V4" fill="none" stroke-linecap="round"/>',
   abc: '<path d="M12 3 4.6 20.4h4.2l1.3-3.4h3.8l1.3 3.4h4.2z"/>'
      + '<path d="M10.9 13.4h2.2" fill="none" stroke-linecap="round"/>',
+  /* Krone fuer die Landeshauptstaedte, Kachel mit Strich fuer Minus,
+     Kachel mit O fuer die Vokale. Alle drei in der Formensprache, die
+     schon da ist: `reihe` ist dieselbe Kachel mit einem Kreuz. In D2
+     haben drei Motive den Blick nicht bestanden (Schildkroete als
+     Karomuster, Muschel als Heissluftballon) - deshalb hier nichts
+     Gegenstaendliches, wo ein Zeichen genuegt. */
+  krone: '<path d="M3.5 17.5 2 6.5l5 4L12 3l5 7.5 5-4-1.5 11z"/>'
+       + '<path d="M3.9 20.6h16.2" fill="none" stroke-linecap="round"/>',
+  minus: '<rect x="3" y="3" width="18" height="18" rx="4.5"/>'
+       + '<path d="M7.6 12h8.8" fill="none" stroke-linecap="round"/>',
+  /* Freistehend, nicht auf einer Kachel: `minus` ist schon eine Kachel
+     mit einem Strich, und zwei Kacheln mit einem Zeichen darin sind bei
+     28 Punkten (kurzes Querformat) kaum auseinanderzuhalten. Neben `abc`,
+     dem A, liest sich das freistehende O als Buchstabe. */
+  vokal: '<ellipse cx="12" cy="12" rx="6.8" ry="8.6"/>'
+       + '<ellipse cx="12" cy="12" rx="2.9" ry="4.3" fill="none"/>',
   medaille: '<path d="M8.2 2.6 12 9.4 15.8 2.6" fill="none" stroke-linecap="round"/>'
           + '<circle cx="12" cy="15.4" r="6.2"/>'
           + '<path d="M9.4 15.6l1.9 1.9 3.4-3.9" fill="none" stroke-linecap="round"/>',
@@ -1390,7 +1428,8 @@ async function glattSetzen(wert){
  * Sternformeln entstanden.
  */
 function verdiente(ebeneId, stand){
-  return Abzeichen.abzeichenDer(ebeneId, vorrat(ebeneId, stand, true), { name: P.name })
+  return Abzeichen.abzeichenDer(ebeneId, vorrat(ebeneId, stand, true),
+    { name: P.name, erreichbar: erreichbar(ebeneId) })
     .map(a => Abzeichen.stand(a, id => Leitner.istGesammelt(stand, id)))
     .filter(a => a.verdient);
 }
@@ -4144,7 +4183,8 @@ async function forscherbuch(){
    */
   const marken = [];
   for (const { e, st } of staende)
-    for (const a of Abzeichen.abzeichenDer(e.id, vorrat(e.id, st, true), { name: P.name }))
+    for (const a of Abzeichen.abzeichenDer(e.id, vorrat(e.id, st, true),
+                                           { name: P.name, erreichbar: erreichbar(e.id) }))
       marken.push({ ...Abzeichen.stand(a, id => Leitner.istGesammelt(st, id)), ebeneTitel: e.titel });
   const ohneFehler = await glattStand();
   /* „bei Kontinente" waere falsches Deutsch, und die Ebenentitel stehen
