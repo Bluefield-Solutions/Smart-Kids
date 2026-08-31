@@ -44,7 +44,7 @@ const GRENZE = 40;
  * alles, und die Kette ruft es ohne Argument auf - eine Abkuerzung, die man
  * versehentlich nimmt, waere keine.
  */
-const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest'];
+const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest', 'treffer'];
 const gewaehlt = (process.argv.find(a => a.startsWith('--nur=')) || '').slice(6)
   .split(',').filter(Boolean);
 if (gewaehlt.some(a => !ABSCHNITTE.includes(a))) {
@@ -352,6 +352,143 @@ if (laeuft('rest')) {
   const rest = await p4.evaluate(() => document.querySelectorAll('path.geb.drueber').length);
   await schliesse(p4);
   if (rest) fehler.push(`${rest} Gebiete leuchten, ohne dass jemand zieht`);
+}
+
+/* --- 6. Die Trefferflaechen, auf JEDER Karte und am Bildschirm (P6) ----
+ *
+ * Hier wird eine Zahl an ihre Messstelle geholt.
+ *
+ * `tor/inhalt.mjs` hat die Trefferflaechen bisher in Node gerechnet:
+ * `radius * 2 * (470/1000)` - 470 Bildpunkte Kartenbreite, geteilt durch
+ * eine geschaetzte viewBox-Breite von 1000. Beides ist falsch. Die Karte
+ * wird in ihren Kasten EINGEPASST, und auf dem Zielgeraet (844 x 390)
+ * bindet die HOEHE, nicht die Breite. Gemessen in D2c: die Node-Rechnung
+ * sagte 36,1 Punkte fuer die Schweiz, der Browser 24,9 - 35 % daneben.
+ * Und die Vorzeichen kippten: Node sah Oesterreich, Tschechien und Polen
+ * gar nicht als „zu klein", der Browser schon.
+ *
+ * Zwei Zusagen werden hier geprueft, und beide gehen nur am Bildschirm:
+ *
+ *   1. Kein Trefferkreis verschluckt den Anker eines ANDEREN Gebiets.
+ *      Das ist die Regel aus F16 - Berlins Kreis lag auf Brandenburgs
+ *      Anker, und wer „Brandenburg" auf Brandenburgs beste Stelle zog,
+ *      bekam „Das ist Berlin." Der Code haelt sie seither ein; geprueft
+ *      hat sie niemand, und schon gar nicht auf allen sieben Karten.
+ *   2. Was kleiner ist als ein Daumen, hat einen Kreis. Ein Gebiet ohne
+ *      Kreis, das unter 44 Punkten liegt, steht auf der Karte und laesst
+ *      sich nicht treffen.
+ *
+ * Die Anker kommen aus dem GEBAUTEN Stand (`dist/`), nicht aus einer
+ * zweiten Rechnung: es sind dieselben Zahlen, die die App laedt.
+ */
+if (laeuft('treffer')) {
+  const daten = JSON.parse(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8')
+    .match(/<script[^>]*id="daten"[^>]*>([\s\S]*?)<\/script>/)[1]);
+  const ankerVon = {};
+  ankerVon['kontinente'] = daten.kontinente
+    .filter(k => k.anker).map(k => ({ id: k.id, name: k.name, anker: k.anker }));
+  ankerVon['bundeslaender'] = daten.deutschland
+    .filter(b => b.anker).map(b => ({ id: b.id, name: b.name, anker: b.anker }));
+  for (const f of fs.readdirSync(path.join(DIST, 'daten'))) {
+    const m = f.match(/^laender-(.+)\.json$/); if (!m) continue;
+    const j = JSON.parse(fs.readFileSync(path.join(DIST, 'daten', f), 'utf8'));
+    ankerVon[`laender:${m[1]}`] = (j.laender || [])
+      .filter(l => l.anker).map(l => ({ id: l.a3, name: l.name, anker: l.anker }));
+  }
+
+  const zeilen = [];
+  for (const [ebene, gebiete] of Object.entries(ankerVon)) {
+    const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE',
+      viewport: { width: 844, height: 390 } });
+    const q = await ctx.newPage();
+    await q.goto(`http://localhost:${port}/`);
+    // Das tiefste Profil: es spielt alle Laender, also stehen auf der
+    // Karte auch die kleinen. Mit Fiona (Tiefe 3) waere die Messung ein
+    // Ausschnitt und haette Luxemburg nie gesehen.
+    await q.waitForSelector('[data-profil="stephan"]');
+    await q.click('[data-profil="stephan"]');
+    await zurEbenenwahl(q, ebene);
+    await q.click(`[data-ebene="${ebene}"]`);
+    await q.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel',
+      { timeout: 25000 });
+    await durchVorlauf(q);
+    await q.waitForFunction(() => document.querySelector('.schirm.da path.geb'),
+      null, { timeout: 25000 });
+    // Erst wenn `kartenGroesse()` gesetzt hat, stimmt der Massstab -
+    // dieselbe Falle wie oben bei `aufgabe()`.
+    await q.waitForFunction(() => {
+      const k = document.querySelector('.schirm.da .karte');
+      return !!(k && k.style.width && parseFloat(k.style.width) > 0);
+    }, null, { timeout: 5000 });
+    await q.waitForTimeout(200);
+    const m = await q.evaluate((gebiete) => {
+      const s = document.querySelector('.schirm.da');
+      const svg = s.querySelector('.karte svg');
+      const ctm = svg.getScreenCTM();
+      const aufSchirm = (a) => { const pt = svg.createSVGPoint();
+        pt.x = a[0]; pt.y = a[1]; const r = pt.matrixTransform(ctm);
+        return { x: r.x, y: r.y }; };
+      const kreise = [...s.querySelectorAll('#treffer circle')].map(c => {
+        const r = c.getBoundingClientRect();
+        return { id: c.dataset.id, x: r.left + r.width / 2, y: r.top + r.height / 2,
+                 d: +r.width.toFixed(1) };
+      });
+      const kreisVon = new Map(kreise.map(k => [k.id, k]));
+      const flaechen = new Map([...s.querySelectorAll('path.geb')].map(pf => {
+        const r = pf.getBoundingClientRect();
+        return [pf.dataset.id, +Math.max(r.width, r.height).toFixed(1)];
+      }));
+      /* Gelesen wird mit der Regel des SPIELS, nicht mit einer eigenen.
+         `zielUnter` fragt `elementFromPoint`, nimmt einen Trefferkreis
+         vor dem Umriss und liefert dessen Kennung. Eine zweite Rechnung
+         daneben waere eine zweite Wahrheit (Regel 15) - und sie koennte
+         gruen sein, waehrend das Spiel etwas anderes tut. */
+      const liest = (x, y) => {
+        const e = document.elementFromPoint(x, y);
+        if (!e || !e.closest) return null;
+        const k = e.closest('#treffer circle');
+        if (k) return k.dataset.id;
+        const pf = e.closest('path.geb');
+        return pf ? pf.dataset.id : null;
+      };
+      const verschluckt = [], ohneKreis = [];
+      for (const g of gebiete) {
+        if (!flaechen.has(g.id)) continue;      // nicht auf dieser Karte
+        const a = aufSchirm(g.anker);
+        const wird = liest(a.x, a.y);
+        if (wird && wird !== g.id) {
+          // Warum - fuer die Meldung: welcher fremde Kreis liegt darauf?
+          const k = kreise.find(c => c.id !== g.id
+            && Math.hypot(a.x - c.x, a.y - c.y) <= c.d / 2);
+          verschluckt.push({ wer: g.name, wird,
+            vom: k ? k.id : null, radius: k ? k.d / 2 : null,
+            abstand: k ? +Math.hypot(a.x - k.x, a.y - k.y).toFixed(1) : null });
+        }
+        if (flaechen.get(g.id) < 44 && !kreisVon.has(g.id))
+          ohneKreis.push({ name: g.name, gross: flaechen.get(g.id) });
+      }
+      const kb = s.querySelector('.karte').getBoundingClientRect();
+      return { verschluckt, ohneKreis,
+               kasten: `${Math.round(kb.width)}×${Math.round(kb.height)}`,
+               kreise: kreise.sort((x, y) => x.d - y.d).slice(0, 3),
+               n: flaechen.size, klein: [...flaechen.values()].filter(v => v < 44).length };
+    }, gebiete);
+    await q.close(); await ctx.close();
+
+    for (const v of m.verschluckt) fehler.push(
+      `${ebene}: wer auf den Anker von ${v.wer} zeigt, bekommt ${v.wird}`
+      + (v.vom ? ` — dessen Trefferkreis (Radius ${v.radius} pt) liegt darüber, `
+                 + `${v.abstand} pt daneben` : '')
+      + '. Das ist die Stelle, die die App selbst zeigt (F16)');
+    for (const o of m.ohneKreis) fehler.push(
+      `${ebene}: ${o.name} ist ${o.gross} pt groß und hat keine entkoppelte `
+      + 'Trefferfläche — es ist mit dem Finger nirgends zu treffen');
+    zeilen.push(`      ${ebene.padEnd(20)} Karte ${m.kasten.padStart(8)} · `
+      + `${m.klein} von ${m.n} unter 44 pt · kleinste Kreise `
+      + (m.kreise.length ? m.kreise.map(k => `${k.id} ${k.d}`).join(', ') : '(keine)'));
+  }
+  console.log('    Trefferflächen, gemessen im Browser auf 844 × 390:');
+  zeilen.forEach(z => console.log(z));
 }
 
 await b.close(); srv.close();

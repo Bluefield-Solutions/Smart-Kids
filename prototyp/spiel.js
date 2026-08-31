@@ -2981,13 +2981,39 @@ function spielschirm(){
     });
 
     g.innerHTML = mit.filter(n=>n.gross*k<MIN_PT).map(n=>{
-      let rPx = MIN_PT/2;
+      let rPx = MIN_PT/2, naechster = Infinity;
       for (const m of mit) {
         if (m.x.id === n.x.id) continue;
         const d = Math.hypot(n.x.anker[0]-m.x.anker[0], n.x.anker[1]-m.x.anker[1]) * k;
-        if (d > 0) rPx = Math.min(rPx, d * 0.55);
+        if (d > 0) { naechster = Math.min(naechster, d); rPx = Math.min(rPx, d * 0.55); }
       }
       rPx = Math.max(rPx, MIN_REST/2);
+      /* Und der Boden darf die Regel darueber NICHT aufheben.
+       *
+       * Genau das tat er. Drei Zeilen weiter oben steht seit F16 „ein
+       * Trefferkreis darf den Anker eines ANDEREN Gebiets nicht
+       * verschlucken" - und `Math.max(rPx, MIN_REST/2)` hat es wieder
+       * eingerissen, sobald zwei Anker naeher als achtzehn Bildpunkte
+       * beieinanderlagen.
+       *
+       * Gemessen hat es niemand, weil die Zahl in Node gerechnet wurde und
+       * dort mit einem angenommenen Kartenmassstab (P6). Am Bildschirm,
+       * auf 844 x 390, sind es vier Faelle: wer auf den Anker von
+       * Nicaragua zeigt, bekam Costa Rica; Guatemala und Honduras
+       * bekamen El Salvador; die Dominikanische Republik bekam Haiti.
+       *
+       * Gekappt wird knapp DIESSEITS des naechsten fremden Ankers - 0,9
+       * davon. Das ist die kleinstmoegliche Einschraenkung: die Zeile
+       * darueber (`d * 0.55`) kann einen fremden Anker gar nicht
+       * erreichen, nur der Boden konnte es. Ein erster Anlauf mit 0,45
+       * hat auch Berlin, Hamburg und das Saarland um vier Punkte
+       * beschnitten, ohne dass dort etwas zu berichtigen gewesen waere -
+       * gemessen und wieder verworfen.
+       *
+       * Wo auch das nicht reicht - Haiti und die Dominikanische Republik
+       * liegen 4,2 Punkte auseinander -, hilft kein Kreis mehr, sondern
+       * nur eine groessere Karte. Das ist P7. */
+      if (Number.isFinite(naechster)) rPx = Math.min(rPx, naechster * 0.9);
       return `<circle data-id="${n.x.id}" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
         r="${(rPx/k).toFixed(1)}" fill="transparent" style="pointer-events:all"/>`;
     }).join('');

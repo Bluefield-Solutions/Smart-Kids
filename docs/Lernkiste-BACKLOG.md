@@ -807,7 +807,7 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
-### P6 · `beruehrung` rechnet mit einem angenommenen Kartenmaßstab
+### P6 · `beruehrung` rechnete mit einem angenommenen Kartenmaßstab  ·  ERLEDIGT
 
 Das Tor rechnet Trefferflächen mit `KARTE_PX/1000` — 470 Bildpunkte
 geteilt durch die viewBox-Breite, die es auf 1000 schätzt. Gemessen im
@@ -824,6 +824,62 @@ ausgibt. Regel 12, wörtlich: die Zahl und ihre Messstelle gehören zusammen
 
 Gefunden in D2c, als die Node-Rechnung gegen eine Browsermessung gehalten
 wurde, die es zufällig schon gab.
+
+**Umgesetzt — und die Messung hat sofort vier echte Fehler gefunden.**
+
+`npm run ziehen` hat einen Abschnitt `treffer`: er öffnet **jede der sieben
+Karten** auf 844 × 390 und misst, was wirklich da steht. Geprüft werden
+zwei Zusagen, und beide gehen nur am Bildschirm:
+
+1. **Wer auf den Anker eines Gebiets zeigt, bekommt dieses Gebiet.**
+   Gelesen wird mit `elementFromPoint` und der Regel des Spiels —
+   Trefferkreis vor Umriss —, nicht mit einer zweiten Rechnung daneben.
+2. **Was kleiner ist als ein Daumen, hat einen Kreis.**
+
+Der erste Lauf war rot:
+
+```
+laender:nordamerika: wer auf den Anker von Nicaragua zeigt, bekommt CRI
+laender:nordamerika: wer auf den Anker von Guatemala zeigt, bekommt SLV
+laender:nordamerika: wer auf den Anker von Honduras zeigt, bekommt SLV
+laender:nordamerika: wer auf den Anker von Dominikanische Republik zeigt,
+                     bekommt HTI
+```
+
+Das ist **genau die Falle aus F16**, nur auf einer anderen Karte: der
+Zeiger zeigt hin, und wer hinzieht, bekommt den Nachbarn.
+
+**Die Ursache stand drei Zeilen unter der Regel, die sie verletzt.**
+`trefferflaechen()` schrumpft jeden Kreis auf `d · 0,55` des Abstands zum
+nächsten fremden Anker — das kann einen fremden Anker gar nicht erreichen.
+Danach aber hebt `Math.max(rPx, MIN_REST/2)` das wieder auf, sobald zwei
+Anker näher als achtzehn Punkte beieinanderliegen. Der Boden riss die
+Regel ein, unter deren eigenem Kommentar er steht.
+
+Gekappt wird jetzt knapp diesseits des nächsten fremden Ankers (`· 0,9`).
+Ein erster Anlauf mit `0,45` hat auch Berlin, Hamburg und das Saarland um
+vier Punkte beschnitten, wo nichts zu berichtigen war — gemessen und
+verworfen. Was es kostet, in Bildpunkten Durchmesser:
+
+| | vorher | nachher |
+|---|---|---|
+| Bundesländer, Afrika, Asien, Südamerika | — | **unverändert** |
+| Belgien, Luxemburg | 20 | 18,8 |
+| Guatemala | 20 | 11,9 |
+| Haiti, Dominikanische Republik | 20 | **7,6** |
+
+Die letzten beiden liegen 4,2 Punkte auseinander. Dort hilft kein Kreis
+mehr — nur eine größere Karte, und das ist **P7**. Bis dahin gilt: lieber
+ein kleiner Kreis als einer, der den Nachbarn aussperrt. Vorher war die
+Anzeige eine Lüge; jetzt ist sie klein, aber wahr.
+
+**Und `beruehrung` sagt keine Bildpunkte mehr.** Es nennt die vier engsten
+Bundesländer in Karteneinheiten (Bremen 20, Hamburg 35,8, Berlin 38,
+Saarland 68,8 von 1000) und schreibt dazu, dass die Bildpunktzahl in
+`ziehen` gemessen wird — hier wäre sie geraten. Seine harte Zusage bleibt
+und gilt jetzt für **alle** sechzehn statt nur für die kleinen: welches
+Gebiet unter den Daumen fällt, hängt am Bildschirm, und den gibt es in
+Node nicht.
 
 ---
 

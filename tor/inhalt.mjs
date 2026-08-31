@@ -766,47 +766,52 @@ console.log(`    ${Object.values(GEBACKEN).flat().length} Umrisse auf Nadeln gep
 
 /* =================================================== Tor `beruehrung` === */
 console.log('\n  Tor `beruehrung`');
-// Kleinste unterstuetzte Darstellung: iPhone quer, Karte 470 von 844 Punkten.
-const KARTE_PX = 470, MIN_PT = 44;
-const zuKlein = [];
-for (const b of DEUTSCHLAND_FEIN) {
-  const s = STAEDTE.find(x=>x.id===b.id);
-  const durchmesserPx = s.radius * 2 * (KARTE_PX/1000);
-  if (durchmesserPx < MIN_PT) zuKlein.push({ name:b.name, px:+durchmesserPx.toFixed(1) });
-}
-console.log(`    ${zuKlein.length} von ${DEUTSCHLAND_FEIN.length} Gebieten sind kleiner als `
-  + `${MIN_PT} pt und brauchen eine entkoppelte Trefferfläche:`);
-zuKlein.sort((a,b)=>a.px-b.px).forEach(z=>console.log(`      ${z.name.padEnd(24)} ${z.px} pt`));
-hinweise.push(`${zuKlein.length} Gebiete brauchen eine entkoppelte Trefferfläche (Konzept 5.4)`);
-// Ueberlappen sich zwei 44-pt-Kreise, gewinnt das kleinere.
-let paare = 0;
-const mitAnker = STAEDTE.filter(s => Array.isArray(s.anker) && s.anker.length === 2
-  && Number.isFinite(s.anker[0]) && Number.isFinite(s.anker[1]));
-for (let i=0;i<mitAnker.length;i++) for (let j=i+1;j<mitAnker.length;j++) {
-  const a=mitAnker[i], b=mitAnker[j];
-  const d = Math.hypot(a.anker[0]-b.anker[0], a.anker[1]-b.anker[1]) * (KARTE_PX/1000);
-  if (d < MIN_PT) { paare++; hinweise.push(`Trefferkreise überlappen: ${a.name} / ${b.name} (${d.toFixed(0)} pt)`); }
-}
-console.log(`    ${paare} Paare mit überlappenden Trefferkreisen — dort gewinnt das kleinere Gebiet`);
+/* Hier stand eine Zahl in Bildpunkten - und sie war falsch.
+ *
+ * `radius * 2 * (470/1000)`: 470 Punkte Kartenbreite, geteilt durch eine
+ * GESCHAETZTE viewBox-Breite von tausend. Beides trifft nicht zu. Die Karte
+ * wird in ihren Kasten eingepasst, und auf dem Zielgeraet (844 x 390)
+ * bindet die HOEHE. Gemessen in D2c gegen den Browser: 36,1 Punkte gegen
+ * 24,9 fuer die Schweiz, rund 35 % daneben - und die Vorzeichen kippten,
+ * Node sah drei Laender gar nicht als „zu klein", die der Browser sah.
+ *
+ * Regel 12: die Zahl und ihre Messstelle gehoeren zusammen. Die
+ * Bildpunkte stehen deshalb seit P6 in `npm run ziehen` (Abschnitt
+ * `treffer`), gemessen am gebauten Spiel auf allen sieben Karten. Hier
+ * bleibt, was OHNE Bildschirm wahr ist.
+ */
+/* Der Platz, den ein Gebiet hat, als Anteil der Kartenbreite - ein Promille
+ * ist ein Tausendstel der viewBox. Das ist massstabsfrei und veraltet
+ * nicht, wenn sich das Fenster aendert. */
+const promille = (s) => +(s.radius * 2).toFixed(1);
+const nachPlatz = [...STAEDTE].filter(s => Number.isFinite(s.radius))
+  .sort((a, b) => a.radius - b.radius);
+console.log(`    Die vier engsten Bundesländer, in Karteneinheiten von 1000: `
+  + nachPlatz.slice(0, 4).map(s => `${s.name} ${promille(s)}`).join(' · '));
+console.log('    Wieviel das in Bildpunkten ist, misst `npm run ziehen` am Browser —'
+  + ' hier wäre es geraten.');
 
-// Bis hierher hat `beruehrung` nur BERICHTET. `npm run proben` hat das
-// gemeldet: ein Tor ohne einen einzigen Fehlerpfad kann nicht rot werden,
-// und von aussen sieht das aus wie eines, das alles bestanden hat.
-//
-// Die harte Zusage, die es zu bewachen gibt: die App baut die entkoppelte
-// Trefferflaeche aus dem ANKER (`formen.filter(x => x.anker)`). Ein Gebiet,
-// das zu klein ist und keinen Anker hat, bekommt keinen Kreis - und ist mit
-// dem Finger dann an KEINER Stelle zu treffen. Es steht in den Daten, wird
-// gezaehlt, erscheint auf der Karte und laesst sich nicht spielen.
+/* Die harte Zusage, die es zu bewachen gibt: die App baut die entkoppelte
+ * Trefferflaeche aus dem ANKER (`formen.filter(x => x.anker)`). Ein Gebiet
+ * ohne Anker bekommt keinen Kreis - und ist mit dem Finger dann an KEINER
+ * Stelle zu treffen. Es steht in den Daten, wird gezaehlt, erscheint auf
+ * der Karte und laesst sich nicht spielen.
+ *
+ * Geprueft werden ALLE, nicht nur die kleinen: welches Gebiet unter den
+ * Daumen faellt, haengt am Bildschirm, und den gibt es hier nicht. Ein
+ * Gebiet ohne Anker ist auf irgendeiner Groesse ein Gebiet ohne
+ * Trefferflaeche. (`topologie` prueft dieselbe Sache fuer alle 87
+ * gespielten Gebiete; hier steht die Zusage, die den Finger betrifft.)
+ */
 {
-  const ohneAnker = zuKlein
-    .map(z => STAEDTE.find(x => x.name === z.name))
-    .filter(s => !s || !Array.isArray(s.anker) || s.anker.length !== 2
-      || !Number.isFinite(s.anker[0]) || !Number.isFinite(s.anker[1]));
+  const ohneAnker = STAEDTE.filter(s => !Array.isArray(s.anker) || s.anker.length !== 2
+    || !Number.isFinite(s.anker[0]) || !Number.isFinite(s.anker[1]));
   pruefe(ohneAnker.length === 0,
-    `${ohneAnker.length} zu kleine Gebiete haben keinen Anker und damit keine `
-    + `Trefferfläche — sie sind mit dem Finger nicht zu treffen`
+    `${ohneAnker.length} Gebiete haben keinen Anker und damit keine `
+    + 'Trefferfläche — sie sind mit dem Finger nicht zu treffen'
     + (ohneAnker[0] ? ` (${ohneAnker.map(s => s?.name ?? '?').join(', ')})` : ''));
+  console.log(`    ${STAEDTE.length - ohneAnker.length} von ${STAEDTE.length} Gebieten `
+    + 'haben einen Anker und damit eine entkoppelte Trefferfläche');
 }
 
 /* ====================================================== Tor `marken` ==== */

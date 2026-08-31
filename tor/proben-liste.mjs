@@ -1182,6 +1182,26 @@ export const PROBEN = [
     sagt:'zählt weiter statt neu anzufangen' },
 
   /* --- ziehen (fünf) ------------------------------------------------ */
+  /* P6: der Boden reisst die Regel wieder ein.
+   *
+   * `Math.max(rPx, MIN_REST/2)` hat die Zeile darueber aufgehoben, sobald
+   * zwei Anker naeher als achtzehn Bildpunkte beieinanderlagen. Gefunden
+   * hat das keiner der siebzehn Tore, weil die Zahl in Node gerechnet
+   * wurde - mit einem angenommenen Kartenmassstab. Am Bildschirm sind es
+   * vier Faelle: wer auf den Anker von Nicaragua zeigt, bekommt Costa
+   * Rica; Guatemala und Honduras bekommen El Salvador; die Dominikanische
+   * Republik bekommt Haiti.
+   *
+   * Der Eingriff hebt die Kappung auf, ohne sie zu loeschen - dann steht
+   * die Zeile noch da und tut nichts, und genau das ist der Zustand, den
+   * ein Tor merken muss. */
+  { n:'der Boden verschluckt wieder den Nachbarn', tor:'ziehen', bauen:true,
+    args:['--nur=treffer'], datei:D,
+    such:'rPx = Math.min(rPx, naechster * 0.9);',
+    ersatz:'rPx = Math.min(rPx, naechster * 99);',
+    an:{ ...DIST, text:'naechster * 99' },
+    sagt:'wer auf den Anker von' },
+
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 0;',
     an:{ ...DIST, text:'NACHSICHT = 0' }, sagt:'Nachsicht nur' },
