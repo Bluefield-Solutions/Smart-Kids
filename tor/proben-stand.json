@@ -733,6 +733,10 @@
     "eine fehlerfreie Runde wird nicht festgehalten": {
       "commit": "8740715a1a2d9781f9e69c5aec33840a89947873",
       "zeit": "2026-08-31"
+    },
+    "ein Nachbarland verliert seine Fahne": {
+      "commit": "06d6075543b8f425fee3d865ba9775fc25ab46a9",
+      "zeit": "2026-08-31"
     }
   }
 }

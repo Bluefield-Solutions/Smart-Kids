@@ -3524,8 +3524,8 @@ if (laeuft('abzeichen')) try {
           for (const id of ids) st[id] = { fach:4, hoechstes:4, faellig:0 };
           t.objectStore('fortschritt').put(st, `${wer}:${schluessel}`);
         }
-        t.objectStore('einstellungen').put({ vorlaufGezeigt: {
-          [`${wer}:bundeslaender`]: true, [`${wer}:laender:europa`]: true } }, 'alles');
+        t.objectStore('einstellungen').put({ vorlaufGezeigt:
+          Object.fromEntries(Object.keys(staende).map(k => [`${wer}:${k}`, true])) }, 'alles');
         t.oncomplete = ja; t.onerror = () => nein(t.error);
       };
       auf.onerror = () => nein(auf.error);
@@ -3556,10 +3556,28 @@ if (laeuft('abzeichen')) try {
   if (!/fehlt noch eins/.test(beiLea.offen.join(' ')))
     merke('abzeichen', new Error('acht von neun Nachbarn, aber die Zahl daneben sagt '
       + `nicht „fehlt noch eins": ${JSON.stringify(beiLea.offen)}`));
-  // Fiona: dieselbe Lage, nur mit Tiefe 3. Ihre drei erreichbaren Laender
-  // sind gesammelt - und trotzdem darf das Abzeichen nicht auftauchen.
+  /* Fiona: dieselbe Lage, nur mit Tiefe 3. Ihre drei erreichbaren Laender
+     sind gesammelt - und trotzdem darf das Abzeichen nicht auftauchen.
+
+     Ihre Kontinente sind hier ALLE gesammelt, und das ist kein Beiwerk:
+     im Buch steht genau EIN offenes Abzeichen, naemlich das mit den
+     wenigsten fehlenden Stuecken, bei Gleichstand das erste der Tafel.
+     Der erste Anlauf liess ihre Kontinente offen - „alle Kontinente"
+     fehlten dann sechs, den Nachbarn ebenfalls sechs, und die Tafel
+     entschied fuer die Kontinente. Die Probe „ein unerreichbares
+     Abzeichen wird angeboten" blieb gruen und hat es gemeldet: der
+     Abschnitt konnte den Fall gar nicht sehen. Der zweite Anlauf fuellte
+     die Kontinente - dann gewann „alle Verdopplungen" mit fuenf
+     fehlenden. Also alles, was sie ueberhaupt sammeln kann: Kontinente,
+     Bundeslaender, Landeshauptstaedte, Rechnen, Buchstaben. Dann ist das
+     Nachbarn-Abzeichen das einzige, das noch offen sein KANN - und wenn
+     es trotzdem nicht dasteht, dann weil die Regel es haelt. */
   const beiFionaEU = await buchVon('fiona',
-    { bundeslaender: alleBL, 'laender:europa': ['RUS','DEU','GBR'] });
+    { bundeslaender: alleBL, kontinente: KONTINENTE.map(k => k.id),
+      hauptstaedte: STAEDTE.filter(b => !b.stadtstaat).map(b => b.id),
+      'rechnen:plusminus': Rechnen.vorrat().map(x => x.id),
+      'schreiben:buchstaben': Schreiben.vorrat().map(x => x.id),
+      'laender:europa': ['RUS','DEU','GBR'] });
   if (/Nachbarn von Deutschland/.test((beiFionaEU.da.join(' ') + beiFionaEU.offen.join(' '))))
     merke('abzeichen', new Error('Fiona bekommt „alle Nachbarn von Deutschland" angeboten — '
       + 'sie spielt Europa nur bis Rang 3 und käme nie hin'));
@@ -3569,7 +3587,8 @@ if (laeuft('abzeichen')) try {
     + `nach der Runde ${buch.da.length} verdient, alle mit Bild`);
   console.log(`  Nachbarn-Abzeichen:         Lea „${
     (beiLea.offen[0] || '(keins)').replace(/\s+/g, ' ')}" · `
-    + `Fiona bekommt es nicht (${beiFionaEU.da.length} verdient, ${beiFionaEU.offen.length} offen)`);
+    + `Fiona bekommt es nicht (${beiFionaEU.da.length} verdient, offen: „${
+      (beiFionaEU.offen[0] || '(keins)').replace(/\s+/g, ' ')}")`);
   await p.close(); await q.close();
 } catch (e) { merke('abzeichen', e); }
 
