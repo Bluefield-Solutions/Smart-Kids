@@ -1856,12 +1856,15 @@ export const PROBEN = [
      ausgebaut (Regel 13).
 
      An ihrer Stelle steht der Fehler, der in dieser Datei wirklich schon
-     passiert ist: `.streu` faellt aus der `:not()`-Liste, wird zum
-     Flex-Element in seiner Eigengroesse und schiebt die Kachel auf. */
-  { n:'der Streu rutscht aus seiner Lage und schiebt die Kachel auf', tor:'smoke',
+     passiert ist: `.streu` faellt aus der `:not()`-Liste. Der zweite
+     Anlauf hat das ueber die KACHELHOEHE geprueft und war ebenfalls
+     blind - die vier Kacheln stehen in einem Raster, und ein Raster
+     gleicht die Hoehen einer Reihe an. Geprueft wird jetzt die Deckung
+     des Streus auf der Kachel; ohne die Regel faellt sie auf null. */
+  { n:'der Streu rutscht aus seiner absoluten Lage', tor:'smoke',
     args:['--nur=streu'], bauen:true, datei:V,
     such:'.kachel.wer>*:not(.silhouette,.streu){position:relative}',
     ersatz:'.kachel.wer>*:not(.silhouette){position:relative}',
     an:{ ...DIST, fehlt:':not(.silhouette,.streu){position:relative}' },
-    sagt:'verschieden hoch' },
+    sagt:'der Streu deckt nur' },
 ];
