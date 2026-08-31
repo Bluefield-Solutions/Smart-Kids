@@ -676,6 +676,48 @@ export const PROBEN = [
     an:{ datei:'tor/smoke.mjs', fehlt:"teile: ['tippen']" },
     sagt:'decken die Abschnitte nicht' },
 
+  /* Die Nadeln werden enger und die Fäden länger.
+   *
+   * Zwei Zahlen ohne Referenz: wie eng zwei Nadelkoepfe stehen duerfen
+   * und wie lang ein Faden sein darf. Ein ausgedachtes Soll waere hier
+   * schlimmer als keines, also eine Ratsche - rot nur, wenn es
+   * SCHLECHTER wird. Eine Ratsche, die nie anschlaegt, weil ihr Stand
+   * nicht gelesen wird, waere allerdings gar nichts; deshalb diese Probe.
+   *
+   * Der Eingriff sitzt im STAND, nicht in der App: er behauptet einen
+   * besseren Zustand, als heute gemessen wird. Genau so herum passiert es
+   * auch wirklich - jemand bestaetigt einen Stand von einer anderen
+   * Fenstergroesse und merkt nicht, dass die Karte danach schlechter
+   * geworden ist. */
+  { n:'die Nadelfäden sind länger geworden als bestätigt', tor:'ziehen',
+    args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
+    such:'"faden": 154', ersatz:'"faden": 100',
+    an:{ datei:'tor/nadeln-stand.json', text:'"faden": 100' },
+    sagt:'sagt nicht „hier"' },
+  { n:'zwei Nadelköpfe rücken enger zusammen als bestätigt', tor:'ziehen',
+    args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
+    such:'"eng": 44.3', ersatz:'"eng": 60',
+    an:{ datei:'tor/nadeln-stand.json', text:'"eng": 60' },
+    sagt:'trifft den falschen' },
+
+  /* Ein geteiltes Tor ohne Deckungsart.
+   *
+   * Seit P4 teilen sich drei Tore auf, und der Laeufer zaehlt bei jedem
+   * nach, dass die Teile zusammen alles abdecken. WIE er zaehlt, sagt
+   * `deckung` in `tor/kette-liste.mjs`. Faellt der Eintrag weg, zaehlt er
+   * bei diesem Tor gar nicht mehr - und ein Teillauf, der die Haelfte
+   * vergisst, meldete wieder gruen.
+   *
+   * Geprobt an `inhalt`, nicht an `tor`: `inhalt` liest dieselbe Liste
+   * (fuer den Vergleich mit CLAUDE.md) und faellt beim Einlesen um. Zwei
+   * Sekunden statt zwei Minuten, und geprueft ist dieselbe Zeile. */
+  { n:'ein geteiltes Tor sagt nicht, wie seine Deckung gezählt wird', tor:'inhalt',
+    datei:'tor/kette-liste.mjs',
+    such:", teile: 3, deckung: 'namen' },\n  { name: 'ansicht'",
+    ersatz:", teile: 3 },\n  { name: 'ansicht'",
+    an:{ datei:'tor/kette-liste.mjs', fehlt:"teile: 3, deckung: 'namen' },\n  { name: 'ansicht'" },
+    sagt:'wie der Läufer die Deckung nachzählt' },
+
   /* --- die Kette selbst ------------------------------------------------
    *
    * Solange die Kette eine `&&`-Zeile war, gab die Shell den Rueckgabewert

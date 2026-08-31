@@ -7,6 +7,7 @@ import { istUmgekehrt, zeigeAufKarte, zielPunkt, starte, zurEbenenwahl,
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
+import { teilVon, meldeTeil } from './teilen.mjs';
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
@@ -706,7 +707,7 @@ const BRAUCHT = { ablage: ['spielen'] };
  * altern, ohne dass etwas kaputtgeht - der Lauf wird dann nur ungleicher.
  * Was NICHT altern darf, ist die Vollstaendigkeit: dass die Teile
  * zusammen alle vierzehn Abschnitte fahren, zaehlt `tools/kette.mjs` nach
- * (`ABSCHNITTE i/n:` unten), so wie beim Bildvergleich. Ein Teillauf, der
+ * (`TEILE i/n:` unten), so wie beim Bildvergleich. Ein Teillauf, der
  * die Haelfte vergisst, meldet sonst „gruen", und niemand sieht, worueber.
  */
 const STUECKE = [
@@ -739,13 +740,9 @@ const STUECKE = [
   }
 }
 const TEIL = (() => {
-  const roh = (process.argv.find(a => a.startsWith('--teil=')) || '').split('=')[1];
-  if (!roh) return null;
-  const [i, n] = roh.split('/').map(Number);
-  if (!Number.isInteger(i) || !Number.isInteger(n) || n < 1 || i < 0 || i >= n) {
-    console.error(`\n  smoke: --teil=${roh} ist unbrauchbar. Erwartet wird i/n mit 0 <= i < n.\n`);
-    process.exit(2);
-  }
+  const t = teilVon('smoke');
+  if (!t) return null;
+  const { i, n } = t;
   const toepfe = [...Array(n)].map(() => ({ ms: 0, teile: [] }));
   for (const g of [...STUECKE].sort((a, b) => b.ms - a.ms)) {
     const leichtester = toepfe.reduce((a, b) => (b.ms < a.ms ? b : a));
@@ -780,9 +777,7 @@ const laeuft = (t) => (!gewaehlt || gewaehlt.has(t)) && !abbruch();
  * dieser Teil faehrt und was es insgesamt gibt - sonst muesste der Laeufer
  * die vierzehn Namen ein zweites Mal fuehren - was zweimal dasteht,
  * veraltet einmal (Regel 6). */
-if (TEIL)
-  console.log(`  ABSCHNITTE ${TEIL.i + 1}/${TEIL.n}: ${[...gewaehlt].sort().join(',')}`
-    + `  VON: ${[...ABSCHNITTE].sort().join(',')}`);
+if (TEIL) meldeTeil('smoke', TEIL, [...gewaehlt].sort(), [...ABSCHNITTE].sort());
 else if (gewaehlt)
   console.log(`  (nur ${[...gewaehlt].sort().join(', ')} — `
     + `${ABSCHNITTE.filter(t => !gewaehlt.has(t)).join(', ')} übersprungen)`);

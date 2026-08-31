@@ -210,7 +210,19 @@
       "zeit": "2026-08-31"
     },
     "ein Abschnitt fehlt in der Verteilung des Rauchtests": {
-      "commit": "98c82195ccf76a6719216d0d6f9ff1bddb53dce6",
+      "commit": "d700d7b77716f162edf6b950f7c735cfe4303287",
+      "zeit": "2026-08-31"
+    },
+    "die Nadelfäden sind länger geworden als bestätigt": {
+      "commit": "d700d7b77716f162edf6b950f7c735cfe4303287",
+      "zeit": "2026-08-31"
+    },
+    "zwei Nadelköpfe rücken enger zusammen als bestätigt": {
+      "commit": "d700d7b77716f162edf6b950f7c735cfe4303287",
+      "zeit": "2026-08-31"
+    },
+    "ein geteiltes Tor sagt nicht, wie seine Deckung gezählt wird": {
+      "commit": "d700d7b77716f162edf6b950f7c735cfe4303287",
       "zeit": "2026-08-31"
     },
     "das Becken verschluckt ein rotes Tor": {

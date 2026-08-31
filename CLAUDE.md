@@ -18,15 +18,15 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 ## Wie hier gearbeitet wird: drei Bahnen
 
 Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
-— die ganze Kette dauert 598 s, wenn alles nacheinander läuft, und 588 davon
-liegen im Browser. Seit P1 laufen die Browsertore nebeneinander, seit P2
-zerfallen `smoke` und `ansicht` dabei in je drei Teilläufe, und seit P3 wartet
-`passt` nicht mehr blind: **130 s**.
+— die ganze Kette dauert 610 s, wenn alles nacheinander läuft, und 600 davon
+liegen im Browser. Seit P1 laufen die Browsertore nebeneinander, seit P2/P4
+zerfallen `smoke`, `passt` und `ansicht` dabei in je drei Teilläufe, und seit
+P3 wartet `passt` nicht mehr blind: **125 s**.
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
 | **`npm run schnell`** | bei **jeder** Änderung | **~54 s** (gemessen 53,5 s, 32 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~2 min (gemessen 2:10; nacheinander wären es 9:58) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~2 min (gemessen 2:05; nacheinander wären es 10:10) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
@@ -44,8 +44,8 @@ Wer eine feste Pause einbaut, sieht sie dort sofort. Für ein AUSBLEIBEN
 („Lea hört nichts") geht das nicht: dort wird nicht gewartet, sondern
 später gelesen.
 
-**Was `schnell` NICHT fährt und warum:** `passt` (110 s, nur bei
-Layoutänderungen interessant) · `ziehen` (57 s, ändert sich fast nie) ·
+**Was `schnell` NICHT fährt und warum:** `passt` (110 s, drei Teilläufe, nur
+bei Layoutänderungen interessant) · `ziehen` (57 s, ändert sich fast nie) ·
 `lesbarkeit`, `pwa`, `offline` (hängen an Marken und Manifest) · den
 Rauchtest-Abschnitt `durchgang` (83 s — jede Ebene für beide Kinder, der
 gründlichste und teuerste Teil). Alles davon läuft auf dem Runner.
@@ -73,8 +73,9 @@ npm run tor        die ganze Kette, rund 2 min. Der Runner fährt sie ohnehin
                    bei jedem Push; hier nur, wenn du sie vorher sehen
                    willst. Die billigen Tore laufen nacheinander und
                    brechen beim ersten Rot ab; die sechs Browsertore laufen
-                   NEBENEINANDER, sechs zur Zeit (130 s statt 598 s), wobei
-                   `smoke` und `ansicht` sich noch einmal dritteln — und
+                   NEBENEINANDER, sechs zur Zeit (125 s statt 610 s), wobei
+                   `smoke`, `passt` und `ansicht` sich noch einmal
+                   dritteln — und
                    sie brechen NICHT ab, man sieht also in einem Lauf, was
                    alles rot ist. Mehr Bänder als Kerne, und es hilft
                    trotzdem: diese Tore rechnen kaum, sie warten. Die Liste

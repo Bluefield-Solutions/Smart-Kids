@@ -6065,3 +6065,113 @@ mit Becken 6        130 s
 
 Der Boden ist jetzt `passt` mit 117 s allein. Wer weiter will, teilt es
 nach Größen auf — sieben, die nichts voneinander wissen.
+
+---
+
+## P4 · `passt` in drei — und ein Blick, der sich selbst widerlegt hat
+
+### Zuerst: zwei der vier Schritte waren schon erledigt
+
+Ich hatte als nächste Schritte notiert, den **Wegweiser** (P15) und das
+**Auge in der Kachel** (P16) in `ansicht` einzufrieren — „beide sind nur im
+Markup vom Rauchtest geprüft, im Bild von keinem Tor". Das war falsch. Ein
+Blick in die eingefrorenen Aufnahmen zeigt beides: der Wegweiser steht in
+`quer-nadeln`, das Auge in `quer-ebenen` und `quer-ebenen-voll`. `ansicht`
+vergleicht Bildpunkte — wer eines von beiden entfernt, bekommt drei rote
+Aufnahmen.
+
+Die Lehre ist dieselbe wie sonst, nur diesmal gegen mich: **nachsehen, bevor
+man Arbeit vorschlägt.** Ein Vorschlag ist eine Behauptung über den Zustand,
+und der ist nachzusehen wie jede andere Zahl.
+
+### `passt` teilt sich in drei
+
+Nach P3 war `passt` mit 117 s der längste Einzellauf und damit der Boden der
+Kette. Die sieben Größen wissen nichts voneinander — jede bekommt ihren
+eigenen Kontext, ihre eigene Seite, ihre eigene Reise durch die App.
+
+Verteilt wird **reihum**, nicht nach Gewicht: gemessen kosten alle sieben
+zwischen 15,6 und 15,8 s. Wo nichts zu wiegen ist, wäre eine Waage nur eine
+Stelle mehr, die veraltet.
+
+```
+Kette   124,8 s   (vorher 129,7)
+passt   51,0 · 35,2 · 34,7 s   (3 Größen, 2, 2)
+```
+
+Der Boden ist jetzt wieder `smoke` mit rund 110 s.
+
+### Ein Trennzeichen, das im Text vorkommt, ist keines
+
+Die Nachzähl-Zeile trennt die Namen erst mit Komma. `passt` hat eine Größe,
+die **„iPhone quer, Leiste"** heißt. Beim Nachzählen zerfiel sie in zwei
+Größen, von denen keine existiert — und die Nachzählung hätte gemeldet, ein
+Teil fahre sie nicht. Jetzt `|`.
+
+### Eine Deckungsart, die dastehen MUSS
+
+Drei Tore teilen sich jetzt auf, und der Läufer zählt bei jedem nach. **Wie**
+er zählt, sagt `deckung` in `tor/kette-liste.mjs` — `'namen'` vergleicht
+Mengen, `'zahl'` addiert. Fällt der Eintrag weg, zählte er bei diesem Tor gar
+nicht mehr. Deshalb wirft die Liste beim Einlesen, wenn ein geteiltes Tor
+keine Deckungsart nennt, und eine Gegenprobe nimmt sie weg.
+
+Geprobt an `inhalt`, nicht an `tor`: `inhalt` liest dieselbe Liste und fällt
+beim Einlesen um. **Drei Sekunden statt zwei Minuten**, geprüft ist dieselbe
+Zeile.
+
+Dazu ein Fall, der mir beim Einrichten selbst begegnet ist: `smoke
+--teil=12/13` bekam **keinen einzigen** Abschnitt, weil dreizehn Stücke auf
+dreizehn Töpfe nicht aufgehen, sobald zwei gleich schwer sind. Ein leerer
+Teillauf meldet grün, ohne etwas geprüft zu haben. Er bricht jetzt ab.
+
+### Der Blick auf die Nadeln — und was er falsch gesehen hat
+
+Auf `quer-nadeln` (Nordamerika, 844 × 390) sah die Ecke um Mittelamerika eng
+aus. Mein Augenschein sagte: drei Köpfe hängen neben der Karte im Weißen, und
+zwei liegen fast aufeinander. **Gemessen stimmt beides nicht:**
+
+```
+Karte                    352 × 280 bei x 46, y 98
+Nadelköpfe               7, davon 0 außerhalb des Kartenkastens
+engster Kopfabstand      44,3 pt   (die Fingergrenze ist 44)
+```
+
+Was das Auge **richtig** gesehen hat, ist etwas anderes, und es hat einen
+Namen bekommen: die **Fadenlänge**.
+
+```
+Fäden   54 · 114 · 44 · 154 · 44 · 84 · 74 pt
+```
+
+Einer misst **154 pt auf einer 352 pt breiten Karte** — 44 % der Kartenbreite.
+Ein Kopf, der so weit von seinem Land entfernt liegt, sagt nicht „hier",
+sondern „irgendwo da drüben". Und genau „hier" ist der ganze Zweck der Nadel.
+
+### Zwei Zahlen ohne Referenz — also eine Ratsche
+
+Woraus sollte ein Soll für „engster Kopfabstand" oder „längster Faden"
+kommen? Aus keiner Referenz, die ich habe. Ein ausgedachtes Soll wäre hier
+schlimmer als keines: es stünde entweder sofort rot oder nie.
+
+Also eine Ratsche, wie bei `budget` und `regeln`: was heute gemessen ist,
+steht in `tor/nadeln-stand.json`, und rot wird es nur, wenn es **schlechter**
+wird. Verglichen wird **je Ebene**, nicht über alle — ein kürzerer Faden in
+Europa darf einen längeren in Nordamerika nicht zudecken.
+
+```
+laender:europa        eng 68,3 pt   Faden  64 pt (19 %)
+laender:nordamerika   eng 44,3 pt   Faden 154 pt (44 %)
+```
+
+Zwei Gegenproben greifen in den **Stand**, nicht in die App: sie behaupten
+einen besseren Zustand, als heute gemessen wird. Genau so herum passiert es
+auch wirklich — jemand bestätigt einen Stand von einer anderen
+Fenstergröße und merkt nicht, dass die Karte danach schlechter geworden ist.
+
+**Was damit nicht behoben ist:** die 154 pt selbst. Die Ratsche hält sie
+fest, sie macht sie nicht kürzer. Ob ein Faden über die halbe Karte für ein
+Kind noch lesbar ist, sagt keine Zahl — das ist der nächste Blick, und er
+gehört aufs Gerät, nicht in ein Tor.
+
+198 Gegenproben.

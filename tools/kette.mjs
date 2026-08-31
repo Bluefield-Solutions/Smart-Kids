@@ -159,60 +159,67 @@ const summe = ergebnisse.reduce((n, e) => n + e.ms, 0);
 console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(24)} ${s(Date.now() - a3)} statt `
   + `${s(summe)} nacheinander`);
 
-/* Die Teile von `smoke` muessen ZUSAMMEN alle Abschnitte fahren.
+/* Die Teile eines geteilten Tores muessen ZUSAMMEN alles abdecken.
  *
- * Geprueft wird die MENGE, nicht die Anzahl: zwei Teile, die beide
- * `durchgang` fahren und `schreiben` keiner, kaemen sonst auf vierzehn
- * und niemand saehe es. Die Namen stehen in der Ausgabe des Teillaufs
- * selbst - beide Seiten, „was ich fahre" und „was es gibt" -, damit die
- * Liste der Abschnitte nicht zweimal dasteht und eine der beiden
- * veraltet (Regel 6).
+ * Ein Teillauf, der die Haelfte vergisst, meldet „gruen" - und niemand
+ * sieht, worueber. Eine Aufteilung ist die bequemste Gelegenheit, still
+ * etwas abzuschalten: eine Pruefung, die nie etwas meldet, ist kein
+ * Beweis (Regel 1).
  *
- * Sagt KEIN Teil etwas dazu, ist das ein Fehler und kein Grund
- * durchzuwinken: dann hat die Zeile ihren Namen geaendert, und diese
- * Nachzaehlung prueft seit dem Tag nichts mehr (Regel 1). */
-{
-  const teile = ergebnisse.filter(e => /^smoke \(/.test(e.name));
-  const gefahren = new Set(), alle = new Set();
-  for (const e of teile) {
-    const m = e.aus.match(/ABSCHNITTE \d+\/\d+: ([^\n]*?)\s+VON: ([^\n]*)/);
-    if (!m) continue;
-    for (const t of m[1].split(',').filter(Boolean)) gefahren.add(t.trim());
-    for (const t of m[2].split(',').filter(Boolean)) alle.add(t.trim());
-  }
-  if (teile.length && !alle.size) {
-    console.log(`\n  ${rot('✗')} smoke: kein Teillauf nennt seine Abschnitte `
-      + '(Zeile „ABSCHNITTE i/n: … VON: …") — die Nachzählung prüft nichts mehr.');
-    process.exit(1);
-  }
-  const fehlt = [...alle].filter(t => !gefahren.has(t));
-  if (fehlt.length) {
-    console.log(`\n  ${rot('✗')} smoke: ${fehlt.length} Abschnitte hat kein Teil gefahren — `
-      + fehlt.join(', '));
-    process.exit(1);
-  }
-  if (alle.size)
-    console.log(`    ${''.padEnd(6)}${'gefahrene Abschnitte'.padEnd(24)} `
+ * WIE gezaehlt wird, sagt `deckung` in der Liste, nicht diese Datei -
+ * sonst muesste hier stehen, welches Tor sich wie teilt, und das stuende
+ * dann zweimal da (Regel 6).
+ *
+ *   'namen'  Mengenvergleich an der Zeile `TEILE i/n: a|b  VON: a|b|c`,
+ *            die das Tor selbst schreibt. Faengt auch den Fall, dass zwei
+ *            Teile dasselbe fahren und ein dritter nichts. Getrennt mit
+ *            `|`: „iPhone quer, Leiste" hat ein Komma im Namen.
+ *   'zahl'   „N von M" addieren. Reicht, wo streng nach Index geteilt
+ *            wird.
+ *
+ * Sagt kein Teil etwas dazu, ist das ein Fehler und kein Grund
+ * durchzuwinken: dann hat die Zeile ihren Namen geaendert, und die
+ * Nachzaehlung haette seither nichts mehr gemeldet. */
+for (const t of MIT_BROWSER.filter(x => x.teile)) {
+  const teile = ergebnisse.filter(e => e.name.startsWith(`${t.name} (`));
+  if (!teile.length) continue;
+  if (t.deckung === 'namen') {
+    const gefahren = new Set(), alle = new Set();
+    for (const e of teile) {
+      const m = e.aus.match(/TEILE \d+\/\d+: ([^\n]*?)\s\sVON: ([^\n]*)/);
+      if (!m) continue;
+      for (const x of m[1].split('|').filter(Boolean)) gefahren.add(x.trim());
+      for (const x of m[2].split('|').filter(Boolean)) alle.add(x.trim());
+    }
+    if (!alle.size) {
+      console.log(`\n  ${rot('✗')} ${t.name}: kein Teillauf nennt seinen Anteil `
+        + '(Zeile „TEILE i/n: … VON: …") — die Nachzählung prüft nichts mehr.');
+      process.exit(1);
+    }
+    const fehlt = [...alle].filter(x => !gefahren.has(x));
+    if (fehlt.length) {
+      console.log(`\n  ${rot('✗')} ${t.name}: ${fehlt.length} hat kein Teil gefahren — `
+        + fehlt.join(', '));
+      process.exit(1);
+    }
+    console.log(`    ${''.padEnd(6)}${`${t.name}: gefahren`.padEnd(24)} `
       + `${gefahren.size} von ${alle.size}`);
-}
-
-/* Und dieselbe Frage fuer `ansicht` - nur zaehlbar statt benennbar.
- *
- * Es prueft 32 Aufnahmen; ihre Namen in jede Teilausgabe zu schreiben
- * waere eine lange Zeile fuer wenig mehr Sicherheit, denn anders als bei
- * den Abschnitten teilt `ansicht` streng nach Index und kann dieselbe
- * Aufnahme nicht zweimal vergeben. Gezaehlt reicht hier also. */
-{
-  const teile = ergebnisse.filter(e => /^ansicht \(/.test(e.name));
-  const gezaehlt = teile.map(e => (e.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || [])
-    .slice(1, 4).reduce((n, z) => n + (+z || 0), 0)).reduce((n, z) => n + z, 0);
-  const soll = +((teile[0]?.aus.match(/der (\d+) Aufnahmen/) || [])[1] || 0);
-  if (soll && gezaehlt !== soll) {
-    console.log(`\n  ${rot('✗')} ansicht: ${gezaehlt} von ${soll} Aufnahmen geprüft — `
-      + 'die Teile decken zusammen nicht alles ab.');
-    process.exit(1);
+  } else {
+    const gezaehlt = teile.map(e => (e.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || [])
+      .slice(1, 4).reduce((n, z) => n + (+z || 0), 0)).reduce((n, z) => n + z, 0);
+    const soll = +((teile[0]?.aus.match(/der (\d+) Aufnahmen/) || [])[1] || 0);
+    if (!soll) {
+      console.log(`\n  ${rot('✗')} ${t.name}: kein Teillauf nennt seine Zahl `
+        + '(„der N Aufnahmen") — die Nachzählung prüft nichts mehr.');
+      process.exit(1);
+    }
+    if (gezaehlt !== soll) {
+      console.log(`\n  ${rot('✗')} ${t.name}: ${gezaehlt} von ${soll} geprüft — `
+        + 'die Teile decken zusammen nicht alles ab.');
+      process.exit(1);
+    }
+    console.log(`    ${''.padEnd(6)}${`${t.name}: geprüft`.padEnd(24)} ${gezaehlt} von ${soll}`);
   }
-  if (soll) console.log(`    ${''.padEnd(6)}${'geprüfte Aufnahmen'.padEnd(24)} ${gezaehlt} von ${soll}`);
 }
 
 console.log('');

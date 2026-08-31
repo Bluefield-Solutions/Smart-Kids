@@ -369,7 +369,7 @@ if (laeuft('treffer')) {
       .filter(l => l.anker).map(l => ({ id: l.a3, name: l.name, anker: l.anker }));
   }
 
-  const zeilen = [];
+  const zeilen = [], gemessen = {};
   for (const [ebene, gebiete] of Object.entries(ankerVon)) {
     const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE',
       viewport: { width: 844, height: 390 } });
@@ -416,7 +416,40 @@ if (laeuft('treffer')) {
       const kreisVon = new Map();
       for (const k of kreise)
         if (!kreisVon.has(k.id) || kreisVon.get(k.id).d < k.d) kreisVon.set(k.id, k);
-      const nadeln = [...s.querySelectorAll('#treffer .nadelkopf')].length;
+      /* Die Nadeln, vermessen — nicht nur gezaehlt.
+       *
+       * Angesehen (P4) sah der Nordamerika-Bildschirm auf dem Zielgeraet
+       * eng aus, und das Auge log dabei in beide Richtungen: drei Koepfe
+       * schienen neben der Karte im Weissen zu haengen (sie liegen alle
+       * im Kartenkasten), und der engste Abstand schien viel kleiner als
+       * er ist (44,3 pt, also gerade noch die Fingergrenze).
+       *
+       * Was das Auge richtig sah, ist die FADENLAENGE: einer misst 154 pt
+       * auf einer 352 pt breiten Karte. Ein Kopf, der 44 % der Karte von
+       * seinem Land entfernt liegt, sagt nicht „hier", sondern „irgendwo
+       * da drueben" - und genau „hier" ist der Zweck der Nadel.
+       *
+       * Beide Zahlen sind eine RATSCHE, kein Soll: was heute steht, ist
+       * gemessen und nicht aus einer Referenz abgeleitet, also taugt es
+       * nicht als Grenze. Es taugt aber, um zu merken, wenn es schlechter
+       * wird - und das ist der Zweck. */
+      const kpf = [...s.querySelectorAll('#treffer .nadelkopf')].map(c => {
+        const r = c.getBoundingClientRect();
+        return { x: r.left + r.width/2, y: r.top + r.height/2 };
+      });
+      const fss = [...s.querySelectorAll('#treffer .nadelfuss')].map(c => {
+        const r = c.getBoundingClientRect();
+        return { x: r.left + r.width/2, y: r.top + r.height/2 };
+      });
+      let engsteNadel = Infinity, laengsterFaden = 0;
+      for (let i = 0; i < kpf.length; i++) {
+        if (fss[i]) laengsterFaden = Math.max(laengsterFaden,
+          Math.hypot(kpf[i].x - fss[i].x, kpf[i].y - fss[i].y));
+        for (let j = i+1; j < kpf.length; j++)
+          engsteNadel = Math.min(engsteNadel,
+            Math.hypot(kpf[i].x - kpf[j].x, kpf[i].y - kpf[j].y));
+      }
+      const nadeln = kpf.length;
       const flaechen = new Map([...s.querySelectorAll('path.geb')].map(pf => {
         const r = pf.getBoundingClientRect();
         return [pf.dataset.id, +Math.max(r.width, r.height).toFixed(1)];
@@ -519,6 +552,9 @@ if (laeuft('treffer')) {
       }
       const groessen = [...kreisVon.values()];
       return { verschluckt, ohneKreis, marke, nadeln, nadelFehl, nadelAuf,
+               engsteNadel: Number.isFinite(engsteNadel) ? +engsteNadel.toFixed(1) : null,
+               faden: +laengsterFaden.toFixed(1),
+               kartenBreite: +kb.width.toFixed(1),
                haken: hkn.length, hakenAuf,
                engste: Number.isFinite(engste) ? +engste.toFixed(1) : null,
                nichtTippbar: groessen.filter(k => klein.has(k.id)).map(k => `${k.id} ${k.d}`),
@@ -555,15 +591,67 @@ if (laeuft('treffer')) {
       `${ebene}: wer auf die Nadel von ${n.id} tippt, bekommt `
       + `${n.wird || 'nichts'} — eine Nadel, die auf den Nachbarn zeigt, `
       + 'ist schlimmer als gar keine');
+    if (m.nadeln) gemessen[ebene] = { eng: m.engsteNadel, faden: m.faden };
     zeilen.push(`      ${ebene.padEnd(20)} Karte ${m.kasten.padStart(8)} · `
       + `${m.klein} von ${m.n} unter 44 pt · kleinste Kreise `
       + (m.kreise.length ? m.kreise.map(k => `${k.id} ${k.d}`).join(', ') : '(keine)')
-      + (m.nadeln ? ` · ${m.nadeln} an der Nadel` : '')
+      + (m.nadeln ? ` · ${m.nadeln} an der Nadel, engster Kopfabstand `
+          + `${m.engsteNadel ?? '—'} pt, längster Faden ${m.faden} pt `
+          + `(${(m.faden / m.kartenBreite * 100).toFixed(0)} % der Kartenbreite)` : '')
       + ` · ${m.haken} Haken, engster Abstand ${m.engste ?? '—'} pt`
       + (m.nichtTippbar.length ? ` · nicht antippbar: ${m.nichtTippbar.join(', ')}` : ''));
   }
   console.log('    Trefferflächen, gemessen im Browser auf 844 × 390:');
   zeilen.forEach(z => console.log(z));
+
+  /* --- Die Ratsche für die Nadeln ------------------------------------
+   *
+   * Zwei Zahlen, die niemand aus einer Referenz ableiten kann: wie eng
+   * zwei Nadelkoepfe stehen duerfen und wie lang ein Faden sein darf. Ein
+   * ausgedachtes Soll waere hier schlimmer als keines - es wuerde entweder
+   * sofort rot stehen oder nie.
+   *
+   * Also eine Ratsche: was heute gemessen ist, steht in
+   * `tor/nadeln-stand.json`, und rot wird es nur, wenn es SCHLECHTER wird.
+   * Wer eine Karte umbaut und dabei die Faeden verlaengert, erfaehrt es;
+   * wer sie verkuerzt, bestaetigt den neuen Stand mit `-- --neu`.
+   *
+   * Der Vergleich laeuft je Ebene, nicht ueber alle: ein kuerzerer Faden
+   * in Europa darf einen laengeren in Nordamerika nicht zudecken. Genau so
+   * hat das Grafiktor im Nachbarverzeichnis einmal gemittelt und dabei
+   * zwei von drei Karten unter dem Band durchgelassen. */
+  const NADELSTAND = 'tor/nadeln-stand.json';
+  const NEU = process.argv.includes('--neu');
+  const alt = fs.existsSync(NADELSTAND)
+    ? JSON.parse(fs.readFileSync(NADELSTAND, 'utf8')) : {};
+  if (NEU) {
+    fs.writeFileSync(NADELSTAND, JSON.stringify(gemessen, null, 2) + '\n');
+    console.log(`    Stand neu bestätigt: ${Object.keys(gemessen).length} Ebenen mit Nadeln`);
+  } else {
+    for (const [ebene, jetzt] of Object.entries(gemessen)) {
+      const war = alt[ebene];
+      if (!war) {
+        console.log(`    NEU  ${ebene}: engster Kopfabstand ${jetzt.eng} pt, `
+          + `längster Faden ${jetzt.faden} pt — mit \`-- --neu\` festhalten`);
+        continue;
+      }
+      if (jetzt.eng < war.eng - 0.5) fehler.push(
+        `${ebene}: zwei Nadelköpfe stehen ${jetzt.eng} pt auseinander, bestätigt waren `
+        + `${war.eng} pt — enger heißt, das Kind trifft den falschen. `
+        + '(`npm run ziehen -- --nur=treffer --neu` bestätigt einen neuen Stand)');
+      if (jetzt.faden > war.faden + 0.5) fehler.push(
+        `${ebene}: der längste Nadelfaden misst ${jetzt.faden} pt, bestätigt waren `
+        + `${war.faden} pt — ein Kopf weit weg von seinem Land sagt nicht „hier". `
+        + '(`npm run ziehen -- --nur=treffer --neu` bestätigt einen neuen Stand)');
+    }
+    // Eine Ebene, die IM STAND steht und jetzt keine Nadeln mehr meldet:
+    // entweder ist die Karte besser geworden - oder die Messung hat
+    // aufgehoert zu messen. Das eine sieht aus wie das andere.
+    for (const ebene of Object.keys(alt))
+      if (!gemessen[ebene]) console.log(`    Hinweis: ${ebene} hat keine Nadeln mehr `
+        + '— entweder ist die Karte besser geworden, oder die Messung greift nicht mehr. '
+        + 'Mit `-- --neu` festhalten, wenn es Absicht war.');
+  }
 }
 
 await b.close(); srv.close();

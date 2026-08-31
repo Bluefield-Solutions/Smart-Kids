@@ -58,23 +58,40 @@ export const NACH_DEM_BAU = [
 /* Die Browsertore, laengstes zuerst.
  *
  * `teile` heisst: das Tor kann sich selbst aufteilen und laeuft dann als
- * mehrere Prozesse nebeneinander. Zwei koennen das:
+ * mehrere Prozesse nebeneinander. Drei koennen das:
  *
+ *   `smoke`    verteilt seit P2 GANZE Abschnitte nach gemessenem Gewicht;
+ *              `ablage` und `spielen` bleiben zusammen.
+ *   `passt`    verteilt seit P4 die sieben Geraetegroessen reihum - sie
+ *              kosten gemessen alle dasselbe, da ist nichts zu wiegen.
  *   `ansicht`  prueft N Aufnahmen, die nichts voneinander wissen.
- *   `smoke`    verteilt seit P2 GANZE Abschnitte nach gemessenem Gewicht
- *              (`--teil=i/n`); `ablage` und `spielen` bleiben zusammen.
  *
- * Beide zaehlen im Laeufer nach, dass die Teile zusammen alles abdecken -
- * ein Teillauf, der die Haelfte vergisst, meldete sonst „gruen".
+ * `deckung` sagt, WIE der Laeufer nachzaehlt, dass die Teile zusammen
+ * alles abdecken - ein Teillauf, der die Haelfte vergisst, meldete sonst
+ * „gruen", und niemand saehe es:
+ *
+ *   'namen'  das Tor schreibt `TEILE i/n: a|b  VON: a|b|c` und der
+ *            Laeufer vergleicht MENGEN. Faengt auch den Fall, dass zwei
+ *            Teile dasselbe fahren und ein drittes nichts.
+ *   'zahl'   das Tor meldet „N von M" und der Laeufer addiert. Reicht,
+ *            wo streng nach Index geteilt wird und dieselbe Sache nicht
+ *            zweimal vergeben werden kann.
  */
 export const MIT_BROWSER = [
-  { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000, teile: 3 },
-  { name: 'passt',      datei: 'tor/passt.mjs',      ms: 110000 },
-  { name: 'ansicht',    datei: 'tor/ansicht.mjs',    ms:  79000, teile: 3 },
+  { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000, teile: 3, deckung: 'namen' },
+  { name: 'passt',      datei: 'tor/passt.mjs',      ms: 110000, teile: 3, deckung: 'namen' },
+  { name: 'ansicht',    datei: 'tor/ansicht.mjs',    ms:  79000, teile: 3, deckung: 'zahl' },
   { name: 'ziehen',     datei: 'tor/ziehen.mjs',     ms:  57000 },
   { name: 'lesbarkeit', datei: 'tor/lesbarkeit.mjs', ms:   9000 },
   { name: 'pwa',        datei: 'tor/pwa.mjs',        ms:   4000 },
 ];
+
+/* Ein geteiltes Tor OHNE Deckungsart waere still ungeprueft - genau die
+ * Luecke, gegen die die Deckung da ist. Also hier nachsehen, nicht dort. */
+for (const t of MIT_BROWSER)
+  if (t.teile && !t.deckung)
+    throw new Error(`tor/kette-liste.mjs: \`${t.name}\` teilt sich in ${t.teile}, `
+      + 'sagt aber nicht, wie der Läufer die Deckung nachzählt (`deckung`)');
 
 /** Alle Namen der Kette, in der Reihenfolge, in der sie starten. */
 export const ALLE = [...OHNE_BROWSER, BAU, ...NACH_DEM_BAU, ...MIT_BROWSER].map(t => t.name);

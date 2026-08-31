@@ -21,6 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import { starte, zurEbenenwahl, durchVorlauf, serviere } from './chromium.mjs';
+import { teilVon, meldeTeil } from './teilen.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -39,6 +40,23 @@ const GERAETE = [
   { n:'iPhone quer, Leiste', w:844, h:390, touch:true,
     sicher:{ oben:21, rechts:59, unten:21, links:59 } },
 ];
+
+/* ---------- Teillaeufe: `--teil=i/n` ------------------------------------
+ *
+ * Nach P3 war `passt` mit 117 s der laengste Einzellauf der Torkette und
+ * damit ihr Boden. Die sieben Groessen wissen nichts voneinander - jede
+ * bekommt ihren eigenen Kontext, ihre eigene Seite, ihre eigene Reise
+ * durch die App. Sie liefen trotzdem nacheinander.
+ *
+ * Verteilt wird schlicht reihum, nicht nach Gewicht: gemessen kosten alle
+ * sieben zwischen 15,6 und 15,8 s. Wo nichts zu wiegen ist, waere eine
+ * Waage nur eine Stelle mehr, die veraltet.
+ *
+ * Dass die Teile zusammen alle sieben fahren, zaehlt `tools/kette.mjs`
+ * nach - an der Zeile `TEILE i/n:` unten.
+ */
+const TEIL = teilVon('passt');
+const MEINE = TEIL ? GERAETE.filter((_, k) => k % TEIL.n === TEIL.i) : GERAETE;
 
 /** Kleinste Kante einer Trefferflaeche, Apple HIG. */
 const MIN_PT = 44;
@@ -272,7 +290,9 @@ let gesehen = 0, zuKlein = 0;
 /** Was das Tor mit Warten verbringt. Sichtbar, damit es nicht nachwaechst. */
 const ruhe = { ms: 0, n: 0 }, blind = { ms: 0, n: 0 };
 
-for (const g of GERAETE) {
+meldeTeil('passt', TEIL, MEINE.map(g => g.n), GERAETE.map(g => g.n));
+
+for (const g of MEINE) {
   const angefangen = Date.now();
   const ctx = await b.newContext({ hasTouch: g.touch, isMobile: g.touch, locale: 'de-DE',
     viewport: { width: g.w, height: g.h }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
@@ -537,7 +557,7 @@ await b.close(); server.close();
 
 console.log(`    Gewartet: ${(ruhe.ms / 1000).toFixed(1)} s auf Ruhe in ${ruhe.n} Aufnahmen, `
   + `${(blind.ms / 1000).toFixed(1)} s blind in ${blind.n} festen Pausen`);
-console.log(`    ${GERAETE.length} Größen × ${gesehen / GERAETE.length} Bildschirme geprüft, `
+console.log(`    ${MEINE.length} Größen × ${gesehen / MEINE.length} Bildschirme geprüft, `
   + `Karten füllen mindestens ${(KARTE_MIN*100).toFixed(0)} % ihres Kastens`
   + (zuKlein ? `, ${zuKlein} Trefferflächen unter ${MIN_PT} pt (Hinweis)` : ''));
 
@@ -548,4 +568,5 @@ if (fehler.length) {
   console.log('  Knopf ist sichtbar und trotzdem nicht zu treffen.');
   process.exit(1);
 }
-console.log(`\n  passt grün: auf allen ${GERAETE.length} Größen ist alles im Bild.`);
+console.log(`\n  passt grün: auf ${TEIL ? `${MEINE.length} von ${GERAETE.length}` : `allen ${GERAETE.length}`} `
+  + 'Größen ist alles im Bild.');
