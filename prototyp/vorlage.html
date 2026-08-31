@@ -711,6 +711,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .karte .nadelfuss{fill:var(--tinte);pointer-events:none}
 .karte .nadelkopf{stroke:var(--tinte);stroke-width:var(--strich);
   vector-effect:non-scaling-stroke;pointer-events:none}
+/* Der Faden des GESUCHTEN Gebiets: er fuehrt vom Zeiger zu der Flaeche,
+   auf die man ablegt. Er traegt dieselbe Farbe wie der Zielrand und sagt
+   damit nichts, was der nicht schon sagt. */
+.karte .nadelfaden.nadelziel{stroke:var(--akzent);opacity:1;
+  stroke-width:var(--strich-stark)}
+.karte .nadelfuss.nadelziel{fill:var(--akzent)}
+.karte .nadelkopf.nadelziel{stroke:var(--akzent);stroke-width:var(--strich-stark)}
 @keyframes haken-auf{from{opacity:0;scale:.4}to{opacity:1;scale:1}}
 .karte path.treffer{fill:var(--treffer);opacity:1;filter:none}
 .karte .zielrand{opacity:.9}

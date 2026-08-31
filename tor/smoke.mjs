@@ -3161,10 +3161,21 @@ if (laeuft('umgekehrt')) try {
       const kreise = [...s.querySelectorAll('#treffer circle[data-id]')];
       const anNadel = [...new Set(kreise.filter(c => c.getBoundingClientRect().width >= 40)
         .map(c => c.dataset.id))];
+      /* Der Wegweiser: haengt das GESUCHTE Gebiet an einer Nadel, ist ihr
+         Faden hervorgehoben - und bei der umgekehrten Frage nicht, denn
+         dort waere er die Antwort. Gelesen wird die Kennung des
+         hervorgehobenen Kopfes, nicht nur seine Zahl: ein Wegweiser, der
+         auf das falsche Land zeigt, waere schlimmer als keiner. */
+      const wegweiser = [...s.querySelectorAll('#treffer .nadelkopf.nadelziel')]
+        .map(c => { const r = c.getBoundingClientRect();
+          const k = [...s.querySelectorAll('#treffer circle[data-id]')].find(x => {
+            const b = x.getBoundingClientRect();
+            return b.width > 40 && Math.abs(b.left + b.width/2 - (r.left + r.width/2)) < 1; });
+          return k ? k.dataset.id : '?'; });
       return { text: s.querySelector('#frage').textContent.trim(),
                ziel: z ? z.dataset.id : null,
                feld: !!s.querySelector('.eingabe'),
-               anNadel,
+               anNadel, wegweiser,
                klein: [...s.querySelectorAll('path.geb[data-klein="1"]')].map(x => x.dataset.id) };
     });
     if (!f.text) break;
@@ -3259,6 +3270,25 @@ if (laeuft('umgekehrt')) try {
   if (!anNadel.length) merke('umgekehrt', new Error(
     `keine der ${verkehrt.length} „Wo liegt …?"-Fragen galt einem Gebiet an der Nadel — `
     + 'dann ist ungeprüft, ob die Nadel die Frage überhaupt zurückbringt (P10)'));
+  /* Der Wegweiser, beide Richtungen (P15).
+   *
+   * Eine normale Frage nach einem Gebiet an der Nadel MUSS ihn zeigen -
+   * sonst zeigt der Zeiger in einen Pulk, in dem vier Laender innerhalb
+   * von zehn Punkten liegen, und niemand sagt, wohin das Etikett gehoert.
+   * Die umgekehrte Frage darf ihn NICHT zeigen: dort ist die Karte die
+   * Antwort, und ein leuchtender Faden waere sie auch. */
+  const normalNadel = fragen.filter(f => !/^Wo liegt /.test(f.text)
+    && f.ziel && nadelSet.has(f.ziel));
+  const ohneWeg = normalNadel.filter(f => !f.wegweiser.includes(f.ziel));
+  if (!normalNadel.length) merke('umgekehrt', new Error(
+    'keine normale Frage galt einem Gebiet an der Nadel — dann ist der Wegweiser ungeprüft'));
+  else if (ohneWeg.length) merke('umgekehrt', new Error(
+    `${ohneWeg.length} Aufgaben zu einem Gebiet an der Nadel ohne hervorgehobenen Faden `
+    + `(${ohneWeg.map(f => f.ziel).join(', ')}) — der Zeiger steht dann im Pulk und sagt nicht, `
+    + 'wohin das Etikett gehört'));
+  const verkehrtMitWeg = fragen.filter(f => /^Wo liegt /.test(f.text) && f.wegweiser.length);
+  if (verkehrtMitWeg.length) merke('umgekehrt', new Error(
+    `bei „${verkehrtMitWeg[0].text}" leuchtet ein Nadelfaden — das ist die Antwort`));
   const daneben = geantwortet.filter(g => !g.gewertet);
   if (daneben.length) merke('umgekehrt', new Error(
     `auf die Nadel getippt und nicht gewertet: ${daneben.map(g => g.name).join(', ')} — `
@@ -3267,7 +3297,8 @@ if (laeuft('umgekehrt')) try {
     + `${kleinDa} bleiben zu klein · ${fragen.length} Aufgaben, davon `
     + `${verkehrt.length} × „Wo liegt …?" `
     + `(${verkehrt.map(f => f.text.replace(/^Wo liegt |\?$/g, '')).join(', ') || 'keine'}), `
-    + `${anNadel.length} davon an der Nadel — alle getippt und gewertet`);
+    + `${anNadel.length} davon an der Nadel — alle getippt und gewertet · `
+    + `Wegweiser bei ${normalNadel.length} normalen Fragen, bei keiner umgekehrten`);
   await r.close();
 } catch (e) { merke('umgekehrt', e); }
 

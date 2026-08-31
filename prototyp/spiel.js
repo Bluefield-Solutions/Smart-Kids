@@ -3127,12 +3127,30 @@ function spielschirm(){
         r="${(rPx/k).toFixed(1)}" fill="transparent" style="pointer-events:all"/>`;
       if (!nadel) return amOrt;
       const farbe = pf ? pf.getAttribute('fill') : 'var(--papier)';
+      /* Haengt das GESUCHTE Gebiet an einer Nadel, wird ihr Faden zum
+       * Wegweiser.
+       *
+       * Der Zeiger steht am Ort, und das bleibt so: er sagt, WO das Land
+       * liegt, und das ist der Lerninhalt. Gemessen auf der
+       * Nordamerikakarte ist der Ort aber ein Pulk - der Zeiger stand auf
+       * (285,320), und innerhalb von zehn Punkten liegen vier Laender.
+       * Wohin das Etikett gehoert, sagt er nicht: das ist der Nadelkopf,
+       * 44 Punkte gross, vierzig Punkte weiter unten.
+       *
+       * Beides zusammen ergibt den Weg: der Zeiger zeigt auf das Land,
+       * der hervorgehobene Faden fuehrt von dort zur Flaeche, auf die man
+       * ablegt.
+       *
+       * NUR wenn das Ziel ohnehin markiert ist. Bei der umgekehrten Frage
+       * („Wo liegt Guatemala?") ist die Karte die Antwort - ein leuchtender
+       * Faden waere sie auch. Dieselbe Bedingung wie beim Zielrand. */
+      const wegweiser = !umgekehrt && n.x.id === ziel.id ? ' nadelziel' : '';
       return amOrt + `
-        <line class="nadelfaden" x1="${n.x.anker[0]}" y1="${n.x.anker[1]}"
+        <line class="nadelfaden${wegweiser}" x1="${n.x.anker[0]}" y1="${n.x.anker[1]}"
               x2="${nadel.x}" y2="${nadel.y}"/>
-        <circle class="nadelfuss" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
+        <circle class="nadelfuss${wegweiser}" cx="${n.x.anker[0]}" cy="${n.x.anker[1]}"
                 r="${(2.4/k).toFixed(2)}"/>
-        <circle class="nadelkopf" cx="${nadel.x}" cy="${nadel.y}"
+        <circle class="nadelkopf${wegweiser}" cx="${nadel.x}" cy="${nadel.y}"
                 r="${(7/k).toFixed(2)}" fill="${farbe}"/>
         <circle data-id="${n.x.id}" cx="${nadel.x}" cy="${nadel.y}"
                 r="${(MIN_PT/2/k).toFixed(1)}" fill="transparent"

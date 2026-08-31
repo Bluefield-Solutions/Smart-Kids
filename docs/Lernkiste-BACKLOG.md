@@ -804,6 +804,31 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
+### P15 · Der Zeiger steht im Pulk  ·  ERLEDIGT
+
+Gemessen auf der Nordamerikakarte, Guatemala als Ziel: der Zeiger („!")
+steht auf **(285, 320)** — und innerhalb von zehn Punkten liegen dort vier
+Länder. Er sagt richtig, *wo* Guatemala liegt; er sagt nicht, **wohin das
+Etikett gehört.** Das ist seit P10 der Nadelkopf, 44 Punkte groß, vierzig
+Punkte weiter unten.
+
+**Der Zeiger bleibt, wo er ist.** Er zeigt auf das Land, und das ist der
+Lerninhalt — ihn an die Nadel zu hängen hieße, die Geografie durch die
+Bedienung zu ersetzen. Stattdessen wird der **Faden** des gesuchten Gebiets
+zum Wegweiser: dieselbe Akzentfarbe wie der Zielrand, etwas dicker. Beides
+zusammen ergibt den Weg — der Zeiger zeigt auf das Land, der Faden führt
+von dort zur Fläche, auf die man ablegt.
+
+**Nur wenn das Ziel ohnehin markiert ist.** Bei „Wo liegt Guatemala?" ist
+die Karte die Antwort, und ein leuchtender Faden wäre sie auch. Dieselbe
+Bedingung wie beim Zielrand — und beide Hälften sind geprüft: der Rauchtest
+verlangt den Wegweiser bei jeder normalen Frage nach einem Gebiet an der
+Nadel (drei kamen vor) und verbietet ihn bei jeder umgekehrten. Zwei
+Gegenproben, eine je Richtung; ohne die zweite wäre der Faden nicht Zierat,
+sondern Verrat.
+
+---
+
 ### P4 · 101 Verweise in die Regelliste eines anderen Verzeichnisses  ·  ERLEDIGT
 
 Gemessen: **197 Verweise der Form „Regel N"** in `tor/`, `tools/`, `src/`,

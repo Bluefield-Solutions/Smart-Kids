@@ -1001,6 +1001,27 @@ export const PROBEN = [
     an:{ datei:'CLAUDE.md', fehlt:'14. **Das Modell' },
     sagt:'diese Regel gibt es nicht' },
 
+  /* --- Der Wegweiser (P15) ----------------------------------------------
+   *
+   * Zwei Zusagen, zwei Proben. Er MUSS da sein, wenn das gesuchte Gebiet
+   * an einer Nadel haengt - sonst zeigt der Zeiger in einen Pulk. Und er
+   * darf bei der umgekehrten Frage NICHT da sein - dort waere er die
+   * Antwort. Faellt eine der beiden aus, ist der Faden Zierat oder
+   * Verrat. */
+  { n:'der Wegweiser bleibt aus', tor:'smoke', args:['--nur=umgekehrt'],
+    bauen:true, datei:D,
+    such:"      const wegweiser = !umgekehrt && n.x.id === ziel.id ? ' nadelziel' : '';",
+    ersatz:"      const wegweiser = '';",
+    an:{ ...DIST, text:"const wegweiser = '';" },
+    sagt:'ohne hervorgehobenen Faden' },
+
+  { n:'der Wegweiser leuchtet auch bei der umgekehrten Frage', tor:'smoke',
+    args:['--nur=umgekehrt'], bauen:true, datei:D,
+    such:"      const wegweiser = !umgekehrt && n.x.id === ziel.id ? ' nadelziel' : '';",
+    ersatz:"      const wegweiser = n.x.id === ziel.id ? ' nadelziel' : '';",
+    an:{ ...DIST, text:"const wegweiser = n.x.id === ziel.id" },
+    sagt:'das ist die Antwort' },
+
   /* --- Die Haken (A4) ---------------------------------------------------
    *
    * Sie sind 26 Punkte gross und stehen am Anker. In Mittelamerika liegen
