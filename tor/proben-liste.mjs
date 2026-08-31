@@ -980,6 +980,20 @@ export const PROBEN = [
     sagt:'wieder zu' },
   /* Und die Prüfung selbst darf nicht ins Leere greifen: stellt sie den
    * Rückfall gar nicht mehr her, ist ihre Zusage geschenkt. */
+  /* --- Die Sprechprobe (M4r) -------------------------------------------
+   *
+   * Sie soll unterscheiden, ob bei einem Versuch ein Wort ankam. Eine
+   * Anzeige, die nach jedem Versuch dasselbe sagt, waere schlimmer als
+   * keine: die halbe Stunde mit dem Geraet in der Hand endete dann mit
+   * einer Zahl, die nichts bedeutet. Der Zaehler muss also wirklich am
+   * Text haengen - genau das stellt diese Probe ab. */
+  { n:'die Sprechprobe zaehlt jeden Versuch als verstanden', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:'    const mitWort   = laeufe.filter(l => l.text);',
+    ersatz:'    const mitWort   = laeufe;',
+    an:{ ...DIST, text:'const mitWort   = laeufe;' },
+    sagt:'sie unterscheidet nicht' },
+
   /* --- Die Nadeln (P10) ------------------------------------------------
    *
    * Zwei Zusagen, zwei Gegenproben. Die erste gilt dem Platz: eine Nadel

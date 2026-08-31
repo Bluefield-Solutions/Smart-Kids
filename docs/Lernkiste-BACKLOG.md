@@ -804,6 +804,39 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
+### P12 · Die Sprechprobe — das Werkzeug für M4r  ·  ERLEDIGT
+
+M4r sagt es selbst: „eine halbe Stunde mit dem Gerät in der Hand, und kann
+nicht von mir kommen." Was von hier kommen kann, ist das **Instrument** —
+damit diese halbe Stunde mit Zahlen endet und nicht mit einem Eindruck.
+
+Der Rauchtest baut die Erkennung nach (`window.SpeechRecognition =
+ErkNachbau`). Er prüft damit den Zustand drumherum — dass man das Zuhören
+beenden kann, dass ein Ende ohne Ergebnis sichtbar wird. **Ob Safari im
+Querformat auf einem iPhone das Mikrofon öffnet, kann er nicht wissen: sein
+Nachbau sagt immer ja.**
+
+Und „einfach spielen und schauen" hilft nicht, weil ein Fehlschlag dort
+nichts erklärt. Deshalb zeichnet die Sprechprobe die **Abfolge** auf, nicht
+das Ergebnis — die Tabelle oben bei M4r zeigt, was sich damit
+unterscheiden lässt.
+
+**Was der Rauchtest daran prüft — und was ausdrücklich nicht.** Nicht, ob
+ein Mikrofon etwas versteht: das geht nur auf dem Gerät. Sondern, dass das
+Werkzeug **unterscheidet**. Zwei Versuche, einer mit Wort und einer ohne,
+und die Anzeige muss sie auseinanderhalten. Eine Anzeige, die nach jedem
+Versuch dasselbe sagt, wäre schlimmer als keine. Die Gegenprobe macht genau
+das kaputt (`mitWort = laeufe` statt `laeufe.filter(l => l.text)`) und der
+Rauchtest wird rot.
+
+**Am Nachbau war dafür etwas nachzutragen:** er meldete weder `start` noch
+`audiostart`. Die Browser tun beides, und die Sprechprobe liest genau daran
+ab, ob das Mikrofon aufgegangen ist — ohne die zwei Zeilen hätte sie im
+Rauchtest nie etwas anderes als „nie aufgegangen" sagen können, und der
+Abschnitt hätte eine Anzeige geprüft, die gar nicht anspringen kann.
+
+---
+
 ### P11 · Fünf Hauptstädte, die keinem Tor gefehlt haben  ·  ERLEDIGT
 
 Prag, Wien, Bern, Kopenhagen und Luxemburg standen nicht auf der Ebene
@@ -1681,6 +1714,34 @@ zugeordnet, keiner falsch angenommen. **Bevor sie hundert Formen spricht,
 muss klar sein, dass das Mikrofon auf dem iPhone im Querformat überhaupt
 zuverlässig auslöst.** Das ist eine halbe Stunde mit dem Gerät in der Hand
 und kann nicht von mir kommen.
+
+**Das Werkzeug dafür steht jetzt** (P12): Elternbereich → *Sprechprobe —
+löst das Mikrofon aus?*. Jedes Antippen ist ein Versuch, und aufgezeichnet
+wird die **Abfolge der Ereignisse mit Zeiten**:
+
+```
+start 0 ms · audiostart 380 ms · speechstart 700 ms · ergebnis 1240 ms · ende 1310 ms — „Europa"
+```
+
+Damit lassen sich vier Dinge unterscheiden, die auf dem Bildschirm alle
+gleich aussehen — „es passiert nichts":
+
+| Was man sieht | Woran man es erkennt |
+|---|---|
+| die Erlaubnis fehlt | `fehler: not-allowed` |
+| das Mikrofon ging nie auf | kein `audiostart` |
+| es ging auf und hörte nichts | `audiostart`, kein `speechstart` |
+| es hörte und das Ergebnis ging verloren | `speechstart`, kein `ergebnis` |
+
+Aufgehoben wird in den Einstellungen (die letzten zwanzig Versuche), nicht
+im Kopf: sonst endet die halbe Stunde mit einem Gefühl statt mit Zahlen,
+und beim nächsten Start ist alles weg. „Versuche verwerfen" setzt zurück.
+
+**Was am Gerät zu tun ist:** Sprachmodus einschalten, iPhone quer, zehnmal
+antippen und je einen Kontinentnamen sagen. Dann die Tabelle abschreiben —
+*Versuche*, *davon mit Mikrofon*, *davon mit verstandenem Wort*, die
+Mediane und die Fehler. Das ist die Antwort auf M4r; erst danach lohnt sich
+der Korpus.
 
 **P1 · `passt` (54 s) und `ziehen` (48 s) laufen hintereinander**, obwohl
 beide unabhängige Browsertore sind. Spart etwa 45 s je vollem Lauf.

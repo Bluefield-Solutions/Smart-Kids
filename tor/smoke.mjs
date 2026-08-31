@@ -312,6 +312,14 @@ async function neueSeite(viewport, ctx, flott = true) {
       start(){
         if (window.__erk.laeuft) throw new Error('recognition already started');
         window.__erk.gestartet++; window.__erk.laeuft = this;
+        /* `start` und `audiostart` gehoeren zum Nachbau dazu: die Browser
+           melden beides, und die Sprechprobe im Elternbereich (M4r) liest
+           genau daran ab, ob das Mikrofon aufgegangen ist. Ohne die zwei
+           Zeilen koennte sie hier nie anders als „nie aufgegangen"
+           sagen - und der Abschnitt `sprechen` pruefte eine Anzeige, die
+           gar nicht anspringen kann. */
+        if (this.onstart) this.onstart();
+        if (this.onaudiostart) this.onaudiostart();
       }
       stop(){
         if (window.__erk.laeuft !== this) return;
@@ -4000,6 +4008,60 @@ if (laeuft('sprechen')) try {
     if (gewertet) console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
       + `3× nicht verstanden ohne Versuch, „${SATZ(name)}." gewertet `
       + `(zwischendurch: „${zwischen}"), ${zweite}, ${rueck}, ${gerettet}`);
+  }
+
+  /* --- Die Sprechprobe im Elternbereich (M4r) ------------------------
+   *
+   * Sie beantwortet eine Frage, die dieser Test NICHT beantworten kann:
+   * springt das Mikrofon auf einem echten iPhone an? Der Nachbau sagt
+   * immer ja. Geprueft wird deshalb nur, dass das WERKZEUG etwas
+   * aufzeichnet - und zwar UNTERSCHEIDET.
+   *
+   * Das ist der ganze Punkt: eine Anzeige, die nach jedem Versuch
+   * dasselbe sagt, waere schlimmer als keine. Zwei Versuche also, und
+   * sie muessen sich unterscheiden - einer mit Wort, einer ohne. */
+  {
+    const q = await neueSeite({ width: 1180, height: 820 }, ctx);
+    await q.click('[data-profil="fiona"]');
+    await q.waitForSelector('.schirm.da #eltern');
+    await q.click('.schirm.da #eltern');
+    await q.waitForSelector('.schirm.da .ziffern');
+    for (let i = 0; i < 4; i++) await q.click('.schirm.da [data-z="0"]');
+    const da = await q.waitForSelector('.schirm.da #probe', { timeout: 10000 })
+      .then(() => true).catch(() => false);
+    if (!da) merke('sprechen', new Error(
+      'im Elternbereich gibt es keine Sprechprobe — dann bleibt M4r eine halbe '
+      + 'Stunde mit dem Gerät in der Hand und ohne Zahlen'));
+    else {
+      const lies = () => q.evaluate(() => Object.fromEntries(
+        [...document.querySelectorAll('.schirm.da [data-probe]')]
+          .map(e => [e.dataset.probe, +e.textContent.trim()])));
+      // 1. Ein Versuch MIT Wort.
+      await q.click('.schirm.da #probe');
+      await bis(q, () => !!window.__erk && !!window.__erk.laeuft, 3000);
+      await q.evaluate(() => window.__sprich('Europa', true));
+      await bis(q, () => +document.querySelector('[data-probe="versuche"]')?.textContent === 1, 4000);
+      const eins = await lies();
+      // 2. Ein Versuch OHNE: das Betriebssystem beendet ihn von selbst.
+      await q.click('.schirm.da #probe');
+      await bis(q, () => !!window.__erk && !!window.__erk.laeuft, 3000);
+      await q.evaluate(() => window.__endeVonSelbst());
+      await bis(q, () => +document.querySelector('[data-probe="versuche"]')?.textContent === 2, 4000);
+      const zwei = await lies();
+      if (!(eins.versuche === 1 && eins.wort === 1 && eins.mikrofon === 1))
+        merke('sprechen', new Error(`die Sprechprobe zählt nach einem verstandenen Wort `
+          + `${JSON.stringify(eins)} — erwartet ein Versuch mit Mikrofon und Wort`));
+      if (!(zwei.versuche === 2 && zwei.wort === 1))
+        merke('sprechen', new Error(`nach einem zweiten Versuch OHNE Wort zählt sie `
+          + `${JSON.stringify(zwei)} — sie unterscheidet nicht, ob etwas ankam`));
+      const spur = await q.$eval('.schirm.da #probelauf', e => e.textContent).catch(() => '');
+      if (!/ende/.test(spur)) merke('sprechen', new Error(
+        `die Sprechprobe zeigt keine Ereignisfolge („${spur.slice(0, 60)}") — `
+        + 'dann steht dort nur, DASS etwas war, und nicht was'));
+      else console.log(`  Sprechprobe (M4r):          2 Versuche gezählt, `
+        + `1 mit Wort · Spur: ${spur.replace(/^Letzter Versuch: /, '').slice(0, 70)}`);
+    }
+    await q.close();
   }
   await p.close();
 } catch (e) { merke('sprechen', e); }

@@ -1017,7 +1017,10 @@ let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:f
   // Leas Regler und ihre Eingabeweise beim Rechnen. Beide gehören in die
   // Einstellungen und nicht ins Profil: das Profil sagt, WER spielt, die
   // Einstellung, wie es gerade eingestellt ist.
-  reihenGeteilt: Rechnen.GETEILT_STANDARD, rechenweise:{} };
+  reihenGeteilt: Rechnen.GETEILT_STANDARD, rechenweise:{},
+  // Die Sprechprobe (M4r). Sie gehoert hierher und nicht ins Protokoll:
+  // sie sagt nichts ueber ein Kind, sondern ueber dieses Geraet.
+  sprechprobe:[] };
 
 /* ---------- Aufgabenvorrat ---------------------------------------------- */
 /**
@@ -4469,6 +4472,137 @@ async function forscherbuch(){
 /* ---------- Elternbereich ------------------------------------------------ */
 /* Die PIN ist eine Tuerklinke, kein Schloss: sie liegt unverschluesselt in
    der Ablage und haelt neugierige Achtjaehrige ab, nicht Angreifer. */
+/* ---------- Die Sprechprobe (M4r) ----------------------------------------
+ *
+ * Sie beantwortet EINE Frage, und zwar die, die vor allen anderen steht:
+ * springt das Mikrofon auf diesem Geraet ueberhaupt an?
+ *
+ * Warum das kein Tor kann: der Rauchtest baut die Erkennung NACH
+ * (`window.SpeechRecognition = ErkNachbau`). Er prueft damit den Zustand
+ * drumherum - dass man das Zuhoeren beenden kann, dass ein Ende ohne
+ * Ergebnis sichtbar wird. Ob Safari im Querformat auf einem iPhone das
+ * Mikrofon oeffnet, kann er nicht wissen; sein Nachbau sagt immer ja.
+ *
+ * Und warum nicht einfach spielen und schauen: weil ein Fehlschlag dort
+ * nichts erklaert. „Es passiert nichts" kann heissen, dass die Erlaubnis
+ * fehlt, dass das Mikrofon nie aufging, dass es aufging und nichts
+ * hoerte, oder dass es hoerte und das Ergebnis verlorenging - vier
+ * verschiedene Sachen, und man sieht ihnen dasselbe an. Aufgezeichnet
+ * wird deshalb die ABFOLGE der Ereignisse mit Zeiten; die
+ * unterscheidet sie.
+ *
+ * Aufgehoben wird in den Einstellungen, nicht im Kopf: die halbe Stunde
+ * mit dem Geraet in der Hand endet sonst mit einem Gefuehl statt mit
+ * Zahlen, und beim naechsten Start ist alles weg.
+ */
+const PROBE_MAX = 20;            // mehr braucht niemand zum Urteilen
+const PROBE_DAUER = 8000;        // dieselbe Frist wie im Spiel
+
+/** Median einer Zahlenliste - `null`, wenn keine da ist. */
+const median = (xs) => {
+  const a = xs.filter(x => Number.isFinite(x)).sort((p, q) => p - q);
+  if (!a.length) return null;
+  const m = a.length >> 1;
+  return a.length % 2 ? a[m] : Math.round((a[m-1] + a[m]) / 2);
+};
+
+function sprechprobe(s){
+  const knopf = s.querySelector('#probe');
+  const weg   = s.querySelector('#probeweg');
+  const stand = s.querySelector('#probestand');
+  if (!knopf || !stand) return;
+  const Erk = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const zeigen = () => {
+    const laeufe = Einst.sprechprobe || [];
+    const mitTon    = laeufe.filter(l => l.folge.some(([, was]) => was === 'audiostart'));
+    const mitWort   = laeufe.filter(l => l.text);
+    const fehler    = laeufe.filter(l => l.fehler);
+    const bisTon    = median(laeufe.map(l => (l.folge.find(([, w]) => w === 'audiostart') || [])[0]));
+    const bisWort   = median(laeufe.map(l => (l.folge.find(([, w]) => w === 'ergebnis') || [])[0]));
+    const letzter   = laeufe[laeufe.length - 1];
+    const zaehl = {};
+    for (const f of fehler) zaehl[f.fehler] = (zaehl[f.fehler] || 0) + 1;
+    stand.innerHTML = `
+      <table class="tab"><tbody>
+        <tr><td>Erkennung im Browser</td><td class="num">${
+          Erk ? (window.SpeechRecognition ? 'SpeechRecognition' : 'webkitSpeechRecognition')
+              : 'gibt es nicht'}</td></tr>
+        <tr><td>Versuche</td><td class="num" data-probe="versuche">${laeufe.length}</td></tr>
+        <tr><td>davon mit Mikrofon (<em>audiostart</em>)</td>
+          <td class="num" data-probe="mikrofon">${mitTon.length}</td></tr>
+        <tr><td>davon mit verstandenem Wort</td>
+          <td class="num" data-probe="wort">${mitWort.length}</td></tr>
+        <tr><td>Fehler</td><td class="num">${
+          fehler.length ? Object.entries(zaehl).map(([k, n]) => `${k} ${n}×`).join(', ') : '—'}</td></tr>
+        <tr><td>bis das Mikrofon aufging</td><td class="num">${
+          bisTon === null ? '—' : bisTon + ' ms'}</td></tr>
+        <tr><td>bis zum ersten Wort</td><td class="num">${
+          bisWort === null ? '—' : bisWort + ' ms'}</td></tr>
+      </tbody></table>
+      ${letzter ? `<p class="unter" id="probelauf">Letzter Versuch: ${
+        letzter.folge.map(([ms, was]) => `${was} ${ms} ms`).join(' · ')}${
+        letzter.text ? ` — „${letzter.text}“` : ''}${
+        letzter.fehler ? ` — Fehler: ${letzter.fehler}` : ''}</p>` : ''}`;
+  };
+  zeigen();
+
+  weg.onclick = async () => { Einst.sprechprobe = []; await einstSichern(); zeigen(); };
+
+  if (!Erk) { knopf.disabled = true; return; }
+
+  let laeuft = null, uhr = null, lauf = null;
+  const t0 = () => Date.now();
+  const fertig = async () => {
+    if (uhr) { clearTimeout(uhr); uhr = null; }
+    laeuft = null;
+    knopf.textContent = 'Mikrofon prüfen';
+    if (lauf) {
+      const alle = (Einst.sprechprobe || []).concat([lauf]).slice(-PROBE_MAX);
+      Einst.sprechprobe = alle; lauf = null;
+      await einstSichern();
+    }
+    zeigen();
+  };
+
+  knopf.onclick = () => {
+    // Zweiter Tipp heisst „fertig" - wie im Spiel. Ein zweiter Erkenner
+    // neben dem ersten wirft auf iOS, und dann waere der Versuch weg.
+    if (laeuft) { try { laeuft.stop(); } catch (e) { fertig(); } return; }
+    const e = new Erk();
+    e.lang = 'de-DE'; e.maxAlternatives = 3; e.continuous = false; e.interimResults = true;
+    const start = t0();
+    lauf = { zeit: start, folge: [], text: '', fehler: '' };
+    const merk = (was) => lauf && lauf.folge.push([Date.now() - start, was]);
+    /* ALLE Ereignisse, nicht nur die mit Ergebnis. Genau dazwischen liegt
+       die Auskunft: `audiostart` ohne `speechstart` heisst „Mikrofon
+       offen, nichts gehoert"; gar kein `audiostart` heisst „nie
+       aufgegangen". Beides sieht auf dem Bildschirm gleich aus. */
+    for (const was of ['start', 'audiostart', 'soundstart', 'speechstart',
+                       'speechend', 'soundend', 'audioend', 'nomatch'])
+      e['on' + was] = () => merk(was);
+    e.onresult = (ev) => {
+      const r = ev.results[ev.results.length - 1];
+      const t = String(r[0].transcript).trim();
+      merk(r.isFinal ? 'ergebnis' : 'zwischen');
+      if (t) lauf.text = t;
+      if (r.isFinal) { try { e.stop(); } catch (err) {} }
+    };
+    e.onerror = (ev) => { merk('fehler'); if (lauf) lauf.fehler = (ev && ev.error) || 'unbekannt'; };
+    e.onend = () => { merk('ende'); fertig(); };
+    try {
+      e.start();
+      laeuft = e;
+      knopf.textContent = 'Fertig';
+      uhr = setTimeout(() => { if (laeuft) { try { laeuft.stop(); } catch (err) { fertig(); } } },
+        PROBE_DAUER);
+    } catch (err) {
+      lauf.fehler = 'start: ' + (err && err.message || err);
+      fertig();
+    }
+  };
+}
+
 function elternTor(){
   const s = el('div'); let eingabe='';
   s.innerHTML = kopf({ links: zurueckKnopf() }) + `
@@ -4646,6 +4780,21 @@ async function elternbereich(){
         <button class="knopf" id="sprach">${Einst.sprachmodus?'Sprachmodus ausschalten':'Sprachmodus einschalten'}</button>
       </div>
 
+      <h3 class="gruppe">Sprechprobe — löst das Mikrofon aus?</h3>
+      <p class="unter">Die Frage <em>vor</em> allen anderen (M4r). Ob die Erkennung ein
+        Wort richtig zuordnet, steht in der Ausspracheliste weiter oben — aber ob das
+        Mikrofon auf <em>diesem</em> Gerät im Querformat überhaupt anspringt, sagt kein
+        Tor und kein Nachbau. Nur das Gerät in der Hand.
+        <br>Jedes Antippen ist <strong>ein Versuch</strong>: sprich einen Kontinentnamen
+        und lies ab, was ankam. Aufgezeichnet wird die Abfolge der Ereignisse mit
+        Zeiten — dann sieht man den Unterschied zwischen „hat nie zugehört" und
+        „hat zugehört und nichts verstanden".</p>
+      <div class="reihe" style="justify-content:flex-start">
+        <button class="knopf" id="probe">Mikrofon prüfen</button>
+        <button class="knopf leise" id="probeweg">Versuche verwerfen</button>
+      </div>
+      <div id="probestand"></div>
+
       <h3 class="gruppe">Landeshauptstädte</h3>
       <p class="unter">Auf dieser Ebene stehen <strong>vier Städte</strong> zur Auswahl,
         eine davon stimmt — für beide Kinder. Gefragt ist, <em>welche</em> Stadt es ist,
@@ -4710,6 +4859,7 @@ async function elternbereich(){
     </div>`;
 
   s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
+  sprechprobe(s);
   s.querySelector('#sprach').onclick=async(e)=>{
     Einst.sprachmodus=!Einst.sprachmodus; await einstSichern();
     e.target.textContent=Einst.sprachmodus?'Sprachmodus ausschalten':'Sprachmodus einschalten'; };
