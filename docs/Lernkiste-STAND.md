@@ -5520,3 +5520,82 @@ nichts nachgehalten. Die Frage landete damit bei der falschen Runde. Steht
 als **P5** im Rückstandsverzeichnis.
 
 166 Gegenproben, alle mit Nachweis.
+
+---
+
+## D2 · Ein Abzeichen ist ein Satz
+
+Bis hierher konnte die App zählen. Sterne je Sitzung, Aufkleber je
+Gegenstand, seit B2 ein Pokal je bestandenem Test — drei Zählwerke, und
+keines davon sagt etwas darüber, **was ein Kind kann**. „Du hast 47
+Aufkleber" ist eine Zahl. „Du kennst die drei Stadtstaaten" ist ein Satz,
+den Lea am Abendbrottisch sagen kann.
+
+### Was aus den Vorbildern kam
+
+Drei, und jedes hat genau eine Sache beigetragen. **Duolingo** hängt eine
+nächste Sprosse an eine endlose Leiter — davon bleibt der sichtbare
+nächste Schritt, denn ein Abzeichen, das erst beim Erreichen erscheint,
+ist bis dahin unsichtbar. **Khan Academy** macht den Namen der Fähigkeit
+zum Abzeichen — davon bleibt: der Text ist die Belohnung, das Bild nur die
+Marke dafür. Das **Panini-Album** teilt sich in benannte Gruppen, und
+„vollständig" gilt je Gruppe — davon bleibt, dass die Menge einen Namen
+braucht, den ein Kind kennt, und klein genug sein muss, um sie zu Ende zu
+bringen.
+
+### Die Menge kommt aus den Daten, nicht aus einer Liste
+
+Das ist der Punkt, an dem so etwas veraltet. Eine Tafel mit Kennungen
+(„Berlin, Hamburg, Bremen") stimmt genau so lange, bis jemand die Daten
+anfasst. Also steht dort eine **Regel**: `x.stadtstaat`. Die fünf
+Reihenabzeichen entstehen aus **einem** Eintrag über `rechenart` und `a`.
+Die Buchstaben des eigenen Namens kommen aus dem Profilnamen — für Fiona
+F I O N A, für Lea L E A, und für ein drittes Kind ohne eine Zeile Code.
+
+Ausnahme sind die neun Nachbarn Deutschlands. Nachbarschaft ist
+Weltwissen und steht in keinem unserer Datensätze. Der Eintrag steht
+deshalb von Hand da — und das Tor prüft, dass jede der neun Kennungen in
+den Europadaten wirklich vorkommt. Ein Abzeichen mit einer leeren Menge
+wäre für immer unerreichbar, und das fiele niemandem auf.
+
+### Was ich absichtlich nicht gebaut habe
+
+„Zehn Tage hintereinander" steht im ANTON-Abgleich als Beispiel, und das
+Protokoll trägt die Tage — es wären zwanzig Zeilen. Es steht trotzdem
+nicht da: **A4** ist mit dem ausdrücklichen Zusatz „kein Streak-Zwang"
+aufgeschrieben, und ein Abzeichen für zehn Tage am Stück ist der stärkste
+Streak-Zwang, den es gibt. Es bestraft einen Krankheitstag. Das Prinzip,
+um das es geht — Abzeichen, die etwas über das Kind sagen —, wird von den
+Mengen besser bedient als von einem Kalender.
+
+### Drei Fehler, und keinen hat ein Tor gefunden
+
+**Ein Abzeichen stand ohne Bild da.** Die Tafel wollte `deutschland`, die
+Bildtafel kennt `karte`. Der Satz stand da, die Fläche daneben war leer.
+Gesehen auf der ersten Aufnahme. Daraus wurde das achte Tor `abzeichen`,
+das die drei stillen Ausfälle prüft: eine Menge, die nichts auswählt (das
+Abzeichen erscheint nie), eine, die alles auswählt (es steht beim ersten
+Aufkleber schon da und sagt nichts), und ein Bild, das es nicht gibt.
+
+**Ein Abzeichen ließ sich verlieren.** Die Menge kam aus dem Vorrat des
+Kindes, und Fionas Kontinentvorrat *wächst*: sie hätte „Du kennst alle
+Kontinente" mit vier von sechs bekommen und beim nächsten Rundenwechsel
+wieder verloren. Jetzt kommt die Menge aus dem **vollen** Vorrat der
+Ebene. Damit kann es nicht mehr passieren: die Menge steht fest, und
+`istGesammelt` liest den Höchststand, der nur steigt. Was ein Kind
+dagegen gar nicht erreichen kann — Fionas Ländertiefe ist 3, die neun
+Nachbarn liegen nicht alle darin —, wird ihm nicht angeboten.
+
+**Und `loese()` zog auf den Anker.** Der Rauchtest zieht das Etikett auf
+den Anker des Ziels; das ist die Stelle, an der die Beschriftung hängt.
+Bei Berlin — 19 Punkte Trefferradius, ringsum Brandenburg — landet man
+damit auf dem Nachbarn. Regel 14, wörtlich: ein Raster ist nur so fein wie
+sein kleinstes Ziel. Der `durchgang` hatte die bessere Suche längst,
+eingebaut in seine eigene Auswertung; sie steht jetzt einmal als
+`zielPunkt` in `chromium.mjs` und wird von beiden benutzt — Trefferkreis,
+Anker, Raster, Kastenmitte, in dieser Reihenfolge. Der erste Versuch ließ
+den Anker weg und machte den Abschnitt `spielen` rot: das Spiel
+entscheidet nach dem **Trefferkreis**, nicht nach dem Umriss, und ein
+Punkt weit außen auf einem großen Land liegt schon im Kreis des Nachbarn.
+
+175 Gegenproben, alle mit Nachweis.

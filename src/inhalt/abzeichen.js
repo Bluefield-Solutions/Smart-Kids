@@ -70,27 +70,31 @@ const REIHENWORT = { 2:'Zweier', 3:'Dreier', 4:'Vierer', 5:'Fünfer', 6:'Sechser
  *   titel    der Satz. Bekommt den Wert aus `je` und das Umfeld.
  *   waehlt   die Regel ueber den Vorrat. Bekommt (vorrat, wert, umfeld).
  *
- * `waehlt` bekommt den VOLLEN Vorrat der Ebene, nicht den des Kindes.
- * Das ist eine Korrektur, und sie hat einen Grund, den man auf der
- * Aufnahme sehen konnte:
+ * `waehlt` bekommt den VOLLEN Vorrat der Ebene, nicht den des Kindes -
+ * und `umfeld.erreichbar` sagt, was das Kind davon ueberhaupt bekommen
+ * kann. Beides zusammen, und beides aus einem Grund:
  *
- * Fionas Kontinentvorrat WAECHST - sie bekommt Runde fuer Runde mehr
- * Kontinente. Gegen ihren Vorrat gerechnet haette sie „Du kennst alle
- * Kontinente" mit vier von sechs bekommen und beim naechsten
- * Rundenwechsel wieder VERLOREN. Ein Abzeichen, das man verlieren kann,
- * ist keins.
+ * Fionas Laendertiefe ist DREI. Von den neun Nachbarn Deutschlands
+ * liegen nur sechs in ihrem Vorrat. Gegen ihren Vorrat gerechnet hiesse
+ * „alle Nachbarn" also „alle sechs, die du sehen kannst" - und das
+ * Abzeichen behauptete „Du kennst alle Nachbarn von Deutschland", waehrend
+ * sie drei davon nie zu Gesicht bekommen hat. Ein Abzeichen, dessen SATZ
+ * nicht stimmt, ist schlimmer als keins: sein Satz ist das Einzige, was
+ * es hat.
  *
- * Gegen den vollen Vorrat gerechnet kann das nicht passieren: die Menge
- * steht fest, und `istGesammelt` liest den Hoechststand, der nur steigt.
- * Kein Abzeichen kann je wieder verschwinden.
+ * Also: die Menge steht fest (voller Vorrat), und was ausserhalb des
+ * kindlichen Vorrats liegt, wird gar nicht erst angeboten - ein Ziel, das
+ * Fiona nicht erreichen kann, gehoert ihr nicht hingestellt.
  *
- * Was das Kind wirklich erreichen kann, entscheidet stattdessen
- * `umfeld.erreichbar` - die Kennungen, die in SEINEM Vorrat vorkommen.
- * Liegt ein Stueck der Menge ausserhalb, wird das Abzeichen gar nicht
- * erst angeboten: Fiona sieht bei den Laendern nur die drei obersten
- * Raenge, und ein Ziel, das sie nicht erreichen kann, gehoert ihr nicht
- * hingestellt. Der Unterschied zu den Kontinenten ist, dass die
- * Laendertiefe FEST ist und die Kontinentrunde waechst.
+ * Der erste Anlauf hat das mit einer FALSCHEN Begruendung gebaut: „sonst
+ * kann Fiona ein Abzeichen wieder verlieren, weil ihre Kontinentrunde
+ * waechst". Die Gegenprobe hat das widerlegt, und sie hatte recht - die
+ * Runde waechst genau dann, wenn die Menge voll ist, beide Rechnungen
+ * kommen bei den Kontinenten immer zum selben Ergebnis. Verlieren kann
+ * man ohnehin nichts: `istGesammelt` liest den Hoechststand, und der
+ * steigt nur. Der Unterschied liegt allein bei den Ebenen mit FESTER
+ * Tiefe, und dort ist er kein verlorenes Abzeichen, sondern ein falscher
+ * Satz.
  */
 export const TAFEL = [
   { ebene:'kontinente', id:'alle-kontinente', zeichen:'welt',

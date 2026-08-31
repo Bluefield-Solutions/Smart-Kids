@@ -3352,6 +3352,18 @@ if (laeuft('abzeichen')) try {
       const ersteRunde = {};
       for (const k of D.kontinente.filter(x => x.runde <= 1))
         ersteRunde[k.id] = { fach:4, faellig:0, hoch:4 };
+      /* Und ALLE NEUN Nachbarn Deutschlands als gesammelt - auch die
+         drei, die ausserhalb ihrer Laendertiefe liegen und die sie nie
+         gefragt bekaeme. Der Stand ist eine schlichte Tabelle; hier steht
+         also ein Zustand, den das Spiel selbst nie erzeugen wuerde.
+         Genau deshalb steht er hier: er trennt die richtige Rechnung von
+         den beiden falschen. Ohne `erreichbar` waere das Abzeichen jetzt
+         VERDIENT, ohne den vollen Vorrat waere es das schon bei sechs -
+         und in beiden Faellen stuende da „Du kennst alle Nachbarn von
+         Deutschland", obwohl sie drei davon nie gesehen hat. */
+      const nachbarn = {};
+      for (const a3 of ['DNK','NLD','BEL','LUX','FRA','CHE','AUT','CZE','POL'])
+        nachbarn[a3] = { fach:4, faellig:0, hoch:4 };
       // Lea: fuenf von sechs sicher, der sechste einen Schritt vor dem
       // Aufkleber. EINE richtige Antwort vervollstaendigt die Menge.
       const leas = {};
@@ -3359,6 +3371,7 @@ if (laeuft('abzeichen')) try {
         ? { fach:4, faellig:0, hoch:4 } : { fach:2, faellig:0, hoch:2 }; });
       const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
       t.objectStore('fortschritt').put(ersteRunde, 'fiona:kontinente');
+      t.objectStore('fortschritt').put(nachbarn, 'fiona:laender:europa');
       t.objectStore('fortschritt').put(leas, 'lea:kontinente');
       t.objectStore('einstellungen').put({ vorlaufGezeigt: {
         'fiona:kontinente': true, 'lea:kontinente': true } }, 'alles');
@@ -3384,10 +3397,10 @@ if (laeuft('abzeichen')) try {
   if (!/fehlen noch 2/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
     `das offene Abzeichen sagt „${beiFiona.offen[0]}" — erwartet werden zwei fehlende `
     + 'Kontinente, gerechnet gegen alle sechs und nicht gegen Fionas Runde'));
-  // Und die Nachbarn gibt es fuer sie gar nicht: ihre Laendertiefe ist 3.
+  // Und die Nachbarn gibt es fuer sie gar nicht - weder verdient noch offen.
   if (/Nachbarn/.test(JSON.stringify(beiFiona))) merke('abzeichen', new Error(
-    'Fiona bekommt das Nachbarn-Abzeichen angeboten, obwohl ihre Ländertiefe '
-    + 'nicht alle neun enthält — ein Ziel, das sie nicht erreichen kann'));
+    'Fiona bekommt das Nachbarn-Abzeichen, obwohl ihre Ländertiefe nur sechs '
+    + 'der neun enthält — der Satz „Du kennst alle Nachbarn" wäre falsch'));
 
   /* --- Und jetzt spielt Fiona das letzte Bundesland ------------------
    *

@@ -691,15 +691,31 @@
       "zeit": "2026-08-31"
     },
     "ein Abzeichen wählt nichts aus seinem Vorrat": {
-      "commit": "8bcf963a5cfc5140d299c649654293b80e4fdbbb",
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
+      "zeit": "2026-08-31"
+    },
+    "ein Abzeichen wählt gleich den ganzen Vorrat": {
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
       "zeit": "2026-08-31"
     },
     "ein Abzeichen will ein Bild, das es nicht gibt": {
-      "commit": "8bcf963a5cfc5140d299c649654293b80e4fdbbb",
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
       "zeit": "2026-08-31"
     },
     "ein Nachbar Deutschlands steht nicht in den Daten": {
-      "commit": "8bcf963a5cfc5140d299c649654293b80e4fdbbb",
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
+      "zeit": "2026-08-31"
+    },
+    "im Buch stehen wieder alle offenen Abzeichen": {
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
+      "zeit": "2026-08-31"
+    },
+    "das neue Abzeichen wird nicht gesagt": {
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
+      "zeit": "2026-08-31"
+    },
+    "eine fehlerfreie Runde wird nicht festgehalten": {
+      "commit": "049f0033d969b5a70e83d6541e032ece169c50d5",
       "zeit": "2026-08-31"
     }
   }

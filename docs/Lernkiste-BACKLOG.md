@@ -172,13 +172,14 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~11~~ | ~~**S3** Die Buchstabenkarten im Vorlauf~~ | Fiona | gering | klein | **gefahren** |
 | ~~12~~ | ~~**B2** Test ohne Hilfen, mit Pokal~~ | Lea | mittel | mittel | **gefahren** |
 | ~~13~~ | ~~**G12** Profilfarben und der Streu auf der Kachel~~ | Fiona, Lea, Stephan | — | mittel | **gewünscht, gefahren** |
+| ~~14~~ | ~~**D2** Abzeichen, die etwas sagen~~ | Fiona, Lea | mittel | mittel | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 3 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
-| 5 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | G12 (der Streu ist die Sprache) |
-| 6 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
-| 7 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
+| 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
+| 7 | **D2b** Mehr Abzeichen, wenn diese getragen haben | Fiona, Lea | mittel | klein | D2, einmal spielen |
 | 8 | **P5** Die Größenratsche fragt die falsche Runde | nur ich | mittel | klein | — |
 | 9 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
 | 10 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
@@ -526,6 +527,78 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 ---
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+### D2 · Abzeichen, die etwas über das Kind sagen  ·  ERLEDIGT
+
+**Referenzabgleich** (Schritt 0, ausführlich in `src/inhalt/abzeichen.js`):
+
+| Vorbild | was es TUT | was übernommen wurde |
+|---|---|---|
+| **Duolingo**, Achievements | hängt eine nächste Sprosse an eine Leiter ohne Ende und zeigt einen Balken dorthin. „50 Wörter" ist eine Zahl, kein Satz. | der **sichtbare nächste Schritt** — ein Abzeichen, das erst beim Erreichen erscheint, ist bis dahin unsichtbar. |
+| **Khan Academy**, Mastery | das Abzeichen **ist** der Name der Fähigkeit. | der **Text ist die Belohnung**, nicht das Bild. |
+| **Panini-Sammelalbum** | teilt das Album in benannte **Gruppen**; „vollständig" gilt je Gruppe. | die Menge braucht einen **Namen, den ein Kind kennt**, und muss klein genug sein, um sie zu Ende zu bringen. |
+
+**Abstand vor der Runde: null von vier.** Es gab Sterne (je Sitzung),
+Aufkleber (je Gegenstand) und den Pokal (je bestandenem Test) — drei
+Zählwerke über einen Gegenstand oder eine Sitzung. Keines nennt eine
+Menge, keines ergibt einen Satz.
+
+**Was gebaut wurde:** zwölf Abzeichen über fünf Ebenen, dazu „Einmal ganz
+ohne Fehler". Die Menge kommt aus einer **Regel über die Daten** —
+`stadtstaat` steht am Bundesland, die fünf Reihen entstehen aus einem
+Eintrag über `rechenart` und `a`, die Buchstaben des eigenen Namens aus
+dem Profilnamen. Der eine Eintrag von Hand sind die neun Nachbarn
+Deutschlands; Nachbarschaft ist Weltwissen und steht in keinem Datensatz.
+
+| Entscheidung | warum |
+|---|---|
+| **dieselbe Schwelle wie der Aufkleber** | wer alle drei Stadtstaaten als Aufkleber hat und trotzdem kein Abzeichen bekäme, hätte recht mit „ich hab die doch alle". Ein Abzeichen ist eine Aussage über die MENGE, keine höhere Hürde je Stück. |
+| **genau ein offenes** | der Bildschirm hat diese Lehre schon einmal teuer bezahlt (sechzig leere Kästen). Eines ist der nächste Schritt, zehn sind eine Mahnung. |
+| **die Menge aus dem VOLLEN Vorrat** | sonst ist sie verlierbar — siehe unten. |
+| **nichts anbieten, was unerreichbar ist** | Fionas Ländertiefe ist 3; die neun Nachbarn liegen nicht alle darin. |
+| **Ansage am Endbildschirm** | Fiona liest nicht. Ein Abzeichen, das nur dasteht, bekommt sie nicht mit. |
+
+**Absichtlich NICHT gebaut: „Zehn Tage hintereinander".** Der
+ANTON-Abgleich nennt es als Beispiel, und es wäre leicht — das Protokoll
+trägt die Tage. **A4** ist aber mit dem ausdrücklichen Zusatz *„kein
+Streak-Zwang"* aufgeschrieben, und ein Abzeichen für zehn Tage am Stück
+ist der stärkste Streak-Zwang, den es gibt: es bestraft einen
+Krankheitstag. Das Prinzip des Abgleichs wird von den Mengen besser
+bedient als von einem Kalender.
+
+**Zwei Fehler, beide auf der Aufnahme gefunden** (Regel 8):
+
+1. Ein Abzeichen stand **ohne Bild** da — die Tafel nannte `deutschland`,
+   die Bildtafel kennt `karte`. Daraus wurde das achte Tor,
+   **`abzeichen`**: leere Menge, ganze Menge, fehlendes Bild, und die neun
+   Nachbarn gegen die Daten. Vier Gegenproben, alle anschlagend.
+2. Die Menge kam aus dem Vorrat des **Kindes**. Fionas Kontinentvorrat
+   wächst — sie hätte „Du kennst alle Kontinente" mit vier von sechs
+   bekommen und beim nächsten Rundenwechsel wieder **verloren**. Ein
+   Abzeichen, das man verlieren kann, ist keins.
+
+**Und ein dritter, im Werkzeug:** `loese()` im Rauchtest zog das Etikett
+auf den **Anker** des Ziels. Bei Berlin (19 pt Radius, ringsum
+Brandenburg) landet man damit auf dem Nachbarn — Regel 14, ein Raster ist
+nur so fein wie sein kleinstes Ziel. Die Punktsuche steht jetzt einmal als
+`zielPunkt` in `chromium.mjs` und wird von `loese` und `durchgang`
+benutzt: Trefferkreis, Anker, Raster, Kastenmitte, in dieser Reihenfolge.
+
+**Abnahme:** Rauchtestabschnitt `abzeichen` und Tor `abzeichen`. Neun
+Gegenproben, alle anschlagend (175 insgesamt).
+
+---
+
+### D2b · Mehr Abzeichen, wenn diese getragen haben
+
+Zwölf sind ein Anfang, kein Vorrat. Naheliegend und schon als Regel
+schreibbar: *„Du kennst alle Bundesländer im Osten"* (aus `ort`), *„Du
+kennst alle Länder, die an Deutschland grenzen"* für die Eltern in voller
+Tiefe, *„Du kannst alle Aufgaben mit Zehnerübergang"*, *„Du kannst deinen
+Nachnamen schreiben"*. **Erst nach einmal Spielen** — welche Sätze etwas
+bedeuten, entscheidet sich am Kind und nicht am Datenmodell.
+
+---
 
 ### G12 · Profilfarben und der Streu auf der Kachel  ·  ERLEDIGT
 

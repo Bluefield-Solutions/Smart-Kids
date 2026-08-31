@@ -1914,14 +1914,20 @@ export const PROBEN = [
     an:{ datei:A, text:"'DAN', 'NLD'" }, sagt:'ohne Land in den Daten' },
 
   /* Der Konstruktionsfehler dieser Runde: die Menge aus dem Vorrat des
-     KINDES statt aus dem vollen. Fiona haette „alle Kontinente" mit vier
-     von sechs bekommen - und beim naechsten Rundenwechsel wieder
-     verloren. Gefunden auf der Aufnahme, nicht vom Tor. */
-  { n:'ein Abzeichen lässt sich wieder verlieren', tor:'smoke',
+     KINDES statt aus dem vollen. Bei Fionas Laendertiefe sind das sechs
+     der neun Nachbarn - und das Abzeichen behauptete trotzdem „Du kennst
+     alle Nachbarn von Deutschland".
+
+     Die erste Fassung dieser Probe hat NICHT angeschlagen, und sie hatte
+     recht damit: sie prueft an den Kontinenten, und dort kommen beide
+     Rechnungen immer zum selben Ergebnis - die Runde waechst genau dann,
+     wenn die Menge voll ist. Die Begruendung im Quelltext war falsch und
+     ist berichtigt. */
+  { n:'ein Abzeichen behauptet mehr, als das Kind gesehen hat', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:D, mehrfach:true,
     such:'vorrat(e.id, st, true)', ersatz:'vorrat(e.id, st)',
     an:{ ...DIST, fehlt:'vorrat(e.id, st, true)' },
-    sagt:'die Menge ist nicht voll' },
+    sagt:'Nachbarn-Abzeichen' },
 
   // Und das Gegenstueck: die Erreichbarkeit faellt weg, und Fiona
   // bekommt ein Ziel hingestellt, das sie nicht erreichen kann.
