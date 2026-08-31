@@ -15,7 +15,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
 import { starte, zurEbenenwahl, durchVorlauf, serviere,
-         schreibVorlage, zeichneZug, istUmgekehrt, zeigeAufKarte } from './chromium.mjs';
+         schreibVorlage, zeichneZug, istUmgekehrt, zeigeAufKarte,
+         zielUndEtikett } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
@@ -432,17 +433,7 @@ async function vorfuehren(seite, was) {
     return;
   }
   await karteSteht(seite);
-  const i = await seite.evaluate(() => {
-    const s = document.querySelector('.schirm.da');
-    const z = s.querySelector('path.ziel');
-    const svg = s.querySelector('.karte svg');
-    const D = JSON.parse(document.getElementById('daten').textContent);
-    const g = D.kontinente.find(x => x.id === z.dataset.id);
-    const pt = svg.createSVGPoint(); pt.x = g.anker[0]; pt.y = g.anker[1];
-    const q = pt.matrixTransform(svg.getScreenCTM());
-    const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent);
-    return { x:q.x, y:q.y, idx:namen.indexOf(g.name) };
-  });
+  const i = await zielUndEtikett(seite);
   const et = (await seite.$$('.schirm.da .etikett'))[i.idx];
   const a = await et.boundingBox();
   await seite.mouse.move(a.x + a.width/2, a.y + a.height/2);

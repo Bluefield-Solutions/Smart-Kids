@@ -1147,39 +1147,64 @@ if (!fs.existsSync(KONZEPT)) {
  * Geprüft wird gegen den ERZEUGTEN Vorrat, nicht gegen eine dritte Liste:
  * `rechnen.js` rechnet die hundert Aufgaben aus, dieses Tor zählt sie.
  */
-{
-  const ABGLEICH = 'docs/Lernkiste-ABGLEICH-ANTON.md';
+/**
+ * Sollwerte aus dem Abgleich lesen und gegen das Gerechnete halten.
+ *
+ * Stand zweimal fast gleich da - fuer Fionas Rechnen und fuer Leas Reihen.
+ * `npm run doppelt` hat es gemeldet: 107 Token. Der Kommentar bei Leas
+ * Block nannte sogar einen Grund („faellt hier etwas um, soll dastehen,
+ * WESSEN Fach kaputt ist") - aber der verlangt getrennte MELDUNGEN, nicht
+ * getrenntes Geruest. `was` steht in jeder Zeile, die dieser Helfer
+ * schreibt; die Auskunft bleibt also dieselbe.
+ *
+ * Nebenbei berichtigt: Fionas Block meldete eine fehlende Datei als
+ * Fehler, Leas ging stillschweigend darueber hinweg. Zwei Fassungen, zwei
+ * Verhalten - genau das, was die Regel meint. Jetzt melden beide.
+ *
+ * `rechne` wird erst gerufen, wenn alle Sollwerte dastehen: sonst
+ * vergliche man gegen `null` und bekaeme fuenf Meldungen statt einer.
+ */
+const ABGLEICH = 'docs/Lernkiste-ABGLEICH-ANTON.md';
+function gegenAbgleich(was, zeilen, rechne) {
   if (!fs.existsSync(ABGLEICH)) {
-    fehler.push(`${ABGLEICH} nicht gefunden — Fionas Rechnen lässt sich nicht prüfen`);
-  } else {
-    const t = fs.readFileSync(ABGLEICH, 'utf8');
-    const zahl = (zeile) => {
-      const m = t.match(new RegExp(`\\|\\s*${zeile}\\s*\\|\\s*(\\d+)`));
-      return m ? +m[1] : null;
-    };
-    const soll = {
-      raum:  zahl('Zahlenraum'),
-      plus:  zahl('Anteil Addition'),
-      minus: zahl('Anteil Subtraktion'),
-      nPlus: zahl('Aufgaben mit Plus'),
-      nMinus:zahl('Aufgaben mit Minus'),
-    };
-    const fehlend = Object.entries(soll).filter(([, v]) => v === null).map(([k]) => k);
-    if (fehlend.length) {
-      fehler.push(`${ABGLEICH} nennt ${fehlend.length} Werte für Fionas Rechnen nicht: `
-        + `${fehlend.join(', ')} — dann prüft dieses Tor nichts`);
-    } else {
-      const v = R.vorrat();
-      const ist = {
-        raum:  R.BIS,
-        plus:  Math.round(R.MISCHUNG_FIONA.plus * 100),
-        minus: Math.round(R.MISCHUNG_FIONA.minus * 100),
-        nPlus: v.filter(x => x.rechenart === 'plus').length,
-        nMinus:v.filter(x => x.rechenart === 'minus').length,
-      };
-      for (const k of Object.keys(soll))
-        pruefe(soll[k] === ist[k],
-          `Fionas Rechnen, ${k}: der Abgleich sagt ${soll[k]}, gerechnet sind ${ist[k]}`);
+    fehler.push(`${ABGLEICH} nicht gefunden — ${was} lässt sich nicht prüfen`);
+    return null;
+  }
+  const t = fs.readFileSync(ABGLEICH, 'utf8');
+  const soll = {};
+  for (const [k, zeile] of Object.entries(zeilen)) {
+    const m = t.match(new RegExp(`\\|\\s*${zeile}\\s*\\|\\s*(\\d+)`));
+    soll[k] = m ? +m[1] : null;
+  }
+  const fehlend = Object.entries(soll).filter(([, v]) => v === null).map(([k]) => k);
+  if (fehlend.length) {
+    fehler.push(`${ABGLEICH} nennt ${fehlend.length} Werte für ${was} nicht: `
+      + `${fehlend.join(', ')} — dann prüft dieses Tor nichts`);
+    return null;
+  }
+  const ist = rechne();
+  for (const k of Object.keys(soll))
+    pruefe(soll[k] === ist[k],
+      `${was}, ${k}: der Abgleich sagt ${soll[k]}, gerechnet sind ${ist[k]}`);
+  return ist;
+}
+
+{
+  const v = R.vorrat();
+  const ist = gegenAbgleich('Fionas Rechnen', {
+    raum:  'Zahlenraum',
+    plus:  'Anteil Addition',
+    minus: 'Anteil Subtraktion',
+    nPlus: 'Aufgaben mit Plus',
+    nMinus:'Aufgaben mit Minus',
+  }, () => ({
+    raum:  R.BIS,
+    plus:  Math.round(R.MISCHUNG_FIONA.plus * 100),
+    minus: Math.round(R.MISCHUNG_FIONA.minus * 100),
+    nPlus: v.filter(x => x.rechenart === 'plus').length,
+    nMinus:v.filter(x => x.rechenart === 'minus').length,
+  }));
+  if (ist) {
       pruefe(ist.plus + ist.minus === 100,
         `Die Anteile ergeben ${ist.plus + ist.minus} statt 100 Prozent`);
       // Die Regel, die aus „wenig mit 0" geworden ist: nur als Ergebnis.
@@ -1193,56 +1218,41 @@ if (!fs.existsSync(KONZEPT)) {
         'zwei Rechenaufgaben haben dieselbe Kennung — dann teilen sie sich einen Leitner-Stand');
       console.log(`    Fionas Rechnen: ${v.length} Aufgaben, `
         + `${ist.plus}/${ist.minus} Prozent, Zahlenraum ${ist.raum} — wie im Abgleich`);
-    }
   }
 }
 
 /* Leas Reihen: derselbe Griff, andere Zahlen.
  *
- * Getrennt von Fionas Block, obwohl das halbe Gerüst dasselbe ist. Der
- * Grund steht in der Ausgabe: fällt hier etwas um, soll dastehen, WESSEN
- * Fach kaputt ist. Ein gemeinsamer Block hätte „Rechnen, nMinus: der
- * Abgleich sagt 55" gemeldet, und man müsste raten, welches Kind gemeint
- * ist.
+ * Hier stand: „Getrennt von Fionas Block, obwohl das halbe Gerüst dasselbe
+ * ist. Der Grund steht in der Ausgabe: fällt hier etwas um, soll dastehen,
+ * WESSEN Fach kaputt ist." Der Grund gilt weiter, die Folgerung war
+ * falsch: er verlangt getrennte MELDUNGEN, nicht getrenntes Gerüst. Das
+ * Gerüst steht seit P8 einmal in `gegenAbgleich`, und `was` steht in jeder
+ * Zeile, die es schreibt — „Leas Reihen, nMal: der Abgleich sagt …".
  */
 {
-  const ABGLEICH = 'docs/Lernkiste-ABGLEICH-ANTON.md';
-  if (fs.existsSync(ABGLEICH)) {
-    const t = fs.readFileSync(ABGLEICH, 'utf8');
-    const zahl = (zeile) => {
-      const m = t.match(new RegExp(`\\|\\s*${zeile}\\s*\\|\\s*(\\d+)`));
-      return m ? +m[1] : null;
-    };
-    const soll = {
-      von:        zahl('Reihen von'),
-      bis:        zahl('Reihen bis'),
-      geteilt:    zahl('Anteil Division'),
-      geteiltMax: zahl('Anteil Division höchstens'),
-      nMal:       zahl('Aufgaben mit Mal'),
-      nZehner:    zahl('Aufgaben mit Zehn'),
-      nGeteilt:   zahl('Aufgaben mit Geteilt'),
-      nLeicht:    zahl('Leichtere Aufgaben'),
-    };
-    const fehlend = Object.entries(soll).filter(([, v]) => v === null).map(([k]) => k);
-    if (fehlend.length) {
-      fehler.push(`${ABGLEICH} nennt ${fehlend.length} Werte für Leas Reihen nicht: `
-        + `${fehlend.join(', ')} — dann prüft dieses Tor nichts`);
-    } else {
-      const v = R.reihenVorrat();
-      const zaehl = (a) => v.filter(x => x.rechenart === a).length;
-      const ist = {
-        von:        R.REIHEN[0],
-        bis:        R.REIHEN[R.REIHEN.length - 1],
-        geteilt:    Math.round(R.GETEILT_STANDARD * 100),
-        geteiltMax: Math.round(R.GETEILT_HOECHSTENS * 100),
-        nMal:       zaehl('mal'),
-        nZehner:    zaehl('zehner'),
-        nGeteilt:   zaehl('geteilt'),
-        nLeicht:    zaehl('leicht'),
-      };
-      for (const k of Object.keys(soll))
-        pruefe(soll[k] === ist[k],
-          `Leas Reihen, ${k}: der Abgleich sagt ${soll[k]}, gerechnet sind ${ist[k]}`);
+  const v = R.reihenVorrat();
+  const zaehl = (a) => v.filter(x => x.rechenart === a).length;
+  const ist = gegenAbgleich('Leas Reihen', {
+    von:        'Reihen von',
+    bis:        'Reihen bis',
+    geteilt:    'Anteil Division',
+    geteiltMax: 'Anteil Division höchstens',
+    nMal:       'Aufgaben mit Mal',
+    nZehner:    'Aufgaben mit Zehn',
+    nGeteilt:   'Aufgaben mit Geteilt',
+    nLeicht:    'Leichtere Aufgaben',
+  }, () => ({
+    von:        R.REIHEN[0],
+    bis:        R.REIHEN[R.REIHEN.length - 1],
+    geteilt:    Math.round(R.GETEILT_STANDARD * 100),
+    geteiltMax: Math.round(R.GETEILT_HOECHSTENS * 100),
+    nMal:       zaehl('mal'),
+    nZehner:    zaehl('zehner'),
+    nGeteilt:   zaehl('geteilt'),
+    nLeicht:    zaehl('leicht'),
+  }));
+  if (ist) {
 
       /* Die Mischung muss an JEDER Reglerstellung aufgehen.
        *
@@ -1292,7 +1302,6 @@ if (!fs.existsSync(KONZEPT)) {
         + `(${ist.nMal} mal, ${ist.nZehner} mit Zehn, ${ist.nGeteilt} geteilt, `
         + `${ist.nLeicht} leicht), Reihen ${ist.von} bis ${ist.bis}, `
         + `${100 - ist.geteilt}/${ist.geteilt} Prozent — wie im Abgleich`);
-    }
   }
 }
 

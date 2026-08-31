@@ -21,7 +21,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, inEbene } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, inEbene, ausAblage,
+         zielUndEtikett } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const TYP = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json',
@@ -88,17 +89,7 @@ async function aufgabe() {
   await inEbene(p, 'fiona', 'kontinente');
   await p.waitForFunction(() => document.querySelector('.schirm.da path.ziel'),
     null, { timeout: 5000 });
-  const info = await p.evaluate(() => {
-    const s = document.querySelector('.schirm.da');
-    const z = s.querySelector('path.ziel');
-    const svg = s.querySelector('.karte svg');
-    const D = JSON.parse(document.getElementById('daten').textContent);
-    const g = D.kontinente.find(x => x.id === z.dataset.id);
-    const pt = svg.createSVGPoint(); pt.x = g.anker[0]; pt.y = g.anker[1];
-    const q = pt.matrixTransform(svg.getScreenCTM());
-    const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent);
-    return { id: g.id, name: g.name, x: q.x, y: q.y, idx: namen.indexOf(g.name) };
-  });
+  const info = await zielUndEtikett(p);
   return { p, info };
 }
 const schliesse = async (p) => { const c = p.__ctx; await p.close(); if (c) await c.close(); };
@@ -155,14 +146,8 @@ async function ziehe(d, richtung = [-1, 1], festesZiel = null) {
   }));
   // Wieviel steht im Protokoll? Das ist die eigentliche Frage bei einem
   // Fehlwurf: ob er einen der drei Versuche gekostet hat.
-  const eintraege = await p.evaluate(() => new Promise(ja => {
-    const a = indexedDB.open('lernkiste');
-    a.onsuccess = () => { const d = a.result;
-      if (!d.objectStoreNames.contains('protokoll')) return ja(0);
-      const q = d.transaction('protokoll', 'readonly').objectStore('protokoll').getAll();
-      q.onsuccess = () => ja(q.result.length); q.onerror = () => ja(-1); };
-    a.onerror = () => ja(-1);
-  }));
+  const alleEintraege = await ausAblage(p, 'protokoll');
+  const eintraege = alleEintraege === -1 ? -1 : alleEintraege.length;
   await schliesse(p);
   return { ...r, leuchtet, amFinger, durchSchild, eintraege, ziel: info.id, richtig: /Das ist /.test(r.frage) };
 }

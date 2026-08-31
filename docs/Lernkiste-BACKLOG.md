@@ -862,7 +862,7 @@ die dasselbe tun, aber verschieden geschrieben sind, entgehen ihm.
 
 ---
 
-### P8 · Elf Dopplungen, die zusammengehören  ·  DREI ERLEDIGT
+### P8 · Elf Dopplungen, die zusammengehören  ·  ERLEDIGT
 
 Der erste Lauf von `doppelt` hat fünfzehn gefunden. Vier davon sind
 Tabellen, die sich naturgemäß wiederholen — die Probenliste, die
@@ -928,7 +928,54 @@ Erklärung. Gezählt werden jetzt **Token**, also das, was wirklich verglichen
 wurde. Eine Zahl, die auf Kommentare anschlägt, erzieht dazu, keine zu
 schreiben.
 
-Bleiben acht.
+**Die acht übrigen sind abgearbeitet — und beim Abarbeiten kamen sechs
+weitere zum Vorschein, die das Tor gar nicht gemeldet hatte.**
+
+Das ist eine Eigenschaft des Tors, die vorher niemand kannte: es fasst
+Fundstellen **je Dateipaar** zusammen und zeigt nur die größte. In
+`tor/smoke.mjs` lagen sechs Dopplungen hintereinander gestapelt — jede kam
+erst zum Vorschein, als die davor weg war. Gemeldet wurden nie mehr als
+eine. Wer nach dem ersten Fund aufhört, hält eine Datei für sauber, in der
+noch fünf stehen.
+
+| Zusammengelegt | Wohin | Was es wert war |
+|---|---|---|
+| `inhalt.mjs` ×2 | `gegenAbgleich()` | zwei Leser derselben Konzepttabelle. Beim Zusammenlegen fiel auf: Fionas Block meldete eine fehlende Abgleichdatei als Fehler, Leas übersprang sie still |
+| `schreiben.js` ×2 | `gleichWeit()` | zwei Neuabtastungen. Die eine tastete eine Kurve dicht ab und dann gleich weit, die andere nur gleich weit — hätten sie sich unterschieden, wäre **jeder** Buchstabenvergleich schief gewesen |
+| `smoke.mjs` ×2 | `backlogZeile()` / `backlogZahlen()` | drei Leser derselben Backlog-Tabelle, nicht zwei |
+| `bauen.mjs` · `entwuerfe/bauen.mjs` | `rahmen()` / `sichtfeld()` in `geo-backen.mjs` | `bbox` — einmal als Rechteck, einmal gleich als viewBox-Zeichenkette |
+| `ansicht` · `ziehen` | `zielUndEtikett()` | Ziel und Anker aus der laufenden Seite |
+| `smoke` · `ziehen` | `ausAblage()`, `standVon()`, `stelleAblage()` | **zwölf** Zugriffe auf IndexedDB, nicht zwei |
+| `smoke.mjs` ×2 (verdeckt) | `abgeschlossen()` | der Abschluss einer Aufgabe, dreimal: Schreiben, Rechnen, Karte |
+| `smoke.mjs` ×2 (verdeckt) | `schreibeSauber()`, `angenommen()` | dreimal derselbe Verzug beim Schreiben — eine geradere Kopie hätte eine andere Toleranz geprüft |
+| `smoke.mjs` ×2 (verdeckt) | `naechsteAufgabe()`, `angesagtMit()` | Warten auf Ansage und Ziel |
+| `rechnen.js` ×2 | `malAufgabe()`, `teilAufgabe()` mit Kennung | vier Aufgabenbauer, zwei Paare. Frage, Ansage und Lösung eines Produkts hängen nicht daran, wie groß die Zahlen sind |
+| `backen-kontinente` · `backen-laender` | — | der Importblock, bleibt |
+
+**Sieben von zwölf Ablage-Zugriffen legten die Läden nicht an.** Sie liefen
+nur, weil vorher in derselben Sitzung ein anderer Abschnitt die Ablage
+gebaut hatte. So sieht eine Dopplung aus, die nichts kostet — bis zu dem
+Tag, an dem ein Abschnitt allein läuft.
+
+**Eine Dopplung habe ich gemessen und stehen lassen:** die beiden
+Umschalter der Antwortweise in `spiel.js`. Beide schalten eine Größe, die
+ihre Umgebung nach dem Klick weiterliest (die Etiketten in `b.onclick`, die
+`eingabeart` beim Werten); ein gemeinsamer Helfer bräuchte Lesen und Setzen
+als Rückrufe und wäre länger als die 125 Token, die er spart. Der Satz
+steht so in `tor/doppelt-erlaubt.json`.
+
+**Aber beim Messen fiel das Eigentliche auf.** Beide Umschalter tragen ihre
+Weise als `data-weise` am Knopf — eine Zusage an die Tore. Gelesen wurde sie
+nur auf der Karte. Der Rechenschirm hatte dieselbe Zusage und **kein Tor**,
+das sie prüft. Der Rauchtest liest sie jetzt auch dort und vergleicht sie
+mit dem, was sichtbar offen ist; die Gegenprobe (`data-weise` lügt) macht
+ihn an drei Stellen rot. So verfällt eine Dopplung wirklich: nicht sichtbar,
+sondern indem eine Hälfte ungeprüft bleibt.
+
+Übrig bleiben acht Einträge in der Erlaubnisliste, alle mit einem echten
+Satz: fünf Tabellen (Probenliste, Länderlisten, Backziele, Abzeichentafel,
+Buchstabenvorlage), der Importblock, der nachrechnende Mulberry32 im Tor
+`schreiben` und die beiden Umschalter.
 
 ---
 

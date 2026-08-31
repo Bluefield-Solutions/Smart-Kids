@@ -962,9 +962,9 @@ export const PROBEN = [
    * Rückfall gar nicht mehr her, ist ihre Zusage geschenkt. */
   { n:'der Rückfall wird gar nicht mehr gestellt', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:'tor/smoke.mjs',
-    such:'        for (const id of ids) st[id] = { fach: 1, hoechstes: 3, faellig: 0,',
-    ersatz:'        for (const id of []) st[id] = { fach: 1, hoechstes: 3, faellig: 0,',
-    an:{ datei:'tor/smoke.mjs', text:'for (const id of []) st[id]' },
+    such:'    const wiederFaellig = Object.fromEntries(ersteRunde.map(id =>',
+    ersatz:'    const wiederFaellig = Object.fromEntries([].map(id =>',
+    an:{ datei:'tor/smoke.mjs', text:'Object.fromEntries([].map(id =>' },
     sagt:'wieder zu' },
   /* Und die Probe selbst darf nicht leerlaufen: haelt der Hoechststand
    * NIE, was er verspricht, muessen die Gelegenheiten trotzdem gezaehlt
@@ -1733,6 +1733,18 @@ export const PROBEN = [
     ersatz:"  let weise = 'auswahl';",
     an:{ ...DIST, text:"let weise = 'auswahl';" },
     sagt:'rechnen geschrieben' },
+
+  /* Der Umschalter im Rechenschirm sagt, worauf er steht - und zwar die
+   * Wahrheit. Auf der Karte liest ein Tor dieses Datenfeld seit langem,
+   * hier bis P8 keines: die beiden Umschalter stehen zweimal da, und nur
+   * einer war bezeugt. Genau so verfaellt eine Dopplung - nicht sichtbar,
+   * sondern indem die eine Haelfte ungeprueft bleibt. */
+  { n:'der Rechen-Umschalter behauptet eine andere Weise', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"    const beschriften = ()=>{ um.dataset.weise = weise;\n      um.textContent = weise==='tippen' ? 'Lieber auswählen' : 'Lieber schreiben';",
+    ersatz:"    const beschriften = ()=>{ um.dataset.weise = 'auswahl';\n      um.textContent = weise==='tippen' ? 'Lieber auswählen' : 'Lieber schreiben';",
+    an:{ ...DIST, text:"um.dataset.weise = 'auswahl'" },
+    sagt:'der Umschalter steht auf' },
 
   // Und der Regler selbst, am ENDE der Kette gemessen: nicht ob er sich
   // schieben lässt, sondern ob Lea davon andere Aufgaben bekommt.

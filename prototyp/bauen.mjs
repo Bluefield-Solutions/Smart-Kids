@@ -12,7 +12,7 @@ import { STAEDTE } from '../src/geo/staedte.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { inline } from './inline.mjs';
 import { polDerUnzugaenglichkeit, pfadZuRingen,
-         ringeZuPolygonen } from '../tools/geo-backen.mjs';
+         ringeZuPolygonen, sichtfeld } from '../tools/geo-backen.mjs';
 
 const NACHBARN = JSON.parse(fs.readFileSync(new URL('./nachbarn.json', import.meta.url)));
 function vierfaerben(ids){
@@ -41,12 +41,6 @@ function ankerFuer(liste){
     return { ...x, anker: pu ? [+pu.punkt[0].toFixed(1), +pu.punkt[1].toFixed(1)] : null };
   });
 }
-
-const bbox = (l)=>{ const xs=[],ys=[];
-  l.forEach(o=>{ const m=o.pfad.match(/-?\d+\.?\d*/g).map(Number);
-    for(let i=0;i<m.length;i+=2){xs.push(m[i]);ys.push(m[i+1]);} });
-  const x0=Math.min(...xs),y0=Math.min(...ys);
-  return `${x0-8} ${y0-8} ${Math.max(...xs)-x0+16} ${Math.max(...ys)-y0+16}`; };
 
 const kont = new Map(I.KONTINENTE.map(k=>[k.id,k]));
 /** Die fuenf Kontinente mit Laenderebene. Australien hat keine. */
@@ -117,7 +111,7 @@ const bK = (()=>{ const xs=[],ys=[];
     for(let i=0;i<m.length;i+=2){xs.push(m[i]);ys.push(m[i+1]);} });
   return { x0:Math.min(...xs), y0:Math.min(...ys), x1:Math.max(...xs), y1:Math.max(...ys) }; })();
 D.vbK = `${bK.x0-8} ${bK.y0-8} ${bK.x1-bK.x0+16} ${bK.y1-bK.y0+16}`;
-D.vbD = bbox(D.deutschland);
+D.vbD = sichtfeld(D.deutschland);
 
 /* Silhouetten fuer die Kacheln (R2).
  *
@@ -156,18 +150,18 @@ const silhouette = (pfad, n) => {
   const welt = KONTINENTE_GROB.filter(k => k.id !== 'antarktika').map(k => k.pfad).join(' ');
   const d = DEUTSCHLAND_GROB.map(b => b.pfad).join(' ');
   D.silhouetten = {
-    kontinente:  { d: silhouette(welt, 16),             vb: bbox([{ pfad: welt }]) },
-    europa:      { d: silhouette(roh.europa, 16),       vb: bbox([{ pfad: roh.europa }]) },
-    afrika:      { d: silhouette(roh.afrika, 16),       vb: bbox([{ pfad: roh.afrika }]) },
-    asien:       { d: silhouette(roh.asien, 16),        vb: bbox([{ pfad: roh.asien }]) },
-    nordamerika: { d: silhouette(roh.nordamerika, 16),  vb: bbox([{ pfad: roh.nordamerika }]) },
-    suedamerika: { d: silhouette(roh.suedamerika, 16),  vb: bbox([{ pfad: roh.suedamerika }]) },
-    deutschland: { d: silhouette(d, 8),                 vb: bbox([{ pfad: d }]) },
+    kontinente:  { d: silhouette(welt, 16),             vb: sichtfeld([{ pfad: welt }]) },
+    europa:      { d: silhouette(roh.europa, 16),       vb: sichtfeld([{ pfad: roh.europa }]) },
+    afrika:      { d: silhouette(roh.afrika, 16),       vb: sichtfeld([{ pfad: roh.afrika }]) },
+    asien:       { d: silhouette(roh.asien, 16),        vb: sichtfeld([{ pfad: roh.asien }]) },
+    nordamerika: { d: silhouette(roh.nordamerika, 16),  vb: sichtfeld([{ pfad: roh.nordamerika }]) },
+    suedamerika: { d: silhouette(roh.suedamerika, 16),  vb: sichtfeld([{ pfad: roh.suedamerika }]) },
+    deutschland: { d: silhouette(d, 8),                 vb: sichtfeld([{ pfad: d }]) },
   };
   const kb = Object.values(D.silhouetten).reduce((a, s) => a + s.d.length, 0) / 1024;
   console.log(`  Silhouetten fuer die Kacheln: ${kb.toFixed(1)} KB`);
 }
-D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, bbox(roh)]));
+D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, sichtfeld(roh)]));
 // Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
 // nicht nur die Ziele - sonst kann man durch Ausschluss raten.
 D.umgebung = Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>

@@ -173,6 +173,31 @@ const weit = (a, b) => Math.hypot(a[0]-b[0], a[1]-b[1]);
  * Geraden nachlaessig - also ausgerechnet dort streng, wo ein Kind
  * ohnehin Muehe hat.
  */
+/**
+ * Eine dichte Punktfolge auf n Punkte bringen, gleich weit nach BOGENLAENGE.
+ *
+ * Die eine Stelle, an der das passiert. Vorher stand sie zweimal da - einmal
+ * fuer die Vorlage (`abtasten`), einmal fuer den gezeichneten Zug
+ * (`abtasten2`). Zwei Fassungen, die anders abtasten, verzerren jeden
+ * Vergleich zwischen beiden, ohne dass irgendetwas rot wird.
+ */
+function gleichWeit(punkte, n){
+  const bis = [0];
+  for (let i = 1; i < punkte.length; i++) bis.push(bis[i-1] + weit(punkte[i-1], punkte[i]));
+  const ganz = bis[bis.length-1];
+  if (!ganz) return Array.from({ length:n }, () => punkte[0].slice());
+  const aus = []; let j = 0;
+  for (let k = 0; k < n; k++) {
+    const ziel = ganz * k / (n-1);
+    while (j < bis.length-2 && bis[j+1] < ziel) j++;
+    const spanne = bis[j+1] - bis[j];
+    const t = spanne ? (ziel - bis[j]) / spanne : 0;
+    aus.push([punkte[j][0] + (punkte[j+1][0]-punkte[j][0])*t,
+              punkte[j][1] + (punkte[j+1][1]-punkte[j][1])*t]);
+  }
+  return aus;
+}
+
 export function abtasten(pfad, n = 32){
   const dicht = [];
   for (const s of stuecke(pfad)) {
@@ -182,20 +207,7 @@ export function abtasten(pfad, n = 32){
       if (!dicht.length || weit(dicht[dicht.length-1], p) > 1e-9) dicht.push(p);
     }
   }
-  const bis = [0];
-  for (let i = 1; i < dicht.length; i++) bis.push(bis[i-1] + weit(dicht[i-1], dicht[i]));
-  const ganz = bis[bis.length-1];
-  if (!ganz) return Array.from({ length:n }, () => dicht[0].slice());
-  const aus = []; let j = 0;
-  for (let k = 0; k < n; k++) {
-    const ziel = ganz * k / (n-1);
-    while (j < bis.length-2 && bis[j+1] < ziel) j++;
-    const spanne = bis[j+1] - bis[j];
-    const t = spanne ? (ziel - bis[j]) / spanne : 0;
-    aus.push([dicht[j][0] + (dicht[j+1][0]-dicht[j][0])*t,
-              dicht[j][1] + (dicht[j+1][1]-dicht[j][1])*t]);
-  }
-  return aus;
+  return gleichWeit(dicht, n);
 }
 
 /** Die Laenge eines Pfades in Kastenpunkten. */
@@ -366,21 +378,7 @@ function mittelPaar(a, b){
 }
 /** Eine Punktfolge auf feste Laenge bringen, gleich weit nach Bogenlaenge. */
 function abtasten2(punkte, n = 24){
-  if (punkte.length === n) return punkte;
-  const bis = [0];
-  for (let i = 1; i < punkte.length; i++) bis.push(bis[i-1] + weit(punkte[i-1], punkte[i]));
-  const ganz = bis[bis.length-1];
-  if (!ganz) return Array.from({ length:n }, () => punkte[0].slice());
-  const aus = []; let j = 0;
-  for (let k = 0; k < n; k++) {
-    const ziel = ganz * k / (n-1);
-    while (j < bis.length-2 && bis[j+1] < ziel) j++;
-    const spanne = bis[j+1] - bis[j];
-    const t = spanne ? (ziel - bis[j]) / spanne : 0;
-    aus.push([punkte[j][0] + (punkte[j+1][0]-punkte[j][0])*t,
-              punkte[j][1] + (punkte[j+1][1]-punkte[j][1])*t]);
-  }
-  return aus;
+  return punkte.length === n ? punkte : gleichWeit(punkte, n);
 }
 
 /** Die abgetasteten und genormten Zuege einer Vorlage - einmal gerechnet. */

@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
+import { rahmen } from '../tools/geo-backen.mjs';
 
 /* --- G13: Vierfaerbung. Nachbarschaft ist Geografie, kein Zufall. ------- */
 const NACHBARN = {
@@ -37,14 +38,7 @@ console.log(`  Vierfärbung: ${vf.benutzt} Farben, ${vf.konflikte.length} Konfli
 if (vf.konflikte.length) throw new Error('Nachbarn gleich gefärbt: '+vf.konflikte.join(', '));
 
 /* --- viewBox aus den echten Pfaden ------------------------------------- */
-const bbox = (liste) => {
-  const xs=[], ys=[];
-  liste.forEach(o=>{ const m=o.pfad.match(/-?\d+\.?\d*/g).map(Number);
-    for(let i=0;i<m.length;i+=2){ xs.push(m[i]); ys.push(m[i+1]); } });
-  const x0=Math.min(...xs), y0=Math.min(...ys);
-  return { x0, y0, w:Math.max(...xs)-x0, h:Math.max(...ys)-y0 };
-};
-const bK = bbox(KONTINENTE_GROB), bD = bbox(DEUTSCHLAND_FEIN);
+const bK = rahmen(KONTINENTE_GROB), bD = rahmen(DEUTSCHLAND_FEIN);
 
 /* --- Ausgabe ------------------------------------------------------------ */
 const daten = {

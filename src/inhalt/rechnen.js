@@ -228,18 +228,27 @@ export function reihenVorrat() {
   return aus;
 }
 
-function malAufgabe(art, a, b) {
+/* Die beiden Bauer - fuer das kleine UND das grosse Einmaleins.
+ *
+ * Unterschieden wird nur durch `art` und `kennung`. Frage, Ansage und
+ * Loesung eines Produkts haengen nicht davon ab, wie gross die Zahlen
+ * sind, und bis P8 standen sie trotzdem zweimal da: einmal fuer Lea
+ * (`m…`, `d…`), einmal fuer die Eltern (`g…`, `t…`). Wer die Ansage
+ * aendert, sollte sie nicht an zwei Stellen aendern muessen - im
+ * Protokoll steht sie woertlich, und Eltern lesen es.
+ */
+function malAufgabe(art, a, b, kennung = 'm') {
   return {
-    id: `m${a}*${b}`, rechenart: art, a, b, wert: a * b,
+    id: `${kennung}${a}*${b}`, rechenart: art, a, b, wert: a * b,
     frage: `${a} × ${b}`, name: String(a * b),
     gesagt: `Was ist ${gesprochen(a)} mal ${gesprochen(b)}?`,
     geloest: `${gesprochen(a)} mal ${gesprochen(b)} ist ${gesprochen(a * b)}`,
   };
 }
 
-function teilAufgabe(p, a) {
+function teilAufgabe(p, a, art = 'geteilt', kennung = 'd') {
   return {
-    id: `d${p}:${a}`, rechenart: 'geteilt', a: p, b: a, wert: p / a,
+    id: `${kennung}${p}:${a}`, rechenart: art, a: p, b: a, wert: p / a,
     frage: `${p} : ${a}`, name: String(p / a),
     gesagt: `Was ist ${gesprochen(p)} geteilt durch ${gesprochen(a)}?`,
     geloest: `${gesprochen(p)} geteilt durch ${gesprochen(a)}`
@@ -340,14 +349,7 @@ export function grossVorrat() {
   return aus;
 }
 
-function grossMal(a, b) {
-  return {
-    id: `g${a}*${b}`, rechenart: 'mal-gross', a, b, wert: a * b,
-    frage: `${a} × ${b}`, name: String(a * b),
-    gesagt: `Was ist ${gesprochen(a)} mal ${gesprochen(b)}?`,
-    geloest: `${gesprochen(a)} mal ${gesprochen(b)} ist ${gesprochen(a * b)}`,
-  };
-}
+const grossMal = (a, b) => malAufgabe('mal-gross', a, b, 'g');
 
 function grossQuadrat(a) {
   return {
@@ -360,15 +362,7 @@ function grossQuadrat(a) {
   };
 }
 
-function grossGeteilt(p, a) {
-  return {
-    id: `t${p}:${a}`, rechenart: 'geteilt-gross', a: p, b: a, wert: p / a,
-    frage: `${p} : ${a}`, name: String(p / a),
-    gesagt: `Was ist ${gesprochen(p)} geteilt durch ${gesprochen(a)}?`,
-    geloest: `${gesprochen(p)} geteilt durch ${gesprochen(a)}`
-           + ` ist ${gesprochen(p / a)}`,
-  };
-}
+const grossGeteilt = (p, a) => teilAufgabe(p, a, 'geteilt-gross', 't');
 
 /* Ablenker fuer Eltern.
  *

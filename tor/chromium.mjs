@@ -266,6 +266,118 @@ export async function zielPunkt(seite) {
   });
 }
 
+/* --- Die Ablage im Browser --------------------------------------------
+ *
+ * `lernkiste` ist die einzige Datenbank, `fortschritt` und `protokoll`
+ * sind ihre Laeden. Die sechs Zeilen zum Oeffnen standen bis P8 acht Mal
+ * da, verteilt auf zwei Tore. Acht Fassungen desselben Aufrufs veralten
+ * nicht gleichzeitig - und eine, die einen fehlenden Laden als „null
+ * Stueck" liest, meldet gruen, wo gar nichts zu lesen war. Deshalb
+ * unterscheiden beide Helfer „nichts drin" von „nicht lesbar": das erste
+ * ist 0, das zweite -1.
+ */
+
+/**
+ * Einen Ausgangsstand in die Ablage schreiben - vor dem Neuladen der Seite.
+ *
+ * `was` ist reine Datei: `{ laden: { schluessel: wert } }`. Wer etwas aus
+ * der geladenen Seite braucht (die Kontinente, die Bundeslaender), liest
+ * das vorher mit einem eigenen `evaluate` und baut den Stand hier draussen
+ * - dann bleibt dieser Helfer ein Schreiber und wird nicht zum zweiten Ort,
+ * an dem Spielwissen steht.
+ *
+ * Die vier Laeden werden angelegt, falls es die Ablage noch nicht gibt.
+ * Fassung und Namen stehen in `src/profil/ablage.js`; sie hier
+ * nachzuziehen ist Absicht - ein Tor, das die geprüfte Datei zum Anlegen
+ * benutzt, kann nicht mehr zeigen, dass sie es falsch macht.
+ *
+ * Bis P8 stand dieser Block zwoelfmal im Rauchtest, und SIEBEN Fassungen
+ * legten die Laeden nicht an: sie liefen nur, weil vorher schon jemand
+ * anders die Ablage gebaut hatte. Genau so sieht eine Dopplung aus, die
+ * nichts kostet - bis zu dem Tag, an dem der Abschnitt allein laeuft.
+ */
+export async function stelleAblage(seite, was) {
+  return seite.evaluate((w) => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onupgradeneeded = () => {
+      for (const l of ['profile', 'fortschritt', 'protokoll', 'einstellungen'])
+        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+    };
+    auf.onsuccess = () => {
+      const t = auf.result.transaction(Object.keys(w), 'readwrite');
+      for (const [laden, eintraege] of Object.entries(w))
+        for (const [schluessel, wert] of Object.entries(eintraege))
+          t.objectStore(laden).put(wert, schluessel);
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }), was);
+}
+
+/** Alle Eintraege eines Ladens. `-1` heisst: nicht lesbar. */
+export async function ausAblage(seite, laden) {
+  return seite.evaluate((name) => new Promise(ja => {
+    const a = indexedDB.open('lernkiste');
+    a.onsuccess = () => { const d = a.result;
+      if (!d.objectStoreNames.contains(name)) return ja(-1);
+      const q = d.transaction(name, 'readonly').objectStore(name).getAll();
+      q.onsuccess = () => ja(q.result); q.onerror = () => ja(-1); };
+    a.onerror = () => ja(-1);
+  }), laden);
+}
+
+/**
+ * Der Stand unter EINEM Schluessel: „profil:ebene" -> Tafel je Gegenstand.
+ *
+ * `null` heisst: nicht lesbar. Ein leerer Stand ist `{}` - der Unterschied
+ * zaehlt, denn „nichts gelernt" und „nicht nachgesehen" duerfen nicht
+ * dieselbe Zahl ergeben.
+ */
+export async function standVon(seite, schluessel) {
+  return seite.evaluate((sch) => new Promise(ja => {
+    const a = indexedDB.open('lernkiste');
+    a.onsuccess = () => { const d = a.result;
+      if (!d.objectStoreNames.contains('fortschritt')) return ja(null);
+      const g = d.transaction('fortschritt', 'readonly').objectStore('fortschritt').get(sch);
+      g.onsuccess = () => ja(g.result || {});
+      g.onerror = () => ja(null); };
+    a.onerror = () => ja(null);
+  }), schluessel);
+}
+
+/** Wieviele Gegenstaende stehen darunter? `-1`: nicht lesbar. */
+export async function standGroesse(seite, schluessel) {
+  const st = await standVon(seite, schluessel);
+  return st ? Object.keys(st).length : -1;
+}
+
+/**
+ * Das gesuchte Gebiet, sein Anker in Bildpunkten und der Platz seines
+ * Etiketts in der Liste.
+ *
+ * Wer ein Etikett zieht, braucht beides: WOHIN (der Anker, umgerechnet in
+ * Bildschirmpunkte) und WAS (das wievielte Etikett in der Liste). Stand bis
+ * P8 in `ziehen` und in `ansicht` zweimal gleich da.
+ *
+ * Der Anker wird hier NICHT gegen `elementFromPoint` geprueft - anders als
+ * in `zielPunkt`, und mit Absicht: beide Aufrufer ziehen bewusst daneben
+ * und messen die Nachsicht. Sie brauchen den ungeschoenten Punkt aus den
+ * Daten, nicht den naechstbesten, an dem das Spiel das Ziel erkennt.
+ */
+export async function zielUndEtikett(seite) {
+  return seite.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const z = s.querySelector('path.ziel');
+    const svg = s.querySelector('.karte svg');
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    const g = D.kontinente.find(x => x.id === z.dataset.id);
+    const pt = svg.createSVGPoint(); pt.x = g.anker[0]; pt.y = g.anker[1];
+    const q = pt.matrixTransform(svg.getScreenCTM());
+    const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent);
+    return { id: g.id, name: g.name, x: q.x, y: q.y, idx: namen.indexOf(g.name) };
+  });
+}
+
 /**
  * Ein Profil waehlen, eine Ebene betreten, warten bis die Karte steht.
  *

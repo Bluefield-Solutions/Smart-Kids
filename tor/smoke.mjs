@@ -1,9 +1,9 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { istUmgekehrt, zeigeAufKarte, zielPunkt } from './chromium.mjs';
-import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
-         schreibVorlage, zeichneZug } from './chromium.mjs';
+import { istUmgekehrt, zeigeAufKarte, zielPunkt, starte, zurEbenenwahl,
+         WELT_VON, durchVorlauf, serviere, schreibVorlage, zeichneZug,
+         ausAblage, standVon, standGroesse, stelleAblage } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
@@ -113,6 +113,30 @@ const PROFILNAMEN = (() => {
  * nicht den Vorrat - und zwar so viele, wie gleich kommen. Der Vorrat ist
  * erzeugt (100, 140, 158); ihn zu zeigen hiesse, einer Sechsjaehrigen vor
  * ihrer ersten Sitzung 2,8 Bildschirme Einmaleins-Tafel hinzulegen. */
+const BACKLOG = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
+
+/**
+ * Eine Zeile der Profiltabelle als Zellen - oder nichts samt Fehler.
+ *
+ * `wozu` sagt, was ohne diese Zeile ungeprueft bliebe. Vorher stand dieser
+ * Zehnzeiler dreimal da, einmal je Zeile; eine fehlende Zeile darf nicht
+ * still zu einem leeren Soll werden, gegen das alles gruen ist.
+ */
+function backlogZeile(zeile, wozu){
+  const z = BACKLOG.match(new RegExp(`^\\|\\s*${zeile}\\s*\\|(.+)\\|\\s*$`, 'm'));
+  if (!z) { fehler.push(`Die Zeile „${zeile}" fehlt im Backlog — `
+    + `dann prüft der Rauchtest ${wozu} gegen nichts`); return null; }
+  return z[1].split('|');
+}
+
+/** Dieselbe Zeile als Zahl je Profil. */
+function backlogZahlen(zeile, wozu){
+  const zellen = backlogZeile(zeile, wozu);
+  if (!zellen) return {};
+  const n = zellen.map(t => +(t.match(/\d+/) || [])[0]).filter(Number.isFinite);
+  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, n[i]]));
+}
+
 /* Die Kennungen der Profile - aus der KOPFZEILE der Tabelle, nicht aus
  * einer Liste hier.
  *
@@ -123,8 +147,7 @@ const PROFILNAMEN = (() => {
  *
  * Die Kennung ist das erste Wort der Spalte, klein: „Fiona (6)" -> `fiona`. */
 const PROFIL_IDS = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*\|\s*Fiona[^|]*\|.+\|\s*$/m);
+  const z = BACKLOG.match(/^\|\s*\|\s*Fiona[^|]*\|.+\|\s*$/m);
   if (!z) { fehler.push('Die Kopfzeile der Profiltabelle fehlt im Backlog — '
     + 'dann weiß der Rauchtest nicht, welche Spalte wem gehört'); return []; }
   return z[0].split('|').slice(2, -1)
@@ -135,23 +158,9 @@ const PROFIL_IDS = (() => {
 const NAME_VON = Object.fromEntries(PROFIL_IDS.map(id =>
   [id, id.charAt(0).toUpperCase() + id.slice(1)]));
 
-const SITZUNG = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*Aufgaben je Sitzung\s*\|(.+)\|\s*$/m);
-  if (!z) { fehler.push('Die Zeile „Aufgaben je Sitzung" fehlt im Backlog — '
-    + 'dann prüft der Rauchtest den Vorlauf gegen nichts'); return {}; }
-  const n = z[1].split('|').map(t => +(t.match(/\d+/) || [])[0]).filter(Number.isFinite);
-  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, n[i]]));
-})();
+const SITZUNG = backlogZahlen('Aufgaben je Sitzung', 'den Vorlauf');
 
-const TIEFE = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*Ländertiefe\s*\|(.+)\|\s*$/m);
-  if (!z) { fehler.push('Die Zeile „Ländertiefe" fehlt im Backlog — '
-    + 'dann prüft der Rauchtest die Tiefe gegen nichts'); return {}; }
-  const zahlen = z[1].split('|').map(s => +(s.match(/\d+/) || [])[0]).filter(Number.isFinite);
-  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, zahlen[i]]));
-})();
+const TIEFE = backlogZahlen('Ländertiefe', 'die Tiefe');
 
 /* Wer bekommt NIE eine Auswahl, sondern tippt immer?
  *
@@ -165,12 +174,9 @@ const TIEFE = (() => {
  * wer ZWEI Eingabewege hat. Das Profil „Eltern" hat einen. Die Gegenprobe
  * lief zweimal durch und bewies beide Male nichts. */
 const OHNE_AUSWAHL = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*Auswahl statt Tippen\s*\|(.+)\|\s*$/m);
-  if (!z) { fehler.push('Die Zeile „Auswahl statt Tippen" fehlt im Backlog — '
-    + 'dann prüft der Rauchtest das Verbot gegen nichts'); return new Set(); }
-  const ids = PROFIL_IDS;
-  return new Set(z[1].split('|').map((t, i) => /\bnie\b/i.test(t) ? ids[i] : null).filter(Boolean));
+  const zellen = backlogZeile('Auswahl statt Tippen', 'das Verbot');
+  if (!zellen) return new Set();
+  return new Set(zellen.map((t, i) => /\bnie\b/i.test(t) ? PROFIL_IDS[i] : null).filter(Boolean));
 })();
 
 
@@ -509,6 +515,55 @@ async function bewertet(p, ms = 6000) {
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
+/**
+ * Ein Zeichen schreiben - leicht verzogen, so wie ein Kind es tut.
+ *
+ * Der Verzug ist Absicht, und er muss an ALLEN Stellen derselbe sein:
+ * eine Kopie, die ein wenig gerader zeichnet, besteht die Toleranz noch,
+ * wenn die andere sie laengst reisst - dann pruefen zwei Abschnitte
+ * verschiedene Nachsicht, und niemand sieht es. Stand bis P8 dreimal da.
+ */
+async function schreibeSauber(seite, zuege, feld = 0) {
+  for (const d of zuege)
+    await zeichneZug(seite, Schreiben.abtasten(d, 26)
+      .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]), feld);
+}
+
+/** Wurde als RICHTIG gewertet - nicht „fast", nicht die Loesung. */
+const angenommen = (seite, ms = 6000) => seite.waitForFunction(
+  () => !!document.querySelector('.schirm.da .frage .richtigText'),
+  null, { timeout: ms }).then(() => true).catch(() => false);
+
+/**
+ * Auf eine Ansage warten, die mit `anfang` beginnt - und sie zurueckgeben.
+ *
+ * Leer, wenn keine kommt. Das Warten gehoert dazu: die App sagt eine halbe
+ * Sekunde nach dem Wechsel an, und wer `__gesagt` sofort liest, liest den
+ * Zustand davor und haelt eine vorhandene Ansage fuer ausgeblieben.
+ */
+const angesagtMit = (seite, anfang, ms = 5000) =>
+  bis(seite, (a) => (window.__gesagt || []).some(t => t.startsWith(a)), ms, anfang)
+    .then(() => seite.evaluate((a) => (window.__gesagt || [])
+      .find(t => t.startsWith(a)) || '', anfang)).catch(() => '');
+
+/**
+ * Auf die naechste Aufgabe warten und den Namen des Gesuchten lesen.
+ *
+ * Gewartet wird darauf, dass das Lob WEG ist: liest man den Namen davor,
+ * steht dort noch das eben geloeste Gebiet, und die Probe spricht die
+ * richtige Antwort auf die falsche Frage. Gibt `null` zurueck, wenn keine
+ * Karte mehr dasteht (Sitzungsende).
+ */
+async function naechsteAufgabe(seite) {
+  await bis(seite, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000);
+  return seite.evaluate(() => {
+    const z = document.querySelector('.schirm.da path.ziel');
+    if (!z) return null;
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
+  });
+}
+
 /* Warten, bis die App weitergegangen ist - nicht eine Frist lang.
  *
  * Nach einer richtigen Antwort bleibt das Lob `LOBPAUSE` stehen, dann
@@ -810,15 +865,7 @@ if (laeuft('ablage')) try {
   }
   // Der Beweis ist die ABLAGE, nicht der Text. Ein Regex auf "0 von 16"
   // trifft die 16 und meldet gruen - genau das ist beim ersten Lauf passiert.
-  const abgelegt = await p.evaluate(() => new Promise(ja => {
-    const a = indexedDB.open('lernkiste');
-    a.onsuccess = () => { const d = a.result;
-      const t = d.transaction('fortschritt', 'readonly');
-      const g = t.objectStore('fortschritt').get('fiona:bundeslaender');
-      g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
-      g.onerror = () => ja(-1); };
-    a.onerror = () => ja(-1);
-  }));
+  const abgelegt = await standGroesse(p, 'fiona:bundeslaender');
   console.log(`  In der Ablage:              ${abgelegt} Gegenstände im Leitner-Stand`);
   if (abgelegt < 3) merke('ablage', new Error(`nur ${abgelegt} Gegenstände abgelegt, erwartet mindestens 3`));
   // Forscherbuch
@@ -845,19 +892,12 @@ if (laeuft('ablage')) try {
   // und die Gegenprobe, die einfach ALLE als gesammelt zeichnete, kam damit
   // durch: sie faelschte genau die Zahl, gegen die geprueft wurde.
   // Fach 3 ist die Schwelle (`HAT_AUFKLEBER` in src/kern/leitner.js).
-  const wirklich = await p.evaluate(() => new Promise(ja => {
-    const a = indexedDB.open('lernkiste');
-    a.onsuccess = () => { const d = a.result;
-      if (!d.objectStoreNames.contains('fortschritt')) return ja(0);
-      const q = d.transaction('fortschritt', 'readonly').objectStore('fortschritt').getAll();
-      // Gezaehlt wird am HOECHSTSTAND, so wie `istGesammelt` es tut. Mit
-      // dem laufenden Fach zaehlte diese Zeile nach jeder falschen Antwort
-      // weniger als das Buch zeigt - und meldete das Buch als Wand.
-      q.onsuccess = () => ja(q.result.reduce((n, st) =>
-        n + Object.values(st || {}).filter(x => (x?.hoechstes ?? x?.fach ?? 1) >= 3).length, 0));
-      q.onerror = () => ja(-1); };
-    a.onerror = () => ja(-1);
-  }));
+  // Gezaehlt wird am HOECHSTSTAND, so wie `istGesammelt` es tut. Mit dem
+  // laufenden Fach zaehlte diese Zeile nach jeder falschen Antwort weniger
+  // als das Buch zeigt - und meldete das Buch als Wand.
+  const staende = await ausAblage(p, 'fortschritt');
+  const wirklich = staende === -1 ? -1 : staende.reduce((n, st) =>
+    n + Object.values(st || {}).filter(x => (x?.hoechstes ?? x?.fach ?? 1) >= 3).length, 0);
   if (alleKleber > wirklich + 3)
     merke('forscherbuch', new Error(`das Buch zeigt ${alleKleber} Aufkleber, `
       + `wirklich gesammelt sind ${wirklich} — mehr als drei Vorschau, das ist wieder die Wand`));
@@ -962,16 +1002,8 @@ if (laeuft('ablage')) try {
       .map((e, i) => Protokoll.eintrag({ zeit: T + i*1000, eingabeart:'tippen',
                                          fachVorher:1, fachNachher:2, ...e }));
     const v = await neueSeite({ width: 1180, height: 820 }, ctx);
-    await v.evaluate((eintraege) => new Promise((ja, nein) => {
-      const auf = indexedDB.open('lernkiste', 1);
-      auf.onsuccess = () => {
-        const t = auf.result.transaction(['protokoll'], 'readwrite');
-        const l = t.objectStore('protokoll');
-        eintraege.forEach((e, i) => l.put(e, `n1-${i}`));
-        t.oncomplete = ja; t.onerror = () => nein(t.error);
-      };
-      auf.onerror = () => nein(auf.error);
-    }), mitschnitt);
+    await stelleAblage(v, { protokoll:
+      Object.fromEntries(mitschnitt.map((e, i) => [`n1-${i}`, e])) });
     await v.reload({ waitUntil: 'domcontentloaded' });
     await v.waitForSelector('[data-profil="fiona"]');
     await v.click('[data-profil="fiona"]');
@@ -1127,15 +1159,7 @@ if (laeuft('ablage')) try {
       // keinen Fortschritt mehr, den man zuruecksetzen koennte. Bleibt er
       // stehen, laeuft die Grenze ab und die Zaehlung unten meldet es.
       await bis(p, () => !document.querySelector('.schirm.da [data-neu="bundeslaender"]'), 4000);
-      const rest = await p.evaluate(() => new Promise(ja => {
-        const a = indexedDB.open('lernkiste');
-        a.onsuccess = () => { const d = a.result;
-          const g = d.transaction('fortschritt', 'readonly').objectStore('fortschritt')
-            .get('fiona:bundeslaender');
-          g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
-          g.onerror = () => ja(-1); };
-        a.onerror = () => ja(-1);
-      }));
+      const rest = await standGroesse(p, 'fiona:bundeslaender');
       console.log(`  „Von vorne":                „${erst.trim()}" → nachgefragt → `
         + `${rest} Gegenstände übrig`);
       if (rest !== 0) merke('vonvorne', new Error(
@@ -1198,14 +1222,7 @@ if (laeuft('ablage')) try {
     if (!weiter) merke('pause', new Error(
       'die Sitzung steht nach zwei gelösten Aufgaben immer noch bei der ersten — '
       + 'die Probe könnte nicht unterscheiden, ob nach „von vorne" neu angefangen wird'));
-    const vorher = await p.evaluate(() => new Promise(ja => {
-      const a = indexedDB.open('lernkiste');
-      a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
-        .objectStore('fortschritt').get('fiona:bundeslaender');
-        g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
-        g.onerror = () => ja(-1); };
-      a.onerror = () => ja(-1);
-    }));
+    const vorher = await standGroesse(p, 'fiona:bundeslaender');
     if (vorher < 1) merke('pause', new Error(
       'vor der Pausenprobe steht kein Fortschritt in den Bundeslaendern — '
       + 'die Probe koennte nichts loeschen und saehe trotzdem gruen aus'));
@@ -1235,14 +1252,7 @@ if (laeuft('ablage')) try {
           g.onerror = () => ja(false); };
         a.onerror = () => ja(false);
       }), 4000);
-      const nachher = await p.evaluate(() => new Promise(ja => {
-        const a = indexedDB.open('lernkiste');
-        a.onsuccess = () => { const g = a.result.transaction('fortschritt', 'readonly')
-          .objectStore('fortschritt').get('fiona:bundeslaender');
-          g.onsuccess = () => ja(g.result ? Object.keys(g.result).length : 0);
-          g.onerror = () => ja(-1); };
-        a.onerror = () => ja(-1);
-      }));
+      const nachher = await standGroesse(p, 'fiona:bundeslaender');
       // Steht die Sitzung wieder am Anfang? Das Fortschrittsband sagt es:
       // der erste Punkt ist `jetzt`, keiner davor ist erledigt.
       const band = await p.evaluate(() => {
@@ -1294,17 +1304,14 @@ if (laeuft('ablage')) try {
      * das gestern gespielt hat.
      */
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
-    await q.evaluate(() => new Promise(ja => {
-      const a = indexedDB.open('lernkiste');
-      a.onsuccess = () => { const st = {};
-        const D = JSON.parse(document.getElementById('daten').textContent);
-        D.deutschland.slice(0, 2).forEach((x, i) => st[x.id] = { fach: i ? 3 : 5,
-          hoechstes: i ? 3 : 5, faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
-        const t = a.result.transaction('fortschritt', 'readwrite');
-        t.objectStore('fortschritt').put(st, 'fiona:bundeslaender');
-        t.oncomplete = () => ja(1); t.onerror = () => ja(0); };
-      a.onerror = () => ja(0);
-    }));
+    const zweiLaender = await q.evaluate(() => {
+      const st = {};
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      D.deutschland.slice(0, 2).forEach((x, i) => st[x.id] = { fach: i ? 3 : 5,
+        hoechstes: i ? 3 : 5, faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
+      return st;
+    });
+    await stelleAblage(q, { fortschritt: { 'fiona:bundeslaender': zweiLaender } });
     await q.reload();
     await q.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
     await q.click('[data-profil="fiona"]');
@@ -1381,21 +1388,15 @@ if (laeuft('ablage')) try {
       downloadThroughput: 750 * 1024 / 8, uploadThroughput: 250 * 1024 / 8 });
     await q.goto(ADRESSE + '?flott', { waitUntil: 'domcontentloaded' });
     await q.waitForSelector('[data-profil="fiona"]', { timeout: 30000 });
-    await q.evaluate(() => new Promise(ja => {
+    // Aufkleber in DREI Ebenen — drei Dateien zum Nachladen.
+    const dreiEbenen = await q.evaluate(() => {
       const D = JSON.parse(document.getElementById('daten').textContent);
-      const a = indexedDB.open('lernkiste', 1);
-      a.onupgradeneeded = () => { for (const l of ['profile','fortschritt','protokoll','einstellungen'])
-        if (!a.result.objectStoreNames.contains(l)) a.result.createObjectStore(l); };
-      a.onsuccess = () => { const t = a.result.transaction(['fortschritt'], 'readwrite');
-        // Aufkleber in DREI Ebenen — drei Dateien zum Nachladen.
-        const ebenen = [['bundeslaender', D.deutschland.map(x => x.id)],
-          ...Object.entries(D.laender).map(([k, l]) => [`laender:${k}`, l.map(x => x.a3)])].slice(0, 3);
-        for (const [id, ids] of ebenen) { const st = {};
-          ids.slice(0, 2).forEach(g => st[g] = { fach: 4, hoechstes: 4, faellig: 0,
-            richtig: 3, falsch: 0, zuletzt: 0 });
-          t.objectStore('fortschritt').put(st, `fiona:${id}`); }
-        t.oncomplete = ja; };
-    }));
+      return [['bundeslaender', D.deutschland.map(x => x.id)],
+        ...Object.entries(D.laender).map(([k, l]) => [`laender:${k}`, l.map(x => x.a3)])].slice(0, 3);
+    });
+    await stelleAblage(q, { fortschritt: Object.fromEntries(dreiEbenen.map(([id, ids]) =>
+      [`fiona:${id}`, Object.fromEntries(ids.slice(0, 2).map(g =>
+        [g, { fach: 4, hoechstes: 4, faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 }]))])) });
     await q.reload({ waitUntil: 'domcontentloaded' });
     await q.waitForSelector('[data-profil="fiona"]', { timeout: 30000 });
     await q.click('[data-profil="fiona"]');
@@ -1486,18 +1487,10 @@ if (laeuft('ablage')) try {
     if (ersteRunde.length >= alle)
       merke('runden', new Error('alle Kontinente stehen in Runde 1 — '
         + 'diese Prüfung kann nichts mehr zeigen'));
-    await p.evaluate((ids) => new Promise(ja => {
-      const a = indexedDB.open('lernkiste');
-      a.onsuccess = () => { const d = a.result;
-        const st = {};
-        // Hoechststand 3 (hatte einen Aufkleber), heute wieder Fach 1.
-        for (const id of ids) st[id] = { fach: 1, hoechstes: 3, faellig: 0,
-          richtig: 2, falsch: 1, zuletzt: 0 };
-        const t = d.transaction('fortschritt', 'readwrite');
-        t.objectStore('fortschritt').put(st, 'fiona:kontinente');
-        t.oncomplete = () => ja(1); t.onerror = () => ja(0); };
-      a.onerror = () => ja(0);
-    }), ersteRunde);
+    // Hoechststand 3 (hatte einen Aufkleber), heute wieder Fach 1.
+    const wiederFaellig = Object.fromEntries(ersteRunde.map(id =>
+      [id, { fach: 1, hoechstes: 3, faellig: 0, richtig: 2, falsch: 1, zuletzt: 0 }]));
+    await stelleAblage(p, { fortschritt: { 'fiona:kontinente': wiederFaellig } });
     // Eine EIGENE Seite: der gestellte Stand soll die Wege nicht
     // durcheinanderbringen, die danach noch geprueft werden. Sie sieht
     // dieselbe Ablage - die haengt an der Herkunft, nicht am Fenster.
@@ -1567,19 +1560,7 @@ if (laeuft('tippen')) try {
  */
 if (laeuft('regler')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
-  await p.evaluate(() => new Promise((ja, nein) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onupgradeneeded = () => {
-      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
-        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
-    };
-    auf.onsuccess = () => {
-      const t = auf.result.transaction(['einstellungen'], 'readwrite');
-      t.objectStore('einstellungen').put({ reihenGeteilt: 0.5 }, 'alles');
-      t.oncomplete = ja; t.onerror = () => nein(t.error);
-    };
-    auf.onerror = () => nein(auf.error);
-  }));
+  await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5 } } });
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="lea"]');
   await p.click('[data-profil="lea"]');
@@ -1670,15 +1651,7 @@ if (laeuft('regler')) try {
    * aendert das Entfernen der Sperre nichts, was zu sehen waere.
    */
   {
-    await p.evaluate(() => new Promise((ja, nein) => {
-      const auf = indexedDB.open('lernkiste', 1);
-      auf.onsuccess = () => {
-        const t = auf.result.transaction(['einstellungen'], 'readwrite');
-        t.objectStore('einstellungen').put({ reihenGeteilt: 0.5, ton: false }, 'alles');
-        t.oncomplete = ja; t.onerror = () => nein(t.error);
-      };
-      auf.onerror = () => nein(auf.error);
-    }));
+    await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5, ton: false } } });
     await p.reload({ waitUntil: 'domcontentloaded' });
     await p.waitForSelector('[data-profil="lea"]');
     await p.click('[data-profil="lea"]');
@@ -1841,6 +1814,36 @@ function lobPruefen(wer, ebene, satz, gesprochen) {
   if (gesprochen) merke('durchgang', new Error(
     `${wer}/${ebene}: die App spricht — „${gesprochen.slice(0, 60)}". `
     + 'Bei „sachlich" sagt sie von sich aus nichts'));
+}
+
+/**
+ * Der Abschluss einer gespielten Aufgabe - fuer jeden Antwortweg gleich.
+ *
+ * Gezaehlt wird die ANSAGE der Aufgabe, nicht das Lob danach; gelesen wird
+ * die Frage-Zeile samt Haken; gemeldet wird eine Antwort, die nicht
+ * gewertet wurde; und dann geht es weiter. Stand bis P8 dreimal da - im
+ * Schreib-, im Rechen- und im Kartenzweig. Auseinandergelaufen waren die
+ * drei noch nicht; sie haetten es aber, denn nur EINE trug den Grund, aus
+ * dem hier erst nach der Antwort gelesen wird: auf ein Ausbleiben kann man
+ * nicht warten.
+ *
+ * `hoert` ist der Ausdruck, an dem die Ansage DIESER Aufgabenform zu
+ * erkennen ist. `wie` beschreibt fuer die Fehlermeldung den Weg, auf dem
+ * geantwortet wurde.
+ */
+async function abgeschlossen(p, wer, ebene, hoert, wie) {
+  const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+  if (hoert.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
+  const r = await p.evaluate(() => {
+    const f = document.querySelector('.schirm.da .frage');
+    return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
+  });
+  if (!/^✓ /.test(r || ''))
+    merke('durchgang', new Error(`${wer}/${ebene}: ${wie} → „${r}"`));
+  lobPruefen(wer, ebene, r, gesagt);
+  durchgespielt++;
+  await weitergegangen(p);
+  await raus(p);
 }
 
 const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa'],
@@ -2038,9 +2041,7 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
           for (const d of zuege) await zeichneZug(p, Schreiben.abtasten(d, 26));
         }
         for (let f = 0; f < felder.length; f++)
-          for (const d of felder[f])
-            await zeichneZug(p, Schreiben.abtasten(d, 26)
-              .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]), f);
+          await schreibeSauber(p, felder[f], f);
         /* „Fertig" IMMER druecken, wenn er dasteht.
          *
          * Bei einem Feld prueft die App von selbst, sobald die erwartete
@@ -2050,19 +2051,9 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
           await p.click('.schirm.da #fertigknopf');
         wege.add(`${wer}: ${gezeigt.length ? 'nachgefahren' : 'nach Ansage'} geschrieben`);
         await bewertet(p);
-        const gesagtS = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-        if (/Fahre den Buchstaben nach|Fahre sie nach|Schreib ein |Schreib die Zahl /.test(gesagtS))
-          gehoert[wer] = (gehoert[wer] || 0) + 1;
-        const rs = await p.evaluate(() => {
-          const f = document.querySelector('.schirm.da .frage');
-          return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
-        });
-        if (!/^✓ /.test(rs || ''))
-          merke('durchgang', new Error(`${wer}/${ebene}: nachgefahren und geschrieben → „${rs}"`));
-        lobPruefen(wer, ebene, rs, gesagtS);
-        durchgespielt++;
-        await weitergegangen(p);
-        await raus(p);
+        await abgeschlossen(p, wer, ebene,
+          /Fahre den Buchstaben nach|Fahre sie nach|Schreib ein |Schreib die Zahl /,
+          'nachgefahren und geschrieben');
         continue;
       }
       if (await p.$('.schirm.da .rechnung')) {
@@ -2092,13 +2083,23 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
           // ins Nichts.
           const tippt = !!s.querySelector('#tippfeld:not([hidden])');
           const zahlen = [...s.querySelectorAll('#auswahl .zahl')].map(z => z.textContent);
-          return { soll, tippt, zahlen, i: zahlen.map(Number).indexOf(soll) };
+          return { soll, tippt, zahlen, i: zahlen.map(Number).indexOf(soll),
+                   // Der Umschalter traegt seine Weise als Datenfeld - wie
+                   // der auf der Karte. Auf der Karte hat ein Tor das
+                   // laengst gelesen, hier bis P8 keines: die beiden
+                   // Umschalter stehen zweimal da, und nur einer war
+                   // bezeugt. Geprueft wird, dass das Datenfeld und der
+                   // sichtbare Weg dasselbe sagen.
+                   weise: s.querySelector('#rechenweise')?.dataset.weise || null };
         });
         if (!r || (!r.tippt && r.i < 0)) {
           merke('durchgang', new Error(`${wer}/${ebene}: die richtige Antwort `
             + `${r ? r.soll : '?'} steht nicht unter ${r ? r.zahlen.join(', ') : '—'}`));
           continue;
         }
+        if (r.weise && (r.weise === 'tippen') !== r.tippt)
+          merke('durchgang', new Error(`${wer}/${ebene}: der Umschalter steht auf `
+            + `„${r.weise}", auf dem Schirm ist ${r.tippt ? 'das Tippfeld' : 'die Auswahl'} offen`));
         if (r.tippt) {
           await p.fill('.schirm.da #rein', String(r.soll));
           await p.click('.schirm.da #pruef');
@@ -2107,19 +2108,7 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
         }
         wege.add(`${wer}: rechnen ${r.tippt ? 'geschrieben' : 'angetippt'}`);
         await bewertet(p);
-        // Gezaehlt wird die ANSAGE der Aufgabe, nicht das Lob danach.
-        const gesagtR = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-        if (/Was ist/.test(gesagtR)) gehoert[wer] = (gehoert[wer] || 0) + 1;
-        const rr = await p.evaluate(() => {
-          const f = document.querySelector('.schirm.da .frage');
-          return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
-        });
-        if (!/^✓ /.test(rr || ''))
-          merke('durchgang', new Error(`${wer}/${ebene}: ${r.soll} angetippt → „${rr}"`));
-        lobPruefen(wer, ebene, rr, gesagtR);
-        durchgespielt++;
-        await weitergegangen(p);
-        await raus(p);
+        await abgeschlossen(p, wer, ebene, /Was ist/, `${r.soll} angetippt`);
         continue;
       }
       /* Die umgekehrte Frage (B3) - und sie wird HIER auch gezaehlt.
@@ -2200,21 +2189,8 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
         }
       }
       await bewertet(p);
-      // Gezaehlt wird die FRAGE, nicht irgendein Ton - und erst hier, weil
-      // ein Ausbleiben sich nicht erwarten laesst.
-      const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
-      if (/Wie heißt/.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
-      const r = await p.evaluate(() => {
-        const f = document.querySelector('.schirm.da .frage');
-        return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
-      });
-      if (!/^✓ /.test(r || ''))
-        merke('durchgang', new Error(`${wer}/${ebene}: „${eingabe}" richtig `
-          + `${z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'} → „${r}"`));
-      lobPruefen(wer, ebene, r, gesagt);
-      durchgespielt++;
-      await weitergegangen(p);
-      await raus(p);
+      await abgeschlossen(p, wer, ebene, /Wie heißt/, `„${eingabe}" richtig `
+        + (z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'));
     }
     /* --- Steht die Aufgabe im Protokoll mit ihrem Namen? (R7) --------
      *
@@ -2475,12 +2451,8 @@ if (laeuft('schreiben')) try {
       + 'erwartet war eine Aufforderung, es noch einmal zu versuchen'));
 
   // 4. Und jetzt richtig. Leicht verzogen, so wie ein Kind schreibt.
-  for (const d of zuege)
-    await zeichneZug(p, Schreiben.abtasten(d, 26)
-      .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
-  const gut = await p.waitForFunction(
-    () => !!document.querySelector('.schirm.da .frage .richtigText'),
-    null, { timeout: 6000 }).then(() => true).catch(() => false);
+  await schreibeSauber(p, zuege);
+  const gut = await angenommen(p);
   if (!gut) {
     const jetzt = await p.$eval('.schirm.da #frage', e => e.textContent);
     merke('schreiben', new Error(`ein sauber geschriebenes ${zeichen} wurde nicht angenommen `
@@ -2492,16 +2464,8 @@ if (laeuft('schreiben')) try {
   // 5. Der Fortschritt muss ANKOMMEN. Ein Buchstabe, der richtig war und
   //    im Leitner nicht steigt, ist eine Uebung ohne Gedaechtnis.
   await p.waitForTimeout(400);
-  const fach = await p.evaluate((id) => new Promise((ja) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onsuccess = () => {
-      const t = auf.result.transaction(['fortschritt'], 'readonly')
-        .objectStore('fortschritt').get('fiona:schreiben:buchstaben');
-      t.onsuccess = () => ja((t.result || {})[id]?.fach ?? 0);
-      t.onerror = () => ja(-1);
-    };
-    auf.onerror = () => ja(-1);
-  }), `bu:${zeichen}`);
+  const buchstabenStand = await standVon(p, 'fiona:schreiben:buchstaben');
+  const fach = buchstabenStand ? (buchstabenStand[`bu:${zeichen}`]?.fach ?? 0) : -1;
   if (!(fach >= 2))
     merke('schreiben', new Error(`nach einem richtigen ${zeichen} steht der Buchstabe `
       + `in Fach ${fach} — erwartet mindestens 2`));
@@ -2525,10 +2489,7 @@ if (laeuft('schreiben')) try {
   await durchVorlaufWenn(d);
   await d.waitForSelector('.schirm.da .schreibblatt', { timeout: 15000 });
 
-  const angesagt = await bis(d, () => (window.__gesagt || [])
-    .some(t => /^Schreib ein /.test(t)), 5000)
-    .then(() => d.evaluate(() => (window.__gesagt || [])
-      .find(t => /^Schreib ein /.test(t)) || '')).catch(() => '');
+  const angesagt = await angesagtMit(d, 'Schreib ein ');
   const gesucht = (angesagt.match(/^Schreib ein ([A-ZÄÖÜ])/) || [])[1];
   if (!gesucht) {
     merke('schreiben', new Error('im Diktat wird kein Buchstabe angesagt — '
@@ -2555,12 +2516,8 @@ if (laeuft('schreiben')) try {
     // Richtig geschrieben - aus dem Gehoer. Die Zuege kommen aus dem
     // Vorrat, nicht vom Bildschirm: dort steht ja nichts.
     const vorlage = Schreiben.BUCHSTABEN.find(x => x.zeichen === gesucht);
-    for (const dz of vorlage.zuege)
-      await zeichneZug(d, Schreiben.abtasten(dz, 26)
-        .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]));
-    const genommen = await d.waitForFunction(
-      () => !!document.querySelector('.schirm.da .frage .richtigText'),
-      null, { timeout: 6000 }).then(() => true).catch(() => false);
+    await schreibeSauber(d, vorlage.zuege);
+    const genommen = await angenommen(d);
     if (!genommen)
       merke('schreiben', new Error(`ein sauber geschriebenes ${gesucht} wurde im Diktat `
         + `nicht angenommen — auf dem Bildschirm steht „${
@@ -2601,16 +2558,10 @@ if (laeuft('schreiben')) try {
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
     await q.click('[data-profil="fiona"]');
     await q.waitForSelector('.schirm.da [data-welt]');
-    const stand = await q.evaluate(() => new Promise((ja) => {
-      const auf = indexedDB.open('lernkiste', 1);
-      auf.onsuccess = () => {
-        const l = auf.result.transaction(['fortschritt'], 'readonly').objectStore('fortschritt');
-        const a = l.get('fiona:schreiben:buchstaben'), b = l.get('fiona:schreiben:diktat');
-        a.onsuccess = () => { b.onsuccess = () => ja({
-          nach: Object.keys(a.result || {}), diktat: Object.keys(b.result || {}) }); };
-      };
-      auf.onerror = () => ja(null);
-    }));
+    const nachStand = await standVon(q, 'fiona:schreiben:buchstaben');
+    const diktatStand = await standVon(q, 'fiona:schreiben:diktat');
+    const stand = nachStand && diktatStand
+      ? { nach: Object.keys(nachStand), diktat: Object.keys(diktatStand) } : null;
     if (!stand || !stand.nach.length)
       merke('schreiben', new Error('der Nachfahr-Stand ist leer — dann beweist der '
         + 'Vergleich der beiden Ebenen nichts'));
@@ -2647,10 +2598,7 @@ if (laeuft('schreiben')) try {
      * und der Abschnitt meldete gruen, ohne die Reihenfolge geprüft zu
      * haben. Welche Zahl dran ist, kommt aus der ANSAGE, nicht vom Blatt. */
     const gesuchteZahl = async () => {
-      const satz = await bis(z, () => (window.__gesagt || [])
-        .some(t => /^Schreib die Zahl /.test(t)), 5000)
-        .then(() => z.evaluate(() => (window.__gesagt || [])
-          .find(t => /^Schreib die Zahl /.test(t)) || '')).catch(() => '');
+      const satz = await angesagtMit(z, 'Schreib die Zahl ');
       const wort = (satz.match(/^Schreib die Zahl ([a-zäöüß]+)/) || [])[1];
       return { satz, zahl: wort && [...Array(21).keys()]
         .find(n => n > 0 && Rechnen.gesprochen(n) === wort) };
@@ -2905,27 +2853,16 @@ if (laeuft('hinweis')) try {
  */
 if (laeuft('test')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
-  await p.evaluate(() => new Promise((ja, nein) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onupgradeneeded = () => {
-      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
-        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
-    };
-    auf.onsuccess = () => {
-      const D = JSON.parse(document.getElementById('daten').textContent);
-      const st = {};
-      for (const g of D.deutschland) st[g.id] = { fach: 5, faellig: 0, hoch: 5 };
-      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
-      t.objectStore('fortschritt').put(st, 'lea:bundeslaender');
-      // Fionas Ebene wird MIT gefuellt - sonst prueft „Fiona bekommt keinen
-      // Test" nur, dass sie noch nichts gesammelt hat.
-      t.objectStore('fortschritt').put(st, 'fiona:bundeslaender');
-      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
-        'lea:bundeslaender': true, 'fiona:bundeslaender': true } }, 'alles');
-      t.oncomplete = ja; t.onerror = () => nein(t.error);
-    };
-    auf.onerror = () => nein(auf.error);
-  }));
+  const alleSicher = await p.evaluate(() => Object.fromEntries(
+    JSON.parse(document.getElementById('daten').textContent).deutschland
+      .map(g => [g.id, { fach: 5, faellig: 0, hoch: 5 }])));
+  await stelleAblage(p, {
+    // Fionas Ebene wird MIT gefuellt - sonst prueft „Fiona bekommt keinen
+    // Test" nur, dass sie noch nichts gesammelt hat.
+    fortschritt: { 'lea:bundeslaender': alleSicher, 'fiona:bundeslaender': alleSicher },
+    einstellungen: { alles: { vorlaufGezeigt: {
+      'lea:bundeslaender': true, 'fiona:bundeslaender': true } } },
+  });
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="lea"]');
   await p.click('[data-profil="lea"]');
@@ -3172,35 +3109,27 @@ if (laeuft('umgekehrt')) try {
    * umgekehrte.
    */
   const r = await neueSeite({ width: 844, height: 390 }, ctx);
-  await r.evaluate(() => new Promise((ja, nein) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onsuccess = () => {
-      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
-      /* Die sieben kleinen faellig - und alle anderen ausdruecklich NICHT.
-       *
-       * Zwei Anlaeufe, zwei Mal nichts geprueft. Erst standen nur HTI und
-       * DOM faellig: dann hat die Sitzung genau zwei Aufgaben, und die
-       * dritte, an der die umgekehrte Frage stuende (`st.i % 3 === 2`),
-       * kam nie. Dann standen sieben faellig - und der Leitner fuellte die
-       * Sitzung mit NEUEN Laendern auf, so dass die dritte Aufgabe „Wo
-       * liegt Kanada?" hiess. Kanada ist gross, die Frage also richtig,
-       * und der Abschnitt gruen: er hat den Fall wieder nicht gesehen.
-       *
-       * Jetzt bekommt jedes andere Land Fach 5 und einen Termin in ferner
-       * Zukunft. Damit kann die Sitzung nur aus den sieben bestehen. */
-      const D = JSON.parse(document.getElementById('daten').textContent);
-      const kleine = new Set(['HTI','DOM','SLV','GTM','HND','NIC','CRI']);
-      const st = {};
-      for (const l of (D.laender.nordamerika || []))
-        st[l.a3] = kleine.has(l.a3) ? { fach:1, faellig:0 }
-                                    : { fach:5, faellig: Date.now() + 9e8 };
-      t.objectStore('fortschritt').put(st, 'stephan:laender:nordamerika');
-      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
-        'stephan:laender:nordamerika': true } }, 'alles');
-      t.oncomplete = ja; t.onerror = () => nein(t.error);
-    };
-    auf.onerror = () => nein(auf.error);
-  }));
+  /* Die sieben kleinen faellig - und alle anderen ausdruecklich NICHT.
+   *
+   * Zwei Anlaeufe, zwei Mal nichts geprueft. Erst standen nur HTI und
+   * DOM faellig: dann hat die Sitzung genau zwei Aufgaben, und die
+   * dritte, an der die umgekehrte Frage stuende (`st.i % 3 === 2`),
+   * kam nie. Dann standen sieben faellig - und der Leitner fuellte die
+   * Sitzung mit NEUEN Laendern auf, so dass die dritte Aufgabe „Wo
+   * liegt Kanada?" hiess. Kanada ist gross, die Frage also richtig,
+   * und der Abschnitt gruen: er hat den Fall wieder nicht gesehen.
+   *
+   * Jetzt bekommt jedes andere Land Fach 5 und einen Termin in ferner
+   * Zukunft. Damit kann die Sitzung nur aus den sieben bestehen. */
+  const kleine = new Set(['HTI','DOM','SLV','GTM','HND','NIC','CRI']);
+  const nordamerika = await r.evaluate(() =>
+    (JSON.parse(document.getElementById('daten').textContent).laender.nordamerika || [])
+      .map(l => l.a3));
+  await stelleAblage(r, {
+    fortschritt: { 'stephan:laender:nordamerika': Object.fromEntries(nordamerika.map(a3 =>
+      [a3, kleine.has(a3) ? { fach:1, faellig:0 } : { fach:5, faellig: Date.now() + 9e8 }])) },
+    einstellungen: { alles: { vorlaufGezeigt: { 'stephan:laender:nordamerika': true } } },
+  });
   await r.reload({ waitUntil: 'domcontentloaded' });
   await r.waitForSelector('[data-profil="stephan"]');
   await r.click('[data-profil="stephan"]');
@@ -3497,33 +3426,26 @@ if (laeuft('abzeichen')) try {
    * - obwohl es sechs sind und drei fehlen. Die Zahl muss die ganze
    * Menge meinen, sonst zaehlt sie etwas anderes als der Satz darueber
    * behauptet. */
-  await p.evaluate(() => new Promise((ja, nein) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onupgradeneeded = () => {
-      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
-        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
-    };
-    auf.onsuccess = () => {
-      const D = JSON.parse(document.getElementById('daten').textContent);
-      const drei = {};
-      for (const k of D.kontinente.filter(x => x.runde <= 1).slice(0, 3))
-        drei[k.id] = { fach:4, faellig:0 };
-      /* Dazu die drei Stadtstaaten - damit sie ueberhaupt EIN Abzeichen
-         hat. Das offene erscheint erst neben einem verdienten (siehe
-         `forscherbuch`); ohne diesen Griff pruefte der Abschnitt einen
-         Bildschirm, den es so nicht gibt. */
-      const stadt = {};
-      for (const b of D.deutschland.filter(x => x.stadtstaat))
-        stadt[b.id] = { fach:4, faellig:0 };
-      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
-      t.objectStore('fortschritt').put(drei, 'fiona:kontinente');
-      t.objectStore('fortschritt').put(stadt, 'fiona:bundeslaender');
-      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
-        'fiona:kontinente': true, 'fiona:bundeslaender': true } }, 'alles');
-      t.oncomplete = ja; t.onerror = () => nein(t.error);
-    };
-    auf.onerror = () => nein(auf.error);
-  }));
+  const fuerAbzeichen = await p.evaluate(() => {
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    const drei = {};
+    for (const k of D.kontinente.filter(x => x.runde <= 1).slice(0, 3))
+      drei[k.id] = { fach:4, faellig:0 };
+    /* Dazu die drei Stadtstaaten - damit sie ueberhaupt EIN Abzeichen
+       hat. Das offene erscheint erst neben einem verdienten (siehe
+       `forscherbuch`); ohne diesen Griff pruefte der Abschnitt einen
+       Bildschirm, den es so nicht gibt. */
+    const stadt = {};
+    for (const b of D.deutschland.filter(x => x.stadtstaat))
+      stadt[b.id] = { fach:4, faellig:0 };
+    return { drei, stadt };
+  });
+  await stelleAblage(p, {
+    fortschritt: { 'fiona:kontinente': fuerAbzeichen.drei,
+                   'fiona:bundeslaender': fuerAbzeichen.stadt },
+    einstellungen: { alles: { vorlaufGezeigt: {
+      'fiona:kontinente': true, 'fiona:bundeslaender': true } } },
+  });
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
@@ -3558,27 +3480,21 @@ if (laeuft('abzeichen')) try {
    * ist die Sitzung deterministisch: es gibt genau einen Gegenstand, den
    * der Leitner noch waehlen kann. */
   const q = await neueSeite({ width: 844, height: 390 }, ctx);
-  await q.evaluate(() => new Promise((ja, nein) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onsuccess = () => {
-      const D = JSON.parse(document.getElementById('daten').textContent);
-      /* Offen bleibt BAYERN, nicht irgendeins.
-         Der erste Anlauf liess das letzte Bundesland der Liste offen -
-         das ist Berlin, mit 19 Punkten Trefferradius das kleinste Gebiet
-         der Karte. Das Etikett landete daneben, die Antwort wurde nicht
-         gewertet, und der Abschnitt scheiterte an der Zielgroesse statt
-         an der Sache. Bayern hat 152. */
-      const st = {};
-      D.deutschland.forEach((b) => { st[b.id] = b.id === 'DE-BY'
-        ? { fach:2, faellig:0, hoch:2 } : { fach:5, faellig:0, hoch:5 }; });
-      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
-      t.objectStore('fortschritt').put(st, 'fiona:bundeslaender');
-      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
-        'fiona:kontinente': true, 'fiona:bundeslaender': true } }, 'alles');
-      t.oncomplete = ja; t.onerror = () => nein(t.error);
-    };
-    auf.onerror = () => nein(auf.error);
-  }));
+  /* Offen bleibt BAYERN, nicht irgendeins.
+     Der erste Anlauf liess das letzte Bundesland der Liste offen - das ist
+     Berlin, mit 19 Punkten Trefferradius das kleinste Gebiet der Karte.
+     Das Etikett landete daneben, die Antwort wurde nicht gewertet, und der
+     Abschnitt scheiterte an der Zielgroesse statt an der Sache. Bayern
+     hat 152. */
+  const bisAufBayern = await q.evaluate(() => Object.fromEntries(
+    JSON.parse(document.getElementById('daten').textContent).deutschland.map(b =>
+      [b.id, b.id === 'DE-BY' ? { fach:2, faellig:0, hoch:2 }
+                              : { fach:5, faellig:0, hoch:5 }])));
+  await stelleAblage(q, {
+    fortschritt: { 'fiona:bundeslaender': bisAufBayern },
+    einstellungen: { alles: { vorlaufGezeigt: {
+      'fiona:kontinente': true, 'fiona:bundeslaender': true } } },
+  });
   await q.reload({ waitUntil: 'domcontentloaded' });
   await q.waitForSelector('[data-profil="fiona"]');
   await q.click('[data-profil="fiona"]');
@@ -3661,21 +3577,13 @@ if (laeuft('abzeichen')) try {
    */
   const buchVon = async (wer, staende) => {
     const r = await neueSeite({ width: 844, height: 390 }, ctx);
-    await r.evaluate(({ wer, staende }) => new Promise((ja, nein) => {
-      const auf = indexedDB.open('lernkiste', 1);
-      auf.onsuccess = () => {
-        const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
-        for (const [schluessel, ids] of Object.entries(staende)) {
-          const st = {};
-          for (const id of ids) st[id] = { fach:4, hoechstes:4, faellig:0 };
-          t.objectStore('fortschritt').put(st, `${wer}:${schluessel}`);
-        }
-        t.objectStore('einstellungen').put({ vorlaufGezeigt:
-          Object.fromEntries(Object.keys(staende).map(k => [`${wer}:${k}`, true])) }, 'alles');
-        t.oncomplete = ja; t.onerror = () => nein(t.error);
-      };
-      auf.onerror = () => nein(auf.error);
-    }), { wer, staende });
+    await stelleAblage(r, {
+      fortschritt: Object.fromEntries(Object.entries(staende).map(([schluessel, ids]) =>
+        [`${wer}:${schluessel}`, Object.fromEntries(ids.map(id =>
+          [id, { fach:4, hoechstes:4, faellig:0 }]))])),
+      einstellungen: { alles: { vorlaufGezeigt:
+        Object.fromEntries(Object.keys(staende).map(k => [`${wer}:${k}`, true])) } },
+    });
     await r.reload({ waitUntil: 'domcontentloaded' });
     await r.waitForSelector(`[data-profil="${wer}"]`);
     await r.click(`[data-profil="${wer}"]`);
@@ -3742,19 +3650,7 @@ if (laeuft('sprechen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   // Der Sprachmodus steht im Elternbereich. Hier wird er gesetzt, wo er
   // liegt - sonst kostet jede Prüfung vier Ziffern und drei Bildschirme.
-  await p.evaluate(() => new Promise((ja, nein) => {
-    const auf = indexedDB.open('lernkiste', 1);
-    auf.onupgradeneeded = () => {
-      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
-        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
-    };
-    auf.onsuccess = () => {
-      const t = auf.result.transaction(['einstellungen'], 'readwrite');
-      t.objectStore('einstellungen').put({ sprachmodus: true }, 'alles');
-      t.oncomplete = ja; t.onerror = () => nein(t.error);
-    };
-    auf.onerror = () => nein(auf.error);
-  }));
+  await stelleAblage(p, { einstellungen: { alles: { sprachmodus: true } } });
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
@@ -3978,13 +3874,7 @@ if (laeuft('sprechen')) try {
     // c) Die zweite Lesart. Neue Aufgabe abwarten, sonst ist `erledigt` gesetzt.
     let zweite = 'übersprungen';
     if (gewertet) {
-      await bis(p, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000);
-      const name2 = await p.evaluate(() => {
-        const z = document.querySelector('.schirm.da path.ziel');
-        if (!z) return null;
-        const D = JSON.parse(document.getElementById('daten').textContent);
-        return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
-      });
+      const name2 = await naechsteAufgabe(p);
       if (name2) {
         await p.click('.schirm.da #mikro');
         await p.evaluate((n) => window.__sprich(['Anna Lena', n, 'Banane'], true), name2);
@@ -4007,13 +3897,7 @@ if (laeuft('sprechen')) try {
      * ankommt (Regel 3). */
     let rueck = 'übersprungen';
     if (gewertet) {
-      await bis(p, () => !document.querySelector('.schirm.da .frage .richtigText'), 8000);
-      const name3 = await p.evaluate(() => {
-        const z = document.querySelector('.schirm.da path.ziel');
-        if (!z) return null;
-        const D = JSON.parse(document.getElementById('daten').textContent);
-        return (D.kontinente.find(x => x.id === z.dataset.id) || {}).name || null;
-      });
+      const name3 = await naechsteAufgabe(p);
       const satz = KONTINENTE.map(k => ({ id:k.id, name:k.name,
         aliasse:k.aliasse, aussprache:k.aussprache }));
       const ziel3 = satz.find(k => k.name === name3);

@@ -451,5 +451,29 @@ function ringeZuPolygonen(ringe) {
   return polys;
 }
 
+/**
+ * Der Rahmen um eine Liste von Pfaden: x0/y0/w/h in Pfadkoordinaten.
+ *
+ * Stand bis P8 zweimal da, einmal je Bauskript - einmal als Rechteck,
+ * einmal gleich als viewBox-Zeichenkette. Wer die Zahlen liest, muss beide
+ * Fassungen gleich lesen, sonst sitzt derselbe Umriss in zwei Entwuerfen
+ * verschieden im Bild.
+ */
+function rahmen(liste) {
+  const xs = [], ys = [];
+  for (const o of liste) {
+    const m = o.pfad.match(/-?\d+\.?\d*/g).map(Number);
+    for (let i = 0; i < m.length; i += 2) { xs.push(m[i]); ys.push(m[i + 1]); }
+  }
+  const x0 = Math.min(...xs), y0 = Math.min(...ys);
+  return { x0, y0, w: Math.max(...xs) - x0, h: Math.max(...ys) - y0 };
+}
+
+/** Derselbe Rahmen als viewBox, mit `rand` ringsum. */
+function sichtfeld(liste, rand = 8) {
+  const r = rahmen(liste);
+  return `${r.x0 - rand} ${r.y0 - rand} ${r.w + 2 * rand} ${r.h + 2 * rand}`;
+}
+
 export { imPolygon, abstandZumRand, polDerUnzugaenglichkeit,
-         pfadZuRingen, ringeZuPolygonen };
+         pfadZuRingen, ringeZuPolygonen, rahmen, sichtfeld };
