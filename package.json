@@ -18,7 +18,7 @@
     "ansicht": "node tor/ansicht.mjs",
     "pwa": "node tor/pwa.mjs",
     "smoke": "node tor/smoke.mjs",
-    "tor": "npm run inhalt && npm run doppelt && npm run spielprobe && npm run schreiben && npm run vergleich && npm run bauen && npm run budget && npm run passt && npm run lesbarkeit && npm run ziehen && npm run ansicht && npm run pwa && npm run smoke",
+    "tor": "npm run inhalt && npm run regeln && npm run doppelt && npm run spielprobe && npm run schreiben && npm run vergleich && npm run bauen && npm run budget && npm run passt && npm run lesbarkeit && npm run ziehen && npm run ansicht && npm run pwa && npm run smoke",
     "tor:runner": "SMARTKIDS_OHNE_ANSICHT=1 npm run tor",
     "passt": "node tor/passt.mjs",
     "spielprobe": "node tor/spielprobe.mjs",
@@ -29,7 +29,8 @@
     "budget": "node tor/budget.mjs",
     "rhythmus": "node tor/rhythmus.mjs",
     "korpus": "node tools/korpus.mjs",
-    "schnell": "node tools/schnell.mjs"
+    "schnell": "node tools/schnell.mjs",
+    "regeln": "node tor/regeln.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",

@@ -11,7 +11,7 @@
 // Warum kein bestehendes Tor das gesehen hat: der Rauchtest zieht auf den
 // Anker, also auf den einen Punkt, der immer trifft. Er beweist damit, dass
 // Ziehen FUNKTIONIERT - nicht, dass es BENUTZBAR ist. Das ist der
-// Unterschied, den Regel 13 meint: wer eine Wirkung messen will, muss sie
+// Unterschied, den Regel 1 meint: wer eine Wirkung messen will, muss sie
 // abschalten koennen. Hier heisst das: absichtlich danebenziehen.
 //
 // Drei Zusagen:
@@ -427,7 +427,7 @@ if (laeuft('treffer')) {
       /* Gelesen wird mit der Regel des SPIELS, nicht mit einer eigenen.
          `zielUnter` fragt `elementFromPoint`, nimmt einen Trefferkreis
          vor dem Umriss und liefert dessen Kennung. Eine zweite Rechnung
-         daneben waere eine zweite Wahrheit (Regel 15) - und sie koennte
+         daneben waere eine zweite Wahrheit (Regel 6) - und sie koennte
          gruen sein, waehrend das Spiel etwas anderes tut. */
       const liest = (x, y) => {
         const e = document.elementFromPoint(x, y);
@@ -474,7 +474,7 @@ if (laeuft('treffer')) {
        * Flaeche. Gesehen wird DURCH die Trefferkreise hindurch
        * (`elementsFromPoint`) - die Nadel liegt ja selbst obenauf, und
        * eine Prüfung, die nur sie findet, kann gar nicht anschlagen
-       * (Regel 13). Geprüft wird die Mitte und vier Punkte auf 0,7 des
+       * (Regel 1). Geprüft wird die Mitte und vier Punkte auf 0,7 des
        * Radius: dieselbe Abtastung, mit der die App den Platz gesucht
        * hat - aber von der anderen Seite gelesen. */
       const nadelFehl = [], nadelAuf = [];

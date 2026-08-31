@@ -30,7 +30,7 @@ import { ELTERN_VERGLEICH } from './gestellt.mjs';
 // q.url.split('?')[0]` liefert fuer `/?flott` den Pfad `/`, also ein
 // Verzeichnis, also 404. Sechs Abschriften waren zusammengelegt worden,
 // diese eine nicht -- und sie ist erst aufgefallen, als die Adresse zum
-// ersten Mal eine Frage trug. Regel 15.
+// ersten Mal eine Frage trug. Regel 6.
 // Fotografiert wird dist/ - das, was ausgeliefert wird, samt eigener
 // Schrift. Solange die Aufnahmen an prototyp/spiel.html hingen, hielten sie
 // eine Fassung fest, die niemand bekommt.
@@ -97,7 +97,7 @@ const AUFNAHMEN = [
   // Bildschirme. Die Hervorhebung des Ziels (Rand, Puls, Zeiger, gedaempfte
   // Nachbarn) steckt aber in `prototyp/spiel.js`, und die hat damit KEIN Tor
   // gesehen: der Lauf blieb gruen, waehrend sich jeder Spielbildschirm
-  // aenderte. Genau die Luecke, vor der Regel 8 warnt.
+  // aenderte. Genau die Luecke, vor der Regel 4 warnt.
   { name:'spiel-kontinent',  spiel:'kontinente',    wahl:'.schirm.da' },
   { name:'spiel-bundesland', spiel:'bundeslaender', wahl:'.schirm.da' },
   // Zwei Zustaende, die nur der Blick beurteilen kann - und in beiden
@@ -274,7 +274,7 @@ const STAND = {
 /* Ein Protokoll fuer den Elternbereich.
  *
  * Ohne Eintraege zeigt er drei Zeilen Striche - das ist ein gueltiger
- * Zustand, aber er bezeugt von den Tabellen nichts (Regel 13: wer eine
+ * Zustand, aber er bezeugt von den Tabellen nichts (Regel 1: wer eine
  * Wirkung abbildet, schaltet sie zuerst ein). Also ein kleiner Satz mit
  * allem, was die Tabellen unterscheiden muessen: zwei Profile, ein Gebiet
  * zweimal falsch (damit es unter die Wackelkandidaten kommt), eine
@@ -806,7 +806,7 @@ for (const a of MEINE) {
   //
   // Gesetzt wird ein FESTER Satz derselben Bauart, nicht ein leerer: die
   // Zeile soll weiter auf ihre Lage und ihre Groesse geprueft werden, nur
-  // eben nicht auf ihren Inhalt (Regel 13 - was man wegnimmt, prueft man
+  // eben nicht auf ihren Inhalt (Regel 1 - was man wegnimmt, prueft man
   // nicht mehr). Dass Fassung und Datum stimmen, prueft `doku`.
   await seite.evaluate(() => {
     for (const b of document.querySelectorAll('.bauzeile'))

@@ -6,7 +6,7 @@
 // ein fehlendes Symbol faellt erst auf dem iPad auf, ein kaputter Service
 // Worker erst im Zug.
 //
-// Regel 13 gilt auch hier: die Offline-Pruefung ist erst dann eine, wenn
+// Regel 1 gilt auch hier: die Offline-Pruefung ist erst dann eine, wenn
 // sie OHNE Service Worker durchfaellt. Genau das steht unten als
 // Gegenprobe - sie laeuft bei jedem Lauf mit.
 import fs from 'node:fs';
@@ -124,7 +124,7 @@ console.log('\n  Tor `offline`');
  *
  * Aufgefallen ist es nur durch eine Gegenprobe: die Datei wurde aus dem
  * Vorrat des Service Workers genommen, und das Tor blieb gruen. Genau der
- * Fall, vor dem Regel 13 warnt - die Pruefung mass etwas anderes, das
+ * Fall, vor dem Regel 1 warnt - die Pruefung mass etwas anderes, das
  * lauter war, und bezeugte die Sache, ohne sie je geprueft zu haben.
  *
  * Jetzt wird die Verbindung am Server ABGERISSEN, nicht hoeflich mit einem
@@ -234,7 +234,7 @@ await ctx.setOffline(false);
 /* --- Gegenprobe: OHNE Service Worker muss dasselbe scheitern ---------- */
 //
 // Ohne sie misst die Pruefung oben vielleicht nur den Browser-Cache, und
-// waere gruen, ohne je etwas bewiesen zu haben (Regel 13).
+// waere gruen, ohne je etwas bewiesen zu haben (Regel 1).
 const ohne = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE',
   serviceWorkers: 'block' });
 const p2 = await ohne.newPage({ viewport: { width: 844, height: 390 } });

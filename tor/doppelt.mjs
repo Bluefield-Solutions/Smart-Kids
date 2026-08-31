@@ -1,6 +1,6 @@
 // Tor `doppelt`.
 //
-// „Was zweimal dasteht, veraltet einmal." Das ist Regel 15, und dieses
+// „Was zweimal dasteht, veraltet einmal." Das ist Regel 6, und dieses
 // Verzeichnis hat sie in einer einzigen Sitzung VIERMAL bezahlt:
 //
 //   pfadZuPolys         in geo-backen, backen-staedte, inhalt UND bauen.
@@ -45,7 +45,7 @@ const NEU = process.argv.includes('--neu');
  * dieses Tor gebaut ist - und damit das leiseste. Wer es hoeher dreht,
  * dreht genau den Befund weg, der die Runde F16/F17 gekostet hat.
  *
- * Regel 13, umgekehrt angewandt: die Schwelle wurde nicht danach gewaehlt,
+ * Regel 1, umgekehrt angewandt: die Schwelle wurde nicht danach gewaehlt,
  * wie ruhig sie ist, sondern danach, ob sie den bekannten Fehler noch
  * sieht. */
 const FENSTER = 100;

@@ -16,7 +16,7 @@
 // nehmen. Genau das ist verboten: `ergebnis` ist die Entscheidung des
 // Abgleichs, und ein Korpus, der sie uebernimmt, kann ihm nicht
 // widersprechen. Er wuerde 100 % Trefferquote messen, immer, und nichts
-// beweisen (Regel 4 - das Modell darf nicht vom Gemessenen abhaengen).
+// beweisen (Regel 14 - das Modell darf nicht vom Gemessenen abhaengen).
 //
 // Also zwei Schritte, und der mittlere ist Handarbeit:
 //

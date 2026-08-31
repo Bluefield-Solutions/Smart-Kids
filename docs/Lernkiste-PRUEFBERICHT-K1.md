@@ -312,7 +312,7 @@ einen — und für die fünf Fallen namentlich den richtigen.
 K1 forderte 90 % Trefferquote gegen einen Korpus, den dieselbe Hand erfindet,
 die den Abgleich einstellt. Wer Prüfling und Prüfer zugleich ist, misst sich
 selbst — und das Tor bezeugt die Sache, ohne sie je geprüft zu haben. Das ist
-Regel 13 dieses Projekts, angewandt auf sich selbst.
+Regel 1 dieses Projekts, angewandt auf sich selbst.
 
 **Behoben in K2, Kapitel 11.** Der Korpus wird in zwei Hälften geteilt: eine
 **erfundene** Hälfte zum Einstellen und eine **eingefrorene** Hälfte aus

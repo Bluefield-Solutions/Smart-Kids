@@ -141,7 +141,7 @@ for (const k of EBENEN) {
                pfad: svgPfad({type:'FeatureCollection',features:[f]}, proj, skala) };
     }).filter(s => s.pfad);
     /* Die Stadtlage entsteht in DERSELBEN Projektion wie die Umrisse
-     * dieser Stufe - sonst laege der Punkt neben dem Land (Regel 12: jede
+     * dieser Stufe - sonst laege der Punkt neben dem Land (Regel 5: jede
      * Zahl traegt ihre Messstelle).
      *
      * Nur `grob`: das ist die Stufe, die `prototyp/bauen.mjs` ins Buendel

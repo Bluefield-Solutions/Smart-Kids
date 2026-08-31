@@ -49,6 +49,7 @@ jobs:
       - name: Die schnellen Tore
         run: |
           node tor/inhalt.mjs
+          node tor/regeln.mjs
           node tor/doppelt.mjs
           node tor/spielprobe.mjs
           node tor/schreiben.mjs

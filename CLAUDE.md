@@ -91,7 +91,13 @@ npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Was ANGESCHLAGEN hat, wird festgehalten, auch wenn der
                    Lauf rot ist: sonst wirft ein einziger Befund die
                    Nachweise von siebzig anderen weg.
-npm run doppelt    findet Quelltext, der zweimal dasteht (Regel 15) — in
+npm run regeln     prüft jeden Verweis „Regel N" gegen die Liste oben: die
+                   Nummer muss es geben (Fehler), und im Satz daneben soll
+                   ein Wort aus der Regel stehen (Ratsche, `-- --neu`
+                   bestätigt den Stand). Beim ersten Lauf zeigten 101 von
+                   197 Verweisen in die Regelliste eines ANDEREN
+                   Verzeichnisses.
+npm run doppelt    findet Quelltext, der zweimal dasteht (Regel 6) — in
                    TOKEN, nicht in Zeilen, sonst entgeht ihm jede Kopie,
                    die jemand umformatiert hat. Was zweimal dastehen DARF,
                    steht in `tor/doppelt-erlaubt.json`, und jeder Eintrag
@@ -132,7 +138,7 @@ npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
 ```
 
 Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `doku` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
+`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
 
@@ -228,6 +234,22 @@ Jede hat mindestens eine Runde gekostet.
    sieben Prüfungen starben vor ihrer ersten Zeile. „Muss rot werden" ist
    erfüllt, wenn ein Tor immer rot ist — deshalb fragt `proben` bei jedem
    roten Tor nach, ob es OHNE Eingriff grün gewesen wäre.
+12. **Ein Raster ist nur so fein wie sein kleinstes Ziel.** Der Rauchtest
+   zog ein Etikett auf Berlins Anker und landete auf Brandenburg; gemeldet
+   wurde eine Zeitüberschreitung statt „daneben". Wer eine Fläche abtastet,
+   muss das kleinste treffen können, das darin vorkommt.
+13. **Safari-Falle: kein Filter, wo ein gebackener Verlauf reicht.** Auf iOS
+   wird aus einem SVG-Filter über einer großen Fläche ein schwarzes Bild —
+   auf dem Schreibtisch unauffällig. Licht und Schatten werden gebacken,
+   nicht gerechnet.
+14. **Das Modell darf nicht vom Gemessenen abhängen.** Ein Korpus, der das
+   Urteil des Abgleichs übernimmt, misst 100 % Trefferquote — immer, und
+   ohne etwas zu beweisen.
+
+Die Nummern sind keine Zierde: das Tor `regeln` prüft jeden Verweis der
+Form „Regel N" gegen diese Liste — die Nummer muss es geben, und im Satz
+daneben muss ein Wort aus ihrer Überschrift stehen. Vorher zeigten 101 von
+197 Verweisen in die Regelliste eines **anderen** Verzeichnisses.
 
 ---
 

@@ -61,7 +61,7 @@
  * Das Abzeichen waere also fuer JEDES Profil unerreichbar gewesen - ein
  * Ziel, das ewig offen steht. Genau die Verfallsart, gegen die das Tor
  * `abzeichen` geschrieben ist; gefunden hat es sie erst, nachdem es gegen
- * den GELIEFERTEN Vorrat mass statt gegen die Quelldatei (Regel 12: die
+ * den GELIEFERTEN Vorrat mass statt gegen die Quelldatei (Regel 5: die
  * Zahl und ihre Messstelle gehoeren zusammen).
  *
  * Ob die fuenf fehlenden Nachbarn ins Spiel sollen, ist eine Entscheidung

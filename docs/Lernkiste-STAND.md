@@ -137,7 +137,7 @@ Lücke. Beide Befunde sind jetzt eingefangen:
   aufeinander (< 0,15 px), der Weg dazwischen ist lang (≥ 20 px) und
   umschließt nichts (mittlere Breite < 0,05 px). Eine Naht ändert weder
   Fläche noch Umgrenzung noch Umlaufsinn — sie ist genau an dieser Kombination
-  zu fassen. **Gegenprobe gefahren** (Regel 13): auf der alten Geometrie
+  zu fassen. **Gegenprobe gefahren** (Regel 1): auf der alten Geometrie
   meldet es *1 Nadel, längste 236 px*, auf der neuen null.
   Die dünnsten **echten** Gebilde im Vorrat — drei Fjorde in Kanada, eine
   Nehrung in den USA — liegen bei 0,18 bis 0,27 px mittlerer Breite und
@@ -323,7 +323,7 @@ der Schnitt **latin** — 51,6 KB statt 328. Beide stehen unter der SIL OFL
 
 `offline` fährt seine **Gegenprobe bei jedem Lauf mit**: ohne Service Worker
 *muss* dasselbe durchfallen. Sonst misst das Tor den Browser-Cache und wäre
-grün, ohne je etwas bewiesen zu haben (Regel 13).
+grün, ohne je etwas bewiesen zu haben (Regel 1).
 
 ### Das Tor `ansicht` läuft nicht auf dem Runner
 
@@ -387,7 +387,7 @@ misst Kartenflächen, keine Knöpfe.
 1. **`justify-content:center` auf `.mitte`.** Läuft der Inhalt über, schiebt
    zentrierter Inhalt nach **oben und unten gleichzeitig** hinaus — deshalb lag
    die Überschrift über den Kopfknöpfen. Für `.seite` war das seit v109
-   repariert, für `.mitte` nie nachgezogen. Regel 15, wörtlich.
+   repariert, für `.mitte` nie nachgezogen. Regel 6, wörtlich.
 2. **`style="min-width:200px"` inline im Markup.** Inline schlägt jede
    Stilregel. Vier Größen waren rot, während im Stylesheet ein sauberes Raster
    stand, das gegen eine Zahl im Markup arbeitete.
@@ -1046,7 +1046,7 @@ jetzt die **Fläche**.
 einem mitschreibenden Server nachgemessen: während der Kontext auf offline
 stand, hat der Server `/daten/deutschland.json` und `/sw.js` ausgeliefert.
 Der Service Worker holte munter weiter — und das Tor meldete „ohne Netz
-kommt die App bis zu den Bundesländern". Genau der Fall, vor dem Regel 13
+kommt die App bis zu den Bundesländern". Genau der Fall, vor dem Regel 1
 warnt: die Prüfung maß etwas anderes, das lauter war.
 
 Das Netz wird jetzt am **Server** abgeschaltet, und zwar durch Abreißen der
@@ -2137,7 +2137,7 @@ von der es nur zwei gibt, ist sie aber das einzige, was sagt, wie groß eine
 Welt ist.
 
 Beides steht in keinem Tor und ist auf der Aufnahme sofort zu sehen.
-**Regel 7**, unverändert gültig: ein Tor prüft, ob etwas funktioniert —
+**Regel 4**, unverändert gültig: ein Tor prüft, ob etwas funktioniert —
 nicht, ob man es spielen kann.
 
 ### Ein Zwischenschritt kostet sechs Tore
@@ -2163,7 +2163,7 @@ echt sind:
 
 ### Und die teuerste halbe Stunde dieser Sitzung
 
-Regel 1 sagt: **erst einchecken, dann gegenproben.** `npm run proben`
+Regel 9 sagt: **erst einchecken, dann gegenproben.** `npm run proben`
 verweigert bei schmutzigem Baum den Dienst, weil das in diesem Verzeichnis
 schon viermal Arbeit gekostet hat.
 
@@ -2246,7 +2246,7 @@ Mit „Ton aus":              0 Schwingungen (erwartet 0)
 
 Die vierte Prüfung ist nachträglich dazugekommen, und zwar weil ihre
 Gegenprobe sonst **nichts bewiesen hätte**: bei eingeschaltetem Ton ändert
-das Entfernen der Sperre nichts, was zu sehen wäre. Regel 13, wieder —
+das Entfernen der Sperre nichts, was zu sehen wäre. Regel 1, wieder —
 *wer eine Wirkung misst, schaltet sie zuerst ab.*
 
 **Ob sie gut klingen, sagt das alles nicht.** Das hört man auf dem iPhone
@@ -2470,7 +2470,7 @@ Splitter, und ein gleichfarbiger Strich schloss die Lücken nicht. Getragen
 hat erst der **äußere** Umriss: ein Kontinent ist ein einziges Polygon und
 dünnt sauber aus.
 
-### Vier Befunde, die kein Tor hatte — nur der Blick (Regel 7)
+### Vier Befunde, die kein Tor hatte — nur der Blick (Regel 4)
 
 **1. Das Wasserzeichen lief aus der Kachel heraus.** Bei 150 % Höhe war
 Afrika ein Fleck und Deutschland ein Schmier; erkennbar war keins von
@@ -2503,7 +2503,7 @@ Aufnahmen, 16 jetzt.
 
 `passt` fährt bereits 7 Größen × 9 Bildschirme ab. Ein zweites Werkzeug
 hätte dieselbe Tour ein zweites Mal beschrieben und wäre auseinandergelaufen
-(Regel 15). Die Prüfung ist deshalb ein zweiter Ausgang desselben Sammlers:
+(Regel 6). Die Prüfung ist deshalb ein zweiter Ausgang desselben Sammlers:
 jedes Paar von Elementen **im Fluss**, deren Rechtecke sich um mehr als 1 px
 schneiden, ist ein Befund. Was absolut liegt, liegt absichtlich übereinander
 und hat seine eigene Prüfung.
@@ -2516,10 +2516,10 @@ Kachel gegen Kachel.
 zwar aus einem lehrreichen Grund:** die Lücke zwischen den Reihen ist
 größer als 4 px, es überlappte gar nichts. Das Tor blieb zu Recht grün.
 Ein Eingriff, der nichts bewirkt, sieht aus wie ein bestandenes Tor
-(Regel 3). Die stehende Gegenprobe verschiebt jetzt um **60 px** und meldet
+(Regel 10). Die stehende Gegenprobe verschiebt jetzt um **60 px** und meldet
 `199×52 px`.
 
-### `lesbarkeit` bezeugte etwas, das es nie geprüft hatte (Regel 13)
+### `lesbarkeit` bezeugte etwas, das es nie geprüft hatte (Regel 1)
 
 Das Tor läuft den **Elternbaum** hoch, um den Grund zu finden. Ein
 Wasserzeichen ist aber ein **Geschwister** — es lag ab R2 unter jeder
@@ -2578,7 +2578,7 @@ Und das ist nicht der schlimmere Teil. Der schlimmere ist das **Grün hier**:
 für einen Commit, der kein Vorfahr von `HEAD` ist, rechnet
 `git rev-list --count X..HEAD` klaglos eine Zahl aus. Sie bedeutet nur
 nichts. Das Tor hat fünf Runden lang eine Zahl gemeldet, die keine
-Messstelle hatte (Regel 12).
+Messstelle hatte (Regel 5).
 
 Der Kommentar an genau dieser Stelle **hat den Fall beschrieben und die
 Lösung genannt** — „gezählt wird an der Standdatei" — und umgesetzt war sie
@@ -2639,7 +2639,7 @@ eine davon berechtigt. Ein Alarm, der bei jedem Lauf angeht, ist kein Alarm.
 ### Der Endbildschirm braucht die Kachelsprache nicht
 
 Geplant war, R2 auf Endbildschirm und Forscherbuch auszudehnen. Der Blick
-auf die Aufnahmen (Regel 7) hat die Hälfte davon erledigt: der
+auf die Aufnahmen (Regel 4) hat die Hälfte davon erledigt: der
 Endbildschirm ist typografisch geführt, hat keine Karten und liest sich auf
 Weiß gut. Ihm Kacheln aufzuzwingen wäre schlechter als ihn zu lassen. Eine
 geplante Arbeit nicht zu tun ist auch ein Ergebnis.
@@ -3066,7 +3066,7 @@ steht genau der Vorrat der Ebene.
 **Zweitens las die Prüfung ihr Soll aus dem Prüfling.** Ich hatte
 `laenderTiefe` aus `prototyp/spiel.js` gelesen — und die Gegenprobe baut den
 Fehler genau dort ein. Beide Seiten wanderten mit, der Test blieb grün.
-Regel 4 in Reinform: *das Modell darf nicht vom Gemessenen abhängen.* Das
+Regel 3 in Reinform: *das Modell darf nicht vom Gemessenen abhängen.* Das
 Soll kommt jetzt aus der Tabelle im Backlog, also von dort, wo die Zahl
 entschieden wurde.
 
@@ -3136,7 +3136,7 @@ lesen, und es log sie an.
 
 Gebaut wird die Tabelle jetzt aus der **Ebenenliste**: alle Ebenen mit
 `art:'rechnen'`, was immer das für welche sind. Eine Liste neben einer Liste
-veraltet (Regel 15) — diese kann es nicht mehr.
+veraltet (Regel 6) — diese kann es nicht mehr.
 
 ### „Zuletzt geübt"
 
@@ -3270,7 +3270,7 @@ sind es nicht: das Vereinigte Königreich, die Ukraine, die Niederlande.
 Sie tragen jetzt `wovon` bei den Fakten (`vom Vereinigten Königreich`,
 `von der Ukraine`, `von den Niederlanden`); überall sonst wird die Form aus
 dem Namen abgeleitet. Gefunden hat das kein Tor, sondern der Blick auf die
-Aufnahme (Regel 7).
+Aufnahme (Regel 4).
 
 ### Zwei Fehler, die die schnelle Bahn gefangen hat
 
@@ -3349,7 +3349,7 @@ gemessen wird ab rund 800 ms danach"*. Diese 800 ms waren **keine Zusage**,
 sondern die zufällige Summe der Wartezeiten davor — die weggefallene
 250-ms-Pause war ihr größter Posten. Ohne sie begann die Messung früher,
 endete früher und sah den Wechsel **gar nicht mehr**. Sie meldete 0.00, also
-„kein Doppelbild", und war grün. Regel 12 in Reinform: eine Zahl, deren
+„kein Doppelbild", und war grün. Regel 5 in Reinform: eine Zahl, deren
 Messstelle an fremden Wartezeiten hängt, misst irgendwann etwas anderes.
 
 Sie läuft jetzt, *bis* sie zwei Bildschirme gesehen hat und wieder einen —
@@ -3384,7 +3384,7 @@ Arbeit dazugelegt (eine Ebene mehr im Durchgang, eine Aufnahme mehr, zwei
 gewachsene Bildschirme in `passt` und `lesbarkeit`). Was gemessen ist, sind
 die beiden Bausteine: Rauchtest 180 → 138 s, Bildvergleich 63 → 51 s. Die
 Kettenzahl daraus zu rechnen wäre eine Schätzung, und die steht hier nicht
-neben gemessenen Zahlen (Regel 12).
+neben gemessenen Zahlen (Regel 5).
 
 ### Eine Gegenprobe hat seit Wochen nichts bewiesen
 
@@ -3420,7 +3420,7 @@ Am Ausrufezeichen ist das mechanisch zu erkennen, und genau darauf prüfen
 beide Tore — `inhalt` an den Listen, der Rauchtest am Bildschirm nach einer
 richtigen Antwort. Geprüft wird die *Eigenschaft*, nicht der Wortlaut; eine
 Liste erlaubter Sätze im Tor wäre eine Abschrift aus `spiel.js`, und die
-fälscht die Gegenprobe (Regel 4). Welches Profil welchen Ton trägt, steht
+fälscht die Gegenprobe (Regel 3). Welches Profil welchen Ton trägt, steht
 in der Zeile „Ton" der Backlog-Tabelle.
 
 Sachlich heißt: „Sitzung beendet." statt „Geschafft!", „Richtig." /
@@ -3466,7 +3466,7 @@ misst, muss er auch bekommen.
 
 Auf 844 × 390 ist die Deutschlandkarte rund **170 px breit**;
 „Mecklenburg-Vorpommern" ist bei 21 px Schrift **260 px lang**. Der erste
-Lauf auf der echten Größe meldete prompt zwei Befunde. Angesehen (Regel 7),
+Lauf auf der echten Größe meldete prompt zwei Befunde. Angesehen (Regel 4),
 und beide waren **Fehler der Prüfung**, nicht der App:
 
 **„steht außerhalb des Kartenfelds".** Die Fahne steht neben der kleinen
@@ -3483,7 +3483,7 @@ nicht falsch, sie hatte nur **keine Messstelle**: im Browser hängt die
 Kartenbreite an der Fenstergröße. Sie steht jetzt in `inhalt`, wo sie eine
 hat (Karte 470 px, Befund G10): 2 innen, 14 als Fahne.
 
-Beides ist Regel 12 — eine Zahl ohne ihre Messstelle. Und beides war
+Beides ist Regel 5 — eine Zahl ohne ihre Messstelle. Und beides war
 zwanzig Runden lang unsichtbar, weil das Tor auf einer Größe lief, die
 niemand gewählt hatte.
 
@@ -3582,7 +3582,7 @@ Auf dem Endbildschirm zeigt der sachliche Ton keine Siegsterne mehr. Nicht
 aus Geschmack, sondern wegen **Redundanz**: drei Sterne heißen „alles auf
 Anhieb richtig", und genau das steht eine Zeile tiefer als „12 von 12 auf
 Anhieb richtig" — nur genauer. Was zweimal dasteht, veraltet einmal
-(Regel 15), und von den beiden ist die Zahl die haltbarere.
+(Regel 6), und von den beiden ist die Zahl die haltbarere.
 
 Im **Kopf während der Sitzung** bleiben sie: dort sind sie der einzige
 laufende Punktestand, also nicht doppelt. Dieselbe Regel, zwei Ergebnisse —
@@ -3655,7 +3655,7 @@ die ersten sechs Geschwister aus der Gesamtliste" — für ein Land oft sechs
 Länder von anderen Kontinenten. Im Spiel stehen die Länder **desselben**
 Kontinents zur Wahl, und genau dort sitzen die gefährlichen Paare. Eine
 Messung an einer Menge, die es nicht gibt, misst die falsche Aufgabe
-(Regel 12).
+(Regel 5).
 
 **Eine Ratsche statt einer Zielzahl.** Auf der erfundenen Hälfte gilt kein
 Prozentsatz — wer den Korpus schreibt und den Abgleich einstellt, ist
@@ -3770,7 +3770,7 @@ Generator.
 
 Kein Tor hat das gemeldet, und keines hätte es können: der Bildschirm war
 vollständig, bedienbar und im Rahmen. Er war nur sinnlos. Das ist genau der
-Fall, für den Regel 8 dasteht — *kein Tor ersetzt den Blick*.
+Fall, für den Regel 4 dasteht — *kein Tor ersetzt den Blick*.
 
 ### Was jetzt dasteht
 
@@ -3865,7 +3865,7 @@ selbst nach und befragt die App nicht — sie bezeugte damit nur, dass
 Ablage (alle vier der ersten Runde schon einmal in Fach 3, heute wieder in
 Fach 1) und zählt, wie viele Kontinente die Ebene danach kennt: 6 von 6.
 
-Das ist Regel 13 in Reinform — wer eine Wirkung misst, schaltet sie zuerst
+Das ist Regel 1 in Reinform — wer eine Wirkung misst, schaltet sie zuerst
 ab. Die Probe, die ihre eigene Abschrift prüft, ist der häufigste Weg, wie
 eine Prüfung leise aufhört zu beweisen.
 
@@ -4231,7 +4231,7 @@ Leere*. Sie ist dreimal danebengegangen, und jedes Mal unauffällig:
    wird, und die Liste bleibt unberührt.
 
 Eine Gegenprobe, die in die Liste greift, in der sie selbst steht, ist ein
-Sonderfall von Regel 13 — und einer, den man nur sieht, wenn man den
+Sonderfall von Regel 1 — und einer, den man nur sieht, wenn man den
 Eingriff nachrechnet statt ihm zu glauben.
 
 ### Und eine, die das Falsche traf
@@ -4296,7 +4296,7 @@ Handarbeit — **absichtlich**:
 naheliegende Weg wäre, `ergebnis: 'richtig'` als Treffer zu nehmen. Genau
 das ist verboten — `ergebnis` ist die Entscheidung des Abgleichs, und ein
 Korpus, der sie übernimmt, kann ihm nicht widersprechen. Er würde 100 %
-Trefferquote messen, immer, und nichts beweisen. Regel 4 in Reinform.
+Trefferquote messen, immer, und nichts beweisen. Regel 14 in Reinform.
 
 **Wieviel gesammelt werden muss, und warum diese Zahl.** Gezählt werden
 *verschiedene Formen*, nicht Äußerungen: wer vierzigmal sauber „Europa"
@@ -4351,7 +4351,7 @@ der richtigen Meldung.
 **Und die Gegenprobe hat die Probe selbst verbessert**, zweimal:
 
 - Der erste Anlauf schlug scheinbar *nicht* an — bis auffiel, dass ich nicht
-  nachgesehen hatte, ob der Eingriff überhaupt ankam (Regel 3). Er kam an;
+  nachgesehen hatte, ob der Eingriff überhaupt ankam (Regel 10). Er kam an;
   die Probe hatte recht und meldete es als **Stapelabzug**: das Werkzeug
   verweigerte aus einem anderen Grund, die Korpusdatei entstand nicht, das
   Lesen warf `ENOENT`. Jetzt wird jede Probe eingewickelt — ein Wurf ist ein
@@ -4423,7 +4423,7 @@ fertig wäre. Also drei.
 Der alte Kommentar sagte „drei Chromium sind die Grenze, gemessen" — das
 galt, bis die Zusammensetzung sich änderte. Eine gemessene Zahl gilt für
 den Tag, an dem sie gemessen wurde; wer sie erbt, erbt ihre
-Voraussetzungen mit (Regel 12).
+Voraussetzungen mit (Regel 5).
 
 `npm run ansicht -- --zeiten` sagt jetzt, was jede Aufnahme kostet — damit
 die Gewichte der Aufteilung eine Messstelle haben statt einer Schätzung.
@@ -4578,7 +4578,7 @@ gezählt statt geschätzt:
 ```
 92 Verweise „Regel N" in tor/, tools/, src/, prototyp/, docs/
 11 Eiserne Regeln in CLAUDE.md
-47 Verweise auf Regel 12, 13 oder 15
+47 Verweise auf Regel 5, 13 oder 15
 ```
 
 **Mehr als die Hälfte der Verweise zeigt auf nichts.** Die gemeinten Regeln
@@ -5155,7 +5155,7 @@ weggelassen werden darf (klein, fest, aus der Erdkunde selbst).
 
 Es maß `abgleich` mit nackten Wörtern. Die App rechnet `hoerAbgleich` mit
 ganzen Äußerungen. Ein Tor, das die Stufe **darunter** misst, bezeugt eine
-Rechnung, die niemand fährt — Regel 12, wieder einmal, und diesmal hat es
+Rechnung, die niemand fährt — Regel 5, wieder einmal, und diesmal hat es
 einen Fehler gedeckt, den das Zielgerät in dreißig Sekunden fand.
 
 Der Korpus kennt jetzt beide Formen: **121 Treffer, 91 Nichttreffer**, in
@@ -5316,7 +5316,7 @@ Zielgerät ergibt die Rechnung 68, die 72 gewinnen, und neun Spalten zu 72
 brauchen 680 Punkte, wo 644 sind. Der Notnagel überstimmte den Wunsch.
 
 Und er stand **zweimal** — im Grundsatz und im kurzen Querformat. Gepflegt
-wurde die obere Fassung, gegolten hat auf dem iPhone die untere. Regel 15,
+wurde die obere Fassung, gegolten hat auf dem iPhone die untere. Regel 6,
 zum wiederholten Mal. Jetzt ist es eine Marke an einer Stelle.
 
 **Warum es überhaupt so lange lag:** `passt` führte zu kleine Flächen als
@@ -5496,7 +5496,7 @@ Zu Recht. Der Streu liegt **im** Knopf, und ein Tipp auf ein Kind eines
 Knopfes löst den Knopf aus. Die Prüfung konnte gar nicht durchfallen.
 `pointer-events:none` bleibt stehen, es hält die Motive aus der
 Treffersuche heraus — aber die Bedienbarkeit trägt es nicht, und
-behaupten durfte es das nicht mehr (Regel 13).
+behaupten durfte es das nicht mehr (Regel 1).
 
 Der Ersatz war ebenfalls blind: Fionas Kachelhöhe gegen Stephans, für den
 Fall, dass `.streu` aus der `:not()`-Liste fällt. Die vier Kacheln stehen
@@ -5592,7 +5592,7 @@ Profil ein Ziel gewesen, das ewig offen steht.
 
 Das ist genau die Verfallsart, gegen die ich in derselben Runde ein Tor
 geschrieben habe — und es hat sie nicht gefunden, weil es gegen
-`LAENDER_EUROPA_FEIN` maß statt gegen das, was gebaut wird. Regel 12,
+`LAENDER_EUROPA_FEIN` maß statt gegen das, was gebaut wird. Regel 5,
 wörtlich: die Zahl und ihre Messstelle gehören zusammen. Gefunden hat es
 die **Gegenprobe**: sie schlug nicht an, dreimal hintereinander nicht,
 und jedes Mal hatte sie recht.
@@ -5616,7 +5616,7 @@ eine Regel ohne Fall prüft niemand.
 **Und `loese()` zog auf den Anker.** Der Rauchtest zieht das Etikett auf
 den Anker des Ziels; das ist die Stelle, an der die Beschriftung hängt.
 Bei Berlin — 19 Punkte Trefferradius, ringsum Brandenburg — landet man
-damit auf dem Nachbarn. Regel 14, wörtlich: ein Raster ist nur so fein wie
+damit auf dem Nachbarn. Regel 12, wörtlich: ein Raster ist nur so fein wie
 sein kleinstes Ziel. Der `durchgang` hatte die bessere Suche längst,
 eingebaut in seine eigene Auswertung; sie steht jetzt einmal als
 `zielPunkt` in `chromium.mjs` und wird von beiden benutzt — Trefferkreis,
@@ -5698,7 +5698,7 @@ außerhalb", und es hatte, an seinem eigenen Maßstab, recht.
 
 Die stehende Gegenprobe schlug an — sie schiebt den Anker nach `[5, 5]`,
 weit vor die Küste. Genau deshalb bewies sie nichts über den Fall, der
-wirklich eingetreten ist. **Regel 13, wieder:** eine Prüfung ist erst
+wirklich eingetreten ist. **Regel 1, wieder:** eine Prüfung ist erst
 dann eine, wenn sie ohne die Sache messbar ausschlägt — und „ohne die
 Sache" heißt hier: ohne den Fehler, den es *gibt*, nicht ohne einen
 ausgedachten.
@@ -5711,7 +5711,7 @@ Fassung des Tores wäre sie grün geblieben.
 
 | Wo | Was |
 |---|---|
-| `tools/geo-backen.mjs` | `pfadZuRingen` und `ringeZuPolygonen` — Ringe nach Fläche sortieren, jeden in seinen Wirt hängen. Einmal, statt dreimal fast gleich (Regel 15). |
+| `tools/geo-backen.mjs` | `pfadZuRingen` und `ringeZuPolygonen` — Ringe nach Fläche sortieren, jeden in seinen Wirt hängen. Einmal, statt dreimal fast gleich (Regel 6). |
 | `tools/backen-staedte.mjs` | benutzt beides; rechnet die Anker jetzt auch **ohne Rohdaten**, weil sie nur an den eingecheckten Umrissen hängen |
 | `src/geo/staedte.js` | Brandenburg `[804.7, 446.1] → [874, 537.7]`, Radius 106,8 → 74,6. Niedersachsen um 2 Punkte (auch ein Loch: Bremen). Sonst nichts. |
 | `tor/inhalt.mjs` | `topologie` prüft gegen Außenring **und** Löcher |

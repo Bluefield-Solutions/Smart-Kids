@@ -84,7 +84,7 @@ const MESSEN = () => {
    * liegt unter jeder Kachel ein Umriss in `var(--ton)`, und dieses Tor
    * haette den Text weiter gegen die nackte Fuellung gemessen: gruen
    * gemeldet, ohne je geprueft zu haben, worauf die Schrift wirklich
-   * steht (Regel 13).
+   * steht (Regel 1).
    *
    * Gesucht wird deshalb jedes absolut liegende Geschwister, das den
    * Textkasten schneidet, und seine Farbe wird auf die Flaeche gemischt.
@@ -184,7 +184,7 @@ const MESSEN = () => {
      * `opacity:.45` wurde deshalb gemessen, als stuende es voll da - das
      * Tor meldete 7,4:1 fuer eine Schrift, die das Auge bei 3,3:1 sieht.
      * Dieselbe Verwechslung wie beim Wasserzeichen, nur andersherum
-     * (Regel 13): dort fehlte der Grund, hier die Farbe darueber.
+     * (Regel 1): dort fehlte der Grund, hier die Farbe darueber.
      *
      * Der Ausschluss "unter 0,5 gar nicht erst ansehen" bleibt daneben
      * stehen - er meint das Element SELBST, das dann absichtlich

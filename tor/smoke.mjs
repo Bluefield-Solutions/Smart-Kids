@@ -74,7 +74,7 @@ const KURZ = process.argv.includes('--kurz');
  *
  * Beides liest dieselbe Tabelle („Was es ist", Konzept des Elternprofils):
  * die Kopfzeile nennt die Profile, die Zeile „Ländertiefe" ihre Zahlen.
- * Der Grund ist Regel 4 - eine Gegenprobe faelscht `spiel.js`, und ein
+ * Der Grund ist Regel 3 - eine Gegenprobe faelscht `spiel.js`, und ein
  * Tor, das sein Soll aus der gefaelschten Datei liest, bleibt gruen.
  * Beide stehen hier oben und nicht bei ihrem Gebrauch: der Elternbereich
  * braucht die Namen schon im Abschnitt `ablage`, tausend Zeilen frueher.
@@ -83,7 +83,7 @@ const KURZ = process.argv.includes('--kurz');
  *
  * Aus derselben Tabelle wie die Tiefe, und aus demselben Grund: das
  * Erwartete darf nicht aus der Datei kommen, die eine Gegenprobe
- * anfasst (Regel 4). Steht in der Kopfzeile „Fiona (6)", zaehlt „Fiona". */
+ * anfasst (Regel 3). Steht in der Kopfzeile „Fiona (6)", zaehlt „Fiona". */
 const PROFILNAMEN = (() => {
   const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
   const z = doc.match(/^\|\s*\|\s*Fiona[^|]*\|(.+)\|\s*$/m);
@@ -98,7 +98,7 @@ const PROFILNAMEN = (() => {
  * damit wertlos. Die Gegenprobe baut den Fehler genau dort ein: setzt man
  * Fionas Tiefe auf zwoelf, wandert die Erwartung mit, und der Test bleibt
  * gruen. Ein Test, der sein Soll aus dem Prueflig holt, prueft nichts
- * (Regel 4).
+ * (Regel 3).
  *
  * Gelesen wird deshalb die Tabelle im Backlog - dieselbe Stelle, an der
  * der Nutzer die Zahl entschieden hat. Was daraus WIRKLICH auf dem
@@ -217,7 +217,7 @@ const bis = (p, fn, ms = 5000, arg = null) =>
  * Geprueft wird am Ausrufezeichen, nicht am Wortlaut: „Super gemacht!"
  * gegen „Richtig." Das ist die Regel, die der Ton IST - eine Liste der
  * erlaubten Saetze waere eine Abschrift aus `spiel.js`, und die faelscht
- * die Gegenprobe (Regel 4). */
+ * die Gegenprobe (Regel 3). */
 const SACHLICH = (() => {
   const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
   const z = doc.match(/^\|\s*Ton\s*\|(.+)\|\s*$/m);
@@ -445,7 +445,7 @@ async function fahnePruefen(p, wo) {
  * frueher und sah den Wechsel gar nicht mehr: sie meldete 0.00 (also
  * „kein Doppelbild") und liess den Test ausserdem in die alte Aufgabe
  * greifen. Ein Fenster, das an fremden Wartezeiten haengt, misst
- * irgendwann etwas anderes (Regel 12).
+ * irgendwann etwas anderes (Regel 5).
  *
  * Jetzt laeuft die Messung, BIS sie zwei Bildschirme gesehen hat und
  * wieder einen - das ist der Wechsel, an welcher Stelle er auch kommt.
@@ -1212,7 +1212,7 @@ if (laeuft('ablage')) try {
     // und die Probe „nach von vorne laeuft die alte Sitzung weiter" bewies
     // nichts: ob neu angefangen oder weitergezaehlt - das Band stand so
     // oder so auf Punkt eins. Der Eingriff war drin, das Tor blieb gruen
-    // (Regel 3).
+    // (Regel 10).
     await loese(p); await loese(p);
     // Gewartet wird darauf, dass der LAUFENDE Punkt weitergerueckt ist -
     // nicht darauf, dass irgendein Punkt gefaerbt ist.
@@ -1222,7 +1222,7 @@ if (laeuft('ablage')) try {
     // 2,6 s spaeter. Die Sitzung stand beim Kreuz also noch auf Aufgabe
     // eins - und dann sieht ein Neuanfang genauso aus wie ein
     // Weiterzaehlen. Die Probe „nach von vorne laeuft die alte Sitzung
-    // weiter" blieb gruen, obwohl der Fehler drin war (Regel 3).
+    // weiter" blieb gruen, obwohl der Fehler drin war (Regel 10).
     const weiter = await p.waitForFunction(() =>
       [...document.querySelectorAll('.schirm.da .band i')]
         .findIndex(x => x.className === 'jetzt') >= 1,
@@ -1415,7 +1415,7 @@ if (laeuft('ablage')) try {
      * Seite - im ersten Anlauf lagen dadurch 2,7 s zwischen `t0` und dem
      * wirklichen Klick, und die Probe meldete das Wartezeichen als „erst
      * nach 3045 ms". Es stand laengst da; gemessen wurde nur von zu weit
-     * vorn. Eine Zahl ohne ihre Messstelle (Regel 12). */
+     * vorn. Eine Zahl ohne ihre Messstelle (Regel 5). */
     /* Die Seite MUSS vorn sein.
      *
      * `bis()` pollt ueber `requestAnimationFrame`, und das laeuft in einer
@@ -1552,7 +1552,7 @@ if (laeuft('tippen')) try {
 
 /* --- Der Regler: kommt er bis in die Sitzung? -------------------------
  *
- * Regel 13 — wer eine Wirkung misst, schaltet sie zuerst ab. Ein Regler im
+ * Regel 1 — wer eine Wirkung misst, schaltet sie zuerst ab. Ein Regler im
  * Elternbereich, der sich schieben lässt und sich beschriftet, sieht von
  * aussen genauso aus wie einer, der wirkt. Dazwischen liegen vier
  * Stationen: Regler → `Einst.reihenGeteilt` → `EBENEN.mischung()` → die
@@ -1653,7 +1653,7 @@ if (laeuft('regler')) try {
 
   /* Und der Schalter (A2): „Ton aus" heisst nicht „nur die Stimme aus".
    *
-   * Regel 13 — wer eine Wirkung misst, schaltet sie zuerst ab. Ohne diesen
+   * Regel 1 — wer eine Wirkung misst, schaltet sie zuerst ab. Ohne diesen
    * zweiten Durchgang haette die Gegenprobe „der Ton spielt auch bei
    * abgeschaltetem Ton" gar keinen Gegenstand: bei eingeschaltetem Ton
    * aendert das Entfernen der Sperre nichts, was zu sehen waere.
@@ -2155,7 +2155,7 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
         // Die Stelle, an der das Ziel obenauf liegt, kommt aus `zielPunkt`
         // in `chromium.mjs` - sie stand hier und wurde von `loese()`
         // gebraucht, das stattdessen den Anker nahm und an Berlin
-        // scheiterte. Eine Fassung, zwei Benutzer (Regel 15).
+        // scheiterte. Eine Fassung, zwei Benutzer (Regel 6).
         return { name: istHaupt ? g.hauptstadt : g.name,
                  alias: (!istHaupt && g.aliasse && g.aliasse.length) ? g.aliasse[0] : null,
                  tippfeld: !!s.querySelector('input.eingabe'),
@@ -2304,7 +2304,7 @@ for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt'
  *
  * Die Untergrenze ist eine Anforderung, keine Abschrift: ein Kind soll
  * „Super! Das ist Sachsen." lesen koennen. Deshalb steht sie hier und nicht
- * in spiel.js (Regel 4 — das Soll kommt nicht aus dem Gemessenen).
+ * in spiel.js (Regel 3 — das Soll kommt nicht aus dem Gemessenen).
  */
 if (laeuft('pausen')) try {
   const LESEZEIT_MIN = 1200;    // was ein Kind zum Lesen braucht
@@ -3404,7 +3404,7 @@ if (laeuft('streu')) try {
      abgeraeumt: mit `pointer-events:auto` blieb der Rauchtest gruen. Und
      zwar zu Recht - der Streu liegt IM Knopf, ein Tipp auf ein Kind des
      Knopfes loest den Knopf aus. Die Pruefung konnte nicht durchfallen
-     und bewies deshalb nichts (Regel 13). `pointer-events:none` bleibt
+     und bewies deshalb nichts (Regel 1). `pointer-events:none` bleibt
      trotzdem stehen; es haelt die Motive aus der Treffersuche heraus,
      nur traegt es die Bedienbarkeit nicht.
 
@@ -3904,7 +3904,7 @@ if (laeuft('sprechen')) try {
      * Fuellwortliste und kam auch vorher schon durch. Die Gegenprobe hat
      * das gemeldet - sie stellte den alten Zustand her, und der Rauchtest
      * blieb gruen. Eine Pruefung, die der Fehler passieren kann, prueft
-     * ihn nicht (Regel 13).
+     * ihn nicht (Regel 1).
      *
      * „Ich glaube das ist X" faellt durch die alte Liste: sie streicht
      * genau EIN Fuellwort am Anfang, und danach steht immer noch „das ist
@@ -4096,7 +4096,7 @@ else if (ueberblendung > UEBERBLENDUNG_MAX)
  * (Karte 470 px breit, Befund G10). Hier stand dieselbe Forderung ohne
  * eine, und auf dem Zielgeraet ist sie nicht erfuellbar: bei 170 px
  * Kartenbreite passt kein einziger Landesname in sein Gebiet. Die
- * Forderung war nicht falsch, sie gehoerte nur woandershin (Regel 12).
+ * Forderung war nicht falsch, sie gehoerte nur woandershin (Regel 5).
  */
 console.log(`  Gelöst im ersten Durchgang: ${geloest.join(', ')}`);
 const jeRunde = [...new Set(sternVerlauf.map(x => x.runde))]

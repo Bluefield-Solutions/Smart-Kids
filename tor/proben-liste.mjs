@@ -220,9 +220,9 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `doku` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →',
     ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
-    an:{ datei:'CLAUDE.md', fehlt:'`doku` → `doppelt`' },
+    an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 
   // Die Vorschau verschweigt ein Tor, das sie nicht faehrt. Der gefaehrlichste
@@ -379,7 +379,7 @@ export const PROBEN = [
   // Der erste Anlauf schob die Kachel um 4 px - und das Tor blieb gruen,
   // ZU RECHT: die Luecke zwischen den Reihen ist groesser als 4 px, es
   // ueberlappte gar nichts. Ein Eingriff, der nichts bewirkt, sieht aus
-  // wie ein bestandenes Tor (Regel 3). 60 px liegen sicher drueber.
+  // wie ein bestandenes Tor (Regel 10). 60 px liegen sicher drueber.
   { n:'zwei Kacheln liegen aufeinander', tor:'passt', bauen:true, datei:V,
     such:'.kachel.welt .name{font-size:var(--s3)}',
     ersatz:'.kachel.welt .name{font-size:var(--s3)}\n.wahl .kachelpaar:first-child{translate:0 60px}',
@@ -412,7 +412,7 @@ export const PROBEN = [
   // GESCHWISTER hinter dem Text liegt. Diese Probe faerbt den Umriss
   // schwarz und deckend: steht er nicht in der Rechnung, aendert sich am
   // gemeldeten Kontrast nichts - und das Tor bezeugt etwas, das es nie
-  // geprueft hat (Regel 13).
+  // geprueft hat (Regel 1).
   { n:'das Wasserzeichen unter der Schrift zählt nicht', tor:'lesbarkeit', bauen:true, datei:V,
     such:'  height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}',
     ersatz:'  height:86%;max-width:52%;opacity:1;pointer-events:none;color:#000}',
@@ -427,7 +427,7 @@ export const PROBEN = [
    *
    * Wer ein Tor nachgibt, muss zeigen, dass es noch anschlaegt. Diese
    * Probe faerbt die Motive schwarz und deckend: bleibt das Tor gruen,
-   * hat die Nachgabe die Pruefung mit erledigt (Regel 13). */
+   * hat die Nachgabe die Pruefung mit erledigt (Regel 1). */
   { n:'der Streu unter der Schrift zählt nicht', tor:'lesbarkeit', bauen:true, datei:V,
     such:'.kachel .streu i{position:absolute;line-height:0;display:block;',
     ersatz:'.kachel .streu i{position:absolute;line-height:0;display:block;'
@@ -722,7 +722,7 @@ export const PROBEN = [
     // Gezielt wird auf `darfWaehlen` - die EINE Stelle, an der das Profil
     // verbietet. Zwei fruehere Fassungen dieser Probe bewiesen nichts:
     // die erste pruefte auf das FEHLEN von `P.kandidaten > 0`, das
-    // zweimal dastand und deshalb nie fehlte (Regel 3); die zweite kam an
+    // zweimal dastand und deshalb nie fehlte (Regel 10); die zweite kam an
     // und liess das Tor gruen, weil die zweite Sperre bei `wieviel` den
     // Eingriff auffing. Seitdem gibt es nur noch eine Sperre.
     such:'  const darfWaehlen = P.kandidaten > 0;',
@@ -980,6 +980,27 @@ export const PROBEN = [
     sagt:'wieder zu' },
   /* Und die Prüfung selbst darf nicht ins Leere greifen: stellt sie den
    * Rückfall gar nicht mehr her, ist ihre Zusage geschenkt. */
+  /* --- Die Regelnummern (P4) --------------------------------------------
+   *
+   * Der Befund: von 197 Verweisen „Regel N" zeigten 101 in die Regelliste
+   * eines ANDEREN Verzeichnisses. Das Tor `regeln` faengt das ab - aber
+   * nur, solange es die Liste wirklich liest. Diese Probe schreibt eine
+   * Nummer hin, die es nicht gibt.
+   *
+   * Eingegriffen wird in CLAUDE.md, nicht in einen Kommentar: damit ist
+   * zugleich bewiesen, dass das Tor die Liste WIRKLICH von dort liest.
+   * Der erste Anlauf schrieb eine erfundene Nummer in einen Kommentar -
+   * und das Tor fand daraufhin die Probe selbst, weil ihr Suchtext in
+   * `proben-liste.mjs` steht. Ein Tor, das seine eigene Gegenprobe
+   * meldet, ist in diesem Verzeichnis das zweite Mal aufgefallen
+   * (`doppelt` war das erste). */
+  { n:'eine Regel fehlt in CLAUDE.md, die Verweise bleiben stehen', tor:'regeln',
+    deckt:'regeln', datei:'CLAUDE.md',
+    such:'14. **Das Modell darf nicht vom Gemessenen abhängen.**',
+    ersatz:'99. **Das Modell darf nicht vom Gemessenen abhängen.**',
+    an:{ datei:'CLAUDE.md', fehlt:'14. **Das Modell' },
+    sagt:'diese Regel gibt es nicht' },
+
   /* --- Die Haken (A4) ---------------------------------------------------
    *
    * Sie sind 26 Punkte gross und stehen am Anker. In Mittelamerika liegen
@@ -2118,7 +2139,7 @@ export const PROBEN = [
      Der Rauchtest blieb gruen - zu Recht: der Streu liegt IM Knopf, ein
      Tipp auf ein Kind des Knopfes loest den Knopf aus. Die Probe hat
      also nicht das Tor entlarvt, sondern die Pruefung, und die ist
-     ausgebaut (Regel 13).
+     ausgebaut (Regel 1).
 
      An ihrer Stelle steht der Fehler, der in dieser Datei wirklich schon
      passiert ist: `.streu` faellt aus der `:not()`-Liste. Der zweite

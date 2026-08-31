@@ -582,7 +582,7 @@ bedient als von einem Kalender.
    Entscheidung über den Inhalt und steht als **D2c**.
 
    Gefunden hat das die **Gegenprobe**, nicht das Tor: das Tor maß gegen
-   die gebackene Geometrie statt gegen den gelieferten Vorrat (Regel 12).
+   die gebackene Geometrie statt gegen den gelieferten Vorrat (Regel 5).
    Jetzt misst es richtig. Und meine Begründung dafür, die Menge aus dem
    vollen Vorrat zu nehmen, war zweimal hintereinander falsch — erst
    „sonst lässt sich ein Abzeichen verlieren" (kann man nicht,
@@ -593,7 +593,7 @@ bedient als von einem Kalender.
 
 **Und ein dritter, im Werkzeug:** `loese()` im Rauchtest zog das Etikett
 auf den **Anker** des Ziels. Bei Berlin (19 pt Radius, ringsum
-Brandenburg) landet man damit auf dem Nachbarn — Regel 14, ein Raster ist
+Brandenburg) landet man damit auf dem Nachbarn — Regel 12, ein Raster ist
 nur so fein wie sein kleinstes Ziel. Die Punktsuche steht jetzt einmal als
 `zielPunkt` in `chromium.mjs` und wird von `loese` und `durchgang`
 benutzt: Trefferkreis, Anker, Raster, Kastenmitte, in dieser Reihenfolge.
@@ -735,7 +735,7 @@ meldete sofort: „nachbarn-de wählt nichts aus 17 Stücken" (sein eigener
 Vorrat trug die Fahne `nachbarDE` nicht mit) und „alle-landeshauptstaedte
 hängt an der Ebene *hauptstaedte*, die es nicht gibt" (sie fehlte in seiner
 Vorratstabelle). Beide Male hatte das Tor recht, und beide Male lag der
-Fehler an **seiner** Messstelle, nicht an der Tafel — Regel 12.
+Fehler an **seiner** Messstelle, nicht an der Tafel — Regel 5.
 
 **Und einer, den nur der Blick fand:** `minus` und `vokal` waren beide eine
 Kachel mit einem Zeichen darin und bei 28 Punkten — der Größe im kurzen
@@ -801,6 +801,71 @@ dunkleren Text, nicht durch blasseren Streu.
 
 **Was es kostet:** das Startbündel wächst um **5,8 KB gzip** (170,0 statt
 164,2 KB für die Seite; 223,9 von 400 KB erlaubt).
+
+---
+
+### P4 · 101 Verweise in die Regelliste eines anderen Verzeichnisses  ·  ERLEDIGT
+
+Gemessen: **197 Verweise der Form „Regel N"** in `tor/`, `tools/`, `src/`,
+`prototyp/` und `docs/`. Die Eiserne Liste hatte **elf** Regeln. Allein die
+Verweise auf 12, 13, 14 und 15 waren **101** — sie zeigten auf nichts.
+
+Die Diagnose stand schon hier und stimmt: die gemeinten Regeln gibt es
+alle, sie stehen nur unter anderen Nummern. Die Verweise folgen der
+Nummerierung eines **anderen** Verzeichnisses; sie sind aus dem Gedächtnis
+entstanden, und das Gedächtnis hatte die falsche Liste offen.
+
+**Drei Regeln fehlten hier wirklich** — und jede hat in *diesem*
+Verzeichnis eine Runde gekostet, sonst hätte ich sie nicht aufgenommen:
+
+| neu | wofür sie hier steht |
+|---|---|
+| 12 · Ein Raster ist nur so fein wie sein kleinstes Ziel | der Rauchtest zog auf Berlins Anker und landete auf Brandenburg — gemeldet wurde eine Zeitüberschreitung statt „daneben" |
+| 13 · Safari-Falle: kein Filter, wo ein gebackener Verlauf reicht | aus einem SVG-Filter über einer großen Fläche wird auf iOS ein schwarzes Bild |
+| 14 · Das Modell darf nicht vom Gemessenen abhängen | ein Korpus, der das Urteil des Abgleichs übernimmt, misst 100 % — immer |
+
+**Und der teurere Fall lag darunter: Nummern, die es gibt und die etwas
+anderes meinen.** 29 Stück, jede einzeln nachgesehen:
+
+- **„Regel 3" hieß achtmal „ist der Eingriff angekommen"** — das ist hier
+  die 10. Ausgerechnet in `proben.mjs` stand über der Prüfung, ob ein
+  Eingriff ankam, die Überschrift „Regel 3".
+- **„Regel 4" hieß siebenmal „das Soll darf nicht aus dem Prüfling
+  kommen"** (hier 3) und viermal „das Modell darf nicht vom Gemessenen
+  abhängen" (jetzt 14).
+- **„Regel 7" und „Regel 8" hießen achtmal „der Blick auf die Aufnahme"** —
+  hier die 4.
+- **„Regel 11" hieß fünfmal „Safari"** — hier jetzt die 13.
+- **„Regel 1" hieß zweimal „erst einchecken, dann gegenproben"** — die
+  Regel, die es hier nicht mehr gibt, weil ihr Grund weg ist (das ist die
+  9).
+
+**Das Tor `regeln` prüft zweierlei, und mit zwei verschiedenen Härten.**
+
+Die **Nummer** ist ein Fehler: sie muss in der Liste stehen, und die Liste
+wird aus `CLAUDE.md` gelesen, nicht abgeschrieben. Wer eine Regel
+dazuschreibt, muss das Tor nicht anfassen.
+
+Das **Stichwort** ist eine Ratsche: im Satz neben dem Verweis soll ein Wort
+aus der Regel stehen. Als Fehler wäre das falsch — der Test ist unscharf,
+und viele richtige Verweise sagen dieselbe Sache mit anderen Worten
+(„bewies deshalb nichts" für Regel 1). Beim ersten Lauf hätte er
+**65 richtige** Verweise gemeldet, und ein Tor, das so oft unrecht hat,
+wird abgeschaltet. Als Ratsche taugt er: 46 sind bestätigt, mehr dürfen es
+nicht werden. Dieselbe Bauart wie `budget`.
+
+**Ein Fehler beim Bauen, vom Tor selbst gefunden:** die erste Fassung zog
+die Stichworte nur aus der **Überschrift** einer Regel. Regel 1 hat zwei
+Sätze, und zitiert wird fast immer der zweite („wer eine Wirkung misst,
+schaltet sie zuerst ab") — damit fielen siebzehn richtige Verweise durch.
+Jetzt zählt der ganze Absatz.
+
+**Und ein Anlauf, den ich verworfen habe.** Der erste Versuch war ein
+Skript, das jeden Verweis automatisch der Regel zuordnet, deren Stichworte
+danebenstehen. Es hat 33 Stellen geändert — und beim Durchsehen war
+mindestens ein Drittel davon falsch (aus „Auf der Aufnahme (Regel 8)" wurde
+„Regel 13", also Safari). Zurückgenommen und von Hand gemacht: vier
+mechanische Klassen mit 84 Stellen, dann 29 einzeln nachgesehen.
 
 ---
 
@@ -1103,7 +1168,7 @@ sonst nichts, und in der Tabelle in Kapitel 11 stand als Tor noch
 
 ### P9 · Ein Tor, das doppelte Wahrheiten meldet  ·  ERLEDIGT
 
-Diese Sitzung hat Regel 15 **viermal** bezahlt: `pfadZuPolys` stand in vier
+Diese Sitzung hat Regel 6 **viermal** bezahlt: `pfadZuPolys` stand in vier
 Dateien (F16/F17), `filter(x => x.rang)` in drei (D2c), die Rangprüfung in
 zwei (D2c), `MIN_PT`/`MIN_REST` im Spiel und noch einmal im Tor. Jedes Mal
 derselbe Befund: eine Fassung wurde gepflegt, die andere galt, und niemand
@@ -1284,7 +1349,7 @@ kippen: Node sieht Österreich, Tschechien und Polen gar nicht als „zu
 klein", der Browser schon.
 
 Betroffen sind auch die Zahlen, die das Tor **heute schon** für Deutschland
-ausgibt. Regel 12, wörtlich: die Zahl und ihre Messstelle gehören zusammen
+ausgibt. Regel 5, wörtlich: die Zahl und ihre Messstelle gehören zusammen
 — und diese Zahl entsteht am falschen Ort. Sie gehört in den Browser
 (`tor/pwa.mjs` oder ein eigener Abschnitt im Rauchtest), nicht in Node.
 
@@ -1574,7 +1639,7 @@ Anker steht auf der Karte und lässt sich nicht spielen.
 (Brandenburg, Niedersachsen, Südafrika). Null Anker außerhalb, null
 fehlend. Gemessen an den Umrissen, die `bauen.mjs` wirklich einbackt —
 grob für Kontinente und Länder, mittel für die Bundesländer. Nicht an den
-feinen: die liegen im Baum, aber kein Kind fasst sie an (Regel 12).
+feinen: die liegen im Baum, aber kein Kind fasst sie an (Regel 5).
 
 **Die vierte Kopie.** `prototyp/bauen.mjs` hatte seine eigene
 `pfadZuPolys`-Fassung mit `polys.push([ring])` — jeder Ring ein Polygon
@@ -1583,7 +1648,7 @@ Berlin gesetzt hatte. Sie stand hier ein zweites Mal, für die Kontinente
 und für alle sechzig Länder. Beide lesen jetzt dieselben Funktionen aus
 `geo-backen.mjs`.
 
-**Und was das gebracht hat: heute nichts.** Regel 13 — die Wirkung
+**Und was das gebracht hat: heute nichts.** Regel 1 — die Wirkung
 abschalten und nachmessen. Mit und ohne die Berichtigung stehen dieselben
 Zahlen da: 82 geprüft, 3 mit Loch, 0 außerhalb. In keinem der drei Fälle
 landete die lochblinde Suche zufällig *im* Loch. Es ist also eine
@@ -1733,7 +1798,7 @@ auf, was **nicht** weggelassen werden darf — eine kleine, feste Klasse.
 **Warum das Tor 100 % meldete, während nichts ging.** Es maß `abgleich` mit
 nackten Wörtern; die App rechnet `hoerAbgleich` mit ganzen Äußerungen. Ein
 Tor, das die Stufe darunter misst, bezeugt eine Rechnung, die niemand fährt
-(Regel 12). Der Korpus hat jetzt beide Formen: **121 Treffer, 91
+(Regel 5). Der Korpus hat jetzt beide Formen: **121 Treffer, 91
 Nichttreffer**, davon ganze Sätze in beiden Hälften — auch solche, in denen
 ein **falscher** Name steht. Gemessen: **100 % Treffer, 0 % falsch-positiv**.
 
@@ -1854,25 +1919,8 @@ HINWEIS im Bericht" steht im Tor selbst.
 Was in P14 daraus wurde: die Suche nach dem, was **sonst noch** niemand
 misst. Siehe dort.
 
-**P4 · Die Regelnummern im Quelltext zeigen in eine andere Regelliste.**
-Gemessen am 30.08.2026: **92 Verweise der Form „Regel N"** stehen in `tor/`,
-`tools/`, `src/`, `prototyp/spiel.js` und `docs/`. Die Eisernen Regeln in
-`CLAUDE.md` sind **elf**. Also zeigen allein die 47 Verweise auf Regel 12,
-13 und 15 auf nichts.
-
-Die Diagnose ist nicht „falsch gezählt": die gemeinten Regeln gibt es alle,
-sie stehen nur unter anderen Nummern (Messstelle ist hier 5 und nicht 12,
-„erst abschalten, dann messen" steckt hier in 1 und nicht in 13, „was
-zweimal dasteht" ist 6 und nicht 15). Die Verweise folgen der Nummerierung
-eines **anderen** Verzeichnisses. Sie sind beim Schreiben aus dem Gedächtnis
-entstanden, und das Gedächtnis hatte die falsche Liste offen.
-
-Das ist genau der Schaden, vor dem Regel 6 warnt — eine Regel, auf die man
-sich per Nummer beruft, die es unter dieser Nummer nicht gibt, ist eine
-Begründung, die niemand nachschlagen kann. Der Ausweg ist entweder die
-Nummer abzuschaffen (die Regel mit ihren Worten zitieren) oder ein Tor, das
-jede Nummer gegen `CLAUDE.md` prüft. **Ich halte das Tor für richtig** — es
-ist zehn Zeilen und hält die Verweise für immer ehrlich.
+~~**P4 · Die Regelnummern im Quelltext zeigen in eine andere Regelliste.**~~
+**Erledigt** — siehe unten, Abschnitt P4.
 
 ---
 

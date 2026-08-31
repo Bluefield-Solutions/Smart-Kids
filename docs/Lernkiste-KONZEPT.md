@@ -744,7 +744,7 @@ Das Tor `beruehrung` (in `tor/inhalt.mjs`) rechnet **keine Kartenpixel
 mehr**. Es hat das bis P6 getan, mit einem angenommenen Maßstab von
 `KARTE_PX/1000` — und lag damit für Europa um rund 35 % daneben, in
 beide Richtungen: Node sah Österreich nicht als zu klein, der Browser
-schon. Regel 12, wörtlich: die Zahl und ihre Messstelle gehören zusammen.
+schon. Regel 5, wörtlich: die Zahl und ihre Messstelle gehören zusammen.
 
 ### 5.5 Klänge und Aufkleber werden erzeugt, nicht beschafft
 

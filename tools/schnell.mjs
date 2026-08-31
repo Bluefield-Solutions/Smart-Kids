@@ -83,7 +83,7 @@ const a3 = Date.now();
  * Im ersten Anlauf stand hier zweimal `Date.now() - a3` - beide Tore
  * meldeten damit dieselbe Zahl, naemlich die des langsameren. Ich haette
  * das kuerzere optimiert und es nicht gemerkt. Eine Zahl, die fuer zwei
- * Dinge gilt, gilt fuer keines (Regel 12). */
+ * Dinge gilt, gilt fuer keines (Regel 5). */
 const mitZeit = async (name, datei, args) => {
   const a = Date.now(); const r = await lauf(datei, args); return { name, r, ms: Date.now() - a };
 };
@@ -107,7 +107,7 @@ const mitZeit = async (name, datei, args) => {
  * bis die Zusammensetzung sich aenderte: der Rauchtest wurde von 28 auf
  * 20 s schneller, und der Bildvergleich verlor 12,5 s, weil die Entwuerfe
  * ihre Schrift nicht mehr aus dem Netz holen. Eine gemessene Zahl gilt
- * fuer den Tag, an dem sie gemessen wurde (Regel 12); wer sie erbt, erbt
+ * fuer den Tag, an dem sie gemessen wurde (Regel 5); wer sie erbt, erbt
  * auch ihre Voraussetzungen. */
 const TEILE = 3;
 const beide = await Promise.all([

@@ -24,7 +24,7 @@ const ZIEL_TREFFER = 0.90, ZIEL_FALSCH = 0.02;
  *
  * Das Spiel ruft seit F14 `hoerAbgleich` - der kennt ganze Aeusserungen und
  * mehrere Lesarten. Ein Tor, das die Stufe DARUNTER misst, bezeugt eine
- * Rechnung, die niemand fährt (Regel 12: jede Zahl traegt ihre Messstelle).
+ * Rechnung, die niemand fährt (Regel 5: jede Zahl traegt ihre Messstelle).
  * Genau daran lag der Befund vom Zielgeraet: hier stand 100 %, waehrend auf
  * dem Telefon jede Antwort mit mehr als einem Wort durchfiel.
  *
@@ -49,7 +49,7 @@ const nachId = new Map(ALLE.map(k => [k.id, k]));
  * Spiel stehen aber die Laender DESSELBEN Kontinents zur Wahl - und genau
  * dort sitzen die gefaehrlichen Paare: Uruguay neben Paraguay, Sudan
  * neben Suedafrika. Eine Messung an einer Menge, die es nicht gibt, misst
- * die falsche Aufgabe (Regel 12).
+ * die falsche Aufgabe (Regel 5).
  */
 const KONT_VON = new Map(Object.entries(I.LAENDER)
   .flatMap(([k, l]) => l.map(x => [x.a3, k])));
@@ -221,7 +221,7 @@ if (!hatEingefroren) {
  * Abgleich fuer richtig haelt (`ergebnis: 'richtig'`), aber ein Mensch fuer
  * falsch (`urteil: 'nein'`), muss bei den NICHTTREFFERN landen. Kaeme er
  * bei den Treffern an, haette das Werkzeug `ergebnis` abgeschrieben - und
- * der Korpus koennte dem Abgleich nie widersprechen (Regel 4).
+ * der Korpus koennte dem Abgleich nie widersprechen (Regel 14).
  */
 {
   const { execFileSync } = await import('node:child_process');
@@ -327,7 +327,7 @@ if (!hatEingefroren) {
     soll(alleN.includes('aussen'),
       'eine Äußerung mit `ergebnis: richtig` und Urteil „nein" landet NICHT bei den '
       + 'Nichttreffern — das Werkzeug schreibt die Entscheidung des Abgleichs ab, '
-      + 'und der Korpus kann ihm nie widersprechen (Regel 4)');
+      + 'und der Korpus kann ihm nie widersprechen (Regel 14)');
     soll(!alleT.includes('aussen'), 'dieselbe Äußerung steht auch bei den Treffern');
     soll(!alleT.includes('weg-damit') && !alleN.includes('weg-damit'),
       'eine als „weg" beurteilte Äußerung steht trotzdem im Korpus');

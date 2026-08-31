@@ -197,7 +197,7 @@ export async function istUmgekehrt(seite) {
  * und bei einem kleinen Gebiet liegt dort der groessere Nachbar darueber.
  * `loese()` hat genau daran gescheitert - das Etikett wurde auf Berlins
  * Anker gezogen, gelandet ist es auf Brandenburg, und der Rauchtest
- * meldete eine Zeitueberschreitung statt „daneben". Regel 14: ein Raster
+ * meldete eine Zeitueberschreitung statt „daneben". Regel 12: ein Raster
  * ist nur so fein wie sein kleinstes Ziel.
  *
  * Gesucht wird in dieser Reihenfolge: der entkoppelte Trefferkreis (den

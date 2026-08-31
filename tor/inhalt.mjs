@@ -17,13 +17,13 @@ import { LAENDER_AFRIKA_FEIN } from '../src/geo/laender-afrika.fein.js';
 import { LAENDER_ASIEN_FEIN } from '../src/geo/laender-asien.fein.js';
 import { LAENDER_EUROPA_FEIN } from '../src/geo/laender-europa.fein.js';
 // Die GROBE Stufe, weil die Ebene „Hauptstädte in Europa" sie zeichnet -
-// und weil nur dort die Stadtlagen gebacken sind (Regel 12: die Zahl und
+// und weil nur dort die Stadtlagen gebacken sind (Regel 5: die Zahl und
 // ihre Messstelle gehoeren zusammen).
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
 /* Und die uebrigen groben Stufen. `bauen.mjs` backt genau diese ein - die
  * feinen sind der Vorrat, nicht die Ware. Ein Anker, der in der feinen
  * Stufe im Gebiet liegt, kann in der groben davor liegen: vereinfachen
- * heisst Ecken abschneiden. (Regel 12.) */
+ * heisst Ecken abschneiden. (Regel 5.) */
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
 import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
@@ -126,7 +126,7 @@ console.log(`    Länder je Kontinent: ${proKontinent.map(x => `${x.k} ${x.n}`).
  * ist, sieht man nur daran, dass beide Antworten vorkommen. Die Forderung
  * stand bis heute im Rauchtest, wo sie keine Messstelle hatte: dort haengt
  * die Kartenbreite an der Fenstergroesse, und auf dem Zielgeraet (170 px)
- * passt kein einziger Name hinein. Hier hat sie eine (Regel 12). */
+ * passt kein einziger Name hinein. Hier hat sie eine (Regel 5). */
 {
   const arten = new Set(STAEDTE.map(x => x.beschriftung));
   pruefe(arten.has('innen') && arten.has('fahne'),
@@ -247,7 +247,7 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
  *
  * Gelesen wird aus `prototyp/spiel.js`, weil die Texte dort stehen und
  * nirgends sonst - eine zweite Liste hier waere die naechste, die
- * veraltet (Regel 15). Das SOLL kommt trotzdem nicht von dort: welches
+ * veraltet (Regel 6). Das SOLL kommt trotzdem nicht von dort: welches
  * Profil welchen Ton bekommt, steht in der Zeile „Ton" im Backlog.
  */
 {
@@ -433,7 +433,7 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
     + 'die Prüfung liest die Bildtafel nicht mehr und würde alles durchlassen');
   /* Die Vorraete, so wie das Spiel sie WIRKLICH baut.
    *
-   * Regel 12, und sie hat in dieser Runde ein ganzes Abzeichen gekostet:
+   * Regel 5, und sie hat in dieser Runde ein ganzes Abzeichen gekostet:
    * die erste Fassung mass gegen `LAENDER_EUROPA_FEIN` - die GEBACKENE
    * Geometrie mit einundfuenfzig Umrissen. Ins Spiel kommt aber nur, was
    * in `erdkunde.js` einen Rang hat (`roh.filter(l => l.rang)` im Bau):
@@ -806,7 +806,7 @@ console.log('\n  Tor `beruehrung`');
  * 24,9 fuer die Schweiz, rund 35 % daneben - und die Vorzeichen kippten,
  * Node sah drei Laender gar nicht als „zu klein", die der Browser sah.
  *
- * Regel 12: die Zahl und ihre Messstelle gehoeren zusammen. Die
+ * Regel 5: die Zahl und ihre Messstelle gehoeren zusammen. Die
  * Bildpunkte stehen deshalb seit P6 in `npm run ziehen` (Abschnitt
  * `treffer`), gemessen am gebauten Spiel auf allen sieben Karten. Hier
  * bleibt, was OHNE Bildschirm wahr ist.
@@ -1340,7 +1340,7 @@ function gegenAbgleich(was, zeilen, rechne) {
  *
  * Die Zahlen 72 · 14 · 72 stehen an ZWEI Orten: in `rechnen.js` als Regel
  * und im Konzept als Tabelle. Genau dafuer ist dieses Tor da - was zweimal
- * dasteht, veraltet einmal (Regel 15).
+ * dasteht, veraltet einmal (Regel 6).
  *
  * Und die Begrenzung ist keine Schoenheit, sondern die Zusage, an der drei
  * Dinge haengen: das Forscherbuch zeichnet jeden Gegenstand einer Ebene,

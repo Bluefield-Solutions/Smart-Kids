@@ -33,7 +33,7 @@ function vierfaerben(ids){
  * mit Lesotho darin und fuer Italien mit San Marino und dem Vatikan.
  *
  * Beide lesen jetzt dieselben Funktionen aus `geo-backen.mjs`. Was zweimal
- * dasteht, veraltet einmal - hier war es viermal (Regel 15).
+ * dasteht, veraltet einmal - hier war es viermal (Regel 6).
  */
 function ankerFuer(liste){
   return liste.map(x=>{

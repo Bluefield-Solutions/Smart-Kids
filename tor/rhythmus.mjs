@@ -32,7 +32,7 @@
 // weiter dagestanden. Er hat mehr gekostet als eine falsche Auskunft: die
 // Gegenprobe „ein neues Tor steht in der Kette" suchte
 // `npm run rhythmus && npm run inhalt` in package.json, fand es nicht mehr
-// und bewies seitdem nichts (Regel 3, und Regel 15 gleich mit).
+// und bewies seitdem nichts (Regel 10, und Regel 6 gleich mit).
 //
 // Gezaehlt wird in TAGEN, nicht in Commits.
 //

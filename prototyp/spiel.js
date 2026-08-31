@@ -13,7 +13,7 @@ const VIER = ['--f1','--f3','--f5','--f6'];
 const el = (t,k,i)=>{ const e=document.createElement(t); if(k)e.className=k; if(i!==undefined)e.innerHTML=i; return e; };
 /* Der Zackenstern. EIN Pfad, zwei Verwendungen: der gezaehlte Stern im Kopf
    (`STERN`, mit Tintenkontur) und der Streustern auf Fionas Kachel (`MOTIV`,
-   ohne). Regel 15 - was zweimal dasteht, veraltet einmal; hier waere es der
+   ohne). Regel 6 - was zweimal dasteht, veraltet einmal; hier waere es der
    Tag, an dem die Zacken der einen Sorte laenger werden als die der anderen. */
 const STERN_VB = '-14 -14 28 28';
 const STERN_D = 'M0 -12 3.7 -4 12 -2.8 6 3.2 7.4 12 0 7.8 -7.4 12 -6 3.2 -12 -2.8 -3.7 -4Z';
@@ -30,7 +30,7 @@ const POKAL='<svg width="26" height="26" viewBox="0 0 24 24" fill="none"'
   + '<path d="M8 21h8M12 17v4"/>'
   + '<path d="M17 5h2.5a2.5 2.5 0 0 1 0 5H17M7 5H4.5a2.5 2.5 0 0 0 0 5H7"/></svg>';
 /* Derselbe Pokal, gross - fuer den Endbildschirm. Eine Marke, kein
-   zweites Zeichen: sonst veraltet eines von beiden (Regel 15). */
+   zweites Zeichen: sonst veraltet eines von beiden (Regel 6). */
 const POKALGROSS = POKAL.replace('width="26" height="26"', 'width="72" height="72"');
 const ZURUECK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>';
 /* ---------- Zeichen und der Kopf ------------------------------------------
@@ -367,7 +367,7 @@ const TON = {
      * Nicht aus Geschmack: sie sagen dasselbe wie die Zeile darunter.
      * Drei Sterne heissen „alles auf Anhieb richtig", und genau das steht
      * eine Zeile tiefer als „12 von 12 auf Anhieb richtig" - nur genauer.
-     * Was zweimal dasteht, veraltet einmal (Regel 15), und von den beiden
+     * Was zweimal dasteht, veraltet einmal (Regel 6), und von den beiden
      * ist die Zahl die haltbarere.
      *
      * Im KOPF waehrend der Sitzung bleiben sie: dort sind sie der einzige
@@ -836,7 +836,7 @@ const SILHOUETTE = { erdkunde:'kontinente', kontinente:'kontinente',
  * dreimal derselbe Fehler: die Ebene heißt `hauptstaedte:europa`, ist
  * also nicht `laender`, und hätte den Rahmen von Deutschland um eine
  * Europakarte gelegt. Der Kontinent hinter dem Doppelpunkt entscheidet,
- * nicht die Art davor (Regel 15). */
+ * nicht die Art davor (Regel 6). */
 const vbVon = (ebeneId) => {
   const [art, kont] = String(ebeneId).split(':');
   return art === 'kontinente' ? D.vbK : kont ? D.vbL[kont] : D.vbD;
@@ -1268,7 +1268,7 @@ D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
 // Vorraete daneben. Hier standen zwei Aufrufe, seit R4 gibt es drei
 // Rechenebenen - die 158 Aufgaben der Eltern fehlten still, und im Protokoll
 // stand fuer sie `g12*13` statt „12 × 13". Eine Liste neben einer Liste
-// veraltet; diese kann es nicht mehr (Regel 15).
+// veraltet; diese kann es nicht mehr (Regel 6).
 //
 // `vorrat` haengt fuer Karten am Profil, fuer `art:'rechnen'` nicht -
 // deshalb nur diese Ebenen. Die Gebietsnamen kommen drei Zeilen weiter
@@ -3048,7 +3048,7 @@ function spielschirm(){
      * Kreisen wissen, wer am Ort zu wenig bekommt. Der erste Anlauf hat
      * die zehn Zeilen abgeschrieben - und das Tor `inhalt` hat es sofort
      * gemeldet, weil eine stehende Gegenprobe ihren Suchtext ploetzlich
-     * zweimal fand. Regel 15, gefunden von einer Probe. */
+     * zweimal fand. Regel 6, gefunden von einer Probe. */
     const kreisAmOrt = (n) => {
       let rPx = MIN_PT/2, naechster = Infinity;
       for (const m of mit) {

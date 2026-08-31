@@ -65,7 +65,7 @@ import { PROBEN, D, V, E, DIST } from './proben-liste.mjs';
 
 const rot = (s) => `\x1b[31m${s}\x1b[0m`, gruen = (s) => `\x1b[32m${s}\x1b[0m`;
 
-/* Regel 1 ist weg — weil der Grund weg ist.
+/* Regel 9 ist weg — weil der Grund weg ist.
  *
  * „Erst einchecken, dann gegenproben" stand hier, seit dieser Lauf viermal
  * frische Arbeit geloescht hatte: er griff in den ARBEITSBAUM ein und
@@ -495,7 +495,7 @@ for (const p of welche) {
       wiederherstellen(p.bauen); continue; }
   }
 
-  /* --- Regel 3: ist er angekommen? -------------------------------- */
+  /* --- Regel 10: ist er angekommen? -------------------------------- */
   let da = true, warum = '';
   if (p.an.gleichWie) {
     const [a, b] = p.an.gleichWie;
