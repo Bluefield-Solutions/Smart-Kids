@@ -5875,3 +5875,88 @@ man sich Tore aussuchen kann, ist eine Art, die Kette still abzuschalten
 Lauf laut dazu, und die Auslieferung setzt ihn nirgends.
 
 194 Gegenproben.
+
+---
+
+## P2 · Der Rauchtest zerfällt in drei
+
+Nach P1 lag der Engpass offen: `smoke` allein brauchte 295 der 308 s der
+ganzen Kette. Die fünf anderen Browsertore liefen längst nebeneinander, er
+lief als ein Stück.
+
+`--teil=i/n` verteilt jetzt **ganze Abschnitte** auf n Prozesse. Nicht nach
+Anzahl — jeder Abschnitt einzeln gemessen (`--nur=<name>`, drei
+nebeneinander, abzüglich der rund 4,6 s, die Browser und Server jeden
+Prozess kosten):
+
+```
+durchgang 79 · ablage+spielen 52 · schreiben 45 · test 31 · abzeichen 18
+umgekehrt 13 · ebene4 11 · regler 10 · pausen 8 · tippen 5 · sprechen 2
+hinweis 0 · streu 0
+```
+
+Nach Anzahl geteilt läge `durchgang` mit 79 s vielleicht neben `schreiben`
+mit 45, und ein Teil bräuchte fast so lange wie vorher das Ganze. Verteilt
+wird deshalb gierig: das schwerste Stück zuerst, immer in den bis dahin
+leichtesten Topf. Das ist deterministisch — derselbe `i` bekommt in jedem
+Lauf dieselben Abschnitte.
+
+`ablage` braucht, was `spielen` abgelegt hat: die beiden sind **ein**
+Stück und können nicht auf zwei Prozesse fallen.
+
+### Gemessen
+
+```
+smoke am Stück      295,0 s
+smoke in drei       101,6 · 97,5 · 99,6 s
+ganze Kette         308,1 s  →  237,6 s
+```
+
+Die drei Teile liegen vier Sekunden auseinander. Das ist keine Feinarbeit,
+sondern was die gewichtete Verteilung leistet — sie hat die Zahlen, nach
+denen sie packt.
+
+### Der Engpass ist jetzt `passt`
+
+183 s, und die Kette braucht 238. Das ist der nächste Schritt, und er ist
+schon benannt: `passt` misst seit P14 **jeden** Knopf auf sieben Größen.
+
+### Zwei Nachzählungen, und warum sie verschieden sind
+
+Ein Teillauf, der die Hälfte vergisst, meldet „grün", und niemand sieht,
+worüber. Bei `smoke` wird deshalb die **Menge** verglichen, nicht die
+Anzahl: zwei Teile, die beide `durchgang` fahren und `schreiben` keiner,
+kämen sonst auf vierzehn. Jeder Teillauf schreibt beide Seiten hin — was
+er fährt und was es gibt —, damit die Liste der vierzehn Namen nicht
+zweimal dasteht und eine der beiden veraltet (Regel 6).
+
+Bei `ansicht` bleibt es beim Zählen. Es teilt streng nach Index und kann
+dieselbe Aufnahme nicht zweimal vergeben; 32 Namen in jede Teilausgabe zu
+schreiben wäre eine lange Zeile für nichts.
+
+Dazu ein dritter Fall, der leicht zu übersehen ist: sagt **kein** Teil
+etwas dazu, ist das ein Fehler und kein Grund durchzuwinken. Sonst hätte
+die Zeile eines Tages ihren Namen geändert, und die Nachzählung hätte
+seither nichts mehr gemeldet — eine Prüfung, die nie etwas meldet, ist kein
+Beweis (Regel 1).
+
+### Die Gegenprobe — und was sie nicht abdeckt
+
+Die Verteilung liest eine **zweite** Liste (`STUECKE`) neben `ABSCHNITTE`,
+und zwei Listen, die dasselbe aufzählen, laufen auseinander. `smoke` zählt
+deshalb selbst nach, bevor es verteilt, und die Gegenprobe „ein Abschnitt
+fehlt in der Verteilung des Rauchtests" nimmt `tippen` heraus und erwartet
+den Abbruch.
+
+Sie läuft mit `--teil=11/13`: bei dreizehn Töpfen fällt in diesen nur
+`hinweis` und `streu`, zusammen vier Sekunden. Die Prüfung selbst hängt
+nicht an `i` und `n` — sie läuft, bevor verteilt wird.
+
+**Was keine Gegenprobe hat:** die Nachzählung im Läufer selbst. Sie zu
+proben hieße, `smoke` in der Kette zu fahren, also hundert Sekunden je
+Probe, und das zweimal (gesund und krank). Der Fehler, den sie fängt, ist
+dafür in der Datei nebenan zu sehen und nicht verteilt — aber
+aufgeschrieben gehört es trotzdem, sonst hält es eines Tages jemand für
+bewiesen.
+
+195 Gegenproben.

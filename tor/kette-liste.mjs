@@ -55,13 +55,17 @@ export const NACH_DEM_BAU = [
 /* Die Browsertore, laengstes zuerst.
  *
  * `teile` heisst: das Tor kann sich selbst aufteilen und laeuft dann als
- * mehrere Prozesse nebeneinander. Nur `ansicht` kann das - es prueft N
- * Aufnahmen, die nichts voneinander wissen. `smoke` koennte es dem Namen
- * nach auch (`--nur=`), aber seine Abschnitte haengen zusammen (`ablage`
- * braucht `spielen`); das ist eine eigene Runde wert, nicht diese.
+ * mehrere Prozesse nebeneinander. Zwei koennen das:
+ *
+ *   `ansicht`  prueft N Aufnahmen, die nichts voneinander wissen.
+ *   `smoke`    verteilt seit P2 GANZE Abschnitte nach gemessenem Gewicht
+ *              (`--teil=i/n`); `ablage` und `spielen` bleiben zusammen.
+ *
+ * Beide zaehlen im Laeufer nach, dass die Teile zusammen alles abdecken -
+ * ein Teillauf, der die Haelfte vergisst, meldete sonst „gruen".
  */
 export const MIT_BROWSER = [
-  { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000 },
+  { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000, teile: 3 },
   { name: 'passt',      datei: 'tor/passt.mjs',      ms: 183000 },
   { name: 'ansicht',    datei: 'tor/ansicht.mjs',    ms:  79000, teile: 3 },
   { name: 'ziehen',     datei: 'tor/ziehen.mjs',     ms:  57000 },

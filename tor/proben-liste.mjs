@@ -656,6 +656,26 @@ export const PROBEN = [
    * genau diese Umstellung hat den alten Suchtext entwertet - gemeldet von
    * der Suchtext-Pruefung in `inhalt`, im selben Lauf. Das Anhaengsel
    * ueberlebt jede Umsortierung der Kette. */
+  /* Ein Abschnitt faellt aus der Verteilung.
+   *
+   * Seit P2 verteilt `smoke` seine vierzehn Abschnitte auf drei Prozesse.
+   * Die Verteilung liest eine zweite Liste (`STUECKE`) - und zwei Listen,
+   * die dasselbe aufzaehlen, laufen auseinander. Passiert das unbemerkt,
+   * laeuft ein Abschnitt in KEINEM Teil, und alle drei melden gruen: die
+   * stillste Art, einen Test abzuschalten. Eine Pruefung, die nie etwas
+   * meldet, ist kein Beweis (Regel 1).
+   *
+   * `--teil=11/13` ist gewaehlt, damit der gesunde Lauf billig ist: bei
+   * dreizehn Toepfen faellt in diesen nur `hinweis` und `streu`, zusammen
+   * vier Sekunden. Die Pruefung selbst haengt nicht an i und n - sie
+   * laeuft, bevor verteilt wird. */
+  { n:'ein Abschnitt fehlt in der Verteilung des Rauchtests', tor:'smoke',
+    args:['--teil=11/13'], bauen:true, datei:'tor/smoke.mjs',
+    such:"  { teile: ['tippen'],              ms:  5 },\n",
+    ersatz:'',
+    an:{ datei:'tor/smoke.mjs', fehlt:"teile: ['tippen']" },
+    sagt:'decken die Abschnitte nicht' },
+
   /* --- die Kette selbst ------------------------------------------------
    *
    * Solange die Kette eine `&&`-Zeile war, gab die Shell den Rueckgabewert

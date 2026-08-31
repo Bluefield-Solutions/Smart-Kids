@@ -676,8 +676,92 @@ const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgan
   'test', 'streu', 'abzeichen',
                     'pausen', 'schreiben', 'hinweis', 'sprechen'];
 const BRAUCHT = { ablage: ['spielen'] };
+
+/* ---------- Teillaeufe: `--teil=i/n` ------------------------------------
+ *
+ * Nach P1 war der Rauchtest der Engpass der ganzen Torkette: 295 von
+ * 308 s. Die fuenf anderen Browsertore liefen laengst nebeneinander, er
+ * lief als ein Stueck.
+ *
+ * `--teil=i/n` verteilt GANZE Abschnitte auf n Prozesse. Nicht nach
+ * Anzahl, sondern nach GEWICHT - jeder Abschnitt einzeln gemessen
+ * (`--nur=<name>`, drei nebeneinander, 31.08.2026, vier Kerne), abzueglich
+ * der rund 4,6 s, die Browser und Server jeden Prozess kosten:
+ *
+ *     durchgang 79 · ablage+spielen 52 · schreiben 45 · test 31 ·
+ *     abzeichen 18 · umgekehrt 13 · ebene4 11 · regler 10 · pausen 8 ·
+ *     tippen 5 · sprechen 2 · hinweis 0 · streu 0
+ *
+ * Nach Anzahl geteilt lande `durchgang` mit 79 s vielleicht neben
+ * `schreiben` mit 45, und ein Teil braeuchte so lange wie vorher das
+ * Ganze. Verteilt wird deshalb gierig: das schwerste Stueck zuerst, immer
+ * in den bis dahin leichtesten Topf. Das ist deterministisch - derselbe
+ * `i` bekommt in jedem Lauf dieselben Abschnitte -, und wenn ein
+ * Abschnitt teurer wird, muss nur seine Zahl hier nachgezogen werden.
+ *
+ * `ablage` braucht `spielen`: die beiden sind EIN Stueck und koennen
+ * nicht auf zwei Prozesse fallen.
+ *
+ * Die Zahlen sind Gewichte fuer die Verteilung, keine Zusage. Sie duerfen
+ * altern, ohne dass etwas kaputtgeht - der Lauf wird dann nur ungleicher.
+ * Was NICHT altern darf, ist die Vollstaendigkeit: dass die Teile
+ * zusammen alle vierzehn Abschnitte fahren, zaehlt `tools/kette.mjs` nach
+ * (`ABSCHNITTE i/n:` unten), so wie beim Bildvergleich. Ein Teillauf, der
+ * die Haelfte vergisst, meldet sonst „gruen", und niemand sieht, worueber.
+ */
+const STUECKE = [
+  { teile: ['durchgang'],           ms: 79 },
+  { teile: ['spielen', 'ablage'],   ms: 52 },
+  { teile: ['schreiben'],           ms: 45 },
+  { teile: ['test'],                ms: 31 },
+  { teile: ['abzeichen'],           ms: 18 },
+  { teile: ['umgekehrt'],           ms: 13 },
+  { teile: ['ebene4'],              ms: 11 },
+  { teile: ['regler'],              ms: 10 },
+  { teile: ['pausen'],              ms:  8 },
+  { teile: ['tippen'],              ms:  5 },
+  { teile: ['sprechen'],            ms:  2 },
+  { teile: ['hinweis'],             ms:  0 },
+  { teile: ['streu'],               ms:  0 },
+];
+// Ein Abschnitt, der in keinem Stueck steht, liefe in KEINEM Teil - und
+// der volle Lauf faende ihn trotzdem. Also hier nachzaehlen, nicht dort.
+{
+  const drin = STUECKE.flatMap(g => g.teile);
+  const fehlt = ABSCHNITTE.filter(t => !drin.includes(t));
+  const zuviel = drin.filter(t => !ABSCHNITTE.includes(t));
+  if (fehlt.length || zuviel.length) {
+    console.error(`\n  smoke: die Stuecke für \`--teil\` decken die Abschnitte nicht: `
+      + `${fehlt.length ? `fehlt ${fehlt.join(', ')}` : ''}`
+      + `${fehlt.length && zuviel.length ? '; ' : ''}`
+      + `${zuviel.length ? `unbekannt ${zuviel.join(', ')}` : ''}\n`);
+    process.exit(2);
+  }
+}
+const TEIL = (() => {
+  const roh = (process.argv.find(a => a.startsWith('--teil=')) || '').split('=')[1];
+  if (!roh) return null;
+  const [i, n] = roh.split('/').map(Number);
+  if (!Number.isInteger(i) || !Number.isInteger(n) || n < 1 || i < 0 || i >= n) {
+    console.error(`\n  smoke: --teil=${roh} ist unbrauchbar. Erwartet wird i/n mit 0 <= i < n.\n`);
+    process.exit(2);
+  }
+  const toepfe = [...Array(n)].map(() => ({ ms: 0, teile: [] }));
+  for (const g of [...STUECKE].sort((a, b) => b.ms - a.ms)) {
+    const leichtester = toepfe.reduce((a, b) => (b.ms < a.ms ? b : a));
+    leichtester.ms += g.ms; leichtester.teile.push(...g.teile);
+  }
+  return { i, n, teile: toepfe[i].teile };
+})();
+
 const gewaehlt = (() => {
   const roh = (process.argv.find(a => a.startsWith('--nur=')) || '').split('=')[1];
+  if (roh && TEIL) {
+    console.error('\n  smoke: --nur und --teil zusammen ergeben keinen Sinn — '
+      + 'das eine waehlt aus, das andere verteilt.\n');
+    process.exit(2);
+  }
+  if (TEIL) return new Set(TEIL.teile);
   if (!roh) return null;
   const m = new Set(roh.split(',').map(x => x.trim()).filter(Boolean));
   for (const t of [...m]) for (const v of (BRAUCHT[t] || [])) m.add(v);
@@ -692,7 +776,14 @@ for (const t of (gewaehlt || []))
     process.exit(2);
   }
 const laeuft = (t) => (!gewaehlt || gewaehlt.has(t)) && !abbruch();
-if (gewaehlt)
+/* Die Zeile, an der `tools/kette.mjs` nachzaehlt. Sie nennt BEIDES: was
+ * dieser Teil faehrt und was es insgesamt gibt - sonst muesste der Laeufer
+ * die vierzehn Namen ein zweites Mal fuehren - was zweimal dasteht,
+ * veraltet einmal (Regel 6). */
+if (TEIL)
+  console.log(`  ABSCHNITTE ${TEIL.i + 1}/${TEIL.n}: ${[...gewaehlt].sort().join(',')}`
+    + `  VON: ${[...ABSCHNITTE].sort().join(',')}`);
+else if (gewaehlt)
   console.log(`  (nur ${[...gewaehlt].sort().join(', ')} — `
     + `${ABSCHNITTE.filter(t => !gewaehlt.has(t)).join(', ')} übersprungen)`);
 

@@ -147,12 +147,49 @@ const summe = ergebnisse.reduce((n, e) => n + e.ms, 0);
 console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(24)} ${s(Date.now() - a3)} statt `
   + `${s(summe)} nacheinander`);
 
-/* Die Teile von `ansicht` muessen ZUSAMMEN alle Aufnahmen abdecken.
+/* Die Teile von `smoke` muessen ZUSAMMEN alle Abschnitte fahren.
  *
- * Ein Teillauf, der die Haelfte vergisst, meldet „gruen" - und niemand
- * sieht, worueber. Dieselbe Nachzaehlung wie in tools/schnell.mjs, aus
- * demselben Grund: eine Aufteilung ist eine Gelegenheit, still etwas
- * abzuschalten (Regel 1). */
+ * Geprueft wird die MENGE, nicht die Anzahl: zwei Teile, die beide
+ * `durchgang` fahren und `schreiben` keiner, kaemen sonst auf vierzehn
+ * und niemand saehe es. Die Namen stehen in der Ausgabe des Teillaufs
+ * selbst - beide Seiten, „was ich fahre" und „was es gibt" -, damit die
+ * Liste der Abschnitte nicht zweimal dasteht und eine der beiden
+ * veraltet (Regel 6).
+ *
+ * Sagt KEIN Teil etwas dazu, ist das ein Fehler und kein Grund
+ * durchzuwinken: dann hat die Zeile ihren Namen geaendert, und diese
+ * Nachzaehlung prueft seit dem Tag nichts mehr (Regel 1). */
+{
+  const teile = ergebnisse.filter(e => /^smoke \(/.test(e.name));
+  const gefahren = new Set(), alle = new Set();
+  for (const e of teile) {
+    const m = e.aus.match(/ABSCHNITTE \d+\/\d+: ([^\n]*?)\s+VON: ([^\n]*)/);
+    if (!m) continue;
+    for (const t of m[1].split(',').filter(Boolean)) gefahren.add(t.trim());
+    for (const t of m[2].split(',').filter(Boolean)) alle.add(t.trim());
+  }
+  if (teile.length && !alle.size) {
+    console.log(`\n  ${rot('✗')} smoke: kein Teillauf nennt seine Abschnitte `
+      + '(Zeile „ABSCHNITTE i/n: … VON: …") — die Nachzählung prüft nichts mehr.');
+    process.exit(1);
+  }
+  const fehlt = [...alle].filter(t => !gefahren.has(t));
+  if (fehlt.length) {
+    console.log(`\n  ${rot('✗')} smoke: ${fehlt.length} Abschnitte hat kein Teil gefahren — `
+      + fehlt.join(', '));
+    process.exit(1);
+  }
+  if (alle.size)
+    console.log(`    ${''.padEnd(6)}${'gefahrene Abschnitte'.padEnd(24)} `
+      + `${gefahren.size} von ${alle.size}`);
+}
+
+/* Und dieselbe Frage fuer `ansicht` - nur zaehlbar statt benennbar.
+ *
+ * Es prueft 32 Aufnahmen; ihre Namen in jede Teilausgabe zu schreiben
+ * waere eine lange Zeile fuer wenig mehr Sicherheit, denn anders als bei
+ * den Abschnitten teilt `ansicht` streng nach Index und kann dieselbe
+ * Aufnahme nicht zweimal vergeben. Gezaehlt reicht hier also. */
 {
   const teile = ergebnisse.filter(e => /^ansicht \(/.test(e.name));
   const gezaehlt = teile.map(e => (e.aus.match(/(\d+) grün, (\d+) neu, (\d+) rot/) || [])

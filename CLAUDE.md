@@ -18,13 +18,14 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 ## Wie hier gearbeitet wird: drei Bahnen
 
 Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
-— die ganze Kette dauert 633 s, wenn alles nacheinander läuft, und 623 davon
-liegen im Browser. Seit P1 laufen die sechs Browsertore nebeneinander: 308 s.
+— die ganze Kette dauert 641 s, wenn alles nacheinander läuft, und 631 davon
+liegen im Browser. Seit P1 laufen die sechs Browsertore nebeneinander, seit P2
+zerfallen `smoke` und `ansicht` dabei in je drei Teilläufe: 238 s.
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
 | **`npm run schnell`** | bei **jeder** Änderung | **~54 s** (gemessen 53,5 s, 32 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~5 min (gemessen 5:08; nacheinander wären es 10:33) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~4 min (gemessen 3:58; nacheinander wären es 10:41) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
@@ -67,11 +68,12 @@ Proben hätten genau daran angeschlagen.
 
 ```
 npm run schnell    DIE NORMALE RUNDE. ~54 s. Siehe oben.
-npm run tor        die ganze Kette, rund 5 min. Der Runner fährt sie ohnehin
+npm run tor        die ganze Kette, rund 4 min. Der Runner fährt sie ohnehin
                    bei jedem Push; hier nur, wenn du sie vorher sehen
                    willst. Die billigen Tore laufen nacheinander und
                    brechen beim ersten Rot ab; die sechs Browsertore laufen
-                   NEBENEINANDER, drei zur Zeit (308 s statt 633 s) — und
+                   NEBENEINANDER, drei zur Zeit (238 s statt 641 s), wobei
+                   `smoke` und `ansicht` sich noch einmal dritteln — und
                    sie brechen NICHT ab, man sieht also in einem Lauf, was
                    alles rot ist. Die Liste steht in `tor/kette-liste.mjs`,
                    der Läufer in `tools/kette.mjs`.
