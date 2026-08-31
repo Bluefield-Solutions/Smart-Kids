@@ -10,6 +10,8 @@
 // Liste — als Daten, nicht als Text. Das ist die Voraussetzung fuer die
 // Pruefung in `inhalt`: findet jede Probe ihren Suchtext ueberhaupt noch?
 import path from 'node:path';
+import fs from 'node:fs';
+import zlib from 'node:zlib';
 import { execSync } from 'node:child_process';
 
 /* ---------------------------------------------------------------------- *
@@ -27,14 +29,58 @@ export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inha
 export const A = 'src/inhalt/abzeichen.js';
 /** Die Buchstabenvorlagen samt Erkennung (N2a). */
 export const S = 'src/inhalt/schreiben.js';
-/** Rauschen, das kein Packer kleinbekommt - aber bei jedem Lauf dasselbe. */
+/** Rauschen, das kein Packer kleinbekommt - aber bei jedem Lauf dasselbe.
+ *
+ * Hier stand `x = (x * 1103515245 + 12345) & 0x7fffffff` - in
+ * JavaScript-Gleitkomma gerechnet. Das Produkt sprengt 2^53, wird gerundet,
+ * und der Generator laeuft in einen kurzen Zyklus: 24 000 Zeichen
+ * schrumpften im Packer auf 10,1 KB, wo 62 Symbole rund 18 hergeben. Das
+ * hiess: die Fuellung war zur Haelfte Muster, und die Probe spritzte halb
+ * soviel ein, wie ihr Name behauptete.
+ * `Math.imul` haelt die Rechnung in 32 Bit und ganzzahlig.
+ */
 function rauschen(n) {
   const z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let x = 1234567, aus = '';
-  for (let i = 0; i < n; i++) { x = (x * 1103515245 + 12345) & 0x7fffffff;
-    aus += z[(x >>> 7) % z.length]; }
+  for (let i = 0; i < n; i++) { x = (Math.imul(x, 1103515245) + 12345) | 0;
+    aus += z[((x >>> 7) & 0x7fffffff) % z.length]; }
   return aus;
 }
+
+/** So viel Fuellstoff, dass er GEPACKT die Zielgroesse ueberschreitet.
+ *
+ * Nicht geschaetzt, sondern gemessen: erzeugen, packen, nachlegen. Wieviel
+ * ein Packer aus 62 Symbolen macht, ist eine Annahme - und Annahmen sind
+ * genau die Sorte Zahl, die hier schon einmal falsch war.
+ */
+function fuellstoff(zielBytes) {
+  let n = Math.ceil(zielBytes * 1.4);
+  for (let i = 0; i < 8; i++) {
+    const st = rauschen(n);
+    const gz = zlib.gzipSync(Buffer.from(st), { level: 9 }).length;
+    if (gz >= zielBytes) return st;
+    n = Math.ceil(n * (zielBytes / gz) * 1.08);
+  }
+  throw new Error('fuellstoff: die Zielgroesse ist in acht Anlaeufen nicht erreicht');
+}
+
+/* Wieviel eingespritzt wird, haengt am STAND - nicht an einer festen Zahl.
+ *
+ * Regel 2, woertlich: Grenzen anteilig, nie absolut. Hier stand
+ * `rauschen(24000)`. Gegen den Stand von 208 KB waren das +11,5 %, gegen
+ * den von 232 KB nur noch +4,4 % - und die Ratsche fragt ab 5 %. Die Probe
+ * hatte also aufgehoert zu beweisen, ohne dass irgendetwas rot geworden
+ * waere. Gefunden hat es nicht sie selbst, sondern die Berichtszeile, die
+ * P5 in derselben Runde hinzugefuegt hat: "+4.4 % seit der Bestaetigung -
+ * noch 0.6 % bis zur Frage".
+ *
+ * Gerechnet wird gegen `bestaetigt.start`, also gegen genau die Zahl, mit
+ * der das Tor vergleicht. Ein Zehntel davon liegt sicher ueber den fuenf
+ * Prozent - und bleibt es, wie gross die App auch wird.
+ */
+const RATSCHE = JSON.parse(fs.readFileSync(
+  path.join(path.dirname(new URL(import.meta.url).pathname), 'budget-stand.json'), 'utf8'));
+const FUELLUNG = fuellstoff(Math.round(RATSCHE.bestaetigt.start * 1024 * 0.10));
 
 /** Der aelteste Commit im Baum - weiter zurueck geht es nicht. */
 const wurzelCommit = () => execSync('git rev-list --max-parents=0 HEAD', { encoding:'utf8' })
@@ -380,7 +426,7 @@ export const PROBEN = [
    * landen, ist dem Tor `budget` gleichgueltig; also an die Stelle, die es
    * immer geben wird. */
   { n:'die Seite wächst unbemerkt', tor:'budget', bauen:true, datei:D,
-    such:"const D = JSON.parse(", ersatz:"const FUELL = '" + rauschen(24000) + "';\nconst D = JSON.parse(",
+    such:"const D = JSON.parse(", ersatz:"const FUELL = '" + FUELLUNG + "';\nconst D = JSON.parse(",
     an:{ ...DIST, text:'const FUELL' }, sagt:'gewachsen' },
 
   /* P5: der mitgeschriebene Stand darf nicht still verschwinden.

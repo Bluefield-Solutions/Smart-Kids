@@ -151,12 +151,16 @@
       "zeit": "2026-08-30"
     },
     "das Startbündel überschreitet seine Grenze": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
-      "zeit": "2026-08-30"
+      "commit": "90488c63f27a1b2e9218f074af31a038951213f6",
+      "zeit": "2026-08-31"
     },
     "die Seite wächst unbemerkt": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
-      "zeit": "2026-08-30"
+      "commit": "90488c63f27a1b2e9218f074af31a038951213f6",
+      "zeit": "2026-08-31"
+    },
+    "der mitgeschriebene Stand verschwindet": {
+      "commit": "90488c63f27a1b2e9218f074af31a038951213f6",
+      "zeit": "2026-08-31"
     },
     "die Entwürfe holen ihre Schrift aus dem Netz": {
       "commit": "ccbf35229f973192441cd53a9a947da3674b3ab8",

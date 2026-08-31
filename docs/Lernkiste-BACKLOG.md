@@ -719,6 +719,33 @@ schmutzigem Baum den Dienst (Regel 1). Und der fehlende `gesehen`-Block
 ist ein **Fehler**, kein Hinweis: ein Tor, das nach einem stillen Rückbau
 einfach weniger *sagt*, bleibt grün und fällt keinem auf.
 
+**Und die neue Zeile hat sofort etwas gefunden**, das seit Monaten still
+verfallen war. Die Gegenprobe „die Seite wächst unbemerkt" spritzt
+Füllstoff ein und erwartet, dass die Ratsche anschlägt. Sie tat es nicht
+mehr:
+
+```
+Startbündel: 232 → 242.1 KB   +4.4 % seit der Bestätigung
+                              — noch 0.6 % bis zur Frage
+```
+
+Zwei Fehler in einer Probe, beide vom selben Typ:
+
+**Regel 2, wörtlich.** Eingespritzt wurden **24 000 Zeichen** — eine
+absolute Zahl gegen eine anteilige Grenze. Gegen den Stand von 208 KB
+waren das +11,5 %, gegen 232 KB nur noch +4,4 %, und die Ratsche fragt ab
+5 %. Die Probe hat aufgehört zu beweisen, ohne dass irgendetwas rot wurde.
+Jetzt hängt die Menge an `bestaetigt.start` — ein Zehntel davon, gemessen
+nach dem Packen, nicht geschätzt.
+
+**Und die Füllung war gar kein Rauschen.** Der Generator rechnete
+`x * 1103515245 + 12345` in JavaScript-Gleitkomma; das Produkt sprengt
+2^53, wird gerundet, und die Folge läuft in einen kurzen Zyklus. 24 000
+Zeichen schrumpften im Packer auf 10,1 KB, wo 62 Symbole 18 hergeben — die
+Probe spritzte also nur halb soviel ein, wie ihr Name behauptete. Mit
+`Math.imul` sind es jetzt 0,75 Byte je Zeichen, genau die Entropie des
+Alphabets.
+
 ---
 
 ### B2 · Der Test ohne Hilfen, mit Pokal  ·  ERLEDIGT
