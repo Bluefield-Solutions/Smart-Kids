@@ -6239,3 +6239,96 @@ Lauf 80   P4, Becken 6   115 s bis zum Abbruch am Ende
 ```
 
 199 Gegenproben.
+
+---
+
+## P5 · `durchgang` zerfällt nach Profil — und die Beckenbreite zum dritten Mal
+
+Nach P4 war `smoke` mit rund 104 s je Drittel wieder der längste Lauf, und
+`durchgang` war mit 79 s das schwerste Stück darin. Er spielt jede Ebene
+für **jedes Profil**, und die vier wissen nichts voneinander — jedes bekommt
+seinen eigenen Kontext, seine eigene Seite. Gemessen:
+
+```
+fiona 31,4 · lea 17,7 · stephan 17,8 · violeta 16,7
+```
+
+Fiona kostet fast doppelt so viel wie die anderen: sie hat die Schreibwelt,
+und jede ihrer Aufgaben wird zusätzlich angesagt.
+
+### Der erste Versuch brachte null
+
+Mit `durchgang:<profil>` als vier Stücken bei **drei** Teilen:
+
+```
+vorher   104,0 · 99,3 · 102,5 s     Kette 122,8 s
+nachher  108,1 · 108,6 · 106,7 s    Kette 126,3 s
+```
+
+Perfekt ausgeglichen — und nicht schneller. Bei drei Töpfen hatte die
+gierige Packung `durchgang` längst neben lauter kleine Stücke gelegt; seine
+79 s waren gar nicht der Engpass. Ich hatte den Hebel an der falschen
+Stelle vermutet und es nicht gemessen, bevor ich ihn gebaut habe.
+
+### Wo er wirklich wirkt
+
+Erst mit **vier** Teilen zeigt sich, wofür die Zerlegung gut ist:
+
+```
+smoke in vier   76,7 · 79,9 · 76,2 · 83,2 s
+```
+
+Ohne die Zerlegung wäre der Boden bei 79 s gelegen — `durchgang` am Stück.
+Nur: die Kette wurde davon auch nicht schneller (132,5 s bei sechs Bändern),
+denn sie ist längst **durchsatzgebunden** und nicht mehr durch den längsten
+Lauf begrenzt.
+
+### Also die Beckenbreite, zum dritten Mal
+
+```
+Becken  6   126,3 s
+Becken  8   109,5 · 109,5 · 110,9 s
+Becken 10    97,8 · 100,1 · 101,2 s   <- eingestellt
+Becken 12   109,9 s
+Becken 16   107,4 s
+```
+
+Acht und zehn sind je dreimal gemessen: der Unterschied ist reproduzierbar,
+die Streuung liegt unter 3 s. Zweieinhalb Bänder je Kern.
+
+**Diese Zahl hat sich jetzt dreimal geändert, und jedes Mal war die alte
+richtig gemessen und trotzdem falsch geworden:**
+
+| | Wert | Warum er galt |
+|---|---|---|
+| P1 | 3 | `smoke` am Stück 295 s — der Boden, 3 und 4 lagen gleichauf |
+| P3 | 6 | Nicht mehr ein langer Lauf begrenzte, sondern der Durchsatz. „Ab acht kippt es" galt für die damaligen **zehn** Läufe |
+| P5 | 10 | Dreizehn kleinere Läufe, und acht kippt nicht mehr |
+
+Die Voraussetzung dieser Zahl ist die **Zusammensetzung** der Kette, und die
+ändert sich mit jedem Umbau. Eine gemessene Zahl gilt für den Tag, an dem
+sie gemessen wurde — hier heißt das: sie gilt für die Kette, an der sie
+gemessen wurde.
+
+```
+vor P1  633 s · nach P1  308 · P2  238 · P3  209 · P4  125 · P5  99,9 s
+```
+
+### Die neue stille Falle, und ihre Gegenprobe
+
+Ein Teillauf sieht seit P5 nur seine eigenen Profile. Die Urteile im
+Durchgang — „Fiona bekam nur 0 von 13 Aufgaben vorgelesen", „kein einziger
+Zug über `lea: antippen`" — hängen deshalb an `PROFILE_HIER`. Ohne diese
+Bedingung meldete der Teil, der Lea spielt, einen **Fehlalarm über Fiona**,
+die er gar nicht gemessen hat. Ein Tor, das über Ungemessenes urteilt, ist
+schlimmer als eines, das schweigt.
+
+Die Gegenprobe nimmt die Bedingung weg und fährt `--teil=5/16`: bei sechzehn
+Töpfen fällt in diesen **nur** `durchgang:lea`, also 27 s statt hundert. Und
+genau dieser Topf ist der Fall, um den es geht.
+
+Dazu vergleicht die Nachzählung im Läufer jetzt **Stücke** statt Abschnitte
+(17 statt 14). Sonst stünde `durchgang` in zwei Teilen, die Menge wäre
+vollständig, und niemand sähe, dass ein Profil in keinem Teil läuft.
+
+200 Gegenproben.

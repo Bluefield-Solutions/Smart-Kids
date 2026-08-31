@@ -18,15 +18,15 @@ geo-holen`, dann `npm run backen`, das **Ergebnis** einchecken.
 ## Wie hier gearbeitet wird: drei Bahnen
 
 Nicht alles wird immer geprüft. Was wann läuft, ist **gemessen** entschieden
-— die ganze Kette dauert 610 s, wenn alles nacheinander läuft, und 600 davon
-liegen im Browser. Seit P1 laufen die Browsertore nebeneinander, seit P2/P4
-zerfallen `smoke`, `passt` und `ansicht` dabei in je drei Teilläufe, und seit
-P3 wartet `passt` nicht mehr blind: **125 s**.
+— die ganze Kette dauert 620 s, wenn alles nacheinander läuft, und 610 davon
+liegen im Browser. Seit P1 laufen die Browsertore nebeneinander: `smoke` in
+vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
+**Unter 100 s.**
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
 | **`npm run schnell`** | bei **jeder** Änderung | **~54 s** (gemessen 53,5 s, 32 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | ~2 min (gemessen 2:05; nacheinander wären es 10:10) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run tor` | wenn du unsicher bist, sonst gar nicht | **~100 s** (gemessen 99,9 s; nacheinander wären es 10:20) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
 | Runner, nachts | automatisch | ~20 min, ohne dich | `npm run proben`: alle Gegenproben |
 
@@ -69,18 +69,18 @@ Proben hätten genau daran angeschlagen.
 
 ```
 npm run schnell    DIE NORMALE RUNDE. ~54 s. Siehe oben.
-npm run tor        die ganze Kette, rund 2 min. Der Runner fährt sie ohnehin
+npm run tor        die ganze Kette, rund 100 s. Der Runner fährt sie ohnehin
                    bei jedem Push; hier nur, wenn du sie vorher sehen
                    willst. Die billigen Tore laufen nacheinander und
                    brechen beim ersten Rot ab; die sechs Browsertore laufen
-                   NEBENEINANDER, sechs zur Zeit (125 s statt 610 s), wobei
-                   `smoke`, `passt` und `ansicht` sich noch einmal
-                   dritteln — und
-                   sie brechen NICHT ab, man sieht also in einem Lauf, was
-                   alles rot ist. Mehr Bänder als Kerne, und es hilft
-                   trotzdem: diese Tore rechnen kaum, sie warten. Die Liste
-                   steht in `tor/kette-liste.mjs`, der Läufer in
-                   `tools/kette.mjs`; `SMARTKIDS_BECKEN` setzt die Breite.
+                   NEBENEINANDER, zehn Läufe zur Zeit (100 s statt 620 s):
+                   `smoke` zerfällt in vier Teile, `passt` und `ansicht` in
+                   je drei — und sie brechen NICHT ab, man sieht also in
+                   einem Lauf, was alles rot ist. Zweieinhalb Bänder je
+                   Kern, und es hilft trotzdem: diese Tore rechnen kaum,
+                   sie warten. Die Liste steht in `tor/kette-liste.mjs`,
+                   der Läufer in `tools/kette.mjs`; `SMARTKIDS_BECKEN`
+                   setzt die Breite.
 npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
                    `-- <export.json>` legt eine Urteilsliste an (der Export
                    kommt aus dem Elternbereich, „Als JSON sichern"),

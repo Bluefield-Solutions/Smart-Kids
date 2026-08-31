@@ -78,7 +78,7 @@ export const NACH_DEM_BAU = [
  *            zweimal vergeben werden kann.
  */
 export const MIT_BROWSER = [
-  { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000, teile: 3, deckung: 'namen' },
+  { name: 'smoke',      datei: 'tor/smoke.mjs',      ms: 293000, teile: 4, deckung: 'namen' },
   { name: 'passt',      datei: 'tor/passt.mjs',      ms: 110000, teile: 3, deckung: 'namen' },
   { name: 'ansicht',    datei: 'tor/ansicht.mjs',    ms:  79000, teile: 3, deckung: 'zahl' },
   { name: 'ziehen',     datei: 'tor/ziehen.mjs',     ms:  57000 },

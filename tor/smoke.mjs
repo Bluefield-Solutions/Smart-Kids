@@ -710,11 +710,32 @@ const BRAUCHT = { ablage: ['spielen'] };
  * (`TEILE i/n:` unten), so wie beim Bildvergleich. Ein Teillauf, der
  * die Haelfte vergisst, meldet sonst „gruen", und niemand sieht, worueber.
  */
+/* `durchgang` zerfaellt noch einmal - nach PROFIL.
+ *
+ * Er war mit 79 s das schwerste Stueck und hat damit die ganze Aufteilung
+ * bestimmt: der Topf, in dem er lag, war immer der vollste. Er spielt
+ * jede Ebene fuer JEDES Profil, und die vier wissen nichts voneinander -
+ * jedes bekommt seinen eigenen Kontext, seine eigene Seite.
+ *
+ * Gemessen (`--nur=durchgang`, dieselbe Maschine, 31.08.2026):
+ *
+ *     fiona 31,4 · lea 17,7 · stephan 17,8 · violeta 16,7
+ *
+ * Fiona kostet fast doppelt so viel wie die anderen: sie hat die
+ * Schreibwelt, und jede ihrer Aufgaben wird zusaetzlich angesagt.
+ *
+ * Ein Stueck heisst deshalb `durchgang:<profil>`. Die Nachzaehlung im
+ * Laeufer vergleicht STUECKE, nicht Abschnitte - sonst stuende
+ * `durchgang` in zwei Teilen und niemand saehe, dass ein Profil in
+ * keinem laeuft. */
 const STUECKE = [
-  { teile: ['durchgang'],           ms: 79 },
   { teile: ['spielen', 'ablage'],   ms: 52 },
   { teile: ['schreiben'],           ms: 45 },
+  { teile: ['durchgang:fiona'],     ms: 31 },
   { teile: ['test'],                ms: 31 },
+  { teile: ['durchgang:stephan'],   ms: 18 },
+  { teile: ['durchgang:lea'],       ms: 18 },
+  { teile: ['durchgang:violeta'],   ms: 17 },
   { teile: ['abzeichen'],           ms: 18 },
   { teile: ['umgekehrt'],           ms: 13 },
   { teile: ['ebene4'],              ms: 11 },
@@ -725,12 +746,15 @@ const STUECKE = [
   { teile: ['hinweis'],             ms:  0 },
   { teile: ['streu'],               ms:  0 },
 ];
-// Ein Abschnitt, der in keinem Stueck steht, liefe in KEINEM Teil - und
-// der volle Lauf faende ihn trotzdem. Also hier nachzaehlen, nicht dort.
+/** Jedes Stueck, das es zu verteilen gibt - `durchgang` je Profil. */
+const STUECK_ALLE = [...ABSCHNITTE.filter(t => t !== 'durchgang'),
+                     ...PROFIL_IDS.map(w => `durchgang:${w}`)];
+// Ein Stueck, das in keinem Topf steht, liefe in KEINEM Teil - und
+// der volle Lauf faende es trotzdem. Also hier nachzaehlen, nicht dort.
 {
   const drin = STUECKE.flatMap(g => g.teile);
-  const fehlt = ABSCHNITTE.filter(t => !drin.includes(t));
-  const zuviel = drin.filter(t => !ABSCHNITTE.includes(t));
+  const fehlt = STUECK_ALLE.filter(t => !drin.includes(t));
+  const zuviel = drin.filter(t => !STUECK_ALLE.includes(t));
   if (fehlt.length || zuviel.length) {
     console.error(`\n  smoke: die Stuecke für \`--teil\` decken die Abschnitte nicht: `
       + `${fehlt.length ? `fehlt ${fehlt.join(', ')}` : ''}`
@@ -748,7 +772,7 @@ const TEIL = (() => {
     const leichtester = toepfe.reduce((a, b) => (b.ms < a.ms ? b : a));
     leichtester.ms += g.ms; leichtester.teile.push(...g.teile);
   }
-  return { i, n, teile: toepfe[i].teile };
+  return { i, n, stuecke: toepfe[i].teile };
 })();
 
 const gewaehlt = (() => {
@@ -758,12 +782,24 @@ const gewaehlt = (() => {
       + 'das eine waehlt aus, das andere verteilt.\n');
     process.exit(2);
   }
-  if (TEIL) return new Set(TEIL.teile);
+  // Aus `durchgang:fiona` wird der Abschnitt `durchgang`; WELCHE Profile
+  // dieser Teil spielt, steht in PROFILE_HIER.
+  if (TEIL) return new Set(TEIL.stuecke.map(x => x.split(':')[0]));
   if (!roh) return null;
   const m = new Set(roh.split(',').map(x => x.trim()).filter(Boolean));
   for (const t of [...m]) for (const v of (BRAUCHT[t] || [])) m.add(v);
   return m;
 })();
+/* Welche Profile der Durchgang hier spielt.
+ *
+ * Ohne `--teil` alle vier - `--nur=durchgang` soll weiterhin der ganze
+ * Durchgang sein. Mit `--teil` nur die, deren Stueck in diesem Topf
+ * gelandet ist. Und das Urteil unten haelt sich daran: ein Urteil ueber
+ * ein Profil, das gar nicht gespielt hat, waere ein Fehlalarm - genau
+ * daran ist die erste Zerlegung schon einmal gescheitert. */
+const PROFILE_HIER = TEIL
+  ? PROFIL_IDS.filter(w => TEIL.stuecke.includes(`durchgang:${w}`))
+  : PROFIL_IDS;
 // Ein Tippfehler im Namen würde sonst ALLES überspringen und grün melden -
 // die stillste Art, einen Test abzuschalten.
 for (const t of (gewaehlt || []))
@@ -777,7 +813,7 @@ const laeuft = (t) => (!gewaehlt || gewaehlt.has(t)) && !abbruch();
  * dieser Teil faehrt und was es insgesamt gibt - sonst muesste der Laeufer
  * die vierzehn Namen ein zweites Mal fuehren - was zweimal dasteht,
  * veraltet einmal (Regel 6). */
-if (TEIL) meldeTeil('smoke', TEIL, [...gewaehlt].sort(), [...ABSCHNITTE].sort());
+if (TEIL) meldeTeil('smoke', TEIL, [...TEIL.stuecke].sort(), [...STUECK_ALLE].sort());
 else if (gewaehlt)
   console.log(`  (nur ${[...gewaehlt].sort().join(', ')} — `
     + `${ABSCHNITTE.filter(t => !gewaehlt.has(t)).join(', ')} übersprungen)`);
@@ -1980,8 +2016,11 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa'],
 /* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
  * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
-if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
+/** Was jedes Profil im Durchgang kostet. Die Zahl, nach der geteilt wird. */
+const durchgangZeit = {};
+if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
   if (abbruch()) break;
+  const angefangen = Date.now();
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
     const p = await neueSeite({ width: 1180, height: 820 }, eigen);
@@ -2363,6 +2402,7 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
     await p.close();
   } catch (e) { merke('durchgang', e); }
   await eigen.close();
+  durchgangZeit[wer] = ((Date.now() - angefangen) / 1000).toFixed(1);
 }
 /* Ab hier wird geurteilt - und ein Urteil über einen Abschnitt, der nicht
  * gelaufen ist, wäre kein Urteil, sondern ein Fehlalarm. Genau daran ist
@@ -2371,27 +2411,43 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
 const EBENEN_JE = (wer) => gespielt[wer] ?? (EBENEN_ALLE.length + EBENEN_EIGEN[wer].length);
 if (laeuft('durchgang')) {
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
+console.log(`  Je Profil:                  `
+  + Object.entries(durchgangZeit).map(([w, s]) => `${w} ${s} s`).join(' · '));
 console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
+console.log(`  Profile hier:               ${PROFILE_HIER.join(' · ')}`);
 console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0} von ${EBENEN_JE('fiona')}, `
   + `Lea ${gehoert.lea||0} von ${EBENEN_JE('lea')}`);
 // Fiona liest noch nicht: JEDE Aufgabe muss angesagt werden. Lea liest -
 // bei ihr waere dieselbe Ansage nur Laerm, und das steht in ihrem Profil.
 // Die Acht war hier festgenagelt und wurde mit der neunten Ebene falsch.
 // Gezaehlt wird jetzt, was Fiona wirklich hat - Erdkunde plus ihr Rechnen.
-if ((gehoert.fiona || 0) < EBENEN_JE('fiona'))
+/* Jedes Urteil hier gilt EINEM Profil - und wird nur gefaellt, wenn
+ * dieses Profil in diesem Teil auch gespielt hat.
+ *
+ * Seit der Durchgang sich auf die vier Profile aufteilt, sieht ein
+ * Teillauf nur seine eigenen. Ohne diese Bedingung meldete der Teil, der
+ * Lea spielt, „Fiona bekam nur 0 von 13 Aufgaben vorgelesen" - ein
+ * Fehlalarm ueber etwas, das er gar nicht gemessen hat. Genau daran ist
+ * die erste Zerlegung des Rauchtests schon einmal gescheitert. */
+const hier = (wer) => PROFILE_HIER.includes(wer);
+if (hier('fiona') && (gehoert.fiona || 0) < EBENEN_JE('fiona'))
   fehler.push(`Fiona bekam nur ${gehoert.fiona||0} von ${EBENEN_JE('fiona')} Aufgaben `
     + 'vorgelesen — sie kann noch nicht lesen, ohne Ansage ist die Ebene für sie '
     + 'nicht spielbar');
-if ((gehoert.lea || 0) > 0)
+if (hier('lea') && (gehoert.lea || 0) > 0)
   fehler.push(`Lea bekam ${gehoert.lea} Aufgaben vorgelesen, obwohl ihr Profil `
     + '`vorlesen: false` sagt — die Ansage hängt nicht am Kind');
 // Voreingestellt zieht Fiona und tippt Lea an. Wird nur EIN Weg gegangen,
 // ist der Umschalter entweder weg oder wirkungslos - und die Haelfte der
-// Bedienung ungeprueft.
-for (const soll of ['fiona: ziehen', 'lea: antippen', 'fiona: rechnen angetippt',
-                    'lea: rechnen geschrieben', `${PROFIL_IDS[2]}: rechnen geschrieben`,
-                    `${PROFIL_IDS[3]}: rechnen geschrieben`])
-  if (!wege.has(soll))
+// Bedienung ungeprueft. Jeder Weg haengt an SEINEM Profil, damit ein
+// Teillauf nur ueber das urteilt, was er gefahren hat.
+for (const [wer, soll] of [['fiona', 'fiona: ziehen'],
+                           ['lea', 'lea: antippen'],
+                           ['fiona', 'fiona: rechnen angetippt'],
+                           ['lea', 'lea: rechnen geschrieben'],
+                           [PROFIL_IDS[2], `${PROFIL_IDS[2]}: rechnen geschrieben`],
+                           [PROFIL_IDS[3], `${PROFIL_IDS[3]}: rechnen geschrieben`]])
+  if (hier(wer) && !wege.has(soll))
     fehler.push(`Kein einziger Zug über „${soll}" — der Umschalter greift nicht `
       + `(gegangen wurde: ${[...wege].join(', ') || 'nichts'})`);
 /* „Eltern bekommt nie eine Auswahl" wird oben am Kartenbildschirm

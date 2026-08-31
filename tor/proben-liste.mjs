@@ -700,6 +700,26 @@ export const PROBEN = [
     an:{ datei:'tor/nadeln-stand.json', text:'"eng": 60' },
     sagt:'trifft den falschen' },
 
+  /* Ein Teillauf urteilt über ein Profil, das er nicht gespielt hat.
+   *
+   * Seit P5 zerfaellt `durchgang` nach PROFIL - der Teil, der Lea spielt,
+   * sieht Fiona nie. Die Urteile darunter („Fiona bekam nur 0 von 13
+   * Aufgaben vorgelesen") haengen deshalb an `PROFILE_HIER`. Faellt diese
+   * Bedingung weg, meldet jeder Teillauf einen Fehlalarm ueber etwas, das
+   * er gar nicht gemessen hat - und ein Tor, das ueber Ungemessenes
+   * urteilt, ist schlimmer als eines, das schweigt.
+   *
+   * `--teil=5/16`: bei sechzehn Toepfen faellt in diesen NUR
+   * `durchgang:lea`, also rund zwanzig Sekunden statt hundert. Und genau
+   * dieser Topf ist der Fall, um den es geht - er spielt Lea und soll
+   * ueber Fiona nichts sagen. */
+  { n:'ein Teillauf urteilt über ein Profil, das er nicht gespielt hat', tor:'smoke',
+    args:['--teil=5/16'], bauen:true, ohneSofort:true, datei:'tor/smoke.mjs',
+    such:"if (hier('fiona') && (gehoert.fiona || 0) < EBENEN_JE('fiona'))",
+    ersatz:"if ((gehoert.fiona || 0) < EBENEN_JE('fiona'))",
+    an:{ datei:'tor/smoke.mjs', fehlt:"hier('fiona') &&" },
+    sagt:'Fiona bekam nur' },
+
   /* Ein Teillauf sagt nicht mehr, was er geprüft hat.
    *
    * Die Nachzaehlung im Laeufer war bis P4 nachsichtig: fand sie keine

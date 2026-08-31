@@ -96,29 +96,35 @@ for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
  * acht Chromium gleichzeitig, und jeder waere langsamer als die Summe
  * spart.
  *
- * SECHS, gemessen an der vollen Kette auf demselben Rechner am selben Tag
- * (vier Kerne), nach P2 und P3:
+ * ZEHN, gemessen an der vollen Kette auf demselben Rechner am selben Tag
+ * (vier Kerne), nach P5 - also mit dreizehn Browserlaeufen:
  *
- *     Becken 3   209,5 s
- *     Becken 4   171,3 s
- *     Becken 5   151,0 s
- *     Becken 6   130,3 s   <- hier
- *     Becken 8   133,1 s
+ *     Becken  6   126,3 s
+ *     Becken  8   109,5 · 109,5 · 110,9 s
+ *     Becken 10    97,8 · 100,1 · 101,2 s   <- hier
+ *     Becken 12   109,9 s
+ *     Becken 16   107,4 s
  *
- * In P1 stand hier DREI, und das war damals richtig: `smoke` brauchte am
- * Stueck 295 s und war der Boden, unter den kein Becken kam - Becken 3 und
- * 4 lagen auf 0,7 s gleichauf. Seit `smoke` in drei Teile zerfaellt und
- * `passt` nicht mehr blind wartet, ist die Kette nicht mehr durch EINEN
- * langen Lauf begrenzt, sondern durch den Durchsatz. Damit zaehlt jedes
- * weitere Band. Eine gemessene Zahl gilt fuer den Tag, an dem sie
- * gemessen wurde, und ihre Voraussetzungen gehoeren dazu.
+ * Die Werte fuer 8 und 10 sind je dreimal gemessen: der Unterschied ist
+ * reproduzierbar und kein Rauschen (Streuung unter 3 s je Einstellung).
  *
- * Mehr Baender als Kerne, und es hilft trotzdem: diese Tore RECHNEN kaum,
- * sie warten - auf einen Bildschirmwechsel, auf einen Selektor, auf den
- * eigenen Server. Ab acht kippt es, dort war es wieder langsamer.
+ * Diese Zahl hat sich jetzt dreimal geaendert, und jedes Mal war die alte
+ * richtig gemessen und trotzdem falsch geworden:
  *
- * Der Boden ist jetzt `passt` mit rund 112 s allein. Wer weiter will,
- * teilt es nach Groessen auf - sieben, die nichts voneinander wissen.
+ *   P1  DREI. `smoke` brauchte am Stueck 295 s und war der Boden, unter
+ *       den kein Becken kam; 3 und 4 lagen auf 0,7 s gleichauf.
+ *   P3  SECHS. `smoke` zerfiel in drei Teile, `passt` wartete nicht mehr
+ *       blind - nicht mehr EIN langer Lauf begrenzte, sondern der
+ *       Durchsatz. „Ab acht kippt es" galt fuer die damaligen ZEHN Laeufe.
+ *   P5  ZEHN. Dreizehn kleinere Laeufe, und acht kippt nicht mehr.
+ *
+ * Eine gemessene Zahl gilt fuer den Tag, an dem sie gemessen wurde - und
+ * ihre Voraussetzungen gehoeren dazu. Hier ist die Voraussetzung die
+ * ZUSAMMENSETZUNG der Kette, und die aendert sich mit jedem Umbau.
+ *
+ * Mehr als doppelt so viele Baender wie Kerne, und es hilft trotzdem:
+ * diese Tore RECHNEN kaum, sie warten - auf einen Bildschirmwechsel, auf
+ * einen Selektor, auf den eigenen Server.
  *
  * Laengstes zuerst: sonst startet der laengste Lauf als letzter, und alle
  * anderen Baender stehen still, waehrend er laeuft. */
@@ -140,7 +146,7 @@ for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
  * fuer den heutigen Runner keine Schaetzung mehr, sondern gemessen. */
 const KERNE = os.cpus().length;
 const BREITE = +(process.env.SMARTKIDS_BECKEN
-  || Math.max(2, Math.min(6, Math.round(KERNE * 1.5))));
+  || Math.max(2, Math.min(10, Math.round(KERNE * 2.5))));
 
 const arbeit = [];
 const KURZ = ['pwa', 'lesbarkeit', 'ansicht'];
