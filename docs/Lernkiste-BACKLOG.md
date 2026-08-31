@@ -171,17 +171,19 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~10~~ | ~~**B3** Die umgekehrte Frage~~ | Lea | mittel | mittel | **gefahren** |
 | ~~11~~ | ~~**S3** Die Buchstabenkarten im Vorlauf~~ | Fiona | gering | klein | **gefahren** |
 | ~~12~~ | ~~**B2** Test ohne Hilfen, mit Pokal~~ | Lea | mittel | mittel | **gefahren** |
+| ~~13~~ | ~~**G12** Profilfarben und der Streu auf der Kachel~~ | Fiona, Lea, Stephan | — | mittel | **gewünscht, gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 3 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
-| 5 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | — |
+| 5 | **D2** Abzeichen, die etwas sagen | Fiona, Lea | mittel | mittel | G12 (der Streu ist die Sprache) |
 | 6 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 | 7 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 8 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
-| 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
-| 11 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
+| 8 | **P5** Die Größenratsche fragt die falsche Runde | nur ich | mittel | klein | — |
+| 9 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
+| 10 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 11 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| 12 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
 
 ---
 
@@ -524,6 +526,61 @@ nicht im Code** — dieser Punkt liegt bei euch, nicht bei mir.
 ---
 
 ### Prozess und Prüfbarkeit — Nutzen gering, aber nicht null
+
+### G12 · Profilfarben und der Streu auf der Kachel  ·  ERLEDIGT
+
+**Gewünscht, nicht abgeleitet.** Fiona türkis, Lea hellgrün, Stephan blau;
+Fiona Sterne, Herzen, Schildkröten in mehreren Farben, Meerestiere und
+große Muscheln; Lea Totenköpfe als Erinnerung an Mexiko, weiß, mit Augen,
+die in Blau und dunklem Grün schillern. Violeta war nicht gemeint und
+behält ihr Violett.
+
+**Was daran eine Entscheidung war:**
+
+| | |
+|---|---|
+| **die Farben** | aus der **vorhandenen** Palette getauscht, nicht neu gemischt. Die sieben Flächen sind auf gleiche Helligkeit geeicht, damit derselbe Textton auf allen trägt; eine achte Farbe daneben wäre die eine, auf der der Name nicht mehr lesbar ist. f7→f4, f5→f3, f3→f5. |
+| **wer einen Streu bekommt** | nur die Kinder. Die Eltern lesen ihren Namen; Fiona nicht — für sie war die Kachel bisher nur ein Farbfleck. Türkis und Hellgrün liegen 45 Grad auseinander, das Muster trägt den Unterschied, den die Farbe allein nicht mehr trägt. |
+| **keine Tintenkontur** | Stern und Pokal haben eine, weil sie etwas bedeuten. Der Streu bedeutet nichts. Ausnahme ist der Totenkopf: weiß auf Hellgrün braucht einen Umriss — und der ist grün, nicht Tinte. |
+| **feste Plätze** | ein gewürfelter Streu sähe bei jedem Laden anders aus, und `ansicht` vergleicht Bildpunkte. Die Tafel im Quelltext **ist** das Bild. |
+| **Prozent statt Punkte** | die Kachel ist quer 190 × 125 Punkte groß und auf dem Schreibtisch 240 × 250. Mit festen Punkten wäre der Streu in einem der beiden Fälle ein Haufen in einer Ecke. |
+
+**Drei Motive waren nicht zu erkennen** und sind neu gezeichnet — gesehen
+auf der Aufnahme, nicht gemessen (Regel 8): die Schildkröte war ein Karo
+(Flossen unter dem Panzer, Gitter darauf), die Muschel ein Heißluftballon
+(falsch herum), das Seepferdchen die Ziffer Drei. Das Seepferdchen ist
+jetzt ein Wal — ein Tier, das seine ganze Auskunft im Umriss trägt.
+
+**Abnahme:** Rauchtestabschnitt `streu` — vier verschiedene Farbtöne in
+ihren Bändern und paarweise 20 Grad auseinander, neun Motivarten in acht
+Farben, Schildkröten in vier, zehn Totenköpfe mit dreistufigem Augenverlauf,
+**null** bei den Eltern, kein Motiv auf einem Namen. Acht Gegenproben, alle
+anschlagend.
+
+**Was es kostet:** das Startbündel wächst um **5,8 KB gzip** (170,0 statt
+164,2 KB für die Seite; 223,9 von 400 KB erlaubt).
+
+---
+
+### P5 · Die Größenratsche fragt die falsche Runde
+
+`budget` meldet Wachstum über **5 %** gegen einen von Hand festgehaltenen
+Stand. Das ist richtig gedacht und hat einen blinden Fleck: eine Runde mit
+**+4,8 %** schlägt nicht an — und hält den Stand auch nicht nach. Die
+nächste Runde misst dann gegen einen zu alten Wert und wird nach etwas
+gefragt, das zur Hälfte nicht ihre Schuld ist.
+
+Gemessen in dieser Runde: der Stand lag bei 208,2 KB, das Bündel bei 223,9.
+Von den 15,7 KB stammen **9,9 aus B2** (Pokal, Testmodus, Rauchtest) und
+5,8 aus G12. B2 war grün, weil +4,75 % unter der Grenze lag.
+
+**Vorschlag:** den gemessenen Wert bei jedem grünen Lauf mitschreiben — als
+zweite Zahl neben dem bestätigten Stand, nicht an seiner Stelle. Dann sagt
+der Bericht „seit der letzten Bestätigung +4,8 %", und die Frage landet bei
+der Runde, die das Wachstum verursacht hat. Die Ratsche selbst bleibt, wie
+sie ist: sie darf sich nicht selbst zurücksetzen, sonst schlägt sie nie an.
+
+---
 
 ### B2 · Der Test ohne Hilfen, mit Pokal  ·  ERLEDIGT
 

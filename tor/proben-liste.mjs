@@ -315,6 +315,22 @@ export const PROBEN = [
     ersatz:'  height:86%;max-width:52%;opacity:1;pointer-events:none;color:#000}',
     an:{ ...DIST, text:'opacity:1;pointer-events:none;color:#000' }, sagt:':1' },
 
+  /* Und der Streu unter der Schrift (G12).
+   *
+   * Das Tor zaehlt seit G12 nicht mehr den KASTEN der Streuschicht,
+   * sondern die Motive darin - der Kasten hat weder Hintergrund noch
+   * gemalte Farbe, und `cs.color` lieferte dort die geerbte Tinte, die
+   * nirgends auf dem Bild steht. Sechs lesbare Texte waren rot.
+   *
+   * Wer ein Tor nachgibt, muss zeigen, dass es noch anschlaegt. Diese
+   * Probe faerbt die Motive schwarz und deckend: bleibt das Tor gruen,
+   * hat die Nachgabe die Pruefung mit erledigt (Regel 13). */
+  { n:'der Streu unter der Schrift zählt nicht', tor:'lesbarkeit', bauen:true, datei:V,
+    such:'.kachel .streu i{position:absolute;line-height:0;display:block;',
+    ersatz:'.kachel .streu i{position:absolute;line-height:0;display:block;'
+      + 'color:#000!important;opacity:1;background:#000;',
+    an:{ ...DIST, text:'color:#000!important;opacity:1;background:#000;' }, sagt:':1' },
+
   { n:'kleiner Text wird zu hell', tor:'lesbarkeit', bauen:true, datei:'src/marken/marken.css',
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },

@@ -90,6 +90,24 @@ const MESSEN = () => {
    * Textkasten schneidet, und seine Farbe wird auf die Flaeche gemischt.
    * Gemessen wird danach gegen BEIDES - Flaeche und Mischung -, also im
    * schlechteren Fall.
+   *
+   * EIN KASTEN IST NICHT IMMER EINE FLAECHE (G12). Das Modell darueber
+   * stammt vom Wasserzeichen: ein Umriss, der seinen Kasten fuellt. Der
+   * Streu auf den Profilkacheln ist das Gegenteil - eine fast leere
+   * Schicht, in der ein Dutzend kleiner Motive liegt, jedes mit seiner
+   * EIGENEN Farbe am `<i>`. Fuer den Kasten selbst gibt es weder einen
+   * Hintergrund noch eine gemalte Farbe; `cs.color` liefert dort die
+   * geerbte Tinte, und die steht nirgends auf dem Bild.
+   *
+   * Das Tor hat daraufhin sechs Texte rot gemeldet, die auf jeder
+   * Aufnahme einwandfrei lesbar sind - „6 Jahre - ziehen und sprechen"
+   * mit 1,16:1, gemessen gegen eine dunkle Flaeche, die es nicht gibt.
+   *
+   * Hat die Schicht also absolut liegende Kinder, wird in DIESE
+   * hineingeschaut: jedes mit seinem eigenen Kasten, seiner eigenen
+   * Farbe und der Deckung der Schicht mal seiner eigenen. Hat sie keine,
+   * bleibt alles wie zuvor - das Wasserzeichen wird weiter als volle
+   * Flaeche gerechnet, und die Gegenprobe dazu schlaegt weiter an.
    */
   const grundVon = (el) => {
     const flaechen = flaecheVon(el);
@@ -109,6 +127,24 @@ const MESSEN = () => {
         const gb = g.getBoundingClientRect();
         if (Math.min(gb.right, kasten.right) - Math.max(gb.left, kasten.left) <= 0) continue;
         if (Math.min(gb.bottom, kasten.bottom) - Math.max(gb.top, kasten.top) <= 0) continue;
+        // Eine Streuschicht: nicht sie zaehlt, sondern was in ihr liegt.
+        const koerner = [...g.children].filter(x => {
+          const xs = getComputedStyle(x);
+          if (xs.position !== 'absolute' && xs.position !== 'fixed') return false;
+          const xb = x.getBoundingClientRect();
+          return Math.min(xb.right, kasten.right) - Math.max(xb.left, kasten.left) > 0
+              && Math.min(xb.bottom, kasten.bottom) - Math.max(xb.top, kasten.top) > 0;
+        });
+        if ([...g.children].some(x => {
+          const xs = getComputedStyle(x);
+          return xs.position === 'absolute' || xs.position === 'fixed'; })) {
+          for (const x of koerner) {
+            const xs = getComputedStyle(x);
+            const f = zuRgb(xs.backgroundColor) || zuRgb(xs.color);
+            if (f) dazu.push([f, a2 * (+xs.opacity)]);
+          }
+          continue;
+        }
         // Ein SVG malt mit `fill:currentColor`; ein Kasten mit seinem
         // Hintergrund. Beides ist `color` bzw. `backgroundColor`.
         const farbe = zuRgb(cs.backgroundColor) || zuRgb(cs.color);

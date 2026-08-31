@@ -424,11 +424,14 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    zusammen und nimmt sie mit. Gemessen: die grosse Muschel sass 24
    Punkte ueber dem oberen Rand der Kachel.
 
-   Die Deckung: 0,58. Der Streu liegt UNTER Name und Zeile, und kein Tor
-   sieht das - `lesbarkeit` sucht den Grund im Elternbaum, und der Streu
-   ist ein Geschwister, kein Vorfahr. Geprueft wird also mit dem Auge
-   (Regel 8). Bei 0,42 war er blass: Leuchtgelb leuchtete nicht mehr, und
-   danach war ausdruecklich gefragt. */
+   Die Deckung: 0,58. Bei 0,42 war der Streu blass - Leuchtgelb leuchtete
+   nicht mehr, und danach war ausdruecklich gefragt.
+
+   Hier stand: „und kein Tor sieht das". Falsch. `lesbarkeit` sucht sehr
+   wohl nach absolut liegenden GESCHWISTERN hinter dem Text - es tut das
+   seit R2 wegen des Wasserzeichens. Es hat den Streu gefunden und sechs
+   Texte rot gemeldet; sein Modell passte nur nicht (siehe dort). Der
+   Kontrast ist jetzt gemessen und gruen, nicht behauptet. */
 .kachel .streu{position:absolute;inset:0;pointer-events:none;opacity:.58;
   overflow:hidden;border-radius:inherit}
 .kachel .streu i{position:absolute;line-height:0;display:block;
@@ -507,6 +510,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   color:var(--auf-flaeche);hyphens:auto;overflow-wrap:break-word;text-align:center;
   line-height:1.15}
 .kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-2)}
+/* Auf einer Kachel MIT Streu ist der Grund nicht mehr ruhig, und die
+   kleine Zeile stand mit 4,46:1 knapp unter der Grenze - gemessen, nicht
+   geschaetzt. Repariert wird die Ursache, nicht das Symptom: nicht der
+   Streu wird blasser (die Leuchtfarben waren ausdruecklich gewuenscht),
+   sondern der Text auf dem unruhigen Grund dunkler. `:has()` fragt die
+   Kachel selbst - das Programm muss nichts mitschicken. */
+.kachel:has(.streu) .rolle{color:var(--tinte)}
 /* Statt "0 von 4": drei Sterne und die Zahl der Aufkleber.
    Fiona liest keine Zahlen - aber sie sieht, ob ein Stern voll ist. */
 .kachel .kachelfuss{display:flex;flex-direction:column;align-items:stretch;

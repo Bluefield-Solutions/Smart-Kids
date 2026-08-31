@@ -3156,10 +3156,13 @@ if (laeuft('umgekehrt')) try {
  *     schwarz und faellt sonst niemandem auf);
  *   - die ELTERN haben keinen. Ohne diesen Fall bezeugt „Fiona hat
  *     einen" nur, dass irgendwo Markup steht;
- *   - kein Motiv liegt auf dem NAMEN, und die Kachel bleibt ueberall
- *     antippbar. Beides ist beim Hinsehen entschieden worden (drei
- *     Motive sind dafuer umgezogen) - und beides waere beim naechsten
+ *   - kein Motiv liegt auf dem NAMEN, und der Streu liegt wirklich auf
+ *     der Kachel. Das Erste ist beim Hinsehen entschieden worden - drei
+ *     Motive sind dafuer umgezogen - und waere beim naechsten
  *     Verschieben still wieder kaputt.
+ *
+ * Den KONTRAST misst dieser Abschnitt nicht. Das tut `lesbarkeit`, und
+ * zwar seit G12 an den Motiven selbst statt am Kasten des Streus.
  */
 if (laeuft('streu')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);

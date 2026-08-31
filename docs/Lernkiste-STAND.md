@@ -5402,3 +5402,89 @@ Aufkleber; jetzt steht er daneben, wo er hingehört: beide sagen dasselbe,
 nämlich was du hier hast.
 
 157 Gegenproben, alle mit Nachweis.
+
+---
+
+## G12 · Die Kacheln gehören jetzt jemandem
+
+Bis hierher unterschieden sich die vier Profilkacheln durch eine Farbe und
+einen Buchstaben. Für Lea, Stephan und Violeta reicht das — sie lesen
+ihren Namen. Für Fiona nicht: sie liest nicht, der Buchstabe ist ihr ein
+Zeichen wie jedes andere, und übrig blieb der Farbfleck.
+
+Gewünscht waren Farben — Fiona türkis, Lea hellgrün, Stephan blau. Das
+allein hätte die Sache verschlechtert: Türkis und Hellgrün liegen
+45 Grad auseinander, vorher waren es Pink und Hellblau mit 100. Deshalb
+kam der Streu dazu, und er ist nicht Zierat, sondern das, was den
+Unterschied jetzt trägt: eine Kachel voller Meerestiere und eine voller
+Totenköpfe verwechselt niemand, auch nicht mit sechs.
+
+### Was aus der Palette kam und was neu ist
+
+Die Farben sind **getauscht**, nicht gemischt. Die sieben Flächenfarben
+sind auf gleiche Helligkeit geeicht — das ist die Bedingung dafür, dass
+derselbe dunkle Textton auf allen sieben lesbar ist. Eine achte Farbe
+daneben wäre die eine, auf der der Name nicht mehr trägt.
+
+Neu sind nur die Streufarben, und die dürfen leuchten, weil auf ihnen
+kein Text steht: Rot, Blau, Gelb, Leuchtgelb, Leuchtgrün, Pink, Orange,
+Lila. Dazu die drei für den Totenkopf — Knochenweiß, ein grüner Umriss,
+und zwei Marken für den Augenverlauf. „Schillern" ist kein Farbwert,
+sondern ein Übergang; die Augen tragen deshalb einen Verlauf von Blau
+nach dunklem Grün und einen weißen Lichtpunkt.
+
+### Drei Motive waren keine Motive
+
+Der erste Entwurf war fertig, grün und falsch. Auf der Aufnahme (Regel 8,
+und Regel 7: hinsehen vor der Lieferung) war zu sehen:
+
+- Die **Schildkröte** war ein Karo. Die Flossen lagen unter dem Panzer,
+  und ein Gitter darauf machte aus dem Rest ein Muster. Jetzt stehen alle
+  vier Flossen und der Kopf deutlich über den Panzerrand hinaus, und der
+  Panzer trägt einen Ring statt eines Gitters.
+- Die **Muschel** war ein Heißluftballon — falsch herum, das Schloss
+  obenauf. Eine Muschel hängt am Schloss: unten schmal, nach oben
+  auffächernd, obere Kante gewellt.
+- Das **Seepferdchen** war die Ziffer Drei. Hals, Schnauze und
+  Ringelschwanz sind bei 21 Punkten kein Tier mehr. Es ist jetzt ein Wal.
+
+Und drei weitere Motive lagen auf dem Namen. Sie sind umgezogen; die
+kleine graue Zeile darunter darf überdeckt werden, das große fette Wort
+nicht.
+
+### Zwei Prüfungen, die nichts bewiesen
+
+Die interessanteste Stelle der Runde. Der Rauchtest sollte belegen, dass
+die Kachel überall antippbar bleibt: ein Tipp mitten auf die große
+Muschel muss ins Spiel führen, sonst fängt der Streu den Finger. Die
+Gegenprobe schaltete `pointer-events:auto` — und der Rauchtest blieb
+grün.
+
+Zu Recht. Der Streu liegt **im** Knopf, und ein Tipp auf ein Kind eines
+Knopfes löst den Knopf aus. Die Prüfung konnte gar nicht durchfallen.
+`pointer-events:none` bleibt stehen, es hält die Motive aus der
+Treffersuche heraus — aber die Bedienbarkeit trägt es nicht, und
+behaupten durfte es das nicht mehr (Regel 13).
+
+Der Ersatz war ebenfalls blind: Fionas Kachelhöhe gegen Stephans, für den
+Fall, dass `.streu` aus der `:not()`-Liste fällt. Die vier Kacheln stehen
+in einem **Raster**, und ein Raster gleicht die Höhen einer Reihe an — die
+Zahl war mit und ohne Fehler dieselbe. Erst der dritte Anlauf misst, was
+wirklich passiert: der Streukasten fällt auf 0 × 0 zusammen, weil die
+Motive selbst absolut liegen, und nimmt sie mit. Die große Muschel saß
+24 Punkte **über** dem oberen Rand.
+
+Zweimal hintereinander hat also die Gegenprobe nicht das Tor entlarvt,
+sondern die Prüfung. Genau dafür ist sie da.
+
+### Und was es kostet
+
+Das Startbündel wächst um **5,8 KB gzip** (170,0 statt 164,2 KB für die
+Seite). Beim Nachmessen kam ein zweiter Befund heraus: der festgehaltene
+Stand lag bei 208,2 KB, gemessen wurden 223,9 — von den 15,7 KB stammen
+**9,9 aus B2**. Die Ratsche schlägt erst über 5 % an und hält den Stand
+nur, wenn jemand „ja, Absicht" sagt; B2 lag mit +4,75 % darunter und hat
+nichts nachgehalten. Die Frage landete damit bei der falschen Runde. Steht
+als **P5** im Rückstandsverzeichnis.
+
+165 Gegenproben, alle mit Nachweis.

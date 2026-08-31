@@ -680,6 +680,10 @@
     "die Augen der Totenköpfe verlieren ihren Verlauf": {
       "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
       "zeit": "2026-08-31"
+    },
+    "der Streu rutscht aus seiner absoluten Lage": {
+      "commit": "2ffb7c20bdb5d987efd1b4cc1f92886299858179",
+      "zeit": "2026-08-31"
     }
   }
 }
