@@ -43,7 +43,7 @@
       "zeit": "2026-08-31"
     },
     "das kleinste Gebiet verliert seinen Anker": {
-      "commit": "c71d949a39ec95d7d3d36165a854e688dd0ca49d",
+      "commit": "74b4b596392776dd3682d4e87b7b8d6b378ffea2",
       "zeit": "2026-08-31"
     },
     "eine Farbe am Markensystem vorbei": {
@@ -386,6 +386,10 @@
       "commit": "8fd2bb10a730e20bc6acd6ccd9454f469d9de4e9",
       "zeit": "2026-08-31"
     },
+    "die umgekehrte Frage kommt auch für Winzlinge": {
+      "commit": "74b4b596392776dd3682d4e87b7b8d6b378ffea2",
+      "zeit": "2026-08-31"
+    },
     "keine Nachsicht — nur der exakte Punkt zählt": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
       "zeit": "2026-08-30"
@@ -643,8 +647,8 @@
       "zeit": "2026-08-30"
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
-      "commit": "bf7704b6012eb3b89a0b128c4a4c1bd7958ebd65",
-      "zeit": "2026-08-30"
+      "commit": "74b4b596392776dd3682d4e87b7b8d6b378ffea2",
+      "zeit": "2026-08-31"
     },
     "die umgekehrte Frage verrät ihre Antwort": {
       "commit": "bf7704b6012eb3b89a0b128c4a4c1bd7958ebd65",
