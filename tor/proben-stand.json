@@ -296,7 +296,7 @@
       "zeit": "2026-08-31"
     },
     "der Rückfall wird gar nicht mehr gestellt": {
-      "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
+      "commit": "283e6a0739f8563a64306bac32a2fa35d444d4aa",
       "zeit": "2026-08-31"
     },
     "die Aufkleberprobe zählt keine Gelegenheiten mehr": {
@@ -597,6 +597,10 @@
     },
     "Lea bekommt die Zahlen vorgesetzt statt zu schreiben": {
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
+      "zeit": "2026-08-31"
+    },
+    "der Rechen-Umschalter behauptet eine andere Weise": {
+      "commit": "283e6a0739f8563a64306bac32a2fa35d444d4aa",
       "zeit": "2026-08-31"
     },
     "der Regler kommt nicht bis in die Sitzung": {
