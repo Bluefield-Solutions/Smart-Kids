@@ -134,8 +134,12 @@
       "zeit": "2026-08-30"
     },
     "das Wasserzeichen unter der Schrift zählt nicht": {
-      "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
-      "zeit": "2026-08-30"
+      "commit": "05286442faa0110b287da63d49525af826f94f57",
+      "zeit": "2026-08-31"
+    },
+    "der Streu unter der Schrift zählt nicht": {
+      "commit": "05286442faa0110b287da63d49525af826f94f57",
+      "zeit": "2026-08-31"
     },
     "kleiner Text wird zu hell": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
