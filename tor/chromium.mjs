@@ -190,6 +190,63 @@ export async function istUmgekehrt(seite) {
   });
 }
 
+/**
+ * Ein Punkt, an dem das gesuchte Gebiet WIRKLICH obenauf liegt.
+ *
+ * Nicht sein Anker: der ist die Stelle, an der die Beschriftung haengt,
+ * und bei einem kleinen Gebiet liegt dort der groessere Nachbar darueber.
+ * `loese()` hat genau daran gescheitert - das Etikett wurde auf Berlins
+ * Anker gezogen, gelandet ist es auf Brandenburg, und der Rauchtest
+ * meldete eine Zeitueberschreitung statt „daneben". Regel 14: ein Raster
+ * ist nur so fein wie sein kleinstes Ziel.
+ *
+ * Gesucht wird in dieser Reihenfolge: der entkoppelte Trefferkreis (den
+ * gibt es fuer die vier kleinsten Gebiete), sonst eine Stelle im
+ * Umrisskasten, an der `elementFromPoint` wirklich das Ziel liefert,
+ * sonst die Mitte des Kastens.
+ *
+ * Der `durchgang` hatte diese Suche laengst - eingebaut in seine eigene
+ * Auswertung. Sie steht jetzt einmal hier und wird von beiden benutzt;
+ * zwei Fassungen davon waeren zwei, die getrennt veralten.
+ */
+export async function zielPunkt(seite) {
+  return seite.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const ziel = s.querySelector('path.ziel');
+    if (!ziel) return null;
+    // 1. Der entkoppelte Trefferkreis. Den gibt es fuer die vier
+    //    kleinsten Gebiete, und er IST dort die Trefferflaeche.
+    const kreis = s.querySelector(`#treffer circle[data-id="${ziel.dataset.id}"]`);
+    if (kreis) { const k = kreis.getBoundingClientRect();
+      return { x: k.left + k.width / 2, y: k.top + k.height / 2 }; }
+    // 2. Der Anker. Er ist die Mitte der Trefferflaeche, nach der das
+    //    Spiel entscheidet - nicht der Umriss. Ein Punkt weit aussen auf
+    //    einem grossen Land liegt zwar IM Umriss, aber schon im
+    //    Trefferkreis des Nachbarn; genau daran hat der Abschnitt
+    //    `spielen` gehangen, als hier nur das Raster stand.
+    try {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const alle = [...D.kontinente, ...Object.values(D.laender).flat(), ...D.deutschland];
+      const g = alle.find(x => (x.id || x.a3) === ziel.dataset.id);
+      const svg = s.querySelector('.karte svg');
+      if (g && g.anker && svg) {
+        const pt = svg.createSVGPoint();
+        pt.x = g.anker[0]; pt.y = g.anker[1];
+        const q = pt.matrixTransform(svg.getScreenCTM());
+        return { x: q.x, y: q.y };
+      }
+    } catch (e) { /* dann weiter unten */ }
+    // 3. Eine Stelle, an der das Ziel wirklich obenauf liegt.
+    const bb = ziel.getBoundingClientRect();
+    for (let n = 0; n <= 8; n++) for (let m = 0; m <= 8; m++) {
+      const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
+      if (document.elementFromPoint(x, y) === ziel) return { x, y };
+    }
+    // 4. Und sonst die Mitte des Kastens.
+    return { x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 };
+  });
+}
+
 /** Beantwortet die umgekehrte Frage: auf das gesuchte Gebiet tippen. */
 export async function zeigeAufKarte(seite) {
   const punkt = await seite.evaluate(() => {

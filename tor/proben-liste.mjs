@@ -23,6 +23,8 @@ import { execSync } from 'node:child_process';
  * `sagt`     ein Stueck der Meldung, die das Tor bringen soll
  * ---------------------------------------------------------------------- */
 export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inhalt/erdkunde.js';
+/** Die Abzeichentafel (D2). */
+export const A = 'src/inhalt/abzeichen.js';
 /** Die Buchstabenvorlagen samt Erkennung (N2a). */
 export const S = 'src/inhalt/schreiben.js';
 /** Rauschen, das kein Packer kleinbekommt - aber bei jedem Lauf dasselbe. */
@@ -1883,4 +1885,71 @@ export const PROBEN = [
     ersatz:'.kachel.wer>*:not(.silhouette){position:relative}',
     an:{ ...DIST, fehlt:':not(.silhouette,.streu){position:relative}' },
     sagt:'der Streu deckt nur' },
+
+  /* --- D2: die Abzeichen ---------------------------------------------
+   *
+   * Neun Proben. Die ersten vier gehen an das Tor `abzeichen`, das die
+   * Tafel prueft, BEVOR jemand hinsieht - die drei stillen Ausfaelle
+   * (leere Menge, ganze Menge, fehlendes Bild) und die neun Nachbarn.
+   * Die restlichen fuenf gehen an den Rauchtest.
+   */
+
+  { n:'ein Abzeichen wählt nichts aus seinem Vorrat', tor:'inhalt', datei:A,
+    such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
+    ersatz:'waehlt: (v) => v.filter(x => x.stadtstaatlich) }',
+    an:{ datei:A, text:'x.stadtstaatlich' }, sagt:'unerreichbar' },
+
+  { n:'ein Abzeichen wählt gleich den ganzen Vorrat', tor:'inhalt', datei:A,
+    such:"  { ebene:'bundeslaender', id:'stadtstaaten', zeichen:'stadt',",
+    ersatz:"  { ebene:'bundeslaender', id:'stadtstaat-alle', zeichen:'stadt',",
+    an:{ datei:A, text:"id:'stadtstaat-alle'" }, sagt:'wählt nichts' },
+
+  { n:'ein Abzeichen will ein Bild, das es nicht gibt', tor:'inhalt', datei:A,
+    such:"id:'alle-bundeslaender', zeichen:'karte'",
+    ersatz:"id:'alle-bundeslaender', zeichen:'deutschland'",
+    an:{ datei:A, text:"zeichen:'deutschland'" }, sagt:'ohne Zeichen' },
+
+  { n:'ein Nachbar Deutschlands steht nicht in den Daten', tor:'inhalt', datei:A,
+    such:"'DNK', 'NLD'", ersatz:"'DAN', 'NLD'",
+    an:{ datei:A, text:"'DAN', 'NLD'" }, sagt:'ohne Land in den Daten' },
+
+  /* Der Konstruktionsfehler dieser Runde: die Menge aus dem Vorrat des
+     KINDES statt aus dem vollen. Fiona haette „alle Kontinente" mit vier
+     von sechs bekommen - und beim naechsten Rundenwechsel wieder
+     verloren. Gefunden auf der Aufnahme, nicht vom Tor. */
+  { n:'ein Abzeichen lässt sich wieder verlieren', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D, mehrfach:true,
+    such:'vorrat(e.id, st, true)', ersatz:'vorrat(e.id, st)',
+    an:{ ...DIST, fehlt:'vorrat(e.id, st, true)' },
+    sagt:'die Menge ist nicht voll' },
+
+  // Und das Gegenstueck: die Erreichbarkeit faellt weg, und Fiona
+  // bekommt ein Ziel hingestellt, das sie nicht erreichen kann.
+  { n:'ein unerreichbares Abzeichen wird trotzdem angeboten', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:A,
+    such:'      if (umfeld.erreichbar && teile.some(id => !umfeld.erreichbar.has(id))) continue;',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'umfeld.erreichbar.has(id)' },
+    sagt:'Nachbarn-Abzeichen' },
+
+  { n:'im Buch stehen wieder alle offenen Abzeichen', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:'          naechstes ? markeBild(naechstes) : \'\'}</div>`',
+    ersatz:'          marken.filter(a => !a.verdient).map(markeBild).join(\'\')}</div>`',
+    an:{ ...DIST, text:"marken.filter(a => !a.verdient).map(markeBild)" },
+    sagt:'offene Abzeichen' },
+
+  { n:'das neue Abzeichen wird nicht gesagt', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:"  if (abzNeu) ansagen(`Neues Abzeichen! ${abzNeu.titel}`);",
+    ersatz:'',
+    an:{ ...DIST, fehlt:'Neues Abzeichen! ${abzNeu.titel}' },
+    sagt:'nicht gesagt' },
+
+  { n:'eine fehlerfreie Runde wird nicht festgehalten', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:'  if (st.glatt === st.liste.length) glattStand()',
+    ersatz:'  if (false) glattStand()',
+    an:{ ...DIST, text:'if (false) glattStand()' },
+    sagt:'ohne einen Fehlversuch' },
 ];

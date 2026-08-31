@@ -8,6 +8,8 @@ import path from 'node:path';
 import { PNG } from 'pngjs';
 import * as I from '../src/inhalt/erdkunde.js';
 import * as R from '../src/inhalt/rechnen.js';
+import * as AB from '../src/inhalt/abzeichen.js';
+import * as SCHR from '../src/inhalt/schreiben.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import { KONTINENTE_FEIN } from '../src/geo/kontinente.fein.js';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
@@ -343,6 +345,66 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   const mehrfach = PROBEN.filter(p => p.mehrfach).length;
   console.log(`    Gegenproben: ${geprueftD} von ${PROBEN.length} greifen genau einmal `
     + `in ihre Datei (${mehrfach} ausdrücklich mehrfach)`);
+}
+
+/* --- Abzeichen: kann man sie ueberhaupt bekommen? (D2) -----------------
+ *
+ * Ein Abzeichen faellt still aus, und zwar auf drei Arten:
+ *
+ *   - seine Regel waehlt NICHTS aus dem Vorrat. Dann ist die Menge leer,
+ *     das Abzeichen erscheint nie, und niemand vermisst es;
+ *   - seine Regel waehlt ALLES. Dann steht es beim ersten Aufkleber schon
+ *     da und sagt nichts;
+ *   - sein Bild gibt es nicht. Dann steht der Satz ohne Zeichen da.
+ *
+ * Der dritte Fall ist in dieser Runde WIRKLICH passiert: die Tafel nannte
+ * `deutschland`, die Bildtafel kennt `karte`. Gefunden hat es nicht das
+ * Tor, sondern der Blick auf die Aufnahme (Regel 8) - jetzt findet es das
+ * Tor, und zwar bevor jemand hinsieht.
+ *
+ * Geprueft wird gegen die WIRKLICHEN Vorraete, nicht gegen erfundene:
+ * sonst prueft man seine eigene Annahme darueber, was in den Daten steht.
+ */
+{
+  console.log('\n  Tor `abzeichen`');
+  const BILDER = new Set([...fs.readFileSync('prototyp/spiel.js', 'utf8')
+    .matchAll(/^  ([a-z]+): '<(?:circle|path|rect|ellipse)/gm)].map(m => m[1]));
+  pruefe(BILDER.size >= 5, `nur ${BILDER.size} Abzeichenbilder in spiel.js gefunden — `
+    + 'die Prüfung liest die Bildtafel nicht mehr und würde alles durchlassen');
+  // Die Vorraete, so wie das Spiel sie baut.
+  const VORRAT = {
+    kontinente: I.KONTINENTE.map(k => ({ id:k.id })),
+    bundeslaender: STAEDTE.map(b => ({ id:b.id, stadtstaat:b.stadtstaat })),
+    'laender:europa': LAENDER_EUROPA_FEIN.map(l => ({ id:l.a3 })),
+    'rechnen:reihen': R.reihenVorrat(),
+    'rechnen:plusminus': R.vorrat(),
+    'schreiben:buchstaben': SCHR.vorrat(),
+  };
+  let geprueft = 0;
+  for (const e of AB.TAFEL) {
+    const v = VORRAT[e.ebene];
+    if (!v) { fehler.push(`Abzeichen „${e.id}" hängt an der Ebene „${e.ebene}", `
+      + 'die es nicht gibt — es kann nie erscheinen'); continue; }
+    for (const wert of (e.je || [null])) {
+      const teile = e.waehlt(v, wert, { name: 'Fiona' });
+      const kennung = typeof e.id === 'function' ? e.id(wert) : e.id;
+      if (!teile.length) fehler.push(`Abzeichen „${kennung}" wählt nichts aus `
+        + `${v.length} Stücken der Ebene „${e.ebene}" — es ist unerreichbar`);
+      else if (teile.length === v.length && !/^alle|^alphabet/.test(kennung))
+        fehler.push(`Abzeichen „${kennung}" wählt ALLE ${v.length} Stücke — `
+          + 'dann ist es kein Ausschnitt und sagt nichts Eigenes');
+      if (!BILDER.has(e.zeichen)) fehler.push(`Abzeichen „${kennung}" will das Bild `
+        + `„${e.zeichen}", und das gibt es in der Bildtafel nicht — der Satz stünde ohne Zeichen da`);
+      geprueft++;
+    }
+  }
+  // Die neun Nachbarn sind das eine Verzeichnis von Hand. Wenn eine
+  // Kennung nicht mehr stimmt, ist das Abzeichen fuer immer unerreichbar.
+  const europa = new Set(LAENDER_EUROPA_FEIN.map(l => l.a3));
+  const fremd = AB.NACHBARN.filter(a => !europa.has(a));
+  pruefe(fremd.length === 0, `Nachbarn Deutschlands ohne Land in den Daten: ${fremd.join(', ')}`);
+  console.log(`    ${geprueft} Abzeichen geprüft: Menge nicht leer, nicht alles, Bild vorhanden`);
+  console.log(`    ${AB.NACHBARN.length} Nachbarn Deutschlands, alle in den Europadaten`);
 }
 
 /* Sterne heissen EINE Sache: wie die Sitzung lief (S1).
@@ -1312,6 +1374,10 @@ if (fehler.length) {
 // Die Zahl wird GEZAEHLT, nicht hingeschrieben: hier stand "Alle vier Tore
 // grün", während längst sechs liefen. Eine Zahl, die niemand nachrechnet,
 // veraltet still.
+// `^\s*`, nicht `^`: das achte Tor (`abzeichen`) steht in einem Block und
+// ist deshalb eingerueckt. Mit dem strengen Anker zaehlte die Zeile es
+// nicht mit und meldete weiter „Alle 7" - dieselbe stille Verjaehrung,
+// gegen die sie geschrieben wurde, nur eine Ebene tiefer.
 const torZahl = (fs.readFileSync(new URL(import.meta.url), 'utf8')
-  .match(/^console\.log\('\\n  Tor `/gm) || []).length;
+  .match(/^\s*console\.log\('\\n  Tor `/gm) || []).length;
 console.log(`\n  Alle ${torZahl} Tore grün. ${ids.size} eindeutige IDs, ${ZAHL.gesamt} Gebiete.`);

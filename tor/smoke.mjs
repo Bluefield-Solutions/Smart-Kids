@@ -1,7 +1,7 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { istUmgekehrt, zeigeAufKarte } from './chromium.mjs';
+import { istUmgekehrt, zeigeAufKarte, zielPunkt } from './chromium.mjs';
 import { starte, zurEbenenwahl, WELT_VON, durchVorlauf, serviere,
          schreibVorlage, zeichneZug } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
@@ -549,18 +549,24 @@ async function loese(p) {
   // Test in die alte Aufgabe.
   await p.waitForFunction(() => document.querySelectorAll('.schirm').length === 1
     && document.querySelector('.schirm.da path.ziel'), null, { timeout: 5000 });
+  /* Der Punkt kommt aus `zielPunkt` und nicht mehr aus dem ANKER.
+     Der Anker ist die Stelle, an der die Beschriftung haengt; bei Berlin
+     (19 Punkte Radius, ringsum Brandenburg) liegt dort der Nachbar
+     darueber. Das Etikett landete daneben, das Warten auf das Lob lief in
+     die Zeitueberschreitung, und der Abschnitt scheiterte an der
+     Zielgroesse statt an der Sache. Gefunden in der Runde D2. */
+  const punkt = await zielPunkt(p);
   const info = await p.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     const ziel = s.querySelector('path.ziel'); if (!ziel) return null;
     const D = JSON.parse(document.getElementById('daten').textContent);
     const id = ziel.dataset.id;
     const b = D.deutschland.find(x => x.id === id);
-    const svg = s.querySelector('.karte svg');
-    const pt = svg.createSVGPoint(); pt.x = b.anker[0]; pt.y = b.anker[1];
-    const q = pt.matrixTransform(svg.getScreenCTM());
+    if (!b) return null;
     const namen = [...s.querySelectorAll('.etikett')].map(e => e.textContent);
-    return { id, name: b.name, x: q.x, y: q.y, idx: namen.indexOf(b.name), namen };
+    return { id, name: b.name, idx: namen.indexOf(b.name), namen };
   });
+  if (info && punkt) { info.x = punkt.x; info.y = punkt.y; }
   if (!info) throw new Error('kein Ziel gefunden');
   if (info.idx < 0) throw new Error(`Etikett "${info.name}" fehlt unter ${info.namen.join(', ')}`);
   const et = (await p.$$('.schirm.da .etikett'))[info.idx];
@@ -599,7 +605,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
-  'test', 'streu',
+  'test', 'streu', 'abzeichen',
                     'pausen', 'schreiben', 'hinweis', 'sprechen'];
 const BRAUCHT = { ablage: ['spielen'] };
 const gewaehlt = (() => {
@@ -2137,22 +2143,17 @@ if (laeuft('durchgang')) for (const wer of PROFIL_IDS) {
         const alle = [...D.kontinente, ...Object.values(D.laender).flat(), ...D.deutschland];
         const g = alle.find(x => (x.id || x.a3) === ziel.dataset.id) || {};
         const istHaupt = /Hauptstadt/.test(frage);
-        // Eine Stelle suchen, an der das Ziel wirklich obenauf liegt.
-        const bb = ziel.getBoundingClientRect();
-        let punkt = { x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 };
-        const kreis = s.querySelector(`#treffer circle[data-id="${ziel.dataset.id}"]`);
-        if (kreis) { const k = kreis.getBoundingClientRect();
-          punkt = { x: k.left + k.width / 2, y: k.top + k.height / 2 }; }
-        else for (let n = 0; n <= 8 && !punkt.gefunden; n++) for (let m = 0; m <= 8; m++) {
-          const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
-          if (document.elementFromPoint(x, y) === ziel) { punkt = { x, y, gefunden: true }; break; }
-        }
+        // Die Stelle, an der das Ziel obenauf liegt, kommt aus `zielPunkt`
+        // in `chromium.mjs` - sie stand hier und wurde von `loese()`
+        // gebraucht, das stattdessen den Anker nahm und an Berlin
+        // scheiterte. Eine Fassung, zwei Benutzer (Regel 15).
         return { name: istHaupt ? g.hauptstadt : g.name,
                  alias: (!istHaupt && g.aliasse && g.aliasse.length) ? g.aliasse[0] : null,
-                 ...punkt, tippfeld: !!s.querySelector('input.eingabe'),
+                 tippfeld: !!s.querySelector('input.eingabe'),
                  weise: s.querySelector('#weise')?.dataset.weise || null,
                  etiketten: [...s.querySelectorAll('.etikett')].map(x => x.textContent.trim()) };
       });
+      Object.assign(z, (await zielPunkt(p)) || {});
       /* Wer nie eine Auswahl bekommt, muss hier ein Tippfeld sehen.
        *
        * Das ist die Stelle, an der ein ausgefallenes Verbot WIRKLICH
@@ -3317,6 +3318,186 @@ if (laeuft('streu')) try {
     + `Eltern ${bild.eltern.join('/')} — Name frei, Streu deckt ${lage.deckung.join(' × ')}`);
   await p.close();
 } catch (e) { merke('streu', e); }
+
+/* --- Abzeichen (D2) --------------------------------------------------
+ *
+ * Vier Dinge, und jedes hat einen Gegenfall:
+ *
+ *   - ein Abzeichen erscheint, wenn seine Menge VOLL ist - und vorher
+ *     ausdruecklich NICHT. Ohne den zweiten Teil bezeugt der erste nur,
+ *     dass irgendwo Markup steht;
+ *   - es kann nicht verlorengehen: die Menge kommt aus dem VOLLEN Vorrat
+ *     der Ebene, nicht aus Fionas wachsender Kontinentrunde. Geprueft
+ *     wird an ihr, mit allen vier Kontinenten ihrer ersten Runde
+ *     gesammelt - „alle Kontinente" muss dann noch FEHLEN, und zwar
+ *     genau zwei;
+ *   - offen steht hoechstens EINES da. Der Bildschirm hat sich die Lehre
+ *     schon einmal teuer erkauft (sechzig leere Kaesten);
+ *   - der Endbildschirm SAGT es, wenn eines dazukommt. Das ist der eine
+ *     Moment, in dem es sich zu sagen lohnt.
+ */
+if (laeuft('abzeichen')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+
+  /* --- Fionas Kontinente: alle IHRE gesammelt, Abzeichen trotzdem offen */
+  await p.evaluate(() => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onupgradeneeded = () => {
+      for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+        if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+    };
+    auf.onsuccess = () => {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      // Fionas erste Runde - die Kontinente mit `runde <= 1`.
+      const ersteRunde = {};
+      for (const k of D.kontinente.filter(x => x.runde <= 1))
+        ersteRunde[k.id] = { fach:4, faellig:0, hoch:4 };
+      // Lea: fuenf von sechs sicher, der sechste einen Schritt vor dem
+      // Aufkleber. EINE richtige Antwort vervollstaendigt die Menge.
+      const leas = {};
+      D.kontinente.forEach((k, i) => { leas[k.id] = i < 5
+        ? { fach:4, faellig:0, hoch:4 } : { fach:2, faellig:0, hoch:2 }; });
+      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+      t.objectStore('fortschritt').put(ersteRunde, 'fiona:kontinente');
+      t.objectStore('fortschritt').put(leas, 'lea:kontinente');
+      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+        'fiona:kontinente': true, 'lea:kontinente': true } }, 'alles');
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }));
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('[data-profil="fiona"]');
+  await p.click('[data-profil="fiona"]');
+  await p.click('#buch');
+  await p.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
+  const beiFiona = await p.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    return { offen: [...s.querySelectorAll('.abz.offen')].map(x => x.textContent.trim()),
+             da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.trim()) };
+  });
+  if (beiFiona.da.length) merke('abzeichen', new Error(
+    `Fiona hat schon ein Abzeichen (${beiFiona.da.join(' · ')}) — sie hat vier von `
+    + 'sechs Kontinenten, die Menge ist nicht voll'));
+  if (beiFiona.offen.length !== 1) merke('abzeichen', new Error(
+    `${beiFiona.offen.length} offene Abzeichen auf einmal — offen steht genau eines`));
+  if (!/fehlen noch 2/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
+    `das offene Abzeichen sagt „${beiFiona.offen[0]}" — erwartet werden zwei fehlende `
+    + 'Kontinente, gerechnet gegen alle sechs und nicht gegen Fionas Runde'));
+  // Und die Nachbarn gibt es fuer sie gar nicht: ihre Laendertiefe ist 3.
+  if (/Nachbarn/.test(JSON.stringify(beiFiona))) merke('abzeichen', new Error(
+    'Fiona bekommt das Nachbarn-Abzeichen angeboten, obwohl ihre Ländertiefe '
+    + 'nicht alle neun enthält — ein Ziel, das sie nicht erreichen kann'));
+
+  /* --- Und jetzt spielt Fiona das letzte Bundesland ------------------
+   *
+   * Gespielt wird auf den BUNDESLAENDERN und nicht auf den Kontinenten:
+   * `loese()` schlaegt sein Ziel in `D.deutschland` nach - der Helfer ist
+   * fuer diese eine Ebene geschrieben. Auf den Kontinenten stirbt er an
+   * `b.anker` eines Gebiets, das dort nicht steht. Gefunden beim ersten
+   * Lauf dieses Abschnitts, und es steht hier, damit es der naechste
+   * nicht wieder herausfindet.
+   *
+   * Fuenfzehn von sechzehn sind sicher (Fach 5, also aus der Auswahl
+   * heraus), das sechzehnte steht einen Schritt vor dem Aufkleber. Damit
+   * ist die Sitzung deterministisch: es gibt genau einen Gegenstand, den
+   * der Leitner noch waehlen kann. */
+  const q = await neueSeite({ width: 844, height: 390 }, ctx);
+  await q.evaluate(() => new Promise((ja, nein) => {
+    const auf = indexedDB.open('lernkiste', 1);
+    auf.onsuccess = () => {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      /* Offen bleibt BAYERN, nicht irgendeins.
+         Der erste Anlauf liess das letzte Bundesland der Liste offen -
+         das ist Berlin, mit 19 Punkten Trefferradius das kleinste Gebiet
+         der Karte. Das Etikett landete daneben, die Antwort wurde nicht
+         gewertet, und der Abschnitt scheiterte an der Zielgroesse statt
+         an der Sache. Bayern hat 152. */
+      const st = {};
+      D.deutschland.forEach((b) => { st[b.id] = b.id === 'DE-BY'
+        ? { fach:2, faellig:0, hoch:2 } : { fach:5, faellig:0, hoch:5 }; });
+      const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+      t.objectStore('fortschritt').put(st, 'fiona:bundeslaender');
+      t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+        'fiona:kontinente': true, 'fiona:bundeslaender': true } }, 'alles');
+      t.oncomplete = ja; t.onerror = () => nein(t.error);
+    };
+    auf.onerror = () => nein(auf.error);
+  }));
+  await q.reload({ waitUntil: 'domcontentloaded' });
+  await q.waitForSelector('[data-profil="fiona"]');
+  await q.click('[data-profil="fiona"]');
+  await zurEbenenwahl(q, 'bundeslaender');
+  await q.click('[data-ebene="bundeslaender"]');
+  await durchVorlaufWenn(q);
+  await q.waitForSelector('.schirm.da .karte svg', { timeout: 25000 });
+  await q.evaluate(() => { window.__gesagt = []; });
+  for (let n = 0; n < 20; n++) {
+    if (await q.$('.schirm.da .siegwahl')) break;
+    if (!(await q.$('.schirm.da .karte svg'))) break;
+    await loese(q);
+    /* Zwischen zwei Aufgaben MUSS gewartet werden, bis das Lob weg ist.
+       Ohne das landet der naechste Zug waehrend des Lobs, wird nicht
+       gewertet, und jede zweite Antwort geht verloren - gemessen: sechs
+       von elf Zuegen. `loese()` wartet nur auf das Lob, nicht darauf,
+       dass es wieder verschwunden ist. */
+    await weitergegangen(q);
+  }
+  await q.waitForSelector('.schirm.da .siegwahl', { timeout: 25000 });
+  const ende = await q.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    return { neu: s.querySelector('.abzneu')?.textContent.replace(/\s+/g,' ').trim() || '',
+             gesagt: (window.__gesagt || []).join(' | ') };
+  });
+  if (!/Neues Abzeichen: Du kennst alle sechzehn Bundesländer/.test(ende.neu))
+    merke('abzeichen', new Error(
+      `der Endbildschirm meldet kein neues Abzeichen, sondern „${ende.neu}"`));
+  if (!/Neues Abzeichen/.test(ende.gesagt)) merke('abzeichen', new Error(
+    'das neue Abzeichen wird hingeschrieben, aber nicht gesagt — für Fiona wäre es nicht da'));
+
+  /* --- Und beim ZWEITEN Mal ist es kein neues mehr ------------------- */
+  await q.click('#nochmal');
+  await q.waitForSelector('.schirm.da .karte svg', { timeout: 25000 });
+  for (let n = 0; n < 20; n++) {
+    if (await q.$('.schirm.da .siegwahl')) break;
+    if (!(await q.$('.schirm.da .karte svg'))) break;
+    await loese(q);
+    /* Zwischen zwei Aufgaben MUSS gewartet werden, bis das Lob weg ist.
+       Ohne das landet der naechste Zug waehrend des Lobs, wird nicht
+       gewertet, und jede zweite Antwort geht verloren - gemessen: sechs
+       von elf Zuegen. `loese()` wartet nur auf das Lob, nicht darauf,
+       dass es wieder verschwunden ist. */
+    await weitergegangen(q);
+  }
+  await q.waitForSelector('.schirm.da .siegwahl', { timeout: 25000 });
+  if (await q.$('.schirm.da .abzneu')) merke('abzeichen', new Error(
+    'der Endbildschirm meldet dasselbe Abzeichen ein zweites Mal als neu'));
+
+  /* --- Im Buch steht es jetzt, samt „ohne Fehler" -------------------- */
+  await q.click('#buch');
+  await q.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
+  const buch = await q.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    return { da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.replace(/\s+/g,' ').trim()),
+             offen: s.querySelectorAll('.abz.offen').length,
+             bilder: [...s.querySelectorAll('.abz svg')].filter(x => x.children.length).length,
+             knoepfe: s.querySelectorAll('button.abz').length };
+  });
+  if (!buch.da.some(t => /alle sechzehn Bundesländer/.test(t))) merke('abzeichen', new Error(
+    `im Buch fehlt das verdiente Abzeichen — dort steht ${JSON.stringify(buch.da)}`));
+  if (!buch.da.some(t => /ohne Fehler/.test(t))) merke('abzeichen', new Error(
+    'eine Runde ohne einen Fehlversuch bringt kein Abzeichen — '
+    + `im Buch steht ${JSON.stringify(buch.da)}`));
+  if (buch.offen > 1) merke('abzeichen', new Error(
+    `${buch.offen} offene Abzeichen im Buch — es soll genau eines sein`));
+  if (buch.bilder !== buch.knoepfe) merke('abzeichen', new Error(
+    `${buch.knoepfe - buch.bilder} Abzeichen stehen ohne Bild da`));
+
+  console.log(`  Abzeichen:                  Fiona 0 verdient, 1 offen („${
+    (beiFiona.offen[0] || '').replace(/\s+/g, ' ')}") · `
+    + `nach der Runde ${buch.da.length} verdient, alle mit Bild`);
+  await p.close(); await q.close();
+} catch (e) { merke('abzeichen', e); }
 
 if (laeuft('sprechen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);

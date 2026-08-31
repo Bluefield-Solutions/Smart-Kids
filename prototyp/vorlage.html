@@ -561,6 +561,43 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .kachel.bunt .name{text-align:left;line-height:1.1;font-size:var(--s1)}
 .kachel.bunt .balken{background:color-mix(in oklab, var(--ton) 45%, var(--papier))}
 .kachel.bunt .balken i{background:color-mix(in oklab, var(--ton) 75%, var(--tinte))}
+/* ---- Abzeichen (D2) --------------------------------------------------
+   Ein Abzeichen ist ein SATZ mit einem Bild davor, keine Kachel mit einer
+   Zahl. Deshalb liegt der Text neben dem Zeichen und nicht darunter: er
+   ist die Belohnung, das Bild ist nur die Marke dafuer.
+   Die Mindestbreite ist grosszuegig - „Du kennst alle Nachbarn von
+   Deutschland" braucht Platz, und zwei Zeilen sind besser als ein
+   Abschneiden. */
+/* Flex statt Raster: bei EINEM Abzeichen zog `auto-fit` den einen Kasten
+   ueber die ganze Breite - ein Satz von vier Woertern in einem Band von
+   1600 Punkten. Gesehen auf der Aufnahme, nicht gemessen. */
+.abzeichen{display:flex;flex-wrap:wrap;gap:var(--r3);width:100%}
+.abz{flex:1 1 300px;max-width:520px}
+.abz{display:flex;align-items:center;gap:var(--r3);text-align:left;
+  padding:var(--r3);border-radius:var(--rund-karte);min-height:56px;
+  background:var(--papier);border:var(--strich) solid var(--linie);
+  font-family:var(--f-lesen);font-size:var(--s0);color:var(--tinte);
+  cursor:pointer}
+.abz svg{flex:0 0 auto}
+.abz .was{line-height:1.15}
+/* Das offene traegt die Farbe des Hinweises, nicht die des Fehlers: es ist
+   der naechste Schritt, keine Mahnung. */
+.abz.offen{background:var(--nochmal-h);border-color:var(--achtung);color:var(--tinte-2)}
+.abz.offen small{display:block;font-family:var(--f-ui);font-size:var(--s-klein);
+  color:var(--tinte-2)}
+.abz.da{background:var(--gut-h);border-color:var(--gut)}
+/* Auf dem Endbildschirm, wenn eines DAZUGEKOMMEN ist. Eine Zeile, mittig,
+   in derselben Sprache wie der Rest des Bildschirms. */
+.abzneu{display:flex;align-items:center;justify-content:center;gap:var(--r3);
+  margin:var(--r3) 0;padding:var(--r2) var(--r4);border-radius:var(--rund-voll);
+  background:var(--gut-h);border:var(--strich) solid var(--gut);
+  font-family:var(--f-lesen);font-size:var(--s0);color:var(--tinte);
+  max-width:100%}
+@media (max-height:440px){
+  .abzeichen{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--r2)}
+  .abz{padding:var(--r2);gap:var(--r2);font-size:var(--s-klein);min-height:48px}
+  .abzneu{font-size:var(--s-klein);margin:var(--r2) 0}
+}
 .kachel .umriss{width:96px;height:96px}
 .kachel .kreis{width:64px;height:64px;border-radius:var(--rund-voll);display:flex;
   align-items:center;justify-content:center;font-family:var(--f-lesen);font-size:var(--s2);

@@ -1106,21 +1106,28 @@ const eigenerRahmen = (pfad) => {
   return `${x0-luft} ${y0-luft} ${b+2*luft} ${h+2*luft}`;
 };
 
-function vorrat(ebeneId, stand = Stand){
+/* `voll` heisst: was diese Ebene UEBERHAUPT enthaelt, ohne die Grenzen
+   des Kindes. Gebraucht von den Abzeichen (D2): ihre Menge muss
+   feststehen, sonst waechst sie mit Fionas Kontinentrunde mit und ein
+   verdientes Abzeichen ginge wieder verloren. */
+function vorrat(ebeneId, stand = Stand, voll = false){
   const [art, kont] = ebeneId.split(':');
   if (art==='kontinente') {
-    const bis = P.id==='fiona' ? kontinentRunde(stand) : RUNDEN;
+    const bis = voll ? RUNDEN : (P.id==='fiona' ? kontinentRunde(stand) : RUNDEN);
     return D.kontinente.filter(k=>k.runde<=bis)
       .map(k=>({ id:k.id, name:k.name, aliasse:k.aliasse, aussprache:k.aussprache,
                  pfad:k.pfad, anker:k.anker }));
   }
   if (art==='laender')
-    return D.laender[kont].filter(l=>l.rang<=P.laenderTiefe)
+    return D.laender[kont].filter(l=>voll || l.rang<=P.laenderTiefe)
       .map(l=>({ id:l.a3, name:l.name, aliasse:l.aliasse, aussprache:l.aussprache,
                  pfad:l.pfad, anker:l.anker }));
   if (art==='bundeslaender')
+    // `stadtstaat` wird mitgereicht, damit das Abzeichen „die drei
+    // Stadtstaaten" seine Menge aus den DATEN nimmt und nicht aus einer
+    // Liste von Kennungen (D2).
     return D.deutschland.map(b=>({ id:b.id, name:b.name, aliasse:[], aussprache:[b.name.toLowerCase()],
-      pfad:b.pfad, anker:b.anker }));
+      pfad:b.pfad, anker:b.anker, stadtstaat:b.stadtstaat }));
   // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
   // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
   // Leitner-Stand über Sitzungen trägt.
@@ -1305,6 +1312,74 @@ async function staende(){
                pokal: await pokalStand(e.id) });
   }
   return aus;
+}
+
+/* ---------- Abzeichen (D2) ----------------------------------------------
+ *
+ * Die Regeln stehen in `src/inhalt/abzeichen.js`, samt Referenzabgleich.
+ * Hier steht nur, wie sie AUSSEHEN und wo sie hingehoeren.
+ *
+ * Die Bildsprache ist die, die G12 aufgemacht hat: gefuellte Formen OHNE
+ * Kontur sind Tapete (der Streu auf der Profilkachel), Formen MIT
+ * Tintenkontur bedeuten etwas (Stern, Pokal). Ein Abzeichen bedeutet
+ * etwas - also Kontur.
+ */
+const ABZEICHENBILD = {
+  welt: '<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/>'
+      + '<path d="M3.4 9h17.2M3.4 15h17.2" fill="none"/>',
+  stadt: '<path d="M3 20V9l4-2.5V20zM9.5 20V4l5-2v18zM17 20V10l4 2.5V20z"/>'
+       + '<path d="M2 20.5h20" fill="none" stroke-linecap="round"/>',
+  karte: '<path d="M2.6 5.8 9 3.4v14.8l-6.4 2.4zM9 3.4l6 2.4v14.8l-6-2.4zM15 5.8l6.4-2.4v14.8L15 20.6z"/>',
+  nachbarn: '<circle cx="12" cy="12" r="4"/>'
+          + '<circle cx="12" cy="3.4" r="1.9"/><circle cx="12" cy="20.6" r="1.9"/>'
+          + '<circle cx="3.4" cy="12" r="1.9"/><circle cx="20.6" cy="12" r="1.9"/>'
+          + '<circle cx="5.9" cy="5.9" r="1.6"/><circle cx="18.1" cy="5.9" r="1.6"/>'
+          + '<circle cx="5.9" cy="18.1" r="1.6"/><circle cx="18.1" cy="18.1" r="1.6"/>',
+  reihe: '<rect x="3" y="3" width="18" height="18" rx="4.5"/>'
+       + '<path d="M8.6 8.6l6.8 6.8M15.4 8.6l-6.8 6.8" fill="none" stroke-linecap="round"/>',
+  doppelt: '<circle cx="8" cy="12" r="5.4"/><circle cx="16" cy="12" r="5.4"/>',
+  schild: '<path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/>'
+        + '<path d="M6.6 15.6h10.8M9 4v3.2h6V4" fill="none" stroke-linecap="round"/>',
+  abc: '<path d="M12 3 4.6 20.4h4.2l1.3-3.4h3.8l1.3 3.4h4.2z"/>'
+     + '<path d="M10.9 13.4h2.2" fill="none" stroke-linecap="round"/>',
+  medaille: '<path d="M8.2 2.6 12 9.4 15.8 2.6" fill="none" stroke-linecap="round"/>'
+          + '<circle cx="12" cy="15.4" r="6.2"/>'
+          + '<path d="M9.4 15.6l1.9 1.9 3.4-3.9" fill="none" stroke-linecap="round"/>',
+};
+/** Ein Abzeichenbild. `voll` faerbt es golden, sonst bleibt es blass. */
+const ABZ = (n, voll, g=34)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24"
+  fill="var(${voll?'--stern-an':'--stern-aus'})" stroke="var(${voll?'--tinte':'--tinte-3'})"
+  stroke-width="1.5" stroke-linejoin="round" aria-hidden="true">${ABZEICHENBILD[n]||''}</svg>`;
+
+/* „Einmal ganz ohne Fehler" ist kein Mengenabzeichen, sondern ein
+ * EREIGNIS - es laesst sich aus dem Leitner-Stand nicht zurueckrechnen.
+ * Also wird es abgelegt, genau wie der Pokal, und genau dort: bei den
+ * Einstellungen, nicht im Fortschritt. „Von vorne" loescht eine Ebene;
+ * was einmal fehlerfrei war, war es. */
+const glattSchluessel = () => `ohnefehler:${P.id}`;
+async function glattStand(){
+  try { return (await Ablage.hole('einstellungen', glattSchluessel())) || null; }
+  catch(e){ return null; }
+}
+async function glattSetzen(wert){
+  try { await Ablage.setze('einstellungen', glattSchluessel(), wert); } catch(e){}
+}
+
+/**
+ * Welche Abzeichen einer Ebene sind verdient? Nur die Kennungen.
+ *
+ * Gebraucht an zwei Stellen - im Forscherbuch und am Ende einer Sitzung,
+ * um zu sehen, ob gerade eines DAZUGEKOMMEN ist. Zweimal gerechnet hiesse
+ * zweimal anders gerechnet; in diesem Verzeichnis sind so schon zwei
+ * Sternformeln entstanden.
+ */
+function abzUmfeld(ebeneId, stand){
+  return { name: P.name, erreichbar: new Set(vorrat(ebeneId, stand).map(x => x.id)) };
+}
+function verdiente(ebeneId, stand){
+  return Abzeichen.abzeichenDer(ebeneId, vorrat(ebeneId, stand, true), abzUmfeld(ebeneId, stand))
+    .map(a => Abzeichen.stand(a, id => Leitner.istGesammelt(stand, id)))
+    .filter(a => a.verdient);
 }
 
 /* ---------- Der Pokal (B2) ----------------------------------------------
@@ -1786,8 +1861,15 @@ async function starten(ebeneId, alsTest = false){
    * wackeligen Gegenstaende abfragt, misst nicht, was jemand kann - er
    * misst, was der Leitner gerade fuer wackelig haelt. */
   const testListe = alsTest ? mischenMit(alle, keim) : null;
+  /* Welche Abzeichen es VORHER schon gab (D2).
+   *
+   * Ohne diesen Griff waere ein neues Abzeichen am Ende nicht von einem
+   * alten zu unterscheiden, und der Endbildschirm muesste entweder alle
+   * aufzaehlen oder schweigen. Beides waere schade: der Moment, in dem
+   * eines dazukommt, ist der einzige, in dem es sich lohnt, es zu sagen. */
   Sitzung = { ebeneId, alle, liste: testListe || liste, i:0, glatt:0, wie:[],
-              aufkleber:0, keim, begonnen:Date.now(), test: alsTest };
+              aufkleber:0, keim, begonnen:Date.now(), test: alsTest,
+              abzVorher: new Set(verdiente(ebeneId, Stand).map(a => a.id)) };
   zeige(schirmZu(ebeneId));
 }
 
@@ -3847,6 +3929,16 @@ function endschirm(){
   const bestanden = st.test && st.glatt >= Math.ceil(st.liste.length * BESTANDEN_AB);
   if (st.test && bestanden) pokalSetzen(st.ebeneId,
     { zeit: Date.now(), richtig: st.glatt, von: st.liste.length });
+  /* Was ist in DIESER Sitzung dazugekommen (D2)? Hoechstens eines wird
+     genannt - zwei Abzeichen auf einmal sind selten, und wer drei Zeilen
+     vorgelesen bekommt, hoert bei der dritten nicht mehr zu. */
+  const abzNeu = verdiente(st.ebeneId, Stand).filter(a => !st.abzVorher.has(a.id))[0];
+  /* Eine ganze Runde ohne einen einzigen Fehlversuch. Kein Mengen-
+     abzeichen, sondern ein Ereignis - und deshalb abgelegt. Es zaehlt das
+     ERSTE Mal: „einmal ganz ohne Fehler" ist ein Tag, kein Zustand. */
+  if (st.glatt === st.liste.length) glattStand().then(alt => { if (!alt) glattSetzen(
+    { zeit: Date.now(), ebene: st.ebeneId, ebeneTitel: (EBENEN.find(e => e.id === st.ebeneId) || {}).titel || st.ebeneId,
+      von: st.liste.length }); });
   s.innerHTML=kopf({}) + `
     <div class="mitte">
       ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
@@ -3857,6 +3949,8 @@ function endschirm(){
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
+      ${abzNeu ? `<div class="abzneu">${ABZ(abzNeu.zeichen, true, 40)}
+        <span>Neues Abzeichen: ${abzNeu.titel}</span></div>` : ''}
       ${fortschrittBalken(f, 'breit')}
       <div class="buchstand">${kleberMarke(f.gesammelt, f.gesamt)}<span>${
         st.aufkleber ? ton().neueKleber(st.aufkleber)
@@ -3887,6 +3981,7 @@ function endschirm(){
    * Aufgefallen ist es nie: der Rauchtest zaehlt nur die ANSAGE der
    * Aufgabe (`Wie heißt` / `Was ist`), und dieser Satz ist keine. */
   ansagen(ton().ende);
+  if (abzNeu) ansagen(`Neues Abzeichen! ${abzNeu.titel}`);
   ansagen(`Du hast ${st.glatt} von ${st.liste.length} auf Anhieb richtig. `
     + (st.aufkleber ? `${st.aufkleber} neue Aufkleber! `
        : f.gesammelt ? '' : `${ton().ersterKleber} `)
@@ -4017,9 +4112,56 @@ async function forscherbuch(){
       ${x.gekonnt?'<i class="siegel"></i>':''}
     </button>`;
 
+  /* --- Die Abzeichen (D2) ------------------------------------------
+   *
+   * Sie stehen OBEN, vor den Aufklebern: das Abzeichen ist die Aussage,
+   * der Aufkleber der Beleg. Wer das Buch aufschlaegt, soll zuerst
+   * lesen, was er kann, und danach, woraus es besteht.
+   *
+   * Gezeigt werden alle verdienten - und genau EINES, das noch fehlt.
+   * Nicht alle offenen: der Bildschirm hat sich diese Lehre schon einmal
+   * teuer erkauft (siehe oben, sechzig leere Kaesten). Eine Liste
+   * dessen, was man noch nicht kann, gehoert nicht an den Ort, der
+   * belohnt. Eines ist der naechste Schritt, zehn sind eine Mahnung.
+   *
+   * Welches eine: das mit den WENIGSTEN fehlenden Stuecken. Bei
+   * Gleichstand entscheidet die Reihenfolge der Tafel, damit es sich
+   * nicht von Aufruf zu Aufruf aendert - `ansicht` vergleicht
+   * Bildpunkte.
+   */
+  const marken = [];
+  for (const { e, st } of staende)
+    for (const a of Abzeichen.abzeichenDer(e.id, vorrat(e.id, st, true), abzUmfeld(e.id, st)))
+      marken.push({ ...Abzeichen.stand(a, id => Leitner.istGesammelt(st, id)), ebeneTitel: e.titel });
+  const ohneFehler = await glattStand();
+  /* „bei Kontinente" waere falsches Deutsch, und die Ebenentitel stehen
+     ohne Artikel da („Kontinente", „Bundesländer", „Plus und Minus"). Ein
+     Doppelpunkt braucht keinen Fall. */
+  if (ohneFehler) marken.unshift({ id:'ohne-fehler', zeichen:'medaille', verdient:true, fehlt:0,
+    titel:`Einmal ganz ohne Fehler: ${ohneFehler.ebeneTitel}.` });
+  const verdient = marken.filter(a => a.verdient);
+  const naechstes = marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt)[0];
+  /* Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert.
+     Ein `div` mit `data-lesen` waere fuer sie stumm - der Rundgang bindet
+     zwar den Klick, aber `beruehrung` misst Trefferflaechen nur an
+     Bedienelementen, und mit dem Finger trifft man nur, was gross genug
+     ist. */
+  const markeBild = (a) => `
+    <button class="abz ${a.verdient?'da':'offen'}" data-abz="${a.id}"
+            data-lesen="${a.verdient ? a.titel
+              : `Fast. ${a.titel} Dir fehlen noch ${a.fehlt}.`}">
+      ${ABZ(a.zeichen, a.verdient)}
+      <span class="was">${a.titel}${a.verdient?''
+        : `<small>Dir ${a.fehlt===1?'fehlt noch eins':`fehlen noch ${a.fehlt}`}.</small>`}</span>
+    </button>`;
+
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${gesamt} Aufkleber</span>` }) + `
     <div class="rollen">
+      ${verdient.length || naechstes ? `
+        <h3 class="gruppe">${verdient.length ? 'Deine Abzeichen' : 'Dein erstes Abzeichen'}</h3>
+        <div class="abzeichen">${verdient.map(markeBild).join('')}${
+          naechstes ? markeBild(naechstes) : ''}</div>` : ''}
       ${gesamt ? vollen.map(g=>`
         <h3 class="gruppe">${g.titel}</h3>
         <div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`).join('')
@@ -4036,8 +4178,9 @@ async function forscherbuch(){
   s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
   s.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
   ansagen(gesamt
-    ? `Dein Forscherbuch. Du hast ${gesamt} Aufkleber${gekonnt?`, ${gekonnt} davon sicher`:''}. `
-      + `Tipp einen an, dann sage ich dir, wie er heißt.`
+    ? `Dein Forscherbuch. Du hast ${gesamt} Aufkleber${gekonnt?`, ${gekonnt} davon sicher`:''}`
+      + `${verdient.length ? ` und ${verdient.length===1?'ein Abzeichen':`${verdient.length} Abzeichen`}` : ''}. `
+      + `Tipp etwas an, dann sage ich dir, was es ist.`
     : 'Dein Forscherbuch ist noch leer. Such dir eine Karte aus — der erste Aufkleber ist schnell da.');
   return s;
 }

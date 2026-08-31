@@ -123,7 +123,7 @@ npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
                    abgelehnt, gilt ein halber Zug nicht als nachgefahren
 ```
 
-Kette: `inhalt` · `topologie` · `beruehrung` · `marken` ·
+Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
 `schrift` · `symbol` · `doku` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
