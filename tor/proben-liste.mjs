@@ -767,6 +767,38 @@ export const PROBEN = [
     an:{ datei:'tor/kette-liste.mjs', fehlt:"teile: 3, deckung: 'namen' },\n  { name: 'ansicht'" },
     sagt:'wie der Läufer die Deckung nachzählt' },
 
+  /* --- A4: Sprechen fuer alle, und „noch einmal hoeren" --------------- */
+  { n:'Stephan darf nicht mehr sprechen', tor:'smoke', args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"name:'Stephan', alter:null, eingabe:['tippen','sprechen']",
+    ersatz:"name:'Stephan', alter:null, eingabe:['tippen']",
+    an:{ ...DIST, fehlt:"'Stephan', alter:null, eingabe:['tippen','sprechen']" },
+    sagt:'kein Mikrofon' },
+  /* Das Schreibfeld darf dabei nicht verschwinden: die Spracheingabe ist
+   * eine Option und kein Ersatz. Der Eingriff nimmt Stephan das Tippen
+   * und laesst ihm nur das Sprechen - genau die Verwechslung, gegen die
+   * die zweite Haelfte der Pruefung steht. */
+  { n:'die Spracheingabe verdrängt das Schreibfeld', tor:'smoke', args:['--nur=sprechen'],
+    bauen:true, datei:D,
+    such:"name:'Stephan', alter:null, eingabe:['tippen','sprechen']",
+    ersatz:"name:'Stephan', alter:null, eingabe:['sprechen']",
+    an:{ ...DIST, text:"'Stephan', alter:null, eingabe:['sprechen']" },
+    sagt:'Schreibfeld ist weg' },
+  { n:'Fiona kann die Aufgabe nicht noch einmal hören', tor:'smoke', args:['--nur=sprechen'],
+    bauen:true, datei:D,
+    such:'  nochHoerenAnhaengen(ansageText);\n',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'nochHoerenAnhaengen(ansageText)' },
+    sagt:'noch einmal hören' },
+  /* Und andersherum: der Knopf haengt am Profil und nicht am Bildschirm.
+   * Faellt die Bedingung weg, bekommt Lea ihn auch - und ein Knopf, der
+   * ihr nichts vorliest, ist ein Knopf, der schweigt. */
+  { n:'der Hörknopf hängt nicht mehr am Profil', tor:'smoke', args:['--nur=sprechen'],
+    bauen:true, datei:D,
+    such:'  if (!P || !P.vorlesen || !text) return null;',
+    ersatz:'  if (!P || !text) return null;',
+    an:{ ...DIST, fehlt:'!P.vorlesen || !text' },
+    sagt:'hängt nicht am Profil' },
+
   /* --- die Kette selbst ------------------------------------------------
    *
    * Solange die Kette eine `&&`-Zeile war, gab die Shell den Rueckgabewert
@@ -1621,9 +1653,12 @@ export const PROBEN = [
      * hier nie wieder gefahren wurde. Genau die Verfallsart, gegen die
      * `rhythmus` da ist. Gesucht wird jetzt bis zur schliessenden
      * Klammer, egal was als Frist drinsteht. */
-    suchRegex:/  setTimeout\(\(\)=>\{\n    const teile = \[frageText\];[\s\S]*?\n  \}, [^;]*\);\n/,
-    ersatzFn:()=>'',
-    an:{ ...DIST, fehlt:'const teile = [frageText]' },
+    /* Seit A4 steht der Satz in `ansageText` und wird nur noch gesagt;
+       der Eingriff nimmt jetzt das SAGEN weg und laesst den Text stehen -
+       damit faellt genau die Ansage aus und nicht auch der Hoerknopf. */
+    such:'  setTimeout(()=>{ ansagen(ansageText); }, FLOTT ? 60 : 500);\n',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'setTimeout(()=>{ ansagen(ansageText); }' },
     sagt:'vorgelesen' },
   // Und sie haengt am KIND: Lea liest, fuer sie waere dieselbe Ansage Laerm.
   // `ohneSofort`: der Eingriff laesst auch die Eltern sprechen, und mit

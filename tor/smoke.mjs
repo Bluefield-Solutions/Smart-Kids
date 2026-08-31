@@ -3909,6 +3909,69 @@ if (laeuft('sprechen')) try {
   await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
 
+  /* Und derselbe Weg fuer STEPHAN (A4).
+   *
+   * Sprechen war bis dahin Fionas Weg, weil sie nicht schreibt. Seit A4
+   * ist es eine Option fuer jeden: „Wie heisst dieses Land?" mit
+   * siebzehn Laendern im Vorrat sind siebzehn getippte Namen. Geprueft
+   * wird, dass das Mikrofon bei ihm wirklich erscheint UND dass das
+   * Schreibfeld daneben stehen bleibt - es soll niemandem etwas
+   * weggenommen werden, nur etwas dazukommen. */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.click('[data-profil="stephan"]');
+    await zurEbenenwahl(q, 'laender:europa');
+    await q.click('[data-ebene="laender:europa"]');
+    await q.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
+    await durchVorlaufWenn(q);
+    await q.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    const da = await q.evaluate(() => ({
+      mikro: !!document.querySelector('.schirm.da #mikro'),
+      feld: !!document.querySelector('.schirm.da .eingabe'),
+    }));
+    if (!da.mikro) merke('sprechen', new Error('Stephan bekommt bei eingeschaltetem '
+      + 'Sprachmodus kein Mikrofon — dann muss er jedes Land tippen'));
+    if (!da.feld) merke('sprechen', new Error('Stephans Schreibfeld ist weg, seit er '
+      + 'sprechen darf — die Spracheingabe ist eine Option und kein Ersatz'));
+    await q.close();
+  }
+
+  /* „Noch einmal hoeren" (A4) - und wer ihn NICHT bekommt.
+   *
+   * Fiona liest nicht: Aufgabe und Moeglichkeiten kommen nur als Ton, und
+   * wer beim ersten Mal ueberhoert wurde, hatte bis A4 keinen Weg zurueck.
+   * Lea liest (`vorlesen: false`) und bekommt deshalb keinen - ein Knopf,
+   * der ihr nichts vorliest, waere ein Knopf, der schweigt.
+   *
+   * Geprueft wird BEIDES, denn nur zusammen ist es eine Aussage: dass er
+   * da ist, wo er hingehoert, und dass er nicht ueberall steht. */
+  {
+    const fk = await p.$('.schirm.da #nochhoeren');
+    if (!fk) merke('sprechen', new Error('Fiona hat keinen Knopf „noch einmal hören" — '
+      + 'wer die Aufgabe überhört hat, kommt nicht mehr an sie heran'));
+    else {
+      const gesagt = await p.evaluate(() => window.__gesagt?.length || 0);
+      await fk.click();
+      await p.waitForFunction((v) => (window.__gesagt?.length || 0) > v, gesagt,
+        { timeout: 4000 }).catch(() => {});
+      const nachher = await p.evaluate(() => window.__gesagt?.length || 0);
+      if (nachher <= gesagt) merke('sprechen', new Error('der Knopf „noch einmal hören" '
+        + 'sagt nichts — er sieht aus wie eine Hilfe und ist keine'));
+    }
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.click('[data-profil="lea"]');
+    await zurEbenenwahl(q, 'kontinente');
+    await q.click('[data-ebene="kontinente"]');
+    await q.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
+    await durchVorlaufWenn(q);
+    await q.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    await q.waitForTimeout(700);
+    if (await q.$('.schirm.da #nochhoeren'))
+      merke('sprechen', new Error('Lea bekommt „noch einmal hören", obwohl ihr nichts '
+        + 'vorgelesen wird — der Knopf hängt nicht am Profil'));
+    await q.close();
+  }
+
   const mikro = await p.$('.schirm.da #mikro');
   if (!mikro) {
     merke('sprechen', new Error('bei eingeschaltetem Sprachmodus steht kein Mikrofon '

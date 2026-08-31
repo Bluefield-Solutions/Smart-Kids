@@ -6510,3 +6510,96 @@ ist zu gross für diese Runde: die Antwortspalte schmaler zu machen berührt
 `passt` auf sieben Grössen, jede eingefrorene Aufnahme und den Grundriss
 selbst. Sie steht damit als nächster Schritt, aber mit einer Zahl davor:
 die Karte hat auf dem Gerät der Kinder weniger als die Hälfte der Breite.
+
+---
+
+## A4 · Sprechen für alle, ein Hörknopf für Fiona, mehr Karte für alle
+
+Drei Wünsche in einer Runde, und alle drei haben ihre eigene Falle gehabt.
+
+### Sprechen ist keine Kinderkrücke mehr
+
+`sprechen` stand nur in Fionas Profil, weil sie nicht schreibt. Es ist aber
+auch der Weg von jemandem, der schreiben **kann und nicht will**: „Wie heißt
+dieses Land?" mit siebzehn Ländern im Vorrat sind siebzehn getippte Namen,
+und der Sinn der Übung ist das Land, nicht die Tastatur. Alle vier Profile
+haben es jetzt.
+
+Es bleibt eine **Option**: das Mikrofon erscheint nur, wenn der Sprachmodus
+im Elternbereich an ist, und das Schreibfeld bleibt daneben stehen. Der
+Rauchtest prüft beides — dass Stephan das Mikrofon bekommt **und** dass ihm
+das Feld nicht weggenommen wird. Zwei Gegenproben, eine je Hälfte.
+
+### Der Hörknopf — und warum der erste Entwurf unprüfbar war
+
+Fiona liest nicht: Aufgabe und Möglichkeiten kommen nur als Ton. Wer beim
+ersten Mal überhört wurde, hatte keinen Weg zurück außer aufzugeben.
+
+Der erste Entwurf war elegant und falsch. `ansagen()` ist der eine Trichter,
+durch den jede Ansage geht — also merkte er sich die letzte, und der Knopf
+wurde angehängt, **wenn sie kam**. Sie kommt aber in einem `setTimeout`
+(500 ms nach dem Bildwechsel, damit die Stimme nicht in den Übergang
+spricht). Damit war der Knopf auf den eingefrorenen Aufnahmen mal da und mal
+nicht, und `ansicht` meldete drei Bilder rot, die sich gar nicht geändert
+hatten.
+
+**Ein Knopf, der von einer Uhr abhängt, ist nicht prüfbar.** Jetzt bekommt
+er seinen Satz mitgegeben und steht sofort; gesagt wird der Satz weiterhin
+erst nach dem Übergang. Zwei Läufe von `ansicht` hintereinander: 32 grün,
+32 grün.
+
+Er hängt am **Profil**, nicht am Bildschirm: Lea liest, für sie wäre er ein
+Knopf, der schweigt. Auch das ist geprüft — und gegengeprobt, in beide
+Richtungen.
+
+### Das Zeichen, viermal gezeichnet
+
+„Mit einem sauberen Icon" war die Bitte, und das entscheidet sich bei
+**26 Punkten**, nicht bei 78. Vier Entwürfe nebeneinander gerendert und in
+beiden Größen angesehen:
+
+- Lautsprecher + Bogen ohne Spitze → verschmilzt zum Klumpen
+- Lautsprecher + **Kreispfeil mit Spitze** → klar getrennt ✓
+- Lautsprecher + zwei Wellen → heißt „Ton an", nicht „noch einmal"
+- Lautsprecher + Welle + Pfeil → zu voll
+
+### Die Karte breiter — und was das nicht bringt
+
+Die Antwortspalte im kurzen Querformat stand auf `min(46vw, 392px)`.
+Gemessen auf 844 × 390, Fionas Weltkarte:
+
+```
+46vw / 392px   Karte 444 × 241
+42vw / 356px   Karte 478 × 259
+38vw / 320px   Karte 512 × 278   <- eingestellt
+34vw / 286px   Karte 539 × 280
+```
+
+Bei 38vw ist die Karte an ihrer **Höhengrenze** angekommen; weiter zu gehen
+brächte nur wieder Luft an den Seiten.
+
+`passt` hat das sofort rot gemacht, und zu Recht: auf dem **iPhone SE quer**
+(667 breit) sind 38vw nur 253 Punkte, und „Mecklenburg-Vorpommern" stand
+zehn Punkte über seinen eigenen Knopf hinaus. Deshalb ein Boden von 307 —
+genau das, was die Spalte dort vorher hatte. Das kleinste Gerät behält seine
+Breite, nur das größere gibt etwas ab.
+
+**Was es nicht bringt:** den Länderkarten. Nordamerika bleibt bei jeder
+Spaltenbreite 352 × 280, weil es schon an der Höhe hängt — die sieben Nadeln
+und der Faden von 154 Punkten bleiben. Die Vermutung aus P7, eine schmalere
+Spalte würde sie erledigen, ist damit auch von der anderen Seite widerlegt.
+
+### Und ein Fehler, den `passt` gefangen hat
+
+Die Profilkachel zeigte `p.eingabe.join(' und ')`. Mit der dritten
+Eingabeart stand dort „ziehen und tippen und sprechen" — kein Deutsch, und
+breit genug, dass Violetas Kachel **15 Punkte in den Bereich des Telefons**
+rutschte, gefunden auf der Größe mit Leiste.
+
+Zwei Dinge daran waren falsch, nicht eines. `aufzaehlen` statt `join` macht
+daraus „ziehen oder tippen". Und `sprechen` steht nur da, **wenn der
+Sprachmodus wirklich an ist** — es ist eine Option hinter einem Schalter;
+wer sie immer läse, bekäme ein Versprechen, das der Bildschirm nicht hält.
+Fiona sah bis A4 genau das.
+
+204 Gegenproben, `npm run tor` grün in 103,0 s.

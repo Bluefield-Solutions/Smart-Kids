@@ -746,9 +746,35 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Im kurzen Querformat steht das Mikrofon NEBEN der Liste statt darunter.
    Es kostete 68 der 210 Punkte, die den Antworten ueberhaupt blieben -
    deshalb war die vierte abgeschnitten. Die Breite dafuer kommt aus der
-   Karte, die dort 44 % ihrer Flaeche ungenutzt liess. */
+   Karte, die dort 44 % ihrer Flaeche ungenutzt liess.
+
+   Seit A4 sind es 38vw statt 46. Gemessen auf 844 x 390, Fionas
+   Weltkarte:
+
+       46vw / 392px   Karte 444 x 241
+       42vw / 356px   Karte 478 x 259
+       38vw / 320px   Karte 512 x 278   <- hier
+       34vw / 286px   Karte 539 x 280
+
+   Bei 38vw ist die Karte 278 hoch und damit an ihrer HOEHENgrenze
+   angekommen - weitere Breite macht sie nicht mehr groesser, sie liesse
+   nur wieder Luft an den Seiten. Genau deshalb steht hier 38 und nicht 34.
+
+   Und deshalb ein BODEN von 307 Punkten. `min(38vw,320px)` allein hat
+   `passt` sofort rot gemacht: auf dem iPhone SE quer (667 breit) sind
+   38vw nur 253 Punkte, und „Mecklenburg-Vorpommern" stand dann 10 Punkte
+   ueber seinen eigenen Knopf hinaus, „Suedamerika" zwei. 307 ist genau
+   das, was die Spalte dort vorher hatte - das kleinste Geraet behaelt
+   also seine Breite, und nur das groessere gibt etwas an die Karte ab.
+   Nicht geschaetzt: 46vw von 667 sind 307.
+
+   Was dieser Schritt NICHT tut: den Laenderkarten helfen. Nordamerika
+   bleibt bei jeder Spaltenbreite 352 x 280, weil es schon an der Hoehe
+   haengt - und deshalb bleiben dort auch die sieben Nadeln und der Faden
+   von 154 Punkten. Die Vermutung, eine schmalere Spalte wuerde die Nadeln
+   erledigen, hat die Messung widerlegt. */
 @media (orientation:landscape) and (max-height:440px){
-  .seite{width:min(46vw,392px);flex-direction:row;align-items:stretch;gap:var(--r2)}
+  .seite{width:clamp(307px,38vw,320px);flex-direction:row;align-items:stretch;gap:var(--r2)}
   .wahlliste{flex:1;min-width:0}
   .werkzeug{flex:none;flex-direction:column;justify-content:center;padding-top:0}
 }
@@ -968,6 +994,10 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 }
 .wahlliste{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;
   gap:var(--r3);justify-content:center;justify-content:safe center;padding:var(--r1)}
+/* „Noch einmal hoeren" - derselbe runde Knopf wie das Auge in der Kachel,
+   aber in der Betonfarbe: er ist eine HILFE und keine Antwort, und er
+   soll neben dem blauen Mikrofon nicht wie ein zweiter Weg aussehen. */
+.werkzeug .nochhoeren{color:var(--akzent)}
 .werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
   padding-top:var(--r2)}
 /* Der leise Ausweg. Er soll erreichbar sein, aber nicht einladen: kein

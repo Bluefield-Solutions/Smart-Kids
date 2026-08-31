@@ -284,6 +284,26 @@
       "zeit": "2026-08-31",
       "s": 1
     },
+    "Stephan darf nicht mehr sprechen": {
+      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
+      "zeit": "2026-08-31",
+      "s": 27
+    },
+    "die Spracheingabe verdrängt das Schreibfeld": {
+      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
+      "zeit": "2026-08-31",
+      "s": 16
+    },
+    "Fiona kann die Aufgabe nicht noch einmal hören": {
+      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
+      "zeit": "2026-08-31",
+      "s": 16
+    },
+    "der Hörknopf hängt nicht mehr am Profil": {
+      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
+      "zeit": "2026-08-31",
+      "s": 16
+    },
     "das Becken verschluckt ein rotes Tor": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
       "zeit": "2026-08-31",
@@ -645,14 +665,14 @@
       "s": 54
     },
     "die Aufgabe wird nicht mehr vorgelesen": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
+      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
       "zeit": "2026-08-31",
-      "s": 65
+      "s": 98
     },
     "die Ansage hängt nicht mehr am Kind": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
+      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
       "zeit": "2026-08-31",
-      "s": 100
+      "s": 85
     },
     "das Forscherbuch zeigt wieder alles": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",

@@ -57,6 +57,18 @@ const ZEICHEN = {
   // Ein Aufkleber: rundes Blatt mit umgeschlagener Ecke.
   kleber:'<path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 0-4 4v5a9 9 0 0 1 0-18z"/><path d="M12 21c2.4 0 8.6-6.2 9-9"/>',
   zu:'<path d="M6 6l12 12M18 6L6 18"/>',
+  /* Nochmal hoeren: der Lautsprecher aus `tonAn`, daneben ein Kreispfeil.
+     Der Lautsprecher sagt „hoeren", der Pfeil sagt „noch einmal" -
+     zusammen sagen sie, was der Knopf tut, ohne ein Wort. Fiona liest
+     nicht.
+     Vier Entwuerfe nebeneinander gezeichnet und bei 26 UND 78 Punkten
+     angesehen, denn der Knopf ist 26 gross und dort entscheidet es sich:
+     ein Bogen ohne Pfeilspitze verschmolz mit dem Lautsprecherkegel zu
+     einem Klumpen, zwei Wellen heissen „Ton an" und nicht „noch einmal",
+     und eine Welle PLUS Pfeil war zu voll. Was uebrig bleibt, ist das
+     Einfachste: Kegel links, Kreispfeil rechts, dazwischen Luft. */
+  nochhoeren:'<path d="M3.5 9.5H7L11 5.5v13L7 14.5H3.5z"/>'
+    + '<path d="M20 12a4 4 0 1 1-1.2-2.85"/><path d="M21.3 6.4l-.5 3.1-3.1-.5"/>',
   /* Anschauen: ein Auge. Es stand bis P16 als das WORT „anschauen" unter
      jeder Kachel - sechzehn Punkte hoch und fuer eine Sechsjaehrige, die
      nicht liest, ohnehin stumm. */
@@ -308,6 +320,35 @@ function vorlesen(text){
  * gerade das Kind vor dem Bildschirm sitzt, das lesen koennte oder nicht.
  */
 function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }
+
+/* „Noch einmal hoeren" (A4).
+ *
+ * Fiona liest nicht: die Aufgabe UND die Moeglichkeiten kommen nur als
+ * Ton. Wer beim ersten Mal nicht zugehoert hat oder ueberhoert wurde,
+ * hatte bis A4 keinen Weg zurueck - ausser die Aufgabe aufzugeben.
+ *
+ * Der Knopf bekommt den Satz MITGEGEBEN und holt ihn nicht aus einer
+ * gemerkten Variablen. Der erste Anlauf tat genau das: `ansagen()` merkte
+ * sich die letzte Ansage, und der Knopf wurde angehaengt, wenn sie kam -
+ * also in einem `setTimeout`. Damit war er auf den eingefrorenen
+ * Aufnahmen mal da und mal nicht, je nachdem, wo der Bildschirmschuss
+ * hinfiel; `ansicht` meldete drei Bilder rot, die sich gar nicht geaendert
+ * hatten. Ein Knopf, der von einer Uhr abhaengt, ist nicht pruefbar.
+ *
+ * Er erscheint nur fuer ein Kind, dem vorgelesen wird - fuer alle anderen
+ * waere er ein Knopf, der schweigt. */
+function nochHoerenKnopf(text){
+  if (!P || !P.vorlesen || !text) return null;
+  const b = el('button', 'knopf rund nochhoeren', ZEI('nochhoeren', 26));
+  b.id = 'nochhoeren';
+  b.setAttribute('aria-label', 'Aufgabe noch einmal hören');
+  b.title = 'Noch einmal hören';
+  // `vorlesen` und nicht `ansagen`: das hier ist eine BITTE, und eine
+  // Bitte wird nicht vom Profil beantwortet - so wie die Karten im
+  // Vorlauf und die Aufkleber im Buch.
+  b.onclick = () => vorlesen(text);
+  return b;
+}
 
 /* Was die App VON SICH AUS sagt: das Lob, die Hinweise beim Ziehen, die
  * Nachfrage vor dem Loeschen, die Bestaetigung des Namens.
@@ -631,7 +672,17 @@ const PROFILE = {
      keine, also sind es acht statt fuenf und nicht dreizehn.
      Nachgezaehlt, nicht geschaetzt: der erste Anlauf schrieb hier
      „aendert sich fuer sie nichts". */
-  lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen'], vorlesen:false,
+  /* `sprechen` haben seit A4 ALLE Profile.
+   *
+   * Es war Fionas Weg, weil sie nicht schreiben kann. Aber es ist auch
+   * der Weg von jemandem, der schreiben KANN und nicht will: „Wie heisst
+   * dieses Land?" mit siebzehn Laendern im Vorrat sind siebzehn getippte
+   * Namen, und der Sinn der Uebung ist das Land, nicht die Tastatur.
+   *
+   * Es bleibt eine OPTION und wird niemandem aufgedraengt: das Mikrofon
+   * erscheint nur, wenn der Sprachmodus im Elternbereich an ist, und das
+   * Schreibfeld bleibt daneben stehen. Wer tippen will, tippt. */
+  lea:  { id:'lea', name:'Lea', alter:8, eingabe:['ziehen','tippen','sprechen'], vorlesen:false,
           kandidaten:99, laenderTiefe:13, sitzung:8, streng:true, ton:'kind', farbe:'--f3' },
   /* Die Eltern - seit N1 ZWEI Profile, Stephan und Violeta.
    *
@@ -650,10 +701,10 @@ const PROFILE = {
    * Moeglichkeiten bei den Bundeslaendern fest verdrahtet (`? 4 :`) und
    * das Profil wurde dort gar nicht gefragt - die Eltern haetten also mit
    * vier Moeglichkeiten geraten, oder die Kinder haetten ihre verloren. */
-  stephan: { id:'stephan', name:'Stephan', alter:null, eingabe:['tippen'], vorlesen:false,
+  stephan: { id:'stephan', name:'Stephan', alter:null, eingabe:['tippen','sprechen'], vorlesen:false,
           kandidaten:0, laenderTiefe:17, sitzung:12, streng:true, ton:'sachlich',
           farbe:'--f5' },
-  violeta: { id:'violeta', name:'Violeta', alter:null, eingabe:['tippen'], vorlesen:false,
+  violeta: { id:'violeta', name:'Violeta', alter:null, eingabe:['tippen','sprechen'], vorlesen:false,
           kandidaten:0, laenderTiefe:17, sitzung:12, streng:true, ton:'sachlich',
           farbe:'--f6' },
 };
@@ -1363,9 +1414,21 @@ function zeige(bau){
  * Eine Verzweigung mit zwei Aesten beschreibt zwei Profile. Sie ist keine
  * Regel, sondern eine Aufzaehlung mit anderen Mitteln.
  */
+/* Die Zeile unter dem Namen: Alter und wie geantwortet wird.
+ *
+ * `sprechen` steht nur da, wenn der Sprachmodus WIRKLICH an ist. Es ist
+ * eine Option hinter einem Schalter im Elternbereich; wer sie hier immer
+ * lesen wuerde, bekaeme ein Versprechen, das der Bildschirm nicht haelt -
+ * und Fiona sah bis A4 genau das.
+ *
+ * Und `aufzaehlen` statt `join(' und ')`: seit alle Profile sprechen
+ * duerfen, stand dort „ziehen und tippen und sprechen". Das ist kein
+ * Deutsch, und es hat die Kachel so breit gemacht, dass Violeta 15 Punkte
+ * in den Bereich des Telefons rutschte - gefunden von `passt` auf der
+ * Groesse mit Leiste, im selben Lauf, in dem das Sprechen dazukam. */
 const profilzeile = (p) => [
   p.alter ? `${p.alter} Jahre` : null,
-  p.eingabe.join(' und '),
+  aufzaehlen(p.eingabe.filter(x => x !== 'sprechen' || Einst.sprachmodus)),
 ].filter(Boolean).join(' · ');
 
 /* ---------- Profilwahl --------------------------------------------------- */
@@ -2343,8 +2406,16 @@ function rechenschirm(){
   // gesagt - ohne die Möglichkeiten wüsste sie nicht, wonach sie greifen
   // kann. So steht es auch im Abgleich, Reihe C1. Wer schreibt, bekommt
   // keine Aufzählung vorgesagt: sie wäre die Antwort.
-  ansagen(weise==='tippen' ? ziel.gesagt
-    : `${ziel.gesagt} ${aufzaehlen(zahlen.map(z=>Rechnen.gesprochen(z)))}?`);
+  const ansageText = weise==='tippen' ? ziel.gesagt
+    : `${ziel.gesagt} ${aufzaehlen(zahlen.map(z=>Rechnen.gesprochen(z)))}?`;
+  ansagen(ansageText);
+  /* Auch hier - und hier braucht es ihn am meisten: auf der Karte steht
+     die Frage wenigstens noch als Bild da, eine Rechenaufgabe mit vier
+     gesprochenen Moeglichkeiten ist ohne Ton weg. */
+  {
+    const b = nochHoerenKnopf(ansageText);
+    if (b) s.querySelector('.werkzeug')?.appendChild(b);
+  }
   return s;
 }
 
@@ -2947,6 +3018,14 @@ function spielschirm(){
   const seite = s.querySelector('#seite');
   const liste = el('div','wahlliste'), werkzeug = el('div','werkzeug');
   seite.append(liste, werkzeug);
+  /* „Noch einmal hoeren" wird ZULETZT angehaengt - nach dem Mikrofon und
+     dem Umschalter -, damit die Reihenfolge dieselbe bleibt, wenn einer
+     der beiden fehlt. Der Satz kommt mit; gesagt wird er weiter unten
+     erst nach dem Bildwechsel, aber der Knopf steht sofort. */
+  const nochHoerenAnhaengen = (satz) => {
+    const b = nochHoerenKnopf(satz);
+    if (b) werkzeug.appendChild(b);
+  };
 
   /**
    * Zeigt die Loesung und geht weiter.
@@ -4009,13 +4088,15 @@ function spielschirm(){
    */
   // 500 ms, und `?flott` kuerzt sie mit: sonst wartete der Rauchtest an
   // fuenf Stellen 900 ms auf eine Ansage, die es noch gar nicht gab.
-  setTimeout(()=>{
+  const ansageText = (() => {
     const teile = [frageText];
     // Bei der umgekehrten Frage waere die Aufzaehlung der Kandidaten die
     // halbe Antwort - gefragt ist ja gerade, WO eines davon liegt.
     if (!tippt && !umgekehrt) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
-    ansagen(teile.join(' '));
-  }, FLOTT ? 60 : 500);
+    return teile.join(' ');
+  })();
+  nochHoerenAnhaengen(ansageText);
+  setTimeout(()=>{ ansagen(ansageText); }, FLOTT ? 60 : 500);
   return s;
 }
 

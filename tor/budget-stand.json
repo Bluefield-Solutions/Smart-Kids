@@ -1,11 +1,11 @@
 {
   "bestaetigt": {
     "zeit": "2026-08-31",
-    "start": 232.5,
-    "geometrie": 27.7,
+    "start": 245.3,
+    "geometrie": 27.8,
     "schrift": 51.7,
     "ebenen": {
-      "laender-europa.json": 114.7,
+      "laender-europa.json": 109.2,
       "laender-asien.json": 98.7,
       "laender-nordamerika.json": 75.6,
       "laender-afrika.json": 68.6,
@@ -15,7 +15,7 @@
   },
   "gesehen": {
     "zeit": "2026-08-31",
-    "start": 243.2,
+    "start": 245.4,
     "geometrie": 27.8,
     "schrift": 51.7,
     "ebenen": {
