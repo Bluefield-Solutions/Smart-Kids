@@ -21,7 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, inEbene, ausAblage,
+import { starte, zurEbenenwahl, durchVorlauf, inEbene, ausAblage, stelleAblage,
          zielUndEtikett } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
@@ -375,6 +375,18 @@ if (laeuft('treffer')) {
       viewport: { width: 844, height: 390 } });
     const q = await ctx.newPage();
     await q.goto(`http://localhost:${port}/`);
+    /* ALLES gesessen - sonst steht auf der Karte kein einziger Haken.
+     *
+     * Gemessen wird hier unter anderem, dass keine zwei Haken
+     * uebereinanderliegen, und dafuer muss es sie geben. Ohne diesen
+     * Stand liefe die Pruefung ueber eine leere Menge und waere immer
+     * gruen (Regel 5). */
+    await stelleAblage(q, {
+      fortschritt: { [`stephan:${ebene}`]: Object.fromEntries(
+        gebiete.map(g => [g.id, { fach: 4, hoechstes: 4, faellig: 0 }])) },
+      einstellungen: { alles: { vorlaufGezeigt: { [`stephan:${ebene}`]: true } } },
+    });
+    await q.reload({ waitUntil: 'domcontentloaded' });
     // Das tiefste Profil: es spielt alle Laender, also stehen auf der
     // Karte auch die kleinen. Mit Fiona (Tiefe 3) waere die Messung ein
     // Ausschnitt und haette Luxemburg nie gesehen.
@@ -479,8 +491,36 @@ if (laeuft('treffer')) {
           }
         if (drunter.size) nadelAuf.push({ id, auf: [...drunter] });
       }
+      /* Und die Haken: „geschafft" muss man EINEM Gebiet ansehen koennen.
+       *
+       * Gemessen auf der Nordamerikakarte mit allen Laendern gesessen:
+       * zehn Haken von 26 Punkten Durchmesser, das engste Paar 4,2 Punkte
+       * auseinander - in Mittelamerika lag ein gruener Fleck, und welches
+       * Land abgehakt war, sah man nicht. Seit die Haken an der Nadel
+       * haengen, ist der engste Abstand dort 40 Punkte.
+       *
+       * Die Grenze ist der RADIUS, nicht der Durchmesser: liegt die Mitte
+       * des einen in der Scheibe des anderen, sind es nicht zwei Haken
+       * sondern ein Fleck. Zwei, die sich BERUEHREN, sind ausdruecklich
+       * erlaubt - auf der Deutschlandkarte liegen mehrere Anker 20 bis 25
+       * Punkte auseinander, und dort steht sichtbar ein Haken je Land.
+       * Eine Grenze am Durchmesser haette acht solcher Paare gemeldet,
+       * die niemanden stoeren. Nachgesehen, nicht gerechnet. */
+      const hkn = [...s.querySelectorAll('.haken')].map(g => {
+        const r = g.getBoundingClientRect();
+        return { id: g.dataset.id, x: r.left + r.width/2, y: r.top + r.height/2, d: r.width };
+      });
+      const hakenAuf = []; let engste = Infinity;
+      for (let i = 0; i < hkn.length; i++) for (let j = i+1; j < hkn.length; j++) {
+        const w = Math.hypot(hkn[i].x - hkn[j].x, hkn[i].y - hkn[j].y);
+        engste = Math.min(engste, w);
+        if (w < Math.max(hkn[i].d, hkn[j].d) / 2)
+          hakenAuf.push(`${hkn[i].id}/${hkn[j].id} ${w.toFixed(1)} pt`);
+      }
       const groessen = [...kreisVon.values()];
       return { verschluckt, ohneKreis, marke, nadeln, nadelFehl, nadelAuf,
+               haken: hkn.length, hakenAuf,
+               engste: Number.isFinite(engste) ? +engste.toFixed(1) : null,
                nichtTippbar: groessen.filter(k => klein.has(k.id)).map(k => `${k.id} ${k.d}`),
                kasten: `${Math.round(kb.width)}×${Math.round(kb.height)}`,
                kreise: groessen.sort((x, y) => x.d - y.d).slice(0, 3),
@@ -501,6 +541,13 @@ if (laeuft('treffer')) {
       + `${k.markiert ? 'als zu klein markiert' : 'NICHT als zu klein markiert'} — `
       + 'die umgekehrte Frage entscheidet dann nach einer Zahl, die es am '
       + 'Bildschirm nicht gibt (P7)');
+    if (!m.haken) fehler.push(
+      `${ebene}: kein einziger Haken auf der Karte, obwohl alles gesessen ist — `
+      + 'dann prüft die Haken-Messung nichts');
+    if (m.hakenAuf.length) fehler.push(
+      `${ebene}: ${m.hakenAuf.length} Haken liegen aufeinander (${m.hakenAuf.slice(0,4).join(', ')}`
+      + `${m.hakenAuf.length > 4 ? ', …' : ''}) — die Mitte des einen liegt in der Scheibe `
+      + 'des anderen, dann sieht man nicht, WELCHES Gebiet sitzt');
     for (const n of m.nadelAuf) fehler.push(
       `${ebene}: die Nadel von ${n.id} liegt auf ${n.auf.join(', ')} — `
       + 'eine Trefferfläche, die einem anderen Gebiet seine Fläche nimmt');
@@ -512,6 +559,7 @@ if (laeuft('treffer')) {
       + `${m.klein} von ${m.n} unter 44 pt · kleinste Kreise `
       + (m.kreise.length ? m.kreise.map(k => `${k.id} ${k.d}`).join(', ') : '(keine)')
       + (m.nadeln ? ` · ${m.nadeln} an der Nadel` : '')
+      + ` · ${m.haken} Haken, engster Abstand ${m.engste ?? '—'} pt`
       + (m.nichtTippbar.length ? ` · nicht antippbar: ${m.nichtTippbar.join(', ')}` : ''));
   }
   console.log('    Trefferflächen, gemessen im Browser auf 844 × 390:');

@@ -1265,7 +1265,22 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Kleiner, statt einen der beiden wegzulassen - beides sind Wege, die
      das Kind sonst nicht hat. */
   .kachelknoepfe{gap:var(--r1)}
-  .kachelknoepfe .leise.mini{padding:0 var(--r2);min-height:0;
+  /* Der Kasten bleibt 16 Punkte hoch, die TREFFERFLAECHE wird 26.
+   *
+   * Gemessen auf 844 x 390 mit Leiste: ueber dem Knopf liegen 2 Punkte
+   * Luft bis zur Kachel, darunter 8 bis zur naechsten Zeile - zehn Punkte,
+   * die niemand benutzt. Padding plus gleich grosser negativer Rand holt
+   * sie, ohne dass sich am Bild etwas aendert.
+   *
+   * 44 sind hier NICHT zu erreichen, und das ist gerechnet, nicht
+   * geschaetzt: von 390 Punkten bleiben mit Leiste 348, davon gehen Kopf
+   * und Frage ab; fuer drei Zeilen aus Kachel (56), Knopfzeile (16) und
+   * Abstand (8) bleibt genau nichts uebrig. Ein 44er Knopf je Kachel
+   * kostete 84 Punkte, die es nicht gibt. Was ein Fehlgriff kostet, ist
+   * dafuer klein: daneben liegt die Kachel, und die startet die Ebene -
+   * also genau das, was das Kind ohnehin wollte. */
+  .kachelknoepfe .leise.mini{padding:var(--r0) var(--r2) var(--r2);min-height:0;
+    margin:calc(-1 * var(--r0)) 0 calc(-1 * var(--r2));
     font-size:calc(var(--s-klein) * 0.9)}
   .wahl{gap:var(--r2)}
   .kachelpaar{gap:var(--r0)}

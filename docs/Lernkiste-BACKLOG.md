@@ -804,6 +804,95 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
+### P13 · Sieben Haken auf einem Fleck  ·  ERLEDIGT
+
+Ein Haken sagt „geschafft". Er ist 26 Punkte groß, in fester
+Bildschirmgröße, und er steht am **Anker** des Gebiets. In Mittelamerika
+liegen sieben Anker so eng beieinander, dass daraus ein grüner Fleck wurde.
+
+**Gemessen, bevor etwas geändert wurde** — auf der Nordamerikakarte, 844 ×
+390, mit allen Ländern gesessen:
+
+```
+10 Haken · 14 Paare übereinander · engster Abstand 4,2 pt (bei 26 pt Durchmesser)
+```
+
+Ich hatte in der Schrittliste geschrieben, der Haken sei „dort vier Punkte
+groß". Das war falsch: er ist überall 26 Punkte groß. **Vier Punkte war der
+Abstand zwischen zweien**, nicht ihre Größe — die Diagnose stimmte, die
+Begründung nicht.
+
+**Wer an der Nadel hängt, bekommt seinen Haken an der Nadel** (P10). Der
+Haken sagt „geschafft", und er muss dort stehen, wo das Kind das Land
+findet. Danach: **null Paare übereinander**, engster Abstand 40 pt.
+
+**Zwei Dinge fielen dabei auf, die nichts mit den Haken zu tun hatten.**
+
+*Die Reihenfolge im SVG war falsch herum.* Der Haken lag unter den
+Trefferflächen, also unter dem Nadelkopf — sichtbar war ein grüner Ring mit
+einem farbigen Punkt darin, ohne Haken. Jetzt stehen die Haken darüber;
+beide nehmen keine Tipps an, die Reihenfolge kostet nichts.
+
+*Die Platzsuche der Nadeln sah nur das oberste Element.*
+`elementFromPoint` liefert genau eines, und über der Karte liegen Haken,
+Fahnen und der Zeiger. Ein Punkt mitten auf Frankreich, an dem gerade ein
+Haken stand, galt damit als freie Fläche. Gefunden wurde das erst, als die
+Haken selbst an die Nadeln wanderten und zu dem wurden, worüber gesucht
+wird. Jetzt `elementsFromPoint` — es sieht durch.
+
+**Das Tor misst es jetzt auf allen sieben Karten**, mit einem gestellten
+Stand, in dem alles gesessen ist (ohne den stünde kein einziger Haken da,
+und die Prüfung liefe über eine leere Menge):
+
+```
+bundeslaender  15 Haken, engster Abstand 18,7 pt
+laender:europa 16 Haken, engster Abstand 13,9 pt
+laender:nordamerika 11 Haken, engster Abstand 24,9 pt
+```
+
+**Die Grenze ist der Radius, nicht der Durchmesser** — und das ist
+angesehen, nicht gerechnet: zwei Haken, die sich *berühren*, sind zwei
+Haken; auf der Deutschlandkarte liegen mehrere Anker 20 bis 25 Punkte
+auseinander, und dort steht sichtbar einer je Land. Eine Grenze am
+Durchmesser hätte acht solcher Paare gemeldet, die niemanden stören. Erst
+wenn die **Mitte** des einen in der Scheibe des anderen liegt, ist es kein
+Paar mehr, sondern ein Fleck.
+
+---
+
+### P14 · Was ein Kind antippt, misst jetzt jemand  ·  ERLEDIGT
+
+S3 war erledigt, die Zahl im Backlog überholt (47,8 pt statt 42). Die
+Frage, die übrig blieb: **was misst `passt` eigentlich nicht?**
+
+Es maß eine **Klassenliste** — `.kachel`, `.knopf`, `.etikett`, `.zi`,
+`.mikro`, `.sterne`, `.aufkleber`. Eine Klassenliste veraltet: `.zahl` (die
+vier Möglichkeiten beim Rechnen) stand nie darin. Jetzt steht `button` mit
+in der Liste. Wer einen neuen Bildschirm baut, muss dafür nichts eintragen.
+
+**Der erste Lauf danach: 56 Trefferflächen unter 44 pt**, und alle waren
+derselbe Knopf — **„anschauen" an jeder Kachel der Ebenenwahl, 16 Punkte
+hoch.** Drei solcher Knöpfe kann eine Kachel tragen („anschauen", „von
+vorne", „Test"), und keiner war je gemessen worden.
+
+**44 sind dort nicht zu erreichen, und das ist gerechnet:** von 390 Punkten
+bleiben mit Leiste 348; davon gehen Kopf und Frage ab; für drei Zeilen aus
+Kachel (56), Knopfzeile (16) und Abstand (8) bleibt genau nichts übrig. Ein
+44er Knopf je Kachel kostete 84 Punkte, die es nicht gibt — deshalb steht im
+Stylesheet seit R3 „kleiner, statt einen der beiden wegzulassen".
+
+**Was zu holen war, ist geholt: 16 → 26 pt.** Über dem Knopf liegen 2
+Punkte Luft bis zur Kachel, darunter 8 bis zur nächsten Zeile — zehn
+Punkte, die niemand benutzte. Padding plus gleich großer negativer Rand
+holt sie, ohne dass sich am Bild irgendetwas ändert (die 32 eingefrorenen
+Aufnahmen sind unverändert grün).
+
+**Was ein Fehlgriff kostet, ist dafür klein**: daneben liegt die Kachel, und
+die startet die Ebene — also genau das, was das Kind ohnehin wollte. Der
+Hinweis bleibt im Bericht stehen, jetzt mit einer Zahl, die jemand liest.
+
+---
+
 ### P12 · Die Sprechprobe — das Werkzeug für M4r  ·  ERLEDIGT
 
 M4r sagt es selbst: „eine halbe Stunde mit dem Gerät in der Hand, und kann
@@ -1754,12 +1843,16 @@ hinein.
 Nicht-Treffer im eingefrorenen Korpus) ist die einzige Prüfung ohne
 Gegenprobe — weil ihr Gegenstand noch nicht existiert. Fällt mit M4r.
 
-**S3 · Die Buchstabenkarten im Vorlauf sind zwei Punkte zu klein.**
-Gemessen mit `npm run passt -- --hinweise` auf dem iPhone quer mit Leiste:
-die 26 Karten des Abc sind **42 pt** hoch, die Zielmarke ist 44. `passt`
-führt das als Hinweis, nicht als Fehler — zu Recht, es sind zwei Punkte.
-Es steht hier, weil ausgerechnet diese Karten das sind, was Fiona antippt,
-um „A wie Affe" zu hören.
+~~**S3 · Die Buchstabenkarten im Vorlauf sind zwei Punkte zu klein.**~~
+**Erledigt — und die Zahl hier war überholt.** Nachgemessen auf dem iPhone
+quer **mit** Leiste: die 26 Karten des Abc sind **47,8 × 74,4 pt**, ohne
+Leiste 61,8 × 87,5. Repariert wurde das mit der Dreizeilen-Grenze
+(`REIHEN_MAX`), und seither führt `passt` einen zu kleinen **Aufkleber als
+FEHLER**, nicht mehr als Hinweis — der Satz „ein Jahr lang stand es als
+HINWEIS im Bericht" steht im Tor selbst.
+
+Was in P14 daraus wurde: die Suche nach dem, was **sonst noch** niemand
+misst. Siehe dort.
 
 **P4 · Die Regelnummern im Quelltext zeigen in eine andere Regelliste.**
 Gemessen am 30.08.2026: **92 Verweise der Form „Regel N"** stehen in `tor/`,

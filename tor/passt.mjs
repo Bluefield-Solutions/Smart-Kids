@@ -64,9 +64,16 @@ const SUCHE = () => {
   // Kaesten, sie sind anklickbar, und die untere Reihe lief auf dem
   // Zielgeraet ueber den Rand. Das Tor meldete gruen, weil es dort nichts
   // zu sehen HATTE.
-  const bedienbar = '.schirm.da .kachel, .schirm.da .etikett, .schirm.da .knopf, '
-    + '.schirm.da .mikro, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
-    + '.schirm.da .aufkleber';
+  //
+  // Und seit dieser Runde steht `button` mit in der Liste - statt jede
+  // Klasse einzeln nachzutragen. Eine Klassenliste veraltet: `.zahl` (die
+  // vier Moeglichkeiten beim Rechnen) und `#pruef` standen nie darin, und
+  // niemand haette es gemerkt, solange sie gross genug sind. Was ein Kind
+  // antippen kann, ist ein Knopf; wer einen neuen Bildschirm baut, muss
+  // dafuer nichts eintragen.
+  const bedienbar = '.schirm.da button, .schirm.da .kachel, .schirm.da .etikett, '
+    + '.schirm.da .knopf, .schirm.da .mikro, .schirm.da .zi, .schirm.da .eingabe, '
+    + '.schirm.da .hinweis, .schirm.da .aufkleber';
   for (const el of document.querySelectorAll(bedienbar)) {
     const eb = el.getBoundingClientRect();
     if (eb.width === 0 && eb.height === 0) continue;         // nicht sichtbar

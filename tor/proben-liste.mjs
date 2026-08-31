@@ -980,6 +980,20 @@ export const PROBEN = [
     sagt:'wieder zu' },
   /* Und die Prüfung selbst darf nicht ins Leere greifen: stellt sie den
    * Rückfall gar nicht mehr her, ist ihre Zusage geschenkt. */
+  /* --- Die Haken (A4) ---------------------------------------------------
+   *
+   * Sie sind 26 Punkte gross und stehen am Anker. In Mittelamerika liegen
+   * sieben Anker so eng beieinander, dass daraus ein gruener Fleck wurde -
+   * vierzehn Paare uebereinander, das engste 4,2 Punkte auseinander. Seit
+   * P10 haengen diese Gebiete an einer Nadel, und der Haken haengt mit.
+   * Nimmt man ihm das wieder weg, ist der Fleck sofort zurueck. */
+  { n:'der Haken bleibt am Ort statt an der Nadel', tor:'ziehen',
+    args:['--nur=treffer'], bauen:true, datei:D,
+    such:'      const n = nadeln.find(x => x.id === h.dataset.id);',
+    ersatz:'      const n = null;',
+    an:{ ...DIST, text:'const n = null;' },
+    sagt:'liegen aufeinander' },
+
   /* --- Die Sprechprobe (M4r) -------------------------------------------
    *
    * Sie soll unterscheiden, ob bei einem Versuch ein Wort ankam. Eine

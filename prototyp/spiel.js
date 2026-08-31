@@ -2829,7 +2829,7 @@ function spielschirm(){
   // DAS der Hinweis - unter lauter abgehakten Nachbarn.
   const haken = formen.filter(g=>g.anker && gesessen(g.id)
       && (umgekehrt || g.id!==ziel.id))
-    .map(g=>`<g class="haken" data-x="${g.anker[0]}" data-y="${g.anker[1]}">
+    .map(g=>`<g class="haken" data-id="${g.id}" data-x="${g.anker[0]}" data-y="${g.anker[1]}">
         <circle r="13" fill="var(--gut)" stroke="var(--papier)" stroke-width="2.5"/>
         <path d="M-6 0 L-2 4.5 L6.5 -4.5" fill="none" stroke="var(--papier)"
               stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2910,9 +2910,14 @@ function spielschirm(){
             style="transform-box:fill-box;transform-origin:center"/></clipPath></defs>
           <g id="umg">${umgebung}</g>
           <g id="fl">${flaechen}</g>
+          <!-- Erst die Trefferflaechen, dann die Haken: seit P10 sitzt ein
+               Haken auf dem Nadelkopf, und lag er darunter, deckte der Kopf
+               ihn zu - ein gruener Ring mit einem farbigen Punkt darin, ohne
+               Haken. Beide nehmen keine Tipps an, die Reihenfolge kostet
+               also nichts. -->
+          <g id="treffer"></g>
           <g id="haken">${haken}</g>
           <g id="fahne"></g>
-          <g id="treffer"></g>
           <path id="belohn" d="" fill="var(--wasch)" clip-path="url(#wasch)" style="display:none"/>
           <g fill="none" stroke="var(--tinte)" stroke-opacity=".5" stroke-width="1.1"
              vector-effect="non-scaling-stroke">${konturen}</g>
@@ -3036,13 +3041,6 @@ function spielschirm(){
       const oben = (zb.height * k < 44) ? -zb.height/2 - 4*px : 0;   // ueber winzigen Flaechen
       zg.setAttribute('transform', `translate(${x} ${y + oben}) scale(${px.toFixed(3)})`);
     }
-    // Haken in fester Bildschirmgroesse, wie der Zeiger: sonst sind sie auf
-    // der Weltkarte winzig und auf Bremen riesig.
-    s.querySelectorAll('.haken').forEach(h=>{
-      h.setAttribute('transform',
-        `translate(${h.dataset.x} ${h.dataset.y}) scale(${(1/k).toFixed(3)})`);
-    });
-
     kreisPx.clear();
     /* Wie gross wird der Kreis AM ORT?
      *
@@ -3093,6 +3091,23 @@ function spielschirm(){
      * Durchgangs noch da, laese sie ihre eigene Arbeit als besetzt. */
     g.innerHTML = '';
     const nadeln = nadelplanFuer();
+
+    /* Haken in fester Bildschirmgroesse, wie der Zeiger: sonst sind sie auf
+     * der Weltkarte winzig und auf Bremen riesig.
+     *
+     * Und wer an der Nadel haengt, bekommt seinen Haken AN DER NADEL.
+     *
+     * Gemessen auf der Nordamerikakarte, mit allen Laendern gesessen:
+     * zehn Haken von 26 Punkten Durchmesser, davon vierzehn Paare
+     * uebereinander, das engste 4,2 Punkte auseinander. In Mittelamerika
+     * lag ein gruener Fleck, und welches Land abgehakt war, sah man
+     * nicht. Der Haken sagt „geschafft" - er muss dort stehen, wo das
+     * Kind das Land findet, und das ist seit P10 der Nadelkopf. */
+    s.querySelectorAll('.haken').forEach(h=>{
+      const n = nadeln.find(x => x.id === h.dataset.id);
+      const x = n ? n.x : h.dataset.x, y = n ? n.y : h.dataset.y;
+      h.setAttribute('transform', `translate(${x} ${y}) scale(${(1/k).toFixed(3)})`);
+    });
     const stuecke = mit.filter(n=>n.gross*k<MIN_PT).map(n=>{
       const rPx = kreisAmOrt(n);
       /* Und wenn auch das nicht reicht, haengt die Flaeche an einer Nadel.
@@ -3171,12 +3186,18 @@ function spielschirm(){
       braucht.sort((a, b) => (a.y - b.y) || (a.x - b.x) || (a.id < b.id ? -1 : 1));
 
       const gesetzt = [], plan = [];
+      /* Gesehen wird DURCH das, was oben liegt (`elementsFromPoint`).
+       *
+       * `elementFromPoint` liefert nur das oberste Element - und ueber der
+       * Karte liegen Haken, Fahnen und der Zeiger. Ein Punkt mitten auf
+       * Frankreich, an dem gerade ein Haken steht, galt damit als frei.
+       * Aufgefallen ist das, als die Haken an die Nadeln wanderten und
+       * damit selbst zu dem wurden, worueber gesucht wird. */
       const freiVonFlaeche = (x, y) => {
         const r = MIN_PT/2 * 0.7;
-        for (const [dx, dy] of [[0,0],[r,0],[-r,0],[0,r],[0,-r]]) {
-          const e = document.elementFromPoint(x + dx, y + dy);
-          if (!e || !e.closest || e.closest('path.geb')) return false;
-        }
+        for (const [dx, dy] of [[0,0],[r,0],[-r,0],[0,r],[0,-r]])
+          for (const e of document.elementsFromPoint(x + dx, y + dy))
+            if (e.closest && e.closest('path.geb')) return false;
         return true;
       };
       for (const b of braucht) {
