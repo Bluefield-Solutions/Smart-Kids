@@ -266,6 +266,33 @@ export async function zielPunkt(seite) {
   });
 }
 
+/**
+ * Ein Profil waehlen, eine Ebene betreten, warten bis die Karte steht.
+ *
+ * Stand in `ziehen`, `ansicht` und im Rauchtest fast gleich - und einmal
+ * sogar zweimal in derselben Datei, angelegt in der Runde P6. Das Tor
+ * `doppelt` hat es beim ersten Lauf gemeldet, also noch am selben Tag.
+ *
+ * Das Warten auf `kartenGroesse()` ist der Grund, warum es EIN Helfer sein
+ * muss: die Karte wird in zwei Bildern gesetzt, und wer den Anker vorher
+ * liest, misst woanders. Genau daran hat die gemessene Nachsicht einmal
+ * zwischen 60 und 80 Punkten geschwankt. Wer diesen Aufbau abschreibt,
+ * laesst die Zeile irgendwann weg.
+ */
+export async function inEbene(seite, profil, ebene, { vorlauf = true } = {}) {
+  await seite.waitForSelector(`[data-profil="${profil}"]`, { timeout: 20000 });
+  await seite.click(`[data-profil="${profil}"]`);
+  await zurEbenenwahl(seite, ebene);
+  await seite.click(`[data-ebene="${ebene}"]`);
+  await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout: 25000 });
+  if (vorlauf) await durchVorlauf(seite);
+  await seite.waitForFunction(() => {
+    const k = document.querySelector('.schirm.da .karte');
+    return !!(k && k.style.width && parseFloat(k.style.width) > 0);
+  }, null, { timeout: 8000 }).catch(() => {});
+  await seite.waitForTimeout(150);
+}
+
 /** Beantwortet die umgekehrte Frage: auf das gesuchte Gebiet tippen. */
 export async function zeigeAufKarte(seite) {
   const punkt = await seite.evaluate(() => {

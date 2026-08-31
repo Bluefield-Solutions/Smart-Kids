@@ -807,6 +807,88 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
+### P9 · Ein Tor, das doppelte Wahrheiten meldet  ·  ERLEDIGT
+
+Diese Sitzung hat Regel 15 **viermal** bezahlt: `pfadZuPolys` stand in vier
+Dateien (F16/F17), `filter(x => x.rang)` in drei (D2c), die Rangprüfung in
+zwei (D2c), `MIN_PT`/`MIN_REST` im Spiel und noch einmal im Tor. Jedes Mal
+derselbe Befund: eine Fassung wurde gepflegt, die andere galt, und niemand
+sah den Unterschied.
+
+`npm run doppelt` sucht Quelltext, der zweimal dasteht. Was zweimal
+dastehen **darf**, steht in `tor/doppelt-erlaubt.json` — und jeder Eintrag
+braucht einen Satz. Ein Eintrag ohne Begründung macht das Tor rot: er wäre
+ein Freibrief, kein Beschluss.
+
+**In Token gemessen, nicht in Zeilen** — und das ist der Unterschied
+zwischen einem Tor, das anschlägt, und einem, das nichts findet. Der erste
+Anlauf verglich normierte Zeilen, fand fünfzehn Dopplungen und ausgerechnet
+die vier nicht, für die er gebaut ist. Der Grund stand sofort da:
+
+```
+bauen.mjs           const #=#.#(§); if(!#) continue;
+backen-staedte.mjs  const # = #.#(§);
+                    if (!#) continue;
+```
+
+Dieselbe Sache, einmal auf einer Zeile, einmal auf zweien. Wer eine Kopie
+anlegt, formatiert sie um.
+
+**Die Fenstergröße ist an der Vergangenheit geeicht**, nicht daran, wie
+ruhig sie ist. Gemessen am Baum von `55950e4`, also vor F17, als
+`pfadZuPolys` noch dreimal dastand:
+
+| Fenster | Befunde heute | findet `pfadZuPolys` von damals |
+|---|---|---|
+| 40 | 84 | ja |
+| 50 | 53 | ja |
+| 80 | 25 | ja |
+| **100** | **16** | **ja** |
+| 120 | 11 | **nein** |
+
+Hundert ist also das größte Fenster, das den Fall noch fängt — und damit
+das leiseste. Wer es höher dreht, dreht genau den Befund weg, der F16 und
+F17 gekostet hat.
+
+**Der erste echte Lauf hat sofort eine Dopplung gefunden, die ich am
+selben Tag angelegt hatte:** der Abschnitt `treffer` aus P6 schrieb den
+Seitenaufbau ab, den `aufgabe()` sechzig Zeilen weiter oben schon hatte —
+samt dem Warten auf `kartenGroesse()`, an dem die gemessene Nachsicht
+einmal zwischen 60 und 80 Punkten geschwankt hat. Beides steht jetzt als
+`inEbene` in `chromium.mjs`.
+
+**Was es nicht kann:** es findet den Text, nicht die Absicht. Zwei Stellen,
+die dasselbe tun, aber verschieden geschrieben sind, entgehen ihm.
+
+---
+
+### P8 · Elf Dopplungen, die zusammengehören
+
+Der erste Lauf von `doppelt` hat fünfzehn gefunden. Vier davon sind
+Tabellen, die sich naturgemäß wiederholen — die Probenliste, die
+Abzeichentafel, die Länderlisten, die Backziele. Sie stehen mit Begründung
+in `tor/doppelt-erlaubt.json` und bleiben.
+
+Die anderen elf gehören zusammengelegt. Sie stehen ebenfalls dort, jede mit
+ihrem Satz, damit die Ratsche keine **neuen** durchlässt — aber sie sind
+Arbeit, nicht Beschluss:
+
+| Wo | Was |
+|---|---|
+| `ansicht` · `smoke` | derselbe gestellte Protokollstand in zwei Toren. **Der gefährlichste**: laufen sie auseinander, messen die beiden Tore verschiedene Elternberichte |
+| `spiel.js` ×2, `tor/schreiben.mjs` | Mulberry32. Die Fassung im Tor ist Absicht (sie rechnet nach); die beiden im Spiel nicht |
+| `smoke.mjs` ×2 | zwei Leser derselben Backlog-Tabelle |
+| `inhalt.mjs` ×2 | zwei Leser derselben Konzepttabelle |
+| `schreiben.js` ×2 | zweimal dieselbe Neuabtastung eines Striches |
+| `bauen.mjs` · `entwuerfe/bauen.mjs` | `bbox` zweimal |
+| `ansicht` · `ziehen` | Ziel und Anker aus der Seite lesen |
+| `smoke` · `ziehen` | der Rest des Seitenaufbaus um `inEbene` herum |
+| `rechnen.js` ×2 | zwei Aufgabenbauer mit demselben Bauplan |
+| `spiel.js` ×2 | der Antwortweg samt Mischen, für Karte und Rechnen |
+| `backen-kontinente` · `backen-laender` | der Importblock — der harmloseste |
+
+---
+
 ### P6 · `beruehrung` rechnete mit einem angenommenen Kartenmaßstab  ·  ERLEDIGT
 
 Das Tor rechnet Trefferflächen mit `KARTE_PX/1000` — 470 Bildpunkte

@@ -21,7 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, inEbene } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const TYP = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json',
@@ -83,23 +83,11 @@ async function aufgabe() {
   const p = await ctx.newPage();
   p.__ctx = ctx;
   await p.goto(`http://localhost:${port}/`);
-  await p.waitForSelector('[data-profil="fiona"]');
-  await p.click('[data-profil="fiona"]');
-  await zurEbenenwahl(p, 'kontinente');
-  await p.click('[data-ebene="kontinente"]');
-  // Seit R3 steht der Vorlauf beim ersten Betreten davor.
-  await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
-  await durchVorlauf(p);
-  await p.waitForFunction(() => document.querySelector('.schirm.da path.ziel'), null, { timeout: 5000 });
-  // Dieselbe Falle wie in `ansicht`: `kartenGroesse()` setzt die Karte in
-  // zwei Bildern, und ein Anker, der vorher gelesen wird, zeigt woanders
-  // hin. Das erklaert vermutlich auch, warum die gemessene Nachsicht
-  // zwischen Laeufen zwischen 60 und 80 Punkten schwankte.
-  await p.waitForFunction(() => {
-    const k = document.querySelector('.schirm.da .karte');
-    return !!(k && k.style.width && parseFloat(k.style.width) > 0);
-  }, null, { timeout: 5000 });
-  await p.waitForTimeout(150);
+  // Profil, Ebene, Vorlauf und das Warten auf `kartenGroesse()` stehen in
+  // `inEbene` - einmal, fuer alle Tore (siehe dort).
+  await inEbene(p, 'fiona', 'kontinente');
+  await p.waitForFunction(() => document.querySelector('.schirm.da path.ziel'),
+    null, { timeout: 5000 });
   const info = await p.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     const z = s.querySelector('path.ziel');
@@ -405,22 +393,9 @@ if (laeuft('treffer')) {
     // Das tiefste Profil: es spielt alle Laender, also stehen auf der
     // Karte auch die kleinen. Mit Fiona (Tiefe 3) waere die Messung ein
     // Ausschnitt und haette Luxemburg nie gesehen.
-    await q.waitForSelector('[data-profil="stephan"]');
-    await q.click('[data-profil="stephan"]');
-    await zurEbenenwahl(q, ebene);
-    await q.click(`[data-ebene="${ebene}"]`);
-    await q.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel',
-      { timeout: 25000 });
-    await durchVorlauf(q);
+    await inEbene(q, 'stephan', ebene);
     await q.waitForFunction(() => document.querySelector('.schirm.da path.geb'),
       null, { timeout: 25000 });
-    // Erst wenn `kartenGroesse()` gesetzt hat, stimmt der Massstab -
-    // dieselbe Falle wie oben bei `aufgabe()`.
-    await q.waitForFunction(() => {
-      const k = document.querySelector('.schirm.da .karte');
-      return !!(k && k.style.width && parseFloat(k.style.width) > 0);
-    }, null, { timeout: 5000 });
-    await q.waitForTimeout(200);
     const m = await q.evaluate((gebiete) => {
       const s = document.querySelector('.schirm.da');
       const svg = s.querySelector('.karte svg');

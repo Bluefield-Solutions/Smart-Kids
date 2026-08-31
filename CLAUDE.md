@@ -91,6 +91,14 @@ npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Was ANGESCHLAGEN hat, wird festgehalten, auch wenn der
                    Lauf rot ist: sonst wirft ein einziger Befund die
                    Nachweise von siebzig anderen weg.
+npm run doppelt    findet Quelltext, der zweimal dasteht (Regel 15) — in
+                   TOKEN, nicht in Zeilen, sonst entgeht ihm jede Kopie,
+                   die jemand umformatiert hat. Was zweimal dastehen DARF,
+                   steht in `tor/doppelt-erlaubt.json`, und jeder Eintrag
+                   braucht einen Satz, warum. `-- --neu` schreibt die
+                   Liste neu — danach von Hand begründen, sonst bleibt es
+                   rot.
+
 npm run smoke      spielt die App im Browser durch. `-- --nur=spielen`
                    fährt nur den Hauptweg (28 s statt 138 s).
                    Läuft mit `?flott`: die Jubelpause der App ist dann
@@ -124,7 +132,7 @@ npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
 ```
 
 Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `doku` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
+`schrift` · `symbol` · `doku` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
 

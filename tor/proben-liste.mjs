@@ -200,9 +200,9 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `doku` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `doku` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →',
     ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
-    an:{ datei:'CLAUDE.md', fehlt:'`doku` → `spielprobe`' },
+    an:{ datei:'CLAUDE.md', fehlt:'`doku` → `doppelt`' },
     sagt:'Tore der Kette nicht' },
 
   // Die Vorschau verschweigt ein Tor, das sie nicht faehrt. Der gefaehrlichste
@@ -417,6 +417,69 @@ export const PROBEN = [
   { n:'kleiner Text wird zu hell', tor:'lesbarkeit', bauen:true, datei:'src/marken/marken.css',
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },
+
+  /* --- doppelt ------------------------------------------------------ *
+   *
+   * Eingespritzt wird eine echte Kopie: `zielPunkt` aus `chromium.mjs`
+   * noch einmal in `vergleich.mjs`, wo sie nichts zu suchen hat. Genau so
+   * sind die vier Faelle entstanden, die dieses Tor bezahlt haben - jemand
+   * brauchte etwas, das schon da war, und schrieb es hin.
+   *
+   * Der Eingriff BENENNT dabei um (`zielPunkt` -> `punktZumZiel`, `seite`
+   * -> `blatt`). Das ist nicht Zierde: der erste Anlauf des Tores verglich
+   * normierte Zeilen und haette eine umbenannte Kopie gefunden, eine
+   * UMFORMATIERTE aber nicht. Die Probe soll denselben Weg nehmen wie ein
+   * Mensch, der abschreibt. */
+  { n:'jemand schreibt eine Funktion ab', tor:'doppelt', datei:'src/vergleich/vergleich.js',
+    such:'export function hoerAbgleich',
+    ersatz:`export function punktZumZiel(blatt) {
+  return blatt.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const ziel = s.querySelector('path.ziel');
+    if (!ziel) return null;
+    const kreis = s.querySelector(\`#treffer circle[data-id="\${ziel.dataset.id}"]\`);
+    if (kreis) { const k = kreis.getBoundingClientRect();
+      return { x: k.left + k.width / 2, y: k.top + k.height / 2 }; }
+    const gilt = (x, y) => {
+      const e = document.elementFromPoint(x, y);
+      if (!e || !e.closest) return false;
+      const k = e.closest('#treffer circle');
+      if (k) return k.dataset.id === ziel.dataset.id;
+      const pf = e.closest('path.geb');
+      return !!pf && pf.dataset.id === ziel.dataset.id;
+    };
+    try {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const alle = [...D.kontinente, ...Object.values(D.laender).flat(), ...D.deutschland];
+      const g = alle.find(x => (x.id || x.a3) === ziel.dataset.id);
+      const svg = s.querySelector('.karte svg');
+      if (g && g.anker && svg) {
+        const pt = svg.createSVGPoint();
+        pt.x = g.anker[0]; pt.y = g.anker[1];
+        const q = pt.matrixTransform(svg.getScreenCTM());
+        if (gilt(q.x, q.y)) return { x: q.x, y: q.y };
+      }
+    } catch (e) { /* dann weiter unten */ }
+    const bb = ziel.getBoundingClientRect();
+    for (let n = 0; n <= 8; n++) for (let m = 0; m <= 8; m++) {
+      const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
+      if (gilt(x, y)) return { x, y };
+    }
+    return { x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 };
+  });
+}
+
+export function hoerAbgleich`,
+    an:{ datei:'src/vergleich/vergleich.js', text:'export function punktZumZiel' },
+    sagt:'stehen zweimal' },
+
+  /* Und ein Eintrag ohne Satz ist kein Beschluss, sondern ein Freibrief. */
+  { n:'eine Dopplung wird ohne Begründung eingetragen', tor:'doppelt',
+    datei:'tor/doppelt-erlaubt.json',
+    suchRegex: /"warum": "Die Probenliste IST eine Tabelle[^"]*"/,
+    ersatzFn: () => '"warum": "NOCH NICHT BEGRÜNDET"',
+    an:{ datei:'tor/doppelt-erlaubt.json', text:'NOCH NICHT BEGRÜNDET' },
+    sagt:'ohne Begründung' },
 
   /* --- budget ------------------------------------------------------- */
   // Die Grenze steht im Konzept, nicht im Tor - also wird sie dort gedreht.
