@@ -113,14 +113,22 @@ for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
  *
  * Laengstes zuerst: sonst startet der laengste Lauf als letzter, und alle
  * anderen Baender stehen still, waehrend er laeuft. */
-/* Auf dem Runner sind es zwei Kerne, nicht vier (`ubuntu-latest`).
+/* Anderthalb Baender je Kern, hoechstens sechs.
  *
- * Die sechs oben sind auf VIER Kernen gemessen; was auf zweien richtig
- * waere, ist hier nicht zu messen. Deshalb wird nicht die Zahl uebernommen,
- * sondern ihr Verhaeltnis: anderthalb Baender je Kern, hoechstens sechs.
- * Auf vier Kernen kommt genau die gemessene Sechs heraus, auf zweien drei.
- * Das ist eine Schaetzung und als solche gekennzeichnet - die Laufzeit des
- * Runners sagt, ob sie stimmt. */
+ * Hier stand „auf dem Runner sind es zwei Kerne, nicht vier" und daraus
+ * abgeleitet, die Formel sei fuer ihn eine SCHAETZUNG. Beides war falsch:
+ * `ubuntu-latest` hat vier Kerne. Der Runner schreibt es seit P1 in jeden
+ * Lauf („10 Browserlaeufe, 6 nebeneinander (4 Kerne)"), ich habe es nur
+ * nicht gelesen. Nachgesehen (P4):
+ *
+ *     Lauf 78 (Becken 3)   303 s fuer den Kettenschritt
+ *     Lauf 79 (Becken 6)   130 s
+ *
+ * Also dieselben vier Kerne, dieselbe Sechs, und dieselbe Zeit wie hier
+ * (308 s bzw. 130 s). Die Formel bleibt trotzdem eine Formel und keine
+ * feste Sechs: sie soll auch stimmen, wenn der Runner sich aendert oder
+ * jemand das Verzeichnis auf einer kleineren Maschine faehrt. Nur ist sie
+ * fuer den heutigen Runner keine Schaetzung mehr, sondern gemessen. */
 const KERNE = os.cpus().length;
 const BREITE = +(process.env.SMARTKIDS_BECKEN
   || Math.max(2, Math.min(6, Math.round(KERNE * 1.5))));

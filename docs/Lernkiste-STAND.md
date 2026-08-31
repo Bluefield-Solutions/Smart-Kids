@@ -6175,3 +6175,31 @@ Kind noch lesbar ist, sagt keine Zahl — das ist der nächste Blick, und er
 gehört aufs Gerät, nicht in ein Tor.
 
 198 Gegenproben.
+
+### Nachgeprüft auf dem Runner — und die Begründung war falsch
+
+Die Beckenbreite folgt seit P3 der Kernzahl: anderthalb Bänder je Kern,
+höchstens sechs. Im Quelltext stand dazu, für den Runner sei das eine
+**Schätzung**, weil `ubuntu-latest` zwei Kerne habe.
+
+Beides war falsch. Der Runner hat **vier** Kerne — und er schreibt es seit
+P1 in jeden Lauf: „10 Browserläufe, 6 nebeneinander (**4 Kerne**)". Die
+Zeile stand da, ich habe sie nur nicht gelesen. Eine Zahl, die das Werkzeug
+selbst mitliefert, ist kein Anlass zum Schätzen.
+
+Gemessen am Kettenschritt der Auslieferung, beide Male auf `ubuntu-latest`:
+
+```
+Lauf 74–77   serielle Kette          ~10 min gesamt
+Lauf 78      P1, Becken 3            303 s
+Lauf 79      P3, Becken 6            130 s
+```
+
+Hier auf dieser Maschine waren es an denselben Ständen 308 s und 130 s. Der
+Runner läuft also praktisch gleich schnell, und die Formel trifft auf ihm
+genau die gemessene Sechs.
+
+Die Formel bleibt trotzdem eine Formel und keine feste Sechs: sie soll auch
+stimmen, wenn der Runner sich ändert oder jemand das Verzeichnis auf einer
+kleineren Maschine fährt. Nur ist sie für den heutigen Runner keine
+Schätzung mehr.
