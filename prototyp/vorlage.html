@@ -1216,7 +1216,37 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     --s-klein:14px; --s0:17px; --s1:20px; --s2:24px; --s3:28px; --s4:34px; --s5:40px;
     --r3:8px; --r4:12px; --r6:14px; --r8:18px; --r12:28px; --r16:36px; --r24:48px;
   }
-  .kopf{padding:var(--r2) var(--r4)}
+  /* Der Kopf gibt auf dem kurzen Querformat Hoehe ab - fuer die Karten.
+   *
+   * Gemessen auf 844 x 390 an `laender:nordamerika`. Das ganze Fenster:
+   * Kopf 68 + Fragesatz 30 + Feld 292 (Karte 280 + 12 Innenabstand). Die
+   * Karte haengt also an der HOEHE, nicht an der Breite - sie war auf
+   * 352 x 280 zusammengedrueckt, und deshalb wanderten die Nadelkoepfe
+   * von Kuba und Panama bis zu 154 Punkte weit vom Land weg.
+   *
+   * Durchprobiert, jede Zeile ein Bau (erst den Raum ansehen, dann
+   * justieren):
+   *
+   *     Kopf 68 px   Karte 352 x 280   Nadeln 7   laengster Faden 154
+   *     Kopf 60 px   Karte 362 x 288   Nadeln 7   laengster Faden 134
+   *     Kopf 52 px   Karte 371 x 296   Nadeln 7   laengster Faden 134
+   *     Kopf 44 px   Karte 371 x 296   Nadeln 7   laengster Faden 134
+   *
+   * Zwei Dinge stehen in dieser Tafel, die man auseinanderhalten muss.
+   *
+   * Erstens hoert der Faden schon bei 60 auf zu fallen: was die 134 dann
+   * noch haelt, ist die Breite, nicht die Hoehe. Weiter nachgeben zahlt
+   * nur noch in Kartenpunkten, nicht in kuerzeren Faeden.
+   *
+   * Zweitens sind die Zeilen unter 60 hier gar nicht erreichbar. Die
+   * `min-height` loest nur den Boden von 68; was die Hoehe dann wirklich
+   * setzt, ist der INHALT - das Kreuz misst 44 Punkte und schrumpft
+   * nicht, dazu zweimal 8 Punkte Innenabstand. NACHGEMESSEN im Browser:
+   * `.kopf` ist 60 px hoch, `min-height` steht auf 52 und greift nicht.
+   * Die 52 steht trotzdem da, weil sie die 68 aufhebt; wer sie streicht,
+   * bekommt die 68 zurueck. Auf 52 zu kommen hiesse, das Kreuz unter
+   * 44 Punkte zu druecken - dafuer sind acht Kartenpunkte zu wenig. */
+  .kopf{padding:var(--r2) var(--r4);min-height:52px}
   /* Das Forscherbuch auf dem kurzen Querformat.
    *
    * Gemessen auf 844 x 390 mit ZWEI Aufklebern und zwei Vorschaukarten:

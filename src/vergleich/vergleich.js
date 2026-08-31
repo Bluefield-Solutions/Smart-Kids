@@ -205,7 +205,9 @@ export function abgleich(eingabe, kandidaten) {
 
 /* Wieviele Woerter ein Ausschnitt hoechstens hat.
  *
- * Der laengste Name im Vorrat ist „Australien und Ozeanien" - drei Woerter.
+ * Der laengste Eintrag im Vorrat ist „Australien und Ozeanien" - drei
+ * Woerter. Seit A5 ist das der ALIAS und nicht mehr der Name; erkannt
+ * werden muss er weiterhin, also bleibt die Vier.
  * Vier laesst Luft fuer „Nordrhein Westfalen" mit einem verschluckten
  * Bindestrich, ohne dass halbe Saetze zu Kandidaten werden. */
 export const FENSTER_MAX = 4;

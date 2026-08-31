@@ -339,7 +339,7 @@ offen gelassen.
 
 ### 4.1 Ebene 1 — Kontinente (6)
 
-Afrika · Asien · Australien und Ozeanien · Europa · Nordamerika ·
+Afrika · Asien · Australien · Europa · Nordamerika ·
 Südamerika.
 
 **Lea:** alle sechs, freies Schreibfeld.

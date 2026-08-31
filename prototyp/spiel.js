@@ -206,7 +206,9 @@ const kleberMarke = (n, gesamt) => `<span class="klebermarke"${
  *     Ansagestimmen vergeben (Anna, Petra, Helena, Marlene) - und erst
  *     wenn keine da ist, faellt es auf "irgendeine deutsche" zurueck.
  *   - Wie SCHNELL. 0,92 war schon langsam; 0,88 gibt einem Kind Zeit,
- *     "Australien und Ozeanien" zu Ende zu hoeren.
+ *     "Australien und Ozeanien" zu Ende zu hoeren (bis A5 der laengste
+ *     Name im Vorrat; er lebt als Alias weiter, und lang gesprochene
+ *     Namen gibt es weiterhin - „Vereinigtes Koenigreich").
  *   - Wie HOCH. `pitch` stand auf 1 (Voreinstellung). 1,15 klingt
  *     zugewandt statt vorlesend. Darueber wird es schrill.
  */
@@ -258,7 +260,9 @@ if ('speechSynthesis' in window){ stimmeSuchen(); speechSynthesis.addEventListen
  *
  * Die Tonhoehe stand auf 1,15. Das klang jung, aber gepresst; 1,06 traegt
  * die Freundlichkeit, ohne die Stimme zu verbiegen. Das Tempo bleibt
- * langsam - „Australien und Ozeanien" muss zu Ende gehoert werden koennen.
+ * langsam - lange Namen muessen zu Ende gehoert werden koennen; bis A5
+ * war „Australien und Ozeanien" der laengste, heute „Vereinigtes
+ * Koenigreich".
  */
 const TEMPO = 0.9, HOEHE = 1.06;
 function sprich(satz, hoehe = HOEHE){
@@ -3487,7 +3491,7 @@ function spielschirm(){
     /* Wie lange hoechstens zugehoert wird.
      *
      * Nicht laenger: ein Kind spricht einen Landesnamen in zwei Sekunden.
-     * Nicht kuerzer: „Australien und Ozeanien" mit einer Denkpause davor
+     * Nicht kuerzer: ein langer Name mit einer Denkpause davor
      * braucht seine Zeit, und ein Fenster, das mitten im Wort zufaellt,
      * ist schlimmer als eines, das zu lange offen steht. */
     const HOERDAUER = 8000;
@@ -3667,8 +3671,9 @@ function spielschirm(){
    * Wo haengt das Etikett, waehrend es gezogen wird?
    *
    * NICHT unter dem Finger. Ein Bildschirmfoto vom iPhone quer zeigt den
-   * Grund: das Etikett "Australien und Ozeanien" ist 240 x 160 Punkte
-   * gross, Australien auf der Weltkarte 60 x 50 - mittig am Finger deckt
+   * Grund: das groesste Etikett war 240 x 160 Punkte
+   * gross (bis A5 "Australien und Ozeanien", zweizeilig), Australien auf
+   * der Weltkarte 60 x 50 - mittig am Finger deckt
    * das Etikett sein eigenes Ziel VOLLSTAENDIG zu. Das Aufleuchten nuetzt
    * dann nichts, weil niemand es sieht.
    *
@@ -3703,8 +3708,9 @@ function spielschirm(){
     let angemeldet=false, zuletzt=null;
     // Beim Aufheben wird aus der Antwortkachel ein SCHILD.
     //
-    // Die Kachel ist 240 x 160 Punkte gross ("Australien und Ozeanien"
-    // bricht auf zwei Zeilen), Australien auf der Weltkarte 60 x 50 - am
+    // Die Kachel war bis A5 240 x 160 Punkte gross ("Australien und
+    // Ozeanien" brach auf zwei Zeilen), Australien auf der Weltkarte
+    // 60 x 50 - am
     // Finger deckt sie mehrere Gebiete auf einmal zu. Als einzeiliges
     // Schild ist sie rund ein Drittel so gross. Die Breite wird deshalb
     // NICHT festgehalten: ohne Breite schrumpft ein `position:fixed`
@@ -5045,7 +5051,7 @@ async function elternbereich(){
       // Angehoert wird ein Satz aus dem Spiel, nicht „Test 1 2 3": man
       // waehlt eine Stimme fuer das, was sie wirklich sagen wird.
       const alterTon = tonAn; tonAn = true;
-      vorlesen('Super gemacht! Das ist Australien und Ozeanien.');
+      vorlesen('Super gemacht! Das ist Australien.');
       tonAn = alterTon;
     });
   };

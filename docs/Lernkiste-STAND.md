@@ -6603,3 +6603,69 @@ wer sie immer läse, bekäme ein Versprechen, das der Bildschirm nicht hält.
 Fiona sah bis A4 genau das.
 
 204 Gegenproben, `npm run tor` grün in 103,0 s.
+
+## A5 — „Australien" heißt Australien, und der Kopf gibt Höhe ab
+
+### Nur noch Australien
+
+Der Kontinent hieß im Spiel „Australien und Ozeanien". Das ist die Sprache
+eines Atlas, nicht die eines Kindes: Fiona hört einen Satz mit vier Wörtern,
+Lea tippt sechzehn Buchstaben, und beide meinen dasselbe Land, das auf der
+Karte liegt. Er heißt jetzt **Australien** — im Knopf, in der Ansage, im
+Lob nach der richtigen Antwort.
+
+Was NICHT verschwunden ist: „Australien und Ozeanien" und „Ozeanien" stehen
+weiter als **Aliasse**. Wer den langen Namen tippt oder spricht, bekommt
+weiter ein Richtig. Ein umbenannter Gegenstand darf niemandem eine Antwort
+wegnehmen, die vorher gezählt hat.
+
+### Der Kopf gibt Höhe ab — 154 auf 134
+
+Aus P7 war eine Zahl offen geblieben: auf `laender:nordamerika` hängt der
+längste Nadelfaden **154 Punkte** weit vom Land weg, und zweimal war die
+Vermutung, woran das liegt, falsch — weder die Reihenfolge der Nadeln noch
+die Breite der Antwortspalte hat etwas bewegt. Die Karte hängt an der
+**Höhe**:
+
+```
+Fenster 390 = Kopf 68 + Fragesatz 30 + Feld 292 (Karte 280 + 12 Innenabstand)
+```
+
+Also durchprobiert, jede Zeile ein Bau — erst den Raum ansehen, dann
+justieren:
+
+```
+Kopf 68 px   Karte 352 × 280   Nadeln 7   längster Faden 154
+Kopf 60 px   Karte 362 × 288   Nadeln 7   längster Faden 134
+Kopf 52 px   Karte 371 × 296   Nadeln 7   längster Faden 134
+Kopf 44 px   Karte 371 × 296   Nadeln 7   längster Faden 134
+```
+
+Zwei Dinge stehen in dieser Tafel, und man muss sie auseinanderhalten.
+
+**Der Faden hört schon bei 60 auf zu fallen.** Was die 134 dann noch hält,
+ist die Breite, nicht die Höhe. Weiter nachzugeben zahlt nur noch in
+Kartenpunkten.
+
+**Und unter 60 ist gar nicht erreichbar.** Die `min-height` löst nur den
+Boden von 68; die Höhe setzt danach der *Inhalt* — das Kreuz misst 44 Punkte
+und schrumpft nicht, dazu zweimal 8 Punkte Innenabstand. Nachgemessen im
+Browser: `.kopf` ist **60 px** hoch, `min-height` steht auf 52 und greift
+nicht. Die 52 steht trotzdem da, weil sie die 68 aufhebt; wer sie streicht,
+bekommt die 68 zurück.
+
+Das ist der Grund, warum die Zeilen 52 und 44 in der Tafel bleiben durften,
+obwohl sie nicht eingestellt sind: sie sagen, was das Nachgeben **noch**
+brächte, und dass es nicht reicht, um dafür das Kreuz unter die 44 Punkte zu
+drücken.
+
+Beide Ratschen sind neu bestätigt und stehen jetzt **enger** als vorher:
+
+```
+laender:nordamerika   engster Kopfabstand 44.3 → 44.5   längster Faden 154 → 134
+laender:europa        engster Kopfabstand 68.3 → 78.2   längster Faden  64 →  64
+```
+
+`passt` grün auf allen sieben Größen — das war die eigentliche Frage am
+kleineren Kopf: ob er seine Knöpfe noch hält. 32 Aufnahmen neu eingefroren,
+weil sich auf jedem Querformat alles um acht Punkte gehoben hat.

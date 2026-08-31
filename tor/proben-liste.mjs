@@ -696,14 +696,27 @@ export const PROBEN = [
    * auch wirklich - jemand bestaetigt einen Stand von einer anderen
    * Fenstergroesse und merkt nicht, dass die Karte danach schlechter
    * geworden ist. */
+  /* Beide Proben zielen auf die ZEILE, nicht auf ihren Wert.
+   *
+   * Sie standen hier eine Runde lang als `such:'"faden": 154'` - also mit
+   * der gemessenen Zahl im Suchtext. Beim ERSTEN Mal, dass die Ratsche
+   * enger wurde (A5: der Kopf gab Hoehe ab, 154 wurde 134), zielten beide
+   * ins Leere. Eine Ratsche ist dafuer da, sich zu bewegen; eine
+   * Gegenprobe, die an ihrem Zahlenwert haengt, verfaellt planmaessig.
+   *
+   * Der Ausdruck fasst deshalb die Ebene mit, nicht nur das Feld: „faden"
+   * steht zweimal in der Datei, und welche Stelle verstellt wuerde,
+   * entschiede sonst die Reihenfolge. */
   { n:'die Nadelfäden sind länger geworden als bestätigt', tor:'ziehen',
     args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
-    such:'"faden": 154', ersatz:'"faden": 100',
+    suchRegex:/("laender:nordamerika":\s*\{\s*"eng":\s*[\d.]+,\s*"faden":\s*)\d+/,
+    ersatzFn:m => m[1] + '100',
     an:{ datei:'tor/nadeln-stand.json', text:'"faden": 100' },
     sagt:'sagt nicht „hier"' },
   { n:'zwei Nadelköpfe rücken enger zusammen als bestätigt', tor:'ziehen',
     args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
-    such:'"eng": 44.3', ersatz:'"eng": 60',
+    suchRegex:/("laender:nordamerika":\s*\{\s*"eng":\s*)[\d.]+/,
+    ersatzFn:m => m[1] + '60',
     an:{ datei:'tor/nadeln-stand.json', text:'"eng": 60' },
     sagt:'trifft den falschen' },
 

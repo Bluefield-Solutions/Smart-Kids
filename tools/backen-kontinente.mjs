@@ -25,7 +25,7 @@ const KONTINENTE = [
   { id:'afrika',      name:'Afrika',                ne:'Africa'        },
   { id:'antarktika',  name:'Antarktika',            ne:'Antarctica'    },
   { id:'asien',       name:'Asien',                 ne:'Asia'          },
-  { id:'australien',  name:'Australien und Ozeanien', ne:'Oceania'     },
+  { id:'australien',  name:'Australien', ne:'Oceania'     },
   { id:'europa',      name:'Europa',                ne:'Europe'        },
   { id:'nordamerika', name:'Nordamerika',           ne:'North America' },
   { id:'suedamerika', name:'Südamerika',            ne:'South America' },

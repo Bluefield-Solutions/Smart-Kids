@@ -28,7 +28,12 @@ export const KONTINENTE = [
     aussprache:['euopa','oiropa','europa','eropa'], runde:1 },
   { id:'afrika', name:'Afrika', aliasse:[],
     aussprache:['afrikaa','afika','affrika'], runde:1 },
-  { id:'australien', name:'Australien und Ozeanien', aliasse:['Australien','Ozeanien'],
+  /* „Australien" statt „Australien und Ozeanien" (A5, auf Wunsch).
+     Der lange Name war der laengste im ganzen Vorrat: drei Woerter, die
+     im Etikett auf zwei Zeilen umbrachen, im Ton zu Ende gehoert werden
+     mussten und in der Fahne 240 Punkte breit waren. `Ozeanien` bleibt
+     als Alias stehen - wer es sagt oder schreibt, hat weiter recht. */
+  { id:'australien', name:'Australien', aliasse:['Australien und Ozeanien','Ozeanien'],
     aussprache:['australjen','austraalien','australiä','aus straßen','australien'], runde:1 },
   { id:'suedamerika', name:'Südamerika', aliasse:['Sued Amerika'],
     aussprache:['süd amerika','suedamerika','südamerka'], runde:1 },
