@@ -420,57 +420,22 @@ export const PROBEN = [
 
   /* --- doppelt ------------------------------------------------------ *
    *
-   * Eingespritzt wird eine echte Kopie: `zielPunkt` aus `chromium.mjs`
-   * noch einmal in `vergleich.mjs`, wo sie nichts zu suchen hat. Genau so
-   * sind die vier Faelle entstanden, die dieses Tor bezahlt haben - jemand
-   * brauchte etwas, das schon da war, und schrieb es hin.
+   * Eingespritzt wird eine echte Kopie - und zwar als KOPIE, nicht als
+   * abgeschriebener Text.
    *
-   * Der Eingriff BENENNT dabei um (`zielPunkt` -> `punktZumZiel`, `seite`
-   * -> `blatt`). Das ist nicht Zierde: der erste Anlauf des Tores verglich
-   * normierte Zeilen und haette eine umbenannte Kopie gefunden, eine
-   * UMFORMATIERTE aber nicht. Die Probe soll denselben Weg nehmen wie ein
-   * Mensch, der abschreibt. */
-  { n:'jemand schreibt eine Funktion ab', tor:'doppelt', datei:'src/vergleich/vergleich.js',
-    such:'export function hoerAbgleich',
-    ersatz:`export function punktZumZiel(blatt) {
-  return blatt.evaluate(() => {
-    const s = document.querySelector('.schirm.da');
-    const ziel = s.querySelector('path.ziel');
-    if (!ziel) return null;
-    const kreis = s.querySelector(\`#treffer circle[data-id="\${ziel.dataset.id}"]\`);
-    if (kreis) { const k = kreis.getBoundingClientRect();
-      return { x: k.left + k.width / 2, y: k.top + k.height / 2 }; }
-    const gilt = (x, y) => {
-      const e = document.elementFromPoint(x, y);
-      if (!e || !e.closest) return false;
-      const k = e.closest('#treffer circle');
-      if (k) return k.dataset.id === ziel.dataset.id;
-      const pf = e.closest('path.geb');
-      return !!pf && pf.dataset.id === ziel.dataset.id;
-    };
-    try {
-      const D = JSON.parse(document.getElementById('daten').textContent);
-      const alle = [...D.kontinente, ...Object.values(D.laender).flat(), ...D.deutschland];
-      const g = alle.find(x => (x.id || x.a3) === ziel.dataset.id);
-      const svg = s.querySelector('.karte svg');
-      if (g && g.anker && svg) {
-        const pt = svg.createSVGPoint();
-        pt.x = g.anker[0]; pt.y = g.anker[1];
-        const q = pt.matrixTransform(svg.getScreenCTM());
-        if (gilt(q.x, q.y)) return { x: q.x, y: q.y };
-      }
-    } catch (e) { /* dann weiter unten */ }
-    const bb = ziel.getBoundingClientRect();
-    for (let n = 0; n <= 8; n++) for (let m = 0; m <= 8; m++) {
-      const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
-      if (gilt(x, y)) return { x, y };
-    }
-    return { x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 };
-  });
-}
-
-export function hoerAbgleich`,
-    an:{ datei:'src/vergleich/vergleich.js', text:'export function punktZumZiel' },
+   * Der erste Anlauf schrieb `zielPunkt` aus `chromium.mjs` als
+   * Ersatztext in diese Liste. Das Tor hat es beim ersten Lauf gemeldet:
+   * vierundsechzig Zeilen, die zweimal dastehen - einmal in
+   * `chromium.mjs` und einmal hier. Es hatte recht. Eine Gegenprobe, die
+   * eine halbe Datei abschreibt, veraltet genau wie jede andere Kopie,
+   * und dann prueft sie eine Fassung, die es nicht mehr gibt.
+   *
+   * `kopie` legt stattdessen im Wegwerfbaum eine Datei ueber eine andere.
+   * Damit steht die Dopplung nur waehrend der Probe da, und in der Liste
+   * steht kein einziger geliehener Zeile. */
+  { n:'jemand schreibt eine Funktion ab', tor:'doppelt',
+    kopie:['tor/chromium.mjs', 'src/vergleich/vergleich.js'],
+    an:{ gleichWie:['tor/chromium.mjs', 'src/vergleich/vergleich.js'] },
     sagt:'stehen zweimal' },
 
   /* Und ein Eintrag ohne Satz ist kein Beschluss, sondern ein Freibrief. */
