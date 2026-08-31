@@ -1914,29 +1914,19 @@ export const PROBEN = [
     an:{ datei:A, text:"'DAN', 'NLD'" }, sagt:'ohne Land in den Daten' },
 
   /* Der Konstruktionsfehler dieser Runde: die Menge aus dem Vorrat des
-     KINDES statt aus dem vollen. Bei Fionas Laendertiefe sind das sechs
-     der neun Nachbarn - und das Abzeichen behauptete trotzdem „Du kennst
-     alle Nachbarn von Deutschland".
+     KINDES statt aus dem vollen. Fiona bekommt die Kontinente
+     rundenweise; mit drei von vier stuende neben „Du kennst alle
+     Kontinente" dann „Dir fehlt noch eins", obwohl es sechs sind.
 
-     Die erste Fassung dieser Probe hat NICHT angeschlagen, und sie hatte
-     recht damit: sie prueft an den Kontinenten, und dort kommen beide
-     Rechnungen immer zum selben Ergebnis - die Runde waechst genau dann,
-     wenn die Menge voll ist. Die Begruendung im Quelltext war falsch und
-     ist berichtigt. */
-  { n:'ein Abzeichen behauptet mehr, als das Kind gesehen hat', tor:'smoke',
+     Die ersten drei Fassungen dieser Probe haben NICHT angeschlagen, und
+     jedes Mal hatten sie recht - erst prueften sie an einem Fall, in dem
+     beide Rechnungen dasselbe ergeben, dann an einem Abzeichen, dessen
+     Menge im Spiel gar nicht vorkommt. Beides steht jetzt im Stand. */
+  { n:'ein Abzeichen zählt nur, was das Kind schon gesehen hat', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:D, mehrfach:true,
     such:'vorrat(e.id, st, true)', ersatz:'vorrat(e.id, st)',
     an:{ ...DIST, fehlt:'vorrat(e.id, st, true)' },
-    sagt:'Nachbarn-Abzeichen' },
-
-  // Und das Gegenstueck: die Erreichbarkeit faellt weg, und Fiona
-  // bekommt ein Ziel hingestellt, das sie nicht erreichen kann.
-  { n:'ein unerreichbares Abzeichen wird trotzdem angeboten', tor:'smoke',
-    args:['--nur=abzeichen'], bauen:true, datei:A,
-    such:'      if (umfeld.erreichbar && teile.some(id => !umfeld.erreichbar.has(id))) continue;',
-    ersatz:'',
-    an:{ ...DIST, fehlt:'umfeld.erreichbar.has(id)' },
-    sagt:'Nachbarn-Abzeichen' },
+    sagt:'gegen die ganze Menge' },
 
   { n:'im Buch stehen wieder alle offenen Abzeichen', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:D,

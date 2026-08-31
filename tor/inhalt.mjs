@@ -371,11 +371,20 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
     .matchAll(/^  ([a-z]+): '<(?:circle|path|rect|ellipse)/gm)].map(m => m[1]));
   pruefe(BILDER.size >= 5, `nur ${BILDER.size} Abzeichenbilder in spiel.js gefunden — `
     + 'die Prüfung liest die Bildtafel nicht mehr und würde alles durchlassen');
-  // Die Vorraete, so wie das Spiel sie baut.
+  /* Die Vorraete, so wie das Spiel sie WIRKLICH baut.
+   *
+   * Regel 12, und sie hat in dieser Runde ein ganzes Abzeichen gekostet:
+   * die erste Fassung mass gegen `LAENDER_EUROPA_FEIN` - die GEBACKENE
+   * Geometrie mit einundfuenfzig Umrissen. Ins Spiel kommt aber nur, was
+   * in `erdkunde.js` einen Rang hat (`roh.filter(l => l.rang)` im Bau):
+   * fuer Europa zwoelf Laender. Gegen die Geometrie sah „alle Nachbarn
+   * von Deutschland" erreichbar aus; im Spiel gibt es fuenf der neun gar
+   * nicht. Ein Tor, das gegen die falsche Messstelle prueft, meldet
+   * gruen und beweist nichts. */
   const VORRAT = {
     kontinente: I.KONTINENTE.map(k => ({ id:k.id })),
     bundeslaender: STAEDTE.map(b => ({ id:b.id, stadtstaat:b.stadtstaat })),
-    'laender:europa': LAENDER_EUROPA_FEIN.map(l => ({ id:l.a3 })),
+    'laender:europa': I.LAENDER.europa.map(l => ({ id:l.a3 })),
     'rechnen:reihen': R.reihenVorrat(),
     'rechnen:plusminus': R.vorrat(),
     'schreiben:buchstaben': SCHR.vorrat(),
@@ -398,13 +407,9 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
       geprueft++;
     }
   }
-  // Die neun Nachbarn sind das eine Verzeichnis von Hand. Wenn eine
-  // Kennung nicht mehr stimmt, ist das Abzeichen fuer immer unerreichbar.
-  const europa = new Set(LAENDER_EUROPA_FEIN.map(l => l.a3));
-  const fremd = AB.NACHBARN.filter(a => !europa.has(a));
-  pruefe(fremd.length === 0, `Nachbarn Deutschlands ohne Land in den Daten: ${fremd.join(', ')}`);
   console.log(`    ${geprueft} Abzeichen geprüft: Menge nicht leer, nicht alles, Bild vorhanden`);
-  console.log(`    ${AB.NACHBARN.length} Nachbarn Deutschlands, alle in den Europadaten`);
+  console.log(`    gemessen am gelieferten Vorrat: ${VORRAT['laender:europa'].length} `
+    + `Länder in Europa, nicht ${LAENDER_EUROPA_FEIN.length} gebackene Umrisse`);
 }
 
 /* Sterne heissen EINE Sache: wie die Sitzung lief (S1).

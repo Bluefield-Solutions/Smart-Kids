@@ -47,14 +47,28 @@
  * besser bedient als von einem Kalender.
  */
 
-/** Die neun Nachbarn Deutschlands, als Laenderkennungen (ISO alpha-3).
+/* WARUM HIER KEIN „Du kennst alle Nachbarn von Deutschland" STEHT.
  *
- *  Der EINE Eintrag, der von Hand steht - Nachbarschaft ist Weltwissen und
- *  liegt in keinem unserer Datensaetze. Damit er nicht still veraltet,
- *  prueft das Tor `inhalt`, dass jede dieser neun Kennungen im Vorrat
- *  wirklich vorkommt: ein Abzeichen, dessen Menge leer ist, waere fuer
- *  immer unerreichbar und faellt sonst niemandem auf. */
-export const NACHBARN = ['DNK', 'NLD', 'BEL', 'LUX', 'FRA', 'CHE', 'AUT', 'CZE', 'POL'];
+ * Der ANTON-Abgleich nennt genau diesen Satz als Beispiel, und er war der
+ * erste Eintrag der Tafel. Er ist wieder raus, und der Grund ist eine
+ * Messung, keine Meinung: die App liefert ZWOELF europaeische Laender,
+ * nicht einundfuenfzig. Die Quelldatei hat 51, gebaut werden die mit
+ * `rang <= 12` - so tief geht das tiefste Profil. Von den neun Nachbarn
+ * Deutschlands sind darunter genau vier: Frankreich, Belgien, Polen, die
+ * Niederlande. Daenemark, Luxemburg, die Schweiz, Oesterreich und
+ * Tschechien kommen im Spiel gar nicht vor.
+ *
+ * Das Abzeichen waere also fuer JEDES Profil unerreichbar gewesen - ein
+ * Ziel, das ewig offen steht. Genau die Verfallsart, gegen die das Tor
+ * `abzeichen` geschrieben ist; gefunden hat es sie erst, nachdem es gegen
+ * den GELIEFERTEN Vorrat mass statt gegen die Quelldatei (Regel 12: die
+ * Zahl und ihre Messstelle gehoeren zusammen).
+ *
+ * Ob die fuenf fehlenden Nachbarn ins Spiel sollen, ist eine Entscheidung
+ * ueber den INHALT und steht als D2c im Rueckstandsverzeichnis. Bis dahin
+ * gibt es das Abzeichen nicht: lieber keins als eines, das niemand
+ * bekommen kann.
+ */
 
 /** Sechserreihe, Siebenerreihe - die Reihen heissen so und nicht „Reihe 6". */
 const REIHENWORT = { 2:'Zweier', 3:'Dreier', 4:'Vierer', 5:'Fünfer', 6:'Sechser',
@@ -70,31 +84,22 @@ const REIHENWORT = { 2:'Zweier', 3:'Dreier', 4:'Vierer', 5:'Fünfer', 6:'Sechser
  *   titel    der Satz. Bekommt den Wert aus `je` und das Umfeld.
  *   waehlt   die Regel ueber den Vorrat. Bekommt (vorrat, wert, umfeld).
  *
- * `waehlt` bekommt den VOLLEN Vorrat der Ebene, nicht den des Kindes -
- * und `umfeld.erreichbar` sagt, was das Kind davon ueberhaupt bekommen
- * kann. Beides zusammen, und beides aus einem Grund:
+ * `waehlt` bekommt den VOLLEN Vorrat der Ebene, nicht den des Kindes.
+ * Das ist bei den Kontinenten sichtbar: Fiona bekommt sie rundenweise,
+ * anfangs nur vier von sechs. Gegen IHREN Vorrat gerechnet stuende dort
+ * „Dir fehlt noch eins", obwohl es sechs Kontinente sind und drei fehlen.
+ * Die Zahl neben einem Abzeichen muss die ganze Menge meinen, sonst
+ * zaehlt sie etwas anderes als der Satz darueber behauptet.
  *
- * Fionas Laendertiefe ist DREI. Von den neun Nachbarn Deutschlands
- * liegen nur sechs in ihrem Vorrat. Gegen ihren Vorrat gerechnet hiesse
- * „alle Nachbarn" also „alle sechs, die du sehen kannst" - und das
- * Abzeichen behauptete „Du kennst alle Nachbarn von Deutschland", waehrend
- * sie drei davon nie zu Gesicht bekommen hat. Ein Abzeichen, dessen SATZ
- * nicht stimmt, ist schlimmer als keins: sein Satz ist das Einzige, was
- * es hat.
+ * Verlieren kann man dadurch nichts: `istGesammelt` liest den
+ * Hoechststand, und der steigt nur.
  *
- * Also: die Menge steht fest (voller Vorrat), und was ausserhalb des
- * kindlichen Vorrats liegt, wird gar nicht erst angeboten - ein Ziel, das
- * Fiona nicht erreichen kann, gehoert ihr nicht hingestellt.
- *
- * Der erste Anlauf hat das mit einer FALSCHEN Begruendung gebaut: „sonst
- * kann Fiona ein Abzeichen wieder verlieren, weil ihre Kontinentrunde
- * waechst". Die Gegenprobe hat das widerlegt, und sie hatte recht - die
- * Runde waechst genau dann, wenn die Menge voll ist, beide Rechnungen
- * kommen bei den Kontinenten immer zum selben Ergebnis. Verlieren kann
- * man ohnehin nichts: `istGesammelt` liest den Hoechststand, und der
- * steigt nur. Der Unterschied liegt allein bei den Ebenen mit FESTER
- * Tiefe, und dort ist er kein verlorenes Abzeichen, sondern ein falscher
- * Satz.
+ * Es gibt hier bewusst KEINE zweite Regel „was das Kind nicht erreichen
+ * kann, wird ihm nicht angeboten". Sie stand hier eine Runde lang, fuer
+ * das Nachbarn-Abzeichen - und mit dem ist sie weggefallen: jede Menge in
+ * dieser Tafel liegt vollstaendig in jedem Vorrat, der die Ebene
+ * ueberhaupt hat. Eine Regel ohne Fall ist eine Regel, die niemand mehr
+ * prueft.
  */
 export const TAFEL = [
   { ebene:'kontinente', id:'alle-kontinente', zeichen:'welt',
@@ -110,10 +115,6 @@ export const TAFEL = [
   { ebene:'bundeslaender', id:'alle-bundeslaender', zeichen:'karte',
     titel: () => 'Du kennst alle sechzehn Bundesländer.',
     waehlt: (v) => v },
-
-  { ebene:'laender:europa', id:'nachbarn', zeichen:'nachbarn',
-    titel: () => 'Du kennst alle Nachbarn von Deutschland.',
-    waehlt: (v) => v.filter(x => NACHBARN.includes(x.id)) },
 
   { ebene:'rechnen:reihen', id:(a)=>`reihe-${a}`, zeichen:'reihe', je:[6,7,8,9,10],
     titel: (a) => `Du kannst die ${REIHENWORT[a]}reihe.`,
@@ -156,8 +157,6 @@ export function abzeichenDer(ebeneId, vorrat, umfeld = {}) {
       // verdient" - eine leere Menge ist immer vollstaendig, und genau so
       // haette jedes Kind sofort jedes Abzeichen.
       if (!teile.length) continue;
-      // Und nicht anbieten, was ausserhalb seines Vorrats liegt.
-      if (umfeld.erreichbar && teile.some(id => !umfeld.erreichbar.has(id))) continue;
       aus.push({
         id: typeof e.id === 'function' ? e.id(wert) : e.id,
         ebene: ebeneId, zeichen: e.zeichen,

@@ -1373,11 +1373,8 @@ async function glattSetzen(wert){
  * zweimal anders gerechnet; in diesem Verzeichnis sind so schon zwei
  * Sternformeln entstanden.
  */
-function abzUmfeld(ebeneId, stand){
-  return { name: P.name, erreichbar: new Set(vorrat(ebeneId, stand).map(x => x.id)) };
-}
 function verdiente(ebeneId, stand){
-  return Abzeichen.abzeichenDer(ebeneId, vorrat(ebeneId, stand, true), abzUmfeld(ebeneId, stand))
+  return Abzeichen.abzeichenDer(ebeneId, vorrat(ebeneId, stand, true), { name: P.name })
     .map(a => Abzeichen.stand(a, id => Leitner.istGesammelt(stand, id)))
     .filter(a => a.verdient);
 }
@@ -4131,7 +4128,7 @@ async function forscherbuch(){
    */
   const marken = [];
   for (const { e, st } of staende)
-    for (const a of Abzeichen.abzeichenDer(e.id, vorrat(e.id, st, true), abzUmfeld(e.id, st)))
+    for (const a of Abzeichen.abzeichenDer(e.id, vorrat(e.id, st, true), { name: P.name }))
       marken.push({ ...Abzeichen.stand(a, id => Leitner.istGesammelt(st, id)), ebeneTitel: e.titel });
   const ohneFehler = await glattStand();
   /* „bei Kontinente" waere falsches Deutsch, und die Ebenentitel stehen

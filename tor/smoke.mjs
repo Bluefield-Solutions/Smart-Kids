@@ -3339,7 +3339,15 @@ if (laeuft('streu')) try {
 if (laeuft('abzeichen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
 
-  /* --- Fionas Kontinente: alle IHRE gesammelt, Abzeichen trotzdem offen */
+  /* --- Fiona: DREI von vier Kontinenten ihrer ersten Runde -----------
+   *
+   * Der Fall, an dem sich zeigt, ob die Menge aus dem VOLLEN Vorrat kommt.
+   * Fiona bekommt die Kontinente rundenweise; mit drei von vier bleibt
+   * sie in Runde eins und sieht genau vier. Ueber ihren Vorrat gerechnet
+   * stuende neben „Du kennst alle Kontinente" also „Dir fehlt noch eins"
+   * - obwohl es sechs sind und drei fehlen. Die Zahl muss die ganze
+   * Menge meinen, sonst zaehlt sie etwas anderes als der Satz darueber
+   * behauptet. */
   await p.evaluate(() => new Promise((ja, nein) => {
     const auf = indexedDB.open('lernkiste', 1);
     auf.onupgradeneeded = () => {
@@ -3348,33 +3356,13 @@ if (laeuft('abzeichen')) try {
     };
     auf.onsuccess = () => {
       const D = JSON.parse(document.getElementById('daten').textContent);
-      // Fionas erste Runde - die Kontinente mit `runde <= 1`.
-      const ersteRunde = {};
-      for (const k of D.kontinente.filter(x => x.runde <= 1))
-        ersteRunde[k.id] = { fach:4, faellig:0, hoch:4 };
-      /* Und ALLE NEUN Nachbarn Deutschlands als gesammelt - auch die
-         drei, die ausserhalb ihrer Laendertiefe liegen und die sie nie
-         gefragt bekaeme. Der Stand ist eine schlichte Tabelle; hier steht
-         also ein Zustand, den das Spiel selbst nie erzeugen wuerde.
-         Genau deshalb steht er hier: er trennt die richtige Rechnung von
-         den beiden falschen. Ohne `erreichbar` waere das Abzeichen jetzt
-         VERDIENT, ohne den vollen Vorrat waere es das schon bei sechs -
-         und in beiden Faellen stuende da „Du kennst alle Nachbarn von
-         Deutschland", obwohl sie drei davon nie gesehen hat. */
-      const nachbarn = {};
-      for (const a3 of ['DNK','NLD','BEL','LUX','FRA','CHE','AUT','CZE','POL'])
-        nachbarn[a3] = { fach:4, faellig:0, hoch:4 };
-      // Lea: fuenf von sechs sicher, der sechste einen Schritt vor dem
-      // Aufkleber. EINE richtige Antwort vervollstaendigt die Menge.
-      const leas = {};
-      D.kontinente.forEach((k, i) => { leas[k.id] = i < 5
-        ? { fach:4, faellig:0, hoch:4 } : { fach:2, faellig:0, hoch:2 }; });
+      const drei = {};
+      for (const k of D.kontinente.filter(x => x.runde <= 1).slice(0, 3))
+        drei[k.id] = { fach:4, faellig:0 };
       const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
-      t.objectStore('fortschritt').put(ersteRunde, 'fiona:kontinente');
-      t.objectStore('fortschritt').put(nachbarn, 'fiona:laender:europa');
-      t.objectStore('fortschritt').put(leas, 'lea:kontinente');
+      t.objectStore('fortschritt').put(drei, 'fiona:kontinente');
       t.objectStore('einstellungen').put({ vorlaufGezeigt: {
-        'fiona:kontinente': true, 'lea:kontinente': true } }, 'alles');
+        'fiona:kontinente': true, 'fiona:bundeslaender': true } }, 'alles');
       t.oncomplete = ja; t.onerror = () => nein(t.error);
     };
     auf.onerror = () => nein(auf.error);
@@ -3382,20 +3370,6 @@ if (laeuft('abzeichen')) try {
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
-  /* Erst EINMAL nach Europa hinein - sonst sagt die Probe nichts.
-     Im Startbuendel liegen nur zwoelf europaeische Laender (die fuer die
-     Hauptstaedte); die vollen einundfuenfzig kommen erst, wenn die Ebene
-     betreten wird. Ohne diesen Umweg kennt das Buch von den neun Nachbarn
-     gar keinen, und ob die Menge aus dem vollen oder aus Fionas Vorrat
-     kommt, macht keinen Unterschied - beide waeren leer. Gemessen, nicht
-     vermutet: `D.laender.europa.length` war 12 statt 51. */
-  await zurEbenenwahl(p, 'laender:europa');
-  await p.click('[data-ebene="laender:europa"]');
-  await durchVorlaufWenn(p);
-  await p.waitForSelector('.schirm.da .karte svg', { timeout: 25000 });
-  await p.click('.schirm.da #zur');            // das Kreuz fuehrt auf die Pause
-  await p.click('.schirm.da #raus');           // „Übung beenden"
-  await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 25000 });
   await p.click('#buch');
   await p.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
   const beiFiona = await p.evaluate(() => {
@@ -3404,17 +3378,13 @@ if (laeuft('abzeichen')) try {
              da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.trim()) };
   });
   if (beiFiona.da.length) merke('abzeichen', new Error(
-    `Fiona hat schon ein Abzeichen (${beiFiona.da.join(' · ')}) — sie hat vier von `
-    + 'sechs Kontinenten, die Menge ist nicht voll'));
+    `Fiona hat schon ein Abzeichen (${beiFiona.da.join(' · ')}) — sie hat drei von `
+    + 'sechs Kontinenten, keine Menge ist voll'));
   if (beiFiona.offen.length !== 1) merke('abzeichen', new Error(
     `${beiFiona.offen.length} offene Abzeichen auf einmal — offen steht genau eines`));
-  if (!/fehlen noch 2/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
-    `das offene Abzeichen sagt „${beiFiona.offen[0]}" — erwartet werden zwei fehlende `
-    + 'Kontinente, gerechnet gegen alle sechs und nicht gegen Fionas Runde'));
-  // Und die Nachbarn gibt es fuer sie gar nicht - weder verdient noch offen.
-  if (/Nachbarn/.test(JSON.stringify(beiFiona))) merke('abzeichen', new Error(
-    'Fiona bekommt das Nachbarn-Abzeichen, obwohl ihre Ländertiefe nur sechs '
-    + 'der neun enthält — der Satz „Du kennst alle Nachbarn" wäre falsch'));
+  if (!/fehlen noch 3/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
+    `das offene Abzeichen sagt „${beiFiona.offen[0]}" — gezählt werden muss gegen die `
+    + 'ganze Menge (sechs Kontinente, drei fehlen), nicht gegen Fionas erste Runde'));
 
   /* --- Und jetzt spielt Fiona das letzte Bundesland ------------------
    *
