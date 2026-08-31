@@ -3359,8 +3359,16 @@ if (laeuft('abzeichen')) try {
       const drei = {};
       for (const k of D.kontinente.filter(x => x.runde <= 1).slice(0, 3))
         drei[k.id] = { fach:4, faellig:0 };
+      /* Dazu die drei Stadtstaaten - damit sie ueberhaupt EIN Abzeichen
+         hat. Das offene erscheint erst neben einem verdienten (siehe
+         `forscherbuch`); ohne diesen Griff pruefte der Abschnitt einen
+         Bildschirm, den es so nicht gibt. */
+      const stadt = {};
+      for (const b of D.deutschland.filter(x => x.stadtstaat))
+        stadt[b.id] = { fach:4, faellig:0 };
       const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
       t.objectStore('fortschritt').put(drei, 'fiona:kontinente');
+      t.objectStore('fortschritt').put(stadt, 'fiona:bundeslaender');
       t.objectStore('einstellungen').put({ vorlaufGezeigt: {
         'fiona:kontinente': true, 'fiona:bundeslaender': true } }, 'alles');
       t.oncomplete = ja; t.onerror = () => nein(t.error);
@@ -3377,9 +3385,10 @@ if (laeuft('abzeichen')) try {
     return { offen: [...s.querySelectorAll('.abz.offen')].map(x => x.textContent.trim()),
              da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.trim()) };
   });
-  if (beiFiona.da.length) merke('abzeichen', new Error(
-    `Fiona hat schon ein Abzeichen (${beiFiona.da.join(' · ')}) — sie hat drei von `
-    + 'sechs Kontinenten, keine Menge ist voll'));
+  if (!beiFiona.da.some(t => /drei Stadtstaaten/.test(t))) merke('abzeichen', new Error(
+    `das verdiente Abzeichen fehlt — im Buch steht ${JSON.stringify(beiFiona.da)}`));
+  if (beiFiona.da.some(t => /alle Kontinente/.test(t))) merke('abzeichen', new Error(
+    'Fiona hat „alle Kontinente" verdient — sie hat drei von sechs, die Menge ist nicht voll'));
   if (beiFiona.offen.length !== 1) merke('abzeichen', new Error(
     `${beiFiona.offen.length} offene Abzeichen auf einmal — offen steht genau eines`));
   if (!/fehlen noch 3/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
@@ -3490,7 +3499,7 @@ if (laeuft('abzeichen')) try {
   if (buch.bilder !== buch.knoepfe) merke('abzeichen', new Error(
     `${buch.knoepfe - buch.bilder} Abzeichen stehen ohne Bild da`));
 
-  console.log(`  Abzeichen:                  Fiona 0 verdient, 1 offen („${
+  console.log(`  Abzeichen:                  Fiona ${beiFiona.da.length} verdient, 1 offen („${
     (beiFiona.offen[0] || '').replace(/\s+/g, ' ')}") · `
     + `nach der Runde ${buch.da.length} verdient, alle mit Bild`);
   await p.close(); await q.close();

@@ -593,10 +593,36 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   background:var(--gut-h);border:var(--strich) solid var(--gut);
   font-family:var(--f-lesen);font-size:var(--s0);color:var(--tinte);
   max-width:100%}
+/* Auf dem Telefon quer ist der Bildschirm 390 Punkte hoch, und das
+   Forscherbuch war vorher randvoll. Die Abzeichenzeile hat die untere
+   Aufkleberreihe 19 Punkte ueber den Rand geschoben - `passt` hat es
+   gemeldet, nicht das Auge.
+   Zurueckgeholt wird das an drei Stellen: kleineres Zeichen (28 statt
+   34), knappere Polsterung, und die Mindesthoehe geht auf 44 - das ist
+   die Fingergrenze und damit die Untergrenze, nicht eine Zahl, die man
+   weiter druecken darf. */
 @media (max-height:440px){
-  .abzeichen{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--r2)}
-  .abz{padding:var(--r2);gap:var(--r2);font-size:var(--s-klein);min-height:48px}
-  .abzneu{font-size:var(--s-klein);margin:var(--r2) 0}
+  .abzeichen{gap:var(--r2)}
+  .abz{flex:1 1 260px;padding:var(--r1) var(--r2);gap:var(--r2);
+    font-size:var(--s-klein);min-height:44px}
+  .abz svg{width:28px;height:28px}
+  /* Die Zahl rutscht in die ZEILE, statt eine eigene zu bekommen. Das
+     spart die eine Zeile, die auf dem kuerzesten Bildschirm (mit Leiste
+     sind es 340 Punkte) noch fehlte - gemessen: 5 Punkte, eine Zeile sind
+     15. Auf dem grossen Bildschirm bleibt sie darunter, dort ist Platz. */
+  .abz.offen small{display:inline;font-size:calc(var(--s-klein) * 0.9)}
+  .abzneu{font-size:var(--s-klein);margin:var(--r1) 0;padding:var(--r1) var(--r3)}
+  .abzneu svg{width:30px;height:30px}
+  /* Und die Ueberschrift faellt weg. Auf 390 Punkten Hoehe ist sie der
+     teuerste Posten des Blocks (30 Punkte samt Abstand) und der
+     entbehrlichste: die Abzeichen sagen selbst, was sie sind - „Du kennst
+     die drei Stadtstaaten" braucht kein Wort darueber. Fiona liest sie
+     ohnehin nicht. */
+  .abzkopf{display:none}
+  /* Und die Luft VOR der ersten Aufklebergruppe: `.gruppe` traegt 24
+     Punkte oben, und nach dem Abzeichenblock braucht es die nicht - der
+     Block trennt schon durch seine Farbe. */
+  .abzeichen + .gruppe{margin-top:var(--r3)}
 }
 .kachel .umriss{width:96px;height:96px}
 .kachel .kreis{width:64px;height:64px;border-radius:var(--rund-voll);display:flex;

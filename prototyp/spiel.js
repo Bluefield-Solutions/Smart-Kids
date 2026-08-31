@@ -4137,7 +4137,22 @@ async function forscherbuch(){
   if (ohneFehler) marken.unshift({ id:'ohne-fehler', zeichen:'medaille', verdient:true, fehlt:0,
     titel:`Einmal ganz ohne Fehler: ${ohneFehler.ebeneTitel}.` });
   const verdient = marken.filter(a => a.verdient);
-  const naechstes = marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt)[0];
+  /* Das offene Abzeichen steht nur da, wenn es schon eines GIBT.
+   *
+   * Gemessen, nicht entschieden: auf dem Telefon quer mit Browserleiste
+   * sind 340 Punkte Hoehe da, und das Forscherbuch war schon vorher
+   * randvoll - `passt` hat gemeldet, dass die untere Aufkleberreihe
+   * herausfaellt. Der erste Versuch war, dafuer die Vorschau
+   * auszublenden; das hat bei einem frischen Konto den ganzen Bildschirm
+   * geleert, denn dort IST die Vorschau der Inhalt.
+   *
+   * Also andersherum: wer noch kein Abzeichen hat, bekommt seinen
+   * naechsten Schritt weiter von der Vorschau („Als Nächstes: Europa")
+   * - dieselbe Auskunft, nur mit Bildern. Wer schon eines hat, hat den
+   * Block ohnehin, und eine Zeile mehr kostet eine Zeile.
+   */
+  const naechstes = verdient.length
+    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt)[0] : null;
   /* Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert.
      Ein `div` mit `data-lesen` waere fuer sie stumm - der Rundgang bindet
      zwar den Klick, aber `beruehrung` misst Trefferflaechen nur an
@@ -4149,14 +4164,14 @@ async function forscherbuch(){
               : `Fast. ${a.titel} Dir fehlen noch ${a.fehlt}.`}">
       ${ABZ(a.zeichen, a.verdient)}
       <span class="was">${a.titel}${a.verdient?''
-        : `<small>Dir ${a.fehlt===1?'fehlt noch eins':`fehlen noch ${a.fehlt}`}.</small>`}</span>
+        : ` <small>Dir ${a.fehlt===1?'fehlt noch eins':`fehlen noch ${a.fehlt}`}.</small>`}</span>
     </button>`;
 
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${gesamt} Aufkleber</span>` }) + `
     <div class="rollen">
-      ${verdient.length || naechstes ? `
-        <h3 class="gruppe">${verdient.length ? 'Deine Abzeichen' : 'Dein erstes Abzeichen'}</h3>
+      ${verdient.length ? `
+        <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
         <div class="abzeichen">${verdient.map(markeBild).join('')}${
           naechstes ? markeBild(naechstes) : ''}</div>` : ''}
       ${gesamt ? vollen.map(g=>`
