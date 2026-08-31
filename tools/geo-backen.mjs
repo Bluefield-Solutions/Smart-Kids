@@ -404,4 +404,52 @@ function polDerUnzugaenglichkeit(polygone) {
   return { punkt: beste, radius: besterAbstand };
 }
 
-export { imPolygon, abstandZumRand, polDerUnzugaenglichkeit };
+/**
+ * Einen SVG-Pfad zurueck in seine Ringe lesen.
+ *
+ * Stand dreimal fast gleich da - in `tools/backen-staedte.mjs`, in
+ * `tor/inhalt.mjs` und hier gebraucht. Was zweimal dasteht, veraltet
+ * einmal: die eine Fassung bekam die Loecher, die andere nicht.
+ */
+function pfadZuRingen(d) {
+  const ringe = [];
+  for (const teil of String(d).split('M').slice(1)) {
+    const z = teil.match(/-?\d+\.?\d*/g); if (!z) continue;
+    const ring = [];
+    for (let i = 0; i + 1 < z.length; i += 2) ring.push([+z[i], +z[i+1]]);
+    if (ring.length > 2) ringe.push(ring);
+  }
+  return ringe;
+}
+
+/**
+ * Ringe zu Polygonen ordnen: `[aussen, loch, loch, ...]`.
+ *
+ * Hier lag der Fehler, der Brandenburg seinen Anker MITTEN IN BERLIN gab.
+ * `backen-staedte.mjs` machte aus jedem Ring ein eigenes Polygon OHNE
+ * Loch - der Kommentar daneben sagte sogar, dass Aussenringe und Loecher
+ * zu trennen seien, der Code tat es nicht. Der groesste einbeschriebene
+ * Kreis suchte sich daraufhin die Mitte des Rings, und die Mitte von
+ * Brandenburg ist Berlin.
+ *
+ * Gemessen auf dem Zielgeraet (844 x 390): Brandenburgs Anker lag 1,8
+ * Bildpunkte neben dem Mittelpunkt von Berlins Trefferkreis, der 10
+ * Bildpunkte Radius hat. Wer „Brandenburg" auf Brandenburgs beste Stelle
+ * zog, bekam „Das ist Berlin." - und `topologie` meldete gruen, weil es
+ * nur gegen den AUSSENRING prueft.
+ */
+function ringeZuPolygonen(ringe) {
+  const nachGroesse = ringe.map(r => ({ r, a: ringFlaeche(r) })).sort((x, y) => y.a - x.a);
+  const polys = [];
+  for (const { r } of nachGroesse) {
+    const [px, py] = r[0];
+    // Gesucht wird der AUSSENRING, der diesen Ring umschliesst - nicht das
+    // ganze Polygon: sonst faende ein zweites Loch im selben Wirt keinen.
+    const wirt = polys.find(q => imRing(px, py, q[0]));
+    if (wirt) wirt.push(r); else polys.push([r]);
+  }
+  return polys;
+}
+
+export { imPolygon, abstandZumRand, polDerUnzugaenglichkeit,
+         pfadZuRingen, ringeZuPolygonen };

@@ -4169,7 +4169,7 @@ async function forscherbuch(){
 
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${gesamt} Aufkleber</span>` }) + `
-    <div class="rollen">
+    <div class="rollen buch">
       ${verdient.length ? `
         <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
         <div class="abzeichen">${verdient.map(markeBild).join('')}${

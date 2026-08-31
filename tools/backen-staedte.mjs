@@ -7,44 +7,53 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as d3 from 'd3-geo';
-import { rohLesen, AUS, polDerUnzugaenglichkeit } from './geo-backen.mjs';
+import { rohLesen, AUS, ROH, polDerUnzugaenglichkeit,
+         pfadZuRingen, ringeZuPolygonen } from './geo-backen.mjs';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
+// Die eingecheckte Fassung - gebraucht, wenn die Rohdaten fehlen (siehe unten).
+import { STAEDTE as EINGECHECKT } from '../src/geo/staedte.js';
 
 const STADTSTAATEN = ['DE-BE','DE-HH','DE-HB'];
 const NAME_IN_NE = { 'München':'Munich', 'Köln':'Cologne', 'Nürnberg':'Nuremberg' };
 
-const orte = rohLesen('ne_10m_populated_places');
-const deOrte = orte.features.filter(f => f.properties.ADM0_A3 === 'DEU');
+/* Die STADTPUNKTE brauchen die Rohdaten, die ANKER nicht.
+ *
+ * Ein Anker haengt allein an `DEUTSCHLAND_FEIN`, und das liegt eingecheckt
+ * im Baum. Ohne diesen Zweig haette die Berichtigung von Brandenburgs
+ * Anker auf 400 MB Natural Earth gewartet - Daten, die zum Bauen und
+ * Spielen niemand braucht und die auf einem frischen Rechner erst geholt
+ * werden muessen.
+ *
+ * Fehlen sie, werden die Stadtpunkte aus der eingecheckten Fassung
+ * uebernommen und NUR die Anker neu gerechnet. Der Lauf schreibt das hin,
+ * damit niemand glaubt, er haette auch die Orte neu bestimmt. */
+const rohDa = ['ne_10m_populated_places', 'ne_10m_admin_1_states_provinces']
+  .every(n => fs.existsSync(path.join(ROH, `${n}.geojson`)));
 
-// Die Deutschland-Projektion aus tools/backen-deutschland.mjs, feine Stufe.
-const proj = d3.geoConicConformal().parallels([48+40/60, 53+40/60]).rotate([-10.5,0]);
-// fitWidth auf dieselbe Bezugsbreite wie die feine Stufe, dann auf 1000 skalieren
-const alleGeo = { type:'FeatureCollection', features: DEUTSCHLAND_FEIN.map(b=>({
-  type:'Feature', properties:{}, geometry:{ type:'Polygon', coordinates:[[[0,0]]] } })) };
-
-// Einfacher: die Lage aus dem bereits normierten Pfadraum ableiten, indem
-// wir die Projektion mit denselben Parametern auf die Rohgeometrie fitten.
-const rohDe = rohLesen('ne_10m_admin_1_states_provinces');
-const deRoh = { type:'FeatureCollection', features: rohDe.features
-  .filter(f=>f.properties.adm0_a3==='DEU')
-  .map(f=>({type:'Feature',properties:{id:f.properties.iso_3166_2},geometry:f.geometry})) };
-proj.fitWidth(2000, deRoh);
-const skala = 1000/2000;
-
-/* --- Pfad zurueck in Polygone lesen (fuer die Anker) -------------------- */
-function pfadZuPolygonen(d) {
-  const polys = [];
-  for (const teil of d.split('M').slice(1)) {
-    const zahlen = teil.match(/-?\d+\.?\d*/g);
-    if (!zahlen) continue;
-    const ring = [];
-    for (let i = 0; i + 1 < zahlen.length; i += 2) ring.push([+zahlen[i], +zahlen[i+1]]);
-    if (ring.length > 2) polys.push(ring);
-  }
-  // Aussenringe und Loecher trennen: ein Ring, der in einem anderen liegt,
-  // ist ein Loch. Fuer unseren Zweck reicht: groesster Ring = aussen.
-  return polys.map(r => [r]);
+let deOrte = [], proj = null, skala = 1;
+if (rohDa) {
+  const orte = rohLesen('ne_10m_populated_places');
+  deOrte = orte.features.filter(f => f.properties.ADM0_A3 === 'DEU');
+  // Die Deutschland-Projektion aus tools/backen-deutschland.mjs, feine Stufe.
+  proj = d3.geoConicConformal().parallels([48+40/60, 53+40/60]).rotate([-10.5,0]);
+  // Die Lage aus dem bereits normierten Pfadraum ableiten, indem wir die
+  // Projektion mit denselben Parametern auf die Rohgeometrie fitten.
+  const rohDe = rohLesen('ne_10m_admin_1_states_provinces');
+  const deRoh = { type:'FeatureCollection', features: rohDe.features
+    .filter(f=>f.properties.adm0_a3==='DEU')
+    .map(f=>({type:'Feature',properties:{id:f.properties.iso_3166_2},geometry:f.geometry})) };
+  // fitWidth auf dieselbe Bezugsbreite wie die feine Stufe, dann auf 1000 skalieren
+  proj.fitWidth(2000, deRoh);
+  skala = 1000/2000;
 }
+
+/* --- Pfad zurueck in Polygone lesen (fuer die Anker) -------------------
+ *
+ * Hier stand eine eigene Fassung, die aus JEDEM Ring ein eigenes Polygon
+ * ohne Loch machte - `polys.map(r => [r])`, direkt unter einem Kommentar,
+ * der das Gegenteil ankuendigte. Beides steht jetzt in `geo-backen.mjs`,
+ * einmal, und `tor/inhalt.mjs` liest dieselben Funktionen.
+ */
 
 const zeilen = [];
 let ohneOrt = 0;
@@ -54,12 +63,15 @@ for (const b of DEUTSCHLAND_FEIN) {
     [f.properties.NAME, f.properties.NAMEASCII, f.properties.NAME_DE].includes(gesucht) ||
     [f.properties.NAME, f.properties.NAMEASCII, f.properties.NAME_DE].includes(b.hauptstadt));
   let ort = null;
-  if (treffer) {
+  if (!rohDa) {
+    ort = (EINGECHECKT.find(z => z.id === b.id) || {}).ort || null;
+    if (!ort) ohneOrt++;
+  } else if (treffer) {
     const p = proj(treffer.geometry.coordinates);
     if (p) ort = [+(p[0]*skala).toFixed(1), +(p[1]*skala).toFixed(1)];
   } else ohneOrt++;
 
-  const pu = polDerUnzugaenglichkeit(pfadZuPolygonen(b.pfad));
+  const pu = polDerUnzugaenglichkeit(ringeZuPolygonen(pfadZuRingen(b.pfad)));
   zeilen.push({
     id: b.id, name: b.name, hauptstadt: b.hauptstadt,
     stadtstaat: STADTSTAATEN.includes(b.id),
@@ -85,8 +97,10 @@ fs.writeFileSync(path.join(AUS,'staedte.js'),
   `// ERZEUGT von tools/backen-staedte.mjs - nicht von Hand aendern.\n`+
   `export const STAEDTE = ${JSON.stringify(zeilen)};\n`);
 
-console.log(`  ${zeilen.length} Länder, ${zeilen.filter(z=>z.ort).length} Stadtlagen gefunden`
-  + (ohneOrt?`, ${ohneOrt} ohne`:''));
+if (!rohDa) console.log('\n  Ohne Rohdaten gelaufen: die Stadtpunkte sind aus der\n'
+  + '  eingecheckten Fassung uebernommen, NEU gerechnet sind nur die Anker.\n');
+console.log(`  ${zeilen.length} Länder, ${zeilen.filter(z=>z.ort).length} Stadtlagen `
+  + (rohDa ? 'gefunden' : 'übernommen') + (ohneOrt?`, ${ohneOrt} ohne`:''));
 console.log(`  Stadtstaaten (keine eigene Hauptstadtfrage): `
   + zeilen.filter(z=>z.stadtstaat).map(z=>z.name).join(', '));
 console.log(`  Rätsel in der Hauptrunde: ${zeilen.filter(z=>!z.stadtstaat).length}\n`);

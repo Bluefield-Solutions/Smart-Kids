@@ -5626,3 +5626,125 @@ entscheidet nach dem **Trefferkreis**, nicht nach dem Umriss, und ein
 Punkt weit außen auf einem großen Land liegt schon im Kreis des Nachbarn.
 
 174 Gegenproben, alle mit Nachweis.
+
+---
+
+## F16 · Brandenburgs Anker lag in Berlin
+
+Diese Runde war als Abschluss von D2 gedacht: Kette fahren, einchecken,
+liefern. Die Kette meldete zwei Fehler, und der zweite war keiner von D2.
+
+### Was die Kette sagte
+
+```
+✗ forscherbuch: das Buch rollt schon bei 5 Karten (340 Punkte Inhalt,
+                322 sichtbar) — die Vorschau steht halb unter dem Rand
+✗ abzeichen:    page.waitForFunction: Timeout 4000ms exceeded.
+```
+
+Der erste Satz sagt, was los ist. Der zweite sagt gar nichts — eine
+Zeitüberschreitung ohne Ort. Und der Abschnitt lief **allein aufgerufen
+grün**, zweimal; nur in der vollen Kette fiel er um. Das riecht nach
+Reihenfolge oder Zufall, und beides führt erfahrungsgemäß zu einer
+Vermutung statt zu einem Befund.
+
+Also habe ich `loese()` einen Satz sagen lassen, bevor es aufgibt — was
+steht auf dem Schirm, welches Gebiet war gemeint, wo wurde losgelassen —
+und die volle Kette noch einmal gefahren. Dreizehn Minuten für einen Satz:
+
+```
+Ziel: Brandenburg    „Das ist Berlin. Brandenburg ist ganz nah —
+                      schau noch mal genau hin."
+```
+
+### Die Ursache, in drei Schritten rückwärts
+
+**Am Bildschirm.** Gemessen am gebauten `dist/`, iPhone quer 844 × 390,
+Ebene Bundesländer: Brandenburgs Anker liegt **1,8 Bildpunkte** neben dem
+Mittelpunkt von Berlins Trefferkreis, und der hat **10 Bildpunkte
+Radius**. Wer auf Brandenburgs Anker zeigt, zeigt auf Berlin.
+
+**In den Daten.** Von sechzehn Bundesländern hat genau eines seinen Anker
+nicht im eigenen Gebiet: `[804.7, 446.1]` — mitten in Berlin. Berlin liegt
+vollständig in Brandenburg; das steht sogar in `tor/inhalt.mjs` als
+erwartetes Loch.
+
+**Im Werkzeug.** `tools/backen-staedte.mjs` las den Pfad in Ringe zurück
+und machte daraus `polys.map(r => [r])` — **jeder Ring ein eigenes Polygon
+ohne Loch**. Direkt darüber stand der Kommentar: „Aussenringe und Loecher
+trennen: ein Ring, der in einem anderen liegt, ist ein Loch." Der
+Kommentar beschrieb, was zu tun war; der Code tat es nicht. Der Suchlauf
+für den größten einbeschriebenen Kreis kannte das Loch damit nicht — und
+die Mitte von Brandenburg ist Berlin.
+
+### Was das im Spiel war
+
+Der Anker ist nicht nur eine Zahl in einer Datei. An ihm hängen der
+**Zeiger**, der dem Kind zeigt, wo es hinziehen soll, das **Häkchen** für
+ein gekonntes Gebiet, die **Namensfahne** und der **Trefferkreis**. Auf
+der Aufnahme vorher steht Brandenburgs Zeiger oben im Land, direkt auf
+Berlins Häkchen; nachher sitzt er unten rechts, im Land, weit weg von
+Berlin.
+
+Anders gesagt: Fiona bekam „Wie heißt dieses Bundesland?", die App zeigte
+ihr die Stelle — und wer dorthin zog, bekam „Das ist Berlin."
+
+### Das Tor, das genau das prüfen sollte
+
+`topologie` prüft „Anker liegt IM Gebiet". Es prüfte gegen
+`imPolygon(anker, [groesster])` — **nur den Außenring, ohne Loch**. Ein
+Anker im Loch ist im Außenring. Das Tor meldete „16 Anker geprüft, 0
+außerhalb", und es hatte, an seinem eigenen Maßstab, recht.
+
+Die stehende Gegenprobe schlug an — sie schiebt den Anker nach `[5, 5]`,
+weit vor die Küste. Genau deshalb bewies sie nichts über den Fall, der
+wirklich eingetreten ist. **Regel 13, wieder:** eine Prüfung ist erst
+dann eine, wenn sie ohne die Sache messbar ausschlägt — und „ohne die
+Sache" heißt hier: ohne den Fehler, den es *gibt*, nicht ohne einen
+ausgedachten.
+
+Es gibt jetzt eine zweite Gegenprobe, und sie setzt den Anker ein, der
+bis heute wirklich in den Daten stand: `[804.7, 446.1]`. Mit der alten
+Fassung des Tores wäre sie grün geblieben.
+
+### Vier Änderungen, eine Ursache
+
+| Wo | Was |
+|---|---|
+| `tools/geo-backen.mjs` | `pfadZuRingen` und `ringeZuPolygonen` — Ringe nach Fläche sortieren, jeden in seinen Wirt hängen. Einmal, statt dreimal fast gleich (Regel 15). |
+| `tools/backen-staedte.mjs` | benutzt beides; rechnet die Anker jetzt auch **ohne Rohdaten**, weil sie nur an den eingecheckten Umrissen hängen |
+| `src/geo/staedte.js` | Brandenburg `[804.7, 446.1] → [874, 537.7]`, Radius 106,8 → 74,6. Niedersachsen um 2 Punkte (auch ein Loch: Bremen). Sonst nichts. |
+| `tor/inhalt.mjs` | `topologie` prüft gegen Außenring **und** Löcher |
+| `tor/chromium.mjs` | `zielPunkt` prüft den Anker, bevor es ihn zurückgibt — mit derselben Regel, nach der das Spiel entscheidet |
+
+Der letzte Punkt ist der, der beim nächsten Mal Zeit spart. Ein Helfer,
+der einen Punkt zurückgibt, ohne ihn zu prüfen, meldet den nächsten
+Datenfehler wieder als Zeitüberschreitung ohne Ort.
+
+**Was die Berichtigung nicht braucht:** die 400 MB Natural Earth. Ein
+Anker hängt allein an `DEUTSCHLAND_FEIN`, und das liegt eingecheckt im
+Baum. Ohne diesen Zweig hätte die Korrektur auf Rohdaten gewartet, die
+zum Bauen und Spielen niemand braucht. Fehlen sie, übernimmt das Werkzeug
+die Stadtpunkte aus der eingecheckten Fassung, rechnet nur die Anker neu
+— und **schreibt das über den Lauf**, damit niemand glaubt, er hätte auch
+die Orte neu bestimmt.
+
+### Und der erste Fehler: das Buch war randvoll
+
+Das Abzeichenband kostet 44 Punkte, und das Forscherbuch stand auf dem
+Zielgerät mit Browserleiste vorher bei **322 in 322 sichtbaren** — also
+bei null. Nicht „knapp": bei null. Jede Zeile, die irgendwer hinzugefügt
+hätte, wäre unten herausgefallen.
+
+Zurückgeholt nicht am Band — 44 Punkte sind die Fingergrenze und keine
+Zahl, die man weiter drückt —, sondern an den zwei
+Gruppenüberschriften: sie trugen zusammen **90 Punkte für zwei Wörter**
+(je 26 hoch, dazu 14 und 8 Punkte Rand) auf einem Bildschirm, der 322
+hat. Mit `--s0` statt `--s1` und engeren Rändern sind es 68, die
+Fußpolsterung gibt sechs weitere her. Gemessen: das Buch rollt nicht
+mehr.
+
+Dieselbe Begründung, die in diesem Block schon für die Bildhöhen steht:
+die Maße sind für den Schreibtisch gewählt und auf dem Telefon zu groß.
+
+175 Gegenproben, alle mit Nachweis.

@@ -52,6 +52,24 @@ export const PROBEN = [
     such:'"anker":[804.7,703]', ersatz:'"anker":[5,5]',
     an:{ datei:'src/geo/staedte.js', text:'"anker":[5,5]' }, sagt:'außerhalb' },
 
+  /* Und derselbe Fehler EINEN Schritt subtiler: der Anker im LOCH.
+   *
+   * Die Probe darueber schiebt ihn nach [5,5], weit vor die Kueste - das
+   * hat auch die alte Fassung des Tores gefunden, die nur gegen den
+   * Aussenring prueft. Genau deshalb bewies sie nichts ueber den Fall,
+   * der wirklich eingetreten ist: Brandenburgs Anker lag in BERLIN, also
+   * im Aussenring und im Loch. Das Tor meldete „0 Anker ausserhalb",
+   * waehrend „Brandenburg" auf Brandenburgs beste Stelle gezogen mit
+   * „Das ist Berlin." beantwortet wurde.
+   *
+   * Der eingesetzte Wert ist der Anker, der bis v-D2 wirklich in den
+   * Daten stand. Eine Probe mit dem echten alten Fehler - nicht mit einem
+   * ausgedachten. */
+  { n:'ein Anker liegt im Loch seines Gebiets', tor:'inhalt', deckt:'topologie', datei:'src/geo/staedte.js',
+    such:'"name":"Brandenburg","hauptstadt":"Potsdam","stadtstaat":false,"ort":[780.6,462.2],"anker":[874,537.7]',
+    ersatz:'"name":"Brandenburg","hauptstadt":"Potsdam","stadtstaat":false,"ort":[780.6,462.2],"anker":[804.7,446.1]',
+    an:{ datei:'src/geo/staedte.js', text:'"anker":[804.7,446.1]' }, sagt:'außerhalb' },
+
   /* --- beruehrung --------------------------------------------------- */
   // Bremen ist mit 9,4 pt das kleinste Gebiet ueberhaupt - ohne Anker
   // bekommt es keinen Trefferkreis und ist mit dem Finger nirgends zu

@@ -786,6 +786,40 @@ Hinweis, den niemand liest, ist dasselbe wie keiner.
 
 ---
 
+### F16 · Brandenburgs Anker lag in Berlin  ·  ERLEDIGT
+
+**Gefunden hat es der Rauchtest, nicht das Tor, das dafür da ist.** Der
+Abschnitt `abzeichen` zog „Brandenburg" auf Brandenburgs Anker und bekam
+„Das ist Berlin." Gemessen auf dem Zielgerät (844 × 390): der Anker liegt
+1,8 Bildpunkte neben dem Mittelpunkt von Berlins Trefferkreis, der 10
+Bildpunkte Radius hat.
+
+**Ursache im Werkzeug.** `tools/backen-staedte.mjs` machte aus jedem Ring
+eines Pfades ein eigenes Polygon *ohne Loch* — unter einem Kommentar, der
+das Gegenteil ankündigte. Der größte einbeschriebene Kreis kannte das Loch
+nicht, und die Mitte von Brandenburg ist Berlin.
+
+**Warum es keinem auffiel.** `topologie` prüft „Anker liegt im Gebiet"
+gegen den Außenring **ohne Löcher**. Ein Anker im Loch ist im Außenring.
+Die stehende Gegenprobe schob den Anker weit vor die Küste — den echten
+Fall konnte sie nicht sehen. Es gibt jetzt eine zweite, die genau den
+Wert einsetzt, der bis hierher in den Daten stand.
+
+**Was das im Spiel war:** am Anker hängen Zeiger, Häkchen, Namensfahne und
+Trefferkreis. Die App zeigte dem Kind die Stelle, auf die es ziehen soll —
+und diese Stelle war Berlin.
+
+Geändert: `geo-backen.mjs` (Ringe zu Polygonen, einmal statt dreimal),
+`backen-staedte.mjs` (benutzt es; rechnet Anker jetzt auch ohne die 400 MB
+Rohdaten), `staedte.js` (Brandenburg und Niedersachsen — die zwei
+Bundesländer mit Loch), `inhalt.mjs` (Tor prüft Löcher mit),
+`chromium.mjs` (`zielPunkt` prüft seinen Punkt, statt ihn zu behaupten).
+
+Im selben Zug: das Forscherbuch stand auf dem Zielgerät bei 322 Punkten in
+322 sichtbaren — bei null Spielraum. Das Abzeichenband hätte es gekippt.
+Zurückgeholt an den Gruppenüberschriften (90 Punkte für zwei Wörter), nicht
+am Band: 44 Punkte sind die Fingergrenze.
+
 ### F15 · Vier Hebel für die Sprachqualität  ·  ERLEDIGT
 
 **Der Befund war diesmal ein Bauchgefühl** („funktioniert halbwegs, aber noch

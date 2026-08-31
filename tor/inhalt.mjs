@@ -41,7 +41,13 @@ const GEBACKEN = {
   nordamerika:  LAENDER_NORDAMERIKA_FEIN,
   suedamerika:  LAENDER_SUEDAMERIKA_FEIN,
 };
-import { vorzeichenFlaeche, ringFlaeche, imPolygon } from '../tools/geo-backen.mjs';
+import { vorzeichenFlaeche, ringFlaeche, imPolygon,
+         pfadZuRingen, ringeZuPolygonen } from '../tools/geo-backen.mjs';
+
+// Die Ringe eines Pfades - flach, ohne Zuordnung von Loechern. Fuer den
+// Umlaufsinn und die Nadeln ist genau das richtig; wo es um „liegt ein
+// Punkt IM Gebiet" geht, muessen die Loecher dazu (siehe unten).
+const pfadZuPolys = pfadZuRingen;
 
 const fehler = [], hinweise = [];
 const pruefe = (b, satz) => { if (!b) fehler.push(satz); };
@@ -502,15 +508,6 @@ console.log(`    ${ZAHL.kontinente} Kontinente + ${ZAHL.laender} Länder + `
 
 /* ==================================================== Tor `topologie` === */
 console.log('\n  Tor `topologie`');
-function pfadZuPolys(d) {
-  const polys = [];
-  for (const teil of d.split('M').slice(1)) {
-    const z = teil.match(/-?\d+\.?\d*/g); if (!z) continue;
-    const ring = []; for (let i=0;i+1<z.length;i+=2) ring.push([+z[i],+z[i+1]]);
-    if (ring.length > 2) polys.push(ring);
-  }
-  return polys;
-}
 // Erwartete Teile und Loecher - aus der Wirklichkeit, nicht aus den Daten.
 const ERWARTET = {
   'DE-HB': { teileMin:2, grund:'Bremen und Bremerhaven liegen 60 km auseinander' },
@@ -563,9 +560,19 @@ for (const s of STAEDTE) {
   }
   const b = DEUTSCHLAND_FEIN.find(x=>x.id===s.id);
   if (!b) { ankerFehlt++; continue; }
-  const polys = pfadZuPolys(b.pfad);
-  const groesster = polys.reduce((a,c)=>ringFlaeche(a)>ringFlaeche(c)?a:c);
-  if (!imPolygon(s.anker[0], s.anker[1], [groesster])) ankerDraussen++;
+  /* Gegen den groessten Aussenring MIT seinen Loechern.
+   *
+   * Hier stand `[groesster]` - nur der Aussenring, ohne Loch. Das Tor
+   * meldete „0 Anker ausserhalb", waehrend Brandenburgs Anker in Berlin
+   * lag: er ist im Aussenring, aber im Loch. Gefunden hat es nicht dieses
+   * Tor, sondern der Rauchtest der Runde D2 - er zog „Brandenburg" auf
+   * Brandenburgs Anker und bekam „Das ist Berlin."
+   *
+   * Eine Pruefung, die den Fall nicht sehen KANN, den sie zu pruefen
+   * vorgibt, ist kein Beweis (Regel 5). */
+  const polys = ringeZuPolygonen(pfadZuPolys(b.pfad));
+  const groesster = polys.reduce((a,c)=>ringFlaeche(a[0])>ringFlaeche(c[0])?a:c);
+  if (!imPolygon(s.anker[0], s.anker[1], groesster)) ankerDraussen++;
 }
 pruefe(ankerFehlt === 0, `${ankerFehlt} Gebiete haben keinen brauchbaren Anker`);
 pruefe(ankerDraussen === 0, `${ankerDraussen} Anker liegen außerhalb ihres Gebiets`);

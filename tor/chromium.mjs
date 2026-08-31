@@ -224,6 +224,25 @@ export async function zielPunkt(seite) {
     //    einem grossen Land liegt zwar IM Umriss, aber schon im
     //    Trefferkreis des Nachbarn; genau daran hat der Abschnitt
     //    `spielen` gehangen, als hier nur das Raster stand.
+    /* Und der Anker gilt nur, wenn das SPIEL an dieser Stelle auch das
+       Ziel erkennt.
+       Ungeprueft hat er den Abschnitt `abzeichen` gekippt: Brandenburgs
+       Anker lag 1,8 Punkte neben dem Mittelpunkt von Berlins
+       Trefferkreis (Radius 10), das Etikett landete auf Berlin, und der
+       Rauchtest scheiterte an einem Datenfehler, ohne ihn zu benennen.
+       Der Anker ist inzwischen berichtigt - aber ein Helfer, der einen
+       Punkt zurueckgibt, ohne ihn zu pruefen, findet den naechsten
+       solchen Fall wieder erst als Zeitueberschreitung. Geprueft wird
+       mit derselben Regel, nach der das Spiel entscheidet: der
+       Trefferkreis schlaegt den Umriss. */
+    const gilt = (x, y) => {
+      const e = document.elementFromPoint(x, y);
+      if (!e || !e.closest) return false;
+      const k = e.closest('#treffer circle');
+      if (k) return k.dataset.id === ziel.dataset.id;
+      const pf = e.closest('path.geb');
+      return !!pf && pf.dataset.id === ziel.dataset.id;
+    };
     try {
       const D = JSON.parse(document.getElementById('daten').textContent);
       const alle = [...D.kontinente, ...Object.values(D.laender).flat(), ...D.deutschland];
@@ -233,14 +252,14 @@ export async function zielPunkt(seite) {
         const pt = svg.createSVGPoint();
         pt.x = g.anker[0]; pt.y = g.anker[1];
         const q = pt.matrixTransform(svg.getScreenCTM());
-        return { x: q.x, y: q.y };
+        if (gilt(q.x, q.y)) return { x: q.x, y: q.y };
       }
     } catch (e) { /* dann weiter unten */ }
     // 3. Eine Stelle, an der das Ziel wirklich obenauf liegt.
     const bb = ziel.getBoundingClientRect();
     for (let n = 0; n <= 8; n++) for (let m = 0; m <= 8; m++) {
       const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
-      if (document.elementFromPoint(x, y) === ziel) return { x, y };
+      if (gilt(x, y)) return { x, y };
     }
     // 4. Und sonst die Mitte des Kastens.
     return { x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 };

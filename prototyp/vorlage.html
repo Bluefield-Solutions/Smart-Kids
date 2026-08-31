@@ -619,10 +619,6 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
      die drei Stadtstaaten" braucht kein Wort darueber. Fiona liest sie
      ohnehin nicht. */
   .abzkopf{display:none}
-  /* Und die Luft VOR der ersten Aufklebergruppe: `.gruppe` traegt 24
-     Punkte oben, und nach dem Abzeichenblock braucht es die nicht - der
-     Block trennt schon durch seine Farbe. */
-  .abzeichen + .gruppe{margin-top:var(--r3)}
 }
 .kachel .umriss{width:96px;height:96px}
 .kachel .kreis{width:64px;height:64px;border-radius:var(--rund-voll);display:flex;
@@ -1171,6 +1167,24 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    * `passt` misst den Ueberlauf nicht, weil `.rollen` rollen DARF. */
   .kleber.gross .aufkleber svg{height:64px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
+  /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
+   *
+   * Gemessen am Zielgeraet mit Browserleiste (844 x 390, davon 322
+   * sichtbar), Fiona mit fuenf Aufklebern: der Abzeichenstreifen kostet
+   * 44 Punkte, und danach stand der Inhalt auf 340 - achtzehn zuviel.
+   * Vorher waren es genau 322 in 322, das Buch hatte also KEINEN
+   * Spielraum; die naechste Zeile, die irgendwer hinzufuegt, haette es
+   * genauso gekippt.
+   *
+   * Zurueckgeholt wird es nicht am Streifen: 44 Punkte sind die
+   * Fingergrenze und keine Zahl, die man weiter drueckt. Es kommt von den
+   * zwei Gruppenueberschriften, die zusammen 90 Punkte fuer zwei Woerter
+   * trugen (je 26 hoch, dazu 14 und 8 Punkte Rand) - auf einem
+   * Bildschirm, der 322 hat. Mit `--s0` statt `--s1` und engeren
+   * Raendern sind es 68, und die Fusspolsterung gibt sechs weitere her:
+   * gemessen 312 in 322, also zehn Punkte Luft statt keiner. */
+  .rollen.buch .gruppe{font-size:var(--s0);margin:var(--r3) 0 var(--r1)}
+  .rollen.buch{padding-bottom:var(--r4)}
   .frage{padding:0 var(--r4) var(--r1)}
   .etikett{min-height:44px}
   .titel{font-size:var(--s2)}
