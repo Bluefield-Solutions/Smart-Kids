@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-08-30",
+  "zeit": "2026-08-31",
   "tore": [
     "ansicht",
     "budget",
@@ -652,6 +652,34 @@
     "der bestandene Test bringt keinen Pokal mehr": {
       "commit": "e2c2d26e11ab40729dc9c2b434662b473d765fa6",
       "zeit": "2026-08-30"
+    },
+    "Fiona ist wieder pink statt türkis": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
+    },
+    "zwei Profile bekommen fast denselben Farbton": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
+    },
+    "auch die Eltern bekommen einen Streu": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
+    },
+    "Fionas Streu hat nur noch eine Farbe": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
+    },
+    "die Schildkröten sind wieder alle gleich": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
+    },
+    "ein Motiv fällt aus Fionas Streu": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
+    },
+    "die Augen der Totenköpfe verlieren ihren Verlauf": {
+      "commit": "7ad49990f885ca62afbd8ac15ef825f6250dfd1c",
+      "zeit": "2026-08-31"
     }
   }
 }

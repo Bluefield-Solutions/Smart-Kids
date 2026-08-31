@@ -1849,13 +1849,19 @@ export const PROBEN = [
     an:{ ...DIST, text:'auge-${profilId}-x' },
     sagt:'Verlauf' },
 
-  // Und der Streu faengt den Finger. Das ist der eine Fehler, der nicht
-  // haesslich aussieht, sondern das Spiel unerreichbar macht: getippt
-  // wird auf das grosse bunte Bild.
-  { n:'der Streu fängt den Finger', tor:'smoke',
+  /* Hier stand „der Streu faengt den Finger" mit `pointer-events:auto`.
+     Der Rauchtest blieb gruen - zu Recht: der Streu liegt IM Knopf, ein
+     Tipp auf ein Kind des Knopfes loest den Knopf aus. Die Probe hat
+     also nicht das Tor entlarvt, sondern die Pruefung, und die ist
+     ausgebaut (Regel 13).
+
+     An ihrer Stelle steht der Fehler, der in dieser Datei wirklich schon
+     passiert ist: `.streu` faellt aus der `:not()`-Liste, wird zum
+     Flex-Element in seiner Eigengroesse und schiebt die Kachel auf. */
+  { n:'der Streu rutscht aus seiner Lage und schiebt die Kachel auf', tor:'smoke',
     args:['--nur=streu'], bauen:true, datei:V,
-    such:'.kachel .streu{position:absolute;inset:0;pointer-events:none;',
-    ersatz:'.kachel .streu{position:absolute;inset:0;pointer-events:auto;',
-    an:{ ...DIST, text:'.kachel .streu{position:absolute;inset:0;pointer-events:auto;' },
-    sagt:'fängt den Finger' },
+    such:'.kachel.wer>*:not(.silhouette,.streu){position:relative}',
+    ersatz:'.kachel.wer>*:not(.silhouette){position:relative}',
+    an:{ ...DIST, fehlt:':not(.silhouette,.streu){position:relative}' },
+    sagt:'verschieden hoch' },
 ];

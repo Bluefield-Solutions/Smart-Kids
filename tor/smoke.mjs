@@ -3268,24 +3268,36 @@ if (laeuft('streu')) try {
     if (drauf.length) merke('streu', new Error(
       `auf ${wer}s Namen liegt ${drauf.join(', ')} — der Name muss frei bleiben`));
 
-  /* Und die Kachel bleibt ueberall antippbar. Getippt wird MITTEN auf die
-     grosse Muschel: ohne `pointer-events:none` faengt sie den Finger, und
-     das Kind kommt an der einen Stelle nicht ins Spiel, an der es am
-     ehesten hintippt - auf das grosse bunte Bild. */
-  const muschel = await p.$('[data-profil="fiona"] [data-motiv="muschel"]');
-  const k = await muschel.boundingBox();
-  await p.mouse.click(k.x + k.width / 2, k.y + k.height / 2);
-  const durch = await p.waitForSelector('[data-welt]', { timeout: 8000 })
-    .then(() => true).catch(() => false);
-  if (!durch) merke('streu', new Error(
-    'ein Tipp auf die große Muschel kommt nicht ins Spiel — der Streu fängt den Finger'));
+  /* Hier stand: „ein Tipp auf die grosse Muschel muss ins Spiel fuehren -
+     sonst faengt der Streu den Finger". Die Gegenprobe hat das
+     abgeraeumt: mit `pointer-events:auto` blieb der Rauchtest gruen. Und
+     zwar zu Recht - der Streu liegt IM Knopf, ein Tipp auf ein Kind des
+     Knopfes loest den Knopf aus. Die Pruefung konnte nicht durchfallen
+     und bewies deshalb nichts (Regel 13). `pointer-events:none` bleibt
+     trotzdem stehen; es haelt die Motive aus der Treffersuche heraus,
+     nur traegt es die Bedienbarkeit nicht.
+
+     Geprueft wird stattdessen der Fehler, der in dieser Datei WIRKLICH
+     schon passiert ist: das Wasserzeichen aus der absoluten Lage zu
+     holen. Steht `.streu` nicht in der `:not()`-Liste, wird es zum
+     Flex-Element in seiner Eigengroesse, und die Kachel waechst auf ein
+     Vielfaches. Gemessen wird gegen Stephans Kachel - die hat keinen
+     Streu und ist das Mass. */
+  const hoehen = await p.evaluate(() => Object.fromEntries(
+    ['fiona','lea','stephan','violeta'].map(id =>
+      [id, Math.round(document.querySelector(`[data-profil="${id}"]`)
+        .getBoundingClientRect().height)])));
+  const schief = Object.entries(hoehen).filter(([, h]) => h !== hoehen.stephan);
+  if (schief.length) merke('streu', new Error(
+    `die Kacheln sind verschieden hoch (${Object.entries(hoehen).map(([k, v]) => k+' '+v)
+      .join(', ')}) — der Streu ist aus seiner Lage gerutscht und schiebt die Kachel auf`));
 
   console.log('  Profilfarben:               '
     + Object.entries(SOLL_TON).map(([id, w]) => `${id} ${w[2]} (${toene[id]}°)`).join(' · '));
   console.log(`  Streu auf den Kacheln:      Fiona ${bild.fionaArten.length} Arten in `
     + `${bild.fionaFarben} Farben (Schildkröten in ${bild.kroetenFarben}), `
     + `Lea ${bild.leaZahl} Totenköpfe mit ${bild.augeStops}-stufigem Auge, `
-    + `Eltern ${bild.eltern.join('/')} — Name frei, Muschel durchlässig`);
+    + `Eltern ${bild.eltern.join('/')} — Name frei, alle Kacheln ${hoehen.stephan} hoch`);
   await p.close();
 } catch (e) { merke('streu', e); }
 
