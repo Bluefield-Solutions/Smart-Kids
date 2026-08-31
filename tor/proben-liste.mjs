@@ -1904,14 +1904,20 @@ export const PROBEN = [
     ersatz:'waehlt: (v) => v.filter(x => !!x) }',
     an:{ datei:A, text:'v.filter(x => !!x) }' }, sagt:'wählt ALLE' },
 
+  /* Und die vierte stille Verfallsart: das Abzeichen haengt an einer
+     Ebene, die es nicht gibt. Dann wird es nie gerechnet und fehlt
+     niemandem - genau so war „alle Nachbarn von Deutschland" eine Runde
+     lang unerreichbar, nur mass das Tor damals am falschen Vorrat. */
+  { n:'ein Abzeichen hängt an einer Ebene, die es nicht gibt', tor:'inhalt',
+    deckt:'abzeichen', datei:A,
+    such:"  { ebene:'bundeslaender', id:'stadtstaaten', zeichen:'stadt',",
+    ersatz:"  { ebene:'bundeslaender:alt', id:'stadtstaaten', zeichen:'stadt',",
+    an:{ datei:A, text:"ebene:'bundeslaender:alt'" }, sagt:'die es nicht gibt' },
+
   { n:'ein Abzeichen will ein Bild, das es nicht gibt', tor:'inhalt', deckt:'abzeichen', datei:A,
     such:"id:'alle-bundeslaender', zeichen:'karte'",
     ersatz:"id:'alle-bundeslaender', zeichen:'deutschland'",
     an:{ datei:A, text:"zeichen:'deutschland'" }, sagt:'ohne Zeichen' },
-
-  { n:'ein Nachbar Deutschlands steht nicht in den Daten', tor:'inhalt', deckt:'abzeichen', datei:A,
-    such:"'DNK', 'NLD'", ersatz:"'DAN', 'NLD'",
-    an:{ datei:A, text:"'DAN', 'NLD'" }, sagt:'ohne Land in den Daten' },
 
   /* Der Konstruktionsfehler dieser Runde: die Menge aus dem Vorrat des
      KINDES statt aus dem vollen. Fiona bekommt die Kontinente
