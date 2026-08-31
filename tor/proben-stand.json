@@ -9,10 +9,12 @@
     "lesbarkeit",
     "passt",
     "pwa",
+    "regeln",
     "rhythmus",
     "schreiben",
     "smoke",
     "spielprobe",
+    "tor",
     "vergleich",
     "ziehen"
   ],
@@ -207,8 +209,12 @@
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
       "zeit": "2026-08-31"
     },
+    "das Becken verschluckt ein rotes Tor": {
+      "commit": "b6909a86ea8c28d0eaaece0d06adb7ed199f0e43",
+      "zeit": "2026-08-31"
+    },
     "ein neues Tor steht in der Kette, aber nicht im Stand": {
-      "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
+      "commit": "b6909a86ea8c28d0eaaece0d06adb7ed199f0e43",
       "zeit": "2026-08-31"
     },
     "ein Nachweis, dessen Alter sich nicht bestimmen lässt": {
@@ -297,6 +303,22 @@
     },
     "eine offene Kontinentrunde geht wieder zu": {
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
+      "zeit": "2026-08-31"
+    },
+    "eine Regel fehlt in CLAUDE.md, die Verweise bleiben stehen": {
+      "commit": "b6909a86ea8c28d0eaaece0d06adb7ed199f0e43",
+      "zeit": "2026-08-31"
+    },
+    "das Auge startet die Ebene statt sie zu zeigen": {
+      "commit": "b6909a86ea8c28d0eaaece0d06adb7ed199f0e43",
+      "zeit": "2026-08-31"
+    },
+    "der Wegweiser bleibt aus": {
+      "commit": "b6909a86ea8c28d0eaaece0d06adb7ed199f0e43",
+      "zeit": "2026-08-31"
+    },
+    "der Wegweiser leuchtet auch bei der umgekehrten Frage": {
+      "commit": "b6909a86ea8c28d0eaaece0d06adb7ed199f0e43",
       "zeit": "2026-08-31"
     },
     "der Haken bleibt am Ort statt an der Nadel": {

@@ -22,6 +22,11 @@ import { execSync } from 'node:child_process';
  * `such`/`ersatz`  der Eingriff, als reine Textersetzung
  * `an`       Datei, in der der Eingriff ankommen MUSS, samt Erkennungstext
  * `bauen`    ob vorher gebaut werden muss (Tore, die `dist/` lesen)
+ * `umgebung` Umgebungsvariablen, die SELBST der Eingriff sind - nur im
+ *            Lauf mit Eingriff gesetzt
+ * `stets`    Umgebungsvariablen, die den RAHMEN stellen - in beiden
+ *            Laeufen gesetzt, damit sich gesund und krank nur im Eingriff
+ *            unterscheiden
  * `sagt`     ein Stueck der Meldung, die das Tor bringen soll
  * ---------------------------------------------------------------------- */
 export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inhalt/erdkunde.js';
@@ -666,9 +671,15 @@ export const PROBEN = [
    * gemacht, `lesbarkeit` bleibt gruen - geprueft wird also nicht nur,
    * dass ein Rot durchkommt, sondern dass es NEBEN einem Gruen durchkommt.
    * Die volle Kette waere fuenf Minuten je Probe; die faehrt niemand, und
-   * eine Probe, die niemand faehrt, beweist nichts (Regel 1). */
+   * eine Probe, die niemand faehrt, beweist nichts (Regel 1).
+   *
+   * `stets` und nicht `umgebung`: die kurze Fassung gilt fuer BEIDE
+   * Laeufe. Im ersten Anlauf stand hier `umgebung`, und damit lief der
+   * gesunde Lauf als VOLLE Kette - verglichen wurden eine volle gruene
+   * und eine kurze rote Kette, also zwei Laeufe, die sich in mehr
+   * unterscheiden als im Eingriff (Regel 14). Und 325 s statt 22. */
   { n:'das Becken verschluckt ein rotes Tor', tor:'tor', bauen:true,
-    umgebung:{ SMARTKIDS_KETTE_PROBE:'1' }, datei:'tor/pwa.mjs',
+    stets:{ SMARTKIDS_KETTE_PROBE:'1' }, datei:'tor/pwa.mjs',
     such:'const pruefe = (b, satz) => { if (!b) fehler.push(satz); };',
     ersatz:'const pruefe = (b, satz) => { if (!b) fehler.push(satz); };\n'
       + "pruefe(false, 'Gegenprobe: dieses Tor ist absichtlich rot');",

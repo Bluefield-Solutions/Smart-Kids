@@ -5839,9 +5839,16 @@ Recht:
   mehr findet — sie wäre still wirkungslos geworden. Sie hängt jetzt am
   Kopf der Liste.
 - **`regeln`** meldete drei neue Verweise ohne Stichwort. Zwei davon
-  waren echte Fehler: „Auf der Aufnahme (Regel 8, und Regel 7: hinsehen
-  vor der Lieferung)" — das ist die Nummerierung des *anderen*
-  Verzeichnisses, gemeint war Regel 4, kein Tor ersetzt den Blick.
+  waren echte Fehler: ein Satz über eine Aufnahme verwies auf zwei
+  Nummern aus der Liste des *anderen* Verzeichnisses (dort stehen unter
+  sieben und acht Dinge, die hier ganz woanders stehen). Gemeint war
+  Regel 4 — kein Tor ersetzt den Blick.
+
+  Und die Zeile, die das hier aufschreibt, ist selbst daran
+  angeschlagen: im ersten Entwurf stand der falsche Verweis wörtlich
+  zitiert da, und das Tor kann ein Zitat nicht von einer Behauptung
+  unterscheiden. Es hat recht — ein zitierter Verweis wird beim
+  Nachschlagen genauso gelesen wie ein gemeinter.
 - **`doppelt`** meldete 118 Token, die in `tools/kette.mjs` und
   `tools/schnell.mjs` gleichzeitig standen — der Prozessstarter und die
   Zeitnahme. Sie stehen jetzt in `tools/laeufer.mjs`. Was *nicht*

@@ -382,9 +382,21 @@ const alleGewaehlt = (NUR.length
   ? vorauswahl.filter(p => NUR.some(n => p.tor === n || p.n.includes(n)))
   : vorauswahl).filter(p => !(p.brauchtStand && !fs.existsSync(STAND)));
 
-/** Alle Proben mit demselben Tor UND denselben Argumenten — sie teilen
- *  sich den gesunden Lauf und gehoeren deshalb zusammen. */
-const gruppeVon = (p) => p.tor + ' ' + (p.args || []).join(' ');
+/** Umgebung, die fuer BEIDE Laeufe gilt — den gesunden und den mit
+ *  Eingriff. Das ist etwas anderes als `umgebung`: DIE ist der Eingriff
+ *  (`SMARTKIDS_RHYTHMUS_MAX:'-1'` macht das Tor kaputt und darf im
+ *  gesunden Lauf gerade nicht gesetzt sein). `stets` stellt dagegen den
+ *  Rahmen ein, in dem beide Laeufe stattfinden — bei „das Becken
+ *  verschluckt ein rotes Tor" die kurze Fassung der Kette. Ohne diese
+ *  Trennung verglich die Probe eine VOLLE gruene Kette mit einer KURZEN
+ *  roten: zwei Laeufe, die sich in mehr unterscheiden als im Eingriff,
+ *  beweisen nichts ueber den Eingriff (Regel 14). Gekostet hat es
+ *  ausserdem 325 s statt 22. */
+const umg = (p) => JSON.stringify(p.stets || {});
+
+/** Alle Proben mit demselben Tor, denselben Argumenten UND derselben
+ *  Umgebung — sie teilen sich den gesunden Lauf und gehoeren zusammen. */
+const gruppeVon = (p) => p.tor + ' ' + (p.args || []).join(' ') + ' ' + umg(p);
 const gruppen = [...new Set(alleGewaehlt.filter(p => !p.nachStand).map(gruppeVon))];
 
 /* Im Kind: nur der eigene Teil. Reihum nach Gruppen, damit die Arbeit
@@ -437,9 +449,10 @@ const istGesund = (p) => {
   // `ohneSofort` gehoert in den Schluessel: der gesunde Lauf muss DIESELBEN
   // Argumente haben wie die Probe, sonst vergleicht er zwei verschiedene
   // Laeufe.
-  const schluessel = p.tor + ' ' + (p.args || []).join(' ') + (p.ohneSofort ? ' /voll' : '');
+  const schluessel = p.tor + ' ' + (p.args || []).join(' ') + (p.ohneSofort ? ' /voll' : '')
+    + ' ' + umg(p);
   if (!gesund.has(schluessel))
-    gesund.set(schluessel, lauf(p.tor, undefined, p.args, p.ohneSofort).code === 0);
+    gesund.set(schluessel, lauf(p.tor, p.stets, p.args, p.ohneSofort).code === 0);
   return gesund.get(schluessel);
 };
 
@@ -518,7 +531,7 @@ for (const p of welche) {
   }
 
   /* --- Schlägt das Tor an? ---------------------------------------- */
-  const r = lauf(p.tor, p.umgebung, p.args, p.ohneSofort);
+  const r = lauf(p.tor, { ...p.stets, ...p.umgebung }, p.args, p.ohneSofort);
   wiederherstellen(p.bauen);
 
   // Erst jetzt fragen, ob es ohne Eingriff gruen gewesen waere: der Baum
@@ -541,7 +554,7 @@ for (const p of welche) {
    * Lauf faellt hier immer an.
    */
   if (r.code !== 0 && p.auchWennRot && p.sagt) {
-    const ohne = lauf(p.tor, undefined, p.args, p.ohneSofort);
+    const ohne = lauf(p.tor, p.stets, p.args, p.ohneSofort);
     if (ohne.aus.includes(p.sagt)) {
       fertig(rot('sagt es auch ohne Eingriff'));
       blind++;
