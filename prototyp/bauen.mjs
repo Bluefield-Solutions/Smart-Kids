@@ -162,10 +162,17 @@ const silhouette = (pfad, n) => {
   console.log(`  Silhouetten fuer die Kacheln: ${kb.toFixed(1)} KB`);
 }
 D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, sichtfeld(roh)]));
-// Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
-// nicht nur die Ziele - sonst kann man durch Ausschluss raten.
+/* Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
+ * nicht nur die Ziele - sonst kann man durch Ausschluss raten.
+ *
+ * Gesiebt wird mit `laenderMeta`, also mit `erdkunde.js` - wie zwanzig
+ * Zeilen weiter oben und aus demselben Grund. Diese Zeile war die VIERTE,
+ * die den gebackenen Rang las (D2c hat drei gefunden). Sie ist harmloser
+ * als die anderen drei und deshalb durchgerutscht: ein Land, das in
+ * beiden Listen steht, wird zweimal gezeichnet - grau darunter, bunt
+ * darueber. Man sieht nichts, man bezahlt nur den Pfad zweimal. */
 D.umgebung = Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
-  [id, roh.filter(l=>!l.rang).map(l=>l.pfad)]));
+  [id, roh.filter(l => !(laenderMeta[l.a3] || {}).rang).map(l=>l.pfad)]));
 
 // Die Kernmodule werden eingebettet - eine Datei, kein Buendler.
 const module = [

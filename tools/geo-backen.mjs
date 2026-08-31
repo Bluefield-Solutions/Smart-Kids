@@ -295,7 +295,23 @@ function ringFlaeche(r) {
  * und sie dominiert dann jede Abstandsmessung, weil ihr ganzer Umriss
  * ploetzlich weit von allem entfernt liegt.
  */
-function inselnFiltern(geo, proj, minPx = 4) {
+/**
+ * @param halteVon (eigenschaften) => [[lon,lat], ...] - Punkte, deren Insel
+ *   bleiben MUSS, auch wenn sie unter der Grenze liegt.
+ *
+ * Warum es das gibt: Kopenhagen liegt auf Seeland, und Seeland misst auf
+ * der groben Stufe 12,7 Bildpunkte im Quadrat - knapp unter der Grenze von
+ * 16. Daenemark wurde also als Juetland gezeichnet, und der Stadtpunkt der
+ * Hauptstadt lag im Meer daneben. Gemeldet hat es `inhalt` in dem Moment,
+ * in dem Daenemark ein gespieltes Land wurde (P11); vorher war es
+ * Umgebung, und ein Umriss ohne Namen faellt niemandem auf.
+ *
+ * Die Grenze zu senken waere die falsche Antwort: sie holt auf JEDER
+ * Karte Splitter zurueck, und die kosten Bytes ohne etwas zu zeigen.
+ * Gehalten wird nur, was gebraucht wird - dieselbe Regel wie eine Zeile
+ * tiefer, wo ein Gebiet nie ganz verschwinden darf.
+ */
+function inselnFiltern(geo, proj, minPx = 4, halteVon = null) {
   const grenze = minPx * minPx;
   let weg = 0, behalten = 0;
   const ringOk = (ring) => {
@@ -303,16 +319,19 @@ function inselnFiltern(geo, proj, minPx = 4) {
     if (p.length < 4) return false;
     return ringFlaeche(p) >= grenze;
   };
-  const polyFiltern = (poly) => {
+  const polyFiltern = (poly, halte) => {
     // Ring 0 ist die Aussenkante, alles weitere sind Loecher.
-    if (!ringOk(poly[0])) { weg++; return null; }
+    const gehalten = halte && halte.length
+      && halte.some(([lon, lat]) => imRing(lon, lat, poly[0]));
+    if (!ringOk(poly[0]) && !gehalten) { weg++; return null; }
     behalten++;
     return [poly[0], ...poly.slice(1).filter(ringOk)];
   };
   const features = geo.features.map(f => {
     const g = f.geometry;
+    const halte = halteVon ? (halteVon(f.properties) || []) : null;
     if (g.type === 'Polygon') {
-      const p = polyFiltern(g.coordinates);
+      const p = polyFiltern(g.coordinates, halte);
       // Ein Gebiet darf NIE ganz verschwinden - hier war eine Unsymmetrie:
       // ein MultiPolygon behielt unten immer seine groesste Flaeche, ein
       // einfaches Polygon fiel ersatzlos weg. Guatemala ist ein einfaches
@@ -324,7 +343,7 @@ function inselnFiltern(geo, proj, minPx = 4) {
       return { ...f, geometry: { type: 'Polygon', coordinates: p } };
     }
     if (g.type === 'MultiPolygon') {
-      const ps = g.coordinates.map(polyFiltern).filter(Boolean);
+      const ps = g.coordinates.map(poly => polyFiltern(poly, halte)).filter(Boolean);
       // keep-shapes von Hand: die groesste Flaeche bleibt in jedem Fall.
       if (!ps.length) {
         let best = null, bestA = -1;

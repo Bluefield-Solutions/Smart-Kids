@@ -10,6 +10,7 @@ import zlib from 'node:zlib';
 import * as d3 from 'd3-geo';
 import { STUFEN, rohLesen, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze,
          passe, svgPfad, teileUndLoecher, inselnFiltern } from './geo-backen.mjs';
+import { LAENDER } from '../src/inhalt/erdkunde.js';
 
 const EUROPA_MASKE = [[
   [-32,36],[-12,34],[10,34],[26,34],[28,35],[41,37],[41,43],[47,44],
@@ -20,57 +21,47 @@ fs.writeFileSync('/tmp/europa-maske.json', JSON.stringify(
   { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
     geometry:{ type:'Polygon', coordinates:EUROPA_MASKE } }] }));
 
-// Stand 2025. Reihenfolge = Rang. Die ersten DREI sind Fionas Menge.
-/* Zwölf Länder je Kontinent, seit Eltern dazukam (R4).
+/* WAS GESPIELT WIRD, STEHT IN `src/inhalt/erdkunde.js` - auch hier.
  *
- * Die ersten FÜNF stehen unverändert und in unveränderter Reihenfolge:
- * Fiona spielt Rang 1 bis 3, Lea 1 bis 5. Wer sie umsortiert, ändert,
- * was die Kinder üben - und zwar unbemerkt, weil ihr Leitner-Stand an
- * der Kennung hängt und nicht am Rang.
+ * Bis P11 hielt dieses Werkzeug seine eigene Liste: zwoelf Laender je
+ * Kontinent, mit Namen und Reihenfolge. Als Europa auf siebzehn wuchs
+ * (D2c, die neun Nachbarn), wurde sie nicht mitgezogen - und weil die
+ * Hauptstaedte NUR fuer Laender dieser Liste gebacken werden, standen
+ * Prag, Wien, Bern, Kopenhagen und Luxemburg nirgends. Auf der Ebene
+ * „Hauptstaedte in Europa" fehlten sie, und kein Tor hat es gemerkt: die
+ * Ebene war vollstaendig, sie war nur kleiner als der Vorrat.
  *
- * Die Ränge 6 bis 12 kommen nach EINWOHNERZAHL dazu. Das ist keine
- * Bequemlichkeit, sondern die einzige Ordnung, die sich begründen lässt:
- * bekannter heißt leichter, und die Reihenfolge muss steigen, sonst ist
- * `laenderTiefe` keine Schwierigkeitsstufe, sondern eine Zufallsauswahl.
+ * Das ist dieselbe Lehre wie in D2c, eine Ebene tiefer: die Geometrie ist
+ * der Vorrat, `erdkunde.js` ist die Ware. Ein zweites Verzeichnis dessen,
+ * was gespielt wird, veraltet - und zwar leise (Regel 6).
  *
- * Was das kostet: NICHTS an Geometrie. Jedes Land des Kontinents wird
- * ohnehin gebacken und ausgeliefert - die namenlosen als `umgebung`,
- * damit die Karte vollständig aussieht. Bei Europa sind das 220 von 314
- * KB. Sieben Länder mehr benennen heißt, sieben Formen von `umgebung`
- * nach `laender` zu schieben; dazu kommen nur Name, Rang und Anker.
+ * Was die Liste dort ordnet, gilt weiter: `rang` ist eine LERNTIEFE, ein
+ * Profil spielt `rang <= laenderTiefe`. Wer sie umsortiert, aendert, was
+ * die Kinder ueben - und zwar unbemerkt, weil ihr Leitner-Stand an der
+ * Kennung haengt und nicht am Rang.
  *
- * Das Konzept hatte das Gegenteil vermutet („zwölf Länder sprengen das
- * Budget voraussichtlich"). Gemessen stimmt es nicht - und die Messung
- * stand die ganze Zeit im gebauten Bündel.
+ * Was die Namen kosten: NICHTS an Geometrie. Jedes Land des Kontinents
+ * wird ohnehin gebacken und ausgeliefert - die namenlosen als `umgebung`,
+ * damit die Karte vollstaendig aussieht. Fuenf Laender mehr benennen
+ * heisst, fuenf Formen von `umgebung` nach `laender` zu schieben; dazu
+ * kommen nur Name, Rang, Anker und - in Europa - die Hauptstadt.
  */
+const zieleAus = (id) => (LAENDER[id] || [])
+  .slice().sort((a, b) => a.rang - b.rang).map(l => [l.a3, l.name]);
+
 const EBENEN = [
-  { id:'asien', name:'Asien', ne:'Asia', projektion:'kegel',
-    ziele:[['IND','Indien'],['CHN','China'],['IDN','Indonesien'],['PAK','Pakistan'],['BGD','Bangladesch'],
-           ['JPN','Japan'],['PHL','Philippinen'],['VNM','Vietnam'],['TUR','Türkei'],['IRN','Iran'],
-           ['THA','Thailand'],['MMR','Myanmar']] },
-  { id:'afrika', name:'Afrika', ne:'Africa', projektion:'azimutal',
-    ziele:[['NGA','Nigeria'],['ETH','Äthiopien'],['EGY','Ägypten'],['COD','DR Kongo'],['TZA','Tansania'],
-           ['ZAF','Südafrika'],['KEN','Kenia'],['UGA','Uganda'],['DZA','Algerien'],['SDN','Sudan'],
-           ['MAR','Marokko'],['AGO','Angola']] },
+  { id:'asien', name:'Asien', ne:'Asia', projektion:'kegel' },
+  { id:'afrika', name:'Afrika', ne:'Africa', projektion:'azimutal' },
   /* `hauptstaedte` backt zusaetzlich die Lage der Hauptstadt je Zielland
-   * (R6). Nur hier, nicht ueberall: es sind zwoelf Punkte zu je rund
+   * (R6). Nur hier, nicht ueberall: es sind siebzehn Punkte zu je rund
    * 45 Byte, und fuer die vier anderen Kontinente gibt es keine Ebene,
    * die sie braucht. Ein Vorrat, den niemand liest, ist Ballast im
    * Nachladepaket. */
   { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true,
-    hauptstaedte:true,
-    ziele:[['RUS','Russland'],['DEU','Deutschland'],['GBR','Vereinigtes Königreich'],['FRA','Frankreich'],['ITA','Italien'],
-           ['ESP','Spanien'],['UKR','Ukraine'],['POL','Polen'],['ROU','Rumänien'],['NLD','Niederlande'],
-           ['BEL','Belgien'],['GRC','Griechenland']] },
-  { id:'nordamerika', name:'Nordamerika', ne:'North America', projektion:'kegel',
-    ziele:[['USA','USA'],['MEX','Mexiko'],['CAN','Kanada'],['GTM','Guatemala'],['HTI','Haiti'],
-           ['CUB','Kuba'],['DOM','Dominikanische Republik'],['HND','Honduras'],['NIC','Nicaragua'],
-           ['SLV','El Salvador'],['CRI','Costa Rica'],['PAN','Panama']] },
-  { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal',
-    ziele:[['BRA','Brasilien'],['COL','Kolumbien'],['ARG','Argentinien'],['PER','Peru'],['VEN','Venezuela'],
-           ['CHL','Chile'],['ECU','Ecuador'],['BOL','Bolivien'],['PRY','Paraguay'],['URY','Uruguay'],
-           ['GUY','Guyana'],['SUR','Suriname']] },
-];
+    hauptstaedte:true },
+  { id:'nordamerika', name:'Nordamerika', ne:'North America', projektion:'kegel' },
+  { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal' },
+].map(k => ({ ...k, ziele: zieleAus(k.id) }));
 
 const roh = rohLesen('ne_10m_admin_0_countries');
 
@@ -133,7 +124,13 @@ for (const k of EBENEN) {
   const perStufe = [];
   for (const st of STUFEN) {
     const projSt = passe(projektionFuer(k.projektion, topo), topo, st.breitePx);
-    const g = inselnFiltern(topo, projSt, 4);
+    /* Die Insel, auf der die Hauptstadt liegt, bleibt - siehe
+       `inselnFiltern`. Ohne das war Daenemark Juetland, und Kopenhagen
+       lag im Meer. */
+    const g = inselnFiltern(topo, projSt, 4, (q) => {
+      const hs = q.rang && hauptstadtVon.get(q.a3);
+      return hs ? [hs.lonlat] : [];
+    });
     const proj = passe(projektionFuer(k.projektion, g.geo), g.geo, st.breitePx);
     const r = await bisAufGrenze(g.geo, proj, HAUSDORFF_GRENZE);
     const skala = 1000 / st.breitePx;

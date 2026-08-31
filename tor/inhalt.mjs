@@ -169,10 +169,28 @@ I.ECHTE_FALLEN.forEach(id => {
  *      alt`) - hier wird die Liste von Hand gegen die Referenz gelegt.
  */
 {
-  const zieleEU = LAENDER_EUROPA_GROB.filter(l => l.rang);
+  /* Gezaehlt wird ueber `erdkunde.js`, NICHT ueber das Gebackene.
+   *
+   * Vorher stand hier `LAENDER_EUROPA_GROB.filter(l => l.rang)` - der
+   * fuenfte Leser des gebackenen Rangs (D2c hat drei gefunden, P11 den
+   * vierten in `bauen.mjs`). Er hat die Luecke, die er finden sollte,
+   * selbst verdeckt: als Europa auf siebzehn Laender wuchs, waren fuenf
+   * davon ohne `rang` gebacken, also nicht in dieser Liste - und das Tor
+   * pruefte zwoelf von siebzehn und meldete gruen. Prag, Wien, Bern,
+   * Kopenhagen und Luxemburg fehlten eine ganze Runde lang auf der Ebene
+   * „Hauptstaedte in Europa", ohne dass irgendetwas rot wurde.
+   *
+   * Wer den Vorrat nach dem Vorrat fragt, bekommt immer ja. */
+  const gebackenEU = new Map(LAENDER_EUROPA_GROB.map(l => [l.a3, l]));
   const meta = new Map(I.LAENDER.europa.map(l => [l.a3, l]));
   let drin = 0;
-  for (const l of zieleEU) {
+  for (const m of I.LAENDER.europa) {
+    const l = gebackenEU.get(m.a3);
+    pruefe(l, `${m.a3} (${m.name}) wird gespielt und ist nicht gebacken — `
+      + '`npm run backen` mit den Rohdaten trägt es nach');
+    if (!l) continue;
+    pruefe(l.name === m.name, `${m.a3}: gebacken steht „${l.name}", `
+      + `in erdkunde.js „${m.name}" — zwei Namen für dasselbe Land`);
     pruefe(l.hauptstadt, `${l.a3}: keine Hauptstadt gebacken`);
     pruefe(l.ort, `${l.a3}: keine Stadtlage gebacken`);
     if (l.ort) {
@@ -185,8 +203,20 @@ I.ECHTE_FALLEN.forEach(id => {
       if (trifft) drin++;
     }
     const ab = I.HAUPTSTADT_ABLENKER_EUROPA[l.a3] || [];
-    pruefe(ab.length >= 2, `${l.a3}: weniger als zwei Ablenker — die Ebene hätte `
-      + 'dort nicht vier Möglichkeiten');
+    /* Zwei Ablenker - oder ein Satz, warum es keine gibt.
+     *
+     * Die Ausnahme ist keine Abschwaechung, sondern die Bedingung dafuer,
+     * dass die Regel ueberhaupt gilt: Luxemburg hat keine zweite Stadt,
+     * die jemand kennt, und ein erfundener Ablenker waere schlechter als
+     * keiner. Was zaehlt, ist dass die Luecke BENANNT ist - eine leere
+     * Liste ohne Grund sieht genauso aus wie eine vergessene. */
+    const ohne = I.HAUPTSTADT_OHNE_ABLENKER[l.a3];
+    pruefe(ab.length >= 2 || !!ohne, `${l.a3}: weniger als zwei Ablenker — die Ebene hätte `
+      + 'dort nicht vier Möglichkeiten. Wenn es wirklich keine gibt, gehört '
+      + 'der Grund in HAUPTSTADT_OHNE_ABLENKER');
+    if (ohne) pruefe(!ab.length,
+      `${l.a3} steht in HAUPTSTADT_OHNE_ABLENKER und hat trotzdem welche — `
+      + 'einer der beiden Einträge ist veraltet');
     pruefe(!ab.includes(l.hauptstadt),
       `${l.a3}: „${l.hauptstadt}" steht auch unter den Ablenkern — zwei richtige Antworten`);
     pruefe(new Set(ab).size === ab.length, `${l.a3}: ein Ablenker steht zweimal`);
@@ -196,13 +226,14 @@ I.ECHTE_FALLEN.forEach(id => {
         + `unter den Ablenkern steht vorn aber „${ab[0]}" — die eigentliche Falle fiele aus`);
   }
   const fremd = Object.keys(I.HAUPTSTADT_ABLENKER_EUROPA)
-    .filter(a3 => !zieleEU.some(l => l.a3 === a3));
+    .filter(a3 => !meta.has(a3));
   pruefe(!fremd.length, `Ablenker für Länder, die es auf der Ebene nicht gibt: ${fremd.join(', ')}`);
   for (const l of I.LAENDER.europa)
     if (l.wovon) pruefe(/^vo[nm] /.test(l.wovon),
       `${l.a3}: \`wovon\` ist „${l.wovon}" — die Frage lautet „Wie heißt die Hauptstadt …?"`);
-  console.log(`    Hauptstädte in Europa: ${zieleEU.length} Länder, ${drin} Stadtlagen im `
-    + `eigenen Land, ${zieleEU.filter(l=>l.regierungssitz).length} abweichender Regierungssitz`);
+  const sitze = I.LAENDER.europa.filter(m => gebackenEU.get(m.a3)?.regierungssitz).length;
+  console.log(`    Hauptstädte in Europa: ${I.LAENDER.europa.length} Länder, ${drin} Stadtlagen im `
+    + `eigenen Land, ${sitze} abweichender Regierungssitz`);
 }
 pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   `Datenstand ${I.STAND.jahr} ist älter als drei Jahre`);

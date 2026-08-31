@@ -126,10 +126,30 @@ export const PROBEN = [
    * noch Trefferflaeche. Bleibt das Tor gruen, laeuft die Schleife gar
    * nicht ueber die Laender - und die neue Reichweite waere Zierde.
    */
+  /* --- Die Hauptstaedte (P11) ------------------------------------------
+   *
+   * Der Fehler, der eine ganze Runde ueberlebt hat: fuenf Laender standen
+   * in `erdkunde.js` und waren ohne `rang` gebacken - das Tor las den
+   * GEBACKENEN Rang, sah sie also gar nicht und meldete gruen. Wer den
+   * Vorrat nach dem Vorrat fragt, bekommt immer ja.
+   *
+   * Diese Probe stellt genau das her: ein Land, das gespielt wird und
+   * nicht gebacken ist. */
+  { n:'ein gespieltes Land ist gar nicht gebacken', tor:'inhalt', deckt:'inhalt',
+    datei:E,
+    such:"    { a3:'GRC', name:'Griechenland', rang:17,",
+    ersatz:"    { a3:'GRX', name:'Griechenland', rang:17,",
+    an:{ datei:E, text:"a3:'GRX'" },
+    sagt:'wird gespielt und ist nicht gebacken' },
+
   { n:'ein gespieltes Land verliert seinen Umriss', tor:'inhalt', deckt:'topologie',
     datei:'src/geo/laender-europa.grob.js',
-    suchRegex: /"a3":"ITA","name":"Italien","rang":5,"teile":3,"loecher":0,"pfad":"[^"]*"/,
-    ersatzFn: () => '"a3":"ITA","name":"Italien","rang":5,"teile":3,"loecher":0,"pfad":""',
+    /* Ohne den Rang: er steht seit P11 in `erdkunde.js` und wird von dort
+       gebacken - Italien ist von 5 auf 13 gerueckt, und diese Probe
+       zielte danach ins Leere. Gesucht wird jetzt, was sich nicht
+       aendert, wenn jemand die Lerntiefe umsortiert. */
+    suchRegex: /"a3":"ITA","name":"Italien","rang":\d+,"teile":\d+,"loecher":\d+,"pfad":"[^"]*"/,
+    ersatzFn: (m) => m[0].replace(/"pfad":"[^"]*"/, '"pfad":""'),
     an:{ datei:'src/geo/laender-europa.grob.js', text:'"pfad":""' },
     sagt:'keinen brauchbaren Anker' },
 

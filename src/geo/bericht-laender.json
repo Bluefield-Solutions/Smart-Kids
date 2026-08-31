@@ -94,13 +94,18 @@
         "Deutschland",
         "Vereinigtes Königreich",
         "Frankreich",
+        "Polen",
+        "Niederlande",
+        "Belgien",
+        "Tschechien",
+        "Österreich",
+        "Schweiz",
+        "Dänemark",
+        "Luxemburg",
         "Italien",
         "Spanien",
         "Ukraine",
-        "Polen",
         "Rumänien",
-        "Niederlande",
-        "Belgien",
         "Griechenland"
       ],
       "stufen": [
@@ -108,22 +113,22 @@
           "stufe": "grob",
           "laender": 51,
           "hausdorffPx": 0.68,
-          "punkte": 27060,
-          "gzip": 109647
+          "punkte": 27254,
+          "gzip": 110585
         },
         {
           "stufe": "mittel",
           "laender": 51,
           "hausdorffPx": 0.728,
           "punkte": 52175,
-          "gzip": 191935
+          "gzip": 192042
         },
         {
           "stufe": "fein",
           "laender": 51,
           "hausdorffPx": 0.65,
           "punkte": 68327,
-          "gzip": 225797
+          "gzip": 225906
         }
       ]
     },
@@ -212,7 +217,7 @@
   ],
   "hauptstaedte": {
     "stufe": "grob",
-    "anzahl": 12,
+    "anzahl": 17,
     "regierungssitze": [
       "Niederlande: Den Haag"
     ]

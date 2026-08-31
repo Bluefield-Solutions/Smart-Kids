@@ -626,12 +626,9 @@ Brüssel: acht statt fünf. Nachgezählt, nicht geschätzt; der erste Anlauf
 schrieb in den Quelltext „ändert sich für sie nichts", und das war falsch.
 Die Eltern gehen von 12 auf 17.
 
-**Die Hauptstädte der fünf Neuen fehlen noch.** `tools/backen-laender.mjs`
-backt sie nur für Länder mit `rang` (`if (!stueck.rang) continue;`), und
-ihre Lage kommt aus den Natural-Earth-Rohdaten — 400 MB, die zum Bauen und
-Spielen niemand braucht. Ein `npm run backen` mit den Rohdaten trägt sie
-nach. Bis dahin stehen die fünf nur auf der Länderebene, nicht auf der
-Hauptstädte-Ebene.
+~~**Die Hauptstädte der fünf Neuen fehlen noch.**~~ **Nachgetragen in P11**
+— und der Grund war ein anderer als hier vermutet: nicht die fehlenden
+Rohdaten, sondern eine zweite Liste dessen, was gespielt wird. Siehe P11.
 
 **Dreimal dieselbe Zeile, dreimal derselbe Fehler.** `prototyp/bauen.mjs`,
 `tor/inhalt.mjs` und `tor/spielprobe.mjs` fragten alle nach dem **gebackenen**
@@ -804,6 +801,82 @@ dunkleren Text, nicht durch blasseren Streu.
 
 **Was es kostet:** das Startbündel wächst um **5,8 KB gzip** (170,0 statt
 164,2 KB für die Seite; 223,9 von 400 KB erlaubt).
+
+---
+
+### P11 · Fünf Hauptstädte, die keinem Tor gefehlt haben  ·  ERLEDIGT
+
+Prag, Wien, Bern, Kopenhagen und Luxemburg standen nicht auf der Ebene
+„Hauptstädte in Europa". Der Backlog nannte als Grund die fehlenden
+Rohdaten — 400 MB Natural Earth. Das war falsch. Die Rohdaten haben
+gefehlt, aber sie waren nicht das Problem:
+
+**`tools/backen-laender.mjs` hielt seine eigene Liste dessen, was gespielt
+wird.** Zwölf Länder je Kontinent, mit Namen und Reihenfolge. Als Europa in
+D2c auf siebzehn wuchs, wurde sie nicht mitgezogen — und weil die
+Hauptstädte nur für Länder *dieser* Liste gebacken werden, gab es die fünf
+Punkte nirgends. Dieselbe Lehre wie in D2c, eine Ebene tiefer: **die
+Geometrie ist der Vorrat, `erdkunde.js` ist die Ware.**
+
+Das Werkzeug liest die Zielliste jetzt aus `erdkunde.js`. Ein Lauf, und die
+Ebene hat siebzehn Hauptstädte statt zwölf.
+
+**Warum kein Tor das gemeldet hat — das ist der eigentliche Befund.**
+
+Die Prüfung stand da und war blind. Sie lief über
+`LAENDER_EUROPA_GROB.filter(l => l.rang)` — also über den **gebackenen**
+Rang. Die fünf waren ohne `rang` gebacken, standen deshalb nicht in ihrer
+Liste, und das Tor prüfte zwölf von siebzehn und meldete grün. **Wer den
+Vorrat nach dem Vorrat fragt, bekommt immer ja.**
+
+Das war der *fünfte* Leser des gebackenen Rangs. D2c hat drei gefunden,
+P11 zwei weitere:
+
+| Wo | Was er las | Folge |
+|---|---|---|
+| `tor/inhalt.mjs` | `LAENDER_EUROPA_GROB.filter(l => l.rang)` | prüfte 12 von 17 und meldete grün |
+| `prototyp/bauen.mjs`, `umgebung` | `roh.filter(l => !l.rang)` | die fünf wurden **zweimal** gezeichnet — grau darunter, bunt darüber. Man sieht nichts, man bezahlt nur den Pfad zweimal: **7 KB** im Nachladepaket Europa |
+
+Das Tor zählt jetzt über `erdkunde.js` und schlägt an, wenn ein gespieltes
+Land nicht gebacken ist. Gegenprobe eingetragen.
+
+**Und dann fiel Kopenhagen ins Meer.**
+
+Sobald Dänemark ein gespieltes Land war, meldete `inhalt`: „Kopenhagen
+liegt nicht in Dänemark (430.8, 403.5) — der Stadtpunkt erschiene neben dem
+Land". Nachgemessen: Kopenhagen liegt auf **Seeland**, und Seeland misst auf
+der groben Stufe **12,7 Bildpunkte im Quadrat** — knapp unter der Grenze von
+16, die `inselnFiltern` setzt. Dänemark wurde als Jütland gezeichnet.
+
+Das stand seit jeher so da und ist niemandem aufgefallen, weil Dänemark
+Umgebung war: ein Umriss ohne Namen wird nicht geprüft.
+
+Die Grenze zu senken wäre die falsche Antwort — sie holt auf **jeder** Karte
+Splitter zurück. Gehalten wird nur, was gebraucht wird: **die Insel, auf der
+die Hauptstadt liegt, bleibt.** Dieselbe Regel wie eine Zeile tiefer, wo ein
+Gebiet nie ganz verschwinden darf. Dänemark hat jetzt zwei Teile statt einem
+(386 → 583 Punkte); Schweden, Finnland und Montenegro haben je ein bis zwei
+Punkte verloren, weil die Vereinfachung über den ganzen Kontinent optimiert.
+Hausdorff bleibt 0,73 px.
+
+**Die Ablenker der fünf** stehen in `erdkunde.js`, nach derselben Regel wie
+die zwölf davor: die Stadt, die ein Kind für die Hauptstadt *halten* könnte.
+Brünn und Ostrava, Graz und Salzburg, **Zürich** und Genf, Aarhus und
+Odense.
+
+**Luxemburg bekommt keine** — und das steht jetzt ausdrücklich da. Die
+zweitgrößte Stadt ist Esch an der Alzette mit 36 000 Einwohnern; ein
+Ablenker, den niemand kennt, ist keiner. Die Falle, um die es auf dieser
+Ebene geht, gibt es dort gar nicht: die Hauptstadt heißt wie das Land und
+ist die größte Stadt. Die Aufgabe ist damit leichter als die anderen
+sechzehn, und das ist die Wahrheit über Luxemburg, keine Lücke. Das Tor
+verlangt **zwei Ablenker oder einen Satz, warum es keine gibt** — eine leere
+Liste ohne Grund sieht genauso aus wie eine vergessene.
+
+**Nachgemessen, weil es zu gut klang:** der Neubau mit frischen Rohdaten hat
+die eingecheckten Dateien **byteweise reproduziert** — alle 51 Umrisse
+Europas unverändert, bevor die Zielliste umgestellt wurde. Der Backvorgang
+ist also reproduzierbar, und die Änderung ist genau das, was sie sein soll.
 
 ---
 

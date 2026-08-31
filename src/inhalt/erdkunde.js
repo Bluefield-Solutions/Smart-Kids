@@ -220,6 +220,21 @@ export const ECHTE_FALLEN = ['DE-HE','DE-NW','DE-SN','DE-ST','DE-MV'];
  * Natural Earth fuehrt Den Haag als `Admin-0 capital alt`. Das Tor
  * `inhalt` prueft, dass die Liste hier und die Daten dort uebereinstimmen.
  */
+/* Und wo es KEINEN gibt, steht das hier - mit Grund.
+ *
+ * Luxemburg hat keine zweite Stadt, die ein deutschsprachiges Kind je
+ * gehoert hat: die groesste nach der Hauptstadt ist Esch an der Alzette
+ * mit 36 000 Einwohnern. Ein Ablenker, den niemand kennt, ist keiner (der
+ * Absatz darueber sagt es fuer die Exonyme, hier gilt dasselbe) - und die
+ * Falle, um die es auf dieser Ebene geht, gibt es in Luxemburg gar nicht:
+ * die Hauptstadt heisst wie das Land und IST die groesste Stadt.
+ *
+ * Die Aufgabe steht trotzdem: die drei uebrigen Moeglichkeiten sind dann
+ * Hauptstaedte anderer Laender. Sie ist damit leichter als die anderen
+ * sechzehn, und das ist die Wahrheit ueber Luxemburg, keine Luecke. */
+export const HAUPTSTADT_OHNE_ABLENKER = { LUX:
+  'keine zweite Stadt, die bekannt genug waere — Esch an der Alzette hat 36 000 Einwohner' };
+
 export const HAUPTSTADT_ABLENKER_EUROPA = {
   RUS:['Sankt Petersburg','Nowosibirsk'],
   DEU:['Hamburg','München'],
@@ -233,4 +248,16 @@ export const HAUPTSTADT_ABLENKER_EUROPA = {
   NLD:['Den Haag','Rotterdam'],
   BEL:['Antwerpen','Gent'],
   GRC:['Thessaloniki','Patras'],
+  // Die fuenf aus P11. Gewaehlt wurde nach derselben Regel wie oben: die
+  // Stadt, die ein Kind fuer die Hauptstadt HALTEN koennte, weil sie
+  // groesser oder bekannter ist.
+  CZE:['Brünn','Ostrava'],
+  AUT:['Graz','Salzburg'],
+  // Zuerich ist die eigentliche Falle dieses Landes - groesser als Bern,
+  // bekannter, und viele Erwachsene halten es fuer die Hauptstadt. Anders
+  // als bei den Niederlanden steht das aber in keinen Daten: Bern IST die
+  // Hauptstadt, Zuerich ist nur die groessere Stadt. Deshalb kein `falle`,
+  // sondern ein Ablenker wie jeder andere.
+  CHE:['Zürich','Genf'],
+  DNK:['Aarhus','Odense'],
 };
