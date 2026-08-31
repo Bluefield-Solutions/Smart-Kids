@@ -679,7 +679,7 @@ dunkleren Text, nicht durch blasseren Streu.
 
 ---
 
-### P5 · Die Größenratsche fragt die falsche Runde
+### P5 · Die Größenratsche fragt die falsche Runde  ·  ERLEDIGT
 
 `budget` meldet Wachstum über **5 %** gegen einen von Hand festgehaltenen
 Stand. Das ist richtig gedacht und hat einen blinden Fleck: eine Runde mit
@@ -696,6 +696,28 @@ zweite Zahl neben dem bestätigten Stand, nicht an seiner Stelle. Dann sagt
 der Bericht „seit der letzten Bestätigung +4,8 %", und die Frage landet bei
 der Runde, die das Wachstum verursacht hat. Die Ratsche selbst bleibt, wie
 sie ist: sie darf sich nicht selbst zurücksetzen, sonst schlägt sie nie an.
+
+**Umgesetzt genau so.** `tor/budget-stand.json` trägt zwei Blöcke:
+`bestaetigt` (was jemand angesehen und mit `--neu` abgenickt hat — die
+Ratsche misst weiter dagegen) und `gesehen` (was der letzte grüne Lauf
+gemessen hat, ändert nichts am Urteil). Der Bericht sagt jetzt bei jedem
+Lauf, auch dem grünen:
+
+```
+Startbündel: 223.9 → 232 KB   +3.6 % seit der Bestätigung,
+                              davon +3.6 % in diesem Lauf
+                              — noch 1.4 % bis zur Frage
+```
+
+Der erste Lauf hat es gleich bewiesen: D2 und F16 zusammen haben **3,6 %
+der fünf** verbraucht. Ohne P5 hätte das die Länder-Runde erfahren, nicht
+diese.
+
+Mitgeschrieben wird nur, wenn sich etwas geändert hat — sonst wäre der
+Baum nach jedem Kettenlauf schmutzig, und `proben` verweigert bei
+schmutzigem Baum den Dienst (Regel 1). Und der fehlende `gesehen`-Block
+ist ein **Fehler**, kein Hinweis: ein Tor, das nach einem stillen Rückbau
+einfach weniger *sagt*, bleibt grün und fällt keinem auf.
 
 ---
 

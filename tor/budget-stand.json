@@ -1,14 +1,30 @@
 {
-  "zeit": "2026-08-31",
-  "start": 223.9,
-  "geometrie": 27.5,
-  "schrift": 51.7,
-  "ebenen": {
-    "laender-europa.json": 108.3,
-    "laender-asien.json": 98.7,
-    "laender-nordamerika.json": 75.6,
-    "laender-afrika.json": 68.6,
-    "laender-suedamerika.json": 62.6,
-    "deutschland.json": 56.3
+  "bestaetigt": {
+    "zeit": "2026-08-31",
+    "start": 232,
+    "geometrie": 27.7,
+    "schrift": 51.7,
+    "ebenen": {
+      "laender-europa.json": 108.3,
+      "laender-asien.json": 98.7,
+      "laender-nordamerika.json": 75.6,
+      "laender-afrika.json": 68.6,
+      "laender-suedamerika.json": 62.6,
+      "deutschland.json": 56.3
+    }
+  },
+  "gesehen": {
+    "zeit": "2026-08-31",
+    "start": 232,
+    "geometrie": 27.7,
+    "schrift": 51.7,
+    "ebenen": {
+      "laender-europa.json": 108.3,
+      "laender-asien.json": 98.7,
+      "laender-nordamerika.json": 75.6,
+      "laender-afrika.json": 68.6,
+      "laender-suedamerika.json": 62.6,
+      "deutschland.json": 56.3
+    }
   }
 }

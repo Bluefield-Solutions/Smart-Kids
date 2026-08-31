@@ -125,6 +125,28 @@ for (const e of ebenen)
  *
  * Neu festhalten mit `npm run budget -- --neu`. Von Hand, mit Blick darauf,
  * so wie die Vorbilder in `ansicht`.
+ *
+ * ---------------------------------------------------------------------
+ * P5: die Ratsche fragte die falsche Runde.
+ *
+ * Eine Runde mit +4,8 % schlug nicht an - und hielt den Stand auch nicht
+ * nach. Die naechste Runde mass dann gegen einen zu alten Wert und wurde
+ * nach etwas gefragt, das zur Haelfte nicht ihre Schuld war. Gemessen:
+ * B2 brachte +4,75 % und blieb gruen, G12 legte 5,8 KB drauf, und die
+ * Frage landete bei G12.
+ *
+ * Der Stand traegt deshalb ZWEI Zahlen:
+ *
+ *   bestaetigt   was jemand angesehen und mit `--neu` abgenickt hat.
+ *                Die Ratsche misst weiter GEGEN DIESE ZAHL - sie darf
+ *                sich nicht selbst zuruecksetzen, sonst schlaegt sie nie
+ *                an, und genau das ist der Verfall, den sie fangen soll.
+ *   gesehen      was der letzte gruene Lauf gemessen hat. Sie aendert
+ *                nichts am Urteil; sie teilt das Wachstum auf.
+ *
+ * Damit sagt der Bericht „+4,8 % seit der Bestaetigung, davon +0,9 % in
+ * diesem Lauf, noch 0,2 % bis zur Frage" - und die Runde, die den Platz
+ * verbraucht, sieht das in ihrem EIGENEN Lauf, nicht die uebernaechste.
  */
 const jetzt = {
   start: kb(startGz), geometrie: kb(geoGz), schrift: kb(schriftGz),
@@ -132,30 +154,84 @@ const jetzt = {
 };
 
 if (NEU) {
-  fs.writeFileSync(STAND, JSON.stringify({ zeit: new Date().toISOString().slice(0, 10),
-    ...jetzt }, null, 2) + '\n');
-  console.log(`\n  Stand neu festgehalten in ${STAND}.\n`);
+  const heute = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(STAND, JSON.stringify({
+    bestaetigt: { zeit: heute, ...jetzt },
+    gesehen:    { zeit: heute, ...jetzt },
+  }, null, 2) + '\n');
+  console.log(`\n  Stand neu festgehalten in ${STAND} — bestätigt und gesehen.\n`);
   process.exit(0);
 }
+
+/** Prozent, einstellig, mit Vorzeichen - „+4.8" oder „-1.2". */
+const proz = (a, b) => (b / a - 1) * 100;
+const pz = (v) => (v >= 0 ? '+' : '') + v.toFixed(1) + ' %';
 
 if (!fs.existsSync(STAND)) {
   fehler.push(`${STAND} fehlt — ohne festgehaltenen Stand fällt Wachstum nicht auf `
     + '(`npm run budget -- --neu`)');
 } else {
-  const alt = JSON.parse(fs.readFileSync(STAND, 'utf8'));
-  const WACHSTUM = 1.05;
-  const vergleiche = (was, a, b) => {
-    if (a === undefined) { hinweise.push(`${was} ist neu — noch kein Stand dafür`); return; }
-    if (b > a * WACHSTUM)
-      fehler.push(`${was} ist von ${a} auf ${b} KB gewachsen (+${((b/a-1)*100).toFixed(0)} %) — `
-        + 'war das Absicht? (`npm run budget -- --neu`)');
-  };
-  vergleiche('Startbündel', alt.start, jetzt.start);
-  vergleiche('Geometrie', alt.geometrie, jetzt.geometrie);
-  vergleiche('Schriften', alt.schrift, jetzt.schrift);
-  for (const [n, v] of Object.entries(jetzt.ebenen)) vergleiche('Ebene ' + n, alt.ebenen?.[n], v);
-  console.log(`\n    gegen den Stand vom ${alt.zeit}: `
-    + `Start ${alt.start} → ${jetzt.start} KB`);
+  const roh = JSON.parse(fs.readFileSync(STAND, 'utf8'));
+  const bestaetigt = roh.bestaetigt;
+  const gesehen = roh.gesehen;
+  /* Beide Blöcke sind Pflicht.
+   *
+   * Ohne `gesehen` ist die Aufteilung weg, und die Ratsche fragt wieder
+   * die falsche Runde - still, denn sie meldet ja weiterhin richtig, DASS
+   * etwas gewachsen ist. Ein Tor, das nach einem stillen Rückbau einfach
+   * weniger sagt, ist die Verfallsart, gegen die Regel 5 steht. */
+  if (!bestaetigt || !gesehen) {
+    fehler.push(`${STAND} hat nicht beide Stände (bestätigt und gesehen) — ohne den `
+      + 'gesehenen landet die Frage nach dem Wachstum bei der übernächsten Runde '
+      + '(`npm run budget -- --neu`)');
+  } else {
+    const WACHSTUM = 1.05;
+    const GRENZE_PZ = (WACHSTUM - 1) * 100;
+    let etwasGewachsen = false;
+    const vergleiche = (was, a, g, b) => {
+      if (a === undefined) { hinweise.push(`${was} ist neu — noch kein Stand dafür`); return; }
+      const seitBestaetigt = proz(a, b);
+      // Der gesehene Wert kann fehlen, wenn eine Ebene neu dazugekommen
+      // ist - dann ist das ganze Wachstum aus diesem Lauf.
+      const vorLauf = g === undefined ? 0 : proz(a, g);
+      if (b > a * WACHSTUM) {
+        fehler.push(`${was} ist von ${a} auf ${b} KB gewachsen (${pz(seitBestaetigt)} seit der `
+          + `Bestätigung vom ${bestaetigt.zeit}) — davon lagen ${pz(vorLauf)} schon vor diesem `
+          + `Lauf vor (gesehen am ${gesehen.zeit}). War das Absicht? `
+          + '(`npm run budget -- --neu`)');
+        etwasGewachsen = true;
+        return;
+      }
+      // Grün, aber nicht bei null: das ist die Auskunft, die P5 gefehlt hat.
+      if (seitBestaetigt >= 0.05) {
+        etwasGewachsen = true;
+        console.log(`    ${was}: ${a} → ${b} KB   ${pz(seitBestaetigt)} seit der Bestätigung, `
+          + `davon ${pz(seitBestaetigt - vorLauf)} in diesem Lauf   `
+          + `— noch ${(GRENZE_PZ - seitBestaetigt).toFixed(1)} % bis zur Frage`);
+      }
+    };
+    console.log(`\n    gegen den Stand vom ${bestaetigt.zeit}:`);
+    vergleiche('Startbündel', bestaetigt.start, gesehen.start, jetzt.start);
+    vergleiche('Geometrie', bestaetigt.geometrie, gesehen.geometrie, jetzt.geometrie);
+    vergleiche('Schriften', bestaetigt.schrift, gesehen.schrift, jetzt.schrift);
+    for (const [n, v] of Object.entries(jetzt.ebenen))
+      vergleiche('Ebene ' + n, bestaetigt.ebenen?.[n], gesehen.ebenen?.[n], v);
+    if (!etwasGewachsen)
+      console.log(`      unverändert: Start ${bestaetigt.start} KB`);
+
+    /* Mitgeschrieben wird NUR, wenn sich etwas geaendert hat.
+     *
+     * Sonst waere der Baum nach jedem Kettenlauf schmutzig, und `proben`
+     * verweigert bei schmutzigem Baum den Dienst (Regel 1). Eine Datei,
+     * die sich ohne Anlass aendert, kostet jedes Mal einen Commit oder
+     * ein `git checkout` - und irgendwann checkt jemand aus Gewohnheit
+     * mehr aus als nur sie. */
+    const gleich = JSON.stringify({ ...gesehen, zeit: 0 })
+                === JSON.stringify({ ...jetzt, zeit: 0 });
+    if (!gleich && !fehler.length)
+      fs.writeFileSync(STAND, JSON.stringify({ bestaetigt,
+        gesehen: { zeit: new Date().toISOString().slice(0, 10), ...jetzt } }, null, 2) + '\n');
+  }
 }
 
 console.log('');

@@ -383,6 +383,22 @@ export const PROBEN = [
     such:"const D = JSON.parse(", ersatz:"const FUELL = '" + rauschen(24000) + "';\nconst D = JSON.parse(",
     an:{ ...DIST, text:'const FUELL' }, sagt:'gewachsen' },
 
+  /* P5: der mitgeschriebene Stand darf nicht still verschwinden.
+   *
+   * Ohne `gesehen` misst die Ratsche weiterhin richtig - sie sagt nur
+   * nicht mehr, WELCHE Runde den Platz verbraucht hat, und die Frage
+   * landet wieder bei der uebernaechsten. Ein Tor, das nach einem
+   * stillen Rueckbau einfach weniger SAGT, faellt keinem auf: es bleibt
+   * ja gruen. Deshalb ist der fehlende Block ein Fehler, kein Hinweis.
+   *
+   * Gedreht wird der Schluessel, nicht der Wert: ein `gesehen` mit
+   * falschen Zahlen ist eine andere Sache als gar keines. */
+  { n:'der mitgeschriebene Stand verschwindet', tor:'budget', bauen:true,
+    datei:'tor/budget-stand.json',
+    such:'"gesehen": {', ersatz:'"gesehen_": {',
+    an:{ datei:'tor/budget-stand.json', text:'"gesehen_": {' },
+    sagt:'nicht beide Stände' },
+
   /* Eine Gegenprobe findet ihren Suchtext nicht mehr.
    *
    * Der haeufigste Verfall, und bis zu dieser Runde nur im vollen Lauf zu
