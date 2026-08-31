@@ -554,8 +554,18 @@ jetzt ein Wal — ein Tier, das seine ganze Auskunft im Umriss trägt.
 **Abnahme:** Rauchtestabschnitt `streu` — vier verschiedene Farbtöne in
 ihren Bändern und paarweise 20 Grad auseinander, neun Motivarten in acht
 Farben, Schildkröten in vier, zehn Totenköpfe mit dreistufigem Augenverlauf,
-**null** bei den Eltern, kein Motiv auf einem Namen. Acht Gegenproben, alle
+**null** bei den Eltern, kein Motiv auf einem Namen. Neun Gegenproben, alle
 anschlagend.
+
+**Ein Tor ist dabei nachgegeben worden**, und das gehört benannt:
+`lesbarkeit` rechnete eine Streuschicht wie ein Wasserzeichen — als volle
+Fläche in ihrer geerbten Tintenfarbe, die nirgends gemalt wird — und
+meldete sechs lesbare Texte rot (1,16:1 für eine Zeile, die auf jeder
+Aufnahme steht). Es zählt jetzt die Motive statt der Schicht. Dass es
+danach noch anschlägt, ist mit einer eigenen Gegenprobe belegt, und die
+alte zum Wasserzeichen schlägt weiter an. Der eine Befund, der die
+Modelländerung überlebt hat (4,46:1 statt 4,5), ist behoben — durch
+dunkleren Text, nicht durch blasseren Streu.
 
 **Was es kostet:** das Startbündel wächst um **5,8 KB gzip** (170,0 statt
 164,2 KB für die Seite; 223,9 von 400 KB erlaubt).

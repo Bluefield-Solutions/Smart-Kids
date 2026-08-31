@@ -5452,7 +5452,39 @@ Und drei weitere Motive lagen auf dem Namen. Sie sind umgezogen; die
 kleine graue Zeile darunter darf überdeckt werden, das große fette Wort
 nicht.
 
-### Zwei Prüfungen, die nichts bewiesen
+### Das Tor, von dem ich dachte, es sehe nichts
+
+In den Quelltext hatte ich geschrieben: „Der Streu liegt unter Name und
+Zeile, und **kein Tor** sieht das — `lesbarkeit` sucht den Grund im
+Elternbaum, und der Streu ist ein Geschwister." Das war falsch, und die
+Kette hat es sofort gezeigt: `lesbarkeit` sucht seit R2 ausdrücklich nach
+absolut liegenden **Geschwistern** hinter dem Text — genau deswegen, wegen
+des Wasserzeichens.
+
+Es hat den Streu gefunden und **sechs** Texte rot gemeldet, darunter „6
+Jahre · ziehen und sprechen" mit **1,16:1**. Auf jeder Aufnahme ist die
+Zeile einwandfrei zu lesen.
+
+Der Grund war das Modell, nicht die Messung. Das Tor nimmt den **Kasten**
+des Geschwisters in dessen Farbe — richtig für ein Wasserzeichen, das
+seinen Kasten füllt. Der Streu ist das Gegenteil: eine fast leere Schicht
+mit einem Dutzend kleiner Motive, jedes mit seiner eigenen Farbe am `<i>`.
+Für die Schicht selbst gibt es weder Hintergrund noch gemalte Farbe, und
+`cs.color` lieferte dort die **geerbte Tinte** — eine dunkle Fläche, die
+nirgends auf dem Bild steht.
+
+Das Tor schaut jetzt in die Kinder einer solchen Schicht hinein, wenn es
+welche gibt: jedes mit eigenem Kasten, eigener Farbe, eigener Deckung.
+Gibt es keine, bleibt alles wie zuvor — und die Gegenprobe zum
+Wasserzeichen schlägt weiter an. Nachgemessen, beide.
+
+Danach blieb ein **echter** Befund stehen: Fionas Zeile mit 4,46:1 statt
+4,5. Repariert ist die Ursache, nicht das Symptom — nicht der Streu wird
+blasser, die Leuchtfarben waren ausdrücklich gewünscht, sondern der Text
+auf dem unruhig gewordenen Grund dunkler. Auf der Aufnahme sieht man den
+Unterschied.
+
+### Zwei weitere Prüfungen, die nichts bewiesen
 
 Die interessanteste Stelle der Runde. Der Rauchtest sollte belegen, dass
 die Kachel überall antippbar bleibt: ein Tipp mitten auf die große
@@ -5487,4 +5519,4 @@ nur, wenn jemand „ja, Absicht" sagt; B2 lag mit +4,75 % darunter und hat
 nichts nachgehalten. Die Frage landete damit bei der falschen Runde. Steht
 als **P5** im Rückstandsverzeichnis.
 
-165 Gegenproben, alle mit Nachweis.
+166 Gegenproben, alle mit Nachweis.
