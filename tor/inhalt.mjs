@@ -20,6 +20,17 @@ import { LAENDER_EUROPA_FEIN } from '../src/geo/laender-europa.fein.js';
 // und weil nur dort die Stadtlagen gebacken sind (Regel 12: die Zahl und
 // ihre Messstelle gehoeren zusammen).
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
+/* Und die uebrigen groben Stufen. `bauen.mjs` backt genau diese ein - die
+ * feinen sind der Vorrat, nicht die Ware. Ein Anker, der in der feinen
+ * Stufe im Gebiet liegt, kann in der groben davor liegen: vereinfachen
+ * heisst Ecken abschneiden. (Regel 12.) */
+import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
+import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
+import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
+import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js';
+import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
+import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
+import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
@@ -552,31 +563,86 @@ console.log(`    ${KONTINENTE_FEIN.length + DEUTSCHLAND_FEIN.length} Umrisse gep
 // nichts: an der Stelle steht ein Stapelabzug statt eines Satzes, und das
 // naechste Mal sucht jemand den Fehler im Tor statt in den Daten. Ein Tor
 // muss auch kaputte Eingaben BEURTEILEN koennen, nicht nur richtige.
-let ankerDraussen = 0, ankerFehlt = 0;
-for (const s of STAEDTE) {
-  if (!Array.isArray(s.anker) || s.anker.length !== 2
-      || !Number.isFinite(s.anker[0]) || !Number.isFinite(s.anker[1])) {
-    ankerFehlt++; continue;
+/* Jeder Anker jedes GESPIELTEN Gebiets - nicht nur der sechzehn.
+ *
+ * Bis F17 pruefte diese Stelle `STAEDTE`, also Deutschland. Sechsundsechzig
+ * weitere Gebiete - sechs Kontinente und sechzig Laender - hatten ebenfalls
+ * einen Anker, und keiner sah ihn an. Der Anker ist keine Zierde: an ihm
+ * haengen der Zeiger, der dem Kind die Stelle zeigt, das Haekchen auf einem
+ * gekonnten Gebiet, die Namensfahne und die entkoppelte Trefferflaeche fuer
+ * alles, was kleiner ist als ein Daumen.
+ *
+ * Gemessen wird an den Umrissen, die `prototyp/bauen.mjs` einbackt - grob
+ * fuer Kontinente und Laender, mittel fuer die Bundeslaender. Nicht an den
+ * feinen: die liegen im Baum, aber kein Kind fasst sie an.
+ *
+ * Ein FEHLENDER Anker liess das Tor hier einmal mit einem TypeError
+ * abstuerzen - gefunden von `npm run proben`. Ein Absturz ist zwar rot,
+ * aber er sagt nichts: an der Stelle steht ein Stapelabzug statt eines
+ * Satzes, und das naechste Mal sucht jemand den Fehler im Tor statt in den
+ * Daten. Ein Tor muss auch kaputte Eingaben BEURTEILEN koennen.
+ */
+const GESPIELT = [
+  ['Kontinente', KONTINENTE_GROB.filter(k => I.KONTINENTE.some(x => x.id === k.id))],
+  ['Europa', LAENDER_EUROPA_GROB.filter(l => l.rang)],
+  ['Afrika', LAENDER_AFRIKA_GROB.filter(l => l.rang)],
+  ['Asien', LAENDER_ASIEN_GROB.filter(l => l.rang)],
+  ['Nordamerika', LAENDER_NORDAMERIKA_GROB.filter(l => l.rang)],
+  ['Südamerika', LAENDER_SUEDAMERIKA_GROB.filter(l => l.rang)],
+  ['Bundesländer', DEUTSCHLAND_MITTEL],
+];
+let ankerDraussen = 0, ankerFehlt = 0, ankerGeprueft = 0, mitLoch = 0;
+const draussen = [], fehlen = [];
+for (const [ebene, liste] of GESPIELT) {
+  for (const g of liste) {
+    ankerGeprueft++;
+    const id = g.id || g.a3;
+    /* Die Bundeslaender bekommen ihren Anker aus `staedte.js` - dort ist
+       er gebacken, weil auch die Beschriftung (G10) daran haengt. Alle
+       anderen rechnet `bauen.mjs` beim Bauen aus, mit denselben drei
+       Funktionen, die hier stehen. */
+    const ausDatei = ebene === 'Bundesländer';
+    const polys = ringeZuPolygonen(pfadZuPolys(g.pfad || ''));
+    if (!polys.length) { ankerFehlt++; fehlen.push(`${ebene}/${g.name || id} (kein Umriss)`); continue; }
+    const groesster = polys.reduce((a, c) => ringFlaeche(a[0]) > ringFlaeche(c[0]) ? a : c);
+    if (groesster.length > 1) mitLoch++;
+    /* Kein Ausweichen aufs Ausrechnen.
+       Der erste Anlauf schrieb `ausDatei || berechnet` - und damit fand
+       das Tor fuer ein Bundesland ohne Anker klaglos einen, statt den
+       fehlenden zu melden. Die Gegenprobe „das kleinste Gebiet verliert
+       seinen Anker" hat es sofort gesagt: sie wurde rot, aber aus einem
+       anderen Grund. Ein Tor, das eine Luecke selbst fuellt, prueft sie
+       nicht mehr. */
+    const anker = ausDatei
+      ? (STAEDTE.find(x => x.id === id) || {}).anker
+      : (polDerUnzugaenglichkeit(polys) || {}).punkt;
+    if (!Array.isArray(anker) || anker.length !== 2
+        || !Number.isFinite(anker[0]) || !Number.isFinite(anker[1])) {
+      ankerFehlt++; fehlen.push(`${ebene}/${g.name || id}`); continue;
+    }
+    /* Gegen den groessten Aussenring MIT seinen Loechern.
+     *
+     * Hier stand `[groesster]` - nur der Aussenring, ohne Loch. Das Tor
+     * meldete „0 Anker ausserhalb", waehrend Brandenburgs Anker in Berlin
+     * lag: er ist im Aussenring, aber im Loch. Gefunden hat es nicht dieses
+     * Tor, sondern der Rauchtest der Runde D2 - er zog „Brandenburg" auf
+     * Brandenburgs Anker und bekam „Das ist Berlin."
+     *
+     * Eine Pruefung, die den Fall nicht sehen KANN, den sie zu pruefen
+     * vorgibt, ist kein Beweis (Regel 5). */
+    if (!imPolygon(anker[0], anker[1], groesster)) {
+      ankerDraussen++; draussen.push(`${ebene}/${g.name || id}`);
+    }
   }
-  const b = DEUTSCHLAND_FEIN.find(x=>x.id===s.id);
-  if (!b) { ankerFehlt++; continue; }
-  /* Gegen den groessten Aussenring MIT seinen Loechern.
-   *
-   * Hier stand `[groesster]` - nur der Aussenring, ohne Loch. Das Tor
-   * meldete „0 Anker ausserhalb", waehrend Brandenburgs Anker in Berlin
-   * lag: er ist im Aussenring, aber im Loch. Gefunden hat es nicht dieses
-   * Tor, sondern der Rauchtest der Runde D2 - er zog „Brandenburg" auf
-   * Brandenburgs Anker und bekam „Das ist Berlin."
-   *
-   * Eine Pruefung, die den Fall nicht sehen KANN, den sie zu pruefen
-   * vorgibt, ist kein Beweis (Regel 5). */
-  const polys = ringeZuPolygonen(pfadZuPolys(b.pfad));
-  const groesster = polys.reduce((a,c)=>ringFlaeche(a[0])>ringFlaeche(c[0])?a:c);
-  if (!imPolygon(s.anker[0], s.anker[1], groesster)) ankerDraussen++;
 }
-pruefe(ankerFehlt === 0, `${ankerFehlt} Gebiete haben keinen brauchbaren Anker`);
-pruefe(ankerDraussen === 0, `${ankerDraussen} Anker liegen außerhalb ihres Gebiets`);
-console.log(`    ${STAEDTE.length} Anker geprüft, ${ankerDraussen} außerhalb, ${ankerFehlt} fehlen`);
+pruefe(ankerFehlt === 0, `${ankerFehlt} Gebiete haben keinen brauchbaren Anker `
+  + `(${fehlen.slice(0, 4).join(', ')}${fehlen.length > 4 ? ' …' : ''}) — ohne Anker `
+  + 'gibt es weder Zeiger noch Häkchen noch Trefferfläche');
+pruefe(ankerDraussen === 0, `${ankerDraussen} Anker liegen außerhalb ihres Gebiets `
+  + `(${draussen.slice(0, 4).join(', ')}${draussen.length > 4 ? ' …' : ''})`);
+console.log(`    ${ankerGeprueft} Anker geprüft — alle gespielten Gebiete, `
+  + `davon ${mitLoch} mit Loch im größten Teil; `
+  + `${ankerDraussen} außerhalb, ${ankerFehlt} fehlen`);
 
 // Nadeln: Schnitte ohne Flaeche.
 //

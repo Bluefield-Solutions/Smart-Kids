@@ -116,6 +116,23 @@ export const PROBEN = [
     ersatz:'"name":"Brandenburg","hauptstadt":"Potsdam","stadtstaat":false,"ort":[780.6,462.2],"anker":[804.7,446.1]',
     an:{ datei:'src/geo/staedte.js', text:'"anker":[804.7,446.1]' }, sagt:'außerhalb' },
 
+  /* Und die andere Haelfte des Prueflaufs: die sechsundsechzig Gebiete,
+   * die NICHT Deutschland sind.
+   *
+   * Bis F17 sah `topologie` nur `STAEDTE` an - sechs Kontinente und
+   * sechzig Laender hatten ebenfalls einen Anker, und keiner pruefte ihn.
+   * Diese Probe nimmt einem gespielten Land den Umriss: dann ist auch
+   * sein Anker weg, und ohne Anker gibt es weder Zeiger noch Haekchen
+   * noch Trefferflaeche. Bleibt das Tor gruen, laeuft die Schleife gar
+   * nicht ueber die Laender - und die neue Reichweite waere Zierde.
+   */
+  { n:'ein gespieltes Land verliert seinen Umriss', tor:'inhalt', deckt:'topologie',
+    datei:'src/geo/laender-europa.grob.js',
+    suchRegex: /"a3":"ITA","name":"Italien","rang":5,"teile":3,"loecher":0,"pfad":"[^"]*"/,
+    ersatzFn: () => '"a3":"ITA","name":"Italien","rang":5,"teile":3,"loecher":0,"pfad":""',
+    an:{ datei:'src/geo/laender-europa.grob.js', text:'"pfad":""' },
+    sagt:'keinen brauchbaren Anker' },
+
   /* --- beruehrung --------------------------------------------------- */
   // Bremen ist mit 9,4 pt das kleinste Gebiet ueberhaupt - ohne Anker
   // bekommt es keinen Trefferkreis und ist mit dem Finger nirgends zu

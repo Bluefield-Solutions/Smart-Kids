@@ -11,7 +11,8 @@ import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { inline } from './inline.mjs';
-import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
+import { polDerUnzugaenglichkeit, pfadZuRingen,
+         ringeZuPolygonen } from '../tools/geo-backen.mjs';
 
 const NACHBARN = JSON.parse(fs.readFileSync(new URL('./nachbarn.json', import.meta.url)));
 function vierfaerben(ids){
@@ -22,20 +23,21 @@ function vierfaerben(ids){
   if(konflikte.length) throw new Error('Vierfärbung: Nachbarn gleich');
   return f;
 }
-/** Pfad zurueck in Polygone lesen - fuer die Anker. */
-function pfadZuPolys(d){
-  const polys=[];
-  for (const teil of d.split('M').slice(1)) {
-    const z=teil.match(/-?\d+\.?\d*/g); if(!z) continue;
-    const ring=[]; for(let i=0;i+1<z.length;i+=2) ring.push([+z[i],+z[i+1]]);
-    if (ring.length>2) polys.push([ring]);
-  }
-  return polys;
-}
-/** Anker fuer jede Form - der Marker im Spiel haengt daran. */
+/** Anker fuer jede Form - der Marker im Spiel haengt daran.
+ *
+ * Hier stand eine EIGENE Fassung von `pfadZuPolys` mit
+ * `polys.push([ring])`: jeder Ring ein Polygon ohne Loch. Dieselbe Zeile
+ * stand in `tools/backen-staedte.mjs` und hat dort Brandenburg seinen
+ * Anker mitten in Berlin gegeben (F16). Sie stand hier ein zweites Mal -
+ * fuer die Kontinente und fuer alle sechzig Laender, also fuer Suedafrika
+ * mit Lesotho darin und fuer Italien mit San Marino und dem Vatikan.
+ *
+ * Beide lesen jetzt dieselben Funktionen aus `geo-backen.mjs`. Was zweimal
+ * dasteht, veraltet einmal - hier war es viermal (Regel 15).
+ */
 function ankerFuer(liste){
   return liste.map(x=>{
-    const pu = polDerUnzugaenglichkeit(pfadZuPolys(x.pfad));
+    const pu = polDerUnzugaenglichkeit(ringeZuPolygonen(pfadZuRingen(x.pfad)));
     return { ...x, anker: pu ? [+pu.punkt[0].toFixed(1), +pu.punkt[1].toFixed(1)] : null };
   });
 }

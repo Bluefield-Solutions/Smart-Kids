@@ -835,6 +835,54 @@ Hinweis, den niemand liest, ist dasselbe wie keiner.
 
 ---
 
+### F17 · Der Ankerprüfstand galt für sechzehn von zweiundachtzig  ·  ERLEDIGT
+
+F16 hat Brandenburgs Anker berichtigt. Diese Runde beantwortet die Frage,
+die danach offen war: **prüft das irgendwer für die anderen sechsundsechzig
+Gebiete?** Nein. `topologie` sah `STAEDTE` an — Deutschland. Sechs
+Kontinente und sechzig Länder haben ebenfalls einen Anker, und keiner hat
+ihn je angesehen.
+
+Der Anker ist keine Zierde. An ihm hängen der **Zeiger**, der dem Kind die
+Stelle zeigt, das **Häkchen** auf einem gekonnten Gebiet, die
+**Namensfahne** und die **entkoppelte Trefferfläche** für alles, was
+kleiner ist als ein Daumen — `formen.filter(x => x.anker)`. Ein Gebiet ohne
+Anker steht auf der Karte und lässt sich nicht spielen.
+
+**Gemessen:** 82 gespielte Gebiete, davon 3 mit einem Loch im größten Teil
+(Brandenburg, Niedersachsen, Südafrika). Null Anker außerhalb, null
+fehlend. Gemessen an den Umrissen, die `bauen.mjs` wirklich einbackt —
+grob für Kontinente und Länder, mittel für die Bundesländer. Nicht an den
+feinen: die liegen im Baum, aber kein Kind fasst sie an (Regel 12).
+
+**Die vierte Kopie.** `prototyp/bauen.mjs` hatte seine eigene
+`pfadZuPolys`-Fassung mit `polys.push([ring])` — jeder Ring ein Polygon
+ohne Loch, dieselbe Zeile, die in `backen-staedte.mjs` Brandenburg nach
+Berlin gesetzt hatte. Sie stand hier ein zweites Mal, für die Kontinente
+und für alle sechzig Länder. Beide lesen jetzt dieselben Funktionen aus
+`geo-backen.mjs`.
+
+**Und was das gebracht hat: heute nichts.** Regel 13 — die Wirkung
+abschalten und nachmessen. Mit und ohne die Berichtigung stehen dieselben
+Zahlen da: 82 geprüft, 3 mit Loch, 0 außerhalb. In keinem der drei Fälle
+landete die lochblinde Suche zufällig *im* Loch. Es ist also eine
+Vorbeugung und keine Fundstelle, und es steht hier so, damit niemand später
+eine Heldentat daraus liest. Bezahlt macht es sich beim nächsten Land mit
+Enklave — und eines davon kommt in der nächsten Runde.
+
+**`beruehrung` braucht keine eigene Erweiterung.** Sein Fehlerpfad ist „ein
+zu kleines Gebiet hat keinen Anker und ist deshalb nicht zu treffen".
+Seit `topologie` für **alle** 82 einen brauchbaren Anker verlangt, ist der
+Fall strukturell ausgeschlossen — für Luxemburg genauso wie für Bremen.
+
+Zwei neue Gegenproben: ein gespieltes Land verliert seinen Umriss (beweist,
+dass die Schleife die Länder überhaupt erreicht), und der Fall, den der
+erste Anlauf selbst gebaut hat — das Tor schrieb `ausDatei || berechnet`
+und fand damit für ein Bundesland *ohne* Anker klaglos einen. Die
+Gegenprobe „das kleinste Gebiet verliert seinen Anker" hat es sofort
+gesagt: sie wurde rot, aber aus dem falschen Grund. Ein Tor, das eine
+Lücke selbst füllt, prüft sie nicht mehr.
+
 ### F16 · Brandenburgs Anker lag in Berlin  ·  ERLEDIGT
 
 **Gefunden hat es der Rauchtest, nicht das Tor, das dafür da ist.** Der
