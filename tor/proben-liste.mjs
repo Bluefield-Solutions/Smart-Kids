@@ -1894,22 +1894,22 @@ export const PROBEN = [
    * Die restlichen fuenf gehen an den Rauchtest.
    */
 
-  { n:'ein Abzeichen wählt nichts aus seinem Vorrat', tor:'inhalt', datei:A,
+  { n:'ein Abzeichen wählt nichts aus seinem Vorrat', tor:'inhalt', deckt:'abzeichen', datei:A,
     such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
     ersatz:'waehlt: (v) => v.filter(x => x.stadtstaatlich) }',
     an:{ datei:A, text:'x.stadtstaatlich' }, sagt:'unerreichbar' },
 
-  { n:'ein Abzeichen wählt gleich den ganzen Vorrat', tor:'inhalt', datei:A,
-    such:"  { ebene:'bundeslaender', id:'stadtstaaten', zeichen:'stadt',",
-    ersatz:"  { ebene:'bundeslaender', id:'stadtstaat-alle', zeichen:'stadt',",
-    an:{ datei:A, text:"id:'stadtstaat-alle'" }, sagt:'wählt nichts' },
+  { n:'ein Abzeichen wählt gleich den ganzen Vorrat', tor:'inhalt', deckt:'abzeichen', datei:A,
+    such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
+    ersatz:'waehlt: (v) => v.filter(x => !!x) }',
+    an:{ datei:A, text:'v.filter(x => !!x) }' }, sagt:'wählt ALLE' },
 
-  { n:'ein Abzeichen will ein Bild, das es nicht gibt', tor:'inhalt', datei:A,
+  { n:'ein Abzeichen will ein Bild, das es nicht gibt', tor:'inhalt', deckt:'abzeichen', datei:A,
     such:"id:'alle-bundeslaender', zeichen:'karte'",
     ersatz:"id:'alle-bundeslaender', zeichen:'deutschland'",
     an:{ datei:A, text:"zeichen:'deutschland'" }, sagt:'ohne Zeichen' },
 
-  { n:'ein Nachbar Deutschlands steht nicht in den Daten', tor:'inhalt', datei:A,
+  { n:'ein Nachbar Deutschlands steht nicht in den Daten', tor:'inhalt', deckt:'abzeichen', datei:A,
     such:"'DNK', 'NLD'", ersatz:"'DAN', 'NLD'",
     an:{ datei:A, text:"'DAN', 'NLD'" }, sagt:'ohne Land in den Daten' },
 

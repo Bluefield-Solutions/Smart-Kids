@@ -16,6 +16,7 @@
     "ziehen"
   ],
   "unterTore": [
+    "abzeichen",
     "beruehrung",
     "doku",
     "inhalt",
@@ -687,6 +688,18 @@
     },
     "der Streu rutscht aus seiner absoluten Lage": {
       "commit": "2ffb7c20bdb5d987efd1b4cc1f92886299858179",
+      "zeit": "2026-08-31"
+    },
+    "ein Abzeichen wählt nichts aus seinem Vorrat": {
+      "commit": "8bcf963a5cfc5140d299c649654293b80e4fdbbb",
+      "zeit": "2026-08-31"
+    },
+    "ein Abzeichen will ein Bild, das es nicht gibt": {
+      "commit": "8bcf963a5cfc5140d299c649654293b80e4fdbbb",
+      "zeit": "2026-08-31"
+    },
+    "ein Nachbar Deutschlands steht nicht in den Daten": {
+      "commit": "8bcf963a5cfc5140d299c649654293b80e4fdbbb",
       "zeit": "2026-08-31"
     }
   }
