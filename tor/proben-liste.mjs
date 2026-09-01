@@ -1711,6 +1711,24 @@ export const PROBEN = [
     ersatz:'if(!auf){ aufheben(); }',
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
 
+  /* Das schmale Fenster bekommt wieder zwei Spalten statt drei (Q5).
+   *
+   * Nachgezaehlt, indem Kacheln dazugelegt wurden: mit zwei Spalten passen
+   * auf 700 x 850 genau zehn, und zehn stehen da. Die naechste Ebene liefe
+   * heraus. Der Eingriff dreht die Spaltenbreite zurueck auf das grosse
+   * Mass, bei dem 700 Punkte nur fuer zwei reichen. */
+  { n:'das schmale Fenster bekommt wieder zwei Spalten', tor:'passt', bauen:true,
+    args:['--teil=2/5'], datei:V,
+    such:'  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}\n'
+       + '  .kachel .ueber{display:none}\n'
+       + '  .kachel .name{font-size:var(--s1)}\n',
+    ersatz:'',
+    // `text`, nicht `fehlt`: der Eingriff LEERT den Block, er entfernt ihn
+    // nicht. Was danach dasteht, ist eine Regel, die nichts tut - und
+    // genau das muss der Nachweis suchen.
+    an:{ ...DIST, text:'@media (min-height:441px) and (max-width:780px){\n}' },
+    sagt:'die Wand ist voll' },
+
   /* Das Kachelbild liegt wieder unter dem Vorschau-Knopf (Q4).
    *
    * Fuer Fiona IST das Bild der Name - sie liest nicht. Gemessen hat das

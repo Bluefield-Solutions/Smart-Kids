@@ -366,35 +366,49 @@ const SUCHE = () => {
       wer: Object.entries(wer).sort((a, b) => b[1] - a[1]).slice(0, 2)
         .map(([k, n]) => `${k} ${Math.round(n / farbe * 100)} %`).join(', ') });
   }
-  /* WIEVIEL LUFT BLEIBT? Der Wahlbildschirm ist eine Wand aus Kacheln,
-   * und sie waechst mit jeder Ebene. Dass sie HEUTE passt, sagt das Tor
-   * schon; was es nicht sagt, ist, wie knapp es war. Eine Wand, die mit
-   * neun Kacheln gerade noch passt, faellt bei der zehnten um - und
-   * gemerkt wird das erst, wenn die zehnte da ist.
+  /* WIEVIEL PASST NOCH? Der Wahlbildschirm ist eine Wand aus Kacheln, und
+   * sie waechst mit jeder Ebene. Dass sie HEUTE passt, sagt das Tor schon;
+   * was es nicht sagt, ist, wieviele noch dazukoennen.
    *
-   * Gemessen wird in KACHELREIHEN, nicht in Bildpunkten: „es sind noch
-   * 30 px frei" sagt niemandem etwas, „es passt keine Reihe mehr" schon.
-   * Die Reihenhoehe kommt aus den Kacheln selbst, damit die Zahl auch bei
-   * einer anderen Kachelform stimmt. */
-  let luft = null;
+   * GEZAEHLT WIRD, INDEM WELCHE DAZUGELEGT WERDEN - nicht gerechnet. Der
+   * erste Anlauf teilte den freien Platz durch die Reihenhoehe und meldete
+   * fuer das iPhone quer „0,8 Reihen frei, die naechste Kachel passt nicht
+   * mehr". Nachgemessen passten dort noch SECHS: die Wand sitzt in einem
+   * Kasten, der sich beim Umbrechen zusammenschiebt, also kostet eine neue
+   * Reihe weniger als eine Reihe hoch ist. Eine Zahl, die das nicht weiss,
+   * sagt das Gegenteil der Wahrheit.
+   *
+   * Die Kopien werden hinterher wieder entfernt; der Bildschirm steht
+   * danach so da wie vorher, und die Pruefungen davor haben ihn ohnehin
+   * schon gesehen. */
+  let wand = null;
   {
-    const wand = document.querySelector('.schirm.da .wahl');
-    const stuecke = wand ? [...wand.children] : [];
-    if (wand && stuecke.length >= 2) {
-      const k = stuecke.map(e => e.getBoundingClientRect());
-      const reihe = Math.max(...k.map(b => b.height));
-      // Der Abstand zwischen zwei Reihen: der erste echte Sprung nach
-      // unten in der Liste der Oberkanten.
-      const oben = [...new Set(k.map(b => Math.round(b.top)))].sort((a, b) => a - b);
-      const sprung = oben.length > 1 ? oben[1] - oben[0] : reihe;
-      const unten = Math.max(...k.map(b => b.bottom));
-      const platz = innerHeight - unten;
-      luft = { reihen: +(platz / sprung).toFixed(1), kacheln: stuecke.length,
-               proReihe: k.filter(b => Math.round(b.top) === oben[0]).length,
-               frei: Math.round(platz) };
+    const w = document.querySelector('.schirm.da .wahl');
+    if (w && w.children.length >= 2) {
+      const muster = w.lastElementChild, heute = w.children.length;
+      const laeuftRaus = () => {
+        const k = [...w.children].map(e => e.getBoundingClientRect());
+        return Math.max(...k.map(x => x.bottom)) > innerHeight;
+      };
+      const kopien = [];
+      // Nach oben, bis es herauslaeuft - hoechstens acht dazu, sonst
+      // kostet die Messung mehr als sie wert ist.
+      let passt = heute;
+      if (!laeuftRaus()) for (let i = 0; i < 8; i++) {
+        const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);
+        if (laeuftRaus()) break;
+        passt = heute + i + 1;
+      }
+      for (const k of kopien) k.remove();
+      const oben = [...new Set([...w.children]
+        .map(e => Math.round(e.getBoundingClientRect().top)))].sort((a, b) => a - b);
+      wand = { heute, passt, mehr: passt - heute, gedeckelt: passt - heute >= 8,
+               jeReihe: [...w.children].filter(e =>
+                 Math.round(e.getBoundingClientRect().top) === oben[0]).length,
+               reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, karte, bewacht, zeichen, luft };
+  return { raus, klein, zu, ueber, karte, bewacht, zeichen, wand };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -533,17 +547,16 @@ for (const g of MEINE) {
         + `(Kasten ${r.karte.kasten.join('×')}, gezeichnet ${r.karte.gez.join('×')}) — `
         + `daneben steht ein Loch, das niemand nutzt`);
     /* Ein HINWEIS, kein Fehler: dass es heute passt, hat das Tor oben
-     * schon geprueft. Hier steht, wie knapp - und zwar bevor jemand die
-     * naechste Ebene baut und sich wundert. Rot waere falsch: die Wand ist
-     * in Ordnung, sie ist nur voll. */
-    if (r.luft && r.luft.reihen < 1)
-      meldungen.push(`${name}: HINWEIS die Wand ist voll — unter ${r.luft.kacheln} Kacheln `
-        + `(${r.luft.proReihe} je Reihe) bleiben ${r.luft.frei} px, das sind `
-        + `${r.luft.reihen} Reihen. Die nächste Kachel, die eine neue Reihe aufmacht, `
-        + `passt hier nicht mehr`);
-    if (r.luft) luftZeilen.push(`      ${name.padEnd(22)} `
-      + `${String(r.luft.kacheln).padStart(2)} Kacheln, ${r.luft.proReihe} je Reihe · `
-      + `${String(r.luft.frei).padStart(4)} px frei = ${r.luft.reihen} Reihen`);
+     * schon geprueft. Hier steht, wieviel noch dazukann - und zwar bevor
+     * jemand die naechste Ebene baut und sich wundert. Rot waere falsch:
+     * die Wand ist in Ordnung, sie ist nur voll. Zwei, weil eine einzelne
+     * Kachel Luft niemandem reicht, um zu planen. */
+    if (r.wand && r.wand.mehr < 2)
+      meldungen.push(`${name}: HINWEIS die Wand ist voll — ${r.wand.heute} Kacheln stehen `
+        + `da, ${r.wand.passt} passen. Die ${r.wand.passt + 1}. läuft hier aus dem Bild`);
+    if (r.wand) luftZeilen.push(`      ${name.padEnd(22)} `
+      + `${String(r.wand.heute).padStart(2)} Kacheln, ${r.wand.jeReihe} je Reihe, `
+      + `${r.wand.reihen} Reihen · Platz für ${r.wand.gedeckelt ? '≥ ' : ''}${r.wand.passt}`);
     /* Die Wasserzeichen. Erst nur ansagen, was gemessen wurde - die
      * Schwellen stehen weiter unten und wurden an diesen Zahlen gesetzt,
      * nicht umgekehrt. */
@@ -710,6 +723,11 @@ for (const g of MEINE) {
   await schau('Weltenwahl (Lea)');
 
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
+  /* Die Hinweise standen bisher NUR im roten Zweig - also genau dann
+   * nicht da, wenn das Tor gruen ist. Ein Hinweis, den man nur zu sehen
+   * bekommt, wenn ohnehin etwas kaputt ist, ist keiner. */
+  meldungen.filter(m => m.includes('HINWEIS')).forEach(m =>
+    console.log(`          · ${g.n}: ${m}`));
   if (process.argv.includes('--hinweise'))
     meldungen.filter(m => m.includes('HINWEIS')).forEach(m => console.log(`            ${m}`));
   // Die Dauer je Groesse steht mit da: sie ist die Zahl, nach der
@@ -728,7 +746,7 @@ for (const g of MEINE) {
 await b.close(); server.close();
 
 if (luftZeilen.length) {
-  console.log('    Luft unter den Kachelwänden:');
+  console.log('    Wieviel passt in die Kachelwände (nachgezählt, nicht gerechnet):');
   [...new Set(luftZeilen)].sort().forEach(z => console.log(z));
 }
 if (zeichenZeilen.length) {

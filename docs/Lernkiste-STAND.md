@@ -7417,3 +7417,62 @@ dass es weitergeht).
 `npm run tor` grün in 126,1 s. 217 Gegenproben, zwei davon neu — die dritte
 („der Ton spielt auch bei abgeschaltetem Ton") gab es schon, sie musste nur
 den neuen zweiten Schalter mitnehmen.
+
+## Q5 — wie die Kachelwand wächst
+
+Die Frage war, wie die Wand wachsen soll. Bevor ich etwas umgebaut habe, habe
+ich sie **nachgezählt** — Kacheln dazugelegt, bis es aus dem Bild lief:
+
+| | heute | passt | bricht bei |
+|---|---|---|---|
+| iPhone quer 844 × 390 | 10 | 16 | — |
+| Fenster breit 1400 × 900 | 10 | 16 | — |
+| **Fenster schmal 700 × 850** | **10** | **10** | **11** |
+
+**Damit ist meine eigene Empfehlung hinfällig.** Ich hatte „zwei Gruppen statt
+einer Wand" vorgeschlagen — auf dem **Zielgerät ist gar nichts eng**, dort
+stehen vier Kacheln je Reihe und es passen sechs weitere. Eng ist allein das
+schmale Schreibtischfenster, und zwar aus genau einem Grund: 700 Punkte reichen
+nicht für drei 240er-Spalten, also werden es zwei, und aus zehn Kacheln werden
+fünf Reihen. Gruppen hätten dort sogar geschadet — jede Gruppenüberschrift ist
+eine Zeile mehr.
+
+Drei schmale Spalten sind hier besser als zwei breite. Ein Fenster unter
+780 Punkten bekommt jetzt 200er-Spalten, kleinere Namen und keine Überzeile —
+genau wie das kurze Querformat, und aus demselben Grund: bei 200 Punkten
+Kachelbreite und dem großen Namen läuft er ins Wasserzeichen, und das hat
+`lesbarkeit` schon einmal zerlegt (fünf Namen von 4,7 auf 2,33:1). Mit dem
+kleinen Namen bleibt es grün.
+
+| | vorher | jetzt |
+|---|---|---|
+| Fenster schmal 700 × 850 | Platz für 10 | **Platz für 15** |
+| Ebenenwahl, schlechteste Größe | 10 | **12** |
+
+**Die Antwort auf die Frage lautet also: sie wächst noch um drei Ebenen, überall.**
+Danach muss etwas anderes passieren — und dann ist es eine Entscheidung mit
+Zahlen statt eine Ahnung.
+
+### Die Zahl, die das Gegenteil der Wahrheit sagte
+
+Der erste Anlauf hat den freien Platz durch die Reihenhöhe geteilt und für das
+iPhone quer gemeldet: „0,8 Reihen frei — die nächste Kachel passt nicht mehr."
+Nachgezählt passten dort noch **sechs**. Der Grund: die Wand sitzt in einem
+Kasten, der sich beim Umbrechen zusammenschiebt, eine neue Reihe kostet also
+weniger als eine Reihe hoch ist.
+
+Gezählt wird deshalb, indem Kacheln **dazugelegt** werden, bis es herausläuft —
+nicht gerechnet. Die Kopien verschwinden hinterher wieder.
+
+### Und ein Hinweis, den niemand zu sehen bekam
+
+`passt` sammelt Hinweise (zu kleine Trefferflächen, jetzt auch die volle Wand)
+und hat sie **nur im roten Zweig** ausgegeben — also genau dann nicht, wenn das
+Tor grün ist. Ein Hinweis, den man nur sieht, wenn ohnehin etwas kaputt ist, ist
+keiner. Sie stehen jetzt in jedem Lauf.
+
+Was sie gleich gemeldet haben: **die Weltenwahl trägt genau drei Kacheln.** Eine
+vierte Welt passt auf dem iPhone nicht — womit auch die andere naheliegende Idee
+(Erdkunde in zwei Welten teilen) gemessen erledigt ist, bevor sie jemand baut.
+
+`npm run tor` grün in 128,1 s. 218 Gegenproben.

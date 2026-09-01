@@ -395,6 +395,33 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    zwei Reihen und schoben den "Verstanden"-Knopf aus dem Bild. Ein Mass
    fuer alle waere hier das Bequeme, nicht das Richtige. */
 .wahl.eng{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+/* Ein Fenster, das fuer DREI 240er-Spalten zu schmal ist (Q5).
+ *
+ * Gemessen, indem Kacheln dazugelegt wurden, bis es aus dem Bild lief:
+ *
+ *   iPhone quer  844x390    16 Kacheln passen (4 Reihen, 17 px frei)
+ *   Fenster breit 1400x900  16 Kacheln passen (4 Reihen, 108 px frei)
+ *   Fenster schmal 700x850  ELF laufen heraus (6 Reihen, -132 px)
+ *
+ * Auf dem Zielgeraet ist also nichts eng - dort stehen vier Kacheln je
+ * Reihe. Eng ist allein das schmale Schreibtischfenster, und zwar aus
+ * einem Grund: 700 Punkte reichen nicht fuer drei 240er-Spalten, also
+ * werden es zwei, und aus zehn Kacheln werden fuenf Reihen.
+ *
+ * Drei schmale sind hier besser als zwei breite. Die Namen werden dabei
+ * eine Stufe kleiner und die Ueberzeile faellt weg - genau wie im kurzen
+ * Querformat, und aus demselben Grund: bei 200 Punkten Kachelbreite und
+ * dem GROSSEN Namen laeuft er ins Wasserzeichen, und `lesbarkeit` hat das
+ * schon einmal zerlegt (fuenf Namen von 4,7 auf 2,33:1).
+ *
+ * `min-height:441px` haelt es aus dem kurzen Querformat heraus - dort
+ * gilt der eigene, kleinere Satz, und zwei Regeln, die sich um dieselbe
+ * Zahl streiten, veralten getrennt. */
+@media (min-height:441px) and (max-width:780px){
+  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+  .kachel .ueber{display:none}
+  .kachel .name{font-size:var(--s1)}
+}
 /* Die Ebenenwahl ist die einzige Kachelwand, die WAECHST.
  *
  * Profile sind vier, Welten sind drei - die Ebenen waren neun und sind
