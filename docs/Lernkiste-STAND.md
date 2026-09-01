@@ -7536,3 +7536,65 @@ mehr mitpflegen. Sie wächst mit.
 
 `npm run tor` grün in 131,2 s. 218 Gegenproben — und damit steht zum ersten Mal
 keine mehr als „beweist nichts" im Bericht.
+
+## Q7 — die Kachelbilder, nachgemessen
+
+Offen war: „ihre Kachelbilder sind zwischen Name und Knopf eingeklemmt — messbar
+als Bildbreite je Kachel, noch nicht gemessen." Jetzt gemessen, auf dem
+Zielgerät (844 × 390), Anteil der **Farbe**, nicht des Kastens:
+
+| Kachel | gezeichnet | Anteil der Kachel | **unter dem Namen** |
+|---|---|---|---|
+| **Nordamerika** | 63 × 42 pt | 32 % | **78 %** |
+| **Mittelamerika** | 62 × 44 pt | 31 % | **66 %** |
+| Bundesländer | 33 × 45 pt | 17 % | 59 % |
+| Kontinente | 81 × 43 pt | 41 % | 45 % |
+| Hauptstädte | 33 × 45 pt | 17 % | 34 % |
+| Südamerika | 25 × 41 pt | 13 % | 10 % |
+| Asien | 55 × 42 pt | 28 % | 0 % |
+| Europa | 56 × 38 pt | 28 % | 0 % |
+| Afrika | 33 × 42 pt | 17 % | 0 % |
+
+Die Vermutung stimmt — **aber nicht so, wie ich sie aufgeschrieben hatte.**
+Nordamerika und Mittelamerika sind nicht die *kleinsten* Bilder, sie sind mit
+31 und 32 % sogar die zweit- und drittgrößten. Eingeklemmt ist nicht ihre
+Breite, sondern ihre **Sicht**: bei Nordamerika liegen 78 % der Farbe unter den
+Buchstaben des eigenen Namens.
+
+Und die erste Zahl hätte das nicht gezeigt. Die Bildbreite, nach der ich gefragt
+hatte, ist bei genau diesen beiden am größten. Die Frage war falsch gestellt;
+gemessen werden musste, was **verdeckt** ist, nicht was breit ist.
+
+Gemessen wird an den **Zeilenkästen der Schrift** (`Range.getClientRects`),
+nicht am Kasten des Elements — der `.name`-Kasten läuft über die ganze Kachel,
+die Buchstaben tun das nicht. Genau dieser Unterschied hat in Q4 den ersten
+Anlauf („70 bis 100 % verdeckt") wertlos gemacht.
+
+### Warum das nicht durch Verschieben zu beheben ist
+
+Die Kachel ist auf dem Zielgerät **197 × 55 Punkte**. Rechts sitzen 44 Punkte
+Vorschau-Knopf, links steht „Mittelamerika". Soll das Bild den Namen ganz
+freilassen, bleiben ihm rund **15 Punkte Breite** — weniger als ein Daumennagel.
+Für einen langen Namen *und* ein Bild ist auf dieser Kachel kein Platz; das ist
+Geometrie, keine Einstellung.
+
+Was es ändern würde, ist eine Entscheidung über das Aussehen und keine
+Reparatur — deshalb steht es hier und ist nicht gebaut:
+
+- **Das Bild links vor den Namen**, als Zeichen statt als Wasserzeichen. Es wäre
+  mit rund 44 Punkten kleiner als heute, aber **ganz** sichtbar. Für ein Kind,
+  das nicht liest, ist das vermutlich der bessere Tausch.
+- **Höhere Kacheln** auf der Erdkundewahl. Kostet eine Reihe (die Wand trägt
+  seit Q5 zwölf bis sechzehn, hat also Luft).
+- **So lassen.** Lea und ihr lest den Namen; Fiona erkennt Afrika, Asien, Europa
+  und Südamerika am Bild — die liegen bei 0 bis 10 %.
+
+### Was jetzt bewacht ist
+
+`tor/masse-stand.json` hält seit dieser Runde **266 Einträge** statt 70: je
+Bildschirm und Kachel die gezeichnete Breite (darf nicht kleiner werden) und der
+Anteil unter dem Namen (darf nicht größer werden). Eine feste Grenze wäre hier
+falsch — die Zahlen sind, wie sie sind, weil die Kachel so groß ist, wie sie ist.
+Verlangen kann man, dass es nicht schlimmer wird.
+
+`npm run tor` grün in 136,9 s. 219 Gegenproben.

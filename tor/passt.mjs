@@ -309,6 +309,16 @@ const SUCHE = () => {
       x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); }
     const N = 44;
     let farbe = 0, draussen = 0, verdeckt = 0; const wer = {};
+    let gx0 = Infinity, gy0 = Infinity, gx1 = -Infinity, gy1 = -Infinity;
+    let unterName = 0;
+    const namenskaesten = [];
+    for (const el of kachel.querySelectorAll('.name, .ueber')) {
+      for (const kind of el.childNodes) {
+        if (kind.nodeType !== 3) continue;
+        const r = document.createRange(); r.selectNodeContents(kind);
+        namenskaesten.push(...[...r.getClientRects()]);
+      }
+    }
     for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
       const ux = x0 + (x1 - x0) * (i + .5) / N, uy = y0 + (y1 - y0) * (j + .5) / N;
       const drin = gezogen
@@ -317,6 +327,10 @@ const SUCHE = () => {
       if (!drin) continue;
       farbe++;
       const pt = new DOMPoint(ux, uy).matrixTransform(ctm);
+      // Die GEZEICHNETE Ausdehnung der Farbe, in Bildschirmpunkten. Nicht
+      // der Kasten: der ist bei einem Umriss zum grossen Teil Meer.
+      if (pt.x < gx0) gx0 = pt.x; if (pt.x > gx1) gx1 = pt.x;
+      if (pt.y < gy0) gy0 = pt.y; if (pt.y > gy1) gy1 = pt.y;
       const stapel = document.elementsFromPoint(pt.x, pt.y);
       // Das Wasserzeichen nimmt keine Tipps an, steht also nie im Stapel.
       // Ist die Kachel nicht darin, liegt der Punkt ausserhalb - von der
@@ -335,6 +349,13 @@ const SUCHE = () => {
        * Zeichen ist - der Vorschau-Knopf mit seinem Ring, der Balken, ein
        * Aufkleber. Die SCHRIFT bleibt draussen: ob ein Name auf dem Bild
        * noch zu lesen ist, misst `lesbarkeit`, und zwar am Kontrast. */
+      // UNTER DEM NAMEN? Gemessen an den Zeilenkaesten der Schrift
+      // (`Range.getClientRects`), nicht am Kasten des Elements: der
+      // `.name`-Kasten laeuft ueber die ganze Kachel, die Buchstaben tun
+      // das nicht. Genau dieser Unterschied hat den ersten Anlauf
+      // („70 bis 100 % verdeckt") wertlos gemacht.
+      if (namenskaesten.some(r => pt.x >= r.left && pt.x <= r.right
+          && pt.y >= r.top && pt.y <= r.bottom)) unterName++;
       const bis = stapel.indexOf(kachel);
       const malt = (e) => {
         if (e === svg || svg.contains(e)) return false;
@@ -361,6 +382,11 @@ const SUCHE = () => {
     zeichen.push({ was: (kachel.querySelector('.name, .titel, b, strong')
         || kachel).textContent.trim().slice(0, 18).replace(/\s+/g, ' '),
       ab: Math.round(draussen / farbe * 100), zu: Math.round(verdeckt / farbe * 100),
+      breit: Math.round(gx1 - gx0), hoch: Math.round(gy1 - gy0),
+      unterm: Math.round(unterName / farbe * 100),
+      // Wieviel von der Kachel nimmt das Bild wirklich ein? Die Breite
+      // allein sagt nichts, solange die Kachel selbst schmaler wird.
+      anteil: Math.round((gx1 - gx0) / kachel.getBoundingClientRect().width * 100),
       // Wer deckt zu? Ohne das ist ein Prozentsatz kein Befund, sondern
       // ein Raetsel - und der erste Anlauf war genau deshalb wertlos.
       wer: Object.entries(wer).sort((a, b) => b[1] - a[1]).slice(0, 2)
@@ -606,6 +632,32 @@ for (const g of MEINE) {
         meldungen.push(`${name}: HINWEIS diese Wand steht noch nicht in ${WAND_DATEI} `
           + `(${r.wand.passt} Kacheln) — `+ '`npm run passt -- --neu` trägt sie nach');
     }
+    /* Und die Kachelbilder in dieselbe Ratsche - zwei Zahlen je Bild:
+     * wie GROSS es gezeichnet wird (darf nicht kleiner werden) und wieviel
+     * davon UNTER DEM NAMEN liegt (darf nicht mehr werden).
+     *
+     * Die zweite ist die eigentliche Auskunft dieser Runde. Gemessen auf
+     * dem Zielgeraet: Nordamerika 78 %, Mittelamerika 66 %,
+     * Bundeslaender 59 %, Kontinente 45 % - die laengsten Namen liegen
+     * auf ihrem eigenen Bild. Eine feste Grenze waere hier falsch: die
+     * Kachel ist 197 x 55 Punkte gross, und fuer einen langen Namen UND
+     * ein Bild ist darin kein Platz. Was man verlangen kann, ist, dass es
+     * nicht schlimmer wird. */
+    for (const z of (r.zeichen || [])) {
+      for (const [was, ist, richtung] of [
+        [`${z.was} · Bild pt`, z.breit, 'grosser'],
+        [`${z.was} · Bild unterm Namen %`, z.unterm, 'kleiner'],
+      ]) {
+        const k = `${g.n} · ${name} · ${was}`;
+        const war = MASS_STAND[k];
+        if (NEU) { wandNeu[k] = ist; continue; }
+        if (war === undefined) continue;   // neu — der HINWEIS unten sagt es
+        const schlechter = richtung === 'grosser' ? ist < war : ist > war;
+        if (schlechter)
+          meldungen.push(`${name}: „${z.was}" — ${was.split(' · ')[1]} steht auf ${ist} `
+            + `statt ${war}. War das Absicht, dann \`npm run passt -- --neu\``);
+      }
+    }
     if (r.kleber) {
       const k = `${g.n} · ${name} · Aufkleber pt`;
       const war = MASS_STAND[k];
@@ -637,7 +689,10 @@ for (const g of MEINE) {
      * nicht umgekehrt. */
     for (const z of (r.zeichen || [])) {
       zeichenZeilen.push(`      ${name.padEnd(22)} ${z.was.padEnd(18)} `
+        + `${String(z.breit).padStart(3)}×${String(z.hoch).padEnd(3)} pt `
+        + `(${String(z.anteil).padStart(2)} % der Kachel) · `
         + `abgeschnitten ${String(z.ab).padStart(3)} % · verdeckt ${String(z.zu).padStart(3)} %`
+        + ` · unter dem Namen ${String(z.unterm).padStart(3)} %`
         + (z.wer ? `  (${z.wer})` : ''));
       if (z.ab > ZEICHEN_AB) meldungen.push(`${name}: vom Kachelbild „${z.was}" sind `
         + `${z.ab} % abgeschnitten (erlaubt ${ZEICHEN_AB}) — für ein Kind, das noch nicht `

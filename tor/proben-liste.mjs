@@ -1711,6 +1711,21 @@ export const PROBEN = [
     ersatz:'if(!auf){ aufheben(); }',
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
 
+  /* Das Kachelbild schrumpft (Q7).
+   *
+   * Die Hoehe ist das bindende Mass: die Kachel ist auf dem Zielgeraet
+   * rund 55 Punkte hoch, das Bild nimmt davon 86 %, und die Breite folgt
+   * der Form. Von 86 auf 60 gedreht wird jedes Bild schmaler - und die
+   * Ratsche in `tor/masse-stand.json` merkt es, ohne dass ein Soll
+   * verletzt waere. Genau dafuer ist sie da: ein Rueckschritt, den keine
+   * absolute Grenze sieht. */
+  { n:'die Kachelbilder werden kleiner gezeichnet', tor:'passt', bauen:true,
+    args:['--teil=0/5'], datei:V,
+    such:'  height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}',
+    ersatz:'  height:60%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}',
+    an:{ ...DIST, text:'height:60%;max-width:52%' },
+    sagt:'Bild pt' },
+
   /* Das schmale Fenster bekommt wieder zwei Spalten statt drei (Q5).
    *
    * Nachgezaehlt, indem Kacheln dazugelegt wurden: mit zwei Spalten passen
