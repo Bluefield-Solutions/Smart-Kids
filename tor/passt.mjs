@@ -247,6 +247,36 @@ const SUCHE = () => {
   // das Wasserzeichen, das Tor `lesbarkeit`.
   const ueber = [];
   {
+    /* Was ueberlappt: der KASTEN oder die SCHRIFT? (Q14)
+     *
+     * Bis hierher wurde immer der Kasten verglichen. Bei einer Kachel und
+     * einem Etikett ist das richtig - sie haben einen Grund und eine
+     * Kante, sie belegen ihren Kasten wirklich. Eine Ueberschrift belegt
+     * ihn NICHT: „Wie heisst dieses Bundesland?" steht mittig in einem
+     * Kasten ueber die ganze Breite, und die Antwortspalte rechts liegt
+     * unter dessen Rand, ohne dass sich ein einziger Buchstabe beruehrt.
+     *
+     * Genau so ist die Auslieferung rot geworden: auf dem Runner (ein
+     * zehn Hauptversionen neuerer Chromium) sassen Frage und Etikett
+     * sieben Punkte enger als hier, und das Tor meldete „ueberlappen sich
+     * um 176x7 px". Zu sehen war nichts - es war eine Zahl, die Kaesten
+     * zaehlt statt Farbe.
+     *
+     * Also: was einen Grund oder eine Kante hat, wird als Kasten
+     * gemessen; nackter Text mit seinen ZEILENKAESTEN (`Range`), so wie
+     * es das Tor beim Bild unter dem Namen schon tut. */
+    const malt = (cs) => {
+      const g = cs.backgroundColor || '';
+      const zahlen = g.match(/[\d.]+/g) || [];
+      const deckend = /^rgb\(/.test(g) && (zahlen.length < 4 || +zahlen[3] > 0.05);
+      return deckend || parseFloat(cs.borderTopWidth) > 0.5
+          || parseFloat(cs.borderBottomWidth) > 0.5 || cs.boxShadow !== 'none';
+    };
+    const zeilenKaesten = (el) => {
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      return [...r.getClientRects()].filter(x => x.width > 1 && x.height > 1);
+    };
     const kasten = [];
     for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
       + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
@@ -256,7 +286,8 @@ const SUCHE = () => {
       if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
       const b = el.getBoundingClientRect();
       if (b.width < 2 || b.height < 2) continue;
-      kasten.push({ el, b, text: (el.textContent.trim() || el.className).slice(0, 22)
+      const flaechen = malt(cs) ? [b] : (zeilenKaesten(el).length ? zeilenKaesten(el) : [b]);
+      kasten.push({ el, b, flaechen, text: (el.textContent.trim() || el.className).slice(0, 22)
         .replace(/\s+/g, ' ') });
     }
     // Nur die INNERSTEN Kaesten. Sonst meldet ein Ueberlappen vierfach:
@@ -269,8 +300,12 @@ const SUCHE = () => {
     for (let i = 0; i < kasten.length; i++) for (let j = i + 1; j < kasten.length; j++) {
       const x = kasten[i], y = kasten[j];
       if (x.el.contains(y.el) || y.el.contains(x.el)) continue;
-      const breit = Math.min(x.b.right, y.b.right) - Math.max(x.b.left, y.b.left);
-      const hoch  = Math.min(x.b.bottom, y.b.bottom) - Math.max(x.b.top, y.b.top);
+      let breit = 0, hoch = 0;
+      for (const a of x.flaechen) for (const c of y.flaechen) {
+        const w = Math.min(a.right, c.right) - Math.max(a.left, c.left);
+        const h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
+        if (w > 1 && h > 1 && w * h > breit * hoch) { breit = w; hoch = h; }
+      }
       if (breit > 1 && hoch > 1)
         ueber.push(`„${x.text}" und „${y.text}" ueberlappen sich um `
           + `${breit.toFixed(0)}×${hoch.toFixed(0)} px`);
@@ -558,6 +593,27 @@ const zeichenZeilen = [], luftZeilen = [], kleberZeilen = [];
  * nicht unter 44. Ein Absturz um fuenfzehn Punkte, der auf dem letzten
  * erlaubten Wert landet, ist unsichtbar. Regel 2, wieder einmal: eine
  * absolute Grenze sieht keinen Rueckschritt. */
+/* Die Ratsche braucht ein BAND, keinen Faden (Q14).
+ *
+ * Die Zahlen in `masse-stand.json` kommen aus einem BROWSER, und der ist
+ * hier ein anderer als auf dem Runner - Chromium 141 gegen 151. Gemessen
+ * an denselben Bildschirmen wich der Anteil des Kachelbildes unter dem
+ * Namen um bis zu fuenf Prozentpunkte ab (8 gegen 13), die Beispielkarten
+ * im Vorlauf um fuenf Prozent (61 gegen 58 pt). Als exakter Vergleich war
+ * die Ratsche damit auf dem Runner dauerhaft rot - achtzehn Auslieferungen
+ * lang, ohne dass sich irgendetwas verschlechtert haette.
+ *
+ * Eine Ratsche soll den EINBRUCH fangen (das Bild verschwindet unter dem
+ * Namen, das Gitter rutscht zusammen), nicht das Rauschen zweier
+ * Textmaschinen. Also anteilig statt absolut (Regel 2), mit einem Boden,
+ * damit kleine Zahlen nicht auf null Spiel kommen. Was das Band NICHT
+ * mehr faengt: eine Verschlechterung um weniger als sechs Prozentpunkte.
+ * Was es weiterhin faengt: 45 auf 78 %, und darum ging es. */
+const BAND_PUNKTE = 6;      // Prozentpunkte
+const BAND_ANTEIL = 0.08;   // und mindestens acht Prozent vom Stand
+const spielVon = (war, prozent) =>
+  Math.max(prozent ? BAND_PUNKTE : 2, Math.abs(war) * BAND_ANTEIL);
+
 const WAND_DATEI = 'tor/masse-stand.json';
 const NEU = process.argv.includes('--neu');
 const MASS_STAND = fs.existsSync(WAND_DATEI)
@@ -716,19 +772,22 @@ for (const g of MEINE) {
         const war = MASS_STAND[k];
         if (NEU) { wandNeu[k] = ist; continue; }
         if (war === undefined) continue;   // neu — der HINWEIS unten sagt es
-        const schlechter = richtung === 'grosser' ? ist < war : ist > war;
+        const spiel = spielVon(war, was.endsWith('%'));
+        const schlechter = richtung === 'grosser' ? ist < war - spiel : ist > war + spiel;
         if (schlechter)
           meldungen.push(`${name}: „${z.was}" — ${was.split(' · ')[1]} steht auf ${ist} `
-            + `statt ${war}. War das Absicht, dann \`npm run passt -- --neu\``);
+            + `statt ${war} (Spiel ±${spiel.toFixed(1)}). War das Absicht, dann `
+            + '`npm run passt -- --neu`');
       }
     }
     if (r.kleber) {
       const k = `${g.n} · ${name} · Aufkleber pt`;
       const war = MASS_STAND[k];
       if (NEU) wandNeu[k] = r.kleber.pt;
-      else if (war !== undefined && r.kleber.pt < war)
+      else if (war !== undefined && r.kleber.pt < war - spielVon(war, false))
         meldungen.push(`${name}: die ${r.kleber.n} Beispielkarten sind auf `
-          + `${r.kleber.pt} pt geschrumpft (waren ${war}) — das Gitter ist `
+          + `${r.kleber.pt} pt geschrumpft (waren ${war}, Spiel `
+          + `${spielVon(war, false).toFixed(1)}) — das Gitter ist `
           + 'zusammengerutscht. War das Absicht, dann `npm run passt -- --neu`');
       else if (war === undefined)
         meldungen.push(`${name}: HINWEIS diese Beispielkarten stehen noch nicht in `

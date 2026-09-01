@@ -512,7 +512,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Der Umriss sitzt rechts und wird nach links ausgeblendet; ohne diese
    Maske lief er im Entwurf mitten durch das Wort „Bundeslaender". */
 .kachel.bunt,.kachel.welt,.kachel.wer{
-  background:color-mix(in oklab, var(--ton) 26%, var(--papier));
+  /* Der Grund steht als MARKE da, nicht nur als Wert: die kleine Zeile
+     auf der Profilkachel braucht ihn noch einmal (siehe `.rolle`), und
+     zweimal derselbe `color-mix` waeren zwei, die getrennt veralten. */
+  --kachelgrund:color-mix(in oklab, var(--ton) 26%, var(--papier));
+  background:var(--kachelgrund);
   border:var(--strich) solid color-mix(in oklab, var(--ton) 52%, var(--papier))}
 /* Das Wasserzeichen liegt GANZ in der Kachel. Bei 150 % Hoehe lief es
    oben und unten heraus: Afrika war ein Fleck, Deutschland ein Schmier -
@@ -686,8 +690,22 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    geschaetzt. Repariert wird die Ursache, nicht das Symptom: nicht der
    Streu wird blasser (die Leuchtfarben waren ausdruecklich gewuenscht),
    sondern der Text auf dem unruhigen Grund dunkler. `:has()` fragt die
-   Kachel selbst - das Programm muss nichts mitschicken. */
-.kachel:has(.streu) .rolle{color:var(--tinte)}
+   Kachel selbst - das Programm muss nichts mitschicken.
+
+   Das reichte nicht (Q14). Dunkler hilft nur, solange unter dem Text
+   etwas HELLES liegt; liegt dort der blaue Fisch, sind es 4,32:1 statt
+   4,5 - und WELCHES Motiv gerade darunter liegt, entscheidet der
+   Zeilenumbruch. Auf dem Runner brach die Zeile eine Stelle anders um
+   als hier, und die Auslieferung war rot, waehrend hier alles gruen war.
+
+   Eine Zahl, die vom Zeilenumbruch abhaengt, ist keine Zusage. Die Zeile
+   bekommt deshalb ihren eigenen Grund - genau den der Kachel. Sichtbar
+   ist das kaum (dieselbe Farbe), aber der Streu liegt jetzt HINTER dem
+   Text und nicht mehr unter ihm, und der Kontrast ist wieder eine feste
+   Zahl statt eines Wuerfels. */
+.kachel:has(.streu) .rolle{color:var(--tinte);
+  background:var(--kachelgrund);border-radius:var(--r2);
+  padding:var(--r0) var(--r2)}
 /* Statt "0 von 4": drei Sterne und die Zahl der Aufkleber.
    Fiona liest keine Zahlen - aber sie sieht, ob ein Stern voll ist. */
 .kachel .kachelfuss{display:flex;flex-direction:column;align-items:stretch;

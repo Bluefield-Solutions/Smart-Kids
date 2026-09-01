@@ -489,6 +489,19 @@ export const PROBEN = [
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },
 
+  /* Die kleine Zeile auf der Profilkachel steht wieder auf dem Streu (Q14).
+   *
+   * Sie hat seit Q14 ihren eigenen Grund - denselben wie die Kachel -,
+   * damit der Kontrast nicht davon abhaengt, welches Motiv gerade unter
+   * ihr liegt. Ohne den lag auf dem Runner der blaue Fisch darunter:
+   * 4,32:1 statt 4,5, und die Auslieferung war rot, waehrend hier alles
+   * gruen war. Der Eingriff nimmt den Grund wieder weg. */
+  { n:'die Profilzeile steht wieder auf dem Streu', tor:'lesbarkeit', bauen:true, datei:V,
+    such:'.kachel:has(.streu) .rolle{color:var(--tinte);\n  background:var(--kachelgrund);',
+    ersatz:'.kachel:has(.streu) .rolle{color:var(--tinte);\n  background:none;',
+    an:{ ...DIST, text:'.kachel:has(.streu) .rolle{color:var(--tinte);\n  background:none;' },
+    sagt:':1' },
+
   /* --- Der Fassungsstempel (Q13) --------------------------------------- *
    *
    * Er steht seit Q13 auf JEDEM Bildschirm und beantwortet die einzige

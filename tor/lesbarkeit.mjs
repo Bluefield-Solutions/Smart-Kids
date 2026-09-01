@@ -111,6 +111,21 @@ const MESSEN = () => {
    */
   const grundVon = (el) => {
     const flaechen = flaecheVon(el);
+    /* Ein eigener, DECKENDER Grund beendet die Suche (Q14).
+     *
+     * Das Modell darunter sucht, was HINTER dem Text liegt - ein
+     * Wasserzeichen, ein Streumotiv. Hat der Text aber selbst einen
+     * deckenden Grund, liegt nichts mehr dahinter: er deckt es zu. Ohne
+     * diese Zeile meldete das Tor die kleine Zeile auf Fionas Kachel
+     * weiter gegen den blauen Fisch, obwohl zwischen Fisch und Schrift
+     * inzwischen die Kachelfarbe liegt - eine Farbe, die gar nicht mehr
+     * zu sehen ist.
+     *
+     * Der Streu liegt vor dem Text im Markup und ist absolut gesetzt; der
+     * Text ist `position:relative` und malt darueber. Die Reihenfolge ist
+     * also nicht geraten, sie steht in der Kachel. */
+    const eigen = zuRgb(getComputedStyle(el).backgroundColor);
+    if (eigen && eigen[3] > 0.9) return [eigen];
     const kasten = el.getBoundingClientRect();
     const dazu = [];
     // Nur bis zum naechsten Kasten hochlaufen, der selbst eine Flaeche
