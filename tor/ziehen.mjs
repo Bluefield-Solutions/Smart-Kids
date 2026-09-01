@@ -763,8 +763,16 @@ if (laeuft('lupe')) {
   if (!(nachher.ganz && nachher.ganz.sichtbar)) fehler.push(
     'nach dem Vergrößern fehlt der Knopf „ganze Karte" — dann kommt ein Kind nicht zurück');
 
-  await q.click('#lupeGanz'); await q.waitForTimeout(220);
-  const zurueck = await lies();
+  /* Der Rueckweg wird nur GEGANGEN, wenn es ihn gibt.
+   *
+   * Stand hier als nacktes `click('#lupeGanz')` - und als eine Gegenprobe
+   * die Lupe abschaltete, war der Knopf mit Recht unsichtbar, Playwright
+   * wartete dreissig Sekunden und das Tor STARB mit einer
+   * Zeitueberschreitung, statt seinen eigenen Befund zu melden. Ein Tor,
+   * das an der falschen Stelle abbricht, sagt nicht mehr, was es weiss. */
+  const zurueck = (nachher.ganz && nachher.ganz.sichtbar)
+    ? (await q.click('#lupeGanz'), await q.waitForTimeout(220), await lies())
+    : nachher;
   if (zurueck.lupe !== 1) fehler.push(
     `„ganze Karte" stellt Maßstab ${zurueck.lupe} her statt 1`);
   if (Math.abs(zurueck.gross - vorher.gross) > 1) fehler.push(

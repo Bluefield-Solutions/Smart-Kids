@@ -474,6 +474,16 @@
       "zeit": "2026-09-01",
       "s": 17
     },
+    "die Lupe zielt auf die Mitte statt auf das Gesuchte": {
+      "commit": "042b4f22380cba74fd1247e31f5954397712d017",
+      "zeit": "2026-09-01",
+      "s": 9
+    },
+    "„ganze Karte\" steht schon vor dem Zoomen da": {
+      "commit": "042b4f22380cba74fd1247e31f5954397712d017",
+      "zeit": "2026-09-01",
+      "s": 9
+    },
     "es gibt gar keine Nadeln mehr": {
       "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
