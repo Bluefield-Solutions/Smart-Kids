@@ -261,6 +261,13 @@ for (const [name, satz] of SAETZE) {
      [p('M32 12 L32 58 L78 58 L62 58 L62 90')]],
     ['die Sechs, 10 % später angesetzt', '6', [sechs.slice(6)]],
     ['die Sechs, 17 % später angesetzt', '6', [sechs.slice(10)]],
+    /* Zwei geschlossene Formen, bei denen ein spaeter Anfang besonders
+     * naheliegt - man setzt irgendwo auf dem Ring an. Sie haengen ALLEIN
+     * am erlaubten Versatz: eine eigene Vorlage gibt es fuer sie nicht.
+     * Gemessen mit Versatz 0 fallen beide durch (8,0 und 9,8 gegen eine
+     * Grenze von 8), mit einem Zehntel gehen beide durch (6,5 und 7,7). */
+    ['die Acht, 17 % später angesetzt', '8', [S.abtasten(S.zuegeVon('8')[0], 60).slice(10)], 'rand'],
+    ['die Null, 23 % später angesetzt', '0', [S.abtasten(S.zuegeVon('0')[0], 60).slice(14)], 'rand'],
   ];
   /* Sauber UND krumm.
    *
@@ -274,15 +281,27 @@ for (const [name, satz] of SAETZE) {
    * zwanzigmal verkrummt, mit demselben Wuerfel wie oben, und dann zaehlt
    * der Anteil. Wer die Vorlage entfernt, verliert diesen Anteil sofort -
    * die knappe saubere Form traegt zwanzig krumme nicht mit. */
+  /* Zwei Sorten Fall, und sie werden verschieden geprueft.
+   *
+   * Die sechs GEMELDETEN Formen sind gewoehnliches Schreiben - sie muessen
+   * auch krumm halten. Die zwei mit `rand` sind Grenzsonden: 17 und 23
+   * Prozent des Zuges fehlen, sie liegen mit 6,5 und 7,7 knapp unter der
+   * Grenze von 8, und sie stehen hier, um den erlaubten VERSATZ zu
+   * beweisen (ohne ihn: 8,0 und 9,8, beide abgelehnt). Wer sie zusaetzlich
+   * verkrummt, misst nicht mehr den Versatz, sondern was daneben noch
+   * alles passiert - und wuerde die Schwelle so lange senken, bis es
+   * passt. Sie werden deshalb nur sauber geprueft, und dass das so ist,
+   * steht hier. */
   const zeilen = [];
   let krumm = 0, krummN = 0;
-  for (const [name, soll, zuege] of FAELLE) {
+  for (const [name, soll, zuege, art] of FAELLE) {
     const e = S.erkennen(zuege, S.ZIFFERN);
     pruefe(e.sicher && e.zeichen === soll,
       `${name} wird nicht als ${soll} erkannt — erkannt: ${e.zeichen}, `
       + `Abstand ${e.abstand.toFixed(1)} von ${S.ABSTAND_MAX}, `
       + `Vorsprung ${e.vorsprung.toFixed(1)} von ${S.VORSPRUNG_MIN}`);
-    zeilen.push(`${soll} ${e.abstand.toFixed(1)}`);
+    zeilen.push(`${soll} ${e.abstand.toFixed(1)}${art === 'rand' ? '~' : ''}`);
+    if (art === 'rand') continue;
     for (let k = 0; k < 20; k++) {
       krummN++;
       const v = S.erkennen(verkrummen(zuege, wuerfel(k * 31337 + name.length)), S.ZIFFERN);
@@ -294,7 +313,7 @@ for (const [name, satz] of SAETZE) {
     + `${anteilFaelle.toFixed(1)} % — unter 80 % ist die passende Vorlage entweder weg `
     + 'oder sie trägt nicht');
   console.log(`    Formen vom Zielgerät: ${FAELLE.length} von ${FAELLE.length} sauber erkannt `
-    + `(${zeilen.join(' · ')}), krumm ${anteilFaelle.toFixed(1)} % von ${krummN}`);
+    + `(${zeilen.join(' · ')}; ~ = Grenzsonde), krumm ${anteilFaelle.toFixed(1)} % von ${krummN}`);
 }
 
 /* ---- Nachfahren ------------------------------------------------------ */

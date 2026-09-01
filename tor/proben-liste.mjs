@@ -1933,7 +1933,10 @@ export const PROBEN = [
     suchRegex:/, 'M36 54 L64 54'/g,
     ersatzFn:() => '',
     an:{ datei:S, fehlt:"'M36 54 L64 54'" },
-    sagt:'Querstrich' },
+    /* Das Tor meldet nicht „Querstrich", sondern den ANTEIL, den die
+       Formen krumm geschrieben noch halten - und genau der bricht ein,
+       wenn eine Vorlage fehlt. */
+    sagt:'krumm geschrieben nur' },
 
   { n:'der Anfang eines Zuges darf nicht mehr rutschen', tor:'schreiben', datei:S,
     such:'export const VERSATZ_ANTEIL = 1/10;',
