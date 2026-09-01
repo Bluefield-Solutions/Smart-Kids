@@ -443,6 +443,14 @@ const KARTE_MIN = 0.92;
 const ZEICHEN_AB = 6, ZEICHEN_ZU = 6;
 const zeichenZeilen = [], luftZeilen = [];
 
+/* Der Stand der Kachelwände: was einmal hineinpasste, muss hineinpassen.
+ * Eine Ratsche wie `tor/budget-stand.json`, kein Soll. */
+const WAND_DATEI = 'tor/wand-stand.json';
+const NEU = process.argv.includes('--neu');
+const WAND_STAND = fs.existsSync(WAND_DATEI)
+  ? JSON.parse(fs.readFileSync(WAND_DATEI, 'utf8')) : {};
+const wandNeu = {};
+
 const { server, adresse: ADRESSE } = await serviere(DIST);
 
 console.log('\n  Tor `passt`');
@@ -546,7 +554,31 @@ for (const g of MEINE) {
         + `${(r.karte.anteil * 100).toFixed(0)} % ihres Kastens `
         + `(Kasten ${r.karte.kasten.join('×')}, gezeichnet ${r.karte.gez.join('×')}) — `
         + `daneben steht ein Loch, das niemand nutzt`);
-    /* Ein HINWEIS, kein Fehler: dass es heute passt, hat das Tor oben
+    /* Die RATSCHE: eine Wand darf keinen Platz verlieren.
+     *
+     * Ohne sie war die Kapazitaet nur eine Zahl im Lauf. Die Gegenprobe
+     * „das schmale Fenster bekommt wieder zwei Spalten" hat das sofort
+     * gezeigt: der Eingriff kam an, die Kapazitaet fiel von 15 auf 10 -
+     * und `passt` blieb gruen, weil zehn Kacheln nun einmal noch
+     * hineinpassen. Ein Tor, das einen Rueckschritt sieht und schweigt,
+     * beweist an dieser Stelle nichts.
+     *
+     * Es ist kein Soll, sondern ein Stand: was einmal gepasst hat, muss
+     * weiter passen. Wer absichtlich enger baut, bestaetigt mit
+     * `npm run passt -- --neu`. */
+    if (r.wand) {
+      const k = `${g.n} · ${name}`;
+      const war = WAND_STAND[k];
+      if (NEU) wandNeu[k] = r.wand.passt;
+      else if (war !== undefined && r.wand.passt < war)
+        meldungen.push(`${name}: die Wand trägt nur noch ${r.wand.passt} Kacheln statt `
+          + `${war} — sie hat Platz verloren. War das Absicht, dann `
+          + '`npm run passt -- --neu`');
+      else if (war === undefined)
+        meldungen.push(`${name}: HINWEIS diese Wand steht noch nicht in ${WAND_DATEI} `
+          + `(${r.wand.passt} Kacheln) — `+ '`npm run passt -- --neu` trägt sie nach');
+    }
+    /* Und ein HINWEIS, kein Fehler: dass es heute passt, hat das Tor oben
      * schon geprueft. Hier steht, wieviel noch dazukann - und zwar bevor
      * jemand die naechste Ebene baut und sich wundert. Rot waere falsch:
      * die Wand ist in Ordnung, sie ist nur voll. Zwei, weil eine einzelne
@@ -767,6 +799,16 @@ console.log(`    ${MEINE.length} Größen × ${gesehen / MEINE.length} Bildschir
   + `Karten füllen mindestens ${(KARTE_MIN*100).toFixed(0)} % ihres Kastens`
   + (zuKlein ? `, ${zuKlein} Trefferflächen unter ${MIN_PT} pt (Hinweis)` : ''));
 
+if (NEU) {
+  /* Nur der EIGENE Teillauf wird geschrieben, der Rest bleibt stehen -
+   * sonst loescht ein `--teil=0/5 --neu` die vier anderen Fuenftel. */
+  const alles = { ...WAND_STAND, ...wandNeu };
+  fs.writeFileSync(WAND_DATEI, JSON.stringify(Object.fromEntries(
+    Object.entries(alles).sort(([a], [b]) => a.localeCompare(b))), null, 2) + '\n');
+  console.log(`\n  ${Object.keys(wandNeu).length} Wände in ${WAND_DATEI} festgehalten `
+    + `(${Object.keys(alles).length} insgesamt).\n`);
+  process.exit(0);
+}
 if (fehler.length) {
   console.log(`\n  ${fehler.length} FEHLER: Elemente laufen über den Rand.`);
   console.log('  `overflow:auto` zählt nicht als Lösung — ein Kind scrollt nicht in einer');

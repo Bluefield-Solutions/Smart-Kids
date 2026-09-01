@@ -1727,7 +1727,14 @@ export const PROBEN = [
     // nicht. Was danach dasteht, ist eine Regel, die nichts tut - und
     // genau das muss der Nachweis suchen.
     an:{ ...DIST, text:'@media (min-height:441px) and (max-width:780px){\n}' },
-    sagt:'die Wand ist voll' },
+    // Gemeldet wird der RUECKSCHRITT, nicht der Ueberlauf: mit zwei
+    // Spalten laufen die zehn Kacheln, die heute dastehen, noch nicht aus
+    // dem Bild - die Wand traegt nur eben keine fuenfzehn mehr. Erst die
+    // Ratsche in `tor/wand-stand.json` macht daraus einen Befund, und
+    // genau darauf zeigt diese Probe. Der erste Anlauf erwartete „die
+    // Wand ist voll" und meldete „beweist nichts": der Hinweis kam, rot
+    // wurde nichts.
+    sagt:'Platz verloren' },
 
   /* Das Kachelbild liegt wieder unter dem Vorschau-Knopf (Q4).
    *
