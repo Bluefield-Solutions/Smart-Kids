@@ -654,10 +654,10 @@
       "zeit": "2026-09-01",
       "s": 28
     },
-    "die Kachelbilder werden kleiner gezeichnet": {
-      "commit": "a7a784997a031e52a2551e7aed8bf1a8bded52e7",
+    "das Bild auf der Weltenwahl wird kleiner gezeichnet": {
+      "commit": "e1c8c36f072c69c5c8f89122d7b690fc1a88b303",
       "zeit": "2026-09-01",
-      "s": 67
+      "s": 85
     },
     "die letzte Kachelreihe klebt wieder links": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",

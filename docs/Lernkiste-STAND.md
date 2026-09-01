@@ -7735,3 +7735,47 @@ niemand gesprochen hatte.
   weil „Mittelamerika" sonst umbricht.
 
 `npm run tor` grün in 177,2 s.
+
+## Q10 — der volle Probenlauf: 218 von 219, und eine, die ins Leere zielte
+
+Der erste vollständige Lauf seit Q4 — dazwischen liegen fünf Runden, vier davon
+an Layout und Kachelform, also genau die Sorte Arbeit, bei der Gegenproben still
+ihren Gegenstand verlieren. 26 Minuten, verteilt auf:
+
+| Tor | Zeit |
+|---|---|
+| ansicht | 1891 s |
+| passt | 1231 s |
+| ziehen | 735 s |
+| inhalt | 397 s |
+| der Rest zusammen | rund 600 s |
+
+**218 schlagen an, eine beweist nichts, keine kam nicht an.**
+
+### Die eine
+
+„die Kachelbilder werden kleiner gezeichnet" drehte in der **Grundregel**
+`.kachel .silhouette{height:86%}` auf 60 % und erwartete, dass die Bilder
+schrumpfen. Der Eingriff kam an — und änderte nichts Gemessenes:
+
+- Seit Q8 setzt die **Ebenenwahl** ihre eigene Bildhöhe (`calc(100% - 62px)`).
+- Die **Weltenwahl** hatte schon immer ihre eigene (80 %).
+
+Die Grundregel galt damit nur noch für Wände **ohne gemessenes Bild**. Die Probe
+war seit Q8 stumm, und keine einzelne Runde konnte das sehen: die Torkette blieb
+grün, weil eine Gegenprobe, die nichts auslöst, keinen Alarm auslöst. Nur der
+volle Lauf sieht es.
+
+Sie zielt jetzt auf die **Weltenwahl** — die einzige Wand mit gemessenem Bild,
+die die Probe „die Kachel verliert ihre Höhe" nicht schon abdeckt. 80 % auf 50 %,
+und die Ratsche meldet es.
+
+### Was der Lauf nicht sagt
+
+Er prüft, ob jede Probe **anschlägt** — nicht, ob sie das Richtige prüft. Beides
+ist in dieser Sitzung schon auseinandergefallen: die Buchstabenkarten fuhren die
+falsche Gerätegröße und schlugen trotzdem an, die Profiltabelle wurde von einem
+Werkzeugcheck zugedeckt. Ein grüner Lauf heißt „alle 219 melden etwas", nicht
+„alle 219 melden das Gemeinte".
+
+219 von 219 mit Nachweis, alle frisch.
