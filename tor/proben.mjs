@@ -280,7 +280,18 @@ const wiederherstellen = (gebaut) => {
   execSync('git checkout -- .', { stdio:'ignore', cwd: BAUM });
   uebermalen();
   if (nachRestore) nachRestore();
-  if (gebaut) execFileSync('npm', ['run', bauBefehl(gebaut)], { stdio:'ignore', cwd: BAUM });
+  /* Und wenn der Wiederaufbau scheitert, stirbt nicht der ganze Arbeiter.
+   *
+   * Genau so ist er einmal gestorben: `npm run symbol` braucht `roh/`, das
+   * in der Wegwerf-Kopie nicht liegt - `execFileSync` warf, niemand fing
+   * es, und der Teillauf hinterliess KEIN Ergebnis. Gemeldet wurde
+   * daraufhin „ein Teillauf hat kein Ergebnis hinterlassen", also die
+   * Folge statt der Ursache. */
+  if (gebaut) {
+    try { execFileSync('npm', ['run', bauBefehl(gebaut)], { stdio:'ignore', cwd: BAUM }); }
+    catch (e) { befunde.push(`Wiederaufbau mit \`npm run ${bauBefehl(gebaut)}\` gescheitert — `
+      + 'die Kopie steht schlechter da als vorher'); }
+  }
 };
 
 /**

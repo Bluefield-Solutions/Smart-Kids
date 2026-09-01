@@ -9,6 +9,7 @@
     "backen": "node --max-old-space-size=6144 tools/backen-kontinente.mjs && node --max-old-space-size=6144 tools/backen-deutschland.mjs && node --max-old-space-size=6144 tools/backen-laender.mjs && node --max-old-space-size=4096 tools/backen-antarktika.mjs && node tools/backen-staedte.mjs",
     "schrift": "node tools/holen-schrift.mjs",
     "symbol": "node tools/backen-symbol.mjs && node tools/backen-symbol-png.mjs",
+    "symbol:png": "node tools/backen-symbol-png.mjs",
     "bauen": "node entwuerfe/bauen.mjs && node prototyp/bauen.mjs",
     "prototyp": "node prototyp/bauen.mjs",
     "entwuerfe": "node entwuerfe/bauen.mjs",

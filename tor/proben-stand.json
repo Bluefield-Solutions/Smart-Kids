@@ -640,9 +640,9 @@
       "s": 96
     },
     "ein Symbol im Manifest gibt es nicht": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 11
+      "commit": "3083ac9c39eb38de1d701bc46e497e1b4fe1fc7d",
+      "zeit": "2026-09-01",
+      "s": 13
     },
     "Deutschland fehlt im Lager des Service Workers": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",

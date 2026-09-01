@@ -235,14 +235,21 @@ export const PROBEN = [
    * gelb, also „nicht wie die Mitte". Gefunden hat es das Auge, nicht das
    * Tor.
    *
-   * `bauen:'symbol'` statt `true`: der Eingriff sitzt im Werkzeug, und
-   * was das Tor liest, sind die PNG - die entstehen mit `npm run symbol`,
-   * nicht beim Bauen. */
+   * Der Eingriff sitzt in der SVG, nicht im Werkzeug, und gebaut wird mit
+   * `bauen:'symbol:png'`. Beides hat einen Grund: `npm run symbol` rechnet
+   * die Kueste aus `roh/` neu, und `roh/` liegt nicht in Git - in der
+   * Wegwerf-Kopie, in der die Proben arbeiten, gibt es sie nicht. Der
+   * erste Anlauf ist genau daran gestorben, und zwar STUMM: der
+   * Wiederaufbau warf, der Teillauf hinterliess kein Ergebnis, und
+   * gemeldet wurde „ein Teillauf hat kein Ergebnis hinterlassen".
+   *
+   * `symbol:png` backt nur die PNG aus der vorhandenen SVG. Das ist
+   * genau der Schritt, der zwischen Eingriff und Tor liegt. */
   { n:'der Stern des Symbols läuft in die iOS-Maske', tor:'inhalt', deckt:'symbol',
-    bauen:'symbol', datei:'tools/backen-symbol.mjs',
-    such:'scale(${(KUGEL/12*0.30).toFixed(3)})',
-    ersatz:'scale(${(KUGEL/12*0.62).toFixed(3)})',
-    an:{ datei:'tools/backen-symbol.mjs', text:'KUGEL/12*0.62' },
+    bauen:'symbol:png', datei:'src/symbol/symbol.svg',
+    suchRegex:/(rotate\(14\) scale\()[\d.]+\)/,
+    ersatzFn:m => m[1] + '9.0)',
+    an:{ datei:'src/symbol/symbol.svg', text:'rotate(14) scale(9.0)' },
     sagt:'springt die Farbe' },
 
   /* --- doku --------------------------------------------------------- */
