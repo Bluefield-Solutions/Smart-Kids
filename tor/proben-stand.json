@@ -474,13 +474,18 @@
       "zeit": "2026-09-01",
       "s": 17
     },
+    "die Lupe vergrößert gar nicht mehr": {
+      "commit": "ac2be0f755dd64e9362e8cb5849e0466a0af15e7",
+      "zeit": "2026-09-01",
+      "s": 13
+    },
     "die Lupe zielt auf die Mitte statt auf das Gesuchte": {
-      "commit": "042b4f22380cba74fd1247e31f5954397712d017",
+      "commit": "ac2be0f755dd64e9362e8cb5849e0466a0af15e7",
       "zeit": "2026-09-01",
       "s": 9
     },
     "„ganze Karte\" steht schon vor dem Zoomen da": {
-      "commit": "042b4f22380cba74fd1247e31f5954397712d017",
+      "commit": "ac2be0f755dd64e9362e8cb5849e0466a0af15e7",
       "zeit": "2026-09-01",
       "s": 9
     },
