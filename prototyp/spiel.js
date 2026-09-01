@@ -8,6 +8,26 @@ const D = JSON.parse(document.getElementById('daten').textContent);
 const BAU = JSON.parse(document.getElementById('bau').textContent);
 const buehne = document.getElementById('buehne');
 
+/* Der Fassungsstempel - EINMAL gesetzt, danach auf jedem Bildschirm da.
+ *
+ * Er beantwortet genau eine Frage, und zwar auf dem Geraet: laeuft hier
+ * schon die Fassung, die gerade gebaut wurde? Auf dem iPhone laesst sich
+ * das sonst nicht sagen - eine PWA sieht nach dem Neustart gleich aus, ob
+ * sie nun frisch geladen ist oder aus dem Lager des Service Workers kommt.
+ *
+ * `v277` ist die Zahl der Einchecker und steigt mit jeder Runde: sie
+ * laesst sich mit dem blossen Auge vergleichen. `d04f0df` sagt, welcher
+ * Einchecker genau; ein `+` dahinter heisst, der Baum war beim Bauen
+ * schmutzig.
+ *
+ * Bis hierher stand der Stempel NUR auf der Profilwahl (`.bauzeile`).
+ * Damit war er nach dem ersten Tippen weg, und wer nachsehen wollte,
+ * musste die App neu starten. Zwei Stempel waeren einer zuviel (Regel 6:
+ * was zweimal dasteht, veraltet einmal) - der auf der Profilwahl ist
+ * deshalb gegangen, die ausfuehrliche Auskunft steht im Elternbereich. */
+const stempel = document.getElementById('fassung');
+if (stempel) stempel.textContent = `v${BAU.bau} · ${BAU.stand}`;
+
 const FL = ['--f1','--f2','--f3','--f4','--f5','--f6','--f7'];
 const VIER = ['--f1','--f3','--f5','--f6'];
 const el = (t,k,i)=>{ const e=document.createElement(t); if(k)e.className=k; if(i!==undefined)e.innerHTML=i; return e; };
@@ -1597,7 +1617,6 @@ function profilwahl(){
           <div class="name">${p.name}</div>
           <div class="rolle">${profilzeile(p)}</div>
         </button>`).join('')}</div>
-      <div class="bauzeile">Prototyp · Fassung ${BAU.fassung} · ${BAU.datum}</div>
     </div>`;
   s.querySelector('#ton').onclick=(e)=>{ tonAn=!tonAn; Einst.ton=tonAn; einstSichern();
     e.target.textContent=tonAn?'Ton an':'Ton aus'; };
@@ -5411,6 +5430,8 @@ async function elternbereich(){
       <h3 class="gruppe">Diese Fassung</h3>
       <table class="tab"><tbody>
         <tr><td>Fassung</td><td class="num">${BAU.fassung}</td></tr>
+        <tr><td>Bau</td><td class="num">v${BAU.bau}</td></tr>
+        <tr><td>Einchecker</td><td class="num">${BAU.stand}</td></tr>
         <tr><td>Gebaut am</td><td class="num">${BAU.datum}</td></tr>
         <tr><td>Stand der Daten</td><td class="num">${BAU.standJahr}</td></tr>
         <tr><td>Speicher dauerhaft</td><td class="num">${

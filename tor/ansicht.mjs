@@ -149,6 +149,17 @@ const AUFNAHMEN = [
      Aufkleberzahlen und Balken nebeneinander. Der Fall nach ein paar
      Wochen, und bis hierher ohne Vorbild. */
   { name:'quer-ebenen-voll', spiel:null, quer:true, stand:'voll', wahl:'.schirm.da' },
+  /* Der Fassungsstempel (Q13) — die einzige Aufnahme, die den GANZEN
+     Rumpf zeigt.
+     Alle anderen fotografieren `.schirm.da`, also den Bildschirm in der
+     Buehne. Der Stempel steht daneben, in dem Streifen, den das Geraet
+     unten fuer sich behaelt - mit `.schirm.da` waere er auf keinem
+     einzigen Vorbild zu sehen, und „er steht unten rechts und deckt
+     nichts zu" bliebe eine Behauptung. Wo er WIRKLICH sitzt, sagt nur
+     dieses Bild. Sein Text wird vorher festgesetzt (siehe „Die BAUUHR
+     aus dem Bild nehmen"), sonst waere die Aufnahme nach jedem
+     Einchecken rot. */
+  { name:'quer-fassung', spiel:null, quer:true, stand:true, wahl:'body' },
   /* Der Vorlauf (R3) — die engste Stelle der App.
    *
    * Sechzehn Kaesten auf einmal, Namen, die an Fugen umbrechen muessen,
@@ -822,12 +833,17 @@ for (const a of MEINE) {
   }
   // Die BAUUHR aus dem Bild nehmen.
   //
-  // Der Baustempel traegt Datum und Uhrzeit des Baus. In einem Vorbild ist
-  // das Gift: die Aufnahme `quer-profile` war beim ersten Lauf gruen und
-  // im naechsten frischen Baum rot, um 2556 Bildpunkte - `15:59` gegen
-  // `16:52`. Im Arbeitsbaum faellt das nicht auf, weil dort die
-  // Zeitstempel der Quelldateien stehenbleiben; in einem frischen
-  // Auschecken sind sie neu, und damit ist es die Uhr auch.
+  // Der Baustempel sagt, welcher Einchecker gebaut wurde. In einem Vorbild
+  // ist das Gift: er aendert sich mit JEDER Runde, und seit Q13 steht er
+  // auf JEDEM Bildschirm - ohne diesen Griff waeren alle 35 Aufnahmen bei
+  // jedem Einchecken rot.
+  //
+  // Vorher trug er Datum und Uhrzeit des Baus, und die Aufnahme
+  // `quer-profile` war beim ersten Lauf gruen und im naechsten frischen
+  // Baum rot, um 2556 Bildpunkte - `15:59` gegen `16:52`. Im Arbeitsbaum
+  // faellt das nicht auf, weil dort die Zeitstempel der Quelldateien
+  // stehenbleiben; in einem frischen Auschecken sind sie neu, und damit
+  // ist es die Uhr auch.
   //
   // Gefunden hat es `npm run proben`: zwei Gegenproben meldeten "war schon
   // vorher rot". Ein Vorbild, das sich von selbst aendert, beweist nichts
@@ -838,8 +854,8 @@ for (const a of MEINE) {
   // eben nicht auf ihren Inhalt (Regel 1 - was man wegnimmt, prueft man
   // nicht mehr). Dass Fassung und Datum stimmen, prueft `doku`.
   await seite.evaluate(() => {
-    for (const b of document.querySelectorAll('.bauzeile'))
-      b.textContent = 'Prototyp · Fassung p0.0 · 2000-01-01 00:00';
+    const b = document.getElementById('fassung');
+    if (b) b.textContent = 'v0 · 0000000';
   });
   /* Der Zeiger wird WEGGELEGT, bevor ausgeloest wird.
    *

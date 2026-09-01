@@ -7984,3 +7984,97 @@ eine Uhr außerhalb der Sache, die sie misst. Regel 5 sagt, jede Zahl trägt ihr
 Messstelle mit — hier war die Messstelle selbst der Fehler.
 
 222 Gegenproben (219 + 3). `npm run tor` grün in 180,6 s.
+
+
+---
+
+## Q13 — der Fassungsstempel, und was er unterwegs gefunden hat
+
+Die Bitte war klein: die Versionsnummer soll unten dezent immer dastehen, damit
+sich vergleichen lässt, was auf dem Gerät läuft.
+
+### Woraus die Nummer besteht
+
+Bis hierher stand auf der **Profilwahl** „Prototyp · Fassung p0.4 ·
+2026-09-01 20:34" — und beides taugte nicht zum Vergleichen. `p0.4` steht seit
+Monaten still, und das Datum war die **Änderungszeit von `spiel.js`**: eine
+Runde, die nur eine Karte oder das Stylesheet anfasst, bekam denselben Stempel
+wie die davor.
+
+Die Zahlen kommen jetzt aus Git:
+
+| | |
+|---|---|
+| `v277` | Zahl der Einchecker — steigt mit **jeder** Runde, mit dem Auge zu vergleichen |
+| `d04f0df` | welcher Einchecker genau |
+| `+` | der Baum war beim Bauen schmutzig — das Gebaute steht so in keinem Einchecker |
+
+Nebenbei ist der Stempel damit **reproduzierbar**: in einem frischen Auschecken
+sind alle mtimes neu, der Einchecktag nicht. Genau daran war die Aufnahme
+`quer-profile` einmal gescheitert.
+
+Der alte Stempel auf der Profilwahl ist weg — zwei Stempel wären einer zuviel
+(Regel 6). Die ausführliche Auskunft (Fassung, Bau, Einchecker, Bauzeit,
+Datenstand) steht im Elternbereich.
+
+### „Er überlagert nur leere Ecken" — im ersten Lauf widerlegt
+
+Der erste Entwurf lag `fixed` in der Ecke und nahm keinen Platz. `passt` hat
+das sofort gemessen:
+
+| | |
+|---|---|
+| iPhone quer, Leiste · Ebenenwahl | über der Kachel „Deutschland" — 100 × 17 px |
+| iPhone quer, Leiste · Ebenenwahl | über dem Vorschau-Knopf — 44 × 17 px |
+| iPhone hochkant · Spiel | über „noch einmal hören" — 44 × 7 px |
+
+Die Ebenenwahl füllt ihre Wand auf dem Zielgerät **exakt** aus: zehn Kacheln,
+Platz für zehn. Es gibt dort keine leere Ecke.
+
+Also nimmt er Platz, aber nur, wo welcher ist — `max(--sicher-unten, 12px)`:
+
+| | |
+|---|---|
+| iPhone quer **mit Leiste** (der Zielfall) | 21 px Streifen ist ohnehin da → **kostet nichts** |
+| iPhone hochkant, iPad, Fenster | Streifen da oder Platz für ≥ 18 Kacheln → kostet nichts Messbares |
+| 844 × 390 **ohne** Leiste | 12 px weg: die Beispielkarten im Vorlauf schrumpfen von 107 auf 101 pt |
+| 667 × 375 ohne Leiste | von 100 auf 94 pt |
+
+Die zehn geänderten Zahlen stehen in `tor/masse-stand.json`; alle bleiben weit
+über der 44-Punkt-Grenze.
+
+### Drei Löcher, die dabei aufgingen — und zu
+
+- **`lesbarkeit` sah ihn nicht.** Es lief über `.schirm.da *`, der Stempel steht
+  daneben. Die Zahl der gemessenen Texte fiel von 214 auf 212, als die alte
+  Bauzeile wegfiel und der neue Stempel dazukam — der teuerste Ausgang eines
+  Umbaus, weil er aussieht wie einer, der nichts kostet. Jetzt sind es 228, und
+  der Stempel misst 4,63:1 (nötig 4,5).
+- **`ansicht` sah ihn nicht.** Alle 35 Aufnahmen fotografieren `.schirm.da`.
+  Neu ist `quer-fassung` — die einzige Aufnahme, die den ganzen Rumpf zeigt.
+  36 statt 35.
+- **`passt` konnte ihn nicht sehen.** Die Überlappungsprüfung sieht nur
+  Elemente im Fluss, und das ist richtig so. Der Stempel hat jetzt seine eigene
+  Prüfung: steht er da, ist er im Fenster, deckt er nichts zu.
+
+Drei stehende Gegenproben: zu blass, verschoben, leer.
+
+### Und zwei Befunde, nach denen niemand gefragt hat
+
+Beim Nachmessen der Kachelwand mit **Leas** Profil:
+
+**1. Lea und die Eltern erreichen „Hauptstädte Europa" auf dem iPhone quer
+nicht.** Sie haben elf Ebenen, die Wand fasst zehn. Die elfte Kachel endet bei
+y = 491 in einem 390 Punkte hohen Fenster — `overflow:visible`, kein Scrollen,
+kein Hinweis. Gemessen mit und ohne Leiste (470 bzw. 491).
+
+**2. Zwei Kacheln heißen beide „Hauptstädte".** Deutschland und Europa. Die
+Überzeile, die sie unterscheidet, ist in der Ebenenwahl ausgeblendet
+(`.wahl.ebenen .kachel .ueber{display:none}`).
+
+Ein Versuch: bei 108 statt 134 Punkten Kachelbreite passen alle elf in zwei
+Reihen zu sechs (Unterkante 369 von 378) — dann brechen aber vier Namen um
+(„Nordamerik/a", „Mittelameri/ka", „Bundesländ/er", „Hauptstädt/e"). Das ist
+eine Abwägung, keine Reparatur, und sie gehört vor den Nutzer.
+
+225 Gegenproben (222 + 3). 36 Aufnahmen. `npm run tor` grün in 187,6 s.

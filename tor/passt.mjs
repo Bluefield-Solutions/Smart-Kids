@@ -250,7 +250,7 @@ const SUCHE = () => {
     const kasten = [];
     for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
       + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
-      + '.schirm.da .titel, .schirm.da .frage, .schirm.da .bauzeile, .schirm.da .kachelpaar')) {
+      + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar')) {
       const cs = getComputedStyle(el);
       if (cs.position === 'absolute' || cs.position === 'fixed') continue;
       if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
@@ -276,6 +276,48 @@ const SUCHE = () => {
           + `${breit.toFixed(0)}×${hoch.toFixed(0)} px`);
     }
   }
+  /* DER FASSUNGSSTEMPEL: deckt er etwas zu? (Q13)
+   *
+   * Er steht seit Q13 auf JEDEM Bildschirm, unten in der Ecke, und liegt
+   * `fixed` ueber allem. Damit faellt er aus der Ueberlappungspruefung
+   * darueber heraus - die sieht nur Elemente IM FLUSS, und das ist
+   * richtig so, sonst meldete jeder Kopf einen Befund.
+   *
+   * Geprueft werden muss er trotzdem, und zwar hier: „nimmt keinen Platz
+   * weg" ist eine BEHAUPTUNG, solange niemand nachmisst. Auf dem iPhone
+   * quer bleiben unter der letzten Kachelreihe wenige Punkte, und eine
+   * Kachelreihe mehr wuerde genau in diese Ecke wachsen.
+   *
+   * `pointer-events:none` schuetzt den Finger, nicht das Auge: was der
+   * Stempel verdeckt, ist verdeckt, auch wenn man hindurchtippen kann. */
+  const stempel = [];
+  {
+    const s = document.getElementById('fassung');
+    const b = s && s.getBoundingClientRect();
+    if (!s) stempel.push('der Fassungsstempel steht gar nicht da');
+    else if (b.width < 2 || b.height < 2) stempel.push('der Fassungsstempel ist leer');
+    else {
+      if (b.right > innerWidth + 1 || b.bottom > innerHeight + 1 || b.left < -1 || b.top < -1)
+        stempel.push(`der Fassungsstempel steht ausserhalb des Fensters `
+          + `(${b.left.toFixed(0)}|${b.top.toFixed(0)} bis `
+          + `${b.right.toFixed(0)}|${b.bottom.toFixed(0)} in ${innerWidth}×${innerHeight})`);
+      for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
+        + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
+        + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, .schirm.da .karte')) {
+        const cs = getComputedStyle(el);
+        if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
+        const k = el.getBoundingClientRect();
+        if (k.width < 2 || k.height < 2) continue;
+        const breit = Math.min(b.right, k.right) - Math.max(b.left, k.left);
+        const hoch  = Math.min(b.bottom, k.bottom) - Math.max(b.top, k.top);
+        if (breit > 1 && hoch > 1)
+          stempel.push(`der Fassungsstempel liegt ueber „${(el.textContent.trim()
+            || el.className).slice(0, 22).replace(/\s+/g, ' ')}" `
+            + `(${breit.toFixed(0)}×${hoch.toFixed(0)} px)`);
+      }
+    }
+  }
+
   /* DAS WASSERZEICHEN: liegt es ganz in seiner Kachel, und liegt etwas
    * darauf?
    *
@@ -464,7 +506,7 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, karte, bewacht, zeichen, wand, kleber };
+  return { raus, klein, zu, ueber, stempel, karte, bewacht, zeichen, wand, kleber };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -615,6 +657,7 @@ for (const g of MEINE) {
     for (const x of r.raus) meldungen.push(`${name}: ${x}`);
     for (const x of r.zu) meldungen.push(`${name}: ${x}`);
     for (const x of r.ueber) meldungen.push(`${name}: ${x}`);
+    for (const x of r.stempel || []) meldungen.push(`${name}: ${x}`);
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
         + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `

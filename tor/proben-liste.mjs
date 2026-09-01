@@ -420,8 +420,8 @@ export const PROBEN = [
   // dass das Polster GAR NICHT wirkte: es stand auf `body`, waehrend die
   // Buehne absolut am Fenster hing. Genau das wird hier nachgestellt.
   { n:'die Bühne beachtet den sicheren Bereich nicht', tor:'passt', args:['--teil=1/5'], bauen:true, datei:V,
-    such:'  top:var(--sicher-oben); right:var(--sicher-rechts);\n  bottom:var(--sicher-unten); left:var(--sicher-links)}',
-    ersatz:'  inset:0}',
+    such:'  top:var(--sicher-oben); right:var(--sicher-rechts);',
+    ersatz:'  top:0; right:0;',
     an:{ ...DIST, fehlt:'top:var(--sicher-oben)' },
     sagt:'im Bereich des Telefons' },
 
@@ -488,6 +488,42 @@ export const PROBEN = [
   { n:'kleiner Text wird zu hell', tor:'lesbarkeit', bauen:true, datei:'src/marken/marken.css',
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },
+
+  /* --- Der Fassungsstempel (Q13) --------------------------------------- *
+   *
+   * Er steht seit Q13 auf JEDEM Bildschirm und beantwortet die einzige
+   * Frage, die sich am Geraet sonst nicht beantworten laesst: laeuft hier
+   * schon die neue Fassung? Drei Zusagen haengen daran, und jede hat
+   * ihre Probe.
+   *
+   * 1. Er wird auf Kontrast gemessen. Er liegt NEBEN der Buehne, und
+   *    `lesbarkeit` lief bis Q13 nur ueber `.schirm.da *` - ein Text auf
+   *    jedem Bildschirm, den kein Tor ansieht, waere genau die Luecke,
+   *    die Regel 1 meint. Der Eingriff bleicht ihn aus. */
+  { n:'der Fassungsstempel wird zu blass', tor:'lesbarkeit', bauen:true, datei:V,
+    such:'font-family:var(--f-ui);font-size:var(--s-winzig);color:var(--tinte-3);',
+    ersatz:'font-family:var(--f-ui);font-size:var(--s-winzig);color:var(--grund-2);',
+    an:{ ...DIST, text:'font-size:var(--s-winzig);color:var(--grund-2);' },
+    sagt:':1' },
+
+  /* 2. Er deckt nichts zu. Der erste Entwurf lag `fixed` in der Ecke und
+   *    ueber der Kachel „Deutschland" - gefunden hat das `passt` im
+   *    ersten Lauf. Der Eingriff schiebt ihn dorthin zurueck, wo etwas
+   *    steht. */
+  { n:'der Fassungsstempel deckt die Kachelwand zu', tor:'passt', bauen:true, datei:V,
+    such:'  bottom:0;height:var(--fassung-hoehe);line-height:var(--fassung-hoehe);',
+    ersatz:'  bottom:120px;height:var(--fassung-hoehe);line-height:var(--fassung-hoehe);',
+    an:{ ...DIST, text:'bottom:120px;height:var(--fassung-hoehe)' },
+    sagt:'der Fassungsstempel liegt ueber' },
+
+  /* 3. Er steht ueberhaupt da. Ein leerer Stempel sieht aus wie kein
+   *    Stempel, und wer auf dem iPhone nachsieht, haelt die alte Fassung
+   *    fuer die neue. */
+  { n:'der Fassungsstempel bleibt leer', tor:'passt', bauen:true, datei:D,
+    such:'if (stempel) stempel.textContent = `v${BAU.bau} · ${BAU.stand}`;',
+    ersatz:'if (false) stempel.textContent = `v${BAU.bau} · ${BAU.stand}`;',
+    an:{ ...DIST, text:'if (false) stempel.textContent' },
+    sagt:'der Fassungsstempel ist leer' },
 
   /* Und die Ueberblendung selbst (Q12).
    *

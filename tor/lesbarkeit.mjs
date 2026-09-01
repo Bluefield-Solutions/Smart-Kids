@@ -164,7 +164,16 @@ const MESSEN = () => {
   };
 
   const raus = [];
-  for (const el of document.querySelectorAll('.schirm.da *')) {
+  /* Der sichtbare Bildschirm - UND der Fassungsstempel.
+   *
+   * Der steht seit Q13 nicht IM Bildschirm, sondern daneben (er liegt in
+   * dem Streifen, den das Telefon fuer sich behaelt). Mit `.schirm.da *`
+   * allein fiele er heraus: die Zahl der gemessenen Texte ging von 214
+   * auf 212, als die alte `.bauzeile` wegfiel und der neue Stempel
+   * dazukam - der teuerste Ausgang eines Umbaus, denn er sieht aus wie
+   * einer, der nichts kostet. Ein Text auf jedem Bildschirm, den kein Tor
+   * auf Kontrast misst, ist genau die Sorte Luecke, die Regel 1 meint. */
+  for (const el of document.querySelectorAll('.schirm.da *, #fassung')) {
     if (el.children.length && ![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()))
       continue;                                   // nur Elemente mit eigenem Text
     const text = el.textContent.trim();

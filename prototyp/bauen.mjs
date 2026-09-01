@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import zlib from 'node:zlib';
+import { execFileSync } from 'node:child_process';
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { DEUTSCHLAND_GROB } from '../src/geo/deutschland.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
@@ -228,11 +229,49 @@ const module = [
          { 'ablage.js': 'const A = Ablage;' }),
 ].join('\n');
 
-// Fassungsstempel. Ohne ihn ist "welche Fassung laeuft auf diesem iPad?"
-// nicht zu beantworten - Konzept K3, Kapitel 13.2.
+/* Fassungsstempel. Ohne ihn ist "welche Fassung laeuft auf diesem iPad?"
+ * nicht zu beantworten - Konzept K3, Kapitel 13.2.
+ *
+ * Die Zahlen kommen aus GIT, nicht aus dem Dateisystem. Zwei Gruende:
+ *
+ *   VERGLEICHBAR  `p0.4` steht seit Monaten still, und `datum` war die
+ *                 Aenderungszeit von `spiel.js` - eine Runde, die nur
+ *                 eine Karte oder das Stylesheet anfasst, bekam
+ *                 denselben Stempel wie die davor. Wer auf dem iPhone
+ *                 nachsehen will, ob die neue Fassung schon da ist,
+ *                 konnte das nicht. Die Zahl der Einchecker steigt mit
+ *                 JEDER Runde und laesst sich mit dem blossen Auge
+ *                 vergleichen; der Kurzschluessel sagt genau welche.
+ *   REPRODUZIERBAR  In einem frischen Auschecken sind alle mtimes neu,
+ *                 der Einchecktag aber nicht. Genau daran ist die
+ *                 Aufnahme `quer-profile` einmal gescheitert (siehe
+ *                 `tor/ansicht.mjs`, „Die BAUUHR aus dem Bild nehmen").
+ *
+ * Kein Git zur Hand (ausgepacktes Archiv, fremder Rechner)? Dann steht
+ * `?` da - eine erfundene Zahl waere schlimmer als keine.
+ *
+ * `+` am Kurzschluessel heisst: der Baum war beim Bauen schmutzig, das
+ * Gebaute steht so in keinem Einchecker. Auf dem Zielgeraet ist das der
+ * Unterschied zwischen "meine Aenderung ist drin" und "ich sehe den
+ * letzten Einchecker". */
+const git = (...args) => {
+  try {
+    return execFileSync('git', args, { cwd: new URL('..', import.meta.url),
+      stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch { return ''; }
+};
+const kurz = git('rev-parse', '--short', 'HEAD');
+const schmutzig = git('status', '--porcelain') !== '';
 const BAU = {
   fassung: process.env.LERNKISTE_FASSUNG || 'p0.4',
-  datum: new Date(fs.statSync(new URL('./spiel.js', import.meta.url)).mtime).toISOString().slice(0,16).replace('T',' '),
+  // Die Zahl der Einchecker - steigt mit jeder Runde, mit dem Auge zu
+  // vergleichen.
+  bau: git('rev-list', '--count', 'HEAD') || '?',
+  // Welcher Einchecker genau. `+` = schmutziger Baum.
+  stand: (kurz || '?') + (schmutzig ? '+' : ''),
+  datum: (git('log', '-1', '--format=%cd', '--date=format:%Y-%m-%d %H:%M')
+    || new Date(fs.statSync(new URL('./spiel.js', import.meta.url)).mtime)
+        .toISOString().slice(0, 16).replace('T', ' ')),
   standJahr: I.STAND.jahr,
 };
 

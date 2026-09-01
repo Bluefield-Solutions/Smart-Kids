@@ -26,6 +26,12 @@
 
   /* --- Schrift. Grundgroesse 20, Verhaeltnis 1,25. --------------------- */
   --s-klein: 16px;   /* nur Elternbereich */
+  /* Eine Stufe UNTER der Leiter, und mit Absicht nur fuer eine Sache: den
+     Fassungsstempel unten in der Ecke. Er steht auf jedem Bildschirm und
+     darf dort nichts wegnehmen; 16px taeten das. Wer hier eine zweite
+     Verwendung eintraegt, macht aus einer Ausnahme eine Stufe - dann
+     gehoert sie in die Leiter darunter. */
+  --s-winzig: 11px;  /* nur der Fassungsstempel */
   --s0: 20px; --s1: 25px; --s2: 31px; --s3: 39px; --s4: 49px; --s5: 61px;
   --f-lesen: "Andika", "Comic Sans MS", sans-serif;   /* was das Kind liest */
   --f-ui: "Plus Jakarta Sans", system-ui, sans-serif; /* alles andere */

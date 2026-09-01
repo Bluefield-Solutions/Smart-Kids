@@ -2244,3 +2244,43 @@ Quelltext: das kleinste Ziel der App ist El Salvador mit 1,71 Quadratgrad an
 einem Stück, und von den vier Kandidaten (Salomonen, Neukaledonien, Fidschi,
 Vanuatu) kommt allein Neukaledonien in die Nähe — ein Überseegebiet, kein Land,
 nach dem hier gefragt wird.
+
+
+---
+
+## Q13 offen: die Kachelwand fasst zehn, Lea hat elf
+
+Gemessen auf dem Zielgerät (844 × 390, mit und ohne Leiste):
+
+| | |
+|---|---|
+| Ebenen für Fiona | 10 — passen |
+| Ebenen für Lea und die Eltern | **11** — die elfte endet bei y = 470 bzw. 491 |
+| Fenster | 390 Punkte hoch, `overflow:visible`, kein Scrollen |
+
+**„Hauptstädte Europa" ist für Lea und euch auf dem iPhone quer nicht zu
+erreichen.** Kein Tor hat es gesagt: `passt` fährt die Ebenenwahl mit dem
+Standardprofil, und das hat zehn.
+
+Dazu kommt: **zwei Kacheln heißen beide „Hauptstädte"** (Deutschland und
+Europa). Die Überzeile, die sie unterscheidet, ist in der Ebenenwahl
+ausgeblendet — sie stand bis R2 oben in der Kachel, dort liegt jetzt das Bild.
+
+Drei Wege, und alle drei kosten etwas:
+
+1. **Schmalere Kacheln.** Bei 108 statt 134 Punkten passen alle elf in zwei
+   Reihen zu sechs (gemessen: Unterkante 369 von 378). Preis: vier Namen
+   brechen um — „Nordamerik/a", „Mittelameri/ka", „Bundesländ/er",
+   „Hauptstädt/e". Mit einer Schriftstufe weniger wäre das zu heilen, dann ist
+   der Name aber auf dem Zielgerät so groß wie eine Fußzeile.
+2. **Niedrigere Kacheln, drei Reihen.** Braucht 92 Punkte weniger auf drei
+   Reihen, also 112 → 81 Punkte Kachelhöhe. Das Kachelbild fiele von 50 auf
+   19 Punkte — es ist für Fiona der Name.
+3. **Weniger Kacheln.** „Hauptstädte Deutschland" und „Hauptstädte Europa" in
+   EINE Kachel legen, die beim Antippen fragt wohin. Löst beide Befunde auf
+   einmal (elf werden zehn, und der doppelte Name verschwindet), kostet aber
+   einen Tipp mehr.
+
+Was `passt` noch nicht kann: es fährt die Ebenenwahl nur mit dem Standardprofil.
+Wer das repariert, trägt Leas Ebenenwahl in die Bildschirmliste nach — sonst
+bleibt derselbe Befund beim nächsten Mal wieder ungesehen.
