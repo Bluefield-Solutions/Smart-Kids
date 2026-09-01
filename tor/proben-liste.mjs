@@ -1718,7 +1718,12 @@ export const PROBEN = [
    * heraus. Der Eingriff dreht die Spaltenbreite zurueck auf das grosse
    * Mass, bei dem 700 Punkte nur fuer zwei reichen. */
   { n:'das schmale Fenster bekommt wieder zwei Spalten', tor:'passt', bauen:true,
-    args:['--teil=2/5'], datei:V,
+    // `--teil=0/5`, weil „Fenster schmal" der SECHSTE Eintrag in `GERAETE`
+    // ist und 5 % 5 = 0 ergibt. Der erste Anlauf nahm 2/5 und fuhr damit
+    // iPhone hoch - eine Groesse, auf der die Regel zwar gilt, aber nichts
+    // aendert (bei 390 Punkten Breite ist es so oder so eine Spalte).
+    // „Beweist nichts" hiess hier: am falschen Geraet gemessen.
+    args:['--teil=0/5'], datei:V,
     such:'  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}\n'
        + '  .kachel .ueber{display:none}\n'
        + '  .kachel .name{font-size:var(--s1)}\n',
