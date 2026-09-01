@@ -1711,19 +1711,27 @@ export const PROBEN = [
     ersatz:'if(!auf){ aufheben(); }',
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
 
-  /* Das Kachelbild schrumpft (Q7).
+  /* Das Bild auf der WELTENWAHL schrumpft (Q7, nachgezogen in Q10).
    *
-   * Die Hoehe ist das bindende Mass: die Kachel ist auf dem Zielgeraet
-   * rund 55 Punkte hoch, das Bild nimmt davon 86 %, und die Breite folgt
-   * der Form. Von 86 auf 60 gedreht wird jedes Bild schmaler - und die
-   * Ratsche in `tor/masse-stand.json` merkt es, ohne dass ein Soll
-   * verletzt waere. Genau dafuer ist sie da: ein Rueckschritt, den keine
-   * absolute Grenze sieht. */
-  { n:'die Kachelbilder werden kleiner gezeichnet', tor:'passt', bauen:true,
+   * Die Ratsche in `tor/masse-stand.json` merkt einen Rueckschritt, ohne
+   * dass ein Soll verletzt waere. Genau dafuer ist sie da.
+   *
+   * HIER STAND `height:86%` aus der Grundregel, und der volle Probenlauf
+   * hat gemeldet, dass das nichts mehr beweist: seit Q8 setzt die
+   * Ebenenwahl ihre eigene Bildhoehe (`calc(100% - 62px)`), und die
+   * Weltenwahl hatte schon immer ihre eigene (80 %). Die Grundregel galt
+   * damit nur noch fuer Waende ohne gemessenes Bild - der Eingriff kam an
+   * und aenderte nichts. Genau die Verfallsart, fuer die es den vollen
+   * Lauf gibt.
+   *
+   * Gezielt wird jetzt auf die Weltenwahl: sie ist die einzige Wand mit
+   * gemessenem Bild, die die Probe „die Kachel verliert ihre Hoehe" NICHT
+   * schon abdeckt. */
+  { n:'das Bild auf der Weltenwahl wird kleiner gezeichnet', tor:'passt', bauen:true,
     args:['--teil=0/5'], datei:V,
-    such:'  height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}',
-    ersatz:'  height:60%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}',
-    an:{ ...DIST, text:'height:60%;max-width:52%' },
+    such:'.kachel.welt .silhouette{height:80%;max-width:76%}',
+    ersatz:'.kachel.welt .silhouette{height:50%;max-width:76%}',
+    an:{ ...DIST, text:'.kachel.welt .silhouette{height:50%' },
     sagt:'Bild pt' },
 
   /* Die letzte Reihe klebt wieder links (Q9).
