@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
-import { starte, zurEbenenwahl, durchVorlauf, serviere,
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa,
          schreibVorlage, zeichneZug, istUmgekehrt, zeigeAufKarte,
          zielUndEtikett } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';

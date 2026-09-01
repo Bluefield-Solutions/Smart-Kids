@@ -993,8 +993,36 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    von 154 Punkten. Die Vermutung, eine schmalere Spalte wuerde die Nadeln
    erledigen, hat die Messung widerlegt. */
 @media (orientation:landscape) and (max-height:440px){
-  .seite{width:clamp(307px,38vw,320px);flex-direction:row;align-items:stretch;gap:var(--r2)}
-  .wahlliste{flex:1;min-width:0}
+  /* Breiter als bis Q14 - und es kostet die Karte NICHTS.
+     Gemessen auf 844x390 mit Leiste: die Karte zeichnet 191x246, ob die
+     Spalte 320 oder 380 Punkte breit ist. Sie haengt an der HOEHE, nicht
+     an der Breite; die zwanzig bis sechzig Punkte, die die Spalte mehr
+     nimmt, hat die Karte vorher nicht gebraucht.
+     Was es dagegen bringt: die Etiketten sind 242 statt 182 Punkte breit,
+     der Text darin hat 210 statt 150. Damit bricht nur noch der eine
+     wirklich lange Name um („Mecklenburg-Vorpommern"), und ein paar
+     Punkte Unterschied zwischen zwei Browsern koennen keinen zweiten
+     Umbruch mehr ausloesen. Genau daran ist die Auslieferung gescheitert:
+     auf dem Runner brach ein zweiter Name um, die Spalte wurde 252 statt
+     226 Punkte hoch, passte nicht mehr in die 243 des Feldes, bekam einen
+     Rollbalken - und der Rollbalken machte die Etiketten noch schmaler.
+     Das kleinste Geraet (iPhone SE quer) behaelt seine 307: 45 vw sind
+     dort 300 und werden nach oben geklemmt. */
+  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}
+  /* Enger als sonst - und das ist kein Geschmack, sondern eine gemessene
+     Notwendigkeit (Q14).
+     Auf dem Zielgeraet stand die Antwortspalte 226 Punkte hoch in einem
+     Feld von 243. Siebzehn Punkte Luft klingen nach genug; sie sind es
+     nicht, weil hier eine SCHLEIFE haengt: wird die Spalte zu hoch,
+     erscheint ein Rollbalken, der Rollbalken nimmt Breite, die schmaleren
+     Etiketten brechen um, und der Umbruch macht die Spalte noch hoeher.
+     Auf dem Runner (Chromium 151) war genau das zu sehen - Etiketten
+     176 statt 182 Punkte breit, die Spalte 252 statt 226 hoch, und ihr
+     Kopf schob sich 13 Punkte in die Frage hinein.
+     Vier Punkte weniger Abstand je Etikett und kein Polster: das sind
+     sechzehn Punkte, und damit steht die Spalte auch dann noch frei, wenn
+     eine Antwort mehr umbricht als hier. */
+  .wahlliste{flex:1;min-width:0;gap:var(--r2);padding:0}
   .werkzeug{flex:none;flex-direction:column;justify-content:center;padding-top:0}
 }
 @media (orientation:portrait){.seite{width:100%;flex:0 0 auto;max-height:56vh;overflow:auto}
