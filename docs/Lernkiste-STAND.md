@@ -6841,10 +6841,23 @@ Stern 0,30   glatt, größter Sprung ≤ 12    grün auf allen vier Größen
 Stern 0,62   Sprung 23 · 51 · 175 · 191    rot auf allen vier Größen
 ```
 
-Die Gegenprobe dazu steht. Sie brauchte eine kleine Erweiterung am
-Probenwerkzeug: `bauen:'symbol'` statt `bauen:true`. Ihr Eingriff sitzt im
-Werkzeug, und was das Tor liest, sind die PNG — die entstehen nicht beim
-Bauen.
+Und die erste Fassung dieser Prüfung war noch zu eng: sie kannte nur die
+**Ecken**. Der Sternentwurf lief oben aus dem Bild, aber mittig genug, um an
+keiner Ecke aufzufallen — und die Gegenprobe meldete prompt „das Tor beweist
+an dieser Stelle nichts". Geprüft wird jetzt auch der **Saum**, die
+äußersten fünf Prozent an jeder Kante: was dort steht, schneidet der
+Bildrand ab, ganz ohne Maske.
+
+Die Gegenprobe dazu steht — und sie hat zwei Anläufe gebraucht. Der erste
+griff am Werkzeug an und ließ `npm run symbol` laufen; das rechnet die Küste
+aus `roh/` neu, und `roh/` liegt nicht in Git, also gibt es sie in der
+Wegwerf-Kopie nicht, in der die Proben arbeiten. Gescheitert ist das
+**stumm**: `execFileSync` warf beim Wiederaufbau, niemand fing es, der
+Teillauf hinterließ kein Ergebnis, und gemeldet wurde „ein Teillauf hat kein
+Ergebnis hinterlassen" — die Folge statt der Ursache. Ein gescheiterter
+Wiederaufbau setzt jetzt einen Befund, statt den Arbeiter zu töten. Der
+Eingriff sitzt in der SVG, gebaut wird mit dem neuen `npm run symbol:png`:
+genau der Schritt, der zwischen Eingriff und Tor liegt.
 
 ### Und die README stand auf dem Stand von vier Ebenen
 

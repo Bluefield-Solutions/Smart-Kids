@@ -85,9 +85,9 @@
       "s": 4
     },
     "das App-Symbol hat die falsche Größe": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 4
+      "commit": "e0437806c471bd54e97f0e920e3cee1d494cfaae",
+      "zeit": "2026-09-01",
+      "s": 5
     },
     "das Konzept nennt eine andere Gebietszahl": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -640,7 +640,7 @@
       "s": 96
     },
     "ein Symbol im Manifest gibt es nicht": {
-      "commit": "3083ac9c39eb38de1d701bc46e497e1b4fe1fc7d",
+      "commit": "e0437806c471bd54e97f0e920e3cee1d494cfaae",
       "zeit": "2026-09-01",
       "s": 13
     },

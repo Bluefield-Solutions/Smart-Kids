@@ -1132,8 +1132,17 @@ console.log('\n  Tor `symbol`');
      * schneidet also WENIGER weg - was hier auffaellt, faellt dort erst
      * recht auf. */
     {
-      const r = g * 0.20;
+      const r = g * 0.20, saum = g * 0.05;
+      /* Zwei Zonen, und beide muessen leer sein.
+       *
+       * Die ECKEN, weil die iOS-Maske sie rund abschneidet. Und der SAUM,
+       * die aeussersten fuenf Prozent an jeder Kante - was dort steht,
+       * steht am Bildrand und ist abgeschnitten, ganz ohne Maske. Genau
+       * das war der erste Sternentwurf: er lief oben aus dem Bild, aber
+       * MITTIG genug, um an keiner Ecke aufzufallen. Eine Pruefung, die
+       * nur die Ecken kennt, haette ihn durchgelassen. */
       const draussen = (x, y) => {
+        if (x < saum || y < saum || x > g - 1 - saum || y > g - 1 - saum) return true;
         const dx = Math.max(r - x, x - (g - 1 - r), 0);
         const dy = Math.max(r - y, y - (g - 1 - r), 0);
         return dx > 0 && dy > 0 && Math.hypot(dx, dy) > r;
@@ -1145,13 +1154,13 @@ console.log('\n  Tor `symbol`');
         const d = Math.max(...[0,1,2].map(i => Math.max(Math.abs(a[i]-b[i]), Math.abs(a[i]-c[i]))));
         if (d > sprung) { sprung = d; wo = [x, y]; }
       }
-      pruefe(sprung <= 12, `symbol-${g}.png: in der Ecke bei ${wo && wo.join(',')} springt die `
-        + `Farbe um ${sprung} — dort steht etwas anderes als der Grund, und die iOS-Maske `
-        + 'schneidet es ab');
+      pruefe(sprung <= 12, `symbol-${g}.png: am Rand bei ${wo && wo.join(',')} springt die `
+        + `Farbe um ${sprung} — dort steht etwas anderes als der Grund, und dort `
+        + 'schneidet entweder der Bildrand oder die iOS-Maske es ab');
     }
   }
   console.log(`    ${NOETIG.length} Größen geprüft: quadratisch, undurchsichtig, nicht leer, `
-    + `nur glatter Grund außerhalb der iOS-Maske`);
+    + `nur glatter Grund am Saum und außerhalb der iOS-Maske`);
 }
 
 /* ======================================================== Tor `doku` ==== */
