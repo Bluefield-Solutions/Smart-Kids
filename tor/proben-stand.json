@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-08-31",
+  "zeit": "2026-09-01",
   "tore": [
     "ansicht",
     "budget",
@@ -33,6 +33,11 @@
       "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
       "zeit": "2026-08-31",
       "s": 5
+    },
+    "ein Kartenschlüssel ist weder Kontinent noch erklärter Ausschnitt": {
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 6
     },
     "ein Anker liegt außerhalb seines Gebiets": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -260,14 +265,14 @@
       "s": 22
     },
     "die Nadelfäden sind länger geworden als bestätigt": {
-      "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
-      "zeit": "2026-08-31",
-      "s": 26
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 29
     },
     "zwei Nadelköpfe rücken enger zusammen als bestätigt": {
-      "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
-      "zeit": "2026-08-31",
-      "s": 15
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 17
     },
     "ein Teillauf urteilt über ein Profil, das er nicht gespielt hat": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -435,19 +440,24 @@
       "s": 77
     },
     "der Wegweiser bleibt aus": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 44
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 47
     },
     "der Wegweiser leuchtet auch bei der umgekehrten Frage": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 25
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 26
+    },
+    "der Rauchtest stellt einen Stand für eine Karte, die es nicht gibt": {
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 21
     },
     "der Haken bleibt am Ort statt an der Nadel": {
-      "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
-      "zeit": "2026-08-31",
-      "s": 15
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 17
     },
     "die Sprechprobe zaehlt jeden Versuch als verstanden": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -455,14 +465,14 @@
       "s": 25
     },
     "die Nadel sucht sich keinen freien Platz mehr": {
-      "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
-      "zeit": "2026-08-31",
-      "s": 15
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 17
     },
     "es gibt gar keine Nadeln mehr": {
       "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
       "zeit": "2026-08-31",
-      "s": 40
+      "s": 46
     },
     "der Rückfall wird gar nicht mehr gestellt": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -890,9 +900,9 @@
       "s": 15
     },
     "der Ausschnitt schneidet wieder Bestimmungswörter ab": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 1
+      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "zeit": "2026-09-01",
+      "s": 2
     },
     "die App redet weiter, während sie zuhört": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",

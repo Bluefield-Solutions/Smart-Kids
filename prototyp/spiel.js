@@ -3270,7 +3270,7 @@ function spielschirm(){
                 r="${(2.4/k).toFixed(2)}"/>
         <circle class="nadelkopf${wegweiser}" cx="${nadel.x}" cy="${nadel.y}"
                 r="${(7/k).toFixed(2)}" fill="${farbe}"/>
-        <circle data-id="${n.x.id}" cx="${nadel.x}" cy="${nadel.y}"
+        <circle class="annadel" data-id="${n.x.id}" cx="${nadel.x}" cy="${nadel.y}"
                 r="${(MIN_PT/2/k).toFixed(1)}" fill="transparent"
                 style="pointer-events:all"/>`;
     });

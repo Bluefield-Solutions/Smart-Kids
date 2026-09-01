@@ -3358,11 +3358,18 @@ if (laeuft('umgekehrt')) try {
     const f = await r.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       const z = s.querySelector('path.ziel');
-      /* An der Nadel haengt, wessen groesste Trefferflaeche NICHT am
-         Anker sitzt. Gelesen wird das am Bildschirm, nicht an einer
-         Liste hier: sonst prueft der Abschnitt seine eigene Annahme. */
-      const kreise = [...s.querySelectorAll('#treffer circle[data-id]')];
-      const anNadel = [...new Set(kreise.filter(c => c.getBoundingClientRect().width >= 40)
+      /* An der Nadel haengt, wer einen Trefferkreis MIT DER MARKE traegt.
+         Gelesen wird das am Bildschirm, nicht an einer Liste hier: sonst
+         prueft der Abschnitt seine eigene Annahme.
+         
+         Bis A6 stand hier „Kreis breiter als 40 Punkte". Auf der
+         Nordamerikakarte stimmte das - dort war am Ort niemand so gross.
+         Auf der Europakarte ist es falsch: ein Gebiet, das am Ort seine
+         vollen 44 Punkte bekommt, sieht genauso aus. Die Gegenprobe „es
+         gibt gar keine Nadeln mehr" hat es gefunden: mit abgeschalteten
+         Nadeln zaehlte der Abschnitt weiter drei „Nadeln" und wurde aus
+         zwei ganz anderen Gruenden rot. */
+      const anNadel = [...new Set([...s.querySelectorAll('#treffer circle.annadel[data-id]')]
         .map(c => c.dataset.id))];
       /* Der Wegweiser: haengt das GESUCHTE Gebiet an einer Nadel, ist ihr
          Faden hervorgehoben - und bei der umgekehrten Frage nicht, denn
@@ -3371,9 +3378,9 @@ if (laeuft('umgekehrt')) try {
          auf das falsche Land zeigt, waere schlimmer als keiner. */
       const wegweiser = [...s.querySelectorAll('#treffer .nadelkopf.nadelziel')]
         .map(c => { const r = c.getBoundingClientRect();
-          const k = [...s.querySelectorAll('#treffer circle[data-id]')].find(x => {
+          const k = [...s.querySelectorAll('#treffer circle.annadel[data-id]')].find(x => {
             const b = x.getBoundingClientRect();
-            return b.width > 40 && Math.abs(b.left + b.width/2 - (r.left + r.width/2)) < 1; });
+            return Math.abs(b.left + b.width/2 - (r.left + r.width/2)) < 1; });
           return k ? k.dataset.id : '?'; });
       return { text: s.querySelector('#frage').textContent.trim(),
                ziel: z ? z.dataset.id : null,
