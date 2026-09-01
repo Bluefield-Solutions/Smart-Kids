@@ -35,7 +35,7 @@
       "s": 5
     },
     "ein Kartenschlüssel ist weder Kontinent noch erklärter Ausschnitt": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 6
     },
@@ -265,12 +265,12 @@
       "s": 22
     },
     "die Nadelfäden sind länger geworden als bestätigt": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 29
     },
     "zwei Nadelköpfe rücken enger zusammen als bestätigt": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 17
     },
@@ -440,24 +440,24 @@
       "s": 77
     },
     "der Wegweiser bleibt aus": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 47
     },
     "der Wegweiser leuchtet auch bei der umgekehrten Frage": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 26
     },
     "der Rauchtest stellt einen Stand für eine Karte, die es nicht gibt": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 21
     },
     "der Haken bleibt am Ort statt an der Nadel": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
-      "s": 17
+      "s": 16
     },
     "die Sprechprobe zaehlt jeden Versuch als verstanden": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -465,14 +465,14 @@
       "s": 25
     },
     "die Nadel sucht sich keinen freien Platz mehr": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 17
     },
     "es gibt gar keine Nadeln mehr": {
-      "commit": "72111075ebe836c64c03274b9d053dbdb5f26b9b",
-      "zeit": "2026-08-31",
-      "s": 46
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
+      "zeit": "2026-09-01",
+      "s": 25
     },
     "der Rückfall wird gar nicht mehr gestellt": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
@@ -900,7 +900,7 @@
       "s": 15
     },
     "der Ausschnitt schneidet wieder Bestimmungswörter ab": {
-      "commit": "073a24097f1dc90c0622cd8ff9e0da6ccbd24958",
+      "commit": "97586c5b536c1fe3aa6250e115df7443d7163c82",
       "zeit": "2026-09-01",
       "s": 2
     },
