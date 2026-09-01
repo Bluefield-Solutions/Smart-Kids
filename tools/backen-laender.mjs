@@ -56,6 +56,27 @@ fs.writeFileSync('/tmp/mittelamerika-maske.json', JSON.stringify(
   { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
     geometry:{ type:'Polygon', coordinates:MITTELAMERIKA_MASKE } }] }));
 
+/* OZEANIEN endet bei 180 Grad - und zwar, weil die Erde dort aufhoert,
+ * gerechnet zu werden.
+ *
+ * Der Erdteil reicht in den Rohdaten ueber die Datumsgrenze: Fidschi,
+ * Kiribati und Tonga liegen zu beiden Seiten von 180. Der Rahmen des
+ * Erdteils spannt sich dadurch ueber fast die ganze Kugel, die azimutale
+ * Projektion setzt ihren Mittelpunkt mitten in den Pazifik - und
+ * herausgekommen ist eine Karte, auf der AUSTRALIEN GAR NICHT ZU SEHEN
+ * war, nur Neuseeland und ein gruener Splitter.
+ *
+ * Die Maske schneidet auf 110 bis 180 Grad Ost und 50 Grad Sued bis zum
+ * Aequator. Darin liegen die drei Ziele vollstaendig (Australien 113-154,
+ * Papua-Neuguinea 141-156, Neuseeland 166-179); die Inseln jenseits der
+ * Grenze fallen weg. Sie waeren auf dieser Karte ohnehin Punkte. */
+const OZEANIEN_MASKE = [[
+  [110,-50],[180,-50],[180,0],[110,0],[110,-50]
+]];
+fs.writeFileSync('/tmp/ozeanien-maske.json', JSON.stringify(
+  { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
+    geometry:{ type:'Polygon', coordinates:OZEANIEN_MASKE } }] }));
+
 /* WAS GESPIELT WIRD, STEHT IN `src/inhalt/erdkunde.js` - auch hier.
  *
  * Bis P11 hielt dieses Werkzeug seine eigene Liste: zwoelf Laender je
@@ -113,7 +134,8 @@ const EBENEN = [
    * und zwei Namen fuer dasselbe Gebiet waeren eine Stelle mehr, die
    * veraltet. Azimutal wie Afrika und Suedamerika: der Erdteil liegt um
    * keinen Breitenkreis herum, sondern um einen Punkt. */
-  { id:'australien', name:'Ozeanien', ne:'Oceania', projektion:'azimutal' },
+  { id:'australien', name:'Ozeanien', ne:'Oceania', projektion:'azimutal',
+    maske:'/tmp/ozeanien-maske.json' },
 ].map(k => ({ ...k, ziele: zieleAus(k.id) }));
 
 const roh = rohLesen('ne_10m_admin_0_countries');

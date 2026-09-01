@@ -138,7 +138,8 @@
       "ziele": [
         "USA",
         "Mexiko",
-        "Kanada"
+        "Kanada",
+        "Grönland"
       ],
       "stufen": [
         {
@@ -146,21 +147,21 @@
           "laender": 42,
           "hausdorffPx": 0.629,
           "punkte": 19929,
-          "gzip": 76893
+          "gzip": 76922
         },
         {
           "stufe": "mittel",
           "laender": 42,
           "hausdorffPx": 0.736,
           "punkte": 60763,
-          "gzip": 195590
+          "gzip": 195618
         },
         {
           "stufe": "fein",
           "laender": 42,
           "hausdorffPx": 0.694,
           "punkte": 88710,
-          "gzip": 259730
+          "gzip": 259765
         }
       ]
     },
@@ -240,6 +241,38 @@
           "hausdorffPx": 0.743,
           "punkte": 39195,
           "gzip": 141271
+        }
+      ]
+    },
+    {
+      "id": "australien",
+      "name": "Ozeanien",
+      "ziele": [
+        "Australien",
+        "Papua-Neuguinea",
+        "Neuseeland"
+      ],
+      "stufen": [
+        {
+          "stufe": "grob",
+          "laender": 13,
+          "hausdorffPx": 0.727,
+          "punkte": 3300,
+          "gzip": 15217
+        },
+        {
+          "stufe": "mittel",
+          "laender": 13,
+          "hausdorffPx": 0.492,
+          "punkte": 14426,
+          "gzip": 53927
+        },
+        {
+          "stufe": "fein",
+          "laender": 13,
+          "hausdorffPx": 0.436,
+          "punkte": 21761,
+          "gzip": 75182
         }
       ]
     }

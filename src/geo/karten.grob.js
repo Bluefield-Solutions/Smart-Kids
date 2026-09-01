@@ -5,6 +5,7 @@ import { LAENDER_EUROPA_GROB } from './laender-europa.grob.js';
 import { LAENDER_NORDAMERIKA_GROB } from './laender-nordamerika.grob.js';
 import { LAENDER_MITTELAMERIKA_GROB } from './laender-mittelamerika.grob.js';
 import { LAENDER_SUEDAMERIKA_GROB } from './laender-suedamerika.grob.js';
+import { LAENDER_AUSTRALIEN_GROB } from './laender-australien.grob.js';
 
 /** Jede Laenderkarte unter ihrem Schluessel - der Schluessel ist der,
  *  unter dem sie in `src/inhalt/erdkunde.js` ihre Ziele hat. */
@@ -15,4 +16,5 @@ export const KARTEN_GROB = {
   nordamerika: LAENDER_NORDAMERIKA_GROB,
   mittelamerika: LAENDER_MITTELAMERIKA_GROB,
   suedamerika: LAENDER_SUEDAMERIKA_GROB,
+  australien: LAENDER_AUSTRALIEN_GROB,
 };

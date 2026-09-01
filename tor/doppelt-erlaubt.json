@@ -19,13 +19,13 @@
   },
   {
     "dateien": "src/inhalt/erdkunde.js",
-    "token": 250,
+    "token": 322,
     "wo": [
-      "src/inhalt/erdkunde.js:45",
-      "src/inhalt/erdkunde.js:65",
-      "src/inhalt/erdkunde.js:160"
+      "src/inhalt/erdkunde.js:66",
+      "src/inhalt/erdkunde.js:86",
+      "src/inhalt/erdkunde.js:258"
     ],
-    "warum": "Die fünf Länderlisten. Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben."
+    "warum": "Die SIEBEN Länderlisten (Q11: Ozeanien ist die siebte). Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben. Die Zahl wächst mit jeder Karte: 250 bei fünf Listen, 322 bei sieben. Wer sie hier hochsetzt, prüft zuerst, ob wirklich nur eine LISTE dazugekommen ist und nicht Logik."
   },
   {
     "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",

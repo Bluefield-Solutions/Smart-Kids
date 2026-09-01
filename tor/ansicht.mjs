@@ -216,6 +216,12 @@ const AUFNAHMEN = [
    * nicht. Wer eine Wirkung abbilden will, muss sie einschalten. */
   { name:'quer-nordamerika', spiel:'laender:nordamerika', kind:'stephan',
     quer:true, wahl:'.schirm.da' },
+  /* Ozeanien (Q11) - die siebte Karte, und die mit dem groessten
+   * Groessenunterschied: Australien ist achtzehnmal Papua-Neuguinea. Ob
+   * die drei nebeneinander noch eine Karte ergeben oder ob Australien
+   * die beiden anderen zu Punkten macht, sagt kein Tor. */
+  { name:'quer-ozeanien', spiel:'laender:australien', kind:'stephan',
+    quer:true, wahl:'.schirm.da' },
   /* Der Elternbereich — der einzige Bildschirm ohne Vorbild, und
    * ausgerechnet der ist zuletzt um zwei Tabellen gewachsen (Übersicht je
    * Profil, „Zuletzt geübt"). Mit gesetztem Protokoll, sonst stünden dort

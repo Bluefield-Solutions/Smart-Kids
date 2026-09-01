@@ -784,7 +784,13 @@ const BEREICH_ELTERN = 'Für Eltern';
 // laufen sie auseinander. Genau das war passiert - gebacken und gezaehlt
 // waren fuenf Kontinente, in der Ebenenwahl standen zwei.
 const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
-  nordamerika:'Nordamerika', mittelamerika:'Mittelamerika', suedamerika:'Südamerika' };
+  nordamerika:'Nordamerika', mittelamerika:'Mittelamerika', suedamerika:'Südamerika',
+  /* Die Kennung heisst `australien` wie der Kontinent auf der Weltkarte,
+   * die EBENE heisst „Ozeanien": gefragt wird nach Australien,
+   * Papua-Neuguinea und Neuseeland, und eine Ebene „Australien", in der
+   * Australien eine von drei Antworten ist, waere ein Raetsel mit der
+   * Loesung im Titel. */
+  australien:'Ozeanien' };
 // `ueber` ist die Zeile ueber dem Namen. Damit heisst die Kachel
 // "Südamerika" statt "Länder in Südamerika" - das passt in eine Zeile,
 // bricht nicht mitten im Wort ("Landeshauptstä/dte") und sagt trotzdem,

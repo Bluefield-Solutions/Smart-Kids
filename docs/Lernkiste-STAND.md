@@ -7779,3 +7779,78 @@ Werkzeugcheck zugedeckt. Ein grüner Lauf heißt „alle 219 melden etwas", nich
 „alle 219 melden das Gemeinte".
 
 219 von 219 mit Nachweis, alle frisch.
+
+## Q11 — Ozeanien, und der Probenlauf wird viermal schneller
+
+### Der Probenlauf: elf von zwölf Proben fuhren den ganzen Lauf
+
+Offen war „ein `--teil`-Schnitt für `ansicht` würde den vollen Lauf kürzen". Das
+war falsch gedacht: `ansicht` hat längst ein `--teil`, die Kette fährt es
+dreigeteilt. Der Kostentreiber ist ein anderer — **elf von zwölf ansicht-Proben
+fuhren alle 34 Aufnahmen**, obwohl sie eine brauchen. Bei `passt` waren es vier
+von neun.
+
+Jede hat jetzt ihre Aufnahme:
+
+| Probe | vorher | jetzt |
+|---|---|---|
+| die Beispielkarten füllen das Band nicht mehr | 149 s | **15 s** |
+| auf dem Zielgerät verschwindet der Kachelbalken | 141 s | **16 s** |
+| die Hauptstädte-Ebene bekommt den falschen Rahmen | 152 s | **23 s** |
+| die Karte wechselt die Farbe | 170 s | **24 s** |
+| die Beispielkarten verlieren ihre Form | 167 s | **31 s** |
+| die Entwürfe holen ihre Schrift aus dem Netz | 297 s | **47 s** |
+
+`ansicht` fällt damit von 1891 auf 316 Sekunden, `passt` von 1231 auf 292 — beide
+zusammen von 52 auf 10 Minuten Rechenzeit.
+
+**Eine hat dabei ihren Gegenstand verloren**, und zwar sofort: „der leere Kopf
+nimmt wieder Platz weg" blieb grün. Ich hatte auf Profil- und Weltenwahl geraten
+— die haben eine Kopfzeile mit Inhalt. Über der Funktion steht, wer sie leer
+ruft: **Endbildschirm und Pause**. Der Kommentar wusste es, ich hatte ihn nicht
+gelesen.
+
+### Ozeanien — die siebte Karte
+
+Drei Ziele: **Australien, Papua-Neuguinea, Neuseeland.** Mehr geht nicht, und das
+sagen die Rohdaten (Fläche in Quadratgrad):
+
+| | |
+|---|---|
+| Australien | 695,9 |
+| Papua-Neuguinea | 38,0 |
+| Neuseeland | 29,1 |
+| *— hier fällt es ab —* | |
+| Salomonen · Neukaledonien · Fidschi | 2,2 · 1,6 · 1,6 |
+
+Australien ist achtzehnmal Papua-Neuguinea und dreihundertmal Fidschi. Auf einer
+Karte, die Australien zeigt, ist alles ab den Salomonen ein Punkt — dieselbe Lage
+wie in Mittelamerika. Dort war der Ausweg eine eigene Karte; hier gibt es ihn
+nicht, die drei Großen liegen zu weit auseinander. Drei ist genauso viel, wie
+Nordamerika bis Grönland hatte.
+
+Die Ebene heißt **Ozeanien**, die Kennung `australien` — so heißt der Kontinent
+auf der Weltkarte, und zwei Namen für dasselbe Gebiet wären eine Stelle mehr, die
+veraltet. Eine Ebene *namens* „Australien", in der Australien eine von drei
+Antworten ist, wäre ein Rätsel mit der Lösung im Titel.
+
+### Die Karte war beim ersten Backen leer — und der Grund ist die Datumsgrenze
+
+Die erste Fassung zeigte **Australien gar nicht**: nur Neuseeland und einen
+grünen Splitter. Der Erdteil reicht in den Rohdaten über 180 Grad — Fidschi,
+Kiribati und Tonga liegen zu beiden Seiten. Der Rahmen spannte sich dadurch über
+fast die ganze Kugel, und die azimutale Projektion setzte ihren Mittelpunkt
+mitten in den Pazifik.
+
+Die Maske schneidet auf 110 bis 180 Grad Ost und 50 Grad Süd bis zum Äquator.
+Darin liegen die drei Ziele vollständig; die Inseln jenseits der Grenze fallen
+weg — sie wären auf dieser Karte ohnehin Punkte. Von 26 Gebieten bleiben 13.
+
+**Gesehen hat das kein Tor.** Die Kette war grün: die Karte hatte einen gültigen
+Rahmen, gültige Umrisse und ein treffbares Ziel. Dass Australien fehlte, stand
+nur im Bild. Deshalb gibt es jetzt die Aufnahme `quer-ozeanien` — die Kette
+prüft 35 statt 34.
+
+Die App zählt **107 Gebiete** (6 + 69 + 16 + 16), das Startbündel 209 KB gzip.
+
+`npm run tor` grün in 200,5 s.
