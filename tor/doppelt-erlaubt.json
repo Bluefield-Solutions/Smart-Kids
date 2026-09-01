@@ -1,17 +1,21 @@
 [
   {
     "dateien": "tor/proben-liste.mjs",
-    "token": 464,
+    "token": 637,
     "wo": [
-      "tor/proben-liste.mjs:194",
-      "tor/proben-liste.mjs:204",
-      "tor/proben-liste.mjs:214",
-      "tor/proben-liste.mjs:222",
-      "tor/proben-liste.mjs:232",
-      "tor/proben-liste.mjs:1694",
-      "tor/proben-liste.mjs:1703"
+      "tor/proben-liste.mjs:1559",
+      "tor/proben-liste.mjs:1570",
+      "tor/proben-liste.mjs:1580",
+      "tor/proben-liste.mjs:1589",
+      "tor/proben-liste.mjs:1595",
+      "tor/proben-liste.mjs:1605",
+      "tor/proben-liste.mjs:1616",
+      "tor/proben-liste.mjs:1628",
+      "tor/proben-liste.mjs:1649",
+      "tor/proben-liste.mjs:1688",
+      "tor/proben-liste.mjs:1691"
     ],
-    "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken."
+    "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken. — Nachgetragen in P10: die Zahl stieg von 464 auf 637, OHNE dass die Liste länger wurde (213 Zeilen vorher, 213 nachher). Sie stieg, weil eine Zeile WEGFIEL: „die umgekehrte Frage kommt auch für Winzlinge“ wurde zu einem Kommentar, Kommentare zählt das Tor nicht mit, und die beiden gleichförmigen Stränge beiderseits rückten im Tokenstrom zusammen zu EINEM. Gemessen am Baum von b2c65fb: dieselbe Stelle, 423 Token. Diese Kennzahl ist die LÄNGE des längsten gleichförmigen Laufs, nicht die MENGE an Dopplung — an einer Tabelle kann sie deshalb auch dann wachsen, wenn etwas gestrichen wird. Wer sie hier hochsetzt, prüft zuerst die Zeilenzahl der Liste."
   },
   {
     "dateien": "src/inhalt/erdkunde.js",

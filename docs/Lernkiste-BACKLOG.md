@@ -179,8 +179,8 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
 | 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 | 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 7 | **Q1** Vier Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
-| 8 | **Q2** 187 von 207 Nachweisen sind überholt | nur ich | mittel | klein | 19 min Rechenzeit |
+| 7 | **Q1** Zwei Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
+| ~~—~~ | ~~**Q2** überholte Nachweise~~ | | | | **gefahren 01.09.** |
 | 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
 | 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
 | ~~—~~ | ~~**D2c** Deutschlands Nachbarn~~ | | | | **gefahren** |
@@ -493,40 +493,37 @@ informiert, nur schlecht.
 
 ---
 
-### Q1 · Vier Gegenproben beweisen nichts mehr
+### Q1 · Zwei Gegenproben beweisen nichts mehr
 
-Der Probenlauf meldet sie selbst, seit P6 — und sie stehen seitdem offen,
-weil jede eine eigene Untersuchung **am Tor** ist, nicht am Läufer:
+**Stand 01.09.2026, nach dem ersten vollen Lauf seit P6.** Er hat nicht
+vier, sondern **zweiundzwanzig** kaputte Proben gefunden. Zwanzig davon
+sind repariert; die Ursachen standen in `docs/Lernkiste-STAND.md` unter
+Q1/Q2. Offen bleiben zwei:
 
-- **die umgekehrte Frage kommt auch für Winzlinge** — `smoke` bleibt
-  **grün**, obwohl der Fehler eingebaut ist. Die schwerste der vier: dort
-  prüft das Tor an dieser Stelle nichts.
-- **eine Spalte fehlt in der Profiltabelle** — `smoke` wird rot, aber mit
-  einer anderen Meldung.
-- ~~**die Buchstabenerkennung nimmt alles an**~~ — **behoben am
-  01.09.2026.** Sie erwartete die Meldung „Gekritzeln werden als
-  *Buchstabe* angenommen"; das Tor sagt „als *Zeichen*", weil dieselbe
-  Zeile für Buchstaben und Ziffern gilt. Drei Wörter.
-- **eine falsche Antwort bleibt stumm** — der Suchtext trifft nicht mehr.
 - **die Buchstabenkarten rutschen wieder zusammen** — `passt` bleibt
-  **grün**, obwohl `--kleber-eng-min` von 56 auf 72 px steht. Gefunden am
-  01.09.2026 beim Nachfahren der Schreibproben; gehört zur selben Sorte
-  wie die drei darüber.
+  **grün**, obwohl `--kleber-eng-min` von 56 auf 72 px steht. Das ist ein
+  echtes Loch im Tor, keine veraltete Erwartung: `passt` sieht die
+  Aufkleberkarten im Vorlauf an dieser Stelle nicht.
+- **eine Spalte fehlt in der Profiltabelle** — `smoke` wird rot, aber mit
+  einer anderen Meldung. Noch nicht untersucht, welcher Abschnitt
+  stattdessen anschlägt.
 
-*Abnahme:* jede schlägt an, und zwar mit **ihrer** Meldung.
+*Abnahme:* beide schlagen an, und zwar mit **ihrer** Meldung.
 
 ---
 
-### Q2 · Der Nachweis der Gegenproben ist überholt
+### Q2 · Der Nachweis der Gegenproben ist überholt  ·  **GEFAHREN 01.09.2026**
 
-`node tor/proben.mjs --geaendert` zählt am 01.09.2026 **187 von 207**
-Proben, deren Datei oder Tor angefasst wurde, seit sie zuletzt angeschlagen
-haben. Das ist kein Fehler, sondern aufgelaufene Rechenzeit: seit P6 wurden
-je Runde nur die betroffenen Proben nachgefahren.
+151 von 213 Proben hatten einen überholten Nachweis. Der Lauf hat 26
+Minuten gekostet und **zweiundzwanzig** kaputte Proben gefunden — nicht
+die vier, die im Bericht standen. Die größte Einzelursache war ein Fehler
+im Probenwerkzeug selbst: der gesunde Vergleichslauf baute nicht, und
+`dist/` steht nicht in Git. Acht Proben fielen daran aus, und zwar
+**abhängig von der Reihenfolge**.
 
-Der volle Lauf kostet rund **19 Minuten** und braucht einen sauberen Baum.
-Er gehört nicht in eine Runde, sondern zwischen zwei — oder nächtlich auf
-den Runner.
+Was bleibt: der Lauf gehört zwischen zwei Runden, nicht in eine. Und er
+gehört **regelmäßig** gefahren — vier Runden Pause haben gereicht, damit
+sich zweiundzwanzig Löcher ansammeln, von denen der Bericht vier kannte.
 
 *Abnahme:* `--geaendert` meldet null ohne Nachweis und null überholte.
 

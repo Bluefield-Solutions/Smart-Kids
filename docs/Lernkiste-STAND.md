@@ -7125,3 +7125,88 @@ statt auf ein Land. Von oben traf man nur noch bis 30 statt 40 Punkte.
 Solange ein Etikett am Finger hängt, sind die Knöpfe jetzt **taub**.
 
 `npm run tor` grün in 107,9 s. 213 Gegenproben.
+
+## Q1/Q2 — der erste volle Probenlauf seit P6: zweiundzwanzig kaputte Proben
+
+Der Bericht kannte vier. Es waren **zweiundzwanzig** von 213 — und die
+größte Einzelursache lag im Probenwerkzeug selbst.
+
+### Der gesunde Vergleichslauf baute nicht
+
+Eine Gegenprobe beweist nur dann etwas, wenn das Tor **ohne** den Eingriff
+grün ist. Dieser Vergleichslauf lief in einer frischen Wegwerf-Kopie gegen
+ein `dist/`, das es dort nicht gab: `dist/` ist gitignoriert, die Kopie
+entsteht aus Git. Ergebnis: *„war schon vorher rot"*, und die Probe bewies
+nichts.
+
+**Acht Proben** sind so ausgefallen, alle im Rauchtest, alle mit langen
+Laufzeiten. Und es hing an der **Reihenfolge**: sobald irgendeine Probe mit
+`bauen:true` durch war, lag ein `dist/` da, und die nächsten
+Vergleichsläufe gingen gut. Ein Probenlauf, dessen Ergebnis davon abhängt,
+in welcher Reihenfolge die Proben zufällig auf sechs Arbeiter verteilt
+wurden, ist kein Beweis — er ist eine Würfelei, die wie ein Beweis
+aussieht.
+
+Gebaut wird jetzt einmal je Kopie, vor dem ersten Vergleichslauf. **Nach
+der einen Zeile schlugen alle acht an** — und mit ihnen vier weitere, die
+aus derselben Wurzel „Eingriff nicht angekommen" gemeldet hatten.
+
+### Der Anker, der ein Verschwinden verlangte, das zweimal dastand
+
+„eine falsche Antwort bleibt stumm" verlangte, dass `klangZu('falsch')`
+gefolgt von `if (versuch >= 3)` **verschwindet**. Den Text gibt es zweimal
+— im Rechenweg und im Schreibweg —, der Eingriff entfernt eine Stelle, und
+die Bedingung konnte nie zutreffen.
+
+Das Tor zählte bisher nur die **Suchtexte** auf Doppelungen; der war hier
+eindeutig. Die Doppelung stand allein im **Anker**. Es zählt jetzt beide —
+kein weiterer ist doppelt.
+
+### Zwei Zusagen, die die Nadeln (P10) unerreichbar gemacht haben
+
+- **„die umgekehrte Frage kommt auch für Winzlinge"** prüfte die Notbremse
+  aus P7: nach einem Gebiet, das der Finger nicht treffen kann, wird nicht
+  gefragt. Seit den Nadeln gibt es diesen Fall nicht mehr — gemessen über
+  sechs Kartenebenen und zwei Fenstergrößen: **null Fälle**. Die Zusage
+  steht jetzt im Tor: `ziehen` meldet einen **Fehler**, wenn ein Gebiet zu
+  klein ist und keine Nadel bekommt. Der Fall darf gar nicht entstehen —
+  das ist prüfbar, die Notbremse war es nicht.
+- **„der Boden verschluckt wieder den Nachbarn"** meldet das Tor seit P10
+  unter einem anderen Namen: ohne die Kappung brauchen die engen Fälle
+  keine Nadel mehr, fallen an ihren Ort zurück, und ihre **Haken** liegen
+  übereinander. Derselbe Befund, andere Stelle. Nachgemessen: mit Eingriff
+  „1 Haken liegen aufeinander (LUX/BEL 9,0 pt)", ohne ihn grün.
+
+### Was offen bleibt
+
+Zwei von 213. **„die Buchstabenkarten rutschen wieder zusammen"** — `passt`
+bleibt grün, obwohl `--kleber-eng-min` von 56 auf 72 px steht; das ist ein
+echtes Loch im Tor. Und **„eine Spalte fehlt in der Profiltabelle"** —
+`smoke` wird rot, aber mit einer anderen Meldung; noch nicht untersucht,
+welcher Abschnitt stattdessen anschlägt.
+
+### Und die Lehre, die Geld kostet
+
+Vier Runden Pause haben gereicht, damit sich zweiundzwanzig Löcher
+ansammeln, von denen der Bericht vier kannte. Der volle Lauf kostet 26
+Minuten und gehört **zwischen** zwei Runden — nicht in eine, und nicht
+alle vier.
+
+### Eine Ratsche, die wächst, wenn man etwas streicht
+
+Das Tor `doppelt` wurde rot: die eingetragene Dopplung in
+`tor/proben-liste.mjs` sei „von 464 auf 637 Token gewachsen". Gewachsen ist
+aber nichts — die Liste hat **vorher 213 Zeilen und nachher 213**.
+
+Sie stieg, weil eine Zeile **wegfiel**. „die umgekehrte Frage kommt auch
+für Winzlinge" wurde zu einem Kommentar, Kommentare zählt das Tor
+absichtlich nicht mit (sonst erzöge es dazu, keine zu schreiben), und die
+beiden gleichförmigen Stränge beiderseits rückten im Tokenstrom zu **einem**
+zusammen. Nachgemessen am Baum von `b2c65fb`: dieselbe Stelle, 423 Token.
+
+Die Kennzahl misst also die **Länge des längsten gleichförmigen Laufs**,
+nicht die **Menge** an Dopplung. An einer Tabelle kann sie deshalb auch
+dann wachsen, wenn etwas gestrichen wird. Das steht jetzt in der
+Begründung des Eintrags selbst, mit der Anweisung, vor jedem Hochsetzen
+zuerst die Zeilenzahl der Liste zu vergleichen — sonst wird aus der Ratsche
+ein Gummiband.
