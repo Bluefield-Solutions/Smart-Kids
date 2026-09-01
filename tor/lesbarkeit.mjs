@@ -201,16 +201,31 @@ const MESSEN = () => {
     let deckung = 1;
     for (let q = el; q && q !== document.documentElement; q = q.parentElement)
       deckung *= +getComputedStyle(q).opacity;
-    let schlechteste = Infinity;
+    /* Die Messstelle wird MITGEFUEHRT (Regel 5: jede Zahl traegt ihre
+     * Messstelle mit).
+     *
+     * Anlass: derselbe Text mass hier ueber 5,2:1 und auf dem Runner
+     * 4,32:1 - und aus dem Protokoll war nicht zu sehen, WORAUF er dort
+     * gemessen wurde. Eine Kontrastzahl ohne die beiden Farben, aus
+     * denen sie kommt, ist auf einem fremden Rechner nicht zu
+     * beurteilen. */
+    let schlechteste = Infinity, schlechterGrund = null;
     for (const g of grundVon(el)) {
       const gesehen = deckung >= 0.999 ? vorn
         : [0, 1, 2].map(i => vorn[i] * deckung + g[i] * (1 - deckung));
-      schlechteste = Math.min(schlechteste, kontrast(gesehen, g));
+      const k = kontrast(gesehen, g);
+      if (k < schlechteste) { schlechteste = k; schlechterGrund = g; }
     }
+    const kasten = el.getBoundingClientRect();
+    const rgb = (c) => c ? c.map(x => Math.round(x)).join(',') : '?';
     raus.push({ text: text.slice(0, 30).replace(/\s+/g, ' '),
                 klasse: (el.className || el.tagName).toString().split(' ')[0],
                 px: Math.round(parseFloat(cs.fontSize)), gross,
-                k: +schlechteste.toFixed(2), noetig: gross ? 3 : 4.5 });
+                k: +schlechteste.toFixed(2), noetig: gross ? 3 : 4.5,
+                wo: `${Math.round(kasten.left)}|${Math.round(kasten.top)} `
+                  + `${Math.round(kasten.width)}×${Math.round(kasten.height)}`,
+                vorn: rgb(vorn), grund: rgb(schlechterGrund),
+                gruende: grundVon(el).length, deckung: +deckung.toFixed(2) });
   }
   return raus;
 };
@@ -277,7 +292,9 @@ for (const abend of [false, true]) {
       gemessen++;
       if (m.k < m.noetig)
         fehler.push(`${abend ? 'Abend' : 'Tag'} · ${wo} · .${m.klasse} „${m.text}" `
-          + `${m.px} px${m.gross ? ' groß' : ''}: ${m.k}:1, nötig ${m.noetig}:1`);
+          + `${m.px} px${m.gross ? ' groß' : ''}: ${m.k}:1, nötig ${m.noetig}:1 `
+          + `— Schrift rgb(${m.vorn}) auf Grund rgb(${m.grund}), `
+          + `${m.gruende} Gründe, Deckung ${m.deckung}, Kasten ${m.wo}`);
       else if (m.k < m.noetig * 1.15) { knapp++;
         hinweise.push(`${abend ? 'Abend' : 'Tag'} · .${m.klasse} „${m.text}": ${m.k}:1 (knapp)`); }
     }

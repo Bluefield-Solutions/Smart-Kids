@@ -263,6 +263,20 @@ Jede hat mindestens eine Runde gekostet.
    Urteil des Abgleichs übernimmt, misst 100 % Trefferquote — immer, und
    ohne etwas zu beweisen.
 
+15. **Gepusht ist nicht ausgeliefert.** Nach jedem Push wird der Ablauf
+   `Auslieferung` nachgesehen — grün oder rot, und bei rot sofort.
+   Achtzehn Auslieferungen sind nacheinander rot gewesen, ohne dass es
+   jemandem aufgefallen wäre: die Kette war hier grün, auf dem Runner
+   nicht, und auf dem iPhone der Kinder stand einen Tag lang die Fassung
+   von vorgestern. „Grün bei mir" ist keine Auslieferung.
+
+16. **Der Runner und dieser Rechner müssen denselben Browser fahren.**
+   Sonst heißt grün an zwei Orten Verschiedenes. Gemessen am Tag des
+   Befunds: hier Chromium 141, auf dem Runner 151 — zehn Hauptversionen
+   auseinander, und `passt` und `lesbarkeit` waren dort rot und hier
+   grün. Ein Tor, das nur an einem der beiden Orte gilt, entscheidet
+   nichts.
+
 Die Nummern sind keine Zierde: das Tor `regeln` prüft jeden Verweis der
 Form „Regel N" gegen diese Liste — die Nummer muss es geben, und im Satz
 daneben muss ein Wort aus ihrer Überschrift stehen. Vorher zeigten 101 von

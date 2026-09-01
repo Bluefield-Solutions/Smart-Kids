@@ -263,12 +263,44 @@ for (const t of MIT_BROWSER.filter(x => x.teile)) {
   }
 }
 
+/* Was aus dem Lauf eines roten Tores in die Kettenmeldung kommt.
+ *
+ * Bis Q14 stand hier ein Filter auf `✗|FEHLER|ROT|Timeout` und ein
+ * Deckel bei zehn Zeilen. Auf dem eigenen Rechner faellt das nicht auf -
+ * man ruft das Tor einfach noch einmal einzeln auf. Auf dem RUNNER geht
+ * das nicht, und dort war die Meldung wertlos:
+ *
+ *     ROT   iPad quer  1180×820 — 1 nicht erreichbar
+ *     3 FEHLER: Elemente laufen über den Rand.
+ *
+ * WELCHES Element, ueber welchen Rand, um wieviel - all das steht in den
+ * eingerueckten Zeilen DIREKT unter der ROT-Zeile, und genau die hat der
+ * Filter weggeworfen. Achtzehn Auslieferungen sind nacheinander rot
+ * gewesen, und aus keinem Protokoll war zu lesen, woran.
+ *
+ * Jetzt gilt: eine Zeile mit Befundwort kommt mit, und wenn sie eine
+ * ROT-Zeile ist, auch alles, was tiefer eingerueckt darunter folgt. */
+function wichtigeZeilen(aus, deckel = 60) {
+  const raus = [];
+  let inDetail = false, tiefeDerRot = 0;
+  for (const z of aus.split('\n')) {
+    if (raus.length >= deckel) break;
+    const tiefe = z.length - z.trimStart().length;
+    if (/✗|FEHLER|ROT|Timeout/.test(z)) {
+      raus.push(z); inDetail = /ROT/.test(z); tiefeDerRot = tiefe; continue;
+    }
+    if (!z.trim()) { inDetail = false; continue; }
+    if (inDetail && tiefe > tiefeDerRot) { raus.push(z); continue; }
+    inDetail = false;
+  }
+  return raus;
+}
+
 console.log('');
 if (befunde.length) {
   for (const b of befunde) {
     console.log(`  ${rot('✗')} ${b.name}:`);
-    console.log(b.aus.split('\n').filter(z => /✗|FEHLER|ROT|Timeout/.test(z))
-      .slice(0, 10).map(z => '      ' + z.trim()).join('\n')
+    console.log(wichtigeZeilen(b.aus).map(z => '      ' + z.trimEnd()).join('\n')
       || b.aus.split('\n').slice(-10).map(z => '      ' + z.trimEnd()).join('\n'));
   }
   console.log(`\n  Kette ROT nach ${s(Date.now() - t0)} — `
