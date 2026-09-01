@@ -175,17 +175,29 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~14~~ | ~~**D2** Abzeichen, die etwas sagen~~ | Fiona, Lea | mittel | mittel | **gefahren** |
 | 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
 | 2 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 3 | **A4** „Heute schon geübt" | alle | mittel | klein | — |
+| 3 | **A4h** „Heute schon geübt" | alle | mittel | klein | — |
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
 | 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 | 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 7 | **D2c** Fehlen Deutschlands Nachbarn im Spiel? | Fiona, Lea | mittel | mittel | **eure Entscheidung** |
-| 8 | **D2b** Mehr Abzeichen, wenn diese getragen haben | Fiona, Lea | mittel | klein | D2, einmal spielen |
-| 9 | **P5** Die Größenratsche fragt die falsche Runde | nur ich | mittel | klein | — |
-| 10 | **P1** `passt` und `ziehen` nebeneinander | nur ich | gering | klein | — |
-| 11 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 12 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
-| 13 | **P4** 47 von 92 Regelverweisen zeigen ins Leere | nur ich | gering | mittel | — |
+| 7 | **Q1** Vier Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
+| 8 | **Q2** 187 von 207 Nachweisen sind überholt | nur ich | mittel | klein | 19 min Rechenzeit |
+| 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
+| 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| ~~—~~ | ~~**D2c** Deutschlands Nachbarn~~ | | | | **gefahren** |
+| ~~—~~ | ~~**D2b** Mehr Abzeichen~~ | | | | **gefahren** |
+| ~~—~~ | ~~**P5** Die Größenratsche~~ | | | | **gefahren** |
+| ~~—~~ | ~~**P1** `passt` und `ziehen` nebeneinander~~ | | | | **gefahren** |
+| ~~—~~ | ~~**P4** Regelverweise ins Leere~~ | | | | **gefahren** |
+
+*Nachgezogen am 01.09.2026.* Fünf Zeilen standen hier als „offen", während
+ihr eigener Abschnitt weiter unten seit Runden **ERLEDIGT** trägt — die
+Tabelle wurde nicht mitgepflegt, als die Punkte fielen. Genau die Falle, die
+Regel 6 beschreibt, diesmal in einem Dokument: wer nur die Rangliste liest,
+arbeitet an Erledigtem.
+
+**A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
+Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
+zwei verschiedene Dinge; der Katalogpunkt heisst deshalb jetzt **A4h**.
 
 ---
 
@@ -478,6 +490,39 @@ sie —, liest daraus das Gegenteil dessen, was dasteht.
 
 Gehört zu S1, ist aber die kleinere Hälfte: hier ist niemand *falsch*
 informiert, nur schlecht.
+
+---
+
+### Q1 · Vier Gegenproben beweisen nichts mehr
+
+Der Probenlauf meldet sie selbst, seit P6 — und sie stehen seitdem offen,
+weil jede eine eigene Untersuchung **am Tor** ist, nicht am Läufer:
+
+- **die umgekehrte Frage kommt auch für Winzlinge** — `smoke` bleibt
+  **grün**, obwohl der Fehler eingebaut ist. Die schwerste der vier: dort
+  prüft das Tor an dieser Stelle nichts.
+- **eine Spalte fehlt in der Profiltabelle** — `smoke` wird rot, aber mit
+  einer anderen Meldung.
+- **die Buchstabenerkennung nimmt alles an** — `schreiben` wird rot, aber
+  nicht deswegen.
+- **eine falsche Antwort bleibt stumm** — der Suchtext trifft nicht mehr.
+
+*Abnahme:* jede schlägt an, und zwar mit **ihrer** Meldung.
+
+---
+
+### Q2 · Der Nachweis der Gegenproben ist überholt
+
+`node tor/proben.mjs --geaendert` zählt am 01.09.2026 **187 von 207**
+Proben, deren Datei oder Tor angefasst wurde, seit sie zuletzt angeschlagen
+haben. Das ist kein Fehler, sondern aufgelaufene Rechenzeit: seit P6 wurden
+je Runde nur die betroffenen Proben nachgefahren.
+
+Der volle Lauf kostet rund **19 Minuten** und braucht einen sauberen Baum.
+Er gehört nicht in eine Runde, sondern zwischen zwei — oder nächtlich auf
+den Runner.
+
+*Abnahme:* `--geaendert` meldet null ohne Nachweis und null überholte.
 
 ---
 
