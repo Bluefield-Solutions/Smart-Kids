@@ -732,7 +732,7 @@ const BEREICH_ELTERN = 'Für Eltern';
 // laufen sie auseinander. Genau das war passiert - gebacken und gezaehlt
 // waren fuenf Kontinente, in der Ebenenwahl standen zwei.
 const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
-  nordamerika:'Nordamerika', suedamerika:'Südamerika' };
+  nordamerika:'Nordamerika', mittelamerika:'Mittelamerika', suedamerika:'Südamerika' };
 // `ueber` ist die Zeile ueber dem Namen. Damit heisst die Kachel
 // "Südamerika" statt "Länder in Südamerika" - das passt in eine Zeile,
 // bricht nicht mitten im Wort ("Landeshauptstä/dte") und sagt trotzdem,
@@ -1349,6 +1349,32 @@ async function standLaden(ebeneId){
 async function standSichern(ebeneId){
   try { await Ablage.setze('fortschritt', standSchluessel(ebeneId), Stand); } catch(e){}
 }
+/* Der Umzug nach Mittelamerika (A6).
+ *
+ * Neun Laender sind von `laender:nordamerika` auf die eigene Karte
+ * gewandert. Ihr Leitner-Stand steht aber unter der ALTEN Ebene: wer
+ * Kuba dreimal richtig hatte, faende es sonst als frisches Gebiet
+ * wieder, und der Aufkleber im Forscherbuch waere weg. Fuer ein Kind
+ * ist das kein Datenschema, das ist geloeschte Arbeit.
+ *
+ * Kopiert, nicht verschoben: die Eintraege bleiben auch unter
+ * Nordamerika stehen. Sie stoeren dort nicht - `Leitner.fortschritt`
+ * geht ueber den VORRAT der Ebene und sieht sie gar nicht -, und wer
+ * eine Fassung zurueckrollt, hat seinen Stand noch.
+ *
+ * Laeuft genau einmal je Kind: sobald unter der neuen Kennung etwas
+ * steht, ist nichts mehr zu tun. */
+async function umzugMittelamerika(){
+  const neu = `${P.id}:laender:mittelamerika`;
+  try {
+    if (await Ablage.hole('fortschritt', neu)) return;
+    const alt = await Ablage.hole('fortschritt', `${P.id}:laender:nordamerika`);
+    if (!alt) return;
+    const ids = (D.laender.mittelamerika || []).map(l => l.a3);
+    const mit = Object.fromEntries(ids.filter(id => alt[id]).map(id => [id, alt[id]]));
+    if (Object.keys(mit).length) await Ablage.setze('fortschritt', neu, mit);
+  } catch(e){}
+}
 async function einstLaden(){
   try { Einst = { ...Einst, ...(await Ablage.hole('einstellungen','alles') || {}) }; } catch(e){}
   tonAn = Einst.ton;
@@ -1457,9 +1483,12 @@ function profilwahl(){
   s.querySelector('#abend').onclick=(e)=>{ Einst.abend=!Einst.abend; einstSichern();
     document.documentElement.setAttribute('data-abend',Einst.abend?'an':'aus');
     e.target.textContent=Einst.abend?'Abend':'Tag'; };
-  s.querySelectorAll('[data-profil]').forEach(b=>b.onclick=()=>{
+  s.querySelectorAll('[data-profil]').forEach(b=>b.onclick=async ()=>{
     P=PROFILE[b.dataset.profil]; Ablage.setze('profile',P.id,{ id:P.id, zuletzt:Date.now() }).catch(()=>{});
-    sagen(P.name); zeige(weltenwahl); });
+    sagen(P.name);
+    // Erst umziehen, dann zeigen: die Weltenwahl summiert den Stand schon.
+    await umzugMittelamerika();
+    zeige(weltenwahl); });
   // Hier ist noch kein Kind gewaehlt - also wird immer angesagt. Wer lesen
   // kann, hoert einen Satz zuviel; wer nicht liest, kaeme sonst nicht los.
   ansagen(`Wer möchte spielen? ${aufzaehlen(Object.values(PROFILE).map(x=>x.name))}?`);
@@ -1668,7 +1697,7 @@ async function ebenenwahl(){
   s.innerHTML = wahlKopf(welt.name) + `
     <div class="mitte">
       <div class="titel">Womit möchtest du anfangen?</div>
-      <div class="wahl">${balken.map(b=>`
+      <div class="wahl ebenen">${balken.map(b=>`
         <div class="kachelpaar">
         <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
           ${silhouette(b.id)}

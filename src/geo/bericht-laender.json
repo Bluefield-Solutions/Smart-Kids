@@ -138,7 +138,36 @@
       "ziele": [
         "USA",
         "Mexiko",
-        "Kanada",
+        "Kanada"
+      ],
+      "stufen": [
+        {
+          "stufe": "grob",
+          "laender": 42,
+          "hausdorffPx": 0.629,
+          "punkte": 19929,
+          "gzip": 76893
+        },
+        {
+          "stufe": "mittel",
+          "laender": 42,
+          "hausdorffPx": 0.736,
+          "punkte": 60763,
+          "gzip": 195590
+        },
+        {
+          "stufe": "fein",
+          "laender": 42,
+          "hausdorffPx": 0.694,
+          "punkte": 88710,
+          "gzip": 259730
+        }
+      ]
+    },
+    {
+      "id": "mittelamerika",
+      "name": "Mittelamerika",
+      "ziele": [
         "Guatemala",
         "Haiti",
         "Kuba",
@@ -152,24 +181,24 @@
       "stufen": [
         {
           "stufe": "grob",
-          "laender": 42,
-          "hausdorffPx": 0.629,
-          "punkte": 19929,
-          "gzip": 77081
+          "laender": 34,
+          "hausdorffPx": 0.384,
+          "punkte": 8256,
+          "gzip": 34646
         },
         {
           "stufe": "mittel",
-          "laender": 42,
-          "hausdorffPx": 0.736,
-          "punkte": 60763,
-          "gzip": 195779
+          "laender": 34,
+          "hausdorffPx": 0.735,
+          "punkte": 12090,
+          "gzip": 49262
         },
         {
           "stufe": "fein",
-          "laender": 42,
-          "hausdorffPx": 0.694,
-          "punkte": 88710,
-          "gzip": 259918
+          "laender": 34,
+          "hausdorffPx": 0.709,
+          "punkte": 15424,
+          "gzip": 60874
         }
       ]
     },

@@ -185,13 +185,27 @@ const AUFNAHMEN = [
   { name:'quer-hauptstaedte-eu', spiel:'hauptstaedte:europa', kind:'lea',
     quer:true, wahl:'.schirm.da' },
   /* Die Nadeln (P10) — der einzige Bildschirm, auf dem eine Trefferflaeche
-   * zu SEHEN ist. Sieben Gebiete Mittelamerikas haengen hier neben der
-   * Karte, mit Faden und farbigem Kopf. Dass sie da sind, misst
-   * `ziehen --nur=treffer`; wie sie AUSSEHEN, misst nichts - ob zwei
-   * Koepfe uebereinanderliegen, ob ein Faden quer ueber die halbe Karte
-   * geht, ob das Bild noch zu lesen ist, sieht nur ein Mensch. Gespielt
-   * von Stephan: nur seine Tiefe hat die sieben ueberhaupt auf der Karte. */
-  { name:'quer-nadeln', spiel:'laender:nordamerika', kind:'stephan',
+   * zu SEHEN ist. Zwei Gebiete haengen hier neben der Karte, mit Faden
+   * und farbigem Kopf. Dass sie da sind, misst `ziehen --nur=treffer`;
+   * wie sie AUSSEHEN, misst nichts - ob zwei Koepfe uebereinanderliegen,
+   * ob ein Faden quer ueber die halbe Karte geht, ob das Bild noch zu
+   * lesen ist, sieht nur ein Mensch. Gespielt von Stephan: nur seine
+   * Tiefe hat die beiden ueberhaupt auf der Karte.
+   *
+   * Bis A6 stand hier NORDAMERIKA mit sieben Nadeln. Seit Mittelamerika
+   * seine eigene Karte hat, hat Nordamerika drei Laender und keine Nadel
+   * mehr - die Aufnahme haette weiter gruen gemeldet und nichts mehr
+   * gezeigt. Europa ist jetzt die einzige Ebene mit Nadeln, also ist es
+   * diese hier (Regel 1: eine Aufnahme, die ihren Gegenstand verloren
+   * hat, bezeugt nichts). */
+  { name:'quer-nadeln', spiel:'laender:europa', kind:'stephan',
+    quer:true, wahl:'.schirm.da' },
+  /* Die neue Karte (A6). Der Ausschnitt Mittelamerika ist der Grund,
+   * warum es die sieben Nadeln nicht mehr gibt: neun Laender, alle am
+   * Ort zu treffen. Ob der Ausschnitt als KARTE etwas taugt - ob der
+   * Rand durch Mexiko und Kolumbien wie ein Kartenrand aussieht und
+   * nicht wie ein Fehler -, sagt kein Tor. */
+  { name:'quer-mittelamerika', spiel:'laender:mittelamerika', kind:'stephan',
     quer:true, wahl:'.schirm.da' },
   /* Der Elternbereich — der einzige Bildschirm ohne Vorbild, und
    * ausgerechnet der ist zuletzt um zwei Tabellen gewachsen (Übersicht je
@@ -812,6 +826,19 @@ for (const a of MEINE) {
     for (const b of document.querySelectorAll('.bauzeile'))
       b.textContent = 'Prototyp · Fassung p0.0 · 2000-01-01 00:00';
   });
+  /* Der Zeiger wird WEGGELEGT, bevor ausgeloest wird.
+   *
+   * Auf dem Schreibtisch liegt die Maus nach dem letzten Klick irgendwo -
+   * und wo, entscheidet, wo die Kacheln stehen. Als der Ausschnitt
+   * Mittelamerika (A6) eine Kachel dazwischenschob, wanderte der Zeiger
+   * auf dem naechsten Bildschirm zufaellig ueber den Knopf „Berlin", und
+   * `spiel-bundesland` meldete 7478 geaenderte Bildpunkte: einen
+   * Hover-Ring, den auf dem Zielgeraet nie jemand sieht.
+   *
+   * Das ist kein Unterschied, den ein Vorbild festhalten soll. Der Zeiger
+   * geht deshalb vor jeder Aufnahme in die Ecke - einmal fuer alle
+   * Aufnahmen, statt in jeder einzeln daran zu denken. */
+  await seite.mouse.move(0, 0);
   // `animations: 'disabled'` haelt laufende Animationen an und spult sie ans
   // Ende. Ohne das bleibt eine ENDLOSE Animation - der atmende Ring am
   // Mikrofonknopf - auch bei 1 ms Dauer irgendwo stehen, und das Tor meldet

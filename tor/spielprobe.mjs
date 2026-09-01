@@ -19,10 +19,7 @@ import { STAEDTE } from '../src/geo/staedte.js';
 import * as V from '../src/vergleich/vergleich.js';
 import * as Ri from '../src/kern/richtung.js';
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
-import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
-import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
-import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js';
-import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
+import { KARTEN_GROB } from '../src/geo/karten.grob.js';
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 
@@ -239,9 +236,10 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
 // eine Unsymmetrie mit Folgen. Die Torkette zaehlte weiter 25 Laender,
 // spielbar waren 24.
 {
-  const geo = { europa:LAENDER_EUROPA_GROB, afrika:LAENDER_AFRIKA_GROB,
-    asien:LAENDER_ASIEN_GROB, nordamerika:LAENDER_NORDAMERIKA_GROB,
-    suedamerika:LAENDER_SUEDAMERIKA_GROB };
+  // Das Verzeichnis kommt erzeugt aus dem Backen (A6) - eine Tafel von
+  // Hand hat hier bei der sechsten Karte behauptet, neun Laender haetten
+  // keine Flaeche, obwohl ihre Karte danebenlag.
+  const geo = KARTEN_GROB;
   for (const [kont, liste] of Object.entries(I.LAENDER)) {
     /* Gefragt wird nach dem UMRISS, nicht nach dem gebackenen Rang.
      *

@@ -395,6 +395,26 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    zwei Reihen und schoben den "Verstanden"-Knopf aus dem Bild. Ein Mass
    fuer alle waere hier das Bequeme, nicht das Richtige. */
 .wahl.eng{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+/* Die Ebenenwahl ist die einzige Kachelwand, die WAECHST.
+ *
+ * Profile sind vier, Welten sind drei - die Ebenen waren neun und sind
+ * mit dem Ausschnitt Mittelamerika (A6) zehn geworden. Auf einem 700
+ * Punkte breiten Fenster stehen sie in zwei Spalten, also fuenf Reihen zu
+ * 125 Punkten, und die letzte Reihe stand drei Punkte unter dem
+ * Fensterrand. Gemessen von `passt`, auf der Groesse „Fenster schmal".
+ *
+ * Die drei Punkte kommen aus dem Abstand ZWISCHEN den Reihen: vier
+ * Luecken zu 16 Punkten. Auf 12 gesetzt sind es sechzehn Punkte weniger,
+ * und die Wand passt wieder.
+ *
+ * Was hier NICHT steht, und warum: ein engeres Spaltenmass. Mit 200 statt
+ * 240 werden daraus drei Spalten und vier Reihen - das passt auch, und
+ * `passt` meldete gruen. `lesbarkeit` hat es zerlegt: bei 200 Punkten
+ * Kachelbreite laeuft der Name in das Wasserzeichen, und fuenf
+ * Kachelnamen fielen von ihren 4,7 auf 2,33:1. Zwei Tore, zwei Seiten
+ * derselben Kachel - und das schmalere Mass war die schlechtere Antwort,
+ * obwohl es die naheliegende war. */
+.wahl.ebenen{gap:var(--r3)}
 /* ---- Die Kachelsprache (R2, Fassung „B · Bild" auf Weiss) -------------
    Auf weissem Grund traegt nicht mehr die Flaeche, sondern der RAND: 26 %
    Fuellung aus dem eigenen Ton, 52 % Rand daraus. Und jede Kachel zeigt

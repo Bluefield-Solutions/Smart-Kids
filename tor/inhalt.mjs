@@ -28,6 +28,7 @@ import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
 import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
 import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js';
+import { KARTEN_GROB } from '../src/geo/karten.grob.js';
 import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
@@ -92,7 +93,10 @@ laender.forEach(l => {
   pruefe(l.name, `Land ${l.a3} ohne Namen`);
   pruefe(l.rang >= 1, `Land ${l.a3}: Rang ${l.rang} ist kein Rang`);
   pruefe(l.aussprache && l.aussprache.length >= 2, `Land ${l.a3}: zu wenige Aussprachevarianten`);
-  pruefe(I.KONTINENTE.some(k=>k.id===l.kontinent), `Land ${l.a3}: Elternknoten ${l.kontinent} fehlt`);
+  // Entweder ein Kontinent - oder ein erklaerter Ausschnitt daraus (A6).
+  pruefe(I.KONTINENTE.some(k=>k.id===l.kontinent)
+    || I.KONTINENTE.some(k=>k.id===I.AUSSCHNITTE[l.kontinent]),
+    `Land ${l.a3}: Elternknoten ${l.kontinent} fehlt`);
 });
 /* Die Raenge sind LUECKENLOS 1 bis n - je Kontinent.
  *
@@ -661,9 +665,8 @@ const GESPIELT = [
  * vergleicht beide Listen. Was `erdkunde.js` spielt, MUSS es im Umriss
  * geben - sonst steht ein Land in der Liste und hat keine Karte. */
 for (const [kont, liste] of Object.entries(I.LAENDER)) {
-  const roh = { europa: LAENDER_EUROPA_GROB, afrika: LAENDER_AFRIKA_GROB,
-                asien: LAENDER_ASIEN_GROB, nordamerika: LAENDER_NORDAMERIKA_GROB,
-                suedamerika: LAENDER_SUEDAMERIKA_GROB }[kont];
+  // Erzeugt aus dem Backen (A6), nicht von Hand gefuehrt.
+  const roh = KARTEN_GROB[kont];
   const da = new Set((roh || []).map(l => l.a3));
   const ohne = liste.filter(x => x.rang && !da.has(x.a3)).map(x => x.name);
   pruefe(ohne.length === 0, `${ohne.join(', ')} steht in erdkunde.js, hat aber `

@@ -43,6 +43,22 @@ export const KONTINENTE = [
     aussprache:['asjen','aasien','asien'], runde:2 },
 ];
 
+/* Karten, die kein Kontinent sind.
+ *
+ * `LAENDER` ist nach KARTEN geordnet, nicht nach Erdteilen - fuenf davon
+ * sind Kontinente, einer ist ein Ausschnitt. Der Eintrag hier sagt, aus
+ * welchem Kontinent ein Ausschnitt geschnitten ist, und ist der Grund,
+ * warum das Tor `inhalt` einen Schluessel wie `mittelamerika` nicht als
+ * Tippfehler meldet: es prueft weiter, dass JEDER Schluessel entweder ein
+ * Kontinent oder ein hier genannter Ausschnitt ist.
+ *
+ * Warum es den Ausschnitt gibt: gemessen. Auf dem Zielgeraet sind neun
+ * der zwoelf Laender Nordamerikas zwischen 4 und 17 Punkte gross - die
+ * Tafel steht in `tools/backen-laender.mjs`. Eine Nebenkarte in der Ecke
+ * bringt keines davon ueber die Fingergrenze; nur ein eigener Massstab
+ * tut es, und ein eigener Massstab ist eine eigene Karte. */
+export const AUSSCHNITTE = { mittelamerika: 'nordamerika' };
+
 /** Ebene 2. rang 1..5; Fiona sieht 1..3, Lea 1..5. */
 export const LAENDER = {
   asien:[
@@ -144,19 +160,51 @@ export const LAENDER = {
       wovon:'von der Ukraine' },
     { a3:'ROU', name:'Rumänien', rang:16, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
     { a3:'GRC', name:'Griechenland', rang:17, aussprache:['griechenland','griechnland'] },
-  ],  nordamerika:[
+  ],
+  /* --- Nordamerika: die drei grossen ------------------------------ *
+   *
+   * Bis A6 standen hier zwoelf Laender, und neun davon waren auf dem
+   * Zielgeraet nicht zu treffen: auf 362 x 288 Punkten ist El Salvador
+   * 4,1 Punkte gross, Haiti 4,6, Kuba 16,9. Sieben von ihnen hingen an
+   * einer Nadel neben der Karte, mit Faeden bis zu 134 Punkten Laenge -
+   * ein Faecher unter Mittelamerika, in dem nicht mehr zu sehen war,
+   * welcher Faden zu welchem Land gehoert.
+   *
+   * Sie stehen jetzt auf einer eigenen Karte (`mittelamerika`), und zwar
+   * nicht, weil das huebscher waere, sondern weil es gemessen die einzige
+   * Form ist, die reicht: die Tafel in `tools/backen-laender.mjs` zeigt,
+   * dass eine Nebenkarte in der Ecke KEIN einziges der neun ueber die
+   * Schwelle bringt. Wer eine eigene Karte braucht, braucht eine eigene
+   * Ebene.
+   *
+   * Gezeichnet werden sie hier weiter - als Umgebung, grau, wie jedes
+   * Land ohne Rang. Die Nordamerikakarte bleibt vollstaendig (G8), nur
+   * gefragt wird nach ihnen woanders. */
+  nordamerika:[
     { a3:'USA', name:'USA', rang:1, aliasse:['Vereinigte Staaten','Amerika'], aussprache:['u es a','usa','amerika'] },
     { a3:'MEX', name:'Mexiko', rang:2, aliasse:['Mexico'], aussprache:['mexiko','mexico'] },
     { a3:'CAN', name:'Kanada', rang:3, aliasse:['Canada'], aussprache:['kanada','canada'] },
-    { a3:'GTM', name:'Guatemala', rang:4, aussprache:['guatemala','gwatemala'] },
-    { a3:'HTI', name:'Haiti', rang:5, aussprache:['haiti','haitii'] },
-    { a3:'CUB', name:'Kuba', rang:6, aliasse:['Cuba'], aussprache:['kuba','cuba'] },
-    { a3:'DOM', name:'Dominikanische Republik', rang:7, aliasse:['Dominikanische Rep.'], aussprache:['dominikanische republik','dominikanische rep'] },
-    { a3:'HND', name:'Honduras', rang:8, aussprache:['honduras','hondurass'] },
-    { a3:'NIC', name:'Nicaragua', rang:9, aliasse:['Nikaragua'], aussprache:['nicaragua','nikaragua'] },
-    { a3:'SLV', name:'El Salvador', rang:10, aliasse:['Salvador'], aussprache:['el salvador','salvador'] },
-    { a3:'CRI', name:'Costa Rica', rang:11, aliasse:['Kostarika'], aussprache:['costa rica','kostarika'] },
-    { a3:'PAN', name:'Panama', rang:12, aussprache:['panama','pannama'] },
+  ],
+  /* --- Mittelamerika und die Karibik ------------------------------ *
+   *
+   * Dieselben neun Laender, dieselbe Reihenfolge nach Einwohnerzahl -
+   * nur der Rang faengt wieder bei eins an, weil `laenderTiefe` je Profil
+   * von oben zaehlt. Fiona (Tiefe 3) uebt Guatemala, Haiti und Kuba, Lea
+   * und die Eltern alle neun.
+   *
+   * Der Name der Ebene sagt „Mittelamerika" und meint es im Schulsinn:
+   * die Landbruecke UND die grossen Antillen. So haelt es der Diercke,
+   * und so passt es in eine Kachelzeile. */
+  mittelamerika:[
+    { a3:'GTM', name:'Guatemala', rang:1, aussprache:['guatemala','gwatemala'] },
+    { a3:'HTI', name:'Haiti', rang:2, aussprache:['haiti','haitii'] },
+    { a3:'CUB', name:'Kuba', rang:3, aliasse:['Cuba'], aussprache:['kuba','cuba'] },
+    { a3:'DOM', name:'Dominikanische Republik', rang:4, aliasse:['Dominikanische Rep.'], aussprache:['dominikanische republik','dominikanische rep'] },
+    { a3:'HND', name:'Honduras', rang:5, aussprache:['honduras','hondurass'] },
+    { a3:'NIC', name:'Nicaragua', rang:6, aliasse:['Nikaragua'], aussprache:['nicaragua','nikaragua'] },
+    { a3:'SLV', name:'El Salvador', rang:7, aliasse:['Salvador'], aussprache:['el salvador','salvador'] },
+    { a3:'CRI', name:'Costa Rica', rang:8, aliasse:['Kostarika'], aussprache:['costa rica','kostarika'] },
+    { a3:'PAN', name:'Panama', rang:9, aussprache:['panama','pannama'] },
   ],
   suedamerika:[
     { a3:'BRA', name:'Brasilien', rang:1, aussprache:['brasilien','brasiljen'] },

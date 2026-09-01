@@ -98,6 +98,20 @@ export const PROBEN = [
     such:"{ id:'afrika', name:'Afrika'", ersatz:"{ id:'europa', name:'Afrika'",
     an:{ datei:E, text:"{ id:'europa', name:'Afrika'" }, sagt:'doppelte ID' },
 
+  /* Ein Ausschnitt, den niemand erklaert hat (A6).
+   *
+   * `LAENDER` ist nach KARTEN geordnet; fuenf Schluessel sind Kontinente,
+   * einer ist ein Ausschnitt. Das Tor laesst einen Schluessel nur durch,
+   * wenn er das eine oder das andere IST - sonst wuerde ein Tippfehler im
+   * Schluessel eine stille zusaetzliche Ebene erzeugen, die kein Kind
+   * findet. Diese Probe nimmt die Erklaerung weg. */
+  { n:'ein Kartenschlüssel ist weder Kontinent noch erklärter Ausschnitt',
+    tor:'inhalt', deckt:'inhalt', datei:E,
+    such:"export const AUSSCHNITTE = { mittelamerika: 'nordamerika' };",
+    ersatz:"export const AUSSCHNITTE = {};",
+    an:{ datei:E, text:'export const AUSSCHNITTE = {};' },
+    sagt:'Elternknoten' },
+
   /* --- topologie ---------------------------------------------------- */
   { n:'ein Anker liegt außerhalb seines Gebiets', tor:'inhalt', deckt:'topologie', datei:'src/geo/staedte.js',
     such:'"anker":[804.7,703]', ersatz:'"anker":[5,5]',
@@ -696,28 +710,32 @@ export const PROBEN = [
    * auch wirklich - jemand bestaetigt einen Stand von einer anderen
    * Fenstergroesse und merkt nicht, dass die Karte danach schlechter
    * geworden ist. */
-  /* Beide Proben zielen auf die ZEILE, nicht auf ihren Wert.
+  /* Beide Proben zielen auf die ZEILE, nicht auf ihren Wert - und auf die
+   * Ebene, die ueberhaupt noch Nadeln hat.
    *
-   * Sie standen hier eine Runde lang als `such:'"faden": 154'` - also mit
-   * der gemessenen Zahl im Suchtext. Beim ERSTEN Mal, dass die Ratsche
-   * enger wurde (A5: der Kopf gab Hoehe ab, 154 wurde 134), zielten beide
-   * ins Leere. Eine Ratsche ist dafuer da, sich zu bewegen; eine
-   * Gegenprobe, die an ihrem Zahlenwert haengt, verfaellt planmaessig.
+   * Sie standen eine Runde lang als `such:'"faden": 154'`, also mit der
+   * gemessenen Zahl im Suchtext. Beim ERSTEN Mal, dass die Ratsche enger
+   * wurde (A5: der Kopf gab Hoehe ab, 154 wurde 134), zielten beide ins
+   * Leere. Eine Ratsche ist dafuer da, sich zu bewegen; eine Gegenprobe,
+   * die an ihrem Zahlenwert haengt, verfaellt planmaessig.
    *
-   * Der Ausdruck fasst deshalb die Ebene mit, nicht nur das Feld: „faden"
-   * steht zweimal in der Datei, und welche Stelle verstellt wuerde,
-   * entschiede sonst die Reihenfolge. */
+   * Und eine Runde spaeter war auch die EBENE weg: mit dem Ausschnitt
+   * Mittelamerika (A6) hat Nordamerika drei Laender und keine Nadel mehr,
+   * die Ratsche fuehrt es nicht mehr. Europa ist jetzt die einzige Ebene
+   * mit Nadeln - also steht sie hier. Wer eine zweite dazubekommt, darf
+   * beide Proben verdoppeln; solange es nur eine gibt, waere ein
+   * Ausdruck ueber „irgendeine Ebene" nur scheinbar allgemeiner. */
   { n:'die Nadelfäden sind länger geworden als bestätigt', tor:'ziehen',
     args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
-    suchRegex:/("laender:nordamerika":\s*\{\s*"eng":\s*[\d.]+,\s*"faden":\s*)\d+/,
-    ersatzFn:m => m[1] + '100',
-    an:{ datei:'tor/nadeln-stand.json', text:'"faden": 100' },
+    suchRegex:/("laender:europa":\s*\{\s*"eng":\s*[\d.]+,\s*"faden":\s*)\d+/,
+    ersatzFn:m => m[1] + '40',
+    an:{ datei:'tor/nadeln-stand.json', text:'"faden": 40' },
     sagt:'sagt nicht „hier"' },
   { n:'zwei Nadelköpfe rücken enger zusammen als bestätigt', tor:'ziehen',
     args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
-    suchRegex:/("laender:nordamerika":\s*\{\s*"eng":\s*)[\d.]+/,
-    ersatzFn:m => m[1] + '60',
-    an:{ datei:'tor/nadeln-stand.json', text:'"eng": 60' },
+    suchRegex:/("laender:europa":\s*\{\s*"eng":\s*)[\d.]+/,
+    ersatzFn:m => m[1] + '90',
+    an:{ datei:'tor/nadeln-stand.json', text:'"eng": 90' },
     sagt:'trifft den falschen' },
 
   /* Ein Teillauf urteilt über ein Profil, das er nicht gespielt hat.
@@ -1227,6 +1245,26 @@ export const PROBEN = [
     ersatz:"      const wegweiser = n.x.id === ziel.id ? ' nadelziel' : '';",
     an:{ ...DIST, text:"const wegweiser = n.x.id === ziel.id" },
     sagt:'das ist die Antwort' },
+
+  /* Und die VORAUSSETZUNG des Abschnitts (A6).
+   *
+   * Er stellt einen Lernstand, in dem nur die kleinen Laender einer Karte
+   * faellig sind - alle anderen bekommen Fach 5 und einen Termin in
+   * ferner Zukunft. Steht eine der Kennungen nicht auf dieser Karte, dann
+   * bekommt eben JEDES Land Fach 5, die Sitzung ist leer, und der
+   * Abschnitt haengt im Warten auf die erste Frage.
+   *
+   * Genau so ist er in A6 gestorben, als Mittelamerika seine eigene Karte
+   * bekam und die sieben kleinen von der Nordamerikakarte verschwanden:
+   * eine nackte Zeitueberschreitung, die nicht sagt, was fehlt. Seitdem
+   * prueft der Abschnitt seine eigene Voraussetzung - und diese Probe
+   * prueft, dass er es tut. */
+  { n:'der Rauchtest stellt einen Stand für eine Karte, die es nicht gibt',
+    tor:'smoke', args:['--nur=umgekehrt'], datei:'tor/smoke.mjs',
+    such:"  const kleine = new Set(['BEL','LUX',",
+    ersatz:"  const kleine = new Set(['XXX','LUX',",
+    an:{ datei:'tor/smoke.mjs', text:"new Set(['XXX','LUX'," },
+    sagt:'steht nicht auf der Europakarte' },
 
   /* --- Die Haken (A4) ---------------------------------------------------
    *

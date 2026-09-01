@@ -3,11 +3,7 @@ import zlib from 'node:zlib';
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { DEUTSCHLAND_GROB } from '../src/geo/deutschland.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
-import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
-import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
-import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
-import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js';
-import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
+import { KARTEN_GROB } from '../src/geo/karten.grob.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { inline } from './inline.mjs';
@@ -43,17 +39,41 @@ function ankerFuer(liste){
 }
 
 const kont = new Map(I.KONTINENTE.map(k=>[k.id,k]));
-/** Die fuenf Kontinente mit Laenderebene. Australien hat keine. */
-const KONT_LAENDER = [
-  ['europa',      LAENDER_EUROPA_GROB],
-  ['afrika',      LAENDER_AFRIKA_GROB],
-  ['asien',       LAENDER_ASIEN_GROB],
-  ['nordamerika', LAENDER_NORDAMERIKA_GROB],
-  ['suedamerika', LAENDER_SUEDAMERIKA_GROB],
-];
+/** Die Laenderkarten. Fuenf Kontinente - Australien hat keine - und EIN
+ *  Ausschnitt: Mittelamerika, weil neun Laender dort auf der
+ *  Nordamerikakarte nicht zu treffen waren (A6, Tafel in
+ *  `tools/backen-laender.mjs`). Die Reihenfolge ist die der Kacheln in der
+ *  Ebenenwahl; Mittelamerika steht neben Nordamerika, wo es hingehoert. */
+const KACHELFOLGE = ['europa', 'afrika', 'asien',
+                    'nordamerika', 'mittelamerika', 'suedamerika'];
+/* Die Umrisse kommen aus dem ERZEUGTEN Verzeichnis, die Reihenfolge von
+ * hier. Wer eine Karte backt und hier zu nennen vergisst, faellt sofort
+ * auf - statt eine Kachel zu bekommen, die niemand sieht. */
+{
+  const gebacken = Object.keys(KARTEN_GROB).sort().join(',');
+  const genannt = [...KACHELFOLGE].sort().join(',');
+  if (gebacken !== genannt)
+    throw new Error(`Kachelfolge und gebackene Karten gehen auseinander:\n`
+      + `  gebacken: ${gebacken}\n  genannt:  ${genannt}`);
+}
+const KONT_LAENDER = KACHELFOLGE.map(id => [id, KARTEN_GROB[id]]);
 
-const laenderMeta = {};
-for (const [k, l] of Object.entries(I.LAENDER)) for (const x of l) laenderMeta[x.a3] = x;
+/* Was auf WELCHER Karte ein Ziel ist - je Ebene, nicht je Kennung.
+ *
+ * Hier stand eine FLACHE Tafel `a3 -> Land` ueber alle Kontinente. Das
+ * ging gut, solange jedes Land auf genau einer Karte lag. Mit dem
+ * Ausschnitt Mittelamerika (A6) liegt Guatemala auf zweien - gefragt wird
+ * es nur auf der einen, gezeichnet wird es auf beiden. Die flache Tafel
+ * hat daraus prompt ein Ziel auf BEIDEN gemacht: der Bau meldete 81
+ * Laender statt 65, weil neun doppelt zaehlten und Kolumbien und
+ * Venezuela als Ziele im Ausschnitt auftauchten, wo sie nur Kuestenlinie
+ * sind.
+ *
+ * Die Zugehoerigkeit steht in `erdkunde.js` und nirgends sonst: unter
+ * welchem SCHLUESSEL ein Land dort steht, dort ist es Ziel. */
+const meta = Object.fromEntries(Object.entries(I.LAENDER)
+  .map(([k, l]) => [k, Object.fromEntries(l.map(x => [x.a3, x]))]));
+const zielAuf = (id, a3) => (meta[id] || {})[a3] || null;
 
 const D = {
   // Welche Kontinente es gibt, steht in `src/inhalt/erdkunde.js` - nicht in
@@ -81,8 +101,8 @@ const D = {
    * die Geometrie ist der Vorrat, nicht die Ware. Was gespielt wird,
    * entscheidet `erdkunde.js` - hier und nirgends sonst. */
   laender: Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
-    [id, ankerFuer(roh.filter(l => (laenderMeta[l.a3] || {}).rang)
-      .map(l=>({ ...l, ...laenderMeta[l.a3],
+    [id, ankerFuer(roh.filter(l => zielAuf(id, l.a3))
+      .map(l=>({ ...l, ...zielAuf(id, l.a3),
       // Ebene „Hauptstädte in Europa" (R6). `hauptstadt`, `ort` und
       // `regierungssitz` kommen gebacken aus `roh`; hier kommen nur die
       // Ablenker dazu - und `falle` wird ABGELEITET, nicht behauptet:
@@ -149,12 +169,32 @@ const silhouette = (pfad, n) => {
   const roh = Object.fromEntries(KONTINENTE_GROB.map(k => [k.id, k.pfad]));
   const welt = KONTINENTE_GROB.filter(k => k.id !== 'antarktika').map(k => k.pfad).join(' ');
   const d = DEUTSCHLAND_GROB.map(b => b.pfad).join(' ');
+  /* Nur die NEUN Ziele, nicht die ganze Karte.
+   *
+   * Der erste Anlauf legte alle 34 Formen des Ausschnitts zusammen - und
+   * das Kachelbild bekam die geraden Schnittkanten der Maske mit: unten
+   * rechts ein rechteckiger Block (Kolumbien und Venezuela, an der
+   * Maskenkante abgeschnitten), unten eine Gerade. Als Karte ist das
+   * richtig, als Zeichen sieht es aus wie ein Fehler.
+   *
+   * Fiona liest nicht - fuer sie IST das Kachelbild der Name. Es zeigt
+   * deshalb das, wonach auf dieser Ebene gefragt wird: die Landbruecke
+   * und die grossen Antillen. */
+  const mittelamerikaUmriss = KARTEN_GROB.mittelamerika
+    .filter(l => zielAuf('mittelamerika', l.a3)).map(l => l.pfad).join(' ');
   D.silhouetten = {
     kontinente:  { d: silhouette(welt, 16),             vb: sichtfeld([{ pfad: welt }]) },
     europa:      { d: silhouette(roh.europa, 16),       vb: sichtfeld([{ pfad: roh.europa }]) },
     afrika:      { d: silhouette(roh.afrika, 16),       vb: sichtfeld([{ pfad: roh.afrika }]) },
     asien:       { d: silhouette(roh.asien, 16),        vb: sichtfeld([{ pfad: roh.asien }]) },
     nordamerika: { d: silhouette(roh.nordamerika, 16),  vb: sichtfeld([{ pfad: roh.nordamerika }]) },
+    /* Mittelamerika hat keinen Kontinentumriss - es ist ein Ausschnitt.
+     * Sein Kachelbild entsteht deshalb aus den Laenderformen selbst,
+     * zusammengelegt. Feiner ausgeduennt (jeder 6. statt jeder 16.
+     * Punkt), weil die Formen klein sind: bei 16 zerfaellt Panama zu
+     * einem Strich. */
+    mittelamerika: { d: silhouette(mittelamerikaUmriss, 6),
+                     vb: sichtfeld([{ pfad: mittelamerikaUmriss }]) },
     suedamerika: { d: silhouette(roh.suedamerika, 16),  vb: sichtfeld([{ pfad: roh.suedamerika }]) },
     deutschland: { d: silhouette(d, 8),                 vb: sichtfeld([{ pfad: d }]) },
   };
@@ -165,14 +205,14 @@ D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, sichtfeld(roh)])
 /* Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
  * nicht nur die Ziele - sonst kann man durch Ausschluss raten.
  *
- * Gesiebt wird mit `laenderMeta`, also mit `erdkunde.js` - wie zwanzig
+ * Gesiebt wird mit `zielAuf`, also mit `erdkunde.js` - wie zwanzig
  * Zeilen weiter oben und aus demselben Grund. Diese Zeile war die VIERTE,
  * die den gebackenen Rang las (D2c hat drei gefunden). Sie ist harmloser
  * als die anderen drei und deshalb durchgerutscht: ein Land, das in
  * beiden Listen steht, wird zweimal gezeichnet - grau darunter, bunt
  * darueber. Man sieht nichts, man bezahlt nur den Pfad zweimal. */
 D.umgebung = Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
-  [id, roh.filter(l => !(laenderMeta[l.a3] || {}).rang).map(l=>l.pfad)]));
+  [id, roh.filter(l => !zielAuf(id, l.a3)).map(l=>l.pfad)]));
 
 // Die Kernmodule werden eingebettet - eine Datei, kein Buendler.
 const module = [
@@ -379,6 +419,23 @@ console.log(`  dist/                ${(verteilt.length/1024).toFixed(0)} KB Seit
   + `  →  ${(zlib.gzipSync(Buffer.from(verteilt)).length/1024).toFixed(0)} KB gzip`
   + `,  ${(distGroesse/1024).toFixed(0)} KB gesamt mit Schrift und Symbolen`);
 const html = verteilt;
+/* Jedes Land ist auf GENAU EINER Karte ein Ziel.
+ *
+ * Seit dem Ausschnitt Mittelamerika (A6) liegt Guatemala auf zwei Karten -
+ * gezeichnet auf beiden, gefragt auf einer. Wer hier wieder eine flache
+ * Tafel `a3 -> Land` einsetzt, bekommt es auf beiden als Ziel, und zu
+ * sehen ist davon: nichts. Beim ersten Anlauf stand in dieser Zeile
+ * prompt „81 Länder" statt 65, und ohne den Vergleich waere die Zahl
+ * einfach durchgelaufen.
+ *
+ * Verglichen wird gegen `erdkunde.js`, also gegen die Ware. */
+{
+  const gebaut = Object.values(D.laender).reduce((a, l) => a + l.length, 0);
+  const gewollt = Object.values(I.LAENDER).reduce((a, l) => a + l.length, 0);
+  if (gebaut !== gewollt)
+    throw new Error(`${gebaut} Laenderziele gebaut, ${gewollt} stehen in erdkunde.js — `
+      + 'ein Land ist auf zwei Karten Ziel geworden (oder auf keiner)');
+}
 console.log(`  ${D.kontinente.length} Kontinente, ${Object.values(D.laender).reduce((a,l)=>a+l.length,0)} Länder in ${Object.keys(D.laender).length} Kontinenten, `
   + `${D.deutschland.length} Bundesländer, ${D.deutschland.filter(b=>!b.stadtstaat).length} Hauptstadt-Rätsel`);
 console.log('  ' + Object.entries(teile).map(([k,t]) =>

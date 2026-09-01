@@ -383,7 +383,8 @@ geläufigen.
 | **Asien** | Indien | China | Indonesien | Pakistan | Bangladesch |
 | **Afrika** | Nigeria | Äthiopien | Ägypten | DR Kongo | Tansania |
 | **Europa** | Russland | Deutschland | Vereinigtes Königreich | Frankreich | Italien |
-| **Nordamerika** | USA | Mexiko | Kanada | Guatemala | Haiti |
+| **Nordamerika** | USA | Mexiko | Kanada | *(siehe Mittelamerika)* | |
+| **Mittelamerika** | Guatemala | Haiti | Kuba | Dominikanische Rep. | Honduras |
 | **Südamerika** | Brasilien | Kolumbien | Argentinien | Peru | Venezuela |
 
 Australien/Ozeanien ist beauftragt ausgenommen, Antarktika ist nicht dabei.
@@ -415,6 +416,43 @@ die es nicht gibt — und könnte durch Ausschluss raten statt zu wissen.
 **Australien ist keine Sackgasse.** Es ist auf Ebene 2 sichtbar und
 erkennbar kein Ziel. Wer hintippt, bekommt einen gesprochenen Satz statt
 nichts. Für eine Sechsjährige ist ein toter Tipp das Ende der Sitzung.
+
+**Mittelamerika hat seine eigene Karte (A6).** Nordamerika hatte zwölf
+Zielländer, und neun davon waren auf dem Zielgerät nicht zu treffen: auf
+362 × 288 Punkten ist El Salvador 4,1 Punkte groß, Haiti 4,6, Kuba 16,9 —
+die Fingergrenze ist 44. Sieben von ihnen hingen an einer Nadel neben der
+Karte, mit Fäden bis zu 134 Punkten.
+
+Gemessen wurde, wie groß ein Ausschnitt sein muss, damit sie ohne Nadel zu
+treffen sind (dieselbe Projektion, mit der gebacken wird):
+
+| Kasten | GTM | HTI | CUB | DOM | HND | NIC | SLV | CRI | PAN | ≥ 44 | ≥ 20 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 120 × 90 | 16 | 10 | 39 | 14 | 23 | 19 | 9 | 22 | 23 | 0 | 4 |
+| 260 × 195 | 35 | 23 | 85 | 29 | 51 | 41 | 20 | 47 | 49 | 4 | 8 |
+| 362 × 288 | 49 | 31 | 118 | 41 | 71 | 57 | 27 | 66 | 69 | 6 | 9 |
+| 480 × 288 | 57 | 36 | 136 | 47 | 82 | 66 | 32 | 76 | 79 | 7 | 9 |
+| 600 × 450 | 81 | 52 | 196 | 68 | 117 | 95 | 45 | 110 | 114 | 9 | 9 |
+
+Eine **Nebenkarte in der Ecke** ist 120 bis 180 Punkte breit — dort ist
+kein einziges der neun zu treffen. Erst der ganze Kartenkasten bringt alle
+neun über 20 Punkte, also über die Schwelle, ab der die App keine Nadel
+mehr setzt. Der Ausschnitt musste die Karte werden, nicht ein Kasten
+darin — und eine eigene Karte ist eine eigene Ebene.
+
+Damit hat Nordamerika drei Ziele (USA, Mexiko, Kanada) und *Mittelamerika*
+neun: Guatemala, Haiti, Kuba, Dominikanische Republik, Honduras,
+Nicaragua, El Salvador, Costa Rica, Panama. Gemessen im Browser hat
+danach **keine der beiden Karten mehr eine einzige Nadel**.
+
+Gezeichnet werden die neun auf der Nordamerikakarte weiter — grau, als
+Umgebung, wie jedes Land ohne Rang. Die Karte bleibt vollständig; nur
+gefragt wird nach ihnen woanders. Und der Ausschnitt schneidet Mexiko und
+Kolumbien an: sie sind dort Umgebung, kein Ziel, und ein Kartenrand mitten
+durch ein Nachbarland ist das, was jeder Atlas an dieser Stelle tut.
+
+Der Lernstand zieht mit um: wer Kuba schon dreimal richtig hatte, findet
+seinen Aufkleber auf der neuen Ebene wieder.
 
 ### 4.3 Ebene 3 — die 16 Bundesländer
 

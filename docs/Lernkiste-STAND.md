@@ -6669,3 +6669,112 @@ laender:europa        engster Kopfabstand 68.3 → 78.2   längster Faden  64 �
 `passt` grün auf allen sieben Größen — das war die eigentliche Frage am
 kleineren Kopf: ob er seine Knöpfe noch hält. 32 Aufnahmen neu eingefroren,
 weil sich auf jedem Querformat alles um acht Punkte gehoben hat.
+
+## A6 — Mittelamerika bekommt seine eigene Karte
+
+### Die Frage war, wie groß ein Ausschnitt sein muss
+
+Auf der Nordamerikakarte hingen sieben Länder an einer Nadel neben der
+Karte, mit Fäden bis zu 134 Punkten — ein Fächer unter Mittelamerika, in
+dem nicht mehr zu sehen war, welcher Faden zu welchem Land gehört. Die
+naheliegende Antwort ist die des Schulatlas: eine **Nebenkarte** in einer
+Ecke, größerer Maßstab, Rahmen darum.
+
+Gemessen, mit derselben Projektion, mit der gebacken wird — jede Zeile ist
+die größte Ausdehnung des Landes in Bildschirmpunkten:
+
+```
+Kasten       GTM  HTI  CUB  DOM  HND  NIC  SLV  CRI  PAN   ≥44  ≥20
+120 ×  90     16   10   39   14   23   19    9   22   23     0    4
+260 × 195     35   23   85   29   51   41   20   47   49     4    8
+362 × 288     49   31  118   41   71   57   27   66   69     6    9
+480 × 288     57   36  136   47   82   66   32   76   79     7    9
+600 × 450     81   52  196   68  117   95   45  110  114     9    9
+```
+
+Eine Nebenkarte, die in eine Ecke passt, ist 120 bis 180 Punkte breit —
+**dort ist kein einziges der neun zu treffen.** Erst der ganze
+Kartenkasten bringt alle neun über 20 Punkte, also über die Schwelle, ab
+der die App gar keine Nadel mehr setzt. Die Idee war nicht zu klein
+umgesetzt, sie war unmöglich: der Ausschnitt musste die Karte werden, nicht
+ein Kasten darin — und eine eigene Karte ist eine eigene Ebene.
+
+Das ist auch die Antwort der Vorbilder: der Diercke gibt Mittelamerika eine
+eigene Seite, Seterra ein eigenes Quiz, eine Kartenanwendung einen eigenen
+Zoom. Keines quetscht die Landbrücke in die Nordamerikakarte.
+
+### Was daraus geworden ist
+
+`laender:nordamerika` hat drei Ziele (USA, Mexiko, Kanada),
+`laender:mittelamerika` neun. Gemessen im Browser auf 844 × 390:
+
+```
+vorher   laender:nordamerika   Karte 362×288 ·  9 von 12 unter 44 pt · 7 an der Nadel, längster Faden 134
+nachher  laender:nordamerika   Karte 362×288 ·  0 von  3 unter 44 pt · keine Nadel
+nachher  laender:mittelamerika Karte 429×288 ·  3 von  9 unter 44 pt · keine Nadel
+```
+
+**Keine der beiden Karten hat noch eine einzige Nadel.** Die neun bleiben
+auf der Nordamerikakarte gezeichnet — grau, als Umgebung, wie jedes Land
+ohne Rang; die Karte bleibt vollständig, nur gefragt wird nach ihnen
+woanders. Der Ausschnitt schneidet Mexiko und Kolumbien an, und das ist
+Absicht: sie sind dort Umgebung, und ein Kartenrand mitten durch ein
+Nachbarland ist das, was jeder Atlas an dieser Stelle tut.
+
+Der Lernstand zieht mit um. Wer Kuba dreimal richtig hatte, fände es sonst
+als frisches Gebiet wieder und der Aufkleber wäre weg — für ein Kind ist
+das kein Datenschema, das ist gelöschte Arbeit. Kopiert, nicht verschoben:
+wer eine Fassung zurückrollt, hat seinen Stand noch.
+
+### Vier Tore sind nacheinander gefallen, und jedes hat etwas anderes gesagt
+
+Das ist der eigentliche Ertrag der Runde.
+
+**`inhalt`** meldete „Elternknoten mittelamerika fehlt" — es prüfte, dass
+jeder Schlüssel in `LAENDER` ein Kontinent ist. Das war richtig, solange es
+nur Kontinente gab. Jetzt steht in `erdkunde.js` ein Verzeichnis
+`AUSSCHNITTE`, das sagt, aus welchem Kontinent ein Ausschnitt geschnitten
+ist — und das Tor lässt einen Schlüssel weiter nur durch, wenn er das eine
+oder das andere ist.
+
+**`spielprobe`** behauptete, neun Länder hätten „keine Fläche auf der
+Karte". Die Karte lag daneben; das Tor führte eine eigene Tafel
+`{ europa: …, afrika: … }` von Hand — und dieselbe Tafel stand ein drittes
+Mal im Bau. Drei Abschriften, drei rote Tore, drei verschiedene Meldungen.
+Sie lesen jetzt **ein erzeugtes Verzeichnis** (`src/geo/karten.grob.js`),
+das aus derselben Schleife entsteht, die die Karten schreibt, und ihnen
+deshalb nicht hinterherhinken kann.
+
+**Der Bau** meldete „81 Länder" statt 65. Die Tafel `a3 → Land` war flach
+über alle Kontinente — das ging gut, solange jedes Land auf genau einer
+Karte lag. Guatemala liegt jetzt auf zweien und wurde prompt auf beiden zum
+Ziel. Die Zugehörigkeit hängt jetzt am Schlüssel, unter dem ein Land in
+`erdkunde.js` steht, und der Bau **vergleicht die Summe**: 65 gebaut, 65 in
+den Daten, sonst bricht er ab.
+
+**Der Rauchtest** starb an einer nackten Zeitüberschreitung. Sein Abschnitt
+„umgekehrte Frage" stellte einen Lernstand, in dem nur die sieben kleinen
+Länder Nordamerikas fällig sind — die es dort nicht mehr gibt. Also bekam
+jedes Land Fach 5, die Sitzung war leer, und er wartete zwanzig Sekunden
+auf eine Frage, die nie kam. Er spielt jetzt **Europa**, die einzige Ebene,
+die noch Nadeln hat, und **prüft seine eigene Voraussetzung**: steht eine
+der Kennungen nicht auf der Karte, sagt er das, statt zu hängen.
+
+Dazu zwei Tore, die nur das Layout betrafen: `passt` fand die zehnte Kachel
+drei Punkte unter dem Rand eines 700 × 850-Fensters. Der naheliegende Griff
+— das Spaltenmaß von 240 auf 200 — machte `passt` grün und `lesbarkeit`
+rot: bei 200 Punkten Kachelbreite läuft der Name ins Wasserzeichen, und
+fünf Kachelnamen fielen von 4,7 auf **2,33:1**. Genommen wurde stattdessen
+der Reihenabstand: vier Lücken zu 16 statt 12 Punkten sind sechzehn Punkte,
+gebraucht waren drei.
+
+### Und eine Aufnahme, die einen Hover-Ring festhielt
+
+`spiel-bundesland` meldete 7478 geänderte Bildpunkte am Knopf „Berlin".
+Nicht der Knopf hatte sich geändert, sondern der Mauszeiger lag woanders:
+er bleibt nach dem letzten Klick liegen, und wo, entscheiden die Kacheln,
+die er zuletzt getroffen hat. Der Ring, den er malt, ist auf dem Zielgerät
+nie zu sehen. Der Zeiger geht jetzt vor **jeder** Aufnahme in die Ecke —
+einmal für alle, statt in jeder einzeln daran zu denken.
+
+`npm run tor` grün in 107,0 s. 33 Aufnahmen, 207 Gegenproben.

@@ -21,6 +21,41 @@ fs.writeFileSync('/tmp/europa-maske.json', JSON.stringify(
   { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
     geometry:{ type:'Polygon', coordinates:EUROPA_MASKE } }] }));
 
+/* Der Ausschnitt Mittelamerika - ein Rechteck in Grad.
+ *
+ * WARUM ein eigener Ausschnitt und keine Nebenkarte in der Ecke: gemessen.
+ * Auf 844 x 390 hat die Nordamerikakarte 362 x 288 Punkte, und darin sind
+ * die neun kleinen Laender zwischen 4,1 (El Salvador) und 16,9 Punkten
+ * (Kuba) gross - neun von zwoelf unter der Fingergrenze von 44. Die Frage
+ * war, wie gross ein Ausschnitt sein muss, damit sie ohne Nadel zu treffen
+ * sind. Gerechnet mit derselben Projektion, die hier backt:
+ *
+ *     Kasten     GTM HTI CUB DOM HND NIC SLV CRI PAN   >=44  >=20
+ *     120 x  90   16  10  39  14  23  19   9  22  23      0     4
+ *     260 x 195   35  23  85  29  51  41  20  47  49      4     8
+ *     362 x 288   49  31 118  41  71  57  27  66  69      6     9
+ *     480 x 288   57  36 136  47  82  66  32  76  79      7     9
+ *     600 x 450   81  52 196  68 117  95  45 110 114      9     9
+ *
+ * Eine Nebenkarte, die in eine Ecke passt, ist 120 bis 180 Punkte breit -
+ * dort ist KEIN einziges Land zu treffen. Erst der ganze Kartenkasten
+ * bringt alle neun ueber 20 Punkte, und damit ueber die Schwelle, ab der
+ * die App keine Nadel mehr setzt. Der Ausschnitt musste also die Karte
+ * werden, nicht ein Kasten darin - und eine eigene Karte ist eine eigene
+ * Ebene.
+ *
+ * Das Rechteck laesst absichtlich Mexiko und Kolumbien angeschnitten: sie
+ * sind hier Umgebung, kein Ziel, und ein Kartenrand mitten durch ein
+ * Nachbarland ist das, was jeder Atlas an dieser Stelle auch tut. Alle
+ * NEUN Ziele liegen vollstaendig innerhalb (gemessen: lon -92,2 bis -60,5,
+ * lat 5,5 bis 26,9). */
+const MITTELAMERIKA_MASKE = [[
+  [-93,5.5],[-62,5.5],[-62,26.5],[-93,26.5],[-93,5.5]
+]];
+fs.writeFileSync('/tmp/mittelamerika-maske.json', JSON.stringify(
+  { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
+    geometry:{ type:'Polygon', coordinates:MITTELAMERIKA_MASKE } }] }));
+
 /* WAS GESPIELT WIRD, STEHT IN `src/inhalt/erdkunde.js` - auch hier.
  *
  * Bis P11 hielt dieses Werkzeug seine eigene Liste: zwoelf Laender je
@@ -60,6 +95,18 @@ const EBENEN = [
   { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true,
     hauptstaedte:true },
   { id:'nordamerika', name:'Nordamerika', ne:'North America', projektion:'kegel' },
+  /* Mittelamerika und die Karibik - derselbe Erdteil, eigener Massstab.
+   *
+   * `dazu` holt Kolumbien und Venezuela dazu: Panama grenzt an Kolumbien,
+   * und ein Kartenrand, hinter dem nichts liegt, sieht aus wie das Ende
+   * der Welt. Sie kommen aus einem anderen CONTINENT-Wert und stehen in
+   * keiner Zielliste - sie werden Umgebung, wie jedes Land ohne Rang.
+   *
+   * `maske` schneidet auf das Rechteck zu, sonst zoege Mexiko den
+   * Massstab wieder auseinander. */
+  { id:'mittelamerika', name:'Mittelamerika', ne:'North America',
+    dazu:'South America', maske:'/tmp/mittelamerika-maske.json',
+    projektion:'kegel' },
   { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal' },
 ].map(k => ({ ...k, ziele: zieleAus(k.id) }));
 
@@ -107,13 +154,15 @@ const fehlendeStaedte = [];
 
 for (const k of EBENEN) {
   const ziele = new Map(k.ziele);
+  const erdteile = [k.ne, ...(k.dazu ? [k.dazu] : [])];
   let geo = { type:'FeatureCollection', features: roh.features
-    .filter(f => f.properties.CONTINENT === k.ne)
+    .filter(f => erdteile.includes(f.properties.CONTINENT))
     .map(f => ({ type:'Feature',
       properties:{ a3:f.properties.ADM0_A3, name: ziele.get(f.properties.ADM0_A3) || null,
                    rang: [...ziele.keys()].indexOf(f.properties.ADM0_A3) + 1 || null },
       geometry:f.geometry })) };
   if (k.klippen) geo = await shaper(geo, '-clip /tmp/europa-maske.json');
+  if (k.maske)   geo = await shaper(geo, `-clip ${k.maske}`);
 
   const fehlend = [...ziele.keys()].filter(a3 => !geo.features.some(f=>f.properties.a3===a3));
   if (fehlend.length) throw new Error(`${k.name}: Zielländer nicht gefunden: ${fehlend.join(', ')}`);
@@ -179,6 +228,32 @@ for (const [id, zeilen] of Object.entries(ausgabe))
     fs.writeFileSync(path.join(AUS,`laender-${id}.${stufe}.js`),
       `// ERZEUGT von tools/backen-laender.mjs - nicht von Hand aendern.\n`+
       `export const LAENDER_${id.toUpperCase()}_${stufe.toUpperCase()} = ${JSON.stringify(s)};\n`);
+
+/* Das Verzeichnis der Karten - EINMAL, erzeugt.
+ *
+ * Dieselbe Tafel `{ europa: LAENDER_EUROPA_GROB, ... }` stand von Hand an
+ * DREI Stellen: im Bau, im Tor `inhalt` und im Tor `spielprobe`. Mit der
+ * sechsten Karte (Mittelamerika, A6) sind prompt alle drei nacheinander
+ * rot geworden, jede mit einer anderen Meldung, und die dritte behauptete,
+ * neun Laender haetten „keine Flaeche auf der Karte" - eine Karte, die
+ * daneben lag.
+ *
+ * Wer eine Karte backt, traegt sie jetzt nirgends mehr nach: diese Datei
+ * entsteht aus derselben Schleife, die die Karten schreibt, und kann ihr
+ * deshalb nicht hinterherhinken. */
+{
+  const ids = Object.keys(ausgabe);
+  fs.writeFileSync(path.join(AUS,'karten.grob.js'),
+    `// ERZEUGT von tools/backen-laender.mjs - nicht von Hand aendern.\n`+
+    ids.map(id => `import { LAENDER_${id.toUpperCase()}_GROB } `
+      + `from './laender-${id}.grob.js';`).join('\n') + '\n\n'
+    + `/** Jede Laenderkarte unter ihrem Schluessel - der Schluessel ist der,\n`
+    + ` *  unter dem sie in \`src/inhalt/erdkunde.js\` ihre Ziele hat. */\n`
+    + `export const KARTEN_GROB = {\n`
+    + ids.map(id => `  ${id}: LAENDER_${id.toUpperCase()}_GROB,`).join('\n')
+    + `\n};\n`);
+  console.log(`\n  Kartenverzeichnis: ${ids.length} Karten in src/geo/karten.grob.js`);
+}
 if (fehlendeStaedte.length)
   throw new Error(`Keine Hauptstadt gefunden fuer: ${fehlendeStaedte.join(', ')} — `
     + 'die Ebene „Hauptstädte in Europa" haette dort eine leere Antwort.');

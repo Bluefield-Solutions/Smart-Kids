@@ -3271,22 +3271,30 @@ if (laeuft('umgekehrt')) try {
 
   /* --- Und die Gegenrichtung: wo man nicht treffen KANN (P7, P10) ----
    *
-   * Gemessen von `npm run ziehen --nur=treffer`: auf der Nordamerikakarte
-   * haben Haiti und die Dominikanische Republik am Ort 7,6 Bildpunkte
-   * Trefferflaeche - ihre Anker liegen 4,2 Punkte auseinander, dort passt
-   * kein Kreis mehr dazwischen. Die Fingergrenze ist 44.
+   * P7 hat gezogen: wo ein Gebiet am Ort keine 20 Punkte bekommt, wird
+   * eben nicht gefragt. P10 hat das umgedreht - solche Gebiete haengen
+   * an einer NADEL neben der Karte, volle 44 Punkte, mit einem Faden zum
+   * Gebiet. Die Frage kommt also wieder, und genau das wird hier
+   * geprueft: nicht dass sie ausbleibt, sondern dass sie gestellt UND an
+   * der Nadel beantwortbar ist.
    *
-   * P7 hat daraus gezogen: dann wird eben nicht gefragt. P10 hat das
-   * umgedreht - die sieben haengen jetzt an einer NADEL neben der Karte,
-   * volle 44 Punkte, mit einem Faden zum Gebiet. Die Frage kommt also
-   * wieder, und genau das wird hier geprueft: nicht dass sie ausbleibt,
-   * sondern dass sie gestellt UND an der Nadel beantwortbar ist.
+   * Gespielt wird EUROPA. Bis A6 stand hier Nordamerika mit seinen
+   * sieben Nadeln; seit Mittelamerika seine eigene Karte hat, hat
+   * Nordamerika drei Laender und keine einzige Nadel mehr. Der Abschnitt
+   * waere nicht rot geworden, sondern LEER: der gestellte Stand liess
+   * alle drei auf Fach 5 laufen, die Sitzung hatte keine Aufgabe, und
+   * das Warten auf die erste Frage lief in die Zeitueberschreitung.
    *
-   * Gezoomt wird weiterhin nicht: eine auf Haiti gezoomte Karte
-   * beantwortet „Wo liegt Haiti?" selbst.
+   * Gemessen von `npm run ziehen --nur=treffer` (844 x 390): auf der
+   * Europakarte haengen zwei Gebiete an einer Nadel, sechs weitere haben
+   * am Ort zwischen 20 und 44 Punkten. Belgien und Luxemburg sind die
+   * beiden engsten - dort passt am Ort kein Kreis mehr hin.
    *
-   * Gestellt wird ein Stand, in dem NUR die sieben faellig sind. Damit
-   * ist jede Aufgabe eine von ihnen.
+   * Gezoomt wird weiterhin nicht: eine auf Luxemburg gezoomte Karte
+   * beantwortet „Wo liegt Luxemburg?" selbst.
+   *
+   * Gestellt wird ein Stand, in dem NUR die acht kleinen faellig sind.
+   * Damit ist jede Aufgabe eine von ihnen.
    */
   const r = await neueSeite({ width: 844, height: 390 }, ctx);
   /* Die sieben kleinen faellig - und alle anderen ausdruecklich NICHT.
@@ -3301,24 +3309,50 @@ if (laeuft('umgekehrt')) try {
    *
    * Jetzt bekommt jedes andere Land Fach 5 und einen Termin in ferner
    * Zukunft. Damit kann die Sitzung nur aus den sieben bestehen. */
-  const kleine = new Set(['HTI','DOM','SLV','GTM','HND','NIC','CRI']);
-  const nordamerika = await r.evaluate(() =>
-    (JSON.parse(document.getElementById('daten').textContent).laender.nordamerika || [])
+  /* Griechenland steht ABSICHTLICH nicht dabei, obwohl es mit 44,0
+     Punkten zu den kleinen zaehlt: es liegt genau AUF der Fingergrenze
+     (`gross * k < MIN_PT`), und die Rundung entscheidet von Bild zu Bild,
+     ob es eine Nadel bekommt. Ein Wackelkandidat als Gegenstand einer
+     Pruefung macht die Pruefung wackelig, nicht die Sache - der Abschnitt
+     meldete „Aufgabe an der Nadel ohne hervorgehobenen Faden (GRC)",
+     obwohl an Faden und Nadel nichts falsch war. */
+  const kleine = new Set(['BEL','LUX','AUT','CZE','NLD','DNK','CHE']);
+  const aufDerKarte = await r.evaluate(() =>
+    (JSON.parse(document.getElementById('daten').textContent).laender.europa || [])
       .map(l => l.a3));
+  /* Und die Voraussetzung wird GEPRUEFT, nicht geglaubt: stuenden die
+     acht Kennungen nicht auf dieser Karte, bekaeme jedes Land Fach 5,
+     die Sitzung waere leer und der Abschnitt liefe in die
+     Zeitueberschreitung statt etwas zu melden. Genau so ist er bei A6
+     gestorben, als die Karte unter ihm gewechselt hat. */
+  {
+    const fehlt = [...kleine].filter(a3 => !aufDerKarte.includes(a3));
+    if (fehlt.length) merke('umgekehrt', new Error(
+      `${fehlt.join(', ')} steht nicht auf der Europakarte — der gestellte Stand `
+      + 'liesse die Sitzung leer, und dieser Abschnitt prüfte nichts'));
+  }
   await stelleAblage(r, {
-    fortschritt: { 'stephan:laender:nordamerika': Object.fromEntries(nordamerika.map(a3 =>
+    fortschritt: { 'stephan:laender:europa': Object.fromEntries(aufDerKarte.map(a3 =>
       [a3, kleine.has(a3) ? { fach:1, faellig:0 } : { fach:5, faellig: Date.now() + 9e8 }])) },
-    einstellungen: { alles: { vorlaufGezeigt: { 'stephan:laender:nordamerika': true } } },
+    einstellungen: { alles: { vorlaufGezeigt: { 'stephan:laender:europa': true } } },
   });
   await r.reload({ waitUntil: 'domcontentloaded' });
   await r.waitForSelector('[data-profil="stephan"]');
   await r.click('[data-profil="stephan"]');
-  await zurEbenenwahl(r, 'laender:nordamerika');
-  await r.click('[data-ebene="laender:nordamerika"]');
+  await zurEbenenwahl(r, 'laender:europa');
+  await r.click('[data-ebene="laender:europa"]');
   await r.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout: 25000 });
   await durchVorlaufWenn(r);
   const fragen = [], geantwortet = [];
-  for (let i = 0; i < 9; i++) {
+  /* Die ganze Sitzung, nicht neun Aufgaben.
+   *
+   * Stephan spielt zwoelf; die umgekehrte Frage steht an jeder dritten,
+   * also an 3, 6, 9 und 12. Auf der Europakarte sind sieben der
+   * siebzehn Laender faellig gestellt - welche davon auf einem dritten
+   * Platz landen, entscheidet der Leitner. Wer nach neun aufhoert,
+   * verschenkt ein Viertel der Gelegenheiten, an denen dieser Abschnitt
+   * ueberhaupt etwas sehen kann. */
+  for (let i = 0; i < 12; i++) {
     await r.waitForSelector('.schirm.da #frage', { timeout: 20000 });
     await r.waitForTimeout(250);
     const f = await r.evaluate(() => {
@@ -3352,7 +3386,7 @@ if (laeuft('umgekehrt')) try {
     if (f.feld && f.ziel) {
       const name = await r.evaluate((id) => {
         const D = JSON.parse(document.getElementById('daten').textContent);
-        const l = (D.laender.nordamerika || []).find(x => x.a3 === id);
+        const l = (D.laender.europa || []).find(x => x.a3 === id);
         return l ? l.name : null;
       }, f.ziel);
       if (!name) break;
@@ -3398,12 +3432,12 @@ if (laeuft('umgekehrt')) try {
     + 'dieser Abschnitt hat sie also gar nicht erreicht'));
   /* Die Voraussetzung des ganzen Abschnitts: auf dieser Karte MUSS es
      Gebiete geben, die am Ort nicht zu treffen sind. Haengt keines an
-     einer Nadel, ist die Nordamerikakarte nicht mehr der enge Fall - und
+     einer Nadel, ist die Europakarte nicht mehr der enge Fall - und
      dann prueft hier nichts mehr, ohne dass etwas rot wuerde. */
   const nadelDa = fragen[0] ? fragen[0].anNadel.length : 0;
   if (!nadelDa) merke('umgekehrt', new Error(
-    'auf der Nordamerikakarte hängt kein Gebiet an einer Nadel — dann prüft dieser '
-    + 'Abschnitt nichts (gemessen sind es sieben, alle unter 16 pt am Ort)'));
+    'auf der Europakarte hängt kein Gebiet an einer Nadel — dann prüft dieser '
+    + 'Abschnitt nichts (gemessen sind es zwei, Belgien und Luxemburg)'));
   const nadelSet = new Set(fragen[0] ? fragen[0].anNadel : []);
   const kleinDa = fragen[0] ? fragen[0].klein.length : 0;
   const kleinSet = new Set(fragen[0] ? fragen[0].klein : []);
@@ -3414,7 +3448,7 @@ if (laeuft('umgekehrt')) try {
      ihr Sinn. Erkannt wird das gefragte Gebiet deshalb am Namen. */
   const namen = await r.evaluate(() => {
     const D = JSON.parse(document.getElementById('daten').textContent);
-    return Object.fromEntries((D.laender.nordamerika || []).map(l => [l.name, l.a3]));
+    return Object.fromEntries((D.laender.europa || []).map(l => [l.name, l.a3]));
   });
   for (const f of verkehrt) {
     const id = namen[f.text.replace(/^Wo liegt |\?$/g, '').trim()];
@@ -3426,7 +3460,7 @@ if (laeuft('umgekehrt')) try {
      ABSCHALTEN, nur filtern. Kaeme hier gar keine mehr, waere der
      Abschnitt gruen und die Frage waere aus dem Spiel verschwunden. */
   if (!verkehrt.length) merke('umgekehrt', new Error(
-    `in ${fragen.length} Aufgaben auf der Nordamerikakarte kam keine einzige `
+    `in ${fragen.length} Aufgaben auf der Europakarte kam keine einzige `
     + '„Wo liegt …?" — die Regel filtert nicht, sie schaltet ab'));
   /* Der eigentliche Punkt von P10: die Frage kommt fuer ein Gebiet, das
      an der Nadel haengt - und sie laesst sich dort beantworten. Ohne
@@ -3462,7 +3496,7 @@ if (laeuft('umgekehrt')) try {
   if (daneben.length) merke('umgekehrt', new Error(
     `auf die Nadel getippt und nicht gewertet: ${daneben.map(g => g.name).join(', ')} — `
     + 'die Trefferfläche steht da und trifft nicht'));
-  console.log(`  An der Nadel:               ${nadelDa} Gebiete auf der Nordamerikakarte, `
+  console.log(`  An der Nadel:               ${nadelDa} Gebiete auf der Europakarte, `
     + `${kleinDa} bleiben zu klein · ${fragen.length} Aufgaben, davon `
     + `${verkehrt.length} × „Wo liegt …?" `
     + `(${verkehrt.map(f => f.text.replace(/^Wo liegt |\?$/g, '')).join(', ') || 'keine'}), `
