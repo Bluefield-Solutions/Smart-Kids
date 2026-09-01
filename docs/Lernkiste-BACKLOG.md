@@ -98,6 +98,14 @@ mit — und vor einer Sechsjährigen stünden zwölf Länder.
 | Aufgaben je Sitzung | 6 | 8 | **12** | **12** |
 | streng | nein | ja | ja | ja |
 
+> **Zwei Zeilen dieser Tabelle widersprechen sich — gemessen in Q12.** Fionas
+> Ländertiefe ist 3, ihre Sitzung ist 6 lang: auf **jeder** der sieben
+> Länderebenen bekommt sie deshalb drei Aufgaben, nie sechs. Die App füllt
+> richtig nicht auf (`spielprobe` bezeugt das), also ist ihre Erdkunde-Runde
+> halb so lang wie ihr Rechnen, ihr Schreiben und ihre Bundesländer. Das ist
+> kein Programmfehler, sondern eine Entscheidung, die hier fällt — und sie ist
+> noch nicht gefallen.
+
 **Stephan und Violeta sind Spalte für Spalte gleich.** Das ist keine
 Bequemlichkeit, sondern die Bedingung des Vergleichs: wer verschiedene
 Aufgaben bekäme, ließe sich nicht vergleichen. Verschieden ist nur der
@@ -2203,3 +2211,36 @@ Aufnahme `quer-nordamerika` als Zeuge.
 - **Die Kachelzeile der Ebenenwahl.** Nordamerika hat jetzt vier Ziele statt
   drei; an der Zahl der Kacheln ändert das nichts. Die Grenze der
   Kachelzeile ist damit weiter ungemessen — sie steht seit A6 auf der Liste.
+
+
+---
+
+## Q12 offen: Fionas Erdkunde-Runde ist halb so lang wie alles andere
+
+Gemessen in Q12 über 47 Ebene-Profil-Paare (`npm run spielprobe`):
+
+| | |
+|---|---|
+| Fiona, alle sieben Länderebenen | **3 statt 6** Aufgaben |
+| Fiona, Kontinente in Runde 1 | 4 statt 6 |
+| Fiona, Rechnen · Schreiben · Bundesländer | 6, wie in der Tabelle |
+
+Die Mechanik ist in Ordnung: gedeckelt, nicht mit Wiederholungen aufgefüllt,
+und das ist jetzt bezeugt. Was nicht stimmt, sind die beiden Zahlen in der
+Profiltabelle. Drei Wege, und alle drei sind Inhalt, nicht Technik:
+
+1. **Ländertiefe 3 → 6.** Sechs Länder je Kontinent für eine Sechsjährige.
+   Die Namen dafür stehen alle schon da (Ozeanien hat nur drei — dort bliebe
+   es bei drei).
+2. **Sitzungslänge auf Länderebenen bei 3 lassen** und die Tabelle ehrlich
+   machen: eine kurze Runde ist für ein Kind, das noch nicht liest, kein
+   Mangel.
+3. **Lassen, wie es ist**, und die Zahl 6 als Obergrenze lesen.
+
+Entschieden wird das am Gerät, nicht hier.
+
+**Ozeanien bleibt bei drei Zielen.** Der Grund steht in Q12 im STAND und im
+Quelltext: das kleinste Ziel der App ist El Salvador mit 1,71 Quadratgrad an
+einem Stück, und von den vier Kandidaten (Salomonen, Neukaledonien, Fidschi,
+Vanuatu) kommt allein Neukaledonien in die Nähe — ein Überseegebiet, kein Land,
+nach dem hier gefragt wird.

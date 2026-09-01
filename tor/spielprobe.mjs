@@ -22,8 +22,15 @@ import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
 import { KARTEN_GROB } from '../src/geo/karten.grob.js';
 import { KONTINENTE_GROB } from '../src/geo/kontinente.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
+// Sitzungslaenge und Tiefe je Profil - aus der Tabelle im Backlog,
+// nicht aus `prototyp/spiel.js`: das Soll kommt aus der Referenz, nicht
+// aus dem Prueflig (Regel 3). Derselbe Leser wie im Rauchtest.
+import * as PT from './profiltabelle.mjs';
 
 const fehler = [], hinweise = [];
+// Was beim Lesen der Profiltabelle schiefging, gehoert in dieselbe Liste -
+// eine fehlende Zeile darf nicht still zu einem leeren Soll werden.
+fehler.push(...PT.FEHLER);
 let geprueft = 0;
 
 /** Die Kandidatensaetze, GENAU wie `vorrat()` in spiel.js sie baut. */
@@ -504,6 +511,120 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   console.log(`    Was geschafft war, bleibt: ${gelegenheiten} falsche Antworten auf `
     + `Gegenstände mit Aufkleber, ${verluste} verlorene Aufkleber, `
     + `${rundeZu}× eine offene Runde wieder zu`);
+}
+
+/* ---- Wie lang ist eine Sitzung wirklich? (Q12) ------------------------
+ *
+ * Anlass war Ozeanien. Die Ebene hat drei Ziele - Australien,
+ * Papua-Neuguinea, Neuseeland -, waehrend Lea sonst acht und die Eltern
+ * zwoelf Aufgaben je Sitzung bekommen. Die Frage, die dahinter steht, ist
+ * nicht „ist das kurz", sondern: WAS macht eine Sitzung, wenn der Vorrat
+ * kleiner ist als sie selbst?
+ *
+ * Zwei Antworten waeren falsch, und beide sahen bisher gruen aus:
+ *
+ *   auffuellen    dieselben drei Gebiete zweimal in einer Runde. Fuer ein
+ *                 Kind ist das kein Ueben, sondern ein Fehler der App -
+ *                 es hat gerade geantwortet und wird dasselbe wieder
+ *                 gefragt.
+ *   abschneiden   eine Ebene mit genug Vorrat bekaeme weniger Aufgaben,
+ *                 als in der Tabelle steht.
+ *
+ * Gemessen wird deshalb ueber JEDE Kartenebene und JEDES Profil, vierzig
+ * Sitzungen weit gespielt (damit sich Faecher und Faelligkeiten wirklich
+ * bewegen): eine Sitzung enthaelt genau `min(Sitzungslaenge, Vorrat)`
+ * Gegenstaende, und keinen zweimal.
+ *
+ * Und die Probe braucht ihre Gelegenheit: eine Pruefung, die nie etwas
+ * meldet, ist kein Beweis (Regel 1). Gaebe es keine Ebene, die kuerzer
+ * ist als die Sitzung, waere der ganze Abschnitt eine
+ * Selbstverstaendlichkeit. Deshalb steht die Zahl der kurzen Faelle als
+ * eigene Bedingung da - faellt sie auf null, ist das ein Fehler, kein
+ * Erfolg.
+ *
+ * Die Sitzungslaenge und die Tiefe kommen aus der Profiltabelle im
+ * Backlog - aus der Referenz, nicht aus `prototyp/spiel.js`: eine
+ * Gegenprobe faelscht das Programm, und ein Soll aus der gefaelschten
+ * Datei prueft nichts (Regel 3).
+ */
+{
+  const TAG = 24 * 60 * 60000;
+  const wuerfel = (k) => { let x = (k * 2654435761) >>> 0;
+    x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; };
+
+  /* Die Kartenebenen, GENAU wie `vorrat()` in spiel.js sie baut - nur auf
+   * die Kennungen eingedampft, denn hier zaehlt allein die Menge.
+   *
+   * Die Rechen- und Schreibebenen fehlen mit Absicht: ihr Vorrat wird
+   * ERZEUGT (100, 140, 158 Aufgaben) und ist nie kuerzer als eine
+   * Sitzung, und sie fragen den Leitner je Rechenart einzeln statt
+   * einmal ueber alles. Was hier geprueft wird, gibt es dort nicht. */
+  const kartenEbenen = (tiefe, wer) => {
+    const e = [];
+    for (const [k, liste] of Object.entries(I.LAENDER))
+      e.push({ id: `laender:${k}`, alle: liste.filter(l => l.rang <= tiefe)
+        .map(l => ({ id: l.a3 })) });
+    // Fionas Kontinentrunde waechst: die erste Runde ist der kuerzeste
+    // Fall, den es wirklich gibt, die volle Liste der laengste.
+    e.push({ id: 'kontinente (Runde 1)',
+      alle: I.KONTINENTE.filter(k => k.runde <= 1).map(k => ({ id: k.id })) });
+    e.push({ id: 'kontinente', alle: I.KONTINENTE.map(k => ({ id: k.id })) });
+    e.push({ id: 'bundeslaender', alle: STAEDTE.map(x => ({ id: x.id })) });
+    e.push({ id: 'hauptstaedte',
+      alle: STAEDTE.filter(x => !x.stadtstaat).map(x => ({ id: x.id })) });
+    // Hauptstaedte in Europa gibt es fuer Fiona nicht - sie liest noch
+    // nicht, und eine Stadt hat keinen Umriss zum Ziehen.
+    if (wer !== 'fiona')
+      e.push({ id: 'hauptstaedte:europa',
+        alle: LAENDER_EUROPA_GROB.filter(l => l.rang <= tiefe && l.hauptstadt)
+          .map(l => ({ id: l.a3 })) });
+    return e;
+  };
+
+  let kurzeFaelle = 0, doppelt = 0, verfehlt = 0;
+  const kuerzeste = [];
+
+  for (const wer of PT.PROFIL_IDS) {
+    const laenge = PT.SITZUNG[wer], tiefe = PT.TIEFE[wer];
+    if (!laenge || !tiefe) continue;      // fehlende Tabellenzeile meldet PT selbst
+    for (const eb of kartenEbenen(tiefe, wer)) {
+      const soll = Math.min(laenge, eb.alle.length);
+      if (eb.alle.length < laenge) kurzeFaelle++;
+      kuerzeste.push({ wer, id: eb.id, vorrat: eb.alle.length, soll, laenge });
+      let stand = L.neuerStand(), keim = 1;
+      for (let t = 0; t < 40; t++) {
+        const jetzt = Date.UTC(2026, 0, 1, 15, 0, 0) + t * TAG;
+        const s = L.sitzung(eb.alle, stand, laenge, jetzt, keim++);
+        const ids = s.map(g => g.id);
+        if (new Set(ids).size !== ids.length && doppelt++ < 3)
+          fehler.push(`${PT.NAME_VON[wer]} · ${eb.id}: eine Sitzung stellt denselben `
+            + `Gegenstand zweimal (${ids.join(', ')}) — das Kind hat gerade `
+            + `geantwortet und wird dasselbe wieder gefragt`);
+        if (s.length !== soll && verfehlt++ < 3)
+          fehler.push(`${PT.NAME_VON[wer]} · ${eb.id}: ${s.length} Aufgaben statt `
+            + `${soll} — bei ${eb.alle.length} Gebieten und ${laenge} Aufgaben je `
+            + `Sitzung sind ${soll} richtig (gedeckelt, nicht aufgefüllt)`);
+        for (const g of s)
+          stand = L.verschieben(stand, g.id, wuerfel(keim++) < 0.85, jetzt);
+      }
+      geprueft += 40;
+    }
+  }
+
+  if (!kurzeFaelle)
+    fehler.push('Sitzungslänge: keine einzige Ebene ist kürzer als die Sitzung — '
+      + 'dann prüft dieser Abschnitt eine Selbstverständlichkeit und beweist nichts');
+
+  kuerzeste.sort((a, b) => a.soll - b.soll);
+  const knapp = kuerzeste.filter(x => x.vorrat < x.laenge);
+  console.log(`    Sitzungslänge: ${kuerzeste.length} Ebene-Profil-Paare gespielt, `
+    + `${kurzeFaelle} davon mit weniger Vorrat als Sitzungslänge — keine Wiederholung, `
+    + `keine aufgefüllte Runde`);
+  console.log('    Die kürzesten Sitzungen der App:');
+  for (const x of knapp.slice(0, 8))
+    console.log(`      ${(PT.NAME_VON[x.wer] + ' · ' + x.id).padEnd(38)}`
+      + `${x.soll} statt ${x.laenge} (${x.vorrat} Gebiete)`);
+  if (knapp.length > 8) console.log(`      … und ${knapp.length - 8} weitere`);
 }
 
 /* ---- Jede Ablehnung nennt einen Grund (A3) ---------------------------

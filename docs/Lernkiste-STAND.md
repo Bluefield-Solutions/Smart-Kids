@@ -7825,9 +7825,14 @@ sagen die Rohdaten (Fläche in Quadratgrad):
 
 Australien ist achtzehnmal Papua-Neuguinea und dreihundertmal Fidschi. Auf einer
 Karte, die Australien zeigt, ist alles ab den Salomonen ein Punkt — dieselbe Lage
-wie in Mittelamerika. Dort war der Ausweg eine eigene Karte; hier gibt es ihn
-nicht, die drei Großen liegen zu weit auseinander. Drei ist genauso viel, wie
-Nordamerika bis Grönland hatte.
+wie in Mittelamerika. Dort war der Ausweg eine eigene Karte. Drei ist genauso
+viel, wie Nordamerika bis Grönland hatte.
+
+> **Nachgemessen in Q12 — der Satz „hier gibt es diesen Ausweg nicht, die drei
+> Großen liegen zu weit auseinander" stand hier falsch.** Herausgeschnitten
+> würden nicht die drei Großen, sondern die vier Kleinen, und die liegen dicht
+> beieinander (156 bis 180 Grad Ost, 7 bis 23 Grad Süd). Geometrisch ginge es.
+> Was wirklich dagegen spricht, steht in Q12.
 
 Die Ebene heißt **Ozeanien**, die Kennung `australien` — so heißt der Kontinent
 auf der Weltkarte, und zwei Namen für dasselbe Gebiet wären eine Stelle mehr, die
@@ -7854,3 +7859,128 @@ prüft 35 statt 34.
 Die App zählt **107 Gebiete** (6 + 69 + 16 + 16), das Startbündel 209 KB gzip.
 
 `npm run tor` grün in 200,5 s.
+
+
+---
+
+## Q12 — wie lang eine Sitzung wirklich ist
+
+Die Frage kam aus Ozeanien: drei Ziele, während Lea sonst acht und die Eltern
+zwölf Aufgaben je Sitzung bekommen. Gefragt war, ob sich das nach einer Runde
+anfühlt oder nach einem Vorgeschmack — und das sagt nur das Spielen. Was sich
+vorher messen ließ, ist die Mechanik dahinter, und die war **von keinem Tor
+bezeugt**.
+
+### Zwei Antworten wären falsch, und beide sahen grün aus
+
+| | |
+|---|---|
+| **auffüllen** | dieselben drei Gebiete zweimal in einer Runde. Für ein Kind ist das kein Üben, sondern ein Fehler der App — es hat gerade geantwortet und wird dasselbe wieder gefragt. |
+| **abschneiden** | eine Ebene mit genug Vorrat bekäme weniger Aufgaben, als in der Profiltabelle steht. |
+
+`spielprobe` misst jetzt über **jede Kartenebene und jedes Profil**, vierzig
+Sitzungen weit gespielt: eine Sitzung enthält genau `min(Sitzungslänge, Vorrat)`
+Gegenstände, und keinen zweimal. 47 Ebene-Profil-Paare, 1880 Sitzungen.
+
+Das Ergebnis: **gedeckelt, nicht aufgefüllt** — die Mechanik ist in Ordnung.
+Beide Zweige sind mit einer Gegenprobe belegt (Auffüllen einbauen, und der
+kurze Fall aus der Zählung nehmen).
+
+### Und dann zeigte die Messung etwas, wonach niemand gefragt hatte
+
+22 der 47 Paare haben weniger Vorrat als Sitzungslänge. Die sieben obersten
+gehören alle Fiona:
+
+| | | |
+|---|---|---|
+| Fiona · alle **sieben** Länderebenen | 3 statt 6 | Ländertiefe 3 |
+| Fiona · Kontinente, Runde 1 | 4 statt 6 | |
+| Lea · Ozeanien | 3 statt 8 | |
+| Lea · Nordamerika, Kontinentrunde 1 | 4 statt 8 | |
+| Lea · Kontinente | 6 statt 8 | |
+| Eltern · Ozeanien | 3 statt 12 | |
+| Eltern · Nordamerika, Kontinentrunde 1 | 4 statt 12 | |
+| Eltern · Kontinente | 6 statt 12 | |
+| Eltern · Mittelamerika | 9 statt 12 | |
+
+**Ozeanien ist nicht der Ausreißer — Fiona ist es.** Ihre Zeile in der
+Profiltabelle sagt „6 Aufgaben je Sitzung" und „Ländertiefe 3", und diese beiden
+Zahlen widersprechen sich auf **jeder** Länderebene: sie bekommt dort nie mehr
+als drei Aufgaben, halb so viele wie beim Rechnen, beim Schreiben, bei den
+Bundesländern. Das ist keine Eigenheit von Ozeanien, das ist die halbe Welt-Welt
+für die Sechsjährige. Ob es geändert wird, ist eine Entscheidung über den
+Inhalt — sie gehört in die Tabelle im Backlog, nicht in den Programmtext.
+
+### Die Ozeanien-Begründung, richtiggestellt
+
+Der Maßstab steht in der App selbst: das kleinste Ziel, das es gibt, ist
+**El Salvador mit 1,71 Quadratgrad — an einem Stück**. Jamaika mit 0,94 ist
+schon keines.
+
+| | ganzes Land | größte Insel | Teile |
+|---|---|---|---|
+| Salomonen | 2,2 | 0,44 | 48 |
+| Neukaledonien | 1,6 | 1,44 | 11 |
+| Fidschi | 1,6 | 0,93 | 44 |
+| Vanuatu | 1,0 | 0,34 | 27 |
+
+Die Gesamtfläche eines Inselstaats sagt nichts darüber, was ein Kind sieht. Von
+den vier Kandidaten käme allein Neukaledonien in die Nähe (Grande Terre, 1,44) —
+ein französisches Überseegebiet, kein Land, nach dem eine Achtjährige gefragt
+wird. Die anderen drei sind keine Insel, sondern ein Schwarm.
+
+Eine eigene Karte für die vier wäre geometrisch möglich. Der Grund dagegen ist
+nicht die Geometrie, sondern was auf ihr zu sehen wäre — und dass es vier Namen
+sind, die in keinem Erdkundeheft dieser Kinder stehen.
+
+### Nebenbei: ein Leser statt zwei
+
+Die Sitzungslänge und die Ländertiefe je Profil stehen in der Tabelle im
+Backlog, und der Leser dafür stand bisher nur in `tor/smoke.mjs`. `spielprobe`
+braucht dieselben Zahlen; ein zweiter Leser wäre genau das, was Regel 6 verbietet
+— was zweimal dasteht, veraltet einmal, und dann prüfen zwei Tore verschiedene
+Profile, ohne dass eines rot wird. Beide lesen jetzt `tor/profiltabelle.mjs`.
+
+### Und nebenbei ein Tor, das ohne Grund rot wurde
+
+Beim Abnehmen dieser Runde meldete `lesbarkeit` in der vollen Kette **sechs
+Fehler auf einen Schlag** — „Abend · Pause", alle sechs Texte, alle **1:1**.
+Genau 1:1 kann der Rechenweg nur ausgeben, wenn die Deckung bei null steht: der
+Bildschirm trug schon `.da`, war aber noch unsichtbar. Gemessen wurde die
+Überblendung, nicht die Farbe.
+
+Nachstellen ließ es sich nicht — neun Läufe einzeln und zu sechst nebeneinander,
+alle grün. Das ist kein Freispruch: eine Frist, die in neunundneunzig von hundert
+Fällen reicht, ist keine Zusage, und ein Tor, das ohne Grund rot wird, wird
+umgangen. Statt `waitForTimeout(350)` wartet `schau()` jetzt darauf, dass der
+sichtbare Bildschirm **voll deckt** — und meldet es als Befund, wenn er das nach
+zwei Sekunden nicht tut.
+
+Gewartet wird in vierzig Schritten zu 50 ms und **nicht** mit
+`waitForFunction`: dessen Ablauf kostet in dieser Umgebung rund dreißig Sekunden
+je Aufruf. Die Gegenprobe, die alle sechzehn Aufrufe ablaufen lässt, brauchte
+damit **acht Minuten**; mit der eigenen Schleife sind es 40 Sekunden.
+
+### Und ein zweites, im selben Kettenlauf
+
+`smoke --nur=pausen` meldete: „mit `?flott` 1047 ms, ohne 1544 ms — der Schalter
+kürzt diesen Weg nicht (erwartet mindestens 1,5×)". Einzeln gemessen steht
+dieselbe Stelle bei **1613 / 918 ms, also 1,8×**, und zwar auf ±5 ms stabil.
+
+Der Fehler lag in der Stoppuhr. Sie stand **außerhalb** der Seite: zwei
+`waitForFunction` erkennen Anfang und Ende der Pause erst beim nächsten
+Bildtakt, und unter Last verrutschen die beiden Enden in **verschiedene**
+Richtungen — die lange Pause wird zu kurz gemessen, die kurze zu lang. Aus 1,8×
+wurde 1,47×, und die Grenze steht bei 1,5.
+
+Ein `MutationObserver` stempelt jetzt beide Enden dort, wo sie entstehen. Was
+übrig bleibt, ist die Pause selbst. Dabei kam eine Zahl heraus, die vorher
+niemand sah: auf dem **Rechenweg** dauert die gekürzte Pause nicht 912, sondern
+**1254 ms** — die alte Messung von außen hat sie um ein Drittel zu kurz
+gemeldet. Beide stehenden Gegenproben schlagen unverändert an.
+
+**Beide Befunde haben dasselbe Muster:** eine Frist statt einer Bedingung, und
+eine Uhr außerhalb der Sache, die sie misst. Regel 5 sagt, jede Zahl trägt ihre
+Messstelle mit — hier war die Messstelle selbst der Fehler.
+
+222 Gegenproben (219 + 3). `npm run tor` grün in 180,6 s.

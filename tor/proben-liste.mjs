@@ -489,6 +489,25 @@ export const PROBEN = [
     such:'--tinte-2:  oklch(0.46  0.030 250)', ersatz:'--tinte-2:  oklch(0.86  0.030 250)',
     an:{ ...DIST, text:'oklch(0.86  0.030 250)' }, sagt:':1' },
 
+  /* Und die Ueberblendung selbst (Q12).
+   *
+   * In der vollen Kette meldete `lesbarkeit` einmal sechs Fehler auf
+   * einen Schlag - „Abend · Pause", alle 1:1. Genau 1:1 heisst: der
+   * Bildschirm trug schon `.da`, war aber noch unsichtbar. Gemessen
+   * wurde die Ueberblendung, nicht die Farbe. Seither wartet das Tor auf
+   * die Deckung statt auf eine Frist.
+   *
+   * Der Eingriff macht JEDEN Bildschirm dauerhaft halbdurchsichtig - der
+   * Fall also, den die neue Wartezeit fangen soll. Ohne sie liefe das
+   * Tor darueber hinweg und meldete Kontrastzahlen, die es nie gemessen
+   * hat (Regel 1: eine Pruefung, die nie etwas meldet, ist kein
+   * Beweis). */
+  { n:'der Bildschirm bleibt halbdurchsichtig', tor:'lesbarkeit', bauen:true, datei:V,
+    such:'.schirm.da{opacity:1;pointer-events:auto}',
+    ersatz:'.schirm.da{opacity:0.3;pointer-events:auto}',
+    an:{ ...DIST, text:'.schirm.da{opacity:0.3;pointer-events:auto}' },
+    sagt:'% Deckung' },
+
   /* --- doppelt ------------------------------------------------------ *
    *
    * Eingespritzt wird eine echte Kopie - und zwar als KOPIE, nicht als
@@ -1395,6 +1414,36 @@ export const PROBEN = [
     such:'        if (hatte && !richtig) gelegenheiten++;',
     ersatz:'        if (false) gelegenheiten++;',
     an:{ datei:'tor/spielprobe.mjs', text:'if (false) gelegenheiten++;' },
+    sagt:'beweist nichts' },
+
+  /* --- Die Sitzungslaenge (Q12) ---------------------------------------- *
+   *
+   * Eine Ebene mit drei Gebieten gibt drei Aufgaben - gedeckelt, nicht
+   * aufgefuellt. Das ist die Zusage, die eine kurze Ebene wie Ozeanien
+   * ueberhaupt tragbar macht: waere sie gebrochen, bekaeme ein Kind
+   * dieselben drei Gebiete zweimal in derselben Runde und haelte das mit
+   * Recht fuer einen Fehler der App.
+   *
+   * Der Eingriff fuellt genau so auf, wie ein erster Entwurf es taete. */
+  { n:'eine Sitzung stellt dasselbe Gebiet zweimal', tor:'spielprobe', deckt:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:'  aus = [...aus, ...rest.slice(0, Math.max(0, laenge - aus.length))]\n'
+       + '    .slice(0, Math.min(laenge, alle.length));',
+    ersatz:'  aus = [...aus, ...rest.slice(0, Math.max(0, laenge - aus.length))];\n'
+       + '  while (aus.length < laenge && alle.length) aus.push(alle[aus.length % alle.length]);',
+    an:{ datei:'src/kern/leitner.js', text:'aus.push(alle[aus.length % alle.length])' },
+    sagt:'stellt denselben Gegenstand zweimal' },
+
+  /* Und die Probe braucht ihre Gelegenheit: eine Pruefung, die nie etwas
+   * meldet, ist kein Beweis (Regel 1). Faellt der kurze Fall aus der
+   * Zaehlung, prueft der ganze Abschnitt nur noch
+   * Selbstverstaendlichkeiten - 47 Ebenen, die alle genug Vorrat haben.
+   * Eine Null ohne Gelegenheit beweist nichts. */
+  { n:'die kurze Ebene faellt aus der Sitzungsmessung', tor:'spielprobe', deckt:'spielprobe',
+    datei:'tor/spielprobe.mjs',
+    such:'      if (eb.alle.length < laenge) kurzeFaelle++;',
+    ersatz:'      if (false) kurzeFaelle++;',
+    an:{ datei:'tor/spielprobe.mjs', text:'if (false) kurzeFaelle++;' },
     sagt:'beweist nichts' },
 
   /* Das Buch holt die Umrisse nicht mehr nach.

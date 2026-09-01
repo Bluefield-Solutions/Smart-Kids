@@ -223,27 +223,39 @@ export const LAENDER = {
   ],
   /* --- Ozeanien: drei, und mehr geht nicht ------------------------ *
    *
-   * Gemessen an den Rohdaten (Flaeche in Quadratgrad, Natural Earth):
+   * Gemessen an den Rohdaten (Natural Earth 1:10m, Flaeche in
+   * Quadratgrad) - und zwar ZWEIMAL, denn die Gesamtflaeche eines
+   * Inselstaats sagt nichts darueber, was ein Kind auf der Karte sieht:
    *
-   *   Australien        695,9
-   *   Papua-Neuguinea    38,0
-   *   Neuseeland         29,1
-   *   ------------------------ hier faellt es ab
-   *   Salomonen           2,2
-   *   Neukaledonien       1,6
-   *   Fidschi             1,6
+   *                     ganzes Land   groesste Insel   Teile
+   *   Australien              695,9           686,4       94
+   *   Papua-Neuguinea          38,0            32,7       58
+   *   Neuseeland               29,1            16,9       26
+   *   -------------------------------------------------------- Abbruch
+   *   Salomonen                 2,2             0,44      48
+   *   Neukaledonien             1,6             1,44      11
+   *   Fidschi                   1,6             0,93      44
+   *   Vanuatu                   1,0             0,34      27
    *
-   * Australien ist achtzehnmal Papua-Neuguinea und dreihundertmal
-   * Fidschi. Auf einer Karte, die Australien zeigt, ist alles ab den
-   * Salomonen ein Punkt - dieselbe Lage wie in Mittelamerika, wo neun
-   * Laender eine eigene Karte brauchten. Hier gibt es diesen Ausweg
-   * nicht: die drei grossen liegen zu weit auseinander, um sie
-   * herauszuschneiden.
+   * Der Massstab dafuer steht in der App selbst: das kleinste Ziel, das
+   * es heute gibt, ist El Salvador mit 1,71 - AN EINEM STUECK. Jamaika
+   * mit 0,94 ist schon keines. Von den vier Kandidaten kaeme allein
+   * Neukaledonien in die Naehe (Grande Terre, 1,44), und das ist ein
+   * franzoesisches Ueberseegebiet, kein Land, nach dem eine Achtjaehrige
+   * gefragt wird. Die anderen drei sind keine Insel, sondern ein Schwarm:
+   * die Salomonen liegen in 48 Stuecken, deren groesstes ein Viertel von
+   * El Salvador misst.
    *
-   * Also drei. Das ist kurz, aber nicht zu kurz - Nordamerika hatte bis
-   * Groenland genauso viele, und `ziehen` verlangt, dass jedes Gebiet zu
-   * treffen ist. Drei treffbare sind besser als sechs, von denen die
-   * Haelfte ein Punkt ist. */
+   * Eine EIGENE Karte fuer die vier waere geometrisch moeglich - sie
+   * liegen dicht beieinander (156 bis 180 Grad Ost, 7 bis 23 Grad Sued),
+   * derselbe Ausweg, den Mittelamerika genommen hat. Das ist der Grund
+   * NICHT: gegen sie spricht, was auf ihr zu sehen waere, und dass es
+   * vier Namen sind, die in keinem Erdkundeheft dieser Kinder stehen.
+   *
+   * Also drei. Das ist die kuerzeste Sitzung der App, und `spielprobe`
+   * misst seit Q12, dass daraus genau drei Aufgaben werden - gedeckelt,
+   * nicht mit Wiederholungen aufgefuellt. Drei treffbare sind besser als
+   * sieben, von denen vier ein Punkt sind. */
   australien:[
     { a3:'AUS', name:'Australien', rang:1, aussprache:['australien','austraalien'] },
     { a3:'PNG', name:'Papua-Neuguinea', rang:2, aliasse:['Papua Neuguinea','Neuguinea'],

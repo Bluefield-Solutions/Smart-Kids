@@ -219,8 +219,51 @@ for (const abend of [false, true]) {
   if (abend) await p.evaluate(() => document.documentElement.setAttribute('data-abend', 'an'));
   await p.waitForTimeout(300);
 
+  /* Auf eine BEDINGUNG warten, nicht auf eine Frist.
+   *
+   * Bis hierher stand hier `waitForTimeout(350)`. In der vollen Kette
+   * (einundzwanzig Laeufe nebeneinander) meldete das Tor EINMAL sechs
+   * Fehler auf einen Schlag: „Abend · Pause", alle sechs Texte, alle
+   * 1:1. Genau 1:1 kann der Rechenweg nur ausgeben, wenn `deckung` bei
+   * null steht - der Bildschirm trug also schon `.da`, war aber noch
+   * unsichtbar. Gemessen wurde die Ueberblendung, nicht die Farbe.
+   *
+   * Nachstellen liess es sich nicht: neun Laeufe einzeln und zu sechst
+   * nebeneinander, alle gruen. Eine Frist, die in 99 von 100 Faellen
+   * reicht, ist trotzdem keine Zusage - und ein Tor, das ohne Grund rot
+   * wird, wird umgangen. Gewartet wird deshalb auf die Sache selbst:
+   * der sichtbare Bildschirm muss durchsichtig NULL Prozent sein.
+   *
+   * Zwei Sekunden sind dafuer reichlich: die Ueberblendung dauert 320 ms,
+   * und unter `reducedMotion` eine. Gewartet wird in vierzig Schritten zu
+   * 50 ms und NICHT mit `waitForFunction`: dessen Ablauf kostet in dieser
+   * Umgebung rund dreissig Sekunden je Aufruf, und die Gegenprobe (die
+   * jeden der sechzehn Aufrufe ablaufen laesst) lief damit acht Minuten
+   * statt einer halben.
+   *
+   * Laeuft die Frist trotzdem ab, ist das ein Befund und keine stille
+   * Messung - sonst faengt der Umbau genau den Fall nicht, fuer den er
+   * da ist (Regel 1: eine Pruefung, die nie etwas meldet, ist kein
+   * Beweis). */
   const schau = async (wo) => {
-    await p.waitForTimeout(350);
+    const deckungJetzt = () => p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      if (!s) return 0;
+      let d = 1;
+      for (let q = s; q && q !== document.documentElement; q = q.parentElement)
+        d *= +getComputedStyle(q).opacity;
+      return d;
+    });
+    let deckung = 0;
+    for (let i = 0; i < 40 && deckung < 0.999; i++) {
+      deckung = await deckungJetzt();
+      if (deckung < 0.999) await p.waitForTimeout(50);
+    }
+    if (deckung < 0.999)
+      fehler.push(`${abend ? 'Abend' : 'Tag'} · ${wo}: der Bildschirm stand nach `
+        + `2 s erst bei ${Math.round(deckung * 100)} % Deckung — hier misst `
+        + 'niemand eine Farbe');
+    await p.waitForTimeout(120);
     for (const m of await p.evaluate(MESSEN)) {
       gemessen++;
       if (m.k < m.noetig)

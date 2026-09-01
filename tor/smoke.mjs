@@ -80,88 +80,31 @@ const KURZ = process.argv.includes('--kurz');
  * Beide stehen hier oben und nicht bei ihrem Gebrauch: der Elternbereich
  * braucht die Namen schon im Abschnitt `ablage`, tausend Zeilen frueher.
  * ------------------------------------------------------------------- */
-/* Wie heissen die drei Profile?
+/* Wer sind die Profile, wie tief gehen sie, wie lang ist eine Sitzung?
  *
- * Aus derselben Tabelle wie die Tiefe, und aus demselben Grund: das
- * Erwartete darf nicht aus der Datei kommen, die eine Gegenprobe
- * anfasst (Regel 3). Steht in der Kopfzeile „Fiona (6)", zaehlt „Fiona". */
-const PROFILNAMEN = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*\|\s*Fiona[^|]*\|(.+)\|\s*$/m);
-  if (!z) { fehler.push('Die Kopfzeile der Profiltabelle fehlt im Backlog — '
-    + 'dann prüft der Rauchtest die Profile gegen nichts'); return []; }
-  return ('Fiona|' + z[1]).split('|').map(t => t.replace(/\(.*/, '').trim()).filter(Boolean);
-})();
-
-/* Wie tief geht jedes Profil? Aus dem KONZEPT, nicht aus dem Programm.
+ * Alles vier aus `tor/profiltabelle.mjs`, und das liest die Tabelle im
+ * Backlog. Bis hierher stand der Leser hier - und `spielprobe` braucht
+ * dieselben Zahlen. Ein zweiter Leser waere genau, was Regel 6 verbietet:
+ * was zweimal dasteht, veraltet einmal, und dann pruefen zwei Tore
+ * verschiedene Profile, ohne dass eines rot wird.
  *
- * Der erste Anlauf las `laenderTiefe` aus `prototyp/spiel.js` - und war
- * damit wertlos. Die Gegenprobe baut den Fehler genau dort ein: setzt man
- * Fionas Tiefe auf zwoelf, wandert die Erwartung mit, und der Test bleibt
- * gruen. Ein Test, der sein Soll aus dem Prueflig holt, prueft nichts
- * (Regel 3).
+ * `PT.FEHLER` traegt, was beim Lesen schiefging - eine fehlende Zeile darf
+ * nicht still zu einem leeren Soll werden.
  *
- * Gelesen wird deshalb die Tabelle im Backlog - dieselbe Stelle, an der
- * der Nutzer die Zahl entschieden hat. Was daraus WIRKLICH auf dem
- * Bildschirm landet, sieht man nur hier: der teuerste denkbare Fehler
- * dieser Runde waere, dass die Raenge 6 bis 12 mitrutschen und vor einem
- * Sechsjaehrigen ploetzlich zwoelf Laender stehen.
- */
-/* Wieviele Aufgaben hat eine Sitzung? Dieselbe Tabelle, Zeile „Aufgaben
- * je Sitzung".
+ * Was aus der Tiefe WIRKLICH auf dem Bildschirm landet, sieht man nur
+ * hier: der teuerste denkbare Fehler waere, dass die Raenge 6 bis 12
+ * mitrutschen und vor einer Sechsjaehrigen ploetzlich zwoelf Laender
+ * stehen.
  *
- * Gebraucht fuer den Vorlauf: bei einer Rechenebene zeigt er BEISPIELE,
- * nicht den Vorrat - und zwar so viele, wie gleich kommen. Der Vorrat ist
- * erzeugt (100, 140, 158); ihn zu zeigen hiesse, einer Sechsjaehrigen vor
- * ihrer ersten Sitzung 2,8 Bildschirme Einmaleins-Tafel hinzulegen. */
-const BACKLOG = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-
-/**
- * Eine Zeile der Profiltabelle als Zellen - oder nichts samt Fehler.
- *
- * `wozu` sagt, was ohne diese Zeile ungeprueft bliebe. Vorher stand dieser
- * Zehnzeiler dreimal da, einmal je Zeile; eine fehlende Zeile darf nicht
- * still zu einem leeren Soll werden, gegen das alles gruen ist.
- */
-function backlogZeile(zeile, wozu){
-  const z = BACKLOG.match(new RegExp(`^\\|\\s*${zeile}\\s*\\|(.+)\\|\\s*$`, 'm'));
-  if (!z) { fehler.push(`Die Zeile „${zeile}" fehlt im Backlog — `
-    + `dann prüft der Rauchtest ${wozu} gegen nichts`); return null; }
-  return z[1].split('|');
-}
-
-/** Dieselbe Zeile als Zahl je Profil. */
-function backlogZahlen(zeile, wozu){
-  const zellen = backlogZeile(zeile, wozu);
-  if (!zellen) return {};
-  const n = zellen.map(t => +(t.match(/\d+/) || [])[0]).filter(Number.isFinite);
-  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, n[i]]));
-}
-
-/* Die Kennungen der Profile - aus der KOPFZEILE der Tabelle, nicht aus
- * einer Liste hier.
- *
- * Vor N1 stand in vier Toren `['fiona','lea','eltern']`. Die vierte Spalte
- * (Violeta) haette sie alle still falsch gemacht: jede Zeile waere um eins
- * verrutscht, und Violetas Werte waeren als Stephans geprueft worden.
- * Eine Tabelle, die ihre eigenen Namen traegt, kann das nicht.
- *
- * Die Kennung ist das erste Wort der Spalte, klein: „Fiona (6)" -> `fiona`. */
-const PROFIL_IDS = (() => {
-  const z = BACKLOG.match(/^\|\s*\|\s*Fiona[^|]*\|.+\|\s*$/m);
-  if (!z) { fehler.push('Die Kopfzeile der Profiltabelle fehlt im Backlog — '
-    + 'dann weiß der Rauchtest nicht, welche Spalte wem gehört'); return []; }
-  return z[0].split('|').slice(2, -1)
-    .map(t => t.trim().split(/[\s(]/)[0].toLowerCase()).filter(Boolean);
-})();
-
-/** Der angezeigte Name je Kennung - „stephan" steht als „Stephan" da. */
-const NAME_VON = Object.fromEntries(PROFIL_IDS.map(id =>
-  [id, id.charAt(0).toUpperCase() + id.slice(1)]));
-
-const SITZUNG = backlogZahlen('Aufgaben je Sitzung', 'den Vorlauf');
-
-const TIEFE = backlogZahlen('Ländertiefe', 'die Tiefe');
+ * Gebraucht wird die Sitzungslaenge fuer den Vorlauf: bei einer Rechenebene
+ * zeigt er BEISPIELE, nicht den Vorrat - und zwar so viele, wie gleich
+ * kommen. Der Vorrat ist erzeugt (100, 140, 158); ihn zu zeigen hiesse,
+ * einer Sechsjaehrigen vor ihrer ersten Sitzung 2,8 Bildschirme
+ * Einmaleins-Tafel hinzulegen. */
+import * as PT from './profiltabelle.mjs';
+const { BACKLOG, PROFIL_IDS, NAME_VON, PROFILNAMEN, SITZUNG, TIEFE } = PT;
+const backlogZeile = PT.zeile;
+fehler.push(...PT.FEHLER);
 
 /* Wer bekommt NIE eine Auswahl, sondern tippt immer?
  *
@@ -2535,6 +2478,36 @@ if (laeuft('pausen')) try {
     const rechnen = ebene.startsWith('rechnen');
     await p.waitForSelector(rechnen ? '.schirm.da .rechnung'
       : '.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    // Von „das Lob steht da" bis „die naechste Aufgabe steht da" - gemessen
+    // IN der Seite, nicht von aussen.
+    //
+    // Bis Q12 standen hier zwei `waitForFunction`, und zwischen ihnen lief
+    // die Stoppuhr im Testrechner. Beide Enden werden aber erst BEMERKT,
+    // wenn der naechste Bildtakt kommt - und unter Last (die Kette faehrt
+    // zehn Browser auf vier Kernen) verrutschen sie in verschiedene
+    // Richtungen: die lange Pause wird zu kurz gemessen, die kurze zu
+    // lang. Gemessen in der Kette: 1544 statt 1613 ms und 1047 statt 918.
+    // Aus 1,8x wurde 1,47x, und das Tor meldete rot, wo nichts war.
+    //
+    // Ein `MutationObserver` stempelt beide Enden dort, wo sie
+    // entstehen. Was uebrig bleibt, ist die Pause selbst.
+    await p.evaluate(() => {
+      window.__pause = {};
+      const sieh = () => {
+        const s = document.querySelector('.schirm.da');
+        if (!s) return;
+        const lob = s.querySelector('.frage .richtigText, .frage .fastText');
+        if (lob && !window.__pause.t0) window.__pause.t0 = performance.now();
+        if (window.__pause.t0 && !lob && !window.__pause.t1
+            && (s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
+                || s.querySelector('#nochmal')))
+          window.__pause.t1 = performance.now();
+      };
+      new MutationObserver(sieh).observe(document.body,
+        { childList: true, subtree: true, characterData: true });
+      sieh();
+    });
+
     // Richtig antworten — auf dem Weg, den dieses Profil hier hat.
     if (rechnen) {
       // Die richtige Zahl wird AUSGERECHNET, nicht abgelesen: an der
@@ -2558,19 +2531,13 @@ if (laeuft('pausen')) try {
     } else {
       await loese(p);
     }
-    // Von „das Lob steht da" bis „die naechste Aufgabe steht da".
-    await p.waitForFunction(() => !!document.querySelector(
-      '.schirm.da .frage .richtigText, .schirm.da .frage .fastText'), null, { timeout: 8000 });
-    const t0 = Date.now();
-    await p.waitForFunction(() => {
-      const s = document.querySelector('.schirm.da');
-      if (!s || s.querySelector('.frage .richtigText, .frage .fastText')) return false;
-      return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
-                || s.querySelector('#nochmal'));
-    }, null, { timeout: 15000 });
-    const dauer = Date.now() - t0;
+    /* Warten darf ruhig ungenau sein - gerechnet wird mit den Stempeln
+     * aus der Seite, nicht mit dem Zeitpunkt, an dem das Warten endet. */
+    await p.waitForFunction(() => window.__pause && window.__pause.t1,
+      null, { timeout: 20000 });
+    const { t0, t1 } = await p.evaluate(() => window.__pause);
     await p.close();
-    return dauer;
+    return Math.round(t1 - t0);
   }
 
   for (const [was, ebene] of [['Karte', 'bundeslaender'], ['Rechnen', 'rechnen:plusminus']]) {
