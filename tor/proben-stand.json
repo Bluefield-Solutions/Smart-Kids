@@ -219,6 +219,11 @@
       "zeit": "2026-09-01",
       "s": 130
     },
+    "der leise Knopf verliert seine Kante": {
+      "commit": "88aaaed457b75e6999734e0a3feed014e2225eff",
+      "zeit": "2026-09-01",
+      "s": 240
+    },
     "der Bildschirm bleibt halbdurchsichtig": {
       "commit": "487f8c0667d4e2a9cacde5f581f4f325f1cee3b3",
       "zeit": "2026-09-01",
