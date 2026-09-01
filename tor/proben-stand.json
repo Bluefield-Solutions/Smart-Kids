@@ -654,6 +654,11 @@
       "zeit": "2026-09-01",
       "s": 23
     },
+    "die Kachelbilder werden kleiner gezeichnet": {
+      "commit": "a7a784997a031e52a2551e7aed8bf1a8bded52e7",
+      "zeit": "2026-09-01",
+      "s": 77
+    },
     "das schmale Fenster bekommt wieder zwei Spalten": {
       "commit": "8087b5e66947c192376c3f2babd73e9db8b05d07",
       "zeit": "2026-09-01",
