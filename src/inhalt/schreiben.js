@@ -101,21 +101,49 @@ export const BUCHSTABEN = [
  */
 export const ZIFFERN = [
   { zeichen:'0', wort:'null',   zuege:['M50 10 Q28 10 28 50 Q28 90 50 90 Q72 90 72 50 Q72 10 50 10'] },
-  { zeichen:'1', wort:'eins',   zuege:['M33 26 L50 12 L50 90'] },
+  { zeichen:'1', wort:'eins',   zuege:['M33 26 L50 12 L50 90'],
+                                auch:[['M50 12 L50 90'],
+                                      ['M33 26 L50 12 L50 90', 'M32 90 L68 90']] },
   { zeichen:'2', wort:'zwei',   zuege:['M28 28 Q30 12 50 12 Q70 12 70 32 Q70 48 28 90 L74 90'] },
   { zeichen:'3', wort:'drei',   zuege:['M28 22 Q35 10 52 12 Q72 14 70 32 Q68 48 48 50 '
                                      + 'Q72 52 74 68 Q76 88 52 89 Q32 90 26 76'] },
-  { zeichen:'4', wort:'vier',   zuege:['M60 12 L24 64 L76 64', 'M60 12 L60 90'] },
+  /* Die Vier hat ZWEI Formen, und die Schule schreibt die andere.
+   *
+   * `zuege` ist die gedruckte Vier mit schraegem linken Schenkel - die
+   * Form, die auf einer Tastatur steht und die hier vorgemacht wird.
+   * Geschrieben wird in der deutschen Grundschrift aber die Vier mit
+   * SENKRECHTEM linken Schenkel: hinunter, nach rechts, absetzen, der
+   * Stamm daneben. Gemeldet vom Zielgeraet (M4r).
+   *
+   * Beide gelten. `auch` sind Formen, die ERKANNT werden - vorgemacht
+   * wird immer `zuege`. */
+  { zeichen:'4', wort:'vier',   zuege:['M60 12 L24 64 L76 64', 'M60 12 L60 90'],
+                                auch:[['M32 12 L32 58 L78 58', 'M62 26 L62 90'],
+                                      ['M32 12 L32 58 L78 58 L62 58 L62 90'],
+                                      ['M60 12 L24 64 L76 64 L60 64 L60 90']] },
   { zeichen:'5', wort:'fünf',   zuege:['M70 12 L34 12 L30 44 Q52 34 66 48 '
                                      + 'Q78 60 70 76 Q60 92 34 86'] },
   { zeichen:'6', wort:'sechs',  zuege:['M66 14 Q46 8 36 30 Q26 52 30 68 Q34 90 52 90 '
                                      + 'Q72 90 72 68 Q72 48 50 48 Q36 48 30 62'] },
-  { zeichen:'7', wort:'sieben', zuege:['M26 14 L74 14 L44 90'] },
+  /* Die Sieben mit Querstrich.
+   *
+   * In Deutschland die uebliche Form - und mit der alten Rechnung
+   * chancenlos: ein Zug zuviel kostete fuenf von zehn Punkten, zwei Zuege
+   * zuviel schlossen sie ganz aus. Gemessen am Zielgeraet lag die
+   * dreizuegige Sieben bei 12,4 gegen eine Grenze von 10 (M4r). */
+  { zeichen:'7', wort:'sieben', zuege:['M26 14 L74 14 L44 90'],
+                                auch:[['M26 14 L74 14 L44 90', 'M36 54 L64 54'],
+                                      ['M26 14 L74 14', 'M74 14 L44 90', 'M36 54 L64 54']] },
   { zeichen:'8', wort:'acht',   zuege:['M50 12 Q30 12 30 30 Q30 46 50 50 Q70 54 70 70 '
                                      + 'Q70 89 50 89 Q30 89 30 70 Q30 54 50 50 '
                                      + 'Q70 46 70 30 Q70 12 50 12'] },
   { zeichen:'9', wort:'neun',   zuege:['M70 46 Q64 62 48 60 Q30 58 30 38 Q30 16 50 14 '
-                                     + 'Q72 12 72 40 Q72 70 62 90'] },
+                                     + 'Q72 12 72 40 Q72 70 62 90'],
+                                /* Der Kringel oben, der Abstrich GERADE
+                                   hinunter - so steht sie in vielen
+                                   Schulheften. */
+                                auch:[['M68 40 Q68 60 48 60 Q28 60 28 38 Q28 16 50 14 '
+                                     + 'Q70 12 70 40', 'M70 40 L70 90']] },
 ];
 
 /** Alle Vorlagen unter ihrem Zeichen - Buchstaben und Ziffern. */
@@ -320,8 +348,20 @@ function einseitig(a, b){
 /** Wie verschieden sind zwei Punktwolken - unabhaengig von Zug und Richtung. */
 const formAbstand = (a, b) => (einseitig(a, b) + einseitig(b, a)) / 2;
 
-/** Aufschlag je Zug, den einer zuviel oder zuwenig hat. */
-export const STRAFE_ZUGZAHL = 5;
+/**
+ * Aufschlag je Zug, den einer zuviel oder zuwenig hat.
+ *
+ * Stand auf 5 - bei einer Grenze von 10 also ein halbes Veto, und bei zwei
+ * Zuegen Unterschied ein ganzes. Damit war die deutsche Sieben mit
+ * Querstrich nicht zu schreiben, ganz gleich wie sauber (M4r).
+ *
+ * Jetzt 2. Die Zugzahl bleibt ein Merkmal - wer ein T in einem Zug malt,
+ * hat kein T geschrieben -, aber sie entscheidet nicht mehr allein. Was
+ * die Zugzahl WIRKLICH tragen soll, tragen jetzt die Varianten: die
+ * Sieben mit Querstrich ist eine eigene Form, kein verunglueckter
+ * Einzelzug.
+ */
+export const STRAFE_ZUGZAHL = 3;
 /** Aufschlag, wenn ein Zug verkehrt herum geschrieben wurde. */
 export const STRAFE_RICHTUNG = 1.5;
 /** Aufschlag, wenn die Zuege in anderer Reihenfolge kamen. */
@@ -371,17 +411,48 @@ export function abstandZu(zuege, vorlageZuege){
   return (form + folge) / 2 + (verdreht ? STRAFE_REIHENFOLGE : 0);
 }
 
-/** Zwei Punktfolgen gleicher Laenge Punkt fuer Punkt vergleichen. */
+/**
+ * Zwei Punktfolgen Punkt fuer Punkt vergleichen - mit erlaubtem VERSATZ.
+ *
+ * Der erste Entwurf verglich stur den i-ten mit dem i-ten Punkt. Das ist
+ * unbarmherzig gegen den haeufigsten Fehler beim Schreiben ueberhaupt: die
+ * Linie stimmt, sie faengt nur ein Stueck frueher oder spaeter an. Auf dem
+ * Zielgeraet (M4r) hat das die Sechs gekostet - wer ihren Bogen nicht ganz
+ * oben ansetzt, bekam ab siebzehn Prozent Versatz eine NULL angezeigt,
+ * nicht etwa eine Ablehnung.
+ *
+ * Gemessen am Bogen der Sechs, Versatz in Punkten von 60:
+ *
+ *     0/60   Abstand  0,0   erkannt als 6
+ *     6/60   Abstand  7,0   erkannt als 6, Vorsprung nur noch 1,6
+ *    10/60   Abstand 12,1   erkannt als 0    <- falsch, nicht unsicher
+ *    14/60   Abstand 17,7   erkannt als 0
+ *
+ * Erlaubt sind jetzt bis zu einem Sechstel der Punkte Versatz, in beide
+ * Richtungen. Was darueber hinausgeht, ist kein Versatz mehr, sondern eine
+ * andere Linie. Am Rand wird geklemmt statt weggelassen: sonst vergliche
+ * ein grosser Versatz weniger Punkte und saehe dadurch besser aus.
+ */
+export const VERSATZ_ANTEIL = 1/10;
 function mittelPaar(a, b){
-  let s = 0; for (let i = 0; i < a.length; i++) s += weit(a[i], b[i]);
-  return s / a.length;
+  const max = Math.max(1, Math.round(a.length * VERSATZ_ANTEIL));
+  let beste = Infinity;
+  for (let v = -max; v <= max; v++) {
+    let s = 0;
+    for (let i = 0; i < a.length; i++) {
+      const j = Math.min(b.length - 1, Math.max(0, i + v));
+      s += weit(a[i], b[j]);
+    }
+    if (s < beste) beste = s;
+  }
+  return beste / a.length;
 }
 /** Eine Punktfolge auf feste Laenge bringen, gleich weit nach Bogenlaenge. */
 function abtasten2(punkte, n = 24){
   return punkte.length === n ? punkte : gleichWeit(punkte, n);
 }
 
-/** Die abgetasteten und genormten Zuege einer Vorlage - einmal gerechnet. */
+/** Die abgetasteten und genormten Zuege der VORGEMACHTEN Form. */
 const vorlagen = new Map();
 export function vorlageZuege(zeichen){
   if (!vorlagen.has(zeichen)) {
@@ -390,6 +461,29 @@ export function vorlageZuege(zeichen){
     vorlagen.set(zeichen, normieren(b.zuege.map(z => abtasten(z, 24))));
   }
   return vorlagen.get(zeichen);
+}
+
+/**
+ * ALLE Formen eines Zeichens - die vorgemachte und die anerkannten.
+ *
+ * Eine Ziffer hat nicht eine Gestalt, sondern eine Familie. Die Sieben mit
+ * und ohne Querstrich sind beide richtig; die Vier mit schraegem und mit
+ * senkrechtem linken Schenkel auch. Das ist keine Toleranzfrage - keine
+ * Schwelle der Welt macht aus einer Sieben ohne Querstrich eine mit.
+ * Fehlende Tinte laesst sich nicht wegmessen, sie muss dastehen.
+ *
+ * Vorgemacht wird immer `zuege`. `auch` wird nur ERKANNT: sonst saehe ein
+ * Kind beim Nachfahren mal die eine, mal die andere Form.
+ */
+const saetze = new Map();
+export function vorlageSaetze(zeichen){
+  if (!saetze.has(zeichen)) {
+    const b = NACH_ZEICHEN.get(zeichen);
+    if (!b) throw new Error(`Kein Zeichen „${zeichen}"`);
+    saetze.set(zeichen, [b.zuege, ...(b.auch || [])]
+      .map(satz => normieren(satz.map(z => abtasten(z, 24)))));
+  }
+  return saetze.get(zeichen);
 }
 
 /**
@@ -431,7 +525,7 @@ export function vorlageZuege(zeichen){
  * Das Soll steht nicht hier, sondern im Backlog - sonst wuerde die
  * Schwelle so lange verschoben, bis das Tor gruen ist (Regel 3).
  */
-export const ABSTAND_MAX = 10;
+export const ABSTAND_MAX = 8;
 export const VORSPRUNG_MIN = 1.2;
 
 /**
@@ -454,7 +548,12 @@ export function erkennen(zuege, satz = BUCHSTABEN){
   const meine = normieren((zuege || []).filter(z => z && z.length > 1).map(z => abtasten2(z)));
   if (!meine.length) return { zeichen:null, abstand:Infinity, vorsprung:0, sicher:false, liste:[] };
   const liste = satz
-    .map(b => ({ zeichen:b.zeichen, abstand: abstandZu(meine, vorlageZuege(b.zeichen)) }))
+    /* Gegen JEDE Form dieses Zeichens - es zaehlt die naechste. Ein Kind,
+       das die Sieben mit Querstrich schreibt, hat eine Sieben
+       geschrieben, und zwar keine schlechtere. */
+    .map(b => ({ zeichen:b.zeichen,
+                 abstand: Math.min(...vorlageSaetze(b.zeichen)
+                   .map(satz => abstandZu(meine, satz))) }))
     .sort((a, b) => a.abstand - b.abstand);
   const vorsprung = liste.length > 1 ? liste[1].abstand - liste[0].abstand : Infinity;
   return {

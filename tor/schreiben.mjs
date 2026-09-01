@@ -235,6 +235,46 @@ for (const [name, satz] of SAETZE) {
     + `bei drei Punkten mehr Nachsicht wären es ${locker}`);
 }
 
+/* ---- Die Formen, die vom Zielgeraet gemeldet wurden (M4r) -------------
+ *
+ * Krumme Vorlagen und Gekritzel messen die BREITE der Toleranz. Sie sagen
+ * nichts darueber, ob die richtigen Formen ueberhaupt im Vorrat stehen -
+ * und genau daran ist die Erkennung am iPhone gescheitert: die deutsche
+ * Sieben mit Querstrich, die Vier mit senkrechtem linken Schenkel und die
+ * Sechs, deren Bogen nicht ganz oben ansetzt.
+ *
+ * Diese sechs Faelle stehen deshalb NAMENTLICH da. Eine Prozentzahl kann
+ * um einen halben Punkt fallen, ohne dass jemand hinsieht; ein Fall mit
+ * Namen kann das nicht.
+ */
+{
+  const p = (d, n = 40) => S.abtasten(d, n);
+  const sechs = p(S.zuegeVon('6')[0], 60);
+  const FAELLE = [
+    ['die Sieben mit Querstrich, zweizügig', '7',
+     [p('M26 14 L74 14 L44 90'), p('M40 52 L64 52')]],
+    ['die Sieben mit Querstrich, dreizügig', '7',
+     [p('M26 14 L74 14'), p('M74 14 L44 90'), p('M40 52 L64 52')]],
+    ['die Vier mit senkrechtem Schenkel, zweizügig', '4',
+     [p('M32 12 L32 58 L78 58'), p('M62 26 L62 90')]],
+    ['die Vier mit senkrechtem Schenkel, einzügig', '4',
+     [p('M32 12 L32 58 L78 58 L62 58 L62 90')]],
+    ['die Sechs, 10 % später angesetzt', '6', [sechs.slice(6)]],
+    ['die Sechs, 17 % später angesetzt', '6', [sechs.slice(10)]],
+  ];
+  const zeilen = [];
+  for (const [name, soll, zuege] of FAELLE) {
+    const e = S.erkennen(zuege, S.ZIFFERN);
+    pruefe(e.sicher && e.zeichen === soll,
+      `${name} wird nicht als ${soll} erkannt — erkannt: ${e.zeichen}, `
+      + `Abstand ${e.abstand.toFixed(1)} von ${S.ABSTAND_MAX}, `
+      + `Vorsprung ${e.vorsprung.toFixed(1)} von ${S.VORSPRUNG_MIN}`);
+    zeilen.push(`${soll} ${e.abstand.toFixed(1)}`);
+  }
+  console.log(`    Formen vom Zielgerät: ${FAELLE.length} von ${FAELLE.length} erkannt `
+    + `(${zeilen.join(' · ')})`);
+}
+
 /* ---- Nachfahren ------------------------------------------------------ */
 {
   let angenommen = 0, abgelehnt = { halb:0, rueckwaerts:0, daneben:0 }, zuege = 0;

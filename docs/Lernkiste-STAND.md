@@ -6867,3 +6867,143 @@ nennt jetzt auch, wie man die App auf dem iPad ablegt — in **Safari**, denn
 nur dort geht es — und dass der Fortschritt je Gerät getrennt liegt.
 
 `npm run tor` grün in 108,5 s. 207 Gegenproben.
+
+## M4r — die Rückmeldung vom iPhone, und was sie an der Schrifterkennung geändert hat
+
+Der Punkt stand seit Runden als Rang 1 im Backlog: *„eine halbe Stunde mit
+dem Gerät in der Hand entscheidet mehr als eine weitere Runde Code."* Jetzt
+ist er gefahren.
+
+**Die Spracheingabe hält.** Fiona wird erkannt, die Wörter werden richtig
+zugeordnet. Der Nachbau in `vergleich` hat an dieser Stelle nicht gelogen.
+
+**Die Schrifterkennung nicht.** Drei Fälle, alle drei aus echtem Schreiben:
+die deutsche **Sieben mit Querstrich**, die **Vier** mit senkrechtem linken
+Schenkel (die Vorlage zeigt die Tastaturform), und die **Sechs**, deren
+Bogen nicht ganz oben ansetzt.
+
+### Erst nachgestellt, dann geändert
+
+```
+                                   vorher                        nachher
+7 mit Querstrich, 2 Züge      7   Abstand  7,3  (knapp)     7   Abstand 1,3
+7 mit Querstrich, 3 Züge      —   Abstand 12,4  ABGELEHNT   7   Abstand 0,8
+4 senkrechter Schenkel        4   Abstand  8,0  Vorspr. 0,1 4   Abstand 0,1
+4 senkrecht, einzügig         —   Abstand 14,5  ABGELEHNT   4   Abstand 0,8
+6, Bogen 10 % später          6   Abstand  7,0  Vorspr. 1,6 6   Abstand 4,1
+6, Bogen 17 % später          0   Abstand 12,1  FALSCH      6   Abstand 7,8
+```
+
+Die dritte Zeile von unten ist die schlimmste: die Sechs wurde nicht
+abgelehnt, sondern als **Null** gelesen. Ein Kind, das eine richtige Sechs
+schreibt und „das ist eine Null" hört, lernt etwas Falsches.
+
+### Drei Ursachen, und keine davon war „zu streng eingestellt"
+
+**Ein Zug zuviel kostete die Hälfte des Budgets.** `STRAFE_ZUGZAHL` stand
+auf 5 bei einer Grenze von 10 — zwei Züge Unterschied schlossen ein Zeichen
+aus. Die deutsche Sieben war damit nicht zu schreiben, ganz gleich wie
+sauber.
+
+**Die Form stand gar nicht im Vorrat.** Jede Ziffer hatte genau eine
+Gestalt. Das ist keine Toleranzfrage: **keine Schwelle der Welt macht aus
+einer Sieben ohne Querstrich eine mit.** Fehlende Tinte lässt sich nicht
+wegmessen, sie muss dastehen.
+
+**Der Punktvergleich verglich stur den i-ten mit dem i-ten Punkt.** Wer
+eine Linie richtig zieht, sie aber ein Stück später ansetzt, verschiebt
+damit *jedes* Paar. Das war die Sechs.
+
+### Was jetzt dasteht
+
+- **Formenfamilien.** Eine Ziffer trägt eine `zuege`-Form (die wird
+  vorgemacht) und beliebig viele `auch`-Formen (die werden nur erkannt).
+  Eingetragen: Sieben mit Querstrich (zwei- und dreizügig), Vier mit
+  senkrechtem Schenkel, Eins ohne Anstrich und mit Fuß, Neun mit geradem
+  Abstrich. Vorgemacht wird immer dieselbe Form — sonst sähe ein Kind beim
+  Nachfahren mal die eine, mal die andere.
+- **Der Anfang eines Zuges darf rutschen**, bis zu einem Zehntel der
+  Punkte, in beide Richtungen. Am Rand wird geklemmt statt weggelassen,
+  sonst verglichen große Versätze weniger Punkte und sähen dadurch besser
+  aus.
+- **`STRAFE_ZUGZAHL` von 5 auf 3.** Die Zugzahl bleibt ein Merkmal — wer
+  ein T in einem Zug malt, hat kein T geschrieben —, aber sie entscheidet
+  nicht mehr allein.
+
+### Die Zahlen kommen aus dem Raum, nicht aus dem Bauch
+
+Drei Größen, jede durchprobiert, gegen 1040 krumme Buchstaben, 400 krumme
+Ziffern, 800 Gekritzel und die sechs Fälle vom Gerät.
+
+**Der erlaubte Versatz** ändert die Gekritzelquote **überhaupt nicht** —
+2,8 % bei jedem Wert, auch bei null. Er kostet also nichts und rettet die
+Sechs. Bei 10 % ist die Ziffernerkennung sogar besser als bei 16,7 %
+(95,0 gegen 94,3 %).
+
+**Der Zugaufschlag** ist der Hebel auf die Gekritzel:
+
+```
+Aufschlag   Buchstaben richtig / Gekritzel   Ziffern richtig / Gekritzel
+    2            94,6 %  /  0,3 %                 95,0 %  /  2,8 %
+    3            93,9 %  /  0,0 %                 95,0 %  /  0,0 %     <- hier
+    4            91,7 %  /  0,0 %                 94,8 %  /  0,0 %
+    5            83,7 %  /  0,0 %                 90,8 %  /  0,0 %
+```
+
+**Die Abstandsgrenze** hat eine Kante, und sie liegt genau zwischen 8 und 9:
+
+```
+Grenze   Buchstaben richtig / Gekritzel   Ziffern richtig / Gekritzel
+   8          93,9 %  /  0,0 %                 95,0 %  /  0,0 %       <- hier
+   9          94,6 %  /  0,3 %                 95,5 %  /  2,8 %
+  10          94,7 %  /  4,5 %                 95,8 %  /  8,3 %
+```
+
+Ein Punkt mehr Nachsicht kostet 2,8 Prozentpunkte Gekritzel und bringt
+einen halben Prozentpunkt Erkennung. Genommen wird die 8.
+
+Das Ergebnis am Tor, gegen den Stand vor der Runde: Buchstaben 94,3 %
+richtig (vorher 94,6), **Gekritzel 0,0 % statt bis zu 1 %**, Ziffern 94,5 %
+richtig, Gekritzel 0,0 % — und die sechs Formen vom Gerät alle erkannt.
+
+### Was recherchiert und NICHT genommen wurde
+
+Der naheliegende Griff wäre der **$P-Punktwolken-Erkenner** (Vatavu,
+Anthony & Wobbrock): eine Geste als *ungeordnete* Punktwolke, Zuordnung
+über eine gierige Paarung. Zugzahl, Zugreihenfolge und Schreibrichtung
+hören damit **von Bauart her** auf zu zählen — genau die Krankheit.
+
+Er ist gebaut und gemessen worden. Er löst die Sieben glänzend (Abstand
+1,2 bei einem Vorsprung von 4,1, zwei- wie dreizügig). Aber er wirft die
+Zuginformation weg, und damit rücken **alle** Ziffern zusammen: eine
+perfekt getroffene Sechs hat nur noch 2,4 Vorsprung vor der Null statt 9,9.
+Gemessen:
+
+```
+                        Punktwolke        heutiger Vergleich
+4 geschlossen           6 (falsch)        4, Abstand 0,1
+6, Bogen 17 % später    6, Vorsprung 0,3  6, Abstand 7,8
+Gekritzel               7,0               10,7  — abgelehnt
+4 geschlossen           8,0               ^ das Gekritzel lag NÄHER
+```
+
+Ein Erkenner, bei dem ein Gekritzel näher liegt als eine echte Ziffer, ist
+kein Auffangnetz, sondern ein Loch. Die Punktwolke bleibt deshalb, was das
+Backlog unter W-A vorgesehen hat: eine **zweite Stufe** unter der ersten —
+und sie kommt erst, wenn echte Züge von Fiona vorliegen, an denen sich ihre
+eigene Schwelle messen lässt. N2b bleibt offen, jetzt mit Zahlen.
+
+### Und die sechs Fälle stehen namentlich im Tor
+
+Prozentzahlen können um einen halben Punkt fallen, ohne dass jemand
+hinsieht. Ein Fall mit Namen kann das nicht: `schreiben` prüft die sechs
+Formen einzeln und nennt sie beim Namen, wenn eine ausfällt. Dazu drei
+stehende Gegenproben, eine je Hebel.
+
+Nebenbei ist einer der vier offenen Punkte aus **Q1** gefallen: die
+Gegenprobe „die Buchstabenerkennung nimmt alles an" erwartete die Meldung
+*„Gekritzeln werden als Buchstabe angenommen"* — das Tor sagt aber
+*„als Zeichen"*, weil dieselbe Zeile für Buchstaben und Ziffern gilt. Drei
+Wörter, seit P6 offen.
+
+`npm run tor` grün in 107,0 s. 210 Gegenproben.

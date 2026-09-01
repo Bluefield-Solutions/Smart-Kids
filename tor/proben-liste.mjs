@@ -1907,7 +1907,39 @@ export const PROBEN = [
     such:"    sicher: liste[0].abstand <= ABSTAND_MAX && vorsprung >= VORSPRUNG_MIN,",
     ersatz:'    sicher: true,',
     an:{ datei:S, fehlt:'abstand <= ABSTAND_MAX' },
-    sagt:'Gekritzeln werden als Buchstabe angenommen' },
+    /* „als ZEICHEN", nicht „als Buchstabe".
+     *
+     * Der Erwartungstext stand seit P6 auf einer Meldung, die das Tor nie
+     * ausgibt: es sagt „Gekritzeln werden als Zeichen angenommen", weil
+     * dieselbe Zeile fuer Buchstaben UND Ziffern gilt. Die Probe wurde
+     * dadurch rot gemeldet - „das Tor wird rot, aber nicht deswegen" -
+     * und stand als einer der vier offenen Punkte in Q1. */
+    sagt:'Gekritzeln werden als Zeichen angenommen' },
+
+  /* Die drei Proben zu den Formen vom Zielgeraet (M4r).
+   *
+   * Jede nimmt EINEN der drei Hebel weg, mit dem die Sieben mit
+   * Querstrich, die Vier mit senkrechtem Schenkel und die versetzt
+   * angesetzte Sechs wieder erkannt werden. Faellt einer aus, ist die
+   * Runde still zurueckgedreht - und genau das wuerde niemandem
+   * auffallen, weil die Prozentzahlen daneben kaum zucken. */
+  { n:'die Sieben verliert ihre Form mit Querstrich', tor:'schreiben', datei:S,
+    suchRegex:/auch:\[\['M26 14 L74 14 L44 90', 'M36 54 L64 54'\],/,
+    ersatzFn:() => "auch:[['M26 14 L74 14 L44 90'],",
+    an:{ datei:S, fehlt:"'M36 54 L64 54'" },
+    sagt:'Querstrich' },
+
+  { n:'der Anfang eines Zuges darf nicht mehr rutschen', tor:'schreiben', datei:S,
+    such:'export const VERSATZ_ANTEIL = 1/10;',
+    ersatz:'export const VERSATZ_ANTEIL = 0;',
+    an:{ datei:S, text:'VERSATZ_ANTEIL = 0;' },
+    sagt:'später angesetzt' },
+
+  { n:'ein Zug zuviel kostet wieder fast alles', tor:'schreiben', datei:S,
+    such:'export const STRAFE_ZUGZAHL = 3;',
+    ersatz:'export const STRAFE_ZUGZAHL = 1;',
+    an:{ datei:S, text:'STRAFE_ZUGZAHL = 1;' },
+    sagt:'Gekritzeln werden als Zeichen angenommen' },
 
   // 2. Die Schreibrichtung wird nicht mehr verlangt. Dann darf Fiona das A
   //    von unten nach oben fahren - und lernt die Bewegung falsch.

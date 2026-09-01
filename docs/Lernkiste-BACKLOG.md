@@ -173,13 +173,13 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~12~~ | ~~**B2** Test ohne Hilfen, mit Pokal~~ | Lea | mittel | mittel | **gefahren** |
 | ~~13~~ | ~~**G12** Profilfarben und der Streu auf der Kachel~~ | Fiona, Lea, Stephan | — | mittel | **gewünscht, gefahren** |
 | ~~14~~ | ~~**D2** Abzeichen, die etwas sagen~~ | Fiona, Lea | mittel | mittel | **gefahren** |
-| 1 | **M4r** Sprechen auf dem iPhone, ein Mal wirklich | Fiona | hoch | mittel | ihr, einmal |
-| 2 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| 1 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| ~~—~~ | ~~**M4r** Sprechen auf dem iPhone~~ | | | | **gefahren 01.09.** |
 | 3 | **A4h** „Heute schon geübt" | alle | mittel | klein | — |
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
 | 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 | 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 7 | **Q1** Vier Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
+| 7 | **Q1** Noch DREI Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
 | 8 | **Q2** 187 von 207 Nachweisen sind überholt | nur ich | mittel | klein | 19 min Rechenzeit |
 | 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
 | 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
@@ -503,8 +503,10 @@ weil jede eine eigene Untersuchung **am Tor** ist, nicht am Läufer:
   prüft das Tor an dieser Stelle nichts.
 - **eine Spalte fehlt in der Profiltabelle** — `smoke` wird rot, aber mit
   einer anderen Meldung.
-- **die Buchstabenerkennung nimmt alles an** — `schreiben` wird rot, aber
-  nicht deswegen.
+- ~~**die Buchstabenerkennung nimmt alles an**~~ — **behoben am
+  01.09.2026.** Sie erwartete die Meldung „Gekritzeln werden als
+  *Buchstabe* angenommen"; das Tor sagt „als *Zeichen*", weil dieselbe
+  Zeile für Buchstaben und Ziffern gilt. Drei Wörter.
 - **eine falsche Antwort bleibt stumm** — der Suchtext trifft nicht mehr.
 
 *Abnahme:* jede schlägt an, und zwar mit **ihrer** Meldung.
