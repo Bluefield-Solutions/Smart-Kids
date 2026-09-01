@@ -1717,7 +1717,11 @@ if (laeuft('tippen')) try {
  */
 if (laeuft('regler')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
-  await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5 } } });
+  /* `klang: true` - seit Q4 stehen die beiden Toene ab Werk auf AUS (auf
+   * Wunsch der Eltern). Wer sie messen will, schaltet sie ein; das Tor
+   * prueft weiter unten, dass ohne dieses Einschalten wirklich nichts
+   * kommt. */
+  await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5, klang: true } } });
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="lea"]');
   await p.click('[data-profil="lea"]');
@@ -1800,21 +1804,25 @@ if (laeuft('regler')) try {
     merke('regler', new Error(`Der Regler stand auf 50 Prozent Division, gespielt wurden `
       + `${geteilt} von ${arten.length} — er kommt nicht bis in die Sitzung`));
 
-  /* Und der Schalter (A2): „Ton aus" heisst nicht „nur die Stimme aus".
+  /* Und die beiden Gegenrichtungen: der Schalter, und die Voreinstellung.
    *
-   * Regel 1 — wer eine Wirkung misst, schaltet sie zuerst ab. Ohne diesen
-   * zweiten Durchgang haette die Gegenprobe „der Ton spielt auch bei
+   * Regel 1 - wer eine Wirkung misst, schaltet sie zuerst ab. Ohne diese
+   * Durchgaenge haette die Gegenprobe „der Ton spielt auch bei
    * abgeschaltetem Ton" gar keinen Gegenstand: bei eingeschaltetem Ton
    * aendert das Entfernen der Sperre nichts, was zu sehen waere.
-   */
-  {
-    await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5, ton: false } } });
+   *
+   * EIN Helfer fuer beide. Der zweite Durchgang stand hier als Abschrift
+   * des ersten - 140 Token, die das Tor `doppelt` sofort gemeldet hat.
+   * Zwei Faelle, die sich nur in der Ablage unterscheiden, sind ein Fall
+   * mit einem Eingang. */
+  const stillMessen = async (einstellungen) => {
+    await stelleAblage(p, { einstellungen: { alles: einstellungen } });
     await p.reload({ waitUntil: 'domcontentloaded' });
     await p.waitForSelector('[data-profil="lea"]');
     await p.click('[data-profil="lea"]');
     await zurEbenenwahl(p, 'rechnen:reihen');
     await p.click('[data-ebene="rechnen:reihen"]');
-  await durchVorlaufWenn(p);
+    await durchVorlaufWenn(p);
     await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
     await p.evaluate(() => { window.__toene = []; });
     const falschZahl = await p.evaluate(() => {
@@ -1829,13 +1837,35 @@ if (laeuft('regler')) try {
     /* Hier wird ein AUSBLEIBEN geprueft, und darauf kann man nicht warten.
      * Gewartet wird stattdessen auf die Wertung: der Ton wird gespielt,
      * wenn bewertet wird - steht die Wertung, ist er entweder gekommen
-     * oder er kommt nicht mehr. Das ist dieselbe Aussage wie vorher,
-     * nur ohne Frist. */
+     * oder er kommt nicht mehr. Dieselbe Aussage, nur ohne Frist. */
     await bewertet(p);
-    const trotzdem = await p.evaluate(() => window.__toene.length);
+    return p.evaluate(() => window.__toene.length);
+  };
+
+  // Der grosse Schalter: „Ton aus" heisst nicht „nur die Stimme aus" -
+  // auch ein eingeschalteter Rueckmeldeton bleibt dann still.
+  {
+    const trotzdem = await stillMessen({ reihenGeteilt: 0.5, klang: true, ton: false });
     console.log(`  Mit „Ton aus":              ${trotzdem} Schwingungen (erwartet 0)`);
     if (trotzdem > 0) merke('regler',
       new Error(`„Ton aus" ist gesetzt, und es kamen trotzdem ${trotzdem} Schwingungen`));
+  }
+
+  /* Und die Voreinstellung (Q4): AB WERK ist es still.
+   *
+   * Das ist die Zusage, um die die Eltern gebeten haben - „die Musik
+   * komplett abschalten" -, und sie steht und faellt mit einem Zeichen in
+   * einer Zeile. Eine Voreinstellung kippt beim naechsten Umbau lautlos.
+   *
+   * Die Ablage sagt hier von Toenen NICHTS: kein `klang`, kein `ton` -
+   * genau das, was auf einem frischen Geraet steht. Der grosse Schalter
+   * bleibt also an, sonst bewiese der Lauf bloss noch einmal den
+   * Durchgang darueber. */
+  {
+    const abWerk = await stillMessen({ reihenGeteilt: 0.5 });
+    console.log(`  Ab Werk, Lautsprecher an:   ${abWerk} Schwingungen (erwartet 0)`);
+    if (abWerk > 0) merke('regler', new Error(`ab Werk kamen ${abWerk} Schwingungen `
+      + '— der Rückmeldeton steht wieder auf an'));
   }
   await p.close();
 } catch (e) { merke('regler', e); }

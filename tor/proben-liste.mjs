@@ -1711,6 +1711,31 @@ export const PROBEN = [
     ersatz:'if(!auf){ aufheben(); }',
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
 
+  /* Das Kachelbild liegt wieder unter dem Vorschau-Knopf (Q4).
+   *
+   * Fuer Fiona IST das Bild der Name - sie liest nicht. Gemessen hat das
+   * bis Q4 niemand, und der Knopf verdeckte bis zu 52 % der Farbe. Der
+   * Eingriff nimmt die eine Zeile heraus, die das Bild an ihm vorbei
+   * rueckt. */
+  { n:'das Kachelbild liegt wieder unter dem Knopf', tor:'passt', bauen:true,
+    args:['--teil=0/5'], datei:V,
+    such:'.wahl.ebenen .kachel .silhouette{right:calc(44px + var(--r0))}',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'.wahl.ebenen .kachel .silhouette{right:calc' },
+    sagt:'verdeckt' },
+
+  /* Die Toene sind ab Werk aus (Q4).
+   *
+   * Die Zusage steht und faellt mit EINEM Zeichen in einer Zeile - eine
+   * Voreinstellung kippt beim naechsten Umbau lautlos, und niemand merkt
+   * es, bis das Geraet wieder Toene macht. Der Eingriff dreht genau dieses
+   * Zeichen um. */
+  { n:'die Rückmeldetöne sind wieder ab Werk an', tor:'smoke', bauen:true,
+    args:['--nur=regler'], datei:D,
+    such:'Einst={ ton:true, klang:false,', ersatz:'Einst={ ton:true, klang:true,',
+    an:{ ...DIST, text:'ton:true, klang:true,' },
+    sagt:'ab Werk kamen' },
+
   /* Der weiche Rand (Q3).
    *
    * Ohne ihn endet die graue Umgebung an der Maskenkante - auf drei von
@@ -1986,11 +2011,13 @@ export const PROBEN = [
   // Und der Schalter: „Ton aus" heisst nicht „nur die Stimme aus".
   { n:'der Ton spielt auch bei abgeschaltetem Ton', tor:'smoke', args:['--nur=regler'],
     bauen:true, datei:D,
-    // Der Riegel `hoertZu` steht seit F15 in derselben Zeile - er bleibt
-    // stehen, herausgenommen wird nur die Tonabschaltung.
-    such:"function klangZu(ergebnis){\n  if (hoertZu || !tonAn) return;",
-    ersatz:"function klangZu(ergebnis){\n  if (hoertZu) return;",
-    an:{ ...DIST, fehlt:"if (hoertZu || !tonAn) return;" },
+    /* Der Riegel `hoertZu` steht seit F15 in derselben Zeile - er bleibt
+     * stehen, herausgenommen wird nur die Tonabschaltung. Und seit Q4
+     * steht `Einst.klang` daneben: der bleibt AUCH stehen, sonst maesse
+     * der Lauf nicht mehr den grossen Schalter, sondern den kleinen. */
+    such:"  if (hoertZu || !tonAn || !Einst.klang) return;",
+    ersatz:"  if (hoertZu || !Einst.klang) return;",
+    an:{ ...DIST, fehlt:"hoertZu || !tonAn || !Einst.klang" },
     sagt:'Ton aus' },
 
   /* --- Schreiben (N2a) ------------------------------------------------ *

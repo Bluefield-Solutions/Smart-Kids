@@ -654,10 +654,30 @@
       "zeit": "2026-09-01",
       "s": 23
     },
+    "das Kachelbild liegt wieder unter dem Knopf": {
+      "commit": "9aa74a7af79b8100bda370dd03112a1d7fb8e5b4",
+      "zeit": "2026-09-01",
+      "s": 77
+    },
+    "die Rückmeldetöne sind wieder ab Werk an": {
+      "commit": "9aa74a7af79b8100bda370dd03112a1d7fb8e5b4",
+      "zeit": "2026-09-01",
+      "s": 35
+    },
+    "die Umgebung endet wieder hart am Rahmen": {
+      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
+      "zeit": "2026-09-01",
+      "s": 33
+    },
     "die Karte wechselt die Farbe": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
       "zeit": "2026-09-01",
       "s": 111
+    },
+    "Grönland ist wieder nur Umgebung": {
+      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
+      "zeit": "2026-09-01",
+      "s": 16
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
@@ -770,9 +790,9 @@
       "s": 14
     },
     "der Ton spielt auch bei abgeschaltetem Ton": {
-      "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
+      "commit": "9aa74a7af79b8100bda370dd03112a1d7fb8e5b4",
       "zeit": "2026-09-01",
-      "s": 21
+      "s": 19
     },
     "die Buchstabenerkennung nimmt alles an": {
       "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
@@ -1093,16 +1113,6 @@
       "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
       "zeit": "2026-09-01",
       "s": 27
-    },
-    "die Umgebung endet wieder hart am Rahmen": {
-      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
-      "zeit": "2026-09-01",
-      "s": 33
-    },
-    "Grönland ist wieder nur Umgebung": {
-      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
-      "zeit": "2026-09-01",
-      "s": 16
     }
   }
 }

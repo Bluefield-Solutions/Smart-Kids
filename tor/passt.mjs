@@ -276,11 +276,158 @@ const SUCHE = () => {
           + `${breit.toFixed(0)}×${hoch.toFixed(0)} px`);
     }
   }
-  return { raus, klein, zu, ueber, karte, bewacht };
+  /* DAS WASSERZEICHEN: liegt es ganz in seiner Kachel, und liegt etwas
+   * darauf?
+   *
+   * Fuer Fiona IST das Kachelbild der Name - sie liest nicht. Im
+   * Stylesheet steht das seit R2 als Absicht („ein Kind, das noch nicht
+   * liest, erkennt Afrika am Bild und nicht am Wort") und daneben die
+   * Lehre, die es einmal gekostet hat: „ein Wasserzeichen, das man nicht
+   * erkennt, ist Dekoration und keine Auskunft."
+   *
+   * Geprueft hat das niemand. Die Kachel ist eine Pille mit
+   * `overflow:hidden`; das Bild sitzt buendig rechts und wird von der
+   * Rundung angeschnitten - oben und unten am staerksten. Und der
+   * Vorschau-Knopf sitzt genau darauf.
+   *
+   * Gemessen wird an der FARBE, nicht am Kasten: der Kasten eines Umrisses
+   * ist zum grossen Teil leer, und ein Mass, das die Leere mitzaehlt,
+   * meldet Beschnitt, wo nur Luft abgeschnitten wurde. `isPointInFill`
+   * fragt den Umriss selbst. */
+  const zeichen = [];
+  for (const svg of document.querySelectorAll('.schirm.da .kachel .silhouette')) {
+    const kachel = svg.closest('.kachel');
+    const pfade = [...svg.querySelectorAll('path')];
+    const ctm = svg.getScreenCTM();
+    if (!kachel || !pfade.length || !ctm) continue;
+    // Gezeichnete Zeichen (Buchstaben, Rechenzeichen) haben keine Fuellung -
+    // dort traegt der STRICH die Form, und `isPointInFill` faende nichts.
+    const gezogen = svg.classList.contains('gezeichnet');
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const q of pfade) { const b = q.getBBox();
+      x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
+      x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); }
+    const N = 44;
+    let farbe = 0, draussen = 0, verdeckt = 0; const wer = {};
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const ux = x0 + (x1 - x0) * (i + .5) / N, uy = y0 + (y1 - y0) * (j + .5) / N;
+      const drin = gezogen
+        ? pfade.some(q => q.isPointInStroke(new DOMPoint(ux, uy)))
+        : pfade.some(q => q.isPointInFill(new DOMPoint(ux, uy)));
+      if (!drin) continue;
+      farbe++;
+      const pt = new DOMPoint(ux, uy).matrixTransform(ctm);
+      const stapel = document.elementsFromPoint(pt.x, pt.y);
+      // Das Wasserzeichen nimmt keine Tipps an, steht also nie im Stapel.
+      // Ist die Kachel nicht darin, liegt der Punkt ausserhalb - von der
+      // Rundung weggeschnitten oder ganz aus dem Bild.
+      if (!stapel.includes(kachel)) { draussen++; continue; }
+      /* Und was liegt darauf? Nur, was dort auch WIRKLICH MALT.
+       *
+       * Der erste Anlauf zaehlte jedes Element im Stapel und meldete
+       * prompt „70 bis 100 % verdeckt" - bei einem Wasserzeichen, das man
+       * auf dem Bildschirm deutlich sieht. Der Grund: der Kachelname und
+       * der Fortschrittsbalken sind KAESTEN ueber die volle Kachelbreite,
+       * und unter ihrem durchsichtigen Teil lag jeder Punkt „verdeckt".
+       * Eine Zahl, die Kaesten zaehlt statt Farbe, sagt nichts.
+       *
+       * Gezaehlt wird deshalb nur, was einen eigenen Grund hat oder ein
+       * Zeichen ist - der Vorschau-Knopf mit seinem Ring, der Balken, ein
+       * Aufkleber. Die SCHRIFT bleibt draussen: ob ein Name auf dem Bild
+       * noch zu lesen ist, misst `lesbarkeit`, und zwar am Kontrast. */
+      const bis = stapel.indexOf(kachel);
+      const malt = (e) => {
+        if (e === svg || svg.contains(e)) return false;
+        const c = getComputedStyle(e);
+        if (+c.opacity < 0.1) return false;
+        const g = c.backgroundColor || '';
+        const m = g.match(/^rgba?\(([^)]+)\)/);
+        const undurchsichtig = m && (m[1].split(',').length < 4
+          || parseFloat(m[1].split(',')[3]) >= 0.1);
+        // `e.querySelector('svg')` stand hier und war die dritte zu weite
+        // Fassung: ein Kasten, der IRGENDWO ein Zeichen enthaelt, malt an
+        // DIESER Stelle noch lange nicht. Damit zaehlte der Kachelfuss
+        // mit, weil der Aufkleber in ihm sitzt.
+        return !!undurchsichtig || e.tagName === 'svg' || e.tagName === 'path';
+      };
+      const drauf = stapel.slice(0, bis).find(malt);
+      if (drauf) { verdeckt++;
+        const wie = drauf.tagName.toLowerCase()
+          + (typeof drauf.className === 'string' && drauf.className
+             ? '.' + drauf.className.trim().split(/\s+/).join('.') : '');
+        wer[wie] = (wer[wie] || 0) + 1; }
+    }
+    if (farbe < 40) continue;   // zu wenig Farbe fuer eine Aussage
+    zeichen.push({ was: (kachel.querySelector('.name, .titel, b, strong')
+        || kachel).textContent.trim().slice(0, 18).replace(/\s+/g, ' '),
+      ab: Math.round(draussen / farbe * 100), zu: Math.round(verdeckt / farbe * 100),
+      // Wer deckt zu? Ohne das ist ein Prozentsatz kein Befund, sondern
+      // ein Raetsel - und der erste Anlauf war genau deshalb wertlos.
+      wer: Object.entries(wer).sort((a, b) => b[1] - a[1]).slice(0, 2)
+        .map(([k, n]) => `${k} ${Math.round(n / farbe * 100)} %`).join(', ') });
+  }
+  /* WIEVIEL LUFT BLEIBT? Der Wahlbildschirm ist eine Wand aus Kacheln,
+   * und sie waechst mit jeder Ebene. Dass sie HEUTE passt, sagt das Tor
+   * schon; was es nicht sagt, ist, wie knapp es war. Eine Wand, die mit
+   * neun Kacheln gerade noch passt, faellt bei der zehnten um - und
+   * gemerkt wird das erst, wenn die zehnte da ist.
+   *
+   * Gemessen wird in KACHELREIHEN, nicht in Bildpunkten: „es sind noch
+   * 30 px frei" sagt niemandem etwas, „es passt keine Reihe mehr" schon.
+   * Die Reihenhoehe kommt aus den Kacheln selbst, damit die Zahl auch bei
+   * einer anderen Kachelform stimmt. */
+  let luft = null;
+  {
+    const wand = document.querySelector('.schirm.da .wahl');
+    const stuecke = wand ? [...wand.children] : [];
+    if (wand && stuecke.length >= 2) {
+      const k = stuecke.map(e => e.getBoundingClientRect());
+      const reihe = Math.max(...k.map(b => b.height));
+      // Der Abstand zwischen zwei Reihen: der erste echte Sprung nach
+      // unten in der Liste der Oberkanten.
+      const oben = [...new Set(k.map(b => Math.round(b.top)))].sort((a, b) => a - b);
+      const sprung = oben.length > 1 ? oben[1] - oben[0] : reihe;
+      const unten = Math.max(...k.map(b => b.bottom));
+      const platz = innerHeight - unten;
+      luft = { reihen: +(platz / sprung).toFixed(1), kacheln: stuecke.length,
+               proReihe: k.filter(b => Math.round(b.top) === oben[0]).length,
+               frei: Math.round(platz) };
+    }
+  }
+  return { raus, klein, zu, ueber, karte, bewacht, zeichen, luft };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
 const KARTE_MIN = 0.92;
+
+/* Das Kachelbild: wieviel davon darf weg sein?
+ *
+ * ZUERST GEMESSEN, DANN GESETZT. Gemessen auf fuenf Groessen, Anteil der
+ * FARBE (nicht des Kastens) des Wasserzeichens:
+ *
+ *                      vorher        nachher
+ *   Afrika              52 %           0 %
+ *   Suedamerika         50 %           0 %
+ *   Bundeslaender       44 %           0 %
+ *   Hauptstaedte        44 %           0 %
+ *   Europa              43 %           0 %
+ *   Asien               42 %           0 %
+ *   Kontinente          29 %           0 %
+ *   Nordamerika         17 %           0 %
+ *   Mittelamerika        7 %           0 %
+ *
+ * Verdeckt hat sie der Vorschau-Knopf oben rechts in der Kachel; seit Q4
+ * rueckt das Bild links an ihm vorbei. Sechs Prozent, weil alles Gemessene
+ * jetzt auf null steht und der naechste Knopf, den jemand in eine Kachel
+ * legt, anschlagen soll - nicht erst der uebernaechste.
+ *
+ * `ab` (abgeschnitten) lag schon vorher ueberall bei 0 bis 1 %: die Pille
+ * schneidet die Ecken des Kastens weg, und dort liegt bei einem Umriss
+ * Meer. Die Zahl steht trotzdem da - sie ist die Zusage, dass ein Bild
+ * ganz in seine Kachel gehoert, und die naechste Kachelform koennte sie
+ * brechen. */
+const ZEICHEN_AB = 6, ZEICHEN_ZU = 6;
+const zeichenZeilen = [], luftZeilen = [];
 
 const { server, adresse: ADRESSE } = await serviere(DIST);
 
@@ -385,6 +532,31 @@ for (const g of MEINE) {
         + `${(r.karte.anteil * 100).toFixed(0)} % ihres Kastens `
         + `(Kasten ${r.karte.kasten.join('×')}, gezeichnet ${r.karte.gez.join('×')}) — `
         + `daneben steht ein Loch, das niemand nutzt`);
+    /* Ein HINWEIS, kein Fehler: dass es heute passt, hat das Tor oben
+     * schon geprueft. Hier steht, wie knapp - und zwar bevor jemand die
+     * naechste Ebene baut und sich wundert. Rot waere falsch: die Wand ist
+     * in Ordnung, sie ist nur voll. */
+    if (r.luft && r.luft.reihen < 1)
+      meldungen.push(`${name}: HINWEIS die Wand ist voll — unter ${r.luft.kacheln} Kacheln `
+        + `(${r.luft.proReihe} je Reihe) bleiben ${r.luft.frei} px, das sind `
+        + `${r.luft.reihen} Reihen. Die nächste Kachel, die eine neue Reihe aufmacht, `
+        + `passt hier nicht mehr`);
+    if (r.luft) luftZeilen.push(`      ${name.padEnd(22)} `
+      + `${String(r.luft.kacheln).padStart(2)} Kacheln, ${r.luft.proReihe} je Reihe · `
+      + `${String(r.luft.frei).padStart(4)} px frei = ${r.luft.reihen} Reihen`);
+    /* Die Wasserzeichen. Erst nur ansagen, was gemessen wurde - die
+     * Schwellen stehen weiter unten und wurden an diesen Zahlen gesetzt,
+     * nicht umgekehrt. */
+    for (const z of (r.zeichen || [])) {
+      zeichenZeilen.push(`      ${name.padEnd(22)} ${z.was.padEnd(18)} `
+        + `abgeschnitten ${String(z.ab).padStart(3)} % · verdeckt ${String(z.zu).padStart(3)} %`
+        + (z.wer ? `  (${z.wer})` : ''));
+      if (z.ab > ZEICHEN_AB) meldungen.push(`${name}: vom Kachelbild „${z.was}" sind `
+        + `${z.ab} % abgeschnitten (erlaubt ${ZEICHEN_AB}) — für ein Kind, das noch nicht `
+        + `liest, IST dieses Bild der Name`);
+      if (z.zu > ZEICHEN_ZU) meldungen.push(`${name}: vom Kachelbild „${z.was}" sind `
+        + `${z.zu} % verdeckt (erlaubt ${ZEICHEN_ZU}) — darauf liegt ${z.wer}`);
+    }
     // Zu kleine Trefferflaechen sind ein Hinweis, kein Fehler: manche
     // Knoepfe sind bewusst schmal (der Zurueck-Pfeil ist 44 hoch, aber
     // nicht 44 breit - er ist trotzdem gut zu treffen).
@@ -555,6 +727,22 @@ for (const g of MEINE) {
 }
 await b.close(); server.close();
 
+if (luftZeilen.length) {
+  console.log('    Luft unter den Kachelwänden:');
+  [...new Set(luftZeilen)].sort().forEach(z => console.log(z));
+}
+if (zeichenZeilen.length) {
+  console.log(`    Die Kachelbilder (erlaubt: abgeschnitten ${ZEICHEN_AB} %, `
+    + `verdeckt ${ZEICHEN_ZU} %):`);
+  // Je Bild EINE Zeile, auch wenn es auf fuenf Groessen gemessen wurde -
+  // gezeigt wird der schlechteste Fall, denn der entscheidet.
+  const je = new Map();
+  for (const z of zeichenZeilen) {
+    const k = z.slice(0, 60);
+    if (!je.has(k) || je.get(k) < z) je.set(k, z);
+  }
+  [...je.values()].sort().forEach(z => console.log(z));
+}
 console.log(`    Gewartet: ${(ruhe.ms / 1000).toFixed(1)} s auf Ruhe in ${ruhe.n} Aufnahmen, `
   + `${(blind.ms / 1000).toFixed(1)} s blind in ${blind.n} festen Pausen`);
 console.log(`    ${MEINE.length} Größen × ${gesehen / MEINE.length} Bildschirme geprüft, `

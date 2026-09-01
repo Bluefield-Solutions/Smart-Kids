@@ -431,6 +431,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Kachelart einmal; am Aufruf steht keine Zahl mehr. */
 .kachel .silhouette{position:absolute;right:0;top:50%;translate:0 -50%;
   height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}
+/* Auf der Ebenenwahl rueckt das Bild UNTER dem Vorschau-Knopf weg (Q4).
+   Der sitzt oben rechts in der Kachel, 44 Punkte gross, und die Kachel ist
+   auf dem Zielgeraet rund 55 Punkte hoch - das Bild lag also fast
+   vollstaendig darunter. Gemessen mit `passt`: bis zu 52 % der Farbe
+   verdeckt, am schlimmsten bei Afrika und Suedamerika, deren Umrisse
+   ungefaehr quadratisch sind und damit genau die Form des Knopfes haben.
+   Fuer Fiona IST dieses Bild der Name; ein Name unter einem Knopf ist
+   keiner. Die 44 sind die Trefferflaeche des Knopfes, keine gewaehlte
+   Zahl - sie steht als MIN_PT auch in `passt` und in `beruehrung`. */
+.wahl.ebenen .kachel .silhouette{right:calc(44px + var(--r0))}
 .kachel.welt .silhouette{height:80%;max-width:76%}
 .kachel .silhouette path{fill:currentColor}
 /* Die Rechenzeichen werden gezogen, nicht gefuellt. */

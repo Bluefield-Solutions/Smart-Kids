@@ -7313,3 +7313,107 @@ Bildvergleich sieht es. Die Aufnahme läuft mit `kind:'stephan'` — in Fionas
 Profil käme Grönland gar nicht vor, und sie bezeugte genau das Neue nicht.
 
 `npm run tor` grün in 122,1 s. 215 Gegenproben, zwei davon neu.
+
+## Q4 — die Töne aus, das Kachelbild frei, und die Wand ist voll
+
+### Die Musik ist aus
+
+Es gibt keine Musik in der App — es gibt **zwei kurze Töne**, einen nach einer
+richtigen und einen nach einer falschen Antwort (A2). Die sind gemeint, und die
+sind jetzt **ab Werk aus**.
+
+Warum das nicht schon ging: sie hingen am **selben Schalter wie die Sprache**,
+mit einer Begründung, die für den Schalter richtig und für die Voreinstellung
+falsch war — „wer ,Ton aus' sagt, meint nicht ,nur die Stimme aus'". Fiona liest
+noch nicht, sie *braucht* das Vorlesen. Wer die Töne loswerden wollte, musste
+ihr also das Vorlesen mit abschalten. **Es gab keine Stellung, in der die App
+vorliest und dabei still ist.**
+
+Jetzt gibt es zwei Schalter:
+
+- Der **Lautsprecher in der Kopfzeile** bleibt der große: aus heißt alles aus,
+  Stimme wie Töne.
+- **„Rückmeldeton"** im Elternbereich ist der kleine darunter und steht ab Werk
+  auf aus. Er sitzt dort und nicht in der Kopfzeile: das ist keine Entscheidung,
+  die ein Kind mitten in einer Aufgabe treffen soll. Wer ihn einschaltet, hört
+  sofort einen Ton als Probe — beim Ausschalten bleibt es still, ein Ton als
+  Quittung fürs Abschalten wäre eine Frechheit.
+
+Gelöscht ist nichts: `src/kern/klang.js` steht unverändert da, und der Rauchtest
+misst die Töne weiter — er schaltet sie dafür ein. Drei Zustände, alle drei
+gemessen:
+
+| | Schwingungen |
+|---|---|
+| Rückmeldeton an | falsch `330→247`, richtig `660 990` |
+| „Ton aus" trotz Rückmeldeton an | 0 |
+| **ab Werk, Lautsprecher an** | **0** |
+
+Die dritte Zeile ist die Zusage, um die gebeten wurde, und sie steht und fällt
+mit **einem Zeichen in einer Zeile**. Eine Voreinstellung kippt beim nächsten
+Umbau lautlos — deshalb misst der Rauchtest sie jetzt mit einer Ablage, die von
+Tönen nichts sagt, also genau so, wie ein frisches Gerät steht. Mit stehender
+Gegenprobe.
+
+### Das Kachelbild lag unter einem Knopf
+
+Im Stylesheet steht seit R2 die Absicht: „ein Kind, das noch nicht liest,
+erkennt Afrika am Bild und nicht am Wort" — und daneben die Lehre, die es einmal
+gekostet hat: „ein Wasserzeichen, das man nicht erkennt, ist Dekoration und
+keine Auskunft."
+
+**Geprüft hat das niemand.** Gemessen wurde jetzt der Anteil der *Farbe* des
+Bildes, der unter etwas liegt, das dort auch wirklich malt:
+
+| | vorher | jetzt |
+|---|---|---|
+| Afrika | 52 % | 0 % |
+| Südamerika | 50 % | 0 % |
+| Bundesländer | 44 % | 0 % |
+| Hauptstädte | 44 % | 0 % |
+| Europa | 43 % | 0 % |
+| Asien | 42 % | 0 % |
+| Kontinente | 29 % | 0 % |
+| Nordamerika | 17 % | 0 % |
+| Mittelamerika | 7 % | 0 % |
+
+Darauf lag der **Vorschau-Knopf** (das Auge), 44 Punkte groß, oben rechts in
+einer Kachel, die auf dem Zielgerät rund 55 Punkte hoch ist. Am schlimmsten traf
+es Afrika und Südamerika: deren Umrisse sind ungefähr quadratisch und haben damit
+genau die Form des Knopfes. Das Bild rückt jetzt links an ihm vorbei — eine
+Zeile, und die 44 sind die Trefferfläche des Knopfes, keine gewählte Zahl.
+
+**Die Zahl war zweimal falsch, bevor sie stimmte.** Der erste Anlauf zählte jedes
+Element im Stapel und meldete „70 bis 100 % verdeckt" — bei einem Bild, das man
+auf dem Bildschirm deutlich sieht. Der Grund: Kachelname und Fortschrittsbalken
+sind **Kästen über die volle Kachelbreite**, und unter ihrem durchsichtigen Teil
+lag jeder Punkt „verdeckt". Der zweite Anlauf zählte jeden Kasten mit, der
+*irgendwo* ein Zeichen enthält — damit zählte der Kachelfuß mit, weil der
+Aufkleber in ihm sitzt. Erst der dritte fragt, ob dort wirklich etwas malt.
+Dreimal dieselbe Falle: **eine Zahl, die Kästen zählt statt Farbe, sagt nichts.**
+
+### Die Kachelwand ist voll
+
+Und die Antwort auf die Frage, die seit A6 offen stand:
+
+| Bildschirm | Kacheln | frei |
+|---|---|---|
+| Ebenenwahl, 700 × 850 (2 je Reihe) | 9 | **9 px = 0,1 Reihen** |
+| Ebenenwahl, iPhone quer (4 je Reihe) | 9 | 50 px = 0,8 Reihen |
+| Weltenwahl, iPhone quer | 3 | 55 px = 0,3 Reihen |
+
+**Die zehnte Ebene passt im schmalen Fenster nicht mehr.** Sie bricht keine
+Regel, die heute gilt — deshalb ist es ein HINWEIS und kein Fehler —, aber die
+nächste Kachel, die eine neue Reihe aufmacht, läuft aus dem Bild. Das steht
+jetzt in jedem Lauf, gerechnet in **Kachelreihen** statt in Bildpunkten: „es
+sind noch 9 px frei" sagt niemandem etwas, „es passt keine Reihe mehr" schon.
+
+Was dagegen zu tun wäre, ist eine Entscheidung und keine Reparatur: kleinere
+Kacheln (das hat `lesbarkeit` schon einmal abgelehnt — bei 200 px Breite fielen
+fünf Namen von 4,7 auf 2,33:1), zwei Gruppen statt einer Wand, oder ein
+Bildschirm, der scrollt (was für ein Kind die schlechteste ist: es weiß nicht,
+dass es weitergeht).
+
+`npm run tor` grün in 126,1 s. 217 Gegenproben, zwei davon neu — die dritte
+(„der Ton spielt auch bei abgeschaltetem Ton") gab es schon, sie musste nur
+den neuen zweiten Schalter mitnehmen.

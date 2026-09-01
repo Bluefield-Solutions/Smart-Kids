@@ -1135,7 +1135,24 @@ const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
  * beantwortet haben. Der Schalter bleibt, der Hinweis im Elternbereich
  * bleibt, und die Sprechprobe dort sagt jetzt in einem Satz, woran es
  * liegt, wenn kein Mikrofon da ist. */
-let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:true, pin:'0000',
+/* `klang:false` - die beiden Rueckmeldetoene sind ab Werk AUS.
+ *
+ * Bis Q4 hingen sie am selben Schalter wie die Sprache, mit der
+ * Begruendung „wer ,Ton aus' sagt, meint nicht ,nur die Stimme aus'". Das
+ * war fuer den Schalter richtig und fuer die Voreinstellung falsch: Fiona
+ * liest noch nicht, sie BRAUCHT die Stimme - wer die Toene loswerden
+ * wollte, musste ihr also das Vorlesen mit abschalten. Es gab keine
+ * Stellung, in der die App vorliest und dabei still ist.
+ *
+ * Jetzt gibt es zwei Schalter. `ton` bleibt der grosse: aus heisst alles
+ * aus, Stimme wie Toene. `klang` ist der kleine darunter und steht ab
+ * Werk auf aus - auf Wunsch der Eltern, die es auf dem Geraet gehoert
+ * haben. Er sitzt im Elternbereich und nicht in der Kopfzeile: es ist
+ * keine Entscheidung, die ein Kind mitten in einer Aufgabe treffen soll.
+ *
+ * Geloescht ist nichts. `src/kern/klang.js` steht unveraendert da, der
+ * Rauchtest misst die Toene weiter - er schaltet sie dafuer ein. */
+let P=null, Sitzung=null, Stand={}, Einst={ ton:true, klang:false, abend:false, sprachmodus:true, pin:'0000',
   antwortweise:{ ...WEISE_VOREINSTELLUNG },
   // Je Kind UND Ebene, nicht ein Schalter fuer alle: der Vorlauf gehoert
   // zu der Ebene, die er erklaert. `stadtstaatenGezeigt` war der eine
@@ -2213,7 +2230,9 @@ function mischenMit(liste, keim){
  * EINE Stelle entscheidet, WIE eine Antwort klingt - ausgeloest wird sie
  * dort, wo die App ohnehin schon entscheidet, wie die Antwort ausging.
  * Der Ton haengt am selben Schalter wie die Sprache: wer „Ton aus" sagt,
- * meint nicht „nur die Stimme aus".
+ * meint nicht „nur die Stimme aus". Seit Q4 gibt es darunter einen
+ * zweiten, kleineren - `Einst.klang`, ab Werk aus -, damit die App
+ * vorlesen und trotzdem still sein kann.
  *
  * Aufgeloeste Aufgaben bleiben STUMM. „Weiss ich nicht" ist kein Fehler,
  * und die App sagt dazu schon „Kein Problem" - ein Geraeusch obendrauf
@@ -2221,7 +2240,10 @@ function mischenMit(liste, keim){
  * ebenso: sie bekommt eine Rueckfrage, keine Wertung.
  */
 function klangZu(ergebnis){
-  if (hoertZu || !tonAn) return;
+  // Zwei Schalter, und beide muessen an sein: `tonAn` ist der grosse in
+  // der Kopfzeile (aus heisst alles aus), `Einst.klang` der kleine im
+  // Elternbereich, der ab Werk auf aus steht.
+  if (hoertZu || !tonAn || !Einst.klang) return;
   if (ergebnis === 'richtig') Klang.richtig();
   else if (ergebnis === 'falsch') Klang.falsch();
 }
@@ -5290,6 +5312,15 @@ async function elternbereich(){
         Stimmen laden, die dann auch hier erscheinen.</p>
       <div class="reihe stimmen" style="justify-content:flex-start" id="stimmwahl"></div>
 
+      <h3 class="gruppe">Rückmeldeton</h3>
+      <p class="unter">Zwei kurze Töne: einer nach einer richtigen, einer nach einer
+        falschen Antwort. <strong>Ab Werk aus.</strong> Das Vorlesen ist davon nicht
+        betroffen — es hängt am Lautsprecher in der Kopfzeile, und der bleibt der große
+        Schalter: steht <em>er</em> auf aus, ist alles still.</p>
+      <div class="reihe" style="justify-content:flex-start">
+        <button class="knopf" id="klang">${Einst.klang?'Rückmeldeton ausschalten':'Rückmeldeton einschalten'}</button>
+      </div>
+
       <h3 class="gruppe">Sprachmodus</h3>
       <p class="unter">Die Spracherkennung läuft <strong>nicht auf dem Gerät</strong>.
         Was das Kind sagt, geht zur Erkennung an Apple beziehungsweise den Browserhersteller.
@@ -5411,6 +5442,14 @@ async function elternbereich(){
   s.querySelector('#sprach').onclick=async(e)=>{
     Einst.sprachmodus=!Einst.sprachmodus; await einstSichern();
     e.target.textContent=Einst.sprachmodus?'Sprachmodus ausschalten':'Sprachmodus einschalten'; };
+  s.querySelector('#klang').onclick=async(e)=>{
+    Einst.klang=!Einst.klang; await einstSichern();
+    // Zum Anhoeren, ohne den Elternbereich zu verlassen: wer den Schalter
+    // umlegt, will wissen, was er sich einhandelt. Beim AUSschalten
+    // schweigt es - ein Ton als Quittung fuers Abschalten waere eine
+    // Frechheit.
+    if (Einst.klang && tonAn) Klang.richtig();
+    e.target.textContent=Einst.klang?'Rückmeldeton ausschalten':'Rückmeldeton einschalten'; };
   {
     const r = s.querySelector('#teiler'), stand = s.querySelector('#teilerstand');
     // EIN Ort, der die Beschriftung schreibt — beim Aufbau und beim
