@@ -204,6 +204,11 @@
       "zeit": "2026-09-01",
       "s": 41
     },
+    "der Bildschirm bleibt halbdurchsichtig": {
+      "commit": "487f8c0667d4e2a9cacde5f581f4f325f1cee3b3",
+      "zeit": "2026-09-01",
+      "s": 63
+    },
     "jemand schreibt eine Funktion ab": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
       "zeit": "2026-09-01",
@@ -506,6 +511,16 @@
     },
     "die Aufkleberprobe zählt keine Gelegenheiten mehr": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "zeit": "2026-09-01",
+      "s": 1
+    },
+    "eine Sitzung stellt dasselbe Gebiet zweimal": {
+      "commit": "487f8c0667d4e2a9cacde5f581f4f325f1cee3b3",
+      "zeit": "2026-09-01",
+      "s": 6
+    },
+    "die kurze Ebene faellt aus der Sitzungsmessung": {
+      "commit": "487f8c0667d4e2a9cacde5f581f4f325f1cee3b3",
       "zeit": "2026-09-01",
       "s": 1
     },
