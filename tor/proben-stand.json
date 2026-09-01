@@ -489,6 +489,11 @@
       "zeit": "2026-09-01",
       "s": 9
     },
+    "kein Gebiet hat mehr eine Trefferstelle": {
+      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
+      "zeit": "2026-09-01",
+      "s": 32
+    },
     "es gibt gar keine Nadeln mehr": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
       "zeit": "2026-09-01",
@@ -649,10 +654,20 @@
       "zeit": "2026-09-01",
       "s": 35
     },
+    "die Umgebung endet wieder hart am Rahmen": {
+      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
+      "zeit": "2026-09-01",
+      "s": 33
+    },
     "die Karte wechselt die Farbe": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
       "zeit": "2026-09-01",
       "s": 108
+    },
+    "Grönland ist wieder nur Umgebung": {
+      "commit": "1c89e5ab20a6c78994839c63f19f9e16b9dfe3e3",
+      "zeit": "2026-09-01",
+      "s": 16
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "371bbe7d160a6803f67d24116ff8c8e177309d41",
