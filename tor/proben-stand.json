@@ -655,9 +655,9 @@
       "s": 23
     },
     "das schmale Fenster bekommt wieder zwei Spalten": {
-      "commit": "d1d60822b52b664f8f47f8a4945e48a1b738b410",
+      "commit": "8087b5e66947c192376c3f2babd73e9db8b05d07",
       "zeit": "2026-09-01",
-      "s": 77
+      "s": 79
     },
     "das Kachelbild liegt wieder unter dem Knopf": {
       "commit": "eda250174725d1b3f4a45adef661626451edefae",
@@ -865,9 +865,9 @@
       "s": 121
     },
     "eine Spalte fehlt in der Profiltabelle": {
-      "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
-      "zeit": "2026-08-31",
-      "s": 18
+      "commit": "8087b5e66947c192376c3f2babd73e9db8b05d07",
+      "zeit": "2026-09-01",
+      "s": 107
     },
     "der Fehlgriff auf der Karte wird nicht mehr benannt": {
       "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
@@ -985,9 +985,9 @@
       "s": 30
     },
     "die Buchstabenkarten rutschen wieder zusammen": {
-      "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 127
+      "commit": "8087b5e66947c192376c3f2babd73e9db8b05d07",
+      "zeit": "2026-09-01",
+      "s": 78
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
       "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
