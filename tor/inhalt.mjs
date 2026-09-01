@@ -387,6 +387,31 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
         pruefe(false, `Gegenprobe „${p.n}": ihr Suchtext steht ${wieoft}× in ${p.datei} — `
           + 'welche Stelle verstellt wird, entscheidet ihre Reihenfolge. Entweder enger '
           + 'fassen oder `mehrfach:true` setzen und dazuschreiben, warum');
+
+      /* Und dasselbe fuer den ANKER, der ein Verschwinden verlangt.
+       *
+       * `an:{ fehlt:'…' }` heisst „nach dem Eingriff darf dieser Text
+       * nirgends mehr stehen". Steht er ZWEIMAL da und ersetzt der
+       * Eingriff nur eine Stelle, kann das nie zutreffen - die Probe
+       * meldet fuer immer „Eingriff nicht angekommen", obwohl er ankam.
+       *
+       * Genau so ist „eine falsche Antwort bleibt stumm" vier Runden lang
+       * dagestanden: `klangZu('falsch');` gefolgt von `if (versuch >= 3)`
+       * gibt es im Rechenweg UND im Schreibweg. Die Doppelung stand im
+       * Suchtext nicht - der war eindeutig -, sondern nur im Anker.
+       * Deshalb reichte die Pruefung darueber nicht. */
+      if (p.an && p.an.fehlt && !p.mehrfach) {
+        const wo = p.an.datei || p.datei;
+        const quelle = (wo !== 'dist/index.html' && fs.existsSync(wo))
+          ? fs.readFileSync(wo, 'utf8') : null;
+        if (quelle) {
+          const oft = quelle.split(p.an.fehlt).length - 1;
+          if (oft > 1) pruefe(false, `Gegenprobe „${p.n}": ihr Anker verlangt, dass „${
+            p.an.fehlt.replace(/\s+/g, ' ').slice(0, 40)}…" VERSCHWINDET — der Text steht aber `
+            + `${oft}× in ${wo}, und der Eingriff entfernt nur eine Stelle. `
+            + 'Das kann nie zutreffen');
+        }
+      }
     }
   }
   /* Eine Probe OHNE Eingriff waere hier unsichtbar: nichts zu pruefen,

@@ -1903,11 +1903,22 @@ export const PROBEN = [
 
   // Ein Ton, den niemand ausloest, ist keiner. Geprueft wird am ENDE der
   // Kette: was das Kind wirklich zu hoeren bekaeme.
+  /* Der Anker faengt die ZEILE DAVOR mit, und das ist noetig.
+   *
+   * `klangZu('falsch');` gefolgt von `if (versuch >= 3)` steht ZWEIMAL in
+   * `spiel.js` - einmal im Rechenweg, einmal im Schreibweg. `such`
+   * ersetzt die erste Fundstelle, `an.fehlt` verlangte danach null - das
+   * kann nie zutreffen, solange die zweite stehen bleibt. Die Probe
+   * meldete deshalb dauerhaft „Eingriff nicht angekommen", obwohl er
+   * ankam.
+   *
+   * `protokollieren('falsch', zahl, ...)` gibt es nur im Rechenweg, den
+   * `--nur=regler` spielt. Damit sind Suchtext und Anker eindeutig. */
   { n:'eine falsche Antwort bleibt stumm', tor:'smoke', args:['--nur=regler'],
     bauen:true, datei:D,
-    such:"    klangZu('falsch');\n    if (versuch >= 3) return aufloesen('dreimal');",
-    ersatz:"    if (versuch >= 3) return aufloesen('dreimal');",
-    an:{ ...DIST, fehlt:"klangZu('falsch');\n    if (versuch >= 3)" },
+    such:"    protokollieren('falsch', zahl, fachVorher);\n    klangZu('falsch');",
+    ersatz:"    protokollieren('falsch', zahl, fachVorher);",
+    an:{ ...DIST, fehlt:"protokollieren('falsch', zahl, fachVorher);\n    klangZu('falsch');" },
     sagt:'stumm' },
 
   // Und der wichtigere Fall: EIN Ton fuer beides. Er ist nicht still, er

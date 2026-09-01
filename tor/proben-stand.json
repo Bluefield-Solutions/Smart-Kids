@@ -190,9 +190,9 @@
       "s": 47
     },
     "das Wasserzeichen unter der Schrift zählt nicht": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 30
+      "s": 35
     },
     "der Streu unter der Schrift zählt nicht": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -235,9 +235,9 @@
       "s": 206
     },
     "ein langes Warten bleibt stumm": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 146
+      "s": 115
     },
     "ein Suchtext wird zweideutig": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -300,9 +300,9 @@
       "s": 61
     },
     "die Spracheingabe verdrängt das Schreibfeld": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 37
+      "s": 39
     },
     "Fiona kann die Aufgabe nicht noch einmal hören": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -430,9 +430,9 @@
       "s": 1
     },
     "eine offene Kontinentrunde geht wieder zu": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 85
+      "s": 112
     },
     "eine Regel fehlt in CLAUDE.md, die Verweise bleiben stehen": {
       "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
@@ -440,9 +440,9 @@
       "s": 1
     },
     "das Auge startet die Ebene statt sie zu zeigen": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 102
+      "s": 76
     },
     "der Wegweiser bleibt aus": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -465,9 +465,9 @@
       "s": 67
     },
     "die Sprechprobe zaehlt jeden Versuch als verstanden": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 33
+      "s": 40
     },
     "die Nadel sucht sich keinen freien Platz mehr": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -495,9 +495,9 @@
       "s": 62
     },
     "der Rückfall wird gar nicht mehr gestellt": {
-      "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 51
+      "s": 58
     },
     "die Aufkleberprobe zählt keine Gelegenheiten mehr": {
       "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
@@ -505,9 +505,9 @@
       "s": 1
     },
     "das Buch zeigt Karten ohne Umriss": {
-      "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 6
+      "s": 59
     },
     "der Schalter kürzt keine Schaupause mehr": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -535,9 +535,9 @@
       "s": 3
     },
     "das Buch rollt wieder beim zweiten Aufkleber": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 83
+      "s": 58
     },
     "der leere Kopf nimmt wieder Platz weg": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -580,14 +580,14 @@
       "s": 96
     },
     "die Wackelkandidaten stehen unter keinem Namen": {
-      "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 11
+      "s": 58
     },
     "es gibt nur einen Löschknopf": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 77
+      "s": 58
     },
     "der Vorlauf erscheint beim ersten Betreten nicht": {
       "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
@@ -600,27 +600,22 @@
       "s": 46
     },
     "der Vorlauf zeigt die falsche Zahl an Gebieten": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 42
+      "s": 56
     },
     "„von vorne\" in der Pause löscht nichts": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 95
+      "s": 58
     },
     "nach „von vorne\" läuft die alte Sitzung weiter": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 81
+      "s": 115
     },
     "der Boden verschluckt wieder den Nachbarn": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
-      "zeit": "2026-08-31",
-      "s": 47
-    },
-    "die umgekehrte Frage kommt auch für Winzlinge": {
-      "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
       "zeit": "2026-08-31",
       "s": 47
     },
@@ -715,9 +710,9 @@
       "s": 47
     },
     "das Fortschrittsband färbt sich nicht mehr": {
-      "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
+      "commit": "bf49e953781603dda75815102f3dcc7b2d30c87e",
       "zeit": "2026-09-01",
-      "s": 43
+      "s": 29
     },
     "die geänderte PIN wird nicht gespeichert": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -757,7 +752,7 @@
     "eine falsche Antwort bleibt stumm": {
       "commit": "408c48678a0f4b1aa9e731b86fd4c69c8f73a7f0",
       "zeit": "2026-08-30",
-      "s": 10
+      "s": 4
     },
     "richtig und falsch klingen gleich": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
