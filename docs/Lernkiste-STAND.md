@@ -8078,3 +8078,90 @@ Reihen zu sechs (Unterkante 369 von 378) — dann brechen aber vier Namen um
 eine Abwägung, keine Reparatur, und sie gehört vor den Nutzer.
 
 225 Gegenproben (222 + 3). 36 Aufnahmen. `npm run tor` grün in 187,6 s.
+
+
+---
+
+## Q14 — einen Tag lang ist nichts angekommen
+
+Der Befund kam vom Gerät: auf dem iPhone stand „Prototyp · Fassung p0.4 ·
+2026-08-31 22:19". Das ist kein alter Cache und kein Service Worker — das ist
+**der letzte erfolgreiche Versand nach Pages**, 99ce2ad, am 31.08. um 22:19:47.
+Alle **achtzehn** Auslieferungen danach waren rot. Einen Tag lang, fünfzehn
+Runden Arbeit, und hier hat jede Runde „Kette grün" gemeldet.
+
+Zwei Regeln kommen daraus, und beide stehen jetzt in CLAUDE.md:
+
+| | |
+|---|---|
+| **15** | Gepusht ist nicht ausgeliefert. Nach jedem Push wird der Ablauf nachgesehen. |
+| **16** | Der Runner und dieser Rechner müssen denselben Browser fahren, sonst heißt grün an zwei Orten Verschiedenes. |
+
+Hier läuft Chromium **141**, der Runner installiert sich **151** — zehn
+Hauptversionen auseinander, und der Download der neueren Bauzahl ist in dieser
+Umgebung gesperrt. Nachstellen ging also nicht; der Runner musste sagen, was er
+sieht. Konnte er nicht:
+
+### Das Protokoll war wertlos
+
+`tools/kette.mjs` filterte die Ausgabe eines roten Tores auf Zeilen mit
+✗/FEHLER/ROT und deckelte bei zehn. Genau die eingerückten Zeilen **direkt
+unter** einer ROT-Zeile — welches Element, über welchen Rand, um wieviel —
+fielen weg. Übrig blieb:
+
+```
+ROT   iPad quer  1180×820 — 1 nicht erreichbar
+3 FEHLER: Elemente laufen über den Rand.
+```
+
+Auf dem eigenen Rechner fällt das nicht auf, weil man das Tor einfach noch
+einmal aufruft. Auf dem Runner geht das nicht.
+
+### Was dann zu sehen war: neun Befunde, acht davon Rauschen
+
+| | |
+|---|---|
+| **8×** Ratsche | „Bild unterm Namen % steht auf 13 statt 8", „58 pt statt 61". Die Zahlen in `masse-stand.json` kommen aus einem Browser; zwischen 141 und 151 weichen sie um bis zu 5 Prozentpunkte bzw. 5 % ab. Als **exakter** Vergleich war die Ratsche dort dauerhaft rot. Jetzt anteilig mit Boden (Regel 2). |
+| **1×** Kästen statt Schrift | „Wie heißt dieses Bundesland?" steht mittig in einem Kasten über die ganze Breite; die Antwortspalte liegt unter dessen Rand, ohne dass sich ein Buchstabe berührt. Jetzt: was einen Grund oder eine Kante hat, wird als Kasten gemessen, nackter Text mit seinen Zeilenkästen. |
+| **2×** Kontrast | „6 Jahre · ziehen" mit 4,32:1 statt 4,5 — die kleine Zeile auf Fionas Kachel steht auf dem Streu, und **welches Motiv darunter liegt, entscheidet der Zeilenumbruch**. Die neue Ausgabe nennt die Farbe (rgb(27,40,53) auf rgb(97,138,210) — der blaue Fisch), und damit war es zu sehen. Die Zeile hat jetzt ihren eigenen Grund. |
+
+### Und darunter ein echter Fehler auf dem Zielgerät
+
+Nach drei Runden blieb einer übrig, und mit den Koordinaten beider Flächen war
+er eindeutig. Die Frage steht auf dem Runner **exakt wie hier** (Textzeile
+y 81–106, Breite auf drei Punkte genau — die eigene Schrift ist also geladen).
+Verschoben ist das erste Etikett: y **104 statt 117**, und **176 statt 182**
+Punkte breit.
+
+Das ist eine Schleife:
+
+```
+Spalte zu hoch → Rollbalken → Etiketten schmaler
+       ↑                              ↓
+   Spalte höher  ←  ein Name mehr bricht um
+```
+
+Gemessen: die Spalte ist hier 226 Punkte hoch in einem Feld von 243 — 17 Punkte
+Luft. Auf dem Runner bricht ein zweiter Name um, sie wird 252, passt nicht mehr,
+bekommt den Rollbalken, und ihr Kopf schiebt sich in die Frage.
+
+**Die Spalte ist jetzt breiter: `clamp(307px, 45vw, 380px)` statt
+`clamp(307px, 38vw, 320px)`.** Das kostet die Karte nichts — sie zeichnet
+191 × 246, ob die Spalte 320 oder 380 breit ist, weil sie an der **Höhe** hängt.
+Die Etiketten haben dafür 210 statt 150 Punkte Textbreite: nur noch
+„Mecklenburg-Vorpommern" bricht um. Das kleinste Gerät (iPhone SE quer) behält
+seine 307.
+
+### Drei Löcher, die dabei zugingen
+
+- `schriftDa()` stand nur in `tor/ansicht.mjs` — und `ansicht` läuft auf dem
+  Runner ausdrücklich **nicht**. Eine Ersatzschrift hätte alle drei Befunde
+  erklärt, und niemand hätte es prüfen können. Jetzt fragen `passt` und
+  `lesbarkeit` es auch.
+- `lesbarkeit` maß weiter gegen das, was hinter einem Text liegt, auch wenn der
+  Text selbst einen **deckenden** Grund hat. Ein eigener Grund beendet die Suche.
+- Der Import von `schriftDa` in `ansicht` war unvollständig — das Tor stürzte
+  beim Start ab, und auf dem Runner wäre es nicht aufgefallen. Gefunden, weil
+  die Kette hier vor dem nächsten Push lief.
+
+**Die Auslieferung ist wieder grün: 0c7761b, v283.**
