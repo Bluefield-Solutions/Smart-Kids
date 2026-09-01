@@ -262,13 +262,25 @@ for (const zeichen of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
   });
 }
 
+/* Was `bauen:` bedeutet.
+ *
+ * `true` heisst „danach `npm run bauen`" - das ist der Normalfall: der
+ * Eingriff sitzt in einer Quelle, und das Tor prueft `dist/`.
+ *
+ * Ein STRING heisst „danach `npm run <string>`". Gebraucht seit A7 vom
+ * App-Symbol: sein Eingriff sitzt in `tools/backen-symbol.mjs`, und was
+ * das Tor liest, sind die PNG unter `src/symbol/` - die entstehen nicht
+ * beim Bauen, sondern mit `npm run symbol`. Ohne das prueft die Probe ein
+ * Bild, das ihr Eingriff nie erreicht hat, und meldet „kam nicht an". */
+const bauBefehl = (b) => typeof b === 'string' ? b : 'bauen';
+
 const wiederherstellen = (gebaut) => {
   // In der KOPIE. Derselbe Befehl, der diesem Verzeichnis viermal Arbeit
   // gekostet hat - hier kann er nichts mehr treffen als sich selbst.
   execSync('git checkout -- .', { stdio:'ignore', cwd: BAUM });
   uebermalen();
   if (nachRestore) nachRestore();
-  if (gebaut) execFileSync('npm', ['run', 'bauen'], { stdio:'ignore', cwd: BAUM });
+  if (gebaut) execFileSync('npm', ['run', bauBefehl(gebaut)], { stdio:'ignore', cwd: BAUM });
 };
 
 /**
@@ -568,7 +580,7 @@ for (const p of welche) {
   }
 
   if (p.bauen) {
-    const b = lauf('bauen');
+    const b = lauf(bauBefehl(p.bauen));
     if (b.code) { fertig(rot('Bau gescheitert')); nichtAngekommen++;
       befunde.push(`${p.n}: der Bau lief nicht durch — die Probe beweist nichts`);
       wiederherstellen(p.bauen); continue; }

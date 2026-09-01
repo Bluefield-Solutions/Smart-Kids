@@ -227,6 +227,24 @@ export const PROBEN = [
     an:{ gleichWie:['src/symbol/symbol-512.png','src/symbol/symbol-180.png'] },
     sagt:'symbol-180' },
 
+  /* Der Stern laeuft in die iOS-Maske (A7).
+   *
+   * Genau so ist der erste Entwurf ausgesehen: bei 0,62 der Kugelhoehe
+   * stand die obere Zacke aus dem Bild heraus. Die alte Eckpruefung
+   * verglich mit der KUGELMITTE und war deshalb gruen - der Stern ist
+   * gelb, also „nicht wie die Mitte". Gefunden hat es das Auge, nicht das
+   * Tor.
+   *
+   * `bauen:'symbol'` statt `true`: der Eingriff sitzt im Werkzeug, und
+   * was das Tor liest, sind die PNG - die entstehen mit `npm run symbol`,
+   * nicht beim Bauen. */
+  { n:'der Stern des Symbols läuft in die iOS-Maske', tor:'inhalt', deckt:'symbol',
+    bauen:'symbol', datei:'tools/backen-symbol.mjs',
+    such:'scale(${(KUGEL/12*0.30).toFixed(3)})',
+    ersatz:'scale(${(KUGEL/12*0.62).toFixed(3)})',
+    an:{ datei:'tools/backen-symbol.mjs', text:'KUGEL/12*0.62' },
+    sagt:'springt die Farbe' },
+
   /* --- doku --------------------------------------------------------- */
   { n:'das Konzept nennt eine andere Gebietszahl', tor:'inhalt', deckt:'doku',
     datei:'docs/Lernkiste-KONZEPT.md',

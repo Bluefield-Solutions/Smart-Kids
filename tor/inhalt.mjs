@@ -1113,9 +1113,45 @@ console.log('\n  Tor `symbol`');
     }
     pruefe(eckenWieMitte === 0,
       `symbol-${g}.png: ${eckenWieMitte} Ecken sehen aus wie die Mitte — die Kugel läuft in die iOS-Maske`);
+
+    /* Und in den Ecken steht NUR Grund - nicht bloss „nicht die Mitte".
+     *
+     * Die vier Punkte darueber vergleichen mit der Kugelmitte. Das faengt
+     * eine Kugel, die zu gross ist, und sonst nichts: als der Stern (A7)
+     * im ersten Entwurf oben aus dem Bild lief, war er GELB, also nicht
+     * wie die Mitte - vier Ecken gruen, und die Zacke haette die iOS-Maske
+     * trotzdem abgeschnitten.
+     *
+     * Geprueft wird deshalb nicht die FARBE, sondern die GLATTHEIT: der
+     * Grund ist ein Verlauf und aendert sich von Bildpunkt zu Bildpunkt um
+     * Bruchteile. Alles, was dort sonst noch steht - eine Kontur, ein
+     * weisser Aufkleberrand, eine Sternzacke -, bringt eine Kante mit.
+     *
+     * Die Maske wird als abgerundetes Rechteck mit 20 % Eckradius
+     * angenaehert. Die wirkliche iOS-Form (ein Squircle) ist etwas voller,
+     * schneidet also WENIGER weg - was hier auffaellt, faellt dort erst
+     * recht auf. */
+    {
+      const r = g * 0.20;
+      const draussen = (x, y) => {
+        const dx = Math.max(r - x, x - (g - 1 - r), 0);
+        const dy = Math.max(r - y, y - (g - 1 - r), 0);
+        return dx > 0 && dy > 0 && Math.hypot(dx, dy) > r;
+      };
+      let sprung = 0, wo = null;
+      for (let y = 0; y < g - 1; y++) for (let x = 0; x < g - 1; x++) {
+        if (!draussen(x, y) || !draussen(x + 1, y) || !draussen(x, y + 1)) continue;
+        const a = punkt(x, y), b = punkt(x + 1, y), c = punkt(x, y + 1);
+        const d = Math.max(...[0,1,2].map(i => Math.max(Math.abs(a[i]-b[i]), Math.abs(a[i]-c[i]))));
+        if (d > sprung) { sprung = d; wo = [x, y]; }
+      }
+      pruefe(sprung <= 12, `symbol-${g}.png: in der Ecke bei ${wo && wo.join(',')} springt die `
+        + `Farbe um ${sprung} — dort steht etwas anderes als der Grund, und die iOS-Maske `
+        + 'schneidet es ab');
+    }
   }
   console.log(`    ${NOETIG.length} Größen geprüft: quadratisch, undurchsichtig, nicht leer, `
-    + `Kugel innerhalb der Maske`);
+    + `nur glatter Grund außerhalb der iOS-Maske`);
 }
 
 /* ======================================================== Tor `doku` ==== */

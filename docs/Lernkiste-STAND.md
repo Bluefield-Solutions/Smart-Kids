@@ -6778,3 +6778,79 @@ nie zu sehen. Der Zeiger geht jetzt vor **jeder** Aufnahme in die Ecke —
 einmal für alle, statt in jeder einzeln daran zu denken.
 
 `npm run tor` grün in 107,0 s. 33 Aufnahmen, 207 Gegenproben.
+
+## A7 — ein Symbol, das ein Kind anfasst
+
+Das alte App-Symbol war ein Atlas-Globus: Nachthimmel, Gradnetz, Küste auf
+0,9 Bildpunkte genau vereinfacht. Auf dem Schreibtisch schön — auf dem
+Startbildschirm eines iPads steht es zwischen bunten Kachelsymbolen und ist
+dunkel, fein und ernst. Fiona ist sechs.
+
+**Drei Vorbilder, und was sie TUN** (nicht, wie sie aussehen):
+
+| | |
+|---|---|
+| Duolingo | EINE Gestalt auf EINER satten Fläche. Keine Szene, dicke Formen. Bei 40 px sind noch drei Dinge zu unterscheiden. |
+| ANTON, Khan Academy Kids | heller, warmer Grund; ein einziger freundlicher Gegenstand; runde, dicke Konturen; hohe Buntheit. |
+| Swift Playgrounds | ein Emblem, großzügiger Rand, EINE Idee — nichts, was man bei 40 px erst suchen müsste. |
+
+Das Soll daraus: ein Gegenstand, wenige Formen, hohe Buntheit, dicke
+Konturen, warmer Grund, nichts, was unter 60 px zu Grieß wird.
+
+**Der Abstand der alten Fassung, an ihrer eigenen Datei gemessen:** Grund
+L 0,21–0,36 (dunkel), Buntheit C 0,038–0,05 (fast grau), Küste auf 0,9 px
+verfeinert, dazu ein Gradnetz aus zwölf Linien. Bei 45 px sind das rund 900
+Küstenpunkte auf 34 Bildpunkten Kugel — jeder Strich unter einem Zehntel
+Bildpunkt.
+
+**Was die neue Fassung anders macht:**
+
+- **Grund** warm und hell statt Nachtblau. Der Globus ist kalt, der Grund
+  warm — der Gegensatz trägt die Form, nicht ein Verlauf auf der Kugel.
+- **Küste absichtlich grob:** Hausdorff 3,5 px statt 0,9. Was bei 512 px
+  eine Bucht ist, ist bei 45 px ein Zittern. Gemessen sind es 3,19.
+- **Gradnetz weg.** Zwölf Linien sind bei 45 px zwölf graue Punkte.
+- **Aufkleber:** weißer Rand und ein gebackener Schatten — das Forscherbuch
+  der App sammelt Aufkleber, und der Globus ist der erste.
+- **Stern:** derselbe Zackenstern, den die App für eine geschaffte Ebene
+  vergibt. Sein Pfad wird aus `prototyp/spiel.js` **gelesen**, nicht
+  abgeschrieben (Regel 6).
+
+Angesehen bei 152, 120, 90, 60, 45 und 32 Punkten. Bis 45 ist es ein Globus
+mit einem Stern; bei 32 ein blaugrüner Punkt mit einem gelben Zipfel — das
+ist die Größe, in der auf einem iPad kein App-Symbol steht.
+
+### Der Stern lief zuerst aus dem Bild — und kein Tor sagte es
+
+Im ersten Entwurf war der Stern 0,62 der Kugelhöhe groß. Damit reichte er
+von 106 bis **−2** auf der senkrechten Achse: er stand oben aus dem Bild
+heraus, und die runde iOS-Maske hätte den Rest genommen.
+
+Das Tor `symbol` prüfte die vier Ecken **gegen die Kugelmitte** — und der
+Stern ist gelb, also „nicht wie die Mitte". Vier Ecken grün. Gesehen hat es
+das Auge.
+
+Geprüft wird jetzt nicht die Farbe, sondern die **Glattheit**: der Grund ist
+ein Verlauf und ändert sich von Bildpunkt zu Bildpunkt um Bruchteile. Alles,
+was dort sonst noch steht — eine Kontur, ein weißer Aufkleberrand, eine
+Sternzacke —, bringt eine Kante mit. Ein- und ausgeschaltet nachgemessen
+(Regel 13):
+
+```
+Stern 0,30   glatt, größter Sprung ≤ 12    grün auf allen vier Größen
+Stern 0,62   Sprung 23 · 51 · 175 · 191    rot auf allen vier Größen
+```
+
+Die Gegenprobe dazu steht. Sie brauchte eine kleine Erweiterung am
+Probenwerkzeug: `bauen:'symbol'` statt `bauen:true`. Ihr Eingriff sitzt im
+Werkzeug, und was das Tor liest, sind die PNG — die entstehen nicht beim
+Bauen.
+
+### Und die README stand auf dem Stand von vier Ebenen
+
+Sie sagte „Erdkunde für Fiona und Lea. Vier Ebenen, 64 Gebiete. Zwei
+Profile." Wirklich sind es drei Fächer, elf Ebenen und vier Profile. Sie
+nennt jetzt auch, wie man die App auf dem iPad ablegt — in **Safari**, denn
+nur dort geht es — und dass der Fortschritt je Gerät getrennt liegt.
+
+`npm run tor` grün in 108,5 s. 207 Gegenproben.

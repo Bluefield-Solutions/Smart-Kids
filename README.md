@@ -1,8 +1,8 @@
 # Smart Kids
 
-Erdkunde für Fiona und Lea. Vier Ebenen, 64 Gebiete, drei Eingabewege.
-Läuft im Browser, lässt sich über Safari auf den Startbildschirm legen und
-startet von dort auch ohne Netz.
+Lernkiste für Fiona und Lea: **Erdkunde, Rechnen und Schreiben** in einer
+Datei. Läuft im Browser, lässt sich auf dem iPhone oder iPad über
+„Zum Home-Bildschirm" ablegen und startet von dort auch ohne Netz.
 
 **Im Netz:** https://bluefield-solutions.github.io/Smart-Kids/
 
@@ -10,19 +10,37 @@ startet von dort auch ohne Netz.
 
 ## Was drin ist
 
-| Ebene | Was | Wieviel |
-|---|---|---|
-| 1 | Kontinente | 7 |
-| 2 | die größten Länder je Kontinent | 25 |
-| 3 | Bundesländer | 16 |
-| 4 | Landeshauptstädte | 16 |
+**Erdkunde** — Kontinente · Länder in Europa, Afrika, Asien, Nordamerika,
+Mittelamerika und Südamerika · Bundesländer · Landeshauptstädte ·
+Hauptstädte in Europa.
 
-Zwei Profile. **Fiona** (6) zieht Etiketten und darf sprechen, **Lea** (8)
-zieht und tippt. Auf Ebene 4 stehen bei beiden **vier Städte** zur Auswahl:
-gefragt ist, *welche* Stadt es ist, nicht wie man sie schreibt.
+**Rechnen** — Plus und Minus bis 10 (Fiona) · Reihen 6 bis 10 (Lea) ·
+Großes Einmaleins (Eltern).
+
+**Schreiben** — Buchstaben nachfahren und hören, Zahlen nachfahren und
+hören (Fiona).
+
+Vier Profile mit eigener Tiefe und eigenen Eingabewegen: **Fiona** (6)
+zieht Etiketten und darf sprechen, **Lea** (8) zieht, tippt und darf
+sprechen, **Stephan** und **Violeta** tippen und sprechen und bekommen nie
+eine Auswahl. Die Sprachausgabe liest jede Frage vor — Fiona liest noch
+nicht, und ohne Vorlesen käme sie nicht los.
 
 Der Fortschritt läuft über ein **Leitner-System** mit fünf Fächern und liegt
 in IndexedDB auf dem Gerät. Er geht nirgendwohin.
+
+---
+
+## Auf dem iPad ablegen
+
+1. Die Adresse oben in **Safari** öffnen (nicht in Chrome — nur Safari legt
+   auf iOS eine App auf den Home-Bildschirm).
+2. Teilen-Knopf → **Zum Home-Bildschirm**.
+3. Name bestätigen. Das Symbol steht danach zwischen den anderen Apps, und
+   die Seite startet ohne Adresszeile — und ohne Netz.
+
+Der Fortschritt liegt **je Gerät** getrennt: was auf dem iPhone geübt wurde,
+steht nicht auf dem iPad.
 
 ---
 
@@ -37,9 +55,10 @@ npm run schrift    Andika und Plus Jakarta Sans holen (einmalig)
 npm run symbol     das App-Symbol neu backen
 ```
 
-Die Torkette: `inhalt` · `topologie` · `beruehrung` · `marken` · `schrift` ·
-`symbol` · `doku` → `vergleich` → `bauen` → `ansicht` → `pwa` · `offline`
-→ `smoke`.
+Die Torkette steht als Daten in `tor/kette-liste.mjs` und wird von
+`tools/kette.mjs` gefahren — nicht hier abgeschrieben, sonst veraltet sie.
+`npm run schnell` fährt die kurze Bahn (rund 50 s), `npm run tor` die ganze
+(rund 105 s, zehn Browser nebeneinander).
 
 `ansicht` läuft **nur ortsfest**. Ein Bildpunktvergleich gilt nur bei
 gleicher Zeichenumgebung; der Runner hat einen anderen Chromium-Bau und
