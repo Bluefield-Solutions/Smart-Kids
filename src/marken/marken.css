@@ -184,6 +184,13 @@
   --primaer:       oklch(0.965 0.035 258);
   --primaer-rand:  oklch(0.800 0.090 258);
   --primaer-kante: oklch(0.690 0.130 258);
+  /* Die Kante unter dem GEFUELLTEN Knopf (Q15).
+     `--akzent` ist der starke Ton der App - das Mikrofon traegt ihn seit
+     M4s als volle Flaeche. Seit Q15 traegt ihn auch der eine laute Knopf
+     je Bildschirm; damit er dieselbe Tiefe bekommt wie alle anderen,
+     braucht er eine dunklere Kante. Abgeleitet, nicht danebengeschrieben:
+     derselbe Ton, ein Stueck zur Tinte gemischt. */
+  --akzent-kante: color-mix(in oklab, var(--akzent) 74%, var(--tinte));
 
   /* --- Bewegung ------------------------------------------------------- */
   --d-tipp: 120ms; --d-zustand: 200ms; --d-schirm: 320ms; --d-belohnung: 500ms;

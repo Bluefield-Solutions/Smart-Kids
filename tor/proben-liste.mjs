@@ -538,6 +538,26 @@ export const PROBEN = [
     an:{ ...DIST, text:'if (false) stempel.textContent' },
     sagt:'der Fassungsstempel ist leer' },
 
+  /* --- Das Knopfmaterial (Q15) ----------------------------------------- *
+   *
+   * Seit R1 steht im Stylesheet, die Tiefe sei „bei allen dieselbe
+   * Mechanik". Zehn Runden lang stimmte das nicht, und niemandem ist es
+   * aufgefallen: der leise Knopf war ein durchsichtiger Umriss, `warnend`
+   * fuhr nach unten, ohne eine Kante zu haben, und der Lupenknopf trug
+   * einen Schlagschatten. Ein Versprechen, das nur im Kommentar steht,
+   * verfaellt.
+   *
+   * Der Eingriff nimmt dem leisen Knopf seine Kante wieder - genau der
+   * Zustand von vor Q15. */
+  { n:'der leise Knopf verliert seine Kante', tor:'passt', bauen:true, datei:V,
+    such:'  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),\n'
+       + '             inset 0 var(--strich) 0 var(--knopf-licht);\n'
+       + '  padding:var(--r2) var(--r4);min-height:44px;',
+    ersatz:'  box-shadow:none;\n'
+       + '  padding:var(--r2) var(--r4);min-height:44px;',
+    an:{ ...DIST, text:'  box-shadow:none;\n  padding:var(--r2) var(--r4);min-height:44px;' },
+    sagt:'hat keine Kante' },
+
   /* Und die Ueberblendung selbst (Q12).
    *
    * In der vollen Kette meldete `lesbarkeit` einmal sechs Fehler auf

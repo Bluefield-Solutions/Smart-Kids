@@ -318,6 +318,37 @@ const SUCHE = () => {
       }
     }
   }
+  /* DAS KNOPFMATERIAL: hat jeder Knopf dieselbe Mechanik? (Q15)
+   *
+   * Das Stylesheet verspricht seit R1 „die Tiefe ist bei allen dieselbe
+   * Mechanik: helle Linie oben INNEN, dunklere Kante unten". Nachgezaehlt
+   * stimmte das nicht - von acht Knopfarten hatten VIER keine Kante, und
+   * `warnend` fuhr drei Punkte nach unten, ohne eine zu haben. Zehn
+   * Runden lang stand die Zusage im Text und nirgends im Bild.
+   *
+   * Eine Zusage, die nur im Kommentar steht, verfaellt. Gemessen wird
+   * deshalb an der berechneten Formatvorlage: jede Art in dieser Liste
+   * braucht einen Schlagschatten mit einem senkrechten Versatz (die
+   * Kante) - alles andere ist Geschmack und gehoert nicht in ein Tor.
+   *
+   * NICHT in der Liste: `.leise` (der Ausweg ist mit Absicht kein
+   * Gegenstand, sondern ein Wort mit einer Linie darunter) und die
+   * Aufkleber im Buch (die liegen, sie stehen nicht). */
+  const material = [];
+  for (const art of ['.knopf', '.etikett', '.zahl', '.zi', '.lupenknopf', '.kachel']) {
+    const el = document.querySelector(`.schirm.da ${art}`);
+    if (!el) continue;
+    const cs = getComputedStyle(el);
+    // „0px 2px 0px rgb(...)" - der zweite Wert ist der senkrechte Versatz.
+    const hatKante = (cs.boxShadow || '').split(',').some(teil => {
+      const n = teil.match(/-?[\d.]+px/g);
+      return n && n.length >= 2 && Math.abs(parseFloat(n[1])) >= 1;
+    });
+    if (!hatKante)
+      material.push(`${art} hat keine Kante (box-shadow: ${cs.boxShadow || 'none'}) — `
+        + 'dann gibt der Knopf beim Drücken nicht nach, er springt');
+  }
+
   /* DER FASSUNGSSTEMPEL: deckt er etwas zu? (Q13)
    *
    * Er steht seit Q13 auf JEDEM Bildschirm, unten in der Ecke, und liegt
@@ -548,7 +579,7 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, stempel, karte, bewacht, zeichen, wand, kleber };
+  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, wand, kleber };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -731,6 +762,7 @@ for (const g of MEINE) {
     for (const x of r.zu) meldungen.push(`${name}: ${x}`);
     for (const x of r.ueber) meldungen.push(`${name}: ${x}`);
     for (const x of r.stempel || []) meldungen.push(`${name}: ${x}`);
+    for (const x of r.material || []) meldungen.push(`${name}: ${x}`);
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
         + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `

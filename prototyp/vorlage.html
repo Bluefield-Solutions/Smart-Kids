@@ -177,27 +177,69 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Die Tiefe ist bei allen dieselbe Mechanik: helle Linie oben INNEN,
    dunklere Kante unten. Beim Druecken faehrt der Knopf um genau die
    Kantenhoehe nach unten - dann sieht es aus, als gaebe er nach. */
+/* Q15: der leise Knopf war gar keiner.
+ *
+ * Der Absatz darueber verspricht „die Tiefe ist bei allen dieselbe
+ * Mechanik". Nachgezaehlt stimmte das nicht: von acht Knopfarten hatten
+ * VIER keine Kante, und es gab vier verschiedene Druckwege - 0, 1 und
+ * 3 Punkte, und `warnend` fuhr 3 Punkte nach unten, ohne eine Kante zu
+ * haben, in die es haette fahren koennen. Der leise Knopf war
+ * durchsichtig mit einem Rand bei 0,885 auf weissem Grund: ein Umriss,
+ * kein Gegenstand. Auf dem Endbildschirm standen so zwei davon neben dem
+ * lauten und sahen aus wie etwas, das noch nicht fertig geladen ist.
+ *
+ * Jetzt hat JEDE Knopfart dieselben drei Teile - Flaeche, helle Linie
+ * oben innen, Kante unten - und faehrt beim Druecken um genau ihre
+ * Kantenhoehe. Der Rang steckt in der Hoehe der Kante, nicht in ihrer
+ * An- oder Abwesenheit:
+ *
+ *   leise   `--kante-flach` (2 px)   Werkzeug am Rand
+ *   laut    `--kante`       (3 px)   Antwort, Kachel, Hauptknopf
+ *
+ * Der Rand ist eine Stufe dunkler (`--knopf-kante` statt `--knopf-rand`):
+ * auf reinem Weiss trug 0,885 zu wenig, um eine Form zu zeichnen. */
 .knopf{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);
-  background:transparent;border:var(--strich) solid var(--knopf-rand);border-radius:var(--rund-voll);
+  background:var(--papier);border:var(--strich) solid var(--knopf-kante);
+  border-radius:var(--rund-voll);
+  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),
+             inset 0 var(--strich) 0 var(--knopf-licht);
   padding:var(--r2) var(--r4);min-height:44px;display:flex;align-items:center;gap:var(--r2);
-  cursor:pointer;transition:background var(--d-tipp) var(--k-standard),
+  cursor:pointer;transition:transform var(--d-tipp) var(--k-standard),
+    box-shadow var(--d-tipp) var(--k-standard),
     border-color var(--d-tipp) var(--k-standard),color var(--d-tipp) var(--k-standard)}
-.knopf:active{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}
-@media (hover:hover){.knopf:hover{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}}
+.knopf:active{transform:translateY(var(--kante-flach));color:var(--tinte);
+  border-color:var(--tinte-3);
+  box-shadow:0 0 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
+@media (hover:hover){.knopf:hover{border-color:var(--primaer-rand);color:var(--tinte)}}
 /* Genau EIN lauter Knopf je Bildschirm - dieselbe Tiefe wie am Etikett.
    Auf dem Endbildschirm standen drei gleich leise Knoepfe nebeneinander:
    "Noch einmal", "Forscherbuch", "Etwas anderes". Was als naechstes
    passieren soll, war daran nicht zu sehen - und wer nicht liest, sieht
    nur drei graue Kapseln. */
-.knopf.haupt{color:var(--auf-flaeche);background:var(--primaer);
-  border-color:var(--primaer-rand);
-  box-shadow:0 var(--kante) 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht);
+/* Q15: GEFUELLT, nicht nur eine Spur blauer.
+ *
+ * Bis hierher trug der Hauptknopf `--primaer` - dieselbe Flaeche, denselben
+ * Rand und dieselbe Kante wie ein Antwort-Etikett. Auf dem Endbildschirm
+ * war er damit „einer von dreien in einer anderen Schattierung", und das
+ * ist genau das Gegenteil von dem, wofuer es ihn gibt.
+ *
+ * Der volle Akzentton ist keine neue Sprache: das Mikrofon traegt ihn seit
+ * M4s als runde, gefuellte Flaeche mit weissem Zeichen. Der laute Knopf ist
+ * dieselbe Sache in Pillenform. Und er kollidiert mit nichts - ein
+ * Etikett und ein Hauptknopf stehen nie auf demselben Bildschirm.
+ *
+ * Die Schrift ist `--papier` auf `--akzent`. Das ist grosse Schrift
+ * (25 px, fett), also gilt 3:1; gemessen wird es von `lesbarkeit` bei
+ * jedem Lauf, nicht hier behauptet. */
+.knopf.haupt{color:var(--papier);background:var(--akzent);
+  border-color:var(--akzent);
+  box-shadow:0 var(--kante) 0 var(--akzent-kante),inset 0 var(--strich) 0 var(--knopf-licht);
   padding:var(--r3) var(--r8);min-height:56px;font-size:var(--s1)}
-.knopf.haupt:active{transform:translateY(3px);background:var(--primaer);
-  color:var(--auf-flaeche);border-color:var(--primaer-rand);
-  box-shadow:0 0 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
-@media (hover:hover){.knopf.haupt:hover{background:var(--primaer);
-  color:var(--auf-flaeche);border-color:var(--primaer-kante)}}
+.knopf.haupt:active{transform:translateY(var(--kante));background:var(--akzent);
+  color:var(--papier);border-color:var(--akzent);
+  box-shadow:0 0 0 var(--akzent-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
+@media (hover:hover){.knopf.haupt:hover{background:var(--akzent);
+  color:var(--papier);border-color:var(--akzent-kante)}}
 /* Der eine Knopf, der etwas WEGNIMMT (R1).
    Kein voller Warnton als Fläche - das wäre ein Alarm, und der Knopf ist
    keiner: er steht neben zwei harmlosen und soll nur nicht mit ihnen
@@ -207,11 +249,17 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    auf 2,92:1 - das Tor `lesbarkeit` hat den Knopf gemeldet, sowie es ihn
    das erste Mal zu sehen bekam. Der Rand darf den vollen Warnton tragen,
    er ist keine Schrift. */
+/* Q15: er fuhr drei Punkte nach unten und hatte keine Kante, in die er
+   haette fahren koennen - der Knopf sprang, statt nachzugeben. Jetzt
+   dieselbe flache Kante wie jeder andere leise Knopf, nur in seinem Ton. */
 .knopf.warnend{color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
-  border-color:var(--warn);background:var(--warn-h)}
-.knopf.warnend:active{transform:translateY(3px);
+  border-color:var(--warn);background:var(--warn-h);
+  box-shadow:0 var(--kante-flach) 0 var(--warn),
+             inset 0 var(--strich) 0 var(--knopf-licht)}
+.knopf.warnend:active{transform:translateY(var(--kante-flach));
   color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
-  border-color:var(--warn);background:var(--warn-h)}
+  border-color:var(--warn);background:var(--warn-h);
+  box-shadow:0 0 0 var(--warn),inset 0 var(--strich) 0 var(--knopf-licht)}
 @media (hover:hover){.knopf.warnend:hover{
   color:color-mix(in oklab, var(--warn) 72%, var(--tinte));
   border-color:var(--warn);background:var(--warn-h)}}
@@ -858,12 +906,22 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    verschwinden. */
 .lupenknoepfe{position:absolute;right:var(--r2);bottom:var(--r2);display:flex;
   flex-direction:column;gap:var(--r2);z-index:2}
+/* Q15: dieselbe Mechanik wie jeder andere leise Knopf.
+   Er hatte einen Schlagschatten statt einer Kante und fuhr einen Punkt
+   statt zwei - drittes Material und dritter Druckweg auf demselben
+   Bildschirm. Durchsichtig bleibt er: er liegt auf der Karte, und was
+   darunter liegt, soll man noch ahnen. */
 .lupenknopf{width:44px;height:44px;border-radius:var(--rund-voll);
-  border:var(--strich) solid var(--knopf-rand);background:color-mix(in oklch,var(--papier) 88%,transparent);
+  border:var(--strich) solid var(--knopf-kante);background:color-mix(in oklch,var(--papier) 88%,transparent);
   color:var(--tinte);font-family:var(--f-ui);font-size:var(--s2);font-weight:700;line-height:1;
   display:flex;align-items:center;justify-content:center;cursor:pointer;
-  box-shadow:var(--schatten-auf)}
-.lupenknopf:active{transform:translateY(1px)}
+  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),
+             inset 0 var(--strich) 0 var(--knopf-licht);
+  transition:transform var(--d-tipp) var(--k-standard),
+             box-shadow var(--d-tipp) var(--k-standard),
+             border-color var(--d-tipp) var(--k-standard)}
+.lupenknopf:active{transform:translateY(var(--kante-flach));
+  box-shadow:0 0 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
 /* Waehrend ein Etikett gezogen wird, nehmen sie nichts an - sonst faengt
    ein Knopf die Antwort ab, die auf das Land darunter gehoert. */
 body[data-zieht] .lupenknoepfe{pointer-events:none}
@@ -1267,13 +1325,30 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   box-shadow:0 0 0 var(--ring) var(--akzent-h),0 var(--kante-flach) 0 var(--linie-2)}
 .leise.mini{min-height:32px;font-size:var(--s-klein);padding:var(--r1) var(--r2);
   align-self:center}
+/* Der Ausweg („Weiss ich nicht") und der Umschalter („Lieber antippen").
+ *
+ * Sie sind mit Absicht KEIN Knopf: sie stehen neben vier Antworten, und
+ * eine fuenfte Pille daneben waere eine fuenfte Antwort. Sie sind aber
+ * auch kein Link in einem Text - der Unterstrich war das letzte Stueck
+ * Netzseite in einer App voller Gegenstaende (Q15).
+ *
+ * Statt des Unterstrichs eine feine Linie DARUNTER, die zum Rand der
+ * leisen Knoepfe passt, und beim Beruehren eine weiche Flaeche im
+ * Akzentton. Damit gehoert der Ausweg sichtbar zur Werkzeugspalte, ohne
+ * sich zu einer Antwort aufzublasen. */
 .leise{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
-  color:var(--tinte-2);background:none;border:none;cursor:pointer;
-  min-height:44px;padding:0 var(--r3);border-radius:var(--rund-voll);
-  text-decoration:underline;text-underline-offset:3px;
-  transition:color var(--d-tipp) var(--k-standard),background var(--d-tipp) var(--k-standard)}
-.leise:active{color:var(--tinte);background:var(--akzent-h)}
-@media (hover:hover){.leise:hover{color:var(--tinte)}}
+  color:var(--tinte-2);background:none;border:none;
+  border-bottom:var(--strich) solid var(--knopf-kante);cursor:pointer;
+  min-height:44px;padding:0 var(--r2);border-radius:var(--r1);
+  /* Die Linie gehoert unter das WORT, nicht unter die Spalte: in der
+     Werkzeugspalte werden die Kinder gestreckt (`align-items:stretch`),
+     und dann lief der Strich quer durch den halben Bildschirm. */
+  align-self:center;
+  transition:color var(--d-tipp) var(--k-standard),
+             background var(--d-tipp) var(--k-standard),
+             border-color var(--d-tipp) var(--k-standard)}
+.leise:active{color:var(--tinte);background:var(--akzent-h);border-color:var(--akzent)}
+@media (hover:hover){.leise:hover{color:var(--tinte);border-color:var(--akzent)}}
 .frage .richtigText{color:var(--gut)}
 /* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
    Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */
@@ -1428,8 +1503,16 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .ziffern.klein .zi{min-height:44px;font-size:var(--s0)}
 
 .kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:var(--r3)}
-.wert{background:var(--papier);border-radius:var(--rund-karte);padding:var(--r3) var(--r4);
-  box-shadow:0 var(--kante-flach) 0 var(--tiefe-farbe)}
+/* Q15: was kein Knopf ist, darf nicht wie einer aussehen.
+   Die vier Zahlen im Elternbereich hatten weissen Grund auf weisser Seite
+   und darunter eine 2 Punkte hohe Kante - also war von der ganzen Kachel
+   genau EINE Linie zu sehen, und die sah aus wie der abgeschnittene
+   untere Rand einer Pille. Vier kaputte Knoepfe, die keine sind.
+   Jetzt eine ruhige Karte: feine Linie ringsum, kleiner Radius, keine
+   Knopfkante. Ein Knopf ist rund und hat eine farbige Kante; eine Karte
+   hat einen Strich. */
+.wert{background:var(--papier);border:var(--strich-fein) solid var(--linie);
+  border-radius:var(--rund-klein);padding:var(--r3) var(--r4)}
 .wert b{display:block;font-size:var(--s2);font-weight:800;letter-spacing:-.02em}
 .wert span{display:block;font-size:var(--s-klein);color:var(--tinte-3)}
 

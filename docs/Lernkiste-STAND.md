@@ -8165,3 +8165,68 @@ seine 307.
   die Kette hier vor dem nächsten Push lief.
 
 **Die Auslieferung ist wieder grün: 0c7761b, v283.**
+
+
+---
+
+## Q15 — die Knöpfe
+
+Gefragt war „alle Buttons schöner". Nachgezählt war das kein Geschmacksthema,
+sondern eine Zusage, die seit zehn Runden im Stylesheet stand und nirgends im
+Bild. Dort heißt es: *„Die Tiefe ist bei allen dieselbe Mechanik: helle Linie
+oben INNEN, dunklere Kante unten. Beim Drücken fährt der Knopf um genau die
+Kantenhöhe nach unten."*
+
+| Knopfart | Füllung | Kante | Druckweg |
+|---|---|---|---|
+| `.knopf` (leise) | **durchsichtig** | **keine** | **keiner** |
+| `.knopf.haupt` | primaer 0,965 | 3 px | 3 px |
+| `.knopf.warnend` | warn-h | **keine** | **3 px — ohne Kante** |
+| `.kachel` | eigener Ton | 3 px | 3 px |
+| `.etikett` | primaer 0,965 | 3 px | 3 px |
+| `.zahl` | primaer 0,965 | 3 px | 3 px |
+| `.lupenknopf` | papier 88 % | **Schlagschatten** | **1 px** |
+| `.leise` | keine | keine | keiner |
+
+**Vier von acht Arten hatten keine Kante, und es gab vier verschiedene
+Druckwege.** Der leise Knopf war ein Umriss bei 0,885 auf reinem Weiß — auf dem
+Endbildschirm standen zwei davon neben dem lauten und sahen aus wie etwas, das
+noch nicht fertig geladen ist. Und `warnend` sprang beim Drücken, weil er drei
+Punkte nach unten fuhr, ohne eine Kante zu haben, in die er hätte fahren können.
+
+### Was jetzt gilt
+
+Jede Knopfart hat dieselben drei Teile — Fläche, helle Linie oben innen, Kante
+unten — und fährt beim Drücken um genau ihre Kantenhöhe. Der **Rang** steckt in
+der Höhe der Kante, nicht in ihrer An- oder Abwesenheit:
+
+| | |
+|---|---|
+| leise | `--kante-flach` (2 px), Fläche `--papier`, Rand eine Stufe dunkler |
+| laut | `--kante` (3 px) |
+
+Und der eine laute Knopf je Bildschirm ist jetzt **gefüllt**: voller
+`--akzent`, weiße Schrift. Das ist keine neue Sprache — das Mikrofon trägt
+denselben Ton seit M4s als runde gefüllte Fläche. Vorher trug der Hauptknopf
+`--primaer`, also exakt dasselbe Material wie ein Antwort-Etikett, und war
+damit „einer von dreien in einer anderen Schattierung".
+
+### Zwei Dinge, die keine Knöpfe sind
+
+- **Der Ausweg** („Weiß ich nicht", „Lieber antippen") bleibt Text — eine fünfte
+  Pille neben vier Antworten wäre eine fünfte Antwort. Statt des
+  Netzseiten-Unterstrichs jetzt eine feine Linie im Ton der leisen Knöpfe und
+  beim Berühren eine weiche Fläche im Akzentton.
+- **Die vier Zahlen im Elternbereich** hatten weißen Grund auf weißer Seite und
+  darunter eine 2 Punkte hohe Kante — von der ganzen Kachel war genau **eine
+  Linie** zu sehen, und die sah aus wie der abgeschnittene untere Rand einer
+  Pille. Vier kaputte Knöpfe, die keine sind. Jetzt eine ruhige Karte: feine
+  Linie ringsum, kleiner Radius, keine Knopfkante.
+
+### Und damit es nicht wieder still verfällt
+
+`passt` misst seit Q15 an der berechneten Formatvorlage, dass jede Knopfart
+eine Kante hat. Das ist die Zusage aus dem Kommentar, endlich als Prüfung —
+mit stehender Gegenprobe („der leise Knopf verliert seine Kante").
+
+227 Gegenproben. 36 Vorbilder neu abgenommen.
