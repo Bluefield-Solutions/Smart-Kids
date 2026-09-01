@@ -85,7 +85,12 @@
       "s": 4
     },
     "das App-Symbol hat die falsche Größe": {
-      "commit": "e0437806c471bd54e97f0e920e3cee1d494cfaae",
+      "commit": "371bbe7d160a6803f67d24116ff8c8e177309d41",
+      "zeit": "2026-09-01",
+      "s": 5
+    },
+    "der Stern des Symbols läuft in die iOS-Maske": {
+      "commit": "371bbe7d160a6803f67d24116ff8c8e177309d41",
       "zeit": "2026-09-01",
       "s": 5
     },
@@ -640,9 +645,9 @@
       "s": 96
     },
     "ein Symbol im Manifest gibt es nicht": {
-      "commit": "e0437806c471bd54e97f0e920e3cee1d494cfaae",
+      "commit": "371bbe7d160a6803f67d24116ff8c8e177309d41",
       "zeit": "2026-09-01",
-      "s": 13
+      "s": 14
     },
     "Deutschland fehlt im Lager des Service Workers": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
