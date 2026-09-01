@@ -7210,3 +7210,106 @@ dann wachsen, wenn etwas gestrichen wird. Das steht jetzt in der
 Begründung des Eintrags selbst, mit der Anweisung, vor jedem Hochsetzen
 zuerst die Zeilenzahl der Liste zu vergleichen — sonst wird aus der Ratsche
 ein Gummiband.
+
+## Q3 — der weiche Kartenrand und Grönland
+
+Zwei Schritte aus der Liste: der Ausschnitt Mittelamerika sollte einen
+Bezugsrahmen bekommen, und Grönland sollte viertes Ziel Nordamerikas werden.
+
+### Der Bezugsrahmen war schon da — das Problem war ein anderes
+
+Ich hatte vorgeschlagen: „die neun Länder liegen ohne Bezugsrahmen im Bild,
+ein angedeuteter Kontinentumriss würde zeigen, wo man ist." Die Aufnahme
+sagt etwas anderes. Der Bezugsrahmen ist längst da — Mexiko, die Halbinsel
+Yucatán, Florida, Kolumbien stehen grau um die neun Ziele herum.
+
+Was wirklich falsch aussah, ist der **Rand** dieser Umgebung. Die grauen
+Nachbarn kommen aus einem Ausschnitt der Weltkarte, und der ist ein Rechteck
+in Länge und Breite. Wo dieses Rechteck mitten durch Land geht, endete die
+graue Fläche an einer Kante, die keine Küste ist: unten rechts ein Block mit
+zwei geraden Seiten, Kolumbien und Venezuela an der Maskenkante abgeschnitten.
+Als Karte ist das richtig — dort **hört** der Ausschnitt auf. Als Bild sieht
+es aus wie ein Fehler.
+
+Gemessen am gebauten Spiel, Chromium, 844 × 390, nur die Umgebung sichtbar,
+Abstand zum hellsten Bildpunkt im äußeren 2-%-Band (0 = Papier, 217 = volles
+Grau):
+
+| Karte | vorher | jetzt |
+|---|---|---|
+| Afrika | 22 | 4 |
+| Asien | 4 | 4 |
+| Europa | 9 | 4 |
+| **Mittelamerika** | **22** | **5** |
+| Nordamerika | 22 | 4 |
+| Südamerika | 0 | 0 |
+
+Die Umgebung blendet jetzt über die äußeren **zehn Prozent** aus. Zehn und
+nicht sechs und nicht vierzehn: bei sechs bleibt die Kante unten rechts
+stehen, bei vierzehn verliert Mexiko seine Gestalt — und Mexiko ist der
+Anhaltspunkt, an dem ein Kind erkennt, wo es ist. Durchprobiert und
+nebeneinandergelegt, nicht geraten.
+
+Drei Sachen, die dabei zu beachten waren:
+
+- **Nur das Graue blendet aus.** Was gefragt wird, behält seine Farbe bis an
+  den Rand — sonst wäre ein Ziel am Rahmen blasser als eines in der Mitte,
+  und die Karte verriete die Aufgabe.
+- **Es liegt in der Lupe**, wandert also beim Zoomen mit. Absicht: die harte
+  Kante gibt es nur bei Maßstab 1, wo der Ausschnitt im sichtbaren Feld
+  endet. Wer hineinzoomt, schneidet ohnehin mitten durch Länder, und das ist
+  ein gewöhnlicher Kartenrand.
+- **Zwei Masken hintereinander statt einer mit `mix-blend-mode`.** Blendmodi
+  in Masken sind auf iOS nicht verlässlich, und das Zielgerät ist ein iPhone.
+  Geschachtelte Masken sind SVG 1.1 und tun es überall.
+
+Ein Tor gab es dafür nicht, also gibt es jetzt eins: `ziehen --nur=rand`
+blendet alles außer der Umgebung aus, fotografiert den Kartenkasten und misst
+das äußere Band. **Alles außer der Umgebung ausblenden ist nicht Bequemlichkeit,
+sondern nötig**: auf der Europakarte reicht Russland in voller Farbe bis an den
+Rahmen, und das ist richtig so — die Kontinentgrenze. Ein Tor, das bloß den
+dunkelsten Randpunkt misst, meldete dort einen Befund über ein Ziel und hätte
+von der Umgebung nie etwas gesehen.
+
+**Was das Tor auf zwei Karten nicht beweist:** Asien und Südamerika messen mit
+und ohne Blende dasselbe — ihre Umgebung kommt dem Rahmen gar nicht nahe genug.
+Dort ist die Zusage nicht bezeugt, sondern nur nicht verletzt. Die vier anderen
+tragen den Beweis. Das steht so im Tor.
+
+### Ein Maskenwert ist keine Farbe
+
+`inhalt` wurde rot: `#fff` in `spiel.js`, „gehört nach marken.css". Es gehört
+dort aber gerade **nicht** hin. Eine SVG-Maske rechnet mit Helligkeit: Weiß
+heißt „ganz sichtbar", Schwarz „ganz weg". Das ist ein Wert der Technik, keine
+Gestaltung — und im Abendmodus darf er sich auf keinen Fall mitändern, während
+`marken.css` genau das für alle Farben tut.
+
+Die Regel ist deshalb geschärft statt umgangen: was zwischen `<mask>` und
+`</mask>` steht, zählt nicht als Farbe. Die Verläufe der Blende stehen
+deswegen **in** der Maske und nicht daneben. Eine Farbe irgendwo sonst im
+Markup schlägt weiter an — die stehende Gegenprobe „eine Farbe steht am
+System vorbei" fährt genau das und bleibt scharf.
+
+### Grönland
+
+Vierte Zielform auf der Nordamerikakarte. `rang` heißt hier **Lerntiefe**,
+nicht Einwohnerzahl — nach Einwohnern wäre Grönland mit 57 000 das letzte Land
+der Welt; als Form ist es das einprägsamste auf dieser Karte: riesig, oben
+rechts, mit nichts zu verwechseln. Dieselbe Überlegung, die in Europa
+Österreich vor die Ukraine gestellt hat.
+
+Auf der **Vier**, nicht auf der Drei: Fiona spielt mit ihrer Tiefe 3 weiter
+USA, Mexiko und Kanada — dieselben drei wie gestern. Lea (13) und die Eltern
+(17) bekommen Grönland dazu.
+
+Es stand schon auf der Karte, grau, als Umgebung. Neu ist nur, dass danach
+gefragt wird: Umriss, Anker und Fläche waren längst da, ein Neubacken der
+400 MB Rohdaten war nicht nötig. Die App zählt jetzt 104 Gebiete statt 103.
+
+Bezeugt wird es am **Bild**: die neue Aufnahme `quer-nordamerika` zeigt die
+Karte für ein Profil mit Tiefe 17. Fällt der Eintrag weg, fällt Grönland in die
+Umgebung zurück, die größte Fläche der Karte wechselt die Farbe, und der
+Bildvergleich sieht es. Die Aufnahme läuft mit `kind:'stephan'` — in Fionas
+Profil käme Grönland gar nicht vor, und sie bezeugte genau das Neue nicht.
+
+`npm run tor` grün in 122,1 s. 215 Gegenproben, zwei davon neu.

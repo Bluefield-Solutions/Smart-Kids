@@ -1711,6 +1711,19 @@ export const PROBEN = [
     ersatz:'if(!auf){ aufheben(); }',
     an:{ ...DIST, text:'if(!auf){ aufheben(); }' }, sagt:'Antippen' },
 
+  /* Der weiche Rand (Q3).
+   *
+   * Ohne ihn endet die graue Umgebung an der Maskenkante - auf drei von
+   * sechs Karten mit vollem Grau bis an den Rahmen. `RANDBLENDE = 0` laesst
+   * die Blende stehen und macht sie wirkungslos: der Verlauf hat dann seine
+   * beiden Halteschritte auf derselben Stelle. Genau der Zustand, den ein
+   * Tor merken muss - die Zeile steht noch da und tut nichts. */
+  { n:'die Umgebung endet wieder hart am Rahmen', tor:'ziehen', bauen:true,
+    args:['--nur=rand'], datei:D,
+    such:'  const RANDBLENDE = 0.10;', ersatz:'  const RANDBLENDE = 0;',
+    an:{ ...DIST, text:'RANDBLENDE = 0;' },
+    sagt:'endet die Umgebung hart am Rahmen' },
+
   /* --- ansicht ------------------------------------------------------ */
   // Gedreht wird jetzt an der MARKE, nicht an einer ausgeschriebenen Farbe:
   // die sieben leiten sich seit der Audit-Runde aus --flaeche-c ab, und die
@@ -1721,6 +1734,23 @@ export const PROBEN = [
     such:'  --flaeche-l: 0.74; --flaeche-c: 0.135;',
     ersatz:'  --flaeche-l: 0.74; --flaeche-c: 0.020;',
     an:{ ...DIST, text:'--flaeche-c: 0.020' }, sagt:'rot' },
+
+  /* Groenland (Q3) - das vierte Ziel Nordamerikas.
+   *
+   * Bezeugt wird es am BILD, nicht an einer Zahl: `quer-nordamerika` zeigt
+   * die Karte fuer ein Profil mit Tiefe 17, und dort ist Groenland farbig
+   * statt grau. Faellt der Eintrag weg, faellt es in die Umgebung zurueck -
+   * die groesste Flaeche der Karte wechselt die Farbe, und der
+   * Bildvergleich sieht es.
+   *
+   * `--nur=quer-nordamerika`, nicht der ganze Lauf: die Aufnahme ist die
+   * einzige, die Nordamerika als LAENDERkarte zeigt, und drei Minuten
+   * Vorbilder fuer einen Befund waeren verschwendet. */
+  { n:'Grönland ist wieder nur Umgebung', tor:'ansicht', bauen:true,
+    args:['--nur=quer-nordamerika'], datei:E,
+    such:"    { a3:'GRL', name:'Grönland', rang:4, aliasse:['Groenland','Greenland'],\n      aussprache:['grönland','groenland','grünland'] },\n",
+    ersatz:'',
+    an:{ ...DIST, fehlt:'Grönland' }, sagt:'quer-nordamerika' },
 
   /* --- pwa ---------------------------------------------------------- */
   { n:'ein Symbol im Manifest gibt es nicht', tor:'pwa', bauen:true, datei:'prototyp/bauen.mjs',

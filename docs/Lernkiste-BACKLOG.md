@@ -2177,3 +2177,29 @@ sondern ein Umbau dieses Bildschirms, und er gehört in N2a hinein statt
 hinterher. Für Lea und euch bleibt die Weltenwahl bei zwei Karten: der
 Bildschirm sieht je nach Profil verschieden aus, und das muss `passt` in
 **beiden** Fassungen sehen.
+
+---
+
+## Q3 erledigt: weicher Kartenrand und Grönland
+
+**Der Mittelamerika-Ausschnitt.** Erledigt, aber anders als angekündigt. Ich
+hatte einen fehlenden Bezugsrahmen vermutet; die Aufnahme zeigt, dass er da
+ist (Mexiko, Yucatán, Florida, Kolumbien). Falsch aussah der **Rand** der
+grauen Umgebung: eine gerade Maskenkante, die keine Küste ist. Sie blendet
+jetzt über die äußeren zehn Prozent aus, auf **allen** Karten und nicht nur
+auf dieser. Gemessen: Mittelamerika von 22 auf 5, Afrika und Nordamerika von
+22 auf 4. Tor `ziehen --nur=rand`, mit stehender Gegenprobe.
+
+**Grönland.** Erledigt, als viertes Ziel Nordamerikas auf Rang 4 — also für
+Lea und euch, nicht für Fiona, deren drei Länder unverändert bleiben. Neue
+Aufnahme `quer-nordamerika` als Zeuge.
+
+### Was dabei offen blieb
+
+- **Das Randtor beweist auf zwei von sechs Karten nichts.** Asien und
+  Südamerika messen mit und ohne Blende dasselbe: ihre Umgebung kommt dem
+  Rahmen nicht nahe genug. Kein Fehler, aber es steht im Tor, damit niemand
+  die sechs grünen Zeilen für sechs Beweise hält.
+- **Die Kachelzeile der Ebenenwahl.** Nordamerika hat jetzt vier Ziele statt
+  drei; an der Zahl der Kacheln ändert das nichts. Die Grenze der
+  Kachelzeile ist damit weiter ungemessen — sie steht seit A6 auf der Liste.

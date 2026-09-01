@@ -184,6 +184,21 @@ export const LAENDER = {
     { a3:'USA', name:'USA', rang:1, aliasse:['Vereinigte Staaten','Amerika'], aussprache:['u es a','usa','amerika'] },
     { a3:'MEX', name:'Mexiko', rang:2, aliasse:['Mexico'], aussprache:['mexiko','mexico'] },
     { a3:'CAN', name:'Kanada', rang:3, aliasse:['Canada'], aussprache:['kanada','canada'] },
+    /* Groenland als viertes - und `rang` heisst hier Lerntiefe, nicht
+     * Einwohnerzahl (siehe oben bei Europa). Nach Einwohnern waere
+     * Groenland mit 57 000 das letzte Land der Welt; als FORM ist es das
+     * einprägsamste auf dieser Karte: riesig, weiss, oben rechts, mit
+     * nichts zu verwechseln. Genau dieselbe Ueberlegung, die in Europa
+     * Oesterreich vor die Ukraine gestellt hat.
+     *
+     * Auf der Vier, nicht auf der Drei: Fiona spielt mit ihrer Tiefe 3
+     * weiter USA, Mexiko und Kanada - dieselben drei wie gestern. Lea
+     * (13) und die Eltern (17) bekommen Groenland dazu.
+     *
+     * Es stand schon auf der Karte, grau, als Umgebung. Neu ist nur, dass
+     * danach gefragt wird - Umriss, Anker und Flaeche waren laengst da. */
+    { a3:'GRL', name:'Grönland', rang:4, aliasse:['Groenland','Greenland'],
+      aussprache:['grönland','groenland','grünland'] },
   ],
   /* --- Mittelamerika und die Karibik ------------------------------ *
    *

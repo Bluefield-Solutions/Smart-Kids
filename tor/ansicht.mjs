@@ -207,6 +207,15 @@ const AUFNAHMEN = [
    * nicht wie ein Fehler -, sagt kein Tor. */
   { name:'quer-mittelamerika', spiel:'laender:mittelamerika', kind:'stephan',
     quer:true, wahl:'.schirm.da' },
+  /* Nordamerika mit Groenland (Q3). Vier Ziele statt drei, und das vierte
+   * ist die groesste Form auf der Karte - ob sie neben USA und Kanada noch
+   * eine Karte ergibt oder das Bild kippt, sagt kein Tor.
+   *
+   * `kind:'stephan'`, weil Fionas Tiefe 3 ist: in IHREM Profil kaeme
+   * Groenland gar nicht vor, und die Aufnahme bezeugte genau das Neue
+   * nicht. Wer eine Wirkung abbilden will, muss sie einschalten. */
+  { name:'quer-nordamerika', spiel:'laender:nordamerika', kind:'stephan',
+    quer:true, wahl:'.schirm.da' },
   /* Der Elternbereich — der einzige Bildschirm ohne Vorbild, und
    * ausgerechnet der ist zuletzt um zwei Tabellen gewachsen (Übersicht je
    * Profil, „Zuletzt geübt"). Mit gesetztem Protokoll, sonst stünden dort

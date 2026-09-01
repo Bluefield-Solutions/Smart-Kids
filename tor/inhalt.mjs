@@ -950,6 +950,22 @@ for (const q of ['prototyp/vorlage.html', 'prototyp/spiel.js']) {
   // Kommentare zaehlen nicht.
   t = t.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/<!--[\s\S]*?-->/g, ' ')
        .replace(/^\s*\/\/.*$/gm, ' ');
+  /* Und in einer MASKE zaehlt Weiss nicht als Farbe.
+   *
+   * Eine SVG-Maske rechnet mit Helligkeit: Weiss heisst „ganz sichtbar",
+   * Schwarz „ganz weg". Das ist ein Wert der Technik, keine Gestaltung -
+   * niemand wuerde ihn in `marken.css` suchen, und dorthin gehoert er auch
+   * nicht: er darf sich mit dem Abendmodus gerade NICHT aendern.
+   *
+   * Der Anlass war die Randblende (Q3). Ohne diese Zeile haette die Regel
+   * einen Maskenwert ins Gestaltungssystem gedrueckt, wo er beim naechsten
+   * Umfaerben stillschweigend falsch geworden waere.
+   *
+   * Ausgenommen ist nur, was ZWISCHEN `<mask>` und `</mask>` steht - die
+   * Verlaeufe der Blende stehen deshalb dort drin und nicht daneben. Eine
+   * Farbe irgendwo sonst im Markup schlaegt weiter an; die Gegenprobe
+   * „eine Farbe steht am System vorbei" faehrt genau das. */
+  t = t.replace(/<mask[\s\S]*?<\/mask>/g, ' ');
   for (const { was, muster } of SYSTEM) {
     const treffer = [...new Set(t.match(muster) || [])];
     if (treffer.length) {

@@ -21,6 +21,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import { PNG } from 'pngjs';
 import { starte, zurEbenenwahl, durchVorlauf, inEbene, ausAblage, stelleAblage,
          zielUndEtikett } from './chromium.mjs';
 
@@ -45,7 +46,8 @@ const GRENZE = 40;
  * alles, und die Kette ruft es ohne Argument auf - eine Abkuerzung, die man
  * versehentlich nimmt, waere keine.
  */
-const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest', 'treffer', 'lupe'];
+const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest', 'treffer', 'lupe',
+  'rand'];
 const gewaehlt = (process.argv.find(a => a.startsWith('--nur=')) || '').slice(6)
   .split(',').filter(Boolean);
 if (gewaehlt.some(a => !ABSCHNITTE.includes(a))) {
@@ -803,6 +805,115 @@ if (laeuft('lupe')) {
   console.log(`    Lupe: ${vorher.ziel} wächst von ${vorher.gross} auf ${nachher.gross} pt `
     + `(Maßstab ${nachher.lupe}×), bleibt im Bild, „ganze Karte" stellt ${zurueck.gross} pt her`);
   await q.close(); await ctx.close();
+}
+
+/* --- rand: die Umgebung endet nicht hart am Rahmen -------------------- *
+ *
+ * Die grauen Nachbarn kommen aus einem Rechteck in Laenge und Breite. Wo
+ * dieses Rechteck mitten durch Land geht, endete die graue Flaeche bisher
+ * an einer Kante, die keine Kueste ist: auf Mittelamerika ein Block unten
+ * rechts mit zwei geraden Seiten (Kolumbien und Venezuela). Als Karte
+ * richtig, als Bild ein Fehler.
+ *
+ * Seit Q3 blendet die Umgebung ueber die aeusseren zehn Prozent aus.
+ *
+ * GEMESSEN WIRD NUR DAS GRAU. Alles andere wird vorher ausgeblendet - und
+ * das ist keine Bequemlichkeit, sondern noetig: auf der Europakarte reicht
+ * RUSSLAND bis an den Rahmen, in voller Farbe, und das ist richtig so (die
+ * Kontinentgrenze). Ein Tor, das nur „dunkelster Bildpunkt am Rand" misst,
+ * meldete dort einen Befund ueber ein Ziel und haette von der Umgebung nie
+ * etwas gesehen.
+ *
+ * Und es misst am BILD, nicht an der Geometrie: die Blende ist eine Maske,
+ * sie steht in keiner Zahl, die man nachrechnen koennte. */
+if (laeuft('rand')) {
+  /* So weit hinein gilt „am Rahmen": zwei Prozent der kuerzeren Seite.
+   * Bei 10 % Blende steht die Maske dort auf 20 % - das Grau ist auf ein
+   * Fuenftel herunter und damit vom Papier kaum zu unterscheiden. */
+  const BAND = 0.02;
+  /* Und so dunkel darf es dort hoechstens noch sein, gemessen als Abstand
+   * zum hellsten Bildpunkt des Ausschnitts (0 = Papier, 217 = das volle
+   * Grau der Umgebung).
+   *
+   * Nicht gewaehlt, sondern abgelesen - Chromium, 844 x 390, der Kartenkasten
+   * allein, alles ausser der Umgebung ausgeblendet:
+   *
+   *                  mit Blende   ohne Blende
+   *   afrika              4           22
+   *   asien               4            4
+   *   europa              4            9
+   *   mittelamerika       5           22
+   *   nordamerika         4           22
+   *   suedamerika         0            0
+   *
+   * Zwoelf liegt zwischen den beiden Haufen und nicht in der Mitte: bei
+   * einer Blende, die nur halb so breit waere, stuende der Wert schon bei
+   * etwa elf, und das Tor soll die halbe Loesung nicht durchwinken.
+   *
+   * WAS ES AUF ZWEI KARTEN NICHT BEWEIST: Asien und Suedamerika messen mit
+   * und ohne Blende dasselbe - ihre Umgebung kommt dem Rahmen gar nicht
+   * nahe genug. Dort ist die Zusage nicht bezeugt, sondern nur nicht
+   * verletzt. Die vier anderen tragen den Beweis. */
+  const DECKEL_RAND = 12;
+  const ebenen = fs.readdirSync(path.join(DIST, 'daten'))
+    .map(f => (f.match(/^laender-(.+)\.json$/) || [])[1]).filter(Boolean)
+    .filter(k => (JSON.parse(fs.readFileSync(path.join(DIST, 'daten', `laender-${k}.json`),
+      'utf8')).umgebung || []).length > 0);
+  if (!ebenen.length) fehler.push('rand: keine Ebene mit Umgebung gefunden — '
+    + 'die Messung haette nichts zu messen');
+  const zeilen = [];
+  for (const kont of ebenen) {
+    const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE',
+      viewport: { width: 844, height: 390 } });
+    const q = await ctx.newPage();
+    await q.goto(`http://localhost:${port}/`);
+    await inEbene(q, 'stephan', `laender:${kont}`);
+    // Alles ausser der Umgebung verschwindet. `#umg` haengt seit Q3 in zwei
+    // Maskengruppen; gehalten wird deshalb der Vorfahr, der unter `#lupe`
+    // haengt, nicht `#umg` selbst.
+    const steht = await q.evaluate(() => {
+      const svg = document.querySelector('.schirm.da .karte > svg');
+      const lupe = svg.querySelector('#lupe'), umg = svg.querySelector('#umg');
+      if (!lupe || !umg) return false;
+      let halte = umg; while (halte.parentNode !== lupe) halte = halte.parentNode;
+      for (const el of svg.children)
+        if (el !== lupe && el.tagName.toLowerCase() !== 'defs') el.style.display = 'none';
+      for (const el of lupe.children) if (el !== halte) el.style.display = 'none';
+      return true;
+    });
+    if (!steht) { fehler.push(`rand: auf ${kont} ist keine Umgebung im Bild`);
+      await q.close(); await ctx.close(); continue; }
+    const roh = await q.locator('.schirm.da .karte > svg').first().screenshot();
+    const bild = PNG.sync.read(roh);
+    const b1 = Math.max(2, Math.round(Math.min(bild.width, bild.height) * BAND));
+    let hell = 0, dunkelRand = 255, dunkelAll = 255;
+    for (let y = 0; y < bild.height; y++) for (let x = 0; x < bild.width; x++) {
+      const i = (bild.width * y + x) << 2;
+      // Ueber Alpha hinweg auf Weiss rechnen: der Ausschnitt ist an den
+      // Ecken durchsichtig, und ein durchsichtiger Punkt ist Papier.
+      const a = bild.data[i + 3] / 255;
+      const l = (0.299 * bild.data[i] + 0.587 * bild.data[i + 1]
+               + 0.114 * bild.data[i + 2]) * a + 255 * (1 - a);
+      if (l > hell) hell = l;
+      if (l < dunkelAll) dunkelAll = l;
+      if (x < b1 || y < b1 || x >= bild.width - b1 || y >= bild.height - b1)
+        if (l < dunkelRand) dunkelRand = l;
+    }
+    const amRand = Math.round(hell - dunkelRand), inMitte = Math.round(hell - dunkelAll);
+    zeilen.push(`      ${kont.padEnd(14)} am Rand ${String(amRand).padStart(3)} `
+      + `· in der Fläche ${String(inMitte).padStart(3)}`);
+    /* Die Gegenprobe zur Gegenprobe: findet die Messung in der FLAECHE auch
+     * kein Grau, dann ist nicht der Rand sauber, sondern das Bild leer -
+     * und die Null am Rand bezeugt nichts. */
+    if (inMitte < 20) fehler.push(`rand: auf ${kont} ist auch in der Fläche `
+      + `kein Grau zu sehen (${inMitte}) — die Messung beweist nichts`);
+    else if (amRand > DECKEL_RAND) fehler.push(`rand: auf ${kont} endet die Umgebung `
+      + `hart am Rahmen — ${amRand} statt höchstens ${DECKEL_RAND} `
+      + `(in der Fläche ${inMitte})`);
+    await q.close(); await ctx.close();
+  }
+  console.log(`    Rand der Umgebung (${Math.round(BAND * 100)} % Band, `
+    + `höchstens ${DECKEL_RAND}):\n${zeilen.join('\n')}`);
 }
 
 await b.close(); srv.close();

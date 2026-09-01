@@ -3006,6 +3006,54 @@ function spielschirm(){
     ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const umgebung = (kont && D.umgebung[kont])
     ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
+  /* Der Rand der Umgebung BLENDET AUS, statt abgeschnitten zu enden.
+   *
+   * Die grauen Nachbarn kommen aus einem Ausschnitt der Weltkarte, und der
+   * ist ein Rechteck in Laenge und Breite. Auf Mittelamerika endet
+   * Kolumbien deshalb unten rechts an einer Kante, die keine Kueste ist -
+   * ein grauer Block mit zwei geraden Seiten. Gemessen am gebauten Spiel:
+   * die Umgebung reicht dort mit vollem Grau bis an den Rahmen. Als Karte
+   * ist das richtig (dort HOERT der Ausschnitt auf), als Bild sieht es aus
+   * wie ein Fehler - der Atlas loest das seit je mit einem weichen Rand.
+   *
+   * Zehn Prozent, nicht sechs und nicht vierzehn: bei sechs bleibt die
+   * Kante unten rechts stehen, bei vierzehn verliert Mexiko seine Gestalt -
+   * und Mexiko ist der Anhaltspunkt, an dem ein Kind erkennt, wo es ist.
+   * Durchprobiert und nebeneinandergelegt, nicht geraten.
+   *
+   * Es liegt IN der Lupe, wandert also beim Zoomen mit. Das ist Absicht:
+   * die harte Kante gibt es nur bei Zoomstufe 1, wo der Ausschnitt im
+   * sichtbaren Feld endet. Wer hineinzoomt, schneidet ohnehin mitten durch
+   * Laender, und das ist ein gewoehnlicher Kartenrand.
+   *
+   * ZWEI Masken hintereinander statt einer mit `mix-blend-mode`: Blendmodi
+   * in Masken sind auf iOS nicht verlaesslich, und das Zielgeraet ist ein
+   * iPhone. Geschachtelte Masken sind SVG 1.1 und tun es ueberall.
+   *
+   * Nur die GRAUEN gehen aus. Was gefragt wird, behaelt seine Farbe bis an
+   * den Rand - sonst waere ein Ziel am Rahmen blasser als eines in der
+   * Mitte, und die Karte wuerde die Aufgabe verraten. */
+  const RANDBLENDE = 0.10;
+  const [rvx, rvy, rvw, rvh] = vb.split(' ').map(Number);
+  // Waagerecht und senkrecht sind dieselbe Blende, einmal gedreht - der
+  // Unterschied sind vier Zahlen, und die stehen deshalb hier und nicht
+  // zweimal ausgeschrieben.
+  // Der Verlauf steht IN der Maske, nicht daneben. Eine Maske rechnet mit
+  // Helligkeit: Weiss heisst „ganz sichtbar", Schwarz „ganz weg". Das sind
+  // keine Farben im Sinne des Gestaltungssystems, und weil sie hier drin
+  // stehen, sieht das Tor `inhalt` ihnen das auch an.
+  const blende = (id, [x1, y1, x2, y2]) => `
+    <mask id="rand${id}" maskUnits="userSpaceOnUse"
+          x="${rvx}" y="${rvy}" width="${rvw}" height="${rvh}">
+      <linearGradient id="bl${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
+        <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="${RANDBLENDE}" stop-color="#fff" stop-opacity="1"/>
+        <stop offset="${1 - RANDBLENDE}" stop-color="#fff" stop-opacity="1"/>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <rect x="${rvx}" y="${rvy}" width="${rvw}" height="${rvh}" fill="url(#bl${id})"/></mask>`;
+  // Ohne Umgebung keine Blende: eine Maske, die nichts verdeckt, waere ein
+  // Bezeichner, den irgendwann jemand fuer benutzt haelt.
+  const randBlende = umgebung ? blende('x', [0, 0, 1, 0]) + blende('y', [0, 0, 0, 1]) : '';
   // Drei Zustaende statt zwei: das gesuchte Gebiet, die schon gesessenen
   // (volle Farbe, sie bleiben stehen) und der Rest (gedaempft).
   //
@@ -3115,11 +3163,12 @@ function spielschirm(){
         return (v[2]/v[3]).toFixed(4);})()}">
         <svg viewBox="${vb}" preserveAspectRatio="xMidYMid meet">
           <defs><clipPath id="wasch"><circle id="waschKreis" cx="0" cy="0" r="900"
-            style="transform-box:fill-box;transform-origin:center"/></clipPath></defs>
+            style="transform-box:fill-box;transform-origin:center"/></clipPath>${randBlende}</defs>
           <!-- ALLES, was zur Karte gehoert, liegt in dieser einen Gruppe -
                damit die Lupe EINE Zahl verschiebt und nicht dreizehn. -->
           <g id="lupe">
-          <g id="umg">${umgebung}</g>
+          <g mask="url(#randx)"><g mask="url(#randy)">
+            <g id="umg">${umgebung}</g></g></g>
           <g id="fl">${flaechen}</g>
           <!-- Erst die Trefferflaechen, dann die Haken: seit P10 sitzt ein
                Haken auf dem Nadelkopf, und lag er darunter, deckte der Kopf
