@@ -664,10 +664,10 @@
       "zeit": "2026-09-01",
       "s": 79
     },
-    "das Kachelbild liegt wieder unter dem Knopf": {
-      "commit": "eda250174725d1b3f4a45adef661626451edefae",
+    "die Kachel verliert ihre Höhe": {
+      "commit": "3e0896e49a50e24adf4e36a51bed83d355af08c9",
       "zeit": "2026-09-01",
-      "s": 77
+      "s": 86
     },
     "die Rückmeldetöne sind wieder ab Werk an": {
       "commit": "9aa74a7af79b8100bda370dd03112a1d7fb8e5b4",
@@ -704,15 +704,10 @@
       "zeit": "2026-09-01",
       "s": 34
     },
-    "„von vorne\" löscht nichts": {
-      "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
+    "„von vorne\" steht wieder an der Kachel": {
+      "commit": "3e0896e49a50e24adf4e36a51bed83d355af08c9",
       "zeit": "2026-09-01",
-      "s": 67
-    },
-    "„von vorne\" löscht schon beim ersten Tipper": {
-      "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
-      "zeit": "2026-09-01",
-      "s": 67
+      "s": 115
     },
     "Antippen antwortet nicht mehr": {
       "commit": "5761ca29e70fed9f1354dc56ae056502273e167e",
