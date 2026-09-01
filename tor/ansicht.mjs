@@ -797,25 +797,7 @@ for (const a of MEINE) {
    * Ein Wort in der gesuchten Schrift ist anders breit als dasselbe Wort
    * in einer Schrift, die es NICHT gibt. Sind beide gleich breit, wird die
    * Ersatzschrift gesetzt - egal, was der Lader meint. */
-  const daSchrift = await seite.evaluate(async () => {
-    await document.fonts.ready;
-    await Promise.all([document.fonts.load('700 20px "Plus Jakarta Sans"'),
-                       document.fonts.load('400 20px "Andika"')]);
-    const messen = (fam) => {
-      const e = document.createElement('span');
-      e.textContent = 'Hamburgefonstiv 123';
-      e.style.cssText = `position:absolute;visibility:hidden;white-space:pre;`
-        + `font-size:40px;font-family:${fam}`;
-      document.body.appendChild(e);
-      const b = e.getBoundingClientRect().width;
-      e.remove();
-      return b;
-    };
-    // Eine Sippe, die es sicher nicht gibt - sie liefert die Ersatzschrift.
-    const ersatz = messen('"gibtesnicht-4711", sans-serif');
-    return messen('"Plus Jakarta Sans", "gibtesnicht-4711", sans-serif') !== ersatz
-        && messen('"Andika", "gibtesnicht-4711", sans-serif') !== ersatz;
-  });
+  const daSchrift = await schriftDa(seite);
   if (!daSchrift) {
     console.log(`  FEHLT   ${a.name}  (die eigene Schrift wurde nicht geladen)`); rot++; continue;
   }

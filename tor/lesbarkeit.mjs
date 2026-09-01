@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, serviere } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [], hinweise = [];
@@ -255,6 +255,13 @@ for (const abend of [false, true]) {
   const p = await ctx.newPage();
   await p.goto(ADRESSE, { waitUntil: 'load' });
   await p.evaluate(async () => { await document.fonts.ready; });
+  /* Dieselbe Frage wie in `passt` (Q14): steht die eigene Schrift da?
+   * Eine Ersatzschrift bricht die Zeilen anders um, und damit liegt ein
+   * anderes Streumotiv unter dem Text. Die Kontrastzahl waere dann die
+   * einer Seite, die es nicht gibt. */
+  if (!(await schriftDa(p)))
+    fehler.push(`${abend ? 'Abend' : 'Tag'}: die eigene Schrift wurde nicht geladen — `
+      + 'jede Zahl aus diesem Lauf ist die einer Ersatzschrift und beweist nichts');
   if (abend) await p.evaluate(() => document.documentElement.setAttribute('data-abend', 'an'));
   await p.waitForTimeout(300);
 

@@ -20,7 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, serviere } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa } from './chromium.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
@@ -306,9 +306,16 @@ const SUCHE = () => {
         const h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
         if (w > 1 && h > 1 && w * h > breit * hoch) { breit = w; hoch = h; }
       }
-      if (breit > 1 && hoch > 1)
+      if (breit > 1 && hoch > 1) {
+        // Die beiden Kaesten kommen MIT (Regel 5: jede Zahl traegt ihre
+        // Messstelle mit). Auf einem fremden Rechner ist „ueberlappen
+        // sich um 176x2 px" sonst nicht nachzurechnen.
+        const k = (r) => `${r.left.toFixed(0)}|${r.top.toFixed(0)}`
+          + `–${r.right.toFixed(0)}|${r.bottom.toFixed(0)}`;
         ueber.push(`„${x.text}" und „${y.text}" ueberlappen sich um `
-          + `${breit.toFixed(0)}×${hoch.toFixed(0)} px`);
+          + `${breit.toFixed(0)}×${hoch.toFixed(0)} px `
+          + `(${x.flaechen.map(k).join(' ')} gegen ${y.flaechen.map(k).join(' ')})`);
+      }
     }
   }
   /* DER FASSUNGSSTEMPEL: deckt er etwas zu? (Q13)
@@ -659,6 +666,16 @@ for (const g of MEINE) {
   });
 
   const meldungen = [];
+  /* Steht ueberhaupt die eigene Schrift da? (Q14)
+   *
+   * Eine Ersatzschrift misst andere Zeilen, andere Umbrueche und andere
+   * Kaesten - und dieses Tor meldet dann Befunde, die nach einem Fehler
+   * der App aussehen. Auf dem Runner faehrt `ansicht` nicht, und das war
+   * bis Q14 der einzige Ort, an dem jemand nachgesehen hat. */
+  if (!(await schriftDa(p)))
+    meldungen.push('die eigene Schrift wurde nicht geladen — jede Zahl aus diesem '
+      + 'Lauf ist die einer Ersatzschrift und beweist nichts');
+
   /* Warten, bis der Bildschirmwechsel wirklich durch ist.
    *
    * Hier stand `waitForTimeout(450)` mit der Begruendung „der

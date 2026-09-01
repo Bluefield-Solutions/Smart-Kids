@@ -465,3 +465,41 @@ export async function zeigeAufKarte(seite) {
   await seite.mouse.click(punkt.x, punkt.y);
   return punkt.name;
 }
+
+/* Ist die EIGENE Schrift geladen? (Q14)
+ *
+ * `document.fonts.check()` reicht nicht: er sagt nur, ob die angemeldeten
+ * Faces geladen sind, und ohne Anmeldung ist die Menge leer - gruen, wo
+ * nie eine Schrift kam. Gemessen wird deshalb die BREITE: ein Wort in der
+ * gesuchten Schrift ist anders breit als dasselbe Wort in einer, die es
+ * nicht gibt. Sind beide gleich breit, steht die Ersatzschrift da.
+ *
+ * Stand bis Q14 nur in `tor/ansicht.mjs` - und `ansicht` laeuft auf dem
+ * Runner ausdruecklich NICHT. Damit war dort niemand da, der es merkt:
+ * eine Ersatzschrift misst andere Zeilen, andere Umbrueche und andere
+ * Kaesten, und `passt` und `lesbarkeit` melden dann Befunde, die nach
+ * einem Fehler der App aussehen. Genau darueber ist die Auslieferung
+ * einen Tag lang gestolpert (Regel 6: was zweimal dasteht, veraltet
+ * einmal - hier stand es EINMAL, an der einzigen Stelle, die der Runner
+ * nicht faehrt).
+ */
+export async function schriftDa(seite) {
+  return seite.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all([document.fonts.load('700 20px "Plus Jakarta Sans"'),
+                       document.fonts.load('400 20px "Andika"')]);
+    const messen = (fam) => {
+      const e = document.createElement('span');
+      e.textContent = 'Hamburgefonstiv 123';
+      e.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;'
+        + `font-size:40px;font-family:${fam}`;
+      document.body.appendChild(e);
+      const b = e.getBoundingClientRect().width;
+      e.remove();
+      return b;
+    };
+    const ersatz = messen('"gibtesnicht-4711", sans-serif');
+    return messen('"Plus Jakarta Sans", "gibtesnicht-4711", sans-serif') !== ersatz
+        && messen('"Andika", "gibtesnicht-4711", sans-serif') !== ersatz;
+  });
+}
