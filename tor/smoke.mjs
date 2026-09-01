@@ -728,14 +728,24 @@ const BRAUCHT = { ablage: ['spielen'] };
  * Laeufer vergleicht STUECKE, nicht Abschnitte - sonst stuende
  * `durchgang` in zwei Teilen und niemand saehe, dass ein Profil in
  * keinem laeuft. */
+/* Die gemessenen Dauern je Profil. Ein Profil, das hier fehlt, bekommt den
+ * Mittelwert - die Aufteilung wird dann etwas schiefer, aber sie laeuft.
+ *
+ * Die LISTE der Profile steht hier NICHT. Sie kam aus der Tabelle im
+ * Backlog, und die vier Zeilen `durchgang:fiona` bis `durchgang:violeta`
+ * waren eine handgepflegte Abschrift davon (Regel 6). Was das gekostet
+ * hat, stand vier Runden lang im Bericht: die Gegenprobe „eine Spalte
+ * fehlt in der Profiltabelle" nimmt Violeta aus der Tabelle, und dann
+ * meldete der Rauchtest nicht etwa den fehlenden Zeugen, sondern
+ * „unbekannt durchgang:violeta" und brach ab, BEVOR irgendetwas lief. Die
+ * Nachzaehlung der Stuecke ist ein Werkzeugcheck; sie stand vor der
+ * Zusage, um die es geht, und hat sie zugedeckt. */
+const DURCHGANG_MS = { fiona: 31, lea: 18, stephan: 18, violeta: 17 };
 const STUECKE = [
   { teile: ['spielen', 'ablage'],   ms: 52 },
   { teile: ['schreiben'],           ms: 45 },
-  { teile: ['durchgang:fiona'],     ms: 31 },
   { teile: ['test'],                ms: 31 },
-  { teile: ['durchgang:stephan'],   ms: 18 },
-  { teile: ['durchgang:lea'],       ms: 18 },
-  { teile: ['durchgang:violeta'],   ms: 17 },
+  ...PROFIL_IDS.map(w => ({ teile: [`durchgang:${w}`], ms: DURCHGANG_MS[w] ?? 20 })),
   { teile: ['abzeichen'],           ms: 18 },
   { teile: ['umgekehrt'],           ms: 13 },
   { teile: ['ebene4'],              ms: 11 },

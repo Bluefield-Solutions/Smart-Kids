@@ -2471,16 +2471,31 @@ export const PROBEN = [
 
   /* --- S3: die Untergrenze ueberstimmt den Wunsch ---------------------
    *
-   * Die alte Zahl zurueck. Dann legt das Gitter auf dem Zielgeraet acht
-   * Spalten an statt neun, die 26 Buchstabenkarten fallen in vier Reihen,
-   * und jede ist 42 statt 62 Punkte hoch.
+   * Die alte Zahl zurueck. Nachgemessen (Q6), nicht abgeschrieben:
+   *
+   *                        gesund (56)          krank (72)
+   *   iPhone quer 844x390  9 Spalten, 88x64     UNVERAENDERT
+   *   iPhone SE quer 667   9 Spalten, 68x59     8 Spalten, 77x44
+   *
+   * Auf dem Zielgeraet tut der Eingriff also GAR NICHTS - dort ist genug
+   * Breite. Er wirkt auf dem kleinsten Geraet, und dort faellt die Karte
+   * von 59 auf 44 Punkte.
+   *
+   * DESHALB BEWIES DIESE PROBE VIER RUNDEN LANG NICHTS. Sie stand auf
+   * `--teil=0/5` (iPhone quer und Fenster schmal - beide unbetroffen), und
+   * sie erwartete „ein Aufkleber muss 44 messen": die feste Grenze im Tor
+   * lautet „unter 44", und 44 ist nicht unter 44. Ein Absturz um fuenfzehn
+   * Punkte, der genau auf dem letzten erlaubten Wert landet, war
+   * unsichtbar - Regel 2, eine absolute Grenze sieht keinen Rueckschritt.
+   *
+   * Erwartet wird jetzt der Rueckschritt selbst, gegen `tor/masse-stand.json`.
    */
   { n:'die Buchstabenkarten rutschen wieder zusammen', tor:'passt',
-    bauen:true, datei:V,
+    bauen:true, args:['--teil=1/5'], datei:V,
     such:'  --kleber-eng-min:56px}',
     ersatz:'  --kleber-eng-min:72px}',
     an:{ ...DIST, text:'--kleber-eng-min:72px' },
-    sagt:'ein Aufkleber muss 44 messen' },
+    sagt:'geschrumpft' },
 
   /* --- B3: die umgekehrte Frage --------------------------------------
    *

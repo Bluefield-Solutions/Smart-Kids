@@ -366,6 +366,19 @@ const SUCHE = () => {
       wer: Object.entries(wer).sort((a, b) => b[1] - a[1]).slice(0, 2)
         .map(([k, n]) => `${k} ${Math.round(n / farbe * 100)} %`).join(', ') });
   }
+  /* Und die kleinste Beispielkarte auf diesem Bildschirm.
+   *
+   * Nur `.aufkleber` im Vorlauf: das sind die Karten, die in einem Gitter
+   * stehen und zusammenrutschen koennen. Gemessen wird die KUERZESTE
+   * Seite, denn die faellt zuerst unter den Daumen. */
+  let kleber = null;
+  {
+    const k = [...document.querySelectorAll('.schirm.da .rollen.vorlauf .aufkleber')]
+      .map(e => e.getBoundingClientRect()).filter(b => b.width > 1 && b.height > 1);
+    if (k.length >= 4) kleber = { n: k.length,
+      pt: Math.round(Math.min(...k.map(b => Math.min(b.width, b.height)))) };
+  }
+
   /* WIEVIEL PASST NOCH? Der Wahlbildschirm ist eine Wand aus Kacheln, und
    * sie waechst mit jeder Ebene. Dass sie HEUTE passt, sagt das Tor schon;
    * was es nicht sagt, ist, wieviele noch dazukoennen.
@@ -408,7 +421,7 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, karte, bewacht, zeichen, wand };
+  return { raus, klein, zu, ueber, karte, bewacht, zeichen, wand, kleber };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -441,13 +454,28 @@ const KARTE_MIN = 0.92;
  * ganz in seine Kachel gehoert, und die naechste Kachelform koennte sie
  * brechen. */
 const ZEICHEN_AB = 6, ZEICHEN_ZU = 6;
-const zeichenZeilen = [], luftZeilen = [];
+const zeichenZeilen = [], luftZeilen = [], kleberZeilen = [];
 
-/* Der Stand der Kachelwände: was einmal hineinpasste, muss hineinpassen.
- * Eine Ratsche wie `tor/budget-stand.json`, kein Soll. */
-const WAND_DATEI = 'tor/wand-stand.json';
+/* Der Stand der MASSE: was einmal so gross war, darf nicht kleiner werden.
+ *
+ * Eine Ratsche wie `tor/budget-stand.json`, kein Soll. Zwei Sorten teilen
+ * sie sich, weil es dieselbe Frage ist - „ist hier etwas zusammengerutscht,
+ * ohne dass ein Soll verletzt waere?":
+ *
+ *   „… · Kacheln"        wieviele Kacheln eine Wand traegt (nachgezaehlt)
+ *   „… · Aufkleber pt"   die kuerzeste Seite der kleinsten Beispielkarte
+ *
+ * Die zweite Sorte kam aus einem Befund: die Gegenprobe „die
+ * Buchstabenkarten rutschen wieder zusammen" bewies nichts mehr. Der
+ * Eingriff wirkt naemlich weiterhin - auf dem iPhone SE quer fallen die
+ * 26 Buchstaben von neun Spalten auf acht und die Karte von 59 auf 44
+ * Punkte -, aber die feste Grenze im Tor lautet „unter 44", und 44 ist
+ * nicht unter 44. Ein Absturz um fuenfzehn Punkte, der auf dem letzten
+ * erlaubten Wert landet, ist unsichtbar. Regel 2, wieder einmal: eine
+ * absolute Grenze sieht keinen Rueckschritt. */
+const WAND_DATEI = 'tor/masse-stand.json';
 const NEU = process.argv.includes('--neu');
-const WAND_STAND = fs.existsSync(WAND_DATEI)
+const MASS_STAND = fs.existsSync(WAND_DATEI)
   ? JSON.parse(fs.readFileSync(WAND_DATEI, 'utf8')) : {};
 const wandNeu = {};
 
@@ -567,8 +595,8 @@ for (const g of MEINE) {
      * weiter passen. Wer absichtlich enger baut, bestaetigt mit
      * `npm run passt -- --neu`. */
     if (r.wand) {
-      const k = `${g.n} · ${name}`;
-      const war = WAND_STAND[k];
+      const k = `${g.n} · ${name} · Kacheln`;
+      const war = MASS_STAND[k];
       if (NEU) wandNeu[k] = r.wand.passt;
       else if (war !== undefined && r.wand.passt < war)
         meldungen.push(`${name}: die Wand trägt nur noch ${r.wand.passt} Kacheln statt `
@@ -577,6 +605,21 @@ for (const g of MEINE) {
       else if (war === undefined)
         meldungen.push(`${name}: HINWEIS diese Wand steht noch nicht in ${WAND_DATEI} `
           + `(${r.wand.passt} Kacheln) — `+ '`npm run passt -- --neu` trägt sie nach');
+    }
+    if (r.kleber) {
+      const k = `${g.n} · ${name} · Aufkleber pt`;
+      const war = MASS_STAND[k];
+      if (NEU) wandNeu[k] = r.kleber.pt;
+      else if (war !== undefined && r.kleber.pt < war)
+        meldungen.push(`${name}: die ${r.kleber.n} Beispielkarten sind auf `
+          + `${r.kleber.pt} pt geschrumpft (waren ${war}) — das Gitter ist `
+          + 'zusammengerutscht. War das Absicht, dann `npm run passt -- --neu`');
+      else if (war === undefined)
+        meldungen.push(`${name}: HINWEIS diese Beispielkarten stehen noch nicht in `
+          + `${WAND_DATEI} (${r.kleber.pt} pt) — `
+          + '`npm run passt -- --neu` trägt sie nach');
+      kleberZeilen.push(`      ${name.padEnd(22)} ${String(r.kleber.n).padStart(2)} Karten · `
+        + `kürzeste Seite ${r.kleber.pt} pt`);
     }
     /* Und ein HINWEIS, kein Fehler: dass es heute passt, hat das Tor oben
      * schon geprueft. Hier steht, wieviel noch dazukann - und zwar bevor
@@ -781,6 +824,10 @@ if (luftZeilen.length) {
   console.log('    Wieviel passt in die Kachelwände (nachgezählt, nicht gerechnet):');
   [...new Set(luftZeilen)].sort().forEach(z => console.log(z));
 }
+if (kleberZeilen.length) {
+  console.log('    Die Beispielkarten im Vorlauf:');
+  [...new Set(kleberZeilen)].sort().forEach(z => console.log(z));
+}
 if (zeichenZeilen.length) {
   console.log(`    Die Kachelbilder (erlaubt: abgeschnitten ${ZEICHEN_AB} %, `
     + `verdeckt ${ZEICHEN_ZU} %):`);
@@ -802,7 +849,7 @@ console.log(`    ${MEINE.length} Größen × ${gesehen / MEINE.length} Bildschir
 if (NEU) {
   /* Nur der EIGENE Teillauf wird geschrieben, der Rest bleibt stehen -
    * sonst loescht ein `--teil=0/5 --neu` die vier anderen Fuenftel. */
-  const alles = { ...WAND_STAND, ...wandNeu };
+  const alles = { ...MASS_STAND, ...wandNeu };
   fs.writeFileSync(WAND_DATEI, JSON.stringify(Object.fromEntries(
     Object.entries(alles).sort(([a], [b]) => a.localeCompare(b))), null, 2) + '\n');
   console.log(`\n  ${Object.keys(wandNeu).length} Wände in ${WAND_DATEI} festgehalten `

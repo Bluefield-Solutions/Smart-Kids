@@ -7476,3 +7476,63 @@ vierte Welt passt auf dem iPhone nicht — womit auch die andere naheliegende Id
 (Erdkunde in zwei Welten teilen) gemessen erledigt ist, bevor sie jemand baut.
 
 `npm run tor` grün in 128,1 s. 218 Gegenproben.
+
+## Q6 — die beiden letzten Proben, die nichts bewiesen
+
+Aus dem Probenlauf blieben zwei übrig, die seit vier Runden im Bericht standen.
+Beide hatten dieselbe Form: **das Tor merkt etwas, aber nicht das, was die Probe
+zusagt.**
+
+### „die Buchstabenkarten rutschen wieder zusammen"
+
+Der Eingriff setzt `--kleber-eng-min` von 56 auf 72 px zurück. Nachgemessen,
+statt den alten Kommentar zu glauben:
+
+| | gesund (56) | krank (72) |
+|---|---|---|
+| iPhone quer 844 × 390 | 9 Spalten, 88 × 64 | **unverändert** |
+| iPhone SE quer 667 × 375 | 9 Spalten, 68 × **59** | 8 Spalten, 77 × **44** |
+
+Zwei Gründe, warum sie nichts bewies, und beide waren nötig:
+
+1. **Sie fuhr die falsche Größe.** Sie stand auf `--teil=0/5`, also iPhone quer
+   und Fenster schmal — auf beiden tut der Eingriff *gar nichts*, dort ist genug
+   Breite. Er wirkt auf dem **kleinsten** Gerät.
+2. **Und selbst dort war er unsichtbar.** Die Karte fällt von 59 auf 44 Punkte.
+   Die feste Grenze im Tor lautet „unter 44", und 44 ist nicht unter 44. Ein
+   Absturz um fünfzehn Punkte, der genau auf dem letzten erlaubten Wert landet,
+   ist für eine absolute Grenze unsichtbar — **Regel 2, wieder einmal.**
+
+Die Ratsche aus Q5 hat deshalb eine zweite Sorte bekommen: neben „wieviele
+Kacheln trägt diese Wand" steht jetzt „wie kurz ist die kürzeste Seite der
+kleinsten Beispielkarte". Die Datei heißt entsprechend `tor/masse-stand.json`
+statt `wand-stand.json` und hält 70 Einträge. Mit dem Eingriff meldet `passt`
+jetzt: *„die 26 Beispielkarten sind auf 44 pt geschrumpft (waren 59) — das
+Gitter ist zusammengerutscht."*
+
+### „eine Spalte fehlt in der Profiltabelle"
+
+Der Eingriff nimmt Violeta aus der Profiltabelle im Backlog. Der Rauchtest wurde
+rot — aber mit `smoke: die Stücke für --teil decken die Abschnitte nicht:
+unbekannt durchgang:violeta`, und zwar **bevor irgendetwas lief**.
+
+Der Grund: die Lastverteilung für `--teil` führte vier Zeilen `durchgang:fiona`
+bis `durchgang:violeta` — eine **handgepflegte Abschrift** der Profiltabelle.
+Fällt Violeta aus der Tabelle, passt die Abschrift nicht mehr, und die
+Nachzählung der Stücke bricht ab. Ein **Werkzeugcheck stand vor der Zusage, um
+die es geht, und hat sie zugedeckt.**
+
+Die Liste steht dort jetzt nicht mehr; nur noch die gemessenen Dauern je Profil,
+und wer fehlt, bekommt den Mittelwert. Die Stücke leiten sich aus der Tabelle
+ab — Regel 6, „was zweimal dasteht, veraltet einmal". Mit dem Eingriff meldet
+der Rauchtest jetzt beides, was er soll:
+
+- *die App kennt 4 Profile, die Tabelle im Backlog nennt 3 — eine fehlende
+  Spalte nimmt jedem Tor ein Profil, ohne dass eines rot wird*
+- *4 Löschknöpfe für 3 Profile*
+
+Und nebenbei: wer künftig ein Profil **hinzufügt**, muss die Verteilung nicht
+mehr mitpflegen. Sie wächst mit.
+
+`npm run tor` grün in 131,2 s. 218 Gegenproben — und damit steht zum ersten Mal
+keine mehr als „beweist nichts" im Bericht.
