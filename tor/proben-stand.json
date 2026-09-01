@@ -654,6 +654,11 @@
       "zeit": "2026-09-01",
       "s": 23
     },
+    "das schmale Fenster bekommt wieder zwei Spalten": {
+      "commit": "d1d60822b52b664f8f47f8a4945e48a1b738b410",
+      "zeit": "2026-09-01",
+      "s": 77
+    },
     "das Kachelbild liegt wieder unter dem Knopf": {
       "commit": "eda250174725d1b3f4a45adef661626451edefae",
       "zeit": "2026-09-01",
