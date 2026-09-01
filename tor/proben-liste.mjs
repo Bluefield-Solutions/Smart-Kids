@@ -1474,7 +1474,10 @@ export const PROBEN = [
    *
    * Auf dem Zielgeraet sind das 17 % der Bildschirmhoehe, und der ganze
    * Block darunter steht dann wieder unter der Mitte. */
-  { n:'der leere Kopf nimmt wieder Platz weg', tor:'ansicht', args:['--nur=quer-profile,quer-welten'], bauen:true, datei:D,
+  { n:'der leere Kopf nimmt wieder Platz weg', tor:'ansicht', // Endbildschirm und Pause sind die beiden, die `kopf({})` rufen - das
+    // steht ueber der Funktion, und der erste Anlauf hat es trotzdem auf
+    // Profil- und Weltenwahl geraten. Die haben eine Kopfzeile mit Inhalt.
+    args:['--nur=quer-ende,quer-pause'], bauen:true, datei:D,
     such:'  (links || mitte || rechts)\n  ?',
     ersatz:'  true\n  ?',
     an:{ ...DIST, fehlt:'(links||mitte||rechts)' },

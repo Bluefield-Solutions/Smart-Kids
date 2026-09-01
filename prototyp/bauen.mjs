@@ -45,7 +45,7 @@ const kont = new Map(I.KONTINENTE.map(k=>[k.id,k]));
  *  `tools/backen-laender.mjs`). Die Reihenfolge ist die der Kacheln in der
  *  Ebenenwahl; Mittelamerika steht neben Nordamerika, wo es hingehoert. */
 const KACHELFOLGE = ['europa', 'afrika', 'asien',
-                    'nordamerika', 'mittelamerika', 'suedamerika'];
+                    'nordamerika', 'mittelamerika', 'suedamerika', 'australien'];
 /* Die Umrisse kommen aus dem ERZEUGTEN Verzeichnis, die Reihenfolge von
  * hier. Wer eine Karte backt und hier zu nennen vergisst, faellt sofort
  * auf - statt eine Kachel zu bekommen, die niemand sieht. */

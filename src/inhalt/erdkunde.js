@@ -221,6 +221,36 @@ export const LAENDER = {
     { a3:'CRI', name:'Costa Rica', rang:8, aliasse:['Kostarika'], aussprache:['costa rica','kostarika'] },
     { a3:'PAN', name:'Panama', rang:9, aussprache:['panama','pannama'] },
   ],
+  /* --- Ozeanien: drei, und mehr geht nicht ------------------------ *
+   *
+   * Gemessen an den Rohdaten (Flaeche in Quadratgrad, Natural Earth):
+   *
+   *   Australien        695,9
+   *   Papua-Neuguinea    38,0
+   *   Neuseeland         29,1
+   *   ------------------------ hier faellt es ab
+   *   Salomonen           2,2
+   *   Neukaledonien       1,6
+   *   Fidschi             1,6
+   *
+   * Australien ist achtzehnmal Papua-Neuguinea und dreihundertmal
+   * Fidschi. Auf einer Karte, die Australien zeigt, ist alles ab den
+   * Salomonen ein Punkt - dieselbe Lage wie in Mittelamerika, wo neun
+   * Laender eine eigene Karte brauchten. Hier gibt es diesen Ausweg
+   * nicht: die drei grossen liegen zu weit auseinander, um sie
+   * herauszuschneiden.
+   *
+   * Also drei. Das ist kurz, aber nicht zu kurz - Nordamerika hatte bis
+   * Groenland genauso viele, und `ziehen` verlangt, dass jedes Gebiet zu
+   * treffen ist. Drei treffbare sind besser als sechs, von denen die
+   * Haelfte ein Punkt ist. */
+  australien:[
+    { a3:'AUS', name:'Australien', rang:1, aussprache:['australien','austraalien'] },
+    { a3:'PNG', name:'Papua-Neuguinea', rang:2, aliasse:['Papua Neuguinea','Neuguinea'],
+      aussprache:['papua-neuguinea','papua neuguinea','neuguinea'] },
+    { a3:'NZL', name:'Neuseeland', rang:3, aliasse:['New Zealand'],
+      aussprache:['neuseeland','neuseland'] },
+  ],
   suedamerika:[
     { a3:'BRA', name:'Brasilien', rang:1, aussprache:['brasilien','brasiljen'] },
     { a3:'COL', name:'Kolumbien', rang:2, aliasse:['Colombia'], aussprache:['kolumbien','kolumbjen'] },

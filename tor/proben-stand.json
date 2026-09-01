@@ -165,24 +165,24 @@
       "s": 12
     },
     "ein Knopf ist breiter als das Fenster": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 307
+      "s": 100
     },
     "die Bühne beachtet den sicheren Bereich nicht": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 171
+      "s": 100
     },
     "zwei Kacheln liegen aufeinander": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 170
+      "s": 46
     },
     "eine Aufkleberkarte liegt außerhalb des Fensters": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 174
+      "s": 46
     },
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -230,9 +230,9 @@
       "s": 21
     },
     "die Entwürfe holen ihre Schrift aus dem Netz": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 297
+      "s": 47
     },
     "ein langes Warten bleibt stumm": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -360,9 +360,9 @@
       "s": 7
     },
     "die Hauptstädte-Ebene bekommt den falschen Rahmen": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 152
+      "s": 23
     },
     "Fiona bekommt die Hauptstädte Europas": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -385,9 +385,9 @@
       "s": 78
     },
     "die Übersicht im Elternbereich fällt weg": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 152
+      "s": 44
     },
     "die Beschriftung fällt immer gleich aus": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -395,9 +395,9 @@
       "s": 8
     },
     "die Siegsterne kommen bei den Eltern zurück": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 159
+      "s": 37
     },
     "ein Schlüssel fehlt im kindlichen Ton": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -420,9 +420,9 @@
       "s": 29
     },
     "die Beispielkarten verlieren ihre Form": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 167
+      "s": 31
     },
     "Aufkleber fallen wieder aus dem Buch": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -547,22 +547,22 @@
     "der leere Kopf nimmt wieder Platz weg": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
       "zeit": "2026-09-01",
-      "s": 164
+      "s": 21
     },
     "die Pause warnt nicht mehr vor „von vorne\"": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 161
+      "s": 33
     },
     "der Vorlauf verteilt die Karten wieder auf acht Spuren": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 151
+      "s": 26
     },
     "die Beispielkarten füllen das Band nicht mehr": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 149
+      "s": 15
     },
     "die Diphthonge verschwinden wieder": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -685,9 +685,9 @@
       "s": 61
     },
     "die Karte wechselt die Farbe": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 170
+      "s": 24
     },
     "Grönland ist wieder nur Umgebung": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
@@ -775,9 +775,9 @@
       "s": 79
     },
     "auf dem Zielgerät verschwindet der Kachelbalken": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
+      "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
       "zeit": "2026-09-01",
-      "s": 141
+      "s": 16
     },
     "der Rundungsrest fällt wieder auf die letzte Sorte": {
       "commit": "6e93c02e997527171a3d657ba855cbe139351df8",

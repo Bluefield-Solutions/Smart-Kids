@@ -108,6 +108,12 @@ const EBENEN = [
     dazu:'South America', maske:'/tmp/mittelamerika-maske.json',
     projektion:'kegel' },
   { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal' },
+  /* Ozeanien. Der Erdteil heisst in den Rohdaten „Oceania", die Kennung
+   * hier `australien` - so heisst auch der Kontinent auf der Weltkarte,
+   * und zwei Namen fuer dasselbe Gebiet waeren eine Stelle mehr, die
+   * veraltet. Azimutal wie Afrika und Suedamerika: der Erdteil liegt um
+   * keinen Breitenkreis herum, sondern um einen Punkt. */
+  { id:'australien', name:'Ozeanien', ne:'Oceania', projektion:'azimutal' },
 ].map(k => ({ ...k, ziele: zieleAus(k.id) }));
 
 const roh = rohLesen('ne_10m_admin_0_countries');
