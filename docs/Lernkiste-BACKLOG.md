@@ -179,7 +179,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
 | 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 | 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 7 | **Q1** Noch DREI Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
+| 7 | **Q1** Vier Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
 | 8 | **Q2** 187 von 207 Nachweisen sind überholt | nur ich | mittel | klein | 19 min Rechenzeit |
 | 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
 | 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
@@ -508,6 +508,10 @@ weil jede eine eigene Untersuchung **am Tor** ist, nicht am Läufer:
   *Buchstabe* angenommen"; das Tor sagt „als *Zeichen*", weil dieselbe
   Zeile für Buchstaben und Ziffern gilt. Drei Wörter.
 - **eine falsche Antwort bleibt stumm** — der Suchtext trifft nicht mehr.
+- **die Buchstabenkarten rutschen wieder zusammen** — `passt` bleibt
+  **grün**, obwohl `--kleber-eng-min` von 56 auf 72 px steht. Gefunden am
+  01.09.2026 beim Nachfahren der Schreibproben; gehört zur selben Sorte
+  wie die drei darüber.
 
 *Abnahme:* jede schlägt an, und zwar mit **ihrer** Meldung.
 

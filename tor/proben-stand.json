@@ -760,17 +760,22 @@
       "s": 20
     },
     "die Buchstabenerkennung nimmt alles an": {
-      "commit": "6b7676c330b71f760c1ca1db242f86294cfe1fde",
+      "commit": "8eb1c325004263abb9c34793ae7d2ef8ab797459",
       "zeit": "2026-09-01",
       "s": 13
     },
+    "die Sieben verliert ihre Form mit Querstrich": {
+      "commit": "8eb1c325004263abb9c34793ae7d2ef8ab797459",
+      "zeit": "2026-09-01",
+      "s": 6
+    },
     "der Anfang eines Zuges darf nicht mehr rutschen": {
-      "commit": "66dd1c0a1f57288e74580693c3ab33c90d799a03",
+      "commit": "8eb1c325004263abb9c34793ae7d2ef8ab797459",
       "zeit": "2026-09-01",
       "s": 6
     },
     "ein Zug zuviel kostet wieder fast alles": {
-      "commit": "6b7676c330b71f760c1ca1db242f86294cfe1fde",
+      "commit": "8eb1c325004263abb9c34793ae7d2ef8ab797459",
       "zeit": "2026-09-01",
       "s": 6
     },
@@ -942,7 +947,7 @@
     "die Buchstabenkarten rutschen wieder zusammen": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
       "zeit": "2026-08-31",
-      "s": 116
+      "s": 115
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
       "commit": "34f5f80797c3bdd3b5b8ab4139a27b6ed9c9ca5f",
