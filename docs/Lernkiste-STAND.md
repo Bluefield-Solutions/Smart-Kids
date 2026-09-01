@@ -7678,3 +7678,60 @@ gewollt; die Grenze liegt bei 400 KB.
   beweist so wenig wie ein Tor, das nichts meldet.
 
 `npm run tor` grün in 177,2 s.
+
+## Q9 — die letzte Reihe steht in der Mitte
+
+Offen war: „die zweite Reihe endet nach drei Kacheln — messbar als
+Ausgeglichenheit der Reihen." Gemessen, und die Vermutung stimmte nur halb.
+
+### Was wirklich schiefstand
+
+Die Aufteilung war nicht das Problem. Das war die **Ausrichtung**:
+
+| | Reihen | letzte Reihe **aus der Mitte** |
+|---|---|---|
+| iPhone quer | 6 + 4 | **138 pt** |
+| iPad quer · Fenster breit | 4 + 4 + 2 | **278 pt** |
+| iPad hoch · Fenster schmal | 3 + 3 + 3 + **1** | **267 / 227 pt** |
+| iPhone SE quer · iPhone hoch | 5 + 5 · 2 × 5 | 0 pt |
+
+Ein Raster füllt seine Reihen von links; bleibt die letzte halb leer, klebt sie
+am linken Rand. Auf zwei Größen stand dort eine **einzelne Kachel ganz außen** —
+das sieht aus wie ein Fehler und nicht wie das Ende einer Liste. Und das war
+**nicht neu**: die alte, flache Kachelform hatte dasselbe. Ich hatte es der neuen
+zugeschrieben.
+
+Ein Raster kann das nicht besser: seine Spuren stehen fest, auch die leeren. Ein
+**umbrechender Fluss** kann es — er zentriert jede Reihe, auch die letzte. Alle
+sieben Größen stehen jetzt auf **0 Punkten aus der Mitte**, und beide Telefone
+teilen sich zu 5 + 5 statt 6 + 4.
+
+Bezahlt ist es damit, dass die Kacheln eine feste Breite haben statt sich zu
+dehnen: an den Reihenenden bleibt Luft. Die ist hier richtig — gleich breite
+Kacheln lesen sich besser als drei gedehnte und eine schmale.
+
+### Der Prüfer hat sofort einen zweiten Fall gefunden
+
+Die Zusage steht jetzt in `passt`: **keine letzte Reihe weiter als 2 Punkte aus
+der Mitte.** Beim ersten Lauf meldete sie nicht nur die Ebenenwahl, sondern auch
+die **Profilwahl** — im schmalen Fenster stand Violeta als vierte Kachel 228
+Punkte weit außen, ganz allein. Denselben Fehler, auf einem Bildschirm, über den
+niemand gesprochen hatte.
+
+### Drei Nachjustierungen, die die Tore erzwungen haben
+
+- **Die Weltenwahl bleibt ein Raster.** Ihre zwei bis drei großen Kacheln dehnen
+  sich über die Breite und haben eine Mindesthöhe; im Fluss standen sie in ihrer
+  Eigenbreite, brachen auf dem Telefon um und liefen 104 Punkte unten heraus. Und
+  das Problem, das der Fluss löst, hat sie gar nicht: drei Kacheln in einer Reihe
+  haben keine halb leere letzte.
+- **160 statt 170 Punkte für die Profilkacheln.** Auf dem Zielgerät mit Leiste
+  bleiben von 844 Punkten 726, und vier Kacheln zu 170 brauchen samt Abstand 728.
+  Zwei Punkte — und Violeta stand in einer zweiten Reihe im Wischstreifen. Solange
+  sich die Kacheln dehnten, fiel das nicht auf.
+- **Eine eigene Stufe für das kleinste Gerät.** Auf 667 Punkten passen bei 134er
+  Kacheln nur vier je Reihe, das wären drei Reihen, und drei hohe Kacheln laufen
+  aus dem Bild. Dort sind sie 118 breit und der Name eine Schriftstufe kleiner,
+  weil „Mittelamerika" sonst umbricht.
+
+`npm run tor` grün in 177,2 s.

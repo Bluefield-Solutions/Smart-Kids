@@ -388,13 +388,28 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    und zwei Reihen; dann steht jeder Name auf einer Zeile.
    `auto-fit` rechnet das je Bildschirm selbst aus - auf dem Telefon
    hochkant wird daraus eine Spalte. */
-.wahl{display:grid;gap:var(--r4);justify-content:center;width:100%;max-width:1100px;
-  grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+/* Jede Kachelwand bricht ZENTRIERT um (Q9).
+ *
+ * Ein Raster fuellt seine Reihen von links; bleibt die letzte halb leer,
+ * klebt sie am linken Rand. Gemessen stand die letzte Reihe auf fuenf von
+ * sieben Groessen 138 bis 278 Punkte aus der Mitte - und die Profilwahl
+ * setzte im schmalen Fenster ihre vierte Kachel 228 Punkte weit nach
+ * aussen, ganz allein. Das sieht aus wie ein Fehler und nicht wie das Ende
+ * einer Liste. Ein Raster kann das nicht: seine Spuren stehen fest, auch
+ * die leeren. Ein umbrechender Fluss zentriert jede Reihe, auch die letzte.
+ *
+ * Bezahlt wird es damit, dass die Kacheln eine feste Breite haben statt
+ * sich zu dehnen: an den Reihenenden bleibt Luft. Die ist hier richtig -
+ * gleich breite Kacheln lesen sich besser als drei gedehnte und eine
+ * schmale. `max-width:100%` haelt sie auf dem Telefon hochkant im Bild. */
+.wahl{display:flex;flex-wrap:wrap;gap:var(--r4);justify-content:center;
+  align-content:flex-start;width:100%;max-width:1100px}
+.wahl>*{flex:0 1 240px;max-width:100%}
 /* Kurze Namen brauchen keine 240 Punkte. Die drei Stadtstaaten heissen
    "Berlin", "Hamburg", "Bremen" - mit dem grossen Mass rutschten sie in
    zwei Reihen und schoben den "Verstanden"-Knopf aus dem Bild. Ein Mass
    fuer alle waere hier das Bequeme, nicht das Richtige. */
-.wahl.eng{grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr))}
+.wahl.eng>*{flex-basis:150px}
 /* Ein Fenster, das fuer DREI 240er-Spalten zu schmal ist (Q5).
  *
  * Gemessen, indem Kacheln dazugelegt wurden, bis es aus dem Bild lief:
@@ -418,7 +433,8 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * gilt der eigene, kleinere Satz, und zwei Regeln, die sich um dieselbe
  * Zahl streiten, veralten getrennt. */
 @media (min-height:441px) and (max-width:780px){
-  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+  .wahl>*{flex-basis:200px}
+  .wahl.ebenen>*{flex-basis:200px}
   .kachel .ueber{display:none}
   .kachel .name{font-size:var(--s1)}
 }
@@ -441,7 +457,26 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * Kachelnamen fielen von ihren 4,7 auf 2,33:1. Zwei Tore, zwei Seiten
  * derselben Kachel - und das schmalere Mass war die schlechtere Antwort,
  * obwohl es die naheliegende war. */
-.wahl.ebenen{gap:var(--r3)}
+/* Die Ebenenwahl bricht ZENTRIERT um, nicht linksbuendig (Q9).
+ *
+ * Ein Raster fuellt seine Reihen von links; bleibt die letzte halb leer,
+ * klebt sie am linken Rand. Gemessen war die letzte Reihe auf fuenf von
+ * sieben Groessen 138 bis 278 Punkte aus der Mitte - auf dem iPad hoch und
+ * im schmalen Fenster stand dort eine EINZELNE Kachel ganz aussen, und das
+ * sieht aus wie ein Fehler und nicht wie das Ende einer Liste.
+ *
+ * Ein Raster kann das nicht: seine Spuren stehen fest, auch die leeren.
+ * Ein umbrechender Fluss kann es - er zentriert jede Reihe, auch die
+ * letzte. Bezahlt wird es damit, dass die Kacheln eine feste Breite haben
+ * statt sich zu dehnen; auf breiten Schirmen bleibt an den Reihenenden
+ * Luft, und die ist hier richtig: zwoelf gleich breite Kacheln lesen sich
+ * besser als acht gedehnte und vier schmale.
+ *
+ * Die Breiten sind dieselben wie vorher, nur als Flussmass statt als
+ * Spurenmass. */
+.wahl.ebenen{gap:var(--r3);display:flex;flex-wrap:wrap;
+  justify-content:center;align-content:flex-start}
+.wahl.ebenen>*{flex:0 0 240px;max-width:100%}
 /* ---- Die Kachelsprache (R2, Fassung „B · Bild" auf Weiss) -------------
    Auf weissem Grund traegt nicht mehr die Flaeche, sondern der RAND: 26 %
    Fuellung aus dem eigenen Ton, 52 % Rand daraus. Und jede Kachel zeigt
@@ -556,7 +591,15 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Die Fachwelten (D4). Zwei grosse Karten statt neun Kacheln: das Kind
    waehlt erst das Fach. Sie duerfen breiter sein als eine Ebenenkachel -
    es sind zwei, und sie sollen unverwechselbar sein. */
-.wahl.weltwahl{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
+/* Die WELTENWAHL bleibt ein Raster.
+   Sie traegt zwei bis drei grosse Kacheln, die sich ueber die Breite
+   dehnen und eine Mindesthoehe haben - im Fluss stehen sie in ihrer
+   Eigenbreite, brechen auf dem Telefon in zwei Reihen um und laufen unten
+   heraus (gemessen: 104 Punkte). Und das Problem, das der Fluss loest,
+   hat sie gar nicht: bei drei Kacheln in einer Reihe gibt es keine halb
+   leere letzte. */
+.wahl.weltwahl{display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
   max-width:760px}
 /* Seit der dritten Welt (N2a) sind es bei Fiona DREI Karten, bei Lea und
    den Eltern zwei. Mit 260 Punkten Mindestbreite passten drei nicht mehr
@@ -1543,11 +1586,24 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Ebene, die man nicht erreicht, traegt gar nichts. */
   .kachel .ueber{display:none}
   .kachel .name{font-size:var(--s1)}
-  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr))}
+  /* 160 statt 170: auf dem Zielgeraet MIT Leiste bleiben von 844 Punkten
+     726, und vier Profilkacheln zu 170 brauchen samt Abstand 728. Zwei
+     Punkte, und Violeta stand in einer zweiten Reihe im Wischstreifen.
+     Seit die Wand ein Fluss ist, dehnen sich die Kacheln nicht mehr auf
+     die Reihe - die Breite muss also von sich aus passen. */
+  .wahl>*{flex-basis:160px}
   /* Fuenf je Reihe, damit neun Ebenen in ZWEI Reihen stehen - daran haengt
-     die Hoehe des Kachelbildes (siehe oben). 120 Punkte, weil das schmalste
-     Fenster hier 667 misst und fuenf Spalten samt Abstand hineinpassen. */
-  .wahl.ebenen{grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr))}
+     die Hoehe des Kachelbildes (siehe oben). 134 Punkte, weil bei weniger
+     „Mittelamerika" umbricht und bei mehr nur vier je Reihe passen. */
+  .wahl.ebenen>*{flex-basis:134px}
+  /* Eine Stufe schmaler fuer das KLEINSTE Geraet (iPhone SE quer, 667):
+     dort passen bei 134 nur vier je Reihe, das waeren drei Reihen, und
+     drei hohe Kacheln laufen aus dem Bild. Weil „Mittelamerika" bei 118
+     umbricht, wird der Name dort eine Stufe kleiner. */
+  @media (max-width:700px){
+    .wahl.ebenen>*{flex-basis:118px}
+    .wahl.ebenen .kachel .name{font-size:var(--s-klein)}
+  }
   /* Die letzte Kachelreihe lag 3 Punkte im Streifen des iPhone. Die vier
      Punkte kommen aus dem Abstand ZWISCHEN den Kacheln, nicht aus der
      Auskunft in ihnen. */

@@ -441,7 +441,24 @@ const SUCHE = () => {
       for (const k of kopien) k.remove();
       const oben = [...new Set([...w.children]
         .map(e => Math.round(e.getBoundingClientRect().top)))].sort((a, b) => a - b);
+      /* Steht die LETZTE Reihe mittig?
+       *
+       * Ein Raster fuellt seine Reihen von links; bleibt die letzte halb
+       * leer, klebt sie am linken Rand. Gemessen war sie auf fuenf von
+       * sieben Groessen 138 bis 278 Punkte aus der Mitte - auf zwei davon
+       * stand dort eine EINZELNE Kachel ganz aussen. Das sieht aus wie ein
+       * Fehler und nicht wie das Ende einer Liste.
+       *
+       * Zwei Punkte Nachsicht, nicht null: eine ungerade Restbreite teilt
+       * sich nicht ohne Rest, und ein halber Bildpunkt ist kein Befund. */
+      const kk = [...w.children].map(e => e.getBoundingClientRect());
+      const letzteReihe = kk.filter(x => Math.round(x.top) === oben[oben.length - 1]);
+      const mitteWand = (Math.min(...kk.map(x => x.left))
+                       + Math.max(...kk.map(x => x.right))) / 2;
+      const mitteLetzte = (Math.min(...letzteReihe.map(x => x.left))
+                         + Math.max(...letzteReihe.map(x => x.right))) / 2;
       wand = { heute, passt, mehr: passt - heute, gedeckelt: passt - heute >= 8,
+               versatz: Math.round(Math.abs(mitteWand - mitteLetzte)),
                jeReihe: [...w.children].filter(e =>
                  Math.round(e.getBoundingClientRect().top) === oben[0]).length,
                reihen: oben.length };
@@ -608,6 +625,10 @@ for (const g of MEINE) {
         + `${(r.karte.anteil * 100).toFixed(0)} % ihres Kastens `
         + `(Kasten ${r.karte.kasten.join('×')}, gezeichnet ${r.karte.gez.join('×')}) — `
         + `daneben steht ein Loch, das niemand nutzt`);
+    if (r.wand && r.wand.versatz > 2)
+      meldungen.push(`${name}: die letzte Reihe steht ${r.wand.versatz} px aus der Mitte `
+        + '— eine halb leere Reihe am linken Rand sieht aus wie ein Fehler, '
+        + 'nicht wie das Ende einer Liste');
     /* Die RATSCHE: eine Wand darf keinen Platz verlieren.
      *
      * Ohne sie war die Kapazitaet nur eine Zahl im Lauf. Die Gegenprobe
@@ -683,7 +704,8 @@ for (const g of MEINE) {
         + `da, ${r.wand.passt} passen. Die ${r.wand.passt + 1}. läuft hier aus dem Bild`);
     if (r.wand) luftZeilen.push(`      ${name.padEnd(22)} `
       + `${String(r.wand.heute).padStart(2)} Kacheln, ${r.wand.jeReihe} je Reihe, `
-      + `${r.wand.reihen} Reihen · Platz für ${r.wand.gedeckelt ? '≥ ' : ''}${r.wand.passt}`);
+      + `${r.wand.reihen} Reihen · Platz für ${r.wand.gedeckelt ? '≥ ' : ''}${r.wand.passt}`
+      + ` · letzte Reihe ${r.wand.versatz} px aus der Mitte`);
     /* Die Wasserzeichen. Erst nur ansagen, was gemessen wurde - die
      * Schwellen stehen weiter unten und wurden an diesen Zahlen gesetzt,
      * nicht umgekehrt. */

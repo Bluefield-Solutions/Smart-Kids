@@ -1739,7 +1739,10 @@ export const PROBEN = [
     // aendert (bei 390 Punkten Breite ist es so oder so eine Spalte).
     // „Beweist nichts" hiess hier: am falschen Geraet gemessen.
     args:['--teil=0/5'], datei:V,
-    such:'  .wahl{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}\n'
+    // Seit Q9 ist die Wand ein Fluss, kein Raster: die Breite steht als
+    // `flex-basis`, nicht als Spurenmass. Der Eingriff nimmt sie heraus.
+    such:'  .wahl>*{flex-basis:200px}\n'
+       + '  .wahl.ebenen>*{flex-basis:200px}\n'
        + '  .kachel .ueber{display:none}\n'
        + '  .kachel .name{font-size:var(--s1)}\n',
     ersatz:'',
