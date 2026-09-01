@@ -45,7 +45,7 @@ const GRENZE = 40;
  * alles, und die Kette ruft es ohne Argument auf - eine Abkuerzung, die man
  * versehentlich nimmt, waere keine.
  */
-const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest', 'treffer'];
+const ABSCHNITTE = ['nachsicht', 'oben', 'meer', 'anzeige', 'tippen', 'rest', 'treffer', 'lupe'];
 const gewaehlt = (process.argv.find(a => a.startsWith('--nur=')) || '').slice(6)
   .split(',').filter(Boolean);
 if (gewaehlt.some(a => !ABSCHNITTE.includes(a))) {
@@ -689,6 +689,90 @@ if (laeuft('treffer')) {
         + '— entweder ist die Karte besser geworden, oder die Messung greift nicht mehr. '
         + 'Mit `-- --neu` festhalten, wenn es Absicht war.');
   }
+}
+
+/* ====================================================== Die Lupe (M4z) ===
+ *
+ * Die Nadeln loesen das ANTIPPEN eines winzigen Landes. Sie loesen das
+ * ANSEHEN nicht - gemeldet vom Geraet: „man hat keine Chance zu sehen, um
+ * welches Land es sich handelt". Dafuer gibt es keinen Trick, sondern nur
+ * einen Massstab.
+ *
+ * Geprueft wird an der engsten Karte, die es gibt, und an dem, was ein
+ * Kind wirklich tut: dreimal auf +.
+ */
+if (laeuft('lupe')) {
+  const ctx = await b.newContext({ viewport:{ width:844, height:390 }, deviceScaleFactor:2 });
+  const q = await ctx.newPage();
+  await q.goto(`http://localhost:${port}/?flott`);
+  await q.waitForSelector('[data-profil="stephan"]');
+  await q.click('[data-profil="stephan"]');
+  await zurEbenenwahl(q, 'laender:mittelamerika');
+  await q.click('[data-ebene="laender:mittelamerika"]');
+  await q.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout:25000 });
+  if (await q.$('.schirm.da #los')) await durchVorlauf(q);
+  await q.waitForSelector('.schirm.da .karte svg', { timeout:25000 });
+  await q.waitForTimeout(600);
+
+  const lies = () => q.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const kasten = s.querySelector('.karte');
+    const kb = kasten.getBoundingClientRect();
+    const z = s.querySelector('path.geb.ziel');
+    const zb = z ? z.getBoundingClientRect() : null;
+    const knopf = (id) => { const e = s.querySelector('#' + id);
+      if (!e) return null; const r = e.getBoundingClientRect();
+      return { b:+r.width.toFixed(1), h:+r.height.toFixed(1),
+               sichtbar: r.width > 0 && getComputedStyle(e).display !== 'none' }; };
+    return {
+      lupe: +(kasten.dataset.lupe || 1),
+      ziel: z ? z.dataset.id : null,
+      gross: zb ? +Math.max(zb.width, zb.height).toFixed(1) : 0,
+      imBild: !!zb && zb.left >= kb.left - 1 && zb.right <= kb.right + 1
+              && zb.top >= kb.top - 1 && zb.bottom <= kb.bottom + 1,
+      plus: knopf('lupePlus'), minus: knopf('lupeMinus'), ganz: knopf('lupeGanz'),
+    };
+  });
+
+  const vorher = await lies();
+  // Die Knoepfe muessen mit dem Daumen zu treffen sein - dieselbe Grenze
+  // wie ueberall (44), und dieselbe Rechnung wie in `beruehrung`.
+  for (const [name, kn] of [['+', vorher.plus], ['−', vorher.minus]]) {
+    if (!kn || !kn.sichtbar) { fehler.push(`der Lupenknopf „${name}" steht nicht da`); continue; }
+    if (kn.b < 44 || kn.h < 44) fehler.push(
+      `der Lupenknopf „${name}" misst ${kn.b}×${kn.h} pt — unter der Fingergrenze von 44`);
+  }
+  // „Ganze Karte" gehoert NICHT hierher, solange nichts zu widerrufen ist.
+  if (vorher.ganz && vorher.ganz.sichtbar) fehler.push(
+    'der Knopf „ganze Karte" steht schon da, bevor gezoomt wurde — '
+    + 'ein Knopf, der nichts zurücknimmt, ist ein Hindernis');
+
+  for (let i = 0; i < 3; i++) { await q.click('#lupePlus'); await q.waitForTimeout(220); }
+  const nachher = await lies();
+
+  if (!(nachher.lupe > 3)) fehler.push(
+    `dreimal auf + bringt nur Maßstab ${nachher.lupe} — die Lupe vergrößert nicht`);
+  if (!(nachher.gross > vorher.gross * 2.5)) fehler.push(
+    `das gesuchte Land wächst von ${vorher.gross} auf ${nachher.gross} pt — zu wenig`);
+  /* Und es muss im Bild BLEIBEN. Der erste Entwurf zoomte auf die Mitte
+     des Rahmens; die liegt auf dieser Karte im offenen Meer noerdlich von
+     Jamaika, und dreimal auf + schob das gesuchte Land aus dem Bild. */
+  if (!nachher.imBild) fehler.push(
+    'nach dem Vergrößern liegt das gesuchte Land nicht mehr ganz im Kartenkasten — '
+    + 'die Lupe zielt auf die Mitte statt auf das Gesuchte');
+  if (!(nachher.ganz && nachher.ganz.sichtbar)) fehler.push(
+    'nach dem Vergrößern fehlt der Knopf „ganze Karte" — dann kommt ein Kind nicht zurück');
+
+  await q.click('#lupeGanz'); await q.waitForTimeout(220);
+  const zurueck = await lies();
+  if (zurueck.lupe !== 1) fehler.push(
+    `„ganze Karte" stellt Maßstab ${zurueck.lupe} her statt 1`);
+  if (Math.abs(zurueck.gross - vorher.gross) > 1) fehler.push(
+    `„ganze Karte" bringt nicht dieselbe Karte zurück: ${zurueck.gross} statt ${vorher.gross} pt`);
+
+  console.log(`    Lupe: ${vorher.ziel} wächst von ${vorher.gross} auf ${nachher.gross} pt `
+    + `(Maßstab ${nachher.lupe}×), bleibt im Bild, „ganze Karte" stellt ${zurueck.gross} pt her`);
+  await q.close(); await ctx.close();
 }
 
 await b.close(); srv.close();

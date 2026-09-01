@@ -166,6 +166,10 @@
   --tiefe-farbe: oklch(0.80 0.020 250);
   --kante-flach: 2px;  /* leichte Karten: Aufkleber, Wertekacheln */
   --kante:      3px;   /* Knopftiefe in Ruhe */
+  /* Der Schatten unter einem Knopf, der AUF etwas liegt - bisher nur die
+     Lupenknoepfe auf der Karte. Er hebt sie vom Land ab, ohne eine Kante
+     zu ziehen; eine Kante haette dort mit den Landesgrenzen konkurriert. */
+  --schatten-auf: 0 1px 3px oklch(0 0 0/.14);
   --kante-hoch: 7px;   /* am Finger, waehrend gezogen wird */
   --knopf-licht:   oklch(0.995 0.003 250);
   --knopf-rand:    oklch(0.885 0.014 250);

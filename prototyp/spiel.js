@@ -57,6 +57,10 @@ const ZEICHEN = {
   // Ein Aufkleber: rundes Blatt mit umgeschlagener Ecke.
   kleber:'<path d="M12 3a9 9 0 0 1 9 9h-5a4 4 0 0 0-4 4v5a9 9 0 0 1 0-18z"/><path d="M12 21c2.4 0 8.6-6.2 9-9"/>',
   zu:'<path d="M6 6l12 12M18 6L6 18"/>',
+  /* „Ganze Karte" - vier Ecken, die nach aussen zeigen. Dasselbe Zeichen,
+     das jede Bildbetrachtung fuer „einpassen" benutzt; ein Kind, das es
+     nicht kennt, lernt es in einem Tipp. */
+  ganzeKarte:'<path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/>',
   /* Nochmal hoeren: der Lautsprecher aus `tonAn`, daneben ein Kreispfeil.
      Der Lautsprecher sagt „hoeren", der Pfeil sagt „noch einmal" -
      zusammen sagen sie, was der Knopf tut, ohne ein Wort. Fiona liest
@@ -224,12 +228,65 @@ let stimme=null, tonAn=true, entsperrt=false;
  * Stimme im Elternbereich aussuchen UND vorher anhoeren. Die Wahl steht
  * in `Einst.stimme` und schlaegt die Liste.
  *
- * Die Reihenfolge hier ist keine Rangliste des Klangs, sondern der
- * Wahrscheinlichkeit: oben stehen die Namen, unter denen Apple und Google
- * ihre hellen, zugewandten Ansagestimmen fuehren.
+ * --- Was hier eine Runde gekostet hat (M4s) --------------------------
+ *
+ * Oben standen `sandy` und `shelley`, mit der Begruendung, das seien die
+ * Namen, unter denen Apple „seine hellen, zugewandten Ansagestimmen
+ * fuehrt". Das war geraten und falsch: **Sandy, Shelley, Eddy, Flo,
+ * Grandma, Grandpa, Reed und Rocko sind Apples SPASS-Stimmen** aus
+ * iOS 17 - absichtlich uebertrieben, teils verzerrt. Auf einem
+ * iPhone XR hat die App damit genau das getan, was gemeldet wurde: „eine
+ * sehr wirre, komische Stimme".
+ *
+ * Der Fehler war nicht die Reihenfolge, sondern dass eine VERMUTUNG als
+ * Rangliste dastand und nie an einem Geraet geprueft wurde. Deshalb
+ * jetzt zwei Listen statt einer:
+ *
+ *   `LIEBLINGE`  Namen, unter denen Apple und Google ihre ruhigen
+ *                Vorlesestimmen fuehren. Anna ist die deutsche
+ *                Standardstimme seit Jahren.
+ *   `SPASSIG`    Namen, die NIE von allein gewaehlt werden. Sie bleiben
+ *                im Elternbereich anwaehlbar - wer sie mag, darf sie
+ *                haben -, aber die App greift nicht selbst danach.
+ *
+ * Und unter gleichen Namen gewinnt die bessere Fassung: Apple fuehrt
+ * dieselbe Stimme als „Anna", „Anna (Premium)" und „Anna (Erweitert)".
  */
-const LIEBLINGE = ['sandy','shelley','helena','anna','petra','marlene','katja',
-                   'vicki','google deutsch'];
+const LIEBLINGE = ['anna','helena','petra','markus','martin','viktor',
+                   'marlene','katja','vicki','google deutsch'];
+/* Apples Spass- und Ausdrucksstimmen (iOS 17+) und die alten
+ * Roboterstimmen. Sie klingen fuer ein Kind nicht freundlich, sondern
+ * kaputt - und eine kaputt klingende Stimme liest keine Frage vor. */
+const SPASSIG = ['sandy','shelley','eddy','flo','grandma','grandpa','reed','rocko',
+                 'bubbles','jester','trinoids','whisper','zarvox','wobble','boing',
+                 'bells','bahh','cellos','organ','superstar','albert','bad news',
+                 'good news','junior','kathy','ralph','fred','deranged','hysterical',
+                 'bruce','princess','pipe organ'];
+const istSpassig = (name) => SPASSIG.some(n => name.toLowerCase().includes(n));
+/** „Anna (Premium)" schlaegt „Anna" - dieselbe Stimme, bessere Fassung. */
+const guete = (v) => /premium|erweitert|enhanced/i.test(v.name + ' ' + (v.voiceURI || '')) ? 1 : 0;
+
+/**
+ * Die Wahl selbst - eine reine Funktion ueber eine Liste.
+ *
+ * Ausgelagert, damit ein Tor sie pruefen kann, ohne einen Browser mit
+ * deutschen Stimmen zu brauchen: `npm run schreiben`… nein, `inhalt`
+ * legt ihr eine erfundene Stimmenliste vor, in der die Spass-Stimmen
+ * ganz oben stehen, und prueft, dass sie nicht danach greift. Vorher
+ * steckte diese Entscheidung mitten in einer Funktion, die ohne
+ * `speechSynthesis` gar nicht lief - und war damit von keinem Tor
+ * erreichbar.
+ */
+function stimmeWaehlen(liste, wunsch){
+  const s = liste || [];
+  if (wunsch) { const w = s.find(v => v.name === wunsch); if (w) return w; }
+  const ernst = s.filter(v => !istSpassig(v.name));
+  for (const n of LIEBLINGE) {
+    const treffer = ernst.filter(v => v.name.toLowerCase().includes(n));
+    if (treffer.length) return treffer.sort((a, b) => guete(b) - guete(a))[0];
+  }
+  return ernst.find(v => v.localService) || ernst[0] || s[0] || null;
+}
 function alleStimmen(){
   return ('speechSynthesis' in window)
     ? speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de')) : [];
@@ -242,12 +299,7 @@ function alleStimmen(){
 // „Cannot access 'Einst' before initialization" gar nicht mehr. Gefunden
 // hat das der Rauchtest, sechzehnmal auf einmal.
 let stimmenWunsch = null;
-function stimmeSuchen(){
-  const s = alleStimmen();
-  stimme = (stimmenWunsch && s.find(v=>v.name===stimmenWunsch))
-        || LIEBLINGE.map(n=>s.find(v=>v.name.toLowerCase().includes(n))).find(Boolean)
-        || s.find(v=>v.localService) || s[0] || null;
-}
+function stimmeSuchen(){ stimme = stimmeWaehlen(alleStimmen(), stimmenWunsch); }
 if ('speechSynthesis' in window){ stimmeSuchen(); speechSynthesis.addEventListener('voiceschanged',stimmeSuchen); }
 /**
  * Vorlesen - satzweise, nicht am Stueck.
@@ -1067,7 +1119,23 @@ const VORMACHEN_JE_ZUG = 750;
  * Pause und reichen dem Test bequem. */
 
 const WEISE_VOREINSTELLUNG = { fiona:'ziehen', lea:'antippen' };
-let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:false, pin:'0000',
+/* `sprachmodus:true` - ab Werk AN, und das ist eine Entscheidung.
+ *
+ * Er stand auf `false`, mit gutem Grund: die Spracherkennung laeuft nicht
+ * auf dem Geraet, sondern bei Apple beziehungsweise dem Browserhersteller,
+ * und das schaltet man nicht ungefragt ein.
+ *
+ * Auf einem ZWEITEN Geraet hat das gekostet, was es kosten musste: die
+ * Einstellungen liegen je Geraet in der Ablage, auf dem iPad war der
+ * Schalter also wieder aus - und weil ein abgeschalteter Knopf mit Absicht
+ * gar nicht erst erscheint, stand auf Fionas Bildschirm einfach kein
+ * Mikrofon. Kein Hinweis, keine Erklaerung, nichts (M4s).
+ *
+ * Umgestellt auf Wunsch der Eltern, die die Frage fuer ihre Kinder
+ * beantwortet haben. Der Schalter bleibt, der Hinweis im Elternbereich
+ * bleibt, und die Sprechprobe dort sagt jetzt in einem Satz, woran es
+ * liegt, wenn kein Mikrofon da ist. */
+let P=null, Sitzung=null, Stand={}, Einst={ ton:true, abend:false, sprachmodus:true, pin:'0000',
   antwortweise:{ ...WEISE_VOREINSTELLUNG },
   // Je Kind UND Ebene, nicht ein Schalter fuer alle: der Vorlauf gehoert
   // zu der Ebene, die er erklaert. `stadtstaatenGezeigt` war der eine
@@ -1456,9 +1524,20 @@ function zeige(bau){
  * Deutsch, und es hat die Kachel so breit gemacht, dass Violeta 15 Punkte
  * in den Bereich des Telefons rutschte - gefunden von `passt` auf der
  * Groesse mit Leiste, im selben Lauf, in dem das Sprechen dazukam. */
+/* Was auf der Profilkachel steht - und was NICHT.
+ *
+ * „sprechen" stand hier seit A4 mit dabei, sobald der Sprachmodus an war.
+ * Seit er ab Werk an ist (M4s), steht es auf ALLEN vier Kacheln - und
+ * sagt damit nichts mehr aus, was die Kacheln unterschiede. Bezahlt hat
+ * es die Breite: „tippen oder sprechen" schob Violetas Kachel sieben
+ * Punkte in den Bereich des Telefons, gemessen von `passt` auf der Groesse
+ * mit Browserleiste. Dieselbe Stelle wie in A4, dieselbe Ursache.
+ *
+ * Die Kachel sagt jetzt, wie das Kind ANTWORTET. Dass es dabei sprechen
+ * darf, gilt ueberall und steht am Mikrofon selbst. */
 const profilzeile = (p) => [
   p.alter ? `${p.alter} Jahre` : null,
-  aufzaehlen(p.eingabe.filter(x => x !== 'sprechen' || Einst.sprachmodus)),
+  aufzaehlen(p.eingabe.filter(x => x !== 'sprechen')),
 ].filter(Boolean).join(' · ');
 
 /* ---------- Profilwahl --------------------------------------------------- */
@@ -3018,6 +3097,9 @@ function spielschirm(){
         <svg viewBox="${vb}" preserveAspectRatio="xMidYMid meet">
           <defs><clipPath id="wasch"><circle id="waschKreis" cx="0" cy="0" r="900"
             style="transform-box:fill-box;transform-origin:center"/></clipPath></defs>
+          <!-- ALLES, was zur Karte gehoert, liegt in dieser einen Gruppe -
+               damit die Lupe EINE Zahl verschiebt und nicht dreizehn. -->
+          <g id="lupe">
           <g id="umg">${umgebung}</g>
           <g id="fl">${flaechen}</g>
           <!-- Erst die Trefferflaechen, dann die Haken: seit P10 sitzt ein
@@ -3043,7 +3125,13 @@ function spielschirm(){
                 vector-effect="non-scaling-stroke" stroke-linejoin="round" style="display:none"/>
           <circle id="stadtpunkt" r="0" fill="var(--akzent)" stroke="white" stroke-width="2"
                   vector-effect="non-scaling-stroke" style="display:none"/>
+          </g>
         </svg>
+        <div class="lupenknoepfe">
+          <button class="lupenknopf" id="lupePlus" aria-label="Karte größer">+</button>
+          <button class="lupenknopf" id="lupeMinus" aria-label="Karte kleiner">−</button>
+          <button class="lupenknopf ganz" id="lupeGanz" aria-label="Ganze Karte">${ZEI("ganzeKarte", 22)}</button>
+        </div>
       </div>
       <div class="seite" id="seite"></div>
     </div>`;
@@ -3135,7 +3223,16 @@ function spielschirm(){
 
   function trefferflaechen(){
     const svg=s.querySelector('.karte svg'); if(!svg) return;
-    const g=svg.querySelector('#treffer'); const ctm=svg.getScreenCTM(); if(!g||!ctm) return;
+    const g=svg.querySelector('#treffer');
+    /* Der Massstab wird an der LUPENGRUPPE genommen, nicht an der Wurzel.
+     *
+     * Seit M4z sitzt zwischen beiden eine Transformation. Die Wurzel weiss
+     * nichts davon: sie meldet weiter den Massstab der ganzen Karte, und
+     * damit haetten die Trefferkreise beim Hineinzoomen ihre Groesse
+     * behalten, waehrend die Laender darunter wachsen - Nadeln fuer
+     * Gebiete, die man laengst treffen kann. */
+    const lupenG = svg.querySelector('#lupe');
+    const ctm=(lupenG || svg).getScreenCTM(); if(!g||!ctm) return;
     const k=Math.abs(ctm.a)||1;
     const mit = formen.filter(x=>x.anker).map(x=>{
       const p=s.querySelector(`path.geb[data-id="${x.id}"]`); const bb=p?p.getBBox():{width:0,height:0};
@@ -3294,8 +3391,10 @@ function spielschirm(){
       const kasten = s.querySelector('.karte');
       const kb = kasten ? kasten.getBoundingClientRect() : null;
       if (!kb || !kb.width) return [];
+      // `k` gehoert in den Schluessel: derselbe Kasten bei doppeltem
+      // Massstab ist eine andere Karte, und ihr Nadelplan ein anderer.
       const schluessel = `${mit.map(m=>m.x.id).join(',')}|`
-        + `${kb.width.toFixed(0)}x${kb.height.toFixed(0)}`;
+        + `${kb.width.toFixed(0)}x${kb.height.toFixed(0)}|${k.toFixed(3)}`;
       if (schluessel === nadelSchluessel) return nadelPlan;
 
       const hin = (a) => { const p = svg.createSVGPoint();
@@ -3385,6 +3484,10 @@ function spielschirm(){
     karte.style.cursor = 'pointer';
     karte.addEventListener('click', (ev) => {
       if (erledigt) return;
+      // Wer die Karte gerade geschoben oder aufgezogen hat, hat nicht
+      // getippt. Ohne das beantwortet jedes Verschieben die Frage - mit
+      // dem Land, das zufaellig unter dem Finger lag.
+      if (lupe && lupe.gezogen()) return;
       const t = zielUnter(ev.clientX, ev.clientY);
       // Ins Meer getippt ist keine falsche Antwort, sondern gar keine -
       // dieselbe Regel wie beim Ziehen ins Leere.
@@ -3756,6 +3859,14 @@ function spielschirm(){
       // Kein Tor hat es gesehen, und im erneuerten Vorbild stand es drin.
       b.style.animation='none';
       b.classList.add('zieht'); b.style.position='fixed';
+      /* Solange ein Etikett am Finger haengt, sind die Lupenknoepfe TAUB.
+       *
+       * Sie liegen ueber der Karte, und wer sein Etikett dort ablegt,
+       * legt es auf einen Knopf statt auf ein Land - `elementFromPoint`
+       * liefert den Knopf, die Umkreissuche findet nichts, und die
+       * Antwort ist weg. Gemessen von `ziehen`: von oben traf man nur
+       * noch bis 30 statt 40 Punkte, sobald die Knoepfe dastanden. */
+      document.body.dataset.zieht = '1';
       b.style.left=heim.left+'px'; b.style.top=heim.top+'px'; b.style.margin='0';
       const z=b.getBoundingClientRect(); zug={b:z.width,h:z.height};
       vorlesen(k.name); };
@@ -3772,6 +3883,7 @@ function spielschirm(){
       });
     };
     const aufraeumen=()=>{
+      delete document.body.dataset.zieht;
       b.classList.remove('zieht'); b.style.position=''; b.style.left='';
       b.style.top=''; b.style.width=''; b.style.margin=''; b.style.transform='';
       b.style.animation='';
@@ -4099,6 +4211,183 @@ function spielschirm(){
       if (st.i>=st.liste.length) zeige(endschirm); else zeige(spielschirm);
     }, schauPause(ergebnis==='fast' ? 2400 : 1600));
   }
+
+  /* --- Die Lupe (M4z) -------------------------------------------------
+   *
+   * Gemeldet vom Geraet: „teilweise haben wir Laender, die zu klein sind
+   * zum Antippen, und man hat keine Chance, das richtige Land zu treffen
+   * oder ueberhaupt zu sehen, um welches es sich handelt."
+   *
+   * Die Nadeln (P10) loesen das ANTIPPEN - sie holen eine Trefferflaeche
+   * neben die Karte. Sie loesen das ANSEHEN nicht: wer wissen will, wie
+   * El Salvador aussieht, bekommt vier Bildpunkte. Dafuer gibt es keine
+   * Trefferflaeche, sondern nur einen Massstab.
+   *
+   * Gebaut als EINE Gruppe mit EINER Transformation. Alles andere -
+   * Treffertest, Nadeln, Haken, Zeiger - rechnet ueber
+   * `getScreenCTM()` und zieht damit von allein mit; das ist der Grund,
+   * warum die Lupe im Bildbereich sitzt und nicht im Datenbereich.
+   *
+   * Drei Wege hinein, weil drei verschiedene Leute sie brauchen:
+   *   - ZWEI FINGER ziehen auf: was jedes Kind von jedem Telefon kennt.
+   *   - Die KNOEPFE + und −: fuer den Schreibtisch, fuer eine Maus, und
+   *     fuer Fiona, die von einer Geste nicht weiss, dass es sie gibt.
+   *   - DOPPELTIPP: hinein an der getippten Stelle, heraus zur ganzen
+   *     Karte.
+   * Und einer heraus, der immer denselben Zustand herstellt: „ganze
+   * Karte". Ein Kind, das sich verirrt hat, braucht einen Knopf und
+   * keine Geste.
+   *
+   * Was die Lupe NICHT tut: sie ueberlebt keine Aufgabe. Der
+   * Spielbildschirm wird je Aufgabe neu gebaut, also faengt jede Frage
+   * bei der ganzen Karte an. Das ist Absicht - eine Karte, die noch von
+   * der letzten Frage auf Kuba steht, waehrend nach Kanada gefragt wird,
+   * sieht kaputt aus.
+   */
+  const lupe = (() => {
+    const kasten = s.querySelector('.karte');
+    const svg = kasten && kasten.querySelector('svg');
+    const g = svg && svg.querySelector('#lupe');
+    if (!g) return null;
+    const [vx, vy, vw, vh] = vb.split(/\s+/).map(Number);
+    const MAX = 8;
+    let k = 1, tx = 0, ty = 0;
+
+    // Immer so verschieben, dass kein Rand ins Leere zeigt.
+    const klemmen = () => {
+      tx = Math.min(vx * (1 - k), Math.max((vx + vw) * (1 - k), tx));
+      ty = Math.min(vy * (1 - k), Math.max((vy + vh) * (1 - k), ty));
+    };
+    const zeigen = () => {
+      klemmen();
+      g.setAttribute('transform', `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) `
+        + `scale(${k.toFixed(4)})`);
+      kasten.dataset.lupe = k > 1.01 ? k.toFixed(1) : '';
+      // Die Trefferflaechen haengen am Massstab - und der hat sich gerade
+      // geaendert. Ohne das bleiben die Nadeln stehen, wo die Karte
+      // vorher war (Regel: erst messen, dann urteilen).
+      trefferflaechen();
+    };
+    /** Einen Bildschirmpunkt in die Koordinaten der Karte umrechnen. */
+    const inSvg = (x, y) => {
+      const m = svg.getScreenCTM();
+      if (!m) return null;
+      const q = svg.createSVGPoint(); q.x = x; q.y = y;
+      return q.matrixTransform(m.inverse());
+    };
+    /** Um `f` groesser werden - und dabei den Punkt `p` (Kartenkoordinaten)
+     *  festhalten. Ohne `p`: die Mitte des sichtbaren Ausschnitts. */
+    const um = (f, p) => {
+      const neu = Math.max(1, Math.min(MAX, k * f));
+      if (Math.abs(neu - k) < 1e-4) return;
+      const halt = p || { x: (vx + vw / 2 - tx) / k * k + tx, y: (vy + vh / 2 - ty) / k * k + ty };
+      const cx = (halt.x - tx) / k, cy = (halt.y - ty) / k;
+      k = neu; tx = halt.x - k * cx; ty = halt.y - k * cy;
+      zeigen();
+    };
+    const umPunkt = (f, x, y) => { const p = inSvg(x, y); if (p) um(f, p); };
+    const ganz = () => { k = 1; tx = 0; ty = 0; zeigen(); };
+
+    /* Worauf zielt der +-Knopf?
+     *
+     * Auf die Mitte zu zoomen ist die bequeme Antwort und die falsche:
+     * gemessen auf der Mittelamerikakarte liegt die Mitte des Rahmens im
+     * offenen Meer noerdlich von Jamaika. Dreimal auf + und das gesuchte
+     * Land war aus dem Bild - genau das, was die Lupe verhindern soll.
+     *
+     * Also auf das GESUCHTE Gebiet, wenn es eines gibt.
+     *
+     * NICHT bei der umgekehrten Frage: „Wo liegt Guatemala?" waere
+     * beantwortet, sobald die Karte von allein dorthin faehrt. Dort bleibt
+     * es bei der Mitte - und der Doppeltipp trifft ohnehin die Stelle, auf
+     * die das Kind selbst zeigt. */
+    const anker = (!umgekehrt && zielForm && zielForm.anker)
+      ? { x: zielForm.anker[0], y: zielForm.anker[1] } : null;
+    const halten = () => (anker ? { x: k * anker.x + tx, y: k * anker.y + ty } : null);
+
+    kasten.querySelector('#lupePlus').onclick  = () => um(1.6, halten());
+    kasten.querySelector('#lupeMinus').onclick = () => um(1 / 1.6, halten());
+    kasten.querySelector('#lupeGanz').onclick  = ganz;
+
+    /* Ziehen und Aufziehen.
+     *
+     * Ein Finger schiebt die Karte - aber NUR wenn sie groesser als das
+     * Fenster ist. Bei ganzer Karte gibt es nichts zu schieben, und ein
+     * Schieben, das nichts tut, verschluckt nur den Tipp: „Tippe auf die
+     * Karte" ist bei der umgekehrten Frage die ganze Bedienung.
+     *
+     * Zwei Finger ziehen auf. Der Abstand der beiden ist das Mass, ihre
+     * Mitte der Festpunkt.
+     */
+    const finger = new Map();
+    let zog = false, start = null;
+    const mitte = () => { const a = [...finger.values()];
+      return { x:(a[0].x + a[1].x) / 2, y:(a[0].y + a[1].y) / 2,
+               d:Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) }; };
+    kasten.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.lupenknopf')) return;
+      finger.set(e.pointerId, { x:e.clientX, y:e.clientY });
+      if (finger.size === 2) start = { ...mitte(), k, tx, ty };
+      else start = { x:e.clientX, y:e.clientY, k, tx, ty };
+      zog = false;
+      /* Gefangen wird der Zeiger NUR, wenn es etwas zu ziehen gibt: bei
+         zwei Fingern oder in einer vergroesserten Karte. Bei ganzer Karte
+         gehoert jeder Tipp der Karte selbst - „Tippe auf die Karte" ist
+         bei der umgekehrten Frage die ganze Bedienung. */
+      if (finger.size >= 2 || k > 1.01) kasten.setPointerCapture?.(e.pointerId);
+    });
+    kasten.addEventListener('pointermove', (e) => {
+      if (!finger.has(e.pointerId)) return;
+      finger.set(e.pointerId, { x:e.clientX, y:e.clientY });
+      if (finger.size >= 2 && start && start.d) {
+        const m = mitte();
+        if (m.d > 0 && start.d > 0) {
+          k = Math.max(1, Math.min(MAX, start.k * (m.d / start.d)));
+          const p = inSvg(start.x, start.y);
+          if (p) { const cx = (p.x - start.tx) / start.k, cy = (p.y - start.ty) / start.k;
+            tx = p.x - k * cx; ty = p.y - k * cy; }
+          zog = true; zeigen();
+        }
+        return;
+      }
+      if (k <= 1.01 || !start) return;
+      const dx = e.clientX - start.x, dy = e.clientY - start.y;
+      // Erst ab acht Punkten ist es ein Schieben. Darunter ist es ein
+      // Tipp mit ruhiger Hand, und der gehoert der Karte.
+      if (!zog && Math.hypot(dx, dy) < 8) return;
+      zog = true;
+      const m = svg.getScreenCTM();
+      if (!m) return;
+      tx = start.tx + dx / m.a; ty = start.ty + dy / m.d;
+      zeigen();
+    });
+    const los = (e) => {
+      finger.delete(e.pointerId);
+      if (!finger.size) start = null;
+      if (zog) { const bis = Date.now() + 400; kasten.dataset.gezogenBis = bis; }
+    };
+    kasten.addEventListener('pointerup', los);
+    kasten.addEventListener('pointercancel', los);
+
+    /* KEIN Doppeltipp - und das ist eine Entscheidung, keine Luecke.
+     *
+     * Er war gebaut: zweimal tippen hinein, noch einmal heraus. Auf der
+     * umgekehrten Frage („Wo liegt Guatemala?") ist ein Tipp auf die Karte
+     * aber die ANTWORT. Ein Kind, das zoomen will, haette mit dem ersten
+     * Tipp geantwortet - und mit dem zweiten die Karte verschoben,
+     * waehrend die Auswertung laeuft.
+     *
+     * Gefunden hat es nicht das Nachdenken, sondern die Bildabnahme: sie
+     * spielt die umgekehrte Frage durch, tippte zweimal kurz
+     * hintereinander auf dieselbe Stelle, und blieb dann stehen, weil die
+     * Frage nicht weiterging.
+     *
+     * Zwei Finger und die Knoepfe reichen. Beide kollidieren mit nichts.
+     */
+
+    return { um, umPunkt, ganz, wert: () => k,
+             gezogen: () => +(kasten.dataset.gezogenBis || 0) > Date.now() };
+  })();
 
   // Erst die Karte messen, dann die Trefferflaechen - die haengen an ihrem
   // Massstab. Andersherum stimmten sie fuer ein Bild lang nicht.
@@ -4950,6 +5239,36 @@ async function elternbereich(){
         und lies ab, was ankam. Aufgezeichnet wird die Abfolge der Ereignisse mit
         Zeiten — dann sieht man den Unterschied zwischen „hat nie zugehört" und
         „hat zugehört und nichts verstanden".</p>
+      ${(() => {
+        /* Warum steht kein Mikrofon da? DREI Gruende, und sie sehen auf dem
+         * Bildschirm eines Kindes alle gleich aus - naemlich nach nichts.
+         *
+         * Gemeldet vom iPad: „über Fionas Profil ist das blaue Icon für die
+         * Spracheingabe gar nicht da." Woran es liegt, war von aussen nicht
+         * zu unterscheiden: Schalter aus? Browser kann es nicht? Profil
+         * darf es nicht? Hier steht es jetzt, in drei Zeilen, auf dem
+         * Geraet selbst - und zwar unabhaengig davon, ob gerade jemand
+         * spielt. */
+        const erk = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+        const alsApp = window.matchMedia?.('(display-mode: standalone)').matches
+                    || window.navigator.standalone === true;
+        const wer = Object.values(PROFILE).filter(x => x.eingabe.includes('sprechen'))
+                          .map(x => x.name);
+        /* „ja"/„nein" statt Haken und Kreuz: die beiden Zeichen liegen
+           ausserhalb des geladenen Schriftschnitts und wuerden auf dem
+           Geraet als leere Kaesten stehen - gemeldet vom Tor `inhalt`,
+           dasselbe wie damals bei den PIN-Punkten (F7). */
+        const zeile = (gut, text) => `<li><strong>${gut ? 'ja' : 'nein'}</strong> — ${text}</li>`;
+        return `<ul class="unter" style="list-style:none;padding-left:0;line-height:1.7">
+          ${zeile(Einst.sprachmodus, `Sprachmodus ist <strong>${Einst.sprachmodus ? 'an' : 'aus'}</strong>`
+            + `${Einst.sprachmodus ? '' : ' — der Schalter darüber'}`)}
+          ${zeile(erk, erk ? 'Dieser Browser kann Spracherkennung'
+            : 'Dieser Browser kann <strong>keine</strong> Spracherkennung — '
+              + 'auf dem iPhone und iPad geht es nur in <strong>Safari</strong>')}
+          ${zeile(wer.length, `Profile mit Sprechen: <strong>${wer.join(', ') || 'keins'}</strong>`)}
+          <li style="opacity:.7">Gestartet ${alsApp ? 'als App vom Home-Bildschirm' : 'im Browser'}</li>
+        </ul>`;
+      })()}
       <div class="reihe" style="justify-content:flex-start">
         <button class="knopf" id="probe">Mikrofon prüfen</button>
         <button class="knopf leise" id="probeweg">Versuche verwerfen</button>

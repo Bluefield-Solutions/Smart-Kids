@@ -7007,3 +7007,121 @@ Gegenprobe „die Buchstabenerkennung nimmt alles an" erwartete die Meldung
 Wörter, seit P6 offen.
 
 `npm run tor` grün in 107,0 s. 210 Gegenproben.
+
+## M4s/M4z — die Lupe, eine wirre Stimme und ein fehlendes Mikrofon
+
+Drei Meldungen vom Gerät, drei sehr verschiedene Ursachen.
+
+### Die Lupe auf allen Karten (M4z)
+
+*„Teilweise haben wir Länder, die zu klein sind zum Antippen, und man hat
+keine Chance, das richtige Land zu treffen oder überhaupt zu sehen, um
+welches es sich handelt."*
+
+Die Nadeln (P10) lösen das **Antippen** — sie holen eine Trefferfläche
+neben die Karte. Das **Ansehen** lösen sie nicht: wer wissen will, wie El
+Salvador aussieht, bekommt 31 Bildpunkte. Dafür gibt es keinen Trick,
+sondern nur einen Maßstab.
+
+Gebaut als **eine** Gruppe mit **einer** Transformation. Alles andere —
+Treffertest, Nadeln, Haken, Zeiger — rechnet über `getScreenCTM()` und
+zieht von allein mit; das ist der Grund, warum die Lupe im Bildbereich
+sitzt und nicht in den Daten. Gemessen auf 844 × 390:
+
+```
+ganze Karte     Maßstab 1,0×   El Salvador  31 pt   3 von 9 unter 44 pt
+dreimal auf +   Maßstab 4,1×   El Salvador 127 pt   0 von 9 unter 44 pt
+ganze Karte     Maßstab 1,0×   El Salvador  31 pt   (Rückweg stellt her)
+```
+
+Drei Wege hinein, weil drei verschiedene Leute sie brauchen: **zwei
+Finger** aufziehen, die **Knöpfe + und −** (für den Schreibtisch, für eine
+Maus, und für Fiona, die von einer Geste nicht weiß, dass es sie gibt), und
+ein Knopf **„ganze Karte"**, der immer denselben Zustand herstellt. Er
+steht nur da, wenn es etwas zurückzunehmen gibt.
+
+**Worauf + zielt**, ist die eigentliche Arbeit gewesen. Auf die Mitte des
+Rahmens zu zoomen ist die bequeme Antwort und die falsche: gemessen liegt
+die Mitte der Mittelamerikakarte im offenen Meer nördlich von Jamaika,
+und dreimal auf + schob das gesuchte Land aus dem Bild. Es zielt jetzt auf
+das **gesuchte Gebiet** — außer bei der umgekehrten Frage, wo eine Karte,
+die von allein zum Ziel fährt, die Antwort wäre.
+
+Die Lupe **überlebt keine Aufgabe**: der Spielbildschirm wird je Aufgabe
+neu gebaut, also fängt jede Frage bei der ganzen Karte an. Eine Karte, die
+noch von der letzten Frage auf Kuba steht, während nach Kanada gefragt
+wird, sieht kaputt aus.
+
+**Und der Doppeltipp ist wieder ausgebaut.** Er war fertig — zweimal
+tippen hinein, noch einmal heraus. Bei der umgekehrten Frage ist ein Tipp
+auf die Karte aber die *Antwort*: ein Kind, das zoomen will, hätte mit dem
+ersten Tipp geantwortet. Gefunden hat das nicht das Nachdenken, sondern die
+Bildabnahme — sie blieb an der Frage hängen, die nicht weiterging.
+
+### Die wirre Stimme (M4s)
+
+Auf einem iPhone XR sprach die App mit *„einer sehr wirren, komischen
+Stimme"*. Die Ursache stand in meiner eigenen Liste, mit einer Begründung,
+die geraten war:
+
+> *„Die Reihenfolge hier ist keine Rangliste des Klangs, sondern der
+> Wahrscheinlichkeit: oben stehen die Namen, unter denen Apple und Google
+> ihre hellen, zugewandten Ansagestimmen führen."* — und oben standen
+> **`sandy`** und **`shelley`**.
+
+Das sind zwei von **Apples Spaß-Stimmen** aus iOS 17 — absichtlich
+übertrieben, teils verzerrt. Auf einem Gerät, das sie hat, greift die App
+zuerst danach. Auf dem Entwicklungsrechner gibt es sie nicht; dort fiel es
+nie auf.
+
+Jetzt zwei Listen statt einer: die Vorlesestimmen (Anna, Helena, Petra,
+Markus, Martin, Viktor …) und eine **Sperrliste** der Spaß- und
+Roboterstimmen, nach der die App nie von allein greift — anwählbar bleiben
+sie, wer sie mag, darf sie haben. Und unter gleichem Namen gewinnt die
+bessere Fassung: „Anna (Premium)" schlägt „Anna".
+
+Geprüft wird das jetzt an einer **erfundenen** Stimmenliste, in der die
+falsche Wahl die bequeme wäre: Sandy, Shelley, Grandpa und Jester stehen
+vorn, Anna hinten. Wer die Sperre entfernt, bekommt sofort Sandy.
+
+### Das fehlende Mikrofon (M4s)
+
+*„Über Fionas Profil ist das blaue Icon für die Spracheingabe gar nicht
+da."*
+
+Kein Fehler im Code — der Sprachmodus stand auf **aus**, und die
+Einstellungen liegen **je Gerät** in der Ablage. Auf dem iPhone war er
+eingeschaltet, auf dem iPad nie. Und weil ein abgeschalteter Knopf mit
+Absicht gar nicht erst erscheint, stand dort einfach nichts: kein Hinweis,
+keine Erklärung.
+
+Zwei Änderungen. Der Sprachmodus ist **ab Werk an** — auf Wunsch der
+Eltern, die die Frage für ihre Kinder beantwortet haben; der Schalter und
+der Hinweis auf die Erkennung außer Haus bleiben. Und die Sprechprobe im
+Elternbereich sagt jetzt in drei Zeilen, woran es liegt, wenn kein
+Mikrofon da ist: Sprachmodus an oder aus, kann dieser Browser
+Spracherkennung, welche Profile dürfen sprechen.
+
+### Was dabei aufgefallen ist, weil das Mikrofon nun überall steht
+
+Der eingeschaltete Sprachmodus hat drei Dinge sichtbar gemacht, die vorher
+**kein Tor je gesehen hat** — `passt` hat den Mikrofonknopf auf keiner
+einzigen Größe geprüft, weil er ohne Sprachmodus nicht erschien:
+
+- Der atmende Ring am Mikrofon lag **außerhalb** des Knopfes (`inset:-8px`)
+  und ragte 5 bis 8 Punkte darüber hinaus. Die Regel steht **zweimal** —
+  einmal allgemein, einmal im engen Querformat —, und die erste Reparatur
+  half deshalb nicht (Regel 6).
+- Auf dem iPad quer ragte der runde „nochmal hören"-Knopf 7 Punkte aus dem
+  Fenster: vier Dinge in einer Reihe, die nicht umbrechen durfte.
+- „tippen **oder sprechen**" auf der Profilkachel schob Violeta wieder
+  7 Punkte in den Bereich des Telefons — dieselbe Stelle wie in A4. Da
+  Sprechen jetzt überall gilt, unterscheidet es keine Kachel mehr und steht
+  nicht mehr drauf.
+
+Und eine echte Kollision, gefunden von `ziehen`: die Lupenknöpfe liegen
+über der Karte, und wer sein Etikett dort ablegt, legt es auf einen Knopf
+statt auf ein Land. Von oben traf man nur noch bis 30 statt 40 Punkte.
+Solange ein Etikett am Finger hängt, sind die Knöpfe jetzt **taub**.
+
+`npm run tor` grün in 107,9 s. 213 Gegenproben.

@@ -671,9 +671,48 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    es in CSS nicht geht. Hier stehen nur die Grenzen, damit vor der ersten
    Messung nichts ueberlaeuft. */
 .karte{flex:0 0 auto;min-width:0;min-height:0;max-width:100%;max-height:100%;
-  aspect-ratio:var(--karte-ar,1);
+  aspect-ratio:var(--karte-ar,1);position:relative;
   display:flex;align-items:center;justify-content:center;touch-action:none}
+/* `overflow:hidden`, seit es die Lupe gibt (M4z).
+   Ohne das schiebt sich die vergroesserte Karte ueber die Antwortliste
+   und ueber den Fragesatz - `overflow:visible` stand hier, damit ein
+   Nadelkopf am Rand nicht abgeschnitten wird. Der Kasten ist aber
+   grosszuegig genug, dass eine Nadel nie ganz aussen sitzt, und eine
+   Karte, die halb ueber den Etiketten liegt, ist der schlimmere Fall. */
+/* Geklemmt wird NUR, wenn die Lupe an ist.
+ *
+ * `overflow:visible` steht hier seit jeher, damit ein Nadelkopf am Rand
+ * nicht abgeschnitten wird - und der Treffertest arbeitet mit
+ * `elementFromPoint`, sieht also nur, was gezeichnet ist. Ein
+ * `overflow:hidden` fuer alle Faelle hat prompt das Ziehen VON OBEN
+ * kaputtgemacht: `ziehen` meldete „getroffen bis 30 px" statt 40.
+ *
+ * Vergroessert muss aber geklemmt werden, sonst schiebt sich die Karte
+ * ueber die Antwortliste. Also genau dann - und keinen Fall frueher. */
 .karte svg{width:100%;height:100%;overflow:visible}
+.karte[data-lupe]:not([data-lupe=""]) svg{overflow:hidden}
+/* Die Lupenknoepfe. Rechts unten in der Karte, uebereinander.
+   44 Punkte, wie jeder Knopf, den ein Daumen treffen soll - `beruehrung`
+   rechnet das nach. Halbdurchsichtiger Grund, damit man die Karte
+   darunter noch sieht, aber ein voller Rand, damit sie nicht im Meer
+   verschwinden. */
+.lupenknoepfe{position:absolute;right:var(--r2);bottom:var(--r2);display:flex;
+  flex-direction:column;gap:var(--r2);z-index:2}
+.lupenknopf{width:44px;height:44px;border-radius:var(--rund-voll);
+  border:var(--strich) solid var(--knopf-rand);background:color-mix(in oklch,var(--papier) 88%,transparent);
+  color:var(--tinte);font-family:var(--f-ui);font-size:var(--s2);font-weight:700;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:var(--schatten-auf)}
+.lupenknopf:active{transform:translateY(1px)}
+/* Waehrend ein Etikett gezogen wird, nehmen sie nichts an - sonst faengt
+   ein Knopf die Antwort ab, die auf das Land darunter gehoert. */
+body[data-zieht] .lupenknoepfe{pointer-events:none}
+@media (hover:hover){.lupenknopf:hover{border-color:var(--primaer-rand)}}
+/* „Ganze Karte" steht nur da, wenn es etwas zurueckzusetzen gibt.
+   Ein Knopf, der immer nichts tut, ist ein Hindernis (dieselbe
+   Entscheidung wie beim Mikrofon im Sprachmodus). */
+.karte:not([data-lupe]) .lupenknopf.ganz,
+.karte[data-lupe=""] .lupenknopf.ganz{display:none}
 /* NUR die Gebiete und ihre Trefferkreise nehmen den Finger an. Alles
    andere in der Karte ist Schmuck.
    Ohne diese Regel lag der pulsierende Ring um das gesuchte Gebiet
@@ -1018,8 +1057,14 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    aber in der Betonfarbe: er ist eine HILFE und keine Antwort, und er
    soll neben dem blauen Mikrofon nicht wie ein zweiter Weg aussehen. */
 .werkzeug .nochhoeren{color:var(--akzent)}
-.werkzeug{flex:none;display:flex;gap:var(--r3);align-items:center;justify-content:center;
-  padding-top:var(--r2)}
+/* `flex-wrap`, seit das Mikrofon ueberall dasteht (M4s).
+   In der Reihe stehen bis zu vier Dinge: Mikrofon, „nochmal hoeren",
+   „Weiss ich nicht" und der Umschalter. Auf dem iPad quer ragte der runde
+   Knopf damit sieben Punkte aus dem Fenster - gemessen von `passt`. Eine
+   Reihe, die nicht umbrechen darf, ist keine Reihe, sondern ein
+   Versprechen ueber die Breite des Geraets. */
+.werkzeug{flex:none;display:flex;flex-wrap:wrap;gap:var(--r3);align-items:center;
+  justify-content:center;padding-top:var(--r2)}
 /* Der leise Ausweg. Er soll erreichbar sein, aber nicht einladen: kein
    Fuellton, kein Rand, nur Text - und trotzdem 44 Punkte hoch, damit ein
    Daumen ihn trifft. */
@@ -1074,8 +1119,15 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    sie es nicht tat - und als hoerte sie weiter zu, nachdem sie aufgehoert
    hatte. Ein Zustand, den man sieht und der nicht stimmt, ist schlimmer
    als keiner: der Nutzer wartet auf etwas, das nicht kommt. */
-.mikro::after{content:"";position:absolute;inset:-8px;border-radius:var(--rund-voll);
-  border:var(--strich-kueste) solid var(--akzent);opacity:.18}
+/* Der Ring liegt INNEN, nicht aussen.
+ *
+ * Er stand auf `inset:-8px` und ragte damit acht Punkte ueber den Knopf
+ * hinaus. Aufgefallen ist das erst, als der Sprachmodus ab Werk an war
+ * (M4s): vorher hat `passt` den Mikrofonknopf auf keiner einzigen Groesse
+ * je gesehen, weil er ohne Sprachmodus gar nicht erst erschien. Der
+ * Fehler war die ganze Zeit da - gemessen wurde er nie. */
+.mikro::after{content:"";position:absolute;inset:2px;border-radius:var(--rund-voll);
+  border:var(--strich-kueste) solid var(--papier);opacity:.28}
 .mikro.hoert::after{opacity:.3;animation:atmen var(--d-atmen) ease-in-out infinite}
 /* Die beiden Knoepfe der Rueckfrage (F15).
    Sie stehen unter der Sprachzeile und muessen mit dem Daumen zu treffen
@@ -1429,7 +1481,10 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .kachel .umriss{width:60px;height:60px}
   .unter{max-width:52ch}
   .mikro{width:56px;height:56px}
-  .mikro::after{inset:-5px;border-width:var(--strich-stark)}
+  /* Auch hier INNEN. Dieselbe Zeile, dieselbe Ursache wie oben - und
+     der Grund, warum die erste Reparatur nicht half: die Regel steht
+     zweimal, und gepflegt wurde die falsche (Regel 6). */
+  .mikro::after{inset:2px;border-width:var(--strich-stark)}
   /* Der Zifferblock der Eltern-PIN in ZWEI Reihen statt drei. */
   .ziffern{grid-template-columns:repeat(6,52px)}
   .zi{min-height:48px}

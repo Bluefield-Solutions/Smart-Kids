@@ -1334,6 +1334,33 @@ export const PROBEN = [
     an:{ ...DIST, text:'if (false && !freiVonFlaeche' },
     sagt:'liegt auf' },
 
+  /* --- Die Lupe (M4z) ------------------------------------------------
+   *
+   * Drei Zusagen, drei Proben. Sie vergroessert. Sie zielt dabei auf das
+   * GESUCHTE Land und nicht auf die Mitte des Rahmens - die liegt auf der
+   * Mittelamerikakarte im offenen Meer, und der erste Entwurf hat das
+   * Land damit aus dem Bild geschoben. Und der Weg zurueck steht da,
+   * sobald es einen gibt. */
+  { n:'die Lupe vergrößert gar nicht mehr', tor:'ziehen', args:['--nur=lupe'],
+    bauen:true, datei:D,
+    such:'    const MAX = 8;', ersatz:'    const MAX = 1;',
+    an:{ ...DIST, text:'const MAX = 1;' },
+    sagt:'die Lupe vergrößert nicht' },
+
+  { n:'die Lupe zielt auf die Mitte statt auf das Gesuchte', tor:'ziehen',
+    args:['--nur=lupe'], bauen:true, datei:D,
+    such:'    const anker = (!umgekehrt && zielForm && zielForm.anker)',
+    ersatz:'    const anker = (false && zielForm && zielForm.anker)',
+    an:{ ...DIST, text:'const anker = (false && zielForm' },
+    sagt:'nicht mehr ganz im Kartenkasten' },
+
+  { n:'„ganze Karte" steht schon vor dem Zoomen da', tor:'ziehen',
+    args:['--nur=lupe'], bauen:true, datei:V,
+    such:'.karte:not([data-lupe]) .lupenknopf.ganz,\n.karte[data-lupe=""] .lupenknopf.ganz{display:none}',
+    ersatz:'.karte .lupenknopf.ganz{display:flex}',
+    an:{ ...DIST, text:'.karte .lupenknopf.ganz{display:flex}' },
+    sagt:'ist ein Hindernis' },
+
   { n:'es gibt gar keine Nadeln mehr', tor:'smoke', args:['--nur=umgekehrt'],
     bauen:true, datei:D,
     such:'        if (kreisAmOrt(n) * 2 < MIN_REST)',

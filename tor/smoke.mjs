@@ -3938,6 +3938,44 @@ if (laeuft('abzeichen')) try {
 
 if (laeuft('sprechen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
+
+  /* Welche Stimme die App von allein waehlt (M4s).
+   *
+   * Geprueft an einer ERFUNDENEN Stimmenliste, nicht an der des Rechners:
+   * hier stehen ein, zwei deutsche Stimmen, auf einem iPhone ein Dutzend,
+   * und genau dort ist der Fehler passiert - die App griff nach „Sandy"
+   * und „Shelley", zwei von Apples Spass-Stimmen aus iOS 17. Gemeldet
+   * wurde „eine sehr wirre, komische Stimme".
+   *
+   * Die Liste ist so gebaut, dass die falsche Wahl die BEQUEME waere: die
+   * Spass-Stimmen stehen vorn, Anna hinten. Wer die Sperre entfernt,
+   * bekommt sofort Sandy. */
+  {
+    const wahl = await p.evaluate(() => {
+      const v = (name, extra = {}) => ({ name, lang:'de-DE', localService:true,
+                                         voiceURI:name, ...extra });
+      const liste = [v('Sandy'), v('Shelley'), v('Grandpa'), v('Jester'),
+                     v('Anna'), v('Anna (Premium)'), v('Markus')];
+      return {
+        allein:  stimmeWaehlen(liste, null)?.name,
+        gewollt: stimmeWaehlen(liste, 'Shelley')?.name,
+        nurSpass: stimmeWaehlen([v('Sandy'), v('Jester')], null)?.name,
+      };
+    });
+    if (wahl.allein !== 'Anna (Premium)') merke('sprechen', new Error(
+      `die App wählt von allein „${wahl.allein}" — erwartet war „Anna (Premium)": `
+      + 'keine Spaß-Stimme, und unter gleichem Namen die bessere Fassung'));
+    // Wer eine Spass-Stimme AUSSUCHT, bekommt sie. Die Sperre gilt der
+    // automatischen Wahl, nicht dem Geschmack.
+    if (wahl.gewollt !== 'Shelley') merke('sprechen', new Error(
+      `eine ausdrücklich gewählte Stimme wird übergangen: „${wahl.gewollt}" statt „Shelley"`));
+    // Und wenn es NUR Spass-Stimmen gibt, ist stumm die falsche Antwort.
+    if (!wahl.nurSpass) merke('sprechen', new Error(
+      'gibt es nur Spaß-Stimmen, wählt die App gar keine — dann liest niemand vor'));
+    console.log(`  Stimme:                     von allein „${wahl.allein}", `
+      + `gewählt „${wahl.gewollt}", im Notfall „${wahl.nurSpass}"`);
+  }
+
   // Der Sprachmodus steht im Elternbereich. Hier wird er gesetzt, wo er
   // liegt - sonst kostet jede Prüfung vier Ziffern und drei Bildschirme.
   await stelleAblage(p, { einstellungen: { alles: { sprachmodus: true } } });
