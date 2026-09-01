@@ -659,15 +659,20 @@
       "zeit": "2026-09-01",
       "s": 77
     },
-    "das schmale Fenster bekommt wieder zwei Spalten": {
-      "commit": "8087b5e66947c192376c3f2babd73e9db8b05d07",
+    "die letzte Kachelreihe klebt wieder links": {
+      "commit": "01fa2fc5601e65911be05ab21b4ff532e91677e5",
       "zeit": "2026-09-01",
-      "s": 79
+      "s": 85
+    },
+    "das schmale Fenster bekommt wieder zwei Spalten": {
+      "commit": "01fa2fc5601e65911be05ab21b4ff532e91677e5",
+      "zeit": "2026-09-01",
+      "s": 45
     },
     "die Kachel verliert ihre Höhe": {
-      "commit": "3e0896e49a50e24adf4e36a51bed83d355af08c9",
+      "commit": "01fa2fc5601e65911be05ab21b4ff532e91677e5",
       "zeit": "2026-09-01",
-      "s": 86
+      "s": 45
     },
     "die Rückmeldetöne sind wieder ab Werk an": {
       "commit": "9aa74a7af79b8100bda370dd03112a1d7fb8e5b4",
