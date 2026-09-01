@@ -1726,6 +1726,19 @@ export const PROBEN = [
     an:{ ...DIST, text:'height:60%;max-width:52%' },
     sagt:'Bild pt' },
 
+  /* Die letzte Reihe klebt wieder links (Q9).
+   *
+   * Der Eingriff macht aus dem zentrierten Fluss einen linksbuendigen.
+   * Gemessen stand die letzte Reihe dann 138 bis 278 Punkte aus der Mitte,
+   * auf zwei Groessen mit einer einzelnen Kachel ganz aussen. Die Zusage
+   * ist eine Zahl in `passt`: hoechstens zwei Punkte. */
+  { n:'die letzte Kachelreihe klebt wieder links', tor:'passt', bauen:true,
+    args:['--teil=0/5'], datei:V,
+    such:'.wahl{display:flex;flex-wrap:wrap;gap:var(--r4);justify-content:center;',
+    ersatz:'.wahl{display:flex;flex-wrap:wrap;gap:var(--r4);justify-content:flex-start;',
+    an:{ ...DIST, text:'flex-wrap:wrap;gap:var(--r4);justify-content:flex-start' },
+    sagt:'aus der Mitte' },
+
   /* Das schmale Fenster bekommt wieder zwei Spalten statt drei (Q5).
    *
    * Nachgezaehlt, indem Kacheln dazugelegt wurden: mit zwei Spalten passen
