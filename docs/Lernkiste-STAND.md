@@ -7598,3 +7598,83 @@ falsch — die Zahlen sind, wie sie sind, weil die Kachel so groß ist, wie sie 
 Verlangen kann man, dass es nicht schlimmer wird.
 
 `npm run tor` grün in 136,9 s. 219 Gegenproben.
+
+## Q8 — die neuen Kacheln: Bild oben, Name darunter
+
+Gebaut, und zwar nachdem ich zweimal behauptet hatte, es gehe nicht. Der zweite
+Anlass war ein **Rechenfehler von mir**, und er ist der eigentliche Merksatz
+dieser Runde.
+
+### Die Rechnung, an der es zweimal gescheitert ist
+
+Die Kachelwand hat auf dem Zielgerät (iPhone quer **mit** Leiste) **266 Punkte
+Höhe**. Ich hatte daraus geschlossen, für die Kacheln blieben rund 214 Punkte,
+und daraus folgte: eine höhere Kachel passt nicht. Die 266 sind aber nicht die
+Grenze für *eine* Reihe, sondern für **alle**:
+
+| | je Reihe | Kachel | **Bild** |
+|---|---|---|---|
+| vier Reihen (heute) | 66 pt | 56 pt | 46 pt |
+| **zwei Reihen** | **133 pt** | **112 pt** | **50 pt** |
+
+Die Höhe war die ganze Zeit da — sie steckte in der **Zahl der Reihen**. Deshalb
+ist die Kachel jetzt schmal: **fünf bis sechs je Reihe** statt drei, damit neun
+Ebenen in zwei Reihen stehen. Wer die Spalten wieder breiter macht, bekommt drei
+Reihen und damit ein kleineres Bild als vorher.
+
+### Was dafür weichen musste
+
+**„von vorne" steht nicht mehr an der Kachel.** Es hing darunter und nur an
+Kacheln *mit* Fortschritt: rund 37 Punkte je Reihe, und die Reihe franste aus,
+weil die Zeile mal da war und mal nicht. Den Knopf gab es ohnehin zweimal — im
+Pausenbildschirm tut er dasselbe, mit derselben Rückfrage. Der Weg ist jetzt:
+Ebene betreten, Kreuz, „von vorne". Ein Tipp mehr, und niemand verliert etwas.
+
+**Die Überzeile („LÄNDER IN", „DEUTSCHLAND") ist weg.** Sie stand oben in der
+Kachel — dort liegt jetzt das Bild, und `lesbarkeit` hat sofort gemeldet, was das
+kostet: 4,34:1 statt 4,5 am Tag, 3,35:1 am Abend. Auf dem Telefon war sie längst
+ausgeblendet; jetzt gilt das überall, statt auf dem großen Schirm etwas anderes
+zu zeigen.
+
+### Das Ergebnis, gemessen
+
+Zielgerät, Anteil der Farbe:
+
+| Kachel | Bild vorher | **jetzt** | unter dem Namen vorher | **jetzt** |
+|---|---|---|---|---|
+| Kontinente | 81 pt | **84** | 45 % | **0 %** |
+| Nordamerika | 63 pt | **66** | 78 % | **0 %** |
+| Mittelamerika | 62 pt | **64** | 66 % | **0 %** |
+| Bundesländer | 33 pt | **34** | 59 % | **0 %** |
+| Südamerika | 25 pt | **26** | 10 % | **0 %** |
+
+Die Bilder sind kaum größer — der Gewinn ist, dass sie **ganz zu sehen** sind.
+Das war auch das Problem: nicht die Größe, sondern die Sicht.
+
+### Was es kostet
+
+Die Wand trägt jetzt **10 bis 12 Kacheln** statt 16 bis 17. Bei neun Ebenen (zehn
+für die Eltern) heißt das: **Platz für höchstens zwei weitere**, auf dem
+engsten Gerät für keine. Die Ratsche in `tor/masse-stand.json` hält alle 266
+Zahlen fest; wer die Wand weiter füllt, sieht es dort, bevor es jemand auf dem
+Telefon sieht.
+
+Und das Startbündel ist von 249,5 auf 262,1 KB gewachsen — davon lagen 5,0 %
+schon vor dieser Runde vor (Grönland und die Ausschnittdaten). Bestätigt, weil
+gewollt; die Grenze liegt bei 400 KB.
+
+### Drei Fehlversuche, die im Code stehen
+
+- **Feste Bildhöhe (58 px).** Auf dem iPad ist die Kachel höher, das Bild blieb
+  bei 58 — und wurde damit *kleiner* als das alte Wasserzeichen (Asien 69 statt
+  125). Eine feste Zahl in einem Kasten, der mitwächst, ist ein Rückschritt mit
+  Ansage. Gefunden hat es die Ratsche, nicht ich.
+- **`top` + `bottom` + `height:auto`.** Bei einem SVG nimmt ein ersetztes Element
+  dann seine *eigene* Höhe: Südamerika wurde 109 Punkte hoch und lag wieder auf
+  dem Namen.
+- **Entwürfe am frischen Profil.** Beide Entwurfsbilder zeigten einen Bildschirm
+  ohne „von vorne"-Zeilen — einen Zustand, den die Kinder nach dem ersten Spielen
+  nie wieder sehen. Ein Entwurf, der einen unerreichbaren Zustand abbildet,
+  beweist so wenig wie ein Tor, das nichts meldet.
+
+`npm run tor` grün in 177,2 s.

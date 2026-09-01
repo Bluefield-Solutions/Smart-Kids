@@ -1830,8 +1830,7 @@ async function ebenenwahl(){
         </button>
         <button class="knopf rund schau" data-schau="${b.id}"
                 aria-label="${b.titel} anschauen" title="Anschauen">${ZEI('auge', 22)}</button>
-        <div class="kachelknoepfe">${b.gesammelt ? `
-          <button class="leise mini" data-neu="${b.id}">von vorne</button>` : ''}${
+        <div class="kachelknoepfe">${
           /* Der Test steht erst da, wenn die Ebene ganz gesammelt ist (B2).
              Vorher waere er kein „Test am Ende", sondern eine zweite Art
              zu ueben - und der Pokal waere nichts wert. */
@@ -1858,36 +1857,19 @@ async function ebenenwahl(){
   s.querySelectorAll('[data-test]').forEach(b=>b.onclick=(ev)=>{
     ev.stopPropagation(); starten(b.dataset.test, true); });
 
-  // „Von vorne" - und zwar fuer das Kind, nicht hinter der Eltern-PIN.
-  //
-  // Wer alles gekonnt hat, kommt sonst nicht mehr an die Aufgaben heran:
-  // die Ebene ist voll, und der einzige Weg zurueck ging ueber „Alles von
-  // Fiona loeschen" im Elternbereich - das loescht das ganze Profil.
-  //
-  // Zwei Tipper, nicht einer: der Knopf steht direkt neben der Kachel, und
-  // ein Fehlgriff wuerde eine Woche Uebung wegraeumen. Der zweite Tipper
-  // sagt ausdruecklich, was verschwindet.
-  s.querySelectorAll('[data-neu]').forEach(b=>b.onclick=async(ev)=>{
-    ev.stopPropagation();
-    const id = b.dataset.neu;
-    const titel = balken.find(x=>x.id===id)?.titel || 'diese Ebene';
-    if (b.dataset.sicher!=='ja'){
-      s.querySelectorAll('[data-neu]').forEach(x=>{
-        if (x!==b){ delete x.dataset.sicher; x.textContent='von vorne'; } });
-      b.dataset.sicher='ja';
-      // Kurz genug fuer EINE Zeile. „Wirklich? Kontinente von vorne" brach
-      // auf dem iPhone quer um und schob die zweite Kachelreihe nach unten -
-      // eine Nachfrage, die das Raster zerreisst, sieht aus wie ein Fehler.
-      // Um WAS es geht, steht in der Kachel direkt darueber.
-      b.textContent='Wirklich löschen?';
-      sagen(`Soll ${titel} wirklich von vorne losgehen?`);
-      return;
-    }
-    await Ablage.loesche('fortschritt', `${P.id}:${id}`).catch(()=>{});
-    if (Sitzung && Sitzung.ebeneId===id) Stand = {};
-    sagen(`${titel} fängt wieder von vorne an.`);
-    zeige(ebenenwahl);
-  });
+  /* „von vorne" steht NICHT mehr an der Kachel (Q8).
+   *
+   * Es gab den Knopf zweimal - hier und im Pausenbildschirm einer Ebene -,
+   * und beide taten dasselbe: Fortschritt loeschen, Leitner-Stand leeren,
+   * zwei Tipper zur Sicherheit. Regel 6. Der Weg dorthin ist jetzt: Ebene
+   * betreten, Kreuz, „von vorne" - ein Tipp mehr, und niemand verliert
+   * etwas. Wer alles gekonnt hat, kommt weiterhin ohne den Elternbereich
+   * an seine Aufgaben.
+   *
+   * Weg musste er aus einem anderen Grund. Er hing UNTER der Kachel und
+   * nur an Kacheln MIT Fortschritt: das kostete rund 37 Punkte je Reihe
+   * und liess die Reihe ausfransen, weil die Zeile mal da war und mal
+   * nicht. Ohne ihn passt die hohe Kachelform, mit ihr nicht. */
   ansagen(`${welt.name}. Womit möchtest du anfangen? `
     + `${aufzaehlen(balken.map(b=>b.titel))}?`);
   return s;

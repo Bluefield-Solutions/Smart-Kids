@@ -1,13 +1,13 @@
 {
   "bestaetigt": {
     "zeit": "2026-09-01",
-    "start": 249.5,
-    "geometrie": 27.6,
+    "start": 262.1,
+    "geometrie": 27.5,
     "schrift": 51.7,
     "ebenen": {
       "laender-europa.json": 109.2,
       "laender-asien.json": 98.7,
-      "laender-nordamerika.json": 75,
+      "laender-nordamerika.json": 75.1,
       "laender-afrika.json": 68.6,
       "laender-suedamerika.json": 62.6,
       "deutschland.json": 56.3,
@@ -16,8 +16,8 @@
   },
   "gesehen": {
     "zeit": "2026-09-01",
-    "start": 261.5,
-    "geometrie": 27.6,
+    "start": 262.1,
+    "geometrie": 27.5,
     "schrift": 51.7,
     "ebenen": {
       "laender-europa.json": 109.2,

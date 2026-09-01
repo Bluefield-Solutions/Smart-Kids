@@ -1303,40 +1303,44 @@ if (laeuft('ablage')) try {
         await bis(p, () => !!document.querySelector('.schirm.da .kachel .balken'), 4000);
       }
     }
-    const knopf = await p.$('.schirm.da [data-neu="bundeslaender"]');
-    if (!knopf) merke('vonvorne', new Error(
-      'nach zwei Sitzungen steht kein „von vorne" an den Bundesländern'));
-    else {
-      const erst = await knopf.textContent();
-      await knopf.click();
-      // Der Knopf fragt nach ODER ist weg (dann hat er sofort geloescht -
-      // genau der Befund, den die Pruefung gleich meldet).
-      await bis(p, () => { const k = document.querySelector('.schirm.da [data-neu="bundeslaender"]');
-        return !k || /Wirklich/.test(k.textContent); }, 3000);
-      // Der Knopf kann nach dem ersten Tipper VERSCHWUNDEN sein - naemlich
-      // genau dann, wenn er schon geloescht hat. Das ist der Befund, nicht
-      // ein Fehler im Test: der erste Anlauf stuerzte hier ab, statt ihn zu
-      // melden, und die Gegenprobe schlug „aus einem anderen Grund" an.
-      const zweiter = await p.$('.schirm.da [data-neu="bundeslaender"]');
-      const nachfrage = zweiter ? (await zweiter.textContent()) : '(weg)';
-      if (!/Wirklich/.test(nachfrage)) merke('vonvorne', new Error(
-        `der erste Tipper löscht sofort — er fragt nicht nach (steht: „${nachfrage.trim()}")`));
-      if (zweiter) await zweiter.click();
-      // Ist wirklich geloescht, verschwindet der Knopf - es gibt dann
-      // keinen Fortschritt mehr, den man zuruecksetzen koennte. Bleibt er
-      // stehen, laeuft die Grenze ab und die Zaehlung unten meldet es.
-      await bis(p, () => !document.querySelector('.schirm.da [data-neu="bundeslaender"]'), 4000);
-      const rest = await standGroesse(p, 'fiona:bundeslaender');
-      console.log(`  „Von vorne":                „${erst.trim()}" → nachgefragt → `
-        + `${rest} Gegenstände übrig`);
-      if (rest !== 0) merke('vonvorne', new Error(
-        `nach „von vorne" stehen noch ${rest} Gegenstände im Leitner-Stand`));
-      const weg = await p.$('.schirm.da [data-neu="bundeslaender"]');
-      if (weg) merke('vonvorne', new Error(
-        'der Knopf steht noch da, obwohl es keinen Fortschritt mehr gibt'));
-      // Das Forscherbuch braucht Aufkleber - die Bundeslaender sind jetzt
-      // leer, aber die Kontinente aus der ersten Sitzung stehen noch.
-    }
+    /* „von vorne" steht seit Q8 NICHT mehr an der Kachel, sondern nur noch
+     * im Pausenbildschirm einer Ebene. Geprueft wird deshalb beides: dass
+     * es an der Kachel WEG ist, und dass der Weg darueber trotzdem
+     * zurueckfuehrt.
+     *
+     * Das Weg-Sein ist die eigentliche Zusage: an ihm haengt die Hoehe der
+     * Kachel, und ohne diese Hoehe passt das Kachelbild nicht. Ein Knopf,
+     * der „nur mal eben" zurueckkommt, nimmt sie wieder weg. */
+    const anDerKachel = await p.$('.schirm.da .wahl.ebenen [data-neu]');
+    if (anDerKachel) merke('vonvorne', new Error(
+      'an der Kachel steht wieder ein „von vorne" — es kostet die Höhe, '
+      + 'von der das Kachelbild lebt'));
+
+    await p.click('.schirm.da [data-ebene="bundeslaender"]');
+    await durchVorlaufWenn(p);
+    await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    await p.click('.schirm.da #zur');
+    await p.waitForSelector('.schirm.da #null', { timeout: 5000 });
+    const erst = (await p.$eval('.schirm.da #null', (e) => e.textContent)).trim();
+    await p.click('.schirm.da #null');
+    await bis(p, () => /Wirklich/.test(
+      document.querySelector('.schirm.da #null')?.textContent || ''), 3000);
+    const nachfrage = (await p.$eval('.schirm.da #null', (e) => e.textContent)).trim();
+    if (!/Wirklich/.test(nachfrage)) merke('vonvorne', new Error(
+      `der erste Tipper löscht sofort — er fragt nicht nach (steht: „${nachfrage}")`));
+    await p.click('.schirm.da #null');
+    await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+    const rest = await standGroesse(p, 'fiona:bundeslaender');
+    console.log(`  „Von vorne" in der Pause:   „${erst}" → nachgefragt → `
+      + `${rest} Gegenstände übrig`);
+    if (rest !== 0) merke('vonvorne', new Error(
+      `nach „von vorne" stehen noch ${rest} Gegenstände im Leitner-Stand`));
+    // Zurueck auf die Ebenenwahl - das Forscherbuch braucht die Aufkleber
+    // der Kontinente aus der ersten Sitzung.
+    await p.click('.schirm.da #zur');
+    await p.waitForSelector('.schirm.da #raus', { timeout: 5000 });
+    await p.click('.schirm.da #raus');
+    await p.waitForSelector('.schirm.da [data-ebene]', { timeout: 5000 });
   }
 
 

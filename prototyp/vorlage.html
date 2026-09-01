@@ -458,16 +458,51 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Kachelart einmal; am Aufruf steht keine Zahl mehr. */
 .kachel .silhouette{position:absolute;right:0;top:50%;translate:0 -50%;
   height:86%;max-width:52%;opacity:.34;pointer-events:none;color:var(--ton)}
-/* Auf der Ebenenwahl rueckt das Bild UNTER dem Vorschau-Knopf weg (Q4).
-   Der sitzt oben rechts in der Kachel, 44 Punkte gross, und die Kachel ist
-   auf dem Zielgeraet rund 55 Punkte hoch - das Bild lag also fast
-   vollstaendig darunter. Gemessen mit `passt`: bis zu 52 % der Farbe
-   verdeckt, am schlimmsten bei Afrika und Suedamerika, deren Umrisse
-   ungefaehr quadratisch sind und damit genau die Form des Knopfes haben.
-   Fuer Fiona IST dieses Bild der Name; ein Name unter einem Knopf ist
-   keiner. Die 44 sind die Trefferflaeche des Knopfes, keine gewaehlte
-   Zahl - sie steht als MIN_PT auch in `passt` und in `beruehrung`. */
-.wahl.ebenen .kachel .silhouette{right:calc(44px + var(--r0))}
+/* Die Ebenenwahl: das BILD OBEN, der Name darunter (Q8).
+ *
+ * Bis Q7 war das Bild ein Wasserzeichen HINTER dem Namen. Gemessen lagen
+ * davon bei Nordamerika 78 % unter den eigenen Buchstaben, bei
+ * Mittelamerika 66 %, bei den Bundeslaendern 59 %. Fuer Fiona IST das Bild
+ * der Name - sie liest nicht -, und ein Name unter Buchstaben ist keiner.
+ *
+ * DIE RECHNUNG, an der es zweimal gescheitert ist. Die Wand hat auf dem
+ * Zielgeraet (iPhone quer MIT Leiste) 266 Punkte Hoehe. Verteilt auf VIER
+ * Reihen sind das 66 je Reihe - eine 56er-Kachel mit einem 46er
+ * Wasserzeichen. Verteilt auf ZWEI Reihen sind es 133, also eine
+ * 123er-Kachel mit 59 Punkten fuer das Bild. Die Hoehe ist da; sie steckt
+ * in der Zahl der Reihen.
+ *
+ * Deshalb ist die Kachel schmal: FUENF je Reihe statt drei, damit neun
+ * Ebenen in zwei Reihen stehen. Wer hier die Spalten wieder breiter macht,
+ * bekommt drei Reihen und damit ein kleineres Bild als vorher.
+ *
+ * Der Vorschau-Knopf sitzt unten rechts und traegt hier keinen Ring: oben
+ * beruehrte er die Ecke des Bildes (bei „Kontinente" lag er auf
+ * Groenland), mit Ring stiess er an die Enden der langen Namen. Seine
+ * Trefferflaeche bleibt 44 Punkte - `passt` misst sie, nicht den Ring. */
+.wahl.ebenen .kachel{min-height:112px;justify-content:flex-end;
+  padding:var(--r2) var(--r1)}
+/* Die Hoehe des Bildes haengt an der Kachel, nicht an einer festen Zahl:
+   auf dem iPad ist die Kachel hoeher, und eine feste Zahl haette das Bild
+   dort KLEINER gemacht als das alte Wasserzeichen (gemessen: Asien 69
+   statt 125). `height:auto` mit `top` und `bottom` geht bei einem SVG
+   nicht - ein ersetztes Element nimmt dann seine eigene Hoehe, und
+   Suedamerika wurde 109 Punkte hoch. Die 62 sind Namenszeile plus
+   Fortschrittszeile plus Rand. */
+.wahl.ebenen .kachel .silhouette{left:50%;right:auto;top:var(--r1);bottom:auto;
+  height:calc(100% - 62px);translate:-50% 0;max-width:82%;opacity:.9}
+/* Die Ueberzeile („LÄNDER IN", „DEUTSCHLAND") faellt hier weg. Sie stand
+   bisher OBEN in der Kachel - dort liegt jetzt das Bild, und `lesbarkeit`
+   hat sofort gemeldet, was das kostet: 4,34:1 statt 4,5 am Tag, 3,35:1 am
+   Abend. Auf dem Telefon war sie ohnehin schon ausgeblendet, mit der
+   Begruendung, dass die Farbe die Einordnung mittraegt; jetzt gilt das
+   ueberall, statt auf dem grossen Schirm etwas anderes zu zeigen. */
+.wahl.ebenen .kachel .ueber{display:none}
+.wahl.ebenen .kachel .name{font-size:var(--s0);text-align:center;width:100%}
+/* Platz fuer das Auge unten rechts - eine Trefferflaeche breit. */
+.wahl.ebenen .kachelfuss{padding-right:var(--r8)}
+.wahl.ebenen .kachelpaar .schau{top:auto;bottom:0;right:0;
+  background:transparent;border-color:transparent;box-shadow:none}
 .kachel.welt .silhouette{height:80%;max-width:76%}
 .kachel .silhouette path{fill:currentColor}
 /* Die Rechenzeichen werden gezogen, nicht gefuellt. */
@@ -1509,6 +1544,10 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .kachel .ueber{display:none}
   .kachel .name{font-size:var(--s1)}
   .wahl{grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr))}
+  /* Fuenf je Reihe, damit neun Ebenen in ZWEI Reihen stehen - daran haengt
+     die Hoehe des Kachelbildes (siehe oben). 120 Punkte, weil das schmalste
+     Fenster hier 667 misst und fuenf Spalten samt Abstand hineinpassen. */
+  .wahl.ebenen{grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr))}
   /* Die letzte Kachelreihe lag 3 Punkte im Streifen des iPhone. Die vier
      Punkte kommen aus dem Abstand ZWISCHEN den Kacheln, nicht aus der
      Auskunft in ihnen. */

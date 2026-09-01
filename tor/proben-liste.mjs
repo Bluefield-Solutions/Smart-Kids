@@ -1762,12 +1762,19 @@ export const PROBEN = [
    * bis Q4 niemand, und der Knopf verdeckte bis zu 52 % der Farbe. Der
    * Eingriff nimmt die eine Zeile heraus, die das Bild an ihm vorbei
    * rueckt. */
-  { n:'das Kachelbild liegt wieder unter dem Knopf', tor:'passt', bauen:true,
+  /* Die hohe Kachel (Q8) - an ihr haengt die Groesse des Bildes.
+   *
+   * Der Eingriff nimmt der Kachel ihre Mindesthoehe. Sie faellt dann auf
+   * die Hoehe ihres Inhalts zusammen, das Bild bekommt `100% - 62px` von
+   * fast nichts, und die Ratsche in `tor/masse-stand.json` meldet den
+   * Rueckschritt. Ein Soll gibt es hier nicht - die Zahl ist, was sie ist,
+   * weil die Wand so hoch ist. Verlangen kann man, dass sie nicht faellt. */
+  { n:'die Kachel verliert ihre Höhe', tor:'passt', bauen:true,
     args:['--teil=0/5'], datei:V,
-    such:'.wahl.ebenen .kachel .silhouette{right:calc(44px + var(--r0))}',
-    ersatz:'',
-    an:{ ...DIST, fehlt:'.wahl.ebenen .kachel .silhouette{right:calc' },
-    sagt:'verdeckt' },
+    such:'.wahl.ebenen .kachel{min-height:112px;justify-content:flex-end;',
+    ersatz:'.wahl.ebenen .kachel{justify-content:flex-end;',
+    an:{ ...DIST, fehlt:'.wahl.ebenen .kachel{min-height:112px' },
+    sagt:'Bild pt' },
 
   /* Die Toene sind ab Werk aus (Q4).
    *
@@ -1848,18 +1855,26 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'transition-delay:calc(var(--d-schirm) / 2)}' },
     sagt:'Doppelbild' },
 
-  // „Von vorne" muss WIRKLICH loeschen - ein Knopf, der dasteht und nichts
-  // tut, ist schlimmer als keiner.
-  { n:'„von vorne" löscht nichts', tor:'smoke', args:['--nur=ablage'], bauen:true, datei:D,
-    such:"    await Ablage.loesche('fortschritt', `${P.id}:${id}`).catch(()=>{});",
-    ersatz:'',
-    an:{ ...DIST, fehlt:"await Ablage.loesche('fortschritt', `${P.id}:${id}`)" },
-    sagt:'Gegenstände im Leitner-Stand' },
-  // Und es muss nachfragen: ein Fehlgriff raeumt eine Woche Uebung weg.
-  { n:'„von vorne" löscht schon beim ersten Tipper', tor:'smoke', args:['--nur=ablage'], bauen:true, datei:D,
-    such:"    if (b.dataset.sicher!=='ja'){", ersatz:'    if (false){',
-    an:{ ...DIST, text:'if (false){' },
-    sagt:'fragt nicht nach' },
+  /* HIER STANDEN ZWEI: „„von vorne" löscht nichts" und „„von vorne" löscht
+   * schon beim ersten Tipper".
+   *
+   * Beide zielten auf den Knopf AN DER KACHEL, und den gibt es seit Q8
+   * nicht mehr - er hing unter der Kachel, kostete rund 37 Punkte je Reihe
+   * und stand damit der hohen Kachelform im Weg. Was er tat, tut der Knopf
+   * im Pausenbildschirm, und der ist seit langem mit zwei eigenen Proben
+   * belegt: „„von vorne" in der Pause löscht nichts" und „nach „von vorne"
+   * läuft die alte Sitzung weiter". Beide Zusagen sind also weiter
+   * bezeugt, nur an einer Stelle statt an zweien.
+   *
+   * Neu ist die Zusage, dass er NICHT wiederkommt - daran haengt die Hoehe
+   * des Kachelbildes. Die Probe darunter setzt ihn zurueck. */
+  { n:'„von vorne" steht wieder an der Kachel', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'        <div class="kachelknoepfe">${',
+    ersatz:'        <div class="kachelknoepfe">${b.gesammelt ? `\n'
+         + '          <button class="leise mini" data-neu="${b.id}">von vorne</button>` : \'\'}${',
+    an:{ ...DIST, text:'data-neu="${b.id}">von vorne' },
+    sagt:'an der Kachel steht wieder' },
 
   // Der Umschalter: ohne ihn spielen beide Kinder denselben Weg, und die
   // Haelfte der Bedienung ist ungeprueft.
