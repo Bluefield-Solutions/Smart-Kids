@@ -1923,9 +1923,15 @@ export const PROBEN = [
    * angesetzte Sechs wieder erkannt werden. Faellt einer aus, ist die
    * Runde still zurueckgedreht - und genau das wuerde niemandem
    * auffallen, weil die Prozentzahlen daneben kaum zucken. */
+  /* `mehrfach`, und zwar mit Grund: der Querstrich steht in BEIDEN
+     Sieben-Formen, der zweizuegigen und der dreizuegigen. Nur eine davon
+     zu entfernen beweist nichts - die andere faengt den Fall auf, das Tor
+     bleibt gruen, und die Probe sieht aus wie bestanden. Genau so ist sie
+     im ersten Anlauf gescheitert. */
   { n:'die Sieben verliert ihre Form mit Querstrich', tor:'schreiben', datei:S,
-    suchRegex:/auch:\[\['M26 14 L74 14 L44 90', 'M36 54 L64 54'\],/,
-    ersatzFn:() => "auch:[['M26 14 L74 14 L44 90'],",
+    mehrfach:true,
+    suchRegex:/, 'M36 54 L64 54'/g,
+    ersatzFn:() => '',
     an:{ datei:S, fehlt:"'M36 54 L64 54'" },
     sagt:'Querstrich' },
 
