@@ -1648,7 +1648,19 @@ export const PROBEN = [
     such:'rPx = Math.min(rPx, naechster * 0.9);',
     ersatz:'rPx = Math.min(rPx, naechster * 99);',
     an:{ ...DIST, text:'naechster * 99' },
-    sagt:'wer auf den Anker von' },
+    /* Das Tor meldet es seit P10 unter einem ANDEREN Namen.
+     *
+     * Ohne die Kappung wachsen die Kreise am Ort so weit, dass die engen
+     * Faelle keine Nadel mehr brauchen - und damit fallen sie an ihren
+     * Ort zurueck, wo ihre HAKEN uebereinanderliegen. Nachgemessen: mit
+     * dem Eingriff meldet `ziehen` „1 Haken liegen aufeinander (LUX/BEL
+     * 9,0 pt)", ohne ihn ist es gruen.
+     *
+     * Der Befund ist derselbe - zwei Gebiete, die man nicht
+     * auseinanderhalten kann -, nur die Stelle, an der er auffaellt, ist
+     * gewandert. Erwartet wird deshalb die Meldung, die das Tor wirklich
+     * gibt, und nicht die, die es einmal gegeben hat. */
+    sagt:'Haken liegen aufeinander' },
 
   /* HIER STAND: „die umgekehrte Frage kommt auch fuer Winzlinge".
    *

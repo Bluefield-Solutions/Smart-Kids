@@ -617,7 +617,7 @@
     "der Boden verschluckt wieder den Nachbarn": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
       "zeit": "2026-08-31",
-      "s": 47
+      "s": 44
     },
     "keine Nachsicht — nur der exakte Punkt zählt": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -690,9 +690,9 @@
       "s": 117
     },
     "die Aufgabe wird nicht mehr vorgelesen": {
-      "commit": "99ce2ad75c1ffd5f75d794cc7775564c2b2bebbc",
-      "zeit": "2026-08-31",
-      "s": 139
+      "commit": "8006e2e9943f0cdd5fa344d75572a65bc53b3d61",
+      "zeit": "2026-09-01",
+      "s": 114
     },
     "die Ansage hängt nicht mehr am Kind": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -837,7 +837,7 @@
     "eine Spalte fehlt in der Profiltabelle": {
       "commit": "9ec939823abc4cdc85b658955558f5b7617ffc4d",
       "zeit": "2026-08-31",
-      "s": 12
+      "s": 68
     },
     "der Fehlgriff auf der Karte wird nicht mehr benannt": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
@@ -957,7 +957,7 @@
     "die Buchstabenkarten rutschen wieder zusammen": {
       "commit": "14a5632f1629157abc17e68836b82e12a325d9c0",
       "zeit": "2026-08-31",
-      "s": 134
+      "s": 129
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
       "commit": "b2c65fbb2386c301ef65b6f5d55ad85c8a2fb56e",
