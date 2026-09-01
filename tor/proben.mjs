@@ -533,7 +533,25 @@ const angeschlagen = new Set();
  * der Preis dafuer, dass „schlaegt an" wirklich heisst, was es sagt.
  */
 const gesund = new Map();
+/* Vor dem ERSTEN gesunden Lauf wird gebaut - einmal je Wegwerf-Kopie.
+ *
+ * `dist/` steht nicht in Git. Eine frische Kopie hat also keins, und der
+ * gesunde Vergleichslauf - der beweisen soll, dass das Tor OHNE den
+ * Eingriff gruen ist - lief gegen ein Verzeichnis, das es nicht gab.
+ * Ergebnis: „war schon vorher rot", und die Probe bewies nichts.
+ *
+ * Gemessen im vollen Lauf vom 01.09.2026: ACHT Proben sind so
+ * ausgefallen, alle im Rauchtest, alle mit langen Laufzeiten. Und es war
+ * eine Frage der REIHENFOLGE - sobald irgendeine Probe mit `bauen:true`
+ * durch war, lag ein `dist/` da, und die naechsten Vergleichslaeufe
+ * gingen gut. Ein Probenlauf, dessen Ergebnis von der Reihenfolge
+ * abhaengt, ist kein Beweis, sondern eine Wuerfelei.
+ *
+ * Einmal, nicht je Probe: der Bau kostet zweieinhalb Sekunden, und die
+ * Quellen sind zu diesem Zeitpunkt immer die eingecheckten. */
+let gebaut = false;
 const istGesund = (p) => {
+  if (!gebaut) { gebaut = true; lauf('bauen'); }
   // `ohneSofort` gehoert in den Schluessel: der gesunde Lauf muss DIESELBEN
   // Argumente haben wie die Probe, sonst vergleicht er zwei verschiedene
   // Laeufe.

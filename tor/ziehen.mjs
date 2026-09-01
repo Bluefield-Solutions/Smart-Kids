@@ -631,6 +631,28 @@ if (laeuft('treffer')) {
       + (m.nichtTippbar.length ? ` · nicht antippbar: ${m.nichtTippbar.join(', ')}` : ''));
     if (m.stufen?.length) {
       const zahl = (w) => m.stufen.filter(x => x.wie === w);
+      /* VERZICHT ist ab jetzt ein Fehler, nicht nur eine Zeile im Bericht.
+       *
+       * „Verzicht" heisst: das Gebiet ist zu klein zum Antippen UND es hat
+       * keine Nadel bekommen - der Finger hat keine Stelle, an der er es
+       * treffen koennte. P7 hat dafuer eine Notbremse in die App gebaut
+       * (`tippbar()`: dann wird nach diesem Gebiet nicht umgekehrt
+       * gefragt), und P10 hat mit den Nadeln dafuer gesorgt, dass der Fall
+       * nicht mehr vorkommt.
+       *
+       * Gemessen am 01.09.2026 ueber alle sechs Kartenebenen und zwei
+       * Fenstergroessen (844 x 390 und 568 x 320): NULL Verzichtsfaelle.
+       * Die Notbremse in der App ist damit unerreichbar - und die
+       * Gegenprobe, die sie beweisen sollte, konnte seit P10 nicht mehr
+       * anschlagen. Sie stand vier Runden lang als „beweist nichts" im
+       * Bericht, ohne dass jemand nachgesehen hat, warum.
+       *
+       * Die Zusage wandert deshalb von der Notbremse ins TOR: der Fall
+       * darf gar nicht erst entstehen. Das ist pruefbar, die Notbremse
+       * war es nicht. */
+      for (const x of zahl('Verzicht')) fehler.push(
+        `${ebene}: ${x.id} ist zu klein zum Antippen (${x.kreis} pt) und hat keine Nadel `
+        + 'bekommen — es gibt keine Stelle, an der ein Finger dieses Gebiet trifft');
       zeilen.push('        '
         + ['Nadel', 'am Ort', 'Verzicht'].map(w => `${w} ${zahl(w).length}`).join(' · ')
         + `  —  am Ort: ${zahl('am Ort').map(x => `${x.id} ${x.kreis}`).join(', ') || '(keine)'}`

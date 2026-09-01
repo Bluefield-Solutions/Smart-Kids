@@ -1383,6 +1383,25 @@ let nadelSchluessel = '', nadelPlan = [];
    44 Punkte, mit einem Faden zum Gebiet. `kreisPx` traegt dann die Nadel,
    nicht den gekappten Kreis - und die Frage kommt wieder. Nur wo auch
    dafuer kein Platz ist, bleibt es beim Verzicht. */
+/* Die Notbremse aus P7 - und was aus ihr geworden ist.
+ *
+ * Sie sagt: nach einem Gebiet, das der Finger nicht treffen kann, wird
+ * nicht umgekehrt gefragt. Seit P10 die Nadeln gebracht hat, gibt es
+ * diesen Fall nicht mehr: gemessen ueber alle sechs Kartenebenen und zwei
+ * Fenstergroessen sind es NULL Faelle, weil jedes zu kleine Gebiet eine
+ * Nadel mit vollen 44 Punkten bekommt.
+ *
+ * Damit ist sie unerreichbar - und die Gegenprobe dazu konnte seit P10
+ * nicht mehr anschlagen. Die Zusage steht jetzt im Tor `ziehen`: ein
+ * Gebiet ohne Trefferstelle ist dort ein FEHLER, der Fall darf gar nicht
+ * erst entstehen.
+ *
+ * Die Zeile bleibt trotzdem stehen. Sie kostet nichts, und sie ist die
+ * richtige Antwort fuer den Tag, an dem eine siebte Karte doch einen Fall
+ * hat, den keine Nadel rettet - dann meldet das Tor ihn, und bis er
+ * repariert ist, stellt die App wenigstens keine unbeantwortbare Frage.
+ * Was sie NICHT mehr ist: ein Beweis. Deshalb steht keine Gegenprobe mehr
+ * daneben, die so tut. */
 const tippbar = (id) => !kreisPx.has(id) || kreisPx.get(id) >= MIN_REST;
 
 const NAMEN = {};

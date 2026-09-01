@@ -1361,6 +1361,18 @@ export const PROBEN = [
     an:{ ...DIST, text:'.karte .lupenknopf.ganz{display:flex}' },
     sagt:'ist ein Hindernis' },
 
+  /* Und die neue Zusage: KEIN Gebiet ohne Trefferstelle.
+   *
+   * Der Eingriff laesst die Nadelsuche gar nicht erst laufen (die Schleife
+   * findet nie einen Platz). Dann fallen die kleinen Gebiete auf ihren
+   * winzigen Kreis am Ort zurueck - und genau das muss `ziehen` melden. */
+  { n:'kein Gebiet hat mehr eine Trefferstelle', tor:'ziehen',
+    args:['--nur=treffer'], bauen:true, datei:D,
+    such:'for (let r = MIN_PT; r <= 170 && !platz; r += 10) {',
+    ersatz:'for (let r = MIN_PT; r < MIN_PT && !platz; r += 10) {',
+    an:{ ...DIST, text:'r < MIN_PT && !platz' },
+    sagt:'es gibt keine Stelle, an der ein Finger' },
+
   { n:'es gibt gar keine Nadeln mehr', tor:'smoke', args:['--nur=umgekehrt'],
     bauen:true, datei:D,
     such:'        if (kreisAmOrt(n) * 2 < MIN_REST)',
@@ -1638,21 +1650,27 @@ export const PROBEN = [
     an:{ ...DIST, text:'naechster * 99' },
     sagt:'wer auf den Anker von' },
 
-  /* P7: die umgekehrte Frage fuer ein Gebiet, das man nicht treffen kann.
+  /* HIER STAND: „die umgekehrte Frage kommt auch fuer Winzlinge".
    *
-   * Gemessen: Guatemala hat auf der Nordamerikakarte 11,9 Bildpunkte
-   * Trefferflaeche, Haiti und die Dominikanische Republik 7,6. Die
-   * Fingergrenze ist 44. „Wo liegt Guatemala?" ist dort keine
-   * Erdkundefrage mehr, sondern eine Fingeruebung.
+   * Sie nahm die Notbremse aus P7 heraus (`&& tippbar(ziel.id)`) und
+   * erwartete, dass der Rauchtest „zu klein zum Antippen" meldet. Sie
+   * stand vier Runden als „beweist nichts" im Bericht - und der Grund war
+   * nicht der Suchtext, sondern die Wirklichkeit:
    *
-   * Der Eingriff nimmt die Bedingung heraus - dann steht die Frage wieder
-   * da, und der Rauchtest muss es sagen. */
-  { n:'die umgekehrte Frage kommt auch für Winzlinge', tor:'smoke',
-    args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"st.i % 3 === 2 && tippbar(ziel.id);",
-    ersatz:"st.i % 3 === 2;",
-    an:{ ...DIST, fehlt:'&& tippbar(ziel.id)' },
-    sagt:'zu klein zum Antippen' },
+   * Seit P10 die Nadeln gebracht hat, gibt es kein Gebiet mehr, das man
+   * nicht treffen kann. Nachgemessen am 01.09.2026 ueber alle sechs
+   * Kartenebenen und zwei Fenstergroessen (844 x 390 und 568 x 320): NULL
+   * Faelle. Die Notbremse ist unerreichbar, also kann kein Eingriff sie
+   * sichtbar machen.
+   *
+   * Die Zusage ist deshalb umgezogen: `ziehen` meldet jetzt einen FEHLER,
+   * wenn ein Gebiet zu klein ist UND keine Nadel bekommt. Der Fall darf
+   * gar nicht erst entstehen - das ist pruefbar, die Notbremse war es
+   * nicht. Die Gegenprobe dazu steht bei den Nadeln („kein Gebiet hat mehr
+   * eine Trefferstelle").
+   *
+   * Aufgeschrieben statt geloescht, damit niemand sie „wiederherstellt".
+   */
 
   { n:'keine Nachsicht — nur der exakte Punkt zählt', tor:'ziehen', bauen:true, args:['--nur=nachsicht,oben'], datei:D,
     such:'const NACHSICHT = 60;', ersatz:'const NACHSICHT = 0;',
