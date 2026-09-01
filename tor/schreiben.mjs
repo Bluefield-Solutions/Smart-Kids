@@ -262,7 +262,20 @@ for (const [name, satz] of SAETZE) {
     ['die Sechs, 10 % später angesetzt', '6', [sechs.slice(6)]],
     ['die Sechs, 17 % später angesetzt', '6', [sechs.slice(10)]],
   ];
+  /* Sauber UND krumm.
+   *
+   * Die saubere Form allein beweist zu wenig: sie geht auch durch, wenn
+   * die passende Vorlage FEHLT und nur der kleinere Zugaufschlag sie
+   * gerade noch durchlaesst. Die Gegenprobe „die Sieben verliert ihre
+   * Form mit Querstrich" hat genau das gezeigt - Vorlage weg, Tor
+   * trotzdem gruen.
+   *
+   * Ein Kind schreibt nicht sauber. Jede der sechs Formen wird deshalb
+   * zwanzigmal verkrummt, mit demselben Wuerfel wie oben, und dann zaehlt
+   * der Anteil. Wer die Vorlage entfernt, verliert diesen Anteil sofort -
+   * die knappe saubere Form traegt zwanzig krumme nicht mit. */
   const zeilen = [];
+  let krumm = 0, krummN = 0;
   for (const [name, soll, zuege] of FAELLE) {
     const e = S.erkennen(zuege, S.ZIFFERN);
     pruefe(e.sicher && e.zeichen === soll,
@@ -270,9 +283,18 @@ for (const [name, satz] of SAETZE) {
       + `Abstand ${e.abstand.toFixed(1)} von ${S.ABSTAND_MAX}, `
       + `Vorsprung ${e.vorsprung.toFixed(1)} von ${S.VORSPRUNG_MIN}`);
     zeilen.push(`${soll} ${e.abstand.toFixed(1)}`);
+    for (let k = 0; k < 20; k++) {
+      krummN++;
+      const v = S.erkennen(verkrummen(zuege, wuerfel(k * 31337 + name.length)), S.ZIFFERN);
+      if (v.sicher && v.zeichen === soll) krumm++;
+    }
   }
-  console.log(`    Formen vom Zielgerät: ${FAELLE.length} von ${FAELLE.length} erkannt `
-    + `(${zeilen.join(' · ')})`);
+  const anteilFaelle = 100 * krumm / krummN;
+  pruefe(anteilFaelle >= 80, `die Formen vom Zielgerät halten krumm geschrieben nur `
+    + `${anteilFaelle.toFixed(1)} % — unter 80 % ist die passende Vorlage entweder weg `
+    + 'oder sie trägt nicht');
+  console.log(`    Formen vom Zielgerät: ${FAELLE.length} von ${FAELLE.length} sauber erkannt `
+    + `(${zeilen.join(' · ')}), krumm ${anteilFaelle.toFixed(1)} % von ${krummN}`);
 }
 
 /* ---- Nachfahren ------------------------------------------------------ */

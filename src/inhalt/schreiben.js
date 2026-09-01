@@ -123,8 +123,17 @@ export const ZIFFERN = [
                                       ['M60 12 L24 64 L76 64 L60 64 L60 90']] },
   { zeichen:'5', wort:'fünf',   zuege:['M70 12 L34 12 L30 44 Q52 34 66 48 '
                                      + 'Q78 60 70 76 Q60 92 34 86'] },
+  /* Die Sechs, deren Bogen NICHT ganz oben ansetzt.
+   *
+   * Gemeldet vom Zielgeraet (M4r): wer den Bogen ein Stueck tiefer
+   * beginnt, bekam eine NULL angezeigt - nicht abgelehnt, sondern falsch.
+   * Ein erlaubter Versatz im Punktvergleich faengt das bis rund zehn
+   * Prozent; darueber ist es keine verrutschte Sechs mehr, sondern eine
+   * kuerzere. Also steht sie als eigene Form da. */
   { zeichen:'6', wort:'sechs',  zuege:['M66 14 Q46 8 36 30 Q26 52 30 68 Q34 90 52 90 '
-                                     + 'Q72 90 72 68 Q72 48 50 48 Q36 48 30 62'] },
+                                     + 'Q72 90 72 68 Q72 48 50 48 Q36 48 30 62'],
+                                auch:[['M54 16 Q37 24 31 44 Q26 62 31 74 Q38 90 54 90 '
+                                     + 'Q72 90 72 68 Q72 48 50 48 Q36 48 30 62']] },
   /* Die Sieben mit Querstrich.
    *
    * In Deutschland die uebliche Form - und mit der alten Rechnung
