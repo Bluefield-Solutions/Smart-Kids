@@ -411,7 +411,7 @@ export const PROBEN = [
     sagt:'Trefferquote' },
 
   /* --- passt -------------------------------------------------------- */
-  { n:'ein Knopf ist breiter als das Fenster', tor:'passt', bauen:true, datei:D,
+  { n:'ein Knopf ist breiter als das Fenster', tor:'passt', args:['--teil=0/5'], bauen:true, datei:D,
     such:"const weiter = el('button','leise');",
     ersatz:"const weiter = el('button','leise'); weiter.style.minWidth='900px';",
     an:{ ...DIST, text:"minWidth='900px'" }, sagt:'über den Rand' },
@@ -419,7 +419,7 @@ export const PROBEN = [
   // Der sichere Bereich. Der Fehler war nicht „zu wenig Abstand", sondern
   // dass das Polster GAR NICHT wirkte: es stand auf `body`, waehrend die
   // Buehne absolut am Fenster hing. Genau das wird hier nachgestellt.
-  { n:'die Bühne beachtet den sicheren Bereich nicht', tor:'passt', bauen:true, datei:V,
+  { n:'die Bühne beachtet den sicheren Bereich nicht', tor:'passt', args:['--teil=1/5'], bauen:true, datei:V,
     such:'  top:var(--sicher-oben); right:var(--sicher-rechts);\n  bottom:var(--sicher-unten); left:var(--sicher-links)}',
     ersatz:'  inset:0}',
     an:{ ...DIST, fehlt:'top:var(--sicher-oben)' },
@@ -431,7 +431,7 @@ export const PROBEN = [
   // ZU RECHT: die Luecke zwischen den Reihen ist groesser als 4 px, es
   // ueberlappte gar nichts. Ein Eingriff, der nichts bewirkt, sieht aus
   // wie ein bestandenes Tor (Regel 10). 60 px liegen sicher drueber.
-  { n:'zwei Kacheln liegen aufeinander', tor:'passt', bauen:true, datei:V,
+  { n:'zwei Kacheln liegen aufeinander', tor:'passt', args:['--teil=0/5'], bauen:true, datei:V,
     such:'.kachel.welt .name{font-size:var(--s3)}',
     ersatz:'.kachel.welt .name{font-size:var(--s3)}\n.wahl .kachelpaar:first-child{translate:0 60px}',
     an:{ ...DIST, text:'translate:0 60px' }, sagt:'ueberlappen sich' },
@@ -439,7 +439,7 @@ export const PROBEN = [
   // Das Forscherbuch war fuer `passt` unsichtbar: `.aufkleber` stand nicht
   // in seiner Auswahl. Diese Probe schiebt eine Aufkleberkarte aus dem
   // Fenster - ohne den Eintrag in der Auswahl bleibt das Tor gruen.
-  { n:'eine Aufkleberkarte liegt außerhalb des Fensters', tor:'passt', bauen:true, datei:V,
+  { n:'eine Aufkleberkarte liegt außerhalb des Fensters', tor:'passt', args:['--teil=0/5'], bauen:true, datei:V,
     such:'.aufkleber.da{opacity:1}',
     ersatz:'.aufkleber.da{opacity:1}\n.rollen .aufkleber:first-child{position:relative;left:-500px}',
     an:{ ...DIST, text:'left:-500px' }, sagt:'über den Rand' },
@@ -571,7 +571,7 @@ export const PROBEN = [
    * kostet 12,5 s Zeitueberschreitung. Genau das war jahrelang so, ohne
    * dass ein Tor etwas gesagt haette: die Schriftpruefung lief nur fuer
    * die App-Bildschirme. */
-  { n:'die Entwürfe holen ihre Schrift aus dem Netz', tor:'ansicht', bauen:true,
+  { n:'die Entwürfe holen ihre Schrift aus dem Netz', tor:'ansicht', args:['--nur=mg-,karte-deutschland'], bauen:true,
     datei:'entwuerfe/mg.html',
     such:'<link rel="stylesheet" href="./schrift.css">',
     ersatz:'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika">',
@@ -1031,7 +1031,7 @@ export const PROBEN = [
   // Faellt die Ableitung aus, liegt der Deutschland-Rahmen um eine
   // Europakarte - und KEIN anderes Tor sagt etwas dazu: gespielt wird sie
   // weiter, sie sieht nur falsch aus.
-  { n:'die Hauptstädte-Ebene bekommt den falschen Rahmen', tor:'ansicht',
+  { n:'die Hauptstädte-Ebene bekommt den falschen Rahmen', tor:'ansicht', args:['--nur=quer-hauptstaedte-eu'],
     bauen:true, datei:D,
     such:"  return art === 'kontinente' ? D.vbK : kont ? D.vbL[kont] : D.vbD;",
     ersatz:"  return art === 'kontinente' ? D.vbK : art === 'laender' ? D.vbL[kont] : D.vbD;",
@@ -1096,7 +1096,7 @@ export const PROBEN = [
   //
   // Der Bereich hatte bis hierher gar kein Vorbild - ausgerechnet der,
   // der zuletzt um zwei Tabellen gewachsen ist.
-  { n:'die Übersicht im Elternbereich fällt weg', tor:'ansicht', bauen:true, datei:D,
+  { n:'die Übersicht im Elternbereich fällt weg', tor:'ansicht', args:['--nur=quer-eltern'], bauen:true, datei:D,
     such:'      <table class="tab" style="margin-top:var(--r3)"><thead><tr><th>Profil</th>',
     ersatz:'      <table class="tab" hidden><thead><tr><th>Profil</th>',
     an:{ ...DIST, text:'<table class="tab" hidden>' },
@@ -1120,7 +1120,7 @@ export const PROBEN = [
   // Drei Sterne heissen „alles auf Anhieb richtig" - und genau das steht
   // eine Zeile tiefer, nur genauer. Auf dem Endbildschirm der Kinder sind
   // sie richtig, bei den Eltern doppelt.
-  { n:'die Siegsterne kommen bei den Eltern zurück', tor:'ansicht', bauen:true, datei:D,
+  { n:'die Siegsterne kommen bei den Eltern zurück', tor:'ansicht', args:['--nur=quer-ende-eltern'], bauen:true, datei:D,
     // Seit B2 steht davor die Weiche „Test oder Uebung"; getauscht wird
     // nur der Uebungszweig.
     such:": ton().siegsterne ? `<div class=\"siegsterne\">${sterne(n,56)}</div>` : ''}",
@@ -1177,7 +1177,7 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'const stuecke = vorlaufVorrat(ebeneId)' },
     sagt:'kein Blättern' },
   // Und der Vorlauf einer Rechenebene sieht anders aus.
-  { n:'die Beispielkarten verlieren ihre Form', tor:'ansicht', bauen:true, datei:V,
+  { n:'die Beispielkarten verlieren ihre Form', tor:'ansicht', args:['--nur=quer-vorlauf-rechnen'], bauen:true, datei:V,
     // Eindeutig, nicht `.rechenkleber{`: das steht auch als Nachfahren-
     // Regel im Vorlauf-Abschnitt, und ein zweideutiger Suchtext trifft
     // die falsche Zeile.
@@ -1474,14 +1474,14 @@ export const PROBEN = [
    *
    * Auf dem Zielgeraet sind das 17 % der Bildschirmhoehe, und der ganze
    * Block darunter steht dann wieder unter der Mitte. */
-  { n:'der leere Kopf nimmt wieder Platz weg', tor:'ansicht', bauen:true, datei:D,
+  { n:'der leere Kopf nimmt wieder Platz weg', tor:'ansicht', args:['--nur=quer-profile,quer-welten'], bauen:true, datei:D,
     such:'  (links || mitte || rechts)\n  ?',
     ersatz:'  true\n  ?',
     an:{ ...DIST, fehlt:'(links||mitte||rechts)' },
     sagt:'quer-ende' },
   /* Und die Pause verliert ihre Warnung. Der Knopf daneben loescht alles,
    * was das Kind in dieser Uebung gesammelt hat. */
-  { n:'die Pause warnt nicht mehr vor „von vorne"', tor:'ansicht', bauen:true, datei:D,
+  { n:'die Pause warnt nicht mehr vor „von vorne"', tor:'ansicht', args:['--nur=quer-pause'], bauen:true, datei:D,
     such:'      <div class="unter" id="was">Bei „von vorne" verschwindet alles, was du',
     ersatz:'      <div class="unter" id="was">Bei „von vorne" geht es weiter, was du',
     an:{ ...DIST, fehlt:'von vorne" verschwindet alles' },
@@ -1491,7 +1491,7 @@ export const PROBEN = [
    *
    * Dann stehen sechs Rechenaufgaben linksbuendig in einer Reihe von acht,
    * mit einem Loch von vierhundert Punkten rechts. */
-  { n:'der Vorlauf verteilt die Karten wieder auf acht Spuren', tor:'ansicht',
+  { n:'der Vorlauf verteilt die Karten wieder auf acht Spuren', tor:'ansicht', args:['--nur=quer-vorlauf'],
     bauen:true, datei:D,
     such:'  const gitter = vorlaufGitter(stuecke.length);',
     ersatz:'  const gitter = { reihen: 2, spalten: 8 };',
@@ -1502,7 +1502,7 @@ export const PROBEN = [
    *
    * Dann haengen die Karten wieder oben, der Knopf unten, und dazwischen
    * steht ein Drittel leeres Band. */
-  { n:'die Beispielkarten füllen das Band nicht mehr', tor:'ansicht', bauen:true, datei:V,
+  { n:'die Beispielkarten füllen das Band nicht mehr', tor:'ansicht', args:['--nur=quer-vorlauf'], bauen:true, datei:V,
     such:'  grid-auto-rows:minmax(min-content,1fr);justify-content:center;',
     ersatz:'  grid-auto-rows:min-content;justify-content:center;',
     an:{ ...DIST, text:'grid-auto-rows:min-content;' },
@@ -1831,7 +1831,7 @@ export const PROBEN = [
   // alte Probe suchte einen Text, den es nicht mehr gibt. Sie ist damit auch
   // die Gegenprobe auf die Ableitung selbst - greift sie nicht durch,
   // haengen die Farben doch nicht an der Marke.
-  { n:'die Karte wechselt die Farbe', tor:'ansicht', bauen:true, datei:'src/marken/marken.css',
+  { n:'die Karte wechselt die Farbe', tor:'ansicht', args:['--nur=quer-spiel'], bauen:true, datei:'src/marken/marken.css',
     such:'  --flaeche-l: 0.74; --flaeche-c: 0.135;',
     ersatz:'  --flaeche-l: 0.74; --flaeche-c: 0.020;',
     an:{ ...DIST, text:'--flaeche-c: 0.020' }, sagt:'rot' },
@@ -2032,7 +2032,7 @@ export const PROBEN = [
   // Die Aufnahmen vom Zielgeraet. Geaendert wird etwas, das NUR im kurzen
   // Querformat sichtbar ist - bei 1240 x 1000 greift die Regel gar nicht.
   // Bleibt `ansicht` dabei gruen, fotografiert es das Zielgeraet nicht.
-  { n:'auf dem Zielgerät verschwindet der Kachelbalken', tor:'ansicht',
+  { n:'auf dem Zielgerät verschwindet der Kachelbalken', tor:'ansicht', args:['--nur=quer-ebenen-voll'],
     bauen:true, datei:V,
     such:'  .kachel .balken{height:5px;flex:1;min-width:40px}',
     ersatz:'  .kachel .balken{display:none}',
