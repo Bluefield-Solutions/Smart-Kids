@@ -109,7 +109,24 @@ const rot = (s) => `\x1b[31m${s}\x1b[0m`, gruen = (s) => `\x1b[32m${s}\x1b[0m`;
  */
 const HAUPT = process.cwd();
 const KOPIE = path.join(HAUPT, KOPIE_NAME);
-const schmutzig = execSync('git status --porcelain', { encoding:'utf8' }).trim();
+/* Nur das SCHLUSS-Zeilenende weg, nicht der fuehrende Leerraum.
+ *
+ * `git status --porcelain` schreibt in Spalte 1 den Stand im Verzeichnis
+ * und in Spalte 2 den im Arbeitsbaum - eine nur im Arbeitsbaum geaenderte
+ * Datei heisst also " M pfad", mit einem LEERZEICHEN vorn. `.trim()` hat
+ * genau dieses eine Leerzeichen der ERSTEN Zeile weggeschnitten; aus
+ * " M prototyp/vorlage.html" wurde "M prototyp/vorlage.html", und
+ * `z.slice(3)` las daraus "rototyp/vorlage.html". Diese Datei gibt es
+ * nicht, also wurde sie stillschweigend uebersprungen.
+ *
+ * Was das heisst: die alphabetisch ERSTE geaenderte Datei stand in der
+ * Wegwerf-Kopie in ihrer HEAD-Fassung, nicht in der, die man vor sich
+ * hat. Aufgefallen ist es erst, als eine frische Gegenprobe ihren
+ * Suchtext nicht fand - der stand nur im Arbeitsbaum. Solange die
+ * geaenderten Dateien zufaellig spaeter im Alphabet lagen, hat es nichts
+ * gekostet, und deshalb hat es auch niemand gesehen. */
+const schmutzig = execSync('git status --porcelain', { encoding:'utf8' })
+  .replace(/\n+$/, '');
 
 /**
  * Die Kopie aufbauen: HEAD auschecken, dann den Arbeitsbaum daruebermalen.
@@ -139,10 +156,26 @@ function uebermalen() {
     const zustand = z.slice(0, 2), datei = z.slice(3).replace(/^"|"$/g, '');
     const ziel = path.join(KOPIE, datei);
     if (zustand.includes('D')) { fs.rmSync(ziel, { force:true }); dazu.push(datei); continue; }
-    if (!fs.existsSync(datei)) continue;
+    if (!fs.existsSync(datei)) {
+      throw new Error(`proben: „${datei}" steht in \`git status\`, aber nicht `
+        + 'auf der Platte. Die Wegwerf-Kopie waere damit nicht das, was du '
+        + 'siehst - und eine Probe, die eine andere Fassung prueft als die '
+        + 'gemeinte, beweist nichts.');
+    }
     fs.mkdirSync(path.dirname(ziel), { recursive:true });
     fs.copyFileSync(datei, ziel);
     dazu.push(datei);
+  }
+  /* Nachsehen, ob es wirklich angekommen ist - dieselbe Frage, die jede
+   * Probe an ihren eigenen Eingriff stellt (Regel 10). Ohne diese drei
+   * Zeilen hat das `.trim()` oben unbemerkt eine Datei ausgelassen. */
+  for (const datei of dazu) {
+    const ziel = path.join(KOPIE, datei);
+    if (!fs.existsSync(datei)) continue;              // geloescht, siehe oben
+    if (fs.readFileSync(datei).equals(fs.readFileSync(ziel))) continue;
+    throw new Error(`proben: „${datei}" ist in der Wegwerf-Kopie nicht die `
+      + 'Fassung aus dem Arbeitsbaum. Geprobt wuerde damit an einem Baum, '
+      + 'den es nicht gibt.');
   }
   return dazu;
 }

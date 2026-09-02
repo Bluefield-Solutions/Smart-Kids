@@ -2105,6 +2105,50 @@ export const PROBEN = [
     // wurde nichts.
     sagt:'Platz verloren' },
 
+  /* Die elfte Ebene laeuft wieder aus dem Bild (Q27).
+   *
+   * Ab elf Kacheln ist die Ebenenkachel im kurzen Querformat ein Sechstel
+   * der Wand breit statt 134 Punkte - sechs je Reihe, also elf und zwoelf
+   * Ebenen in zwei Reihen. Ohne die Regel bleibt es bei fuenf je Reihe,
+   * die elfte faengt eine dritte Reihe an, und die laeuft auf dem
+   * Zielgeraet aus dem Bild. Der Eingriff nimmt die Regel heraus.
+   *
+   * Gemeldet wird wieder der RUECKSCHRITT, nicht der Ueberlauf: die zehn
+   * Kacheln, die heute dastehen, passen so oder so. Was faellt, ist die
+   * KAPAZITAET - von zwoelf auf zehn -, und dafuer gibt es die Ratsche. */
+  { n:'die elfte Ebene bekommt ihre schmale Kachel nicht mehr',
+    tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
+    such:'  .wahl.ebenen:has(> :nth-child(11))>*{\n'
+       + '    flex-basis:max(100px, calc((100% - 5 * var(--r3)) / 6))}\n',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'flex-basis:max(100px, calc((100% - 5 * var(--r3)) / 6))' },
+    sagt:'Platz verloren' },
+
+  /* Die Messung wackelt die Wand nicht mehr durch (Q27).
+   *
+   * `passt` klont Kacheln, um zu messen, wieviele an die Wand passen.
+   * Chromium wendet eine `:has(> :nth-child(N))`-Regel auf die KINDER
+   * aber erst an, wenn der Teilbaum neu haengt - `matches()` trifft
+   * sofort zu, die Breite bleibt. Ohne das Wiedereinhaengen misst das Tor
+   * eine Kachelbreite, die es im Spiel nie gibt, und meldet zehn statt
+   * zwoelf. Der Eingriff nimmt den Anstoss heraus.
+   *
+   * Diese Probe steht neben der vorigen, nicht statt ihrer: die eine
+   * bewacht die REGEL, die andere die MESSUNG. Beide sinken auf dieselbe
+   * Zahl, und ohne die zweite haette das Tor die Regel jahrelang
+   * bezeugen koennen, ohne sie je zu sehen. */
+  { n:'die Kapazitätsmessung hängt die Wand nicht mehr neu ein',
+    // `bauen:true`, obwohl der Eingriff im TOR steht und nicht im
+    // Stylesheet: `dist/` ist nicht eingecheckt, und ohne Bau hat die
+    // Wegwerf-Kopie gar keine Datei zum Messen. Der erste Anlauf lief
+    // ohne und meldete „wird rot, aber aus einem anderen Grund".
+    tor:'passt', bauen:true, args:['--teil=0/5'], datei:'tor/passt.mjs',
+    such:'        const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);\n'
+       + '        neuHaengen();\n',
+    ersatz:'        const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);\n',
+    an:{ datei:'tor/passt.mjs', fehlt:'w.appendChild(k);\n        neuHaengen();' },
+    sagt:'Platz verloren' },
+
   /* Das Kachelbild liegt wieder unter dem Vorschau-Knopf (Q4).
    *
    * Fuer Fiona IST das Bild der Name - sie liest nicht. Gemessen hat das

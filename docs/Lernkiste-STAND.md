@@ -9012,3 +9012,146 @@ welchen — die Wand trüge wieder 18 statt 12 und bliebe still. Das Bild dagege
 fällt von 168 auf 89 Punkte.
 
 240 Gegenproben.
+
+---
+
+## Q27 — Die elfte Ebene passt, und eine Regel greift erst beim Wiedereinhängen
+
+### Der zweite Blick auf den Fremdgriff
+
+`passt` nimmt den Fremdgriff jetzt **zweimal** und meldet nur, was beide Male
+dasteht. Der Rauchtest tut das seit Q19 über die Zeit; `passt` sieht jeden
+Bildschirm nur einmal und hatte deshalb keine Bestätigung. Was nur im ersten
+Blick steht, wird gezählt und benannt („einmal gesehen, nicht bestätigt"),
+aber nicht als Befund geführt.
+
+### Gemessen und verworfen: die höhere Weltenkachel
+
+Q24 hat die Weltenkachel höher gemacht und dazu geschrieben, das Bild wachse
+von 142 auf 158 Punkte. **Das ist falsch.** Gemessen war der SVG-Kasten, nicht
+das Gezeichnete:
+
+| | Kachel | Kasten | gezeichnet |
+|---|---|---|---|
+| iPhone quer | 268 × 200 | 202 × 158 | 202 × **110** |
+| iPad quer | 280 × 279 | 211 × 221 | 211 × **115** |
+
+Der Weltumriss ist durch `max-width:76%` in der **Breite** gebunden. Eine
+höhere Kachel macht den Kasten höher und das Bild keinen Punkt größer. Die
+Änderung ist deshalb zurückgenommen; die Begründung steht als Kommentar an der
+Stelle, an der sie stand, damit sie nicht ein zweites Mal gemacht wird.
+
+Für die **Ebenen**kachel (Q23, Q26) stimmt die Zahl: dort ist gezeichnet =
+Kasten, das Bild ist höhengebunden. Nachgemessen, nicht angenommen.
+
+### Die elfte Ebene — und warum das Tor sie zehn Runden lang nicht sah
+
+Q13 stand seit Fassungen offen: die Kachelwand fasst zehn, Lea hat elf. Die
+Regel dafür ist keine Punktzahl mehr, sondern ein **Sechstel der Wand**:
+
+```css
+.wahl.ebenen:has(> :nth-child(11))>*{
+  flex-basis:max(100px, calc((100% - 5 * var(--r3)) / 6))}
+```
+
+Ein fester Wert hat zweimal danebengelegen. 118 Punkte geben auf 844 sechs
+Kacheln je Reihe — auf dem iPhone SE quer (667) nur fünf, und auf demselben
+iPhone **mit** Uhr und Wischstreifen (726 nutzbar) auch nur fünf. Elf Kacheln
+in drei Reihen laufen auf beiden aus dem Bild.
+
+Was das Tor jetzt misst (Kapazität der Ebenenwand, gemessen durch Klonen):
+
+| | vorher | jetzt |
+|---|---|---|
+| iPhone quer | 10 | **12** |
+| iPhone quer, Leiste | 10 | **12** |
+| iPhone SE quer | 10 | **12** |
+| iPhone hoch | 12 | 15 |
+| Fenster schmal 700 × 850 | 10 | 15 |
+| iPad quer / hoch | 12 | 15 / ≥ 18 |
+
+Nach unten begrenzt auf 100 Punkte: derselbe Block fängt auch das Hochformat
+(390 breit), und ein Sechstel davon wären 54 Punkte — eine Kachel, auf der
+weder Bild noch Name etwas taugen.
+
+**Der Preis, angesehen und nicht überschlagen:** bei elf Kacheln auf dem
+kleinsten Gerät ist die Kachel 100 statt 118 Punkte breit, und zwei Namen
+brechen um. Im Bildschirmfoto steht dort „Mittelamerik/a" und „Bundeslände/r“
+— ein einzelner Buchstabe in der zweiten Zeile. Das ist zur Hälfte die
+Messstelle: dieses Chromium hat **kein deutsches Trennmuster** (nachgesehen,
+„Mittelamerika" bricht in 70 Punkten Breite ohne Trennstrich um), `hyphens:auto`
+und `lang="de"` stehen aber seit R2 an der Kachel. Auf iOS wäre der Umbruch
+getrennt statt abgehackt — **geprüft ist das nicht**, hier ist kein Gerät.
+Es betrifft ohnehin nur Namen ab zwölf Zeichen und erst ab der elften Ebene.
+
+### Die Regel greift — das Tor sah sie nur nicht
+
+Beim Messen kam heraus, warum die Wand trotz der neuen Regel weiter „Platz für
+10" meldete: **Chromium wendet eine `:has(> :nth-child(N))`-Regel auf die
+Kinder erst an, wenn der Teilbaum neu hängt.** Direkt nach `appendChild` trifft
+`matches()` bereits zu, die Kachelbreite bleibt trotzdem die alte. Gemessen auf
+844 × 390 mit `isMobile`:
+
+| | Breite der Kachel |
+|---|---|
+| 10 Kacheln | 134 pt |
+| 11 angehängt | 134 pt — `matches()` = true |
+| nach dem Wiedereinhängen | **118 pt** |
+
+Die App fällt nicht hinein: sie baut jede Wand an einem losgelösten `div` mit
+`innerHTML` und hängt sie fertig ein. Nur `passt` hängt Kacheln an eine
+**stehende** Wand, und nur `passt` braucht den Anstoß. Zwei Gegenproben stehen
+jetzt daneben: eine bewacht die Regel, die andere die Messung — sie fallen auf
+dieselbe Zahl, und ohne die zweite hätte das Tor die Regel bezeugen können,
+ohne sie je zu sehen.
+
+### Unterwegs gefunden: die Wegwerf-Kopie ließ eine Datei aus
+
+Eine frische Gegenprobe fand ihren Suchtext nicht, obwohl er dastand. Ursache:
+
+```js
+const schmutzig = execSync('git status --porcelain', …).trim();
+```
+
+`git status --porcelain` schreibt eine nur im Arbeitsbaum geänderte Datei als
+`" M pfad"` — mit führendem Leerzeichen. `.trim()` schnitt genau dieses eine
+Leerzeichen der **ersten** Zeile weg; aus `" M prototyp/vorlage.html"` wurde
+`"M prototyp/vorlage.html"`, und `z.slice(3)` las daraus
+`"rototyp/vorlage.html"`. Die Datei gibt es nicht, also wurde sie
+stillschweigend übersprungen.
+
+**Was das heißt:** die alphabetisch **erste** geänderte Datei stand in der
+Wegwerf-Kopie in ihrer HEAD-Fassung. Bei sauberem Baum passiert gar nichts —
+die Kopie wird dann nicht übermalt —, es traf also genau die Läufe während der
+Arbeit. Solange die geänderten Dateien zufällig später im Alphabet lagen, hat
+es nichts gekostet.
+
+Repariert ist beides: nur noch das Schluss-Zeilenende fällt weg, und nach dem
+Übermalen wird **nachgesehen**, ob jede Datei byteweise angekommen ist. Das ist
+dieselbe Frage, die jede Probe an ihren eigenen Eingriff stellt.
+
+### Das Becken, dreimal je Einstellung
+
+Neben `SMARTKIDS_BECKEN` stand seit Q24 die Bitte, die Zahl nicht einmal,
+sondern dreimal zu messen. Nachgeholt — ruhige Maschine, vier Kerne, dieselbe
+Kette hintereinander weg:
+
+| Becken | Läufe | Mittel | Ausgang |
+|---|---|---|---|
+| 6 | 159 · 157 · 155 s | 157 s | 3 × grün |
+| **8** | 135 · 133 · 134 s | **134 s** | 3 × grün |
+| 10 | 136 · 135 · 131 s | 134 s | 3 × grün |
+
+Die Kette streut kaum: höchstens 5 s Spanne, unter 4 %. Damit sind die 23 s
+zwischen 6 und 8 ein Unterschied und kein Rauschen — anders als die 8 s, die in
+Q24 zwischen 6 und 8 lagen und aus je einer Messung stammten.
+
+Bei 8 ist der Boden erreicht; zehn Bänder bringen einen Wimpernschlag. Und der
+unbequeme Teil: **Becken 10 lief hier dreimal grün, in Q24 dreimal rot.** Das
+heißt nicht, dass zehn doch geht — es heißt, dass der Kipppunkt sich nicht auf
+Verlangen zeigt. Genau deshalb bleibt es bei acht: die Ersparnis wäre eine
+Sekunde, der Einsatz ein Lauf, der an einem anderen Tag umkippt und dann wie
+ein Fehler im Spiel aussieht. Die Formel bleibt stehen, jetzt mit einem Beleg
+statt einer Erinnerung.
+
+242 Gegenproben.

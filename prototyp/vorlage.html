@@ -552,6 +552,27 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .wahl.ebenen{gap:var(--r3);display:flex;flex-wrap:wrap;
   justify-content:center;align-content:flex-start}
 .wahl.ebenen>*{flex:0 0 240px;max-width:100%}
+/* AB ELF EBENEN wird die Kachel schmaler (Q27).
+ *
+ * `passt` meldet seit Fassungen als Hinweis: „die Wand ist voll - 10
+ * Kacheln stehen da, 10 passen. Die 11. laeuft hier aus dem Bild." Das
+ * galt fuer das schmale Schreibtischfenster (700 x 850), wo zwei Kacheln
+ * je Reihe stehen und fuenf Reihen die Hoehe fuellen. Die elfte Ebene
+ * haette also nicht die Kachelwand gesprengt, sondern die Auslieferung.
+ *
+ * Schmaler statt niedriger: die Hoehe traegt das Bild, die Breite traegt
+ * nur den Namen. Bei 200 statt 240 stehen im schmalen Fenster drei je
+ * Reihe, und zwoelf Kacheln brauchen vier Reihen statt sechs.
+ *
+ * `:has()` statt eines Merkmals im Markup - dieselbe Ueberlegung wie bei
+ * der Weltenwahl mit ihren drei Karten: die Zahl der Kacheln ist eine
+ * Eigenschaft dieses Bildschirms, keine Auskunft, die das Programm
+ * mitschicken muesste.
+ *
+ * Und es ist HEUTE zu messen, obwohl es die elfte Ebene noch nicht gibt:
+ * `passt` klont Kacheln, um die Kapazitaet zu bestimmen - die Regel
+ * greift dabei mit. */
+.wahl.ebenen:has(> :nth-child(11))>*{flex-basis:200px}
 /* ---- Die Kachelsprache (R2, Fassung „B · Bild" auf Weiss) -------------
    Auf weissem Grund traegt nicht mehr die Flaeche, sondern der RAND: 26 %
    Fuellung aus dem eigenen Ton, 52 % Rand daraus. Und jede Kachel zeigt
@@ -1862,6 +1883,25 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      die Hoehe des Kachelbildes (siehe oben). 134 Punkte, weil bei weniger
      „Mittelamerika" umbricht und bei mehr nur vier je Reihe passen. */
   .wahl.ebenen>*{flex-basis:134px}
+  /* Und auf dem Telefon dieselbe Ausweichbewegung, aber NICHT in Punkten:
+     ab elf Kacheln ist die Breite ein Sechstel der Wand. Ein fester Wert
+     hat hier zweimal danebengelegen - 118 pt geben auf 844 sechs je
+     Reihe, auf dem iPhone SE quer (667) nur fuenf, und auf demselben
+     iPhone MIT Uhr und Wischstreifen (726 nutzbar) auch nur fuenf. Elf
+     Kacheln in drei Reihen laufen auf beiden aus dem Bild. Sechs je Reihe
+     sind hier nicht bequem, sondern die Bedingung: elf und zwoelf Ebenen
+     in zwei Reihen. Der Name wird dabei eine Stufe kleiner - dieselbe
+     Stufe, die das kleinste Geraet ohnehin schon faehrt.
+     Fuenf Luecken zwischen sechs Kacheln, deshalb 5 x --r3.
+     Nach unten begrenzt: derselbe Block faengt auch das HOCHformat
+     (390 breit), und ein Sechstel davon waeren 54 Punkte - eine Kachel,
+     auf der weder Bild noch Name etwas taugen. Bei 100 bleibt das
+     Hochformat bei drei je Reihe, wo es heute schon steht; 100 ist kein
+     runder Wunsch, sondern das Mass, das das kleinste Geraet an dieser
+     Stelle ohnehin ausrechnet (iPhone SE quer, 667 breit). */
+  .wahl.ebenen:has(> :nth-child(11))>*{
+    flex-basis:max(100px, calc((100% - 5 * var(--r3)) / 6))}
+  .wahl.ebenen:has(> :nth-child(11)) .kachel .name{font-size:var(--s-klein)}
   /* Eine Stufe schmaler fuer das KLEINSTE Geraet (iPhone SE quer, 667):
      dort passen bei 134 nur vier je Reihe, das waeren drei Reihen, und
      drei hohe Kacheln laufen aus dem Bild. Weil „Mittelamerika" bei 118
@@ -1888,6 +1928,32 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .zi{min-height:48px}
 }
 
+/* Die WELTENWAHL bekommt KEINE hoehere Kachel (Q27, gemessen und verworfen).
+ *
+ * Der Versuch stand hier: auf dem grossen Schirm ist es eine Reihe mit 244
+ * bis 439 Punkten Luft, also die Kachel hoeher machen wie bei der
+ * Ebenenwahl. Gemessen sah es gut aus - Kachel 180 → 279, „Bild" 142 →
+ * 221. Angesehen war es das Gegenteil: die Karte schwamm in Luft.
+ *
+ * Gemessen war der SVG-KASTEN, nicht das Gezeichnete. Der Umriss ist hier
+ * durch `max-width:76%` in der BREITE gebunden, nicht in der Hoehe:
+ *
+ *     iPhone quer   Kachel 268x200   Kasten 202x158   gezeichnet 202x110
+ *     iPad quer     Kachel 280x279   Kasten 211x221   gezeichnet 211x115
+ *
+ * Eine hoehere Kachel macht den Kasten hoeher und das Bild keinen Punkt
+ * groesser. Regel 5, und diesmal an mir selbst: jede Zahl traegt ihre
+ * Messstelle mit, und diese hier trug die falsche - gemessen war der
+ * Kasten, gefragt war das Bild.
+ *
+ * Damit ist auch die Zeile in Q24 falsch, die „Bild 142 → 158" behauptet -
+ * gewachsen ist dort der Kasten, das Bild blieb bei 110. Was die hoehere
+ * Kachel WIRKLICH gebracht hat, ist Flaeche fuer den Finger und eine
+ * Wand, die den Bildschirm fuellt; das ist etwas wert, nur nicht das.
+ *
+ * Der Hebel fuer das Bild waere `max-width`, nicht die Hoehe - und der
+ * gehoert in eine eigene Runde, weil er den Umriss unter den Namen
+ * schiebt und `lesbarkeit` darueber zu urteilen hat. */
 </style></head>
 <body><div id="buehne"></div><div id="fassung"></div>
 <script id="daten" type="application/json">__DATEN__</script>

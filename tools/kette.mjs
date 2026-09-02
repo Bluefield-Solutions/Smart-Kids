@@ -169,6 +169,33 @@ for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
  * Kette bei Becken 10: einmal 135 s, einmal 231 s). Fuer einen Vergleich
  * der Bestzeiten taugt das nicht; fuer die Frage „ab wann kippt es"
  * genuegt es, und die ist hier die wichtigere. */
+/* Nachgemessen in Q27 - dreimal je Einstellung, ruhige Maschine, vier
+ * Kerne, dieselbe Kette hintereinander weg:
+ *
+ *     Becken  6   159 · 157 · 155 s   Mittelwert 157   alle gruen
+ *     Becken  8   135 · 133 · 134 s   Mittelwert 134   alle gruen
+ *     Becken 10   136 · 135 · 131 s   Mittelwert 134   alle gruen
+ *
+ * Drei Dinge stehen damit fest, die vorher nur eine Vermutung waren.
+ *
+ * ERSTENS streut die Kette kaum: hoechstens 5 s Spanne je Einstellung,
+ * also unter 4 %. Ein Unterschied von 23 s zwischen 6 und 8 ist damit
+ * einer und kein Rauschen - anders als die 8 s zwischen 186,6 und 194,5
+ * oben, die aus je einer Messung stammen und nichts beweisen.
+ *
+ * ZWEITENS ist bei 8 der Boden erreicht. Zehn Baender bringen einen
+ * Wimpernschlag (134 gegen 134) - die Kette wartet dann nicht mehr auf
+ * Baender, sondern auf ihren laengsten Einzellauf.
+ *
+ * DRITTENS, und das ist der unbequeme Teil: Becken 10 lief hier DREIMAL
+ * gruen, waehrend es in Q24 dreimal rot war. Das heisst nicht, dass zehn
+ * doch geht. Es heisst, dass der Kipppunkt sich nicht auf Verlangen
+ * zeigt - und genau deshalb bleibt es bei acht: die Ersparnis waere eine
+ * Sekunde, der Einsatz ein Lauf, der an einem anderen Tag umkippt und
+ * dann wie ein Fehler im Spiel aussieht.
+ *
+ * Die Formel bleibt also stehen, jetzt aber mit einem Beleg statt mit
+ * einer Erinnerung. Gemessen mit `SMARTKIDS_BECKEN=<n> npm run tor`. */
 const KERNE = os.cpus().length;
 const BREITE = +(process.env.SMARTKIDS_BECKEN
   || Math.max(2, Math.min(8, KERNE * 2)));

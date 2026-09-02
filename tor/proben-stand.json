@@ -236,14 +236,14 @@
       "s": 17
     },
     "die Werkzeugspalte rutscht auf die Antwortliste": {
-      "commit": "2b5743d934105d8533c7bdbe1ea0a0d4b98f5baf",
+      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
       "zeit": "2026-09-02",
       "s": 105
     },
     "der Fremdgriff sieht die Aufgabe nicht mehr": {
-      "commit": "2b5743d934105d8533c7bdbe1ea0a0d4b98f5baf",
+      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
       "zeit": "2026-09-02",
-      "s": 82
+      "s": 81
     },
     "das Buch verliert den Weg zurück in den Vorlauf": {
       "commit": "90f3b5847ddd8cb022a93a072ceb35811e5c7749",
@@ -286,9 +286,9 @@
       "s": 18
     },
     "das Auge liegt wieder auf dem Kachelnamen": {
-      "commit": "75677ade7ef9fd743db7afabd102a028c8eab477",
+      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
       "zeit": "2026-09-02",
-      "s": 81
+      "s": 78
     },
     "der leise Knopf verliert seine Kante": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -774,6 +774,16 @@
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
       "zeit": "2026-09-02",
       "s": 53
+    },
+    "die elfte Ebene bekommt ihre schmale Kachel nicht mehr": {
+      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
+      "zeit": "2026-09-02",
+      "s": 90
+    },
+    "die Kapazitätsmessung hängt die Wand nicht mehr neu ein": {
+      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
+      "zeit": "2026-09-02",
+      "s": 90
     },
     "die Kachel verliert ihre Höhe": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",

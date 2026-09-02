@@ -2248,7 +2248,22 @@ nach dem hier gefragt wird.
 
 ---
 
-## Q13 offen: die Kachelwand fasst zehn, Lea hat elf
+## Q13 erledigt (Q27): die Kachelwand fasst zwölf
+
+**Gelöst in Q27 auf Weg 1**, aber nicht mit der Zahl, die hier stand: die
+Kachel ist ab elf Ebenen ein **Sechstel der Wand** breit statt fester 108
+Punkte. Auf dem Zielgerät sind das 130, auf dem kleinsten Gerät 100 — ein
+fester Wert hätte auf einem der drei Geräte danebengelegen. Gemessen trägt die
+Wand jetzt zwölf Kacheln auf allen drei Telefonformaten (vorher zehn).
+
+Der Preis ist der, der unten steht: zwei Namen brechen um. Nachgesehen im
+Bildschirmfoto und für tragbar befunden — es betrifft Namen ab zwölf Zeichen
+und erst ab der elften Ebene. Der Rest dieses Eintrags ist der Befund, wie er
+gemessen war.
+
+---
+
+### Der ursprüngliche Befund
 
 Gemessen auf dem Zielgerät (844 × 390, mit und ohne Leiste):
 

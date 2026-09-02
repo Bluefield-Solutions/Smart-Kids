@@ -26,6 +26,8 @@ import { fremdgriff } from './fremdgriff.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
+/** Fremdgriffe, die nur EINEN von zwei Blicken ueberlebt haben. Auskunft. */
+const griffEinmal = new Set();
 
 /** Die Groessen, auf denen geurteilt wird. Nicht "ein paar Breiten". */
 const GERAETE = [
@@ -575,15 +577,36 @@ const SUCHE = () => {
         return Math.max(...k.map(x => x.bottom)) > innerHeight;
       };
       const kopien = [];
+      /* Neu einhaengen, sonst misst die Kopie eine Breite, die es im
+       * Spiel nie gibt.
+       *
+       * Seit Q27 wird die Ebenenkachel schmaler, sobald elf davon an der
+       * Wand haengen (`.wahl.ebenen:has(> :nth-child(11))>*`). Chromium
+       * meldet nach dem Anhaengen der elften Kachel SOFORT `matches()`
+       * true - wendet die Regel auf die Kinder aber erst an, wenn der
+       * Teilbaum neu haengt. Gemessen auf 844 x 390 mit `isMobile`:
+       * 10 Kacheln 134 pt, elfte angehaengt 134 pt, nach dem
+       * Wiedereinhaengen 118 pt.
+       *
+       * Die App selbst faellt nicht hinein: sie baut jede Wand an einem
+       * losgeloesten `div` mit `innerHTML` und haengt sie fertig ein -
+       * genau der Weg, auf dem die Regel greift. Nur diese Messung haengt
+       * Kacheln an eine STEHENDE Wand, und nur sie braucht den Anstoss. */
+      const neuHaengen = () => {
+        const eltern = w.parentElement, nach = w.nextSibling;
+        w.remove(); eltern.insertBefore(w, nach);
+      };
       // Nach oben, bis es herauslaeuft - hoechstens acht dazu, sonst
       // kostet die Messung mehr als sie wert ist.
       let passt = heute;
       if (!laeuftRaus()) for (let i = 0; i < 8; i++) {
         const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);
+        neuHaengen();
         if (laeuftRaus()) break;
         passt = heute + i + 1;
       }
       for (const k of kopien) k.remove();
+      if (kopien.length) neuHaengen();
       const oben = [...new Set([...w.children]
         .map(e => Math.round(e.getBoundingClientRect().top)))].sort((a, b) => a - b);
       /* Steht die LETZTE Reihe mittig?
@@ -767,7 +790,31 @@ for (const g of MEINE) {
       requestAnimationFrame(() => requestAnimationFrame(f))));
     ruhe.ms += Date.now() - angehalten; ruhe.n++;
     const r = await p.evaluate(SUCHE);
-    r.griff = (await p.evaluate(fremdgriff)).map(x => x.meldung);
+    /* Der Fremdgriff wird ZWEIMAL genommen (Q27).
+     *
+     * Im Rauchtest hat genau das drei Anlaeufe gekostet: ein einzelner
+     * Blick sieht auch das Etikett, das gerade am Finger haengt, und
+     * meldet es als Befund. Hier ist der Bildschirm zwar absichtlich zur
+     * Ruhe gebracht - keine laufende Animation, zwei Bilder Ruhe - und es
+     * zieht niemand. Dass es deshalb gutgeht, ist aber eine Annahme, und
+     * es ist dieselbe Falle: sie hat drueben dreimal zugeschnappt und
+     * hier bisher nur noch nicht.
+     *
+     * Verglichen wird ueber den SCHLUESSEL, der keine Zahlen traegt -
+     * genau daran ist die erste Fassung drueben gescheitert: die Meldung
+     * traegt ihre Messstelle mit (Regel 5), und Bildpunkte aendern sich
+     * zwischen zwei Blicken immer.
+     *
+     * Ein zweiter Aufruf je Bildschirm, 154 im ganzen Tor. Gemessen
+     * kostet er nichts, was man saehe. */
+    const griffA = await p.evaluate(fremdgriff);
+    const griffB = griffA.length ? await p.evaluate(fremdgriff) : [];
+    const nochDa = new Set(griffB.map(x => x.schluessel));
+    r.griff = griffA.filter(x => nochDa.has(x.schluessel)).map(x => x.meldung);
+    // Was nur EINMAL dastand, ist kein Befund - aber eine Auskunft. Ohne
+    // sie saehe „nichts gefunden" genauso aus wie „alles weggefiltert".
+    r.griffEinmal = griffA.filter(x => !nochDa.has(x.schluessel))
+      .map(x => x.schluessel);
     // Liegt etwas Bedienbares im Bereich, den das Telefon fuer sich
     // beansprucht? Dort sitzen Uhr, Akku und der Streifen zum Wischen - ein
     // Knopf darunter ist zu sehen und nicht zu treffen.
@@ -795,6 +842,7 @@ for (const g of MEINE) {
     for (const x of r.stempel || []) meldungen.push(`${name}: ${x}`);
     for (const x of r.material || []) meldungen.push(`${name}: ${x}`);
     for (const x of r.griff || []) meldungen.push(`${name}: ${x}`);
+    for (const x of r.griffEinmal || []) griffEinmal.add(`${name}: ${x}`);
     if (r.ohneBild && r.ohneBild.length)
       meldungen.push(`${name}: ${r.ohneBild.join(', ')} ${r.ohneBild.length === 1
         ? 'hat kein Kachelbild' : 'haben kein Kachelbild'} — für ein Kind, das noch 
@@ -1124,6 +1172,9 @@ if (zeichenZeilen.length) {
 }
 console.log(`    Gewartet: ${(ruhe.ms / 1000).toFixed(1)} s auf Ruhe in ${ruhe.n} Aufnahmen, `
   + `${(blind.ms / 1000).toFixed(1)} s blind in ${blind.n} festen Pausen`);
+if (griffEinmal.size)
+  console.log(`    Fremdgriff einmal gesehen, nicht bestätigt: `
+    + `${[...griffEinmal].slice(0, 4).join(' · ')}`);
 console.log(`    ${MEINE.length} Größen × ${gesehen / MEINE.length} Bildschirme geprüft, `
   + `Karten füllen mindestens ${(KARTE_MIN*100).toFixed(0)} % ihres Kastens`
   + (zuKlein ? `, ${zuKlein} Trefferflächen unter ${MIN_PT} pt (Hinweis)` : ''));
