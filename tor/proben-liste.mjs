@@ -621,6 +621,31 @@ export const PROBEN = [
     an:{ datei:'tor/fremdgriff.mjs', text:"s.querySelector('.gibt-es-nicht')" },
     sagt:'keinen einzigen Aufgabenbildschirm' },
 
+  /* Q20: der Weg zurueck in den Vorlauf.
+   *
+   * Seit Q18 gibt es auf dem Telefon kein Auge mehr an der Ebenenkachel.
+   * Faellt auch der Ersatz im Buch weg, ist eine Ebene nach dem ersten
+   * Betreten NICHT MEHR anzusehen - und das faellt niemandem auf, weil
+   * nichts fehlt, was man sehen koennte. */
+  { n:'das Buch verliert den Weg zurück in den Vorlauf', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"      ? `<button class=\"knopf rund\" id=\"allesehen\" aria-label=\"${dran.titel} anschauen\"",
+    ersatz:"      ? `<button class=\"knopf rund\" id=\"garnicht\" aria-label=\"${dran.titel} anschauen\"",
+    an:{ ...DIST, text:'id=\"garnicht\"' },
+    sagt:'kein Weg zurück in den Vorlauf' },
+
+  /* Und der Rueckweg selbst: „Zurück" muss ins BUCH fuehren, nicht in die
+   * Ebenenwahl. `vorlauf` hatte die Ebenenwahl fest eingebaut - mit einem
+   * Knopf, der einfach `vorlauf(id)` aufruft, faellt das Kind in einen
+   * Bildschirm, in dem es gar nicht war. Das sieht wie ein Fehlgriff aus
+   * und ist keiner. */
+  { n:'„Zurück" aus dem Vorlauf fällt in die Ebenenwahl', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"  s.querySelector('#zur').onclick = () => zeige(zurueck || ebenenwahl);",
+    ersatz:"  s.querySelector('#zur').onclick = () => zeige(ebenenwahl);",
+    an:{ ...DIST, text:"onclick = () => zeige(ebenenwahl)" },
+    sagt:'führt nicht ins Buch zurück' },
+
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,
     such:'      if (finger.size >= 2 && start && start.d) {',

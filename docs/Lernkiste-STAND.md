@@ -8559,3 +8559,54 @@ Kette vom Takt bis zur Meldung), und die Erkennung der Aufgabe greift ins Leere
 (beweist, dass die Zahl etwas bedeutet).
 
 233 Gegenproben.
+
+---
+
+## Q20 — der Weg zurück in den Vorlauf, und die Wand ist ausgemessen
+
+Zwei Dinge in einer Runde, beide aus dem, was Q18 offengelassen hat.
+
+### Der Vorlauf ist wieder erreichbar
+
+Seit Q18 gibt es auf dem Telefon kein Auge mehr an der Ebenenkachel — seine
+Trefferfläche lag auf dem Namen. Damit war eine Ebene nach dem **ersten**
+Betreten nicht mehr anzusehen: der Vorlauf erscheint nur einmal je Kind und
+Ebene, und `vorlaufGezeigt` wird nie zurückgesetzt.
+
+Der Ersatz steht im **Forscherbuch**, wo ohnehin „Als Nächstes: Europa" mit drei
+Karten daneben steht. Und er steht im **Kopf**, nicht im Fluss — das hat der
+Rauchtest entschieden, nicht der Geschmack:
+
+> das Buch rollt schon bei 5 Karten (364 Punkte Inhalt, 318 sichtbar) — die
+> Vorschau steht halb unter dem Rand
+
+Ein Knopf, der eine Zeile braucht, nimmt sie dem, was er anbietet. Im Kopf war
+der Platz schon da: rechts stand nichts.
+
+`vorlauf()` bekommt jetzt seinen **Rückweg vom Aufrufer**. Vorher stand
+`ebenenwahl` fest darin — richtig, solange er nur von dort kam; aus dem Buch
+aufgerufen fiele „Zurück" in einen Bildschirm, in dem das Kind gar nicht war.
+
+Und das Auge wird **angesagt**: „Oben rechts ist ein Auge. Tipp es an, dann
+zeige ich dir alles aus Kontinente." Fiona liest nicht — ein Knopf, der nur zu
+sehen ist, ist für sie keiner.
+
+### Breitere Kacheln gibt es nicht — gemessen
+
+Der zweite Vorschlag lautete: vier breitere Kacheln je Reihe statt fünf, dann
+wird das Bild größer. **Er ist schon arithmetisch falsch** — es sind zehn
+Kacheln, vier je Reihe sind drei Reihen.
+
+Nachgemessen auf 844 × 390: die Wand endet bei 357, sicher wäre bis 369 —
+**12 Punkte Luft**. In der Breite 702 von 726 — **24 Punkte**. Das Bild ist
+89 × 48 und **höhenbegrenzt** (max-width wäre 110, genutzt 89): breitere Kacheln
+machen es also gar nicht größer.
+
+Die 12 Punkte reichten für Kachel 118 und Bild 54 — acht Prozent mehr, und der
+ganze Spielraum wäre weg. Ein Browser, der zwei Punkte anders rechnet, schöbe
+die zweite Reihe in den Wischstreifen. Das ist kein Gewinn, das ist eine Wette.
+
+Die Zerlegung der 112 Punkte und die drei verbleibenden Wege stehen im
+Rückstandsverzeichnis, damit der nächste nicht wieder von vorn rechnet.
+
+235 Gegenproben.

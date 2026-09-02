@@ -1022,6 +1022,45 @@ if (laeuft('ablage')) try {
     merke('forscherbuch', new Error('das Buch sagt Fiona nicht, was drin ist — '
       + `sie kann es nicht lesen (gesagt: „${buchGesagt.slice(-80)}")`));
   await p.screenshot({ path: '/tmp/smoke-buch.png' });
+
+  /* --- Der Weg zurueck in den Vorlauf (Q20) ---------------------------
+   *
+   * Seit Q18 gibt es auf dem Telefon kein Auge mehr an der Ebenenkachel -
+   * seine Trefferflaeche lag auf dem Namen. Damit war der Vorlauf nach
+   * dem ersten Betreten NICHT MEHR ZU ERREICHEN: er erscheint nur einmal
+   * je Ebene, und `vorlaufGezeigt` wird nie zurueckgesetzt.
+   *
+   * Der Ersatz steht im Buch, unter „Als Nächstes". Geprueft wird die
+   * ganze Schleife und nicht nur, dass ein Knopf dasteht: hin in den
+   * Vorlauf, dort stehen Karten, und „Zurück" fuehrt ins BUCH zurueck -
+   * nicht in die Ebenenwahl, wo das Kind gar nicht war.
+   *
+   * Ohne die Rueckwegpruefung waere der haeufigste Fehler nicht zu sehen:
+   * `vorlauf` hatte `ebenenwahl` fest eingebaut, und mit einem Knopf, der
+   * einfach `vorlauf(id)` aufruft, faellt man in einen fremden
+   * Bildschirm. Das sieht wie ein Fehlgriff aus und ist keiner. */
+  const zumVorlauf = await p.$('.schirm.da #allesehen');
+  if (!zumVorlauf) {
+    merke('forscherbuch', new Error('kein Weg zurück in den Vorlauf — seit das Auge '
+      + 'auf dem Telefon weg ist, wäre eine Ebene nach dem ersten Betreten '
+      + 'nicht mehr anzusehen'));
+  } else {
+    await p.$eval('.schirm.da #allesehen', x => x.click());
+    const imVorlauf = await p.waitForSelector('.schirm.da #los', { timeout: 8000 })
+      .then(() => true).catch(() => false);
+    if (!imVorlauf) merke('forscherbuch', new Error('„Alle ansehen" führt nicht in den Vorlauf'));
+    else {
+      const karten = await p.$$eval('.schirm.da .aufkleber', e => e.length);
+      if (karten < 2) merke('forscherbuch', new Error(`der Vorlauf aus dem Buch zeigt `
+        + `${karten} Karten — dann ist er kein Anschauen`));
+      await p.$eval('.schirm.da #zur', x => x.click());
+      const zurueckImBuch = await p.waitForSelector('.schirm.da #allesehen', { timeout: 8000 })
+        .then(() => true).catch(() => false);
+      if (!zurueckImBuch) merke('forscherbuch', new Error('„Zurück" aus dem Vorlauf führt '
+        + 'nicht ins Buch zurück, sondern anderswohin — das Kind war im Buch'));
+    }
+  }
+
   // Elternbereich
   await p.click('#zur'); await p.waitForSelector('.schirm.da #eltern');
   await p.click('#eltern'); await p.waitForSelector('.schirm.da .ziffern');

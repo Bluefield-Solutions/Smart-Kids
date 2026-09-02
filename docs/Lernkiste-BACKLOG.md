@@ -2373,3 +2373,59 @@ Drei Ideen, keine gemessen:
 Nummer 1 ist der Vorschlag; Nummer 2 der Ort, an dem ein Kind danach suchen
 würde. Beides ist zu messen, bevor es gebaut wird — auf 844 × 390 mit Leiste ist
 noch kein Bildschirm groß.
+
+---
+
+## Q20 gemessen und verworfen: breitere Kacheln gibt es nicht
+
+Der Vorschlag lautete: jetzt, wo das Auge weg ist, vier breitere Kacheln je
+Reihe statt fünf — dann würde das Bild größer, und Fiona liest das Bild.
+
+**Er ist schon arithmetisch falsch.** Es sind zehn Kacheln. Vier je Reihe sind
+drei Reihen, nicht zwei. Fünf je Reihe ist keine Wahl, sondern eine Folge der
+Kachelzahl.
+
+Gemessen auf 844 × 390 (Leiste: die Anordnung ist dieselbe, der sichere Bereich
+schneidet unten 21 Punkte ab):
+
+| | |
+|---|---|
+| Wand | 10 Kacheln à 134 × 112 in 2 Reihen |
+| Breite | 5 × 134 + 4 × 8 = **702** von 726 nutzbaren — 24 Punkte übrig |
+| Höhe | Wand endet bei **357**, sicher bis 369 — **12 Punkte übrig** |
+| Bild | 89 × 48, **höhenbegrenzt** (max-width wäre 110, genutzt 89) |
+
+Die 12 Punkte reichen für 6 Punkte je Reihe, also Kachel 118 und Bild 54 — acht
+Prozent mehr Bild, und der ganze Spielraum wäre aufgebraucht. Ein Browser, der
+zwei Punkte anders rechnet, schiebt die zweite Reihe in den Wischstreifen. Das
+ist kein Gewinn, das ist eine Wette.
+
+### Woraus die 112 Punkte bestehen
+
+| | |
+|---|---|
+| Polsterung oben + unten | 16 |
+| Bild | 48 |
+| Abstand | 11 |
+| Name | 19 |
+| Fuß (Aufkleberzahl 20 hoch, Balken 5) | 20 |
+
+Jeder Posten außer den Abständen trägt etwas: das Bild ist für Fiona der Name,
+der Name ist für Lea der Name, die Zahl sagt „wie viel habe ich", der Balken
+sagt „wie weit bin ich". Das Bild hinter den Namen zu legen ist in Q8 gemessen
+und verworfen worden — es kostet Kontrast (4,34 : 1 statt 4,5).
+
+### Was übrig bleibt, falls es je wieder aufkommt
+
+1. **Weniger Kacheln.** Der einzige Weg zu wirklich breiteren: acht statt zehn,
+   dann sind vier je Reihe zwei Reihen und die Kachel wird 175 breit. Das Bild
+   bliebe trotzdem 48 hoch — es hängt an der Höhe, nicht an der Breite. Also
+   kein Gewinn für Fiona, nur ruhigere Kacheln.
+2. **Die Frage kleiner.** Über der Wand stehen 61 Punkte für „Womit möchtest du
+   anfangen?". Zehn davon wären zu holen. Sie sind aber das, was dem Kind sagt,
+   was zu tun ist.
+3. **Die Aufkleberzahl weg, nur der Balken bleibt.** Bild 48 → 63 (+31 %). Der
+   einzige Posten mit echtem Gewinn — und der einzige, der Lea etwas wegnimmt.
+
+Keiner der drei ist gebaut. Sie stehen hier, damit der nächste, der an der
+Kachel baut, nicht wieder von vorn rechnet.

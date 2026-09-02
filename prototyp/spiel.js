@@ -2077,7 +2077,14 @@ function vorlaufSatz(ebeneId){
   return 'Tippe auf ein Bild, dann sage ich dir, wie es heißt.';
 }
 
-async function vorlauf(ebeneId){
+/* Wohin „Zurück" fuehrt, entscheidet der AUFRUFER (Q20).
+ *
+ * Bis hierher stand `ebenenwahl` fest darin - und das war richtig,
+ * solange der Vorlauf nur von dort kam. Seit das Auge auf dem Telefon
+ * weggefallen ist (Q18), kommt er auch aus dem Forscherbuch, und dann
+ * faellt „Zurück" in einen Bildschirm, den das Kind gar nicht verlassen
+ * hat. */
+async function vorlauf(ebeneId, zurueck = null){
   const s = el('div');
   // Erst die Karte holen, DANN den Vorrat lesen.
   //
@@ -2119,7 +2126,7 @@ async function vorlauf(ebeneId){
     <div class="reihe vorlauffuss">
       <button class="knopf haupt" id="los">Jetzt starten</button>
     </div>`;
-  s.querySelector('#zur').onclick = () => zeige(ebenenwahl);
+  s.querySelector('#zur').onclick = () => zeige(zurueck || ebenenwahl);
   s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));
   s.querySelector('#los').onclick = () => {
     Einst.vorlaufGezeigt[vorlaufSchluessel(ebeneId)] = true;
@@ -5052,7 +5059,19 @@ async function forscherbuch(){
     </button>`;
 
   s.innerHTML = kopf({ links: zurueckKnopf(),
-    mitte:`<span class="marke">${gesamt} Aufkleber</span>` }) + `
+    mitte:`<span class="marke">${gesamt} Aufkleber</span>`,
+    /* Der Weg zurueck in den Vorlauf steht im KOPF, nicht im Fluss (Q20).
+     *
+     * Der erste Anlauf setzte ihn unter die Vorschau. Der Rauchtest hat
+     * sofort gemeldet, was das kostet: 364 Punkte Inhalt bei 318
+     * sichtbaren - das Buch fing schon bei fuenf Karten an zu rollen, und
+     * die Vorschau stand halb unter dem Rand. Ein Knopf, der eine Zeile
+     * braucht, nimmt sie dem, was er anbietet.
+     *
+     * Im Kopf ist der Platz schon da: rechts stand nichts. */
+    rechts: vorschau.length
+      ? `<button class="knopf rund" id="allesehen" aria-label="${dran.titel} anschauen"
+                 title="Alle ansehen">${ZEI('auge', 22)}</button>` : '' }) + `
     <div class="rollen buch">
       ${verdient.length ? `
         <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
@@ -5072,11 +5091,33 @@ async function forscherbuch(){
       : gesamt ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : ''}
     </div>`;
   s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
+  /* Der Weg zurueck in den Vorlauf (Q20).
+   *
+   * Auf dem Telefon ist das Auge an der Kachel weggefallen (Q18), weil
+   * seine Trefferflaeche auf dem Namen lag. Damit gab es dort KEINEN Weg
+   * mehr, sich eine Ebene noch einmal anzusehen - der Vorlauf erscheint
+   * nur beim ersten Betreten, und `vorlaufGezeigt` wird nie
+   * zurueckgesetzt.
+   *
+   * Hier ist Platz, den die Kachel nicht hat, und hier steht die Frage
+   * schon: „Als Nächstes: Europa" mit drei Karten daneben. Der Knopf
+   * zeigt alle - und traegt das Auge, damit Fiona ihn ohne Lesen
+   * wiedererkennt.
+   *
+   * „Zurück" fuehrt von dort ins BUCH, nicht in die Ebenenwahl: das Kind
+   * war im Buch. */
+  const zumVorlauf = s.querySelector('#allesehen');
+  if (zumVorlauf) zumVorlauf.onclick = () => zeige(() => vorlauf(dran.id, forscherbuch));
   s.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
   ansagen(gesamt
     ? `Dein Forscherbuch. Du hast ${gesamt} Aufkleber${gekonnt?`, ${gekonnt} davon sicher`:''}`
       + `${verdient.length ? ` und ${verdient.length===1?'ein Abzeichen':`${verdient.length} Abzeichen`}` : ''}. `
       + `Tipp etwas an, dann sage ich dir, was es ist.`
+      // Fiona liest nicht: ein Knopf, der nur zu SEHEN ist, ist fuer sie
+      // keiner. Das Auge oben rechts wird deshalb angesagt - und mit dem,
+      // was es tut, nicht mit seinem Namen.
+      + (vorschau.length ? ` Oben rechts ist ein Auge. Tipp es an, dann `
+        + `zeige ich dir alles aus ${dran.titel}.` : '')
     : 'Dein Forscherbuch ist noch leer. Such dir eine Karte aus — der erste Aufkleber ist schnell da.');
   return s;
 }
