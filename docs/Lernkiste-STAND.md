@@ -8469,81 +8469,93 @@ Grund statt zwei: die Ersatzschriften. Der Chromium-Bau ist keiner mehr.
 
 ## Q19 — der Fremdgriff sieht jetzt auch die Aufgabe
 
-`passt` prüft den Fremdgriff seit Q18, aber nur an **vierzehn Stationen, die es
-selbst ansteuert**: Profilwahl, Weltenwahl, Ebenenwahl, Vorläufe, Schreiben,
-Diktat, Zahlen, Forscherbuch, Elterntor. Was es nie sieht, ist die **Aufgabe** —
-die Karte mit ihren Etiketten, der Hinweis nach einem Fehlversuch, das Lob, die
-Fahne mit dem Namen, der Endbildschirm. Genau dort liegen die meisten Kästen
-übereinander.
-
-### Keine Stationenliste
-
-Der naheliegende Weg wäre gewesen, den Aufruf an sechs Stellen im Rauchtest
-einzutragen. Eine Stationenliste ist aber genau die Sorte Stelle, an der man
-etwas vergisst — und sie wächst nicht mit: der nächste Bildschirm steht nicht
-darin.
-
-Stattdessen sieht ein **Beobachter in der Seite** jedem Bildschirmwechsel zu und
-prüft selbst. Er wird in `neueSeite()` eingespritzt und beim `close()` geerntet
-— zwei Stellen, durch die *jede* Seite des Rauchtests geht. Wer morgen einen
-neuen Bildschirm baut, trägt dafür nichts ein.
+`passt` prüft ihn seit Q18, aber nur an **vierzehn Stationen, die es selbst
+ansteuert**: Profilwahl, Weltenwahl, Ebenenwahl, Vorläufe, Schreiben, Diktat,
+Zahlen, Forscherbuch, Elterntor — lauter Wahlbildschirme. Was es nie sieht, ist
+die **Aufgabe**: die Karte mit ihren Etiketten, der Hinweis nach einem
+Fehlversuch, das Lob, die Fahne mit dem Namen, der Endbildschirm. Genau dort
+liegen die meisten Kästen übereinander.
 
 Der Quelltext steht **einmal**, in `tor/fremdgriff.mjs`, und versorgt beide Tore
-(Regel 6). `passt` ruft ihn als `evaluate` auf, der Rauchtest spritzt denselben
-Text als Startskript ein.
+(Regel 6): `passt` ruft ihn als `evaluate`, der Rauchtest spritzt denselben Text
+als Startskript ein. Er wird in `neueSeite()` eingespritzt und beim `close()`
+geerntet — zwei Stellen, durch die *jede* Seite des Rauchtests geht. Keine
+Stationenliste: die wächst nicht mit, der nächste Bildschirm stünde nicht darin.
 
-### Was das Messen sofort korrigiert hat
+### Diese Runde bestand fast ganz aus dem Messen der Messung
 
-Der erste Anlauf gab beim ersten Blick in ein bewegtes Bild auf — und das war
-der **häufigere** Fall: 33 übersprungen gegen 18 geprüft. Ein Bildschirm, der
-länger überblendet als die Wartezeit, wäre damit nie geprüft worden, und niemand
-hätte es gemerkt. Mit vier Nachfassversuchen:
+Der Eingriff für die Gegenprobe schiebt die Werkzeugspalte („Weiß ich nicht"
+und das Mikrofon) 60 Punkte nach links über die Antwortliste. Er lag im
+gebauten Stand, er war mit einem Handskript **jedes Mal** zu sehen — und der
+Rauchtest meldete grün. Dreimal hintereinander, aus drei verschiedenen Gründen:
 
-| Teil | geprüft | davon Aufgabe | übersprungen |
+**1. Anstoß durch Änderungen trifft schlecht.** Die erste Fassung hing die
+Prüfung an einen `MutationObserver`: Bildschirm geändert, 250 ms warten,
+nachsehen. Von rund zwölf gespielten Aufgaben kamen **vier** unter den Blick,
+und welche vier, entschied der Zufall. Jetzt ein Takt von 350 ms — er trifft
+jeden Bildschirm, der stehenbleibt, und um genau die geht es. Aus 20 geprüften
+Bildschirmen wurden 90.
+
+**2. Die Messstelle in der Meldung machte den Vergleich unmöglich.** Ein Befund
+zählt erst, wenn er in zwei Blicken dasteht — sonst meldet die Prüfung das
+Etikett, das gerade am Finger hängt. Verglichen wurde die **Meldung**, und die
+trägt seit derselben Runde ihre Bildpunkte mit (Regel 5). Zwischen zwei Aufgaben
+ändern die sich immer. Zwei Blicke sahen damit nie „dasselbe". Jetzt entscheidet
+ein **Schlüssel ohne Zahlen** über die Bestätigung, die Messstelle bleibt in der
+Meldung.
+
+**3. Jeder übersprungene Blick löschte den Verdacht.** Während gespielt wird,
+liegt zwischen zwei ruhenden Bildern fast immer ein bewegtes. Der Fehler stand
+in *jedem* Blick da, wurde zweimal als Verdacht notiert und zweimal wieder
+vergessen. Zurückgesetzt wird jetzt beim **Bildschirmwechsel** — dort verliert
+ein Verdacht seinen Gegenstand; ein bewegtes Zwischenbild tut das nicht.
+
+Alle drei sind derselbe Fehler in drei Gestalten: eine Prüfung, die läuft, etwas
+sieht und trotzdem nichts meldet. Das ist die Sorte, die Regel 1 meint — und sie
+war nur zu finden, weil die Gegenprobe *vor* dem Zufriedensein kam.
+
+Als Auskunft steht jetzt im Bericht, was **einmal** gesehen und nicht bestätigt
+wurde. Ohne diese Zahl sähe „nichts gefunden" genauso aus wie „alles wieder
+weggefiltert".
+
+### Drei Befunde, die keine waren
+
+Der erste vollständige Lauf meldete „Bremen" und „Hessen" zu 100 % unter einem
+**anderen Etikett** und „Brasilien" zu 67 % unter **„Weiß ich nicht"** — der
+nächste Lauf keinen davon. Der Grund ist die Sache selbst: während das Kind ein
+Etikett **zieht**, hängt es am Finger und liegt über den anderen. Das *ist* ein
+fremder Griff, und zwar der richtige. Deshalb: hängt etwas am Finger
+(`.zieht`), wird nicht gemessen. Gemessen wird die Anordnung, nicht der Zug.
+
+### Was dabei herauskam
+
+| Teil | geprüft | davon Aufgabe | in Bewegung übersprungen |
 |---|---|---|---|
-| 1 | 20 | 4 | 7 |
-| 2 | 38 | 0 (spielt nicht) | 8 |
-| 3 | 33 | 21 | 14 |
-| 4 | 33 | 14 | 18 |
+| 1 | 90 | 78 | 75 |
+| 2 | 185 | 4 (spielt nicht, dafür 66× Buch) | 82 |
+| 3 | 70 | 57 | 199 |
+| 4 | 46 | 16 | 173 |
 
-**124 ruhende Bildschirme, 39 davon Aufgaben.** Kein Fremdgriff — die App ist an
-diesen Stellen sauber.
+**391 ruhende Bildschirme, 155 davon Aufgaben.** Kein Fremdgriff, kein
+unbestätigter Verdacht — die App ist an diesen Stellen sauber.
 
-### Drei Befunde, die keine waren — und was sie gekostet hätten
+### Was er nicht sieht
 
-Der erste vollständige Lauf meldete drei Fremdgriffe: „Bremen" und „Hessen" zu
-100 % unter einem **anderen Etikett**, „Brasilien" zu 67 % unter **„Weiß ich
-nicht"**. Der nächste Lauf meldete keinen einzigen davon.
-
-Ein Tor, das mal anschlägt und mal nicht, ist schlimmer als keines: es kostet
-jedes Mal eine Untersuchung und beweist nie etwas. Der Grund war die Sache
-selbst — während das Kind ein Etikett **zieht**, hängt es am Finger und liegt
-über den anderen. Das *ist* ein fremder Griff, und zwar der richtige. Dasselbe
-gilt für den Augenblick, in dem eine Antwortliste neu gesetzt wird.
-
-Zwei Zusätze, und beide sind die Sache und nicht ein Filter:
-
-- **Am Finger hängt etwas** (`.zieht`) → nicht messen. Gemessen wird die
-  Anordnung, nicht der Zug.
-- **Ein Befund zählt erst, wenn er bleibt.** Jeder Verdacht wird 300 ms später
-  ein zweites Mal nachgesehen, wieder im ruhenden Bild. Ein Fehler in der
-  Anordnung bleibt liegen; ein Etikett am Finger nicht.
-
-Und beim Nachsehen fiel auf, dass die Meldung selbst zu wenig sagte: „greift
-`.etikett`" ließ nicht erkennen, ob da ein Knopf falsch sitzt oder ob gerade
-etwas am Finger hängt. Sie trägt jetzt ihre Messstelle mit (Regel 5) — welcher
-Knopf, welches Wort, welche zwei Kästen.
+Bildschirme, die **keine halbe Sekunde stehen**. Die Ebenenwahl zum Beispiel:
+der Rauchtest tippt dort sofort eine Kachel an. Mit eingeblendetem Auge meldet
+`fremdgriff` dort 7 bis 8 % — der Beobachter kommt nur nicht zweimal hin. Das
+ist keine Lücke, sondern die Arbeitsteilung: kurzlebige Bildschirme steuert
+`passt` einzeln an, der Rauchtest ist für die, auf denen gespielt wird.
 
 ### Und die Zahl steht im Bericht
 
-„Kein Fremdgriff gefunden" heißt zweierlei: alles sitzt, oder die Prüfung kam nie
-zum Zug. Ohne die Zahl sind beide nicht zu unterscheiden. Bei null geprüften
-Bildschirmen ist das deshalb ein **Fehler**, kein Hinweis — und ebenso, wenn
-kein einziger **Aufgaben**bildschirm darunter war: dann prüft der Rauchtest
-nichts, was `passt` nicht schon prüfte, und die ganze Runde wäre umsonst.
+„Kein Fremdgriff gefunden" heißt zweierlei: alles sitzt, oder die Prüfung kam
+nie zum Zug. Bei null geprüften Bildschirmen ist das deshalb ein **Fehler**,
+kein Hinweis — und ebenso, wenn kein einziger **Aufgaben**bildschirm darunter
+war: dann prüft der Rauchtest nichts, was `passt` nicht schon prüfte.
 
-Zwei Gegenproben: eine lässt das Auge auf den Kachelnamen zurück (beweist die
-Kette vom Beobachter bis zur Meldung), die andere lässt die Erkennung der
-Aufgabe ins Leere greifen (beweist, dass die Zahl etwas bedeutet).
+Zwei Gegenproben: die Werkzeugspalte rutscht auf die Antwortliste (beweist die
+Kette vom Takt bis zur Meldung), und die Erkennung der Aufgabe greift ins Leere
+(beweist, dass die Zahl etwas bedeutet).
 
 233 Gegenproben.

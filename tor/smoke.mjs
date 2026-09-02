@@ -33,7 +33,7 @@ const { server, adresse: ADRESSE } = await serviere(wurzel);
 const b = await starte();
 const fehler = [];
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
-const griffStand = { geprueft: 0, uebersprungen: 0, arten: {} };
+const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 const merke = (was, e) => fehler.push(`${was}: ${e.message || e}`);
 
 /* `--sofort`: aufhoeren, sobald der erste Fehler feststeht.
@@ -231,6 +231,7 @@ async function neueSeite(viewport, ctx, flott = true) {
         griffStand.geprueft += g.geprueft; griffStand.uebersprungen += g.uebersprungen;
         for (const [k, v] of Object.entries(g.arten || {}))
           griffStand.arten[k] = (griffStand.arten[k] || 0) + v;
+        for (const k of g.einmal || []) griffStand.einmal.add(k);
         for (const m of g.meldungen) fehler.push(`Fremdgriff — ${m}`);
       }
     } catch { /* Seite schon weg: dann gibt es nichts zu ernten */ }
@@ -4507,6 +4508,8 @@ console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${
 console.log(`  Fremdgriff geprüft:         ${griffStand.geprueft} ruhende Bildschirme (`
   + `${Object.entries(griffStand.arten).map(([k, v]) => `${v}× ${k}`).join(', ') || 'keine'})`
   + `, ${griffStand.uebersprungen} in Bewegung übersprungen`);
+if (griffStand.einmal.size)
+  console.log(`  … einmal gesehen, nicht bestätigt: ${[...griffStand.einmal].slice(0, 6).join(' · ')}`);
 if (griffStand.geprueft === 0)
   fehler.push('Der Fremdgriff hat keinen einzigen ruhenden Bildschirm gesehen — '
     + 'dann beweist „nichts gefunden" nichts (Regel 1)');

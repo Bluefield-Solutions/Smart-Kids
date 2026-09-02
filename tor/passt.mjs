@@ -746,7 +746,7 @@ for (const g of MEINE) {
       requestAnimationFrame(() => requestAnimationFrame(f))));
     ruhe.ms += Date.now() - angehalten; ruhe.n++;
     const r = await p.evaluate(SUCHE);
-    r.griff = await p.evaluate(fremdgriff);
+    r.griff = (await p.evaluate(fremdgriff)).map(x => x.meldung);
     // Liegt etwas Bedienbares im Bereich, den das Telefon fuer sich
     // beansprucht? Dort sitzen Uhr, Akku und der Streifen zum Wischen - ein
     // Knopf darunter ist zu sehen und nicht zu treffen.

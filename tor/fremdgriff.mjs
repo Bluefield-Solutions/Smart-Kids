@@ -39,7 +39,10 @@
  * Chromium. Null waere keine Strenge, sondern eine Wette darauf. */
 export const FREMD_ZU = 5;
 
-/** Laeuft in der Seite. Gibt eine Liste von Meldungen zurueck (leer = gut). */
+/** Laeuft in der Seite. Gibt Befunde zurueck: `{ schluessel, meldung }` (leer = gut).
+ *
+ * Der Schluessel traegt keine Zahlen und ist deshalb ueber zwei Blicke
+ * hinweg vergleichbar; die Meldung traegt ihre Messstelle mit (Regel 5). */
 export function fremdgriff() {
   const FREMD_ZU = 5;   // dieselbe Zahl; die Seite sieht das Modul nicht
   const AUSWAHL = '.schirm.da button, .schirm.da .kachel, .schirm.da .etikett, '
@@ -85,12 +88,24 @@ export function fremdgriff() {
       const kk = (r) => `${r.left.toFixed(0)}|${r.top.toFixed(0)}`
         + `–${r.right.toFixed(0)}|${r.bottom.toFixed(0)}`;
       const f = ersterFremder.getBoundingClientRect();
-      aus.push(`„${(k.textContent.trim() || k.className).slice(0, 22)
-        .replace(/\s+/g, ' ')}" — ${anteil} % des Wortes greift `
-        + `${[...wer].join(', ')} „${(ersterFremder.textContent || '').trim().slice(0, 18)
-        .replace(/\s+/g, ' ')}" statt den eigenen Knopf `
-        + `(erlaubt ${FREMD_ZU} %, ${fremd} von ${punkte} Punkten; `
-        + `Schrift ${kaesten.map(kk).join(' ')} gegen Knopf ${kk(f)})`);
+      const wort = (k.textContent.trim() || k.className).slice(0, 22).replace(/\s+/g, ' ');
+      const fremderName = [...wer].join(', ');
+      aus.push({
+        /* Der SCHLUESSEL traegt keine Zahlen.
+         *
+         * Er entscheidet, ob zwei Blicke denselben Befund sehen - und
+         * genau daran ist der erste Anlauf gescheitert: die Meldung trug
+         * (richtigerweise, Regel 5) ihre Messstelle mit, und die
+         * Bildpunkte aendern sich zwischen zwei Aufgaben immer. Zwei
+         * Blicke sahen damit nie „dasselbe", und ein eingebauter Fehler
+         * blieb unentdeckt, obwohl er in jedem einzelnen Blick dastand. */
+        schluessel: `${wort}|${fremderName}`,
+        meldung: `„${wort}" — ${anteil} % des Wortes greift `
+          + `${fremderName} „${(ersterFremder.textContent || '').trim().slice(0, 18)
+          .replace(/\s+/g, ' ')}" statt den eigenen Knopf `
+          + `(erlaubt ${FREMD_ZU} %, ${fremd} von ${punkte} Punkten; `
+          + `Schrift ${kaesten.map(kk).join(' ')} gegen Knopf ${kk(f)})`,
+      });
     }
   }
   return aus;
@@ -119,7 +134,7 @@ export function fremdgriff() {
  * Laeuft in der Seite. Erwartet `window.__fremdgriff`.
  */
 export function griffBeobachter() {
-  window.__griff = { meldungen: [], geprueft: 0, uebersprungen: 0, arten: {} };
+  window.__griff = { meldungen: [], geprueft: 0, uebersprungen: 0, arten: {}, einmal: [] };
   const G = window.__griff;
   const gesehen = new Set();
   /* Ein Befund zaehlt erst, wenn er BLEIBT.
@@ -135,65 +150,85 @@ export function griffBeobachter() {
    * Griff - und zwar der richtige. Dasselbe gilt fuer den Augenblick, in
    * dem eine Antwortliste neu gesetzt wird.
    *
-   * Ein Fehler in der Anordnung bleibt dagegen liegen. Also wird jeder
-   * Verdacht ein zweites Mal nachgesehen, 300 ms spaeter und wieder im
-   * ruhenden Bild; nur was beide Male dasteht, ist ein Befund. */
+   * Ein Fehler in der Anordnung bleibt dagegen liegen. Also muss ein
+   * Verdacht in ZWEI aufeinanderfolgenden Blicken dastehen, beide im
+   * ruhenden Bild.
+   */
   const verdacht = new Set();
-  let t = null, nach = null, versuch = 0;
+  let letzteMarke = null;
+
   const pruefen = () => {
     const schirme = document.querySelectorAll('.schirm.da');
     // Am Finger haengt etwas: dann liegt es ueber allem, und das gehoert
     // sich so. Gemessen wird die Anordnung, nicht der Zug.
-    if (document.querySelector('.schirm.da .zieht')) { G.uebersprungen++; return; }
-    if (schirme.length !== 1
+    if (document.querySelector('.schirm.da .zieht')
+      || schirme.length !== 1
       || document.getAnimations().some(a => a.playState === 'running'
            && a.effect?.getTiming().iterations !== Infinity)) {
-      /* Nicht aufgeben, nachsehen. Der erste Anlauf gab beim ersten Blick
-       * in ein bewegtes Bild auf - und das war der haeufigere Fall: 33
-       * uebersprungen gegen 18 geprueft. Ein Bildschirm, der laenger
-       * ueberblendet als die Wartezeit, waere damit NIE geprueft worden,
-       * und niemand haette es gemerkt. Also viermal nachfassen; bleibt es
-       * in Bewegung, ist es Zierde (ein pulsierendes Ziel etwa) und
-       * gehoert wirklich uebersprungen. */
-      if (++versuch <= 4) { clearTimeout(t); t = setTimeout(pruefen, 250); return; }
-      versuch = 0; G.uebersprungen++; return;
+      /* Der Verdacht bleibt ueber einen uebersprungenen Blick hinweg
+       * stehen.
+       *
+       * Der erste Anlauf loeschte ihn hier - und damit nie ein Befund
+       * bestaetigt: waehrend gespielt wird, liegt zwischen zwei ruhenden
+       * Bildern fast immer ein bewegtes. Der eingebaute Fehler (die
+       * Werkzeugspalte 60 Punkte auf der Antwortliste) stand in JEDEM
+       * einzelnen Blick da, wurde zweimal als Verdacht notiert und
+       * zweimal wieder vergessen. Der Rauchtest meldete gruen.
+       *
+       * Zurueckgesetzt wird beim BILDSCHIRMWECHSEL - dort verliert ein
+       * Verdacht seinen Gegenstand. Ein bewegtes Zwischenbild tut das
+       * nicht. */
+      G.uebersprungen++; return;
     }
-    versuch = 0;
     G.geprueft++;
     /* WELCHE Bildschirme gesehen wurden, nicht nur wieviele.
      *
-     * „18 geprueft" beweist noch nicht, dass die Aufgabe darunter war -
+     * „20 geprueft" beweist noch nicht, dass die Aufgabe darunter war -
      * und die ist der ganze Grund, warum diese Pruefung auch im Rauchtest
-     * laeuft. `passt` steuert nur Wahlbildschirme an. Bliebe die Aufgabe
-     * unbesucht, meldete der Rauchtest „nichts gefunden" und haette
-     * nichts geprueft, was `passt` nicht schon prueft. */
+     * laeuft. `passt` steuert nur Wahlbildschirme an. */
     const s = schirme[0];
     const art = s.querySelector('.karte svg, .etikett, .zahl, .eingabe, .feldreihe') ? 'aufgabe'
               : s.querySelector('.kachel') ? 'wahl'
               : s.querySelector('.aufkleber') ? 'buch' : 'sonst';
     G.arten[art] = (G.arten[art] || 0) + 1;
-    const marke = (schirme[0].className || 'Bildschirm').split(' ').slice(0, 2).join('.');
-    const jetzt = new Set(window.__fremdgriff().map(m => `${marke}: ${m}`));
-    for (const zeile of jetzt) {
-      if (!verdacht.has(zeile)) continue;      // erst einmal gesehen
+    const marke = (s.className || 'Bildschirm').split(' ').slice(0, 2).join('.');
+    if (marke !== letzteMarke) { verdacht.clear(); letzteMarke = marke; }
+    const jetzt = new Map();
+    for (const b of window.__fremdgriff())
+      jetzt.set(`${marke}: ${b.schluessel}`, `${marke}: ${b.meldung}`);
+    for (const [schluessel, zeile] of jetzt) {
+      if (!verdacht.has(schluessel)) continue;   // erst einmal gesehen
       // Derselbe Befund steht auf zwoelf Aufgaben zwoelfmal. Einmal reicht.
-      if (gesehen.has(zeile) || gesehen.size >= 20) continue;
-      gesehen.add(zeile); G.meldungen.push(zeile);
+      if (gesehen.has(schluessel) || gesehen.size >= 20) continue;
+      gesehen.add(schluessel); G.meldungen.push(zeile);
+      // Bestaetigt ist kein Verdacht mehr.
+      G.einmal = G.einmal.filter(x => x !== schluessel);
     }
     verdacht.clear();
-    for (const zeile of jetzt) verdacht.add(zeile);
-    // Und selbst nachsehen: ohne diesen zweiten Blick haengt die
-    // Bestaetigung daran, ob sich zufaellig noch etwas am Baum aendert.
-    if (jetzt.size) { clearTimeout(nach); nach = setTimeout(pruefen, 300); }
+    for (const schluessel of jetzt.keys()) {
+      verdacht.add(schluessel);
+      // Auskunft, kein Befund: was EINMAL dastand und sich nicht
+      // bestaetigt hat. Ohne diese Zahl waere nicht zu sehen, ob die
+      // Bestaetigung etwas verschluckt - „nichts gefunden" saehe genauso
+      // aus wie „alles wieder weggefiltert".
+      if (!G.einmal.includes(schluessel) && G.einmal.length < 20)
+        G.einmal.push(schluessel);
+    }
   };
-  const start = () => {
-    const buehne = document.getElementById('buehne') || document.body;
-    // KEINE Attribute beobachten: das pulsierende Ziel und jede
-    // Klassenaenderung waeren sonst eine Pruefung je Bild. Was einen
-    // Bildschirm aendert, fuegt Knoten ein oder nimmt sie weg.
-    new MutationObserver(() => { clearTimeout(t); t = setTimeout(pruefen, 250); })
-      .observe(buehne, { childList: true, subtree: true });
-  };
+
+  /* Ein TAKT, kein Anstoss durch Aenderungen.
+   *
+   * Der erste Anlauf haengte die Pruefung an einen `MutationObserver`:
+   * Bildschirm geaendert, kurz warten, nachsehen. Das klang sparsam und
+   * hat schlecht getroffen - von rund zwoelf gespielten Aufgaben kamen
+   * VIER unter den Blick, und welche vier, entschied der Zufall. Ein
+   * eingebauter Fehler blieb dabei unentdeckt: die Werkzeugspalte lag 60
+   * Punkte auf der Antwortliste, und der Rauchtest meldete gruen.
+   *
+   * Ein Takt trifft jeden Bildschirm, der stehenbleibt - und um genau die
+   * geht es. Er kostet nichts: der Blick selbst sind wenige Millisekunden,
+   * und im ruhenden Bild passiert ohnehin nichts anderes. */
+  const start = () => setInterval(pruefen, 350);
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', start);
   else start();
 }
