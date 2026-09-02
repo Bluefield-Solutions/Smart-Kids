@@ -1,0 +1,48 @@
+# Wie weit liegen die Bildpunkte auf dem Runner von denen am Arbeitsplatz?
+#
+# `ansicht` laeuft in der Auslieferung NICHT (`SMARTKIDS_OHNE_ANSICHT=1`).
+# Der Grund stand bis Q18 doppelt da: anderer Chromium-Bau UND andere
+# Ersatzschriften. Der Chromium-Bau ist seit Q18b auf beiden Seiten
+# derselbe (Regel 16: der Runner und dieser Rechner fahren denselben
+# Browser). Uebrig bleibt die Frage nach den Schriften - und die ist eine
+# ZAHL, keine Meinung.
+#
+# Dieser Ablauf holt sie. Er ist kein Tor: er faellt nie rot aus, er
+# schreibt nur auf, um wieviel Prozent jede der 37 Aufnahmen abweicht.
+# Liegt alles unter dem Band, das `ansicht` ohnehin erlaubt (0,08 %),
+# gehoert das Tor in die Kette; liegt es darueber, steht hier, um wieviel
+# und woran - und der Verzicht hat wieder einen belegten Grund statt eines
+# geerbten.
+#
+# Von Hand angestossen, nicht nach der Uhr: die Frage stellt sich einmal
+# und wieder, wenn jemand an den Schriften ruehrt.
+name: Bildmessung
+
+on:
+  workflow_dispatch:
+
+jobs:
+  messen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run bauen
+      # `|| true`: das hier MISST, es urteilt nicht. Ein roter Ablauf
+      # saehe aus wie ein kaputter Stand und ist keiner.
+      - name: ansicht messen (kein Tor)
+        run: node tor/ansicht.mjs || true
+      # Und die Abweichungsbilder mit, sonst steht da nur eine Prozentzahl
+      # und niemand kann sie beurteilen.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: abweichungen
+          path: tor/abweichungen
+          retention-days: 7
+          if-no-files-found: ignore
