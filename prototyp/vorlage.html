@@ -746,6 +746,25 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .wahl.weltwahl:has(> :nth-child(3)){
   grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));max-width:1000px}
 .wahl.weltwahl:has(> :nth-child(3)) .kachel.welt{min-height:180px}
+/* Und ab der VIERTEN Welt noch eine Stufe (Q30).
+ *
+ * Gemessen, bevor es sie gibt - `passt` klont Kacheln und meldet die
+ * Kapazitaet. Mit 200 Punkten Mindestbreite passen auf dem Zielgeraet
+ * drei nebeneinander; die vierte bricht um, und die zweite Reihe endet
+ * bei 519 von 390 Punkten. Mit Uhr und Wischstreifen bei 540. Eine
+ * vierte Welt waere also nicht knapp, sondern unsichtbar.
+ *
+ * 150 statt 200: vier mal 150 plus drei Luecken sind 624 Punkte, und
+ * nutzbar sind auf dem Zielgeraet 816, mit Leiste 711, auf dem kleinsten
+ * Geraet (iPhone SE quer) 651. Es passt also ueberall in EINE Reihe, und
+ * am knappsten dort, wo es immer am knappsten ist.
+ *
+ * Der Preis: das Weltbild schrumpft auf dem kleinsten Geraet von 159 auf
+ * 117 Punkte. Das ist der Preis fuer eine vierte Welt und faellig, wenn
+ * sie kommt - heute kostet die Regel nichts, weil `:has()` erst ab der
+ * vierten Kachel greift. */
+.wahl.weltwahl:has(> :nth-child(4)){
+  grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));max-width:1200px}
 /* Eine Welt ist keine Zeile.
    Der erste Entwurf gab den beiden Karten dieselbe Hoehe wie einer
    Ebenenkachel - auf dem Zielgeraet standen dann zwei breite Balken unter
@@ -1759,6 +1778,23 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      (`.rollen`), aber wer rollen muss, sieht nicht alles - und genau das
      war der Wunsch. */
   .albumkarte svg{height:96px}
+  /* Bei EINER Karte ist das zu klein (Q30).
+     Die 96 sind fuer den engsten Fall gerechnet - zwei Karten -, und in
+     dem Buch, das die Kinder am Anfang aufschlagen, steht genau eine. Die
+     Weltkarte lag dann als Briefmarke in einem halbleeren Bildschirm.
+     Gezaehlt wird mit `:has()` am Geschwisterpaar: sind zwei Albumkarten
+     da, greift die Regel nicht. Kein Merkmal im Markup - die Zahl der
+     Karten ist eine Eigenschaft dieses Bildschirms, keine Auskunft, die
+     das Programm mitschicken muesste. Dieselbe Ueberlegung wie bei der
+     Weltenwahl, und dieselbe Stelle, an der Chromium sie erst nach dem
+     Wiedereinhaengen anwendet (siehe `tor/passt.mjs`).
+
+     125 und nicht 170. Die erste Zahl war am Buch EINES Profils gemessen
+     und lief auf dem Zielgeraet 11 Punkte ueber den Rand, mit Uhr und
+     Wischstreifen 21, auf dem iPhone SE quer 6 - `passt` hat es an drei
+     Groessen gemeldet, nachdem ich es an einer gemessen hatte. Der enge
+     Fall ist nicht der, den man vor sich hat. */
+  .rollen.buch:not(:has(.albumkarte ~ .albumkarte)) .albumkarte svg{height:125px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *

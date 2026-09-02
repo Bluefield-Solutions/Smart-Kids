@@ -1581,8 +1581,9 @@ bleibt die Rückfallebene.
 
 | Was | Wohin | Wann |
 |---|---|---|
-| Protokoll, Profile, PIN, Stimme | **nirgendwohin** — IndexedDB, lokal | nie |
+| Profile, PIN, Stimme | **nirgendwohin** — IndexedDB, lokal | nie |
 | **Fortschritt und Aufkleber** | **nirgendwohin**, solange kein Familienschlüssel gesetzt ist; sonst **zugesperrt** an den selbst aufgesetzten Gleichlaufdienst | beim Start und nach einer Runde |
+| **Protokoll** (seit Q30) | ebenso — aber nur das **jüngste**, bis 300 KB voll sind. Was älter ist, bleibt auf dem Gerät, auf dem es entstand | ebenso |
 | Programm, Karten, Schrift | von GitHub Pages **her**, nicht hin | beim Aktualisieren |
 | **Sprachaufnahme** | **Apple** (Web Speech API) | nur bei aktivem Sprachmodus und gedrücktem Knopf |
 | Nutzungsdaten, Telemetrie, Werbung | — | **gibt es nicht** |
@@ -1606,10 +1607,20 @@ ist deshalb neu zu fassen, und zwar so, wie sie **gemessen** ist:
    Kennung und nie den Schlüssel. Das Tor `gleichlauf` prüft, dass im Lager
    des Dienstes kein Klartext steht — und eine Gegenprobe, die Klartext
    sendet, macht es rot.
-3. **Es reist nur, was zum Kind gehört.** Fortschritt und die zwei
-   Einstellungen, die daran hängen. Die PIN reist nicht, die Stimme nicht,
-   die Lautstärke nicht — das steht in einer Liste (`REIST`), und eine
-   Gegenprobe schickt die PIN mit, um zu zeigen, dass das Tor es merkt.
+3. **Es reist nur, was zum Kind gehört.** Fortschritt, die zwei
+   Einstellungen, die daran hängen, und seit Q30 das Protokoll. Die PIN
+   reist nicht, die Stimme nicht, die Lautstärke nicht — das steht in einer
+   Liste (`REIST`), und eine Gegenprobe schickt die PIN mit, um zu zeigen,
+   dass das Tor es merkt.
+
+   Beim Protokoll gilt eine **gemessene Grenze**, und die ist eine
+   Datenschutzaussage so gut wie eine technische: ein Eintrag wiegt 241
+   Byte, tausend Antworten 235 KB. Es reisen die jüngsten Einträge, bis 300
+   KB voll sind — was älter ist, bleibt liegen, wo es entstanden ist. Der
+   Umschlag wächst damit **nicht** mit den Jahren. Und `roheingabe` (das
+   Feld, in dem stünde, was die Spracherkennung gehört hat) reist mit,
+   wenn es gefüllt ist — der Sprachmodus ist per Vorgabe aus, aber wer ihn
+   einschaltet, sollte das wissen.
 
 K3 13.3 ist damit nicht gebrochen, sondern verschoben: es geht etwas ins
 Netz, und niemand dort kann es lesen.

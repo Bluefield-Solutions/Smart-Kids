@@ -567,6 +567,19 @@ const SUCHE = () => {
    * Die Kopien werden hinterher wieder entfernt; der Bildschirm steht
    * danach so da wie vorher, und die Pruefungen davor haben ihn ohnehin
    * schon gesehen. */
+  /* Die Albumkarte im Forscherbuch (Q30).
+   *
+   * Sie ist keine `.kachel`, also faellt sie durch die Bildmessung oben.
+   * Damit war ihre Groesse von keiner Ratsche gedeckt - und genau das ist
+   * die Sorte Zahl, die still schrumpft: eine Regel mehr im engen Block,
+   * und die Weltkarte liegt wieder als Briefmarke da.
+   *
+   * Gemessen wird die HOEHE, nicht die Breite: das SVG rechnet seine
+   * Breite aus dem Seitenverhaeltnis der Karte aus, die Hoehe ist das,
+   * was das Stylesheet setzt. */
+  const album = [...document.querySelectorAll('.schirm.da .albumkarte svg')]
+    .map(e => Math.round(e.getBoundingClientRect().height));
+
   let wand = null;
   {
     const w = document.querySelector('.schirm.da .wahl');
@@ -632,7 +645,7 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, ohneBild, wand, kleber };
+  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, ohneBild, wand, kleber, album };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -896,6 +909,24 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      * Kachel ist 197 x 55 Punkte gross, und fuer einen langen Namen UND
      * ein Bild ist darin kein Platz. Was man verlangen kann, ist, dass es
      * nicht schlimmer wird. */
+    /* Die kleinste Albumkarte des Bildschirms in die Ratsche (Q30).
+     * Die kleinste und nicht der Mittelwert: ein Buch mit einer grossen
+     * und einer geschrumpften Karte darf nicht als „unveraendert"
+     * durchgehen, weil sich beide ausgleichen. Genau daran ist das
+     * Grafiktor in einem anderen Verzeichnis schon einmal gescheitert. */
+    if ((r.album || []).length) {
+      const k = `${g.n} · ${name} · Albumkarte Bild pt`;
+      const ist = Math.min(...r.album), war = MASS_STAND[k];
+      if (NEU) wandNeu[k] = ist;
+      else if (war !== undefined) {
+        const spiel = spielVon(war, false);
+        if (ist < war - spiel)
+          meldungen.push(`${name}: die Albumkarte ist auf ${ist} statt ${war} Punkte `
+            + `geschrumpft (Spiel ±${spiel.toFixed(1)}). War das Absicht, dann `
+            + '`npm run passt -- --neu`');
+      }
+    }
+
     for (const z of (r.zeichen || [])) {
       for (const [was, ist, richtung] of [
         [`${z.was} · Bild pt`, z.breit, 'grosser'],

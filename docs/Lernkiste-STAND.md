@@ -9386,3 +9386,117 @@ steht im Kopf von `dienst/gleichlauf-worker.js`. Bis dahin zeigt der
 Elternbereich „nicht eingerichtet", und alles läuft wie bisher.
 
 250 Gegenproben.
+
+---
+
+## Q30 — Der Dienst wird prüfbar, zwei Wände bekommen Luft, das Protokoll reist mit
+
+Vier Punkte in der Reihenfolge, in der sie aufeinander aufbauen.
+
+### 1 · Der Dienst wartet nicht mehr auf mich
+
+Er war der einzige Teil von Q29, den niemand gefahren hatte: geschrieben,
+eingecheckt, ungeprüft. Der nachgebaute Dienst im Tor prüft den *Client*.
+
+Jetzt prüft das Tor auch die **Datei selbst** — ein Worker ist ein Objekt mit
+einer `fetch`-Methode, `Request`/`Response`/`URL` gibt es in Node, und das
+KV-Lager sind acht Zeilen. Geprüft wird, woran ein Dienst scheitert, wenn er
+scheitert: eine Kennung, die keine ist (sechs Formen, alle müssen 404 geben);
+eine Fassung, die nicht stimmt; etwas, das zu groß ist; ein Verb, das er nicht
+kennt; die Vorabfrage.
+
+Dazu zwei Dinge, die dir die fünf Minuten abnehmen, soweit ich das kann:
+
+- **Die Adresse kommt aus einer Repository-Variablen.** `SMARTKIDS_GLEICHLAUF`
+  unter Settings → Secrets and variables → Actions → Variables. Kein
+  Einchecken, kein Codeeingriff; der nächste Bau nimmt sie mit. Nicht gesetzt
+  heißt leer heißt aus.
+- **`npm run dienstprobe -- https://…`** spricht den *aufgesetzten* Dienst an,
+  in einem **Wegwerfraum** unter einer zufälligen Kennung: erreichbar, legt ab,
+  gibt zurück, sperrt zu, zählt Fassungen. Grün heißt: die Adresse kann in die
+  Variable.
+
+**Und die Dienstprobe hat sofort einen Fehler gefunden**, den das Tor nicht
+sehen konnte: `satzVereinen` reichte einen Gegenstand, den nur ein Gerät
+kennt, **unverändert durch** statt ihn auszurechnen. Fehlten ihm Felder, kamen
+sie erst beim nächsten Abgleich dazu — der Stand sah geändert aus, obwohl
+niemand geübt hatte, und jedes Gerät schrieb einmal zu viel. Das Tor war blind
+dafür, weil seine Beispielsätze **vollständig** sind: *eine Prüfung mit
+sauberen Daten sieht die Sorte Fehler nie, die von unsauberen kommt.* Es prüft
+jetzt zusätzlich einen Satz ohne `richtig`/`falsch`.
+
+### 2 · Die vierte Welt
+
+`passt` meldete auf jedem Telefonformat „die 4. läuft hier aus dem Bild".
+Gemessen, bevor es sie gibt:
+
+| | 3 Welten | 4 Welten, vorher | 4 Welten, jetzt |
+|---|---|---|---|
+| iPhone quer | 3 je Reihe, unten 339/390 | 2 je Reihe, **519**/390 | 4 je Reihe, 339/390 |
+| mit Leiste | 3 je Reihe, 345/390 | 2 je Reihe, **540**/390 | 4 je Reihe, 345/390 |
+| iPhone SE quer | 3 je Reihe, 331/375 | 2 je Reihe, **519**/375 | 4 je Reihe, 331/375 |
+
+Dieselbe Form wie bei der Ebenenwahl in Q27: `:has(> :nth-child(4))` senkt die
+Mindestbreite von 200 auf 150 Punkte. Vier mal 150 plus drei Lücken sind 624;
+nutzbar sind 816, mit Leiste 711, auf dem kleinsten Gerät 651. Die Kapazität
+der Weltenwand steigt damit von **3 auf 4 bis 6**.
+
+### 3 · Die einzelne Albumkarte
+
+Die 96 Punkte aus Q28 sind für den engsten Fall gerechnet — *zwei* Karten. In
+dem Buch, das die Kinder am Anfang aufschlagen, steht genau eine, und die
+Weltkarte lag als Briefmarke in einem halbleeren Bildschirm.
+
+Gezählt wird mit `:has()` am Geschwisterpaar. Die Zahl war 170 — gemessen am
+Buch *eines* Profils, und `passt` hat sie an **drei** Größen zerlegt: 11 Punkte
+über den Rand auf dem Zielgerät, 21 mit Leiste, 6 auf dem iPhone SE quer. *Der
+enge Fall ist nicht der, den man vor sich hat.* Es sind jetzt 125.
+
+Damit das nicht wieder still schrumpft, misst `passt` die Albumkarte neu und
+führt sie in der Maßratsche — die **kleinste** je Bildschirm, nicht den
+Mittelwert: ein Buch mit einer großen und einer geschrumpften Karte darf sich
+nicht selbst ausgleichen.
+
+### 4 · Das Protokoll reist mit — mit einer gemessenen Grenze
+
+Es ist anhängend, also ist Zusammenführen eine Vereinigung. Das Thema ist die
+**Größe**, und sie ist gemessen: ein Eintrag mit Schlüssel wiegt **241 Byte**.
+
+| | roh | zugesperrt (× 1,37) |
+|---|---|---|
+| 1 000 Antworten | 235 KB | 322 KB |
+| 5 000 Antworten | 1,15 MB | 1,6 MB |
+
+Ein Kind mit sechzehn Antworten am Tag ist nach zwei Monaten bei tausend. Ohne
+Grenze wäre der Umschlag nach einem halben Jahr größer als der Dienst annimmt,
+und der Gleichlauf hörte **still** auf zu funktionieren — genau dann, wenn am
+meisten drinsteht.
+
+Also reist nur das **Jüngste**, bis 300 KB voll sind (der Dienst nimmt 512, und
+der Fortschritt braucht auch Platz). Was älter ist, bleibt auf dem Gerät, auf
+dem es entstand; die Ausfuhr im Elternbereich liest weiter alles, sie liest ja
+lokal. Zwei Gegenproben halten das fest: eine nimmt die Grenze heraus, die
+andere sortiert nach dem **Schlüssel** statt nach der Zeit — als Text steht
+„9…" vor „10…", und so beschnitten bliebe das Älteste stehen. Das wäre
+schlimmer als kein Beschnitt, weil es aussieht wie Ordnung.
+
+Gemessen mit `npm run zweigeraete`:
+
+```
+A: im Stand = afrika,europa | Protokoll 20
+B: im Stand = afrika,asien,europa | Protokoll 25 (eigene 5 + 20 von A)
+A nach dem zweiten Start: im Stand = afrika,asien,europa | Protokoll 25
+Steht „afrika" lesbar im Lager des Dienstes? false
+```
+
+Kapitel 13.3 im Konzept ist entsprechend nachgezogen — samt dem Hinweis, dass
+`roheingabe` mitreist, wenn der Sprachmodus je eingeschaltet wird.
+
+### Unterwegs
+
+`npm run doppelt` hat einen Block gefangen, den ich beim Einsetzen **zweimal**
+in `passt.mjs` geschrieben hatte: mein Suchmuster traf zwei Stellen, und beide
+bekamen die neue Messung. Kein Schaden — beide Kopien rechneten dasselbe —,
+aber genau so entstehen zwei Wahrheiten.
+
+256 Gegenproben.

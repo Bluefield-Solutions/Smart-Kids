@@ -12,6 +12,7 @@
  * Gegenproben koennen deshalb jeden Fall einzeln nachstellen.
  */
 import * as G from '../src/kern/gleichlauf.js';
+import DIENST from '../dienst/gleichlauf-worker.js';
 
 let fehler = [];
 const pruefe = (satz, bedingung) => { if (!bedingung) fehler.push(satz); };
@@ -116,12 +117,81 @@ await abschnitt('Zusammenführen', async () => {
   pruefe('zweimal zusammenfuehren aendert noch etwas',
     JSON.stringify(G.vereinen(v, ipad)) === JSON.stringify(v));
 
+  /* Und dasselbe mit einem UNVOLLSTAENDIGEN Satz - dem Fall, den
+     `npm run dienstprobe` gefunden hat. Ein Gegenstand, den nur ein
+     Geraet kennt, muss beim ersten Zusammenfuehren fertig gerechnet
+     werden; sonst kommen die fehlenden Felder erst beim zweiten dazu,
+     und der Stand sieht geaendert aus, obwohl niemand geuebt hat.
+     Beispielsaetze mit allen Feldern sehen das nie - deshalb steht hier
+     ausdruecklich einer ohne. */
+  const halb = { fortschritt: { x: { a: { fach: 3, hoechstes: 3, zuletzt: 1 } } } };
+  const einmal = G.vereinen(null, halb);
+  pruefe('ein unvollstaendiger Satz wird durchgereicht statt ausgerechnet',
+    JSON.stringify(G.vereinen(einmal, einmal)) === JSON.stringify(einmal));
+  pruefe('nach dem Zusammenfuehren fehlen dem Satz noch Felder',
+    'richtig' in einmal.fortschritt.x.a && 'falsch' in einmal.fortschritt.x.a);
+
   // Die Zaehler werden nicht addiert. Beide Geraete tragen die gemeinsame
   // Vorgeschichte; eine Summe zaehlte sie doppelt.
   const z = G.vereinen({ fortschritt: { x: { a: satz({ richtig: 5, zuletzt: 1 }) } } },
                        { fortschritt: { x: { a: satz({ richtig: 7, zuletzt: 2 }) } } });
   pruefe(`die Zaehler werden addiert statt verglichen: ${z.fortschritt.x.a.richtig}`,
     z.fortschritt.x.a.richtig === 7);
+});
+
+/* ---------- Das Protokoll (Q30) --------------------------------------- */
+await abschnitt('Protokoll', async () => {
+  const e = (t) => ({ zeit:t, profil:'fiona', ebene:'kontinente', gebietId:'afrika',
+    eingabeart:'auswahl', ergebnis:'richtig', roheingabe:'', sicherheit:null,
+    dauerMs:3421, versuch:1, fachVorher:2, fachNachher:3 });
+
+  // Anhaengend: was auf einem Geraet steht, steht danach auf beiden.
+  const a = { protokoll: { 'a1': e(100), 'a2': e(200) } };
+  const b = { protokoll: { 'b1': e(150) } };
+  const v = G.vereinen(a, b);
+  pruefe(`vereinigt fehlt ein Eintrag: ${Object.keys(v.protokoll).sort().join(',')}`,
+    Object.keys(v.protokoll).sort().join(',') === 'a1,a2,b1');
+  pruefe('die Reihenfolge aendert das Protokoll',
+    JSON.stringify(G.vereinen(b, a).protokoll) === JSON.stringify(v.protokoll));
+
+  /* Die Grenze. Ohne sie waere der Umschlag nach einem halben Jahr
+     groesser als der Dienst annimmt - und der Gleichlauf hoerte still
+     auf zu funktionieren, genau dann, wenn am meisten drinsteht.
+
+     Geprueft wird an einer Menge, die das Budget SICHER sprengt: 4500
+     Eintraege sind gemessen rund 1,1 MB. */
+  const viel = {}; for (let i = 0; i < 4500; i++) viel['t' + i] = e(i);
+  const beschnitten = G.protokollVereinen({}, viel);
+  const gross = JSON.stringify(beschnitten).length;
+  pruefe(`das beschnittene Protokoll wiegt ${Math.round(gross / 1024)} KB, `
+    + `erlaubt sind ${Math.round(G.PROTOKOLL_BUDGET / 1024)}`,
+    gross <= G.PROTOKOLL_BUDGET);
+  pruefe('die Grenze schneidet alles weg', Object.keys(beschnitten).length > 100);
+  /* Und sie schneidet das RICHTIGE weg: das Juengste bleibt. Ein
+     Beschnitt, der die neuesten Antworten wegwirft, waere schlimmer als
+     keiner - der Elternbereich zeigt dann eine Geschichte, die vor
+     Monaten aufhoert. */
+  const zeiten = Object.values(beschnitten).map(x => x.zeit);
+  pruefe(`der Beschnitt behaelt das Aelteste statt des Juengsten `
+    + `(${Math.min(...zeiten)} bis ${Math.max(...zeiten)})`,
+    Math.max(...zeiten) === 4499);
+  pruefe('nach dem Beschneiden aendert ein zweiter Durchgang noch etwas',
+    JSON.stringify(G.protokollVereinen(beschnitten, beschnitten))
+      === JSON.stringify(beschnitten));
+
+  /* Sortiert wird nach der ZEIT im Eintrag, nicht nach dem Schluessel:
+     als Text steht „9…" vor „10…", und ein Protokoll, das nach Text
+     sortiert beschnitten wird, wirft die falschen weg. */
+  const gemischt = { '9-x': e(9), '10-x': e(10), '100-x': e(100) };
+  /* Ein Budget, in das genau EINER passt (ein Eintrag wiegt gemessen 241
+     Byte). Waere es kleiner, passte gar keiner, und die Zeile bewiese
+     nichts - der erste Anlauf stand auf 200 und meldete eine leere
+     Liste. */
+  const einer = G.protokollVereinen({}, gemischt, 300);
+  pruefe(`es passt nicht genau einer hinein: ${Object.keys(einer).join(',')}`,
+    Object.keys(einer).length === 1);
+  pruefe(`nach Text sortiert statt nach Zeit: ${Object.keys(einer).join(',')}`,
+    Object.keys(einer)[0] === '100-x');
 });
 
 /* ---------- Was reist und was nicht ----------------------------------- */
@@ -218,6 +288,99 @@ await abschnitt('Streitfall', async () => {
     { fortschritt: { x: { meins: satz({ hoechstes: 3 }) } } }, dazwischen);
   const drin = Object.keys(r.stand?.fortschritt?.x || {}).sort().join(',');
   pruefe(`nach dem Streit fehlt etwas: ${drin}`, drin === 'alt,dazwischen,meins');
+});
+
+/* ---------- Der Dienst selbst -----------------------------------------
+ *
+ * Bis Q30 war er der einzige Teil dieser Runde, den niemand gefahren hat:
+ * geschrieben, eingecheckt, ungeprueft. Der nachgebaute Dienst oben prueft
+ * den CLIENT - er sagt nichts darueber, ob die Datei, die spaeter im Netz
+ * steht, dasselbe tut.
+ *
+ * Sie laesst sich aber fahren: ein Worker ist ein Objekt mit einer
+ * `fetch`-Methode, und `Request`/`Response`/`URL` gibt es in Node. Was
+ * fehlt, ist das KV-Lager - und das sind acht Zeilen.
+ *
+ * Geprueft wird das, woran ein Dienst scheitert, wenn er scheitert: eine
+ * Kennung, die keine ist; eine Fassung, die nicht stimmt; etwas, das zu
+ * gross ist; ein Verb, das er nicht kennt.
+ */
+function lagerImKopf() {
+  const m = new Map();
+  return { STAND: {
+    get: async (k, o) => { const w = m.get(k);
+      return w === undefined ? null : (o && o.type === 'json' ? JSON.parse(w) : w); },
+    put: async (k, w) => { m.set(k, w); },
+    _map: m } };
+}
+const anfrage = (weg, o = {}) => new Request('https://dienst.beispiel' + weg, o);
+const alsJson = async (a) => ({ status: a.status, wert: await a.json().catch(() => null) });
+
+await abschnitt('Der Dienst', async () => {
+  const RAUM = 'a'.repeat(32);
+  let u = lagerImKopf();
+
+  const leer = await alsJson(await DIENST.fetch(anfrage(`/v1/${RAUM}`), u));
+  pruefe(`ein leerer Raum antwortet ${leer.status} statt 200`, leer.status === 200);
+  pruefe('ein leerer Raum meldet nicht Fassung 0',
+    leer.wert && leer.wert.fassung === 0 && leer.wert.stand === null);
+
+  const hin = await alsJson(await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'PUT',
+    headers:{ 'content-type':'application/json' },
+    body: JSON.stringify({ fassung: 0, stand: 'ZUGESPERRT' }) }), u));
+  pruefe(`das erste Ablegen antwortet ${hin.status} statt 200`, hin.status === 200);
+  pruefe('das erste Ablegen zaehlt die Fassung nicht hoch', hin.wert.fassung === 1);
+
+  const zurueck = await alsJson(await DIENST.fetch(anfrage(`/v1/${RAUM}`), u));
+  pruefe('was abgelegt wurde, kommt nicht zurueck',
+    zurueck.wert.stand === 'ZUGESPERRT' && zurueck.wert.fassung === 1);
+
+  /* Der Streitfall. Wer eine alte Fassung mitbringt, bekommt 409 UND den
+     aktuellen Stand - sonst muesste der Client noch einmal holen, und
+     genau dazwischen koennte wieder jemand schreiben. */
+  const streit = await alsJson(await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'PUT',
+    headers:{ 'content-type':'application/json' },
+    body: JSON.stringify({ fassung: 0, stand: 'ANDERS' }) }), u));
+  pruefe(`eine alte Fassung antwortet ${streit.status} statt 409`, streit.status === 409);
+  pruefe('der Streitfall liefert den aktuellen Stand nicht mit',
+    streit.wert.stand === 'ZUGESPERRT' && streit.wert.fassung === 1);
+  const nochDa = await alsJson(await DIENST.fetch(anfrage(`/v1/${RAUM}`), u));
+  pruefe('der Streitfall hat den Stand ueberschrieben', nochDa.wert.stand === 'ZUGESPERRT');
+
+  /* Alles, was keine Raumkennung ist, geht ins Leere. Sie ist ein
+     Schluessel im Lager; ein Weg, der andere Schluessel erreicht, waere
+     der eine Fehler, der hier wirklich weh taete. */
+  for (const weg of ['/v1/kurz', '/v1/' + 'A'.repeat(32), '/v1/' + 'a'.repeat(33),
+                     '/v2/' + 'a'.repeat(32), '/', '/v1/../andere']) {
+    const a = await DIENST.fetch(anfrage(weg), u);
+    pruefe(`„${weg}" antwortet ${a.status} statt 404`, a.status === 404);
+  }
+
+  const zuGross = await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'PUT',
+    headers:{ 'content-type':'application/json', 'content-length': String(9e6) },
+    body: JSON.stringify({ fassung: 1, stand: 'x' }) }), u);
+  pruefe(`ein zu grosser Umschlag antwortet ${zuGross.status} statt 413`, zuGross.status === 413);
+
+  const kaputt = await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'PUT',
+    headers:{ 'content-type':'application/json' }, body: 'kein json' }), u);
+  pruefe(`kaputtes JSON antwortet ${kaputt.status} statt 400`, kaputt.status === 400);
+
+  const ohneStand = await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'PUT',
+    headers:{ 'content-type':'application/json' }, body: JSON.stringify({ fassung: 1 }) }), u);
+  pruefe(`ein Umschlag ohne Stand antwortet ${ohneStand.status} statt 400`, ohneStand.status === 400);
+
+  const geloescht = await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'DELETE' }), u);
+  pruefe(`DELETE antwortet ${geloescht.status} statt 405`, geloescht.status === 405);
+
+  const vor = await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'OPTIONS' }), u);
+  pruefe(`die Vorabfrage antwortet ${vor.status}`, vor.status === 200 || vor.status === 204);
+  pruefe('die Vorabfrage erlaubt keine fremde Herkunft — dann kommt kein Browser durch',
+    vor.headers.get('access-control-allow-origin') === '*');
+
+  /* Und der Dienst haelt wirklich nur das, was er halten soll: EINEN
+     Schluessel je Raum, sonst nichts. */
+  pruefe(`der Dienst hat ${u.STAND._map.size} Eintraege statt einem`,
+    u.STAND._map.size === 1);
 });
 
 console.log(`    Schlüssel, Raum, Schloss, Zusammenführung und eine ganze Runde `

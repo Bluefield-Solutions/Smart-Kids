@@ -83,6 +83,25 @@ const schluesselSetzen = (p, code) => p.evaluate(async (code) => {
       t.oncomplete = ja; t.onerror = () => nein(t.error); };
     a.onerror = () => nein(a.error); });
 }, code);
+/* Und das Protokoll (Q30): es reist seit dieser Runde mit, beschnitten
+   auf das juengste Budget. Gezaehlt wird, was auf dem Geraet liegt. */
+const protokollSetzen = (p, n, ab) => p.evaluate(async ({n, ab}) => {
+  await new Promise((ja,nein)=>{ const a = indexedDB.open('lernkiste',1);
+    a.onsuccess = () => { const t = a.result.transaction('protokoll','readwrite');
+      const s = t.objectStore('protokoll');
+      for (let i = 0; i < n; i++) s.put({ zeit: ab + i, profil:'fiona',
+        ebene:'kontinente', gebietId:'afrika', eingabeart:'auswahl',
+        ergebnis:'richtig', roheingabe:'', sicherheit:null, dauerMs:3000,
+        versuch:1, fachVorher:2, fachNachher:3 }, `${ab + i}-x`);
+      t.oncomplete = ja; t.onerror = () => nein(t.error); };
+    a.onerror = () => nein(a.error); });
+}, {n, ab});
+const protokollZaehlen = (p) => p.evaluate(() => new Promise((ja,nein)=>{
+  const a = indexedDB.open('lernkiste',1);
+  a.onsuccess = () => { const t = a.result.transaction('protokoll','readonly');
+    const g = t.objectStore('protokoll').count();
+    g.onsuccess = () => ja(g.result); t.onerror = () => nein(t.error); };
+  a.onerror = () => nein(a.error); }));
 const standLesen = (p) => p.evaluate(() => new Promise((ja,nein)=>{
   const a = indexedDB.open('lernkiste',1);
   a.onsuccess = () => { const t = a.result.transaction('fortschritt','readonly');
@@ -102,18 +121,22 @@ const kleberZaehlen = async (p) => {
 // Geraet A: Afrika und Europa, gekoppelt.
 await geraet('A', async (p) => {
   await standSetzen(p, ['afrika','europa']);
+  await protokollSetzen(p, 20, 1000);
   await schluesselSetzen(p, CODE);
   await p.reload({ waitUntil:'load' });
   await p.waitForTimeout(2500);              // der Gleichlauf beim Start
-  console.log('A: im Stand =', (await standLesen(p)).join(','));
+  console.log('A: im Stand =', (await standLesen(p)).join(','),
+    '| Protokoll', await protokollZaehlen(p));
 });
 // Geraet B: NUR Asien, derselbe Schluessel.
 await geraet('B', async (p) => {
   await standSetzen(p, ['asien']);
+  await protokollSetzen(p, 5, 2000);
   await schluesselSetzen(p, CODE);
   await p.reload({ waitUntil:'load' });
   await p.waitForTimeout(2500);
-  console.log('B: im Stand =', (await standLesen(p)).join(','));
+  console.log('B: im Stand =', (await standLesen(p)).join(','),
+    '| Protokoll', await protokollZaehlen(p), '(eigene 5 + 20 von A)');
 });
 // Und A noch einmal - jetzt muss Asien dazugekommen sein.
 await geraet('A2', async (p) => {
@@ -121,7 +144,8 @@ await geraet('A2', async (p) => {
   await schluesselSetzen(p, CODE);
   await p.reload({ waitUntil:'load' });
   await p.waitForTimeout(2500);
-  console.log('A nach dem zweiten Start: im Stand =', (await standLesen(p)).join(','));
+  console.log('A nach dem zweiten Start: im Stand =', (await standLesen(p)).join(','),
+    '| Protokoll', await protokollZaehlen(p), '(eigene 20 + 5 von B)');
 });
 console.log('Im Lager des Dienstes:', [...lager.values()].map(v => v.stand.slice(0,40) + '…'));
 console.log('Steht „afrika" lesbar darin?', [...lager.values()].some(v => /afrika/i.test(v.stand)));

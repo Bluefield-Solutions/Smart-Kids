@@ -2047,10 +2047,16 @@ Zusammenführung, Elternbereich, ein eigenes Tor mit sechs Gegenproben und
 die Messung „nichts verlässt das Gerät" im Rauchtest.
 
 **Offen ist genau ein Schritt, und er liegt bei euch:** den Dienst
-aufsetzen. Cloudflare-Konto, `wrangler deploy`, Adresse beim Bauen
-mitgeben — die Anleitung steht im Kopf von
-`dienst/gleichlauf-worker.js`. Bis dahin ist der Gleichlauf aus, und der
-Elternbereich sagt das auch.
+aufsetzen. Cloudflare-Konto, `wrangler deploy` — die Anleitung steht im
+Kopf von `dienst/gleichlauf-worker.js`. Danach (Q30):
+
+1. `npm run dienstprobe -- https://…` — grün heißt, der Dienst spricht das
+   Protokoll. Er legt dafür in einem Wegwerfraum ab und geht wieder.
+2. Die Adresse als Repository-Variable `SMARTKIDS_GLEICHLAUF` eintragen
+   (Settings → Secrets and variables → Actions → Variables). Kein
+   Einchecken nötig; der nächste Bau nimmt sie mit.
+
+Bis dahin ist der Gleichlauf aus, und der Elternbereich sagt das auch.
 
 Und eine Naht bleibt unbewacht: dass die App den Gleichlauf wirklich
 anstößt, prüft kein Tor, sondern `npm run zweigeraete` von Hand. Der

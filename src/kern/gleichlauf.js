@@ -200,14 +200,33 @@ export async function aufsperren(schloss, b64) {
  */
 const zahl = (x, weg = 0) => (typeof x === 'number' && isFinite(x)) ? x : weg;
 
+/* Auch EIN Satz allein wird durchgerechnet, nicht durchgereicht.
+ *
+ * Hier stand `if (!a) return b; if (!b) return a;` - und damit kam ein
+ * Gegenstand, den nur ein Geraet kennt, unveraendert durch. Ist er nicht
+ * vollstaendig (ein alter Satz ohne `richtig`/`falsch` etwa), fehlen die
+ * Felder auch im Umschlag; beim NAECHSTEN Abgleich treffen dann zwei
+ * Saetze aufeinander, die Felder kommen dazu, und der Stand sieht
+ * geaendert aus, obwohl niemand etwas geuebt hat. Ergebnis: ein
+ * ueberfluessiges Schreiben je Gegenstand, bei jedem ersten Abgleich.
+ *
+ * Gefunden hat das `npm run dienstprobe` gegen den echten Dienst - die
+ * Zeile „ein Gerät, das schon alles hat, schreibt trotzdem". Im Tor war
+ * es unsichtbar, weil dessen Beispielsaetze vollstaendig sind: eine
+ * Pruefung mit sauberen Daten sieht die Sorte Fehler nie, die von
+ * unsauberen kommt. */
 export function satzVereinen(a, b) {
-  if (!a) return b; if (!b) return a;
-  const az = zahl(a.zuletzt), bz = zahl(b.zuletzt);
-  const jung = az >= bz ? a : b;
+  if (!a && !b) return a || b;
+  // Fehlt einer, zaehlt der andere zweimal - das Ergebnis ist dann er
+  // selbst, aber vollstaendig ausgerechnet.
+  const x = a || b, y = b || a;
+  const az = zahl(x.zuletzt), bz = zahl(y.zuletzt);
+  const jung = az >= bz ? x : y;
+  const [aa, bb] = [x, y];
   return { ...jung,
-    hoechstes: Math.max(zahl(a.hoechstes, zahl(a.fach, 1)), zahl(b.hoechstes, zahl(b.fach, 1))),
-    richtig: Math.max(zahl(a.richtig), zahl(b.richtig)),
-    falsch: Math.max(zahl(a.falsch), zahl(b.falsch)),
+    hoechstes: Math.max(zahl(aa.hoechstes, zahl(aa.fach, 1)), zahl(bb.hoechstes, zahl(bb.fach, 1))),
+    richtig: Math.max(zahl(aa.richtig), zahl(bb.richtig)),
+    falsch: Math.max(zahl(aa.falsch), zahl(bb.falsch)),
     zuletzt: Math.max(az, bz) };
 }
 
@@ -269,6 +288,48 @@ function geordnet(x) {
   return aus;
 }
 
+/* ---------- Das Protokoll (Q30) ---------------------------------------
+ *
+ * Es ist anhaengend: jeder Eintrag hat einen Schluessel, der ihn eindeutig
+ * macht (`zeit-zufall`), und niemand aendert je einen. Zusammenfuehren ist
+ * deshalb die einfachste Rechnung dieser Datei - eine Vereinigung.
+ *
+ * DIE GRENZE IST DAS EIGENTLICHE THEMA, und sie ist gemessen: ein Eintrag
+ * mit Schluessel wiegt 241 Byte. Tausend Antworten sind 235 KB, fuenftausend
+ * 1,15 MB - und zugesperrt kommt ein Drittel dazu. Ein Kind mit sechzehn
+ * Antworten am Tag ist nach zwei Monaten bei tausend. Ohne Grenze waere der
+ * Umschlag nach einem halben Jahr groesser als der Dienst annimmt, und der
+ * Gleichlauf hoerte still auf zu funktionieren - genau dann, wenn am
+ * meisten drinsteht.
+ *
+ * Also reist nur das JUENGSTE, bis das Budget voll ist. Was aelter ist,
+ * bleibt auf dem Geraet, auf dem es entstanden ist: die Ausfuhr im
+ * Elternbereich liest weiter alles, sie liest ja lokal. Was reist, ist die
+ * gemeinsame juengere Geschichte - und das ist es, was der Elternbereich
+ * zeigt.
+ *
+ * 300 KB, nicht 512: der Dienst nimmt 512 KB, zugesperrt und in Base64
+ * wird aus 300 rund 410, und der Fortschritt braucht auch noch Platz.
+ */
+export const PROTOKOLL_BUDGET = 300 * 1024;
+
+export function protokollVereinen(a, b, budget = PROTOKOLL_BUDGET) {
+  const alle = { ...(a || {}), ...(b || {}) };
+  /* Sortiert wird nach der ZEIT im Eintrag, nicht nach dem Schluessel.
+     Der Schluessel faengt zwar mit der Zeit an, ist aber Text - und als
+     Text steht „9…" vor „10…". */
+  const zeit = (e) => zahl(e && e.zeit);
+  const reihe = Object.entries(alle).sort((x, y) => zeit(y[1]) - zeit(x[1]));
+  const aus = {};
+  let wiegt = 0;
+  for (const [k, e] of reihe) {
+    const gross = k.length + JSON.stringify(e).length + 4;
+    if (wiegt + gross > budget) break;
+    wiegt += gross; aus[k] = e;
+  }
+  return aus;
+}
+
 /** Der ganze Umschlag: zwei Staende hinein, einer heraus. */
 export function vereinen(a, b) {
   const A = a || {}, B = b || {};
@@ -277,6 +338,7 @@ export function vereinen(a, b) {
     fortschritt[k] = standVereinen((A.fortschritt || {})[k], (B.fortschritt || {})[k]);
   return geordnet({ fassung: 1,
            fortschritt,
+           protokoll: protokollVereinen(A.protokoll, B.protokoll),
            einstellungen: einstVereinen(A.einstellungen, B.einstellungen) });
 }
 

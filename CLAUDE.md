@@ -153,8 +153,13 @@ npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
                    selbst, wird krumm Geschriebenes gelesen, wird Gekritzel
                    abgelehnt, gilt ein halber Zug nicht als nachgefahren
 npm run gleichlauf prüft den Geräteabgleich ohne Browser und ohne Netz:
-                   Schlüssel, Raum, Schloss, und ob beim Zusammenführen
-                   zweier Stände jemand etwas verliert
+                   Schlüssel, Raum, Schloss, den Dienst selbst, und ob beim
+                   Zusammenführen zweier Stände jemand etwas verliert
+npm run dienstprobe -- <adresse>   spricht der AUFGESETZTE Dienst das
+                   Protokoll? Legt in einem Wegwerfraum ab und geht wieder.
+npm run zweigeraete  zwei Browser-Kontexte, ein echter Dienst — die eine
+                   Naht, die kein Tor bewacht. Braucht einen Bau mit
+                   SMARTKIDS_GLEICHLAUF; siehe den Kopf des Werkzeugs.
 ```
 
 Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·

@@ -2119,6 +2119,65 @@ export const PROBEN = [
     an:{ datei:'src/kern/gleichlauf.js', text:"replace(/[OQ]/g, '0')" },
     sagt:'ueberlebt das Hin und Zurueck nicht' },
 
+  /* 4c. Ein unvollstaendiger Satz wird durchgereicht statt ausgerechnet.
+   *
+   * Gefunden hat das nicht das Tor, sondern `npm run dienstprobe` gegen
+   * einen laufenden Dienst: „ein Gerät, das schon alles hat, schreibt
+   * trotzdem". Das Tor war blind dafuer, weil seine Beispielsaetze
+   * vollstaendig sind - eine Pruefung mit sauberen Daten sieht die Sorte
+   * Fehler nie, die von unsauberen kommt. Seither prueft es einen Satz
+   * ohne `richtig`/`falsch`, und diese Probe haelt die Zeile fest. */
+  { n:'ein halber Leitner-Satz kommt unverändert durch', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"  if (!a && !b) return a || b;",
+    ersatz:"  if (!a) return b; if (!b) return a;",
+    an:{ datei:'src/kern/gleichlauf.js', text:'if (!a) return b; if (!b) return a;' },
+    sagt:'durchgereicht statt ausgerechnet' },
+
+  /* 4d. Der DIENST selbst - die Datei, die spaeter im Netz steht.
+   *
+   * Bis Q30 hat sie niemand gefahren. Der Eingriff nimmt ihm die
+   * Fassungspruefung: er nimmt dann jedes Schreiben an, auch eines mit
+   * einer veralteten Fassung - und damit ueberschreibt das zweite Geraet
+   * die Aufkleber des ersten, ohne dass jemand es merkt. Das ist der
+   * teuerste Fehler, den dieser Dienst machen kann. */
+  { n:'der Dienst nimmt jede Fassung an', tor:'gleichlauf',
+    datei:'dienst/gleichlauf-worker.js',
+    such:"      if ((+rein.fassung || 0) !== jetzt) return antwort({ fassung: jetzt, stand: da?.stand ?? null }, 409);",
+    ersatz:"      // Fassungspruefung entfernt",
+    an:{ datei:'dienst/gleichlauf-worker.js', fehlt:'409);' },
+    sagt:'statt 409' },
+
+  /* 4e. Das Protokoll reist ohne Grenze.
+   *
+   * Gemessen wiegt ein Eintrag 241 Byte; tausend Antworten sind 235 KB,
+   * fuenftausend 1,15 MB, und zugesperrt kommt ein Drittel dazu. Ohne
+   * Grenze waere der Umschlag nach einem halben Jahr groesser als der
+   * Dienst annimmt - und der Gleichlauf hoerte STILL auf zu
+   * funktionieren, genau dann, wenn am meisten drinsteht. Der Eingriff
+   * nimmt die Grenze heraus. */
+  { n:'das Protokoll reist ohne Grenze', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"    if (wiegt + gross > budget) break;",
+    ersatz:"    if (false) break;",
+    an:{ datei:'src/kern/gleichlauf.js', text:'if (false) break;' },
+    sagt:'erlaubt sind' },
+
+  /* 4f. Beschnitten wird nach dem SCHLUESSEL statt nach der Zeit.
+   *
+   * Der Schluessel faengt mit der Zeit an, ist aber Text - und als Text
+   * steht „9…" vor „10…". Ein Protokoll, das so beschnitten wird, wirft
+   * die juengsten Antworten weg und behaelt die aeltesten: der
+   * Elternbereich zeigt dann eine Geschichte, die vor Monaten aufhoert.
+   * Das ist schlimmer als gar kein Beschnitt, weil es aussieht wie
+   * Ordnung. */
+  { n:'das Protokoll wird nach dem Schlüssel beschnitten', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"  const reihe = Object.entries(alle).sort((x, y) => zeit(y[1]) - zeit(x[1]));",
+    ersatz:"  const reihe = Object.entries(alle).sort((x, y) => y[0] < x[0] ? -1 : 1);",
+    an:{ datei:'src/kern/gleichlauf.js', text:'y[0] < x[0] ? -1 : 1' },
+    sagt:'nach Text sortiert statt nach Zeit' },
+
   /* 5. Irgendetwas verlaesst das Geraet.
    *
    * Die Zusage aus K3 lautet: ohne Familienschluessel und ohne
@@ -2137,6 +2196,37 @@ export const PROBEN = [
     an:{ ...DIST, text:"fetch('https://beispiel.ungueltig/v1/x')" },
     sagt:'verlassen das Gerät' },
 
+  /* --- Die zwei Waende (Q30) -------------------------------------------
+
+     Die vierte Welt laeuft wieder aus dem Bild.
+
+     Mit 200 Punkten Mindestbreite passen auf dem Zielgeraet drei Welten
+     nebeneinander; die vierte bricht um, und die zweite Reihe endet bei
+     519 von 390 Punkten. Der Eingriff nimmt die Regel heraus, die ab der
+     vierten Welt schmaler macht. Gemeldet wird der RUECKSCHRITT an der
+     Kapazitaetsratsche - die drei Welten von heute passen so oder so. */
+  { n:'die vierte Welt bekommt ihre schmale Kachel nicht mehr',
+    tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
+    such:'.wahl.weltwahl:has(> :nth-child(4)){\n'
+       + '  grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));max-width:1200px}\n',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'minmax(min(150px,100%),1fr));max-width:1200px' },
+    sagt:'Platz verloren' },
+
+  /* Die einzelne Albumkarte wird wieder klein.
+
+     Die 96 Punkte sind fuer den engsten Fall gerechnet - zwei Karten -,
+     und im Buch, das die Kinder am Anfang aufschlagen, steht genau eine.
+     Der Eingriff nimmt die Ausnahme heraus. Ohne die Albumkarten-Ratsche
+     in `passt` waere das nicht zu sehen: die Karte ist keine `.kachel`
+     und faellt durch die Bildmessung. */
+  { n:'die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße',
+    tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
+    such:'  .rollen.buch:not(:has(.albumkarte ~ .albumkarte)) .albumkarte svg{height:125px}',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'.albumkarte ~ .albumkarte)) .albumkarte svg' },
+    sagt:'Albumkarte ist auf' },
+
   /* --- Der Gleichlauf (Q29) -------------------------------------------
    *
    * Drei Zusagen, drei Gegenproben. Sie sind billig - das Tor `gleichlauf`
@@ -2153,7 +2243,7 @@ export const PROBEN = [
    * gesammelt hat. Genau der Fall, wegen dem es diese Runde gibt. */
   { n:'beim Zusammenführen fällt der Aufkleber zurück', tor:'gleichlauf',
     datei:'src/kern/gleichlauf.js',
-    such:"    hoechstes: Math.max(zahl(a.hoechstes, zahl(a.fach, 1)), zahl(b.hoechstes, zahl(b.fach, 1))),",
+    such:"    hoechstes: Math.max(zahl(aa.hoechstes, zahl(aa.fach, 1)), zahl(bb.hoechstes, zahl(bb.fach, 1))),",
     ersatz:"    hoechstes: zahl(jung.hoechstes, zahl(jung.fach, 1)),",
     an:{ datei:'src/kern/gleichlauf.js', text:'hoechstes: zahl(jung.hoechstes' },
     sagt:'der Aufkleber ist weg' },

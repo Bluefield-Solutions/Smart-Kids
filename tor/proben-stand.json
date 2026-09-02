@@ -781,15 +781,45 @@
       "zeit": "2026-09-02",
       "s": 4
     },
+    "ein halber Leitner-Satz kommt unverändert durch": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "zeit": "2026-09-02",
+      "s": 3
+    },
+    "der Dienst nimmt jede Fassung an": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "zeit": "2026-09-02",
+      "s": 0
+    },
+    "das Protokoll reist ohne Grenze": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "zeit": "2026-09-02",
+      "s": 3
+    },
+    "das Protokoll wird nach dem Schlüssel beschnitten": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "zeit": "2026-09-02",
+      "s": 0
+    },
     "etwas verlässt das Gerät, ohne dass jemand es eingerichtet hat": {
       "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
       "zeit": "2026-09-02",
       "s": 163
     },
-    "beim Zusammenführen fällt der Aufkleber zurück": {
-      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+    "die vierte Welt bekommt ihre schmale Kachel nicht mehr": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
       "zeit": "2026-09-02",
-      "s": 4
+      "s": 78
+    },
+    "die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "zeit": "2026-09-02",
+      "s": 41
+    },
+    "beim Zusammenführen fällt der Aufkleber zurück": {
+      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "zeit": "2026-09-02",
+      "s": 3
     },
     "der Gleichlauf nimmt die PIN mit": {
       "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",

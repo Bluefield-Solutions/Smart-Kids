@@ -22,6 +22,22 @@ jobs:
   tore:
     name: Torkette
     runs-on: ubuntu-latest
+    # Die Adresse des Gleichlaufdienstes (Q29/Q30).
+    #
+    # Sie steht als Variable im Repository (Settings → Secrets and
+    # variables → Actions → Variables, Name `SMARTKIDS_GLEICHLAUF`) und
+    # NICHT im Code: dann laesst sie sich setzen, ohne etwas einzuchecken,
+    # und ein Fork bekommt sie nicht mit.
+    #
+    # Sie ist kein Geheimnis, deshalb `vars` und nicht `secrets`: die
+    # Adresse steht ohnehin in jeder gebauten Datei. Was geheim bleibt,
+    # ist der Familienschluessel, und der kommt nie hierher.
+    #
+    # Ist die Variable nicht gesetzt, ist sie leer - und dann ist der
+    # Gleichlauf aus. Das ist die Voreinstellung und bleibt es, bis
+    # jemand einen Dienst aufsetzt.
+    env:
+      SMARTKIDS_GLEICHLAUF: ${{ vars.SMARTKIDS_GLEICHLAUF }}
     steps:
       # Ein flacher Klon reicht.
       #

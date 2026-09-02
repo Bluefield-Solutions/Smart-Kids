@@ -1590,6 +1590,13 @@ async function gleichlaufSammeln(){
     for (const [k, w] of d) aus.fortschritt[k] = w;
     const e = await Ablage.alleMitSchluessel('einstellungen');
     for (const [k, w] of e) if (Gleichlauf.REIST(k)) aus.einstellungen[k] = w;
+    /* Das Protokoll reist mit, aber nur so weit das Budget reicht (Q30).
+       Beschnitten wird schon HIER und nicht erst beim Zusammenfuehren:
+       sonst baut ein Geraet mit zwei Jahren Geschichte erst einen
+       Umschlag von zwei Megabyte und wirft ihn dann weg. */
+    const pr = {};
+    for (const [k, w] of await Ablage.alleMitSchluessel('protokoll')) pr[k] = w;
+    aus.protokoll = Gleichlauf.protokollVereinen({}, pr);
   } catch(e){}
   return aus;
 }
@@ -1604,6 +1611,14 @@ async function gleichlaufAblegen(vereint, vorher){
   for (const [k, w] of Object.entries(vereint.einstellungen || {})) {
     if (JSON.stringify(w) === JSON.stringify((vorher.einstellungen || {})[k])) continue;
     try { await Ablage.setze('einstellungen', k, w); geaendert++; } catch(e){}
+  }
+  /* Beim Protokoll wird nur ANGEHAENGT, nie verglichen: ein Eintrag
+     aendert sich nie, und was schon dasteht, muss nicht neu geschrieben
+     werden. Der Vergleich waere hier auch teuer - es koennen tausend
+     sein. */
+  for (const [k, w] of Object.entries(vereint.protokoll || {})) {
+    if ((vorher.protokoll || {})[k] !== undefined) continue;
+    try { await Ablage.setze('protokoll', k, w); geaendert++; } catch(e){}
   }
   return geaendert;
 }
