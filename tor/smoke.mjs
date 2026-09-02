@@ -8,6 +8,7 @@ import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
+import { fremdgriff, griffBeobachter } from './fremdgriff.mjs';
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
@@ -31,6 +32,8 @@ const { server, adresse: ADRESSE } = await serviere(wurzel);
 
 const b = await starte();
 const fehler = [];
+/** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
+const griffStand = { geprueft: 0, uebersprungen: 0, arten: {} };
 const merke = (was, e) => fehler.push(`${was}: ${e.message || e}`);
 
 /* `--sofort`: aufhoeren, sobald der erste Fehler feststeht.
@@ -205,6 +208,34 @@ async function neueSeite(viewport, ctx, flott = true) {
   const festWarten = p.waitForTimeout.bind(p);
   p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
+
+  /* Der FREMDGRIFF laeuft auf jeder Seite mit (Q19).
+   *
+   * Warum ueberhaupt hier, wo `passt` ihn schon prueft, und warum ohne
+   * Stationenliste: steht in `tor/fremdgriff.mjs`. Der Quelltext steht
+   * einmal und nicht zweimal - stuende er hier noch einmal, veraltete
+   * eine der beiden Fassungen (Regel 6). Eingespritzt als Text, damit
+   * dieselbe Datei beide Tore versorgt. */
+  await p.addInitScript({ content:
+      `window.__fremdgriff = ${fremdgriff.toString()};\n`
+    + `(${griffBeobachter.toString()})();\n` });
+
+  /* Geerntet wird beim SCHLIESSEN - der einen Stelle, durch die jede Seite
+   * geht. Ein Aufruf an zwanzig Stellen waere wieder eine Liste, die
+   * veraltet. */
+  const festSchliessen = p.close.bind(p);
+  p.close = async (...a) => {
+    try {
+      const g = await p.evaluate(() => window.__griff);
+      if (g) {
+        griffStand.geprueft += g.geprueft; griffStand.uebersprungen += g.uebersprungen;
+        for (const [k, v] of Object.entries(g.arten || {}))
+          griffStand.arten[k] = (griffStand.arten[k] || 0) + v;
+        for (const m of g.meldungen) fehler.push(`Fremdgriff — ${m}`);
+      }
+    } catch { /* Seite schon weg: dann gibt es nichts zu ernten */ }
+    return festSchliessen(...a);
+  };
   // Was gesprochen wird, mitschreiben statt es zu hoeren.
   //
   // Fiona liest noch nicht. Ob die App ihr die Aufgabe VORLIEST, ist damit
@@ -4466,6 +4497,26 @@ if (laeuft('sprechen')) try {
 await ctx.close(); await b.close(); server.close();
 
 console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${blind.n} festen Pausen`);
+/* Die Zahl steht MIT im Bericht, nicht nur der Befund.
+ *
+ * „Kein Fremdgriff gefunden" heisst zweierlei: alles sitzt, oder die
+ * Pruefung kam nie zum Zug. Ohne die Zahl sind beide nicht zu
+ * unterscheiden - eine Pruefung, die nie etwas meldet, beweist nichts
+ * (Regel 1), und dieses Verzeichnis hatte den Fall dreimal. Bei null
+ * geprueften Bildschirmen ist das deshalb ein FEHLER, kein Hinweis. */
+console.log(`  Fremdgriff geprüft:         ${griffStand.geprueft} ruhende Bildschirme (`
+  + `${Object.entries(griffStand.arten).map(([k, v]) => `${v}× ${k}`).join(', ') || 'keine'})`
+  + `, ${griffStand.uebersprungen} in Bewegung übersprungen`);
+if (griffStand.geprueft === 0)
+  fehler.push('Der Fremdgriff hat keinen einzigen ruhenden Bildschirm gesehen — '
+    + 'dann beweist „nichts gefunden" nichts (Regel 1)');
+// Die AUFGABE ist der Grund, warum diese Prüfung hier zusätzlich läuft:
+// `passt` steuert nur Wahlbildschirme an. Ohne sie prüft der Rauchtest
+// nichts, was `passt` nicht schon prüfte.
+else if (!griffStand.arten.aufgabe && laeuft('spielen'))
+  fehler.push('Der Fremdgriff hat keinen einzigen Aufgabenbildschirm gesehen — '
+    + 'genau die sind der Grund, warum er auch im Rauchtest läuft, und ohne sie '
+    + 'beweist er hier nichts (Regel 1)');
 
 if (laeuft('spielen')) {
 console.log(`  Namen auf der Karte:        ${[...fahnenArten].join(' und ') || 'KEINE'}`

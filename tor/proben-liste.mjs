@@ -586,6 +586,32 @@ export const PROBEN = [
     an:{ datei:'tor/chromium.mjs', text:"x.name === 'chromium-tip-of-tree'" },
     sagt:'an beiden Orten Verschiedenes' },
 
+  /* Q19: der Fremdgriff im Rauchtest — zwei Proben, zwei Fragen.
+   *
+   * ERSTENS: kommt ueberhaupt etwas an? Derselbe Eingriff wie bei `passt`
+   * (das Auge zurueck auf den Kachelnamen), aber gegen den Rauchtest
+   * gefahren. Er beweist die ganze Kette: Beobachter, Ruhebedingung,
+   * Ernte beim Schliessen, Meldung. */
+  { n:'der Rauchtest sieht den Fremdgriff nicht mehr', tor:'smoke',
+    args:['--teil=0/4'], bauen:true, datei:V,
+    such:'  .wahl.ebenen .kachelpaar .schau{display:none}',
+    ersatz:'  .wahl.ebenen .kachelpaar .schau{display:inline-flex}',
+    an:{ ...DIST, text:'.wahl.ebenen .kachelpaar .schau{display:inline-flex}' },
+    sagt:'des Wortes greift' },
+
+  /* ZWEITENS: sieht er die AUFGABE? Das ist der ganze Grund, warum die
+   * Pruefung zusaetzlich hier laeuft - `passt` steuert nur
+   * Wahlbildschirme an. Der Eingriff laesst die Erkennung ins Leere
+   * greifen; gezaehlt werden dann null Aufgabenbildschirme, und der
+   * Rauchtest meldete sonst „nichts gefunden", ohne etwas Neues geprueft
+   * zu haben (Regel 1). */
+  { n:'der Fremdgriff sieht die Aufgabe nicht mehr', tor:'smoke',
+    args:['--teil=0/4'], bauen:true, datei:'tor/fremdgriff.mjs',
+    such:"    const art = s.querySelector('.karte svg, .etikett, .zahl, .eingabe, .feldreihe') ? 'aufgabe'",
+    ersatz:"    const art = s.querySelector('.gibt-es-nicht') ? 'aufgabe'",
+    an:{ datei:'tor/fremdgriff.mjs', text:"s.querySelector('.gibt-es-nicht')" },
+    sagt:'keinen einzigen Aufgabenbildschirm' },
+
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,
     such:'      if (finger.size >= 2 && start && start.d) {',

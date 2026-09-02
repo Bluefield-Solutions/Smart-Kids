@@ -8464,3 +8464,86 @@ Damit hat auch das Überspringen von `ansicht` auf dem Runner nur noch **einen**
 Grund statt zwei: die Ersatzschriften. Der Chromium-Bau ist keiner mehr.
 
 231 Gegenproben.
+
+---
+
+## Q19 — der Fremdgriff sieht jetzt auch die Aufgabe
+
+`passt` prüft den Fremdgriff seit Q18, aber nur an **vierzehn Stationen, die es
+selbst ansteuert**: Profilwahl, Weltenwahl, Ebenenwahl, Vorläufe, Schreiben,
+Diktat, Zahlen, Forscherbuch, Elterntor. Was es nie sieht, ist die **Aufgabe** —
+die Karte mit ihren Etiketten, der Hinweis nach einem Fehlversuch, das Lob, die
+Fahne mit dem Namen, der Endbildschirm. Genau dort liegen die meisten Kästen
+übereinander.
+
+### Keine Stationenliste
+
+Der naheliegende Weg wäre gewesen, den Aufruf an sechs Stellen im Rauchtest
+einzutragen. Eine Stationenliste ist aber genau die Sorte Stelle, an der man
+etwas vergisst — und sie wächst nicht mit: der nächste Bildschirm steht nicht
+darin.
+
+Stattdessen sieht ein **Beobachter in der Seite** jedem Bildschirmwechsel zu und
+prüft selbst. Er wird in `neueSeite()` eingespritzt und beim `close()` geerntet
+— zwei Stellen, durch die *jede* Seite des Rauchtests geht. Wer morgen einen
+neuen Bildschirm baut, trägt dafür nichts ein.
+
+Der Quelltext steht **einmal**, in `tor/fremdgriff.mjs`, und versorgt beide Tore
+(Regel 6). `passt` ruft ihn als `evaluate` auf, der Rauchtest spritzt denselben
+Text als Startskript ein.
+
+### Was das Messen sofort korrigiert hat
+
+Der erste Anlauf gab beim ersten Blick in ein bewegtes Bild auf — und das war
+der **häufigere** Fall: 33 übersprungen gegen 18 geprüft. Ein Bildschirm, der
+länger überblendet als die Wartezeit, wäre damit nie geprüft worden, und niemand
+hätte es gemerkt. Mit vier Nachfassversuchen:
+
+| Teil | geprüft | davon Aufgabe | übersprungen |
+|---|---|---|---|
+| 1 | 20 | 4 | 7 |
+| 2 | 38 | 0 (spielt nicht) | 8 |
+| 3 | 33 | 21 | 14 |
+| 4 | 33 | 14 | 18 |
+
+**124 ruhende Bildschirme, 39 davon Aufgaben.** Kein Fremdgriff — die App ist an
+diesen Stellen sauber.
+
+### Drei Befunde, die keine waren — und was sie gekostet hätten
+
+Der erste vollständige Lauf meldete drei Fremdgriffe: „Bremen" und „Hessen" zu
+100 % unter einem **anderen Etikett**, „Brasilien" zu 67 % unter **„Weiß ich
+nicht"**. Der nächste Lauf meldete keinen einzigen davon.
+
+Ein Tor, das mal anschlägt und mal nicht, ist schlimmer als keines: es kostet
+jedes Mal eine Untersuchung und beweist nie etwas. Der Grund war die Sache
+selbst — während das Kind ein Etikett **zieht**, hängt es am Finger und liegt
+über den anderen. Das *ist* ein fremder Griff, und zwar der richtige. Dasselbe
+gilt für den Augenblick, in dem eine Antwortliste neu gesetzt wird.
+
+Zwei Zusätze, und beide sind die Sache und nicht ein Filter:
+
+- **Am Finger hängt etwas** (`.zieht`) → nicht messen. Gemessen wird die
+  Anordnung, nicht der Zug.
+- **Ein Befund zählt erst, wenn er bleibt.** Jeder Verdacht wird 300 ms später
+  ein zweites Mal nachgesehen, wieder im ruhenden Bild. Ein Fehler in der
+  Anordnung bleibt liegen; ein Etikett am Finger nicht.
+
+Und beim Nachsehen fiel auf, dass die Meldung selbst zu wenig sagte: „greift
+`.etikett`" ließ nicht erkennen, ob da ein Knopf falsch sitzt oder ob gerade
+etwas am Finger hängt. Sie trägt jetzt ihre Messstelle mit (Regel 5) — welcher
+Knopf, welches Wort, welche zwei Kästen.
+
+### Und die Zahl steht im Bericht
+
+„Kein Fremdgriff gefunden" heißt zweierlei: alles sitzt, oder die Prüfung kam nie
+zum Zug. Ohne die Zahl sind beide nicht zu unterscheiden. Bei null geprüften
+Bildschirmen ist das deshalb ein **Fehler**, kein Hinweis — und ebenso, wenn
+kein einziger **Aufgaben**bildschirm darunter war: dann prüft der Rauchtest
+nichts, was `passt` nicht schon prüfte, und die ganze Runde wäre umsonst.
+
+Zwei Gegenproben: eine lässt das Auge auf den Kachelnamen zurück (beweist die
+Kette vom Beobachter bis zur Meldung), die andere lässt die Erkennung der
+Aufgabe ins Leere greifen (beweist, dass die Zahl etwas bedeutet).
+
+233 Gegenproben.
