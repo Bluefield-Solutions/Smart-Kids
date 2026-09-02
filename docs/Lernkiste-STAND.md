@@ -8610,3 +8610,47 @@ Die Zerlegung der 112 Punkte und die drei verbleibenden Wege stehen im
 Rückstandsverzeichnis, damit der nächste nicht wieder von vorn rechnet.
 
 235 Gegenproben.
+
+---
+
+## Q21 — `ansicht` auf dem Runner: gemessen, und es geht nicht
+
+Seit Q18b fahren Runner und Arbeitsplatz denselben Chromium. Damit hatte das
+Überspringen von `ansicht` auf dem Runner nur noch **einen** Grund statt zwei:
+die Schriften. Ob der trägt, war eine Vermutung — also gemessen.
+
+Der Ablauf **Bildmessung** (`.github/workflows/bildmessung.yml`, von Hand
+anzustoßen) baut, fährt `ansicht` und fällt dabei nie rot aus: er misst, er
+urteilt nicht. Die Abweichungsbilder lädt er als Artefakt hoch, sonst stünde da
+nur eine Prozentzahl.
+
+**Von 37 Aufnahmen sind 35 rot**, zwischen 0,23 % und 4,02 % — das Fünfzigfache
+des erlaubten Bandes von 0,08 %:
+
+| | |
+|---|---|
+| `quer-eltern-vergleich` | 4,016 % |
+| `quer-vorlauf` | 3,267 % |
+| `quer-ende-eltern` | 2,960 % |
+| … | … |
+| `mg-belohnung` | 0,234 % |
+
+Und **grün sind genau die beiden ohne Text**: `mg-farbstreifen` und
+`karte-deutschland` — beide mit **0 Bildpunkten** Unterschied.
+
+Das ist die saubere Antwort auf zwei Fragen auf einmal:
+
+- **Regel 16 hält.** Derselbe Chromium zeichnet dasselbe, auf den Bildpunkt
+  genau, sobald kein Buchstabe im Bild ist. Ohne den Pin aus Q18b wären auch
+  diese beiden abgewichen.
+- **`ansicht` kann dort nicht laufen.** Nicht „vielleicht", nicht „vermutlich
+  wegen Schriften": jede Aufnahme mit Text weicht ab, und zwar um Größenordnungen.
+
+Der Verzicht im Auslieferungsablauf trägt jetzt diese Zahlen im Kommentar statt
+eines geerbten Satzes. Und die Frage lässt sich wieder stellen, falls jemand an
+den Schriften rührt — der Ablauf steht da.
+
+Ein zweiter Gedanke, der sich damit erledigt hat: das Band aufzuweiten, bis es
+passt. Bei 4 % erlaubter Abweichung würde `ansicht` am Arbeitsplatz nichts mehr
+finden. Grenzen sind anteilig zu setzen, nicht so weit, bis sie nichts mehr
+ausschließen — Regel 2 von der anderen Seite.

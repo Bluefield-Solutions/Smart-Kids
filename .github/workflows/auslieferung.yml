@@ -50,10 +50,19 @@ jobs:
       # `tor:runner` ist die volle Kette OHNE das Tor `ansicht`. Das ist
       # kein stiller Verzicht: das Tor meldet den Verzicht im Protokoll
       # samt Grund. Bildpunktvergleiche gelten nur bei gleicher
-      # Zeichenumgebung. Der Chromium-Bau ist seit Q18 auf beiden Seiten
-      # derselbe; die Ersatzschriften des Runners sind es nicht, und die
-      # entscheiden ueber jeden Buchstaben. `ansicht` bleibt deshalb am
-      # Arbeitsplatz - jetzt aus EINEM Grund statt aus zweien.
+      # Zeichenumgebung. Der Chromium-Bau ist seit Q18b auf beiden Seiten
+      # derselbe; die Schriften sind es nicht.
+      #
+      # Und das ist seit Q21 GEMESSEN statt vermutet (Ablauf
+      # `Bildmessung`, von Hand anzustossen): von 37 Aufnahmen sind auf
+      # dem Runner 35 rot, zwischen 0,23 % und 4,02 % - das Fuenfzigfache
+      # des erlaubten Bandes von 0,08 %. Gruen sind genau die beiden OHNE
+      # Text (`mg-farbstreifen`, `karte-deutschland`), und die auf den
+      # Bildpunkt genau: derselbe Chromium zeichnet dasselbe, sobald kein
+      # Buchstabe im Bild ist.
+      #
+      # Damit ist beides belegt - dass Regel 16 haelt, und dass `ansicht`
+      # hier trotzdem nicht laufen kann.
       - name: Alle Tore (ohne ansicht — siehe Protokoll)
         run: npm run tor:runner
       # Bei Rot bleibt sichtbar, WAS sich geaendert hat - sonst steht da
