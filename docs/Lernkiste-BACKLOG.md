@@ -2456,3 +2456,35 @@ Zwei Wege, keiner gemessen:
    zweite Projektion im Bau und die Frage, ob beide wirklich dieselbe sind.
 
 Nummer 2 ist der saubere Weg, Nummer 1 der billigere.
+
+---
+
+## Q25 gemessen und verworfen: die Anker in die Weltkarte projizieren
+
+Weg 2 aus „Q24 offen" — die Anker der Ebenen in das Koordinatensystem der
+Weltkarte bringen, damit der Wächter auch für Kontinentbilder rechnen kann.
+
+**Geht mit den vorhandenen Daten nicht.** `KONTINENTE_GROB` hält nur
+Kontinentumrisse, keine Länder; `KARTEN_GROB[k]` hält die Länder, aber in einer
+eigenen, je Kontinent angepassten Projektion. Es gibt keinen gemeinsamen Rahmen
+und keine Projektionsparameter, aus denen sich einer rechnen ließe — beide
+Datensätze tragen nur projizierte Punkte, keine Längen- und Breitengrade.
+
+Und der naheliegende Ersatz trägt nicht. Gemessen wurde, ob sich der Fall am
+**Seitenverhältnis** erkennen lässt (Länderkarte gegen Kontinentumriss):
+
+| | Verhältnis |
+|---|---|
+| europa | 0,74 |
+| nordamerika | 0,76 |
+| **australien** | **1,10** |
+| asien | 1,14 |
+| suedamerika | 1,16 |
+| afrika | 1,26 |
+
+Der Fall, den es zu finden gilt, liegt **mitten im Feld**. Kein Signal — und gut,
+dass das vor dem Bauen gemessen wurde.
+
+Was bliebe: beim Backen Längen- und Breitengrade mitführen, dann ist jede
+Projektion nachträglich anzustellen. Das ist ein Eingriff in die
+Backwerkzeuge, nicht in ein Tor.

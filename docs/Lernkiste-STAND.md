@@ -8887,3 +8887,67 @@ genügt es, und die ist hier die wichtigere.
 Und es erklärt Q22 nachträglich: dieselbe Ursache, nur auf dem Runner.
 
 238 Gegenproben.
+
+---
+
+## Q25 — die Frist misst die Maschine, und was daran nicht bewiesen ist
+
+Jede Wartefrist im Rauchtest steht in Millisekunden Wanduhr — „vier Sekunden auf
+die Ansage". Das ist eine Wette darauf, wie viele Bilder die App in vier Sekunden
+bekommt, und Q24 hat gezeigt, wie sie verloren geht.
+
+Läuft eine **kurze** Frist (bis 10 s) ab, wird jetzt gemessen, ob die Maschine
+langsamer geworden ist, und einmal nachgefasst — an **einer** Stelle in
+`neueSeite()`, durch die jede der achtunddreißig Fristen läuft. Wer morgen eine
+neue schreibt, bekommt die Nachsicht geschenkt.
+
+### Die erste Messung maß die falsche Sache
+
+Sie zählte zwanzig `requestAnimationFrame`. Nachgeprüft mit einer echten
+CPU-Drossel — dem Weg, auf dem sich so etwas überhaupt herstellen lässt:
+
+| Drossel | gemessen | |
+|---|---|---|
+| 20× | 2,4× | nachgefasst |
+| 12× | **1,0×** | **nicht** nachgefasst, Frist gerissen |
+
+Die Bildfolge kommt vom Compositor, nicht von dem Faden, der die App rechnet.
+Eine Auslösung, die mal kommt und mal nicht, ist schlimmer als keine — sie macht
+rote Läufe unwiederholbar, und genau das war die Krankheit. Und eine Prüfung, die
+so nie etwas meldet, ist kein Beweis (Regel 1): wer eine Wirkung misst, muss
+zeigen, dass die Zahl mit ihr steigt und fällt.
+
+Jetzt eine feste **Rechenschleife**, und ihre Norm wird nicht hingeschrieben,
+sondern zu Beginn des Laufs gemessen: gefragt ist „langsamer als vorhin", nicht
+„langsamer als auf irgendeinem Rechner". Die Norm muss dabei **vor** der Drossel
+entstehen — sonst misst sie diese mit, der Faktor bleibt eins, und die Prüfung
+hätte sich selbst weggemessen. Nachgemessen: Drossel 12× → **8,0×**, Frist 4000
+→ 32000 ms.
+
+### Was NICHT bewiesen ist
+
+Dass die Nachsicht einen Lauf rettet. Gemessen:
+
+| Drossel | |
+|---|---|
+| 3× und 8× | grün, **keine Frist läuft ab** |
+| 12× | Nachsicht greift, die App braucht trotzdem mehr als 32 s |
+
+Zwischen „reißt gar nicht" und „ist ohnehin kaputt" gibt es kein Fenster, in dem
+die Streckung entscheidet — jedenfalls nicht mit einer gedrosselten **einzelnen**
+Seite. Die drei roten Läufe aus Q24 kamen aus dem Gedränge **zwischen** zehn
+Browsern, und dagegen half die Beckenbreite, nicht die Frist.
+
+Was bleibt und was bewiesen ist: die Prüfung **misst** richtig und **streckt**
+richtig, und aus „Timeout 4000ms" wird „die Maschine war achtmal langsamer und
+hat es trotzdem nicht geschafft". Das ist Diagnose, keine Rettung — und so steht
+es auch im Bericht.
+
+Die Gegenprobe prüft die Gefahr, nicht das Versprechen: eine Frist von einer
+Millisekunde muss rot werden. Ein Tor, das nach einem Fehlschlag einfach länger
+wartet, meldet sonst irgendwann gar nichts mehr.
+
+`SMARTKIDS_DROSSEL=12` bleibt als Werkzeug da — ohne sie war das alles nicht zu
+messen.
+
+239 Gegenproben.

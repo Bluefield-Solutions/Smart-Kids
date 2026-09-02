@@ -694,6 +694,24 @@ export const PROBEN = [
     an:{ datei:'prototyp/bauen.mjs', text:'const ozeanienUmriss = roh.australien;' },
     sagt:'nennt seine Herkunft nicht' },
 
+  /* Q25: die Nachsicht darf kein Freibrief sein.
+   *
+   * Seit Q25 misst der Rauchtest bei einer abgelaufenen Frist nach, ob
+   * die Maschine langsamer geworden ist, und faellt dann noch einmal
+   * nach. Die Gefahr dabei ist offensichtlich: ein Tor, das nach einem
+   * Fehlschlag einfach laenger wartet, meldet irgendwann gar nichts mehr.
+   *
+   * Der Eingriff setzt eine Frist auf eine Millisekunde. Auf einer
+   * gesunden Maschine ist die Rechenzeit dann NICHT hoeher als die Norm,
+   * die Nachsicht greift nicht, und der Rauchtest wird rot - genau so
+   * soll es sein. */
+  { n:'die Nachsicht schluckt eine gerissene Frist', tor:'smoke',
+    args:['--teil=0/4'], bauen:true, datei:'tor/smoke.mjs',
+    such:"  await p.waitForSelector('.schirm.da .kacheln', { timeout: 4000 });",
+    ersatz:"  await p.waitForSelector('.schirm.da .kacheln', { timeout: 1 });",
+    an:{ datei:'tor/smoke.mjs', text:"'.schirm.da .kacheln', { timeout: 1 }" },
+    sagt:'Timeout' },
+
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,
     such:'      if (finger.size >= 2 && start && start.d) {',

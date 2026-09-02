@@ -34,6 +34,59 @@ const b = await starte();
 const fehler = [];
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
+
+/* Wie schnell ist diese Maschine GERADE? (Q25)
+ *
+ * Jede Wartefrist hier ist in Millisekunden Wanduhr angegeben - „vier
+ * Sekunden auf die Ansage". Das ist eine Wette darauf, wieviele Bilder die
+ * App in vier Sekunden bekommt, und die Wette geht verloren, sobald die
+ * Kette zehn Chromium auf vier Kernen faehrt: an einem Tag wurden die
+ * Abnahmelaeufe dreimal rot, jedes Mal an einer anderen Frist, und
+ * derselbe Teil lief allein in 94 s durch.
+ *
+ * Die Beckenbreite (Q24) nimmt den Druck weg. Die Fristen bleiben
+ * trotzdem Wanduhr - und damit eine Wette auf die Maschine, auf der
+ * jemand das Verzeichnis morgen faehrt.
+ *
+ * Gemessen wird deshalb der TAKT DER SEITE: wie lange ein Bild wirklich
+ * braucht. Bei 16,7 ms ist der Faktor 1 und nichts aendert sich; bei 60 ms
+ * ist er 3,6, und dieselbe Frist gibt der App wieder gleich viele Bilder.
+ *
+ * Gemessen wird nicht auf Vorrat, sondern erst, wenn eine Frist ABLAEUFT -
+ * dann ist die Frage „lag es an der Maschine?" gestellt und die Antwort
+ * einen halben Bildschirm wert. War sie nein, bleibt es beim Befund. */
+const TAKT = { faktor: 1, n: 0, hoechster: 1, norm: 0 };
+
+/* Gemessen wird RECHENZEIT, nicht die Bildfolge.
+ *
+ * Der erste Anlauf zaehlte zwanzig `requestAnimationFrame` und leitete
+ * daraus ab, wie langsam die Maschine sei. Das misst die Sache nicht:
+ * die Bildfolge kommt vom Compositor und nicht vom Faden, der die App
+ * rechnet. Nachgeprueft mit einer echten Drossel - der Weg, auf dem sich
+ * so etwas ueberhaupt herstellen laesst:
+ *
+ *     Drossel 20x   gemessen 2,4x   → nachgefasst
+ *     Drossel 12x   gemessen  1,0x  → NICHT nachgefasst, Frist gerissen
+ *
+ * Eine Ausloesung, die mal kommt und mal nicht, ist schlimmer als keine:
+ * sie macht rote Laeufe unwiederholbar, und genau das war die Krankheit.
+ * Eine Pruefung, die so nie etwas meldet, ist kein Beweis (Regel 1) - wer
+ * eine Wirkung misst, muss zeigen, dass die Zahl mit ihr steigt und
+ * faellt.
+ *
+ * Eine feste Rechenschleife tut das. Und ihre NORM wird nicht
+ * hingeschrieben, sondern zu Beginn dieses Laufs gemessen: gefragt ist
+ * „langsamer als vorhin", nicht „langsamer als auf irgendeinem Rechner".
+ * Damit traegt die Zahl ihre Messstelle mit (Regel 5). */
+const rechenzeit = (p) => p.evaluate(() => {
+  const t0 = performance.now();
+  let x = 0; for (let i = 0; i < 3e6; i++) x += i % 7;
+  return (performance.now() - t0) + (x % 1);   // x benutzen, sonst faellt es weg
+}).catch(() => 0);
+const taktMessen = async (p) => {
+  const ms = await rechenzeit(p);
+  return (!ms || !TAKT.norm) ? 1 : Math.max(1, ms / TAKT.norm);
+};
 const merke = (was, e) => fehler.push(`${was}: ${e.message || e}`);
 
 /* `--sofort`: aufhoeren, sobald der erste Fehler feststeht.
@@ -207,6 +260,66 @@ async function neueSeite(viewport, ctx, flott = true) {
       + 'als er behauptet');
   const festWarten = p.waitForTimeout.bind(p);
   p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
+
+  /* Die DROSSEL - damit die Nachsicht oben pruefbar ist (Q25).
+   *
+   * Ohne sie ist der Eingriff eine Behauptung: auf einer flotten Maschine
+   * laeuft keine Frist ab, die Nachsicht kommt nie zum Zug, und ein
+   * gruener Lauf beweist nichts (Regel 1). `SMARTKIDS_DROSSEL=12` macht
+   * die Seite zwoelfmal langsamer; erst dort laeuft ueberhaupt eine Frist
+   * ab. Bei 3x und 8x reisst keine - was auch heisst, dass die Fristen
+   * fuer eine EINZELNE langsame Seite reichlich bemessen sind und das
+   * Gedraenge zwischen zehn Browsern etwas anderes war (Q24).
+   *
+   * Sie ist kein Schalter fuer den Alltag: ohne die Umgebungsvariable
+   * passiert hier nichts. */
+  /* Die NORM zuerst, und zwar am gesunden Zustand.
+   *
+   * Sie muss VOR der Drossel entstehen, sonst misst sie diese mit und der
+   * Faktor bleibt bei eins - die Pruefung haette sich dann selbst
+   * wegmessen. Und sie muss vor dem ersten Ablauf entstehen: eine Norm,
+   * die erst beim Zeitverlust genommen wird, ist der Zeitverlust. */
+  if (!TAKT.norm) TAKT.norm = await rechenzeit(p) || 0;
+
+  const DROSSEL = +(process.env.SMARTKIDS_DROSSEL || 0);
+  if (DROSSEL > 1) {
+    const cdp = await p.context().newCDPSession(p);
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: DROSSEL });
+  }
+
+  /* Jede Frist dieser Seite geht durch EINE Stelle (Q25).
+   *
+   * Nicht an achtunddreissig Aufrufstellen nachbessern: das waere wieder
+   * eine Liste, die veraltet. Hier laeuft jede Wartefrist durch, und wer
+   * morgen eine neue schreibt, bekommt die Nachsicht geschenkt.
+   *
+   * NUR die kurzen Fristen. Was 15 oder 25 Sekunden wartet, wartet
+   * meistens auf etwas, das gar nicht kommen SOLL - dort waere ein
+   * zweiter Anlauf reine Wartezeit. Die Grenze ist die Sorte Frist, die
+   * gerissen ist: vier bis zehn Sekunden. */
+  const gemessen = async (lauf, frist) => {
+    try { return await lauf(TAKT.faktor); }
+    catch (e) {
+      if (!/Timeout/.test(String(e && e.message)) || frist > 10000) throw e;
+      const jetzt = await taktMessen(p);
+      // War die Maschine gar nicht langsam, ist es ein Befund und bleibt
+      // einer. Ohne diese Zeile waere die Nachsicht ein Freibrief.
+      if (jetzt <= TAKT.faktor * 1.3) throw e;
+      TAKT.faktor = Math.min(jetzt, 8); TAKT.n++;
+      TAKT.hoechster = Math.max(TAKT.hoechster, TAKT.faktor);
+      return lauf(TAKT.faktor);
+    }
+  };
+  const festFn = p.waitForFunction.bind(p);
+  const festSel = p.waitForSelector.bind(p);
+  p.waitForFunction = (fn, arg, opt = {}) => {
+    const frist = opt.timeout ?? 30000;
+    return gemessen(f => festFn(fn, arg, { ...opt, timeout: Math.round(frist * f) }), frist);
+  };
+  p.waitForSelector = (wahl, opt = {}) => {
+    const frist = opt.timeout ?? 30000;
+    return gemessen(f => festSel(wahl, { ...opt, timeout: Math.round(frist * f) }), frist);
+  };
   p.on('pageerror', e => fehler.push(`Seitenfehler: ${String(e).slice(0, 140)}`));
 
   /* Der FREMDGRIFF laeuft auf jeder Seite mit (Q19).
@@ -4537,6 +4650,15 @@ if (laeuft('sprechen')) try {
 await ctx.close(); await b.close(); server.close();
 
 console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${blind.n} festen Pausen`);
+/* Die Nachsicht steht im Bericht.
+ *
+ * Sonst ist nicht zu sehen, ob die Kette gerade sauber lief oder ob sie
+ * dreimal am Rand entlanggeschrammt ist - und genau der Unterschied ist
+ * die Vorwarnung, dass die Maschine oder die Beckenbreite nicht mehr
+ * passt. */
+if (TAKT.n) console.log(`  Maschine war langsam:       ${TAKT.n}× nachgefasst, `
+  + `Rechenzeit bis ${TAKT.hoechster.toFixed(1)}× der Norm `
+  + `(${TAKT.norm.toFixed(0)} ms für die Eichschleife zu Beginn)`);
 /* Die Zahl steht MIT im Bericht, nicht nur der Befund.
  *
  * „Kein Fremdgriff gefunden" heisst zweierlei: alles sitzt, oder die
