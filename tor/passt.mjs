@@ -1090,7 +1090,9 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await p.waitForSelector('.schirm.da [data-welt]');
 
   await tipp('.schirm.da #buch');
-  await p.waitForSelector('.schirm.da .aufkleber');
+  /* Seit Q28 kann das Buch ohne einen einzigen `.aufkleber` dastehen: auf
+     einer Ebene mit Karte klebt alles auf EINER Albumkarte. */
+  await p.waitForSelector('.schirm.da .aufkleber, .schirm.da .albumkarte');
   await schau('Forscherbuch');
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da #eltern');

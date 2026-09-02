@@ -55,6 +55,16 @@ const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set()
  * Gemessen wird nicht auf Vorrat, sondern erst, wenn eine Frist ABLAEUFT -
  * dann ist die Frage „lag es an der Maschine?" gestellt und die Antwort
  * einen halben Bildschirm wert. War sie nein, bleibt es beim Befund. */
+/* Woran man erkennt, dass das Buch offen ist.
+ *
+ * Bis Q28 war das `.aufkleber` - jeder Gegenstand ein Kasten. Seit die
+ * Albumseite bei einer Ebene MIT Karte die Karte selbst ist, gibt es dort
+ * keine Kaesten mehr, und ein Buch kann ganz ohne sie dastehen. Ein Tor,
+ * das auf `.aufkleber` wartet, lief damit dreissig Sekunden in die Frist -
+ * gemessen, nicht vermutet: `passt` und vier Abschnitte des Rauchtests
+ * sind daran gescheitert, bevor diese Zeile hier stand. */
+const BUCHKARTE = '.schirm.da .aufkleber, .schirm.da .albumkarte';
+
 const TAKT = { faktor: 1, n: 0, hoechster: 1, norm: 0 };
 
 /* Gemessen wird RECHENZEIT, nicht die Bildfolge.
@@ -920,6 +930,7 @@ else if (gewaehlt)
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
 const sternVerlauf = [], bandVerlauf = [];
+let endeZeigteKleber = 0;
 let endSterne = null, kleberMoment = 0;
 const fahnenArten = new Set();
 /** Namen, die auf zwei Zeilen umbrechen mussten. Auskunft. */
@@ -1007,6 +1018,26 @@ if (laeuft('spielen')) try {
     if (nochmal) {
       endSterne = await p.evaluate(() => [...document.querySelectorAll('.schirm.da .sterne svg')]
         .filter(x => !/stern-aus/.test(x.innerHTML)).length);
+      /* Was die Runde eingebracht hat, steht als BILD da (Q28).
+       *
+       * Vorher stand dort eine Zahl - „2 von 4 im Buch" -, und der
+       * Aufkleber, um den es ging, war nirgends zu sehen. Fuer ein Kind,
+       * das nicht liest, war der Endbildschirm damit stumm.
+       *
+       * Geprueft wird an dem, was der Bildschirm SELBST sagt: steht dort
+       * „neue Aufkleber", muss auch mindestens einer zu sehen sein. Eine
+       * feste Erwartung („nach zwei Sitzungen sind es drei") waere eine
+       * zweite Rechnung neben dem Leitner und ginge irgendwann anders
+       * aus als er. */
+      const ende = await p.evaluate(() => {
+        const s = document.querySelector('.schirm.da');
+        return { sagt: +(s.querySelector('.buchstand')?.dataset.neu || 0),
+                 zeigt: s.querySelectorAll('.kleberzeile .frischerkleber').length };
+      });
+      if (ende.sagt && !ende.zeigt)
+        merke('spielen', new Error(`der Endbildschirm zählt ${ende.sagt} neue Aufkleber, `
+          + 'zeigt aber keinen — für ein Kind, das nicht liest, ist das nichts'));
+      if (ende.zeigt) endeZeigteKleber = ende.zeigt;
       await nochmal.click(); await p.waitForSelector('.schirm.da .karte svg');
     }
   }
@@ -1017,6 +1048,8 @@ if (laeuft('spielen')) try {
   // Fuellt sich die Karte wirklich? Die Zusage lautet: was schon sass,
   // bleibt in voller Farbe stehen und traegt einen Haken - und zwar ueber
   // den Aufgabenwechsel hinweg, denn der baut den Bildschirm neu.
+  if (endeZeigteKleber)
+    console.log(`  Aufkleber am Rundenende:    ${endeZeigteKleber} als Bild, nicht als Zahl`);
   const gefuellt = await p.evaluate(() => ({
     gesessen: document.querySelectorAll('.schirm.da path.geb.gesessen').length,
     haken:   document.querySelectorAll('.schirm.da .haken').length,
@@ -1099,9 +1132,14 @@ if (laeuft('ablage')) try {
   // Forscherbuch
   await p.evaluate(() => { window.__gesagt = []; });
   await p.click('#buch');
-  await p.waitForSelector('.schirm.da .aufkleber');
+  await p.waitForSelector(BUCHKARTE);
   await bis(p, () => (window.__gesagt || []).length > 0, 4000);
-  const kleber = await p.$$eval('.schirm.da .aufkleber.da', e => e.length);
+  /* Seit Q28 klebt auf einer Ebene MIT Karte alles auf einer Albumkarte,
+     statt in einzelnen Kaesten. Gezaehlt wird deshalb beides: die
+     gesammelten Kaesten und die farbigen Flaechen auf den Karten. */
+  const kleber = await p.evaluate(() =>
+      document.querySelectorAll('.schirm.da .aufkleber.da').length
+    + document.querySelectorAll('.schirm.da .albumkleber').length);
   if (kleber < 1) merke('forscherbuch', new Error('kein einziger Aufkleber nach zwei Sitzungen'));
   const alleKleber = await p.$$eval('.schirm.da .aufkleber', e => e.length);
   /* --- Das Buch zeigt nicht mehr die ganze Wand ----------------------
@@ -1129,6 +1167,41 @@ if (laeuft('ablage')) try {
   if (alleKleber > wirklich + 3)
     merke('forscherbuch', new Error(`das Buch zeigt ${alleKleber} Aufkleber, `
       + `wirklich gesammelt sind ${wirklich} — mehr als drei Vorschau, das ist wieder die Wand`));
+  /* Und die Zusage in der Form, die seit Q28 gilt (die Albumkarte zeigt
+   * ALLES, auch das Offene - blass, auf der Karte, ohne Fragezeichen).
+   *
+   * Die Zahl allein traegt hier nicht mehr: eine Karte zaehlt eins,
+   * gleich wieviel darauf liegt. Was die Wand ausmachte, waren die
+   * FRAGEZEICHEN - Kaesten, die sagen „das kannst du noch nicht".
+   * Hoechstens drei davon, wie eh und je; auf einer Ebene mit Karte
+   * keines. */
+  const fragezeichen = await p.$$eval('.schirm.da .aufkleber',
+    es => es.filter(e => /^\?$/.test(e.textContent.trim())).length);
+  if (fragezeichen > 3)
+    merke('forscherbuch', new Error(`${fragezeichen} Kästen mit Fragezeichen im Buch — `
+      + 'höchstens drei sind Vorschau, mehr ist wieder die To-do-Liste'));
+  /* Und die andere Haelfte derselben Zusage: die Albumkarte zeigt AUCH,
+   * was noch fehlt - blass, an seinem Platz.
+   *
+   * Ohne diese Zeile waere die Karte durch eine zu ersetzen, die nur die
+   * gesammelten Gebiete zeigt, und alles bliebe gruen: das Fragezeichen
+   * ist dann erst recht keines da. Genau die Verfallsart, gegen die
+   * Regel 1 steht: eine Pruefung, die nie etwas meldet, ist kein Beweis -
+   * und eine, die nur Verbotenes sucht, meldet zum Gebotenen nie etwas. */
+  const album = await p.$$eval('.schirm.da .albumkarte', es => es.map(k => ({
+    voll: k.querySelectorAll('.albumkleber').length,
+    offen: k.querySelectorAll('.albumoffen').length })));
+  for (const k of album)
+    if (!k.offen && !k.voll)
+      merke('forscherbuch', new Error('eine Albumkarte im Buch ist leer — '
+        + 'weder Gesammeltes noch Offenes'));
+  const blind = album.filter(k => k.voll && !k.offen).length;
+  if (album.length && blind === album.length && staende !== -1 && wirklich < 30)
+    merke('forscherbuch', new Error(`alle ${album.length} Albumkarten zeigen nur Gesammeltes — `
+      + 'das Offene liegt nicht mehr blass darunter, und damit sieht das Kind nicht mehr alles'));
+  if (album.length)
+    console.log(`  Album im Buch:              ${album.map(k => `${k.voll} von ${k.voll + k.offen}`)
+      .join(', ')}`);
   // Und es sagt Fiona, was drin ist.
   const buchGesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
   if (!/Forscherbuch/.test(buchGesagt))
@@ -1617,11 +1690,11 @@ if (laeuft('ablage')) try {
     // die Umrisse noch nicht geholt sind.
     await zurEbenenwahl(q, 'bundeslaender');
     await q.click('#buch');
-    await q.waitForSelector('.schirm.da .aufkleber');
+    await q.waitForSelector(BUCHKARTE);
     await bis(q, () => !!document.querySelector('.schirm.da .rollen'), 4000);
     const b = await q.evaluate(() => {
       const r = document.querySelector('.schirm.da .rollen');
-      const karten = [...document.querySelectorAll('.schirm.da .aufkleber')];
+      const karten = [...document.querySelectorAll('.schirm.da .aufkleber, .schirm.da .albumkarte')];
       return { da: karten.length,
                // Ein Gebiet MUSS einen Umriss zeigen. Der Rechenkasten ist
                // die Notdarstellung, und sein Inhalt war hier „undefined".
@@ -1730,7 +1803,7 @@ if (laeuft('ablage')) try {
       bisZeichen = Date.now() - t0;
       if (!zeichen) await q.waitForTimeout(60);
     }
-    await q.waitForSelector('.schirm.da .aufkleber', { timeout: 30000 });
+    await q.waitForSelector(BUCHKARTE, { timeout: 30000 });
     const bisBuch = Date.now() - t0;
     // Und es muss auch wieder WEG sein.
     const weg = await bis(q, () => !document.querySelector('.schirm.warten'), 3000);
@@ -1746,7 +1819,7 @@ if (laeuft('ablage')) try {
     // Wohin der Weg zurueck fuehrt, ist hier gleichgueltig - gebraucht wird
     // nur EIN Wechsel, der sofort steht. Deshalb auf „das Buch ist weg"
     // warten und nicht auf einen bestimmten Bildschirm.
-    await bis(q, () => !document.querySelector('.schirm.da .aufkleber'), 10000);
+    await bis(q, () => !document.querySelector('.schirm.da .aufkleber, .schirm.da .albumkarte'), 10000);
     await q.waitForTimeout(WARTEZEICHEN_LUFT);
     const spaet = await q.evaluate(() => !!document.querySelector('.schirm.warten'));
     if (spaet) merke('warten', new Error('nach einem Bildschirm, der sofort da war, '

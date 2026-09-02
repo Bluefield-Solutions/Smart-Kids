@@ -1278,12 +1278,48 @@ const buchstabenBild = (x, ton) => {
  * nebeneinander, und der Unterschied ist die ganze Auskunft. Der erste
  * Entwurf dieser Zusammenfassung hat ihn verloren - die Strichdeckung
  * stand fest auf .6 statt .25 -, und gemerkt hat es der Bildvergleich. */
+/* Der Stanzrand (Q28).
+ *
+ * Bis hierher war ein „Aufkleber" ein flacher Umriss in einem weissen
+ * Kasten - also ein Kartenausschnitt, kein Aufkleber. Was einen ausmacht,
+ * ist der weisse Rand, den die Stanze stehen laesst, und der Schatten
+ * darunter. Beides entsteht aus DEMSELBEN Pfad, dreimal gezeichnet:
+ *
+ *     1. weiter, sehr blasser Strich   der Schatten ringsum
+ *     2. weisser Strich darueber       der Stanzrand
+ *     3. die Flaeche selbst            der Aufkleber
+ *     4. ein Verlauf obendrauf         der Glanz
+ *
+ * Alle Striche tragen `vector-effect="non-scaling-stroke"`, sind also in
+ * BILDSCHIRMpunkten breit und nicht in Kartenkoordinaten. Ohne das waere
+ * der Rand auf der Weltkarte unsichtbar und auf einem Bundesland ein
+ * Klumpen: die Umrisse dieser App leben in Rahmen, die sich um mehr als
+ * das Tausendfache unterscheiden.
+ *
+ * Und deshalb steht hier auch KEIN Versatz nach unten fuer den Schatten:
+ * ein `translate` gaelte in Kartenkoordinaten und waere auf Bremen eine
+ * Bildschirmbreite. Der Schatten liegt ringsum, nicht darunter.
+ *
+ * Was noch nicht gesammelt ist, bekommt nichts davon: es ist der SCHATTEN
+ * des Aufklebers, nicht der Aufkleber. */
 const stueckBild = (x, ton, rahmen, offen = false) =>
-    x.pfad  ? `<svg viewBox="${rahmen}" aria-hidden="true"><path d="${x.pfad}" fill-rule="evenodd"
+    x.pfad  ? `<svg viewBox="${rahmen}" aria-hidden="true">${offen ? '' : `
+                <path d="${x.pfad}" fill-rule="evenodd" class="kleberschatten"/>
+                <path d="${x.pfad}" fill-rule="evenodd" class="kleberrand"/>`}
+               <path d="${x.pfad}" fill-rule="evenodd"
                 fill="${ton}" stroke="var(--tinte)" stroke-opacity="${offen ? .25 : .6}"
-                stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`
+                stroke-width="1.6" vector-effect="non-scaling-stroke"/>${offen ? '' : `
+               <path d="${x.pfad}" fill-rule="evenodd" class="kleberglanz"/>`}</svg>`
   : x.zeichenFolge ? buchstabenBild(x, ton)
   :           `<div class="rechenkleber" style="--ton:${ton}">${x.frage}</div>`;
+
+/** EIN Aufkleber, so wie er im Buch klebt.
+ *
+ * Drei Stellen zeigen denselben: das Buch, der Lobsatz im Augenblick des
+ * Verdienens und der Endbildschirm. Vor Q28 war das keine Frage - nur das
+ * Buch zeigte ihn ueberhaupt, die anderen beiden sagten eine Zahl. */
+const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
+  eigenerRahmen(x.pfad) || vbVon(ebeneId));
 
 /** Was unter dem Bild steht. Beim Buchstaben sein Merkwort. */
 const stueckFuss = (x) => x.pfad ? x.name : x.zeichenFolge ? x.wort : `= ${x.name}`;
@@ -2276,8 +2312,11 @@ async function starten(ebeneId, alsTest = false){
    * alten zu unterscheiden, und der Endbildschirm muesste entweder alle
    * aufzaehlen oder schweigen. Beides waere schade: der Moment, in dem
    * eines dazukommt, ist der einzige, in dem es sich lohnt, es zu sagen. */
+  /* `neueKleber` haelt die KENNUNGEN, nicht die Gegenstaende.
+     Der Gegenstand steht in `alle`, und zwar genau einmal - eine zweite
+     Kopie waere eine zweite Wahrheit, sobald der Leitner ihn verschiebt. */
   Sitzung = { ebeneId, alle, liste: testListe || liste, i:0, glatt:0, wie:[],
-              aufkleber:0, keim, begonnen:Date.now(), test: alsTest,
+              aufkleber:0, neueKleber:[], keim, begonnen:Date.now(), test: alsTest,
               abzVorher: new Set(verdiente(ebeneId, Stand).map(a => a.id)) };
   zeige(schirmZu(ebeneId));
 }
@@ -2340,7 +2379,7 @@ function werten(ziel, ergebnis, versuch){
   if (ergebnis === 'richtig' && versuch === 1) st.glatt++;
   st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
   const neuerAufkleber = !hatteVorher && Leitner.istGesammelt(Stand, ziel.id);
-  if (neuerAufkleber) st.aufkleber++;
+  if (neuerAufkleber) { st.aufkleber++; st.neueKleber.push(ziel.id); }
   standSichern(st.ebeneId);
   return neuerAufkleber;
 }
@@ -2430,13 +2469,26 @@ function pauseSchirm(){
  * Das Lob kommt zuerst und steht für sich. Die Sache danach - der Name oder
  * die Rechnung - ist das, was gelernt wird, nicht der Applaus.
  */
+/* Der Aufkleber wird GEZEIGT, nicht angekuendigt (Q28).
+ *
+ * Hier stand die Zeile „Neuer Aufkleber!" - ein Wort ueber ein Bild, das
+ * nirgends zu sehen war. Fiona liest nicht; fuer sie war das nichts.
+ * Jetzt klebt der Aufkleber selbst da, und das Wort steht darunter. */
+const letzterKleber = () => {
+  const st = Sitzung;
+  if (!st || !st.neueKleber.length) return '';
+  const id = st.neueKleber[st.neueKleber.length - 1];
+  const i = st.alle.findIndex(x => x.id === id);
+  return i < 0 ? '' : kleberBild(st.alle[i], i, st.ebeneId);
+};
+
 function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
   const frage = s.querySelector('#frage');
   if (!frage) return;
   frage.innerHTML = fastText
     ? `<span class="fastText">${fastText}</span>`
     : `<span class="richtigText"><b class="jubel">${spruch || 'Richtig!'}</b> ${sache}</span>`
-      + (neuerAufkleber ? `<span class="neuerkleber">Neuer Aufkleber!</span>` : '')
+      + (neuerAufkleber ? `<span class="neuerkleber">${letzterKleber()}<b>Neuer Aufkleber!</b></span>` : '')
       + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
 }
 
@@ -4839,7 +4891,27 @@ function endschirm(){
       ${abzNeu ? `<div class="abzneu">${ABZ(abzNeu.zeichen, true, 40)}
         <span>Neues Abzeichen: ${abzNeu.titel}</span></div>` : ''}
       ${fortschrittBalken(f, 'breit')}
-      <div class="buchstand">${kleberMarke(f.gesammelt, f.gesamt)}<span>${
+      ${/* `data-neu` traegt die ZAHL der neuen Aufkleber ins Markup.
+           Der Rauchtest hat sie vorher aus dem Satz gelesen - und der
+           lautet „6 neue!", ohne das Wort „Aufkleber". Die Pruefung lief
+           damit ins Leere, und die Gegenprobe hat es gemeldet: das Tor
+           blieb gruen, obwohl der Fehler drin war. Eine Klasse oder eine
+           Marke ist eine Zusage des Programms; ein Satz ist Text, den
+           jemand aendern darf. */''}
+      <div class="buchstand" data-neu="${st.aufkleber}">${
+        /* Was diese Runde eingebracht hat, steht hier als BILD - in
+           derselben Zeile, in der vorher nur das Zeichen stand. Nicht
+           darueber: der Endbildschirm hat auf 844 x 390 keine Zeile
+           uebrig, und eine neue haette die Knoepfe hinausgeschoben.
+           Hoechstens drei, sonst wird die Zeile in einer guten Runde
+           laenger als der Bildschirm. */
+        st.neueKleber.length
+          ? `<span class="kleberzeile">${st.neueKleber.slice(0, 3).map((id, n) => {
+              const i = st.alle.findIndex(x => x.id === id);
+              return i < 0 ? '' : `<span class="frischerkleber" style="--nr:${n}"
+                >${kleberBild(st.alle[i], i, st.ebeneId)}</span>`;
+            }).join('')}</span>`
+          : kleberMarke(f.gesammelt, f.gesamt)}<span>${
         st.aufkleber ? ton().neueKleber(st.aufkleber)
         : `von ${f.gesamt} im Buch`}</span></div>${
         /* Warum noch keiner da ist - aber nur, solange noch keiner da ist.
@@ -4999,6 +5071,87 @@ async function forscherbuch(){
       ${x.gekonnt?'<i class="siegel"></i>':''}
     </button>`;
 
+  /* --- Die Albumseite IST die Karte (Q28) ---------------------------
+   *
+   * Der Wunsch war „ich will immer ALLE sehen". Genau das stand hier
+   * schon einmal - sechzig graue Kaesten mit Fragezeichen, ueber alle
+   * Ebenen auf einmal - und es ist gescheitert: es sah nach Arbeit aus.
+   * Die Lehre steht oben und gilt weiter.
+   *
+   * Der Fehler war aber nicht „alle zeigen". Es waren die KAESTEN. Ein
+   * leerer Kasten mit einem Fragezeichen ist eine Pruefungsfrage; eine
+   * blasse Flaeche auf einer Karte ist ein Stueck Welt, das noch keine
+   * Farbe hat. Dieselbe Menge, das Gegenteil an Wirkung.
+   *
+   * Also die Karte selbst: was gesammelt ist, klebt in Farbe und mit
+   * Stanzrand darauf, der Rest liegt blass darunter. Fiona sieht auf
+   * einen Blick alles - und keine einzige Luecke sieht aus wie eine
+   * Aufgabe. Es kostet ausserdem kein neues Bild: die Umrisse sind da,
+   * und der Rahmen ist der der ganzen Karte, den `vbVon` ohnehin liefert.
+   *
+   * Und es kostet WENIGER Hoehe als vorher, nicht mehr - eine Karte statt
+   * eines Kachelgitters. Das Buch ist auf 844 x 390 randvoll (siehe die
+   * Messung weiter unten: 318 Punkte Inhalt bei 318 sichtbaren), und ein
+   * Vorschlag, der eine Zeile kostet, waere hier keiner.
+   *
+   * Wer keine Karte hat - Rechnen, Schreiben -, behaelt die Kacheln. Ein
+   * Kaestchen mit „3 + 4" IST dort der Aufkleber; eine Karte gibt es
+   * nicht, und eine erfundene waere schlimmer als keine.
+   *
+   * Angetippt wird die ganze Karte, nicht das einzelne Land: `beruehrung`
+   * misst Trefferflaechen an Bedienelementen, und ein Pfad in einem SVG
+   * ist keines. Bremen waere ausserdem sechs Punkte gross. Die Karte
+   * sagt, was darauf klebt.
+   */
+  const hatKarte = (g) => g.vb && [...g.da, ...g.offen].some(x => x.pfad);
+  const albumKarte = (g) => {
+    const alle = [...g.da, ...g.offen].sort((a, b) => a.i - b.i);
+    const namen = g.da.map(x => x.name).filter(Boolean);
+    /* Die UMGEBUNG als Grund - sonst schwebt Europa im Nichts.
+     *
+     * Auf der Laenderebene sind nur zwoelf Laender modelliert. Ohne den
+     * Grund liegen zwoelf Flecken in einem leeren Rahmen, und niemand
+     * erkennt darin Europa - gesehen auf der ersten Aufnahme dieser
+     * Karte. Die Umrisse drumherum liegen schon in den Daten; das
+     * Spielfeld zeichnet sie seit R1. Hier sind sie blasser als dort:
+     * im Spiel sind sie Kulisse, im Buch duerfen sie den Aufklebern
+     * nicht die Schau stehlen. */
+    const [, kont] = String(g.id).split(':');
+    const grund = (kont && D.umgebung[kont])
+      ? D.umgebung[kont].map(d => `<path d="${d}" class="albumgrund"/>`).join('') : '';
+    return `
+    <button class="albumkarte" data-lesen="${g.titel}. ${namen.length
+        ? `Du hast ${namen.slice(0, 8).join(', ')}${namen.length > 8 ? ' und mehr' : ''}.`
+        : 'Hier ist noch nichts.'}">
+      <svg viewBox="${g.vb}" role="img" aria-label="${g.titel}"
+           style="aspect-ratio:${(() => { const z = String(g.vb).trim().split(/\s+/).map(Number);
+             return (z[2] > 0 && z[3] > 0) ? `${z[2]} / ${z[3]}` : '3 / 2'; })()}">${
+        /* Das Seitenverhaeltnis muss AN DAS BILD, nicht ins Stylesheet.
+         *
+         * Ein `<svg>` mit `viewBox` und `width:auto` nimmt nicht die
+         * Breite, die zur Hoehe passt - es nimmt die volle Breite seines
+         * Kastens. Steht der Kasten auf `fit-content`, beissen sich beide,
+         * und heraus kommt eine Briefmarke: gemessen 279 statt 580 Punkte
+         * Breite bei 290 Punkten Hoehe. Mit `aspect-ratio` aus derselben
+         * `viewBox` rechnet der Browser die Breite aus, und die Karte
+         * fuellt ihren Platz. Je Karte eine andere Zahl, also gehoert sie
+         * hierher und nicht in eine Regel. */''}
+        ${grund}
+        ${alle.filter(x => !x.gesammelt && x.pfad).map(x =>
+          `<path d="${x.pfad}" fill-rule="evenodd" class="albumoffen"/>`).join('')}
+        ${alle.filter(x => x.gesammelt && x.pfad).map(x => `
+          <g class="albumkleber">
+          <path d="${x.pfad}" fill-rule="evenodd" class="kleberschatten"/>
+          <path d="${x.pfad}" fill-rule="evenodd" class="kleberrand"/>
+          <path d="${x.pfad}" fill-rule="evenodd" fill="var(${FL[x.i % 7]})"
+                stroke="var(--tinte)" stroke-opacity=".6" stroke-width="1.6"
+                vector-effect="non-scaling-stroke"/>
+          <path d="${x.pfad}" fill-rule="evenodd" class="kleberglanz"/>
+          </g>`).join('')}
+      </svg>
+    </button>`;
+  };
+
   /* --- Die Abzeichen (D2) ------------------------------------------
    *
    * Sie stehen OBEN, vor den Aufklebern: das Abzeichen ist die Aussage,
@@ -5088,17 +5241,32 @@ async function forscherbuch(){
         <div class="abzeichen">${verdient.map(markeBild).join('')}${
           naechstes ? markeBild(naechstes) : ''}</div>` : ''}
       ${gesamt ? vollen.map(g=>`
-        <h3 class="gruppe">${g.titel}</h3>
-        <div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`).join('')
+        <h3 class="gruppe">${g.titel}${g.da.filter(x=>x.gekonnt).length
+          ? ` <small>${g.da.length} Aufkleber, ${g.da.filter(x=>x.gekonnt).length} davon sicher</small>`
+          : ''}</h3>
+        ${hatKarte(g) ? albumKarte(g)
+          : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`}`).join('')
       : `<div class="mitte">
            <div class="titel">Hier kommen deine Aufkleber hin</div>
            <div class="unter">Für jedes Gebiet, das du zweimal richtig hattest,
              kommt einer dazu. Such dir eine Karte aus — der erste ist schnell da.</div>
          </div>`}
-      ${vorschau.length ? `
+      ${/* Die Vorschau steht nur da, wo die Karte sie nicht schon zeigt.
+            Auf der Albumkarte liegt jedes offene Gebiet blass darunter -
+            dieselbe Auskunft, an derselben Stelle, ohne Fragezeichen. Der
+            Knopf oben rechts (Q20) bleibt davon unberuehrt: er haengt an
+            `vorschau`, und die wird weiter gerechnet. */
+        vorschau.length && !(dran && vollen.includes(dran) && hatKarte(dran)) ? `
         <h3 class="gruppe">Als Nächstes: ${dran.titel}</h3>
-        <div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`
-      : gesamt ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : ''}
+        ${hatKarte(dran)
+          /* Auch das Naechste ist eine KARTE, wenn es eine hat - ganz
+             blass, weil noch nichts darauf klebt. Drei Kaesten mit
+             Fragezeichen sagen „drei Aufgaben"; eine leere Karte sagt
+             „hier ist noch Platz". Dasselbe Wissen, das Gegenteil an
+             Ton. */
+          ? albumKarte(dran)
+          : `<div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`}`
+      : gesamt && !vorschau.length ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : ''}
     </div>`;
   s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
   /* Der Weg zurueck in den Vorlauf (Q20).

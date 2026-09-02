@@ -2105,6 +2105,35 @@ export const PROBEN = [
     // wurde nichts.
     sagt:'Platz verloren' },
 
+  /* Der Endbildschirm zeigt wieder nur eine Zahl (Q28).
+   *
+   * Der Aufkleber ist das einzige, was ueber die Aufgabe hinaus bleibt -
+   * und bis Q28 war er am Rundenende nirgends zu sehen, es stand dort
+   * „2 von 4 im Buch". Fiona liest nicht; fuer sie war das nichts. Der
+   * Eingriff nimmt den Bildzweig heraus, die Zeile sagt dann wieder
+   * „neue Aufkleber", ohne einen zu zeigen. */
+  { n:'der Endbildschirm zeigt die neuen Aufkleber nicht mehr', tor:'smoke',
+    bauen:true, args:['--teil=0/4'], datei:D,
+    such:'        st.neueKleber.length\n          ? `<span class="kleberzeile">',
+    ersatz:'        false\n          ? `<span class="kleberzeile">',
+    an:{ ...DIST, text:'false\n          ? `<span class="kleberzeile">' },
+    sagt:'zeigt aber keinen' },
+
+  /* Die Albumkarte zeigt nur noch das Gesammelte (Q28).
+   *
+   * Der Wunsch war „ich will immer ALLE sehen". Was gesammelt ist, klebt
+   * in Farbe; was fehlt, liegt blass an seinem Platz. Der Eingriff
+   * streicht das Blasse - und genau dann sieht das Kind wieder nur, was
+   * es schon hat. Die Fragezeichen-Pruefung daneben faellt darauf nicht
+   * herein: ohne die blassen Flaechen gibt es erst recht keine. */
+  { n:'die Albumkarte zeigt das Offene nicht mehr', tor:'smoke',
+    bauen:true, args:['--teil=0/4'], datei:D,
+    such:"        ${alle.filter(x => !x.gesammelt && x.pfad).map(x =>\n"
+       + "          `<path d=\"${x.pfad}\" fill-rule=\"evenodd\" class=\"albumoffen\"/>`).join('')}",
+    ersatz:"        ${''}",
+    an:{ ...DIST, fehlt:'class="albumoffen"' },
+    sagt:'sieht das Kind nicht mehr alles' },
+
   /* Die elfte Ebene laeuft wieder aus dem Bild (Q27).
    *
    * Ab elf Kacheln ist die Ebenenkachel im kurzen Querformat ein Sechstel

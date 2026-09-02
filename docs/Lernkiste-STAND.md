@@ -9155,3 +9155,116 @@ ein Fehler im Spiel aussieht. Die Formel bleibt stehen, jetzt mit einem Beleg
 statt einer Erinnerung.
 
 242 Gegenproben.
+
+---
+
+## Q28 — Der Aufkleber wird ein Aufkleber, und die Albumseite wird die Karte
+
+Drei Wünsche standen am Anfang, alle drei von Fiona: die Aufkleber sollen
+**geräteübergreifend** da sein, sie will **immer alle sehen**, und sie sollen
+**schön** sein. Zwei davon stießen auf etwas, das mit Absicht so gebaut ist —
+das steht unten. Diese Runde macht die zwei sichtbaren.
+
+### Was vorher da war, gemessen
+
+| | |
+|---|---|
+| Aufkleber | flacher Umriss in weißer Karte |
+| Animation am Aufkleber | **keine** — animiert wurde nur das *Wort* „Neuer Aufkleber!" |
+| Endbildschirm | „2 von 4 im Buch" — eine Zahl; die neuen Aufkleber waren nie zu sehen |
+| Forscherbuch | nur das Gesammelte, plus drei Vorschaukästen mit „?" |
+
+### Der Stanzrand
+
+Was einen Aufkleber ausmacht, ist der weiße Rand, den die Stanze stehen lässt.
+Er entsteht aus **demselben Pfad**, viermal gezeichnet: blasser Strich (der
+Schatten ringsum), weißer Strich darüber (die Stanze), die Fläche, ein
+Verlauf obendrauf (der Glanz). Kein neues Bild, kein Filter.
+
+Alle Striche tragen `vector-effect="non-scaling-stroke"`, sind also in
+**Bildschirm**punkten breit. Ohne das wäre der Rand auf der Weltkarte
+unsichtbar und auf Bremen ein Klumpen — die Rahmen dieser App unterscheiden
+sich um mehr als das Tausendfache. Aus demselben Grund liegt der Schatten
+**ringsum** und nicht darunter: ein `translate` gälte in Kartenkoordinaten
+und wäre auf Bremen eine Bildschirmbreite.
+
+Der Glanz ist **gebacken**, nicht gerechnet: ein Verlauf, kein `filter`.
+Das ist Regel 13 — die Safari-Falle, aus der über einer großen Fläche auf
+iOS ein schwarzes Bild wird, während auf dem Schreibtisch nichts auffällt. Und er hat eine eigene
+Marke (`--glanz-licht`), weil das Tor `inhalt` jede Farbe am System vorbei
+meldet; dasselbe galt für die 90 ms der Staffelung, die jetzt aus
+`--d-staffel` kommen und damit unter `prefers-reduced-motion` von selbst auf
+null fallen.
+
+### Der Aufkleber wird gezeigt, nicht angekündigt
+
+Im Augenblick des Verdienens klebt jetzt der Aufkleber selbst da, mit dem
+Wort daneben. **Nebeneinander und nicht darüber** — gemessen im Augenblick
+des Aufklebers, Kontinente, iPhone quer:
+
+| | tiefster Punkt | mit Leiste |
+|---|---|---|
+| nebeneinander | 378 von 390 | **369** |
+| übereinander | 385 von 390 | **391** |
+
+Übereinander läuft die Seite auf dem Zielgerät mit Uhr und Wischstreifen
+also über — um einen Punkt, aber sie läuft über. Die erste Fassung der
+Begründung im Stylesheet behauptete, die vierte Antwort falle aus dem Bild;
+**nachgemessen stimmt das nicht**, alle vier Etiketten bleiben in beiden
+Fassungen sichtbar. Ohne die Messung wäre eine Begründung stehen geblieben,
+die schöner klingt als sie stimmt.
+
+Am Rundenende stehen die Aufkleber der Runde in derselben Zeile, in der
+vorher nur ein Zeichen stand — höchstens drei, sonst wird die Zeile in einer
+guten Runde länger als der Bildschirm.
+
+### Die Albumseite IST die Karte
+
+Der Wunsch „ich will immer alle sehen" stand hier schon einmal — sechzig
+graue Kästen mit Fragezeichen — und ist gescheitert: *es sah nach Arbeit aus.*
+
+Der Fehler war aber nicht „alle zeigen". Es waren die **Kästen**. Ein leerer
+Kasten mit einem Fragezeichen ist eine Prüfungsfrage; eine blasse Fläche auf
+einer Karte ist ein Stück Welt, das noch keine Farbe hat. Dieselbe Menge, das
+Gegenteil an Wirkung.
+
+Also die Karte selbst: was gesammelt ist, klebt in Farbe mit Stanzrand
+darauf, der Rest liegt blass darunter. Auf der Länderebene kommt die
+**Umgebung** als Grund dazu — ohne sie lagen zwölf Flecken in einem leeren
+Rahmen, und niemand erkannte darin Europa. Die Umrisse liegen schon in den
+Daten; das Spielfeld zeichnet sie seit R1.
+
+Es kostet **weniger** Höhe als vorher, nicht mehr: eine Karte statt eines
+Kachelgitters, und die Vorschau entfällt, wo die Karte sie schon zeigt. Wer
+keine Karte hat — Rechnen, Schreiben — behält die Kacheln; ein Kästchen mit
+`3 + 4` **ist** dort der Aufkleber.
+
+Ein Umweg unterwegs: ein `<svg>` mit `viewBox` und `width:auto` nimmt nicht
+die Breite, die zur Höhe passt, sondern die volle Breite seines Kastens.
+Steht der Kasten auf `fit-content`, beißen sich beide — gemessen 279 statt
+580 Punkte Breite bei 290 Punkten Höhe. Das Seitenverhältnis steht deshalb
+als `aspect-ratio` am Bild, aus derselben `viewBox`.
+
+### Was die Tore davon gelernt haben
+
+Das Buch kann jetzt **ohne einen einzigen `.aufkleber`** dastehen. `passt`
+und vier Abschnitte des Rauchtests warteten dreißig Sekunden auf einen
+Kasten, den es nicht mehr gibt — gemessen, nicht vermutet.
+
+Die alte Zusage („höchstens drei Vorschaukästen") war eine Zahl über Kästen
+und trägt nicht mehr, wo eine Karte alles zeigt. An ihre Stelle treten zwei
+Prüfungen, die **beide Hälften** derselben Zusage bewachen:
+
+- höchstens drei Kästen mit einem **Fragezeichen** — das war die To-do-Liste;
+- jede Albumkarte zeigt **auch das Offene** blass. Ohne diese zweite Zeile
+  wäre die Karte durch eine zu ersetzen, die nur Gesammeltes zeigt, und alles
+  bliebe grün: Fragezeichen gäbe es dann erst recht keine.
+
+Und eine dritte am Endbildschirm: zählt er neue Aufkleber, muss er auch einen
+**zeigen**. Der erste Anlauf las die Zahl aus dem Satz — der lautet aber
+„6 neue!", ohne das Wort „Aufkleber", und die Prüfung lief ins Leere. Gemeldet
+hat das die Gegenprobe: das Tor blieb grün, obwohl der Fehler drin war. Jetzt
+trägt `data-neu` die Zahl. Eine Marke ist eine Zusage des Programms; ein Satz
+ist Text, den jemand ändern darf.
+
+244 Gegenproben.

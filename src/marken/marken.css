@@ -95,6 +95,11 @@
   --grund:    oklch(1 0 0);
   --grund-2:  oklch(1 0 0);
   --papier:   oklch(1     0      0);
+  /* Das Licht auf einem Aufkleber (Q28). Es ist reines Weiss und bleibt
+     es auch im dunklen Anstrich: ein Glanzpunkt ist eine Spiegelung, kein
+     Untergrund - er wird dort nicht dunkler, sondern seltener. Die Staerke
+     steht am Verlauf selbst (`stop-opacity`), nicht hier. */
+  --glanz-licht: oklch(1 0 0);
 
   /* Die Blende des Wasserzeichens (R2).
      Sie steht hier und nicht im Stylesheet, weil sie ZWEIMAL gebraucht

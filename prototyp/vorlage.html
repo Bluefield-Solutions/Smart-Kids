@@ -1410,13 +1410,37 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1}
 /* Der Aufkleber bekommt einen eigenen Augenblick - er ist das einzige,
    was ueber diese Aufgabe hinaus bleibt. */
-.frage .neuerkleber{display:inline-block;margin-top:var(--r2);
-  font-family:var(--f-lesen);font-size:var(--s0);font-weight:800;
-  color:var(--auf-flaeche);background:var(--f2);
-  border-radius:var(--rund-flaeche);padding:var(--r1) var(--r4);
+/* Seit Q28 steht hier der Aufkleber SELBST, mit dem Wort darunter. Der
+   Kasten ist deshalb eine Spalte und nicht mehr die Pille - die Pille ist
+   das `b` darin. */
+/* `inline-flex`, nicht `flex`: als Block naehme der Kasten die ganze
+   Breite, und seine Kinder staenden links am Rand statt in der Mitte -
+   gesehen auf dem Zielgeraet, wo der Aufkleber dann am Bildrand klebte. */
+.frage .neuerkleber{display:inline-flex;flex-direction:column;align-items:center;
+  gap:var(--r1);margin-top:var(--r2);
   animation:kleber-auf var(--d-belohnung) var(--k-standard) both}
+.frage .neuerkleber svg{height:56px;width:auto;max-width:100px}
+.frage .neuerkleber .rechenkleber{font-size:var(--s1);padding:var(--r1) var(--r3)}
+.frage .neuerkleber b{font-family:var(--f-lesen);font-size:var(--s0);font-weight:800;
+  color:var(--auf-flaeche);background:var(--f2);
+  border-radius:var(--rund-flaeche);padding:var(--r1) var(--r4)}
 @keyframes kleber-auf{from{opacity:0;transform:scale(.4) rotate(-8deg)}
   to{opacity:1;transform:none}}
+/* Die Aufkleber der Runde auf dem Endbildschirm - nacheinander, 90 ms
+   versetzt. Nacheinander und nicht gleichzeitig, weil man drei Dinge, die
+   zugleich erscheinen, als eines sieht. */
+.kleberzeile{display:inline-flex;align-items:center;gap:var(--r1)}
+.kleberzeile svg{height:34px;width:auto;max-width:46px;display:block}
+.kleberzeile .rechenkleber{font-size:var(--s-klein);padding:0 var(--r1)}
+.frischerkleber{display:inline-block;
+  animation:kleber-auf var(--d-belohnung) var(--k-standard) both;
+  /* `--d-staffel` ist dieselbe Marke, in der die Antworten hereinkommen -
+     dieselbe Sache, also dieselbe Zahl. Und sie faellt unter
+     `prefers-reduced-motion` von selbst auf null. */
+  animation-delay:calc(var(--nr) * var(--d-staffel) * 2)}
+@media (prefers-reduced-motion:reduce){
+  .frage .neuerkleber,.frischerkleber{animation:none}
+}
 .frage .fastText{color:var(--warn)}
 .frage .loesung{color:var(--akzent)}
 /* Der Nebenbei-Hinweis steht UNTER dem Haken, kleiner und leiser. */
@@ -1541,9 +1565,68 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .aufkleber .siegel{position:absolute;top:6px;right:6px;width:12px;height:12px;border-radius:50%;
   background:var(--gut);border:var(--strich-stark) solid var(--papier)}
 .aufkleber svg{width:100%;height:64px}
+/* --- Der Stanzrand (Q28) -----------------------------------------------
+   Drei Striche aus EINEM Pfad, alle in Bildschirmpunkten (die Breite steht
+   am Pfad selbst, `non-scaling-stroke`). Die Reihenfolge traegt die
+   Wirkung: der blasse Strich liegt am weitesten aussen, der weisse
+   darueber, die Flaeche zuoberst.
+
+   Elf und acht, nicht dreizehn und zehn: gemessen auf dem Zielgeraet ist
+   das Bild einer Ebenenkachel 63 Punkte hoch. Ein Rand von fuenf Punkten
+   ist dort ein Sechzehntel des Bildes - sichtbar, ohne die Form zu
+   fressen. Bei Bremen frisst jeder Punkt mehr davon die Form. */
+.kleberschatten{fill:none;stroke:var(--tinte);stroke-opacity:.14;stroke-width:11;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke}
+/* `--papier` und nicht Weiss: der Aufkleber ist aus dem BOGEN gestanzt,
+   sein Rand hat also die Farbe der Seite. Im dunklen Anstrich ist das
+   kein Weiss mehr, und der Rand waere dort ein Leuchtstreifen. */
+.kleberrand{fill:var(--papier);stroke:var(--papier);stroke-width:8;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke}
+/* Der Glanz ist GEBACKEN, nicht gerechnet: ein Verlauf, kein Filter.
+   Regel 13 - was auf dem Schreibtisch unauffaellig ist, kann auf iOS ein
+   schwarzes Bild sein, und ein `filter` ueber sechzig Aufklebern ist genau
+   die Sorte Rechnung, die dort umkippt. */
+.kleberglanz{fill:url(#glanz);pointer-events:none}
+#kleberdefs{position:absolute;width:0;height:0;overflow:hidden}
+/* Ein Aufkleber gibt nach, wenn man ihn drueckt. 120 ms, nur `transform` -
+   die eine Eigenschaft, die auf dem Telefon nichts kostet. */
+.aufkleber{transition:transform var(--d-tipp) var(--k-standard)}
+.aufkleber.da:active{transform:rotate(-2deg) scale(.96)}
+@media (prefers-reduced-motion:reduce){ .aufkleber.da:active{transform:none} }
 .aufkleber span{font-family:var(--f-lesen);font-size:var(--s-klein);font-weight:700;
   color:var(--auf-flaeche);text-align:center;line-height:1.15;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+
+/* --- Die Albumkarte (Q28) ---------------------------------------------
+   Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert. Und
+   ein `div` mit `data-lesen` waere fuer `beruehrung` unsichtbar - das Tor
+   misst Trefferflaechen nur an Bedienelementen. */
+/* Die Karte gibt die Breite vor, nicht der Bildschirm.
+   Der erste Entwurf setzte `width:100%` auf den Kasten und `100%` auf das
+   SVG - die Weltkarte lag dann als Briefmarke in der Mitte eines Kastens
+   ueber die ganze Seite, mit Leerraum links und rechts. Ein SVG mit
+   `viewBox` rechnet seine Breite aus der Hoehe aus, wenn man sie ihm
+   laesst; der Kasten legt sich darum. */
+.albumkarte{background:var(--papier);border:var(--strich) solid var(--linie);
+  border-radius:var(--rund-karte);padding:var(--r2);
+  display:block;width:fit-content;max-width:100%;margin:0 auto;
+  box-shadow:0 var(--kante-flach) 0 var(--tiefe-farbe);cursor:pointer;
+  transition:transform var(--d-tipp) var(--k-standard)}
+.albumkarte:active{transform:scale(.99)}
+/* Die Albumseite darf den Platz nehmen, den sie hat: auf dem Schreibtisch
+   ist das Buch sonst zu zwei Dritteln leer, und eine Weltkarte in
+   Briefmarkengroesse ist kein Album. Nach oben begrenzt, damit zwei
+   Ebenen nebeneinander noch auf einen Bildschirm passen. */
+.albumkarte svg{height:clamp(120px, 34vh, 300px);width:auto;max-width:100%;display:block}
+/* Was noch fehlt, ist der SCHATTEN des Aufklebers - kein Fragezeichen und
+   kein leerer Kasten. Blass genug, dass die Farbe traegt, und kraeftig
+   genug, dass die Form zu sehen ist: bei .55 Deckung liegt der Umriss
+   ueber dem Weiss der Seite, ohne mit den gesammelten zu konkurrieren. */
+.albumoffen{fill:var(--linie);fill-opacity:.55;stroke:var(--tinte);stroke-opacity:.12;
+  stroke-width:1;vector-effect:non-scaling-stroke}
+.albumgrund{fill:var(--linie);fill-opacity:.3}
+.gruppe small{font-weight:600;font-size:var(--s-klein);color:var(--tinte-3)}
+@media (prefers-reduced-motion:reduce){ .albumkarte:active{transform:none} }
 
 .pin{display:flex;gap:var(--r3);justify-content:center;align-items:center;min-height:34px}
 .pin i{width:16px;height:16px;border-radius:var(--rund-voll);border:var(--strich-stark) solid var(--akzent);
@@ -1661,6 +1744,13 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    * Schreibtisch gewaehlt (96 und 72 Punkte) und auf dem Telefon zu gross;
    * `passt` misst den Ueberlauf nicht, weil `.rollen` rollen DARF. */
   .kleber.gross .aufkleber svg{height:64px}
+  /* Das Buch ist auf 844 x 390 randvoll - die Karte bekommt hier weniger
+     Hoehe als der Platz auf dem Schreibtisch hergibt. Gerechnet: Kopf 60 +
+     Abzeichen 60 + zweimal (Ueberschrift 28 + Karte + Polster 16) muessen
+     unter 390 bleiben, also hoechstens 96 je Karte. Das Buch DARF rollen
+     (`.rollen`), aber wer rollen muss, sieht nicht alles - und genau das
+     war der Wunsch. */
+  .albumkarte svg{height:96px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *
@@ -1810,6 +1900,21 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     margin:calc(-1 * var(--r0)) 0 calc(-1 * var(--r2));
     font-size:calc(var(--s-klein) * 0.9)}
   .wahl{gap:var(--r2)}
+  /* Der neue Aufkleber steht NEBEN dem Wort, nicht darueber (Q28).
+     Gemessen im Augenblick des Aufklebers, Kontinente, iPhone quer:
+
+         nebeneinander    tiefster Punkt 378 von 390   mit Leiste 369
+         uebereinander    tiefster Punkt 385 von 390   mit Leiste 391
+
+     Auf dem Zielgeraet MIT Uhr und Wischstreifen laeuft die Seite
+     uebereinander also ueber - um einen Punkt, aber sie laeuft ueber.
+     Die erste Fassung dieser Zeile behauptete, die vierte Antwort falle
+     aus dem Bild; nachgemessen stimmt das nicht, alle vier Etiketten
+     bleiben in beiden Fassungen sichtbar. Was uebersteht, ist die Seite
+     selbst. Ohne die Messung waere hier eine Begruendung stehen
+     geblieben, die schoener klingt als sie stimmt. */
+  .frage .neuerkleber{flex-direction:row;gap:var(--r2);margin-top:var(--r1)}
+  .frage .neuerkleber svg{height:40px;max-width:64px}
   .kachelpaar{gap:var(--r0)}
   /* Die letzten fuenfzehn Punkte fuer den sicheren Bereich.
      Auf dem iPhone quer MIT Uhr, Akku und Wischstreifen bleiben von 390
@@ -1955,6 +2060,19 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
  * gehoert in eine eigene Runde, weil er den Umriss unter den Namen
  * schiebt und `lesbarkeit` darueber zu urteilen hat. */
 </style></head>
-<body><div id="buehne"></div><div id="fassung"></div>
+<body><!-- Der Glanz der Aufkleber (Q28). EIN Verlauf fuer alle: eine
+     Verlaufsmarke gilt im Dokument, nicht im einzelnen SVG, und eine
+     Kopie je Aufkleber waere bei sechzig Aufklebern sechzig Kopien
+     derselben vier Zeilen. `objectBoundingBox` ist die Voreinstellung -
+     der Verlauf passt sich damit jedem Rahmen an, und die Rahmen dieser
+     App unterscheiden sich um mehr als das Tausendfache. -->
+<svg id="kleberdefs" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="glanz" x1="0" y1="0" x2=".35" y2="1">
+    <stop offset="0" stop-color="var(--glanz-licht)" stop-opacity=".5"/>
+    <stop offset=".42" stop-color="var(--glanz-licht)" stop-opacity=".08"/>
+    <stop offset=".44" stop-color="var(--glanz-licht)" stop-opacity="0"/>
+  </linearGradient>
+</defs></svg>
+<div id="buehne"></div><div id="fassung"></div>
 <script id="daten" type="application/json">__DATEN__</script>
 <script id="bau" type="application/json">__BAU__</script>

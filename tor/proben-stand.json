@@ -775,6 +775,16 @@
       "zeit": "2026-09-02",
       "s": 53
     },
+    "der Endbildschirm zeigt die neuen Aufkleber nicht mehr": {
+      "commit": "bb34a9bc6cf6dc55fd353dfb8f39c036ab6cfecc",
+      "zeit": "2026-09-02",
+      "s": 104
+    },
+    "die Albumkarte zeigt das Offene nicht mehr": {
+      "commit": "bb34a9bc6cf6dc55fd353dfb8f39c036ab6cfecc",
+      "zeit": "2026-09-02",
+      "s": 134
+    },
     "die elfte Ebene bekommt ihre schmale Kachel nicht mehr": {
       "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
       "zeit": "2026-09-02",
