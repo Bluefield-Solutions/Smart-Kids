@@ -1633,8 +1633,27 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .aufkleber.da:active{transform:rotate(-2deg) scale(.96)}
 @media (prefers-reduced-motion:reduce){ .aufkleber.da:active{transform:none} }
 .aufkleber span{font-family:var(--f-lesen);font-size:var(--s-klein);font-weight:700;
-  color:var(--auf-flaeche);text-align:center;line-height:1.15;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+  color:var(--auf-flaeche);text-align:center;line-height:1.4;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
+  /* `flex:0 0 auto` UND 1,4 statt 1,15 Zeilenhoehe - die Fusszeile wird
+     NICHT gestaucht und nicht angeschnitten.
+     Gefunden in Audit A am Forscherbuch: unter jedem Rechen-Aufkleber
+     stand „= 6", und davon war die untere Haelfte weg - gemessen 11
+     Punkte Kasten fuer 19 Punkte Zeile, also 42 % abgeschnitten. Die
+     Ursache ist die Voreinstellung `flex-shrink:1` zusammen mit dem
+     `overflow:hidden`, das hier fuer die Ellipse steht: ein Flexkind mit
+     verstecktem Ueberlauf hat `min-height:auto` von 0, laesst sich also
+     bis auf nichts zusammendruecken - und schneidet dann ab, statt zu
+     drueckeln.
+     Der Flexanteil allein hat es nicht geloest: danach standen 16
+     Punkte gegen 19. Die zweite Haelfte ist die ZEILENHOEHE. 1,15 mal
+     14 Punkte sind 16,1 - die Schrift Andika braucht aber 19, ihr
+     Inhaltskasten ist 1,36 mal so hoch wie der Schriftgrad. Eine
+     Zeilenhoehe unter dem, was die Schrift belegt, schneidet mit
+     `overflow:hidden` unten ab. 1,4 gibt ihr, was sie braucht.
+     `passt` hat das nie gesehen: es misst, was ueber den BILDSCHIRM
+     laeuft, nicht was ein Kasten in sich selbst abschneidet. */
+  flex:0 0 auto}
 
 /* --- Die Albumkarte (Q28) ---------------------------------------------
    Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert. Und

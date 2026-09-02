@@ -189,6 +189,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~6~~ | ~~**S2** Anteil neben Anzahl~~ | | | | **gefahren (Q31)** |
 | ~~7~~ | ~~**Q1** Zwei Gegenproben beweisen nichts~~ | | | | **nachgesehen (Q31): beide schlagen an** |
 | ~~—~~ | ~~**Q2** überholte Nachweise~~ | | | | **gefahren 01.09.** |
+| 2 | **Q33** Die Lupenknöpfe liegen auf der Karte | Fiona, Lea | hoch | mittel | eine Entscheidung am Gerät |
 | 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
 | ~~10~~ | ~~**P3** Größenwächter ohne Gegenprobe~~ | | | | **gefahren (Q31)** |
 | ~~—~~ | ~~**D2c** Deutschlands Nachbarn~~ | | | | **gefahren** |
@@ -2542,3 +2543,95 @@ dass das vor dem Bauen gemessen wurde.
 Was bliebe: beim Backen Längen- und Breitengrade mitführen, dann ist jede
 Projektion nachträglich anzustellen. Das ist ein Eingriff in die
 Backwerkzeuge, nicht in ein Tor.
+
+
+---
+
+## Q33 offen: die Lupenknöpfe liegen auf der Karte
+
+**Gemessen in Audit A (Q32), auf allen sieben Größen.** Die drei Lupenknöpfe
+sitzen absolut positioniert unten rechts **in** `.karte` und verdecken damit
+das, was dort liegt:
+
+| Größe | verdeckt |
+|---|---|
+| iPhone SE quer | **71,8 %** von Australien |
+| iPhone hoch | 71,2 % |
+| **iPhone quer, Leiste (Zielgerät)** | **70,4 %** — die Mitte des Gebiets liegt auf `#lupeMinus` |
+| iPhone quer | 60,3 % |
+| Fenster schmal | 42,1 % |
+| iPad hoch | 19,5 % |
+| iPad quer | 16,9 % |
+
+Antworten geht trotzdem (die Umkreissuche findet das Gebiet, mit einem echten
+Zug nachgeprüft). Was nicht geht, ist es zu **sehen**: „Wie heißt dieser
+Kontinent?", und „dieser" liegt unter einem Knopf. Das trifft Lea genauso wie
+Fiona.
+
+**Eine andere Ecke ist keine Lösung** — alle vier gemessen, an zwei Karten:
+
+| Knöpfe | Kontinente | Bundesländer |
+|---|---|---|
+| rechts unten (heute) | 70,4 % Australien | 22,8 % Bayern |
+| links unten | 6,3 % Nordamerika | **99,9 % Saarland** |
+| links oben | 25,5 % Nordamerika | 21,7 % Nordrhein-Westfalen |
+| rechts oben | 27,0 % Asien | **100 % Berlin** |
+
+Die freieren Ecken tauschen ein großes Gebiet gegen ein winziges, und ein
+winziges ganz zu verdecken ist schlimmer. Das Problem ist nicht die Ecke,
+sondern dass die Knöpfe **überhaupt auf der Karte liegen**.
+
+**Zwei Wege, beide gemessen:**
+
+1. **Polster rechts an `.karte`** (52 pt). Verdeckung auf jeder Größe null,
+   eine Zeile CSS — und die Karte wird um **16 %** kleiner (328 × 175 →
+   277 × 147 pt auf dem Zielgerät). Für Fiona, die ohnehin mit kleinen Zielen
+   kämpft, ist das ein echter Preis.
+2. **Die Knöpfe aus der Karte in die Werkzeugspalte.** Kostet die Karte
+   nichts. Die Frage ist, ob auf 390 Punkten Höhe neben Mikrofon, Hörknopf
+   und den beiden leisen Auswegen noch drei mal 44 Punkte Platz haben. Das
+   entscheidet der Blick auf dem Gerät, nicht die Rechnung hier.
+
+**Solange es offen ist, hält eine Ratsche.** `passt` misst die Verdeckung
+seit Q32 und führt sie in `tor/masse-stand.json` (21 Einträge). Schlechter
+darf es nicht werden.
+
+*Warum kein Tor es je gesehen hat:* `passt` prüft seit langem, ob Schmuck
+über dem Ziel liegt — aber nur, was `e.closest('.karte svg')` erfüllt. Die
+Lupenknöpfe sind HTML und liegen **neben** dem svg im selben Kasten. Eine
+Prüfung, die nur in die Zeichnung schaut, sieht nicht, was darüber liegt.
+
+---
+
+## Q34 offen: die App sagt alles und zeigt nichts
+
+**Gemessen in Audit A (Q32).** Elf Stationen auf dem Zielgerät, **21
+antippbare Dinge ohne jedes Signal** für ein Kind, das nicht liest — kein
+Bild, keine Ziffer, keine Stimme beim Antippen. Sie stehen in Gruppen:
+
+- **Pausenbildschirm**: alle drei Knöpfe („Weiterspielen", „Übung beenden",
+  „Von vorne anfangen") — und der dritte löscht die Runde.
+- **Endbildschirm**: alle drei („Noch einmal", „Forscherbuch", „Etwas
+  anderes") — die Gabelung nach jeder Sitzung, und einer führt zu ihren
+  Aufklebern.
+- **Aufgabe**: „Weiß ich nicht" und „Lieber antippen" — ihre beiden Auswege.
+- **Vorlauf**: „Jetzt starten".
+
+Jeder dieser Bildschirme **spricht** — die Ansagen sind da und gut gebaut
+(„Pause. Weiterspielen, Übung beenden, oder von vorne anfangen?"). Was fehlt,
+ist die Brücke vom Satz zum Kasten: sie trägt allein die Reihenfolge, und die
+trägt nur, wenn Fiona zugehört hat und sich erinnert.
+
+**Drei Wege, keiner gemessen:**
+
+1. **Ein Zeichen auf jeden dieser Knöpfe.** Das Buch für „Forscherbuch", der
+   Pfeil für „Noch einmal", das Kreuz für „Übung beenden". Es gibt die
+   Zeichenbibliothek (`ZEI`) schon; es sind rund zehn Knöpfe.
+2. **`data-lesen` auf jeden Knopf**, so wie es die Aufkleber und Albumkarten
+   längst tragen: antippen sagt, was er tut, bevor er es tut. Das ist billig
+   und passt zur bestehenden Mechanik — aber es setzt voraus, dass ein
+   antippbarer Knopf beim ersten Antippen **nicht auslöst**, und das ist eine
+   Änderung an der Bedienung, keine an der Gestaltung.
+3. **Beides**, mit dem Zeichen als Hauptsache und der Stimme als Zugabe.
+
+Nummer 1 ist der Weg, der nichts an der Bedienung ändert.

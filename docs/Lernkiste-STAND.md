@@ -9631,3 +9631,278 @@ die auf ein Abmelden wartet, das es nicht gibt, läuft ewig weiter.
 ein unbegrenztes Ersetzen trifft, was es findet.
 
 260 Gegenproben.
+
+---
+
+# Q32 · Zwei Audits: „ohne Schrift" und der Gleichlauf unter Beschuss
+
+**Ziel.** Zwei der sieben angebotenen Audits fahren — A („Die Sechsjährige,
+die nicht liest") und B („Der Sicherheitsprüfer für den Gleichlauf").
+**Abnahme, wie angeboten:** für A eine Liste jeder Stelle, an der ohne Lesen
+Schluss ist; für B eine Tabelle Angreifer × Fähigkeit plus drei Sätze zu dem,
+was wir bewusst nicht abwehren.
+
+---
+
+## Audit A · Ohne Schrift
+
+### Das Werkzeug, und was es misst
+
+`npm run ohneschrift` geht Fionas Weg auf dem **Zielgerät** ab (iPhone quer
+844 × 390 **mit** Leiste, 21/59/21/59) und fragt an elf Stationen dasselbe:
+Was trägt dieses antippbare Ding für ein Kind, das nicht liest?
+
+Drei Dinge zählen — ein **Bild** (Umriss, Zeichen, Emoji), eine **Ziffer**
+(sie rechnet bis zehn), eine **Stimme** (`data-lesen` spricht beim Antippen,
+`ansagen()` sagt den Bildschirm von selbst an). Wer nichts davon trägt, ist
+für sie nicht da. Daneben entstehen Aufnahmen, auf denen **die Buchstaben
+vertauscht** sind: nicht durch Blöcke ersetzt (das bricht jede Zeile anders
+um und sieht aus wie ein Ladefehler), sondern Groß gegen Groß und Klein gegen
+Klein getauscht. Ziffern und Zeichen bleiben stehen. So sieht ein Bildschirm
+aus, wenn man ihn nicht lesen kann.
+
+### Was das Werkzeug über sich selbst zugeben musste
+
+Das Messen hat **vier eigene Fehler** produziert, bevor es einen fremden fand.
+Drei davon hätten als Befund im Bericht gestanden:
+
+1. **„Die Profilwahl SAGT NICHTS."** Falsch. Der erste Entwurf lud vor jeder
+   Station neu und leerte den Ansagenspeicher **nach** dem Laden — also nach
+   der Ansage, die er messen wollte. Regel 1 andersherum: eine Prüfung, die
+   ihren Gegenstand wegwischt, bevor sie hinsieht, meldet immer dasselbe.
+2. **„Der Aufgabenbildschirm SAGT NICHTS."** Auch falsch. Er sagt sich
+   500 ms nach dem Aufbau an (`setTimeout` in `spiel.js`, damit der
+   Bildschirmwechsel nicht in die Stimme fällt); gemessen wurde davor.
+   Jetzt wird auf **Ruhe** gewartet, nicht auf eine Zahl.
+3. **„Fionas Rechenschirm SAGT NICHTS."** Derselbe Fehler ein zweites Mal, an
+   der anderen Seite: der Rechenschirm sagt sich **beim Aufbauen** an, die
+   Karte 500 ms später. Ein Leeren nach dem Klick trifft den einen und nicht
+   den anderen.
+4. **„Nach einer falschen Antwort hört sie nur den Namen."** Der Klick war nie
+   angekommen: `el.click()` auf ein Etikett ist kein Finger, die Karte nimmt
+   Antworten über Zeigerereignisse an. Der Bericht trug eine Station über
+   einen Bildschirm, den es so nie gab. Gefunden hat es die Prüfung, die
+   nach Regel 10 zuerst nachsieht, ob der Eingriff angekommen ist — nicht
+   mein Blick. Mit einem echten Zug sagt die App
+   „Australien ist ganz nah — schau noch mal genau hin."
+
+Und ein fünfter, im Messer selbst: die beiden Lupenknöpfe tragen „+" und „−"
+und sind **dasselbe Ding**. Ohne die Forderung, dass eine Ziffer dabei sein
+muss, galt das Plus als Zahl und das Minus als nichts. Ein Messer, das ein
+Paar auseinanderreißt, misst seine eigene Zeichenliste. Alle fünf Fälle
+stehen jetzt in der Selbstprobe (`--selbst`, acht erfundene Fälle).
+
+### Die Befunde
+
+**Jeder Bildschirm spricht mit ihr.** Elf Stationen, elf Ansagen, und sie
+sind gut gebaut: „Wer möchte spielen? Fiona, Lea, Stephan oder Violeta?",
+„Pause. Weiterspielen, Übung beenden, oder von vorne anfangen?". Das ist die
+gute Nachricht, und sie ist die Grundlage der schlechten.
+
+**Und die Knöpfe selbst tragen nichts.** 21 antippbare Dinge über elf
+Stationen sind für sie stumm und blind. Sie stehen nicht verstreut, sie
+stehen in Gruppen:
+
+| Wo | Was ohne Signal ist |
+|---|---|
+| **Pausenbildschirm** | *alle drei*: „Weiterspielen", „Übung beenden", „Von vorne anfangen" — und der dritte löscht die Runde |
+| **Endbildschirm** (beide Fassungen) | *alle drei*: „Noch einmal", „Forscherbuch", „Etwas anderes" — die Gabelung nach **jeder** Sitzung, und „Forscherbuch" führt zu ihren Aufklebern |
+| **Aufgabe** (Karte und Rechnen) | „Weiß ich nicht" und „Lieber antippen" — ihre beiden Auswege — sowie die zwei Lupenknöpfe |
+| **Vorlauf** | „Jetzt starten" — der eine Knopf, der die Übung beginnt |
+
+*Nicht alle 21 wiegen gleich.* „Jetzt starten" steht als einziger Knopf
+allein unten, groß und blau, über vier Kontinentumrissen — die Aufnahme zeigt
+es deutlich: nach Lage und Gewicht ist er unverwechselbar, auch wenn er kein
+Zeichen trägt. Die Zählung nennt ihn trotzdem, weil eine Prüfung, die schon
+beim Messen abwägt, nicht mehr misst. Schwer wiegen die **Dreiergruppen**:
+Pause und Endbildschirm, wo drei gleich geformte Kästen nebeneinander stehen
+und die Reihenfolge das einzige ist, was sie unterscheidet.
+| **Profilwahl** | Stephan und Violeta (Erwachsene, die lesen — der harmloseste Fall) |
+
+Das Muster ist eines, nicht zwanzig: **die App sagt alles und zeigt nichts.**
+Fiona hört eine Aufzählung und sieht drei gleich geformte Kästen. Die
+Zuordnung Satz → Kasten trägt allein die Reihenfolge, und die trägt nur, wenn
+sie zugehört hat und sich erinnert. Die Farbe hilft ein Stück weit — der
+Hauptweg ist blau gefüllt, der gefährliche orange —, aber welcher der beiden
+hellen Kästen „Übung beenden" ist, steht nirgends als Bild.
+
+*Nebenbei, und kein Befund:* der Rückmeldeton steht ab Werk auf **aus**
+(`klang:false`, auf euren Wunsch nach dem Hören auf dem Gerät). Damit bleibt
+für „das war falsch" das Wackeln des Etiketts und der Satz, der gesprochen
+wird — der Ton, den A2 dafür gebaut hat, spielt in der Voreinstellung nicht
+mit. Das ist eure Entscheidung; es gehört nur in dieselbe Rechnung.
+
+### Zwei Befunde, die der Blick gefunden hat — und die Messung bestätigt
+
+Regel 4, wörtlich: kein Tor ersetzt den Blick. Beide standen auf den
+Aufnahmen, bevor eine Zahl sie hatte.
+
+**A1 · Die Lupenknöpfe liegen auf Australien.** Auf der Aufnahme des
+Aufgabenbildschirms war das gesuchte Gebiet nicht zu finden. Nachgemessen:
+
+| Größe | schlimmstes Gebiet | verdeckt |
+|---|---|---|
+| iPhone SE quer | Australien | **71,8 %** |
+| iPhone hoch | Australien | 71,2 % |
+| **iPhone quer, Leiste (Zielgerät)** | **Australien** | **70,4 %** — die Mitte liegt auf `#lupeMinus` |
+| iPhone quer | Australien | 60,3 % |
+| Fenster schmal | Australien | 42,1 % |
+| iPad hoch | Australien | 19,5 % |
+| iPad quer | Australien | 16,9 % |
+
+Auf **allen sieben** Größen, nicht nur auf dem Zielgerät. Antworten geht
+trotzdem — die Umkreissuche findet das Gebiet, nachgeprüft mit einem echten
+Zug auf die Mitte —, aber *sehen* kann man es nicht. „Wie heißt dieser
+Kontinent?", und „dieser" liegt unter einem Knopf. Das trifft Lea genauso.
+
+Warum kein Tor es gesehen hat: `passt` prüft seit langem, ob **Schmuck** über
+dem Ziel liegt — aber nur, was `e.closest('.karte svg')` erfüllt. Die drei
+Lupenknöpfe sind HTML und liegen **neben** dem svg im selben Kasten. Eine
+Prüfung, die nur in die Zeichnung schaut, sieht nicht, was darüber liegt.
+
+*Und der naheliegende Fix ist keiner.* Alle vier Ecken gemessen, an zwei
+Karten:
+
+| Knöpfe | Kontinente | Bundesländer |
+|---|---|---|
+| rechts unten (heute) | 70,4 % Australien | 22,8 % Bayern |
+| links unten | 6,3 % Nordamerika | **99,9 % Saarland** |
+| links oben | 25,5 % Nordamerika | 21,7 % Nordrhein-Westfalen |
+| rechts oben | 27,0 % Asien | **100 % Berlin** |
+
+Keine Ecke ist frei, und die freieren tauschen ein großes Gebiet gegen ein
+winziges — das ist schlechter, nicht besser. Das Problem ist nicht die Ecke,
+sondern dass die Knöpfe **überhaupt auf der Karte liegen**. Ein Polster
+rechts (52 pt) macht die Verdeckung auf jeder Größe zu null und die Karte um
+**16 %** kleiner (328 × 175 → 277 × 147 pt auf dem Zielgerät). Das ist ein
+Abwägen und kein Fehler, den man eben behebt: die Knöpfe gehören aus der
+Karte in die Werkzeugspalte, und ob dort auf 390 Punkten Höhe drei mal 44
+Punkte Platz haben, entscheidet der Blick auf dem Gerät. **Steht als Q33
+offen.**
+
+Festgeschrieben ist es trotzdem: `passt` misst die Verdeckung jetzt und führt
+sie als **Ratsche** in `tor/masse-stand.json` (21 Einträge). Schlechter darf
+es nicht werden, während die Entscheidung offen ist.
+
+**A2 · Im Forscherbuch war unter jedem Aufkleber die Hälfte der Zeile weg.**
+Auf der Aufnahme stand unter „3 + 3" ein angeschnittenes „= 6". Gemessen:
+**11 Punkte Kasten für 19 Punkte Zeile**, bei allen acht Aufklebern — 42 %
+fehlten.
+
+Zwei Ursachen, und die erste allein hat es nicht gelöst:
+
+1. `.aufkleber span` ist ein Flexkind mit `overflow:hidden` (für die
+   Ellipse bei langen Namen). Damit ist sein `min-height:auto` gleich null,
+   und es lässt sich bis auf nichts zusammendrücken. `flex:0 0 auto` brachte
+   11 auf 16 Punkte — und drei fehlten weiter.
+2. Die **Zeilenhöhe**. 1,15 × 14 Punkte sind 16,1; die Schrift Andika
+   braucht 19, ihr Inhaltskasten ist 1,36 mal so hoch wie der Schriftgrad.
+   Eine Zeilenhöhe unter dem, was die Schrift belegt, schneidet mit
+   `overflow:hidden` unten ab. 1,4 gibt ihr, was sie braucht.
+
+Danach: **0 abgeschnittene Kästen** über alle elf Stationen. `passt` prüft es
+jetzt als Befund — scharf und nicht ausgehandelt, entweder die Schrift ist
+ganz da oder nicht. Warum es nie auffiel: `passt` misst, was über den
+**Bildschirm** läuft. Hier lief nichts über einen Rand; ein Kasten schnitt in
+sich selbst ab.
+
+---
+
+## Audit B · Der Gleichlauf unter Beschuss
+
+Gefahren gegen den wirklichen Quelltext, nicht gegen die Beschreibung. Die
+**Tabelle Angreifer × Fähigkeit** und die drei Sätze zu dem, was wir bewusst
+nicht abwehren, stehen in `docs/Lernkiste-KONZEPT.md`, Kapitel **13.3.1** —
+dort, wo die Datenschutzzusage steht, gegen die sie zu halten sind.
+
+### Was hält
+
+**Der Rückspiel-Angriff läuft ins Leere, und zwar von selbst.** Wer den
+Dienst betreibt, kann einen **alten** Umschlag ausliefern. Er richtet nichts
+an: die Zusammenführung ist monoton (`hoechstes` das Größere, Zähler das
+Größere, `zuletzt` das Spätere, das Protokoll eine Vereinigung), und jedes
+Gerät trägt seinen vollständigen Stand ohnehin selbst. Der alte Umschlag wird
+vereint und verschwindet darin. Das ist keine glückliche Fügung — es ist
+dieselbe Eigenschaft, die drei Geräte ohne Schiedsrichter zusammenkommen
+lässt.
+
+**Fälschen kann niemand.** AES-GCM ohne Schlüssel. Der Dienst kann
+zurückhalten, löschen, zurückspielen — hineinschreiben kann er nichts
+Lesbares.
+
+**Der PIN-Filter hält in beide Richtungen**, und das war er nicht immer: in
+Q29 lag die PIN im Umschlag, sobald der eigene Stand der ältere war. Der
+Filter ist eine **Erlaubnisliste** (`REIST`), keine Verbotsliste — wer eine
+Einstellung dazuschreibt, muss sie ausdrücklich reisen lassen. Das ist die
+richtige Richtung.
+
+### Drei Löcher, gefunden und geschlossen
+
+**B1 · Der Raum verfiel nie.** `STAND.put()` lief ohne `expirationTtl`. Jeder
+Raum lag für immer im Lager — auch der, dessen Familienschlüssel jemand
+gewechselt hat, und auch jeder, den ein Fremder angelegt hat. Jetzt
+**180 Tage**, bei jedem Schreiben neu gesetzt. Ein Verfall ist hier
+**gefahrlos**, und das ist der Punkt: fällt der Raum weg, legen ihn die
+Geräte beim nächsten Abgleich neu an und führen zusammen wie beim ersten Mal.
+Der Raum ist ein Treffpunkt, kein Lager.
+
+**B2 · Die Größengrenze war Zierde.** Geprüft wurde `content-length`. Eine
+Anfrage in Stücken hat gar keinen, `+null || 0` ist null, die Prüfung ging
+durch — und `anfrage.json()` las danach den ganzen Körper ein, wie groß er
+auch war. Erst die Zeile darunter sah nach, und da lag alles schon im
+Speicher. **Die eine Prüfung war Zierde, die andere kam zu spät.** Jetzt wird
+am gelesenen Text gemessen; die Kopfzeile bleibt als schnelle Absage davor.
+
+**B3 · Jede Herkunft durfte.** `access-control-allow-origin: *` fest im Code.
+Gegen einen entschlossenen Angreifer schützt CORS ohnehin nichts — `curl`
+fragt nicht nach Herkunft, und die Adresse des Dienstes steht öffentlich in
+jeder gebauten Datei. Es schneidet aber eine ganze Klasse ab: **fremde
+Browser als Werkzeug.** Eine beliebige Seite im Netz konnte jeden ihrer
+Besucher unbemerkt in diesen Dienst schreiben lassen, und die Rechnung
+bekommt, wem das Cloudflare-Konto gehört. `HERKUNFT` in `wrangler.toml`
+schließt das; leer bleibt `*` — mit `vary: origin`, sonst gäbe ein
+Zwischenspeicher die Erlaubnis der einen Herkunft an die nächste weiter.
+
+Alle drei haben **stehende Gegenproben** (263 statt 260), und das Tor
+`gleichlauf` prüft sie: die KV-Attrappe merkt sich jetzt die Frist mit, sonst
+wäre „jedes Schreiben setzt eine Frist" eine Behauptung über Code, den
+niemand ausführt.
+
+### Was bewusst offen bleibt
+
+**Es gibt keine Anmeldung, und es soll keine geben.** Wer die Adresse kennt,
+kann beliebig viele Räume anlegen und Kosten und Schreibkontingent des Kontos
+verbrauchen. Das ist der Preis für „kein Konto, keine E-Mail, kein Name".
+Gegengehalten wird mit **Grenzen**, nicht mit Ausweisen — Frist, Größe,
+Herkunft.
+
+**Ein verlorenes Gerät lässt sich nicht aussperren.** Wer den Schlüssel hat,
+hat ihn; „Dieses Gerät lösen" löst nur das Gerät, auf dem man es tippt. Der
+Weg ist: neuen Schlüssel anlegen und auf den übrigen Geräten nachtragen, dann
+verfällt der alte Raum von selbst. **Das steht jetzt im Elternbereich** — ohne
+den Satz käme niemand darauf.
+
+**Und was im Umschlag steht, wenn jemand doch den Schlüssel hat**, ist mehr
+als Zahlen: der Profilname ist die Kennung (`fiona`, `lea`), die Zeitstempel
+sagen, wann geübt wurde, und `roheingabe` hält, **was ein Kind gesagt hat**.
+Es ist zugesperrt — aber wer „der Dienst sieht nichts" liest, soll wissen,
+was er nicht sieht.
+
+---
+
+## Und ein Fund über mich selbst
+
+Die Torkette wurde zweimal rot, beide Male an mir:
+
+- `inhalt` meldete, dass eine **bestehende** Gegenprobe ins Leere zeigt: ich
+  hatte im Dienst `antwort(` in `sag(` umbenannt, und ihr Suchtext traf nicht
+  mehr. Der Eingriff wäre nicht angekommen, das Tor wäre grün geblieben — die
+  Sorte Verfall, gegen die Regel 10 steht.
+- `regeln` meldete fünf Verweise ins Leere: ich hatte die Regelnummern von
+  **towerfront** benutzt statt die von hier. „Regel 13" ist dort „wer eine
+  Wirkung misst, schaltet sie zuerst ab", hier die Safari-Falle. Und was dort
+  unter Nummer drei steht — jede Probe prüft zuerst, ob ihr Eingriff
+  angekommen ist —, steht hier als Regel 10. Zwei Verzeichnisse, zwei Listen,
+  ein Kopf.
+
+263 Gegenproben.

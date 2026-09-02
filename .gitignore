@@ -24,3 +24,7 @@ seite/
 .zweigbaum/
 .probenbaum/
 .probenbaum*
+
+# Was nur der Blick beurteilen kann: die Aufnahmen der Audit-Werkzeuge.
+# Sie entstehen bei jedem Lauf neu und gehoeren nicht ins Verzeichnis.
+blick/

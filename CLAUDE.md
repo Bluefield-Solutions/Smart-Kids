@@ -160,6 +160,13 @@ npm run dienstprobe -- <adresse>   spricht der AUFGESETZTE Dienst das
 npm run zweigeraete  zwei Browser-Kontexte, ein echter Dienst — die eine
                    Naht, die kein Tor bewacht. Braucht einen Bau mit
                    SMARTKIDS_GLEICHLAUF; siehe den Kopf des Werkzeugs.
+npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
+                   zählt, was ihr NICHTS sagt — kein Bild, keine Ziffer,
+                   keine Stimme. Schreibt dazu Aufnahmen nach `blick/`,
+                   auf denen die Buchstaben vertauscht sind: so sieht ein
+                   Bildschirm aus, wenn man ihn nicht lesen kann. Kein
+                   Tor, ein Blickwerkzeug — `--selbst` prüft nur den
+                   Messer selbst.
 ```
 
 Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·

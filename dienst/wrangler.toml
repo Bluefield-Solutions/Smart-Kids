@@ -9,3 +9,19 @@ compatibility_date = "2026-09-01"
 [[kv_namespaces]]
 binding = "STAND"
 id = "HIER_DIE_KENNUNG_AUS_WRANGLER_EINTRAGEN"
+
+# Woher Anfragen kommen duerfen (Audit B, Q32).
+#
+# LEER LASSEN heisst `*`, und das ist die Voreinstellung. CORS schuetzt hier
+# nichts gegen jemanden, der es darauf anlegt: die Adresse dieses Dienstes
+# steht in jeder gebauten Datei, und `curl` fragt nicht nach Herkunft.
+#
+# Was eine Eintragung abschneidet, ist etwas anderes und keine Kleinigkeit:
+# FREMDE BROWSER ALS WERKZEUG. Sonst kann eine beliebige Seite im Netz jeden
+# ihrer Besucher unbemerkt in diesen Dienst schreiben lassen - und die
+# Rechnung dafuer bekommt, wem dieses Konto gehoert.
+#
+# Wer das will, traegt hier die eigene Pages-Adresse ein (mehrere mit Komma):
+#
+#   [vars]
+#   HERKUNFT = "https://bluefield-solutions.github.io"

@@ -1595,6 +1595,15 @@ let gleichlaufStand = { zuletzt: 0, fehler: null, gesendet: 0 };
 
 const gleichlaufAn = () => !!(GLEICHLAUF_ADRESSE && Einst.familienschluessel);
 
+/* Aussperren geht nicht durch Loesen (Audit B).
+ *
+ * „Dieses Geraet loesen" loest NUR das Geraet, auf dem man es tippt - wer
+ * den Familienschluessel hat, hat ihn. Wer wirklich aussperren will, legt
+ * einen NEUEN Schluessel an und traegt ihn auf den uebrigen Geraeten nach;
+ * der alte Raum verfaellt dann von selbst nach 180 Tagen (die Frist steht
+ * im Dienst, siehe dienst/gleichlauf-worker.js). Genau dieser Satz steht
+ * seit Q32 auch im Elternbereich - ohne ihn kaeme niemand darauf. */
+
 /** Alles, was reist, aus der Ablage holen. */
 async function gleichlaufSammeln(){
   const aus = { fassung: 1, fortschritt: {}, einstellungen: {} };
@@ -5889,6 +5898,11 @@ async function elternbereich(){
         <p class="unter">Dieses Gerät läuft mit. Der Schlüssel steht auch auf
           jedem anderen Gerät, das dieselben Aufkleber zeigen soll — abtippen,
           nicht verschicken.</p>
+        <p class="unter">Ist ein Gerät weg oder soll es nicht mehr mitlaufen:
+          hier <strong>lösen</strong> und einen <strong>neuen Schlüssel</strong>
+          anlegen, dann den auf den übrigen Geräten eintragen. Nur lösen reicht
+          nicht — wer den alten Schlüssel hat, kommt weiter in den alten Raum.
+          Der wird nach einem halben Jahr ohne Abgleich von selbst geleert.</p>
         <div class="wert schluesselschild">
           <b>${Einst.familienschluessel}</b><span>Familienschlüssel</span></div>
         <div class="reihe" style="justify-content:flex-start">

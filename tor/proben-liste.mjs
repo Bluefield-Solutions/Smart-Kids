@@ -2143,7 +2143,7 @@ export const PROBEN = [
    * teuerste Fehler, den dieser Dienst machen kann. */
   { n:'der Dienst nimmt jede Fassung an', tor:'gleichlauf',
     datei:'dienst/gleichlauf-worker.js',
-    such:"      if ((+rein.fassung || 0) !== jetzt) return antwort({ fassung: jetzt, stand: da?.stand ?? null }, 409);",
+    such:"      if ((+rein.fassung || 0) !== jetzt) return sag({ fassung: jetzt, stand: da?.stand ?? null }, 409);",
     ersatz:"      // Fassungspruefung entfernt",
     an:{ datei:'dienst/gleichlauf-worker.js', fehlt:'409);' },
     sagt:'statt 409' },
@@ -2156,6 +2156,36 @@ export const PROBEN = [
    * Dienst annimmt - und der Gleichlauf hoerte STILL auf zu
    * funktionieren, genau dann, wenn am meisten drinsteht. Der Eingriff
    * nimmt die Grenze heraus. */
+  /* ---- Audit B: die drei Loecher im Dienst -------------------------- */
+
+  // Der Raum verfaellt nicht mehr. Ohne Frist liegt jeder Raum fuer immer
+  // im Lager - auch der, dessen Familienschluessel gewechselt wurde, und
+  // auch der, den ein Fremder angelegt hat.
+  { n:'der Raum im Dienst verfällt nie', tor:'gleichlauf',
+    datei:'dienst/gleichlauf-worker.js',
+    such:'JSON.stringify(neu), { expirationTtl: FRIST });',
+    ersatz:'JSON.stringify(neu));',
+    an:{ datei:'dienst/gleichlauf-worker.js', fehlt:'expirationTtl' },
+    sagt:'keine Frist' },
+
+  // Die Groesse wird wieder nur am Kopf gemessen. Eine Anfrage in Stuecken
+  // hat gar keinen `content-length`, und dann ist die Pruefung null.
+  { n:'der Dienst misst die Größe nur an der Kopfzeile', tor:'gleichlauf',
+    datei:'dienst/gleichlauf-worker.js',
+    such:'      if (text.length > GRENZE) return sag({ fehler: \'zu gross\' }, 413);',
+    ersatz:'',
+    an:{ datei:'dienst/gleichlauf-worker.js', fehlt:'text.length > GRENZE' },
+    sagt:'content-length' },
+
+  // Die Herkunft laesst sich nicht mehr einschraenken - jede fremde Seite
+  // darf wieder jeden ihrer Besucher in diesen Dienst schreiben lassen.
+  { n:'der Dienst erlaubt jede Herkunft, egal was eingestellt ist', tor:'gleichlauf',
+    datei:'dienst/gleichlauf-worker.js',
+    such:'  return erlaubt.includes(woher) ? woher : erlaubt[0];',
+    ersatz:'  return \'*\';',
+    an:{ datei:'dienst/gleichlauf-worker.js', text:"return '*';" },
+    sagt:'HERKUNFT' },
+
   { n:'das Protokoll reist ohne Grenze', tor:'gleichlauf',
     datei:'src/kern/gleichlauf.js',
     such:"    if (wiegt + gross > budget) break;",

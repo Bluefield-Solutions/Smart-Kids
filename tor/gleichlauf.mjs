@@ -306,12 +306,16 @@ await abschnitt('Streitfall', async () => {
  * gross ist; ein Verb, das er nicht kennt.
  */
 function lagerImKopf() {
+  const fristen = new Map();
   const m = new Map();
   return { STAND: {
     get: async (k, o) => { const w = m.get(k);
       return w === undefined ? null : (o && o.type === 'json' ? JSON.parse(w) : w); },
-    put: async (k, w) => { m.set(k, w); },
-    _map: m } };
+    /* Die Attrappe merkt sich die FRIST mit (Audit B). Ohne sie waere
+       „jedes Schreiben setzt eine Frist" eine Behauptung ueber Code, den
+       niemand ausfuehrt - und genau solche Behauptungen veralten still. */
+    put: async (k, w, o) => { m.set(k, w); fristen.set(k, o && o.expirationTtl); },
+    _map: m, _fristen: fristen } };
 }
 const anfrage = (weg, o = {}) => new Request('https://dienst.beispiel' + weg, o);
 const alsJson = async (a) => ({ status: a.status, wert: await a.json().catch(() => null) });
@@ -376,6 +380,51 @@ await abschnitt('Der Dienst', async () => {
   pruefe(`die Vorabfrage antwortet ${vor.status}`, vor.status === 200 || vor.status === 204);
   pruefe('die Vorabfrage erlaubt keine fremde Herkunft — dann kommt kein Browser durch',
     vor.headers.get('access-control-allow-origin') === '*');
+
+  /* --- Audit B: der Raum verfaellt -----------------------------------
+   *
+   * Ein Raum, den niemand mehr anfasst, lag vorher fuer immer im Lager -
+   * auch der, dessen Schluessel gewechselt wurde, und auch der, den ein
+   * Fremder angelegt hat. Ein Verfall ist hier gefahrlos, weil jedes
+   * Geraet seinen vollstaendigen Stand selbst traegt. */
+  const frist = u.STAND._fristen.get(RAUM);
+  pruefe(`der Raum bekommt keine Frist (${frist}) — er laege fuer immer im Lager`,
+    typeof frist === 'number' && frist >= 60);
+  pruefe(`die Frist ist ${frist} s — unter dreissig Tagen wuerde ein Urlaub sie reissen`,
+    frist >= 30 * 24 * 3600);
+
+  /* --- Audit B: die Groesse wird am KOERPER gemessen, nicht am Kopf ---
+   *
+   * `content-length` gibt es bei einer Anfrage in Stuecken gar nicht, und
+   * dann war die Pruefung `+null || 0` also null - sie ging durch, und
+   * der ganze Koerper landete im Speicher, bevor irgendjemand hinsah.
+   * Diese Probe schickt bewusst OHNE Kopf zu viel. */
+  const ohneKopf = await DIENST.fetch(anfrage(`/v1/${RAUM}`, { method:'PUT',
+    headers:{ 'content-type':'application/json' },
+    body: JSON.stringify({ fassung: 1, stand: 'y'.repeat(600 * 1024) }) }), u);
+  pruefe(`ein zu grosser Koerper OHNE content-length antwortet ${ohneKopf.status} `
+    + 'statt 413 — die Kopfzeile ist kein Riegel', ohneKopf.status === 413);
+
+  /* --- Audit B: die Herkunft laesst sich einschraenken ----------------
+   *
+   * `*` bleibt die Voreinstellung und ist ehrlich gemeint: die Adresse
+   * des Dienstes steht oeffentlich in jeder gebauten Datei, und `curl`
+   * fragt nicht nach Herkunft. Was `HERKUNFT` abschneidet, ist die
+   * Klasse „fremde Browser als Werkzeug": eine beliebige Seite laesst
+   * sonst jeden ihrer Besucher in diesen Dienst schreiben, und die
+   * Rechnung bekommt der, dem das Konto gehoert. */
+  const eng = { ...lagerImKopf(), HERKUNFT: 'https://meine.seite' };
+  const fremd = await DIENST.fetch(anfrage(`/v1/${RAUM}`,
+    { headers: { origin: 'https://fremde.seite' } }), eng);
+  pruefe('bei gesetzter HERKUNFT bekommt eine fremde Seite trotzdem ihre Erlaubnis',
+    fremd.headers.get('access-control-allow-origin') !== 'https://fremde.seite');
+  const eigen = await DIENST.fetch(anfrage(`/v1/${RAUM}`,
+    { headers: { origin: 'https://meine.seite' } }), eng);
+  pruefe('bei gesetzter HERKUNFT kommt die eigene Seite nicht durch',
+    eigen.headers.get('access-control-allow-origin') === 'https://meine.seite');
+  pruefe('die Antwort sagt nicht `vary: origin` — ein Zwischenspeicher gaebe die '
+    + 'Erlaubnis der einen Herkunft an die naechste weiter',
+    /origin/i.test(eigen.headers.get('vary') || ''));
 
   /* Und der Dienst haelt wirklich nur das, was er halten soll: EINEN
      Schluessel je Raum, sonst nichts. */

@@ -34,7 +34,8 @@
     "regeln": "node tor/regeln.mjs",
     "gleichlauf": "node tor/gleichlauf.mjs",
     "zweigeraete": "node tools/zwei-geraete.mjs",
-    "dienstprobe": "node tools/dienstprobe.mjs"
+    "dienstprobe": "node tools/dienstprobe.mjs",
+    "ohneschrift": "node tools/ohne-schrift.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",

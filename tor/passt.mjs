@@ -223,6 +223,67 @@ const SUCHE = () => {
     bewacht = { sichtbar, gefangen, wer: [...wer].slice(0, 3) };
   }
 
+  /* VERDECKT: liegt ein BEDIENELEMENT auf einem Gebiet der Karte?
+   *
+   * Die Pruefung darueber (`bewacht`) sieht nur in die Zeichnung hinein -
+   * `e.closest('.karte svg')`. Die drei Lupenknoepfe sind aber HTML und
+   * liegen NEBEN dem svg im selben Kasten, absolut positioniert. Sie
+   * waren damit fuer jedes Tor unsichtbar, und gemessen hat es erst
+   * Audit A: auf dem Zielgeraet liegen sie zu 70,4 % auf Australien,
+   * und die Mitte des Gebiets liegt auf `#lupeMinus`.
+   *
+   * Antworten geht trotzdem - die Umkreissuche findet das Gebiet -, aber
+   * SEHEN kann man das gesuchte Gebiet nicht. „Wie heisst dieser
+   * Kontinent?", und „dieser" liegt unter einem Knopf.
+   *
+   * Gemessen wird an ALLEN Gebieten und nicht nur am Ziel: welches
+   * gefragt wird, wuerfelt die Sitzung, und eine Zahl, die vom Wuerfel
+   * abhaengt, taugt in keiner Ratsche. */
+  let verdeckt = null;
+  const kartenKasten = document.querySelector('.schirm.da .karte');
+  if (kartenKasten) {
+    const knoepfe = [...kartenKasten.querySelectorAll('button, input, [role="button"]')]
+      .map(k => ({ id: k.id || k.className, r: k.getBoundingClientRect() }))
+      .filter(k => k.r.width > 2 && k.r.height > 2);
+    let schlimmst = 0, wo = '', wer = '';
+    for (const pf of kartenKasten.querySelectorAll('svg path.geb')) {
+      const r = pf.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) continue;
+      let ueber = 0, taeter = '';
+      for (const k of knoepfe) {
+        const bx = Math.max(0, Math.min(r.right, k.r.right) - Math.max(r.left, k.r.left));
+        const by = Math.max(0, Math.min(r.bottom, k.r.bottom) - Math.max(r.top, k.r.top));
+        if (bx * by > 0) { ueber += bx * by; taeter = taeter || k.id; }
+      }
+      const anteil = ueber / (r.width * r.height) * 100;
+      if (anteil > schlimmst) { schlimmst = anteil; wo = pf.dataset.id || '?'; wer = taeter; }
+    }
+    if (knoepfe.length) verdeckt = { anteil: +schlimmst.toFixed(1), wo, wer };
+  }
+
+  /* BESCHNITTEN: schneidet ein Kasten seinen EIGENEN Inhalt ab?
+   *
+   * Das ist eine andere Frage als „laeuft etwas ueber den Bildschirm" -
+   * und dieses Tor hat bis Audit A nur die zweite gestellt. Gefunden im
+   * Forscherbuch: unter jedem Rechen-Aufkleber stand „= 6", davon war die
+   * untere Haelfte weg. 11 Punkte Kasten fuer 19 Punkte Zeile. Nichts
+   * lief ueber einen Rand, nichts ueberlappte - und trotzdem war die
+   * Haelfte der Schrift nicht da.
+   *
+   * Zwei Punkte Nachsicht: Zeilenhoehen runden, und ein Punkt Differenz
+   * ist keine abgeschnittene Schrift. */
+  const beschnitten = [];
+  for (const e of document.querySelectorAll('.schirm.da *')) {
+    const st = getComputedStyle(e);
+    if (!/hidden|clip/.test(st.overflowY)) continue;
+    if (!e.clientHeight || e.scrollHeight - e.clientHeight <= 2) continue;
+    const text = (e.textContent || '').replace(/\s+/g, ' ').trim();
+    if (!text) continue;                       // ein leerer Kasten schneidet nichts ab
+    beschnitten.push({ text: text.slice(0, 22),
+      marke: e.tagName.toLowerCase() + (e.id ? '#' + e.id : ''),
+      kasten: e.clientHeight, inhalt: e.scrollHeight });
+  }
+
   let karte = null;
   const svg = document.querySelector('.schirm.da .karte svg');
   if (svg) {
@@ -678,7 +739,8 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, ohneBild, wand, kleber, album };
+  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, verdeckt,
+           beschnitten, zeichen, ohneBild, wand, kleber, album };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -711,7 +773,7 @@ const KARTE_MIN = 0.92;
  * ganz in seine Kachel gehoert, und die naechste Kachelform koennte sie
  * brechen. */
 const ZEICHEN_AB = 6, ZEICHEN_ZU = 6;
-const zeichenZeilen = [], luftZeilen = [], kleberZeilen = [];
+const zeichenZeilen = [], luftZeilen = [], kleberZeilen = [], verdecktZeilen = [];
 
 /* Der Stand der MASSE: was einmal so gross war, darf nicht kleiner werden.
  *
@@ -893,6 +955,47 @@ for (const g of MEINE) {
       meldungen.push(`${name}: ${r.ohneBild.join(', ')} ${r.ohneBild.length === 1
         ? 'hat kein Kachelbild' : 'haben kein Kachelbild'} — für ein Kind, das noch 
 nicht liest, ist die Kachel damit unbeschriftet`);
+    /* Ein Kasten, der seinen Inhalt abschneidet, ist ein BEFUND.
+     * Er ist scharf und nicht ausgehandelt: entweder die Schrift ist ganz
+     * da oder sie ist es nicht. Heute meldet er nichts - das ist kein
+     * Beweis dafuer, dass er nichts kann, sondern der Zustand nach der
+     * Reparatur aus Audit A; die stehende Gegenprobe stellt ihn nach. */
+    for (const c of (r.beschnitten || []))
+      meldungen.push(`${name}: „${c.text}" wird abgeschnitten — ${c.marke} ist `
+        + `${c.kasten} pt hoch, der Inhalt braucht ${c.inhalt} pt`);
+
+    /* Die Verdeckung der Karte durch Bedienelemente ist eine RATSCHE und
+     * kein Befund - noch nicht.
+     *
+     * Sie ist heute schlecht (70,4 % auf dem Zielgeraet), und sie zu
+     * beheben heisst, die drei Lupenknoepfe von der Karte zu nehmen. Wo
+     * sie stattdessen hinsollen, ist eine Entscheidung am Geraet: Audit A
+     * hat alle vier Ecken gemessen, und KEINE ist frei - unten links
+     * verschwindet das Saarland zu 99,9 %, oben rechts Berlin zu 100 %.
+     * Ein Polster rechts macht die Verdeckung zu null und die Karte um
+     * 16 % kleiner. Das ist ein Abwaegen, kein Fehler, den man eben
+     * behebt - und ein rotes Tor wuerde diese Abwaegung erzwingen statt
+     * sie zu ermoeglichen.
+     *
+     * Also festgeschrieben, was heute ist: schlechter darf es nicht
+     * werden. */
+    if (r.verdeckt) {
+      const k = `${g.n} · ${name} · Karte von Knöpfen verdeckt %`;
+      const war = MASS_STAND[k];
+      if (NEU) wandNeu[k] = r.verdeckt.anteil;
+      else if (war === undefined)
+        meldungen.push(`${name}: HINWEIS die Verdeckung der Karte steht noch nicht in `
+          + `${WAND_DATEI} (${r.verdeckt.anteil} %) — `
+          + '`npm run passt -- --neu` trägt sie nach');
+      else if (r.verdeckt.anteil > war + spielVon(war, true))
+        meldungen.push(`${name}: „${r.verdeckt.wo}" ist jetzt zu ${r.verdeckt.anteil} % von `
+          + `${r.verdeckt.wer} verdeckt statt zu ${war} % — die Bedienelemente sind weiter `
+          + 'auf die Karte gerutscht. War das Absicht, dann `npm run passt -- --neu`');
+      if (r.verdeckt.anteil > 0)
+        verdecktZeilen.push(`      ${name.padEnd(22)} ${String(r.verdeckt.anteil).padStart(5)} % `
+          + `von „${r.verdeckt.wo}" liegt unter ${r.verdeckt.wer}`);
+    }
+
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
         + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `
@@ -1253,6 +1356,10 @@ if (luftZeilen.length) {
 if (kleberZeilen.length) {
   console.log('    Die Beispielkarten im Vorlauf:');
   [...new Set(kleberZeilen)].sort().forEach(z => console.log(z));
+}
+if (verdecktZeilen.length) {
+  console.log('    Was die Bedienelemente von der Karte verdecken (offen, siehe Q32):');
+  [...new Set(verdecktZeilen)].sort().forEach(z => console.log(z));
 }
 if (zeichenZeilen.length) {
   console.log(`    Die Kachelbilder (erlaubt: abgeschnitten ${ZEICHEN_AB} %, `

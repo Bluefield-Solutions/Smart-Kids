@@ -1581,7 +1581,9 @@ bleibt die Rückfallebene.
 
 | Was | Wohin | Wann |
 |---|---|---|
-| Profile, PIN, Stimme | **nirgendwohin** — IndexedDB, lokal | nie |
+| PIN, Stimme, Lautstärke | **nirgendwohin** — IndexedDB, lokal. Sie stehen nicht auf der Liste `REIST`, und der Filter greift auf **beiden** Seiten | nie |
+| **Familienschlüssel** | **nirgendwohin** — aus ihm werden Raumkennung und Schloss abgeleitet, er selbst geht nie ins Netz. Er steht im Klartext in IndexedDB (Audit B, Angreifer D) | nie |
+| **Der Profilname** (`fiona`, `lea` …) | er ist die Kennung im Protokoll und reist damit **zugesperrt** mit, sobald der Gleichlauf an ist | mit dem Protokoll |
 | **Fortschritt und Aufkleber** | **nirgendwohin**, solange kein Familienschlüssel gesetzt ist; sonst **zugesperrt** an den selbst aufgesetzten Gleichlaufdienst | beim Start und nach einer Runde |
 | **Protokoll** (seit Q30) | ebenso — aber nur das **jüngste**, bis 300 KB voll sind. Was älter ist, bleibt auf dem Gerät, auf dem es entstand | ebenso |
 | Programm, Karten, Schrift | von GitHub Pages **her**, nicht hin | beim Aktualisieren |
@@ -1624,6 +1626,80 @@ ist deshalb neu zu fassen, und zwar so, wie sie **gemessen** ist:
 
 K3 13.3 ist damit nicht gebrochen, sondern verschoben: es geht etwas ins
 Netz, und niemand dort kann es lesen.
+
+---
+
+#### 13.3.1 Audit B — das Bedrohungsmodell des Gleichlaufs
+
+*Gefahren am 02.09.2026, gegen den wirklichen Quelltext von
+`src/kern/gleichlauf.js`, `dienst/gleichlauf-worker.js` und der Verkabelung
+in `prototyp/spiel.js`. Vier Angreifer, und was jeder von ihnen kann.*
+
+| Angreifer | kann lesen | kann ändern | kann stören |
+|---|---|---|---|
+| **A · kennt die Raumkennung** (32 Hexzeichen, nicht aber den Familienschlüssel) | **nichts** — der Inhalt ist AES-GCM, der Schlüssel ist ein anderer Ableger und war nie im Netz | **nichts Sinnvolles** — er kann den Raum mit Müll überschreiben, aber nichts Lesbares hineinlegen | **ja** — Müll im Raum lässt jedes Gerät „der Familienschlüssel passt nicht zu diesem Raum" melden, bis jemand einmal schreibt |
+| **B · betreibt den Dienst** (oder hat das KV-Lager kopiert) | **nichts** — er sieht Raumkennung, Bytes, Fassungszahl und Zeitpunkt. Wieviele Kinder, welche Aufgaben, welche Namen: nichts davon | **nichts** — AES-GCM ohne Schlüssel lässt sich nicht fälschen | **ja** — er kann zurückhalten, löschen oder einen **alten** Umschlag ausliefern |
+| **C · hört mit** (offenes WLAN, Zwischenstelle) | **nichts** — TLS, und darunter noch einmal der eigene Umschlag | **nichts** | ja, wie jede Zwischenstelle |
+| **D · hat das Gerät kurz in der Hand** | **alles** — der Familienschlüssel steht im Klartext in IndexedDB und im Elternbereich hinter einer vierstelligen PIN, die ausdrücklich „eine Türklinke, kein Schloss" ist | **alles** — mit dem Schlüssel gehört ihm der Raum | ja |
+
+**Drei Sätze zu dem, was der Rückspiel-Angriff (B) anrichtet: fast nichts.**
+Die Zusammenführung ist **monoton** — `hoechstes` das Größere, Zähler das
+Größere, `zuletzt` das Spätere, das Protokoll eine Vereinigung. Ein
+zurückgespielter alter Umschlag wird deshalb mit dem lokalen Stand vereint
+und verschwindet darin; kein Aufkleber geht verloren, weil jedes Gerät
+seinen vollständigen Stand ohnehin selbst trägt. Das ist keine glückliche
+Fügung, sondern dieselbe Eigenschaft, die drei Geräte ohne Schiedsrichter
+zusammenkommen lässt.
+
+**Was im Umschlag steht, wenn jemand doch den Schlüssel hat.** Nicht nur
+Zahlen: der Profilname ist die Kennung (`fiona`, `lea`), die Zeitstempel
+sagen, wann geübt wurde, und `roheingabe` hält, **was ein Kind gesagt hat**,
+wenn der Sprachmodus lief. Das ist das Empfindlichste in dieser App, und es
+reist mit. Es ist zugesperrt — aber wer die Zusage „der Dienst sieht nichts"
+liest, soll auch wissen, was er nicht sieht.
+
+**Drei Löcher, gefunden und geschlossen.**
+
+1. **Der Raum verfiel nie.** `STAND.put()` lief ohne `expirationTtl`: jeder
+   Raum lag für immer im Lager — auch der, dessen Schlüssel gewechselt
+   wurde, und auch jeder, den ein Fremder angelegt hat. Jetzt **180 Tage**,
+   bei jedem Schreiben neu gesetzt. Ein Verfall ist hier gefahrlos, weil
+   jedes Gerät seinen vollständigen Stand selbst trägt: fällt der Raum weg,
+   legen ihn die Geräte beim nächsten Abgleich neu an.
+2. **Die Größengrenze war Zierde.** Geprüft wurde `content-length` — den
+   eine Anfrage in Stücken gar nicht hat, und `+null || 0` ist null. Die
+   Prüfung ging durch, und `anfrage.json()` las danach den ganzen Körper
+   ein, wie groß er auch war. Jetzt wird am **gelesenen Text** gemessen;
+   die Kopfzeile bleibt als schnelle Absage davor.
+3. **Jede Herkunft durfte.** `access-control-allow-origin: *` fest im Code.
+   Das schützt gegen einen entschlossenen Angreifer ohnehin nicht — `curl`
+   fragt nicht nach Herkunft, und die Adresse des Dienstes steht öffentlich
+   in jeder gebauten Datei. Es schneidet aber eine ganze Klasse ab:
+   **fremde Browser als Werkzeug.** Eine beliebige Seite im Netz konnte
+   jeden ihrer Besucher unbemerkt in diesen Dienst schreiben lassen, und
+   die Rechnung bekommt, wem das Cloudflare-Konto gehört. `HERKUNFT` in
+   `wrangler.toml` schließt das; leer bleibt `*`, und das steht als
+   Voreinstellung dort mit Begründung.
+
+**Und drei Dinge, die wir bewusst NICHT abwehren.**
+
+- **Es gibt keine Anmeldung, und es soll keine geben.** Wer die Adresse des
+  Dienstes kennt, kann beliebig viele Räume anlegen und damit Kosten und
+  Schreibkontingent des Kontos verbrauchen. Das ist der Preis für „kein
+  Konto, keine E-Mail, kein Name". Gegengehalten wird mit **Grenzen**, nicht
+  mit Ausweisen: Frist, Größengrenze, Herkunft — und, wenn es je nötig wird,
+  einer Ratenbegrenzung in Cloudflare selbst. Wer das nicht will, richtet
+  den Gleichlauf nicht ein; er ist ab Werk aus.
+- **Ein verlorenes Gerät lässt sich nicht aussperren.** Wer den
+  Familienschlüssel hat, hat ihn. „Dieses Gerät lösen" löst nur das Gerät,
+  auf dem man es tippt. Wer wirklich aussperren will, legt im Elternbereich
+  einen **neuen** Schlüssel an und trägt ihn auf den übrigen Geräten
+  nach — der alte Raum verfällt dann von selbst nach 180 Tagen. Das steht
+  jetzt auch im Elternbereich, denn ohne diesen Satz käme niemand darauf.
+- **Wer den Schlüssel verliert, verliert den Raum.** Kein Wiederherstellen,
+  kein Zurücknehmen. Verloren geht ein Gleichlauf, nie ein Aufkleber: der
+  Stand auf jedem Gerät bleibt vollständig stehen.
+
 
 **Und eine Berichtigung, die hierher gehört.** Der Absatz unten schreibt der
 Inhaltssicherheitsrichtlinie (CSP) zu, sie schließe fremde Herkünfte aus,
