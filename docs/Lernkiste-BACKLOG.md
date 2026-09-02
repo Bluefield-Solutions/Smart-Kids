@@ -2388,7 +2388,20 @@ und zwar auf Weg 2: auf dem Telefon entfällt das Auge ganz.
 
 ---
 
-## Q18 offen: auf dem Telefon gibt es kein zweites Anschauen mehr
+## Q18 erledigt (Q20): auf dem Telefon gibt es das zweite Anschauen wieder
+
+**Gelöst auf Weg 2** — dem, von dem hier steht, er sei „der Ort, an dem ein
+Kind danach suchen würde": ein Auge oben rechts im Forscherbuch. Der
+Rauchtest fährt die ganze Schleife (hin in den Vorlauf, dort stehen Karten,
+„Zurück" führt ins **Buch** und nicht in die Ebenenwahl), und zwei
+Gegenproben halten sie fest.
+
+Der Eintrag stand seither als „offen" da — nachgesehen in Q31. Was folgt,
+ist der Befund, wie er gemessen war.
+
+---
+
+### Der ursprüngliche Befund
 
 Mit dem Auge (Q18) ist auf dem Telefon der einzige Weg weggefallen, den Vorlauf
 einer Ebene **noch einmal** zu sehen. Beim ersten Betreten erscheint er weiter
