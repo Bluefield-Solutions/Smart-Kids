@@ -9601,6 +9601,19 @@ Trennmuster. Auf iOS trägt `hyphens:auto` mit `lang="de"`, und dort wäre der
 Umbruch getrennt statt abgehackt — hier ist kein Gerät, das bleibt unbelegt.
 Die sieben Punkte helfen in beiden Fällen, weil sie den Umbruch ganz vermeiden.
 
+**Und die Auslieferung hat die Grenze dieser Prüfung sofort gezeigt.** Sie
+wurde auf dem Runner rot: dort misst „Bundesländer" rund 98 Punkte statt 91,
+und der Name bricht. Es ist eine **Schriftmessung** — damit gilt für sie, was
+für `ansicht` gilt: der Chromium ist auf beiden Seiten derselbe (Regel 16), die
+Schriften sind es nicht. Drei Punkte Luft sind keine, und zu schließen ist der
+Unterschied nicht, ohne die Schrift kleiner zu machen: auf dem iPhone SE quer
+sind bei elf Kacheln 100 Punkte Breite die Obergrenze (Q27).
+
+Also dieselbe Behandlung wie bei `ansicht` und aus demselben Grund: auf dem
+Runner übersprungen, **mit Ansage im Protokoll**. Beide Zweige sind gefahren —
+mit Schalter meldet das Tor „2 Namensumbruch übersprungen", ohne Schalter wird
+es rot. Ein Tor, das dort etwas anderes misst als hier, ist dort kein Tor.
+
 ### Nachtrag 2 · Der Elternbereich zieht nach
 
 Die Gleichlauf-Zeile stimmte nur im Augenblick des Aufbaus. Jetzt steht dort
