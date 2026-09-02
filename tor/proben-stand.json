@@ -224,6 +224,11 @@
       "zeit": "2026-09-02",
       "s": 78
     },
+    "der Runner darf wieder einen anderen Browser fahren": {
+      "commit": "bcf7c31d4596b3b2e13e95eab4610abbd91f4e66",
+      "zeit": "2026-09-02",
+      "s": 17
+    },
     "zwei Finger ziehen die Karte nicht mehr auf": {
       "commit": "12b511cd6169e96698f9ec5229299194371bfd76",
       "zeit": "2026-09-02",
