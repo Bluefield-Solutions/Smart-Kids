@@ -1,7 +1,7 @@
 // Rauchtest. Spielt den Prototyp wirklich - und prueft, was M3 bis M6
 // zugesagt haben: dass der Fortschritt einen Neustart ueberlebt, dass das
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
-import { istUmgekehrt, zeigeAufKarte, zielPunkt, starte, zurEbenenwahl,
+import { istUmgekehrt, zeigeAufKarte, zielPunkt, starte, zurEbenenwahl, durchGruppe,
          WELT_VON, durchVorlauf, serviere, schreibVorlage, zeichneZug,
          ausAblage, standVon, standGroesse, stelleAblage } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
@@ -1843,12 +1843,21 @@ if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
     const p = await neueSeite({ width: 844, height: 390 }, eigen);
     await p.click(`[data-profil="${wer}"]`);
     await zurEbenenwahl(p, 'hauptstaedte');
-    await p.click('[data-ebene="hauptstaedte"]');
+    await durchGruppe(p, 'hauptstaedte');
+    await p.waitForSelector('.schirm.da [data-ebene="hauptstaedte"]:not([data-gruppe])',
+      { timeout: 15000 });
+    await p.$eval('.schirm.da [data-ebene="hauptstaedte"]:not([data-gruppe])', x => x.click());
   await durchVorlaufWenn(p);
     // Die Einweisung zu den Stadtstaaten steht beim ersten Mal davor.
     await p.waitForSelector('.schirm.da #weiter, .schirm.da .karte svg path.ziel', { timeout: 6000 });
-    const weiter = await p.$('.schirm.da #weiter');
-    if (weiter) await weiter.click();
+    // Neu aufloesen statt einen Griff festzuhalten: zwischen `$` und
+    // `click` kann der Bildschirm gewechselt haben, und ein Griff auf ein
+    // Element, das nicht mehr am Baum haengt, wirft.
+    // `$eval` und nicht `click`: waehrend der Ueberblendung liegt der
+    // gehende Bildschirm noch darueber, und Playwright wartet dann dreissig
+    // Sekunden auf einen Knopf, der laengst da ist.
+    if (await p.$('.schirm.da #weiter'))
+      await p.$eval('.schirm.da #weiter', x => x.click()).catch(() => {});
     await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 6000 });
     for (let n = 0; n < 5; n++) {
       if (!(await p.$('.schirm.da .karte svg path.ziel'))) break;
@@ -1882,7 +1891,17 @@ if (laeuft('ebene4')) for (const wer of ['fiona', 'lea']) {
         return { x: q.x, y: q.y, idx: namen.indexOf(bl.hauptstadt) };
       });
       if (ok.idx < 0) break;
-      const et = (await p.$$('.schirm.da .etikett'))[ok.idx]; const bb = await et.boundingBox();
+      // Der Kasten wird in EINEM Zug geholt, nicht ueber einen Griff:
+      // zwischen `$$` und `boundingBox()` kann der Bildschirm gewechselt
+      // haben, und dann wirft der Griff „not attached to the DOM". Genau
+      // das ist passiert, als in Q17 ein Bildschirm dazukam.
+      const bb = await p.evaluate((k) => {
+        const e = document.querySelectorAll('.schirm.da .etikett')[k];
+        if (!e) return null;
+        const r = e.getBoundingClientRect();
+        return { x:r.x, y:r.y, width:r.width, height:r.height };
+      }, ok.idx);
+      if (!bb) break;
       await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await p.mouse.down();
       await p.mouse.move(ok.x, ok.y, { steps: 8 }); await p.mouse.up();
       await bewertet(p); await weitergegangen(p);
@@ -2031,7 +2050,28 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
     for (const w of welten) {
       await p.click(`.schirm.da [data-welt="${w}"]`);
       await p.waitForSelector('.schirm.da [data-ebene]');
+      /* Auch hinter die GRUPPENKACHELN sehen (Q17).
+       *
+       * Seit zwei Ebenen sich eine Kachel teilen, steht nicht mehr jede
+       * Kennung offen in der Wand. Diese Zaehlung ist aber genau die
+       * Zusage „jede Ebene ist erreichbar" - sie muss den Schritt also
+       * mitgehen, sonst meldete sie ab Q17 einen Fehler, wo keiner ist,
+       * und ab der naechsten Gruppe nichts mehr, wo einer waere. */
       const hier = await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene));
+      for (const g of await p.$$eval('.schirm.da [data-gruppe]', es => es.map(e => e.dataset.gruppe))) {
+        await p.click(`.schirm.da [data-gruppe="${g}"]`);
+        // Auf den ZUSTAND warten, nicht auf das Erscheinen einer Kennung:
+        // `[data-ebene]` steht auch auf dem Bildschirm, den wir gerade
+        // verlassen, und der bleibt die Ueberblendung lang liegen. Erst
+        // wenn nur noch EIN Bildschirm da ist und die Gruppenkachel weg
+        // ist, sind wir wirklich drin.
+        await p.waitForFunction(() => document.querySelectorAll('.schirm.da').length === 1
+          && !document.querySelector('.schirm.da [data-gruppe]'), null, { timeout: 20000 });
+        hier.push(...await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene)));
+        await p.click('.schirm.da #zur');
+        await p.waitForFunction(k => document.querySelectorAll('.schirm.da').length === 1
+          && !!document.querySelector(`.schirm.da [data-gruppe="${k}"]`), g, { timeout: 20000 });
+      }
       const fremd = hier.filter(e => WELT_VON(e) !== w);
       if (fremd.length) merke('durchgang',
         new Error(`${wer}: „${fremd.join(', ')}" steht in der Welt „${w}"`));
@@ -2086,6 +2126,10 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
           await p.click('.schirm.da #zur');
         await zurEbenenwahl(p, ebene);
       }
+      // Steht die Ebene hinter einer Gruppenkachel, erst diese oeffnen
+      // (Q17). Der Zweig darueber springt `zurEbenenwahl` naemlich, wenn
+      // die Kennung schon dasteht - und die GRUPPENKACHEL traegt sie auch.
+      await durchGruppe(p, ebene);
       await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
       /* Wieviele Laender sieht DIESES Kind wirklich?
        *

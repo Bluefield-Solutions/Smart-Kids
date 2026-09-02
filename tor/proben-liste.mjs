@@ -555,6 +555,19 @@ export const PROBEN = [
    * bezeugt, die Geste seit M4z gar nicht - und sie ist die einzige
    * Bedienung der App, die zwei Finger braucht. Der Eingriff haengt sie
    * ab: der Zweifingerzweig wird nie betreten, ein Finger schiebt weiter. */
+  /* --- Die Gruppenkachel (Q17) ----------------------------------------- *
+   *
+   * Zwei Ebenen, eine Kachel: „Hauptstädte" fragt beim Antippen, wohin.
+   * Faellt die Zusammenlegung weg, stehen wieder ELF Kacheln in Leas Wand
+   * - und die elfte endet auf dem Zielgeraet ausserhalb des Fensters, ohne
+   * Rollen und ohne Hinweis. Der Eingriff schaltet die Gruppierung ab. */
+  { n:'die Hauptstädte stehen wieder als zwei Kacheln da', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:D,
+    such:'    if (!b.gruppe) { aus.push(b); continue; }',
+    ersatz:'    if (true) { aus.push(b); continue; }',
+    an:{ ...DIST, text:'if (true) { aus.push(b); continue; }' },
+    sagt:'über den Rand' },
+
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,
     such:'      if (finger.size >= 2 && start && start.d) {',
@@ -1143,8 +1156,8 @@ export const PROBEN = [
   // Sie liest noch nicht, und eine Stadt hat keinen Umriss zum Ziehen.
   { n:'Fiona bekommt die Hauptstädte Europas', tor:'smoke', bauen:true,
     args:['--nur=durchgang', '--kurz'], datei:D,
-    such:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,\n    wer:['lea','stephan','violeta'] },",
-    ersatz:"  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3 },",
+    such:"    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa' },",
+    ersatz:"    gruppe:'hauptstaedte', wo:'Europa' },",
     an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta']" },
     sagt:'steht aber in fionas Auswahl' },
 
@@ -2446,8 +2459,8 @@ export const PROBEN = [
   // saehe dabei genauso aus wie eine, die wirkt.
   { n:'jede Welt zeigt wieder alle Ebenen', tor:'smoke', args:['--nur=durchgang'],
     bauen:true, datei:D,
-    such:'  const balken = (await staende()).filter(b => weltVon(b) === welt.id);',
-    ersatz:'  const balken = await staende();',
+    such:'  const alle = (await staende()).filter(b => weltVon(b) === welt.id);',
+    ersatz:'  const alle = await staende();',
     an:{ ...DIST, fehlt:'filter(b => weltVon(b) === welt.id)' },
     sagt:'steht in der Welt' },
 

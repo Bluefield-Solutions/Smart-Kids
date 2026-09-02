@@ -8278,3 +8278,58 @@ drei Wege stehen mit Zahlen im Backlog. Sofort gemacht ist nur, was eindeutig
 war: das Auge hing 2 bis 4 Punkte über die untere Kachelkante hinaus.
 
 228 Gegenproben.
+
+
+---
+
+## Q17 — zwei Ebenen, eine Kachel
+
+Die Entscheidung aus Q13 und Q16: „Hauptstädte" gibt es einmal, und wer sie
+antippt, wird gefragt wohin.
+
+Das löst **zwei** Befunde mit einem Schnitt:
+
+| | vorher | jetzt |
+|---|---|---|
+| Leas Kacheln in der Wand | **11** — die elfte endete bei y = 491 in einem 390 Punkte hohen Fenster, ohne Rollen und ohne Hinweis | **10**, die letzte Reihe endet bei 368 von 369 |
+| Zwei Kacheln mit demselben Namen | „Hauptstädte" und „Hauptstädte" | eine, und dahinter „Deutschland" / „Europa" |
+
+Der neue Bildschirm heißt „Hauptstädte — wo?" und zeigt die beiden Ebenen mit
+dem Umriss, der sie unterscheidet — Deutschland und Europa. Erst dort steht der
+Ort als **Name**; auf der Wand ist er die Überzeile, und die ist seit Q8
+ausgeblendet, weil dort das Bild liegt.
+
+**Wer nur eine der beiden hat, bekommt keine Frage mit einer Antwort:** Fiona
+hat Europa nicht, ihre Kachel führt wie bisher direkt hinein.
+
+### Was NICHT zusammengelegt ist
+
+Die Ebenen selbst — eigene Kennung, eigener Leitner-Stand, eigener Fortschritt,
+eigene Abzeichen. Zusammengelegt ist nur, was man **sieht**. Die Gruppenkachel
+rechnet ihren Stand aus der Summe ihrer Teile, und einen Pokal zeigt sie erst,
+wenn beide bestanden sind.
+
+Das Auge und der Test-Knopf gehören an die Teile, nicht an die Gruppe: „die
+Vorschau von zwei Ebenen anschauen" ist keine Sache, die man tun kann.
+
+### Was die Tore dabei gelernt haben
+
+Ein Bildschirm mehr im Weg hat vier Stellen aufgedeckt, an denen ein Tor sich
+auf einen **Griff** verlassen hat statt auf eine Bedingung:
+
+- `durchGruppe` und der Rauchtest klickten über `elementHandle.click()` —
+  zwischen `$` und `click` wechselt der Bildschirm, und der Griff wirft „not
+  attached to the DOM". Jetzt `$eval`, das direkt im Baum klickt.
+- Zweimal wurde auf `[data-ebene="hauptstaedte"]` gewartet. Diese Kennung trägt
+  aber auch die **Gruppenkachel**, die man gerade verlässt — das Warten war
+  sofort vorbei, und der nächste Griff ging ins Leere. Unter Last zuverlässig.
+  Gewartet wird jetzt auf `:not([data-gruppe])`.
+- Die Zählung „jede Ebene ist erreichbar" sah nur die offene Wand. Sie geht
+  jetzt hinter jede Gruppenkachel — sonst hätte sie ab Q17 einen Fehler
+  gemeldet, wo keiner ist, und ab der nächsten Gruppe nichts mehr, wo einer wäre.
+
+Neue Aufnahme `quer-gruppe` (37 statt 36) und eine Gegenprobe: fällt die
+Zusammenlegung weg, stehen wieder elf Kacheln in der Wand, und `passt` meldet
+den Überlauf.
+
+229 Gegenproben.

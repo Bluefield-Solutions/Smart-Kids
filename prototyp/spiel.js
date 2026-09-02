@@ -824,7 +824,10 @@ const EBENEN = [
   // Kachel und brach als "Landeshauptstäd/te" um. Die Ueberzeile sagt
   // schon "Deutschland", die Frage sagt "Hauptstadt von Hessen" - das
   // lange Wort trug hier nichts bei ausser einem Zeilenumbruch.
-  { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2 },
+  /* `gruppe` und `wo`: die beiden Hauptstadt-Ebenen teilen sich EINE
+     Kachel (Q17). Warum, steht bei `gruppiert()` weiter unten. */
+  { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2,
+    gruppe:'hauptstaedte', wo:'Deutschland' },
   /* Hauptstädte in Europa (R6).
    *
    * Dieselbe Frage auf einer anderen Karte, und deshalb dieselbe
@@ -843,7 +846,7 @@ const EBENEN = [
    * D2c hinzugefügt hat, kommen hier erst dazu, wenn `npm run backen`
    * einmal mit den Rohdaten gelaufen ist. */
   { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,
-    wer:['lea','stephan','violeta'] },
+    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa' },
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
@@ -1827,19 +1830,75 @@ async function weltenwahl(){
 }
 
 /* ---------- Ebenenwahl mit Fortschritt ----------------------------------- */
-async function ebenenwahl(){
+/* Zwei Ebenen, EINE Kachel (Q17).
+ *
+ * „Hauptstädte" gab es zweimal - Deutschland und Europa -, und auf der
+ * Kachel stand beide Male dasselbe Wort. Was sie unterscheidet, ist die
+ * Ueberzeile, und die ist in der Ebenenwahl ausgeblendet, seit dort das
+ * Bild oben liegt (Q8). Zwei Kacheln, ein Name, kein Unterschied.
+ *
+ * Es war aber nicht nur haesslich, es war eine Sackgasse: mit elf Ebenen
+ * passte Leas letzte Kachel auf dem Zielgeraet nicht mehr in die Wand -
+ * sie endete bei y = 491 in einem 390 Punkte hohen Fenster, ohne Rollen
+ * und ohne Hinweis. „Hauptstädte Europa" war fuer sie und die Eltern
+ * schlicht nicht zu erreichen (Q13).
+ *
+ * Beides loest dieselbe Sache: die Ebenen einer `gruppe` stehen als EINE
+ * Kachel da, und wer sie antippt, wird gefragt wohin. Aus elf werden
+ * zehn, und der doppelte Name verschwindet - die zweite Ebene heisst
+ * jetzt dort, wo es darauf ankommt, „Deutschland" bzw. „Europa".
+ *
+ * Wer nur EINE der Ebenen hat, bekommt keine Frage mit einer Antwort:
+ * Fiona hat Europa nicht, ihre Kachel fuehrt wie bisher direkt hinein.
+ *
+ * Die Ebenen selbst bleiben unberuehrt - eigene Kennung, eigener
+ * Leitner-Stand, eigener Fortschritt, eigene Abzeichen. Zusammengelegt
+ * ist nur, was man SIEHT.
+ */
+function gruppiert(balken){
+  const aus = [], schon = new Set();
+  for (const b of balken) {
+    if (!b.gruppe) { aus.push(b); continue; }
+    if (schon.has(b.gruppe)) continue;
+    schon.add(b.gruppe);
+    const teile = balken.filter(x => x.gruppe === b.gruppe);
+    if (teile.length === 1) { aus.push(teile[0]); continue; }
+    // Der Stand der Gruppe ist die Summe ihrer Teile - sonst zeigte die
+    // Kachel den Fortschritt einer Haelfte und veruntreute die andere.
+    aus.push({ ...b, gruppenKachel:b.gruppe, teile,
+      gesammelt: teile.reduce((n, x) => n + x.gesammelt, 0),
+      gekonnt:   teile.reduce((n, x) => n + x.gekonnt, 0),
+      gesamt:    teile.reduce((n, x) => n + x.gesamt, 0),
+      anteil:    teile.reduce((n, x) => n + x.anteil, 0) / teile.length,
+      // Ein Pokal steht erst da, wenn ALLE Teile bestanden sind.
+      pokal:     teile.every(x => x.pokal) });
+  }
+  return aus;
+}
+
+async function ebenenwahl(gruppe = null){
   const s = el('div');
   // Nur die Ebenen DIESER Welt. Ohne den Filter wäre die Weltenwahl eine
   // Zwischentür, die nichts zutut - und drei Runden später hätte niemand
   // mehr gewusst, wozu sie da war.
   const welt = WELTEN.find(w => w.id === Welt) || WELTEN[0];
-  const balken = (await staende()).filter(b => weltVon(b) === welt.id);
-  s.innerHTML = wahlKopf(welt.name) + `
+  const alle = (await staende()).filter(b => weltVon(b) === welt.id);
+  // Innerhalb einer Gruppe heisst die Kachel nach dem ORT, nicht nach der
+  // Frage: „Deutschland" und „Europa", nicht zweimal „Hauptstädte".
+  const balken = gruppe ? alle.filter(b => b.gruppe === gruppe).map(b => ({ ...b,
+                            ueber: b.titel, titel: b.wo || b.titel }))
+                        : gruppiert(alle);
+  const frage = gruppe
+    ? (alle.find(b => b.gruppe === gruppe)?.titel || welt.name) + ' — wo?'
+    : 'Womit möchtest du anfangen?';
+  s.innerHTML = wahlKopf(gruppe ? welt.name : welt.name) + `
     <div class="mitte">
-      <div class="titel">Womit möchtest du anfangen?</div>
+      <div class="titel">${frage}</div>
       <div class="wahl ebenen">${balken.map(b=>`
         <div class="kachelpaar">
-        <button class="kachel bunt" data-ebene="${b.id}" style="--ton:var(--f${b.farbe})">
+        <button class="kachel bunt" data-ebene="${b.id}"${
+          b.gruppenKachel ? ` data-gruppe="${b.gruppenKachel}"` : ''
+        } style="--ton:var(--f${b.farbe})">
           ${silhouette(b.id)}
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
@@ -1853,22 +1912,28 @@ async function ebenenwahl(){
             ${fortschrittBalken(b)}
           </div>
         </button>
+        ${b.gruppenKachel ? '' : `
         <button class="knopf rund schau" data-schau="${b.id}"
-                aria-label="${b.titel} anschauen" title="Anschauen">${ZEI('auge', 22)}</button>
+                aria-label="${b.titel} anschauen" title="Anschauen">${ZEI('auge', 22)}</button>`}
         <div class="kachelknoepfe">${
           /* Der Test steht erst da, wenn die Ebene ganz gesammelt ist (B2).
              Vorher waere er kein „Test am Ende", sondern eine zweite Art
              zu ueben - und der Pokal waere nichts wert. */
-          testOffen(b) ? `
+          !b.gruppenKachel && testOffen(b) ? `
           <button class="leise mini" data-test="${b.id}">Test</button>` : ''}
         </div></div>`).join('')}</div>
     </div>`;
   // Zurück führt in die Welt, nicht bis zur Profilwahl: sonst wäre die
   // Weltenwahl eine Tür, die nur in eine Richtung aufgeht.
-  s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
+  // Aus einer Gruppe fuehrt „Zurück" in die WAND, nicht in die Weltenwahl:
+  // sonst waere die Frage „wo?" eine Tuer, hinter der man zwei Schritte
+  // zurueckfaellt.
+  s.querySelector('#zur').onclick=()=>zeige(gruppe ? ()=>ebenenwahl() : weltenwahl);
   s.querySelector('#buch').onclick=()=>zeige(forscherbuch);
   s.querySelector('#eltern').onclick=()=>zeige(elternTor);
   s.querySelectorAll('[data-ebene]').forEach(b=>b.onclick=()=>{
+    // Eine Gruppenkachel fragt erst, wohin.
+    if (b.dataset.gruppe) { zeige(()=>ebenenwahl(b.dataset.gruppe)); return; }
     const id=b.dataset.ebene;
     // Beim ERSTEN Mal auf dieser Ebene: erst anschauen, dann raten (R3).
     // Danach nur noch auf Wunsch, ueber den Knopf „anschauen" an der
@@ -1895,7 +1960,7 @@ async function ebenenwahl(){
    * nur an Kacheln MIT Fortschritt: das kostete rund 37 Punkte je Reihe
    * und liess die Reihe ausfransen, weil die Zeile mal da war und mal
    * nicht. Ohne ihn passt die hohe Kachelform, mit ihr nicht. */
-  ansagen(`${welt.name}. Womit möchtest du anfangen? `
+  ansagen(`${gruppe ? frage : welt.name + '. ' + frage} `
     + `${aufzaehlen(balken.map(b=>b.titel))}?`);
   return s;
 }

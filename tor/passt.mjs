@@ -20,7 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe } from './chromium.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
@@ -895,7 +895,9 @@ for (const g of MEINE) {
   // ein Grundriss, der nur mit einer von beiden geprueft wird, ist halb
   // geprueft.
   for (const ebene of ['kontinente', 'bundeslaender', 'hauptstaedte']) {
-    await tipp(`[data-ebene="${ebene}"]`);
+    // Seit Q17 kann die Ebene hinter einer Gruppenkachel liegen.
+    await durchGruppe(p, ebene);
+    await tipp(`[data-ebene="${ebene}"]:not([data-gruppe])`);
     // Der Vorlauf (R3) ist die engste Stelle der ganzen App: bis zu
     // sechzehn Kaesten auf einmal, auf dem kleinsten Geraet. Er wird
     // deshalb ANGESEHEN und nicht nur durchlaufen.

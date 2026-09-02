@@ -2327,3 +2327,17 @@ anderen Knopf (Q15). Gebaut, angesehen, weggeworfen — auf einer 112 Punkte
 hohen Kachel ist eine gefüllte Scheibe von 44 Punkten ein Viertel der Fläche,
 sie legt sich über den Namen und ragt über die Kante. Der Grund steht jetzt im
 Stylesheet, damit es niemand ein zweites Mal versucht.
+
+
+---
+
+## Q13/Q16 erledigt: die Wand trägt wieder
+
+Beides gelöst durch die Zusammenlegung der beiden „Hauptstädte"-Ebenen (Q17):
+Lea hat zehn statt elf Kacheln, und der doppelte Name ist weg.
+
+**Was offen bleibt: das Auge liegt weiter auf dem Namen.** Die Zusammenlegung
+nimmt eine Kachel weg, sie macht die übrigen aber nicht breiter — bei zehn
+Kacheln sind es weiterhin fünf je Reihe zu 134 Punkten. „Kontinente" verliert
+also nach wie vor 22 × 13 Punkte an die Trefferfläche der Vorschau. Die drei
+Wege stehen oben; billiger geworden ist keiner davon.

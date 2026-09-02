@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PNG } from 'pngjs';
-import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa,
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe,
          schreibVorlage, zeichneZug, istUmgekehrt, zeigeAufKarte,
          zielUndEtikett } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
@@ -195,6 +195,14 @@ const AUFNAHMEN = [
    * Fiona hat sie nicht. */
   { name:'quer-hauptstaedte-eu', spiel:'hauptstaedte:europa', kind:'lea',
     quer:true, wahl:'.schirm.da' },
+  /* Die Gruppenkachel (Q17) — der einzige Bildschirm, den man NUR sieht,
+     wenn man zwei Ebenen hat, die sich eine Kachel teilen.
+     Er entsteht seit Q17 zwischen Wand und Ebene: „Hauptstädte — wo?",
+     Deutschland und Europa. Ohne Vorbild waere er der einzige
+     Bildschirm der App ohne Bild — und ausgerechnet der, den Fiona nie
+     zu sehen bekommt und der deshalb beim Durchklicken nicht auffaellt. */
+  { name:'quer-gruppe', spiel:null, kind:'lea', quer:true, wahl:'.schirm.da',
+    tun:'gruppe' },
   /* Die Nadeln (P10) — der einzige Bildschirm, auf dem eine Trefferflaeche
    * zu SEHEN ist. Zwei Gebiete haengen hier neben der Karte, mit Faden
    * und farbigem Kopf. Dass sie da sind, misst `ziehen --nur=treffer`;
@@ -724,6 +732,13 @@ for (const a of MEINE) {
     // geht durch sie hindurch.
     await seite.waitForSelector('.schirm.da [data-welt]');
     if (a.tun !== 'welten') await zurEbenenwahl(seite, a.spiel || 'kontinente');
+    // `tun:'gruppe'` heisst: die Gruppenkachel oeffnen und dort bleiben.
+    if (a.tun === 'gruppe') {
+      await seite.$eval('.schirm.da [data-gruppe]', x => x.click());
+      await seite.waitForSelector('.schirm.da .wahl.ebenen [data-ebene]:not([data-gruppe])',
+        { timeout: 15000 });
+      await seite.waitForTimeout(300);
+    }
     if (a.tun === 'buch') {
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen');
@@ -746,7 +761,9 @@ for (const a of MEINE) {
         await seite.waitForTimeout(200);
       }
     } else if (a.spiel) {
-      await seite.click(`[data-ebene="${a.spiel}"]`);
+      // Seit Q17 kann die Ebene hinter einer Gruppenkachel liegen.
+      await durchGruppe(seite, a.spiel);
+      await seite.click(`.schirm.da [data-ebene="${a.spiel}"]:not([data-gruppe])`);
       // Seit R3 steht der Vorlauf beim ersten Betreten davor.
       await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
         + '.schirm.da .rechnung', { timeout: 25000 });

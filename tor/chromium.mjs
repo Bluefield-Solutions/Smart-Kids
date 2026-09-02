@@ -85,13 +85,47 @@ export async function serviere(wurzel, erreichbar = () => true) {
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
                                 : String(ebene).startsWith('schreiben') ? 'schreiben' : 'erdkunde';
 
-/** Von der Weltenwahl in die Ebenenwahl der Welt, in der `ebene` liegt. */
+/* Von der Weltenwahl in die Ebenenwahl der Welt, in der `ebene` liegt.
+ *
+ * Seit Q17 kann dort eine GRUPPENKACHEL stehen: die beiden Hauptstadt-
+ * Ebenen teilen sich eine Kachel und fragen beim Antippen, wohin. Wer
+ * eine Ebene sucht, die dahinter liegt, muss also einen Schritt weiter -
+ * und weil es sonst in fuenf Toren zweimal und mehr dastuende und dann
+ * einmal veraltet (Regel 6), steht es hier.
+ *
+ * Gesucht wird nicht geraten: liegt die Kachel offen da, wird nichts
+ * getan; liegt sie nicht da und es gibt eine Gruppe mit demselben Anfang,
+ * wird die geoeffnet. Fionas Kachel fuehrt direkt hinein - fuer sie gibt
+ * es keine Gruppe, und dieser Zweig laeuft leer. */
 export async function zurEbenenwahl(seite, ebene = 'kontinente') {
   await seite.waitForSelector('.schirm.da [data-welt]', { timeout: 15000 });
   await alleinIm(seite);
   await seite.click(`.schirm.da [data-welt="${WELT_VON(ebene)}"]`);
   await seite.waitForSelector('.schirm.da [data-ebene]', { timeout: 15000 });
   await alleinIm(seite);
+  await durchGruppe(seite, ebene);
+}
+
+/** Steht die Ebene hinter einer Gruppenkachel? Dann diese oeffnen. */
+export async function durchGruppe(seite, ebene) {
+  const da = await seite.$(`.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`);
+  if (da) return false;
+  const gruppe = String(ebene).split(':')[0];
+  if (!(await seite.$(`.schirm.da [data-gruppe="${gruppe}"]`))) return false;
+  // Nicht ueber einen GRIFF klicken: zwischen `$` und `click` kann der
+  // Bildschirm gewechselt haben, und ein Griff auf ein Element, das nicht
+  // mehr am Baum haengt, wirft „not attached to the DOM".
+  await seite.$eval(`.schirm.da [data-gruppe="${gruppe}"]`, x => x.click());
+  /* Gewartet wird auf die Kachel OHNE Gruppenkennung.
+   *
+   * `[data-ebene="hauptstaedte"]` allein taugt nicht: die Gruppenkachel,
+   * die wir gerade verlassen, traegt dieselbe Kennung und liegt die
+   * Ueberblendung lang noch da. Das Warten waere sofort vorbei, und der
+   * naechste Griff ginge ins Leere - unter Last zuverlaessig. */
+  await seite.waitForSelector(
+    `.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`, { timeout: 15000 });
+  await alleinIm(seite);
+  return true;
 }
 
 /* Von der Ebenenwahl in die AUFGABE — seit R3 fuehrt er ueber den Vorlauf.
