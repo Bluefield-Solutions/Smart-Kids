@@ -2196,6 +2196,72 @@ export const PROBEN = [
     an:{ ...DIST, text:"fetch('https://beispiel.ungueltig/v1/x')" },
     sagt:'verlassen das Gerät' },
 
+  /* --- Der Namensumbruch bei elf Kacheln (Q31) -------------------------
+   *
+   * Gemessen an elf Kacheln auf dem iPhone SE quer: von elf Namen
+   * brachen genau zwei um, und beide liessen einen Rest von sieben bis
+   * neun Punkten in der zweiten Zeile stehen - einen einzelnen
+   * Buchstaben. Repariert wurde das an sieben Punkten seitlichem
+   * Polster und einem Hauch Laufweite. Der Eingriff nimmt beides
+   * heraus, und das Tor muss die Waise sehen. */
+  { n:'bei elf Kacheln bricht der Name wieder auf einen Buchstaben',
+    tor:'passt', bauen:true, args:['--teil=1/5'], datei:V,
+    such:'  .wahl.ebenen:has(> :nth-child(11)) .kachel{padding-left:var(--r0);padding-right:var(--r0)}\n'
+       + '  .wahl.ebenen:has(> :nth-child(11)) .kachel .name{letter-spacing:-.02em}',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'.kachel .name{letter-spacing:-.02em}' },
+    sagt:'ein einzelner Buchstabe' },
+
+  /* --- „Heute schon geübt" (A4h) ---------------------------------------
+   *
+   * Zwei Proben, und die zweite ist die wichtigere.
+   *
+   * 1. Die Zeile ueberlebt den Neustart nicht. Der Eingriff schreibt die
+   *    Marke gar nicht erst - die Zeile stuende dann waehrend der Runde
+   *    da (der Zustand im Kopf reicht dafuer) und waere nach dem
+   *    Neustart weg. Genau die Abnahme aus dem Backlog: „die Zeile
+   *    stimmt nach einem Neustart". */
+  { n:'„heute schon geübt" überlebt den Neustart nicht', tor:'smoke',
+    bauen:true, args:['--teil=0/4'], datei:D,
+    such:"  try { await Ablage.setze('einstellungen', k, t); } catch(e){}",
+    ersatz:"  try { if (false) await Ablage.setze('einstellungen', k, t); } catch(e){}",
+    an:{ ...DIST, text:"if (false) await Ablage.setze('einstellungen', k, t)" },
+    sagt:'nicht „heute schon geübt"' },
+
+  /* 2. Sie steht auf JEDER Kachel.
+   *
+   *    Das ist die Sorte Fehler, die freundlich aussieht: die Zeile ist
+   *    da, sie ist gruen, sie sagt etwas Nettes - und sie sagt es auch
+   *    dem Kind, das heute nicht gespielt hat. Damit ist sie kein
+   *    Hinweis mehr, sondern ein taeglicher Vorwurf, und genau den
+   *    schliesst der Abgleich aus („kein Streak-Zwang"). Der Eingriff
+   *    laesst den Tagesvergleich weg. */
+  { n:'„heute schon geübt" steht auf jeder Kachel', tor:'smoke',
+    bauen:true, args:['--teil=0/4'], datei:D,
+    such:"          ${geuebtStand[GEUEBT(p.id)] === heute()",
+    ersatz:"          ${true",
+    an:{ ...DIST, text:'${true\n            ?' },
+    sagt:'die noch gar nicht gespielt hat' },
+
+  /* --- Der Groessenwaechter im Korpus (P3) -----------------------------
+   *
+   * Er stand im Backlog als „die einzige Pruefung ohne Gegenprobe - ihr
+   * Gegenstand existiert noch nicht". Beim Herausloesen kam heraus, dass
+   * er schlimmer dran war: `rot++` stand VOR `let rot = 0`. Waere der
+   * eingefrorene Korpus je zu klein gewesen, haette das Tor nicht
+   * gemeldet, sondern mit einem ReferenceError abgebrochen.
+   *
+   * Jetzt ist die Regel eine Funktion, und das Tor faehrt sie an zwei
+   * erfundenen Korpora - einer knapp darunter, einer knapp darueber. Der
+   * Eingriff dreht den Vergleich um: die Grenze gilt dann als
+   * „mindestens einer weniger", und ein zu kleiner Korpus kaeme durch. */
+  { n:'der Größenwächter im Korpus urteilt falsch herum', tor:'vergleich',
+    datei:'tor/vergleich.mjs',
+    such:"  return { treffer, nicht,\n           reicht: treffer >= KORPUS_MIN_TREFFER && nicht >= KORPUS_MIN_NICHT };",
+    ersatz:"  return { treffer, nicht,\n           reicht: treffer >= KORPUS_MIN_TREFFER - 1 && nicht >= KORPUS_MIN_NICHT - 1 };",
+    an:{ datei:'tor/vergleich.mjs', text:'KORPUS_MIN_TREFFER - 1 && nicht >= KORPUS_MIN_NICHT - 1' },
+    sagt:'urteilt falsch' },
+
   /* --- Die zwei Waende (Q30) -------------------------------------------
 
      Die vierte Welt laeuft wieder aus dem Bild.
@@ -2581,7 +2647,7 @@ export const PROBEN = [
   // ausgeblendet, und die Zahl daneben liest Fiona nicht.
   { n:'die Ebenenwahl zeigt keine Aufkleber mehr', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
-    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}${',
+    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt, true)}${',
     ersatz:'<div class="stand">${\'\'}${',
     an:{ ...DIST, fehlt:'<div class="stand">${kleberMarke(b.gesammelt' },
     sagt:'nennt die Aufkleber nicht' },
@@ -2594,8 +2660,8 @@ export const PROBEN = [
    * ist eine Zeile, und niemand wuerde ihn bemerken. */
   { n:'die Sterne kommen auf die Ebenenkachel zurueck', tor:'smoke', args:['--nur=ablage'],
     bauen:true, datei:D,
-    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}${',
-    ersatz:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${kleberMarke(b.gesammelt, b.gesamt)}${',
+    such:'<div class="stand">${kleberMarke(b.gesammelt, b.gesamt, true)}${',
+    ersatz:'<div class="stand">${sterne(sterneFuer(b.gesammelt, b.gesamt), 20)}${kleberMarke(b.gesammelt, b.gesamt, true)}${',
     an:{ ...DIST, text:'sterne(sterneFuer(b.gesammelt, b.gesamt), 20)' },
     sagt:'zeigt wieder' },
 

@@ -183,14 +183,14 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~14~~ | ~~**D2** Abzeichen, die etwas sagen~~ | Fiona, Lea | mittel | mittel | **gefahren** |
 | 1 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | ~~—~~ | ~~**M4r** Sprechen auf dem iPhone~~ | | | | **gefahren 01.09.** |
-| 3 | **A4h** „Heute schon geübt" | alle | mittel | klein | — |
+| ~~3~~ | ~~**A4h** „Heute schon geübt"~~ | | | | **gefahren (Q31)** |
 | 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
 | 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
-| 6 | **S2** Auf der Kachel steht Anteil neben Anzahl | Fiona, Lea | gering | klein | S1 |
-| 7 | **Q1** Zwei Gegenproben beweisen nichts mehr | nur ich | mittel | mittel | je eine Untersuchung |
+| ~~6~~ | ~~**S2** Anteil neben Anzahl~~ | | | | **gefahren (Q31)** |
+| ~~7~~ | ~~**Q1** Zwei Gegenproben beweisen nichts~~ | | | | **nachgesehen (Q31): beide schlagen an** |
 | ~~—~~ | ~~**Q2** überholte Nachweise~~ | | | | **gefahren 01.09.** |
 | 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| 10 | **P3** Der Größenwächter im Korpus hat keine Gegenprobe | nur ich | gering | klein | M4r |
+| ~~10~~ | ~~**P3** Größenwächter ohne Gegenprobe~~ | | | | **gefahren (Q31)** |
 | ~~—~~ | ~~**D2c** Deutschlands Nachbarn~~ | | | | **gefahren** |
 | ~~—~~ | ~~**D2b** Mehr Abzeichen~~ | | | | **gefahren** |
 | ~~—~~ | ~~**P5** Die Größenratsche~~ | | | | **gefahren** |

@@ -214,10 +214,23 @@ const fortschrittBalken = (f, klasse='') => {
       fest.toFixed(3)})"></i></div>`;
 };
 
-/** Die Zahl der Aufkleber mit ihrem Zeichen davor. */
-const kleberMarke = (n, gesamt) => `<span class="klebermarke"${
+/** Die Zahl der Aufkleber mit ihrem Zeichen davor.
+ *
+ * `vonWieviel` entscheidet, ob „9" oder „9/60" dasteht - und das ist S2.
+ *
+ * AUF EINER KACHEL steht die Zahl neben Sternen und Balken, und die
+ * zeigen einen ANTEIL. Nebeneinander hiess das: neun Aufkleber und ein
+ * Stern (Länder Asien, 9 von 60) standen neben zwei Aufklebern und zwei
+ * Sternen (Kontinente, 2 von 6). Wer die Kacheln vergleicht - und Kinder
+ * vergleichen sie -, las daraus das Gegenteil dessen, was dastand.
+ * Niemand war falsch informiert, nur schlecht.
+ *
+ * AUF DEM ENDBILDSCHIRM bleibt die nackte Zahl: dort steht daneben
+ * „von 4 im Buch", und „2/4 von 4 im Buch" waere dieselbe Auskunft
+ * zweimal. Es wird nichts verglichen - es gibt nur eine Ebene. */
+const kleberMarke = (n, gesamt, vonWieviel = false) => `<span class="klebermarke"${
   n ? '' : ' data-leer="ja"'} aria-label="${n} von ${gesamt} Aufklebern">${
-  ZEI('kleber', 20)}${n}</span>`;
+  ZEI('kleber', 20)}${n}${vonWieviel ? `<small>/${gesamt}</small>` : ''}</span>`;
 
 /* ---------- Vorlesen ----------------------------------------------------
  *
@@ -1747,6 +1760,50 @@ const profilzeile = (p) => [
 ].filter(Boolean).join(' · ');
 
 /* ---------- Profilwahl --------------------------------------------------- */
+/* „Heute schon geübt" (A4h).
+ *
+ * EINE Marke je Kind mit dem Tag darin - kein Zaehler, keine Kette, kein
+ * „drei Tage hintereinander". Der ANTON-Abgleich nennt den Punkt
+ * ausdruecklich MIT dem Zusatz „kein Streak-Zwang", und der Grund steht
+ * in `src/inhalt/abzeichen.js`: ein Abzeichen fuer zehn Tage am Stueck
+ * bestraft einen Krankheitstag. Was hier steht, ist eine ruhige Zeile
+ * ueber HEUTE - sie kann morgen wieder da sein, und sie kann fehlen,
+ * ohne dass etwas verloren geht.
+ *
+ * Warum eine Marke und nicht das Protokoll: die Profilwahl ist der erste
+ * Bildschirm. Alle Eintraege zu lesen, um vier Ja/Nein-Fragen zu
+ * beantworten, hiesse bei einem Jahr Spielzeit fuenftausend Datensaetze
+ * fuer vier Zeilen. Die Marke ist ein String je Kind.
+ *
+ * Der Tag ist ORTSZEIT und als `YYYY-MM-DD` abgelegt. Nicht als
+ * Zeitstempel: „heute" ist eine Frage an den Kalender des Kindes, nicht
+ * an die Uhr - wer um 23:50 anfaengt und um 00:10 aufhoert, hat an zwei
+ * Tagen geuebt, und das ist richtig so. */
+const heute = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-`
+       + `${String(d.getDate()).padStart(2,'0')}`;
+};
+const GEUEBT = (id) => `geuebt:${id}`;
+let geuebtStand = {};
+
+async function geuebtLaden(){
+  geuebtStand = {};
+  try {
+    for (const [k, w] of await Ablage.alleMitSchluessel('einstellungen'))
+      if (String(k).startsWith('geuebt:')) geuebtStand[k] = w;
+  } catch(e){}
+}
+/** Nach einer gewerteten Antwort: heute ist geuebt. Hoechstens ein
+ *  Schreibvorgang je Kind und Tag - die Abfrage davor ist der Punkt. */
+async function geuebtMerken(){
+  if (!P) return;
+  const k = GEUEBT(P.id), t = heute();
+  if (geuebtStand[k] === t) return;
+  geuebtStand[k] = t;
+  try { await Ablage.setze('einstellungen', k, t); } catch(e){}
+}
+
 function profilwahl(){
   const s = el('div');
   s.innerHTML = kopf({ mitte:'<span class="marke">Smart Kids</span>', rechts:
@@ -1760,6 +1817,8 @@ function profilwahl(){
           <div class="kreis" style="background:var(${p.farbe})">${p.name[0]}</div>
           <div class="name">${p.name}</div>
           <div class="rolle">${profilzeile(p)}</div>
+          ${geuebtStand[GEUEBT(p.id)] === heute()
+            ? '<div class="heute">heute schon geübt</div>' : ''}
         </button>`).join('')}</div>
     </div>`;
   s.querySelector('#ton').onclick=(e)=>{ tonAn=!tonAn; Einst.ton=tonAn; einstSichern();
@@ -1955,7 +2014,7 @@ async function weltenwahl(){
           <div class="name">${w.name}</div>
           <div class="ueber">${meine.length} ${meine.length === 1 ? 'Übung' : 'Übungen'}</div>
           <div class="kachelfuss">
-            <div class="stand">${kleberMarke(gesammelt, gesamt)}</div>
+            <div class="stand">${kleberMarke(gesammelt, gesamt, true)}</div>
             ${fortschrittBalken({ gesammelt, gesamt, anteil })}
           </div>
         </button>`; }).join('')}</div>
@@ -2044,7 +2103,7 @@ async function ebenenwahl(gruppe = null){
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
           <div class="kachelfuss">
-            <div class="stand">${kleberMarke(b.gesammelt, b.gesamt)}${
+            <div class="stand">${kleberMarke(b.gesammelt, b.gesamt, true)}${
               /* Der Pokal steht NEBEN dem Aufkleberstand, nicht darueber:
                  beide sagen „was du hier hast", und beide gehoeren damit in
                  dieselbe Zeile. Der erste Anlauf legte ihn absolut ueber die
@@ -2485,6 +2544,7 @@ function werten(ziel, ergebnis, versuch){
   st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
   const neuerAufkleber = !hatteVorher && Leitner.istGesammelt(Stand, ziel.id);
   if (neuerAufkleber) { st.aufkleber++; st.neueKleber.push(ziel.id); }
+  geuebtMerken();
   standSichern(st.ebeneId);
   return neuerAufkleber;
 }
@@ -5997,15 +6057,49 @@ async function elternbereich(){
    * weiss, ob es funktioniert hat. */
   const glstand = s.querySelector('#glstand');
   const glSchreiben = (satz) => { if (glstand) glstand.textContent = satz; };
-  const glZeit = (t) => new Date(t).toLocaleString('de-DE',
-    { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  /* „vor drei Minuten", nicht „02.09. 19:41".
+   *
+   * Die Frage, die hier jemand hat, ist „laeuft es noch?" - und darauf
+   * antwortet ein Abstand, keine Uhrzeit. Eine Uhrzeit muss man erst mit
+   * der eigenen vergleichen, und bei „19:41" weiss man nicht, ob das
+   * heute war. Ab einem Tag steht das Datum trotzdem da: „vor 40
+   * Stunden" rechnet auch niemand. */
+  const glVorher = (t) => {
+    const s2 = Math.round((Date.now() - t) / 1000);
+    if (s2 < 90) return 'gerade eben';
+    if (s2 < 5400) return `vor ${Math.round(s2 / 60)} Minuten`;
+    if (s2 < 86400) return `vor ${Math.round(s2 / 3600)} Stunden`;
+    return 'am ' + new Date(t).toLocaleString('de-DE',
+      { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  };
   const glMelden = (st) => glSchreiben(st.fehler
     ? `Zuletzt nicht geklappt: ${st.fehler}.`
-      + (st.zuletzt ? ` Davor am ${glZeit(st.zuletzt)}.` : '')
-    : st.zuletzt ? `Zuletzt abgeglichen am ${glZeit(st.zuletzt)}`
+      + (st.zuletzt ? ` Davor ${glVorher(st.zuletzt)}.` : '')
+    : st.zuletzt ? `Zuletzt abgeglichen ${glVorher(st.zuletzt)}`
       + (st.gesendet ? ` — ${st.gesendet} Einträge sind dazugekommen.` : '.')
     : 'Noch nicht abgeglichen.');
-  if (Einst.familienschluessel && BAU.gleichlauf) glMelden(gleichlaufStand);
+  if (Einst.familienschluessel && BAU.gleichlauf) {
+    glMelden(gleichlaufStand);
+    /* Die Zeile zieht NACH, ohne dass jemand etwas antippt.
+     *
+     * Zwei Gruende: der Abstand wird von selbst aelter („vor 3 Minuten"
+     * stimmt nach zehn nicht mehr), und ein Gleichlauf, der im
+     * Hintergrund fertig wird, waehrend jemand hier steht, soll zu sehen
+     * sein. Vorher stimmte die Zeile nur im Augenblick des Aufbaus - und
+     * eine Anzeige, die nur auf Knopfdruck stimmt, ist keine.
+     *
+     * Beendet wird die Uhr daran, dass ihr Element aus dem Baum ist
+     * (`isConnected`), nicht an einem Ereignis: Bildschirme werden hier
+     * ausgetauscht, nicht abgemeldet, und eine Uhr, die auf ein
+     * Abmelden wartet, das es nicht gibt, laeuft ewig weiter. */
+    const uhr = setInterval(() => {
+      if (!glstand.isConnected) { clearInterval(uhr); return; }
+      glMelden(gleichlaufStand);
+    }, 15000);
+    /* Und beim Oeffnen einmal wirklich abgleichen. Nicht darauf warten -
+       der Bildschirm steht sofort da, die Zeile zieht nach. */
+    gleichlaufFahren().then(glMelden);
+  }
 
   const glNeu = s.querySelector('#glneu');
   if (glNeu) glNeu.onclick = async () => {
@@ -6106,5 +6200,5 @@ async function umzugEltern(){
  * erste Bildschirm darf nicht an einem Netzaufruf haengen. Wer im Zug
  * startet, sieht die Profilwahl sofort; was aus dem Netz kommt, kommt
  * spaeter und aendert nur die Zahlen. */
-(async ()=>{ await einstLaden(); await umzugEltern(); zeige(profilwahl);
+(async ()=>{ await einstLaden(); await geuebtLaden(); await umzugEltern(); zeige(profilwahl);
   if (gleichlaufAn()) gleichlaufFahren(); })();

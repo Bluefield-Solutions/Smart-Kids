@@ -249,7 +249,8 @@ export function standVereinen(a, b) {
  * Es sind Einstellungen des GERAETS, nicht des Kindes - und die PIN
  * gehoert ohnehin nicht in einen Umschlag, der reist, auch wenn er
  * zugesperrt ist. */
-export const REIST = (k) => k === 'glatt' || String(k).startsWith('nr:');
+export const REIST = (k) => k === 'glatt' || String(k).startsWith('nr:')
+  || String(k).startsWith('geuebt:');
 
 export function einstVereinen(a, b) {
   /* Gefiltert wird auf BEIDEN Seiten, nicht nur auf der ankommenden.
@@ -264,6 +265,13 @@ export function einstVereinen(a, b) {
     if (!REIST(k)) continue;
     if (!(k in aus)) { aus[k] = w; continue; }
     if (String(k).startsWith('nr:')) { aus[k] = Math.max(zahl(aus[k]), zahl(w)); continue; }
+    /* „heute schon geübt" (A4h): der SPAETERE Tag gilt. Er steht als
+       `YYYY-MM-DD` da, und in dieser Schreibweise ist der spaetere Tag
+       auch der groessere Text - deshalb genuegt ein Vergleich, und es
+       braucht kein Datum daraus zu werden. Wer auf dem iPad geuebt hat,
+       sieht es danach auch auf dem iPhone. */
+    if (String(k).startsWith('geuebt:')) {
+      aus[k] = String(w) > String(aus[k]) ? w : aus[k]; continue; }
     // `glatt`: das FRUEHERE gilt.
     const alt = aus[k], neu = w;
     aus[k] = (zahl(neu && neu.zeit, Infinity) < zahl(alt && alt.zeit, Infinity)) ? neu : alt;

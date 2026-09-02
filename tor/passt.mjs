@@ -612,9 +612,42 @@ const SUCHE = () => {
       // Nach oben, bis es herauslaeuft - hoechstens acht dazu, sonst
       // kostet die Messung mehr als sie wert ist.
       let passt = heute;
+      /* Und im selben Zug: brechen die NAMEN um, wenn es eng wird? (Q31)
+       *
+       * Gemessen wird bei elf Kacheln - der Schwelle, ab der die Kachel
+       * schmaler wird (Q27). Ein Umbruch an sich ist kein Befund; die
+       * Zeile ist hoch genug fuer zwei. Der Befund ist die WAISE: ein
+       * Rest von sieben bis neun Punkten in der zweiten Zeile, also ein
+       * einzelner Buchstabe („Mittelamerik/a"). Das sieht aus wie ein
+       * Fehler und ist einer.
+       *
+       * Der Kasten steht daneben, damit die Zahl ihre Messstelle
+       * mitbringt: ein Rest von 8 Punkten heisst bei 94 Punkten Kasten
+       * etwas anderes als bei 240. */
+      let waisen = [];
+      const namenMessen = () => {
+        /* Nur an der EBENENwahl. Dort gibt es die Regel „ab elf wird die
+         * Kachel schmaler" (Q27), und dort ist elf eine Zahl, die kommen
+         * wird - Lea hat heute zehn. An der Weltenwand waeren elf Welten
+         * eine Erfindung; die Regel dort greift ab VIER (Q30), und
+         * Waisen bei elf zu melden hiesse, gegen einen Fall zu pruefen,
+         * den es nie gibt. Eine Meldung ohne Fall ist Laerm, und Laerm
+         * macht ein Tor leiser, nicht lauter. */
+        if (!w.classList.contains('ebenen')) return;
+        for (const na of w.querySelectorAll('.kachel .name')) {
+          const rg = document.createRange(); rg.selectNodeContents(na);
+          const zeilen = [...rg.getClientRects()].map(x => x.width);
+          if (zeilen.length < 2) continue;
+          const rest = zeilen[zeilen.length - 1];
+          const kasten = na.getBoundingClientRect().width || 1;
+          if (rest / kasten < 0.2) waisen.push(`${na.textContent.trim().slice(0, 18)} `
+            + `(${Math.round(rest)} von ${Math.round(kasten)} pt in der letzten Zeile)`);
+        }
+      };
       if (!laeuftRaus()) for (let i = 0; i < 8; i++) {
         const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);
         neuHaengen();
+        if (heute + i + 1 === 11) namenMessen();
         if (laeuftRaus()) break;
         passt = heute + i + 1;
       }
@@ -638,7 +671,7 @@ const SUCHE = () => {
                        + Math.max(...kk.map(x => x.right))) / 2;
       const mitteLetzte = (Math.min(...letzteReihe.map(x => x.left))
                          + Math.max(...letzteReihe.map(x => x.right))) / 2;
-      wand = { heute, passt, mehr: passt - heute, gedeckelt: passt - heute >= 8,
+      wand = { heute, passt, waisen, mehr: passt - heute, gedeckelt: passt - heute >= 8,
                versatz: Math.round(Math.abs(mitteWand - mitteLetzte)),
                jeReihe: [...w.children].filter(e =>
                  Math.round(e.getBoundingClientRect().top) === oben[0]).length,
@@ -909,6 +942,13 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      * Kachel ist 197 x 55 Punkte gross, und fuer einen langen Namen UND
      * ein Bild ist darin kein Platz. Was man verlangen kann, ist, dass es
      * nicht schlimmer wird. */
+    /* Waisen in den Kachelnamen (Q31) - ein Befund, kein Hinweis.
+     * Er kostet nichts zu beheben (ein Hauch Polster, ein Hauch
+     * Laufweite) und sieht wie ein Fehler aus, solange er dasteht. */
+    for (const wa of ((r.wand && r.wand.waisen) || []))
+      meldungen.push(`${name}: bei elf Kacheln bricht „${wa}" — ein einzelner `
+        + 'Buchstabe in der zweiten Zeile sieht aus wie ein Fehler');
+
     /* Die kleinste Albumkarte des Bildschirms in die Ratsche (Q30).
      * Die kleinste und nicht der Mittelwert: ein Buch mit einer grossen
      * und einer geschrumpften Karte darf nicht als „unveraendert"

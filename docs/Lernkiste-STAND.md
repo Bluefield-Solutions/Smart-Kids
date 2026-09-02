@@ -9500,3 +9500,121 @@ bekamen die neue Messung. Kein Schaden — beide Kopien rechneten dasselbe —,
 aber genau so entstehen zwei Wahrheiten.
 
 256 Gegenproben.
+
+---
+
+## Q31 — Drei aus dem Backlog, und zwei Nachträge
+
+### P3 · Der Größenwächter im Korpus war nicht ohne Gegenprobe — er war tot
+
+Im Backlog stand er als *„die einzige Prüfung ohne Gegenprobe, weil ihr
+Gegenstand noch nicht existiert"*. Beim Herauslösen kam heraus, dass er
+schlimmer dran war:
+
+```js
+if (zt < 100 || zn < 50) { … rot++; }   // ← hier
+let rot = 0;                            // ← und erst hier deklariert
+```
+
+`rot++` stand **vor** `let rot = 0`. Wäre der eingefrorene Korpus je zu klein
+gewesen, hätte die Prüfung nicht gemeldet, sondern das Tor mit einem
+`ReferenceError` abgebrochen — und niemand hätte den Satz gelesen, um den es
+geht. *Eine tote Prüfung verfällt nicht nur, sie verrottet.*
+
+Die Regel ist jetzt eine **Funktion** (`korpusMass`), und das Tor fährt sie an
+zwei erfundenen Korpora — einer knapp darunter, einer knapp darüber. Damit ist
+sie heute belegt statt an dem Tag, an dem jemand die echte Datei anlegt, und
+eine Gegenprobe hat etwas zu brechen. Nebenbei zeigt `vergleich` jetzt die
+Korpusgröße auch für die erfundene Hälfte: 121 Treffer, 91 Nichttreffer, nötig
+sind 100 / 50.
+
+### Q1 · Nachgesehen: beide Gegenproben schlagen an
+
+Der Eintrag nennt zwei Proben, die nichts mehr bewiesen. Heute gefahren:
+**beide schlagen an, und zwar mit ihrer eigenen Meldung** („geschrumpft" und
+„nimmt jedem Tor ein Profil"). Der Punkt ist erledigt; die Rangliste war
+stehen geblieben. Dieselbe Falle wie am 01.09., diesmal andersherum: damals
+standen erledigte Punkte als offen, heute ein reparierter.
+
+### A4h · „Heute schon geübt"
+
+Eine ruhige Zeile auf der Profilkachel — **kein Zähler, keine Kette, kein
+„drei Tage hintereinander"**. Der ANTON-Abgleich nennt den Punkt ausdrücklich
+mit dem Zusatz *kein Streak-Zwang*, und der Grund steht in `abzeichen.js`:
+ein Abzeichen für zehn Tage am Stück bestraft einen Krankheitstag.
+
+Abgelegt wird **eine Marke je Kind** mit dem Tag darin (`geuebt:<id>`), nicht
+das Protokoll: die Profilwahl ist der erste Bildschirm, und alle Einträge zu
+lesen hieße bei einem Jahr Spielzeit fünftausend Datensätze für vier Zeilen.
+Der Tag ist Ortszeit als `YYYY-MM-DD` — „heute" ist eine Frage an den Kalender
+des Kindes, nicht an die Uhr.
+
+Die Marke **reist mit** (Q29): wer auf dem iPad geübt hat, sieht es auf dem
+iPhone. Zusammengeführt wird der spätere Tag, und in dieser Schreibweise ist
+der spätere auch der größere Text.
+
+*Abnahme, gefahren:* der Rauchtest liest die Zeile **nach einem Neustart** —
+`fiona ja, lea nein, stephan nein, violeta nein`. Zwei Gegenproben, und die
+zweite ist die wichtigere: sie lässt die Zeile auf **jeder** Kachel stehen.
+Das sieht freundlich aus und ist der Streak-Zwang — ein täglicher Vorwurf für
+den, der heute nicht gespielt hat.
+
+### S2 · Anteil neben Anzahl
+
+Auf der Kachel standen Sterne und Balken (ein **Anteil**) neben der
+Aufkleberzahl (einer **Anzahl**): neun Aufkleber und ein Stern (Länder Asien,
+9 von 60) neben zwei Aufklebern und zwei Sternen (Kontinente, 2 von 6). Wer
+die Kacheln vergleicht — und Kinder vergleichen sie —, las das Gegenteil.
+
+Jetzt steht dort `2/54`. Auf dem **Endbildschirm** bleibt die nackte Zahl:
+daneben steht „von 4 im Buch", und dort wird nichts verglichen.
+
+Zwei Kleinigkeiten, die die Tore gefangen haben: der Nenner war zuerst blasser
+(`--tinte-3`) und kam im Abendanstrich auf **3,1:1** statt 4,5 — `lesbarkeit`
+hat es an fünf Kacheln gemeldet. Er ist jetzt nur kleiner, nicht blasser. Und
+die Lücke des Flex-Kastens machte aus `2/54` ein `2 /54`.
+
+### Nachtrag 1 · Der Namensumbruch bei elf Kacheln
+
+Gemessen an elf Kacheln auf dem iPhone SE quer, dem engsten Fall:
+
+| | Textbreite | Kasten |
+|---|---|---|
+| Mittelamerika | 97 pt (2 Zeilen, Rest **9**) | 90 |
+| Bundesländer | 95 pt (2 Zeilen, Rest **7**) | 90 |
+| Nordamerika | 90 pt | 90 |
+
+Von elf Namen brachen genau **zwei** um, und beide ließen einen einzelnen
+Buchstaben in der zweiten Zeile stehen. Es fehlten sieben Punkte, nicht
+siebzig — geholt an sieben Punkten seitlichem Polster und einem Hauch
+Laufweite. Die Schriftgröße bleibt: 14 Punkte sind schon die kleine Stufe, und
+ein Name, den ein Kind lesen soll, ist der falsche Ort zum Sparen. Danach
+passen **alle elf** in eine Zeile (Mittelamerika 93 von 94).
+
+`passt` misst das jetzt selbst und meldet die **Waise** — einen Rest unter 20 %
+der Kastenbreite. Nur an der Ebenenwahl: dort greift die Elf-Regel, und elf
+Ebenen wird es geben (Lea hat zehn). An der Weltenwand wären elf Welten eine
+Erfindung, und eine Meldung ohne Fall ist Lärm.
+
+**Was damit nicht geprüft ist:** dieses Chromium hat kein deutsches
+Trennmuster. Auf iOS trägt `hyphens:auto` mit `lang="de"`, und dort wäre der
+Umbruch getrennt statt abgehackt — hier ist kein Gerät, das bleibt unbelegt.
+Die sieben Punkte helfen in beiden Fällen, weil sie den Umbruch ganz vermeiden.
+
+### Nachtrag 2 · Der Elternbereich zieht nach
+
+Die Gleichlauf-Zeile stimmte nur im Augenblick des Aufbaus. Jetzt steht dort
+ein **Abstand** statt einer Uhrzeit („vor drei Minuten"), die Zeile zieht alle
+15 Sekunden nach, und beim Öffnen läuft einmal ein Abgleich — ohne dass der
+Bildschirm darauf wartet. Beendet wird die Uhr daran, dass ihr Element aus dem
+Baum ist: Bildschirme werden hier ausgetauscht, nicht abgemeldet, und eine Uhr,
+die auf ein Abmelden wartet, das es nicht gibt, läuft ewig weiter.
+
+### Und zum zweiten Mal in zwei Runden
+
+`npm run doppelt` hat wieder einen Block gefangen, den mein Suchmuster
+**zweimal** eingesetzt hat — diesmal 179 Token im Rauchtest. Beim ersten Mal
+(Q30) war es `passt.mjs`. Das ist kein Zufall mehr, sondern eine Angewohnheit:
+ein unbegrenztes Ersetzen trifft, was es findet.
+
+260 Gegenproben.

@@ -807,6 +807,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   color:var(--auf-flaeche);hyphens:auto;overflow-wrap:break-word;text-align:center;
   line-height:1.15}
 .kachel .rolle{font-family:var(--f-ui);font-size:var(--s-klein);color:var(--tinte-2)}
+/* „heute schon geübt" (A4h) - eine RUHIGE Zeile.
+   Kein Abzeichen, keine Farbe, kein Ausrufezeichen: sie soll gesehen
+   werden und niemanden treiben. Wer gestern geuebt hat und heute nicht,
+   sieht hier nichts - und das ist kein Vorwurf, sondern eine leere
+   Stelle. */
+.kachel .heute{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
+  color:var(--gut)}
 /* Auf einer Kachel MIT Streu ist der Grund nicht mehr ruhig, und die
    kleine Zeile stand mit 4,46:1 knapp unter der Grenze - gemessen, nicht
    geschaetzt. Repariert wird die Ursache, nicht das Symptom: nicht der
@@ -833,6 +840,19 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .kachel .kachelfuss{display:flex;flex-direction:column;align-items:stretch;
   gap:var(--r1);width:100%}
 .kachel .stand{display:flex;align-items:center;gap:var(--r3);min-height:22px}
+/* Das „/60" steht KLEINER als die eigene Zahl (S2): was das Kind
+   gesammelt hat, ist die Nachricht; wovon, ist der Massstab.
+   Kleiner und leichter, aber NICHT blasser: mit `--tinte-3` kam es im
+   Abendanstrich auf 3,1:1 gegen den Kachelgrund - noetig sind 4,5. Das
+   Tor `lesbarkeit` hat es an fuenf Kacheln gemeldet, bevor es jemand
+   sehen konnte. Ein Unterschied, den man nur mit hellerer Farbe
+   hinbekommt, ist auf einer bunten Kachel keiner. */
+/* Die Luecke des Flex-Kastens wieder heraus: sie sitzt zwischen Zeichen,
+   Zahl UND Nenner, und aus „2/54" wurde „2 /54". Mit derselben Marke
+   zurueckgenommen, mit der sie entsteht: was zweimal dasteht, veraltet
+   einmal (Regel 6) - hier waere es dieselbe Zahl zum zweiten Mal. */
+.klebermarke small{font-size:.78em;font-weight:600;
+  margin-inline-start:calc(var(--r1) * -1)}
 .klebermarke{display:inline-flex;align-items:center;gap:var(--r1);font-family:var(--f-ui);
   font-size:var(--s-klein);font-weight:700;color:var(--tinte-2)}
 /* Der leere Aufkleber muss noch zu SEHEN sein - mit --stern-aus war er auf
@@ -2051,6 +2071,31 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .wahl.ebenen:has(> :nth-child(11))>*{
     flex-basis:max(100px, calc((100% - 5 * var(--r3)) / 6))}
   .wahl.ebenen:has(> :nth-child(11)) .kachel .name{font-size:var(--s-klein)}
+  /* Und die letzten Punkte fuer die zwei langen Namen (Q31).
+   *
+   * GEMESSEN an elf Kacheln auf dem iPhone SE quer, dem engsten Fall:
+   * von elf Namen brechen genau zwei um, und beide lassen einen Rest
+   * von sieben bis neun Punkten in der zweiten Zeile stehen - also
+   * einen einzelnen Buchstaben („Mittelamerik/a", „Bundeslände/r").
+   *
+   *     Kasten 90 pt      Mittelamerika 97   Bundesländer 95
+   *                       Nordamerika   90   Hauptstädte  86
+   *
+   * Es fehlen sieben Punkte, nicht siebzig. Geholt werden sie da, wo sie
+   * am wenigsten kosten: am seitlichen Polster der Kachel (das Bild
+   * darueber ist ohnehin schmaler) und an einem Hauch Laufweite. Die
+   * SCHRIFTGROESSE bleibt - sie ist mit 14 Punkten schon die kleine
+   * Stufe, und ein Name, den ein Kind lesen soll, ist der falsche Ort
+   * zum Sparen.
+   *
+   * WAS DAMIT NICHT GEPRUEFT IST: dieses Chromium hat kein deutsches
+   * Trennmuster (nachgesehen - „Mittelamerika" bricht in 70 Punkten
+   * Breite ohne Trennstrich um). Auf iOS traegt `hyphens:auto` mit
+   * `lang="de"`, und dort waere der Umbruch getrennt statt abgehackt.
+   * Hier ist kein Gerät; das bleibt unbelegt. Die Punkte unten helfen
+   * in BEIDEN Faellen, weil sie den Umbruch ganz vermeiden. */
+  .wahl.ebenen:has(> :nth-child(11)) .kachel{padding-left:var(--r0);padding-right:var(--r0)}
+  .wahl.ebenen:has(> :nth-child(11)) .kachel .name{letter-spacing:-.02em}
   /* Eine Stufe schmaler fuer das KLEINSTE Geraet (iPhone SE quer, 667):
      dort passen bei 134 nur vier je Reihe, das waeren drei Reihen, und
      drei hohe Kacheln laufen aus dem Bild. Weil „Mittelamerika" bei 118

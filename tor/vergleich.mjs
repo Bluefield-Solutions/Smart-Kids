@@ -95,33 +95,84 @@ const erfunden = JSON.parse(fs.readFileSync(new URL('./korpus/erfunden.json', im
 const eingefrorenPfad = new URL('./korpus/eingefroren.json', import.meta.url);
 const hatEingefroren = fs.existsSync(eingefrorenPfad);
 
+/* Wie gross ein eingefrorener Korpus mindestens sein muss (P3).
+ *
+ * Sonst gilt ab dem Tag, an dem die Datei entsteht, eine 90-Prozent-Grenze
+ * fuer eine Zahl, die wuerfelt: bei fuenfundzwanzig Formen liegt eine
+ * gemessene Quote gut und gern zwoelf Punkte daneben. Die Grenzen stehen
+ * auch in `tools/korpus.mjs`, das die Datei baut - hier wird nachgesehen,
+ * ob sie eingehalten sind. Von Hand geschrieben kaeme sie sonst durch.
+ *
+ * ALS FUNKTION, nicht als Zeile im Ablauf. Das ist der ganze Unterschied
+ * zwischen einer Pruefung, die man fahren kann, und einer, die auf Daten
+ * wartet: `eingefroren.json` gibt es noch nicht, und solange sie fehlte,
+ * war dieser Absatz totes Holz - im Backlog als „einzige Pruefung ohne
+ * Gegenprobe" gefuehrt.
+ *
+ * Beim Herausloesen kam heraus, dass sie schlimmer dran war als das:
+ * `rot++` stand VOR `let rot = 0`. Waere die Datei je zu klein gewesen,
+ * haette die Pruefung nicht gemeldet, sondern das Tor mit einem
+ * ReferenceError abgebrochen - und niemand haette den Satz gelesen, um
+ * den es geht. Eine tote Pruefung verfaellt nicht nur, sie verrottet. */
+export const KORPUS_MIN_TREFFER = 100;
+export const KORPUS_MIN_NICHT = 50;
+
+export function korpusMass(korpus) {
+  const zaehl = (a) => (a || []).reduce((n, [, f]) => n + (f || []).length, 0);
+  const treffer = zaehl(korpus && korpus.treffer);
+  const nicht = zaehl(korpus && korpus.nichttreffer);
+  return { treffer, nicht,
+           reicht: treffer >= KORPUS_MIN_TREFFER && nicht >= KORPUS_MIN_NICHT };
+}
+
+let rot = 0;
+
+/* Und die Funktion wird GEFAHREN, auch ohne die Datei.
+ *
+ * Zwei erfundene Korpora - einer zu klein, einer gross genug. Damit ist
+ * die Regel heute belegt statt an dem Tag, an dem jemand die echte Datei
+ * anlegt; und eine Gegenprobe hat etwas zu brechen. */
+{
+  const bauen = (t, n) => ({
+    treffer: [['x', Array.from({ length: t }, (_, i) => 'a' + i)]],
+    nichttreffer: [['y', Array.from({ length: n }, (_, i) => 'b' + i)]] });
+  const klein = korpusMass(bauen(KORPUS_MIN_TREFFER - 1, KORPUS_MIN_NICHT));
+  const knapp = korpusMass(bauen(KORPUS_MIN_TREFFER, KORPUS_MIN_NICHT));
+  const wenig = korpusMass(bauen(KORPUS_MIN_TREFFER, KORPUS_MIN_NICHT - 1));
+  if (klein.reicht || wenig.reicht || !knapp.reicht) {
+    console.log(`\n  ROT: die Größenprüfung des Korpus urteilt falsch — `
+      + `${KORPUS_MIN_TREFFER - 1} Treffer gelten als ${klein.reicht ? 'genug' : 'zu wenig'}, `
+      + `${KORPUS_MIN_TREFFER} als ${knapp.reicht ? 'genug' : 'zu wenig'}, `
+      + `${KORPUS_MIN_NICHT - 1} Nichttreffer als ${wenig.reicht ? 'genug' : 'zu wenig'}`);
+    rot++;
+  }
+}
+
 const laeufe = [pruefe(erfunden, 'erfunden')];
+{
+  /* Auch der erfundene Korpus wird GEMESSEN und die Zahl gezeigt - er
+   * muss die Grenze nicht halten (er ist zum Einstellen da), aber wer
+   * sieht, wie weit er davon weg ist, weiss, wieviel noch zu sammeln
+   * ist. Eine Grenze, die nur an einer Datei haengt, die es nicht gibt,
+   * sagt niemandem etwas. */
+  const m = korpusMass(erfunden);
+  console.log(`\n  Korpusgröße  erfunden: ${m.treffer} Treffer, ${m.nicht} Nichttreffer`
+    + `  (eingefroren nötig: ${KORPUS_MIN_TREFFER} / ${KORPUS_MIN_NICHT})`);
+}
 if (hatEingefroren) {
-  /* Ein eingefrorener Korpus muss GROSS GENUG sein, um seine Zielzahlen zu
-   * tragen. Sonst gilt ab dem Tag, an dem die Datei entsteht, eine
-   * 90-Prozent-Grenze fuer eine Zahl, die wuerfelt: bei fuenfundzwanzig
-   * Formen liegt eine gemessene Quote gut und gern zwoelf Punkte daneben.
-   * Die Grenzen stehen in `tools/korpus.mjs`, das die Datei baut - hier
-   * wird nur nachgesehen, ob sie eingehalten sind. Von Hand geschrieben
-   * kaeme sie sonst durch.
-   *
-   * EHRLICH DAZU: das ist die einzige Pruefung im Verzeichnis ohne
-   * Gegenprobe. Ihr Gegenstand gibt es noch nicht - sobald die Datei da
-   * ist, gehoert eine nachgetragen. */
   const gefroren = JSON.parse(fs.readFileSync(eingefrorenPfad));
-  const zt = (gefroren.treffer || []).reduce((n, [, f]) => n + f.length, 0);
-  const zn = (gefroren.nichttreffer || []).reduce((n, [, f]) => n + f.length, 0);
-  if (zt < 100 || zn < 50) {
-    console.log(`\n  ROT: der eingefrorene Korpus ist zu klein — ${zt} Treffer `
-      + `(nötig 100), ${zn} Nichttreffer (nötig 50). Eine Zielzahl über so wenigen`);
+  const m = korpusMass(gefroren);
+  console.log(`  Korpusgröße  eingefroren: ${m.treffer} Treffer, ${m.nicht} Nichttreffer`);
+  if (!m.reicht) {
+    console.log(`\n  ROT: der eingefrorene Korpus ist zu klein — ${m.treffer} Treffer `
+      + `(nötig ${KORPUS_MIN_TREFFER}), ${m.nicht} Nichttreffer (nötig ${KORPUS_MIN_NICHT}). `
+      + 'Eine Zielzahl über so wenigen');
     console.log('  Formen wackelt stärker als der Abstand, um den es geht.');
     console.log('  Weiter sammeln: `npm run korpus`.');
     rot++;
   }
   laeufe.push(pruefe(gefroren, 'eingefroren'));
 }
-
-let rot = 0;
 for (const r of laeufe) {
   const gilt = r.name === 'eingefroren';
   console.log(`\n  Korpus »${r.name}«${gilt ? '  — DIESE ZAHLEN GELTEN' : '  (nur zum Einstellen)'}`);

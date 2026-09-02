@@ -806,6 +806,26 @@
       "zeit": "2026-09-02",
       "s": 163
     },
+    "bei elf Kacheln bricht der Name wieder auf einen Buchstaben": {
+      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
+      "zeit": "2026-09-02",
+      "s": 79
+    },
+    "„heute schon geübt\" überlebt den Neustart nicht": {
+      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
+      "zeit": "2026-09-02",
+      "s": 136
+    },
+    "„heute schon geübt\" steht auf jeder Kachel": {
+      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
+      "zeit": "2026-09-02",
+      "s": 56
+    },
+    "der Größenwächter im Korpus urteilt falsch herum": {
+      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
+      "zeit": "2026-09-02",
+      "s": 5
+    },
     "die vierte Welt bekommt ihre schmale Kachel nicht mehr": {
       "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
       "zeit": "2026-09-02",
@@ -1057,9 +1077,9 @@
       "s": 119
     },
     "eine Spalte fehlt in der Profiltabelle": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
       "zeit": "2026-09-02",
-      "s": 63
+      "s": 110
     },
     "der Fehlgriff auf der Karte wird nicht mehr benannt": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -1177,9 +1197,9 @@
       "s": 28
     },
     "die Buchstabenkarten rutschen wieder zusammen": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
       "zeit": "2026-09-02",
-      "s": 52
+      "s": 79
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",

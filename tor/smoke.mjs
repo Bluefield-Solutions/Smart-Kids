@@ -1097,6 +1097,28 @@ if (laeuft('spielen')) try {
 let fortschritt = null;
 if (laeuft('ablage')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
+  /* „Heute schon geübt" (A4h) - und zwar NACH einem Neustart.
+   *
+   * Das ist die ganze Abnahme aus dem Backlog: „die Zeile stimmt nach
+   * einem Neustart". Vorher hat Fiona gespielt, Lea nicht - also muss
+   * die Zeile bei Fiona stehen und bei Lea fehlen. Nur „sie ist da"
+   * waere kein Beweis: eine Zeile, die auf JEDER Kachel steht, sagt
+   * nichts, und sie waere genau der Streak-Zwang, den der Abgleich
+   * ausdruecklich nicht will - jeden Tag ein Vorwurf fuer den, der
+   * nicht gespielt hat. */
+  await p.waitForSelector('.schirm.da [data-profil]');
+  const geuebt = await p.evaluate(() => Object.fromEntries(
+    [...document.querySelectorAll('.schirm.da [data-profil]')]
+      .map(k => [k.dataset.profil, !!k.querySelector('.heute')])));
+  console.log(`  Heute schon geübt:          `
+    + Object.entries(geuebt).map(([k, v]) => `${k} ${v ? 'ja' : 'nein'}`).join(', ')
+    + ' (nach Neustart)');
+  if (!geuebt.fiona)
+    merke('ablage', new Error('nach dem Neustart steht bei Fiona nicht „heute schon '
+      + 'geübt", obwohl sie gerade gespielt hat'));
+  if (geuebt.lea)
+    merke('ablage', new Error('„heute schon geübt" steht auch bei Lea, die noch gar '
+      + 'nicht gespielt hat — eine Zeile auf jeder Kachel sagt nichts'));
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'bundeslaender');
   /* Die Ebenenwahl trägt Aufkleber und einen Balken statt der Zeile
