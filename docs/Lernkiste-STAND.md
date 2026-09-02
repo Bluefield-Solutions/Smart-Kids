@@ -8413,3 +8413,54 @@ gilt sie für jeden Knopf, der künftig über einem Wort landet — nicht nur f�
 dieses Auge.
 
 230 Gegenproben.
+
+---
+
+## Q18b — Regel 16 wird gemessen statt aufgeschrieben
+
+Seit Q14 steht in CLAUDE.md: *der Runner und dieser Rechner müssen denselben
+Browser fahren.* Sie taten es nicht. Hier lag Chromium **141.0.7390.37** (Bau
+1194, fest im Abbild), auf dem Runner installierte `npx playwright install` das,
+was `playwright: ^1.62.1` mitbringt: Bau **1234**, Chromium **151**. Zehn
+Hauptversionen auseinander — und `passt` und `lesbarkeit` waren dort rot und
+hier grün, achtzehn Auslieferungen lang.
+
+Nachgesehen, welche Playwright-Fassung welchen Bau erwartet:
+
+| Playwright | Bau | Chromium |
+|---|---|---|
+| 1.55.0 | 1187 | 140.0.7339.16 |
+| **1.56.0 / 1.56.1** | **1194** | **141.0.7390.37** |
+| 1.57.0 | 1200 | 143.0.7499.4 |
+| 1.58.0 | 1208 | 145.0.7632.6 |
+| 1.62.1 (war gesetzt) | 1234 | 151.0.7922.34 |
+
+Also **1.56.1, auf den Punkt genau** statt `^1.56.1`. Das Dach war der ganze
+Fehler: es hat die Fassung über sechs Ausgaben mitwandern lassen, während der
+Browser im Abbild stehen blieb.
+
+### Warum das Anschreiben nicht gereicht hat
+
+Weil ein `npm update` genügt. Die Regel steht seit Q14 in CLAUDE.md und war beim
+Schreiben schon gebrochen — sie beschrieb einen Zustand, den niemand herstellte.
+
+`starte()` in `tor/chromium.mjs` vergleicht deshalb bei jedem Browserstart die
+Fassung des **wirklich gestarteten** Browsers mit der, die `browsers.json`
+erwartet. Nicht die Bauzahl im Pfad (die steht nur hier), nicht die
+Playwright-Fassung (die sagt nichts über den Browser, der wirklich lief):
+
+- **hier** startet der feste Chromium aus dem Abbild → muss 141.0.7390.37 sein,
+- **auf dem Runner** startet der von `playwright install` geholte → derselbe,
+  weil dieselbe `browsers.json` ihn bestimmt.
+
+Stimmen beide mit `browsers.json`, stimmen sie miteinander. Und die Prüfung
+überspringt sich an keinem der beiden Orte still — sie läuft in jedem Tor, das
+einen Browser startet.
+
+Die Gegenprobe lässt `starte()` den *tip-of-tree*-Zweig erwarten (142.0.7430.0)
+statt den stabilen. Derselbe Browser startet, die Prüfung muss anschlagen.
+
+Damit hat auch das Überspringen von `ansicht` auf dem Runner nur noch **einen**
+Grund statt zwei: die Ersatzschriften. Der Chromium-Bau ist keiner mehr.
+
+231 Gegenproben.

@@ -12,6 +12,49 @@ const KANDIDATEN = [
 export function chromiumPfad() {
   return KANDIDATEN.find(x => fs.existsSync(x)) || null;
 }
+/* Regel 16: der Runner und dieser Rechner muessen denselben Browser fahren.
+ *
+ * Sonst heisst gruen an zwei Orten Verschiedenes - und das ist keine
+ * Sorge, sondern ein Befund: am Tag der Entdeckung lief hier Chromium
+ * 141 und auf dem Runner 151, `passt` und `lesbarkeit` waren dort rot und
+ * hier gruen, und achtzehn Auslieferungen sind nacheinander gescheitert.
+ *
+ * Aufgeschrieben stand die Regel danach in CLAUDE.md. Das reicht nicht:
+ * eine Regel, die nur in einem Dokument steht, wird gebrochen - es genuegt
+ * ein `npm update`. Also wird sie gemessen.
+ *
+ * Gemessen wird nicht die Bauzahl im Pfad und nicht die Fassung von
+ * Playwright, sondern die Fassung des Browsers, der WIRKLICH gestartet
+ * ist, gegen die, die dieses Playwright erwartet (`browsers.json`). Hier
+ * im Bild liegt ein fertiger Chromium an fester Stelle; auf dem Runner
+ * holt `playwright install` seinen eigenen. Stimmen beide mit
+ * `browsers.json` ueberein, stimmen sie miteinander ueberein - und die
+ * Pruefung geht an beiden Orten, ohne sich an einem still zu ueberspringen.
+ *
+ * Einmal je Prozess, nicht je Browser: `version()` kostet nichts, aber
+ * zwanzig gleiche Zeilen im Protokoll kosten Lesbarkeit.
+ */
+let browserGeprueft = false;
+async function gleicherBrowser(b) {
+  if (browserGeprueft) return;
+  browserGeprueft = true;
+  let soll = null;
+  try {
+    const j = JSON.parse(fs.readFileSync(
+      new URL('../node_modules/playwright-core/browsers.json', import.meta.url), 'utf8'));
+    soll = (j.browsers || []).find(x => x.name === 'chromium');
+  } catch { /* faellt unten auf die Meldung */ }
+  if (!soll) throw new Error('browsers.json von playwright-core ist nicht zu lesen — '
+    + 'ohne sie ist nicht zu sagen, welcher Browser hier erwartet wird (Regel 16).');
+  const ist = b.version();
+  if (ist !== soll.browserVersion)
+    throw new Error(`Chromium ${ist} laeuft, ${soll.browserVersion} (Bau ${soll.revision}) `
+      + 'wird von diesem Playwright erwartet — dann faehrt der Runner einen anderen Browser '
+      + 'als dieser Rechner, und gruen heisst an beiden Orten Verschiedenes (Regel 16). '
+      + 'Entweder die Playwright-Fassung auf die des vorhandenen Browsers zurueckziehen '
+      + 'oder den Browser nachziehen (`npx playwright install chromium`).');
+}
+
 export async function starte(opt = {}) {
   // Hier im Bild liegt ein fertiger Chromium an bekannter Stelle, dessen
   // Bauzahl aber nicht die ist, die Playwright erwartet - deshalb der
@@ -22,12 +65,18 @@ export async function starte(opt = {}) {
   // noch das andere einen Browser, bricht das Tor ab. Ein Tor, das bei
   // fehlendem Werkzeug gruen meldet, ist schlimmer als keines.
   const pfad = chromiumPfad();
+  let b;
   try {
-    return await chromium.launch(pfad ? { executablePath: pfad, ...opt } : opt);
+    b = await chromium.launch(pfad ? { executablePath: pfad, ...opt } : opt);
   } catch (e) {
     throw new Error('Kein Chromium gefunden — das Tor kann nicht laufen. '
       + `Auf einem Runner hilft \`npx playwright install --with-deps chromium\`. (${e.message})`);
   }
+  // NACH dem `catch`: eine falsche Browserfassung ist kein fehlendes
+  // Werkzeug, und die Meldung darf nicht in „Kein Chromium gefunden"
+  // umgeschrieben werden.
+  await gleicherBrowser(b);
+  return b;
 }
 
 /* Der kleine Server, der `dist/` ausliefert.

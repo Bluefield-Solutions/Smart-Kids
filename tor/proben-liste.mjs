@@ -568,6 +568,24 @@ export const PROBEN = [
     an:{ ...DIST, text:'if (true) { aus.push(b); continue; }' },
     sagt:'über den Rand' },
 
+  /* Regel 16: der Runner und dieser Rechner fahren denselben Browser.
+   *
+   * Der Eingriff laesst `starte()` die Fassung des TIP-OF-TREE-Zweigs
+   * erwarten (142) statt der stabilen (141). Der Browser, der wirklich
+   * startet, ist derselbe wie vorher - schlagen muss also die Pruefung
+   * an, nicht das Fehlen eines Werkzeugs.
+   *
+   * Warum ueberhaupt eine Probe fuer eine Zeile, die nur vergleicht:
+   * weil genau dieser Vergleich zwoelf Fassungen lang gefehlt hat und
+   * niemandem aufgefallen ist. Faellt er wieder weg, laeuft alles gruen
+   * weiter - bis zur naechsten roten Auslieferung. */
+  { n:'der Runner darf wieder einen anderen Browser fahren', tor:'lesbarkeit',
+    bauen:true, datei:'tor/chromium.mjs',
+    such:"    soll = (j.browsers || []).find(x => x.name === 'chromium');",
+    ersatz:"    soll = (j.browsers || []).find(x => x.name === 'chromium-tip-of-tree');",
+    an:{ datei:'tor/chromium.mjs', text:"x.name === 'chromium-tip-of-tree'" },
+    sagt:'an beiden Orten Verschiedenes' },
+
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,
     such:'      if (finger.size >= 2 && start && start.d) {',

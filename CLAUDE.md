@@ -277,6 +277,14 @@ Jede hat mindestens eine Runde gekostet.
    grün. Ein Tor, das nur an einem der beiden Orte gilt, entscheidet
    nichts.
 
+   Seit Q18 ist es **erzwungen, nicht aufgeschrieben**: `playwright` steht
+   in `package.json` auf den Punkt genau (1.56.1 → Bau 1194 →
+   141.0.7390.37, der Browser, der hier liegt), und `starte()` in
+   `tor/chromium.mjs` vergleicht bei jedem Start die Fassung des wirklich
+   gestarteten Browsers mit der, die `browsers.json` erwartet. Ein `npm
+   update` zieht die beiden Orte damit nicht mehr still auseinander — es
+   wird sofort rot, an beiden.
+
 Die Nummern sind keine Zierde: das Tor `regeln` prüft jeden Verweis der
 Form „Regel N" gegen diese Liste — die Nummer muss es geben, und im Satz
 daneben muss ein Wort aus ihrer Überschrift stehen. Vorher zeigten 101 von

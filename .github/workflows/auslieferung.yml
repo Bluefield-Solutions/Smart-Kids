@@ -37,12 +37,23 @@ jobs:
       - run: npm ci
       # Playwright braucht seinen eigenen Chromium. --with-deps holt die
       # Systembibliotheken dazu; ohne sie startet er auf dem Runner nicht.
+      #
+      # WELCHEN Chromium er holt, entscheidet die Playwright-Fassung in
+      # `package.json` - und die steht dort auf den Punkt genau (1.56.1,
+      # Bau 1194, Chromium 141.0.7390.37), weil genau der auch am
+      # Arbeitsplatz liegt. Mit `^1.56.1` war es zehn Hauptversionen
+      # daneben: hier 141, hier gruen; dort 151, dort rot. Nachgeprueft
+      # wird das bei jedem Browserstart (`tor/chromium.mjs`), damit ein
+      # `npm update` es nicht wieder still auseinanderzieht - Regel 16,
+      # der Runner und dieser Rechner fahren denselben Browser.
       - run: npx playwright install --with-deps chromium
       # `tor:runner` ist die volle Kette OHNE das Tor `ansicht`. Das ist
       # kein stiller Verzicht: das Tor meldet den Verzicht im Protokoll
       # samt Grund. Bildpunktvergleiche gelten nur bei gleicher
-      # Zeichenumgebung, und der Runner hat einen anderen Chromium-Bau
-      # und andere Ersatzschriften. `ansicht` gehoert an den Arbeitsplatz.
+      # Zeichenumgebung. Der Chromium-Bau ist seit Q18 auf beiden Seiten
+      # derselbe; die Ersatzschriften des Runners sind es nicht, und die
+      # entscheiden ueber jeden Buchstaben. `ansicht` bleibt deshalb am
+      # Arbeitsplatz - jetzt aus EINEM Grund statt aus zweien.
       - name: Alle Tore (ohne ansicht — siehe Protokoll)
         run: npm run tor:runner
       # Bei Rot bleibt sichtbar, WAS sich geaendert hat - sonst steht da
