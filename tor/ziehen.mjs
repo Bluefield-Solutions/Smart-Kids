@@ -726,7 +726,10 @@ if (laeuft('treffer')) {
  * Kind wirklich tut: dreimal auf +.
  */
 if (laeuft('lupe')) {
-  const ctx = await b.newContext({ viewport:{ width:844, height:390 }, deviceScaleFactor:2 });
+  // `hasTouch`, weil hier seit Q16 auch mit ZWEI FINGERN aufgezogen wird:
+  // ohne Beruehrungsemulation nimmt Chromium keine Beruehrungsereignisse an.
+  const ctx = await b.newContext({ viewport:{ width:844, height:390 }, deviceScaleFactor:2,
+    hasTouch:true, isMobile:true });
   const q = await ctx.newPage();
   await q.goto(`http://localhost:${port}/?flott`);
   await q.waitForSelector('[data-profil="stephan"]');
@@ -802,8 +805,63 @@ if (laeuft('lupe')) {
   if (Math.abs(zurueck.gross - vorher.gross) > 1) fehler.push(
     `„ganze Karte" bringt nicht dieselbe Karte zurück: ${zurueck.gross} statt ${vorher.gross} pt`);
 
+  /* --- Und jetzt die ZWEI FINGER (Q16) --------------------------------
+   *
+   * Die Lupe hat drei Knoepfe UND eine Geste: zwei Finger auseinander
+   * ziehen die Karte auf, ihre Mitte ist der Festpunkt. Die Geste steht
+   * seit M4z im Programm und war bis Q16 von KEINEM Tor beruehrt worden -
+   * die Knoepfe waren dreifach bezeugt, die Geste gar nicht. Genau die
+   * Sorte Zusage, die still ausfaellt: es reicht ein `touch-action`, das
+   * jemand von `none` auf `manipulation` setzt, und das Telefon nimmt die
+   * Geste fuer sich, ohne dass ein Bildpunkt anders aussieht.
+   *
+   * Gefahren wird sie ECHT, ueber `Input.dispatchTouchEvent` im
+   * Steuerprotokoll des Browsers - nicht mit selbstgebauten
+   * `PointerEvent`s. Der Unterschied ist nicht Feinheit: die App faengt
+   * den Zeiger mit `setPointerCapture`, und das wirft bei einer erfundenen
+   * Zeigernummer. Ein nachgemachtes Ereignis haette also die Geste
+   * geprueft, die es im Spiel nicht gibt.
+   *
+   * WAS DIESES TOR NICHT KANN, und das gehoert daneben: `touch-action`.
+   * Nachgestellt (`none` auf `manipulation` gesetzt) zog die Karte hier
+   * weiter auf - Chromium liefert in der Beruehrungsemulation die
+   * Zeigerereignisse trotzdem aus. Auf einem echten iPhone nimmt Safari
+   * die Geste an dieser Stelle fuer sich. Geprueft ist also, dass die
+   * GESTE angeschlossen ist; dass das Telefon sie durchlaesst, sagt nur
+   * das Geraet (Regel 5 - die Messstelle gehoert zur Zahl).
+   */
+  const kb = await q.evaluate(() => {
+    const r = document.querySelector('.schirm.da .karte').getBoundingClientRect();
+    return { x:r.left + r.width / 2, y:r.top + r.height / 2 };
+  });
+  const cdp = await ctx.newCDPSession(q);
+  const punkte = (abstand) => [
+    { x: kb.x - abstand / 2, y: kb.y, id: 1 },
+    { x: kb.x + abstand / 2, y: kb.y, id: 2 },
+  ];
+  const beruehren = (art, abstand) => cdp.send('Input.dispatchTouchEvent', {
+    type: art, touchPoints: art === 'touchEnd' ? [] : punkte(abstand) });
+  await beruehren('touchStart', 40);
+  for (const d of [70, 110, 150, 190, 230]) { await beruehren('touchMove', d); await q.waitForTimeout(60); }
+  await beruehren('touchEnd', 230);
+  await q.waitForTimeout(260);
+  const gezogen = await lies();
+
+  if (!(gezogen.lupe > 1.01))
+    fehler.push('zwei Finger ziehen die Karte nicht auf — der Maßstab steht nach der '
+      + `Geste immer noch auf ${gezogen.lupe}. Entweder nimmt die Karte keine `
+      + 'Berührungen an (`touch-action`), oder die Geste ist nicht mehr angeschlossen');
+  else if (!(gezogen.gross > vorher.gross * 1.5))
+    fehler.push(`zwei Finger bringen Maßstab ${gezogen.lupe}, aber das Land wächst nur von `
+      + `${vorher.gross} auf ${gezogen.gross} pt`);
+  if (gezogen.lupe > 1.01 && !(gezogen.ganz && gezogen.ganz.sichtbar))
+    fehler.push('nach dem Aufziehen fehlt der Knopf „ganze Karte" — dann kommt ein Kind '
+      + 'aus einer Karte, die es mit den Fingern vergrößert hat, nicht mehr zurück');
+
   console.log(`    Lupe: ${vorher.ziel} wächst von ${vorher.gross} auf ${nachher.gross} pt `
     + `(Maßstab ${nachher.lupe}×), bleibt im Bild, „ganze Karte" stellt ${zurueck.gross} pt her`);
+  console.log(`    Zwei Finger: 40 → 230 pt Abstand ergibt Maßstab ${gezogen.lupe}× `
+    + `(${vorher.gross} → ${gezogen.gross} pt)`);
   await q.close(); await ctx.close();
 }
 

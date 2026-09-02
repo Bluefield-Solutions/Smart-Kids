@@ -2284,3 +2284,46 @@ Drei Wege, und alle drei kosten etwas:
 Was `passt` noch nicht kann: es fährt die Ebenenwahl nur mit dem Standardprofil.
 Wer das repariert, trägt Leas Ebenenwahl in die Bildschirmliste nach — sonst
 bleibt derselbe Befund beim nächsten Mal wieder ungesehen.
+
+
+---
+
+## Q16 offen: das Auge liegt auf dem Namen — auf dem Zielgerät
+
+Gemessen auf 844 × 390 mit Leiste, Leas Ebenenwahl:
+
+| | Kachel | Trefferfläche des Auges liegt über dem Namen |
+|---|---|---|
+| Kontinente | 134 × 112 | **22 × 13 px** |
+| Europa | 134 × 112 | 6 × 13 px |
+| Afrika | 134 × 112 | 3 × 13 px |
+| iPad quer | 240 × 112 | — |
+
+Ein Kind, das auf das Ende von „Kontinente" tippt, öffnet die **Vorschau**
+statt die Ebene. Auf dem iPad passiert das nicht: dort ist die Kachel 240 statt
+134 Punkte breit.
+
+Rechnen lässt es sich nicht wegdiskutieren: die Kachel ist 134 × 112, das Auge
+muss 44 × 44 messen (Fingergrenze), und der Name steht zentriert über die volle
+Breite. Ein zweiter Knopf in einer Kachel dieser Größe hat keinen Platz, der
+nicht schon vergeben ist.
+
+Drei Wege — und alle drei hängen an der Wandentscheidung aus Q13:
+
+1. **Breitere Kacheln.** Löst beides auf einmal (Leas elfte Kachel und das
+   Auge), kostet aber die Reihe: bei 134 passen fünf nebeneinander.
+2. **Kein Auge auf dem Telefon.** Die Vorschau erscheint beim ersten Betreten
+   einer Ebene ohnehin von selbst; das Auge ist der Weg, sie noch einmal zu
+   sehen. Auf dem Gerät, auf dem sie nicht hinpasst, könnte sie entfallen —
+   dann ist die Kachel ein einziges, sauberes Ziel.
+3. **Name links, Auge rechts** statt beide zentriert. Dann bricht
+   „Mittelamerika" bei 90 Punkten Textbreite um.
+
+**Was in Q16 schon gemacht ist:** das Auge hing 2 bis 4 Punkte über die untere
+Kachelkante hinaus und sitzt jetzt drin.
+
+**Verworfen in Q16:** dem Auge dieselbe Fläche und Kante zu geben wie jedem
+anderen Knopf (Q15). Gebaut, angesehen, weggeworfen — auf einer 112 Punkte
+hohen Kachel ist eine gefüllte Scheibe von 44 Punkten ein Viertel der Fläche,
+sie legt sich über den Namen und ragt über die Kante. Der Grund steht jetzt im
+Stylesheet, damit es niemand ein zweites Mal versucht.

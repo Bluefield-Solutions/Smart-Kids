@@ -615,7 +615,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .wahl.ebenen .kachel .name{font-size:var(--s0);text-align:center;width:100%}
 /* Platz fuer das Auge unten rechts - eine Trefferflaeche breit. */
 .wahl.ebenen .kachelfuss{padding-right:var(--r8)}
-.wahl.ebenen .kachelpaar .schau{top:auto;bottom:0;right:0;
+/* Das Auge bleibt nackt - als einzige Bedienstelle der App, und mit
+   Grund (Q16 nachgemessen).
+   Seit Q15 hat jeder Knopf Flaeche und Kante. Dem Auge dieselbe zu geben
+   war ein Versuch und ein Fehlschlag: auf dem Zielgeraet ist die Kachel
+   112 Punkte hoch, der Knopf 44 - eine gefuellte Scheibe dort ist ein
+   Viertel der Kachel, sie legt sich ueber den Namen und ragt ueber die
+   Kante hinaus. Angesehen und verworfen. Was bleibt, ist ein Zeichen auf
+   der Kachel; dass es zu druecken ist, traegt seine Trefferflaeche, nicht
+   sein Aussehen. */
+.wahl.ebenen .kachelpaar .schau{top:auto;bottom:var(--r0);right:var(--r0);
   background:transparent;border-color:transparent;box-shadow:none}
 .kachel.welt .silhouette{height:80%;max-width:76%}
 .kachel .silhouette path{fill:currentColor}

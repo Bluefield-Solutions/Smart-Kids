@@ -549,6 +549,19 @@ export const PROBEN = [
    *
    * Der Eingriff nimmt dem leisen Knopf seine Kante wieder - genau der
    * Zustand von vor Q15. */
+  /* --- Die Geste mit zwei Fingern (Q16) -------------------------------- *
+   *
+   * Die Lupe hat drei Knoepfe und eine Geste. Die Knoepfe waren dreifach
+   * bezeugt, die Geste seit M4z gar nicht - und sie ist die einzige
+   * Bedienung der App, die zwei Finger braucht. Der Eingriff haengt sie
+   * ab: der Zweifingerzweig wird nie betreten, ein Finger schiebt weiter. */
+  { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
+    args:['--nur=lupe'], bauen:true, datei:D,
+    such:'      if (finger.size >= 2 && start && start.d) {',
+    ersatz:'      if (false && start && start.d) {',
+    an:{ ...DIST, text:'if (false && start && start.d) {' },
+    sagt:'zwei Finger ziehen die Karte nicht auf' },
+
   { n:'der leise Knopf verliert seine Kante', tor:'passt', bauen:true, datei:V,
     such:'  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),\n'
        + '             inset 0 var(--strich) 0 var(--knopf-licht);\n'

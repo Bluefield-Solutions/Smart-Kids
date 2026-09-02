@@ -8230,3 +8230,51 @@ eine Kante hat. Das ist die Zusage aus dem Kommentar, endlich als Prüfung —
 mit stehender Gegenprobe („der leise Knopf verliert seine Kante").
 
 227 Gegenproben. 36 Vorbilder neu abgenommen.
+
+
+---
+
+## Q16 — zwei Finger, und ein Auge auf dem Namen
+
+### „Kann man auch mit den Fingern zoomen?"
+
+Ja — und zwar seit M4z. Zwei Finger auseinander ziehen die Karte auf, ihre
+Mitte ist der Festpunkt; dazu drei Knöpfe (`+`, `−`, „ganze Karte").
+
+Nur hatte das **nie ein Tor angefasst**. Die Knöpfe waren dreifach bezeugt
+(Größe, Wirkung, Rückweg), die Geste gar nicht — und sie ist die einzige
+Bedienung der App, die zwei Finger braucht. Es hätte gereicht, dass jemand
+`touch-action` von `none` auf `manipulation` setzt, und das Telefon nähme die
+Geste für sich, ohne dass ein einziger Bildpunkt anders aussieht.
+
+`ziehen --nur=lupe` zieht jetzt wirklich auf: **40 → 230 Punkte Fingerabstand
+ergibt Maßstab 5,8×** (das gesuchte Land wächst von 29,7 auf 170,8 pt), und der
+Knopf „ganze Karte" muss danach dastehen. Gefahren wird über
+`Input.dispatchTouchEvent` im Steuerprotokoll des Browsers, nicht mit
+selbstgebauten `PointerEvent`s: die App fängt den Zeiger mit
+`setPointerCapture`, und das wirft bei einer erfundenen Zeigernummer — ein
+nachgemachtes Ereignis hätte eine Geste geprüft, die es im Spiel nicht gibt.
+
+**Was das Tor NICHT kann**, und das steht daneben: `touch-action`.
+Nachgestellt zog die Karte hier weiter auf — Chromium liefert in der
+Berührungsemulation die Zeigerereignisse trotzdem aus. Auf einem echten iPhone
+nimmt Safari die Geste an dieser Stelle für sich. Geprüft ist also, dass die
+**Geste angeschlossen** ist; dass das Telefon sie durchlässt, sagt nur das Gerät.
+
+### Die Kacheln — gemessen statt geraten
+
+Der Versuch, dem Auge dieselbe Fläche und Kante zu geben wie jedem anderen
+Knopf (Q15), ist gebaut, angesehen und weggeworfen worden: auf einer 112 Punkte
+hohen Kachel ist eine gefüllte Scheibe von 44 Punkten ein Viertel der Fläche.
+
+Beim Nachmessen kam dafür etwas heraus, das kein Geschmacksurteil ist: **die
+Trefferfläche des Auges liegt auf dem Namen.** „Kontinente" um 22 × 13 px,
+„Europa" um 6 × 13. Ein Kind, das auf das Ende des Wortes tippt, öffnet die
+Vorschau statt die Ebene. Auf dem iPad passiert das nicht — dort ist die Kachel
+240 statt 134 Punkte breit.
+
+Das ist dieselbe Enge wie in Q13, und es gehört in dieselbe Entscheidung. Die
+drei Wege stehen mit Zahlen im Backlog. Sofort gemacht ist nur, was eindeutig
+war: das Auge hing 2 bis 4 Punkte über die untere Kachelkante hinaus.
+
+228 Gegenproben.
