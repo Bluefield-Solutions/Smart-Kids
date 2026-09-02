@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-01",
+  "zeit": "2026-09-02",
   "tore": [
     "ansicht",
     "budget",
@@ -218,6 +218,11 @@
       "commit": "b974aee15c8d2d891e73cf0371a201ddc292838d",
       "zeit": "2026-09-01",
       "s": 130
+    },
+    "zwei Finger ziehen die Karte nicht mehr auf": {
+      "commit": "12b511cd6169e96698f9ec5229299194371bfd76",
+      "zeit": "2026-09-02",
+      "s": 18
     },
     "der leise Knopf verliert seine Kante": {
       "commit": "88aaaed457b75e6999734e0a3feed014e2225eff",
