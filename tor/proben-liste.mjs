@@ -588,15 +588,24 @@ export const PROBEN = [
 
   /* Q19: der Fremdgriff im Rauchtest — zwei Proben, zwei Fragen.
    *
-   * ERSTENS: kommt ueberhaupt etwas an? Derselbe Eingriff wie bei `passt`
-   * (das Auge zurueck auf den Kachelnamen), aber gegen den Rauchtest
-   * gefahren. Er beweist die ganze Kette: Beobachter, Ruhebedingung,
-   * Ernte beim Schliessen, Meldung. */
-  { n:'der Rauchtest sieht den Fremdgriff nicht mehr', tor:'smoke',
+   * ERSTENS: kommt ueberhaupt etwas an? Der Eingriff schiebt die
+   * Werkzeugspalte (der leise Ausweg und das Mikrofon) 60 Punkte nach
+   * links ueber die Antwortliste. Genau die Sorte Rutsch, gegen die diese
+   * Pruefung da ist - und auf einem Bildschirm, den `passt` nie ansteuert.
+   *
+   * Warum NICHT der Eingriff aus Q18 (das Auge zurueck auf den
+   * Kachelnamen): gemessen, er schlaegt hier nicht an. Der Beobachter
+   * verlangt einen Befund zweimal im Abstand von 300 ms, und die
+   * Ebenenwahl steht im Rauchtest keine halbe Sekunde - dort wird sofort
+   * eine Kachel angetippt. Kurzlebige Bildschirme sind Sache von `passt`,
+   * das sie einzeln ansteuert; der Rauchtest ist fuer die, auf denen
+   * gespielt wird. */
+  { n:'die Werkzeugspalte rutscht auf die Antwortliste', tor:'smoke',
     args:['--teil=0/4'], bauen:true, datei:V,
-    such:'  .wahl.ebenen .kachelpaar .schau{display:none}',
-    ersatz:'  .wahl.ebenen .kachelpaar .schau{display:inline-flex}',
-    an:{ ...DIST, text:'.wahl.ebenen .kachelpaar .schau{display:inline-flex}' },
+    such:'  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}',
+    ersatz:'  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}\n'
+         + '  .werkzeug{margin-left:-60px}',
+    an:{ ...DIST, text:'.werkzeug{margin-left:-60px}' },
     sagt:'des Wortes greift' },
 
   /* ZWEITENS: sieht er die AUFGABE? Das ist der ganze Grund, warum die
