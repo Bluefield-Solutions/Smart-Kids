@@ -5068,10 +5068,20 @@ async function forscherbuch(){
      * die Vorschau stand halb unter dem Rand. Ein Knopf, der eine Zeile
      * braucht, nimmt sie dem, was er anbietet.
      *
-     * Im Kopf ist der Platz schon da: rechts stand nichts. */
+     * Nachgemessen bei Leas Buch mit zwei Aufklebern und zwei
+     * Vorschaukarten (Q23): 318 Punkte Inhalt bei 318 sichtbaren - NULL
+     * Luft. Neben die Ueberschrift „Als Nächstes" passt er also auch
+     * nicht; im Kopf ist der Platz schon da, rechts stand nichts.
+     *
+     * Er traegt aber ein WORT, nicht nur das Auge. Oben rechts, weit weg
+     * von der Vorschau, ist ein nacktes Zeichen ein Raetsel - anders als
+     * an der Kachel, wo es direkt auf dem Gegenstand sass. Auf schmalen
+     * Fenstern faellt das Wort weg (`.knopf .wort`), dort ist es dieselbe
+     * Knappheit wie bei „Zurück". */
     rechts: vorschau.length
-      ? `<button class="knopf rund" id="allesehen" aria-label="${dran.titel} anschauen"
-                 title="Alle ansehen">${ZEI('auge', 22)}</button>` : '' }) + `
+      ? `<button class="knopf" id="allesehen" aria-label="${dran.titel} anschauen"
+                 title="Alle ansehen">${ZEI('auge', 22)}<span class="wort">Ansehen</span></button>`
+      : '' }) + `
     <div class="rollen buch">
       ${verdient.length ? `
         <h3 class="gruppe abzkopf">Deine Abzeichen</h3>

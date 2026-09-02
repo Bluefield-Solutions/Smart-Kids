@@ -516,6 +516,27 @@ const SUCHE = () => {
       wer: Object.entries(wer).sort((a, b) => b[1] - a[1]).slice(0, 2)
         .map(([k, n]) => `${k} ${Math.round(n / farbe * 100)} %`).join(', ') });
   }
+  /* HAT jede Kachel ueberhaupt ein Bild? (Q23)
+   *
+   * Die Schleife darueber misst die Kachelbilder - und ein FEHLENDES gibt
+   * nichts zu messen. Genau daran ist „Ozeanien" elf Fassungen lang
+   * vorbeigekommen: `australien` stand nicht in der Silhouettenliste, die
+   * Kachel war leer, und im Bericht standen neun Zeilen fuer zehn Kacheln.
+   * Neun gegen zehn faellt in einer Liste niemandem auf.
+   *
+   * Und fuer Fiona ist das kein Schoenheitsfehler: sie liest nicht, das
+   * Kachelbild IST der Name. Eine Kachel ohne Bild ist fuer sie
+   * unbeschriftet.
+   *
+   * Geprueft wird die Ebenenwahl, weil dort die Zusage gilt. Auf der
+   * Weltenwahl steht der Name gross und die Kachel traegt zwei Zeilen;
+   * dort ist das Bild Schmuck. */
+  const ohneBild = [];
+  for (const k of document.querySelectorAll('.schirm.da .wahl.ebenen .kachel'))
+    if (!k.querySelector('.silhouette'))
+      ohneBild.push(`„${(k.querySelector('.name') || k).textContent.trim()
+        .slice(0, 18).replace(/\s+/g, ' ')}"`);
+
   /* Und die kleinste Beispielkarte auf diesem Bildschirm.
    *
    * Nur `.aufkleber` im Vorlauf: das sind die Karten, die in einem Gitter
@@ -588,7 +609,7 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, wand, kleber };
+  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, ohneBild, wand, kleber };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -774,6 +795,10 @@ for (const g of MEINE) {
     for (const x of r.stempel || []) meldungen.push(`${name}: ${x}`);
     for (const x of r.material || []) meldungen.push(`${name}: ${x}`);
     for (const x of r.griff || []) meldungen.push(`${name}: ${x}`);
+    if (r.ohneBild && r.ohneBild.length)
+      meldungen.push(`${name}: ${r.ohneBild.join(', ')} ${r.ohneBild.length === 1
+        ? 'hat kein Kachelbild' : 'haben kein Kachelbild'} — für ein Kind, das noch 
+nicht liest, ist die Kachel damit unbeschriftet`);
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
         + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `

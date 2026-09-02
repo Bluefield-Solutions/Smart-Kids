@@ -629,8 +629,8 @@ export const PROBEN = [
    * nichts fehlt, was man sehen koennte. */
   { n:'das Buch verliert den Weg zurück in den Vorlauf', tor:'smoke',
     args:['--nur=ablage'], bauen:true, datei:D,
-    such:"      ? `<button class=\"knopf rund\" id=\"allesehen\" aria-label=\"${dran.titel} anschauen\"",
-    ersatz:"      ? `<button class=\"knopf rund\" id=\"garnicht\" aria-label=\"${dran.titel} anschauen\"",
+    such:"      ? `<button class=\"knopf\" id=\"allesehen\" aria-label=\"${dran.titel} anschauen\"",
+    ersatz:"      ? `<button class=\"knopf\" id=\"garnicht\" aria-label=\"${dran.titel} anschauen\"",
     an:{ ...DIST, text:'id=\"garnicht\"' },
     sagt:'kein Weg zurück in den Vorlauf' },
 
@@ -645,6 +645,22 @@ export const PROBEN = [
     ersatz:"  s.querySelector('#zur').onclick = () => zeige(ebenenwahl);",
     an:{ ...DIST, text:"onclick = () => zeige(ebenenwahl)" },
     sagt:'führt nicht ins Buch zurück' },
+
+  /* Q23: eine Ebenenkachel ohne Bild.
+   *
+   * Genau so ist „Ozeanien" elf Fassungen lang durchgekommen:
+   * `australien` fehlte in der Silhouettenliste, die Kachel war leer, und
+   * `passt` MASS die Kachelbilder - ein fehlendes gibt nichts zu messen.
+   * Neun Zeilen im Bericht fuer zehn Kacheln faellt niemandem auf.
+   *
+   * Fuer Fiona ist das kein Schoenheitsfehler: sie liest nicht, das
+   * Kachelbild IST der Name. */
+  { n:'eine Ebenenkachel hat kein Bild mehr', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:'prototyp/bauen.mjs',
+    such:'    australien:  { d: silhouette(roh.australien, 5),    vb: sichtfeld([{ pfad: roh.australien }]) },',
+    ersatz:'',
+    an:{ ...DIST, fehlt:'"australien":{"d"' },
+    sagt:'hat kein Kachelbild' },
 
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,

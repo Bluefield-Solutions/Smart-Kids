@@ -1722,6 +1722,30 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   /* Und damit faellt der Platz weg, der fuer das Auge freigehalten war:
      18 Punkte, die der Fortschrittsbalken bekommt. */
   .wahl.ebenen .kachelfuss{padding-right:0}
+  /* Die AUFKLEBERZAHL faellt auf dem Telefon weg — fuer das Bild (Q23).
+   *
+   * Gemessen (Q20): die Kachel ist 112 Punkte hoch, davon nimmt das Bild
+   * 48. Der Rest ist Polsterung (16), Name (19), Abstaende (11) und der
+   * Kachelfuss (20). Der Fuss ist 20 hoch, weil die Aufkleberzahl es ist -
+   * der Balken darin misst 5. In der Breite und in der Hoehe der WAND ist
+   * nichts mehr zu holen: 24 beziehungsweise 12 Punkte, und beides ist
+   * innerhalb dessen, was zwei Browser verschieden rechnen.
+   *
+   * Also hier. Der Balken bleibt und sagt weiter, wie weit die Ebene ist -
+   * anteilig, was fuer Fiona ohnehin die einzige lesbare Form ist. Die
+   * genaue Zahl steht im Forscherbuch, wo die Aufkleber liegen.
+   *
+   * Der POKAL bleibt: er ist kein Zaehler, sondern eine Auszeichnung, und
+   * es gibt ihn erst, wenn die Ebene bestanden ist. Deshalb faellt nicht
+   * `.stand` weg, sondern nur die Marke darin. */
+  .wahl.ebenen .kachel .stand .klebermarke{display:none}
+  .wahl.ebenen .kachel .stand:not(:has(.pokal)){display:none}
+  /* Und der Abzug am Bild geht mit: 62 waren Name, Fuss, Rand und
+     Abstaende. Der Fuss ist von 20 auf 5 Punkte geschrumpft (nur noch der
+     Balken), also 47. Wer die Zahl hier vergisst, hat die fuenfzehn
+     Punkte freigeraeumt und laesst sie leer — gemessen, nicht geschaetzt:
+     das Bild stand danach unveraendert auf 48. */
+  .wahl.ebenen .kachel .silhouette{height:calc(100% - 47px)}
   /* Der Kasten bleibt 16 Punkte hoch, die TREFFERFLAECHE wird 26.
    *
    * Gemessen auf 844 x 390 mit Leiste: ueber dem Knopf liegen 2 Punkte

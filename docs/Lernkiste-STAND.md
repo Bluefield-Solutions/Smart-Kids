@@ -8703,3 +8703,66 @@ Das ist der ganze Sinn dieser Zeile, und sie hat sich am selben Tag bezahlt
 gemacht, an dem sie geschrieben wurde.
 
 Volle Kette grün in 139,1 s.
+
+---
+
+## Q23 — das Kachelbild wird groß, und Ozeanien hatte gar keins
+
+### Die Aufkleberzahl weicht dem Bild
+
+Q20 hatte drei Wege gemessen und nur einen mit echtem Gewinn übriggelassen: die
+Aufkleberzahl von der Ebenenkachel nehmen, den Balken lassen. Gebaut, gemessen:
+
+| | vorher | jetzt |
+|---|---|---|
+| Kachelfuß | 20 pt (Zahl 20, Balken 5) | 5 pt (nur der Balken) |
+| Bild | 89 × 48 | **108 × 63** |
+
+**+31 % Bildhöhe**, und die Wand endet weiterhin bei 357 — es ist kein Platz
+dazugekommen, er war nur falsch verteilt.
+
+Der Balken bleibt und sagt weiter, wie weit die Ebene ist; anteilig, und das ist
+für Fiona ohnehin die einzige lesbare Form. Die genaue Zahl steht im
+Forscherbuch, wo die Aufkleber liegen. Der **Pokal** bleibt auch — er ist kein
+Zähler, sondern eine Auszeichnung. Deshalb fällt nicht `.stand` weg, sondern nur
+die Marke darin.
+
+Und der Abzug am Bild musste mitgehen: `calc(100% - 62px)` → `47px`. Ohne das
+blieb das Bild unverändert auf 48 und die fünfzehn Punkte standen leer — gemessen,
+nicht angenommen.
+
+### Und dabei fiel auf: „Ozeanien" hatte kein Bild
+
+Elf Fassungen lang. `australien` fehlte in `D.silhouetten`, die Kachel war leer —
+und **für Fiona ist das Kachelbild der Name**. Ihre Ozeanien-Kachel war
+unbeschriftet.
+
+Warum es kein Tor gemeldet hat: `passt` **misst** die Kachelbilder, und ein
+fehlendes gibt nichts zu messen. Im Bericht standen neun Zeilen für zehn Kacheln,
+und neun gegen zehn fällt in einer Liste niemandem auf. Das ist Regel 1 in ihrer
+leisesten Form: nicht eine Prüfung, die schweigt, sondern eine, die über den Fall
+gar nicht erst stolpert.
+
+`passt` verlangt jetzt, dass **jede** Ebenenkachel ein Bild hat.
+
+Die Kennung heißt übrigens `australien` wie der Kontinent auf der Weltkarte, auf
+der Kachel steht „Ozeanien" — genau diese Stelle hat es gekostet: wer nach
+`ozeanien` sucht, findet nichts.
+
+Ausgedünnt wird der Umriss mit 5 statt 16 wie bei den anderen Kontinenten. Bei 16
+war Australien ein Klumpen; die Form, an der man es erkennt — Carpentaria-Golf,
+Kap York, die Große Australische Bucht — braucht die feineren Punkte. Dieselbe
+Überlegung wie bei Mittelamerika.
+
+### Das Auge im Buchkopf bekommt ein Wort
+
+Nachgemessen, ob es näher an „Als Nächstes" rücken kann: Leas Buch hat bei zwei
+Aufklebern und zwei Vorschaukarten **318 Punkte Inhalt bei 318 sichtbaren** —
+null Luft. Neben die Überschrift passt es nicht, in den Kopf muss es.
+
+Dort war es aber ein nacktes Zeichen, weit weg von dem, was es anbietet — anders
+als an der Kachel, wo es direkt auf dem Gegenstand saß. Es trägt jetzt das Wort
+**„Ansehen"** neben dem Auge, wie „Zurück" auf der anderen Seite; auf schmalen
+Fenstern fällt das Wort weg, dieselbe Knappheit wie überall.
+
+236 Gegenproben.

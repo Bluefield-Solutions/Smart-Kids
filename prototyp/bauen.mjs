@@ -197,6 +197,20 @@ const silhouette = (pfad, n) => {
     mittelamerika: { d: silhouette(mittelamerikaUmriss, 6),
                      vb: sichtfeld([{ pfad: mittelamerikaUmriss }]) },
     suedamerika: { d: silhouette(roh.suedamerika, 16),  vb: sichtfeld([{ pfad: roh.suedamerika }]) },
+    /* Ozeanien hat elf Fassungen lang GEFEHLT (Q23).
+     *
+     * Die Kachel stand ohne Bild da - und fuer Fiona IST das Kachelbild
+     * der Name; ihre Ozeanien-Kachel war damit unbeschriftet. Kein Tor
+     * hat es gemeldet, weil `passt` die Kachelbilder MISST und ein
+     * fehlendes nichts zu messen gibt: neun Zeilen im Bericht, zehn
+     * Kacheln, und der Unterschied faellt in einer Liste nicht auf.
+     *
+     * Die Kennung heisst `australien` wie der Kontinent auf der
+     * Weltkarte; auf der Kachel steht „Ozeanien". Genau diese Stelle hat
+     * es gekostet: wer nach `ozeanien` sucht, findet nichts, und wer die
+     * Liste hier abschreibt, uebersieht den einen Namen, der anders
+     * lautet als sein Gebiet. */
+    australien:  { d: silhouette(roh.australien, 5),    vb: sichtfeld([{ pfad: roh.australien }]) },
     deutschland: { d: silhouette(d, 8),                 vb: sichtfeld([{ pfad: d }]) },
   };
   const kb = Object.values(D.silhouetten).reduce((a, s) => a + s.d.length, 0) / 1024;
