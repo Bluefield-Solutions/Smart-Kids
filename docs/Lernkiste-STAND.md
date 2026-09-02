@@ -8328,8 +8328,19 @@ auf einen **Griff** verlassen hat statt auf eine Bedingung:
   jetzt hinter jede Gruppenkachel — sonst hätte sie ab Q17 einen Fehler
   gemeldet, wo keiner ist, und ab der nächsten Gruppe nichts mehr, wo einer wäre.
 
-Neue Aufnahme `quer-gruppe` (37 statt 36) und eine Gegenprobe: fällt die
-Zusammenlegung weg, stehen wieder elf Kacheln in der Wand, und `passt` meldet
-den Überlauf.
+### Und die Gegenprobe hat die eigentliche Lücke gefunden
+
+Die Probe „die Hauptstädte stehen wieder als zwei Kacheln da" schlug **nicht**
+an: `passt` blieb grün, obwohl elf Kacheln in der Wand standen. Der Grund ist
+derselbe, aus dem der Fehler wochenlang unentdeckt blieb — **`passt` fuhr die
+Ebenenwahl nur mit dem Standardprofil**, und das hat zehn Ebenen.
+
+Ein Bildschirm, dessen Inhalt am Kind hängt, ist mit einem Kind halb geprüft.
+`passt` fährt jetzt auch **Leas** Ebenenwahl, auf allen sieben Größen. Erst
+damit ist die Zusage bezeugt — und die nächste Ebene, die dazukommt, wird
+denselben Überlauf zurückbringen, diesmal aber sichtbar.
+
+Neue Aufnahme `quer-gruppe` (37 statt 36), ein Bildschirm mehr in `passt`
+(399 statt 266 Maße im Stand).
 
 229 Gegenproben.

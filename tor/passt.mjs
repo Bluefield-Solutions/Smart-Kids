@@ -1027,6 +1027,22 @@ for (const g of MEINE) {
   await p.waitForSelector('.schirm.da [data-welt]');
   await schau('Weltenwahl (Lea)');
 
+  /* Und die EBENENWAHL als Lea (Q17).
+   *
+   * Bis hierher hat dieses Tor die Wand nur mit dem Standardprofil
+   * gefahren. Das hat zehn Ebenen und passt; Lea und die Eltern hatten
+   * elf, und die elfte endete auf dem Zielgeraet ausserhalb des Fensters.
+   * Wochenlang war „Hauptstädte Europa" fuer sie nicht zu erreichen, und
+   * kein Tor hat es gesagt - weil keines je Leas Wand gesehen hat.
+   *
+   * Ein Bildschirm, dessen Inhalt am Kind haengt, ist mit einem Kind halb
+   * geprueft. Seit Q17 sind es wieder zehn, aber die Wand ist damit auch
+   * wieder randvoll: die naechste Ebene bringt denselben Fehler zurueck,
+   * und diesmal soll ihn jemand sehen. */
+  await tipp('.schirm.da [data-welt="erdkunde"]');
+  await p.waitForSelector('.schirm.da [data-ebene]');
+  await schau('Ebenenwahl (Lea)');
+
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
   /* Die Hinweise standen bisher NUR im roten Zweig - also genau dann
    * nicht da, wenn das Tor gruen ist. Ein Hinweis, den man nur zu sehen
