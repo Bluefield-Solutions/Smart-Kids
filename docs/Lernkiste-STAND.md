@@ -8843,8 +8843,22 @@ Jetzt muss jede Ebene ihre Herkunft **nennen** — entweder `zielUmriss(id)` ode
 `kontinentUmriss(id, …)`. Ein Bild ohne Angabe bricht den Bau ab. Nachrechnen
 lässt sich weiterhin nur die erste Sorte; aber das Weglassen ist keine Tür mehr.
 
-Zwei Gegenproben also, nicht eine: eine setzt die falsche Herkunft, die andere
-gar keine.
+### Was er kann und was nicht — und warum die erste Gegenprobe weg musste
+
+Die erste Fassung der Probe erklärte Ozeanien wieder zum **Kontinent**. Sie
+schlug nicht an, und das ist richtig so: für Kontinentbilder ist die Rechnung
+nicht anzustellen. Eine Probe, die etwas prüft, das das Tor gar nicht
+verspricht, ist keine Probe, sondern eine Behauptung — sie hätte den Druck
+erzeugt, das Tor zu verwässern, bis sie durchgeht.
+
+Sie prüft jetzt, was der Wächter wirklich zusagt: bei einem Bild **aus den
+Zielen** fehlt eines davon. Die zweite prüft, dass sich das Tor nicht durch
+Weglassen abschalten lässt.
+
+**Offen bleibt** damit: eine Ebene, die ihr Bild als Kontinentumriss deklariert,
+obwohl ihre Ziele nicht darin liegen — genau der Ozeanien-Fall. Der Bau nimmt
+diese Angabe als Zusage und kann sie nicht nachrechnen. Steht im
+Rückstandsverzeichnis.
 
 ### Und die Kette hat sich selbst ausgebremst
 

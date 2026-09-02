@@ -260,6 +260,16 @@
       "zeit": "2026-09-02",
       "s": 90
     },
+    "dem Kachelbild fehlt eines seiner Ziele": {
+      "commit": "34900135ee932758b1b2660bf28b45f17993494f",
+      "zeit": "2026-09-02",
+      "s": 14
+    },
+    "ein Kachelbild nennt seine Herkunft nicht": {
+      "commit": "34900135ee932758b1b2660bf28b45f17993494f",
+      "zeit": "2026-09-02",
+      "s": 4
+    },
     "zwei Finger ziehen die Karte nicht mehr auf": {
       "commit": "12b511cd6169e96698f9ec5229299194371bfd76",
       "zeit": "2026-09-02",

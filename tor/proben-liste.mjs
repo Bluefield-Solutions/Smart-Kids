@@ -663,19 +663,25 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'"australien":{"d"' },
     sagt:'hat kein Kachelbild' },
 
-  /* Q24: das Kachelbild zeigt wieder den Kontinent statt der Ziele.
+  /* Q24: dem Kachelbild fehlt ein Ziel.
    *
-   * Genau der Stand von vorgestern: „Ozeanien" fragt nach
-   * Papua-Neuguinea, Australien und Neuseeland und zeigte den
-   * australischen Kontinentumriss - zwei von drei Antworten kamen im Bild
-   * nicht vor. Der Eingriff baut das Bild wieder aus dem Kontinent; der
-   * Bau muss abbrechen. */
-  { n:'das Kachelbild zeigt wieder den Kontinent statt der Ziele', tor:'bauen',
+   * Der Anlass war „Ozeanien": die Ebene fragt nach Papua-Neuguinea,
+   * Australien und Neuseeland und zeigte den australischen
+   * Kontinentumriss - zwei von drei Antworten kamen im Bild nicht vor.
+   *
+   * Der Eingriff laesst ein Ziel aus dem Bild fallen, und zwar bei der
+   * Sorte, die der Waechter WIRKLICH nachrechnen kann: Bild und Ziele
+   * aus derselben Karte. (Ozeanien wieder zum Kontinent zu erklaeren
+   * waere kein Eingriff, den er sehen KANN - fuer Kontinentbilder ist die
+   * Rechnung nicht anzustellen, und eine Probe, die das prueft, waere
+   * keine Probe, sondern eine Behauptung.) */
+  { n:'dem Kachelbild fehlt eines seiner Ziele', tor:'bauen',
     datei:'prototyp/bauen.mjs',
-    such:"  const ozeanienUmriss = zielUmriss('australien');",
-    ersatz:"  const ozeanienUmriss = kontinentUmriss('australien', roh.australien);",
-    an:{ datei:'prototyp/bauen.mjs',
-         text:"kontinentUmriss('australien', roh.australien)" },
+    such:"  const zielUmriss = (id) => (ausZielen[id] = KARTEN_GROB[id]\n"
+       + "    .filter(l => zielAuf(id, l.a3)).map(l => l.pfad).join(' '));",
+    ersatz:"  const zielUmriss = (id) => (ausZielen[id] = KARTEN_GROB[id]\n"
+       + "    .filter(l => zielAuf(id, l.a3) && l.a3 !== 'NZL').map(l => l.pfad).join(' '));",
+    an:{ datei:'prototyp/bauen.mjs', text:"l.a3 !== 'NZL'" },
     sagt:'zeigt nicht, wonach die Ebene fragt' },
 
   /* Und die Luecke, die die erste Fassung der Probe aufgedeckt hat: der

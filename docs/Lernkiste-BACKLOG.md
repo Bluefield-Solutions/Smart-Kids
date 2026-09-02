@@ -2429,3 +2429,30 @@ und verworfen worden — es kostet Kontrast (4,34 : 1 statt 4,5).
 
 Keiner der drei ist gebaut. Sie stehen hier, damit der nächste, der an der
 Kachel baut, nicht wieder von vorn rechnet.
+
+
+---
+
+## Q24 offen: „Kontinentumriss" ist eine Zusage, keine Rechnung
+
+`bauen` prüft seit Q24, dass jedes Ziel einer Ebene im Sichtfeld ihres
+Kachelbildes liegt — aber nur, wo Bild und Ziele aus **derselben Karte** kommen
+(`zielUmriss()`). Für die fünf Kontinentebenen kommt der Umriss aus der
+**Weltkarte** und die Anker aus der **Länderkarte**: zwei Koordinatensysteme,
+und ein Vergleich der Zahlen wäre keiner.
+
+Dort ist `kontinentUmriss(id, …)` also eine **Angabe**, die der Bau glaubt. Wer
+sie falsch macht — so wie Ozeanien es zwei Fassungen lang war — kommt durch.
+
+Zwei Wege, keiner gemessen:
+
+1. **Alle Kachelbilder aus den Zielen bauen**, wie Mittelamerika und Ozeanien es
+   tun. Dann gilt die Rechnung überall. Es ändert aber das Bild von fünf
+   Ebenen: „Europa" wäre nicht mehr der Kontinent, sondern die 17 Länder, nach
+   denen gefragt wird. Ob das besser oder schlechter ist, entscheidet der Blick,
+   nicht die Prüfbarkeit.
+2. **Die Anker in die Weltkarte projizieren.** Dann ist die Rechnung auch für
+   Kontinentbilder anzustellen, ohne dass sich ein Bild ändert. Kostet eine
+   zweite Projektion im Bau und die Frage, ob beide wirklich dieselbe sind.
+
+Nummer 2 ist der saubere Weg, Nummer 1 der billigere.
