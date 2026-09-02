@@ -2288,7 +2288,11 @@ bleibt derselbe Befund beim nächsten Mal wieder ungesehen.
 
 ---
 
-## Q16 offen: das Auge liegt auf dem Namen — auf dem Zielgerät
+## Q16 erledigt (Q18): das Auge liegt nicht mehr auf dem Namen
+
+**Gelöst in Q18 auf Weg 2:** auf dem Telefon entfällt das Auge. Was hier steht,
+ist der Befund, wie er gemessen war — und die drei Wege, damit der nächste, der
+an der Kachel baut, nicht wieder von vorne rechnet.
 
 Gemessen auf 844 × 390 mit Leiste, Leas Ebenenwahl:
 
@@ -2336,8 +2340,36 @@ Stylesheet, damit es niemand ein zweites Mal versucht.
 Beides gelöst durch die Zusammenlegung der beiden „Hauptstädte"-Ebenen (Q17):
 Lea hat zehn statt elf Kacheln, und der doppelte Name ist weg.
 
-**Was offen bleibt: das Auge liegt weiter auf dem Namen.** Die Zusammenlegung
-nimmt eine Kachel weg, sie macht die übrigen aber nicht breiter — bei zehn
-Kacheln sind es weiterhin fünf je Reihe zu 134 Punkten. „Kontinente" verliert
-also nach wie vor 22 × 13 Punkte an die Trefferfläche der Vorschau. Die drei
-Wege stehen oben; billiger geworden ist keiner davon.
+**Das Auge lag danach weiter auf dem Namen.** Die Zusammenlegung nimmt eine
+Kachel weg, sie macht die übrigen aber nicht breiter — bei zehn Kacheln sind es
+weiterhin fünf je Reihe zu 134 Punkten. Geschlossen ist das erst in **Q18**,
+und zwar auf Weg 2: auf dem Telefon entfällt das Auge ganz.
+
+---
+
+## Q18 offen: auf dem Telefon gibt es kein zweites Anschauen mehr
+
+Mit dem Auge (Q18) ist auf dem Telefon der einzige Weg weggefallen, den Vorlauf
+einer Ebene **noch einmal** zu sehen. Beim ersten Betreten erscheint er weiter
+von selbst; danach nicht mehr, und `Einst.vorlaufGezeigt` wird nie
+zurückgesetzt.
+
+Auf dem iPad und im Schreibtischfenster ist das Auge da — der Verlust trifft
+genau das Zielgerät.
+
+Was dagegen spräche, es einfach wieder hinzustellen, steht in Q16: gerechnet
+passt kein zweiter 44-Punkt-Knopf in eine Kachel von 134 × 112.
+
+Drei Ideen, keine gemessen:
+
+1. **Im Vorlauf selbst.** Am Ende der Runde steht ohnehin ein Bildschirm mit
+   drei Karten („Als Nächstes"). Von dort in den ganzen Vorlauf zu kommen wäre
+   ein Knopf an einer Stelle, an der Platz ist.
+2. **Im Forscherbuch.** Dort liegen die gesammelten Aufkleber je Ebene. Ein
+   „alle ansehen" gehört inhaltlich dorthin — und der Bildschirm ist nicht eng.
+3. **Im Elternbereich zurücksetzen.** Billigste Fassung, aber die falsche:
+   ein Kind, das noch einmal blättern will, fragt dann einen Erwachsenen.
+
+Nummer 1 ist der Vorschlag; Nummer 2 der Ort, an dem ein Kind danach suchen
+würde. Beides ist zu messen, bevor es gebaut wird — auf 844 × 390 mit Leiste ist
+noch kein Bildschirm groß.

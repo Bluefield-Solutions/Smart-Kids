@@ -8344,3 +8344,72 @@ Neue Aufnahme `quer-gruppe` (37 statt 36), ein Bildschirm mehr in `passt`
 (399 statt 266 Maße im Stand).
 
 229 Gegenproben.
+
+---
+
+## Q18 — das Auge fällt auf dem Telefon weg
+
+Der Befund stand seit Q16 gemessen im Rückstandsverzeichnis, und in Q17 war er
+noch da: die Trefferfläche der Vorschau liegt auf dem Namen der Kachel. Jetzt
+mit der ganzen Wand gemessen, auf 844 × 390 mit Leiste, Leas Ebenenwahl:
+
+| Kachel | Trefferfläche des Auges über der Schrift |
+|---|---|
+| Mittelamerika | **38 × 15 px** |
+| Bundesländer | 36 × 15 px |
+| Nordamerika | 33 × 15 px |
+| Südamerika | 28 × 15 px |
+| Kontinente | 24 × 15 px |
+| Ozeanien | 17 × 15 px |
+| Europa | 8 × 15 px |
+| Afrika | 5 × 15 px |
+| Asien | 2 × 15 px |
+| iPad quer (240 × 112) | 0 × 0 |
+
+Nicht drei Kacheln, sondern **alle neun** — und 15 Punkte sind bei einem
+17-Punkt-Wort die ganze Zeilenhöhe. Bei „Mittelamerika" ist es das letzte
+Drittel des Wortes. Wer dort hintippt, landet in der Vorschau statt in der
+Ebene.
+
+Die Zahlen aus Q16 (22 × 13, 6 × 13, 3 × 13) waren dieselbe Sache, nur mit
+einem Kasten statt der Schrift gemessen und nur an drei Kacheln — Regel 5: eine
+Zahl ohne Messstelle ist halb so viel wert.
+
+### Weg 2 von dreien
+
+Die drei Wege standen seit Q16 durchgerechnet im Rückstandsverzeichnis. Breitere
+Kacheln kosten eine dritte Reihe und damit das Bild; niedrigere Kacheln drücken
+das Bild von 50 auf 19 Punkte; Name links / Auge rechts lässt „Mittelamerika"
+auf 90 Punkten umbrechen. Bleibt Weg 2: **auf dem Telefon entfällt das Auge.**
+
+Und zwar nur dort. Auf dem iPad misst dieselbe Kachel 240 × 112, die
+Überschneidung ist 0 × 0, und das Auge bleibt. Die 18 Punkte, die im Kachelfuß
+für das Auge freigehalten waren, bekommt der Fortschrittsbalken.
+
+**Was das Telefon dafür verliert, ist das ZWEITE Anschauen.** Der Vorlauf
+erscheint beim ersten Betreten einer Ebene weiterhin von selbst; ihn danach noch
+einmal aufzurufen, geht auf dem Telefon nicht mehr. Das steht als offener Punkt
+im Rückstandsverzeichnis — es ist ein Verlust, kein Nebeneffekt.
+
+### Der Fall, den kein Tor sehen konnte
+
+Siebzehn Tore waren grün, und gefunden hat es das Auge. Das ist kein Zufall,
+sondern eine Lücke mit einer Form:
+
+- „verdeckt" fragt nach der **Mitte** eines Knopfes. Die Mitte der Kachel ist
+  frei — das Auge sitzt in der Ecke.
+- „überlappen" sieht nur Elemente **im Fluss**. Das Auge liegt absolut.
+- Und zu **sehen** war ohnehin nichts: das Auge trägt seit Q16 keine Fläche.
+  Sichtbar ist das Wort, greifbar der Knopf.
+
+`passt` prüft das jetzt als **Fremdgriff**: an Punkten auf der Schrift eines
+bedienbaren Elements wird `elementFromPoint` befragt; antwortet ein anderes
+bedienbares Element, ist der Griff fremd. Die Grenze ist anteilig (Regel 2) —
+höchstens 5 % eines Wortes. Null wäre keine Strenge, sondern eine Wette auf die
+Rundung des jeweiligen Chromium.
+
+Die Prüfung fragt nicht nach Kästen, sondern nach dem, was ein Finger tut. Damit
+gilt sie für jeden Knopf, der künftig über einem Wort landet — nicht nur für
+dieses Auge.
+
+230 Gegenproben.

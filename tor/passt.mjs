@@ -349,6 +349,73 @@ const SUCHE = () => {
         + 'dann gibt der Knopf beim Drücken nicht nach, er springt');
   }
 
+  /* FREMDGRIFF: greift die Flaeche, auf der ein Wort steht, dieses Wort? (Q18)
+   *
+   * Die Pruefung „verdeckt" oben fragt nach der MITTE eines Knopfes, die
+   * Pruefung „ueberlappen" sieht nur Elemente im Fluss. Zwischen beiden
+   * liegt ein Fall, den keine von ihnen sieht und den man auch nicht
+   * sieht: ein Knopf, der DURCHSICHTIG ueber dem Wort eines anderen
+   * liegt. Zu sehen ist das Wort, zu greifen ist der Knopf.
+   *
+   * Genau das war das Auge an der Ebenenkachel. Es traegt seit Q16 keine
+   * Flaeche mehr - mit Absicht, eine gefuellte Scheibe waere auf einer
+   * 112er Kachel ein Viertel davon. Seine TREFFERFLAECHE blieb aber 44
+   * Punkte, und die reichte bei allen neun Kacheln in die Namenszeile:
+   * bis zu 38 x 15 Punkte, ein Drittel von „Mittelamerika". Siebzehn
+   * Tore waren gruen, und der Befund kam vom Auge, nicht von einem Tor.
+   *
+   * Gefragt wird deshalb nicht nach Kaesten, sondern nach dem, was ein
+   * Finger tut: an Punkten auf der SCHRIFT eines bedienbaren Elements
+   * wird `elementFromPoint` befragt. Antwortet ein ANDERES bedienbares
+   * Element, ist der Griff fremd.
+   *
+   * Die Grenze ist anteilig (Regel 2): ein Wort darf zu FREMD_ZU Prozent
+   * unter fremdem Griff liegen. Null waere hier keine Strenge, sondern
+   * eine Wette auf die Rundung des jeweiligen Chromium. */
+  const griff = [];
+  {
+    // Steht HIER und nicht oben bei den anderen Grenzen: `SUCHE` laeuft in
+    // der Seite und sieht nichts aus diesem Modul.
+    const FREMD_ZU = 5;   // Prozent des Wortes
+    const AUSWAHL = '.schirm.da button, .schirm.da .kachel, .schirm.da .etikett, '
+      + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .aufkleber';
+    const bedien = [...document.querySelectorAll(AUSWAHL)];
+    // Der Besitzer eines Punktes: das INNERSTE bedienbare Element darueber.
+    const eignerVon = (el) => { while (el) { if (bedien.includes(el)) return el;
+      el = el.parentElement; } return null; };
+    for (const k of bedien) {
+      const kb = k.getBoundingClientRect();
+      if (kb.width < 2 || kb.height < 2) continue;
+      // Die ZEILENKAESTEN der Schrift, nicht der Kasten des Elements: ein
+      // `.name` ist kachelbreit, das Wort darin ist es nicht.
+      const kaesten = [];
+      const gehen = document.createTreeWalker(k, NodeFilter.SHOW_TEXT);
+      for (let n = gehen.nextNode(); n; n = gehen.nextNode()) {
+        if (!n.nodeValue || !n.nodeValue.trim()) continue;
+        const r = document.createRange(); r.selectNodeContents(n);
+        for (const x of r.getClientRects())
+          if (x.width > 2 && x.height > 2) kaesten.push(x);
+      }
+      let punkte = 0, fremd = 0; const wer = new Set();
+      for (const x of kaesten) for (let i = 0; i < 12; i++) for (let j = 0; j < 3; j++) {
+        const px = x.left + x.width * (i + .5) / 12, py = x.top + x.height * (j + .5) / 3;
+        if (px < 0 || py < 0 || px > innerWidth || py > innerHeight) continue;
+        punkte++;
+        const e = eignerVon(document.elementFromPoint(px, py));
+        if (!e || e === k || k.contains(e) || e.contains(k)) continue;
+        fremd++;
+        wer.add('.' + (String(e.className || e.tagName).split(' ')[0]));
+      }
+      if (!punkte) continue;
+      const anteil = Math.round(fremd * 100 / punkte);
+      if (anteil > FREMD_ZU)
+        griff.push(`„${(k.textContent.trim() || k.className).slice(0, 22)
+          .replace(/\s+/g, ' ')}" — ${anteil} % des Wortes greift `
+          + `${[...wer].join(', ')} statt den eigenen Knopf `
+          + `(erlaubt ${FREMD_ZU} %, ${fremd} von ${punkte} Punkten)`);
+    }
+  }
+
   /* DER FASSUNGSSTEMPEL: deckt er etwas zu? (Q13)
    *
    * Er steht seit Q13 auf JEDEM Bildschirm, unten in der Ecke, und liegt
@@ -579,7 +646,7 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
-  return { raus, klein, zu, ueber, stempel, material, karte, bewacht, zeichen, wand, kleber };
+  return { raus, klein, zu, ueber, stempel, material, griff, karte, bewacht, zeichen, wand, kleber };
 };
 
 /** Wieviel ihres eigenen Kastens die Karte mindestens ausfuellen muss. */
@@ -763,6 +830,7 @@ for (const g of MEINE) {
     for (const x of r.ueber) meldungen.push(`${name}: ${x}`);
     for (const x of r.stempel || []) meldungen.push(`${name}: ${x}`);
     for (const x of r.material || []) meldungen.push(`${name}: ${x}`);
+    for (const x of r.griff || []) meldungen.push(`${name}: ${x}`);
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
         + `${r.bewacht.gefangen + r.bewacht.sichtbar} Punkten auf dem gesuchten Gebiet `

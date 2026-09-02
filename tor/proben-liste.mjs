@@ -575,6 +575,20 @@ export const PROBEN = [
     an:{ ...DIST, text:'if (false && start && start.d) {' },
     sagt:'zwei Finger ziehen die Karte nicht auf' },
 
+  /* Q18: das Auge kommt auf dem Telefon zurueck.
+   *
+   * Es traegt dort keine Flaeche, aber eine Trefferflaeche von 44 Punkten
+   * - und die passt in eine 112 Punkte hohe Kachel nur, indem sie in die
+   * Namenszeile reicht. Zu sehen ist der Name, zu greifen das Auge. Der
+   * Eingriff blendet es wieder ein; anschlagen muss die Fremdgriff-
+   * Pruefung, nicht der Ueberlauf. */
+  { n:'das Auge liegt wieder auf dem Kachelnamen', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:V,
+    such:'  .wahl.ebenen .kachelpaar .schau{display:none}',
+    ersatz:'  .wahl.ebenen .kachelpaar .schau{display:inline-flex}',
+    an:{ ...DIST, text:'.wahl.ebenen .kachelpaar .schau{display:inline-flex}' },
+    sagt:'des Wortes greift' },
+
   { n:'der leise Knopf verliert seine Kante', tor:'passt', bauen:true, datei:V,
     such:'  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),\n'
        + '             inset 0 var(--strich) 0 var(--knopf-licht);\n'

@@ -1693,6 +1693,32 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Kleiner, statt einen der beiden wegzulassen - beides sind Wege, die
      das Kind sonst nicht hat. */
   .kachelknoepfe{gap:var(--r1)}
+  /* Das Auge faellt auf dem Telefon WEG (Q18).
+   *
+   * Gemessen auf 844 x 390 mit Leiste: die Kachel ist dort 134 x 112,
+   * das Auge sitzt unten rechts, und seine Trefferflaeche ist 44 x 44 -
+   * sie muss es sein, das ist die Fingergrenze. In eine 112er Kachel
+   * passt das nur, indem sie nach OBEN in die Namenszeile reicht. Sie tut
+   * es bei allen neun Kacheln: „Mittelamerika" 38 x 15 Punkte, „Bundes-
+   * laender" 36 x 15, „Nordamerika" 33 x 15, „Kontinente" 24 x 15 - bei
+   * einem 17-Punkt-Wort ist das die ganze Zeilenhoehe und bis zu einem
+   * Drittel der Breite. Wer auf das Ende des Wortes tippt, landet in der
+   * Vorschau statt in der Ebene.
+   *
+   * Die drei Auswege sind durchgerechnet und alle teurer: breitere
+   * Kacheln kosten eine dritte Reihe (und damit das Bild), niedrigere
+   * Kacheln druecken das Bild von 50 auf 19 Punkte, und Name links /
+   * Auge rechts laesst „Mittelamerika" auf 90 Punkten umbrechen.
+   *
+   * Also weg - und nur hier. Auf dem iPad misst dieselbe Kachel 240 x 112
+   * und die Ueberschneidung ist 0 x 0; dort bleibt das Auge. Was das
+   * Telefon dafuer verliert, ist das ZWEITE Anschauen: der Vorlauf
+   * erscheint beim ersten Betreten einer Ebene ohnehin von selbst.
+   * Gewonnen ist, dass die Kachel ein einziges sauberes Ziel ist. */
+  .wahl.ebenen .kachelpaar .schau{display:none}
+  /* Und damit faellt der Platz weg, der fuer das Auge freigehalten war:
+     18 Punkte, die der Fortschrittsbalken bekommt. */
+  .wahl.ebenen .kachelfuss{padding-right:0}
   /* Der Kasten bleibt 16 Punkte hoch, die TREFFERFLAECHE wird 26.
    *
    * Gemessen auf 844 x 390 mit Leiste: ueber dem Knopf liegen 2 Punkte
