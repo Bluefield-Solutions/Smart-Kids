@@ -8951,3 +8951,64 @@ wartet, meldet sonst irgendwann gar nichts mehr.
 messen.
 
 239 Gegenproben.
+
+---
+
+## Q26 — Ozeanien trägt, und der große Schirm hatte das kleinere Bild
+
+### Erst gezählt, dann geurteilt: „Ozeanien" ist lesbar
+
+Die Sorge war, dass Papua-Neuguinea und Neuseeland auf 134 Punkten Breite nur
+Flecken sind. Gezählt wurden die getrennten Landmassen je Kachel und wie viele
+davon mindestens 6 Punkte messen — auf dem Zielgerät:
+
+| Kachel | Teile | davon ab 6 pt | größter |
+|---|---|---|---|
+| Mittelamerika | 9 | 9 | 38 pt |
+| **Ozeanien** | **6** | **4** | 49 pt |
+| Kontinente | 9 | 8 | 43 pt |
+| Bundesländer | 20 | 12 | 26 pt |
+
+Ozeanien liegt zwischen Kontinente und Bundesländer, und beide gelten seit
+Fassungen als lesbar. Die zwei unsichtbaren Teile sind Tasmanien und eine
+Nebeninsel — nicht die beiden Länder, um die es ging. **Keine Änderung.**
+
+### Und dabei fiel etwas anderes auf, verkehrt herum
+
+Auf dem iPad ist die Ebenenkachel **240 breit und trotzdem nur 112 hoch**, das
+Bild misst **48 Punkte — weniger als die 63 auf dem Telefon**. Mehr Platz,
+kleineres Bild. Und der Platz stand leer: auf 1180 × 820 endete die Wand bei
+657, das sind **163 Punkte**.
+
+| | Kachel | Bild | Wand endet bei |
+|---|---|---|---|
+| iPhone quer | 134 × 112 | 63 | 357 von 390 |
+| iPad quer, vorher | 240 × **112** | **48** | 657 von 820 |
+| iPad quer, jetzt | 240 × **160** | **96** | 729 von 820 |
+
+Das Bild wächst automatisch mit: sein Abzug (62 Punkte für Name, Fuß und Ränder)
+hängt an der Kachelhöhe, nicht an einer festen Zahl. Und auf dem iPad sind
+danach **alle sechs** Teile von Ozeanien größer als 6 Punkte statt vier.
+
+**Die Grenze ist nicht das iPad, sondern das schmale Schreibtischfenster**
+(700 × 850): dort stehen zwei Kacheln je Reihe, also fünf Reihen, und die Wand
+endet bei 800 von 850 — zehn Punkte je Reihe wären zu haben, mehr nicht. Die
+Regel greift deshalb ab 760 Punkten Breite **und** 700 Punkten Höhe. Mit 900
+statt 760 fiel das iPad **hochkant** (820 breit) durch die Schwelle, obwohl dort
+279 Punkte leer standen.
+
+### Das Tor hat den Preis genannt
+
+> Ebenenwahl: die Wand trägt nur noch 12 Kacheln statt 18 — sie hat Platz
+> verloren.
+
+Stimmt. Er kostet aber nichts, was nicht schon bezahlt ist: das schmale Fenster
+meldet bei **zehn** Kacheln „die Wand ist voll — die 11. läuft hier aus dem
+Bild". Die elfte Ebene bricht dort, lange bevor das iPad an seine zwölf stößt.
+
+Die Gegenprobe zielt auf die Ratsche am **Bild**, nicht auf die an der
+Wandkapazität: die meldet nur *verlorenen* Platz, und ein Rückbau gewinnt
+welchen — die Wand trüge wieder 18 statt 12 und bliebe still. Das Bild dagegen
+fällt von 168 auf 89 Punkte.
+
+240 Gegenproben.

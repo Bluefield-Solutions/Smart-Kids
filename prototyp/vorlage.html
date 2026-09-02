@@ -627,6 +627,31 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .wahl.ebenen .kachelpaar .schau{top:auto;bottom:var(--r0);right:var(--r0);
   background:transparent;border-color:transparent;box-shadow:none}
 .kachel.welt .silhouette{height:80%;max-width:76%}
+/* Auf dem GROSSEN Schirm darf die Ebenenkachel hoeher sein (Q26).
+ *
+ * Nachgemessen mit denselben Zahlen wie auf dem Telefon, und das Ergebnis
+ * ist verkehrt herum: auf dem iPad ist die Kachel 240 breit und trotzdem
+ * nur 112 hoch, das Bild misst 48 Punkte - WENIGER als die 63 auf dem
+ * Telefon. Mehr Platz, kleineres Bild.
+ *
+ * Der Platz steht dabei leer: auf 1180 x 820 endet die Wand bei 657, das
+ * sind 163 Punkte. Bei drei Reihen sind 48 je Reihe zu haben; genommen
+ * werden sie, und das Bild waechst von 48 auf 98 mit, weil sein Abzug
+ * (62) an der Kachelhoehe haengt und nicht an einer festen Zahl.
+ *
+ * Die Grenze ist NICHT der iPad, sondern das schmale Schreibtischfenster
+ * (700 x 850): dort stehen zwei Kacheln je Reihe, also fuenf Reihen, und
+ * die Wand endet bei 800 von 850 - zehn Punkte je Reihe waeren zu haben,
+ * mehr nicht. Deshalb greift die Regel erst ab 900 Punkten Breite UND 700
+ * Punkten Hoehe. Ohne diese zweite Bedingung waere aus einer Wohltat fuer
+ * das iPad ein Ueberlauf im Fenster geworden.
+ *
+ * 760 und nicht 900: mit 900 fiel das iPad HOCHKANT (820 breit) durch die
+ * Schwelle, obwohl dort 279 Punkte leer stehen und vier Reihen sie
+ * verteilen. Das schmale Fenster hat 700 und bleibt draussen. */
+@media (min-width:760px) and (min-height:700px){
+  .wahl.ebenen .kachel{min-height:160px}
+}
 .kachel .silhouette path{fill:currentColor}
 /* Die Rechenzeichen werden gezogen, nicht gefuellt. */
 .kachel .silhouette.gezeichnet path{fill:none}

@@ -712,6 +712,26 @@ export const PROBEN = [
     an:{ datei:'tor/smoke.mjs', text:"'.schirm.da .kacheln', { timeout: 1 }" },
     sagt:'Timeout' },
 
+  /* Q26: die Ebenenkachel wird auf dem grossen Schirm wieder flach.
+   *
+   * Gemessen war es verkehrt herum: auf dem iPad ist die Kachel 240 breit
+   * und war trotzdem nur 112 hoch, das Bild 48 Punkte - WENIGER als die
+   * 63 auf dem Telefon. Der Eingriff nimmt die Regel wieder weg.
+   *
+   * Anschlagen muss die Ratsche auf dem BILD („Bild pt"), nicht die auf
+   * der Wandkapazitaet: die meldet nur VERLORENEN Platz, und ein Rueckbau
+   * gewinnt welchen - die Wand traegt dann wieder 18 statt 12 Kacheln und
+   * bliebe still. Das Bild dagegen faellt von 168 auf 89 Punkte, und das
+   * ist weit ausserhalb des Bandes. */
+  { n:'die Ebenenkachel wird auf dem großen Schirm wieder flach', tor:'passt',
+    args:['--teil=3/5'], bauen:true, datei:V,
+    such:'@media (min-width:760px) and (min-height:700px){\n'
+       + '  .wahl.ebenen .kachel{min-height:160px}\n}',
+    ersatz:'@media (min-width:760px) and (min-height:700px){\n'
+       + '  .wahl.ebenen .kachel{min-height:112px}\n}',
+    an:{ ...DIST, text:'.wahl.ebenen .kachel{min-height:112px}' },
+    sagt:'Bild pt' },
+
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,
     such:'      if (finger.size >= 2 && start && start.d) {',
