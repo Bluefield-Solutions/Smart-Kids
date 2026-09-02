@@ -157,7 +157,24 @@ export function griffBeobachter() {
   const verdacht = new Set();
   let letzteMarke = null;
 
+  /* Zweimal je Bild, nicht alle 350 ms endlos.
+   *
+   * Der Takt allein hat den Rauchtest auf dem Runner zweimal ROT gemacht:
+   * `durchgang: page.click: Timeout 30000ms exceeded`. Auf einem Rechner
+   * mit zwei Kernen ist die Pruefung kein Nebenbei - sie fragt fuer jedes
+   * Wort auf jedem Knopf sechsunddreissig Mal `elementFromPoint`, und das
+   * dreimal je Sekunde, an einem Bild, das sich gar nicht mehr aendert.
+   * Ein Tor, das den Prueflig ausbremst, misst sich selbst mit.
+   *
+   * Zweimal reicht, denn mehr braucht die Bestaetigung nicht: was zwei
+   * ruhende Blicke ueberlebt, ist keine Bewegung. Danach ruht die Pruefung,
+   * bis sich am Baum etwas ruehrt. Der Takt bleibt trotzdem der Anstoss -
+   * er trifft auch Bildschirme, die nach der Aenderung erst zur Ruhe
+   * kommen, und genau daran war die erste Fassung gescheitert. */
+  let schmutzig = true, stabil = 0;
+
   const pruefen = () => {
+    if (!schmutzig && stabil >= 2) return;   // nichts hat sich geruehrt
     const schirme = document.querySelectorAll('.schirm.da');
     // Am Finger haengt etwas: dann liegt es ueber allem, und das gehoert
     // sich so. Gemessen wird die Anordnung, nicht der Zug.
@@ -180,6 +197,8 @@ export function griffBeobachter() {
        * nicht. */
       G.uebersprungen++; return;
     }
+    if (schmutzig) { schmutzig = false; stabil = 0; }
+    stabil++;
     G.geprueft++;
     /* WELCHE Bildschirme gesehen wurden, nicht nur wieviele.
      *
@@ -228,7 +247,16 @@ export function griffBeobachter() {
    * Ein Takt trifft jeden Bildschirm, der stehenbleibt - und um genau die
    * geht es. Er kostet nichts: der Blick selbst sind wenige Millisekunden,
    * und im ruhenden Bild passiert ohnehin nichts anderes. */
-  const start = () => setInterval(pruefen, 350);
+  const start = () => {
+    /* HIER und nicht oben: das Startskript laeuft, bevor es ein
+     * `document.documentElement` gibt. Der erste Anlauf warf auf jeder
+     * Seite „parameter 1 is not of type 'Node'", die Pruefung lief nie -
+     * und gemeldet hat das die Null-Zeile, nicht ein Absturz. */
+    new MutationObserver(() => { schmutzig = true; }).observe(document.documentElement,
+      { childList: true, subtree: true, attributes: true,
+        attributeFilter: ['class', 'style', 'data-ebene', 'hidden'] });
+    setInterval(pruefen, 350);
+  };
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', start);
   else start();
 }

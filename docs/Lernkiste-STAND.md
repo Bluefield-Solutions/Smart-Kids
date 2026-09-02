@@ -8654,3 +8654,52 @@ Ein zweiter Gedanke, der sich damit erledigt hat: das Band aufzuweiten, bis es
 passt. Bei 4 % erlaubter Abweichung würde `ansicht` am Arbeitsplatz nichts mehr
 finden. Grenzen sind anteilig zu setzen, nicht so weit, bis sie nichts mehr
 ausschließen — Regel 2 von der anderen Seite.
+
+---
+
+## Q22 — der Fremdgriff hat den Rauchtest ausgebremst
+
+Zwei Auslieferungen nach Q19 sind rot geworden: `durchgang: page.click: Timeout
+30000ms exceeded`, beide Male in Teil 4 des Rauchtests, dazwischen zwei grüne.
+Ein Tor, das mal anschlägt und mal nicht, ist schlimmer als keines — und hier
+war es **mein** Tor, nicht die App.
+
+Der Grund ist der Takt aus Q19. Er fragt für jedes Wort auf jedem Knopf
+sechsunddreißig Mal `elementFromPoint`, und das dreimal je Sekunde — auch an
+einem Bild, das sich seit zwei Sekunden nicht mehr rührt. Am Arbeitsplatz mit
+vier Kernen fällt das nicht auf; der Runner hat zwei, und dort konkurriert die
+Prüfung mit dem, was sie prüft. **Ein Tor, das den Prüfling ausbremst, misst
+sich selbst mit** — das ist Regel 5 von der unangenehmen Seite: die Messstelle
+war nicht neutral.
+
+Behoben, ohne den Takt aufzugeben: ein `MutationObserver` setzt eine Fahne, wenn
+sich am Baum etwas rührt, und geprüft wird nur, solange dieselbe Anordnung nicht
+schon **zweimal** gesehen wurde. Zwei Blicke sind genau das, was die Bestätigung
+braucht; danach ruht die Prüfung, bis sich etwas ändert. Der Takt bleibt der
+Anstoß — er trifft auch die Bildschirme, die nach einer Änderung erst zur Ruhe
+kommen, und genau daran war die allererste Fassung gescheitert.
+
+Gemessen, gleiche Abdeckung bei einem Bruchteil der Last:
+
+| | vorher | jetzt |
+|---|---|---|
+| Teil 1 | 90 geprüft, 78 Aufgaben | 25 geprüft, 12 Aufgaben |
+| Teil 4 | 46 geprüft, 16 Aufgaben | 45 geprüft, 16 Aufgaben |
+
+Die Zahl fällt, die **Abdeckung** nicht: vorher wurde derselbe stehende
+Bildschirm zehnmal gemessen, jetzt zweimal.
+
+### Und der Umbau hatte selbst einen Fehler
+
+Der `MutationObserver` stand zuerst ganz oben im Startskript — dort gibt es noch
+kein `document.documentElement`. Er warf auf jeder Seite, die Prüfung lief
+**nie**, und gemeldet hat das nicht ein Absturz, sondern die Zeile aus Q19:
+
+> Der Fremdgriff hat keinen einzigen ruhenden Bildschirm gesehen — dann beweist
+> „nichts gefunden" nichts (Regel 1)
+
+Eine Prüfung, die zählt, wie oft sie zum Zug kam, findet ihren eigenen Ausfall.
+Das ist der ganze Sinn dieser Zeile, und sie hat sich am selben Tag bezahlt
+gemacht, an dem sie geschrieben wurde.
+
+Volle Kette grün in 139,1 s.
