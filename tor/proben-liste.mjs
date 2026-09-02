@@ -657,10 +657,25 @@ export const PROBEN = [
    * Kachelbild IST der Name. */
   { n:'eine Ebenenkachel hat kein Bild mehr', tor:'passt',
     args:['--teil=0/5'], bauen:true, datei:'prototyp/bauen.mjs',
-    such:'    australien:  { d: silhouette(roh.australien, 5),    vb: sichtfeld([{ pfad: roh.australien }]) },',
+    such:'    australien:  { d: silhouette(ozeanienUmriss, 4),\n'
+       + '                   vb: sichtfeld([{ pfad: ozeanienUmriss }]) },',
     ersatz:'',
     an:{ ...DIST, fehlt:'"australien":{"d"' },
     sagt:'hat kein Kachelbild' },
+
+  /* Q24: das Kachelbild zeigt wieder den Kontinent statt der Ziele.
+   *
+   * Genau der Stand von vorgestern: „Ozeanien" fragt nach
+   * Papua-Neuguinea, Australien und Neuseeland und zeigte den
+   * australischen Kontinentumriss - zwei von drei Antworten kamen im Bild
+   * nicht vor. Der Eingriff baut das Bild wieder aus dem Kontinent; der
+   * Bau muss abbrechen. */
+  { n:'das Kachelbild zeigt wieder den Kontinent statt der Ziele', tor:'bauen',
+    datei:'prototyp/bauen.mjs',
+    such:"  const ozeanienUmriss = zielUmriss('australien');",
+    ersatz:"  const ozeanienUmriss = roh.australien;",
+    an:{ datei:'prototyp/bauen.mjs', text:'const ozeanienUmriss = roh.australien;' },
+    sagt:'zeigt nicht, wonach die Ebene fragt' },
 
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,

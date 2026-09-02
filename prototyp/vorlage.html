@@ -1780,7 +1780,30 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      obwohl sie auf einer Ebenenkachel ausgeblendet ist - dort sind es
      acht Kacheln, hier zwei, und „2 Uebungen" ist das einzige, was sagt,
      wie gross eine Welt ist. */
-  .kachel.welt{min-height:170px}
+  /* Die Weltkacheln nehmen sich den Platz, der da ist (Q24).
+   *
+   * Anders als auf der Ebenenwahl ist hier LUFT: gemessen auf 844 x 390
+   * endete die Wand bei 329 von 390 - einundsechzig Punkte standen leer,
+   * und darunter kommt nichts mehr. Auf dem kleinsten Geraet (iPhone SE
+   * quer, 667 x 375) sind es 33 bis zum sicheren Rand.
+   *
+   * Es ist EINE Reihe (drei Kacheln bei Fiona, zwei bei Lea), also geht
+   * der ganze Zuwachs in die Hoehe der einen Reihe. 200 statt 170: das
+   * sind 30, und 33 waren zu haben.
+   *
+   * Und das Bild waechst mit, ohne dass hier etwas dazu steht: es ist
+   * hier kein Kasten neben dem Text, sondern ein Wasserzeichen ueber 80 %
+   * der Kachelhoehe. Genau deshalb war auf der Ebenenwahl der Kachelfuss
+   * der Hebel und hier die Kachel selbst - dieselbe Frage, zwei
+   * verschiedene Antworten, weil zwei verschiedene Aufbauten. */
+  .kachel.welt{min-height:200px}
+  /* Und dieselbe Zahl fuer die DREI-Kachel-Fassung (Fiona). Die Regel
+     oben ist spezifischer (`.wahl.weltwahl:has(> :nth-child(3))`) und
+     gewinnt sonst mit ihren 180 - gemessen: Lea wuchs auf 200, Fiona
+     blieb auf 180, und dieselbe Luft stand bei ihr weiter leer. Die 180
+     dort sind gegen eine zweite REIHE gesetzt, also gegen die Breite; in
+     der Hoehe kosten sie nur. */
+  .wahl.weltwahl:has(> :nth-child(3)) .kachel.welt{min-height:200px}
   .kachel.welt .ueber{display:block}
   .kachel.welt .name{font-size:var(--s2)}
   .kachel .stand .sterne svg{width:17px;height:17px}

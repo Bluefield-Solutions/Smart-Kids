@@ -181,8 +181,24 @@ const silhouette = (pfad, n) => {
    * Fiona liest nicht - fuer sie IST das Kachelbild der Name. Es zeigt
    * deshalb das, wonach auf dieser Ebene gefragt wird: die Landbruecke
    * und die grossen Antillen. */
-  const mittelamerikaUmriss = KARTEN_GROB.mittelamerika
-    .filter(l => zielAuf('mittelamerika', l.a3)).map(l => l.pfad).join(' ');
+  /* Ein Kachelbild AUS DEN ZIELEN, fuer Ebenen ohne brauchbaren
+   * Kontinentumriss. Der Helfer merkt sich, welche Ebenen so gebaut sind -
+   * nur fuer die ist die Pruefung unten ueberhaupt rechenbar, weil nur
+   * dort Bild und Ziele im selben Koordinatensystem liegen. */
+  const ausZielen = {};
+  const zielUmriss = (id) => (ausZielen[id] = KARTEN_GROB[id]
+    .filter(l => zielAuf(id, l.a3)).map(l => l.pfad).join(' '));
+  const mittelamerikaUmriss = zielUmriss('mittelamerika');
+  /* Ozeanien ebenso - und aus demselben Grund (Q24).
+   *
+   * Die Ebene fragt nach Papua-Neuguinea, Australien und Neuseeland; das
+   * Kachelbild zeigte den KONTINENTUMRISS, also nur Australien. Fuer
+   * Fiona ist das Kachelbild der Name, und dieser Name war falsch: zwei
+   * von drei Antworten kamen darin gar nicht vor.
+   *
+   * Wie bei Mittelamerika wird der Umriss deshalb aus den ZIELEN
+   * gebaut - was gefragt wird, ist auch, was zu sehen ist. */
+  const ozeanienUmriss = zielUmriss('australien');
   D.silhouetten = {
     kontinente:  { d: silhouette(welt, 16),             vb: sichtfeld([{ pfad: welt }]) },
     europa:      { d: silhouette(roh.europa, 16),       vb: sichtfeld([{ pfad: roh.europa }]) },
@@ -210,11 +226,58 @@ const silhouette = (pfad, n) => {
      * es gekostet: wer nach `ozeanien` sucht, findet nichts, und wer die
      * Liste hier abschreibt, uebersieht den einen Namen, der anders
      * lautet als sein Gebiet. */
-    australien:  { d: silhouette(roh.australien, 5),    vb: sichtfeld([{ pfad: roh.australien }]) },
+    australien:  { d: silhouette(ozeanienUmriss, 4),
+                   vb: sichtfeld([{ pfad: ozeanienUmriss }]) },
     deutschland: { d: silhouette(d, 8),                 vb: sichtfeld([{ pfad: d }]) },
   };
+  /* ZEIGT das Kachelbild, wonach die Ebene fragt? (Q24)
+   *
+   * Zwei Fassungen lang zeigte „Ozeanien" den Kontinentumriss, also nur
+   * Australien - gefragt wird aber nach Papua-Neuguinea, Australien und
+   * Neuseeland. Zwei von drei Antworten kamen im Bild gar nicht vor. Fuer
+   * Fiona IST das Kachelbild der Name; dieser Name war falsch.
+   *
+   * Kein Tor konnte das melden: `passt` misst, ob das Bild da ist, gross
+   * genug und unverdeckt - nicht, ob es das RICHTIGE zeigt. Und das ist
+   * auch keine Frage an den Browser, sondern an die Daten. Also hier, wo
+   * beide Seiten zusammenkommen.
+   *
+   * Geprueft wird mit den ANKERN: jedes Ziel der Ebene hat einen Punkt
+   * auf der Karte, und der muss im Sichtfeld des Kachelbildes liegen.
+   * Das ist grob und genau deshalb tauglich - eine Verschiebung um ein
+   * paar Punkte faengt es nicht, ein fehlendes Neuseeland schon.
+   *
+   * WAS ES NICHT FAENGT, und das gehoert dazu: die Ebenen mit
+   * Kontinentumriss (Europa, Afrika, Asien, Nord- und Suedamerika). Deren
+   * Bild kommt aus der WELTKARTE, die Anker aus der jeweiligen
+   * Laenderkarte - zwei Koordinatensysteme, und ein Vergleich der Zahlen
+   * waere keiner. Beim ersten Lauf meldete die Pruefung prompt, in Europas
+   * Bild fehlten siebzehn Laender; sie lagen nur woanders gemessen.
+   *
+   * Fuer die stimmt es aber ohnehin durch die Bauweise: der Umriss IST der
+   * Kontinent, in dem die Ziele liegen. Genau diese Zusage war bei
+   * Ozeanien gebrochen - dort heisst der Kontinent `australien` und die
+   * Ebene fragt nach drei Laendern, von denen zwei nicht auf dem
+   * australischen Festland liegen. Wer eine solche Ebene neu anlegt, baut
+   * ihr Bild ueber `zielUmriss()` und faellt damit in diese Pruefung. */
+  for (const k of Object.keys(ausZielen)) {
+    const ziele = D.laender[k], s = D.silhouetten[k];
+    if (!ziele || !s) continue;
+    const [vx, vy, vb, vh] = s.vb.split(/\s+/).map(Number);
+    const draussen = ziele.filter(z => {
+      if (!z.anker) return false;
+      const [x, y] = String(z.anker).split(',').map(Number);
+      return x < vx - 1 || y < vy - 1 || x > vx + vb + 1 || y > vy + vh + 1;
+    });
+    if (draussen.length)
+      throw new Error(`Das Kachelbild von „${k}" zeigt nicht, wonach die Ebene fragt: `
+        + `${draussen.map(z => z.name).join(', ')} ${draussen.length === 1 ? 'liegt' : 'liegen'} `
+        + `ausserhalb des Bildes (Sichtfeld ${s.vb}). Fuer ein Kind, das noch nicht liest, `
+        + `ist das Kachelbild der Name der Ebene.`);
+  }
   const kb = Object.values(D.silhouetten).reduce((a, s) => a + s.d.length, 0) / 1024;
-  console.log(`  Silhouetten fuer die Kacheln: ${kb.toFixed(1)} KB`);
+  console.log(`  Silhouetten fuer die Kacheln: ${kb.toFixed(1)} KB, `
+    + `alle Ziele im Bild`);
 }
 D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, sichtfeld(roh)]));
 /* Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),

@@ -8766,3 +8766,69 @@ als an der Kachel, wo es direkt auf dem Gegenstand saß. Es trägt jetzt das Wor
 Fenstern fällt das Wort weg, dieselbe Knappheit wie überall.
 
 236 Gegenproben.
+
+---
+
+## Q24 — dieselbe Frage, zwei verschiedene Antworten
+
+### Die Weltenwahl: hier war das Bild nie das Problem
+
+Dieselbe Rechnung wie in Q23, auf die Weltenwahl angewandt — und sie kommt zu
+einem anderen Ergebnis. Gemessen auf 844 × 390:
+
+| | |
+|---|---|
+| Bild | 202 × 142 = **79 % der Kachelhöhe** |
+| Kachel | 268 × 180 |
+| Wand endet bei | 329 von 390 — **61 Punkte standen leer** |
+
+Auf der Ebenenkachel ist das Bild ein Kasten neben dem Text und war deshalb 43 %
+hoch; hier ist es ein **Wasserzeichen über 80 % der Kachel**. Am Beiwerk ist
+nichts zu holen — es sitzt schon dahinter.
+
+Zu holen war die **Luft darunter**: es ist eine Reihe, also geht der ganze
+Zuwachs in ihre Höhe. 200 statt 170, und das Bild wächst von 142 auf 158 mit,
+ohne dass eine Zeile dazu nötig wäre.
+
+Und eine zweite Regel musste mit: `\.wahl.weltwahl:has(> :nth-child(3))` setzt
+für **drei** Kacheln 180 und ist spezifischer. Gemessen: Lea wuchs auf 200,
+Fiona blieb auf 180 — dieselbe Luft stand bei ihr weiter leer. Die 180 dort sind
+gegen eine zweite **Reihe** gesetzt, also gegen die Breite; in der Höhe kosten
+sie nur.
+
+Die Grenze kommt vom kleinsten Gerät: iPhone SE quer, Wand endete bei 321 von
+375, sicher bis 354 — 33 Punkte. Genommen sind 30.
+
+### Und „Ozeanien" zeigte das Falsche
+
+Die Ebene fragt nach **Papua-Neuguinea, Australien und Neuseeland**. Das
+Kachelbild, seit Q23 überhaupt erst vorhanden, war der **Kontinentumriss** —
+also nur Australien. Zwei von drei Antworten kamen im Bild gar nicht vor, und
+für Fiona *ist* das Kachelbild der Name.
+
+Gelöst wie bei Mittelamerika: der Umriss entsteht aus den **Zielen** der Ebene,
+nicht aus dem Kontinent. Was gefragt wird, ist auch, was zu sehen ist.
+
+### Der Wächter, der dabei entstand — und was er nicht kann
+
+`bauen` prüft jetzt mit den **Ankern**: jedes Ziel einer Ebene hat einen Punkt
+auf der Karte, und der muss im Sichtfeld des Kachelbildes liegen. Grob, und
+genau deshalb tauglich — ein fehlendes Neuseeland fängt es, eine Verschiebung um
+ein paar Punkte nicht.
+
+Beim ersten Lauf meldete er prompt, in **Europas** Bild fehlten siebzehn Länder.
+Das war er selbst: Europas Umriss kommt aus der **Weltkarte**, seine Anker aus
+der **Länderkarte** — zwei Koordinatensysteme, und ein Vergleich der Zahlen wäre
+keiner. Regel 5, wieder einmal: eine Zahl ohne ihre Messstelle.
+
+Er gilt deshalb nur, wo Bild und Ziele aus derselben Karte kommen — und das
+bestimmt kein Namensverzeichnis, sondern der Helfer `zielUmriss()`, durch den
+solche Bilder gebaut werden. Wer eine Ebene ohne brauchbaren Kontinentumriss neu
+anlegt, geht durch denselben Aufruf und fällt damit in die Prüfung.
+
+Für die Kontinentebenen stimmt die Zusage ohnehin durch die Bauweise: der Umriss
+*ist* der Kontinent, in dem die Ziele liegen. Genau diese Zusage war bei
+Ozeanien gebrochen — dort heißt der Kontinent `australien`, und die Ebene fragt
+nach drei Ländern, von denen zwei nicht auf dem australischen Festland liegen.
+
+237 Gegenproben.
