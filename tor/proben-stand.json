@@ -229,10 +229,15 @@
       "zeit": "2026-09-02",
       "s": 17
     },
-    "der Fremdgriff sieht die Aufgabe nicht mehr": {
-      "commit": "612926b5c8e2d8abb146c54faf83bb8ca332f334",
+    "die Werkzeugspalte rutscht auf die Antwortliste": {
+      "commit": "ab6358e1a8bfe101cb8293ef196a3fe795abf3a2",
       "zeit": "2026-09-02",
-      "s": 160
+      "s": 104
+    },
+    "der Fremdgriff sieht die Aufgabe nicht mehr": {
+      "commit": "ab6358e1a8bfe101cb8293ef196a3fe795abf3a2",
+      "zeit": "2026-09-02",
+      "s": 81
     },
     "zwei Finger ziehen die Karte nicht mehr auf": {
       "commit": "12b511cd6169e96698f9ec5229299194371bfd76",
