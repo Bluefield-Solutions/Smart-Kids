@@ -9268,3 +9268,121 @@ trägt `data-neu` die Zahl. Eine Marke ist eine Zusage des Programms; ein Satz
 ist Text, den jemand ändern darf.
 
 244 Gegenproben.
+
+---
+
+## Q29 — Der Gleichlauf: dieselben Aufkleber auf allen Geräten
+
+Fionas dritter Wunsch, und der einzige, der an eine Bauweise stieß statt an
+eine Gestaltung. `src/profil/ablage.js` sagte: *„Alles bleibt auf dem Gerät.
+Nichts geht ins Netz — das ist keine Einstellung, sondern die Bauweise: es
+gibt keinen Code, der etwas hochlädt."* Diese Runde baut ihn.
+
+### Der Referenzabgleich, und was er entschieden hat
+
+| Vorbild | Was es **tut** | Übernommen |
+|---|---|---|
+| **Anki** (AnkiWeb) | ein Konto, ein Server, Karten im Klartext | dass der Abgleich **nebenher** läuft. **Nicht** das Konto. |
+| **Obsidian Sync** | Ende-zu-Ende verschlüsselt; der Betreiber sieht Bytes | genau das — der einzige Weg, der K3 13.3 nicht bricht, sondern **verschiebt** |
+| **Das WLAN-Passwort am Router** | ein Code, den man abtippt, und danach nie wieder | die Kopplung ist **ein Code**, kein Verfahren |
+
+Daraus das Soll: kein Konto, keine E-Mail, kein Name. Der Dienst sieht nur
+Bytes. Offline ändert sich nichts. Und zusammengeführt wird **ohne
+Rückfrage** — aus zwei Ständen wird einer, und niemand verliert etwas.
+
+### Wie es aussieht
+
+Ein **Familienschlüssel** aus 80 Bit, sechzehn Zeichen in vier Gruppen:
+`K7QM-3XR9-2FTB-HN45`. Achtzig und nicht hundertachtundzwanzig, weil ein
+Mensch ihn von einem Bildschirm auf ein Telefon tippt — sechsundzwanzig
+Zeichen tippt niemand zweimal. Das Alphabet ist Crockfords Base32, ohne I,
+L, O und U.
+
+Aus demselben Code entstehen **zwei** Ableger: die **Raumkennung** (die
+bekommt der Dienst) und das **Schloss** (das bekommt er nie). Zugesperrt
+wird mit AES-GCM, der Zufallsstreifen reist vorn mit.
+
+Der Dienst ist eine Datei (`dienst/gleichlauf-worker.js`, ein Cloudflare
+Worker) mit zwei Aufrufen — `GET` und `PUT` mit einer Fassungszahl gegen
+gleichzeitiges Schreiben. Er entscheidet nichts; er kann es auch gar nicht,
+er sieht den Inhalt nicht.
+
+**Voreinstellung: aus.** Es braucht beides — einen aufgesetzten Dienst
+(Adresse im Bau, nicht in der App) und einen Schlüssel im Elternbereich.
+Fehlt eines, passiert nichts.
+
+### Zusammenführen: niemand verliert etwas
+
+| Feld | Regel | warum |
+|---|---|---|
+| `hoechstes` | das **Größere** | daran hängt der Aufkleber, und er fällt nie |
+| `fach`, `faellig` | vom **jüngeren** Stand | das laufende Fach *soll* nach einem Fehler fallen |
+| `richtig`, `falsch` | das **Größere**, nicht die Summe | beide Geräte tragen die gemeinsame Vorgeschichte; addiert wäre sie doppelt gezählt. Zu wenig ist hier der harmlose Fehler — es erfindet keine Übung |
+| `zuletzt` | das **Spätere** | |
+
+Die Rechnung ist verbandsartig: reihenfolgeunabhängig und wiederholbar. Das
+ist keine Feinheit, sondern die Bedingung dafür, dass drei Geräte ohne
+Schiedsrichter zusammenkommen.
+
+Und es reist nur, was zum Kind gehört: Fortschritt, der Sitzungszähler und
+„einmal ganz ohne Fehler". **Die PIN reist nicht**, die Stimme nicht, die
+Lautstärke nicht.
+
+### Das Tor hat im ersten Lauf drei echte Fehler gefunden
+
+Es prüft ohne Browser und ohne Netz — der Dienst wird nachgebaut. Was es
+sofort meldete:
+
+1. **Die Reihenfolge änderte das Ergebnis.** `vereinen(a,b)` und
+   `vereinen(b,a)` gaben denselben Inhalt in verschiedener Schreibweise.
+   `gleich()` vergleicht als Text — zwei Geräte hätten sich **endlos**
+   denselben Stand geschickt, jedes in der Meinung, der andere habe etwas
+   Neues. Behoben: die Schlüssel stehen jetzt in fester Reihenfolge, bis
+   nach unten durch.
+2. **Die PIN reiste mit.** Der Filter griff nur auf der ankommenden Seite;
+   war der eigene Stand der ältere, lag die eigene PIN im Umschlag. Ein
+   Filter, der nur eine Richtung kennt, ist keiner.
+3. **Das großzügige Lesen zerstörte gültige Zeichen.** Der Code-Leser machte
+   aus `Q` eine Null — und **Q gehört zum Alphabet**. Jeder Schlüssel mit
+   einem Q führte in einen fremden, leeren Raum: es sieht aus wie ein leeres
+   Konto und ist ein Zahlendreher. Gefunden an einem gewürfelten Schlüssel,
+   in dem zufällig ein Q vorkam — das Tor prüft seither zusätzlich einen
+   **festen** Code, in dem jedes Zeichen des Alphabets einmal steht. Ein
+   Fehler, der vom Würfel abhängt, rutscht sonst irgendwann durch.
+
+Ein vierter kam aus einer Gegenprobe: der Rauchtest-Prüfung „verlässt etwas
+das Gerät?" stand **hinter** der Zeile, die den Lauf beendet. Sie wurde
+erhoben und nie gelesen. Regel 1 aus dem langweiligsten Grund, den es gibt:
+falsche Zeile.
+
+### Was geprüft ist — und die eine Naht, die es nicht ist
+
+- `gleichlauf` (neu in der Kette, ohne Browser, 0,1 s): Schlüssel, Raum,
+  Schloss, Zusammenführung, eine ganze Runde gegen einen nachgebauten
+  Dienst, der Streitfall, kein Netz. **Sechs Gegenproben.**
+- `smoke`: **null fremde Aufrufe** im ganzen Lauf — gegen die Herkunft des
+  eigenen Servers gezählt, nicht gegen eine Liste erlaubter Adressen. Eine
+  Gegenprobe baut einen Aufruf nach draußen ein.
+- **Nicht** geprüft ist die Naht zwischen App und Dienst: dass die App den
+  Gleichlauf wirklich anstößt. Die Adresse steht im Bau, ein Tor müsste
+  also mit einem eigenen Bau fahren. Statt dessen gibt es
+  `npm run zweigeraete` — zwei Browser-Kontexte, ein echter Dienst, von
+  Hand zu fahren. Gemessen am 02.09.2026:
+
+  ```
+  A: im Stand = afrika,europa
+  B: im Stand = afrika,asien,europa
+  A nach dem zweiten Start: im Stand = afrika,asien,europa
+  Steht „afrika" lesbar im Lager des Dienstes? false
+  ```
+
+  Das steht hier, damit niemand die Naht für bewacht hält.
+
+### Was noch zu tun ist — von euch
+
+Der Dienst ist geschrieben, aber nicht aufgesetzt: das braucht ein
+Cloudflare-Konto und `wrangler deploy`, rund fünf Minuten. Die Anleitung
+steht im Kopf von `dienst/gleichlauf-worker.js`. Bis dahin zeigt der
+Elternbereich „nicht eingerichtet", und alles läuft wie bisher.
+
+250 Gegenproben.

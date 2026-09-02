@@ -323,6 +323,7 @@ const module = [
   inline(new URL('../src/inhalt/abzeichen.js', import.meta.url), 'Abzeichen'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),
   inline(new URL('../src/kern/richtung.js', import.meta.url), 'Richtung'),
+  inline(new URL('../src/kern/gleichlauf.js', import.meta.url), 'Gleichlauf'),
   inline(new URL('../src/profil/ablage.js', import.meta.url), 'Ablage'),
   inline(new URL('../src/protokoll/protokoll.js', import.meta.url), 'Protokoll',
          { 'ablage.js': 'const A = Ablage;' }),
@@ -372,6 +373,19 @@ const BAU = {
     || new Date(fs.statSync(new URL('./spiel.js', import.meta.url)).mtime)
         .toISOString().slice(0, 16).replace('T', ' ')),
   standJahr: I.STAND.jahr,
+  /* Die Adresse des Gleichlaufdienstes (Q29).
+   *
+   * Leer heisst AUS - und zwar vollstaendig: die App laeuft dann wie
+   * bisher, es gibt keinen Code, der etwas hochlaedt. Das ist die
+   * Voreinstellung und bleibt es, solange niemand einen Dienst
+   * aufsetzt. Wie das geht, steht im Kopf von
+   * `dienst/abgleich-worker.js`; hier wird die Adresse nur
+   * durchgereicht:  SMARTKIDS_GLEICHLAUF=https://... npm run bauen
+   *
+   * Sie steht im Bau und nicht im Elternbereich, weil sonst jedes Geraet
+   * sie einzeln getippt bekaeme - neben dem Familienschluessel eine
+   * zweite Zeile Abtippen, und die laengere von beiden. */
+  gleichlauf: (process.env.SMARTKIDS_GLEICHLAUF || '').replace(/\/+$/, ''),
 };
 
 const vorlage = fs.readFileSync(new URL('./vorlage.html', import.meta.url), 'utf8');

@@ -6,6 +6,7 @@
     "bauen",
     "budget",
     "doppelt",
+    "gleichlauf",
     "inhalt",
     "lesbarkeit",
     "passt",
@@ -774,6 +775,36 @@
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
       "zeit": "2026-09-02",
       "s": 53
+    },
+    "der Familienschlüssel verträgt kein Q mehr": {
+      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "zeit": "2026-09-02",
+      "s": 4
+    },
+    "etwas verlässt das Gerät, ohne dass jemand es eingerichtet hat": {
+      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "zeit": "2026-09-02",
+      "s": 163
+    },
+    "beim Zusammenführen fällt der Aufkleber zurück": {
+      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "zeit": "2026-09-02",
+      "s": 4
+    },
+    "der Gleichlauf nimmt die PIN mit": {
+      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "zeit": "2026-09-02",
+      "s": 0
+    },
+    "der Gleichlauf schickt Klartext": {
+      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "zeit": "2026-09-02",
+      "s": 4
+    },
+    "die Umschläge kommen in wechselnder Reihenfolge": {
+      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "zeit": "2026-09-02",
+      "s": 0
     },
     "der Endbildschirm zeigt die neuen Aufkleber nicht mehr": {
       "commit": "bb34a9bc6cf6dc55fd353dfb8f39c036ab6cfecc",

@@ -1,8 +1,26 @@
 /* Ablage. IndexedDB, ohne Zeremonie und ohne Abhaengigkeit.
  *
- * Alles bleibt auf dem Geraet. Nichts geht ins Netz - siehe Konzept K3,
- * Kapitel 13.3. Das ist keine Einstellung, sondern die Bauweise: es gibt
- * keinen Code, der etwas hochlaedt.
+ * Hier stand bis Q29: „Nichts geht ins Netz. Das ist keine Einstellung,
+ * sondern die Bauweise: es gibt keinen Code, der etwas hochlaedt."
+ *
+ * DAS STIMMT SEIT Q29 NICHT MEHR, und der Satz darf nicht stehen
+ * bleiben - er waere die gefaehrlichste Sorte Kommentar: einer, dem man
+ * glaubt.
+ *
+ * Was jetzt gilt, in drei Saetzen:
+ *
+ *   1. Ohne Familienschluessel geht weiter nichts ins Netz. Das ist die
+ *      Voreinstellung, und der Rauchtest misst sie am ganzen Lauf: kein
+ *      einziger fremder Aufruf.
+ *   2. MIT Familienschluessel geht der Fortschritt an einen Dienst, den
+ *      die Eltern selbst aufsetzen - zugesperrt mit einem Schluessel, der
+ *      das Geraet nie verlaesst. Wer das Lager des Dienstes kopiert, hat
+ *      Zufallsrauschen (`src/kern/gleichlauf.js`, Tor `gleichlauf`).
+ *   3. Die PIN, die Stimme und alle anderen Geraeteeinstellungen reisen
+ *      NICHT mit. Was reist, steht in `REIST` und nirgends sonst.
+ *
+ * K3 13.3 ist damit nicht gebrochen, sondern verschoben: es geht etwas
+ * ins Netz, und niemand dort kann es lesen.
  */
 const DB = 'lernkiste', FASSUNG = 1;
 const LAEDEN = ['profile', 'fortschritt', 'protokoll', 'einstellungen'];
@@ -38,6 +56,25 @@ export const hole   = (laden, k) => tun(laden, 'readonly',  s => s.get(k));
 export const setze  = (laden, k, w) => tun(laden, 'readwrite', s => s.put(w, k));
 export const loesche= (laden, k) => tun(laden, 'readwrite', s => s.delete(k));
 export const alles  = (laden) => tun(laden, 'readonly', s => s.getAll());
+/* Alles MIT den Schluesseln - fuer den Gleichlauf (Q29).
+ *
+ * `alles` gibt nur die Werte. Beim Zusammenfuehren zweier Geraete braucht
+ * es aber gerade die Schluessel: unter `fiona:kontinente` steht Fionas
+ * Stand, unter `lea:kontinente` Leas, und wer sie ohne Namen einsammelt,
+ * kann sie nicht wieder auseinandersortieren.
+ *
+ * Zwei Aufrufe in einer Transaktion, nicht einer je Schluessel: bei
+ * dreissig Ebenen mal vier Profilen waeren das hundertzwanzig
+ * Transaktionen fuer eine Liste. */
+export async function alleMitSchluessel(laden) {
+  const d = await oeffnen();
+  return new Promise((ja, nein) => {
+    const t = d.transaction(laden, 'readonly'), s = t.objectStore(laden);
+    const k = s.getAllKeys(), w = s.getAll();
+    t.oncomplete = () => ja(k.result.map((n, i) => [n, w.result[i]]));
+    t.onerror = () => nein(t.error);
+  });
+}
 export const leeren = (laden) => tun(laden, 'readwrite', s => s.clear());
 
 /** Anhaengen an eine Liste. Fuer das Protokoll: nur schreiben, nie aendern. */

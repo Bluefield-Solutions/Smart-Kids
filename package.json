@@ -31,7 +31,9 @@
     "rhythmus": "node tor/rhythmus.mjs",
     "korpus": "node tools/korpus.mjs",
     "schnell": "node tools/schnell.mjs",
-    "regeln": "node tor/regeln.mjs"
+    "regeln": "node tor/regeln.mjs",
+    "gleichlauf": "node tor/gleichlauf.mjs",
+    "zweigeraete": "node tools/zwei-geraete.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",

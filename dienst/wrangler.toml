@@ -1,0 +1,11 @@
+# Der Abgleichdienst. Siehe den Kopf von gleichlauf-worker.js.
+#
+# Die Kennung unten entsteht bei `wrangler kv namespace create STAND` und
+# ist KEIN Geheimnis - sie benennt nur ein Lager im eigenen Konto.
+name = "smart-kids-gleichlauf"
+main = "gleichlauf-worker.js"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "STAND"
+id = "HIER_DIE_KENNUNG_AUS_WRANGLER_EINTRAGEN"

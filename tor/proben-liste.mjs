@@ -264,7 +264,7 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
     ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
@@ -2104,6 +2104,97 @@ export const PROBEN = [
     // Wand ist voll" und meldete „beweist nichts": der Hinweis kam, rot
     // wurde nichts.
     sagt:'Platz verloren' },
+
+  /* 4b. Das grosszuegige Lesen zerstoert wieder gueltige Zeichen.
+   *
+   * Der erste Entwurf machte aus Q eine Null - und Q gehoert zum
+   * Alphabet. Jeder Code mit einem Q fuehrte damit in einen fremden
+   * Raum, und dort steht nichts: es sieht aus wie ein leeres Konto und
+   * ist ein Zahlendreher. Der Eingriff stellt genau diesen Entwurf
+   * wieder her. */
+  { n:'der Familienschlüssel verträgt kein Q mehr', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"    .replace(/O/g, '0').replace(/[IL]/g, '1')",
+    ersatz:"    .replace(/[OQ]/g, '0').replace(/[IL]/g, '1')",
+    an:{ datei:'src/kern/gleichlauf.js', text:"replace(/[OQ]/g, '0')" },
+    sagt:'ueberlebt das Hin und Zurueck nicht' },
+
+  /* 5. Irgendetwas verlaesst das Geraet.
+   *
+   * Die Zusage aus K3 lautet: ohne Familienschluessel und ohne
+   * eingerichteten Dienst geht nichts ins Netz. Seit es Code gibt, der
+   * senden KANN, ist das keine Eigenschaft der Bauweise mehr, sondern
+   * eine Zusage - und eine Zusage ohne Pruefung ist ein Vorsatz.
+   *
+   * Der Eingriff baut genau das ein, was hier auffallen soll: einen
+   * Aufruf nach draussen beim Start. Nicht ueber den Gleichlauf, sondern
+   * daneben - der Rauchtest soll JEDEN fremden Aufruf sehen und nicht
+   * nur die, die durch eine bestimmte Funktion gehen. */
+  { n:'etwas verlässt das Gerät, ohne dass jemand es eingerichtet hat',
+    tor:'smoke', bauen:true, args:['--teil=0/4'], datei:D,
+    such:"  if (gleichlaufAn()) gleichlaufFahren(); })();",
+    ersatz:"  fetch('https://beispiel.ungueltig/v1/x').catch(()=>{}); })();",
+    an:{ ...DIST, text:"fetch('https://beispiel.ungueltig/v1/x')" },
+    sagt:'verlassen das Gerät' },
+
+  /* --- Der Gleichlauf (Q29) -------------------------------------------
+   *
+   * Drei Zusagen, drei Gegenproben. Sie sind billig - das Tor `gleichlauf`
+   * braucht weder Browser noch Netz -, und sie sind noetig: bei zwei von
+   * ihnen hat der erste Lauf des Tores einen echten Fehler gefunden, und
+   * ohne die Proben waere nicht zu sagen, ob es das wieder taete.
+   */
+
+  /* 1. Der Aufkleber faellt zurueck.
+   *
+   * `hoechstes` ist die Hoechstmarke, und daran haengt der Aufkleber. Der
+   * Eingriff nimmt statt des Groesseren das des juengeren Standes - und
+   * damit verliert ein Kind auf dem zweiten Geraet, was es auf dem ersten
+   * gesammelt hat. Genau der Fall, wegen dem es diese Runde gibt. */
+  { n:'beim Zusammenführen fällt der Aufkleber zurück', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"    hoechstes: Math.max(zahl(a.hoechstes, zahl(a.fach, 1)), zahl(b.hoechstes, zahl(b.fach, 1))),",
+    ersatz:"    hoechstes: zahl(jung.hoechstes, zahl(jung.fach, 1)),",
+    an:{ datei:'src/kern/gleichlauf.js', text:'hoechstes: zahl(jung.hoechstes' },
+    sagt:'der Aufkleber ist weg' },
+
+  /* 2. Die PIN reist mit.
+   *
+   * Der Filter muss auf BEIDEN Seiten greifen. Der erste Entwurf filterte
+   * nur die ankommende - und legte damit die eigene PIN in den Umschlag,
+   * sobald der eigene Stand der aeltere war. Der Eingriff stellt genau
+   * diesen Entwurf wieder her. */
+  { n:'der Gleichlauf nimmt die PIN mit', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"  const aus = Object.fromEntries(Object.entries(a || {}).filter(([k]) => REIST(k)));",
+    ersatz:"  const aus = { ...(a || {}) };",
+    an:{ datei:'src/kern/gleichlauf.js', fehlt:'filter(([k]) => REIST(k))' },
+    sagt:'die PIN ist im Umschlag gelandet' },
+
+  /* 3. Der Umschlag geht offen hinaus.
+   *
+   * Die ganze Zusage aus K3 haengt daran: es geht etwas ins Netz, aber
+   * niemand dort kann es lesen. Der Eingriff schickt Klartext - und das
+   * Tor muss es sehen, ohne den Inhalt zu kennen. */
+  { n:'der Gleichlauf schickt Klartext', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"  const inhalt = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv },\n    schloss, roh(JSON.stringify(obj))));\n  return zuB64(new Uint8Array([...iv, ...inhalt]));",
+    ersatz:"  return JSON.stringify(obj);",
+    an:{ datei:'src/kern/gleichlauf.js', text:'return JSON.stringify(obj);' },
+    sagt:'der Name steht lesbar im Umschlag' },
+
+  /* 4. Die feste Reihenfolge faellt weg.
+   *
+   * Ohne sie kommt aus `vereinen(a,b)` und `vereinen(b,a)` derselbe Inhalt
+   * in verschiedener Schreibweise. `gleich()` sieht dann einen
+   * Unterschied, wo keiner ist, und zwei Geraete schicken sich endlos
+   * denselben Stand. Der Eingriff nimmt die Ordnung heraus. */
+  { n:'die Umschläge kommen in wechselnder Reihenfolge', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"  return geordnet({ fassung: 1,",
+    ersatz:"  return ({ fassung: 1,",
+    an:{ datei:'src/kern/gleichlauf.js', fehlt:'return geordnet({ fassung: 1,' },
+    sagt:'die Reihenfolge aendert das Ergebnis' },
 
   /* Der Endbildschirm zeigt wieder nur eine Zahl (Q28).
    *

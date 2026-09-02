@@ -271,6 +271,29 @@ async function neueSeite(viewport, ctx, flott = true) {
   const festWarten = p.waitForTimeout.bind(p);
   p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
 
+  /* Verlaesst irgendetwas dieses Geraet? (Q29)
+   *
+   * Seit dem Gleichlauf gibt es Code, der senden KANN - und damit eine
+   * Zusage, die nur noch gilt, solange sie geprueft wird: ohne
+   * Familienschluessel und ohne eingerichteten Dienst geht nichts ins
+   * Netz. Der Rauchtest spielt ganze Runden, oeffnet das Buch, geht in
+   * den Elternbereich; wenn dabei ein einziger fremder Aufruf faellt,
+   * steht er hier.
+   *
+   * Gezaehlt wird gegen die HERKUNFT des eigenen Servers, nicht gegen
+   * eine Liste erlaubter Adressen: eine Liste veraltet, sobald jemand
+   * eine neue Adresse einbaut - und genau dann soll es auffallen.
+   *
+   * `data:` und `blob:` bleiben aussen vor. Das sind die eingebackenen
+   * Bilder und die Datei, die der Elternbereich zum Sichern erzeugt;
+   * beide verlassen nichts. */
+  p.on('request', (r) => {
+    const u = r.url();
+    if (/^(data|blob|about):/.test(u)) return;
+    if (u.startsWith(ADRESSE)) return;
+    fremdeAufrufe.add(u.slice(0, 120));
+  });
+
   /* Die DROSSEL - damit die Nachsicht oben pruefbar ist (Q25).
    *
    * Ohne sie ist der Eingriff eine Behauptung: auf einer flotten Maschine
@@ -930,6 +953,9 @@ else if (gewaehlt)
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
 const sternVerlauf = [], bandVerlauf = [];
+/* Jede fremde Adresse, die im ganzen Lauf angefragt wurde. Ein Satz und
+   kein Zaehler: bei einem Befund will man wissen WOHIN. */
+const fremdeAufrufe = new Set();
 let endeZeigteKleber = 0;
 let endSterne = null, kleberMoment = 0;
 const fahnenArten = new Set();
@@ -4810,5 +4836,20 @@ console.log(`  Fortschrittsband:           ${bandVerlauf[bandVerlauf.length-1] |
 if (!bandVerlauf.some(b => /glatt|geschafft|gezeigt/.test(b)))
   fehler.push('Das Fortschrittsband färbt sich nie — es zeigt nicht, wie die Runde lief');
 }
+/* Und die Zusage aus K3, am ganzen Lauf gemessen (Q29).
+ *
+ * VOR der Auswertung, nicht dahinter. Der erste Anlauf stand unter der
+ * Zeile, die den Lauf beendet - der Befund wurde also erhoben und nie
+ * gelesen. Gemeldet hat das die Gegenprobe: sie baute einen Aufruf nach
+ * draussen ein, und das Tor blieb gruen. Eine Pruefung, die nie etwas
+ * meldet, ist kein Beweis (Regel 1) - hier war sie es aus dem
+ * langweiligsten Grund, den es gibt: falsche Zeile. */
+if (fremdeAufrufe.size)
+  fehler.push(`${fremdeAufrufe.size} Aufrufe verlassen das Gerät, obwohl kein `
+    + `Familienschlüssel gesetzt und kein Dienst eingerichtet ist: `
+    + [...fremdeAufrufe].slice(0, 3).join(', '));
+else
+  console.log(`  Nichts verlässt das Gerät:  0 fremde Aufrufe im ganzen Lauf`);
+
 if (fehler.length) { console.log(`\n  ${fehler.length} FEHLER:`); fehler.forEach(f => console.log('    ✗ ' + f)); process.exit(1); }
 console.log('\n  Rauchtest grün: gespielt, abgelegt, Neustart überstanden, Buch gefüllt, Eltern gelesen, getippt.');

@@ -152,10 +152,14 @@ npm run symbol     App-Symbol neu backen
 npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
                    selbst, wird krumm Geschriebenes gelesen, wird Gekritzel
                    abgelehnt, gilt ein halber Zug nicht als nachgefahren
+npm run gleichlauf prüft den Geräteabgleich ohne Browser und ohne Netz:
+                   Schlüssel, Raum, Schloss, und ob beim Zusammenführen
+                   zweier Stände jemand etwas verliert
 ```
 
 Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` → `bauen` →
+`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
+`gleichlauf` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.
 

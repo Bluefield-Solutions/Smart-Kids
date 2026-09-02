@@ -1581,13 +1581,47 @@ bleibt die Rückfallebene.
 
 | Was | Wohin | Wann |
 |---|---|---|
-| Fortschritt, Protokoll, Profile | **nirgendwohin** — IndexedDB, lokal | nie |
+| Protokoll, Profile, PIN, Stimme | **nirgendwohin** — IndexedDB, lokal | nie |
+| **Fortschritt und Aufkleber** | **nirgendwohin**, solange kein Familienschlüssel gesetzt ist; sonst **zugesperrt** an den selbst aufgesetzten Gleichlaufdienst | beim Start und nach einer Runde |
 | Programm, Karten, Schrift | von GitHub Pages **her**, nicht hin | beim Aktualisieren |
 | **Sprachaufnahme** | **Apple** (Web Speech API) | nur bei aktivem Sprachmodus und gedrücktem Knopf |
 | Nutzungsdaten, Telemetrie, Werbung | — | **gibt es nicht** |
 
 Kein Konto, keine Anmeldung, kein Cookie, keine fremde Schriftart, kein CDN,
 kein Analysewerkzeug.
+
+**Der Gleichlauf (Q29) — was er ändert und was nicht.** Bis Q29 stand hier
+und in `src/profil/ablage.js` „nichts geht ins Netz, und zwar als Bauweise:
+es gibt keinen Code, der etwas hochlädt". Seit Q29 gibt es ihn. Die Zusage
+ist deshalb neu zu fassen, und zwar so, wie sie **gemessen** ist:
+
+1. **Aus, solange niemand ihn einrichtet.** Es braucht zweierlei: einen
+   Dienst, den die Eltern selbst aufsetzen (die Adresse steht im Bau, nicht
+   in der App), und einen Familienschlüssel im Elternbereich. Fehlt eines,
+   passiert nichts. Der Rauchtest misst das am ganzen Lauf: **null fremde
+   Aufrufe**, gegen die Herkunft des eigenen Servers gezählt und nicht gegen
+   eine Liste erlaubter Adressen.
+2. **Der Dienst kann nichts lesen.** Raumkennung und Schlüssel sind zwei
+   verschiedene Ableger desselben Familienschlüssels; er bekommt die
+   Kennung und nie den Schlüssel. Das Tor `gleichlauf` prüft, dass im Lager
+   des Dienstes kein Klartext steht — und eine Gegenprobe, die Klartext
+   sendet, macht es rot.
+3. **Es reist nur, was zum Kind gehört.** Fortschritt und die zwei
+   Einstellungen, die daran hängen. Die PIN reist nicht, die Stimme nicht,
+   die Lautstärke nicht — das steht in einer Liste (`REIST`), und eine
+   Gegenprobe schickt die PIN mit, um zu zeigen, dass das Tor es merkt.
+
+K3 13.3 ist damit nicht gebrochen, sondern verschoben: es geht etwas ins
+Netz, und niemand dort kann es lesen.
+
+**Und eine Berichtigung, die hierher gehört.** Der Absatz unten schreibt der
+Inhaltssicherheitsrichtlinie (CSP) zu, sie schließe fremde Herkünfte aus,
+„der Browser setzt das durch, es ist keine bloße Absicht". Nachgesehen in
+`dist/index.html`: **es gibt dort keine CSP.** Sie war in K1 geplant und ist
+nie eingebaut worden; ein Tor `csp` gibt es ebenfalls nicht. Was die Zusage
+heute wirklich trägt, ist die Messung aus Punkt 1 — und die ist erst mit
+dieser Runde entstanden. Bis dahin war es eine Absicht, die sich für einen
+Riegel ausgab.
 
 **Was die CSP leistet — und was nicht.** Die Inhaltssicherheitsrichtlinie
 schließt aus, dass das Programm Fremdressourcen nachlädt, Telemetrie sendet
@@ -1754,7 +1788,9 @@ Im Repository liegen ausschließlich Programm und Karten. **Fortschritt,
 Protokoll und Aufnahmen liegen nur auf den Geräten** und werden nie
 eingecheckt — auch nicht der Sprachkorpus aus M4, der Fionas Stimme enthielte.
 Er wird als Textliste geführt (was gesagt wurde, was verstanden wurde), nie
-als Tondatei. Das Tor `csp` und ein Eintrag in `.gitignore` sichern das ab.
+als Tondatei. Ein Eintrag in `.gitignore` sichert das ab — das hier
+genannte Tor `csp` gibt es nicht und hat es nie gegeben (nachgesehen in
+Q29, siehe die Berichtigung in 13.3).
 
 **O5 · Der Name.** „Lernkiste" ist Arbeitstitel und als Bezeichnung für
 Lernmaterial verbreitet. Bei einer Familien-App ohne Vertrieb folgenlos, aber

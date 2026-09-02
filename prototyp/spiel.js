@@ -1517,6 +1517,7 @@ async function standLaden(ebeneId){
 }
 async function standSichern(ebeneId){
   try { await Ablage.setze('fortschritt', standSchluessel(ebeneId), Stand); } catch(e){}
+  gleichlaufBald();
 }
 /* Der Umzug nach Mittelamerika (A6).
  *
@@ -1551,6 +1552,95 @@ async function einstLaden(){
   document.documentElement.setAttribute('data-abend', Einst.abend ? 'an' : 'aus');
 }
 async function einstSichern(){ try{ await Ablage.setze('einstellungen','alles',Einst); }catch(e){} }
+
+/* ---------- Gleichlauf: dieselben Aufkleber auf allen Geraeten (Q29) ----
+ *
+ * Alles Rechnen steht in `src/kern/gleichlauf.js` und ist dort ohne
+ * Browser zu pruefen. Hier steht nur, WANN es laeuft und WO die Ablage
+ * ist - das ist die eine Aufgabe, die das Spiel behalten muss.
+ *
+ * Drei Zusagen, und sie sind hier eingebaut, nicht versprochen:
+ *
+ *  1. OHNE Familienschluessel passiert gar nichts. Kein Aufruf, kein
+ *     Netz, kein Byte. Die App laeuft exakt wie vor dieser Runde, und das
+ *     ist die Voreinstellung.
+ *  2. Fehler sind still. Kein Netz heisst „spaeter nochmal" - im Spiel
+ *     ist davon nichts zu sehen, nur im Elternbereich steht, wann es
+ *     zuletzt geklappt hat.
+ *  3. Es wird nie GEWARTET. Der Gleichlauf laeuft neben dem Spiel her;
+ *     kein Bildschirm haengt an ihm.
+ */
+const GLEICHLAUF_ADRESSE = (BAU.gleichlauf || '');
+/* Vier Sekunden nach der letzten Aenderung, nicht bei jeder.
+ *
+ * Eine Runde erzeugt bis zu sechzehn Sicherungen. Ohne die Sammelfrist
+ * waeren das sechzehn Aufrufe fuer einen Stand, der sich am Ende einmal
+ * unterscheidet - und auf einem Telefon im Zug sechzehn Fehlschlaege. */
+const GLEICHLAUF_FRIST = 4000;
+let gleichlaufUhr = null, gleichlaufLaeuft = false;
+let gleichlaufStand = { zuletzt: 0, fehler: null, gesendet: 0 };
+
+const gleichlaufAn = () => !!(GLEICHLAUF_ADRESSE && Einst.familienschluessel);
+
+/** Alles, was reist, aus der Ablage holen. */
+async function gleichlaufSammeln(){
+  const aus = { fassung: 1, fortschritt: {}, einstellungen: {} };
+  try {
+    const d = await Ablage.alleMitSchluessel('fortschritt');
+    for (const [k, w] of d) aus.fortschritt[k] = w;
+    const e = await Ablage.alleMitSchluessel('einstellungen');
+    for (const [k, w] of e) if (Gleichlauf.REIST(k)) aus.einstellungen[k] = w;
+  } catch(e){}
+  return aus;
+}
+
+/** Was zurueckkommt, wieder ablegen - und nur, was sich geaendert hat. */
+async function gleichlaufAblegen(vereint, vorher){
+  let geaendert = 0;
+  for (const [k, w] of Object.entries(vereint.fortschritt || {})) {
+    if (JSON.stringify(w) === JSON.stringify((vorher.fortschritt || {})[k])) continue;
+    try { await Ablage.setze('fortschritt', k, w); geaendert++; } catch(e){}
+  }
+  for (const [k, w] of Object.entries(vereint.einstellungen || {})) {
+    if (JSON.stringify(w) === JSON.stringify((vorher.einstellungen || {})[k])) continue;
+    try { await Ablage.setze('einstellungen', k, w); geaendert++; } catch(e){}
+  }
+  return geaendert;
+}
+
+/**
+ * Eine Runde Gleichlauf. Gibt zurueck, was danach zu sagen ist.
+ *
+ * `gleichlaufLaeuft` ist kein Schmuck: der Start ruft ihn, das Ende einer
+ * Runde ruft ihn, und der Elternbereich hat einen Knopf. Zwei Laeufe
+ * gleichzeitig wuerden sich gegenseitig die Fassung wegnehmen und beide
+ * im Streitfall landen.
+ */
+async function gleichlaufFahren(){
+  if (!gleichlaufAn() || gleichlaufLaeuft) return gleichlaufStand;
+  gleichlaufLaeuft = true;
+  try {
+    const meiner = await gleichlaufSammeln();
+    const r = await Gleichlauf.runde(GLEICHLAUF_ADRESSE, Einst.familienschluessel, meiner);
+    if (r.fehler) { gleichlaufStand = { ...gleichlaufStand, fehler: r.fehler }; return gleichlaufStand; }
+    const geaendert = await gleichlaufAblegen(r.stand, meiner);
+    gleichlaufStand = { zuletzt: Date.now(), fehler: null, gesendet: geaendert };
+    /* Was aus dem Netz kam, gilt ab sofort - auch fuer die Ebene, die
+       gerade offen ist. Ohne diese Zeile schriebe die naechste Antwort
+       den alten Stand zurueck und machte den Gleichlauf rueckgaengig. */
+    if (geaendert && Sitzung && Sitzung.ebeneId) await standLaden(Sitzung.ebeneId);
+  } catch(e) {
+    gleichlaufStand = { ...gleichlaufStand, fehler: 'unerwartet: ' + (e && e.message) };
+  } finally { gleichlaufLaeuft = false; }
+  return gleichlaufStand;
+}
+
+/** Nach einer Aenderung: bald, aber nicht sofort. */
+function gleichlaufBald(){
+  if (!gleichlaufAn()) return;
+  clearTimeout(gleichlaufUhr);
+  gleichlaufUhr = setTimeout(() => { gleichlaufFahren(); }, GLEICHLAUF_FRIST);
+}
 
 /* ---------- Bildschirmwechsel ------------------------------------------- */
 /* Ein Bildschirm, der auf Daten wartet, sagt das - aber erst nach einem
@@ -5697,6 +5787,41 @@ async function elternbereich(){
         <span class="unter" id="pinstand"></span>
       </div>
 
+      <h3 class="gruppe">Aufkleber auf allen Geräten</h3>
+      ${!BAU.gleichlauf ? `
+        <p class="unter">Der Gleichlauf ist <strong>nicht eingerichtet</strong>.
+          Alles bleibt auf diesem Gerät — so wie bisher. Wie ein eigener
+          Dienst dafür aufgesetzt wird, steht in
+          <code>dienst/gleichlauf-worker.js</code>; es dauert rund fünf
+          Minuten und kostet nichts.</p>`
+      : !Einst.familienschluessel ? `
+        <p class="unter">Zwei Geräte mit demselben <strong>Familienschlüssel</strong>
+          teilen sich die Aufkleber. Der Schlüssel bleibt bei euch: was über
+          das Netz geht, ist zugesperrt, und der Dienst kann es nicht lesen.</p>
+        <div class="reihe" style="justify-content:flex-start">
+          <button class="knopf haupt" id="glneu">Neuen Schlüssel anlegen</button>
+        </div>
+        <p class="unter">Auf dem zweiten Gerät stattdessen den Schlüssel des
+          ersten eintragen:</p>
+        <div class="reihe" style="justify-content:flex-start">
+          <input class="eingabe schluesselfeld" id="glfeld" inputmode="latin"
+                 autocapitalize="characters" spellcheck="false"
+                 placeholder="ABCD-EFGH-JKMN-PQRS">
+          <button class="knopf" id="glnehmen">Übernehmen</button>
+        </div>
+        <span class="unter" id="glstand"></span>`
+      : `
+        <p class="unter">Dieses Gerät läuft mit. Der Schlüssel steht auch auf
+          jedem anderen Gerät, das dieselben Aufkleber zeigen soll — abtippen,
+          nicht verschicken.</p>
+        <div class="wert schluesselschild">
+          <b>${Einst.familienschluessel}</b><span>Familienschlüssel</span></div>
+        <div class="reihe" style="justify-content:flex-start">
+          <button class="knopf haupt" id="gljetzt">Jetzt abgleichen</button>
+          <button class="knopf" id="gllos" style="color:var(--warn)">Dieses Gerät lösen</button>
+        </div>
+        <span class="unter" id="glstand"></span>`}
+
       <h3 class="gruppe">Ausfuhr und Löschen</h3>
       <div class="reihe" style="justify-content:flex-start">
         <button class="knopf" id="csv">Als CSV sichern</button>
@@ -5846,6 +5971,70 @@ async function elternbereich(){
     };
   }
 
+  /* --- Gleichlauf (Q29) ------------------------------------------------
+   *
+   * Alles hier ist Elternsache: es gibt keinen Weg dorthin, der nicht
+   * durch die PIN fuehrt, und im Spiel ist von alldem nichts zu sehen.
+   *
+   * Der Stand wird GEZEIGT und nicht behauptet: „zuletzt abgeglichen"
+   * kommt aus derselben Uhr, die der Gleichlauf stellt. Ohne das waere
+   * hier ein Knopf, der nichts sagt - und ein Elternteil, das nicht
+   * weiss, ob es funktioniert hat. */
+  const glstand = s.querySelector('#glstand');
+  const glSchreiben = (satz) => { if (glstand) glstand.textContent = satz; };
+  const glZeit = (t) => new Date(t).toLocaleString('de-DE',
+    { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  const glMelden = (st) => glSchreiben(st.fehler
+    ? `Zuletzt nicht geklappt: ${st.fehler}.`
+      + (st.zuletzt ? ` Davor am ${glZeit(st.zuletzt)}.` : '')
+    : st.zuletzt ? `Zuletzt abgeglichen am ${glZeit(st.zuletzt)}`
+      + (st.gesendet ? ` — ${st.gesendet} Einträge sind dazugekommen.` : '.')
+    : 'Noch nicht abgeglichen.');
+  if (Einst.familienschluessel && BAU.gleichlauf) glMelden(gleichlaufStand);
+
+  const glNeu = s.querySelector('#glneu');
+  if (glNeu) glNeu.onclick = async () => {
+    Einst.familienschluessel = Gleichlauf.schluesselNeu();
+    await einstSichern();
+    zeige(eltern);
+  };
+  const glNehmen = s.querySelector('#glnehmen');
+  if (glNehmen) glNehmen.onclick = async () => {
+    const roh = s.querySelector('#glfeld').value;
+    /* Geprueft wird HIER, nicht erst beim ersten Aufruf. Ein Schluessel
+       mit einem Zahlendreher fuehrt sonst in einen leeren Raum, der wie
+       ein leeres Konto aussieht - und niemand kaeme darauf, dass ein
+       Zeichen falsch ist. */
+    if (!Gleichlauf.ausCode(roh)) {
+      glSchreiben('Das sind nicht sechzehn Zeichen. Bitte noch einmal ansehen.');
+      return;
+    }
+    Einst.familienschluessel = Gleichlauf.alsCode(Gleichlauf.ausCode(roh));
+    await einstSichern();
+    zeige(eltern);
+  };
+  const glJetzt = s.querySelector('#gljetzt');
+  if (glJetzt) glJetzt.onclick = async () => {
+    glSchreiben('Läuft …');
+    glMelden(await gleichlaufFahren());
+  };
+  const glLos = s.querySelector('#gllos');
+  if (glLos) glLos.onclick = async () => {
+    /* Zweimal tippen, wie beim Loeschen - nur ist hier NICHTS weg: der
+       Stand dieses Geraets bleibt vollstaendig stehen, es laeuft nur
+       nicht mehr mit. Genau das steht auch da, sonst klingt „lösen"
+       gefaehrlicher als es ist. */
+    if (glLos.dataset.sicher !== 'ja') {
+      glLos.dataset.sicher = 'ja';
+      glLos.textContent = 'Wirklich lösen?';
+      glSchreiben('Die Aufkleber auf diesem Gerät bleiben. Es läuft nur nicht mehr mit.');
+      return;
+    }
+    Einst.familienschluessel = null;
+    await einstSichern();
+    zeige(eltern);
+  };
+
   s.querySelector('#csv').onclick=()=>sichern(Protokoll.alsCsv(eintraege,NAMEN),
     `lernkiste-${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');
   s.querySelector('#json').onclick=()=>sichern(Protokoll.alsJson(eintraege),
@@ -5896,4 +6085,11 @@ async function umzugEltern(){
   }
 }
 
-(async ()=>{ await einstLaden(); await umzugEltern(); zeige(profilwahl); })();
+/* Beim Start EINMAL - und ohne darauf zu warten.
+ *
+ * `zeige(profilwahl)` steht vor dem Gleichlauf und nicht dahinter: der
+ * erste Bildschirm darf nicht an einem Netzaufruf haengen. Wer im Zug
+ * startet, sieht die Profilwahl sofort; was aus dem Netz kommt, kommt
+ * spaeter und aendert nur die Zahlen. */
+(async ()=>{ await einstLaden(); await umzugEltern(); zeige(profilwahl);
+  if (gleichlaufAn()) gleichlaufFahren(); })();

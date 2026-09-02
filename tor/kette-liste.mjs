@@ -42,6 +42,7 @@ export const OHNE_BROWSER = [
   { name: 'spielprobe', datei: 'tor/spielprobe.mjs' },
   { name: 'schreiben',  datei: 'tor/schreiben.mjs' },
   { name: 'vergleich',  datei: 'tor/vergleich.mjs' },
+  { name: 'gleichlauf', datei: 'tor/gleichlauf.mjs' },
 ];
 
 /* Gebaut wird zwischendrin: alles Weitere prueft `dist/`, nicht die Quelle.

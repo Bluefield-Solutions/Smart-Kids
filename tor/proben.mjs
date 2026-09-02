@@ -162,6 +162,19 @@ function uebermalen() {
         + 'siehst - und eine Probe, die eine andere Fassung prueft als die '
         + 'gemeinte, beweist nichts.');
     }
+    /* Ein GANZES Verzeichnis, wenn git eines meldet.
+     *
+     * `git status --porcelain` fasst ein unbekanntes Verzeichnis zu EINER
+     * Zeile zusammen („?? dienst/") und nennt die Dateien darin nicht.
+     * `copyFileSync` bekam damit ein Verzeichnis und warf `EISDIR` - der
+     * ganze Probenlauf brach ab, als in dieser Runde ein neues
+     * Verzeichnis dazukam. Vorher gab es keines, deshalb ist es nie
+     * aufgefallen. */
+    if (fs.statSync(datei).isDirectory()) {
+      fs.cpSync(datei, ziel, { recursive:true });
+      dazu.push(datei);
+      continue;
+    }
     fs.mkdirSync(path.dirname(ziel), { recursive:true });
     fs.copyFileSync(datei, ziel);
     dazu.push(datei);
@@ -172,6 +185,7 @@ function uebermalen() {
   for (const datei of dazu) {
     const ziel = path.join(KOPIE, datei);
     if (!fs.existsSync(datei)) continue;              // geloescht, siehe oben
+    if (fs.statSync(datei).isDirectory()) continue;   // ganz kopiert, siehe oben
     if (fs.readFileSync(datei).equals(fs.readFileSync(ziel))) continue;
     throw new Error(`proben: „${datei}" ist in der Wegwerf-Kopie nicht die `
       + 'Fassung aus dem Arbeitsbaum. Geprobt wuerde damit an einem Baum, '

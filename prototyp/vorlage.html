@@ -1628,6 +1628,14 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .gruppe small{font-weight:600;font-size:var(--s-klein);color:var(--tinte-3)}
 @media (prefers-reduced-motion:reduce){ .albumkarte:active{transform:none} }
 
+/* --- Der Familienschluessel (Q29) --------------------------------------
+   Er wird ABGETIPPT, von einem Bildschirm auf ein anderes Geraet. Also
+   dieselbe Schrift wie im Ausgabefeld (jede Ziffer gleich breit, Null und
+   O unterscheidbar) und Luft zwischen den Zeichen. */
+.schluesselschild{margin-bottom:var(--r3)}
+.schluesselschild b{font-family:var(--f-mono);letter-spacing:.08em}
+.schluesselfeld{max-width:16em;font-family:var(--f-mono);letter-spacing:.06em}
+
 .pin{display:flex;gap:var(--r3);justify-content:center;align-items:center;min-height:34px}
 .pin i{width:16px;height:16px;border-radius:var(--rund-voll);border:var(--strich-stark) solid var(--akzent);
   transition:background var(--d-tipp) var(--k-standard)}
