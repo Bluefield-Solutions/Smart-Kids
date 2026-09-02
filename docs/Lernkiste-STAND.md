@@ -9806,6 +9806,17 @@ ganz da oder nicht. Warum es nie auffiel: `passt` misst, was über den
 **Bildschirm** läuft. Hier lief nichts über einen Rand; ein Kasten schnitt in
 sich selbst ab.
 
+*Und eine Ehrlichkeit dazu, die beim Schreiben der Gegenprobe herauskam:*
+`passt` sieht das Forscherbuch **leer**. Sein Durchgang löst die
+Rechenaufgaben mit „Weiß ich nicht" und sammelt deshalb keinen einzigen
+Aufkleber — im Buch stehen null `.aufkleber` und eine Albumkarte. Der Kasten,
+an dem der Fehler entdeckt wurde, ist also **kein Gegenstand dieses Tores**.
+Die Prüfung gilt trotzdem für jeden Kasten auf allen 22 Bildschirmen, und die
+Gegenprobe sitzt an einem, den es wirklich sieht (`.marke` trägt
+`overflow:hidden` und keine eigene Zeilenhöhe). Dass ein gefülltes
+Forscherbuch in keinem Tor vorkommt, ist ein eigener Befund und steht als
+**Q35** im Backlog.
+
 ---
 
 ## Audit B · Der Gleichlauf unter Beschuss
@@ -9863,7 +9874,8 @@ bekommt, wem das Cloudflare-Konto gehört. `HERKUNFT` in `wrangler.toml`
 schließt das; leer bleibt `*` — mit `vary: origin`, sonst gäbe ein
 Zwischenspeicher die Erlaubnis der einen Herkunft an die nächste weiter.
 
-Alle drei haben **stehende Gegenproben** (263 statt 260), und das Tor
+Alle drei haben **stehende Gegenproben** (265 statt 260 — die beiden neuen
+Prüfungen in `passt` haben auch je eine), und das Tor
 `gleichlauf` prüft sie: die KV-Attrappe merkt sich jetzt die Frist mit, sonst
 wäre „jedes Schreiben setzt eine Frist" eine Behauptung über Code, den
 niemand ausführt.
@@ -9905,4 +9917,73 @@ Die Torkette wurde zweimal rot, beide Male an mir:
   angekommen ist —, steht hier als Regel 10. Zwei Verzeichnisse, zwei Listen,
   ein Kopf.
 
-263 Gegenproben.
+## Und ein dritter Fund, aus dem Probenlauf selbst
+
+**Eine Gegenprobe hat leise aufgehört zu beweisen — seit Q31.**
+
+„Die Hauptstädte stehen wieder als zwei Kacheln da" schaltet die Gruppierung
+ab: statt zehn Kacheln stehen elf auf der Wand, und die elfte lief aus dem
+Bild. So war es, als sie in **Q17** zuletzt bewiesen hat. In Q31 hat die
+Kachelwand gelernt, ab elf Ebenen ein **Sechstel** breit zu werden — seither
+passen zwölf, und die elfte läuft nicht mehr heraus. Nachgemessen mit dem
+Eingriff: `passt` meldet „11 Kacheln stehen da, **12 passen**" und bleibt mit
+Recht grün.
+
+Der Eingriff kommt weiterhin an; nur ist das, was er auslösen sollte, kein
+Fehler mehr. **Dreiunddreißig Fassungen lang** stand sie als Beweis in der
+Liste, ohne einer zu sein — genau die Verfallsart, vor der Regel 1 warnt:
+eine Prüfung, die nie etwas meldet, ist kein Beweis, und diese hörte auf zu
+melden, ohne dass irgendwo etwas rot wurde.
+
+Gefunden hat es der erste volle `passt`-Probenlauf seit Q17. Das ist auch das
+Argument dafür, dass er **regelmäßig** gehört und nicht nur, wenn man gerade
+ein Tor angefasst hat.
+
+**Und `smoke` fing es auch nicht.** Nachgesehen im Quelltext und nachgefahren:
+seine Zählung „jede Ebene ist erreichbar" geht seit Q17 ausdrücklich *hinter*
+die Gruppenkacheln — genau dadurch ist sie blind für das Gegenteil. Fällt die
+Gruppierung weg, läuft die Schleife über `[data-gruppe]` einfach leer, alle
+Ebenen stehen offen da, und die Zählung stimmt weiter.
+
+Die Zusage war damit von **keinem** Tor mehr bewacht. Sie wird jetzt dort
+geprüft, wo der Gegenstand ohnehin steht: `smoke` sieht nach, ob zwei Ebenen
+derselben Gruppe offen nebeneinander auf der Wand stehen. An der Sache, nicht
+an einer Nebenwirkung — die Nebenwirkung war ja gerade das, was Q31 beseitigt
+hat. Die Gegenprobe zeigt jetzt dorthin.
+
+## Und eine Beobachtung über eine Zahl, die die Maschine misst
+
+Die Kette wurde einmal rot an einer Stelle, die nichts mit dieser Runde zu
+tun hat: `smoke` prüft, dass `?flott` den Kartenweg **mindestens 1,5×**
+kürzt. Gemessen wurden 1157 ms gegen 1641 ms — 1,42×, knapp darunter.
+
+Allein gefahren, auf einer ruhigen Maschine: **1,8×** für die Karte und
+**2,4×** fürs Rechnen. Der Unterschied ist nicht die App. Die Kette fährt
+**acht Browser nebeneinander auf vier Kernen**, und unter dieser Last wird
+die kurze Pause relativ teurer als die lange — das Verhältnis fällt, ohne
+dass sich am Schalter etwas geändert hätte.
+
+**Und ausgelöst hat es diese Runde.** Der zweite Lauf war wieder rot, mit
+1092 gegen 1635 ms — also kein Zufall, sondern reproduzierbar. Meine neue
+Prüfung „schneidet ein Kasten seinen Inhalt ab" rief `getComputedStyle` für
+**jedes** Element auf, bevor sie wusste, ob überhaupt etwas überläuft: 22
+Bildschirme × 7 Größen × einige hundert Elemente. Das hat `passt` so viel
+schwerer gemacht, dass die Zeitmessung im Rauchtest nebenan umkippte.
+
+Umgedreht — erst die billige Frage (`scrollHeight` gegen `clientHeight`,
+liegt ohnehin bereit), dann der Stil, und nur bei dem einen Element von
+hundert, bei dem etwas überläuft. Danach: **Kette grün nach 140,4 s.**
+
+Die Lehre ist nicht „die Prüfung war zu teuer". Sie ist, dass in einer Kette,
+die acht Browser auf vier Kerne legt, **jede neue Messung eine Zeitmessung an
+anderer Stelle verschieben kann** — und dass eine Zusage, die als Verhältnis
+zweier Wartezeiten geprüft wird, dagegen wehrlos ist.
+
+Nach Regel 5 trägt jede Zahl ihre Messstelle mit, und diese hier hat keine:
+sie steht als „×" da, gemessen unter einer Last, die von der Zahl der Kerne
+und der Zahl der Nachbarläufe abhängt. „Flattern" ist keine Erklärung — die
+Erklärung ist, dass ein Verhältnis zweier Wartezeiten unter Last kein Maß
+für einen Schalter ist. Steht als **Q37** im Backlog; behoben ist es nicht,
+nur verstanden.
+
+265 Gegenproben.

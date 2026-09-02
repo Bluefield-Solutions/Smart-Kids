@@ -2635,3 +2635,90 @@ trägt nur, wenn Fiona zugehört hat und sich erinnert.
 3. **Beides**, mit dem Zeichen als Hauptsache und der Stimme als Zugabe.
 
 Nummer 1 ist der Weg, der nichts an der Bedienung ändert.
+
+---
+
+## Q35 offen: kein Tor sieht ein gefülltes Forscherbuch
+
+**Gefunden in Q32 beim Schreiben einer Gegenprobe.** `passt` geht das
+Forscherbuch an — und sieht dort **null Aufkleber und eine Albumkarte**. Sein
+Durchgang löst die Rechenaufgaben mit „Weiß ich nicht" und sammelt deshalb
+nichts. Genau der Kasten, in dem Audit A einen abgeschnittenen Text gefunden
+hat, kommt in `passt` also gar nicht vor.
+
+`smoke` spielt ganze Sitzungen und erreicht ein gefülltes Buch — es zählt
+dort Aufkleber und Fragezeichen —, misst aber keine Maße. Die beiden Tore
+teilen sich die Arbeit so, dass die **gefüllte Aufkleberwand** zwischen ihnen
+durchfällt: das eine sieht sie und misst nicht, das andere misst und sieht
+sie nicht.
+
+Zwei Wege:
+
+1. **`passt` sammelt Aufkleber.** Ein paar richtige Antworten statt „Weiß ich
+   nicht" in Fionas Rechenebene, und das Buch ist voll. Kostet Laufzeit im
+   längsten Tor der Kette.
+2. **Die Maßprüfungen wandern in einen gemeinsamen Baustein**, den `passt`
+   und `smoke` beide aufrufen — so wie `fremdgriff` und `teilen` es schon
+   sind. Dann misst `smoke` die Kästen dort, wo es ohnehin steht.
+
+Nummer 2 ist der saubere Weg und passt zu dem, was hier schon gebaut ist.
+
+
+---
+
+## Q36 erledigt (Q32): die Gruppierung war von keinem Tor mehr bewacht
+
+Zwei Ebenen teilen sich seit Q17 eine Kachel („Hauptstädte"). Bewiesen wurde
+das über eine **Nebenwirkung**: ohne Gruppierung standen elf Kacheln da, und
+die elfte lief aus dem Bild — `passt` wurde rot.
+
+Q31 hat die Nebenwirkung beseitigt (die Wand wird ab elf Ebenen ein Sechstel
+breit, zwölf passen), und damit die Prüfung gleich mit. **Dreiunddreißig
+Fassungen lang** bewies die Gegenprobe nichts mehr, ohne dass etwas rot wurde.
+`smoke` fing es ebenfalls nicht: seine Zählung geht seit Q17 ausdrücklich
+*hinter* die Gruppenkacheln und ist dadurch blind dafür, dass keine mehr da
+ist.
+
+**Geschlossen in Q32:** `smoke` prüft die Sache statt der Nebenwirkung — steht
+eine gruppierte Ebene mit mehr als einer eigenen Kachel offen auf der Wand,
+wird es rot. Das Soll (`GRUPPIERT = ['hauptstaedte']`) steht ausgeschrieben
+im Tor, nicht aus der Kennung abgeleitet: der erste Anlauf las den Stamm vor
+dem Doppelpunkt und wurde am **gesunden** Spiel rot, weil `rechnen:plusminus`,
+`rechnen:reihen` und `rechnen:gross` denselben Stamm teilen und keine Gruppe
+sind. Eine Regel, die sich ihre Erwartung aus der Schreibweise holt, misst die
+Schreibweise.
+
+**Die Lehre, die bleibt:** eine Gegenprobe, die auf eine *Nebenwirkung* zeigt,
+verfällt, sobald jemand die Nebenwirkung repariert — und zwar lautlos. Wer
+eine Zusage prüft, prüft sie an der Sache.
+
+
+---
+
+## Q37 offen: eine Zahl, die die Maschine misst
+
+`smoke` prüft, dass `?flott` den Kartenweg mindestens **1,5×** kürzt. In der
+vollen Kette (acht Browser nebeneinander auf vier Kernen) wurde daraus einmal
+**1,42×** und das Tor rot. Allein gefahren, auf ruhiger Maschine: **1,8×** für
+die Karte, **2,4×** fürs Rechnen.
+
+Die App hat sich nicht geändert. Unter Last wird die kurze Pause relativ
+teurer als die lange, und das Verhältnis fällt. Nach Regel 5 trägt jede Zahl
+ihre Messstelle mit — diese hier hat keine: sie hängt an der Zahl der Kerne
+und der Nachbarläufe.
+
+Es als „Flattern" abzutun wäre falsch. Der Befund ist, dass ein **Verhältnis
+zweier Wartezeiten** unter Last kein Maß für einen Schalter ist.
+
+Zwei Wege:
+
+1. **Nicht das Verhältnis messen, sondern den Schalter**: `?flott` setzt eine
+   Pause auf einen festen kleinen Wert. Prüfbar ist, dass die App diesen Wert
+   auch benutzt — an der Marke, nicht an der Stoppuhr. Das ist unabhängig von
+   der Last und beweist genau das, was die Zusage sagt.
+2. **Den Abschnitt aus dem Nebeneinander nehmen**, damit er allein misst.
+   Billiger, aber es bleibt eine Stoppuhr — und die nächste schnellere oder
+   langsamere Maschine verschiebt die Grenze wieder.
+
+Nummer 1 ist der Weg. Die Zeitmessung selbst bleibt im Bericht stehen, sie ist
+als *Auskunft* nützlich — nur nicht als Tor.

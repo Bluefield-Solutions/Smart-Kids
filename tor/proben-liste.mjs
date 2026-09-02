@@ -431,6 +431,31 @@ export const PROBEN = [
   // ZU RECHT: die Luecke zwischen den Reihen ist groesser als 4 px, es
   // ueberlappte gar nichts. Ein Eingriff, der nichts bewirkt, sieht aus
   // wie ein bestandenes Tor (Regel 10). 60 px liegen sicher drueber.
+  /* ---- Audit A: die zwei neuen Pruefungen in `passt` ---------------- */
+
+  // Ein Kasten schneidet seinen eigenen Inhalt ab. Gefunden wurde das im
+  // Forscherbuch (unter jedem Rechen-Aufkleber fehlte die halbe Zeile,
+  // 11 Punkte Kasten fuer 19 Punkte Zeile) - aber `passt` sieht dort ein
+  // LEERES Buch, weil sein Durchgang keine Aufkleber sammelt. Geprobt
+  // wird deshalb an einem Kasten, den es wirklich sieht: die Marke traegt
+  // `overflow:hidden` und keine eigene Zeilenhoehe.
+  { n:'ein Kasten schneidet seine Schrift ab', tor:'passt', args:['--teil=1/5'],
+    bauen:true, datei:V,
+    such:'.marke{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);',
+    ersatz:'.marke{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);line-height:.6;',
+    an:{ ...DIST, text:'color:var(--tinte-2);line-height:.6;' },
+    sagt:'wird abgeschnitten' },
+
+  // Die Bedienelemente rutschen weiter auf die Karte. Die Ratsche haelt
+  // fest, was heute ist (70,4 % von Australien auf dem Zielgeraet, Q33) -
+  // schlechter darf es nicht werden, solange die Entscheidung offen ist.
+  { n:'die Lupenknöpfe rutschen weiter auf die Karte', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:V,
+    such:'.lupenknopf{width:44px;height:44px;',
+    ersatz:'.lupenknopf{width:150px;height:44px;',
+    an:{ ...DIST, text:'.lupenknopf{width:150px' },
+    sagt:'verdeckt statt zu' },
+
   { n:'zwei Kacheln liegen aufeinander', tor:'passt', args:['--teil=0/5'], bauen:true, datei:V,
     such:'.kachel.welt .name{font-size:var(--s3)}',
     ersatz:'.kachel.welt .name{font-size:var(--s3)}\n.wahl .kachelpaar:first-child{translate:0 60px}',
@@ -561,12 +586,32 @@ export const PROBEN = [
    * Faellt die Zusammenlegung weg, stehen wieder ELF Kacheln in Leas Wand
    * - und die elfte endet auf dem Zielgeraet ausserhalb des Fensters, ohne
    * Rollen und ohne Hinweis. Der Eingriff schaltet die Gruppierung ab. */
-  { n:'die Hauptstädte stehen wieder als zwei Kacheln da', tor:'passt',
-    args:['--teil=0/5'], bauen:true, datei:D,
+  /* NACHGEZOGEN in Q32, weil sie leise aufgehoert hatte zu beweisen.
+   *
+   * Sie erwartete „über den Rand": elf Kacheln statt zehn, und die elfte
+   * laeuft aus dem Bild. Das stimmte bis Q31 - dort hat die Kachelwand
+   * gelernt, ab elf Ebenen ein SECHSTEL breit zu werden, und seither
+   * passen zwoelf. Der Eingriff kommt weiterhin an, `passt` bleibt aber
+   * mit Recht gruen: es laeuft nichts mehr aus dem Bild.
+   *
+   * Zuletzt bewiesen hat sie in Q17, dreiunddreissig Fassungen vorher.
+   * Genau die Verfallsart, vor der Regel 1 warnt - eine Pruefung, die
+   * nie etwas meldet, ist kein Beweis, und diese hoerte auf zu melden,
+   * ohne dass irgendwo etwas rot wurde.
+   *
+   * Nachgemessen: mit dem Eingriff meldet `passt` „11 Kacheln stehen da,
+   * 12 passen" und bleibt mit Recht gruen. Auch `smoke` fing es nicht -
+   * seine Gruppenschleife laeuft dann einfach leer.
+   *
+   * Also prueft `smoke` seit Q32 die SACHE statt einer Nebenwirkung:
+   * gehoeren zwei Ebenen derselben Gruppe an, teilen sie sich EINE
+   * Kachel. Dorthin zeigt diese Probe jetzt. */
+  { n:'die Hauptstädte stehen wieder als zwei Kacheln da', tor:'smoke',
+    args:['--teil=2/4'], bauen:true, datei:D,
     such:'    if (!b.gruppe) { aus.push(b); continue; }',
     ersatz:'    if (true) { aus.push(b); continue; }',
     an:{ ...DIST, text:'if (true) { aus.push(b); continue; }' },
-    sagt:'über den Rand' },
+    sagt:'Gruppierung greift nicht' },
 
   /* Regel 16: der Runner und dieser Rechner fahren denselben Browser.
    *

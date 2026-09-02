@@ -167,24 +167,34 @@
       "s": 3
     },
     "ein Knopf ist breiter als das Fenster": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 107
+      "s": 85
     },
     "die Bühne beachtet den sicheren Bereich nicht": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 89
+      "s": 84
+    },
+    "ein Kasten schneidet seine Schrift ab": {
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
+      "zeit": "2026-09-02",
+      "s": 42
+    },
+    "die Lupenknöpfe rutschen weiter auf die Karte": {
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
+      "zeit": "2026-09-02",
+      "s": 42
     },
     "zwei Kacheln liegen aufeinander": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 50
+      "s": 42
     },
     "eine Aufkleberkarte liegt außerhalb des Fensters": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 51
+      "s": 42
     },
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -217,19 +227,19 @@
       "s": 19
     },
     "der Fassungsstempel deckt die Kachelwand zu": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 294
+      "s": 258
     },
     "der Fassungsstempel bleibt leer": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 157
+      "s": 127
     },
     "die Hauptstädte stehen wieder als zwei Kacheln da": {
-      "commit": "ba2ef36fdd2033b982ca0af8cf18af6681e0880d",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 78
+      "s": 83
     },
     "der Runner darf wieder einen anderen Browser fahren": {
       "commit": "bcf7c31d4596b3b2e13e95eab4610abbd91f4e66",
@@ -257,9 +267,9 @@
       "s": 63
     },
     "eine Ebenenkachel hat kein Bild mehr": {
-      "commit": "6fa8d5c50ab1393d28112ab3731802e6bb8d51f9",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 90
+      "s": 41
     },
     "dem Kachelbild fehlt eines seiner Ziele": {
       "commit": "34900135ee932758b1b2660bf28b45f17993494f",
@@ -277,9 +287,9 @@
       "s": 109
     },
     "die Ebenenkachel wird auf dem großen Schirm wieder flach": {
-      "commit": "e58b10d8f8d6c961aa48dfd3e54318662b810185",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 48
+      "s": 50
     },
     "zwei Finger ziehen die Karte nicht mehr auf": {
       "commit": "12b511cd6169e96698f9ec5229299194371bfd76",
@@ -287,14 +297,14 @@
       "s": 18
     },
     "das Auge liegt wieder auf dem Kachelnamen": {
-      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 78
+      "s": 41
     },
     "der leise Knopf verliert seine Kante": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 160
+      "s": 128
     },
     "der Bildschirm bleibt halbdurchsichtig": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -762,42 +772,57 @@
       "s": 21
     },
     "das Bild auf der Weltenwahl wird kleiner gezeichnet": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 58
+      "s": 41
     },
     "die letzte Kachelreihe klebt wieder links": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 57
+      "s": 41
     },
     "das schmale Fenster bekommt wieder zwei Spalten": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 53
+      "s": 41
     },
     "der Familienschlüssel verträgt kein Q mehr": {
-      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 4
+      "s": 6
     },
     "ein halber Leitner-Satz kommt unverändert durch": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 3
+      "s": 0
     },
     "der Dienst nimmt jede Fassung an": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
+      "zeit": "2026-09-02",
+      "s": 0
+    },
+    "der Raum im Dienst verfällt nie": {
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
+      "zeit": "2026-09-02",
+      "s": 1
+    },
+    "der Dienst misst die Größe nur an der Kopfzeile": {
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
+      "zeit": "2026-09-02",
+      "s": 0
+    },
+    "der Dienst erlaubt jede Herkunft, egal was eingestellt ist": {
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
       "s": 0
     },
     "das Protokoll reist ohne Grenze": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 3
+      "s": 0
     },
     "das Protokoll wird nach dem Schlüssel beschnitten": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
       "s": 0
     },
@@ -807,9 +832,9 @@
       "s": 163
     },
     "bei elf Kacheln bricht der Name wieder auf einen Buchstaben": {
-      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 79
+      "s": 42
     },
     "„heute schon geübt\" überlebt den Neustart nicht": {
       "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
@@ -827,32 +852,32 @@
       "s": 5
     },
     "die vierte Welt bekommt ihre schmale Kachel nicht mehr": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 78
+      "s": 42
     },
     "die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
       "s": 41
     },
     "beim Zusammenführen fällt der Aufkleber zurück": {
-      "commit": "28b50be1bea5851cac9408d28edd51e923aeae77",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 3
+      "s": 0
     },
     "der Gleichlauf nimmt die PIN mit": {
-      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
       "s": 0
     },
     "der Gleichlauf schickt Klartext": {
-      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 4
+      "s": 0
     },
     "die Umschläge kommen in wechselnder Reihenfolge": {
-      "commit": "c93065f6cd92ad23c0a9a8bed53f20ba7f0cb07c",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
       "s": 0
     },
@@ -867,19 +892,19 @@
       "s": 134
     },
     "die elfte Ebene bekommt ihre schmale Kachel nicht mehr": {
-      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 90
+      "s": 41
     },
     "die Kapazitätsmessung hängt die Wand nicht mehr neu ein": {
-      "commit": "45edea0ec946ab0050fa71d001a20bd8948ec69d",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 90
+      "s": 41
     },
     "die Kachel verliert ihre Höhe": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 51
+      "s": 40
     },
     "die Rückmeldetöne sind wieder ab Werk an": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -1197,9 +1222,9 @@
       "s": 28
     },
     "die Buchstabenkarten rutschen wieder zusammen": {
-      "commit": "736e727cc043d07b49e75a31d3acbed1a213300b",
+      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
       "zeit": "2026-09-02",
-      "s": 79
+      "s": 41
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",

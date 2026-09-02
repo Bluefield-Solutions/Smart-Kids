@@ -274,9 +274,18 @@ const SUCHE = () => {
    * ist keine abgeschnittene Schrift. */
   const beschnitten = [];
   for (const e of document.querySelectorAll('.schirm.da *')) {
-    const st = getComputedStyle(e);
-    if (!/hidden|clip/.test(st.overflowY)) continue;
+    /* ERST die billige Frage, DANN die teure.
+     *
+     * Der erste Entwurf rief `getComputedStyle` fuer jedes Element auf und
+     * fragte den Ueberlauf ab, bevor er wusste, ob es ueberhaupt einen
+     * gibt. Das sind zweiundzwanzig Bildschirme mal sieben Groessen mal
+     * einigen hundert Elementen - und die Kette wurde dadurch schwer
+     * genug, dass eine Zeitmessung im Rauchtest nebenan umkippte
+     * (Q37). `scrollHeight` und `clientHeight` stehen ohnehin bereit;
+     * gefragt wird der Stil nur noch bei dem einen Element von hundert,
+     * bei dem ueberhaupt etwas ueberlaeuft. */
     if (!e.clientHeight || e.scrollHeight - e.clientHeight <= 2) continue;
+    if (!/hidden|clip/.test(getComputedStyle(e).overflowY)) continue;
     const text = (e.textContent || '').replace(/\s+/g, ' ').trim();
     if (!text) continue;                       // ein leerer Kasten schneidet nichts ab
     beschnitten.push({ text: text.slice(0, 22),

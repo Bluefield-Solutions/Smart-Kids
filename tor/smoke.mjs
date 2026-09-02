@@ -2380,6 +2380,50 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       const fremd = hier.filter(e => WELT_VON(e) !== w);
       if (fremd.length) merke('durchgang',
         new Error(`${wer}: „${fremd.join(', ')}" steht in der Welt „${w}"`));
+
+      /* Und steht auch WIRKLICH noch eine Gruppenkachel da? (Q32)
+       *
+       * Die Zaehlung oben geht hinter die Gruppen, damit sie „jede Ebene
+       * ist erreichbar" auch nach Q17 noch beweist. Genau dadurch ist sie
+       * blind fuer das Gegenteil: faellt die Gruppierung weg, stehen die
+       * beiden Hauptstadt-Ebenen einzeln auf der Wand, die Schleife
+       * darueber laeuft leer, und alles bleibt gruen.
+       *
+       * Bis Q31 fiel das trotzdem auf - elf Kacheln liefen aus dem Bild,
+       * und `passt` wurde rot. Seit die Wand ab elf Ebenen ein Sechstel
+       * breit wird, passen zwoelf: es laeuft nichts mehr heraus, und
+       * damit hat die Gegenprobe „die Hauptstädte stehen wieder als zwei
+       * Kacheln da" DREIUNDDREISSIG FASSUNGEN lang nichts mehr bewiesen,
+       * ohne dass irgendwo etwas rot wurde.
+       *
+       * Geprueft wird deshalb hier, wo der Gegenstand ohnehin steht, und
+       * an der Sache statt an einer Nebenwirkung: gehoeren zwei Ebenen
+       * derselben Gruppe an, dann teilen sie sich EINE Kachel. Welche
+       * Gruppen es gibt, sagt die Wand selbst - abgeschrieben wird
+       * nichts. */
+      /* Das SOLL kommt aus der Referenz, nicht aus der Namensform.
+       *
+       * Der erste Anlauf leitete die Gruppe aus der Kennung ab: alles vor
+       * dem Doppelpunkt sei ein Stamm, und zwei Ebenen mit demselben
+       * Stamm gehoerten zusammen. Das war rot am gesunden Spiel -
+       * `rechnen:plusminus`, `rechnen:reihen` und `rechnen:gross` teilen
+       * den Stamm und sind KEINE Gruppe. Eine Regel, die sich ihre
+       * Erwartung aus der Schreibweise holt, misst die Schreibweise.
+       *
+       * Welche Ebenen sich eine Kachel teilen, ist eine Entscheidung aus
+       * dem Konzept (Q17: die beiden Hauptstadt-Ebenen). Sie steht
+       * deshalb hier ausgeschrieben. Kommt eine zweite Gruppe dazu,
+       * gehoert sie hierher - genau wie eine neue Zeile in der
+       * Profiltabelle. */
+      const GRUPPIERT = ['hauptstaedte'];
+      const offen = await p.$$eval('.schirm.da [data-ebene]',
+        es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));
+      for (const stamm of GRUPPIERT) {
+        const n = offen.filter(e => e === stamm || e.startsWith(stamm + ':')).length;
+        if (n > 1) merke('durchgang', new Error(`${wer}: „${stamm}" steht mit ${n} `
+          + 'eigenen Kacheln offen auf der Wand — die Gruppierung greift nicht, '
+          + 'und die Wand wird um jede weitere Ebene länger'));
+      }
       da.push(...hier);
       await p.click('.schirm.da #zur');
       await p.waitForSelector('.schirm.da [data-welt]');
