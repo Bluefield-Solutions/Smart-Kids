@@ -144,9 +144,34 @@ for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
  * feste Sechs: sie soll auch stimmen, wenn der Runner sich aendert oder
  * jemand das Verzeichnis auf einer kleineren Maschine faehrt. Nur ist sie
  * fuer den heutigen Runner keine Schaetzung mehr, sondern gemessen. */
+/* Und seit Q24: ZWEI Baender je Kern, nicht zweieinhalb.
+ *
+ * Die Zehn oben ist richtig gemessen und trotzdem falsch geworden - zum
+ * vierten Mal, und wieder aus dem Grund, der dort schon steht: ihre
+ * VORAUSSETZUNG hat sich geaendert. Sie lautete „diese Tore rechnen kaum,
+ * sie warten". Seit Q19 stimmt das nicht mehr: der Fremdgriff laeuft in
+ * jeder Seite mit und rechnet dort.
+ *
+ * Gemessen am selben Tag, dieselbe Kette:
+ *
+ *     Becken 10   dreimal ROT - dreimal ein ANDERER Zeitfehler
+ *                 (`waitForFunction: Timeout 4000ms`, ein Zug, der nicht
+ *                 ankam), und der Lastschnitt bei 11 auf vier Kernen
+ *     Becken  8   186,6 s, gruen
+ *     Becken  6   194,5 s, gruen
+ *
+ * Und derselbe Teil, der in der Kette scheiterte, lief ALLEIN in 94 s
+ * durch. Drei verschiedene Fehler aus derselben Ursache sind kein
+ * Flackern, sondern ein Befund: die Kette hat sich selbst ausgebremst.
+ *
+ * Die Zahlen sind je EINMAL gemessen, nicht dreimal wie oben - die
+ * Maschine war an diesem Tag erkennbar langsamer als damals (dieselbe
+ * Kette bei Becken 10: einmal 135 s, einmal 231 s). Fuer einen Vergleich
+ * der Bestzeiten taugt das nicht; fuer die Frage „ab wann kippt es"
+ * genuegt es, und die ist hier die wichtigere. */
 const KERNE = os.cpus().length;
 const BREITE = +(process.env.SMARTKIDS_BECKEN
-  || Math.max(2, Math.min(10, Math.round(KERNE * 2.5))));
+  || Math.max(2, Math.min(8, KERNE * 2)));
 
 const arbeit = [];
 const KURZ = ['pwa', 'lesbarkeit', 'ansicht'];

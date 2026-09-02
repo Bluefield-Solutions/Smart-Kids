@@ -673,9 +673,20 @@ export const PROBEN = [
   { n:'das Kachelbild zeigt wieder den Kontinent statt der Ziele', tor:'bauen',
     datei:'prototyp/bauen.mjs',
     such:"  const ozeanienUmriss = zielUmriss('australien');",
+    ersatz:"  const ozeanienUmriss = kontinentUmriss('australien', roh.australien);",
+    an:{ datei:'prototyp/bauen.mjs',
+         text:"kontinentUmriss('australien', roh.australien)" },
+    sagt:'zeigt nicht, wonach die Ebene fragt' },
+
+  /* Und die Luecke, die die erste Fassung der Probe aufgedeckt hat: der
+   * Waechter hing an dem Aufruf, den er pruefen soll. Wer ihn weglaesst,
+   * schaltet ihn ab - deshalb muss jede Ebene ihre Herkunft NENNEN. */
+  { n:'ein Kachelbild nennt seine Herkunft nicht', tor:'bauen',
+    datei:'prototyp/bauen.mjs',
+    such:"  const ozeanienUmriss = zielUmriss('australien');",
     ersatz:"  const ozeanienUmriss = roh.australien;",
     an:{ datei:'prototyp/bauen.mjs', text:'const ozeanienUmriss = roh.australien;' },
-    sagt:'zeigt nicht, wonach die Ebene fragt' },
+    sagt:'nennt seine Herkunft nicht' },
 
   { n:'zwei Finger ziehen die Karte nicht mehr auf', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:D,

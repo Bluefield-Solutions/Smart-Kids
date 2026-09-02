@@ -185,9 +185,18 @@ const silhouette = (pfad, n) => {
    * Kontinentumriss. Der Helfer merkt sich, welche Ebenen so gebaut sind -
    * nur fuer die ist die Pruefung unten ueberhaupt rechenbar, weil nur
    * dort Bild und Ziele im selben Koordinatensystem liegen. */
-  const ausZielen = {};
+  const ausZielen = {}, ausKontinent = {};
   const zielUmriss = (id) => (ausZielen[id] = KARTEN_GROB[id]
     .filter(l => zielAuf(id, l.a3)).map(l => l.pfad).join(' '));
+  /* Und die Gegenrichtung: das Bild ist der KONTINENT, in dem die Ziele
+   * liegen. Rechenbar ist das nicht - der Umriss kommt aus der Weltkarte,
+   * die Ziele aus der Laenderkarte, zwei Koordinatensysteme - eine Zahl
+   * ohne ihre Messstelle, und die traegt hier nichts (Regel 5).
+   * Aufgeschrieben werden muss es trotzdem, und zwar HIER statt in einem
+   * Kommentar: die Pruefung unten verlangt, dass jede Ebene ihre Herkunft
+   * nennt. Sonst faellt die Pruefung mit dem Aufruf weg, den sie pruefen
+   * soll - genau das hat die Gegenprobe gezeigt. */
+  const kontinentUmriss = (id, pfad) => (ausKontinent[id] = pfad);
   const mittelamerikaUmriss = zielUmriss('mittelamerika');
   /* Ozeanien ebenso - und aus demselben Grund (Q24).
    *
@@ -201,10 +210,10 @@ const silhouette = (pfad, n) => {
   const ozeanienUmriss = zielUmriss('australien');
   D.silhouetten = {
     kontinente:  { d: silhouette(welt, 16),             vb: sichtfeld([{ pfad: welt }]) },
-    europa:      { d: silhouette(roh.europa, 16),       vb: sichtfeld([{ pfad: roh.europa }]) },
-    afrika:      { d: silhouette(roh.afrika, 16),       vb: sichtfeld([{ pfad: roh.afrika }]) },
-    asien:       { d: silhouette(roh.asien, 16),        vb: sichtfeld([{ pfad: roh.asien }]) },
-    nordamerika: { d: silhouette(roh.nordamerika, 16),  vb: sichtfeld([{ pfad: roh.nordamerika }]) },
+    europa:      { d: silhouette(kontinentUmriss('europa', roh.europa), 16),       vb: sichtfeld([{ pfad: ausKontinent.europa }]) },
+    afrika:      { d: silhouette(kontinentUmriss('afrika', roh.afrika), 16),       vb: sichtfeld([{ pfad: ausKontinent.afrika }]) },
+    asien:       { d: silhouette(kontinentUmriss('asien', roh.asien), 16),        vb: sichtfeld([{ pfad: ausKontinent.asien }]) },
+    nordamerika: { d: silhouette(kontinentUmriss('nordamerika', roh.nordamerika), 16),  vb: sichtfeld([{ pfad: ausKontinent.nordamerika }]) },
     /* Mittelamerika hat keinen Kontinentumriss - es ist ein Ausschnitt.
      * Sein Kachelbild entsteht deshalb aus den Laenderformen selbst,
      * zusammengelegt. Feiner ausgeduennt (jeder 6. statt jeder 16.
@@ -212,7 +221,7 @@ const silhouette = (pfad, n) => {
      * einem Strich. */
     mittelamerika: { d: silhouette(mittelamerikaUmriss, 6),
                      vb: sichtfeld([{ pfad: mittelamerikaUmriss }]) },
-    suedamerika: { d: silhouette(roh.suedamerika, 16),  vb: sichtfeld([{ pfad: roh.suedamerika }]) },
+    suedamerika: { d: silhouette(kontinentUmriss('suedamerika', roh.suedamerika), 16),  vb: sichtfeld([{ pfad: ausKontinent.suedamerika }]) },
     /* Ozeanien hat elf Fassungen lang GEFEHLT (Q23).
      *
      * Die Kachel stand ohne Bild da - und fuer Fiona IST das Kachelbild
@@ -260,9 +269,22 @@ const silhouette = (pfad, n) => {
    * Ebene fragt nach drei Laendern, von denen zwei nicht auf dem
    * australischen Festland liegen. Wer eine solche Ebene neu anlegt, baut
    * ihr Bild ueber `zielUmriss()` und faellt damit in diese Pruefung. */
-  for (const k of Object.keys(ausZielen)) {
+  for (const k of Object.keys(D.laender)) {
+    /* Erst die Herkunft. Ohne diese Zeile hing die Pruefung an dem
+     * Aufruf, den sie pruefen soll: die Gegenprobe ersetzte
+     * `zielUmriss('australien')` durch den rohen Kontinentpfad, damit
+     * stand `australien` in keiner der beiden Listen - und die Schleife
+     * ging still darueber hinweg. Ein Tor, das man durch Weglassen
+     * abschalten kann, ist keines: eine Pruefung, die nie etwas meldet,
+     * ist kein Beweis (Regel 1). */
+    if (!(k in ausZielen) && !(k in ausKontinent))
+      throw new Error(`Das Kachelbild von „${k}" nennt seine Herkunft nicht. `
+        + `Es kommt entweder aus den ZIELEN der Ebene (\`zielUmriss('${k}')\`) oder `
+        + `aus dem KONTINENT, in dem sie liegen (\`kontinentUmriss('${k}', …)\`) - `
+        + 'und nur die erste Sorte laesst sich nachrechnen, weil nur dort Bild und '
+        + 'Ziele im selben Koordinatensystem liegen.');
     const ziele = D.laender[k], s = D.silhouetten[k];
-    if (!ziele || !s) continue;
+    if (!(k in ausZielen) || !ziele || !s) continue;
     const [vx, vy, vb, vh] = s.vb.split(/\s+/).map(Number);
     const draussen = ziele.filter(z => {
       if (!z.anker) return false;

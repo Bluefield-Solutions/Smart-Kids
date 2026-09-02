@@ -8831,4 +8831,45 @@ Für die Kontinentebenen stimmt die Zusage ohnehin durch die Bauweise: der Umris
 Ozeanien gebrochen — dort heißt der Kontinent `australien`, und die Ebene fragt
 nach drei Ländern, von denen zwei nicht auf dem australischen Festland liegen.
 
-237 Gegenproben.
+### Und dann hat die Gegenprobe den Wächter selbst zerlegt
+
+Die erste Fassung schlug **nicht** an. Der Eingriff ersetzt
+`zielUmriss('australien')` durch den rohen Kontinentpfad — und damit stand
+`australien` in keiner der beiden Listen, die Schleife ging still darüber
+hinweg. **Ein Tor, das man durch Weglassen abschalten kann, ist keines.** Es
+hing an genau dem Aufruf, den es prüfen soll.
+
+Jetzt muss jede Ebene ihre Herkunft **nennen** — entweder `zielUmriss(id)` oder
+`kontinentUmriss(id, …)`. Ein Bild ohne Angabe bricht den Bau ab. Nachrechnen
+lässt sich weiterhin nur die erste Sorte; aber das Weglassen ist keine Tür mehr.
+
+Zwei Gegenproben also, nicht eine: eine setzt die falsche Herkunft, die andere
+gar keine.
+
+### Und die Kette hat sich selbst ausgebremst
+
+Die Abnahmeläufe wurden **dreimal rot, mit drei verschiedenen Fehlern** —
+`waitForFunction: Timeout 4000ms` an zwei Stellen, und einmal ein Zug, der nicht
+ankam. Derselbe Teil lief **allein in 94 s** durch.
+
+Drei verschiedene Fehler aus derselben Ursache sind kein Flackern, sondern ein
+Befund. Die Beckenbreite von zehn ist richtig gemessen — unter der Voraussetzung
+„diese Tore rechnen kaum, sie warten". Seit Q19 stimmt die nicht mehr: der
+Fremdgriff läuft in jeder Seite mit und rechnet dort. Genau davor warnt der
+Kommentar an dieser Zahl seit drei Umbauten, und es ist jetzt der vierte.
+
+| Becken | |
+|---|---|
+| 10 | dreimal ROT, Lastschnitt 11 auf vier Kernen |
+| 8 | 186,6 s, grün |
+| 6 | 194,5 s, grün |
+
+Also **zwei Bänder je Kern statt zweieinhalb**. Die Zahlen sind je einmal
+gemessen, nicht dreimal wie damals: die Maschine war an diesem Tag erkennbar
+langsamer (dieselbe Kette bei Becken 10 einmal 135 s, einmal 231 s). Für einen
+Vergleich der Bestzeiten taugt das nicht — für die Frage „ab wann kippt es"
+genügt es, und die ist hier die wichtigere.
+
+Und es erklärt Q22 nachträglich: dieselbe Ursache, nur auf dem Runner.
+
+238 Gegenproben.
