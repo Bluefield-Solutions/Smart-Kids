@@ -219,6 +219,11 @@
       "zeit": "2026-09-01",
       "s": 130
     },
+    "die Hauptstädte stehen wieder als zwei Kacheln da": {
+      "commit": "ba2ef36fdd2033b982ca0af8cf18af6681e0880d",
+      "zeit": "2026-09-02",
+      "s": 78
+    },
     "zwei Finger ziehen die Karte nicht mehr auf": {
       "commit": "12b511cd6169e96698f9ec5229299194371bfd76",
       "zeit": "2026-09-02",
