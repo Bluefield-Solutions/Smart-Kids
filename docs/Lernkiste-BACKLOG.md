@@ -2656,7 +2656,7 @@ die Hälfte der Zeit falsch.
 
 ---
 
-## Q35 offen: kein Tor sieht ein gefülltes Forscherbuch
+## Q35 erledigt (Q35): kein Tor sieht ein gefülltes Forscherbuch
 
 **Gefunden in Q32 beim Schreiben einer Gegenprobe.** `passt` geht das
 Forscherbuch an — und sieht dort **null Aufkleber und eine Albumkarte**. Sein
@@ -2864,7 +2864,7 @@ seine Begründung mitliefert.
 
 ---
 
-## Q39b offen: eine Prüfung in `smoke`, die jeden Ausschnitt rot macht
+## Q39b erledigt (Q39b): eine Prüfung in `smoke`, die jeden Ausschnitt rot macht
 
 **Gemessen am Lauf vom 03.09. (Nr. 6, von Hand angestoßen auf `22332de`) und
 hier nachgestellt.** Von 21 Befunden sind 14 geblieben — und zehn davon haben
@@ -2935,4 +2935,46 @@ ungeprüft. Ob das an der neuen Gegenprobe liegt, die `proben` selbst fährt
 (sie legt eine Wegwerf-Kopie **in** einer Wegwerf-Kopie an), ist die erste
 Frage — und die Antwort steht im Protokoll des nächsten Laufs, weil blinde
 Urteile ihre Ausgabe jetzt mitbringen.
+
+**Geschlossen in Q39b:** Weg 2, aber ohne Liste — die Messung hat den
+zweiten Weg gleich mit widerlegt. `tippen`, `regler` und `hinweis` bringen je
+EINEN ruhenden Bildschirm, und auf dem Runner mit sechs Arbeitern null: eine
+Regel je Abschnitt hinge an der Zahl der freien Kerne. Entschieden wird jetzt
+nach der Herkunft des Ausschnitts (voller Lauf und `--teil` tragen die
+Zusage, `--nur` nicht). Alle zehn Proben schlagen wieder an.
+
+**Geschlossen in Q35** (das Forscherbuch): der Rauchtest pflanzt jetzt auch
+eine halbe Rechenebene — eine Ebene ohne Landkarte zeigt einzelne Kleber, und
+erst damit ist das Buch gefüllt. Drei Blindproben nachgetragen (mindestens
+drei Karten, mindestens eine blasse, und gemessen wird erst nach der
+Überblendung). Die Messung hat sofort einen echten Fehler gefunden: das Buch
+war 794 Punkte hoch in 318 sichtbaren, weil ein `display:none`-Kopf die
+Rasterplatzierung verschob. 794 → 341, nichts steht mehr unsichtbar unter
+der Kante.
+
+
+---
+
+## Q39c erledigt (Q35): die vier „TOR BLEIBT GRÜN"
+
+Alle vier geschlossen, jede mit einer eigenen Ursache — und keine davon war
+eine schlecht geschriebene Probe:
+
+| Probe | Tor | Ursache |
+|---|---|---|
+| das Buch rollt beim zweiten Aufkleber | `smoke` | das Buch war nie gefüllt (Q35); dazu drehte der Eingriff an `svg`-Höhen, und ein Rechenkleber hat kein `svg` |
+| die Deckung der Vorfahren | `lesbarkeit` | frisches Profil, leeres Buch — der offene Aufkleber wurde nie gezeichnet |
+| bei elf Kacheln bricht der Name | `passt` | schlägt wieder an, ohne Zutun |
+| zwei Nadelköpfe rücken enger zusammen | `ziehen` | der Eingriff hing an einer Messung von damals (90 über 78,2); der Abstand ist auf 100,3 gewachsen |
+
+Der Nadelkopf-Fall ist der lehrreichste: **eine Gegenprobe, deren Eingriff an
+einer vergangenen Messung hängt, verfällt mit jeder Verbesserung.** Der
+Eingriff steht jetzt auf 200 Punkten — mehr als die halbe Kartenbreite,
+darüber kann kein Kopfabstand liegen.
+
+Und der Kontrast-Fall hat einen echten Befund mitgebracht: die blassen
+Vorschaukleber standen bei 2,22 : 1 statt 3 : 1.
+
+**Offen bleibt aus dieser Ecke nichts mehr** — außer dem, was der nächste
+nächtliche Lauf zeigt.
 

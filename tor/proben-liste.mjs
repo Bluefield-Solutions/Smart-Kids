@@ -1103,11 +1103,20 @@ export const PROBEN = [
     ersatzFn:m => m[1] + '40',
     an:{ datei:'tor/nadeln-stand.json', text:'"faden": 40' },
     sagt:'sagt nicht „hier"' },
+  /* Der Eingriff setzt die Ratsche WEIT hoch, nicht auf eine Zahl von
+   * damals (Q39c).
+   *
+   * Hier stand 90, und das war einmal ueber dem gemessenen Wert (78,2).
+   * Der Abstand ist seitdem auf 100,3 gewachsen - gut fuer die Kinder, und
+   * die Probe war damit still: 100,3 ist nicht kleiner als 90. Eine
+   * Gegenprobe, deren Eingriff an einer VERGANGENEN Messung haengt,
+   * verfaellt mit jeder Verbesserung. Zweihundert Punkte sind mehr als die
+   * halbe Kartenbreite; darueber kann kein Kopfabstand liegen. */
   { n:'zwei Nadelköpfe rücken enger zusammen als bestätigt', tor:'ziehen',
     args:['--nur=treffer'], bauen:true, datei:'tor/nadeln-stand.json',
     suchRegex:/("laender:europa":\s*\{\s*"eng":\s*)[\d.]+/,
-    ersatzFn:m => m[1] + '90',
-    an:{ datei:'tor/nadeln-stand.json', text:'"eng": 90' },
+    ersatzFn:m => m[1] + '200',
+    an:{ datei:'tor/nadeln-stand.json', text:'"eng": 200' },
     sagt:'trifft den falschen' },
 
   /* Ein Teillauf urteilt über ein Profil, das er nicht gespielt hat.

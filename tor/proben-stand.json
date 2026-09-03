@@ -198,9 +198,9 @@
       "s": 46
     },
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
-      "commit": "f31c80bacae2930abb7c614208dcb1acfda1a565",
+      "commit": "5557c61c93082b7535bcbe29106cb0f9b2de8beb",
       "zeit": "2026-09-03",
-      "s": 33
+      "s": 22
     },
     "das Wasserzeichen unter der Schrift zählt nicht": {
       "commit": "f31c80bacae2930abb7c614208dcb1acfda1a565",
@@ -378,14 +378,14 @@
       "s": 23
     },
     "die Nadelfäden sind länger geworden als bestätigt": {
-      "commit": "22332de675c6b6a0906432e7a21dd6330fde870d",
+      "commit": "5557c61c93082b7535bcbe29106cb0f9b2de8beb",
       "zeit": "2026-09-03",
-      "s": 37
+      "s": 34
     },
     "zwei Nadelköpfe rücken enger zusammen als bestätigt": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 24
+      "commit": "5557c61c93082b7535bcbe29106cb0f9b2de8beb",
+      "zeit": "2026-09-03",
+      "s": 18
     },
     "ein Teillauf urteilt über ein Profil, das er nicht gespielt hat": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -838,9 +838,9 @@
       "s": 92
     },
     "bei elf Kacheln bricht der Name wieder auf einen Buchstaben": {
-      "commit": "f31c80bacae2930abb7c614208dcb1acfda1a565",
+      "commit": "5557c61c93082b7535bcbe29106cb0f9b2de8beb",
       "zeit": "2026-09-03",
-      "s": 82
+      "s": 79
     },
     "„heute schon geübt\" überlebt den Neustart nicht": {
       "commit": "22332de675c6b6a0906432e7a21dd6330fde870d",

@@ -1295,7 +1295,13 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   font-family:var(--f-lesen);font-weight:700;font-size:var(--s1);
   color:var(--auf-flaeche);background:color-mix(in oklab, var(--ton) 34%, var(--papier));
   border-radius:var(--rund-klein);font-variant-numeric:tabular-nums}
-.aufkleber:not(.da) .rechenkleber{background:var(--linie);color:var(--tinte-3)}
+/* Der OFFENE Rechenkleber: dunklere Tinte als `--tinte-3` (Q35).
+   Gemessen, seit `lesbarkeit` ein Buch mit Inhalt sieht: „1 + 4" stand mit
+   2,22:1 auf dem grauen Kasten, noetig sind 3:1 fuer grosse Schrift - und
+   die 72 % Deckung des offenen Aufklebers rechnen da schon mit. Blass
+   bleibt er trotzdem: die Deckung macht das Zurueckgenommene, nicht eine
+   Tinte, die man nicht mehr lesen kann. */
+.aufkleber:not(.da) .rechenkleber{background:color-mix(in oklab, var(--linie) 55%, var(--papier));color:var(--tinte-2)}
 /* ---- Schreiben (N2a) --------------------------------------------------
    Die Schreibflaeche ist QUADRATISCH, und das ist keine Geschmacksfrage:
    der Kasten der Vorlage ist 100 x 100, und der Finger wird ueber

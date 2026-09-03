@@ -10183,3 +10183,131 @@ Probenlauf dort vorher rot sind, sagt die nächste Nacht. Ich rate es hier
 nicht.
 
 269 Gegenproben · Kette grün nach 138,7 s.
+
+
+---
+
+# Q35 · Vier blinde Gegenproben, und was hinter jeder einzelnen stand
+
+Der nächtliche Lauf hatte nach Q34 noch vierzehn Befunde. Zehn davon waren
+**eine** Ursache, vier waren vier. Alle vier sind jetzt geschlossen — und
+keine einzige war das, wonach sie aussah.
+
+## Zehn auf einmal: eine Prüfung ohne Geltungsbereich (Q39b)
+
+`smoke` fragt am Ende, ob der **Fremdgriff** überhaupt zum Zug kam: kein
+ruhender Bildschirm gesehen, dann beweist „nichts gefunden" nichts. Richtige
+Frage — sie wurde nur auch dann gestellt, wenn der Lauf gar nicht der ganze
+war. `--nur=streu` kommt an keinem ruhenden Bildschirm vorbei, also war das
+Tor dort rot, **auf jeder Maschine**. Zehn Gegenproben, die einen Abschnitt
+einzeln fahren, bewiesen seitdem nichts.
+
+Gemessen, je Abschnitt einzeln (03.09., dieser Rechner, vier Kerne), ruhende
+Bildschirme:
+
+```
+spielen 5   ablage 10   tippen 1   regler 1    ebene4 0   durchgang 18
+umgekehrt 6 test 31     streu 0    abzeichen 12 pausen 10 schreiben 40
+hinweis 1   sprechen 8
+```
+
+**Eine Liste der stillen Abschnitte wäre die naheliegende Lösung und die
+falsche.** `tippen`, `regler` und `hinweis` bringen je EINEN — und auf dem
+Runner mit sechs Arbeitern war es null: dort ruht ein Bildschirm nie lange
+genug. Eine Regel je Abschnitt hinge also an der Zahl der freien Kerne,
+nicht an der App. Genau der Fehler, den Q37 gerade herausgenommen hat.
+
+Deshalb nach **Herkunft des Ausschnitts**: der volle Lauf und jedes
+`--teil=i/n` tragen die Zusage — die Teile zerlegen den vollen Lauf, und
+jeder der vier hat große Abschnitte darin. Ein von Hand gewähltes `--nur=…`
+trägt sie nicht und bekommt eine Zeile statt eines Befunds.
+
+## Und vier einzeln
+
+**Das Buch (Q35).** Zwei der vier hingen am Forscherbuch, und dahinter stand
+dieselbe Sache: *kein Tor hat je ein gefülltes Buch gesehen.* Seit Q28 fasst
+eine Ebene **mit** Landkarte ihre Aufkleber zu einer Albumkarte zusammen —
+und der Rauchtest pflanzte nur Bundesländer-Fortschritt. Ergebnis: eine
+einzige Karte im Buch. Sechs statt zwei gepflanzte Länder ändern daran
+nichts. Ein Buch mit einer Karte kann nicht rollen, also war die
+Überlaufprobe still.
+
+Jetzt wird zusätzlich eine halbe **Rechen**ebene gepflanzt — Rechnen hat
+keine Landkarte, also stehen dort einzelne Kleber: drei gekonnte, drei
+blasse in der Vorschau. Sieben Karten in vier Blöcken, wie ein Kind es
+sieht. Dazu drei Blindproben, die gefehlt haben: mindestens drei Karten
+(nach *oben* gab es die Schranke längst, nach unten nicht), mindestens eine
+blasse, und gemessen wird erst, wenn die Überblendung durch ist — vorher
+lagen zwei Bildschirme übereinander und `scrollHeight` war die Summe: **794
+statt 318**.
+
+Und dann fand die Messung, wofür sie da ist: das Buch war auf dem Zielgerät
+794 Punkte hoch in 318 sichtbaren, die Vorschau **vollständig** unter dem
+Rand. Ursache: `.abzkopf` („Deine Abzeichen") ist im kurzen Querformat
+`display:none`, fällt aus der Rasterplatzierung heraus — und ab da lag jeder
+Block in der schmalen Spalte, 190 statt 618 Punkte breit, drei Reihen statt
+einer. Die Spalte wird jetzt **genannt** statt abgezählt, die Regel für die
+einzelne Albumkarte fragt nach „nichts dahinter" statt nach „keine zweite",
+und die Überschrift steht neben ihrer Reihe statt darüber. **794 → 341**,
+und nichts fängt mehr unter der Unterkante an.
+
+Die Prüfung selbst hat dabei ihr Maß gewechselt. „Bei höchstens acht Karten
+darf nichts rollen" war ein Stellvertreter für die Höhe, und seit Q28 stimmt
+er nicht mehr: sieben Karten können in vier Blöcken stehen. Gemessen wird
+jetzt der **Anteil**, den jeder Block zeigt, anteilig an seiner eigenen Höhe.
+Unter einem Viertel ist er ein Saum und keine Auskunft. Ein Album darf
+rollen; ein Block, von dem man nicht einmal den Anfang sieht, darf es nicht.
+
+**Der Kontrast (Q39c).** Dieselbe Ursache, anderes Tor: `lesbarkeit` lief mit
+einem frischen Profil, und ein frisches Buch ist leer. Die halbe
+Aufkleber-Gestaltung stand nie vor diesem Tor — vor allem der **offene**
+Aufkleber, der als einziger mit 72 % Deckung gezeichnet wird. Mit einem
+Profil, das etwas gesammelt hat, meldete es sofort einen echten Befund: die
+Vorschaukleber standen bei **2,22 : 1**, nötig sind 3 : 1 für große Schrift.
+Dunklere Tinte auf einem helleren Kasten bringt sie über die Grenze, ohne
+ihnen das Zurückgenommene zu nehmen.
+
+**Die Nadelköpfe.** Der Eingriff der Gegenprobe setzte die Ratsche auf 90 —
+einmal über dem gemessenen Wert (78,2). Der Abstand ist seitdem auf **100,3**
+gewachsen, und damit war die Probe still: 100,3 ist nicht kleiner als 90.
+*Eine Gegenprobe, deren Eingriff an einer vergangenen Messung hängt,
+verfällt mit jeder Verbesserung.* Jetzt 200 Punkte — mehr als die halbe
+Kartenbreite, darüber kann kein Kopfabstand liegen. Die Ratsche selbst ist
+auf 100,3 nachbestätigt.
+
+**Die elfte Kachel** schlägt wieder an, ohne Zutun — sie hing an einem
+Zustand, den die Bucharbeit mit aufgeräumt hat.
+
+## Zwei Nachträge, die die Arbeit selbst gefunden hat
+
+*Der Wettlauf um die Wegwerf-Kopie.* Im Lauf vom 03.09. starb ein Arbeiter an
+`git worktree add` (Status 128), seine Proben waren ungeprüft — gemeldet nur
+als „Ein Teillauf hat kein Ergebnis hinterlassen", denn die Fehlerausgabe
+stand auf `ignore`. Sie wird jetzt mitgelesen, viermal nachgefasst, und der
+`prune` läuft nur noch im Elternteil, der nicht mit sich selbst konkurriert.
+
+*„Rechenkleber" ist eine Art, keine fehlende Datei.* Die Ausnahme für
+Rechenkleber in der Umriss-Prüfung fragte nach der Klasse `rechnen` — und die
+heißt nicht „ist eine Rechenaufgabe", sondern „hat keinen Pfad". Sie sitzt
+damit auch auf einem **Gebiet**, dessen Umriss nicht geladen ist, also genau
+auf dem Fall, den die Prüfung fangen soll. Die zuständige Gegenprobe hat es
+im selben Lauf gemeldet. Der Aufkleber trägt jetzt `data-art`, abgeleitet aus
+der Sache selbst.
+
+## Die Lehre dieser Runde
+
+Vier blinde Gegenproben, vier verschiedene Ursachen — und in **keinem**
+Fall war die Probe schlecht geschrieben. Sie zeigten alle auf etwas, das es
+noch gab, aber nicht mehr dort und nicht mehr so:
+
+* eine Prüfung ohne Geltungsbereich (zehnmal dasselbe),
+* ein Bildschirm, den das Tor nie gefüllt gesehen hat (zweimal),
+* ein Eingriff, der an einer alten Messung hing,
+* eine Klasse, die etwas anderes heißt, als ihr Name sagt.
+
+Das ist dieselbe Verfallsart wie in Q36 und Q38, nur in vier Kleidern: **eine
+Gegenprobe stirbt nicht am Fehler, sondern am Umzug.** Und sie sagt es auch —
+seit Q34 mit Begründung. Fünf Nächte lang hat das niemand gelesen, weil im
+Protokoll nur „war schon vorher rot" stand.
+
+270 Gegenproben · Kette grün nach 132,8 s.

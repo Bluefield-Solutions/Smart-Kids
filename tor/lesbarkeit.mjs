@@ -14,7 +14,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa,
+         stelleAblage } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [], hinweise = [];
@@ -254,6 +255,27 @@ for (const abend of [false, true]) {
     viewport: { width: 1180, height: 820 }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const p = await ctx.newPage();
   await p.goto(ADRESSE, { waitUntil: 'load' });
+  /* Ein Profil, das schon etwas GESAMMELT hat (Q35).
+   *
+   * Der Rundgang lief bis hierher mit einem frischen Profil, und ein
+   * frisches Buch ist leer: null Aufkleber. Damit stand die halbe
+   * Aufkleber-Gestaltung nie vor diesem Tor - vor allem der OFFENE
+   * Aufkleber, der als einziger mit `opacity:.72` gezeichnet wird. Die
+   * stehende Gegenprobe „die Deckung der Vorfahren zaehlt beim Kontrast
+   * nicht" faerbt genau diese Regel ein und bewies deshalb nichts.
+   *
+   * Gepflanzt wird eine RECHENebene: eine Ebene mit Landkarte fasst ihre
+   * Aufkleber seit Q28 zu einer Albumkarte zusammen, und auf der gibt es
+   * keinen einzelnen Kleber. Drei von hundert gekonnt heisst: drei Kleber
+   * im Buch und darunter die blasse Vorschau. */
+  const gepflanzt = await p.evaluate(() => {
+    const re = {};
+    Rechnen.vorrat().slice(0, 3).forEach(x => re[x.id] = { fach: 5, hoechstes: 5,
+      faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
+    return re;
+  });
+  await stelleAblage(p, { fortschritt: { 'fiona:rechnen:plusminus': gepflanzt } });
+  await p.reload();
   await p.evaluate(async () => { await document.fonts.ready; });
   /* Dieselbe Frage wie in `passt` (Q14): steht die eigene Schrift da?
    * Eine Ersatzschrift bricht die Zeilen anders um, und damit liegt ein
