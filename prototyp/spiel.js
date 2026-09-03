@@ -4655,8 +4655,15 @@ function spielschirm(){
       // Mal soweit ist. Jetzt hat der Aufkleber einen Augenblick.
       belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
                 neuerAufkleber);
+      /* Und Fiona HOERT den Satz - sie liest nicht (D3).
+         Derselbe Vorrang wie auf dem Bildschirm: wo die umgekehrte Frage
+         schon etwas zu sagen hat, tritt die Zugabe zurueck. Und sie kommt
+         ZULETZT, nach dem Aufkleber: das Lob gehoert dem Kind, der Satz
+         dem Gebiet. */
+      const mitnehmen = ergebnis === 'richtig' && !nebenbei ? Saetze.satzZu(ziel.id) : null;
       sagen(ergebnis==='fast' ? text
-        : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+        : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : '')
+          + (mitnehmen ? ` ${mitnehmen}` : ''));
     } else if (st.test) {
       /* Im Test ist EIN Versuch alles (B2).
        *
@@ -4969,7 +4976,18 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleb
     punkt.animate([{r:0},{r:7}],{duration:300,delay:600,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'forwards'});
   }
   nameAufDieKarte(s, ziel);
-  lobsatz(s, `Das ist ${ziel.name}.`, fastText, spruch, nebenbei, neuerAufkleber);
+  /* Ein Satz zum Mitnehmen (D3) - aber nur, wenn `nebenbei` frei ist.
+   *
+   * Der Platz ist schon vergeben: bei der umgekehrten Frage steht dort,
+   * WO das Getippte lag („Das ist Bayern. Bremen liegt weiter oben.").
+   * Diese Auskunft gehoert zur Aufgabe, der Satz ist eine Zugabe - und
+   * eine Zugabe verdraengt nichts.
+   *
+   * Kein Ersatz, wenn es keinen Satz gibt: `satzZu` gibt dann `null`,
+   * und `lobsatz` laesst die Zeile weg. Ein Fuellsatz saehe aus wie
+   * einer und waere keiner. */
+  lobsatz(s, `Das ist ${ziel.name}.`, fastText, spruch,
+          nebenbei || Saetze.satzZu(ziel.id) || '', neuerAufkleber);
 }
 
 /**

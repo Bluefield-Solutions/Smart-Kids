@@ -10,6 +10,7 @@ import * as I from '../src/inhalt/erdkunde.js';
 import * as R from '../src/inhalt/rechnen.js';
 import * as AB from '../src/inhalt/abzeichen.js';
 import * as SCHR from '../src/inhalt/schreiben.js';
+import * as S from '../src/inhalt/saetze.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import { KONTINENTE_FEIN } from '../src/geo/kontinente.fein.js';
 import { DEUTSCHLAND_FEIN } from '../src/geo/deutschland.fein.js';
@@ -599,6 +600,88 @@ console.log(`    ${ZAHL.kontinente} Kontinente + ${ZAHL.laender} Länder + `
   + `${ZAHL.bundeslaender} Bundesländer + ${ZAHL.staedte} Städte = ${ZAHL.gesamt} Gebiete`);
 
 /* ==================================================== Tor `topologie` === */
+/* ====================================================== Tor `saetze` ==== *
+ *
+ * Ein Satz zum Mitnehmen je Gebiet (D3). Das SOLL steht in
+ * `src/inhalt/saetze.js` und ist dort aus drei Vorbildern abgeleitet;
+ * hier wird gemessen, ob es eingehalten ist.
+ *
+ * Warum das ein Tor braucht und kein Blick genuegt: 91 Gebiete. Ein Satz,
+ * der fehlt, faellt beim Spielen genau einmal auf - naemlich dann, wenn
+ * ein Kind gerade dieses Gebiet trifft, und dann fehlt er still. `lobsatz`
+ * laesst die Zeile einfach weg; auf dem Bildschirm ist nichts zu sehen,
+ * was ein Fehler waere.
+ */
+console.log('\n  Tor `saetze`');
+{
+  /* Gemessen wird gegen die WIRKLICH gespielten Gebiete (Regel 5), also
+     gegen dieselben Quellen, aus denen der Bau den Vorrat schneidet -
+     nicht gegen die Schluessel der Satztabelle selbst. Andersherum
+     bewiese es nur, dass jeder Satz einen Schluessel hat. */
+  const gebiete = [
+    ...I.KONTINENTE.map(k => ({ id: k.id, name: k.name, wo: 'Kontinent' })),
+    ...DEUTSCHLAND_FEIN.map(g => ({ id: g.id, name: g.name, wo: 'Bundesland' })),
+    ...Object.entries(I.LAENDER).flatMap(([kont, ls]) => ls
+      .filter(l => l.rang)
+      .map(l => ({ id: l.a3, name: l.name, wo: `Land in ${kont}` }))),
+  ];
+  pruefe(gebiete.length >= 80, `nur ${gebiete.length} Gebiete gefunden — die Prüfung liest `
+    + 'die Vorräte nicht mehr und würde eine leere Satztabelle durchlassen');
+
+  const ohne = gebiete.filter(g => !S.satzZu(g.id));
+  pruefe(!ohne.length, `${ohne.length} Gebiete ohne Satz zum Mitnehmen: `
+    + `${ohne.slice(0, 6).map(g => `${g.name} (${g.id}, ${g.wo})`).join(' · ')}`
+    + `${ohne.length > 6 ? ' …' : ''}`);
+
+  /* Und die Form. Jede dieser drei Zeilen hat ihren Grund im Soll:
+
+     EIN Satz - zwei sind ein Absatz, und ein Absatz wird nicht
+     weitererzaehlt. Gezaehlt werden Satzzeichen, die einen Satz BEENDEN,
+     und der Gedankenstrich zaehlt nicht: „Chile ist lang — sehr lang."
+     ist ein Satz mit Einschub, keine zwei.
+
+     Der NAME - „dort ist es warm" haengt an nichts. Geprueft wird gegen
+     den Namen aus dem Vorrat, in beiden Richtungen: „Ägypten" steht in
+     „In Ägypten ...", und „DR Kongo" in „In der DR Kongo ...".
+
+     Die LAENGE - Fiona liest nicht, sie hoert. 110 Zeichen sind rund
+     sieben Sekunden Sprechzeit; laenger haengt der Satz hinter dem Lob
+     und dem Aufkleber, und das Kind tippt laengst weiter. */
+  const zuViele = gebiete.filter(g => {
+    const t = S.satzZu(g.id);
+    return t && (t.match(/[.!?](\s|$)/g) || []).length !== 1;
+  });
+  pruefe(!zuViele.length, `${zuViele.length} Sätze bestehen nicht aus genau einem Satz: `
+    + zuViele.slice(0, 3).map(g => `${g.name} („${S.satzZu(g.id)}")`).join(' · '));
+
+  /* Der Vergleich laesst die BEUGUNG durch.
+     „Das Vereinigte Königreich" ist derselbe Name wie „Vereinigtes
+     Königreich" - und der einzige Satz, den die strenge Fassung gemeldet
+     hat. Ein Satz, der den Namen richtig beugt, nennt ihn; ein Tor, das
+     ihn deshalb verwirft, erzwingt schlechtes Deutsch. Abgeschnitten wird
+     je Wort eine deutsche Adjektivendung, auf BEIDEN Seiten - „Vereinigte"
+     und „Vereinigtes" werden zu „Vereinigt", „Königreich" bleibt.
+     Namen ohne Beugung (Ägypten, Kuba, DR Kongo) sind davon unberuehrt. */
+  const stamm = (t) => t.toLowerCase().replace(/\b(\w{4,}?)(?:e|er|es|en|em)\b/g, '$1');
+  const ohneNamen = gebiete.filter(g => {
+    const t = S.satzZu(g.id);
+    return t && !stamm(t).includes(stamm(g.name));
+  });
+  pruefe(!ohneNamen.length, `${ohneNamen.length} Sätze nennen ihr Gebiet nicht beim Namen: `
+    + ohneNamen.slice(0, 3).map(g => `${g.name} („${S.satzZu(g.id)}")`).join(' · '));
+
+  const LAENGE = 110;
+  const lang = gebiete.filter(g => (S.satzZu(g.id) || '').length > LAENGE);
+  pruefe(!lang.length, `${lang.length} Sätze sind länger als ${LAENGE} Zeichen und damit `
+    + `zu lang zum Vorlesen: ${lang.slice(0, 3).map(g =>
+      `${g.name} (${S.satzZu(g.id).length})`).join(' · ')}`);
+
+  const zeichen = gebiete.map(g => (S.satzZu(g.id) || '').length);
+  console.log(`    ${gebiete.length} Gebiete, alle mit genau einem Satz — `
+    + `${Math.min(...zeichen)} bis ${Math.max(...zeichen)} Zeichen `
+    + `(im Mittel ${Math.round(zeichen.reduce((a, b) => a + b, 0) / zeichen.length)})`);
+}
+
 console.log('\n  Tor `topologie`');
 // Erwartete Teile und Loecher - aus der Wirklichkeit, nicht aus den Daten.
 const ERWARTET = {

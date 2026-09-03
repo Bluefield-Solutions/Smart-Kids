@@ -767,6 +767,61 @@ export const PROBEN = [
     an:{ datei:'tor/smoke.mjs', text:"'.schirm.da .kacheln', { timeout: 1 }" },
     sagt:'Timeout' },
 
+  /* --- D3: der Satz zum Mitnehmen ------------------------------------
+   *
+   * Vier Zusagen, vier Proben. Drei davon stellen einen Zustand her, in
+   * dem das Spiel WEITER FUNKTIONIERT - der Satz fehlt einfach, und
+   * `lobsatz` laesst die Zeile weg. Auf dem Bildschirm ist dann nichts
+   * zu sehen, was ein Fehler waere: genau die Sorte, gegen die es Tore
+   * gibt.
+   */
+
+  /* 1. Ein Gebiet verliert seinen Satz. `inhalt` zaehlt die Luecken. */
+  { n:'ein Gebiet hat keinen Satz zum Mitnehmen', tor:'inhalt', deckt:'saetze',
+    datei:'src/inhalt/saetze.js',
+    such:"  EGY: 'In Ägypten stehen die Pyramiden, und dort fließt der Nil.',",
+    ersatz:'',
+    an:{ datei:'src/inhalt/saetze.js', fehlt:'In Ägypten stehen die Pyramiden' },
+    sagt:'ohne Satz zum Mitnehmen' },
+
+  /* 2. Ein Satz wird zu einem Absatz. Zwei Saetze werden nicht
+   *    weitererzaehlt - das ist das ganze Soll, und es ist zaehlbar. */
+  { n:'aus einem Satz zum Mitnehmen werden zwei', tor:'inhalt', deckt:'saetze',
+    datei:'src/inhalt/saetze.js',
+    such:"  CUB: 'Kuba ist die größte Insel der Karibik.',",
+    ersatz:"  CUB: 'Kuba ist die größte Insel der Karibik. Dort ist es warm.',",
+    an:{ datei:'src/inhalt/saetze.js', text:'Dort ist es warm' },
+    sagt:'nicht aus genau einem Satz' },
+
+  /* 3. Der Satz nennt sein Gebiet nicht mehr beim Namen. „Dort ist es
+   *    warm" haengt an nichts - und haengt damit auch nicht an dem, was
+   *    gerade gelernt wurde. */
+  { n:'ein Satz zum Mitnehmen nennt sein Gebiet nicht', tor:'inhalt', deckt:'saetze',
+    datei:'src/inhalt/saetze.js',
+    such:"  PRY: 'Paraguay hat kein Meer.',",
+    ersatz:"  PRY: 'Dieses Land hat kein Meer.',",
+    an:{ datei:'src/inhalt/saetze.js', text:"PRY: 'Dieses Land hat kein Meer.'" },
+    sagt:'nicht beim Namen' },
+
+  /* 4. Und der Weg bis zum Kind. Der Satz steht in der Tabelle, wird aber
+   *    nicht mehr hingeschrieben - fuer Lea ist er dann weg, fuer Fiona
+   *    ebenso, und `inhalt` sieht davon nichts: die Tabelle ist ja heil. */
+  { n:'der Satz zum Mitnehmen kommt nicht auf den Bildschirm', tor:'smoke',
+    args:['--nur=spielen'], bauen:true, datei:D,
+    such:'          nebenbei || Saetze.satzZu(ziel.id) || \x27\x27, neuerAufkleber);',
+    ersatz:'          nebenbei, neuerAufkleber);',
+    an:{ ...DIST, fehlt:'nebenbei || Saetze.satzZu(ziel.id)' },
+    sagt:'steht nicht auf dem Bildschirm' },
+
+  /* 5. ... und der andere Weg: er steht da, wird aber nicht gesprochen.
+   *    Fiona liest nicht; fuer sie ist er damit gar nicht da. */
+  { n:'der Satz zum Mitnehmen wird nicht gesprochen', tor:'smoke',
+    args:['--nur=spielen'], bauen:true, datei:D,
+    such:"          + (mitnehmen ? ` ${mitnehmen}` : ''));",
+    ersatz:"          );",
+    an:{ ...DIST, fehlt:'(mitnehmen ? ` ${mitnehmen}`' },
+    sagt:'wird nicht gesprochen' },
+
   /* Q42: die Ratsche auf das blinde Warten.
    *
    * Der Rauchtest wartete an dreizehn Stellen eine feste Zeit, egal ob

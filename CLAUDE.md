@@ -178,7 +178,7 @@ npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
                    Messer selbst.
 ```
 
-Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
+Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
 `schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·

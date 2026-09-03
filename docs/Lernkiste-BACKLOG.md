@@ -3379,3 +3379,56 @@ Reiter, der die Seite gar nicht austauscht, grün durchgekommen: die Marke
 wandert, sechs Reiter stehen da, und darunter immer dasselbe. Genau das
 stellt eine der drei neuen Gegenproben her, und sie hat diese Lücke
 gefunden, bevor jemand sie hätte haben können.
+
+## D3 erledigt (D3): ein Satz zum Mitnehmen — 91 Gebiete, 91 Sätze
+
+**Referenzabgleich** (Schritt 0, ausführlich in `src/inhalt/saetze.js`):
+
+| Vorbild | was es **tut** | was übernommen wurde |
+|---|---|---|
+| **Kinder-Weltatlas** | ein Kasten mit fünf Zahlen je Land: Fläche, Einwohner, Hauptstadt, Währung, Sprache. Er macht das Land *nachschlagbar*. | **nichts** — das ist die Gegenlage. Fünf Zahlen behält niemand. |
+| **Sammelkarte** (Panini, Pokémon) | auf der Rückseite steht **ein** Satz, und immer dieselbe Sorte: das Besondere. Das ist die Währung auf dem Schulhof — „weißt du, dass …". | **ein** Satz, und er handelt vom Besonderen. |
+| **„Wissen macht Ah!" / Sendung mit der Maus** | erklärt nie ein Land, erzählt eine Sache: der Nil fließt nach *Norden*. Anschaulich statt vollständig. | **anschaulich vor vollständig** — lieber ein Stiefel als eine Einwohnerzahl. |
+
+**Das Soll, daraus abgeleitet — und jedes Stück gemessen** (`inhalt` → Tor
+`saetze`, neun statt acht Prüfungen):
+
+- **jedes** gespielte Gebiet hat einen. Einer, der nur bei den berühmten
+  Ländern kommt, ist eine Auszeichnung für manche und eine Lücke für die
+  anderen — und Fiona spielt Australien.
+- **genau einer**. Zwei sind ein Absatz, und ein Absatz wird nicht
+  weitererzählt. Gezählt werden satzbeendende Zeichen; der Gedankenstrich
+  zählt nicht.
+- er nennt das Gebiet **beim Namen**. „Dort ist es warm" hängt an nichts.
+- er ist **kurz genug zum Sprechen**: höchstens 110 Zeichen. Gemessen: 23
+  bis 104, im Mittel 57.
+
+Was *nicht* darin steht: Einwohnerzahlen, Währungen, Hauptstädte. Die
+Hauptstadt ist eine eigene Ebene; sie hier noch einmal zu nennen wäre
+dieselbe Auskunft an zwei Stellen (Regel 6).
+
+**Und der Weg bis zum Kind wird getrennt geprüft.** Dass es einen Satz
+*gibt*, ist die eine Hälfte; dass er ankommt, die andere, und die hat drei
+Stationen: `satzZu` findet ihn, `lobsatz` schreibt ihn hin, `sagen` spricht
+ihn. Der Rauchtest misst an **beiden Enden**, weil zwei Kinder gemeint sind
+— Lea liest ihn, Fiona hört ihn. Gemessen: **12 von 12** Treffern auf dem
+Bildschirm *und* gesprochen. Darunter die Blindprobe: springt die Prüfung
+bei weniger als zwei Aufgaben überhaupt an, kommt die Satztabelle im Bau
+gar nicht an, und „kein Befund" beweist nichts (Regel 1).
+
+**Eine Beugungsregel, die das Tor lernen musste.** „Das Vereinigte
+Königreich" ist derselbe Name wie „Vereinigtes Königreich" — der strenge
+Vergleich hat genau diesen einen Satz verworfen. Ein Tor, das einen Satz
+ablehnt, weil er den Namen richtig beugt, erzwingt schlechtes Deutsch.
+Abgeschnitten wird jetzt je Wort eine deutsche Adjektivendung, auf **beiden**
+Seiten; Namen ohne Beugung (Ägypten, Kuba, DR Kongo) bleiben unberührt.
+
+**Offen, und ehrlich als offen notiert:** der Satz nimmt auf dem
+Lob-Bildschirm eine Zeile, und alles darunter rückt nach — im
+Abweichungsbild von `ansicht` ist die ganze Karte verschoben. Ob das für
+ein Kind spürbar ist, ist **nicht gemessen**: mein Messversuch hat den
+Lob-Zustand gar nicht erreicht und deshalb etwas anderes gemessen, und eine
+Zahl, die aus dem falschen Zustand kommt, ist keine (Regel 5). Der
+Bildvergleich ist erneuert, `passt` ist grün — es fällt nichts vom Rand.
+Was aussteht, ist die Messung, ob die Karte zwischen Frage und Lob springt,
+und ob die Zeile dafür freigehalten werden sollte.

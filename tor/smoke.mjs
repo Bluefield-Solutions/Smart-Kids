@@ -1122,6 +1122,10 @@ else if (gewaehlt)
 /* --- Durchgang 1: spielen und ablegen --------------------------------- */
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 let geloest = [];
+/* Aussen, nicht im Abschnitt: die Bilanz steht ganz unten, und ein `let`
+   im Block waere dort nicht mehr da. Der erste Anlauf stand drinnen und
+   ist beim ersten Lauf mit „satzGesehen is not defined" gescheitert. */
+let satzGesehen = 0, satzAngekommen = 0;
 const sternVerlauf = [], bandVerlauf = [];
 /* Jede fremde Adresse, die im ganzen Lauf angefragt wurde. Ein Satz und
    kein Zaehler: bei einem Befund will man wissen WOHIN. */
@@ -1189,6 +1193,37 @@ if (laeuft('spielen')) try {
       });
       sternVerlauf.push({ runde, n: kopf.sterne });
       bandVerlauf.push(kopf.band.join(' '));
+      /* Der Satz zum Mitnehmen (D3) - kommt er wirklich an?
+       *
+       * `inhalt` prueft, dass es zu jedem Gebiet einen gibt. Das ist die
+       * eine Haelfte; die andere ist, dass er den WEG bis zum Kind geht,
+       * und der hat drei Stationen: `satzZu` findet ihn, `lobsatz`
+       * schreibt ihn hin, `sagen` spricht ihn. Jede kann still ausfallen -
+       * und ein Satz, der nur in einer Tabelle steht, ist keiner.
+       *
+       * Gemessen wird an BEIDEN Enden, weil zwei Kinder gemeint sind: Lea
+       * liest ihn, Fiona hoert ihn. Und gemessen wird gegen die Tabelle
+       * im gebauten Bildschirm, nicht gegen eine Liste hier - sonst
+       * haenge das Modell am Gemessenen und der Abschnitt pruefte seine
+       * eigene Annahme (Regel 14). */
+      const mitgenommen = await p.evaluate(() => {
+        const s = document.querySelector('.schirm.da');
+        const soll = typeof Saetze === 'undefined' ? null
+          : Saetze.satzZu(s.querySelector('path.geb.treffer')?.dataset.id || '');
+        return { soll, steht: s.querySelector('.frage .nebenbei')?.textContent.trim() || '',
+                 gesagt: (window.__gesagt || []).join(' | ') };
+      });
+      if (mitgenommen.soll) {
+        satzGesehen++;
+        if (mitgenommen.steht !== mitgenommen.soll)
+          merke('spielen', new Error(`der Satz zum Mitnehmen steht nicht auf dem Bildschirm — `
+            + `erwartet „${mitgenommen.soll}", da steht „${mitgenommen.steht || '(nichts)'}"`));
+        else if (!mitgenommen.gesagt.includes(mitgenommen.soll))
+          merke('spielen', new Error(`der Satz zum Mitnehmen wird nicht gesprochen — `
+            + `Fiona liest nicht, für sie ist er damit gar nicht da (gesagt: `
+            + `„${mitgenommen.gesagt.slice(-90)}")`));
+        else satzAngekommen++;
+      }
       /* Die Fahne wird MIT dem Lob gezeichnet, aber nicht im selben Bild:
        * `loese()` wartet auf das Lob, die Fahne kommt einen Anzeigeschritt
        * spaeter. Gewartet wird auf DIESE Fahne, nicht auf irgendeine.
@@ -5585,6 +5620,20 @@ else if (ueberblendung > UEBERBLENDUNG_MAX)
  * Forderung war nicht falsch, sie gehoerte nur woandershin (Regel 5).
  */
 console.log(`  Gelöst im ersten Durchgang: ${geloest.join(', ')}`);
+/* Und die Blindprobe unter der D3-Prüfung.
+ *
+ * Sie greift nur bei einem Gebiet, das einen Satz HAT - sonst gäbe es
+ * nichts zu vergleichen. Genau das ist ihre Schwachstelle: verschwindet
+ * die Satztabelle aus dem Bau, findet `satzZu` nirgends etwas, die
+ * Prüfung springt kein einziges Mal an, und der Abschnitt bleibt grün.
+ * Zwölf Aufgaben auf der Deutschlandkarte, sechzehn Bundesländer, alle
+ * mit Satz - unter zwei Treffern stimmt etwas nicht (Regel 1). */
+if (satzGesehen < 2)
+  merke('spielen', new Error(`der Satz zum Mitnehmen wurde bei ${satzGesehen} von `
+    + `${geloest.length} gelösten Aufgaben überhaupt geprüft — dann beweist „kein Befund" `
+    + 'hier nichts: die Satztabelle kommt im Bau gar nicht an'));
+else console.log(`  Satz zum Mitnehmen:         bei ${satzAngekommen} von ${satzGesehen} `
+  + 'Treffern auf dem Bildschirm und gesprochen');
 const jeRunde = [...new Set(sternVerlauf.map(x => x.runde))]
   .map(r => sternVerlauf.filter(x => x.runde === r).map(x => x.n));
 console.log(`  Sterne im Kopf:             ${jeRunde.map(r => r.join('→')).join('   |   ')}`
