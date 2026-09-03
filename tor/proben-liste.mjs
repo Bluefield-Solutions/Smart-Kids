@@ -1859,12 +1859,29 @@ export const PROBEN = [
    *
    * Dann rollt das Buch auf dem Zielgeraet schon beim zweiten Aufkleber,
    * und die Vorschau steht halb unter dem Rand. */
-  { n:'das Buch rollt wieder beim zweiten Aufkleber', tor:'smoke', args:['--nur=ablage'],
-    bauen:true, datei:V,
-    such:'  .kleber.gross .aufkleber svg{height:64px}',
-    ersatz:'  .kleber.gross .aufkleber svg{height:112px}',
-    an:{ ...DIST, text:'.kleber.gross .aufkleber svg{height:112px}' },
-    sagt:'unter dem Rand' },
+  /* Umbenannt in Q35: die Probe hiess „das Buch rollt wieder beim zweiten
+   * Aufkleber" und zeigte damit auf einen Stellvertreter, den es nicht
+   * mehr gibt. Gemessen wird jetzt, ob ein ganzer Block erst UNTER der
+   * Unterkante anfaengt. Der Eingriff ist derselbe geblieben - er macht
+   * die Kleber so hoch, dass die Vorschau vom Bildschirm faellt. */
+  { n:'ein Block im Buch fängt erst unter der Unterkante an', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:V,
+    /* Gedreht wird an der ALBUMKARTE, nicht an der Kleberhoehe (Q35).
+     *
+     * Die alte Fassung machte `.kleber.gross .aufkleber svg` hoeher - und
+     * das aendert im Buch dieses Tors gar nichts: dort stehen
+     * Rechenkleber, und ein Rechenkleber hat kein `svg`, er IST die
+     * Aufgabe (siehe `kleber` in spiel.js). Der Eingriff kam an, das Bild
+     * blieb gleich, und die Probe bezeugte nichts. Nachgemessen: 341
+     * Punkte mit 64 wie mit 112.
+     *
+     * Die Albumkarte ist das eine Bild in diesem Buch. Waechst sie auf
+     * 300 Punkte, rutscht alles darunter vom Bildschirm - genau der
+     * Zustand, den die Pruefung meint. */
+    such:'  .albumkarte svg{height:96px}',
+    ersatz:'  .albumkarte svg{height:300px}',
+    an:{ ...DIST, text:'.albumkarte svg{height:300px}' },
+    sagt:'unter der Unterkante' },
 
   /* Der leere Kopf nimmt wieder 68 Punkte weg.
    *
@@ -2392,9 +2409,9 @@ export const PROBEN = [
      und faellt durch die Bildmessung. */
   { n:'die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße',
     tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
-    such:'  .rollen.buch:not(:has(.albumkarte ~ .albumkarte)) .albumkarte svg{height:125px}',
+    such:'  .rollen.buch:not(:has(.albumkarte ~ *)) .albumkarte svg{height:125px}',
     ersatz:'',
-    an:{ ...DIST, fehlt:'.albumkarte ~ .albumkarte)) .albumkarte svg' },
+    an:{ ...DIST, fehlt:'.albumkarte ~ *)) .albumkarte svg' },
     sagt:'Albumkarte ist auf' },
 
   /* --- Der Gleichlauf (Q29) -------------------------------------------

@@ -1723,14 +1723,34 @@ if (laeuft('ablage')) try {
      * das gestern gespielt hat.
      */
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
-    const zweiLaender = await q.evaluate(() => {
-      const st = {};
+    /* Zwei Laender UND eine halbe Rechenebene (Q35).
+     *
+     * Bis hierher stand hier nur `bundeslaender`, und das Buch zeigte
+     * daraufhin GENAU EINE Karte: seit Q28 fasst eine Ebene MIT Landkarte
+     * ihre Aufkleber zu einer Albumkarte zusammen, auf der die gekonnten
+     * Gebiete farbig liegen. Schoen - aber damit hatte die Ueberlaufprobe
+     * darunter nichts mehr zu messen, und die stehende Gegenprobe „das
+     * Buch rollt wieder beim zweiten Aufkleber" bewies seitdem nichts.
+     * Nachgemessen: sechs statt zwei gepflanzte Laender aendern die Zahl
+     * der Karten nicht, sie bleibt eins.
+     *
+     * Einzelne Aufkleber gibt es nur bei einer Ebene OHNE Landkarte -
+     * Rechnen, Buchstaben. Fuenf von hundert gekonnt heisst: fuenf Kleber
+     * im Buch, und weil noch etwas offen ist, steht darunter auch die
+     * blasse Vorschau. Erst damit sieht dieses Tor ein Buch, wie ein Kind
+     * es sieht. */
+    const gepflanzt = await q.evaluate(() => {
+      const bl = {}, re = {};
       const D = JSON.parse(document.getElementById('daten').textContent);
-      D.deutschland.slice(0, 2).forEach((x, i) => st[x.id] = { fach: i ? 3 : 5,
+      D.deutschland.slice(0, 2).forEach((x, i) => bl[x.id] = { fach: i ? 3 : 5,
         hoechstes: i ? 3 : 5, faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
-      return st;
+      const vorrat = Rechnen.vorrat();
+      vorrat.slice(0, 3).forEach(x => re[x.id] = { fach: 5, hoechstes: 5,
+        faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 });
+      return { bl, re, ganz: vorrat.length };
     });
-    await stelleAblage(q, { fortschritt: { 'fiona:bundeslaender': zweiLaender } });
+    await stelleAblage(q, { fortschritt: { 'fiona:bundeslaender': gepflanzt.bl,
+      'fiona:rechnen:plusminus': gepflanzt.re } });
     await q.reload();
     await q.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
     await q.click('[data-profil="fiona"]');
@@ -1740,33 +1760,113 @@ if (laeuft('ablage')) try {
     await q.click('#buch');
     await q.waitForSelector(BUCHKARTE);
     await bis(q, () => !!document.querySelector('.schirm.da .rollen'), 4000);
+    /* Und WARTEN, bis der alte Bildschirm weg ist (Q35).
+     *
+     * Bis hierher wurde gemessen, sobald `.rollen` im Baum stand - mitten
+     * in der Ueberblendung. Auf dem Bild lagen dann zwei Bildschirme
+     * uebereinander, die Ebenenwahl noch halb sichtbar, und `scrollHeight`
+     * war die Summe von beidem: 794 Punkte statt 318. Der Befund „das Buch
+     * rollt" haette also die Ueberblendung gemeldet, nicht das Buch.
+     *
+     * Gewartet wird auf die SACHE, nicht auf eine Zahl von Millisekunden:
+     * der sichtbare Bildschirm muss ganz da sein und kein zweiter daneben
+     * stehen - dieselbe Frage, die `lesbarkeit` vor jeder Aufnahme stellt. */
+    await bis(q, () => {
+      const alle = [...document.querySelectorAll('.schirm')];
+      const da = alle.filter(e => getComputedStyle(e).opacity !== '0'
+        && getComputedStyle(e).display !== 'none');
+      return da.length === 1 && getComputedStyle(da[0]).opacity === '1';
+    }, 4000);
     const b = await q.evaluate(() => {
       const r = document.querySelector('.schirm.da .rollen');
       const karten = [...document.querySelectorAll('.schirm.da .aufkleber, .schirm.da .albumkarte')];
       return { da: karten.length,
                // Ein Gebiet MUSS einen Umriss zeigen. Der Rechenkasten ist
                // die Notdarstellung, und sein Inhalt war hier „undefined".
-               ohneUmriss: karten.filter(k => !k.querySelector('svg path')).length,
+               // ... AUSSER den Rechenklebern: die haben von Haus aus
+               // keinen (der Aufkleber IST die Aufgabe, siehe `kleber` in
+               // spiel.js). Ohne diese Ausnahme meldete die Pruefung acht
+               // von neun Karten als umrisslos, sobald das Buch endlich
+               // eine Rechenebene enthielt (Q35).
+               ohneUmriss: karten.filter(k => !k.classList.contains('rechnen')
+                 && !k.querySelector('svg path')).length,
+               rechenkleber: karten.filter(k => k.classList.contains('rechnen')).length,
+               blass: karten.filter(k => !k.classList.contains('da')).length,
                undef: karten.filter(k => /undefined/.test(k.textContent)).length,
-               sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight) };
+               sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight),
+               /* Wieviel ist von jedem Block ueberhaupt zu sehen?
+                *
+                * Nicht „liegt sein Anfang unter der Kante" - dann genuegen
+                * zwei Punkte Rand, um als sichtbar zu gelten, und die
+                * Gegenprobe fiel genau in diese Luecke: mit doppelt hohen
+                * Klebern begann die Vorschau zwei Punkte ueber der
+                * Unterkante und das Tor blieb still. Gemessen wird der
+                * ANTEIL, den ein Block zeigt - anteilig an seiner eigenen
+                * Hoehe (Regel 2), damit ein grosser Block nicht mit
+                * demselben Saum durchkommt wie ein kleiner. */
+                anteile: [...r.children]
+                  .map(e => ({ e, k: e.getBoundingClientRect() }))
+                  .filter(x => x.k.height > 2)
+                  .map(x => ({
+                    was: x.e.className.split(' ')[0]
+                      + ' „' + (x.e.textContent || '').trim().slice(0, 24) + '"',
+                    anteil: Math.max(0, Math.min(x.k.bottom, r.getBoundingClientRect().bottom)
+                      - x.k.top) / x.k.height })) };
     });
     if (b.ohneUmriss)
       merke('forscherbuch', new Error(`${b.ohneUmriss} von ${b.da} Karten im Buch zeigen `
         + 'keinen Umriss — das Buch wurde geöffnet, bevor die Geometrie geladen war'));
     if (b.undef)
       merke('forscherbuch', new Error(`auf ${b.undef} Karten im Buch steht „undefined"`));
-    console.log(`  Buch auf dem Zielgerät:     ${b.da} Karten mit Umriss, ${b.ganz} Punkte `
-      + `Inhalt in ${b.sichtbar} sichtbaren`);
-    // Die Grenze ist die Zahl der Karten, nicht eine Punktzahl: acht Karten
-    // passen auf 844 x 390 in zwei Reihen, und so lange soll nichts unter
-    // dem Rand stehen.
-    if (b.da <= 8 && b.ganz > b.sichtbar + 2)
-      merke('forscherbuch', new Error(`das Buch rollt schon bei ${b.da} Karten `
-        + `(${b.ganz} Punkte Inhalt, ${b.sichtbar} sichtbar) — die Vorschau steht halb `
-        + 'unter dem Rand'));
-    if (b.da > 8)
-      merke('forscherbuch', new Error(`${b.da} Karten im Buch — die Prüfung greift `
-        + 'nicht mehr, sie prüft nur ein fast leeres Buch'));
+    console.log(`  Buch auf dem Zielgerät:     ${b.da} Karten (${b.rechenkleber} Rechenkleber, `
+      + `${b.blass} blass), ${b.ganz} Punkte Inhalt in ${b.sichtbar} sichtbaren`);
+    /* Und die Blindprobe darunter, die hier gefehlt hat (Q35).
+     *
+     * Nach oben war sie da: ueber acht Karten sagt die Pruefung selbst,
+     * dass sie nicht mehr greift. Nach UNTEN nicht - und genau dorthin ist
+     * sie gefallen. Seit Q28 fasst eine Ebene mit Landkarte ihre Aufkleber
+     * zu EINER Albumkarte zusammen; das Buch hatte damit eine einzige
+     * Karte, konnte nicht rollen, und die Ueberlaufprobe war still. Drei
+     * Karten sind das Wenigste, bei dem „rollt es schon?" eine Frage ist.
+     *
+     * Und eine blasse muss dabei sein: die Vorschau „Als Nächstes" ist der
+     * einzige Ort, an dem ein Aufkleber OHNE `da` gezeichnet wird. Ohne
+     * sie steht die halbe Aufkleber-Gestaltung ungeprueft da - daran ist
+     * die Kontrastprobe im Tor `lesbarkeit` still geworden. */
+    if (b.da < 3)
+      merke('forscherbuch', new Error(`nur ${b.da} Karte${b.da === 1 ? '' : 'n'} im Buch — `
+        + 'dann beweist „es rollt nicht" nichts (Regel 1). Der gepflanzte Fortschritt '
+        + 'füllt das Buch nicht mehr'));
+    if (!b.blass)
+      merke('forscherbuch', new Error('keine einzige blasse Karte im Buch — dann ist der '
+        + 'offene Aufkleber hier nie gezeichnet worden, und was er zeigt, ist ungeprüft'));
+    /* Gemessen wird, ob etwas GANZ unter dem Rand steht - nicht, ob das
+     * Buch rollt (Q35).
+     *
+     * Hier stand: „bei hoechstens acht Karten darf nichts rollen", und
+     * acht Karten waren die zwei Reihen, die auf 844 x 390 passen. Diese
+     * Zahl war ein Stellvertreter fuer die Hoehe, und seit Q28 stimmt er
+     * nicht mehr: das Buch ist keine Kleberwand mehr, sondern eine Folge
+     * von Gruppen - Abzeichen, je Ebene eine Ueberschrift mit Albumkarte
+     * oder Kleberreihe, dazu die Vorschau. Sieben Karten koennen in vier
+     * Bloecken stehen und 341 Punkte hoch sein.
+     *
+     * Was ein Kind wirklich trifft, ist nicht das Rollen - ein Album darf
+     * rollen, es waechst ja. Es ist, dass ein ganzer Block UNSICHTBAR
+     * anfaengt: die Ueberschrift „Als Naechstes" auf der Unterkante und
+     * darunter nichts. Genau das war der Zustand vor dieser Runde, und
+     * genau das misst diese Zeile - an der Sache, nicht an einem
+     * Stellvertreter. */
+    /* Ein Viertel. Darunter ist ein Block ein Saum und keine Auskunft:
+     * bei der Kleberreihe waeren das 18 von 74 Punkten - der obere Rand
+     * der Karten, gerade genug, um zu sehen, DASS da etwas ist. */
+    const VIERTEL = 0.25;
+    const knapp = b.anteile.filter(x => x.anteil < VIERTEL);
+    if (knapp.length)
+      merke('forscherbuch', new Error(`${knapp.length} Block${knapp.length === 1 ? '' : 'e'} `
+        + `im Buch steht so gut wie ganz unter der Unterkante (${knapp.map(x =>
+          `${x.was} ${Math.round(x.anteil * 100)} %`).join(' · ')}) — davon sieht ein Kind `
+        + `nicht einmal einen Anfang (${b.ganz} Punkte Inhalt, ${b.sichtbar} sichtbar)`));
     await q.close();
   }
 

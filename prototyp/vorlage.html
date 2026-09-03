@@ -1826,6 +1826,50 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    * Schreibtisch gewaehlt (96 und 72 Punkte) und auf dem Telefon zu gross;
    * `passt` misst den Ueberlauf nicht, weil `.rollen` rollen DARF. */
   .kleber.gross .aufkleber svg{height:64px}
+  /* Und die Ueberschrift steht NEBEN ihrer Reihe, nicht darueber (Q35).
+   *
+   * Gemessen auf 844 x 390 mit fuenf Aufklebern in zwei Ebenen: 404 Punkte
+   * Inhalt in 318 sichtbaren - „Als Naechstes" stand als nackte
+   * Ueberschrift auf der Unterkante, die blassen Vorschaukleber darunter
+   * waren ganz weg. Ein Kind sieht eine Zeile und nichts dahinter.
+   *
+   * Uebereinander kostet jede Gruppe zweiundzwanzig Punkte allein fuer
+   * ihren Namen, und rechts neben der Albumkarte lagen dreihundert Punkte
+   * Weiss. Nebeneinander kostet sie nichts und benutzt die Breite, die das
+   * Querformat ohnehin hat: 143 + 74 + 74 statt 3 x 22 obendrauf.
+   *
+   * Das Raster passt, weil im Buch immer eine Ueberschrift und ein Block
+   * abwechseln. Der leere Fall („Hier kommen deine Aufkleber hin") ist
+   * KEIN Paar und bekommt deshalb beide Spalten. */
+  .rollen.buch{display:grid;grid-template-columns:minmax(110px,190px) 1fr;
+    align-items:center;column-gap:var(--r4);row-gap:var(--r2);align-content:start;
+    /* Der grosse Fuss unter `.rollen` ist fuer eine Liste gedacht, die
+       WIRKLICH rollt - er soll die letzte Zeile vom Rand loesen. Im Buch
+       auf dem kurzen Querformat sind es die letzten Punkte, die ueber
+       „rollt" oder „rollt nicht" entscheiden (gemessen 341 in 318). */
+    padding-bottom:var(--r3)}
+  /* Die Spalte wird GENANNT, nicht abgezaehlt.
+   *
+   * Erst stand hier nur das Raster und die Annahme, dass sich Ueberschrift
+   * und Block immer abwechseln. Sie stimmt nicht: `.abzkopf` („Deine
+   * Abzeichen") ist auf dem kurzen Querformat `display:none`, faellt aus
+   * der Platzierung heraus - und ab da lag jeder Block in der SCHMALEN
+   * Spalte. Gemessen: die Kleberreihe 190 statt 618 Punkte breit, drei
+   * Reihen statt einer, das Buch 794 Punkte statt 318. Sichtbar wurde es
+   * erst, als ein Profil mit Abzeichen im Spiel war.
+   *
+   * Mit ausgeschriebener Spalte ist es gleichgueltig, was dazwischen
+   * fehlt. */
+  .rollen.buch > .gruppe{margin:0;grid-column:1}
+  .rollen.buch > :not(.gruppe){grid-column:2}
+  /* Die Zaehlung auf eine eigene Zeile: in der schmalen Spalte brach sonst
+     „Bundeslaender 2 / Aufkleber, 1 davon sicher" mitten in der Zahl um. */
+  .rollen.buch > .gruppe small{display:block}
+  /* Und die Albumkarte an denselben linken Rand wie die Kleberreihen
+     darunter - sonst steht sie als einzige Karte mittig und die Spalten
+     springen. */
+  .rollen.buch > .albumkarte{justify-self:start;margin-inline:0}
+  .rollen.buch > .mitte{grid-column:1 / -1}
   /* Das Buch ist auf 844 x 390 randvoll - die Karte bekommt hier weniger
      Hoehe als der Platz auf dem Schreibtisch hergibt. Gerechnet: Kopf 60 +
      Abzeichen 60 + zweimal (Ueberschrift 28 + Karte + Polster 16) muessen
@@ -1849,7 +1893,12 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Wischstreifen 21, auf dem iPhone SE quer 6 - `passt` hat es an drei
      Groessen gemeldet, nachdem ich es an einer gemessen hatte. Der enge
      Fall ist nicht der, den man vor sich hat. */
-  .rollen.buch:not(:has(.albumkarte ~ .albumkarte)) .albumkarte svg{height:125px}
+  /* Q35: „einzige Karte" heisst NICHTS DAHINTER, nicht „keine zweite
+     Albumkarte". Sobald das Buch eine Rechenebene enthaelt, folgen auf die
+     Albumkarte noch zwei Kleberreihen samt Ueberschriften - dann ist der
+     Bildschirm nicht halbleer, und die 125 kosten genau die Punkte, die
+     der Vorschau unten fehlen (gemessen 370 in 318 sichtbaren). */
+  .rollen.buch:not(:has(.albumkarte ~ *)) .albumkarte svg{height:125px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *
