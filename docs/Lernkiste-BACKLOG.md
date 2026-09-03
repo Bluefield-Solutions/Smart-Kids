@@ -2978,3 +2978,41 @@ Vorschaukleber standen bei 2,22 : 1 statt 3 : 1.
 **Offen bleibt aus dieser Ecke nichts mehr** — außer dem, was der nächste
 nächtliche Lauf zeigt.
 
+
+---
+
+## Q39d offen: eine Probe, die hier anschlägt und dort nicht
+
+**Der Stand nach dieser Runde, gemessen am Lauf vom 03.09. (Nr. 7 auf
+`8ef3e6c`):**
+
+| Lauf | Befunde |
+|---|---|
+| Nr. 5, 02.09. (`af28aba`) | 21 |
+| Nr. 6, nach Q34 (`22332de`) | 14 |
+| Nr. 7, nach Q35/Q39b/Q39c (`8ef3e6c`) | **1** |
+
+`253 schlagen an, 1 beweisen nichts, 0 kamen nicht an, 12 ausgelassen.`
+
+Der eine, der bleibt: **„bei elf Kacheln bricht der Name wieder auf einen
+Buchstaben"** — `passt` bleibt auf dem Runner grün, obwohl der Fehler drin
+ist. **Auf diesem Rechner schlägt dieselbe Probe an** (nachgemessen in
+dieser Runde). Sie ist damit weder kaputt noch tot, sondern
+umgebungsabhängig — und das ist genau die Sorte Befund, die man nicht raten
+darf.
+
+Was zu klären ist, in dieser Reihenfolge:
+
+1. **Woran hängt der Umbruch?** Der Eingriff nimmt `padding` und
+   `letter-spacing` für elf Kacheln heraus; ob daraus ein einzelner
+   Buchstabe wird, entscheidet die Schriftmetrik. `passt` prüft mit
+   `schriftDa`, dass die eigene Schrift geladen ist — aber nicht, dass sie
+   *dieselbe* ist wie hier.
+2. **Oder hängt es am Zustand?** Elf Kacheln setzen elf offene Ebenen
+   voraus. Steht auf dem Runner ein anderes Profil, gibt es die elfte
+   Kachel nicht, und dann prüft die Probe eine Wand, die es nicht gibt.
+
+Nummer 2 ist billiger zu prüfen und deshalb zuerst: der Lauf müsste sagen,
+wie viele Kacheln er gesehen hat. Sagt er es nicht, ist das der erste
+Befund.
+
