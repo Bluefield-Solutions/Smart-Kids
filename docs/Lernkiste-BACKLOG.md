@@ -2790,13 +2790,18 @@ Der letzte Lauf (02.09., af28aba): **210 schlagen an, 21 beweisen nichts,
 | 8 | `smoke` | „ist schon OHNE Eingriff rot" — alle acht sind Farbmessungen (Streu, Profiltöne, Schildkröten, Totenköpfe) |
 | 1 | `ziehen` | „bleibt grün, obwohl der Fehler drin ist" (zwei Nadelköpfe rücken enger zusammen) |
 
-**Die ersten zwanzig sind eine Sache, und es ist Regel 16.** Die Auslieferung
+**Die ersten zwölf sind eine Sache, und es ist Regel 16.** Die Auslieferung
 fährt `npm run tor:runner`, also `SMARTKIDS_OHNE_ANSICHT=1` — dort ist
 `ansicht` ausdrücklich abgeschaltet, weil die Vorbilder auf diesem Rechner
 entstehen und der Runner anders rastert. `npm run proben` kennt diesen
 Schalter nicht und fährt `ansicht` mit. Jede Probe, die `ansicht` auslöst,
 findet es **vor** ihrem Eingriff schon rot und meldet zu Recht „beweist
-nichts". Dasselbe bei den acht Farbproben in `smoke`.
+nichts".
+
+> **Nachgetragen nach dem Lauf vom 03.09.:** hier stand „die ersten zwanzig",
+> und die acht Farbproben in `smoke` waren mitgezählt. Das war falsch. Sie
+> haben mit dem Runner nichts zu tun — siehe Q39b. Ich hatte zwei Gruppen
+> zusammengeworfen, weil sie in derselben Spalte standen.
 
 Das heißt: **die Auslieferung ist grün, weil sie wegsieht — und der
 Probenlauf ist rot, weil er hinsieht.** Beides beschreibt dieselbe Lücke.
@@ -2855,4 +2860,79 @@ jetzt übersprungen.
 **Offen bleibt Q39b:** die acht Farbproben in `smoke` und die eine in
 `ziehen`. Sie sind erst zu beurteilen, wenn der nächste nächtliche Lauf
 seine Begründung mitliefert.
+
+
+---
+
+## Q39b offen: eine Prüfung in `smoke`, die jeden Ausschnitt rot macht
+
+**Gemessen am Lauf vom 03.09. (Nr. 6, von Hand angestoßen auf `22332de`) und
+hier nachgestellt.** Von 21 Befunden sind 14 geblieben — und zehn davon haben
+**eine** Ursache, die mit dem Runner nichts zu tun hat.
+
+`smoke` prüft am Ende, ob der **Fremdgriff** überhaupt zum Zug kam:
+
+```
+✗ Der Fremdgriff hat keinen einzigen ruhenden Bildschirm gesehen —
+  dann beweist „nichts gefunden" nichts (Regel 1)
+```
+
+Das ist eine richtige Prüfung mit einem falschen Geltungsbereich. Sie zählt,
+was der ganze Lauf gesehen hat — und wird auch dann gestellt, wenn der Lauf
+gar nicht der ganze war. `npm run smoke -- --nur=streu` kommt an keinem
+ruhenden Bildschirm vorbei, also ist das Tor rot, **auf jeder Maschine**:
+
+```
+Fremdgriff geprüft:   0 ruhende Bildschirme (keine), 0 in Bewegung übersprungen
+```
+
+Nachgestellt auf dem Arbeitsrechner, nicht vermutet — dort steht dieselbe
+Zeile.
+
+**Was das gekostet hat:** zehn Gegenproben, die einen Abschnitt einzeln
+fahren (acht um den Streu, `der Fehlgriff auf der Karte wird nicht mehr
+benannt`, `der Hinweis zeigt in die falsche Richtung`), beweisen seitdem
+nichts. Sie melden es auch brav — nur stand der Grund bis Q34 nicht im
+Protokoll, und deshalb hat ihn fünf Nächte lang niemand gelesen. Die Torkette
+blieb grün, weil sie `smoke` in vier Teilen fährt und jeder Teil mehrere
+Abschnitte enthält.
+
+Die Prüfung direkt darunter macht es schon richtig:
+
+```js
+else if (!griffStand.arten.aufgabe && laeuft('spielen'))
+```
+
+— sie fragt erst, ob der Abschnitt überhaupt lief. Der ersten fehlt genau
+dieser Zusatz.
+
+**Zwei Wege.** Der Unterschied zwischen ihnen ist Regel 1: eine Prüfung,
+die nie etwas meldet, ist kein Beweis — und das gilt auch für die
+Nachfrage, ob sie überhaupt zum Zug kam.
+
+1. **Aus dem Gesehenen ableiten:** `geprueft === 0` ist nur dann ein Befund,
+   wenn der Lauf überhaupt Bildschirme zum Ruhen hatte — also wenn
+   `uebersprungen > 0`. Braucht keine Liste. Das Loch: bricht der Beobachter
+   selbst, stehen beide auf null und nichts schlägt an.
+2. **Den Abschnitt nennen**, wie die Prüfung darunter es tut. Dafür muss
+   erst **gemessen** werden, welche der vierzehn Abschnitte überhaupt einen
+   ruhenden Bildschirm erzeugen — je Abschnitt einmal `--nur=<name>` und die
+   Fremdgriff-Zeile ablesen. Eine Liste, die man errät, ist die falsche.
+
+Nummer 2, und die Messung gehört davor.
+
+**Die vier übrigen sind eine eigene Sache** und jede für sich: `smoke` /
+„das Buch rollt wieder beim zweiten Aufkleber", `lesbarkeit` / „die Deckung
+der Vorfahren zählt beim Kontrast nicht", `passt` / „bei elf Kacheln bricht
+der Name wieder auf einen Buchstaben", `ziehen` / „zwei Nadelköpfe rücken
+enger zusammen als bestätigt". Alle vier melden **TOR BLEIBT GRÜN** — das Tor
+lässt den eingebauten Fehler durch. Das ist der schwerste der drei Befundtypen
+und nichts an der Umgebung.
+
+**Und einer ist neu:** „Ein Teillauf hat kein Ergebnis hinterlassen
+(`.probenbaum-2.json`)". Ein Arbeiter ist abgestürzt, seine Proben sind
+ungeprüft. Ob das an der neuen Gegenprobe liegt, die `proben` selbst fährt
+(sie legt eine Wegwerf-Kopie **in** einer Wegwerf-Kopie an), ist die erste
+Frage — und die Antwort steht im Protokoll des nächsten Laufs, weil blinde
+Urteile ihre Ausgabe jetzt mitbringen.
 
