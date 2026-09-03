@@ -2592,13 +2592,25 @@ export const PROBEN = [
 
   /* Und die Blindprobe darueber: reicht die Umgebung auf KEINER Karte mehr
    * ins Randband, hat der Deckel nichts zu deckeln - das Tor waere gruen,
-   * ohne etwas geprueft zu haben. Eine Blende ueber die halbe Karte laesst
-   * in der Mitte reichlich Grau stehen (die Probe darunter bleibt also
-   * still) und raeumt genau das Band frei, um das es geht. */
-  { n:'die Blende frisst das ganze Randband', tor:'ziehen',
-    bauen:true, args:['--nur=rand'], datei:D,
-    such:'  const RANDBLENDE = 0.10;', ersatz:'  const RANDBLENDE = 0.6;',
-    an:{ ...DIST, text:'RANDBLENDE = 0.6;' },
+   * ohne etwas geprueft zu haben.
+   *
+   * Der Eingriff zieht das Sichtfeld weit auf. Die Umgebung sind echte
+   * Nachbarlaender und keine Flaeche ohne Ende: mit 250 statt 8 Einheiten
+   * Luft steht ueberall Papier zwischen ihnen und dem Rahmen. Genau der
+   * Fall, in dem der Deckel nichts mehr deckelt - und weil in der Mitte
+   * reichlich Grau bleibt (4,9 bis 11,2 %), schweigt die Probe darunter
+   * dabei.
+   *
+   * Eine breitere BLENDE waere der naheliegende Eingriff und der falsche:
+   * sie loescht auf Suedamerika den letzten Splitter Grau, und dann meldet
+   * die Blindprobe darunter - nicht diese. Nachgemessen, nicht vermutet. */
+  { n:'die Umgebung reicht auf keiner Karte mehr ins Randband', tor:'ziehen',
+    bauen:true, args:['--nur=rand'], datei:'tools/geo-backen.mjs',
+    such:'function sichtfeld(liste, rand = 8) {',
+    ersatz:'function sichtfeld(liste, rand = 250) {',
+    /* Angekommen ist es, wenn das Sichtfeld der Weltkachel nicht mehr
+     * dasteht - es haengt an derselben Zahl. */
+    an:{ ...DIST, fehlt:'"vb":"102.3 -8 820.6 444.8"' },
     sagt:'überhaupt bis ins Randband' },
 
   /* --- ansicht ------------------------------------------------------ */

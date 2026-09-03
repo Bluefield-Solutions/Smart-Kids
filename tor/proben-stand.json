@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-02",
+  "zeit": "2026-09-03",
   "tore": [
     "ansicht",
     "bauen",
@@ -182,9 +182,9 @@
       "s": 42
     },
     "die Lupenknöpfe liegen wieder auf der Karte": {
-      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
-      "zeit": "2026-09-02",
-      "s": 79
+      "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
+      "zeit": "2026-09-03",
+      "s": 81
     },
     "zwei Kacheln liegen aufeinander": {
       "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
@@ -917,9 +917,14 @@
       "s": 41
     },
     "die Umgebung endet wieder hart am Rahmen": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 44
+      "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
+      "zeit": "2026-09-03",
+      "s": 37
+    },
+    "die Umgebung ist unsichtbar, das Tor misst ein leeres Bild": {
+      "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
+      "zeit": "2026-09-03",
+      "s": 20
     },
     "die Karte wechselt die Farbe": {
       "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",
@@ -927,9 +932,9 @@
       "s": 24
     },
     "Grönland ist wieder nur Umgebung": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 27
+      "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
+      "zeit": "2026-09-03",
+      "s": 16
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
