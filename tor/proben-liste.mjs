@@ -2655,6 +2655,29 @@ export const PROBEN = [
    * Eine breitere BLENDE waere der naheliegende Eingriff und der falsche:
    * sie loescht auf Suedamerika den letzten Splitter Grau, und dann meldet
    * die Blindprobe darunter - nicht diese. Nachgemessen, nicht vermutet. */
+  /* Der Wettlauf zweier Bildschirmbauten (Q41).
+   *
+   * `zeige()` ist asynchron: `bau()` kann dauern. Ohne die Nummer je
+   * Aufruf raeumt der LANGSAMERE beim Fertigwerden alle bisherigen
+   * Bildschirme weg - auch den, den der schnellere danach schon
+   * hingestellt hat. Uebrig bleibt der Bildschirm, den niemand zuletzt
+   * wollte.
+   *
+   * Geprueft wird an der PROVOZIERTEN Stelle in `--nur=tippen`, nicht am
+   * langen Weg, an dem der Fehler gefunden wurde. Der lange Weg
+   * (`--teil=3/4`, zwoelffach gedrosselt) hat den Wettlauf nur in FUENF
+   * von sechs Laeufen ausgeloest - er muss sich zufaellig einstellen -,
+   * und eine staerkere Drossel half nicht (einmal von zweimal). Fuenf
+   * Minuten je Lauf kostete er obendrein. Der Rauchtest ruft `zeige`
+   * seit Q41 selbst zweimal auf und bestimmt die Reihenfolge: anderthalb
+   * Sekunden, und das Ergebnis faellt immer gleich aus. */
+  { n:'der langsamere Bildschirmbau räumt den schnelleren weg', tor:'smoke',
+    bauen:true, args:['--nur=tippen'], datei:D,
+    such:'    if (uhr) clearTimeout(uhr);\n    if (meins !== zeigeLauf) return;',
+    ersatz:'    if (uhr) clearTimeout(uhr);',
+    an:{ ...DIST, fehlt:'if (meins !== zeigeLauf) return;\n    // ALLE bisherigen' },
+    sagt:'hat den schnelleren weggeräumt' },
+
   /* Der Auslass selbst (Q39).
    *
    * Ohne ihn urteilt der naechtliche Lauf ueber ein Tor, das dort gar

@@ -3125,3 +3125,86 @@ Geduld, und diese Maschine ist heute langsamer als heute früh (Kette 180 bis
 230 s statt 132). Ob das die Maschine ist oder eine Stelle, die auf nichts
 wartet, sagt der nächste rote Lauf — und den kann man jetzt lesen.
 
+
+
+---
+
+## Q41 erledigt (Q41): der Klick, der 30 Sekunden wartete — und was dahinter lag
+
+Der Befund aus dem ersten nachlesbaren roten Lauf (Q40):
+
+```
+✗ durchgang: page.click: Timeout 30000ms exceeded.
+  waiting for locator('.schirm.da [data-z="0"]')
+```
+
+`[data-z="0"]` ist die **PIN-Tastatur** im Elternbereich.
+
+**Erstens, die Geduld.** `smoke` hängt seit Q25 jede *Wartefrist* an einen
+gemessenen Maschinenfaktor — die *Klicks* nicht: `page.click` bringt seine
+eigenen 30 s mit, und die sind fest. Derselbe Abschnitt allein gefahren
+braucht ein Sechstel der Zeit (fiona 9,9 s gegen 62,0 s im vollen Lauf).
+Dreißig Sekunden fest sind in beide Richtungen falsch: unter Last zu wenig,
+im Alltag eine halbe Minute Warten auf einen Knopf, der gar nicht kommt.
+
+Die Frist hängt jetzt am gemessenen Faktor, gedeckelt auf eine Minute —
+**ohne zweiten Anlauf**, und das ist der Unterschied zu den Wartefristen.
+Der erste Entwurf hat den Klick wie eine Wartefrist behandelt und zweimal
+angesetzt; ein Klick, der beim ersten Mal *angekommen* und nur in der
+Nachprüfung abgelaufen ist, tippt dann doppelt. Bei der PIN sind das fünf
+Ziffern statt vier. **Ein Klick ist nicht idempotent, eine Wartefrist
+schon.**
+
+**Zweitens, die Diagnose.** Ein Klick, der scheitert, sagt jetzt, wie es
+aussah — welche Bildschirme standen da, wo lag das Ziel, was lag darüber.
+Sie hat sofort geliefert:
+
+```
+Lage: {"schirme":["da:1"],"ziel":"steht nicht im Baum"}
+```
+
+Ein Bildschirm, voll da, kein Überblenden — die Tastatur war einfach schon
+**weg**. Damit war die naheliegende Vermutung (Überblendung, verdeckt) vom
+Tisch, ohne dass ich sie hätte prüfen müssen.
+
+**Drittens, und das ist die Sache selbst: eine Wettlaufstelle in der App.**
+`zeige()` ist asynchron. Ohne Vorkehrung räumt der **langsamere** Bau beim
+Fertigwerden alle bisherigen Bildschirme weg — auch den, den der schnellere
+danach schon hingestellt hat. Übrig bleibt der Bildschirm, den niemand
+zuletzt wollte. Auf einem schnellen Gerät fällt das nicht auf; auf einem
+langsamen Telefon ist es genau der Doppeltipp, den ein Kind macht, wenn
+nichts passiert. Eine Nummer je Aufruf genügt: **wer zuletzt gerufen wurde,
+gewinnt — nicht, wer zuerst fertig ist.**
+
+Gemessen mit zwölffach gedrosselter Seite, `--teil=3/4`: ohne den Wächter
+**3 von 3** rot, mit ihm grün.
+
+**Die Gegenprobe hat drei Anläufe gebraucht, und das ist der lehrreiche
+Teil.** Zuerst stand sie auf dem langen Weg, auf dem der Fehler gefunden
+wurde: `--teil=3/4`, zwölffach gedrosselt, fünf Minuten je Lauf. Gemessen:
+
+| Aufbau | schlägt an |
+|---|---|
+| `--teil=3/4`, Drossel 12 | **5 von 6** |
+| `--teil=3/4`, Drossel 20 | **1 von 3** — stärker hilft nicht, es wird schlechter |
+| `--nur=ablage`, Drossel 12 (dieselbe Klickfolge) | **0 von 4** |
+
+Der Wettlauf muss sich zufällig einstellen; er hängt am langen Weg mit einem
+gefüllten Profil, und mehr Drosselung macht ihn nicht sicherer. Eine Probe,
+die einmal von sechs Malen schweigt, macht den nächtlichen Lauf gelegentlich
+rot, ohne dass etwas kaputt ist — das ist dieselbe Sorte Rauschen wie ein
+Tor, das man wegerklären muss.
+
+**Also nicht abwarten, sondern provozieren.** `zeige` steht global
+(`spiel.js` wird als gewöhnliches Skript eingebettet). Der Rauchtest ruft es
+in `--nur=tippen` jetzt selbst zweimal auf — mit zwei Bauten, deren
+Reihenfolge er bestimmt: der zuerst gerufene braucht 400 ms, der zuletzt
+gerufene null. Danach muss der zuletzt gerufene dastehen und der andere
+gar nicht erst angekommen sein. Anderthalb Sekunden statt fünf Minuten, und
+das Ergebnis fällt immer gleich aus.
+
+*Und dabei ist mir noch ein eigener Fehler aufgefallen:* die erste Fassung
+suchte `.schirm.da #schnell` — einen **Nachfahren**. `zeige` hängt
+`.schirm.da` aber an das Element selbst. Die Prüfung war damit im ersten
+Anlauf immer rot, auch mit Wächter. Gefunden, weil ich sie zuerst gegen den
+gesunden Zustand gefahren habe.

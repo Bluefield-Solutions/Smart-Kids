@@ -247,6 +247,35 @@ const VORLESEN = (() => {
   return Object.fromEntries(z[1].split('|').map((t, i) => [ids[i], /\bja\b/i.test(t)]));
 })();
 
+/**
+ * Was auf dem Bildschirm stand, als der Klick nicht ankam (Q41).
+ *
+ * Drei Fragen, und jede hat schon einmal einen Lauf erklaert: standen ZWEI
+ * Bildschirme da (Ueberblendung), war das Ziel ueberhaupt im Baum, und lag
+ * etwas darueber? Sie kosten nichts - gefragt wird nur, wenn ohnehin
+ * gescheitert ist.
+ */
+async function mitLage(p, wahl, e) {
+  const kopf = String((e && e.message) || e).split('\n')[0];
+  const lage = await p.evaluate((w) => {
+    const schirme = [...document.querySelectorAll('.schirm')].map(x =>
+      `${x.classList.contains('da') ? 'da' : 'geht'}:${getComputedStyle(x).opacity}`);
+    const el = document.querySelector(w);
+    if (!el) return { schirme, ziel: 'steht nicht im Baum' };
+    const r = el.getBoundingClientRect();
+    const oben = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    const name = (x) => x ? `${x.tagName.toLowerCase()}${
+      x.id ? '#' + x.id : '.' + String(x.className || '').split(' ')[0]}` : 'nichts';
+    return { schirme,
+      ziel: `${Math.round(r.width)}×${Math.round(r.height)} bei `
+        + `${Math.round(r.left)}/${Math.round(r.top)}`,
+      deckung: getComputedStyle(el).opacity, zeiger: getComputedStyle(el).pointerEvents,
+      darueber: oben === el ? 'das Ziel selbst' : name(oben) };
+  }, wahl).catch(() => null);
+  return `${kopf} — beim Tippen auf ${wahl}. `
+    + (lage ? `Lage: ${JSON.stringify(lage)}` : 'Die Seite antwortet nicht mehr.');
+}
+
 async function neueSeite(viewport, ctx, flott = true) {
   /* `ctx.newPage()` nimmt KEINE Optionen.
    *
@@ -342,6 +371,49 @@ async function neueSeite(viewport, ctx, flott = true) {
       TAKT.hoechster = Math.max(TAKT.hoechster, TAKT.faktor);
       return lauf(TAKT.faktor);
     }
+  };
+  /* Und die KLICKS gehen durch dieselbe Stelle (Q41).
+   *
+   * Bis hierher hingen nur die Wartefristen an der gemessenen Nachsicht,
+   * die Klicks nicht: `page.click` bringt seine eigenen 30 s mit, und die
+   * sind fest. Genau daran ist ein Kettenlauf gescheitert -
+   * `page.click: Timeout 30000ms exceeded` auf `[data-z="0"]`, der
+   * PIN-Tastatur im Elternbereich -, waehrend derselbe Abschnitt ALLEIN
+   * gefahren in einem Sechstel der Zeit durchlaeuft: fiona 9,9 s gegen
+   * 62,0 s im vollen Lauf. Die Maschine war voll, nicht die App kaputt.
+   *
+   * Die Frist haengt jetzt am GEMESSENEN Faktor - aber OHNE zweiten
+   * Anlauf, und das ist der Unterschied zu den Wartefristen.
+   *
+   * Der erste Entwurf hat den Klick wie eine Wartefrist behandelt:
+   * kurze Frist, bei nachgewiesener Langsamkeit noch einmal. Gedrosselt
+   * gefahren (`SMARTKIDS_DROSSEL=12`) meldete er
+   *
+   *     page.click: Timeout 64000ms exceeded — beim Tippen auf
+   *     .schirm.da [data-z="0"]. Lage: {"schirme":["da:1"],
+   *     "ziel":"steht nicht im Baum"}
+   *
+   * und damit war es heraus: EIN Bildschirm, voll da, kein Ueberblenden -
+   * die Tastatur war einfach schon weg. Ein zweiter Anlauf auf einen
+   * Klick, der beim ersten Mal ANGEKOMMEN und nur in der Nachpruefung
+   * abgelaufen ist, tippt zweimal. Bei der PIN sind das fuenf Ziffern
+   * statt vier: nach der vierten wechselt der Bildschirm, und die
+   * fuenfte findet nichts mehr. Ein Klick ist nicht idempotent, eine
+   * Wartefrist schon.
+   *
+   * Also fuenfzehn Sekunden mal dem Faktor, den die WARTEfristen
+   * gemessen haben, gedeckelt auf eine Minute - und nur ein Versuch.
+   *
+   * Und wenn es dann nicht klappt, sagt der Befund, wie es aussah:
+   * welche Bildschirme standen da, wo lag das Ziel, was lag darueber. Ein
+   * „Timeout 30000ms exceeded" allein ist auf einem Runner, an den man
+   * nicht herankommt, keine Auskunft - dieselbe Lehre wie in Q40. */
+  const festClick = p.click.bind(p);
+  p.click = async (wahl, opt = {}) => {
+    const frist = Math.min(60000,
+      Math.round((opt.timeout ?? 15000) * Math.max(1, TAKT.faktor)));
+    try { return await festClick(wahl, { ...opt, timeout: frist }); }
+    catch (e) { throw new Error(await mitLage(p, wahl, e)); }
   };
   const festFn = p.waitForFunction.bind(p);
   const festSel = p.waitForSelector.bind(p);
@@ -2066,6 +2138,50 @@ if (laeuft('tippen')) try {
     null, { timeout: 4000 });
   console.log(`  Rechtschreibhinweis:        „${name.toLowerCase()}" → Großschreibung gemeldet`);
   await p.close();
+
+  /* Wer zuletzt GERUFEN wurde, gewinnt (Q41).
+   *
+   * `zeige()` ist asynchron. Ohne Vorkehrung raeumt der langsamere Bau
+   * beim Fertigwerden alle bisherigen Bildschirme weg - auch den, den der
+   * schnellere danach schon hingestellt hat. Uebrig bleibt der
+   * Bildschirm, den niemand zuletzt wollte.
+   *
+   * PROVOZIERT statt abgewartet, und das ist der Punkt. Gefunden wurde
+   * der Fehler ueber den langen Weg (`--teil=3/4`, zwoelffach gedrosselt,
+   * fuenf Minuten) - und die Gegenprobe dort schlug nur in fuenf von
+   * sechs Laeufen an, weil sich die Reihenfolge einstellen MUSS. Eine
+   * staerkere Drossel half nicht (einmal von zweimal). Hier dauert
+   * dieselbe Frage anderthalb Sekunden und faellt immer gleich aus: zwei
+   * Bauten, deren Reihenfolge dieses Tor selbst bestimmt.
+   *
+   * `zeige` steht global - `spiel.js` wird als gewoehnliches Skript
+   * eingebettet, nicht als Modul. */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.waitForSelector('[data-profil="fiona"]');
+    const wer = await q.evaluate(async () => {
+      const bau = (id, ms) => () => new Promise(r => setTimeout(() => {
+        const d = document.createElement('div'); d.id = id; r(d);
+      }, ms));
+      zeige(bau('langsam', 400));   // zuerst gerufen, zuletzt fertig
+      zeige(bau('schnell', 0));     // zuletzt gerufen, zuerst fertig
+      await new Promise(r => setTimeout(r, 1200));
+      /* `#schnell` IST der Bildschirm, nicht sein Kind: `zeige` haengt
+       * `.schirm.da` an das Element selbst. `.schirm.da #schnell` suchte
+       * einen Nachfahren und fand nie einen - die Pruefung war im ersten
+       * Anlauf immer rot, auch mit Waechter. */
+      const s = document.getElementById('schnell');
+      return { schnell: !!s && s.classList.contains('da'),
+               langsam: !!document.getElementById('langsam') };
+    });
+    if (!wer.schnell || wer.langsam)
+      merke('tippen', new Error('zwei Bildschirmwechsel kurz hintereinander: es steht '
+        + `${wer.langsam ? 'der ZUERST gerufene' : 'gar keiner'} da — der langsamere `
+        + 'Bau hat den schnelleren weggeräumt'));
+    else
+      console.log('  Zwei Wechsel auf einmal:    der zuletzt gerufene steht da');
+    await q.close();
+  }
 } catch (e) { merke('tippen', e); }
 
 /* --- Der Regler: kommt er bis in die Sitzung? -------------------------

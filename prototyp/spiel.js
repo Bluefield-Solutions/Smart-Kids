@@ -1754,18 +1754,38 @@ const wartezeichen = () => {
     aria-label="Wird geladen"><i></i><i></i><i></i></div></div>`;
   return w;
 };
+/* Wer zuletzt GERUFEN wurde, gewinnt - nicht, wer zuerst fertig ist.
+ *
+ * Zwei Aufrufe koennen sich ueberholen: `bau()` ist asynchron, und der
+ * langsamere raeumt beim Fertigwerden ALLE bisherigen Bildschirme weg -
+ * auch den, den der schnellere danach schon hingestellt hat. Uebrig
+ * bleibt der Bildschirm, den niemand zuletzt wollte.
+ *
+ * Gefunden mit `SMARTKIDS_DROSSEL=12` (zwoelffach gedrosselte Seite): auf
+ * „Zurueck" folgte sofort „Eltern", die PIN-Tastatur stand da, und im
+ * naechsten Augenblick war sie weg - der Weltenwahl-Bau war spaeter
+ * fertig geworden und hat sie mitgenommen. Auf einem schnellen Geraet
+ * faellt es nicht auf; auf einem langsamen Telefon ist es genau der
+ * Doppeltipp, den ein Kind macht, wenn nichts passiert.
+ *
+ * Eine Nummer je Aufruf genuegt. Der Bau eines ueberholten Aufrufs wird
+ * still verworfen - sein Bildschirm kommt gar nicht erst an die Buehne. */
+let zeigeLauf = 0;
 function zeige(bau){
+  const meins = ++zeigeLauf;
   const fertig = Promise.resolve(bau());
   /* Das Wartezeichen ist selbst ein `.schirm` - damit raeumt der Code
      unten es weg wie jeden anderen, und es kann nicht haengenbleiben. */
   let uhr = setTimeout(()=>{
     uhr = null;
+    if (meins !== zeigeLauf) return;
     const w = wartezeichen();
     buehne.appendChild(w);
     requestAnimationFrame(()=>w.classList.add('da'));
   }, WARTEZEICHEN_AB);
   fertig.then(neu=>{
     if (uhr) clearTimeout(uhr);
+    if (meins !== zeigeLauf) return;
     // ALLE bisherigen Bildschirme, nicht nur den sichtbaren. Wird zeige()
     // zweimal kurz hintereinander gerufen, bleibt sonst einer haengen -
     // im Elternbereich schimmerten drei Bildschirme uebereinander.
