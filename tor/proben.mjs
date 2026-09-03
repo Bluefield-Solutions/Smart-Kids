@@ -162,6 +162,21 @@ function uebermalen() {
         + 'siehst - und eine Probe, die eine andere Fassung prueft als die '
         + 'gemeinte, beweist nichts.');
     }
+    /* `node_modules` nicht - das ist der Zeiger, den dieses Werkzeug
+     * selbst legt.
+     *
+     * `.gitignore` haelt `node_modules/`, und dieses Muster trifft nur ein
+     * VERZEICHNIS. In der Wegwerf-Kopie steht dort ein Zeiger auf das
+     * Verzeichnis nebenan (siehe `kopieAufbauen`), und ein Zeiger ist fuer
+     * git eine Datei: er stand als „?? node_modules" in der Liste,
+     * `statSync` folgte ihm, hielt ihn fuer ein Verzeichnis und kopierte
+     * ihn auf sich selbst. Node bricht das mit ERR_FS_CP_EINVAL ab, und
+     * der ganze Lauf endet.
+     *
+     * Gemerkt hat es niemand, weil es nur auftritt, wenn `proben` IN einer
+     * Wegwerf-Kopie laeuft - also erst, seit eine Gegenprobe das Werkzeug
+     * selbst faehrt (Q39). */
+    if (fs.lstatSync(datei).isSymbolicLink()) { dazu.push(datei); continue; }
     /* Ein GANZES Verzeichnis, wenn git eines meldet.
      *
      * `git status --porcelain` fasst ein unbekanntes Verzeichnis zu EINER
@@ -557,6 +572,26 @@ if (!TEIL)
  * aufhalten, nicht sie durchwinken. */
 
 let ok = 0, blind = 0, nichtAngekommen = 0;
+/* Proben, die HIER nicht zu beweisen sind, werden ausgelassen - nicht
+ * abgeurteilt (Q39).
+ *
+ * Der Anlass: der naechtliche Lauf war fuenfmal gelaufen und fuenfmal rot,
+ * und zwoelf seiner einundzwanzig Befunde waren gar keine. `ansicht` ist
+ * auf dem Runner mit Absicht abgeschaltet (`SMARTKIDS_OHNE_ANSICHT=1`,
+ * Regel 16: die Vorbilder entstehen auf dem Arbeitsrechner, der Runner
+ * rastert anders). Jede Probe, die `ansicht` auslost, findet es dort VOR
+ * ihrem Eingriff schon rot und meldet voellig zu Recht „beweist nichts" -
+ * und sagt damit etwas ueber die Umgebung, nicht ueber die Probe.
+ *
+ * Ein Lauf, dessen Rot man wegerklaeren muss, wird nicht gelesen. Was hier
+ * nicht zu beweisen ist, wird deshalb ausgelassen, beim Namen genannt und
+ * getrennt gezaehlt - und es bekommt KEINEN Nachweis, altert also weiter,
+ * bis `rhythmus` es faellig macht. Ausgelassen heisst nicht erlassen. */
+const OHNE_ANSICHT = process.env.SMARTKIDS_OHNE_ANSICHT === '1';
+const nichtHier = (p) => (OHNE_ANSICHT && p.tor === 'ansicht')
+  ? '`ansicht` ist in dieser Umgebung abgeschaltet' : null;
+let ausgelassen = 0;
+const ausgelassenNamen = [];
 const befunde = [];
 /* WELCHE Proben angeschlagen haben - nicht wieviele.
  *
@@ -604,8 +639,14 @@ const istGesund = (p) => {
   // Laeufe.
   const schluessel = p.tor + ' ' + (p.args || []).join(' ') + (p.ohneSofort ? ' /voll' : '')
     + ' ' + umg(p);
-  if (!gesund.has(schluessel))
-    gesund.set(schluessel, lauf(p.tor, p.stets, p.args, p.ohneSofort).code === 0);
+  if (!gesund.has(schluessel)) {
+    const r = lauf(p.tor, p.stets, p.args, p.ohneSofort);
+    // Die AUSGABE mit ablegen, nicht nur das Ja/Nein: „war schon vorher rot"
+    // ohne den Grund ist auf einem Runner, an den man nicht herankommt,
+    // keine Auskunft. Genau daran haben neun Befunde des naechtlichen Laufs
+    // fuenf Naechte lang nichts erklaert (Q39).
+    gesund.set(schluessel, { gruen: r.code === 0, aus: r.aus });
+  }
   return gesund.get(schluessel);
 };
 
@@ -621,6 +662,10 @@ const istGesund = (p) => {
  * offen gelassen hat.
  */
 const zeiten = [];
+/** Der Schwanz einer Torausgabe, eingerueckt - vierzehn Zeilen reichen fuer
+ *  die Befundliste und den Schlusssatz jedes Tors. */
+const zeile = (aus) => String(aus || '').split('\n').slice(LAUT ? -40 : -14)
+  .map(z => '      ' + z).join('\n');
 const durchgang = (welche) => {
 for (const p of welche) {
   const t0 = Date.now();
@@ -634,6 +679,14 @@ for (const p of welche) {
   const fertig = (wie) => { const s = (Date.now() - t0) / 1000;
     zeiten.push({ n: p.n, tor: p.tor, s });
     console.log(`  ${p.tor.padEnd(11)} ${p.n} … ${wie}  ${s.toFixed(0)} s`); };
+
+  /* Vor dem Eingriff: ist diese Probe hier ueberhaupt zu beweisen? */
+  const auslassGrund = nichtHier(p);
+  if (auslassGrund) {
+    ausgelassen++; ausgelassenNamen.push(p.n);
+    console.log(`  ${p.tor.padEnd(11)} ${p.n} … ausgelassen (${auslassGrund})`);
+    continue;
+  }
 
   /* --- Eingriff --------------------------------------------------- */
   if (p.kopie) fs.copyFileSync(imBaum(p.kopie[0]), imBaum(p.kopie[1]));
@@ -715,11 +768,16 @@ for (const p of welche) {
         + 'diese Probe beweist nichts, sie stellt nur einen bestehenden Fehler nach.');
       continue;
     }
-  } else if (r.code !== 0 && !istGesund(p)) {
+  } else if (r.code !== 0 && !istGesund(p).gruen) {
     fertig(rot('war schon vorher rot'));
     blind++;
     befunde.push(`${p.n}: \`${p.tor}\` ist schon OHNE Eingriff rot — `
       + 'diese Probe beweist nichts, sie stellt nur einen bestehenden Fehler nach.');
+    // Der GESUNDE Lauf ist hier die Auskunft, nicht der mit Eingriff: er
+    // sagt, was das Tor ohne jedes Zutun bemaengelt. Immer, nicht nur mit
+    // `--laut` - dieser Lauf faehrt nachts, und wer ihn liest, kann ihn
+    // nicht eben noch einmal starten.
+    console.log(zeile(istGesund(p).aus));
     continue;
   }
 
@@ -728,7 +786,7 @@ for (const p of welche) {
     blind++;
     befunde.push(`${p.n}: \`${p.tor}\` bleibt grün, obwohl der Fehler drin ist — `
       + 'das Tor beweist an dieser Stelle nichts.');
-    if (LAUT) console.log(r.aus.split('\n').slice(-14).map(z => '      ' + z).join('\n'));
+    console.log(zeile(r.aus));
     continue;
   }
   if (p.sagt && !r.aus.includes(p.sagt)) {
@@ -736,7 +794,7 @@ for (const p of welche) {
     blind++;
     befunde.push(`${p.n}: \`${p.tor}\` wird rot, meldet aber nicht „${p.sagt}" — `
       + 'es fällt vielleicht aus einem anderen Grund durch.');
-    if (LAUT) console.log(r.aus.split('\n').slice(-14).map(z => '      ' + z).join('\n'));
+    console.log(zeile(r.aus));
     continue;
   }
   fertig(gruen('schlägt an'));
@@ -778,6 +836,8 @@ if (nebenlaeufig) {
     }
     const teil = JSON.parse(fs.readFileSync(ablage, 'utf8'));
     ok += teil.ok; blind += teil.blind; nichtAngekommen += teil.nichtAngekommen;
+    ausgelassen += teil.ausgelassen || 0;
+    ausgelassenNamen.push(...(teil.ausgelassenNamen || []));
     for (const n of teil.angeschlagen) angeschlagen.add(n);
     befunde.push(...teil.befunde);
     zeiten.push(...teil.zeiten);
@@ -796,7 +856,8 @@ if (nebenlaeufig) {
  * dem Elternteil — sonst taeten es alle drei gleichzeitig. */
 if (TEIL) {
   fs.writeFileSync(ERGEBNIS, JSON.stringify({
-    ok, blind, nichtAngekommen, befunde, zeiten, angeschlagen: [...angeschlagen] }));
+    ok, blind, nichtAngekommen, ausgelassen, ausgelassenNamen,
+    befunde, zeiten, angeschlagen: [...angeschlagen] }));
   process.exit(befunde.length ? 1 : 0);
 }
 
@@ -846,7 +907,25 @@ for (const [t, s] of Object.entries(jeTor).sort((a,b)=>b[1]-a[1]))
     + `  ${'█'.repeat(Math.round(s/gesamt*40))}`);
 
 console.log(`\n  ${ok} schlagen an, ${blind} beweisen nichts, `
-  + `${nichtAngekommen} kamen nicht an.\n`);
+  + `${nichtAngekommen} kamen nicht an`
+  + (ausgelassen ? `, ${ausgelassen} ausgelassen` : '') + '.\n');
+/* Ausgelassen wird beim Namen genannt. Eine Zahl in der Bilanz kann man
+ * ueberlesen; eine Liste von zwoelf Namen nicht - und genau diese zwoelf
+ * haben hier keinen Nachweis bekommen. */
+if (ausgelassen) {
+  console.log(`  Hier nicht zu beweisen und deshalb ausgelassen (kein Nachweis, `
+    + `sie altern weiter):`);
+  for (const n of ausgelassenNamen) console.log(`    · ${n}`);
+  console.log('');
+}
+/* Und die Schranke darunter: ein Auslass-Grund, der zu viel greift, macht
+ * einen Lauf gruen, der nichts mehr geprueft hat. Ein Fuenftel ist die
+ * Grenze - heute sind es zwoelf von 268, also ein Zweiundzwanzigstel.
+ * Anteilig, damit sie mit der Liste mitwaechst (Regel 2), und nur im
+ * vollen Lauf: eine Auswahl von einer Probe darf ganz ausfallen. */
+if (!NUR.length && ausgelassen * 5 > PROBEN.length)
+  befunde.push(`${ausgelassen} von ${PROBEN.length} Proben wurden ausgelassen — `
+    + 'mehr als ein Fünftel. Ein Lauf, der so viel überspringt, prüft nichts mehr.');
 for (const b of befunde) console.log(`  ✗ ${b}`);
 
 /* Was angeschlagen HAT, wird festgehalten - auch wenn der Lauf rot ist.
@@ -988,4 +1067,5 @@ if (ersterDurchgangRot) {
   console.log('  ihr Nachweis geht nicht verloren, weil eine andere Probe scheitert.\n');
   process.exit(1);
 }
-console.log(`\n  proben grün: ${ok} Gegenproben, alle schlagen an.\n`);
+console.log(`\n  proben grün: ${ok} Gegenproben, alle schlagen an`
+  + (ausgelassen ? ` — ${ausgelassen} ausgelassen, hier nicht zu beweisen` : '') + '.\n');

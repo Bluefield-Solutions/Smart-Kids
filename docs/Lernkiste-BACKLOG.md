@@ -2774,7 +2774,7 @@ unverändert.
 
 ---
 
-## Q39 offen: der nächtliche Probenlauf war noch nie grün
+## Q39 halb erledigt (Q34): der nächtliche Probenlauf war noch nie grün
 
 Nachgesehen beim Prüfen der Auslieferung (Q33). Der Arbeitsablauf
 **Gegenproben** (`proben.yml`, jede Nacht 02:00 UTC) ist **fünfmal gelaufen
@@ -2823,4 +2823,36 @@ Nadelköpfe rücken enger zusammen als bestätigt" — `ziehen` bleibt grün,
 obwohl der Fehler drin ist. Das ist keine Umgebungsfrage, sondern ein Tor,
 das an dieser Stelle nichts beweist. Hier reicht `SMARTKIDS_OHNE_ANSICHT`
 nicht; das ist Handarbeit.
+
+**Geschlossen in Q34: Weg 1, und ein Stück mehr.**
+
+`npm run proben` kennt jetzt den Unterschied zwischen „beweist nichts" und
+**„hier nicht zu beweisen"**. Steht `SMARTKIDS_OHNE_ANSICHT=1` in der
+Umgebung, werden die zwölf `ansicht`-Proben *ausgelassen*: beim Namen
+genannt, getrennt gezählt — und **ohne Nachweis**. Sie altern also weiter,
+und `rhythmus` macht sie fällig; sein Befund sagt seit dieser Runde auch
+dazu, wo sie zu fahren sind (`npm run proben -- ansicht`, auf dem
+Arbeitsrechner). Ausgelassen heißt nicht erlassen.
+
+Darunter eine Schranke, damit der Auslass nicht zum Ausschalter wird: greift
+er im vollen Lauf auf mehr als **ein Fünftel** aller Proben, ist das ein
+Befund. Heute sind es 12 von 269.
+
+**Und die neun übrigen sagen ab jetzt, warum.** „War schon vorher rot" stand
+bisher ohne den Grund im Protokoll — der Grund war nur mit `--laut` zu
+haben, und den nächtlichen Lauf startet niemand eben noch einmal. Die
+Ausgabe des **gesunden** Laufs steht jetzt immer darunter, bei jedem blinden
+Urteil. Was `smoke --nur=streu` auf dem Runner bemängelt, sagt uns die
+nächste Nacht, statt dass ich es hier rate.
+
+Der Umbau hat gleich eine Falle mit aufgedeckt, die nur auftritt, wenn
+`proben` sich selbst fährt: `node_modules` ist in der Wegwerf-Kopie ein
+**Zeiger**, `.gitignore` hält aber nur `node_modules/` — ein Verzeichnis.
+Git meldete den Zeiger als unbekannt, `statSync` folgte ihm, und das
+Werkzeug kopierte ihn auf sich selbst (`ERR_FS_CP_EINVAL`). Zeiger werden
+jetzt übersprungen.
+
+**Offen bleibt Q39b:** die acht Farbproben in `smoke` und die eine in
+`ziehen`. Sie sind erst zu beurteilen, wenn der nächste nächtliche Lauf
+seine Begründung mitliefert.
 

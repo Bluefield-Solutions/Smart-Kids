@@ -172,12 +172,27 @@ if (verschollen.length)
   fehler.push(`Für ${verschollen.length} Probe${verschollen.length === 1 ? '' : 'n'} lässt sich `
     + `das Alter nicht bestimmen: ${nenne(verschollen)}. Im Stand fehlt ein gültiges `
     + 'Datum (`zeit`) — ohne das ist „wie alt" keine Frage, die sich beantworten lässt.');
-if (zuAlt.length)
+/* Wo die Probe zu fahren ist, gehoert in den Befund (Q39).
+ *
+ * Zwoelf Proben haengen an `ansicht`, und `ansicht` laeuft auf dem Runner
+ * nicht (`SMARTKIDS_OHNE_ANSICHT=1`, Regel 16: die Vorbilder entstehen auf
+ * dem Arbeitsrechner, der Runner rastert anders). Der naechtliche Lauf
+ * laesst sie seit Q39 ausdruecklich aus - sie altern also weiter, und
+ * genau dann steht dieser Befund hier. Er ist richtig so; nur muss er
+ * sagen, WO man ihn abstellt, sonst faehrt jemand denselben naechtlichen
+ * Lauf noch einmal und wundert sich. */
+const nurHier = new Set(PROBEN.filter(p => p.tor === 'ansicht').map(p => p.n));
+if (zuAlt.length) {
+  const bilder = zuAlt.filter(x => nurHier.has(x.n));
   fehler.push(`${zuAlt.length} Nachweis${zuAlt.length === 1 ? '' : 'e'} sind älter als `
     + `${GRENZE} Tage (bis zu ${Math.max(...zuAlt.map(x => x.alter))}): `
     + `${nenne(zuAlt.map(x => x.n))}. Eine Probe hört leise auf zu beweisen — je länger es `
     + 'her ist, desto schwerer ist der Tag zu finden, an dem es passiert ist. '
-    + '(`npm run proben`)');
+    + '(`npm run proben`)'
+    + (bilder.length ? ` — davon ${bilder.length} an \`ansicht\`, und die sind NUR auf dem `
+      + 'Arbeitsrechner zu beweisen (`npm run proben -- ansicht`): der nächtliche Lauf '
+      + 'lässt sie aus, weil `ansicht` dort abgeschaltet ist.' : ''));
+}
 
 /* Die Kette kommt aus `tor/kette-liste.mjs` - derselben Liste, die
  * `tools/kette.mjs` faehrt und `tor/inhalt.mjs` gegen CLAUDE.md haelt.

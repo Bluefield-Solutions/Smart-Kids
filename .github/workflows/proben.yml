@@ -44,9 +44,21 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      # `ansicht` ist hier abgeschaltet - dasselbe wie in der Auslieferung
+      # (`npm run tor:runner`) und aus demselben Grund: die Vorbilder
+      # entstehen auf dem Arbeitsrechner, dieser Runner rastert anders
+      # (Regel 16). Ohne diese Zeile fand jede der zwoelf `ansicht`-Proben
+      # das Tor VOR ihrem Eingriff schon rot und meldete „beweist nichts" -
+      # zwoelf von einundzwanzig Befunden waren gar keine, und dieser Lauf
+      # war fuenfmal von fuenf rot. `proben` laesst sie jetzt ausdruecklich
+      # aus, nennt sie beim Namen und gibt ihnen KEINEN Nachweis: sie
+      # altern weiter, bis `rhythmus` sie auf dem Arbeitsrechner faellig
+      # macht.
       - name: Alle Gegenproben
         id: proben
         continue-on-error: true
+        env:
+          SMARTKIDS_OHNE_ANSICHT: '1'
         run: npm run proben
       # Der Stand wird zurückgeschrieben, AUCH wenn eine Probe nicht
       # angeschlagen hat: was angeschlagen hat, hat angeschlagen. Die

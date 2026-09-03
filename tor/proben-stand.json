@@ -10,6 +10,7 @@
     "inhalt",
     "lesbarkeit",
     "passt",
+    "proben",
     "pwa",
     "regeln",
     "rhythmus",
@@ -926,6 +927,11 @@
       "zeit": "2026-09-03",
       "s": 20
     },
+    "der nächtliche Lauf urteilt wieder über `ansicht`": {
+      "commit": "222a15de74a014f1c29e451a571fc52254552a2d",
+      "zeit": "2026-09-03",
+      "s": 16
+    },
     "die Umgebung reicht auf keiner Karte mehr ins Randband": {
       "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
       "zeit": "2026-09-03",
@@ -937,9 +943,9 @@
       "s": 24
     },
     "Grönland ist wieder nur Umgebung": {
-      "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
+      "commit": "222a15de74a014f1c29e451a571fc52254552a2d",
       "zeit": "2026-09-03",
-      "s": 16
+      "s": 15
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",

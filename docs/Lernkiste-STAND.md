@@ -10126,3 +10126,60 @@ unbeachtet: **sieben verschiedene Karten, ein identischer Messwert.**
   ist ersetzt.
 * 37 Vorbilder erneuert — die Knopfzeichen und die Werkzeugspalte stehen in
   fast jeder Aufnahme.
+
+
+---
+
+# Q34 · Der nächtliche Lauf sagt jetzt die Wahrheit
+
+Eine kleine Runde mit einem großen Vorzeichen: der Arbeitsablauf
+**Gegenproben** war fünfmal gelaufen und fünfmal rot — und **zwölf seiner
+einundzwanzig Befunde waren gar keine.**
+
+`ansicht` ist auf dem Runner mit Absicht abgeschaltet (Regel 16: die
+Vorbilder entstehen hier, der Runner rastert anders). Jede Probe, die
+`ansicht` auslöst, fand es dort **vor** ihrem Eingriff schon rot und meldete
+völlig korrekt „beweist nichts" — eine Aussage über die Umgebung, nicht über
+die Probe. Ein Lauf, dessen Rot man wegerklären muss, wird nach der dritten
+Nacht nicht mehr gelesen.
+
+**Drei Änderungen.**
+
+*Erstens:* `proben` unterscheidet „beweist nichts" von **„hier nicht zu
+beweisen"**. Die zwölf werden ausgelassen, beim Namen genannt, getrennt
+gezählt — und sie bekommen **keinen Nachweis**. Sie altern weiter, bis
+`rhythmus` sie fällig macht, und dessen Befund nennt seit dieser Runde auch
+die Maschine, auf der sie zu fahren sind. *Ausgelassen heißt nicht
+erlassen* — das ist der ganze Unterschied zu einem Schalter, der ein Tor
+stillstellt.
+
+*Zweitens:* eine Schranke darunter. Ein Auslass-Grund, der zu viel greift,
+macht einen Lauf grün, der nichts mehr geprüft hat. Mehr als **ein Fünftel**
+ausgelassen ist ein Befund; heute sind es 12 von 269, also ein
+Zweiundzwanzigstel.
+
+*Drittens:* jedes blinde Urteil zeigt jetzt die Ausgabe, auf die es sich
+stützt. „War schon vorher rot" ohne den Grund ist auf einer Maschine, an die
+man nicht herankommt, keine Auskunft — und der Grund war bisher nur mit
+`--laut` zu haben. Bei „war schon vorher rot" steht dort die Ausgabe des
+**gesunden** Laufs: was das Tor ohne jedes Zutun bemängelt.
+
+**Die neue Gegenprobe fährt das Werkzeug selbst** — `proben` mit einer
+einzigen Probe und abgeschaltetem `ansicht`. Nimmt man die Bedingung heraus
+und lässt die Zeile stehen, meldet der Lauf wieder, was er fünf Nächte lang
+gemeldet hat. Und genau diese Gegenprobe hat eine Falle aufgedeckt, die es
+nur gibt, wenn `proben` sich selbst fährt: `node_modules` ist in der
+Wegwerf-Kopie ein **Zeiger**, `.gitignore` hält aber nur `node_modules/` —
+und das Muster trifft nur ein Verzeichnis. Git meldete den Zeiger als
+unbekannt, `statSync` folgte ihm, und das Werkzeug kopierte ihn auf sich
+selbst: `ERR_FS_CP_EINVAL`, Lauf tot. Aufgefallen ist es in dem Moment, in
+dem die dritte Änderung von oben den Grund mit ausdruckte — die Neuerung hat
+sich selbst gefangen.
+
+**Was offen bleibt (Q39b):** acht Farbproben in `smoke --nur=streu` und eine
+in `ziehen`. Die acht messen am DOM, nicht am Bild — sie *sollten* auf dem
+Runner laufen, und in der Auslieferung tun sie es auch. Warum sie im
+Probenlauf dort vorher rot sind, sagt die nächste Nacht. Ich rate es hier
+nicht.
+
+269 Gegenproben · Kette grün nach 138,7 s.

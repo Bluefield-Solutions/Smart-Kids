@@ -2604,6 +2604,26 @@ export const PROBEN = [
    * Eine breitere BLENDE waere der naheliegende Eingriff und der falsche:
    * sie loescht auf Suedamerika den letzten Splitter Grau, und dann meldet
    * die Blindprobe darunter - nicht diese. Nachgemessen, nicht vermutet. */
+  /* Der Auslass selbst (Q39).
+   *
+   * Ohne ihn urteilt der naechtliche Lauf ueber ein Tor, das dort gar
+   * nicht laeuft: `ansicht` beendet sich bei `SMARTKIDS_OHNE_ANSICHT=1`
+   * sofort und gruen, und jede seiner zwoelf Proben meldete deshalb einen
+   * Befund ueber die Umgebung statt ueber die App. Fuenf Naechte lang war
+   * der Lauf deswegen rot.
+   *
+   * Der Eingriff nimmt die Bedingung heraus, laesst die Zeile aber stehen -
+   * genau der Zustand, den ein Tor merken muss. Gefahren wird `proben`
+   * selbst, mit EINER Probe und abgeschaltetem `ansicht`: dann faellt der
+   * Lauf in Sekunden und meldet wieder, was er vor Q39 gemeldet hat. */
+  { n:'der nächtliche Lauf urteilt wieder über `ansicht`', tor:'proben',
+    bauen:true, args:['Grönland'], stets:{ SMARTKIDS_OHNE_ANSICHT:'1' },
+    datei:'tor/proben.mjs',
+    such:"const nichtHier = (p) => (OHNE_ANSICHT && p.tor === 'ansicht')",
+    ersatz:"const nichtHier = (p) => (false && p.tor === 'ansicht')",
+    an:{ datei:'tor/proben.mjs', text:"(false && p.tor === 'ansicht')" },
+    sagt:'bleibt grün, obwohl der Fehler drin ist' },
+
   { n:'die Umgebung reicht auf keiner Karte mehr ins Randband', tor:'ziehen',
     bauen:true, args:['--nur=rand'], datei:'tools/geo-backen.mjs',
     such:'function sichtfeld(liste, rand = 8) {',
