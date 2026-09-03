@@ -200,7 +200,7 @@
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
       "zeit": "2026-09-02",
-      "s": 18
+      "s": 13
     },
     "das Wasserzeichen unter der Schrift zählt nicht": {
       "commit": "22332de675c6b6a0906432e7a21dd6330fde870d",
@@ -927,6 +927,11 @@
       "zeit": "2026-09-03",
       "s": 28
     },
+    "die Fremdgriff-Frage gilt wieder für jeden Ausschnitt": {
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 11
+    },
     "der nächtliche Lauf urteilt wieder über `ansicht`": {
       "commit": "22332de675c6b6a0906432e7a21dd6330fde870d",
       "zeit": "2026-09-03",
@@ -1128,14 +1133,14 @@
       "s": 59
     },
     "der Fehlgriff auf der Karte wird nicht mehr benannt": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 12
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 15
     },
     "der Hinweis zeigt in die falsche Richtung": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 10
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 9
     },
     "alle Ebenen landen in derselben Welt": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -1288,44 +1293,44 @@
       "s": 42
     },
     "Fiona ist wieder pink statt türkis": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 10
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "zwei Profile bekommen fast denselben Farbton": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 8
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "auch die Eltern bekommen einen Streu": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 9
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "Fionas Streu hat nur noch eine Farbe": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 10
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "die Schildkröten sind wieder alle gleich": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 8
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "ein Motiv fällt aus Fionas Streu": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 9
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "die Augen der Totenköpfe verlieren ihren Verlauf": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 9
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "der Streu rutscht aus seiner absoluten Lage": {
-      "commit": "6e93c02e997527171a3d657ba855cbe139351df8",
-      "zeit": "2026-09-01",
-      "s": 8
+      "commit": "7f312a79dcc3589afeb08614c24bbc77c294dc0f",
+      "zeit": "2026-09-03",
+      "s": 7
     },
     "ein Abzeichen wählt nichts aus seinem Vorrat": {
       "commit": "22332de675c6b6a0906432e7a21dd6330fde870d",

@@ -4903,9 +4903,57 @@ console.log(`  Fremdgriff geprüft:         ${griffStand.geprueft} ruhende Bilds
   + `, ${griffStand.uebersprungen} in Bewegung übersprungen`);
 if (griffStand.einmal.size)
   console.log(`  … einmal gesehen, nicht bestätigt: ${[...griffStand.einmal].slice(0, 6).join(' · ')}`);
-if (griffStand.geprueft === 0)
+/* WO diese Frage gilt (Q39b).
+ *
+ * Sie zaehlt, was der Lauf gesehen hat - und wurde bis hierher auch dann
+ * gestellt, wenn der Lauf gar nicht der ganze war. `--nur=streu` kommt an
+ * keinem ruhenden Bildschirm vorbei, also war `smoke` dort rot, auf jeder
+ * Maschine. Zehn stehende Gegenproben, die einen Abschnitt einzeln fahren,
+ * haben deshalb aufgehoert zu beweisen; gemerkt hat es niemand, weil die
+ * Torkette `smoke` in vier Teilen faehrt und jeder Teil grosse Abschnitte
+ * enthaelt.
+ *
+ * GEMESSEN, je Abschnitt einzeln, 03.09.2026, dieser Rechner, vier Kerne
+ * (`--nur=<name> --sofort --kurz`), ruhend · in Bewegung:
+ *
+ *   spielen  5·49   ablage 10·64   tippen  1·3    regler   1·2
+ *   ebene4   0·0    durchgang 18·120  umgekehrt 6·49  test 31·67
+ *   streu    0·0    abzeichen 12·52  pausen 10·18   schreiben 40·27
+ *   hinweis  1·4    sprechen  8·21
+ *
+ * Zwei Abschnitte bringen die Pruefung nie zum Zug: `ebene4` und `streu`.
+ * Sie stehen unten als Liste - kurz genug, um sie zu pflegen, und sie
+ * meldet sich selbst, wenn sie veraltet (ein Abschnitt, der neu keine
+ * ruhenden Bildschirme mehr liefert, macht seinen Ausschnitt rot).
+ *
+ * Und `hinweis` zeigt, warum eine Liste allein nicht reicht: EINS ist die
+ * ganze Ausbeute, und auf dem Runner - sechs Arbeiter nebeneinander - war
+ * es null. Ein Bildschirm ruht dort nie lange genug. Die Zusage haengt
+ * also an der Last, sobald man sie je Ausschnitt stellt.
+ *
+ * Deshalb nach Herkunft des Ausschnitts:
+ *   - VOLLER Lauf: harter Befund. 168 ruhende Bildschirme sind gemessen,
+ *     null waere ein kaputter Beobachter.
+ *   - `--teil=i/n`: harter Befund. Die Teile ZERLEGEN den vollen Lauf,
+ *     jeder traegt seinen Anteil der Zusage - und in der Kette hat jeder
+ *     der vier grosse Abschnitte darin (mindestens 12).
+ *   - `--nur=...`: eine Zeile, kein Befund. Ein von Hand gewaehlter
+ *     Ausschnitt sagt nichts darueber, ob der Fremdgriff im ganzen Lauf
+ *     zum Zug kommt. */
+/* KEINE Liste der stillen Abschnitte an dieser Stelle - sie waere wieder
+ * lastabhaengig. `tippen`, `regler` und `hinweis` bringen je EINEN ruhenden
+ * Bildschirm; auf dem Runner mit sechs Arbeitern nebeneinander ist es
+ * null. Eine Regel „dieser Abschnitt muss einen bringen" waere also nicht
+ * an der App gemessen, sondern an der Zahl der freien Kerne - genau der
+ * Fehler, den Q37 gerade herausgenommen hat. Die Tafel oben ist eine
+ * Messung mit Datum und Messstelle (Regel 5), keine Zusage. */
+const nurAusschnitt = !!gewaehlt && !TEIL;
+if (griffStand.geprueft === 0 && !nurAusschnitt)
   fehler.push('Der Fremdgriff hat keinen einzigen ruhenden Bildschirm gesehen — '
     + 'dann beweist „nichts gefunden" nichts (Regel 1)');
+else if (griffStand.geprueft === 0)
+  console.log('  … in diesem Ausschnitt kam der Fremdgriff nicht zum Zug — kein Befund, '
+    + 'die Zusage trägt der volle Lauf und jeder `--teil`');
 // Die AUFGABE ist der Grund, warum diese Prüfung hier zusätzlich läuft:
 // `passt` steuert nur Wahlbildschirme an. Ohne sie prüft der Rauchtest
 // nichts, was `passt` nicht schon prüfte.

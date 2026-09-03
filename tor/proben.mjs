@@ -138,10 +138,47 @@ const schmutzig = execSync('git status --porcelain', { encoding:'utf8' })
  * geaendert hast, wird HINEINKOPIERT. Damit ist geprueft, was du siehst,
  * und gerechnet wird wie zu Hause.
  */
+/* Sechs Arbeiter legen ihre Kopie im selben Augenblick an - und git
+ * vertraegt das nicht immer (Q39).
+ *
+ * Gemessen im Lauf vom 03.09.: `git worktree add --detach .probenbaum-2
+ * HEAD` fiel mit Status 128 aus, der Arbeiter starb, und seine Proben
+ * waren ungeprueft. Gemeldet hat es der Elternteil nur als „Ein Teillauf
+ * hat kein Ergebnis hinterlassen" - WARUM stand nirgends, denn die
+ * Ausgabe war auf `ignore` gestellt.
+ *
+ * Zwei Aenderungen, und keine davon raet, was git gesagt hat:
+ *   - die Fehlerausgabe wird MITGELESEN und steht im Befund. Ein Werkzeug,
+ *     das eine Fremdmeldung wegwirft, laesst denselben Fehler beim
+ *     naechsten Mal wieder untersuchen.
+ *   - viermal nachfassen mit wachsender Pause. Sperren in `.git` sind
+ *     kurzlebig; ein Wettlauf, der beim ersten Versuch verloren geht, ist
+ *     beim zweiten meist entschieden. Bleibt es dabei, fliegt der Fehler
+ *     mit der Meldung von git.
+ * Und der `prune` laeuft nur noch im Elternteil: er raeumt in derselben
+ * Verwaltung auf, in die die Arbeiter gerade schreiben, und keiner von
+ * ihnen braucht ihn. */
 function kopieAufbauen() {
   fs.rmSync(KOPIE, { recursive:true, force:true });
-  try { execSync('git worktree prune', { stdio:'ignore' }); } catch { /* egal */ }
-  execSync(`git worktree add --detach ${KOPIE} HEAD`, { stdio:'ignore' });
+  if (!TEIL) { try { execSync('git worktree prune', { stdio:'ignore' }); } catch { /* egal */ } }
+  let letzter = null;
+  for (let versuch = 0; versuch < 5; versuch++) {
+    try {
+      execSync(`git worktree add --detach ${KOPIE} HEAD`,
+        { stdio:['ignore', 'ignore', 'pipe'] });
+      letzter = null;
+      break;
+    } catch (e) {
+      letzter = String(e.stderr || e.message || e).trim();
+      fs.rmSync(KOPIE, { recursive:true, force:true });
+      // Warten, ohne zu schlafen: der Aufbau ist der einzige Schritt vor
+      // dem ersten `await`, und ein `setTimeout` hier haette niemanden.
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 200 * (versuch + 1));
+    }
+  }
+  if (letzter)
+    throw new Error(`proben: die Wegwerf-Kopie ${KOPIE_NAME} liess sich in fünf `
+      + `Versuchen nicht anlegen. git sagt:\n${letzter}`);
   // Die Abhaengigkeiten stehen schon nebenan. Ein zweites `npm ci` kostet
   // mehr als der ganze Lauf.
   fs.symlinkSync(path.join(HAUPT, 'node_modules'), path.join(KOPIE, 'node_modules'), 'dir');
@@ -211,7 +248,8 @@ function uebermalen() {
 
 function kopieAbbauen() {
   fs.rmSync(KOPIE, { recursive:true, force:true });
-  try { execSync('git worktree prune', { stdio:'ignore' }); } catch { /* egal */ }
+  // Aufgeraeumt wird im Elternteil - siehe `kopieAufbauen`.
+  if (!TEIL) { try { execSync('git worktree prune', { stdio:'ignore' }); } catch { /* egal */ } }
 }
 
 kopieAufbauen();

@@ -2616,6 +2616,19 @@ export const PROBEN = [
    * genau der Zustand, den ein Tor merken muss. Gefahren wird `proben`
    * selbst, mit EINER Probe und abgeschaltetem `ansicht`: dann faellt der
    * Lauf in Sekunden und meldet wieder, was er vor Q39 gemeldet hat. */
+  /* Der Geltungsbereich der Fremdgriff-Frage (Q39b).
+   *
+   * Ohne ihn ist `smoke` in JEDEM Ausschnitt rot, in dem kein Bildschirm
+   * zur Ruhe kommt - und zehn stehende Gegenproben, die genau so einen
+   * Ausschnitt fahren, beweisen dann nichts. Der Eingriff nimmt die
+   * Bedingung heraus und laesst die Zeile stehen. */
+  { n:'die Fremdgriff-Frage gilt wieder für jeden Ausschnitt', tor:'smoke',
+    args:['--nur=streu'], bauen:true, datei:'tor/smoke.mjs',
+    such:'if (griffStand.geprueft === 0 && !nurAusschnitt)',
+    ersatz:'if (griffStand.geprueft === 0 && true)',
+    an:{ datei:'tor/smoke.mjs', fehlt:'griffStand.geprueft === 0 && !nurAusschnitt' },
+    sagt:'keinen einzigen ruhenden Bildschirm' },
+
   { n:'der nächtliche Lauf urteilt wieder über `ansicht`', tor:'proben',
     bauen:true, args:['Grönland'], stets:{ SMARTKIDS_OHNE_ANSICHT:'1' },
     datei:'tor/proben.mjs',
