@@ -181,10 +181,10 @@
       "zeit": "2026-09-02",
       "s": 42
     },
-    "die Lupenknöpfe rutschen weiter auf die Karte": {
-      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
+    "die Lupenknöpfe liegen wieder auf der Karte": {
+      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
       "zeit": "2026-09-02",
-      "s": 42
+      "s": 79
     },
     "zwei Kacheln liegen aufeinander": {
       "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
@@ -632,14 +632,19 @@
       "s": 69
     },
     "der Schalter kürzt keine Schaupause mehr": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
       "zeit": "2026-09-02",
-      "s": 44
+      "s": 38
     },
     "das Lob ist weg, bevor ein Kind es gelesen hat": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
+      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
       "zeit": "2026-09-02",
-      "s": 22
+      "s": 16
+    },
+    "die Schaupause wird gar nicht mehr mitgeschrieben": {
+      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
+      "zeit": "2026-09-02",
+      "s": 36
     },
     "eine Schaupause geht wieder an `?flott` vorbei": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",

@@ -890,8 +890,24 @@ if (laeuft('rand')) {
    * Fuenftel herunter und damit vom Papier kaum zu unterscheiden. */
   const BAND = 0.02;
   /* Und so dunkel darf es dort hoechstens noch sein, gemessen als Abstand
-   * zum hellsten Bildpunkt des Ausschnitts (0 = Papier, 217 = das volle
+   * zum hellsten Bildpunkt des Ausschnitts (0 = Papier, 24 = das volle
    * Grau der Umgebung).
+   *
+   * HIER STAND 217, UND DAS WAR NIE DIE UMGEBUNG (Q33). Der Ausschnitt
+   * ist der Kartenkasten, und bis Q33 lagen die drei Lupenknoepfe
+   * absolut auf ihm - im Bild, das dieses Tor aufnimmt, mit dunkler
+   * Kante. Deshalb las die Flaechenmessung auf ALLEN SIEBEN Karten
+   * genau denselben Wert 217, und die Blindprobe darunter (unter 20 =
+   * die Messung beweist nichts) konnte nie anschlagen. Als die Knoepfe
+   * die Karte verliessen, stand die Wahrheit da: das volle Grau liegt
+   * 22 bis 32 vom Papier entfernt, auf Suedamerika 9. Nachgemessen mit
+   * abgeschalteter Umgebung ist das Bild in allen sieben Faellen
+   * vollstaendig leer - hellster wie dunkelster Punkt 255. Die
+   * Blindprobe fragt seit Q33 danach und nicht nach einem Abstand.
+   *
+   * Die Randwerte in der Tafel unten waren davon NICHT betroffen: die
+   * Knoepfe sassen mit Abstand --r2 in der Ecke, das Band misst zwei
+   * Prozent - sie lagen knapp daneben. Deshalb gilt die Eichung weiter.
    *
    * Nicht gewaehlt, sondern abgelesen - Chromium, 844 x 390, der Kartenkasten
    * allein, alles ausser der Umgebung ausgeblendet:
@@ -920,6 +936,11 @@ if (laeuft('rand')) {
   if (!ebenen.length) fehler.push('rand: keine Ebene mit Umgebung gefunden — '
     + 'die Messung haette nichts zu messen');
   const zeilen = [];
+  /* Wieviele Karten die Zusage ueberhaupt auf die Probe stellen: nur wo die
+   * Umgebung dem Rahmen nahe kommt, hat der Deckel etwas zu deckeln. Ohne
+   * diese Zeile koennte die Umgebung auf jeder Karte weit vom Rand enden
+   * und das Tor bliebe gruen, ohne je etwas geprueft zu haben. */
+  let mitRand = 0;
   for (const kont of ebenen) {
     const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE',
       viewport: { width: 844, height: 390 } });
@@ -944,7 +965,11 @@ if (laeuft('rand')) {
     const roh = await q.locator('.schirm.da .karte > svg').first().screenshot();
     const bild = PNG.sync.read(roh);
     const b1 = Math.max(2, Math.round(Math.min(bild.width, bild.height) * BAND));
-    let hell = 0, dunkelRand = 255, dunkelAll = 255;
+    /* Alles, was sich vom Papier unterscheidet. 250 und nicht 255: die
+     * Kanten sind geglaettet, und ein Punkt, der eine Stufe unter Weiss
+     * liegt, ist Rechenrest und kein Grau. */
+    const PAPIER = 250;
+    let hell = 0, dunkelRand = 255, dunkelAll = 255, tinte = 0;
     for (let y = 0; y < bild.height; y++) for (let x = 0; x < bild.width; x++) {
       const i = (bild.width * y + x) << 2;
       // Ueber Alpha hinweg auf Weiss rechnen: der Ausschnitt ist an den
@@ -954,24 +979,44 @@ if (laeuft('rand')) {
                + 0.114 * bild.data[i + 2]) * a + 255 * (1 - a);
       if (l > hell) hell = l;
       if (l < dunkelAll) dunkelAll = l;
+      if (l < PAPIER) tinte++;
       if (x < b1 || y < b1 || x >= bild.width - b1 || y >= bild.height - b1)
         if (l < dunkelRand) dunkelRand = l;
     }
     const amRand = Math.round(hell - dunkelRand), inMitte = Math.round(hell - dunkelAll);
+    const anteilTinte = tinte / (bild.width * bild.height) * 100;
+    if (amRand > 0) mitRand++;
     zeilen.push(`      ${kont.padEnd(14)} am Rand ${String(amRand).padStart(3)} `
-      + `· in der Fläche ${String(inMitte).padStart(3)}`);
-    /* Die Gegenprobe zur Gegenprobe: findet die Messung in der FLAECHE auch
-     * kein Grau, dann ist nicht der Rand sauber, sondern das Bild leer -
-     * und die Null am Rand bezeugt nichts. */
-    if (inMitte < 20) fehler.push(`rand: auf ${kont} ist auch in der Fläche `
-      + `kein Grau zu sehen (${inMitte}) — die Messung beweist nichts`);
+      + `· in der Fläche ${String(inMitte).padStart(3)} `
+      + `· Grau auf ${anteilTinte.toFixed(2).padStart(5)} % der Fläche`);
+    /* Die Blindprobe: ist im Bild ueberhaupt kein Grau, dann ist nicht der
+     * Rand sauber, sondern der Ausschnitt leer - und die Null am Rand
+     * bezeugt nichts.
+     *
+     * Gefragt wird nach der FLAECHE, die Grau traegt, nicht nach ihrer
+     * Tiefe. Auf Suedamerika ragt die Umgebung nur als Splitter ins Bild:
+     * neun Stufen dunkel, elf Bildpunkte. Das ist wenig, aber es ist
+     * etwas - und der Unterschied zu „gar nichts" ist der einzige, den
+     * diese Probe treffen muss. Mit ausgeblendeter Umgebung steht sie auf
+     * allen sieben Karten auf glatt null. */
+    if (anteilTinte === 0) fehler.push(`rand: auf ${kont} ist überhaupt kein Grau `
+      + `im Bild — die Messung beweist nichts`);
     else if (amRand > DECKEL_RAND) fehler.push(`rand: auf ${kont} endet die Umgebung `
       + `hart am Rahmen — ${amRand} statt höchstens ${DECKEL_RAND} `
       + `(in der Fläche ${inMitte})`);
     await q.close(); await ctx.close();
   }
+  /* Ein Drittel der Karten, mindestens zwei - anteilig, damit die Zahl mit
+   * einer achten Karte mitwaechst (Regel 2). Heute sind es fuenf von
+   * sieben. */
+  const TRAGEND = Math.max(2, Math.ceil(ebenen.length / 3));
+  if (ebenen.length && mitRand < TRAGEND)
+    fehler.push(`rand: nur ${mitRand} von ${ebenen.length} Karten bringen die Umgebung `
+      + `überhaupt bis ins Randband (nötig ${TRAGEND}) — der Deckel hätte `
+      + `nichts zu deckeln`);
   console.log(`    Rand der Umgebung (${Math.round(BAND * 100)} % Band, `
-    + `höchstens ${DECKEL_RAND}):\n${zeilen.join('\n')}`);
+    + `höchstens ${DECKEL_RAND}, ${mitRand} von ${ebenen.length} Karten `
+    + `reichen hinein):\n${zeilen.join('\n')}`);
 }
 
 await b.close(); srv.close();

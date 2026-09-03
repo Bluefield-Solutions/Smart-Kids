@@ -207,6 +207,10 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   cursor:pointer;transition:transform var(--d-tipp) var(--k-standard),
     box-shadow var(--d-tipp) var(--k-standard),
     border-color var(--d-tipp) var(--k-standard),color var(--d-tipp) var(--k-standard)}
+/* Zeichen werden nicht gestaucht (Q34). In einer engen Knopfreihe ist der
+   Text das, was umbrechen darf - ein zusammengedruecktes Zeichen ist keines
+   mehr. */
+.knopf svg,.leise svg{flex:none}
 .knopf:active{transform:translateY(var(--kante-flach));color:var(--tinte);
   border-color:var(--tinte-3);
   box-shadow:0 0 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
@@ -998,8 +1002,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    rechnet das nach. Halbdurchsichtiger Grund, damit man die Karte
    darunter noch sieht, aber ein voller Rand, damit sie nicht im Meer
    verschwinden. */
-.lupenknoepfe{position:absolute;right:var(--r2);bottom:var(--r2);display:flex;
-  flex-direction:column;gap:var(--r2);z-index:2}
+/* Seit Q33 stehen sie NEBEN der Karte, in der Werkzeugspalte - nicht mehr
+   absolut auf ihr. Warum, steht in spiel.js an der Stelle, die sie
+   anhaengt: sie verdeckten auf dem Zielgeraet 70,4 % von Australien.
+   Nebeneinander und nicht uebereinander: die Werkzeugspalte ist auf dem
+   kurzen Querformat hoch bemessen, aber nicht hoch genug fuer drei
+   Knoepfe untereinander PLUS Mikrofon und Hoerknopf. */
+.lupenknoepfe{display:flex;flex-wrap:wrap;gap:var(--r2);justify-content:center}
 /* Q15: dieselbe Mechanik wie jeder andere leise Knopf.
    Er hatte einen Schlagschatten statt einer Kante und fuhr einen Punkt
    statt zwei - drittes Material und dritter Druckweg auf demselben
@@ -1023,8 +1032,11 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 /* „Ganze Karte" steht nur da, wenn es etwas zurueckzusetzen gibt.
    Ein Knopf, der immer nichts tut, ist ein Hindernis (dieselbe
    Entscheidung wie beim Mikrofon im Sprachmodus). */
-.karte:not([data-lupe]) .lupenknopf.ganz,
-.karte[data-lupe=""] .lupenknopf.ganz{display:none}
+/* „Ganze Karte" steht nur da, wenn etwas zurueckzustellen ist.
+   Die Regel hing am Kartenkasten als VORFAHR - seit Q33 sind die Knoepfe
+   seine Geschwister, und der Kasten daneben ist `.feld`. Ohne diesen
+   Umbau stuende der dritte Knopf immer da, auch ungezoomt. */
+.feld:not(:has(.karte[data-lupe]:not([data-lupe=""]))) .lupenknopf.ganz{display:none}
 /* NUR die Gebiete und ihre Trefferkreise nehmen den Finger an. Alles
    andere in der Karte ist Schmuck.
    Ohne diese Regel lag der pulsierende Ring um das gesuchte Gebiet
@@ -1430,7 +1442,11 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
  * leisen Knoepfe passt, und beim Beruehren eine weiche Flaeche im
  * Akzentton. Damit gehoert der Ausweg sichtbar zur Werkzeugspalte, ohne
  * sich zu einer Antwort aufzublasen. */
-.leise{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
+/* Seit Q34 traegt auch der leise Knopf ein Zeichen (das Fragezeichen an
+   „Weiss ich nicht"). Er war bis dahin reiner Text und lag damit auf einer
+   Grundlinie; mit einem Zeichen daneben braucht er eine Achse. */
+.leise{display:inline-flex;align-items:center;justify-content:center;gap:var(--r1);
+  font-family:var(--f-ui);font-size:var(--s-klein);font-weight:600;
   color:var(--tinte-2);background:none;border:none;
   border-bottom:var(--strich) solid var(--knopf-kante);cursor:pointer;
   min-height:44px;padding:0 var(--r2);border-radius:var(--r1);

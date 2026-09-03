@@ -2856,8 +2856,32 @@ for (const [wer, soll] of [['fiona', 'fiona: ziehen'],
  * in spiel.js (Regel 3 — das Soll kommt nicht aus dem Gemessenen).
  */
 if (laeuft('pausen')) try {
+  /* EINE Zahl, und sie kommt aus der Anforderung (Regel 3).
+   *
+   * „Ein Kind soll ,Super! Das ist Sachsen.' lesen koennen" - das sind
+   * 1200 ms. Daran haengen jetzt BEIDE Urteile, und zwar als absolute
+   * Grenzen statt als Verhaeltnis:
+   *
+   *   ohne Schalter   die angeforderte Pause muss darueber liegen
+   *   mit Schalter    sie muss darunter liegen
+   *
+   * WARUM KEIN VERHAELTNIS MEHR (Q37). Hier stand `normal < kurz * 1.5`,
+   * und das hat die Kette zweimal rot gemacht, ohne dass sich an der App
+   * etwas geaendert haette: gemessen wurden 1,42x und 1,50x, allein
+   * gefahren 1,8x und 2,4x. Die Kette faehrt acht Browser auf vier
+   * Kernen; unter dieser Last wird die kurze Pause relativ teurer als die
+   * lange, und das Verhaeltnis faellt. Q12 hatte das schon einmal
+   * gemildert (Stempel in der Seite statt Stoppuhr im Testrechner) - der
+   * Rest ist nicht wegzumessen, weil die kurze Pause zu einem guten Teil
+   * aus Rechnen besteht und die lange fast nur aus Warten.
+   *
+   * WAS JETZT GEMESSEN WIRD: nicht wie lange die Pause DAUERT, sondern
+   * welche Pause die App ANFORDERT. `schauPause()` reicht eine Zahl an
+   * `setTimeout` weiter; diese Zahl ist die Entscheidung des Schalters,
+   * und sie haengt an keiner Maschine. Die Stoppuhr bleibt - aber als
+   * Auskunft im Bericht, nicht als Tor.
+   */
   const LESEZEIT_MIN = 1200;    // was ein Kind zum Lesen braucht
-  const KUERZER_UM   = 1.5;     // der Schalter muss mindestens so viel bringen
 
   /** Eine Aufgabe loesen und messen, wie lange das Lob danach stehenbleibt. */
   async function pauseMessen(ebene, flott) {
@@ -2884,6 +2908,21 @@ if (laeuft('pausen')) try {
     //
     // Ein `MutationObserver` stempelt beide Enden dort, wo sie
     // entstehen. Was uebrig bleibt, ist die Pause selbst.
+    /* Die ANGEFORDERTE Pause mitschreiben (Q37).
+     *
+     * `schauPause()` gibt eine Zahl an `setTimeout` weiter. Die Aufrufe im
+     * Rumpf schlagen `setTimeout` beim Aufruf im Fenster nach, also greift
+     * ein Mantel, der nach dem Laden gelegt wird. Kleine Zahlen bleiben
+     * draussen - die Ansage (500 ms) und die Uebergaenge sind hier nicht
+     * gemeint. */
+    await p.evaluate(() => {
+      window.__angefordert = [];
+      const alt = window.setTimeout;
+      window.setTimeout = function (fn, ms, ...rest) {
+        if (typeof ms === 'number' && ms >= 200) window.__angefordert.push(ms);
+        return alt.call(window, fn, ms, ...rest);
+      };
+    });
     await p.evaluate(() => {
       window.__pause = {};
       const sieh = () => {
@@ -2900,6 +2939,10 @@ if (laeuft('pausen')) try {
         { childList: true, subtree: true, characterData: true });
       sieh();
     });
+
+    // Erst hier leeren: was VOR der Antwort angefordert wurde (Vorlauf,
+    // Kartenaufbau), gehoert nicht zur Schaupause.
+    await p.evaluate(() => { window.__angefordert = []; });
 
     // Richtig antworten — auf dem Weg, den dieses Profil hier hat.
     if (rechnen) {
@@ -2929,22 +2972,46 @@ if (laeuft('pausen')) try {
     await p.waitForFunction(() => window.__pause && window.__pause.t1,
       null, { timeout: 20000 });
     const { t0, t1 } = await p.evaluate(() => window.__pause);
+    /* Die groesste angeforderte Pause NACH der Antwort ist die Schaupause.
+     * Die anderen sind kleiner (die Ansage liegt bei 500). */
+    const angefordert = await p.evaluate(() =>
+      (window.__angefordert || []).reduce((a, b) => Math.max(a, b), 0));
     await p.close();
-    return Math.round(t1 - t0);
+    return { gemessen: Math.round(t1 - t0), angefordert };
   }
 
   for (const [was, ebene] of [['Karte', 'bundeslaender'], ['Rechnen', 'rechnen:plusminus']]) {
     const normal = await pauseMessen(ebene, false);
     const kurz   = await pauseMessen(ebene, true);
-    console.log(`  Schaupause ${was.padEnd(8)}       ${normal} ms normal, ${kurz} ms mit `
-      + `\`?flott\` (${(normal / Math.max(1, kurz)).toFixed(1)}×)`);
-    if (normal < LESEZEIT_MIN)
-      merke('pausen', new Error(`${was}: das Lob steht nur ${normal} ms — unter ${LESEZEIT_MIN} ms `
-        + 'kann ein Kind es nicht lesen'));
-    if (normal < kurz * KUERZER_UM)
-      merke('pausen', new Error(`${was}: mit \`?flott\` ${kurz} ms, ohne ${normal} ms — `
-        + `der Schalter kürzt diesen Weg nicht (erwartet mindestens ${KUERZER_UM}×). `
-        + 'Genau so ist der Kartenweg an ihm vorbeigelaufen'));
+    console.log(`  Schaupause ${was.padEnd(8)}       angefordert ${normal.angefordert} ms normal, `
+      + `${kurz.angefordert} ms mit \`?flott\`  ·  gestoppt ${normal.gemessen} / ${kurz.gemessen} ms`);
+
+    /* Geurteilt wird an der ANGEFORDERTEN Zahl. Kam gar keine an, ist die
+     * Messung selbst kaputt - und das ist ein Befund, kein Freispruch
+     * (Regel 1: eine Pruefung, die nie etwas meldet, ist kein Beweis). */
+    if (!normal.angefordert || !kurz.angefordert)
+      merke('pausen', new Error(`${was}: es wurde gar keine Schaupause angefordert `
+        + `(${normal.angefordert} / ${kurz.angefordert} ms) — dann misst diese Prüfung nichts`));
+    else {
+      if (normal.angefordert < LESEZEIT_MIN)
+        merke('pausen', new Error(`${was}: das Lob steht nur ${normal.angefordert} ms — `
+          + `unter ${LESEZEIT_MIN} ms kann ein Kind es nicht lesen`));
+      if (kurz.angefordert >= LESEZEIT_MIN)
+        merke('pausen', new Error(`${was}: mit \`?flott\` werden ${kurz.angefordert} ms `
+          + `angefordert, also nicht weniger als die Lesezeit von ${LESEZEIT_MIN} ms — `
+          + 'der Schalter kürzt diesen Weg nicht. Genau so ist der Kartenweg an ihm '
+          + 'vorbeigelaufen'));
+    }
+
+    /* Und die Stoppuhr bleibt als AUSKUNFT stehen, nicht als Tor. Sie sagt,
+     * ob die angeforderte Pause auch ungefaehr die gebrauchte ist - wenn
+     * beides weit auseinanderliegt, stimmt etwas anderes nicht. Weit heisst
+     * hier grosszuegig: unter Last kommt Rechenzeit dazu, und genau davor
+     * soll dieses Tor nicht mehr umkippen. */
+    for (const [w, m] of [['ohne Schalter', normal], ['mit `?flott`', kurz]])
+      if (m.gemessen > m.angefordert * 2 + 800)
+        console.log(`    HINWEIS ${was} ${w}: angefordert ${m.angefordert} ms, `
+          + `gebraucht ${m.gemessen} ms — die Maschine war langsam, kein Befund`);
   }
 } catch (e) { merke('pausen', e); }
 

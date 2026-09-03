@@ -782,7 +782,7 @@ const KARTE_MIN = 0.92;
  * ganz in seine Kachel gehoert, und die naechste Kachelform koennte sie
  * brechen. */
 const ZEICHEN_AB = 6, ZEICHEN_ZU = 6;
-const zeichenZeilen = [], luftZeilen = [], kleberZeilen = [], verdecktZeilen = [];
+const zeichenZeilen = [], luftZeilen = [], kleberZeilen = [];
 
 /* Der Stand der MASSE: was einmal so gross war, darf nicht kleiner werden.
  *
@@ -973,37 +973,23 @@ nicht liest, ist die Kachel damit unbeschriftet`);
       meldungen.push(`${name}: „${c.text}" wird abgeschnitten — ${c.marke} ist `
         + `${c.kasten} pt hoch, der Inhalt braucht ${c.inhalt} pt`);
 
-    /* Die Verdeckung der Karte durch Bedienelemente ist eine RATSCHE und
-     * kein Befund - noch nicht.
+    /* Kein Bedienelement liegt auf der Karte. Scharf, nicht ausgehandelt.
      *
-     * Sie ist heute schlecht (70,4 % auf dem Zielgeraet), und sie zu
-     * beheben heisst, die drei Lupenknoepfe von der Karte zu nehmen. Wo
-     * sie stattdessen hinsollen, ist eine Entscheidung am Geraet: Audit A
-     * hat alle vier Ecken gemessen, und KEINE ist frei - unten links
-     * verschwindet das Saarland zu 99,9 %, oben rechts Berlin zu 100 %.
-     * Ein Polster rechts macht die Verdeckung zu null und die Karte um
-     * 16 % kleiner. Das ist ein Abwaegen, kein Fehler, den man eben
-     * behebt - und ein rotes Tor wuerde diese Abwaegung erzwingen statt
-     * sie zu ermoeglichen.
+     * In Q32 stand hier eine Ratsche: die drei Lupenknoepfe verdeckten auf
+     * dem Zielgeraet 70,4 % von Australien, auf allen sieben Groessen
+     * zwischen 16,9 und 71,8 %, und wo sie stattdessen hinsollten, war
+     * eine offene Frage. Seit Q33 stehen sie in der Werkzeugspalte, die
+     * Verdeckung ist ueberall null - und die Karte ist dabei auf keiner
+     * Groesse kleiner geworden (gemessen, +0,0 % Flaeche auf allen
+     * sieben).
      *
-     * Also festgeschrieben, was heute ist: schlechter darf es nicht
-     * werden. */
-    if (r.verdeckt) {
-      const k = `${g.n} · ${name} · Karte von Knöpfen verdeckt %`;
-      const war = MASS_STAND[k];
-      if (NEU) wandNeu[k] = r.verdeckt.anteil;
-      else if (war === undefined)
-        meldungen.push(`${name}: HINWEIS die Verdeckung der Karte steht noch nicht in `
-          + `${WAND_DATEI} (${r.verdeckt.anteil} %) — `
-          + '`npm run passt -- --neu` trägt sie nach');
-      else if (r.verdeckt.anteil > war + spielVon(war, true))
-        meldungen.push(`${name}: „${r.verdeckt.wo}" ist jetzt zu ${r.verdeckt.anteil} % von `
-          + `${r.verdeckt.wer} verdeckt statt zu ${war} % — die Bedienelemente sind weiter `
-          + 'auf die Karte gerutscht. War das Absicht, dann `npm run passt -- --neu`');
-      if (r.verdeckt.anteil > 0)
-        verdecktZeilen.push(`      ${name.padEnd(22)} ${String(r.verdeckt.anteil).padStart(5)} % `
-          + `von „${r.verdeckt.wo}" liegt unter ${r.verdeckt.wer}`);
-    }
+     * Damit gibt es nichts mehr auszuhandeln. Null ist eine Zahl, die
+     * man verteidigen kann; „nicht schlechter als 70,4 %" war nur eine
+     * Bremse. */
+    if (r.verdeckt && r.verdeckt.anteil > 0)
+      meldungen.push(`${name}: „${r.verdeckt.wo}" ist zu ${r.verdeckt.anteil} % von `
+        + `${r.verdeckt.wer} verdeckt — ein Bedienelement liegt auf der Karte. `
+        + 'Was gefragt ist, muss zu sehen sein');
 
     if (r.bewacht && r.bewacht.gefangen > 0)
       meldungen.push(`${name}: ${r.bewacht.gefangen} von `
@@ -1365,10 +1351,6 @@ if (luftZeilen.length) {
 if (kleberZeilen.length) {
   console.log('    Die Beispielkarten im Vorlauf:');
   [...new Set(kleberZeilen)].sort().forEach(z => console.log(z));
-}
-if (verdecktZeilen.length) {
-  console.log('    Was die Bedienelemente von der Karte verdecken (offen, siehe Q32):');
-  [...new Set(verdecktZeilen)].sort().forEach(z => console.log(z));
 }
 if (zeichenZeilen.length) {
   console.log(`    Die Kachelbilder (erlaubt: abgeschnitten ${ZEICHEN_AB} %, `

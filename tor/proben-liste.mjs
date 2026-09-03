@@ -446,15 +446,25 @@ export const PROBEN = [
     an:{ ...DIST, text:'color:var(--tinte-2);line-height:.6;' },
     sagt:'wird abgeschnitten' },
 
-  // Die Bedienelemente rutschen weiter auf die Karte. Die Ratsche haelt
-  // fest, was heute ist (70,4 % von Australien auf dem Zielgeraet, Q33) -
-  // schlechter darf es nicht werden, solange die Entscheidung offen ist.
-  { n:'die Lupenknöpfe rutschen weiter auf die Karte', tor:'passt',
-    args:['--teil=1/5'], bauen:true, datei:V,
-    such:'.lupenknopf{width:44px;height:44px;',
-    ersatz:'.lupenknopf{width:150px;height:44px;',
-    an:{ ...DIST, text:'.lupenknopf{width:150px' },
-    sagt:'verdeckt statt zu' },
+  /* Die Lupenknoepfe liegen wieder AUF der Karte - der Zustand vor Q33.
+   *
+   * Der erste Anlauf setzte nur `position:absolute` im Stilblatt. Das
+   * stellt den alten Zustand NICHT her: die Knoepfe haengen seit Q33 in
+   * der Werkzeugspalte, und absolut positioniert suchen sie sich den
+   * naechsten positionierten Vorfahren - also nicht die Karte. Sie landen
+   * am Bildrand, verdecken nichts, und `passt` bleibt zu Recht gruen. Eine
+   * Gegenprobe, die den Fehler nicht wirklich einbaut, beweist nichts.
+   *
+   * Jetzt haengt der Eingriff sie dorthin zurueck, wo sie waren, und gibt
+   * ihnen dieselbe Lage. */
+  { n:'die Lupenknöpfe liegen wieder auf der Karte', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:D,
+    such:'  werkzeug.appendChild(lupen);',
+    ersatz:'  lupen.style.cssText = "position:absolute;right:8px;bottom:8px;'
+         + 'display:flex;flex-direction:column;gap:8px;z-index:2";\n'
+         + '  s.querySelector(".karte").appendChild(lupen);',
+    an:{ ...DIST, text:'s.querySelector(".karte").appendChild(lupen)' },
+    sagt:'liegt auf der Karte' },
 
   { n:'zwei Kacheln liegen aufeinander', tor:'passt', args:['--teil=0/5'], bauen:true, datei:V,
     such:'.kachel.welt .name{font-size:var(--s3)}',
@@ -1691,11 +1701,15 @@ export const PROBEN = [
     an:{ ...DIST, text:'const anker = (false && zielForm' },
     sagt:'nicht mehr ganz im Kartenkasten' },
 
+  /* NACHGEZOGEN in Q33: die Regel haengt jetzt an `.feld`, nicht an der
+   * Karte. Die Knoepfe stehen seit Q33 in der Werkzeugspalte und sind
+   * damit keine Kinder der Karte mehr - der alte Suchtext zeigte ins
+   * Leere, und `npm run inhalt` hat es beim ersten Lauf gemeldet. */
   { n:'„ganze Karte" steht schon vor dem Zoomen da', tor:'ziehen',
     args:['--nur=lupe'], bauen:true, datei:V,
-    such:'.karte:not([data-lupe]) .lupenknopf.ganz,\n.karte[data-lupe=""] .lupenknopf.ganz{display:none}',
-    ersatz:'.karte .lupenknopf.ganz{display:flex}',
-    an:{ ...DIST, text:'.karte .lupenknopf.ganz{display:flex}' },
+    such:'.feld:not(:has(.karte[data-lupe]:not([data-lupe=""]))) .lupenknopf.ganz{display:none}',
+    ersatz:'.feld .lupenknopf.ganz{display:flex}',
+    an:{ ...DIST, text:'.feld .lupenknopf.ganz{display:flex}' },
     sagt:'ist ein Hindernis' },
 
   /* Und die neue Zusage: KEIN Gebiet ohne Trefferstelle.
@@ -1794,6 +1808,21 @@ export const PROBEN = [
     ersatz:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : 300;',
     an:{ ...DIST, text:'Math.min(ms, 900) : 300;' },
     sagt:'kann ein Kind es nicht lesen' },
+
+  /* Und die Ablesung selbst darf nicht ins Leere greifen (Q37).
+   *
+   * Seit die Pruefung an der ANGEFORDERTEN Zahl haengt statt an der
+   * Stoppuhr, haengt ihr ganzes Urteil an dem Mantel um `setTimeout`.
+   * Faengt der nichts mehr - weil jemand die Untergrenze verstellt oder
+   * die App die Pause anders stellt -, waere jedes Urteil geschenkt. Der
+   * Eingriff hebt die Untergrenze ueber jede Schaupause; danach wird
+   * nichts mehr mitgeschrieben, und das MUSS auffallen. */
+  { n:'die Schaupause wird gar nicht mehr mitgeschrieben', tor:'smoke',
+    args:['--nur=pausen'], bauen:true, datei:'tor/smoke.mjs',
+    such:'        if (typeof ms === \'number\' && ms >= 200) window.__angefordert.push(ms);',
+    ersatz:'        if (typeof ms === \'number\' && ms >= 999999) window.__angefordert.push(ms);',
+    an:{ datei:'tor/smoke.mjs', text:'ms >= 999999' },
+    sagt:'gar keine Schaupause angefordert' },
 
   /* Eine Schaupause faellt wieder neben den Schalter.
    *
@@ -2544,6 +2573,33 @@ export const PROBEN = [
     such:'  const RANDBLENDE = 0.10;', ersatz:'  const RANDBLENDE = 0;',
     an:{ ...DIST, text:'RANDBLENDE = 0;' },
     sagt:'endet die Umgebung hart am Rahmen' },
+
+  /* Die Blindprobe unter der Randmessung (Q33).
+   *
+   * Sie soll anschlagen, wenn im Ausschnitt gar kein Grau steht - dann
+   * bezeugt die Null am Rand nichts. Bis Q33 stand sie auf einer Zahl, die
+   * von den Lupenknoepfen kam und deshalb auf keiner Karte je unter die
+   * Schwelle fiel: sie konnte nicht anschlagen und hatte trotzdem 33
+   * Fassungen lang keinen Befund. Diese Probe ist die Antwort darauf.
+   *
+   * Der Eingriff laesst die Umgebung stehen und macht sie unsichtbar -
+   * genau der Zustand, den keine Randmessung merken kann. */
+  { n:'die Umgebung ist unsichtbar, das Tor misst ein leeres Bild', tor:'ziehen',
+    bauen:true, args:['--nur=rand'], datei:D,
+    such:'fill="var(--linie)" opacity=".55"', ersatz:'fill="var(--linie)" opacity="0"',
+    an:{ ...DIST, text:'fill="var(--linie)" opacity="0"' },
+    sagt:'überhaupt kein Grau' },
+
+  /* Und die Blindprobe darueber: reicht die Umgebung auf KEINER Karte mehr
+   * ins Randband, hat der Deckel nichts zu deckeln - das Tor waere gruen,
+   * ohne etwas geprueft zu haben. Eine Blende ueber die halbe Karte laesst
+   * in der Mitte reichlich Grau stehen (die Probe darunter bleibt also
+   * still) und raeumt genau das Band frei, um das es geht. */
+  { n:'die Blende frisst das ganze Randband', tor:'ziehen',
+    bauen:true, args:['--nur=rand'], datei:D,
+    such:'  const RANDBLENDE = 0.10;', ersatz:'  const RANDBLENDE = 0.6;',
+    an:{ ...DIST, text:'RANDBLENDE = 0.6;' },
+    sagt:'überhaupt bis ins Randband' },
 
   /* --- ansicht ------------------------------------------------------ */
   // Gedreht wird jetzt an der MARKE, nicht an einer ausgeschriebenen Farbe:

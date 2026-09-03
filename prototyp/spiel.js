@@ -98,6 +98,54 @@ const ZEICHEN = {
      nicht liest, ohnehin stumm. */
   auge:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/>'
      + '<circle cx="12" cy="12" r="3.1"/>',
+
+  /* --- Q34: Zeichen fuer die Knoepfe, die fuer Fiona leer waren --------
+   *
+   * Audit A hat 21 antippbare Dinge gezaehlt, die einem Kind, das nicht
+   * liest, NICHTS sagen - kein Bild, keine Ziffer, keine Stimme. Schwer
+   * wogen die Dreiergruppen: Pausenbildschirm und Endbildschirm, je drei
+   * gleich geformte Kaesten nebeneinander. Fiona hoert eine Aufzaehlung
+   * und sieht drei Kaesten; die Zuordnung Satz -> Kasten traegt allein
+   * die Reihenfolge.
+   *
+   * Zwei Regeln fuer diese fuenf Zeichen:
+   *
+   *   1. GLEICHES ZIEL, GLEICHES ZEICHEN. „Übung beenden" und „Etwas
+   *      anderes" fuehren beide zur Kachelwand - also beide `kacheln`.
+   *      Zwei Zeichen fuer denselben Weg waeren zwei Wege.
+   *   2. WAS LOESCHT, SIEHT ANDERS AUS. „Noch einmal" wiederholt, „Von
+   *      vorne anfangen" LOESCHT. Beides mit einem Kreispfeil zu zeigen
+   *      hiesse, den Unterschied zu verstecken, auf den es ankommt -
+   *      deshalb dort der Eimer.
+   */
+  /* Weiterspielen: das Dreieck, das jedes Abspielen der Welt benutzt. */
+  weiter:'<path d="M8.5 5.4l10.5 6.6-10.5 6.6z"/>',
+  /* Zur Kachelwand: vier Kacheln. Genau das, was danach dasteht. */
+  kacheln:'<rect x="4" y="4" width="7" height="7" rx="1.8"/>'
+        + '<rect x="13" y="4" width="7" height="7" rx="1.8"/>'
+        + '<rect x="4" y="13" width="7" height="7" rx="1.8"/>'
+        + '<rect x="13" y="13" width="7" height="7" rx="1.8"/>',
+  /* Noch einmal: der Kreispfeil, derselbe wie in `nochhoeren` - dort
+     heisst er „noch einmal hoeren", hier „noch einmal spielen". */
+  nochmal:'<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20.6 3.9v4.6H16"/>',
+  /* Von vorne: ein Eimer. Nicht der Kreispfeil - hier verschwindet
+     etwas, und das muss man sehen, bevor man tippt. */
+  weg:'<path d="M5 7h14"/><path d="M9.5 7V5.4A1.4 1.4 0 0 1 10.9 4h2.2a1.4 1.4 0 0 1 1.4 1.4V7"/>'
+    + '<path d="M6.7 7l.8 11.5A1.6 1.6 0 0 0 9.1 20h5.8a1.6 1.6 0 0 0 1.6-1.5L17.3 7"/>',
+  /* „Weiss ich nicht": ein Fragezeichen. Der Punkt darunter ist ein Strich
+     ohne Laenge - der Zeichensatz hier ist ohne Fuellung, und ein runder
+     Abschluss macht daraus einen Punkt. */
+  frage:'<path d="M9.1 8.8a2.9 2.9 0 1 1 3.6 2.9c-.8.2-1.2.8-1.2 1.6v.8"/>'
+      + '<path d="M11.5 17.6v.01"/>',
+  /* Lupe groesser und kleiner. Bis Q34 stand dort ein nacktes „+" und
+     „−". Beide sind Rechenzeichen, und in einer App mit einer Rechenwelt
+     ist das die falsche Auskunft; ausserdem hat Audit A gemessen, dass
+     ein einzelnes Rechenzeichen fuer ein Kind, das nicht liest, gar
+     nichts traegt. Mit der Lupe daneben sagt es, worum es geht. */
+  lupeAuf:'<circle cx="10.5" cy="10.5" r="6"/><path d="M14.9 14.9L20 20"/>'
+        + '<path d="M8 10.5h5M10.5 8v5"/>',
+  lupeZu:'<circle cx="10.5" cy="10.5" r="6"/><path d="M14.9 14.9L20 20"/>'
+       + '<path d="M8 10.5h5"/>',
 };
 const ZEI = (n, g=24)=>`<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none"
   stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"
@@ -2333,7 +2381,7 @@ async function vorlauf(ebeneId, zurueck = null){
         </button>`).join('')}</div>
     </div>
     <div class="reihe vorlauffuss">
-      <button class="knopf haupt" id="los">Jetzt starten</button>
+      <button class="knopf haupt" id="los">${ZEI('weiter', 22)}Jetzt starten</button>
     </div>`;
   s.querySelector('#zur').onclick = () => zeige(zurueck || ebenenwahl);
   s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));
@@ -2605,9 +2653,9 @@ function pauseSchirm(){
     <div class="mitte">
       <div class="titel">Pause</div>
       <div class="reihe siegwahl">
-        <button class="knopf haupt" id="weiter">Weiterspielen</button>
-        <button class="knopf" id="raus">Übung beenden</button>
-        <button class="knopf warnend" id="null">Von vorne anfangen</button>
+        <button class="knopf haupt" id="weiter">${ZEI('weiter', 22)}Weiterspielen</button>
+        <button class="knopf" id="raus">${ZEI('kacheln', 22)}Übung beenden</button>
+        <button class="knopf warnend" id="null">${ZEI('weg', 22)}Von vorne anfangen</button>
       </div>
       <div class="unter" id="was">Bei „von vorne" verschwindet alles, was du
         in <strong>${titel}</strong> schon gesammelt hast.</div>
@@ -2618,7 +2666,11 @@ function pauseSchirm(){
   knopf.onclick = async () => {
     if (knopf.dataset.sicher !== 'ja') {
       knopf.dataset.sicher = 'ja';
-      knopf.textContent = 'Wirklich löschen?';
+      /* `innerHTML` und nicht `textContent`: seit Q34 traegt der Knopf ein
+         Zeichen, und `textContent` haette es beim Umbenennen mit
+         weggeworfen - ausgerechnet auf dem Schritt, auf dem es am meisten
+         zaehlt. */
+      knopf.innerHTML = ZEI('weg', 22) + 'Wirklich löschen?';
       s.querySelector('#was').textContent =
         `Alle Häkchen in ${titel} sind dann weg, und es geht bei der ersten Aufgabe los.`;
       sagen(`Soll ${titel} wirklich von vorne losgehen?`);
@@ -2720,7 +2772,8 @@ function rechenschirm(){
                placeholder="?" aria-label="Ergebnis">
         <button class="knopf haupt" id="pruef">Prüfen</button>
       </div>` : ''}
-      <div class="werkzeug"><button class="leise" id="weissnicht">Weiß ich nicht</button></div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
     </div>`;
 
   const luecke = s.querySelector('#luecke');
@@ -3522,11 +3575,6 @@ function spielschirm(){
                   vector-effect="non-scaling-stroke" style="display:none"/>
           </g>
         </svg>
-        <div class="lupenknoepfe">
-          <button class="lupenknopf" id="lupePlus" aria-label="Karte größer">+</button>
-          <button class="lupenknopf" id="lupeMinus" aria-label="Karte kleiner">−</button>
-          <button class="lupenknopf ganz" id="lupeGanz" aria-label="Ganze Karte">${ZEI("ganzeKarte", 22)}</button>
-        </div>
       </div>
       <div class="seite" id="seite"></div>
     </div>`;
@@ -3534,6 +3582,35 @@ function spielschirm(){
   const seite = s.querySelector('#seite');
   const liste = el('div','wahlliste'), werkzeug = el('div','werkzeug');
   seite.append(liste, werkzeug);
+
+  /* Die Lupenknoepfe stehen NEBEN der Karte, nicht auf ihr (Q33).
+   *
+   * Sie lagen bis hierher absolut positioniert unten rechts IN der Karte.
+   * Audit A hat gemessen, was das kostet: auf dem Zielgeraet sind 70,4 %
+   * von Australien verdeckt, die Mitte des Gebiets liegt auf
+   * `#lupeMinus` - und das auf allen sieben Groessen, zwischen 16,9 und
+   * 71,8 %. Antworten ging trotzdem (die Umkreissuche findet das Gebiet),
+   * SEHEN nicht: „Wie heisst dieser Kontinent?", und „dieser" liegt unter
+   * einem Knopf.
+   *
+   * Eine andere Ecke ist keine Loesung - alle vier gemessen, keine ist
+   * frei: unten links verschwindet das Saarland zu 99,9 %, oben rechts
+   * Berlin zu 100 %. Und ein Polster in der Karte macht sie 16 % kleiner,
+   * weil ihr Kasten ein festes Seitenverhaeltnis hat.
+   *
+   * Die Werkzeugspalte kostet die Karte dagegen NICHTS: ihre Breite
+   * bestimmt die Antwortliste, und die ist breiter als 44 Punkte. Dort
+   * stehen ohnehin schon das Mikrofon und der Hoerknopf.
+   *
+   * Angehaengt hier und nicht im Markup, weil `werkzeug` erst hier
+   * entsteht - und ZUERST, damit die Lupe ueber dem Ausweg steht: sie
+   * gehoert zur Karte, „Weiss ich nicht" zur Aufgabe. */
+  const lupen = el('div','lupenknoepfe');
+  lupen.innerHTML = `
+    <button class="lupenknopf" id="lupePlus" aria-label="Karte größer">${ZEI('lupeAuf', 24)}</button>
+    <button class="lupenknopf" id="lupeMinus" aria-label="Karte kleiner">${ZEI('lupeZu', 24)}</button>
+    <button class="lupenknopf ganz" id="lupeGanz" aria-label="Ganze Karte">${ZEI("ganzeKarte", 22)}</button>`;
+  werkzeug.appendChild(lupen);
   /* „Noch einmal hoeren" wird ZULETZT angehaengt - nach dem Mikrofon und
      dem Umschalter -, damit die Reihenfolge dieselbe bleibt, wenn einer
      der beiden fehlt. Der Satz kommt mit; gesagt wird er weiter unten
@@ -3926,12 +4003,24 @@ function spielschirm(){
   if (!st.test) {
     const weiter = el('button','leise');
     weiter.id = 'ueberspringen';
-    weiter.textContent = 'Weiß ich nicht';
+    // Q34: mit Zeichen. Derselbe Ausweg wie im Rechnen, dasselbe Zeichen.
+    weiter.innerHTML = ZEI('frage', 20) + 'Weiß ich nicht';
     weiter.onclick = ()=>aufloesen('uebersprungen');
     werkzeug.appendChild(weiter);
   }
 
-  /* Der Umschalter steht nur dort, wo er etwas zu schalten hat: bei einer
+  /* KEIN Zeichen an diesem Knopf (Q34), und das ist kein Vergessen.
+   *
+   * Audit A zaehlt ihn weiter als „stumm und blind", zu Recht: fuer ein
+   * Kind, das nicht liest, steht dort nichts. Ein Zeichen waere hier aber
+   * nicht dasselbe wie an den anderen zehn. Er ist ein UMSCHALTER - seine
+   * Beschriftung wechselt zwischen „Lieber antippen" und „Lieber ziehen",
+   * und ein Zeichen, das dabei stehenbliebe, waere die halbe Zeit falsch.
+   * Es braeuchte zwei, und dann steht die Frage im Raum, ob ein Zeichen
+   * ueberhaupt sagen kann, was „ziehen statt antippen" heisst. Das ist
+   * eine eigene Runde und keine Zeile hier.
+   *
+   * Der Umschalter steht nur dort, wo er etwas zu schalten hat: bei einer
    * Auswahl mit Etiketten. Beim Tippfeld gibt es nichts umzuschalten - und
    * bei der umgekehrten Frage erst recht nicht: dort ist die Karte die
    * Antwort, es gibt kein Etikett, das man ziehen oder antippen koennte.
@@ -4700,9 +4789,11 @@ function spielschirm(){
       ? { x: zielForm.anker[0], y: zielForm.anker[1] } : null;
     const halten = () => (anker ? { x: k * anker.x + tx, y: k * anker.y + ty } : null);
 
-    kasten.querySelector('#lupePlus').onclick  = () => um(1.6, halten());
-    kasten.querySelector('#lupeMinus').onclick = () => um(1 / 1.6, halten());
-    kasten.querySelector('#lupeGanz').onclick  = ganz;
+    /* Gesucht wird im BILDSCHIRM, nicht mehr im Kartenkasten: die Knoepfe
+     * stehen seit Q33 in der Werkzeugspalte (siehe dort). */
+    s.querySelector('#lupePlus').onclick  = () => um(1.6, halten());
+    s.querySelector('#lupeMinus').onclick = () => um(1 / 1.6, halten());
+    s.querySelector('#lupeGanz').onclick  = ganz;
 
     /* Ziehen und Aufziehen.
      *
@@ -5093,10 +5184,10 @@ function endschirm(){
         !st.aufkleber && !f.gesammelt
           ? `<div class="leiser">${ton().ersterKleber}</div>` : ''}
       <div class="reihe siegwahl">
-        <button class="knopf haupt" id="nochmal">${
+        <button class="knopf haupt" id="nochmal">${ZEI('nochmal', 22)}${
           st.test ? (bestanden ? 'Weiter üben' : 'Noch einmal üben') : 'Noch einmal'}</button>
-        <button class="knopf" id="buch">Forscherbuch</button>
-        <button class="knopf" id="andere">Etwas anderes</button>
+        <button class="knopf" id="buch">${ZEI('buch', 22)}Forscherbuch</button>
+        <button class="knopf" id="andere">${ZEI('kacheln', 22)}Etwas anderes</button>
       </div>
     </div>`;
   /* Nach einem Test fuehrt der Hauptknopf ins UEBEN, nicht in den naechsten
