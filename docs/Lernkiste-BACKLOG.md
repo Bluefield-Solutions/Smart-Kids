@@ -3316,3 +3316,66 @@ Seiten anfasste und `messtakt` dort fehlte — eine Zahl, die ihre Messstelle
 nicht mitträgt, sagt weniger als sie behauptet (Regel 5). Jetzt geht jede
 Seite durch `uhrenBuchfuehrung()`, und der Bericht meint alle: 0 blind,
 1,5 s in drei Ausbleiben, 0,3 s in fünf Messtakt-Schritten.
+
+## Q44 erledigt (Q44): das Forscherbuch bekommt Kapitel
+
+**Gemessen zuerst.** Auf dem Zielgerät (844 × 390 quer, 318 Punkte
+sichtbar) mit sechs Gruppen: **842 Punkte Inhalt in 318**, und **sechs von
+zwölf Blöcken fangen erst unter der Unterkante an** — vier ganze Gruppen
+und die Vorschau. Zwei Gruppen passen, die dritte kippt es. Fiona sah zwei
+Albumkarten und glaubte, das sei alles; sie liest nicht und rollt nicht auf
+Verdacht.
+
+Ihr Wunsch war ausdrücklich: **sie will immer alle sehen.** Ein Buch, das
+man dreimal rollen muss, erfüllt ihn nicht.
+
+**Also Reiter, wie ein Sammelalbum Kapitel hat.** Ein Streifen über dem
+Buch zeigt jede Gruppe auf einmal — Zahl groß in der Farbe der Ebene, Name
+klein darunter —, und unter ihm steht genau eine Seite, ganz. Was sie hat,
+sieht sie damit immer vollständig; was darin steckt, ohne zu rollen. Ab
+drei Kapiteln; darunter ist der Streifen eine Tür mehr vor demselben
+Inhalt. Nach: **251 Punkte in 251**, auf jeder der sechs Seiten.
+
+Nebenbei wird das Buch schöner: wo vorher zwei Albumkarten zu je 125
+Punkten übereinander standen, hat die eine Karte auf ihrer Seite **200**.
+
+**Drei Fehler, die dabei aufgefallen sind** — alle drei von einem Tor oder
+einer Gegenprobe, keiner vom Hinsehen:
+
+1. **`.zahl` gab es schon.** Meine Kapitelzahl hieß so — und saß prompt in
+   einem blauen Tastenkasten, weil `.zahl` die Taste auf dem Rechenfeld
+   ist. Zu sehen war es sofort, zu erklären erst nach dem Blick ins
+   Stilblatt. Heißt jetzt `.reiterzahl`.
+2. **„Du hast alles gefunden."** stand bei einem Buch mit zwei halbvollen
+   Landkarten. Ich hatte die Bedingung an das Vorschau-*Kapitel* gehängt;
+   dort ist die Vorschau aber nur *unterdrückt*, weil die Albumkarte das
+   Offene ohnehin blass zeigt. Zwei von sieben Kontinenten sind nicht
+   „alles".
+3. **Sieben Reiter passten nicht auf 844 Punkte** — der letzte stand zu
+   78 % im Streifen. Mit fester Breite; jetzt teilen sie sich die Breite
+   und rollen erst, wenn auch das nicht mehr reicht.
+
+**Und vier Prüfungen, die still geworden wären.** Das ist der teuerste Teil
+dieser Runde, und wieder dieselbe Klasse wie Q36, Q39b, Q43: *die Prüfung
+zeigt auf etwas, das es noch gibt — nur nicht mehr dort.*
+
+| was | warum still | jetzt |
+|---|---|---|
+| „das Forscherbuch zeigt wieder alles" | zählte `.aufkleber` auf der offenen Seite; die gefälschten hundert lagen auf einer anderen | `ueberAlleKapitel()` blättert und summiert |
+| „keine einzige blasse Karte im Buch" | die blasse Vorschaukarte liegt seit den Kapiteln eine Seite weiter | dieselbe Schleife |
+| „ein Block fängt unter der Unterkante an" | der Eingriff drehte an `.albumkarte svg{96px}` — die **Regel wurde überschrieben**, das Kapitelbuch hat eine spezifischere | dreht an der Regel, die wirklich gilt |
+| vier `waitForSelector(BUCHKARTE)` | „das Buch steht" hieß „eine Karte ist zu sehen"; auf der Abzeichenseite liegt keine | `BUCHDA` wartet auf das Buch selbst |
+
+Die dritte Zeile ist eine **neue** Verfallsart in dieser Datei: nicht der
+Suchtext war weg und nicht die Prüfung — die CSS-Regel, an der der Eingriff
+drehte, war von einer spezifischeren überschrieben. Der Eingriff kam an,
+das Bild blieb gleich, und die Probe bewies nichts.
+
+**Das Tor dazu** misst beide Zusagen getrennt, und zwar an allen Kapiteln,
+nicht nur am ersten: jeder Reiter steht **ganz** im Streifen (waagerecht
+gemessen, anteilig an seiner Breite), und auf jeder Seite steht jeder Block
+ganz im Bild. Dazu ein **Fingerabdruck** je Seite — ohne den wäre ein
+Reiter, der die Seite gar nicht austauscht, grün durchgekommen: die Marke
+wandert, sechs Reiter stehen da, und darunter immer dasselbe. Genau das
+stellt eine der drei neuen Gegenproben her, und sie hat diese Lücke
+gefunden, bevor jemand sie hätte haben können.

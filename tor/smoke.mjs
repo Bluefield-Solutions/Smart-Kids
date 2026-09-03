@@ -63,7 +63,13 @@ const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set()
  * das auf `.aufkleber` wartet, lief damit dreissig Sekunden in die Frist -
  * gemessen, nicht vermutet: `passt` und vier Abschnitte des Rauchtests
  * sind daran gescheitert, bevor diese Zeile hier stand. */
-const BUCHKARTE = '.schirm.da .aufkleber, .schirm.da .albumkarte';
+/* Und mit Q44 noch einmal weiter: „das Buch steht" ist auch nicht mehr
+ * „eine KARTE ist zu sehen". Beim Aufschlagen steht das Abzeichenkapitel
+ * da, und auf dem liegt keine Karte - vier Abschnitte liefen wieder in
+ * dieselbe Frist. Gewartet wird jetzt auf das Buch selbst; wer Karten
+ * zaehlen will, blaettert (`ueberAlleKapitel`). Der Name sagt das auch:
+ * `BUCHDA`, nicht `BUCHKARTE`. */
+const BUCHDA = '.schirm.da .rollen.buch';
 
 const TAKT = { faktor: 1, n: 0, hoechster: 1, norm: 0 };
 
@@ -260,6 +266,33 @@ const bisHier = async (fn, ms = 6000, takt = 50) => {
  * Bedingung eintritt - anders als eine feste Pause, die IMMER kostet. */
 const bis = (p, fn, ms = 5000, arg = null) =>
   p.waitForFunction(fn, arg, { timeout: ms }).then(() => true).catch(() => false);
+
+/* Das Buch hat seit Q44 Kapitel - wer es ZAEHLEN will, muss blaettern.
+ *
+ * Jede Zusage ueber das Buch („hoechstens drei Fragezeichen", „keine
+ * umrisslose Karte", „eine blasse ist dabei") ist eine Aussage ueber das
+ * BUCH, nicht ueber eine Seite. Als die Reiter kamen, zaehlten drei
+ * Pruefungen ploetzlich nur die offene Seite - und zwei Gegenproben, die
+ * seit Monaten anschlugen, wurden still: „das Forscherbuch zeigt wieder
+ * alles" faelscht hundert Aufkleber in eine Gruppe, die gar nicht offen
+ * stand, und der Rauchtest sah drei.
+ *
+ * Ohne Reiter gibt es genau eine Seite; dann laeuft die Schleife einmal,
+ * und das Ergebnis ist genau das von vorher.
+ *
+ * Am Ende steht wieder die ERSTE Seite da: was danach fotografiert oder
+ * gemessen wird, soll das sein, was ein Kind beim Aufschlagen sieht. */
+const ueberAlleKapitel = async (p, lies) => {
+  const n = await p.$$eval('.schirm.da [data-kap]', rs => rs.length).catch(() => 0);
+  if (!n) return [await p.evaluate(lies)];
+  const aus = [];
+  for (let i = 0; i < n; i++) {
+    await p.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
+    aus.push(await p.evaluate(lies));
+  }
+  await p.$$eval('.schirm.da [data-kap]', rs => rs[0].click());
+  return aus;
+};
 
 /* Nach „Fertig" auf die REAKTION warten, nicht auf eine Frist (Q42).
  *
@@ -1317,16 +1350,28 @@ if (laeuft('ablage')) try {
   // Forscherbuch
   await p.evaluate(() => { window.__gesagt = []; });
   await p.click('#buch');
-  await p.waitForSelector(BUCHKARTE);
+  await p.waitForSelector(BUCHDA);
   await bis(p, () => (window.__gesagt || []).length > 0, 4000);
   /* Seit Q28 klebt auf einer Ebene MIT Karte alles auf einer Albumkarte,
      statt in einzelnen Kaesten. Gezaehlt wird deshalb beides: die
      gesammelten Kaesten und die farbigen Flaechen auf den Karten. */
-  const kleber = await p.evaluate(() =>
-      document.querySelectorAll('.schirm.da .aufkleber.da').length
-    + document.querySelectorAll('.schirm.da .albumkleber').length);
+  /* Durch das ganze Buch, nicht nur ueber die offene Seite (Q44) - siehe
+     `ueberAlleKapitel`. Alles in EINEM Durchgang gelesen: jeder weitere
+     kostet ein Blaettern je Kapitel. */
+  const buchSeiten = await ueberAlleKapitel(p, () => {
+    const kaesten = [...document.querySelectorAll('.schirm.da .aufkleber')];
+    return { kleber: document.querySelectorAll('.schirm.da .aufkleber.da').length
+               + document.querySelectorAll('.schirm.da .albumkleber').length,
+             alleKleber: kaesten.length,
+             fragezeichen: kaesten.filter(e => /^\?$/.test(e.textContent.trim())).length,
+             album: [...document.querySelectorAll('.schirm.da .albumkarte')].map(k => ({
+               voll: k.querySelectorAll('.albumkleber').length,
+               offen: k.querySelectorAll('.albumoffen').length })) };
+  });
+  const summe = (welche) => buchSeiten.reduce((n, x) => n + x[welche], 0);
+  const kleber = summe('kleber');
   if (kleber < 1) merke('forscherbuch', new Error('kein einziger Aufkleber nach zwei Sitzungen'));
-  const alleKleber = await p.$$eval('.schirm.da .aufkleber', e => e.length);
+  const alleKleber = summe('alleKleber');
   /* --- Das Buch zeigt nicht mehr die ganze Wand ----------------------
    *
    * Rueckmeldung der Kinder: es sieht nach ARBEIT aus. Vorher standen hier
@@ -1360,8 +1405,7 @@ if (laeuft('ablage')) try {
    * FRAGEZEICHEN - Kaesten, die sagen „das kannst du noch nicht".
    * Hoechstens drei davon, wie eh und je; auf einer Ebene mit Karte
    * keines. */
-  const fragezeichen = await p.$$eval('.schirm.da .aufkleber',
-    es => es.filter(e => /^\?$/.test(e.textContent.trim())).length);
+  const fragezeichen = summe('fragezeichen');
   if (fragezeichen > 3)
     merke('forscherbuch', new Error(`${fragezeichen} Kästen mit Fragezeichen im Buch — `
       + 'höchstens drei sind Vorschau, mehr ist wieder die To-do-Liste'));
@@ -1373,9 +1417,7 @@ if (laeuft('ablage')) try {
    * ist dann erst recht keines da. Genau die Verfallsart, gegen die
    * Regel 1 steht: eine Pruefung, die nie etwas meldet, ist kein Beweis -
    * und eine, die nur Verbotenes sucht, meldet zum Gebotenen nie etwas. */
-  const album = await p.$$eval('.schirm.da .albumkarte', es => es.map(k => ({
-    voll: k.querySelectorAll('.albumkleber').length,
-    offen: k.querySelectorAll('.albumoffen').length })));
+  const album = buchSeiten.flatMap(x => x.album);
   for (const k of album)
     if (!k.offen && !k.voll)
       merke('forscherbuch', new Error('eine Albumkarte im Buch ist leer — '
@@ -1895,7 +1937,7 @@ if (laeuft('ablage')) try {
     // die Umrisse noch nicht geholt sind.
     await zurEbenenwahl(q, 'bundeslaender');
     await q.click('#buch');
-    await q.waitForSelector(BUCHKARTE);
+    await q.waitForSelector(BUCHDA);
     await bis(q, () => !!document.querySelector('.schirm.da .rollen'), 4000);
     /* Und WARTEN, bis der alte Bildschirm weg ist (Q35).
      *
@@ -1914,30 +1956,18 @@ if (laeuft('ablage')) try {
         && getComputedStyle(e).display !== 'none');
       return da.length === 1 && getComputedStyle(da[0]).opacity === '1';
     }, 4000);
-    const b = await q.evaluate(() => {
+    /* Das Buch hat seit Q44 Kapitel - also wird es DURCHGEBLAETTERT.
+     *
+     * Die Zaehlungen hier (Karten, blasse, umrisslose) sind Aussagen ueber
+     * das BUCH, nicht ueber eine Seite. Als die Reiter kamen, lag die
+     * blasse Vorschaukarte auf einer anderen Seite als die offene, und
+     * „keine einzige blasse Karte" schlug an - richtig gemessen, falsche
+     * Frage. Gezaehlt wird deshalb ueber alle Seiten; die HOEHEN bleiben
+     * die der Seite, die beim Aufschlagen dasteht, denn das ist die, die
+     * ein Kind zuerst sieht. */
+    const bDa = await q.evaluate(() => {
       const r = document.querySelector('.schirm.da .rollen');
-      const karten = [...document.querySelectorAll('.schirm.da .aufkleber, .schirm.da .albumkarte')];
-      return { da: karten.length,
-               // Ein Gebiet MUSS einen Umriss zeigen. Der Rechenkasten ist
-               // die Notdarstellung, und sein Inhalt war hier „undefined".
-               /* ... AUSSER den Rechenklebern: die haben von Haus aus
-                * keinen (der Aufkleber IST die Aufgabe, siehe `kleber` in
-                * spiel.js). Ohne diese Ausnahme meldete die Pruefung acht
-                * von neun Karten als umrisslos, sobald das Buch endlich
-                * eine Rechenebene enthielt (Q35).
-                *
-                * Gefragt wird nach `data-art`, NICHT nach der Klasse
-                * `rechnen`: die heisst „hat keinen Pfad" und sitzt damit
-                * auch auf einem GEBIET, dessen Umriss nicht geladen ist -
-                * also genau auf dem Fall, den diese Pruefung fangen soll.
-                * Mit der Klasse als Merkmal hat die Gegenprobe „das Buch
-                * zeigt Karten ohne Umriss" aufgehoert anzuschlagen. */
-               ohneUmriss: karten.filter(k => k.dataset.art !== 'rechnen'
-                 && !k.querySelector('svg path')).length,
-               rechenkleber: karten.filter(k => k.dataset.art === 'rechnen').length,
-               blass: karten.filter(k => !k.classList.contains('da')).length,
-               undef: karten.filter(k => /undefined/.test(k.textContent)).length,
-               sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight),
+      return { sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight),
                /* Wieviel ist von jedem Block ueberhaupt zu sehen?
                 *
                 * Nicht „liegt sein Anfang unter der Kante" - dann genuegen
@@ -1957,6 +1987,36 @@ if (laeuft('ablage')) try {
                     anteil: Math.max(0, Math.min(x.k.bottom, r.getBoundingClientRect().bottom)
                       - x.k.top) / x.k.height })) };
     });
+    /* Durch alle Kapitel zaehlen (Q44) - `bDa` traegt die HOEHEN der Seite,
+       die beim Aufschlagen dasteht, die Zaehlungen kommen aus dem ganzen
+       Buch. Ohne Reiter ist beides dasselbe. */
+    const kartenSeiten = await ueberAlleKapitel(q, () => {
+      const karten = [...document.querySelectorAll('.schirm.da .aufkleber, .schirm.da .albumkarte')];
+      return { da: karten.length,
+               /* Ein Gebiet MUSS einen Umriss zeigen. Der Rechenkasten ist
+                * die Notdarstellung, und sein Inhalt war hier „undefined".
+                *
+                * ... AUSSER den Rechenklebern: die haben von Haus aus
+                * keinen (der Aufkleber IST die Aufgabe, siehe `kleber` in
+                * spiel.js). Ohne diese Ausnahme meldete die Pruefung acht
+                * von neun Karten als umrisslos, sobald das Buch endlich
+                * eine Rechenebene enthielt (Q35).
+                *
+                * Gefragt wird nach `data-art`, NICHT nach der Klasse
+                * `rechnen`: die heisst „hat keinen Pfad" und sitzt damit
+                * auch auf einem GEBIET, dessen Umriss nicht geladen ist -
+                * also genau auf dem Fall, den diese Pruefung fangen soll.
+                * Mit der Klasse als Merkmal hat die Gegenprobe „das Buch
+                * zeigt Karten ohne Umriss" aufgehoert anzuschlagen. */
+               ohneUmriss: karten.filter(k => k.dataset.art !== 'rechnen'
+                 && !k.querySelector('svg path')).length,
+               rechenkleber: karten.filter(k => k.dataset.art === 'rechnen').length,
+               blass: karten.filter(k => !k.classList.contains('da')).length,
+               undef: karten.filter(k => /undefined/.test(k.textContent)).length };
+    });
+    const b = { ...bDa };
+    for (const k of ['da', 'ohneUmriss', 'rechenkleber', 'blass', 'undef'])
+      b[k] = kartenSeiten.reduce((n, x) => n + x[k], 0);
     if (b.ohneUmriss)
       merke('forscherbuch', new Error(`${b.ohneUmriss} von ${b.da} Karten im Buch zeigen `
         + 'keinen Umriss — das Buch wurde geöffnet, bevor die Geometrie geladen war'));
@@ -2011,6 +2071,144 @@ if (laeuft('ablage')) try {
         + `im Buch steht so gut wie ganz unter der Unterkante (${knapp.map(x =>
           `${x.was} ${Math.round(x.anteil * 100)} %`).join(' · ')}) — davon sieht ein Kind `
         + `nicht einmal einen Anfang (${b.ganz} Punkte Inhalt, ${b.sichtbar} sichtbar)`));
+    await q.close();
+  }
+
+  /* --- Und ein Buch, das nicht mehr auf eine Seite passt (Q44) -------
+   *
+   * Der Block darueber pflanzt ZWEI Gruppen, und zwei passen. Gemessen
+   * auf dem Zielgeraet (844 x 390, 318 Punkte sichtbar): sechs Gruppen
+   * sind 842 Punkte Inhalt, und sechs von zwoelf Bloecken fangen erst
+   * UNTER der Unterkante an. Fionas Wunsch war ausdruecklich, dass sie
+   * immer ALLE sieht.
+   *
+   * Seit Q44 bekommt das Buch dafuer Kapitelreiter. Geprueft werden die
+   * beiden Zusagen, die daran haengen, und zwar getrennt:
+   *
+   *   1. JEDES Kapitel steht im Streifen, und zwar ganz - sonst weiss ein
+   *      Kind, das nicht liest, nicht einmal, dass es das Kapitel gibt.
+   *   2. Auf JEDER Seite ist jeder Block zu sehen - sonst hat das
+   *      Blaettern das Rollen nur ersetzt.
+   *
+   * Die zweite wird an ALLEN Kapiteln gemessen, nicht nur am ersten: die
+   * Seiten sind verschieden hoch, und die hoechste ist die, die kippt.
+   */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    /* Fuenf Ebenen, davon zwei mit Landkarte und drei ohne. Die Mischung
+       ist wichtig: eine Albumkarte und eine Kleberreihe sind verschieden
+       hoch, und ein Streifen, der nur mit lauter gleichen Seiten geprueft
+       waere, bewiese fuer den gemischten Fall nichts. */
+    const viele = await q.evaluate(() => {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      const gut = { fach: 5, hoechstes: 5, faellig: 0, richtig: 3, falsch: 0, zuletzt: 0 };
+      const aus = (ids) => { const o = {}; ids.forEach(x => o[x] = { ...gut }); return o; };
+      return {
+        'fiona:kontinente':    aus(D.kontinente.slice(0, 3).map(x => x.id)),
+        'fiona:bundeslaender': aus(D.deutschland.slice(0, 3).map(x => x.id)),
+        'fiona:rechnen:plusminus': aus(Rechnen.vorrat().slice(0, 4).map(x => x.id)),
+        'fiona:schreiben:buchstaben': aus(['bu:P', 'bu:F', 'bu:X', 'bu:O']),
+        'fiona:schreiben:diktat':     aus(['di:P', 'di:F', 'di:X']) };
+    });
+    await stelleAblage(q, { fortschritt: viele });
+    await q.reload();
+    await q.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
+    await q.click('[data-profil="fiona"]');
+    await zurEbenenwahl(q, 'bundeslaender');
+    await q.click('#buch');
+    await q.waitForSelector(BUCHDA);
+    /* Dieselbe Frage wie oben: der alte Bildschirm muss weg sein, sonst
+       ist `scrollHeight` die Summe von zweien (Q35). */
+    await bis(q, () => {
+      const da = [...document.querySelectorAll('.schirm')]
+        .filter(e => getComputedStyle(e).opacity !== '0');
+      return da.length === 1 && getComputedStyle(da[0]).opacity === '1'
+        && !!da[0].querySelector('.rollen');
+    }, 8000);
+
+    const streifen = await q.evaluate(() => {
+      const st = document.querySelector('.schirm.da .buchreiter');
+      if (!st) return { reiter: 0 };
+      const sk = st.getBoundingClientRect();
+      return { reiter: st.querySelectorAll('[data-kap]').length,
+               /* Waagerecht gemessen, weil der Streifen waagerecht rollt.
+                  Anteilig an der eigenen Breite (Regel 2), damit ein
+                  langer Name nicht mit demselben Saum durchkommt wie ein
+                  kurzer. */
+               teils: [...st.querySelectorAll('[data-kap]')].map(r => {
+                 const k = r.getBoundingClientRect();
+                 return { was: (r.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 22),
+                          anteil: Math.max(0, Math.min(k.right, sk.right) - Math.max(k.left, sk.left))
+                            / (k.width || 1) };
+               }) };
+    });
+    /* Die Blindprobe: ohne genug Kapitel misst dieser Block nichts.
+       Drei ist die Grenze, ab der es den Streifen ueberhaupt gibt - steht
+       er bei fuenf gepflanzten Ebenen nicht da, ist entweder der Stand
+       nicht angekommen oder die Grenze verstellt, und in beiden Faellen
+       beweist „kein Befund" hier nichts (Regel 1). */
+    if (streifen.reiter < 3)
+      merke('forscherbuch', new Error(`das Buch hat nur ${streifen.reiter} Kapitelreiter, `
+        + 'obwohl fünf Ebenen gepflanzt wurden — dann prüft dieser Abschnitt die '
+        + 'Kapitel gar nicht, er findet nur keine'));
+    else {
+      const halb = streifen.teils.filter(x => x.anteil < 1);
+      if (halb.length)
+        merke('forscherbuch', new Error(`${halb.length} von ${streifen.reiter} Kapiteln stehen `
+          + `nicht ganz im Streifen (${halb.map(x => `„${x.was}" ${Math.round(x.anteil*100)} %`)
+            .join(' · ')}) — ein Kind, das nicht liest, sieht dann nicht, dass es sie gibt`));
+      /* Und jetzt jede Seite einzeln. Gemessen wird nach dem Klick am
+         WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
+         welche Seite wie hoch wird, entscheidet der Bildschirm. */
+      const eng = [], gleich = [];
+      const seiten = new Set();
+      for (let i = 0; i < streifen.reiter; i++) {
+        await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
+        const seite = await q.evaluate(() => {
+          const r = document.querySelector('.schirm.da .rollen');
+          const rk = r.getBoundingClientRect();
+          return { was: document.querySelector('.schirm.da [data-kap].da')?.textContent
+                     .trim().replace(/\s+/g, ' ').slice(0, 22) || '(keins offen)',
+                   /* Nur Bloecke, die es WIRKLICH gibt (> 2 px).
+                      Der erste Anlauf zaehlte auch die - dieselbe Grenze
+                      wie im Block darueber. `.abzkopf` ist auf dem kurzen
+                      Querformat `display:none`, also null hoch; geteilt
+                      durch die Ersatz-Eins ergab das den Anteil 0, und die
+                      Pruefung meldete eine Ueberschrift als unsichtbar,
+                      die gar nicht da sein soll. */
+                   bloecke: [...r.children]
+                     .map(e => ({ k: e.getBoundingClientRect() }))
+                     .filter(x => x.k.height > 2)
+                     .map(x => ({ anteil: Math.max(0, Math.min(x.k.bottom, rk.bottom)
+                       - Math.max(x.k.top, rk.top)) / x.k.height }))
+                     .filter(x => x.anteil < 1).length,
+                   ganz: [...r.children].filter(e =>
+                     e.getBoundingClientRect().height > 2).length,
+                   /* Und WAS auf der Seite steht - als Fingerabdruck.
+                      Ohne den waere ein Reiter, der die Seite gar nicht
+                      austauscht, hier gruen: die Marke wandert, sechs
+                      Reiter stehen da, und darunter immer dasselbe. Genau
+                      das stellt die Gegenprobe „ein Kapitelreiter
+                      blaettert nicht" her, und sie hat diese Luecke
+                      gefunden. */
+                   abdruck: (r.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120) };
+        });
+        if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
+        if (seiten.has(seite.abdruck)) gleich.push(`„${seite.was}"`);
+        seiten.add(seite.abdruck);
+      }
+      if (eng.length)
+        merke('forscherbuch', new Error(`auf ${eng.length} von ${streifen.reiter} Kapitelseiten `
+          + `steht nicht alles im Bild (${eng.join(' · ')}) — dann hat das Blättern das `
+          + 'Rollen nur ersetzt'));
+      if (gleich.length)
+        merke('forscherbuch', new Error(`${gleich.length} von ${streifen.reiter} Kapiteln zeigen `
+          + `dieselbe Seite wie ein anderes (${gleich.join(' · ')}) — der Reiter markiert sich, `
+          + 'blättert aber nicht'));
+      if (!eng.length && !gleich.length)
+        console.log(`  Buch mit Kapiteln:          ${streifen.reiter} Reiter, alle ganz im `
+          + `Streifen; ${seiten.size} verschiedene Seiten, jeder Block ganz im Bild`);
+    }
     await q.close();
   }
 
@@ -2095,7 +2293,7 @@ if (laeuft('ablage')) try {
       bisZeichen = Date.now() - t0;
       if (!zeichen) await q.messtakt(60);
     }
-    await q.waitForSelector(BUCHKARTE, { timeout: 30000 });
+    await q.waitForSelector(BUCHDA, { timeout: 30000 });
     const bisBuch = Date.now() - t0;
     // Und es muss auch wieder WEG sein.
     const weg = await bis(q, () => !document.querySelector('.schirm.warten'), 3000);

@@ -906,6 +906,46 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* Flex statt Raster: bei EINEM Abzeichen zog `auto-fit` den einen Kasten
    ueber die ganze Breite - ein Satz von vier Woertern in einem Band von
    1600 Punkten. Gesehen auf der Aufnahme, nicht gemessen. */
+/* --- Die Kapitelreiter im Forscherbuch (Q44) --------------------------
+ *
+ * Ein Streifen ueber dem Buch, in dem JEDE Gruppe steht - Zahl gross in
+ * ihrer Farbe, Name klein darunter. Er rollt waagerecht, wenn es viele
+ * werden; die ersten sechs stehen auf 844 Punkten nebeneinander.
+ *
+ * `flex:0 0 auto` an beiden Enden: der Streifen darf NICHT schrumpfen,
+ * sonst nimmt ihm ein volles Buch genau die Hoehe, wegen der es ihn
+ * gibt. Und `min-height` statt einer festen Hoehe, weil der Name auf
+ * schmalen Geraeten umbricht. */
+.buchreiter{flex:0 0 auto;display:flex;gap:var(--r2);overflow-x:auto;overflow-y:hidden;
+  padding:0 var(--r4) var(--r2);-webkit-overflow-scrolling:touch;touch-action:pan-x;
+  scrollbar-width:none}
+.buchreiter::-webkit-scrollbar{display:none}
+/* `flex:1 1 auto` und nicht `0 0 auto`: die Reiter TEILEN sich die Breite.
+   Gemessen auf 844 Punkten: sieben Kapitel mit fester Breite waren 78 %
+   des letzten - der stand halb im Streifen, und genau das soll er nicht.
+   Mit `min-width` als Boden bleibt jeder mit dem Daumen zu treffen; wird
+   es noch enger, rollt der Streifen (`overflow-x`) statt zu quetschen. */
+.reiter{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;
+  gap:0;min-width:66px;max-width:170px;min-height:44px;padding:var(--r2) var(--r3);
+  border:var(--strich) solid var(--linie);border-radius:var(--rund-karte);
+  background:var(--papier);color:var(--tinte-2);cursor:pointer;
+  font-family:var(--f-ui);line-height:1.1}
+/* `.reiterzahl` und nicht `.zahl`: die gibt es schon, sie ist eine TASTE
+   auf dem Rechenfeld (Kasten, Rand, Druckwirkung). Der erste Anlauf hiess
+   `.zahl`, und die Kapitelzahl sass prompt in einem blauen Tastenkasten -
+   zu sehen war es sofort, zu erklaeren erst nach dem Blick ins
+   Stilblatt. */
+.reiter .reiterzahl{font-size:var(--s2);font-weight:800;line-height:1.05}
+.reiter .was{font-size:var(--s-klein);font-weight:700;white-space:nowrap;
+  max-width:13ch;overflow:hidden;text-overflow:ellipsis}
+/* Offen und zu sprechen dieselbe Sprache wie alle Knoepfe hier: das
+   geschlossene Kapitel liegt flach, das offene steht auf seiner Kante und
+   traegt volle Tinte. Die FARBE traegt schon die Zahl - ein zweiter
+   Farbtraeger daneben waere keine Auskunft mehr, sondern Laerm. */
+.reiter{box-shadow:0 0 0 var(--knopf-kante)}
+.reiter.da{color:var(--tinte);border-color:var(--knopf-kante);
+  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),
+             inset 0 var(--strich) 0 var(--knopf-licht)}
 .abzeichen{display:flex;flex-wrap:wrap;gap:var(--r3);width:100%}
 .abz{flex:1 1 300px;max-width:520px}
 .abz{display:flex;align-items:center;gap:var(--r3);text-align:left;
@@ -1905,6 +1945,13 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Bildschirm nicht halbleer, und die 125 kosten genau die Punkte, die
      der Vorschau unten fehlen (gemessen 370 in 318 sichtbaren). */
   .rollen.buch:not(:has(.albumkarte ~ *)) .albumkarte svg{height:125px}
+  /* Im KAPITELBUCH steht genau eine Karte auf der Seite (Q44).
+     Die 125 sind fuer ein Buch gerechnet, in dem darunter noch zwei
+     Gruppen standen - hier steht nichts darunter. Gemessen auf 844 x 390:
+     der Reiterstreifen kostet 67 Punkte, die Seite hat 251, und die Karte
+     nahm davon 145. Mit 200 sind es 220 - dreissig Punkte Luft, dieselbe
+     Reserve, die das Buch vorher hatte. */
+  .rollen.buch.kapitel:not(:has(.albumkarte ~ *)) .albumkarte svg{height:200px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *

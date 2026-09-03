@@ -1917,7 +1917,7 @@ export const PROBEN = [
    * mehr gibt. Gemessen wird jetzt, ob ein ganzer Block erst UNTER der
    * Unterkante anfaengt. Der Eingriff ist derselbe geblieben - er macht
    * die Kleber so hoch, dass die Vorschau vom Bildschirm faellt. */
-  { n:'ein Block im Buch fängt erst unter der Unterkante an', tor:'smoke',
+  { n:'eine Kapitelseite im Buch ist zu hoch für den Bildschirm', tor:'smoke',
     args:['--nur=ablage'], bauen:true, datei:V,
     /* Gedreht wird an der ALBUMKARTE, nicht an der Kleberhoehe (Q35).
      *
@@ -1930,11 +1930,22 @@ export const PROBEN = [
      *
      * Die Albumkarte ist das eine Bild in diesem Buch. Waechst sie auf
      * 300 Punkte, rutscht alles darunter vom Bildschirm - genau der
-     * Zustand, den die Pruefung meint. */
-    such:'  .albumkarte svg{height:96px}',
-    ersatz:'  .albumkarte svg{height:300px}',
-    an:{ ...DIST, text:'.albumkarte svg{height:300px}' },
-    sagt:'unter der Unterkante' },
+     * Zustand, den die Pruefung meint.
+     *
+     * Q44 hat den Eingriff ins Leere laufen lassen, und das ist die dritte
+     * Verfallsart in dieser Datei: nicht der Suchtext war weg, nicht die
+     * Pruefung - die REGEL wurde ueberschrieben. Das Kapitelbuch hat eine
+     * eigene, spezifischere Hoehe fuer die einzelne Albumkarte
+     * (`.rollen.buch.kapitel:not(:has(...))`, 200 Punkte); die 300 aus dem
+     * allgemeinen `.albumkarte svg` kamen im Buch gar nicht mehr an.
+     * `proben` hat es gemeldet: „`smoke` bleibt gruen, obwohl der Fehler
+     * drin ist". Gedreht wird jetzt an der Regel, die WIRKLICH gilt, und
+     * gemessen wird an der Zusage, die es seit Q44 gibt: auf einer
+     * Kapitelseite steht jeder Block ganz im Bild. */
+    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *)) .albumkarte svg{height:200px}',
+    ersatz:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *)) .albumkarte svg{height:600px}',
+    an:{ ...DIST, text:'.albumkarte svg{height:600px}' },
+    sagt:'nicht alles im Bild' },
 
   /* Der leere Kopf nimmt wieder 68 Punkte weg.
    *
@@ -2469,7 +2480,12 @@ export const PROBEN = [
     tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
     such:'  .rollen.buch:not(:has(.albumkarte ~ *)) .albumkarte svg{height:125px}',
     ersatz:'',
-    an:{ ...DIST, fehlt:'.albumkarte ~ *)) .albumkarte svg' },
+    /* Der HOEHENWERT gehoert dazu, nicht nur der Aufhaenger: seit Q44 gibt
+       es eine zweite Regel mit demselben Anfang (`.rollen.buch.kapitel:...`,
+       200 Punkte). „`.albumkarte ~ *)) .albumkarte svg` fehlt" war damit
+       nie wahr, und `proben` hat es gemeldet: der Eingriff kam an, die
+       Nachfrage sagte nein, und die Probe bewies nichts. */
+    an:{ ...DIST, fehlt:'.albumkarte ~ *)) .albumkarte svg{height:125px}' },
     sagt:'Albumkarte ist auf' },
 
   /* --- Der Gleichlauf (Q29) -------------------------------------------
@@ -3710,10 +3726,60 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'vorrat(e.id, st, true)' },
     sagt:'gegen die ganze Menge' },
 
+  /* --- Q44: die Kapitel im Forscherbuch ------------------------------
+   *
+   * Drei Zusagen haengen daran, und jede bekommt ihre eigene Probe. Alle
+   * drei sind Faelle, in denen das Buch WEITER FUNKTIONIERT und trotzdem
+   * kaputt ist - genau die Sorte, die ein Tor braucht, weil ein Blick sie
+   * nicht meldet.
+   */
+
+  /* 1. Ohne den Streifen faellt das Buch auf das Rollen zurueck. Der
+   *    Eingriff hebt die Grenze so weit an, dass es ihn nie gibt; alle
+   *    Kapitel stehen dann wieder untereinander, und die hinteren fangen
+   *    unter der Unterkante an. */
+  { n:'das Buch rollt wieder statt zu blaettern', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'  const OHNE_REITER = 2;',
+    ersatz:'  const OHNE_REITER = 99;',
+    an:{ ...DIST, text:'OHNE_REITER = 99' },
+    sagt:'Kapitelreiter' },
+
+  /* 2. Der Streifen steht, aber ein Reiter fuehrt ins Leere: der Klick
+   *    tauscht die Seite nicht mehr aus. Das Buch sieht dann vollstaendig
+   *    aus - sechs Reiter, eine Seite - und zeigt doch immer dieselbe.
+   *    Der Eingriff laesst die Marke wandern und den Inhalt stehen. */
+  { n:'ein Kapitelreiter blaettert nicht', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'    seitenKasten.innerHTML = seiten(buchKapitel);',
+    ersatz:'    seitenKasten.innerHTML = seitenKasten.innerHTML;',
+    an:{ ...DIST, text:'seitenKasten.innerHTML = seitenKasten.innerHTML' },
+    /* „dieselbe Seite" und nicht „Kapitelseiten": der Rauchtest hat ZWEI
+       Meldungen ueber Kapitelseiten, und die erste (zu hoch fuers Bild)
+       trifft hier nicht zu. Beim ersten Anlauf stand die falsche hier -
+       `proben` meldete „wird rot, aber nicht mit diesem Wort", und genau
+       dafuer gibt es das Wort. */
+    sagt:'dieselbe Seite' },
+
+  /* 3. Und die Breite: mit fester Breite statt geteilter passt der letzte
+   *    Reiter nicht mehr in den Streifen (gemessen 78 % bei sieben
+   *    Kapiteln auf 844 Punkten). Er ist dann noch da und noch zu
+   *    treffen - aber ein Kind, das nicht liest, sieht ihn nicht. */
+  { n:'der letzte Kapitelreiter steht halb im Streifen', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:V,
+    such:'.reiter{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;',
+    ersatz:'.reiter{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;',
+    an:{ ...DIST, text:'.reiter{flex:0 0 auto' },
+    sagt:'im Streifen' },
+
   { n:'im Buch stehen wieder alle offenen Abzeichen', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:D,
-    such:'          naechstes ? markeBild(naechstes) : \'\'}</div>`',
-    ersatz:'          marken.filter(a => !a.verdient).map(markeBild).join(\'\')}</div>`',
+    /* Die Einrueckung ist mit Q44 um zwei Stellen gewandert: die Abzeichen
+       stehen jetzt im Kapitel-Aufbau statt unmittelbar im `innerHTML`.
+       `inhalt` hat es gemeldet - der Eingriff waere sonst nicht angekommen
+       und das Tor haette gruen gemeldet, ohne etwas zu pruefen. */
+    such:'        naechstes ? markeBild(naechstes) : \'\'}</div>` });',
+    ersatz:'        marken.filter(a => !a.verdient).map(markeBild).join(\'\')}</div>` });',
     an:{ ...DIST, text:"marken.filter(a => !a.verdient).map(markeBild)" },
     sagt:'offene Abzeichen' },
 

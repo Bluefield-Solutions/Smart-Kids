@@ -5276,6 +5276,13 @@ function endschirm(){
  * eine, aus der die Vorschau kommt. Wer alles hoelte, zoege sechs
  * Kontinente und Deutschland nach, um drei Aufkleber zu zeigen.
  */
+/* Welches Kapitel im Buch zuletzt offen stand (Q44).
+ *
+ * AUSSERHALB der Funktion, weil `forscherbuch` bei jedem Aufruf neu baut:
+ * wer einen Aufkleber antippt und zurueckkommt, soll dort weiterlesen, wo
+ * er war, und nicht auf Seite eins. */
+let buchKapitel = null;
+
 async function forscherbuch(){
   const s = el('div');
   // Erster Durchgang: die Staende lesen und zaehlen. Das geht OHNE Umrisse -
@@ -5304,7 +5311,7 @@ async function forscherbuch(){
     const stuecke = alle.map((g,i)=>({
       ...g, gesammelt: Leitner.istGesammelt(st, g.id), gekonnt: Leitner.istGekonnt(st, g.id),
       fach: st[g.id]?.fach ?? 0, i }));
-    gruppen.push({ id:e.id, titel:e.titel, vb,
+    gruppen.push({ id:e.id, titel:e.titel, farbe:e.farbe, vb,
       da: stuecke.filter(x=>x.gesammelt), offen: stuecke.filter(x=>!x.gesammelt) });
   }
   const gesamt = gruppen.reduce((a,g)=>a+g.da.length,0);
@@ -5498,6 +5505,110 @@ async function forscherbuch(){
         : ` <small>Dir ${a.fehlt===1?'fehlt noch eins':`fehlen noch ${a.fehlt}`}.</small>`}</span>
     </button>`;
 
+  /* --- Das Buch bekommt Kapitel (Q44) --------------------------------
+   *
+   * Gemessen auf dem Zielgeraet (844 x 390 quer, 318 Punkte sichtbar):
+   * bei sechs Gruppen stehen 842 Punkte Inhalt in 318, und sechs von
+   * zwoelf Bloecken fangen erst UNTER der Unterkante an - vier ganze
+   * Gruppen und die Vorschau. Zwei Gruppen passen, die dritte kippt es.
+   *
+   * Fionas Wunsch war ausdruecklich, dass sie IMMER ALLE sieht. Ein Buch,
+   * das man dreimal rollen muss, erfuellt ihn nicht; und ein Kind, das
+   * nicht liest, rollt nicht auf Verdacht - es sieht zwei Karten und
+   * glaubt, das sei alles.
+   *
+   * Also Reiter, wie ein Sammelalbum Kapitel hat. Der Streifen zeigt
+   * jede Gruppe AUF EINMAL - Farbe, Zahl, Name -, und darunter steht
+   * genau eine ganz da. Was sie hat, sieht sie also immer vollstaendig;
+   * was darin steckt, ohne zu rollen. Und die eine Albumkarte bekommt
+   * dabei mehr Hoehe als vorher zwei nebeneinander.
+   *
+   * Die Grenze ist gemessen und keine runde Zahl. Bis zu zwei Kapiteln
+   * ist der Streifen unnoetig - und ein Reiter, den man nicht braucht,
+   * ist eine Tuer mehr vor demselben Inhalt.
+   */
+  const kapitel = [];
+  if (verdient.length) kapitel.push({
+    id:'abzeichen', titel:'Abzeichen', farbe:2, zahl:verdient.length,
+    lesen:`Deine Abzeichen. Du hast ${verdient.length===1?'eins':verdient.length}.`,
+    inhalt:`
+      <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
+      <div class="abzeichen">${verdient.map(markeBild).join('')}${
+        naechstes ? markeBild(naechstes) : ''}</div>` });
+  for (const g of vollen) kapitel.push({
+    id:g.id, titel:g.titel, farbe:g.farbe, zahl:g.da.length,
+    lesen:`${g.titel}. ${g.da.length===1?'Ein Aufkleber':`${g.da.length} Aufkleber`}.`,
+    inhalt:`
+      <h3 class="gruppe">${g.titel}${g.da.filter(x=>x.gekonnt).length
+        ? ` <small>${g.da.length} Aufkleber, ${g.da.filter(x=>x.gekonnt).length} davon sicher</small>`
+        : ''}</h3>
+      ${hatKarte(g) ? albumKarte(g)
+        : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`}` });
+  /* Die Vorschau steht nur da, wo die Karte sie nicht schon zeigt.
+     Auf der Albumkarte liegt jedes offene Gebiet blass darunter -
+     dieselbe Auskunft, an derselben Stelle, ohne Fragezeichen. Der
+     Knopf oben rechts (Q20) bleibt davon unberuehrt: er haengt an
+     `vorschau`, und die wird weiter gerechnet. */
+  if (vorschau.length && !(dran && vollen.includes(dran) && hatKarte(dran))) kapitel.push({
+    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe, zahl:vorschau.length,
+    lesen:`Als Nächstes: ${dran.titel}.`,
+    inhalt:`
+      <h3 class="gruppe">Als Nächstes: ${dran.titel}</h3>
+      ${hatKarte(dran)
+        /* Auch das Naechste ist eine KARTE, wenn es eine hat - ganz
+           blass, weil noch nichts darauf klebt. Drei Kaesten mit
+           Fragezeichen sagen „drei Aufgaben"; eine leere Karte sagt
+           „hier ist noch Platz". Dasselbe Wissen, das Gegenteil an
+           Ton. */
+        ? albumKarte(dran)
+        : `<div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`}` });
+
+  const OHNE_REITER = 2;   // gemessen, siehe oben
+  const mitReitern = kapitel.length > OHNE_REITER;
+  /* Welches Kapitel offen steht: das zuletzt gewaehlte, sonst die
+     ABZEICHEN, sonst das, an dem gerade gearbeitet wird, sonst das erste.
+     Die Merkstelle liegt AUSSEN (`buchKapitel`), damit ein Blick auf einen
+     Aufkleber und zurueck nicht jedes Mal auf Seite eins landet.
+
+     Die Abzeichen zuerst, und das ist keine Reihenfolge aus Bequemlichkeit
+     - es ist dieselbe, in der sie vorher OBEN standen: das Abzeichen ist
+     die Aussage, der Aufkleber der Beleg. Wer das Buch aufschlaegt, soll
+     zuerst sehen, was er kann. Der erste Anlauf schlug beim Kapitel „dran"
+     auf, und der Rauchtest hat es gemeldet: er wartete 25 Sekunden auf
+     `.abzeichen` und fand sie nicht, weil sie eine Seite weiter lagen. */
+  const offen = !mitReitern ? null
+    : (kapitel.find(k => k.id === buchKapitel)
+       || kapitel.find(k => k.id === 'abzeichen')
+       || kapitel.find(k => k.id === (dran && dran.id)) || kapitel[0]).id;
+
+  const leer = `<div class="mitte">
+           <div class="titel">Hier kommen deine Aufkleber hin</div>
+           <div class="unter">Für jedes Gebiet, das du zweimal richtig hattest,
+             kommt einer dazu. Such dir eine Karte aus — der erste ist schnell da.</div>
+         </div>`;
+  const seiten = (welches) => (gesamt ? '' : leer)
+    + kapitel.filter(k => !mitReitern || k.id === welches).map(k => k.inhalt).join('')
+    /* „Du hast alles gefunden" haengt an `vorschau`, NICHT daran, ob es
+       ein Vorschaukapitel gibt (Q44).
+       Der erste Anlauf fragte nach dem Kapitel - und der Satz stand
+       prompt bei einem Buch mit zwei halbvollen Landkarten da: dort ist
+       die Vorschau nur UNTERDRUECKT, weil die Albumkarte das Offene
+       ohnehin blass zeigt. Zwei von sieben Kontinenten sind nicht
+       „alles". */
+    + (gesamt && !vorschau.length
+       ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : '');
+
+  /* Ein Reiter ist ein KNOPF mit Zahl und Namen.
+     Die Zahl steht gross und in der Farbe der Ebene: Fiona liest den Namen
+     nicht, aber sie erkennt „ihre" Farbe wieder und sieht, wieviel darin
+     steckt. Angesagt wird beides (`data-lesen`), damit sie es auch hoert. */
+  const reiter = (k) => `
+      <button class="reiter${k.id===offen?' da':''}" data-kap="${k.id}" role="tab"
+              aria-selected="${k.id===offen}" data-lesen="${k.lesen}">
+        <span class="reiterzahl" style="color:var(${FL[(k.farbe-1+7)%7]})">${k.zahl}</span>
+        <span class="was">${k.titel}</span>
+      </button>`;
+
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${gesamt} Aufkleber</span>`,
     /* Der Weg zurueck in den Vorlauf steht im KOPF, nicht im Fluss (Q20).
@@ -5521,41 +5632,32 @@ async function forscherbuch(){
     rechts: vorschau.length
       ? `<button class="knopf" id="allesehen" aria-label="${dran.titel} anschauen"
                  title="Alle ansehen">${ZEI('auge', 22)}<span class="wort">Ansehen</span></button>`
-      : '' }) + `
-    <div class="rollen buch">
-      ${verdient.length ? `
-        <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
-        <div class="abzeichen">${verdient.map(markeBild).join('')}${
-          naechstes ? markeBild(naechstes) : ''}</div>` : ''}
-      ${gesamt ? vollen.map(g=>`
-        <h3 class="gruppe">${g.titel}${g.da.filter(x=>x.gekonnt).length
-          ? ` <small>${g.da.length} Aufkleber, ${g.da.filter(x=>x.gekonnt).length} davon sicher</small>`
-          : ''}</h3>
-        ${hatKarte(g) ? albumKarte(g)
-          : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`}`).join('')
-      : `<div class="mitte">
-           <div class="titel">Hier kommen deine Aufkleber hin</div>
-           <div class="unter">Für jedes Gebiet, das du zweimal richtig hattest,
-             kommt einer dazu. Such dir eine Karte aus — der erste ist schnell da.</div>
-         </div>`}
-      ${/* Die Vorschau steht nur da, wo die Karte sie nicht schon zeigt.
-            Auf der Albumkarte liegt jedes offene Gebiet blass darunter -
-            dieselbe Auskunft, an derselben Stelle, ohne Fragezeichen. Der
-            Knopf oben rechts (Q20) bleibt davon unberuehrt: er haengt an
-            `vorschau`, und die wird weiter gerechnet. */
-        vorschau.length && !(dran && vollen.includes(dran) && hatKarte(dran)) ? `
-        <h3 class="gruppe">Als Nächstes: ${dran.titel}</h3>
-        ${hatKarte(dran)
-          /* Auch das Naechste ist eine KARTE, wenn es eine hat - ganz
-             blass, weil noch nichts darauf klebt. Drei Kaesten mit
-             Fragezeichen sagen „drei Aufgaben"; eine leere Karte sagt
-             „hier ist noch Platz". Dasselbe Wissen, das Gegenteil an
-             Ton. */
-          ? albumKarte(dran)
-          : `<div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`}`
-      : gesamt && !vorschau.length ? `<h3 class="gruppe">Du hast alles gefunden.</h3>` : ''}
-    </div>`;
+      : '' })
+    + (mitReitern ? `<div class="buchreiter" role="tablist">${
+        kapitel.map(reiter).join('')}</div>` : '')
+    + `<div class="rollen buch${mitReitern ? ' kapitel' : ''}">${seiten(offen)}</div>`;
   s.querySelector('#zur').onclick=()=>zeige(weltenwahl);
+  /* Ein Reiter wechselt die SEITE, nicht den Bildschirm (Q44).
+   *
+   * `zeige(forscherbuch)` waere eine Ueberblendung samt vollem Neuaufbau -
+   * und damit dieselbe Wartezeit wie beim Aufschlagen, fuer einen Griff,
+   * der sich wie Blaettern anfuehlen soll. Die Seiten sind ohnehin schon
+   * gebaut; ausgetauscht wird nur, welche im Kasten steht. */
+  const seitenKasten = s.querySelector('.rollen');
+  s.querySelectorAll('[data-kap]').forEach(r => r.addEventListener('click', () => {
+    buchKapitel = r.dataset.kap;
+    s.querySelectorAll('[data-kap]').forEach(a => {
+      const jetzt = a.dataset.kap === buchKapitel;
+      a.classList.toggle('da', jetzt);
+      a.setAttribute('aria-selected', String(jetzt));
+    });
+    seitenKasten.innerHTML = seiten(buchKapitel);
+    seitenKasten.scrollTop = 0;
+    /* Die neuen Kaesten haben noch keinen Zuhoerer: `[data-lesen]` wird
+       weiter unten EINMAL gebunden, und das war vor diesem Austausch. */
+    seitenKasten.querySelectorAll('[data-lesen]')
+      .forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));
+  }));
   /* Der Weg zurueck in den Vorlauf (Q20).
    *
    * Auf dem Telefon ist das Auge an der Kachel weggefallen (Q18), weil
