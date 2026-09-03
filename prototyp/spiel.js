@@ -5325,6 +5325,7 @@ async function forscherbuch(){
    */
   const kleber = (g, x, offen) => `
     <button class="aufkleber ${offen?'':'da'} ${x.gekonnt?'sicher':''} ${x.pfad?'':'rechnen'}"
+            data-art="${x.frage ? 'rechnen' : 'karte'}"
             data-lesen="${offen?'Das kennst du noch nicht.'
               :(x.zeichenFolge ? (/[A-ZÄÖÜ]/.test(x.zeichen)
                     ? `${x.zeichen} wie ${x.wort}` : `Die ${x.wort}`)

@@ -1783,14 +1783,21 @@ if (laeuft('ablage')) try {
       return { da: karten.length,
                // Ein Gebiet MUSS einen Umriss zeigen. Der Rechenkasten ist
                // die Notdarstellung, und sein Inhalt war hier „undefined".
-               // ... AUSSER den Rechenklebern: die haben von Haus aus
-               // keinen (der Aufkleber IST die Aufgabe, siehe `kleber` in
-               // spiel.js). Ohne diese Ausnahme meldete die Pruefung acht
-               // von neun Karten als umrisslos, sobald das Buch endlich
-               // eine Rechenebene enthielt (Q35).
-               ohneUmriss: karten.filter(k => !k.classList.contains('rechnen')
+               /* ... AUSSER den Rechenklebern: die haben von Haus aus
+                * keinen (der Aufkleber IST die Aufgabe, siehe `kleber` in
+                * spiel.js). Ohne diese Ausnahme meldete die Pruefung acht
+                * von neun Karten als umrisslos, sobald das Buch endlich
+                * eine Rechenebene enthielt (Q35).
+                *
+                * Gefragt wird nach `data-art`, NICHT nach der Klasse
+                * `rechnen`: die heisst „hat keinen Pfad" und sitzt damit
+                * auch auf einem GEBIET, dessen Umriss nicht geladen ist -
+                * also genau auf dem Fall, den diese Pruefung fangen soll.
+                * Mit der Klasse als Merkmal hat die Gegenprobe „das Buch
+                * zeigt Karten ohne Umriss" aufgehoert anzuschlagen. */
+               ohneUmriss: karten.filter(k => k.dataset.art !== 'rechnen'
                  && !k.querySelector('svg path')).length,
-               rechenkleber: karten.filter(k => k.classList.contains('rechnen')).length,
+               rechenkleber: karten.filter(k => k.dataset.art === 'rechnen').length,
                blass: karten.filter(k => !k.classList.contains('da')).length,
                undef: karten.filter(k => /undefined/.test(k.textContent)).length,
                sichtbar: Math.round(r.clientHeight), ganz: Math.round(r.scrollHeight),
