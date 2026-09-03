@@ -2361,6 +2361,22 @@ function vorlaufSatz(ebeneId){
  * weggefallen ist (Q18), kommt er auch aus dem Forscherbuch, und dann
  * faellt „Zurück" in einen Bildschirm, den das Kind gar nicht verlassen
  * hat. */
+/* Der Satz „Diese Karte fehlt noch" stand zweimal fast gleich da: einmal
+ * im Vorlauf, einmal beim Starten (Regel 6). Das war nicht nur doppelte
+ * Pflege - es war auch nicht mehr zu SAGEN, welche der beiden Stellen
+ * eine Gegenprobe verstellt, weil beide Wachen bis aufs Zeichen gleich
+ * lauteten. Jetzt gibt es einen Schirm und zwei unterscheidbare Wachen.
+ */
+function karteFehltSchirm(){
+  const s = el('div');
+  s.innerHTML = kopf({ links: zurueckKnopf() }) + `
+    <div class="mitte"><div class="titel">Diese Karte fehlt noch</div>
+    <div class="unter">Sie wird beim ersten Mal aus dem Netz geholt.
+      Probier es noch einmal, wenn du wieder Verbindung hast.</div></div>`;
+  s.querySelector('#zur').onclick = () => zeige(ebenenwahl);
+  return s;
+}
+
 async function vorlauf(ebeneId, zurueck = null){
   const s = el('div');
   // Erst die Karte holen, DANN den Vorrat lesen.
@@ -2369,14 +2385,7 @@ async function vorlauf(ebeneId, zurueck = null){
   // `ebeneLaden` hat jedes Stueck ein leeres `pfad`, und der Vorlauf malte
   // sechzehn Kaesten mit dem Wort „undefined". `starten()` macht dasselbe
   // in derselben Reihenfolge; wer den Vorrat anfasst, muss vorher laden.
-  if (!(await ebeneLaden(ebeneId))) {
-    s.innerHTML = kopf({ links: zurueckKnopf() }) + `
-      <div class="mitte"><div class="titel">Diese Karte fehlt noch</div>
-      <div class="unter">Sie wird beim ersten Mal aus dem Netz geholt.
-        Probier es noch einmal, wenn du wieder Verbindung hast.</div></div>`;
-    s.querySelector('#zur').onclick = () => zeige(ebenenwahl);
-    return s;
-  }
+  if (!(await ebeneLaden(ebeneId))) return karteFehltSchirm();
   await standLaden(ebeneId);
   const ebene = EBENEN.find(e => e.id === ebeneId);
   const stuecke = vorlaufVorrat(ebeneId);
@@ -2483,15 +2492,7 @@ async function ebeneLaden(ebeneId){
 }
 
 async function starten(ebeneId, alsTest = false){
-  if (!(await ebeneLaden(ebeneId))) {
-    zeige(()=>{ const s=el('div');
-      s.innerHTML = kopf({ links: zurueckKnopf() }) + `
-        <div class="mitte"><div class="titel">Diese Karte fehlt noch</div>
-        <div class="unter">Sie wird beim ersten Mal aus dem Netz geholt.
-          Probier es noch einmal, wenn du wieder Verbindung hast.</div></div>`;
-      s.querySelector('#zur').onclick=()=>zeige(ebenenwahl); return s; });
-    return;
-  }
+  if (!(await ebeneLaden(ebeneId))) { zeige(karteFehltSchirm); return; }
   await standLaden(ebeneId);
   const alle = vorrat(ebeneId);
   // Die Sitzungsnummer waechst, die Uhr nicht: gleicher Fortschritt +

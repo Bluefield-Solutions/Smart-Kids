@@ -2678,6 +2678,37 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'if (meins !== zeigeLauf) return;\n    // ALLE bisherigen' },
     sagt:'hat den schnelleren weggeräumt' },
 
+  /* Die Karte, die nicht kommt (Q43).
+   *
+   * `ebeneLaden` verspricht: schlaegt das Holen fehl, sagt die App es -
+   * statt still eine leere Karte zu zeigen. Der Eingriff haengt die
+   * Bedingung ab, laesst die Zeile aber stehen: das Holen scheitert
+   * weiterhin, nur der Satz bleibt aus.
+   *
+   * Der Rauchtest fuehrt diese Frage seit Q43 in einem eigenen Kontext
+   * mit blockiertem Service Worker - ohne den liefert der Arbeiter die
+   * Daten aus seinem Lager, und keine Umleitung sieht den Aufruf. */
+  { n:'die fehlende Länderkarte wird verschwiegen', tor:'smoke',
+    bauen:true, args:['--nur=tippen'], datei:D,
+    /* `&& false` HINTEN, nicht `false &&` vorn: vorn kaeme das Laden gar
+     * nicht mehr zum Zug, und dann meldet die Blindprobe darueber („die
+     * Karte wurde gar nicht erst geholt") - eine richtige Meldung ueber
+     * die falsche Sache. Hinten laeuft der Versuch, scheitert, und nur
+     * der Satz bleibt aus: genau der Zustand, den die Zusage verbietet.
+     * Der erste Anlauf stand vorn und ist daran aufgefallen.
+     *
+     * Und die Wache steht im VORLAUF, nicht in `starten`: aus der
+     * Ebenenwahl fuehrt der erste Griff auf eine Karte immer erst durch
+     * den Vorlauf (`vorlaufGezeigt` ist bei einem frischen Profil leer).
+     * Bis v343 lauteten beide Wachen aufs Zeichen gleich - `inhalt` hat
+     * diese Probe deshalb zurueckgewiesen, und zu Recht: welche der
+     * beiden sie verstellt, haette allein ihre Zeilennummer entschieden.
+     */
+    such:'  if (!(await ebeneLaden(ebeneId))) return karteFehltSchirm();',
+    ersatz:'  if (!(await ebeneLaden(ebeneId)) && false) return karteFehltSchirm();',
+    an:{ ...DIST, text:'ebeneLaden(ebeneId)) && false) return karteFehltSchirm' },
+    sagt:'die App sagt es nicht' },
+
   /* Der Auslass selbst (Q39).
    *
    * Ohne ihn urteilt der naechtliche Lauf ueber ein Tor, das dort gar

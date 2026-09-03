@@ -2182,6 +2182,46 @@ if (laeuft('tippen')) try {
       console.log('  Zwei Wechsel auf einmal:    der zuletzt gerufene steht da');
     await q.close();
   }
+
+  /* Und was passiert, wenn die Karte NICHT kommt? (Q43)
+   *
+   * `ebeneLaden` holt die Umrisse einer Laenderebene nach und verspricht:
+   * „Schlaegt das Holen fehl, sagt es das statt still eine leere Karte zu
+   * zeigen." Bis hierher hat diese Zusage kein Tor geprueft - und zwar aus
+   * einem Grund, den man erst sieht, wenn man ihn sucht: der SERVICE
+   * WORKER liefert `daten/*.json` aus seinem Lager, und eine Route in
+   * Playwright sieht das gar nicht. Nachgemessen mit einer Umleitung auf
+   * `**\/daten/**`: kein einziger Aufruf kam an, bis der Kontext den
+   * Arbeiter blockierte. Der ganze Nachladeweg lief in jedem Lauf am Tor
+   * vorbei.
+   *
+   * Deshalb ein EIGENER Kontext mit `serviceWorkers:'block'`. Er ist der
+   * einzige Ort, an dem das Nachladen ueberhaupt stattfindet. */
+  {
+    const ohneArbeiter = await b.newContext({ hasTouch: true, isMobile: true,
+      locale: 'de-DE', viewport: { width: 844, height: 390 }, serviceWorkers: 'block' });
+    let geholtVersuche = 0;
+    await ohneArbeiter.route('**/daten/laender-*.json', r => { geholtVersuche++; r.abort(); });
+    const k = await ohneArbeiter.newPage();
+    await k.goto(ADRESSE, { waitUntil: 'load' });
+    await k.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
+    await k.click('[data-profil="fiona"]');
+    await zurEbenenwahl(k, 'laender:australien');
+    await k.$eval('.schirm.da [data-ebene="laender:australien"]', e => e.click());
+    const sagtEs = await k.waitForFunction(
+      () => /fehlt noch/.test(document.querySelector('.schirm.da .titel')?.textContent || ''),
+      null, { timeout: 15000 }).then(() => true).catch(() => false);
+    if (!geholtVersuche)
+      merke('tippen', new Error('die Länderkarte wurde gar nicht erst geholt — dann ist '
+        + 'der Nachladeweg hier nicht gegangen, und dann beweist der Satz daneben nichts (Regel 1)'));
+    else if (!sagtEs)
+      merke('tippen', new Error('die Länderkarte kam nicht, und die App sagt es nicht — '
+        + 'ein Kind steht vor einer leeren Karte und weiß nicht, warum'));
+    else
+      console.log(`  Karte kommt nicht:          nach ${geholtVersuche} Versuch`
+        + `${geholtVersuche === 1 ? '' : 'en'} steht „Diese Karte fehlt noch" da`);
+    await ohneArbeiter.close();
+  }
 } catch (e) { merke('tippen', e); }
 
 /* --- Der Regler: kommt er bis in die Sitzung? -------------------------

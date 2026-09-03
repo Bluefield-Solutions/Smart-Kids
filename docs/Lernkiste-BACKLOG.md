@@ -3208,3 +3208,61 @@ suchte `.schirm.da #schnell` — einen **Nachfahren**. `zeige` hängt
 `.schirm.da` aber an das Element selbst. Die Prüfung war damit im ersten
 Anlauf immer rot, auch mit Wächter. Gefunden, weil ich sie zuerst gegen den
 gesunden Zustand gefahren habe.
+
+
+---
+
+## Q43 erledigt (Q43): der Nachladeweg lief an jedem Tor vorbei
+
+Die Frage war, ob es beim **Nachladen** einer Karte denselben Wettlauf gibt
+wie in Q41: das Kind tippt eine Ebene an, es dauert, es tippt weiter — und
+die späte Antwort schiebt sich vor das, was zuletzt gewollt war.
+
+**Der Wettlauf ließ sich nicht nachweisen.** `starten()` wartet auf die
+Karte, bevor überhaupt ein Bildschirm entsteht; während der Wartezeit steht
+die Ebenenwahl da oder das Wartezeichen, und der Weg zurück führt sauber in
+die Pause. Drei Anläufe, kein Befund.
+
+**Gefunden wurde etwas anderes, und es ist größer.** Um überhaupt zu messen,
+habe ich `daten/laender-*.json` umgeleitet — und **kein einziger Aufruf kam
+an**. Der Grund: der **Service Worker** liefert die Dateien aus seinem
+Lager, und eine Umleitung in Playwright sieht das nicht. Erst mit
+`serviceWorkers: 'block'` erschien der Aufruf.
+
+Das heißt: **der ganze Nachladeweg ist in jedem Lauf am Tor vorbeigelaufen.**
+`ebeneLaden`, das Wartezeichen, und vor allem die Zusage
+
+> *„Schlägt das Holen fehl, sagt es das statt still eine leere Karte zu
+> zeigen."*
+
+hatte kein Tor je geprüft. Die Zusage steht seit langem im Quelltext; ob sie
+hält, wusste niemand.
+
+**Jetzt fährt der Rauchtest sie** — in einem eigenen Kontext mit
+blockiertem Arbeiter, weil das der einzige Ort ist, an dem das Nachladen
+stattfindet. Zwei Fragen, nicht eine: *kam der Aufruf überhaupt an* (sonst
+ist der Weg nicht gegangen, und der Satz daneben beweist nichts — Regel 1), und
+*sagt die App es*.
+
+Die erste hat sich sofort bezahlt gemacht: mein erster Eingriff für die
+Gegenprobe schrieb `if (false && !(await ebeneLaden(…)))` und schaltete
+damit das Laden gleich mit ab. Die Blindprobe meldete es — eine richtige
+Aussage über die falsche Sache. Der Eingriff steht jetzt hinten
+(`&& false`): der Versuch läuft, scheitert, und nur der Satz bleibt aus.
+
+**Und dann hat die Probe nicht gegriffen, sondern gezielt.** `inhalt` wies
+sie zurück: ihr Suchtext stand **zweimal** in `prototyp/spiel.js` — die
+Wache im Vorlauf und die beim Starten lauteten aufs Zeichen gleich, samt
+dem Bildschirm dahinter. Welche der beiden die Gegenprobe verstellt, hätte
+allein ihre Zeilennummer entschieden. Sie hätte funktioniert; sie hätte nur
+nicht mehr *sagen* können, worüber.
+
+Das ist Regel 6 — „was zweimal dasteht, veraltet einmal" — in ihrer
+teuersten Form: nicht zwei Sätze, die auseinander
+laufen, sondern zwei Stellen, die eine Messung mehrdeutig machen. Die
+Antwort war nicht, den Suchtext enger zu fassen — das hätte die
+Doppelung stehen gelassen und nur ihre Folge versteckt. Der Bildschirm ist
+jetzt `karteFehltSchirm()` und steht einmal; die beiden Wachen rufen ihn
+verschieden auf und sind dadurch unterscheidbar. Die Gegenprobe zeigt auf
+die im **Vorlauf** — das ist die, durch die ein Kind aus der Ebenenwahl
+wirklich läuft, weil `vorlaufGezeigt` bei einem frischen Profil leer ist.
