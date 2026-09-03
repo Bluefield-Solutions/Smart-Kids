@@ -2334,8 +2334,13 @@ export const PROBEN = [
    * Buchstaben. Repariert wurde das an sieben Punkten seitlichem
    * Polster und einem Hauch Laufweite. Der Eingriff nimmt beides
    * heraus, und das Tor muss die Waise sehen. */
+  /* `nurMitAnsicht`, weil `passt` seine Waisenmessung bei
+   * `SMARTKIDS_OHNE_ANSICHT` ausdruecklich ueberspringt - es ist eine
+   * Schriftmessung, und der Runner hat andere Ersatzschriften (Regel 16).
+   * Ohne dieses Merkmal meldete der naechtliche Lauf sie als „TOR BLEIBT
+   * GRUEN", und das war eine Aussage ueber die Umgebung. */
   { n:'bei elf Kacheln bricht der Name wieder auf einen Buchstaben',
-    tor:'passt', bauen:true, args:['--teil=1/5'], datei:V,
+    tor:'passt', bauen:true, args:['--teil=1/5'], datei:V, nurMitAnsicht:true,
     such:'  .wahl.ebenen:has(> :nth-child(11)) .kachel{padding-left:var(--r0);padding-right:var(--r0)}\n'
        + '  .wahl.ebenen:has(> :nth-child(11)) .kachel .name{letter-spacing:-.02em}',
     ersatz:'',

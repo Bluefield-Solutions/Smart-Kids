@@ -365,7 +365,7 @@
     "der letzte Probenlauf liegt zu lange zurück": {
       "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
       "zeit": "2026-09-03",
-      "s": 0
+      "s": 1
     },
     "eine Probe hat keinen Nachweis, und es faellt nicht auf": {
       "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",

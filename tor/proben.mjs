@@ -626,8 +626,24 @@ let ok = 0, blind = 0, nichtAngekommen = 0;
  * getrennt gezaehlt - und es bekommt KEINEN Nachweis, altert also weiter,
  * bis `rhythmus` es faellig macht. Ausgelassen heisst nicht erlassen. */
 const OHNE_ANSICHT = process.env.SMARTKIDS_OHNE_ANSICHT === '1';
+/* Nicht nur `ansicht` selbst (Q39d).
+ *
+ * Derselbe Schalter stellt auch EINZELNE Pruefungen in anderen Toren
+ * still, und aus demselben Grund: `passt` ueberspringt seine
+ * Waisenmessung („bei elf Kacheln bricht der Name auf einen Buchstaben"),
+ * weil sie eine SCHRIFTmessung ist - es steht seit langem so im Tor, mit
+ * Ansage. Die zugehoerige Gegenprobe fiel damit auf dem Runner in dieselbe
+ * Falle wie die zwoelf `ansicht`-Proben: das Tor blieb gruen, obwohl der
+ * Fehler drin war, und der Lauf meldete es als Befund.
+ *
+ * Aufgefallen ist es erst, nachdem Q39a die zwoelf offensichtlichen Faelle
+ * weggeraeumt hatte - der eine, der uebrig blieb, war derselbe Fall in
+ * einem anderen Tor. Eine Probe sagt es jetzt selbst: `nurMitAnsicht`. */
 const nichtHier = (p) => (OHNE_ANSICHT && p.tor === 'ansicht')
-  ? '`ansicht` ist in dieser Umgebung abgeschaltet' : null;
+  ? '`ansicht` ist in dieser Umgebung abgeschaltet'
+  : (OHNE_ANSICHT && p.nurMitAnsicht)
+  ? 'ihre Prüfung ist eine Schriftmessung und hier abgeschaltet'
+  : null;
 let ausgelassen = 0;
 const ausgelassenNamen = [];
 const befunde = [];

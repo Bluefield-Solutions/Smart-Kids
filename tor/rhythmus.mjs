@@ -80,6 +80,8 @@ const STAND = 'tor/proben-stand.json';
  * liest dieselbe Drei und meint etwas anderes.
  */
 const GRENZE = Math.min(3, Number(process.env.SMARTKIDS_RHYTHMUS_MAX ?? 3));   // Tage
+/** Laeuft dieses Tor dort, wo Bild- und Schriftmessungen abgeschaltet sind? */
+const OHNE_ANSICHT = process.env.SMARTKIDS_OHNE_ANSICHT === '1';
 // `Math.min` und nicht einfach der Wert: die Schraube darf nur STRENGER
 // stellen, nie lockerer. Sie ist fuer die Gegenprobe da - anders liesse
 // sich „der Lauf liegt zu lange zurueck" gar nicht ausloesen, denn wie
@@ -181,17 +183,45 @@ if (verschollen.length)
  * genau dann steht dieser Befund hier. Er ist richtig so; nur muss er
  * sagen, WO man ihn abstellt, sonst faehrt jemand denselben naechtlichen
  * Lauf noch einmal und wundert sich. */
-const nurHier = new Set(PROBEN.filter(p => p.tor === 'ansicht').map(p => p.n));
-if (zuAlt.length) {
-  const bilder = zuAlt.filter(x => nurHier.has(x.n));
-  fehler.push(`${zuAlt.length} Nachweis${zuAlt.length === 1 ? '' : 'e'} sind älter als `
-    + `${GRENZE} Tage (bis zu ${Math.max(...zuAlt.map(x => x.alter))}): `
-    + `${nenne(zuAlt.map(x => x.n))}. Eine Probe hört leise auf zu beweisen — je länger es `
+const nurHier = new Set(PROBEN.filter(p => p.tor === 'ansicht' || p.nurMitAnsicht)
+  .map(p => p.n));
+/* Und WO dieses Tor laeuft, entscheidet, worueber es urteilen darf (Q39e).
+ *
+ * Die dreizehn Nachweise oben koennen nur auf dem Arbeitsrechner
+ * entstehen. Der naechtliche Lauf laesst ihre Proben aus - also altern
+ * sie dort zwangslaeufig, und nach drei Tagen waere der Lauf rot fuer
+ * etwas, das er nicht abstellen kann. Das ist genau das Rot, das man
+ * wegerklaeren muss, und nach dem dritten Mal liest es niemand mehr.
+ *
+ * Dort werden sie deshalb GENANNT und nicht gezaehlt; hier sind sie ein
+ * Befund wie jeder andere. Genannt heisst genannt: die Namen stehen im
+ * Protokoll, damit „lenient" nicht „unsichtbar" heisst. */
+const dortNichtZuHolen = OHNE_ANSICHT ? zuAlt.filter(x => nurHier.has(x.n)) : [];
+const zuAltHier = zuAlt.filter(x => !dortNichtZuHolen.includes(x));
+if (dortNichtZuHolen.length) {
+  console.log(`    ${dortNichtZuHolen.length} Nachweis${
+    dortNichtZuHolen.length === 1 ? ' altert' : 'e altern'} hier zwangsläufig — `
+    + `${dortNichtZuHolen.length === 1 ? 'er entsteht' : 'sie entstehen'} nur auf dem `
+    + `Arbeitsrechner (\`npm run proben -- ansicht\`):`);
+  for (const x of dortNichtZuHolen) console.log(`      · ${x.n} (${x.alter} Tage)`);
+}
+/* Und die Schranke darunter, dieselbe wie in `proben`: eine Ausnahme, die
+ * zu viel umfasst, macht einen Lauf gruen, der nichts mehr mahnt. Mehr als
+ * ein Fuenftel ist keine Ausnahme mehr - heute sind es dreizehn von 270. */
+if (dortNichtZuHolen.length * 5 > namen.length)
+  fehler.push(`${dortNichtZuHolen.length} von ${namen.length} Nachweisen sind hier `
+    + 'ausgenommen — mehr als ein Fünftel. Eine Ausnahme, die so weit reicht, '
+    + 'stellt die Frist ab, statt sie zu verschieben.');
+if (zuAltHier.length) {
+  const bilder = zuAltHier.filter(x => nurHier.has(x.n));
+  fehler.push(`${zuAltHier.length} Nachweis${zuAltHier.length === 1 ? '' : 'e'} sind älter als `
+    + `${GRENZE} Tage (bis zu ${Math.max(...zuAltHier.map(x => x.alter))}): `
+    + `${nenne(zuAltHier.map(x => x.n))}. Eine Probe hört leise auf zu beweisen — je länger es `
     + 'her ist, desto schwerer ist der Tag zu finden, an dem es passiert ist. '
     + '(`npm run proben`)'
-    + (bilder.length ? ` — davon ${bilder.length} an \`ansicht\`, und die sind NUR auf dem `
-      + 'Arbeitsrechner zu beweisen (`npm run proben -- ansicht`): der nächtliche Lauf '
-      + 'lässt sie aus, weil `ansicht` dort abgeschaltet ist.' : ''));
+    + (bilder.length ? ` — davon ${bilder.length} an einer Bild- oder Schriftmessung, und die `
+      + 'sind NUR auf dem Arbeitsrechner zu beweisen (`npm run proben -- ansicht`): der '
+      + 'nächtliche Lauf lässt sie aus, weil `ansicht` dort abgeschaltet ist.' : ''));
 }
 
 /* Die Kette kommt aus `tor/kette-liste.mjs` - derselben Liste, die
@@ -211,4 +241,11 @@ if (fehler.length) {
   console.log('');
   process.exit(1);
 }
-console.log(`  rhythmus grün: kein Nachweis ist älter als ${GRENZE} Tage.\n`);
+/* Der Schlusssatz sagt, WORUEBER geurteilt wurde. „Kein Nachweis ist
+ * aelter" waere auf dem Runner falsch: dort altern die dreizehn ja weiter,
+ * sie werden nur nicht angemahnt. Ein gruener Satz, der mehr behauptet als
+ * der Lauf geprueft hat, ist die stillste Art, ein Tor abzuschalten. */
+console.log(`  rhythmus grün: kein Nachweis ist älter als ${GRENZE} Tage`
+  + (dortNichtZuHolen.length
+    ? ` — die ${dortNichtZuHolen.length} oben ausgenommen, sie gehören dem Arbeitsrechner`
+    : '') + '.\n');

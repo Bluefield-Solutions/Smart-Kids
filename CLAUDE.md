@@ -88,8 +88,13 @@ npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
                    liegt Handarbeit, und die ist der Punkt: das Urteil darf
                    NICHT aus `ergebnis` kommen — das ist die Entscheidung
                    des Abgleichs, den der Korpus prüfen soll.
-npm run rhythmus   wie alt die Nachweise sind. Bremst nichts mehr —
-                   der nächtliche Lauf hält sie frisch.
+npm run rhythmus   wie alt die Nachweise sind. Steht seit Q39e wieder VORN
+                   in der Kette und kostet Millisekunden. Der nächtliche
+                   Lauf hält 257 der 270 frisch — die anderen dreizehn
+                   (zwölf an `ansicht`, einer an der Schriftmessung in
+                   `passt`) entstehen nur hier, und dort werden sie
+                   genannt statt angemahnt. Sonst stellte die Frist für
+                   sie niemand.
 npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
                    Läuft nachts auf dem Runner; hier nur, wenn du ein Tor
                    geändert hast. Sechs Arbeiter, GEWICHTET verteilt: jede
@@ -169,7 +174,7 @@ npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
                    Messer selbst.
 ```
 
-Kette: `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
+Kette: `rhythmus` → `inhalt` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
 `schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·

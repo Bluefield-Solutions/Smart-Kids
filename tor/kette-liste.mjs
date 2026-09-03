@@ -36,6 +36,23 @@
 
 /** Die billigen Tore. Zusammen unter zehn Sekunden, alle ohne Browser. */
 export const OHNE_BROWSER = [
+  /* `rhythmus` ist zurueck in der Kette (Q39e).
+   *
+   * Es stand hier schon einmal und ist ausgezogen, weil es in RUNDEN AM
+   * CODE zaehlte: nach einer Arbeitssitzung stand es auf 47 Runden
+   * Rueckstand und loeste mitten in der Arbeit einen 25-Minuten-Lauf aus.
+   * Der Grund ist weg - es zaehlt seit dem Umbau in TAGEN, und der Runner
+   * haelt jede Nacht 257 der 270 Nachweise frisch.
+   *
+   * Zurueck muss es, weil die anderen dreizehn NUR HIER entstehen koennen:
+   * zwoelf an `ansicht`, einer an der Schriftmessung in `passt`. Der
+   * naechtliche Lauf laesst sie aus und darf sie deshalb auch nicht
+   * anmahnen (das Tor selbst haelt sich daran). Bliebe es nur dort, gaebe
+   * es niemanden, der die Frist fuer diese dreizehn ueberhaupt stellt -
+   * und eine Frist, die niemand stellt, ist keine.
+   *
+   * Es kostet Millisekunden. */
+  { name: 'rhythmus',   datei: 'tor/rhythmus.mjs' },
   { name: 'inhalt',     datei: 'tor/inhalt.mjs' },
   { name: 'regeln',     datei: 'tor/regeln.mjs' },
   { name: 'doppelt',    datei: 'tor/doppelt.mjs' },

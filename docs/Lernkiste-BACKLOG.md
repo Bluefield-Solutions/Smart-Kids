@@ -2981,7 +2981,7 @@ nächtliche Lauf zeigt.
 
 ---
 
-## Q39d offen: eine Probe, die hier anschlägt und dort nicht
+## Q39d erledigt (Q39d): eine Probe, die hier anschlägt und dort nicht
 
 **Der Stand nach dieser Runde, gemessen am Lauf vom 03.09. (Nr. 7 auf
 `8ef3e6c`):**
@@ -3015,4 +3015,50 @@ Was zu klären ist, in dieser Reihenfolge:
 Nummer 2 ist billiger zu prüfen und deshalb zuerst: der Lauf müsste sagen,
 wie viele Kacheln er gesehen hat. Sagt er es nicht, ist das der erste
 Befund.
+
+**Geschlossen in Q39d — und keine der beiden Vermutungen stimmte.** Der
+Grund stand längst im Tor: `passt` überspringt seine Waisenmessung bei
+`SMARTKIDS_OHNE_ANSICHT` **ausdrücklich und mit Ansage**, weil sie eine
+Schriftmessung ist (Regel 16). Seit Q39a diesen Schalter für den nächtlichen
+Lauf setzt, konnte die Gegenprobe dort nicht mehr anschlagen — sie fiel in
+dieselbe Falle wie die zwölf `ansicht`-Proben, nur in einem anderen Tor.
+
+Aufgefallen ist es erst, **nachdem** Q39a die zwölf offensichtlichen Fälle
+weggeräumt hatte. Der eine, der übrig blieb, war derselbe Fall im Schatten
+der anderen.
+
+Eine Probe sagt es jetzt selbst: `nurMitAnsicht: true`. `proben` lässt sie
+dort aus, `rhythmus` zählt sie zu den Nachweisen, die nur hier entstehen.
+
+
+---
+
+## Q39e erledigt (Q39e): dreizehn Nachweise, die nur ein Rechner erneuern kann
+
+Nach Q39a und Q39d gibt es **dreizehn** Gegenproben, die der nächtliche Lauf
+auslässt: zwölf an `ansicht`, eine an der Schriftmessung in `passt`. Sie
+bekommen dort keinen Nachweis, altern also weiter — und nach drei Tagen wäre
+der Lauf rot für etwas, das er nicht abstellen kann. **Genau das Rot, das
+man wegerklären muss**, und nach dem dritten Mal liest es niemand mehr.
+
+Zwei Hälften, und beide sind nötig:
+
+1. **Auf dem Runner werden sie genannt, nicht angemahnt.** `rhythmus` weiß
+   jetzt, wo es läuft. Die Namen stehen mit ihrem Alter im Protokoll —
+   „ausgenommen" heißt nicht „unsichtbar" —, und der grüne Schlusssatz sagt
+   dazu, dass er sie ausgenommen hat. Ein grüner Satz, der mehr behauptet
+   als der Lauf geprüft hat, ist die stillste Art, ein Tor abzuschalten.
+2. **`rhythmus` steht wieder vorn in der Kette.** Sonst stellte die Frist
+   für diese dreizehn **niemand** — der Runner darf nicht, und hier lief es
+   nicht. Der Grund für den Auszug ist weg: es zählte damals in *Runden am
+   Code* und stand nach einer Sitzung auf 47 Runden Rückstand; seit dem
+   Umbau zählt es in **Tagen** und kostet Millisekunden.
+
+Darunter dieselbe Schranke wie in `proben`: greift die Ausnahme auf mehr als
+ein Fünftel aller Nachweise, ist das ein Befund. Heute sind es dreizehn von
+270.
+
+**Gemessen, beide Richtungen** (ein Nachweis künstlich auf 33 Tage gesetzt):
+auf dem Arbeitsrechner ein harter Befund mit dem Befehl, der ihn abstellt;
+mit dem Schalter eine Zeile im Protokoll und ein grüner Lauf.
 
