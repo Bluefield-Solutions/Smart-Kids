@@ -2770,3 +2770,57 @@ Gegenproben nachgetragen.
 
 Die Randwerte selbst waren nicht betroffen, die Eichung des Deckels gilt
 unverändert.
+
+
+---
+
+## Q39 offen: der nächtliche Probenlauf war noch nie grün
+
+Nachgesehen beim Prüfen der Auslieferung (Q33). Der Arbeitsablauf
+**Gegenproben** (`proben.yml`, jede Nacht 02:00 UTC) ist **fünfmal gelaufen
+und fünfmal rot** — seit es ihn gibt, am 29.08. Gemeldet wird das nur als
+Warnung im Protokoll, und die sieht niemand.
+
+Der letzte Lauf (02.09., af28aba): **210 schlagen an, 21 beweisen nichts,
+0 kamen nicht an.** Die 21 zerfallen in drei Gruppen:
+
+| Anzahl | Tor | Was das Protokoll sagt |
+|---|---|---|
+| 12 | `ansicht` | „ist schon OHNE Eingriff rot" |
+| 8 | `smoke` | „ist schon OHNE Eingriff rot" — alle acht sind Farbmessungen (Streu, Profiltöne, Schildkröten, Totenköpfe) |
+| 1 | `ziehen` | „bleibt grün, obwohl der Fehler drin ist" (zwei Nadelköpfe rücken enger zusammen) |
+
+**Die ersten zwanzig sind eine Sache, und es ist Regel 16.** Die Auslieferung
+fährt `npm run tor:runner`, also `SMARTKIDS_OHNE_ANSICHT=1` — dort ist
+`ansicht` ausdrücklich abgeschaltet, weil die Vorbilder auf diesem Rechner
+entstehen und der Runner anders rastert. `npm run proben` kennt diesen
+Schalter nicht und fährt `ansicht` mit. Jede Probe, die `ansicht` auslöst,
+findet es **vor** ihrem Eingriff schon rot und meldet zu Recht „beweist
+nichts". Dasselbe bei den acht Farbproben in `smoke`.
+
+Das heißt: **die Auslieferung ist grün, weil sie wegsieht — und der
+Probenlauf ist rot, weil er hinsieht.** Beides beschreibt dieselbe Lücke.
+
+Drei Wege:
+
+1. **`npm run proben` auf dem Runner denselben Schalter geben**
+   (`SMARTKIDS_OHNE_ANSICHT=1`) und die 20 Proben dort ausdrücklich
+   **auslassen** statt sie scheitern zu lassen. Ehrlich, billig — und es
+   schreibt fest, dass zwanzig Nachweise nur auf diesem Rechner entstehen.
+2. **Die Vorbilder auf dem Runner backen** statt hier. Dann prüft der Runner
+   wirklich, und dieser Rechner bekommt die Abweichung zu sehen. Das ist der
+   saubere Weg und der teure: 37 Aufnahmen, und die Sichtprüfung wandert von
+   „ich sehe das Bild" zu „ich lade ein Artefakt herunter".
+3. **Denselben Chromium erzwingen** (Version festnageln, Schriftpaket
+   gleichziehen) und hoffen, dass die Rasterung dann übereinstimmt. Das ist
+   genau die Wette, die Regel 16 schon einmal verloren hat.
+
+Nummer 1 sofort, damit der nächtliche Lauf endlich etwas aussagt; Nummer 2
+als eigene Runde.
+
+**Der eine Befund, der davon unabhängig ist, ist der dritte:** „zwei
+Nadelköpfe rücken enger zusammen als bestätigt" — `ziehen` bleibt grün,
+obwohl der Fehler drin ist. Das ist keine Umgebungsfrage, sondern ein Tor,
+das an dieser Stelle nichts beweist. Hier reicht `SMARTKIDS_OHNE_ANSICHT`
+nicht; das ist Handarbeit.
+
