@@ -3062,3 +3062,66 @@ ein Fünftel aller Nachweise, ist das ein Befund. Heute sind es dreizehn von
 auf dem Arbeitsrechner ein harter Befund mit dem Befehl, der ihn abstellt;
 mit dem Schalter eine Zeile im Protokoll und ein grüner Lauf.
 
+
+
+---
+
+## Q40 erledigt (Q40): ein roter Lauf, den niemand mehr nachlesen konnte
+
+**Der Anlass steht in dieser Sitzung.** Ein Kettenlauf war rot („1 von 23
+Läufen"), die drei Läufe danach grün — und welches Tor es war, ließ sich
+nicht mehr sagen. Die Kette schreibt ihre Ausgabe an den Bildschirm und
+sonst nirgendwohin. Wer sie durch `tail` liest oder wessen Fenster scrollt,
+hat den Befund verloren. In diesem Verzeichnis ist „Flake" keine Erklärung —
+ein Lauf, dessen Rot man nicht nachlesen kann, aber auch keine.
+
+**Was jetzt geschieht:** jeder Lauf wird **vollständig** nach
+`.kette/letzter.log` geschrieben — die ganze Ausgabe jedes Tores, nicht der
+gefilterte Auszug vom Bildschirm. Der Filter ist für den Blick gemacht, und
+genau das, was er weglässt, sucht man hinterher. Ein **roter** Lauf bekommt
+zusätzlich eine eigene Datei mit Zeitstempel; die letzten fünf bleiben
+stehen. Sonst übermalt ihn der nächste grüne Lauf — der Fall, der das hier
+ausgelöst hat.
+
+Auf dem Runner wird `.kette/` bei Rot als Artefakt gesichert, neben den
+Abweichungsbildern.
+
+**Zwei Messungen, und die erste hat einen Fehler in der Sache gefunden:**
+
+| gefahren | erwartet | gemessen |
+|---|---|---|
+| ein rotes Tor, Abbruchweg | eine Datei, Grund darin | ✓ `rot-…log`, Befund mit Datei und Zeile |
+| sieben rote Läufe hintereinander | höchstens fünf Dateien | erst **zwei** — der Zeitstempel war minutengenau |
+
+Sechs Läufe in derselben Minute trugen denselben Namen und haben sich
+gegenseitig überschrieben. **Ein Protokoll, das sich selbst übermalt, ist
+genau der Fehler, den diese Änderung beseitigen sollte.** Jetzt
+sekundengenau; nachgemessen: sieben Läufe, fünf Dateien, die fünf neuesten.
+
+Die Gegenprobe fährt die kurze Kette mit einem absichtlich roten `pwa` und
+verlangt den Satz „Ganz nachzulesen in `.kette/rot-`". Verschwindet das
+Mitschreiben, fällt der Satz weg und sie schlägt nicht mehr an.
+
+**Und der erste rote Lauf, den es nachzulesen gab, war gleich einer.** Kaum
+stand das Protokoll, wurde die Kette rot — und diesmal ließ sich sagen,
+woran:
+
+| Tor | Befund |
+|---|---|
+| `smoke (4/4)` | `durchgang: page.click: Timeout 30000ms exceeded` |
+| `ziehen` | `rand: auf asien ist überhaupt kein Grau im Bild — die Messung beweist nichts` |
+
+Der zweite ist **meiner, aus Q38**. `#umg` steht sofort im Baum, gefüllt
+wird es aus einer nachgeladenen Datei — gemessen wurde bisher, sobald die
+Ebene offen war. Auf einer trockenen Maschine geht das gut, unter Last
+nicht: im Bild war nichts, weil noch nichts gezeichnet **war**. Die
+Blindprobe hatte recht und meinte doch das Falsche — dieselbe Verwechslung
+wie in Q35, wo mitten in der Überblendung gemessen wurde. Es wird jetzt auf
+die Sache gewartet (mindestens ein Pfad in `#umg`), nicht auf
+Millisekunden; kommt nach 15 s keiner, ist genau das der Befund.
+
+Der erste bleibt offen und steht als **Q41**: der Rauchtest klickt mit 30 s
+Geduld, und diese Maschine ist heute langsamer als heute früh (Kette 180 bis
+230 s statt 132). Ob das die Maschine ist oder eine Stelle, die auf nichts
+wartet, sagt der nächste rote Lauf — und den kann man jetzt lesen.
+

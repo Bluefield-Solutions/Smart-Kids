@@ -17,6 +17,9 @@
 // Die Liste steht in `tor/kette-liste.mjs`, nicht hier - `tor/inhalt.mjs`
 // liest sie ebenfalls, wenn es die Kette gegen CLAUDE.md haelt (Regel 6).
 import os from 'node:os';
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { OHNE_BROWSER, BAU, NACH_DEM_BAU, MIT_BROWSER } from '../tor/kette-liste.mjs';
 import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
 
@@ -49,16 +52,91 @@ if (PROBE) process.env.SMARTKIDS_OHNE_ANSICHT = '1';
 
 const t0 = Date.now();
 const befunde = [];
+/* JEDER Lauf wird mitgeschrieben, nicht nur der Auszug am Ende (Q40).
+ *
+ * Der Anlass: ein Lauf war rot („1 von 23"), der naechste gruen, und der
+ * Grund war nicht mehr zu ermitteln - die Kette schreibt ihre Ausgabe an
+ * den Bildschirm und sonst nirgendwohin. Wer sie durch `tail` liest oder
+ * wessen Fenster scrollt, hat den Befund verloren. In diesem Verzeichnis
+ * ist „Flake" keine Erklaerung; ein Lauf, dessen Rot man nicht nachlesen
+ * kann, ist aber auch keine.
+ *
+ * Was mitgeschrieben wird, ist die VOLLE Ausgabe jedes Tores, nicht der
+ * gefilterte Auszug: der Filter ist fuer den Bildschirm gemacht, und
+ * genau das, was er weglaesst, sucht man hinterher.
+ *
+ * `.kette/letzter.log` ist immer der letzte Lauf. Ein ROTER bekommt
+ * zusaetzlich eine eigene Datei mit Zeitstempel - sonst uebermalt ihn der
+ * naechste gruene Lauf, und das ist genau der Fall, der diese Zeilen
+ * ausgeloest hat. Die letzten fuenf bleiben stehen. */
+const PROTOKOLL = '.kette';
+const laeufe = [];
 const melde = ({ name, code, aus, ms }) => {
   console.log(`    ${code === 0 ? gruen('grün') : rot('ROT ')}  ${name.padEnd(24)} ${s(ms)}`);
+  laeufe.push({ name, code, aus, ms });
   if (code !== 0) befunde.push({ name, aus });
 };
+
+/** Der Einchecker, an dem dieser Lauf haengt - ohne git ein Fragezeichen. */
+const kurz = (() => {
+  try {
+    const k = execFileSync('git', ['rev-parse', '--short', 'HEAD'],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    const schmutzig = execFileSync('git', ['status', '--porcelain'],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() !== '';
+    return k + (schmutzig ? '+' : '');
+  } catch { return '?'; }
+})();
+
+/**
+ * Schreibt den Lauf weg und sagt, wohin.
+ *
+ * Gibt `null` zurueck, wenn nichts geschrieben werden konnte - der Aufrufer
+ * entscheidet, was das heisst. Ein GRUENER Lauf braucht sein Protokoll
+ * nicht; ein roter schon, und dann ist ein fehlendes Protokoll selbst ein
+ * Befund. Deshalb wirft diese Funktion nicht.
+ */
+function protokollSchreiben(gruenerLauf) {
+  /* Bis auf die SEKUNDE. Minutengenau war es zuerst, und nachgemessen
+   * blieben von sechs roten Laeufen zwei Dateien uebrig: die anderen vier
+   * hatten denselben Namen und haben sich gegenseitig ueberschrieben. Ein
+   * Protokoll, das sich selbst uebermalt, ist der Fehler, den diese
+   * Aenderung gerade beseitigen sollte. */
+  const stempel = new Date().toISOString().slice(0, 19).replace('T', '-').replace(/:/g, '');
+  const kopf = [
+    `Torkette ${gruenerLauf ? 'GRÜN' : 'ROT'} — ${new Date().toISOString()}`,
+    `Einchecker: ${kurz}`,
+    `Dauer: ${s(Date.now() - t0)}`,
+    `Läufe: ${laeufe.length}, davon rot: ${laeufe.filter(l => l.code !== 0).length}`,
+    '', '='.repeat(72), '',
+  ].join('\n');
+  const koerper = laeufe.map(l =>
+    `### ${l.name} — ${l.code === 0 ? 'grün' : 'ROT'} (${s(l.ms)})\n\n${l.aus}\n`).join('\n');
+  try {
+    fs.mkdirSync(PROTOKOLL, { recursive: true });
+    const letzter = path.join(PROTOKOLL, 'letzter.log');
+    fs.writeFileSync(letzter, kopf + koerper);
+    if (gruenerLauf) return letzter;
+    const eigen = path.join(PROTOKOLL, `rot-${stempel}-${kurz.replace('+', '')}.log`);
+    fs.writeFileSync(eigen, kopf + koerper);
+    // Die letzten fuenf roten bleiben. Mehr sagt nichts mehr, und ein
+    // Verzeichnis, das nur waechst, wird irgendwann geloescht statt gelesen.
+    const alte = fs.readdirSync(PROTOKOLL).filter(f => f.startsWith('rot-')).sort();
+    for (const f of alte.slice(0, Math.max(0, alte.length - 5)))
+      fs.rmSync(path.join(PROTOKOLL, f), { force: true });
+    return eigen;
+  } catch { return null; }
+}
 
 const abbruch = (r) => {
   melde(r);
   console.log('\n' + r.aus.split('\n').slice(-18).join('\n'));
+  const wo = protokollSchreiben(false);
   console.log(`\n  Kette ROT nach ${s(Date.now() - t0)} — `
-    + 'die billigen Tore brechen ab, damit kein Browser umsonst läuft.\n');
+    + 'die billigen Tore brechen ab, damit kein Browser umsonst läuft.');
+  console.log(wo ? `  Ganz nachzulesen in ${wo}\n`
+    : `  ${rot('Und das Protokoll liess sich nicht schreiben')} — dieser Lauf ist `
+      + `nur hier zu lesen.\n`);
   process.exit(1);
 };
 
@@ -355,10 +433,18 @@ if (befunde.length) {
     console.log(wichtigeZeilen(b.aus).map(z => '      ' + z.trimEnd()).join('\n')
       || b.aus.split('\n').slice(-10).map(z => '      ' + z.trimEnd()).join('\n'));
   }
+  const wo = protokollSchreiben(false);
   console.log(`\n  Kette ROT nach ${s(Date.now() - t0)} — `
     + `${befunde.length} von `
     + `${(PROBE ? 1 : OHNE_BROWSER.length + 1 + NACH_DEM_BAU.length) + arbeit.length} `
-    + 'Läufen.\n');
+    + 'Läufen.');
+  /* Ein roter Lauf OHNE Protokoll ist der Fall, den es nicht geben darf -
+   * dann steht der Grund nur im Fenster, und das ist beim naechsten Lauf
+   * weg. Es steht deshalb als eigene Zeile da und nicht als Randnotiz. */
+  console.log(wo ? `  Ganz nachzulesen in ${wo}\n`
+    : `  ${rot('Und das Protokoll liess sich nicht schreiben')} — dieser Lauf ist `
+      + `nur hier zu lesen.\n`);
   process.exit(1);
 }
+protokollSchreiben(true);
 console.log(`  Kette grün nach ${s(Date.now() - t0)}.\n`);

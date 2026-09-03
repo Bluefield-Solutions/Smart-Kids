@@ -1241,6 +1241,26 @@ export const PROBEN = [
     an:{ datei:'tor/pwa.mjs', text:'absichtlich rot' },
     sagt:'Kette ROT' },
 
+  /* Der rote Lauf muss nachzulesen sein (Q40).
+   *
+   * Der Anlass steht in `tools/kette.mjs`: ein Lauf war rot, der naechste
+   * gruen, und der Grund war weg. Seitdem schreibt die Kette jeden Lauf
+   * mit und einen roten in eine eigene Datei - und diese Probe haelt
+   * fest, dass sie es auch SAGT. Derselbe Eingriff wie eine Zeile
+   * darueber (ein absichtlich rotes `pwa` in der kurzen Fassung), aber
+   * eine andere Frage: dort „wird die Kette rot", hier „findet man
+   * hinterher heraus, warum".
+   *
+   * Verschwindet das Mitschreiben, faellt der Satz weg und die Probe
+   * schlaegt nicht mehr an. */
+  { n:'der rote Lauf ist hinterher nicht mehr nachzulesen', tor:'tor', bauen:true,
+    stets:{ SMARTKIDS_KETTE_PROBE:'1' }, datei:'tor/pwa.mjs',
+    such:'const pruefe = (b, satz) => { if (!b) fehler.push(satz); };',
+    ersatz:'const pruefe = (b, satz) => { if (!b) fehler.push(satz); };\n'
+      + "pruefe(false, 'Gegenprobe: dieses Tor ist absichtlich rot');",
+    an:{ datei:'tor/pwa.mjs', text:'absichtlich rot' },
+    sagt:'Ganz nachzulesen in .kette/rot-' },
+
   { n:'ein neues Tor steht in der Kette, aber nicht im Stand', tor:'rhythmus', auchWennRot:true,
     brauchtStand:true, nachStand:true, datei:'tor/kette-liste.mjs',
     such:'export const OHNE_BROWSER = [',

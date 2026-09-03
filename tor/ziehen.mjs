@@ -950,17 +950,33 @@ if (laeuft('rand')) {
     // Alles ausser der Umgebung verschwindet. `#umg` haengt seit Q3 in zwei
     // Maskengruppen; gehalten wird deshalb der Vorfahr, der unter `#lupe`
     // haengt, nicht `#umg` selbst.
+    /* Erst warten, bis die Umgebung WIRKLICH da ist (Q40).
+     *
+     * `#umg` steht sofort im Baum, gefuellt wird es aus einer
+     * nachgeladenen Datei. Gemessen wurde bisher, sobald die Ebene offen
+     * war - auf einer trockenen Maschine geht das gut, unter Last nicht:
+     * ein Kettenlauf meldete „auf asien ist ueberhaupt kein Grau im Bild",
+     * und im Bild war nichts, weil noch nichts gezeichnet WAR. Die
+     * Blindprobe hatte recht und meinte doch das Falsche.
+     *
+     * Gewartet wird auf die Sache - mindestens ein Pfad in `#umg` -, nicht
+     * auf Millisekunden. */
+    await q.waitForFunction(() => {
+      const u = document.querySelector('.schirm.da .karte > svg #umg');
+      return !!u && u.querySelectorAll('path').length > 0;
+    }, null, { timeout: 15000 }).catch(() => {});
     const steht = await q.evaluate(() => {
       const svg = document.querySelector('.schirm.da .karte > svg');
       const lupe = svg.querySelector('#lupe'), umg = svg.querySelector('#umg');
-      if (!lupe || !umg) return false;
+      if (!lupe || !umg || !umg.querySelector('path')) return false;
       let halte = umg; while (halte.parentNode !== lupe) halte = halte.parentNode;
       for (const el of svg.children)
         if (el !== lupe && el.tagName.toLowerCase() !== 'defs') el.style.display = 'none';
       for (const el of lupe.children) if (el !== halte) el.style.display = 'none';
       return true;
     });
-    if (!steht) { fehler.push(`rand: auf ${kont} ist keine Umgebung im Bild`);
+    if (!steht) { fehler.push(`rand: auf ${kont} steht nach 15 s kein einziger `
+      + 'Umgebungspfad im Baum — gemessen würde ein Bild, das es noch nicht gibt');
       await q.close(); await ctx.close(); continue; }
     const roh = await q.locator('.schirm.da .karte > svg').first().screenshot();
     const bild = PNG.sync.read(roh);

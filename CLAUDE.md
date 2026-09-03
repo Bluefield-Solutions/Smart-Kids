@@ -71,7 +71,11 @@ Proben hätten genau daran angeschlagen.
 npm run schnell    DIE NORMALE RUNDE. ~54 s. Siehe oben.
 npm run tor        die ganze Kette, rund 100 s. Der Runner fährt sie ohnehin
                    bei jedem Push; hier nur, wenn du sie vorher sehen
-                   willst. Die billigen Tore laufen nacheinander und
+                   willst. Sie schreibt seit Q40 jeden Lauf VOLLSTÄNDIG
+                   nach `.kette/letzter.log`, einen roten zusätzlich in
+                   eine eigene Datei mit Zeitstempel (die letzten fünf
+                   bleiben). Der Anlass: ein Lauf war rot, der nächste
+                   grün, und der Grund war nicht mehr zu ermitteln. Die billigen Tore laufen nacheinander und
                    brechen beim ersten Rot ab; die sechs Browsertore laufen
                    NEBENEINANDER, zehn Läufe zur Zeit (100 s statt 620 s):
                    `smoke` zerfällt in vier Teile, `passt` und `ansicht` in

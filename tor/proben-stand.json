@@ -423,9 +423,14 @@
       "s": 19
     },
     "das Becken verschluckt ein rotes Tor": {
-      "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
+      "commit": "5b9112c2f3982547553735d414e020ea627e67a1",
       "zeit": "2026-09-03",
-      "s": 20
+      "s": 39
+    },
+    "der rote Lauf ist hinterher nicht mehr nachzulesen": {
+      "commit": "5b9112c2f3982547553735d414e020ea627e67a1",
+      "zeit": "2026-09-03",
+      "s": 22
     },
     "ein neues Tor steht in der Kette, aber nicht im Stand": {
       "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
@@ -918,14 +923,14 @@
       "s": 37
     },
     "die Umgebung endet wieder hart am Rahmen": {
-      "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
+      "commit": "5b9112c2f3982547553735d414e020ea627e67a1",
       "zeit": "2026-09-03",
-      "s": 37
+      "s": 43
     },
     "die Umgebung ist unsichtbar, das Tor misst ein leeres Bild": {
-      "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
+      "commit": "5b9112c2f3982547553735d414e020ea627e67a1",
       "zeit": "2026-09-03",
-      "s": 21
+      "s": 24
     },
     "die Fremdgriff-Frage gilt wieder für jeden Ausschnitt": {
       "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
@@ -938,9 +943,9 @@
       "s": 14
     },
     "die Umgebung reicht auf keiner Karte mehr ins Randband": {
-      "commit": "628a06ef8a9f5490a8e909f31c85ec461ebf6c06",
+      "commit": "5b9112c2f3982547553735d414e020ea627e67a1",
       "zeit": "2026-09-03",
-      "s": 22
+      "s": 23
     },
     "die Karte wechselt die Farbe": {
       "commit": "a7c857b78b080fd7b4767ea25ba5c379d73bec00",

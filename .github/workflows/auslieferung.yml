@@ -90,6 +90,21 @@ jobs:
           name: abweichungen
           path: tor/abweichungen/
           if-no-files-found: ignore
+      # Und das VOLLE Protokoll des Laufs (Q40).
+      #
+      # Auf dem Bildschirm steht nur ein Auszug: `wichtigeZeilen` nimmt die
+      # Befundzeilen und was eingerueckt darunter haengt, hoechstens
+      # sechzig. Das ist fuer den Blick gemacht. Wer hinterher wissen
+      # will, was das Tor SONST noch gemessen hat - die Zahl daneben, den
+      # Lauf davor -, braucht die ganze Ausgabe, und die schreibt die Kette
+      # seit Q40 nach `.kette/`.
+      - name: Protokoll des Laufs sichern
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kettenprotokoll
+          path: .kette/
+          if-no-files-found: ignore
       # Die Vorschau wird MITGENOMMEN, nicht weggeräumt.
       #
       # Pages kennt eine Seite je Verzeichnis. Stellte nur der eine Ablauf
