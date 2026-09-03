@@ -189,7 +189,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | ~~6~~ | ~~**S2** Anteil neben Anzahl~~ | | | | **gefahren (Q31)** |
 | ~~7~~ | ~~**Q1** Zwei Gegenproben beweisen nichts~~ | | | | **nachgesehen (Q31): beide schlagen an** |
 | ~~—~~ | ~~**Q2** überholte Nachweise~~ | | | | **gefahren 01.09.** |
-| 2 | **Q33** Die Lupenknöpfe liegen auf der Karte | Fiona, Lea | hoch | mittel | eine Entscheidung am Gerät |
+| ~~2~~ | ~~**Q33** Die Lupenknöpfe liegen auf der Karte~~ | | | | **gefahren (Q33): Verdeckung 0 %** |
 | 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
 | ~~10~~ | ~~**P3** Größenwächter ohne Gegenprobe~~ | | | | **gefahren (Q31)** |
 | ~~—~~ | ~~**D2c** Deutschlands Nachbarn~~ | | | | **gefahren** |
@@ -2547,7 +2547,7 @@ Backwerkzeuge, nicht in ein Tor.
 
 ---
 
-## Q33 offen: die Lupenknöpfe liegen auf der Karte
+## Q33 erledigt (Q33): die Lupenknöpfe liegen auf der Karte
 
 **Gemessen in Audit A (Q32), auf allen sieben Größen.** Die drei Lupenknöpfe
 sitzen absolut positioniert unten rechts **in** `.karte` und verdecken damit
@@ -2601,9 +2601,21 @@ darf es nicht werden.
 Lupenknöpfe sind HTML und liegen **neben** dem svg im selben Kasten. Eine
 Prüfung, die nur in die Zeichnung schaut, sieht nicht, was darüber liegt.
 
+**Geschlossen in Q33:** Weg 2, und der Blick auf dem Gerät hat entschieden
+wie. Untereinander passen sie nicht — nebeneinander schon: die drei Knöpfe
+stehen in einer Zeile in der Werkzeugspalte, die dafür von 109 auf 133 Punkte
+wächst; die Antwortliste gibt den Platz her (262 → 238), der Kartenkasten
+bleibt Punkt für Punkt derselbe. Gemessen über alle sieben Größen:
+**Verdeckung 0 %, Kartenfläche +0,0 %.**
+
+Die Ratsche ist dabei weggefallen und durch eine Regel ersetzt: liegt ein
+Bedienelement über der Karte, ist `passt` rot. Eine Ratsche sagt „nicht
+schlimmer als gestern" — hier ist aber jeder Prozentpunkt falsch. Die 21
+Einträge in `tor/masse-stand.json` sind gelöscht.
+
 ---
 
-## Q34 offen: die App sagt alles und zeigt nichts
+## Q34 erledigt (Q33): die App sagt alles und zeigt nichts
 
 **Gemessen in Audit A (Q32).** Elf Stationen auf dem Zielgerät, **21
 antippbare Dinge ohne jedes Signal** für ein Kind, das nicht liest — kein
@@ -2635,6 +2647,12 @@ trägt nur, wenn Fiona zugehört hat und sich erinnert.
 3. **Beides**, mit dem Zeichen als Hauptsache und der Stimme als Zugabe.
 
 Nummer 1 ist der Weg, der nichts an der Bedienung ändert.
+
+**Geschlossen in Q33:** Weg 1. Zeichen tragen jetzt Weiterspielen, Übung
+beenden, Von vorne anfangen, Weiß ich nicht, Jetzt starten, Überspringen und
+Forscherbuch. `#weise` bleibt bewusst ohne — seine Aufschrift wechselt
+zwischen „Lieber antippen" und „Lieber ziehen", ein festes Zeichen wäre dort
+die Hälfte der Zeit falsch.
 
 ---
 
@@ -2695,7 +2713,7 @@ eine Zusage prüft, prüft sie an der Sache.
 
 ---
 
-## Q37 offen: eine Zahl, die die Maschine misst
+## Q37 erledigt (Q33): eine Zahl, die die Maschine misst
 
 `smoke` prüft, dass `?flott` den Kartenweg mindestens **1,5×** kürzt. In der
 vollen Kette (acht Browser nebeneinander auf vier Kernen) wurde daraus einmal
@@ -2722,3 +2740,33 @@ Zwei Wege:
 
 Nummer 1 ist der Weg. Die Zeitmessung selbst bleibt im Bericht stehen, sie ist
 als *Auskunft* nützlich — nur nicht als Tor.
+
+**Geschlossen in Q33:** Weg 1. `smoke` fängt `window.setTimeout` ab und liest
+die **angeforderte** Pause statt der vergangenen Zeit. Übrig ist eine einzige
+Zahl, `LESEZEIT_MIN = 1200`, und drei Ja/Nein-Aussagen daran: es wird
+überhaupt eine Pause angefordert · im normalen Lauf ist sie mindestens so
+lang · mit `?flott` ist sie kürzer. `KUERZER_UM` ist ersatzlos weg, die
+Stoppuhr steht nur noch als Auskunft im Bericht.
+
+
+---
+
+## Q38 erledigt (Q33): die Blindprobe unter der Randmessung stand auf den Lupenknöpfen
+
+Aufgefallen, weil `ziehen` nach Q33 rot wurde: die Flächenmessung der
+Umgebung fiel von 217 auf 22, auf Südamerika auf 9.
+
+Die 217 waren nie die Umgebung, sondern die dunkle Kante der drei
+Lupenknöpfe, die im aufgenommenen Kartenausschnitt lagen — deshalb stand auf
+**allen sieben Karten derselbe Wert**, und die Blindprobe („kein Grau in der
+Fläche, dann beweist die Null am Rand nichts", Schwelle 20) konnte
+dreiunddreißig Fassungen lang nicht anschlagen.
+
+Sie fragt jetzt nach der Fläche, die Grau trägt — mit ausgeblendeter Umgebung
+glatt 0,00 % auf allen sieben Karten, mit ihr 0,02 bis 23,37 %. Dazu eine
+zweite Zeile, die zählt, wie viele Karten die Zusage überhaupt auf die Probe
+stellen (ein Drittel, mindestens zwei; heute fünf von sieben). Zwei
+Gegenproben nachgetragen.
+
+Die Randwerte selbst waren nicht betroffen, die Eichung des Deckels gilt
+unverändert.

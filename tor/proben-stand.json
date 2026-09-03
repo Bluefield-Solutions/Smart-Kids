@@ -67,14 +67,14 @@
       "s": 5
     },
     "eine Farbe am Markensystem vorbei": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 6
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 11
     },
     "eine benutzte Marke gibt es nicht": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 7
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 3
     },
     "eine Flächenfarbe hängt sich vom System ab": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -182,9 +182,9 @@
       "s": 42
     },
     "die Lupenknöpfe liegen wieder auf der Karte": {
-      "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
       "zeit": "2026-09-03",
-      "s": 81
+      "s": 82
     },
     "zwei Kacheln liegen aufeinander": {
       "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
@@ -237,9 +237,9 @@
       "s": 127
     },
     "die Hauptstädte stehen wieder als zwei Kacheln da": {
-      "commit": "c9a7eab2a284d8785384f6a5e02417ff1a876d8d",
-      "zeit": "2026-09-02",
-      "s": 83
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 86
     },
     "der Runner darf wieder einen anderen Browser fahren": {
       "commit": "bcf7c31d4596b3b2e13e95eab4610abbd91f4e66",
@@ -632,29 +632,29 @@
       "s": 69
     },
     "der Schalter kürzt keine Schaupause mehr": {
-      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
-      "zeit": "2026-09-02",
-      "s": 38
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 41
     },
     "das Lob ist weg, bevor ein Kind es gelesen hat": {
-      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
-      "zeit": "2026-09-02",
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
       "s": 16
     },
     "die Schaupause wird gar nicht mehr mitgeschrieben": {
-      "commit": "18170ebab7631c3cf1e8722b14b84fdc1f3796b1",
-      "zeit": "2026-09-02",
-      "s": 36
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 20
     },
     "eine Schaupause geht wieder an `?flott` vorbei": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 7
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 3
     },
     "die Schaupausen-Prüfung findet nichts mehr": {
-      "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
-      "zeit": "2026-09-02",
-      "s": 6
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 3
     },
     "der Rohdatenpfad wird wieder absolut": {
       "commit": "af28aba29093fa0348408ff1721cfef73c249de6",
@@ -925,6 +925,11 @@
       "commit": "3fed1b0709f71580da627bc013b0f36f37db04ea",
       "zeit": "2026-09-03",
       "s": 20
+    },
+    "die Umgebung reicht auf keiner Karte mehr ins Randband": {
+      "commit": "a9f6f6b2d197d464ad3fb84a1506b0f0c7faff67",
+      "zeit": "2026-09-03",
+      "s": 35
     },
     "die Karte wechselt die Farbe": {
       "commit": "41018b6ad8fa309437e0bb1835485bf0e963fe43",

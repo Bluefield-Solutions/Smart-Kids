@@ -9987,3 +9987,142 @@ für einen Schalter ist. Steht als **Q37** im Backlog; behoben ist es nicht,
 nur verstanden.
 
 265 Gegenproben.
+
+
+---
+
+# Q33 · Drei aus dem Backlog — und der Fund, der beim Aufräumen herausfiel
+
+Die Reihenfolge war nicht die aus dem Bericht (Q33 · Q34 · Q37), sondern
+**Q37 zuerst**: eine lastabhängige Zeitmessung, die während zweier
+Umbaurunden am Grundriss zufällig rot wird, kostet jedes Mal einen Lauf und
+verschleiert, was wirklich kaputt ist. Erst das Maß gerade ziehen, dann
+umbauen.
+
+## Q37 · Den Schalter prüfen, nicht die Maschine
+
+`smoke` verglich zwei gestoppte Zeiten und verlangte einen Faktor 1,5. Was
+es damit maß, hing von der Zahl der Kerne und der Nachbarläufe ab — der
+Befund aus Q32.
+
+Gemessen wird jetzt die **angeforderte** Pause statt der vergangenen Zeit:
+`window.setTimeout` wird für die Dauer des Wegs umgehängt und schreibt jede
+Frist ab 200 ms mit; kurz vor dem Antworten wird die Liste geleert, danach
+die größte Frist genommen. Das ist die Zahl, die im Quelltext steht, und
+keine, die eine Uhr beobachtet.
+
+Übrig bleibt **eine** Zahl statt dreier: `LESEZEIT_MIN = 1200`. Drei
+Aussagen hängen daran, und alle drei sind Ja/Nein:
+
+* Wird überhaupt keine Pause angefordert, ist das ein Befund — sonst
+  bewiese der Rest nichts.
+* Im normalen Lauf muss die angeforderte Pause **mindestens** 1200 ms sein
+  (Lesezeit fürs Lob).
+* Mit `?flott` muss sie **darunter** liegen — sonst kürzt der Schalter
+  diesen Weg nicht.
+
+`KUERZER_UM` ist ersatzlos weg. Die Stoppuhr steht weiter im Bericht, als
+Auskunft, aber sie entscheidet nichts mehr.
+
+Drei Gegenproben, alle schlagen an: der Schalter kürzt nicht mehr · das Lob
+ist weg, bevor ein Kind es gelesen hat · die Pause wird gar nicht mehr
+mitgeschrieben.
+
+## Q33 · Die Lupenknöpfe stehen jetzt neben der Karte
+
+Aus Audit A: auf dem Zielgerät verdeckten die drei Knöpfe **70,4 % von
+Australien** — und Australien ist eine Antwortfläche, keine Verzierung. Sie
+lagen absolut auf dem Kartenkasten, weil dort Platz war.
+
+Sie hängen jetzt in der Werkzeugspalte, nebeneinander statt untereinander:
+die Spalte ist im kurzen Querformat hoch bemessen, aber nicht hoch genug für
+drei Knöpfe **plus** Mikrofon und Hörknopf. Nachgemessen über alle sieben
+Größen: Verdeckung **0 %**, und die Karte verliert dabei keine Fläche
+(**+0,0 %**). Die Werkzeugspalte wächst von 109 auf 133 Punkte, die Liste
+gibt sie her (262 → 238); der Kartenkasten bleibt Punkt für Punkt derselbe.
+
+Und die Regel dahinter ist keine Tafelzeile mehr. `passt` führte
+„Karte von Knöpfen verdeckt %" als Kennzahl mit Ratsche — 21 Einträge in
+`tor/masse-stand.json`, einer je Bildschirm und Größe. Eine Ratsche sagt
+„nicht schlimmer als gestern"; hier ist aber jeder Prozentpunkt falsch. Seit
+dieser Runde ist es ein harter Befund: **liegt ein Bedienelement über der
+Karte, ist das Tor rot.** Die 21 Einträge sind gelöscht.
+
+## Q34 · Ein Zeichen auf jedem Knopf, der für Fiona leer war
+
+Ebenfalls aus Audit A: elf Stationen auf Fionas Weg, und an fünf Stellen
+stand ein Knopf, der ohne Lesen nichts sagt. Sie tragen jetzt ein Zeichen —
+Weiterspielen ▷, Übung beenden ▦, Von vorne anfangen 🗑, Weiß ich nicht ?,
+Jetzt starten ▷, Überspringen →, Forscherbuch 📖.
+
+Einer bleibt bewusst ohne: `#weise` wechselt seine Aufschrift zwischen
+„Lieber antippen" und „Lieber ziehen". Ein festes Zeichen wäre dort die
+Hälfte der Zeit falsch, und ein wechselndes wäre zwei Zeichen für eine
+Sache.
+
+Zwei Kleinigkeiten am Rand, beide aus dem Bild: `.knopf svg` bekommt
+`flex:none` (in einer engen Reihe darf der Text umbrechen, nicht das
+Zeichen), und `.leise` wird zur Achse statt einer Grundlinie — er war bis
+hierher reiner Text.
+
+## Q38 · Die Blindprobe unter der Randmessung stand auf den Lupenknöpfen
+
+Das ist der eigentliche Fund der Runde, und er fiel bei Q33 heraus.
+
+`ziehen` prüft, dass die graue Umgebung nicht hart am Rahmen endet. Es misst
+am Bild: dunkelster Punkt im äußeren Zweiprozentband gegen den hellsten
+Punkt des Ausschnitts. Darunter steht eine **Blindprobe** — findet die
+Messung *in der Fläche* auch kein Grau, dann ist nicht der Rand sauber,
+sondern das Bild leer, und die Null am Rand bezeugt nichts. Ihre Schwelle
+war 20, abgelesen an einem vollen Grau von **217**.
+
+Als die Knöpfe die Karte verließen, wurde `ziehen` rot: 22 statt 217, auf
+Südamerika 9.
+
+Die 217 waren nie die Umgebung. Der aufgenommene Ausschnitt ist der
+Kartenkasten, und in ihm lagen die drei Lupenknöpfe mit ihrer dunklen
+Kante — deshalb las die Flächenmessung auf **allen sieben Karten genau
+denselben Wert**, was für sieben verschiedene Landkarten unmöglich ist und
+dreiunddreißig Fassungen lang niemandem auffiel. Die Blindprobe konnte
+damit nicht anschlagen. Die *Rand*werte waren nicht betroffen: die Knöpfe
+saßen mit Abstand `--r2` in der Ecke, das Band misst zwei Prozent — sie
+lagen knapp daneben. Die Eichung des Deckels (12, zwischen 4 mit und 22 ohne
+Blende) gilt unverändert.
+
+Nachgemessen mit **abgeschalteter** Umgebung, alle sieben Karten: hellster
+wie dunkelster Punkt 255, Grauanteil glatt 0,00 %. Mit Umgebung: 0,02 %
+(Südamerika) bis 23,37 % (Afrika). Die Blindprobe fragt seit dieser Runde
+nach der **Fläche, die Grau trägt**, nicht nach ihrer Tiefe — der
+Unterschied zwischen „ein Splitter" und „gar nichts" ist der einzige, den
+sie treffen muss.
+
+Dazu eine zweite Zeile, die es vorher nicht gab: **wie viele Karten die
+Zusage überhaupt auf die Probe stellen.** Reicht die Umgebung auf keiner
+Karte mehr ins Randband, hat der Deckel nichts zu deckeln und das Tor wäre
+grün, ohne etwas geprüft zu haben. Verlangt wird ein Drittel, mindestens
+zwei; heute sind es fünf von sieben.
+
+Und die Gegenprobe dazu hat mich zweimal gekostet. Der naheliegende Eingriff
+— eine viel breitere Blende — machte `ziehen` rot, aber aus dem anderen
+Grund: er löscht auf Südamerika den letzten Splitter Grau, und dann meldet
+die Blindprobe darunter. Eine Gegenprobe, die das falsche Tor auslöst,
+bezeugt nichts. Der Eingriff zieht jetzt das **Sichtfeld** auf (250 statt 8
+Einheiten Luft): die Umgebung sind echte Nachbarländer und keine Fläche ohne
+Ende, also steht dann überall Papier zwischen ihnen und dem Rahmen —
+0 von 7 Karten im Band, und in der Mitte bleiben 4,9 bis 11,2 % Grau stehen,
+die Blindprobe darunter schweigt.
+
+**Die Lehre:** Regel 1 sagt, eine Prüfung, die nie etwas meldet, ist kein
+Beweis — wer eine Wirkung misst, schaltet sie zuerst ab. Bei der Randmessung
+war das getan. Bei der **Blindprobe darunter** nicht: sie ist selbst eine
+Prüfung, und niemand hat je nachgesehen, ob sie anschlagen *kann*. Das
+Warnzeichen lag dabei offen da und blieb dreiunddreißig Fassungen lang
+unbeachtet: **sieben verschiedene Karten, ein identischer Messwert.**
+
+## Die Runde in Zahlen
+
+* Kette grün nach **139,9 s**, 22 Läufe.
+* **268** stehende Gegenproben, alle mit Nachweis; zwei sind neu (Q38), eine
+  ist ersetzt.
+* 37 Vorbilder erneuert — die Knopfzeichen und die Werkzeugspalte stehen in
+  fast jeder Aufnahme.
