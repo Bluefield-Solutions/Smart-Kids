@@ -3266,3 +3266,53 @@ jetzt `karteFehltSchirm()` und steht einmal; die beiden Wachen rufen ihn
 verschieden auf und sind dadurch unterscheidbar. Die Gegenprobe zeigt auf
 die im **Vorlauf** — das ist die, durch die ein Kind aus der Ebenenwahl
 wirklich läuft, weil `vorlaufGezeigt` bei einem frischen Profil leer ist.
+
+## Q42 erledigt (Q42): dreizehn feste Pausen — und die, die nie gezählt wurden
+
+Der Rauchtest wartete an dreizehn Stellen eine **feste Zeit**, egal ob das
+Erwartete schon dastand: 3,4 s je Lauf. Das ist doppelt teuer. Auf einer
+schnellen Maschine sind es 3,4 s Verschwendung, auf einer langsamen reicht
+dieselbe Frist nicht — dann wird der Test *flatterhaft* statt langsam, und
+ein flatterhafter Test wird irgendwann nicht mehr geglaubt.
+
+Alle dreizehn sind ersetzt. Nicht durch längere Fristen, sondern durch ein
+Warten auf **die Sache**:
+
+| wo | vorher | jetzt |
+|---|---|---|
+| nach „Fertig" im Schreibschirm (3×) | 250 / 300 / 400 ms | `nachFertig()` — das Geschriebene ist weg, oder es wird vorgemacht, oder das Lob steht |
+| der Leitner-Eintrag nach dem Lob | 400 ms | `bisHier()` pollt die Ablage, bis der Buchstabe wirklich im Fach steht |
+| falsche Antwort im Test | 500 ms | die Frage ist eine andere |
+| die sechzehn Testaufgaben | 16 × 1900 ms | ein anderes Ziel oder der Endbildschirm |
+| „Etwas anderes" nach dem Test | 600 ms | die Ebenenwahl steht |
+| zurück bis zur Profilwahl | 400 ms je Schritt | die Blende ist durch (ein Bildschirm) |
+| daneben getippt | 400 ms | der Hinweis ist da |
+| die zwölf Europa-Aufgaben | 12 × 250 ms | Blende durch **und** Ziel auf der Karte |
+| die drei Kauderwelsch-Äußerungen | 3 × 120 ms | der Satz auf dem Bildschirm ist ein anderer |
+
+**Zweimal war das Warten fast die Prüfung geworden.** Bei der falschen
+Antwort im Test lag es nahe, auf die Marke „daneben" am Band zu warten —
+die wird zwei Zeilen weiter geprüft. Und bei den Kauderwelsch-Äußerungen
+darauf, dass der Satz das gesprochene Wort *nennt* — genau die Zusage, um
+die es geht. Beide Male ist es der Umweg geworden: auf irgendeine Änderung
+warten, und was dort steht, prüft die Prüfung. Ein Warten beweist nichts.
+
+**Und die Zahl ist jetzt eine Ratsche.** Bis heute stand „Blind gewartet:
+3,4 s" im Bericht und wuchs, ohne dass jemand davon rot wurde. Wer jetzt
+`waitForTimeout` ruft, macht den Rauchtest rot und liest im selben Satz,
+was er stattdessen tun kann. Zwei Auswege stehen daneben, weil es sie
+wirklich gibt: `p.ausbleiben(ms)` für eine Zusage, dass **nichts** kommt
+(dort gibt es nichts, worauf zu warten wäre — die Frist ist die Messung),
+und `p.messtakt(ms)` für die Abtastung innerhalb einer Zeitmessung. Beide
+stehen eigens im Bericht, damit sie nicht im Dunkeln wachsen.
+
+**Der eigentliche Fund kam beim Aufräumen.** Die Buchführung hing in
+`neueSeite` — und galt deshalb nur für Seiten, die von dort kommen. Die
+gedrosselte Seite im Wartezeichen-Abschnitt und die ohne Dienstarbeiter aus
+Q43 haben ihren eigenen Kontext: ihre festen Pausen sind **nie gezählt
+worden**. „Dreizehn" waren dreizehn *gezählte*; wieviele es wirklich waren,
+stand nirgends. Aufgefallen ist das erst, als die neue Ratsche eine dieser
+Seiten anfasste und `messtakt` dort fehlte — eine Zahl, die ihre Messstelle
+nicht mitträgt, sagt weniger als sie behauptet (Regel 5). Jetzt geht jede
+Seite durch `uhrenBuchfuehrung()`, und der Bericht meint alle: 0 blind,
+1,5 s in drei Ausbleiben, 0,3 s in fünf Messtakt-Schritten.

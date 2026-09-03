@@ -767,6 +767,30 @@ export const PROBEN = [
     an:{ datei:'tor/smoke.mjs', text:"'.schirm.da .kacheln', { timeout: 1 }" },
     sagt:'Timeout' },
 
+  /* Q42: die Ratsche auf das blinde Warten.
+   *
+   * Der Rauchtest wartete an dreizehn Stellen eine feste Zeit, egal ob
+   * das Erwartete schon da war - 3,4 s je Lauf, und auf einer langsamen
+   * Maschine trotzdem zu kurz. Alle dreizehn sind ersetzt; damit die Zahl
+   * nicht still wieder waechst, ist sie jetzt ein FEHLER und keine
+   * Auskunft mehr.
+   *
+   * Der Eingriff setzt genau eine feste Pause wieder ein, und zwar dort,
+   * wo jede Seite durchkommt. Er misst damit nicht die Pause, sondern die
+   * Ratsche: eine Millisekunde kostet nichts und muss trotzdem anschlagen.
+   * Stuende die Grenze bei einer Sekunde, waere sie umgehbar. */
+  { n:'eine feste Pause schleicht sich in den Rauchtest zurueck', tor:'smoke',
+    args:['--nur=spielen'], bauen:true, datei:'tor/smoke.mjs',
+    such:'  p.messtakt = (ms) => { messtakt.ms += ms; messtakt.n++; return festWarten(ms); };',
+    /* OHNE `await`: `uhrenBuchfuehrung` ist nicht async, und ein `await`
+       darin waere ein Syntaxfehler - der Rauchtest waere rot, aber aus
+       dem falschen Grund. Der Zaehler steigt ohnehin sofort; auf die
+       Pause zu warten ist fuer diese Probe nicht noetig. */
+    ersatz:'  p.messtakt = (ms) => { messtakt.ms += ms; messtakt.n++; return festWarten(ms); };'
+      + '\n  p.waitForTimeout(1);',
+    an:{ datei:'tor/smoke.mjs', text:'\n  p.waitForTimeout(1);' },
+    sagt:'feste Pausen' },
+
   /* Q26: die Ebenenkachel wird auf dem grossen Schirm wieder flach.
    *
    * Gemessen war es verkehrt herum: auf dem iPad ist die Kachel 240 breit

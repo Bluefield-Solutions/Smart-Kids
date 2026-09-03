@@ -202,6 +202,53 @@ const OHNE_AUSWAHL = (() => {
  */
 const blind = { ms: 0, n: 0 };
 
+/* Zwei Arten von Warten, die sich NICHT wegmessen lassen (Q42).
+ *
+ * Wer auf das AUSBLEIBEN von etwas wartet, hat nichts, worauf er warten
+ * koennte: die Zusage ist ja gerade, dass nichts kommt. Eine Frist ist da
+ * kein Notbehelf, sondern die Messung selbst - und wie lang sie ist, sagt,
+ * wie stark die Aussage ist.
+ *
+ * Und wer eine ZEITSPANNE misst, braucht einen Takt, der die Spanne nicht
+ * verzerrt; der Takt endet mit der Sache und nicht mit der Uhr.
+ *
+ * Beides steht getrennt in der Bilanz, damit die Zahl darueber ehrlich
+ * bleibt. „Blind gewartet" soll null sein und null bleiben duerfen: wer
+ * eine feste Pause dazuschreibt, sieht sie im Bericht sofort. Die beiden
+ * anderen Zahlen sind Auskunft, keine Ratsche. */
+const ausbleiben = { ms: 0, n: 0 }, messtakt = { ms: 0, n: 0 };
+
+/* Die Buchfuehrung an EINE Seite haengen.
+ *
+ * Sie stand in `neueSeite`, und deshalb galt sie auch nur dort: die
+ * gedrosselte Seite im Wartezeichen-Abschnitt und die ohne Dienstarbeiter
+ * im Nachladeweg kommen aus einem eigenen Kontext und wurden nie gezaehlt.
+ * Die dreizehn festen Pausen waren also dreizehn GEZAEHLTE - wieviele es
+ * wirklich waren, stand nirgends. Aufgefallen ist es erst, als die neue
+ * Ratsche eine dieser Seiten anfasste und `messtakt` dort fehlte.
+ *
+ * Jetzt geht jede Seite hier durch, und die Zahl im Bericht meint alle. */
+function uhrenBuchfuehrung(p) {
+  const festWarten = p.waitForTimeout.bind(p);
+  p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
+  p.ausbleiben = (ms) => { ausbleiben.ms += ms; ausbleiben.n++; return festWarten(ms); };
+  p.messtakt = (ms) => { messtakt.ms += ms; messtakt.n++; return festWarten(ms); };
+  return p;
+}
+
+/* Auf eine Bedingung warten, die nur HIER zu pruefen ist - etwa ein
+ * Eintrag in der Ablage, den `standVon` ueber die Seite holt. Gepollt wird
+ * in Node, weil die Bedingung in Node steht; gewartet wird trotzdem auf
+ * die Sache: die Schleife endet, sobald sie zutrifft. */
+const bisHier = async (fn, ms = 6000, takt = 50) => {
+  const ende = Date.now() + ms;
+  for (;;) {
+    if (await fn()) return true;
+    if (Date.now() > ende) return false;
+    await new Promise(r => setTimeout(r, takt));
+  }
+};
+
 /* Auf eine BEDINGUNG warten, nicht auf eine Frist.
  *
  * Gibt `true` zurueck, wenn sie eingetreten ist, `false` bei Ablauf - und
@@ -213,6 +260,25 @@ const blind = { ms: 0, n: 0 };
  * Bedingung eintritt - anders als eine feste Pause, die IMMER kostet. */
 const bis = (p, fn, ms = 5000, arg = null) =>
   p.waitForFunction(fn, arg, { timeout: ms }).then(() => true).catch(() => false);
+
+/* Nach „Fertig" auf die REAKTION warten, nicht auf eine Frist (Q42).
+ *
+ * `pruefen()` im Schreibbildschirm hat drei Ausgaenge, und jeder ist am
+ * Bildschirm zu sehen: bei einer abgelehnten Antwort wird das Geschriebene
+ * weggeraeumt (`meine` zurueck, `malen()`), nach dem dritten Fehlversuch
+ * wird stattdessen vorgemacht, und bei einer richtigen steht das Lob. Nur
+ * die richtige laesst die Striche stehen - deshalb steht sie hier eigens.
+ *
+ * Gewartet wird auf „irgendeiner davon ist eingetreten", nicht auf einen
+ * bestimmten: welcher es ist, prueft der Aufrufer danach. Sonst waere das
+ * Warten schon die Pruefung, und ein Warten beweist nichts (Regel 1). */
+const nachFertig = (p, ms = 8000) => bis(p, () => {
+  const s = document.querySelector('.schirm.da');
+  if (!s) return false;
+  return s.querySelectorAll('.gemalt path').length === 0
+      || s.querySelectorAll('.vorlage path.malt').length > 0
+      || !!s.querySelector('.richtigText');
+}, ms);
 
 /* Wer bekommt die Aufgabe vorgelesen? Aus der Backlog-Tabelle, Zeile
  * „Vorlesen" - dieselbe Quelle wie Tiefe, Namen und Auswahlverbot.
@@ -297,8 +363,7 @@ async function neueSeite(viewport, ctx, flott = true) {
     fehler.push(`Der Bildausschnitt ist ${ist.width}×${ist.height} statt `
       + `${viewport.width}×${viewport.height} — der Test misst eine andere Größe, `
       + 'als er behauptet');
-  const festWarten = p.waitForTimeout.bind(p);
-  p.waitForTimeout = (ms) => { blind.ms += ms; blind.n++; return festWarten(ms); };
+  uhrenBuchfuehrung(p);
 
   /* Verlaesst irgendetwas dieses Geraet? (Q29)
    *
@@ -1979,7 +2044,7 @@ if (laeuft('ablage')) try {
      * `serviceWorkers: 'block'` sperrt ihn fuer diesen Kontext. */
     const kalt = await b.newContext({ viewport: { width: 844, height: 390 },
       locale: 'de-DE', serviceWorkers: 'block' });
-    const q = await kalt.newPage();
+    const q = uhrenBuchfuehrung(await kalt.newPage());
     await q.setViewportSize({ width: 844, height: 390 });
     const cdp = await kalt.newCDPSession(q);
     await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 100,
@@ -2028,7 +2093,7 @@ if (laeuft('ablage')) try {
     for (let i = 0; i < 80 && !zeichen; i++) {
       zeichen = await q.evaluate(() => !!document.querySelector('.schirm.warten.da'));
       bisZeichen = Date.now() - t0;
-      if (!zeichen) await q.waitForTimeout(60);
+      if (!zeichen) await q.messtakt(60);
     }
     await q.waitForSelector(BUCHKARTE, { timeout: 30000 });
     const bisBuch = Date.now() - t0;
@@ -2047,7 +2112,7 @@ if (laeuft('ablage')) try {
     // nur EIN Wechsel, der sofort steht. Deshalb auf „das Buch ist weg"
     // warten und nicht auf einen bestimmten Bildschirm.
     await bis(q, () => !document.querySelector('.schirm.da .aufkleber, .schirm.da .albumkarte'), 10000);
-    await q.waitForTimeout(WARTEZEICHEN_LUFT);
+    await q.ausbleiben(WARTEZEICHEN_LUFT);
     const spaet = await q.evaluate(() => !!document.querySelector('.schirm.warten'));
     if (spaet) merke('warten', new Error('nach einem Bildschirm, der sofort da war, '
       + 'taucht das Wartezeichen trotzdem noch auf — seine Uhr wird nicht abbestellt'));
@@ -2202,7 +2267,7 @@ if (laeuft('tippen')) try {
       locale: 'de-DE', viewport: { width: 844, height: 390 }, serviceWorkers: 'block' });
     let geholtVersuche = 0;
     await ohneArbeiter.route('**/daten/laender-*.json', r => { geholtVersuche++; r.abort(); });
-    const k = await ohneArbeiter.newPage();
+    const k = uhrenBuchfuehrung(await ohneArbeiter.newPage());
     await k.goto(ADRESSE, { waitUntil: 'load' });
     await k.waitForSelector('[data-profil="fiona"]', { timeout: 15000 });
     await k.click('[data-profil="fiona"]');
@@ -3354,7 +3419,7 @@ if (laeuft('schreiben')) try {
   for (let i = 0; i < 2; i++) {
     await zeichneZug(p, [[20, 80], [50, 30], [80, 80], [30, 40]]);
     await p.click('.schirm.da #fertigknopf');
-    await p.waitForTimeout(250);
+    await nachFertig(p);
   }
   const nachUnsinn = await p.$eval('.schirm.da #frage', e => e.textContent);
   if (!/noch einmal/i.test(nachUnsinn))
@@ -3374,9 +3439,16 @@ if (laeuft('schreiben')) try {
 
   // 5. Der Fortschritt muss ANKOMMEN. Ein Buchstabe, der richtig war und
   //    im Leitner nicht steigt, ist eine Uebung ohne Gedaechtnis.
-  await p.waitForTimeout(400);
-  const buchstabenStand = await standVon(p, 'fiona:schreiben:buchstaben');
-  const fach = buchstabenStand ? (buchstabenStand[`bu:${zeichen}`]?.fach ?? 0) : -1;
+  /* Gewartet wird auf den EINTRAG, nicht auf 400 ms (Q42). Gesichert wird
+     erst nach dem Lobsatz, und wie lange das Schreiben in die Ablage
+     dauert, ist Sache des Geraets - eine feste Pause ist auf dem schnellen
+     verschenkt und auf dem langsamen zu kurz. */
+  let buchstabenStand = null, fach = -1;
+  await bisHier(async () => {
+    buchstabenStand = await standVon(p, 'fiona:schreiben:buchstaben');
+    fach = buchstabenStand ? (buchstabenStand[`bu:${zeichen}`]?.fach ?? 0) : -1;
+    return fach >= 2;
+  }, 8000);
   if (!(fach >= 2))
     merke('schreiben', new Error(`nach einem richtigen ${zeichen} steht der Buchstabe `
       + `in Fach ${fach} — erwartet mindestens 2`));
@@ -3450,7 +3522,7 @@ if (laeuft('schreiben')) try {
     for (let i = 0; i < 3; i++) {
       await zeichneZug(d, [[20, 80], [50, 30], [80, 80], [30, 40]]);
       await d.click('.schirm.da #fertigknopf');
-      await d.waitForTimeout(300);
+      await nachFertig(d);
     }
     const vorgemacht = await d.waitForFunction(
       () => document.querySelectorAll('.schirm.da .vorlage path.malt').length > 0,
@@ -3548,7 +3620,7 @@ if (laeuft('schreiben')) try {
               await zeichneZug(z, Schreiben.abtasten(d, 26)
                 .map(([x, y], i) => [x * 0.92 + 5 + (i % 3 - 1), y * 0.92 + 4 + (i % 2 ? 1 : -1)]), f);
           await z.click('.schirm.da #fertigknopf');
-          await z.waitForTimeout(400);
+          await nachFertig(z);
         };
         await malen([...ziffern].reverse());
         const nachTausch = await z.evaluate(() =>
@@ -3812,9 +3884,15 @@ if (laeuft('test')) try {
 
     /* EIN Versuch je Aufgabe: absichtlich danebenschreiben, dann muss die
      * Aufgabe vorbei sein - ohne dass die Antwort dasteht. */
+    /* Gewartet wird darauf, dass die App die Antwort VERARBEITET hat -
+       kenntlich daran, dass die Frage eine andere ist -, nicht auf 500 ms
+       (Q42). Und nicht auf die Marke „daneben" am Band: die wird gleich
+       darunter geprueft, das Warten waere dann schon die Pruefung. */
+    const vorFalsch = await p.$eval('.schirm.da #frage', e => e.textContent);
     await p.fill('.schirm.da .eingabe', 'Quatschhausen');
     await p.$eval('.schirm.da .wahlliste .knopf', x => x.click());
-    await p.waitForTimeout(500);
+    await bis(p, (v) => (document.querySelector('.schirm.da #frage')?.textContent || '') !== v,
+      10000, vorFalsch);
     const nachFalsch = await p.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       return { satz: s.querySelector('#frage')?.textContent.trim() || '',
@@ -3833,6 +3911,8 @@ if (laeuft('test')) try {
       if (await p.$('.schirm.da #nochmal')) break;
       await p.waitForFunction(() =>
         document.querySelectorAll('#buehne .schirm').length === 1, null, { timeout: 8000 });
+      const dranVorher = await p.evaluate(() =>
+        document.querySelector('.schirm.da path.ziel')?.dataset.id || '');
       if (await istUmgekehrt(p)) await zeigeAufKarte(p);
       else {
         const name = await p.evaluate(() => {
@@ -3845,7 +3925,13 @@ if (laeuft('test')) try {
         await p.fill('.schirm.da .eingabe', name);
         await p.$eval('.schirm.da .wahlliste .knopf', x => x.click());
       }
-      await p.waitForTimeout(1900);
+      /* Sechzehn Aufgaben mal 1900 ms waren dreissig Sekunden, von denen
+         der Test nichts hatte (Q42). Gewartet wird auf das, was danach
+         kommt: ein anderes Ziel oder der Endbildschirm. Die Lobpause
+         dauert dann, was sie dauert - auch wenn sie einmal laenger wird. */
+      await bis(p, (v) => !!document.querySelector('.schirm.da #nochmal')
+        || (document.querySelector('.schirm.da path.ziel')?.dataset.id || '') !== v,
+        15000, dranVorher);
     }
     const ende = await p.evaluate(() => {
       const s = document.querySelector('.schirm.da');
@@ -3858,7 +3944,9 @@ if (laeuft('test')) try {
         + `„${ende.gross}"${ende.pokal ? '' : ' ohne Pokal'} — bestanden wird ab 80 %`));
     else {
       await p.click('.schirm.da #andere');
-      await p.waitForTimeout(600);
+      // Gewartet wird auf die Ebenenwahl, nicht auf 600 ms (Q42). Ob der
+      // Pokal an der Kachel steht, ist die Frage danach - nicht diese.
+      await bis(p, () => !!document.querySelector('.schirm.da [data-ebene]'), 10000);
       const bleibt = await p.evaluate(() => !!document.querySelector('.schirm.da .pokal'));
       if (!bleibt)
         merke('test', new Error('der Pokal steht nach dem Test nicht an der Kachel — '
@@ -3876,7 +3964,11 @@ if (laeuft('test')) try {
         while (!(await p.$('.schirm.da [data-profil="fiona"]'))) {
           const zur = await p.$('.schirm.da #zur');
           if (!zur) break;
-          await zur.click(); await p.waitForTimeout(400);
+          /* Auf das Ende der Blende warten, nicht auf 400 ms (Q42):
+             waehrend sie laeuft stehen zwei Bildschirme, und die Schleife
+             sucht Fiona dann womoeglich auf dem alten. */
+          await zur.click();
+          await bis(p, () => document.querySelectorAll('#buehne .schirm').length === 1, 8000);
         }
         await p.click('[data-profil="fiona"]');
         await zurEbenenwahl(p, 'bundeslaender');
@@ -3984,7 +4076,9 @@ if (laeuft('umgekehrt')) try {
       return { gesucht: name, falsch: weit.name, ...punkt(weit) };
     });
     await p.mouse.click(daneben.x, daneben.y);
-    await p.waitForTimeout(400);
+    // Auf den Hinweis warten, nicht auf 400 ms (Q42). Geprueft wird
+    // gleich, was er SAGT - dass er ueberhaupt kommt, ist nicht dasselbe.
+    await bis(p, () => !!document.querySelector('.schirm.da .wahlliste .hinweis'), 8000);
     const hin = await p.evaluate(() =>
       document.querySelector('.schirm.da .wahlliste .hinweis')?.textContent.trim() || '');
     if (!hin.includes(daneben.falsch) || !/liegt weiter/.test(hin))
@@ -4088,7 +4182,11 @@ if (laeuft('umgekehrt')) try {
    * ueberhaupt etwas sehen kann. */
   for (let i = 0; i < 12; i++) {
     await r.waitForSelector('.schirm.da #frage', { timeout: 20000 });
-    await r.waitForTimeout(250);
+    /* Die Frage steht, die Karte womoeglich noch nicht - und gelesen wird
+       gleich am Ziel auf der Karte. Also darauf warten und nicht auf
+       250 ms (Q42), und zugleich darauf, dass die Blende durch ist. */
+    await bis(r, () => document.querySelectorAll('#buehne .schirm').length === 1
+      && !!document.querySelector('.schirm.da .karte svg path.ziel'), 15000);
     const f = await r.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       const z = s.querySelector('path.ziel');
@@ -4778,7 +4876,9 @@ if (laeuft('sprechen')) try {
     await q.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
     await durchVorlaufWenn(q);
     await q.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
-    await q.waitForTimeout(700);
+    /* Ein Ausbleiben - siehe oben. Der Knopf darf auch nicht NACHTRAEGLICH
+       auftauchen; worauf hier zu warten waere, gibt es nicht. */
+    await q.ausbleiben(700);
     if (await q.$('.schirm.da #nochhoeren'))
       merke('sprechen', new Error('Lea bekommt „noch einmal hören", obwohl ihr nichts '
         + 'vorgelesen wird — der Knopf hängt nicht am Profil'));
@@ -4837,7 +4937,8 @@ if (laeuft('sprechen')) try {
       await p.mouse.down();
       await p.mouse.move(zielDaneben.x, zielDaneben.y, { steps: 8 });
       await p.mouse.up();
-      await p.waitForTimeout(200);
+      // Auch hier ein Ausbleiben: die Zusage ist, dass NICHTS gesagt wird.
+      await p.ausbleiben(200);
       const dabei = await p.evaluate(() => ({
         gesagt: window.__gesagt.length, toene: window.__toene.length }));
       if (dabei.gesagt > beimHoeren.gesagt)
@@ -4940,10 +5041,18 @@ if (laeuft('sprechen')) try {
     // a) Dreimal Kauderwelsch. Vorher loeste die App danach die Aufgabe auf:
     //    drei Verstaendnisfehler zaehlten wie drei falsche Antworten.
     const KAUDERWELSCH = ['ratzefummel', 'schnurpsel', 'kladderadatsch'];
+    const satzJetzt = () => p.evaluate(() =>
+      document.querySelector('.schirm.da .frage')?.textContent || '');
     for (const k of KAUDERWELSCH) {
+      /* Gewartet wird darauf, dass die Aeusserung ANGEKOMMEN ist - der
+         Satz auf dem Bildschirm ist danach ein anderer -, nicht auf 120 ms
+         (Q42). Nicht darauf, dass er das Wort NENNT: genau das wird gleich
+         geprueft, und ein Warten darauf waere die Pruefung selbst. */
+      const vorher = await satzJetzt();
       await p.click('.schirm.da #mikro');
       await p.evaluate((w) => window.__sprich(w, true), k);
-      await p.waitForTimeout(120);
+      await bis(p, (v) => (document.querySelector('.schirm.da .frage')?.textContent || '') !== v,
+        6000, vorher);
     }
     /* Der ZAEHLER zuerst, dann der Satz - in dieser Reihenfolge, und das
      * ist kein Geschmack.
@@ -5144,7 +5253,31 @@ if (laeuft('sprechen')) try {
 
 await ctx.close(); await b.close(); server.close();
 
-console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${blind.n} festen Pausen`);
+/* Die Bilanz des Wartens - und die Ratsche darauf (Q42).
+ *
+ * Bis v343 standen hier 3,4 s in dreizehn festen Pausen, und die Zahl war
+ * nur Auskunft: sie stand da, wuchs, und niemand wurde davon rot. Jetzt
+ * ist sie NULL, und das ist erzwungen. Wer wieder `waitForTimeout` ruft,
+ * macht den Rauchtest rot und liest im selben Satz, was er stattdessen tun
+ * kann: auf die Sache warten (`bis`, `bisHier`, `nachFertig`), oder, wenn
+ * es die Sache gar nicht gibt, `ausbleiben` bzw. `messtakt` nehmen und
+ * damit sagen, WARUM hier eine Frist steht.
+ *
+ * Die beiden bleiben Auskunft und werden nicht geratscht: eine Frist, die
+ * ein Ausbleiben misst, ist kein Mangel, sondern die Messung. Sichtbar
+ * muss sie trotzdem sein - sonst waechst sie im Dunkeln. */
+if (blind.n) {
+  console.log(`  Blind gewartet:             ${(blind.ms/1000).toFixed(1)} s in ${blind.n} festen Pausen`);
+  fehler.push(`${blind.n} feste Pausen (${(blind.ms/1000).toFixed(1)} s) im Rauchtest — `
+    + `\`waitForTimeout\` wartet, egal ob das Erwartete schon da ist: auf dem schnellen `
+    + `Rechner verschenkt, auf dem langsamen zu kurz. Auf die Sache warten (\`bis\`, `
+    + `\`bisHier\`, \`nachFertig\`) — und wenn es die Sache nicht gibt, \`p.ausbleiben(ms)\` `
+    + `oder \`p.messtakt(ms)\` nehmen, damit im Bericht steht, warum hier eine Frist steht`);
+} else console.log(`  Blind gewartet:             keine feste Pause`);
+if (ausbleiben.n) console.log(`  Auf ein Ausbleiben:         ${(ausbleiben.ms/1000).toFixed(1)} s in `
+  + `${ausbleiben.n} Fristen — dort gibt es nichts, worauf zu warten waere`);
+if (messtakt.n) console.log(`  Messtakt:                   ${(messtakt.ms/1000).toFixed(1)} s in `
+  + `${messtakt.n} Schritten — Abtastung innerhalb einer Zeitmessung`);
 /* Die Nachsicht steht im Bericht.
  *
  * Sonst ist nicht zu sehen, ob die Kette gerade sauber lief oder ob sie
