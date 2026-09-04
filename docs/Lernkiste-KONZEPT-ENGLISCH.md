@@ -9,7 +9,7 @@ Lehrplan, nach dem Lea unterrichtet wird.
 
 ---
 
-## § 0 · Für wen — und das sind zwei verschiedene Kinder
+## § 0 · Für wen — drei Gruppen, drei verschiedene Aufgaben
 
 | | Fiona | Lea | Stephan & Violeta |
 |---|---|---|---|
@@ -343,6 +343,25 @@ stünde derselbe Wortschatz zweimal da, und eine der beiden Fassungen
 **veraltet** (Regel 6). Im Datenmodell heisst das: ein Feld `bild` am Wort,
 und Fionas Vorrat ist „alle mit Bild".
 
+### Und was die Erwachsenen bekommen — nicht diese 140 Wörter
+
+Die Lehrplanliste ist für Stephan und Violeta wertlos: *cat*, *blue* und
+*seven* sind kein Problem, das sie haben. Ihr Inhalt ist ein anderer, und
+er ist **kürzer**:
+
+| | Umfang | woher |
+|---|---|---|
+| **falsche Freunde** | rund 30 | die klassischen deutsch-englischen Fallen |
+| **Wendungen** | 4–6 je Themengebiet | dieselben Themengebiete wie Lea |
+| **Hörsätze** | 3–5 je Themengebiet | aus den Wendungen gebaut |
+
+**Die Themengebiete sind dieselben** — und das ist Absicht, nicht
+Sparsamkeit. Wer am selben Abend alle drei spielt, hat dasselbe Thema
+gehabt: Fiona hat auf Essen gezeigt, Lea hat *bread* geschrieben, und die
+Eltern haben *„Could we get the bill?"* getippt. Eine zweite Themenliste
+wäre eine, die **veraltet** (Regel 6) — und sie würde diesen Abend
+kaputtmachen.
+
 ### Die Bilder
 
 140 Wörter wollen Bilder, und die App ist **eine** HTML-Datei. Fotos
@@ -605,8 +624,17 @@ hier trägt sie besonders nötig).
 - **Keine Aussprachenote.** Begründet in § 3, und zwar mit Zahlen.
 - **Keine Grammatikregeln.** Chunks, sonst nichts. Ein Achtjähriger lernt
   „I've got", nicht das Present Perfect.
-- **Keine Übersetzungsaufgaben Deutsch → Englisch.** Bild → Wort, nicht
-  Wort → Wort. Das ist die Reihenfolge, in der Sprache entsteht.
+- **Keine Übersetzungsaufgaben Deutsch → Englisch — für die Kinder.**
+  Bild → Wort, nicht Wort → Wort. Das ist die Reihenfolge, in der Sprache
+  entsteht, und ein Kind, das über die Muttersprache umweg-denkt, spricht
+  langsamer.
+  **Für die Eltern gilt das Gegenteil** (Form 8), und das ist kein
+  Widerspruch, sondern der Unterschied aus § 2b: bei Lea entsteht die
+  Verknüpfung gerade erst und darf nicht über das Deutsche laufen. Bei
+  Stephan und Violeta **existiert sie längst** — sie ist nur zugewachsen.
+  Der deutsche Satz ist dort kein Umweg, sondern der Schlüssel zu einem
+  Fach, das zugeht. *Diesen Punkt hat die Prüfschleife gefunden: er stand
+  als schlichtes Verbot da und hätte Form 8 verboten.*
 - **Kein Streak, kein Tageszwang.** Wie bei A4h entschieden: eine ruhige
   Zeile, kein Druck.
 - **Keine aufgenommenen Sprachdateien.** Sie sprengen die eine Datei;

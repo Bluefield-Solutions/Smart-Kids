@@ -3944,6 +3944,34 @@ E3 hat deshalb jetzt einen Schritt mehr: *ansehen, entscheiden, dann
 `--neu`* — mit Begruendung im Einchecker. Ein `--neu` ohne Blick waere das
 Stilllegen einer Ratsche, die gerade das Richtige gemeldet hat.
 
+### QS6 und QS7 · Zwei Widersprueche, die ich selbst hineingeschrieben habe
+
+Beim Erweitern des Konzepts auf die Erwachsenen sind zwei entstanden —
+gefunden beim Durchgehen der Abschnittsfolge, nicht von einem Tor:
+
+**QS6.** § 0 hiess weiter „Fuer wen — und das sind zwei verschiedene
+Kinder", waehrend darunter eine Tabelle mit drei Gruppen stand. Dieselbe
+Sorte wie QS2, im selben Durchgang, von mir. *Ueberschriften altern
+zuerst*: sie werden geschrieben, wenn der Abschnitt entsteht, und beim
+Erweitern liest man sie nicht mehr.
+
+**QS7.** § 8 („Was bewusst NICHT kommt") verbot **Uebersetzungsaufgaben
+Deutsch → Englisch**. Form 8 fuer die Eltern ist genau das. Ein Verbot und
+eine Aufgabe im selben Dokument, sechs Bildschirme auseinander.
+
+Aufgeloest, und zwar nicht durch Streichen: das Verbot ist fuer die
+**Kinder** richtig und fuer die **Erwachsenen** falsch, und der Grund
+steht in § 2b. Bei Lea entsteht die Verknuepfung Wort–Bedeutung gerade
+erst und darf nicht ueber das Deutsche laufen. Bei Stephan und Violeta
+existiert sie laengst — sie ist nur zugewachsen, und der deutsche Satz ist
+dort kein Umweg, sondern der Schluessel.
+
+Beide Faelle sind dasselbe: **ein Satz, der fuer eine Zielgruppe
+geschrieben wurde, gilt nach dem Erweitern nicht mehr fuer alle.** Wer ein
+Dokument um eine Gruppe erweitert, muss die alten Zusagen einzeln
+durchgehen — sie werden nicht automatisch falsch, aber sie werden
+automatisch ungeprueft.
+
 ### Was die Schleife NICHT gefunden hat
 
 Die Zaehlwoerter im Konzept gegen ihre Tabellen (neun Spielformen, sieben
