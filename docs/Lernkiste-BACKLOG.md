@@ -167,46 +167,77 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| ~~1~~ | ~~**N2a** Buchstaben nachfahren~~ | Fiona | hoch | groß | **gefahren** |
-| ~~2~~ | ~~**N3** Buchstabe angesagt, selbst geschrieben~~ | Fiona | hoch | mittel | **gefahren** |
-| ~~3~~ | ~~**N4** Zahlen 1 bis 20~~ | Fiona | hoch | klein | **gefahren** |
-| ~~4~~ | ~~**N1** Stephan und Violeta, mit Vergleich~~ | ihr beide | hoch | mittel | **gefahren** |
-| ~~5~~ | ~~**S1** Drei Sterne bedeuten zwei Dinge~~ | Fiona, Lea | hoch | klein | **gefahren** |
-| ~~6~~ | ~~**A3** Der Fehler wird auch beim Ziehen benannt~~ | Fiona, Lea | hoch | mittel | **gefahren** |
-| ~~7~~ | ~~**F13** Der Sprachmodus hatte keinen Ausgang~~ | Fiona | hoch | klein | **gefahren** |
-| ~~8~~ | ~~**F14** Gesprochenes als Satz verstehen~~ | Fiona | hoch | mittel | **gefahren** |
-| ~~9~~ | ~~**F15** Vier Hebel für die Sprachqualität~~ | Fiona | hoch | mittel | **gefahren** |
-| ~~10~~ | ~~**B3** Die umgekehrte Frage~~ | Lea | mittel | mittel | **gefahren** |
-| ~~11~~ | ~~**S3** Die Buchstabenkarten im Vorlauf~~ | Fiona | gering | klein | **gefahren** |
-| ~~12~~ | ~~**B2** Test ohne Hilfen, mit Pokal~~ | Lea | mittel | mittel | **gefahren** |
-| ~~13~~ | ~~**G12** Profilfarben und der Streu auf der Kachel~~ | Fiona, Lea, Stephan | — | mittel | **gewünscht, gefahren** |
-| ~~14~~ | ~~**D2** Abzeichen, die etwas sagen~~ | Fiona, Lea | mittel | mittel | **gefahren** |
-| 1 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| ~~—~~ | ~~**M4r** Sprechen auf dem iPhone~~ | | | | **gefahren 01.09.** |
-| ~~3~~ | ~~**A4h** „Heute schon geübt"~~ | | | | **gefahren (Q31)** |
-| 4 | **D3** Ein Satz zum Mitnehmen | Fiona, Lea | mittel | groß | 63 Sätze |
-| 5 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
-| ~~6~~ | ~~**S2** Anteil neben Anzahl~~ | | | | **gefahren (Q31)** |
-| ~~7~~ | ~~**Q1** Zwei Gegenproben beweisen nichts~~ | | | | **nachgesehen (Q31): beide schlagen an** |
-| ~~—~~ | ~~**Q2** überholte Nachweise~~ | | | | **gefahren 01.09.** |
-| ~~2~~ | ~~**Q33** Die Lupenknöpfe liegen auf der Karte~~ | | | | **gefahren (Q33): Verdeckung 0 %** |
-| 9 | **P2** Die festen Wartezeiten im Rauchtest | nur ich | gering | mittel | — |
-| ~~10~~ | ~~**P3** Größenwächter ohne Gegenprobe~~ | | | | **gefahren (Q31)** |
-| ~~—~~ | ~~**D2c** Deutschlands Nachbarn~~ | | | | **gefahren** |
-| ~~—~~ | ~~**D2b** Mehr Abzeichen~~ | | | | **gefahren** |
-| ~~—~~ | ~~**P5** Die Größenratsche~~ | | | | **gefahren** |
-| ~~—~~ | ~~**P1** `passt` und `ziehen` nebeneinander~~ | | | | **gefahren** |
-| ~~—~~ | ~~**P4** Regelverweise ins Leere~~ | | | | **gefahren** |
+| 1 | **E1–E9** Englisch — die neue Welt | Lea, Fiona | hoch | groß | Konzept steht, § 8 |
+| 2 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 3 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
+| 4 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
+| 5 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
+| 6 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
+| 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
+| 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
+| 10 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
-*Nachgezogen am 01.09.2026.* Fünf Zeilen standen hier als „offen", während
-ihr eigener Abschnitt weiter unten seit Runden **ERLEDIGT** trägt — die
-Tabelle wurde nicht mitgepflegt, als die Punkte fielen. Genau die Falle, die
-Regel 6 beschreibt, diesmal in einem Dokument: wer nur die Rangliste liest,
-arbeitet an Erledigtem.
+**Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
+dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal
+Erledigtes als offen (D3 war gefahren, P2 fiel mit Q42, S2 mit Q31). Eine
+Tabelle, in der Erledigtes stehen bleibt, wird nicht gelesen, sondern
+überflogen; dann fällt genau das nicht auf. Was gefahren ist, steht in
+seinem eigenen Block weiter unten und im Archiv — **Regel 6, was zweimal
+dasteht, veraltet einmal.** Der Nachweis, dass ein Punkt gefahren ist, ist
+sein Block, nicht diese Zeile.
+
+*Zweimal nachgezogen: 01.09.2026 (fünf Zeilen), 04.09.2026 (die Tabelle
+umgestellt).*
 
 **A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
 Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
 zwei verschiedene Dinge; der Katalogpunkt heisst deshalb jetzt **A4h**.
+
+---
+
+### Neu offen seit v350 — vier Punkte aus den Runden Q48/Q49
+
+**Q50 · Die dreizehn ausgelassenen Proben.** Der nächtliche Lauf vom
+04.09. meldet dreizehn Gegenproben als *„hier nicht zu beweisen und
+deshalb ausgelassen (kein Nachweis, sie altern weiter)"*. Zwölf davon
+gehören zu `ansicht`, das auf dem Runner abgeschaltet ist — das ist
+gewollt und in Q39 entschieden. Die dreizehnte ist **„der leere Kopf
+nimmt wieder Platz weg"**, und die ist genau der Anker, den `anker` in
+Q48 als tot gemeldet und den ich repariert habe. Ob sie seither wieder
+etwas beweist, ist **nicht nachgemessen** — sie steht auf einem Nachweis
+von vor der Reparatur.
+
+*Abnahme:* die dreizehn einzeln durchgehen, jede mit einem Satz, warum
+sie ausgelassen wird. Wo der Grund nicht mehr gilt, fährt sie wieder
+mit. Wo er gilt, gehört er in den Quelltext der Probe, nicht in ein
+Protokoll, das morgen weg ist.
+
+**G13 · Die restlichen 21 Punkte Kartensprung** *(grafisch)*. Q45 hat 47
+Punkte gemessen, Q45b hat 26 davon geholt. Was bleibt, ist der Satz zum
+Mitnehmen mit 21 Punkten. Freihalten lässt er sich nicht — in Q45
+gebaut, gemessen (0 statt 48) und wieder ausgebaut, weil `passt` an drei
+Größen anschlug: „noch einmal hören" 4 bis 6 Punkte über dem Rand, 25
+Punkte im Wischbereich. **Der Weg ist ein anderer Grundriss der
+Knopfspalte**, keine Zeile CSS — und der ist am Gerät zu beurteilen,
+nicht hier. Die Ratsche im Rauchtest steht bei 30 und hält die 21.
+
+**D3b · Der Satz zum Mitnehmen auf der Ebenenkachel** *(grafisch)*. Er
+steht im Spiel (einen Augenblick) und im Buch (zum Nachschlagen). Auf der
+**Kachel** stünde er dort, wo ein Kind ihn liest, *bevor* es sich für eine
+Ebene entscheidet — das ist ein anderer Zweck: nicht Belohnung, sondern
+Einladung. Offen ist, ob die Kachel den Platz hat; `passt` entscheidet
+das, nicht ich.
+
+**D3c · Die 91 Sätze mit einer echten Stimme hören** *(inhaltlich)*.
+`smoke` schreibt mit, **dass** gesprochen wird, nie **wie es klingt**.
+Bei „Grönland ist die größte Insel der Erde" ist das der Unterschied
+zwischen einem Satz und einer Zumutung. Kein Tor kann das — es ist eine
+halbe Stunde am Gerät mit einer Liste.
+
+*Abnahme:* alle 91 einmal gehört, die schlechten notiert und
+umgeschrieben. Die Zahl der geänderten Sätze gehört ins Protokoll — steht
+dort null, war die halbe Stunde nicht ehrlich.
 
 ---
 
@@ -489,7 +520,7 @@ so zurück, wie sie waren.
 
 ---
 
-### S2 · Auf der Kachel steht Anteil neben Anzahl
+### S2 · Auf der Kachel steht Anteil neben Anzahl  ·  ERLEDIGT (Q31)
 
 Sterne und Balken zeigen einen **Anteil**, die Aufklebernummer eine
 **Anzahl**. Nebeneinander heißt das: neun Aufkleber und ein Stern (Länder
@@ -2017,9 +2048,10 @@ der Korpus.
 **P1 · `passt` (54 s) und `ziehen` (48 s) laufen hintereinander**, obwohl
 beide unabhängige Browsertore sind. Spart etwa 45 s je vollem Lauf.
 
-**P2 · Die festen Wartezeiten im Rauchtest** — der nächste und riskanteste
-Hebel gegen die Laufzeit. Gehört zwischen zwei Inhaltsrunden, nicht in eine
-hinein.
+~~**P2 · Die festen Wartezeiten im Rauchtest**~~ — **ERLEDIGT (Q42).**
+Dreizehn feste Pausen sind gefallen; `uhrenBuchfuehrung()` zaehlt seither
+drei Sorten Warten getrennt, und dabei kam heraus, dass die dreizehn nur
+die GEZAEHLTEN waren.
 
 **P3 · Der Größenwächter in `vergleich`** (mindestens 100 Treffer, 50
 Nicht-Treffer im eingefrorenen Korpus) ist die einzige Prüfung ohne
