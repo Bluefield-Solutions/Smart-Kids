@@ -196,9 +196,10 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 16 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
-| 17 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 10 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
+| 11 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
+| 12 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
+| 13 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
 dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal

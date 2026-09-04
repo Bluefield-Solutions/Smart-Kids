@@ -1057,7 +1057,7 @@ Eine Leistungsangabe ohne Messstelle ist keine. Messgerät: **iPad
 
 | Größe | Grenze | Wie geprüft |
 |---|---|---|
-| **Startbündel** gesamt, gzip | **< 400 KB** | Tor `budget`, bricht die Kette |
+| **Startbündel** gesamt, gzip | **< 700 KB** | Tor `budget`, bricht die Kette |
 | davon Geometrie (nur grobe Stufe) | < 90 KB | Tor `budget` |
 | davon Schriften (zwei, beschnitten) | < 60 KB | Tor `budget` |
 | **Nachladbar je Ebene** (mittel/fein) | < 250 KB | Tor `budget` |
@@ -1087,8 +1087,44 @@ sondern von vornherein vermeiden:
 Stufen liegen über 250 KB (Asien 268, Nordamerika 253); beide werden auf
 Ebene 2 aber nur in der mittleren Stufe gezeigt.
 
+**Die Startbündel-Grenze ist von 400 auf 700 KB gegangen** (04.09.2026), und
+die Begründung gehört dazu, weil eine Grenze ohne Begründung beim nächsten
+Mal wieder verhandelt wird.
+
+*Was sie nie war:* eine physikalische Schranke. Gemessen sind heute
+**314,6 KB gzip** — so wie das Tor es zählt, also Bündel *plus* die beiden
+beschnittenen Schriften; die Bündeldatei allein sind 261. Die App läuft als
+PWA auf vier Telefonen im eigenen WLAN; der Service Worker lädt nur nach
+einer Auslieferung neu. Der Unterschied zwischen 315 und 400 KB sind dort
+Zehntelsekunden — bei G19 durchgerechnet und dokumentiert.
+
+*Was sie ist:* ein Stellvertreter für die Zeile zwei weiter unten, **„Erstes
+Bild, kalt < 1,5 s"**. Das ist die Zahl, die zählt; die Bündelgröße ist nur
+das, was sich leicht messen lässt. Bei einem Bündel, dessen teuerster Posten
+das Auswerten von 11 000 Zeilen JavaScript ist, geht die Übertragung ohnehin
+im Rauschen unter.
+
+*Warum trotzdem eine Grenze bleibt:* das Tor hat zwei Hälften, und die
+wichtigere ist nicht die Zahl. Es meldet **jedes Wachstum über 5 % seit der
+letzten Bestätigung** und fragt nach, ob es Absicht war. Diese Ratsche
+bemerkt das schleichende Zunehmen; die feste Grenze ist der Notnagel, falls
+jemand die Ratsche einmal bestätigt, ohne hinzusehen. Ein Notnagel, den man
+nie erreicht, hat seinen Zweck nicht verloren — er hat ihn erfüllt.
+
+*Warum 700 und nicht „weg":* die vierte Welt (Englisch, E1–E12) bringt
+Wortschatz und **ein SVG je Wort** (E4). Das ist der erste Posten seit den
+Karten, der das Bündel wirklich bewegen kann. 700 KB sind gut das Doppelte von
+heute und lassen dafür Platz, ohne dass die Grenze bedeutungslos wird. Wer
+sie erreicht, hat einen Grund zum Nachsehen — und dann steht in dieser Zeile
+eine Messung und keine Meinung.
+
+*Offen und hier ehrlich vermerkt:* die Zeile „Erstes Bild, kalt < 1,5 s"
+nennt als Prüfung „Playwright + Lighthouse in CI". **Dieses Tor gibt es
+nicht.** Solange es fehlt, ist die Bündelgröße der einzige Wächter über die
+Ladezeit — was ein zweiter Grund ist, sie nicht ersatzlos zu streichen.
+
 **Das Budget ist geteilt, seit die Karten feiner geworden sind** (Kapitel
-5.3b). Das Startbündel bleibt bei 400 KB und enthält nur die grobe Stufe;
+5.3b). Das Startbündel enthält nur die grobe Stufe;
 die feinen Stufen werden beim Öffnen einer Ebene geladen und danach dauerhaft
 vorgehalten. Die Zahl „600–900 KB" ist **geschätzt, nicht gemessen** — sie
 hängt daran, wie viele Punkte VG250 nach der Topologievereinfachung behält.

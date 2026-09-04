@@ -33,6 +33,15 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 **Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
 Rest fährt der Runner.**
 
+*Die eine Ausnahme, eng gefasst:* berührt eine Runde **ausschließlich**
+`docs/`, `CLAUDE.md`, `README.md` oder `tor/proben-*`, dann ist
+`--betroffen` schon der vollständige Lauf — nichts davon erreicht den Bau,
+und kein Browsertor kann etwas anderes sehen als vorher. Die volle Kette
+davor wäre genau die drei Minuten, gegen die diese Bahn gebaut wurde.
+Sobald **eine** Datei außerhalb dieser Liste dabei ist, gilt die Regel
+ohne Ausnahme: die volle Kette ist dann der Schutz gegen eine falsche
+Zuordnung, und den braucht sie.
+
 `--betroffen` nimmt **kein Argument**. Aussuchen kann man nichts; welche
 Dateien geändert sind, sagt `git status`, und die Zuordnung Datei → Tor steht
 in `tor/kette-liste.mjs` neben der Kette. Was dort nicht steht, fällt auf

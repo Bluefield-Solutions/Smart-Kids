@@ -1000,7 +1000,7 @@ export const PROBEN = [
   // insgeheim eine eigene Zahl mitbringt.
   { n:'das Startbündel überschreitet seine Grenze', tor:'budget', bauen:true,
     datei:'docs/Lernkiste-KONZEPT.md',
-    such:'| **Startbündel** gesamt, gzip | **< 400 KB** |',
+    such:'| **Startbündel** gesamt, gzip | **< 700 KB** |',
     ersatz:'| **Startbündel** gesamt, gzip | **< 100 KB** |',
     an:{ datei:'docs/Lernkiste-KONZEPT.md', text:'**< 100 KB**' },
     sagt:'erlaubt sind 100' },
