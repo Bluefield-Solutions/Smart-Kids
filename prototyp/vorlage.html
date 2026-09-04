@@ -2052,6 +2052,18 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      ist zum Durchsehen da, nicht zum Abnehmen einer Zahl. */
     .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
+  /* Auf einer KAPITELSEITE duerfen die Aufkleber groesser sein (G15b).
+   *
+   * Die 64 und 48 oben sind fuer ein Buch gerechnet, in dem mehrere
+   * Gruppen untereinander um dieselbe Hoehe stritten. Auf einer eigenen
+   * Seite steht eine Gruppe allein - gemessen nutzten die
+   * Aufkleberseiten 42 % („hören") und 29 % („Als Nächstes") ihrer Hoehe.
+   * Der freie Platz gehoert dem, was das Kind gesammelt hat.
+   *
+   * Die Zahlen sind abgetastet, nicht gewaehlt: das Kapiteltor meldet,
+   * sobald ein Block unter die Kante faellt. */
+  .rollen.buch.kapitel .kleber.gross .aufkleber svg{height:76px}
+  .rollen.buch.kapitel .kleber.gross.vorschau .aufkleber svg{height:76px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *
    * Gemessen am Zielgeraet mit Browserleiste (844 x 390, davon 322

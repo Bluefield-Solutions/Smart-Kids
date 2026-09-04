@@ -196,7 +196,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 10 | **G15b** Buchseite: ein Grundriss je Seite statt einer Höhe für alle | Fiona, Lea | hoch | groß | G15 hat gezeigt, warum |
+| 10 | **G15c** „Als Nächstes" nutzt 29 % seiner Seite | Fiona, Lea | mittel | mittel | G15b hat den Rest geholt |
 | 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
 | 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
 | 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
@@ -4288,3 +4288,76 @@ Kommentare haben sich in dieser Sitzung mehrfach bezahlt gemacht — sie
 sind der Grund, warum QS8 und Q49 ueberhaupt zu finden waren. Kuerzer
 schreiben ist hier die falsche Ersparnis; die richtige ist, sie
 irgendwann nicht mitzuliefern.
+
+---
+
+## G15b · Ein Grundriss je Seite — GEFAHREN, und QS11 dabei korrigiert
+
+G15 ist an einer Annahme gescheitert. Diese Runde hat zuerst **gemessen**
+und dann gebaut.
+
+### Die Messung, die vorher gefehlt hat
+
+Neu im Rauchtest: je Kapitelseite der Anteil der Hoehe, der wirklich
+benutzt wird — unterster Rand aller Bloecke gegen die Hoehe des Kastens,
+anteilig und nicht in Punkten (Regel 2). Gemessen am 04.09.:
+
+| Kapitelseite | vorher | jetzt |
+|---|---|---|
+| **Abzeichen** | **18 %** | **38 %** |
+| Kontinente | 86 % | 86 % |
+| Bundesländer | 94 % | 94 % |
+| Minus | 63 % | 63 % |
+| Buchstaben nachfahren | 89 % | **98 %** |
+| Buchstaben hören | 42 % | **47 %** |
+| Als Nächstes | 29 % | 29 % |
+
+**Damit ist bewiesen, warum G15 scheitern musste.** Die Karte, die ich
+wachsen lassen wollte, steht auf den Seiten *Kontinente* und
+*Bundesländer* — mit 86 % und 94 % die beiden **vollsten** Seiten. Leer
+waren die anderen fünf. Ich habe genau die Seiten vergrössert, die keinen
+Platz hatten, und die mit Platz nicht angefasst.
+
+### Was gebaut wurde
+
+**Drei nächste Abzeichen statt einem.** Die Begründung für „genau eines"
+stammt aus der Zeit, als das Buch **eine rollende Seite** war und jede
+Zeile mit den Aufkleberreihen um denselben Platz stritt. Seit Q44 haben
+die Abzeichen ein eigenes Kapitel, und das nutzte 18 % seiner Höhe. Ein
+Bildschirm, der zu 82 % leer ist, hat kein Platzproblem. Drei und nicht
+alle — „sechzig leere Kästen" ist die Lehre, die dieser Bildschirm schon
+einmal teuer bezahlt hat, und sie steht.
+
+**Grössere Aufkleber auf Kapitelseiten** (96 statt 64, Vorschau 76 statt
+48). Abgetastet, nicht gewählt: bei 96 kippte „nachfahren" auf 114 %, bei
+84 auf 105 %, bei 76 auf 98 %. Das Kapiteltor hat jedes Mal gemeldet.
+
+**Die Zusage stand doppelt.** „Genau ein offenes Abzeichen" war an **zwei**
+Stellen in `smoke` festgehalten. Die eine mitzuziehen und die andere zu
+vergessen ist genau die Verfallsart, gegen die Regel 6 geschrieben ist —
+was zweimal dasteht, veraltet einmal. Gemeldet hat es die Kette, nicht
+ich. Beide sagen jetzt „eins bis drei".
+
+### QS11 war zur Hälfte falsch gemessen
+
+Der Befund lautete: „das Forscherbuch hat mit 37 % das grösste leere Band
+der App". Gemessen war das an `quer-buch` — und diese Aufnahme zeigt ein
+Konto mit **zwei Aufklebern**. Dort ist die Seite leer, weil **nichts da
+ist**, nicht weil der Grundriss schlecht wäre. Kein Vergrössern der Welt
+hätte daran etwas geändert.
+
+Die 37 % stehen weiter im Bild, und sie sind **richtig so**: ein leeres
+Buch sieht leer aus. Was falsch war, ist der Schluss daraus.
+
+*Die Lehre:* eine Aufnahme ist eine Messstelle (Regel 5), und diese hier
+trug ihre nicht mit. „37 % leer" heisst je nach Konto zweierlei — zu
+wenig Inhalt oder zu viel Grundriss —, und nur die zweite Lesart ist ein
+Fehler. Die neue Messung im Rauchtest unterscheidet das, weil sie an
+einem **durchgespielten** Buch misst.
+
+*Abnahme:* Ratsche bei 25 % je Kapitelseite, eine stehende Gegenprobe
+nimmt zwei der drei nächsten Abzeichen weg und schlägt an.
+
+**Offen bleibt „Als Nächstes" mit 29 %** — die Vorschauseite. Sie zeigt
+je nach Ebene eine blasse Karte oder eine Aufkleberreihe; ihr Fall ist
+nicht derselbe wie die anderen. Steht als **G15c**.

@@ -3658,6 +3658,19 @@ export const PROBEN = [
 
 
 
+
+  /* --- G15b: eine Kapitelseite darf nicht halb leer sein ---------------
+   *
+   * Die Ratsche haelt fest, was gemessen ist. Der Eingriff nimmt den
+   * Abzeichen-Kapiteln zwei ihrer drei naechsten Schritte - genau der
+   * Zustand von vor G15b, in dem die Seite 18 % ihrer Hoehe nutzte. */
+  { n:'eine Kapitelseite im Buch ist wieder halb leer', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'.sort((a,b)=>a.fehlt-b.fehlt).slice(0, 3) : [];',
+    ersatz:'.sort((a,b)=>a.fehlt-b.fehlt).slice(0, 1) : [];',
+    an:{ ...DIST, text:'.slice(0, 1) : []' },
+    sagt:'Kapitelseiten nutzen weniger als' },
+
   /* --- G14: der Lohn gehoert den Kindern ------------------------------
    *
    * Zwei Proben, eine je Richtung. Eine allein bewiese die Haelfte: wer
@@ -3978,8 +3991,14 @@ export const PROBEN = [
     /* Die Einrueckung ist mit Q44 um zwei Stellen gewandert: die Abzeichen
        stehen jetzt im Kapitel-Aufbau statt unmittelbar im `innerHTML`.
        `inhalt` hat es gemeldet - der Eingriff waere sonst nicht angekommen
-       und das Tor haette gruen gemeldet, ohne etwas zu pruefen. */
-    such:'        naechstes ? markeBild(naechstes) : \'\'}</div>` });',
+       und das Tor haette gruen gemeldet, ohne etwas zu pruefen.
+       Mit G15b sind aus dem EINEN naechsten Abzeichen DREI geworden, weil
+       die Abzeichen seit Q44 eine eigene Seite haben und die nur zu 18 %
+       genutzt war. Wieder von `inhalt` gemeldet, wieder derselbe Grund:
+       der Anker haengt an einer Zeile, die sich geaendert hat. Die Probe
+       selbst bleibt richtig - „alle" ist weiter falsch, drei sind es
+       nicht. */
+    such:'        naechste.map(markeBild).join(\'\')}</div>` });',
     ersatz:'        marken.filter(a => !a.verdient).map(markeBild).join(\'\')}</div>` });',
     an:{ ...DIST, text:"marken.filter(a => !a.verdient).map(markeBild)" },
     sagt:'offene Abzeichen' },

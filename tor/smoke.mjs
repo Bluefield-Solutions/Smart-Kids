@@ -32,6 +32,23 @@ const { server, adresse: ADRESSE } = await serviere(wurzel);
 
 const b = await starte();
 const fehler = [];
+
+/* Wieviel einer Kapitelseite im Forscherbuch benutzt sein muss (G15b).
+ *
+ * Eine RATSCHE, kein Soll aus der Referenz: es gibt keinen Wert, den ein
+ * Vorbild vorgibt. Sie haelt nur fest, was schon erreicht ist, damit es
+ * nicht unbemerkt zurueckfaellt. Der Anfangswert wird gemessen, nicht
+ * gewaehlt: gemessen am 04.09. ueber alle sieben Kapitelseiten.
+ *
+ *   Abzeichen 18 → 38 %   Kontinente 86 %   Bundeslaender 94 %
+ *   Minus 63 %            nachfahren 89 → 98 %   hoeren 42 → 47 %
+ *   Als Naechstes 29 %
+ *
+ * Die Ratsche steht auf 25 und nicht auf 29: der schlechteste Wert haengt
+ * daran, WAS ein Profil gerade gesammelt hat, und ein Buch mit einem
+ * Gegenstand weniger darf nicht rot werden. 25 faengt trotzdem den
+ * Rueckfall auf die 18 %, mit denen diese Runde angefangen hat. */
+const BUCH_GENUTZT_MIN = 25;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 
@@ -2276,7 +2293,7 @@ if (laeuft('ablage')) try {
       /* Und jetzt jede Seite einzeln. Gemessen wird nach dem Klick am
          WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
          welche Seite wie hoch wird, entscheidet der Bildschirm. */
-      const eng = [], gleich = [];
+      const eng = [], gleich = [], genutzt = [];
       const seiten = new Set();
       for (let i = 0; i < streifen.reiter; i++) {
         await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
@@ -2298,6 +2315,25 @@ if (laeuft('ablage')) try {
                      .map(x => ({ anteil: Math.max(0, Math.min(x.k.bottom, rk.bottom)
                        - Math.max(x.k.top, rk.top)) / x.k.height }))
                      .filter(x => x.anteil < 1).length,
+                   /* WIEVIEL DER SEITE BENUTZT WIRD (G15b).
+                    *
+                    * Die Pruefung darueber fragt, ob jeder Block ins Bild
+                    * passt. Das ist nicht dieselbe Frage wie: wird die
+                    * Seite genutzt? G15 hat beides verwechselt und drei
+                    * Anlaeufe gebraucht - die Karte wuchs, ein Block fiel
+                    * heraus, und das leere Band blieb trotzdem.
+                    *
+                    * Gemessen wird der unterste Rand aller Bloecke gegen
+                    * die Hoehe des Kastens. Anteilig, nicht in Punkten
+                    * (Regel 2): der Kasten ist auf jedem Geraet anders
+                    * hoch. */
+                   genutzt: (() => {
+                     const bs = [...r.children].map(e => e.getBoundingClientRect())
+                       .filter(k => k.height > 2);
+                     if (!bs.length || rk.height <= 0) return null;
+                     const unten = Math.max(...bs.map(k => k.bottom));
+                     return Math.round(100 * (unten - rk.top) / rk.height);
+                   })(),
                    ganz: [...r.children].filter(e =>
                      e.getBoundingClientRect().height > 2).length,
                    /* Und WAS auf der Seite steht - als Fingerabdruck.
@@ -2310,6 +2346,7 @@ if (laeuft('ablage')) try {
                    abdruck: (r.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120) };
         });
         if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
+        if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
         if (seiten.has(seite.abdruck)) gleich.push(`„${seite.was}"`);
         seiten.add(seite.abdruck);
       }
@@ -2317,6 +2354,17 @@ if (laeuft('ablage')) try {
         merke('forscherbuch', new Error(`auf ${eng.length} von ${streifen.reiter} Kapitelseiten `
           + `steht nicht alles im Bild (${eng.join(' · ')}) — dann hat das Blättern das `
           + 'Rollen nur ersetzt'));
+      if (genutzt.length) {
+        const schlecht = genutzt.filter(([, a]) => a < BUCH_GENUTZT_MIN);
+        console.log(`  Buchseiten genutzt:         `
+          + genutzt.map(([w, a]) => `${w.split(' ').pop()} ${a} %`).join(' · ')
+          + `  (Ratsche: mindestens ${BUCH_GENUTZT_MIN} %)`);
+        if (schlecht.length)
+          merke('forscherbuch', new Error(`${schlecht.length} von ${genutzt.length} `
+            + `Kapitelseiten nutzen weniger als ${BUCH_GENUTZT_MIN} % ihrer Hoehe `
+            + `(${schlecht.map(([w, a]) => `„${w}" ${a} %`).join(' · ')}) — `
+            + 'das Forscherbuch ist die Sammlung, und eine halbleere Seite zeigt sie nicht'));
+      }
       if (gleich.length)
         merke('forscherbuch', new Error(`${gleich.length} von ${streifen.reiter} Kapiteln zeigen `
           + `dieselbe Seite wie ein anderes (${gleich.join(' · ')}) — der Reiter markiert sich, `
@@ -4965,8 +5013,13 @@ if (laeuft('abzeichen')) try {
     `das verdiente Abzeichen fehlt — im Buch steht ${JSON.stringify(beiFiona.da)}`));
   if (beiFiona.da.some(t => /alle Kontinente/.test(t))) merke('abzeichen', new Error(
     'Fiona hat „alle Kontinente" verdient — sie hat drei von sechs, die Menge ist nicht voll'));
-  if (beiFiona.offen.length !== 1) merke('abzeichen', new Error(
-    `${beiFiona.offen.length} offene Abzeichen auf einmal — offen steht genau eines`));
+  /* Auch hier hoechstens drei statt genau eines (G15b) - dieselbe Zusage,
+     an der zweiten Stelle. Sie stand doppelt da; die eine mitzuziehen und
+     die andere zu vergessen ist genau die Verfallsart, gegen die Regel 6
+     geschrieben ist (was zweimal dasteht, veraltet einmal). Gemeldet hat
+     es die Kette, nicht ich. */
+  if (beiFiona.offen.length < 1 || beiFiona.offen.length > 3) merke('abzeichen', new Error(
+    `${beiFiona.offen.length} offene Abzeichen auf einmal — es sollen eins bis drei sein`));
   if (!/fehlen noch 3/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
     `das offene Abzeichen sagt „${beiFiona.offen[0]}" — gezählt werden muss gegen die `
     + 'ganze Menge (sechs Kontinente, drei fehlen), nicht gegen Fionas erste Runde'));
@@ -5064,8 +5117,21 @@ if (laeuft('abzeichen')) try {
   if (!buch.da.some(t => /ohne Fehler/.test(t))) merke('abzeichen', new Error(
     'eine Runde ohne einen Fehlversuch bringt kein Abzeichen — '
     + `im Buch steht ${JSON.stringify(buch.da)}`));
-  if (buch.offen > 1) merke('abzeichen', new Error(
-    `${buch.offen} offene Abzeichen im Buch — es soll genau eines sein`));
+  /* HOECHSTENS DREI offene, seit G15b - und die Zahl ist die Zusage.
+   *
+   * Bis v361 stand hier „genau eines". Das war richtig, solange das Buch
+   * EINE rollende Seite war und jede Zeile mit den Aufkleberreihen um
+   * denselben Platz stritt. Seit Q44 haben die Abzeichen ein eigenes
+   * Kapitel, und das nutzte gemessen 18 % seiner Hoehe - den
+   * schlechtesten Wert aller sieben Seiten.
+   *
+   * Die Obergrenze bleibt, nur hoeher: „sechzig leere Kaesten" ist die
+   * Lehre, die dieser Bildschirm schon einmal teuer bezahlt hat. Ohne
+   * Grenze waere aus dem naechsten Schritt wieder eine Mangelliste. */
+  if (buch.offen > 3) merke('abzeichen', new Error(
+    `${buch.offen} offene Abzeichen im Buch — es sollen höchstens drei sein`));
+  if (buch.offen === 0) merke('abzeichen', new Error(
+    'kein einziges offenes Abzeichen im Buch — dann ist der nächste Schritt unsichtbar'));
   if (buch.bilder !== buch.knoepfe) merke('abzeichen', new Error(
     `${buch.knoepfe - buch.bilder} Abzeichen stehen ohne Bild da`));
 

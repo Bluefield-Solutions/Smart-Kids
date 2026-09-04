@@ -5569,8 +5569,22 @@ async function forscherbuch(){
    * - dieselbe Auskunft, nur mit Bildern. Wer schon eines hat, hat den
    * Block ohnehin, und eine Zeile mehr kostet eine Zeile.
    */
-  const naechstes = verdient.length
-    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt)[0] : null;
+  /* DREI naechste statt einem - seit die Abzeichen eine eigene Seite haben
+   * (G15b).
+   *
+   * Die Begruendung darueber gilt weiter, aber ihre Voraussetzung ist weg:
+   * sie stammt aus der Zeit, als das ganze Buch EINE rollende Seite war
+   * und jede Zeile mit den Aufkleberreihen um denselben Platz stritt. Seit
+   * Q44 hat der Abzeichenblock ein eigenes Kapitel - und das nutzte
+   * gemessen 18 % seiner Hoehe, den schlechtesten Wert aller sieben
+   * Seiten. Ein Bildschirm, der zu 82 % leer ist, hat kein Platzproblem.
+   *
+   * Drei und nicht alle: „sechzig leere Kaesten" ist die Lehre, die dieser
+   * Bildschirm schon einmal teuer bezahlt hat, und sie steht. Drei ist die
+   * Zahl, die die Seite fuellt, ohne eine Liste zu werden - und es sind die
+   * drei NAECHSTEN, also die, die am wenigsten fehlen. */
+  const naechste = verdient.length
+    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt).slice(0, 3) : [];
   /* Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert.
      Ein `div` mit `data-lesen` waere fuer sie stumm - der Rundgang bindet
      zwar den Klick, aber `beruehrung` misst Trefferflaechen nur an
@@ -5620,7 +5634,7 @@ async function forscherbuch(){
     inhalt:`
       <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
       <div class="abzeichen">${verdient.map(markeBild).join('')}${
-        naechstes ? markeBild(naechstes) : ''}</div>` });
+        naechste.map(markeBild).join('')}</div>` });
   for (const g of vollen) kapitel.push({
     id:g.id, titel:g.titel, farbe:g.farbe, zahl:g.da.length,
     lesen:`${g.titel}. ${g.da.length===1?'Ein Aufkleber':`${g.da.length} Aufkleber`}.`,
