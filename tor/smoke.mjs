@@ -579,7 +579,38 @@ async function neueSeite(viewport, ctx, flott = true) {
   await p.addInitScript(() => {
     window.__gesagt = [];
     window.__abgebrochen = 0;
-    speechSynthesis.speak = (u) => { if (u && u.text) window.__gesagt.push(u.text); };
+    /* Zweiter Mitschnitt, mit Sprache und Stimme (E2).
+     *
+     * `__gesagt` bleibt eine Liste von TEXTEN - dreizehn Stellen lesen sie
+     * so, und eine Liste, die ploetzlich Objekte fuehrt, macht sie alle
+     * still falsch. Was dazukommt, kommt DANEBEN. */
+    window.__gesagtWie = [];
+    speechSynthesis.speak = (u) => {
+      if (!u || !u.text) return;
+      window.__gesagt.push(u.text);
+      window.__gesagtWie.push({ text: u.text, lang: u.lang, stimme: u.voice?.name || null });
+    };
+    /* Stimmen unterschieben. Chromium hier hat keine, und ohne eine
+       englische kann die vierte Welt nichts sagen - dann pruefte diese
+       Messung nur, dass geschwiegen wird, und das ist die Haelfte.
+       
+       MIT DEM NACHBAU MUSS AUCH DIE AEUSSERUNG NACHGEBAUT WERDEN, und das
+       hat mich eine halbe Stunde gekostet: `u.voice = {…}` mit einem
+       einfachen Objekt WIRFT in Chromium - das Feld nimmt nur eine echte
+       `SpeechSynthesisVoice`. Und `vorlesen` hat ein `catch(e){}`, das
+       alles verschluckt. Ergebnis: die App schwieg, kein Fehler, kein
+       Hinweis - und zwar auch auf DEUTSCH, weil ohne Nachbau
+       `getVoices()` hier leer ist und `u.voice` nie gesetzt wurde. Mein
+       Nachbau hat also erst den Fehler gebaut, den er messen wollte. */
+    window.__stimmen = [
+      { name: 'Anna', lang: 'de-DE', localService: true },
+      { name: 'Daniel', lang: 'en-GB', localService: true },
+    ];
+    speechSynthesis.getVoices = () => window.__stimmen;
+    window.SpeechSynthesisUtterance = class {
+      constructor(text) { this.text = text; this.lang = ''; this.rate = 1;
+        this.pitch = 1; this.voice = null; }
+    };
     // `cancel` gehoert mitgeschrieben, seit die App beim Zuhoeren schweigen
     // muss (F15): das Mikrofon hoert sonst den eigenen Lautsprecher mit.
     speechSynthesis.cancel = () => { window.__abgebrochen++; };
@@ -5333,6 +5364,59 @@ if (laeuft('sprechen')) try {
   await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
   await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
+
+  /* E2 - die englische Stimme.
+   *
+   * Ohne sie sagt die App „cat" mit einer deutschen Stimme, also „katt".
+   * Das ist keine Kleinigkeit: die ganze Form „Hoeren und zeigen" haengt
+   * daran, dass das gehoerte Wort das englische IST - und wer die falsche
+   * Aussprache lernt, merkt es nicht.
+   *
+   * GEPRUEFT WIRD IN BEIDE RICHTUNGEN, und die zweite ist die, an der ich
+   * mich sonst selbst betrogen haette:
+   *   1. MIT englischer Stimme muss `sagenEn` sprechen, und zwar mit einer
+   *      Kennung, die auf „en" beginnt - nicht auf „de".
+   *   2. OHNE englische Stimme muss es SCHWEIGEN. Nicht deutsch sprechen.
+   *      Ein Geraet ohne englische Stimme gibt es wirklich.
+   * Ohne die erste Haelfte waere die Pruefung durch eine App zu erfuellen,
+   * die nie etwas sagt; ohne die zweite durch eine, die immer deutsch
+   * spricht.
+   *
+   * Aufgerufen wird `sagenEn` DIREKT und nicht ueber einen Bildschirm: die
+   * vierte Welt gibt es noch nicht (E3). Das ist die Ausnahme und sie
+   * steht hier, damit sie auffaellt - sobald es eine englische Ebene gibt,
+   * gehoert diese Messung an sie. */
+  {
+    const sagenLassen = async (stimmen) => p.evaluate(async (st) => {
+      window.__stimmen = st;
+      speechSynthesis.dispatchEvent(new Event('voiceschanged'));
+      window.__gesagtWie = []; window.__gesagt = [];
+      // eslint-disable-next-line no-undef
+      sagenEn('cat');
+      await new Promise(r => setTimeout(r, 50));
+      return window.__gesagtWie;
+    }, stimmen);
+
+    const DE = { name: 'Anna', lang: 'de-DE', localService: true };
+    const EN = { name: 'Daniel', lang: 'en-GB', localService: true };
+    const mit = await sagenLassen([DE, EN]);
+    const ohne = await sagenLassen([DE]);
+    console.log(`  Englische Stimme (E2):      mit → ${mit.length ? mit[0].lang + ' / '
+      + mit[0].stimme : 'nichts gesagt'} · ohne → `
+      + `${ohne.length ? ohne[0].lang + ' / ' + ohne[0].stimme : 'geschwiegen'}`);
+    if (!mit.length)
+      merke('sprechen', new Error('mit englischer Stimme sagt die App gar nichts — '
+        + 'dann kann die vierte Welt kein Wort vorsprechen'));
+    else if (!/^en/i.test(mit[0].lang || ''))
+      merke('sprechen', new Error(`das englische Wort wird als „${mit[0].lang}" `
+        + `gesprochen — eine deutsche Stimme sagt „cat" wie „katt"`));
+    else if (mit[0].stimme !== EN.name)
+      merke('sprechen', new Error(`gesprochen hat „${mit[0].stimme}" statt der `
+        + `englischen Stimme „${EN.name}"`));
+    if (ohne.length)
+      merke('sprechen', new Error(`ohne englische Stimme spricht die App trotzdem `
+        + `(„${ohne[0].lang}") — lieber schweigen als falsch sprechen`));
+  }
 
   /* G17 - die Antwort ist lauter als das Werkzeug.
    *

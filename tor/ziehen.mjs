@@ -940,7 +940,7 @@ if (laeuft('rand')) {
    * Umgebung dem Rahmen nahe kommt, hat der Deckel etwas zu deckeln. Ohne
    * diese Zeile koennte die Umgebung auf jeder Karte weit vom Rand enden
    * und das Tor bliebe gruen, ohne je etwas geprueft zu haben. */
-  let mitRand = 0;
+  let mitRand = 0, anlaufSumme = 0;
   for (const kont of ebenen) {
     const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE',
       viewport: { width: 844, height: 390 } });
@@ -978,8 +978,45 @@ if (laeuft('rand')) {
     if (!steht) { fehler.push(`rand: auf ${kont} steht nach 15 s kein einziger `
       + 'Umgebungspfad im Baum — gemessen würde ein Bild, das es noch nicht gibt');
       await q.close(); await ctx.close(); continue; }
-    const roh = await q.locator('.schirm.da .karte > svg').first().screenshot();
-    const bild = PNG.sync.read(roh);
+    /* Gewartet wird auf das BILD, nicht auf den Baum (Q51).
+     *
+     * Q40 hat hier schon einmal geflickt: unter Last wurde gemessen, bevor
+     * gezeichnet war. Der Flicken wartet auf `#umg` mit mindestens einem
+     * Pfad - also auf den DOM. Gemessen werden aber BILDPUNKTE, und
+     * zwischen „der Pfad steht im Baum" und „er ist gerastert" liegt genau
+     * die Luecke, die unter Last aufgeht: ein Kettenlauf meldete „auf
+     * asien ist ueberhaupt kein Grau im Bild", derselbe Lauf allein
+     * gefahren 12,77 %.
+     *
+     * Die Messstelle des Wartens muss die Messstelle der Messung sein
+     * (Regel 5: jede Zahl traegt ihre Messstelle mit). Also wird
+     * aufgenommen und NACHGESEHEN - ist nichts drauf, noch einmal, bis zu
+     * dreimal. Das ist kein blindes Warten: abgebrochen wird, sobald das
+     * Bild etwas zeigt, und wenn es nach drei Anlaeufen nichts zeigt,
+     * bleibt der Befund rot. Ein leeres Bild ist dann keine Frage der
+     * Geduld mehr.
+     *
+     * Wieviele Anlaeufe es brauchte, steht im Bericht. Eine Zahl, die
+     * still von 1 auf 3 wandert, waere sonst der naechste Fund in einem
+     * halben Jahr. */
+    let roh, bild, anlaeufe = 0;
+    for (;;) {
+      anlaeufe++;
+      roh = await q.locator('.schirm.da .karte > svg').first().screenshot();
+      bild = PNG.sync.read(roh);
+      if (anlaeufe >= 3) break;
+      let etwas = false;
+      for (let i = 0; i < bild.data.length && !etwas; i += 4) {
+        const a = bild.data[i + 3] / 255;
+        const l = (0.299 * bild.data[i] + 0.587 * bild.data[i + 1]
+                 + 0.114 * bild.data[i + 2]) * a + 255 * (1 - a);
+        if (l < 250) etwas = true;
+      }
+      if (etwas) break;
+      await q.evaluate(() => new Promise(r =>
+        requestAnimationFrame(() => requestAnimationFrame(r))));
+    }
+    if (anlaeufe > 1) anlaufSumme += anlaeufe - 1;
     const b1 = Math.max(2, Math.round(Math.min(bild.width, bild.height) * BAND));
     /* Alles, was sich vom Papier unterscheidet. 250 und nicht 255: die
      * Kanten sind geglaettet, und ein Punkt, der eine Stufe unter Weiss
@@ -1004,7 +1041,8 @@ if (laeuft('rand')) {
     if (amRand > 0) mitRand++;
     zeilen.push(`      ${kont.padEnd(14)} am Rand ${String(amRand).padStart(3)} `
       + `· in der Fläche ${String(inMitte).padStart(3)} `
-      + `· Grau auf ${anteilTinte.toFixed(2).padStart(5)} % der Fläche`);
+      + `· Grau auf ${anteilTinte.toFixed(2).padStart(5)} % der Fläche`
+      + (anlaeufe > 1 ? `  (${anlaeufe} Aufnahmen bis etwas im Bild war)` : ''));
     /* Die Blindprobe: ist im Bild ueberhaupt kein Grau, dann ist nicht der
      * Rand sauber, sondern der Ausschnitt leer - und die Null am Rand
      * bezeugt nichts.
@@ -1032,7 +1070,9 @@ if (laeuft('rand')) {
       + `nichts zu deckeln`);
   console.log(`    Rand der Umgebung (${Math.round(BAND * 100)} % Band, `
     + `höchstens ${DECKEL_RAND}, ${mitRand} von ${ebenen.length} Karten `
-    + `reichen hinein):\n${zeilen.join('\n')}`);
+    + `reichen hinein`
+    + (anlaufSumme ? `, ${anlaufSumme} Aufnahme(n) nachgeholt` : '')
+    + `):\n${zeilen.join('\n')}`);
 }
 
 await b.close(); srv.close();

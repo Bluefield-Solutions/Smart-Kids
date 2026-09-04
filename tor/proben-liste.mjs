@@ -3593,9 +3593,12 @@ export const PROBEN = [
   //    und das Mikrofon hoert den eigenen Lautsprecher mit.
   { n:'die App redet weiter, während sie zuhört', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:'function vorlesen(text){\n  if(hoertZu) return;\n',
-    ersatz:'function vorlesen(text){\n',
-    an:{ ...DIST, fehlt:'function vorlesen(text){\n  if(hoertZu) return;' },
+    /* Nachgezogen mit E2: `vorlesen` nimmt seither eine Sprache entgegen.
+       Der Anker haengt an der Signatur, und eine Signatur aendert sich -
+       gemeldet hat es `inhalt` in 2,8 Sekunden, bevor ein Browser lief. */
+    such:"function vorlesen(text, sprache = 'de'){\n  if(hoertZu) return;\n",
+    ersatz:"function vorlesen(text, sprache = 'de'){\n",
+    an:{ ...DIST, fehlt:"function vorlesen(text, sprache = 'de'){\n  if(hoertZu) return;" },
     sagt:'hört den eigenen Lautsprecher mit' },
 
   // 2. Die laufende Ansage wird nicht mehr abgeschnitten. Der Riegel
@@ -4287,4 +4290,46 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'Happy Easter!' },
     deckt:'englisch',
     sagt:'steht nicht in der Quelle' },
+
+  /* Q51 - die Blindprobe unter der Randmessung meldet auch dann noch,
+   * wenn die Aufnahme wiederholt wird.
+   *
+   * Seit Q51 nimmt `ziehen` bis zu dreimal auf, wenn nichts im Bild ist:
+   * Q40 hatte auf den DOM gewartet, gemessen werden aber Bildpunkte, und
+   * unter Last ging genau dazwischen die Luecke auf („auf asien ist
+   * ueberhaupt kein Grau", allein gefahren 12,77 %).
+   *
+   * Diese Probe fragt die Kehrseite: MASKIERT die Wiederholung einen echt
+   * leeren Ausschnitt? Der Eingriff blendet die Umgebung aus - dann ist
+   * das Bild wirklich leer, und zwar dauerhaft. Das Tor muss trotzdem rot
+   * werden, auf allen sieben Karten, und der Bericht muss „3 Aufnahmen"
+   * sagen: sie hat es versucht und aufgegeben.
+   *
+   * Ohne diese Probe waere die Wiederholung ein Geduldsfaden, an dem sich
+   * jeder Befund irgendwann totlaufen kann. */
+  { n:'die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung',
+    tor:'ziehen', args:['--nur=rand'], bauen:true, datei:'tor/ziehen.mjs',
+    such:"      for (const el of lupe.children) if (el !== halte) el.style.display = 'none';",
+    ersatz:"      for (const el of lupe.children) if (el !== halte) el.style.display = 'none';\n"
+      + "      halte.style.display = 'none';",
+    an:{ datei:'tor/ziehen.mjs', text:"halte.style.display = 'none';" },
+    sagt:'ist überhaupt kein Grau' },
+
+  /* E2 - ohne englische Stimme spricht die App trotzdem.
+   *
+   * Angegriffen wird der Waechter in `vorlesen`, nicht die Stimmenwahl:
+   * das ist die Haelfte, die man am ehesten „aufraeumt", weil sie wie
+   * eine ueberfluessige Abfrage aussieht. Faellt sie, springt die
+   * deutsche Stimme ein und sagt „cat" wie „katt" - und niemand merkt es,
+   * am wenigsten das Kind, das gerade Englisch lernt.
+   *
+   * Lieber schweigen als falsch sprechen: ein Geraet ohne englische
+   * Stimme gibt es wirklich, und der Elternbereich sagt dann, wie man
+   * eine nachlaedt. */
+  { n:'ohne englische Stimme springt die deutsche ein', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"  if (sprache === 'en' && !stimmeEn) return;",
+    ersatz:"  // Eingriff der Gegenprobe. Anker: if (sprache === 'en' && !stimmeEn) return;",
+    an:{ ...DIST, fehlt:"\n  if (sprache === 'en' && !stimmeEn) return;" },
+    sagt:'spricht die App trotzdem' },
 ];

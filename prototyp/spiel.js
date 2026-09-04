@@ -391,9 +391,19 @@ function stimmeWaehlen(liste, wunsch){
   }
   return ernst.find(v => v.localService) || ernst[0] || s[0] || null;
 }
-function alleStimmen(){
+/* Die Stimmen einer Sprache (E2).
+ *
+ * Bis hierher gab es nur deutsche - `alleStimmen()` filterte hart auf
+ * „de". Fuer die vierte Welt sagt die App englische Woerter, und eine
+ * deutsche Stimme spricht „cat" wie „katt". Das ist keine Kleinigkeit:
+ * die ganze Form „Hoeren und zeigen" haengt daran, dass das gehoerte Wort
+ * das englische IST.
+ *
+ * Der Praefix statt der vollen Kennung: „en" trifft en-US, en-GB, en-AU.
+ * Welche davon, entscheidet dieselbe Guete-Ordnung wie beim Deutschen. */
+function alleStimmen(sprache = 'de'){
   return ('speechSynthesis' in window)
-    ? speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de')) : [];
+    ? speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(sprache)) : [];
 }
 // Der Name der gewaehlten Stimme steht hier und NICHT in `Einst`.
 //
@@ -403,8 +413,24 @@ function alleStimmen(){
 // „Cannot access 'Einst' before initialization" gar nicht mehr. Gefunden
 // hat das der Rauchtest, sechzehnmal auf einmal.
 let stimmenWunsch = null;
-function stimmeSuchen(){ stimme = stimmeWaehlen(alleStimmen(), stimmenWunsch); }
+/* Die englische Stimme wird NICHT gewaehlt, sondern gefunden - oder eben
+ * nicht (E2).
+ *
+ * Kein Wunsch, keine Lieblingsliste: die Namen in `LIEBLINGE` sind Apples
+ * deutsche Ansagestimmen und sagen ueber eine englische nichts. Genommen
+ * wird die beste ernste, die da ist; ist keine da, bleibt sie `null`, und
+ * das ist eine Auskunft und kein Fehler. Ein Geraet ohne englische Stimme
+ * gibt es wirklich - dann muss die App das SAGEN statt still deutsch zu
+ * sprechen. Deutsch gesprochenes Englisch ist schlimmer als kein Ton:
+ * das Kind lernt eine falsche Aussprache und merkt es nicht. */
+let stimmeEn = null;
+function stimmeSuchen(){
+  stimme = stimmeWaehlen(alleStimmen('de'), stimmenWunsch);
+  stimmeEn = stimmeWaehlen(alleStimmen('en'), null);
+}
 if ('speechSynthesis' in window){ stimmeSuchen(); speechSynthesis.addEventListener('voiceschanged',stimmeSuchen); }
+/** Gibt es auf diesem Geraet ueberhaupt eine englische Stimme? */
+function englischHoerbar(){ return !!stimmeEn; }
 /**
  * Vorlesen - satzweise, nicht am Stueck.
  *
@@ -421,10 +447,21 @@ if ('speechSynthesis' in window){ stimmeSuchen(); speechSynthesis.addEventListen
  * Koenigreich".
  */
 const TEMPO = 0.9, HOEHE = 1.06;
-function sprich(satz, hoehe = HOEHE){
+function sprich(satz, hoehe = HOEHE, sprache = 'de'){
   const u = new SpeechSynthesisUtterance(satz);
-  u.lang='de-DE'; u.rate=TEMPO; u.pitch=hoehe;
-  if (stimme) u.voice = stimme;
+  const en = sprache === 'en';
+  /* Die Kennung kommt von der STIMME, wo es eine gibt, und nur sonst aus
+     der Voreinstellung. Ein `u.lang` von „en-US" auf einer Stimme, die
+     „en-GB" spricht, ist auf manchen Geraeten der Unterschied zwischen
+     der gewaehlten Stimme und der Voreingestellten. */
+  u.lang = en ? (stimmeEn?.lang || 'en-GB') : (stimme?.lang || 'de-DE');
+  /* Englisch eine Spur langsamer: es ist die Fremdsprache, und das Kind
+     soll das Wort HOEREN, nicht erraten. Kein neuer Wert - derselbe
+     Abschlag, den `?flott` benutzt, nur in die andere Richtung. */
+  u.rate = en ? TEMPO * 0.9 : TEMPO;
+  u.pitch = hoehe;
+  const v = en ? stimmeEn : stimme;
+  if (v) u.voice = v;
   speechSynthesis.speak(u);
 }
 /* Solange die App ZUHOERT, schweigt sie.
@@ -450,18 +487,24 @@ function hoerenBeginnt(){
 }
 function hoerenEndet(){ hoertZu = false; }
 
-function vorlesen(text){
+function vorlesen(text, sprache = 'de'){
   if(hoertZu) return;
   if(!tonAn||!('speechSynthesis' in window)||!text) return;
+  /* Lieber schweigen als falsch sprechen (E2). Ohne englische Stimme
+     wuerde die deutsche einspringen und „cat" als „katt" sagen. Wer das
+     merkt, ist nicht das Kind. */
+  if (sprache === 'en' && !stimmeEn) return;
   try{ if(!entsperrt){ speechSynthesis.speak(new SpeechSynthesisUtterance('')); entsperrt=true; }
     speechSynthesis.cancel();
     // Der Jubel darf eine Spur hoeher liegen als die Sache danach. Das ist
     // der Unterschied zwischen „Klasse!" und „Klasse."
     const saetze = String(text).split(/(?<=[.!?])\s+/).filter(Boolean);
     saetze.forEach((satz, i) => sprich(satz,
-      i === 0 && /!$/.test(satz) ? HOEHE + 0.08 : HOEHE));
+      i === 0 && /!$/.test(satz) ? HOEHE + 0.08 : HOEHE, sprache));
   }catch(e){}
 }
+/** Ein englisches Wort sagen - fuer die vierte Welt. */
+function sagenEn(text){ if (!P || ton().spricht) vorlesen(text, 'en'); }
 
 /**
  * Ansagen - fuer das Kind, das noch nicht liest.
@@ -6187,6 +6230,7 @@ async function elternbereich(){
         Gesprochene Inhalte › Stimmen › Deutsch</em> — dort lassen sich bessere
         Stimmen laden, die dann auch hier erscheinen.</p>
       <div class="reihe stimmen" style="justify-content:flex-start" id="stimmwahl"></div>
+      <p class="unter" id="enstimme"></p>
 
       <h3 class="gruppe">Rückmeldeton</h3>
       <p class="unter">Zwei kurze Töne: einer nach einer richtigen, einer nach einer
@@ -6397,6 +6441,22 @@ async function elternbereich(){
         <textarea class="ausgabefeld" readonly>${text.replace(/</g,'&lt;')}</textarea>`;
     }
   };
+  /* Und die englische Stimme - eine Auskunft, keine Wahl (E2).
+   *
+   * Gewaehlt wird sie nicht: die Lieblingsliste sind Apples deutsche
+   * Ansagestimmen und sagen ueber eine englische nichts. Aber ob es
+   * ueberhaupt eine gibt, gehoert hierher - denn wenn nicht, SCHWEIGT die
+   * vierte Welt, und das soll niemand fuer einen Fehler halten. Der Weg
+   * dorthin steht dabei; er ist ein anderer als beim Deutschen. */
+  const enZeigen = () => {
+    const p = s.querySelector('#enstimme'); if (!p) return;
+    p.innerHTML = englischHoerbar()
+      ? `Für Englisch nimmt die App <strong>${stimmeEn.name}</strong> (${stimmeEn.lang}).`
+      : 'Für <strong>Englisch</strong> hat dieses Gerät keine Stimme. Die englischen '
+        + 'Wörter bleiben dann still — lieber das als eine deutsche Stimme, die '
+        + '„cat" wie „katt" sagt. Nachladen unter <em>Einstellungen › '
+        + 'Bedienungshilfen › Gesprochene Inhalte › Stimmen › Englisch</em>.';
+  };
   // Die Stimmenliste wird ERST GEBAUT, wenn sie da ist.
   //
   // `getVoices()` liefert beim ersten Aufruf oft eine leere Liste; die
@@ -6428,9 +6488,10 @@ async function elternbereich(){
       tonAn = alterTon;
     });
   };
-  stimmenZeichnen();
+  stimmenZeichnen(); enZeigen();
   if ('speechSynthesis' in window)
-    speechSynthesis.addEventListener('voiceschanged', stimmenZeichnen, { once:false });
+    speechSynthesis.addEventListener('voiceschanged',
+      () => { stimmenZeichnen(); enZeigen(); }, { once:false });
 
   /* Die PIN war NICHT zu aendern.
    *

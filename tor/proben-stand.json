@@ -1293,9 +1293,9 @@
       "s": 1
     },
     "die App redet weiter, während sie zuhört": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
+      "commit": "fff74f37d68fb8b6fc2d0f97556030738b19fa69",
       "zeit": "2026-09-04",
-      "s": 71
+      "s": 68
     },
     "die laufende Ansage läuft ins Mikrofon weiter": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -1546,6 +1546,16 @@
       "commit": "e3055ea4b4c370f126ac006362a8a832d52498d1",
       "zeit": "2026-09-04",
       "s": 10
+    },
+    "die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung": {
+      "commit": "80633617eba308b1b33fd54f421c4affe828afc8",
+      "zeit": "2026-09-04",
+      "s": 36
+    },
+    "ohne englische Stimme springt die deutsche ein": {
+      "commit": "fff74f37d68fb8b6fc2d0f97556030738b19fa69",
+      "zeit": "2026-09-04",
+      "s": 68
     }
   }
 }

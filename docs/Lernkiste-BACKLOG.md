@@ -187,8 +187,8 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **Q51** `ziehen` wartet auf den DOM, misst aber Bildpunkte | nur ich | mittel | klein | — |
-| 2 | **E2–E12** Englisch — die neue Welt | Lea, Fiona, ihr beide | hoch | groß | E1b |
+| 1 | **E3** Vierte Welt + erste Ebene „Hören und zeigen“ | Lea | hoch | mittel | E2 steht |
+| 2 | **E4–E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E3 |
 | 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -4533,6 +4533,78 @@ zwischen grün und rot.
 *Der Weg:* auf das Bild warten statt auf den Baum — zwei Aufnahmen im
 Abstand, bis sie gleich sind. Und die Blindprobe von „größer als null" auf
 einen Anteil heben, der zu den gemessenen 0,02 % passt.
+
+### Q51 · `ziehen` wartet jetzt auf das Bild — GEFAHREN (v372)
+
+Q40 hat hier schon einmal geflickt: unter Last wurde gemessen, bevor
+gezeichnet war. Der Flicken wartet auf `#umg` mit mindestens einem Pfad —
+also auf den **DOM**. Gemessen werden aber **Bildpunkte**, und zwischen
+„der Pfad steht im Baum" und „er ist gerastert" liegt die Lücke, die unter
+Last aufgeht.
+
+**Die Messstelle des Wartens muss die Messstelle der Messung sein.** Also
+wird aufgenommen und nachgesehen — ist nichts drauf, noch einmal, bis zu
+dreimal. Kein blindes Warten: abgebrochen wird, sobald das Bild etwas
+zeigt. Wie viele Anläufe es brauchte, steht im Bericht; eine Zahl, die
+still von 1 auf 3 wandert, wäre sonst der nächste Fund in einem halben
+Jahr.
+
+**Meine Empfehlung von gestern war falsch.** Ich hatte geschrieben, die
+Blindprobe solle „von größer als null auf einen gemessenen Anteil" gehoben
+werden. Der Kommentar an der Stelle sagt genauer, warum das nicht geht:
+auf Südamerika ragt die Umgebung nur als **elf Bildpunkte** ins Bild, und
+mit ausgeblendeter Umgebung steht die Probe auf allen sieben Karten auf
+glatt null. Die Schwelle ist richtig geeicht; falsch war nur der Zeitpunkt.
+
+Gegenprobe 303 blendet die Umgebung aus und prüft die **Kehrseite**:
+maskiert die Wiederholung einen echt leeren Ausschnitt? Nein — alle sieben
+bleiben rot, und der Bericht sagt „3 Aufnahmen": sie hat es versucht und
+aufgegeben. Ohne diese Probe wäre die Wiederholung ein Geduldsfaden, an
+dem sich jeder Befund irgendwann totläuft.
+
+### E2 · Die englische Stimme — GEFAHREN (v372)
+
+`sprich()` nagelte `lang='de-DE'` fest. Eine deutsche Stimme sagt „cat"
+wie „katt", und daran hängt die ganze Form „Hören und zeigen": das gehörte
+Wort muss das englische **sein**.
+
+- `alleStimmen(sprache)` statt hartem „de"-Filter; `stimmeEn` wird beim
+  Laden mitgesucht — ohne Wunschliste, denn die Lieblingsnamen sind Apples
+  deutsche Ansagestimmen und sagen über eine englische nichts.
+- `sprich(satz, hoehe, sprache)` nimmt die Kennung von der **Stimme**, wo
+  es eine gibt: `en-GB` auf einer `en-GB`-Stimme, nicht pauschal `en-US`.
+- Englisch läuft eine Spur langsamer (0,9 × TEMPO) — es ist die
+  Fremdsprache, und das Kind soll das Wort hören, nicht erraten.
+- **Ohne englische Stimme schweigt die App.** Lieber das als eine
+  deutsche, die falsch spricht. Der Elternbereich sagt, dass und warum —
+  und wie man eine nachlädt.
+
+**Das Tor prüft beide Richtungen**, und die zweite ist die, an der ich
+mich sonst selbst betrogen hätte: *mit* englischer Stimme muss gesprochen
+werden (gemessen `en-GB` / Daniel), *ohne* muss geschwiegen werden. Ohne
+die erste Hälfte wäre die Prüfung durch eine App zu erfüllen, die nie
+etwas sagt.
+
+#### Mein Nachbau hat erst den Fehler gebaut, den er messen wollte
+
+Der Stimmen-Nachbau lieferte einfache Objekte. **`u.voice = {…}` wirft in
+Chromium** — das Feld nimmt nur eine echte `SpeechSynthesisVoice`. Und
+`vorlesen` hat ein `catch(e){}`, das alles verschluckt: die App schwieg,
+kein Fehler, kein Hinweis. Und zwar auch auf **Deutsch** — ohne Nachbau
+ist `getVoices()` hier leer, `u.voice` wird nie gesetzt, und deshalb war es
+vorher nie aufgefallen. Aufgefallen ist es an „noch einmal hören sagt
+nichts", einer Prüfung, die mit E2 gar nichts zu tun hat. Die
+`SpeechSynthesisUtterance` wird jetzt mit nachgebaut.
+
+Gegenprobe 304 nimmt den Wächter in `vorlesen` weg — die Hälfte, die man
+am ehesten „aufräumt", weil sie wie eine überflüssige Abfrage aussieht.
+
+Und `inhalt` hat eine **ältere** Gegenprobe gefangen, deren Anker an der
+Signatur von `vorlesen` hing: 2,8 Sekunden, bevor ein Browser lief.
+
+**E3 bleibt offen und ist jetzt Rang 1.** Die Reihenfolge im Konzept
+verdeckte, dass „Hören und zeigen" ohne E2 englische Wörter mit deutscher
+Stimme sagt. E2 war der eigentliche Blocker, nicht E3.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 
