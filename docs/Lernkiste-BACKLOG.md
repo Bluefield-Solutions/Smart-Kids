@@ -3630,3 +3630,71 @@ Toren gefangen:
 
 Kosten: **0,2 s je Kettenlauf**, 172 Nachfragen geprüft. Der volle
 Probenlauf brauchte für denselben Befund 150 Minuten.
+
+---
+
+## Q49 — die Probe borgte sich ihre Voraussetzung von der Rechnerlast
+
+**Gefunden vom nächtlichen Lauf, nicht von mir.** Der Lauf vom 04.09.
+meldete unter 285 Proben genau eine, die nichts beweist:
+
+```
+✗ die Fremdgriff-Frage gilt wieder für jeden Ausschnitt:
+  `smoke` bleibt grün, obwohl der Fehler drin ist
+```
+
+Bei mir schlug dieselbe Probe an. Derselbe Einchecker, dieselbe App, nur
+eine andere Maschine.
+
+**Was die Probe behauptet.** Der Fremdgriff (Q19) prüft auf jedem
+ruhenden Bildschirm, ob ein fremdes Element über einem Knopf liegt. Sieht
+er in einem ganzen Lauf keinen einzigen ruhenden Bildschirm, dann beweist
+„nichts gefunden" nichts, und `smoke` wird rot — außer in einem
+Ausschnitt (`--nur=…`), denn ein Ausschnitt sagt über den ganzen Lauf
+nichts. Diese Ausnahme ist die Sache, die geprüft wird: ohne sie wären
+zehn stehende Gegenproben, die einen Ausschnitt fahren, alle wertlos.
+
+**Woran sie gestorben ist.** Die Probe fuhr `--nur=streu` und verließ
+sich darauf, dass dort *kein* Bildschirm zur Ruhe kommt. Gemessen:
+
+| Ausschnitt | ruhende Bildschirme (hier) |
+|---|---|
+| `streu` | **0** |
+| `hinweis` | 1 |
+| `regler` | 2 |
+| `tippen` | 4 |
+
+Auf dem Runner kommt in `streu` einer zur Ruhe — die Abschnitte laufen
+dort langsamer, und der Beobachter tickt alle 350 ms. Damit ist die
+Bedingung `geprueft === 0` nicht mehr erfüllt, der eingebaute Fehler
+kommt gar nicht zum Zug, und das Tor bleibt grün.
+
+Die Null war nie eine Eigenschaft der App. Sie war eine Eigenschaft
+meines Rechners — **Regel 5, jede Zahl trägt ihre Messstelle mit**, und
+diese hier trug sie nicht.
+
+**Der Flick.** Die Probe stellt ihre Voraussetzung jetzt selbst her,
+statt sie sich zu borgen. Ein Eingriff, zwei Wirkungen:
+
+```js
+ersatz:'griffStand.geprueft = 0;\nif (griffStand.geprueft === 0 && true)',
+```
+
+Nachgewiesen an dem Ausschnitt, an dem es vorher nicht ging:
+
+| Ausschnitt | ruhende Bildschirme | mit Eingriff |
+|---|---|---|
+| `streu` | 0 | **rot** |
+| `tippen` | 4 | **rot** |
+
+`tippen` ist der Fall des Runners, nur deutlicher. Vorher wäre er grün
+geblieben; jetzt ist der Ausgang von der Maschine unabhängig. Und wer die
+Prüfung ganz aus `smoke` entfernt, wird weiter erwischt: dann findet der
+Eingriff seine Stelle nicht, und der Lauf meldet „kam nicht an".
+
+**Was das über den nächtlichen Lauf sagt.** Er hat 169 Minuten gebraucht
+und einen einzigen Befund gebracht — aber einen, den kein Kettenlauf
+finden konnte, weil er nur auf einer *anderen* Maschine existiert. Das
+ist genau das, wofür er da ist. Q47 hat gezeigt, dass eine Probe an einer
+Änderung woanders stirbt; Q49 zeigt, dass sie auch an einem anderen
+Rechner sterben kann.

@@ -2880,16 +2880,24 @@ export const PROBEN = [
    * genau der Zustand, den ein Tor merken muss. Gefahren wird `proben`
    * selbst, mit EINER Probe und abgeschaltetem `ansicht`: dann faellt der
    * Lauf in Sekunden und meldet wieder, was er vor Q39 gemeldet hat. */
-  /* Der Geltungsbereich der Fremdgriff-Frage (Q39b).
+  /* Der Geltungsbereich der Fremdgriff-Frage (Q39b, geflickt in Q49).
    *
    * Ohne ihn ist `smoke` in JEDEM Ausschnitt rot, in dem kein Bildschirm
    * zur Ruhe kommt - und zehn stehende Gegenproben, die genau so einen
-   * Ausschnitt fahren, beweisen dann nichts. Der Eingriff nimmt die
-   * Bedingung heraus und laesst die Zeile stehen. */
+   * Ausschnitt fahren, beweisen dann nichts.
+   *
+   * Der Eingriff nimmt die Bedingung heraus UND setzt die Zahl der
+   * ruhenden Bildschirme auf null. Das zweite ist der Flick: bis Q49
+   * borgte sich die Probe die Null vom Ausschnitt `streu`, in dem hier
+   * kein Bildschirm zur Ruhe kommt. Auf dem Runner kommt einer zur Ruhe -
+   * derselbe Ausschnitt, dieselbe App, nur langsamer, und die Probe blieb
+   * gruen. Eine Voraussetzung, die aus der Rechnerlast kommt, ist keine
+   * (Regel 5: jede Zahl traegt ihre Messstelle mit). Jetzt stellt die
+   * Probe sie selbst her und gilt auf jeder Maschine. */
   { n:'die Fremdgriff-Frage gilt wieder für jeden Ausschnitt', tor:'smoke',
     args:['--nur=streu'], bauen:true, datei:'tor/smoke.mjs',
     such:'if (griffStand.geprueft === 0 && !nurAusschnitt)',
-    ersatz:'if (griffStand.geprueft === 0 && true)',
+    ersatz:'griffStand.geprueft = 0;\nif (griffStand.geprueft === 0 && true)',
     an:{ datei:'tor/smoke.mjs', fehlt:'griffStand.geprueft === 0 && !nurAusschnitt' },
     sagt:'keinen einzigen ruhenden Bildschirm' },
 
