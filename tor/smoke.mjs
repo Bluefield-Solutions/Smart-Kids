@@ -1241,20 +1241,20 @@ if (laeuft('spielen')) try {
            ist ein Punkt, egal wie gross die Karte ist. */
         /* Eine RATSCHE, kein Soll - und ihre Zahl ist gemessen, nicht
            gewuenscht.
-           Der Sprung von der Frage zum Lob ist heute 47 Punkte: die
-           gezeichnete Karte wandert 47 nach unten und wird 48 kleiner
-           (273 auf 225, achtzehn Prozent). 22 davon kostet der Satz zum
-           Mitnehmen (D3), 25 die Lobzeile, die es seit langem gibt.
-           Freihalten laesst er sich - gebaut und gemessen, 0 statt 48 -,
-           aber die 48 Punkte hat der Bildschirm nicht: `passt` meldete
-           dann „noch einmal hoeren" ueber dem Rand. Die ganze Rechnung
-           steht in `prototyp/spiel.js` ueber dem Fragekasten und im
-           Rueckstandsverzeichnis.
-           Bis das geloest ist, haelt diese Zeile wenigstens den Stand:
-           groesser darf er nicht werden. Fuenfzig und nicht siebenund-
-           vierzig, damit nicht jede Schriftaenderung die Zahl neu setzt;
-           wer sie hochsetzt, hat die Karte unruhiger gemacht. */
-        const DECKEL = 50;
+           Der Sprung von der Frage zum Lob war 47 Punkte: die gezeichnete
+           Karte wanderte 47 nach unten und wurde 48 kleiner (273 auf 225,
+           achtzehn Prozent). Seit die Lobzeile im kurzen Querformat NEBEN
+           der Sache steht statt darueber, sind es 21 - und „Lob ohne Satz"
+           misst sich Punkt fuer Punkt wie die Frage: die Lobzeile kostet
+           nichts mehr. Was bleibt, ist der Satz zum Mitnehmen.
+           Freihalten laesst er sich nicht: 22 Punkte mehr auf dem
+           Fragebildschirm, und `passt` meldet „noch einmal hoeren" im
+           Wischbereich. Gebaut, gemessen, wieder ausgebaut - die Rechnung
+           steht im Rueckstandsverzeichnis.
+           Dreissig und nicht einundzwanzig, damit nicht jede
+           Schriftaenderung die Zahl neu setzt; wer sie hochsetzt, hat die
+           Karte unruhiger gemacht. */
+        const DECKEL = 30;
         const weit = Math.max(Math.abs(nachLob.oben - vorLob.oben),
                               Math.abs(nachLob.hoch - vorLob.hoch));
         if (weit > DECKEL)
@@ -2324,6 +2324,55 @@ if (laeuft('ablage')) try {
       if (!eng.length && !gleich.length)
         console.log(`  Buch mit Kapiteln:          ${streifen.reiter} Reiter, alle ganz im `
           + `Streifen; ${seiten.size} verschiedene Seiten, jeder Block ganz im Bild`);
+
+      /* Und der Satz zum Mitnehmen im Buch (Q46).
+       *
+       * Zwei Zusagen, und die zweite ist die, die still ausfallen kann:
+       * er STEHT auf einer Kartenseite, und ein Tipp auf die Karte
+       * BLAETTERT ihn weiter. Das Blaettern ist der Teil, den ein Blick
+       * nicht meldet - die Seite sieht danach genauso aus, nur mit einem
+       * anderen Satz, und wer den ersten nicht auswendig kann, merkt
+       * nichts.
+       *
+       * Gemessen wird gegen die Satztafel im gebauten Bildschirm, nicht
+       * gegen eine Liste hier - sonst prueft der Abschnitt seine eigene
+       * Annahme (Regel 14: das Modell haengt sonst am Gemessenen). */
+      const mitKarte = await q.evaluate(() => {
+        const r = [...document.querySelectorAll('.schirm.da [data-kap]')];
+        return r.findIndex(x => x.dataset.kap.startsWith('laender')
+          || ['kontinente', 'bundeslaender'].includes(x.dataset.kap));
+      });
+      if (mitKarte < 0)
+        merke('forscherbuch', new Error('kein einziges Kapitel mit Landkarte im Buch — dann '
+          + 'ist der Satz zum Mitnehmen hier gar nicht geprüft, er fehlt nur nicht'));
+      else {
+        await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), mitKarte);
+        const vorher = await q.evaluate(() => {
+          const p = document.querySelector('.schirm.da .buchsatz');
+          return { satz: p?.textContent.trim() || '',
+                   /* Wieviele Gebiete dieser Gruppe ueberhaupt einen Satz
+                      haben - unter zweien gibt es nichts zu blaettern,
+                      und „er blaettert nicht" beweist nichts (Regel 1). */
+                   karten: document.querySelectorAll('.schirm.da .albumkleber').length };
+        });
+        if (!vorher.satz)
+          merke('forscherbuch', new Error('auf der Kartenseite im Buch steht kein Satz zum '
+            + 'Mitnehmen — im Spiel steht er einen Augenblick, hier soll man ihn nachlesen'));
+        else if (vorher.karten < 2)
+          console.log(`  Satz im Buch:               „${vorher.satz.slice(0, 40)}…" `
+            + `(nur ${vorher.karten} Aufkleber — zum Blättern zu wenig)`);
+        else {
+          await q.click('.schirm.da .albumkarte');
+          const nachher = await q.evaluate(() =>
+            document.querySelector('.schirm.da .buchsatz')?.textContent.trim() || '');
+          if (nachher === vorher.satz)
+            merke('forscherbuch', new Error(`ein Tipp auf die Albumkarte blättert den Satz `
+              + `nicht weiter — es bleibt bei „${vorher.satz.slice(0, 50)}…", obwohl `
+              + `${vorher.karten} Gebiete gesammelt sind`));
+          else console.log(`  Satz im Buch:               steht da und blättert `
+            + `(„${vorher.satz.slice(0, 28)}…" → „${nachher.slice(0, 28)}…")`);
+        }
+      }
     }
     await q.close();
   }
@@ -5724,7 +5773,7 @@ else if (kartenSprung.length)
     + `${kartenSprung.length} von ${kartenMessungen} Aufgaben (${kartenSprung.slice(0, 2)
       .join(' · ')}) — der freigehaltene Platz greift nicht, und sie springt genau dann, `
     + 'wenn das Kind auf die Form schaut, die es eben getroffen hat'));
-else console.log(`  Karte beim Lob:             rückt höchstens 50 Punkte (${kartenMessungen} `
+else console.log(`  Karte beim Lob:             rückt höchstens 30 Punkte (${kartenMessungen} `
   + `Aufgaben an der gezeichneten Fläche${kartenMitKleber
     ? `, ${kartenMitKleber} mit neuem Aufkleber ausgenommen` : ''})`);
 if (satzGesehen < 2)

@@ -288,8 +288,18 @@
       "zeit": "2026-09-03",
       "s": 33
     },
+    "der Satz zum Mitnehmen fehlt im Buch": {
+      "commit": "4cb98f0f7945bc3593f8f6e07e955090321a9472",
+      "zeit": "2026-09-04",
+      "s": 114
+    },
+    "ein Tipp auf die Albumkarte blaettert den Satz nicht mehr": {
+      "commit": "4cb98f0f7945bc3593f8f6e07e955090321a9472",
+      "zeit": "2026-09-04",
+      "s": 58
+    },
     "das Lob schiebt die Karte noch weiter weg": {
-      "commit": "8e078459da247e3a0cdaf6014bae3bfd4b249105",
+      "commit": "4cb98f0f7945bc3593f8f6e07e955090321a9472",
       "zeit": "2026-09-04",
       "s": 48
     },

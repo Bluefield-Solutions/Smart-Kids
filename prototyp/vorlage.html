@@ -946,6 +946,12 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .reiter.da{color:var(--tinte);border-color:var(--knopf-kante);
   box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),
              inset 0 var(--strich) 0 var(--knopf-licht)}
+/* Der Satz zum Mitnehmen im Buch (Q46).
+   Leiser als eine Ueberschrift und ohne Kasten: er ist eine Zugabe, keine
+   Aufgabe. `cursor:default` - getippt wird die KARTE, nicht der Satz; ein
+   Text, der wie ein Knopf aussieht und keiner ist, ist eine Luege. */
+.buchsatz{font-family:var(--f-lesen);font-size:var(--s-klein);font-weight:600;
+  color:var(--tinte-2);margin:var(--r2) 0 0;max-width:52ch;cursor:default}
 .abzeichen{display:flex;flex-wrap:wrap;gap:var(--r3);width:100%}
 .abz{flex:1 1 300px;max-width:520px}
 .abz{display:flex;align-items:center;gap:var(--r3);text-align:left;
@@ -1945,14 +1951,25 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Albumkarte noch zwei Kleberreihen samt Ueberschriften - dann ist der
      Bildschirm nicht halbleer, und die 125 kosten genau die Punkte, die
      der Vorschau unten fehlen (gemessen 370 in 318 sichtbaren). */
-  .rollen.buch:not(:has(.albumkarte ~ *)) .albumkarte svg{height:125px}
+  /* „Nichts dahinter" heisst: keine weitere GRUPPE dahinter (Q46).
+     Der Satz zum Mitnehmen steht seit Q46 unter der Karte und ist damit
+     ein Geschwister - `:has(.albumkarte ~ *)` traf ihn, die Regel fiel
+     aus, und die Karte schrumpfte von 200 auf 125 zurueck. Zu sehen war
+     es sofort auf der Aufnahme; erklaeren liess es sich erst am
+     Selektor. Ein Satz ist keine Gruppe, und die Ausnahme muss ihn
+     ueberspringen. */
+  .rollen.buch:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:125px}
   /* Im KAPITELBUCH steht genau eine Karte auf der Seite (Q44).
      Die 125 sind fuer ein Buch gerechnet, in dem darunter noch zwei
      Gruppen standen - hier steht nichts darunter. Gemessen auf 844 x 390:
      der Reiterstreifen kostet 67 Punkte, die Seite hat 251, und die Karte
      nahm davon 145. Mit 200 sind es 220 - dreissig Punkte Luft, dieselbe
      Reserve, die das Buch vorher hatte. */
-  .rollen.buch.kapitel:not(:has(.albumkarte ~ *)) .albumkarte svg{height:200px}
+  /* 165 und nicht 200, seit der Satz zum Mitnehmen darunter steht (Q46).
+     Gemessen: mit 200 fiel er auf zwei von sieben Kapitelseiten unter die
+     Unterkante - das Kapiteltor hat es gemeldet. Die Seite hat 251
+     Punkte, der Satz nimmt zwei Zeilen. */
+  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *
@@ -1973,6 +1990,19 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .rollen.buch .gruppe{font-size:var(--s0);margin:var(--r3) 0 var(--r1)}
   .rollen.buch{padding-bottom:var(--r4)}
   .frage{padding:0 var(--r4) var(--r1)}
+  /* Das Lob steht hier in EINER Zeile, nicht in zweien (Q45).
+   *
+   * Auf dem Schreibtisch traegt das Lob seine eigene Zeile: „Klasse!"
+   * gross, darunter die Sache. Das ist gut - ein Kind liest das erste
+   * Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat.
+   *
+   * Auf 390 Punkten kostet dieselbe Zeile 26 Punkte KARTE, und zwar
+   * genau im Augenblick des Lobs: gemessen wandert die gezeichnete Karte
+   * dabei nach unten und wird kleiner. Nebeneinander bleibt beides
+   * lesbar - „Klasse!" ist weiter groesser und farbig -, und der
+   * Bildschirm bleibt ruhig. Auf dem grossen Geraet aendert sich nichts;
+   * dort ist der Platz da. */
+  .frage .jubel{display:inline;font-size:var(--s1)}
   .etikett{min-height:44px}
   .titel{font-size:var(--s2)}
   /* Auf dem kleinsten Geraet (iPhone SE quer, 667x375) zaehlt jeder

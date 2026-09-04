@@ -3495,3 +3495,60 @@ zum Bild passte):
    übereinander, und die Hülle war die Vereinigung der alten und der neuen
    Karte. Gemeldet wurden 154 → 140, dieselbe Stelle einzeln gemessen
    ergab 141 → 140. Ein Rücken, das es nicht gab.
+
+## Q45b erledigt: die 47 Punkte waren zur Hälfte geschenkt
+
+Die offene Zahl aus Q45. Ich hatte den Sprung als „Preis des Lobs"
+hingenommen — er war zur Hälfte **Verschwendung**.
+
+Das Lob steht in zwei Zeilen: „Klasse!" groß, darunter „Das ist Australien."
+Auf dem Schreibtisch ist das richtig — ein Kind liest das erste Wort und
+weiß Bescheid, bevor es den Satz zu Ende gelesen hat. Auf **390 Punkten**
+kostet dieselbe Zeile **26 Punkte Karte**, und zwar genau im Augenblick des
+Lobs. Nebeneinander bleibt beides lesbar; „Klasse!" ist weiter größer und
+farbig.
+
+| | vorher | jetzt |
+|---|---|---|
+| Karte wandert | 47 Punkte | **21** |
+| Karte wird kleiner | 48 (273 → 225, 18 %) | **22** (273 → 251, 8 %) |
+| Lob **ohne** Satz | 118 / 247 | **93 / 273 — Punkt für Punkt wie die Frage** |
+
+Die Lobzeile kostet jetzt **nichts**. Und es kostet auch keinen Bildschirm:
+`passt` ist auf allen sieben Größen grün, die Änderung greift nur im kurzen
+Querformat.
+
+**Was bleibt, ist der Satz zum Mitnehmen: 21 Punkte.** Freihalten lässt er
+sich nicht — 22 Punkte mehr auf dem Fragebildschirm, und „noch einmal
+hören" steht wieder im Wischbereich (in Q45 gemessen). Die Ratsche steht
+jetzt auf **30 statt 50**.
+
+## Q46 erledigt: der Satz zum Mitnehmen steht auch im Buch
+
+Im Spiel steht er einen Augenblick und ist dann weg — genau dann, wenn das
+Kind noch mit dem Treffer beschäftigt ist. Das Buch ist der Ort, an dem man
+nachschaut; also steht er dort noch einmal, unter der Albumkarte, und zwar
+zu einem Gebiet, das dem Kind **gehört**. Ein Tipp auf die Karte nimmt das
+nächste.
+
+Warum nicht ein Tipp auf das einzelne Gebiet: die Albumkarte ist **ein**
+Knopf, und Bremen wäre darauf vier Bildpunkte groß — eine Trefferfläche,
+die kein Finger trifft.
+
+**Drei Fehler, alle von einem Tor gefunden, keiner vom Hinsehen:**
+
+1. **Die Albumkarte schrumpfte von 200 auf 125 zurück.** Die Regel „bei
+   EINER Karte darf sie größer sein" fragt `:not(:has(.albumkarte ~ *))` —
+   und der neue Satz ist ein Geschwister. Auf der Aufnahme sofort zu sehen,
+   erklären ließ es sich erst am Selektor. Ein Satz ist keine Gruppe.
+2. **Auf zwei von sieben Kapitelseiten fiel ein Block unter die Kante** —
+   Karte 200 plus Satz passt nicht in 251. Jetzt 165.
+3. **Der Tipp blätterte nur auf der ersten Seite.** Der Kapitelwechsel
+   tauscht den Inhalt aus und band bis dahin nur `[data-lesen]` neu; mein
+   Zuhörer war danach weg. Dieselbe Klasse wie in Q44 — *alle* Zuhörer
+   gehören an eine Stelle, und die muss nach jedem Austausch laufen.
+
+Und zwei stehende Gegenproben, die beide anschlagen: der Satz fehlt, und
+der Tipp blättert nicht mehr. Die zweite ist die wichtige — die Seite sieht
+danach genauso aus, nur mit einem anderen Satz, und wer den ersten nicht
+auswendig kann, merkt nichts.

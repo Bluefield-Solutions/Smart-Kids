@@ -5571,6 +5571,12 @@ async function forscherbuch(){
    * ist der Streifen unnoetig - und ein Reiter, den man nicht braucht,
    * ist eine Tuer mehr vor demselben Inhalt.
    */
+  /* Die Gebiete einer Gruppe, die dem Kind gehoeren UND einen Satz haben.
+     In der Reihenfolge des Vorrats, nicht gewuerfelt: das Buch soll beim
+     zweiten Aufschlagen dasselbe zeigen, und `ansicht` vergleicht
+     Bildpunkte. */
+  const satzGebiete = (g) => g.da.filter(x => Saetze.satzZu(x.id));
+
   const kapitel = [];
   if (verdient.length) kapitel.push({
     id:'abzeichen', titel:'Abzeichen', farbe:2, zahl:verdient.length,
@@ -5587,7 +5593,19 @@ async function forscherbuch(){
         ? ` <small>${g.da.length} Aufkleber, ${g.da.filter(x=>x.gekonnt).length} davon sicher</small>`
         : ''}</h3>
       ${hatKarte(g) ? albumKarte(g)
-        : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`}` });
+        : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`}
+      ${/* Ein Satz zum Mitnehmen, hier zum NACHLESEN (Q46).
+            Im Spiel steht er einen Augenblick und ist dann weg - genau
+            dann, wenn das Kind noch mit dem Treffer beschaeftigt ist. Das
+            Buch ist der Ort, an dem man nachschaut; also steht er hier
+            noch einmal, und zwar zu einem Gebiet, das dem Kind GEHOERT.
+            Ein Tipp auf die Karte nimmt den naechsten. Warum nicht ein
+            Tipp auf das einzelne Gebiet: die Albumkarte ist EIN Knopf,
+            und Bremen waere darauf vier Bildpunkte gross - eine
+            Trefferflaeche, die kein Finger trifft (`beruehrung`). */
+        satzGebiete(g).length ? `<p class="buchsatz" data-gruppe="${g.id}"
+          data-lesen="${Saetze.satzZu(satzGebiete(g)[0].id)}"
+          >${Saetze.satzZu(satzGebiete(g)[0].id)}</p>` : ''}` });
   /* Die Vorschau steht nur da, wo die Karte sie nicht schon zeigt.
      Auf der Albumkarte liegt jedes offene Gebiet blass darunter -
      dieselbe Auskunft, an derselben Stelle, ohne Fragezeichen. Der
@@ -5697,10 +5715,10 @@ async function forscherbuch(){
     });
     seitenKasten.innerHTML = seiten(buchKapitel);
     seitenKasten.scrollTop = 0;
-    /* Die neuen Kaesten haben noch keinen Zuhoerer: `[data-lesen]` wird
-       weiter unten EINMAL gebunden, und das war vor diesem Austausch. */
-    seitenKasten.querySelectorAll('[data-lesen]')
-      .forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));
+    /* Die neuen Kaesten haben noch keinen Zuhoerer - und zwar KEINEN,
+       nicht nur keinen fuers Vorlesen. Deshalb dieselbe Stelle wie beim
+       Aufbau (Q46). */
+    seiteBinden(seitenKasten);
   }));
   /* Der Weg zurueck in den Vorlauf (Q20).
    *
@@ -5719,7 +5737,45 @@ async function forscherbuch(){
    * war im Buch. */
   const zumVorlauf = s.querySelector('#allesehen');
   if (zumVorlauf) zumVorlauf.onclick = () => zeige(() => vorlauf(dran.id, forscherbuch));
-  s.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
+  /* ALLE Zuhoerer der Seite an einer Stelle - und die laeuft auch nach
+     dem Blaettern (Q46).
+     Der erste Anlauf band den Kartentipp einmal beim Aufbau. Ein
+     Kapitelwechsel tauscht den Inhalt aus, und dabei wurde nur
+     `[data-lesen]` neu gebunden: auf jeder Seite ausser der ersten war
+     der Satz danach fest. Der Rauchtest hat es gemeldet - er blaettert
+     erst zum Kartenkapitel und tippt dann. */
+  const seiteBinden = (wo) => {
+    wo.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
+    kartensatzBinden(wo);
+  };
+  /* Ein Tipp auf die Albumkarte blaettert den Satz weiter (Q46).
+   *
+   * `addEventListener` und nicht `onclick`: die Zeile darueber hat dort
+   * schon einen Zuhoerer gesetzt, der den Kartentitel vorliest. Ein
+   * zweites `onclick` haette ihn ersetzt, und das Buch waere fuer Fiona
+   * still geworden - sie hoert den Titel, nicht den Satz.
+   *
+   * Gezaehlt wird AM ELEMENT (`dataset.dran`), nicht in einer Variablen
+   * hier: der Bildschirm wird beim Kapitelwechsel neu gebaut, eine
+   * Variable waere dann wieder auf null. */
+  function kartensatzBinden(wo) {
+  wo.querySelectorAll('.albumkarte').forEach(karte => {
+    const zeile = karte.parentElement?.querySelector('.buchsatz');
+    if (!zeile) return;
+    const g = gruppen.find(x => x.id === zeile.dataset.gruppe);
+    const wo = g ? satzGebiete(g) : [];
+    if (wo.length < 2) return;   // nichts zu blaettern
+    karte.addEventListener('click', () => {
+      const n = ((+zeile.dataset.dran || 0) + 1) % wo.length;
+      zeile.dataset.dran = n;
+      const satz = Saetze.satzZu(wo[n].id);
+      zeile.textContent = satz;
+      zeile.dataset.lesen = satz;
+      vorlesen(satz);
+    });
+  });
+  }
+  seiteBinden(s);
   ansagen(gesamt
     ? `Dein Forscherbuch. Du hast ${gesamt} Aufkleber${gekonnt?`, ${gekonnt} davon sicher`:''}`
       + `${verdient.length ? ` und ${verdient.length===1?'ein Abzeichen':`${verdient.length} Abzeichen`}` : ''}. `

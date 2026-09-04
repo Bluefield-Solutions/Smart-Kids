@@ -767,6 +767,30 @@ export const PROBEN = [
     an:{ datei:'tor/smoke.mjs', text:"'.schirm.da .kacheln', { timeout: 1 }" },
     sagt:'Timeout' },
 
+  /* --- Q46: der Satz zum Mitnehmen steht auch im Buch ----------------
+   *
+   * Zwei Zusagen, zwei Proben. Die zweite ist die, die still ausfaellt:
+   * die Seite sieht nach dem Tipp genauso aus, nur mit einem anderen
+   * Satz - wer den ersten nicht auswendig kann, merkt nichts.
+   */
+
+  { n:'der Satz zum Mitnehmen fehlt im Buch', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'        satzGebiete(g).length ? `<p class="buchsatz" data-gruppe="${g.id}"',
+    ersatz:'        false ? `<p class="buchsatz" data-gruppe="${g.id}"',
+    an:{ ...DIST, text:'false ? `<p class="buchsatz"' },
+    sagt:'kein Satz zum Mitnehmen' },
+
+  /* Der Tipp blaettert nicht mehr. Der Eingriff setzt die Schwelle so
+   * hoch, dass es nie zwei Gebiete zum Blaettern gibt - der Zuhoerer wird
+   * dann gar nicht erst gebunden, und der Satz steht fest. */
+  { n:'ein Tipp auf die Albumkarte blaettert den Satz nicht mehr', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'    if (wo.length < 2) return;   // nichts zu blaettern',
+    ersatz:'    if (wo.length < 99) return;   // nichts zu blaettern',
+    an:{ ...DIST, text:'if (wo.length < 99) return' },
+    sagt:'blättert den Satz nicht weiter' },
+
   /* --- Q45: die Karte darf beim Lob nicht weiter ruecken -------------
    *
    * Der freigehaltene Platz ist gebaut, gemessen (0 statt 48 Punkte) und
@@ -776,10 +800,15 @@ export const PROBEN = [
    */
   { n:'das Lob schiebt die Karte noch weiter weg', tor:'smoke',
     args:['--nur=spielen'], bauen:true, datei:V,
-    such:'.frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1}',
-    ersatz:'.frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1;'
-      + 'padding-block:22px}',
-    an:{ ...DIST, text:'line-height:1.1;padding-block:22px' },
+    /* Der Eingriff nimmt genau die Zeile zurueck, die den Sprung von 47
+       auf 21 gebracht hat: das Lob steht dann wieder UEBER der Sache
+       statt daneben, und die Karte rueckt wieder 47 Punkte.
+       Nicht `padding-block` am Lob, wie im ersten Anlauf: an einem
+       `display:inline` hat es keine Wirkung auf die Zeilenhoehe, der
+       Eingriff waere angekommen und haette nichts getan. */
+    such:'  .frage .jubel{display:inline;font-size:var(--s1)}',
+    ersatz:'  .frage .jubel{display:block;font-size:var(--s1)}',
+    an:{ ...DIST, text:'.frage .jubel{display:block;font-size:var(--s1)}' },
     sagt:'rückt beim Lob' },
 
   /* --- D3: der Satz zum Mitnehmen ------------------------------------
@@ -2012,8 +2041,13 @@ export const PROBEN = [
      * drin ist". Gedreht wird jetzt an der Regel, die WIRKLICH gilt, und
      * gemessen wird an der Zusage, die es seit Q44 gibt: auf einer
      * Kapitelseite steht jeder Block ganz im Bild. */
-    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *)) .albumkarte svg{height:200px}',
-    ersatz:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *)) .albumkarte svg{height:600px}',
+    /* Der Selektor hat sich mit Q46 geaendert - der Satz zum Mitnehmen
+       steht seit dann unter der Karte und muss uebersprungen werden -,
+       und die Hoehe von 200 auf 165. `inhalt` hat es gemeldet: der
+       Eingriff waere nicht angekommen, und das Tor haette gruen gemeldet,
+       ohne etwas zu pruefen. */
+    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}',
+    ersatz:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:600px}',
     an:{ ...DIST, text:'.albumkarte svg{height:600px}' },
     sagt:'nicht alles im Bild' },
 
@@ -2548,14 +2582,14 @@ export const PROBEN = [
      und faellt durch die Bildmessung. */
   { n:'die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße',
     tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
-    such:'  .rollen.buch:not(:has(.albumkarte ~ *)) .albumkarte svg{height:125px}',
+    such:'  .rollen.buch:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:125px}',
     ersatz:'',
     /* Der HOEHENWERT gehoert dazu, nicht nur der Aufhaenger: seit Q44 gibt
        es eine zweite Regel mit demselben Anfang (`.rollen.buch.kapitel:...`,
        200 Punkte). „`.albumkarte ~ *)) .albumkarte svg` fehlt" war damit
        nie wahr, und `proben` hat es gemeldet: der Eingriff kam an, die
        Nachfrage sagte nein, und die Probe bewies nichts. */
-    an:{ ...DIST, fehlt:'.albumkarte ~ *)) .albumkarte svg{height:125px}' },
+    an:{ ...DIST, fehlt:'.albumkarte svg{height:125px}' },
     sagt:'Albumkarte ist auf' },
 
   /* --- Der Gleichlauf (Q29) -------------------------------------------
