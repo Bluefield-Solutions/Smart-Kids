@@ -197,7 +197,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
 | 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
 | 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
 | 14 | **G18** Keine toten Knöpfe im Lob | alle | gering | klein | — |
 | 16 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
@@ -4089,6 +4088,92 @@ gruen; auf dem Stand OHNE meine Aenderung unter derselben Last ebenfalls
 gruen. Die Erklaerung passt — ein abgeschossener Lauf laesst seine
 Wegwerf-Baeume in `.git/worktrees` stehen —, bewiesen ist sie nicht. Wer
 `proben` abschiesst, sollte danach `git worktree prune` fahren.
+
+### G16 · Die Werkzeugspalte war nur auf dem Telefon eine Spalte — GEFAHREN (v365)
+
+Der Befund aus QS13 lautete: sechs Bedienelemente in **drei
+Gestaltungssprachen**, im Lob-Bild zu einem schiefen Raster umgeordnet,
+„sieht aus wie eine Schublade, nicht wie eine Spalte".
+
+**Zuerst gemessen, dann gebaut.** Vorübergehende Diagnose im Rauchtest,
+am gebauten Bündel, drei Fenster:
+
+| Fenster | Reihen | Achsen | Kasten |
+|---|---|---|---|
+| 844 × 390 (Zielgerät) | 5 | **1** | 133 × 272 |
+| 1400 × 900 (Schreibtisch quer) | 3 | **5** | 300 × 140 |
+| 700 × 850 (Hochformat) | 2 | **5** | 668 × 84 |
+
+Auf dem **Zielgerät stimmte es gar nicht**: dort stand die Spalte sauber
+auf einer Achse. Der Befund traf den Schreibtisch — `flex-direction:column`
+stand nur in der Telefonregel (`max-height:440px`). Bei 700 × 850 war die
+„Spalte" 668 Punkte breit, also so breit wie das Fenster.
+
+Dazu, größenunabhängig: die beiden leisen Auswege waren **verschieden
+breit** (133 und 122 auf dem Telefon, 147 und 137 auf dem Schreibtisch) —
+sie waren so breit wie ihr Wort. Zwei gleiche Dinge in zwei Größen sind
+zwei Dinge.
+
+**Was gebaut ist.** Im Querformat ist die Werkzeugspalte eine Spalte:
+`flex-direction:column`, kein Umbruch, höchstens 300 Punkte breit (die
+Breite, die `.seite` dort ohnehin hat), und die beiden leisen Auswege
+werden auf dieselbe Breite gestreckt. Ergebnis: **1 Achse** auf 844 × 390
+und auf 1400 × 900, gleiche Breite je Rolle.
+
+**Warum das Hochformat eine Reihe bleibt — gemessen, nicht gewählt.** Als
+Spalte wird sie 308 statt 84 Punkte hoch. Im Querformat steht sie *neben*
+der Karte und hat die Höhe; im Hochformat steht sie *unter* den Antworten
+und nimmt sie ihnen weg. `passt` hat es beim ersten Anlauf gemeldet:
+„Afrika" 11 Punkte über den Rand der Antwortliste auf 390 × 844, 104 auf
+700 × 850 — und dort greift das Wort zu 67 % in „Weiß ich nicht" statt in
+den eigenen Knopf. Ein Grundriss, der auf einem Format aufgeräumt aussieht
+und auf einem anderen die Antworten verdeckt, ist keiner.
+
+**Und ein Fehler in meiner eigenen Begründung.** Beim ersten Anlauf hatte
+ich geschrieben, die Spalte sei so breit wie ihr breitestes Kind, der
+feine Strich könne also nicht quer über den Bildschirm laufen. Die Messung
+sagte 668. Deshalb der Deckel.
+
+**Zwei Drittel des Befunds waren schon entschieden.** Die drei
+„Gestaltungssprachen" sind nicht drei Nachlässigkeiten:
+
+- Die Auswege sind mit **Absicht keine Knöpfe** (Q15): sie stehen neben
+  vier Antworten, und eine fünfte Pille wäre eine fünfte Antwort.
+- `#weise` trägt mit **Absicht kein Zeichen** (Q34): die Aufschrift
+  wechselt zwischen „Lieber antippen" und „Lieber ziehen", ein festes
+  Zeichen wäre die Hälfte der Zeit falsch, ein wechselndes wären zwei
+  Zeichen für eine Sache.
+- Dass das Mikrofon der satteste Punkt des Bildschirms ist, ist **G17**
+  („Die Antwort ist wichtiger als das Mikrofon") und nicht dieser Punkt.
+
+Das Audit ist ohne diese Entscheidungen im Blick geschrieben worden. Was
+davon übrig blieb, ist die Spalte — und die ist es wert gewesen: sie war
+auf zwei von drei Formaten keine.
+
+**Das Tor.** `smoke`, Abschnitt `sprechen`, misst in drei Fenstern die
+**Mitte jedes Kindes** der Spalte — nicht die CSS-Regel. Eine Prüfung auf
+„`flex-direction` steht auf `column`" bezeugte den Stil und nicht das
+Bild; sie bliebe grün, wenn ein Kind per `order` oder `position` daneben
+rutscht. Die Zahlen des Hochformats stehen im Bericht, obwohl dort nichts
+verlangt wird: ein Wert, der niemandem auffällt, wenn er sich ändert, ist
+kein Wert.
+
+Gegenprobe 296: nimmt der Querformat-Regel ihre Richtung. Dann melden
+**beide** Hälften in **beiden** Querformaten — fünf Achsen statt einer,
+133 und 122 statt zweimal 133.
+
+**Was sich in den Vorbildern bewegt hat** — und hier habe ich mich beim
+ersten Aufschreiben selbst korrigieren müssen. Über der Schwelle liegen
+**vier**: `spiel-kontinent`, `spiel-bundesland`, `spiel-zug`, `spiel-lob`,
+also genau die vier Schreibtischaufnahmen, mit 5,5 bis 6,8 % geänderten
+Bildpunkten. Ich wollte daraus schreiben, die Telefonaufnahmen seien
+unberührt geblieben — sie sind es nicht. Fünf von ihnen haben sich
+ebenfalls geändert, nur unter der Schwelle von 0,08 %: **844 × 390 ist
+Querformat**, die neue Regel gilt dort also auch, und „Lieber antippen"
+ist von 122 auf 133 Punkte gewachsen. Klein, aber nicht nichts.
+
+Das ist die Sorte Satz, die man schreibt, weil er die Geschichte rundet:
+„auf dem Zielgerät war schon alles gut". Die Byte-Liste hat widersprochen.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

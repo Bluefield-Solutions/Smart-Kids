@@ -4144,4 +4144,23 @@ export const PROBEN = [
     ersatz:"  fs.writeFileSync(abwegDatei(a.name, '.png'), Buffer.alloc(8));",
     an:{ datei:'tor/ansicht.mjs', fehlt:'\n  abwegLoeschen(a.name);\n' },
     sagt:'NICHT rot gefunden' },
+
+  /* G16 - die Werkzeugspalte wird wieder eine Schublade.
+   *
+   * Der Eingriff nimmt der Querformat-Regel ihre Richtung: aus der Spalte
+   * wird die alte Reihe mit Umbruch. Dann stehen die fuenf Bedienelemente
+   * wieder auf fuenf Mitten statt auf einer - gemessen 79, 202, 92, 189,
+   * 247 auf dem Zielgeraet -, und die beiden leisen Auswege sind wieder
+   * verschieden breit (133 und 122).
+   *
+   * Beide Haelften der Pruefung schlagen an, und das ist Absicht: die
+   * Breite allein waere mit `align-self` auch in einer Reihe zu
+   * erzwingen, die Achse nicht. Die Probe faengt den Fall, der beides
+   * zerlegt. */
+  { n:'die Werkzeugspalte wird wieder eine Reihe mit Umbruch', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:V,
+    such:'  .werkzeug{flex-direction:column;flex-wrap:nowrap;',
+    ersatz:'  .werkzeug{flex-direction:row;flex-wrap:wrap;',
+    an:{ ...DIST, fehlt:'flex-direction:column;flex-wrap:nowrap' },
+    sagt:'Schublade' },
 ];

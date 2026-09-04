@@ -5269,6 +5269,96 @@ if (laeuft('sprechen')) try {
   await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
 
+  /* G16 - die Werkzeugspalte ist eine SPALTE, in jedem Format.
+   *
+   * Das Grafik-Audit nannte sie „eine Schublade, keine Spalte". Gemessen
+   * war das nie, und auf dem Zielgeraet stimmte es auch nicht: dort stand
+   * sie sauber auf einer Achse. Auf dem Schreibtisch nicht -
+   *
+   *   Fenster     Reihen  Achsen   Kasten
+   *   844x390        5      1      133 x 272
+   *   1400x900       3      5      300 x 140
+   *   700x850        2      5      668 x  84
+   *
+   * - weil `flex-direction:column` nur in der Telefonregel stand. Fuenf
+   * Achsen sind fuenf verschiedene Mitten in willkuerlich umgebrochenen
+   * Gruppen.
+   *
+   * GEMESSEN WIRD DIE MITTE, nicht die Regel. Eine Prüfung auf
+   * „`flex-direction` steht auf `column`" bezeugte den Stil und nicht das
+   * Bild; sie bliebe gruen, wenn ein Kind der Spalte per `position` oder
+   * `order` daneben rutscht. Die Mitte kann nur stimmen, wenn es wirklich
+   * untereinander steht.
+   *
+   * Und die zweite Haelfte: gleiche Rolle, gleiche Breite. Die beiden
+   * leisen Auswege waren 133 und 122 breit - so breit wie ihr Wort.
+   *
+   * NICHT geprueft wird das HOCHFORMAT - dort ist es mit Absicht eine
+   * Reihe, weil die Spalte 308 statt 84 Punkte hoch waere und die
+   * Antworten vom Bildschirm schoebe (`passt`: 104 Punkte). Seine Zahlen
+   * stehen trotzdem im Bericht.
+   *
+   * NICHT geprueft wird auch, ob alle sechs Elemente gleich AUSSEHEN. Zwei der
+   * drei „Gestaltungssprachen" aus dem Audit sind aeltere, begruendete
+   * Entscheidungen: die Auswege sind mit Absicht keine Knoepfe (Q15), und
+   * `#weise` traegt mit Absicht kein Zeichen (Q34, weil es die Haelfte der
+   * Zeit falsch waere). Ein Tor, das die durchbricht, waere kein Tor,
+   * sondern eine zweite Meinung. */
+  {
+    const spalte = () => p.evaluate(() => {
+      const w = document.querySelector('.schirm.da .werkzeug');
+      if (!w) return null;
+      const wk = w.getBoundingClientRect();
+      const kinder = [...w.children].map(e => {
+        const k = e.getBoundingClientRect();
+        return { was: e.className || e.id, mitte: Math.round(k.x + k.width / 2 - wk.x),
+          b: Math.round(k.width), leise: e.classList.contains('leise') };
+      }).filter(k => k.b > 0);
+      return { b: Math.round(wk.width), h: Math.round(wk.height), kinder };
+    });
+    const zeilen = [];
+    /* `spalte:false` fuer das Hochformat, und das ist kein Schlupfloch,
+       sondern der gemessene Grund: dort steht die Werkzeugspalte UNTER
+       den Antworten, und als Spalte nimmt sie ihnen 224 Punkte weg -
+       `passt` meldete „Afrika" 104 Punkte ueber dem Rand der
+       Antwortliste. Die Zahlen des Hochformats stehen trotzdem in der
+       Zeile: ein Wert, der niemandem auffaellt, wenn er sich aendert,
+       ist kein Wert. */
+    for (const gr of [{ width: 844, height: 390, spalte: true },
+                      { width: 1400, height: 900, spalte: true },
+                      { width: 700, height: 850, spalte: false }]) {
+      await p.setViewportSize(gr);
+      await new Promise(r => setTimeout(r, 300));
+      const d = await spalte();
+      if (!d || d.kinder.length < 3) {
+        merke('sprechen', new Error(`Werkzeugspalte auf ${gr.width}x${gr.height} nicht `
+          + `gefunden oder fast leer — dann prüft diese Messung nichts`));
+        continue;
+      }
+      /* Zwei Punkte Spiel: eine ungerade Breite teilt sich nicht ohne
+         Rest, und ein Zeichen mit halbem Bildpunkt verschiebt die Mitte
+         um einen. Drei waeren schon eine sichtbare Stufe. */
+      const mitten = [...new Set(d.kinder.map(k => k.mitte))];
+      const achsen = mitten.filter((m, i) => mitten.slice(0, i).every(v => Math.abs(v - m) > 2));
+      const leise = d.kinder.filter(k => k.leise).map(k => k.b);
+      zeilen.push(`${gr.width}x${gr.height}${gr.spalte ? '' : ' (hoch, Reihe)'}: `
+        + `${d.b}x${d.h}, ${achsen.length} Achse(n)`
+        + (leise.length ? `, leise ${leise.join('/')}` : ''));
+      if (!gr.spalte) continue;
+      if (achsen.length > 1)
+        merke('sprechen', new Error(`die Werkzeugspalte steht auf ${gr.width}x${gr.height} auf `
+          + `${achsen.length} Achsen (Mitten ${mitten.join(', ')}) — das ist eine Schublade, `
+          + `keine Spalte`));
+      if (leise.length > 1 && Math.max(...leise) - Math.min(...leise) > 2)
+        merke('sprechen', new Error(`die beiden leisen Auswege sind auf `
+          + `${gr.width}x${gr.height} verschieden breit (${leise.join(' und ')}) — `
+          + `gleiche Rolle, gleiche Breite`));
+    }
+    console.log(`  Werkzeugspalte (G16):       ${zeilen.join(' · ')}`);
+    await p.setViewportSize({ width: 844, height: 390 });
+    await new Promise(r => setTimeout(r, 300));
+  }
+
   /* Und derselbe Weg fuer STEPHAN (A4).
    *
    * Sprechen war bis dahin Fionas Weg, weil sie nicht schreibt. Seit A4

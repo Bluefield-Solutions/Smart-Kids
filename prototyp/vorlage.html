@@ -1233,7 +1233,11 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
      sechzehn Punkte, und damit steht die Spalte auch dann noch frei, wenn
      eine Antwort mehr umbricht als hier. */
   .wahlliste{flex:1;min-width:0;gap:var(--r2);padding:0}
-  .werkzeug{flex:none;flex-direction:column;justify-content:center;padding-top:0}
+  /* `flex-direction` und `justify-content` stehen seit G16 in der
+     Grundregel - sie galten hier schon, gelten jetzt ueberall, und was
+     zweimal dasteht, veraltet einmal (Regel 6). Was BLEIBT, ist das
+     fehlende Polster: auf 390 Punkten Hoehe zaehlt jeder. */
+  .werkzeug{flex:none;padding-top:0}
 }
 @media (orientation:portrait){.seite{width:100%;flex:0 0 auto;max-height:56vh;overflow:auto}
   /* Sonst wird aus "Berlin" ein 784 Punkte breiter Balken mit einem Wort
@@ -1462,14 +1466,62 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    aber in der Betonfarbe: er ist eine HILFE und keine Antwort, und er
    soll neben dem blauen Mikrofon nicht wie ein zweiter Weg aussehen. */
 .werkzeug .nochhoeren{color:var(--akzent)}
-/* `flex-wrap`, seit das Mikrofon ueberall dasteht (M4s).
-   In der Reihe stehen bis zu vier Dinge: Mikrofon, „nochmal hoeren",
-   „Weiss ich nicht" und der Umschalter. Auf dem iPad quer ragte der runde
-   Knopf damit sieben Punkte aus dem Fenster - gemessen von `passt`. Eine
-   Reihe, die nicht umbrechen darf, ist keine Reihe, sondern ein
-   Versprechen ueber die Breite des Geraets. */
+/* Die Werkzeugspalte ist eine SPALTE - im Querformat, wo sie eine ist.
+ *
+ * Bis hierher war das hier eine Reihe mit `flex-wrap`, und nur auf dem
+ * TELEFON (dem einzigen Format mit `max-height:440px`) eine Spalte. Auf
+ * dem Schreibtisch, dem zweiten unterstuetzten Weg, war sie keine -
+ * gemessen am gebauten Buendel:
+ *
+ *   Fenster     Reihen  Achsen   Kasten
+ *   844x390        5      1      133 x 272   <- Telefon, eine Spalte
+ *   1400x900       3      5      300 x 140   <- Schreibtisch quer
+ *   700x850        2      5      668 x  84   <- Hochformat
+ *
+ * Fuenf Achsen heisst: fuenf Bedienelemente, fuenf verschiedene Mitten,
+ * in willkuerlichen Gruppen umgebrochen. Das Grafik-Audit hat es „eine
+ * Schublade, keine Spalte" genannt.
+ *
+ * WARUM NUR IM QUERFORMAT, und das ist gemessen und nicht gewaehlt: die
+ * Spalte wird als Spalte 308 statt 84 Punkte hoch. Im Querformat steht
+ * sie NEBEN der Karte und hat die Hoehe; im Hochformat steht sie UNTER
+ * den Antworten und nimmt sie ihnen weg. `passt` hat genau das gemeldet -
+ * „Afrika" 11 Punkte ueber den Rand der Antwortliste auf 390x844, 104 auf
+ * 700x850, und dort greift das Wort zu 67 % in „Weiss ich nicht" statt in
+ * den eigenen Knopf. Ein Grundriss, der auf einem Format aufgeraeumt
+ * aussieht und auf einem anderen die Antworten verdeckt, ist keiner.
+ *
+ * Was der alte `flex-wrap` verhindern sollte (M4s), verhindert die Spalte
+ * besser: der runde Knopf ragte sieben Punkte aus dem Fenster, weil vier
+ * Dinge nebeneinander standen. Im Querformat steht jetzt nichts mehr
+ * nebeneinander. Im Hochformat bleibt der Umbruch - und mit ihm der
+ * Grund, aus dem es ihn gibt. */
 .werkzeug{flex:none;display:flex;flex-wrap:wrap;gap:var(--r3);align-items:center;
   justify-content:center;padding-top:var(--r2)}
+@media (orientation:landscape){
+  .werkzeug{flex-direction:column;flex-wrap:nowrap;
+    /* Eine Spalte hat eine Breite. Ohne Deckel war sie 668 Punkte breit -
+       so breit wie das Fenster -, und der feine Strich unter „Weiss ich
+       nicht" lief quer ueber den Bildschirm. Genau das, wovor der
+       Kommentar an `.leise` warnt; ich hatte beim ersten Anlauf behauptet,
+       das koenne hier nicht passieren, und die Messung hat mir
+       widersprochen. 300 ist keine gewaehlte Zahl: so breit ist die Seite
+       im Querformat ohnehin (`.seite{width:min(38vw,300px)}`). */
+    max-width:300px;margin-inline:auto}
+  /* Gleiche Rolle, gleiche Breite.
+   *
+   * „Weiss ich nicht" und „Lieber antippen" sind dasselbe Ding - ein
+   * leiser Ausweg -, waren aber verschieden breit: 133 und 122 auf dem
+   * Telefon, 147 und 137 auf dem Schreibtisch. Sie waren so breit wie ihr
+   * Wort. Zwei gleiche Dinge in zwei Groessen sind zwei Dinge.
+   *
+   * Das ueberschreibt das `align-self:center` weiter unten. Dessen Grund -
+   * der Strich soll unter dem WORT stehen und nicht quer ueber den
+   * Bildschirm - gilt weiter und ist hier erfuellt: die Spalte ist
+   * hoechstens 300 breit. In einer Reihe war sie es nicht, deshalb steht
+   * diese Regel im Querformat und nicht in der Grundregel. */
+  .werkzeug .leise{align-self:stretch}
+}
 /* Der leise Ausweg. Er soll erreichbar sein, aber nicht einladen: kein
    Fuellton, kein Rand, nur Text - und trotzdem 44 Punkte hoch, damit ein
    Daumen ihn trifft. */
