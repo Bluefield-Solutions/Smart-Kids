@@ -1126,6 +1126,8 @@ let geloest = [];
    im Block waere dort nicht mehr da. Der erste Anlauf stand drinnen und
    ist beim ersten Lauf mit „satzGesehen is not defined" gescheitert. */
 let satzGesehen = 0, satzAngekommen = 0;
+let kartenMessungen = 0, kartenMitKleber = 0;
+const kartenSprung = [];
 const sternVerlauf = [], bandVerlauf = [];
 /* Jede fremde Adresse, die im ganzen Lauf angefragt wurde. Ein Satz und
    kein Zaehler: bei einem Befund will man wissen WOHIN. */
@@ -1179,7 +1181,86 @@ if (laeuft('spielen')) try {
   for (let runde = 0; runde < 2; runde++) {
     for (let n = 0; n < 6; n++) {
       if (!(await p.$('.schirm.da .karte svg'))) break;
+      /* Steht die Karte still, wenn das Lob kommt? (Q45)
+       *
+       * Gemessen wird die GEZEICHNETE Karte, nicht ihr Kasten: das SVG
+       * behaelt sein Seitenverhaeltnis, ein Kasten kann sich also aendern,
+       * ohne dass ein Kind etwas sieht - und umgekehrt. Genommen wird die
+       * Huelle aller Gebiete in Fensterkoordinaten, also genau das, was
+       * dasteht.
+       *
+       * Vor Q45 wanderte sie beim Lob 47 Punkte nach unten und wurde dabei
+       * 48 kleiner - von 273 auf 225, achtzehn Prozent, genau in dem
+       * Augenblick, in dem das Kind auf die Form schaut, die es eben
+       * getroffen hat. */
+      const kartenBild = () => p.evaluate(() => {
+        const k = document.querySelector('.schirm.da .karte svg');
+        if (!k) return null;
+        let y0 = 1e9, y1 = -1e9;
+        for (const g of k.querySelectorAll('path.geb')) {
+          const q = g.getBoundingClientRect();
+          if (q.width < 1) continue;
+          y0 = Math.min(y0, q.top); y1 = Math.max(y1, q.bottom);
+        }
+        return y1 < y0 ? null : { oben: Math.round(y0), hoch: Math.round(y1 - y0) };
+      });
+      /* Erst warten, DANN messen - und zwar auf dasselbe, worauf `loese`
+         gleich darauf wartet. Der erste Anlauf mass sofort, also mitten in
+         der Ueberblendung: zwei Bildschirme uebereinander, und die Huelle
+         war die Vereinigung der alten und der neuen Karte. Gemeldet wurden
+         154 → 140, während dieselbe Stelle einzeln gemessen 141 → 140
+         ergab. Ein Ruecken, das es nicht gab - gemessen im falschen
+         Augenblick (Regel 5). */
+      await p.waitForFunction(() => document.querySelectorAll('#buehne .schirm').length === 1
+        && (document.querySelector('.schirm.da path.ziel')
+            || /^Wo liegt /.test(document.querySelector('.schirm.da #frage')?.textContent || '')),
+        null, { timeout: 8000 }).catch(() => {});
+      const vorLob = await kartenBild();
       geloest.push(await loese(p));
+      const nachLob = await kartenBild();
+      /* Der neue Aufkleber ist die eine Ausnahme, und sie ist Absicht.
+       *
+       * Er bringt eine eigene Zeile mit Bild mit; gemessen kostet die 23
+       * Punkte Karte. Freigehalten wird sie NICHT: ein Aufkleber entsteht
+       * einmal je Gebiet, die Frage steht bei jeder Aufgabe - fuer ein
+       * seltenes Ereignis dauerhaft zu zahlen waere der schlechtere
+       * Tausch. Der Augenblick darf sich anfuehlen, als machte der
+       * Bildschirm Platz; das ist er auch.
+       *
+       * Gezaehlt wird er trotzdem, damit die Ausnahme eine ZAHL hat und
+       * keine Behauptung bleibt. */
+      const mitKleber = await p.evaluate(() =>
+        !!document.querySelector('.schirm.da .frage .neuerkleber'));
+      if (mitKleber) kartenMitKleber++;
+      else if (vorLob && nachLob) {
+        kartenMessungen++;
+        /* Zwei Punkte Nachsicht, und zwar aus einem Grund: die Frage ist
+           EINE Zeile, der freigehaltene Platz drei, und was uebrigbleibt,
+           wird gerundet. Gemessen wurden 1 bis 2 Punkte; alles darueber
+           ist wieder ein Ruecken. Anteilig waere hier falsch - ein Punkt
+           ist ein Punkt, egal wie gross die Karte ist. */
+        /* Eine RATSCHE, kein Soll - und ihre Zahl ist gemessen, nicht
+           gewuenscht.
+           Der Sprung von der Frage zum Lob ist heute 47 Punkte: die
+           gezeichnete Karte wandert 47 nach unten und wird 48 kleiner
+           (273 auf 225, achtzehn Prozent). 22 davon kostet der Satz zum
+           Mitnehmen (D3), 25 die Lobzeile, die es seit langem gibt.
+           Freihalten laesst er sich - gebaut und gemessen, 0 statt 48 -,
+           aber die 48 Punkte hat der Bildschirm nicht: `passt` meldete
+           dann „noch einmal hoeren" ueber dem Rand. Die ganze Rechnung
+           steht in `prototyp/spiel.js` ueber dem Fragekasten und im
+           Rueckstandsverzeichnis.
+           Bis das geloest ist, haelt diese Zeile wenigstens den Stand:
+           groesser darf er nicht werden. Fuenfzig und nicht siebenund-
+           vierzig, damit nicht jede Schriftaenderung die Zahl neu setzt;
+           wer sie hochsetzt, hat die Karte unruhiger gemacht. */
+        const DECKEL = 50;
+        const weit = Math.max(Math.abs(nachLob.oben - vorLob.oben),
+                              Math.abs(nachLob.hoch - vorLob.hoch));
+        if (weit > DECKEL)
+          kartenSprung.push(`${vorLob.oben}/${vorLob.hoch} → ${nachLob.oben}/${nachLob.hoch} `
+            + `(${weit} Punkte)`);
+      }
       // Der Kopf muss auf die Antwort REAGIEREN, nicht erst beim naechsten
       // Bild. Vorher wurde der Bildschirm je Aufgabe einmal gebaut und
       // zeigte damit den Stand VOR der laufenden Antwort - bei vier von
@@ -5628,6 +5709,24 @@ console.log(`  Gelöst im ersten Durchgang: ${geloest.join(', ')}`);
  * Prüfung springt kein einziges Mal an, und der Abschnitt bleibt grün.
  * Zwölf Aufgaben auf der Deutschlandkarte, sechzehn Bundesländer, alle
  * mit Satz - unter zwei Treffern stimmt etwas nicht (Regel 1). */
+/* Die Bilanz der Kartenruhe - mit ihrer eigenen Blindprobe (Q45).
+ *
+ * Ohne sie waere „kein Sprung gefunden" auch dann wahr, wenn gar nicht
+ * gemessen wurde: `kartenBild` gibt `null`, sobald kein Gebiet mehr eine
+ * Breite hat, und dann zaehlt die Schleife still nichts. Zwoelf Aufgaben
+ * werden gespielt; unter zwei Messungen beweist die Zeile darunter nichts
+ * (Regel 1). */
+if (kartenMessungen < 2)
+  merke('spielen', new Error(`die Ruhe der Karte wurde bei ${kartenMessungen} von `
+    + `${geloest.length} Aufgaben überhaupt gemessen — dann sagt „sie rückt nicht" nichts`));
+else if (kartenSprung.length)
+  merke('spielen', new Error(`die Karte rückt beim Lob weiter als erlaubt: bei `
+    + `${kartenSprung.length} von ${kartenMessungen} Aufgaben (${kartenSprung.slice(0, 2)
+      .join(' · ')}) — der freigehaltene Platz greift nicht, und sie springt genau dann, `
+    + 'wenn das Kind auf die Form schaut, die es eben getroffen hat'));
+else console.log(`  Karte beim Lob:             rückt höchstens 50 Punkte (${kartenMessungen} `
+  + `Aufgaben an der gezeichneten Fläche${kartenMitKleber
+    ? `, ${kartenMitKleber} mit neuem Aufkleber ausgenommen` : ''})`);
 if (satzGesehen < 2)
   merke('spielen', new Error(`der Satz zum Mitnehmen wurde bei ${satzGesehen} von `
     + `${geloest.length} gelösten Aufgaben überhaupt geprüft — dann beweist „kein Befund" `

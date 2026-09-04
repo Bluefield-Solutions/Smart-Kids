@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-03",
+  "zeit": "2026-09-04",
   "tore": [
     "ansicht",
     "bauen",
@@ -287,6 +287,11 @@
       "commit": "f41121a1f74f1f8659691d2eff4aae1b4678a36f",
       "zeit": "2026-09-03",
       "s": 33
+    },
+    "das Lob schiebt die Karte noch weiter weg": {
+      "commit": "8e078459da247e3a0cdaf6014bae3bfd4b249105",
+      "zeit": "2026-09-04",
+      "s": 48
     },
     "ein Gebiet hat keinen Satz zum Mitnehmen": {
       "commit": "f41121a1f74f1f8659691d2eff4aae1b4678a36f",

@@ -767,6 +767,21 @@ export const PROBEN = [
     an:{ datei:'tor/smoke.mjs', text:"'.schirm.da .kacheln', { timeout: 1 }" },
     sagt:'Timeout' },
 
+  /* --- Q45: die Karte darf beim Lob nicht weiter ruecken -------------
+   *
+   * Der freigehaltene Platz ist gebaut, gemessen (0 statt 48 Punkte) und
+   * wieder herausgenommen worden - er kostet mehr Bildschirm, als da ist.
+   * Was bleibt, ist die Ratsche: der Sprung darf nicht wachsen. Die Probe
+   * macht ihn groesser, indem sie dem Lob eine Zeile mehr gibt.
+   */
+  { n:'das Lob schiebt die Karte noch weiter weg', tor:'smoke',
+    args:['--nur=spielen'], bauen:true, datei:V,
+    such:'.frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1}',
+    ersatz:'.frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1;'
+      + 'padding-block:22px}',
+    an:{ ...DIST, text:'line-height:1.1;padding-block:22px' },
+    sagt:'rückt beim Lob' },
+
   /* --- D3: der Satz zum Mitnehmen ------------------------------------
    *
    * Vier Zusagen, vier Proben. Drei davon stellen einen Zustand her, in

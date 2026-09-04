@@ -3558,6 +3558,25 @@ function spielschirm(){
 
   s.innerHTML = `
     ${aufgabenKopf(st)}
+    <!-- Der Platz fuer das Lob wird NICHT freigehalten - gemessen, nicht
+         entschieden (Q45).
+         Die gezeichnete Karte wandert beim Lob 47 Punkte nach unten und
+         wird dabei 48 kleiner, von 273 auf 225 - achtzehn Prozent, genau
+         in dem Augenblick, in dem das Kind auf die Form schaut, die es
+         eben getroffen hat. 22 davon kosten der Satz zum Mitnehmen (D3),
+         26 die Lobzeile, die es seit langem gibt.
+         Der Platz LIESSE sich freihalten: Frage und kommendes Lob in
+         dieselbe Rasterzelle, dann ist sie von Anfang an so hoch wie das
+         Lob, und die Karte steht still - gemessen 0 Punkte statt 48, ohne
+         eine einzige geratene Zahl. Gebaut, gemessen, und wieder
+         herausgenommen: die 48 Punkte hat der Bildschirm nicht. Das Tor
+         passt meldete „noch einmal hoeren" 4 bis 6 Punkte ueber dem Rand auf dem
+         iPhone SE quer und 25 Punkte im Wischbereich auf dem Zielgeraet
+         mit Browserleiste. Auch die halbe Fassung (nur die Sachzeile
+         freigehalten, 22 Punkte) lag noch 12 Punkte im Wischbereich.
+         Ein Knopf, den der Daumen nicht trifft, ist teurer als eine Karte,
+         die rueckt. Was bleibt, ist eine Ratsche im Rauchtest: der Sprung
+         darf nicht groesser werden als er heute ist. -->
     <div class="frage" id="frage">${frageText}</div>
     <div class="feld">
       <div class="karte" id="karte" style="--karte-ar:${(()=>{const v=vb.split(' ').map(Number);
@@ -4939,6 +4958,13 @@ function spielschirm(){
 }
 
 /* ---------- Belohnungsmoment --------------------------------------------- */
+/* „Das ist X." an EINER Stelle (Q45).
+   Der Platzhalter, der den Raum fuer das Lob freihaelt, muss genau den
+   Satz tragen, der gleich kommt - sonst haelt er den falschen Raum frei.
+   Zwei Schablonen mit demselben Wortlaut waeren genau die Sorte Dopplung,
+   die einmal veraltet (Regel 6). */
+const sacheSatz = (ziel) => `Das ist ${ziel.name}.`;
+
 function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleber){
   // Beim Belohnen wird die Hervorhebung still - sonst blinkt es weiter,
   // waehrend sich der Umriss nachzeichnet.
@@ -4986,7 +5012,7 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleb
    * Kein Ersatz, wenn es keinen Satz gibt: `satzZu` gibt dann `null`,
    * und `lobsatz` laesst die Zeile weg. Ein Fuellsatz saehe aus wie
    * einer und waere keiner. */
-  lobsatz(s, `Das ist ${ziel.name}.`, fastText, spruch,
+  lobsatz(s, sacheSatz(ziel), fastText, spruch,
           nebenbei || Saetze.satzZu(ziel.id) || '', neuerAufkleber);
 }
 

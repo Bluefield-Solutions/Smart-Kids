@@ -3432,3 +3432,66 @@ Zahl, die aus dem falschen Zustand kommt, ist keine (Regel 5). Der
 Bildvergleich ist erneuert, `passt` ist grün — es fällt nichts vom Rand.
 Was aussteht, ist die Messung, ob die Karte zwischen Frage und Lob springt,
 und ob die Zeile dafür freigehalten werden sollte.
+
+## Q45 (Q45): die Karte springt beim Lob — gemessen, gebaut, wieder ausgebaut
+
+Der offene Punkt aus D3. Diesmal richtig gemessen: **die gezeichnete
+Karte**, nicht ihr Kasten, und mit der Sache abgeschaltet (Regel 13).
+
+| Zustand | gezeichnete Karte (oben / hoch) |
+|---|---|
+| Frage | 93 / **273** |
+| Lob | 140 / **225** |
+| Lob, Satz aus dem Baum genommen | 118 / 247 |
+
+Sie **wandert 47 Punkte nach unten und wird 48 kleiner** — von 273 auf
+225, **achtzehn Prozent**, genau in dem Augenblick, in dem das Kind auf die
+Form schaut, die es eben getroffen hat. 22 Punkte davon kostet der Satz zum
+Mitnehmen, 25 die Lobzeile, die es seit langem gibt.
+
+**Es lässt sich lösen, und zwar ohne eine einzige geratene Zahl.** Frage und
+kommendes Lob in dieselbe Rasterzelle: zur Zeit der Frage steht das Ziel
+längst fest, also auch, was gleich dastehen wird. Die Zelle ist so hoch wie
+der Höhere von beiden — bei jeder Satzlänge und jedem Umbruch richtig.
+Gebaut, gemessen: **0 statt 48 Punkte.**
+
+**Und wieder ausgebaut, weil der Bildschirm die 48 Punkte nicht hat.**
+`passt` hat es gemeldet, an drei Größen:
+
+- „noch einmal hören" **4 bis 6 Punkte über dem Rand** (iPhone SE quer),
+- **25 Punkte im Wischbereich** auf dem Zielgerät mit Browserleiste,
+- und bei der halben Fassung (nur die Sachzeile freigehalten, 22 Punkte)
+  immer noch **12 Punkte im Wischbereich**.
+
+Ein Knopf, den der Daumen nicht trifft, ist teurer als eine Karte, die
+rückt. Das ist keine Vermutung über den Geschmack, sondern eine gemessene
+Grenze — und sie gehört auf das Gerät, nicht in eine Zeile CSS.
+
+**Ein echter Fehler ist dabei herausgefallen.** Der Fragekasten dehnte sich
+in der Rasterzelle auf die volle Höhe und deckte den Lupenknopf zu —
+`passt` meldete „lupenknopf — verdeckt von .frage". Ein unsichtbarer
+Kasten, der einen Knopf verdeckt, ist schlimmer als eine verschobene Karte.
+Mit dem Rückbau ist er weg, aber die Lehre steht: eine Zelle, in der zwei
+Dinge liegen, dehnt beide, wenn man es ihr nicht verbietet.
+
+**Was bleibt, ist eine Ratsche.** Der Rauchtest misst den Sprung jetzt bei
+jeder Aufgabe an der gezeichneten Fläche und lässt ihn **nicht größer
+werden als 50 Punkte**. Die Gegenprobe gibt der Lobzeile 22 Punkte mehr und
+schlägt an. Ausgenommen sind die Aufgaben mit **neuem Aufkleber**: der
+bringt eine eigene Zeile mit Bild mit, und für ein Ereignis, das einmal je
+Gebiet vorkommt, dauerhaft Platz freizuhalten wäre der schlechtere Tausch.
+Sie werden gezählt, damit die Ausnahme eine Zahl hat.
+
+**Offen bleibt:** die 47 Punkte selbst. Sie zu holen heißt, dem Fragekopf
+oder der Knopfspalte 48 Punkte abzuringen — und das ist eine
+Grundrissfrage, keine Zeile CSS. Auf dem Gerät zu beurteilen.
+
+**Zwei eigene Messfehler auf dem Weg** (beide gefunden, weil die Zahl nicht
+zum Bild passte):
+
+1. Der erste Anlauf hat den Lob-Zustand gar nicht erreicht — die Antwort
+   war ein Klick, gebraucht wird ein Zug. Gemessen wurde die nächste Frage.
+2. Der zweite maß **mitten in der Überblendung**: zwei Bildschirme
+   übereinander, und die Hülle war die Vereinigung der alten und der neuen
+   Karte. Gemeldet wurden 154 → 140, dieselbe Stelle einzeln gemessen
+   ergab 141 → 140. Ein Rücken, das es nicht gab.
