@@ -26,6 +26,7 @@
     "abzeichen",
     "beruehrung",
     "doku",
+    "farben",
     "inhalt",
     "marken",
     "saetze",
@@ -1313,6 +1314,11 @@
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
       "zeit": "2026-09-04",
       "s": 51
+    },
+    "die Kachel eines Kontinents hat wieder eine eigene Farbe": {
+      "commit": "53dab73f3ca35a3031dc5457c8c8caa958f428c5",
+      "zeit": "2026-09-04",
+      "s": 9
     },
     "die Fehlerüberschrift nennt jeden Befund einen Überlauf": {
       "commit": "b18b9a8ec185db56636910347d4e4d1d5a4cb9a4",

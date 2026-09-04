@@ -1722,6 +1722,64 @@ if (fehler.length) {
 // veraltet still.
 // `^\s*`, nicht `^`: das achte Tor (`abzeichen`) steht in einem Block und
 // ist deshalb eingerueckt. Mit dem strengen Anker zaehlte die Zeile es
+/* ====================================================== Tor `farben` ==== *
+ *
+ * Ein Kontinent hat EINE Farbe - auf der Kachel wie auf der Karte (QS8).
+ *
+ * Bis v358 hatte er zwei: die Kachel nahm ihren Ton aus ihrer Position in
+ * der EBENEN-Liste (`farbe:[3,2,4,7,6][i%5]`), die Weltkarte aus ihrer
+ * Position in der Geometrie (`FL[i%7]`). Sieben von sieben Kontinenten
+ * sahen auf der Kachel anders aus als auf der Karte, und weil `i%5` ueber
+ * sieben Eintraege laeuft, teilten sich zwei Paare einen Ton.
+ *
+ * WORAN DIESE PRUEFUNG FAST GESCHEITERT WAERE. Der erste Anlauf rechnete
+ * beide Seiten aus `I.KONTINENTE` aus - also aus DERSELBEN Liste. Damit
+ * verglich er eine Zahl mit sich selbst und konnte nie rot werden; die
+ * Gegenprobe hat genau das gemeldet. Eine Pruefung, die nie etwas meldet,
+ * ist kein Beweis (Regel 1), und der billigste Weg dorthin ist, das
+ * Gemessene aus derselben Quelle zu holen wie das Soll (Regel 14: das
+ * Modell darf nicht vom Gemessenen abhaengen).
+ *
+ * Geprueft wird deshalb der QUELLTEXT, in dem die Kachelfarbe entsteht -
+ * `prototyp/spiel.js`. Zwei Zusagen, beide sind einzeln zu brechen:
+ *   1. die Laenderebenen nehmen `KONT_FARBE[...]`, keine feste Liste
+ *   2. `KONT_FARBE` wird aus `D.kontinente` gerechnet, also aus genau der
+ *      Reihenfolge, in der die Weltkarte ihre Flaechen einfaerbt
+ * Faellt eine davon, faellt die Farbgleichheit - und zwar unsichtbar,
+ * solange niemand Kachel und Karte nebeneinander legt. Kein Tor ersetzt
+ * den Blick (Regel 4): gefunden hat den Bruch der Blick auf zwei
+ * Aufnahmen, nicht eine Pruefung. Das hier ist der Teil davon, den eine
+ * Maschine ab jetzt haelt.
+ */
+console.log('\n  Tor `farben`');
+{
+  const quelle = fs.readFileSync('prototyp/spiel.js', 'utf8');
+  const schief = [];
+
+  const ebenenZeile = quelle.match(/id:`laender:\$\{k\}`[\s\S]{0,200}?farbe:\s*([^,\n}]+)/);
+  if (!ebenenZeile)
+    schief.push('die Laenderebenen sind nicht mehr zu finden — diese Pruefung misst nichts');
+  else if (!/KONT_FARBE/.test(ebenenZeile[1]))
+    schief.push(`die Kachel nimmt wieder einen eigenen Ton: farbe: ${ebenenZeile[1].trim()}`
+      + ' — auf der Karte steht der Kontinent dann anders da als auf seiner Kachel');
+
+  const quell = quelle.match(/const KONT_FARBE = ([\s\S]{0,200}?);/);
+  if (!quell)
+    schief.push('`KONT_FARBE` gibt es nicht mehr — die Kachelfarbe kommt von woanders');
+  else if (!/D\.kontinente/.test(quell[1]))
+    schief.push('`KONT_FARBE` wird nicht mehr aus `D.kontinente` gerechnet — '
+      + 'die Kachel folgt der Karte nur noch zufaellig');
+
+  if (schief.length) {
+    console.log('    ' + schief.join('\n    '));
+    console.error('\n  farben ROT: ein Kontinent sieht auf der Kachel anders aus als auf der Karte.');
+    process.exit(1);
+  }
+  const toene = I.KONTINENTE.map((k, i) => (i % 7) + 1);
+  console.log(`    ${I.KONTINENTE.length} Kontinente, Kachelton aus der Kartenreihenfolge, `
+    + `${new Set(toene).size} verschiedene Toene`);
+}
+
 // nicht mit und meldete weiter „Alle 7" - dieselbe stille Verjaehrung,
 // gegen die sie geschrieben wurde, nur eine Ebene tiefer.
 const torZahl = (fs.readFileSync(new URL(import.meta.url), 'utf8')

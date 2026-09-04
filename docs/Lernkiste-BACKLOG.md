@@ -196,7 +196,14 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 10 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 10 | **G14** Der Lohn: Treffer und Rundenende bekommen einen Augenblick | Fiona, Lea | **hoch** | mittel | Blick am Gerät |
+| 11 | **G15** Das Forscherbuch füllt seine Seite (37 % leeres Band) | Fiona, Lea | hoch | mittel | — |
+| 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
+| 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
+| 14 | **G18** Keine toten Knöpfe im Lob | alle | gering | klein | — |
+| 15 | **QS9** `ansicht` leert `tor/abweichungen/` vor jedem Lauf | nur ich | mittel | klein | — |
+| 16 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
+| 17 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
 dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal
@@ -3980,3 +3987,149 @@ noetig wurden. Die Torkette ist gruen, `inhalt` (9 Tore), `regeln`,
 `anker`, `doku` ebenfalls. Der Silhouettenbedarf der vierten Welt
 (`silhouette('englisch')`) war im Konzept nicht genannt und steht jetzt
 in § 6 — eine Welt ohne Zeichen waere eine leere Kachel.
+
+---
+
+## QS-II · Der Blick — Spielgefuehl, Layout, Lernwirkung
+
+**Die erste Schleife hat gelesen. Diese hat hingesehen.** 37 Aufnahmen
+aus `tor/vorbilder/`, nebeneinandergelegt und nachgemessen. Kein Tor
+hatte einen der folgenden Befunde je gemeldet, und alle waren gruen:
+jeder Bildschirm ist fuer sich in Ordnung. Falsch ist, was zwischen
+ihnen steht (Regel 4: kein Tor ersetzt den Blick).
+
+### QS8 · Ein Kontinent hatte keine Farbe — GEFLICKT
+
+Die Kachel nahm ihren Ton aus ihrer Position in der Ebenenliste
+(`farbe:[3,2,4,7,6][i%5]`), die Weltkarte aus ihrer Position in der
+Geometrie (`FL[i%7]`). Zwei Listen, zwei Reihenfolgen, kein Bezug.
+Nachgemessen:
+
+| Kontinent | Kachel (vorher) | Karte |
+|---|---|---|
+| Europa | `--f3` grün | `--f4` türkis |
+| Afrika | `--f2` orange | `--f1` rot |
+| Asien | `--f4` türkis | `--f2` orange |
+| Nordamerika | `--f7` magenta | `--f5` blau |
+| Südamerika | `--f3` grün | `--f6` violett |
+| Australien | `--f2` orange | `--f3` grün |
+
+**Sieben von sieben verschieden.** Und weil `i%5` ueber sieben Eintraege
+laeuft, teilten sich zwei Paare einen Ton: Europa und Suedamerika beide
+gruen, Afrika und Australien beide orange — auf **einem** Bildschirm
+nebeneinander.
+
+Warum das mehr ist als Kosmetik: eine gleichbleibende Farbe ist ein
+Abrufhinweis. Wer „Afrika ist die rote Form" gelernt hat, findet Afrika
+auf der Karte wieder — wenn es dort auch rot ist. Sonst hat das Kind
+zwei Dinge gelernt statt einem, und keines davon hilft beim anderen.
+
+*Geflickt:* `KONT_FARBE` wird aus derselben Liste gerechnet, die die
+Karte zeichnet. Die Karte gibt den Ton an, nicht die Kachel — sie ist
+das Bild, auf das ein Kind am laengsten schaut, und ihre Farben stehen
+nebeneinander. Mittelamerika kommt auf der Weltkarte nicht vor und
+bekommt den einen Ton, den die sechs anderen frei lassen. Jetzt: 7 von 7
+gleich, 0 Dopplungen. Neues Tor `farben`, mit Gegenprobe.
+
+**Und das Tor waere fast wertlos gewesen.** Der erste Anlauf rechnete
+beide Seiten aus `I.KONTINENTE` aus — dieselbe Liste, mit sich selbst
+verglichen. Es konnte nie rot werden. **Gemeldet hat das die
+Gegenprobe**, nicht ich: sie schlug nicht an, und das war der Hinweis.
+Jetzt liest das Tor den Quelltext, in dem die Kachelfarbe entsteht
+(Regel 14: das Modell darf nicht vom Gemessenen abhaengen).
+
+### QS9 · `tor/abweichungen/` wird nie geleert — und hat mich in die Irre gefuehrt
+
+Beim Nachmessen zaehlte ich **32 geaenderte Bildschirme** und schloss
+daraus, die eingecheckten Vorbilder seien veraltet. Falsch. Das
+Verzeichnis wird nie geraeumt; 29 der Dateien waren Altbestand aus
+frueheren Laeufen. Der echte Befund war **3**, und genau die drei, die
+Kontinentkacheln zeigen.
+
+Ich bin auf mein eigenes Werkzeug hereingefallen und habe es erst
+gemerkt, als ich den Gegenversuch fuhr (dieselbe Messung **ohne** meine
+Aenderung — dieselben 13 Treffer, also konnten sie nicht von mir sein).
+*Wer eine Wirkung misst, schaltet sie zuerst ab* — hier hat genau das
+den Denkfehler aufgedeckt.
+
+*Offen:* `ansicht` soll `tor/abweichungen/` zu Beginn leeren. Ein
+Diff-Verzeichnis, das Altes behaelt, meldet Befunde, die es nicht gibt.
+
+### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
+
+Der angestossene volle Lauf war **gruen: 276 Gegenproben, alle schlagen
+an, 0 beweisen nichts, 0 kamen nicht an.** Trotzdem rot gemeldet — nicht
+an einer Probe, sondern am `git push`: ich hatte waehrend der halben
+Stunde selbst gepusht. Der Stand von 276 Nachweisen wurde verworfen.
+
+*Geflickt:* `git pull --rebase` vor dem Schieben, dreimal versucht. Der
+Auftrag fasst genau eine Datei an, die sonst niemand schreibt.
+
+### QS11 · Leerraum — gemessen, nicht geschaetzt
+
+Groesstes **zusammenhaengendes leeres Band**, als Anteil der Bildhoehe:
+
+| Bildschirm | leeres Band |
+|---|---|
+| **Forscherbuch** | **37 %** |
+| Pause | 31 % |
+| Profilwahl | 23 % |
+| Endbildschirm | 18 % |
+| Weltenwahl | 13 % |
+| Ebenenwahl | 9 % |
+
+Auf dem Zielgeraet (390 Punkte hoch) sind 37 % **144 Punkte am Stueck,
+in denen nichts steht** — und zwar auf dem Bildschirm, der die Sammlung
+zeigt, also den einzigen langfristigen Anreiz der App.
+
+Die Ebenenwahl mit 9 % zeigt, dass es anders geht: zehn Kacheln, dicht,
+ausgewogen, jede mit Umriss, Farbe, Name und Balken. **Sie ist der
+Massstab, den die anderen Bildschirme nicht erreichen.**
+
+### QS12 · Der Lohn ist die schwaechste Stelle der App
+
+Was beim Treffer passiert: das Wort **„Klasse!"** wird gruen. Sonst
+nichts. Beim Rundenende: drei Sterne und **„Geschafft!"** in Beinahe-
+Schwarz.
+
+Die Vorbilder aus dem Genre setzen dort ihre Mittel ein — Duolingo und
+Khan Academy Kids arbeiten mit Figur, Bewegung und Klang genau in diesem
+Augenblick, und zwar nicht aus Spielerei: die unmittelbare, deutliche
+Rueckmeldung ist der Teil, der Kinder wiederkommen laesst.
+
+Hier ist der Augenblick **still und statisch**. Die App ist sauber,
+ruhig und erwachsen — und genau deshalb fehlt ihr der Moment, in dem ein
+sechsjaehriges Kind merkt, dass es etwas geschafft hat.
+
+*Das ist kein Fehler, den ein Tor findet.* Es ist eine Entscheidung, die
+nie getroffen wurde.
+
+### QS13 · Umgekehrte Rangfolge auf dem Spielbildschirm
+
+Der **saettigste** Punkt des Bildschirms ist der Mikrofonknopf: kraeftig
+blau, gefuellt, mit Ring. Die **Antwortknoepfe** — die eigentliche
+Aufgabe — sind fast weiss mit duennem Rand.
+
+Das Auge geht zuerst zum Werkzeug, nicht zur Frage. Bei einem Kind, das
+noch nicht liest und ohnehin nur Formen und Farben hat, ist das die
+falsche Reihenfolge.
+
+Dazu die **Werkzeugspalte**: Lupe auf, Lupe zu, „Weiß ich nicht", „Lieber
+antippen", Mikrofon, Ton aus — sechs Bedienelemente in **drei**
+Gestaltungssprachen (Kreisknopf, Textzeile mit Trennstrich, grosser
+gefuellter Kreis). Im Lob-Bild ordnen sie sich zu einem schiefen Raster
+um. Sie sieht aus wie eine Schublade, nicht wie eine Spalte.
+
+### QS14 · Tote Knoepfe im Lob
+
+Nach der richtigen Antwort bleiben die uebrigen Antwortknoepfe stehen und
+sehen weiter antippbar aus. Die Runde ist da schon weiter. Drei Knoepfe,
+die etwas versprechen und nichts tun.
+
+### Was daraus wird
+
+QS8 und QS10 sind geflickt und eingecheckt. Der Rest sind **Entwuerfe,
+keine Flicken** — sie aendern das Gesicht der App, und das gehoert
+angesehen, bevor sie gebaut werden: kein Tor ersetzt den Blick (Regel 4),
+und ein Gesicht laesst sich nicht ausrechnen. Sie stehen als **G14 bis
+G18** in der Rangliste.

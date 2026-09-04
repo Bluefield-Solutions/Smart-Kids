@@ -876,10 +876,39 @@ const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
 // "Südamerika" statt "Länder in Südamerika" - das passt in eine Zeile,
 // bricht nicht mitten im Wort ("Landeshauptstä/dte") und sagt trotzdem,
 // worum es geht. `farbe` gibt jeder Ebene ihren eigenen Ton.
+/* Ein Kontinent hat EINE Farbe - auf der Kachel wie auf der Karte (QS8).
+ *
+ * Bis v358 stand hier `farbe:[3,2,4,7,6][i%5]`: die Kachel bekam ihren Ton
+ * aus ihrer POSITION in der Liste, die Weltkarte aus `FL[i%7]` ueber ihre
+ * eigene, andere Reihenfolge. Ergebnis, nachgemessen: SIEBEN von sieben
+ * Kontinenten hatten auf der Kachel eine andere Farbe als auf der Karte -
+ * und weil `i%5` ueber sieben Eintraege laeuft, teilten sich obendrein
+ * zwei Paare einen Ton (Europa/Suedamerika gruen, Afrika/Australien
+ * orange).
+ *
+ * Warum das mehr ist als Kosmetik: eine gleichbleibende Farbe ist ein
+ * Abrufhinweis. Ein Kind, das „Afrika ist die rote Form" gelernt hat,
+ * findet Afrika auf der Karte wieder - wenn es dort auch rot ist. Ist es
+ * das nicht, hat es zwei Dinge gelernt statt einem.
+ *
+ * Die Karte gibt den Ton an, nicht die Kachel: sie ist das Bild, auf das
+ * ein Kind am laengsten schaut, und ihre Farben stehen nebeneinander (auf
+ * der Kachel steht immer nur eine). Mittelamerika kommt auf der Weltkarte
+ * nicht vor und bekommt den einen Ton, den die sechs anderen frei lassen.
+ *
+ * EINE Quelle, nicht zwei nebeneinander (Regel 6: was zweimal dasteht,
+ * veraltet einmal) - `KONT_FARBE` wird aus derselben Liste gerechnet, die
+ * die Karte zeichnet. Kommt ein Kontinent dazu, wandert seine Kachel von
+ * selbst mit. */
+const KONT_FARBE = Object.fromEntries(
+  D.kontinente.map((k, i) => [k.id, (i % 7) + 1]));
+KONT_FARBE.mittelamerika = KONT_FARBE.mittelamerika
+  ?? [1,2,3,4,5,6,7].find(f => !Object.values(KONT_FARBE).includes(f));
+
 const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
-  ...Object.keys(D.laender).map((k,i)=>({ id:`laender:${k}`, ueber:'Länder in',
-    titel: KONT_TITEL[k] || k, farbe:[3,2,4,7,6][i%5] })),
+  ...Object.keys(D.laender).map((k)=>({ id:`laender:${k}`, ueber:'Länder in',
+    titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })),
   { id:'bundeslaender', ueber:'Deutschland', titel:'Bundesländer',      farbe:1 },
     // "Hauptstädte" statt "Landeshauptstädte": das Wort passt nicht in die
   // Kachel und brach als "Landeshauptstäd/te" um. Die Ueberzeile sagt

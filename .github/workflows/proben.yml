@@ -74,7 +74,23 @@ jobs:
           git config user.email "noreply@github.com"
           git add tor/proben-stand.json
           git commit -m "Probenstand (nächtlicher Lauf)"
-          git push
+          # Erst holen, dann schieben (QS10).
+          #
+          # Der Lauf dauert eine halbe Stunde. Wer in dieser Zeit auf `main`
+          # pusht, liess den Nachweis von 276 Gegenproben verfallen: `git
+          # push` wurde abgelehnt, der Auftrag rot, und der Stand landete
+          # nie im Verzeichnis. Genau so passiert am 04.09.
+          #
+          # `--rebase` ist hier gefahrlos, weil dieser Auftrag GENAU EINE
+          # Datei anfasst und niemand sonst sie schreibt. Bei einem
+          # Zusammenstoss gilt der frischere Nachweis - der eigene.
+          for i in 1 2 3; do
+            git pull --rebase -X ours origin main && git push && exit 0
+            echo "  Push $i fehlgeschlagen, neuer Versuch."
+            sleep 5
+          done
+          echo "::error::Der Probenstand liess sich nicht schieben."
+          exit 1
       - name: Was nicht angeschlagen hat
         if: steps.proben.outcome != 'success'
         run: |

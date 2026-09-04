@@ -264,8 +264,8 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`schrift` · `symbol` · `doku` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `farben` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`schrift` · `symbol` · `farben` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 
@@ -3651,6 +3651,29 @@ export const PROBEN = [
     an:{ ...DIST, text:'--kleber-eng-min:72px' },
     sagt:'geschrumpft' },
 
+
+
+  /* --- QS8: ein Kontinent hat EINE Farbe ------------------------------
+   *
+   * Der Eingriff gibt der Kachel wieder einen eigenen Ton statt des
+   * Kartentons - genau der Zustand von vor v358, in dem sieben von sieben
+   * Kontinenten auf der Kachel anders aussahen als auf der Karte. */
+  { n:'die Kachel eines Kontinents hat wieder eine eigene Farbe', tor:'inhalt',
+    deckt:'farben',
+    datei:'prototyp/spiel.js',
+    /* Der Ersatz LAESST DEN ANKER STEHEN, in einem Kommentar dahinter.
+     *
+     * Ohne das meldet `inhalt` nicht den Farbbruch, sondern den fehlenden
+     * Anker dieser Probe — es prueft alle Anker am eingegriffenen Baum,
+     * und der Eingriff loescht seinen eigenen. Der Lauf wird rot, aber aus
+     * dem falschen Grund, und die Probe beweist nichts (Regel 1). Gilt
+     * fuer jede Probe, die eine Datei aendert, an der `inhalt` selbst
+     * haengt. */
+    such:'titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })),',
+    ersatz:'titel: KONT_TITEL[k] || k, farbe: [3,2,4,7,6][0] })),'
+      + ' /* titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })), */',
+    an:{ datei:'prototyp/spiel.js', text:'farbe: [3,2,4,7,6][0]' },
+    sagt:'nimmt wieder einen eigenen Ton' },
 
   /* --- QS1: die Ueberschrift von `passt` sagt, was gemessen wurde -----
    *
