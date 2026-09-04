@@ -25,30 +25,42 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run schnell`** | bei **jeder** Änderung | **~54 s** (gemessen 53,5 s, 32 Aufnahmen) | inhalt · spielprobe · schreiben · vergleich · bauen · budget, dann Rauchtest (Hauptweg) und **drei Drittel** des Bildvergleichs — vier Browser nebeneinander |
-| `npm run tor` | wenn du unsicher bist, sonst gar nicht | **~100 s** (gemessen 99,9 s; nacheinander wären es 10:20) | die volle Kette, alle Größen, alle Bildschirme |
-| Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | die volle Kette — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts | automatisch | **~19 min** (gemessen 1157 s), ohne dich | `npm run proben`: alle 200 Gegenproben, 6 nebeneinander |
+| **`npm run tor -- --betroffen`** | bei **jeder** Änderung | **14 s bis 200 s**, je nachdem, was `git` meldet | alle billigen Tore plus die Browsertore, die von den geänderten Dateien überhaupt erreicht werden können |
+| `npm run tor` | **einmal** je Runde, vor dem Einchecken | **~3 min** (gemessen 176,6 · 179,6 · 182,4 · 198,6 · 204,0 s am 04.09.) | die volle Kette, alle Größen, alle Bildschirme |
+| Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | dieselbe Kette ohne `ansicht` — und nur bei Grün geht etwas nach `/` |
+| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 298 Gegenproben, 6 nebeneinander |
 
-**Die Regel ist einfach: du fährst `schnell`, der Runner fährt den Rest.**
+**Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
+Rest fährt der Runner.**
 
-Der Preis, ausgesprochen: ein Layoutfehler auf dem iPhone SE fällt dir nicht
-sofort auf, sondern drei Minuten später im Ablauf. Auf dem Gerät der Kinder
-landet er trotzdem nie — die Auslieferung fährt die volle Kette und schickt
-nur bei Grün.
+`--betroffen` nimmt **kein Argument**. Aussuchen kann man nichts; welche
+Dateien geändert sind, sagt `git status`, und die Zuordnung Datei → Tor steht
+in `tor/kette-liste.mjs` neben der Kette. Was dort nicht steht, fällt auf
+**alle** Tore zurück — eine Datei, die niemand eingetragen hat, ist die
+gefährlichste. Der Lauf nennt oben die geänderten Dateien und die
+ausgelassenen Tore beim Namen und sagt grün wie rot dazu, dass er nichts
+freigibt.
 
-**Der Rauchtest wartet auf Bedingungen, nicht auf Fristen.** Er hatte
-45,5 s in 84 festen Pausen verbracht — ein Viertel seiner Laufzeit. Jetzt
-sind es null, und der Bericht nennt die Zahl selbst (*„Blind gewartet"*).
-Wer eine feste Pause einbaut, sieht sie dort sofort. Für ein AUSBLEIBEN
-(„Lea hört nichts") geht das nicht: dort wird nicht gewartet, sondern
-später gelesen.
+Gemessen am Tag des Umbaus: eine Änderung nur an `docs/` fuhr **14,5 s statt
+200 s**. Der Anlass war gerechnet, nicht gefühlt — eine Runde kostete rund
+37 Minuten Maschinenzeit, und ein voller Kettenlauf nach einer reinen
+Doku-Änderung war davon der größte einzelne Posten.
 
-**Was `schnell` NICHT fährt und warum:** `passt` (110 s, drei Teilläufe, nur
-bei Layoutänderungen interessant) · `ziehen` (57 s, ändert sich fast nie) ·
-`lesbarkeit`, `pwa`, `offline` (hängen an Marken und Manifest) · den
-Rauchtest-Abschnitt `durchgang` (83 s — jede Ebene für beide Kinder, der
-gründlichste und teuerste Teil). Alles davon läuft auf dem Runner.
+**`npm run schnell` ist weg** (04.09.). Es fuhr einen FESTEN Ausschnitt
+(`smoke --nur=spielen`) statt eines abgeleiteten, hatte **keine einzige
+Gegenprobe** — und war **rot**, seit `smoke` seinen Fremdgriff-Prüfbereich
+bekommen hat: „Der Fremdgriff hat keinen einzigen Aufgabenbildschirm
+gesehen." Niemand hat es gemerkt, weil niemand es fuhr; CLAUDE.md empfahl es
+trotzdem als die normale Runde. Ein Werkzeug, das immer dasselbe auslässt,
+egal was sich geändert hat, ist genau der Schalter, vor dem
+`tools/kette.mjs` warnt.
+
+**`ansicht` von Hand: in drei Teilen nebeneinander.** Ein Prozess braucht
+150 s, drei brauchen **44 s** — dieselbe Arbeit, dieselben 37 Aufnahmen:
+
+```
+for i in 0 1 2; do node tor/ansicht.mjs --teil=$i/3 & done; wait
+```
 
 **Die Gegenproben laufen nachts.** Sie prüfen die TORE, nicht die App, und
 sie dauern zwanzig Minuten. `rhythmus` stand deshalb bis hierher vorn in der
@@ -68,8 +80,9 @@ Proben hätten genau daran angeschlagen.
 ## Befehle
 
 ```
-npm run schnell    DIE NORMALE RUNDE. ~54 s. Siehe oben.
-npm run tor        die ganze Kette, rund 100 s. Der Runner fährt sie ohnehin
+npm run tor -- --betroffen
+                   DIE NORMALE RUNDE. 14 s bis 200 s. Siehe oben.
+npm run tor        die ganze Kette, rund 3 min. Der Runner fährt sie ohnehin
                    bei jedem Push; hier nur, wenn du sie vorher sehen
                    willst. Sie schreibt seit Q40 jeden Lauf VOLLSTÄNDIG
                    nach `.kette/letzter.log`, einen roten zusätzlich in
@@ -141,12 +154,14 @@ npm run smoke      spielt die App im Browser durch. `-- --nur=spielen`
                    ebene4 · durchgang.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
-                   `-- --teil=0/2` faehrt die eine Haelfte - geteilt nach
-                   AUFWAND, nicht reihum; `schnell`
-                   fuehrt beide Haelften nebeneinander und zaehlt nach,
-                   dass zusammen ALLE geprueft sind (die Zahl steht nicht hier -
-                   sie stand als „sechzehn" da, waehrend es einundzwanzig
-                   waren; `schnell` zaehlt sie selbst nach).
+                   `-- --teil=0/3` faehrt ein Drittel - geteilt nach
+                   AUFWAND, nicht reihum. Die Kette faehrt alle drei
+                   nebeneinander und zaehlt nach, dass zusammen ALLE
+                   geprueft sind (die Zahl steht nicht hier - sie stand als
+                   „sechzehn" da, waehrend es einundzwanzig waren; die
+                   Kette zaehlt sie selbst nach). Von Hand:
+                   `for i in 0 1 2; do node tor/ansicht.mjs --teil=$i/3 & done; wait`
+                   - 44 s statt 150.
                    `-- --nur=quer-vorlauf` nimmt nur die Bildschirme auf,
                    deren Name den Text enthaelt — fuer die Hand, wenn du an
                    einem davon arbeitest. Trifft nichts, ist es rot.
@@ -179,7 +194,7 @@ npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
 ```
 
 Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `farben` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
+`schrift` · `symbol` · `farben` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` · `anker` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.

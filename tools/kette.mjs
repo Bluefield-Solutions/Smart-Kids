@@ -20,7 +20,8 @@ import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { OHNE_BROWSER, BAU, NACH_DEM_BAU, MIT_BROWSER } from '../tor/kette-liste.mjs';
+import { OHNE_BROWSER, BAU, NACH_DEM_BAU, MIT_BROWSER,
+  betroffeneTore } from '../tor/kette-liste.mjs';
 import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
 
 /* Die kurze Kette fuer die Gegenprobe.
@@ -49,6 +50,49 @@ import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
  */
 const PROBE = process.env.SMARTKIDS_KETTE_PROBE === '1';
 if (PROBE) process.env.SMARTKIDS_OHNE_ANSICHT = '1';
+
+/* `--betroffen`: nur die Browsertore, die von den geaenderten Dateien
+ * ueberhaupt erreicht werden koennen.
+ *
+ * Der Einwand steht eine Bildschirmseite hoeher und er gilt: „ein
+ * Schalter, mit dem man sich Tore aussuchen kann, ist eine Art, die Kette
+ * still abzuschalten". Diese Flagge nimmt deshalb KEIN Argument. Ich kann
+ * nichts aussuchen - ich kann nur Dateien aendern, und welche das sind,
+ * sagt `git`. Die Zuordnung steht in `tor/kette-liste.mjs`, neben der
+ * Kette; was dort nicht steht, faellt auf ALLE zurueck.
+ *
+ * Die billigen Tore laufen immer mit, ohne Zuordnung - zusammen unter
+ * fuenfzehn Sekunden. Gespart wird nur an den Browsertoren, und nur da,
+ * wo sie nichts anderes sehen koennen als beim letzten Mal.
+ *
+ * WOFUER SIE NICHT DA IST: den vollen Lauf zu ersetzen. Sie sagt das in
+ * jedem Lauf selbst dazu, gruen wie rot. */
+const BETROFFEN = process.argv.includes('--betroffen');
+let nurTore = null, geaendert = [];
+if (BETROFFEN) {
+  if (PROBE) {
+    console.log('\n  `--betroffen` und die Kettenprobe zusammen ergeben keinen Lauf, '
+      + 'den jemand lesen kann.\n');
+    process.exit(2);
+  }
+  /* Geaendert heisst: gegen HEAD, einschliesslich dessen, was noch gar
+     nicht in git steht. Ein neues Tor, das nur im Arbeitsbaum liegt, ist
+     die haeufigste Datei einer laufenden Runde. */
+  const aus = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'],
+    { encoding: 'utf8' });
+  geaendert = aus.split('\n').filter(Boolean)
+    .map(z => z.slice(3).trim())
+    .map(z => z.includes(' -> ') ? z.split(' -> ')[1] : z)   // umbenannt
+    .map(z => z.replace(/^"|"$/g, ''));
+  if (!geaendert.length) {
+    console.log('\n  Nichts geändert — dann gibt es auch nichts zu prüfen.');
+    console.log('  (Vor dem Einchecken zählt ohnehin nur der volle Lauf: `npm run tor`.)\n');
+    process.exit(0);
+  }
+  nurTore = betroffeneTore(geaendert);
+}
+/** Laeuft dieses Browsertor in diesem Lauf? */
+const dran = (name) => nurTore === null || nurTore.has(name);
 
 const t0 = Date.now();
 const befunde = [];
@@ -145,6 +189,24 @@ console.log(PROBE
     + '  Nur `pwa`, `lesbarkeit` und `ansicht` (übersprungen), nur für die '
     + 'Gegenprobe. Kein grüner Lauf.\n'
   : '\n  Torkette — die volle Runde\n');
+
+/* Was ausgelassen wird, steht OBEN und nicht in einer Fussnote.
+ *
+ * Ein Lauf, der weniger prueft und das kleingedruckt sagt, ist eine
+ * abgeschaltete Kette mit gutem Gewissen. Deshalb: die geaenderten
+ * Dateien beim Namen, die ausgelassenen Tore beim Namen, und die
+ * Ansage, dass dieser Lauf nichts freigibt. */
+if (BETROFFEN) {
+  const aus = MIT_BROWSER.filter(t => !dran(t.name)).map(t => t.name);
+  console.log(`  Geändert: ${geaendert.slice(0, 6).join(' · ')}`
+    + (geaendert.length > 6 ? ` · … (${geaendert.length} Dateien)` : ''));
+  console.log(nurTore === null
+    ? '  Betroffen: ALLE Browsertore — mindestens eine Datei ist keinem Tor zugeordnet.'
+    : aus.length
+      ? `  Ausgelassen: ${aus.join(' · ')} — sie können von diesen Dateien nichts sehen.`
+      : '  Ausgelassen: nichts.');
+  console.log(`  ${grau('Das ist kein voller Lauf. Vor dem Einchecken: `npm run tor`.')}\n`);
+}
 
 // 1. Ohne Browser. Beim ersten Rot ist Schluss.
 for (const t of (PROBE ? [] : OHNE_BROWSER)) {
@@ -280,7 +342,8 @@ const BREITE = +(process.env.SMARTKIDS_BECKEN
 
 const arbeit = [];
 const KURZ = ['pwa', 'lesbarkeit', 'ansicht'];
-for (const t of (PROBE ? MIT_BROWSER.filter(t => KURZ.includes(t.name)) : MIT_BROWSER)) {
+for (const t of (PROBE ? MIT_BROWSER.filter(t => KURZ.includes(t.name))
+                       : MIT_BROWSER.filter(t => dran(t.name)))) {
   if (!t.teile) { arbeit.push({ name: t.name, datei: t.datei, args: [], ms: t.ms }); continue; }
   for (let i = 0; i < t.teile; i++)
     arbeit.push({ name: `${t.name} (${i + 1}/${t.teile})`, datei: t.datei,
@@ -447,4 +510,8 @@ if (befunde.length) {
   process.exit(1);
 }
 protokollSchreiben(true);
-console.log(`  Kette grün nach ${s(Date.now() - t0)}.\n`);
+console.log(`  Kette grün nach ${s(Date.now() - t0)}.`);
+console.log(BETROFFEN
+  ? `  ${rot('Aber nur die betroffenen Tore.')} Freigegeben ist damit nichts — `
+    + 'vor dem Einchecken `npm run tor`.\n'
+  : '');

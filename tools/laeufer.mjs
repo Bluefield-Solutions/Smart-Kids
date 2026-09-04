@@ -1,4 +1,4 @@
-// Was `tools/schnell.mjs` und `tools/kette.mjs` gemeinsam haben.
+// Was die Laeufe von `tools/kette.mjs` gemeinsam haben.
 //
 // Beide fahren Tore als eigene Prozesse, sammeln deren Ausgabe ein und
 // melden gruen oder rot mit einer Dauer daneben. Das stand zweimal da, bis
@@ -27,7 +27,7 @@ export const lauf = (befehl, args = []) => new Promise((fertig) => {
 
 /* Jedes Tor misst SEINE Dauer, nicht die der Gruppe.
  *
- * Im ersten Anlauf von tools/schnell.mjs stand dort zweimal dieselbe
+ * Im ersten Anlauf des kurzen Laufs stand dort zweimal dieselbe
  * Gruppenzeit - beide Tore meldeten damit die Zahl des langsameren, und ich
  * haette das kuerzere optimiert, ohne es zu merken. Eine Zahl, die fuer
  * zwei Dinge gilt, gilt fuer keines: jede Zahl traegt ihre Messstelle mit

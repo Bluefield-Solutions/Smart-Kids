@@ -25,6 +25,7 @@
   "unterTore": [
     "abzeichen",
     "beruehrung",
+    "betroffen",
     "doku",
     "farben",
     "inhalt",
@@ -1524,6 +1525,11 @@
       "commit": "5e289d5cb45a0a9f31259e4a53f98a213a0e99db",
       "zeit": "2026-09-04",
       "s": 35
+    },
+    "eine unbekannte Datei zieht keine Tore mehr nach sich": {
+      "commit": "3c62c299b79c5687827f813f248784172b08db7c",
+      "zeit": "2026-09-04",
+      "s": 9
     }
   }
 }

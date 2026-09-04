@@ -57,7 +57,8 @@ npm run symbol     das App-Symbol neu backen
 
 Die Torkette steht als Daten in `tor/kette-liste.mjs` und wird von
 `tools/kette.mjs` gefahren — nicht hier abgeschrieben, sonst veraltet sie.
-`npm run schnell` fährt die kurze Bahn (rund 50 s), `npm run tor` die ganze
+`npm run tor -- --betroffen` fährt nur die Tore, die von den geänderten
+Dateien erreicht werden können, `npm run tor` die ganze
 (rund 105 s, zehn Browser nebeneinander).
 
 `ansicht` läuft **nur ortsfest**. Ein Bildpunktvergleich gilt nur bei

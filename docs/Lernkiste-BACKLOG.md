@@ -4239,6 +4239,99 @@ auch nur jemandem, der falsch antwortet.
 
 Gegenproben 297 und 298, eine je Hälfte.
 
+### T1 · Was eine Runde wirklich kostet — und was daran zu sparen war (v367)
+
+Die Frage war: dauern die Gegenproben zu lang? **Gemessen: nein.** Sie sind
+der kleinste Posten.
+
+**Ein voller Probenlauf:** 298 Gegenproben, **185 Minuten** hintereinander,
+mit sechs Arbeitern rund **31 Minuten**. Er läuft nachts um 04:00 auf dem
+Runner und kostet uns null Zeit. Zwei Tore tragen 83 % davon:
+
+| Tor | Proben | Zeit | je Probe |
+|---|---|---|---|
+| smoke | 134 | 125 min | 56 s |
+| passt | 22 | 29 min | 80 s |
+| ziehen | 19 | 9 min | 29 s |
+| inhalt | 46 | 5 min | 7 s |
+| alle übrigen | 77 | 17 min | — |
+
+**Je Runde gefahren werden nur die neuen:** QS9 eine (15 s), G16 eine (80 s),
+G17 zwei (103 s). Mit den Blindproben von Hand rund **fünf Minuten**.
+
+**Wo die Zeit wirklich hinging** (G17-Runde, rund 37 min Maschinenzeit):
+
+| Posten | Zeit | Anteil |
+|---|---|---|
+| `smoke --nur=sprechen` im Bau-und-Messen-Kreis, 6× | ~10 min | 27 % |
+| `ansicht` voll, 4× | ~10 min | 27 % |
+| volle Torkette, 2× à 3,3 min | ~7 min | 18 % |
+| **Gegenproben inkl. Blindproben** | **~5 min** | **14 %** |
+| Auslieferung abwarten | ~5 min | 14 % |
+
+#### Was gebaut wurde
+
+**1. `npm run tor -- --betroffen`.** Fährt nur die Browsertore, die von den
+geänderten Dateien erreicht werden können. Die Zuordnung Datei → Tor steht
+in `tor/kette-liste.mjs`, neben der Kette. Gemessen: eine reine
+Doku-Änderung fährt **14,5 s statt 200 s**.
+
+Der Einwand stand schon im Quelltext von `tools/kette.mjs`: *„ein Schalter,
+mit dem man sich Tore aussuchen kann, ist eine Art, die Kette still
+abzuschalten"*. Er gilt — deshalb nimmt die Flagge **kein Argument**.
+Aussuchen kann niemand etwas; was geändert ist, sagt `git status`. Drei
+Dinge machen es tragbar, und sie müssen zusammen gelten:
+
+- die **billigen Tore laufen immer**, ohne Zuordnung (zusammen unter 15 s);
+- was in der Zuordnung **nicht steht, fällt auf ALLE zurück** — eine Datei,
+  die niemand eingetragen hat, ist die gefährlichste;
+- der Lauf **nennt oben** die geänderten Dateien und die ausgelassenen Tore
+  und sagt grün wie rot dazu, dass er nichts freigibt.
+
+**2. `ansicht` von Hand in drei Teilen.** Ein Prozess 150 s, drei
+nebeneinander **44 s** — dieselben 37 Aufnahmen, ohne eine Zeile neuen Code:
+`for i in 0 1 2; do node tor/ansicht.mjs --teil=$i/3 & done; wait`
+
+**3. Die Auslieferung wird nicht mehr abgewartet.** Steht in CLAUDE.md.
+
+**4. Der nächtliche Lauf prüft Ende zu Ende.** Er fuhr bisher nur die
+Gegenproben. Jetzt fährt er **zuerst die volle Torkette**, dann die 298
+Proben — und die Reihenfolge ist der Punkt: eine Gegenprobe an einem Tor,
+das schon ohne ihren Eingriff rot ist, beweist nichts und meldet „war schon
+rot". Wer wissen will, ob die 298 etwas taugen, muss zuerst wissen, dass die
+Kette grün war. `ansicht` bleibt auch dort aus (Regel 16, der Runner
+rastert anders) — und die Überschrift des Schritts sagt das, damit es
+niemand für mehr hält.
+
+#### Nebenbefund: `npm run schnell` war rot und niemand hat es gemerkt
+
+CLAUDE.md empfahl es als **die normale Runde bei jeder Änderung**. Es war
+rot — auch auf v366, also nicht durch diese Runde: *„Der Fremdgriff hat
+keinen einzigen Aufgabenbildschirm gesehen"*, seit `smoke` seinen
+Prüfbereich bekommen hat (Q39b). Es hatte **keine einzige Gegenprobe**, und
+es fuhr einen **festen** Ausschnitt (`smoke --nur=spielen`) statt eines
+abgeleiteten — genau der Schalter, vor dem `tools/kette.mjs` warnt.
+
+**Entfernt**, nicht repariert: `--betroffen` kann alles, was es konnte, und
+leitet ab statt zu wählen.
+
+#### Das Tor
+
+`inhalt` bekommt ein elftes Untertor, **`betroffen`**. Es prüft die
+Funktion, nicht den Text der Liste: unbekannte Datei → alle Tore; unbekannte
+Datei *neben* einer bekannten → trotzdem alle; reine Doku → keine
+Browsertore; `tor/smoke.mjs` → genau `smoke`. Dazu: jeder Torname, den eine
+Regel wörtlich nennt, muss es in der Kette geben — ein Tippfehler dort hieße
+„kein Tor" und nicht „Fehler", die Zuordnung führe still weniger.
+
+Gegenprobe 299 dreht den Rückfall um (`return null` → `continue`). Beim
+ersten Anlauf war sie der bekannte **Selbsttreffer**: ihr Eingriff löschte
+ihren eigenen Suchtext, `inhalt` meldete den fehlenden Anker statt des
+Befundes, und die Probe sagte „beweist nichts". Der Anker steht jetzt als
+Kommentar hinter dem Eingriff, und `an:` prüft die Wirkung statt des Textes.
+
+**Was das je Runde spart: 13–19 Minuten, ohne dass eine Prüfung wegfällt.**
+
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 
 Der angestossene volle Lauf war **gruen: 276 Gegenproben, alle schlagen

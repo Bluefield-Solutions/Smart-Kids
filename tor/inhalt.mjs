@@ -33,7 +33,7 @@ import { KARTEN_GROB } from '../src/geo/karten.grob.js';
 import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
-import { ALLE as KETTE } from './kette-liste.mjs';
+import { ALLE as KETTE, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
@@ -1778,6 +1778,67 @@ console.log('\n  Tor `farben`');
   const toene = I.KONTINENTE.map((k, i) => (i % 7) + 1);
   console.log(`    ${I.KONTINENTE.length} Kontinente, Kachelton aus der Kartenreihenfolge, `
     + `${new Set(toene).size} verschiedene Toene`);
+}
+
+/* =================================================== Tor `betroffen` ==== *
+ *
+ * Der Rueckfall von `--betroffen` haelt.
+ *
+ * `npm run tor -- --betroffen` faehrt nur die Browsertore, die von den
+ * geaenderten Dateien erreicht werden koennen. Das ist genau so lange
+ * unbedenklich, wie die UNBEKANNTE Datei auf ALLE Tore zurueckfaellt.
+ * Faellt sie stattdessen auf keines zurueck, dann ist eine neue Datei -
+ * also der haeufigste Fall einer laufenden Runde - ungeprueft, und der
+ * Lauf meldet dafuer gruen. Ein Werkzeug, das beim Zweifel WENIGER
+ * prueft, ist gefaehrlicher als gar keines.
+ *
+ * Geprueft wird die Funktion, nicht der Text der Liste: `betroffeneTore`
+ * bekommt Pfade und muss antworten. Vier Faelle, jeder einzeln zu
+ * brechen - und der wichtigste ist der erste.
+ *
+ * Dazu: jeder Torname, den eine Regel WOERTLICH nennt, muss es in der
+ * Kette geben. Ein Tippfehler dort hiesse „kein Tor" und nicht „Fehler" -
+ * die Zuordnung wuerde still weniger fahren, und niemand saehe es.
+ */
+console.log('\n  Tor `betroffen`');
+{
+  const schief = [];
+  const alles = (l) => betroffeneTore(l) === null;
+  const menge = (l) => { const r = betroffeneTore(l); return r === null ? null : [...r].sort(); };
+
+  if (!alles(['irgendwas/neu.js']))
+    schief.push('eine Datei, die keiner Regel entspricht, faellt NICHT auf alle Tore zurueck '
+      + '— dann ist jede neue Datei ungeprueft, und der Lauf meldet gruen');
+  if (!alles(['docs/x.md', 'irgendwas/neu.js']))
+    schief.push('eine unbekannte Datei NEBEN einer bekannten faellt nicht auf alle zurueck '
+      + '— die strengere Zuordnung muss gewinnen');
+  const doku = menge(['docs/Lernkiste-BACKLOG.md', 'CLAUDE.md']);
+  if (doku === null || doku.length)
+    schief.push(`eine reine Doku-Aenderung zieht Browsertore nach sich (${doku}) `
+      + '— dann spart die Bahn nichts');
+  const nurSmoke = menge(['tor/smoke.mjs']);
+  if (String(nurSmoke) !== 'smoke')
+    schief.push(`\`tor/smoke.mjs\` betrifft ${nurSmoke} statt genau \`smoke\``);
+
+  /* Die Namen gegen die Kette halten. `ALLE` ist die Kette selbst - dieselbe
+     Liste, aus der `tools/kette.mjs` faehrt. Eine zweite Namensliste hier
+     waere Regel 6: was zweimal dasteht, veraltet einmal. */
+  const kette = new Set(KETTE);
+  for (const b of BETRIFFT) {
+    if (typeof b.tore !== 'object' || b.tore === null) continue;
+    for (const n of b.tore)
+      if (!kette.has(n))
+        schief.push(`die Zuordnung nennt ein Tor \`${n}\`, das die Kette nicht kennt `
+          + '— ein Tippfehler heisst hier „kein Tor", nicht „Fehler"');
+  }
+
+  if (schief.length) {
+    console.log('    ' + schief.join('\n    '));
+    console.error('\n  betroffen ROT: die Zuordnung Datei → Tor prüft weniger, als sie soll.');
+    process.exit(1);
+  }
+  console.log(`    ${BETRIFFT.length} Regeln, Unbekanntes fällt auf alle ${kette.size} `
+    + 'Tore zurück');
 }
 
 // nicht mit und meldete weiter „Alle 7" - dieselbe stille Verjaehrung,

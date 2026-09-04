@@ -264,8 +264,8 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `farben` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`schrift` · `symbol` · `farben` · `doku` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `farben` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`schrift` · `symbol` · `farben` · `betroffen` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 
@@ -4189,4 +4189,33 @@ export const PROBEN = [
     ersatz:'  --abgelehnt: oklch(0.96  0.040  40);',
     an:{ ...DIST, fehlt:'--abgelehnt: oklch(0.90  0.095  40)' },
     sagt:'wie eine Hervorhebung' },
+
+  /* Der Rueckfall von `--betroffen` faellt in die falsche Richtung.
+   *
+   * `npm run tor -- --betroffen` faehrt nur die Browsertore, die von den
+   * geaenderten Dateien erreicht werden koennen. Das haengt an genau
+   * einer Zeile: eine Datei, die keiner Regel entspricht, muss ALLE Tore
+   * ziehen. Der Eingriff laesst sie stattdessen KEINES ziehen - dann
+   * waere jede neue Datei ungeprueft, und der Lauf meldete gruen.
+   *
+   * Das ist die gefaehrlichste Bauart Fehler in diesem Werkzeug: er macht
+   * nichts rot, er macht nur weniger. Eine Runde spaeter faellt niemandem
+   * mehr auf, dass ein Tor nicht mehr laeuft. */
+  { n:'eine unbekannte Datei zieht keine Tore mehr nach sich', tor:'inhalt',
+    datei:'tor/kette-liste.mjs',
+    /* Der Suchtext ueberlebt im Ersatz - als Kommentar hinter dem Eingriff.
+     *
+     * Ohne das ist es der Selbsttreffer: `inhalt` prueft auch, dass jede
+     * Gegenprobe ihren Suchtext noch findet, und dieser Eingriff loescht
+     * genau seinen eigenen. Das Tor meldete dann den fehlenden Anker
+     * statt des Befundes - rot aus dem falschen Grund, und die Probe
+     * haette „beweist nichts" gesagt. Genau so passiert, beim ersten
+     * Anlauf. `an:` prueft deshalb nicht den Text, sondern die WIRKUNG:
+     * `return null` darf nicht mehr die erste Anweisung sein. */
+    such:'if (!treffer) return null;',
+    ersatz:'if (!treffer) continue; // Eingriff der Gegenprobe. '
+      + 'Anker bleibt stehen: if (!treffer) return null;',
+    an:{ datei:'tor/kette-liste.mjs', text:'if (!treffer) continue;' },
+    deckt:'betroffen',
+    sagt:'faellt NICHT auf alle Tore zurueck' },
 ];

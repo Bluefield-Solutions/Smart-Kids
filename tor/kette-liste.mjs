@@ -119,3 +119,71 @@ for (const t of MIT_BROWSER)
 
 /** Alle Namen der Kette, in der Reihenfolge, in der sie starten. */
 export const ALLE = [...OHNE_BROWSER, BAU, ...NACH_DEM_BAU, ...MIT_BROWSER].map(t => t.name);
+
+/* ---------------------------------------------------------------------
+ * Welche Tore eine geaenderte Datei ueberhaupt betreffen KANN.
+ *
+ * Der Anlass ist gemessen, nicht gefuehlt: eine Runde kostete rund 37
+ * Minuten Maschinenzeit, und davon entfielen auf die Gegenproben fuenf.
+ * Der groesste einzelne Posten war ein voller Kettenlauf (3,3 min) nach
+ * einer Aenderung, die nur `docs/` angefasst hatte - dort kann kein
+ * Browsertor etwas anderes sehen als vorher.
+ *
+ * DREI DINGE MACHEN DAS UNGEFAEHRLICH, und sie muessen zusammen gelten:
+ *
+ *   1. Die billigen Tore laufen IMMER, ohne Zuordnung. Zusammen unter
+ *      fuenfzehn Sekunden - da ist nichts zu sparen und deshalb auch
+ *      nichts falsch zu machen. Die Zuordnung entscheidet nur ueber die
+ *      Browsertore.
+ *   2. Was hier nicht steht, faellt auf ALLE Tore zurueck. Eine Datei,
+ *      die niemand eingetragen hat, ist die gefaehrlichste - sie bekommt
+ *      den vollen Lauf, nicht keinen.
+ *   3. Es ersetzt den vollen Lauf nicht. `--betroffen` sagt in jedem Lauf
+ *      selbst dazu, dass vor dem Einchecken `npm run tor` faellig ist.
+ *
+ * Und der Einwand aus `tools/kette.mjs` steht: „ein Schalter, mit dem man
+ * sich Tore aussuchen kann, ist eine Art, die Kette still abzuschalten".
+ * Er gilt - deshalb nimmt `--betroffen` KEINE Liste entgegen. Aussuchen
+ * kann ich nichts; ich kann nur Dateien aendern, und was ich geaendert
+ * habe, sagt `git`.
+ *
+ * Reihenfolge zaehlt: das erste passende Muster gewinnt.
+ */
+export const BETRIFFT = [
+  /* Dokumente. `inhalt` und `regeln` lesen sie und laufen ohnehin immer;
+     ein Browser sieht von einer Zeile im Backlog nichts. */
+  { muster: /^(docs\/|CLAUDE\.md$|README\.md$)/,        tore: [] },
+  /* Der Auslieferungs- und Probenauftrag. Laeuft auf dem Runner, nicht
+     hier - und `dist/` aendert sich davon nicht. */
+  { muster: /^(\.github\/|\.gitignore$)/,               tore: [] },
+  /* Der Probenstand und die Probenliste gehoeren `proben`, nicht der
+     Kette. `rhythmus` liest den Stand und laeuft immer. */
+  { muster: /^tor\/proben(-liste\.mjs|-stand\.json)$/,  tore: [] },
+  /* Die Vorbilder sind das Soll von `ansicht` und von sonst niemandem. */
+  { muster: /^tor\/vorbilder\//,                        tore: ['ansicht'] },
+  /* Die Kettenliste selbst: sie bestimmt, WAS laeuft, und `inhalt` haelt
+     sie gegen CLAUDE.md. Wer daran dreht, bekommt alles. */
+  { muster: /^tor\/kette-liste\.mjs$/,                  tore: null },
+  /* Ein einzelnes Tor betrifft genau sich selbst. Ein Tor kann kein
+     anderes rot machen - sie teilen keine Datei ausser dieser Liste, und
+     die steht eine Zeile hoeher. */
+  { muster: /^tor\/([a-z]+)\.mjs$/,                     tore: (m) => [m[1]] },
+  { muster: /^tor\/([a-z]+)-stand\.json$/,              tore: (m) => [m[1]] },
+];
+
+/** Die Tore, die eine Liste geaenderter Dateien betreffen kann.
+ *  `null` heisst: alles - entweder weil eine Datei nichts trifft oder
+ *  weil sie ausdruecklich alles betrifft. */
+export function betroffeneTore(dateien) {
+  const aus = new Set();
+  for (const d of dateien) {
+    const weg = d.replace(/\\/g, '/');
+    const treffer = BETRIFFT.find(b => b.muster.test(weg));
+    if (!treffer) return null;                       // unbekannt -> alles
+    const t = typeof treffer.tore === 'function'
+      ? treffer.tore(weg.match(treffer.muster)) : treffer.tore;
+    if (t === null) return null;                     // ausdruecklich alles
+    for (const n of t) aus.add(n);
+  }
+  return aus;
+}

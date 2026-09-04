@@ -54,6 +54,29 @@ jobs:
       # aus, nennt sie beim Namen und gibt ihnen KEINEN Nachweis: sie
       # altern weiter, bis `rhythmus` sie auf dem Arbeitsrechner faellig
       # macht.
+      # Ende zu Ende, bevor die Gegenproben laufen.
+      #
+      # Warum das hier dazugehoert: seit die Kette am Arbeitsplatz mit
+      # `--betroffen` nur noch die Tore faehrt, die von den geaenderten
+      # Dateien erreicht werden koennen, gibt es Laeufe, in denen ein
+      # Browsertor tagelang nicht anfaesst. Der volle Lauf vor dem
+      # Einchecken faengt das - aber er ist eine Regel, und Regeln werden
+      # gebrochen. Hier ist es eine Maschine.
+      #
+      # Und es steht VOR den Proben, nicht danach: eine Gegenprobe an
+      # einem Tor, das schon ohne ihren Eingriff rot ist, beweist nichts -
+      # sie meldet dann „war schon rot" und ihr Nachweis verfaellt still.
+      # Wer wissen will, ob die 298 etwas taugen, muss zuerst wissen, dass
+      # die Kette gruen war.
+      #
+      # `ansicht` bleibt auch hier aus, aus demselben Grund wie unten: der
+      # Runner rastert anders als der Arbeitsplatz (Regel 16). Ende zu
+      # Ende heisst hier „alles, was auf diesem Rechner etwas beweisen
+      # kann" - und das sagt diese Zeile, damit es niemand fuer mehr haelt.
+      - name: Die volle Torkette (ohne ansicht — anderer Rasterer)
+        id: kette
+        continue-on-error: true
+        run: npm run tor:runner
       - name: Alle Gegenproben
         id: proben
         continue-on-error: true
@@ -92,7 +115,12 @@ jobs:
           echo "::error::Der Probenstand liess sich nicht schieben."
           exit 1
       - name: Was nicht angeschlagen hat
-        if: steps.proben.outcome != 'success'
+        if: steps.kette.outcome != 'success' || steps.proben.outcome != 'success'
         run: |
-          echo "::warning::Nicht jede Gegenprobe hat angeschlagen — siehe Protokoll oben."
+          if [ "${{ steps.kette.outcome }}" != "success" ]; then
+            echo "::error::Die Torkette war rot — die Gegenproben darunter beweisen dann wenig."
+          fi
+          if [ "${{ steps.proben.outcome }}" != "success" ]; then
+            echo "::warning::Nicht jede Gegenprobe hat angeschlagen — siehe Protokoll oben."
+          fi
           exit 1
