@@ -2057,11 +2057,11 @@ export const PROBEN = [
        und die Hoehe von 200 auf 165. `inhalt` hat es gemeldet: der
        Eingriff waere nicht angekommen, und das Tor haette gruen gemeldet,
        ohne etwas zu pruefen.
-       Mit G15 steht sie auf 210 - das Forscherbuch hatte das groesste
+       Mit G15 steht sie auf 185 - das Forscherbuch hatte das groesste
        leere Band der App. Gemeldet hat es wieder `inhalt`, an derselben
        Stelle, aus demselben Grund: eine Hoehe im Suchtext ist ein Anker
        auf eine Zahl, und Zahlen aendern sich. */
-    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:210px}',
+    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}',
     ersatz:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:600px}',
     an:{ ...DIST, text:'.albumkarte svg{height:600px}' },
     sagt:'nicht alles im Bild' },

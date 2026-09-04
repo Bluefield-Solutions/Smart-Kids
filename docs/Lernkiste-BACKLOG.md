@@ -196,8 +196,9 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 10 | **G14** Der Lohn: Treffer und Rundenende bekommen einen Augenblick | Fiona, Lea | **hoch** | mittel | Blick am Gerät |
-| 11 | **G15** Das Forscherbuch füllt seine Seite (37 % leeres Band) | Fiona, Lea | hoch | mittel | — |
+| 10 | **G15b** Buchseite: ein Grundriss je Seite statt einer Höhe für alle | Fiona, Lea | hoch | groß | G15 hat gezeigt, warum |
+| 11 | **G19** Kommentare aus `dist/` nehmen? 48,3 % des Bündels | nur ihr | mittel | klein | Entscheidung |
+| 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
 | 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
 | 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
 | 14 | **G18** Keine toten Knöpfe im Lob | alle | gering | klein | — |
@@ -4133,3 +4134,94 @@ keine Flicken** — sie aendern das Gesicht der App, und das gehoert
 angesehen, bevor sie gebaut werden: kein Tor ersetzt den Blick (Regel 4),
 und ein Gesicht laesst sich nicht ausrechnen. Sie stehen als **G14 bis
 G18** in der Rangliste.
+
+---
+
+## G14 und G15 · Der Lohn, und ein Fehlschlag mit Zahlen
+
+### G14 · Der Lohn — GEFAHREN, und nur fuer die Kinder
+
+Entschieden am 04.09.: **deutlich, aber nur fuer die Kinderprofile.**
+
+Der Schalter heisst `feier` und sitzt in `TON` neben `siegsterne` — dort,
+wo diese Unterscheidung seit je wohnt („kindlich darf jubeln, sachlich
+schweigt"). Stephan und Violeta bekommen nichts davon.
+
+| Wann | Was |
+|---|---|
+| Treffer | hinter dem Lobwort steigt kurz ein Feld in der Erfolgsfarbe auf und verblasst; „Klasse!" zieht auf |
+| Rundenende | die drei Sterne **landen nacheinander**, 90 ms versetzt |
+| Rundenende, neue Aufkleber | der **Forscherbuch-Knopf winkt** einmal, nachdem sie gelandet sind |
+
+Alle Zeiten kommen aus den vorhandenen Marken (`--d-belohnung`,
+`--d-staffel`), nicht aus neuen Zahlen (Regel 6). Das hat einen zweiten
+Nutzen: unter `prefers-reduced-motion` stehen diese Marken auf 1 ms, also
+faellt die ganze Feier von selbst aus — ohne eine zweite Regel, die man
+vergessen kann. Bewegt werden nur `transform`, `opacity` und
+`background-color`; kein Filter, kein `backdrop`.
+
+**Nicht gebaut: der fliegende Aufkleber.** Er braeuchte die Lage beider
+Elemente zur Laufzeit und ein Element, das ueber den Bildschirm wandert —
+und `passt` misst, ob etwas ueber den Rand laeuft. Der winkende Knopf sagt
+dasselbe und kann nichts kaputtmachen. Der Flug steht als eigener Punkt.
+
+**Zwei Gegenproben, eine je Richtung.** Eine allein bewiese die Haelfte:
+wer nur „bei sachlich keine Feier" prueft, bleibt gruen, wenn die Feier
+ueberhaupt niemandem mehr erscheint (Regel 1). Beide schlagen an.
+
+**Ein Fehler dabei, und ein zweiter im Nachweis.** Mein `.replace` traf
+`<div class="reihe siegwahl">` auf dem PAUSENBILDSCHIRM statt auf dem
+Endbildschirm — dort gibt es kein `st`, und die Seite warf
+`ReferenceError: st is not defined`. Gefunden hat es der Rauchtest. Beim
+Nachsehen habe ich dann `tor/smoke.mjs` weggelegt und daraus geschlossen,
+der Fehler sei Vorbestand — **ich hatte nur das Tor zurueckgelegt, nicht
+die App.** Wer eine Wirkung abschaltet, muss die richtige abschalten.
+
+### G15 · Das Forscherbuch — DER NAHELIEGENDE WEG WAR FALSCH
+
+**Befund unveraendert: 37 % der Bildhoehe sind ein einziges leeres Band.**
+Der naheliegende Schluss war, die Albumkarte wachsen zu lassen. Er ist
+falsch, und zwar gemessen.
+
+| Hoehe | `passt` | `smoke --nur=spielen --kurz` | **volle Kette** |
+|---|---|---|---|
+| 190 | grün | grün | **rot** — 2 von 7 Kapitelseiten |
+| 210 | grün | grün | **rot** — 2 von 7 |
+| 235 | grün | grün | (nicht gefahren) |
+| 185 | grün | grün | **rot** — 1 von 7 |
+| **165** | grün | grün | **grün** |
+
+Auf 844 × 390 ist die Seite bei 165 schon voll — derselbe Befund, den Q46
+bei 200 hatte. Was bleibt, ist der Deckel fuer die **grossen** Bildschirme
+(`clamp(120px, 42vh, 340px)` statt `34vh/300`) und ein deutlicheres
+Offenes (`.albumoffen` von .55 auf .72 Deckung): der freie Platz ist der
+halbe Sinn eines Albums, und bei .55 sah er aus wie ein Artefakt.
+
+**Das leere Band auf dem Zielgeraet ist damit NICHT behoben.** Es bleibt
+bei 37 %, und ich weiss jetzt, warum: das Kapiteltor prueft, ob jeder
+BLOCK ins Bild passt — nicht, ob die Seite genutzt wird. Manche
+Kapitelseiten sind randvoll, andere fast leer, und eine Zahl fuer alle
+sprengt die vollen. Der richtige Weg ist ein Grundriss, der sich je Seite
+richtet, und das ist eine eigene Runde. Steht als **G15b**.
+
+**Die teuerste Lehre dieser Runde: ein abgekuerzter Lauf ist kein
+Nachweis.** Zwei Anlaeufe waren gruen und beide wertlos — `passt` sieht
+das Kapiteltor nicht, und `smoke --nur=spielen --kurz` faehrt den Zweig
+gar nicht erst an. `--kurz` ist zum Durchsehen da, nicht zum Abnehmen
+einer Zahl. Drei Anlaeufe hat mich das gekostet.
+
+### QS15 · Fast die Haelfte des Buendels sind Kommentare
+
+Beim Bestaetigen des Budgets nachgemessen:
+
+| | |
+|---|---|
+| Buendel gesamt | **723,1 KB** |
+| davon Blockkommentare | 315,4 KB |
+| davon Zeilenkommentare | 34,1 KB |
+| **Kommentaranteil** | **48,3 %** |
+
+Der Bau minifiziert nicht, also wird jede Begruendung mit auf das Telefon
+geliefert. Das ist kein Fehler — es ist eine Entscheidung, die nie
+getroffen wurde. Der Quelltext bleibt in Git, ganz gleich was `dist/`
+enthaelt. Steht als **G19** zur Entscheidung.

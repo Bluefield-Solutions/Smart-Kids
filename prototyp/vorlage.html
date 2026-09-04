@@ -2036,25 +2036,21 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Gemessen: mit 200 fiel er auf zwei von sieben Kapitelseiten unter die
      Unterkante - das Kapiteltor hat es gemeldet. Die Seite hat 251
      Punkte, der Satz nimmt zwei Zeilen. */
-  /* 190 seit G15, gemessen wie die 165 davor.
-     Das Forscherbuch hatte das groesste zusammenhaengende LEERE BAND der
-     ganzen App: 37 % der Bildhoehe, auf 390 Punkten also 144 am Stueck
-     ohne Inhalt - und zwar auf dem Bildschirm, der die Sammlung zeigt.
-     Die Karte nimmt jetzt, was da ist.
+  /* 165 - UNVERAENDERT, und das ist das Ergebnis von G15, kein Versaeumnis.
+     Das Forscherbuch hatte das groesste zusammenhaengende leere Band der
+     App (37 % der Bildhoehe). Der naheliegende Schluss war, die Karte
+     wachsen zu lassen. Er ist falsch, und zwar gemessen: 190, 185 und 210
+     wurden der Reihe nach probiert, und die volle Kette meldete jedes Mal
+     „auf 1 bis 2 von 7 Kapitelseiten steht nicht alles im Bild" - derselbe
+     Befund wie Q46 bei 200. AUF 844 x 390 IST DIE SEITE BEI 165 SCHON
+     VOLL; das leere Band steht auf den GROSSEN Bildschirmen, und dort
+     greift der Deckel oben (`clamp(120px, 42vh, 340px)`, vorher 34vh/300).
 
-     WARUM 210 UND NICHT 235. Bei 235 sind `passt` und das Kapiteltor im
-     Rauchtest beide gruen - gemessen, nicht vermutet. Genommen ist
-     trotzdem der kleinere Wert, und der Grund ist die Messstelle
-     (Regel 5): der Rauchtest spielt EIN Buch mit DIESEN Saetzen. Ein
-     Satz zum Mitnehmen darf 110 Zeichen haben und nimmt dann drei Zeilen
-     statt zwei. Gemessen ist also nicht der schlimmste Fall, sondern der
-     vorliegende. 210 laesst diese Zeile Platz.
-
-     Dazu kommt: Q46 hat 200 als ZU VIEL gemessen, damals mit demselben
-     Tor. Warum es heute bei 235 gruen bleibt, konnte ich nicht
-     aufklaeren. Zwei Messungen, die sich widersprechen, und eine davon
-     ist meine - dann gilt die vorsichtigere. */
-  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:210px}
+     Zwei Anlaeufe waren vorher gruen und beide wertlos: `passt` sieht das
+     Kapiteltor nicht, und `smoke --nur=spielen --kurz` faehrt den Zweig
+     gar nicht erst an. EIN ABGEKUERZTER LAUF IST KEIN NACHWEIS - `--kurz`
+     ist zum Durchsehen da, nicht zum Abnehmen einer Zahl. */
+    .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *
