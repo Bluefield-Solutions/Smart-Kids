@@ -2921,7 +2921,14 @@ export const PROBEN = [
     args:['--nur=quer-nordamerika'], datei:E,
     such:"    { a3:'GRL', name:'Grönland', rang:4, aliasse:['Groenland','Greenland'],\n      aussprache:['grönland','groenland','grünland'] },\n",
     ersatz:'',
-    an:{ ...DIST, fehlt:'Grönland' }, sagt:'quer-nordamerika' },
+    /* Nachgefragt wird der EINTRAG, nicht der Name (Q47).
+       „Grönland fehlt" war seit D3 nie mehr wahr: der Satz zum Mitnehmen
+       nennt das Land, und der steht im selben Buendel. Der Eingriff kam
+       an, die Nachfrage sagte nein, und die Probe bewies nichts - im
+       vollen Lauf gemeldet, in keinem Ausschnitt zu sehen. Das ist der
+       Wert eines vollen Laufs: eine Probe stirbt an einer Aenderung
+       woanders. */
+    an:{ ...DIST, fehlt:'"a3":"GRL","name":"Grönland"' }, sagt:'quer-nordamerika' },
 
   /* --- pwa ---------------------------------------------------------- */
   { n:'ein Symbol im Manifest gibt es nicht', tor:'pwa', bauen:true, datei:'prototyp/bauen.mjs',

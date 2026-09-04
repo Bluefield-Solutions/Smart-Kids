@@ -3552,3 +3552,33 @@ Und zwei stehende Gegenproben, die beide anschlagen: der Satz fehlt, und
 der Tipp blättert nicht mehr. Die zweite ist die wichtige — die Seite sieht
 danach genauso aus, nur mit einem anderen Satz, und wer den ersten nicht
 auswendig kann, merkt nichts.
+
+## Q47 erledigt: der volle Probenlauf — und die eine Probe, die D3 getötet hat
+
+**150 Minuten, 281 Proben, 283 von 285 schlagen an.** Der Stand trug vorher
+Nachweise aus vier Fassungen (232 · 49 · 3 · 1); jetzt stehen alle 285 auf
+**einer** — dem heutigen Baum.
+
+**Die zwei, die nicht anschlugen, sind eine.**
+
+„**Grönland ist wieder nur Umgebung**" fragte nach: *steht „Grönland" nach
+dem Eingriff nicht mehr im Bündel?* Seit **D3** steht es dort immer — der
+Satz zum Mitnehmen nennt das Land („Grönland ist die größte Insel der
+Erde"). Der Eingriff kam an, die Nachfrage sagte nein, und die Probe bewies
+nichts. Gefragt wird jetzt nach dem **Eintrag** (`"a3":"GRL","name":"Grönland"`),
+nicht nach dem Namen.
+
+Und die zweite — „der nächtliche Lauf urteilt wieder über `ansicht`" — war
+davon **verdeckt**: sie fährt `proben` in `proben`, und der innere Lauf
+wurde rot, aber wegen Grönland. Die Maschine hat genau das gesagt: *„wird
+rot, meldet aber nicht ‚bleibt grün, obwohl der Fehler drin ist' — es fällt
+vielleicht aus einem anderen Grund durch."* Mit dem Grönland-Flick schlägt
+sie wieder an, ohne dass ich sie angefasst hätte.
+
+**Das ist der Wert eines vollen Laufs, in einem Satz:** eine Probe stirbt
+an einer Änderung *woanders*. Kein Ausschnitt hätte das gefunden — D3 hat
+`src/inhalt/saetze.js` angefasst, die Probe zeigt auf
+`src/inhalt/erdkunde.js`, und der Schaden entstand erst im gebauten Bündel,
+in dem beide landen. Es ist dieselbe Klasse wie Q36, Q39b, Q43, Q44 — mit
+dem Unterschied, dass ich sie diesmal selbst verursacht habe und sie erst
+nach 150 Minuten sichtbar wurde.
