@@ -1277,6 +1277,33 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   white-space:nowrap;font-size:var(--s0);padding:var(--r3) var(--r5);
   min-height:0;width:auto;justify-content:center}
 .etikett.weg{visibility:hidden;pointer-events:none}
+/* Was nach der Aufgabe stehen bleibt, ruht (G18).
+ *
+ * Die uebrigen Antwortknoepfe waren im Lob nicht zu unterscheiden von
+ * denen, auf die man tippen soll: Deckkraft 1, voller Griff, volle Kante.
+ * Ein Griff darauf verschwand still in `if (erledigt) return`.
+ *
+ * Was hier zurueckgenommen wird, ist genau das, was „druecken" verspricht:
+ * die KANTE (ein Knopf ohne Tiefe sieht nicht mehr nach Knopf aus) und
+ * ein Teil der Farbe. Der Kasten bleibt, wo er ist - er soll nicht
+ * verschwinden, sonst springt die Liste und die Karte darunter wandert
+ * mitten im Lob.
+ *
+ * `pointer-events:none` ist dabei nicht die Reparatur, sondern die
+ * Ehrlichkeit: der Griff war schon vorher wirkungslos, jetzt sieht man
+ * es. Und der Uebergang laeuft ueber `--d-zustand`, das unter
+ * `prefers-reduced-motion` auf 1 ms steht - kein zweiter Schalter, den
+ * man vergessen kann. */
+[data-fertig] .etikett:not(.weg),
+[data-fertig] .zahl{opacity:.42;box-shadow:none;pointer-events:none;
+  transform:translateY(var(--kante));
+  /* `animation:none` ist hier kein Schoenheitsfehler, sondern der Grund,
+     warum die Zeile darueber ueberhaupt wirkt: die Etiketten laufen mit
+     `animation: herein ... both` ein, und ein Animationswert schlaegt in
+     der Kaskade eine gewoehnliche Deklaration. Ohne diese Zeile blieb die
+     Deckkraft auf 1 - gemessen, nicht vermutet: „Griff none, Kante nein,
+     Deckkraft 1". Der Griff war weg, das Aussehen nicht. */
+  animation:none}
 /* Falsch: das Etikett faehrt zurueck und WACKELT. Vorher passierte am
    Etikett gar nichts - es kam nur ein Satz darunter, und das Kind sah
    nicht, dass seine Antwort abgelehnt worden war. */

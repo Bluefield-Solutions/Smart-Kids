@@ -4218,4 +4218,26 @@ export const PROBEN = [
     an:{ datei:'tor/kette-liste.mjs', text:'if (!treffer) continue;' },
     deckt:'betroffen',
     sagt:'faellt NICHT auf alle Tore zurueck' },
+
+  /* G18 - die ruhenden Knoepfe sehen wieder wach aus.
+   *
+   * Angegriffen wird die SUBTILE Haelfte, nicht die offensichtliche. Ohne
+   * `animation:none` bleibt die Deckkraft auf 1: die Etiketten laufen mit
+   * `animation: herein ... both` ein, und ein Animationswert schlaegt in
+   * der Kaskade eine gewoehnliche Deklaration. Genau das ist mir beim
+   * Bauen passiert - der Griff war weg, das Aussehen nicht, und ohne
+   * Messung haette ich es fuer erledigt gehalten.
+   *
+   * Die grobe Haelfte (`pointer-events` weg) faengt dieselbe Pruefung; wer
+   * sie streicht, macht die Knoepfe wieder greifbar und faellt an
+   * „Griff auto" durch. */
+  { n:'die ruhenden Antwortknoepfe behalten ihre volle Deckkraft', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:V,
+    such:'  animation:none}',
+    ersatz:'  }',
+    /* Der Anker nennt die Zeile MIT ihrem Vorgaenger: `animation:none}`
+       allein steht sechsmal im Buendel, und ein Anker, der auch woanders
+       zutrifft, faengt das Verschwinden nicht. */
+    an:{ ...DIST, fehlt:'das Aussehen nicht. */\n  animation:none}' },
+    sagt:'weiter antippbar aus' },
 ];

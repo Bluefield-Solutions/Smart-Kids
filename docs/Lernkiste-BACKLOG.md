@@ -197,7 +197,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
 | 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 14 | **G18** Keine toten Knöpfe im Lob | alle | gering | klein | — |
 | 16 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
 | 17 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
@@ -4331,6 +4330,76 @@ Befundes, und die Probe sagte „beweist nichts". Der Anker steht jetzt als
 Kommentar hinter dem Eingriff, und `an:` prüft die Wirkung statt des Textes.
 
 **Was das je Runde spart: 13–19 Minuten, ohne dass eine Prüfung wegfällt.**
+
+### G18 · Was nach der Aufgabe stehen bleibt, ruht — GEFAHREN (v368)
+
+Der Befund (QS14): nach der richtigen Antwort blieben die übrigen
+Antwortknöpfe stehen und sahen weiter antippbar aus. **Gemessen im Lob**,
+mit einer vorübergehenden Diagnose im Rauchtest:
+
+| Etikett | Klassen | Deckkraft | Griff |
+|---|---|---|---|
+| Hessen | `etikett` | 1 | **auto** |
+| Mecklenburg-V. (gewählt) | `etikett weg` | 0 | none |
+| Sachsen | `etikett` | 0,98 | **auto** |
+| Sachsen-Anhalt | `etikett` | 0,95 | **auto** |
+
+Drei Knöpfe mit vollem Griff, voller Füllung und voller 3-Punkt-Kante; der
+Griff darauf verschwand still in `if (erledigt) return`. **G17 hat den
+Befund verschärft** — seit die Antworten kräftiger sind, sind die toten
+Knöpfe das Lauteste auf dem Bildschirm.
+
+**Kein Schalter, sondern eine Ableitung.** Das Markieren hängt nicht an
+einem zusätzlichen Aufruf, den man an einer der sieben Endstellen
+vergessen kann, sondern am Setzen von `erledigt` selbst:
+`erledigt = beendet(s)`. Wer eine achte Endstelle baut, muss `erledigt`
+setzen — und fährt damit hier durch. Zurückgesetzt wird nichts: jede
+Aufgabe baut ein frisches `s`.
+
+Zurückgenommen wird genau das, was „drücken" verspricht: die **Kante**
+(ein Knopf ohne Tiefe sieht nicht mehr nach Knopf aus) und ein Teil der
+Farbe. Der Kasten bleibt, wo er ist — sonst springt die Liste und die
+Karte wandert mitten im Lob.
+
+#### Drei Messfehler, alle von der Messung selbst gefunden
+
+1. **`pointer-events` war weg, das Aussehen nicht.** Die Etiketten laufen
+   mit `animation: herein … both` ein, und ein **Animationswert schlägt in
+   der Kaskade eine gewöhnliche Deklaration**. Ohne `animation:none` blieb
+   die Deckkraft auf 1. Ohne die Messung hätte ich es für erledigt
+   gehalten.
+2. **Zu früh gemessen.** Die erste Fassung las die Etiketten mitten in der
+   gestaffelten Einlaufanimation: „0 von 4 greifbar", Deckkraft 0. Die
+   Messung war rot, die App war in Ordnung.
+3. **Zu spät gemessen.** Die zweite Fassung wartete bis zu drei Sekunden
+   auf den Ruhezustand — mit `?flott` dauert das Lob 900 ms. Gemessen
+   wurden vier frische Etiketten der *nächsten* Aufgabe, die natürlich
+   wach waren. Die Messung meldete den Fehler, den sie selbst gebaut
+   hatte.
+
+Gewartet wird jetzt auf die **Kante** und nicht auf eine Deckkraftschwelle:
+die Deckkraft unterschreitet 0,6 schon auf zwei Dritteln des Weges, und
+dann meldete die Messung „Kante ja" über einen Übergang, der noch lief.
+
+#### Das Tor prüft in beide Richtungen
+
+Die erste Hälfte ist die wichtigere: **während** der Aufgabe müssen die
+Etiketten greifbar sein. Ohne sie wäre die Prüfung durch Knöpfe zu
+erfüllen, die *immer* ruhen — also durch ein Spiel, das man nicht spielen
+kann. Dazu eine dritte Zusage: im Lob muss genau ein Etikett auf `weg`
+stehen, sonst misst die Prüfung die nächste Aufgabe statt der gelösten.
+
+Gegenprobe 300 greift die **subtile** Hälfte an und nimmt `animation:none`
+weg. Ihr Anker nennt die Zeile mit ihrem Vorgänger: `animation:none}`
+allein steht sechsmal im Bündel, und ein Anker, der auch woanders zutrifft,
+fängt das Verschwinden nicht.
+
+**Offen, aus dem Code geschlossen und nicht gemessen (G18b):** das
+**Mikrofon** ist im Lob vermutlich ebenso tot — sein Ergebnis läuft durch
+denselben `erledigt`-Wächter. Es ruht bewusst *nicht* mit, weil ich nicht
+gemessen habe, welche Knöpfe der Werkzeugspalte im Lob noch etwas tun
+(„noch einmal hören" könnte lebendig sein). Das ist eine eigene Messung,
+keine Zeile hier.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

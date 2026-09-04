@@ -31,6 +31,29 @@ if (stempel) stempel.textContent = `v${BAU.bau} · ${BAU.stand}`;
 const FL = ['--f1','--f2','--f3','--f4','--f5','--f6','--f7'];
 const VIER = ['--f1','--f3','--f5','--f6'];
 const el = (t,k,i)=>{ const e=document.createElement(t); if(k)e.className=k; if(i!==undefined)e.innerHTML=i; return e; };
+/* Die Aufgabe ist zu Ende (G18).
+ *
+ * Der Befund: nach der richtigen Antwort blieben die uebrigen
+ * Antwortknoepfe stehen und sahen weiter antippbar aus. Gemessen im Lob -
+ * drei Knoepfe, Deckkraft 1, `pointer-events:auto`, volle Fuellung und
+ * volle 3-Punkt-Kante. Ein Griff darauf verschluckte `if (erledigt)
+ * return` still. Drei Knoepfe, die etwas versprechen und nichts tun; seit
+ * G17, das die Antworten kraeftiger gemacht hat, sind sie ausserdem das
+ * Lauteste auf dem Bildschirm.
+ *
+ * KEIN SCHALTER, SONDERN EINE ABLEITUNG. Das Markieren haengt nicht an
+ * einem zusaetzlichen Aufruf, den man an einer der sieben Endstellen
+ * vergessen kann, sondern am Setzen von `erledigt` selbst: `erledigt =
+ * beendet(s)`. Wer eine achte Endstelle baut, muss `erledigt` setzen -
+ * und faehrt damit hier durch. Ein Aufruf, den man vergessen kann, wird
+ * einmal vergessen.
+ *
+ * Zurueckgesetzt wird nichts: jede Aufgabe baut in `spielschirm`,
+ * `rechenschirm` und `schreibschirm` ein frisches `s`. Das Merkmal geht
+ * mit dem alten Bildschirm.
+ *
+ * Gibt `true` zurueck, damit es an die Stelle der Zuweisung passt. */
+const beendet = (s) => { if (s) s.dataset.fertig = '1'; return true; };
 /* Der Zackenstern. EIN Pfad, zwei Verwendungen: der gezaehlte Stern im Kopf
    (`STERN`, mit Tintenkontur) und der Streustern auf Fionas Kachel (`MOTIV`,
    ohne). Regel 6 - was zweimal dasteht, veraltet einmal; hier waere es der
@@ -2857,7 +2880,7 @@ function rechenschirm(){
 
   function aufloesen(grund){
     if (erledigt) return;
-    erledigt = true;
+    erledigt = beendet(s);
     const fachVorher = Stand[ziel.id]?.fach ?? 1;
     Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
     st.wie[st.i] = 'gezeigt';
@@ -2893,7 +2916,7 @@ function rechenschirm(){
     versuch++;
     const fachVorher = Stand[ziel.id]?.fach ?? 1;
     if (zahl === ziel.wert) {
-      erledigt = true;
+      erledigt = beendet(s);
       const neuerAufkleber = werten(ziel, 'richtig', versuch);
       kopfNachziehenIn(s);
       protokollieren('richtig', zahl, fachVorher);
@@ -3210,7 +3233,7 @@ function schreibschirm(){
   /** Vormachen statt ablehnen - nach drei Fehlversuchen oder auf Wunsch. */
   function aufloesen(){
     if (erledigt) return;
-    erledigt = true;
+    erledigt = beendet(s);
     const fachVorher = Stand[ziel.id]?.fach ?? 1;
     Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
     st.wie[st.i] = 'gezeigt';
@@ -3237,7 +3260,7 @@ function schreibschirm(){
     const gelesen = meine.map(m => Schreiben.erkennen(m, satz));
     const stimmt = gelesen.every((e, i) => e.sicher && e.zeichen === folge[i]);
     if (stimmt) {
-      erledigt = true;
+      erledigt = beendet(s);
       const neuerAufkleber = werten(ziel, 'richtig', versuch);
       kopfNachziehenIn(s);
       protokollieren('richtig', gelesen.map(e => e.zeichen).join(''), fachVorher);
@@ -3709,7 +3732,7 @@ function spielschirm(){
    */
   function aufloesen(grund){
     if (erledigt) return;
-    erledigt = true;
+    erledigt = beendet(s);
     Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
     st.wie[st.i] = 'gezeigt';
     kopfNachziehen();
@@ -4694,7 +4717,7 @@ function spielschirm(){
     }
 
     if (ergebnis!=='falsch') {
-      erledigt = true;
+      erledigt = beendet(s);
       const neuerAufkleber = werten(ziel, ergebnis, versuch);
       kopfNachziehen();
       if (ctx.etikett) ctx.etikett.classList.add('weg');
@@ -4729,7 +4752,7 @@ function spielschirm(){
        * Die Aufgabe endet, aber die Antwort steht NICHT da: was hier
        * fehlt, gehoert in die naechste Uebungsrunde, nicht in die
        * Pruefung. */
-      erledigt = true;
+      erledigt = beendet(s);
       // Der Leitner erfaehrt es: nicht gekonnt ist nicht gekonnt, ob mit
       // oder ohne Hilfen. Sonst waere ein Test eine Runde, die den
       // Lernstand nicht anfasst - und genau die Gegenstaende, die im Test

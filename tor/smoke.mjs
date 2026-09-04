@@ -1936,7 +1936,72 @@ if (laeuft('ablage')) try {
     // nichts: ob neu angefangen oder weitergezaehlt - das Band stand so
     // oder so auf Punkt eins. Der Eingriff war drin, das Tor blieb gruen
     // (Regel 10).
-    await loese(p); await loese(p);
+    /* G18 - was nach der Aufgabe stehen bleibt, ruht.
+     *
+     * Der Befund (QS14): nach der richtigen Antwort blieben die uebrigen
+     * Antwortknoepfe stehen und sahen weiter antippbar aus. Gemessen im
+     * Lob - drei Knoepfe, Deckkraft 1, `pointer-events:auto`, volle
+     * 3-Punkt-Kante; der Griff verschwand still in `if (erledigt)
+     * return`.
+     *
+     * GEPRUEFT WIRD IN BEIDE RICHTUNGEN, und die erste Haelfte ist die
+     * wichtigere: WAEHREND der Aufgabe muessen die Etiketten greifbar
+     * sein. Ohne sie waere die Pruefung durch Knoepfe zu erfuellen, die
+     * IMMER ruhen - also durch ein Spiel, das man nicht spielen kann.
+     * Eine Wirkung, die man nicht abschaltet, ist nicht gemessen. */
+    const etiketten = () => p.evaluate(() => [...document
+      .querySelectorAll('.schirm.da .etikett')].map(e => {
+        const st = getComputedStyle(e);
+        return { weg: e.classList.contains('weg'), griff: st.pointerEvents,
+          deckkraft: +st.opacity, kante: st.boxShadow !== 'none' };
+      }));
+    /* Erst warten, bis die Etiketten DA sind. Sie laufen gestaffelt ein
+       (`--rang`), und beim ersten Anlauf habe ich mitten hinein gemessen:
+       „0 von 4 greifbar", Deckkraft 0. Die Messung war rot, die App war
+       in Ordnung - eine Messstelle, die zu frueh liegt, misst die
+       Animation und nicht die Sache. */
+    await p.waitForFunction(() => {
+      const e = [...document.querySelectorAll('.schirm.da .etikett')];
+      return e.length > 1 && e.every(x => +getComputedStyle(x).opacity > 0.9);
+    }, null, { timeout: 5000 });
+    const g18vorher = await etiketten();
+    const lebendig = g18vorher.filter(e => e.griff === 'auto' && e.deckkraft > 0.9 && e.kante);
+    if (lebendig.length < 2)
+      merke('spielen', new Error(`vor der Antwort sind nur ${lebendig.length} von `
+        + `${g18vorher.length} Etiketten greifbar — dann prüft die Messung danach nichts`));
+
+    await loese(p);
+    /* Gemessen wird INNERHALB des Lobs, und das ist knapp: mit `?flott`
+       dauert es 900 ms, dann steht die naechste Aufgabe da. Beim ersten
+       Anlauf wartete ich bis zu drei Sekunden auf den Ruhezustand - und
+       mass am Ende vier frische Etiketten der NAECHSTEN Aufgabe, die
+       natuerlich wach waren. Die Messung meldete den Fehler, den sie
+       selbst gebaut hatte.
+       `pointer-events` gilt sofort und wird nicht ueberblendet; Deckkraft
+       und Kante laufen ueber `--d-zustand`. Gewartet wird auf die KANTE
+       und nicht auf eine Deckkraftschwelle: die Deckkraft unterschreitet
+       0,6 schon auf zwei Dritteln des Weges, und dann meldete die Messung
+       „Kante ja" ueber einen Uebergang, der noch lief. Gewartet wird auf
+       den ZUSTAND, nicht auf eine Frist. */
+    await p.waitForFunction(() => [...document
+      .querySelectorAll('.schirm.da .etikett')]
+      .filter(e => !e.classList.contains('weg'))
+      .every(e => getComputedStyle(e).boxShadow === 'none'), null, { timeout: 600 })
+      .catch(() => {});
+    const nachher = (await etiketten()).filter(e => !e.weg);
+    if (nachher.length >= g18vorher.length)
+      merke('spielen', new Error(`im Lob steht kein Etikett auf \`weg\` `
+        + `(${nachher.length} von ${g18vorher.length}) — dann ist die Aufgabe schon `
+        + `weiter, und diese Messung sieht die nächste statt der gelösten`));
+    const wach = nachher.filter(e => e.griff !== 'none' || e.deckkraft > 0.6 || e.kante);
+    console.log(`  Knöpfe im Lob (G18):        ${lebendig.length} greifbar vorher, `
+      + `${nachher.length} übrig, davon ${wach.length} noch wach`);
+    if (wach.length)
+      merke('spielen', new Error(`nach der Antwort sehen ${wach.length} von ${nachher.length} `
+        + `Antwortknöpfen weiter antippbar aus (Griff ${wach[0].griff}, Deckkraft `
+        + `${wach[0].deckkraft}, Kante ${wach[0].kante ? 'ja' : 'nein'}) — sie versprechen `
+        + `etwas und tun nichts`));
+    await loese(p);
     // Gewartet wird darauf, dass der LAUFENDE Punkt weitergerueckt ist -
     // nicht darauf, dass irgendein Punkt gefaerbt ist.
     //
