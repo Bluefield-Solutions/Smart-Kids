@@ -1541,6 +1541,11 @@
       "commit": "cec3e03b31b2bb8254232682d8a734ae888021fc",
       "zeit": "2026-09-04",
       "s": 9
+    },
+    "ein Redemittel wird um einen eigenen Satz ergaenzt": {
+      "commit": "e3055ea4b4c370f126ac006362a8a832d52498d1",
+      "zeit": "2026-09-04",
+      "s": 10
     }
   }
 }

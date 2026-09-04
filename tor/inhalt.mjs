@@ -1860,14 +1860,52 @@ console.log('\n  Tor `englisch`');
   const leer = EN.WOERTER.filter(w => !w || !w.trim());
   if (leer.length) schief.push(`${leer.length} leere Einträge`);
 
+  /* Die vier Themengebiete, gegen die ZWEITE amtliche Datei.
+   *
+   * Geprueft wird jeder Satz einzeln: steht er so in der Quelle? Damit
+   * faengt das Tor auch den Fall, der bei Redemitteln am naechsten liegt -
+   * dass jemand ein „…" auffuellt oder eine Frage glattzieht, weil sie
+   * unfertig aussieht. Sie ist nicht unfertig; die Luecke ist der Inhalt. */
+  const QUELLE2 = 'docs/referenz/ISB-Englisch-Redemittel-34.txt';
+  if (!fs.existsSync(QUELLE2)) {
+    schief.push(`${QUELLE2} fehlt — dann sind die Themengebiete ungeprüft`);
+  } else {
+    /* Die Quelle traegt weiche Anfuehrungszeichen und Zeilenumbrueche
+       mitten im Satz. Verglichen wird deshalb ueber eine geglaettete
+       Fassung - Umbrueche zu Leerzeichen, Apostrophe vereinheitlicht. */
+    const glatt = (t) => t.replace(/[\u2018\u2019\u00b4]/g, "'").replace(/\s+/g, ' ');
+    const roh2 = glatt(fs.readFileSync(QUELLE2, 'utf8'));
+    if (EN.THEMENGEBIETE.length !== 4)
+      schief.push(`${EN.THEMENGEBIETE.length} Themengebiete statt der vier des Lehrplans`);
+    for (const g of EN.THEMENGEBIETE) {
+      if (!roh2.includes(glatt(`${g.nr} ${g.titel}`)))
+        schief.push(`das Themengebiet „${g.nr} ${g.titel}" steht nicht in der Quelle`);
+      if (!g.handlungen.length)
+        schief.push(`„${g.titel}" hat keine Sprachhandlung — ein leeres Themengebiet`);
+      for (const h of g.handlungen) {
+        if (!h.saetze.length)
+          schief.push(`„${g.titel}" / „${h.was}" hat kein einziges Redemittel`);
+        for (const satz of h.saetze)
+          if (!roh2.includes(glatt(satz)))
+            schief.push(`dieses Redemittel steht nicht in der Quelle: „${satz.slice(0, 60)}"`);
+      }
+    }
+  }
+
   if (schief.length) {
     console.log('    ' + schief.join('\n    '));
-    console.error('\n  englisch ROT: die Daten weichen von der amtlichen Wortschatzliste ab.');
+    console.error('\n  englisch ROT: die Daten weichen von den amtlichen Listen ab.');
     process.exit(1);
   }
+  const handlungen = EN.THEMENGEBIETE.reduce((n, g) => n + g.handlungen.length, 0);
+  const saetze = EN.THEMENGEBIETE.reduce((n, g) =>
+    n + g.handlungen.reduce((m, h) => m + h.saetze.length, 0), 0);
   console.log(`    ${EN.WOERTER.length} Wörter, ${EN.ZAHLEN.length} Zahlen, `
     + `${EN.WAEHRUNG.length} Währungszeichen — Wort für Wort wie in der ISB-Liste`);
-  console.log('    (Themengebiete noch offen — sie stehen in der Redemittel-Liste, E1b)');
+  console.log(`    ${EN.THEMENGEBIETE.length} Themengebiete, ${handlungen} Sprachhandlungen, `
+    + `${saetze} Redemittel — Satz für Satz wie in der Redemittel-Liste`);
+  console.log('    (kein Wort trägt ein Themengebiet — die Zuordnung steht in keiner '
+    + 'der beiden Quellen)');
 }
 
 /* =================================================== Tor `betroffen` ==== *

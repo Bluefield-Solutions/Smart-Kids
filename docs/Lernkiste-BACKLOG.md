@@ -187,7 +187,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **E1b** Themengebiete zuordnen | Lea, Fiona | hoch | klein | **Redemittel-Liste des ISB** |
+| 1 | **Q51** `ziehen` wartet auf den DOM, misst aber Bildpunkte | nur ich | mittel | klein | — |
 | 2 | **E2–E12** Englisch — die neue Welt | Lea, Fiona, ihr beide | hoch | groß | E1b |
 | 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
@@ -4455,6 +4455,84 @@ Eingriff.)
 `doppelt` schlug an: 301 Token gleichförmig. Eingetragen mit Begründung —
 eine Datenliste *ist* ein gleichförmiger Lauf, derselbe Fall wie die
 sieben Länderlisten. Die Zahl ist an die Wortzahl gebunden.
+
+### E1b · Die vier Themengebiete liegen im Verzeichnis — GEFAHREN (v371)
+
+Die zweite amtliche Datei ist da: *„Liste empfohlener Redemittel"* (ISB).
+Eingetragen sind **4 Themengebiete, 16 Sprachhandlungen, 39 Redemittel** —
+Satz für Satz, mit `docs/referenz/ISB-Englisch-Redemittel-34.txt` daneben.
+
+| | Themengebiet | Sprachhandlungen | Redemittel |
+|---|---|---|---|
+| 4.1 | Familie und Freunde | 2 | 8 |
+| 4.2 | Schule | 7 | 15 |
+| 4.3 | Freizeit und Feste | 4 | 10 |
+| 4.4 | Einkaufen | 3 | 6 |
+
+#### Der wichtigste Befund: die Zuordnung Wort → Themengebiet gibt es nicht
+
+Sie steht in **keiner** der beiden amtlichen Dateien. Der Wortschatz ist
+alphabetisch, die Redemittel sind thematisch, und dazwischen gibt es keine
+Brücke. **Gemessen, bevor ich es geglaubt habe** — von den 151 Wörtern
+kommen vor:
+
+| | |
+|---|---|
+| in gar keinem Redemittel | **60** (apple, butter, hamster, tomato …) |
+| in genau einem Themengebiet | 54 |
+| in mehreren | 37 |
+
+Eine abgeleitete Zuordnung wäre für **zwei Drittel der Wörter erfunden** —
+und das wäre die teuerste Sorte Erfindung: sie sieht amtlich aus, weil sie
+neben amtlichen Daten steht.
+
+**Deshalb tragen die Themengebiete ihre Redemittel, nicht ihre Wörter.**
+Das genügt für alles, was ansteht: Abzeichen je Themengebiet (E9), Sätze
+zum Selbersagen, die Reihenfolge der Ebenen. Und es entspricht dem, was
+die Quelle selbst sagt — die Wörter werden „nicht isoliert erworben,
+sondern stets in Verbindung mit den empfohlenen Redemitteln".
+
+Damit ist auch **Fionas Teilmenge** noch offen: ohne Themengebiete je Wort
+wäre die Auswahl mein Geschmack. Sie hängt jetzt an den Bildern (E4) — was
+ein Bild bekommt, kann Fiona spielen.
+
+#### Was beim Lesen schiefging
+
+Der Parser hat zweimal falsch gelesen, und beide Male hat das Hinsehen es
+gefangen, nicht eine Prüfung:
+
+1. Das Aufzählungszeichen (`\uf0b7`) ging im Heredoc verloren.
+   `startswith('')` trifft **jede** Zeile — jede wurde zur
+   Sprachhandlung und verlor ihren ersten Buchstaben („ow are you?").
+2. Bei 4.4 läuft die deutsche Beschreibung über drei Zeilen, dann folgen
+   die englischen Sätze ohne Tabulator. Getrennt wird jetzt nach Sprache;
+   Zeilenumbrüche mitten im Satz werden verbunden, wenn die Vorzeile nicht
+   auf `.`, `!` oder `?` endet.
+
+Gegenprobe 302 hängt „Happy Easter!" an ein Redemittel — die Sorte
+Änderung, die man aus Hilfsbereitschaft macht, weil zu Weihnachten und
+Geburtstag ja noch Ostern fehlt. Die Lücke **ist** der Inhalt.
+
+### Q51 · `ziehen` wartet auf den DOM, misst aber Bildpunkte
+
+Ein Kettenlauf meldete *„auf asien ist überhaupt kein Grau im Bild — die
+Messung beweist nichts"*. Allein gefahren: **12,77 %** Grau auf Asien,
+grün. Nicht meine Änderung — diese Runde fasst keine Karte an.
+
+An der Stelle steht bereits ein Kommentar über **genau diesen Fehler**
+(Q40): unter Last wurde gemessen, bevor gezeichnet war. Der Flicken wartet
+seither auf `#umg` mit mindestens einem Pfad — also auf den **DOM**.
+Gemessen werden aber **Bildpunkte**. Zwischen „der Pfad steht im Baum" und
+„er ist gerastert" liegt genau die Lücke, die unter Last aufgeht.
+
+Nebenbei gemessen: drei Kontinente liegen ohnehin nahe null — Südamerika
+**0,02 %**, Australien 0,12 %, Nordamerika 0,68 %. Die Blindprobe schlägt
+bei genau null an; dort ist ein geglätteter Bildpunkt der Unterschied
+zwischen grün und rot.
+
+*Der Weg:* auf das Bild warten statt auf den Baum — zwei Aufnahmen im
+Abstand, bis sie gleich sind. Und die Blindprobe von „größer als null" auf
+einen Anteil heben, der zu den gemessenen 0,02 % passt.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

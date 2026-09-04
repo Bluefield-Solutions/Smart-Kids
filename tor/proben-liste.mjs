@@ -4267,4 +4267,24 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:"'color'," },
     deckt:'englisch',
     sagt:'nicht in der amtlichen Liste' },
+
+  /* E1b - ein Redemittel wird glattgezogen.
+   *
+   * Der Eingriff haengt „Happy Easter!" an. Das ist die Sorte Aenderung,
+   * die man aus Hilfsbereitschaft macht: die amtlichen Redemittel sehen
+   * unfertig aus, weil sie voller „…" stehen und weil zu Weihnachten und
+   * Geburtstag ja noch Ostern fehlt. Sie sind nicht unfertig - die Luecke
+   * IST der Inhalt, und was der Lehrplan nicht verlangt, gehoert nicht
+   * dazu.
+   *
+   * Geprueft wird gegen `docs/referenz/ISB-Englisch-Redemittel-34.txt`,
+   * Satz fuer Satz. */
+  { n:'ein Redemittel wird um einen eigenen Satz ergaenzt', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"'Happy birthday! Merry Christmas!',",
+    ersatz:"'Happy birthday! Merry Christmas! Happy Easter!', "
+      + "// Anker: 'Happy birthday! Merry Christmas!',",
+    an:{ datei:'src/inhalt/englisch.js', text:'Happy Easter!' },
+    deckt:'englisch',
+    sagt:'steht nicht in der Quelle' },
 ];
