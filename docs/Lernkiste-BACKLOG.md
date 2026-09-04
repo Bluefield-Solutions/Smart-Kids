@@ -197,7 +197,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
 | 10 | **G15b** Buchseite: ein Grundriss je Seite statt einer Höhe für alle | Fiona, Lea | hoch | groß | G15 hat gezeigt, warum |
-| 11 | **G19** Kommentare aus `dist/` nehmen? 48,3 % des Bündels | nur ihr | mittel | klein | Entscheidung |
 | 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
 | 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
 | 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
@@ -4225,3 +4224,67 @@ Der Bau minifiziert nicht, also wird jede Begruendung mit auf das Telefon
 geliefert. Das ist kein Fehler — es ist eine Entscheidung, die nie
 getroffen wurde. Der Quelltext bleibt in Git, ganz gleich was `dist/`
 enthaelt. Steht als **G19** zur Entscheidung.
+
+---
+
+## G19 · Kommentare aus `dist/`? — GEMESSEN UND ABGELEHNT
+
+Nicht verworfen, weil es nicht ginge, sondern weil die Rechnung nicht
+aufgeht. Damit niemand es in einem halben Jahr noch einmal aufmacht,
+stehen hier die Zahlen.
+
+### Was es braechte
+
+| | roh | gzip |
+|---|---|---|
+| mit Kommentaren | 723 KB | **256 KB** |
+| ohne (geschätzt) | 373 KB | **118 KB** |
+| **Ersparnis** | 350 KB | **138 KB = 54 %** |
+
+Der Gewinn haelt also auch gepackt — deutsche Prosa komprimiert sich
+nicht weg. 54 % der Uebertragung sind eine ernste Zahl.
+
+### Warum trotzdem nicht
+
+**1. Real in Prozent, unwirksam in der Sache.** Die App laeuft als PWA auf
+vier Telefonen im eigenen WLAN, und der Service Worker laedt nur nach
+einer Auslieferung neu. 138 KB sind dort Zehntelsekunden. Für Fiona und
+Lea aendert sich nichts — und sie sind der Massstab.
+
+**2. Die Grenze ist nicht knapp.** Das Konzept setzt **< 400 KB gzip**
+fuer das Startbuendel; gemessen sind **310 KB**. 90 KB Luft, 22 %.
+
+**3. Der Preis ist eine echte Fussangel.** Ein handgeschriebener
+Kommentar-Entferner bricht an `//` in einer Adresse, an `*/` in einer
+Zeichenkette, an einem Regex-Literal — und diese Datei ist voll von allen
+dreien. Ein richtiger Minifier waere eine neue Abhaengigkeit in einem Bau,
+den dieses Projekt bewusst mit zwei Dateien und ohne Werkzeugkette haelt.
+
+**4. Regel 7 macht beide Wege teuer.** Geprüft wird `dist/`. Entweder man
+entfernt beim NORMALEN Bau — dann prueft die Kette das Richtige, aber
+jeder Lauf hier verliert die lesbare Fassung. Oder nur beim AUSLIEFERN —
+dann prueft die Kette etwas anderes als das, was auf dem Telefon landet,
+und genau das verbietet die Regel.
+
+### Was es gekostet haette, und was es fast nicht kostet
+
+Nachgemessen, weil es die eigentliche Sorge war: von **174** Proben mit
+einem Anker im Buendel verschwaende genau **eine** — und das neue Tor
+`anker` faengt sie in 0,2 s. Der Grund gegen G19 ist also *nicht* die
+Prüfbarkeit. Es ist der Nutzen.
+
+### Wann es doch gemacht wird
+
+**Wenn `budget` ueber 360 KB gzip meldet.** Dann sind 40 KB bis zur Grenze
+uebrig, und der Bau muss ohnehin angefasst werden. Dann aber mit einem
+richtigen, sprachbewussten Werkzeug und im NORMALEN Bau — geprüft wird
+`dist/` und nicht der Prototyp (Regel 7), also muss die Kette genau das
+sehen, was auf dem Telefon landet.
+
+**Der Anstieg gehoert beobachtet:** 294,6 → 310,2 KB in zwei Tagen, und
+der Zuwachs kommt fast vollstaendig aus den Begruendungen dieser Sitzung.
+In diesem Tempo waeren es rund sechs weitere Sitzungen bis 360. Die
+Kommentare haben sich in dieser Sitzung mehrfach bezahlt gemacht — sie
+sind der Grund, warum QS8 und Q49 ueberhaupt zu finden waren. Kuerzer
+schreiben ist hier die falsche Ersparnis; die richtige ist, sie
+irgendwann nicht mitzuliefern.
