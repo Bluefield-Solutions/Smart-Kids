@@ -386,9 +386,9 @@
       "s": 14
     },
     "die Entwürfe holen ihre Schrift aus dem Netz": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 25
+      "s": 28
     },
     "ein langes Warten bleibt stumm": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -521,9 +521,9 @@
       "s": 7
     },
     "die Hauptstädte-Ebene bekommt den falschen Rahmen": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 17
+      "s": 18
     },
     "Fiona bekommt die Hauptstädte Europas": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -546,7 +546,7 @@
       "s": 33
     },
     "die Übersicht im Elternbereich fällt weg": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
       "s": 22
     },
@@ -556,9 +556,9 @@
       "s": 8
     },
     "die Siegsterne kommen bei den Eltern zurück": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 35
+      "s": 57
     },
     "ein Schlüssel fehlt im kindlichen Ton": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -581,9 +581,9 @@
       "s": 25
     },
     "die Beispielkarten verlieren ihre Form": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 14
+      "s": 11
     },
     "Aufkleber fallen wieder aus dem Buch": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -721,22 +721,22 @@
       "s": 71
     },
     "der leere Kopf nimmt wieder Platz weg": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 55
+      "s": 58
     },
     "die Pause warnt nicht mehr vor „von vorne\"": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 16
+      "s": 14
     },
     "der Vorlauf verteilt die Karten wieder auf acht Spuren": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 17
+      "s": 20
     },
     "die Beispielkarten füllen das Band nicht mehr": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
       "s": 12
     },
@@ -996,9 +996,9 @@
       "s": 16
     },
     "der nächtliche Lauf urteilt wieder über `ansicht`": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 25
+      "s": 18
     },
     "die Umgebung reicht auf keiner Karte mehr ins Randband": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -1006,14 +1006,14 @@
       "s": 28
     },
     "die Karte wechselt die Farbe": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 15
+      "s": 13
     },
     "Grönland ist wieder nur Umgebung": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
-      "s": 14
+      "s": 15
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -1096,7 +1096,7 @@
       "s": 72
     },
     "auf dem Zielgerät verschwindet der Kachelbalken": {
-      "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
       "zeit": "2026-09-04",
       "s": 13
     },
@@ -1504,6 +1504,11 @@
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
       "zeit": "2026-09-04",
       "s": 9
+    },
+    "eine gruene Aufnahme laesst ihr Abweichungsbild liegen": {
+      "commit": "35f19d1a4833876c562c2657dea2aa81c42b6fdc",
+      "zeit": "2026-09-04",
+      "s": 15
     }
   }
 }

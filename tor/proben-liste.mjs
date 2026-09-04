@@ -4121,4 +4121,27 @@ export const PROBEN = [
     ersatzFn:(m)=>m[0].replace('BALLAST', ''),
     an:{ datei:'tor/proben-liste.mjs', text:"text:'const FUELL'" },
     sagt:'schon OHNE den Eingriff' },
+
+  /* QS9 — `tor/abweichungen/` behauptet eine Aenderung, die es nicht gibt.
+   *
+   * Der Befund: das Verzeichnis wurde nie geleert. Ich habe darin 32 Bilder
+   * gezaehlt und geschlossen, meine Aenderung habe 32 Bildschirme bewegt;
+   * gemessen waren es drei, die uebrigen 29 lagen seit frueheren Laeufen
+   * da. `ansicht` raeumt jetzt vor jedem Vergleich die Bilder DER Aufnahme,
+   * die es gerade misst - je Teil nur die eigenen Namen, sonst raeumte der
+   * zweite Teil die Funde des ersten weg.
+   *
+   * WARUM DIESE PROBE DAS RAEUMEN ANGREIFT und nicht einfach eine Datei
+   * hinlegt: eine hingelegte Datei loescht dasselbe Raeumen im selben Lauf,
+   * bevor die Pruefung sie sieht. Beim ersten Anlauf blieb der Lauf gruen,
+   * und das sah aus wie eine bestandene Probe - die Probe haette den Fall
+   * bezeugt, ohne ihn je geprueft zu haben. Sie dreht deshalb
+   * `abwegLoeschen` UM: die Aufnahme hinterlaesst eine Datei, statt sie
+   * wegzunehmen. Genau der Zustand, den QS9 beschreibt. */
+  { n:'eine gruene Aufnahme laesst ihr Abweichungsbild liegen', tor:'ansicht',
+    args:['--nur=quer-buch'], bauen:true, datei:'tor/ansicht.mjs',
+    such:'  abwegLoeschen(a.name);',
+    ersatz:"  fs.writeFileSync(abwegDatei(a.name, '.png'), Buffer.alloc(8));",
+    an:{ datei:'tor/ansicht.mjs', fehlt:'\n  abwegLoeschen(a.name);\n' },
+    sagt:'NICHT rot gefunden' },
 ];

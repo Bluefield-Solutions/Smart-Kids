@@ -200,7 +200,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
 | 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
 | 14 | **G18** Keine toten Knöpfe im Lob | alle | gering | klein | — |
-| 15 | **QS9** `ansicht` leert `tor/abweichungen/` vor jedem Lauf | nur ich | mittel | klein | — |
 | 16 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
 | 17 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
@@ -4051,8 +4050,45 @@ Aenderung — dieselben 13 Treffer, also konnten sie nicht von mir sein).
 *Wer eine Wirkung misst, schaltet sie zuerst ab* — hier hat genau das
 den Denkfehler aufgedeckt.
 
-*Offen:* `ansicht` soll `tor/abweichungen/` zu Beginn leeren. Ein
-Diff-Verzeichnis, das Altes behaelt, meldet Befunde, die es nicht gibt.
+**GEFAHREN (v364).** `ansicht` raeumt jetzt — aber nicht so, wie es hier
+stand.
+
+**Nicht „zu Beginn leeren".** Das Tor faehrt in drei Teilen nebeneinander
+(`--teil=i/n`). Ein pauschales Leeren im zweiten Teil haette die Funde des
+ersten weggeworfen — dieselbe Bauart Fehler noch einmal, nur schneller.
+Geraeumt wird deshalb **je Aufnahme, vor ihrem Vergleich**: jeder Teil
+fasst genau die Namen an, die er auch misst, und die Koerbe sind
+zerschnitten. Verwaiste Bilder — zu Aufnahmen, die es nicht mehr gibt —
+raeumt jeder Teil zusaetzlich; sie stehen in keinem Korb, also wuerde sie
+sonst keiner finden.
+
+**Die Selbstpruefung ist der eigentliche Punkt.** Am Ende jedes Laufs
+prueft `ansicht`, dass zu keiner Aufnahme, die es NICHT rot gefunden hat,
+ein Bild im Verzeichnis liegt. Ohne diese Zeile waere das Raeumen eine
+Zusage ohne Nachweis — und genau so eine Zusage war QS9.
+
+**Der erste Anlauf war selbst eine Pruefung, die nie etwas meldet.** Ich
+wollte die Selbstpruefung belegen, indem ich eine Datei von Hand ins
+Verzeichnis legte. Der Lauf blieb gruen — weil das Raeumen sie im selben
+Lauf loescht, bevor die Pruefung sie sieht. Das sah aus wie eine
+bestandene Probe und war keine. Die Gegenprobe greift deshalb das
+**Raeumen** an: sie dreht `abwegLoeschen` um, sodass jede Aufnahme eine
+Datei hinterlaesst statt sie wegzunehmen. Dann meldet es. (Probe 295.)
+
+**Gemessen vorher:** 8 Dateien im Verzeichnis, waehrend der letzte Lauf
+37 von 37 gruen war. Nach einem Lauf mit `--nur=quer-buch`: die zwei
+Dateien dieser Aufnahme sind weg, die sechs anderen stehen noch — richtig
+so, dieser Lauf hat sie nicht gemessen.
+
+**Nebenbefund, nicht bewiesen.** Nach einem `proben`-Lauf, den ich mit
+`pkill` abgeschossen hatte, stuerzte der naechste in `kopieAufbauen()`
+ab (`git worktree add`, Status 128 — der in Q39 beschriebene Wettlauf),
+und der uebernaechste meldete zwei Proben falsch („Eingriff NICHT
+angekommen", „TOR BLEIBT GRÜN"). Danach dreimal dieselbe Auswahl, alle
+gruen; auf dem Stand OHNE meine Aenderung unter derselben Last ebenfalls
+gruen. Die Erklaerung passt — ein abgeschossener Lauf laesst seine
+Wegwerf-Baeume in `.git/worktrees` stehen —, bewiesen ist sie nicht. Wer
+`proben` abschiesst, sollte danach `git worktree prune` fahren.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

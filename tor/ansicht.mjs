@@ -545,7 +545,50 @@ await seite.addInitScript(() => { Math.random = () => 0.42; });
 fs.mkdirSync(VORBILDER, { recursive:true });
 fs.mkdirSync(ABWEICHUNGEN, { recursive:true });
 
+/* QS9: `tor/abweichungen/` wurde NIE geleert.
+ *
+ * Was das gekostet hat: ich habe in dieses Verzeichnis gesehen, 32 Bilder
+ * gezaehlt und daraus geschlossen, meine Aenderung habe 32 Bildschirme
+ * veraendert. Gemessen waren es drei - die anderen 29 lagen seit einem
+ * frueheren Lauf da. Ein Verzeichnis, in dem Altes liegen bleibt, ist
+ * keine Auskunft ueber den letzten Lauf, sondern ueber alle Laeufe seit
+ * dem letzten Aufraeumen von Hand; und es sieht genauso aus.
+ *
+ * Geraeumt wird NICHT pauschal beim Start. Das Tor faehrt in drei Teilen
+ * nebeneinander (`--teil=i/n`), und ein pauschales Leeren im zweiten Teil
+ * wuerde die Funde des ersten wegwerfen. Jeder Teil raeumt deshalb genau
+ * die Namen, die er auch misst - die Koerbe sind zerschnitten, also
+ * greift keiner in den anderen. */
+const abwegDatei = (name, art) => path.join(ABWEICHUNGEN, name + art);
+const abwegLoeschen = (name) => {
+  for (const art of ['.png', '.jetzt.png']) {
+    try { fs.unlinkSync(abwegDatei(name, art)); } catch { /* war nicht da */ }
+  }
+};
+
+/* Verwaiste: Bilder zu Aufnahmen, die es nicht mehr gibt.
+ *
+ * Die raeumt kein Teil ueber seine eigenen Namen weg - eine geloeschte
+ * oder umbenannte Aufnahme steht in keinem Korb mehr. Jeder Teil rechnet
+ * hier dieselbe Liste aus und loescht dieselben Dateien; dass zwei das
+ * gleichzeitig tun, macht nichts (der zweite faellt ins `catch`). */
+{
+  const bekannt = new Set(AUFNAHMEN.map(a => a.name));
+  let verwaist = 0;
+  for (const d of fs.readdirSync(ABWEICHUNGEN)) {
+    if (!d.endsWith('.png')) continue;
+    const name = d.replace(/\.jetzt\.png$|\.png$/, '');
+    if (bekannt.has(name)) continue;
+    try { fs.unlinkSync(path.join(ABWEICHUNGEN, d)); verwaist++; } catch { /* schon weg */ }
+  }
+  if (verwaist) console.log(`  (${verwaist} verwaiste Bilder entfernt — `
+    + `sie gehoerten zu Aufnahmen, die es nicht mehr gibt)`);
+}
+
 let rot = 0, neu = 0, gruen = 0;
+/* Welche Aufnahmen dieser Lauf rot gefunden hat - fuer die Selbstpruefung
+   ganz unten. Nur die duerfen am Ende ein Bild in `abweichungen/` haben. */
+const roteNamen = new Set();
 let letzteSeite = null;
 
 /* Zwei Fenster: der Schreibtisch, an dem die alten Vorbilder haengen, und
@@ -877,6 +920,13 @@ for (const a of MEINE) {
   const jetzt = await el.screenshot({ animations: 'disabled' });
   const ziel = path.join(VORBILDER, a.name + '.png');
 
+  /* Was diese Aufnahme beim LETZTEN Mal hinterlassen hat, geht jetzt weg -
+   * vor dem Vergleich, nicht danach. Wird sie wieder rot, schreibt sie es
+   * gleich neu; wird sie gruen, bleibt nichts liegen, das behauptet, sie
+   * waere rot. Auch `--aktualisieren` laeuft hier durch: ein erneuertes
+   * Vorbild ohne Unterschied darf keinen Unterschied dokumentieren. */
+  abwegLoeschen(a.name);
+
   if (AKTUALISIEREN || !fs.existsSync(ziel)) {
     fs.writeFileSync(ziel, jetzt);
     console.log(`  ${fs.existsSync(ziel)&&!AKTUALISIEREN?'NEU    ':'ERNEUERT'} ${a.name}`);
@@ -884,13 +934,13 @@ for (const a of MEINE) {
   }
   const v = vergleiche(PNG.sync.read(fs.readFileSync(ziel)), PNG.sync.read(jetzt));
   if (v.masse) {
-    console.log(`  ROT     ${a.name}  — Maße geändert`); rot++;
+    console.log(`  ROT     ${a.name}  — Maße geändert`); rot++; roteNamen.add(a.name);
   } else if (v.anteil > GRENZE_ANTEIL) {
     fs.writeFileSync(path.join(ABWEICHUNGEN, a.name + '.png'), PNG.sync.write(v.diff));
     fs.writeFileSync(path.join(ABWEICHUNGEN, a.name + '.jetzt.png'), jetzt);
     console.log(`  ROT     ${a.name}  — ${v.anders} Bildpunkte anders `
       + `(${(v.anteil*100).toFixed(3)} %, erlaubt ${(GRENZE_ANTEIL*100).toFixed(3)} %)`);
-    rot++;
+    rot++; roteNamen.add(a.name);
   } else {
     console.log(`  grün    ${a.name}  — ${v.anders} Bildpunkte anders (${(v.anteil*100).toFixed(4)} %)`);
     gruen++;
@@ -914,6 +964,37 @@ if (ZEITEN) {
       .padStart(5)} s  ${art} (${l.length})`);
 }
 console.log(`\n  ${gruen} grün, ${neu} neu, ${rot} rot`);
+
+/* Die Selbstpruefung: das Verzeichnis darf nur zeigen, was DIESER Lauf
+ * gefunden hat.
+ *
+ * Ohne sie waere das Aufraeumen oben eine Zusage ohne Nachweis - und genau
+ * so eine Zusage ist QS9 gewesen: das Verzeichnis hat behauptet, 32
+ * Bildschirme haetten sich geaendert, und niemand hat es nachgezaehlt.
+ * Geprueft wird nur ueber die Namen, die dieser Teil gemessen hat; die
+ * anderen Koerbe gehoeren ihm nicht.
+ *
+ * WORAN DIESE PRUEFUNG NICHT ZU RUETTELN IST, und das ist der Grund, warum
+ * die Gegenprobe so aussieht, wie sie aussieht: eine Datei von Hand in das
+ * Verzeichnis zu legen beweist hier NICHTS. Das Raeumen oben loescht sie im
+ * selben Lauf, bevor die Pruefung sie sehen kann - ich habe es versucht,
+ * der Lauf blieb gruen, und das sah aus wie eine bestandene Probe. Die
+ * Pruefung haengt am Raeumen, also muss die Gegenprobe das RAEUMEN
+ * angreifen: sie dreht `abwegLoeschen` um, sodass die Aufnahme eine Datei
+ * hinterlaesst statt sie wegzunehmen. Dann meldet es. Regel 1 - und der
+ * erste Anlauf war genau die Pruefung, die nie etwas sagt. */
+const gelogen = MEINE.filter(a => !roteNamen.has(a.name))
+  .filter(a => ['.png', '.jetzt.png'].some(art => fs.existsSync(abwegDatei(a.name, art))))
+  .map(a => a.name);
+if (gelogen.length) {
+  console.log(`\n  ansicht ROT: in tor/abweichungen/ liegen Bilder zu ${gelogen.length} `
+    + `Aufnahme(n), die dieser Lauf NICHT rot gefunden hat:`);
+  for (const n of gelogen.slice(0, 8)) console.log(`    ${n}`);
+  console.log('  Das Verzeichnis wuerde eine Aenderung behaupten, die es nicht gibt.');
+  console.log('  Es wird vor jedem Vergleich geraeumt — wenn hier etwas steht, ist');
+  console.log('  das Raeumen kaputt, nicht das Bild.\n');
+  process.exit(1);
+}
 if (rot) {
   console.log('\n  Die Unterschiede liegen in tor/abweichungen/ — rot markiert, was sich');
   console.log('  geändert hat. War die Änderung Absicht, dann:');
