@@ -197,7 +197,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
 | 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
 | 14 | **G18** Keine toten Knöpfe im Lob | alle | gering | klein | — |
 | 16 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
 | 17 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
@@ -4174,6 +4173,71 @@ ist von 122 auf 133 Punkte gewachsen. Klein, aber nicht nichts.
 
 Das ist die Sorte Satz, die man schreibt, weil er die Geschichte rundet:
 „auf dem Zielgerät war schon alles gut". Die Byte-Liste hat widersprochen.
+
+### G17 · Die Antwort ist lauter als ihr Werkzeug — GEFAHREN (v366)
+
+Der Befund aus QS13: der sattste Punkt des Spielbildschirms war der
+Mikrofonknopf, die Antwortknöpfe waren fast weiß. Gemessen als
+Farbabstand zum Grund im OKLCH-Raum (√(ΔL² + C²)):
+
+| | Füllung | Abstand | Fläche |
+|---|---|---|---|
+| Antwort ×4 | `oklch(0.965 0.035 258)` | **0,049** | 10135 pt² |
+| Mikrofon ×1 | `oklch(0.55 0.190 258)` | **0,488** | 3136 pt² |
+
+Das Mikrofon war je Flächeneinheit **zehnmal so laut** wie eine Antwort.
+
+**Was diese Zahl nicht kann**, und das gehört dazu: multipliziert man
+Abstand mit Fläche, lagen die Antworten schon vorher vorn (1986 gegen
+1530). Die Summe über die Fläche widerspricht dem Befund — und der Befund
+hat trotzdem recht, weil das Auge zuerst auf den sattesten *Fleck* geht
+und nicht auf das größte Integral. Ein Modell des Sehens habe ich nicht;
+deshalb prüft das Tor auch nicht die Rangfolge, sondern hält als Ratsche
+fest, was gebaut wurde.
+
+**Entschieden: die Antworten heben, das Mikrofon nicht anfassen.** Für
+Fiona ist das Mikrofon der Weg, überhaupt zu antworten — die vier
+Etiketten tragen Wörter, die sie nicht lesen kann. Ein leises Mikrofon
+hätte ihren Weg schwerer auffindbar gemacht, um einen Befund zu erfüllen,
+der von Leas Bildschirm stammt.
+
+`--primaer` 0,965/0,035 → **0,900/0,085**, Rand und Kante ziehen mit.
+Abstand **0,049 → 0,131**, das 2,7-fache.
+
+Der Kommentar über der Marke sagte übrigens seit je: *„Die Antwort ist
+der wichtigste Knopf der App und darf das zeigen."* Die Zahlen lösten den
+Satz nur nicht ein.
+
+**Nachgerechnet, ob die Knöpfe jetzt mit der Karte verwechselbar sind:**
+Abstand zur nächsten der sieben Flächenfarben **0,175**, zum weißen Grund
+0,131. Die Knöpfe bleiben näher an Weiß als an einem Kontinent.
+
+#### Zwei Marken hatten zwei Aufgaben — beide erst am Bild aufgefallen
+
+1. **`--warn-h`** hieß laut Kommentar „Grund eines abgelehnten Etiketts".
+   Es war auch der Grund des **löschenden** Knopfes. Angehoben wurde
+   „Von vorne anfangen" zu einem kräftig orangen Block und zum zweitlautesten
+   Punkt des Pausenbildschirms — neben „Weiterspielen", dem Hauptknopf.
+   Gesehen auf `quer-pause`, nicht gerechnet. Getrennt: `--warn-h` bleibt
+   blass, das abgelehnte Etikett bekommt **`--abgelehnt`**.
+2. **`--primaer-kante`** war die Kante unter einem Knopf *und* die Farbe
+   des Strichs, den das Kind auf dem Schreibblatt zieht. `ansicht` meldete
+   `quer-schreiben`, obwohl diese Runde vom Spielbildschirm handelt.
+   Getrennt: **`--zugstrich`**, mit genau dem alten Wert — dort ändert
+   sich nichts, es wird nur entkoppelt.
+
+Danach sind es **genau die sieben Bildschirme mit Antwortknöpfen**, die
+sich ändern. Vorher waren es neun.
+
+**Die Prüfungen** (`smoke`, Abschnitt `sprechen`): der Farbabstand des
+Antwortknopfs als Ratsche bei 0,11 — und die zweite Zusage, die beim Bauen
+fast gekippt wäre: das **abgelehnte** Etikett darf nicht heller sein als
+ein ruhendes. Mit `--primaer` auf 0,900 und `--abgelehnt` auf 0,96 hätte
+die Ablehnung ausgesehen wie eine Hervorhebung. Zwei Marken, die nur
+zusammen stimmen; ohne diese Probe fällt das erst am Gerät auf, und dort
+auch nur jemandem, der falsch antwortet.
+
+Gegenproben 297 und 298, eine je Hälfte.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

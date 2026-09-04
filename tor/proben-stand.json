@@ -1514,6 +1514,16 @@
       "commit": "95528a6a00e28f079ea78115240db00e172702a7",
       "zeit": "2026-09-04",
       "s": 80
+    },
+    "der Antwortknopf wird wieder fast weiss": {
+      "commit": "5e289d5cb45a0a9f31259e4a53f98a213a0e99db",
+      "zeit": "2026-09-04",
+      "s": 68
+    },
+    "das abgelehnte Etikett wird heller als ein ruhendes": {
+      "commit": "5e289d5cb45a0a9f31259e4a53f98a213a0e99db",
+      "zeit": "2026-09-04",
+      "s": 35
     }
   }
 }

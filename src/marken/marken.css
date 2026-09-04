@@ -124,7 +124,24 @@
   --gut:      oklch(0.62  0.140 155);
   --gut-h:    oklch(0.93  0.055 155);
   --warn:     oklch(0.65  0.130  40);
-  --warn-h:   oklch(0.96  0.040  40);   /* Grund eines abgelehnten Etiketts */
+  /* Der leise Warnton - Grund des LOESCHENDEN Knopfes („Von vorne
+   * anfangen"). Bleibt blass, mit Absicht: er steht neben
+   * „Weiterspielen", und der ist der Hauptknopf.
+   *
+   * Hier stand bis G17 „Grund eines abgelehnten Etiketts", und das war
+   * nur die halbe Wahrheit - die Marke hatte ZWEI Aufgaben. Ich habe sie
+   * fuer die eine angehoben und damit die andere kaputtgemacht: der
+   * loeschende Knopf wurde ein kraeftig oranger Block und der zweitlaute
+   * Punkt des Pausenbildschirms. Gesehen auf `quer-pause`, nicht
+   * gerechnet. Zwei Aufgaben, zwei Marken. */
+  --warn-h:   oklch(0.96  0.040  40);
+  /* Grund eines ABGELEHNTEN Etiketts. Zieht mit `--primaer` mit (G17):
+   * bei 0,96 waere die abgelehnte Antwort heller als eine ruhende
+   * (0,900), die Ablehnung saehe aus wie eine Hervorhebung. Gleiche
+   * Helligkeit, anderer Farbton - den Unterschied traegt die Farbe und
+   * nicht die Helligkeit, und das ist der Unterschied, der gemeint
+   * ist. */
+  --abgelehnt: oklch(0.90  0.095  40);
   --achtung:  oklch(0.75  0.130  85);   /* zwischen gut und warn */
   --nochmal-h:oklch(0.95  0.040  85);   /* Grund eines Hinweises */
 
@@ -185,10 +202,47 @@
   --knopf-licht:   oklch(0.995 0.003 250);
   --knopf-rand:    oklch(0.885 0.014 250);
   --knopf-kante:   oklch(0.825 0.022 250);
-  /* Die Antwort ist der wichtigste Knopf der App und darf das zeigen. */
-  --primaer:       oklch(0.965 0.035 258);
-  --primaer-rand:  oklch(0.800 0.090 258);
-  --primaer-kante: oklch(0.690 0.130 258);
+  /* Die Antwort ist der wichtigste Knopf der App und darf das zeigen.
+   *
+   * Dieser Satz stand hier schon, die Zahlen loesten ihn nicht ein (G17).
+   * Gemessen am gebauten Buendel, Farbabstand zum weissen Grund im
+   * OKLCH-Raum (Wurzel aus dL^2 + C^2):
+   *
+   *              Fuellung                   Abstand   Flaeche
+   *   Antwort    oklch(0.965 0.035 258)      0,049    10135 pt^2  x4
+   *   Mikrofon   oklch(0.55  0.190 258)      0,488     3136 pt^2  x1
+   *
+   * Das Mikrofon war je Flaecheneinheit ZEHNMAL so laut wie eine Antwort.
+   * Der satteste Punkt des Bildschirms war das Werkzeug, nicht die
+   * Aufgabe - und bei einem Kind, das noch nicht liest und nur Formen und
+   * Farben hat, ist das die falsche Reihenfolge.
+   *
+   * Entschieden wurde, die ANTWORTEN zu heben und das Mikrofon nicht
+   * anzufassen: fuer Fiona ist das Mikrofon der Weg, ueberhaupt zu
+   * antworten - die vier Etiketten tragen Woerter, die sie nicht lesen
+   * kann. Ein leises Mikrofon haette ihren Weg schwerer auffindbar
+   * gemacht, um einen Befund zu erfuellen, der von Leas Bildschirm
+   * stammt.
+   *
+   * Neu: Abstand 0,131 statt 0,049, also das 2,7-fache. Damit traegt die
+   * zwoelffache Flaeche die Rangfolge - vier Etiketten haben zusammen
+   * 40540 Punkte, das Mikrofon 3136.
+   *
+   * Rand und Kante ziehen mit, sonst verschwindet die Kontur IM Feld:
+   * ein Rand von 0,800 auf einer Fuellung von 0,900 waere heller als
+   * frueher der Rand auf Weiss. */
+  --primaer:       oklch(0.900 0.085 258);
+  --primaer-rand:  oklch(0.700 0.130 258);
+  --primaer-kante: oklch(0.600 0.150 258);
+  /* Der Strich, den das Kind auf dem Schreibblatt zieht.
+   *
+   * Er hing bis G17 an `--primaer-kante`, also an der KANTE UNTER EINEM
+   * KNOPF - zwei Aufgaben in einer Marke, dieselbe Kopplung wie bei
+   * `--warn-h`. Als die Knopfkante fuer die Antworten dunkler wurde, wurde
+   * der Strich des Kindes es mit; `ansicht` hat `quer-schreiben` gemeldet,
+   * obwohl diese Runde vom Spielbildschirm handelt. Der Wert ist genau der
+   * alte - hier wird nichts geaendert, nur entkoppelt. */
+  --zugstrich:     oklch(0.690 0.130 258);
   /* Die Kante unter dem GEFUELLTEN Knopf (Q15).
      `--akzent` ist der starke Ton der App - das Mikrofon traegt ihn seit
      M4s als volle Flaeche. Seit Q15 traegt ihn auch der eine laute Knopf

@@ -1280,7 +1280,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 /* Falsch: das Etikett faehrt zurueck und WACKELT. Vorher passierte am
    Etikett gar nichts - es kam nur ein Satz darunter, und das Kind sah
    nicht, dass seine Antwort abgelehnt worden war. */
-.etikett.falsch{background:var(--warn-h);border-color:var(--warn);
+.etikett.falsch{background:var(--abgelehnt);border-color:var(--warn);
   animation:wackeln var(--d-wackeln) var(--k-standard)}
 @keyframes wackeln{
   0%,100%{translate:0}
@@ -1317,7 +1317,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   box-shadow:0 0 0 var(--primaer-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
 .zahl[disabled]{opacity:.45;cursor:default}
 .zahl.stimmt{background:var(--gut-h);border-color:var(--gut);opacity:1}
-.zahl.falsch{background:var(--warn-h);border-color:var(--warn);
+.zahl.falsch{background:var(--abgelehnt);border-color:var(--warn);
   animation:wackeln var(--d-wackeln) var(--k-standard)}
 @media (prefers-reduced-motion:reduce){.zahl.falsch{animation:none}}
 /* Wer das Ergebnis SCHREIBT, braucht kein Feld über die ganze Zeile: die
@@ -1331,7 +1331,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 /* Dasselbe Wackeln wie bei der falschen Zahl. Eine geschriebene Antwort,
    die nur mit einem Satz abgelehnt wird, sieht aus, als sei sie gar nicht
    angekommen. */
-.eingabe.falsch{border-color:var(--warn);background:var(--warn-h);
+.eingabe.falsch{border-color:var(--warn);background:var(--abgelehnt);
   animation:wackeln var(--d-wackeln) var(--k-standard)}
 @media (prefers-reduced-motion:reduce){.eingabe.falsch{animation:none}}
 /* Der Regler im Elternbereich. Er ist erst dann einer, wenn man ihn mit
@@ -1400,7 +1400,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .vorlage .spaeter{stroke:var(--linie);opacity:.55}
 .vorlage .schon{stroke:var(--linie);opacity:.35}
 .vorlage .dran{stroke:var(--linie-2)}
-.gemalt path,.zug{stroke:var(--primaer-kante)}
+.gemalt path,.zug{stroke:var(--zugstrich)}
 /* Der Punkt, an dem der naechste Zug anfaengt. Ohne ihn faengt ein Kind
    unten an und bekommt gesagt, die Richtung stimme nicht - ohne je
    erfahren zu haben, welche gemeint war. */
@@ -1421,7 +1421,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    sonst liefe der lange Zug eines S genauso schnell wie der Balken eines A.
    Dauer und Versatz kommen aus dem Programm (VORMACHEN_JE_ZUG), damit die
    Wartezeit danach und die Malzeit nicht getrennt veralten. */
-.vorlage .malt{stroke:var(--primaer-kante);stroke-dasharray:100;stroke-dashoffset:100;
+.vorlage .malt{stroke:var(--zugstrich);stroke-dasharray:100;stroke-dashoffset:100;
   animation-name:malen;animation-timing-function:var(--k-standard);
   animation-fill-mode:forwards}
 @keyframes malen{to{stroke-dashoffset:0}}

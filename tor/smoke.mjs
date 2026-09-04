@@ -5269,6 +5269,68 @@ if (laeuft('sprechen')) try {
   await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
 
+  /* G17 - die Antwort ist lauter als das Werkzeug.
+   *
+   * Der Befund: der satteste Punkt des Bildschirms war der Mikrofonknopf,
+   * die Antwortknoepfe waren fast weiss. Gemessen als Farbabstand zum
+   * Grund im OKLCH-Raum (Wurzel aus dL^2 + dC^2):
+   *
+   *              Fuellung                   Abstand   Flaeche
+   *   Antwort    oklch(0.965 0.035 258)      0,049    10135 pt^2  x4
+   *   Mikrofon   oklch(0.55  0.190 258)      0,488     3136 pt^2  x1
+   *
+   * WAS DIESE ZAHL NICHT KANN, und das gehoert dazu: multipliziert man
+   * Abstand mit Flaeche, lagen die Antworten schon VORHER vorn (1986
+   * gegen 1530). Die Summe ueber die Flaeche widerspricht dem Befund also
+   * - und der Befund hat trotzdem recht, weil das Auge zuerst auf den
+   * saettigsten FLECK geht und nicht auf das groesste Integral. Deshalb
+   * prueft dieses Tor NICHT die Rangfolge (die haengt an einem Modell des
+   * Sehens, das ich nicht habe), sondern haelt fest, was gebaut wurde:
+   * den Abstand der Antwort. Eine Ratsche, kein Soll.
+   *
+   * Und die zweite Zusage, die beim Bauen fast gekippt waere: das
+   * ABGELEHNTE Etikett darf nicht heller sein als ein ruhendes. Mit
+   * `--primaer` auf 0,900 und `--abgelehnt` unveraendert auf 0,96 haette die
+   * Ablehnung ausgesehen wie eine Hervorhebung. */
+  {
+    const farben = await p.evaluate(() => {
+      const zerlegen = (c) => {
+        const m = String(c).match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+        return m ? { L: +m[1], C: +m[2], h: +m[3] } : null;
+      };
+      const wurzel = getComputedStyle(document.documentElement);
+      const marke = (n) => zerlegen(wurzel.getPropertyValue(n));
+      const e = document.querySelector('.schirm.da .etikett');
+      const m = document.querySelector('.schirm.da .mikro');
+      return { antwort: e && zerlegen(getComputedStyle(e).backgroundColor),
+        mikro: m && zerlegen(getComputedStyle(m).backgroundColor),
+        grund: marke('--grund'), warnH: marke('--abgelehnt'), primaer: marke('--primaer') };
+    });
+    if (!farben.antwort || !farben.grund) {
+      merke('sprechen', new Error('die Farben des Antwortknopfs sind nicht ablesbar — '
+        + 'dann prüft diese Messung nichts'));
+    } else {
+      const abstand = (a, b) => Math.sqrt((a.L - b.L) ** 2 + (a.C - b.C) ** 2);
+      const aA = abstand(farben.antwort, farben.grund);
+      const aM = farben.mikro ? abstand(farben.mikro, farben.grund) : null;
+      /* 0,11 statt der gemessenen 0,131: die Ratsche haelt die Sache, nicht
+         die dritte Nachkommastelle. Faellt sie unter 0,11, ist die Antwort
+         wieder auf dem Weg zurueck nach Fast-Weiss. */
+      const G17_ABSTAND_MIN = 0.11;
+      console.log(`  Antwort gegen Werkzeug:     Farbabstand zum Grund `
+        + `${aA.toFixed(3)}${aM !== null ? ` · Mikrofon ${aM.toFixed(3)}` : ''} `
+        + `(Ratsche ${G17_ABSTAND_MIN})`);
+      if (aA < G17_ABSTAND_MIN)
+        merke('sprechen', new Error(`der Antwortknopf steht nur ${aA.toFixed(3)} vom Grund `
+          + `ab (verlangt ${G17_ABSTAND_MIN}) — dann ist die Antwort wieder blasser als `
+          + `ihr Werkzeug`));
+      if (farben.warnH && farben.primaer && farben.warnH.L > farben.primaer.L + 0.02)
+        merke('sprechen', new Error(`das abgelehnte Etikett ist heller als ein ruhendes `
+          + `(${farben.warnH.L} gegen ${farben.primaer.L}) — dann sieht die Ablehnung aus `
+          + `wie eine Hervorhebung`));
+    }
+  }
+
   /* G16 - die Werkzeugspalte ist eine SPALTE, in jedem Format.
    *
    * Das Grafik-Audit nannte sie „eine Schublade, keine Spalte". Gemessen

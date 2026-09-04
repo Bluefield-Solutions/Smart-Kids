@@ -4163,4 +4163,30 @@ export const PROBEN = [
     ersatz:'  .werkzeug{flex-direction:row;flex-wrap:wrap;',
     an:{ ...DIST, fehlt:'flex-direction:column;flex-wrap:nowrap' },
     sagt:'Schublade' },
+
+  /* G17, erste Haelfte - die Antwort faellt zurueck nach Fast-Weiss.
+   *
+   * Der Eingriff setzt `--primaer` auf den alten Wert. Der Farbabstand
+   * des Antwortknopfs zum Grund faellt von 0,131 auf 0,049, und damit
+   * ist die Aufgabe wieder blasser als das Werkzeug daneben. */
+  { n:'der Antwortknopf wird wieder fast weiss', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:'src/marken/marken.css',
+    such:'  --primaer:       oklch(0.900 0.085 258);',
+    ersatz:'  --primaer:       oklch(0.965 0.035 258);',
+    an:{ ...DIST, fehlt:'oklch(0.900 0.085 258)' },
+    sagt:'blasser als ihr Werkzeug' },
+
+  /* G17, zweite Haelfte - die Ablehnung wird zur Hervorhebung.
+   *
+   * Das ist der Fehler, der beim Bauen fast passiert waere: `--primaer`
+   * steigt auf 0,900, `--warn-h` bleibt auf 0,96 - und dann ist das
+   * ABGELEHNTE Etikett das hellste auf dem Bildschirm. Zwei Marken, die
+   * nur zusammen stimmen; ohne diese Probe faellt das erst am Geraet auf,
+   * und dort auch nur jemandem, der falsch antwortet. */
+  { n:'das abgelehnte Etikett wird heller als ein ruhendes', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:'src/marken/marken.css',
+    such:'  --abgelehnt: oklch(0.90  0.095  40);',
+    ersatz:'  --abgelehnt: oklch(0.96  0.040  40);',
+    an:{ ...DIST, fehlt:'--abgelehnt: oklch(0.90  0.095  40)' },
+    sagt:'wie eine Hervorhebung' },
 ];
