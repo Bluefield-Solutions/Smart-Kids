@@ -264,8 +264,8 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `farben` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`schrift` · `symbol` · `farben` · `betroffen` · `doku` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `farben` · `englisch` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`schrift` · `symbol` · `farben` · `englisch` · `betroffen` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 
@@ -4240,4 +4240,31 @@ export const PROBEN = [
        zutrifft, faengt das Verschwinden nicht. */
     an:{ ...DIST, fehlt:'das Aussehen nicht. */\n  animation:none}' },
     sagt:'weiter antippbar aus' },
+
+  /* E1 - der Wortschatz weicht von der amtlichen Liste ab.
+   *
+   * Der Eingriff schreibt `colour` amerikanisch. Das ist mit Absicht die
+   * LEISESTE Abweichung, die es gibt: kein fehlendes Wort, keine falsche
+   * Anzahl, nur ein Buchstabe weniger - und genau die Sorte, die man beim
+   * Abschreiben macht und beim Nachlesen uebersieht. Faengt das Tor sie,
+   * faengt es auch ein erfundenes Wort.
+   *
+   * Geprueft wird gegen `docs/referenz/ISB-Englisch-Wortschatz-34.txt`,
+   * den Text der amtlichen PDF - also gegen die Quelle und nicht gegen
+   * sich selbst. Bei `farben` war genau das der Fehler des ersten Anlaufs
+   * (Regel 14: das Modell darf nicht vom Gemessenen abhaengen), und bei
+   * Vokabeln waere er teurer: eine erfundene Zeile faellt erst auf, wenn
+   * Lea in der Schule etwas anderes lernt. */
+  { n:'ein englisches Wort weicht von der amtlichen Liste ab', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    /* Der Suchtext ueberlebt im Ersatz, als Kommentar dahinter - sonst ist
+       es der Selbsttreffer: `inhalt` prueft auch, dass jede Gegenprobe
+       ihren Suchtext noch findet, und dieser Eingriff loescht genau
+       seinen eigenen. Das Tor meldete dann den fehlenden Anker statt des
+       Befundes. Heute der dritte Fall dieser Art. */
+    such:"'colour',",
+    ersatz:"'color', // Eingriff der Gegenprobe. Anker bleibt stehen: 'colour',",
+    an:{ datei:'src/inhalt/englisch.js', text:"'color'," },
+    deckt:'englisch',
+    sagt:'nicht in der amtlichen Liste' },
 ];

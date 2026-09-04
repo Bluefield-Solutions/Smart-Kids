@@ -34,6 +34,7 @@ import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
 import { ALLE as KETTE, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
+import * as EN from '../src/inhalt/englisch.js';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
@@ -1778,6 +1779,95 @@ console.log('\n  Tor `farben`');
   const toene = I.KONTINENTE.map((k, i) => (i % 7) + 1);
   console.log(`    ${I.KONTINENTE.length} Kontinente, Kachelton aus der Kartenreihenfolge, `
     + `${new Set(toene).size} verschiedene Toene`);
+}
+
+/* ==================================================== Tor `englisch` ==== *
+ *
+ * Der Wortschatz in `src/inhalt/englisch.js` ist der amtliche - Wort fuer
+ * Wort.
+ *
+ * Verglichen wird gegen die QUELLE und nicht gegen sich selbst: neben den
+ * Daten liegt `docs/referenz/ISB-Englisch-Wortschatz-34.txt`, der Text der
+ * PDF des ISB. Dieses Tor liest beide und haelt sie nebeneinander. Damit
+ * kann die Datendatei nicht still abweichen, und niemand muss sich darauf
+ * verlassen, dass ich richtig abgeschrieben habe.
+ *
+ * Genau dieser Fehler war bei `farben` schon einmal da: der erste Anlauf
+ * rechnete beide Seiten aus DERSELBEN Liste und konnte nie rot werden
+ * (Regel 14 - das Modell darf nicht vom Gemessenen abhaengen). Bei
+ * Vokabeln waere er teurer: eine erfundene Zeile faellt erst auf, wenn Lea
+ * in der Schule etwas anderes lernt.
+ *
+ * GELESEN WIRD SPALTENWEISE, nicht nach Nummer. Die amtliche Liste
+ * nummeriert von 1 bis 151, laesst dabei aber die 29 aus und vergibt die
+ * 39 zweimal („39. cold" und „39. England/English"). Wer nach Nummer
+ * liest, bekommt 150 Woerter und eine Kollision; wer den sechs Spalten
+ * folgt, bekommt die 151, die dastehen.
+ */
+console.log('\n  Tor `englisch`');
+{
+  const QUELLE = 'docs/referenz/ISB-Englisch-Wortschatz-34.txt';
+  const schief = [];
+  if (!fs.existsSync(QUELLE)) {
+    schief.push(`${QUELLE} fehlt — dann vergleicht dieses Tor die Daten mit sich selbst`);
+  } else {
+    const roh = fs.readFileSync(QUELLE, 'utf8');
+    /* Sechs Spalten je Zeile, jede Zelle „N. wort". Ein Wort kann Leer- und
+       Sonderzeichen tragen („be (am, are, is)", „I / I'd / I'm / I've"),
+       deshalb bis zum naechsten „N. " und nicht bis zum Leerzeichen. */
+    const spalten = [[], [], [], [], [], []];
+    for (const z of roh.split('\n')) {
+      const tr = [...z.trim().matchAll(/\d{1,3}\.\s+(.+?)(?=\s+\d{1,3}\.\s|$)/g)]
+        .map(m => m[1].trim());
+      if (tr.length < 2) continue;
+      tr.forEach((w, i) => { if (i < 6) spalten[i].push(w); });
+    }
+    const ausQuelle = spalten.flat();
+    if (ausQuelle.length < 100) {
+      schief.push(`aus ${QUELLE} sind nur ${ausQuelle.length} Wörter zu lesen — `
+        + 'die Datei ist kaputt oder anders aufgebaut, und dieses Tor prüft nichts');
+    } else {
+      const zuviel = EN.WOERTER.filter(w => !ausQuelle.includes(w));
+      const fehlt  = ausQuelle.filter(w => !EN.WOERTER.includes(w));
+      if (zuviel.length)
+        schief.push(`${zuviel.length} Wörter stehen in den Daten, aber nicht in der `
+          + `amtlichen Liste: ${zuviel.slice(0, 5).join(', ')}`);
+      if (fehlt.length)
+        schief.push(`${fehlt.length} Wörter der amtlichen Liste fehlen in den Daten: `
+          + `${fehlt.slice(0, 5).join(', ')}`);
+      if (EN.WOERTER.length !== ausQuelle.length)
+        schief.push(`die Daten haben ${EN.WOERTER.length} Wörter, die Quelle `
+          + `${ausQuelle.length}`);
+      /* Die Reihenfolge zaehlt mit: die Quelle ist alphabetisch, und eine
+         umsortierte Datei waere der erste Schritt zu „ich habe da mal
+         aufgeraeumt". */
+      const ersteAbweichung = EN.WOERTER.findIndex((w, i) => w !== ausQuelle[i]);
+      if (!zuviel.length && !fehlt.length && ersteAbweichung >= 0)
+        schief.push(`ab Stelle ${ersteAbweichung + 1} stehen die Wörter in anderer `
+          + `Reihenfolge als in der Quelle („${EN.WOERTER[ersteAbweichung]}" statt `
+          + `„${ausQuelle[ersteAbweichung]}")`);
+    }
+    /* Zahlen und Waehrung stehen als SATZ in der Quelle, nicht als Liste -
+       geprueft wird deshalb, dass der Satz noch dasselbe sagt. */
+    const zahlSatz = roh.match(/(\d+)\s+Zahlen\s*\(([^)]+)\)/);
+    if (!zahlSatz) schief.push('der Satz über die Zahlen steht nicht mehr in der Quelle');
+    else if (+zahlSatz[1] !== EN.ZAHLEN.length)
+      schief.push(`die Quelle nennt ${zahlSatz[1]} Zahlen, die Daten haben `
+        + `${EN.ZAHLEN.length}`);
+  }
+  const doppelt = EN.WOERTER.filter((w, i) => EN.WOERTER.indexOf(w) !== i);
+  if (doppelt.length) schief.push(`doppelte Wörter: ${doppelt.join(', ')}`);
+  const leer = EN.WOERTER.filter(w => !w || !w.trim());
+  if (leer.length) schief.push(`${leer.length} leere Einträge`);
+
+  if (schief.length) {
+    console.log('    ' + schief.join('\n    '));
+    console.error('\n  englisch ROT: die Daten weichen von der amtlichen Wortschatzliste ab.');
+    process.exit(1);
+  }
+  console.log(`    ${EN.WOERTER.length} Wörter, ${EN.ZAHLEN.length} Zahlen, `
+    + `${EN.WAEHRUNG.length} Währungszeichen — Wort für Wort wie in der ISB-Liste`);
+  console.log('    (Themengebiete noch offen — sie stehen in der Redemittel-Liste, E1b)');
 }
 
 /* =================================================== Tor `betroffen` ==== *

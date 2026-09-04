@@ -187,19 +187,20 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **E1–E12** Englisch — die neue Welt | Lea, Fiona, ihr beide | hoch | groß | Konzept steht |
-| 2 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
-| 3 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
-| 4 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
-| 5 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
-| 6 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
-| 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
-| 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 10 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 11 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
-| 12 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
-| 13 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 1 | **E1b** Themengebiete zuordnen | Lea, Fiona | hoch | klein | **Redemittel-Liste des ISB** |
+| 2 | **E2–E12** Englisch — die neue Welt | Lea, Fiona, ihr beide | hoch | groß | E1b |
+| 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
+| 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
+| 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
+| 7 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
+| 8 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| 9 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
+| 10 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
+| 11 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
+| 12 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
+| 13 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
+| 14 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
 dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal
@@ -4401,6 +4402,59 @@ denselben `erledigt`-Wächter. Es ruht bewusst *nicht* mit, weil ich nicht
 gemessen habe, welche Knöpfe der Werkzeugspalte im Lob noch etwas tun
 („noch einmal hören" könnte lebendig sein). Das ist eine eigene Messung,
 keine Zeile hier.
+
+### E1a · Der verbindliche Wortschatz liegt im Verzeichnis — GEFAHREN (v370)
+
+Der Nutzer hat die amtliche PDF angehängt: *„Grundschule, Englisch,
+Jahrgangsstufen 3/4: Verbindlicher Wortschatz — alphabetische
+Darstellung"* (ISB Bayern). Damit ist der Engpass weg, den ich nicht
+selbst lösen konnte — der Egress-Proxy blockiert `lehrplanplus.bayern.de`
+und `isb.bayern.de`; suchen ging, holen nicht.
+
+**Eingetragen: 151 Wörter, 15 Zahlen (1–12, 15, 30, 45), drei
+Währungszeichen** — in `src/inhalt/englisch.js`, in der alphabetischen
+Reihenfolge der Quelle.
+
+**Die Quelle liegt daneben.** `docs/referenz/ISB-Englisch-Wortschatz-34.txt`
+ist der Text der PDF, Wort für Wort. Das neue Untertor `englisch` liest
+**beide** und hält sie nebeneinander: fehlende Wörter, überzählige,
+falsche Anzahl, falsche Reihenfolge. Damit kann die Datendatei nicht still
+abweichen, und niemand muss sich darauf verlassen, dass ich richtig
+abgeschrieben habe.
+
+Genau dieser Fehler war bei `farben` schon einmal da: der erste Anlauf
+rechnete beide Seiten aus *derselben* Liste und konnte nie rot werden. Bei
+Vokabeln wäre er teurer — eine erfundene Zeile fällt erst auf, wenn Lea in
+der Schule etwas anderes lernt.
+
+#### Ein Fehler in der amtlichen Liste
+
+Die PDF nummeriert von 1 bis 151, lässt dabei aber die **29 aus** und
+vergibt die **39 zweimal** („39. cold" und „39. England/English"). Es sind
+151 Wörter; die Nummern der Behörde stimmen nicht. Gelesen wird deshalb
+**spaltenweise**, nicht nach Nummer — wer nach Nummer liest, bekommt 150
+Wörter und eine Kollision.
+
+#### Was ausdrücklich NICHT eingetragen ist
+
+- **Die Themengebiete.** Sie stehen in einer *zweiten* ISB-Datei („Liste
+  empfohlener Redemittel"), genau dem Anhang, auf den die Wortschatzliste
+  selbst verweist. Solange die fehlt, hat kein Wort ein Themengebiet —
+  lieber keine Zuordnung als eine erfundene. Steht als **E1b**, und es ist
+  der neue Rang 1: klein, aber alles Weitere hängt daran.
+- **Fionas Teilmenge.** Ohne Themengebiete wäre die Auswahl mein
+  Geschmack.
+
+Gegenprobe 301 schreibt `colour` amerikanisch — mit Absicht die
+**leiseste** Abweichung, die es gibt: kein fehlendes Wort, keine falsche
+Anzahl, nur ein Buchstabe weniger. Fängt das Tor sie, fängt es auch ein
+erfundenes Wort. (Beim ersten Anlauf war sie der Selbsttreffer — heute der
+dritte Fall dieser Art; der Anker steht jetzt als Kommentar hinter dem
+Eingriff.)
+
+`doppelt` schlug an: 301 Token gleichförmig. Eingetragen mit Begründung —
+eine Datenliste *ist* ein gleichförmiger Lauf, derselbe Fall wie die
+sieben Länderlisten. Die Zahl ist an die Wortzahl gebunden.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

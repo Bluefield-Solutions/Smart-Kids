@@ -118,5 +118,15 @@
       "src/inhalt/saetze.js:127"
     ],
     "warum": "Die Satztafel IST eine Tabelle: eine Zeile je Gebiet, immer Kennung und EIN Satz. Einundneunzig Zeilen derselben Form - das ist ihr Zweck, nicht ihr Mangel: wer einen Satz sucht, liest eine Zeile, und wer einen nachtraegt, schreibt eine. Zusammenlegen gaebe es hier gar nicht zusammenzulegen; was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderer. Die Zahl waechst mit jeder Karte, die dazukommt - Ozeanien hat sie zuletzt um drei Zeilen verlaengert. Wer sie hier hochsetzt, prueft zuerst, ob wirklich nur Saetze dazugekommen sind und nicht Logik."
+  },
+  {
+    "dateien": "src/inhalt/englisch.js",
+    "token": 301,
+    "wo": [
+      "src/inhalt/englisch.js:31",
+      "src/inhalt/englisch.js:39",
+      "src/inhalt/englisch.js:47"
+    ],
+    "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt."
   }
 ]
