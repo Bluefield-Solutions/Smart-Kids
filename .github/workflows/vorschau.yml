@@ -6,7 +6,7 @@
 #
 # Er fährt NUR die Tore ohne Browser — inhalt (mit topologie, beruehrung,
 # marken, schrift, symbol, doku), spielprobe, schreiben, vergleich,
-# gleichlauf, budget.
+# gleichlauf, budget, anker.
 # Zusammen
 # unter drei Sekunden, und kein `playwright install` (das allein sind 39 s).
 # Was fehlt, fehlt ausdrücklich:
@@ -58,3 +58,4 @@ jobs:
           node tor/gleichlauf.mjs
           node prototyp/bauen.mjs
           node tor/budget.mjs
+          node tor/anker.mjs

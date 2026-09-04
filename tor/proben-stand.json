@@ -2,6 +2,7 @@
   "form": 2,
   "zeit": "2026-09-04",
   "tore": [
+    "anker",
     "ansicht",
     "bauen",
     "budget",
@@ -1457,6 +1458,21 @@
       "commit": "338c993a9f26326af974f594b1af13dd8bfaa312",
       "zeit": "2026-09-04",
       "s": 30
+    },
+    "ein Anker verlangt ein Verschwinden, das nie eintritt": {
+      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
+      "zeit": "2026-09-04",
+      "s": 14
+    },
+    "ein Anker verlangt ein Verschwinden von etwas, das es nicht gibt": {
+      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
+      "zeit": "2026-09-04",
+      "s": 9
+    },
+    "ein Anker sucht etwas, das ohne Eingriff schon dasteht": {
+      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
+      "zeit": "2026-09-04",
+      "s": 9
     }
   }
 }

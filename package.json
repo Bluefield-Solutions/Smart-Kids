@@ -28,6 +28,7 @@
     "ziehen": "node tor/ziehen.mjs",
     "proben": "node tor/proben.mjs",
     "budget": "node tor/budget.mjs",
+    "anker": "node tor/anker.mjs",
     "rhythmus": "node tor/rhythmus.mjs",
     "korpus": "node tools/korpus.mjs",
     "schnell": "node tools/schnell.mjs",

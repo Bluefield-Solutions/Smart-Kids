@@ -71,6 +71,12 @@ export const BAU = { name: 'bauen', dateien: ['entwuerfe/bauen.mjs', 'prototyp/b
 /** Misst die gebaute Datei — also nach dem Bau, aber noch ohne Browser. */
 export const NACH_DEM_BAU = [
   { name: 'budget', datei: 'tor/budget.mjs' },
+  /* `anker` MUSS hier stehen und nicht bei den billigen Toren (Q48).
+     Es liest das gebaute Buendel; vorher gaebe es nichts zu lesen, und ein
+     altes Buendel waere schlimmer als keines. Es kostet unter einer
+     Sekunde und haette den Groenland-Fall in dieser Zeit gefunden - der
+     volle Probenlauf brauchte 150 Minuten dafuer. */
+  { name: 'anker', datei: 'tor/anker.mjs' },
 ];
 
 /* Die Browsertore, laengstes zuerst.

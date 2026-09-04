@@ -698,7 +698,14 @@ export const PROBEN = [
     args:['--nur=ablage'], bauen:true, datei:D,
     such:"  s.querySelector('#zur').onclick = () => zeige(zurueck || ebenenwahl);",
     ersatz:"  s.querySelector('#zur').onclick = () => zeige(ebenenwahl);",
-    an:{ ...DIST, text:"onclick = () => zeige(ebenenwahl)" },
+    /* Gefragt wird nach dem VERSCHWINDEN, nicht nach dem Erscheinen (Q48).
+       Was der Eingriff hinschreibt, steht seit Q43 auch in
+       `karteFehltSchirm`: dort raeumt derselbe Knopf in dieselbe
+       Ebenenwahl. „Angekommen" war damit wahr, bevor etwas passiert war -
+       auch mit `#zur` davor, denn diese Zeile ist Wort fuer Wort
+       dieselbe. Was es nur EINMAL gibt, ist das Wegnehmen: `zurueck ||`
+       steht genau an der Stelle, die die Probe meint. */
+    an:{ ...DIST, fehlt:'zeige(zurueck || ebenenwahl)' },
     sagt:'führt nicht ins Buch zurück' },
 
   /* Q23: eine Ebenenkachel ohne Bild.
@@ -1012,8 +1019,12 @@ export const PROBEN = [
    * landen, ist dem Tor `budget` gleichgueltig; also an die Stelle, die es
    * immer geben wird. */
   { n:'die Seite wächst unbemerkt', tor:'budget', bauen:true, datei:D,
-    such:"const D = JSON.parse(", ersatz:"const FUELL = '" + FUELLUNG + "';\nconst D = JSON.parse(",
-    an:{ ...DIST, text:'const FUELL' }, sagt:'gewachsen' },
+    such:"const D = JSON.parse(", ersatz:"const FUELLBALLAST = '" + FUELLUNG + "';\nconst D = JSON.parse(",
+    /* `FUELLBALLAST` und nicht `FUELL` (Q48): `const FUELL` ist ein
+       Praefix von `const FUELLWOERTER`, das es im Vergleichsmodul schon
+       gibt. Die Nachfrage traf also von Anfang an - „angekommen" war wahr,
+       bevor etwas passiert war. */
+    an:{ ...DIST, text:'const FUELLBALLAST' }, sagt:'gewachsen' },
 
   /* P5: der mitgeschriebene Stand darf nicht still verschwinden.
    *
@@ -2061,7 +2072,11 @@ export const PROBEN = [
     args:['--nur=quer-ende,quer-pause'], bauen:true, datei:D,
     such:'  (links || mitte || rechts)\n  ?',
     ersatz:'  true\n  ?',
-    an:{ ...DIST, fehlt:'(links||mitte||rechts)' },
+    /* MIT Leerzeichen (Q48). So steht es in der Quelle und so kommt es ins
+       Buendel - der Bau minimiert nicht. Ohne sie stand der Text nirgends,
+       „ist verschwunden" traf also schon vor dem Eingriff zu, und die
+       Probe hat vier Runden lang nichts bezeugt. */
+    an:{ ...DIST, fehlt:'(links || mitte || rechts)' },
     sagt:'quer-ende' },
   /* Und die Pause verliert ihre Warnung. Der Knopf daneben loescht alles,
    * was das Kind in dieser Uebung gesammelt hat. */
@@ -3937,4 +3952,66 @@ export const PROBEN = [
     an:{ datei:'dist/daten/laender-europa.json',
          fehlt:'"a3":"LUX","name":"Luxemburg","rang":12,"teile":1,"loecher":0,"nachbarDE":true' },
     sagt:'fehlt noch eins' },
+  /* --- Q48: das Tor `anker` ------------------------------------------
+   *
+   * Drei Regeln, drei Proben. Jede stellt genau die Verfallsart her, gegen
+   * die die Regel steht - und in allen dreien laeuft das Spiel weiter, die
+   * Kette bleibt gruen, und nur eine Gegenprobe hoert still auf zu
+   * beweisen. Das ist die Sorte, fuer die es dieses Tor gibt.
+   *
+   * ZWEIMAL AUFGEFALLEN, dass eine Probe SICH SELBST trifft:
+   *
+   * Der Eingriff geht in die Probenliste - eine Gegenprobe, die andere
+   * Gegenproben prueft, muss an einer kaputten gemessen werden. Damit
+   * steht der gesuchte Text aber zweimal in der Datei: einmal am Ziel und
+   * einmal in dieser Zeile hier. Der erste Anlauf stand VOR seinen Zielen
+   * und hat deshalb sich selbst verstellt; das Ziel blieb heil, das Tor
+   * blieb gruen, und die Probe meldete „beweist nichts" - richtig, aber
+   * aus einem Grund, den man erst sieht, wenn man ihn sucht.
+   *
+   * Zwei Dinge zusammen loesen es, und keines davon ist die Reihenfolge.
+   *
+   * Der Suchausdruck enthaelt EINE Zeichenklasse (`Gr[ö]nland`,
+   * `FUELLBA[L]LAST`): er trifft damit sein Ziel, aber nicht mehr sich
+   * selbst - der Text in dieser Zeile lautet ja anders. Auf die
+   * Reihenfolge zu bauen waere die schlechtere Loesung gewesen, und
+   * `inhalt` hat sie zu Recht abgelehnt: „ihr Suchtext steht 2x in der
+   * Datei - welche Stelle verstellt wird, entscheidet ihre Reihenfolge".
+   *
+   * Und der Ersatz wird GERECHNET (`ersatzFn`) statt hingeschrieben -
+   * sonst staende der Text, an dem das Ankommen erkannt wird, schon vor
+   * dem Eingriff in der Datei, und die Nachfrage waere selbst der Fall,
+   * den dieses Tor verbietet.
+   */
+
+  /* 1. Der Text, der verschwinden soll, kommt auch von woanders. Das ist
+   *    der Groenland-Fall: der Eingriff nimmt eine Stelle, die zweite
+   *    bleibt stehen, und die Nachfrage trifft nie zu. */
+  { n:'ein Anker verlangt ein Verschwinden, das nie eintritt', tor:'anker',
+    bauen:true, datei:'tor/proben-liste.mjs',
+    suchRegex:/fehlt:'"a3":"GRL","name":"Gr[ö]nland"'/,
+    ersatzFn:(m)=>m[0].replace(/"a3":"GRL","name":"(Gr[ö]nland)"/, '$1'),
+    an:{ datei:'tor/proben-liste.mjs', text:"fehlt:'Grönland'" },
+    sagt:'VERSCHWINDET' },
+
+  /* 2. Der Text steht nirgends. Dann ist „er ist verschwunden" schon vor
+   *    dem Eingriff wahr - die Nachfrage traegt nichts bei, und die Probe
+   *    meldet gruen, ohne etwas gesehen zu haben. */
+  { n:'ein Anker verlangt ein Verschwinden von etwas, das es nicht gibt', tor:'anker',
+    bauen:true, datei:'tor/proben-liste.mjs',
+    suchRegex:/fehlt:'\(links \|\| mitte \|\| rechts\)'/,
+    ersatzFn:(m)=>m[0].replace(/ \|\| /g, '||'),
+    an:{ datei:'tor/proben-liste.mjs', text:"fehlt:'(links||mitte||rechts)'" },
+    sagt:'schon jetzt nicht' },
+
+  /* 3. Der Text, an dem man den Eingriff erkennen soll, steht schon da.
+   *    „Angekommen" ist dann wahr, bevor irgendetwas passiert ist - der
+   *    `const FUELL`-Fall, wo ein Praefix eines vorhandenen Namens
+   *    gewaehlt war. */
+  { n:'ein Anker sucht etwas, das ohne Eingriff schon dasteht', tor:'anker',
+    bauen:true, datei:'tor/proben-liste.mjs',
+    suchRegex:/text:'const FUELLBA[L]LAST'/,
+    ersatzFn:(m)=>m[0].replace('BALLAST', ''),
+    an:{ datei:'tor/proben-liste.mjs', text:"text:'const FUELL'" },
+    sagt:'schon OHNE den Eingriff' },
 ];

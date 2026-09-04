@@ -3582,3 +3582,51 @@ an einer Änderung *woanders*. Kein Ausschnitt hätte das gefunden — D3 hat
 in dem beide landen. Es ist dieselbe Klasse wie Q36, Q39b, Q43, Q44 — mit
 dem Unterschied, dass ich sie diesmal selbst verursacht habe und sie erst
 nach 150 Minuten sichtbar wurde.
+
+## Q48 erledigt: das Tor `anker` — der Grönland-Fall in 0,2 s statt 150 Minuten
+
+Jede Gegenprobe hat zwei Hälften: den **Eingriff** und die **Nachfrage**,
+an der man erkennt, dass er angekommen ist. Für den Eingriff prüft `inhalt`
+längst, dass er genau einmal greift. Für die Nachfrage auch — **außer wenn
+sie auf `dist/index.html` zeigt.** Die Zeile steht wörtlich so da:
+`wo !== 'dist/index.html'`, und zwar mit gutem Grund: `inhalt` läuft *vor*
+dem Bau, ein altes Bündel wäre schlimmer als keines.
+
+Genau in diese Lücke ist Grönland gefallen. Das neue Tor schließt sie, indem
+es **nach `bauen`** läuft. Zwei Fragen, beide einfach:
+
+- `an.fehlt` — der Text muss verschwinden **können**. Steht er öfter im
+  Bündel, als der Eingriff wegnimmt, kommt der Rest woanders her und bleibt
+  stehen: die Nachfrage trifft nie zu. Steht er gar nicht da, trifft sie
+  schon ohne Eingriff zu.
+- `an.text` — der Text darf **nicht** schon dastehen. Sonst ist
+  „angekommen" wahr, bevor irgendetwas passiert ist.
+
+**Vier tote Anker beim ersten Lauf** — keiner davon war je einem Tor
+aufgefallen:
+
+| Probe | was faul war |
+|---|---|
+| „Zurück aus dem Vorlauf" | `onclick = () => zeige(ebenenwahl)` steht **seit meinem Q43-Umbau** auch in `karteFehltSchirm` |
+| „die Seite wächst unbemerkt" | `const FUELL` ist ein **Präfix** von `const FUELLWOERTER` — traf von Anfang an |
+| „der leere Kopf" | Anker ohne Leerzeichen (`(links||mitte||rechts)`), gebaut wird **mit** — stand nirgends, „verschwunden" war immer wahr |
+| „Grönland" | in Q47 schon geflickt |
+
+**Zwei eigene Fehler beim Bauen der Gegenproben**, beide von den bestehenden
+Toren gefangen:
+
+1. Die erste Fassung war **zu streng**: „ein Fehlwurf bleibt stumm"
+   schneidet einen Block heraus, in dem der Text zweimal steht — beide
+   gehen mit. Das Tor rechnet jetzt nach, wie viele Stellen der Eingriff
+   *wirklich* wegnimmt, statt die Zahl zu raten.
+2. Die Gegenproben trafen **sich selbst**. Sie greifen in die Probenliste,
+   und damit steht der gesuchte Text zweimal in der Datei: am Ziel und in
+   ihrer eigenen Zeile. Der erste Anlauf stand vor seinen Zielen und hat
+   sich selbst verstellt. Ich wollte es über die *Reihenfolge* lösen —
+   `inhalt` hat das zu Recht abgelehnt („welche Stelle verstellt wird,
+   entscheidet ihre Reihenfolge"). Jetzt trägt jeder Suchausdruck **eine
+   Zeichenklasse** (`Gr[ö]nland`, `FUELLBA[L]LAST`): er trifft sein Ziel,
+   aber nicht mehr sich selbst.
+
+Kosten: **0,2 s je Kettenlauf**, 172 Nachfragen geprüft. Der volle
+Probenlauf brauchte für denselben Befund 150 Minuten.
