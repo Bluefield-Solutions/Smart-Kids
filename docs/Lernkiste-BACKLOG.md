@@ -86,12 +86,17 @@ nicht aus der Datei kommen, die geprüft wird. Setzt man Fionas Tiefe in
 `spiel.js` auf zwölf und stünde das Soll auch dort, wanderte die Erwartung
 mit — und vor einer Sechsjährigen stünden zwölf Länder.
 
-### 2.1 Die drei Profile
+### 2.1 Die vier Profile
+
+> *Hiess bis v355 „Die drei Profile", waehrend die Tabelle darunter seit
+> N1 vier Spalten hat.* Genau der Fehler, den die Tabelle selbst
+> beschreibt — nur eine Zeile hoeher. Gefunden in der Pruefschleife QS.
 
 | | Fiona (6) | Lea (8) | Stephan | Violeta |
 |---|---|---|---|---|
 | Eingabe | ziehen, sprechen | ziehen, tippen | **nur tippen** | **nur tippen** |
 | Vorlesen | ja | nein | nein | nein |
+| Ton als Gegenstand (Englisch) | ja | ja | **ja** | **ja** |
 | Ton | kindlich | kindlich | **sachlich** | **sachlich** |
 | Auswahl statt Tippen | 4 Möglichkeiten | nur Ebene 4 | **nie** | **nie** |
 | Ländertiefe | 3 | **13** | **17** | **17** |
@@ -105,6 +110,21 @@ mit — und vor einer Sechsjährigen stünden zwölf Länder.
 > halb so lang wie ihr Rechnen, ihr Schreiben und ihre Bundesländer. Das ist
 > kein Programmfehler, sondern eine Entscheidung, die hier fällt — und sie ist
 > noch nicht gefallen.
+
+**Zwei Zeilen über den Ton, und sie meinen Verschiedenes (QS3).**
+„Vorlesen" heisst hier **Lesehilfe**: die Frage wird laut gesagt, weil das Kind
+sie nicht lesen kann — das braucht nur Fiona. Bei Englisch ist der Ton
+aber nicht die Hilfe, sondern **der Gegenstand**: eine Höraufgabe ohne Ton
+ist keine leichtere Aufgabe, sondern gar keine. Stünde hier nur eine
+Zeile, würde ein Tor entweder eine stumme Elternaufgabe durchwinken oder
+eine richtige anschlagen — beides falsch, und beides erst beim Bauen von
+Englisch aufgefallen.
+
+Die Zeile heisst weiter genau **„Vorlesen"** und nicht „Vorlesen als
+Lesehilfe", obwohl das deutlicher wäre: `tor/smoke.mjs` sucht sie mit
+`/^\|\s*Vorlesen\s*\|/`. Der schönere Name war einen Versuch wert und hat
+das Tor sofort rot gemacht — **die Zeile ist eine Schnittstelle, kein
+Text.** Wer sie umbenennt, ändert die Regel im Tor mit.
 
 **Stephan und Violeta sind Spalte für Spalte gleich.** Das ist keine
 Bequemlichkeit, sondern die Bedingung des Vergleichs: wer verschiedene
@@ -167,7 +187,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **E1–E9** Englisch — die neue Welt | Lea, Fiona | hoch | groß | Konzept steht, § 8 |
+| 1 | **E1–E12** Englisch — die neue Welt | Lea, Fiona, ihr beide | hoch | groß | Konzept steht |
 | 2 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 3 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 4 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -196,7 +216,7 @@ zwei verschiedene Dinge; der Katalogpunkt heisst deshalb jetzt **A4h**.
 
 ---
 
-### E1–E9 · Englisch — die vierte Welt
+### E1–E12 · Englisch — die vierte Welt
 
 **Das Konzept steht vollständig in `docs/Lernkiste-KONZEPT-ENGLISCH.md`**
 — Referenzabgleich, Didaktik, die Sprachfrage mit Zahlen, Spielformen,
@@ -229,6 +249,9 @@ veraltet eine der beiden Fassungen).
 | **E7** | Lea liest: Wort zum Bild | am Gerät |
 | **E8** | Lea schreibt: Abschreiben mit Vorlage | am Gerät, `passt` für die Buchstabenkarten |
 | **E9** | Der Satz zum Selbersagen + Abzeichen je Themengebiet | Abzeichen erscheint erst bei vollem Gebiet |
+| **E10** | **Eltern: falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tore E-f und E-g |
+| **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | Tor E-g |
+| **E12** | **Eltern: Hoeren und schreiben** — ganzer Satz, normales Tempo | am Geraet; das zweite Hoeren wird gezaehlt |
 
 **E1 zuerst, und es ist blockiert.** Die vollständige ISB-Wortliste liegt
 noch nicht vor: der Netzzugang dieser Umgebung sperrt `isb.bayern.de` und
@@ -243,10 +266,56 @@ Der zweite Weg ist der bessere — dann stimmt auch die **Reihenfolge** der
 Themengebiete mit ihrem Unterricht überein, und die steht in keiner
 Wortliste.
 
+**Stephan und Violeta sind der dritte Fall, nicht der schwerste.** Ihr
+passiver Wortschatz ist zwei- bis dreimal so gross wie ihr aktiver, und
+Produktion verfaellt schneller als Verstehen — sie kennen die Woerter,
+sie kommen nur nicht. Also **kein Vokabelaufbau, sondern Zugriff**: die
+Antwort wird **getippt**, nie ausgewaehlt. Die Elternspalte der
+Profiltabelle sagt das seit N1 — es braucht keine neue Regel, nur die
+richtigen Ebenen.
+
+Und ein Befund, der die Reihenfolge umdreht: Erwachsene mit
+Schulfremdsprache schlagen echte Anfaenger in der Produktion deutlich,
+aber ihr **Hoerverstehen** ist auf Anfaengerniveau zurueckgefallen. Hoeren
+ist fuer sie nicht die Aufwaermuebung, sondern der harte Teil — und
+deshalb in normalem Tempo, nicht diktiert.
+
+**E10 haengt an nichts.** Die falschen Freunde brauchen weder die
+Lehrplanliste noch ein Bild. Solange E1 blockiert ist, ist E10 das Paket,
+das laufen kann.
+
 **Fiona bekommt die Ebenen 1, 2 und 3, sonst nichts.** Sie ist sechs und
 liest nicht; Lesen und Abschreiben wären für sie keine leichtere Aufgabe,
 sondern eine unmögliche. Englisch hat sie erst in zwei Jahren — für sie
 ist das kein Schulfach, sondern ein Spiel mit Klängen.
+
+---
+
+### B3r · Nachbarn · groesser/kleiner · Puzzle · Steckbrief
+
+> *Stand bis v355 in der Rangliste, hatte aber als einziger Punkt
+> **keinen Block**, der sagt was er ist.* Gefunden in der Pruefschleife QS
+> beim Abzaehlen: neun von zehn Ranglistenpunkten waren erklaert, einer
+> nicht. Genau das, was die Rangliste verhindern soll — sie ist ein Blick,
+> keine Suche, und ein Punkt ohne Block ist beides nicht.
+
+Der Rest von **B3** („mehr Aufgabenformen", ANTON-Katalog). Die
+**umgekehrte Frage** ist gefahren; was bleibt, sind vier Formen, die ohne
+neue Daten moeglich sind:
+
+| Form | Frage | was schon dasteht |
+|---|---|---|
+| **Nachbarn** | „Welches Land grenzt an Bayern?" | die Nachbarschaften aus D2c |
+| **groesser/kleiner** | „Welches Land ist groesser — Frankreich oder Spanien?" | die Flaechen stehen in der Geometrie |
+| **Puzzle** | ein Umriss wandert an seinen Platz | das Ziehen aus `ziehen` |
+| **Steckbrief** | Hauptstadt, Nachbarn, Groesse zu einem Gebiet | alles vorhanden |
+
+**Teilbar: jede Form einzeln**, und keine braucht neue Daten — das ist der
+Grund, warum der Punkt trotz mittleren Nutzens weit unten steht: er ist
+jederzeit machbar und deshalb nie dringend.
+
+*Abnahme je Form:* `spielprobe` prueft die Frage ohne Browser (sie ist eine
+Rechnung), der Rauchtest spielt sie einmal durch.
 
 ---
 
@@ -3784,3 +3853,102 @@ finden konnte, weil er nur auf einer *anderen* Maschine existiert. Das
 ist genau das, wofür er da ist. Q47 hat gezeigt, dass eine Probe an einer
 Änderung woanders stirbt; Q49 zeigt, dass sie auch an einem anderen
 Rechner sterben kann.
+
+---
+
+## QS · Die Pruefschleife zum Englisch-Konzept
+
+**Auftrag: alles noch einmal proben, in jeder Ebene, keine Fehler, keine
+Luecken, keine Widersprueche.** Fuenf Befunde, alle repariert. Vier davon
+haette kein Tor gefunden, weil sie in Dokumenten stehen — und einer
+steckte im Tor selbst.
+
+### QS1 · `passt` nennt jeden Befund einen Ueberlauf
+
+Gefunden bei der Probe, ob eine vierte Weltkachel passt (siehe QS5).
+`passt` meldete **38 FEHLER: Elemente laufen ueber den Rand** — und
+gezaehlt waren:
+
+| | |
+|---|---|
+| echte Ueberlaeufe | **0** |
+| Ratschenwerte, die sich geaendert haben | **38** |
+
+Kein einziger Ueberlauf, und trotzdem stand es so da. Wer den Befund in
+einem Jahr liest, sucht einen Ueberlauf, den es nicht gibt, und findet ihn
+nie. Jede Zahl traegt ihre Messstelle mit (Regel 5) — die Ueberschrift ist
+der Anfang der Messstelle.
+
+*Geflickt:* die Ueberschrift zaehlt jetzt getrennt und nennt beide Sorten
+beim Namen; die Erklaerung zu `overflow:auto` erscheint nur noch, wenn es
+wirklich einen Ueberlauf gab. **Stehende Gegenprobe:** sie nimmt die
+Unterscheidung heraus und legt gleichzeitig einen Befund hinein — beides
+in EINEM Ersatz, damit die Voraussetzung nicht geborgt ist (der Fehler aus
+Q49). Sie schlaegt an.
+
+### QS2 · „Die drei Profile" ueber einer Tabelle mit vier Spalten
+
+Die Ueberschrift von § 2.1 stand seit N1 falsch — im selben Abschnitt, der
+erklaert, warum die Kennungen aus der Kopfzeile kommen und nicht aus einer
+Liste im Tor. *Nachgezogen.*
+
+### QS3 · „Vorlesen" heisst zweierlei, und Englisch bringt das ans Licht
+
+In der Profiltabelle steht fuer Stephan und Violeta **Vorlesen: nein**.
+Eine englische Hoeraufgabe **ist** Vorlesen — der Widerspruch faellt auf,
+sobald Englisch gebaut wird, und zwar als stumme Aufgabe oder als falscher
+Toralarm.
+
+Aufgeloest: „Vorlesen" meint **Lesehilfe** (die Frage laut sagen, weil das
+Kind nicht liest). Bei Englisch ist der Ton nicht Hilfe, sondern
+**Gegenstand**. Zwei Zeilen statt einer.
+
+**Und dabei ein zweiter Fund.** Ich wollte die Zeile in „Vorlesen als
+Lesehilfe" umbenennen — deutlicher. `tor/smoke.mjs` sucht sie mit
+`/^\|\s*Vorlesen\s*\|/` und wurde sofort rot: *„Die Zeile ‚Vorlesen' fehlt
+im Backlog."* Das Tor hat recht und der Name bleibt. **Diese Tabellenzeile
+ist eine Schnittstelle, kein Text.** Steht jetzt so daneben.
+
+Offen bleibt: sobald Englisch steht, braucht die neue Zeile ein Tor, das
+sie liest — sonst ist sie eine Angabe, die niemand prueft. Als **QS3** in
+der Rangliste.
+
+### QS4 · B3r stand in der Rangliste ohne Block
+
+Neun von zehn Ranglistenpunkten hatten einen Abschnitt, der sagt was sie
+sind. Einer nicht. Die Rangliste ist ein Blick und keine Suche; ein Punkt
+ohne Block ist beides nicht. *Block geschrieben.*
+
+### QS5 · Die vierte Weltkachel — behauptet, dann gemessen
+
+Der erste Entwurf des Konzepts versprach bei E3 „`passt` gruen mit vier
+Weltkarten". **Das war eine Annahme.** Nachgemessen mit einer eingebauten
+vierten Welt, gebaut, `passt` ueber alle sieben Groessen:
+
+| | |
+|---|---|
+| die Wand fasst (iPhone SE quer) | **genau 4** Kacheln, die 5. faellt raus |
+| Erdkunde-Bild | 214 pt → **127 pt** (−41 %) |
+| Rechnen | 54 pt → 32 pt |
+| Schreiben | 47 pt → 28 pt |
+
+Zwei Ergebnisse, beide gehoeren ins Konzept und standen nicht drin:
+
+1. **Englisch ist die letzte Welt, die passt.** Eine fuenfte braucht einen
+   anderen Grundriss, keine weitere Kachel.
+2. Die vierte Welt **kostet jedes vorhandene Weltbild bis zu 41 %** seiner
+   Groesse. Das ist kein Fehler, sondern ein Preis — und einer, den ein
+   Blick beurteilen muss, kein Tor (Regel 4: kein Tor ersetzt den Blick).
+
+E3 hat deshalb jetzt einen Schritt mehr: *ansehen, entscheiden, dann
+`--neu`* — mit Begruendung im Einchecker. Ein `--neu` ohne Blick waere das
+Stilllegen einer Ratsche, die gerade das Richtige gemeldet hat.
+
+### Was die Schleife NICHT gefunden hat
+
+Die Zaehlwoerter im Konzept gegen ihre Tabellen (neun Spielformen, sieben
+Tore, zwoelf Pakete) stimmen — nach zwei Korrekturen, die beim Erweitern
+noetig wurden. Die Torkette ist gruen, `inhalt` (9 Tore), `regeln`,
+`anker`, `doku` ebenfalls. Der Silhouettenbedarf der vierten Welt
+(`silhouette('englisch')`) war im Konzept nicht genannt und steht jetzt
+in § 6 — eine Welt ohne Zeichen waere eine leere Kachel.

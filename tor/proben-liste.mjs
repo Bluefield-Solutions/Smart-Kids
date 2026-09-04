@@ -3651,6 +3651,26 @@ export const PROBEN = [
     an:{ ...DIST, text:'--kleber-eng-min:72px' },
     sagt:'geschrumpft' },
 
+
+  /* --- QS1: die Ueberschrift von `passt` sagt, was gemessen wurde -----
+   *
+   * Gefunden bei der Probe, ob eine vierte Weltkachel passt: 38 Befunde,
+   * NULL davon ein Ueberlauf - und trotzdem stand darueber „Elemente
+   * laufen ueber den Rand". Wer das liest, sucht das Falsche.
+   *
+   * Der Eingriff nimmt die Unterscheidung heraus, sodass jeder Befund
+   * wieder als Ueberlauf gilt. Damit ueberhaupt ein Befund entsteht, wird
+   * gleichzeitig eine Ratsche verstellt: `passt` bleibt gruen, solange
+   * nichts abweicht, und ein stilles Tor beweist nichts (Regel 1). Beides
+   * in EINEM Ersatz, damit die Voraussetzung nicht geborgt ist - der
+   * Fehler aus Q49. */
+  { n:'die Fehlerüberschrift nennt jeden Befund einen Überlauf', tor:'passt',
+    bauen:true, args:['--teil=1/5'], datei:'tor/passt.mjs',
+    such:'const istRatsche = (f) => / steht auf .* statt /.test(f);',
+    ersatz:"const istRatsche = (f) => false;\nfehler.push('Die Kachel — Bild pt steht auf 1 statt 2');",
+    an:{ datei:'tor/passt.mjs', fehlt:'/ steht auf .* statt /.test(f)' },
+    sagt:'läuft über den Rand oder ist verdeckt' },
+
   /* --- B3: die umgekehrte Frage --------------------------------------
    *
    * Drei Proben: die Form selbst, die Markierung, die Wertung.

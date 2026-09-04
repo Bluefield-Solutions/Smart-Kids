@@ -1,7 +1,7 @@
 # Konzept: Englisch — die vierte Welt
 
-**Stand 04.09.2026, v352. Noch nichts davon ist gebaut.** Dieses Dokument
-ist der Schritt 0 zu den Paketen E1 bis E9 im Backlog: drei Vorbilder
+**Stand 04.09.2026, v356. Noch nichts davon ist gebaut.** Dieses Dokument
+ist der Schritt 0 zu den Paketen E1 bis E12 im Backlog: drei Vorbilder
 benannt, aufgeschrieben was sie TUN, ein Soll daraus abgeleitet, der
 Abstand gemessen. Das Soll kommt aus der **Referenz**, nicht aus mir
 (Regel 3) — bei einem Schulfach heisst Referenz zusätzlich: aus dem
@@ -11,13 +11,14 @@ Lehrplan, nach dem Lea unterrichtet wird.
 
 ## § 0 · Für wen — und das sind zwei verschiedene Kinder
 
-| | Lea | Fiona |
-|---|---|---|
-| Alter, Klasse | 8, **dritte Klasse** | 6, **erste Klasse** |
-| Englisch in der Schule | **ab jetzt**, LehrplanPLUS Bayern | ab Klasse 3, also **in zwei Jahren** |
-| Liest | ja, sicher | **nein** |
-| Vorwissen | „ein bisschen was gelesen, ein, zwei Sätze gesagt" | keins |
-| Was die App leisten soll | **das begleiten, was in der Schule läuft** | Ohr und Mut, sonst nichts |
+| | Fiona | Lea | Stephan & Violeta |
+|---|---|---|---|
+| Alter, Stand | 6, **erste Klasse** | 8, **dritte Klasse** | erwachsen, **Abitur** |
+| Englisch | ab Klasse 3, also **in zwei Jahren** | **ab jetzt**, LehrplanPLUS Bayern | lange her, seither wenig geredet |
+| Liest | **nein** | ja, sicher | selbstverständlich |
+| Vorwissen | keins | „ein bisschen was gelesen, ein, zwei Sätze gesagt" | **viel, aber eingerostet** |
+| Das Problem | es gibt noch keins | Wortschatz aufbauen | **nicht Wissen, sondern Zugriff** |
+| Was die App leisten soll | Ohr und Mut, sonst nichts | **das begleiten, was in der Schule läuft** | das Vorhandene **wieder erreichbar** machen |
 
 Daraus folgt schon fast alles. Für Lea ist Englisch ein **Schulfach mit
 einem Lehrplan**, und die App hat gefälligst denselben Wortschatz zu
@@ -26,6 +27,11 @@ Wörter und hat von beidem die Hälfte. Für Fiona ist Englisch **kein
 Schulfach**, sondern ein Spiel mit Klängen; sie liest nicht, also gibt es
 für sie keine Buchstabe-zu-Bild-Aufgabe, keine geschriebene Antwort und
 keine Rechtschreibung. Nicht „vereinfacht" — **anders**.
+
+Und für Stephan und Violeta ist Englisch **weder Schulfach noch Spiel**,
+sondern ein Wiederfinden: der Wortschatz ist da, er kommt nur nicht, wenn
+man ihn braucht. Das ist eine dritte Aufgabe, keine schwerere Fassung der
+zweiten — dazu § 2b.
 
 Das ist genau das Muster, das in dieser App schon zweimal steht:
 `schreiben:*` gehört nur Fiona, `rechnen:reihen` nur Lea. Die Welt
@@ -144,6 +150,72 @@ sie Pflicht, im Englischen ändert sie das Wort), und /e/ gegen /æ/
 → Das ist keine Fehlerliste zum Anstreichen, sondern eine **Bauliste für
 Höraufgaben**. Wer den Unterschied nicht *hört*, kann ihn nicht sprechen.
 Genau dafür gibt es Spielform 2.
+
+---
+
+## § 2b · Und die Erwachsenen — ein ganz anderer Fall
+
+Stephan und Violeta haben Abitur und seither wenig Englisch geredet. Das
+ist kein „Lea, nur schwerer" — es ist ein eigener, gut untersuchter Fall,
+und die Forschung dazu sagt vier Dinge, von denen drei überraschen.
+
+**1. Der passive Wortschatz ist zwei- bis dreimal so groß wie der aktive.**
+Sie *kennen* die Wörter. Was fehlt, ist der Weg vom Kennen zum Sagen.
+→ Also **keine Vokabeln beibringen.** Die Aufgabe ist Zugriff, nicht
+Erwerb.
+
+**2. Produktion verfällt schneller als Verstehen** — was zuerst geht, ist
+das Sprechen, nicht das Erkennen.
+→ Also **produktiv abfragen**: das Wort **schreiben**, nicht aus vier
+auswählen. Wiedererkennen misst genau das, was bei ihnen noch da ist, und
+übt genau das, was sie nicht brauchen.
+
+**3. Und der Befund, der die Reihenfolge umdreht.** „False beginners" —
+Erwachsene mit Schulfremdsprache — schlagen echte Anfänger deutlich in der
+**Produktion**, aber ihr **Hörverstehen ist auf das Niveau echter Anfänger
+zurückgefallen**. Das Ohr geht zuerst.
+→ Also ist Hören für sie **nicht die Aufwärmübung, sondern der harte
+Teil**. Kein langsam Diktiertes: normales Tempo, verschliffene Wörter, ein
+Satz statt eines Wortes. Genau die Aufgabe, bei der sie sich unangenehm
+ertappt fühlen — und die einzige, die dort etwas bewegt.
+
+**4. Die Lücke ist bei Wortverbindungen am größten**, nicht bei
+Einzelwörtern. Man weiß *bill* und *make*, aber nicht, dass man *„Could we
+get the bill?"* sagt und nicht *„Can I become the bill?"*.
+→ Also **Wendungen statt Wörter** — und dazu das, was Deutschen mit
+Schulenglisch verlässlich passiert: **falsche Freunde**. *become* ist nicht
+*bekommen*, *eventually* nicht *eventuell*, *actually* nicht *aktuell*,
+*gift* ist Gift im englischen Sinn nicht, sondern ein Geschenk, und ein
+*Handy* heißt auf Englisch nicht Handy. Das ist der peinliche Wortschatz,
+den ein Abiturient längst zu kennen glaubt — und beim Reden trotzdem
+danebengreift.
+
+### Was das für die Aufgaben heißt
+
+Die Elternspalte der Profiltabelle (§ 2.1 im Backlog) passt bereits genau:
+**nur tippen, nie Auswahl statt Tippen, sachlicher Ton, streng, 12
+Aufgaben je Sitzung.** Das ist produktiver Abruf, und er steht dort seit
+N1. Für Englisch heißt das ohne eine einzige neue Regel: sie **schreiben**
+die Antwort. Fiona zeigt, Lea liest und schreibt ab, die Eltern
+produzieren.
+
+**Ein Nebeneffekt, der Arbeit spart:** die Erwachsenen brauchen **keine
+Bilder**. Ihr Englisch kann also fertig sein, **bevor die 140 Zeichnungen
+aus E4 existieren** — es hängt nur an der Wortliste und an der Stimme.
+
+### Ein Widerspruch, den diese Prüfschleife gefunden hat
+
+In der Profiltabelle steht für Stephan und Violeta **„Vorlesen: nein"**.
+Für Englisch geht das nicht: eine Höraufgabe **ist** Vorlesen.
+
+Der Widerspruch ist keiner, sobald man die Spalte richtig liest — sie
+meint *Vorlesen als **Lesehilfe***, also die Frage laut sagen, weil das
+Kind sie nicht lesen kann. Bei Englisch ist der Ton nicht die Hilfe,
+sondern **der Gegenstand**. Zwei verschiedene Dinge unter einem Wort.
+
+Das muss in der Tabelle stehen und nicht nur hier, sonst liest es ein Tor
+falsch — und der Rauchtest würde entweder eine stumme Aufgabe durchwinken
+oder eine richtige anschlagen. Nachgetragen als **QS3**.
 
 ---
 
@@ -286,17 +358,26 @@ Bilder fehlen noch**, damit der Fortschritt sichtbar ist statt gefühlt.
 
 ## § 5 · Die Spielformen
 
-Sechs, und jede hat eine Begründung aus § 1 bis § 3. Die Spalte „ohne
+Neun, und jede hat eine Begründung aus § 1 bis § 3. Die Spalte „ohne
 Mikrofon" ist keine Höflichkeit, sondern die Zusage aus § 3.
 
 | # | Form | für wen | liest? | ohne Mikrofon? |
 |---|---|---|---|---|
-| 1 | **Hören und zeigen** | beide | nein | ja |
-| 2 | **Zwei Wörter, ein Laut Unterschied** | beide | nein | ja |
-| 3 | **Sag es — und es passiert etwas** | beide | nein | **ja** (tippen geht immer) |
+| 1 | **Hören und zeigen** | Fiona, Lea | nein | ja |
+| 2 | **Zwei Wörter, ein Laut Unterschied** | **alle drei** | nein | ja |
+| 3 | **Sag es — und es passiert etwas** | Fiona, Lea | nein | **ja** (tippen geht immer) |
 | 4 | **Wort zum Bild** | Lea | ja | ja |
 | 5 | **Abschreiben** | Lea | ja | ja |
 | 6 | **Der Satz, den du sagen kannst** | Lea | ja | ja |
+| 7 | **Hören und schreiben** | Eltern | ja | ja |
+| 8 | **Die Wendung, nicht das Wort** | Eltern | ja | ja |
+| 9 | **Falsche Freunde** | Eltern | ja | ja |
+
+Form 2 steht bei allen dreien — mit **verschiedenen Paaren**. Fiona
+bekommt *dog/dock*, die Eltern *thirty/dirty* und *worse/verse*. Dieselbe
+Mechanik, dieselbe Datei, ein Feld `stufe` am Paar. Nicht zwei Spiele, die
+gleich aussehen und getrennt veralten (Regel 6, sonst **veraltet** eines
+von beiden).
 
 ### 1 · Hören und zeigen
 
@@ -366,21 +447,72 @@ Befund 3 aus § 2, und es ist die Form, die aus Vokabeln Sprache macht.
 
 ---
 
+### 7 · Hören und schreiben  *(Eltern)*
+
+Ein **ganzer Satz**, einmal gesprochen, in normalem Tempo — nicht
+buchstabiert, nicht verlangsamt. Geschrieben wird, was ankam.
+
+Das ist Befund 3 aus § 2b in einer Aufgabe: Erwachsene mit Schulenglisch
+halten sich fürs Hören für zu gut und sind es nicht. Ein zweites Mal
+Hören gibt es, aber es wird **gezählt** — nicht bestraft, nur gezählt.
+Eine Zahl, die man sieht, wirkt ohne Strafe.
+
+Bewusst **nicht** verlangsamt: langsames Englisch übt langsames Englisch.
+Was am Flughafen gesprochen wird, ist schnell.
+
+### 8 · Die Wendung, nicht das Wort  *(Eltern)*
+
+Deutsch steht da, Englisch wird getippt — aber nie ein Einzelwort:
+*„Können wir zahlen?"* → *„Could we get the bill, please?"*
+
+Mehrere Lösungen gelten. *„Could we have the bill"* ist genauso richtig.
+Die App hält deshalb **eine Menge** richtiger Antworten je Wendung, keine
+einzige — sonst prüft sie Auswendiglernen statt Können. Die Nachsicht
+beim Vergleichen gibt es in der App schon (Schreibtoleranz aus R6); für
+Englisch kommt dazu, dass Groß- und Kleinschreibung und der Punkt am Ende
+egal sind.
+
+### 9 · Falsche Freunde  *(Eltern)*
+
+Ein deutscher Satz mit einer Falle: *„Ich habe einen Brief bekommen."*
+Zwei englische Fassungen stehen da, eine mit `become`. Welche stimmt?
+
+Das ist die einzige Form, in der die App **die typische Falle** zeigt statt
+sie zu vermeiden — und sie funktioniert nur, weil beide Fassungen plausibel
+aussehen. Ein falscher Freund, den man erkennt, wenn man ihn sieht, ist
+keiner mehr; genau darum geht es.
+
+Und es ist die Form mit der besten Trefferquote fürs Geld: die Liste ist
+kurz (rund dreißig Fallen tragen die meisten Fehler), sie ist **speziell
+für Deutschsprachige** richtig, und sie braucht **kein einziges Bild**.
+
+---
+
 ## § 6 · Wie es in die App passt
 
 Sehr gut, und das ist kein Zufall: die Trennung, die C3 („Aufgabentyp ohne
 Karte") eingezogen hat, war genau dafür da.
 
 ```
-WELTEN         + { id:'englisch', name:'Englisch', farbe:? }
-EBENEN         + englisch:hoeren     art:'englisch'  wer:['fiona','lea']
-               + englisch:laute      art:'englisch'  wer:['fiona','lea']
-               + englisch:sprechen   art:'englisch'  wer:['fiona','lea']
-               + englisch:lesen      art:'englisch'  wer:['lea']
-               + englisch:schreiben  art:'englisch'  wer:['lea']
-               + englisch:saetze     art:'englisch'  wer:['lea']
+WELTEN         + { id:'englisch', name:'Englisch', farbe:1 }
+EBENEN         + englisch:hoeren     wer:['fiona','lea']
+               + englisch:laute      (alle - mit `stufe` am Lautpaar)
+               + englisch:sprechen   wer:['fiona','lea']
+               + englisch:lesen      wer:['lea']
+               + englisch:schreiben  wer:['lea']
+               + englisch:saetze     wer:['lea']
+               + englisch:diktat     wer:['stephan','violeta']
+               + englisch:wendungen  wer:['stephan','violeta']
+               + englisch:freunde    wer:['stephan','violeta']
+                 (alle mit art:'englisch')
 weltVon(e)     + art === 'englisch' → 'englisch'
-src/inhalt/englisch.js   Wortschatz, Themengebiete, Lautpaare, Chunks
+silhouette()   + ein Zeichen für die Welt „englisch"  ← sonst leere Kachel
+src/inhalt/englisch.js   Wortschatz, Themengebiete, Lautpaare, Wendungen,
+                         falsche Freunde
+
+Je Profil sichtbar: Fiona 3 Ebenen, Lea 6, die Eltern 4. Neun Einträge,
+aber nie mehr als sechs auf einem Bildschirm — die Kachelwand fasst zwölf
+(Q13/Q27), das ist also unkritisch.
 ```
 
 **Was schon da ist und mitbenutzt wird:** Leitner-Fach je Ebene und Profil,
@@ -406,7 +538,7 @@ dafür — Paket E2 und Tor E-c.
 
 ## § 7 · Was gemessen wird
 
-Ohne Tore geht hier nichts an den Start. Fünf, und jedes mit einer
+Ohne Tore geht hier nichts an den Start. Sieben, und jedes mit einer
 Gegenprobe, die zuerst prüft, ob ihr Eingriff angekommen ist (Regel 10).
 
 | Tor | prüft | Gegenprobe schlägt an, wenn |
@@ -415,7 +547,44 @@ Gegenprobe, die zuerst prüft, ob ihr Eingriff angekommen ist (Regel 10).
 | **E-b** `smoke` | **jede** Englisch-Aufgabe ist ohne Mikrofon zu Ende zu spielen | ein Weg verlangt Sprechen |
 | **E-c** `smoke` | fehlt die englische Stimme, sagt die App es — statt stumm zu bleiben | die Stimmensuche findet nichts und die App schweigt |
 | **E-d** `smoke` | die Sprechaufgabe endet nach zwei Anläufen und wertet nie eine Aussprache | ein dritter Anlauf erscheint; oder irgendwo steht eine Aussprachezahl |
-| **E-e** `passt` | sechs Ebenen in einer vierten Welt laufen auf 844 × 390 nicht über | die Weltenwahl bekommt eine vierte Karte und niemand misst nach |
+| **E-e** `passt` | die vierte Weltkachel läuft auf keiner der sieben Größen über | die Weltenwahl bekommt eine fünfte Karte |
+| **E-f** `smoke` | die Elternaufgaben verlangen eine **getippte** Antwort, nie eine Auswahl | eine Elternebene bietet vier Möglichkeiten an |
+| **E-g** `inhalt` | jede Wendung hält **mehrere** gültige Antworten; jeder falsche Freund hat beide Fassungen | eine Wendung steht mit genau einer Lösung da |
+
+### Die vierte Weltkachel — gemessen, nicht behauptet
+
+**Der erste Entwurf dieses Dokuments hat bei E3 „`passt` grün mit vier
+Weltkarten" versprochen. Diese Prüfschleife hat es nachgemessen, und so
+einfach ist es nicht.**
+
+Gemessen wurde mit einer eingebauten vierten Welt, gebaut, `passt` über
+alle sieben Größen (Messstelle: `dist/index.html`, Chromium, 04.09.):
+
+| | |
+|---|---|
+| echte Überläufe | **0** |
+| Ratschenwerte, die sich ändern | **38** |
+| die Wand fasst (iPhone SE quer) | **genau 4** Kacheln, die 5. fällt raus |
+
+Also: **die vierte Welt passt — die fünfte nicht.** Englisch ist die
+letzte Welt, die auf das Zielgerät geht. Wer danach eine fünfte will,
+braucht einen anderen Grundriss, keine weitere Kachel.
+
+Und sie ist nicht umsonst. Vier Karten teilen sich dieselbe Breite, also
+schrumpft **jedes vorhandene Weltbild**:
+
+| Welt | vorher | mit vier Welten |
+|---|---|---|
+| Erdkunde | 214 pt | **127 pt** (−41 %) |
+| Rechnen | 54 pt | 32 pt |
+| Schreiben | 47 pt | 28 pt |
+
+Das ist **kein Fehler, sondern ein Preis** — und einer, den ein Blick
+beurteilen muss, kein Tor (Regel 4: kein Tor ersetzt den **Blick**).
+Deshalb gehört in E3 ein Schritt, der im ersten Entwurf fehlte: *die
+Weltenwahl mit vier Karten ansehen, dann entscheiden, dann `--neu`* — mit
+der Begründung im Einchecker. Ein `--neu` ohne Blick wäre das Stillegen
+einer Ratsche, die gerade das Richtige gemeldet hat.
 
 **E-b und E-d sind die beiden, um die es geht.** Sie prüfen keine
 Rechnung, sondern eine **Zusage an ein Kind** — und eine Zusage, die
@@ -450,7 +619,7 @@ hier trägt sie besonders nötig).
 
 ## § 9 · Die Reihenfolge
 
-Neun Pakete. Die Zerlegung folgt einer Regel: **nach jedem Paket ist die
+Zwölf Pakete. Die Zerlegung folgt einer Regel: **nach jedem Paket ist die
 App spielbar** — kein halbes Fach im Auslieferungsstand.
 
 | Paket | was | Abnahme |
@@ -464,8 +633,21 @@ App spielbar** — kein halbes Fach im Auslieferungsstand.
 | **E7** | Lea liest: **Wort zum Bild** | am Gerät |
 | **E8** | Lea schreibt: **Abschreiben mit Vorlage** | am Gerät; `passt` für die Buchstabenkarten |
 | **E9** | **Der Satz, den du sagen kannst** + Abzeichen je Themengebiet | Abzeichen erscheint erst, wenn das Gebiet voll ist |
+| **E10** | Eltern: **falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tor E-g; und E-f (getippt, nie Auswahl) |
+| **E11** | Eltern: **Wendungen** je Themengebiet, mit mehreren gültigen Antworten | Tor E-g; Groß-/Kleinschreibung und Schlusspunkt sind egal |
+| **E12** | Eltern: **Hören und schreiben** — ganzer Satz, normales Tempo, zweites Hören wird gezählt | am Gerät; die Zahl der Wiederholungen steht im Elternbereich |
 
-**E1 vor allem anderen.** Ohne die richtige Wortliste baut man ein Fach,
-das an Leas Unterricht vorbeigeht — und merkt es erst bei der ersten
-Probe.
+**E1 vor allem anderen — aber nur für Lea und Fiona.**  Ohne die richtige
+Wortliste baut man ein Fach, das an Leas Unterricht vorbeigeht, und merkt
+es erst bei der ersten Probe.
+
+**E10 hängt an nichts.** Die falschen Freunde brauchen weder die
+Lehrplanliste noch ein einziges Bild — sie sind eine eigene, kurze Liste,
+und sie sind für Deutschsprachige richtig, nicht für irgendwen. **Solange
+E1 blockiert ist, ist E10 das Paket, das laufen kann.** Nach E2 (englische
+Stimme) und E3 (die vierte Welt) ist es der kürzeste Weg zu etwas, das
+wirklich benutzt wird.
+
+Drei Zielgruppen — und die Reihenfolge folgt nicht dem Alter, sondern
+dem, was nicht blockiert ist.
 

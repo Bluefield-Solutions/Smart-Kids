@@ -1383,11 +1383,37 @@ if (NEU) {
     + `(${Object.keys(alles).length} insgesamt).\n`);
   process.exit(0);
 }
+/* Die Ueberschrift muss sagen, was gemessen wurde (QS1).
+ *
+ * Bis v355 stand ueber JEDEM Befund dieses Tors „Elemente laufen ueber
+ * den Rand" - auch ueber den Ratschenwerten, die gar kein Ueberlauf sind,
+ * sondern eine Groesse, die sich geaendert hat. Gefunden bei der Probe,
+ * ob eine VIERTE Weltkachel passt: 38 Befunde, davon NULL Ueberlaeufe.
+ * Wer das in einem Jahr liest, sucht einen Ueberlauf, den es nicht gibt -
+ * und findet ihn nie. Jede Zahl traegt ihre Messstelle mit (Regel 5), und
+ * die Ueberschrift ist der Anfang der Messstelle.
+ *
+ * Unterschieden wird am Text: eine Ratsche sagt immer „steht auf X statt
+ * Y". Das ist kein Ratespiel - die Zeile wird eine Funktion weiter oben
+ * genau so gebaut. */
+const istRatsche = (f) => / steht auf .* statt /.test(f);
 if (fehler.length) {
-  console.log(`\n  ${fehler.length} FEHLER: Elemente laufen über den Rand.`);
-  console.log('  `overflow:auto` zählt nicht als Lösung — ein Kind scrollt nicht in einer');
-  console.log('  Liste, von der es nicht weiß, dass sie weitergeht. Und ein verdeckter');
-  console.log('  Knopf ist sichtbar und trotzdem nicht zu treffen.');
+  const ratschen = fehler.filter(istRatsche).length;
+  const rand     = fehler.length - ratschen;
+  const teile = [];
+  if (rand)     teile.push(`${rand}× läuft über den Rand oder ist verdeckt`);
+  if (ratschen) teile.push(`${ratschen}× eine festgehaltene Größe hat sich geändert`);
+  console.log(`\n  ${fehler.length} FEHLER: ${teile.join(', ')}.`);
+  if (rand) {
+    console.log('  `overflow:auto` zählt nicht als Lösung — ein Kind scrollt nicht in einer');
+    console.log('  Liste, von der es nicht weiß, dass sie weitergeht. Und ein verdeckter');
+    console.log('  Knopf ist sichtbar und trotzdem nicht zu treffen.');
+  }
+  if (ratschen) {
+    console.log('  Die Ratschenwerte sind KEIN Überlauf: dort steht etwas noch im Bild,');
+    console.log('  aber anders groß als beim letzten Festhalten. War das Absicht, dann');
+    console.log('  `npm run passt -- --neu` — und die Begründung in den Einchecker.');
+  }
   process.exit(1);
 }
 console.log(`\n  passt grün: auf ${TEIL ? `${MEINE.length} von ${GERAETE.length}` : `allen ${GERAETE.length}`} `
