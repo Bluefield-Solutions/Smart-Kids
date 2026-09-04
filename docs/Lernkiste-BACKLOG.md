@@ -196,7 +196,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 7 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
 | 8 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
 | 9 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 10 | **G15c** „Als Nächstes" nutzt 29 % seiner Seite | Fiona, Lea | mittel | mittel | G15b hat den Rest geholt |
 | 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
 | 12 | **G16** Werkzeugspalte: sechs Elemente, EINE Gestaltungssprache | Fiona, Lea | mittel | mittel | — |
 | 13 | **G17** Die Antwort ist wichtiger als das Mikrofon — Rangfolge drehen | Fiona | mittel | klein | — |
@@ -3598,7 +3597,7 @@ und ob die Zeile dafür freigehalten werden sollte.
 ## Q45 (Q45): die Karte springt beim Lob — gemessen, gebaut, wieder ausgebaut
 
 Der offene Punkt aus D3. Diesmal richtig gemessen: **die gezeichnete
-Karte**, nicht ihr Kasten, und mit der Sache abgeschaltet (Regel 13).
+Karte**, nicht ihr Kasten, und mit der Sache abgeschaltet (Regel 1).
 
 | Zustand | gezeichnete Karte (oben / hoch) |
 |---|---|
@@ -4361,3 +4360,75 @@ nimmt zwei der drei nächsten Abzeichen weg und schlägt an.
 **Offen bleibt „Als Nächstes" mit 29 %** — die Vorschauseite. Sie zeigt
 je nach Ebene eine blasse Karte oder eine Aufkleberreihe; ihr Fall ist
 nicht derselbe wie die anderen. Steht als **G15c**.
+
+---
+
+## G15c · „Als Nächstes" — mehr Auskunft, nicht mehr Luft
+
+Der letzte offene Wert aus G15b: die Vorschauseite nutzte **29 %** ihrer
+Höhe, den schlechtesten der sieben Werte.
+
+### Was da wirklich stand
+
+Erst gemessen, statt am Bild geschätzt — Überschrift und Blöcke einzeln:
+
+```
+Als Nächstes   29 % von 251 pt:   H3.gruppe h=44 | DIV.kleber gross vorschau h=74
+```
+
+Also 118 von 251 Punkten, der Rest leer. Und die drei Vorschaukarten
+waren nur 74 Punkte hoch, weil auf dieser Seite **Rechen-Aufkleber ohne
+SVG** standen — meine Höhenregel aus G15b greift dort gar nicht.
+
+### Der Griff, den ich NICHT getan habe
+
+Die Karten größer machen. Das hätte den Kasten gefüllt und nichts gesagt
+— und es hätte **meine eigene Messung befriedigt, ohne die Sache zu
+verbessern.** „genutzt" misst, wo der Inhalt aufhört, nicht ob er etwas
+taugt; eine Kennzahl, die sich durch einen höheren leeren Kasten erfüllen
+lässt, misst den Kasten.
+
+Das ist derselbe Fehler wie Regel 1 in umgekehrter Richtung: dort wird
+eine Wirkung bezeugt, die nie geprüft wurde — hier wäre eine Zahl erfüllt
+worden, die nichts mehr bedeutet.
+
+### Was stattdessen dasteht
+
+Die Frage, die die Seite selbst aufwirft: sie sagt „als Nächstes" — dann
+gehört dazu, **wie weit es noch ist.** Also dieselbe Zeile und derselbe
+Balken wie auf den anderen Kapitelseiten:
+
+> **Als Nächstes: Europa**  *3 von 17 gesammelt*
+> ▬▬▬▬▭▭▭▭▭▭▭▭▭▭▭▭▭
+
+Nichts Neues erfunden, nur nicht mehr weggelassen.
+
+| | vorher | jetzt |
+|---|---|---|
+| Als Nächstes | 29 % | **62 %** |
+
+### Warum die vollen Seiten KEINEN Balken bekommen
+
+Naheliegend wäre, ihn überall hinzusetzen. Auf den Seiten mit Albumkarte
+wäre er aber eine zweite Fassung derselben Auskunft: die Karte zeigt
+gesammelt gegen offen bereits als Bild. Zwei Anzeigen für dieselbe Sache,
+und eine davon veraltet (Regel 6). Die Vorschauseite hat diese Karte
+nicht — dort ist der Balken die einzige Stelle, an der die Zahl steht.
+
+*Abnahme:* Ratsche von 25 auf **35 %** gezogen, stehende Gegenprobe nimmt
+den Fortschritt wieder weg und schlägt an.
+
+### Stand aller sieben Kapitelseiten
+
+| Seite | Start | jetzt |
+|---|---|---|
+| Abzeichen | 18 % | 38 % |
+| Als Nächstes | 29 % | **62 %** |
+| Buchstaben hören | 42 % | 47 % |
+| Minus | 63 % | 63 % |
+| Kontinente | 86 % | 86 % |
+| Buchstaben nachfahren | 89 % | 98 % |
+| Bundesländer | 94 % | 94 % |
+
+**Der schlechteste Wert ist von 18 auf 38 % gestiegen, der Schnitt von 60
+auf 70 %.** Keine Seite ist dabei über den Rand gelaufen.

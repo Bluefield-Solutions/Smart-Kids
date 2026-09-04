@@ -42,13 +42,13 @@ const fehler = [];
  *
  *   Abzeichen 18 → 38 %   Kontinente 86 %   Bundeslaender 94 %
  *   Minus 63 %            nachfahren 89 → 98 %   hoeren 42 → 47 %
- *   Als Naechstes 29 %
+ *   Als Naechstes 29 → 62 %
  *
- * Die Ratsche steht auf 25 und nicht auf 29: der schlechteste Wert haengt
+ * Die Ratsche steht auf 35 und nicht auf 38: der schlechteste Wert haengt
  * daran, WAS ein Profil gerade gesammelt hat, und ein Buch mit einem
- * Gegenstand weniger darf nicht rot werden. 25 faengt trotzdem den
+ * Gegenstand weniger darf nicht rot werden. 35 faengt trotzdem den
  * Rueckfall auf die 18 %, mit denen diese Runde angefangen hat. */
-const BUCH_GENUTZT_MIN = 25;
+const BUCH_GENUTZT_MIN = 35;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 

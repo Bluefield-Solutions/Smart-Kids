@@ -1315,6 +1315,11 @@
       "zeit": "2026-09-04",
       "s": 51
     },
+    "die Vorschauseite verschweigt wieder den Fortschritt": {
+      "commit": "9b7479d121ae0b85022fece6e369a2b875c60328",
+      "zeit": "2026-09-04",
+      "s": 114
+    },
     "eine Kapitelseite im Buch ist wieder halb leer": {
       "commit": "b4362dc46c33ad5ab6e7cc4267247c2dec02177a",
       "zeit": "2026-09-04",

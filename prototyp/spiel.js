@@ -5665,7 +5665,30 @@ async function forscherbuch(){
     id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe, zahl:vorschau.length,
     lesen:`Als Nächstes: ${dran.titel}.`,
     inhalt:`
-      <h3 class="gruppe">Als Nächstes: ${dran.titel}</h3>
+      <h3 class="gruppe">Als Nächstes: ${dran.titel}${
+        /* WIE WEIT das Kind in dieser Gruppe ist (G15c).
+         *
+         * Die Vorschauseite nutzte gemessen 29 % ihrer Hoehe - der
+         * schlechteste Wert der sieben Kapitelseiten. Der naheliegende
+         * Griff waere gewesen, die drei Karten groesser zu machen; das
+         * haette den Kasten gefuellt und nichts gesagt.
+         *
+         * Und es haette meine eigene Messung befriedigt, ohne die Sache
+         * zu verbessern: „genutzt" misst, wo der Inhalt AUFHOERT, nicht
+         * ob er etwas taugt. Eine Kennzahl, die sich durch einen
+         * hoeheren leeren Kasten erfuellen laesst, misst den Kasten.
+         *
+         * Also mehr AUSKUNFT statt mehr Luft, und zwar die, welche die
+         * Seite selbst aufwirft: sie sagt „als Naechstes" - dann gehoert
+         * dazu, wie weit es noch ist. Dieselbe Zeile und derselbe Balken
+         * wie auf den anderen Kapitelseiten; nichts Neues, nur nicht
+         * mehr weggelassen. */
+        (() => { const gesamt = dran.da.length + dran.offen.length;
+          return gesamt ? ` <small>${dran.da.length} von ${gesamt} gesammelt</small>` : ''; })()
+        }</h3>
+      ${(() => { const gesamt = dran.da.length + dran.offen.length;
+        return gesamt ? fortschrittBalken({ gesammelt: dran.da.length, gesamt,
+          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) : ''; })()}
       ${hatKarte(dran)
         /* Auch das Naechste ist eine KARTE, wenn es eine hat - ganz
            blass, weil noch nichts darauf klebt. Drei Kaesten mit

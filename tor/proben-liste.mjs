@@ -3659,6 +3659,19 @@ export const PROBEN = [
 
 
 
+
+  /* --- G15c: die Vorschauseite sagt, wie weit es noch ist -------------
+   *
+   * Der Eingriff nimmt den Fortschritt von der Vorschauseite - genau der
+   * Zustand von vor G15c, in dem sie 29 % ihrer Hoehe nutzte und nichts
+   * ausser drei Karten zeigte. */
+  { n:'die Vorschauseite verschweigt wieder den Fortschritt', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) : ''; })()}",
+    ersatz:"          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) \u0026\u0026 '' : ''; })()}",
+    an:{ ...DIST, text:"gesamt }) && ''" },
+    sagt:'Kapitelseiten nutzen weniger als' },
+
   /* --- G15b: eine Kapitelseite darf nicht halb leer sein ---------------
    *
    * Die Ratsche haelt fest, was gemessen ist. Der Eingriff nimmt den
