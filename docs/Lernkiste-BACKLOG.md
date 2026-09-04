@@ -196,6 +196,60 @@ zwei verschiedene Dinge; der Katalogpunkt heisst deshalb jetzt **A4h**.
 
 ---
 
+### E1–E9 · Englisch — die vierte Welt
+
+**Das Konzept steht vollständig in `docs/Lernkiste-KONZEPT-ENGLISCH.md`**
+— Referenzabgleich, Didaktik, die Sprachfrage mit Zahlen, Spielformen,
+Datenmodell, Tore. Hier steht nur, was zu tun ist und woran es abgenommen
+wird; die Begründungen stehen dort und nicht zweimal (Regel 6, sonst
+veraltet eine der beiden Fassungen).
+
+**Die drei Festlegungen, die alles andere tragen:**
+
+1. **Aussprache wird nicht bewertet.** Veröffentlichte Wortfehlerraten
+   für Kinder: 13,9 % beim Vorlesen, 32,0 % beim freien Sprechen — und
+   das für *englische Muttersprachler* mit einem eigens nachtrainierten
+   Modell. Lea ist acht, Deutsche und Anfängerin; sie liegt in jeder
+   Hinsicht schlechter. Ein Werkzeug, das bei jedem dritten Wort irrt,
+   darf kein Kind korrigieren.
+2. **Jede Aufgabe ist ohne Mikrofon lösbar** — geprüft, nicht behauptet
+   (Tor E-b).
+3. **Der Wortschatz kommt aus dem bayerischen Lehrplan**, nicht aus mir:
+   rund 140 verbindliche Wörter für Jgst. 3/4, nach Themengebieten. Klein
+   genug, um sie zu Ende zu spielen.
+
+| Paket | was | Abnahme |
+|---|---|---|
+| **E1** | Wortschatz holen und eintragen (ISB-Liste, Themengebiete, Fionas Teilmenge) | `inhalt` zählt je Themengebiet und meldet ein leeres |
+| **E2** | Englische Stimme: `sagen()` je Ebene, Stimmensuche, Auskunft bei fehlender Stimme | Tor E-c |
+| **E3** | Vierte Welt + erste Ebene „Hören und zeigen" | am Gerät gespielt, `passt` grün mit vier Weltkarten |
+| **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommt |
+| **E5** | „Zwei Wörter, ein Laut Unterschied" — Lautpaare mit Grund | Tor E-a, alle vier Stolperstellen vertreten |
+| **E6** | „Sag es" — zwei Anläufe, kein Urteil, eigene Stimme | Tore E-b und E-d |
+| **E7** | Lea liest: Wort zum Bild | am Gerät |
+| **E8** | Lea schreibt: Abschreiben mit Vorlage | am Gerät, `passt` für die Buchstabenkarten |
+| **E9** | Der Satz zum Selbersagen + Abzeichen je Themengebiet | Abzeichen erscheint erst bei vollem Gebiet |
+
+**E1 zuerst, und es ist blockiert.** Die vollständige ISB-Wortliste liegt
+noch nicht vor: der Netzzugang dieser Umgebung sperrt `isb.bayern.de` und
+`lehrplanplus.bayern.de`. Themengebiete und Stichproben sind über
+Suchtreffer belegt, die Liste selbst nicht. **Eine ausgedachte Wortliste
+wäre genau der Fehler, den Regel 3 verbietet** — das Soll käme dann aus
+mir statt aus der Referenz, und es fiele erst bei Leas erster Probe auf.
+
+*Wege dorthin:* die PDF von einem anderen Rechner holen und ins Repo
+legen; oder Leas Schulbuch abschreiben, das denselben Lehrplan abbildet.
+Der zweite Weg ist der bessere — dann stimmt auch die **Reihenfolge** der
+Themengebiete mit ihrem Unterricht überein, und die steht in keiner
+Wortliste.
+
+**Fiona bekommt die Ebenen 1, 2 und 3, sonst nichts.** Sie ist sechs und
+liest nicht; Lesen und Abschreiben wären für sie keine leichtere Aufgabe,
+sondern eine unmögliche. Englisch hat sie erst in zwei Jahren — für sie
+ist das kein Schulfach, sondern ein Spiel mit Klängen.
+
+---
+
 ### Neu offen seit v350 — vier Punkte aus den Runden Q48/Q49
 
 **Q50 · Die dreizehn ausgelassenen Proben.** Der nächtliche Lauf vom
