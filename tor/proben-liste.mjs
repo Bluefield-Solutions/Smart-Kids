@@ -1633,8 +1633,8 @@ export const PROBEN = [
   { n:'die Siegsterne kommen bei den Eltern zurück', tor:'ansicht', args:['--nur=quer-ende-eltern'], bauen:true, datei:D,
     // Seit B2 steht davor die Weiche „Test oder Uebung"; getauscht wird
     // nur der Uebungszweig.
-    such:": ton().siegsterne ? `<div class=\"siegsterne\">${sterne(n,56)}</div>` : ''}",
-    ersatz:': `<div class="siegsterne">${sterne(n,56)}</div>`}',
+    such:": ton().siegsterne ? `<div class=\"siegsterne${ton().feier ? ' feier' : ''}\"",
+    ersatz:': `<div class="siegsterne"',
     an:{ ...DIST, fehlt:'ton().siegsterne ?' },
     sagt:'quer-ende-eltern' },
   // Ein Schluessel fehlt in einem der beiden Toene.
@@ -2056,8 +2056,12 @@ export const PROBEN = [
        steht seit dann unter der Karte und muss uebersprungen werden -,
        und die Hoehe von 200 auf 165. `inhalt` hat es gemeldet: der
        Eingriff waere nicht angekommen, und das Tor haette gruen gemeldet,
-       ohne etwas zu pruefen. */
-    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}',
+       ohne etwas zu pruefen.
+       Mit G15 steht sie auf 210 - das Forscherbuch hatte das groesste
+       leere Band der App. Gemeldet hat es wieder `inhalt`, an derselben
+       Stelle, aus demselben Grund: eine Hoehe im Suchtext ist ein Anker
+       auf eine Zahl, und Zahlen aendern sich. */
+    such:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:210px}',
     ersatz:'  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:600px}',
     an:{ ...DIST, text:'.albumkarte svg{height:600px}' },
     sagt:'nicht alles im Bild' },
@@ -3652,6 +3656,26 @@ export const PROBEN = [
     sagt:'geschrumpft' },
 
 
+
+
+  /* --- G14: der Lohn gehoert den Kindern ------------------------------
+   *
+   * Zwei Proben, eine je Richtung. Eine allein bewiese die Haelfte: wer
+   * nur „bei sachlich keine Feier" prueft, bleibt gruen, wenn die Feier
+   * ueberhaupt niemandem mehr erscheint. */
+  { n:'der Lohn feiert auch bei den Eltern', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:'prototyp/spiel.js',
+    such:"    feier: false,",
+    ersatz:"    feier: true,",
+    an:{ ...DIST, fehlt:'feier: false' },
+    sagt:'Das Profil steht im Backlog auf „sachlich"' },
+
+  { n:'der Lohn bleibt auch bei den Kindern stumm', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:'prototyp/spiel.js',
+    such:"    feier: true,",
+    ersatz:"    feier: false,",
+    an:{ ...DIST, fehlt:'feier: true' },
+    sagt:'wieder stumm' },
 
   /* --- QS8: ein Kontinent hat EINE Farbe ------------------------------
    *

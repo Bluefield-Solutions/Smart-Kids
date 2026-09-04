@@ -1546,8 +1546,70 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
      dieselbe Sache, also dieselbe Zahl. Und sie faellt unter
      `prefers-reduced-motion` von selbst auf null. */
   animation-delay:calc(var(--nr) * var(--d-staffel) * 2)}
+/* --- Der Lohn (G14) ---------------------------------------------------
+ *
+ * Bis v358 passierte im wichtigsten Augenblick der App fast nichts: das
+ * Lobwort wurde gruen, am Rundenende standen drei Sterne da. Sauber,
+ * ruhig, erwachsen - und genau deshalb ohne den Moment, in dem eine
+ * Sechsjaehrige merkt, dass sie etwas geschafft hat. Die Vorbilder aus
+ * dem Genre setzen dort ihre Mittel ein, und nicht aus Spielerei: die
+ * unmittelbare, deutliche Rueckmeldung ist der Teil, der Kinder
+ * wiederkommen laesst.
+ *
+ * NUR FUER DIE KINDERPROFILE. Der Schalter ist `feier` in TON, neben
+ * `siegsterne` - dort, wo diese Unterscheidung schon wohnt („kindlich
+ * darf jubeln, sachlich schweigt"). Stephan und Violeta bekommen nichts
+ * davon; ihre Kachel bleibt, was sie war.
+ *
+ * Alle Zeiten kommen aus den vorhandenen Marken (`--d-belohnung`,
+ * `--d-staffel`) und nicht aus neuen Zahlen (Regel 6). Das hat einen
+ * zweiten Nutzen: unter `prefers-reduced-motion` stehen diese Marken auf
+ * 1 ms, also faellt die ganze Feier von selbst aus - ohne eine zweite
+ * Regel, die man vergessen kann.
+ *
+ * Bewegt werden nur `transform`, `opacity` und `background-color`. Kein
+ * Filter, kein `backdrop`: auf iOS ist das die Falle, die schon einmal
+ * ein schwarzes Bild gekostet hat. */
+@keyframes jubel-auf{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+@keyframes lobgrund{
+  0%{background-color:transparent}
+  30%{background-color:color-mix(in oklch, var(--gut) 15%, transparent)}
+  100%{background-color:transparent}}
+@keyframes stern-landen{
+  from{opacity:0;transform:scale(.35) translateY(-16px)}
+  to{opacity:1;transform:none}}
+@keyframes buch-winkt{0%,100%{transform:none}45%{transform:scale(1.07)}}
+
+/* Das Farbfeld liegt auf dem Textknoten selbst, nicht auf einem
+   Pseudo-Element mit `z-index:-1` - das waere hinter den Seitengrund
+   gerutscht. Und es bekommt KEIN Innenmass: ein Zuschlag hier
+   verschoebe den Umbruch, und `passt` misst genau das. */
+.frage .richtigText.feier{border-radius:var(--r6);
+  animation:lobgrund calc(var(--d-belohnung) * 2.4) var(--k-standard) both}
+.frage .richtigText.feier .jubel{
+  animation:jubel-auf var(--d-belohnung) var(--k-standard) both}
+
+/* Die Sterne landen NACHEINANDER. Drei Sterne, die zugleich erscheinen,
+   sieht man als einen - derselbe Grund, aus dem die Aufkleber seit je
+   versetzt hereinkommen. */
+.siegsterne.feier svg{animation:stern-landen var(--d-belohnung) var(--k-standard) both}
+.siegsterne.feier .sterne svg:nth-child(2){animation-delay:calc(var(--d-staffel) * 2)}
+.siegsterne.feier .sterne svg:nth-child(3){animation-delay:calc(var(--d-staffel) * 4)}
+
+/* Und wohin der Aufkleber gegangen ist: der Forscherbuch-Knopf winkt
+   einmal, nachdem die neuen Aufkleber gelandet sind.
+   Nicht ein FLIEGENDER Aufkleber, obwohl das schoener waere: der braeuchte
+   die Lage beider Elemente zur Laufzeit und ein Element, das ueber den
+   Bildschirm wandert - und `passt` misst, ob etwas ueber den Rand laeuft.
+   Ein Knopf, der im richtigen Augenblick winkt, sagt dasselbe und kann
+   nichts kaputtmachen. Der Flug steht als eigener Punkt offen. */
+.siegwahl.feier #buch{animation:buch-winkt calc(var(--d-belohnung) * 1.6)
+  var(--k-standard) both; animation-delay:calc(var(--d-staffel) * 8)}
+
 @media (prefers-reduced-motion:reduce){
   .frage .neuerkleber,.frischerkleber{animation:none}
+  .frage .richtigText.feier,.frage .richtigText.feier .jubel,
+  .siegsterne.feier svg,.siegwahl.feier #buch{animation:none}
 }
 .frage .fastText{color:var(--warn)}
 .frage .loesung{color:var(--akzent)}
@@ -1744,13 +1806,18 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    ist das Buch sonst zu zwei Dritteln leer, und eine Weltkarte in
    Briefmarkengroesse ist kein Album. Nach oben begrenzt, damit zwei
    Ebenen nebeneinander noch auf einen Bildschirm passen. */
-.albumkarte svg{height:clamp(120px, 34vh, 300px);width:auto;max-width:100%;display:block}
+.albumkarte svg{height:clamp(120px, 42vh, 340px);width:auto;max-width:100%;display:block}
 /* Was noch fehlt, ist der SCHATTEN des Aufklebers - kein Fragezeichen und
    kein leerer Kasten. Blass genug, dass die Farbe traegt, und kraeftig
-   genug, dass die Form zu sehen ist: bei .55 Deckung liegt der Umriss
-   ueber dem Weiss der Seite, ohne mit den gesammelten zu konkurrieren. */
-.albumoffen{fill:var(--linie);fill-opacity:.55;stroke:var(--tinte);stroke-opacity:.12;
-  stroke-width:1;vector-effect:non-scaling-stroke}
+   genug, dass die Form zu sehen ist.
+   .55 waren zu blass (G15). Auf der Aufnahme des Forscherbuchs lagen die
+   offenen Gebiete so schwach ueber dem Weiss, dass sie wie ein Artefakt
+   aussahen statt wie ein freier Platz - und der freie Platz ist der halbe
+   Sinn eines Albums: er zeigt, was noch zu holen ist. Jetzt .72 mit
+   deutlicherem Umriss. Immer noch klar unter den gesammelten, die Farbe,
+   Rand, Schatten und Glanz tragen. */
+.albumoffen{fill:var(--linie);fill-opacity:.72;stroke:var(--tinte);stroke-opacity:.28;
+  stroke-width:1.2;vector-effect:non-scaling-stroke}
 .albumgrund{fill:var(--linie);fill-opacity:.3}
 .gruppe small{font-weight:600;font-size:var(--s-klein);color:var(--tinte-3)}
 @media (prefers-reduced-motion:reduce){ .albumkarte:active{transform:none} }
@@ -1969,7 +2036,25 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Gemessen: mit 200 fiel er auf zwei von sieben Kapitelseiten unter die
      Unterkante - das Kapiteltor hat es gemeldet. Die Seite hat 251
      Punkte, der Satz nimmt zwei Zeilen. */
-  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:165px}
+  /* 190 seit G15, gemessen wie die 165 davor.
+     Das Forscherbuch hatte das groesste zusammenhaengende LEERE BAND der
+     ganzen App: 37 % der Bildhoehe, auf 390 Punkten also 144 am Stueck
+     ohne Inhalt - und zwar auf dem Bildschirm, der die Sammlung zeigt.
+     Die Karte nimmt jetzt, was da ist.
+
+     WARUM 210 UND NICHT 235. Bei 235 sind `passt` und das Kapiteltor im
+     Rauchtest beide gruen - gemessen, nicht vermutet. Genommen ist
+     trotzdem der kleinere Wert, und der Grund ist die Messstelle
+     (Regel 5): der Rauchtest spielt EIN Buch mit DIESEN Saetzen. Ein
+     Satz zum Mitnehmen darf 110 Zeichen haben und nimmt dann drei Zeilen
+     statt zwei. Gemessen ist also nicht der schlimmste Fall, sondern der
+     vorliegende. 210 laesst diese Zeile Platz.
+
+     Dazu kommt: Q46 hat 200 als ZU VIEL gemessen, damals mit demselben
+     Tor. Warum es heute bei 235 gruen bleibt, konnte ich nicht
+     aufklaeren. Zwei Messungen, die sich widersprechen, und eine davon
+     ist meine - dann gilt die vorsichtigere. */
+  .rollen.buch.kapitel:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:210px}
   .kleber.gross.vorschau .aufkleber svg{height:48px}
   /* Und die Ueberschriften der Aufklebergruppen werden kleiner.
    *

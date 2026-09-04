@@ -537,6 +537,10 @@ const TON = {
   kind: {
     spricht: true,
     siegsterne: true,
+    /* Der Lohn (G14) - hier und nicht an drei Stellen im Bildschirmbau.
+       „kindlich darf jubeln, sachlich schweigt" stand als Satz schon
+       oben; das ist derselbe Satz als Schalter. */
+    feier: true,
     lob:  ['Super gemacht!', 'Ganz genau!', 'Richtig!', 'Klasse!',
            'Das stimmt!', 'Toll gemacht!', 'Perfekt!', 'Prima!'],
     ende: 'Geschafft!',
@@ -545,6 +549,7 @@ const TON = {
   },
   sachlich: {
     spricht: false,
+    feier: false,
     /* Keine Sterne auf dem Endbildschirm.
      *
      * Nicht aus Geschmack: sie sagen dasselbe wie die Zeile darunter.
@@ -2763,7 +2768,8 @@ function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
   if (!frage) return;
   frage.innerHTML = fastText
     ? `<span class="fastText">${fastText}</span>`
-    : `<span class="richtigText"><b class="jubel">${spruch || 'Richtig!'}</b> ${sache}</span>`
+    : `<span class="richtigText${ton().feier ? ' feier' : ''}"><b class="jubel">${
+        spruch || 'Richtig!'}</b> ${sache}</span>`
       + (neuerAufkleber ? `<span class="neuerkleber">${letzterKleber()}<b>Neuer Aufkleber!</b></span>` : '')
       + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
 }
@@ -5240,7 +5246,8 @@ function endschirm(){
   s.innerHTML=kopf({}) + `
     <div class="mitte">
       ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
-        : ton().siegsterne ? `<div class="siegsterne">${sterne(n,56)}</div>` : ''}
+        : ton().siegsterne ? `<div class="siegsterne${ton().feier ? ' feier' : ''}"
+             >${sterne(n,56)}</div>` : ''}
       <div class="gross">${st.test
         ? (bestanden ? 'Test bestanden!' : 'Noch nicht ganz.') : ton().ende}</div>
       <div class="unter">${st.test
@@ -5277,7 +5284,7 @@ function endschirm(){
            Danach ist der Satz eine Erklaerung fuer etwas, das man sieht. */
         !st.aufkleber && !f.gesammelt
           ? `<div class="leiser">${ton().ersterKleber}</div>` : ''}
-      <div class="reihe siegwahl">
+      <div class="reihe siegwahl${ton().feier && st.aufkleber ? ' feier' : ''}">
         <button class="knopf haupt" id="nochmal">${ZEI('nochmal', 22)}${
           st.test ? (bestanden ? 'Weiter üben' : 'Noch einmal üben') : 'Noch einmal'}</button>
         <button class="knopf" id="buch">${ZEI('buch', 22)}Forscherbuch</button>

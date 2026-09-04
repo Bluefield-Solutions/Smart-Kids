@@ -2959,7 +2959,21 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
  * aus der der Test schon liest, ob die Antwort ueberhaupt durchkam. Es
  * kostet also nichts extra, und es prueft die eine Eigenschaft, die den
  * Ton ausmacht. */
-function lobPruefen(wer, ebene, satz, gesprochen) {
+function lobPruefen(wer, ebene, satz, gesprochen, feiert) {
+  /* Die Feier gehoert den Kindern (G14).
+   *
+   * Gefragt wird BEIDE Richtungen, und das ist der Punkt: eine Pruefung,
+   * die nur „bei sachlich keine Feier" sagt, bliebe gruen, wenn die Feier
+   * ueberhaupt niemandem mehr erscheint - sie meldete nie etwas und waere
+   * kein Beweis (Regel 1). Der Schalter sitzt in TON neben `siegsterne`;
+   * wer ihn dort umlegt, faellt hier auf. */
+  if (feiert !== undefined) {
+    if (SACHLICH.has(wer) && feiert) merke('durchgang', new Error(
+      `${wer}/${ebene}: der Lohn feiert. Das Profil steht im Backlog auf „sachlich"`));
+    if (!SACHLICH.has(wer) && !feiert) merke('durchgang', new Error(
+      `${wer}/${ebene}: der Lohn feiert NICHT, obwohl das Profil kindlich `
+      + 'angesprochen wird — dann ist der Augenblick wieder stumm (G14)'));
+  }
   if (!SACHLICH.has(wer)) return;
   if (satz && /!/.test(satz)) merke('durchgang', new Error(
     `${wer}/${ebene}: das Lob ruft — „${satz.replace(/^✓ /, '')}". `
@@ -2993,13 +3007,19 @@ function lobPruefen(wer, ebene, satz, gesprochen) {
 async function abgeschlossen(p, wer, ebene, hoert, wie) {
   const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
   if (hoert.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
-  const r = await p.evaluate(() => {
+  const { r, feiert } = await p.evaluate(() => {
     const f = document.querySelector('.schirm.da .frage');
-    return (f?.querySelector('.richtigText') ? '✓ ' : '') + (f?.textContent.trim() || '');
+    const gut = f?.querySelector('.richtigText');
+    return { r: (gut ? '✓ ' : '') + (f?.textContent.trim() || ''),
+             /* Gelesen wird die KLASSE, nicht die Bewegung: eine
+                Animation laesst sich nicht anhalten und ablesen, eine
+                Klasse schon. Sie ist die Zusage, die Bewegung ihre
+                Folge. */
+             feiert: gut ? gut.classList.contains('feier') : undefined };
   });
   if (!/^✓ /.test(r || ''))
     merke('durchgang', new Error(`${wer}/${ebene}: ${wie} → „${r}"`));
-  lobPruefen(wer, ebene, r, gesagt);
+  lobPruefen(wer, ebene, r, gesagt, feiert);
   durchgespielt++;
   await weitergegangen(p);
   await raus(p);
