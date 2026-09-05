@@ -322,6 +322,7 @@ const module = [
   inline(new URL('../src/inhalt/schreiben.js', import.meta.url), 'Schreiben'),
   inline(new URL('../src/inhalt/abzeichen.js', import.meta.url), 'Abzeichen'),
   inline(new URL('../src/inhalt/saetze.js', import.meta.url), 'Saetze'),
+  inline(new URL('../src/inhalt/englisch.js', import.meta.url), 'Englisch'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),
   inline(new URL('../src/kern/richtung.js', import.meta.url), 'Richtung'),
   inline(new URL('../src/kern/gleichlauf.js', import.meta.url), 'Gleichlauf'),

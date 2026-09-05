@@ -138,10 +138,12 @@ const AUFNAHMEN = [
   { name:'quer-welten', spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'welten' },
   /* Dieselbe Weltenwahl fuer LEA - und sie sieht anders aus.
    *
-   * Seit N2a haengt die Zahl der Karten am Profil: Fiona hat drei Welten,
-   * Lea und die Eltern zwei. Ein Bildschirm, der je nach Kind eine andere
-   * Gestalt hat, braucht beide Vorbilder - sonst haelt die Sammlung nur
-   * die Haelfte fest und die andere aendert sich unbemerkt. */
+   * Seit N2a haengt die Zahl der Karten am Profil, seit E3 sind es vier
+   * und drei: Fiona hat Erdkunde, Rechnen, Schreiben und Englisch, Lea
+   * dieselben ohne Schreiben, die Eltern nur die ersten beiden. Ein
+   * Bildschirm, der je nach Kind eine andere Gestalt hat, braucht beide
+   * Vorbilder - sonst haelt die Sammlung nur die Haelfte fest und die
+   * andere aendert sich unbemerkt. */
   { name:'quer-welten-lea', spiel:null, kind:'lea', quer:true, wahl:'.schirm.da',
     tun:'welten' },
   { name:'quer-ebenen', spiel:null, quer:true, stand:true, wahl:'.schirm.da' },
@@ -305,6 +307,23 @@ const AUFNAHMEN = [
     wahl:'.schirm.da', tun:'vorlauf' },
   { name:'quer-zahlen', spiel:'schreiben:zahlen', quer:true,
     wahl:'.schirm.da', tun:'zweistellig' },
+  /* Englisch (E3) - zwei Aufnahmen, und die zweite ist die, wegen der
+   * diese Runde einen Befund hat.
+   *
+   * Der Vorlauf zeigt alle 25 Gegenstaende auf einmal: zehn Farbflecken
+   * und fuenfzehn Ziffern, jeder mit seinem englischen Wort darunter. Das
+   * ist der einzige Bildschirm, auf dem die Farben nebeneinander stehen -
+   * ob zwei zu nah beieinander liegen, rechnet `inhalt` in CIELAB, ob es
+   * GUT aussieht, sagt nur das Bild.
+   *
+   * Die Aufgabe selbst zeigt vier Flecken auf neutralem Grund und sonst
+   * nichts - kein Wort, denn das ist die Frage. Genau hier ist das
+   * Verblassen aus G18 aufgefallen: es machte aus Gruen einen Mintton.
+   * Kein Tor haette danach gesucht, und der Befund kam vom Hinsehen. */
+  { name:'quer-englisch-vorlauf', spiel:'englisch:hoeren', quer:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
+  { name:'quer-englisch', spiel:'englisch:hoeren', quer:true,
+    wahl:'.schirm.da' },
 ];
 
 /**
@@ -532,6 +551,48 @@ function vergleiche(a, b) {
 
 const browser = await starte();
 // Determinismus: feste Punktdichte, feste Groesse, Bewegung aus, Datum fest.
+/* Der Wuerfel steht still - und seit E3 stehen auch die Stimmen fest.
+ *
+ * Chromium hier hat KEINE Stimme, also auch keine englische. Ohne Nachbau
+ * zeigte die Englischebene auf jeder Aufnahme ihre Notfassung („Wo ist
+ * blue?") statt des Bildschirms, den ein Geraet mit Stimme zeigt - und
+ * genau der ist der, den man beurteilen muss.
+ *
+ * Nachgebaut wird auch `SpeechSynthesisUtterance` und `speak`, und das ist
+ * nicht Vorsicht, sondern eine bezahlte Lehre aus E2: `u.voice = {…}` mit
+ * einem einfachen Objekt WIRFT in Chromium, und `vorlesen` verschluckt es.
+ * Ohne die beiden Zeilen waere die App auf allen Aufnahmen still kaputt.
+ *
+ * Sichtbar aendert das sonst nichts: kein Bildschirm dieser App zeigt an,
+ * ob gerade gesprochen wird. */
+/* Woran man erkennt, dass der Aufgabenbildschirm einer kartenlosen Welt
+ * steht. Eine Tabelle und keine Kette von `startsWith`: mit der vierten
+ * Welt (E3) waere daraus die dritte Stelle geworden, an der dieselbe
+ * Zuordnung einzeln nachgetragen wird - und die erste Aufnahme der
+ * Englischebene lief prompt in die Zeitueberschreitung, weil sie auf eine
+ * Karte wartete, die es dort nicht gibt. Was hier fehlt, wartet auf die
+ * Karte; das ist die richtige Voreinstellung. */
+const OHNE_KARTE = {
+  rechnen:   '.schirm.da .rechnung',
+  schreiben: '.schirm.da .schreibblatt',
+  englisch:  '.schirm.da .engkarte',
+};
+
+const STIMMEN_NACHBAU = () => {
+  Math.random = () => 0.42;
+  window.__stimmen = [
+    { name: 'Anna', lang: 'de-DE', localService: true },
+    { name: 'Daniel', lang: 'en-GB', localService: true },
+  ];
+  speechSynthesis.getVoices = () => window.__stimmen;
+  speechSynthesis.speak = () => {};
+  speechSynthesis.cancel = () => {};
+  window.SpeechSynthesisUtterance = class {
+    constructor(text) { this.text = text; this.lang = ''; this.rate = 1;
+      this.pitch = 1; this.voice = null; }
+  };
+};
+
 const seite = await browser.newPage({
   viewport:{ width:1240, height:1000 },
   deviceScaleFactor: 2,
@@ -540,7 +601,7 @@ const seite = await browser.newPage({
   locale: 'de-DE',
   timezoneId: 'Europe/Berlin',
 });
-await seite.addInitScript(() => { Math.random = () => 0.42; });
+await seite.addInitScript(STIMMEN_NACHBAU);
 
 fs.mkdirSync(VORBILDER, { recursive:true });
 fs.mkdirSync(ABWEICHUNGEN, { recursive:true });
@@ -605,7 +666,7 @@ const holeSeite = async (a) => {
       reducedMotion: 'reduce', colorScheme: 'light',
       locale: 'de-DE', timezoneId: 'Europe/Berlin',
     });
-    await querSeite.addInitScript(() => { Math.random = () => 0.42; });
+    await querSeite.addInitScript(STIMMEN_NACHBAU);
   }
   return querSeite;
 };
@@ -809,7 +870,7 @@ for (const a of MEINE) {
       await seite.click(`.schirm.da [data-ebene="${a.spiel}"]:not([data-gruppe])`);
       // Seit R3 steht der Vorlauf beim ersten Betreten davor.
       await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
-        + '.schirm.da .rechnung', { timeout: 25000 });
+        + '.schirm.da .rechnung, .schirm.da .engkarte', { timeout: 25000 });
       // `tun:'vorlauf'` heisst: HIER bleiben. Kein `continue` - das
       // uebersprang die Aufnahme selbst und liess die naechste auf einer
       // halb gewanderten Seite landen (`quer-buch` wurde davon rot).
@@ -819,10 +880,9 @@ for (const a of MEINE) {
       // Eine Rechenebene hat keine Karte, auf die man warten könnte.
       // Jede Sorte hat ihr eigenes Kennzeichen: die Rechnung, das
       // Schreibfeld oder das Zielgebiet auf der Karte.
-      const ohneKarte = a.spiel.startsWith('rechnen') || a.spiel.startsWith('schreiben');
-      await seite.waitForSelector(a.spiel.startsWith('rechnen') ? '.schirm.da .rechnung'
-        : a.spiel.startsWith('schreiben') ? '.schirm.da .schreibblatt'
-        : '.schirm.da .karte svg path.ziel');
+      const steht = OHNE_KARTE[String(a.spiel).split(':')[0]];
+      await seite.waitForSelector(steht || '.schirm.da .karte svg path.ziel');
+      const ohneKarte = !!steht;
       await seite.waitForTimeout(ohneKarte ? 300 : 0);
       if (a.tun) await vorfuehren(seite, a.tun);
       }

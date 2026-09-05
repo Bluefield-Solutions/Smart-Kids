@@ -1906,6 +1906,111 @@ console.log('\n  Tor `englisch`');
     + `${saetze} Redemittel — Satz für Satz wie in der Redemittel-Liste`);
   console.log('    (kein Wort trägt ein Themengebiet — die Zuordnung steht in keiner '
     + 'der beiden Quellen)');
+
+  /* ---- Der Vorrat von „Hoeren und zeigen" (E3, Tor E-a in klein) -------
+   *
+   * Die Ebene fragt 25 Gegenstaende ab. Geprueft wird hier dreierlei, und
+   * jedes einzeln, weil jedes fuer sich schiefgehen kann:
+   *
+   *   1. JEDER GEGENSTAND STEHT IM AMTLICHEN WORTSCHATZ. Ein Farbwort, das
+   *      nicht in WOERTER steht, waere erfunden - und weil WOERTER selbst
+   *      gegen die PDF geprueft ist, haengt diese Kette an der Quelle und
+   *      nicht an mir.
+   *   2. JEDER HAT EIN BILD. Ohne Bild waere die Moeglichkeit ein leerer
+   *      Kasten, und fuer ein Kind, das nicht liest, die Ebene unbedienbar.
+   *   3. DIE ZEHN FARBEN SIND AUSEINANDERZUHALTEN. Das ist die einzige
+   *      Zusage dieser Ebene, die man nicht ansieht, sondern rechnet:
+   *      liegen zwei Farben zu nah beieinander, ist die Aufgabe nicht zu
+   *      loesen, egal wie gut jemand Englisch kann. Gemessen als
+   *      CIELAB-Abstand - eine Formel von aussen, nicht meine Schaetzung
+   *      (Regel 14: das Modell darf nicht vom Gemessenen abhaengen).
+   */
+  {
+    const eng = [];
+    const vorrat = EN.vorratHoeren();
+    for (const f of EN.FARBEN)
+      if (!EN.WOERTER.includes(f.wort))
+        eng.push(`die Farbe „${f.wort}" steht nicht im amtlichen Wortschatz`);
+    for (const z of EN.ZAHLEN)
+      if (!EN.ZAHLWORT[z]) eng.push(`die Zahl ${z} hat kein englisches Zahlwort`);
+    for (const x of Object.keys(EN.ZAHLWORT))
+      if (!EN.ZAHLEN.includes(+x))
+        eng.push(`„${EN.ZAHLWORT[x]}" steht als Zahlwort da, aber ${x} ist keine `
+          + 'Zahl der amtlichen Liste');
+    if (vorrat.length !== EN.FARBEN.length + EN.ZAHLEN.length)
+      eng.push(`der Hörvorrat hat ${vorrat.length} Gegenstände, erwartet waren `
+        + `${EN.FARBEN.length + EN.ZAHLEN.length}`);
+    const ids = new Set(vorrat.map(x => x.id));
+    if (ids.size !== vorrat.length)
+      eng.push(`der Hörvorrat hat doppelte Kennungen — der Leitner führte sie als eine`);
+    for (const x of vorrat) {
+      if (!x.farbton && !x.ziffern)
+        eng.push(`„${x.wort}" hat kein Bild — vier leere Kästen sind keine Aufgabe`);
+      if (!x.wort) eng.push(`ein Gegenstand ohne Wort: ${x.id}`);
+      if (!['farbe', 'zahl'].includes(x.sorte))
+        eng.push(`„${x.wort}" hat die Sorte „${x.sorte}" — dann kommen die Ablenker `
+          + 'aus der falschen Menge');
+    }
+    /* Die Ablenker: drei, aus derselben Sorte, nie das Ziel selbst.
+       Geprueft an JEDEM Gegenstand und nicht an einem Beispiel - die
+       Zahlen sind 15, die Farben 10, und bei kleiner Menge geht so etwas
+       zuerst kaputt. */
+    for (const x of vorrat) {
+      let k = 1;
+      const w = () => { k = (k * 1664525 + 1013904223) >>> 0; return k / 4294967296; };
+      const ab = EN.ablenkerFuer(x, w);
+      if (ab.length !== 3)
+        eng.push(`„${x.wort}" bekommt ${ab.length} Ablenker statt drei`);
+      if (ab.some(y => y.id === x.id))
+        eng.push(`„${x.wort}" steht unter seinen eigenen Ablenkern`);
+      if (ab.some(y => y.sorte !== x.sorte))
+        eng.push(`„${x.wort}" bekommt einen Ablenker anderer Sorte — dann ist die `
+          + 'Aufgabe ohne ein Wort Englisch zu lösen');
+    }
+    /* CIELAB, von Hand: sRGB -> linear -> XYZ (D65) -> Lab. Zwanzig Zeilen
+       statt einer Abhaengigkeit, und sie stehen hier statt in den Daten -
+       ein Tor, das seine Formel aus dem Prüfling holt, prüft sie nicht. */
+    const linear = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92
+      : Math.pow((c + 0.055) / 1.055, 2.4); };
+    const lab = (hex) => {
+      const r = linear(parseInt(hex.slice(1, 3), 16)),
+            g = linear(parseInt(hex.slice(3, 5), 16)),
+            b = linear(parseInt(hex.slice(5, 7), 16));
+      const X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
+      const Y =  0.2126 * r + 0.7152 * g + 0.0722 * b;
+      const Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
+      const f = (u) => u > 0.008856 ? Math.cbrt(u) : 7.787 * u + 16 / 116;
+      return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
+    };
+    let engster = Infinity, engstesPaar = '';
+    for (let i = 0; i < EN.FARBEN.length; i++)
+      for (let j = i + 1; j < EN.FARBEN.length; j++) {
+        const a = lab(EN.FARBEN[i].farbton), b = lab(EN.FARBEN[j].farbton);
+        const d = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+        if (d < engster) { engster = d; engstesPaar = `${EN.FARBEN[i].wort}/${EN.FARBEN[j].wort}`; }
+      }
+    /* 25 und nicht 31,3 (der gemessene Wert): eine Ratsche mit Luft. Bei
+       25 liegen zwei Farben noch klar auseinander - der Schwellwert faengt
+       das Hinzufuegen einer elften Farbe, die neben einer der zehn liegt,
+       und nicht das Nachjustieren eines Tons um zwei Prozent. */
+    const ENGSTER_MIN = 25;
+    if (!(engster >= ENGSTER_MIN))
+      eng.push(`die engsten zwei Farben (${engstesPaar}) liegen nur ${engster.toFixed(1)} `
+        + `CIELAB auseinander, nötig sind ${ENGSTER_MIN} — die Aufgabe wäre nicht lösbar`);
+    if (!EN.FARBEN.every(f => /^#[0-9a-f]{6}$/.test(f.farbton)))
+      eng.push('nicht jede Farbe hat einen lesbaren Wert der Form #rrggbb');
+
+    if (eng.length) {
+      console.log('    ' + eng.join('\n    '));
+      console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');
+      process.exit(1);
+    }
+    console.log(`    „Hören und zeigen": ${vorrat.length} Gegenstände `
+      + `(${EN.FARBEN.length} Farben, ${EN.ZAHLEN.length} Zahlen), jeder mit Bild und `
+      + `im amtlichen Wortschatz`);
+    console.log(`    engste zwei Farben: ${engstesPaar} mit ${engster.toFixed(1)} CIELAB `
+      + `(nötig ${ENGSTER_MIN})`);
+  }
 }
 
 /* =================================================== Tor `betroffen` ==== *

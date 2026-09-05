@@ -540,8 +540,25 @@ function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }
  *
  * Er erscheint nur fuer ein Kind, dem vorgelesen wird - fuer alle anderen
  * waere er ein Knopf, der schweigt. */
-function nochHoerenKnopf(text){
-  if (!P || !P.vorlesen || !text) return null;
+/* Die SPRACHE gehoert zum Satz, nicht zum Knopf.
+ *
+ * Der erste Anlauf fuer E3 liess sie weg - der Knopf las das englische
+ * Wort mit der deutschen Stimme vor („blue" als „blü-e"). Ein Knopf, der
+ * eine falsche Aussprache wiederholt, ist schlimmer als keiner: er UEBT
+ * sie. Und ohne englische Stimme gibt es ihn gar nicht, sonst waere er ein
+ * Knopf, der schweigt - dieselbe Regel wie bei `P.vorlesen`. */
+function nochHoerenKnopf(text, sprache = 'de'){
+  if (!P || !text) return null;
+  /* Wer den Knopf bekommt, haengt an der SPRACHE - und das ist kein
+     Sonderfall, sondern derselbe Satz von zwei Seiten: der Knopf steht da,
+     wo er etwas zu wiederholen hat.
+     Auf Deutsch wiederholt er eine VORLESEHILFE, also nur fuer ein Kind,
+     dem vorgelesen wird. Auf Englisch wiederholt er die FRAGE - Lea traegt
+     `vorlesen: false` und braucht ihn trotzdem, sie ist sogar die, die ihn
+     am meisten braucht. Ohne englische Stimme gibt es ihn nicht: ein Knopf,
+     der schweigt, ist schlimmer als keiner. */
+  if (sprache === 'en') { if (!englischHoerbar()) return null; }
+  else if (!P.vorlesen) return null;
   const b = el('button', 'knopf rund nochhoeren', ZEI('nochhoeren', 26));
   b.id = 'nochhoeren';
   b.setAttribute('aria-label', 'Aufgabe noch einmal hören');
@@ -549,7 +566,7 @@ function nochHoerenKnopf(text){
   // `vorlesen` und nicht `ansagen`: das hier ist eine BITTE, und eine
   // Bitte wird nicht vom Profil beantwortet - so wie die Karten im
   // Vorlauf und die Aufkleber im Buch.
-  b.onclick = () => vorlesen(text);
+  b.onclick = () => vorlesen(text, sprache);
   return b;
 }
 
@@ -1071,6 +1088,25 @@ const EBENEN = [
     art:'schreiben', wer:['fiona'] },
   { id:'schreiben:zahlen', ueber:'Schreiben', titel:'Zahlen hören', farbe:2,
     art:'schreiben', wer:['fiona'] },
+  /* Die vierte Welt (E3): Englisch, erste Ebene „Hoeren und zeigen".
+   *
+   * `art:'englisch'` und nicht ein Schalter an einer Kartenebene: gefragt
+   * wird anders (die App SAGT etwas, statt etwas hinzuschreiben), und die
+   * Ebene braucht einen eigenen Leitner-Stand. Dieselbe Begruendung wie bei
+   * `schreiben:diktat`.
+   *
+   * `wer`: Fiona und Lea. Fuer die Eltern kommt Englisch erst mit E10 bis
+   * E12 - falsche Freunde, Wendungen, Hoeren und Schreiben. Bis dahin
+   * verschwindet die ganze Welt fuer sie von selbst, weil sie keine Ebene
+   * mehr haelt; es braucht keine zweite Regel daneben.
+   *
+   * Warum Fiona MIT dabei ist, obwohl es noch keine Bilder gibt: der Vorrat
+   * dieser Ebene sind die zehn Farben und die 15 Zahlen - beides Bilder,
+   * die sich aus dem Wort selbst ergeben (siehe `Englisch.vorratHoeren`).
+   * Ein Farbfleck braucht niemanden, der ihn malt, und die Ziffern lernt
+   * sie nebenan in der Schreibwelt. */
+  { id:'englisch:hoeren', ueber:'Englisch', titel:'Hören und zeigen', farbe:3,
+    art:'englisch', wer:['fiona','lea'] },
 ];
 
 /* Die Fachwelten (D4).
@@ -1107,9 +1143,20 @@ const WELTEN = [
    * werden - `passt` prueft sie einzeln, weil eine dritte Karte auf
    * 844 x 390 nicht selbstverstaendlich ist. */
   { id:'schreiben', name:'Schreiben', farbe:6 },
+  /* Die vierte Welt (E3) - und sie ist die LETZTE, die auf das Zielgeraet
+   * geht. Gemessen mit vier eingebauten Kacheln auf 844 x 390: die Wand
+   * fasst genau vier, die fuenfte faellt heraus. Wer eine fuenfte Welt
+   * will, braucht einen anderen Grundriss, keine weitere Kachel.
+   *
+   * Und sie ist nicht umsonst: vier Karten teilen sich dieselbe Breite,
+   * also schrumpft jedes vorhandene Weltbild - Erdkunde von 214 auf 127
+   * Punkte. Das ist kein Fehler, sondern ein Preis, und einer, den ein
+   * Blick beurteilen muss und kein Tor. */
+  { id:'englisch',  name:'Englisch', farbe:3 },
 ];
 const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'
-                     : e.art === 'schreiben' ? 'schreiben' : 'erdkunde';
+                     : e.art === 'schreiben' ? 'schreiben'
+                     : e.art === 'englisch' ? 'englisch' : 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
 let Welt = WELTEN[0].id;
 
@@ -1167,6 +1214,9 @@ const SCHREIBBILD = {
   'schreiben:ziffern':     ['1','2'],
   'schreiben:zahlen':      ['ton','7'],
 };
+/* Welche Kennungen das Englischbild tragen: die Welt und ihre eine Ebene.
+   Ein Satz und keine Tabelle - es gibt (noch) nichts zu unterscheiden. */
+const ENGLISCHBILD = new Set(['englisch', 'englisch:hoeren']);
 const MATHEBILD = {
   'rechnen':           ['plus','mal'],
   'rechnen:plusminus': ['plus','minus'],
@@ -1209,6 +1259,31 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="9" stroke-linecap="round"
       stroke-linejoin="round">${teile}</svg>`;
   }
+  /* Die Englischkachel (E3): das Lautsprecherzeichen und ein Fleck.
+   *
+   * Kein Union Jack und keine Buchstaben „EN" - Fiona liest nicht, und
+   * eine Flagge sagt ihr nichts ueber die Aufgabe. Die beiden Zeichen
+   * sagen genau das, was gleich passiert: du HOERST etwas und tippst auf
+   * ein BILD. Der Fleck ist derselbe Kreis, der in der Aufgabe die Farbe
+   * traegt - nicht ein huebscheres Zeichen daneben (Regel 6). */
+  /* OHNE `transform` und ohne `<circle>` - und das ist keine Stilfrage,
+     sondern die Messstelle (Regel 5). Der erste Anlauf setzte den
+     Lautsprecher in eine skalierte Gruppe und den Fleck als `<circle>`.
+     `passt` misst die gezeichnete Ausdehnung ueber `getBBox()` und
+     `isPointInStroke` je PFAD, beides im eigenen Koordinatenraum des
+     Pfades - eine Gruppentransformation faellt dabei heraus, und ein
+     `<circle>` wird gar nicht erst gefunden. Gemeldet wurden 10 x 7
+     Punkte, also 5 % der Kachel, bei einem Zeichen, das auf dem
+     Bildschirm die halbe Kachel fuellt. Die Zahl war falsch, nicht das
+     Bild - und eine falsche Zahl in einer Ratsche ist schlimmer als
+     keine. Jetzt liegt alles in EINEM Raum: der 24er-Kasten des
+     Lautsprecherzeichens, der Fleck als Bogenpfad daneben. */
+  if (ENGLISCHBILD.has(ebeneId))
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round">${ZEICHEN.tonAn}<path
+      d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
     const teile = zeichen.map((n, i) =>
@@ -1235,8 +1310,8 @@ function silhouette(ebeneId) {
  * veralten - und eine davon haette Fionas Schreibebene auf dem
  * Kartenbildschirm geoeffnet, wo es nichts zu ziehen gibt.
  */
-const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm }
-  [ebeneArt(ebeneId)] || spielschirm);
+const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,
+  englisch: englischschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören. */
 const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
@@ -1472,6 +1547,17 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
                 stroke-width="1.6" vector-effect="non-scaling-stroke"/>${offen ? '' : `
                <path d="${x.pfad}" fill-rule="evenodd" class="kleberglanz"/>`}</svg>`
   : x.zeichenFolge ? buchstabenBild(x, ton)
+  /* Die beiden Bilder der Englischebene (E3).
+   *
+   * Sie kommen VOR dem Rechenzweig, weil beide dieselbe letzte Zeile
+   * treffen wuerden - ein englischer Gegenstand hat kein `frage`, und der
+   * Kasten waere leer.
+   *
+   * Der Farbfleck traegt seinen Ton als Marke am Markup, nicht im
+   * Stilblatt: welche zehn Farben es gibt, steht in den Daten, und eine
+   * Liste im Stylesheet daneben waere dieselbe Auskunft an zwei Orten. */
+  : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
+  : x.ziffern    ? `<div class="ziffernkleber" style="--ton:${ton}">${x.ziffern}</div>`
   :           `<div class="rechenkleber" style="--ton:${ton}">${x.frage}</div>`;
 
 /** EIN Aufkleber, so wie er im Buch klebt.
@@ -1483,7 +1569,10 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
   eigenerRahmen(x.pfad) || vbVon(ebeneId));
 
 /** Was unter dem Bild steht. Beim Buchstaben sein Merkwort. */
-const stueckFuss = (x) => x.pfad ? x.name : x.zeichenFolge ? x.wort : `= ${x.name}`;
+/* Beim englischen Gegenstand steht das WORT darunter - und zwar nur im
+   Vorlauf und im Buch, nie in der Aufgabe. Dort waere es die Antwort. */
+const stueckFuss = (x) => x.pfad ? x.name : x.zeichenFolge ? x.wort
+                        : x.sorte ? x.wort : `= ${x.name}`;
 
 const eigenerRahmen = (pfad) => {
   const z = String(pfad).match(/-?\d+\.?\d*/g);
@@ -1535,6 +1624,11 @@ function vorrat(ebeneId, stand = Stand, voll = false){
          : kont==='ziffern' ? Schreiben.vorratZiffern()
          : kont==='zahlen'  ? Schreiben.vorratZahlen(Rechnen.gesprochen)
          :                    Schreiben.vorrat();
+  // Fuenfundzwanzig, und sie stehen nicht hier: die zehn Farben und die 15
+  // Zahlen leiten sich aus den amtlichen Listen ab (E3). Waechst der Vorrat
+  // mit E4, aendert sich an dieser Zeile nichts.
+  if (art==='englisch')
+    return Englisch.vorratHoeren();
   if (art==='hauptstaedte') {
     // Europa: dieselben Länder wie `laender:europa`, dieselbe Tiefe je
     // Profil - gefragt wird nur nach etwas anderem. `hauptstadt` und `ort`
@@ -2451,6 +2545,12 @@ function vorlaufSatz(ebeneId){
   if (art === 'schreiben')
     return 'Das sind die Buchstaben, die du schreiben lernst. Tippe einen an, '
       + 'dann sage ich dir, wie er heißt.';
+  if (art === 'englisch')
+    return englischHoerbar()
+      ? 'Gleich sage ich dir ein Wort auf <strong>Englisch</strong>, und du '
+        + 'tippst auf das richtige Bild. Tippe hier eins an, dann hörst du es schon mal.'
+      : 'Dieses Gerät hat <strong>keine englische Stimme</strong>. Die Wörter '
+        + 'stehen deshalb geschrieben da — hören kannst du sie hier nicht.';
   return 'Tippe auf ein Bild, dann sage ich dir, wie es heißt.';
 }
 
@@ -2503,6 +2603,7 @@ async function vorlauf(ebeneId, zurueck = null){
       <div class="kleber${gitter.spalten > 8 ? ' viel' : ''}" style="--spalten:${
         gitter.spalten};--reihen:${gitter.reihen}">${stuecke.map((x, i) => `
         <button class="aufkleber da" data-lesen="${vorlaufAnsage(x, ebeneId)}"
+                data-sprache="${x.sorte ? 'en' : 'de'}"
                 title="${x.gebiet ? `${x.gebiet}: ${x.name}` : x.name}">
           ${stueckBild(x, `var(${FL[i%7]})`, rahmen(x))}
           <span>${stueckFuss(x)}</span>
@@ -2513,7 +2614,8 @@ async function vorlauf(ebeneId, zurueck = null){
       <button class="knopf haupt" id="los">${ZEI('weiter', 22)}Jetzt starten</button>
     </div>`;
   s.querySelector('#zur').onclick = () => zeige(zurueck || ebenenwahl);
-  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));
+  s.querySelectorAll('[data-lesen]').forEach(b =>
+    b.onclick = () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));
   s.querySelector('#los').onclick = () => {
     Einst.vorlaufGezeigt[vorlaufSchluessel(ebeneId)] = true;
     einstSichern();
@@ -2529,6 +2631,10 @@ async function vorlauf(ebeneId, zurueck = null){
 
 /** Was beim Antippen gesagt wird. Bei den Hauptstädten das PAAR. */
 function vorlaufAnsage(x, ebeneId){
+  // Der englische Gegenstand sagt SEIN Wort, und zwar auf Englisch. Ein
+  // deutscher Rahmensatz drumherum („Das heißt blue.") liefe durch die
+  // englische Stimme und klänge nach nichts.
+  if (x.sorte) return x.wort;
   // Bei einem Buchstaben das Merkwort, bei einer Zahl ihr Zahlwort.
   if (x.zeichenFolge) return /[A-ZÄÖÜ]/.test(x.zeichen)
     ? `${x.zeichen} wie ${x.wort}.` : `Die ${x.wort}.`;
@@ -2840,6 +2946,53 @@ function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
       + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
 }
 
+/* Ein Eintrag ins Protokoll - EINE Stelle fuer alle drei
+ * Aufgabenbildschirme.
+ *
+ * Bis E3 stand dieser Block dreimal fast gleich da: im Rechenschirm, im
+ * Schreibschirm und - frisch abgeschrieben - im Englischschirm.
+ * Unterschiedlich war EINE Zeile, die Eingabeart. Gefunden hat es `doppelt`
+ * beim dritten Mal, und das ist genau der Zeitpunkt, an dem es sich noch
+ * billig aufloesen laesst: bei vier Kopien pflegt man drei und vergisst
+ * eine, und das Protokoll ist die Datei, an der man es zuletzt merkt -
+ * sie wird erst im Elternbereich gelesen, Wochen spaeter.
+ *
+ * `versuch` und `beginn` kommen mit, statt aus einem Abschluss zu
+ * stammen: sie gehoeren zur Aufgabe, nicht zum Bildschirm. */
+/* Die abgelehnte Antwort wackelt.
+ *
+ * Der Neustart der Bewegung braucht die Zeile in der Mitte: `remove`,
+ * einen Lesezugriff auf `offsetWidth`, dann `add`. Ohne den Lesezugriff
+ * fasst der Browser beide Aenderungen zu einer zusammen, und beim zweiten
+ * Fehlversuch in Folge passiert gar nichts.
+ *
+ * Genau das ist der Grund, warum diese sechs Zeilen EINMAL dastehen und
+ * nicht je Bildschirm: es ist keine Bewegung, sondern ein Kniff, und ein
+ * Kniff, den man an zwei Stellen pflegt, ist an einer davon bald weg. */
+const wackelt = (k) => {
+  if (!k) return;
+  k.classList.remove('falsch'); void k.offsetWidth;
+  k.classList.add('falsch');
+  setTimeout(() => k.classList.remove('falsch'), 900);
+};
+
+/** Zur naechsten Aufgabe - oder zum Ende. Auch das stand dreimal da. */
+const weiterIn = (st) => {
+  st.i++;
+  if (st.i >= st.liste.length) zeige(endschirm);
+  else zeige(schirmZu(st.ebeneId));
+};
+
+function eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn, eingabeart }){
+  Protokoll.schreiben(Protokoll.eintrag({
+    zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
+    eingabeart,
+    ergebnis, roheingabe: String(roh), sicherheit: null,
+    dauerMs: Date.now()-beginn, versuch,
+    fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
+  }));
+}
+
 /* ---------- Der Rechenbildschirm ----------------------------------------
  *
  * Die Aufgabe OHNE Karte - der erste Bildschirm dieser App, der keine hat.
@@ -2905,21 +3058,11 @@ function rechenschirm(){
     if (rein) { rein.disabled = true; s.querySelector('#pruef').disabled = true; }
   };
 
-  function protokollieren(ergebnis, roh, fachVorher){
-    Protokoll.schreiben(Protokoll.eintrag({
-      zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
-      eingabeart: weise==='tippen' ? 'tippen' : 'antippen',
-      ergebnis, roheingabe: String(roh), sicherheit: null,
-      dauerMs: Date.now()-beginn, versuch,
-      fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
-    }));
-  }
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: weise==='tippen' ? 'tippen' : 'antippen' });
 
-  function weiter(){
-    st.i++;
-    if (st.i>=st.liste.length) zeige(endschirm);
-    else zeige(schirmZu(st.ebeneId));
-  }
+  const weiter = () => weiterIn(st);
 
   function aufloesen(grund){
     if (erledigt) return;
@@ -2947,12 +3090,7 @@ function rechenschirm(){
     return +t;
   }
 
-  function wackeln(k){
-    if (!k) return;
-    k.classList.remove('falsch'); void k.offsetWidth;
-    k.classList.add('falsch');
-    setTimeout(()=>k.classList.remove('falsch'), 900);
-  }
+
 
   function bewerte(zahl, knopf){
     if (erledigt) return;
@@ -2977,7 +3115,7 @@ function rechenschirm(){
     if (versuch >= 3) return aufloesen('dreimal');
     // Die Zahl sagt selbst, dass sie abgelehnt wurde - wie das Etikett auf
     // der Karte. Ein Satz allein reicht einer Sechsjährigen nicht.
-    wackeln(knopf);
+    wackelt(knopf);
     const f = s.querySelector('#frage');
     const satz = 'Nicht ganz — probier es noch einmal.';
     if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
@@ -2994,7 +3132,7 @@ function rechenschirm(){
       // „Prüfen" tippt, bevor es etwas geschrieben hat, hat sich nicht
       // verrechnet - es hätte sonst einen seiner drei Versuche an einem
       // Fehlgriff verloren.
-      if (z === null) { wackeln(rein); rein.focus(); return; }
+      if (z === null) { wackelt(rein); rein.focus(); return; }
       bewerte(z, rein);
       rein.value = '';
     };
@@ -3047,6 +3185,140 @@ function rechenschirm(){
      gesprochenen Moeglichkeiten ist ohne Ton weg. */
   {
     const b = nochHoerenKnopf(ansageText);
+    if (b) s.querySelector('.werkzeug')?.appendChild(b);
+  }
+  return s;
+}
+
+/* ---------- Der Englischbildschirm (E3) ---------------------------------
+ *
+ * „Hoeren und zeigen": die App sagt ein englisches Wort, vier Bilder stehen
+ * da, das Kind tippt. Es ist die Ebene-4-Aufgabe aus Erdkunde - vier
+ * Moeglichkeiten, eine richtig -, nur dass die Frage nicht dasteht,
+ * sondern GESAGT wird.
+ *
+ * DIE FRAGE IST DER TON, und daraus folgt alles Weitere:
+ *
+ *   Das Wort wird mit `vorlesen(..., 'en')` gesagt, nicht mit `sagen` oder
+ *   `ansagen`. Beide fragen das Profil - `ansagen` nach `P.vorlesen`
+ *   („lies mir die Aufgabe vor, ich kann noch nicht lesen"), `sagen` nach
+ *   dem Ton. Hier ist das falsch: Lea traegt `vorlesen: false` und
+ *   bekaeme damit vier Bilder ohne Frage. Ein Vorlesehelfer ist
+ *   abschaltbar, eine Aufgabe nicht.
+ *
+ *   Findet das Geraet KEINE englische Stimme, ist die Ebene sonst stumm -
+ *   fuer Fiona also gar keine Aufgabe. Dann steht das Wort geschrieben da,
+ *   und das ist eine ehrliche Notloesung: Lea kann weiterspielen, Fiona
+ *   nicht. Der Elternbereich sagt seit E2, ob das Geraet eine Stimme hat.
+ *   Verschwiegen wird es nirgends.
+ *
+ * Die drei Ablenker kommen aus DERSELBEN Sorte (`Englisch.ablenkerFuer`).
+ * Stuenden neben einem Farbfleck drei Ziffern, waere die Aufgabe ohne ein
+ * Wort Englisch zu loesen.
+ */
+function englischschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+
+  // Ohne englische Stimme steht das Wort da. MIT Stimme steht es nirgends -
+  // geschrieben waere es die Antwort, und geprueft wuerde Lesen statt Hoeren.
+  const stumm = !englischHoerbar();
+
+  const r1 = rnd(st.keim + st.i * 7919);
+  const auswahl = mischenMit([ziel, ...Englisch.ablenkerFuer(ziel, r1)],
+                             st.keim + st.i * 7919);
+
+  const bild = (x) => x.farbton
+    ? `<span class="farbfleck" style="--farbton:${x.farbton}"></span>`
+    : `<span class="ziffernbild">${x.ziffern}</span>`;
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">${stumm
+      ? `Wo ist <strong lang="en">${ziel.wort}</strong>?`
+      : 'Tippe auf das Bild, das du hörst.'}</div>
+    <div class="englischfeld">
+      <div class="engwahl" id="auswahl">${auswahl.map(x =>
+        `<button class="engkarte" data-id="${x.id}" aria-label="${x.wort}"
+                 lang="en">${bild(x)}</button>`).join('')}</div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const ausschalten = () => s.querySelectorAll('.engkarte').forEach(k => k.disabled = true);
+  const zeigen = () => { const k = s.querySelector(`.engkarte[data-id="${ziel.id}"]`);
+    if (k) k.classList.add('stimmt'); return k; };
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'antippen' });
+
+  const weiter = () => weiterIn(st);
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten();
+    zeigen();
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem. Das ist `
+      + `<strong lang="en">${ziel.wort}</strong>.</span>`;
+    // Der deutsche Trost und das englische Wort sind ZWEI Aeusserungen.
+    // In einem Satz gemischt liefe „blue" durch die deutsche Stimme.
+    sagen('Kein Problem. Das ist:');
+    vorlesen(ziel.wort, 'en');
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+
+
+  function bewerte(id, knopf){
+    if (erledigt) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (id === ziel.id) {
+      erledigt = beendet(s);
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', id, fachVorher);
+      ausschalten();
+      if (knopf) knopf.classList.add('stimmt');
+      const spruch = lob();
+      lobsatz(s, `<strong lang="en">${ziel.wort}</strong>.`, null, spruch, '', neuerAufkleber);
+      sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      vorlesen(ziel.wort, 'en');
+      setTimeout(weiter, LOBPAUSE);
+      return;
+    }
+    protokollieren('falsch', id, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    wackelt(knopf);
+    const f = s.querySelector('#frage');
+    const satz = 'Nicht ganz — hör noch einmal hin.';
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+    // Und dann das Wort noch einmal - ohne es waere „hoer noch einmal hin"
+    // eine Aufforderung ohne Gegenstand.
+    vorlesen(ziel.wort, 'en');
+  }
+
+  s.querySelectorAll('.engkarte').forEach(k =>
+    k.onclick = () => bewerte(k.dataset.id, k));
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+
+  /* Die Frage selbst - siehe den Kopf dieser Funktion: `vorlesen` und nicht
+     `ansagen`, weil sie kein Vorlesehelfer ist. */
+  vorlesen(ziel.wort, 'en');
+  {
+    const b = nochHoerenKnopf(ziel.wort, 'en');
     if (b) s.querySelector('.werkzeug')?.appendChild(b);
   }
   return s;
@@ -3257,21 +3529,11 @@ function schreibschirm(){
     malen();
   }
 
-  function protokollieren(ergebnis, roh, fachVorher){
-    Protokoll.schreiben(Protokoll.eintrag({
-      zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
-      eingabeart: 'schreiben',
-      ergebnis, roheingabe: String(roh), sicherheit: null,
-      dauerMs: Date.now()-beginn, versuch,
-      fachVorher, fachNachher: Stand[ziel.id]?.fach ?? fachVorher,
-    }));
-  }
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'schreiben' });
 
-  function weiter(){
-    st.i++;
-    if (st.i>=st.liste.length) zeige(endschirm);
-    else zeige(schirmZu(st.ebeneId));
-  }
+  const weiter = () => weiterIn(st);
 
   /** Vormachen statt ablehnen - nach drei Fehlversuchen oder auf Wunsch. */
   function aufloesen(){

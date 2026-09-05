@@ -1,6 +1,9 @@
 # Smart Kids
 
-Erdkunde-Lernspiel für zwei Kinder, deutsch, als PWA über GitHub Pages.
+Lernspiel für zwei Kinder und ihre Eltern, deutsch, als PWA über GitHub
+Pages. Vier Welten: **Erdkunde, Rechnen, Schreiben, Englisch** — die vierte
+seit E3, und sie ist die letzte, die auf das Zielgerät passt (gemessen: die
+Wand fasst genau vier Kacheln).
 TypeScript-frei bislang: reines ES2022, SVG im DOM, kein Gerüst.
 
 **Diese Datei wird zu Beginn jeder Sitzung gelesen. Sie ist kurz gehalten,
@@ -28,7 +31,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor -- --betroffen`** | bei **jeder** Änderung | **14 s bis 200 s**, je nachdem, was `git` meldet | alle billigen Tore plus die Browsertore, die von den geänderten Dateien überhaupt erreicht werden können |
 | `npm run tor` | **einmal** je Runde, vor dem Einchecken | **~3 min** (gemessen 176,6 · 179,6 · 182,4 · 198,6 · 204,0 s am 04.09.) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | dieselbe Kette ohne `ansicht` — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 298 Gegenproben, 6 nebeneinander |
+| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 311 Gegenproben, 6 nebeneinander |
 
 **Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
 Rest fährt der Runner.**
@@ -344,7 +347,8 @@ daneben muss ein Wort aus ihrer Überschrift stehen. Vorher zeigten 101 von
 ## Aufbau
 
 ```
-src/inhalt/    was gefragt wird (Kontinente, Länder, Städte)
+src/inhalt/    was gefragt wird (Kontinente, Länder, Städte, Rechnen,
+               Buchstaben, Englisch)
 src/geo/       gebackene SVG-Pfade, drei Stufen je Ebene
 src/kern/      Leitner, Vergleich, Protokoll
 src/marken/    das Gestaltungssystem - die EINZIGE Stelle mit Zahlenwerten
@@ -354,6 +358,8 @@ prototyp/      der spielbare Stand + die PWA-Teile
 tools/         Backen, Holen, Symbol
 tor/           die Torkette
 docs/          Konzept, Prüfbericht, Grafik-Audit, Stand
+docs/referenz/ die amtlichen Listen im Wortlaut - das SOLL der Datentore,
+               damit es nicht aus der geprüften Datei selbst kommt
 ```
 
 ---

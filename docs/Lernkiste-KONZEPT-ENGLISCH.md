@@ -410,6 +410,20 @@ ersten Tag an ohne Erklärung bedienen kann.
 vorgelesen**, das Kind tippt beim richtigen. Kostet mehr Zeit, prüft
 aber echtes Hören statt Wiedererkennen.
 
+**Wie E3 sie wirklich gebaut hat (v373):** mit den 25 Wörtern, deren Bild
+sich aus dem Wort selbst ergibt — den **zehn Farben** (ein Fleck in der
+Farbe) und den **15 Zahlen** (die Ziffer). Der Grund steht oben in § 4:
+ein Bild je Wort gibt es erst mit E4. Die Möglichkeiten als Text zu
+stellen wäre der bequeme Weg gewesen und hätte genau den Satz gebrochen,
+der diese Form auszeichnet — „die einzige, die Fiona vom ersten Tag an
+ohne Erklärung bedienen kann". Mit E4 wächst der Vorrat, ohne dass sich an
+der Ebene etwas ändert.
+
+Und eine Lehre, die keiner der neun Formen vorher aufgefallen wäre: auf
+einer Farbebene ist **Deckung kein neutrales Mittel**. Das Verblassen
+verbrauchter Knöpfe (G18) machte aus Grün einen Mintton. Was hier zurück
+tritt, ist der Kasten — nie der Fleck.
+
 ### 2 · Zwei Wörter, ein Laut Unterschied  *(die wichtigste Form)*
 
 *think* / *sink*. *wine* / *vine*. *dog* / *dock*. *pet* / *pat*.
@@ -565,6 +579,8 @@ Gegenprobe, die zuerst prüft, ob ihr Eingriff angekommen ist (Regel 10).
 | **E-a** `inhalt` | jedes Wort hat Themengebiet, Vertonung und (falls für Fiona) ein Bild; jedes Lautpaar hat einen Grund | ein Wort verliert sein Bild und steht trotzdem in Fionas Vorrat |
 | **E-b** `smoke` | **jede** Englisch-Aufgabe ist ohne Mikrofon zu Ende zu spielen | ein Weg verlangt Sprechen |
 | **E-c** `smoke` | fehlt die englische Stimme, sagt die App es — statt stumm zu bleiben | die Stimmensuche findet nichts und die App schweigt |
+| **E-c2** `smoke` | mit Stimme wird das Wort gesagt und steht NICHT geschrieben da; ohne Stimme umgekehrt | eine der beiden Hälften fällt weg — dann prüft die Ebene Lesen statt Hören, oder sie ist stumm und leer |
+| **E-h** `inhalt` | jeder Gegenstand der Hörebene steht im amtlichen Wortschatz, hat ein Bild, und je zwei Farben sind auseinanderzuhalten (CIELAB ≥ 25) | eine Farbe rückt an eine andere heran — die Aufgabe wird unlösbar, ohne dass irgendwo etwas fehlt |
 | **E-d** `smoke` | die Sprechaufgabe endet nach zwei Anläufen und wertet nie eine Aussprache | ein dritter Anlauf erscheint; oder irgendwo steht eine Aussprachezahl |
 | **E-e** `passt` | die vierte Weltkachel läuft auf keiner der sieben Größen über | die Weltenwahl bekommt eine fünfte Karte |
 | **E-f** `smoke` | die Elternaufgaben verlangen eine **getippte** Antwort, nie eine Auswahl | eine Elternebene bietet vier Möglichkeiten an |
@@ -654,7 +670,7 @@ App spielbar** — kein halbes Fach im Auslieferungsstand.
 |---|---|---|
 | **E1** | Wortschatz holen und eintragen: ISB-Liste, Themengebiete, Fiona-Teilmenge | `inhalt` zählt die Wörter je Themengebiet und meldet, wenn eins leer ist |
 | **E2** | Englische Stimme: `sagen()` je Ebene, Stimmensuche, Auskunft wenn keine da ist | Tor E-c |
-| **E3** | Vierte Welt, erste Ebene: **Hören und zeigen** | am Gerät gespielt; `passt` grün mit vier Weltkarten (E-e) |
+| **E3** | Vierte Welt, erste Ebene: **Hören und zeigen** | **GEFAHREN (v373)** — mit Farben und Zahlen; `passt` grün mit vier Weltkarten (E-e), Tor E-c am laufenden Bildschirm |
 | **E4** | Die Bilder — SVG je Wort. **Zahl offen halten:** wie viele fehlen | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommen soll |
 | **E5** | **Zwei Wörter, ein Laut Unterschied** — die Lautpaare mit Grund | Tor E-a; und die vier Stolperstellen aus § 2 sind alle vertreten |
 | **E6** | **Sag es** — Sprechaufgabe, zwei Anläufe, kein Urteil; eigene Stimme prüfen | Tore E-b und E-d |

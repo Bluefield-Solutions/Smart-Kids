@@ -823,7 +823,8 @@ let ueberblendung = null;
  */
 async function durchVorlaufWenn(p) {
   await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
-    + '.schirm.da .rechnung, .schirm.da .eingabe', { timeout: 25000 }).catch(() => {});
+    + '.schirm.da .rechnung, .schirm.da .eingabe, .schirm.da .engkarte',
+    { timeout: 25000 }).catch(() => {});
   await durchVorlauf(p);
 }
 
@@ -930,7 +931,7 @@ async function weitergegangen(p, ms = 8000) {
     if (!s) return false;
     if (s.querySelector('.frage .richtigText, .frage .fastText, .frage .loesung')) return false;
     return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
-              || s.querySelector('#nochmal'));
+              || s.querySelector('.engkarte') || s.querySelector('#nochmal'));
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
@@ -1014,7 +1015,7 @@ async function loese(p) {
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
   'test', 'streu', 'abzeichen',
-                    'pausen', 'schreiben', 'hinweis', 'sprechen'];
+                    'pausen', 'schreiben', 'hinweis', 'sprechen', 'englisch'];
 const BRAUCHT = { ablage: ['spielen'] };
 
 /* ---------- Teillaeufe: `--teil=i/n` ------------------------------------
@@ -1092,6 +1093,7 @@ const STUECKE = [
   { teile: ['pausen'],              ms:  8 },
   { teile: ['tippen'],              ms:  5 },
   { teile: ['sprechen'],            ms:  2 },
+  { teile: ['englisch'],            ms:  4 },
   { teile: ['hinweis'],             ms:  0 },
   { teile: ['streu'],               ms:  0 },
 ];
@@ -3079,6 +3081,10 @@ if (laeuft('ebene4')) {
 const wege = new Set();
 // Wieviele Aufgaben hat das Kind ANGESAGT bekommen?
 const gehoert = {};
+/* Wie oft ein Kind das englische Wort wirklich gehoert hat.
+   Getrennt von `gehoert`, weil es keine Vorlesehilfe ist, sondern die
+   Frage - siehe den Englischzweig im Durchgang. */
+const gehoertEn = {};
 /* Und wieviele Ebenen wurden ihm ueberhaupt VORGELEGT?
  *
  * Frueher stand hier die Gesamtzahl der Ebenen als Sollwert. Das war
@@ -3087,6 +3093,7 @@ const gehoert = {};
  * in diesem Lauf gar nicht gab. Verglichen wird jetzt Gleiches mit
  * Gleichem: was angesagt wurde, gegen das, was vorgelegt wurde. */
 const gespielt = {};
+const gespieltEnglisch = {};
 const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
   'bundeslaender', 'hauptstaedte'];
@@ -3171,14 +3178,14 @@ async function abgeschlossen(p, wer, ebene, hoert, wie) {
 
 const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa'],
                        violeta: ['rechnen:gross', 'hauptstaedte:europa'],
-                       fiona: ['rechnen:plusminus',
+                       fiona: ['rechnen:plusminus', 'englisch:hoeren',
                                // Die Schreibwelt gehoert nur ihr (N2a, N3).
                                // Ohne diese beiden prueft `durchgang` zwar,
                                // dass keine FREMDE Ebene dasteht, aber nicht,
                                // dass die eigenen ueberhaupt da sind.
                                'schreiben:buchstaben', 'schreiben:diktat',
                                'schreiben:ziffern', 'schreiben:zahlen'],
-                       lea: ['rechnen:reihen', 'hauptstaedte:europa'] };
+                       lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren'] };
 /* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
  * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
@@ -3305,12 +3312,23 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * seit die Tiefe je Profil verschieden ist (3 · 5 · 12), ist sie eine
      * eigene Art von Bildschirm. Ohne sie lief die Gegenprobe „Fiona
      * bekommt die Länder der Eltern zu sehen" ins Leere - der Eingriff war drin,
-     * das Tor blieb grün, weil es die Ebene gar nicht aufschlug. */
+     * das Tor blieb grün, weil es die Ebene gar nicht aufschlug.
+     *
+     * Mit E3 ist genau dasselbe ein zweites Mal passiert, und zwar
+     * innerhalb einer Stunde: die Gegenprobe „die Englischebene sagt das
+     * Wort gar nicht mehr" meldete „`smoke` bleibt grün, obwohl der Fehler
+     * drin ist". Von Hand nachgestellt schlug das Tor mit vier Meldungen
+     * an - `proben` haengt aber `--kurz` an, und diese Zeile liess die
+     * Ebene aus. Die Englischebene ist die VIERTE Art von Bildschirm
+     * (Karte, Rechnung, Schreibblatt, Hoeren) und gehoert deshalb hierher.
+     * `schreiben` fehlt hier weiterhin - sie hat einen eigenen Abschnitt. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
-                    || e === 'laender:europa' || e.startsWith('rechnen'))
+                    || e === 'laender:europa' || e.startsWith('rechnen')
+                    || e.startsWith('englisch'))
       : da;
     gespielt[wer] = zuSpielen.length;
+    gespieltEnglisch[wer] = zuSpielen.filter(e => e.startsWith('englisch')).length;
     for (const ebene of zuSpielen) {
       // Der teuerste Posten ueberhaupt: achtzehn Ebenen mal zwei Profile.
       // Steht der Fehler schon fest, beweisen die restlichen nichts mehr.
@@ -3378,7 +3396,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       // der Zwischenschirm mit „Weiter". Vorher stand hier eine feste
       // Pause; sie lief 27 Mal, einmal je Ebene und Profil.
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
-        + '.schirm.da .schreibblatt, .schirm.da #weiter', { timeout: 15000 }).catch(() => {});
+        + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da #weiter',
+        { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       /* Rechnen: die Aufgabe OHNE Karte.
@@ -3449,6 +3468,50 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         await abgeschlossen(p, wer, ebene,
           /Fahre den Buchstaben nach|Fahre sie nach|Schreib ein |Schreib die Zahl /,
           'nachgefahren und geschrieben');
+        continue;
+      }
+      /* Englisch: die Aufgabe ohne Karte, ohne Rechnung und ohne Frage.
+       *
+       * Sie steht als eigener Zweig hier und nicht als Sonderfall im
+       * Kartenzweig - aus demselben Grund wie Rechnen und Schreiben: es
+       * gibt kein `path.ziel`, auf das man warten koennte, und der erste
+       * Lauf mit der vierten Welt lief prompt in die Zeitueberschreitung
+       * und meldete nebenbei, Fiona bekomme eine Aufgabe nicht vorgelesen.
+       * Beides derselbe fehlende Zweig, und es ist inzwischen das DRITTE
+       * Mal, dass genau dieser Fehler auftritt.
+       *
+       * Was hier gespielt wird, ist der Weg des Kindes: hoeren, auf das
+       * richtige Bild tippen. Welches richtig ist, steht in der Sitzung -
+       * auf dem Bildschirm steht es mit Absicht nicht, das ist die ganze
+       * Zusage dieser Ebene. */
+      if (await p.$('.schirm.da .engkarte')) {
+        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
+                                              wort: Sitzung?.liste[Sitzung.i]?.wort || '' }));
+        if (!auf.id) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
+          continue;
+        }
+        /* DAS WORT MUSS GEHOERT WORDEN SEIN - und zwar bei JEDEM Profil.
+         *
+         * Es zaehlt deshalb NICHT in `gehoert`: der Zaehler dort meint die
+         * Vorlesehilfe, und die haengt am Profil („Lea bekam eine Aufgabe
+         * vorgelesen, obwohl ihr Profil vorlesen:false sagt"). Hier ist
+         * das Wort die FRAGE. Wuerde es dort mitgezaehlt, meldete der
+         * Durchgang bei Lea einen Fehler, wo die App genau richtig ist -
+         * und beim Ausschalten ohne Ersatz haette niemand mehr gemessen,
+         * dass sie es ueberhaupt hoert. Also ein eigener Zaehler und ein
+         * eigenes Urteil, statt einer Ausnahme. */
+        const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
+        if (!gesagt.some(x => String(x).trim() === auf.wort))
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde nicht `
+            + `gesagt — auf dieser Ebene IST das Wort die Frage, für jedes Profil `
+            + `(gehört: ${gesagt.join(' | ') || 'nichts'})`));
+        else gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+        await p.$eval(`.schirm.da .engkarte[data-id="${auf.id}"]`, x => x.click());
+        wege.add(`${wer}: englisch gehört und getippt`);
+        await bewertet(p);
+        // Ein Muster, das nie zutrifft: `gehoert` bleibt hier unberuehrt.
+        await abgeschlossen(p, wer, ebene, /(?!)/, 'das gehörte Bild getippt');
         continue;
       }
       if (await p.$('.schirm.da .rechnung')) {
@@ -3643,7 +3706,16 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
  * gelaufen ist, wäre kein Urteil, sondern ein Fehlalarm. Genau daran ist
  * die erste Fassung dieser Zerlegung gescheitert: „Der Übergang wurde
  * nicht gemessen" bei einem Lauf, der ihn gar nicht messen sollte. */
-const EBENEN_JE = (wer) => gespielt[wer] ?? (EBENEN_ALLE.length + EBENEN_EIGEN[wer].length);
+/* Wieviele Ebenen dieses Profil gespielt hat - ABZUEGLICH der englischen.
+   Dort zaehlt `gehoert` nicht mit (das Wort ist die Frage, keine
+   Vorlesehilfe), also darf sie auch im Soll nicht stehen; sonst meldete
+   der Durchgang bei Fiona „nur 13 von 14 vorgelesen" fuer eine Ebene, die
+   sie sehr wohl hoert. Geprueft wird sie durch `gehoertEn` daneben. */
+const ENGLISCH_JE = (wer) => (gespielt[wer] !== undefined
+  ? gespieltEnglisch[wer] || 0
+  : EBENEN_EIGEN[wer].filter(e => e.startsWith('englisch')).length);
+const EBENEN_JE = (wer) => (gespielt[wer] ?? (EBENEN_ALLE.length + EBENEN_EIGEN[wer].length))
+  - ENGLISCH_JE(wer);
 if (laeuft('durchgang')) {
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 console.log(`  Je Profil:                  `
@@ -3652,6 +3724,8 @@ console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'K
 console.log(`  Profile hier:               ${PROFILE_HIER.join(' · ')}`);
 console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0} von ${EBENEN_JE('fiona')}, `
   + `Lea ${gehoert.lea||0} von ${EBENEN_JE('lea')}`);
+console.log(`  Englisch gehört (E3):       Fiona ${gehoertEn.fiona||0} von ${ENGLISCH_JE('fiona')}, `
+  + `Lea ${gehoertEn.lea||0} von ${ENGLISCH_JE('lea')} — das Wort ist die Frage, nicht die Hilfe`);
 // Fiona liest noch nicht: JEDE Aufgabe muss angesagt werden. Lea liest -
 // bei ihr waere dieselbe Ansage nur Laerm, und das steht in ihrem Profil.
 // Die Acht war hier festgenagelt und wurde mit der neunten Ebene falsch.
@@ -3669,6 +3743,15 @@ if (hier('fiona') && (gehoert.fiona || 0) < EBENEN_JE('fiona'))
   fehler.push(`Fiona bekam nur ${gehoert.fiona||0} von ${EBENEN_JE('fiona')} Aufgaben `
     + 'vorgelesen — sie kann noch nicht lesen, ohne Ansage ist die Ebene für sie '
     + 'nicht spielbar');
+/* Und die andere Haelfte: auf der Englischebene muss BEIDEN das Wort
+   gesagt worden sein. Ohne dieses Urteil waere der Ausschluss oben ein
+   Loch - eine Ebene, auf der nie jemand etwas hoert, faellt dann keinem
+   mehr auf. */
+for (const w of ['fiona', 'lea'])
+  if (hier(w) && (gehoertEn[w] || 0) < ENGLISCH_JE(w))
+    fehler.push(`${w} bekam auf der Englischebene ${gehoertEn[w]||0} von `
+      + `${ENGLISCH_JE(w)} Wörtern gesagt — dort IST das Wort die Frage, und ohne `
+      + 'es stehen vier Bilder ohne Aufgabe da');
 if (hier('lea') && (gehoert.lea || 0) > 0)
   fehler.push(`Lea bekam ${gehoert.lea} Aufgaben vorgelesen, obwohl ihr Profil `
     + '`vorlesen: false` sagt — die Ansage hängt nicht am Kind');
@@ -5382,10 +5465,11 @@ if (laeuft('sprechen')) try {
    * die nie etwas sagt; ohne die zweite durch eine, die immer deutsch
    * spricht.
    *
-   * Aufgerufen wird `sagenEn` DIREKT und nicht ueber einen Bildschirm: die
-   * vierte Welt gibt es noch nicht (E3). Das ist die Ausnahme und sie
-   * steht hier, damit sie auffaellt - sobald es eine englische Ebene gibt,
-   * gehoert diese Messung an sie. */
+   * Aufgerufen wird `sagenEn` DIREKT und nicht ueber einen Bildschirm, und
+   * das ist seit E3 kein Notbehelf mehr, sondern die Arbeitsteilung: hier
+   * steht die STIMMENWAHL fuer sich, im Abschnitt `englisch` steht sie am
+   * laufenden Bildschirm. Zwei Messstellen fuer zwei Aussagen - faellt die
+   * Ebene aus, sagt diese hier trotzdem noch, ob die Wahl stimmt. */
   {
     const sagenLassen = async (stimmen) => p.evaluate(async (st) => {
       window.__stimmen = st;
@@ -5605,7 +5689,11 @@ if (laeuft('sprechen')) try {
    * der ihr nichts vorliest, waere ein Knopf, der schweigt.
    *
    * Geprueft wird BEIDES, denn nur zusammen ist es eine Aussage: dass er
-   * da ist, wo er hingehoert, und dass er nicht ueberall steht. */
+   * da ist, wo er hingehoert, und dass er nicht ueberall steht.
+   *
+   * GILT NUR AUF DEUTSCH. Auf der Englischebene bekommt Lea ihn sehr wohl:
+   * dort wiederholt er nicht eine Vorlesehilfe, sondern die FRAGE. Diese
+   * Haelfte steht im Abschnitt `englisch`. */
   {
     const fk = await p.$('.schirm.da #nochhoeren');
     if (!fk) merke('sprechen', new Error('Fiona hat keinen Knopf „noch einmal hören" — '
@@ -6000,6 +6088,188 @@ if (laeuft('sprechen')) try {
   }
   await p.close();
 } catch (e) { merke('sprechen', e); }
+
+/* --- Englisch: „Hoeren und zeigen" (E3) -------------------------------
+ *
+ * Die Ebene hat EINE Zusage, und alles andere haengt daran: die Frage ist
+ * der Ton. Ein Kind, das sie nicht hoert, sieht vier Farbflecken ohne
+ * Frage - und das sieht auf einem Bildschirmfoto aus wie eine fertige
+ * Aufgabe. Genau dafuer taugt ein Foto hier nicht.
+ *
+ * Gemessen wird deshalb in BEIDE Richtungen, und die zweite ist die, ohne
+ * die die erste nichts wert waere (Regel 1 - wer eine Wirkung misst,
+ * schaltet sie zuerst ab):
+ *
+ *   MIT englischer Stimme   das Wort wird gesagt, auf `en`, mit der
+ *                           englischen Stimme - und es steht NIRGENDS
+ *                           geschrieben. Stuende es da, pruefte die
+ *                           Aufgabe Lesen und nicht Hoeren.
+ *   OHNE englische Stimme   es wird geschwiegen (E2) - und dann steht es
+ *                           geschrieben da. Sonst waere die Ebene stumm
+ *                           und leer.
+ *
+ * Gespielt wird als LEA und nicht als Fiona. Lea traegt `vorlesen: false`,
+ * ist also das Profil, an dem sich ein „ansagen" statt „vorlesen" verraet
+ * - bei Fiona liefe beides und die Messung saehe nichts.
+ */
+if (laeuft('englisch')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.waitForSelector('[data-profil="lea"]', { timeout: 20000 });
+  await p.click('[data-profil="lea"]');
+
+  // Die vierte Welt muss ueberhaupt dastehen. Gewartet wird auf die
+  // Weltenwahl, nicht auf eine Frist: ohne das las der erste Lauf eine
+  // leere Liste und meldete „die englische Welt fehlt", obwohl sie da war.
+  await p.waitForSelector('.schirm.da [data-welt]', { timeout: 20000 });
+  const welten = await p.$$eval('.schirm.da [data-welt]', ns => ns.map(n => n.dataset.welt));
+  if (!welten.includes('englisch'))
+    merke('englisch', new Error(`die Weltenwahl zeigt ${welten.join(', ')} — `
+      + 'die englische Welt fehlt, dann ist die Ebene nicht zu erreichen'));
+
+  await zurEbenenwahl(p, 'englisch:hoeren');
+  await p.click('[data-ebene="englisch:hoeren"]');
+  await durchVorlaufWenn(p);
+  await p.waitForSelector('.schirm.da .engkarte', { timeout: 20000 });
+
+  const lage = async () => p.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const karten = [...s.querySelectorAll('.engkarte')];
+    return {
+      wort: Sitzung?.liste[Sitzung.i]?.wort || '',
+      ziel: Sitzung?.liste[Sitzung.i]?.id || '',
+      sorten: karten.map(k => k.dataset.id.split(':')[1]),
+      ids: karten.map(k => k.dataset.id),
+      text: s.textContent,
+      hoerknopf: !!s.querySelector('#nochhoeren'),
+      /* Die Fuellung des Flecks, wie der Browser sie WIRKLICH zeichnet -
+         samt der Deckung des Kastens darueber. `opacity` faerbt um, ohne
+         `background-color` anzufassen, und genau daran waere die Messung
+         vorbeigelaufen. */
+      flecken: karten.map(k => {
+        const f = k.querySelector('.farbfleck');
+        if (!f) return null;
+        const st = getComputedStyle(f);
+        return { farbe: st.backgroundColor,
+                 deckung: +getComputedStyle(k).opacity * +st.opacity };
+      }),
+    };
+  });
+
+  {
+    const l = await lage();
+    const gesagt = await p.evaluate(() => window.__gesagtWie.slice(-1)[0] || null);
+
+    // 1. Die Frage kommt - und zwar englisch.
+    if (!gesagt || gesagt.text !== l.wort)
+      merke('englisch', new Error(`gefragt ist „${l.wort}", gesagt wurde `
+        + `„${gesagt ? gesagt.text : 'nichts'}" — Lea bekommt vier Bilder ohne Frage`));
+    else if (!/^en/i.test(gesagt.lang || ''))
+      merke('englisch', new Error(`„${l.wort}" wird als „${gesagt.lang}" gesprochen — `
+        + 'eine deutsche Stimme übt die falsche Aussprache ein'));
+
+    // 2. Vier Moeglichkeiten, eine richtig, alle aus derselben Sorte.
+    if (l.ids.length !== 4)
+      merke('englisch', new Error(`${l.ids.length} Möglichkeiten statt vier`));
+    if (new Set(l.ids).size !== l.ids.length)
+      merke('englisch', new Error('dieselbe Möglichkeit steht zweimal da'));
+    if (!l.ids.includes(l.ziel))
+      merke('englisch', new Error('die richtige Antwort steht gar nicht dabei'));
+    if (new Set(l.sorten).size !== 1)
+      merke('englisch', new Error(`die vier Möglichkeiten mischen ${
+        [...new Set(l.sorten)].join(' und ')} — dann ist die Aufgabe ohne ein Wort `
+        + 'Englisch zu lösen'));
+
+    // 3. Das Wort steht NIRGENDS. Sonst ist es eine Leseaufgabe.
+    if (new RegExp(`\\b${l.wort}\\b`, 'i').test(l.text))
+      merke('englisch', new Error(`das gesuchte Wort „${l.wort}" steht auf dem `
+        + 'Bildschirm — dann prüft die Aufgabe Lesen statt Hören'));
+
+    // 4. Und Lea bekommt „noch einmal hören", obwohl ihr nichts vorgelesen wird.
+    if (!l.hoerknopf)
+      merke('englisch', new Error('Lea hat auf der Englischebene keinen Knopf '
+        + '„noch einmal hören" — hier ist er keine Vorlesehilfe, sondern die Frage'));
+
+    console.log(`  Englisch (E3):              „${l.wort}" als ${gesagt?.lang} / `
+      + `${gesagt?.stimme} · ${l.ids.length} Möglichkeiten, alle „${l.sorten[0]}" · `
+      + `Wort steht nicht da`);
+
+    /* 5. Die Farben ueberleben die Antwort.
+     *
+     * Der Befund, um den es geht, ist am Bild aufgefallen und nicht
+     * gerechnet: das Verblassen aus G18 nahm den Flecken die Farbe, und
+     * nach der Antwort war Gruen ein Mintton. Auf einer Farbebene ist die
+     * Deckung kein neutrales Mittel - sie AENDERT die Antwort.
+     *
+     * Gemessen wird die wirksame Deckung des Flecks, vorher und nachher.
+     * Nicht seine `background-color`: die bleibt gleich, waehrend der
+     * Kasten darueber sie wegblendet. Genau dieser Unterschied ist der
+     * Fehler. */
+    const vorher = (await lage()).flecken;
+    await p.click(`.schirm.da .engkarte[data-id="${l.ziel}"]`);
+    await p.waitForFunction(() => !!document.querySelector('.schirm.da .engkarte.stimmt'),
+      null, { timeout: 4000 }).catch(() => {});
+    const nachher = (await lage()).flecken;
+    if (vorher.some(x => x) && vorher.length === nachher.length) {
+      const blass = nachher.filter((n, i) => n && vorher[i] && n.deckung < vorher[i].deckung - 0.01);
+      if (blass.length)
+        merke('englisch', new Error(`${blass.length} von ${nachher.length} Farbflecken `
+          + `verblassen nach der Antwort (auf ${blass[0].deckung.toFixed(2)}) — `
+          + 'ein Fleck mit halber Deckung ist eine andere Farbe, und das Kind '
+          + 'lernt die falsche'));
+      else console.log(`  Farbe bleibt Farbe:         ${nachher.length} Flecken, `
+        + `Deckung ${nachher.map(x => x.deckung.toFixed(2)).join(' ')} — unverändert`);
+    }
+    // Und die richtige Antwort ist auch als solche zu sehen.
+    if (!(await p.$('.schirm.da .engkarte.stimmt')))
+      merke('englisch', new Error('nach der richtigen Antwort ist keine Karte '
+        + 'hervorgehoben — für ein Kind, das nicht liest, ist der Lobsatz nichts'));
+  }
+
+  /* Die Gegenrichtung: KEINE englische Stimme.
+   *
+   * Ohne diese Haelfte waere alles oben von einer App zu erfuellen, die das
+   * Wort einfach immer hinschreibt und nie etwas sagt. Geprueft wird an
+   * einer NEUEN Seite: die Stimmenliste wird vor dem Laden gesetzt, sonst
+   * hat `stimmeSuchen()` sie laengst gelesen. */
+  {
+    /* `neueSeite` und nicht `ctx.newPage()`: der ganze Nachbau von
+       `speechSynthesis` haengt dort. Der erste Anlauf ging daran vorbei -
+       dann gibt es weder `__gesagtWie` noch ueberhaupt eine deutsche
+       Stimme, und die Messung haette „nichts gesagt" gemeldet, ohne je
+       eine englische Stimme entfernt zu haben. */
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.evaluate(() => {
+      window.__stimmen = [{ name: 'Anna', lang: 'de-DE', localService: true }];
+      speechSynthesis.dispatchEvent(new Event('voiceschanged'));
+      window.__gesagtWie = []; window.__gesagt = [];
+    });
+    await q.waitForSelector('[data-profil="lea"]', { timeout: 20000 });
+    await q.click('[data-profil="lea"]');
+    await zurEbenenwahl(q, 'englisch:hoeren');
+    await q.click('[data-ebene="englisch:hoeren"]');
+    await durchVorlaufWenn(q);
+    await q.waitForSelector('.schirm.da .engkarte', { timeout: 20000 });
+    const l = await q.evaluate(() => ({
+      wort: Sitzung?.liste[Sitzung.i]?.wort || '',
+      text: document.querySelector('.schirm.da').textContent,
+      hoerknopf: !!document.querySelector('.schirm.da #nochhoeren'),
+      gesagt: window.__gesagtWie.filter(x => /^en/i.test(x.lang || '')).length,
+    }));
+    if (l.gesagt)
+      merke('englisch', new Error('ohne englische Stimme spricht die App trotzdem '
+        + 'englisch — lieber schweigen als falsch sprechen'));
+    if (!new RegExp(`\\b${l.wort}\\b`, 'i').test(l.text))
+      merke('englisch', new Error(`ohne englische Stimme steht „${l.wort}" nirgends — `
+        + 'dann sind es vier Bilder ohne Frage, und die Ebene ist unspielbar'));
+    if (l.hoerknopf)
+      merke('englisch', new Error('ohne englische Stimme steht „noch einmal hören" da — '
+        + 'ein Knopf, der schweigt, ist schlimmer als keiner'));
+    console.log(`  Ohne englische Stimme:      geschwiegen, „${l.wort}" steht `
+      + `geschrieben da, kein Hörknopf`);
+    await q.close();
+  }
+  await p.close();
+} catch (e) { merke('englisch', e); }
 
 await ctx.close(); await b.close(); server.close();
 

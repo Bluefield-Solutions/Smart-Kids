@@ -375,8 +375,8 @@ export const PROBEN = [
    * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
    * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm }",
-    ersatz:"const schirmZu = (ebeneId) => ({ }",
+    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm }[ebeneArt(ebeneId)] || spielschirm);",
+    ersatz:"const schirmZu = (ebeneId) => spielschirm;",
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
 
@@ -1340,9 +1340,13 @@ export const PROBEN = [
    * ihr nichts vorliest, ist ein Knopf, der schweigt. */
   { n:'der Hörknopf hängt nicht mehr am Profil', tor:'smoke', args:['--nur=sprechen'],
     bauen:true, datei:D,
-    such:'  if (!P || !P.vorlesen || !text) return null;',
-    ersatz:'  if (!P || !text) return null;',
-    an:{ ...DIST, fehlt:'!P.vorlesen || !text' },
+    /* Seit E3 haengt der Knopf an der SPRACHE: auf Englisch bekommt ihn
+       auch Lea, weil dort das Wort die Frage ist. Der Eingriff sitzt
+       deshalb an der deutschen Haelfte - der englische Zweig darueber
+       bliebe stehen, und die Probe traefe sonst zwei Zusagen auf einmal. */
+    such:"  else if (!P.vorlesen) return null;",
+    ersatz:"  else if (false) return null;",
+    an:{ ...DIST, text:'else if (false) return null;' },
     sagt:'hängt nicht am Profil' },
 
   /* --- die Kette selbst ------------------------------------------------
@@ -2194,7 +2198,7 @@ export const PROBEN = [
   // Er kommt, aber er ist stumm - und damit fuer Fiona leer.
   { n:'die Karten im Vorlauf sagen nichts', tor:'smoke', bauen:true,
     args:['--nur=spielen'], datei:D,
-    such:"  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => vorlesen(b.dataset.lesen));",
+    such:"  s.querySelectorAll('[data-lesen]').forEach(b =>\n    b.onclick = () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));",
     ersatz:"  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => {});",
     an:{ ...DIST, text:"forEach(b => b.onclick = () => {})" },
     sagt:'sagt nichts' },
@@ -2582,8 +2586,14 @@ export const PROBEN = [
      Mit 200 Punkten Mindestbreite passen auf dem Zielgeraet drei Welten
      nebeneinander; die vierte bricht um, und die zweite Reihe endet bei
      519 von 390 Punkten. Der Eingriff nimmt die Regel heraus, die ab der
-     vierten Welt schmaler macht. Gemeldet wird der RUECKSCHRITT an der
-     Kapazitaetsratsche - die drei Welten von heute passen so oder so. */
+     vierten Welt schmaler macht.
+
+     SEIT E3 IST DAS KEINE VORSORGE MEHR, sondern der laufende Betrieb:
+     Fiona HAT vier Welten. Gemessen am selben Lauf sagt die
+     Kapazitaetsratsche „4 Kacheln stehen da, 4 passen" (iPhone SE quer) -
+     die Regel traegt genau die vierte, und die fuenfte gibt es nicht mehr
+     umsonst. Der Eingriff schlaegt damit nicht mehr nur an der Ratsche
+     an, sondern am wirklichen Bildschirm. */
   { n:'die vierte Welt bekommt ihre schmale Kachel nicht mehr',
     tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
     such:'.wahl.weltwahl:has(> :nth-child(4)){\n'
@@ -3406,7 +3416,7 @@ export const PROBEN = [
   // Bildschirmfoto aus wie ein Gestaltungseinfall, nicht wie ein Fehler.
   { n:'alle Ebenen landen in derselben Welt', tor:'smoke', args:['--nur=durchgang'],
     bauen:true, datei:D,
-    such:"const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'\n                     : e.art === 'schreiben' ? 'schreiben' : 'erdkunde';",
+    such:"const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'\n                     : e.art === 'schreiben' ? 'schreiben'\n                     : e.art === 'englisch' ? 'englisch' : 'erdkunde';",
     ersatz:"const weltVon = (e) => 'erdkunde';",
     an:{ ...DIST, text:"const weltVon = (e) => 'erdkunde';" },
     sagt:'die Welt' },
@@ -4290,6 +4300,142 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'Happy Easter!' },
     deckt:'englisch',
     sagt:'steht nicht in der Quelle' },
+
+  /* ---- E3: die vierte Welt und „Hoeren und zeigen" -------------------
+   *
+   * Sieben Proben, und sie teilen sich sauber in zwei Haelften: drei am
+   * VORRAT (Tor `inhalt`, Untertor `englisch`) und vier am BILDSCHIRM
+   * (Tor `smoke`, Abschnitt `englisch`). Die zweite Haelfte ist die
+   * teurere und die noetigere: was diese Ebene zusagt, ist eine Zusage an
+   * ein Kind, das nicht liest, und die sieht man einem Bildschirmfoto
+   * nicht an - vier Farbflecken ohne Frage sehen aus wie eine Aufgabe. */
+
+  /* Der Vorrat greift an der amtlichen Liste vorbei.
+   *
+   * `gray` statt `grey` - die amerikanische Schreibung, und damit dieselbe
+   * leise Sorte wie bei E1: kein fehlendes Wort, ein Buchstabe. Der
+   * Lehrplan sagt britisches Englisch, und Lea schreibt in der Schule
+   * `grey`. */
+  { n:'eine Farbe der Englischebene steht nicht im amtlichen Wortschatz', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"{ wort: 'grey',   farbton: '#9aa2ab' },",
+    ersatz:"{ wort: 'gray',   farbton: '#9aa2ab' }, // Anker: { wort: 'grey',   farbton: '#9aa2ab' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"wort: 'gray'" },
+    deckt:'englisch',
+    sagt:'nicht im amtlichen Wortschatz' },
+
+  /* Zwei Farben liegen zu nah beieinander.
+   *
+   * Der Eingriff zieht `red` an `orange` heran. Das ist die Sorte
+   * Aenderung, die aus Geschmack passiert („das Rot ist mir zu grell") -
+   * und sie macht die Aufgabe unloesbar, ohne dass irgendwo etwas fehlt.
+   * Kein anderes Tor koennte das sehen: die Datei ist gueltig, das Wort
+   * steht in der Liste, das Bild ist da. */
+  { n:'zwei Farben der Englischebene sind nicht auseinanderzuhalten', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"{ wort: 'red',    farbton: '#e03131' },",
+    ersatz:"{ wort: 'red',    farbton: '#f2760c' }, // Anker: { wort: 'red',    farbton: '#e03131' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"farbton: '#f2760c'" },
+    deckt:'englisch',
+    sagt:'CIELAB auseinander' },
+
+  /* Die Ablenker kommen aus der falschen Menge.
+   *
+   * Ohne den Sortenfilter stehen neben einem Farbfleck drei Ziffern - und
+   * dann ist die Aufgabe ohne ein Wort Englisch zu loesen. Sie SIEHT dabei
+   * genauso aus wie eine richtige, und sie wird sogar oefter richtig
+   * beantwortet. Das ist die gefaehrlichste Art, eine Lernaufgabe kaputt
+   * zu machen: die Zahlen werden besser. */
+  { n:'die Ablenker der Englischebene kommen aus der falschen Sorte', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"  const andere = vorratHoeren().filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
+    /* Der Suchtext ueberlebt im Ersatz, als Kommentar darunter - und zwar
+       WORTWOERTLICH. Der erste Anlauf hat nur ein Bruchstueck gerettet
+       („x.sorte === ziel.sorte"), und `inhalt` meldete daraufhin den
+       fehlenden Anker statt des Befundes: das ist der Selbsttreffer, und
+       zwar der vierte in diesem Verzeichnis. Zwei Leerzeichen hinter dem
+       „//" sind kein Zufall - sie machen den Suchtext samt seiner
+       Einrueckung wieder auffindbar. */
+    ersatz:"  const andere = vorratHoeren().filter(x => x.id !== ziel.id);\n"
+      + "  //Anker:  const andere = vorratHoeren().filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
+    an:{ datei:'src/inhalt/englisch.js', text:'filter(x => x.id !== ziel.id);' },
+    deckt:'englisch',
+    sagt:'Ablenker anderer Sorte' },
+
+  /* Das gesuchte Wort steht auf dem Bildschirm.
+   *
+   * Damit wird aus „Hoeren und zeigen" eine Leseaufgabe - und zwar eine,
+   * die Lea muehelos loest und Fiona gar nicht. Der Eingriff ist die
+   * bequeme Aenderung: das Wort HINZUSCHREIBEN sieht nach mehr Hilfe aus.
+   * Es ist die Antwort. */
+  { n:'das gesuchte englische Wort steht auf dem Bildschirm', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:"    <div class=\"frage\" id=\"frage\">${stumm",
+    ersatz:"    <div class=\"frage\" id=\"frage\">${true",
+    an:{ ...DIST, text:'id="frage">${true' },
+    sagt:'prüft die Aufgabe Lesen statt Hören' },
+
+  /* Und die Gegenrichtung: OHNE englische Stimme faellt die Notschrift weg.
+   *
+   * Dann ist die Ebene stumm UND leer - vier Farbflecken ohne Frage. Fuer
+   * ein Kind, das nicht liest, war sie das ohnehin; hier geht auch noch
+   * der Weg fuer Lea verloren. Beide Proben zusammen halten die Zusage
+   * fest: das Wort steht genau dann da, wenn es nicht zu hoeren ist. */
+  { n:'ohne englische Stimme steht das Wort nirgends', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:'  const stumm = !englischHoerbar();',
+    ersatz:'  const stumm = false; // Anker: !englischHoerbar()',
+    an:{ ...DIST, text:'const stumm = false;' },
+    sagt:'vier Bilder ohne Frage' },
+
+  /* Die Farbflecken verblassen nach der Antwort.
+   *
+   * Der Eingriff nimmt die Englischkarte wieder in die G18-Regel auf -
+   * also genau der Zustand, den diese Runde am Bild gefunden hat. Er ist
+   * nicht boeswillig, sondern der naheliegende: „verbrauchte Knoepfe
+   * verblassen" gilt ueberall sonst, und wer die Ausnahme nicht kennt,
+   * raeumt sie beim naechsten Aufraeumen weg. Danach ist Gruen ein
+   * Mintton und Grau von Weiss nicht mehr zu unterscheiden. */
+  { n:'die verbrauchten Farbflecken verlieren ihre Farbe', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:V,
+    such:'[data-fertig] .etikett:not(.weg),\n[data-fertig] .zahl{',
+    ersatz:'[data-fertig] .etikett:not(.weg),\n[data-fertig] .engkarte,\n[data-fertig] .zahl{',
+    an:{ ...DIST, text:'[data-fertig] .engkarte,' },
+    sagt:'verblassen nach der Antwort' },
+
+  /* Die Frage wird mit der deutschen Stimme gesagt.
+   *
+   * „blue" als „blü-e". Das ist der Fehler, den E2 verhindern sollte, hier
+   * an der Stelle, an der er wirklich wehtut - und er ist LAUTLOS: die App
+   * sagt etwas, das Kind hoert etwas, alles sieht richtig aus. Nur die
+   * Aussprache, die geuebt wird, ist die falsche. */
+  { n:'das englische Wort wird deutsch ausgesprochen', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:"  vorlesen(ziel.wort, 'en');\n  {\n    const b = nochHoerenKnopf(ziel.wort, 'en');",
+    ersatz:"  vorlesen(ziel.wort);\n  {\n    const b = nochHoerenKnopf(ziel.wort, 'en');",
+    an:{ ...DIST, fehlt:"  vorlesen(ziel.wort, 'en');\n  {\n    const b" },
+    sagt:'übt die falsche Aussprache ein' },
+
+  /* Die Englischebene sagt gar nichts mehr.
+   *
+   * Diese Probe haelt die AUSNAHME fest, die E3 in den Durchgang gebracht
+   * hat: das englische Wort zaehlt nicht als Vorlesehilfe, sonst meldete
+   * der Rauchtest bei Lea einen Fehler, wo die App richtig ist. Eine
+   * Ausnahme ohne Gegenstueck waere ein Loch - eine Ebene, auf der nie
+   * jemand etwas hoert, fiele danach keinem mehr auf. Der Eingriff nimmt
+   * die Ansage weg; anschlagen muss das NEUE Urteil, nicht das alte.
+   *
+   * Der Anker haengt am Kommentar darueber, damit er sich von dem der
+   * Probe „das englische Wort wird deutsch ausgesprochen" unterscheidet -
+   * beide sitzen auf derselben Zeile, und zwei Proben mit demselben
+   * Suchtext waeren nicht mehr auseinanderzuhalten. */
+  { n:'die Englischebene sagt das Wort gar nicht mehr', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n  vorlesen(ziel.wort, 'en');",
+    ersatz:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n"
+      + "  //Anker:  vorlesen(ziel.wort, 'en');",
+    an:{ ...DIST, text:"//Anker:  vorlesen(ziel.wort, 'en');" },
+    sagt:'IST das Wort die Frage' },
 
   /* Q51 - die Blindprobe unter der Randmessung meldet auch dann noch,
    * wenn die Aufnahme wiederholt wird.

@@ -187,20 +187,21 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **E3** Vierte Welt + erste Ebene „Hören und zeigen“ | Lea | hoch | mittel | E2 steht |
-| 2 | **E4–E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E3 |
-| 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
-| 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
-| 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
-| 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
-| 7 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
-| 8 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 9 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
-| 10 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 11 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 12 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
-| 13 | **QS3** „Ton als Gegenstand" braucht ein Tor, sobald Englisch steht | nur ich | mittel | klein | E3 |
-| 14 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 1 | **E4** Die Bilder — ein SVG je Wort | Fiona, Lea | hoch | groß | Malarbeit, kein Code |
+| 2 | **E5–E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E4 (nur E10 nicht) |
+| 3 | **QS3** „Ton als Gegenstand" braucht ein Tor — jetzt steht Englisch | nur ich | mittel | klein | — |
+| 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 5 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
+| 6 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
+| 7 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
+| 8 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
+| 9 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| 10 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
+| 11 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
+| 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
+| 13 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
+| 14 | **G19** Das Wasserzeichen der Weltenkachel liegt hochkant zu 100 % hinter dem Namen | niemand am Zielgerät | gering | klein | — |
+| 15 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
 dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal
@@ -211,8 +212,8 @@ seinem eigenen Block weiter unten und im Archiv — **Regel 6, was zweimal
 dasteht, veraltet einmal.** Der Nachweis, dass ein Punkt gefahren ist, ist
 sein Block, nicht diese Zeile.
 
-*Zweimal nachgezogen: 01.09.2026 (fünf Zeilen), 04.09.2026 (die Tabelle
-umgestellt).*
+*Dreimal nachgezogen: 01.09.2026 (fünf Zeilen), 04.09.2026 (die Tabelle
+umgestellt), 05.09.2026 (E3 gefahren, E4 rückt auf Rang 1).*
 
 **A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
 Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
@@ -246,7 +247,7 @@ veraltet eine der beiden Fassungen).
 |---|---|---|
 | **E1** | Wortschatz holen und eintragen (ISB-Liste, Themengebiete, Fionas Teilmenge) | `inhalt` zählt je Themengebiet und meldet ein leeres |
 | **E2** | Englische Stimme: `sagen()` je Ebene, Stimmensuche, Auskunft bei fehlender Stimme | Tor E-c |
-| **E3** | Vierte Welt + erste Ebene „Hören und zeigen" | am Gerät gespielt, `passt` grün mit vier Weltkarten |
+| **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommen soll |
 | **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommt |
 | **E5** | „Zwei Wörter, ein Laut Unterschied" — Lautpaare mit Grund | Tor E-a, alle vier Stolperstellen vertreten |
 | **E6** | „Sag es" — zwei Anläufe, kein Urteil, eigene Stimme | Tore E-b und E-d |
@@ -4605,6 +4606,151 @@ Signatur von `vorlesen` hing: 2,8 Sekunden, bevor ein Browser lief.
 **E3 bleibt offen und ist jetzt Rang 1.** Die Reihenfolge im Konzept
 verdeckte, dass „Hören und zeigen" ohne E2 englische Wörter mit deutscher
 Stimme sagt. E2 war der eigentliche Blocker, nicht E3.
+
+### E3 · Die vierte Welt und „Hören und zeigen" — GEFAHREN (v373)
+
+Die App sagt ein englisches Wort, vier Bilder stehen da, das Kind tippt.
+Mechanisch ist das die Ebene-4-Aufgabe aus Erdkunde; neu ist, dass die
+**Frage der Ton ist**.
+
+#### Der Zuschnitt — und warum er nicht willkürlich ist
+
+Das Konzept sagt für diese Form „vier Bilder". Ein Bild je Wort gibt es
+noch nicht; das ist E4, und das ist Malarbeit. Der naheliegende Ausweg
+wäre gewesen, die vier Möglichkeiten als **Text** zu stellen — und damit
+wäre die Ebene für Fiona keine Aufgabe, sondern vier leere Kästen. Das
+Konzept nennt sie ausdrücklich „die einzige, die Fiona vom ersten Tag an
+ohne Erklärung bedienen kann"; ein Textzuschnitt hätte genau diesen Satz
+gebrochen und dabei ausgesehen wie eine fertige Ebene.
+
+Stattdessen fängt die Ebene mit den Wörtern an, **deren Bild sich aus dem
+Wort selbst ergibt**:
+
+| | wieviel | das Bild |
+|---|---|---|
+| Farben | 10 (black … yellow) | ein Fleck in der Farbe |
+| Zahlen | 15 (1–12, 15, 30, 45) | die Ziffer |
+
+25 Gegenstände, genug für mehrere Sitzungen, kein einziges neues Bild —
+und beide Sorten kann Fiona bedienen. `vorratHoeren()` hängt an den
+Listen, nicht an einer Aufzählung: mit E4 wächst der Vorrat, ohne dass
+sich an der Ebene etwas ändert.
+
+#### Was daran gemessen wird
+
+Vier Zusagen, und jede in **beide** Richtungen — sonst wäre keine davon
+eine Prüfung (Regel 1: wer eine Wirkung misst, schaltet sie zuerst ab):
+
+| Zusage | mit | ohne |
+|---|---|---|
+| die Frage ist der Ton | „blue" als `en-GB` / Daniel | ohne englische Stimme: geschwiegen |
+| das Wort steht nicht da | mit Stimme: nirgends im Markup | ohne Stimme: steht geschrieben da |
+| vier Möglichkeiten, eine Sorte | 4 × „farbe", genau eine richtig | Ablenker anderer Sorte → rot |
+| die Farbe überlebt die Antwort | Deckung 1,00 vorher wie nachher | in der G18-Regel → rot |
+
+Gespielt wird im Tor als **Lea**, nicht als Fiona: Lea trägt
+`vorlesen: false`, ist also das Profil, an dem sich ein „ansagen" statt
+„vorlesen" verrät. Bei Fiona liefe beides, und die Messung sähe nichts.
+
+Dazu vier Proben am Vorrat und am Durchgang (Tor `inhalt`, Tor `smoke`): ein Farbwort, das nicht im
+amtlichen Wortschatz steht (`gray` statt `grey`); zwei Farben, die zu nah
+beieinander liegen; Ablenker aus der falschen Sorte. Der Farbabstand wird
+in **CIELAB** gerechnet — eine Formel von außen, nicht meine Schätzung.
+Gemessen: die engsten zwei sind `orange`/`red` mit **31,3**, nötig sind 25.
+
+#### Zwei Befunde aus dieser Runde, beide am Bild und nicht gerechnet
+
+**1. Das Verblassen aus G18 nahm den Farbflecken die Farbe.** Nach der
+Antwort war Grün ein Mintton, Rot ein Rosa, Grau von Weiß nicht mehr zu
+unterscheiden. „Verbrauchte Knöpfe verblassen" gilt überall sonst und ist
+dort richtig; auf einer Farbebene ist Deckung **kein neutrales Mittel** —
+ein Fleck mit 45 % Deckung ist eine andere Farbe, und ein Kind, das
+danach noch einmal hinsieht, lernt die falsche. Jetzt tritt der **Kasten**
+zurück (Rand, Kante und Grund gehen in den Bildschirmgrund), der Fleck
+behält seine Farbe. Gegenprobe 309 nimmt die Karte wieder in die
+G18-Regel auf — der naheliegendste Griff beim nächsten Aufräumen.
+
+**2. Das Wasserzeichen der Kachel wurde mit 5 % gemessen statt mit 40 %.**
+Und die Zahl war falsch, nicht das Bild. Der erste Entwurf setzte den
+Lautsprecher in eine skalierte `<g>` und den Fleck als `<circle>`. `passt`
+misst die gezeichnete Ausdehnung über `getBBox()` und `isPointInStroke`
+**je Pfad, im eigenen Koordinatenraum des Pfades**: eine
+Gruppentransformation fällt dabei heraus, ein `<circle>` wird gar nicht
+gefunden. Gemeldet wurden 10 × 7 Punkte bei einem Zeichen, das auf dem
+Bildschirm die halbe Kachel füllt. Jetzt liegt alles in **einem** Raum.
+Eine falsche Zahl in einer Ratsche ist schlimmer als keine — sie sieht
+gepflegt aus.
+
+#### Die vierte Weltkachel — angesehen, dann festgehalten
+
+Das Konzept verlangt hier ausdrücklich einen **Blick** vor dem `--neu`:
+vier Karten teilen sich dieselbe Breite, also schrumpft jedes vorhandene
+Weltbild. Angesehen auf 844 × 390, für Fiona (vier Kacheln) und für Lea
+(drei): die Erdkunde-Weltkarte bleibt als Weltkarte erkennbar, das
+Rechenzeichen und die Buchstaben ebenso. Der Preis ist bezahlt, nicht
+übersehen.
+
+#### Und noch ein Loch: `--kurz` spielte die neue Ebene gar nicht
+
+Die achte Gegenprobe („die Englischebene sagt das Wort gar nicht mehr")
+meldete **„`smoke` bleibt grün, obwohl der Fehler drin ist"**. Von Hand
+nachgestellt schlug das Tor mit vier Meldungen an. Der Unterschied:
+`proben` hängt `--kurz` an, und dessen Auswahl (`kontinente`,
+`hauptstaedte`, `laender:europa`, `rechnen`) kannte die vierte Welt nicht
+— die Ebene wurde schlicht nicht aufgeschlagen.
+
+Genau derselbe Fehler stand dort schon einmal, kommentiert und alles: die
+Länderebene fehlte in `--kurz`, und die Gegenprobe „Fiona bekommt die
+Länder der Eltern zu sehen" lief ins Leere. Die Englischebene ist die
+**vierte Art von Bildschirm** (Karte, Rechnung, Schreibblatt, Hören) und
+gehört deshalb in dieselbe Zeile.
+
+Wäre die Probe nicht gelaufen, hätte E3 eine Prüfung mitgeliefert, die
+nichts prüft — und niemand hätte es gemerkt, weil das Tor grün war.
+
+#### Der Selbsttreffer, zum vierten Mal
+
+Die Gegenprobe „die Ablenker kommen aus der falschen Sorte" löscht mit
+ihrem Eingriff genau die Zeile, die ihr eigener Suchtext ist. `inhalt`
+prüft aber auch, dass jede Probe ihren Anker noch findet — und meldete
+prompt den fehlenden Anker statt des Befundes. Die Probe wäre rot
+geworden, ohne je das zu prüfen, wofür sie da ist.
+
+Der Griff dagegen ist bekannt (dreimal in der Vorrunde): den Suchtext
+**wortwörtlich** in einem Kommentar darunter stehen lassen. Beim ersten
+Anlauf habe ich nur ein Bruchstück gerettet — das reicht nicht, der
+Vergleich ist auf das Zeichen genau, Einrückung eingeschlossen.
+
+**Was E3 NICHT ist:** eine spielbare englische Welt für Fiona in dem
+Sinne, den das Konzept meint. Farben und Zahlen kann sie; alles andere —
+*cat*, *apple*, *schoolbag* — braucht E4. Das ist keine Einschränkung
+dieser Runde, sondern die Reihenfolge: E4 ist damit Rang 1.
+
+### G19 · Das Wasserzeichen liegt hochkant hinter dem Namen — OFFEN
+
+Gefunden beim Blick auf die vierte Weltkachel (E3), gemeldet von `passt`:
+
+```
+iPad hoch  Weltenwahl: „Rechnen"   — Bild unterm Namen  99 % (vorher  4 %)
+iPad hoch  Weltenwahl: „Schreiben" — Bild unterm Namen 100 % (vorher 44 %)
+iPad hoch  Weltenwahl: „Erdkunde"  — Bild unterm Namen  57 % (vorher 17 %)
+```
+
+Vier Kacheln nebeneinander sind hochkant kurz und schmal; das Wasserzeichen
+sitzt senkrecht mittig und rechtsbündig, der Name unten links — und bei
+kurzer Kachel treffen sich beide. Ein Wasserzeichen, das ganz hinter dem
+Namen liegt, ist **Dekoration und keine Auskunft**; genau so steht es im
+Stilblatt, und für Fiona ist das Kachelbild der Name.
+
+**Warum es diese Runde nicht behoben wurde:** es trifft keine Größe, auf
+der geurteilt wird — iPhone quer und iPad quer sind sauber, dort ist die
+Kachel hoch genug. Und der naheliegende Griff (Wasserzeichen nach oben
+statt mittig) ändert **jede** Weltkachel auf **allen sieben** Größen und
+damit die halbe Ratsche ein zweites Mal in derselben Runde. Das ist keine
+Änderung, die man nebenbei mitnimmt.
+
+Der Zustand war übrigens schon vorher da (Schreiben: 44 %). Die vierte
+Kachel hat ihn nicht verursacht, sondern sichtbar gemacht.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

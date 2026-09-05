@@ -128,5 +128,14 @@
       "src/inhalt/englisch.js:47"
     ],
     "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt."
+  },
+  {
+    "dateien": "prototyp/bauen.mjs",
+    "token": 100,
+    "wo": [
+      "prototyp/bauen.mjs:319",
+      "prototyp/bauen.mjs:325"
+    ],
+    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen."
   }
 ]

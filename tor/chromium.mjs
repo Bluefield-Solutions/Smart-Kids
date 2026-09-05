@@ -132,7 +132,8 @@ export async function serviere(wurzel, erreichbar = () => true) {
  * falschen Welt steht und dass es beide Welten gibt.
  */
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
-                                : String(ebene).startsWith('schreiben') ? 'schreiben' : 'erdkunde';
+                                : String(ebene).startsWith('schreiben') ? 'schreiben'
+                                : String(ebene).startsWith('englisch') ? 'englisch' : 'erdkunde';
 
 /* Von der Weltenwahl in die Ebenenwahl der Welt, in der `ebene` liegt.
  *

@@ -1205,34 +1205,42 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da [data-welt="schreiben"]');
   await zurEbenenwahl(p, 'schreiben:buchstaben');
-  await tipp('[data-ebene="schreiben:buchstaben"]');
-  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 20000 });
-  if (await p.$('.schirm.da #los')) {
-    await schau('Vorlauf schreiben');
-    await durchVorlauf(p);
-  }
-  await p.waitForSelector('.schirm.da .schreibblatt');
-  await schau('Schreiben');
-  await tipp('.schirm.da #zur');
-  await p.waitForSelector('.schirm.da #null');
-  await tipp('.schirm.da #raus');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  /* Eine Ebene betreten, ansehen, wieder heraus.
+   *
+   * Viermal stand das fast Wort fuer Wort da - Buchstaben, Diktat, Zahlen,
+   * Englisch -, und beim vierten hat `doppelt` es gemeldet. Was sich
+   * unterscheidet, ist wenig: die Kennung, woran man merkt, dass der
+   * Bildschirm steht, und ob vor der Aufnahme noch etwas zu tun ist.
+   *
+   * Der Weg HINAUS ist dabei der Teil, den man am ehesten falsch
+   * abschreibt: seit R1 fuehrt das Kreuz nicht mehr in die Ebenenwahl,
+   * sondern in die Pause, und erst `#raus` fuehrt weiter. Er stand
+   * viermal da und musste viermal stimmen. */
+  const ebeneAnsehen = async (ebene, steht, name,
+      { vorlaufName = null, dazwischen = null } = {}) => {
+    await tipp(`[data-ebene="${ebene}"]`);
+    await p.waitForSelector(`.schirm.da #los, ${steht}`, { timeout: 20000 });
+    if (await p.$('.schirm.da #los')) {
+      if (vorlaufName) await schau(vorlaufName);
+      await durchVorlauf(p);
+    }
+    await p.waitForSelector(steht);
+    if (dazwischen) await dazwischen();
+    await schau(name);
+    await tipp('.schirm.da #zur');
+    await p.waitForSelector('.schirm.da #null');
+    await tipp('.schirm.da #raus');
+    await p.waitForSelector('.schirm.da [data-ebene]');
+  };
+
+  await ebeneAnsehen('schreiben:buchstaben', '.schirm.da .schreibblatt', 'Schreiben',
+    { vorlaufName: 'Vorlauf schreiben' });
 
   /* Und das Diktat (N3): derselbe Bildschirm ohne Vorlage, dafuer mit
      einem vierten Knopf („Noch mal hören"). Vier Knoepfe neben einem
      quadratischen Feld sind auf 844 x 390 nicht selbstverstaendlich. */
-  await tipp('[data-ebene="schreiben:diktat"]');
-  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 20000 });
-  if (await p.$('.schirm.da #los')) {
-    await schau('Vorlauf diktat');
-    await durchVorlauf(p);
-  }
-  await p.waitForSelector('.schirm.da .schreibblatt');
-  await schau('Diktat');
-  await tipp('.schirm.da #zur');
-  await p.waitForSelector('.schirm.da #null');
-  await tipp('.schirm.da #raus');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  await ebeneAnsehen('schreiben:diktat', '.schirm.da .schreibblatt', 'Diktat',
+    { vorlaufName: 'Vorlauf diktat' });
 
   /* Und die Zahlen (N4) - der einzige Bildschirm mit ZWEI Schreibfeldern.
    *
@@ -1241,13 +1249,7 @@ nicht liest, ist die Kachel damit unbeschriftet`);
    * entscheidet der Leitner; bei einer einstelligen steht nur ein Kasten
    * da. Also wird weitergeblaettert, bis eine zweistellige kommt - der
    * Fall, um den es geht, wird nicht dem Zufall ueberlassen. */
-  await tipp('[data-ebene="schreiben:zahlen"]');
-  await p.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 20000 });
-  if (await p.$('.schirm.da #los')) {
-    await schau('Vorlauf zahlen');
-    await durchVorlauf(p);
-  }
-  await p.waitForSelector('.schirm.da .schreibblatt');
+  const bisZweistellig = async () => {
   for (let n = 0; n < 12; n++) {
     if ((await p.$$('.schirm.da .feldkasten')).length > 1) break;
     await tipp('.schirm.da #weissnicht');
@@ -1273,11 +1275,28 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   if ((await p.$$('.schirm.da .feldkasten')).length < 2)
     meldungen.push('Zahlen: nach zwölf Aufgaben kam keine zweistellige — '
       + 'dann ist der Bildschirm mit zwei Feldern ungeprüft');
-  await schau('Zahlen (zweistellig)');
+  };
+  await ebeneAnsehen('schreiben:zahlen', '.schirm.da .schreibblatt',
+    'Zahlen (zweistellig)', { vorlaufName: 'Vorlauf zahlen', dazwischen: bisZweistellig });
   await tipp('.schirm.da #zur');
-  await p.waitForSelector('.schirm.da #null');
-  await tipp('.schirm.da #raus');
-  await p.waitForSelector('.schirm.da [data-ebene]');
+  await p.waitForSelector('.schirm.da [data-welt]');
+
+  /* Die vierte Welt (E3) - und ihr Vorlauf ist die zweitdichteste
+   * Kachelwand der App: 25 Gegenstaende, zehn Farbflecken und fuenfzehn
+   * Ziffern, jeder mit seinem englischen Wort darunter. Nur das Abc hat
+   * mehr.
+   *
+   * Die Aufgabe selbst ist der karge Gegenpol - vier Karten und sonst
+   * nichts. Genau deshalb gehoert sie hierher: was auf 844 x 390 zu klein
+   * ist, faellt bei vier grossen Kacheln nicht auf, sondern bei der
+   * Fingergrenze. `beruehrung` rechnet sie, `passt` sieht sie.
+   *
+   * Ohne englische Stimme (die hat Chromium hier nicht) steht das Wort
+   * geschrieben in der Frage - die Notfassung, und damit die Zeile, die
+   * am ehesten zu lang wird. */
+  await zurEbenenwahl(p, 'englisch:hoeren');
+  await ebeneAnsehen('englisch:hoeren', '.schirm.da .engkarte', 'Englisch',
+    { vorlaufName: 'Vorlauf englisch' });
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da [data-welt]');
 

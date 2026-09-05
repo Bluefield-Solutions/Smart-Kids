@@ -1,8 +1,8 @@
 {
   "bestaetigt": {
-    "zeit": "2026-09-04",
-    "start": 310.2,
-    "geometrie": 26.9,
+    "zeit": "2026-09-05",
+    "start": 326,
+    "geometrie": 27.2,
     "schrift": 51.7,
     "ebenen": {
       "laender-europa.json": 109.2,
@@ -16,8 +16,8 @@
     }
   },
   "gesehen": {
-    "zeit": "2026-09-04",
-    "start": 315.8,
+    "zeit": "2026-09-05",
+    "start": 326,
     "geometrie": 27.2,
     "schrift": 51.7,
     "ebenen": {

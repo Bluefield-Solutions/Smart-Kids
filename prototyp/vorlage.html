@@ -1380,6 +1380,77 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    bleibt er trotzdem: die Deckung macht das Zurueckgenommene, nicht eine
    Tinte, die man nicht mehr lesen kann. */
 .aufkleber:not(.da) .rechenkleber{background:color-mix(in oklab, var(--linie) 55%, var(--papier));color:var(--tinte-2)}
+/* ---- Englisch: Hoeren und zeigen (E3) ---------------------------------
+   Vier Karten, eine richtig - derselbe Griff wie bei den vier Zahlen des
+   Rechenblatts. Was anders ist, ist der GRUND, und er steckt in einer
+   einzigen Zeile: die Karte ist PAPIERFARBEN, nicht `--primaer`.
+
+   Eine Farbaufgabe auf einem blauen Knopf misst nicht mehr, was sie soll.
+   „Ist das blau?" haengt daran, worauf es liegt; zehn Farbflecken auf zehn
+   blauen Kaesten sind zehn Mischungen. Der neutrale Grund ist hier keine
+   Gestaltung, sondern Teil der Aufgabe - so wie der weisse Rand um einen
+   Aufkleber. */
+.englischfeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r6);padding:0 var(--r4) var(--r4);min-height:0}
+.engwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}
+.engkarte{display:flex;align-items:center;justify-content:center;
+  background:var(--papier);border:var(--strich) solid var(--linie);
+  border-radius:var(--rund-karte);min-width:124px;min-height:124px;
+  padding:var(--r3);cursor:pointer;
+  box-shadow:0 var(--kante) 0 var(--linie),inset 0 var(--strich) 0 var(--knopf-licht);
+  transition:transform var(--d-tipp) var(--k-standard),
+             box-shadow var(--d-tipp) var(--k-standard),
+             background var(--d-zustand) var(--k-standard)}
+.engkarte:active{transform:translateY(3px);
+  box-shadow:0 0 0 var(--linie),inset 0 var(--strich) 0 var(--knopf-licht)}
+/* VERBRAUCHT ohne Deckung - und das ist der eine Punkt, an dem diese
+   Karte nicht so aussehen darf wie eine Zahl (G18).
+   Ueberall sonst heisst „schon benutzt" halbe Deckung: der Knopf tritt
+   zurueck und sieht nicht mehr greifbar aus. Hier zerstoert genau das den
+   Lerninhalt - ein Farbfleck mit 45 % Deckung ist eine ANDERE Farbe. Am
+   Bild gesehen und nicht gerechnet: nach der Antwort war Gruen ein
+   Mintton, Rot ein Rosa, und Grau von Weiss nicht mehr zu unterscheiden.
+   Ein Kind, das danach noch einmal hinsieht, lernt die falsche Farbe.
+   Zurueck tritt deshalb der KASTEN - Rand, Kante und Grund gehen in den
+   Bildschirmgrund -, der Fleck behaelt seine Farbe. */
+.engkarte[disabled]{cursor:default}
+.engkarte[disabled]:not(.stimmt){box-shadow:none;pointer-events:none;
+  transform:translateY(var(--kante));
+  background:var(--grund);border-color:var(--grund);animation:none}
+.engkarte.stimmt{background:var(--gut-h);border-color:var(--gut);opacity:1}
+.engkarte.falsch{background:var(--abgelehnt);border-color:var(--warn);
+  animation:wackeln var(--d-wackeln) var(--k-standard)}
+@media (prefers-reduced-motion:reduce){.engkarte.falsch{animation:none}}
+/* Der Farbfleck traegt IMMER einen dunklen Ring - nicht nur `white`.
+   Ein Ring nur ums Weisse waere ein zweites Merkmal, an dem man „white"
+   erkennt, ohne die Farbe zu kennen. Er ist rund, weil ein Quadrat auf
+   einer eckigen Karte mit ihr verschmilzt. */
+.farbfleck{display:block;width:76px;height:76px;border-radius:50%;
+  background:var(--farbton);border:var(--strich-stark) solid var(--tinte-3)}
+.ziffernbild{font-family:var(--f-lesen);font-weight:700;font-size:var(--s4);
+  line-height:1;color:var(--tinte);font-variant-numeric:tabular-nums}
+/* Der Aufkleber einer englischen Zahl - dieselbe Bauart wie
+   `.rechenkleber` und deshalb daran angehaengt statt daneben geschrieben.
+   Der Farbfleck braucht das nicht: er ist im Buch dasselbe Bild wie in der
+   Aufgabe, nur kleiner. */
+.ziffernkleber{display:flex;align-items:center;justify-content:center;width:100%;height:100%;
+  font-family:var(--f-lesen);font-weight:700;font-size:var(--s1);
+  color:var(--auf-flaeche);background:color-mix(in oklab, var(--ton) 34%, var(--papier));
+  border-radius:var(--rund-klein);font-variant-numeric:tabular-nums}
+.aufkleber:not(.da) .ziffernkleber{background:color-mix(in oklab, var(--linie) 55%, var(--papier));color:var(--tinte-2)}
+/* Im Buch und im Vorlauf ist der Fleck kein Kreis, sondern eine FLAECHE -
+   dieselbe Form wie der Rechen- und der Ziffernaufkleber daneben. Der
+   Aufkleber IST die Farbe.
+   Der erste Anlauf behielt den Kreis und liess ihn ueber `aspect-ratio`
+   mitwachsen. Das geht nicht auf: die Hoehe kommt aus dem Flexlauf, die
+   Breite aus dem Seitenverhaeltnis, und hochkant wurden daraus 82 Punkte
+   in einer 56 Punkte breiten Karte - `passt` meldete „13 px ueber den Rand
+   des eigenen Knopfes". Ein `max-width` darauf macht daraus ein Ei.
+   Eine Flaeche hat das Problem nicht, und sie ist ausserdem die richtige
+   Form: neben fuenfzehn Ziffernkacheln stand ein Kreis wie ein Fremdkoerper. */
+.aufkleber .farbfleck{width:100%;height:auto;flex:1 1 0;min-height:0;
+  border-radius:var(--rund-klein)}
+.aufkleber:not(.da) .farbfleck{opacity:.35}
 /* ---- Schreiben (N2a) --------------------------------------------------
    Die Schreibflaeche ist QUADRATISCH, und das ist keine Geschmacksfrage:
    der Kasten der Vorlage ist 100 x 100, und der Finger wird ueber
@@ -2370,6 +2441,13 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .rechnung{font-size:var(--s4)}
   .rechenfeld{gap:var(--r4)}
   .zahl{min-height:64px;min-width:76px;font-size:var(--s2);padding:var(--r2) var(--r3)}
+  /* Auf 844x390 ist dieselbe Rechnung wie bei `.zahl`: Kopf, Frage, vier
+     Karten und der Ausweg muessen uebereinander passen. 104 statt 124, und
+     der Fleck geht von 76 auf 64 - beides bleibt weit ueber der
+     Fingergrenze von 44. */
+  .engkarte{min-height:104px;min-width:104px;padding:var(--r2)}
+  .farbfleck{width:64px;height:64px}
+  .ziffernbild{font-size:var(--s3)}
   .tippfeld .eingabe{min-height:64px;font-size:var(--s2);min-width:130px}
   .tippfeld .knopf{min-height:64px}
   .siegsterne svg{width:40px;height:40px}

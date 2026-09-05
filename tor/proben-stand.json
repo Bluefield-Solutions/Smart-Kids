@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-04",
+  "zeit": "2026-09-05",
   "tore": [
     "anker",
     "ansicht",
@@ -1538,14 +1538,54 @@
       "s": 116
     },
     "ein englisches Wort weicht von der amtlichen Liste ab": {
-      "commit": "cec3e03b31b2bb8254232682d8a734ae888021fc",
-      "zeit": "2026-09-04",
-      "s": 9
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 10
     },
     "ein Redemittel wird um einen eigenen Satz ergaenzt": {
       "commit": "e3055ea4b4c370f126ac006362a8a832d52498d1",
       "zeit": "2026-09-04",
       "s": 10
+    },
+    "eine Farbe der Englischebene steht nicht im amtlichen Wortschatz": {
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 3
+    },
+    "zwei Farben der Englischebene sind nicht auseinanderzuhalten": {
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 3
+    },
+    "die Ablenker der Englischebene kommen aus der falschen Sorte": {
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 3
+    },
+    "das gesuchte englische Wort steht auf dem Bildschirm": {
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 16
+    },
+    "ohne englische Stimme steht das Wort nirgends": {
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 9
+    },
+    "die verbrauchten Farbflecken verlieren ihre Farbe": {
+      "commit": "dc09d695b5929b739ac2b8cd223a7ac2180c9666",
+      "zeit": "2026-09-05",
+      "s": 15
+    },
+    "das englische Wort wird deutsch ausgesprochen": {
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 9
+    },
+    "die Englischebene sagt das Wort gar nicht mehr": {
+      "commit": "03e3844d875be7ef7d6760bfb627f423a888d85c",
+      "zeit": "2026-09-05",
+      "s": 75
     },
     "die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung": {
       "commit": "80633617eba308b1b33fd54f421c4affe828afc8",
@@ -1553,9 +1593,9 @@
       "s": 36
     },
     "ohne englische Stimme springt die deutsche ein": {
-      "commit": "fff74f37d68fb8b6fc2d0f97556030738b19fa69",
-      "zeit": "2026-09-04",
-      "s": 68
+      "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
+      "zeit": "2026-09-05",
+      "s": 69
     }
   }
 }
