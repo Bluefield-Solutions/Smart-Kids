@@ -43,6 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Die volle Historie, weil `bauen.mjs` die Fassungszahl aus
+          # `git rev-list --count HEAD` nimmt. Ein flacher Klon zaehlt 1,
+          # und dann steht auf dem Geraet `v1` statt der Fassung. Genau
+          # das ist von v117 bis v405 passiert (Q53).
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

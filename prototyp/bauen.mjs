@@ -365,6 +365,30 @@ const git = (...args) => {
 };
 const kurz = git('rev-parse', '--short', 'HEAD');
 const schmutzig = git('status', '--porcelain') !== '';
+
+/* EIN FLACHER KLON MACHT AUS DER FASSUNGSZAHL EINE LUEGE, und zwar
+ * lautlos. `actions/checkout` holt ohne `fetch-depth: 0` genau EINEN
+ * Einchecker; `rev-list --count HEAD` sagt dann `1`. Auf dem Geraet stand
+ * darum ab v117 nicht die Fassung, sondern `v1` - 288 Auslieferungen
+ * lang, und der Kurzschluessel daneben war die ganze Zeit richtig.
+ *
+ * Es hat niemand gemerkt, weil hier auf dem Rechner immer die volle
+ * Historie liegt: die Zahl ist an ihrer Messstelle richtig und nur an
+ * der anderen falsch (Regel 5). Und es hat GESCHADET - der Nutzer sah
+ * `v1`, schloss auf eine sehr alte Fassung, und die Suche ging in eine
+ * ganz andere Richtung.
+ *
+ * Deshalb bricht der Bau jetzt ab, statt eine falsche Zahl auszuliefern.
+ * Ein `?` waere ertraeglich, eine erfundene `1` ist es nicht. */
+if (git('rev-parse', '--is-shallow-repository') === 'true') {
+  console.error('\n  Der Klon ist FLACH - `rev-list --count HEAD` zaehlt dann 1\n'
+    + '  statt der wirklichen Fassung, und genau die steht auf dem Geraet.\n'
+    + '  In den Arbeitsablauf gehoert:\n\n'
+    + '      - uses: actions/checkout@v4\n'
+    + '        with:\n'
+    + '          fetch-depth: 0\n');
+  process.exit(1);
+}
 const BAU = {
   fassung: process.env.LERNKISTE_FASSUNG || 'p0.4',
   // Die Zahl der Einchecker - steigt mit jeder Runde, mit dem Auge zu

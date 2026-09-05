@@ -4902,6 +4902,70 @@ Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
 
+### Q53 · Auf dem Gerät stand 288 Auslieferungen lang `v1` — GEFAHREN (v406)
+
+Der teuerste stille Fehler, den dieses Verzeichnis kennt. Gefunden hat ihn
+der Nutzer, mit einem Satz: *„da steht v1 349ed1b"*.
+
+`349ed1b` ist der **neueste** Einchecker. Das Gerät war also die ganze Zeit
+aktuell. Falsch war die **Zahl davor**.
+
+#### Was passiert ist
+
+`bauen.mjs` nimmt die Fassungszahl aus `git rev-list --count HEAD`.
+`actions/checkout` holt ohne `fetch-depth: 0` genau **einen** Einchecker —
+dann zählt der Befehl `1`. Auf dem Gerät stand darum `v1`, während der
+Kurzschlüssel daneben die ganze Zeit richtig war.
+
+Die Zeile ist in **v117** gestrichen worden (`3a81065`, 30.8.), mit einer
+Begründung, die für sich genommen stimmte: `rhythmus` zählte damals Runden
+am Code und brauchte die Historie — nach dem Umbau zählt es in **Tagen**,
+also braucht es sie nicht mehr. Übersehen wurde der **zweite Leser**.
+`fetch-depth` hatte zwei Kunden, und gestrichen wurde für den einen.
+
+**288 Auslieferungen** von v117 bis v405. Kein Tor, kein Zeuge.
+
+#### Warum kein Tor es gesehen hat, und das ist die Lehre
+
+Hier auf dem Rechner liegt **immer** die volle Historie. Die Zahl ist an
+ihrer Messstelle richtig und nur an der anderen falsch — Regel 5 in ihrer
+unangenehmsten Form: nicht „falsch gemessen", sondern „am falschen Ort
+gemessen, und der richtige Ort war nie besucht". Jedes Tor, das die Zahl
+hätte prüfen können, lief auf demselben Rechner mit derselben Historie.
+
+Und es hat **geschadet**: der Nutzer sah `v1`, schloss auf eine sehr alte
+Fassung, und die Suche ging in eine ganz andere Richtung. Der Fehler aus
+Q52 war echt und unabhängig nachgewiesen — aber der **Anlass**, ihn zu
+suchen, war diese Zahl.
+
+#### Drei Griffe, nicht einer
+
+1. **`fetch-depth: 0` in allen fünf Abläufen.** Zwei hatten es schon
+   (`proben`, `vorschau-versand`), drei nicht (`auslieferung`, `vorschau`,
+   `bildmessung`).
+2. **Der Bau bricht ab, wenn der Klon flach ist.**
+   `git rev-parse --is-shallow-repository` — das ist die Bedingung, die die
+   Zahl zur Lüge macht, also wird genau sie geprüft, nicht der Name einer
+   Fahne in einer YAML-Datei. Ein `?` wäre erträglich, eine erfundene `1`
+   ist es nicht. Nachgewiesen an einem **echten** flachen Klon: ohne die
+   Sperre steht `"bau":"1"` im Bündel, mit ihr bricht der Bau ab.
+3. **`doku` sagt es schon hier**, wo eine Zeile die Ursache ist: jeder
+   Ablauf, der baut, muss die Historie holen. Ein roter Runner nach vier
+   Minuten sagt nur, dass etwas kaputt ist. Kommentare zählen dabei nicht
+   mit — sonst hätte der Kommentar, der den Fehler erklärt, ihn gedeckt.
+
+Stehende Gegenprobe: „der Auslieferung fehlt die Historie" nimmt die Zeile
+heraus, `inhalt` wird rot.
+
+#### Nebenbei, und es gehört hierher
+
+Meine beiden neuen Kommentare verwiesen auf **„Regel 12"** — das ist die
+Nummerierung von *towerfront*, nicht von hier; die Messstellen-Regel ist
+hier die **5**. Genau der Fehler, den `docs/Lernkiste-STAND.md` schon
+einmal aufgeschrieben hat („die Verweise folgen der Nummerierung eines
+anderen Verzeichnisses"). Das Tor `regeln` hat es im selben Lauf gefangen.
+
+---
 ### Q52 · Der Service Worker warf den Abruf weg, den er brauchte — GEFAHREN (v402)
 
 Der Nutzer: *„Ich habe vorhin auch eine sehr alte Version gesehen."* Er

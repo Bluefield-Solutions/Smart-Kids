@@ -39,13 +39,19 @@ jobs:
     env:
       SMARTKIDS_GLEICHLAUF: ${{ vars.SMARTKIDS_GLEICHLAUF }}
     steps:
-      # Ein flacher Klon reicht.
-      #
-      # Hier stand `fetch-depth: 0` mit der Begruendung, `rhythmus` zaehle
-      # Runden am Code und brauche dafuer die Historie. Es zaehlt seit dem
-      # Umbau in TAGEN, und ein Datum steht in der Standdatei — Historie
-      # braucht davon nichts.
+      # `rhythmus` braucht die Historie nicht mehr (es zaehlt in TAGEN),
+      # und deshalb ist `fetch-depth: 0` hier einmal gestrichen worden.
+      # Es hat aber einen ZWEITEN Leser, an den niemand gedacht hat:
+      # `bauen.mjs` nimmt die Fassungszahl aus `git rev-list --count
+      # HEAD`. Ein flacher Klon zaehlt 1 - und auf dem Geraet stand
+      # danach 288 Auslieferungen lang `v1` (Q53).
       - uses: actions/checkout@v4
+        with:
+          # Die volle Historie, weil `bauen.mjs` die Fassungszahl aus
+          # `git rev-list --count HEAD` nimmt. Ein flacher Klon zaehlt 1,
+          # und dann steht auf dem Geraet `v1` statt der Fassung. Genau
+          # das ist von v117 bis v405 passiert (Q53).
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

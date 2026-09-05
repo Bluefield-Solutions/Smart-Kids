@@ -3169,6 +3169,24 @@ export const PROBEN = [
     an:{ datei:'dist/sw.js', fehlt:'ereignis.waitUntil(abruf' },
     sagt:'müden Leitung' },
 
+  /* --- doku: die Historie, die der Bau braucht (Q53) ---------------- *
+   *
+   * Der teuerste stille Fehler dieses Verzeichnisses: 288 Auslieferungen
+   * lang stand auf dem Geraet `v1`, weil `actions/checkout` ohne
+   * `fetch-depth: 0` genau einen Einchecker holt und `rev-list --count
+   * HEAD` dann 1 zaehlt. Auf diesem Rechner liegt immer die volle
+   * Historie - die Zahl war an ihrer Messstelle richtig und nur an der
+   * anderen falsch (Regel 5).
+   *
+   * Der Eingriff nimmt die Zeile aus der Auslieferung. Kein Bauen
+   * noetig: die Pruefung liest den Ablauf. */
+  { n:'der Auslieferung fehlt die Historie', tor:'inhalt',
+    datei:'.github/workflows/auslieferung.yml',
+    such:"        with:\n          # Die volle Historie, weil `bauen.mjs` die Fassungszahl aus\n          # `git rev-list --count HEAD` nimmt. Ein flacher Klon zaehlt 1,\n          # und dann steht auf dem Geraet `v1` statt der Fassung. Genau\n          # das ist von v117 bis v405 passiert (Q53).\n          fetch-depth: 0\n",
+    ersatz:"",
+    an:{ datei:'.github/workflows/auslieferung.yml', fehlt:'fetch-depth: 0\n' },
+    sagt:'statt der Fassung' },
+
   /* --- smoke -------------------------------------------------------- */
   // Das Doppelbild: nimmt man dem neuen Bildschirm seinen Takt Vorsprung,
   // blenden beide gleichzeitig und treffen sich bei etwa 0,5.

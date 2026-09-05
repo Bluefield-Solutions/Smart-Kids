@@ -1649,6 +1649,30 @@ if (!fs.existsSync(ANWEISUNG)) {
      */
     const ablaeufe = fs.readdirSync('.github/workflows')
       .filter(f => f.endsWith('.yml')).map(f => ['.github/workflows/' + f]);
+
+    /* JEDER Ablauf, der baut, braucht die volle Historie (Q53).
+     *
+     * `bauen.mjs` nimmt die Fassungszahl aus `git rev-list --count HEAD`.
+     * `actions/checkout` klont ohne `fetch-depth: 0` genau einen
+     * Einchecker, die Zahl ist dann 1, und auf dem Geraet steht `v1`.
+     * Von v117 bis v405 war das so - 288 Auslieferungen, kein Tor, kein
+     * Zeuge; der Nutzer hat es gefunden und auf eine sehr alte Fassung
+     * geschlossen.
+     *
+     * Der Bau bricht deshalb selbst ab, wenn der Klon flach ist. Diese
+     * Pruefung sagt es aber SCHON HIER, wo eine Zeile die Ursache ist -
+     * ein roter Runner nach vier Minuten sagt nur, dass etwas kaputt ist.
+     * Geprueft wird die Eigenschaft, nicht der Name: wer baut, holt die
+     * Historie. */
+    for (const [datei] of ablaeufe) {
+      const t = fs.readFileSync(datei, 'utf8');
+      if (!/bauen\.mjs|npm run bauen|npm run tor/.test(t)) continue;
+      const tief = t.replace(/^\s*#.*$/gm, '');   // Kommentare zaehlen nicht
+      pruefe(/fetch-depth:\s*0/.test(tief),
+        `${datei} baut, holt aber nur einen Einchecker — dann zaehlt `
+        + '`rev-list --count HEAD` 1, und auf dem Gerät steht `v1` statt der Fassung '
+        + '(`fetch-depth: 0` beim `actions/checkout`)');
+    }
     for (const [datei] of ablaeufe) {
       const t = fs.readFileSync(datei, 'utf8');
       if (!/upload-pages-artifact/.test(t)) continue;
