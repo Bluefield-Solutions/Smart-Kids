@@ -6575,7 +6575,21 @@ async function forscherbuch(){
     const offen = fertig.filter(r => r.stuecke.some(t => habe.has(t.id)));
     const naechsterRaum = fertig.find(r => !r.stuecke.some(t => habe.has(t.id)));
     const raeume = naechsterRaum ? [...offen, naechsterRaum] : offen;
-    kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:3, zahl:dabei.length,
+    /* DAS KAPITEL GIBT ES ERST, WENN ETWAS DRIN IST.
+     *
+     * Gemessen, nicht entschieden: bis zu zwei Kapiteln gibt es keine
+     * Reiter, dann stehen sie UNTEREINANDER (`OHNE_REITER`). Ein leeres
+     * Tierkapitel obendrauf schob die Albumkarte auf dem Zielgeraet 72
+     * Punkte unter die Kante - gefunden von `passt`, auf allen vier
+     * Groessen.
+     *
+     * Und es ist auch inhaltlich richtig: drei graue Fragezeichen aus
+     * einem Raum, den das Kind noch gar nicht kennt, sind kein
+     * Versprechen, sondern eine Mahnung. Dieselbe Lehre wie bei den
+     * sechzig leeren Kaesten, die dieser Bildschirm schon einmal teuer
+     * bezahlt hat. Wer das erste Tier hat, bekommt das Kapitel - und
+     * darin dann auch den naechsten Raum zu sehen. */
+    if (dabei.length) kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:6, zahl:dabei.length,
       lesen:`Deine Tiere. Du hast ${dabei.length === 1 ? 'eins'
         : dabei.length ? dabei.length : 'noch keins'} von ${alle.length}.`,
       inhalt:`
