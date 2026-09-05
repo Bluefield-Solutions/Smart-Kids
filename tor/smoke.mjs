@@ -5791,6 +5791,80 @@ if (laeuft('landschaft')) try {
       + `${ALLE_TIERE.length} Tieren zu erreichen — das Blättern überspringt welche`));
   await q.close();
 
+  /* --- Die Sammlung oeffnet einen Raum (T6) --------------------------
+   *
+   * Der einzige Lohn, der NICHT am Fertigwerden einer Ebene haengt,
+   * sondern an der Zahl der Tiere. Er ist damit auch der einzige, den
+   * kein anderer Abschnitt streift: `durchgang` spielt Ebenen, und die
+   * geben ihn nicht.
+   *
+   * Geprueft wird am ENDBILDSCHIRM einer wirklich gespielten Runde -
+   * nicht an den Daten. Die Daten sagt `inhalt`; hier geht es um die
+   * Frage, ob der Zweig in `tierFuer` ueberhaupt erreicht wird. Ein
+   * unerreichbarer Zweig sieht in den Daten aus wie ein richtiger.
+   *
+   * Gespielt wird FIONAS Rechenebene: sechs Aufgaben, und geantwortet
+   * wird mit einem Tipp auf die richtige Zahl - der kuerzeste Weg zu
+   * einem Endbildschirm, den es gibt. */
+  const z = await neueSeite({ width: 844, height: 390 }, ctx);
+  await z.waitForSelector('[data-profil="fiona"]');
+  /* Genau die Schwelle, und keines der Tiere, die dahinter liegen. */
+  const SCHWELLE = 30;
+  const vorTiefsee = ALLE_TIERE
+    .filter(id => !['fisch', 'hai', 'orca'].includes(id)).slice(0, SCHWELLE);
+  await stelleAblage(z, { einstellungen: {
+    'tiere:fiona': { ids: vorTiefsee, gorilla: 0, szenen: {} },
+    alles: { vorlaufGezeigt: { 'fiona:rechnen:plusminus': true } } } });
+  await z.reload({ waitUntil: 'domcontentloaded' });
+  await z.waitForSelector('[data-profil="fiona"]');
+  await z.click('[data-profil="fiona"]');
+  await zurEbenenwahl(z, 'rechnen:plusminus');
+  await z.click('.schirm.da [data-ebene="rechnen:plusminus"]');
+  await durchVorlaufWenn(z);
+  let aufgaben = 0;
+  while (aufgaben < 20 && !(await z.$('.schirm.da .buchstand'))) {
+    const r = await z.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const t = s.querySelector('.rechnung'); if (!t) return null;
+      const m = t.textContent.match(/(\d+)\s*([+−×:])\s*(\d+)/); if (!m) return null;
+      const a = +m[1], b = +m[3];
+      const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
+                 : m[2] === '×' ? a * b : a / b;
+      const zahlen = [...s.querySelectorAll('#auswahl .zahl')].map(x => +x.textContent);
+      return { i: zahlen.indexOf(soll) };
+    });
+    if (!r || r.i < 0) break;
+    await z.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
+    await bewertet(z);
+    /* Auf die NAECHSTE Aufgabe warten und nicht nur auf das Urteil.
+       Nach einer richtigen Antwort steht die geloeste Rechnung noch
+       einen Augenblick da („2 + 4 = 6"), und die vier Zahlen darunter
+       auch: der naechste Durchgang der Schleife tippt dann ein zweites
+       Mal in dieselbe Aufgabe. Gemessen kamen so auf neun Runden drei
+       geloeste Aufgaben - die Sitzung war nach zwanzig noch nicht zu
+       Ende, und der Abschnitt meldete „kein Endbildschirm". */
+    await weitergegangen(z);
+    aufgaben++;
+  }
+  const ende = await z.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const zeile = s.querySelector('.tierneu');
+    return { da: !!s.querySelector('.buchstand'),
+             tier: zeile ? zeile.textContent.replace(/\s+/g, ' ').trim() : null,
+             bilder: zeile ? zeile.querySelectorAll('.tierbild').length : 0 };
+  });
+  if (!ende.da)
+    merke('landschaft', new Error(`nach ${aufgaben} Aufgaben kein Endbildschirm — `
+      + 'die Runde ist nicht zu Ende gespielt worden'));
+  else if (!ende.tier || !/Tiefsee/.test(ende.tier))
+    merke('landschaft', new Error(`mit ${SCHWELLE} Tieren sagt der Endbildschirm `
+      + `„${ende.tier || '(nichts)'}" — die Sammlung öffnet die Tiefsee nicht`));
+  else if (ende.bilder !== 3)
+    merke('landschaft', new Error(`die Tiefsee bringt ${ende.bilder} Tiere statt drei`));
+  await z.close();
+
+  console.log(`  Sammlung öffnet einen Raum: bei ${SCHWELLE} Tieren nach `
+    + `${aufgaben} Aufgaben — „${(ende.tier || '').slice(0, 46)}"`);
   console.log(`  Bank blättert:              667 x 375, ${ALLE_TIERE.length} Tiere: `
     + `${ersteSeite} auf der ersten Seite, ${gesehen.size} über ${runden + 1} Seiten erreichbar`);
   console.log(`  Landschaft:                 ${tueren.length} Türen offen `

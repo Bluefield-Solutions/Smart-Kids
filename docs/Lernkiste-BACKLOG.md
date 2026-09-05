@@ -4902,6 +4902,62 @@ Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
 
+### T6 · „In der Tiefsee" — der erste Raum ohne Ebene · GEFAHREN (v400)
+
+Es ist **keine Ebene mehr frei**: die zehn Erdkunde-, drei Rechen-, vier
+Englisch- und vier Schreibebenen sind vergeben. Statt eine zu teilen,
+öffnet diesen Raum die **Sammlung selbst** — wer dreißig Tiere hat,
+bekommt die Tiefsee dazu (Fisch · Hai · Orca).
+
+Das ist der Sache nach richtig und nicht nur ein Ausweg: die anderen
+dreizehn Räume sind der Lohn für **eine** Sache, die man fertig gemacht
+hat. Dieser ist der Lohn für das **Sammeln** — und damit der erste, der
+nicht an einer Welt hängt, sondern an allen.
+
+**Dreißig ist gemessen, nicht gesetzt.** Das knappste Profil (Lea,
+Stephan, Violeta) erreicht zwölf Räume, also 36 Tiere; dreißig sind zehn
+Räume. Und `inhalt` rechnet das jetzt **je Profil nach**, statt es zu
+glauben: die Zuordnung Ebene → Profil wird aus `spiel.js` gelesen, nicht
+abgeschrieben. Probe mit `ab: 40` gemacht — das Tor nennt alle vier
+Profile einzeln mit ihrer erreichbaren Zahl.
+
+Nur **eine** Nachricht je Endbildschirm: hat die Runde schon einen Raum
+gebracht, wartet die Schwelle bis zum nächsten Mal. Zwei grüne Zeilen sind
+für ein sechsjähriges Kind keine zwei Nachrichten, sondern keine.
+
+#### Der Test, der seit drei Runden offen war
+
+Damit ist auch der Punkt aus T4 erledigt: **eine Vergabe außerhalb der
+Erdkunde wird jetzt wirklich gespielt.** Der Rauchtest setzt dreißig Tiere,
+spielt Fionas Rechenebene — sechs Aufgaben, geantwortet mit einem Tipp auf
+die richtige Zahl — und prüft den **Endbildschirm** auf „In der Tiefsee ist
+offen: der Fisch, der Hai und der Orca."
+
+Dabei ein Fehler im Test selbst, der zeigt, warum feste Fristen nicht
+taugen: nach einer richtigen Antwort bleibt die gelöste Rechnung
+(„2 + 4 = 6") einen Augenblick stehen, samt der vier Zahlen darunter — die
+Schleife tippte ein zweites Mal in dieselbe Aufgabe. Gemessen: **neun
+Runden, drei gelöste Aufgaben**. Mit `weitergegangen()` sind es sechs
+Aufgaben in sechs Runden.
+
+Zwei Gegenproben, beide schlagen an: ein Zweig, der nie erreicht wird
+(in den Daten nicht zu sehen), und eine Schwelle, die nicht gilt.
+
+**Startbündel: 393 von 700 KB. 42 Tiere zu sammeln, 14 Räume.**
+
+#### Offen
+
+- Zwei Tiere haben keinen Raum: **Ente** und **Tintenfisch**. Für einen
+  fünfzehnten fehlt ein drittes — der Raum wartet auf den nächsten Stapel.
+- `ablage/eltern` hat im ersten der beiden Kettenläufe eine
+  **4000-ms-Frist** gerissen und im zweiten gehalten. Der Abschnitt
+  `landschaft` ist netto 4,4 s lang, der Topf also nicht wesentlich
+  schwerer geworden — die Frist ist unter acht gleichzeitigen Browsern
+  einfach knapp. Eine Frist, die von der Rechnerlast abhängt, ist ein
+  Messfehler und kein Befund; sie gehört auf eine Bedingung umgestellt.
+
+---
+
 ### T5 · Im Riff und Auf der Weide — GEFAHREN (v399)
 
 Zwei Räume in einer Runde, weil beide dieselbe Kette und dieselben zwei

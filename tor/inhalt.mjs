@@ -2330,9 +2330,18 @@ console.log('\n  Tor `englisch`');
       tf.push(`„${t.id}" hat nirgends Weiss — fehlt der Lichtpunkt im Auge?`);
   }
 
+  /* EIN RAUM HAENGT AN EINER EBENE ODER AN EINER ZAHL - nie an beidem
+   * und nie an keinem. Ohne beides waere er gar nicht zu oeffnen, mit
+   * beidem gaebe es zwei Wege zu denselben drei Tieren, und welcher
+   * zuerst greift, entschiede die Reihenfolge in der Liste. */
   const raumTitel = new Map();
   for (const r of TI.RAEUME) {
-    if (!ebenen.has(r.ebene))
+    if (!!r.ebene === !!r.ab)
+      tf.push(`„${r.titel}" hängt ${r.ebene ? 'an einer Ebene UND an einer Zahl'
+        : 'weder an einer Ebene noch an einer Zahl'} — genau eines von beidem`);
+    if (r.ab !== undefined && !(Number.isInteger(r.ab) && r.ab > 0))
+      tf.push(`„${r.titel}" öffnet sich bei „${r.ab}" — das ist keine Anzahl`);
+    if (r.ebene && !ebenen.has(r.ebene))
       tf.push(`der Lebensraum „${r.titel}" haengt an der Ebene „${r.ebene}", `
         + 'die es in spiel.js nicht gibt — er waere nie zu öffnen');
     if (r.tiere.length !== 3)
@@ -2351,6 +2360,39 @@ console.log('\n  Tor `englisch`');
       raumTitel.set(id, r.titel);
     }
   }
+  /* JEDE SCHWELLE MUSS FUER JEDES PROFIL ERREICHBAR SEIN (T6).
+   *
+   * Ein Raum, der sich bei dreissig Tieren oeffnet, ist fuer ein Kind,
+   * das nur siebenundzwanzig holen kann, kein Ziel, sondern eine
+   * Taeuschung - und im Buch stuende er als naechster Raum, den es nie
+   * gibt. Gerechnet wird aus den Ebenen, die dem Profil GEHOEREN, mal
+   * drei Tiere je Raum; die Raeume mit Schwelle zaehlen dabei nicht mit,
+   * sonst haelte sich die Schwelle an sich selbst fest.
+   *
+   * Die Zuordnung Ebene -> Profil steht in spiel.js und wird hier
+   * GELESEN, nicht abgeschrieben. Eine Ebene ohne `wer` gehoert allen. */
+  {
+    const werVon = new Map();
+    for (const m of spiel.matchAll(/\{ id:'([a-z:]+)', ueber:'[^']*'[^}]*?\}/gs)) {
+      const w = m[0].match(/wer:\[([^\]]*)\]/);
+      werVon.set(m[1], w ? w[1].replace(/'/g, '').split(',').map(x => x.trim()) : null);
+    }
+    const profile = [...new Set([...werVon.values()].filter(Boolean).flat())];
+    for (const r of TI.RAEUME.filter(x => x.ab)) {
+      for (const p of profile) {
+        const raeume = new Set(TI.RAEUME
+          .filter(x => x.ebene && (werVon.get(x.ebene) === null
+            || !werVon.has(x.ebene) || werVon.get(x.ebene).includes(p)))
+          .map(x => x.titel));
+        const holbar = raeume.size * 3;
+        if (holbar < r.ab)
+          tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren, ${p} kann aber `
+            + `nur ${holbar} holen (${raeume.size} Räume) — der Raum wäre für `
+            + 'dieses Profil nie zu erreichen');
+      }
+    }
+  }
+
   if (TI.tierMit(TI.GORILLA) === null || !TI.tierMit(TI.GORILLA).bild)
     tf.push('der Gorilla ist nicht gemalt — er ist der einzige, der immer da sein muss');
   if (TI.RAEUME.some(r => r.tiere.includes(TI.GORILLA)))
@@ -2366,7 +2408,24 @@ console.log('\n  Tor `englisch`');
    *
    * Geprueft wird der zweite Aufruf mit dem Ergebnis des ersten - also
    * genau die Kette, die auch das Spiel faehrt. */
-  for (const r of TI.RAEUME) {
+  /* Und dasselbe fuer die Schwelle: bei genau `ab` gibt sie den Raum,
+     einen weniger gibt sie nichts, und beim zweiten Mal auch nichts. Die
+     mittlere Zeile ist die wichtige - ohne sie waere „ab 30" von „ab 1"
+     nicht zu unterscheiden. */
+  for (const r of TI.RAEUME.filter(x => x.ab)) {
+    const fremd = TI.sammelbar().map(t => t.id).filter(id => !r.tiere.includes(id));
+    const knapp = TI.raumAbZahl(fremd.slice(0, r.ab - 1));
+    if (knapp && knapp.raum.titel === r.titel)
+      tf.push(`„${r.titel}" öffnet sich schon bei ${r.ab - 1} Tieren`);
+    const genau = TI.raumAbZahl(fremd.slice(0, r.ab));
+    if (!genau || genau.raum.titel !== r.titel)
+      tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren nicht`);
+    const zweitesMal = TI.raumAbZahl([...fremd.slice(0, r.ab), ...r.tiere]);
+    if (zweitesMal && zweitesMal.raum.titel === r.titel)
+      tf.push(`„${r.titel}" gibt seine Tiere ein ZWEITES Mal`);
+  }
+
+  for (const r of TI.RAEUME.filter(x => x.ebene)) {
     const ersteMal = TI.raumTiere(r.ebene, []);
     const gemaltImRaum = r.tiere.filter(id => TI.tierMit(id) && TI.tierMit(id).bild);
     if (ersteMal.length !== gemaltImRaum.length)

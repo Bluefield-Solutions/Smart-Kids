@@ -2399,6 +2399,17 @@ function tierFuer(st){
     tiereSichern();
     return (st.tiere = { raum: Tiere.raumZu(st.ebeneId), neu });
   }
+  /* DIE SAMMLUNG SELBST oeffnet einen Raum (T6) - aber erst, wenn diese
+     Runde keinen gebracht hat. Zwei gruene Zeilen auf einem
+     Endbildschirm sind fuer ein sechsjaehriges Kind keine zwei
+     Nachrichten, sondern keine; die Schwelle wartet dann bis zum
+     naechsten Mal, und sie laeuft nicht weg. */
+  const ausZahl = Tiere.raumAbZahl(TierStand.ids);
+  if (ausZahl) {
+    TierStand = { ...TierStand, ids: [...TierStand.ids, ...ausZahl.neu.map(t => t.id)] };
+    tiereSichern();
+    return (st.tiere = { raum: ausZahl.raum, neu: ausZahl.neu });
+  }
   if (st.glatt < st.liste.length) {
     TierStand = { ...TierStand, gorilla: (TierStand.gorilla || 0) + 1 };
     tiereSichern();

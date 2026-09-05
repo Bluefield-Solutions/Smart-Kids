@@ -363,6 +363,25 @@ export const RAEUME = [
     tiere:['schaf', 'esel', 'hund'] },
   { ebene:'schreiben:zahlen',     titel:'Auf der Weide',
     tiere:['schaf', 'esel', 'hund'] },
+  /* DER ERSTE RAUM OHNE EBENE (T6).
+   *
+   * Es ist keine mehr frei: die zehn Erdkundeebenen, die drei
+   * Rechenebenen, die vier Englisch- und die vier Schreibebenen sind
+   * vergeben. Statt eine zu teilen, oeffnet diesen Raum die SAMMLUNG
+   * selbst - wer dreissig Tiere hat, bekommt die Tiefsee dazu.
+   *
+   * Das ist der Sache nach richtig und nicht nur ein Ausweg: die
+   * anderen dreizehn Raeume sind der Lohn fuer EINE Sache, die man
+   * fertig gemacht hat. Dieser ist der Lohn fuer das Sammeln selbst -
+   * und damit der erste, der nicht an einer Welt haengt, sondern an
+   * allen.
+   *
+   * DREISSIG ist gemessen und nicht gesetzt: das knappste Profil
+   * erreicht zwoelf Raeume, also 36 Tiere. Dreissig sind zehn Raeume -
+   * weit, aber fuer jedes der vier Kinder und Eltern erreichbar. `inhalt`
+   * rechnet das nach, statt es zu glauben. */
+  { ab: 30,                      titel:'In der Tiefsee',
+    tiere:['fisch', 'hai', 'orca'] },
 ];
 
 /** Was gemalt ist - der wirkliche Vorrat. */
@@ -372,7 +391,31 @@ export const gemalt = () => TIERE.filter(t => t.bild);
 export const tierMit = (id) => TIERE.find(t => t.id === id) || null;
 
 /** Der Lebensraum einer Ebene - oder `null`, wenn sie keinen hat. */
-export const raumZu = (ebeneId) => RAEUME.find(r => r.ebene === ebeneId) || null;
+export const raumZu = (ebeneId) =>
+  (ebeneId && RAEUME.find(r => r.ebene === ebeneId)) || null;
+
+/**
+ * Welcher Raum sich durch die SAMMLUNG oeffnet (T6).
+ *
+ * Geprueft wird gegen das, was das Kind schon hat - nicht gegen eine
+ * Zahl im Stand. Ein Zaehler waere eine zweite Wahrheit neben `ids`
+ * (Regel 6), und er liefe auseinander, sobald ein Tier auf einem
+ * anderen Geraet dazukommt.
+ *
+ * Gibt hoechstens EINEN Raum zurueck, auch wenn zwei Schwellen zugleich
+ * faellig waeren: der Endbildschirm hat eine Zeile, und zwei Nachrichten
+ * auf einmal sind fuer ein sechsjaehriges Kind keine zwei Nachrichten,
+ * sondern keine.
+ */
+export function raumAbZahl(habe = []) {
+  const da = new Set(habe);
+  for (const r of RAEUME) {
+    if (!r.ab || da.size < r.ab) continue;
+    const neu = r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));
+    if (neu.length) return { raum: r, neu };
+  }
+  return null;
+}
 
 /**
  * Was das Fertigwerden DIESER Ebene einbringt - nur, was gemalt ist und
@@ -471,6 +514,9 @@ export const KULISSEN = {
   "Auf der Weide": {
     ton:'#eef4e2',
     bild:'<path d="M0 0h160v30H0z" fill="#c6e4f4"/><path d="M0 30c24-8 44 4 70 0s52-8 90 2v10H0z" fill="#8fc272"/><path d="M0 40h160v50H0z" fill="#a7d489"/><path d="M0 52c30 6 54-6 84-2s48 8 76 4v36H0z" fill="#bade9c"/><path d="M28 14c4 0 6 2 6 4h-16c0-3 2-5 5-5 1 0 2 .3 3 .6C27 13 27.4 14 28 14z" fill="#f2f8fc"/><path d="M112 10c5 0 8 2.4 8 5h-20c0-3.6 2.6-6 6-6 1.2 0 2.4.4 3.4 1z" fill="#f2f8fc"/><path d="M4 42v-12h3v12zM20 42v-12h3v12zM36 42v-12h3v12zM52 42v-12h3v12zM68 42v-12h3v12zM84 42v-12h3v12zM100 42v-12h3v12zM116 42v-12h3v12zM132 42v-12h3v12zM148 42v-12h3v12zM0 32h160v2.6H0zM0 38h160v2.6H0z" fill="#e4d3ae"/><path d="M4 62h20v8H4z" fill="#9c7548"/><path d="M5 63h18v3H5z" fill="#7fc0dc"/><path d="M140 68c0-5 4-8 9-8s9 3 9 8-4 7-9 7-9-2-9-7z" fill="#e2c274"/><path d="M143 65c1.5-2 4-3 6-3s3.5.5 5 1.5c-4-.5-8 .3-11 1.5z" fill="#eed599"/><path d="M34 80c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2zM118 84c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2e07a"/><path d="M76 86c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2a0bc"/>' },
+  "In der Tiefsee": {
+    ton:'#dde3ee',
+    bild:'<path d="M0 0h160v30H0z" fill="#16233f"/><path d="M0 30h160v30H0z" fill="#1d2d4e"/><path d="M0 60h160v30H0z" fill="#26375c"/><path d="M70 0l10 62-26 0z" fill="#27395f"/><path d="M0 78c20-6 36 2 58 0s34-6 56-4 30 4 46 2v14H0z" fill="#33456b"/><path d="M8 78c0-8 3-13 3-20h5c0 7 3 12 3 20z" fill="#3d5178"/><path d="M12 50c1.8 0 2.6 1.2 2.6 2.6s-.8 2.6-2.6 2.6-2.6-1.2-2.6-2.6.8-2.6 2.6-2.6zM14 40c1.4 0 2 1 2 2s-.6 2-2 2-2-1-2-2 .6-2 2-2zM11 32c1 0 1.6.8 1.6 1.6s-.6 1.6-1.6 1.6-1.6-.8-1.6-1.6.6-1.6 1.6-1.6z" fill="#5f7ba8"/><path d="M142 40c6 0 10 4 10 8s-4 6-10 6-10-2-10-6 4-8 10-8z" fill="#6fd8c6"/><path d="M136 54c0 8-1 14-2 20h2c2-6 3-12 2-20zM142 54c0 9 0 15-.6 20h2c1-5 1-11 .6-20zM148 54c1 8 1 14 .6 20h-2c-.6-6-.6-12-1-20z" fill="#8fe6d6"/><path d="M120 22c4 0 6.6 2.6 6.6 5.2s-2.6 4-6.6 4-6.6-1.4-6.6-4 2.6-5.2 6.6-5.2z" fill="#7fd2e0"/><path d="M116 31c0 5-.6 9-1.2 13h1.4c1.2-4 1.8-8 1.2-13zM120 31c0 6 0 10-.4 13h1.4c.6-3 .6-7 .4-13z" fill="#a0e2ec"/><path d="M36 24c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM96 44c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM52 66c1 0 1.6.7 1.6 1.6s-.6 1.6-1.6 1.6-1.6-.7-1.6-1.6.6-1.6 1.6-1.6z" fill="#8fd8e8"/>' },
 };
 
 /** Die Landschaft eines Raumes - oder `null`, wenn es noch keine gibt. */

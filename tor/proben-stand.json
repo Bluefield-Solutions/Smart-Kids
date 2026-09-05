@@ -213,6 +213,16 @@
       "zeit": "2026-09-05",
       "s": 16
     },
+    "die Sammlung öffnet keinen Raum mehr": {
+      "commit": "6a125d1ee81e42d548e30cfc1afe5a080a4003aa",
+      "zeit": "2026-09-05",
+      "s": 29
+    },
+    "die Schwelle gilt nicht mehr": {
+      "commit": "6a125d1ee81e42d548e30cfc1afe5a080a4003aa",
+      "zeit": "2026-09-05",
+      "s": 10
+    },
     "der Lagername vergisst den Ort": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
       "zeit": "2026-09-04",

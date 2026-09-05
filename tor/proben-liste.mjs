@@ -527,6 +527,31 @@ export const PROBEN = [
     an:{ ...DIST, text:'    seite = 0;  //Anker' },
     sagt:'Blättern überspringt' },
 
+  /* --- Die Sammlung oeffnet einen Raum (T6) -------------------------- */
+  /* Der Zweig in `tierFuer` wird gar nicht erreicht. In den DATEN sieht
+     das aus wie ein richtiger Raum - `inhalt` bliebe gruen -, und am
+     Bildschirm bekommt das Kind nie etwas. Genau dafuer ist der
+     gespielte Endbildschirm da. */
+  { n:'die Sammlung öffnet keinen Raum mehr', tor:'smoke', args:['--nur=landschaft'],
+    bauen:true, datei:D,
+    such:"  const ausZahl = Tiere.raumAbZahl(TierStand.ids);",
+    ersatz:"  const ausZahl = null;  //Anker: const ausZahl = Tiere.raumAbZahl(TierStand.ids);",
+    an:{ ...DIST, text:'const ausZahl = null;' },
+    sagt:'öffnet die Tiefsee nicht' },
+
+  /* Und die Schwelle selbst: ohne sie gaebe es den Raum vom ersten Tier
+     an. Das Kind bekaeme ihn, bevor es ihn verdient hat - und der
+     einzige Lohn, der fuer das SAMMELN steht, waere geschenkt. */
+  { n:'die Schwelle gilt nicht mehr', tor:'inhalt', datei:'src/inhalt/tiere.js',
+    /* OHNE die Einrueckung im Suchtext: der Anker steht im Kommentar am
+       Zeilenende und traegt sie nicht. Mit vier Leerzeichen davor haette
+       der Eingriff seinen eigenen Anker weggenommen - zwoelftes Mal
+       dieselbe Falle. */
+    such:"if (!r.ab || da.size < r.ab) continue;",
+    ersatz:"if (!r.ab) continue;  //Anker: if (!r.ab || da.size < r.ab) continue;",
+    an:{ datei:'src/inhalt/tiere.js', text:'if (!r.ab) continue;' },
+    sagt:'öffnet sich schon bei' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.
