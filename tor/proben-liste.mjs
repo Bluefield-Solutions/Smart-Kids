@@ -4734,7 +4734,7 @@ export const PROBEN = [
    * (`laender:ozeanien` statt `laender:australien`), das Bild bleibt
    * gemalt, und der Raum ist nie wieder zu oeffnen. Kein Bildschirm wird
    * dabei rot - im Buch steht einfach fuer immer ein blasses Kaenguru. */
-  { n:'ein Lebensraum haengt an einer Ebene, die es nicht gibt', tor:'inhalt',
+  { n:'ein Lebensraum haengt an einer Ebene, die es nicht gibt', tor:'inhalt', deckt:'tiere',
     datei:'src/inhalt/tiere.js',
     /* Der Suchtext steht woertlich im Kommentar darunter - `//Anker:` und
        ZWEI Leerzeichen. `inhalt` prueft in der Wegwerf-Kopie zuerst, ob
@@ -4753,7 +4753,7 @@ export const PROBEN = [
    * Runde nicht geklappt hat. Steht er in einem Lebensraum, wird aus dem
    * Trost ein Sammelstueck, und im Buch stuende eine Reihe von Gorillas:
    * die Liste der Runden, die schiefgegangen sind. */
-  { n:'der Gorilla wird zum Sammelstueck', tor:'inhalt',
+  { n:'der Gorilla wird zum Sammelstueck', tor:'inhalt', deckt:'tiere',
     datei:'src/inhalt/tiere.js',
     such:"    tiere:['elefant', 'giraffe', 'loewe'] },",
     ersatz:"    tiere:['elefant', 'giraffe', 'gorilla'] },\n"
@@ -4767,7 +4767,7 @@ export const PROBEN = [
    * bekommt ein Kind, das eine fertige Ebene noch einmal spielt, dieselben
    * Tiere wieder - und der Endbildschirm ruft jedes Mal „Das Outback ist
    * offen!". Ein Lohn, den es immer wieder gibt, ist keiner. */
-  { n:'die Tiere eines Raums gibt es bei jedem Durchgang neu', tor:'inhalt',
+  { n:'die Tiere eines Raums gibt es bei jedem Durchgang neu', tor:'inhalt', deckt:'tiere',
     datei:'src/inhalt/tiere.js',
     such:"  return r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));",
     ersatz:"  return r.tiere.map(tierMit).filter(t => t && t.bild);\n"
