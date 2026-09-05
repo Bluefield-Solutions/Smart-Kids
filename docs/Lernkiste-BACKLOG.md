@@ -4903,7 +4903,7 @@ Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
 
-### T1 · Die Tiere — GEFAHREN (v387)
+### T1 · Die Tiere — GEFAHREN (v387), neu gezeichnet in v390
 
 Wer alle Umrisse einer Ebene im Buch hat, bekommt die Tiere ihres
 **Lebensraums** dazu. Für **alle vier Profile**.
@@ -4975,6 +4975,40 @@ Aufkleber ist so groß wie ein Aufkleber.
 **4. „das Känguru, der Koala ODER die Schlange".** `aufzaehlen` kannte nur
 „oder" — es stammt aus der Profilfrage („Fiona, Lea, Stephan oder
 Violeta?"). Über drei Tiere, die man alle drei bekommt, ist das falsch.
+
+#### T1b · Neu gezeichnet — die Optik siegt
+
+Alle siebzehn Tiere sind ein zweites Mal entstanden, und der Aufkleber
+dazu. Drei Dinge machen den Unterschied, und sie sind an jedem Tier
+dieselben:
+
+**Der Lichtpunkt im Auge.** Ein weisser Punkt, kleiner als die Pupille,
+links oben. Das ist der grösste Einzelunterschied zwischen dem ersten und
+dem zweiten Satz — ohne ihn wirken die Tiere leblos, mit ihm schauen sie.
+`inhalt` verlangt ihn jetzt: kein Weiss im Bild, keine Abnahme.
+
+**Zwei Töne statt einem.** Jedes Tier hat eine Grundfarbe und eine hellere
+Bauch- oder Gesichtspartie. Eine Fläche ist ein Umriss, zwei sind ein
+Körper.
+
+**Der Aufkleber ist ein Aufkleber.** Weisser gestanzter Rand, zwei Lagen
+Schatten (eine enge Kante, eine weite Schwebe), ein Glanz von links oben —
+und ein pastellener Grund, der zum Tier gehört und deshalb in den DATEN
+steht (`ton`): der Fuchs klebt auf Warm, der Pinguin auf Kalt. Vorher war
+es ein Kästchen mit einem Bild darin.
+
+Kein `filter`, nur `box-shadow` und ein Verlauf (Regel 13: Safari-Falle,
+kein Filter, wo ein gebackener Verlauf reicht). Die einzige Ausnahme ist
+das Verblassen der fehlenden Tiere — es trifft nur das SVG, nicht den
+Aufkleber, und steht auf einem Bild, das sich nicht bewegt.
+
+**Zwei Befunde nebenbei:** der Glanz lag im ersten Anlauf über 34 % der
+Fläche mit 55 % Deckung und hat jedes Tier ausgewaschen — er geht jetzt
+bis 22 % mit 30 %. Und die Beschriftung brach mitten im Wort
+(„Kängu|ru"): `hyphens:auto` half nicht, weil der Browser hier keine
+deutschen Trennmuster hat. Gemessen statt geraten — „Schmetterling" ist
+mit 62 Punkten der längste Name eines gemalten Tieres, der Aufkleber ist
+92 Punkte breit, und damit passt jeder Name in eine Zeile.
 
 #### Offen: die Landschaft (T2)
 

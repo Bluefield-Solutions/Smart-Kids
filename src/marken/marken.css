@@ -198,6 +198,18 @@
      Lupenknoepfe auf der Karte. Er hebt sie vom Land ab, ohne eine Kante
      zu ziehen; eine Kante haette dort mit den Landesgrenzen konkurriert. */
   --schatten-auf: 0 1px 3px oklch(0 0 0/.14);
+  /* Der Schatten unter einem AUFKLEBER (T1). Zwei Lagen, und das ist der
+     Unterschied zu `--schatten-auf`: eine harte, enge fuer die Kante, die
+     das Papier vom Grund abhebt, und eine weite, weiche darunter, die ihn
+     schweben laesst. Eine Lage allein sieht nach Kasten aus, zwei nach
+     etwas, das aufgeklebt ist. */
+  --schatten-kleber: 0 2px 4px oklch(0 0 0/.10), 0 10px 18px -10px oklch(0 0 0/.45);
+  /* Der Glanz auf einem Aufkleber: eine Ecke Licht von links oben, nicht
+     die halbe Flaeche. Der erste Anlauf ging bis 34 % mit 55 % Deckung
+     und hat jedes Tier ausgewaschen - gesehen an der Zeichenbank, nicht
+     gerechnet. Ein Verlauf und kein `filter`: auf iOS schwaerzt ein
+     Filter ueber einem gezeichneten Bild den Kasten (Regel 13). */
+  --kleber-glanz: linear-gradient(150deg, oklch(1 0 0/.30) 0 22%, oklch(1 0 0/0) 48%);
   --kante-hoch: 7px;   /* am Finger, waehrend gezogen wird */
   --knopf-licht:   oklch(0.995 0.003 250);
   --knopf-rand:    oklch(0.885 0.014 250);

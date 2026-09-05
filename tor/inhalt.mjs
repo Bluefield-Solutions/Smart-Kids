@@ -2315,6 +2315,19 @@ console.log('\n  Tor `englisch`');
     if (!/^<path /.test(t.bild)) tf.push(`„${t.id}" faengt nicht mit einem Pfad an`);
     if (!/fill="#/.test(t.bild))
       tf.push(`„${t.id}" traegt keine eigene Farbe — ein Fuchs ist orange`);
+    /* Der pastellene Grund gehoert zum Aufkleber. Ohne ihn klebt das Tier
+       auf Weiss, und aus dem Aufkleber wird ein Kaestchen mit einem Bild
+       darin - der Unterschied, um den es bei T1b ging. */
+    if (!/^#[0-9a-f]{6}$/i.test(t.ton || ''))
+      tf.push(`„${t.id}" hat keinen Aufkleberton (\`ton\`)`);
+    /* JEDES AUGE BRAUCHT SEINEN LICHTPUNKT.
+       Gemessen und nicht behauptet: ein weisser Pfad, der KLEINER ist als
+       der dunkle daneben. Ohne ihn wirken die Tiere leblos - das war der
+       groesste Unterschied zwischen dem ersten und dem zweiten Satz, und
+       es ist die eine Sache, die man beim Nachzeichnen vergisst. */
+    if (!/fill="#ffffff"/.test(t.bild) && !/fill="#fff"/.test(t.bild)
+        && !/fill="#f[cdef]/i.test(t.bild))
+      tf.push(`„${t.id}" hat nirgends Weiss — fehlt der Lichtpunkt im Auge?`);
   }
 
   const raumTitel = new Map();

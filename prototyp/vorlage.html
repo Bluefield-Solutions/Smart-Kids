@@ -998,20 +998,53 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    gemessen 400 Punkte breit. Ein Aufkleber ist so gross wie ein
    Aufkleber. */
 .tierwand{display:flex;flex-wrap:wrap;gap:var(--r2);width:100%}
-.tierfeld{width:68px;flex:none;display:flex;flex-direction:column;align-items:center;gap:var(--r0);
-  padding:var(--r1);border-radius:var(--r3);border:var(--strich) solid var(--linie);
-  background:var(--grund);cursor:pointer;font:inherit;min-height:44px}
-.tierfeld span{font-family:var(--f-lesen);font-size:var(--s-klein);
-  color:var(--tinte-2);text-align:center;line-height:1.15;
-  max-width:100%;overflow-wrap:anywhere}
-.tierfeld.da{background:var(--gut-h);border-color:var(--gut)}
-.tierfeld.da span{color:var(--tinte)}
+/* EIN AUFKLEBER, kein Kasten.
+ *
+ * Drei Dinge machen den Unterschied, und alle drei stehen hier:
+ *   der weisse RAND ringsum   - so ist ein Aufkleber gestanzt
+ *   zwei Lagen SCHATTEN       - eine enge Kante, eine weite Schwebe
+ *   ein GLANZ von links oben  - Papier im Licht
+ *
+ * Der Grund ist pastellfarben und kommt je Tier aus den DATEN (`ton`):
+ * der Fuchs klebt auf Warm, der Pinguin auf Kalt. Ein Aufkleber, der auf
+ * Weiss klebt, sieht aus wie ein Kaestchen mit einem Bild darin.
+ *
+ * KEIN `filter`, kein `blur` - nur `box-shadow` und ein Verlauf. Auf iOS
+ * schwaerzt ein Filter ueber einem gezeichneten Bild nach etwa einer
+ * Sekunde den ganzen Kasten (Regel 13: Safari-Falle, kein Filter, wo ein
+ * gebackener Verlauf reicht). Das Verblassen der fehlenden Tiere ist die
+ * einzige Ausnahme - es trifft NUR das SVG, nicht den Aufkleber, und es
+ * steht auf einem Bild, das sich nicht bewegt. */
+.tierfeld{width:92px;flex:none;display:flex;flex-direction:column;align-items:center;
+  gap:var(--r0);padding:var(--r1) var(--r1) var(--r0);
+  border-radius:var(--r4);border:var(--kante-flach) solid var(--papier);
+  background:var(--ton,var(--grund-2));box-shadow:var(--schatten-kleber);
+  cursor:pointer;font:inherit;min-height:44px;position:relative;isolation:isolate}
+/* Der Glanz: eine Ecke Licht, nicht die halbe Flaeche. Der erste Anlauf
+   ging bis 34 % mit 55 % Deckung und hat jedes Tier ausgewaschen. */
+.tierfeld::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:var(--kleber-glanz);
+  pointer-events:none}
+/* `hyphens:auto` VOR `overflow-wrap`: sonst wird „Kängu|ru" mitten im
+   Wort zerschnitten, ohne Strich - gesehen im Buch. Mit Trennung bricht
+   der Browser dort, wo man ein Wort trennt, und setzt einen Bindestrich.
+   `overflow-wrap` bleibt als Rueckfall fuer das eine lange Wort, das
+   sich nicht trennen laesst. */
+.tierfeld span{font-family:var(--f-lesen);font-size:calc(var(--s-klein) * .8);
+  color:var(--tinte);text-align:center;line-height:1.15;
+  max-width:100%;hyphens:auto;overflow-wrap:break-word;position:relative;z-index:1}
+/* Die fehlenden: der Aufkleber bleibt ein Aufkleber, nur ohne Bild und
+   ohne Farbe. Ein weggelassenes Kaestchen sagt nichts, ein leeres sagt
+   „hier kommt noch etwas". */
+.tierfeld:not(.da){background:var(--grund-2);box-shadow:var(--schatten-auf)}
+.tierfeld:not(.da) span{color:var(--tinte-3)}
 /* Die fehlenden bleiben SICHTBAR und werden nur blass - ein leeres
    Kaestchen sagt „hier kommt noch etwas", ein weggelassenes sagt nichts.
    Kein `opacity` auf dem ganzen Feld: der Rahmen soll seine Farbe
    behalten, damit die Wand ein Raster bleibt (dieselbe Lehre wie bei den
    Farbflecken in G18). */
-.tierfeld:not(.da) .tierbild{opacity:.16;filter:grayscale(1)}
+.tierfeld:not(.da) .tierbild{opacity:.18;filter:grayscale(1)}
+.tierneu .tierbild{filter:none}
 .abzneu{display:flex;align-items:center;justify-content:center;gap:var(--r3);
   margin:var(--r3) 0;padding:var(--r2) var(--r4);border-radius:var(--rund-voll);
   background:var(--gut-h);border:var(--strich) solid var(--gut);
@@ -1040,7 +1073,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   .tierraum{margin-bottom:var(--r1)}
   .tierraum h4{margin-bottom:var(--r0)}
   .tierwand{gap:var(--r1)}
-  .tierfeld{width:52px}
+  .tierfeld{width:72px}
+  /* Gemessen auf 390 Punkten: „Schmetterling" ist der laengste Name eines
+     gemalten Tieres und braucht bei .8 noch 68 Punkte - zwei zuviel fuer
+     die 66, die im Aufkleber Platz haben. Bei .72 sind es 62. */
+  .tierfeld span{font-size:calc(var(--s-klein) * .72)}
   .tierfeld{padding:var(--r0)}
   .abzneu{font-size:var(--s-klein);margin:var(--r1) 0;padding:var(--r1) var(--r3)}
   .abzneu svg{width:30px;height:30px}

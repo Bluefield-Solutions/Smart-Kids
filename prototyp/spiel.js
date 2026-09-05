@@ -6598,6 +6598,7 @@ async function forscherbuch(){
           <h4>${r.titel}</h4>
           <div class="tierwand">${r.stuecke.map(t => `
             <button class="tierfeld${habe.has(t.id) ? ' da' : ''}"
+                    style="--ton:${t.ton}"
                     data-lesen="${habe.has(t.id) ? t.name
                       : `${t.name} fehlt dir noch. Mach ${r.titel} fertig.`}"
                     >${tierBild(t)}<span>${habe.has(t.id) ? ohneArtikel(t.name) : '?'}</span></button>`).join('')}</div>
