@@ -4959,11 +4959,13 @@ heraus, `inhalt` wird rot.
 
 #### Nebenbei, und es gehört hierher
 
-Meine beiden neuen Kommentare verwiesen auf **„Regel 12"** — das ist die
-Nummerierung von *towerfront*, nicht von hier; die Messstellen-Regel ist
-hier die **5**. Genau der Fehler, den `docs/Lernkiste-STAND.md` schon
-einmal aufgeschrieben hat („die Verweise folgen der Nummerierung eines
-anderen Verzeichnisses"). Das Tor `regeln` hat es im selben Lauf gefangen.
+Meine beiden neuen Kommentare trugen die Regelnummer aus *towerfront* —
+dort ist die Messstelle die Zwölf, hier ist sie die **5** (Regel 5). Genau
+der Fehler, den `docs/Lernkiste-STAND.md` schon einmal aufgeschrieben hat:
+„die Verweise folgen der Nummerierung eines anderen Verzeichnisses". Das
+Tor `regeln` hat es im selben Lauf gefangen — und dann ein zweites Mal,
+weil dieser Absatz die falsche Nummer zitierte und das Tor ein Zitat nicht
+von einem Verweis unterscheiden kann. Deshalb steht sie hier als Wort.
 
 ---
 ### Q52 · Der Service Worker warf den Abruf weg, den er brauchte — GEFAHREN (v402)
