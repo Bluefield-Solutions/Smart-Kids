@@ -189,7 +189,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 |---|---|---|---|---|---|
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
-| 3 | **T3** Die restlichen 86 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
+| 3 | **T3** Die restlichen 79 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
 | 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -4951,7 +4951,7 @@ zweite nicht vom richtigen zu unterscheiden.
 
 ---
 
-### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396
+### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396, Stapel 2 in v398
 
 Gemalt wird in **Stapeln zu sieben**. Das ist kein Rhythmus, sondern ein
 Abbruchpunkt: nach jedem Stapel ist der Vorrat vollständig, die Tore sind
@@ -4970,10 +4970,25 @@ Drei standen im ersten Wurf nicht:
 | Schaf | die Wolle zerfiel in acht helle Blasen | die Beulen bekommen die **Rumpffarbe** — eine Wolke statt acht |
 | Ente | Kopf und Rumpf zwei getrennte Kreise, der Schnabel schwebte | ein Hals dazwischen, blasser blauer Grund |
 
+**Stapel 2: das Meer.** Fisch · Korallenfisch · Kugelfisch · Krake ·
+Tintenfisch · Hai · Orca. Die Schwierigkeit war hier nicht das einzelne
+Tier, sondern der **Unterschied**: drei Fische, zwei Große, zwei
+Achtarmige — und daneben stehen Wal und Delfin schon im Album. Getrennt
+werden sie an Form und Farbe, nicht am Namen; bei 44 Punkten liest niemand
+einen Namen.
+
+| | Befund | Griff |
+|---|---|---|
+| Kugelfisch | der Stachelkranz las sich als **Sonne** | kurze, dicke Stacheln auf der Kante statt langer Strahlen |
+| Tintenfisch | rechteckiger Mantel, gerade Arme — ein **Roboter** | spitzer Mantel, Flossen oben, zwei lange Fangarme mit Keule |
+| Hai (zweimal) | runder Kopf, Bauchband quer durch — ein **grauer Allerweltsfisch** | spitze Schnauze, große Rückenflosse, Bauch an der unteren Kante, Maul mit Zähnen |
+
 **Was ein Tier kostet**, gemessen und nicht geschätzt: 1866 Byte roh,
-**0,47 KB gzip**. Das Startbündel ging von 382,6 auf **385,9 von 700 KB**.
-Hochgerechnet auf die verbleibenden 86: rund 40 KB, also **426 von 700**.
-Es passt — und es ist ein Drittel des Spielraums, der noch da ist.
+**0,47 KB gzip**. Das Startbündel ging über die beiden Stapel von 382,6 auf
+**389,6 von 700 KB**. Die Größen-Ratsche hat bei +5,2 % gegenüber der
+letzten Bestätigung angeschlagen und eine Zusage verlangt — genau ihr
+Zweck: Wachstum in kleinen Schritten fällt sonst niemandem auf.
+Hochgerechnet auf die verbleibenden 79: rund 37 KB, also **427 von 700**.
 
 Die sieben stehen in **keinem** Lebensraum. `sammelbar()` zählt nur, was
 in einem Raum steht, also bleibt die Sammlung bei 30 und kein Bildschirm
