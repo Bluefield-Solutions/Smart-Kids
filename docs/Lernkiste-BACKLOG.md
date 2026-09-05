@@ -4902,6 +4902,37 @@ Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
 
+### Q51 · Die Frist nach dem Ziehen — GEFAHREN (v401)
+
+`ablage/eltern` wurde im vollen Kettenlauf rot und allein gefahren grün.
+Die Meldung lautete `page.waitForFunction: Timeout 4000ms exceeded` — und
+sagte damit **nicht**, worauf gewartet wurde. Eine halbe Runde ging für die
+Suche drauf; die Stelle sitzt in `loese()`, nach dem Ziehen eines Etiketts
+auf den Anker.
+
+Zwei Dinge waren falsch, und das zweite ist das schlimmere.
+
+**Die Zahl.** Diese Frist wartet auf etwas, das **kommen muss**: das Lob
+nach einer richtigen Antwort. Für so eine Frist ist eine knappe Zahl der
+schlechteste Fall — sie kostet nichts, solange die Sache eintritt, und
+macht aus Rechnerlast einen Befund, sobald sie es nicht tut. Acht Browser
+auf vier Kernen reichen. Jetzt zehn Sekunden: die Obergrenze, bis zu der
+`gemessen()` noch einen zweiten Anlauf mit gemessener Nachsicht gibt
+(`frist > 10000` → kein Anlauf mehr).
+
+**Die Auskunft.** Statt der nackten Playwright-Zeile steht jetzt da, was
+gezogen wurde, welche Frage offen war, was als Hinweis dastand und wie
+viele Etiketten es gab:
+
+> „Thüringen" auf den Anker gezogen, aber nach 10 s kein Lob — Frage „Wie
+> heißt dieses Bundesland?", Hinweis „—", 4 Etiketten. Die Antwort wurde
+> nicht gewertet.
+
+Nachgewiesen durch Einspritzung: die Lob-Klasse umbenannt, Meldung gelesen,
+zurückgesetzt. Dieselbe Lehre wie in Q40, nur an einer Stelle, die sie noch
+nicht hatte.
+
+---
 ### T6 · „In der Tiefsee" — der erste Raum ohne Ebene · GEFAHREN (v400)
 
 Es ist **keine Ebene mehr frei**: die zehn Erdkunde-, drei Rechen-, vier
@@ -4949,12 +4980,7 @@ Zwei Gegenproben, beide schlagen an: ein Zweig, der nie erreicht wird
 
 - Zwei Tiere haben keinen Raum: **Ente** und **Tintenfisch**. Für einen
   fünfzehnten fehlt ein drittes — der Raum wartet auf den nächsten Stapel.
-- `ablage/eltern` hat im ersten der beiden Kettenläufe eine
-  **4000-ms-Frist** gerissen und im zweiten gehalten. Der Abschnitt
-  `landschaft` ist netto 4,4 s lang, der Topf also nicht wesentlich
-  schwerer geworden — die Frist ist unter acht gleichzeitigen Browsern
-  einfach knapp. Eine Frist, die von der Rechnerlast abhängt, ist ein
-  Messfehler und kein Befund; sie gehört auf eine Bedingung umgestellt.
+- ~~`ablage/eltern` riss eine 4000-ms-Frist~~ — **erledigt in v401**, siehe Q51.
 
 ---
 
