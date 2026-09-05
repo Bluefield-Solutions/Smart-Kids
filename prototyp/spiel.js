@@ -2613,20 +2613,28 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
  *              hat es `passt` - die dreissig Aufkleber liefen auf dem
  *              Zielgeraet acht Punkte ueber den Rand, bei zehn Spalten
  *              und drei Reihen. Zwoelf stehen in zwei Reihen.
- *   SECHS      Wendungen und Hoeren. Hier steht ein ganzer SATZ auf der
+ *   DREI       Wendungen und Hoeren. Hier steht ein ganzer SATZ auf der
  *              Kachel, und zwar zweimal - englisch und deutsch. Eine
  *              solche Kachel ist drei Zeilen hoch statt einer, und damit
  *              gilt die Rechnung aus `vorlaufGitter` nicht mehr: sie
- *              rechnet mit 41 Punkten je Reihe. Gemessen auf 844 x 390
- *              lag die zweite Reihe unter dem Startknopf, mit zwoelf
- *              Beispielen genauso wie mit zwanzig. Eine Reihe zu sechs
- *              ist 140 Punkte breit, drei Zeilen hoch und passt.
+ *              rechnet mit 41 Punkten je Reihe. Mit zwanzig wie mit
+ *              zwoelf Beispielen lag die zweite Reihe unter dem
+ *              Startknopf.
+ *
+ *              Erst sechs, und das war um Haaresbreite zu knapp: HIER
+ *              gruen, auf dem Runner 19 Punkte darueber, und ein Wort
+ *              lag zu 17 Prozent auf „Jetzt starten". Derselbe Browser,
+ *              andere Schriftmasse - also EINE Reihe statt zwei
+ *              (`vorlaufGitter` legt bis drei Karten in eine), und der
+ *              Streit um Zeilenumbrueche ist damit keiner mehr.
+ *              Drei Beispiele zeigen, wie die Aufgabe aussieht; das ist
+ *              die ganze Aufgabe des Vorlaufs.
  *
  * Und warum ueberhaupt gekuerzt wird, steht darueber: der Vorlauf zeigt
  * Beispiele, nicht den Vorrat. */
 const VORLAUF_JE = (art) =>
     ['rechnen', 'freunde'].includes(art) ? P.sitzung
-  : ['wendungen', 'hoersatz'].includes(art) ? 6
+  : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;
 function vorlaufVorrat(ebeneId){
   const alle = vorrat(ebeneId);
@@ -2696,9 +2704,12 @@ function vorlaufSatz(ebeneId){
     return 'Das sind die Buchstaben, die du schreiben lernst. Tippe einen an, '
       + 'dann sage ich dir, wie er heißt.';
   if (art === 'wendungen')
-    return 'Ein deutscher Satz, und du tippst ihn auf <strong>Englisch</strong>. '
-      + 'Es gibt mehr als eine richtige Fassung — es zählt, ob man dich versteht. '
-      + 'Tippe hier eine an, dann siehst du eine davon.';
+    /* Zwei Zeilen und nicht drei: der Satz steht ueber den Beispielen
+       und nimmt ihnen die Hoehe weg. Der erste Anlauf war drei Zeilen
+       lang, und zusammen mit den Satzkacheln lief der Vorlauf auf dem
+       Runner ueber den Rand. */
+    return 'Ein deutscher Satz, und du tippst ihn auf <strong>Englisch</strong> — '
+      + 'mehr als eine Fassung ist richtig. Tippe hier eine an.';
   if (art === 'hoersatz')
     return englischHoerbar()
       ? 'Ich sage einen englischen Satz — <strong>einmal, in normalem Tempo</strong>. '
