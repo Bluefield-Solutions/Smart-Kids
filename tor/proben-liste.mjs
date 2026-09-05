@@ -4736,8 +4736,14 @@ export const PROBEN = [
    * dabei rot - im Buch steht einfach fuer immer ein blasses Kaenguru. */
   { n:'ein Lebensraum haengt an einer Ebene, die es nicht gibt', tor:'inhalt',
     datei:'src/inhalt/tiere.js',
+    /* Der Suchtext steht woertlich im Kommentar darunter - `//Anker:` und
+       ZWEI Leerzeichen. `inhalt` prueft in der Wegwerf-Kopie zuerst, ob
+       jeder Probenanker noch dasteht; ein Eingriff, der seinen eigenen
+       Anker verstellt, laesst das Tor ueber den fehlenden Anker klagen
+       statt ueber den Befund. Siebtes Mal in diesem Verzeichnis. */
     such:"  { ebene:'laender:australien',  titel:'Das Outback',",
-    ersatz:"  { ebene:'laender:ozeanien',  titel:'Das Outback',",
+    ersatz:"  { ebene:'laender:ozeanien',  titel:'Das Outback',\n"
+      + "//Anker:  { ebene:'laender:australien',  titel:'Das Outback',",
     an:{ datei:'src/inhalt/tiere.js', text:"ebene:'laender:ozeanien'" },
     sagt:'die es in spiel.js nicht gibt' },
 
@@ -4750,7 +4756,8 @@ export const PROBEN = [
   { n:'der Gorilla wird zum Sammelstueck', tor:'inhalt',
     datei:'src/inhalt/tiere.js',
     such:"    tiere:['elefant', 'giraffe', 'loewe'] },",
-    ersatz:"    tiere:['elefant', 'giraffe', 'gorilla'] },",
+    ersatz:"    tiere:['elefant', 'giraffe', 'gorilla'] },\n"
+      + "//Anker:      tiere:['elefant', 'giraffe', 'loewe'] },",
     an:{ datei:'src/inhalt/tiere.js', text:"'giraffe', 'gorilla'" },
     sagt:'wird nicht gesammelt' },
 
