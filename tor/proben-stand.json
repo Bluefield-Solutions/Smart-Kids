@@ -1641,6 +1641,11 @@
       "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
       "zeit": "2026-09-05",
       "s": 132
+    },
+    "der ganze Satz muss aufs Zeichen genau getippt werden": {
+      "commit": "0364d459607b24a81aabfb239429144a1bf0831b",
+      "zeit": "2026-09-05",
+      "s": 127
     }
   }
 }
