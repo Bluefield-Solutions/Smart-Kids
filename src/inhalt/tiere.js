@@ -335,6 +335,34 @@ export const RAEUME = [
     tiere:['kuh', 'pferd', 'schwein'] },
   { ebene:'rechnen:gross',       titel:'Der Bauernhof',
     tiere:['kuh', 'pferd', 'schwein'] },
+  /* ENGLISCH gibt das Riff, SCHREIBEN die Weide - jede WELT einen Raum,
+   * gleich welche ihrer Ebenen fertig wird. Dieselbe Ableitung wie beim
+   * Bauernhof: die vier Englischebenen sind auf die Profile verteilt
+   * (Fiona und Lea hoeren, die Eltern haben die drei anderen), und wer
+   * eine davon durch hat, hat die Welt durch genug fuer drei Tiere.
+   *
+   * Bei SCHREIBEN sind alle vier Ebenen Fionas - die Welt gibt es nur
+   * fuer sie (`wer:['fiona']`, siehe spiel.js). Der Raum ist damit als
+   * einziger nicht fuer alle vier zu holen. Das ist keine Ungleichheit,
+   * die hier entsteht, sondern eine, die es schon gibt: Lea hat keine
+   * Schreibwelt. Und es ist die Welt, die Fiona am schwersten faellt -
+   * ein Lohn gehoert eher dorthin als in die leichte. */
+  { ebene:'englisch:hoeren',     titel:'Im Riff',
+    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
+  { ebene:'freunde',             titel:'Im Riff',
+    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
+  { ebene:'wendungen',           titel:'Im Riff',
+    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
+  { ebene:'hoersatz',            titel:'Im Riff',
+    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
+  { ebene:'schreiben:buchstaben', titel:'Auf der Weide',
+    tiere:['schaf', 'esel', 'hund'] },
+  { ebene:'schreiben:diktat',     titel:'Auf der Weide',
+    tiere:['schaf', 'esel', 'hund'] },
+  { ebene:'schreiben:ziffern',    titel:'Auf der Weide',
+    tiere:['schaf', 'esel', 'hund'] },
+  { ebene:'schreiben:zahlen',     titel:'Auf der Weide',
+    tiere:['schaf', 'esel', 'hund'] },
 ];
 
 /** Was gemalt ist - der wirkliche Vorrat. */
@@ -437,6 +465,12 @@ export const KULISSEN = {
   "Der Bauernhof": {
     ton:'#f3f0e2',
     bild:'<path d="M0 0h160v34H0z" fill="#bfe0f2"/><path d="M0 34c26-10 46 4 72-2s52-12 88 0v12H0z" fill="#8ec072"/><path d="M0 44h160v46H0z" fill="#a4d183"/><path d="M0 54c30 6 54-6 84-2s48 8 76 4v34H0z" fill="#b6dd97"/><path d="M136 12c6 0 10 4 10 9s-4 9-10 9-10-4-10-9 4-9 10-9z" fill="#fbe27a"/><path d="M116 52V28h34v24z" fill="#c05a4a"/><path d="M112 28l21-11 21 11z" fill="#8e3f34"/><path d="M128 52V36h10v16z" fill="#e8d7b2"/><path d="M120 32h6v6h-6zM140 32h6v6h-6z" fill="#f0dfc0"/><path d="M154 52V30h8v22z" fill="#d9d3c2"/><path d="M154 30c0-3 2-5 4-5s4 2 4 5z" fill="#b9b2a0"/><path d="M2 60v-13h3v13zM10 60v-15h3v15zM18 60v-13h3v13zM26 60v-15h3v15zM0 49h32v2.4H0zM0 55h32v2.4H0z" fill="#e8d9ba"/><path d="M44 62c0-4 3-7 7-7s7 3 7 7-3 6-7 6-7-2-7-6z" fill="#e2c274"/><path d="M46 60c1-2 3-3 5-3s3 .5 4 1.5c-3-.5-6 0-9 1.5z" fill="#eed599"/><path d="M74 52V44h3.4v8z" fill="#8a6238"/><path d="M75.6 26c7 0 12 5 12 10s-5 9-12 9-12-4-12-9 5-10 12-10z" fill="#5aa05a"/><path d="M75.6 28c5 0 8 2.6 9.4 6-2.8-2.4-5.8-3.6-9.4-3.6s-6.6 1.2-9.4 3.6c1.4-3.4 4.4-6 9.4-6z" fill="#75b972"/><path d="M96 78l-2-8 3 4 2-6 2 6 3-4-2 8zM30 84l-2-7 3 3.5 2-5 2 5 3-3.5-2 7z" fill="#8ec072"/>' },
+  "Im Riff": {
+    ton:'#dcf2ee',
+    bild:'<path d="M0 0h160v24H0z" fill="#3fb0b8"/><path d="M0 24h160v24H0z" fill="#57c2c4"/><path d="M0 48h160v22H0z" fill="#7ed4cf"/><path d="M0 70h160v20H0z" fill="#f2e4bc"/><path d="M0 70c22-5 42 3 64 1s34-7 56-5 26 4 40 2v22H0z" fill="#f8eecd"/><path d="M6 70c0-9 5-14 5-21 0-4-3-5-3-9 0-4 4-6 8-6s8 2 8 6c0 4-3 5-3 9 0 7 5 12 5 21z" fill="#f07f9a"/><path d="M15 70c0-7 4-10 4-15 0-2-2-3-2-5 0-3 3-4 6-4s6 1 6 4c0 2-2 3-2 5 0 5 4 8 4 15z" fill="#f8a8b8"/><path d="M136 70c-7 0-12-4-12-9s5-9 12-9 14 4 14 9-7 9-14 9z" fill="#c98adc"/><path d="M130 58c3-2 7-2 10 0-3 1-7 1-10 0zM128 63c5-2 12-2 17 0-5 2-12 2-17 0z" fill="#deaae8"/><path d="M152 70c-2-8 1-14 0-22 3 5 5 15 3 22zM158 70c0-9 3-15 3-22 2 8 0 16-1 22z" fill="#4fbf8e"/><path d="M40 20c2 0 3 1.4 3 3s-1 3-3 3-3-1.4-3-3 1-3 3-3zM48 10c1.4 0 2 1 2 2s-.6 2-2 2-2-1-2-2 .6-2 2-2zM120 26c1.8 0 2.6 1.2 2.6 2.6s-.8 2.6-2.6 2.6-2.6-1.2-2.6-2.6.8-2.6 2.6-2.6z" fill="#c2ecec"/>' },
+  "Auf der Weide": {
+    ton:'#eef4e2',
+    bild:'<path d="M0 0h160v30H0z" fill="#c6e4f4"/><path d="M0 30c24-8 44 4 70 0s52-8 90 2v10H0z" fill="#8fc272"/><path d="M0 40h160v50H0z" fill="#a7d489"/><path d="M0 52c30 6 54-6 84-2s48 8 76 4v36H0z" fill="#bade9c"/><path d="M28 14c4 0 6 2 6 4h-16c0-3 2-5 5-5 1 0 2 .3 3 .6C27 13 27.4 14 28 14z" fill="#f2f8fc"/><path d="M112 10c5 0 8 2.4 8 5h-20c0-3.6 2.6-6 6-6 1.2 0 2.4.4 3.4 1z" fill="#f2f8fc"/><path d="M4 42v-12h3v12zM20 42v-12h3v12zM36 42v-12h3v12zM52 42v-12h3v12zM68 42v-12h3v12zM84 42v-12h3v12zM100 42v-12h3v12zM116 42v-12h3v12zM132 42v-12h3v12zM148 42v-12h3v12zM0 32h160v2.6H0zM0 38h160v2.6H0z" fill="#e4d3ae"/><path d="M4 62h20v8H4z" fill="#9c7548"/><path d="M5 63h18v3H5z" fill="#7fc0dc"/><path d="M140 68c0-5 4-8 9-8s9 3 9 8-4 7-9 7-9-2-9-7z" fill="#e2c274"/><path d="M143 65c1.5-2 4-3 6-3s3.5.5 5 1.5c-4-.5-8 .3-11 1.5z" fill="#eed599"/><path d="M34 80c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2zM118 84c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2e07a"/><path d="M76 86c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2a0bc"/>' },
 };
 
 /** Die Landschaft eines Raumes - oder `null`, wenn es noch keine gibt. */

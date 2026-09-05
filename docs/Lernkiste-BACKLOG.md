@@ -4902,6 +4902,54 @@ Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
 
+### T5 · Im Riff und Auf der Weide — GEFAHREN (v399)
+
+Zwei Räume in einer Runde, weil beide dieselbe Kette und dieselben zwei
+Vorbilder anfassen — getrennt wären es zwei Läufe für dieselbe Arbeit.
+
+| Raum | Tiere | hängt an |
+|---|---|---|
+| **Im Riff** | Korallenfisch · Kugelfisch · Krake | allen vier **Englisch**-Ebenen |
+| **Auf der Weide** | Schaf · Esel · Hund | allen vier **Schreiben**-Ebenen |
+
+**Jede Welt gibt einen Raum, gleich welche ihrer Ebenen fertig wird** —
+dieselbe Ableitung wie beim Bauernhof. Die vier Englischebenen sind auf
+die Profile verteilt (Fiona und Lea hören, die Eltern haben die drei
+anderen); wer eine davon durch hat, hat genug für drei Tiere.
+
+Bei Schreiben sind alle vier Ebenen Fionas. Die Weide ist damit als
+einziger Raum nicht für alle vier zu holen. Das ist keine Ungleichheit,
+die hier entsteht, sondern eine, die es schon gibt: Lea hat keine
+Schreibwelt. Und es ist die Welt, die Fiona am schwersten fällt — ein Lohn
+gehört eher dorthin als in die leichte.
+
+#### Was das Wachstum diesmal gekostet hat
+
+Die Sammlung geht von 33 auf **39**, die Räume von 11 auf 13. Die Bank
+hat es weggesteckt — sie blättert seit T4. Gekippt ist die **Reiterzeile
+im Buch**: dreizehn Reiter standen auf 667 × 375 in zwei Zeilen, und das
+Kapitel lag 32 Punkte unter dem Rand.
+
+Der Griff ist keine Verkleinerung, sondern eine Streichung: **die Zahl auf
+dem Reiter ist weg**. Sie sagt fast nichts — ein Raum gibt seine drei
+Tiere *auf einmal*, sie ist also 0/3 oder 3/3, und beides steht schon da,
+weil das Tier auf dem Reiter blass ist, solange keines gesammelt ist.
+Gesagt wird sie weiterhin (`data-lesen`), für Fiona. Dreizehn Reiter
+passen jetzt in eine Zeile, und es reicht bis etwa sechzehn.
+
+Der Fall 1/3 oder 2/3 bleibt möglich — bei einem Profil, das seine Tiere
+bekommen hat, bevor der Raum fertig gemalt war (genau das ist zwischen
+v390 und v392 passiert). Die Wand einen Tipp weiter zeigt ihn genau.
+
+**Startbündel: 391 von 700 KB.**
+
+#### Offen
+
+- Fünf Tiere haben noch keinen Raum: Ente, Fisch, Tintenfisch, Hai, Orca.
+  Vier davon wären „In der Tiefsee" — der Raum fehlt, nicht die Tiere.
+
+---
+
 ### T4 · Der Bauernhof — GEFAHREN (v397)
 
 Der **erste Lebensraum außerhalb der Erdkunde**. Er hängt an allen **drei**

@@ -6871,8 +6871,19 @@ async function forscherbuch(){
                   data-raumwahl="${r.titel}"
                   role="tab" aria-selected="${i === zuerst}"
                   data-lesen="${r.titel}. ${meins.length} von drei."
+            ${/* KEINE ZAHL auf dem Reiter mehr.
+                 Bei dreizehn Raeumen stand die Reihe auf dem kleinsten
+                 Geraet in zwei Zeilen und das Kapitel 32 Punkte unter
+                 dem Rand. Die Zahl sagt ausserdem fast nichts: ein Raum
+                 gibt seine drei Tiere AUF EINMAL, sie ist also 0/3 oder
+                 3/3 - und beides steht schon da, weil das Tier auf dem
+                 Reiter blass ist, solange keines gesammelt ist. Gesagt
+                 wird sie weiterhin (`data-lesen`), fuer Fiona.
+                 Bleibt der Fall 1/3 oder 2/3: den gibt es nur bei einem
+                 Profil, das seine Tiere bekommen hat, BEVOR der Raum
+                 fertig gemalt war. Die Wand darunter zeigt ihn genau. */''}
             >${zeichen ? tierBild(zeichen, 'raumzeichen') : ''
-            }<span>${r.titel}</span><small>${meins.length}/3</small></button>`;
+            }<span>${r.titel}</span></button>`;
         }).join('')}</div>` : ''}
         ${raeume.map((r, i) => `<div class="tierraum" data-raumseite="${r.titel}"${
             i === zuerst ? '' : ' hidden'}>
