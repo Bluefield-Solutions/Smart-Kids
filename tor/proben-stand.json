@@ -203,6 +203,16 @@
       "zeit": "2026-09-05",
       "s": 7
     },
+    "die Bank blättert nicht mehr": {
+      "commit": "2be78e1847c34ecc8d4850ff24e2d330d8fa9b7a",
+      "zeit": "2026-09-05",
+      "s": 15
+    },
+    "das Blättern zeigt immer dieselbe Seite": {
+      "commit": "2be78e1847c34ecc8d4850ff24e2d330d8fa9b7a",
+      "zeit": "2026-09-05",
+      "s": 16
+    },
     "der Lagername vergisst den Ort": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
       "zeit": "2026-09-04",

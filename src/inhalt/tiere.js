@@ -306,6 +306,21 @@ export const RAEUME = [
     tiere:['taube', 'ratte', 'streifenhoernchen'] },
   { ebene:'hauptstaedte',        titel:'In der Stadt',
     tiere:['taube', 'ratte', 'streifenhoernchen'] },
+  /* DER ERSTE RAUM AUSSERHALB DER ERDKUNDE (T4).
+   *
+   * Er haengt an allen DREI Rechenebenen, weil die Rechenwelt EINE Welt
+   * ist, die je Profil eine andere Ebene zeigt: Fiona Plus und Minus,
+   * Lea die Reihen, die Eltern das grosse Einmaleins. Eine Ebene zu
+   * waehlen hiesse, drei von vier Profilen den Hof zu verschliessen -
+   * und ausgerechnet Lea, die von den Kindern am meisten rechnet.
+   * Dieselbe Bauart wie bei den beiden Hauptstadt-Ebenen darueber:
+   * mehrere Ebenen, EIN Raum, dieselbe Liste. */
+  { ebene:'rechnen:plusminus',   titel:'Der Bauernhof',
+    tiere:['kuh', 'pferd', 'schwein'] },
+  { ebene:'rechnen:reihen',      titel:'Der Bauernhof',
+    tiere:['kuh', 'pferd', 'schwein'] },
+  { ebene:'rechnen:gross',       titel:'Der Bauernhof',
+    tiere:['kuh', 'pferd', 'schwein'] },
 ];
 
 /** Was gemalt ist - der wirkliche Vorrat. */
@@ -405,6 +420,9 @@ export const KULISSEN = {
   "In der Stadt": {
     ton:'#eef0f6',
     bild:'<path d="M0 0h160v30H0z" fill="#c6dcf2"/><path d="M0 30V12h22v18zM24 30V4h20v26zM46 30V16h26v14zM74 30V8h18v22zM94 30V18h24v12zM120 30V6h22v24zM144 30V14h16v16z" fill="#e0c9b4"/><path d="M24 30V4h20v26z" fill="#cbd8e6"/><path d="M74 30V8h18v22z" fill="#d9c2d2"/><path d="M120 30V6h22v24z" fill="#cbd8e6"/><path d="M5 16h5v5H5zM13 16h5v5h-5zM29 10h5v5h-5zM37 10h5v5h-5zM29 20h5v5h-5zM52 20h5v5h-5zM60 20h5v5h-5zM79 14h5v5h-5zM79 23h5v5h-5zM99 22h5v5h-5zM107 22h5v5h-5zM125 12h5v5h-5zM133 12h5v5h-5zM125 22h5v5h-5zM149 20h5v5h-5z" fill="#f7dd94"/><path d="M0 30h160v18H0z" fill="#d6dae2"/><path d="M0 48h160v14H0z" fill="#8b919c"/><path d="M0 62h160v28H0z" fill="#d6dae2"/><path d="M10 54h18v3H10zM46 54h18v3H46zM82 54h18v3H82zM118 54h18v3h-18z" fill="#f4f6fa"/><path d="M0 72h160v1.4H0zM26 62v28h1.4V62zM60 62v28h1.4V62zM94 62v28h1.4V62zM128 62v28h1.4V62z" fill="#c4c9d2"/><path d="M14 48V22h3v26zM10 22h11v3.4H10z" fill="#6a707c"/><path d="M11 20c2.2 0 3.6 1.4 3.6 3s-1.4 3-3.6 3-3.6-1.4-3.6-3 1.4-3 3.6-3z" fill="#f7dd94"/><path d="M146 48V40h3v8z" fill="#8a6238"/><path d="M147.6 26c6.4 0 10.6 4.2 10.6 8.4s-4.2 7.6-10.6 7.6-10.6-3.4-10.6-7.6 4.2-8.4 10.6-8.4z" fill="#63b063"/><path d="M147.6 28c4.4 0 7.2 1.8 8.4 5-2.4-1.8-5-2.8-8.4-2.8s-6 1-8.4 2.8c1.2-3.2 4-5 8.4-5z" fill="#7cc47a"/><path d="M141 48h13v6h-13z" fill="#c47c50"/>' },
+  "Der Bauernhof": {
+    ton:'#f3f0e2',
+    bild:'<path d="M0 0h160v34H0z" fill="#bfe0f2"/><path d="M0 34c26-10 46 4 72-2s52-12 88 0v12H0z" fill="#8ec072"/><path d="M0 44h160v46H0z" fill="#a4d183"/><path d="M0 54c30 6 54-6 84-2s48 8 76 4v34H0z" fill="#b6dd97"/><path d="M136 12c6 0 10 4 10 9s-4 9-10 9-10-4-10-9 4-9 10-9z" fill="#fbe27a"/><path d="M116 52V28h34v24z" fill="#c05a4a"/><path d="M112 28l21-11 21 11z" fill="#8e3f34"/><path d="M128 52V36h10v16z" fill="#e8d7b2"/><path d="M120 32h6v6h-6zM140 32h6v6h-6z" fill="#f0dfc0"/><path d="M154 52V30h8v22z" fill="#d9d3c2"/><path d="M154 30c0-3 2-5 4-5s4 2 4 5z" fill="#b9b2a0"/><path d="M2 60v-13h3v13zM10 60v-15h3v15zM18 60v-13h3v13zM26 60v-15h3v15zM0 49h32v2.4H0zM0 55h32v2.4H0z" fill="#e8d9ba"/><path d="M44 62c0-4 3-7 7-7s7 3 7 7-3 6-7 6-7-2-7-6z" fill="#e2c274"/><path d="M46 60c1-2 3-3 5-3s3 .5 4 1.5c-3-.5-6 0-9 1.5z" fill="#eed599"/><path d="M74 52V44h3.4v8z" fill="#8a6238"/><path d="M75.6 26c7 0 12 5 12 10s-5 9-12 9-12-4-12-9 5-10 12-10z" fill="#5aa05a"/><path d="M75.6 28c5 0 8 2.6 9.4 6-2.8-2.4-5.8-3.6-9.4-3.6s-6.6 1.2-9.4 3.6c1.4-3.4 4.4-6 9.4-6z" fill="#75b972"/><path d="M96 78l-2-8 3 4 2-6 2 6 3-4-2 8zM30 84l-2-7 3 3.5 2-5 2 5 3-3.5-2 7z" fill="#8ec072"/>' },
 };
 
 /** Die Landschaft eines Raumes - oder `null`, wenn es noch keine gibt. */

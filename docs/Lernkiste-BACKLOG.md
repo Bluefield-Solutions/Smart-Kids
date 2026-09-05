@@ -190,7 +190,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
 | 3 | **T3** Die restlichen 86 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
-| 3b | **T4** Der Bauernhof als elfter Lebensraum | alle vier | mittel | klein | T3-Stapel 1 (da) |
 | 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -4902,6 +4901,55 @@ in anderer Form: `falle` ist die Form, die ein Deutscher **tippt**, der
 Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
+
+### T4 · Der Bauernhof — GEFAHREN (v397)
+
+Der **erste Lebensraum außerhalb der Erdkunde**. Er hängt an allen **drei**
+Rechenebenen, weil die Rechenwelt eine Welt ist, die je Profil eine andere
+Ebene zeigt: Fiona Plus und Minus, Lea die Reihen, die Eltern das große
+Einmaleins. Eine davon zu wählen hieße, drei von vier Profilen den Hof zu
+verschließen — und ausgerechnet Lea, die von den Kindern am meisten rechnet.
+Dieselbe Bauart wie bei den beiden Hauptstadt-Ebenen: mehrere Ebenen, **ein**
+Raum, dieselbe Liste.
+
+Kuh · Pferd · Schwein. Schaf, Esel, Hund und Ente bleiben Aufkleber ohne
+Raum, bis ein zwölfter kommt — ein Raum fasst drei.
+
+#### Die Bank blättert, und warum sie es muss
+
+Der elfte Raum bringt die Sammlung von 30 auf **33**. Gemessen auf
+667 × 375, dem kleinsten Gerät, das `passt` fährt: neben dem Bild bleiben
+254 × 303 Punkte, also 5 Spalten × 6 Reihen zu 44 — **dreißig Kästen**. Bei
+33 lag die Bank **29 Punkte** unter dem Rand.
+
+Das ist kein Grundrissfehler, sondern eine Fläche, die nicht da ist:
+
+- neun Plätze zu 44 verlangen ein Bild von mindestens **288 × 162**;
+- was daneben oder darunter übrig bleibt, fasst in **keiner** Anordnung
+  33 Kästen zu 44 (nachgerechnet für nebeneinander und untereinander);
+- rollen zählt nicht (dieselbe Zeile steht im Tor), kleiner geht nicht
+  (44 ist die Fingergrenze).
+
+Also **ein** Knopf, der im Kreis blättert. Nicht zwei: „vor" und „zurück"
+wären zwei Zeichen, zwischen denen ein sechsjähriges Kind wählen müsste,
+und die Bank hat heute zwei Seiten. Wie viel auf eine Seite passt, wird
+**gemessen** (`ResizeObserver`) und nicht gesetzt — der Kasten ist auf dem
+Telefon 44 und auf dem iPad 56 Punkte breit. Ergebnis: auf allen Größen
+außer der kleinsten erscheint der Knopf gar nicht.
+
+Zwei Gegenproben, beide schlagen an: ohne Umblättern meldet der Rauchtest
+die überstehende Bank, und ein Knopf, der im Kreis derselben Seite
+blättert, wird als „überspringt Tiere" gefangen — am Bildschirm ist das
+zweite nicht vom richtigen zu unterscheiden.
+
+#### Offen
+
+- Die Vergabe für eine **Rechenebene** ist datenseitig geprüft
+  (`raumTiere` je Raum, einmal und nicht zweimal), am Bildschirm aber
+  nicht: der Rauchtest spielt keine Rechenebene zu Ende, das sind 100
+  Aufgaben. Der Weg dahin ist derselbe wie bei der Erdkunde.
+
+---
 
 ### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396
 

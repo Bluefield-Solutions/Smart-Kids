@@ -6364,11 +6364,51 @@ function landschaft(titel, zurueck){
             <div class="plaetze">${plaetze.map(platzHtml).join('')}</div>
           </div>
         </div>
-        <div class="tierbank">${bank.map(bankHtml).join('')}</div>
+        <div class="bankspalte">
+          <div class="tierbank">${bank.map(bankHtml).join('')}</div>
+          <button class="knopf bankmehr" id="mehrtiere" hidden
+                  data-lesen="Mehr Tiere">${ZEI('weiter', 20)}<span class="wort">Mehr Tiere</span></button>
+        </div>
       </div>`;
 
   const feld = s.querySelector('.plaetze');
   const bankfeld = s.querySelector('.tierbank');
+  const mehr = s.querySelector('#mehrtiere');
+
+  /* ---- Die Bank BLAETTERT, wenn sie voll ist (T4) --------------------
+   *
+   * Gemessen auf 667 x 375 - dem kleinsten Geraet, das `passt` faehrt:
+   * neben dem Bild bleiben 254 x 303 Punkte, also 5 Spalten mal 6 Reihen
+   * zu 44 plus Luecke - dreissig Kaesten. Beim elften Lebensraum sind es
+   * dreiunddreissig, und die Bank lag 29 Punkte unter dem Rand.
+   *
+   * Es ist kein Grundrissfehler, sondern eine FLAECHE, die nicht da ist:
+   * neun Plaetze zu 44 verlangen ein Bild von mindestens 288 x 162, und
+   * was daneben oder darunter uebrig bleibt, fasst in keiner Anordnung
+   * dreiunddreissig Kaesten zu 44. Rollen ist keine Loesung (dieselbe
+   * Zeile steht im Tor: ein Kind rollt nicht in einer Liste, von der es
+   * nicht weiss, dass sie weitergeht), kleiner geht nicht (44 ist die
+   * Fingergrenze), also wird geblaettert.
+   *
+   * EIN Knopf und nicht zwei: er laeuft im Kreis. „Vor" und „Zurueck"
+   * waeren zwei Zeichen, zwischen denen ein sechsjaehriges Kind waehlen
+   * muesste, und die Bank hat heute zwei Seiten.
+   *
+   * Wieviel auf eine Seite passt, wird GEMESSEN und nicht gesetzt: der
+   * Kasten ist auf dem Telefon 44 und auf dem iPad 56 Punkte breit, und
+   * die Bank ist mal Spalte, mal Zeile. Eine feste Zahl waere auf dem
+   * grossen Geraet eine halb leere Bank. */
+  let seite = 0, jeSeite = bank.length;
+  const messen = () => {
+    const k = bankfeld.querySelector('.bankstueck');
+    if (!k) return bank.length;
+    const kb = k.getBoundingClientRect(), rb = bankfeld.getBoundingClientRect();
+    if (!kb.width || !rb.width) return bank.length;
+    const l = parseFloat(getComputedStyle(bankfeld).gap) || 0;
+    const sp = Math.max(1, Math.floor((rb.width  + l) / (kb.width  + l)));
+    const ze = Math.max(1, Math.floor((rb.height + l) / (kb.height + l)));
+    return Math.max(6, sp * ze);
+  };
   const satz = s.querySelector('#szenesatz');
   /* Der Name traegt seinen Artikel („die Schlange") - am Satzanfang muss
      der gross werden, sonst steht dort „die Schlange ist da." mit kleinem
@@ -6382,7 +6422,11 @@ function landschaft(titel, zurueck){
      der sich wie Hinstellen anfuehlen soll. */
   const male = () => {
     feld.innerHTML = plaetze.map(platzHtml).join('');
-    bankfeld.innerHTML = bank.map(bankHtml).join('');
+    const seiten = Math.max(1, Math.ceil(bank.length / jeSeite));
+    seite = Math.min(seite, seiten - 1);
+    bankfeld.innerHTML = bank.slice(seite * jeSeite, (seite + 1) * jeSeite)
+      .map(bankHtml).join('');
+    mehr.hidden = seiten < 2;
     binden();
   };
 
@@ -6421,6 +6465,23 @@ function landschaft(titel, zurueck){
     });
   }
   binden();
+
+  /* Gemessen wird, sobald der Kasten eine Groesse HAT - also nach dem
+     Anhaengen, und wieder beim Drehen des Geraets. Ein `ResizeObserver`
+     statt eines Zeitgebers: der Bildschirm wird losgeloest gebaut und
+     erst danach eingehaengt, eine Frist waere hier geraten. */
+  const beobachter = new ResizeObserver(() => {
+    const n = messen();
+    if (n !== jeSeite) { jeSeite = n; male(); }
+  });
+  beobachter.observe(bankfeld);
+
+  mehr.onclick = () => {
+    const seiten = Math.max(1, Math.ceil(bank.length / jeSeite));
+    seite = (seite + 1) % seiten;
+    male();
+    sagen(seiten > 1 ? `Noch mehr Tiere. Seite ${seite + 1} von ${seiten}.` : 'Alle Tiere.');
+  };
 
   s.querySelector('#zur').onclick = () => zeige(zurueck || forscherbuch);
   s.querySelector('#leeren').onclick = () => {

@@ -9,6 +9,9 @@ import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 import { fremdgriff, griffBeobachter } from './fremdgriff.mjs';
+import { sammelbar } from '../src/inhalt/tiere.js';
+/** Alles, was ein Kind sammeln kann - der teuerste Fall fuer die Bank (T4). */
+const ALLE_TIERE = sammelbar().map(t => t.id);
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
@@ -5738,6 +5741,58 @@ if (laeuft('landschaft')) try {
   if (await p.$('.schirm.da .platz.voll'))
     merke('landschaft', new Error('nach „Wegräumen" steht noch ein Tier im Bild'));
 
+  /* --- Die Bank blaettert, wenn sie voll ist (T4) --------------------
+   *
+   * Auf dem KLEINSTEN Geraet und mit ALLEN Tieren: dort - und nur dort -
+   * passt die Bank nicht mehr auf eine Seite. Ein Blaettern, das nur auf
+   * dem grossen Bildschirm geprueft wird, ist nie geprueft: dort
+   * erscheint der Knopf gar nicht.
+   *
+   * Geprueft wird nicht, DASS ein Knopf da ist, sondern dass ueber die
+   * Seiten JEDES Tier erreichbar bleibt. Ein Blaettern, das eines
+   * ueberspringt, sieht am Bildschirm aus wie eines, das geht. */
+  const q = await neueSeite({ width: 667, height: 375 }, ctx);
+  await q.waitForSelector('[data-profil="fiona"]');
+  await stelleAblage(q, { einstellungen: { 'tiere:fiona': {
+    ids: ALLE_TIERE, gorilla: 0, szenen: {} } } });
+  await q.reload({ waitUntil: 'domcontentloaded' });
+  await q.waitForSelector('[data-profil="fiona"]');
+  await q.click('[data-profil="fiona"]');
+  await q.click('#buch');
+  await q.waitForSelector('.schirm.da .rollen.buch');
+  const rq = await q.$('.schirm.da .reiter[data-kap="tiere"]');
+  if (rq) await rq.click();
+  await q.waitForSelector('.schirm.da .tierraum:not([hidden]) .raumauf');
+  await q.click('.schirm.da .tierraum:not([hidden]) .raumauf');
+  await q.waitForSelector('.schirm.da .szene');
+  await bis(q, () => document.querySelectorAll('.schirm.da .platz').length === 9);
+  const knopfDa = await q.evaluate(() =>
+    !document.querySelector('.schirm.da #mehrtiere').hidden);
+  if (!knopfDa)
+    merke('landschaft', new Error(`auf 667 x 375 passen ${ALLE_TIERE.length} Tiere `
+      + 'angeblich auf eine Seite — dann steht die Bank über dem Rand'));
+  const gesehen = new Set();
+  let runden = 0;
+  const seiteLesen = () => q.$$eval('.schirm.da .bankstueck', ns => ns.map(n => n.dataset.tier));
+  /* Die ERSTE Seite ist die Seitengroesse - die letzte ist der Rest.
+     Die Zeile meldete erst den Rest (8 von 33) und sah aus wie eine
+     viel zu kleine Seite. Eine Zahl, die im Bericht steht, wird
+     gelesen; eine falsche wird geglaubt. */
+  const ersteSeite = (await seiteLesen()).length;
+  for (const t of await seiteLesen()) gesehen.add(t);
+  while (knopfDa && runden < 8 && gesehen.size < ALLE_TIERE.length) {
+    await q.click('.schirm.da #mehrtiere');
+    await bis(q, () => true);
+    for (const t of await seiteLesen()) gesehen.add(t);
+    runden++;
+  }
+  if (gesehen.size !== ALLE_TIERE.length)
+    merke('landschaft', new Error(`über die Seiten sind nur ${gesehen.size} von `
+      + `${ALLE_TIERE.length} Tieren zu erreichen — das Blättern überspringt welche`));
+  await q.close();
+
+  console.log(`  Bank blättert:              667 x 375, ${ALLE_TIERE.length} Tiere: `
+    + `${ersteSeite} auf der ersten Seite, ${gesehen.size} über ${runden + 1} Seiten erreichbar`);
   console.log(`  Landschaft:                 ${tueren.length} Türen offen `
     + `(„${tueren.join('", „')}") · Kulisse ${kulisse} Pfade · `
     + 'hinstellen, bleiben, wegräumen');

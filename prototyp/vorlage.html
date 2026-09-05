@@ -1172,8 +1172,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 
 /* Die Bank: alles, was dem Kind gehoert - OHNE Namen. Wer schon im Bild
    steht, wird blass; derselbe Griff wie bei den fehlenden Aufklebern. */
+.bankspalte{flex:1 1 auto;min-width:0;min-height:0;display:flex;
+  flex-direction:column;gap:var(--r1)}
 .tierbank{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-wrap:wrap;
-  align-content:flex-start;justify-content:center;gap:var(--r1)}
+  align-content:flex-start;justify-content:center;gap:var(--r1);overflow:hidden}
+.bankmehr{flex:none;align-self:center}
 .bankstueck{width:56px;height:56px;flex:none;display:flex;align-items:center;
   justify-content:center;padding:var(--r0);
   border-radius:var(--r4);border:var(--kante-flach) solid var(--papier);
@@ -1188,7 +1191,10 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    umgekehrt. Die Grenze steht bei 560, weil das schmalste Geraet, das
    `passt` faehrt, 390 Punkte breit ist und das naechste 667. */
 @media (max-width:560px){
-  .rollen.landschaft{flex-direction:column;overflow:auto;align-items:center}
+  /* `overflow:hidden` und nicht `auto`: die Bank blaettert seit T4, und
+     eine Spalte, die statt dessen rollt, haette zwei Wege fuer dieselbe
+     Sache - einen davon verbotenen (`passt`: Rollen zaehlt nicht). */
+  .rollen.landschaft{flex-direction:column;overflow:hidden;align-items:center}
   /* Das Bild behaelt sein Verhaeltnis - auch hoch.
      Der erste Anlauf machte es hier 4:3, weil die hinterste Reihe bei
      16:9 nur 38 Punkte hoch war. Das lag aber nicht am Format, sondern
@@ -1196,7 +1202,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
      die hinterste Reihe hier 58. Und 4:3 kostete etwas: die Kulisse ist
      16:9 und lag mit hellen Baendern ueber und unter dem Bild. */
   .szene{width:100%;max-width:100%;height:auto;flex:none}
-  .tierbank{flex:none;width:100%}
+  .bankspalte{flex:1 1 auto;width:100%}
 }
 /* KURZ UND QUER - das Zielgeraet und das kleinste. Dreissig Tiere sind
    dreissig Kaesten, und die muessen ohne Rollen in die Bank passen:

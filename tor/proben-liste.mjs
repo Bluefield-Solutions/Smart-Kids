@@ -501,6 +501,32 @@ export const PROBEN = [
     an:{ datei:'tor/ansicht.mjs', text:"if (false && a.tun === 'landschaft') {" },
     sagt:'quer-landschaft' },
 
+  /* --- landschaft: die Bank blaettert (T4) --------------------------- */
+  /* Ohne die Umblaetterung passt die Bank auf dem kleinsten Geraet nicht
+     mehr - der elfte Lebensraum bringt sie von 30 auf 33 Kaesten, und
+     dreissig ist dort die Grenze. Der Eingriff nimmt die Seite weg (es
+     wird wieder alles auf einmal gezeigt); dann sind zwar alle Tiere
+     da, aber der Knopf bleibt weg, und der Rauchtest meldet genau das.
+     Der Anker steht als Kommentar dahinter - der Eingriff nimmt ihn
+     sonst selbst weg (elfmal passiert). */
+  { n:'die Bank blättert nicht mehr', tor:'smoke', args:['--nur=landschaft'],
+    bauen:true, datei:D,
+    such:"    mehr.hidden = seiten < 2;",
+    ersatz:"    mehr.hidden = true;  //Anker: mehr.hidden = seiten < 2;",
+    an:{ ...DIST, text:'mehr.hidden = true;' },
+    sagt:'passen 33 Tiere' },
+
+  /* Und die andere Haelfte derselben Zusage: der Knopf ist da, blaettert
+     aber im Kreis derselben Seite. Am Bildschirm ist das nicht zu
+     unterscheiden - man tippt, etwas bewegt sich, und die Tiere der
+     zweiten Seite sind trotzdem nie zu erreichen. */
+  { n:'das Blättern zeigt immer dieselbe Seite', tor:'smoke', args:['--nur=landschaft'],
+    bauen:true, datei:D,
+    such:"    seite = (seite + 1) % seiten;",
+    ersatz:"    seite = 0;  //Anker: seite = (seite + 1) % seiten;",
+    an:{ ...DIST, text:'    seite = 0;  //Anker' },
+    sagt:'Blättern überspringt' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.
