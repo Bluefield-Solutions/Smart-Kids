@@ -2081,6 +2081,83 @@ console.log('\n  Tor `englisch`');
     console.log(`    ${blaetter.length} Blätter à 10 Felder · gezeichnet: `
       + `${gezeichnet} von ${EN.BILDER.length}`);
   }
+
+  /* ---- Die falschen Freunde (E10, Tor E-g) ----------------------------
+   *
+   * „jeder falsche Freund hat beide Fassungen" - die richtige und die
+   * Falle. Geprueft wird das, und die eine Sache, an der die ganze Ebene
+   * haengt:
+   *
+   *   DIE FALLE DARF NIE UNTER DEN RICHTIGEN ANTWORTEN STEHEN. Sonst
+   *   belohnt die Aufgabe genau den Fehler, den sie zeigen soll - und
+   *   zwar lautlos: der Bildschirm saehe richtig aus, das Lob kaeme, und
+   *   gelernt waere das Falsche. Verglichen wird ueber `wieGetippt`, also
+   *   so, wie die App wirklich vergleicht (Regel 13: wer eine Wirkung
+   *   misst, misst sie an der Stelle, an der sie eintritt).
+   *
+   * Und: der Grund muss die Falle NENNEN. „Das ist falsch" hilft nicht;
+   * die Ebene lebt davon, dass dort steht, was `become` wirklich heisst.
+   */
+  {
+    const ff = [];
+    const ids = new Set();
+    for (const f of EN.FREUNDE) {
+      if (ids.has(f.id)) ff.push(`die Falle „${f.id}" gibt es zweimal`);
+      ids.add(f.id);
+      if (!f.satz || !/[.!?]$/.test(f.satz))
+        ff.push(`„${f.id}" hat keinen deutschen Satz`);
+      if (!f.luecke || !f.luecke.includes('___'))
+        ff.push(`„${f.id}" hat keine Lücke im englischen Satz — dann gibt es `
+          + 'nichts zu tippen');
+      if (!f.richtig || !f.richtig.length)
+        ff.push(`„${f.id}" hat keine richtige Antwort`);
+      if (!f.falle) ff.push(`„${f.id}" hat keine Falle — dann ist es keiner`);
+      if (!f.warum) ff.push(`„${f.id}" sagt nicht, was die Falle wirklich heißt`);
+      if (f.falle && f.richtig
+          && f.richtig.map(EN.wieGetippt).includes(EN.wieGetippt(f.falle)))
+        ff.push(`bei „${f.id}" steht die Falle „${f.falle}" unter den richtigen `
+          + 'Antworten — dann belohnt die Aufgabe den Fehler, den sie zeigen soll');
+      /* Der Grund muss die Falle NENNEN - und zwar in Anfuehrungszeichen,
+         damit man sieht, von welchem Wort die Rede ist.
+         Verglichen werden nur die ersten DREI Buchstaben, ohne Bindestrich.
+         Das ist grob, und es ist mit Absicht grob: der erste Anlauf
+         verlangte die Falle wortwoertlich und wurde prompt rot bei
+         „became" gegen „become" und bei „oldtimer" gegen „old-timer" -
+         dieselben Woerter in anderer Form. `falle` ist die Form, die ein
+         Deutscher TIPPT; der Grund nennt die Grundform. Wer beide gleich
+         erzwingt, macht die Daten falsch, damit die Pruefung gruen wird.
+         Was diese Regel noch faengt: ein Grund, der gar kein Wort nennt,
+         und einer, der ein voellig anderes nennt. */
+      const genannt = (f.warum || '').toLowerCase().replace(/[-\s]/g, '');
+      const stamm = (f.falle || '').toLowerCase().replace(/[-\s]/g, '').slice(0, 3);
+      if (f.warum && !/[„"][^„"]+[""]/.test(f.warum))
+        ff.push(`der Grund zu „${f.id}" nennt kein Wort in Anführungszeichen: `
+          + `„${f.warum}"`);
+      if (f.falle && f.warum && stamm && !genannt.includes(stamm))
+        ff.push(`der Grund zu „${f.id}" nennt die Falle „${f.falle}" nicht: `
+          + `„${f.warum}"`);
+      /* Die Luecke steht im ENGLISCHEN Satz, und der darf die Falle nicht
+         schon enthalten. Im deutschen Satz darf sie sehr wohl stehen -
+         bei „Gymnasium", „Chef", „Rock" oder „also" ist sie DASSELBE Wort,
+         und genau das macht den falschen Freund aus. */
+      if (f.falle && f.luecke
+          && new RegExp(`\\b${f.falle}\\b`, 'i').test(f.luecke))
+        ff.push(`der englische Satz zu „${f.id}" enthält die Falle „${f.falle}" `
+          + 'schon — dann ist sie zu lesen statt zu erkennen');
+    }
+    if (EN.FREUNDE.length < 25)
+      ff.push(`nur ${EN.FREUNDE.length} falsche Freunde — das Konzept nennt rund `
+        + 'dreißig, und darunter trägt die Ebene keine Sitzung');
+    if (ff.length) {
+      console.log('    ' + ff.join('\n    '));
+      console.error('\n  englisch ROT: die falschen Freunde (E10) stimmen nicht.');
+      process.exit(1);
+    }
+    const mehrere = EN.FREUNDE.filter(f => f.richtig.length > 1).length;
+    console.log(`    Falsche Freunde (E10): ${EN.FREUNDE.length} Fallen, jede mit `
+      + `beiden Fassungen · ${mehrere} halten mehrere gültige Antworten · `
+      + 'keine Falle steht unter den richtigen');
+  }
 }
 
 /* =================================================== Tor `betroffen` ==== *

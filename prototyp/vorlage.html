@@ -1294,6 +1294,21 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
  * es. Und der Uebergang laeuft ueber `--d-zustand`, das unter
  * `prefers-reduced-motion` auf 1 ms steht - kein zweiter Schalter, den
  * man vergessen kann. */
+/* G18c: ein ABGESCHALTETER Knopf sieht auch abgeschaltet aus.
+ *
+ * G18 hat `.etikett` und `.zahl` erfasst - die Antwortknöpfe. Der grosse
+ * Knopf daneben („Prüfen") wurde nie erfasst, weil `.knopf[disabled]`
+ * nirgends stand: nach der Antwort blieb er sattblau und sah aus, als
+ * liesse sich noch einmal prüfen. Aufgefallen ist das bei den falschen
+ * Freunden (E10), auf einem Bildschirm, dessen Hauptknopf genau dieser
+ * ist - vorhanden war es überall.
+ *
+ * Es haengt am ZUSTAND des Knopfes und nicht an `[data-fertig]`: ein
+ * Knopf, der `disabled` traegt, ist verbraucht, egal warum. Das ist
+ * dieselbe Ehrlichkeit wie bei G18 - der Griff war schon vorher
+ * wirkungslos, jetzt sieht man es. */
+.knopf[disabled]{opacity:.42;box-shadow:none;pointer-events:none;
+  transform:translateY(var(--kante));animation:none}
 [data-fertig] .etikett:not(.weg),
 [data-fertig] .zahl{opacity:.42;box-shadow:none;pointer-events:none;
   transform:translateY(var(--kante));
@@ -1451,6 +1466,57 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .aufkleber .farbfleck{width:100%;height:auto;flex:1 1 0;min-height:0;
   border-radius:var(--rund-klein)}
 .aufkleber:not(.da) .farbfleck{opacity:.35}
+/* ---- Falsche Freunde (E10) --------------------------------------------
+   Zwei Zeilen uebereinander: der deutsche Satz zurueckgenommen, der
+   englische gross. Das ist die Rangfolge der Aufgabe - der deutsche Satz
+   ist die Vorlage, der englische das, woran gearbeitet wird.
+
+   Das Eingabefeld sitzt IN der Zeile, nicht darunter: es ist die Luecke.
+   `width` waechst deshalb mit dem Inhalt und ist nicht die volle Breite -
+   ein Feld ueber die ganze Zeile laedt zu einem Satz ein, gesucht ist ein
+   Wort. Die 8 Zeichen sind das laengste erwartete („sensitive" hat neun,
+   das Feld waechst mit). */
+.freundefeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r4);padding:0 var(--r4) var(--r4);min-height:0}
+.freundsatz{font-size:var(--s1);color:var(--tinte-2);text-align:center;
+  max-width:36ch}
+/* Der englische Satz ist FLIESSTEXT, kein Flexlauf.
+   Der erste Anlauf machte ihn zu `display:flex` mit Umbruch - und weil das
+   Eingabefeld von `.eingabe` `width:100%` erbt, sprang es auf eine eigene
+   Zeile und zerriss den Satz in drei Teile. Genau das, was diese Aufgabe
+   nicht sein darf: die Luecke sitzt IM Satz, sonst ist sie ein Formular.
+   `display:block` und ein `inline-block`-Feld halten sie darin. */
+.freundluecke{font-family:var(--f-lesen);font-size:var(--s2);color:var(--tinte);
+  text-align:center;max-width:34ch;line-height:2;display:block}
+/* ZWEI Klassen im Selektor, und das ist noetig: `.eingabe` traegt
+   `width:100%` und steht im Stilblatt WEITER UNTEN. Bei gleicher
+   Spezifitaet gewinnt die spaetere Regel - der erste Anlauf schrieb
+   `.wort-eingabe` allein hin, und das Feld blieb ueber die volle Breite.
+   Auf dem Bildschirm sah man den Satz in drei Zeilen zerrissen; im
+   Stilblatt sah man gar nichts. */
+/* Die Breite ist FEST und fuer alle dreissig gleich - 15 Zeichen, so
+   breit wie die laengste Antwort („grammar school", 14). Sie waechst NICHT
+   mit dem gesuchten Wort: ein Feld, das so breit ist wie die Loesung,
+   verraet ihre Laenge, und bei „set menu" gegen „menu" ist das schon die
+   halbe Antwort.
+   `width:auto` taugt hier nicht - ein `input` faellt damit auf seine
+   Voreinstellung von zwanzig Zeichen zurueck, und das sah aus wie ein
+   Feld ueber die ganze Zeile. */
+.freundluecke .wort-eingabe{display:inline-block;width:15ch;
+  font-size:inherit;text-align:center;padding:0 var(--r2);min-height:44px;
+  vertical-align:baseline;border-width:var(--strich)}
+.freundluecke .luecke{font-family:var(--f-lesen);font-size:inherit;
+  min-width:15ch;vertical-align:baseline}
+/* Der Aufkleber eines falschen Freundes: das englische Wort. Dieselbe
+   Bauart wie der Rechen- und der Ziffernaufkleber - was hier klebt, ist ein
+   Wort und kein Umriss, und drei Formen fuer dieselbe Sache waeren zwei zu
+   viel. Kleiner gesetzt, weil „grammar school" hineinpassen muss. */
+.wortkleber{display:flex;align-items:center;justify-content:center;width:100%;height:100%;
+  font-family:var(--f-lesen);font-weight:700;font-size:var(--s-klein);
+  color:var(--auf-flaeche);background:color-mix(in oklab, var(--ton) 34%, var(--papier));
+  border-radius:var(--rund-klein);text-align:center;padding:0 var(--r1);
+  overflow-wrap:anywhere}
+.aufkleber:not(.da) .wortkleber{background:color-mix(in oklab, var(--linie) 55%, var(--papier));color:var(--tinte-2)}
 /* ---- Schreiben (N2a) --------------------------------------------------
    Die Schreibflaeche ist QUADRATISCH, und das ist keine Geschmacksfrage:
    der Kasten der Vorlage ist 100 x 100, und der Finger wird ueber
@@ -2445,6 +2511,10 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Karten und der Ausweg muessen uebereinander passen. 104 statt 124, und
      der Fleck geht von 76 auf 64 - beides bleibt weit ueber der
      Fingergrenze von 44. */
+  /* Auf 844x390 muessen zwei Saetze, das Feld, „Prüfen" und der Ausweg
+     uebereinander passen - dieselbe Rechnung wie bei der Rechnung. */
+  .freundluecke{font-size:var(--s1);line-height:1.9}
+  .freundluecke .luecke{font-size:var(--s1)}
   .engkarte{min-height:104px;min-width:104px;padding:var(--r2)}
   .farbfleck{width:64px;height:64px}
   .ziffernbild{font-size:var(--s3)}

@@ -522,7 +522,17 @@ egal sind.
 ### 9 · Falsche Freunde  *(Eltern)*
 
 Ein deutscher Satz mit einer Falle: *„Ich habe einen Brief bekommen."*
-Zwei englische Fassungen stehen da, eine mit `become`. Welche stimmt?
+Daneben derselbe Satz auf Englisch — mit einer **Lücke** genau an der
+Falle: `I ___ a letter yesterday.` Getippt wird das eine Wort.
+
+> **Gebaut wurde eine Lücke, nicht die Auswahl, die hier zuerst stand.**
+> Der erste Entwurf schrieb „zwei englische Fassungen stehen da, welche
+> stimmt?". Das widerspricht der Profiltabelle, die für Stephan und
+> Violeta „Auswahl statt Tippen: **nie**" sagt, und dem Tor E-f, das genau
+> das prüft. Die Tabelle ist die Referenz, also gewinnt sie — und der
+> Zuschnitt wird besser: eine Auswahl aus zweien lässt sich zur Hälfte
+> erraten, und was man erkennt, kann man noch lange nicht sagen. Bei der
+> Lücke kommt der falsche Freund **aus einem selbst**.
 
 Das ist die einzige Form, in der die App **die typische Falle** zeigt statt
 sie zu vermeiden — und sie funktioniert nur, weil beide Fassungen plausibel
@@ -692,7 +702,7 @@ App spielbar** — kein halbes Fach im Auslieferungsstand.
 | **E7** | Lea liest: **Wort zum Bild** | am Gerät |
 | **E8** | Lea schreibt: **Abschreiben mit Vorlage** | am Gerät; `passt` für die Buchstabenkarten |
 | **E9** | **Der Satz, den du sagen kannst** + Abzeichen je Themengebiet | Abzeichen erscheint erst, wenn das Gebiet voll ist |
-| **E10** | Eltern: **falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tor E-g; und E-f (getippt, nie Auswahl) |
+| **E10** | Eltern: **falsche Freunde** — 30 Fallen, zwei Fassungen je Falle | **GEFAHREN (v375)** — Tor E-g und E-f; gebaut als **Lücke**, nicht als Auswahl (siehe Form 9) |
 | **E11** | Eltern: **Wendungen** je Themengebiet, mit mehreren gültigen Antworten | Tor E-g; Groß-/Kleinschreibung und Schlusspunkt sind egal |
 | **E12** | Eltern: **Hören und schreiben** — ganzer Satz, normales Tempo, zweites Hören wird gezählt | am Gerät; die Zahl der Wiederholungen steht im Elternbereich |
 

@@ -188,7 +188,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
-| 2 | **E5–E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E4b (nur E10 nicht) |
+| 2 | **E5–E9, E11, E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E4b (E11 und E12 nicht) |
 | 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -200,7 +200,8 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 11 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
 | 12 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
 | 13 | **G19** Das Wasserzeichen der Weltenkachel liegt hochkant zu 100 % hinter dem Namen | niemand am Zielgerät | gering | klein | — |
-| 14 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 14 | **E10b** Die Fallen im Elternbereich nachzählen — welche wirklich getippt werden | ihr beide | gering | klein | ein paar Sitzungen |
+| 15 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
 dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal
@@ -213,7 +214,7 @@ sein Block, nicht diese Zeile.
 
 *Dreimal nachgezogen: 01.09.2026 (fünf Zeilen), 04.09.2026 (die Tabelle
 umgestellt), 05.09.2026 (E3 gefahren, E4 rückt auf Rang 1; dann E4a und QS3
-gefahren, E4b bleibt Rang 1).*
+gefahren, E4b bleibt Rang 1; dann E10 gefahren).*
 
 **A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
 Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
@@ -4837,6 +4838,79 @@ Gegenprobe 315 stellt Leas Zelle auf „nein". Die App spricht dann weiter
 (richtig), die Tabelle sagt etwas anderes — und genau das schlägt an. Die
 andere Hälfte fängt die Probe „die Englischebene sagt das Wort gar nicht
 mehr". Erst zusammen sind sie eine Aussage.
+
+### E10 · Falsche Freunde — GEFAHREN (v375)
+
+Die erste Englischebene für Stephan und Violeta, und die einzige Form der
+App, die eine **Falle zeigt statt sie zu vermeiden**. Dreißig Stück, und
+sie hängen an nichts: weder an einem Bild noch an der Lehrplanliste.
+
+#### Der Widerspruch in der eigenen Referenz
+
+§ 5 Form 9 beschreibt: *„Zwei englische Fassungen stehen da, eine mit
+`become`. Welche stimmt?"* — also eine **Auswahl**. Die Profiltabelle sagt
+für Stephan und Violeta **„Auswahl statt Tippen: nie"**, und Tor E-f prüft
+genau das. Beides zusammen geht nicht.
+
+**Die Tabelle gewinnt** (Regel 3: das Soll kommt aus der Referenz) — und
+der Zuschnitt wird dadurch besser, nicht schlechter. Gebaut ist es jetzt
+als **Lücke**: der deutsche Satz steht da, darunter derselbe auf Englisch
+mit einer Lücke genau an der Falle. Getippt wird das eine Wort.
+
+> „Ich habe gestern einen Brief bekommen."
+> `I ___ a letter yesterday.`
+
+Eine Auswahl aus zweien lässt sich zur Hälfte erraten, und was man
+**erkennt**, kann man noch lange nicht sagen — das ist genau das Problem
+aus § 2b: Schulenglisch, das zugewachsen ist, erkennt viel und produziert
+wenig. Bei der Lücke kommt der falsche Freund **aus einem selbst**. Wer
+`become` tippt, bekommt genau dort die Auskunft; das ist ein anderer
+Moment als ein Haken an der richtigen von zwei Zeilen.
+
+Die Falle wird deshalb **erkannt, nicht angeboten**. `tor/inhalt.mjs`
+verlangt, dass sie nie unter den richtigen Antworten steht — sonst
+belohnte die Aufgabe lautlos den Fehler, den sie zeigen soll: der
+Bildschirm sähe richtig aus, das Lob käme, und gelernt wäre das Falsche.
+
+#### Drei Befunde
+
+**1. Die Kennung war falsch gewählt, und der Vorlauf zeigte den falschen
+Vorrat.** Die Ebene hieß zuerst `englisch:freunde` — und in dieser App
+sagt der Teil **vor** dem Doppelpunkt, *wie* gefragt wird (so steht es seit
+R6 bei `hauptstaedte:europa`). `vorrat()` und `vorlaufSatz()` lesen genau
+diesen Teil. Unter der Überschrift „Falsche Freunde" standen deshalb die
+zehn Farben und die fünfzehn Zahlen von „Hören und zeigen" — und **kein
+Tor hätte das gemeldet**, der Bildschirm war ja gefüllt. Die Ebene heißt
+jetzt `freunde`; zur Welt gehört sie über `art`, und die Kennung muss das
+nicht auch noch sagen.
+
+**2. Mein neuer Wächter fand einen Fehler — seinen eigenen.** Die Prüfung
+„die Falle darf nicht auf dem Bildschirm stehen" las den ganzen
+Bildschirmtext und wurde prompt rot bei „Sie geht aufs **Gymnasium**": die
+Falle heißt `gymnasium` und steht damit im **deutschen** Satz. Das ist
+kein Fehler, sondern der Grund, warum es ein falscher Freund ist — bei
+`Chef`, `Rock`, `Gift`, `Kind`, `bald`, `Rat` und `also` ist es genauso.
+Gezählt wird jetzt nur der englische Satz.
+
+**3. Und dieselbe Sorte noch einmal, am Text:** die Prüfung „der Grund
+muss die Falle nennen" verlangte sie wortwörtlich und wurde rot bei
+`became` gegen `become` und `oldtimer` gegen `old-timer`. Dieselben Wörter
+in anderer Form: `falle` ist die Form, die ein Deutscher **tippt**, der
+Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
+falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
+Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
+
+### G18c · Ein abgeschalteter Knopf sah aus wie ein greifbarer — GEFLICKT
+
+Aufgefallen beim Bau von E10, vorhanden war es **überall**: `.knopf[disabled]`
+stand nirgends im Stilblatt. Nach der Antwort blieb „Prüfen" sattblau und
+sah aus, als ließe sich noch einmal prüfen — auf dem Rechenblatt seit C1,
+auf dem Schreibblatt seit N2a.
+
+G18 hatte `.etikett` und `.zahl` erfasst, also die Antwortknöpfe; der
+große Knopf daneben war nie erfasst worden. Es hängt jetzt am **Zustand**
+des Knopfes und nicht an `[data-fertig]`: ein Knopf mit `disabled` ist
+verbraucht, egal warum.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

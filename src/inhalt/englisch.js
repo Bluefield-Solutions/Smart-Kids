@@ -462,3 +462,182 @@ export const NUR_WORT = [
   'time', 'to', 'very', 'we', 'welcome', 'what', 'when',
   'where', 'who', 'yes', 'you', 'your',
 ];
+
+/* ---------- Falsche Freunde (E10) ----------------------------------------
+ *
+ * Ein deutscher Satz mit einer Falle, daneben derselbe Satz auf Englisch -
+ * mit einer LUECKE genau an der Falle. Getippt wird das eine Wort.
+ *
+ * WARUM LUECKE UND NICHT AUSWAHL, und das ist eine Entscheidung gegen den
+ * ersten Entwurf des Konzepts: § 5 Form 9 beschreibt „zwei englische
+ * Fassungen stehen da, welche stimmt?" - also eine Auswahl aus zweien. Die
+ * Profiltabelle im Backlog sagt fuer Stephan und Violeta aber „Auswahl
+ * statt Tippen: NIE", und Tor E-f prueft das. Beides zusammen geht nicht.
+ *
+ * Die Tabelle gewinnt, weil sie die Referenz ist (Regel 3) - und der
+ * Zuschnitt wird dadurch besser, nicht schlechter:
+ *
+ *   Eine Auswahl aus zweien laesst sich zur Haelfte erraten, und was man
+ *   ERKENNT, wenn man es sieht, kann man noch lange nicht sagen. Genau das
+ *   ist das Problem aus § 2b: Schulenglisch, das zugewachsen ist, erkennt
+ *   viel und produziert wenig.
+ *
+ *   Bei der Luecke kommt der falsche Freund aus einem selbst. Wer bei
+ *   „Ich habe einen Brief bekommen" `become` tippt, bekommt genau dort die
+ *   Auskunft - und das ist ein anderer Moment als ein Haken an der
+ *   richtigen von zwei Zeilen.
+ *
+ * `falle` ist deshalb kein Schmuck: sie wird nicht angeboten, sondern
+ * ERKANNT. Tippt jemand sie, sagt die App, was das Wort wirklich heisst,
+ * statt nur „falsch". Das Untertor `englisch` verlangt, dass die Falle nie
+ * unter den richtigen Antworten steht - sonst waere die Aufgabe eine, die
+ * den Fehler belohnt.
+ *
+ * DIE LISTE IST MEINE, nicht amtlich. Sie steht deshalb hier und nicht in
+ * `docs/referenz/`: es sind die klassischen deutsch-englischen Fallen, und
+ * sie sind fuer Deutschsprachige richtig - nicht fuer irgendwen.
+ */
+export const FREUNDE = [
+  { id: 'get',      satz: 'Ich habe gestern einen Brief bekommen.',
+    luecke: 'I ___ a letter yesterday.',
+    richtig: ['got', 'received'], falle: 'became',
+    warum: '„become" heißt werden, nicht bekommen.' },
+  { id: 'boss',     satz: 'Mein Chef ist heute nicht da.',
+    luecke: 'My ___ is not here today.',
+    richtig: ['boss', 'manager'], falle: 'chef',
+    warum: '„chef" ist der Koch.' },
+  { id: 'mobile',   satz: 'Mein Handy ist kaputt.',
+    luecke: 'My ___ is broken.',
+    richtig: ['mobile', 'mobile phone', 'phone', 'cell phone', 'cellphone'], falle: 'handy',
+    warum: '„handy" heißt praktisch.' },
+  { id: 'possibly', satz: 'Eventuell regnet es morgen.',
+    luecke: 'It will ___ rain tomorrow.',
+    richtig: ['possibly', 'maybe', 'perhaps'], falle: 'eventually',
+    warum: '„eventually" heißt schließlich, am Ende.' },
+  { id: 'current',  satz: 'Das ist die aktuelle Fassung.',
+    luecke: 'This is the ___ version.',
+    richtig: ['current', 'latest'], falle: 'actual',
+    warum: '„actual" heißt tatsächlich.' },
+  { id: 'sensitive', satz: 'Sie ist ein sehr sensibler Mensch.',
+    luecke: 'She is a very ___ person.',
+    richtig: ['sensitive'], falle: 'sensible',
+    warum: '„sensible" heißt vernünftig.' },
+  { id: 'poison',   satz: 'Die Flasche enthält Gift.',
+    luecke: 'The bottle contains ___.',
+    richtig: ['poison'], falle: 'gift',
+    warum: '„gift" ist das Geschenk.' },
+  { id: 'skirt',    satz: 'Sie trägt einen blauen Rock.',
+    luecke: 'She is wearing a blue ___.',
+    richtig: ['skirt'], falle: 'rock',
+    warum: '„rock" ist der Fels.' },
+  { id: 'child',    satz: 'Sie haben ein Kind.',
+    luecke: 'They have a ___.',
+    richtig: ['child'], falle: 'kind',
+    warum: '„kind" heißt nett.' },
+  { id: 'soon',     satz: 'Ich bin bald zurück.',
+    luecke: 'I will be back ___.',
+    richtig: ['soon'], falle: 'bald',
+    warum: '„bald" heißt kahl.' },
+  { id: 'advice',   satz: 'Ich brauche einen Rat.',
+    luecke: 'I need some ___.',
+    richtig: ['advice'], falle: 'rat',
+    warum: '„rat" ist die Ratte.' },
+  { id: 'opinion',  satz: 'Das ist meine Meinung.',
+    luecke: 'That is my ___.',
+    richtig: ['opinion', 'view'], falle: 'meaning',
+    warum: '„meaning" heißt Bedeutung.' },
+  { id: 'mark',     satz: 'Ich habe eine gute Note bekommen.',
+    luecke: 'I got a good ___.',
+    richtig: ['mark', 'grade'], falle: 'note',
+    warum: '„note" ist die Notiz.' },
+  { id: 'factory',  satz: 'Er arbeitet in einer Fabrik.',
+    luecke: 'He works in a ___.',
+    richtig: ['factory', 'plant'], falle: 'fabric',
+    warum: '„fabric" ist der Stoff.' },
+  { id: 'brochure', satz: 'Nimm dir einen Prospekt mit.',
+    luecke: 'Take a ___ with you.',
+    richtig: ['brochure', 'leaflet'], falle: 'prospect',
+    warum: '„prospect" heißt Aussicht.' },
+  { id: 'donate',   satz: 'Wir wollen Geld spenden.',
+    luecke: 'We want to ___ money.',
+    richtig: ['donate', 'give'], falle: 'spend',
+    warum: '„spend" heißt ausgeben.' },
+  { id: 'likeable', satz: 'Er ist sehr sympathisch.',
+    luecke: 'He is very ___.',
+    richtig: ['likeable', 'likable', 'nice', 'pleasant'], falle: 'sympathetic',
+    warum: '„sympathetic" heißt mitfühlend.' },
+  { id: 'reputable', satz: 'Das ist eine seriöse Firma.',
+    luecke: 'That is a ___ company.',
+    richtig: ['reputable', 'respectable', 'trustworthy'], falle: 'serious',
+    warum: '„serious" heißt ernst.' },
+  { id: 'projector', satz: 'Der Beamer ist an.',
+    luecke: 'The ___ is on.',
+    richtig: ['projector'], falle: 'beamer',
+    warum: '„beamer" versteht kein Englischsprachiger — im Zweifel als BMW.' },
+  { id: 'tuxedo',   satz: 'Er trug einen Smoking.',
+    luecke: 'He was wearing a ___.',
+    richtig: ['tuxedo', 'tux', 'dinner jacket'], falle: 'smoking',
+    warum: '„smoking" heißt rauchend.' },
+  { id: 'vintage',  satz: 'Das ist ein schöner Oldtimer.',
+    luecke: 'That is a beautiful ___.',
+    richtig: ['vintage car', 'classic car'], falle: 'oldtimer',
+    warum: '„old-timer" ist ein alter Mann.' },
+  { id: 'so',       satz: 'Ich war müde, also bin ich gegangen.',
+    luecke: 'I was tired, ___ I left.',
+    richtig: ['so'], falle: 'also',
+    warum: '„also" heißt auch.' },
+  { id: 'commission', satz: 'Er bekommt eine Provision.',
+    luecke: 'He gets a ___.',
+    richtig: ['commission'], falle: 'provision',
+    warum: '„provision" heißt Bereitstellung, Vorrat.' },
+  { id: 'review',   satz: 'Der Film bekam eine gute Kritik.',
+    luecke: 'The film got a good ___.',
+    richtig: ['review'], falle: 'critic',
+    warum: '„critic" ist der Kritiker, also die Person.' },
+  { id: 'grammar',  satz: 'Sie geht aufs Gymnasium.',
+    luecke: 'She goes to a ___.',
+    richtig: ['grammar school', 'secondary school', 'high school'], falle: 'gymnasium',
+    warum: '„gymnasium" ist die Turnhalle.' },
+  { id: 'setmenu',  satz: 'Ich nehme das Menü.',
+    luecke: 'I will take the ___.',
+    richtig: ['set menu', 'set meal'], falle: 'menu',
+    warum: '„menu" ist die Speisekarte.' },
+  { id: 'suit',     satz: 'Sie trug ein elegantes Kostüm.',
+    luecke: 'She was wearing an elegant ___.',
+    richtig: ['suit'], falle: 'costume',
+    warum: '„costume" ist die Verkleidung.' },
+  { id: 'sparkling', satz: 'Wir trinken Sekt.',
+    luecke: 'We are drinking ___.',
+    richtig: ['sparkling wine', 'champagne'], falle: 'sect',
+    warum: '„sect" ist die Sekte.' },
+  { id: 'billion',  satz: 'Das Projekt kostet eine Milliarde Euro.',
+    luecke: 'The project costs a ___ euros.',
+    richtig: ['billion'], falle: 'milliard',
+    warum: '„milliard" gibt es im heutigen Englisch nicht — eine Milliarde ist a billion.' },
+  { id: 'checks',   satz: 'Der Schaffner kontrolliert die Fahrkarten.',
+    luecke: 'The conductor ___ the tickets.',
+    richtig: ['checks', 'inspects'], falle: 'controls',
+    warum: '„to control" heißt steuern, nicht prüfen.' },
+];
+
+/**
+ * Was ein Kind oder ein Erwachsener getippt hat, auf Vergleichsform.
+ *
+ * Gross- und Kleinschreibung und der Schlusspunkt sind egal - so steht es
+ * im Konzept. Getrimmt wird auch der doppelte Zwischenraum: „set  menu"
+ * ist dieselbe Antwort wie „set menu", und wer sich darueber freut, hat
+ * kein Englisch geprueft.
+ *
+ * NICHT nachsichtig ist die Rechtschreibung. Bei einer Wendung waere das
+ * richtig (R6), hier nicht: die Aufgabe dreht sich um EIN Wort, und wer
+ * „recieved" schreibt, soll es sehen.
+ */
+export const wieGetippt = (t) => String(t).toLowerCase().trim()
+  .replace(/[.!?]+$/, '').replace(/\s+/g, ' ');
+
+/** Der Vorrat der Ebene „Falsche Freunde". */
+export function vorratFreunde(){
+  return FREUNDE.map(f => ({ id: `en:freund:${f.id}`, name: f.richtig[0],
+    satz: f.satz, luecke: f.luecke, richtig: f.richtig, falle: f.falle,
+    warum: f.warum }));
+}

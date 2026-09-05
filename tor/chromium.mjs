@@ -133,7 +133,9 @@ export async function serviere(wurzel, erreichbar = () => true) {
  */
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
                                 : String(ebene).startsWith('schreiben') ? 'schreiben'
-                                : String(ebene).startsWith('englisch') ? 'englisch' : 'erdkunde';
+                                : String(ebene).startsWith('englisch')
+                                  || String(ebene).startsWith('freunde') ? 'englisch'
+                                : 'erdkunde';
 
 /* Von der Weltenwahl in die Ebenenwahl der Welt, in der `ebene` liegt.
  *

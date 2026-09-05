@@ -928,7 +928,8 @@ async function weitergegangen(p, ms = 8000) {
     if (!s) return false;
     if (s.querySelector('.frage .richtigText, .frage .fastText, .frage .loesung')) return false;
     return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
-              || s.querySelector('.engkarte') || s.querySelector('#nochmal'));
+              || s.querySelector('.engkarte') || s.querySelector('.freundluecke')
+              || s.querySelector('#nochmal'));
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
@@ -3173,8 +3174,8 @@ async function abgeschlossen(p, wer, ebene, hoert, wie) {
   await raus(p);
 }
 
-const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa'],
-                       violeta: ['rechnen:gross', 'hauptstaedte:europa'],
+const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde'],
+                       violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
                                // Die Schreibwelt gehoert nur ihr (N2a, N3).
                                // Ohne diese beiden prueft `durchgang` zwar,
@@ -3322,7 +3323,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'laender:europa' || e.startsWith('rechnen')
-                    || e.startsWith('englisch'))
+                    || e.startsWith('englisch') || e.startsWith('freunde'))
       : da;
     gespielt[wer] = zuSpielen.length;
     gespieltEnglisch[wer] = zuSpielen.filter(e => e.startsWith('englisch')).length;
@@ -3393,8 +3394,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       // der Zwischenschirm mit „Weiter". Vorher stand hier eine feste
       // Pause; sie lief 27 Mal, einmal je Ebene und Profil.
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
-        + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da #weiter',
-        { timeout: 15000 }).catch(() => {});
+        + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da .freundluecke, '
+        + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       /* Rechnen: die Aufgabe OHNE Karte.
@@ -3481,6 +3482,48 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * richtige Bild tippen. Welches richtig ist, steht in der Sitzung -
        * auf dem Bildschirm steht es mit Absicht nicht, das ist die ganze
        * Zusage dieser Ebene. */
+      /* Falsche Freunde (E10) - die zweite Englischebene, und der dritte
+       * Zweig, der ohne eigene Zeile in eine Zeitueberschreitung liefe.
+       * Es gibt kein `path.ziel`, keine Rechnung und keine Karte: ein
+       * deutscher Satz, eine Luecke, ein getipptes Wort. */
+      if (await p.$('.schirm.da .freundluecke')) {
+        const auf = await p.evaluate(() => ({
+          wort: Sitzung?.liste[Sitzung.i]?.richtig?.[0] || '',
+          falle: Sitzung?.liste[Sitzung.i]?.falle || '',
+          /* E-f: eine ELTERNAUFGABE verlangt eine getippte Antwort, nie
+             eine Auswahl. Gezaehlt wird, was auf dem Schirm zum Antippen
+             steht. */
+          wahlknoepfe: document.querySelectorAll(
+            '.schirm.da .etikett, .schirm.da .zahl, .schirm.da .engkarte').length,
+          /* Gelesen wird nur der ENGLISCHE Satz, nicht der ganze Schirm.
+           *
+           * Der erste Anlauf nahm den ganzen Bildschirmtext - und wurde
+           * prompt rot bei „Sie geht aufs Gymnasium": die Falle heisst
+           * `gymnasium` und steht damit im DEUTSCHEN Satz. Das ist kein
+           * Fehler, sondern der Grund, warum es ein falscher Freund ist -
+           * bei `Chef`, `Rock`, `Gift`, `Kind`, `bald`, `Rat` und `also`
+           * ist es genauso. Was die Ebene zusagt, ist etwas anderes: die
+           * Falle wird nicht ANGEBOTEN. Also zaehlt der englische Satz. */
+          englisch: document.querySelector('.schirm.da .freundluecke')?.textContent || '',
+        }));
+        if (!auf.wort) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Wort`));
+          continue;
+        }
+        if (auf.wahlknoepfe)
+          merke('durchgang', new Error(`${wer}/${ebene}: ${auf.wahlknoepfe} Möglichkeiten `
+            + 'zum Antippen — die Profiltabelle sagt für dieses Profil „Auswahl statt '
+            + 'Tippen: nie"'));
+        if (auf.falle && new RegExp(`\\b${auf.falle}\\b`, 'i').test(auf.englisch))
+          merke('durchgang', new Error(`${wer}/${ebene}: die Falle „${auf.falle}" steht `
+            + 'im englischen Satz — ein falscher Freund, den man dort liest, ist keiner mehr'));
+        await p.fill('.schirm.da #rein', auf.wort);
+        await p.click('.schirm.da #pruef');
+        wege.add(`${wer}: falscher Freund getippt`);
+        await bewertet(p);
+        await abgeschlossen(p, wer, ebene, /(?!)/, 'das fehlende Wort getippt');
+        continue;
+      }
       if (await p.$('.schirm.da .engkarte')) {
         const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
                                               wort: Sitzung?.liste[Sitzung.i]?.wort || '' }));
@@ -6282,6 +6325,58 @@ if (laeuft('englisch')) try {
         + 'ein Knopf, der schweigt, ist schlimmer als keiner'));
     console.log(`  Ohne englische Stimme:      geschwiegen, „${l.wort}" steht `
       + `geschrieben da, kein Hörknopf`);
+    await q.close();
+  }
+  /* Falsche Freunde (E10) - die Falle wird ERKANNT, nicht angeboten.
+   *
+   * Zwei Zusagen, und beide sind nur am laufenden Bildschirm zu sehen:
+   *
+   *   1. Wer die Falle tippt, bekommt GENAU DORT die Auskunft, was das
+   *      Wort wirklich heisst - nicht ein allgemeines „Nicht ganz". Das
+   *      ist der ganze Zweck der Ebene. Ein Tor, das nur „ist rot"
+   *      pruefte, liesse den Unterschied durch.
+   *   2. Gross- und Kleinschreibung und der Schlusspunkt sind egal.
+   *      Getippt wird hier von Erwachsenen auf einem Telefon, und die
+   *      erste Grossschreibung macht die Tastatur von allein. Eine
+   *      Aufgabe, die daran scheitert, prueft die Tastatur.
+   *
+   * Gespielt wird als Stephan - die Ebene gehoert ihm und Violeta. */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await q.waitForSelector('[data-profil="stephan"]', { timeout: 20000 });
+    await q.click('[data-profil="stephan"]');
+    await zurEbenenwahl(q, 'freunde');
+    await q.click('[data-ebene="freunde"]');
+    await durchVorlaufWenn(q);
+    await q.waitForSelector('.schirm.da .freundluecke', { timeout: 20000 });
+    const auf = await q.evaluate(() => ({
+      falle: Sitzung?.liste[Sitzung.i]?.falle || '',
+      wort: Sitzung?.liste[Sitzung.i]?.richtig?.[0] || '',
+      warum: Sitzung?.liste[Sitzung.i]?.warum || '',
+    }));
+    await q.fill('.schirm.da #rein', auf.falle);
+    await q.click('.schirm.da #pruef');
+    await q.waitForFunction(() => !!document.querySelector('.schirm.da .frage .fastText'),
+      null, { timeout: 4000 }).catch(() => {});
+    const nachFalle = await q.$eval('.schirm.da .frage', e => e.textContent.trim())
+      .catch(() => '');
+    if (!nachFalle.includes(auf.warum))
+      merke('englisch', new Error(`„${auf.falle}" getippt, und die App sagt `
+        + `„${nachFalle}" — sie muss dort sagen, was das Wort wirklich heißt `
+        + `(„${auf.warum}"), sonst ist die Falle nur eine falsche Antwort`));
+    /* Und jetzt richtig - GROSS geschrieben und mit Punkt. Beides muss
+       durchgehen; ohne diese Haelfte waere die Zusage aus dem Konzept
+       („Groß-/Kleinschreibung und Schlusspunkt sind egal") unbezeugt. */
+    await q.fill('.schirm.da #rein', auf.wort.toUpperCase() + '.');
+    await q.click('.schirm.da #pruef');
+    await q.waitForFunction(() => !!document.querySelector('.schirm.da .frage .richtigText'),
+      null, { timeout: 4000 }).catch(() => {});
+    const gewertet = !!(await q.$('.schirm.da .frage .richtigText'));
+    if (!gewertet)
+      merke('englisch', new Error(`„${auf.wort.toUpperCase()}." wurde nicht gewertet — `
+        + 'Groß-/Kleinschreibung und der Schlusspunkt sollen egal sein'));
+    console.log(`  Falsche Freunde (E10):      „${auf.falle}" → „${auf.warum}" · `
+      + `„${auf.wort.toUpperCase()}." ${gewertet ? 'gewertet' : 'NICHT gewertet'}`);
     await q.close();
   }
   await p.close();

@@ -1340,6 +1340,20 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await p.waitForSelector('.schirm.da [data-ebene]');
   await schau('Ebenenwahl (Lea)');
 
+  /* Und die Elternebene (E10) - als STEPHAN, denn ihm gehoert sie.
+   *
+   * Sie ist der einzige Bildschirm der App, auf dem ein Eingabefeld
+   * MITTEN in einem Satz sitzt. Das ist die engste Stelle, die es hier
+   * gibt: der deutsche Satz, der englische mit der Luecke, „Prüfen" und
+   * der Ausweg muessen auf 844 x 390 uebereinander passen - und der Satz
+   * darf dabei nicht umbrechen, wo es ihn zerreisst. */
+  await p.goto(ADRESSE, { waitUntil: 'load' });
+  await p.waitForSelector('[data-profil="stephan"]');
+  await tipp('[data-profil="stephan"]');
+  await zurEbenenwahl(p, 'freunde');
+  await ebeneAnsehen('freunde', '.schirm.da .freundluecke', 'Falsche Freunde',
+    { vorlaufName: 'Vorlauf freunde' });
+
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
   /* Die Hinweise standen bisher NUR im roten Zweig - also genau dann
    * nicht da, wenn das Tor gruen ist. Ein Hinweis, den man nur zu sehen

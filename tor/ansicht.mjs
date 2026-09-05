@@ -324,6 +324,15 @@ const AUFNAHMEN = [
     wahl:'.schirm.da', tun:'vorlauf' },
   { name:'quer-englisch', spiel:'englisch:hoeren', quer:true,
     wahl:'.schirm.da' },
+  /* Falsche Freunde (E10) - der einzige Bildschirm der App mit einem
+   * Eingabefeld MITTEN im Satz. Ob das aussieht wie eine Luecke oder wie
+   * ein danebengeratenes Formular, sagt kein Tor, sondern nur das Bild;
+   * `passt` misst, dass es hineinpasst, und das ist etwas anderes.
+   *
+   * Als Stephan, denn ihm gehoert die Ebene - und damit ist es zugleich
+   * die einzige Aufnahme eines Aufgabenbildschirms im SACHLICHEN Ton. */
+  { name:'quer-freunde', spiel:'freunde', kind:'stephan', quer:true,
+    wahl:'.schirm.da' },
 ];
 
 /**
@@ -576,6 +585,7 @@ const OHNE_KARTE = {
   rechnen:   '.schirm.da .rechnung',
   schreiben: '.schirm.da .schreibblatt',
   englisch:  '.schirm.da .engkarte',
+  freunde:   '.schirm.da .freundluecke',
 };
 
 const STIMMEN_NACHBAU = () => {
@@ -870,7 +880,8 @@ for (const a of MEINE) {
       await seite.click(`.schirm.da [data-ebene="${a.spiel}"]:not([data-gruppe])`);
       // Seit R3 steht der Vorlauf beim ersten Betreten davor.
       await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
-        + '.schirm.da .rechnung, .schirm.da .engkarte', { timeout: 25000 });
+        + '.schirm.da .rechnung, .schirm.da .engkarte, .schirm.da .freundluecke',
+        { timeout: 25000 });
       // `tun:'vorlauf'` heisst: HIER bleiben. Kein `continue` - das
       // uebersprang die Aufnahme selbst und liess die naechste auf einer
       // halb gewanderten Seite landen (`quer-buch` wurde davon rot).

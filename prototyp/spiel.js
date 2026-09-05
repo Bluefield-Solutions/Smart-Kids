@@ -1107,6 +1107,33 @@ const EBENEN = [
    * sie nebenan in der Schreibwelt. */
   { id:'englisch:hoeren', ueber:'Englisch', titel:'Hören und zeigen', farbe:3,
     art:'englisch', wer:['fiona','lea'] },
+  /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
+   * die eine FALLE zeigt statt sie zu vermeiden.
+   *
+   * `art:'freunde'` und nicht ein Schalter an `englisch`: gefragt wird
+   * anders (ein deutscher Satz, eine Luecke, ein getipptes Wort), und die
+   * Ebene braucht einen eigenen Leitner-Stand. Dieselbe Begruendung wie
+   * ueberall sonst.
+   *
+   * `wer`: nur Stephan und Violeta. Die Lehrplanliste ist fuer sie
+   * wertlos - `cat`, `blue` und `seven` sind kein Problem, das sie haben.
+   * Ihr Problem sind die dreissig Fallen, die sie seit der Schule
+   * mitschleppen. Umgekehrt hat eine Achtjaehrige von „Provision" nichts:
+   * sie kennt das deutsche Wort nicht. */
+  /* Die Kennung heisst `freunde` und NICHT `englisch:freunde`.
+   *
+   * In dieser App sagt der Teil vor dem Doppelpunkt, WIE gefragt wird, und
+   * der dahinter, WO oder WOMIT - so steht es bei `hauptstaedte:europa`.
+   * `vorrat()` und `vorlaufSatz()` lesen genau diesen Teil. Mit
+   * `englisch:freunde` bekam die Elternebene deshalb den Vorrat von
+   * „Hören und zeigen": im Vorlauf standen unter der Ueberschrift
+   * „Falsche Freunde" die zehn Farben und die fuenfzehn Zahlen, und kein
+   * Tor haette das gemeldet - der Bildschirm war ja gefuellt.
+   *
+   * Zur Welt gehoert sie trotzdem, und das entscheidet `art` ueber
+   * `WELT_VON_ART`. Die Kennung muss das nicht auch noch sagen. */
+  { id:'freunde', ueber:'Englisch', titel:'Falsche Freunde', farbe:1,
+    art:'freunde', wer:['stephan','violeta'] },
 ];
 
 /* Die Fachwelten (D4).
@@ -1154,9 +1181,16 @@ const WELTEN = [
    * Blick beurteilen muss und kein Tor. */
   { id:'englisch',  name:'Englisch', farbe:3 },
 ];
-const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'
-                     : e.art === 'schreiben' ? 'schreiben'
-                     : e.art === 'englisch' ? 'englisch' : 'erdkunde';
+/* Welche Welt zu welcher Aufgabenart gehoert.
+ *
+ * Eine Tabelle und keine Kette von Fragezeichen: mit der zweiten
+ * Englischart (E10) waere daraus die vierte Stufe geworden, und die
+ * fuenfte kommt mit E11. Was hier fehlt, landet in der Erdkunde - das ist
+ * die richtige Voreinstellung, weil die Kartenebenen die einzigen ohne
+ * eigene `art` sind. */
+const WELT_VON_ART = { rechnen:'rechnen', schreiben:'schreiben',
+                       englisch:'englisch', freunde:'englisch' };
+const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
 let Welt = WELTEN[0].id;
 
@@ -1217,6 +1251,11 @@ const SCHREIBBILD = {
 /* Welche Kennungen das Englischbild tragen: die Welt und ihre eine Ebene.
    Ein Satz und keine Tabelle - es gibt (noch) nichts zu unterscheiden. */
 const ENGLISCHBILD = new Set(['englisch', 'englisch:hoeren']);
+/* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
+   Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
+   Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
+   nichts. */
+const FREUNDEBILD = new Set(['freunde']);
 const MATHEBILD = {
   'rechnen':           ['plus','mal'],
   'rechnen:plusminus': ['plus','minus'],
@@ -1278,6 +1317,12 @@ function silhouette(ebeneId) {
      Bild - und eine falsche Zahl in einer Ratsche ist schlimmer als
      keine. Jetzt liegt alles in EINEM Raum: der 24er-Kasten des
      Lautsprecherzeichens, der Fleck als Bogenpfad daneben. */
+  if (FREUNDEBILD.has(ebeneId))
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/><path
+      d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   if (ENGLISCHBILD.has(ebeneId))
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -1311,7 +1356,7 @@ function silhouette(ebeneId) {
  * Kartenbildschirm geoeffnet, wo es nichts zu ziehen gibt.
  */
 const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,
-  englisch: englischschirm }[ebeneArt(ebeneId)] || spielschirm);
+  englisch: englischschirm, freunde: freundeschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören. */
 const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
@@ -1556,6 +1601,7 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
    * Der Farbfleck traegt seinen Ton als Marke am Markup, nicht im
    * Stilblatt: welche zehn Farben es gibt, steht in den Daten, und eine
    * Liste im Stylesheet daneben waere dieselbe Auskunft an zwei Orten. */
+  : x.luecke     ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
   : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
   : x.ziffern    ? `<div class="ziffernkleber" style="--ton:${ton}">${x.ziffern}</div>`
   :           `<div class="rechenkleber" style="--ton:${ton}">${x.frage}</div>`;
@@ -1572,7 +1618,19 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
 /* Beim englischen Gegenstand steht das WORT darunter - und zwar nur im
    Vorlauf und im Buch, nie in der Aufgabe. Dort waere es die Antwort. */
 const stueckFuss = (x) => x.pfad ? x.name : x.zeichenFolge ? x.wort
-                        : x.sorte ? x.wort : `= ${x.name}`;
+                        : x.sorte ? x.wort
+                        /* Beim falschen Freund steht die FALLE darunter, nicht
+                           die Uebersetzung: der Aufkleber ist das PAAR
+                           (`get` gegen `became`), und das Paar ist die ganze
+                           Lehre. Ein Aufkleber, der nur „get" zeigt, waere
+                           eine Vokabel und kein falscher Freund.
+                           Der erste Anlauf schnitt das Wort mit einem
+                           regulaeren Ausdruck aus `warum` heraus - eine
+                           Zeichenkette zu zerlegen, die es als Feld daneben
+                           gibt, ist die Sorte Klugheit, die beim naechsten
+                           Satzzeichen bricht. */
+                        : x.falle ? `nicht ${x.falle}`
+                        : `= ${x.name}`;
 
 const eigenerRahmen = (pfad) => {
   const z = String(pfad).match(/-?\d+\.?\d*/g);
@@ -1629,6 +1687,10 @@ function vorrat(ebeneId, stand = Stand, voll = false){
   // mit E4, aendert sich an dieser Zeile nichts.
   if (art==='englisch')
     return Englisch.vorratHoeren();
+  // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
+  // Einzelstueck, es gibt keine Regel, aus der man sie rechnen koennte.
+  if (art==='freunde')
+    return Englisch.vorratFreunde();
   if (art==='hauptstaedte') {
     // Europa: dieselben Länder wie `laender:europa`, dieselbe Tiefe je
     // Profil - gefragt wird nur nach etwas anderem. `hauptstadt` und `ort`
@@ -2481,7 +2543,14 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
  */
 function vorlaufVorrat(ebeneId){
   const alle = vorrat(ebeneId);
-  if (ebeneArt(ebeneId) !== 'rechnen' || alle.length <= P.sitzung) return alle;
+  /* Seit E10 gilt dasselbe fuer die falschen Freunde, und aus demselben
+     Grund: dreissig Fallen sind keine Vorschau, sondern eine Tafel.
+     Gemessen hat es `passt` - die dreissig Aufkleber liefen auf dem
+     Zielgeraet acht Punkte ueber den Rand, bei zehn Spalten und drei
+     Reihen. Zwoelf Beispiele stehen in zwei Reihen und zeigen genau das,
+     was der Vorlauf zeigen soll: wie die Aufgaben aussehen. */
+  if (!['rechnen', 'freunde'].includes(ebeneArt(ebeneId)) || alle.length <= P.sitzung)
+    return alle;
   const schritt = Math.floor(alle.length / P.sitzung);
   return alle.filter((_, i) => i % schritt === 0).slice(0, P.sitzung);
 }
@@ -2545,6 +2614,10 @@ function vorlaufSatz(ebeneId){
   if (art === 'schreiben')
     return 'Das sind die Buchstaben, die du schreiben lernst. Tippe einen an, '
       + 'dann sage ich dir, wie er heißt.';
+  if (art === 'freunde')
+    return 'Ein deutscher Satz, daneben derselbe auf <strong>Englisch</strong> — '
+      + 'mit einer Lücke. Genau dort sitzt die Falle. Tippe hier eine an, '
+      + 'dann siehst du sie ganz.';
   if (art === 'englisch')
     return englischHoerbar()
       ? 'Gleich sage ich dir ein Wort auf <strong>Englisch</strong>, und du '
@@ -2635,6 +2708,9 @@ function vorlaufAnsage(x, ebeneId){
   // deutscher Rahmensatz drumherum („Das heißt blue.") liefe durch die
   // englische Stimme und klänge nach nichts.
   if (x.sorte) return x.wort;
+  // Der falsche Freund wird DEUTSCH angesagt - der Satz ist die Aufgabe,
+  // das englische Wort die Antwort.
+  if (x.luecke) return `${x.satz} ${x.warum}`;
   // Bei einem Buchstaben das Merkwort, bei einer Zahl ihr Zahlwort.
   if (x.zeichenFolge) return /[A-ZÄÖÜ]/.test(x.zeichen)
     ? `${x.zeichen} wie ${x.wort}.` : `Die ${x.wort}.`;
@@ -3216,6 +3292,138 @@ function rechenschirm(){
  * Stuenden neben einem Farbfleck drei Ziffern, waere die Aufgabe ohne ein
  * Wort Englisch zu loesen.
  */
+/* ---------- Falsche Freunde (E10) ---------------------------------------
+ *
+ * Ein deutscher Satz mit einer Falle, daneben derselbe Satz auf Englisch -
+ * mit einer Luecke genau an der Falle. Getippt wird das eine Wort.
+ *
+ * WARUM GETIPPT UND NICHT AUSGEWAEHLT, obwohl das Konzept „zwei Fassungen,
+ * welche stimmt?" beschreibt: die Profiltabelle sagt fuer Stephan und
+ * Violeta „Auswahl statt Tippen: NIE", und Tor E-f prueft das. Beides
+ * zusammen geht nicht, und die Tabelle ist die Referenz. Die ganze
+ * Begruendung steht bei `FREUNDE` in `src/inhalt/englisch.js` - kurz: eine
+ * Auswahl aus zweien laesst sich zur Haelfte erraten, und was man ERKENNT,
+ * kann man noch lange nicht sagen.
+ *
+ * DIE FALLE WIRD ERKANNT, NICHT ANGEBOTEN. Wer sie tippt, bekommt genau
+ * dort die Auskunft, was das Wort wirklich heisst - und dieser Fehlversuch
+ * zaehlt wie jeder andere. Er wird nicht bestraft und nicht geschenkt.
+ */
+function freundeschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'tippen' });
+  const weiter = () => weiterIn(st);
+
+  /* Die Luecke wird zum Eingabefeld - an der Stelle, an der das Wort
+     fehlt, und nicht darunter. Ein Feld unter dem Satz waere ein Formular;
+     hier soll man den Satz LESEN und die Luecke fuellen. */
+  const satzMitFeld = ziel.luecke.replace('___',
+    '<input class="eingabe wort-eingabe" id="rein" inputmode="text" '
+    + 'autocomplete="off" autocorrect="off" autocapitalize="off" '
+    + 'spellcheck="false" lang="en" aria-label="das fehlende Wort">');
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Wie heißt der Satz auf Englisch?</div>
+    <div class="freundefeld">
+      <div class="freundsatz">${ziel.satz}</div>
+      <div class="freundluecke" lang="en">${satzMitFeld}</div>
+      <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const rein = s.querySelector('#rein');
+  const ausschalten = () => { rein.disabled = true;
+    s.querySelector('#pruef').disabled = true; };
+  /* Die Luecke gefuellt zeigen - beim Loesen wie beim Aufgeben. Ohne das
+     bliebe der Satz unvollstaendig stehen, und man saehe nie, wie er
+     richtig heisst. */
+  const fuellen = (wort) => {
+    const l = s.querySelector('.freundluecke');
+    if (l) l.innerHTML = ziel.luecke.replace('___',
+      `<span class="luecke gefuellt">${wort}</span>`);
+  };
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten();
+    fuellen(ziel.richtig[0]);
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem: `
+      + `<strong lang="en">${ziel.richtig[0]}</strong>. ${ziel.warum}</span>`;
+    sagen(`Kein Problem. ${ziel.warum}`);
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function bewerte(roh){
+    if (erledigt) return;
+    const eingabe = Englisch.wieGetippt(roh);
+    // Leer ist KEIN Fehlversuch - wie beim Rechnen. Wer auf „Prüfen"
+    // tippt, ohne etwas geschrieben zu haben, hat sich nicht geirrt.
+    if (!eingabe) { wackelt(rein); rein.focus(); return; }
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (ziel.richtig.some(r => Englisch.wieGetippt(r) === eingabe)) {
+      erledigt = beendet(s);
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', roh, fachVorher);
+      ausschalten();
+      fuellen(eingabe);
+      const spruch = lob();
+      /* Der Grund steht AUCH beim richtigen Treffer da, als Nebensatz.
+         Wer „got" auf Anhieb tippt, weiss deshalb noch nicht, warum
+         `become` daneben liegt - und das ist der Inhalt dieser Ebene. */
+      lobsatz(s, `<strong lang="en">${ziel.richtig[0]}</strong>.`, null, spruch,
+        ziel.warum, neuerAufkleber);
+      sagen(`${spruch} ${ziel.warum}`);
+      setTimeout(weiter, LOBPAUSE);
+      return;
+    }
+    protokollieren('falsch', roh, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    wackelt(rein);
+    /* IN DIE FALLE GETIPPT - der Augenblick, um den es geht.
+       Sie bekommt einen eigenen Satz, nicht das allgemeine „Nicht ganz":
+       wer `become` schreibt, hat nicht irgendetwas Falsches geschrieben,
+       sondern GENAU das Naheliegende. Das ist die Auskunft, fuer die die
+       Ebene da ist - und sie kommt aus den Daten, nicht aus einem Vorrat
+       netter Saetze. */
+    const inDieFalle = eingabe === Englisch.wieGetippt(ziel.falle);
+    const satz = inDieFalle ? `Genau die Falle. ${ziel.warum}`
+                            : 'Nicht ganz — noch einmal.';
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+    rein.select();
+  }
+
+  const pruefen = () => bewerte(rein.value);
+  s.querySelector('#pruef').onclick = pruefen;
+  rein.addEventListener('keydown', e => { if (e.key === 'Enter') pruefen(); });
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+  setTimeout(() => rein.focus(), 360);
+  // Angesagt wird der DEUTSCHE Satz - er ist die Aufgabe. Fuer Stephan und
+  // Violeta steht `vorlesen: false`, also passiert hier nichts; die Zeile
+  // steht trotzdem da, weil die Ebene sonst als einzige gar nicht ansagt.
+  ansagen(ziel.satz);
+  return s;
+}
+
 function englischschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();

@@ -375,7 +375,7 @@ export const PROBEN = [
    * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
    * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm }[ebeneArt(ebeneId)] || spielschirm);",
+    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm }[ebeneArt(ebeneId)] || spielschirm);",
     ersatz:"const schirmZu = (ebeneId) => spielschirm;",
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
@@ -3416,8 +3416,11 @@ export const PROBEN = [
   // Bildschirmfoto aus wie ein Gestaltungseinfall, nicht wie ein Fehler.
   { n:'alle Ebenen landen in derselben Welt', tor:'smoke', args:['--nur=durchgang'],
     bauen:true, datei:D,
-    such:"const weltVon = (e) => e.art === 'rechnen' ? 'rechnen'\n                     : e.art === 'schreiben' ? 'schreiben'\n                     : e.art === 'englisch' ? 'englisch' : 'erdkunde';",
-    ersatz:"const weltVon = (e) => 'erdkunde';",
+    /* Seit E10 ist die Zuordnung eine TABELLE - der Eingriff sitzt an ihr
+       und nicht mehr an einer Kette von Fragezeichen. Was er anrichtet,
+       ist dasselbe: jede Ebene landet in der Erdkunde. */
+    such:"const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';",
+    ersatz:"const weltVon = (e) => 'erdkunde'; //Anker:  const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';",
     an:{ ...DIST, text:"const weltVon = (e) => 'erdkunde';" },
     sagt:'die Welt' },
 
@@ -4471,6 +4474,70 @@ export const PROBEN = [
     an:{ datei:'tools/bildprompt.mjs', text:'const JE_BLATT = 9;' },
     deckt:'englisch',
     sagt:'Felder statt zehn' },
+
+  /* E10 - die Falle steht unter den richtigen Antworten.
+   *
+   * Der teuerste Fehler, den diese Ebene machen kann, und der leiseste:
+   * der Bildschirm sieht richtig aus, das Lob kommt, und gelernt ist das
+   * Falsche. Kein anderes Tor koennte ihn sehen - die Datei ist gueltig,
+   * der Satz steht da, die Antwort wird gewertet. */
+  { n:'die Falle steht unter den richtigen Antworten', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"    richtig: ['sensitive'], falle: 'sensible',",
+    ersatz:"    richtig: ['sensitive', 'sensible'], falle: 'sensible',"
+      + " //Anker:      richtig: ['sensitive'], falle: 'sensible',",
+    an:{ datei:'src/inhalt/englisch.js', text:"richtig: ['sensitive', 'sensible']" },
+    deckt:'englisch',
+    sagt:'belohnt die Aufgabe den Fehler' },
+
+  /* E10 - die Falle bekommt keinen eigenen Satz mehr.
+   *
+   * Der Eingriff laesst die Ebene auf `become` dasselbe sagen wie auf
+   * jedes andere falsche Wort: „Nicht ganz". Danach ist sie eine
+   * Vokabelabfrage - richtig oder falsch -, und der Grund, aus dem es sie
+   * gibt, ist weg. Sie SIEHT dabei unveraendert aus, und sie wird sogar
+   * genauso oft richtig beantwortet. */
+  { n:'die Falle bekommt keine eigene Auskunft mehr', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:"    const satz = inDieFalle ? `Genau die Falle. ${ziel.warum}`\n"
+      + "                            : 'Nicht ganz — noch einmal.';",
+    ersatz:"    const satz = 'Nicht ganz — noch einmal.';\n"
+      + "    //Anker:    const satz = inDieFalle ? `Genau die Falle. ${ziel.warum}`\n"
+      + "    //                            : 'Nicht ganz — noch einmal.';",
+    an:{ ...DIST, text:"const satz = 'Nicht ganz — noch einmal.';" },
+    sagt:'was das Wort wirklich heißt' },
+
+  /* E10 - Gross- und Kleinschreibung zaehlt auf einmal doch.
+   *
+   * Getippt wird hier von Erwachsenen auf einem Telefon, und die erste
+   * Grossschreibung macht die Tastatur von allein. Wer daran scheitert,
+   * hat kein Englisch geprueft, sondern eine Tastatur - und aergert sich
+   * ueber eine Antwort, die richtig war. */
+  { n:'Groß- und Kleinschreibung zählt bei den falschen Freunden doch', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:'src/inhalt/englisch.js',
+    such:"export const wieGetippt = (t) => String(t).toLowerCase().trim()",
+    /* OHNE Anker im Ersatz: geprueft wird `smoke`, nicht `inhalt` - der
+       Suchtext muss nur im sauberen Baum stehen, und dort steht er. Ein
+       Anker im Kommentar haette hier gerade geschadet: er brachte
+       `toLowerCase` ins Buendel zurueck, und die Wache „ist der Eingriff
+       angekommen?" schlug an, obwohl er angekommen war. */
+    ersatz:"export const wieGetippt = (t) => String(t).trim()",
+    an:{ ...DIST, fehlt:'String(t).toLowerCase().trim()' },
+    sagt:'wurde nicht gewertet' },
+
+  /* E10 / Tor E-f - die Elternebene bietet auf einmal etwas zum Antippen.
+   *
+   * Die Profiltabelle sagt fuer Stephan und Violeta „Auswahl statt
+   * Tippen: NIE", und genau daran haengt der Zuschnitt dieser Ebene: eine
+   * Auswahl aus zweien laesst sich zur Haelfte erraten. Der Eingriff legt
+   * einen Antwortknopf dazu - die naheliegendste aller Hilfsbereitschaften. */
+  { n:'die Elternebene bietet eine Auswahl an', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'      <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>',
+    ersatz:'      <div class="tippfeld"><button class="zahl">${ziel.falle}</button>'
+      + '<button class="knopf haupt" id="pruef">Prüfen</button></div>',
+    an:{ ...DIST, text:'<button class="zahl">' },
+    sagt:'Möglichkeiten zum Antippen' },
 
   /* QS3 - die Zeile „Ton als Gegenstand" ist eine EINGABE, keine Notiz.
    *

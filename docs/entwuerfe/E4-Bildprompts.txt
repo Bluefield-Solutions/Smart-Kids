@@ -1,0 +1,457 @@
+
+========================================================================
+  Tiere  —  9 Wörter
+  cat · chicken · dog · fish · hamster · horse · mouse · pet · rabbit
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a cat sitting upright, seen from the side, tail curled around its paws
+ 2. a hen standing, seen from the side, with a comb and a rounded body
+ 3. a dog sitting upright, seen from the side, with floppy ears
+ 4. a single fish seen from the side, with a fan tail and one round eye
+ 5. a hamster sitting on its hind legs, seen from the side, holding a seed
+ 6. a horse standing, seen from the side, with a mane and a tail
+ 7. a mouse seen from the side, with big round ears and a long thin tail
+ 8. a child seen from the front holding a small cat in both arms
+ 9. a rabbit sitting, seen from the side, with two long upright ears
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Essen und Trinken (1 von 2)  —  10 Wörter
+  apple · bread · butter · cheese · chips · chocolate · drink · eat · egg · fruit
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. one apple seen from the front, with a short stalk and one leaf
+ 2. a whole loaf of bread seen from the side, with a rounded top
+ 3. a rectangular block of butter on a small dish, seen from the side
+ 4. a triangular wedge of cheese seen from the side, with three round holes
+ 5. a paper cone of chips (french fries) standing upright, seen from the front
+ 6. a bar of chocolate seen from above, divided into six squares, one corner broken off
+ 7. a tall glass with a bent drinking straw, seen from the side
+ 8. a round empty plate seen from above with a fork on its left and a knife on its right
+ 9. a boiled egg standing in an egg cup, seen from the side
+10. a bowl seen from the side, filled with an apple, a pear and a bunch of grapes
+
+
+========================================================================
+  Essen und Trinken (2 von 2)  —  8 Wörter
+  ham · plum · salad · strawberry · sweets · tea · tomato · water
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. two overlapping oval slices of ham lying flat, seen from above
+ 2. one plum seen from the front, with a short stalk and one leaf, and a vertical groove
+ 3. a bowl seen from the side, heaped with leaves of lettuce
+ 4. one strawberry seen from the front, pointing down, with a leafy crown and seed dots
+ 5. three wrapped sweets with twisted ends, lying flat, seen from above
+ 6. a teacup on a saucer, seen from the side, with a teabag string over the rim
+ 7. one tomato seen from the front, with a five-pointed star of leaves on top
+ 8. a plain glass half filled with water, seen from the side
+ 9. empty — leave this panel completely blank white
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  In der Schule  —  9 Wörter
+  board · book · chair · class/classroom · pen/pencil · picture · rubber · school/schoolbag · teacher
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a classroom board on two legs, seen from the front, empty
+ 2. an open book seen from the front, both pages blank
+ 3. a simple wooden chair with a straight back, seen from the side
+ 4. a classroom seen from the front: a board on the wall and two desks with chairs
+ 5. a pencil and a pen lying crossed over each other, seen from above
+ 6. a framed picture hanging on a wall, seen from the front, showing a mountain and a sun
+ 7. a rectangular eraser seen at a slight angle, one corner worn round
+ 8. a school satchel with two buckles and shoulder straps, seen from the front
+ 9. a grown-up standing beside a board, seen from the front, holding a pointer
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Kleidung  —  5 Wörter
+  dress · jeans · pullover · shirt · shoes
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a dress on a coat hanger, seen from the front
+ 2. a pair of jeans lying flat, seen from the front, with pockets and a belt loop
+ 3. a knitted pullover lying flat, seen from the front, arms spread
+ 4. a shirt with a collar and buttons lying flat, seen from the front
+ 5. a pair of lace-up shoes standing side by side, seen from the side
+ 6. empty — leave this panel completely blank white
+ 7. empty — leave this panel completely blank white
+ 8. empty — leave this panel completely blank white
+ 9. empty — leave this panel completely blank white
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Menschen und Familie  —  9 Wörter
+  boy · brother · family · father · friend · girl · mother · old · sister
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+All the people on this sheet are drawn in the same way: the same proportions, the same simple round head, no faces except two dot eyes and a mouth. Only height, hair and clothing tell them apart.
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a boy standing, seen from the front, short hair, arms at his sides
+ 2. two boys standing side by side, seen from the front, one a head taller
+ 3. four people standing in a row, seen from the front: two grown-ups and two children
+ 4. a grown man standing, seen from the front, arms at his sides
+ 5. two children standing side by side holding hands, seen from the front
+ 6. a girl standing, seen from the front, long hair, arms at her sides
+ 7. a grown woman standing, seen from the front, arms at her sides
+ 8. an old person standing bent forward, seen from the side, leaning on a walking stick
+ 9. two girls standing side by side, seen from the front, one a head taller
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Zuhause, Feste und Zeit  —  9 Wörter
+  house · room · birthday · Halloween · Merry Christmas · morning · o‘clock · party · weekend
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a small house seen from the front: a pitched roof, a door and two windows
+ 2. a bedroom seen from the front: a bed, a window and a bedside lamp
+ 3. a round birthday cake seen from the side with five burning candles
+ 4. a carved pumpkin lantern seen from the front, with triangular eyes and a grinning mouth
+ 5. a decorated fir tree seen from the front, with baubles and a star on top
+ 6. a sun rising over a straight horizon line, seen from the front, with rays
+ 7. a round clock face seen from the front with two hands, no numerals, showing three o clock
+ 8. three balloons on strings rising together, seen from the front
+ 9. a calendar page seen from the front, a grid of blank squares, the last two squares of the bottom row filled in solid
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Wo? — die Praepositionen  —  6 Wörter
+  behind · in · In front of · next to · on · under
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+Every panel on this sheet shows THE SAME closed box and THE SAME ball, drawn identically, in the same size and the same position on the ground line. The ONLY difference between the panels is where the ball is. Panel 6 shows a table instead of the box, because a ball cannot lie under a box that stands on the floor.
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a closed box seen from the front with a ball behind it, only the upper half of the ball visible above the box
+ 2. an open box seen from the front with a ball inside it, resting on the bottom of the box
+ 3. a closed box seen from the front with a ball in front of it, the ball overlapping the lower edge of the box
+ 4. a closed box seen from the front with a ball on the ground beside it, to the right, not touching
+ 5. a closed box seen from the front with a ball resting on top of it
+ 6. a table seen from the front with a ball on the floor underneath it
+ 7. empty — leave this panel completely blank white
+ 8. empty — leave this panel completely blank white
+ 9. empty — leave this panel completely blank white
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Gegensaetze und Gefuehle  —  8 Wörter
+  big · small · little · cold · hot · happy · sad · good
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+Where a panel shows a pair, both halves are drawn identically apart from the one property the word is about, and the half that the word means is the solid black one.
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. two balls side by side, one very large and one very small; the large one is solid black, the small one is only an outline
+ 2. two balls side by side, one very large and one very small; the small one is solid black, the large one is only an outline
+ 3. a grown cat and a kitten side by side, seen from the side; the kitten is solid black, the grown cat is only an outline
+ 4. a thermometer standing upright, seen from the front, its column low, with a snowflake beside it
+ 5. a thermometer standing upright, seen from the front, its column high, with a sun beside it
+ 6. a round face seen from the front with two dot eyes and a wide smiling mouth
+ 7. a round face seen from the front with two dot eyes and a downturned mouth
+ 8. a hand making a thumbs-up sign, seen from the side
+ 9. empty — leave this panel completely blank white
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Spielen und Sport  —  8 Wörter
+  bike · football · go · play · ride · sports · swim · tennis
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a bicycle seen from the side, both wheels, handlebars and saddle visible
+ 2. a football (soccer ball) seen from the front, with its pentagon pattern
+ 3. a person walking to the right, seen from the side, one leg forward, arms swinging
+ 4. a child seen from the front kicking a ball that lies on the ground
+ 5. a child riding a bicycle to the right, seen from the side
+ 6. a football, a tennis racket and a swimming goggle arranged together, seen from the front
+ 7. a person swimming front crawl, seen from the side, one arm out of the water, wavy water lines
+ 8. a tennis racket lying at an angle with a tennis ball beside it, seen from above
+ 9. empty — leave this panel completely blank white
+10. empty — leave this panel completely blank white
+
+
+========================================================================
+  Laender und Uebriges  —  5 Wörter
+  bye · colour · England/English · Germany/German · give
+========================================================================
+
+One single image, 2500 x 1000 pixels, containing a grid of ten square
+panels: five panels across and two panels down, each panel 500 x 500 pixels.
+Do NOT draw the grid. No borders, no frames, no separating lines, no captions,
+no letters, no numbers, no signature anywhere in the image.
+
+Style: flat vector pictogram. Solid pure black shapes on a pure white background.
+No grey, no colour, no gradients, no shading, no hatching, no texture, no
+drop shadows, no perspective, no 3D. Every shape is one closed silhouette with a
+clean outer contour; where a detail must read (an eye, a hole, a window), cut it
+out of the black shape as white negative space rather than drawing a thin line
+over it. The drawings will be traced into SVG paths, so contours must be smooth
+and closed.
+
+Composition: each subject sits centred in its own panel, upright, and fills about
+70 % of the panel, leaving a clear white margin on all four sides. Nothing touches
+a panel edge and nothing crosses into a neighbouring panel. All ten drawings share
+the same visual weight, the same level of detail and the same apparent size.
+Children aged six to eight must recognise each subject at a glance without any
+text.
+
+
+
+The ten panels, in reading order — first the top row from left to right, then the
+bottom row from left to right:
+ 1. a raised open hand waving goodbye, seen from the front, with two small motion arcs
+ 2. a painter palette held from below with a brush, seen from above, six round blobs of paint on it
+ 3. a rectangular flag on a pole, seen from the side, bearing a plain upright cross that reaches all four edges
+ 4. a rectangular flag on a pole, seen from the side, divided into three equal horizontal bands, the top one solid black and the other two only outlined
+ 5. a hand seen from the side holding out a small wrapped present with a ribbon
+ 6. empty — leave this panel completely blank white
+ 7. empty — leave this panel completely blank white
+ 8. empty — leave this panel completely blank white
+ 9. empty — leave this panel completely blank white
+10. empty — leave this panel completely blank white
+
