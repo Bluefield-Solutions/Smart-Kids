@@ -31,7 +31,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor -- --betroffen`** | bei **jeder** Änderung | **14 s bis 200 s**, je nachdem, was `git` meldet | alle billigen Tore plus die Browsertore, die von den geänderten Dateien überhaupt erreicht werden können |
 | `npm run tor` | **einmal** je Runde, vor dem Einchecken | **~3 min** (gemessen 176,6 · 179,6 · 182,4 · 198,6 · 204,0 s am 04.09.) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | dieselbe Kette ohne `ansicht` — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 325 Gegenproben, 6 nebeneinander |
+| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 328 Gegenproben, 6 nebeneinander |
 
 **Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
 Rest fährt der Runner.**
@@ -216,7 +216,7 @@ npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
 ```
 
 Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `farben` · `englisch` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
+`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` · `anker` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` → `smoke`.

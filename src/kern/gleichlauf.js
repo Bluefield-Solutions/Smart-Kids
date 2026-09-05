@@ -249,8 +249,29 @@ export function standVereinen(a, b) {
  * Es sind Einstellungen des GERAETS, nicht des Kindes - und die PIN
  * gehoert ohnehin nicht in einen Umschlag, der reist, auch wenn er
  * zugesperrt ist. */
-export const REIST = (k) => k === 'glatt' || String(k).startsWith('nr:')
-  || String(k).startsWith('geuebt:');
+/* `ohnefehler:` UND NICHT `glatt` - hier stand zwei Fassungen lang der
+ * falsche Name.
+ *
+ * Der Schluessel, den die App schreibt, heisst `ohnefehler:<kind>`
+ * (`glattSchluessel()` in `spiel.js`); `glatt` heisst nur die ZAHL in
+ * einer Sitzung. Dieser Filter liess also `glatt` durch, das es gar nicht
+ * gibt, und sperrte `ohnefehler:fiona` aus: „Einmal ganz ohne Fehler" ist
+ * nie zwischen iPhone und iPad gereist.
+ *
+ * Und das Tor daneben hat es bezeugt statt gefunden: `tor/gleichlauf.mjs`
+ * fragte `REIST('glatt')` - also genau den Namen aus dieser Zeile und
+ * nicht den aus der App. Eine Pruefung, die ihren Gegenstand aus dem
+ * Prueflig abschreibt, kann nie etwas melden (Regel 1: sie ist kein
+ * Beweis). Sie fragt jetzt nach dem Schluessel, den die App wirklich
+ * schreibt.
+ *
+ * `tiere:` (T1) ist die Sammlung eines Kindes und muss aus demselben
+ * Grund mitreisen wie der Fortschritt: wer auf dem iPad einen Fuchs
+ * bekommt, hat ihn auch auf dem iPhone. */
+export const REIST = (k) => String(k).startsWith('ohnefehler:')
+  || String(k).startsWith('nr:')
+  || String(k).startsWith('geuebt:')
+  || String(k).startsWith('tiere:');
 
 export function einstVereinen(a, b) {
   /* Gefiltert wird auf BEIDEN Seiten, nicht nur auf der ankommenden.
@@ -272,7 +293,18 @@ export function einstVereinen(a, b) {
        sieht es danach auch auf dem iPhone. */
     if (String(k).startsWith('geuebt:')) {
       aus[k] = String(w) > String(aus[k]) ? w : aus[k]; continue; }
-    // `glatt`: das FRUEHERE gilt.
+    /* `tiere:` (T1): die VEREINIGUNG der Sammlungen, und beim Gorilla die
+       groessere Zahl. Nicht „das juengere gewinnt": wer auf dem iPad
+       einen Fuchs und auf dem iPhone eine Eule bekommen hat, hat beide -
+       ein Aufkleber, den ein anderes Geraet wegnimmt, waere schlimmer
+       als gar kein Gleichlauf. */
+    if (String(k).startsWith('tiere:')) {
+      const alt = aus[k] || {}, neu = w || {};
+      aus[k] = { ids: [...new Set([...(alt.ids || []), ...(neu.ids || [])])],
+                 gorilla: Math.max(zahl(alt.gorilla), zahl(neu.gorilla)) };
+      continue;
+    }
+    // `ohnefehler:`: das FRUEHERE gilt.
     const alt = aus[k], neu = w;
     aus[k] = (zahl(neu && neu.zeit, Infinity) < zahl(alt && alt.zeit, Infinity)) ? neu : alt;
   }

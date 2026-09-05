@@ -131,12 +131,12 @@
   },
   {
     "dateien": "prototyp/bauen.mjs",
-    "token": 100,
+    "token": 201,
     "wo": [
       "prototyp/bauen.mjs:319",
       "prototyp/bauen.mjs:325"
     ],
-    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen."
+    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung."
   },
   {
     "dateien": "src/inhalt/englisch.js · tools/backen-kontinente.mjs",
@@ -146,5 +146,16 @@
       "tools/backen-kontinente.mjs:24"
     ],
     "warum": "Zwei Tabellen, die sich nur in der FORM gleichen: der Bildplan (`{ wort, gebiet, motiv }`, 86 Zeilen) und die Kontinentliste (`{ id, name, ne }`, sieben Zeilen). Beide sind Datenzeilen mit drei Feldern und ausgerichteten Werten - mehr haben sie nicht miteinander zu tun, und sie stehen in zwei Verzeichnissen mit verschiedenen Aufgaben (Inhalt und Backwerkzeug). Zusammenlegen waere hier nicht Aufraeumen, sondern das Verknuepfen von Englischvokabeln mit Erdkunde-Rohdaten."
+  },
+  {
+    "dateien": "src/inhalt/tiere.js",
+    "token": 1900,
+    "wo": [
+      "src/inhalt/tiere.js:50",
+      "src/inhalt/tiere.js:74",
+      "src/inhalt/tiere.js:85",
+      "src/inhalt/tiere.js:110"
+    ],
+    "warum": "Der Tierplan IST eine Tabelle: eine Zeile je Tier, immer id/name/art/zeichen und darunter ggf. das Bild. 124 Zeilen derselben Form - das ist ihr Zweck. Und die Bilder sind SVG-Pfade aus demselben kleinen Vokabular (`M`, `c`, `s`, `z`, `fill=\"#…\"`), weil sie im selben Stil gezeichnet sind; dass ein Fuchs und eine Eule sich im Tokenstrom aehneln, heisst nicht, dass sie dasselbe Bild sind. Zusammenlegen gaebe es hier nichts: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderes Tier. Die Zahl waechst mit jedem gemalten Tier - wer sie hochsetzt, prueft zuerst, ob wirklich nur Bilder dazugekommen sind und nicht Logik dazwischen."
   }
 ]

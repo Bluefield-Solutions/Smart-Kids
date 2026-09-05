@@ -605,8 +605,13 @@ function nochHoerenKnopf(text, sprache = 'de', zaehlen = false){
 function sagen(text){ if (!P || ton().spricht) vorlesen(text); }
 
 /** Eine Aufzaehlung, wie man sie spricht: „A, B, C oder D". */
-const aufzaehlen = (namen) => namen.length < 2 ? (namen[0] || '')
-  : namen.slice(0, -1).join(', ') + ' oder ' + namen[namen.length - 1];
+/* `wort` ist das letzte Bindewort und steht mit dabei: eine WAHL wird mit
+   „oder" aufgezaehlt („Fiona, Lea, Stephan oder Violeta?"), eine
+   AUFZAEHLUNG mit „und" („Kaenguru, Koala und Schlange"). Der erste
+   Anlauf hatte nur „oder" und sagte damit „das Kaenguru, der Koala ODER
+   die Schlange" ueber drei Tiere, die man alle drei bekommt. */
+const aufzaehlen = (namen, wort = 'oder') => namen.length < 2 ? (namen[0] || '')
+  : namen.slice(0, -1).join(', ') + ` ${wort} ` + namen[namen.length - 1];
 
 /* ---------- Lob ---------------------------------------------------------
  *
@@ -2228,6 +2233,9 @@ function profilwahl(){
     sagen(P.name);
     // Erst umziehen, dann zeigen: die Weltenwahl summiert den Stand schon.
     await umzugMittelamerika();
+    // Und die Tiere holen, BEVOR gespielt wird: der Endbildschirm
+    // entscheidet synchron und haette sonst eine leere Sammlung vor sich.
+    await tiereLaden();
     zeige(weltenwahl); });
   // Hier ist noch kein Kind gewaehlt - also wird immer angesagt. Wer lesen
   // kann, hoert einen Satz zuviel; wer nicht liest, kaeme sonst nicht los.
@@ -2320,6 +2328,93 @@ async function glattStand(){
 async function glattSetzen(wert){
   try { await Ablage.setze('einstellungen', glattSchluessel(), wert); } catch(e){}
 }
+
+/* ---------- Fionas Tiere (T1) -------------------------------------------
+ *
+ * Ein Sammelalbum neben dem Forscherbuch. Der Unterschied ist der ZWECK,
+ * und er ist der ganze Grund, warum es getrennt ist: der Aufkleber im
+ * Forscherbuch IST der Lerngegenstand („Afrika", „3 + 4") - das Tier ist
+ * es nicht. Es ist der Lohn dafuer, dass eine Runde ohne einen einzigen
+ * Fehlversuch durchging.
+ *
+ * WARUM NEBEN DEM BUCH UND NICHT DARIN VERMISCHT: wer die Tiere unter die
+ * Aufkleber mischt, macht aus „Afrika" und „der Fuchs" dasselbe. Sie
+ * bekommen deshalb ein eigenes Kapitel - dieselbe Bauart wie die
+ * Abzeichen, und aus demselben Grund.
+ *
+ * WARUM IM EIGENEN SCHLUESSEL und nicht in `Einst`: `Einst` liegt unter
+ * `einstellungen/alles` und REIST NICHT - dort stehen die PIN und der
+ * Ton, die auf dem Geraet bleiben sollen. Die Sammlung eines Kindes muss
+ * aber mitreisen: wer auf dem iPad einen Fuchs bekommt, hat ihn auch auf
+ * dem iPhone. Also ein eigener Schluessel je Kind, und `Gleichlauf.REIST`
+ * laesst ihn durch.
+ */
+const tierSchluessel = () => `tiere:${P.id}`;
+/* Im Speicher gehalten, weil der Endbildschirm SYNCHRON entscheiden muss:
+   er zeichnet das Tier, das er gerade vergeben hat, und kann nicht auf die
+   Ablage warten. Geladen wird bei der Profilwahl, geschrieben nebenher. */
+let TierStand = { ids: [], gorilla: 0 };
+async function tiereLaden(){
+  TierStand = { ids: [], gorilla: 0 };
+  try { TierStand = { ...TierStand,
+    ...(await Ablage.hole('einstellungen', tierSchluessel()) || {}) }; } catch(e){}
+}
+function tiereSichern(){
+  Ablage.setze('einstellungen', tierSchluessel(), TierStand).catch(()=>{});
+  gleichlaufBald();
+}
+
+/**
+ * Was diese Runde einbringt - EINMAL je Sitzung.
+ *
+ * `st.tiere` haelt die Entscheidung fest. Ohne das bekaeme ein zweiter
+ * Aufruf von `endschirm()` ein zweites Mal etwas: der Bildschirm wird bei
+ * jedem `zeige()` neu gebaut, und `ansicht` fotografiert ihn zweimal.
+ * Ein Aufkleber, der sich durch Hinsehen vermehrt, ist keiner.
+ *
+ * ZWEI DINGE KOENNEN GESCHEHEN, und sie haengen an Verschiedenem:
+ *
+ *   DER LEBENSRAUM  Ist die EBENE fertig - jeder Umriss im Buch -, dann
+ *                   kommen ihre Tiere dazu. Nicht die gute Runde zaehlt,
+ *                   sondern das Fertigwerden; deshalb kann es auch bei
+ *                   einer Runde mit Fehlern geschehen.
+ *   DER GORILLA     War die Runde NICHT fehlerfrei, kommt er vorbei. Er
+ *                   wird nicht gesammelt (siehe `tiere.js`), sondern
+ *                   gezaehlt.
+ *
+ * Beides zusammen ist moeglich - und dann steht der Lebensraum da, nicht
+ * der Gorilla: die Ebene fertig zu haben ist die groessere Nachricht.
+ */
+function tierFuer(st){
+  if (st.tiere !== undefined) return st.tiere;
+  /* Gerechnet auf `st.alle` und `Stand` - genau der Menge, aus der auch
+     der Fortschrittsbalken kommt. Zwei Zaehler fuer „ist die Ebene
+     fertig" waeren zwei Zahlen, die eines Tages auseinanderlaufen. */
+  const f = Leitner.fortschritt(st.alle, Stand);
+  const neu = (f.gesamt && f.gesammelt === f.gesamt)
+    ? Tiere.raumTiere(st.ebeneId, TierStand.ids) : [];
+  if (neu.length) {
+    TierStand = { ...TierStand, ids: [...TierStand.ids, ...neu.map(t => t.id)] };
+    tiereSichern();
+    return (st.tiere = { raum: Tiere.raumZu(st.ebeneId), neu });
+  }
+  if (st.glatt < st.liste.length) {
+    TierStand = { ...TierStand, gorilla: (TierStand.gorilla || 0) + 1 };
+    tiereSichern();
+    return (st.tiere = { gorilla: Tiere.tierMit(Tiere.GORILLA) });
+  }
+  return (st.tiere = null);
+}
+
+/* Auf der Kachel steht der Name OHNE Artikel, gesprochen wird er MIT.
+   „das Känguru" lief auf dem Aufkleber ueber beide Raender - gemessen im
+   Buch, 68 Punkte breit. Der Artikel gehoert zum Gehoerten (Fiona lernt
+   ihn dort), nicht auf ein Schild von der Breite eines Daumens. */
+const ohneArtikel = (name) => String(name).replace(/^(der|die|das) /, '');
+
+/** Ein Tier als Bild. `RAHMEN` kommt aus den Daten, nicht von hier. */
+const tierBild = (t, klasse = '') => `<svg class="tierbild ${klasse}"
+  viewBox="${Tiere.RAHMEN}" role="img" aria-label="${t.name}">${t.bild}</svg>`;
 
 /**
  * Welche Abzeichen einer Ebene sind verdient? Nur die Kennungen.
@@ -6026,6 +6121,10 @@ function endschirm(){
      genannt - zwei Abzeichen auf einmal sind selten, und wer drei Zeilen
      vorgelesen bekommt, hoert bei der dritten nicht mehr zu. */
   const abzNeu = verdiente(st.ebeneId, Stand).filter(a => !st.abzVorher.has(a.id))[0];
+  /* Und das Tier - VOR dem Markup, denn es entscheidet sich hier und wird
+     dabei abgelegt. Ein Aufruf, nicht zwei: `tierFuer` merkt sich das
+     Ergebnis an der Sitzung. */
+  const tier = tierFuer(st);   // { raum, neu:[…] } oder { gorilla } oder null
   /* Eine ganze Runde ohne einen einzigen Fehlversuch. Kein Mengen-
      abzeichen, sondern ein Ereignis - und deshalb abgelegt. Es zaehlt das
      ERSTE Mal: „einmal ganz ohne Fehler" ist ein Tag, kein Zustand. */
@@ -6045,6 +6144,13 @@ function endschirm(){
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
       ${abzNeu ? `<div class="abzneu">${ABZ(abzNeu.zeichen, true, 40)}
         <span>Neues Abzeichen: ${abzNeu.titel}</span></div>` : ''}
+      ${/* Die Tiere (T1). Sie stehen UEBER dem Balken und unter dem Satz:
+           es ist die Antwort auf „wie lief es", und die steht oben. */
+        tier && tier.neu ? `<div class="tierneu">${
+          tier.neu.map(t => tierBild(t)).join('')}
+        <span>${tier.raum.titel} ist offen: ${aufzaehlen(tier.neu.map(t => t.name), 'und')}!</span></div>`
+        : tier && tier.gorilla ? `<div class="tierneu hilft">${tierBild(tier.gorilla)}
+        <span>${tier.gorilla.name} übt mit dir weiter.</span></div>` : ''}
       ${fortschrittBalken(f, 'breit')}
       ${/* `data-neu` traegt die ZAHL der neuen Aufkleber ins Markup.
            Der Rauchtest hat sie vorher aus dem Satz gelesen - und der
@@ -6096,6 +6202,13 @@ function endschirm(){
    * Aufgabe (`Wie heißt` / `Was ist`), und dieser Satz ist keine. */
   ansagen(ton().ende);
   if (abzNeu) ansagen(`Neues Abzeichen! ${abzNeu.titel}`);
+  /* Fiona liest nicht - fuer sie IST die Ansage der Satz. Und der Gorilla
+     bekommt einen freundlichen: er ist kein Tadel, sondern der, der
+     wiederkommt. */
+  if (tier && tier.neu)
+    ansagen(`${tier.raum.titel} ist offen! Du bekommst ${aufzaehlen(tier.neu.map(t => t.name), 'und')}.`);
+  else if (tier && tier.gorilla)
+    ansagen(`${tier.gorilla.name} kommt vorbei und übt mit dir weiter.`);
   ansagen(`Du hast ${st.glatt} von ${st.liste.length} auf Anhieb richtig. `
     + (st.aufkleber ? `${st.aufkleber} neue Aufkleber! `
        : f.gesammelt ? '' : `${ton().ersterKleber} `)
@@ -6417,6 +6530,69 @@ async function forscherbuch(){
   const satzGebiete = (g) => g.da.filter(x => Saetze.satzZu(x.id));
 
   const kapitel = [];
+  /* --- Meine Tiere (T1) ----------------------------------------------
+   *
+   * Ein eigenes Kapitel, VOR den Abzeichen: es ist das, was Fiona sucht,
+   * wenn sie das Buch aufschlaegt. Gezeigt werden alle GEMALTEN - die
+   * gesammelten in Farbe, die fehlenden blass.
+   *
+   * Die leeren Kaesten sind hier kein Rueckfall in „sechzig leere
+   * Kaesten" (die Lehre, die dieser Bildschirm einmal teuer bezahlt hat).
+   * Der Unterschied ist die ZAHL und der Zweck: ein Sammelalbum LEBT vom
+   * leeren Platz, solange man ihn zu Ende fuellen kann. Zwoelf sind zu
+   * Ende zu bringen, die 124 des Plans waeren es nicht - deshalb steht
+   * hier nur, was es wirklich gibt.
+   *
+   * Der Gorilla steht NICHT in der Wand, sondern als Zeile darunter. Er
+   * ist kein Sammelstueck: eine Reihe von Gorillas waere eine Liste der
+   * Runden, die nicht geklappt haben - und die gehoert nicht in das Buch
+   * eines sechsjaehrigen Kindes. Wie oft er da war, steht als Satz da,
+   * und zwar in seinem Ton. */
+  {
+    const habe = new Set(TierStand.ids || []);
+    const alle = Tiere.sammelbar();
+    const dabei = alle.filter(t => habe.has(t.id));
+    /* NACH LEBENSRAUM gruppiert, und nur die Raeume, deren Bilder es
+       schon gibt. Ein Raum ist die Einheit, in der gesammelt wird - drei
+       Tiere nebeneinander, alle drei oder keines. Eine Wand aus sechzehn
+       Einzelstuecken haette dieselben Tiere und keinen Zusammenhang; so
+       sieht man, WOFUER es sie gab.
+
+       Die Ebenen, deren Bilder noch fehlen, stehen hier NICHT. Ein Raum
+       mit drei Fragezeichen, den man nicht oeffnen kann, waere kein
+       Versprechen, sondern eine Mahnung - dieselbe Lehre wie bei den
+       sechzig leeren Kaesten. */
+    const fertig = Tiere.RAEUME
+      .filter((r, i, alleR) => alleR.findIndex(x => x.titel === r.titel) === i)
+      .map(r => ({ ...r, stuecke: r.tiere.map(Tiere.tierMit).filter(t => t && t.bild) }))
+      .filter(r => r.stuecke.length === r.tiere.length);
+    /* DIE OFFENEN UND EINER MEHR - gemessen und nicht entschieden.
+       Fuenf Raeume zu drei Tieren sind 430 Punkte hoch; auf dem
+       Zielgeraet sind 318 sichtbar, und ein Kind, das nicht liest, rollt
+       nicht auf Verdacht. Dieselbe Regel wie bei den Abzeichen: alles
+       Verdiente, und EINES, das noch fehlt. Eines ist der naechste
+       Schritt, fuenf sind eine Liste dessen, was man nicht hat. */
+    const offen = fertig.filter(r => r.stuecke.some(t => habe.has(t.id)));
+    const naechsterRaum = fertig.find(r => !r.stuecke.some(t => habe.has(t.id)));
+    const raeume = naechsterRaum ? [...offen, naechsterRaum] : offen;
+    kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:3, zahl:dabei.length,
+      lesen:`Deine Tiere. Du hast ${dabei.length === 1 ? 'eins'
+        : dabei.length ? dabei.length : 'noch keins'} von ${alle.length}.`,
+      inhalt:`
+        <h3 class="gruppe">Meine Tiere <small>${dabei.length} von ${alle.length}</small></h3>
+        ${raeume.map(r => `<div class="tierraum">
+          <h4>${r.titel}</h4>
+          <div class="tierwand">${r.stuecke.map(t => `
+            <button class="tierfeld${habe.has(t.id) ? ' da' : ''}"
+                    data-lesen="${habe.has(t.id) ? t.name
+                      : `${t.name} fehlt dir noch. Mach ${r.titel} fertig.`}"
+                    >${tierBild(t)}<span>${habe.has(t.id) ? ohneArtikel(t.name) : '?'}</span></button>`).join('')}</div>
+        </div>`).join('')}
+        ${TierStand.gorilla ? `<p class="buchsatz" data-lesen="${
+            `Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal' : TierStand.gorilla + '-mal'} da und hat mit dir geübt.`
+          }">Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal'
+            : `${TierStand.gorilla}-mal`} da und hat mit dir geübt.</p>` : ''}` });
+  }
   if (verdient.length) kapitel.push({
     id:'abzeichen', titel:'Abzeichen', farbe:2, zahl:verdient.length,
     lesen:`Deine Abzeichen. Du hast ${verdient.length===1?'eins':verdient.length}.`,

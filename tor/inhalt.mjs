@@ -35,6 +35,7 @@ import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
 import { ALLE as KETTE, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
 import * as EN from '../src/inhalt/englisch.js';
+import * as TI from '../src/inhalt/tiere.js';
 import * as BP from '../tools/bildprompt.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
@@ -2255,6 +2256,127 @@ console.log('\n  Tor `englisch`');
     console.log(`    Hören und schreiben (E12): ${hs.length} Diktatsätze, alle aus `
       + `den Wendungen · längster ${laengste} Wörter (Grenze ${LAENGSTER})`);
   }
+}
+
+/* ============================================= Tor `tiere` (T1) ========= *
+ *
+ * Die Tiere sind Aufkleber fuer eine FERTIGE EBENE - und daran haengt
+ * alles, was hier geprueft wird:
+ *
+ *   Ein Lebensraum ohne Ebene ist nie zu oeffnen. Sein Bild waere gemalt
+ *   und laege fuer immer blass im Buch, und niemand koennte sagen, ob das
+ *   ein Fehler ist oder Absicht.
+ *   Eine Kennung ohne Eintrag ist ein Absturz beim Aufschlagen des Buchs.
+ *   Und `transform` oder `<circle>` im Bild machen jede Messung von
+ *   `passt` falsch - dieselbe Messstelle wie beim Englischbild (E3), und
+ *   dort hat sie eine Runde gekostet.
+ *
+ * Die ZAHL der gemalten steht mit da. Sie ist der Stand des Plans, und
+ * ohne sie waere „noch nicht gemalt" eine Erinnerung statt einer Zahl.
+ */
+{
+  const tf = [];
+  const spiel = fs.readFileSync('prototyp/spiel.js', 'utf8');
+  /* Die Ebenenkennungen aus der Liste in `spiel.js` - dieselbe Quelle, aus
+     der auch das Spiel sie nimmt. Eine zweite Liste hier waere die, die
+     bei der naechsten Ebene veraltet (Regel 6: was zweimal dasteht,
+     veraltet einmal). */
+  /* `,\s+ueber:` und nicht `, ueber:` - eine Zeile richtet ihre Spalten
+     mit zwei Leerzeichen aus, und der erste Anlauf hat `hauptstaedte`
+     genau daran verloren und den Lebensraum „In der Stadt" als
+     unerreichbar gemeldet. Ein Ausdruck, der an der Einrueckung haengt,
+     misst die Einrueckung. */
+  const ebenen = new Set([...spiel.matchAll(/\{ id:'([a-z:]+)',\s+ueber:'/g)].map(m => m[1]));
+  /* Die Laenderebenen stehen nicht als Zeile da, sie werden aus den
+     Kontinenten ERZEUGT (`id:\`laender:${k}\``). Also kommen ihre
+     Kennungen aus derselben Quelle wie im Spiel: den geladenen Karten.
+     Eine abgeschriebene Liste waere die, die bei der achten Karte
+     veraltet. */
+  if (/id:`laender:\$\{k\}`/.test(spiel))
+    for (const k of Object.keys(KARTEN_GROB)) ebenen.add(`laender:${k}`);
+  if (ebenen.size < 8) tf.push(`nur ${ebenen.size} Ebenen in spiel.js gefunden — `
+    + 'die Erkennung greift ins Leere, und alles darunter beweist nichts');
+
+  const ids = new Set();
+  for (const t of TI.TIERE) {
+    if (ids.has(t.id)) tf.push(`die Kennung „${t.id}" gibt es zweimal`);
+    ids.add(t.id);
+    if (!/^(der|die|das) /.test(t.name))
+      tf.push(`„${t.id}" hat keinen Artikel im Namen — Fiona lernt ihn mit`);
+    if (!t.bild) continue;
+    /* KEIN `transform`, KEIN `<circle>`: `passt` misst die gezeichnete
+       Ausdehnung je PFAD im eigenen Koordinatenraum. Eine
+       Gruppentransformation faellt heraus, ein `<circle>` wird gar nicht
+       gefunden - und heraus kommt eine Zahl, die mit dem Bild nichts zu
+       tun hat. */
+    if (/transform=/.test(t.bild)) tf.push(`„${t.id}" hat ein transform im Bild`);
+    if (/<circle|<ellipse|<rect/.test(t.bild))
+      tf.push(`„${t.id}" hat ein <circle>, <ellipse> oder <rect> — nur <path>`);
+    if (!/^<path /.test(t.bild)) tf.push(`„${t.id}" faengt nicht mit einem Pfad an`);
+    if (!/fill="#/.test(t.bild))
+      tf.push(`„${t.id}" traegt keine eigene Farbe — ein Fuchs ist orange`);
+  }
+
+  const raumTitel = new Map();
+  for (const r of TI.RAEUME) {
+    if (!ebenen.has(r.ebene))
+      tf.push(`der Lebensraum „${r.titel}" haengt an der Ebene „${r.ebene}", `
+        + 'die es in spiel.js nicht gibt — er waere nie zu öffnen');
+    if (r.tiere.length !== 3)
+      tf.push(`„${r.titel}" hat ${r.tiere.length} Tiere, nicht drei`);
+    for (const id of r.tiere)
+      if (!ids.has(id)) tf.push(`„${r.titel}" nennt „${id}", das es im Plan nicht gibt`);
+    /* Ein Tier gehoert in EINEN Raum. Zwei Raeume mit demselben Tier
+       hiessen: das Fertigwerden der einen Ebene nimmt der anderen ihren
+       Lohn weg - und im Buch stuende dasselbe Stueck zweimal. Zwei
+       Raeume duerfen sich einen TITEL teilen (die beiden
+       Hauptstadt-Ebenen tun es), dann aber mit derselben Liste. */
+    for (const id of r.tiere) {
+      const wo = raumTitel.get(id);
+      if (wo && wo !== r.titel)
+        tf.push(`„${id}" steht in „${wo}" UND in „${r.titel}"`);
+      raumTitel.set(id, r.titel);
+    }
+  }
+  if (TI.tierMit(TI.GORILLA) === null || !TI.tierMit(TI.GORILLA).bild)
+    tf.push('der Gorilla ist nicht gemalt — er ist der einzige, der immer da sein muss');
+  if (TI.RAEUME.some(r => r.tiere.includes(TI.GORILLA)))
+    tf.push('der Gorilla steht in einem Lebensraum — er wird nicht gesammelt');
+
+  /* EINMAL UND NICHT ZWEIMAL.
+   *
+   * `raumTiere` bekommt, was das Kind schon hat, und liefert den Rest.
+   * Ohne diese Bedingung bekaeme ein Kind, das eine fertige Ebene noch
+   * einmal spielt, dieselben Tiere wieder - und im Endbildschirm stuende
+   * jedes Mal „Das Outback ist offen!". Ein Lohn, den es bei jedem
+   * Durchgang neu gibt, ist keiner.
+   *
+   * Geprueft wird der zweite Aufruf mit dem Ergebnis des ersten - also
+   * genau die Kette, die auch das Spiel faehrt. */
+  for (const r of TI.RAEUME) {
+    const ersteMal = TI.raumTiere(r.ebene, []);
+    const gemaltImRaum = r.tiere.filter(id => TI.tierMit(id) && TI.tierMit(id).bild);
+    if (ersteMal.length !== gemaltImRaum.length)
+      tf.push(`„${r.titel}" gibt beim ersten Mal ${ersteMal.length} statt `
+        + `${gemaltImRaum.length} Tiere`);
+    const zweitesMal = TI.raumTiere(r.ebene, ersteMal.map(t => t.id));
+    if (zweitesMal.length)
+      tf.push(`„${r.titel}" gibt beim ZWEITEN Mal noch einmal `
+        + `${zweitesMal.length} Tiere — dann ist der Lohn keiner`);
+  }
+
+  if (tf.length) {
+    console.log('    ' + tf.join('\n    '));
+    console.error('\n  tiere ROT: die Tiere (T1) stimmen nicht.');
+    process.exit(1);
+  }
+  const raeume = TI.RAEUME.filter((r, i, a) => a.findIndex(x => x.titel === r.titel) === i);
+  const fertig = raeume.filter(r => r.tiere.every(id => TI.tierMit(id).bild));
+  console.log('\n  Tor `tiere`');
+  console.log(`    ${TI.TIERE.length} im Plan, ${TI.gemalt().length} gemalt · `
+    + `${raeume.length} Lebensräume, ${fertig.length} davon vollständig`);
+  console.log('    ' + raeume.map(r => `${r.titel}: `
+    + `${r.tiere.filter(id => TI.tierMit(id).bild).length}/3`).join(' · '));
 }
 
 /* =================================================== Tor `betroffen` ==== *

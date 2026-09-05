@@ -199,19 +199,41 @@ await abschnitt('Was reist', async () => {
   pruefe('die PIN reist mit', !G.REIST('pin'));
   pruefe('die Stimme reist mit', !G.REIST('stimme'));
   pruefe('der Sitzungszaehler reist nicht', G.REIST('nr:fiona:kontinente'));
-  pruefe('„ohne Fehler" reist nicht', G.REIST('glatt'));
+  /* DER SCHLUESSEL, DEN DIE APP WIRKLICH SCHREIBT.
+   *
+   * Hier stand `G.REIST('glatt')` - also der Name aus `REIST` selbst und
+   * nicht der aus `glattSchluessel()` in `spiel.js`, der
+   * `ohnefehler:<kind>` lautet. Die Pruefung schrieb ihren Gegenstand vom
+   * Prueflig ab und konnte deshalb nie etwas melden (Regel 1: sie war kein
+   * Beweis). Sie war zwei Fassungen lang gruen, waehrend „Einmal ganz ohne
+   * Fehler" zwischen iPhone und iPad NICHT reiste. */
+  pruefe('„ohne Fehler" reist nicht', G.REIST('ohnefehler:fiona'));
+  pruefe('das Wort „glatt" reist, obwohl es den Schluessel nicht gibt',
+    !G.REIST('glatt'));
+  pruefe('die Tiersammlung reist nicht', G.REIST('tiere:fiona'));
 
   const v = G.vereinen(
-    { einstellungen: { pin: '1234', 'nr:a': 7, glatt: { zeit: 500 } } },
-    { einstellungen: { pin: '9999', 'nr:a': 3, glatt: { zeit: 200 } } });
+    { einstellungen: { pin: '1234', 'nr:a': 7, 'ohnefehler:a': { zeit: 500 },
+                       'tiere:a': { ids: ['fuchs'], gorilla: 2 } } },
+    { einstellungen: { pin: '9999', 'nr:a': 3, 'ohnefehler:a': { zeit: 200 },
+                       'tiere:a': { ids: ['eule'], gorilla: 5 } } });
   pruefe('die PIN ist im Umschlag gelandet', !('pin' in v.einstellungen));
   pruefe(`der Sitzungszaehler ist nicht der groessere: ${v.einstellungen['nr:a']}`,
     v.einstellungen['nr:a'] === 7);
   /* „Einmal ganz ohne Fehler" zaehlt das ERSTE Mal. Nimmt man das
      spaetere, wandert der Tag bei jedem Abgleich nach vorn, und aus
      einem Ereignis wird ein Zustand. */
-  pruefe(`„ohne Fehler" nimmt nicht das fruehere: ${v.einstellungen.glatt.zeit}`,
-    v.einstellungen.glatt.zeit === 200);
+  pruefe(`„ohne Fehler" nimmt nicht das fruehere: ${v.einstellungen['ohnefehler:a'].zeit}`,
+    v.einstellungen['ohnefehler:a'].zeit === 200);
+  /* Die Sammlung wird VEREINIGT, nicht ersetzt (T1). Wer auf dem iPad
+     einen Fuchs und auf dem iPhone eine Eule bekommen hat, hat beide -
+     ein Aufkleber, den das andere Geraet wegnimmt, waere schlimmer als
+     gar kein Gleichlauf. Beim Gorilla zaehlt die groessere Zahl. */
+  pruefe(`die Tiere werden nicht vereinigt: ${v.einstellungen['tiere:a'].ids}`,
+    ['eule', 'fuchs'].every(x => v.einstellungen['tiere:a'].ids.includes(x))
+    && v.einstellungen['tiere:a'].ids.length === 2);
+  pruefe(`der Gorilla nimmt nicht die groessere Zahl: ${v.einstellungen['tiere:a'].gorilla}`,
+    v.einstellungen['tiere:a'].gorilla === 5);
 });
 
 /* ---------- Eine ganze Runde gegen einen nachgebauten Dienst ----------- */

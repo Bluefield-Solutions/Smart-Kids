@@ -264,8 +264,8 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `farben` · `englisch` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`schrift` · `symbol` · `farben` · `englisch` · `betroffen` · `doku` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 
@@ -4725,4 +4725,46 @@ export const PROBEN = [
       + "//Anker:  'w-vorstellen', 'w-wiegehts', 'w-freutmich',",
     an:{ datei:'src/inhalt/englisch.js', text:"'w-vorstellen-alt'" },
     sagt:'zeigt auf keine Wendung' },
+
+  /* ---- T1: die Tiere und ihre Lebensraeume --------------------------- */
+
+  /* Ein Lebensraum haengt an einer Ebene, die es nicht gibt.
+   *
+   * Genau so faellt diese Sache still aus: die Kennung wird umbenannt
+   * (`laender:ozeanien` statt `laender:australien`), das Bild bleibt
+   * gemalt, und der Raum ist nie wieder zu oeffnen. Kein Bildschirm wird
+   * dabei rot - im Buch steht einfach fuer immer ein blasses Kaenguru. */
+  { n:'ein Lebensraum haengt an einer Ebene, die es nicht gibt', tor:'inhalt',
+    datei:'src/inhalt/tiere.js',
+    such:"  { ebene:'laender:australien',  titel:'Das Outback',",
+    ersatz:"  { ebene:'laender:ozeanien',  titel:'Das Outback',",
+    an:{ datei:'src/inhalt/tiere.js', text:"ebene:'laender:ozeanien'" },
+    sagt:'die es in spiel.js nicht gibt' },
+
+  /* Der Gorilla wird gesammelt.
+   *
+   * Er ist der Einzige, der NICHT verdient wird - er kommt, wenn eine
+   * Runde nicht geklappt hat. Steht er in einem Lebensraum, wird aus dem
+   * Trost ein Sammelstueck, und im Buch stuende eine Reihe von Gorillas:
+   * die Liste der Runden, die schiefgegangen sind. */
+  { n:'der Gorilla wird zum Sammelstueck', tor:'inhalt',
+    datei:'src/inhalt/tiere.js',
+    such:"    tiere:['elefant', 'giraffe', 'loewe'] },",
+    ersatz:"    tiere:['elefant', 'giraffe', 'gorilla'] },",
+    an:{ datei:'src/inhalt/tiere.js', text:"'giraffe', 'gorilla'" },
+    sagt:'wird nicht gesammelt' },
+
+  /* Der Lohn gibt es bei jedem Durchgang neu.
+   *
+   * `raumTiere` bekommt, was das Kind schon hat. Faellt der Filter weg,
+   * bekommt ein Kind, das eine fertige Ebene noch einmal spielt, dieselben
+   * Tiere wieder - und der Endbildschirm ruft jedes Mal „Das Outback ist
+   * offen!". Ein Lohn, den es immer wieder gibt, ist keiner. */
+  { n:'die Tiere eines Raums gibt es bei jedem Durchgang neu', tor:'inhalt',
+    datei:'src/inhalt/tiere.js',
+    such:"  return r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));",
+    ersatz:"  return r.tiere.map(tierMit).filter(t => t && t.bild);\n"
+      + "  //Anker:  return r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));",
+    an:{ datei:'src/inhalt/tiere.js', text:"filter(t => t && t.bild);" },
+    sagt:'beim ZWEITEN Mal' },
 ];

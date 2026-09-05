@@ -969,6 +969,49 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .abz.da{background:var(--gut-h);border-color:var(--gut)}
 /* Auf dem Endbildschirm, wenn eines DAZUGEKOMMEN ist. Eine Zeile, mittig,
    in derselben Sprache wie der Rest des Bildschirms. */
+/* --- Fionas Tiere (T1) ---------------------------------------------
+ *
+ * Das Tier auf dem Endbildschirm und die Wand im Buch. Zwei Groessen,
+ * eine Form: `.tierbild` ist immer quadratisch, weil der Rahmen aller
+ * Tiere `0 0 48 48` ist - der Elefant soll nicht groesser sein als die
+ * Maus, nur weil er breiter gezeichnet ist.
+ */
+.tierbild{width:100%;height:auto;aspect-ratio:1;display:block}
+.tierneu{display:flex;align-items:center;justify-content:center;gap:var(--r3);
+  margin:var(--r2) 0;padding:var(--r1) var(--r4) var(--r1) var(--r2);
+  border-radius:var(--rund-voll);
+  background:var(--gut-h);border:var(--strich) solid var(--gut);
+  font-family:var(--f-lesen);font-size:var(--s0);color:var(--tinte);
+  max-width:100%}
+/* Der Gorilla kommt nach einer Runde, die nicht geklappt hat - also im
+   ruhigen Ton und nicht im gruenen. Kein Rot: er ist kein Fehler, er ist
+   der, der wiederkommt. */
+.tierneu.hilft{background:var(--grund-2);border-color:var(--linie)}
+.tierneu .tierbild{width:44px;flex:none}
+/* Ein Lebensraum ist die Einheit: Ueberschrift und drei Tiere darunter.
+   Die Reihe steht fuer sich, damit man sieht, was zusammengehoert. */
+.tierraum{width:100%;margin-bottom:var(--r2)}
+.tierraum h4{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:700;
+  color:var(--tinte-2);margin:0 0 var(--r1)}
+/* FESTE Breite, kein `1fr`: bei drei Tieren in einer `auto-fit`-Spur
+   zieht jede Kachel ein Drittel des Bildschirms an sich, und der Wal war
+   gemessen 400 Punkte breit. Ein Aufkleber ist so gross wie ein
+   Aufkleber. */
+.tierwand{display:flex;flex-wrap:wrap;gap:var(--r2);width:100%}
+.tierfeld{width:68px;flex:none;display:flex;flex-direction:column;align-items:center;gap:var(--r0);
+  padding:var(--r1);border-radius:var(--r3);border:var(--strich) solid var(--linie);
+  background:var(--grund);cursor:pointer;font:inherit;min-height:44px}
+.tierfeld span{font-family:var(--f-lesen);font-size:var(--s-klein);
+  color:var(--tinte-2);text-align:center;line-height:1.15;
+  max-width:100%;overflow-wrap:anywhere}
+.tierfeld.da{background:var(--gut-h);border-color:var(--gut)}
+.tierfeld.da span{color:var(--tinte)}
+/* Die fehlenden bleiben SICHTBAR und werden nur blass - ein leeres
+   Kaestchen sagt „hier kommt noch etwas", ein weggelassenes sagt nichts.
+   Kein `opacity` auf dem ganzen Feld: der Rahmen soll seine Farbe
+   behalten, damit die Wand ein Raster bleibt (dieselbe Lehre wie bei den
+   Farbflecken in G18). */
+.tierfeld:not(.da) .tierbild{opacity:.16;filter:grayscale(1)}
 .abzneu{display:flex;align-items:center;justify-content:center;gap:var(--r3);
   margin:var(--r3) 0;padding:var(--r2) var(--r4);border-radius:var(--rund-voll);
   background:var(--gut-h);border:var(--strich) solid var(--gut);
@@ -992,6 +1035,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
      sind es 340 Punkte) noch fehlte - gemessen: 5 Punkte, eine Zeile sind
      15. Auf dem grossen Bildschirm bleibt sie darunter, dort ist Platz. */
   .abz.offen small{display:inline;font-size:calc(var(--s-klein) * 0.9)}
+  .tierneu{font-size:var(--s-klein);margin:var(--r0) 0;padding:var(--r0) var(--r3) var(--r0) var(--r1)}
+  .tierneu .tierbild{width:34px}
+  .tierraum{margin-bottom:var(--r1)}
+  .tierraum h4{margin-bottom:var(--r0)}
+  .tierwand{gap:var(--r1)}
+  .tierfeld{width:52px}
+  .tierfeld{padding:var(--r0)}
   .abzneu{font-size:var(--s-klein);margin:var(--r1) 0;padding:var(--r1) var(--r3)}
   .abzneu svg{width:30px;height:30px}
   /* Und die Ueberschrift faellt weg. Auf 390 Punkten Hoehe ist sie der
