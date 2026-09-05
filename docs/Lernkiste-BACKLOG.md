@@ -189,7 +189,8 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 |---|---|---|---|---|---|
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
-| 3 | **T3** Die restlichen 93 Tiere des Plans malen | alle vier | mittel | groß | Zeichenbank steht |
+| 3 | **T3** Die restlichen 86 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
+| 3b | **T4** Der Bauernhof als elfter Lebensraum | alle vier | mittel | klein | T3-Stapel 1 (da) |
 | 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -4901,6 +4902,38 @@ in anderer Form: `falle` ist die Form, die ein Deutscher **tippt**, der
 Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
+
+### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396
+
+Gemalt wird in **Stapeln zu sieben**. Das ist kein Rhythmus, sondern ein
+Abbruchpunkt: nach jedem Stapel ist der Vorrat vollständig, die Tore sind
+grün, und die nächste Runde kann etwas anderes tun.
+
+**Stapel 1: der Bauernhof.** Kuh · Pferd · Schaf · Schwein · Esel · Hund ·
+Ente. Zusammen gewählt, nicht der Reihe nach aus dem Plan gepflückt: sieben
+Tiere, die einen Raum ergeben, sind ein elfter Lebensraum (T4); sieben
+zufällige sind sieben Aufkleber ohne Ort.
+
+Drei standen im ersten Wurf nicht:
+
+| | Befund | Griff |
+|---|---|---|
+| Kuh | weiß auf fast weißem Grund, die Flecken schwammen frei im Rumpf | warmer Ton, Flecken schneiden die Silhouette an |
+| Schaf | die Wolle zerfiel in acht helle Blasen | die Beulen bekommen die **Rumpffarbe** — eine Wolke statt acht |
+| Ente | Kopf und Rumpf zwei getrennte Kreise, der Schnabel schwebte | ein Hals dazwischen, blasser blauer Grund |
+
+**Was ein Tier kostet**, gemessen und nicht geschätzt: 1866 Byte roh,
+**0,47 KB gzip**. Das Startbündel ging von 382,6 auf **385,9 von 700 KB**.
+Hochgerechnet auf die verbleibenden 86: rund 40 KB, also **426 von 700**.
+Es passt — und es ist ein Drittel des Spielraums, der noch da ist.
+
+Die sieben stehen in **keinem** Lebensraum. `sammelbar()` zählt nur, was
+in einem Raum steht, also bleibt die Sammlung bei 30 und kein Bildschirm
+ändert sich — die Vorbilder von `ansicht` blieben grün, ohne dass etwas
+erneuert werden musste. Das ist der Grund, warum T4 eine eigene Runde ist
+und nicht an diese angehängt wurde.
+
+---
 
 ### T2 · Die Landschaft — GEFAHREN (v392)
 
