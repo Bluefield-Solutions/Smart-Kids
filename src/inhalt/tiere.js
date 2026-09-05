@@ -169,7 +169,9 @@ export const TIERE = [
   { id:'elefant', name:'der Elefant', art:'tier', zeichen:'🐘',
     ton:'#e8eef5',
     bild:'<path d="M11.4 29c2 0 3.4 1.4 3.4 3.6v6.8c0 1.6-1.1 2.6-2.6 2.6s-2.6-1-2.6-2.6v-6.8c0-2.2.4-3.6 1.8-3.6z" fill="#8695a6"/><path d="M20.2 29.6c2 0 3.4 1.4 3.4 3.6v6.2c0 1.6-1.1 2.6-2.6 2.6s-2.6-1-2.6-2.6V33.2c0-2.2.4-3.6 1.8-3.6z" fill="#8695a6"/><path d="M7.4 20.6c-1.6.6-2.4 2-2.4 4.2 0 1.6.3 3 .9 4.2.5.9.2 1.8-.7 2.2-.9.4-1.8.1-2.2-.8-.9-1.7-1.3-3.6-1.3-5.6 0-3.6 1.7-6 4.6-6.8z" fill="#8695a6"/><path d="M20 14.6c9.4 0 15.2 5.2 15.2 14 0 6.8-4 10.4-11.4 10.4h-6.4C10 39 6 35.4 6 28.6c0-8.8 5.8-14 14-14z" fill="#94a3b3"/><path d="M20.4 29.4c5.83 0 9.40 2.53 9.40 4.60s-3.57 4.60-9.40 4.60-9.40-2.07-9.40-4.60 3.57-4.60 9.40-4.60z" fill="#a7b5c4"/><path d="M34.6 11.000000000000002c6.45 0 10.40 5.83 10.40 10.60s-3.95 10.60-10.40 10.60-10.40-4.77-10.40-10.60 3.95-10.60 10.40-10.60z" fill="#a1b0c0"/><path d="M27.6 12.6c4.6 0 7.6 3.4 7.6 8.8s-3 9.2-7.6 9.2-7.4-3.8-7.4-9.2 2.8-8.8 7.4-8.8z" fill="#8695a6"/><path d="M27.6 15.4c3 0 5 2.3 5 6s-2 6.3-5 6.3-4.9-2.6-4.9-6.3 1.9-6 4.9-6z" fill="#96a5b6"/><path d="M39.4 28.6c2.6 0 4.2 1.8 4.2 4.8 0 2.6-.6 4.6-.6 6.2 0 .9.4 1.4 1.1 1.4.5 0 .9-.2 1.2-.6-.2 1.6-1.3 2.6-2.9 2.6-2 0-3.3-1.5-3.3-4 0-2.2.7-4.4.7-6.4 0-1.6-.4-2.7-1.2-3.4z" fill="#a1b0c0"/><path d="M42.6 40.6c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5-2.5-1-2.5-2.5 1-2.5 2.5-2.5z" fill="#b6c3d0"/><path d="M36.6 30.4c1 1.6 1.2 3.2.6 4.8-.9-1.4-1.9-2.4-3-3.2z" fill="#f4f7fa"/><path d="M38.4 17.400000000000002c1.36 0 2.20 1.21 2.20 2.20s-0.84 2.20-2.20 2.20-2.20-0.99-2.20-2.20 0.84-2.20 2.20-2.20z" fill="#2d333c"/><path d="M37.67 17.88c0.55 0 0.88 0.48 0.88 0.88s-0.33 0.88-0.88 0.88-0.88-0.40-0.88-0.88 0.33-0.88 0.88-0.88z" fill="#ffffff"/><path d="M20 16.6c6.4 0 10.9 2.4 13.2 7-3-3.2-7.4-4.8-13.2-4.8-4.6 0-8.2 1.1-10.8 3.2 2-3.6 5.6-5.4 10.8-5.4z" fill="#b0bdcb"/>' },
-  { id:'mammut', name:'das Mammut', art:'tier', zeichen:'🦣' },
+  { id:'mammut', name:'das Mammut', art:'tier', zeichen:'🦣',
+    ton:'#f4e8d6',
+    bild:'<path d="M9.6 28h6.4v12H9.6zM19.6 29h6.4v11h-6.4z" fill="#5f4128"/><path d="M8.2 37.6h9.2c1.1 0 2 .9 2 2s-.9 2-2 2H8.2c-1.1 0-2-.9-2-2s.9-2 2-2zM18.2 38.6h9.2c1.1 0 2 .9 2 2s-.9 2-2 2h-9.2c-1.1 0-2-.9-2-2s.9-2 2-2z" fill="#4a321d"/><path d="M18 12.6c8.6 0 13.4 5.6 13.4 14.6 0 3.4-.4 6.2-1.2 8.4l-2-2.4-1.8 2.6-2-2.4-1.8 2.6-2-2.4-1.8 2.6-2-2.4-1.8 2.4-2.2-2.6c-.8-2.2-1.2-5-1.2-8.4 0-9 4.8-14.6 13.4-14.6z" fill="#8a5f38"/><path d="M7.6 30.6c-2 1.4-3 3.2-3 5.4l2.6-.4c0-1.6.2-3.2 .4-5z" fill="#8a5f38"/><path d="M8.6 21.6c7-2.6 14.2-2.6 21.2 0-7 1.4-14.2 1.4-21.2 0z" fill="#734d2c"/><path d="M34 11.6c5.4 0 8.8 3.8 8.8 9.8 0 3.2-.8 5.8-2.4 7.6l-11.8 2c-2.6-2-4-5.2-4-9.6 0-6.4 3.6-9.8 9.4-9.8z" fill="#9a6d42"/><path d="M34 12.6c3.6 0 6 2 7 5.6-2-2.2-4.2-3.2-7-3.2s-5 1-7 3.2c1-3.6 3.4-5.6 7-5.6z" fill="#b0824f"/><path d="M27.6 17.6c-3-.8-5 .6-5.8 3.6 2.8 1 4.8.2 5.8-3.6z" fill="#6b4a2e"/><path d="M33.6 26.6c3.6 2.6 5.4 5.6 5.4 9 0 2.2-.9 3.9-2.8 5l-1.4-2.4c1.1-.7 1.6-1.6 1.6-2.6 0-2.6-1.4-4.9-4.2-7z" fill="#c4b193"/><path d="M39.8 26c1.2 5 1.4 9.4.8 13.2-.4 2.6-1.7 4.1-3.8 4.4l-.6-3.2c1-.2 1.6-.9 1.8-2.1 .5-3.3.3-7.3-.8-11.7z" fill="#7a5230"/><path d="M36.2 43.6c-2 .2-3.3-.7-4-2.6l2.8-1c.3.9.8 1.2 1.6 1.1z" fill="#6b4a2e"/><path d="M35.6 25.6c6 2.2 9.6 5.6 10.6 10.2.7 3.2-.6 5.8-3.8 7.6l-1.6-2.8c2-1.2 2.8-2.7 2.4-4.6-.7-3.4-3.5-6-8.2-7.8z" fill="#f6efe0"/><path d="M42.4 43.4c3.2-1.8 4.5-4.4 3.8-7.6l-2.8.6c.5 2.3-.3 4.1-2.4 5.4z" fill="#ffffff"/><path d="M35.6 16.900000000000002c1.67 0 2.70 1.49 2.70 2.70s-1.03 2.70-2.70 2.70-2.70-1.22-2.70-2.70 1.03-2.70 2.70-2.70z" fill="#3a2614"/><path d="M34.71 17.49c0.67 0 1.08 0.59 1.08 1.08s-0.41 1.08-1.08 1.08-1.08-0.49-1.08-1.08 0.41-1.08 1.08-1.08z" fill="#ffffff"/>' },
   { id:'dromedar', name:'das Dromedar', art:'tier', zeichen:'🐪' },
   { id:'trampeltier', name:'das Trampeltier', art:'tier', zeichen:'🐫' },
   { id:'giraffe', name:'die Giraffe', art:'tier', zeichen:'🦒',
@@ -396,6 +398,28 @@ export const RAEUME = [
    * rechnet das nach, statt es zu glauben. */
   { ab: 30,                      titel:'In der Tiefsee',
     tiere:['fisch', 'hai', 'orca'] },
+
+  /* Der zweite Raum, den die Sammlung selbst oeffnet - und der einzige,
+   * in dem kein Tier lebt.
+   *
+   * „Vor langer Zeit" ist keine Landschaft, sondern eine ZEIT, und
+   * genau das macht ihn fuer ein sechsjaehriges Kind wertvoll: es gibt
+   * Tiere, die es GAB und nicht mehr gibt. Das ist ein Gedanke, kein
+   * Ort - und der Aufkleber ist die einfachste Art, ihn zu erzaehlen.
+   *
+   * Deshalb stehen hier nur die drei, die es WIRKLICH gab.
+   * Drache, Einhorn und Yeti gehoeren nicht dazu, obwohl sie gemalt
+   * sind und obwohl es bequem waere: sie sind erfunden, und ein Raum,
+   * der beides mischt, nimmt dem Gedanken die Spitze. Fuer sie kommt
+   * ein eigener.
+   *
+   * SECHSUNDDREISSIG ist wieder gemessen: das knappste Profil erreicht
+   * ueber seine Ebenen 36 Tiere, und die Tiefsee legt bei 30 noch drei
+   * dazu. Wer also elf seiner zwoelf Raeume voll hat, ist da - es
+   * verlangt Ausdauer, aber keine Vollstaendigkeit. `inhalt` rechnet es
+   * je Profil nach, statt es zu glauben. */
+  { ab: 36,                      titel:'Vor langer Zeit',
+    tiere:['tyrannosaurus', 'langhalssaurier', 'mammut'] },
 ];
 
 /** Was gemalt ist - der wirkliche Vorrat. */
@@ -531,7 +555,9 @@ export const KULISSEN = {
   "In der Tiefsee": {
     ton:'#dde3ee',
     bild:'<path d="M0 0h160v30H0z" fill="#16233f"/><path d="M0 30h160v30H0z" fill="#1d2d4e"/><path d="M0 60h160v30H0z" fill="#26375c"/><path d="M70 0l10 62-26 0z" fill="#27395f"/><path d="M0 78c20-6 36 2 58 0s34-6 56-4 30 4 46 2v14H0z" fill="#33456b"/><path d="M8 78c0-8 3-13 3-20h5c0 7 3 12 3 20z" fill="#3d5178"/><path d="M12 50c1.8 0 2.6 1.2 2.6 2.6s-.8 2.6-2.6 2.6-2.6-1.2-2.6-2.6.8-2.6 2.6-2.6zM14 40c1.4 0 2 1 2 2s-.6 2-2 2-2-1-2-2 .6-2 2-2zM11 32c1 0 1.6.8 1.6 1.6s-.6 1.6-1.6 1.6-1.6-.8-1.6-1.6.6-1.6 1.6-1.6z" fill="#5f7ba8"/><path d="M142 40c6 0 10 4 10 8s-4 6-10 6-10-2-10-6 4-8 10-8z" fill="#6fd8c6"/><path d="M136 54c0 8-1 14-2 20h2c2-6 3-12 2-20zM142 54c0 9 0 15-.6 20h2c1-5 1-11 .6-20zM148 54c1 8 1 14 .6 20h-2c-.6-6-.6-12-1-20z" fill="#8fe6d6"/><path d="M120 22c4 0 6.6 2.6 6.6 5.2s-2.6 4-6.6 4-6.6-1.4-6.6-4 2.6-5.2 6.6-5.2z" fill="#7fd2e0"/><path d="M116 31c0 5-.6 9-1.2 13h1.4c1.2-4 1.8-8 1.2-13zM120 31c0 6 0 10-.4 13h1.4c.6-3 .6-7 .4-13z" fill="#a0e2ec"/><path d="M36 24c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM96 44c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM52 66c1 0 1.6.7 1.6 1.6s-.6 1.6-1.6 1.6-1.6-.7-1.6-1.6.6-1.6 1.6-1.6z" fill="#8fd8e8"/>' },
-};
+  "Vor langer Zeit": {
+    ton:'#f6e6d2',
+    bild:'<path d="M0 0h160v22H0z" fill="#f2c79a"/><path d="M0 22h160v14H0z" fill="#f0b98a"/><path d="M0 36c22-10 38 2 60-2s44-12 66-4 26 6 34 4v10H0z" fill="#a8785c"/><path d="M0 44h160v46H0z" fill="#c9a578"/><path d="M0 52c30 6 56-6 88-2s44 8 72 4v36H0z" fill="#d8b78a"/><path d="M112 44l20-30 20 30z" fill="#8a6248"/><path d="M126 22l6-8 6 8z" fill="#c05a3c"/><path d="M124 24c5-3 11-3 16 0-5 2-11 2-16 0z" fill="#e07a48"/><path d="M132 13c-2.6-4-1-7 2.4-8.6-.8 2.8 0 4.4 1.6 5.8-1.6 1.2-3.2 2-4 2.8z" fill="#eddcc8"/><path d="M136.6 6.6c-1.6-2.6 0-4 2.2-4.8-.6 2 0 2.8.8 3.6-1 .6-2.2 1-3 1.2z" fill="#f4e8da"/><path d="M96 44l12-18 12 18z" fill="#9a7156"/><path d="M14.6 60V38h2.8v22z" fill="#5c7a3e"/><path d="M16 40c-13 -2 -15 2 -16 6 12 -2 10 -3 10 -4z" fill="#6f9450"/><path d="M16 40c13 -2 15 2 16 6 -12 -2 -10 -3 -10 -4z" fill="#5c7a3e"/><path d="M16 45c-11 -2 -13 2 -14 6 10 -2 8 -3 8 -4z" fill="#6f9450"/><path d="M16 45c11 -2 13 2 14 6 -10 -2 -8 -3 -8 -4z" fill="#5c7a3e"/><path d="M16 50c-9 -2 -11 2 -12 6 8 -2 6 -3 6 -4z" fill="#6f9450"/><path d="M16 50c9 -2 11 2 12 6 -8 -2 -6 -3 -6 -4z" fill="#5c7a3e"/><path d="M16 55c-7 -2 -9 2 -10 6 6 -2 4 -3 4 -4z" fill="#6f9450"/><path d="M16 55c7 -2 9 2 10 6 -6 -2 -4 -3 -4 -4z" fill="#5c7a3e"/><path d="M40.6 62V46h2.4v16z" fill="#5c7a3e"/><path d="M41.8 48c-9 -1.6 -11 1.6 -12 4.6 8 -1.6 6 -2.4 6 -3z" fill="#79a058"/><path d="M41.8 53c-7 -1.6 -9 1.6 -10 4.6 6 -1.6 4 -2.4 4 -3z" fill="#79a058"/><path d="M41.8 57c-5 -1.6 -7 1.6 -8 4.6 4 -1.6 2 -2.4 2 -3z" fill="#79a058"/><path d="M0 90c0-10 6-16 14-16s16 6 16 16z" fill="#a8896c"/><path d="M4 82c2-4 6-6 10-6s7 1 9 3c-6-1-13 0-19 3z" fill="#bd9d7e"/><path d="M132 90c0-8 6-13 14-13s14 5 14 13z" fill="#a8896c"/><path d="M136 84c2-3 6-5 10-5s7 1 9 2c-6-1-13 0-19 3z" fill="#bd9d7e"/><path d="M34 84c2.6 0 4 1.2 4 2.6s-1.4 2.6-4 2.6-4-1.2-4-2.6 1.4-2.6 4-2.6z" fill="#b89a7c"/><path d="M120 86c2 0 3 1 3 2s-1 2-3 2-3-1-3-2 1-2 3-2z" fill="#b89a7c"/>' },};
 
 /** Die Landschaft eines Raumes - oder `null`, wenn es noch keine gibt. */
 export const kulisseZu = (titel) => KULISSEN[titel] || null;

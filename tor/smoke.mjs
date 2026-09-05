@@ -9,9 +9,11 @@ import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 import { fremdgriff, griffBeobachter } from './fremdgriff.mjs';
-import { sammelbar } from '../src/inhalt/tiere.js';
+import { sammelbar, RAEUME } from '../src/inhalt/tiere.js';
 /** Alles, was ein Kind sammeln kann - der teuerste Fall fuer die Bank (T4). */
 const ALLE_TIERE = sammelbar().map(t => t.id);
+/** Die Raeume, die die SAMMLUNG oeffnet - aus den Daten, nicht gezaehlt. */
+const AB_RAEUME = RAEUME.filter(r => r.ab);
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
@@ -5834,14 +5836,26 @@ if (laeuft('landschaft')) try {
    * Gespielt wird FIONAS Rechenebene: sechs Aufgaben, und geantwortet
    * wird mit einem Tipp auf die richtige Zahl - der kuerzeste Weg zu
    * einem Endbildschirm, den es gibt. */
+  /* JEDER Raum, den die Sammlung oeffnet - aus den Daten, nicht einer
+     davon abgeschrieben. Als es nur die Tiefsee gab, stand hier ihre
+     Schwelle als Zahl und ihre drei Tiere als Liste; der zweite Raum
+     haette den ganzen Block ein zweites Mal verlangt (Regel 6). */
+  const abBerichte = [];
+  for (const raum of AB_RAEUME) {
   const z = await neueSeite({ width: 844, height: 390 }, ctx);
   await z.waitForSelector('[data-profil="fiona"]');
-  /* Genau die Schwelle, und keines der Tiere, die dahinter liegen. */
-  const SCHWELLE = 30;
-  const vorTiefsee = ALLE_TIERE
-    .filter(id => !['fisch', 'hai', 'orca'].includes(id)).slice(0, SCHWELLE);
+  /* Genau die Schwelle - und keines der Tiere DIESES Raumes.
+     Die Tiere der frueheren Raeume sind mit drin, sonst schlaegt der
+     erste zu und der gepruefte kaeme nie an die Reihe. */
+  const SCHWELLE = raum.ab;
+  const vorRaum = ALLE_TIERE
+    .filter(id => !raum.tiere.includes(id)).slice(0, SCHWELLE);
+  if (vorRaum.length < SCHWELLE)
+    merke('landschaft', new Error(`fuer „${raum.titel}" gibt es nur `
+      + `${vorRaum.length} andere Tiere, die Schwelle ist ${SCHWELLE} — `
+      + 'der Raum ist nicht zu erreichen'));
   await stelleAblage(z, { einstellungen: {
-    'tiere:fiona': { ids: vorTiefsee, gorilla: 0, szenen: {} },
+    'tiere:fiona': { ids: vorRaum, gorilla: 0, szenen: {} },
     alles: { vorlaufGezeigt: { 'fiona:rechnen:plusminus': true } } } });
   await z.reload({ waitUntil: 'domcontentloaded' });
   await z.waitForSelector('[data-profil="fiona"]');
@@ -5884,15 +5898,16 @@ if (laeuft('landschaft')) try {
   if (!ende.da)
     merke('landschaft', new Error(`nach ${aufgaben} Aufgaben kein Endbildschirm — `
       + 'die Runde ist nicht zu Ende gespielt worden'));
-  else if (!ende.tier || !/Tiefsee/.test(ende.tier))
+  else if (!ende.tier || !ende.tier.includes(raum.titel))
     merke('landschaft', new Error(`mit ${SCHWELLE} Tieren sagt der Endbildschirm `
-      + `„${ende.tier || '(nichts)'}" — die Sammlung öffnet die Tiefsee nicht`));
+      + `„${ende.tier || '(nichts)'}" — die Sammlung öffnet „${raum.titel}" nicht`));
   else if (ende.bilder !== 3)
-    merke('landschaft', new Error(`die Tiefsee bringt ${ende.bilder} Tiere statt drei`));
+    merke('landschaft', new Error(`„${raum.titel}" bringt ${ende.bilder} Tiere statt drei`));
   await z.close();
+  abBerichte.push(`„${raum.titel}" bei ${SCHWELLE} nach ${aufgaben} Aufgaben`);
+  }
 
-  console.log(`  Sammlung öffnet einen Raum: bei ${SCHWELLE} Tieren nach `
-    + `${aufgaben} Aufgaben — „${(ende.tier || '').slice(0, 46)}"`);
+  console.log(`  Sammlung öffnet Räume:      ${abBerichte.join(' · ')}`);
   console.log(`  Bank blättert:              667 x 375, ${ALLE_TIERE.length} Tiere: `
     + `${ersteSeite} auf der ersten Seite, ${gesehen.size} über ${runden + 1} Seiten erreichbar`);
   console.log(`  Landschaft:                 ${tueren.length} Türen offen `

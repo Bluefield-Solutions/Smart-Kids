@@ -537,11 +537,26 @@ export const PROBEN = [
     such:"  const ausZahl = Tiere.raumAbZahl(TierStand.ids);",
     ersatz:"  const ausZahl = null;  //Anker: const ausZahl = Tiere.raumAbZahl(TierStand.ids);",
     an:{ ...DIST, text:'const ausZahl = null;' },
-    sagt:'öffnet die Tiefsee nicht' },
+    sagt:'öffnet „In der Tiefsee" nicht' },
 
   /* Und die Schwelle selbst: ohne sie gaebe es den Raum vom ersten Tier
      an. Das Kind bekaeme ihn, bevor es ihn verdient hat - und der
      einzige Lohn, der fuer das SAMMELN steht, waere geschenkt. */
+  /* Und die Schleife selbst (T7). Der Abschnitt fuhr bis v407 EINEN
+     Raum - die Tiefsee, mit ihrer Schwelle als Zahl und ihren drei
+     Tieren als Liste. Jetzt faehrt er alle, die die Sammlung oeffnet.
+     Diese Probe trifft absichtlich den ZWEITEN: bliebe die Schleife
+     beim ersten stehen, waere sie gruen und der neue Raum ungeprueft -
+     und das saehe genauso aus wie ein bestandenes Tor.
+     Der Eingriff tauscht ein gemaltes Tier gegen ein geplantes: der
+     Raum gibt dann zwei statt drei. */
+  { n:'der zweite Sammlungsraum wird nicht gefahren', tor:'smoke',
+    args:['--nur=landschaft'], bauen:true, datei:'src/inhalt/tiere.js',
+    such:"    tiere:['tyrannosaurus', 'langhalssaurier', 'mammut'] },",
+    ersatz:"    tiere:['tyrannosaurus', 'langhalssaurier', 'phoenix'] },",
+    an:{ ...DIST, text:"'langhalssaurier', 'phoenix'" },
+    sagt:'bringt 2 Tiere statt drei' },
+
   { n:'die Schwelle gilt nicht mehr', tor:'inhalt', datei:'src/inhalt/tiere.js',
     /* OHNE die Einrueckung im Suchtext: der Anker steht im Kommentar am
        Zeilenende und traegt sie nicht. Mit vier Leerzeichen davor haette
