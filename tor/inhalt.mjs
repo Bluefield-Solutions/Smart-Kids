@@ -2158,6 +2158,102 @@ console.log('\n  Tor `englisch`');
       + `beiden Fassungen · ${mehrere} halten mehrere gültige Antworten · `
       + 'keine Falle steht unter den richtigen');
   }
+
+  /* --- E11/E12: die Wendungen und die Diktatsaetze -------------------- *
+   *
+   * Die Zusage dieser Ebene ist eine BESONDERE, und sie steht als
+   * einziger Satz im Vorlauf: „Es gibt mehr als eine richtige Fassung -
+   * es zaehlt, ob man dich versteht." Genau das ist hier zu pruefen, und
+   * es zerfaellt in zwei Haelften, die sich gegenseitig halten:
+   *
+   *   MEHRERE   Jede Wendung traegt mindestens zwei Fassungen. Mit
+   *             einer waere die Zusage eine Behauptung; das Kind tippt
+   *             dann eine Fassung, die man versteht, und bekommt „falsch".
+   *   VERSCHIEDEN  Und die Fassungen muessen sich NACH der Normalform
+   *             unterscheiden. Zwei Schreibweisen desselben Satzes sind
+   *             keine zweite Fassung - sie beweisen nur, dass `wieGesagt`
+   *             Punkte wegnimmt (Regel 1: eine Pruefung, die nie etwas
+   *             meldet, ist kein Beweis).
+   *
+   * Und die Gegenrichtung, ohne die die Nachsicht unbegrenzt waere:
+   * keine zwei VERSCHIEDENEN Wendungen duerfen auf dieselbe Normalform
+   * fallen. Sonst waere die Antwort auf die eine Aufgabe auch die auf
+   * eine andere, und die Ebene wuerde nachsichtig statt richtig.
+   */
+  {
+    const wf = [], gesehen = new Map(), ids = new Set();
+    const woerter = (t) => String(t).trim().split(/\s+/).length;
+    for (const w of EN.WENDUNGEN) {
+      if (ids.has(w.id)) wf.push(`die Kennung „${w.id}" gibt es zweimal`);
+      ids.add(w.id);
+      if (!w.deutsch || !w.gebiet)
+        wf.push(`„${w.id}" hat keinen deutschen Satz oder kein Themengebiet`);
+      if (w.richtig.length < 2)
+        wf.push(`„${w.id}" hat nur ${w.richtig.length} gültige Fassung — `
+          + 'die Ebene sagt zu, dass es mehr als eine gibt');
+      const norm = w.richtig.map(EN.wieGesagt);
+      if (new Set(norm).size !== norm.length)
+        wf.push(`„${w.id}" zählt dieselbe Fassung zweimal — nach `
+          + '`wieGesagt` bleibt sie ein einziger Satz');
+      for (const n of new Set(norm)) {
+        if (gesehen.has(n) && gesehen.get(n) !== w.id)
+          wf.push(`„${n}" gilt für „${w.id}" UND für „${gesehen.get(n)}" — `
+            + 'dann beantwortet eine Wendung die andere mit');
+        gesehen.set(n, w.id);
+      }
+    }
+    /* Vier Themengebiete, und keines darf leer bleiben: der Lehrplan
+       nennt sie einzeln, und eine Ebene, die nur Smalltalk fragt, deckt
+       ihn nicht ab. Die Zahl kommt aus den DATEN und nicht von hier -
+       geprueft wird, dass jedes vorkommt, nicht wie oft. */
+    const gebiete = new Set(EN.WENDUNGEN.map(w => w.gebiet));
+    for (const g of ['4.1', '4.2', '4.3', '4.4'])
+      if (!gebiete.has(g)) wf.push(`kein Satz zum Themengebiet ${g}`);
+
+    /* Die Diktatsaetze sind eine AUSWAHL der Wendungen und keine zweite
+       Liste (Regel 6). Ohne diese Bindung haetten E11 und E12 zwei
+       Vorraete, die auseinanderlaufen - und der eine wuerde still
+       veralten. Geprueft wird deshalb, dass jede Kennung wirklich eine
+       Wendung trifft. */
+    const zuId = new Map(EN.WENDUNGEN.map(w => [w.id, w]));
+    const hs = [];
+    for (const id of EN.HOERSAETZE) {
+      const w = zuId.get(id);
+      if (!w) { wf.push(`der Diktatsatz „${id}" zeigt auf keine Wendung`); continue; }
+      hs.push(w);
+    }
+    if (new Set(EN.HOERSAETZE).size !== EN.HOERSAETZE.length)
+      wf.push('eine Kennung steht zweimal unter den Diktatsätzen');
+    // Eine Sitzung der Eltern ist zwölf Aufgaben lang (Profiltabelle).
+    // Darunter wiederholte sich der Vorrat innerhalb einer Sitzung.
+    if (hs.length < 12)
+      wf.push(`nur ${hs.length} Diktatsätze — eine Sitzung ist zwölf Aufgaben lang`);
+    const hgebiete = new Set(hs.map(w => w.gebiet));
+    for (const g of ['4.1', '4.2', '4.3', '4.4'])
+      if (!hgebiete.has(g)) wf.push(`kein Diktatsatz zum Themengebiet ${g}`);
+    /* RATSCHE, kein Soll. Der Vorlauf verspricht „einmal, in normalem
+       Tempo" - ab einer gewissen Laenge misst das nicht mehr das Hoeren,
+       sondern das Behalten. Gemessen am heutigen Vorrat: sieben Woerter.
+       Die Grenze steht bei neun, damit ein laengerer Satz auffaellt,
+       bevor er unbemerkt zur Gedaechtnisaufgabe wird. */
+    const LAENGSTER = 9;
+    for (const w of hs)
+      if (woerter(w.richtig[0]) > LAENGSTER)
+        wf.push(`„${w.richtig[0]}" hat ${woerter(w.richtig[0])} Wörter — `
+          + `ab ${LAENGSTER} misst das Diktat das Behalten und nicht das Hören`);
+
+    if (wf.length) {
+      console.log('    ' + wf.join('\n    '));
+      console.error('\n  englisch ROT: die Wendungen (E11/E12) stimmen nicht.');
+      process.exit(1);
+    }
+    const laengste = Math.max(...hs.map(w => woerter(w.richtig[0])));
+    console.log(`    Wendungen (E11): ${EN.WENDUNGEN.length} Sätze in `
+      + `${gebiete.size} Themengebieten, jeder mit mindestens zwei gültigen `
+      + 'Fassungen · keine Fassung beantwortet zwei Aufgaben');
+    console.log(`    Hören und schreiben (E12): ${hs.length} Diktatsätze, alle aus `
+      + `den Wendungen · längster ${laengste} Wörter (Grenze ${LAENGSTER})`);
+  }
 }
 
 /* =================================================== Tor `betroffen` ==== *

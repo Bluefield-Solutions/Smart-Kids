@@ -929,7 +929,7 @@ async function weitergegangen(p, ms = 8000) {
     if (s.querySelector('.frage .richtigText, .frage .fastText, .frage .loesung')) return false;
     return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
               || s.querySelector('.engkarte') || s.querySelector('.freundluecke')
-              || s.querySelector('#nochmal'));
+              || s.querySelector('.satzfeld') || s.querySelector('#nochmal'));
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
@@ -3153,8 +3153,43 @@ function lobPruefen(wer, ebene, satz, gesprochen, feiert) {
  * erkennen ist. `wie` beschreibt fuer die Fehlermeldung den Weg, auf dem
  * geantwortet wurde.
  */
-async function abgeschlossen(p, wer, ebene, hoert, wie) {
-  const gesagt = await p.evaluate(() => (window.__gesagt || []).join(' | '));
+/* Eine getippte Antwort abgeben und die Wertung abwarten.
+ *
+ * Drei Zweige des Durchgangs enden inzwischen gleich: falsche Freunde
+ * (ein Wort), Wendungen und Hoeren und schreiben (ein ganzer Satz).
+ * Nach E11/E12 stand derselbe Fuenfzeiler zweimal da, und `doppelt` hat
+ * ihn gefunden. Verschieden sind nur der Text, der Name des Weges und
+ * das Wort fuer die Fehlermeldung - der Vorgang ist derselbe.
+ */
+async function tippeAntwort(p, wer, ebene, text, weg, wie, eigen = null) {
+  await p.fill('.schirm.da #rein', text);
+  await p.click('.schirm.da #pruef');
+  wege.add(`${wer}: ${weg}`);
+  await bewertet(p);
+  // Kein Muster, das je zutraefe: auf diesen Ebenen zaehlt `gehoert`
+  // nicht mit - was hier gesagt wird, ist die Frage und keine Vorlesehilfe.
+  await abgeschlossen(p, wer, ebene, /(?!)/, wie, eigen);
+}
+
+async function abgeschlossen(p, wer, ebene, hoert, wie, eigen = null) {
+  /* `eigen` ist der Satz, der die AUFGABE IST - und der wird hier
+   * abgezogen, bevor geurteilt wird.
+   *
+   * Der Anlass (E12): „Hören und schreiben" gehoert den Eltern, und
+   * Stephan steht im Backlog auf „sachlich" - die App sagt bei ihm von
+   * sich aus nichts. Der englische Satz ist aber nicht „von sich aus":
+   * ohne ihn steht ein leeres Eingabefeld da. Der Rauchtest meldete
+   * genau das als Fehler, und er hatte recht mit dem, was er gemessen
+   * hat, und unrecht mit dem, was er daraus schloss.
+   *
+   * Dieselbe Unterscheidung wie bei `gehoert` und `gehoertEn`: Frage
+   * oder Zutat. Sie steht hier EINMAL und nicht als Ausnahme in jedem
+   * Zweig - eine Ausnahme je Ebene waere die Stelle, an der die naechste
+   * Ebene sie vergisst und dafuer gruen meldet. */
+  const alles = await p.evaluate(() => (window.__gesagt || []).slice());
+  const gesagt = alles
+    .filter(x => !eigen || String(x).trim() !== String(eigen).trim())
+    .join(' | ');
   if (hoert.test(gesagt)) gehoert[wer] = (gehoert[wer] || 0) + 1;
   const { r, feiert } = await p.evaluate(() => {
     const f = document.querySelector('.schirm.da .frage');
@@ -3174,8 +3209,17 @@ async function abgeschlossen(p, wer, ebene, hoert, wie) {
   await raus(p);
 }
 
-const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde'],
-                       violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde'],
+/* Wo der GEGENSTAND selbst auf Englisch gesagt wird - und nicht bloss
+   irgendwo Englisch vorkommt. „Wendungen" und „falsche Freunde" stehen
+   geschrieben da und sagen nichts; „Hoeren und zeigen" (E3) und „Hoeren
+   und schreiben" (E12) sagen die Frage. Der Unterschied entscheidet
+   ZWEIMAL: diese Ebenen zaehlen nicht im Soll der Vorlesehilfe mit, und
+   in `gehoertEn` muessen sie es. */
+const SAGT_ENGLISCH = (e) => String(e).startsWith('englisch') || e === 'hoersatz';
+const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
+                                 'wendungen', 'hoersatz'],
+                       violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
+                                 'wendungen', 'hoersatz'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
                                // Die Schreibwelt gehoert nur ihr (N2a, N3).
                                // Ohne diese beiden prueft `durchgang` zwar,
@@ -3240,6 +3284,34 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       const fremd = hier.filter(e => WELT_VON(e) !== w);
       if (fremd.length) merke('durchgang',
         new Error(`${wer}: „${fremd.join(', ')}" steht in der Welt „${w}"`));
+
+      /* Und hat jede dieser Kacheln ueberhaupt etwas zu fragen? (E11)
+       *
+       * Der Anlass: die Ebene „Wendungen" trug `art:'wendungen'` in der
+       * einen Ableitung und `art:'wendung'` in der anderen. `schirmZu()`
+       * fragt `ebeneArt()`, `vorrat()` spaltet die KENNUNG - und damit
+       * oeffnete die Kachel den richtigen Bildschirm mit einem LEEREN
+       * Vorrat. Kein Tor wurde rot; sichtbar war es erst im Spiel, als
+       * der Bildschirm auf `Sitzung.liste[0]` zugriff, das es nicht gab.
+       *
+       * Geprueft wird an der Kachel und nicht an einer Liste von
+       * Kennungen: eine Liste muesste bei jeder neuen Ebene nachgepflegt
+       * werden, und genau die Ebene, die man vergisst, ist die neue.
+       * Geladen wird mit dem Lader der App - ohne ihn haetten die
+       * Kartenebenen ihre Daten noch nicht. */
+      const leer = await p.evaluate(async (ids) => {
+        const aus = [];
+        for (const id of ids) {
+          try {
+            if (!(await ebeneLaden(id))) continue;   // fehlende Karte: eigenes Tor
+            if (vorrat(id).length === 0) aus.push(id);
+          } catch (e) { aus.push(`${id} (${e.message})`); }
+        }
+        return aus;
+      }, hier);
+      if (leer.length) merke('durchgang',
+        new Error(`${wer}: „${leer.join(', ')}" hat einen leeren Vorrat — `
+          + `die Kachel steht da und fragt nichts`));
 
       /* Und steht auch WIRKLICH noch eine Gruppenkachel da? (Q32)
        *
@@ -3319,14 +3391,23 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * an - `proben` haengt aber `--kurz` an, und diese Zeile liess die
      * Ebene aus. Die Englischebene ist die VIERTE Art von Bildschirm
      * (Karte, Rechnung, Schreibblatt, Hoeren) und gehoert deshalb hierher.
-     * `schreiben` fehlt hier weiterhin - sie hat einen eigenen Abschnitt. */
+     * `schreiben` fehlt hier weiterhin - sie hat einen eigenen Abschnitt.
+     *
+     * Mit E11/E12 kam die FUENFTE Art dazu (der ganze getippte Satz), und
+     * zwar in zwei Ausfuehrungen, die einander ausschliessen: bei
+     * „Wendungen" steht der deutsche Satz da, bei „Hoeren und schreiben"
+     * wird der englische gesagt und steht nirgends. Eine der beiden
+     * auszulassen hiesse, die Haelfte der Zusagen dieses Bildschirms
+     * ungeprueft zu lassen - genau der Fehler, der hier schon zweimal
+     * drinstand. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'laender:europa' || e.startsWith('rechnen')
-                    || e.startsWith('englisch') || e.startsWith('freunde'))
+                    || e.startsWith('englisch') || e.startsWith('freunde')
+                    || e === 'wendungen' || e === 'hoersatz')
       : da;
     gespielt[wer] = zuSpielen.length;
-    gespieltEnglisch[wer] = zuSpielen.filter(e => e.startsWith('englisch')).length;
+    gespieltEnglisch[wer] = zuSpielen.filter(SAGT_ENGLISCH).length;
     for (const ebene of zuSpielen) {
       // Der teuerste Posten ueberhaupt: achtzehn Ebenen mal zwei Profile.
       // Steht der Fehler schon fest, beweisen die restlichen nichts mehr.
@@ -3395,7 +3476,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       // Pause; sie lief 27 Mal, einmal je Ebene und Profil.
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
         + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da .freundluecke, '
-        + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
+        + '.schirm.da .satzfeld, .schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       /* Rechnen: die Aufgabe OHNE Karte.
@@ -3517,11 +3598,85 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         if (auf.falle && new RegExp(`\\b${auf.falle}\\b`, 'i').test(auf.englisch))
           merke('durchgang', new Error(`${wer}/${ebene}: die Falle „${auf.falle}" steht `
             + 'im englischen Satz — ein falscher Freund, den man dort liest, ist keiner mehr'));
-        await p.fill('.schirm.da #rein', auf.wort);
-        await p.click('.schirm.da #pruef');
-        wege.add(`${wer}: falscher Freund getippt`);
-        await bewertet(p);
-        await abgeschlossen(p, wer, ebene, /(?!)/, 'das fehlende Wort getippt');
+        await tippeAntwort(p, wer, ebene, auf.wort,
+          'falscher Freund getippt', 'das fehlende Wort getippt');
+        continue;
+      }
+      /* Wendungen (E11) und Hoeren und schreiben (E12) - der VIERTE Zweig
+       * ohne Karte, und beide auf einem Bildschirm.
+       *
+       * Was hier gespielt wird, ist der Weg des Erwachsenen: den ganzen
+       * Satz tippen. Zwei Zusagen haengen daran, und sie sind das
+       * Gegenteil voneinander:
+       *
+       *   E11  Der DEUTSCHE Satz steht da, der englische nirgends -
+       *        sonst waere es Abschreiben.
+       *   E12  Der ENGLISCHE Satz wird gesagt und steht nirgends -
+       *        sonst waere es Lesen statt Hoeren. Und das zweite Hoeren
+       *        wird gezaehlt: der Knopf ist die einzige Zahl, die etwas
+       *        ueber das Hoerverstehen sagt.
+       *
+       * Welcher der beiden Faelle vorliegt, wird nicht an der Kennung
+       * abgelesen, sondern am Gegenstand: `satzEn` traegt der, der
+       * gehoert werden will. */
+      if (await p.$('.schirm.da .satzfeld')) {
+        const auf = await p.evaluate(() => ({
+          satzEn: Sitzung?.liste[Sitzung.i]?.satzEn || '',
+          deutsch: Sitzung?.liste[Sitzung.i]?.deutsch || '',
+          richtig: Sitzung?.liste[Sitzung.i]?.richtig || [],
+          text: document.querySelector('.schirm.da').innerText || '',
+          knopf: !!document.querySelector('.schirm.da #nochhoeren'),
+          gezaehlt: Einst?.nochmalGehoert?.[P.id] || 0,
+        }));
+        if (!auf.richtig.length) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt keine Antwort`));
+          continue;
+        }
+        /* Keine der gueltigen Fassungen darf dastehen - bei BEIDEN
+           Ebenen. Gezaehlt werden alle, nicht nur die erste: die zweite
+           auf dem Schirm waere genauso die Antwort. */
+        const verraten = auf.richtig.filter(r =>
+          auf.text.toLowerCase().includes(String(r).toLowerCase()));
+        if (verraten.length) merke('durchgang', new Error(
+          `${wer}/${ebene}: „${verraten.join(' | ')}" steht auf dem Bildschirm — `
+          + 'dann ist die Aufgabe abgeschrieben und nicht gekonnt'));
+
+        if (auf.satzEn) {
+          const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
+          if (!gesagt.some(x => String(x).trim() === auf.satzEn.trim()))
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.satzEn}" wurde nicht `
+              + `gesagt — auf dieser Ebene IST der Satz die Frage `
+              + `(gehört: ${gesagt.join(' | ') || 'nichts'})`));
+          else gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+          if (!auf.knopf)
+            merke('durchgang', new Error(`${wer}/${ebene}: kein „noch einmal hören" — `
+              + 'der Vorlauf verspricht ihn, und einmal Hören reicht nicht'));
+          else {
+            await p.click('.schirm.da #nochhoeren');
+            const jetzt = await p.evaluate(() => Einst?.nochmalGehoert?.[P.id] || 0);
+            if (jetzt !== auf.gezaehlt + 1)
+              merke('durchgang', new Error(`${wer}/${ebene}: das zweite Hören wurde `
+                + `nicht gezählt (${auf.gezaehlt} → ${jetzt}) — ohne diese Zahl misst `
+                + 'nichts mehr, wie gut das Hören wirklich ist'));
+            wege.add(`${wer}: den Satz noch einmal gehört`);
+          }
+        } else if (!auf.text.includes(auf.deutsch)) {
+          merke('durchgang', new Error(`${wer}/${ebene}: der deutsche Satz `
+            + `„${auf.deutsch}" steht nicht da — dann gibt es nichts zu übersetzen`));
+        }
+        /* Getippt wird NICHT die Musterfassung, sondern eine, wie sie
+           auf einer Telefontastatur entsteht: alles klein, ohne Punkt
+           am Ende, mit einem geraden statt eines typografischen
+           Apostrophs und mit doppeltem Leerzeichen.
+           Der erste Anlauf tippte `richtig[0]` wortwoertlich - dann
+           haette dieselbe Antwort auch ein Vergleich auf Gleichheit
+           angenommen, und `wieGesagt` waere nie geprueft worden. Eine
+           Pruefung, die auch ohne die Sache besteht, bezeugt sie, ohne
+           sie je gemessen zu haben (Regel 1). */
+        const wieGetippt = auf.richtig[0].toLowerCase()
+          .replace(/[’‘]/g, "'").replace(/[.!?]+$/, '').replace(/ /g, '  ');
+        await tippeAntwort(p, wer, ebene, wieGetippt,
+          'ganzen Satz getippt', 'den ganzen Satz getippt', auf.satzEn);
         continue;
       }
       if (await p.$('.schirm.da .engkarte')) {
@@ -3766,7 +3921,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
    sie sehr wohl hoert. Geprueft wird sie durch `gehoertEn` daneben. */
 const ENGLISCH_JE = (wer) => (gespielt[wer] !== undefined
   ? gespieltEnglisch[wer] || 0
-  : EBENEN_EIGEN[wer].filter(e => e.startsWith('englisch')).length);
+  : EBENEN_EIGEN[wer].filter(SAGT_ENGLISCH).length);
 const EBENEN_JE = (wer) => (gespielt[wer] ?? (EBENEN_ALLE.length + EBENEN_EIGEN[wer].length))
   - ENGLISCH_JE(wer);
 if (laeuft('durchgang')) {

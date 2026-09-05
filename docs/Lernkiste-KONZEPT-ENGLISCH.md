@@ -703,8 +703,8 @@ App spielbar** — kein halbes Fach im Auslieferungsstand.
 | **E8** | Lea schreibt: **Abschreiben mit Vorlage** | am Gerät; `passt` für die Buchstabenkarten |
 | **E9** | **Der Satz, den du sagen kannst** + Abzeichen je Themengebiet | Abzeichen erscheint erst, wenn das Gebiet voll ist |
 | **E10** | Eltern: **falsche Freunde** — 30 Fallen, zwei Fassungen je Falle | **GEFAHREN (v375)** — Tor E-g und E-f; gebaut als **Lücke**, nicht als Auswahl (siehe Form 9) |
-| **E11** | Eltern: **Wendungen** je Themengebiet, mit mehreren gültigen Antworten | Tor E-g; Groß-/Kleinschreibung und Schlusspunkt sind egal |
-| **E12** | Eltern: **Hören und schreiben** — ganzer Satz, normales Tempo, zweites Hören wird gezählt | am Gerät; die Zahl der Wiederholungen steht im Elternbereich |
+| **E11** | Eltern: **Wendungen** je Themengebiet, mit mehreren gültigen Antworten | **GEFAHREN (v376)** — 20 Sätze, 4.1 bis 4.4 zu je fünf, jeder mit mindestens zwei gültigen Fassungen; Groß-/Kleinschreibung, Schlusspunkt und Apostroph sind egal (`wieGesagt`) |
+| **E12** | Eltern: **Hören und schreiben** — ganzer Satz, normales Tempo, zweites Hören wird gezählt | **GEFAHREN (v376)** — 12 Diktatsätze, ausgewählt aus E11 und nicht daneben aufgeschrieben; das zweite Hören zählt je Profil und steht im Elternbereich; ohne englische Stimme fällt die Ebene auf die Frage von E11 zurück |
 
 **E1 vor allem anderen — aber nur für Lea und Fiona.**  Ohne die richtige
 Wortliste baut man ein Fach, das an Leas Unterricht vorbeigeht, und merkt

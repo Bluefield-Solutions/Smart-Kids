@@ -641,3 +641,160 @@ export function vorratFreunde(){
     satz: f.satz, luecke: f.luecke, richtig: f.richtig, falle: f.falle,
     warum: f.warum }));
 }
+
+/* ---------- Wendungen (E11) und Hoersaetze (E12) --------------------------
+ *
+ * Beides fuer Stephan und Violeta, beides ohne ein einziges Bild - und
+ * beide auf DENSELBEN vier Themengebieten wie Leas Wortschatz. Das ist
+ * Absicht und nicht Sparsamkeit: wer am selben Abend spielt, hat dasselbe
+ * Thema gehabt. Eine zweite Themenliste waere eine, die veraltet.
+ *
+ * E11, DIE WENDUNG UND NICHT DAS WORT. Deutsch steht da, Englisch wird
+ * getippt - aber nie ein Einzelwort. Und: MEHRERE Loesungen gelten.
+ * „Could we have the bill" ist genauso richtig wie „Could we get the
+ * bill". Eine Wendung mit genau einer zugelassenen Antwort prueft
+ * Auswendiglernen statt Koennen; das Untertor `englisch` verlangt deshalb
+ * fuer JEDE Wendung mindestens zwei.
+ *
+ * E12, HOEREN UND SCHREIBEN. Ein ganzer Satz, einmal gesprochen, in
+ * normalem Tempo - nicht buchstabiert, nicht verlangsamt. Langsames
+ * Englisch uebt langsames Englisch; was am Flughafen gesprochen wird, ist
+ * schnell. Ein zweites Mal Hoeren gibt es, aber es wird GEZAEHLT - nicht
+ * bestraft, nur gezaehlt. Eine Zahl, die man sieht, wirkt ohne Strafe.
+ *
+ * Die Hoersaetze sind AUS DEN WENDUNGEN GEBAUT und nicht daneben
+ * erfunden: jeder ist die erste zugelassene Antwort einer Wendung. Damit
+ * kann E12 nicht von E11 abweichen - und `inhalt` rechnet genau das nach.
+ */
+export const WENDUNGEN = [
+  // --- 4.1 Familie und Freunde ---
+  { id: 'w-vorstellen', gebiet: '4.1', deutsch: 'Darf ich vorstellen — das ist meine Frau.',
+    richtig: ['This is my wife.', 'Let me introduce my wife.',
+              'I would like you to meet my wife.', "I'd like you to meet my wife."] },
+  { id: 'w-woher',      gebiet: '4.1', deutsch: 'Wir kommen aus der Nähe von München.',
+    richtig: ['We are from near Munich.', "We're from near Munich.",
+              'We come from near Munich.', 'We live near Munich.'] },
+  { id: 'w-kinder',     gebiet: '4.1', deutsch: 'Wir haben zwei Kinder, acht und sechs.',
+    richtig: ['We have two children, eight and six.',
+              "We've got two children, eight and six.",
+              'We have got two children, eight and six.'] },
+  { id: 'w-wiegehts',   gebiet: '4.1', deutsch: 'Wie geht es dir denn so?',
+    richtig: ['How are you doing?', 'How are you?', 'How have you been?',
+              "How's it going?", 'How is it going?'] },
+  { id: 'w-freutmich',  gebiet: '4.1', deutsch: 'Es hat mich gefreut, Sie kennenzulernen.',
+    richtig: ['It was nice to meet you.', 'It was good to meet you.',
+              'Nice to meet you.', 'It was a pleasure to meet you.'] },
+  // --- 4.2 Schule ---
+  { id: 'w-nochmal',    gebiet: '4.2', deutsch: 'Könnten Sie das bitte noch einmal sagen?',
+    richtig: ['Could you say that again, please?', 'Could you repeat that, please?',
+              'Would you say that again, please?', 'Sorry, could you say that again?'] },
+  { id: 'w-langsamer',  gebiet: '4.2', deutsch: 'Könnten Sie bitte etwas langsamer sprechen?',
+    richtig: ['Could you speak a little more slowly, please?',
+              'Could you speak more slowly, please?',
+              'Could you slow down a little, please?'] },
+  { id: 'w-verstehe',   gebiet: '4.2', deutsch: 'Das habe ich nicht ganz verstanden.',
+    richtig: ["I didn't quite get that.", 'I did not quite get that.',
+              "I didn't quite catch that.", "I'm not sure I understood that."] },
+  { id: 'w-wieheisst',  gebiet: '4.2', deutsch: 'Wie heißt das auf Englisch?',
+    richtig: ["What's that called in English?", 'What is that called in English?',
+              "What's the English word for that?", 'How do you say that in English?'] },
+  { id: 'w-frage',      gebiet: '4.2', deutsch: 'Darf ich kurz etwas fragen?',
+    richtig: ['Could I ask you something?', 'May I ask you something?',
+              'Can I ask you a quick question?'] },
+  // --- 4.3 Freizeit und Feste ---
+  { id: 'w-wochenende', gebiet: '4.3', deutsch: 'Was machst du am Wochenende?',
+    richtig: ['What are you doing at the weekend?',
+              'What are you up to at the weekend?',
+              'What are you doing this weekend?'] },
+  { id: 'w-gernemal',   gebiet: '4.3', deutsch: 'Wir würden gern mal wiederkommen.',
+    richtig: ["We'd like to come back some time.",
+              'We would like to come back some time.',
+              "We'd love to come back again."] },
+  { id: 'w-empfehlen',  gebiet: '4.3', deutsch: 'Was würden Sie uns hier empfehlen?',
+    richtig: ['What would you recommend here?', 'What would you recommend?',
+              'What can you recommend here?'] },
+  { id: 'w-lustig',     gebiet: '4.3', deutsch: 'Das hat wirklich Spaß gemacht.',
+    richtig: ['That was really good fun.', 'That was great fun.',
+              'We really enjoyed that.', 'That was a lot of fun.'] },
+  { id: 'w-verabreden', gebiet: '4.3', deutsch: 'Wollen wir uns morgen um sieben treffen?',
+    richtig: ['Shall we meet at seven tomorrow?',
+              'Should we meet at seven tomorrow?',
+              'How about meeting at seven tomorrow?'] },
+  // --- 4.4 Einkaufen ---
+  { id: 'w-zahlen',     gebiet: '4.4', deutsch: 'Können wir bitte zahlen?',
+    richtig: ['Could we get the bill, please?', 'Could we have the bill, please?',
+              'Can we have the bill, please?', 'Could we pay, please?'] },
+  { id: 'w-kostet',     gebiet: '4.4', deutsch: 'Was kostet das?',
+    richtig: ['How much is it?', 'How much is this?', 'How much does it cost?',
+              "What's the price?"] },
+  { id: 'w-nurschauen', gebiet: '4.4', deutsch: 'Danke, ich schaue mich nur um.',
+    richtig: ["Thanks, I'm just looking.", 'Thanks, I am just looking.',
+              "Thank you, I'm just browsing.", "No thanks, I'm just looking."] },
+  { id: 'w-anprobieren', gebiet: '4.4', deutsch: 'Kann ich das anprobieren?',
+    richtig: ['Can I try it on?', 'Could I try it on?', 'May I try this on?'] },
+  { id: 'w-karte',      gebiet: '4.4', deutsch: 'Kann ich mit Karte zahlen?',
+    richtig: ['Can I pay by card?', 'Could I pay by card?', 'Do you take cards?',
+              'Do you accept cards?'] },
+];
+
+/* Die Hoersaetze (E12) - je Themengebiet drei, und JEDER ist die erste
+   zugelassene Antwort einer Wendung. Erfunden wird hier nichts: die
+   Kennung zeigt auf die Wendung, der Satz wird von dort geholt. So kann
+   E12 nicht von E11 abweichen, und wer eine Wendung umformuliert, aendert
+   den Hoersatz mit. */
+export const HOERSAETZE = [
+  'w-vorstellen', 'w-wiegehts', 'w-freutmich',
+  'w-nochmal', 'w-verstehe', 'w-wieheisst',
+  'w-wochenende', 'w-empfehlen', 'w-verabreden',
+  'w-zahlen', 'w-kostet', 'w-anprobieren',
+];
+
+/**
+ * Ein ganzer Satz auf Vergleichsform.
+ *
+ * Gross- und Kleinschreibung, Satzzeichen und doppelte Zwischenraeume
+ * sind egal - so steht es im Konzept. Der Apostroph wird vereinheitlicht:
+ * eine Telefontastatur setzt gern den typografischen, die Daten tragen
+ * den geraden, und daran soll niemand scheitern.
+ *
+ * NICHT vereinheitlicht werden Kurzformen: „I'd like" und „I would like"
+ * bleiben zwei Antworten, und beide stehen in der Liste. Sie automatisch
+ * gleichzusetzen hiesse zu raten, welche Kurzform gemeint war - „I'd"
+ * kann „I would" und „I had" sein.
+ */
+export const wieGesagt = (t) => String(t).toLowerCase()
+  .replace(/[‘’´`]/g, "'")
+  .replace(/[.,!?;:]/g, ' ')
+  .replace(/\s+/g, ' ').trim();
+
+/* Das Themengebiet geht NICHT mit in den Vorrat - und das ist kein
+ * Vergessen, sondern zweimal Absicht:
+ *
+ *   Es hiesse anderswo etwas anderes. `gebiet` traegt in dieser App das
+ *   LAND, zu dem eine Hauptstadt gehoert („Die Hauptstadt von Spanien
+ *   ist Madrid."). Ein Feld gleichen Namens mit einer Lehrplannummer
+ *   darin ist genau die Doppeldeutigkeit, die beim naechsten Leser
+ *   auffliegt - und `vorlaufAnsage` haette „Die Hauptstadt von 4.3"
+ *   gesagt, waere nicht `deutsch` zufaellig davor abgefragt worden.
+ *
+ *   Und es stand als „4.3" auf der Vorlaufkachel. Fuer ein Kind wie fuer
+ *   einen Erwachsenen ist das keine Auskunft, sondern eine Zeile - auf
+ *   dem iPhone SE quer sechs Punkte zuviel, gemessen von `passt`.
+ *
+ * Geprueft wird das Gebiet trotzdem, und zwar da, wo es hingehoert: `inhalt`
+ * liest `WENDUNGEN` selbst und verlangt alle vier Themengebiete. */
+
+/** Der Vorrat der Ebene „Wendungen". */
+export function vorratWendungen(){
+  return WENDUNGEN.map(w => ({ id: `en:wendung:${w.id}`, name: w.richtig[0],
+    deutsch: w.deutsch, richtig: w.richtig }));
+}
+
+/** Der Vorrat der Ebene „Hören und schreiben". */
+export function vorratHoersaetze(){
+  return HOERSAETZE.map(id => {
+    const w = WENDUNGEN.find(x => x.id === id);
+    return { id: `en:hoeren:${id}`, name: w.richtig[0], satzEn: w.richtig[0],
+      richtig: w.richtig, deutsch: w.deutsch };
+  });
+}

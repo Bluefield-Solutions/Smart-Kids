@@ -188,7 +188,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
-| 2 | **E5–E9, E11, E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E4b (E11 und E12 nicht) |
+| 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
 | 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
@@ -214,7 +214,8 @@ sein Block, nicht diese Zeile.
 
 *Dreimal nachgezogen: 01.09.2026 (fünf Zeilen), 04.09.2026 (die Tabelle
 umgestellt), 05.09.2026 (E3 gefahren, E4 rückt auf Rang 1; dann E4a und QS3
-gefahren, E4b bleibt Rang 1; dann E10 gefahren).*
+gefahren, E4b bleibt Rang 1; dann E10 gefahren; dann E11 und E12 gefahren
+und aus Rang 2 gestrichen).*
 
 **A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
 Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
@@ -256,8 +257,8 @@ veraltet eine der beiden Fassungen).
 | **E8** | Lea schreibt: Abschreiben mit Vorlage | am Gerät, `passt` für die Buchstabenkarten |
 | **E9** | Der Satz zum Selbersagen + Abzeichen je Themengebiet | Abzeichen erscheint erst bei vollem Gebiet |
 | **E10** | **Eltern: falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tore E-f und E-g |
-| **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | Tor E-g |
-| **E12** | **Eltern: Hoeren und schreiben** — ganzer Satz, normales Tempo | am Geraet; das zweite Hoeren wird gezaehlt |
+| **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | **GEFAHREN v376** — siehe Block unten |
+| **E12** | **Eltern: Hoeren und schreiben** — ganzer Satz, normales Tempo | **GEFAHREN v376** — siehe Block unten |
 
 **E1 zuerst, und es ist blockiert.** Die vollständige ISB-Wortliste liegt
 noch nicht vor: der Netzzugang dieser Umgebung sperrt `isb.bayern.de` und
@@ -4899,6 +4900,100 @@ in anderer Form: `falle` ist die Form, die ein Deutscher **tippt**, der
 Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
+
+### E11/E12 · Wendungen und Hören und schreiben — GEFAHREN (v376)
+
+Zwei Ebenen für Stephan und Violeta auf **einem** Bildschirm. Was sie
+unterscheidet, ist eine Eigenschaft der Aufgabe und nicht des Bildschirms:
+steht der deutsche Satz da, oder wird der englische gesprochen? Zwei
+Bildschirme wären zwei Stellen, an denen die nächste Änderung einmal
+vergessen wird.
+
+| | E11 · Wendungen | E12 · Hören und schreiben |
+|---|---|---|
+| Frage | „Wie sagt man das auf Englisch?" | „Schreib auf, was du hörst." |
+| gegeben | der deutsche Satz | der englische Satz, **einmal gesprochen** |
+| Antwort | der ganze Satz, getippt | der ganze Satz, getippt |
+| Nebensatz nach dem Lob | „Geht auch: …" — eine **zweite** gültige Fassung | „Auf Deutsch: …" — die **Bedeutung** |
+
+Der Nebensatz sagt jeweils das, was die Aufgabe **nicht** geprüft hat.
+Bei E11 war der Sinn gegeben, offen bleibt die Vielfalt; bei E12 stand die
+Fassung nie zur Wahl, der Sinn schon — wer einen Satz richtig aufschreibt,
+den er nicht verstanden hat, hat gehört und nicht gelernt.
+
+**Zwanzig Wendungen, fünf je Themengebiet 4.1 bis 4.4; zwölf davon sind
+zugleich die Diktatsätze.** Die Diktatsätze sind eine **Auswahl** der
+Wendungen und keine zweite Liste (Regel 6) — `tor/inhalt.mjs` verlangt,
+dass jede Kennung eine Wendung trifft.
+
+**Mehr als eine richtige Antwort** ist der Inhalt dieser Ebene und steht so
+im Vorlauf. Jede Wendung trägt mindestens zwei gültige Fassungen, und sie
+müssen sich **nach** der Normalform unterscheiden: zwei Schreibweisen
+desselben Satzes sind keine zweite Fassung, sondern nur der Beweis, dass
+`wieGesagt` Punkte wegnimmt. Und die Gegenrichtung, ohne die die Nachsicht
+unbegrenzt wäre: keine zwei verschiedenen Wendungen dürfen auf dieselbe
+Normalform fallen — sonst beantwortete die eine die andere mit.
+
+**Das zweite Hören wird gezählt.** Es kostet keinen Versuch und keinen
+Stern; die Zahl steht je Profil im Elternbereich. Sie ist das Einzige, was
+überhaupt etwas über das Hörverstehen sagt — „richtig" allein wäre auch die
+Antwort, die man erst beim vierten Anlauf verstanden hat. Eine Zahl, die
+man sieht, wirkt ohne Strafe.
+
+#### Fünf Befunde
+
+**1. Die Kachel stand da und fragte nichts.** `schirmZu()` fragt
+`ebeneArt()`, `vorrat()` spaltet die **Kennung** — und `art:'wendung'`
+gegen die Kennung `wendungen` fiel darum auseinander. Der richtige
+Bildschirm ging auf, mit einem **leeren** Vorrat, und griff auf
+`Sitzung.liste[0]` zu, das es nicht gab. Kein Tor wurde rot; sichtbar war
+es erst beim Spielen. Seither sieht der Durchgang an **jeder** Kachel nach,
+ob sie etwas zu fragen hat — an der Kachel und nicht an einer Liste von
+Kennungen, denn genau die Ebene, die man in einer Liste vergisst, ist die
+neue.
+
+**2. Die Lobzeile zeigte die eigene Schreibung.** Sie zeigte `roh`, also
+genau das, was eingetippt war. Wer den Satz in Großbuchstaben und ohne
+Punkt tippt, bekam ihn so zurück und als „Stimmt." bestätigt — die einzige
+Stelle, an der überhaupt die richtige Schreibung zu sehen ist, zeigte damit
+die falsche. Gezeigt wird jetzt die **getroffene** Fassung.
+
+**3. „Bei sachlich sagt sie von sich aus nichts" — und der Satz ist die
+Frage.** Der Rauchtest meldete, die App spreche bei Stephan. Er hatte
+recht mit dem, was er gemessen hat, und unrecht mit dem, was er daraus
+schloss: ohne den englischen Satz steht ein leeres Eingabefeld da.
+`abgeschlossen()` zieht die Frage jetzt ab, **einmal** und nicht als
+Ausnahme je Zweig — dieselbe Unterscheidung wie bei `gehoert` und
+`gehoertEn`.
+
+**4. Ganze Sätze sind keine Aufkleber.** Der Vorlauf trägt hier den
+englischen und den deutschen Satz übereinander; eine solche Kachel ist drei
+Zeilen hoch statt einer, und die Rechnung in `vorlaufGitter` geht von 41
+Punkten je Reihe aus. Mit zwanzig Beispielen lag die zweite Reihe unter dem
+Startknopf, mit zwölf genauso. Gezeigt werden **sechs** — eine Reihe,
+gemessen auf 844 × 390.
+
+**5. „4.1" auf dem Aufkleber.** Das Themengebiet ging als `gebiet` mit in
+den Vorrat — ein Feld, das in dieser App das **Land** einer Hauptstadt
+trägt („Die Hauptstadt von Spanien ist Madrid."). `vorlaufAnsage` hätte
+„Die Hauptstadt von 4.3" gesagt, wäre nicht `deutsch` zufällig davor
+abgefragt worden; und auf dem iPhone SE quer waren es sechs Punkte zuviel,
+gemessen von `passt`. Das Gebiet steht jetzt nur noch in den Daten, wo
+`inhalt` es liest.
+
+#### Was der Rauchtest hier tippt
+
+**Nicht** die Musterfassung, sondern eine, wie sie auf einer
+Telefontastatur entsteht: alles klein, ohne Schlusspunkt, mit geradem
+Apostroph und doppelten Leerzeichen. Der erste Anlauf tippte `richtig[0]`
+wortwörtlich — dann hätte dieselbe Antwort auch ein Vergleich auf
+Gleichheit angenommen, und `wieGesagt` wäre nie geprüft worden (Regel 1).
+
+#### Ohne englische Stimme
+
+fällt E12 auf die Frage von E11 zurück: derselbe Satz, aus dem Deutschen.
+Den englischen Satz hinzuschreiben wäre die Antwort; geprüft würde
+Abschreiben.
 
 ### G18c · Ein abgeschalteter Knopf sah aus wie ein greifbarer — GEFLICKT
 

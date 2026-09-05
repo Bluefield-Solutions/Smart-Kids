@@ -547,7 +547,7 @@ function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }
  * eine falsche Aussprache wiederholt, ist schlimmer als keiner: er UEBT
  * sie. Und ohne englische Stimme gibt es ihn gar nicht, sonst waere er ein
  * Knopf, der schweigt - dieselbe Regel wie bei `P.vorlesen`. */
-function nochHoerenKnopf(text, sprache = 'de'){
+function nochHoerenKnopf(text, sprache = 'de', zaehlen = false){
   if (!P || !text) return null;
   /* Wer den Knopf bekommt, haengt an der SPRACHE - und das ist kein
      Sonderfall, sondern derselbe Satz von zwei Seiten: der Knopf steht da,
@@ -566,7 +566,21 @@ function nochHoerenKnopf(text, sprache = 'de'){
   // `vorlesen` und nicht `ansagen`: das hier ist eine BITTE, und eine
   // Bitte wird nicht vom Profil beantwortet - so wie die Karten im
   // Vorlauf und die Aufkleber im Buch.
-  b.onclick = () => vorlesen(text, sprache);
+  //
+  // `zaehlen` (E12): wo der Satz SELBST die Aufgabe ist, ist das zweite
+  // Hoeren die einzige Zahl, die ueberhaupt etwas ueber das Hoerverstehen
+  // sagt - „richtig" allein waere auch die Antwort, die man erst beim
+  // vierten Anlauf verstanden hat. Gezaehlt wird je Profil und ueber alle
+  // Sitzungen; es kostet keinen Versuch und keinen Stern, die Zahl steht
+  // nur im Elternbereich. Eine Zahl, die man sieht, wirkt ohne Strafe.
+  b.onclick = () => {
+    if (zaehlen) {
+      Einst.nochmalGehoert = { ...(Einst.nochmalGehoert || {}),
+        [P.id]: (Einst.nochmalGehoert?.[P.id] || 0) + 1 };
+      einstSichern();
+    }
+    vorlesen(text, sprache);
+  };
   return b;
 }
 
@@ -1134,6 +1148,25 @@ const EBENEN = [
    * `WELT_VON_ART`. Die Kennung muss das nicht auch noch sagen. */
   { id:'freunde', ueber:'Englisch', titel:'Falsche Freunde', farbe:1,
     art:'freunde', wer:['stephan','violeta'] },
+  /* Die Wendung, nicht das Wort (E11). Deutsch steht da, Englisch wird
+   * getippt - aber nie ein Einzelwort, und MEHRERE Loesungen gelten.
+   *
+   * Fuer die Kinder waere das verboten (Paragraf 8: keine Uebersetzung
+   * Deutsch nach Englisch), fuer die Eltern ist es genau richtig, und das
+   * ist kein Widerspruch: bei Lea entsteht die Verknuepfung gerade erst
+   * und darf nicht ueber das Deutsche laufen. Bei Stephan und Violeta
+   * EXISTIERT sie laengst - sie ist nur zugewachsen. */
+  { id:'wendungen', ueber:'Englisch', titel:'Wendungen', farbe:6,
+    art:'wendungen', wer:['stephan','violeta'] },
+  /* Hoeren und schreiben (E12) - ein ganzer Satz, einmal gesprochen, in
+   * NORMALEM Tempo. Langsames Englisch uebt langsames Englisch; was am
+   * Flughafen gesprochen wird, ist schnell.
+   *
+   * Ein zweites Mal Hoeren gibt es, aber es wird GEZAEHLT - nicht
+   * bestraft, nur gezaehlt, und die Zahl steht im Elternbereich. Eine
+   * Zahl, die man sieht, wirkt ohne Strafe. */
+  { id:'hoersatz', ueber:'Englisch', titel:'Hören und schreiben', farbe:4,
+    art:'hoersatz', wer:['stephan','violeta'] },
 ];
 
 /* Die Fachwelten (D4).
@@ -1189,7 +1222,8 @@ const WELTEN = [
  * die richtige Voreinstellung, weil die Kartenebenen die einzigen ohne
  * eigene `art` sind. */
 const WELT_VON_ART = { rechnen:'rechnen', schreiben:'schreiben',
-                       englisch:'englisch', freunde:'englisch' };
+                       englisch:'englisch', freunde:'englisch',
+                       wendungen:'englisch', hoersatz:'englisch' };
 const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
 let Welt = WELTEN[0].id;
@@ -1256,6 +1290,15 @@ const ENGLISCHBILD = new Set(['englisch', 'englisch:hoeren']);
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
    nichts. */
 const FREUNDEBILD = new Set(['freunde']);
+/* Die Kachel der Wendungen (E11): zwei Sprechblasen - es geht um das, was
+   man SAGT, und nicht um einzelne Woerter. Und die von „Hören und
+   schreiben" (E12): der Lautsprecher und drei Schriftzeilen, in dieser
+   Reihenfolge - erst hoeren, dann schreiben. */
+const SATZBILD = {
+  wendungen: '<path d="M4 4h17v11H11l-4 4v-4H4z"/>'
+           + '<path d="M27 9h17v11H34l-4 4v-4h-3z"/>',
+  hoersatz:  ZEICHEN.tonAn + '<path d="M28 8h16M28 13h16M28 18h10"/>',
+};
 const MATHEBILD = {
   'rechnen':           ['plus','mal'],
   'rechnen:plusminus': ['plus','minus'],
@@ -1317,6 +1360,11 @@ function silhouette(ebeneId) {
      Bild - und eine falsche Zahl in einer Ratsche ist schlimmer als
      keine. Jetzt liegt alles in EINEM Raum: der 24er-Kasten des
      Lautsprecherzeichens, der Fleck als Bogenpfad daneben. */
+  if (SATZBILD[ebeneId])
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round">${SATZBILD[ebeneId]}</svg>`;
   if (FREUNDEBILD.has(ebeneId))
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -1355,8 +1403,16 @@ function silhouette(ebeneId) {
  * veralten - und eine davon haette Fionas Schreibebene auf dem
  * Kartenbildschirm geoeffnet, wo es nichts zu ziehen gibt.
  */
+/* `wendungen` und `hoersatz` teilen sich EINEN Bildschirm.
+ *
+ * Was sie unterscheidet, ist eine Eigenschaft der AUFGABE und nicht des
+ * Bildschirms: steht der deutsche Satz da, oder wird der englische
+ * gesprochen? Dieselbe Ueberlegung wie beim Schreibschirm, der vier
+ * Ebenen traegt - zwei Bildschirme waeren zwei Stellen, an denen die
+ * naechste Aenderung einmal vergessen wird. */
 const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,
-  englisch: englischschirm, freunde: freundeschirm }[ebeneArt(ebeneId)] || spielschirm);
+  englisch: englischschirm, freunde: freundeschirm,
+  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören. */
 const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
@@ -1601,7 +1657,8 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
    * Der Farbfleck traegt seinen Ton als Marke am Markup, nicht im
    * Stilblatt: welche zehn Farben es gibt, steht in den Daten, und eine
    * Liste im Stylesheet daneben waere dieselbe Auskunft an zwei Orten. */
-  : x.luecke     ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
+  : x.luecke || x.deutsch
+                 ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
   : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
   : x.ziffern    ? `<div class="ziffernkleber" style="--ton:${ton}">${x.ziffern}</div>`
   :           `<div class="rechenkleber" style="--ton:${ton}">${x.frage}</div>`;
@@ -1630,6 +1687,9 @@ const stueckFuss = (x) => x.pfad ? x.name : x.zeichenFolge ? x.wort
                            gibt, ist die Sorte Klugheit, die beim naechsten
                            Satzzeichen bricht. */
                         : x.falle ? `nicht ${x.falle}`
+                        // Bei einer Wendung steht der DEUTSCHE Satz darunter -
+                        // er ist die Aufgabe, das Englische die Antwort.
+                        : x.deutsch ? x.deutsch
                         : `= ${x.name}`;
 
 const eigenerRahmen = (pfad) => {
@@ -1691,6 +1751,10 @@ function vorrat(ebeneId, stand = Stand, voll = false){
   // Einzelstueck, es gibt keine Regel, aus der man sie rechnen koennte.
   if (art==='freunde')
     return Englisch.vorratFreunde();
+  if (art==='wendungen')
+    return Englisch.vorratWendungen();
+  if (art==='hoersatz')
+    return Englisch.vorratHoersaetze();
   if (art==='hauptstaedte') {
     // Europa: dieselben Länder wie `laender:europa`, dieselbe Tiefe je
     // Profil - gefragt wird nur nach etwas anderem. `hauptstadt` und `ort`
@@ -2541,18 +2605,35 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
  * Genommen wird nicht der Anfang, sondern jede n-te: sonst stuenden bei
  * „Plus und Minus" acht Mal `1 + irgendwas` da und kein einziges Minus.
  */
+/* Wieviele Beispiele der Vorlauf einer Ebene zeigt - oder `null` fuer
+ * „alle". Zwei Zahlen, und beide sind gemessen und nicht gesetzt:
+ *
+ *   P.sitzung  Rechnen und falsche Freunde. Seit E10 auch die: dreissig
+ *              Fallen sind keine Vorschau, sondern eine Tafel. Gemessen
+ *              hat es `passt` - die dreissig Aufkleber liefen auf dem
+ *              Zielgeraet acht Punkte ueber den Rand, bei zehn Spalten
+ *              und drei Reihen. Zwoelf stehen in zwei Reihen.
+ *   SECHS      Wendungen und Hoeren. Hier steht ein ganzer SATZ auf der
+ *              Kachel, und zwar zweimal - englisch und deutsch. Eine
+ *              solche Kachel ist drei Zeilen hoch statt einer, und damit
+ *              gilt die Rechnung aus `vorlaufGitter` nicht mehr: sie
+ *              rechnet mit 41 Punkten je Reihe. Gemessen auf 844 x 390
+ *              lag die zweite Reihe unter dem Startknopf, mit zwoelf
+ *              Beispielen genauso wie mit zwanzig. Eine Reihe zu sechs
+ *              ist 140 Punkte breit, drei Zeilen hoch und passt.
+ *
+ * Und warum ueberhaupt gekuerzt wird, steht darueber: der Vorlauf zeigt
+ * Beispiele, nicht den Vorrat. */
+const VORLAUF_JE = (art) =>
+    ['rechnen', 'freunde'].includes(art) ? P.sitzung
+  : ['wendungen', 'hoersatz'].includes(art) ? 6
+  : null;
 function vorlaufVorrat(ebeneId){
   const alle = vorrat(ebeneId);
-  /* Seit E10 gilt dasselbe fuer die falschen Freunde, und aus demselben
-     Grund: dreissig Fallen sind keine Vorschau, sondern eine Tafel.
-     Gemessen hat es `passt` - die dreissig Aufkleber liefen auf dem
-     Zielgeraet acht Punkte ueber den Rand, bei zehn Spalten und drei
-     Reihen. Zwoelf Beispiele stehen in zwei Reihen und zeigen genau das,
-     was der Vorlauf zeigen soll: wie die Aufgaben aussehen. */
-  if (!['rechnen', 'freunde'].includes(ebeneArt(ebeneId)) || alle.length <= P.sitzung)
-    return alle;
-  const schritt = Math.floor(alle.length / P.sitzung);
-  return alle.filter((_, i) => i % schritt === 0).slice(0, P.sitzung);
+  const wieviel = VORLAUF_JE(ebeneArt(ebeneId));
+  if (!wieviel || alle.length <= wieviel) return alle;
+  const schritt = Math.floor(alle.length / wieviel);
+  return alle.filter((_, i) => i % schritt === 0).slice(0, wieviel);
 }
 
 /* Wieviele Beispielkarten NEBENEINANDER stehen.
@@ -2614,6 +2695,16 @@ function vorlaufSatz(ebeneId){
   if (art === 'schreiben')
     return 'Das sind die Buchstaben, die du schreiben lernst. Tippe einen an, '
       + 'dann sage ich dir, wie er heißt.';
+  if (art === 'wendungen')
+    return 'Ein deutscher Satz, und du tippst ihn auf <strong>Englisch</strong>. '
+      + 'Es gibt mehr als eine richtige Fassung — es zählt, ob man dich versteht. '
+      + 'Tippe hier eine an, dann siehst du eine davon.';
+  if (art === 'hoersatz')
+    return englischHoerbar()
+      ? 'Ich sage einen englischen Satz — <strong>einmal, in normalem Tempo</strong>. '
+        + 'Du schreibst, was angekommen ist. Noch einmal hören geht, es wird nur gezählt.'
+      : 'Dieses Gerät hat <strong>keine englische Stimme</strong>. Statt zu hören '
+        + 'übersetzt du deshalb — dieselben Sätze, nur aus dem Deutschen.';
   if (art === 'freunde')
     return 'Ein deutscher Satz, daneben derselbe auf <strong>Englisch</strong> — '
       + 'mit einer Lücke. Genau dort sitzt die Falle. Tippe hier eine an, '
@@ -2711,6 +2802,9 @@ function vorlaufAnsage(x, ebeneId){
   // Der falsche Freund wird DEUTSCH angesagt - der Satz ist die Aufgabe,
   // das englische Wort die Antwort.
   if (x.luecke) return `${x.satz} ${x.warum}`;
+  // Wendung und Hoersatz: angesagt wird der DEUTSCHE Satz. Das englische
+  // Wort im Vorlauf vorzusprechen waere bei E12 die halbe Antwort.
+  if (x.deutsch) return x.deutsch;
   // Bei einem Buchstaben das Merkwort, bei einer Zahl ihr Zahlwort.
   if (x.zeichenFolge) return /[A-ZÄÖÜ]/.test(x.zeichen)
     ? `${x.zeichen} wie ${x.wort}.` : `Die ${x.wort}.`;
@@ -3292,6 +3386,154 @@ function rechenschirm(){
  * Stuenden neben einem Farbfleck drei Ziffern, waere die Aufgabe ohne ein
  * Wort Englisch zu loesen.
  */
+/* ---------- Wendungen (E11) und Hoeren und schreiben (E12) --------------
+ *
+ * EIN Bildschirm, zwei Ebenen - dieselbe Ueberlegung wie beim
+ * Schreibschirm, der vier traegt. Was sie unterscheidet, ist eine
+ * Eigenschaft der AUFGABE und nicht des Bildschirms:
+ *
+ *   `ziel.deutsch` steht da      die Wendung: deutsch lesen, englisch tippen
+ *   `ziel.satzEn` wird gesagt    der Hoersatz: englisch hoeren, englisch tippen
+ *
+ * Beide vergleichen einen GANZEN SATZ gegen eine MENGE zugelassener
+ * Antworten. Eine einzige zuzulassen hiesse Auswendiglernen zu pruefen
+ * statt Koennen - „Could we have the bill" ist genauso richtig wie
+ * „Could we get the bill".
+ *
+ * DAS ZWEITE HOEREN WIRD GEZAEHLT, NICHT BESTRAFT. Es kostet keinen
+ * Versuch und keinen Stern; die Zahl steht im Elternbereich. Eine Zahl,
+ * die man sieht, wirkt ohne Strafe - und sie ist das Einzige, was hier
+ * ueberhaupt misst, wie gut das Hoeren wirklich ist.
+ */
+function satzschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+  /* `gehoert` entscheidet, welche der beiden Ebenen hier laeuft - und es
+     haengt an ZWEI Dingen: ob der Gegenstand einen englischen Satz zum
+     Hoeren mitbringt (E12) und ob dieses Geraet ihn ueberhaupt sagen kann.
+     Ohne englische Stimme faellt „Hoeren und schreiben" auf die Frage von
+     E11 zurueck - derselbe Satz, aus dem Deutschen. Den englischen Satz
+     hinzuschreiben waere die Antwort; geprueft wuerde Abschreiben. */
+  const gehoert = !!ziel.satzEn && englischHoerbar();
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'tippen' });
+  const weiter = () => weiterIn(st);
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">${gehoert
+      ? 'Schreib auf, was du hörst.'
+      : 'Wie sagt man das auf Englisch?'}</div>
+    <div class="satzfeld">
+      ${gehoert ? '' : `<div class="satzdeutsch">${ziel.deutsch}</div>`}
+      <input class="eingabe satz-eingabe" id="rein" inputmode="text" lang="en"
+             autocomplete="off" autocorrect="off" autocapitalize="off"
+             spellcheck="false" aria-label="der englische Satz">
+      <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const rein = s.querySelector('#rein');
+  const ausschalten = () => { rein.disabled = true;
+    s.querySelectorAll('#pruef, #nochhoeren').forEach(k => k.disabled = true); };
+
+  /* Der Satz wird gesagt, sobald der Bildschirm steht - und danach nur auf
+     Wunsch. `vorlesen` und nicht `ansagen`: der Satz IST die Aufgabe, und
+     Stephan traegt `vorlesen: false`. Dieselbe Stelle wie bei E3. */
+  if (gehoert) vorlesen(ziel.satzEn, 'en');
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten();
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem: `
+      + `<strong lang="en">${ziel.richtig[0]}</strong></span>`;
+    sagen('Kein Problem.');
+    if (gehoert) vorlesen(ziel.richtig[0], 'en');
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function bewerte(roh){
+    if (erledigt) return;
+    const eingabe = Englisch.wieGesagt(roh);
+    if (!eingabe) { wackelt(rein); rein.focus(); return; }
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    /* Getroffen wird auf der NORMALFORM verglichen, gezeigt wird die
+       aufgeschriebene Fassung - nicht die getippte.
+       Der erste Anlauf zeigte `roh`, also genau das, was eingetippt war.
+       Wer den Satz in Grossbuchstaben und ohne Punkt tippt, bekam ihn so
+       zurueck und als „Stimmt." bestaetigt; die einzige Stelle, an der
+       ueberhaupt die richtige Schreibung zu sehen ist, zeigte damit die
+       eigene. */
+    const getroffen = ziel.richtig.find(r => Englisch.wieGesagt(r) === eingabe);
+    if (getroffen) {
+      erledigt = beendet(s);
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', roh, fachVorher);
+      ausschalten();
+      const spruch = lob();
+      /* Was der Nebensatz sagt, haengt daran, was die Aufgabe NICHT
+         geprueft hat - und das ist bei den beiden Ebenen jeweils das
+         andere:
+           Wendungen  Der Sinn war gegeben, offen bleibt die Vielfalt.
+                      Also eine zweite gueltige Fassung; genau das ist
+                      der Inhalt dieser Ebene - es gibt nicht die eine
+                      richtige Antwort.
+           Hoeren     Die Fassung stand nie zur Wahl, der Sinn schon.
+                      Also die Bedeutung: wer einen Satz richtig
+                      aufschreibt, den er nicht verstanden hat, hat
+                      gehoert und nicht gelernt. */
+      const andere = ziel.richtig.find(r => Englisch.wieGesagt(r) !== eingabe);
+      const nebenbei = gehoert
+        ? `Auf Deutsch: ${ziel.deutsch}`
+        : (andere ? `Geht auch: <span lang="en">${andere}</span>` : '');
+      lobsatz(s, `<strong lang="en">${getroffen}</strong>`, null, spruch,
+        nebenbei, neuerAufkleber);
+      sagen(spruch);
+      setTimeout(weiter, LOBPAUSE);
+      return;
+    }
+    protokollieren('falsch', roh, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    wackelt(rein);
+    const f = s.querySelector('#frage');
+    const satz = gehoert ? 'Noch nicht ganz — hör es dir noch einmal an.'
+                         : 'Noch nicht ganz — anders herum probieren.';
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+    rein.select();
+  }
+
+  const pruefen = () => bewerte(rein.value);
+  s.querySelector('#pruef').onclick = pruefen;
+  rein.addEventListener('keydown', e => { if (e.key === 'Enter') pruefen(); });
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+  setTimeout(() => rein.focus(), 360);
+
+  /* „Noch einmal hören" - derselbe Knopf wie ueberall, nur mit dem
+     dritten Beweggrund: hier wird er GEZAEHLT (Regel 6 - er stand hier
+     einmal eigenhaendig nachgebaut, mit eigener Kennung und eigenem
+     Beschriftungstext). Der Vorlauf verspricht ihn ausdruecklich. */
+  const b = gehoert ? nochHoerenKnopf(ziel.satzEn, 'en', true) : null;
+  if (b) s.querySelector('.werkzeug').appendChild(b);
+  if (!gehoert) ansagen(ziel.deutsch);
+  return s;
+}
+
 /* ---------- Falsche Freunde (E10) ---------------------------------------
  *
  * Ein deutscher Satz mit einer Falle, daneben derselbe Satz auf Englisch -
@@ -6701,6 +6943,7 @@ async function elternbereich(){
         Stimmen laden, die dann auch hier erscheinen.</p>
       <div class="reihe stimmen" style="justify-content:flex-start" id="stimmwahl"></div>
       <p class="unter" id="enstimme"></p>
+      <p class="unter" id="nochmalzahl"></p>
 
       <h3 class="gruppe">Rückmeldeton</h3>
       <p class="unter">Zwei kurze Töne: einer nach einer richtigen, einer nach einer
@@ -6927,6 +7170,24 @@ async function elternbereich(){
         + '„cat" wie „katt" sagt. Nachladen unter <em>Einstellungen › '
         + 'Bedienungshilfen › Gesprochene Inhalte › Stimmen › Englisch</em>.';
   };
+  /* Wie oft der Satz ein zweites Mal gehoert wurde (E12).
+   *
+   * Sie steht hier und nirgends im Spiel: waehrend der Aufgabe waere sie
+   * ein Punktestand und damit eine Strafe. Das Konzept sagt ausdruecklich
+   * „nicht bestraft, nur gezaehlt" - und eine Zahl, die man RUHIG
+   * nachliest, wirkt anders als eine, die einem beim Tippen zusieht.
+   *
+   * Sie ist ausserdem das Einzige, was ueberhaupt etwas ueber das Hoeren
+   * sagt: „richtig" allein ist auch die Antwort, die erst beim vierten
+   * Anlauf ankam. */
+  {
+    const p = s.querySelector('#nochmalzahl');
+    const n = Einst.nochmalGehoert?.[P.id] || 0;
+    if (p) p.innerHTML = n
+      ? `„Hören und schreiben": <strong>${n}-mal</strong> ein zweites Mal gehört. `
+        + 'Das kostet nichts — es steht hier, damit man es sieht.'
+      : '„Hören und schreiben": bisher kein zweites Hören.';
+  }
   // Die Stimmenliste wird ERST GEBAUT, wenn sie da ist.
   //
   // `getVoices()` liefert beim ersten Aufruf oft eine leere Liste; die

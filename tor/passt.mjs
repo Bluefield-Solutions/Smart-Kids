@@ -1354,6 +1354,27 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await ebeneAnsehen('freunde', '.schirm.da .freundluecke', 'Falsche Freunde',
     { vorlaufName: 'Vorlauf freunde' });
 
+  /* Und die beiden Satzebenen (E11/E12) - auch sie gehoeren Stephan.
+   *
+   * Zwei Gruende, warum sie hier stehen und nicht als „noch eine Ebene"
+   * durchgewinkt werden:
+   *
+   *   Der VORLAUF traegt hier ganze Saetze auf den Kacheln, englisch und
+   *   deutsch uebereinander. Eine solche Kachel ist drei Zeilen hoch
+   *   statt einer - und die Rechnung in `vorlaufGitter` geht von 41
+   *   Punkten je Reihe aus. Mit zwanzig Beispielen lag die zweite Reihe
+   *   unter dem Startknopf; gemessen hat es dieses Tor.
+   *
+   *   Das EINGABEFELD ist das breiteste der App (34 Zeichen), und bei
+   *   „Hören und schreiben" steht ausser ihm fast nichts da. Was auf dem
+   *   Zielgeraet mit Leiste noch hineinpasst, entscheidet sich hier. */
+  /* Kein `zurEbenenwahl` davor: die drei Englischebenen stehen in derselben
+     Wand, und `ebeneAnsehen` laesst sie dort zurueck. */
+  await ebeneAnsehen('wendungen', '.schirm.da .satzfeld', 'Wendungen',
+    { vorlaufName: 'Vorlauf wendungen' });
+  await ebeneAnsehen('hoersatz', '.schirm.da .satzfeld', 'Hören und schreiben',
+    { vorlaufName: 'Vorlauf hören' });
+
   const echte = meldungen.filter(m => !m.includes('HINWEIS'));
   /* Die Hinweise standen bisher NUR im roten Zweig - also genau dann
    * nicht da, wenn das Tor gruen ist. Ein Hinweis, den man nur zu sehen

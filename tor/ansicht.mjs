@@ -333,6 +333,22 @@ const AUFNAHMEN = [
    * die einzige Aufnahme eines Aufgabenbildschirms im SACHLICHEN Ton. */
   { name:'quer-freunde', spiel:'freunde', kind:'stephan', quer:true,
     wahl:'.schirm.da' },
+  /* Wendungen (E11) und Hoeren und schreiben (E12) - EIN Bildschirm in
+   * zwei Ausfuehrungen, und der Unterschied ist genau das, was man sehen
+   * muss: bei der einen steht der deutsche Satz ueber dem Feld, bei der
+   * anderen steht dort NICHTS. Ein Bildschirm mit einer Zeile und einem
+   * Eingabefeld auf 844 x 390 ist der leerste der ganzen App - ob das
+   * ruhig aussieht oder unfertig, sagt kein Tor.
+   *
+   * Der Vorlauf kommt mit: er traegt hier ganze Saetze auf den Kacheln,
+   * zweisprachig uebereinander, und ist damit die einzige Kachelwand,
+   * auf der ein Umbruch mitten in einem Satz sitzt. */
+  { name:'quer-wendungen-vorlauf', spiel:'wendungen', kind:'stephan', quer:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
+  { name:'quer-wendungen', spiel:'wendungen', kind:'stephan', quer:true,
+    wahl:'.schirm.da' },
+  { name:'quer-hoersatz', spiel:'hoersatz', kind:'stephan', quer:true,
+    wahl:'.schirm.da' },
 ];
 
 /**
@@ -586,6 +602,8 @@ const OHNE_KARTE = {
   schreiben: '.schirm.da .schreibblatt',
   englisch:  '.schirm.da .engkarte',
   freunde:   '.schirm.da .freundluecke',
+  wendungen: '.schirm.da .satzfeld',
+  hoersatz:  '.schirm.da .satzfeld',
 };
 
 const STIMMEN_NACHBAU = () => {

@@ -1466,6 +1466,19 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .aufkleber .farbfleck{width:100%;height:auto;flex:1 1 0;min-height:0;
   border-radius:var(--rund-klein)}
 .aufkleber:not(.da) .farbfleck{opacity:.35}
+/* ---- Wendungen (E11) und Hören und schreiben (E12) ---------------------
+   Hier ist das breite Feld richtig, anders als bei den falschen Freunden:
+   gesucht ist ein GANZER SATZ, und ein schmales Feld lüde zu einem Wort
+   ein. `max-width` haelt es trotzdem beisammen - über die volle Breite
+   eines iPads gezogen liest sich kein Satz mehr.
+   Der deutsche Satz steht darüber und zurückgenommen: er ist die Vorlage,
+   gearbeitet wird am englischen. Bei E12 fehlt er ganz — dort IST der Ton
+   die Aufgabe. */
+.satzfeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r4);padding:0 var(--r4) var(--r4);min-height:0}
+.satzdeutsch{font-size:var(--s2);color:var(--tinte);text-align:center;max-width:32ch}
+.satzfeld .satz-eingabe{width:min(100%,34ch);font-size:var(--s1);text-align:left;
+  padding:var(--r2) var(--r3);min-height:56px}
 /* ---- Falsche Freunde (E10) --------------------------------------------
    Zwei Zeilen uebereinander: der deutsche Satz zurueckgenommen, der
    englische gross. Das ist die Rangfolge der Aufgabe - der deutsche Satz
@@ -2513,6 +2526,8 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Fingergrenze von 44. */
   /* Auf 844x390 muessen zwei Saetze, das Feld, „Prüfen" und der Ausweg
      uebereinander passen - dieselbe Rechnung wie bei der Rechnung. */
+  .satzdeutsch{font-size:var(--s1)}
+  .satzfeld .satz-eingabe{font-size:var(--s0);min-height:48px}
   .freundluecke{font-size:var(--s1);line-height:1.9}
   .freundluecke .luecke{font-size:var(--s1)}
   .engkarte{min-height:104px;min-width:104px;padding:var(--r2)}

@@ -375,7 +375,7 @@ export const PROBEN = [
    * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
    * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm }[ebeneArt(ebeneId)] || spielschirm);",
+    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm,\n  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);",
     ersatz:"const schirmZu = (ebeneId) => spielschirm;",
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
@@ -4533,8 +4533,15 @@ export const PROBEN = [
    * einen Antwortknopf dazu - die naheliegendste aller Hilfsbereitschaften. */
   { n:'die Elternebene bietet eine Auswahl an', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
-    such:'      <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>',
-    ersatz:'      <div class="tippfeld"><button class="zahl">${ziel.falle}</button>'
+    /* Die Zeile mit der LUECKE steht davor: seit E11 gibt es ein zweites
+       Tippfeld (der Satzbildschirm), und `<div class="tippfeld">…` allein
+       traf beide. Welche Stelle verstellt wird, haette dann die
+       Reihenfolge entschieden - und die Probe haette am Ende die falsche
+       Ebene geprueft, ohne dass es jemandem auffaellt. */
+    such:'      <div class="freundluecke" lang="en">${satzMitFeld}</div>\n'
+      + '      <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>',
+    ersatz:'      <div class="freundluecke" lang="en">${satzMitFeld}</div>\n'
+      + '      <div class="tippfeld"><button class="zahl">${ziel.falle}</button>'
       + '<button class="knopf haupt" id="pruef">Prüfen</button></div>',
     an:{ ...DIST, text:'<button class="zahl">' },
     sagt:'Möglichkeiten zum Antippen' },
@@ -4601,4 +4608,96 @@ export const PROBEN = [
     ersatz:"  // Eingriff der Gegenprobe. Anker: if (sprache === 'en' && !stimmeEn) return;",
     an:{ ...DIST, fehlt:"\n  if (sprache === 'en' && !stimmeEn) return;" },
     sagt:'spricht die App trotzdem' },
+
+  /* ---- E11/E12: die Wendungen und die Diktatsaetze ------------------- */
+
+  /* Die Kachel steht da und fragt nichts.
+   *
+   * Genau so ist diese Ebene auf die Welt gekommen: `schirmZu()` fragt
+   * `ebeneArt()`, `vorrat()` spaltet die KENNUNG - und `art:'wendungen'`
+   * gegen die Kennung `wendungen` fiel darum auseinander, sobald die
+   * Einzahl irgendwo stand. Der richtige Bildschirm ging auf, mit einem
+   * leeren Vorrat, und griff auf `Sitzung.liste[0]` zu, das es nicht gab.
+   * Kein Tor wurde rot. Seither sieht der Durchgang an JEDER Kachel nach,
+   * ob sie etwas zu fragen hat.
+   *
+   * Der Eingriff stellt die Einzahl wieder her - also genau den Fehler,
+   * den es schon gab, und nicht einen erfundenen. */
+  { n:'eine Ebenenkachel hat gar keinen Vorrat', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  if (art==='wendungen')\n    return Englisch.vorratWendungen();",
+    ersatz:"  if (art==='wendung')\n    return Englisch.vorratWendungen();",
+    an:{ ...DIST, fehlt:"if (art==='wendungen')" },
+    sagt:'hat einen leeren Vorrat' },
+
+  /* Der gesuchte Satz steht auf dem Bildschirm.
+   *
+   * Bei „Hören und schreiben" ist der englische Satz die FRAGE - stuende
+   * er da, waere die Ebene ein Abschreibtest. Der Eingriff zeigt ihn als
+   * Hilfe an, so wie es bei den Wendungen richtig waere: dieselbe Zeile,
+   * eine Ebene zu weit. */
+  { n:'der zu hörende Satz steht mit auf dem Bildschirm', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'      ${gehoert ? \'\' : `<div class="satzdeutsch">${ziel.deutsch}</div>`}',
+    ersatz:'      ${`<div class="satzdeutsch">${ziel.name}</div>`}',
+    an:{ ...DIST, text:'<div class="satzdeutsch">${ziel.name}</div>' },
+    sagt:'steht auf dem Bildschirm' },
+
+  /* Das zweite Hoeren wird nicht mehr gezaehlt.
+   *
+   * Diese Zahl ist das Einzige, was ueberhaupt etwas darueber sagt, wie
+   * gut das Hoeren wirklich ist - „richtig" allein waere auch die
+   * Antwort, die man erst beim vierten Anlauf verstanden hat. Sie kostet
+   * nichts und steht nur im Elternbereich; genau deshalb faellt ihr
+   * Wegfall sonst niemandem auf. */
+  { n:'das zweite Hören wird nicht mehr gezählt', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  const b = gehoert ? nochHoerenKnopf(ziel.satzEn, 'en', true) : null;",
+    ersatz:"  const b = gehoert ? nochHoerenKnopf(ziel.satzEn, 'en', false) : null;",
+    an:{ ...DIST, text:"nochHoerenKnopf(ziel.satzEn, 'en', false)" },
+    sagt:'nicht gezählt' },
+
+  /* Die Normalform faellt weg.
+   *
+   * `wieGesagt` macht aus „We'd like to come back some time." und
+   * „we'd like to come back some time" dasselbe. Ohne sie muesste das
+   * Kind - hier: der Erwachsene - die Grossschreibung und den Punkt
+   * treffen, um „verstanden" zu heissen, und die ganze Zusage der Ebene
+   * („es zaehlt, ob man dich versteht") waere hinfaellig.
+   *
+   * Der Rauchtest tippt deshalb bewusst NICHT die Musterfassung, sondern
+   * eine, wie sie auf einer Telefontastatur entsteht. Ohne das haette
+   * diese Probe nichts anzugreifen. */
+  { n:'der ganze Satz muss aufs Zeichen genau getippt werden', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:'src/inhalt/englisch.js',
+    such:"export const wieGesagt = (t) => String(t).toLowerCase()",
+    ersatz:"export const wieGesagt = (t) => String(t)",
+    an:{ ...DIST, fehlt:'wieGesagt = (t) => String(t).toLowerCase()' },
+    sagt:'wurde nicht gewertet' },
+
+  /* Eine Wendung mit nur EINER gueltigen Fassung.
+   *
+   * Die Ebene sagt zu, dass es mehr als eine richtige Antwort gibt - das
+   * ist ihr ganzer Inhalt und steht so im Vorlauf. Eine Wendung, die nur
+   * eine kennt, nimmt die zweite Fassung nicht an und sagt „falsch" zu
+   * etwas, das jeder Muttersprachler versteht. */
+  { n:'eine Wendung kennt nur eine einzige Fassung', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"'This is my wife.', 'Let me introduce my wife.',",
+    ersatz:"'This is my wife.', //Anker:  'Let me introduce my wife.',",
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"'This is my wife.', 'Let me introduce my wife.'," },
+    sagt:'gültige Fassung' },
+
+  /* Ein Diktatsatz, den es nicht gibt.
+   *
+   * Die Diktatsaetze sind eine AUSWAHL der Wendungen und keine zweite
+   * Liste (Regel 6). Faellt die Bindung, laufen die beiden Vorraete
+   * auseinander - und der Zugriff auf `w.richtig` waere ein Absturz beim
+   * Aufschlagen der Ebene, nicht ein roter Bericht. */
+  { n:'ein Diktatsatz zeigt auf keine Wendung', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"  'w-vorstellen', 'w-wiegehts', 'w-freutmich',",
+    ersatz:"  'w-vorstellen-alt', 'w-wiegehts', 'w-freutmich',",
+    an:{ datei:'src/inhalt/englisch.js', text:"'w-vorstellen-alt'" },
+    sagt:'zeigt auf keine Wendung' },
 ];

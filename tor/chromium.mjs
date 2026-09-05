@@ -131,10 +131,11 @@ export async function serviere(wurzel, erreichbar = () => true) {
  * Rauchtest sieht deshalb zusaetzlich nach, dass keine Kachel in der
  * falschen Welt steht und dass es beide Welten gibt.
  */
+const ENGLISCHE_EBENEN = ['englisch', 'freunde', 'wendungen', 'hoersatz'];
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
                                 : String(ebene).startsWith('schreiben') ? 'schreiben'
-                                : String(ebene).startsWith('englisch')
-                                  || String(ebene).startsWith('freunde') ? 'englisch'
+                                : ENGLISCHE_EBENEN.some(e => String(ebene).startsWith(e))
+                                  ? 'englisch'
                                 : 'erdkunde';
 
 /* Von der Weltenwahl in die Ebenenwahl der Welt, in der `ebene` liegt.
