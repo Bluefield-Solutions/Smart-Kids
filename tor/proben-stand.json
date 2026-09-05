@@ -214,9 +214,14 @@
       "s": 19
     },
     "die Sammlung öffnet keinen Raum mehr": {
-      "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
+      "commit": "8745fa7fb0aa305d0561647bf453e3c5a94de3f8",
       "zeit": "2026-09-05",
-      "s": 19
+      "s": 42
+    },
+    "der zweite Sammlungsraum wird nicht gefahren": {
+      "commit": "8745fa7fb0aa305d0561647bf453e3c5a94de3f8",
+      "zeit": "2026-09-05",
+      "s": 23
     },
     "die Schwelle gilt nicht mehr": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",

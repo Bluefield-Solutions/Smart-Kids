@@ -5212,6 +5212,75 @@ zweite nicht vom richtigen zu unterscheiden.
 
 ---
 
+### T7 · „Vor langer Zeit" — GEFAHREN (v408)
+
+Der zweite Raum, den die **Sammlung selbst** öffnet, und der einzige, in
+dem kein Tier lebt. „Vor langer Zeit" ist keine Landschaft, sondern eine
+**Zeit** — und genau das macht ihn für ein sechsjähriges Kind wertvoll: es
+gibt Tiere, die es **gab** und nicht mehr gibt. Das ist ein Gedanke, kein
+Ort, und der Aufkleber ist die einfachste Art, ihn zu erzählen.
+
+**Tyrannosaurus · Langhalssaurier · Mammut.** Drache, Einhorn und Yeti
+gehören nicht dazu, obwohl sie gemalt sind und obwohl es bequem wäre: sie
+sind erfunden, und ein Raum, der beides mischt, nimmt dem Gedanken die
+Spitze. Für sie kommt ein eigener („Im Märchen" — alle drei sind fertig,
+es fehlt nur die Kulisse).
+
+**Sechsunddreißig ist gemessen, nicht gesetzt.** Das knappste Profil
+erreicht über seine Ebenen 36 Tiere, und die Tiefsee legt bei 30 noch drei
+dazu. Wer elf seiner zwölf Räume voll hat, ist da — Ausdauer, aber keine
+Vollständigkeit. `inhalt` rechnet es je Profil nach.
+
+#### Das Mammut hat fünf Anläufe gebraucht, und der Grund ist eine Lehre
+
+Ich habe es jedes Mal **neu erfunden**, statt den Elefanten anzusehen, der
+schon im Album steht und funktioniert. Der steht im Profil nach rechts,
+Kopf vorn, und der Rüssel wächst **aus** dem Kopf nach unten.
+
+| Anlauf | Was dastand |
+|---|---|
+| 1 | ein Haken: nur **ein** Stoßzahn sichtbar, der Rüssel dahinter verschwunden |
+| 2 | Kopf und Leib ein Klumpen, die zwei Zähne wieder einer |
+| 3 | Rüssel sichtbar, aber er endete auf der Fußplatte — also ein Bein |
+| 4 | erst mit der Bauart des Elefanten: lesbar, aber die Zähne noch verschmolzen |
+| 5 | Reihenfolge hinterer Zahn → **Rüssel** → vorderer Zahn: jetzt sind es zwei |
+
+Die Lehre ist dieselbe wie beim Elch (das Geweih) und beim Drachen (die
+Flügel): **das Kennzeichen muss aus der Silhouette heraus**, in den leeren
+Grund. Braun auf Braun innerhalb des Umrisses ist bei 44 Punkten kein
+Merkmal, sondern eine Fläche.
+
+Vier Unterschiede zum Elefanten, alle bei 44 Punkten tragend: warmes Braun
+statt Blaugrau, ein **kleines** Ohr statt des großen Lappens, ein
+zotteliger Saum, und die zwei hellen Stoßzähne vor dem Kopf.
+
+#### Der Rauchtest fährt jetzt alle Sammlungsräume statt einem
+
+Vorher stand die Schwelle der Tiefsee als **Zahl** und ihre drei Tiere als
+**Liste** im Abschnitt; der zweite Raum hätte den ganzen Block ein zweites
+Mal verlangt (Regel 6). Jetzt läuft er über `RAEUME.filter(r => r.ab)` —
+der dritte kostet dann nichts mehr.
+
+Gemessen: „In der Tiefsee" bei 30 nach 6 Aufgaben, „Vor langer Zeit" bei 36
+nach 6 Aufgaben — beide am **gespielten Endbildschirm**, nicht an den Daten.
+
+Die neue Gegenprobe trifft absichtlich den **zweiten** Raum: bliebe die
+Schleife beim ersten stehen, wäre sie grün und der neue Raum ungeprüft —
+und das sähe genauso aus wie ein bestandenes Tor.
+
+**15 Räume, 15 Kulissen, 45 Tiere zu sammeln, 53 von 124 gemalt.** Die Bank
+braucht auf 667 × 375 jetzt zwei Seiten (25 auf der ersten).
+
+#### Offen
+
+- **„Im Märchen"** (Drache · Einhorn · Yeti) — die drei sind gemalt, es
+  fehlen die Kulisse und eine Schwelle. Mehr als 36 geht nicht, ohne dass
+  ein Profil ihn nie erreicht; also braucht er entweder eine Ebene oder
+  eine Sammlung, die erst weiter wächst.
+- **Ente, Tintenfisch, Eidechse, Elch** haben weiter keinen Raum.
+
+---
+
 ### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396, 2 in v398, 3 in v405
 
 Gemalt wird in **Stapeln zu sieben**. Das ist kein Rhythmus, sondern ein
