@@ -273,6 +273,40 @@ export const REIST = (k) => String(k).startsWith('ohnefehler:')
   || String(k).startsWith('geuebt:')
   || String(k).startsWith('tiere:');
 
+/* Die Landschaften (T2) - je RAUM die juengere Aufstellung.
+ *
+ * Hier gilt NICHT die Vereinigung wie bei den Aufklebern, und das ist
+ * der Unterschied zwischen einer Sammlung und einem Bild: zwei
+ * Aufkleberstaende zusammenzuwerfen ergibt einen groesseren Stand, zwei
+ * Aufstellungen zusammenzuwerfen ergibt ein Durcheinander - Tiere, die
+ * das Kind weggeraeumt hat, stuenden wieder da, und auf jedem Platz
+ * gaebe es zwei Anwaerter. Ein Raum ist EIN Bild; das zuletzt gemalte
+ * gilt.
+ *
+ * MUSS VERTAUSCHBAR SEIN: `vereinen(a,b)` und `vereinen(b,a)` muessen
+ * dasselbe ergeben, sonst schicken sich zwei Geraete endlos denselben
+ * Stand (die Lehre, die `geordnet()` weiter unten traegt). Bei gleicher
+ * Zeit entscheidet deshalb erst die Zahl der Tiere und dann der Text -
+ * beides haengt nicht daran, wer zuerst gefragt hat.
+ */
+function szenenVereinen(a, b) {
+  const aus = { ...(a || {}) };
+  for (const [raum, neu] of Object.entries(b || {})) {
+    const alt = aus[raum];
+    if (!alt) { aus[raum] = neu; continue; }
+    aus[raum] = juengere(alt, neu);
+  }
+  return aus;
+}
+function juengere(a, b) {
+  const za = zahl(a && a.zeit), zb = zahl(b && b.zeit);
+  if (za !== zb) return za > zb ? a : b;
+  const na = (a.stand || []).filter(Boolean).length;
+  const nb = (b.stand || []).filter(Boolean).length;
+  if (na !== nb) return na > nb ? a : b;
+  return JSON.stringify(a) <= JSON.stringify(b) ? a : b;
+}
+
 export function einstVereinen(a, b) {
   /* Gefiltert wird auf BEIDEN Seiten, nicht nur auf der ankommenden.
    *
@@ -301,7 +335,8 @@ export function einstVereinen(a, b) {
     if (String(k).startsWith('tiere:')) {
       const alt = aus[k] || {}, neu = w || {};
       aus[k] = { ids: [...new Set([...(alt.ids || []), ...(neu.ids || [])])],
-                 gorilla: Math.max(zahl(alt.gorilla), zahl(neu.gorilla)) };
+                 gorilla: Math.max(zahl(alt.gorilla), zahl(neu.gorilla)),
+                 szenen: szenenVereinen(alt.szenen, neu.szenen) };
       continue;
     }
     // `ohnefehler:`: das FRUEHERE gilt.

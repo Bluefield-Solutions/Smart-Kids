@@ -325,3 +325,73 @@ export const sammelbar = () => {
   return gemalt().filter(t => ids.has(t.id) && t.id !== GORILLA);
 };
 
+
+/* ---------- Die Kulissen (T2) -----------------------------------------
+ *
+ * Eine je LEBENSRAUM, nicht je Ebene: „In der Stadt" haengt an zwei
+ * Ebenen und ist EINE Landschaft. Der Schluessel ist deshalb der Titel
+ * des Raumes - dieselbe Einheit, in der auch gesammelt wird.
+ *
+ * DER RAHMEN IST 160 x 90 und nicht 48 x 48 wie beim Tier: eine
+ * Landschaft ist breit, ein Aufkleber ist quadratisch. Der Horizont
+ * liegt bei y=34; darunter beginnt das Spielfeld, ueber das die neun
+ * Plaetze gelegt werden.
+ *
+ * DESHALB STEHT IN DER MITTE NICHTS. Baeume, Felsen und Haeuser stehen
+ * am RAND - was in der Mitte steht, verdeckt einen Platz, und ein
+ * Platz, auf dem ein Baum waechst, ist kein Platz. Das ist die einzige
+ * Regel, die diese zehn Bilder gemeinsam haben.
+ *
+ * Sonst gilt, was fuer die Tiere gilt: nur Pfade, kein `transform`,
+ * keine Datei - aus demselben Grund (`passt` misst je Pfad, und die App
+ * ist EINE Datei).
+ *
+ * `ton` ist der Grund, auf dem die Szene liegt - fuer den Rahmen und
+ * fuer die Kachel, die ins Bild fuehrt. Er gehoert zur Landschaft wie
+ * der Aufkleberton zum Tier.
+ */
+export const SZENE = '0 0 160 90';
+
+/** So viele Plaetze hat jede Landschaft: drei Reihen zu dreien.
+ *
+ *  Nicht mehr: auf 390 Punkten Breite - der schmalsten Groesse, die
+ *  `passt` faehrt - ist eine Spalte dann noch 120 Punkte breit. Vier
+ *  Spalten waeren 90, und die hinterste Reihe faellt damit unter das
+ *  Fingermass. Die Zahl kommt aus der Messung, nicht aus dem Gefuehl. */
+export const PLAETZE = 9;
+
+export const KULISSEN = {
+  "Im Meer": {
+    ton:'#dcf0f6',
+    bild:'<path d="M0 0h160v26H0z" fill="#3f8fb4"/><path d="M0 26h160v26H0z" fill="#57a6c4"/><path d="M0 52h160v22H0z" fill="#79bdd4"/><path d="M0 74h160v16H0z" fill="#e6d9b0"/><path d="M22 0l10 74-22 0zM62 0l8 74-18 0zM118 0l14 74-26 0z" fill="#8fd0e2"/><path d="M0 74c22-4 42 4 64 2s34-8 56-6 26 4 40 2v18H0z" fill="#efe2bd"/><path d="M12 74c0-8 4-12 4-18 0-3-2-4-2-7 0-3 3-5 6-5s6 2 6 5c0 3-2 4-2 7 0 6 4 10 4 18z" fill="#e88a86"/><path d="M20 74c0-6 3-9 3-13 0-2-1-3-1-5 0-2 2-3 4-3s4 1 4 3c0 2-1 3-1 5 0 4 3 7 3 13z" fill="#f0aeaa"/><path d="M140 74c-2-10 2-18 0-28 4 6 6 18 4 28zM146 74c0-12 4-20 4-30 2 10 0 22-1 30zM152 74c-1-8 2-14 3-20 1 8 0 15-1 20z" fill="#4fa17e"/><path d="M36 22c2 0 3 1.4 3 3s-1 3-3 3-3-1.4-3-3 1-3 3-3zM44 12c1.4 0 2 1 2 2s-.6 2-2 2-2-1-2-2 .6-2 2-2zM128 30c1.8 0 2.6 1.2 2.6 2.6s-.8 2.6-2.6 2.6-2.6-1.2-2.6-2.6.8-2.6 2.6-2.6z" fill="#c7ecf4"/>' },
+  "Wald und Wiese": {
+    ton:'#e7f2dd',
+    bild:'<path d="M0 0h160v34H0z" fill="#b8dcf0"/><path d="M0 34c26-12 46 4 72-2s52-14 88 2v10H0z" fill="#96c48a"/><path d="M0 44h160v46H0z" fill="#a8d492"/><path d="M0 52c30 6 54-6 84-2s48 8 76 4v36H0z" fill="#b7de9e"/><path d="M132 12c6 0 10 4 10 9s-4 9-10 9-10-4-10-9 4-9 10-9z" fill="#fbe27a"/><path d="M12.4 48v-9.9h3.2v9.9z" fill="#8a6238"/><path d="M14 26c6.93 0 9.9 6.93 9.9 10.395000000000001s-4.455 4.95-9.9 4.95-9.9-1.9800000000000002-9.9-4.95 2.97-10.395000000000001 9.9-10.395000000000001z" fill="#5aa05a"/><path d="M14 26c4.95 0 6.93 4.95 6.93 7.425000000000001c-3.9600000000000004-3.465-9.9-3.465-13.86 0 0-2.475 1.9800000000000002-7.425000000000001 6.93-7.425000000000001z" fill="#75b972"/><path d="M148.4 50v-8.1h3.2v8.1z" fill="#8a6238"/><path d="M150 32c5.669999999999999 0 8.1 5.669999999999999 8.1 8.505s-3.645 4.05-8.1 4.05-8.1-1.62-8.1-4.05 2.4299999999999997-8.505 8.1-8.505z" fill="#4f9553"/><path d="M150 32c4.05 0 5.669999999999999 4.05 5.669999999999999 6.074999999999999c-3.24-2.8349999999999995-8.1-2.8349999999999995-11.339999999999998 0 0-2.025 1.62-6.074999999999999 5.669999999999999-6.074999999999999z" fill="#6cb06b"/><path d="M30 78c1.4 0 2 .8 2 1.8s-.6 1.8-2 1.8-2-.8-2-1.8.6-1.8 2-1.8zM120 84c1.4 0 2 .8 2 1.8s-.6 1.8-2 1.8-2-.8-2-1.8.6-1.8 2-1.8z" fill="#f4e07a"/><path d="M62 86c1.4 0 2 .8 2 1.8s-.6 1.8-2 1.8-2-.8-2-1.8.6-1.8 2-1.8z" fill="#f2a0bc"/>' },
+  "Die Savanne": {
+    ton:'#f8ecd2',
+    bild:'<path d="M0 0h160v34H0z" fill="#f5d9a0"/><path d="M0 34h160v56H0z" fill="#e0b96e"/><path d="M0 34c34-6 58 6 90 2s44-8 70-2v14H0z" fill="#d6ab5e"/><path d="M0 56c34 6 60-4 92 0s42 6 68 2v32H0z" fill="#e8c880"/><path d="M124 16c8 0 13 5 13 11s-5 11-13 11-13-5-13-11 5-11 13-11z" fill="#f7b850"/><path d="M20 56v-20h3.6v20zM21.8 40l-8-6 1.6-2 6.4 5zM21.8 42l8-7 1.6 2-8 6z" fill="#7a5a34"/><path d="M6 34c0-5 7-8 16-8s16 3 16 8c0 3-4 4-16 4S6 37 6 34z" fill="#6f9a52"/><path d="M10 32c2-3 7-4 12-4s10 1 12 4c-3-2-7-3-12-3s-9 1-12 3z" fill="#87b166"/><path d="M146 62c-6 0-10-3-10-6s4-6 10-6 12 3 12 6-6 6-12 6z" fill="#a8894c"/><path d="M40 76l2-8 2 8zM48 80l2-9 2 9zM106 74l2-8 2 8z" fill="#c2a05a"/>' },
+  "Das Outback": {
+    ton:'#fbe6d8',
+    bild:'<path d="M0 0h160v34H0z" fill="#f4cfae"/><path d="M0 34h160v56H0z" fill="#cd7f52"/><path d="M0 34c30-8 52 4 84 0s46-8 76 0v12H0z" fill="#bd6a42"/><path d="M0 58c32 6 58-4 90 0s40 6 70 2v30H0z" fill="#dc9060"/><path d="M114 34l6-13h28l6 13z" fill="#ae5c40"/><path d="M120 21h28l3 6h-34z" fill="#c67450"/><path d="M4 60c0-9 6-14 14-14s15 5 15 14z" fill="#ae5c40"/><path d="M10 56c2-4 6-7 10-7s7 1 9 3c-6-1-13 1-19 4z" fill="#c67450"/><path d="M126 74l-2-9 3 5 2-7 2 7 3-5-2 9zM140 78l-2-8 3 4 2-6 2 6 3-4-2 8z" fill="#b08a52"/><path d="M52 82l-2-8 3 4 2-6 2 6 3-4-2 8z" fill="#b08a52"/>' },
+  "Die Karibik": {
+    ton:'#e2f4ee',
+    bild:'<path d="M0 0h160v30H0z" fill="#a9e0ee"/><path d="M0 30h160v20H0z" fill="#3fb8b0"/><path d="M0 50h160v12H0z" fill="#78d6c8"/><path d="M0 62h160v28H0z" fill="#f5e5c2"/><path d="M0 62c26-4 44 4 70 2s38-8 62-4 22 4 28 2v28H0z" fill="#fbf0d6"/><path d="M0 60c24 4 40-2 66 0s40 4 62 0 22-2 32 0v3c-12 2-22 0-32 1s-38 3-62 1-42 3-66-2z" fill="#ffffff"/><path d="M22 12c7 0 11 5 11 10s-4 10-11 10-11-5-11-10 4-10 11-10z" fill="#fce07c"/><path d="M142 66c-2-14 0-24 4-32h3c-4 9-5 19-3 32z" fill="#8a6238"/><path d="M146 34c8-4 15-2 18 3-6-3-11-3-16 0zM146 34c6-8 14-9 19-5-7-1-13 2-17 6zM146 34c-8-4-15-1-18 4 6-4 12-4 17-1zM146 34c-6-7-14-7-18-2 6-2 12 0 16 3z" fill="#3fa06a"/><path d="M143 40c2 0 3 1.2 3 2.6s-1 2.6-3 2.6-3-1.2-3-2.6 1-2.6 3-2.6z" fill="#c2762c"/><path d="M40 80c0-3 2-5 5-5s5 2 5 5z" fill="#f2b8b0"/>' },
+  "Der Dschungel": {
+    ton:'#e4f2d8',
+    bild:'<path d="M0 0h160v34H0z" fill="#8ccb7e"/><path d="M0 34h160v56H0z" fill="#a2d68c"/><path d="M0 34c30-10 52 6 84 2s46-10 76-2v14H0z" fill="#7dbf72"/><path d="M0 58c32 8 58-4 90 2s40 4 70 0v30H0z" fill="#b2df98"/><path d="M0 0h160v14c-14 8-26 2-40 8s-24-4-38 2S26 16 12 20 4 10 0 14z" fill="#3f7a4c"/><path d="M20 14c8-4 14 0 18 4-8-2-13 0-18 4zM64 18c8-5 15-1 19 3-8-2-14 0-19 4zM112 12c8-4 15 0 19 4-8-2-14 0-19 4z" fill="#54935c"/><path d="M34 20c2 12 0 22-2 32h-2.4c2-10 4-20 2-32zM126 22c-2 14 0 24 2 34h-2.4c-2-10-4-20-2-34z" fill="#3f7a4c"/><path d="M6 90c0-16 6-28 16-32-5 11-8 20-8 32z" fill="#4f9a58"/><path d="M0 90c0-10 4-18 10-22-3 7-5 13-5 22z" fill="#69b46e"/><path d="M160 90c0-18-10-30-22-34 6 13 10 22 10 34z" fill="#4f9a58"/><path d="M154 88c-1-11-5-19-11-24 4 8 6 15 7 24z" fill="#69b46e"/><path d="M46 84c1.8 0 2.6 1.1 2.6 2.4s-.8 2.4-2.6 2.4-2.6-1.1-2.6-2.4.8-2.4 2.6-2.4zM110 80c1.8 0 2.6 1.1 2.6 2.4s-.8 2.4-2.6 2.4-2.6-1.1-2.6-2.4.8-2.4 2.6-2.4z" fill="#f2a64c"/>' },
+  "Wald und Fluss": {
+    ton:'#e4f0ee',
+    bild:'<path d="M0 0h160v30H0z" fill="#bcdcee"/><path d="M0 30h160v60H0z" fill="#8fbd7e"/><path d="M0 30c26-10 46 6 72 0s52-10 88 0v10H0z" fill="#6f9f68"/><path d="M0 66c26-6 44 2 70 0s38-6 62-2 22 2 28 0v10c-8 2-18 0-30 2s-38 4-62 2-42 4-68-2z" fill="#5fa8cc"/><path d="M0 68c24 4 42-2 66 0s40 4 62 0 22-2 32 0v2c-12 2-22 0-32 1s-38 3-62 1-42 3-66-2z" fill="#8cc8e0"/><path d="M16 52l-8 0 8-12 8 12zM16 44l-6 0 6-10 6 10zM14.6 52h3v6h-3z" fill="#3f7a4c"/><path d="M148 56l-9 0 9-14 9 14zM148 47l-7 0 7-11 7 11zM146.5 56h3v6h-3z" fill="#3f7a4c"/><path d="M38 50l-6 0 6-9 6 9zM36.8 50h2.4v5h-2.4z" fill="#4a8a56"/><path d="M92 78c0-4 4-6 8-6s8 2 8 6zM110 82c0-3 3-5 6-5s6 2 6 5z" fill="#a8adb2"/>' },
+  "Der Regenwald": {
+    ton:'#e6f2e0',
+    bild:'<path d="M0 0h160v34H0z" fill="#7fb98a"/><path d="M0 34h160v56H0z" fill="#4e8f5c"/><path d="M0 34c28-8 50 4 82 0s48-8 78 0v12H0z" fill="#5d9d64"/><path d="M0 56c30 8 56-4 88 2s42 4 72 0v32H0z" fill="#639e6a"/><path d="M0 38c30-6 56 4 88 0s44-6 72-2v6c-28-2-44 4-72 6s-58-8-88-2z" fill="#cfe6d2"/><path d="M12 90V26h7v64zM138 90V20h8v70z" fill="#7b5b3c"/><path d="M12 90V26h3v64zM138 90V20h3v70z" fill="#967350"/><path d="M0 0h160v14c-16 6-24-2-38 4s-22-6-36 0S30 10 16 16 6 8 0 12z" fill="#3f7a4c"/><path d="M0 90c2-16 12-26 26-30-6 12-9 21-9 30z" fill="#68b06e"/><path d="M160 90c-2-18-14-28-28-32 7 13 11 22 11 32z" fill="#68b06e"/><path d="M150 88c-2-10-6-17-12-21 3 7 5 13 6 21z" fill="#87c58a"/><path d="M46 84c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2a0bc"/>' },
+  "Vor der Haustür": {
+    ton:'#eef1e2',
+    bild:'<path d="M0 0h160v36H0z" fill="#c2e2f2"/><path d="M0 36h160v54H0z" fill="#9ecb84"/><path d="M0 52c30 6 54-6 84-2s48 8 76 4v36H0z" fill="#b1d996"/><path d="M110 52V30h40v22z" fill="#f0e2cc"/><path d="M106 30l24-14 24 14z" fill="#c46a54"/><path d="M124 52V38h12v14z" fill="#8a6238"/><path d="M114 36h8v7h-8zM140 36h8v7h-8z" fill="#8fc8e0"/><path d="M4 62v-14h3v14zM12 62v-16h3v16zM20 62v-14h3v14zM28 62v-16h3v16zM0 50h34v2.4H0zM0 56h34v2.4H0z" fill="#e2d3b8"/><path d="M62 52V42h3.4v10z" fill="#8a6238"/><path d="M63.6 24c7 0 12 5 12 10s-5 9-12 9-12-4-12-9 5-10 12-10z" fill="#5aa05a"/><path d="M63.6 26c5 0 8 2.6 9.4 6-2.8-2.4-5.8-3.6-9.4-3.6s-6.6 1.2-9.4 3.6c1.4-3.4 4.4-6 9.4-6z" fill="#75b972"/><path d="M40 80c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2zM88 84c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2e07a"/><path d="M140 78c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2a0bc"/>' },
+  "In der Stadt": {
+    ton:'#eef0f6',
+    bild:'<path d="M0 0h160v30H0z" fill="#c6dcf2"/><path d="M0 30V12h22v18zM24 30V4h20v26zM46 30V16h26v14zM74 30V8h18v22zM94 30V18h24v12zM120 30V6h22v24zM144 30V14h16v16z" fill="#e0c9b4"/><path d="M24 30V4h20v26z" fill="#cbd8e6"/><path d="M74 30V8h18v22z" fill="#d9c2d2"/><path d="M120 30V6h22v24z" fill="#cbd8e6"/><path d="M5 16h5v5H5zM13 16h5v5h-5zM29 10h5v5h-5zM37 10h5v5h-5zM29 20h5v5h-5zM52 20h5v5h-5zM60 20h5v5h-5zM79 14h5v5h-5zM79 23h5v5h-5zM99 22h5v5h-5zM107 22h5v5h-5zM125 12h5v5h-5zM133 12h5v5h-5zM125 22h5v5h-5zM149 20h5v5h-5z" fill="#f7dd94"/><path d="M0 30h160v18H0z" fill="#d6dae2"/><path d="M0 48h160v14H0z" fill="#8b919c"/><path d="M0 62h160v28H0z" fill="#d6dae2"/><path d="M10 54h18v3H10zM46 54h18v3H46zM82 54h18v3H82zM118 54h18v3h-18z" fill="#f4f6fa"/><path d="M0 72h160v1.4H0zM26 62v28h1.4V62zM60 62v28h1.4V62zM94 62v28h1.4V62zM128 62v28h1.4V62z" fill="#c4c9d2"/><path d="M14 48V22h3v26zM10 22h11v3.4H10z" fill="#6a707c"/><path d="M11 20c2.2 0 3.6 1.4 3.6 3s-1.4 3-3.6 3-3.6-1.4-3.6-3 1.4-3 3.6-3z" fill="#f7dd94"/><path d="M146 48V40h3v8z" fill="#8a6238"/><path d="M147.6 26c6.4 0 10.6 4.2 10.6 8.4s-4.2 7.6-10.6 7.6-10.6-3.4-10.6-7.6 4.2-8.4 10.6-8.4z" fill="#63b063"/><path d="M147.6 28c4.4 0 7.2 1.8 8.4 5-2.4-1.8-5-2.8-8.4-2.8s-6 1-8.4 2.8c1.2-3.2 4-5 8.4-5z" fill="#7cc47a"/><path d="M141 48h13v6h-13z" fill="#c47c50"/>' },
+};
+
+/** Die Landschaft eines Raumes - oder `null`, wenn es noch keine gibt. */
+export const kulisseZu = (titel) => KULISSEN[titel] || null;

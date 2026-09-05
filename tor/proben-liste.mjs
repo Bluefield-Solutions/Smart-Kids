@@ -380,6 +380,82 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
 
+  /* --- landschaft (T2) ---------------------------------------------
+   *
+   * Vier Zusagen, die es ohne diesen Bildschirm nicht gab. Jede einzeln
+   * zu brechen - und die erste ist die, an der man es zuerst versucht:
+   * die Tuer.
+   */
+  // Die Tuer geht auf, sobald EIN Tier des Raumes da ist. Dann steht das
+  // Kind vor einer Landschaft, in die es nichts hineinstellen kann.
+  { n:'die Landschaft geht schon bei einem Tier auf', tor:'smoke', args:['--nur=landschaft'],
+    bauen:true, datei:D,
+    such:"          ${r.stuecke.every(t => habe.has(t.id)) && Tiere.kulisseZu(r.titel)",
+    ersatz:"          ${r.stuecke.some(t => habe.has(t.id)) && Tiere.kulisseZu(r.titel)",
+    an:{ ...DIST, text:'r.stuecke.some(t => habe.has(t.id)) && Tiere.kulisseZu' },
+    sagt:'trotzdem eine Tür' },
+
+  /* Ohne die Sperre ist JEDER Tipp auf das Bild ein Zufallstier - und
+     ein Kind, das die Landschaft nur ansehen will, stellt beim
+     Hinlangen etwas hinein. Der Anker steht als Kommentar dahinter,
+     weil der Eingriff ihn sonst selbst wegnimmt (achtmal passiert). */
+  { n:'ein Tipp ins Bild stellt ein Tier hin, ohne dass eines gewählt war',
+    tor:'smoke', args:['--nur=landschaft'], bauen:true, datei:D,
+    such:"      if (!gewaehlt) { sagen('Tippe zuerst auf ein Tier.'); return; }",
+    ersatz:"      if (!gewaehlt) gewaehlt = bank[0] && bank[0].id;"
+      + "  //Anker: if (!gewaehlt) { sagen('Tippe zuerst auf ein Tier.'); return; }",
+    an:{ ...DIST, text:'if (!gewaehlt) gewaehlt = bank[0]' },
+    sagt:'ohne dass eines gewählt war' },
+
+  /* Die Aufstellung wird nicht abgelegt. Am Bildschirm ist das nicht zu
+     sehen - erst beim naechsten Aufschlagen ist das Bild leer. Genau
+     der Fehler, den nur ein Neustart findet. */
+  { n:'die Aufstellung wird nie abgelegt', tor:'smoke', args:['--nur=landschaft'],
+    bauen:true, datei:D,
+    such:"        [titel]: { stand: [...plaetze], zeit: Date.now() } } };\n    tiereSichern();",
+    ersatz:"        [titel]: { stand: [...plaetze], zeit: Date.now() } } };",
+    an:{ ...DIST, fehlt:'{ stand: [...plaetze], zeit: Date.now() } } };\n    tiereSichern();' },
+    sagt:'überlebt die Seite nicht' },
+
+  /* „Wegräumen" leert nur den Bildschirm. Der Stand bleibt stehen, und
+     beim naechsten Aufschlagen ist alles wieder da - fuer ein Kind
+     nicht von einem kaputten Knopf zu unterscheiden. */
+  { n:'Wegräumen leert den Bildschirm, aber nicht die Ablage',
+    tor:'smoke', args:['--nur=landschaft'], bauen:true, datei:D,
+    such:"    plaetze.fill(null); gewaehlt = null; sichern(); male();",
+    ersatz:"    plaetze.fill(null); gewaehlt = null; male();",
+    an:{ ...DIST, text:'plaetze.fill(null); gewaehlt = null; male();' },
+    sagt:'nicht die Ablage' },
+
+  /* --- inhalt: die Kulissen (T2) ------------------------------------ */
+  // Ein voller Raum ohne Kulisse: im Buch waere das eine Tuer, hinter
+  // der nichts ist - und am Bildschirm ein Absturz.
+  { n:'einem vollen Lebensraum fehlt die Kulisse', tor:'inhalt', datei:'src/inhalt/tiere.js',
+    such:"  \"Das Outback\": {", ersatz:"  \"Das Outback ausgebaut\": {",
+    an:{ datei:'src/inhalt/tiere.js', text:'"Das Outback ausgebaut"' },
+    sagt:'keine Kulisse' },
+
+  /* Die Kulisse benutzt `transform` - dieselbe Messstelle wie beim Tier:
+     `passt` misst je Pfad im eigenen Koordinatenraum, eine Gruppen-
+     verschiebung faellt dabei durch. */
+  { n:'eine Kulisse verschiebt sich mit transform', tor:'inhalt', datei:'src/inhalt/tiere.js',
+    such:"export const kulisseZu = (titel) => KULISSEN[titel] || null;",
+    ersatz:"export const kulisseZu = (titel) => { const k = KULISSEN[titel];\n"
+      + "  return k ? { ...k, bild: k.bild + '<path transform=\"translate(2)\" d=\"M0 0h1v1z\" fill=\"#000000\"/>' } : null; };",
+    an:{ datei:'src/inhalt/tiere.js', text:"transform=" },
+    sagt:'benutzt „transform"' },
+
+  /* --- gleichlauf: die Landschaften (T2) ---------------------------- */
+  // Die Aufstellungen werden wie die Aufkleber VEREINIGT statt ersetzt.
+  // Dann bringt der Abgleich weggeraeumte Tiere zurueck, und auf einem
+  // Platz stehen zwei.
+  { n:'die Landschaften werden vereinigt statt ersetzt', tor:'gleichlauf',
+    datei:'src/kern/gleichlauf.js',
+    such:"    aus[raum] = juengere(alt, neu);",
+    ersatz:"    aus[raum] = { ...alt, ...neu, stand: (alt.stand || []).map((x, i) => x || (neu.stand || [])[i]) };",
+    an:{ datei:'src/kern/gleichlauf.js', text:'x || (neu.stand || [])[i]' },
+    sagt:'juengere Aufstellung' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.

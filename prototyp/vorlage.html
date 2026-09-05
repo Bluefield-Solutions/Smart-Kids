@@ -1045,6 +1045,103 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Farbflecken in G18). */
 .tierfeld:not(.da) .tierbild{opacity:.18;filter:grayscale(1)}
 .tierneu .tierbild{filter:none}
+
+/* ---------- Die Landschaft (T2) ---------------------------------------
+   Ein voller Raum wird zur TUER: die Ueberschrift traegt die Kulisse als
+   Streifen. Ein Kind, das nicht liest, sieht am Bild, wohin es geht. */
+.raumauf{display:flex;align-items:center;gap:var(--r2);width:100%;
+  margin:0 0 var(--r1);padding:var(--r0) var(--r2) var(--r0) var(--r0);
+  border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
+  background:var(--grund-2);cursor:pointer;font:inherit;min-height:44px;
+  text-align:left;color:var(--tinte-2)}
+.raumauf span{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:700;
+  flex:1 1 auto;min-width:0}
+.raumauf svg.raumstreifen{width:64px;height:36px;flex:none;
+  border-radius:var(--r2);display:block}
+.raumauf:hover{border-color:var(--tinte-3)}
+
+/* QUER IST DAS ZIELGERAET, und quer ist die Hoehe knapp: auf 844 x 390
+   bleiben nach dem Kopf rund 300 Punkte. Ein Bild ueber die volle
+   Breite waere bei 16:9 461 Punkte hoch - anderthalb Bildschirme fuer
+   das eine, was man hier ansehen will.
+   Deshalb steht das Bild LINKS und wird von der HOEHE bestimmt, die
+   Bank rechts daneben. Der erste Anlauf machte es umgekehrt: die Szene
+   wurde von einer Flex-Spalte auf 100 Punkte zusammengedrueckt, und die
+   Tiere darin waren gemessen 17 Punkte gross - unter der Haelfte des
+   Fingermasses, und als Bild nicht mehr zu erkennen. */
+.rollen.landschaft{display:flex;align-items:stretch;gap:var(--r3);
+  overflow:hidden;padding-bottom:var(--r3)}
+.szene{height:100%;width:auto;aspect-ratio:16/9;flex:0 0 auto;max-width:100%;
+  position:relative;border-radius:var(--r4);overflow:hidden;
+  background:var(--ton,var(--grund-2));
+  border:var(--strich) solid var(--papier);box-shadow:var(--schatten-kleber)}
+.szene>svg.kulisse{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* `minmax(0,1fr)` und nicht `1fr`: eine Prozenthoehe im Platz misst sich
+   an der Zeile, und eine `1fr`-Zeile misst sich am Inhalt. Gemessen: die
+   Zeilen wurden 114 Punkte hoch in einem 156 Punkte hohen Band, und die
+   vorderste Reihe stand halb unter dem Bildrand. */
+.plaetze{position:absolute;inset:26% 0 1%;display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.6fr)}
+.platz{display:flex;align-items:flex-end;justify-content:center;
+  padding:0 4% 2%;border:0;background:none;position:relative;
+  min-height:0;min-width:0;cursor:pointer}
+/* Der freie Platz zeigt sich nur als leiser Ring. Neun Ringe sind ein
+   Angebot; neun Kaesten waeren ein Formular. */
+.platz.frei::after{content:"";height:50%;aspect-ratio:1;border-radius:50%;
+  border:var(--strich) dashed var(--szene-ring);background:var(--szene-ringfeld)}
+/* Der Schatten ist eine ELLIPSE und kein gefilterter Schlagschatten: auf
+   iOS ist ein Filter auf einem Pfad die Falle aus Regel 13, und das Tor
+   `marken` haelt sie fest. (Es liest die Datei als TEXT - der verbotene
+   Ausdruck darf hier also auch nicht als Beispiel stehen, sonst meldet
+   das Tor den Kommentar statt des Fehlers. Achtmal passiert.)
+   Sie setzt das Tier ausserdem besser auf den Boden als ein Schatten,
+   der in jede Richtung gleich faellt. */
+.platz.voll::before{content:"";position:absolute;left:50%;bottom:4%;
+  width:46%;height:8%;border-radius:50%;background:var(--szene-schatten);
+  transform:translateX(-50%)}
+.platz .tierbild{height:94%;max-height:94%;width:auto;max-width:88%;
+  position:relative}
+
+/* Die Bank: alles, was dem Kind gehoert. Wer schon im Bild steht, wird
+   blass - derselbe Griff wie bei den fehlenden Aufklebern. */
+.banksaeule{flex:1 1 200px;min-width:0;min-height:0;display:flex;
+  flex-direction:column;gap:var(--r1);overflow:auto}
+.tierbank{display:flex;flex-wrap:wrap;justify-content:center;
+  align-content:flex-start;gap:var(--r1);width:100%}
+.bankstueck{width:68px;flex:none;display:flex;flex-direction:column;
+  align-items:center;gap:0;padding:var(--r0);
+  border-radius:var(--r4);border:var(--kante-flach) solid var(--papier);
+  background:var(--ton,var(--grund-2));box-shadow:var(--schatten-kleber);
+  cursor:pointer;font:inherit;min-height:44px}
+.bankstueck span{font-family:var(--f-lesen);font-size:calc(var(--s-klein) * .68);
+  color:var(--tinte);text-align:center;line-height:1.1;max-width:100%;
+  overflow-wrap:break-word}
+.bankstueck.gewaehlt{border-color:var(--gut);
+  box-shadow:0 0 0 var(--strich) var(--gut), var(--schatten-kleber)}
+.bankstueck.weg{background:var(--grund-2);box-shadow:var(--schatten-auf)}
+.bankstueck.weg .tierbild{opacity:.22;filter:grayscale(1)}
+.bankstueck.weg span{color:var(--tinte-3)}
+.szenehinweis{margin:0;text-align:center;flex:none}
+/* HOCH wird gestapelt: dort ist die Breite knapp und die Hoehe da - genau
+   umgekehrt. Die Grenze steht bei 560, weil das schmalste Geraet, das
+   `passt` faehrt, 390 Punkte breit ist und das naechste 667. */
+@media (max-width:560px){
+  .rollen.landschaft{flex-direction:column;overflow:auto;align-items:center}
+  /* HOEHER statt breiter: bei 390 Punkten Breite ist das Bild im
+     Breitformat 219 hoch, und die hinterste Reihe misst dann 38 Punkte -
+     unter dem Fingermass. Bei 4:3 sind es 55. Gemessen im Browser, nicht
+     aus dem Verhaeltnis gerechnet. */
+  .szene{width:100%;height:auto;flex:none;aspect-ratio:4/3}
+  .banksaeule{overflow:visible;flex:none;width:100%}
+}
+@media (max-height:440px){
+  .raumauf svg.raumstreifen{width:52px;height:30px}
+  .bankstueck{width:60px}
+  .bankstueck span{font-size:calc(var(--s-klein) * .62)}
+  .szenehinweis{font-size:calc(var(--s-klein) * .85)}
+}
+}
 .abzneu{display:flex;align-items:center;justify-content:center;gap:var(--r3);
   margin:var(--r3) 0;padding:var(--r2) var(--r4);border-radius:var(--rund-voll);
   background:var(--gut-h);border:var(--strich) solid var(--gut);

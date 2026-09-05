@@ -2353,11 +2353,12 @@ const tierSchluessel = () => `tiere:${P.id}`;
 /* Im Speicher gehalten, weil der Endbildschirm SYNCHRON entscheiden muss:
    er zeichnet das Tier, das er gerade vergeben hat, und kann nicht auf die
    Ablage warten. Geladen wird bei der Profilwahl, geschrieben nebenher. */
-let TierStand = { ids: [], gorilla: 0 };
+let TierStand = { ids: [], gorilla: 0, szenen: {} };
 async function tiereLaden(){
-  TierStand = { ids: [], gorilla: 0 };
+  TierStand = { ids: [], gorilla: 0, szenen: {} };
   try { TierStand = { ...TierStand,
     ...(await Ablage.hole('einstellungen', tierSchluessel()) || {}) }; } catch(e){}
+  if (!TierStand.szenen || typeof TierStand.szenen !== 'object') TierStand.szenen = {};
 }
 function tiereSichern(){
   Ablage.setze('einstellungen', tierSchluessel(), TierStand).catch(()=>{});
@@ -6265,6 +6266,157 @@ function endschirm(){
  * er war, und nicht auf Seite eins. */
 let buchKapitel = null;
 
+
+/* ---------- Die Landschaft (T2) ----------------------------------------
+ *
+ * Wer einen Lebensraum voll hat, bekommt ein BILD dazu, in das er seine
+ * Tiere hineinstellen kann. Der Wunsch war: „Da kann man dann jedes Tier
+ * reinbringen und kann sich dann ein kleines Szenario umsetzen."
+ *
+ * ES WIRD GETIPPT, NICHT GEZOGEN. Erst auf ein Tier, dann auf einen
+ * Platz. Ziehen waere naeher an der Vorstellung - und auf dem Zielgeraet
+ * die schlechtere Bedienung: ein sechsjaehriger Finger, der ein Tier
+ * ueber ein 780 Punkte breites Bild zieht, verliert es unterwegs, und
+ * ein losgelassenes Tier ohne Platz muss irgendwohin. Zwei Tipps sind
+ * immer eindeutig, und sie sind mit dem Rauchtest nachzuspielen - ein
+ * Zug ist es nur unter Vorbehalt.
+ *
+ * NEUN PLAETZE IN DREI REIHEN, und die Reihen sind verschieden hoch: die
+ * hinterste traegt die kleinsten Tiere, die vorderste die groessten.
+ * Das ist die ganze Tiefe des Bildes, und sie kostet nichts - drei
+ * Zeilenhoehen im Raster.
+ *
+ * JEDES Tier darf hinein, nicht nur die drei des Raumes. Ein Elefant in
+ * der Karibik ist kein Fehler, sondern der Witz an der Sache; die Tiere
+ * des Raumes stehen nur VORN in der Bank, damit das Naheliegende auch
+ * das Naechste ist.
+ *
+ * DER STAND STEHT IM PROFIL, nicht am Geraet: er reist mit `tiere:` mit
+ * (siehe `gleichlauf.js`). Gespeichert wird die Reihe der neun Plaetze,
+ * nicht Bildpunkte - ein Bild, das auf dem iPad anders gross ist als auf
+ * dem iPhone, haette sonst zwei Wahrheiten.
+ */
+function landschaft(titel, zurueck){
+  const s = el('div');
+  const k = Tiere.kulisseZu(titel);
+  const raum = Tiere.RAEUME.find(r => r.titel === titel);
+  const eigene = new Set(raum ? raum.tiere : []);
+  /* Die Bank: alles, was dem Kind gehoert - die Tiere DIESES Raumes
+     zuerst. Der Gorilla ist nicht dabei; er wird nicht gesammelt. */
+  const habe = (TierStand.ids || []).map(Tiere.tierMit).filter(t => t && t.bild);
+  const bank = [...habe.filter(t => eigene.has(t.id)),
+                ...habe.filter(t => !eigene.has(t.id))];
+  /* Die neun Plaetze. Was im Stand steht, aber nicht (mehr) im Besitz
+     ist, faellt weg - sonst stuende ein Tier im Bild, das im Buch nicht
+     existiert. */
+  const daheim = new Set(bank.map(t => t.id));
+  const alt = (TierStand.szenen || {})[titel];
+  const plaetze = Array.from({ length: Tiere.PLAETZE }, (_, i) => {
+    const id = alt && Array.isArray(alt.stand) ? alt.stand[i] : null;
+    return id && daheim.has(id) ? id : null; });
+
+  let gewaehlt = null;
+
+  const sichern = () => {
+    TierStand = { ...TierStand,
+      szenen: { ...(TierStand.szenen || {}),
+        [titel]: { stand: [...plaetze], zeit: Date.now() } } };
+    tiereSichern();
+  };
+
+  const reihe = (i) => Math.floor(i / 3);
+  const platzHtml = (id, i) => {
+    const t = id ? Tiere.tierMit(id) : null;
+    return `<button class="platz r${reihe(i)}${t ? ' voll' : ' frei'}" data-platz="${i}"
+      aria-label="${t ? `${t.name} wegnehmen` : `Platz ${i + 1}`}"
+      >${t ? tierBild(t, 'imbild') : ''}</button>`;
+  };
+  const bankHtml = (t) => `<button class="bankstueck${
+      plaetze.includes(t.id) ? ' weg' : ''}${gewaehlt === t.id ? ' gewaehlt' : ''}"
+      data-tier="${t.id}" style="--ton:${t.ton}"
+      aria-label="${t.name}">${tierBild(t)}<span>${ohneArtikel(t.name)}</span></button>`;
+
+  s.innerHTML = kopf({ links: zurueckKnopf('Buch'),
+      mitte: `<span class="marke">${titel}</span>`,
+      rechts: `<button class="knopf" id="leeren" aria-label="Alle Tiere wegräumen"
+                 title="Wegräumen">${ZEI('zu', 22)}<span class="wort">Wegräumen</span></button>` })
+    + `<div class="rollen landschaft">
+        <div class="szene" style="--ton:${k.ton}">
+          <svg class="kulisse" viewBox="${Tiere.SZENE}" role="img"
+               aria-label="${titel}">${k.bild}</svg>
+          <div class="plaetze">${plaetze.map(platzHtml).join('')}</div>
+        </div>
+        <div class="banksaeule">
+          <p class="szenehinweis hinweis" id="szenesatz">Tippe auf ein Tier und dann in das Bild.</p>
+          <div class="tierbank">${bank.map(bankHtml).join('')}</div>
+        </div>
+      </div>`;
+
+  const feld = s.querySelector('.plaetze');
+  const bankfeld = s.querySelector('.tierbank');
+  const satz = s.querySelector('#szenesatz');
+  /* Der Name traegt seinen Artikel („die Schlange") - am Satzanfang muss
+     der gross werden, sonst steht dort „die Schlange ist da." mit kleinem
+     d. Hier und nicht in den Daten: der Artikel gehoert zum Namen, die
+     Grossschreibung zum Satz. */
+  const sagen = (text) => { const t = text.charAt(0).toUpperCase() + text.slice(1);
+    satz.textContent = t; ansagen(t); };
+
+  /* Neu gezeichnet werden nur die beiden Listen, nicht der Bildschirm.
+     `zeige()` waere eine Ueberblendung samt Kulisse - fuer einen Tipp,
+     der sich wie Hinstellen anfuehlen soll. */
+  const male = () => {
+    feld.innerHTML = plaetze.map(platzHtml).join('');
+    bankfeld.innerHTML = bank.map(bankHtml).join('');
+    binden();
+  };
+
+  function binden(){
+    feld.querySelectorAll('.platz').forEach(b => b.onclick = () => {
+      const i = +b.dataset.platz;
+      if (plaetze[i]) {                       // besetzt: wieder wegnehmen
+        const t = Tiere.tierMit(plaetze[i]);
+        plaetze[i] = null; sichern(); male();
+        sagen(`${t.name} geht wieder weg.`);
+        return;
+      }
+      if (!gewaehlt) { sagen('Tippe zuerst auf ein Tier.'); return; }
+      const t = Tiere.tierMit(gewaehlt);
+      /* Jedes Tier steht hoechstens EINMAL im Bild. Zweimal derselbe
+         Koala waere kein Szenario, sondern ein Fehler, den niemand
+         zurueckdrehen kann - und die Bank haette kein Zeichen mehr
+         dafuer, was schon drin ist. */
+      const vorher = plaetze.indexOf(gewaehlt);
+      if (vorher >= 0) plaetze[vorher] = null;
+      plaetze[i] = gewaehlt; gewaehlt = null;
+      sichern(); male();
+      sagen(`${t.name} ist da.`);
+    });
+    bankfeld.querySelectorAll('.bankstueck').forEach(b => b.onclick = () => {
+      const id = b.dataset.tier, t = Tiere.tierMit(id);
+      const drin = plaetze.indexOf(id);
+      if (drin >= 0) {                        // schon im Bild: wieder holen
+        plaetze[drin] = null; sichern(); male();
+        sagen(`${t.name} geht wieder weg.`);
+        return;
+      }
+      gewaehlt = gewaehlt === id ? null : id;
+      male();
+      sagen(gewaehlt ? `${t.name}. Jetzt einen Platz.` : t.name);
+    });
+  }
+  binden();
+
+  s.querySelector('#zur').onclick = () => zeige(zurueck || forscherbuch);
+  s.querySelector('#leeren').onclick = () => {
+    if (!plaetze.some(Boolean)) { sagen('Es ist noch kein Tier im Bild.'); return; }
+    plaetze.fill(null); gewaehlt = null; sichern(); male();
+    sagen('Alles weggeräumt.');
+  };
+  ansagen(`${titel}. Tippe auf ein Tier und dann in das Bild.`);
+  return s;
+}
+
 async function forscherbuch(){
   const s = el('div');
   // Erster Durchgang: die Staende lesen und zaehlen. Das geht OHNE Umrisse -
@@ -6595,7 +6747,22 @@ async function forscherbuch(){
       inhalt:`
         <h3 class="gruppe">Meine Tiere <small>${dabei.length} von ${alle.length}</small></h3>
         ${raeume.map(r => `<div class="tierraum">
-          <h4>${r.titel}</h4>
+          ${/* EIN VOLLER RAUM WIRD ZUR TUER (T2).
+                Solange etwas fehlt, ist die Zeile eine Ueberschrift; ist
+                der Raum voll, ist sie der Knopf in die Landschaft - und
+                traegt die Kulisse als Streifen, damit auch ein Kind, das
+                nicht liest, sieht, wohin es geht. Kein zweiter Knopf
+                daneben: eine Zeile, die manchmal etwas kann, ist
+                weniger zu lernen als zwei Zeilen, von denen eine
+                meistens fehlt. */''}
+          ${r.stuecke.every(t => habe.has(t.id)) && Tiere.kulisseZu(r.titel)
+            ? `<button class="raumauf" data-raum="${r.titel}"
+                 data-lesen="${r.titel} anschauen"
+                 aria-label="${r.titel} anschauen"><svg class="raumstreifen"
+                 viewBox="${Tiere.SZENE}" role="presentation"
+                 >${Tiere.kulisseZu(r.titel).bild}</svg><span>${r.titel}</span>
+                 ${ZEI('auge', 20)}</button>`
+            : `<h4>${r.titel}</h4>`}
           <div class="tierwand">${r.stuecke.map(t => `
             <button class="tierfeld${habe.has(t.id) ? ' da' : ''}"
                     style="--ton:${t.ton}"
@@ -6800,6 +6967,13 @@ async function forscherbuch(){
   const seiteBinden = (wo) => {
     wo.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
     kartensatzBinden(wo);
+    /* Der Weg in die Landschaft (T2) - HIER und nicht beim Aufbau, aus
+       demselben Grund wie der Kartensatz: ein Kapitelwechsel tauscht den
+       Inhalt aus, und ein einmal gebundener Zuhoerer haengt danach an
+       einem Knopf, den es nicht mehr gibt. `addEventListener` neben dem
+       `onclick` der Zeile darueber, sonst waere die Tuer stumm. */
+    wo.querySelectorAll('.raumauf').forEach(b => b.addEventListener('click',
+      () => zeige(() => landschaft(b.dataset.raum, forscherbuch))));
   };
   /* Ein Tipp auf die Albumkarte blaettert den Satz weiter (Q46).
    *

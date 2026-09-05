@@ -1012,7 +1012,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
-  'test', 'streu', 'abzeichen',
+  'test', 'streu', 'abzeichen', 'landschaft',
                     'pausen', 'schreiben', 'hinweis', 'sprechen', 'englisch'];
 const BRAUCHT = { ablage: ['spielen'] };
 
@@ -1028,8 +1028,8 @@ const BRAUCHT = { ablage: ['spielen'] };
  * der rund 4,6 s, die Browser und Server jeden Prozess kosten:
  *
  *     durchgang 79 · ablage+spielen 52 · schreiben 45 · test 31 ·
- *     abzeichen 18 · umgekehrt 13 · ebene4 11 · regler 10 · pausen 8 ·
- *     tippen 5 · sprechen 2 · hinweis 0 · streu 0
+ *     abzeichen 18 · umgekehrt 13 · landschaft 12 · ebene4 11 ·
+ *     regler 10 · pausen 8 · tippen 5 · sprechen 2 · hinweis 0 · streu 0
  *
  * Nach Anzahl geteilt lande `durchgang` mit 79 s vielleicht neben
  * `schreiben` mit 45, und ein Teil braeuchte so lange wie vorher das
@@ -1044,7 +1044,7 @@ const BRAUCHT = { ablage: ['spielen'] };
  * Die Zahlen sind Gewichte fuer die Verteilung, keine Zusage. Sie duerfen
  * altern, ohne dass etwas kaputtgeht - der Lauf wird dann nur ungleicher.
  * Was NICHT altern darf, ist die Vollstaendigkeit: dass die Teile
- * zusammen alle vierzehn Abschnitte fahren, zaehlt `tools/kette.mjs` nach
+ * zusammen alle Abschnitte fahren, zaehlt `tools/kette.mjs` nach
  * (`TEILE i/n:` unten), so wie beim Bildvergleich. Ein Teillauf, der
  * die Haelfte vergisst, meldet sonst „gruen", und niemand sieht, worueber.
  */
@@ -1085,6 +1085,7 @@ const STUECKE = [
   { teile: ['test'],                ms: 31 },
   ...PROFIL_IDS.map(w => ({ teile: [`durchgang:${w}`], ms: DURCHGANG_MS[w] ?? 20 })),
   { teile: ['abzeichen'],           ms: 18 },
+  { teile: ['landschaft'],          ms: 12 },
   { teile: ['umgekehrt'],           ms: 13 },
   { teile: ['ebene4'],              ms: 11 },
   { teile: ['regler'],              ms: 10 },
@@ -5609,6 +5610,126 @@ if (laeuft('abzeichen')) try {
       (beiFionaEU.offen[0] || '(keins)').replace(/\s+/g, ' ')}")`);
   await p.close(); await q.close();
 } catch (e) { merke('abzeichen', e); }
+
+/* --- Die Landschaft (T2) ----------------------------------------------
+ *
+ * Der eine Bildschirm, den kein anderes Tor betritt: er ist nur ueber
+ * einen VOLLEN Lebensraum zu erreichen, und den hat kein Durchgang
+ * nebenbei. Geprueft wird die ganze Kette, wie ein Kind sie geht -
+ * Buch, Tuer, Tier, Platz -, und danach das eine, was ein Bild von
+ * einem Spielzeug unterscheidet: es ist beim naechsten Aufschlagen
+ * noch da.
+ *
+ * DIE TUER IST TEIL DER PRUEFUNG. Ein Raum, dessen Tiere alle da sind,
+ * MUSS aufgehen; ein Raum mit einer Luecke darf es nicht. Ohne den
+ * zweiten Fall pruefte der Abschnitt nur, dass ein Knopf funktioniert -
+ * nicht, dass er zur richtigen Zeit da ist.
+ */
+if (laeuft('landschaft')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.waitForSelector('[data-profil="fiona"]');
+  /* „Im Meer" voll, „Wald und Wiese" halb: der eine Raum muss aufgehen,
+     der andere nicht. Zwei Faelle aus EINEM Stand. */
+  await stelleAblage(p, { einstellungen: { 'tiere:fiona': {
+    ids: ['wal', 'delfin', 'pinguin', 'fuchs', 'igel'], gorilla: 0, szenen: {} } } });
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('[data-profil="fiona"]');
+  await p.click('[data-profil="fiona"]');
+  await p.click('#buch');
+  await p.waitForSelector('.schirm.da .raumauf, .schirm.da .albumkarte', { timeout: 25000 });
+  const reiter = await p.$('.schirm.da .reiter[data-kap="tiere"]');
+  if (reiter) { await reiter.click();
+    await bis(p, () => !!document.querySelector('.schirm.da .tierraum')); }
+  const tueren = await p.$$eval('.schirm.da .raumauf', ns => ns.map(n => n.dataset.raum));
+  if (!tueren.includes('Im Meer'))
+    merke('landschaft', new Error('„Im Meer" ist voll und hat trotzdem keine Tür'));
+  if (tueren.includes('Wald und Wiese'))
+    merke('landschaft', new Error('„Wald und Wiese" fehlt ein Tier und hat trotzdem eine Tür'));
+
+  await p.click('.schirm.da .raumauf[data-raum="Im Meer"]');
+  await p.waitForSelector('.schirm.da .szene', { timeout: 15000 });
+  await bis(p, () => document.querySelectorAll('.schirm.da .platz').length === 9);
+  /* Die Kulisse muss WIRKLICH gezeichnet sein - ein leerer Rahmen mit
+     dem richtigen Ton sieht auf einem Bildschirmfoto aus wie ein
+     Bild. Gezaehlt werden die Pfade, nicht die Farbe. */
+  const kulisse = await p.$$eval('.schirm.da .kulisse path', ns => ns.length);
+  if (kulisse < 5)
+    merke('landschaft', new Error(`die Kulisse hat nur ${kulisse} Pfade — leerer Rahmen?`));
+
+  /* EIN TIPP REICHT NICHT. Erst das Tier, dann der Platz - und ein Platz
+     ohne gewaehltes Tier darf NICHTS tun. Ohne diese Zeile waere jeder
+     Streifschuss auf das Bild ein Zufallstier. */
+  await p.click('.schirm.da .platz[data-platz="4"]');
+  await p.ausbleiben(160);   // es soll NICHTS geschehen - darauf kann man nicht warten
+  if (await p.$('.schirm.da .platz.voll'))
+    merke('landschaft', new Error('ein Tipp auf einen leeren Platz stellt ein Tier hin, '
+      + 'ohne dass eines gewählt war'));
+
+  await p.click('.schirm.da .bankstueck[data-tier="wal"]');
+  await bis(p, () => !!document.querySelector('.schirm.da .bankstueck.gewaehlt'));
+  if (!(await p.$('.schirm.da .bankstueck.gewaehlt')))
+    merke('landschaft', new Error('ein Tipp auf ein Tier wählt es nicht aus — '
+      + 'das Kind sieht nicht, was gerade in der Hand ist'));
+  await p.click('.schirm.da .platz[data-platz="4"]');
+  await bis(p, () => !!document.querySelector('.schirm.da .platz.voll'));
+  const nachher = await p.evaluate(() => ({
+    voll: [...document.querySelectorAll('.schirm.da .platz.voll')].map(n => n.dataset.platz),
+    weg: [...document.querySelectorAll('.schirm.da .bankstueck.weg')].map(n => n.dataset.tier),
+    satz: (document.querySelector('.schirm.da #szenesatz') || {}).textContent || '' }));
+  if (nachher.voll.join() !== '4')
+    merke('landschaft', new Error(`nach dem Hinstellen sind ${nachher.voll.length} Plätze `
+      + 'belegt, nicht genau einer'));
+  if (!nachher.weg.includes('wal'))
+    merke('landschaft', new Error('der Wal steht im Bild und in der Bank noch normal da — '
+      + 'das Kind kann ihn ein zweites Mal nehmen'));
+  if (!/^Der Wal/.test(nachher.satz))
+    merke('landschaft', new Error(`die Zeile sagt „${nachher.satz}" — `
+      + 'nicht, welches Tier gerade dazugekommen ist'));
+
+  /* SIE MUSS BLEIBEN. Eine Aufstellung, die beim Zublaettern vergeht,
+     ist ein Bildschirmschoner und kein Bild. Geprueft ueber einen
+     ECHTEN Neustart der Seite, nicht ueber den Stand im Speicher. */
+  await p.click('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da .raumauf', { timeout: 15000 });
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('[data-profil="fiona"]');
+  await p.click('[data-profil="fiona"]');
+  await p.click('#buch');
+  await p.waitForSelector('.schirm.da .raumauf, .schirm.da .albumkarte', { timeout: 25000 });
+  const reiter2 = await p.$('.schirm.da .reiter[data-kap="tiere"]');
+  if (reiter2) { await reiter2.click();
+    await bis(p, () => !!document.querySelector('.schirm.da .tierraum')); }
+  await p.click('.schirm.da .raumauf[data-raum="Im Meer"]');
+  await p.waitForSelector('.schirm.da .szene', { timeout: 15000 });
+  await bis(p, () => document.querySelectorAll('.schirm.da .platz').length === 9);
+  const geblieben = await p.$$eval('.schirm.da .platz.voll',
+    ns => ns.map(n => n.dataset.platz));
+  if (geblieben.join() !== '4')
+    merke('landschaft', new Error('nach dem Neustart steht der Wal nicht mehr auf Platz 5 '
+      + `(belegt: ${geblieben.join(',') || 'nichts'}) — die Aufstellung überlebt die Seite nicht`));
+
+  /* WEGRAEUMEN muss auch wirken - und der Stand muss es mitbekommen.
+     Ein „Wegräumen", das nur den Bildschirm leert, bringt beim naechsten
+     Aufschlagen alles zurueck. */
+  await p.click('.schirm.da #leeren');
+  await bis(p, () => !document.querySelector('.schirm.da .platz.voll'));
+  const nachLeeren = await p.evaluate(() => new Promise(ja => {
+    const a = indexedDB.open('lernkiste');
+    a.onsuccess = () => { const q = a.result.transaction('einstellungen', 'readonly')
+      .objectStore('einstellungen').get('tiere:fiona');
+      q.onsuccess = () => ja(q.result); q.onerror = () => ja(null); };
+    a.onerror = () => ja(null); }));
+  const stand = ((nachLeeren || {}).szenen || {})['Im Meer'] || {};
+  if ((stand.stand || []).some(Boolean))
+    merke('landschaft', new Error('„Wegräumen" leert den Bildschirm, aber nicht die Ablage'));
+  if (await p.$('.schirm.da .platz.voll'))
+    merke('landschaft', new Error('nach „Wegräumen" steht noch ein Tier im Bild'));
+
+  console.log(`  Landschaft:                 ${tueren.length} Türen offen `
+    + `(„${tueren.join('", „')}") · Kulisse ${kulisse} Pfade · `
+    + 'hinstellen, bleiben, wegräumen');
+  await p.close();
+} catch (e) { merke('landschaft', e); }
 
 if (laeuft('sprechen')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);

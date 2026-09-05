@@ -212,11 +212,15 @@ await abschnitt('Was reist', async () => {
     !G.REIST('glatt'));
   pruefe('die Tiersammlung reist nicht', G.REIST('tiere:fiona'));
 
-  const v = G.vereinen(
-    { einstellungen: { pin: '1234', 'nr:a': 7, 'ohnefehler:a': { zeit: 500 },
-                       'tiere:a': { ids: ['fuchs'], gorilla: 2 } } },
-    { einstellungen: { pin: '9999', 'nr:a': 3, 'ohnefehler:a': { zeit: 200 },
-                       'tiere:a': { ids: ['eule'], gorilla: 5 } } });
+  const A = { einstellungen: { pin: '1234', 'nr:a': 7, 'ohnefehler:a': { zeit: 500 },
+                'tiere:a': { ids: ['fuchs'], gorilla: 2,
+                  szenen: { 'Wald und Wiese': { stand: ['fuchs', null, null], zeit: 500 },
+                            'Im Meer':        { stand: ['wal', null, null],   zeit: 900 } } } } };
+  const B = { einstellungen: { pin: '9999', 'nr:a': 3, 'ohnefehler:a': { zeit: 200 },
+                'tiere:a': { ids: ['eule'], gorilla: 5,
+                  szenen: { 'Wald und Wiese': { stand: [null, 'eule', null], zeit: 800 },
+                            'Die Savanne':    { stand: ['loewe', null, null], zeit: 100 } } } } };
+  const v = G.vereinen(A, B);
   pruefe('die PIN ist im Umschlag gelandet', !('pin' in v.einstellungen));
   pruefe(`der Sitzungszaehler ist nicht der groessere: ${v.einstellungen['nr:a']}`,
     v.einstellungen['nr:a'] === 7);
@@ -234,6 +238,36 @@ await abschnitt('Was reist', async () => {
     && v.einstellungen['tiere:a'].ids.length === 2);
   pruefe(`der Gorilla nimmt nicht die groessere Zahl: ${v.einstellungen['tiere:a'].gorilla}`,
     v.einstellungen['tiere:a'].gorilla === 5);
+  /* DIE LANDSCHAFTEN (T2) sind KEINE Vereinigung, und das ist der
+     Unterschied zwischen einer Sammlung und einem Bild. Je Raum gilt die
+     juengere Aufstellung; ein Raum, den nur ein Geraet kennt, kommt
+     unveraendert mit. Zwei Aufstellungen zu mischen brachte weggeraeumte
+     Tiere zurueck. */
+  const sz = v.einstellungen['tiere:a'].szenen || {};
+  pruefe(`die juengere Aufstellung gilt nicht: ${JSON.stringify(sz['Wald und Wiese'])}`,
+    sz['Wald und Wiese'] && sz['Wald und Wiese'].zeit === 800
+    && sz['Wald und Wiese'].stand[1] === 'eule' && !sz['Wald und Wiese'].stand[0]);
+  pruefe('ein Raum, den nur eine Seite kennt, geht verloren',
+    sz['Im Meer'] && sz['Im Meer'].stand[0] === 'wal'
+    && sz['Die Savanne'] && sz['Die Savanne'].stand[0] === 'loewe');
+  /* VERTAUSCHBAR: sonst schicken sich zwei Geraete endlos denselben
+     Stand, jedes in der Meinung, der andere habe etwas Neues - dieselbe
+     Falle, wegen der `geordnet()` die Schluessel sortiert. */
+  pruefe('die Reihenfolge aendert die Landschaften',
+    JSON.stringify(G.vereinen(B, A).einstellungen['tiere:a'].szenen) === JSON.stringify(sz));
+  /* Gleiche Zeit: dann entscheidet die Zahl der Tiere - und die ist auf
+     beiden Wegen dieselbe. Ohne diesen Zweig waere „vertauschbar" eine
+     Behauptung ueber einen Fall, den die Probe darueber gar nicht hat. */
+  const g1 = G.vereinen(
+    { einstellungen: { 'tiere:a': { szenen: { R: { stand: ['a', null], zeit: 7 } } } } },
+    { einstellungen: { 'tiere:a': { szenen: { R: { stand: ['b', 'c'],  zeit: 7 } } } } });
+  const g2 = G.vereinen(
+    { einstellungen: { 'tiere:a': { szenen: { R: { stand: ['b', 'c'],  zeit: 7 } } } } },
+    { einstellungen: { 'tiere:a': { szenen: { R: { stand: ['a', null], zeit: 7 } } } } });
+  pruefe(`bei gleicher Zeit gewinnt nicht die vollere Aufstellung: `
+    + JSON.stringify(g1.einstellungen['tiere:a'].szenen.R.stand),
+    g1.einstellungen['tiere:a'].szenen.R.stand.join() === 'b,c'
+    && JSON.stringify(g1) === JSON.stringify(g2));
 });
 
 /* ---------- Eine ganze Runde gegen einen nachgebauten Dienst ----------- */

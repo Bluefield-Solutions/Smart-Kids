@@ -2378,6 +2378,46 @@ console.log('\n  Tor `englisch`');
         + `${zweitesMal.length} Tiere — dann ist der Lohn keiner`);
   }
 
+  /* ---------- Die Kulissen (T2) ----------------------------------------
+   *
+   * EINE je Lebensraum, und der Schluessel ist der TITEL: „In der Stadt"
+   * haengt an zwei Ebenen und ist eine Landschaft. Ein Raum, dessen
+   * Tiere alle gemalt sind, aber keine Kulisse hat, waere im Buch eine
+   * Tuer, hinter der nichts ist - und das faellt erst dem Kind auf.
+   *
+   * Gemessen wird dasselbe wie beim Tier (`passt` misst je Pfad im
+   * eigenen Koordinatenraum), nur im groesseren Rahmen. Dazu die eine
+   * Regel, die diese zehn Bilder gemeinsam haben: in der MITTE steht
+   * nichts - dort liegen die neun Plaetze. */
+  const raumTitelAlle = [...new Set(TI.RAEUME.map(r => r.titel))];
+  for (const titel of raumTitelAlle) {
+    const voll = TI.RAEUME.find(r => r.titel === titel)
+      .tiere.every(id => TI.tierMit(id) && TI.tierMit(id).bild);
+    const k = TI.kulisseZu(titel);
+    if (!k) { if (voll) tf.push(`„${titel}" ist vollständig gemalt, hat aber keine `
+      + 'Kulisse — im Buch wäre das eine Tür, hinter der nichts ist'); continue; }
+    if (!k.bild || !k.bild.startsWith('<path '))
+      tf.push(`die Kulisse „${titel}" fängt nicht mit einem Pfad an`);
+    for (const verboten of ['transform', '<circle', '<ellipse', '<rect', '<image', '<g '])
+      if (k.bild.includes(verboten))
+        tf.push(`die Kulisse „${titel}" benutzt „${verboten}" — `
+          + 'dieselbe Messstelle wie beim Tier: `passt` misst je Pfad');
+    if (!/fill="#/.test(k.bild))
+      tf.push(`die Kulisse „${titel}" hat keine Farbe im Pfad`);
+    if (!/^#[0-9a-f]{6}$/i.test(String(k.ton || '')))
+      tf.push(`die Kulisse „${titel}" hat keinen Ton (${k.ton})`);
+  }
+  for (const titel of Object.keys(TI.KULISSEN))
+    if (!raumTitelAlle.includes(titel))
+      tf.push(`die Kulisse „${titel}" gehört zu keinem Lebensraum`);
+  /* NEUN PLAETZE, drei mal drei. Die Zahl steht im Stylesheet als
+     Raster und hier als Zahl; laufen sie auseinander, hat die
+     Landschaft Plaetze, die niemand sieht - oder Ringe ohne Knopf. */
+  if (TI.PLAETZE !== 9)
+    tf.push(`es sind ${TI.PLAETZE} Plätze, das Raster hat drei mal drei`);
+  if (TI.SZENE !== '0 0 160 90')
+    tf.push(`der Szenenrahmen ist „${TI.SZENE}", nicht „0 0 160 90"`);
+
   if (tf.length) {
     console.log('    ' + tf.join('\n    '));
     console.error('\n  tiere ROT: die Tiere (T1) stimmen nicht.');
@@ -2390,6 +2430,8 @@ console.log('\n  Tor `englisch`');
     + `${raeume.length} Lebensräume, ${fertig.length} davon vollständig`);
   console.log('    ' + raeume.map(r => `${r.titel}: `
     + `${r.tiere.filter(id => TI.tierMit(id).bild).length}/3`).join(' · '));
+  console.log(`    ${Object.keys(TI.KULISSEN).length} Kulissen à ${TI.PLAETZE} Plätze — `
+    + `${fertig.filter(r => TI.kulisseZu(r.titel)).length} Landschaften sind zu öffnen`);
 }
 
 /* =================================================== Tor `betroffen` ==== *

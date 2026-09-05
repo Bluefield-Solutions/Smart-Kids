@@ -210,6 +210,15 @@
      gerechnet. Ein Verlauf und kein `filter`: auf iOS schwaerzt ein
      Filter ueber einem gezeichneten Bild den Kasten (Regel 13). */
   --kleber-glanz: linear-gradient(150deg, oklch(1 0 0/.30) 0 22%, oklch(1 0 0/0) 48%);
+  /* Die Landschaft (T2). Der freie Platz ist ein leiser Ring auf einem
+     Bild, dessen Farbe sich je Lebensraum aendert - deshalb Weiss mit
+     Deckung und keine der Grundfarben: die haelt vor Wueste wie vor
+     Meer. Der Schatten liegt als eigene Ellipse unter dem Tier und
+     nicht als `drop-shadow`; auf iOS ist ein Filter auf einem Pfad die
+     Falle aus Regel 13. */
+  --szene-ring: oklch(1 0 0/.85);
+  --szene-ringfeld: oklch(1 0 0/.22);
+  --szene-schatten: oklch(0 0 0/.22);
   --kante-hoch: 7px;   /* am Finger, waehrend gezogen wird */
   --knopf-licht:   oklch(0.995 0.003 250);
   --knopf-rand:    oklch(0.885 0.014 250);
