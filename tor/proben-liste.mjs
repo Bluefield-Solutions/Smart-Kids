@@ -4673,7 +4673,12 @@ export const PROBEN = [
     such:"export const wieGesagt = (t) => String(t).toLowerCase()",
     ersatz:"export const wieGesagt = (t) => String(t)",
     an:{ ...DIST, fehlt:'wieGesagt = (t) => String(t).toLowerCase()' },
-    sagt:'wurde nicht gewertet' },
+    /* Der Wortlaut kommt aus `abgeschlossen()` und nicht aus dem
+       Schreibzweig: dort heisst dieselbe Sorte Befund „wurde nicht
+       gewertet", hier „<wie> → <was in der Frage steht>". Der erste
+       Anlauf schrieb den anderen Satz ab - `smoke` wurde rot, und die
+       Probe meldete trotzdem „beweist nichts". */
+    sagt:'den ganzen Satz getippt → „Noch nicht ganz' },
 
   /* Eine Wendung mit nur EINER gueltigen Fassung.
    *

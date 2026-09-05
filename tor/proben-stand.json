@@ -293,14 +293,14 @@
       "s": 34
     },
     "der Satz zum Mitnehmen fehlt im Buch": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 74
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 128
     },
     "ein Tipp auf die Albumkarte blaettert den Satz nicht mehr": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 69
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 62
     },
     "das Lob schiebt die Karte noch weiter weg": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -308,29 +308,29 @@
       "s": 70
     },
     "ein Gebiet hat keinen Satz zum Mitnehmen": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 5
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 14
     },
     "aus einem Satz zum Mitnehmen werden zwei": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 6
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 3
     },
     "ein Satz zum Mitnehmen nennt sein Gebiet nicht": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 7
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 4
     },
     "der Satz zum Mitnehmen kommt nicht auf den Bildschirm": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 38
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 53
     },
     "der Satz zum Mitnehmen wird nicht gesprochen": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 35
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 27
     },
     "eine feste Pause schleicht sich in den Rauchtest zurueck": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -493,9 +493,9 @@
       "s": 0
     },
     "Der Vorrat der Eltern wächst still": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 5
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 9
     },
     "Eltern bekommt doch eine Auswahl": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -853,9 +853,9 @@
       "s": 1
     },
     "ein halber Leitner-Satz kommt unverändert durch": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 0
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 6
     },
     "der Dienst nimmt jede Fassung an": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -1268,9 +1268,9 @@
       "s": 51
     },
     "ein ganzer Satz wird nicht mehr verstanden": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 70
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 105
     },
     "nicht verstanden kostet wieder einen Versuch": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -1428,14 +1428,14 @@
       "s": 9
     },
     "ein Abzeichen wählt nichts aus seinem Vorrat": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 6
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 3
     },
     "ein Abzeichen wählt gleich den ganzen Vorrat": {
-      "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
-      "zeit": "2026-09-04",
-      "s": 6
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 3
     },
     "ein Abzeichen hängt an einer Ebene, die es nicht gibt": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
@@ -1543,9 +1543,9 @@
       "s": 10
     },
     "ein Redemittel wird um einen eigenen Satz ergaenzt": {
-      "commit": "e3055ea4b4c370f126ac006362a8a832d52498d1",
-      "zeit": "2026-09-04",
-      "s": 10
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 4
     },
     "eine Farbe der Englischebene steht nicht im amtlichen Wortschatz": {
       "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
@@ -1631,6 +1631,16 @@
       "commit": "6ba49dc98c908b56b9fadbac81fd137f4a323b7c",
       "zeit": "2026-09-05",
       "s": 69
+    },
+    "eine Ebenenkachel hat gar keinen Vorrat": {
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 105
+    },
+    "der zu hörende Satz steht mit auf dem Bildschirm": {
+      "commit": "d24da3309574361af00dd7e794fbc0554aff368e",
+      "zeit": "2026-09-05",
+      "s": 132
     }
   }
 }
