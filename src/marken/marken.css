@@ -219,6 +219,8 @@
   --szene-ring: oklch(1 0 0/.85);
   --szene-ringfeld: oklch(1 0 0/.22);
   --szene-schatten: oklch(0 0 0/.22);
+  /* Der Zettel im Himmel: hell genug zum Lesen ueber jeder Kulisse. */
+  --szene-zettel: oklch(1 0 0/.82);
   --kante-hoch: 7px;   /* am Finger, waehrend gezogen wird */
   --knopf-licht:   oklch(0.995 0.003 250);
   --knopf-rand:    oklch(0.885 0.014 250);

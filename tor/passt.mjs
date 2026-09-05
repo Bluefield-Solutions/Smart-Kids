@@ -20,9 +20,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe } from './chromium.mjs';
+import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe,
+  stelleAblage } from './chromium.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 import { fremdgriff } from './fremdgriff.mjs';
+import { sammelbar } from '../src/inhalt/tiere.js';
+/** Alles, was ein Kind ueberhaupt sammeln kann - der teuerste Fall (T2). */
+const ALLE_TIERE = sammelbar().map(t => t.id);
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -1310,6 +1314,59 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await tipp('.schirm.da #eltern');
   await p.waitForSelector('.schirm.da .ziffern');
   await schau('Eltern-Tor');
+
+  /* --- Die Landschaft (T2) --------------------------------------------
+   *
+   * Der einzige Bildschirm, der einen VOLLEN Lebensraum voraussetzt - er
+   * ist auf keinem Weg zu erreichen, den dieses Tor sonst geht. Ohne den
+   * Griff in die Ablage bliebe er auf allen sieben Groessen ungesehen,
+   * und das ist der Bildschirm mit dem meisten Grundriss: ein Bild, das
+   * seine Hoehe aus dem Fenster nimmt, neun Plaetze darueber und eine
+   * Bank daneben. Genau die Sorte, die auf 844 x 390 zusammenfaellt.
+   *
+   * MIT einem Tier im Bild, nicht nur leer: der Platz waechst mit dem,
+   * was drinsteht, und ein leeres Raster beweist ueber die volle
+   * Aufstellung nichts. */
+  /* DER VOLLE STAND, nicht ein halber: alle dreissig Sammeltiere und
+     zwei fertige Karten. Das ist der teuerste Grundriss, den es geben
+     kann - zehn Raumreiter im Buch und dreissig Kaesten in der Bank -,
+     und genau der ist zu pruefen. Mit zwoelf Tieren war das Kapitel auf
+     jeder Groesse gruen und mit dreissig auf drei von fuenf rot.
+     Der Fortschritt gehoert dazu: Tiere gibt es nur fuer fertige
+     Ebenen. Ohne ihn haette das Buch keine Reiter, stapelte alle
+     Kapitel und prueft einen Zustand, den kein Kind je sieht. */
+  const fuerTiere = await p.evaluate(() => {
+    const D = JSON.parse(document.getElementById('daten').textContent);
+    const voll = (liste) => Object.fromEntries(liste.map(x => [x.id, { fach: 4, faellig: 0 }]));
+    return { kont: voll(D.kontinente), land: voll(D.deutschland) };
+  });
+  await stelleAblage(p, {
+    fortschritt: { 'fiona:kontinente': fuerTiere.kont,
+                   'fiona:bundeslaender': fuerTiere.land },
+    einstellungen: { 'tiere:fiona': {
+      ids: ALLE_TIERE, gorilla: 3,
+      szenen: { 'Im Meer': { stand: ['wal', null, null, null, 'delfin',
+                                     null, null, 'pinguin', null], zeit: 1 } } },
+      alles: { vorlaufGezeigt: { 'fiona:kontinente': true,
+                                 'fiona:bundeslaender': true } } } });
+  await p.goto(ADRESSE, { waitUntil: 'load' });
+  await p.waitForSelector('[data-profil="fiona"]');
+  await tipp('[data-profil="fiona"]');
+  await p.waitForSelector('.schirm.da [data-welt]');
+  await tipp('.schirm.da #buch');
+  await p.waitForSelector('.schirm.da .rollen.buch');
+  const tierReiter = await p.$('.schirm.da .reiter[data-kap="tiere"]');
+  if (tierReiter) await tierReiter.click();
+  await p.waitForSelector('.schirm.da .tierraum:not([hidden])');
+  await schau('Forscherbuch (Tiere)');
+  /* Offen steht der ZULETZT fertige Raum. Zum Meer fuehrt der
+     Raumreiter - und damit ist auch er einmal gedrueckt. */
+  await p.waitForSelector('.schirm.da .raumchip[data-raumwahl="Im Meer"]');
+  await tipp('.schirm.da .raumchip[data-raumwahl="Im Meer"]');
+  await p.waitForSelector('.schirm.da .raumauf[data-raum="Im Meer"]');
+  await tipp('.schirm.da .raumauf[data-raum="Im Meer"]');
+  await p.waitForSelector('.schirm.da .platz.voll');
+  await schau('Landschaft');
 
   /* Und die Weltenwahl noch einmal - als LEA.
    *

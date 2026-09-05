@@ -390,9 +390,13 @@ export const PROBEN = [
   // Kind vor einer Landschaft, in die es nichts hineinstellen kann.
   { n:'die Landschaft geht schon bei einem Tier auf', tor:'smoke', args:['--nur=landschaft'],
     bauen:true, datei:D,
-    such:"          ${r.stuecke.every(t => habe.has(t.id)) && Tiere.kulisseZu(r.titel)",
-    ersatz:"          ${r.stuecke.some(t => habe.has(t.id)) && Tiere.kulisseZu(r.titel)",
-    an:{ ...DIST, text:'r.stuecke.some(t => habe.has(t.id)) && Tiere.kulisseZu' },
+    such:"const raumVoll = (r) => r.stuecke.every(t => habe.has(t.id));",
+    ersatz:"const raumVoll = (r) => r.stuecke.some(t => habe.has(t.id));"
+      + "  //Anker: const raumVoll = (r) => r.stuecke.every(t => habe.has(t.id));",
+    /* NICHT `r.stuecke.some(...)` als Anker: genau das steht drei Zeilen
+       hoeher schon im Filter `offen`, und die Ankunftspruefung waere
+       dann auch ohne den Eingriff erfuellt. */
+    an:{ ...DIST, text:'const raumVoll = (r) => r.stuecke.some(' },
     sagt:'trotzdem eine Tür' },
 
   /* Ohne die Sperre ist JEDER Tipp auf das Bild ein Zufallstier - und
@@ -428,11 +432,18 @@ export const PROBEN = [
     sagt:'nicht die Ablage' },
 
   /* --- inhalt: die Kulissen (T2) ------------------------------------ */
-  // Ein voller Raum ohne Kulisse: im Buch waere das eine Tuer, hinter
-  // der nichts ist - und am Bildschirm ein Absturz.
+  /* Ein voller Raum ohne Kulisse: im Buch waere das eine Tuer, hinter der
+     nichts ist - und am Bildschirm ein Absturz.
+     BEIDE Proben hier tragen ihren Suchtext WOERTLICH in einem Kommentar
+     weiter. Der erste Anlauf benannte den Schluessel um; danach war der
+     Suchtext weg, und `inhalt` meldete statt des Befundes seine eigene
+     Vorpruefung („der Eingriff käme nicht an"). Neunmal dieselbe Falle -
+     eine Probe, die ihren eigenen Anker zerstoert, prueft nichts. */
   { n:'einem vollen Lebensraum fehlt die Kulisse', tor:'inhalt', datei:'src/inhalt/tiere.js',
-    such:"  \"Das Outback\": {", ersatz:"  \"Das Outback ausgebaut\": {",
-    an:{ datei:'src/inhalt/tiere.js', text:'"Das Outback ausgebaut"' },
+    such:"export const kulisseZu = (titel) => KULISSEN[titel] || null;",
+    ersatz:"export const kulisseZu = (titel) => titel === 'Das Outback' ? null : (KULISSEN[titel] || null);"
+      + "  //Anker: export const kulisseZu = (titel) => KULISSEN[titel] || null;",
+    an:{ datei:'src/inhalt/tiere.js', text:"titel === 'Das Outback' ? null" },
     sagt:'keine Kulisse' },
 
   /* Die Kulisse benutzt `transform` - dieselbe Messstelle wie beim Tier:
@@ -440,9 +451,10 @@ export const PROBEN = [
      verschiebung faellt dabei durch. */
   { n:'eine Kulisse verschiebt sich mit transform', tor:'inhalt', datei:'src/inhalt/tiere.js',
     such:"export const kulisseZu = (titel) => KULISSEN[titel] || null;",
-    ersatz:"export const kulisseZu = (titel) => { const k = KULISSEN[titel];\n"
-      + "  return k ? { ...k, bild: k.bild + '<path transform=\"translate(2)\" d=\"M0 0h1v1z\" fill=\"#000000\"/>' } : null; };",
-    an:{ datei:'src/inhalt/tiere.js', text:"transform=" },
+    ersatz:"export const kulisseZu = (t) => { const k = KULISSEN[t]; return k ? { ...k,\n"
+      + "  bild: k.bild + '<path transform=\"translate(2)\" d=\"M0 0h1v1z\" fill=\"#000000\"/>' } : null; };\n"
+      + "//Anker: export const kulisseZu = (titel) => KULISSEN[titel] || null;",
+    an:{ datei:'src/inhalt/tiere.js', text:"k.bild + '<path transform=" },
     sagt:'benutzt „transform"' },
 
   /* --- gleichlauf: die Landschaften (T2) ---------------------------- */

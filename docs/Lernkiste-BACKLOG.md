@@ -189,9 +189,8 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 |---|---|---|---|---|---|
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
-| 3 | **T2** Die Landschaft — Tiere in eine Szene stellen | alle vier | hoch | groß | T1 (gefahren) |
-| 4 | **T1b** Die restlichen fünf Lebensräume malen (15 Tiere) | alle vier | hoch | mittel | — |
-| 5 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 3 | **T3** Die restlichen 93 Tiere des Plans malen | alle vier | mittel | groß | Zeichenbank steht |
+| 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
 | 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
@@ -4902,6 +4901,72 @@ in anderer Form: `falle` ist die Form, die ein Deutscher **tippt**, der
 Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
+
+### T2 · Die Landschaft — GEFAHREN (v392)
+
+> „Wenn man dann alles fertig hat, kann man auf einen der Umrisse
+> drücken, und dann sieht man so eine kleine Landschaft. Da kann man
+> dann jedes Tier reinbringen und kann sich dann ein kleines Szenario
+> umsetzen."
+
+Ein voller Lebensraum wird im Forscherbuch zur **Tür**: die Zeile trägt
+die Kulisse als Streifen und führt in die Landschaft. Dort stehen neun
+Plätze in drei Reihen; darunter die **Bank** mit allem, was dem Kind
+gehört — nicht nur den drei Tieren dieses Raumes. Ein Elefant in der
+Karibik ist kein Fehler, sondern der Witz an der Sache.
+
+**Getippt, nicht gezogen.** Erst auf ein Tier, dann auf einen Platz.
+Ziehen wäre näher an der Vorstellung und auf dem Zielgerät die
+schlechtere Bedienung: ein sechsjähriger Finger verliert das Tier
+unterwegs, und ein losgelassenes Tier ohne Platz muss irgendwohin. Zwei
+Tipps sind immer eindeutig — und mit dem Rauchtest nachzuspielen.
+
+**Zehn Kulissen, eine je Lebensraum** (`KULISSEN` in `tiere.js`), 160 × 90,
+nur Pfade. Die eine Regel, die alle zehn teilen: **in der Mitte steht
+nichts** — dort liegen die Plätze. Bäume, Felsen und Häuser stehen am
+Rand.
+
+**Der Stand reist mit.** `tiere:<profil>.szenen` hält je Raum die Reihe
+der neun Plätze und eine Zeit. Beim Abgleich gilt **je Raum die jüngere
+Aufstellung** — nicht die Vereinigung wie bei den Aufklebern: zwei
+Sammlungen zusammenzuwerfen ergibt eine größere Sammlung, zwei
+Aufstellungen ein Durcheinander. Weggeräumte Tiere stünden wieder da.
+
+#### Was das Ausmessen gefunden hat
+
+Fünf Befunde, alle am Browser gemessen, keiner geraten:
+
+1. **`1fr` misst sich am Inhalt.** Die drei Reihen wurden 114 Punkte hoch
+   in einem 156 Punkte hohen Band, weil eine Prozenthöhe im Platz sich an
+   der Zeile misst und die Zeile sich am Platz. `minmax(0,1fr)` bricht
+   den Ring.
+2. **Das Bild von der Höhe bestimmen zu lassen** ergab auf dem iPad
+   1146 × 726 und eine Bank, die mit dreißig Tieren 2091 Punkte unter dem
+   Rand lag. Jetzt 58 % der Breite.
+3. **Verschieden hohe Reihen** (1 : 1,3 : 1,6) sahen besser aus und
+   machten die hinteren Plätze auf dem kleinsten Gerät 33 Punkte hoch.
+   Jetzt sind die **Kästen** gleich und die **Tiere** verschieden groß.
+4. **Das Tierkapitel des Buches wuchs mit dem Fortschritt.** Fünf Räume
+   untereinander lagen 689 Punkte unter dem Rand. Kein neuer Fehler — er
+   war seit T1 da und hatte nie einen Zeugen, weil `passt` das Kapitel nie
+   mit einem vollen Stand gesehen hat. Jetzt: **Raumreiter**, ein Raum auf
+   einmal.
+5. **Die Zeile im Bild** lag als freier Überzug über dem hintersten Platz.
+   Eine Spalte kann sich nicht selbst überdecken.
+
+Seither seedet `passt` den **teuersten** Stand: alle dreißig Sammeltiere
+und zwei fertige Karten. Mit zwölf Tieren war jede Größe grün und mit
+dreißig drei von fünf rot.
+
+#### Offen
+
+- Der Rauchtest stellt EIN Tier hin. Ob neun nebeneinander noch lesbar
+  sind, hat nur das Auge gesehen, kein Tor.
+- Ein Tier steht höchstens einmal im Bild. Zweimal derselbe Koala wäre
+  ein Szenario, das niemand zurückdrehen kann — dagegen spricht nichts
+  Gemessenes, nur die Bedienung.
+
+---
 
 ### T1 · Die Tiere — GEFAHREN (v387), neu gezeichnet in v390
 

@@ -6331,10 +6331,17 @@ function landschaft(titel, zurueck){
       aria-label="${t ? `${t.name} wegnehmen` : `Platz ${i + 1}`}"
       >${t ? tierBild(t, 'imbild') : ''}</button>`;
   };
+  /* OHNE NAMEN. In der Wand des Buches steht er - dort wird gesammelt,
+     und dort gehoert er hin. Hier ist die Bank ein Werkzeugkasten: der
+     Name wird gesprochen und steht in der Zeile im Bild, sobald ein
+     Tier in der Hand ist. Gemessen: mit Namen braucht ein Stueck 68
+     Punkte, ohne 44 - und bei dreissig Tieren ist das der Unterschied
+     zwischen einer Bank, die auf das kleinste Geraet passt, und einer,
+     die 416 Punkte unter dem Rand endet. */
   const bankHtml = (t) => `<button class="bankstueck${
       plaetze.includes(t.id) ? ' weg' : ''}${gewaehlt === t.id ? ' gewaehlt' : ''}"
       data-tier="${t.id}" style="--ton:${t.ton}"
-      aria-label="${t.name}">${tierBild(t)}<span>${ohneArtikel(t.name)}</span></button>`;
+      aria-label="${t.name}" title="${t.name}">${tierBild(t)}</button>`;
 
   s.innerHTML = kopf({ links: zurueckKnopf('Buch'),
       mitte: `<span class="marke">${titel}</span>`,
@@ -6344,12 +6351,20 @@ function landschaft(titel, zurueck){
         <div class="szene" style="--ton:${k.ton}">
           <svg class="kulisse" viewBox="${Tiere.SZENE}" role="img"
                aria-label="${titel}">${k.bild}</svg>
-          <div class="plaetze">${plaetze.map(platzHtml).join('')}</div>
+          ${/* Zeile und Plaetze liegen ZUSAMMEN ueber der Kulisse, als
+                Spalte. Der erste Anlauf setzte die Zeile als freien
+                Ueberzug in den Himmel und die Plaetze auf feste 22 %:
+                auf dem kleinsten Geraet lag sie damit ueber dem
+                hintersten Platz, und `passt` meldete sie als verdeckt.
+                Eine Spalte kann sich nicht selbst ueberdecken - und die
+                22 % waren ohnehin geraten, wo eine Zeile ihre Hoehe
+                mitbringt. */''}
+          <div class="szeneinhalt">
+            <p class="szenesatz hinweis" id="szenesatz">Erst ein Tier, dann ein Platz.</p>
+            <div class="plaetze">${plaetze.map(platzHtml).join('')}</div>
+          </div>
         </div>
-        <div class="banksaeule">
-          <p class="szenehinweis hinweis" id="szenesatz">Tippe auf ein Tier und dann in das Bild.</p>
-          <div class="tierbank">${bank.map(bankHtml).join('')}</div>
-        </div>
+        <div class="tierbank">${bank.map(bankHtml).join('')}</div>
       </div>`;
 
   const feld = s.querySelector('.plaetze');
@@ -6741,12 +6756,48 @@ async function forscherbuch(){
      * sechzig leeren Kaesten, die dieser Bildschirm schon einmal teuer
      * bezahlt hat. Wer das erste Tier hat, bekommt das Kapitel - und
      * darin dann auch den naechsten Raum zu sehen. */
+    /* EIN RAUM AUF EINMAL, und die anderen als Reiter darueber (T2).
+     *
+     * Bis hierher standen alle offenen Raeume UNTEREINANDER. Das war
+     * richtig, solange es zwei waren, und es bricht bei dreien: gemessen
+     * auf dem Zielgeraet steht ein Raum mit Tuer und drei Aufklebern 160
+     * Punkte hoch, sichtbar sind 318. Mit fuenf Raeumen lagen die
+     * unteren 689 Punkte unter dem Rand - `passt` hat es gemeldet, sowie
+     * es das Kapitel zum ersten Mal mit einem vollen Stand gesehen hat.
+     * Kein neuer Fehler: er war seit T1 da und hatte nur nie einen
+     * Zeugen. Ein Bildschirm, dessen Hoehe mit dem Fortschritt waechst,
+     * hat irgendwann jedes Kind ausgesperrt.
+     *
+     * `overflow:auto` waere keine Loesung - dieselbe Zeile steht im Tor:
+     * ein Kind rollt nicht in einer Liste, von der es nicht weiss, dass
+     * sie weitergeht.
+     *
+     * Also dasselbe Mittel wie beim Buch selbst, eine Ebene tiefer:
+     * Reiter. Sie tragen den Kulissenstreifen und die Zahl „2/3" - ein
+     * Kind, das nicht liest, sieht daran, wo es weitermachen kann. Die
+     * Seiten stehen alle im Markup und werden nur ein- und ausgeblendet;
+     * ein Neuaufbau des Buches waere fuer einen Reiterwechsel dieselbe
+     * Wartezeit wie fuers Aufschlagen. */
+    const raumVoll = (r) => r.stuecke.every(t => habe.has(t.id));
+    /* Offen steht der LETZTE, an dem etwas passiert ist - nicht der
+       erste. Wer gerade „Das Outback" fertig gemacht hat, sucht das
+       Outback, nicht das Meer. */
+    const zuerst = Math.max(0, raeume.map(raumVoll).lastIndexOf(true));
     if (dabei.length) kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:6, zahl:dabei.length,
       lesen:`Deine Tiere. Du hast ${dabei.length === 1 ? 'eins'
         : dabei.length ? dabei.length : 'noch keins'} von ${alle.length}.`,
       inhalt:`
-        <h3 class="gruppe">Meine Tiere <small>${dabei.length} von ${alle.length}</small></h3>
-        ${raeume.map(r => `<div class="tierraum">
+        <h3 class="gruppe tierkopf">Meine Tiere <small>${dabei.length} von ${alle.length}</small></h3>
+        ${raeume.length > 1 ? `<div class="raumwahl" role="tablist">${raeume.map((r, i) => `
+          <button class="raumchip${i === zuerst ? ' da' : ''}" data-raumwahl="${r.titel}"
+                  role="tab" aria-selected="${i === zuerst}"
+                  data-lesen="${r.titel}. ${r.stuecke.filter(t => habe.has(t.id)).length} von drei."
+            >${Tiere.kulisseZu(r.titel) ? `<svg class="raumstreifen" viewBox="${Tiere.SZENE}"
+                 role="presentation">${Tiere.kulisseZu(r.titel).bild}</svg>` : ''
+            }<span>${r.titel}</span><small>${
+              r.stuecke.filter(t => habe.has(t.id)).length}/3</small></button>`).join('')}</div>` : ''}
+        ${raeume.map((r, i) => `<div class="tierraum" data-raumseite="${r.titel}"${
+            i === zuerst ? '' : ' hidden'}>
           ${/* EIN VOLLER RAUM WIRD ZUR TUER (T2).
                 Solange etwas fehlt, ist die Zeile eine Ueberschrift; ist
                 der Raum voll, ist sie der Knopf in die Landschaft - und
@@ -6755,7 +6806,7 @@ async function forscherbuch(){
                 daneben: eine Zeile, die manchmal etwas kann, ist
                 weniger zu lernen als zwei Zeilen, von denen eine
                 meistens fehlt. */''}
-          ${r.stuecke.every(t => habe.has(t.id)) && Tiere.kulisseZu(r.titel)
+          ${raumVoll(r) && Tiere.kulisseZu(r.titel)
             ? `<button class="raumauf" data-raum="${r.titel}"
                  data-lesen="${r.titel} anschauen"
                  aria-label="${r.titel} anschauen"><svg class="raumstreifen"
@@ -6974,6 +7025,18 @@ async function forscherbuch(){
        `onclick` der Zeile darueber, sonst waere die Tuer stumm. */
     wo.querySelectorAll('.raumauf').forEach(b => b.addEventListener('click',
       () => zeige(() => landschaft(b.dataset.raum, forscherbuch))));
+    /* Der Raumreiter blendet um, statt neu zu bauen - dieselbe
+       Entscheidung wie bei den Kapitelreitern (Q44), aus demselben
+       Grund. `hidden` und nicht `display`, damit die Seite auch fuer
+       den Vorleser weg ist. */
+    wo.querySelectorAll('.raumchip').forEach(b => b.addEventListener('click', () => {
+      const raum = b.dataset.raumwahl;
+      wo.querySelectorAll('.raumchip').forEach(c => {
+        c.classList.toggle('da', c === b);
+        c.setAttribute('aria-selected', String(c === b)); });
+      wo.querySelectorAll('[data-raumseite]').forEach(seite => {
+        seite.hidden = seite.dataset.raumseite !== raum; });
+    }));
   };
   /* Ein Tipp auf die Albumkarte blaettert den Satz weiter (Q46).
    *

@@ -31,7 +31,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor -- --betroffen`** | bei **jeder** Änderung | **14 s bis 200 s**, je nachdem, was `git` meldet | alle billigen Tore plus die Browsertore, die von den geänderten Dateien überhaupt erreicht werden können |
 | `npm run tor` | **einmal** je Runde, vor dem Einchecken | **~3 min** (gemessen 176,6 · 179,6 · 182,4 · 198,6 · 204,0 s am 04.09.) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | dieselbe Kette ohne `ansicht` — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 328 Gegenproben, 6 nebeneinander |
+| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 335 Gegenproben, 6 nebeneinander |
 
 **Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
 Rest fährt der Runner.**
@@ -173,7 +173,7 @@ npm run smoke      spielt die App im Browser durch. `-- --nur=spielen`
                    (`bewertet`, `weitergegangen`), nicht auf Fristen —
                    eine Frist ist entweder zu lang oder zu kurz.
                    Abschnitte: spielen · ablage · tippen · regler ·
-                   ebene4 · durchgang.
+                   ebene4 · durchgang · landschaft.
 npm run bauen      dist/ (was ausgeliefert wird) + prototyp/spiel.html
 npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    `-- --teil=0/3` faehrt ein Drittel - geteilt nach

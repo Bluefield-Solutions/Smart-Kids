@@ -158,6 +158,41 @@
       "zeit": "2026-09-04",
       "s": 58
     },
+    "die Landschaft geht schon bei einem Tier auf": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 29
+    },
+    "ein Tipp ins Bild stellt ein Tier hin, ohne dass eines gewählt war": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 19
+    },
+    "die Aufstellung wird nie abgelegt": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 14
+    },
+    "Wegräumen leert den Bildschirm, aber nicht die Ablage": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 14
+    },
+    "einem vollen Lebensraum fehlt die Kulisse": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 10
+    },
+    "eine Kulisse verschiebt sich mit transform": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 10
+    },
+    "die Landschaften werden vereinigt statt ersetzt": {
+      "commit": "4d5d02385bd94c8b14633d5a6f6fa5b8f1cd47f2",
+      "zeit": "2026-09-05",
+      "s": 4
+    },
     "der Lagername vergisst den Ort": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
       "zeit": "2026-09-04",

@@ -5628,6 +5628,29 @@ if (laeuft('abzeichen')) try {
 if (laeuft('landschaft')) try {
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
   await p.waitForSelector('[data-profil="fiona"]');
+  /* Der Weg ins Meer - EINMAL geschrieben.
+     Er wird hier zweimal gegangen (vor und nach dem Neustart), und
+     zweimal derselbe Weg ist zweimal dieselbe Falle: welches Kapitel
+     offen steht, haengt davon ab, was vorher gelaufen ist, und welcher
+     Raum offen steht davon, welcher zuletzt fertig wurde.
+     Auf das BUCH warten und nicht auf einen Aufkleber: Playwright nimmt
+     bei einer Selektorliste den ersten Treffer im Baum, und der liegt
+     seit den Raumreitern auf einer ausgeblendeten Seite. */
+  const insMeer = async () => {
+    await p.waitForSelector('.schirm.da .rollen.buch', { timeout: 25000 });
+    const r = await p.$('.schirm.da .reiter[data-kap="tiere"]');
+    if (r) await r.click();
+    await p.waitForSelector('.schirm.da .tierraum:not([hidden])', { timeout: 15000 });
+    await p.click('.schirm.da .raumchip[data-raumwahl="Im Meer"]').catch(() => {});
+    await bis(p, () => !!document.querySelector(
+      '.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="Im Meer"]'));
+  };
+  const inDieLandschaft = async () => {
+    await p.click('.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="Im Meer"]');
+    await p.waitForSelector('.schirm.da .szene', { timeout: 15000 });
+    await bis(p, () => document.querySelectorAll('.schirm.da .platz').length === 9);
+  };
+
   /* „Im Meer" voll, „Wald und Wiese" halb: der eine Raum muss aufgehen,
      der andere nicht. Zwei Faelle aus EINEM Stand. */
   await stelleAblage(p, { einstellungen: { 'tiere:fiona': {
@@ -5636,19 +5659,14 @@ if (laeuft('landschaft')) try {
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
   await p.click('#buch');
-  await p.waitForSelector('.schirm.da .raumauf, .schirm.da .albumkarte', { timeout: 25000 });
-  const reiter = await p.$('.schirm.da .reiter[data-kap="tiere"]');
-  if (reiter) { await reiter.click();
-    await bis(p, () => !!document.querySelector('.schirm.da .tierraum')); }
+  await insMeer();
   const tueren = await p.$$eval('.schirm.da .raumauf', ns => ns.map(n => n.dataset.raum));
   if (!tueren.includes('Im Meer'))
     merke('landschaft', new Error('„Im Meer" ist voll und hat trotzdem keine Tür'));
   if (tueren.includes('Wald und Wiese'))
     merke('landschaft', new Error('„Wald und Wiese" fehlt ein Tier und hat trotzdem eine Tür'));
 
-  await p.click('.schirm.da .raumauf[data-raum="Im Meer"]');
-  await p.waitForSelector('.schirm.da .szene', { timeout: 15000 });
-  await bis(p, () => document.querySelectorAll('.schirm.da .platz').length === 9);
+  await inDieLandschaft();
   /* Die Kulisse muss WIRKLICH gezeichnet sein - ein leerer Rahmen mit
      dem richtigen Ton sieht auf einem Bildschirmfoto aus wie ein
      Bild. Gezaehlt werden die Pfade, nicht die Farbe. */
@@ -5695,13 +5713,8 @@ if (laeuft('landschaft')) try {
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
   await p.click('#buch');
-  await p.waitForSelector('.schirm.da .raumauf, .schirm.da .albumkarte', { timeout: 25000 });
-  const reiter2 = await p.$('.schirm.da .reiter[data-kap="tiere"]');
-  if (reiter2) { await reiter2.click();
-    await bis(p, () => !!document.querySelector('.schirm.da .tierraum')); }
-  await p.click('.schirm.da .raumauf[data-raum="Im Meer"]');
-  await p.waitForSelector('.schirm.da .szene', { timeout: 15000 });
-  await bis(p, () => document.querySelectorAll('.schirm.da .platz').length === 9);
+  await insMeer();
+  await inDieLandschaft();
   const geblieben = await p.$$eval('.schirm.da .platz.voll',
     ns => ns.map(n => n.dataset.platz));
   if (geblieben.join() !== '4')

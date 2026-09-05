@@ -936,8 +936,27 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    zu sehen war es sofort, zu erklaeren erst nach dem Blick ins
    Stilblatt. */
 .reiter .reiterzahl{font-size:var(--s2);font-weight:800;line-height:1.05}
+/* `min(13ch, 100%)` und nicht nur `13ch`: in einer Spalte mit
+   `align-items:center` nimmt das Wort seine eigene Breite und schert
+   sich nicht um den Reiter. Gemessen auf 390 x 844 mit fuenf Kapiteln -
+   das ist der Stand, den ein Kind mit Tieren hat: „Bundesländer" stand
+   13 Punkte ueber seinem Knopf und griff mit 8 % in den Nachbarn.
+   Sichtbar wurde es erst, als `passt` das Buch zum ersten Mal mit fuenf
+   Kapiteln gesehen hat. Rollen waere hier keine Loesung - ein Reiter,
+   der aus dem Streifen gerollt ist, ist fuer dieses Tor genauso weg wie
+   einer unter dem Rand. */
 .reiter .was{font-size:var(--s-klein);font-weight:700;white-space:nowrap;
-  max-width:13ch;overflow:hidden;text-overflow:ellipsis}
+  max-width:min(13ch, 100%);overflow:hidden;text-overflow:ellipsis}
+/* SCHMAL wird UMGEBROCHEN statt abgeschnitten.
+   Auf 390 Punkten teilen sich fuenf Kapitel die Breite und jeder Reiter
+   ist 66 Punkte breit - „Bundesländer" braucht 95. Das Auslassungs-
+   zeichen versteckt das nur: gemessen griff das Wort mit 8 % in den
+   Nachbarn, weil die Schrift ueber ihre Zelle hinausreicht, auch wo sie
+   beschnitten wird. Zwei kurze Zeilen sind haesslicher und richtig. */
+@media (max-width:430px){
+  .reiter .was{white-space:normal;overflow-wrap:anywhere;max-width:100%;
+    font-size:calc(var(--s-klein) * .84);line-height:1.05}
+}
 /* Offen und zu sprechen dieselbe Sprache wie alle Knoepfe hier: das
    geschlossene Kapitel liegt flach, das offene steht auf seiner Kante und
    traegt volle Tinte. Die FARBE traegt schon die Zahl - ein zweiter
@@ -1049,6 +1068,28 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* ---------- Die Landschaft (T2) ---------------------------------------
    Ein voller Raum wird zur TUER: die Ueberschrift traegt die Kulisse als
    Streifen. Ein Kind, das nicht liest, sieht am Bild, wohin es geht. */
+/* Die Raumreiter. Gemessen auf dem Zielgeraet: zehn Chips à 104 Punkte
+   passen in zwei Reihen von je 44 - zusammen 96 Punkte. Ein Raum
+   UNTEREINANDER kostet 160; fuenf davon lagen 689 Punkte unter dem
+   Rand. */
+.raumwahl{display:flex;flex-wrap:wrap;gap:var(--r1);width:100%;
+  margin-bottom:var(--r2)}
+.raumchip{display:flex;align-items:center;gap:var(--r1);
+  padding:var(--r0) var(--r1) var(--r0) var(--r0);
+  border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
+  background:var(--grund-2);cursor:pointer;font:inherit;min-height:44px;
+  color:var(--tinte-3)}
+.raumchip svg.raumstreifen{width:40px;height:24px;flex:none;
+  border-radius:var(--r1);display:block}
+/* KEIN NAME auf dem Reiter. Zehn Reiter mit Namen brauchten auf dem
+   Zielgeraet drei Reihen, und das Kapitel lag 92 Punkte unter dem Rand.
+   Der Streifen ist die Auskunft - er zeigt die Landschaft selbst -, der
+   Name steht darunter an der Tuer und wird beim Tippen gesprochen. */
+.raumchip span{display:none}
+.raumchip small{font-family:var(--f-ui);font-size:calc(var(--s-klein) * .74);
+  color:var(--tinte-3)}
+.raumchip.da{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}
+.raumchip.da small{color:var(--tinte-2)}
 .raumauf{display:flex;align-items:center;gap:var(--r2);width:100%;
   margin:0 0 var(--r1);padding:var(--r0) var(--r2) var(--r0) var(--r0);
   border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
@@ -1061,18 +1102,19 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .raumauf:hover{border-color:var(--tinte-3)}
 
 /* QUER IST DAS ZIELGERAET, und quer ist die Hoehe knapp: auf 844 x 390
-   bleiben nach dem Kopf rund 300 Punkte. Ein Bild ueber die volle
+   bleiben nach dem Kopf rund 318 Punkte. Ein Bild ueber die volle
    Breite waere bei 16:9 461 Punkte hoch - anderthalb Bildschirme fuer
    das eine, was man hier ansehen will.
-   Deshalb steht das Bild LINKS und wird von der HOEHE bestimmt, die
-   Bank rechts daneben. Der erste Anlauf machte es umgekehrt: die Szene
-   wurde von einer Flex-Spalte auf 100 Punkte zusammengedrueckt, und die
-   Tiere darin waren gemessen 17 Punkte gross - unter der Haelfte des
-   Fingermasses, und als Bild nicht mehr zu erkennen. */
-.rollen.landschaft{display:flex;align-items:stretch;gap:var(--r3);
+   Deshalb steht das Bild LINKS und nimmt 58 % der Breite, die Bank
+   rechts daneben. Der erste Anlauf liess das Bild von der HOEHE
+   bestimmen: auf dem iPad war es dann 1146 x 726 gross, und die Bank
+   daneben lag mit dreissig Tieren 2091 Punkte unter dem Rand. Ein
+   Bildschirm, der auf dem kleinsten Geraet passt und auf dem groessten
+   nicht, ist nicht geprueft, sondern geraten. */
+.rollen.landschaft{display:flex;align-items:stretch;gap:var(--r2);
   overflow:hidden;padding-bottom:var(--r3)}
-.szene{height:100%;width:auto;aspect-ratio:16/9;flex:0 0 auto;max-width:100%;
-  position:relative;border-radius:var(--r4);overflow:hidden;
+.szene{width:58%;max-width:58%;flex:0 0 auto;height:auto;aspect-ratio:16/9;
+  align-self:flex-start;position:relative;border-radius:var(--r4);overflow:hidden;
   background:var(--ton,var(--grund-2));
   border:var(--strich) solid var(--papier);box-shadow:var(--schatten-kleber)}
 .szene>svg.kulisse{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -1080,9 +1122,18 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    an der Zeile, und eine `1fr`-Zeile misst sich am Inhalt. Gemessen: die
    Zeilen wurden 114 Punkte hoch in einem 156 Punkte hohen Band, und die
    vorderste Reihe stand halb unter dem Bildrand. */
-.plaetze{position:absolute;inset:26% 0 1%;display:grid;
+/* DREI GLEICH HOHE REIHEN, und die Tiefe kommt aus der Bildgroesse.
+   Der erste Anlauf gab der hintersten Reihe weniger Hoehe (1 : 1,3 :
+   1,6) - das sah besser aus und machte die hinteren Plaetze auf dem
+   kleinsten Geraet 33 Punkte hoch, also unter das Fingermass. Ein
+   Bildschirm, auf dem ein Drittel der Ziele zu klein ist, ist keine
+   Frage des Geschmacks. Jetzt sind die KAESTEN gleich und die TIERE
+   verschieden gross; dieselbe Tiefe, dieselbe Trefferflaeche. */
+.szeneinhalt{position:absolute;inset:0;display:flex;flex-direction:column;
+  padding:2% 0 1%}
+.plaetze{flex:1 1 auto;min-height:0;display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  grid-template-rows:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.6fr)}
+  grid-template-rows:repeat(3,minmax(0,1fr))}
 .platz{display:flex;align-items:flex-end;justify-content:center;
   padding:0 4% 2%;border:0;background:none;position:relative;
   min-height:0;min-width:0;cursor:pointer}
@@ -1094,7 +1145,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    iOS ist ein Filter auf einem Pfad die Falle aus Regel 13, und das Tor
    `marken` haelt sie fest. (Es liest die Datei als TEXT - der verbotene
    Ausdruck darf hier also auch nicht als Beispiel stehen, sonst meldet
-   das Tor den Kommentar statt des Fehlers. Achtmal passiert.)
+   das Tor den Kommentar statt des Fehlers. Neunmal passiert.)
    Sie setzt das Tier ausserdem besser auf den Boden als ein Schatten,
    der in jede Richtung gleich faellt. */
 .platz.voll::before{content:"";position:absolute;left:50%;bottom:4%;
@@ -1102,44 +1153,82 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   transform:translateX(-50%)}
 .platz .tierbild{height:94%;max-height:94%;width:auto;max-width:88%;
   position:relative}
+.platz.r0 .tierbild{height:68%;max-height:68%;max-width:64%}
+.platz.r1 .tierbild{height:82%;max-height:82%;max-width:76%}
+/* Die Zeile liegt IM Bild, oben im Himmel: dort ist kein Platz, und als
+   eigene Zeile darunter kostete sie die Hoehe, die der Bank fehlte. */
+/* Die Zeile ist die ERSTE Zeile der Spalte, nicht ein Ueberzug: so kann
+   sie keinen Platz verdecken. `min-height` haelt die Hoehe der Plaetze
+   ruhig, wenn ein laengerer Satz kommt - „Das Streifenhörnchen geht
+   wieder weg." ist der laengste und passt bei 320 Punkten Bildbreite in
+   eine Zeile. */
+.szenesatz{flex:none;align-self:center;max-width:94%;margin:0 0 1%;
+  min-height:2.1em;display:flex;align-items:center;text-align:center;
+  padding:var(--r0) var(--r2);border-radius:var(--rund-voll);
+  background:var(--szene-zettel);font-size:calc(var(--s-klein) * .88)}
 
-/* Die Bank: alles, was dem Kind gehoert. Wer schon im Bild steht, wird
-   blass - derselbe Griff wie bei den fehlenden Aufklebern. */
-.banksaeule{flex:1 1 200px;min-width:0;min-height:0;display:flex;
-  flex-direction:column;gap:var(--r1);overflow:auto}
-.tierbank{display:flex;flex-wrap:wrap;justify-content:center;
-  align-content:flex-start;gap:var(--r1);width:100%}
-.bankstueck{width:68px;flex:none;display:flex;flex-direction:column;
-  align-items:center;gap:0;padding:var(--r0);
+/* Die Bank: alles, was dem Kind gehoert - OHNE Namen. Wer schon im Bild
+   steht, wird blass; derselbe Griff wie bei den fehlenden Aufklebern. */
+.tierbank{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-wrap:wrap;
+  align-content:flex-start;justify-content:center;gap:var(--r1)}
+.bankstueck{width:56px;height:56px;flex:none;display:flex;align-items:center;
+  justify-content:center;padding:var(--r0);
   border-radius:var(--r4);border:var(--kante-flach) solid var(--papier);
   background:var(--ton,var(--grund-2));box-shadow:var(--schatten-kleber);
-  cursor:pointer;font:inherit;min-height:44px}
-.bankstueck span{font-family:var(--f-lesen);font-size:calc(var(--s-klein) * .68);
-  color:var(--tinte);text-align:center;line-height:1.1;max-width:100%;
-  overflow-wrap:break-word}
+  cursor:pointer;font:inherit}
+.bankstueck .tierbild{width:100%;height:auto}
 .bankstueck.gewaehlt{border-color:var(--gut);
   box-shadow:0 0 0 var(--strich) var(--gut), var(--schatten-kleber)}
 .bankstueck.weg{background:var(--grund-2);box-shadow:var(--schatten-auf)}
 .bankstueck.weg .tierbild{opacity:.22;filter:grayscale(1)}
-.bankstueck.weg span{color:var(--tinte-3)}
-.szenehinweis{margin:0;text-align:center;flex:none}
 /* HOCH wird gestapelt: dort ist die Breite knapp und die Hoehe da - genau
    umgekehrt. Die Grenze steht bei 560, weil das schmalste Geraet, das
    `passt` faehrt, 390 Punkte breit ist und das naechste 667. */
 @media (max-width:560px){
   .rollen.landschaft{flex-direction:column;overflow:auto;align-items:center}
-  /* HOEHER statt breiter: bei 390 Punkten Breite ist das Bild im
-     Breitformat 219 hoch, und die hinterste Reihe misst dann 38 Punkte -
-     unter dem Fingermass. Bei 4:3 sind es 55. Gemessen im Browser, nicht
-     aus dem Verhaeltnis gerechnet. */
-  .szene{width:100%;height:auto;flex:none;aspect-ratio:4/3}
-  .banksaeule{overflow:visible;flex:none;width:100%}
+  /* Das Bild behaelt sein Verhaeltnis - auch hoch.
+     Der erste Anlauf machte es hier 4:3, weil die hinterste Reihe bei
+     16:9 nur 38 Punkte hoch war. Das lag aber nicht am Format, sondern
+     an den ungleichen Zeilen; seit die Kaesten gleich hoch sind, misst
+     die hinterste Reihe hier 58. Und 4:3 kostete etwas: die Kulisse ist
+     16:9 und lag mit hellen Baendern ueber und unter dem Bild. */
+  .szene{width:100%;max-width:100%;height:auto;flex:none}
+  .tierbank{flex:none;width:100%}
 }
+/* KURZ UND QUER - das Zielgeraet und das kleinste. Dreissig Tiere sind
+   dreissig Kaesten, und die muessen ohne Rollen in die Bank passen:
+   bei 44 Punkten sind es auf 844 x 390 sechs je Reihe in fuenf Reihen
+   (240 von 318 Punkten), auf 667 x 375 sechs in fuenf (240 von 303).
+   Bei 56 waren es dort acht Reihen und 416 Punkte. */
 @media (max-height:440px){
   .raumauf svg.raumstreifen{width:52px;height:30px}
-  .bankstueck{width:60px}
-  .bankstueck span{font-size:calc(var(--s-klein) * .62)}
-  .szenehinweis{font-size:calc(var(--s-klein) * .85)}
+  .raumwahl{gap:var(--r0);margin-bottom:var(--r1)}
+  .raumchip{padding:var(--r0);gap:var(--r0)}
+  .raumchip svg.raumstreifen{width:28px;height:17px}
+  /* Die letzten fuenfzehn Punkte auf dem KLEINSTEN Geraet (667 x 375):
+     die eigenen Abstaende der drei Bloecke fallen weg - das Raster des
+     Buches setzt seine Zeilen ohnehin auseinander -, und der Aufkleber
+     geht von 72 auf 66 (unten, wo er schon steht - zweimal derselbe
+     Wert waere Regel 6). Gemessen 247 in 236, danach 225. */
+  .raumwahl{margin-bottom:0}
+  .tierraum{margin-bottom:0}
+  /* Und die letzten fuenf: das Tierkapitel bringt vier Zeilen mit, wo
+     die anderen zwei haben - vier Zeilenabstaende statt zwei. */
+  .rollen.buch:has(.tierraum){row-gap:var(--r1)}
+  /* Die Ueberschrift faellt weg - der KAPITELREITER traegt sie schon,
+     samt Zahl („Meine Tiere · 15"). Gemessen auf 667 x 375: sichtbar
+     sind 236 Punkte, und Ueberschrift, Reiterreihe, Tuer, Aufkleberwand
+     und Gorillazeile waren zusammen 297. Ohne sie sind es 215. Zweimal
+     dieselbe Auskunft kostet hier genau die Zeile, die fehlt. */
+  .tierkopf{display:none}
+  .bankstueck{width:44px;height:44px}
+  .szenesatz{font-size:calc(var(--s-klein) * .8)}
+}
+/* Auf dem kleinsten Geraet (667 x 375) stand das Bild einmal auf 50 %
+   Breite: 320 x 179, und die neun Plaetze wurden 42 Punkte hoch - unter
+   dem Fingermass. Bei 58 % sind es 371 x 209 und 52 Punkte, und die
+   Bank daneben braucht mit dreissig Kaesten zu 44 sechs Reihen von 288
+   in 303 Punkten. Beides gemessen, keines gerechnet. */
 }
 }
 .abzneu{display:flex;align-items:center;justify-content:center;gap:var(--r3);
@@ -1170,7 +1259,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   .tierraum{margin-bottom:var(--r1)}
   .tierraum h4{margin-bottom:var(--r0)}
   .tierwand{gap:var(--r1)}
-  .tierfeld{width:72px}
+  .tierfeld{width:66px}
   /* Gemessen auf 390 Punkten: „Schmetterling" ist der laengste Name eines
      gemalten Tieres und braucht bei .8 noch 68 Punkte - zwei zuviel fuer
      die 66, die im Aufkleber Platz haben. Bei .72 sind es 62. */
@@ -2403,6 +2492,16 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      springen. */
   .rollen.buch > .albumkarte{justify-self:start;margin-inline:0}
   .rollen.buch > .mitte{grid-column:1 / -1}
+  /* Das Tierkapitel nimmt BEIDE Spalten (T2).
+     Das Raster „Ueberschrift links, Block rechts" ist fuer EIN Paar
+     gedacht; das Tierkapitel bringt drei Bloecke hintereinander mit,
+     und die lagen alle in der schmalen Spalte. Gemessen auf 390 x 844:
+     die Reiterreihe 164 statt 358 Punkte breit, fuenf Reihen statt
+     drei, die Aufkleberwand drei Reihen statt einer - zusammen 29
+     Punkte unter dem Rand. Dieselbe Falle wie bei `.abzkopf` eine
+     Erklaerung weiter oben. */
+  .rollen.buch > .raumwahl,
+  .rollen.buch > .tierraum{grid-column:1 / -1}
   /* Das Buch ist auf 844 x 390 randvoll - die Karte bekommt hier weniger
      Hoehe als der Platz auf dem Schreibtisch hergibt. Gerechnet: Kopf 60 +
      Abzeichen 60 + zweimal (Ueberschrift 28 + Karte + Polster 16) muessen
