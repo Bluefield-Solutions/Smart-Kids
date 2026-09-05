@@ -378,7 +378,20 @@ docs/referenz/ die amtlichen Listen im Wortlaut - das SOLL der Datentore,
 
 - Deutsch, auch im Quelltext (Kommentare, Bezeichner, Ausgaben).
 - Nach jeder Runde: vier nächste Schritte, davon mindestens einer technisch
-  und einer grafisch.
+  und einer grafisch — **als Reihenfolge, nicht als Liste**, und so
+  geschnitten, dass sie mit dem vorhandenen Budget abzuarbeiten sind.
+  Also je Schritt: was er kostet, warum er an dieser Stelle steht, was mit
+  ihm in **dieselbe** Runde gehört (gleiche Tore, gleiche Dateien — ein
+  Kettenlauf statt drei), was vorher passieren muss, damit das Nächste
+  nicht zweimal gemacht wird, und welcher Schritt sich abschneiden lässt,
+  wenn es nicht reicht.
+
+  Die Einheit, in der geplant wird, ist die **Runde = ein voller
+  Kettenlauf, ~220 s**. Ein Schritt, der ein Tor ändert, gehört vor den,
+  den dieses Tor danach hütet; ein Schritt, der ein Bild abnimmt
+  (`ansicht`), gehört hinter jede Änderung am Grundriss — sonst wird
+  dasselbe Bild zweimal erneuert. Wo eine Zahl im Spiel ist (Startbündel
+  von 700 KB, Ebene von 250, Fingermaß 44), steht sie dabei.
 - Getestet wird auf **iPhone und iPad, quer**. Dort wird geurteilt.
 - Gestaltung zählt. „User experience, grafisches Design etc. ist mir
   persönlich extrem wichtig."
