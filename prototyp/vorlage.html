@@ -1079,8 +1079,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
   background:var(--grund-2);cursor:pointer;font:inherit;min-height:44px;
   color:var(--tinte-3)}
-.raumchip svg.raumstreifen{width:40px;height:24px;flex:none;
-  border-radius:var(--r1);display:block}
+/* Das Tier auf dem Reiter: quadratisch wie auf dem Aufkleber, nur
+   kleiner. Kein eigener Grund darunter - der Reiter hat schon einen,
+   und zwei Kaesten ineinander sind bei 30 Punkten nur noch Rand. */
+.raumchip .raumzeichen{width:30px;height:30px;flex:none;display:block}
+.raumchip.leer .raumzeichen{opacity:.3;filter:grayscale(1)}
 /* KEIN NAME auf dem Reiter. Zehn Reiter mit Namen brauchten auf dem
    Zielgeraet drei Reihen, und das Kapitel lag 92 Punkte unter dem Rand.
    Der Streifen ist die Auskunft - er zeigt die Landschaft selbst -, der
@@ -1204,7 +1207,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   .raumauf svg.raumstreifen{width:52px;height:30px}
   .raumwahl{gap:var(--r0);margin-bottom:var(--r1)}
   .raumchip{padding:var(--r0);gap:var(--r0)}
-  .raumchip svg.raumstreifen{width:28px;height:17px}
+  .raumchip .raumzeichen{width:26px;height:26px}
   /* Die letzten fuenfzehn Punkte auf dem KLEINSTEN Geraet (667 x 375):
      die eigenen Abstaende der drei Bloecke fallen weg - das Raster des
      Buches setzt seine Zeilen ohnehin auseinander -, und der Aufkleber

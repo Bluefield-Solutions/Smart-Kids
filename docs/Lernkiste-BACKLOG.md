@@ -4958,13 +4958,30 @@ Seither seedet `passt` den **teuersten** Stand: alle dreißig Sammeltiere
 und zwei fertige Karten. Mit zwölf Tieren war jede Größe grün und mit
 dreißig drei von fünf rot.
 
+#### Nachgezogen in v395
+
+- **Der Platz ist jetzt hart.** `passt` behandelte eine Unterschreitung
+  der 44 Punkte als Hinweis, außer beim Aufkleber. Der Platz gehört in
+  dieselbe Klasse: er ist nie aus gutem Grund schmal, und in der Runde,
+  die ihn gebaut hat, ist er dreimal darunter gerutscht (33 · 42 · 46) —
+  jedes Mal habe ich es an der eigenen Messung gesehen und nicht am Tor.
+- **Der Raumreiter trägt ein Tier**, nicht die Kulisse. Bei 28 × 17 waren
+  „Wald und Wiese", „Der Dschungel", „Der Regenwald" und „Wald und Fluss"
+  vier grüne Flecken — vier von zehn. Gezeigt wird das erste Tier, das dem
+  Kind gehört; im nächsten Raum das erste blass.
+- **`ansicht` nimmt beides ab**: `quer-buch-tiere` und `quer-landschaft`,
+  mit dem vollen Stand (30 Tiere, 10 Räume, neun besetzte Plätze). Der
+  zweite ist der einzige Bildschirm, auf dem neun Figuren gleichzeitig
+  stehen — ob sie nebeneinander lesbar sind, sagt keine Zahl.
+
 #### Offen
 
-- Der Rauchtest stellt EIN Tier hin. Ob neun nebeneinander noch lesbar
-  sind, hat nur das Auge gesehen, kein Tor.
 - Ein Tier steht höchstens einmal im Bild. Zweimal derselbe Koala wäre
   ein Szenario, das niemand zurückdrehen kann — dagegen spricht nichts
   Gemessenes, nur die Bedienung.
+- „Streifenhörnchen" bricht im Aufkleber als „Streifenhör|nchen". Dieses
+  Chromium hat keine deutschen Trennmuster; ein weiches Trennzeichen wäre
+  eine Angabe je Wort und damit eine Liste, die veraltet.
 
 ---
 

@@ -149,9 +149,25 @@ const SUCHE = () => {
      * Stylesheet die gewuenschte Spaltenzahl ueberstimmte. Ein Jahr lang
      * stand es als HINWEIS im Bericht - und ein Hinweis, den niemand
      * liest, ist dasselbe wie keiner. */
+    /* Und dasselbe gilt fuer den PLATZ in der Landschaft (T2).
+     *
+     * Er ist wie der Aufkleber nie aus gutem Grund schmal: neun gleiche
+     * Kaesten in einem Bild, das seine Groesse aus dem Fenster nimmt -
+     * wird einer davon zu klein, ist eine Verhaeltnisrechnung
+     * schiefgegangen und nicht eine Gestaltung getroffen worden.
+     *
+     * In der Runde, die ihn gebaut hat, hat er das dreimal getan: 33
+     * Punkte bei ungleich hohen Reihen, 42 bei einem Bild auf halber
+     * Breite, 46 nach dem Umbau der Zeile darueber. Jedes Mal stand es
+     * als HINWEIS im Bericht, jedes Mal habe ich es an der eigenen
+     * Messung gesehen und nicht am Tor. Ein Hinweis, den man nur findet,
+     * wenn man ohnehin schon sucht, ist kein Tor - dieselbe Lehre wie
+     * bei den Abc-Karten darueber, nur ein Jahr spaeter. */
+    const SCHMAL_IST_FEHLER = { aufkleber: 'ein Aufkleber', platz: 'ein Platz in der Landschaft' };
+    const hart = Object.keys(SCHMAL_IST_FEHLER).find(k => el.classList.contains(k));
     const schmal = Math.min(eb.width, eb.height);
-    if (el.classList.contains('aufkleber') && schmal < 44 - 0.5)
-      raus.push(`„${text}" — nur ${schmal.toFixed(0)} pt, ein Aufkleber muss `
+    if (hart && schmal < 44 - 0.5)
+      raus.push(`„${text || hart}" — nur ${schmal.toFixed(0)} pt, ${SCHMAL_IST_FEHLER[hart]} muss `
         + `44 messen (Gitter zusammengerutscht?)`);
     // Der Hinweis ist Text, kein Ziel fuer den Finger - fuer ihn gilt die
     // 44-Punkt-Regel nicht.

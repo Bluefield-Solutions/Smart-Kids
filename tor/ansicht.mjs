@@ -59,6 +59,10 @@ if (process.env.SMARTKIDS_OHNE_ANSICHT === '1') {
 }
 
 const VORBILDER = path.join(process.cwd(), 'tor/vorbilder');
+/* Alles, was ein Kind sammeln kann (T2) - die Landschaft wird mit dem
+   VOLLEN Stand aufgenommen: zehn Raumreiter und dreissig Kaesten in der
+   Bank sind der teuerste Grundriss, den es gibt. */
+const ALLE_TIERE = (await import('../src/inhalt/tiere.js')).sammelbar().map(t => t.id);
 const ABWEICHUNGEN = path.join(process.cwd(), 'tor/abweichungen');
 const AKTUALISIEREN = process.argv.includes('--aktualisieren');
 /* `--teil=i/n`: nur jede n-te Aufnahme, ab der i-ten.
@@ -184,6 +188,21 @@ const AUFNAHMEN = [
   { name:'quer-ende',   spiel:'kontinente', quer:true, stand:true, antippen:true,
     wahl:'.schirm.da', tun:'durch' },
   { name:'quer-buch',   spiel:null, quer:true, stand:true, wahl:'.schirm.da', tun:'buch' },
+  /* Das Tierkapitel und die Landschaft (T2).
+   *
+   * Zwei Bildschirme, die kein anderes Vorbild zeigt - und der zweite
+   * ist der einzige, auf dem neun Figuren gleichzeitig stehen. Ob sie
+   * nebeneinander noch lesbar sind, sagt keine Zahl; das ist genau die
+   * Sorte Befund, fuer die es dieses Tor gibt (elf von 57 kamen aus
+   * Bildschirmfotos).
+   *
+   * Aufgenommen wird der VOLLE Stand: dreissig Tiere, zehn Raeume, das
+   * Bild besetzt. Ein halber Stand zeigt einen Grundriss, den es nach
+   * ein paar Wochen nicht mehr gibt. */
+  { name:'quer-buch-tiere', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'tierbuch' },
+  { name:'quer-landschaft', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'landschaft' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -802,7 +821,38 @@ for (const a of MEINE) {
      *
      * Die Kennungen kommen aus den DATEN der Seite, nicht aus einer Liste
      * hier - sonst waere die naechste Ebene wieder nicht dabei. */
-    if (a.stand === 'voll') {
+    /* Der Tierstand (T2): dreissig Tiere, zwei fertige Karten und ein
+       besetztes Bild. Die Aufstellung steht HIER und wird nicht
+       geklickt - ein Vorbild muss bei jedem Lauf dasselbe zeigen, und
+       neun Tipps sind neun Gelegenheiten, dass es das nicht tut. */
+    if (a.stand === 'tiere') {
+      await seite.evaluate(({ wer, tiere }) => new Promise((ja, nein) => {
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        const voll = (liste) => Object.fromEntries(
+          liste.map(x => [x, { fach: 4, hoechstes: 4, faellig: 0,
+                               richtig: 4, falsch: 0, zuletzt: 0 }]));
+        const auf = indexedDB.open('lernkiste', 1);
+        auf.onupgradeneeded = () => {
+          for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+            if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+        };
+        auf.onsuccess = () => {
+          const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+          t.objectStore('fortschritt').put(voll(D.kontinente.map(k => k.id)), `${wer}:kontinente`);
+          t.objectStore('fortschritt').put(voll(D.deutschland.map(b => b.id)), `${wer}:bundeslaender`);
+          t.objectStore('einstellungen').put({ ids: tiere, gorilla: 3,
+            szenen: { 'In der Stadt': { stand: ['wal', 'taube', 'schmetterling',
+              'fuchs', 'ratte', 'krabbe', 'katze', 'streifenhoernchen', 'igel'],
+              zeit: 1 } } }, `tiere:${wer}`);
+          t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+            [`${wer}:kontinente`]: true, [`${wer}:bundeslaender`]: true } }, 'alles');
+          t.oncomplete = ja; t.onerror = () => nein(t.error);
+        };
+        auf.onerror = () => nein(auf.error);
+      }), { wer: a.kind || 'fiona', tiere: ALLE_TIERE });
+      await seite.reload({ waitUntil:'domcontentloaded' });
+      await seite.waitForSelector('[data-profil="fiona"]');
+    } else if (a.stand === 'voll') {
       await seite.evaluate((wer) => new Promise((ja, nein) => {
         const D = JSON.parse(document.getElementById('daten').textContent);
         const ebenen = [['kontinente', D.kontinente.map(k => k.id)],
@@ -874,6 +924,24 @@ for (const a of MEINE) {
     if (a.tun === 'buch') {
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen');
+      await seite.waitForTimeout(400);
+    } else if (a.tun === 'tierbuch' || a.tun === 'landschaft') {
+      /* Ins Buch, ins Tierkapitel, auf den Raum „In der Stadt" - und bei
+         `landschaft` noch durch die Tuer. Beides derselbe Weg bis auf
+         den letzten Schritt; zweimal geschrieben waere er zweimal zu
+         pflegen (Regel 6). */
+      await seite.click('#buch');
+      await seite.waitForSelector('.schirm.da .rollen.buch');
+      const reiter = await seite.$('.schirm.da .reiter[data-kap="tiere"]');
+      if (reiter) await reiter.click();
+      await seite.waitForSelector('.schirm.da .tierraum:not([hidden])');
+      await seite.click('.schirm.da .raumchip[data-raumwahl="In der Stadt"]');
+      await seite.waitForSelector(
+        '.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="In der Stadt"]');
+      if (a.tun === 'landschaft') {
+        await seite.click('.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="In der Stadt"]');
+        await seite.waitForSelector('.schirm.da .platz.voll');
+      }
       await seite.waitForTimeout(400);
     } else if (a.tun === 'eltern') {
       // Durch die Tuer: vier Nullen, dann steht der Bereich da.

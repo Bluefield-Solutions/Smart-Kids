@@ -468,6 +468,39 @@ export const PROBEN = [
     an:{ datei:'src/kern/gleichlauf.js', text:'x || (neu.stand || [])[i]' },
     sagt:'juengere Aufstellung' },
 
+  /* --- passt: der Platz in der Landschaft (T2) ---------------------- */
+  /* Die neun Plaetze duerfen nicht unter das Fingermass fallen. Fuenf
+     Zeilen statt drei: die neun Kaesten fuellen weiter drei davon, jeder
+     ist aber nur noch ein Fuenftel des Bandes hoch - auf dem Zielgeraet
+     40 statt 66 Punkte. Genau die Verhaeltnisrechnung, die in der Runde,
+     die das Bild gebaut hat, dreimal schiefgegangen ist.
+     Der Anker steht als Kommentar dahinter: der Eingriff nimmt ihn sonst
+     selbst weg, und dann meldet `inhalt` seine Vorpruefung statt des
+     Befundes (zehnmal passiert). */
+  { n:'die Plätze in der Landschaft rutschen unter das Fingermaß', tor:'passt',
+    args:['--teil=0/3'], bauen:true, datei:V,
+    such:"  grid-template-rows:repeat(3,minmax(0,1fr))}",
+    ersatz:"  grid-template-rows:repeat(5,minmax(0,1fr))}"
+      + "  /*Anker: grid-template-rows:repeat(3,minmax(0,1fr))} */",
+    an:{ ...DIST, text:'grid-template-rows:repeat(5,minmax(0,1fr))' },
+    sagt:'ein Platz in der Landschaft muss' },
+
+  /* --- ansicht: die Landschaft (T2) --------------------------------- */
+  /* Die Aufnahme muss die LANDSCHAFT zeigen und nicht das Buch davor.
+     Ohne diese Probe waere ein Weg, der auf halber Strecke stehen
+     bleibt, nicht von einem funktionierenden zu unterscheiden: das Tor
+     legt sein Vorbild beim ersten Lauf selbst an und vergleicht danach
+     mit sich. Ein falscher Bildschirm waere dann fuer immer der
+     richtige.
+     Der Eingriff nimmt den Tuerklick weg - stehen bleibt das
+     Tierkapitel, und das ist ein anderes Bild. */
+  { n:'die Aufnahme der Landschaft bleibt im Buch stehen', tor:'ansicht',
+    args:['--nur=quer-landschaft'], datei:'tor/ansicht.mjs',
+    such:"      if (a.tun === 'landschaft') {",
+    ersatz:"      if (false && a.tun === 'landschaft') {  //Anker: if (a.tun === 'landschaft') {",
+    an:{ datei:'tor/ansicht.mjs', text:"if (false && a.tun === 'landschaft') {" },
+    sagt:'quer-landschaft' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.

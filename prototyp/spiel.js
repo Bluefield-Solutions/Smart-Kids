@@ -6788,14 +6788,31 @@ async function forscherbuch(){
         : dabei.length ? dabei.length : 'noch keins'} von ${alle.length}.`,
       inhalt:`
         <h3 class="gruppe tierkopf">Meine Tiere <small>${dabei.length} von ${alle.length}</small></h3>
-        ${raeume.length > 1 ? `<div class="raumwahl" role="tablist">${raeume.map((r, i) => `
-          <button class="raumchip${i === zuerst ? ' da' : ''}" data-raumwahl="${r.titel}"
+        ${/* AUF DEM REITER STEHT EIN TIER, nicht die Landschaft.
+              Der erste Anlauf trug den Kulissenstreifen. Bei 28 x 17
+              Punkten sind „Wald und Wiese", „Der Dschungel", „Der
+              Regenwald" und „Wald und Fluss" vier gruene Flecken - und
+              das sind vier von zehn. Ein Tier ist bei 28 Punkten noch
+              zu erkennen (dafuer ist es gezeichnet, das misst
+              `probebild` am Aufkleber) und es ist ausserdem das, was
+              das Kind gesammelt hat: der Raum mit dem Wal.
+              Gezeigt wird das erste Tier, das dem Kind GEHOERT - beim
+              naechsten Raum, in dem es noch keines hat, das erste blass.
+              Ein farbiges Tier auf einem Reiter, hinter dem keines
+              steht, waere ein Versprechen, das die Seite nicht haelt.
+              Die Landschaft traegt weiter die TUER darunter - dorthin
+              fuehrt sie, und dort ist sie gross genug. */''}
+        ${raeume.length > 1 ? `<div class="raumwahl" role="tablist">${raeume.map((r, i) => {
+          const meins = r.stuecke.filter(t => habe.has(t.id));
+          const zeichen = meins[0] || r.stuecke[0];
+          return `
+          <button class="raumchip${i === zuerst ? ' da' : ''}${meins.length ? '' : ' leer'}"
+                  data-raumwahl="${r.titel}"
                   role="tab" aria-selected="${i === zuerst}"
-                  data-lesen="${r.titel}. ${r.stuecke.filter(t => habe.has(t.id)).length} von drei."
-            >${Tiere.kulisseZu(r.titel) ? `<svg class="raumstreifen" viewBox="${Tiere.SZENE}"
-                 role="presentation">${Tiere.kulisseZu(r.titel).bild}</svg>` : ''
-            }<span>${r.titel}</span><small>${
-              r.stuecke.filter(t => habe.has(t.id)).length}/3</small></button>`).join('')}</div>` : ''}
+                  data-lesen="${r.titel}. ${meins.length} von drei."
+            >${zeichen ? tierBild(zeichen, 'raumzeichen') : ''
+            }<span>${r.titel}</span><small>${meins.length}/3</small></button>`;
+        }).join('')}</div>` : ''}
         ${raeume.map((r, i) => `<div class="tierraum" data-raumseite="${r.titel}"${
             i === zuerst ? '' : ' hidden'}>
           ${/* EIN VOLLER RAUM WIRD ZUR TUER (T2).
