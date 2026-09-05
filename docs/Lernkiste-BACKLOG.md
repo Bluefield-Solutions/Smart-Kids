@@ -4902,6 +4902,71 @@ Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
 
+### Q52 · Der Service Worker warf den Abruf weg, den er brauchte — GEFAHREN (v402)
+
+Der Nutzer: *„Ich habe vorhin auch eine sehr alte Version gesehen."* Er
+hatte recht, und es lag nicht an der Auslieferung.
+
+Die Seite wird **netzzuerst** geholt, mit einer Reißleine von 2,5 s —
+damit ein Kind auf einer lahmen Leitung nicht wartet, sondern die Fassung
+aus dem Lager bekommt. Nur: beim Zeitablauf wurde der laufende Abruf
+**verworfen**. Also landete nichts im Lager. Also kam beim nächsten Start
+wieder dieselbe alte Fassung, und beim übernächsten auch.
+
+**Auf einer Leitung, die für 324 KB länger als 2,5 s braucht, hat sich die
+App nie erneuert.** Nicht selten, nicht manchmal — nie. Und weil ein Kind
+die App vom Startbildschirm aus öffnet, meist unterwegs, ist das der
+Normalfall und nicht der Ausnahmefall.
+
+#### Warum kein Tor es gesagt hat
+
+`offline` prüft, dass die App **ohne Netz** startet. Genau das tat sie ja —
+aus dem alten Lager. Die Prüfung war richtig, sie hat nur die andere
+Hälfte der Zusage nie angesehen: dass die Fassung, die sie zeigt, auch
+irgendwann eine neue wird. Regel 13 in ihrer teuersten Fassung: wer eine
+Wirkung misst, muss sie abschalten können — hier war die Wirkung
+„erneuert sich" nie eingeschaltet, und niemand hat es bemerkt, weil auf
+einer schnellen Leitung das Rennen immer der Abruf gewann. Auf dem
+Entwicklungsrechner ist die Leitung immer schnell.
+
+#### Der Griff
+
+Der Abruf läuft jetzt weiter, gleich wer das Rennen gewinnt, und legt ab,
+sobald er ankommt. Die Reißleine entscheidet nur noch, **was der Benutzer
+sieht**, nicht mehr, ob nachgeladen wird. `waitUntil` hält den Service
+Worker dafür am Leben; ohne das darf der Browser ihn nach der Antwort
+abschalten, und der Nachschub wäre wieder weg.
+
+#### Das Tor `nachschub`
+
+Eine müde Leitung auf Zuruf: `serviere()` nimmt einen dritten Parameter
+`verzug`, der je Pfad Millisekunden verzögert. Gearbeitet wird auf einer
+**Kopie** von `dist/` — der Lauf schreibt die Seite mitten im Betrieb um
+(das tut eine Auslieferung auch), und die anderen Tore der Kette lesen
+dasselbe Verzeichnis.
+
+Geprüft werden **drei Dinge zugleich**, und das ist der Punkt:
+
+1. die Reißleine hält — der langsame Start kommt schnell
+2. der Nachschub kommt an — danach liegt die **neue** Fassung im Lager
+3. der nächste Start zeigt sie
+
+Ohne (1) wäre ein Kind zum Warten verurteilt, ohne (2) und (3) bei der
+alten Fassung gefangen. **Eine Prüfung, die nur (1) sieht, war genau die,
+die es gab.**
+
+Gemessen bei 3,5 s je Seite: Start nach 2,6 s mit v402, v999 im Lager,
+nächster Start v999. Die Gegenprobe setzt die alte Fassung zurück und
+holt die Meldung „die App erneuert sich auf einer müden Leitung NIE".
+
+#### Und die Fehler-E-Mails
+
+Die sind eine andere Sache und harmlos: drei Läufe am Morgen des 5.9.
+(`Auslieferung` #176 und #177, `Gegenproben` #11), alle **vor** dieser
+Sitzung. Bei einem roten Lauf wird der Schritt „Nach Pages" **übersprungen**
+— rot hat also nie etwas ausgeliefert. Alle Läufe seit 12:08 sind grün.
+
+---
 ### Q51 · Die Frist nach dem Ziehen — GEFAHREN (v401)
 
 `ablage/eltern` wurde im vollen Kettenlauf rot und allein gefahren grün.
