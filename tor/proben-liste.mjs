@@ -4710,7 +4710,8 @@ export const PROBEN = [
   /* Ein Diktatsatz, den es nicht gibt.
    *
    * Die Diktatsaetze sind eine AUSWAHL der Wendungen und keine zweite
-   * Liste (Regel 6). Faellt die Bindung, laufen die beiden Vorraete
+   * Liste (Regel 6: was zweimal dasteht, veraltet einmal). Faellt die
+   * Bindung, laufen die beiden Vorraete
    * auseinander - und der Zugriff auf `w.richtig` waere ein Absturz beim
    * Aufschlagen der Ebene, nicht ein roter Bericht. */
   { n:'ein Diktatsatz zeigt auf keine Wendung', tor:'inhalt',

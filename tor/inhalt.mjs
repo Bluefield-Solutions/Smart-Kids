@@ -2211,7 +2211,8 @@ console.log('\n  Tor `englisch`');
       if (!gebiete.has(g)) wf.push(`kein Satz zum Themengebiet ${g}`);
 
     /* Die Diktatsaetze sind eine AUSWAHL der Wendungen und keine zweite
-       Liste (Regel 6). Ohne diese Bindung haetten E11 und E12 zwei
+       Liste (Regel 6: was zweimal dasteht, veraltet einmal). Ohne diese
+       Bindung haetten E11 und E12 zwei
        Vorraete, die auseinanderlaufen - und der eine wuerde still
        veralten. Geprueft wird deshalb, dass jede Kennung wirklich eine
        Wendung trifft. */

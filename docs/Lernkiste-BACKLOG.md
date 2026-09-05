@@ -4923,8 +4923,8 @@ den er nicht verstanden hat, hat gehört und nicht gelernt.
 
 **Zwanzig Wendungen, fünf je Themengebiet 4.1 bis 4.4; zwölf davon sind
 zugleich die Diktatsätze.** Die Diktatsätze sind eine **Auswahl** der
-Wendungen und keine zweite Liste (Regel 6) — `tor/inhalt.mjs` verlangt,
-dass jede Kennung eine Wendung trifft.
+Wendungen und keine zweite Liste (Regel 6: was zweimal dasteht, veraltet
+einmal) — `tor/inhalt.mjs` verlangt, dass jede Kennung eine Wendung trifft.
 
 **Mehr als eine richtige Antwort** ist der Inhalt dieser Ebene und steht so
 im Vorlauf. Jede Wendung trägt mindestens zwei gültige Fassungen, und sie
@@ -4987,7 +4987,8 @@ gemessen von `passt`. Das Gebiet steht jetzt nur noch in den Daten, wo
 Telefontastatur entsteht: alles klein, ohne Schlusspunkt, mit geradem
 Apostroph und doppelten Leerzeichen. Der erste Anlauf tippte `richtig[0]`
 wortwörtlich — dann hätte dieselbe Antwort auch ein Vergleich auf
-Gleichheit angenommen, und `wieGesagt` wäre nie geprüft worden (Regel 1).
+Gleichheit angenommen, und `wieGesagt` wäre nie geprüft worden — eine
+Prüfung, die auch ohne die Sache besteht, ist kein Beweis (Regel 1).
 
 #### Ohne englische Stimme
 

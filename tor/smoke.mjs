@@ -3672,7 +3672,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            haette dieselbe Antwort auch ein Vergleich auf Gleichheit
            angenommen, und `wieGesagt` waere nie geprueft worden. Eine
            Pruefung, die auch ohne die Sache besteht, bezeugt sie, ohne
-           sie je gemessen zu haben (Regel 1). */
+           sie je gemessen zu haben - kein Beweis (Regel 1). */
         const wieGetippt = auf.richtig[0].toLowerCase()
           .replace(/[’‘]/g, "'").replace(/[.!?]+$/, '').replace(/ /g, '  ');
         await tippeAntwort(p, wer, ebene, wieGetippt,
