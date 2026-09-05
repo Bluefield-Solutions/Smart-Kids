@@ -3157,6 +3157,18 @@ export const PROBEN = [
     an:{ datei:'dist/sw.js', fehlt:'./daten/deutschland.json' },
     sagt:'Bundesländer' },
 
+  /* Die teuerste Probe dieses Verzeichnisses, weil ihr Fehler MONATE
+   * unbemerkt lief: auf einer mueden Leitung hat sich die App nie
+   * erneuert. Der Eingriff setzt genau die Fassung zurueck, die das
+   * angerichtet hat - den Abruf im Rennen, verworfen beim Zeitablauf.
+   * `offline` bleibt dabei gruen, denn ohne Netz startete sie ja. */
+  { n:'der abgebrochene Abruf legt nichts nach', tor:'pwa', bauen:true,
+    datei:'prototyp/pwa/sw.js',
+    such:"async function seiteHolen(anfrage, ereignis) {\n  const lager = await caches.open(LAGER);\n  /* Der Abruf laeuft weiter, gleich wer das Rennen gewinnt - und er legt\n     ab, sobald er ankommt. `waitUntil` haelt den Service Worker dafuer am\n     Leben; ohne das darf der Browser ihn nach der Antwort abschalten, und\n     der Nachschub waere wieder weg. */\n  const abruf = fetch(anfrage, { cache: 'no-store' }).then(async (netz) => {\n    if (!netz || !netz.ok) throw new Error('Antwort nicht in Ordnung');\n    await lager.put('./index.html', netz.clone());\n    return netz;\n  });\n  if (ereignis && ereignis.waitUntil) ereignis.waitUntil(abruf.catch(() => {}));\n  else abruf.catch(() => {});\n  try {\n    return await Promise.race([\n      abruf,\n      new Promise((_, nein) => setTimeout(() => nein(new Error('zu langsam')), ZU_LANGSAM)),\n    ]);\n  } catch (e) {\n    const alt = await lager.match('./index.html');\n    if (alt) return alt;\n    // Nichts im Lager - dann bleibt nur warten, so lange es dauert.\n    return abruf;\n  }\n}\n",
+    ersatz:"async function seiteHolen(anfrage, ereignis) {\n  const lager = await caches.open(LAGER);\n  try {\n    const netz = await Promise.race([\n      fetch(anfrage, { cache: 'no-store' }),\n      new Promise((_, nein) => setTimeout(() => nein(new Error('zu langsam')), ZU_LANGSAM)),\n    ]);\n    if (!netz || !netz.ok) throw new Error('Antwort nicht in Ordnung');\n    await lager.put('./index.html', netz.clone());\n    return netz;\n  } catch (e) {\n    const alt = await lager.match('./index.html');\n    if (alt) return alt;\n    return fetch(anfrage);\n  }\n}\n",
+    an:{ datei:'dist/sw.js', fehlt:'ereignis.waitUntil(abruf' },
+    sagt:'müden Leitung' },
+
   /* --- smoke -------------------------------------------------------- */
   // Das Doppelbild: nimmt man dem neuen Bildschirm seinen Takt Vorsprung,
   // blenden beide gleichzeitig und treffen sich bei etwa 0,5.

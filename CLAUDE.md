@@ -219,7 +219,7 @@ Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `ma
 `schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` · `anker` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
-`offline` → `smoke`.
+`offline` · `nachschub` → `smoke`.
 
 ### Zwei Wege ins Netz
 
@@ -236,7 +236,7 @@ genau dieser Commit schon einmal ausgeliefert wurde. Sonst käme Ungeprüftes
 unter `/`.
 
 Die Vorschau ist zum **Ansehen**, nicht zum Ausliefern: `passt`,
-`lesbarkeit`, `ziehen`, `ansicht`, `pwa`/`offline` und `smoke` laufen dort
+`lesbarkeit`, `ziehen`, `ansicht`, `pwa`/`offline`/`nachschub` und `smoke` laufen dort
 nicht. Was sie nicht prüft, steht namentlich in `vorschau.yml`, und das Tor
 `doku` schlägt an, wenn ein Tor dazukommt, das dort weder gefahren noch
 genannt ist.

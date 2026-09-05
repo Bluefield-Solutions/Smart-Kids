@@ -17,6 +17,7 @@
 #     ziehen       Nachsicht beim Ziehen
 #     ansicht      Bildvergleich
 #     pwa/offline  startet ohne Netz
+#     nachschub    erneuert sich auf einer lahmen Leitung
 #     smoke        spielt die App wirklich durch
 #
 # Eine Vorschau kann also auf dem Gerät kaputt sein. Deshalb steht unten

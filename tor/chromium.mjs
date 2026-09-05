@@ -89,14 +89,27 @@ export async function starte(opt = {}) {
  *
  * Erst zerlegen, DANN auf `/` pruefen. Und einmal, nicht sechsmal.
  */
-export async function serviere(wurzel, erreichbar = () => true) {
+/**
+ * Ein Server fuer die Tore.
+ *
+ * `erreichbar()` schaltet das Netz ab - siehe unten, warum die Leitung
+ * dabei abreissen muss.
+ *
+ * `verzug()` macht es LANGSAM, ohne es abzuschalten, und gibt die
+ * Millisekunden je Anfrage zurueck. Das ist der andere Fall, und er ist
+ * der gefaehrlichere: eine tote Leitung merkt man, eine muede nicht. Der
+ * Service Worker hat auf ihr die App nie erneuert (siehe `sw.js`), und
+ * das ist auf dem Geraet der Kinder monatelang niemandem aufgefallen -
+ * es sah ja aus, als liefe alles.
+ */
+export async function serviere(wurzel, erreichbar = () => true, verzug = () => 0) {
   const { default: fs2 } = await import('node:fs');
   const { default: path2 } = await import('node:path');
   const { default: http2 } = await import('node:http');
   const TYP = { '.html':'text/html; charset=utf-8', '.css':'text/css',
     '.js':'text/javascript', '.png':'image/png', '.woff2':'font/woff2',
     '.json':'application/json', '.webmanifest':'application/manifest+json' };
-  const server = http2.createServer((q, a) => {
+  const server = http2.createServer(async (q, a) => {
     /* Das Netz kann weg sein.
      *
      * `erreichbar()` ist kein Beiwerk: das Tor `offline` prueft, ob die
@@ -107,6 +120,8 @@ export async function serviere(wurzel, erreichbar = () => true) {
      * hat es gemeldet. */
     if (!erreichbar()) { q.socket.destroy(); return; }
     const ohneFrage = String(q.url).split('?')[0];
+    const warten = verzug(ohneFrage);
+    if (warten > 0) await new Promise(r => setTimeout(r, warten));
     const datei = path2.join(wurzel, ohneFrage === '/' ? '/index.html' : ohneFrage);
     if (!datei.startsWith(wurzel) || !fs2.existsSync(datei) || fs2.statSync(datei).isDirectory()) {
       a.statusCode = 404; return a.end();

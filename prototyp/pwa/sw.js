@@ -11,7 +11,17 @@
 //     jeder Auslieferung. Also Netz zuerst - aber mit einer Reissleine von
 //     2,5 Sekunden. Ein Kind wartet nicht auf ein muerbes Hotel-WLAN; nach
 //     2,5 s kommt die letzte bekannte Fassung aus dem Lager, und die neue
-//     wird beim naechsten Start da sein.
+//     ist beim naechsten Start da.
+//
+//     DIE REISSLEINE ENTSCHEIDET NUR, WAS GEZEIGT WIRD - nicht, ob
+//     weitergeladen wird. Das war der Fehler: der Abruf wurde beim
+//     Zeitablauf VERWORFEN, also landete auch nichts im Lager, also war
+//     beim naechsten Start wieder dieselbe alte Fassung da. Auf einer
+//     Leitung, die fuer 324 KB laenger als 2,5 s braucht, hat die App
+//     sich damit NIE erneuert - nachgestellt mit 3,5 s Antwortzeit: drei
+//     Starts hintereinander die alte Fassung, und auch fuenf Sekunden
+//     spaeter lag nur die alte im Lager. Genau das hat auf dem Geraet
+//     der Kinder eine sehr alte Fassung stehen lassen.
 //   - Schrift und Symbole aendern sich INNERHALB einer Fassung nie. Also
 //     Lager zuerst, ohne Umweg. Bei einer neuen Fassung heisst das Lager
 //     anders, und alles wird einmal neu geholt.
@@ -44,20 +54,29 @@ self.addEventListener('activate', (e) => {
   })());
 });
 
-async function seiteHolen(anfrage) {
+async function seiteHolen(anfrage, ereignis) {
   const lager = await caches.open(LAGER);
-  try {
-    const netz = await Promise.race([
-      fetch(anfrage, { cache: 'no-store' }),
-      new Promise((_, nein) => setTimeout(() => nein(new Error('zu langsam')), ZU_LANGSAM)),
-    ]);
+  /* Der Abruf laeuft weiter, gleich wer das Rennen gewinnt - und er legt
+     ab, sobald er ankommt. `waitUntil` haelt den Service Worker dafuer am
+     Leben; ohne das darf der Browser ihn nach der Antwort abschalten, und
+     der Nachschub waere wieder weg. */
+  const abruf = fetch(anfrage, { cache: 'no-store' }).then(async (netz) => {
     if (!netz || !netz.ok) throw new Error('Antwort nicht in Ordnung');
     await lager.put('./index.html', netz.clone());
     return netz;
+  });
+  if (ereignis && ereignis.waitUntil) ereignis.waitUntil(abruf.catch(() => {}));
+  else abruf.catch(() => {});
+  try {
+    return await Promise.race([
+      abruf,
+      new Promise((_, nein) => setTimeout(() => nein(new Error('zu langsam')), ZU_LANGSAM)),
+    ]);
   } catch (e) {
     const alt = await lager.match('./index.html');
     if (alt) return alt;
-    throw e;
+    // Nichts im Lager - dann bleibt nur warten, so lange es dauert.
+    return abruf;
   }
 }
 
@@ -73,7 +92,7 @@ async function stueckHolen(anfrage) {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  if (e.request.mode === 'navigate') e.respondWith(seiteHolen(e.request));
+  if (e.request.mode === 'navigate') e.respondWith(seiteHolen(e.request, e));
   else if (new URL(e.request.url).origin === self.location.origin)
     e.respondWith(stueckHolen(e.request));
 });

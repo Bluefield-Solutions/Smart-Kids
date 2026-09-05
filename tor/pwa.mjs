@@ -12,6 +12,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import os from 'node:os';
 import { starte, zurEbenenwahl, serviere, durchVorlauf } from './chromium.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
@@ -249,7 +250,115 @@ pruefe(!ohneSw.da,
   + 'den Browser-Cache und nicht den Service Worker');
 console.log(`    Gegenprobe ohne Service Worker: ${ohneSw.da ? 'startet TROTZDEM' : 'startet nicht'}`
   + ` — die Pruefung oben misst wirklich das Lager`);
-await ohne.close(); await ctx.close(); await b.close(); server.close();
+await ohne.close(); await ctx.close();
+
+/* --- Tor `nachschub`: erneuert sich die App auf einer MUEDEN Leitung? --
+ *
+ * Der andere Fall, und der gefaehrlichere. Eine tote Leitung merkt man;
+ * eine muede nicht. Die Seite wird netzzuerst geholt, mit einer
+ * Reissleine von 2,5 Sekunden - und bis v403 wurde der Abruf beim
+ * Zeitablauf VERWORFEN. Also landete nichts im Lager, also kam beim
+ * naechsten Start wieder dieselbe alte Fassung. Auf einer Leitung, die
+ * fuer 324 KB laenger als 2,5 s braucht, hat sich die App damit NIE
+ * erneuert. Auf dem Geraet der Kinder stand eine sehr alte Fassung, und
+ * kein Tor hat es gesagt: `offline` prueft, dass sie OHNE Netz startet,
+ * und genau das tat sie ja.
+ *
+ * Geprueft werden drei Dinge, und alle drei muessen zugleich gelten:
+ *   1. die Reissleine haelt      - der langsame Start kommt schnell
+ *   2. der Nachschub kommt an    - danach liegt die NEUE Fassung im Lager
+ *   3. der naechste Start zeigt sie
+ *
+ * Ohne (1) waere ein Kind zum Warten verurteilt, ohne (2) und (3) waere
+ * es bei der alten Fassung gefangen. Eine Pruefung, die nur (1) sieht,
+ * war genau die, die es gab.
+ *
+ * Gearbeitet wird auf einer KOPIE von dist: dieser Lauf schreibt die
+ * Seite mitten im Betrieb um (das tut eine Auslieferung auch), und die
+ * anderen Tore der Kette lesen dasselbe Verzeichnis. */
+console.log('\n  Tor `nachschub`');
+{
+  const kopie = fs.mkdtempSync(path.join(os.tmpdir(), 'smartkids-nachschub-'));
+  for (const d of fs.readdirSync(DIST, { withFileTypes: true })) {
+    const von = path.join(DIST, d.name), nach = path.join(kopie, d.name);
+    if (d.isDirectory()) fs.cpSync(von, nach, { recursive: true });
+    else fs.copyFileSync(von, nach);
+  }
+  const seitePfad = path.join(kopie, 'index.html');
+  const alteSeite = fs.readFileSync(seitePfad, 'utf8');
+  const alteNr = (alteSeite.match(/"bau":"(\d+)"/) || [])[1];
+  pruefe(!!alteNr, 'in der gebauten Seite steht keine Fassungsnummer — '
+    + 'dann kann dieses Tor „alt" nicht von „neu" unterscheiden');
+
+  let muede = 0;
+  const { server: s2, adresse: A2 } = await serviere(kopie, () => true,
+    (weg) => (weg === '/' || weg === '/index.html') ? muede : 0);
+  const ctx2 = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
+  const q = await ctx2.newPage({ viewport: { width: 844, height: 390 } });
+
+  const zeigt = () => q.evaluate(() =>
+    (document.getElementById('fassung')?.textContent || '?').trim().split(' ')[0]);
+  const imLager = () => q.evaluate(async () => {
+    for (const n of await caches.keys()) {
+      const t = await (await caches.open(n)).match('./index.html');
+      if (!t) continue;
+      const m = (await t.text()).match(/"bau":"(\d+)"/);
+      return m ? m[1] : null;
+    }
+    return null;
+  });
+  const starten = async () => {
+    const t0 = Date.now();
+    await q.goto(A2, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
+    await q.evaluate(() => navigator.serviceWorker.ready).catch(() => {});
+    await q.waitForFunction(() => !!document.getElementById('fassung'),
+      null, { timeout: 15000 }).catch(() => {});
+    return Date.now() - t0;
+  };
+
+  await starten(); await starten();            // Lager gefuellt, alte Fassung drin
+  pruefe(await imLager() === alteNr,
+    'nach zwei Starts liegt die Seite nicht im Lager — die Vorbedingung fehlt');
+
+  // Eine NEUE Auslieferung, und ab jetzt ist die Leitung muede.
+  fs.writeFileSync(seitePfad, alteSeite.replace(/"bau":"\d+"/, '"bau":"999"'));
+  muede = 3500;                                 // laenger als die Reissleine
+  const dauer = await starten();
+  const gezeigt1 = await zeigt(), lager1 = await imLager();
+  /* (1) Die Reissleine haelt. Grosszuegig gemessen: die Reissleine steht
+     bei 2,5 s, der Rest ist Aufbau der Seite. Waere sie kaputt, stuende
+     hier die volle Antwortzeit von 3,5 s plus Aufbau. */
+  pruefe(dauer < muede,
+    `der langsame Start hat ${(dauer / 1000).toFixed(1)} s gebraucht, die Leitung `
+    + `braucht ${(muede / 1000).toFixed(1)} s — die Reissleine greift nicht mehr, `
+    + 'ein Kind wartet auf das Netz');
+  pruefe(gezeigt1 === 'v' + alteNr,
+    `beim langsamen Start stand „${gezeigt1}" da statt der Fassung aus dem Lager`);
+  /* (2) Der Nachschub kommt trotzdem an. DAS ist die Zusage, die gefehlt
+     hat - dem Abruf ein paar Sekunden geben und dann nachsehen. */
+  const bis5 = Date.now() + 8000;
+  let lager2 = lager1;
+  while (Date.now() < bis5 && lager2 !== '999') {
+    await q.waitForTimeout(400); lager2 = await imLager();
+  }
+  pruefe(lager2 === '999',
+    `nach dem langsamen Start liegt weiter v${lager2} im Lager statt v999 — `
+    + 'die Reissleine wirft den Abruf weg, und die App erneuert sich auf einer '
+    + 'müden Leitung NIE');
+  // (3) Und beim naechsten Start ist sie da.
+  await starten();
+  const gezeigt2 = await zeigt();
+  pruefe(gezeigt2 === 'v999',
+    `beim zweiten Start auf der müden Leitung steht „${gezeigt2}" da statt v999`);
+
+  console.log(`    Müde Leitung (${(muede / 1000).toFixed(1)} s je Seite): `
+    + `Start nach ${(dauer / 1000).toFixed(1)} s mit v${alteNr}, `
+    + `Nachschub v${lager2} im Lager, nächster Start ${gezeigt2}`);
+  await ctx2.close(); s2.close();
+  fs.rmSync(kopie, { recursive: true, force: true });
+}
+
+await b.close(); server.close();
 
 if (fehler.length) {
   console.log(`\n  ${fehler.length} FEHLER:`);
