@@ -189,7 +189,9 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 |---|---|---|---|---|---|
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
-| 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 3 | **T2** Die Landschaft — Tiere in eine Szene stellen | alle vier | hoch | groß | T1 (gefahren) |
+| 4 | **T1b** Die restlichen fünf Lebensräume malen (15 Tiere) | alle vier | hoch | mittel | — |
+| 5 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
 | 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
@@ -4900,6 +4902,87 @@ in anderer Form: `falle` ist die Form, die ein Deutscher **tippt**, der
 Grund nennt die Grundform. Wer beide gleich erzwingt, macht die Daten
 falsch, damit die Prüfung grün wird. Verglichen werden jetzt drei
 Buchstaben ohne Bindestrich — grob, und mit Absicht grob.
+
+### T1 · Die Tiere — GEFAHREN (v387)
+
+Wer alle Umrisse einer Ebene im Buch hat, bekommt die Tiere ihres
+**Lebensraums** dazu. Für **alle vier Profile**.
+
+| Ebene | Lebensraum | Tiere |
+|---|---|---|
+| Kontinente | Im Meer | Wal · Delfin · Pinguin |
+| Länder Europa | Wald und Wiese | Fuchs · Igel · Eule |
+| Länder Afrika | Die Savanne | Elefant · Giraffe · Löwe |
+| Länder Australien | Das Outback | Känguru · Koala · Schlange |
+| Länder Mittelamerika | Die Karibik | Schildkröte · Krabbe · Krokodil |
+| Länder Asien | Der Dschungel | *(Tiger · Panda · Orang-Utan — noch nicht gemalt)* |
+| Länder Nordamerika | Wald und Fluss | *(Waschbär · Adler · Biber)* |
+| Länder Südamerika | Der Regenwald | *(Papagei · Faultier ·)* Schmetterling |
+| Bundesländer | Vor der Haustür | *(Hase · Amsel · Katze)* |
+| Hauptstädte | In der Stadt | *(Taube · Ratte · Streifenhörnchen)* |
+
+**Warum an der fertigen Ebene und nicht an der guten Runde.** Der erste
+Entwurf gab nach jeder fehlerfreien Sitzung das nächste Tier aus einer
+Liste. Das ist ein schnellerer Handel und ein leererer: das Tier hätte mit
+nichts zu tun, was das Kind gerade gelernt hat. Am Lebensraum sagt es
+etwas — wer die Savanne aufmacht, hat Afrika zu Ende gebracht. Das Tier
+ist der **Beleg**, nicht der Preis; damit bleibt die Entscheidung S2 aus
+dem ANTON-Abgleich (*„die Belohnung bleibt im Lernen"*) unangetastet.
+
+**Der Gorilla ist der einzige Affe.** Er wird nicht verdient, sondern
+kommt vorbei, wenn eine Runde **nicht** fehlerfrei war. Deshalb steht er
+in keinem Lebensraum und wird **gezählt statt gesammelt**: eine Reihe von
+Gorillas im Buch wäre die Liste der Runden, die schiefgegangen sind, und
+die gehört nicht in das Buch eines sechsjährigen Kindes. Im Buch steht ein
+Satz — „Der Gorilla war schon 3-mal da und hat mit dir geübt." Er hat ein
+freundliches Gesicht: er sagt „komm, nochmal", nicht „das war schlecht".
+
+**Kommen beide zusammen, gewinnt der Lebensraum.** Die Ebene fertig zu
+haben ist die größere Nachricht — auch wenn die letzte Runde Fehler hatte.
+
+**124 im Plan, 17 gemalt.** Stephans Liste, in seiner Reihenfolge, als
+**eine** Liste mit optionalem `bild` (Regel 6 — was zweimal dasteht, veraltet einmal: zwei Listen wären zwei
+Wahrheiten, und die eine, die man beim Nachtragen vergisst, wäre die mit
+den Bildern). `inhalt` zählt beide auseinander.
+
+**Gezeichnet, nicht geladen.** SVG-Pfade, kein Bilderordner: die App ist
+eine Datei und lädt nichts nach. 124 Bilder wären 124 Dateien; als Pfade
+kosten sie ein paar hundert Byte das Stück und sind bei jeder Größe
+scharf. Der Preis: jedes muss gezeichnet werden. Kein `transform`, kein
+`<circle>` — dieselbe Messstelle wie beim Englischbild (E3).
+
+#### Vier Befunde
+
+**1. „Einmal ganz ohne Fehler" ist nie gereist.** Gefunden beim
+Anschließen der Sammlung an den Gleichlauf: `REIST` ließ `glatt` durch —
+einen Schlüssel, den es nicht gibt. Die App schreibt
+`ohnefehler:<kind>`, und der war ausgesperrt. **Und das Tor daneben hat es
+bezeugt statt gefunden:** es fragte `REIST('glatt')`, also genau den Namen
+aus dem Prüfling. Eine Prüfung, die ihren Gegenstand abschreibt, kann nie
+etwas melden (Regel 1: sie ist kein Beweis). Zwei Fassungen lang grün.
+
+**2. Mein eigener Wächter fand einen Fehler — seinen eigenen.** Die Prüfung
+„jeder Lebensraum hängt an einer Ebene, die es gibt" meldete vier Räume als
+unerreichbar. Drei zu Recht (die Länderebenen werden **erzeugt**, nicht
+aufgeschrieben), einen zu Unrecht: `hauptstaedte` richtet seine Spalten
+mit **zwei** Leerzeichen aus, und mein Ausdruck verlangte eines. Ein
+Ausdruck, der an der Einrückung hängt, misst die Einrückung.
+
+**3. Der Aufkleber war 400 Punkte breit.** `auto-fit` mit `1fr` zieht bei
+drei Tieren jedes auf ein Drittel des Bildschirms. Jetzt feste Breite: ein
+Aufkleber ist so groß wie ein Aufkleber.
+
+**4. „das Känguru, der Koala ODER die Schlange".** `aufzaehlen` kannte nur
+„oder" — es stammt aus der Profilfrage („Fiona, Lea, Stephan oder
+Violeta?"). Über drei Tiere, die man alle drei bekommt, ist das falsch.
+
+#### Offen: die Landschaft (T2)
+
+Was noch fehlt: bei einer fertigen Ebene auf einen Umriss tippen und eine
+**Landschaft** aufmachen, in die man seine Tiere stellen kann. Die
+Zugmechanik gibt es (Fiona zieht Etiketten auf die Karte); was fehlt, ist
+der Hintergrund je Lebensraum, die Ablage der gestellten Tiere und der
+Weg dorthin.
 
 ### E11/E12 · Wendungen und Hören und schreiben — GEFAHREN (v376)
 
