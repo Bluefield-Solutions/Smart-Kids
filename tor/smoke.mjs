@@ -990,8 +990,36 @@ async function loese(p) {
   // ("Klasse! Das ist Thueringen."), meldete der Rauchtest einundzwanzig
   // Fehler, obwohl jede Antwort gewertet worden war. Eine Klasse ist eine
   // Zusage des Programms; ein Satz ist Text, den jemand aendern darf.
-  await p.waitForFunction(() => !!document.querySelector('.schirm.da .frage .richtigText'),
-    null, { timeout: 4000 });
+  /* VIER Sekunden waren zu knapp - und die Meldung sagte es nicht.
+   *
+   * Diese Frist wartet auf etwas, das KOMMEN MUSS: das Lob nach einer
+   * richtigen Antwort. Fuer so eine Frist ist eine knappe Zahl der
+   * schlechteste Fall - sie kostet nichts, solange die Sache eintritt,
+   * und macht aus Rechnerlast einen Befund, sobald sie es nicht tut.
+   * Genau das ist passiert: `ablage/eltern` riss die vier Sekunden im
+   * vollen Lauf (acht Browser auf vier Kernen) und hielt sie allein
+   * gefahren. Zehn Sekunden sind die Obergrenze, bis zu der `gemessen()`
+   * noch einen zweiten Anlauf mit gemessener Nachsicht gibt - darueber
+   * gaebe es keinen mehr.
+   *
+   * Und die MELDUNG. „page.waitForFunction: Timeout 4000ms exceeded"
+   * sagt nicht, worauf gewartet wurde; ich habe eine halbe Runde
+   * gebraucht, um die Stelle zu finden. Dieselbe Lehre wie in Q40, nur
+   * an einer Stelle, die sie noch nicht hatte. */
+  const gewertet = await p.waitForFunction(
+    () => !!document.querySelector('.schirm.da .frage .richtigText'),
+    null, { timeout: 10000 }).then(() => true).catch(() => false);
+  if (!gewertet) {
+    const lage = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      return { frage: (s?.querySelector('#frage')?.textContent || '').slice(0, 40),
+               hinweis: (s?.querySelector('.hinweis')?.textContent || '').slice(0, 40),
+               etiketten: s ? s.querySelectorAll('.etikett').length : -1 };
+    }).catch(() => ({}));
+    throw new Error(`„${info.name}" auf den Anker gezogen, aber nach 10 s kein Lob — `
+      + `Frage „${lage.frage}", Hinweis „${lage.hinweis || '—'}", `
+      + `${lage.etiketten} Etiketten. Die Antwort wurde nicht gewertet.`);
+  }
   return info.name;
 }
 
