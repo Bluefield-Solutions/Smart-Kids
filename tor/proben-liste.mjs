@@ -4275,8 +4275,12 @@ export const PROBEN = [
        ihren Suchtext noch findet, und dieser Eingriff loescht genau
        seinen eigenen. Das Tor meldete dann den fehlenden Anker statt des
        Befundes. Heute der dritte Fall dieser Art. */
-    such:"'colour',",
-    ersatz:"'color', // Eingriff der Gegenprobe. Anker bleibt stehen: 'colour',",
+    /* Der Anker nennt das Wort DAVOR mit: seit E4 steht `'colour',` ein
+       zweites Mal in derselben Datei, naemlich als Bildeintrag. Ein Anker,
+       der zweimal zutrifft, verstellt die Stelle, die gerade zuerst kommt -
+       und das ist dann eine andere Probe als die aufgeschriebene. */
+    such:"'cold', 'colour',",
+    ersatz:"'cold', 'color', // Eingriff der Gegenprobe. Anker: 'cold', 'colour',",
     an:{ datei:'src/inhalt/englisch.js', text:"'color'," },
     deckt:'englisch',
     sagt:'nicht in der amtlichen Liste' },
@@ -4436,6 +4440,58 @@ export const PROBEN = [
       + "  //Anker:  vorlesen(ziel.wort, 'en');",
     an:{ ...DIST, text:"//Anker:  vorlesen(ziel.wort, 'en');" },
     sagt:'IST das Wort die Frage' },
+
+  /* E4 - ein Wort faellt aus dem Bildplan heraus.
+   *
+   * Der Eingriff streicht „about" aus den Funktionswoertern. Danach steht
+   * es in keiner der drei Listen: es bekommt kein Bild, und niemand hat
+   * das entschieden - es ist einfach durchgefallen. Genau die Sorte
+   * Luecke, die man beim Nachtragen eines Wortes macht und die erst
+   * auffiele, wenn Lea in der Schule danach gefragt wird. */
+  { n:'ein Wort fällt aus dem Bildplan heraus', tor:'inhalt',
+    datei:'src/inhalt/englisch.js',
+    such:"  'a/an', 'about', 'and', 'at', 'be (am, are, is)', 'can/can‘t', 'come',",
+    ersatz:"  'a/an', 'and', 'at', 'be (am, are, is)', 'can/can‘t', 'come',\n"
+      + "  //Anker:  'a/an', 'about', 'and', 'at', 'be (am, are, is)', 'can/can‘t', 'come',",
+    an:{ datei:'src/inhalt/englisch.js', text:"  'a/an', 'and', 'at', 'be (am, are, is)'" },
+    deckt:'englisch',
+    sagt:'in keiner der drei Listen' },
+
+  /* E4 - ein Blatt hat nicht zehn Felder.
+   *
+   * Der Nutzer schneidet jedes Blatt in ein 5x2-Raster. Neun Felder heissen
+   * ein anderes Raster - und das faellt beim Schneiden nicht auf, sondern
+   * erst am schiefen Bild. Der Eingriff sitzt an der Zahl im Werkzeug,
+   * nicht an einer Kopie im Tor: geprueft wird, was der Nutzer wirklich
+   * bekommt. */
+  { n:'ein Bildblatt hat nicht zehn Felder', tor:'inhalt',
+    datei:'tools/bildprompt.mjs',
+    such:'const JE_BLATT = 10;',
+    ersatz:'const JE_BLATT = 9; //Anker:  const JE_BLATT = 10;',
+    an:{ datei:'tools/bildprompt.mjs', text:'const JE_BLATT = 9;' },
+    deckt:'englisch',
+    sagt:'Felder statt zehn' },
+
+  /* QS3 - die Zeile „Ton als Gegenstand" ist eine EINGABE, keine Notiz.
+   *
+   * Der Eingriff stellt Leas Zelle auf „nein". Danach spricht die App
+   * weiter (richtig), die Tabelle sagt aber etwas anderes - und genau das
+   * muss auffallen. Ohne diese Probe koennte man die Zeile auf „nein"
+   * stellen, ohne dass ein Tor rot wird; sie waere dann ein Satz im
+   * Backlog und kein Soll.
+   *
+   * Die andere Haelfte - ein Profil mit „ja", das nichts hoert - faengt
+   * die Probe „die Englischebene sagt das Wort gar nicht mehr". Erst
+   * zusammen sind sie eine Aussage. */
+  { n:'die Zeile „Ton als Gegenstand" wird nicht gelesen', tor:'smoke',
+    /* `bauen:true`, obwohl der Eingriff nur ein Dokument anfasst: die
+       Wegwerf-Kopie hat kein `dist/`, und ohne Bau laeuft der Rauchtest in
+       „ERR_HTTP_RESPONSE_CODE_FAILURE" statt in den Befund. */
+    args:['--nur=durchgang'], bauen:true, datei:'docs/Lernkiste-BACKLOG.md',
+    such:'| Ton als Gegenstand (Englisch) | ja | ja | **ja** | **ja** |',
+    ersatz:'| Ton als Gegenstand (Englisch) | ja | nein | **ja** | **ja** |',
+    an:{ datei:'docs/Lernkiste-BACKLOG.md', text:'| ja | nein | **ja**' },
+    sagt:'die Profiltabelle für dieses Profil' },
 
   /* Q51 - die Blindprobe unter der Randmessung meldet auch dann noch,
    * wenn die Aufnahme wiederholt wird.

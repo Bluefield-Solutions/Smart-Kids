@@ -31,7 +31,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor -- --betroffen`** | bei **jeder** Änderung | **14 s bis 200 s**, je nachdem, was `git` meldet | alle billigen Tore plus die Browsertore, die von den geänderten Dateien überhaupt erreicht werden können |
 | `npm run tor` | **einmal** je Runde, vor dem Einchecken | **~3 min** (gemessen 176,6 · 179,6 · 182,4 · 198,6 · 204,0 s am 04.09.) | die volle Kette, alle Größen, alle Bildschirme |
 | Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | dieselbe Kette ohne `ansicht` — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 311 Gegenproben, 6 nebeneinander |
+| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 315 Gegenproben, 6 nebeneinander |
 
 **Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
 Rest fährt der Runner.**
@@ -110,6 +110,16 @@ npm run tor        die ganze Kette, rund 3 min. Der Runner fährt sie ohnehin
                    sie warten. Die Liste steht in `tor/kette-liste.mjs`,
                    der Läufer in `tools/kette.mjs`; `SMARTKIDS_BECKEN`
                    setzt die Breite.
+npm run bildprompt DIE BILD-PROMPTS FÜR E4. Ohne Argument die elf Blätter mit
+                   ihren Wörtern, `-- <blatt>` einen vollständigen Prompt zum
+                   Kopieren, `-- --alle` alle elf. Ein Prompt = EIN Bild mit
+                   zehn Feldern (5 × 2), danach in ein 5×2-Raster
+                   schneiden. Der Stil-Block steht in `tools/bildprompt.mjs`
+                   genau einmal; die Motive stehen als Daten in
+                   `src/inhalt/englisch.js` und werden wortwörtlich
+                   eingesetzt. `inhalt` prüft, dass jedes der 151 Wörter in
+                   genau einer der drei Mengen steht (Bild · Farbfleck ·
+                   Funktionswort) und dass jedes Blatt zehn Felder hat.
 npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
                    `-- <export.json>` legt eine Urteilsliste an (der Export
                    kommt aus dem Elternbereich, „Als JSON sichern"),

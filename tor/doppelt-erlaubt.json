@@ -121,13 +121,13 @@
   },
   {
     "dateien": "src/inhalt/englisch.js",
-    "token": 301,
+    "token": 1204,
     "wo": [
       "src/inhalt/englisch.js:31",
       "src/inhalt/englisch.js:39",
       "src/inhalt/englisch.js:47"
     ],
-    "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt."
+    "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt. — Nachgetragen in E4: von 301 auf 1204. Der Bildplan (BILDER) ist die zweite gleichfoermige Tabelle in derselben Datei, 86 Zeilen der Form `{ wort, gebiet, motiv }`, und sie ist mit dem Wortschatz zu EINEM Lauf zusammengewachsen: dazwischen stehen nur Kommentare, und die zaehlt das Tor nicht mit. Zusammenlegen gibt es auch hier nichts - was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderes Motiv. Die Zahl haengt an zwei Zaehlungen: 151 Woerter und 86 Bilder. Wer sie hochsetzt, prueft zuerst, ob wirklich nur Zeilen dazugekommen sind - das Untertor `englisch` rechnet beide Zahlen nach."
   },
   {
     "dateien": "prototyp/bauen.mjs",
@@ -137,5 +137,14 @@
       "prototyp/bauen.mjs:325"
     ],
     "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen."
+  },
+  {
+    "dateien": "src/inhalt/englisch.js · tools/backen-kontinente.mjs",
+    "token": 104,
+    "wo": [
+      "src/inhalt/englisch.js:353",
+      "tools/backen-kontinente.mjs:24"
+    ],
+    "warum": "Zwei Tabellen, die sich nur in der FORM gleichen: der Bildplan (`{ wort, gebiet, motiv }`, 86 Zeilen) und die Kontinentliste (`{ id, name, ne }`, sieben Zeilen). Beide sind Datenzeilen mit drei Feldern und ausgerichteten Werten - mehr haben sie nicht miteinander zu tun, und sie stehen in zwei Verzeichnissen mit verschiedenen Aufgaben (Inhalt und Backwerkzeug). Zusammenlegen waere hier nicht Aufraeumen, sondern das Verknuepfen von Englischvokabeln mit Erdkunde-Rohdaten."
   }
 ]

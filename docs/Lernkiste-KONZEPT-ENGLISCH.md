@@ -373,6 +373,20 @@ Das ist **Arbeit und kein Code**, so wie D1 („ein Begleiter"). Deshalb ist
 es ein eigenes Paket (E4) und deshalb steht dort eine Zahl: **wie viele
 Bilder fehlen noch**, damit der Fortschritt sichtbar ist statt gefühlt.
 
+**Gemessen in E4a: es sind 86, nicht 140.** Von den 151 Wörtern haben zehn
+schon ein Bild (die Farben — der Fleck aus E3 genügt), und 55 bekommen
+keines, weil man „about", „please" oder „the" nicht malen kann, ohne zu
+raten. Die Einteilung steht als Daten in `src/inhalt/englisch.js`; das
+Untertor `englisch` verlangt, dass die drei Mengen die 151 lückenlos und
+überschneidungsfrei decken — beim Aufschreiben stand „weekend" prompt in
+zweien.
+
+Die 86 sind in **elf Themenblätter zu je zehn Feldern** geordnet, und
+`npm run bildprompt` gibt zu jedem einen fertigen Prompt aus. Ein Prompt
+erzeugt EIN Bild mit zehn Feldern, das danach in ein 5×2-Raster
+geschnitten wird — zehn Zeichnungen in einem Zug haben denselben Strich,
+86 einzelne hätten 86 verschiedene.
+
 ---
 
 ## § 5 · Die Spielformen
@@ -671,7 +685,8 @@ App spielbar** — kein halbes Fach im Auslieferungsstand.
 | **E1** | Wortschatz holen und eintragen: ISB-Liste, Themengebiete, Fiona-Teilmenge | `inhalt` zählt die Wörter je Themengebiet und meldet, wenn eins leer ist |
 | **E2** | Englische Stimme: `sagen()` je Ebene, Stimmensuche, Auskunft wenn keine da ist | Tor E-c |
 | **E3** | Vierte Welt, erste Ebene: **Hören und zeigen** | **GEFAHREN (v373)** — mit Farben und Zahlen; `passt` grün mit vier Weltkarten (E-e), Tor E-c am laufenden Bildschirm |
-| **E4** | Die Bilder — SVG je Wort. **Zahl offen halten:** wie viele fehlen | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommen soll |
+| **E4a** | Der Bildplan: welches Wort ein Bild bekommt, und **was** darauf zu sehen ist — plus elf fertige Prompts zu je zehn Feldern | **GEFAHREN (v374)** — `inhalt` prüft, dass die drei Mengen (86 Bilder · 10 Farbflecken · 55 Funktionswörter) die 151 genau einmal decken |
+| **E4b** | Die Bilder — SVG je Wort. **Zahl offen halten:** wie viele fehlen | `inhalt` meldet „gezeichnet: N von 86" |
 | **E5** | **Zwei Wörter, ein Laut Unterschied** — die Lautpaare mit Grund | Tor E-a; und die vier Stolperstellen aus § 2 sind alle vertreten |
 | **E6** | **Sag es** — Sprechaufgabe, zwei Anläufe, kein Urteil; eigene Stimme prüfen | Tore E-b und E-d |
 | **E7** | Lea liest: **Wort zum Bild** | am Gerät |

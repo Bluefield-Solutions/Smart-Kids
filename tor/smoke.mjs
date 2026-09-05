@@ -354,14 +354,11 @@ const SACHLICH = (() => {
     .map((t, i) => /sachlich/i.test(t) ? ids[i] : null).filter(Boolean));
 })();
 
-const VORLESEN = (() => {
-  const doc = fs.readFileSync('docs/Lernkiste-BACKLOG.md', 'utf8');
-  const z = doc.match(/^\|\s*Vorlesen\s*\|(.+)\|\s*$/m);
-  if (!z) { fehler.push('Die Zeile „Vorlesen" fehlt im Backlog — dann weiß der '
-    + 'Rauchtest nicht, auf welche Ansage er warten darf'); return {}; }
-  const ids = PROFIL_IDS;
-  return Object.fromEntries(z[1].split('|').map((t, i) => [ids[i], /\bja\b/i.test(t)]));
-})();
+/* „Vorlesen" und „Ton als Gegenstand" kommen jetzt beide aus
+ * `profiltabelle.mjs` - siehe dort, warum es EIN Leser ist und nicht zwei.
+ * Der Leser stand hier, solange es nur die eine Zeile gab. */
+const VORLESEN = PT.VORLESEN;
+const TON_GEGENSTAND = PT.TON_GEGENSTAND;
 
 /**
  * Was auf dem Bildschirm stand, als der Klick nicht ankam (Q41).
@@ -3502,11 +3499,24 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * dass sie es ueberhaupt hoert. Also ein eigener Zaehler und ein
          * eigenes Urteil, statt einer Ausnahme. */
         const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
-        if (!gesagt.some(x => String(x).trim() === auf.wort))
+        const kam = gesagt.some(x => String(x).trim() === auf.wort);
+        /* WER es hoeren muss, steht in der Profiltabelle - Zeile „Ton als
+           Gegenstand (Englisch)" - und nicht hier (QS3, Regel 3: das Soll
+           kommt aus der Referenz). Geprueft wird in beide Richtungen: wer
+           „ja" traegt, muss es hoeren; wer „nein" traegt, darf es nicht
+           hoeren. Ohne die zweite Haelfte waere die Zeile eine Notiz und
+           keine Eingabe - man koennte sie auf „nein" stellen, und nichts
+           wuerde rot. */
+        if (TON_GEGENSTAND[wer] && !kam)
           merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde nicht `
-            + `gesagt — auf dieser Ebene IST das Wort die Frage, für jedes Profil `
+            + `gesagt — auf dieser Ebene IST das Wort die Frage, und die `
+            + `Profiltabelle sagt für ${wer} „ja" `
             + `(gehört: ${gesagt.join(' | ') || 'nichts'})`));
-        else gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+        else if (!TON_GEGENSTAND[wer] && kam)
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde gesagt, `
+            + 'obwohl die Profiltabelle für dieses Profil „nein" trägt — dann hängt '
+            + 'der Ton nicht an der Tabelle, sondern am Bildschirm'));
+        else if (kam) gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
         await p.$eval(`.schirm.da .engkarte[data-id="${auf.id}"]`, x => x.click());
         wege.add(`${wer}: englisch gehört und getippt`);
         await bewertet(p);
@@ -3724,8 +3734,10 @@ console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'K
 console.log(`  Profile hier:               ${PROFILE_HIER.join(' · ')}`);
 console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0} von ${EBENEN_JE('fiona')}, `
   + `Lea ${gehoert.lea||0} von ${EBENEN_JE('lea')}`);
-console.log(`  Englisch gehört (E3):       Fiona ${gehoertEn.fiona||0} von ${ENGLISCH_JE('fiona')}, `
-  + `Lea ${gehoertEn.lea||0} von ${ENGLISCH_JE('lea')} — das Wort ist die Frage, nicht die Hilfe`);
+console.log(`  Englisch gehört (QS3):      `
+  + PROFIL_IDS.map(w => `${NAME_VON[w]} ${gehoertEn[w]||0}/${ENGLISCH_JE(w)}`
+      + `${TON_GEGENSTAND[w] ? '' : ' (Tabelle: nein)'}`).join(' · ')
+  + ' — Soll aus der Zeile „Ton als Gegenstand"');
 // Fiona liest noch nicht: JEDE Aufgabe muss angesagt werden. Lea liest -
 // bei ihr waere dieselbe Ansage nur Laerm, und das steht in ihrem Profil.
 // Die Acht war hier festgenagelt und wurde mit der neunten Ebene falsch.
@@ -3743,12 +3755,16 @@ if (hier('fiona') && (gehoert.fiona || 0) < EBENEN_JE('fiona'))
   fehler.push(`Fiona bekam nur ${gehoert.fiona||0} von ${EBENEN_JE('fiona')} Aufgaben `
     + 'vorgelesen — sie kann noch nicht lesen, ohne Ansage ist die Ebene für sie '
     + 'nicht spielbar');
-/* Und die andere Haelfte: auf der Englischebene muss BEIDEN das Wort
-   gesagt worden sein. Ohne dieses Urteil waere der Ausschluss oben ein
-   Loch - eine Ebene, auf der nie jemand etwas hoert, faellt dann keinem
-   mehr auf. */
-for (const w of ['fiona', 'lea'])
-  if (hier(w) && (gehoertEn[w] || 0) < ENGLISCH_JE(w))
+/* Und die andere Haelfte: auf der Englischebene muss jedem Profil, das die
+   Tabelle mit „ja" fuehrt, das Wort gesagt worden sein. Ohne dieses Urteil
+   waere der Ausschluss oben ein Loch - eine Ebene, auf der nie jemand
+   etwas hoert, faellt dann keinem mehr auf.
+
+   Die Namen kommen aus der TABELLE und nicht aus einer Liste hier: mit E10
+   bis E12 bekommen auch Stephan und Violeta englische Ebenen, und eine
+   Liste `['fiona','lea']` waere dann still zu kurz. */
+for (const w of PROFIL_IDS)
+  if (hier(w) && TON_GEGENSTAND[w] && (gehoertEn[w] || 0) < ENGLISCH_JE(w))
     fehler.push(`${w} bekam auf der Englischebene ${gehoertEn[w]||0} von `
       + `${ENGLISCH_JE(w)} Wörtern gesagt — dort IST das Wort die Frage, und ohne `
       + 'es stehen vier Bilder ohne Aufgabe da');

@@ -1587,6 +1587,21 @@
       "zeit": "2026-09-05",
       "s": 75
     },
+    "ein Wort fällt aus dem Bildplan heraus": {
+      "commit": "dac353b401e3131f48c5d4cc2fdb5751548c8f72",
+      "zeit": "2026-09-05",
+      "s": 9
+    },
+    "ein Bildblatt hat nicht zehn Felder": {
+      "commit": "ae7be602c5018baa5b2530d9c5580411da7fd570",
+      "zeit": "2026-09-05",
+      "s": 9
+    },
+    "die Zeile „Ton als Gegenstand\" wird nicht gelesen": {
+      "commit": "203f04314d65531dd9598f79d82f76e251f5380e",
+      "zeit": "2026-09-05",
+      "s": 91
+    },
     "die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung": {
       "commit": "80633617eba308b1b33fd54f421c4affe828afc8",
       "zeit": "2026-09-04",

@@ -187,21 +187,20 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
-| 1 | **E4** Die Bilder — ein SVG je Wort | Fiona, Lea | hoch | groß | Malarbeit, kein Code |
-| 2 | **E5–E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E4 (nur E10 nicht) |
-| 3 | **QS3** „Ton als Gegenstand" braucht ein Tor — jetzt steht Englisch | nur ich | mittel | klein | — |
-| 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
-| 5 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
-| 6 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
-| 7 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
-| 8 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
-| 9 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 10 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
-| 11 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
-| 12 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
-| 13 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
-| 14 | **G19** Das Wasserzeichen der Weltenkachel liegt hochkant zu 100 % hinter dem Namen | niemand am Zielgerät | gering | klein | — |
-| 15 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
+| 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
+| 2 | **E5–E12** Englisch — der Rest der Welt | Lea, Fiona, ihr beide | hoch | groß | E4b (nur E10 nicht) |
+| 3 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
+| 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
+| 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
+| 7 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
+| 8 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
+| 9 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
+| 10 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
+| 11 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
+| 12 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
+| 13 | **G19** Das Wasserzeichen der Weltenkachel liegt hochkant zu 100 % hinter dem Namen | niemand am Zielgerät | gering | klein | — |
+| 14 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
 dreißig Zeilen, davon zwanzig durchgestrichen — und trotzdem zweimal
@@ -213,7 +212,8 @@ dasteht, veraltet einmal.** Der Nachweis, dass ein Punkt gefahren ist, ist
 sein Block, nicht diese Zeile.
 
 *Dreimal nachgezogen: 01.09.2026 (fünf Zeilen), 04.09.2026 (die Tabelle
-umgestellt), 05.09.2026 (E3 gefahren, E4 rückt auf Rang 1).*
+umgestellt), 05.09.2026 (E3 gefahren, E4 rückt auf Rang 1; dann E4a und QS3
+gefahren, E4b bleibt Rang 1).*
 
 **A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
 Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
@@ -4751,6 +4751,92 @@ damit die halbe Ratsche ein zweites Mal in derselben Runde. Das ist keine
 
 Der Zustand war übrigens schon vorher da (Schreiben: 44 %). Die vierte
 Kachel hat ihn nicht verursacht, sondern sichtbar gemacht.
+
+### E4a · Der Bildplan und die elf Prompts — GEFAHREN (v374)
+
+E4 ist Malarbeit, und Malarbeit fängt mit einer Entscheidung an: **welches
+Wort bekommt überhaupt ein Bild.** Die beiden amtlichen Listen kennen die
+Frage nicht — sie ist meine, und deshalb steht sie in den Daten und nicht
+im Referenzverzeichnis.
+
+Die 151 Wörter zerfallen jetzt in **genau drei Mengen**, und `inhalt`
+verlangt, dass sie sich lückenlos und überschneidungsfrei decken:
+
+| | wieviel | Bild |
+|---|---|---|
+| **BILDER** | 86 | muss gemalt werden — Wort, Blatt und **Motiv** |
+| **FARBEN** | 10 | hat schon eines: der Farbfleck aus E3 |
+| **NUR_WORT** | 55 | bekommt keines — „about", „please", „the" |
+
+Die Prüfung hat sich sofort bezahlt gemacht: **„weekend" stand in zwei
+Listen**, und ohne sie hätte das Wort ein Bild bekommen und wäre trotzdem
+als Funktionswort gezählt worden.
+
+#### Die Prompts: elf Blätter, je zehn Felder
+
+`npm run bildprompt` gibt sie aus — einen je Blatt, vollständig zum
+Kopieren. **Ein Prompt erzeugt EIN Bild mit zehn Feldern** (5 × 2, jedes
+500 × 500 in einer 2500 × 1000er Leinwand), das danach in ein 5×2-Raster
+geschnitten wird.
+
+Warum zehn auf einmal und nicht 86 einzeln: 86 Einzelbilder heißen 86 Mal
+denselben Stil neu treffen, und getroffen wird er nie ganz. Zehn Felder
+auf einem Blatt entstehen in einem Zug — gleiche Strichstärke, gleiche
+Größe, gleiche Haltung. Das Schneiden ist danach Rechnung und kein
+Augenmaß, und **deshalb hat jedes Blatt zehn Felder, auch das letzte**: die
+Reste werden mit „empty" aufgefüllt statt das Raster zu ändern. Ein Blatt
+mit neun Feldern fiele beim Schneiden nicht auf, sondern erst am schiefen
+Bild — `inhalt` zählt sie deshalb am Werkzeug selbst nach.
+
+Der **Stil-Block steht genau einmal** in `tools/bildprompt.mjs` (Regel 6).
+Er sagt drei Dinge, und jedes hat einen Grund: das *Raster*, damit das
+Schneiden Rechnung ist; den *Stil* — flache schwarze Flächen auf Weiß,
+weil daraus SVG-Pfade werden sollen und Grau, Verläufe und Schatten sich
+nicht nachzeichnen lassen; und die *Haltung* je Motiv, denn „a cat" allein
+lässt zehnmal etwas anderes entstehen.
+
+Drei Blätter tragen zusätzlich einen **Hinweis fürs ganze Blatt**, und der
+wichtigste ist der bei den Präpositionen: *dieselbe Kiste, derselbe Ball,
+nur der Ort ändert sich.* Wären sie je Feld anders gezeichnet, lernte ein
+Kind „mal ist da eine Kiste und mal ein Korb" statt „auf, unter, neben" —
+und das Blatt hätte genau das verfehlt, wofür es da ist.
+
+Die elf Blätter: Tiere (9) · Essen und Trinken (18, zwei Blätter) · In der
+Schule (9) · Kleidung (5) · Menschen und Familie (9) · Zuhause, Feste und
+Zeit (9) · Wo? (6) · Gegensätze und Gefühle (8) · Spielen und Sport (8) ·
+Länder und Übriges (5).
+
+**Was offen bleibt (E4b):** die Bilder selbst. Der Fortschritt ist jetzt
+eine Zahl und kein Gefühl — `inhalt` meldet „gezeichnet: 0 von 86", und
+die Zahl steigt, sobald ein Wort seinen Pfad bekommt.
+
+### QS3 · „Ton als Gegenstand" ist eine Eingabe geworden — GEFAHREN (v374)
+
+Die Zeile stand seit der Prüfschleife in der Profiltabelle und **wurde von
+keinem Tor gelesen**. Damit war sie ein Satz im Backlog: man hätte sie auf
+„nein" stellen können, und nichts wäre rot geworden.
+
+Jetzt liest `tor/profiltabelle.mjs` sie — und zwar mit demselben Leser wie
+„Vorlesen". Der stand bis hierher in `tor/smoke.mjs`; mit der zweiten
+Ja-Nein-Zeile wären daraus zwei fast gleiche Leser geworden, und einer von
+beiden veraltet (Regel 6).
+
+Der Rauchtest urteilt in **beide Richtungen**: wer in der Tabelle „ja"
+trägt, muss das englische Wort hören; wer „nein" trägt, darf es nicht
+hören. Und die Namen kommen aus der Tabelle, nicht aus einer Liste im Tor
+— mit E10 bis E12 bekommen auch Stephan und Violeta englische Ebenen, und
+`['fiona','lea']` wäre dann still zu kurz.
+
+**Der Leser scheiterte an einem Klammerpaar.** Die Zeile heißt „Ton als
+Gegenstand (Englisch)", und `zeile()` setzte den Namen ungeschützt in
+einen regulären Ausdruck: die Klammern wurden zur Gruppe, das Muster
+passte auf nichts, und der Leser meldete pflichtschuldig „die Zeile fehlt
+im Backlog" — bei einer Zeile, die dasteht. Der Name wird jetzt maskiert.
+
+Gegenprobe 315 stellt Leas Zelle auf „nein". Die App spricht dann weiter
+(richtig), die Tabelle sagt etwas anderes — und genau das schlägt an. Die
+andere Hälfte fängt die Probe „die Englischebene sagt das Wort gar nicht
+mehr". Erst zusammen sind sie eine Aussage.
 
 ### QS10 · Der naechtliche Probenlauf verliert seinen Nachweis bei jedem Push — GEFLICKT
 

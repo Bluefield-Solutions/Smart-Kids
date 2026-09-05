@@ -54,7 +54,15 @@ export const PROFILNAMEN = PROFIL_IDS.map(id => NAME_VON[id]);
  * still zu einem leeren Soll werden, gegen das alles gruen ist.
  */
 export function zeile(name, wozu){
-  const z = BACKLOG.match(new RegExp(`^\\|\\s*${name}\\s*\\|(.+)\\|\\s*$`, 'm'));
+  /* Der Name wird MASKIERT, bevor er ins Muster geht.
+   *
+   * „Ton als Gegenstand (Englisch)" hat Klammern, und die sind in einem
+   * regulaeren Ausdruck eine Gruppe: das Muster passte auf nichts, und der
+   * Leser meldete pflichtschuldig „die Zeile fehlt im Backlog" - bei einer
+   * Zeile, die dasteht. Ein Leser, der an einem Klammerpaar scheitert,
+   * faellt beim naechsten Zeilennamen wieder darauf herein. */
+  const roh = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const z = BACKLOG.match(new RegExp(`^\\|\\s*${roh}\\s*\\|(.+)\\|\\s*$`, 'm'));
   if (!z) { FEHLER.push(`Die Zeile „${name}" fehlt im Backlog — `
     + `dann prüft der Rauchtest ${wozu} gegen nichts`); return null; }
   return z[1].split('|');
@@ -68,5 +76,35 @@ export function zahlen(name, wozu){
   return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, n[i]]));
 }
 
+/**
+ * Dieselbe Zeile als JA/NEIN je Profil.
+ *
+ * Stand bis QS3 nur in `tor/smoke.mjs`, einmal fuer „Vorlesen". Mit der
+ * zweiten Ja-Nein-Zeile („Ton als Gegenstand") waeren daraus zwei fast
+ * gleiche Leser geworden - genau das, was Regel 6 verbietet: was zweimal
+ * dasteht, veraltet einmal, und dann liest ein Tor die eine Zeile und ein
+ * anderes die andere, ohne dass eines rot wird.
+ */
+export function jaNein(name, wozu){
+  const zellen = zeile(name, wozu);
+  if (!zellen) return {};
+  return Object.fromEntries(PROFIL_IDS.map((id, i) => [id, /\bja\b/i.test(zellen[i] || '')]));
+}
+
 export const SITZUNG = zahlen('Aufgaben je Sitzung', 'den Vorlauf');
 export const TIEFE = zahlen('Ländertiefe', 'die Tiefe');
+export const VORLESEN = jaNein('Vorlesen', 'auf welche Ansage er warten darf');
+/* QS3: die zweite Zeile ueber den Ton - und sie meint etwas anderes.
+ *
+ * „Vorlesen" ist die LESEHILFE: die Frage wird laut gesagt, weil das Kind
+ * sie nicht lesen kann. Das braucht nur Fiona. Auf einer Hoeraufgabe ist
+ * der Ton dagegen der GEGENSTAND: ohne ihn ist es keine leichtere Aufgabe,
+ * sondern gar keine - vier Bilder ohne Frage.
+ *
+ * Ohne diese zweite Zeile muesste ein Tor sich entscheiden, und beide
+ * Antworten waeren falsch: entweder es winkt eine stumme Englischaufgabe
+ * durch (weil Lea „Vorlesen: nein" traegt), oder es schlaegt bei einer
+ * richtigen an (weil sie trotzdem etwas hoert). Genau das ist beim Bauen
+ * von E3 passiert. */
+export const TON_GEGENSTAND = jaNein('Ton als Gegenstand (Englisch)',
+  'wer auf einer Höraufgabe das Wort hören muss');

@@ -280,3 +280,185 @@ export function ablenkerFuer(ziel, wuerfel, wieviel = 3){
   }
   return andere.slice(0, wieviel);
 }
+
+/* ---------- Die Bilder (E4) ----------------------------------------------
+ *
+ * 140 Woerter wollen Bilder, sagt das Konzept - und das ist Arbeit und kein
+ * Code. Was hier steht, ist der PLAN dafuer: welches Wort ein Bild bekommt,
+ * und WAS darauf zu sehen sein soll. Die Zeichnung selbst kommt danach.
+ *
+ * Zwei Listen, und jedes der 151 Woerter steht in genau einer davon:
+ *
+ *   BILDER    Wort + Motiv. Das Motiv ist englisch und wortwoertlich das,
+ *             was im Bild-Prompt landet - `tools/bildprompt.mjs` setzt es
+ *             ein, ohne es umzuschreiben.
+ *   NUR_WORT  Funktionswoerter. „about", „please", „the" - man kann sie
+ *             nicht malen, und ein Bild dafuer waere geraten. Sie lernt man
+ *             im SATZ (E9, E11), nicht am Bild.
+ *
+ * Die zehn Farben stehen in KEINER der beiden: ihr Bild ist der Farbfleck
+ * aus E3, es muss niemand malen. Das Untertor `englisch` rechnet die drei
+ * Mengen zusammen und verlangt, dass sie die 151 genau einmal decken - eine
+ * Einteilung, die man vergessen kann, waere in einem Jahr keine mehr.
+ *
+ * WAS HIER MEINE ENTSCHEIDUNG IST, und das gehoert dazu: die Einteilung
+ * selbst. Das ISB sagt nicht, welches Wort man malen kann - beide amtlichen
+ * Listen kennen den Unterschied gar nicht. Amtlich ist die Wortliste; die
+ * Spalte daneben ist meine. Deshalb steht sie hier und nicht im
+ * Referenzverzeichnis.
+ */
+
+/** Die Themenblaetter - je Blatt EIN Prompt, je Prompt zehn Felder. */
+export const BILDGEBIETE = [
+  { id: 'tiere',       titel: 'Tiere' },
+  { id: 'essen',       titel: 'Essen und Trinken' },
+  { id: 'schule',      titel: 'In der Schule' },
+  { id: 'kleidung',    titel: 'Kleidung' },
+  { id: 'menschen',    titel: 'Menschen und Familie',
+    /* Ein `hinweis` steht im Prompt UNTER dem Stil und ueber den Feldern.
+       Er gilt fuer das ganze Blatt und sagt, was die zehn Felder
+       miteinander zu tun haben - das kann kein einzelnes Motiv sagen. */
+    hinweis: 'All the people on this sheet are drawn in the same way: the same '
+      + 'proportions, the same simple round head, no faces except two dot eyes '
+      + 'and a mouth. Only height, hair and clothing tell them apart.' },
+  { id: 'zuhause',     titel: 'Zuhause, Feste und Zeit' },
+  { id: 'wo',          titel: 'Wo? — die Praepositionen',
+    /* Der wichtigste Hinweis von allen. Auf diesem Blatt ist der
+       Unterschied zwischen den Feldern die ganze Lehre: waeren Kiste und
+       Ball je Feld anders gezeichnet, lernte ein Kind „mal ist da eine
+       Kiste und mal ein Korb" statt „auf, unter, neben". */
+    hinweis: 'Every panel on this sheet shows THE SAME closed box and THE SAME '
+      + 'ball, drawn identically, in the same size and the same position on the '
+      + 'ground line. The ONLY difference between the panels is where the ball '
+      + 'is. Panel 6 shows a table instead of the box, because a ball cannot lie '
+      + 'under a box that stands on the floor.' },
+  { id: 'gegensaetze', titel: 'Gegensaetze und Gefuehle',
+    hinweis: 'Where a panel shows a pair, both halves are drawn identically apart '
+      + 'from the one property the word is about, and the half that the word '
+      + 'means is the solid black one.' },
+  { id: 'sport',       titel: 'Spielen und Sport' },
+  { id: 'rest',        titel: 'Laender und Uebriges' },
+];
+
+/* Wort, Themenblatt, Motiv.
+ *
+ * Das Motiv ist ENGLISCH, weil der Prompt englisch ist - eine deutsche
+ * Beschreibung muesste beim Einsetzen uebersetzt werden, und dabei geht
+ * genau die Genauigkeit verloren, um die es hier geht.
+ *
+ * Es beschreibt EINEN Gegenstand in EINER Haltung. „a cat" reicht nicht -
+ * ein Bildermacher zeichnet dann zehnmal etwas anderes, mal von vorn, mal
+ * springend, und die zehn Felder passen nicht zusammen. Deshalb steht die
+ * Ansicht dabei. */
+export const BILDER = [
+  // --- Tiere ---
+  { wort: 'cat',      gebiet: 'tiere', motiv: 'a cat sitting upright, seen from the side, tail curled around its paws' },
+  { wort: 'chicken',  gebiet: 'tiere', motiv: 'a hen standing, seen from the side, with a comb and a rounded body' },
+  { wort: 'dog',      gebiet: 'tiere', motiv: 'a dog sitting upright, seen from the side, with floppy ears' },
+  { wort: 'fish',     gebiet: 'tiere', motiv: 'a single fish seen from the side, with a fan tail and one round eye' },
+  { wort: 'hamster',  gebiet: 'tiere', motiv: 'a hamster sitting on its hind legs, seen from the side, holding a seed' },
+  { wort: 'horse',    gebiet: 'tiere', motiv: 'a horse standing, seen from the side, with a mane and a tail' },
+  { wort: 'mouse',    gebiet: 'tiere', motiv: 'a mouse seen from the side, with big round ears and a long thin tail' },
+  { wort: 'pet',      gebiet: 'tiere', motiv: 'a child seen from the front holding a small cat in both arms' },
+  { wort: 'rabbit',   gebiet: 'tiere', motiv: 'a rabbit sitting, seen from the side, with two long upright ears' },
+  // --- Essen und Trinken ---
+  { wort: 'apple',      gebiet: 'essen', motiv: 'one apple seen from the front, with a short stalk and one leaf' },
+  { wort: 'bread',      gebiet: 'essen', motiv: 'a whole loaf of bread seen from the side, with a rounded top' },
+  { wort: 'butter',     gebiet: 'essen', motiv: 'a rectangular block of butter on a small dish, seen from the side' },
+  { wort: 'cheese',     gebiet: 'essen', motiv: 'a triangular wedge of cheese seen from the side, with three round holes' },
+  { wort: 'chips',      gebiet: 'essen', motiv: 'a paper cone of chips (french fries) standing upright, seen from the front' },
+  { wort: 'chocolate',  gebiet: 'essen', motiv: 'a bar of chocolate seen from above, divided into six squares, one corner broken off' },
+  { wort: 'drink',      gebiet: 'essen', motiv: 'a tall glass with a bent drinking straw, seen from the side' },
+  { wort: 'eat',        gebiet: 'essen', motiv: 'a round empty plate seen from above with a fork on its left and a knife on its right' },
+  { wort: 'egg',        gebiet: 'essen', motiv: 'a boiled egg standing in an egg cup, seen from the side' },
+  { wort: 'fruit',      gebiet: 'essen', motiv: 'a bowl seen from the side, filled with an apple, a pear and a bunch of grapes' },
+  { wort: 'ham',        gebiet: 'essen', motiv: 'two overlapping oval slices of ham lying flat, seen from above' },
+  { wort: 'plum',       gebiet: 'essen', motiv: 'one plum seen from the front, with a short stalk and one leaf, and a vertical groove' },
+  { wort: 'salad',      gebiet: 'essen', motiv: 'a bowl seen from the side, heaped with leaves of lettuce' },
+  { wort: 'strawberry', gebiet: 'essen', motiv: 'one strawberry seen from the front, pointing down, with a leafy crown and seed dots' },
+  { wort: 'sweets',     gebiet: 'essen', motiv: 'three wrapped sweets with twisted ends, lying flat, seen from above' },
+  { wort: 'tea',        gebiet: 'essen', motiv: 'a teacup on a saucer, seen from the side, with a teabag string over the rim' },
+  { wort: 'tomato',     gebiet: 'essen', motiv: 'one tomato seen from the front, with a five-pointed star of leaves on top' },
+  { wort: 'water',      gebiet: 'essen', motiv: 'a plain glass half filled with water, seen from the side' },
+  // --- In der Schule ---
+  { wort: 'board',            gebiet: 'schule', motiv: 'a classroom board on two legs, seen from the front, empty' },
+  { wort: 'book',             gebiet: 'schule', motiv: 'an open book seen from the front, both pages blank' },
+  { wort: 'chair',            gebiet: 'schule', motiv: 'a simple wooden chair with a straight back, seen from the side' },
+  { wort: 'class/classroom',  gebiet: 'schule', motiv: 'a classroom seen from the front: a board on the wall and two desks with chairs' },
+  { wort: 'pen/pencil',       gebiet: 'schule', motiv: 'a pencil and a pen lying crossed over each other, seen from above' },
+  { wort: 'picture',          gebiet: 'schule', motiv: 'a framed picture hanging on a wall, seen from the front, showing a mountain and a sun' },
+  { wort: 'rubber',           gebiet: 'schule', motiv: 'a rectangular eraser seen at a slight angle, one corner worn round' },
+  { wort: 'school/schoolbag', gebiet: 'schule', motiv: 'a school satchel with two buckles and shoulder straps, seen from the front' },
+  { wort: 'teacher',          gebiet: 'schule', motiv: 'a grown-up standing beside a board, seen from the front, holding a pointer' },
+  // --- Kleidung ---
+  { wort: 'dress',    gebiet: 'kleidung', motiv: 'a dress on a coat hanger, seen from the front' },
+  { wort: 'jeans',    gebiet: 'kleidung', motiv: 'a pair of jeans lying flat, seen from the front, with pockets and a belt loop' },
+  { wort: 'pullover', gebiet: 'kleidung', motiv: 'a knitted pullover lying flat, seen from the front, arms spread' },
+  { wort: 'shirt',    gebiet: 'kleidung', motiv: 'a shirt with a collar and buttons lying flat, seen from the front' },
+  { wort: 'shoes',    gebiet: 'kleidung', motiv: 'a pair of lace-up shoes standing side by side, seen from the side' },
+  // --- Menschen und Familie ---
+  { wort: 'boy',     gebiet: 'menschen', motiv: 'a boy standing, seen from the front, short hair, arms at his sides' },
+  { wort: 'brother', gebiet: 'menschen', motiv: 'two boys standing side by side, seen from the front, one a head taller' },
+  { wort: 'family',  gebiet: 'menschen', motiv: 'four people standing in a row, seen from the front: two grown-ups and two children' },
+  { wort: 'father',  gebiet: 'menschen', motiv: 'a grown man standing, seen from the front, arms at his sides' },
+  { wort: 'friend',  gebiet: 'menschen', motiv: 'two children standing side by side holding hands, seen from the front' },
+  { wort: 'girl',    gebiet: 'menschen', motiv: 'a girl standing, seen from the front, long hair, arms at her sides' },
+  { wort: 'mother',  gebiet: 'menschen', motiv: 'a grown woman standing, seen from the front, arms at her sides' },
+  { wort: 'old',     gebiet: 'menschen', motiv: 'an old person standing bent forward, seen from the side, leaning on a walking stick' },
+  { wort: 'sister',  gebiet: 'menschen', motiv: 'two girls standing side by side, seen from the front, one a head taller' },
+  // --- Zuhause, Feste und Zeit ---
+  { wort: 'house',           gebiet: 'zuhause', motiv: 'a small house seen from the front: a pitched roof, a door and two windows' },
+  { wort: 'room',            gebiet: 'zuhause', motiv: 'a bedroom seen from the front: a bed, a window and a bedside lamp' },
+  { wort: 'birthday',        gebiet: 'zuhause', motiv: 'a round birthday cake seen from the side with five burning candles' },
+  { wort: 'Halloween',       gebiet: 'zuhause', motiv: 'a carved pumpkin lantern seen from the front, with triangular eyes and a grinning mouth' },
+  { wort: 'Merry Christmas', gebiet: 'zuhause', motiv: 'a decorated fir tree seen from the front, with baubles and a star on top' },
+  { wort: 'morning',         gebiet: 'zuhause', motiv: 'a sun rising over a straight horizon line, seen from the front, with rays' },
+  { wort: 'o‘clock',         gebiet: 'zuhause', motiv: 'a round clock face seen from the front with two hands, no numerals, showing three o clock' },
+  { wort: 'party',           gebiet: 'zuhause', motiv: 'three balloons on strings rising together, seen from the front' },
+  { wort: 'weekend',         gebiet: 'zuhause', motiv: 'a calendar page seen from the front, a grid of blank squares, the last two squares of the bottom row filled in solid' },
+  // --- Wo? Die Praepositionen. Immer DIESELBE Kiste und DERSELBE Ball. ---
+  { wort: 'behind',      gebiet: 'wo', motiv: 'a closed box seen from the front with a ball behind it, only the upper half of the ball visible above the box' },
+  { wort: 'in',          gebiet: 'wo', motiv: 'an open box seen from the front with a ball inside it, resting on the bottom of the box' },
+  { wort: 'In front of', gebiet: 'wo', motiv: 'a closed box seen from the front with a ball in front of it, the ball overlapping the lower edge of the box' },
+  { wort: 'next to',     gebiet: 'wo', motiv: 'a closed box seen from the front with a ball on the ground beside it, to the right, not touching' },
+  { wort: 'on',          gebiet: 'wo', motiv: 'a closed box seen from the front with a ball resting on top of it' },
+  { wort: 'under',       gebiet: 'wo', motiv: 'a table seen from the front with a ball on the floor underneath it' },
+  // --- Gegensaetze und Gefuehle ---
+  { wort: 'big',    gebiet: 'gegensaetze', motiv: 'two balls side by side, one very large and one very small; the large one is solid black, the small one is only an outline' },
+  { wort: 'small',  gebiet: 'gegensaetze', motiv: 'two balls side by side, one very large and one very small; the small one is solid black, the large one is only an outline' },
+  { wort: 'little', gebiet: 'gegensaetze', motiv: 'a grown cat and a kitten side by side, seen from the side; the kitten is solid black, the grown cat is only an outline' },
+  { wort: 'cold',   gebiet: 'gegensaetze', motiv: 'a thermometer standing upright, seen from the front, its column low, with a snowflake beside it' },
+  { wort: 'hot',    gebiet: 'gegensaetze', motiv: 'a thermometer standing upright, seen from the front, its column high, with a sun beside it' },
+  { wort: 'happy',  gebiet: 'gegensaetze', motiv: 'a round face seen from the front with two dot eyes and a wide smiling mouth' },
+  { wort: 'sad',    gebiet: 'gegensaetze', motiv: 'a round face seen from the front with two dot eyes and a downturned mouth' },
+  { wort: 'good',   gebiet: 'gegensaetze', motiv: 'a hand making a thumbs-up sign, seen from the side' },
+  // --- Spielen und Sport ---
+  { wort: 'bike',     gebiet: 'sport', motiv: 'a bicycle seen from the side, both wheels, handlebars and saddle visible' },
+  { wort: 'football', gebiet: 'sport', motiv: 'a football (soccer ball) seen from the front, with its pentagon pattern' },
+  { wort: 'go',       gebiet: 'sport', motiv: 'a person walking to the right, seen from the side, one leg forward, arms swinging' },
+  { wort: 'play',     gebiet: 'sport', motiv: 'a child seen from the front kicking a ball that lies on the ground' },
+  { wort: 'ride',     gebiet: 'sport', motiv: 'a child riding a bicycle to the right, seen from the side' },
+  { wort: 'sports',   gebiet: 'sport', motiv: 'a football, a tennis racket and a swimming goggle arranged together, seen from the front' },
+  { wort: 'swim',     gebiet: 'sport', motiv: 'a person swimming front crawl, seen from the side, one arm out of the water, wavy water lines' },
+  { wort: 'tennis',   gebiet: 'sport', motiv: 'a tennis racket lying at an angle with a tennis ball beside it, seen from above' },
+  // --- Laender und Uebriges ---
+  { wort: 'bye',              gebiet: 'rest', motiv: 'a raised open hand waving goodbye, seen from the front, with two small motion arcs' },
+  { wort: 'colour',           gebiet: 'rest', motiv: 'a painter palette held from below with a brush, seen from above, six round blobs of paint on it' },
+  { wort: 'England/English',  gebiet: 'rest', motiv: 'a rectangular flag on a pole, seen from the side, bearing a plain upright cross that reaches all four edges' },
+  { wort: 'Germany/German',   gebiet: 'rest', motiv: 'a rectangular flag on a pole, seen from the side, divided into three equal horizontal bands, the top one solid black and the other two only outlined' },
+  { wort: 'give',             gebiet: 'rest', motiv: 'a hand seen from the side holding out a small wrapped present with a ribbon' },
+];
+
+/* Die Funktionswoerter. Sie bekommen KEIN Bild - nicht aus Faulheit,
+   sondern weil ein Bild fuer „about" oder „the" geraten waere, und ein
+   geratenes Bild lehrt das Falsche. Sie kommen im Satz vor (E9, E11). */
+export const NUR_WORT = [
+  'a/an', 'about', 'and', 'at', 'be (am, are, is)', 'can/can‘t', 'come',
+  'dear', 'do/don‘t', 'fine', 'from', 'great', 'have/has (got)',
+  'haven’t/ hasn´t (got)', 'he', 'hello', 'help', 'her', 'here', 'his',
+  'hobby', 'how', 'I / I’d / I’m / I‘ve', 'it', 'Its', 'know', 'like',
+  'many', 'much', 'my', 'name', 'no/not', 'okay/OK', 'please', 'put',
+  'she', 'sorry', 'take', 'thank(s)', 'the', 'there', 'they', 'this',
+  'time', 'to', 'very', 'we', 'welcome', 'what', 'when',
+  'where', 'who', 'yes', 'you', 'your',
+];

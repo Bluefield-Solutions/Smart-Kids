@@ -35,6 +35,7 @@ import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
 import { ALLE as KETTE, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
 import * as EN from '../src/inhalt/englisch.js';
+import * as BP from '../tools/bildprompt.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
@@ -2010,6 +2011,75 @@ console.log('\n  Tor `englisch`');
       + `im amtlichen Wortschatz`);
     console.log(`    engste zwei Farben: ${engstesPaar} mit ${engster.toFixed(1)} CIELAB `
       + `(nötig ${ENGSTER_MIN})`);
+  }
+
+  /* ---- Der Bildplan (E4) ----------------------------------------------
+   *
+   * 86 Woerter sollen ein Bild bekommen, 10 haben eines (der Farbfleck),
+   * 55 bekommen keines. Geprueft wird die EINTEILUNG, nicht der Geschmack:
+   *
+   *   1. DIE DREI MENGEN DECKEN DIE 151 GENAU EINMAL. Kein Wort ohne
+   *      Einteilung (es fiele sonst still aus E4 heraus), keines in zwei
+   *      (dann waere unklar, ob es gemalt wird). Genau das ist mir beim
+   *      Aufschreiben passiert - „weekend" stand in beiden Listen.
+   *   2. JEDES BILD HAT EIN MOTIV, und zwar ein beschriebenes. „a cat"
+   *      reicht nicht: ohne Haltung zeichnet ein Bildermacher zehnmal
+   *      etwas anderes, und die zehn Felder eines Blattes passen nicht
+   *      zusammen. Deshalb eine Mindestlaenge - grob, aber sie faengt die
+   *      Zeile, die jemand schnell nachtraegt.
+   *   3. JEDES BLATT HAT ZEHN FELDER. Der Nutzer schneidet die Blaetter in
+   *      ein 5x2-Raster; ein Blatt mit neun Feldern haette ein anderes
+   *      Raster, und der Schnitt liefe schief. Gezaehlt wird am Werkzeug
+   *      selbst, nicht an einer Zahl daneben.
+   */
+  {
+    const e4 = [];
+    const inFarben = new Set(EN.FARBEN.map(f => f.wort));
+    const inBildern = new Set(EN.BILDER.map(b => b.wort));
+    const inWort = new Set(EN.NUR_WORT);
+    for (const w of EN.WOERTER) {
+      const n = [inFarben.has(w), inBildern.has(w), inWort.has(w)].filter(Boolean).length;
+      if (n === 0) e4.push(`„${w}" steht in keiner der drei Listen — es fällt aus `
+        + 'dem Bildplan heraus, ohne dass jemand entschieden hätte, ob es ein Bild bekommt');
+      if (n > 1) e4.push(`„${w}" steht in zwei der drei Listen — dann ist nicht `
+        + 'entschieden, ob es gemalt wird');
+    }
+    for (const w of [...inBildern, ...inWort])
+      if (!EN.WOERTER.includes(w))
+        e4.push(`„${w}" steht im Bildplan, aber nicht im amtlichen Wortschatz`);
+    const gebiete = new Set(EN.BILDGEBIETE.map(g => g.id));
+    const motive = new Map();
+    for (const b of EN.BILDER) {
+      if (!gebiete.has(b.gebiet))
+        e4.push(`„${b.wort}" liegt auf dem Blatt „${b.gebiet}", das es nicht gibt`);
+      if (!b.motiv || b.motiv.trim().length < 25)
+        e4.push(`„${b.wort}" hat kein beschriebenes Motiv („${b.motiv || ''}") — `
+          + 'ohne Haltung und Ansicht zeichnet jedes Feld etwas anderes');
+      if (motive.has(b.motiv))
+        e4.push(`„${b.wort}" und „${motive.get(b.motiv)}" haben dasselbe Motiv`);
+      else motive.set(b.motiv, b.wort);
+      /* Das Motiv geht wortwoertlich in einen englischen Prompt. Ein
+         deutscher Satz darin faellt dort nicht auf, sondern erst am Bild. */
+      if (/[äöüßÄÖÜ]/.test(b.motiv))
+        e4.push(`das Motiv zu „${b.wort}" ist nicht englisch: „${b.motiv}"`);
+    }
+    const blaetter = BP.blaetter();
+    for (const bl of blaetter)
+      if (bl.felder.length !== 10)
+        e4.push(`das Blatt „${bl.id}" hat ${bl.felder.length} Felder statt zehn — `
+          + 'dann stimmt beim Zuschneiden das Raster nicht');
+
+    if (e4.length) {
+      console.log('    ' + e4.join('\n    '));
+      console.error('\n  englisch ROT: der Bildplan für E4 stimmt nicht.');
+      process.exit(1);
+    }
+    const gezeichnet = EN.BILDER.filter(b => b.pfad).length;
+    console.log(`    Bildplan (E4): ${EN.BILDER.length} Wörter wollen ein Bild, `
+      + `${EN.FARBEN.length} haben eines (der Farbfleck), ${EN.NUR_WORT.length} `
+      + `bekommen keines — zusammen ${EN.WOERTER.length} von ${EN.WOERTER.length}`);
+    console.log(`    ${blaetter.length} Blätter à 10 Felder · gezeichnet: `
+      + `${gezeichnet} von ${EN.BILDER.length}`);
   }
 }
 

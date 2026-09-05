@@ -35,7 +35,8 @@
     "gleichlauf": "node tor/gleichlauf.mjs",
     "zweigeraete": "node tools/zwei-geraete.mjs",
     "dienstprobe": "node tools/dienstprobe.mjs",
-    "ohneschrift": "node tools/ohne-schrift.mjs"
+    "ohneschrift": "node tools/ohne-schrift.mjs",
+    "bildprompt": "node tools/bildprompt.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",
