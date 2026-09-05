@@ -1647,8 +1647,13 @@
       "zeit": "2026-09-05",
       "s": 127
     },
+    "eine Wendung kennt nur eine einzige Fassung": {
+      "commit": "c95b633d4a70c81d2797f7c23441cad2f9bc6e8b",
+      "zeit": "2026-09-05",
+      "s": 9
+    },
     "ein Diktatsatz zeigt auf keine Wendung": {
-      "commit": "29b7cc990d998c55bea9cde8d471b4c2fc1a1be2",
+      "commit": "c95b633d4a70c81d2797f7c23441cad2f9bc6e8b",
       "zeit": "2026-09-05",
       "s": 3
     }
