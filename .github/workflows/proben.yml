@@ -105,10 +105,23 @@ jobs:
           # nie im Verzeichnis. Genau so passiert am 04.09.
           #
           # `--rebase` ist hier gefahrlos, weil dieser Auftrag GENAU EINE
-          # Datei anfasst und niemand sonst sie schreibt. Bei einem
+          # Datei EINCHECKT und niemand sonst sie schreibt. Bei einem
           # Zusammenstoss gilt der frischere Nachweis - der eigene.
+          #
+          # `--autostash`, und daran ist der Lauf vom 05.09. gescheitert:
+          # eingecheckt wird eine Datei, VERAENDERT werden mehrere. Die
+          # Torkette schreibt ihre eigenen Ratschen fort (`masse-stand`,
+          # `budget-stand`, die Protokolle unter `.kette/`), und die
+          # bleiben unaufgeraeumt liegen. `git pull --rebase` verweigert
+          # dann den Dienst - „You have unstaged changes" -, und zwar bei
+          # allen drei Versuchen gleich, weil sich zwischen ihnen nichts
+          # aendert. Der Lauf war inhaltlich gruen: alle 319 Gegenproben
+          # haben angeschlagen, und der Nachweis ging trotzdem verloren.
+          #
+          # Die Schleife sah wie eine Absicherung gegen einen Wettlauf aus
+          # und war keine: sie kam nie bis zum Schieben.
           for i in 1 2 3; do
-            git pull --rebase -X ours origin main && git push && exit 0
+            git pull --rebase --autostash -X ours origin main && git push && exit 0
             echo "  Push $i fehlgeschlagen, neuer Versuch."
             sleep 5
           done
