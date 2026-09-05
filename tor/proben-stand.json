@@ -1646,6 +1646,11 @@
       "commit": "0364d459607b24a81aabfb239429144a1bf0831b",
       "zeit": "2026-09-05",
       "s": 127
+    },
+    "ein Diktatsatz zeigt auf keine Wendung": {
+      "commit": "29b7cc990d998c55bea9cde8d471b4c2fc1a1be2",
+      "zeit": "2026-09-05",
+      "s": 3
     }
   }
 }

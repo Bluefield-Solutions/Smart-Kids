@@ -4686,11 +4686,25 @@ export const PROBEN = [
    * ist ihr ganzer Inhalt und steht so im Vorlauf. Eine Wendung, die nur
    * eine kennt, nimmt die zweite Fassung nicht an und sagt „falsch" zu
    * etwas, das jeder Muttersprachler versteht. */
+  /* KEINE Wendung traegt nur zwei Fassungen - die wenigste hat drei.
+     Der Eingriff nimmt deshalb zwei auf einmal weg, sonst bliebe die
+     Ebene ueber der Grenze und die Probe bewiese nichts.
+
+     Und der Suchtext steht WOERTLICH im Kommentar daneben. Das ist der
+     Selbsttreffer, der in diesem Verzeichnis inzwischen zum sechsten Mal
+     aufgetreten ist: `inhalt` prueft in der Wegwerf-Kopie zuerst, ob
+     jeder Probenanker noch dasteht - ein Eingriff, der seinen eigenen
+     Anker wegnimmt, laesst das Tor ueber den fehlenden Anker klagen
+     statt ueber den Befund. Ein Block-Kommentar, weil der Anker zwei
+     Zeilen lang ist. */
   { n:'eine Wendung kennt nur eine einzige Fassung', tor:'inhalt',
     datei:'src/inhalt/englisch.js',
-    such:"'This is my wife.', 'Let me introduce my wife.',",
-    ersatz:"'This is my wife.', //Anker:  'Let me introduce my wife.',",
-    an:{ datei:'src/inhalt/englisch.js', fehlt:"'This is my wife.', 'Let me introduce my wife.'," },
+    such:"richtig: ['Could you say that again, please?', 'Could you repeat that, please?',\n"
+      + "              'Would you say that again, please?', 'Sorry, could you say that again?'] },",
+    ersatz:"richtig: ['Could you say that again, please?'] },\n"
+      + "/*Anker:  richtig: ['Could you say that again, please?', 'Could you repeat that, please?',\n"
+      + "              'Would you say that again, please?', 'Sorry, could you say that again?'] },\n*/",
+    an:{ datei:'src/inhalt/englisch.js', text:"richtig: ['Could you say that again, please?'] }," },
     sagt:'gültige Fassung' },
 
   /* Ein Diktatsatz, den es nicht gibt.
@@ -4701,8 +4715,13 @@ export const PROBEN = [
    * Aufschlagen der Ebene, nicht ein roter Bericht. */
   { n:'ein Diktatsatz zeigt auf keine Wendung', tor:'inhalt',
     datei:'src/inhalt/englisch.js',
+    /* Der Anker steht woertlich im Kommentar darunter - `//Anker:` und
+       ZWEI Leerzeichen, damit die beiden fuehrenden Leerzeichen des
+       Suchtextes mit dabei sind. Ohne ihn klagte `inhalt` in der
+       Wegwerf-Kopie ueber den fehlenden Anker statt ueber den Befund. */
     such:"  'w-vorstellen', 'w-wiegehts', 'w-freutmich',",
-    ersatz:"  'w-vorstellen-alt', 'w-wiegehts', 'w-freutmich',",
+    ersatz:"  'w-vorstellen-alt', 'w-wiegehts', 'w-freutmich',\n"
+      + "//Anker:  'w-vorstellen', 'w-wiegehts', 'w-freutmich',",
     an:{ datei:'src/inhalt/englisch.js', text:"'w-vorstellen-alt'" },
     sagt:'zeigt auf keine Wendung' },
 ];
