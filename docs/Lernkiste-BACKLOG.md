@@ -5146,7 +5146,7 @@ zweite nicht vom richtigen zu unterscheiden.
 
 ---
 
-### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396, Stapel 2 in v398
+### T3 · Die 93 Tiere des Plans — LÄUFT, Stapel 1 in v396, 2 in v398, 3 in v405
 
 Gemalt wird in **Stapeln zu sieben**. Das ist kein Rhythmus, sondern ein
 Abbruchpunkt: nach jedem Stapel ist der Vorrat vollständig, die Tore sind
@@ -5190,6 +5190,49 @@ in einem Raum steht, also bleibt die Sammlung bei 30 und kein Bildschirm
 ändert sich — die Vorbilder von `ansicht` blieben grün, ohne dass etwas
 erneuert werden musste. Das ist der Grund, warum T4 eine eigene Runde ist
 und nicht an diese angehängt wurde.
+
+**Stapel 3: vor langer Zeit.** Tyrannosaurus · Langhalssaurier · Drache ·
+Einhorn · Yeti · Eidechse · Elch. Wieder zusammen gewählt und nicht der
+Reihe nach gepflückt: fünf davon ergeben einen Raum, den es sonst nirgends
+geben kann — die Tiere, die es **nicht gibt**. Eidechse und Elch fallen
+dabei ab, sie gehören in einen echten Lebensraum.
+
+Die Schwierigkeit war hier eine andere als im Meer: nicht der Unterschied
+zwischen den sieben, sondern die **Gattung**. Ein Drache, ein Dinosaurier
+und eine Eidechse sind dasselbe Tier in drei Größen, wenn man sie nicht
+auseinanderzeichnet. Vier von sieben standen nicht:
+
+| | Befund | Griff |
+|---|---|---|
+| Tyrannosaurus (2×) | Zähne mitten im Leib, kein erkennbarer Kopf — ein grüner Klumpen mit Schwanz | das **offene Maul liegt am linken Rand**, Zähne auf beiden Kiefern; die schwebenden Rückenzacken gestrichen, der Schwanz setzt am Leib an |
+| Drache (3×) | ein heller Kreis mit zwei Strichen mitten im Bauch las sich als **Lupe**; danach schwebte der Kopf über einem rechteckigen Hals | Bauch schmal und nach unten gerückt, ohne Streifen; Hals nach unten breiter statt als Kasten |
+| Einhorn | eine weiße **Henne mit Partyhut** — der Kopf hatte keine Schnauze, das Horn stand neben dem Ohr | Pferdeprofil mit langer Schnauze nach links unten, das Horn gerade aus der Stirn |
+| Yeti (2×) | ein Gesicht in einer weißen Kapuze; danach zu blass, um auf hellem Grund überhaupt zu stehen | Arme **außerhalb** der Leibsilhouette, zottelige Kante ringsum, kräftigerer Fellton |
+
+Beurteilt wurde wie immer am **echten Aufkleber** und bei 44 Punkten
+nebeneinander, nicht an der großen Fassung. Der Yeti ist der Fall, der das
+begründet: die zweite Fassung sah groß gut aus und war klein nicht da.
+
+**Startbündel 389,6 → 396 von 700 KB** (+1,6 % seit der Bestätigung, die
+Ratsche bleibt still). 52 von 124 gemalt.
+
+Die sieben stehen wieder in **keinem** Raum, die Sammlung bleibt bei 42,
+kein Bildschirm ändert sich, die 45 Vorbilder blieben grün.
+
+#### Was dabei über die Messstelle zu lernen war
+
+Die Kette ging beim ersten Anlauf **rot** — `ablage/eltern` und ein
+Durchgang, beide mit Fristen. Beides war die **Last**: im Hintergrund lief
+noch ein voller Probenlauf, sechs Teile auf vier Kernen, und die
+Kettenläufe brauchten 343 s statt 197. Auf der leeren Maschine ist
+dieselbe Kette in 214 s grün.
+
+Der Probenlauf selbst war ein Fehler von mir: `node tor/proben.mjs
+--nur="…"` — `--nur=` ist eine Fahne von `smoke`, nicht von `proben`.
+`proben` liest seinen Filter als **freies Argument**; eine unbekannte
+Fahne fällt still weg, und aus der einen Probe wurde ein zweiter voller
+Lauf. Kein Schaden, aber neunzig Minuten Rechenzeit und zwei rote Tore,
+die nichts mit der Änderung zu tun hatten.
 
 ---
 
