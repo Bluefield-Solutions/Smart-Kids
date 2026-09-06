@@ -272,6 +272,12 @@ const AUFNAHMEN = [
     wahl:'.schirm.da' },
   { name:'quer-vorlauf-flaggen', spiel:'flaggen:europa', quer:true,
     wahl:'.schirm.da', tun:'vorlauf' },
+  /* Die Verwechslungen (F3): zwei grosse Flaggen nebeneinander, und der
+     einzige Bildschirm der App, auf dem zwei fast gleiche Bilder
+     absichtlich dicht beieinanderstehen. Ob man den Unterschied da noch
+     sieht, entscheidet ein Auge - also braucht er ein Vorbild. */
+  { name:'quer-flaggenpaare', spiel:'flaggen:paare', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -697,6 +703,7 @@ const OHNE_KARTE = {
      Beide muessen hier stehen - ein Vorbild, das nur auf die Wahlform
      wartet, liefe bei Lea in den Zeitablauf. */
   flaggen:   '.schirm.da .flaggenkarte, .schirm.da .flaggengross',
+
 };
 
 const STIMMEN_NACHBAU = () => {

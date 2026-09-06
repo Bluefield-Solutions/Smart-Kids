@@ -1165,6 +1165,32 @@ const EBENEN = [
   ...Object.keys(D.laender).map((k) => ({ id:`flaggen:${k}`, ueber:'Die Welt',
     titel:'Flaggen', farbe: KONT_FARBE[k], art:'flaggen',
     gruppe:'flaggen', wo: KONT_TITEL[k] || k })),
+  /* Verwechslungen (F3) - der achte Eintrag DERSELBEN Gruppe.
+   *
+   * Keine neunte Kachel auf der Wand: sie steht hinter „Flaggen", neben
+   * den sieben Karten. Genau dafuer ist die Gruppe da.
+   *
+   * `wer`: Lea und die Eltern. Fuer Fiona waere sie falsch - sie lernt
+   * gerade, dass eine Flagge zu einem Land gehoert; zwei fast gleiche
+   * nebeneinander verwirren dieses Lernen, statt darauf aufzubauen.
+   * Dieselbe Ueberlegung wie bei „Falsche Freunde" (E10), und aus
+   * demselben Grund: eine Falle zeigt man erst, wenn die Regel steht.
+   *
+   * DIE KENNUNG HEISST `flaggen:paare` UND NICHT `flaggenpaare`.
+   *
+   * Der erste Anlauf hatte sie ohne Doppelpunkt, mit der Begruendung,
+   * hier werde ja anders gefragt. Der Rauchtest fand die Ebene daraufhin
+   * nicht: er oeffnet eine Gruppenkachel, indem er den Teil VOR dem
+   * Doppelpunkt als Gruppennamen nimmt (`durchGruppe`). Ohne Doppelpunkt
+   * suchte er eine Gruppe `flaggenpaare`, die es nicht gibt.
+   *
+   * Die Regel im Haus ist enger, als ich sie gelesen hatte: der Teil vor
+   * dem Doppelpunkt ist die Gruppe UND die Art; wie gefragt wird,
+   * entscheidet der Teil dahinter. `schreiben:diktat` macht es genauso -
+   * ein Bildschirm, vier Ebenen, unterschieden am `kont`. */
+  { id:'flaggen:paare', ueber:'Flaggen', titel:'Flaggen', farbe:1,
+    art:'flaggen', gruppe:'flaggen', wo:'Verwechslungen',
+    wer:['lea','stephan','violeta'] },
   { id:'rechnen:plusminus', ueber:'Rechnen', titel:'Plus und Minus', farbe:4,
     art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },
   /* Leas Reihen.
@@ -1897,11 +1923,50 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    *
    * `voll` gilt wie bei den Laendern: die Menge eines Abzeichens darf
    * nicht mit der Tiefe des Profils wackeln (D2b). */
+  /* DIE ENGERE BEDINGUNG ZUERST.
+   *
+   * Hier stand sie hinter der allgemeinen (`art==='flaggen'`), und die
+   * schluckte sie: `D.laender['paare']` gibt es nicht, also kam eine
+   * leere Liste zurueck. Der Rauchtest sagte es sofort - „die Kachel
+   * steht da und fragt nichts" -, aber gruen waere sie in jedem Tor
+   * gewesen, das nur zaehlt statt zu spielen. */
+  if (art==='flaggen' && kont==='paare') {
+    const namen = new Map();
+    for (const liste of Object.values(D.laender))
+      for (const l of liste) namen.set(l.a3, l);
+    const nameVon = (a3) => namen.get(a3)
+      || Flaggen.FLAGGEN_EXTRA.find(f => f.a3 === a3) || { name: a3 };
+    const aus = [];
+    for (const p of Flaggen.fragbarePaare())
+      for (const a3 of p.paar) {
+        const l = nameVon(a3), gegen = nameVon(p.paar.find(x => x !== a3));
+        aus.push({ id:`fp:${a3}:${p.paar.join('-')}`, a3, name:l.name,
+          aliasse:l.aliasse, aussprache:l.aussprache, flagge:a3,
+          gegen: gegen.name, gegenA3: p.paar.find(x => x !== a3), grund: p.grund });
+      }
+    return aus;
+  }
   if (art==='flaggen')
     return (D.laender[kont] || []).filter(l => (voll || l.rang<=P.laenderTiefe)
         && Flaggen.hatFlagge(l.a3))
       .map(l=>({ id:`fl:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3 }));
+  /* Die Verwechslungen (F3).
+   *
+   * EIN Gegenstand je Paar und Richtung: „Welche ist Rumaenien?" und
+   * „Welche ist der Tschad?" sind zwei Aufgaben, nicht eine - wer die
+   * eine kann, hat die andere noch nicht. Aus elf fragbaren Paaren
+   * werden so 22 Gegenstaende.
+   *
+   * `fragbarePaare()` und nicht die ganze Liste: zwei Paare kann man
+   * NICHT fragen, weil sie sich in dieser Darstellung um null Prozent
+   * unterscheiden (Rumaenien/Tschad, Monaco/Indonesien). Sie werden im
+   * Vorlauf gezeigt und erklaert, aber nie abgefragt - der Grund steht
+   * bei `AEHNLICH`.
+   *
+   * Der Name kommt aus `LAENDER`, wo es einen gibt, und sonst aus
+   * `FLAGGEN_EXTRA`: acht dieser Laender haben in dieser App keinen
+   * Kartenumriss und stehen deshalb nur dort. */
   if (art==='rechnen')
     return kont==='reihen' ? Rechnen.reihenVorrat()
          : kont==='gross'  ? Rechnen.grossVorrat()
@@ -2966,6 +3031,10 @@ function vorlaufSatz(ebeneId){
      Wirklichkeit quadratisch ist. Das Konzept haelt fest, dass eine
      Vereinfachung ausgesprochen und nicht verschwiegen wird - und der
      Vorlauf ist die Stelle, an der man sie hoert. */
+  if (art === 'flaggen' && kont === 'paare')
+    return 'Zwei Flaggen, die sich sehr ähnlich sehen — und eine davon ist gesucht. '
+      + 'Nach jeder Antwort steht da, <strong>woran</strong> man sie unterscheidet. '
+      + 'Zwei Paare kann man gar nicht sehen; die stehen hier zum Anschauen.';
   if (art === 'flaggen')
     return P.eingabe.includes('tippen')
       ? 'Gleich siehst du eine Flagge und tippst den Namen des Landes. '
@@ -4101,6 +4170,12 @@ function englischschirm(){
  * App.
  */
 function flaggenschirm(){
+  /* Zwei Ebenen, ein Einstieg - unterschieden am Teil hinter dem
+     Doppelpunkt, wie beim Schreibschirm. `flaggen:paare` ist eine andere
+     Aufgabe (zwei Flaggen, ein Versuch, eine Erklaerung) und bekommt
+     deshalb einen eigenen Bildschirm; die WEICHE steht hier, damit
+     `schirmZu` eine Zeile je ART behaelt und nicht je Ebene. */
+  if (String(Sitzung.ebeneId).split(':')[1] === 'paare') return paarschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
@@ -4326,6 +4401,129 @@ function flaggenschirm(){
      Landesname die Antwort - vorgelesen waere die Aufgabe geloest, bevor
      sie gestellt ist. */
   if (zeigen) ansagen(`${ziel.name}. Wo ist die Flagge?`);
+  return s;
+}
+
+/* ---------- Die Verwechslungen (F3) --------------------------------------
+ *
+ * ZWEI Flaggen, die sich sehr aehnlich sehen, und die Frage „Welche ist
+ * Rumaenien?". Das ist die Ebene, die es sonst nirgends gibt, und sie ist
+ * der Grund, warum die Flaggen mehr sind als Bildchen.
+ *
+ * SIE ZEIGT EINE FALLE, STATT SIE ZU VERMEIDEN - dieselbe Bauart wie
+ * „Falsche Freunde" (E10) und aus demselben Grund: bei Lea und den Eltern
+ * ist die Verknuepfung da und nur zugewachsen. Fuer Fiona waere sie
+ * falsch; sie lernt gerade erst, dass eine Flagge zu einem Land gehoert.
+ *
+ * DER UNTERSCHIED WIRD IMMER GENANNT, ob richtig oder falsch geantwortet
+ * wurde. Das ist der eigentliche Inhalt: „Luxemburgs Blau ist heller" ist
+ * das, was man mitnimmt - nicht, dass man einmal richtig geraten hat. Er
+ * steht bei den DATEN (`grund` in `AEHNLICH`), weil er zur Sache gehoert.
+ *
+ * ZWEI Moeglichkeiten und nicht vier: mehr waeren nicht schwerer,
+ * sondern eine andere Aufgabe. Der Reiz liegt darin, dass die beiden
+ * nebeneinander stehen und man trotzdem hinsehen muss.
+ */
+function paarschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+
+  /* Die Seite, auf der die richtige steht, wird GEWUERFELT - mit dem Keim
+     der Aufgabe, wie ueberall. Ohne das stuende bei „Welche ist
+     Rumaenien?" die richtige immer links, weil das Paar so notiert ist,
+     und die Ebene pruefte, ob man die Liste auswendig kann. */
+  const zwei = mischenMit([{ a3: ziel.a3, id: ziel.id, name: ziel.name },
+    { a3: ziel.gegenA3, id: `gegen:${ziel.gegenA3}`, name: ziel.gegen }],
+    st.keim + st.i * 7919);
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'antippen' });
+  const weiter = () => weiterIn(st);
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Welche ist <strong>${ziel.name}</strong>?</div>
+    <div class="flaggenfeld">
+      <div class="flaggenwahl paare" id="auswahl">${zwei.map(x =>
+        `<button class="flaggenkarte gross" data-id="${x.id}" aria-label="${x.name}"
+          >${Flaggen.flaggeSvg(x.a3)}</button>`).join('')}</div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const ausschalten = () => s.querySelectorAll('.flaggenkarte')
+    .forEach(k => k.disabled = true);
+  /* NACH der Antwort bekommt JEDE der beiden ihren Namen - auch die
+     falsche. Wer „das ist Luxemburg" liest, hat in diesem Augenblick zwei
+     Flaggen gelernt statt einer; nur die eigene zu benennen waere die
+     halbe Lehre. */
+  const beideBenennen = () => {
+    for (const x of zwei) {
+      const k = s.querySelector(`.flaggenkarte[data-id="${x.id}"]`);
+      if (!k || k.querySelector('.paarname')) continue;
+      const n = el('div', 'paarname'); n.textContent = x.name;
+      k.appendChild(n);
+      if (x.id === ziel.id) k.classList.add('stimmt');
+    }
+  };
+  const erklaeren = () => {
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">${ziel.grund}</span>`;
+    sagen(ziel.grund);
+  };
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten(); beideBenennen(); erklaeren();
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function bewerte(id, knopf){
+    if (erledigt) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (id === ziel.id) {
+      erledigt = beendet(s);
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', id, fachVorher);
+      ausschalten(); beideBenennen();
+      /* Der Unterschied steht NEBEN dem Lob und nicht statt seiner:
+         `nebenbei` ist genau dafuer da (die Hauptstadtebene nutzt es fuer
+         ihre Fallen). Wer richtig lag, soll trotzdem erfahren, WORAN. */
+      lobsatz(s, `<strong>${ziel.name}</strong>.`, null, lob(), ziel.grund,
+        neuerAufkleber);
+      sagen(lob() + '. ' + ziel.grund);
+      standSichern(st.ebeneId);
+      setTimeout(weiter, LOBPAUSE);
+      return;
+    }
+    protokollieren('falsch', id, fachVorher);
+    klangZu('falsch');
+    /* NUR EIN Versuch bei zwei Moeglichkeiten.
+     *
+     * Ein zweiter waere keiner: es bleibt genau eine uebrig. „Noch einmal
+     * versuchen" hiesse hier „tippe auf die andere", und das ist kein
+     * Ueberlegen, sondern ein Ausschlussverfahren mit einem Schritt.
+     * Deshalb geht es sofort in die Aufloesung - mit der Erklaerung, die
+     * ohnehin die Sache ist. */
+    wackelt(knopf);
+    setTimeout(aufloesen, 260);
+  }
+
+  s.querySelectorAll('.flaggenkarte').forEach(k =>
+    k.onclick = () => bewerte(k.dataset.id, k));
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+  ansagen(`Welche ist ${ziel.name}?`);
   return s;
 }
 

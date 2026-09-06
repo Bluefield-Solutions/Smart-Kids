@@ -1866,6 +1866,19 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   transition:transform var(--d-tipp) var(--k-standard),
              box-shadow var(--d-tipp) var(--k-standard)}
 .flaggenkarte:active{transform:translateY(3px);box-shadow:0 0 0 var(--linie)}
+/* Die Verwechslungen (F3): ZWEI Flaggen statt vier, also duerfen beide
+   groesser sein. Der Reiz der Ebene liegt darin, dass die zwei
+   nebeneinander stehen und man trotzdem hinsehen muss - zu klein waere
+   das keine Aufgabe, sondern eine Zumutung. */
+.flaggenwahl.paare{gap:var(--r6)}
+.flaggenkarte.gross{width:min(230px,38vw)}
+@media (max-height:440px){ .flaggenkarte.gross{width:min(190px,32vw)} }
+/* Der Name steht ERST NACH der Antwort da - und dann an BEIDEN Karten.
+   Er sitzt in der Karte und nicht darunter, damit die Zuordnung
+   eindeutig bleibt: zwei Namen unter zwei Flaggen sind zwei Fragen. */
+.paarname{font-size:var(--s-klein);font-weight:700;line-height:1.2;
+  padding:var(--r1) var(--r2);color:var(--tinte);background:var(--papier);
+  border-top:var(--strich) solid var(--linie);text-align:center}
 .flaggenkarte[disabled]{cursor:default}
 .flaggenkarte[disabled]:not(.stimmt){box-shadow:none;pointer-events:none;
   transform:translateY(var(--kante));border-color:var(--grund)}

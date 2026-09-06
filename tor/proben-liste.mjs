@@ -1887,7 +1887,13 @@ export const PROBEN = [
     args:['--nur=durchgang', '--kurz'], datei:D,
     such:"    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa' },",
     ersatz:"    gruppe:'hauptstaedte', wo:'Europa' },",
-    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta']" },
+    /* Die Nachfrage nennt die GANZE Zeile und nicht nur die `wer`-Liste.
+       Seit F3 gibt es eine zweite Ebene mit derselben Liste
+       (`flaggenpaare`); ein Eingriff, der eine von zweien entfernt,
+       laesst die andere stehen, und die Probe meldete fuer immer "kam
+       nicht an". Das Tor `anker` hat es gesagt, bevor der naechste
+       Probenlauf es gekostet haette. */
+    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta'], gruppe:'hauptstaedte'" },
     sagt:'steht aber in fionas Auswahl' },
 
   /* --- Ton je Profil und der Elternbereich als Bild -------------------- */
@@ -5491,6 +5497,62 @@ export const PROBEN = [
    * geht still weiter. Das ist eine Luecke im Rauchtest und keine in der
    * App; sie steht als Punkt in F5. Eine Probe auf ein Tor, das an dieser
    * Stelle nichts beweist, waere selbst nur eine Behauptung. */
+  /* --- Die Verwechslungen (F3) ---------------------------------------
+
+   * 1. EIN PAAR, DAS MAN NICHT SEHEN KANN, WIRD TROTZDEM GEFRAGT.
+   *
+   * Rumaenien und der Tschad unterscheiden sich in dieser Darstellung um
+   * NULL Prozent - nur im Blauton, und den fasst das Raster nicht. Ohne
+   * `fragbar:false` stellt die Ebene eine Frage, die kein Kind
+   * beantworten kann und die es nur raten lehrt. Das Tor muss es sagen.
+   */
+  { n:'ein Paar, das man nicht sehen kann, wird trotzdem gefragt',
+    tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
+    such:"  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.', fragbar:false },",
+    ersatz:"  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.' },\n"
+      + "//Anker:  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.', fragbar:false },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"ist dunkler.' },\n//Anker:" },
+    sagt:'nicht zu sehen' },
+
+  /* 2. UND DIE GEGENRICHTUNG: `fragbar:false` als Freibrief.
+   *
+   * Ein Paar, das man sehr wohl unterscheiden kann, mit der Ausnahme
+   * stillzustellen waere Bequemlichkeit - und dann liesse sich jede zu
+   * aehnliche Zeichnung wegdefinieren, statt sie zu verbessern. Genau
+   * dafuer ist der Boden nicht da. */
+  { n:'die Ausnahme wird zum Freibrief', tor:'inhalt', deckt:'flaggen',
+    datei:'src/inhalt/flaggen.js',
+    such:"  { paar:['HND', 'NIC'], grund:'Honduras hat fünf Sterne, Nicaragua ein Dreieck.' },",
+    ersatz:"  { paar:['HND', 'NIC'], grund:'Honduras hat fünf Sterne, Nicaragua ein Dreieck.', fragbar:false },\n"
+      + "//Anker:  { paar:['HND', 'NIC'], grund:'Honduras hat fünf Sterne, Nicaragua ein Dreieck.' },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"ein Dreieck.', fragbar:false }" },
+    sagt:'Freibrief' },
+
+  /* 3. Ein Paar ohne Erklaerung.
+   *
+   * Der Satz „Luxemburgs Blau ist heller" IST der Inhalt dieser Ebene -
+   * nicht, dass man einmal richtig geraten hat. Ohne ihn zeigt sie zwei
+   * Flaggen und schweigt. */
+  { n:'ein Verwechslungspaar sagt nicht, woran man es erkennt',
+    tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
+    such:"  { paar:['NLD', 'LUX'], grund:'Luxemburgs Blau ist heller.' },",
+    ersatz:"  { paar:['NLD', 'LUX'] },\n"
+      + "//Anker:  { paar:['NLD', 'LUX'], grund:'Luxemburgs Blau ist heller.' },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"{ paar:['NLD', 'LUX'] },\n//Anker:" },
+    sagt:'WORAN' },
+
+  /* 4. Nach der Antwort bekommt nur die RICHTIGE ihren Namen.
+   *
+   * Wer auf Luxemburg tippt und „das ist Luxemburg" liest, hat in diesem
+   * Augenblick zwei Flaggen gelernt statt einer. Nur die eigene zu
+   * benennen ist die halbe Lehre - und sieht im Lauf genauso gruen aus. */
+  { n:'nach der Antwort bekommt nur die richtige Flagge ihren Namen',
+    tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"      if (!k || k.querySelector('.paarname')) continue;",
+    ersatz:"      if (!k || k.querySelector('.paarname') || x.id !== ziel.id) continue;",
+    an:{ ...DIST, text:"|| x.id !== ziel.id) continue;" },
+    sagt:'halbe Lehre' },
+
   { n:'die Flaggenfrage wird nicht mehr angesagt', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
     such:"  if (zeigen) ansagen(`${ziel.name}. Wo ist die Flagge?`);",

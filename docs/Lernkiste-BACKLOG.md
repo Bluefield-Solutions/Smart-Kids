@@ -254,9 +254,21 @@ im Konzept:
 | **F1** | `src/inhalt/flaggen.js`: Formsprache, 69 Bauanweisungen, `flaggeTeile`/`flaggeSvg`; Tor `flaggen` | Das Tor misst die **Unterscheidbarkeit am Raster** und schlägt an, wenn einer Flagge ihr unterscheidendes Zeichen fehlt | mittel |
 | **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | groß |
 | **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Fiona sagt „Deutschland" statt zu tippen; der Kartenbildschirm verhält sich unverändert | mittel |
-| **F3** | „Verwechslungen" — achter Gruppeneintrag, acht Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad, und das Tor beweist, dass sie sich ähnlich **sehen** | mittel |
+| **F3** | „Verwechslungen" — achter Gruppeneintrag, dreizehn Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad — und zwei Paare kann man **gar nicht** fragen | **gefahren** |
 | **F4** | „Auf die Karte" — die Flagge wird auf ihr Land gezogen | Nur Länder mit Umriss und über der Fingergrenze (P7/P10) | groß |
 | **F5** | Abzeichen, Doku, volle Torkette, Gegenproben — **und die Lücke unten** | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+
+**Was F3 dabei herausgefunden hat, und es ist der wichtigste Satz der ganzen
+Reihe:** *nicht jede echte Verwechslung lässt sich abfragen.* Rumänien und der
+Tschad unterscheiden sich nur im Blauton, Monaco und Indonesien nur im
+Seitenverhältnis — im Raster sind beide Paare zu **0,0 %** verschieden. „Welche
+ist Rumänien?" hat dann keine Antwort, die man sehen kann; wer sie trotzdem
+stellt, bringt einem Kind bei zu raten und nennt das Lernen. Diese Paare tragen
+`fragbar:false`, werden gezeigt und erklärt, aber nie abgefragt. **Dass es
+Flaggen gibt, die man nicht auseinanderhalten kann, ist selbst etwas, das man
+über Flaggen lernen kann.** Das Tor setzt beide Richtungen durch: ein Paar unter
+dem Boden *muss* die Kennzeichnung tragen, und ein Paar mit der Kennzeichnung
+muss auch wirklich zu nah sein — sonst wäre die Ausnahme ein Freibrief.
 
 **Eine Lücke im Rauchtest, gefunden beim Gegenproben (für F5).** Nimmt man
 `flaggen: flaggenschirm` aus `schirmZu`, fällt die Ebene auf den

@@ -11151,3 +11151,66 @@ andere.
 Textumbruch hängt, und ein Umbruch, der an der Schriftrundung hängt. Wo ein
 absolut gesetztes Bild neben fließendem Text steht, muss der Text seinen Platz
 **reservieren**, nicht bekommen.
+
+## F3 · Verwechslungen — und der Satz, der die ganze Reihe trägt
+
+Zwei Flaggen, die sich sehr ähnlich sehen, und die Frage *„Welche ist
+Rumänien?"*. Danach steht da, **woran** man sie unterscheidet — und beide
+bekommen ihren Namen, auch die falsche. Wer auf Luxemburg tippt und „das ist
+Luxemburg" liest, hat in diesem Augenblick zwei Flaggen gelernt statt einer.
+
+Für Lea und euch, nicht für Fiona: sie lernt gerade, dass eine Flagge zu einem
+Land gehört; zwei fast gleiche nebeneinander verwirren dieses Lernen, statt
+darauf aufzubauen. Dieselbe Überlegung wie bei „Falsche Freunde" — eine Falle
+zeigt man erst, wenn die Regel steht.
+
+**Dreizehn Paare, elf davon fragbar.** Acht Länder ohne Kartenumriss kamen dafür
+dazu (`FLAGGEN_EXTRA`): der Tschad, Irland, die Elfenbeinküste, Norwegen,
+Island, Monaco, Slowenien, die Slowakei. Sie dürfen in „Auf die Karte" (F4)
+nicht vorkommen, und das Tor setzt es durch, statt sich darauf zu verlassen,
+dass jemand daran denkt.
+
+### Nicht jede echte Verwechslung lässt sich abfragen
+
+Das ist der Fund dieser Runde, und er kam aus dem Boden des Tors:
+
+| Paar | gemessener Unterschied |
+|---|---|
+| Rumänien / Tschad | **0,0 %** — nur der Blauton |
+| Monaco / Indonesien | **0,0 %** — nur das Seitenverhältnis |
+
+„Welche ist Rumänien?" hat dann keine Antwort, die man **sehen** kann. Wer sie
+trotzdem stellt, bringt einem Kind bei zu raten und nennt das Lernen.
+
+Diese beiden tragen `fragbar:false`: sie werden gezeigt und erklärt, aber nie
+abgefragt. Das ist kein Rückzug, sondern der ehrlichere Inhalt — **dass es
+Flaggen gibt, die man nicht auseinanderhalten kann, ist selbst etwas, das man
+über Flaggen lernen kann.**
+
+Und das Tor prüft **beide** Richtungen: ein Paar unter dem Boden *muss* die
+Kennzeichnung tragen, und ein Paar mit der Kennzeichnung muss auch wirklich zu
+nah sein. Ohne die zweite Hälfte wäre `fragbar:false` ein Freibrief, mit dem
+sich jede zu ähnliche Zeichnung stillstellen ließe — und genau dafür ist der
+Boden nicht da.
+
+### Drei Fehler beim Einbauen, alle vom selben Missverständnis
+
+Ich hatte die Kennung `flaggenpaare` genannt, „weil hier ja anders gefragt
+wird". **Die Regel im Haus ist enger, als ich sie gelesen hatte:** der Teil vor
+dem Doppelpunkt ist die Gruppe *und* die Art; wie gefragt wird, entscheidet der
+Teil dahinter. `schreiben:diktat` macht es genauso.
+
+1. Der Rauchtest fand die Ebene nicht — er öffnet eine Gruppenkachel, indem er
+   den Teil vor dem Doppelpunkt als Gruppennamen nimmt, und suchte eine Gruppe
+   `flaggenpaare`, die es nicht gibt.
+2. Nach der Umbenennung stand die engere Bedingung (`kont==='paare'`) **hinter**
+   der allgemeinen, und die schluckte sie: `D.laender['paare']` gibt es nicht,
+   also kam eine leere Liste zurück. „Die Kachel steht da und fragt nichts."
+3. Und `anker` meldete Kollateralschaden: meine neue Ebene trägt dieselbe
+   `wer`-Liste wie „Hauptstädte in Europa". Eine bestehende Gegenprobe entfernt
+   diesen Text und erwartet, dass er aus dem Bündel verschwindet — mit zwei
+   Vorkommen hätte sie für immer „kam nicht an" gemeldet. Das Tor hat es gesagt,
+   bevor der nächste Probenlauf es gekostet hätte.
+
+Alle drei hat ein Tor gemeldet, keiner ein Blick. Das ist die Sorte Fehler, für
+die die Kette da ist.

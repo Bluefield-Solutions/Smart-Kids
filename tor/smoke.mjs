@@ -4052,11 +4052,16 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * ist die SECHSTE Art (Karte, Rechnung, Schreibblatt, Hoeren,
      * getippter Satz, Flagge) und traegt ausserdem als einzige ZWEI
      * Antwortrichtungen an einem Bildschirm - Fiona tippt eine Flagge an,
-     * Lea schreibt den Namen. */
+     * Lea schreibt den Namen.
+     *
+     * `flaggenpaare` (F3) steht daneben und ist die SIEBTE Art: zwei
+     * Flaggen statt vier, ein Versuch statt drei, und danach eine
+     * Erklaerung. Sie hier zu vergessen waere derselbe Fehler zum
+     * vierten Mal - deshalb kam sie mit der Ebene und nicht danach. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'laender:europa' || e.startsWith('rechnen')
-                    || e === 'flaggen:europa'
+                    || e === 'flaggen:europa' || e === 'flaggen:paare'
                     || e.startsWith('englisch') || e.startsWith('freunde')
                     || e === 'wendungen' || e === 'hoersatz')
       : da;
@@ -4388,6 +4393,46 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * Nennrichtung waere der Landesname die Antwort - vorgelesen waere
        * die Aufgabe geloest, bevor sie gestellt ist. Ein Test, der hier
        * eine Ansage verlangte, wuerde also genau das Falsche erzwingen. */
+      /* Die Verwechslungen (F3) - VOR dem Flaggenzweig, weil sie dieselbe
+       * Karte benutzen. Woran sie zu erkennen sind: es stehen GENAU ZWEI
+       * da, und `.paare` sagt es am Markup.
+       *
+       * Geprueft wird die Sache, die diese Ebene ausmacht: dass nach der
+       * Antwort BEIDE Flaggen ihren Namen tragen und der Unterschied
+       * genannt wird. Ohne das waere sie eine Ratewand mit zwei Feldern -
+       * und genau das ist der Unterschied zu einer Bildchen-App. */
+      if (await p.$('.schirm.da .flaggenwahl.paare')) {
+        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
+          name: Sitzung?.liste[Sitzung.i]?.name || '',
+          gegen: Sitzung?.liste[Sitzung.i]?.gegen || '',
+          grund: Sitzung?.liste[Sitzung.i]?.grund || '' }));
+        const wieviel = (await p.$$('.schirm.da .flaggenkarte')).length;
+        if (wieviel !== 2)
+          merke('durchgang', new Error(`${wer}/${ebene}: ${wieviel} Flaggen statt zwei — `
+            + 'die Ebene lebt davon, dass genau die beiden nebeneinanderstehen'));
+        if (!auf.grund)
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.name}" sagt nicht, `
+            + 'woran man die beiden unterscheidet — dann ist die Aufgabe geraten '
+            + 'und nicht gelernt'));
+        await p.$eval(`.schirm.da .flaggenkarte[data-id="${auf.id}"]`, x => x.click());
+        await bewertet(p);
+        const nach = await p.evaluate(() => ({
+          namen: [...document.querySelectorAll('.schirm.da .paarname')]
+            .map(x => x.textContent.trim()),
+          text: (document.querySelector('.schirm.da') || {}).textContent || '' }));
+        if (!nach.namen.includes(auf.name) || !nach.namen.includes(auf.gegen))
+          merke('durchgang', new Error(`${wer}/${ebene}: nach der Antwort stehen `
+            + `„${nach.namen.join('", „') || 'keine Namen'}" da statt „${auf.name}" `
+            + `und „${auf.gegen}" — wer die falsche sieht und ihren Namen nicht `
+            + 'erfährt, hat nur die halbe Lehre'));
+        if (auf.grund && !nach.text.includes(auf.grund))
+          merke('durchgang', new Error(`${wer}/${ebene}: der Unterschied `
+            + `(„${auf.grund}") steht nach der Antwort nicht da — er IST der Inhalt `
+            + 'dieser Ebene, nicht die Punktzahl'));
+        wege.add(`${wer}: Verwechslung entschieden`);
+        await abgeschlossen(p, wer, ebene, /(?!)/, 'die beiden auseinandergehalten');
+        continue;
+      }
       if (await p.$('.schirm.da .flaggenkarte, .schirm.da .flaggengross')) {
         const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
                                               name: Sitzung?.liste[Sitzung.i]?.name || '' }));
