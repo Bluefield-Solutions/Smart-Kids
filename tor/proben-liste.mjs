@@ -5426,8 +5426,14 @@ export const PROBEN = [
      Grund ist kein Nachweis (Regel 1). */
   { n:'einer Flagge fehlt ihr unterscheidendes Zeichen', tor:'inhalt', deckt:'flaggen',
     datei:'src/inhalt/flaggen.js',
+    /* Der Suchtext bleibt als Anker-Kommentar stehen. `inhalt` prueft
+       naemlich SELBST, ob jede Gegenprobe ihren Suchtext noch findet -
+       und ohne diese Zeile faellt das Tor genau daran durch, nicht an der
+       Flagge. Rot aus einem anderen Grund ist kein Nachweis. Dieselbe
+       Bauart wie bei den Tier-Proben. */
     such:"                    zeichen:{ form:'vogel', gross:0.46, farbe:'#7F5000' } } },",
-    ersatz:"                    zeichen:{ form:'vogel', gross:0.02, farbe:'#7F5000' } } },",
+    ersatz:"                    zeichen:{ form:'vogel', gross:0.02, farbe:'#7F5000' } } },\n"
+      + "//Anker:                    zeichen:{ form:'vogel', gross:0.46, farbe:'#7F5000' } } },",
     an:{ datei:'src/inhalt/flaggen.js', text:"form:'vogel', gross:0.02" },
     sagt:'nicht zu beantworten' },
 

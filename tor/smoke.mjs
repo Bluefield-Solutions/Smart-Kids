@@ -4381,8 +4381,20 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
           /* Der Landesname MUSS gesagt worden sein. Fuer Fiona ist diese
              Richtung die einzige, die sie spielen kann - sie liest nicht,
              und ohne die Ansage stehen vier Flaggen ohne Frage da. */
+          /* GESUCHT WIRD DER GANZE FRAGESATZ, nicht nur der Landesname.
+           *
+           * `__gesagt` sammelt ueber die ganze Sitzung. Fiona spielt vor
+           * den Flaggen die Laenderkarte - dort faellt derselbe Name
+           * laengst, und ein Blick auf „steht der Name irgendwo drin"
+           * war deshalb immer wahr. Die Probe, die die Ansage entfernt,
+           * blieb gruen: gemessen wurde die Vorgeschichte, nicht die
+           * Frage (Regel 1 - wer eine Wirkung misst, schaltet sie zuerst
+           * ab, und hier hat genau das nichts geaendert).
+           *
+           * Der Satz „… Wo ist die Flagge?" faellt nur hier. */
           const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
-          if (VORLESEN[wer] && !gesagt.some(x => String(x).includes(auf.name)))
+          const frage = `${auf.name}. Wo ist die Flagge?`;
+          if (VORLESEN[wer] && !gesagt.some(x => String(x).trim() === frage))
             merke('durchgang', new Error(`${wer}/${ebene}: „${auf.name}" wurde nicht `
               + 'gesagt — in dieser Richtung IST der Landesname die Frage, und wer '
               + `nicht liest, sieht sonst vier Flaggen ohne Aufgabe `
