@@ -5651,6 +5651,11 @@ if (laeuft('abzeichen')) try {
     await r.click('#buch');
     await r.waitForSelector('.schirm.da .rollen', { timeout: 25000 });
     const aus = await abzeichenSagen(r);
+    /* Auch HIER, und nicht nur oben: Leas Buch hat eine halb gespielte
+       Ebene und damit ein Kapitel „Als Naechstes" - genau das, das keine
+       Zahl tragen darf. Im Buch oben gibt es das nicht, dort blieb die
+       Gegenprobe dafuer still gruen. */
+    await kopfGegenReiter(r, `Buch von ${wer}`);
     await r.close();
     return aus;
   };

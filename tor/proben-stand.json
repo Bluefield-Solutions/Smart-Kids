@@ -228,6 +228,11 @@
       "zeit": "2026-09-05",
       "s": 5
     },
+    "die Kopfzahl zählt etwas anderes als die Reiter": {
+      "commit": "6b8e8eeb8b181541511e11d164023238dde91ee6",
+      "zeit": "2026-09-06",
+      "s": 55
+    },
     "der Lagername vergisst den Ort": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
       "zeit": "2026-09-05",
