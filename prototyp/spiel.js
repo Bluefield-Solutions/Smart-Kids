@@ -1434,7 +1434,8 @@ function silhouette(ebeneId) {
    *
    * Welche: die ERSTE dieser Karte, also die, nach der auch als erstes
    * gefragt wird. Fuer Europa Russland, fuer Asien Indien. Ein eigenes
-   * Schmuckbild waere schoener zu bauen und eine Luege (Regel 6) -
+   * Schmuckbild waere schoener zu bauen und eine Luege - was zweimal
+   * dasteht, veraltet einmal (Regel 6) -
    * dieselbe Ueberlegung wie beim Kachelbuchstaben, der genau der Zug
    * ist, den Fiona gleich nachfaehrt.
    *
@@ -1445,8 +1446,11 @@ function silhouette(ebeneId) {
   if (ebeneId === 'flaggen' || ebeneId.startsWith('flaggen:')) {
     const kont = ebeneId.split(':')[1];
     const erste = kont && (D.laender[kont] || []).find(l => Flaggen.hatFlagge(l.a3));
-    return `<span class="silhouette flaggensilhouette"
-      >${Flaggen.flaggeSvg(erste ? erste.a3 : 'DEU')}</span>`;
+    /* Die Klasse sitzt am SVG selbst und nicht an einer Huelle darum.
+       `passt` sucht `.kachel .silhouette` und ruft darauf `getScreenCTM()` -
+       auf einem `<span>` gibt es das nicht, und das Tor stuerzte ab. */
+    return Flaggen.flaggeSvg(erste ? erste.a3 : 'DEU',
+      { klasse: 'silhouette flaggensilhouette' });
   }
   /* Die Schreibwelt zeigt Buchstaben - und zwar DIE Buchstaben.
    *

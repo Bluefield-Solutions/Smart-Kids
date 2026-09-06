@@ -244,6 +244,34 @@ const AUFNAHMEN = [
      die ohne Vorbild schiefgeht. */
   { name:'quer-buch-rechnen', spiel:null, quer:true, stand:'rechnen',
     wahl:'.schirm.da', tun:'buchkapitel', kap:'welt:rechnen' },
+  /* Die Flaggen (F2) - VIER Aufnahmen, weil es vier verschiedene Bilder
+   * sind und nicht eines mit Varianten:
+   *
+   *   der Gruppenwaehler   sieben Kacheln, jede mit einer echten Flagge
+   *                        als Wasserzeichen. Der erste Bildschirm, auf
+   *                        dem ein Wasserzeichen seine EIGENEN Farben
+   *                        traegt - beim ersten Versuch war Russland ein
+   *                        flacher gruener Block, weil `fill:currentColor`
+   *                        fuer alle galt.
+   *   die Wahlform         vier Flaggen nebeneinander (Fiona)
+   *   die Nennform         eine grosse Flagge und ein Eingabefeld (Lea)
+   *   der Vorlauf          dreizehn Flaggen mit Namen, zwei Reihen - und
+   *                        genau dort war die zweite Reihe beim ersten
+   *                        Bau unten abgeschnitten.
+   *
+   * Alle vier sind Bildschirme, auf denen viele farbige Flaechen dicht
+   * nebeneinander stehen. Das ist die Sorte Bild, die ohne Vorbild
+   * schiefgeht (dieselbe Ueberlegung wie bei der Rechentafel). */
+  /* `gruppe:` sagt WELCHE - es gibt seit F2 zwei Gruppenkacheln.
+     `spiel:` bleibt leer: mit einer Ebene HINTER der Gruppe waere der
+     Waehler schon durchschritten, wenn die Aufnahme faellt. */
+  { name:'quer-flaggen-gruppe', spiel:null, quer:true,
+    wahl:'.schirm.da', tun:'gruppe', gruppe:'flaggen' },
+  { name:'quer-flaggen-wahl', spiel:'flaggen:europa', quer:true, wahl:'.schirm.da' },
+  { name:'quer-flaggen-tippen', spiel:'flaggen:europa', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
+  { name:'quer-vorlauf-flaggen', spiel:'flaggen:europa', quer:true,
+    wahl:'.schirm.da', tun:'vorlauf' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -664,6 +692,11 @@ const OHNE_KARTE = {
   freunde:   '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',
+  /* Die Flaggenebene (F2) zeigt je nach Profil ZWEI verschiedene Dinge:
+     vier Karten zum Antippen oder eine grosse Flagge mit Eingabefeld.
+     Beide muessen hier stehen - ein Vorbild, das nur auf die Wahlform
+     wartet, liefe bei Lea in den Zeitablauf. */
+  flaggen:   '.schirm.da .flaggenkarte, .schirm.da .flaggengross',
 };
 
 const STIMMEN_NACHBAU = () => {
@@ -979,7 +1012,10 @@ for (const a of MEINE) {
     if (a.tun !== 'welten') await zurEbenenwahl(seite, a.spiel || 'kontinente');
     // `tun:'gruppe'` heisst: die Gruppenkachel oeffnen und dort bleiben.
     if (a.tun === 'gruppe') {
-      await seite.$eval('.schirm.da [data-gruppe]', x => x.click());
+      // Seit F2 gibt es ZWEI Gruppenkacheln (Hauptstaedte und Flaggen).
+      // Ohne `gruppe:` bleibt es bei der ersten - so wie es war.
+      await seite.$eval(a.gruppe ? `.schirm.da [data-gruppe="${a.gruppe}"]`
+                                 : '.schirm.da [data-gruppe]', x => x.click());
       await seite.waitForSelector('.schirm.da .wahl.ebenen [data-ebene]:not([data-gruppe])',
         { timeout: 15000 });
       await seite.waitForTimeout(300);
@@ -1053,7 +1089,8 @@ for (const a of MEINE) {
       await seite.click(`.schirm.da [data-ebene="${a.spiel}"]:not([data-gruppe])`);
       // Seit R3 steht der Vorlauf beim ersten Betreten davor.
       await seite.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel, '
-        + '.schirm.da .rechnung, .schirm.da .engkarte, .schirm.da .freundluecke',
+        + '.schirm.da .rechnung, .schirm.da .engkarte, .schirm.da .freundluecke, '
+        + '.schirm.da .flaggenkarte, .schirm.da .flaggengross',
         { timeout: 25000 });
       // `tun:'vorlauf'` heisst: HIER bleiben. Kein `continue` - das
       // uebersprang die Aufnahme selbst und liess die naechste auf einer

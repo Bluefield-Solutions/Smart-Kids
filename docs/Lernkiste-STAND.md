@@ -10946,3 +10946,122 @@ denselben Stand haben. Das ist keine Kleinigkeit — es braucht einen Ort, an
 dem der Stand liegt, eine Antwort auf „zwei Geräte, zwei Stände" und die
 Zusage aus dem Bedrohungsmodell (Q29: nichts verlässt das Gerät), die dann
 neu zu fassen ist. Bis dahin bleibt es, wie es ist.
+
+## F1 und F2 · Flaggen — 69 Bauanweisungen und die elfte Kachel
+
+Gewünscht von der Familie: *„Wir möchten gerne Länderflaggen sehen und dann
+entweder den Ländern zuordnen, oder eine Variante zum Eintippen, zum
+Einsprechen. Fokus auf Europa und die anderen Kontinente. Für alle Profile."*
+
+**Das ganze Konzept steht in `docs/Lernkiste-KONZEPT-FLAGGEN.md`** —
+Referenzabgleich (Seterra, Montessori, Anton), die vier Festlegungen,
+Spielformen, Datenmodell, Tore. Die Runden F0 bis F5 stehen im Backlog. Hier
+nur, was zwei Runden Arbeit gekostet und was sie gefunden haben.
+
+### Eine Flagge ist keine Zeichnung, sondern eine Bauanweisung
+
+„Drei Querstreifen: schwarz, rot, gold" ist die ganze Wahrheit über die
+deutsche Flagge, und sie ist neunzig Zeichen lang. Acht Bauarten und zwölf
+Zeichen decken alle 69; fünf Flaggen folgen keiner Regel und bekommen einen
+Notausgang, den das Tor **zählt**.
+
+**Der Preis, gemessen:** das Startbündel wächst um 24 KB — 350 Byte je Flagge.
+Als Fotos wären es 69 Dateien, als gemalte Pfade ein Vielfaches.
+
+`flaggeTeile` ist die eine Übersetzung von einer Anweisung in Formen, und sie
+hat **zwei Abnehmer**: das Bild auf dem Schirm und ein grobes Punktfeld für das
+Tor. Zwei getrennte Übersetzungen wären zwei Wahrheiten, und die gemessene wäre
+nicht die gezeigte.
+
+### Das Tor misst, ob man den Unterschied SIEHT
+
+Sechs der 69 unterscheiden sich von einer anderen **nur** durch ihr Wappen. Ein
+Wappen wird nicht gezeichnet, sondern angedeutet — und ob die Andeutung reicht,
+entscheidet kein Auge, sondern eine Zahl: zwei Schwellen, 3 % der Fläche als
+Boden (darunter ist die Aufgabe nicht *schwer*, sondern *nicht zu beantworten*)
+und 6 % als Soll für jedes Paar, das nicht als verwechselbar gelistet ist.
+
+Es hat sofort gearbeitet:
+
+| Fund | Was war |
+|---|---|
+| **Nicaragua / Honduras: 3,5 %** | Beide blau-weiß-blau; mein Nicaragua-Zeichen war ein kleiner Stern in der **Grundfarbe**. Jetzt ein sichtbares Dreieck. Ecuador/Kolumbien ebenso. |
+| **Chile war ein `eigen`** | Und ist keiner: ein Zweistreifer mit Kanton, genau das kann die Formsprache. Der Notausgang war Bequemlichkeit. |
+| **Meine eigene Rückprüfung maß das Falsche** | Siehe unten. |
+
+### Die Prüfung, die ich wieder herausgenommen habe
+
+Sie verlangte, dass sich zwei als „ähnlich" gelistete Flaggen auf **höchstens
+30 %** der Fläche unterscheiden — sonst verwechsle sie ja niemand. Sie meldete
+daraufhin:
+
+```
+NLD/LUX unterscheidet sich auf 31 % der Fläche — das verwechselt niemand
+IDN/POL unterscheidet sich auf 100 % der Fläche — das verwechselt niemand
+```
+
+Beides sind **Schulbeispiele der Verwechslung**: das eine sind zwei Blautöne,
+das andere ist dieselbe Flagge auf dem Kopf. Ein Bildpunkt sieht bei einer
+Umkehrung den größtmöglichen Unterschied, ein Mensch sieht zweimal Rot und
+Weiß.
+
+**An einem Raster ist nicht zu messen, was Menschen verwechseln.** Eine
+Prüfung, die das Falsche misst, ist schlimmer als keine: diese hätte drei
+richtige Einträge aus der Liste getrieben. Geprüft wird jetzt der **bauliche**
+Grund — gleiche Bauart, gleiche Zahl und Richtung der Streifen. Das ist
+prüfbar, und es ist die Aussage, die stimmt.
+
+### Und der Fund, den kein Tor melden konnte
+
+Auf dem gemalten Bogen aller 69 war sofort zu sehen, dass der „Vogel" ein
+**Pfeil** war. Fünf Flaggen trugen ihn — Ägypten, Uganda, Mexiko, Guatemala,
+Ecuador. Die Form war da, groß genug, in der richtigen Farbe, alle Abstände
+stimmten. **Ob ein Bild das Richtige zeigt, sieht ein Auge** (Regel 4: kein Tor
+ersetzt den Blick). Ebenso zu groß: Myanmars Stern, der die halbe Flagge
+füllte.
+
+Deshalb gehört der Bogen zur Runde: `flaggeSvg` über alle 69, angesehen,
+**bevor** eine Flagge in die App geht.
+
+### Eine Kachel, nicht sieben
+
+Die Erdkundewand zeigte zehn Kacheln und trägt gemessen zwölf (Q13/Q27).
+Sieben Flaggenebenen wären siebzehn gewesen. `gruppe:'flaggen'` ist derselbe
+Mechanismus, den sich die Hauptstadt-Ebenen seit Q17 teilen: **eine** Kachel,
+ein Tipp fragt „wo?". Die Wand geht von zehn auf elf.
+
+**Der Preis, und er ist gemessen:** jede Kachel wird schmaler, und mit ihr das
+Wasserzeichen — „Kontinente" von 90 auf 76 Punkte, 24 Ratschenwerte in `passt`.
+Angesehen und für tragbar befunden; die Alternative wäre eine fünfte Welt, und
+die Weltenwand fasst gemessen vier.
+
+### Die Ebene sagt WAS, das Profil sagt WIE
+
+Ein Bildschirm, vier Erfahrungen, **ein** Leitner-Stand. Zwei Ebenen daraus zu
+machen hieße: wer die Flagge Rumäniens angetippt kennt, müsste sie getippt von
+vorn lernen. Es ist dasselbe Können.
+
+Fünf Dinge kamen erst beim Spielen heraus:
+
+1. **Die Kennung und `art` müssen gleich heißen.** `art:'flagge'` neben der
+   Kennung `flaggen:` — der Bildschirm fand sich, der Vorrat nicht, und die
+   Kachel stand mit null Gebieten da. Kein Tor konnte das melden.
+2. **Die Gruppenkachel trägt den Titel ihres ersten Teils.** Meiner hieß
+   „Europa" — also stand auf der Kachel für alle sieben Karten „Europa".
+3. **Lea bekam dreimal hintereinander vier Flaggen zum Antippen.** Die
+   Voreinstellung war die leichtere Richtung. Vier Möglichkeiten sind die
+   größte Hilfe, die das Spiel kennt (B2); als Regelfall verschenken sie die
+   Ebene.
+4. **Fiona bekam drei Karten statt vier.** Die Ablenker kamen aus *ihrer*
+   Tiefe, und die ist in Europa drei Länder. Ein Ablenker muss nicht lernbar
+   sein, er muss falsch sein.
+5. **„die Flagge von Vereinigtes Königreich"** ist falsches Deutsch, und
+   fünfzehn der 69 Namen tragen einen Artikel. Der Name steht jetzt vorn.
+
+### Was noch fehlt: das Sprechen (F2b)
+
+Kein Vergessen. Der Sprachweg sitzt in `spielschirm` eingewachsen, mit vier
+gemeldeten Fehlern darin (F13, F14, F15). Ihn nachzubauen hieße, eine zweite
+Fassung zu haben, die dieselben vier Fehler wieder bekommt. Er gehört
+herausgelöst — und das ist erst fällig, seit es einen zweiten Aufrufer gibt.
+Steht als **F2b** im Backlog, direkt nach F2.

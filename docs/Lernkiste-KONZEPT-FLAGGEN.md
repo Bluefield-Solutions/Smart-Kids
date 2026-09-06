@@ -13,7 +13,7 @@ nichts zweimal dasteht und eine der beiden Fassungen veraltet (Regel 6).
 
 ## § 0 · Referenzabgleich — was die Vorbilder TUN
 
-Regel 10: *Das Soll kommt aus der Referenz, nicht aus mir.* Drei Vorbilder,
+Regel 3: *Das Soll kommt aus der Referenz, nicht aus mir.* Drei Vorbilder,
 benannt, mit dem, was sie tun und was sie kosten.
 
 ### Vorbild 1 · Seterra / GeoGuessr — „Flags of Europe"
@@ -249,7 +249,8 @@ export const FLAGGEN = [ { a3:'DEU', bau:{…} }, … ];
  *
  * Sie hat ZWEI Abnehmer: `flaggeSvg` macht daraus ein Bild, das Tor macht
  * daraus ein Raster und misst, ob sich zwei Flaggen zu aehnlich sehen. Zwei
- * getrennte Uebersetzungen waeren zwei Wahrheiten (Regel 6), und die
+ * getrennte Uebersetzungen waeren zwei Wahrheiten - was zweimal dasteht,
+ * veraltet einmal (Regel 6). Die
  * gemessene waere nicht die gezeigte - das Tor bezeugte dann eine Flagge,
  * die niemand sieht.
  */
@@ -303,7 +304,7 @@ können, sich zu ähnlich sehen, ist die Flagge falsch gezeichnet — nicht
 
 **Die Unterscheidbarkeit wird am RASTER gemessen, nicht an der Beschreibung.**
 Zwei Beschreibungen sind immer verschieden — sie stehen ja in verschiedenen
-Zeilen. Verschieden **aussehen** ist etwas anderes, und nur das zählt (Regel 12:
+Zeilen. Verschieden **aussehen** ist etwas anderes, und nur das zählt (Regel 5:
 jede Zahl trägt ihre Messstelle mit).
 
 ### Die übrigen Tore
@@ -320,7 +321,9 @@ jede Zahl trägt ihre Messstelle mit).
 ### Und die Gegenproben
 
 Jede neue Prüfung bekommt eine stehende Gegenprobe, und jede prüft zuerst, ob
-ihr Eingriff angekommen ist (Regel 5, Regel 3). Die wichtigste:
+ihr Eingriff angekommen ist (Regel 1: eine Prüfung, die nie etwas meldet, ist
+kein Beweis; Regel 10: jede Probe prüft zuerst, ob ihr Eingriff angekommen ist).
+Die wichtigste:
 **einer Flagge ihr unterscheidendes Zeichen wegnehmen** — das Tor muss anschlagen,
 sonst prüft es nur, dass Rechtecke da sind.
 

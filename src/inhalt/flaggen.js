@@ -18,7 +18,8 @@
  *   flaggeRaster macht daraus ein grobes Punktfeld fuer das Tor, das misst,
  *                ob sich zwei Flaggen zu aehnlich SEHEN
  *
- * Zwei getrennte Uebersetzungen waeren zwei Wahrheiten (Regel 6), und die
+ * Zwei getrennte Uebersetzungen waeren zwei Wahrheiten - und was zweimal
+ * dasteht, veraltet einmal (Regel 6). Die
  * gemessene waere nicht die gezeigte: das Tor bezeugte dann eine Flagge,
  * die niemand zu sehen bekommt. Deshalb gibt es nur DREI Grundformen -
  * Rechteck, Scheibe, Vieleck -, und beide Abnehmer koennen alle drei
@@ -304,7 +305,8 @@ function ahornblatt(x, y, r, farbe){
  *
  * KEIN TOR HAT DAS GEMELDET, und keines haette es koennen: die Form war
  * da, gross genug, in der richtigen Farbe, und alle Abstaende stimmten.
- * Ob ein Bild das Richtige ZEIGT, sieht ein Auge (Regel 8). Deshalb wird
+ * Ob ein Bild das Richtige ZEIGT, sieht ein Auge: kein Tor ersetzt den
+ * Blick (Regel 4). Deshalb wird
  * der Bogen gemalt und angesehen, bevor eine Flagge in die App geht. */
 function vogelTeile(x, y, r, farbe){
   const p = [[0, -0.95], [0.18, -0.62], [0.60, -0.80], [1.30, -0.30],
@@ -320,6 +322,37 @@ function vogelTeile(x, y, r, farbe){
 const alsPfad = (p) => 'M' + p.map(([x, y]) => `${x} ${y}`).join('L') + 'Z';
 
 /**
+ * JEDE Form wird zu einem PFAD - auch das Rechteck und die Scheibe.
+ *
+ * Nicht aus Ordnungsliebe, sondern weil es die MESSSTELLE ist. `passt`
+ * misst ein Kachel-Wasserzeichen ueber `getBBox()` und `isPointInFill()`
+ * je PFAD; ein `<rect>` und ein `<circle>` findet es gar nicht erst.
+ * Die deutsche Flagge besteht aus drei Rechtecken - als `<rect>`
+ * gezeichnet war sie fuer das Tor UNSICHTBAR, und der Lauf meldete
+ * nichts. Nicht „gruen": nichts. Ein stiller Ausfall ist schlimmer als
+ * ein roter Lauf.
+ *
+ * Dieselbe Lehre und dieselbe Zeile wie bei den Tieren und beim
+ * Englischbild (E3), wo sie schon einmal eine Runde gekostet hat.
+ *
+ * Die Scheibe wird zu zwei Halbbogen. Das ist die uebliche Schreibweise
+ * fuer einen Kreis als Pfad und exakt - kein genaehertes Vieleck.
+ */
+function alsPfadTeil(t){
+  if (t.form === 'rechteck') {
+    const x = +t.x.toFixed(2), y = +t.y.toFixed(2);
+    const b = +t.b.toFixed(2), h = +t.h.toFixed(2);
+    return `M${x} ${y}h${b}v${h}h${-b}Z`;
+  }
+  if (t.form === 'scheibe') {
+    const x = +t.x.toFixed(2), y = +t.y.toFixed(2), r = +t.r.toFixed(2);
+    return `M${+(x - r).toFixed(2)} ${y}a${r} ${r} 0 1 0 ${r * 2} 0`
+         + `a${r} ${r} 0 1 0 ${-r * 2} 0Z`;
+  }
+  return alsPfad(t.punkte);
+}
+
+/**
  * Das Bild.
  *
  * `preserveAspectRatio` bleibt auf der Voreinstellung: eine Flagge, die
@@ -329,14 +362,8 @@ const alsPfad = (p) => 'M' + p.map(([x, y]) => `${x} ${y}`).join('L') + 'Z';
 export function flaggeSvg(a3, { klasse = 'flagge', titel = '' } = {}){
   const f = flaggeVon(a3);
   if (!f) return '';
-  const inhalt = flaggeTeile(f.bau).map(t =>
-    t.form === 'rechteck'
-      ? `<rect x="${+t.x.toFixed(2)}" y="${+t.y.toFixed(2)}" width="${
-          +t.b.toFixed(2)}" height="${+t.h.toFixed(2)}" fill="${t.farbe}"/>`
-    : t.form === 'scheibe'
-      ? `<circle cx="${+t.x.toFixed(2)}" cy="${+t.y.toFixed(2)}" r="${
-          +t.r.toFixed(2)}" fill="${t.farbe}"/>`
-      : `<path d="${alsPfad(t.punkte)}" fill="${t.farbe}"/>`).join('');
+  const inhalt = flaggeTeile(f.bau)
+    .map(t => `<path d="${alsPfadTeil(t)}" fill="${t.farbe}"/>`).join('');
   /* Der RAND gehoert zur Flagge, nicht zum Stilblatt.
    *
    * Japan ist weiss mit einer roten Scheibe. Ohne Rand steht auf einer
@@ -366,7 +393,7 @@ const imVieleck = (px, py, p) => {
  * Gemessen wird an den FORMEN, die auch gezeichnet werden - nicht an der
  * Bauanweisung. Zwei Bauanweisungen sind immer verschieden, sie stehen ja
  * in verschiedenen Zeilen; verschieden AUSSEHEN ist etwas anderes, und nur
- * das zaehlt (Regel 12: jede Zahl traegt ihre Messstelle mit).
+ * das zaehlt (Regel 5: jede Zahl traegt ihre Messstelle mit).
  *
  * Gibt je Punkt ein `[r,g,b]` zurueck, Zeile fuer Zeile.
  */

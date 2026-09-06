@@ -253,9 +253,24 @@ im Konzept:
 | **F0** | Referenzabgleich — Seterra, Montessori, Anton; fünf Soll-Sätze | steht im Konzept, § 0 | **erledigt** |
 | **F1** | `src/inhalt/flaggen.js`: Formsprache, 69 Bauanweisungen, `flaggeTeile`/`flaggeSvg`; Tor `flaggen` | Das Tor misst die **Unterscheidbarkeit am Raster** und schlägt an, wenn einer Flagge ihr unterscheidendes Zeichen fehlt | mittel |
 | **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | groß |
+| **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Fiona sagt „Deutschland" statt zu tippen; der Kartenbildschirm verhält sich unverändert | mittel |
 | **F3** | „Verwechslungen" — achter Gruppeneintrag, acht Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad, und das Tor beweist, dass sie sich ähnlich **sehen** | mittel |
 | **F4** | „Auf die Karte" — die Flagge wird auf ihr Land gezogen | Nur Länder mit Umriss und über der Fingergrenze (P7/P10) | groß |
 | **F5** | Abzeichen, Doku, volle Torkette, Gegenproben | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+
+**Warum das Sprechen eine eigene Runde ist (F2b) und nicht in F2 steckt.**
+Der Sprachweg — Mikrofon, Rückfrage bei unsicherer Erkennung, gerettetes
+Zwischenergebnis, der *eine* Ausgang aus F13 — sitzt in `spielschirm`
+eingewachsen, dem größten Bildschirm der App. In diesen dreihundert Zeilen
+stecken **vier gemeldete Fehler** (F13, F14, F15) und ihre Reparaturen. Ihn im
+Flaggenschirm nachzubauen hieße, eine zweite Fassung davon zu haben — und die
+zweite Fassung bekommt dieselben vier Fehler wieder, weil niemand sie beim
+Nachbauen kennt. Regel 6, und teuer.
+
+Er gehört **herausgelöst**, einmal, mit den Gegenproben des Kartenbildschirms
+als Netz: derselbe Weg, dieselbe Rückfrage, zwei Aufrufer. Das ist eine Runde
+für sich, und sie ist erst dann fällig, wenn es einen zweiten Aufrufer
+wirklich gibt — den gibt es seit F2.
 
 **Warum die Reihenfolge so und nicht anders.** F1 ist unsichtbar und trägt
 trotzdem alles: ohne einen Vorrat, dessen Flaggen sich nachweislich

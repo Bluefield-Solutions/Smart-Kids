@@ -1,161 +1,165 @@
 [
- {
-  "dateien": "tor/proben-liste.mjs",
-  "token": 637,
-  "wo": [
-   "tor/proben-liste.mjs:1559",
-   "tor/proben-liste.mjs:1570",
-   "tor/proben-liste.mjs:1580",
-   "tor/proben-liste.mjs:1589",
-   "tor/proben-liste.mjs:1595",
-   "tor/proben-liste.mjs:1605",
-   "tor/proben-liste.mjs:1616",
-   "tor/proben-liste.mjs:1628",
-   "tor/proben-liste.mjs:1649",
-   "tor/proben-liste.mjs:1688",
-   "tor/proben-liste.mjs:1691"
-  ],
-  "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken. — Nachgetragen in P10: die Zahl stieg von 464 auf 637, OHNE dass die Liste länger wurde (213 Zeilen vorher, 213 nachher). Sie stieg, weil eine Zeile WEGFIEL: „die umgekehrte Frage kommt auch für Winzlinge“ wurde zu einem Kommentar, Kommentare zählt das Tor nicht mit, und die beiden gleichförmigen Stränge beiderseits rückten im Tokenstrom zusammen zu EINEM. Gemessen am Baum von b2c65fb: dieselbe Stelle, 423 Token. Diese Kennzahl ist die LÄNGE des längsten gleichförmigen Laufs, nicht die MENGE an Dopplung — an einer Tabelle kann sie deshalb auch dann wachsen, wenn etwas gestrichen wird. Wer sie hier hochsetzt, prüft zuerst die Zeilenzahl der Liste."
- },
- {
-  "dateien": "src/inhalt/erdkunde.js",
-  "token": 322,
-  "wo": [
-   "src/inhalt/erdkunde.js:66",
-   "src/inhalt/erdkunde.js:86",
-   "src/inhalt/erdkunde.js:258"
-  ],
-  "warum": "Die SIEBEN Länderlisten (Q11: Ozeanien ist die siebte). Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben. Die Zahl wächst mit jeder Karte: 250 bei fünf Listen, 322 bei sieben. Wer sie hier hochsetzt, prüft zuerst, ob wirklich nur eine LISTE dazugekommen ist und nicht Logik."
- },
- {
-  "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",
-  "token": 175,
-  "wo": [
-   "tools/backen-kontinente.mjs:7",
-   "tools/backen-laender.mjs:7"
-  ],
-  "warum": "Der Importblock zweier Backwerkzeuge, die dieselben acht Helfer aus `geo-backen.mjs` holen. Die geteilte Wahrheit steht schon dort; doppelt ist nur die Liste der Namen, und die kann nicht auseinanderlaufen."
- },
- {
-  "dateien": "prototyp/spiel.js",
-  "token": 125,
-  "wo": [
-   "prototyp/spiel.js:2299",
-   "prototyp/spiel.js:3148"
-  ],
-  "warum": "Die beiden Umschalter der Antwortweise: „Lieber ziehen/antippen\" auf der Karte, „Lieber auswählen/schreiben\" im Rechenschirm. In P8 gemessen und ABGELEHNT: beide schalten eine Zustandsgröße, die ihre Umgebung nach dem Klick weiterliest (die Etiketten in `b.onclick`, die `eingabeart` beim Werten). Ein gemeinsamer Helfer bräuchte Lesen und Setzen als Rückrufe und wäre länger als die 125 Token, die er spart. Was wirklich auseinanderlaufen konnte, war die Zusage `data-weise` — die stand auf beiden Schirmen und war nur auf einem bezeugt. Seit P8 liest der Rauchtest sie auch im Rechenschirm, mit Gegenprobe."
- },
- {
-  "dateien": "prototyp/spiel.js · tor/schreiben.mjs",
-  "token": 113,
-  "wo": [
-   "tor/schreiben.mjs:122",
-   "prototyp/spiel.js:1197"
-  ],
-  "warum": "Mulberry32, der Würfel mit Saat — im Spiel EINMAL (seit P8) und im Tor noch einmal. Die Fassung im Tor ist Absicht: sie rechnet die Reihenfolge nach, die das Spiel erzeugt, und wäre wertlos, wenn sie dieselbe Funktion aufriefe. Ein Nachrechner, der die geprüfte Funktion benutzt, prüft nichts."
- },
- {
-  "dateien": "src/inhalt/abzeichen.js",
-  "token": 134,
-  "wo": [
-   "src/inhalt/abzeichen.js:128",
-   "src/inhalt/abzeichen.js:166"
-  ],
-  "warum": "Dieselbe Sache: die Abzeichentafel ist eine Tabelle, elf Zeilen mit ebene/id/zeichen/titel/waehlt. Wer eine Zeile liest, soll das ganze Abzeichen sehen und nicht drei Stellen aufsuchen müssen. — Nachgetragen im Buch-Umbau: jede Zeile trägt jetzt ein Feld mehr (`kurz`, der NAME neben dem Satz), und der gleichförmige Lauf ist damit von 110 auf 134 Token gewachsen. Wieder nur eine Zeile je Abzeichen mehr; die Zahl misst die Länge des Laufs, nicht die Menge an Dopplung. Wer sie hochsetzt, prüft zuerst, ob wirklich nur ein Feld dazugekommen ist und nicht Logik dazwischen."
- },
- {
-  "dateien": "src/inhalt/schreiben.js",
-  "token": 101,
-  "wo": [
-   "src/inhalt/schreiben.js:69",
-   "src/inhalt/schreiben.js:80"
-  ],
-  "warum": "Die Buchstaben- und die Ziffernvorlage. Wieder eine Tabelle: eine Zeile je Zeichen, immer zeichen/wort/zuege. Die Neuabtastung, die hier bis P8 zweimal stand, ist zusammengelegt (`gleichWeit`) — was bleibt, sind die Daten."
- },
- {
-  "dateien": "src/inhalt/saetze.js",
-  "token": 279,
-  "wo": [
-   "src/inhalt/saetze.js:75",
-   "src/inhalt/saetze.js:78",
-   "src/inhalt/saetze.js:79",
-   "src/inhalt/saetze.js:80",
-   "src/inhalt/saetze.js:81",
-   "src/inhalt/saetze.js:82",
-   "src/inhalt/saetze.js:83",
-   "src/inhalt/saetze.js:84",
-   "src/inhalt/saetze.js:85",
-   "src/inhalt/saetze.js:86",
-   "src/inhalt/saetze.js:87",
-   "src/inhalt/saetze.js:88",
-   "src/inhalt/saetze.js:89",
-   "src/inhalt/saetze.js:90",
-   "src/inhalt/saetze.js:91",
-   "src/inhalt/saetze.js:92",
-   "src/inhalt/saetze.js:93",
-   "src/inhalt/saetze.js:94",
-   "src/inhalt/saetze.js:97",
-   "src/inhalt/saetze.js:98",
-   "src/inhalt/saetze.js:104",
-   "src/inhalt/saetze.js:105",
-   "src/inhalt/saetze.js:106",
-   "src/inhalt/saetze.js:107",
-   "src/inhalt/saetze.js:108",
-   "src/inhalt/saetze.js:111",
-   "src/inhalt/saetze.js:112",
-   "src/inhalt/saetze.js:113",
-   "src/inhalt/saetze.js:114",
-   "src/inhalt/saetze.js:115",
-   "src/inhalt/saetze.js:116",
-   "src/inhalt/saetze.js:117",
-   "src/inhalt/saetze.js:118",
-   "src/inhalt/saetze.js:119",
-   "src/inhalt/saetze.js:120",
-   "src/inhalt/saetze.js:121",
-   "src/inhalt/saetze.js:122",
-   "src/inhalt/saetze.js:125",
-   "src/inhalt/saetze.js:126",
-   "src/inhalt/saetze.js:127"
-  ],
-  "warum": "Die Satztafel IST eine Tabelle: eine Zeile je Gebiet, immer Kennung und EIN Satz. Einundneunzig Zeilen derselben Form - das ist ihr Zweck, nicht ihr Mangel: wer einen Satz sucht, liest eine Zeile, und wer einen nachtraegt, schreibt eine. Zusammenlegen gaebe es hier gar nicht zusammenzulegen; was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderer. Die Zahl waechst mit jeder Karte, die dazukommt - Ozeanien hat sie zuletzt um drei Zeilen verlaengert. Wer sie hier hochsetzt, prueft zuerst, ob wirklich nur Saetze dazugekommen sind und nicht Logik."
- },
- {
-  "dateien": "src/inhalt/englisch.js",
-  "token": 1204,
-  "wo": [
-   "src/inhalt/englisch.js:31",
-   "src/inhalt/englisch.js:39",
-   "src/inhalt/englisch.js:47"
-  ],
-  "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt. — Nachgetragen in E4: von 301 auf 1204. Der Bildplan (BILDER) ist die zweite gleichfoermige Tabelle in derselben Datei, 86 Zeilen der Form `{ wort, gebiet, motiv }`, und sie ist mit dem Wortschatz zu EINEM Lauf zusammengewachsen: dazwischen stehen nur Kommentare, und die zaehlt das Tor nicht mit. Zusammenlegen gibt es auch hier nichts - was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderes Motiv. Die Zahl haengt an zwei Zaehlungen: 151 Woerter und 86 Bilder. Wer sie hochsetzt, prueft zuerst, ob wirklich nur Zeilen dazugekommen sind - das Untertor `englisch` rechnet beide Zahlen nach."
- },
- {
-  "dateien": "prototyp/bauen.mjs",
-  "token": 201,
-  "wo": [
-   "prototyp/bauen.mjs:319",
-   "prototyp/bauen.mjs:325"
-  ],
-  "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung."
- },
- {
-  "dateien": "src/inhalt/englisch.js · tools/backen-kontinente.mjs",
-  "token": 104,
-  "wo": [
-   "src/inhalt/englisch.js:353",
-   "tools/backen-kontinente.mjs:24"
-  ],
-  "warum": "Zwei Tabellen, die sich nur in der FORM gleichen: der Bildplan (`{ wort, gebiet, motiv }`, 86 Zeilen) und die Kontinentliste (`{ id, name, ne }`, sieben Zeilen). Beide sind Datenzeilen mit drei Feldern und ausgerichteten Werten - mehr haben sie nicht miteinander zu tun, und sie stehen in zwei Verzeichnissen mit verschiedenen Aufgaben (Inhalt und Backwerkzeug). Zusammenlegen waere hier nicht Aufraeumen, sondern das Verknuepfen von Englischvokabeln mit Erdkunde-Rohdaten."
- },
- {
-  "dateien": "src/inhalt/tiere.js",
-  "token": 1900,
-  "wo": [
-   "src/inhalt/tiere.js:50",
-   "src/inhalt/tiere.js:74",
-   "src/inhalt/tiere.js:85",
-   "src/inhalt/tiere.js:110"
-  ],
-  "warum": "Der Tierplan IST eine Tabelle: eine Zeile je Tier, immer id/name/art/zeichen und darunter ggf. das Bild. 124 Zeilen derselben Form - das ist ihr Zweck. Und die Bilder sind SVG-Pfade aus demselben kleinen Vokabular (`M`, `c`, `s`, `z`, `fill=\"#…\"`), weil sie im selben Stil gezeichnet sind; dass ein Fuchs und eine Eule sich im Tokenstrom aehneln, heisst nicht, dass sie dasselbe Bild sind. Zusammenlegen gaebe es hier nichts: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderes Tier. Die Zahl waechst mit jedem gemalten Tier - wer sie hochsetzt, prueft zuerst, ob wirklich nur Bilder dazugekommen sind und nicht Logik dazwischen."
- }
+  {
+    "dateien": "tor/proben-liste.mjs",
+    "token": 637,
+    "wo": [
+      "tor/proben-liste.mjs:1559",
+      "tor/proben-liste.mjs:1570",
+      "tor/proben-liste.mjs:1580",
+      "tor/proben-liste.mjs:1589",
+      "tor/proben-liste.mjs:1595",
+      "tor/proben-liste.mjs:1605",
+      "tor/proben-liste.mjs:1616",
+      "tor/proben-liste.mjs:1628",
+      "tor/proben-liste.mjs:1649",
+      "tor/proben-liste.mjs:1688",
+      "tor/proben-liste.mjs:1691"
+    ],
+    "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken. — Nachgetragen in P10: die Zahl stieg von 464 auf 637, OHNE dass die Liste länger wurde (213 Zeilen vorher, 213 nachher). Sie stieg, weil eine Zeile WEGFIEL: „die umgekehrte Frage kommt auch für Winzlinge“ wurde zu einem Kommentar, Kommentare zählt das Tor nicht mit, und die beiden gleichförmigen Stränge beiderseits rückten im Tokenstrom zusammen zu EINEM. Gemessen am Baum von b2c65fb: dieselbe Stelle, 423 Token. Diese Kennzahl ist die LÄNGE des längsten gleichförmigen Laufs, nicht die MENGE an Dopplung — an einer Tabelle kann sie deshalb auch dann wachsen, wenn etwas gestrichen wird. Wer sie hier hochsetzt, prüft zuerst die Zeilenzahl der Liste."
+  },
+  {
+    "dateien": "src/inhalt/erdkunde.js",
+    "token": 322,
+    "wo": [
+      "src/inhalt/erdkunde.js:66",
+      "src/inhalt/erdkunde.js:86",
+      "src/inhalt/erdkunde.js:258"
+    ],
+    "warum": "Die SIEBEN Länderlisten (Q11: Ozeanien ist die siebte). Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben. Die Zahl wächst mit jeder Karte: 250 bei fünf Listen, 322 bei sieben. Wer sie hier hochsetzt, prüft zuerst, ob wirklich nur eine LISTE dazugekommen ist und nicht Logik."
+  },
+  {
+    "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",
+    "token": 175,
+    "wo": [
+      "tools/backen-kontinente.mjs:7",
+      "tools/backen-laender.mjs:7"
+    ],
+    "warum": "Der Importblock zweier Backwerkzeuge, die dieselben acht Helfer aus `geo-backen.mjs` holen. Die geteilte Wahrheit steht schon dort; doppelt ist nur die Liste der Namen, und die kann nicht auseinanderlaufen."
+  },
+  {
+    "dateien": "prototyp/spiel.js",
+    "token": 125,
+    "wo": [
+      "prototyp/spiel.js:2299",
+      "prototyp/spiel.js:3148"
+    ],
+    "warum": "Die beiden Umschalter der Antwortweise: „Lieber ziehen/antippen\" auf der Karte, „Lieber auswählen/schreiben\" im Rechenschirm. In P8 gemessen und ABGELEHNT: beide schalten eine Zustandsgröße, die ihre Umgebung nach dem Klick weiterliest (die Etiketten in `b.onclick`, die `eingabeart` beim Werten). Ein gemeinsamer Helfer bräuchte Lesen und Setzen als Rückrufe und wäre länger als die 125 Token, die er spart. Was wirklich auseinanderlaufen konnte, war die Zusage `data-weise` — die stand auf beiden Schirmen und war nur auf einem bezeugt. Seit P8 liest der Rauchtest sie auch im Rechenschirm, mit Gegenprobe."
+  },
+  {
+    "dateien": "prototyp/spiel.js · tor/schreiben.mjs",
+    "token": 113,
+    "wo": [
+      "tor/schreiben.mjs:122",
+      "prototyp/spiel.js:1197"
+    ],
+    "warum": "Mulberry32, der Würfel mit Saat — im Spiel EINMAL (seit P8) und im Tor noch einmal. Die Fassung im Tor ist Absicht: sie rechnet die Reihenfolge nach, die das Spiel erzeugt, und wäre wertlos, wenn sie dieselbe Funktion aufriefe. Ein Nachrechner, der die geprüfte Funktion benutzt, prüft nichts."
+  },
+  {
+    "dateien": "src/inhalt/abzeichen.js",
+    "token": 134,
+    "wo": [
+      "src/inhalt/abzeichen.js:128",
+      "src/inhalt/abzeichen.js:166"
+    ],
+    "warum": "Dieselbe Sache: die Abzeichentafel ist eine Tabelle, elf Zeilen mit ebene/id/zeichen/titel/waehlt. Wer eine Zeile liest, soll das ganze Abzeichen sehen und nicht drei Stellen aufsuchen müssen. — Nachgetragen im Buch-Umbau: jede Zeile trägt jetzt ein Feld mehr (`kurz`, der NAME neben dem Satz), und der gleichförmige Lauf ist damit von 110 auf 134 Token gewachsen. Wieder nur eine Zeile je Abzeichen mehr; die Zahl misst die Länge des Laufs, nicht die Menge an Dopplung. Wer sie hochsetzt, prüft zuerst, ob wirklich nur ein Feld dazugekommen ist und nicht Logik dazwischen."
+  },
+  {
+    "dateien": "src/inhalt/schreiben.js",
+    "token": 101,
+    "wo": [
+      "src/inhalt/schreiben.js:69",
+      "src/inhalt/schreiben.js:80"
+    ],
+    "warum": "Die Buchstaben- und die Ziffernvorlage. Wieder eine Tabelle: eine Zeile je Zeichen, immer zeichen/wort/zuege. Die Neuabtastung, die hier bis P8 zweimal stand, ist zusammengelegt (`gleichWeit`) — was bleibt, sind die Daten."
+  },
+  {
+    "dateien": "src/inhalt/saetze.js",
+    "token": 279,
+    "wo": [
+      "src/inhalt/saetze.js:75",
+      "src/inhalt/saetze.js:78",
+      "src/inhalt/saetze.js:79",
+      "src/inhalt/saetze.js:80",
+      "src/inhalt/saetze.js:81",
+      "src/inhalt/saetze.js:82",
+      "src/inhalt/saetze.js:83",
+      "src/inhalt/saetze.js:84",
+      "src/inhalt/saetze.js:85",
+      "src/inhalt/saetze.js:86",
+      "src/inhalt/saetze.js:87",
+      "src/inhalt/saetze.js:88",
+      "src/inhalt/saetze.js:89",
+      "src/inhalt/saetze.js:90",
+      "src/inhalt/saetze.js:91",
+      "src/inhalt/saetze.js:92",
+      "src/inhalt/saetze.js:93",
+      "src/inhalt/saetze.js:94",
+      "src/inhalt/saetze.js:97",
+      "src/inhalt/saetze.js:98",
+      "src/inhalt/saetze.js:104",
+      "src/inhalt/saetze.js:105",
+      "src/inhalt/saetze.js:106",
+      "src/inhalt/saetze.js:107",
+      "src/inhalt/saetze.js:108",
+      "src/inhalt/saetze.js:111",
+      "src/inhalt/saetze.js:112",
+      "src/inhalt/saetze.js:113",
+      "src/inhalt/saetze.js:114",
+      "src/inhalt/saetze.js:115",
+      "src/inhalt/saetze.js:116",
+      "src/inhalt/saetze.js:117",
+      "src/inhalt/saetze.js:118",
+      "src/inhalt/saetze.js:119",
+      "src/inhalt/saetze.js:120",
+      "src/inhalt/saetze.js:121",
+      "src/inhalt/saetze.js:122",
+      "src/inhalt/saetze.js:125",
+      "src/inhalt/saetze.js:126",
+      "src/inhalt/saetze.js:127"
+    ],
+    "warum": "Die Satztafel IST eine Tabelle: eine Zeile je Gebiet, immer Kennung und EIN Satz. Einundneunzig Zeilen derselben Form - das ist ihr Zweck, nicht ihr Mangel: wer einen Satz sucht, liest eine Zeile, und wer einen nachtraegt, schreibt eine. Zusammenlegen gaebe es hier gar nicht zusammenzulegen; was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderer. Die Zahl waechst mit jeder Karte, die dazukommt - Ozeanien hat sie zuletzt um drei Zeilen verlaengert. Wer sie hier hochsetzt, prueft zuerst, ob wirklich nur Saetze dazugekommen sind und nicht Logik."
+  },
+  {
+    "dateien": "src/inhalt/englisch.js",
+    "token": 1204,
+    "wo": [
+      "src/inhalt/englisch.js:31",
+      "src/inhalt/englisch.js:39",
+      "src/inhalt/englisch.js:47"
+    ],
+    "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt. — Nachgetragen in E4: von 301 auf 1204. Der Bildplan (BILDER) ist die zweite gleichfoermige Tabelle in derselben Datei, 86 Zeilen der Form `{ wort, gebiet, motiv }`, und sie ist mit dem Wortschatz zu EINEM Lauf zusammengewachsen: dazwischen stehen nur Kommentare, und die zaehlt das Tor nicht mit. Zusammenlegen gibt es auch hier nichts - was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderes Motiv. Die Zahl haengt an zwei Zaehlungen: 151 Woerter und 86 Bilder. Wer sie hochsetzt, prueft zuerst, ob wirklich nur Zeilen dazugekommen sind - das Untertor `englisch` rechnet beide Zahlen nach."
+  },
+  {
+    "dateien": "prototyp/bauen.mjs",
+    "token": 235,
+    "wo": [
+      "prototyp/bauen.mjs:319",
+      "prototyp/bauen.mjs:320",
+      "prototyp/bauen.mjs:321",
+      "prototyp/bauen.mjs:325",
+      "prototyp/bauen.mjs:326",
+      "prototyp/bauen.mjs:327"
+    ],
+    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung. — Nachgetragen in F1: `flaggen.js` ist das dreizehnte Modul, und mit ihm ist der gleichfoermige Lauf von 201 auf 235 Token gewachsen. Wieder genau EINE `inline`-Zeile mehr, nachgezaehlt und nicht geschaetzt: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung."
+  },
+  {
+    "dateien": "src/inhalt/englisch.js · tools/backen-kontinente.mjs",
+    "token": 104,
+    "wo": [
+      "src/inhalt/englisch.js:353",
+      "tools/backen-kontinente.mjs:24"
+    ],
+    "warum": "Zwei Tabellen, die sich nur in der FORM gleichen: der Bildplan (`{ wort, gebiet, motiv }`, 86 Zeilen) und die Kontinentliste (`{ id, name, ne }`, sieben Zeilen). Beide sind Datenzeilen mit drei Feldern und ausgerichteten Werten - mehr haben sie nicht miteinander zu tun, und sie stehen in zwei Verzeichnissen mit verschiedenen Aufgaben (Inhalt und Backwerkzeug). Zusammenlegen waere hier nicht Aufraeumen, sondern das Verknuepfen von Englischvokabeln mit Erdkunde-Rohdaten."
+  },
+  {
+    "dateien": "src/inhalt/tiere.js",
+    "token": 1900,
+    "wo": [
+      "src/inhalt/tiere.js:50",
+      "src/inhalt/tiere.js:74",
+      "src/inhalt/tiere.js:85",
+      "src/inhalt/tiere.js:110"
+    ],
+    "warum": "Der Tierplan IST eine Tabelle: eine Zeile je Tier, immer id/name/art/zeichen und darunter ggf. das Bild. 124 Zeilen derselben Form - das ist ihr Zweck. Und die Bilder sind SVG-Pfade aus demselben kleinen Vokabular (`M`, `c`, `s`, `z`, `fill=\"#…\"`), weil sie im selben Stil gezeichnet sind; dass ein Fuchs und eine Eule sich im Tokenstrom aehneln, heisst nicht, dass sie dasselbe Bild sind. Zusammenlegen gaebe es hier nichts: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderes Tier. Die Zahl waechst mit jedem gemalten Tier - wer sie hochsetzt, prueft zuerst, ob wirklich nur Bilder dazugekommen sind und nicht Logik dazwischen."
+  }
 ]

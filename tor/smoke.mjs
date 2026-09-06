@@ -4111,7 +4111,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       // Pause; sie lief 27 Mal, einmal je Ebene und Profil.
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
         + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da .freundluecke, '
-        + '.schirm.da .satzfeld, .schirm.da #weiter', { timeout: 15000 }).catch(() => {});
+        + '.schirm.da .satzfeld, .schirm.da .flaggenkarte, .schirm.da .flaggengross, '
+        + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
       /* Rechnen: die Aufgabe OHNE Karte.
@@ -4355,6 +4356,71 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         await bewertet(p);
         // Ein Muster, das nie zutrifft: `gehoert` bleibt hier unberuehrt.
         await abgeschlossen(p, wer, ebene, /(?!)/, 'das gehörte Bild getippt');
+        continue;
+      }
+      /* Die Flaggenebene (F2) - ZWEI Formen, und beide werden gespielt.
+       *
+       * Welche kommt, entscheidet das Profil und die laufende Nummer der
+       * Aufgabe (`zeigen` in `flaggenschirm`), nicht dieser Test. Er fragt
+       * deshalb den Bildschirm und nicht die Profiltabelle: steht eine
+       * Wahl da, wird angetippt; steht ein Feld da, wird getippt.
+       *
+       * Und die ANSAGE wird nur in der Wahlrichtung verlangt. In der
+       * Nennrichtung waere der Landesname die Antwort - vorgelesen waere
+       * die Aufgabe geloest, bevor sie gestellt ist. Ein Test, der hier
+       * eine Ansage verlangte, wuerde also genau das Falsche erzwingen. */
+      if (await p.$('.schirm.da .flaggenkarte, .schirm.da .flaggengross')) {
+        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
+                                              name: Sitzung?.liste[Sitzung.i]?.name || '' }));
+        if (!auf.id) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
+          continue;
+        }
+        const zeigt = !!(await p.$('.schirm.da .flaggenkarte'));
+        if (zeigt) {
+          /* Der Landesname MUSS gesagt worden sein. Fuer Fiona ist diese
+             Richtung die einzige, die sie spielen kann - sie liest nicht,
+             und ohne die Ansage stehen vier Flaggen ohne Frage da. */
+          const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
+          if (VORLESEN[wer] && !gesagt.some(x => String(x).includes(auf.name)))
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.name}" wurde nicht `
+              + 'gesagt — in dieser Richtung IST der Landesname die Frage, und wer '
+              + `nicht liest, sieht sonst vier Flaggen ohne Aufgabe `
+              + `(gehört: ${gesagt.join(' | ') || 'nichts'})`));
+          const gibts = await p.$(`.schirm.da .flaggenkarte[data-id="${auf.id}"]`);
+          if (!gibts) {
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.name}" steht gar nicht `
+              + 'unter den Flaggen zur Wahl — die Auswahl enthält das Ziel nicht'));
+            continue;
+          }
+          await p.$eval(`.schirm.da .flaggenkarte[data-id="${auf.id}"]`, x => x.click());
+          wege.add(`${wer}: Flagge angetippt`);
+        } else {
+          await p.fill('.schirm.da #rein', auf.name);
+          await p.click('.schirm.da #pruef');
+          wege.add(`${wer}: Flagge benannt`);
+        }
+        await bewertet(p);
+        /* DER LANDESNAME ZAEHLT ALS VORLESEHILFE - aber nur in der
+         * Wahlrichtung, und das ist der Unterschied zur Englischebene.
+         *
+         * Dort spricht `vorlesen(wort,'en')` am Profil VORBEI: das Wort
+         * ist die Frage, und ohne es steht die Aufgabe nicht da - auch
+         * fuer jemanden, dem die App sonst nichts vorliest. Deshalb hat
+         * es dort einen eigenen Zaehler.
+         *
+         * Hier ruft die App `ansagen()`, und das fragt `P.vorlesen`. Es
+         * IST also die Vorlesehilfe und gehoert in `gehoert` - sonst
+         * stuende Fionas Zaehler bei 15 von 23, waehrend sie in
+         * Wirklichkeit jede Aufgabe gehoert hat, und der Fehler laege im
+         * Messgeraet.
+         *
+         * In der NENNrichtung wird nichts angesagt, und das ist richtig:
+         * der Landesname waere dort die Antwort. Dort bleibt das Muster
+         * deshalb eines, das nie zutrifft. */
+        const wieHoert = zeigt ? new RegExp(auf.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+                               : /(?!)/;
+        await abgeschlossen(p, wer, ebene, wieHoert, 'die Flagge zugeordnet');
         continue;
       }
       if (await p.$('.schirm.da .rechnung')) {

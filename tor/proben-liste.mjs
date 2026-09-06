@@ -395,7 +395,7 @@ export const PROBEN = [
    * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
    * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm,\n  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);",
+    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,\n  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);",
     ersatz:"const schirmZu = (ebeneId) => spielschirm;",
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
@@ -5397,6 +5397,82 @@ export const PROBEN = [
       + "  //Anker:  return r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));",
     an:{ datei:'src/inhalt/tiere.js', text:"filter(t => t && t.bild);" },
     sagt:'beim ZWEITEN Mal' },
+
+  /* --- Die Flaggen (F1, F2) ------------------------------------------
+   *
+   * Fuenf Proben, und die erste ist die, die den ganzen Vorrat traegt.
+   */
+
+  /* 1. EINER FLAGGE IHR UNTERSCHEIDENDES ZEICHEN NEHMEN.
+   *
+   * Nicaragua und Honduras sind beide blau-weiss-blau; das Dreieck in der
+   * Mitte ist der ganze Unterschied. Ohne es sind es zwei gleiche Bilder
+   * mit zwei Namen, und die Aufgabe ist nicht schwer, sondern nicht zu
+   * beantworten.
+   *
+   * Genau das ist beim Bauen passiert, mit einem Stern in der GRUNDFARBE
+   * statt eines Dreiecks: gemessen 3,5 % Unterschied. Das Tor hat es
+   * gemeldet, bevor es jemand gesehen hat - und diese Probe haelt fest,
+   * dass es das kann. */
+  { n:'einer Flagge fehlt ihr unterscheidendes Zeichen', tor:'inhalt', deckt:'flaggen',
+    datei:'src/inhalt/flaggen.js',
+    such:"                    zeichen:{ form:'dreieckchen', gross:0.50, farbe:'#0067C6' } } },",
+    ersatz:"                    zeichen:{ form:'dreieckchen', gross:0.02, farbe:'#0067C6' } } },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"form:'dreieckchen', gross:0.02" },
+    sagt:'nicht zu beantworten' },
+
+  /* 2. Eine Flagge zeichnet mit `<rect>` statt mit einem Pfad.
+   *
+   * `passt` misst ein Kachel-Wasserzeichen je PFAD. Ein `<rect>` findet es
+   * nicht - die Flagge waere fuer das Tor unsichtbar, und der Lauf meldete
+   * NICHTS. Nicht „gruen": nichts. Genau diese Sorte stiller Ausfall ist
+   * der Grund, warum die Regel bei den Tieren steht. */
+  { n:'eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden',
+    tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
+    such:"    return `M${x} ${y}h${b}v${h}h${-b}Z`;",
+    ersatz:"    return `` + `<!--` + `M${x} ${y}h${b}v${h}h${-b}Z`;",
+    an:{ datei:'src/inhalt/flaggen.js', text:"`` + `<!--`" },
+    sagt:'flaggen' },
+
+  /* 3. Ein Land aus `LAENDER` bekommt keine Flagge.
+   *
+   * Es stuende dann auf der Ebene gar nicht zur Wahl - lautlos, denn
+   * `vorrat` filtert ueber `hatFlagge`. Ein Land, das im Spiel fehlt und
+   * das niemand vermisst, ist genau die Art Luecke, die erst ein Kind
+   * findet. */
+  { n:'ein Land hat keine Flagge mehr', tor:'inhalt', deckt:'flaggen',
+    datei:'src/inhalt/flaggen.js',
+    such:"  { a3:'POL', bau:{ art:'streifen', farben:[W, '#DC143C'] } },\n",
+    ersatz:"",
+    an:{ datei:'src/inhalt/flaggen.js', fehlt:"a3:'POL'" },
+    sagt:'hat keine Flagge' },
+
+  /* 4. Der Notausgang wird zur Gewohnheit.
+   *
+   * `art:'eigen'` gibt es fuer die vier Flaggen, die keiner Regel folgen.
+   * Waechst die Zahl, ist nicht die Flagge besonders, sondern die
+   * Formsprache zu eng - und dann gehoert sie erweitert und nicht
+   * umgangen. Chile stand schon einmal dort und ist keiner. */
+  { n:'immer mehr Flaggen umgehen die Formsprache', tor:'inhalt', deckt:'flaggen',
+    datei:'src/inhalt/flaggen.js',
+    such:"  { a3:'CHL', bau:{ art:'streifen', farben:[W, '#D52B1E'],",
+    ersatz:"  { a3:'CHL', bau:{ art:'eigen', teile:() => [rechteck(0,0,BREIT,HOCH,'#D52B1E')] } },\n"
+      + "  { a3:'XXX', bau:{ art:'streifen', farben:[W, '#D52B1E'],",
+    an:{ datei:'src/inhalt/flaggen.js', text:"art:'eigen', teile:() => [rechteck(0,0,BREIT,HOCH" },
+    sagt:'umgehen die Formsprache' },
+
+  /* 5. Die Flaggenebene faellt aus dem Rauchtest.
+   *
+   * Ohne den Bildschirm findet `schirmZu` nichts und faellt auf den
+   * Kartenbildschirm zurueck - der wartet auf eine Karte, die es nicht
+   * gibt. Die Probe haelt fest, dass der Durchgang das merkt und nicht
+   * still weiterlaeuft. */
+  { n:'die Flaggenebene landet auf dem Kartenbildschirm', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,",
+    ersatz:"englisch: englischschirm, freunde: freundeschirm,",
+    an:{ ...DIST, fehlt:"flaggen: flaggenschirm" },
+    sagt:'durchgang' },
 
   /* Die Stimme wird durch eine Beruehrung freigegeben (S1t).
    *

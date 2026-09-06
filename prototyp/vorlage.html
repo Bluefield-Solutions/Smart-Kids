@@ -680,6 +680,23 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .kachel .silhouette path{fill:currentColor}
 /* Die Rechenzeichen werden gezogen, nicht gefuellt. */
 .kachel .silhouette.gezeichnet path{fill:none}
+/* DIE FLAGGE BEHAELT IHRE EIGENEN FARBEN.
+   
+   `fill:currentColor` faerbt jeden Pfad im Ton der Kachel - richtig fuer
+   einen Umriss, falsch fuer eine Flagge: aus Russland wurde ein flacher
+   gruener Block. Eine Flagge, die nicht ihre Farben hat, ist keine, und
+   das Wasserzeichen sagte damit gar nichts (dieselbe Lehre wie beim
+   Farbfleck, G18: eine verfaerbte Farbe lehrt die falsche).
+   
+   Sie ist ausserdem WENIGER blass und schmaler als ein Umriss: ein
+   Rechteck mit 34 % Deckung neben einem Namen sieht aus wie ein
+   vergessener Kasten, ein Umriss nicht. Und sie steht ohne die
+   Weichzeichner-Maske da - eine angeschnittene Flagge waere eine andere
+   Flagge. */
+.kachel .flaggensilhouette path{fill:revert-layer}
+.kachel .flaggensilhouette{opacity:.62;max-width:46%;height:auto;
+  -webkit-mask-image:none;mask-image:none;
+  border-radius:calc(var(--rund-klein) / 2)}
 .kachel .silhouette.gezeichnet{opacity:.26;max-width:44%}
 .kachel.welt .silhouette.gezeichnet{max-width:56%}
 .kachel.bunt,.kachel.welt,.kachel.wer{position:relative;overflow:hidden}
@@ -1847,14 +1864,15 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    Hoechsthoehe und behaelt ihr Seitenverhaeltnis; sie darf schmaler
    werden als die Karte. */
 .flaggenkleber{width:100%;display:flex;align-items:center;justify-content:center}
-.flaggenkleber svg{width:auto;height:100%;max-width:100%;max-height:46px;
-  border-radius:2px}
+/* KEIN eigener Radius. Die Flagge bringt ihre Kontur selbst mit (der
+   Rand in `flaggeSvg`), und ein zweiter Wert hier waere ein Mass am
+   Markensystem vorbei - das Tor `marken` sagt es sofort. */
+.flaggenkleber svg{width:auto;height:100%;max-width:100%;max-height:46px}
 .rollen.buch .flaggenkleber svg{max-height:56px}
 .flaggenkleber.offen{opacity:.3;filter:grayscale(.7)}
 /* Das Wasserzeichen der Kachel. Es liegt hinter dem Namen und darf ihn
    nicht ueberstrahlen - deshalb blass, wie jeder andere Umriss dort. */
-.flaggensilhouette{display:block}
-.flaggensilhouette svg{display:block;width:100%;height:auto}
+.flaggensilhouette{display:block;width:100%;height:auto}
 .englischfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r6);padding:0 var(--r4) var(--r4);min-height:0}
 .engwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}

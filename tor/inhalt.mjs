@@ -2533,7 +2533,7 @@ console.log('\n  Tor `englisch`');
  * DESHALB WIRD AM RASTER GEMESSEN UND NICHT AN DER BESCHREIBUNG. Zwei
  * Beschreibungen sind immer verschieden - sie stehen in verschiedenen
  * Zeilen. Verschieden AUSSEHEN ist etwas anderes, und nur das zaehlt
- * (Regel 12: jede Zahl traegt ihre Messstelle mit). Das Raster kommt aus
+ * (Regel 5: jede Zahl traegt ihre Messstelle mit). Das Raster kommt aus
  * denselben Formen, aus denen auch das Bild entsteht; eine zweite
  * Uebersetzung waere eine zweite Wahrheit, und die gemessene waere nicht
  * die gezeigte.
@@ -2549,7 +2549,7 @@ console.log('\n  Tor `englisch`');
  *          das Tor erzwingt die Entscheidung, statt sie zu verschweigen.
  *
  * Was die Schwellen NICHT sind: eine Zusage, dass eine Flagge richtig
- * aussieht. Das sieht ein Auge, kein Tor (Regel 8).
+ * aussieht. Das sieht ein Auge, kein Tor (Regel 4: kein Tor ersetzt den Blick).
  */
 console.log('\n  Tor `flaggen`');
 {
@@ -2609,6 +2609,28 @@ console.log('\n  Tor `flaggen`');
     ff.push('die Flagge kommt ohne Rand — eine weisse Flagge auf weisser Karte '
       + 'hat dann keine Kontur mehr, und Japan ist nur noch ein roter Punkt');
 
+  /* JEDE Form muss ein PFAD sein - dieselbe Messstelle wie beim Tier und
+   * beim Englischbild (Regel 5: jede Zahl trägt ihre Messstelle mit).
+   *
+   * `passt` misst ein Kachel-Wasserzeichen über `getBBox()` und
+   * `isPointInFill()` je PFAD. Ein `<rect>` findet es nicht. Die deutsche
+   * Flagge sind drei Rechtecke - als `<rect>` gezeichnet war sie für das
+   * Tor unsichtbar, und der Lauf meldete nichts. Nicht „grün": nichts.
+   *
+   * Geprüft wird an ALLEN 69, nicht an einer: die Bauarten erzeugen
+   * verschiedene Formen, und eine einzige Stichprobe bezeugt nur die
+   * Bauart, die sie zufällig getroffen hat. Der Rand darf ein `<rect>`
+   * sein - er ist gestrichelt und nicht gefüllt, `isPointInFill` fände
+   * ihn ohnehin nicht. */
+  for (const f of FL.FLAGGEN) {
+    const svg = FL.flaggeSvg(f.a3);
+    const ohneRand = svg.replace(/<rect [^>]*fill="none"[^>]*\/>/g, '');
+    for (const verboten of ['<rect', '<circle', '<ellipse', '<polygon', 'transform='])
+      if (ohneRand.includes(verboten))
+        { ff.push(`${f.a3} zeichnet mit „${verboten}" statt mit einem Pfad — `
+          + 'dann misst `passt` das Wasserzeichen nicht und meldet nichts'); break; }
+  }
+
   /* Die eigentliche Pruefung: sieht man den Unterschied?
    *
    * Gemessen wird je KARTE, weil eine Auswahl nie ueber Karten hinweg
@@ -2638,7 +2660,7 @@ console.log('\n  Tor `flaggen`');
       + `\`AEHNLICH\` zu stehen: ${unterSoll.join(', ')} — entweder ist die Zeichnung `
       + 'zu grob, oder das Paar gehört in die Liste. Beides ist zu entscheiden.');
 
-  /* Und die Gegenrichtung (Regel 13: wer eine Wirkung misst, schaltet sie
+  /* Und die Gegenrichtung (Regel 1: wer eine Wirkung misst, schaltet sie
      zuerst ab). `AEHNLICH` behauptet etwas - was davon ist zu prüfen?
      
      NICHT, ob Menschen die beiden verwechseln. Der erste Anlauf hat es
