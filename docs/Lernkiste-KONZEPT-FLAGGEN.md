@@ -209,6 +209,34 @@ Flaggen mehr sind als Bildchen:
 Bauart wie „Falsche Freunde" (E10), und aus demselben Grund: bei den Eltern ist
 die Verknüpfung längst da und nur zugewachsen.
 
+### Nachtrag aus der gefahrenen Runde: nicht jedes Paar lässt sich fragen
+
+Gemessen, nachdem die Flaggen gezeichnet waren:
+
+| Paar | Unterschied im Raster |
+|---|---|
+| Rumänien / Tschad | **0,0 %** — nur der Blauton |
+| Monaco / Indonesien | **0,0 %** — nur das Seitenverhältnis, und alle Flaggen stehen hier im selben Rahmen |
+
+„Welche ist Rumänien?" hat dann **keine Antwort, die man sehen kann**. Wer sie
+trotzdem stellt, bringt einem Kind bei zu raten und nennt das Lernen.
+
+Diese Paare tragen `fragbar:false`. Sie werden **gezeigt und erklärt, aber nie
+abgefragt** — und das ist kein Rückzug, sondern der ehrlichere Inhalt: *dass es
+Flaggen gibt, die man nicht auseinanderhalten kann, ist selbst etwas, das man
+über Flaggen lernen kann.*
+
+Das Tor prüft beide Richtungen (Regel 1: wer eine Wirkung misst, schaltet sie
+zuerst ab). Ein Paar unter dem Boden **muss** die Kennzeichnung tragen; ein Paar
+**mit** der Kennzeichnung muss auch wirklich zu nah sein. Ohne die zweite Hälfte
+wäre `fragbar:false` ein Freibrief, mit dem sich jede zu ähnliche Zeichnung
+stillstellen ließe, statt sie zu verbessern.
+
+**Und der Unterschied wird immer genannt**, ob richtig oder falsch geantwortet
+wurde: „Luxemburgs Blau ist heller" ist das, was man mitnimmt — nicht, dass man
+einmal richtig geraten hat. Nach der Antwort tragen **beide** Flaggen ihren
+Namen, auch die falsche.
+
 ### F4 · „Auf die Karte" — die Montessori-Form
 
 Die Flagge liegt unten, die Karte steht oben, und sie wird auf ihr Land gezogen.
