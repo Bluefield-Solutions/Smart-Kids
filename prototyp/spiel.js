@@ -1191,6 +1191,25 @@ const EBENEN = [
   { id:'flaggen:paare', ueber:'Flaggen', titel:'Flaggen', farbe:1,
     art:'flaggen', gruppe:'flaggen', wo:'Verwechslungen',
     wer:['lea','stephan','violeta'] },
+  /* „Auf die Karte" (F4) - die Montessori-Form aus dem Referenzabgleich.
+   *
+   * Die Flagge steht in der Frage, getippt wird auf das Land. Das ist die
+   * einzige Form, die Flagge, Umriss UND Lage gleichzeitig verlangt - und
+   * damit die, die aus zwei Wissensinseln eine macht.
+   *
+   * Sie laeuft auf dem `spielschirm`, nicht auf einem eigenen: die
+   * umgekehrte Frage („Wo liegt X?", Tippen auf die Karte) gibt es dort
+   * seit B3 samt Trefferflaechen, Zughinweis und der Regel, dass nach
+   * einem Gebiet unter der Fingergrenze gar nicht erst gefragt wird
+   * (P7/P10). Ein zweiter Bildschirm haette das alles noch einmal - und
+   * die vier Fehler dazu, die es dort gekostet hat.
+   *
+   * `wer`: Lea und die Eltern. Fiona zieht auf ihren Kartenebenen, sie
+   * tippt nicht - und „umgekehrt" verlangt einen Tipp auf ein Gebiet.
+   * Dieselbe Grenze wie bei `umgekehrt` selbst (`kannLesen`). */
+  { id:'flaggen:karte', ueber:'Flaggen', titel:'Flaggen', farbe:5,
+    art:'flaggen', gruppe:'flaggen', wo:'Auf die Karte',
+    wer:['lea','stephan','violeta'] },
   { id:'rechnen:plusminus', ueber:'Rechnen', titel:'Plus und Minus', farbe:4,
     art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },
   /* Leas Reihen.
@@ -1393,8 +1412,32 @@ const SILHOUETTE = { erdkunde:'kontinente', kontinente:'kontinente',
  * also nicht `laender`, und hätte den Rahmen von Deutschland um eine
  * Europakarte gelegt. Der Kontinent hinter dem Doppelpunkt entscheidet,
  * nicht die Art davor (Regel 6). */
+/**
+ * WELCHE KARTE braucht diese Ebene?
+ *
+ * Bis F4 war das dieselbe Frage wie „was steht hinter dem Doppelpunkt" -
+ * `laender:europa` spielt auf der Europakarte. „Auf die Karte"
+ * (`flaggen:karte`) bricht das: hinter dem Doppelpunkt steht die
+ * SPIELFORM, die Karte ist Europa.
+ *
+ * Der Name der Ebene muss trotzdem mit `flaggen` anfangen - der Teil davor
+ * ist die Gruppe, und ohne ihn faende weder die Kachelgruppe noch der
+ * Rauchtest die Ebene (das hat F3 eine Runde gekostet).
+ *
+ * Also steht die Zuordnung HIER, an einer Stelle, und alle vier Nutzer
+ * fragen sie: der Rahmen, die Umgebung, das Nachladen und die Auswahl.
+ * `AUSSCHNITTE` in `erdkunde.js` macht dasselbe fuer Mittelamerika - das
+ * Muster ist nicht neu, es bekommt nur einen zweiten Fall.
+ *
+ * WARUM EUROPA: es ist die tiefste Liste (17 Laender), und die Flaggen
+ * Europas sind die, die ein Kind hier wirklich wiedersieht.
+ */
+const KARTE_ZU = { 'flaggen:karte': 'europa' };
+const karteVon = (ebeneId) => KARTE_ZU[ebeneId]
+  || String(ebeneId).split(':')[1] || '';
 const vbVon = (ebeneId) => {
-  const [art, kont] = String(ebeneId).split(':');
+  const art = String(ebeneId).split(':')[0];
+  const kont = karteVon(ebeneId);
   return art === 'kontinente' ? D.vbK : kont ? D.vbL[kont] : D.vbD;
 };
 
@@ -1930,6 +1973,20 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    * leere Liste zurueck. Der Rauchtest sagte es sofort - „die Kachel
    * steht da und fragt nichts" -, aber gruen waere sie in jedem Tor
    * gewesen, das nur zaehlt statt zu spielen. */
+  /* „Auf die Karte" (F4): dieselben Laender wie `laender:europa`, MIT
+   * Umriss (der wird gebraucht - es wird ja auf die Karte getippt) und
+   * mit Flagge.
+   *
+   * `hatFlagge` filtert, und das ist keine Formalie: `FLAGGEN_EXTRA`
+   * (der Tschad, Irland, ...) hat KEINEN Kartenumriss und darf hier
+   * nicht auftauchen - sonst fragte die Ebene nach einem Ort, den es auf
+   * keiner Karte dieser App gibt. Das Tor `flaggen` haelt beide Listen
+   * getrennt; hier wirkt die Trennung. */
+  if (art==='flaggen' && kont==='karte')
+    return (D.laender.europa || []).filter(l => (voll || l.rang<=P.laenderTiefe)
+        && Flaggen.hatFlagge(l.a3))
+      .map(l=>({ id:`fk:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
+                 aussprache:l.aussprache, flagge:l.a3, pfad:l.pfad, anker:l.anker }));
   if (art==='flaggen' && kont==='paare') {
     const namen = new Map();
     for (const liste of Object.values(D.laender))
@@ -3031,6 +3088,10 @@ function vorlaufSatz(ebeneId){
      Wirklichkeit quadratisch ist. Das Konzept haelt fest, dass eine
      Vereinfachung ausgesprochen und nicht verschwiegen wird - und der
      Vorlauf ist die Stelle, an der man sie hoert. */
+  if (art === 'flaggen' && kont === 'karte')
+    return 'Eine Flagge steht da, und du tippst auf das Land, zu dem sie gehört. '
+      + 'Hier gehören <strong>Flagge, Form und Ort</strong> zusammen — '
+      + 'das ist die schwerste der drei Flaggenebenen.';
   if (art === 'flaggen' && kont === 'paare')
     return 'Zwei Flaggen, die sich sehr ähnlich sehen — und eine davon ist gesucht. '
       + 'Nach jeder Antwort steht da, <strong>woran</strong> man sie unterscheidet. '
@@ -3222,11 +3283,15 @@ async function ebeneLaden(ebeneId){
   // etwas hinter dem Doppelpunkt - der erste Anlauf zog daraufhin
   // `daten/laender-plusminus.json`, bekam 404, und die Rechenebene ging
   // gar nicht mehr auf.
-  if ((art!=='laender' && art!=='hauptstaedte') || !kont || geholt.has(kont)) return true;
+  /* `flaggen:karte` (F4) braucht dieselbe Karte wie `laender:europa` -
+     sie steht in `KARTE_ZU`, nicht hinter dem Doppelpunkt. */
+  const karte = karteVon(ebeneId);
+  if ((art!=='laender' && art!=='hauptstaedte' && ebeneId!=='flaggen:karte')
+      || !karte || geholt.has(karte)) return true;
   try {
-    const t = await (await fetch(`./daten/laender-${kont}.json`)).json();
-    D.laender[kont] = t.laender; D.umgebung[kont] = t.umgebung; D.vbL[kont] = t.vbL;
-    geholt.add(kont);
+    const t = await (await fetch(`./daten/laender-${karte}.json`)).json();
+    D.laender[karte] = t.laender; D.umgebung[karte] = t.umgebung; D.vbL[karte] = t.vbL;
+    geholt.add(karte);
     return true;
   } catch(e){ return false; }
 }
@@ -4175,7 +4240,19 @@ function flaggenschirm(){
      Aufgabe (zwei Flaggen, ein Versuch, eine Erklaerung) und bekommt
      deshalb einen eigenen Bildschirm; die WEICHE steht hier, damit
      `schirmZu` eine Zeile je ART behaelt und nicht je Ebene. */
-  if (String(Sitzung.ebeneId).split(':')[1] === 'paare') return paarschirm();
+  /* DREI Ebenen teilen sich die Art `flaggen`, und die Weiche steht hier,
+     damit `schirmZu` eine Zeile je ART behaelt statt einer je Ebene:
+     
+       flaggen:<karte>   vier Flaggen oder ein Eingabefeld  (dieser Schirm)
+       flaggen:paare     zwei Flaggen und eine Erklaerung   (paarschirm)
+       flaggen:karte     die Flagge auf die Landkarte       (spielschirm)
+     
+     Der letzte Fall ist der Grund, warum die Weiche nicht in `schirmZu`
+     steht: dort haengt sie an `art`, und `art` ist bei allen dreien
+     dasselbe. */
+  const teil = String(Sitzung.ebeneId).split(':')[1];
+  if (teil === 'paare') return paarschirm();
+  if (teil === 'karte') return spielschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
@@ -4876,7 +4953,11 @@ function spielschirm(){
    * Vier-Punkt-Treffer. `st.i % 3 === 2` sorgt dafuer, dass die
    * umgekehrte Frage nie die erste ist; bis dahin hat `trefferflaechen`
    * laengst gemessen, und `kreisPx` steht. */
-  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id);
+  /* „Auf die Karte" (F4) ist IMMER die umgekehrte Frage - das ist ihr
+     ganzer Zweck. Sonst bleibt es bei jeder dritten (B3). */
+  const aufKarte = art === 'flaggen' && kont === 'karte';
+  const umgekehrt = aufKarte
+    || (kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id));
   // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
   // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
   // Namen gleichzeitig zu lesen ist eine andere.
@@ -4971,8 +5052,9 @@ function spielschirm(){
   // den Laendern, sonst saehe dieselbe Karte in zwei Ebenen verschieden aus.
   const farbeVon=(g,i)=> (art==='bundeslaender'||(istHaupt && !kont))
     ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
-  const umgebung = (kont && D.umgebung[kont])
-    ? D.umgebung[kont].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
+  const karte = karteVon(st.ebeneId);
+  const umgebung = (karte && D.umgebung[karte])
+    ? D.umgebung[karte].map(p=>`<path d="${p}" fill="var(--linie)" opacity=".55"/>`).join('') : '';
   /* Der Rand der Umgebung BLENDET AUS, statt abgeschnitten zu enden.
    *
    * Die grauen Nachbarn kommen aus einem Ausschnitt der Weltkarte, und der
@@ -5116,7 +5198,14 @@ function spielschirm(){
     || WEISE_VOREINSTELLUNG[P.id] || 'ziehen';
   // „von Polen", aber „vom Vereinigten Königreich" - die drei Ausnahmen
   // stehen als `wovon` bei den Fakten, der Rest wird abgeleitet.
-  const frageText = umgekehrt ? `Wo liegt ${ziel.name}?`
+  /* Die FLAGGE ist die Frage, nicht der Name (F4).
+     Sie steht im Fragetext und nicht daneben: der Bildschirm hat keine
+     zweite Zeile frei, und eine Flagge ueber der Karte waere ein zweites
+     Bild neben dem, auf das man tippen soll. */
+  const frageText = aufKarte
+      ? `Wohin gehört diese Flagge? ${Flaggen.flaggeSvg(ziel.flagge,
+          { klasse:'frageflagge', titel:'Flagge' })}`
+    : umgekehrt ? `Wo liegt ${ziel.name}?`
     : istHaupt ? `Wie heißt die Hauptstadt ${ziel.wovon || `von ${ziel.gebiet}`}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
     : art==='laender' ? 'Wie heißt dieses Land?' : 'Wie heißt dieses Bundesland?';

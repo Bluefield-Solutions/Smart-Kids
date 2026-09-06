@@ -11239,3 +11239,65 @@ Die Lehre, und sie gilt über diese Stelle hinaus: **wo ein absolut gesetztes
 Element neben fließendem Text steht, ist jede Abstandszahl eine Wette auf die
 Schriftmetrik.** Wer sie gewinnt, hat nichts bewiesen — er hatte denselben
 Browser.
+
+
+## F4 · Auf die Karte — die Montessori-Form, und sie war die billigste
+
+Die Flagge steht in der Frage, getippt wird auf das Land. Das ist Soll 3 aus dem
+Referenzabgleich und die einzige Form, die **Flagge, Umriss und Ort
+gleichzeitig** verlangt — aus zwei Wissensinseln wird eine.
+
+Im Konzept stand sie als „groß" und als teuerste Runde, weil sie in
+`spielschirm` eingreift. Sie war die **billigste**, und zwar weil sie ihn
+*benutzt* statt ihn zu kopieren: die umgekehrte Frage („Wo liegt X?", Tippen auf
+die Karte) gibt es dort seit B3, samt Trefferflächen, Zughinweis und der Regel,
+dass nach einem Gebiet unter der Fingergrenze gar nicht erst gefragt wird
+(P7/P10). Was dazukam, ist eine Zeile: statt des Namens steht die Flagge in der
+Frage.
+
+**Der Preis war eine Zuordnung, keine Kopie.** `flaggen:karte` spielt auf der
+Europakarte, aber hinter dem Doppelpunkt steht die *Spielform*, nicht die Karte —
+und die Ebene muss mit `flaggen` anfangen, sonst findet weder die Kachelgruppe
+noch der Rauchtest sie. Also steht die Zuordnung an **einer** Stelle
+(`KARTE_ZU`), und alle vier Nutzer fragen sie: Rahmen, Umgebung, Nachladen,
+Vorrat.
+
+Und die Trennung aus F3 zahlt sich hier aus: `FLAGGEN_EXTRA` — der Tschad,
+Irland, Monaco und die anderen fünf — hat **keinen Kartenumriss**. Auf dieser
+Ebene dürfen sie nicht vorkommen, sonst fragte sie nach einem Ort, den es auf
+keiner Karte dieser App gibt. Der Vorrat filtert über `hatFlagge` gegen
+`D.laender.europa`, und das Tor hält beide Listen getrennt.
+
+**Damit ist die Flaggenreihe an ihrer eigentlichen Stelle angekommen:** die
+Gruppe „Flaggen" hält neun Einträge — sieben Karten, die Verwechslungen und die
+Landkarte —, und auf der Erdkundewand steht dafür **eine** Kachel.
+
+### Und dann fand die Ebene einen toten Zweig im Rauchtest
+
+Der Umbau am Spielbildschirm war eine Zeile. Drei Runden kostete das, was
+danach kam — und zwar nicht in der App, sondern im Werkzeug.
+
+Der `durchgang` spielt von jeder Ebene die **erste** Aufgabe. Die umgekehrte
+Frage kommt in den Erdkundeebenen als **dritte** (`st.i % 3 === 2`). Der Zweig,
+der sie behandelt, war deshalb seit B3 **nie gelaufen** — er stand da,
+vollständig aussehend, und war nicht bezeugt. Auf `flaggen:karte` ist *jede*
+Frage die umgekehrte; damit lief er zum ersten Mal, und es fiel dreierlei auf:
+
+1. `istUmgekehrt` erkannte nur „Wo liegt …", nicht „Wohin gehört …".
+2. `zeigeAufKarte` las das gesuchte Land aus dem **Fragetext** — auf dieser
+   Ebene steht dort kein Name, sondern eine Flagge. Es liest jetzt die Sitzung.
+3. Der Zweig prüfte das Lob nicht und **verließ die Ebene nicht**. Er war eine
+   zweite, unvollständige Fassung von `abgeschlossen()` (Regel 6). Der nächste
+   Schleifendurchlauf stand deshalb mitten im Spiel, kam über `#zur` auf den
+   *Pausenschirm* statt auf eine Wand und lief in einen Zeitablauf.
+
+Der dritte Punkt ist der teure: der Rest der Runde des Profils fiel danach aus.
+Drei Profile spielten je acht Ebenen weniger, und der Bericht sagte dazu — was
+er sagen konnte: „Kein einziger Zug über „lea: rechnen geschrieben"". Der
+Zeitablauf selbst meldete nur „Timeout 15000ms exceeded" und **nicht, wo**.
+
+Das ist jetzt behoben, und zwar an beiden Enden: der Zweig geht durch
+`abgeschlossen()` wie jeder andere, und der `catch`, an dem der ganze
+Profildurchlauf hängt, **nennt die Ebene**, bei der er zugeschlagen hat. Der
+erste Lauf mit dieser einen Zeile mehr zeigte die Stelle sofort — sie lag nicht
+auf `flaggen:karte`, sondern auf der Ebene **danach**.

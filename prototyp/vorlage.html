@@ -1897,6 +1897,12 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 /* Der Name steht ERST NACH der Antwort da - und dann an BEIDEN Karten.
    Er sitzt in der Karte und nicht darunter, damit die Zuordnung
    eindeutig bleibt: zwei Namen unter zwei Flaggen sind zwei Fragen. */
+/* Die Flagge IN der Frage (F4). Sie steht in der Zeile mit dem Text,
+   also mittig zur Schrift ausgerichtet und klein genug, dass die Frage
+   eine Zeile bleibt - eine zweite Zeile naehme der Karte Hoehe, und die
+   ist auf dem Zielgeraet die knappe Groesse. */
+.frageflagge{display:inline-block;vertical-align:-0.28em;height:1.5em;
+  width:auto;margin-left:var(--r2)}
 .paarname{font-size:var(--s-klein);font-weight:700;line-height:1.2;
   padding:var(--r1) var(--r2);color:var(--tinte);background:var(--papier);
   border-top:var(--strich) solid var(--linie);text-align:center}

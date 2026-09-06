@@ -4392,9 +4392,14 @@ export const PROBEN = [
   // 1. Es gibt sie nicht mehr - jede Aufgabe fragt wieder nach dem Namen.
   { n:'die umgekehrte Frage kommt nicht mehr vor', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"  const umgekehrt = kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id);",
-    ersatz:'  const umgekehrt = false;',
-    an:{ ...DIST, text:'const umgekehrt = false;' },
+    such:"    || (kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id));",
+    /* NUR der zweite Summand faellt weg, nicht die ganze Zeile: seit F4
+       steht darueber `const umgekehrt = aufKarte`, und ein Ersatz, der
+       die Deklaration mitbringt, erzeugte eine zweite davon - die App
+       liesse sich gar nicht mehr bauen, und das Tor waere aus dem
+       falschen Grund rot (Regel 10). */
+    ersatz:'    || false;',
+    an:{ ...DIST, text:'|| false;' },
     sagt:'kommt gar nicht vor' },
 
   // 2. Das gesuchte Gebiet ist wieder angemalt - dann beantwortet sich
@@ -5497,6 +5502,48 @@ export const PROBEN = [
    * geht still weiter. Das ist eine Luecke im Rauchtest und keine in der
    * App; sie steht als Punkt in F5. Eine Probe auf ein Tor, das an dieser
    * Stelle nichts beweist, waere selbst nur eine Behauptung. */
+  /* --- „Auf die Karte" (F4) -------------------------------------------
+   *
+   * DIE FLAGGE VERSCHWINDET AUS DER FRAGE. Der Bildschirm fragt dann
+   * „Wohin gehoert diese Flagge?" und zeigt keine; die Karte darunter
+   * funktioniert weiter tadellos, und ein Durchlauf, der nur zaehlt,
+   * meldet gruen. */
+  { n:'die Flagge verschwindet aus der Frage auf der Karte', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"      ? `Wohin gehört diese Flagge? ${Flaggen.flaggeSvg(ziel.flagge,",
+    ersatz:"      ? `Wohin gehört diese Flagge? ${'' && Flaggen.flaggeSvg(ziel.flagge,",
+    an:{ ...DIST, text:"${'' && Flaggen.flaggeSvg(ziel.flagge," },
+    sagt:'keine Flagge' },
+
+  /* Und die Karte selbst: `KARTE_ZU` sagt, dass `flaggen:karte` auf der
+   * Europakarte spielt. Ohne den Eintrag sucht das Nachladen
+   * `laender-karte.json`, bekommt 404, und die Ebene geht gar nicht auf -
+   * derselbe Fehler, den `rechnen:plusminus` einmal hatte. */
+  { n:'die Kartenebene weiss nicht mehr, welche Karte sie braucht',
+    tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"const KARTE_ZU = { 'flaggen:karte': 'europa' };",
+    ersatz:"const KARTE_ZU = {};",
+    an:{ ...DIST, fehlt:"'flaggen:karte': 'europa'" },
+    sagt:'durchgang' },
+
+  /* Und drittens: die Ebene ist nur dann „auf die Karte", wenn sie die
+   * UMGEKEHRTE Frage stellt. Faellt der Zwang weg, fragt sie „Wie heisst
+   * dieses Land?" mit hervorgehobenem Gebiet - eine ganz normale
+   * Erdkundeaufgabe, in der die Flagge nirgends vorkommt. Nichts bricht,
+   * nichts ist leer, und der Zweig im Rauchtest, der die umgekehrte
+   * Frage spielt, wird schlicht nicht mehr betreten.
+   *
+   * Genau dieser Zweig war bis F4 tot - er lief in keinem einzigen Lauf,
+   * weil die umgekehrte Frage in den Erdkundeebenen erst die dritte ist
+   * und der Durchgang nur die erste spielt. Diese Probe ist der Beweis,
+   * dass er jetzt laeuft (Regel 1). */
+  { n:'„Auf die Karte" stellt wieder die gewoehnliche Frage', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'  const umgekehrt = aufKarte',
+    ersatz:'  const umgekehrt = false',
+    an:{ ...DIST, text:'const umgekehrt = false' },
+    sagt:'durchgang' },
+
   /* --- Die Verwechslungen (F3) ---------------------------------------
 
    * 1. EIN PAAR, DAS MAN NICHT SEHEN KANN, WIRD TROTZDEM GEFRAGT.

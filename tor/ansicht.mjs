@@ -278,6 +278,11 @@ const AUFNAHMEN = [
      sieht, entscheidet ein Auge - also braucht er ein Vorbild. */
   { name:'quer-flaggenpaare', spiel:'flaggen:paare', kind:'lea', quer:true,
     wahl:'.schirm.da' },
+  /* „Auf die Karte" (F4): die Flagge steht IN der Fragezeile, darunter die
+     Europakarte. Ob die Zeile dabei einzeilig bleibt - und die Karte
+     damit ihre Hoehe behaelt - sieht man nur hier. */
+  { name:'quer-flaggen-karte', spiel:'flaggen:karte', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },

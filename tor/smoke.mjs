@@ -1060,9 +1060,20 @@ async function weitergegangen(p, ms = 8000) {
     const s = document.querySelector('.schirm.da');
     if (!s) return false;
     if (s.querySelector('.frage .richtigText, .frage .fastText, .frage .loesung')) return false;
+    /* Woran man erkennt, dass die NAECHSTE Aufgabe steht.
+     *
+     * `path.ziel` gibt es nur bei der Vorwaertsfrage - die umgekehrte
+     * („Wo liegt X?", und seit F4 „Wohin gehoert diese Flagge?") hebt
+     * absichtlich nichts hervor. Auf `flaggen:karte` ist JEDE Frage die
+     * umgekehrte; ohne die Flagge in der Fragezeile als Merkmal wartete
+     * dieser Helfer acht Sekunden auf etwas, das dort nie kommt, und der
+     * Durchgang liess danach die halbe Runde des Profils aus, ohne zu
+     * klagen. */
     return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
               || s.querySelector('.engkarte') || s.querySelector('.freundluecke')
-              || s.querySelector('.satzfeld') || s.querySelector('#nochmal'));
+              || s.querySelector('.satzfeld') || s.querySelector('#nochmal')
+              || s.querySelector('#frage .frageflagge')
+              || s.querySelector('.flaggenkarte') || s.querySelector('.flaggengross'));
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
@@ -3871,6 +3882,7 @@ const durchgangZeit = {};
 if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
   if (abbruch()) break;
   const angefangen = Date.now();
+  let letzteEbene = 'vor der ersten Ebene';
   const eigen = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
   try {
     const p = await neueSeite({ width: 1180, height: 820 }, eigen);
@@ -4061,13 +4073,19 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'laender:europa' || e.startsWith('rechnen')
-                    || e === 'flaggen:europa' || e === 'flaggen:paare'
+                    || e === 'flaggen:europa' || e === 'flaggen:paare' || e === 'flaggen:karte'
                     || e.startsWith('englisch') || e.startsWith('freunde')
                     || e === 'wendungen' || e === 'hoersatz')
       : da;
     gespielt[wer] = zuSpielen.length;
     gespieltEnglisch[wer] = zuSpielen.filter(SAGT_ENGLISCH).length;
     for (const ebene of zuSpielen) {
+      /* Merken, WO wir sind. Der ganze Profildurchlauf haengt an EINEM
+       * `catch` - ein Zeitablauf darin meldete bisher nur „Timeout
+       * 15000ms exceeded" und liess offen, welche der zwanzig Ebenen ihn
+       * ausgeloest hat. Das kostete einen ganzen Lauf, nur um die Stelle
+       * zu finden. */
+      letzteEbene = `${wer}/${ebene}`;
       // Der teuerste Posten ueberhaupt: achtzehn Ebenen mal zwei Profile.
       // Steht der Fehler schon fest, beweisen die restlichen nichts mehr.
       if (abbruch()) break;
@@ -4393,6 +4411,31 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * Nennrichtung waere der Landesname die Antwort - vorgelesen waere
        * die Aufgabe geloest, bevor sie gestellt ist. Ein Test, der hier
        * eine Ansage verlangte, wuerde also genau das Falsche erzwingen. */
+      /* „Auf die Karte" (F4): die FLAGGE muss in der Frage stehen.
+       *
+       * Ohne sie fragt der Bildschirm „Wohin gehört diese Flagge?" und
+       * zeigt keine - die Aufgabe waere nicht zu beantworten, und der
+       * Rest des Kartenbildschirms funktionierte weiter tadellos. Genau
+       * die Sorte Fehler, die ein Durchlauf ohne diese Zeile gruen
+       * meldet.
+       *
+       * Geprueft wird VOR der Antwort, nicht danach: nachher steht die
+       * Loesung da, und die enthaelt ohnehin ein Bild. */
+      if (ebene === 'flaggen:karte' && await p.$('.schirm.da .karte')) {
+        const f = await p.evaluate(() => {
+          const e = document.querySelector('.schirm.da #frage .frageflagge');
+          if (!e) return null;
+          const r = e.getBoundingClientRect();
+          return { hoch: Math.round(r.height), breit: Math.round(r.width) };
+        });
+        if (!f)
+          merke('durchgang', new Error(`${wer}/${ebene}: in der Frage steht keine `
+            + 'Flagge — „Wohin gehört diese Flagge?" ohne Flagge ist nicht zu '
+            + 'beantworten, und die Karte darunter funktioniert trotzdem'));
+        else if (f.hoch < 14 || f.breit < 20)
+          merke('durchgang', new Error(`${wer}/${ebene}: die Flagge in der Frage ist `
+            + `nur ${f.breit}×${f.hoch} pt — zu klein, um sie zu erkennen`));
+      }
       /* Die Verwechslungen (F3) - VOR dem Flaggenzweig, weil sie dieselbe
        * Karte benutzen. Woran sie zu erkennen sind: es stehen GENAU ZWEI
        * da, und `.paare` sagt es am Markup.
@@ -4578,14 +4621,20 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         const gesucht = await zeigeAufKarte(p);
         wege.add(`${wer}: umgekehrt gezeigt`);
         await bewertet(p);
-        const rU = await p.evaluate(() => ({
-          richtig: !!document.querySelector('.schirm.da .frage .richtigText'),
-          satz: document.querySelector('.schirm.da .frage').textContent.trim() }));
-        if (!rU.richtig)
-          merke('durchgang', new Error(`${wer}/${ebene}: „Wo liegt ${gesucht}?" auf `
-            + `${gesucht} getippt und nicht gewertet — auf dem Schirm steht „${rU.satz}"`));
-        durchgespielt++;
-        await weitergegangen(p);
+        /* Und dann RAUS — ueber `abgeschlossen`, wie jeder andere Zweig.
+         *
+         * Bis F4 war dieser Zweig tot: in den Erdkundeebenen kommt die
+         * umgekehrte Frage erst als dritte, der Durchgang spielt aber nur
+         * die erste. Auf `flaggen:karte` ist JEDE Frage die umgekehrte —
+         * damit lief er zum ersten Mal, und es fiel auf, dass er als
+         * einziger weder das Lob prueft noch die Ebene verlaesst. Der
+         * naechste Schleifendurchlauf stand deshalb mitten im Spiel, kam
+         * ueber `#zur` auf den Pausenschirm statt auf eine Wand und lief
+         * in einen Zeitablauf — der Rest der Runde des Profils fiel
+         * aus. Eine eigene Fassung desselben Ablaufs, und sie war die
+         * unvollstaendige (Regel 6). */
+        await abgeschlossen(p, wer, ebene, /Wohin gehört|Wo liegt/,
+          `auf ${gesucht} getippt`);
         continue;
       }
       await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 8000 });
@@ -4696,7 +4745,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       console.log(`  Aufgaben der Eltern:        ${rechen.slice(0, 3).join(' · ') || 'KEINE'}`);
     }
     await p.close();
-  } catch (e) { merke('durchgang', e); }
+  } catch (e) { merke('durchgang', new Error(`${letzteEbene}: ${e.message}`)); }
   await eigen.close();
   durchgangZeit[wer] = ((Date.now() - angefangen) / 1000).toFixed(1);
 }

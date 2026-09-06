@@ -255,8 +255,24 @@ im Konzept:
 | **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | groß |
 | **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Fiona sagt „Deutschland" statt zu tippen; der Kartenbildschirm verhält sich unverändert | mittel |
 | **F3** | „Verwechslungen" — achter Gruppeneintrag, dreizehn Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad — und zwei Paare kann man **gar nicht** fragen | **gefahren** |
-| **F4** | „Auf die Karte" — die Flagge wird auf ihr Land gezogen | Nur Länder mit Umriss und über der Fingergrenze (P7/P10) | groß |
+| **F4** | „Auf die Karte" — die Flagge steht in der Frage, getippt wird auf das Land | Läuft auf dem `spielschirm`, nicht auf einem eigenen | **gefahren** |
 | **F5** | Abzeichen, Doku, volle Torkette, Gegenproben — **und die Lücke unten** | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+
+**F4 ist billiger geworden als geplant — weil sie den `spielschirm` BENUTZT
+statt ihn zu kopieren.** Die umgekehrte Frage („Wo liegt X?", Tippen auf die
+Karte) gibt es dort seit B3, samt Trefferflächen, Zughinweis und der Regel, dass
+nach einem Gebiet unter der Fingergrenze gar nicht erst gefragt wird (P7/P10).
+Was F4 hinzufügt, ist eine Zeile: statt des Namens steht die **Flagge** in der
+Frage. Ein zweiter Bildschirm hätte all das noch einmal — und die vier Fehler
+dazu, die es dort gekostet hat.
+
+Der Preis war eine neue Zuordnung: `flaggen:karte` spielt auf der **Europakarte**,
+aber hinter dem Doppelpunkt steht die Spielform, nicht die Karte. Die Ebene
+*muss* mit `flaggen` anfangen (sonst findet weder die Gruppe noch der Rauchtest
+sie — das hat F3 eine Runde gekostet), also steht die Zuordnung an einer Stelle
+(`KARTE_ZU`) und alle vier Nutzer fragen sie: Rahmen, Umgebung, Nachladen,
+Vorrat. `AUSSCHNITTE` macht dasselbe für Mittelamerika seit langem — das Muster
+ist nicht neu, es bekommt nur einen zweiten Fall.
 
 **Was F3 dabei herausgefunden hat, und es ist der wichtigste Satz der ganzen
 Reihe:** *nicht jede echte Verwechslung lässt sich abfragen.* Rumänien und der

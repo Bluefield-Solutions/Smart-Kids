@@ -288,7 +288,14 @@ export async function zeichneZug(seite, punkte, feld = 0) {
 export async function istUmgekehrt(seite) {
   return seite.evaluate(() => {
     const f = document.querySelector('.schirm.da #frage');
-    return !!f && /^Wo liegt /.test(f.textContent.trim());
+    if (!f) return false;
+    const t = f.textContent.trim();
+    /* ZWEI Formen fragen nach dem ORT: „Wo liegt X?" (B3) und „Wohin
+       gehoert diese Flagge?" (F4). Beide werden mit einem Tipp auf die
+       Karte beantwortet und haben kein `path.ziel` - die zweite kam
+       dazu, und ohne diese Zeile lief der Durchgang in den Zeitablauf,
+       weil er auf ein hervorgehobenes Ziel wartete, das es nicht gibt. */
+    return /^Wo liegt /.test(t) || /^Wohin gehört /.test(t);
   });
 }
 
@@ -515,7 +522,36 @@ export async function inEbene(seite, profil, ebene, { vorlauf = true } = {}) {
 export async function zeigeAufKarte(seite) {
   const punkt = await seite.evaluate(() => {
     const s = document.querySelector('.schirm.da');
-    const name = s.querySelector('#frage').textContent.trim()
+    /* WELCHES Gebiet gesucht ist, sagt die SITZUNG - nicht der Fragetext.
+     *
+     * Hier stand `„Wo liegt X?" ohne „Wo liegt"`. Das ging, solange jede
+     * umgekehrte Frage den Namen enthielt. „Wohin gehoert diese Flagge?"
+     * (F4) enthaelt ihn nicht - dort IST die Flagge die Frage -, und der
+     * Helfer fand nichts mehr.
+     *
+     * Die Sitzung weiss es ohnehin, und sie weiss es genauer: `a3` ist
+     * die Kennung auf der Karte, waehrend der Name erst nachgeschlagen
+     * werden musste. Der Textweg bleibt als Rueckfall stehen, fuer die
+     * Bildschirme ohne laufende Sitzung. */
+    let vonSitzung = null;
+    const lauf = (typeof Sitzung !== 'undefined' && Sitzung && Sitzung.liste)
+      ? Sitzung.liste[Sitzung.i] : null;
+    /* BEIDE Kennungen probieren, und `id` zuerst.
+     *
+     * Auf den Kartenebenen ist die Kennung des Gegenstands zugleich die
+     * am Umriss (`DEU`). Auf „Auf die Karte" (F4) nicht: dort heisst der
+     * Gegenstand `fk:ITA`, damit er einen eigenen Leitner-Stand bekommt,
+     * und der Umriss traegt denselben Wert - `a3` waere `ITA` und faende
+     * nichts. Gesucht wird deshalb, was am Bildschirm WIRKLICH steht,
+     * statt sich auf eine der beiden zu verlassen. */
+    for (const kennung of [lauf && lauf.id, lauf && lauf.a3]) {
+      if (!kennung || vonSitzung) continue;
+      if (s.querySelector(`#treffer circle[data-id="${kennung}"]`)
+          || s.querySelector(`.karte svg path[data-id="${kennung}"]`))
+        vonSitzung = { id: kennung, name: lauf.name || kennung };
+    }
+    const name = vonSitzung ? vonSitzung.name
+      : s.querySelector('#frage').textContent.trim()
       .replace(/^Wo liegt /, '').replace(/\?$/, '').trim();
     /* Gesucht wird die KENNUNG, nicht der Anker.
      *
@@ -533,7 +569,7 @@ export async function zeigeAufKarte(seite) {
     const D = JSON.parse(document.getElementById('daten').textContent);
     const alle = [].concat(...Object.values(D).filter(Array.isArray),
       ...Object.values(D.laender || {}).filter(Array.isArray));
-    const geb = alle.find(x => x && x.name === name);
+    const geb = vonSitzung || alle.find(x => x && x.name === name);
     if (!geb) return null;
     const id = geb.id || geb.a3;
 
