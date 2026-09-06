@@ -2383,11 +2383,17 @@ export const PROBEN = [
     ersatz:'    if (false) zeige(()=>vorlauf(id));',
     an:{ ...DIST, text:'if (false) zeige' }, sagt:'kommt kein Vorlauf' },
   // Er kommt, aber er ist stumm - und damit fuer Fiona leer.
+  /* Der Eingriff sitzt jetzt an `ansagenBinden` - dem EINEN Ort, an dem
+     die Ansage gebunden wird. Bis zum Buch-Umbau stand dieselbe Schleife
+     zweimal da (Vorlauf und Buch), und diese Probe hing an der Fassung
+     im Vorlauf. Genau diese Dopplung hat dann auch gekostet: der
+     „Zurueck"-Knopf verlor seine Aufgabe, ich habe die eine Stelle
+     geflickt, und der Rauchtest hat die zweite gemeldet. */
   { n:'die Karten im Vorlauf sagen nichts', tor:'smoke', bauen:true,
     args:['--nur=spielen'], datei:D,
-    such:"  s.querySelectorAll('[data-lesen]').forEach(b =>\n    b.onclick = () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));",
-    ersatz:"  s.querySelectorAll('[data-lesen]').forEach(b => b.onclick = () => {});",
-    an:{ ...DIST, text:"forEach(b => b.onclick = () => {})" },
+    such:"  b.addEventListener('click', () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));",
+    ersatz:"  b.addEventListener('click', () => {});",
+    an:{ ...DIST, text:"b.addEventListener('click', () => {})" },
     sagt:'sagt nichts' },
   // Er zeigt nicht, was die Ebene enthaelt.
   { n:'der Vorlauf zeigt die falsche Zahl an Gebieten', tor:'smoke', bauen:true,
@@ -4243,9 +4249,14 @@ export const PROBEN = [
        genutzt war. Wieder von `inhalt` gemeldet, wieder derselbe Grund:
        der Anker haengt an einer Zeile, die sich geaendert hat. Die Probe
        selbst bleibt richtig - „alle" ist weiter falsch, drei sind es
-       nicht. */
-    such:'        naechste.map(markeBild).join(\'\')}</div>` });',
-    ersatz:'        marken.filter(a => !a.verdient).map(markeBild).join(\'\')}</div>` });',
+       nicht.
+       DRITTES MAL beim Buch-Umbau: der Anker hing an der ZEILE samt
+       Einrueckung und schliessender Klammer, und beides gehoert zum
+       Grundriss, nicht zur Sache. Jetzt haengt er an dem, was die Probe
+       wirklich meint - dem Aufruf selbst. Der ueberlebt jeden Umbau des
+       Seitenaufbaus und ist im Baum eindeutig. */
+    such:"naechste.map(markeBild).join('')",
+    ersatz:"marken.filter(a => !a.verdient).map(markeBild).join('')",
     an:{ ...DIST, text:"marken.filter(a => !a.verdient).map(markeBild)" },
     sagt:'offene Abzeichen' },
 

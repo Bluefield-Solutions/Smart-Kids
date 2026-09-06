@@ -14,6 +14,22 @@ import { sammelbar, RAEUME } from '../src/inhalt/tiere.js';
 const ALLE_TIERE = sammelbar().map(t => t.id);
 /** Die Raeume, die die SAMMLUNG oeffnet - aus den Daten, nicht gezaehlt. */
 const AB_RAEUME = RAEUME.filter(r => r.ab);
+/* Was die Abzeichen im Buch SAGEN - die Ansage, nicht die Beschriftung.
+ *
+ * Seit dem Buch-Umbau traegt die Zelle den kurzen Namen („Kontinente"),
+ * und der SATZ - die Zusage, die dieser Abschnitt prueft - steht in
+ * `data-lesen`. Am Zellentext zu messen hiesse ab jetzt, die
+ * Beschriftung zu pruefen statt die Aussage.
+ *
+ * Der ganze AUFRUF steht hier und nicht nur der Ausleser: eine Funktion
+ * aus dem Tor kann `page.evaluate` nicht mitnehmen, also muss das, was
+ * geteilt wird, die Auswertung selbst sein. */
+const abzeichenSagen = (seite) => seite.evaluate(() => {
+  const s = document.querySelector('.schirm.da');
+  const sagt = (x) => (x.dataset.lesen || x.textContent).replace(/\s+/g, ' ').trim();
+  return { da: [...s.querySelectorAll('.abz.da')].map(sagt),
+           offen: [...s.querySelectorAll('.abz.offen')].map(sagt) };
+});
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
@@ -5431,11 +5447,7 @@ if (laeuft('abzeichen')) try {
   await p.click('[data-profil="fiona"]');
   await p.click('#buch');
   await p.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
-  const beiFiona = await p.evaluate(() => {
-    const s = document.querySelector('.schirm.da');
-    return { offen: [...s.querySelectorAll('.abz.offen')].map(x => x.textContent.trim()),
-             da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.trim()) };
-  });
+  const beiFiona = await abzeichenSagen(p);
   if (!beiFiona.da.some(t => /drei Stadtstaaten/.test(t))) merke('abzeichen', new Error(
     `das verdiente Abzeichen fehlt — im Buch steht ${JSON.stringify(beiFiona.da)}`));
   if (beiFiona.da.some(t => /alle Kontinente/.test(t))) merke('abzeichen', new Error(
@@ -5534,7 +5546,8 @@ if (laeuft('abzeichen')) try {
   await q.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
   const buch = await q.evaluate(() => {
     const s = document.querySelector('.schirm.da');
-    return { da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.replace(/\s+/g,' ').trim()),
+    return { da: [...s.querySelectorAll('.abz.da')].map(x =>
+               (x.dataset.lesen || x.textContent).replace(/\s+/g,' ').trim()),
              offen: s.querySelectorAll('.abz.offen').length,
              bilder: [...s.querySelectorAll('.abz svg')].filter(x => x.children.length).length,
              knoepfe: s.querySelectorAll('button.abz').length };
@@ -5588,11 +5601,7 @@ if (laeuft('abzeichen')) try {
     await zurEbenenwahl(r, 'bundeslaender');
     await r.click('#buch');
     await r.waitForSelector('.schirm.da .rollen', { timeout: 25000 });
-    const aus = await r.evaluate(() => {
-      const s = document.querySelector('.schirm.da');
-      return { da: [...s.querySelectorAll('.abz.da')].map(x => x.textContent.replace(/\s+/g,' ').trim()),
-               offen: [...s.querySelectorAll('.abz.offen')].map(x => x.textContent.replace(/\s+/g,' ').trim()) };
-    });
+    const aus = await abzeichenSagen(r);
     await r.close();
     return aus;
   };

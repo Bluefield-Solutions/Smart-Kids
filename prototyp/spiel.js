@@ -203,8 +203,39 @@ const kopf = ({ links='', mitte='', rechts='' })=>
     <div class="kopf-mitte">${mitte}</div>
     <div class="kopf-rechts">${rechts}</div></div>`
   : '';
+/* `data-lesen` und `aria-label`, weil das Wort auf schmalen Fenstern
+   WEGFAELLT (`.knopf .wort{display:none}` unter 520 Punkten) - dann steht
+   dort ein nacktes Zeichen. Und weil Fiona das Wort auch dann nicht
+   liest, wenn es dasteht: er war der einzige Griff im ganzen
+   Forscherbuch ohne Ansage (Buch-Audit II, K3). */
+/**
+ * Die Ansage an alles haengen, was `data-lesen` traegt - und zwar NEBEN
+ * das, was der Knopf schon tut.
+ *
+ * Hier stand zweimal `b.onclick = () => vorlesen(...)`, einmal im
+ * Vorlauf und einmal im Buch. Eine Zuweisung WIRFT WEG, was vorher
+ * dastand: wer `data-lesen` an einen Knopf schreibt, der schon etwas
+ * tut, nimmt ihm seine Aufgabe - oder bekommt sie zurueck und verliert
+ * die Ansage, je nachdem, wer zuletzt bindet. Beim „Zurueck" war es das
+ * erste: der Knopf sagte seinen Namen und ging nicht mehr zurueck.
+ * `lesbarkeit` und der Rauchtest haben es an zwei verschiedenen Stellen
+ * gemeldet - und die zweite erst, nachdem die erste geflickt war.
+ *
+ * Deshalb steht es jetzt EINMAL da (Regel 6). `addEventListener` legt
+ * die Ansage neben die Aufgabe; die Marke verhindert, dass ein zweiter
+ * Lauf ueber dieselben Knoepfe sie doppelt sprechen laesst - im Buch
+ * laeuft das Binden einmal beim Aufbau und noch einmal bei jedem
+ * Blaettern.
+ */
+const ansagenBinden = (wo) => wo.querySelectorAll('[data-lesen]').forEach(b => {
+  if (b.dataset.lesenGebunden) return;
+  b.dataset.lesenGebunden = '1';
+  b.addEventListener('click', () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));
+});
+
 const zurueckKnopf = (wohin='Zurück')=>
-  `<button class="knopf" id="zur"><span class="zei">${ZURUECK}</span><span class="wort">${wohin}</span></button>`;
+  `<button class="knopf" id="zur" data-lesen="${wohin}" aria-label="${wohin}"
+    ><span class="zei">${ZURUECK}</span><span class="wort">${wohin}</span></button>`;
 const schliessenKnopf = (was='Schließen')=>
   `<button class="knopf rund" id="zur" aria-label="${was}" title="${was}">${ZEI('zu')}</button>`;
 
@@ -2896,8 +2927,7 @@ async function vorlauf(ebeneId, zurueck = null){
       <button class="knopf haupt" id="los">${ZEI('weiter', 22)}Jetzt starten</button>
     </div>`;
   s.querySelector('#zur').onclick = () => zeige(zurueck || ebenenwahl);
-  s.querySelectorAll('[data-lesen]').forEach(b =>
-    b.onclick = () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));
+  ansagenBinden(s);
   s.querySelector('#los').onclick = () => {
     Einst.vorlaufGezeigt[vorlaufSchluessel(ebeneId)] = true;
     einstSichern();
@@ -6572,6 +6602,36 @@ async function forscherbuch(){
    * mit einem Fragezeichen und sagte nichts darüber, was als Nächstes
    * kommt.
    */
+  /* ---------- EINE Seite, fuenfmal (Buch-Audit II) -----------------
+   *
+   * Bis v411 hat jedes Kapitel seinen eigenen Grundriss mitgebracht, und
+   * das Querformat wurde daraus ERSCHLOSSEN: `.rollen.buch > .gruppe`
+   * links, `> :not(.gruppe)` rechts. Die Annahme dahinter - „im Buch
+   * wechseln sich Ueberschrift und Block ab" - ist zweimal gebrochen,
+   * beide Male teuer und beide Male erst spaet sichtbar: einmal, weil
+   * `.abzkopf` auf dem kurzen Querformat `display:none` war und aus der
+   * Platzierung fiel (jeder Block lag danach in der SCHMALEN Spalte),
+   * und einmal, weil das Tierkapitel drei Bloecke mitbringt statt einem.
+   *
+   * Jetzt ist das Paar die STRUKTUR und keine Vermutung mehr: eine
+   * Spalte fuer das, was die Seite SAGT (Titel, Zahl, Balken, Fusssatz),
+   * eine fuer das, was sie ZEIGT. Was dazwischen fehlt oder dazukommt,
+   * ist gleichgueltig - es gibt keine Reihenfolge mehr zu erraten.
+   *
+   * Und der Fusssatz bekommt damit zum ersten Mal einen Ort. Er stand
+   * linksbuendig unter einer mittigen Karte und gehoerte optisch zu
+   * nichts (Audit I, B8).
+   */
+  const buchSeite = ({ id, titel, zusatz = '', balken = '', zeigt, fuss = '' }) => `
+    <section class="buchseite" data-seite="${id}">
+      <div class="buchspalte">
+        <h3 class="gruppe">${titel}${zusatz}</h3>
+        ${balken}
+        ${fuss}
+      </div>
+      <div class="buchraster">${zeigt}</div>
+    </section>`;
+
   const kleber = (g, x, offen) => `
     <button class="aufkleber ${offen?'':'da'} ${x.gekonnt?'sicher':''} ${x.pfad?'':'rechnen'}"
             data-art="${x.frage ? 'rechnen' : 'karte'}"
@@ -6693,7 +6753,12 @@ async function forscherbuch(){
   /* „bei Kontinente" waere falsches Deutsch, und die Ebenentitel stehen
      ohne Artikel da („Kontinente", „Bundesländer", „Plus und Minus"). Ein
      Doppelpunkt braucht keinen Fall. */
+  /* Das EINE Abzeichen, das nicht aus der Tafel kommt - es haengt an
+     einer Runde und nicht an einem Vorrat. Es braucht seinen kurzen
+     Namen deshalb hier; ohne ihn stand auf der Zelle „undefined", und
+     der Rauchtest hat es sofort gemeldet. */
   if (ohneFehler) marken.unshift({ id:'ohne-fehler', zeichen:'medaille', verdient:true, fehlt:0,
+    kurz:'Ohne Fehler',
     titel:`Einmal ganz ohne Fehler: ${ohneFehler.ebeneTitel}.` });
   const verdient = marken.filter(a => a.verdient);
   /* Das offene Abzeichen steht nur da, wenn es schon eines GIBT.
@@ -6731,13 +6796,24 @@ async function forscherbuch(){
      zwar den Klick, aber `beruehrung` misst Trefferflaechen nur an
      Bedienelementen, und mit dem Finger trifft man nur, was gross genug
      ist. */
+  /* DAS ZEICHEN IST DAS BILD, der Satz die Bildunterschrift (Audit II, K1).
+   *
+   * Gemessen: die Abzeichenseite war zu 92 % Text - 312 Zeichen bei 8 %
+   * Bildanteil, und das Zeichen daneben 22 Punkte gross. Ausgerechnet
+   * der Ort, an dem das Buch sagt „das KANNST du", war fuer ein
+   * sechsjaehriges Kind, das nicht liest, eine Wand aus Buchstaben.
+   *
+   * Jetzt eine Zelle wie jede andere: Zeichen gross oben, darunter EIN
+   * Titel. Der ganze Satz („Dir fehlen noch 5") steht nicht mehr im
+   * Bild, sondern in der ANSAGE - dort erreicht er Fiona wirklich, und
+   * Lea liest den Titel. */
   const markeBild = (a) => `
-    <button class="abz ${a.verdient?'da':'offen'}" data-abz="${a.id}"
+    <button class="abz zelle ${a.verdient?'da':'offen'}" data-abz="${a.id}"
             data-lesen="${a.verdient ? a.titel
-              : `Fast. ${a.titel} Dir fehlen noch ${a.fehlt}.`}">
+              : `Fast. ${a.titel} Dir ${a.fehlt===1?'fehlt noch eins':`fehlen noch ${a.fehlt}`}.`}">
       ${ABZ(a.zeichen, a.verdient)}
-      <span class="was">${a.titel}${a.verdient?''
-        : ` <small>Dir ${a.fehlt===1?'fehlt noch eins':`fehlen noch ${a.fehlt}`}.</small>`}</span>
+      <span class="was">${a.kurz}</span>
+      ${a.verdient ? '' : `<span class="fehlt">${a.fehlt}</span>`}
     </button>`;
 
   /* --- Das Buch bekommt Kapitel (Q44) --------------------------------
@@ -6858,8 +6934,13 @@ async function forscherbuch(){
     if (dabei.length) kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:6, zahl:dabei.length,
       lesen:`Deine Tiere. Du hast ${dabei.length === 1 ? 'eins'
         : dabei.length ? dabei.length : 'noch keins'} von ${alle.length}.`,
-      inhalt:`
-        <h3 class="gruppe tierkopf">Meine Tiere <small>${dabei.length} von ${alle.length}</small></h3>
+      inhalt: buchSeite({ id:'tiere', titel:'Meine Tiere',
+        zusatz:` <small>${dabei.length} von ${alle.length}</small>`,
+        fuss: TierStand.gorilla ? `<p class="buchsatz" data-lesen="${
+            `Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal' : TierStand.gorilla + '-mal'} da und hat mit dir geübt.`
+          }">Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal'
+            : `${TierStand.gorilla}-mal`} da und hat mit dir geübt.</p>` : '',
+        zeigt:`
         ${/* AUF DEM REITER STEHT EIN TIER, nicht die Landschaft.
               Der erste Anlauf trug den Kulissenstreifen. Bei 28 x 17
               Punkten sind „Wald und Wiese", „Der Dschungel", „Der
@@ -6920,29 +7001,25 @@ async function forscherbuch(){
                     data-lesen="${habe.has(t.id) ? t.name
                       : `${t.name} fehlt dir noch. Mach ${r.titel} fertig.`}"
                     >${tierBild(t)}<span>${habe.has(t.id) ? ohneArtikel(t.name) : '?'}</span></button>`).join('')}</div>
-        </div>`).join('')}
-        ${TierStand.gorilla ? `<p class="buchsatz" data-lesen="${
-            `Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal' : TierStand.gorilla + '-mal'} da und hat mit dir geübt.`
-          }">Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal'
-            : `${TierStand.gorilla}-mal`} da und hat mit dir geübt.</p>` : ''}` });
+        </div>`).join('')}` }) });
   }
   if (verdient.length) kapitel.push({
     id:'abzeichen', titel:'Abzeichen', farbe:2, zahl:verdient.length,
     lesen:`Deine Abzeichen. Du hast ${verdient.length===1?'eins':verdient.length}.`,
-    inhalt:`
-      <h3 class="gruppe abzkopf">Deine Abzeichen</h3>
-      <div class="abzeichen">${verdient.map(markeBild).join('')}${
-        naechste.map(markeBild).join('')}</div>` });
+    inhalt: buchSeite({ id:'abzeichen', titel:'Deine Abzeichen',
+      zusatz:` <small>${verdient.length} verdient</small>`,
+      zeigt:`<div class="abzeichen">${verdient.map(markeBild).join('')}${
+        naechste.map(markeBild).join('')}</div>` }) });
   for (const g of vollen) kapitel.push({
     id:g.id, titel:g.titel, farbe:g.farbe, zahl:g.da.length,
     lesen:`${g.titel}. ${g.da.length===1?'Ein Aufkleber':`${g.da.length} Aufkleber`}.`,
-    inhalt:`
-      <h3 class="gruppe">${g.titel}${g.da.filter(x=>x.gekonnt).length
+    inhalt: buchSeite({ id:g.id, titel:g.titel,
+      zusatz: g.da.filter(x=>x.gekonnt).length
         ? ` <small>${g.da.length} Aufkleber, ${g.da.filter(x=>x.gekonnt).length} davon sicher</small>`
-        : ''}</h3>
-      ${hatKarte(g) ? albumKarte(g)
-        : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`}
-      ${/* Ein Satz zum Mitnehmen, hier zum NACHLESEN (Q46).
+        : '',
+      zeigt: hatKarte(g) ? albumKarte(g)
+        : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`,
+      fuss:`${/* Ein Satz zum Mitnehmen, hier zum NACHLESEN (Q46).
             Im Spiel steht er einen Augenblick und ist dann weg - genau
             dann, wenn das Kind noch mit dem Treffer beschaeftigt ist. Das
             Buch ist der Ort, an dem man nachschaut; also steht er hier
@@ -6953,7 +7030,7 @@ async function forscherbuch(){
             Trefferflaeche, die kein Finger trifft (`beruehrung`). */
         satzGebiete(g).length ? `<p class="buchsatz" data-gruppe="${g.id}"
           data-lesen="${Saetze.satzZu(satzGebiete(g)[0].id)}"
-          >${Saetze.satzZu(satzGebiete(g)[0].id)}</p>` : ''}` });
+          >${Saetze.satzZu(satzGebiete(g)[0].id)}</p>` : ''}` }) });
   /* Die Vorschau steht nur da, wo die Karte sie nicht schon zeigt.
      Auf der Albumkarte liegt jedes offene Gebiet blass darunter -
      dieselbe Auskunft, an derselben Stelle, ohne Fragezeichen. Der
@@ -6962,8 +7039,8 @@ async function forscherbuch(){
   if (vorschau.length && !(dran && vollen.includes(dran) && hatKarte(dran))) kapitel.push({
     id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe, zahl:vorschau.length,
     lesen:`Als Nächstes: ${dran.titel}.`,
-    inhalt:`
-      <h3 class="gruppe">Als Nächstes: ${dran.titel}${
+    inhalt: buchSeite({ id:'naechstes', titel:`Als Nächstes: ${dran.titel}`,
+      zusatz:`${
         /* WIE WEIT das Kind in dieser Gruppe ist (G15c).
          *
          * Die Vorschauseite nutzte gemessen 29 % ihrer Hoehe - der
@@ -6983,18 +7060,18 @@ async function forscherbuch(){
          * mehr weggelassen. */
         (() => { const gesamt = dran.da.length + dran.offen.length;
           return gesamt ? ` <small>${dran.da.length} von ${gesamt} gesammelt</small>` : ''; })()
-        }</h3>
-      ${(() => { const gesamt = dran.da.length + dran.offen.length;
+        }`,
+      balken:`${(() => { const gesamt = dran.da.length + dran.offen.length;
         return gesamt ? fortschrittBalken({ gesammelt: dran.da.length, gesamt,
-          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) : ''; })()}
-      ${hatKarte(dran)
+          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) : ''; })()}`,
+      zeigt:`${hatKarte(dran)
         /* Auch das Naechste ist eine KARTE, wenn es eine hat - ganz
            blass, weil noch nichts darauf klebt. Drei Kaesten mit
            Fragezeichen sagen „drei Aufgaben"; eine leere Karte sagt
            „hier ist noch Platz". Dasselbe Wissen, das Gegenteil an
            Ton. */
         ? albumKarte(dran)
-        : `<div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`}` });
+        : `<div class="kleber gross vorschau">${vorschau.map(x=>kleber(dran,x,true)).join('')}</div>`}` }) });
 
   const OHNE_REITER = 2;   // gemessen, siehe oben
   const mitReitern = kapitel.length > OHNE_REITER;
@@ -7116,7 +7193,7 @@ async function forscherbuch(){
      der Satz danach fest. Der Rauchtest hat es gemeldet - er blaettert
      erst zum Kartenkapitel und tippt dann. */
   const seiteBinden = (wo) => {
-    wo.querySelectorAll('[data-lesen]').forEach(b=>b.onclick=()=>vorlesen(b.dataset.lesen));
+    ansagenBinden(wo);
     kartensatzBinden(wo);
     /* Der Weg in die Landschaft (T2) - HIER und nicht beim Aufbau, aus
        demselben Grund wie der Kartensatz: ein Kapitelwechsel tauscht den
@@ -7150,7 +7227,14 @@ async function forscherbuch(){
    * Variable waere dann wieder auf null. */
   function kartensatzBinden(wo) {
   wo.querySelectorAll('.albumkarte').forEach(karte => {
-    const zeile = karte.parentElement?.querySelector('.buchsatz');
+    /* Die SEITE fragen, nicht das Elternelement.
+       Bis zum Buch-Umbau lagen Karte und Satz im selben Kasten; jetzt
+       steht der Satz in der linken Spalte und die Karte in der rechten -
+       Geschwister, keine Verwandtschaft ersten Grades. Der Rauchtest hat
+       es gemeldet: ein Tipp auf die Karte blaetterte den Satz nicht mehr
+       weiter. `closest` haelt beide Faelle. */
+    const seite = karte.closest('.buchseite') || karte.parentElement;
+    const zeile = seite?.querySelector('.buchsatz');
     if (!zeile) return;
     const g = gruppen.find(x => x.id === zeile.dataset.gruppe);
     const wo = g ? satzGebiete(g) : [];

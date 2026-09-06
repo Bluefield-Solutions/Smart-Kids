@@ -110,31 +110,51 @@ const REIHENWORT = { 2:'Zweier', 3:'Dreier', 4:'Vierer', 5:'Fünfer', 6:'Sechser
  * Deshalb reicht der Vorrat als Massstab nicht, und `umfeld.erreichbar`
  * steht daneben: die Menge, die dieses Profil je zu sehen bekommt.
  */
+/* `kurz` ist der NAME des Abzeichens, `titel` der Satz.
+ *
+ * Bis v411 gab es nur den Satz, und im Buch stand er als Beschriftung
+ * einer Rasterzelle: „Du kannst alle Verdopplungen." brach dort auf drei
+ * Zeilen und mitten im Wort um („Verdopplunge n."). Gemessen war die
+ * Abzeichenseite deshalb zu 92 % Text bei 8 % Bild - ausgerechnet der
+ * Ort, an dem das Buch sagt „das KANNST du", war fuer ein Kind, das
+ * nicht liest, eine Wand aus Buchstaben (Buch-Audit II, K1).
+ *
+ * Den Namen aus dem Satz zu SCHNEIDEN waere die naheliegende Klugheit
+ * gewesen - und genau die Sorte, die beim naechsten Satzzeichen bricht.
+ * Also ein Feld daneben. Der Satz bleibt, wo er hingehoert: in der
+ * Ansage, wo er Fiona wirklich erreicht.
+ */
 export const TAFEL = [
   { ebene:'kontinente', id:'alle-kontinente', zeichen:'welt',
+    kurz: () => 'Kontinente',
     titel: () => 'Du kennst alle Kontinente.',
     waehlt: (v) => v },
 
   { ebene:'bundeslaender', id:'stadtstaaten', zeichen:'stadt',
+    kurz: () => 'Stadtstaaten',
     titel: () => 'Du kennst die drei Stadtstaaten.',
     // Aus den DATEN, nicht aus einer Liste von Kennungen: `stadtstaat`
     // steht an jedem Bundesland.
     waehlt: (v) => v.filter(x => x.stadtstaat) },
 
   { ebene:'bundeslaender', id:'alle-bundeslaender', zeichen:'karte',
+    kurz: () => 'Bundesländer',
     titel: () => 'Du kennst alle sechzehn Bundesländer.',
     waehlt: (v) => v },
 
   { ebene:'rechnen:reihen', id:(a)=>`reihe-${a}`, zeichen:'reihe', je:[6,7,8,9,10],
+    kurz: (a) => `${REIHENWORT[a]}reihe`,
     titel: (a) => `Du kannst die ${REIHENWORT[a]}reihe.`,
     waehlt: (v, a) => v.filter(x =>
       (x.rechenart === 'mal' || x.rechenart === 'zehner') && x.a === a) },
 
   { ebene:'rechnen:plusminus', id:'verdoppeln', zeichen:'doppelt',
+    kurz: () => 'Verdoppeln',
     titel: () => 'Du kannst alle Verdopplungen.',
     waehlt: (v) => v.filter(x => x.rechenart === 'plus' && x.a === x.b) },
 
   { ebene:'schreiben:buchstaben', id:'dein-name', zeichen:'schild',
+    kurz: (_, u) => `${u.name}`,
     titel: (_, u) => `Du kannst ${u.name} schreiben.`,
     // Die Buchstaben des eigenen Namens - fuer Fiona F I O N A, fuer Lea
     // L E A. Das persoenlichste Abzeichen, das sich rechnen laesst.
@@ -144,6 +164,7 @@ export const TAFEL = [
     } },
 
   { ebene:'schreiben:buchstaben', id:'alphabet', zeichen:'abc',
+    kurz: () => 'Alphabet',
     titel: () => 'Du kannst das ganze Alphabet.',
     waehlt: (v) => v },
 
@@ -163,10 +184,12 @@ export const TAFEL = [
    * sie vor. `nachbarDE` steht an den Laendern selbst, nicht als Liste
    * von Kennungen hier - dieselbe Regel wie bei `stadtstaat`. */
   { ebene:'laender:europa', id:'nachbarn-de', zeichen:'nachbarn',
+    kurz: () => 'Nachbarn',
     titel: () => 'Du kennst alle Nachbarn von Deutschland.',
     waehlt: (v) => v.filter(x => x.nachbarDE) },
 
   { ebene:'hauptstaedte', id:'alle-landeshauptstaedte', zeichen:'krone',
+    kurz: () => 'Hauptstädte',
     titel: () => 'Du kennst alle Landeshauptstädte.',
     waehlt: (v) => v },
 
@@ -175,12 +198,14 @@ export const TAFEL = [
    * offenes Abzeichen, naemlich das mit den wenigsten fehlenden Stuecken.
    * Ein fernes Ziel draengt sich also nicht vor. */
   { ebene:'rechnen:plusminus', id:'minus', zeichen:'minus',
+    kurz: () => 'Minus',
     titel: () => 'Du kannst alle Minusaufgaben.',
     waehlt: (v) => v.filter(x => x.rechenart === 'minus') },
 
   /* Fuenf Stueck - das kleinste Abzeichen der Tafel, und mit Absicht:
    * Fiona braucht eines, das sie erreicht, bevor das Alphabet voll ist. */
   { ebene:'schreiben:buchstaben', id:'vokale', zeichen:'vokal',
+    kurz: () => 'Vokale',
     titel: () => 'Du kennst alle Vokale.',
     waehlt: (v) => v.filter(x => 'AEIOU'.includes(x.zeichen)) },
 ];
@@ -211,6 +236,7 @@ export function abzeichenDer(ebeneId, vorrat, umfeld = {}) {
         id: typeof e.id === 'function' ? e.id(wert) : e.id,
         ebene: ebeneId, zeichen: e.zeichen,
         titel: e.titel(wert, umfeld),
+        kurz: e.kurz(wert, umfeld),
         teile,
       });
     }
