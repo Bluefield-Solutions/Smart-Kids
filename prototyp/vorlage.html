@@ -628,8 +628,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    nicht - ein ersetztes Element nimmt dann seine eigene Hoehe, und
    Suedamerika wurde 109 Punkte hoch. Die 62 sind Namenszeile plus
    Fortschrittszeile plus Rand. */
+/* DIE 62 WAREN EINE ANNAHME: eine Namenszeile.
+   
+   Mit der elften Kachel (F2) wurde jede Kachel schmaler, und
+   „Bundeslaender" bricht auf den schmalen Formaten in ZWEI Zeilen. Die
+   zweite Zeile waechst nach unten, das Bild steht absolut - also lag es
+   zu 10 % unter dem eigenen Namen. Auf DIESEM Rechner nicht, auf dem
+   Runner schon: ob ein Name mit 13 Zeichen umbricht, entscheidet die
+   Sub-Pixel-Rundung der Schrift, und dann ist die ganze Geometrie eine
+   Muenze. Genau dieselbe Falle wie bei den Raumnamen (B15).
+   
+   Der Namenskasten ist deshalb IMMER zwei Zeilen hoch, ob er sie braucht
+   oder nicht, und der Abzug nennt beide. Das kostet Bildhoehe - und
+   kauft dafuer, dass die Zahl auf jedem Rechner dieselbe ist. Eine
+   Ratsche, die je nach Maschine anders steht, misst die Maschine. */
 .wahl.ebenen .kachel .silhouette{left:50%;right:auto;top:var(--r1);bottom:auto;
-  height:calc(100% - 62px);translate:-50% 0;max-width:82%;opacity:.9}
+  height:calc(100% - var(--kachelabzug));translate:-50% 0;max-width:82%;opacity:.9}
+.wahl.ebenen{--kachelabzug:86px}
+@media (max-height:440px), (max-width:430px){ .wahl.ebenen{--kachelabzug:78px} }
 /* Die Ueberzeile („LÄNDER IN", „DEUTSCHLAND") faellt hier weg. Sie stand
    bisher OBEN in der Kachel - dort liegt jetzt das Bild, und `lesbarkeit`
    hat sofort gemeldet, was das kostet: 4,34:1 statt 4,5 am Tag, 3,35:1 am
@@ -637,7 +653,9 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Begruendung, dass die Farbe die Einordnung mittraegt; jetzt gilt das
    ueberall, statt auf dem grossen Schirm etwas anderes zu zeigen. */
 .wahl.ebenen .kachel .ueber{display:none}
-.wahl.ebenen .kachel .name{font-size:var(--s0);text-align:center;width:100%}
+.wahl.ebenen .kachel .name{font-size:var(--s0);text-align:center;width:100%;
+  line-height:1.15;min-height:2.3em;display:flex;align-items:center;
+  justify-content:center}
 /* Platz fuer das Auge unten rechts - eine Trefferflaeche breit. */
 .wahl.ebenen .kachelfuss{padding-right:var(--r8)}
 /* Das Auge bleibt nackt - als einzige Bedienstelle der App, und mit
@@ -1872,7 +1890,12 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .flaggenkleber.offen{opacity:.3;filter:grayscale(.7)}
 /* Das Wasserzeichen der Kachel. Es liegt hinter dem Namen und darf ihn
    nicht ueberstrahlen - deshalb blass, wie jeder andere Umriss dort. */
-.flaggensilhouette{display:block;width:100%;height:auto}
+/* Die Flagge behaelt ihr Seitenverhaeltnis (`height:auto`) - und muss
+   deshalb ausdruecklich denselben Platz freilassen wie jeder Umriss,
+   sonst legt sie sich auf den Namen. `max-height` und nicht `height`:
+   eine gestauchte Flagge waere eine andere. */
+.flaggensilhouette{display:block;width:100%;height:auto;
+  max-height:calc(100% - var(--kachelabzug, 86px))}
 .englischfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r6);padding:0 var(--r4) var(--r4);min-height:0}
 .engwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}

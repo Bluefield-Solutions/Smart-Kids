@@ -11110,3 +11110,44 @@ flaggenschirm` aus `schirmZu`, fällt die Ebene auf den Kartenbildschirm zurück
 noch Karte und geht still zur nächsten Ebene. Das gilt für **jede** Ebene,
 deren Bildschirm kaputtgeht. Der Durchgang zählt dann Ebenen und misst nichts.
 Steht als Punkt in F5; eine Probe darauf wäre heute selbst nur eine Behauptung.
+
+### Der Runner hat es gefunden, nicht ich — und es war wieder die Schriftrundung
+
+Die Kette war hier grün, auf dem Runner rot:
+
+```
+ROT  iPhone SE quer 667×375 — Ebenenwahl: „Bundesländer" —
+     Bild unterm Namen % steht auf 10 statt 0
+ROT  iPhone hoch    390×844 — dasselbe
+```
+
+**Dieselbe Falle wie in B15, eine Ebene höher.** Im Stylesheet stand:
+
+```css
+.wahl.ebenen .kachel .silhouette{ height:calc(100% - 62px) }
+```
+
+und der Kommentar daneben sagte, was die 62 sind: „Namenszeile plus
+Fortschrittszeile plus Rand". **Eine** Namenszeile. Mit der elften Kachel wurde
+jede Kachel schmaler, „Bundesländer" hat dreizehn Zeichen und bricht auf den
+schmalen Formaten in zwei Zeilen — die zweite wächst nach unten, das Bild steht
+absolut, also lag es zu 10 % unter dem eigenen Namen.
+
+Ob es umbricht, entscheidet die Sub-Pixel-Rundung der Schrift. Auf diesem
+Rechner nicht, auf dem Runner schon. **Eine Ratsche, die je nach Maschine
+anders steht, misst die Maschine.**
+
+Der Namenskasten ist deshalb jetzt **immer zwei Zeilen hoch**, ob er sie
+braucht oder nicht, und der Abzug (`--kachelabzug`) nennt beide. Das kostet
+Bildhöhe — auf dem Zielgerät sind es 66 Punkte statt 76 — und kauft dafür, dass
+die Zahl auf jedem Rechner dieselbe ist.
+
+Und die Flagge musste ausdrücklich mit: sie behält ihr Seitenverhältnis
+(`height:auto`) und ignorierte den Abzug deshalb, bis sie eine `max-height`
+bekam. `max-height` und nicht `height` — eine gestauchte Flagge wäre eine
+andere.
+
+**Das ist der zweite Fall in zwei Runden.** Beide Male: ein Maß, das an einem
+Textumbruch hängt, und ein Umbruch, der an der Schriftrundung hängt. Wo ein
+absolut gesetztes Bild neben fließendem Text steht, muss der Text seinen Platz
+**reservieren**, nicht bekommen.
