@@ -1439,6 +1439,16 @@
       "zeit": "2026-09-06",
       "s": 80
     },
+    "jede Ebene bekommt wieder ihr eigenes Kapitel": {
+      "commit": "8051f5a8689603183b786f4eaf1afc8e781cae15",
+      "zeit": "2026-09-06",
+      "s": 128
+    },
+    "die Weltseite blaettert nicht in ihre Ebene": {
+      "commit": "8051f5a8689603183b786f4eaf1afc8e781cae15",
+      "zeit": "2026-09-06",
+      "s": 112
+    },
     "der Kapitelname wird wieder abgeschnitten statt umgebrochen": {
       "commit": "81f91dd904cd154af0c28d0e938fe4e92ae8cb47",
       "zeit": "2026-09-06",

@@ -10501,3 +10501,128 @@ steht dort schon **ohne** Eingriff, an `.marke`. „Angekommen" wäre wahr
 gewesen, bevor etwas passiert ist. Gemeldet hat es das Tor `anker` (Q48),
 bevor ein einziger Browser lief. Jetzt gehört die Zeile danach mit dazu:
 `13ch` gibt es nur am Reiter.
+
+---
+
+## B12 · Das Buch bekommt Welten — gröber geschnitten
+
+Entschieden nach einer Messung, nicht nach einem Gefühl. Die Frage war, was
+der Kapitelstreifen macht, wenn mehr Kapitel da sind, als nebeneinander
+passen. Die Zahlen, gemessen an einem Profil mit Fortschritt auf **allen**
+Ebenen:
+
+| Schirm | Reiter | ohne Rollen sichtbar | Streifen |
+|---|---|---|---|
+| **844 × 390 (Zielgerät)** | 17 | 12 | 109 px |
+| 1180 × 820 | 17 | 15 | 158 px |
+| 390 × 844 | 17 | 5 | 109 px |
+
+Der letzte Bericht hatte das als Hochkant-Problem geführt. Das war zu eng
+gefasst: **auf dem Zielgerät fehlten fünf Kapitel**, und der Streifen nahm gut
+ein Viertel der Bildhöhe. Es fängt nicht bei acht Kapiteln an — Fiona hat
+allein sechs Länderebenen.
+
+Das ist derselbe Fehler, den Q44 einmal behoben hat, eine Ebene höher: ein
+Bildschirm, dessen Bedienleiste mit dem Fortschritt wächst, sperrt irgendwann
+jedes Kind aus. Und Rollen ist hier so wenig eine Lösung wie dort — ein Kind,
+das nicht liest, rollt nicht auf Verdacht.
+
+**Ein Reiter je Welt.** Das ist keine neue Ordnung, sondern die, welche die App
+auf der Weltenwahl ohnehin hat, und sie kommt aus derselben Regel (`weltVon`).
+Aus siebzehn Reitern werden sechs, und der Streifen wächst nicht mehr mit der
+zwanzigsten Ebene:
+
+| Schirm | Reiter | ohne Rollen sichtbar | Streifen |
+|---|---|---|---|
+| **844 × 390** | 6 | **6** | **62 px** |
+| 1180 × 820 | 6 | 6 | 70 px |
+| 390 × 844 | 6 | 5 | 78 px |
+
+**Was darin liegt**, ist der Bau des Tierkapitels, noch einmal: links was die
+Seite sagt, rechts ein Raster aus Zellen; ein Tipp tauscht das Raster gegen die
+Ebene, ein Pfeil führt zurück. Ausdrücklich **keine** zweite Reiterzeile — „eine
+Reiterzeile über einer Reiterzeile war die auffälligste Unruhe im Buch" steht
+seit Runde 3 im Tierkapitel und gilt hier genauso. Eine Welt mit genau einer
+Ebene bekommt kein Raster: ein Raster vor einer einzigen Zelle wäre eine Tür
+mehr vor demselben Inhalt.
+
+Die Zelle trägt den **Umriss der Ebene** — denselben, den die Kachel auf der
+Ebenenwahl zeigt, aus demselben Zeichner. Ein Kind, das nicht liest, erkennt
+Afrika wieder.
+
+### Die Zusage ist eine über das Wachstum
+
+Geprüft wird nicht die Zahl der Reiter, sondern die **Form der Kennung**: jeder
+Reiter ist eine Welt oder eines der drei festen Kapitel (Tiere, Abzeichen, Als
+Nächstes). Eine Obergrenze („höchstens acht") wäre wieder eine Zahl, die mit
+dem nächsten Profil falsch wird; diese Zusage gilt für jedes Profil und für
+jede Ebene, die noch kommt. Darunter die Blindprobe: ohne einen einzigen
+Weltreiter beweist „keine Ebene im Streifen" nichts.
+
+### Vier Prüfungen, die eine Ebene tiefer mussten
+
+Dieselbe Falle wie bei Q44, als die Kapitel kamen und drei Prüfungen still nur
+noch die offene Seite zählten:
+
+* Der **Rauchtest** blätterte je Kapitel eine Seite. Von „Erdkunde" hätte er
+  nur das Raster gesehen — keine Albumkarte, keine Rechentafel, keinen Satz
+  zum Mitnehmen. Er geht jetzt auch durch jede Zelle: aus fünf Messungen
+  werden neun.
+* Der **Fingerabdruck** einer Seite war `textContent` des ganzen Kastens — und
+  der nimmt die verborgenen Abschnitte mit. Damit trugen die Übersicht und
+  jede ihrer Ebenen denselben Abdruck, und die Zusage „ein Reiter blättert"
+  schlug auf jedem Kapitel an, das mehr als eine Ebene hat.
+* Die **Rechentafel** wurde gegen ihren Reiter gezählt. Der zählt jetzt eine
+  ganze Welt zusammen; verglichen wird deshalb mit der Zelle, die zu dieser
+  Ebene führt — dieselbe Zahl, weiterhin aus einer anderen Rechnung.
+* Die **Tonleiter** misst jetzt sieben Seiten in fünf Kapiteln statt fünf.
+  Und sie hat dabei sofort etwas gefunden: der Rückweg-Knopf trug die
+  Browser-Voreinstellung `padding: 1px 6px` — zwei Sprossen mehr in einer
+  Leiter, die drei hat. Derselbe Knopf steht seit Runde 3 im Tierkapitel; dort
+  war er nur nie unter der Messung.
+
+### Was die Messstelle mitwandern musste
+
+Die Zusage aus dem letzten Commit („kein Kapitelname ragt über seinen Reiter")
+wurde auf 667 × 375 gemessen, weil dort siebzehn Reiter eng genug waren. Mit
+sechs Weltreitern ist 667 nicht mehr eng — die Blindprobe hat es sofort
+gemeldet („kein einziger Kapitelname ist breiter als sein Reiter"). Gemessen
+wird jetzt auf **390 × 844**, wo die Reiter auf ihrem Boden von 66 Punkten
+stehen; dort sind drei von fünf Namen breiter als ihr Reiter, und keiner ragt
+hinaus. Die Zahl ist mit der Sache gewandert (Regel 5).
+
+### Was offen bleibt
+
+Auf **390 × 844** steht weiter ein Reiter von sechs außerhalb des Streifens.
+Sechs mal 66 Punkte sind 396 auf einem 390 Punkte breiten Schirm — es fehlt
+buchstäblich ein Reiter breit. Zu holen wäre es über einen niedrigeren Boden
+(`min-width`) im Hochformat; ob 60 Punkte noch mit dem Daumen zu treffen sind,
+ist eine Messung und keine Meinung. Steht als B12b.
+
+### Zwei Gegenproben — und was sie über sich selbst gezeigt haben
+
+*Zurück auf ein Kapitel je Ebene.* Der Eingriff fällt auf den Zustand vor B12
+zurück; der Rauchtest meldet „4 von 7 Kapitelreitern tragen eine Ebene statt
+einer Welt". Beim ersten Anlauf traf der Suchtext nicht — er stand mit sechs
+Leerzeichen Einzug in der Probe und mit vier in der Datei.
+
+*Die Weltseite blättert nicht.* Der erste Eingriff setzte `hidden` auf einen
+Ausdruck, der immer falsch ist — dann standen **alle** Abschnitte gleichzeitig
+da, und der Rauchtest wurde rot, aber wegen des Überlaufs. Ein Eingriff, der
+einen anderen Fehler baut als den gemeinten, prüft auch etwas anderes; die
+Probe hat sich selbst gemeldet („rot, aber nicht deswegen"). Jetzt ist die
+Zuweisung ein Nulleingriff: der Tipp geht ins Leere, die Übersicht bleibt
+stehen.
+
+Dabei fiel auf, dass die Meldung „der Reiter markiert sich, blättert aber
+nicht" seit B12 **zwei** Fehler abdeckt: der Streifen blättert nicht, oder das
+Raster der Weltseite blättert nicht. Eine Meldung für beides sagt nicht, wo
+man suchen soll — und zwei Gegenproben könnten sich nicht auf sie berufen,
+ohne dasselbe zu beweisen. Sie ist jetzt geteilt; der zweite Fall heißt „die
+Zelle lässt sich antippen, und dahinter steht nichts".
+
+Und eine Lehre über das Werkzeug, nicht über die App: **zwei `proben`-Läufe
+gleichzeitig gehen nicht.** Beide arbeiten in derselben Wegwerf-Kopie
+(`.probenbaum`); der zweite Lauf hat dem ersten den Baum unter den Füßen
+weggezogen, und heraus kam ein „schlägt nicht an", das nichts mit der Probe zu
+tun hatte. Zwanzig Minuten Fehlersuche an der falschen Stelle.

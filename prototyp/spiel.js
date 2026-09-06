@@ -6562,7 +6562,11 @@ async function forscherbuch(){
     const stuecke = alle.map((g,i)=>({
       ...g, gesammelt: Leitner.istGesammelt(st, g.id), gekonnt: Leitner.istGekonnt(st, g.id),
       fach: st[g.id]?.fach ?? 0, i }));
-    gruppen.push({ id:e.id, titel:e.titel, farbe:e.farbe, vb,
+    /* `welt` kommt aus `weltVon` und nicht aus einer Liste hier: dieselbe
+       Regel, die die Weltenwahl schon benutzt. Eine zweite Zuordnung
+       daneben waere die naechste, die veraltet (Regel 6: was zweimal
+       dasteht, veraltet einmal). */
+    gruppen.push({ id:e.id, titel:e.titel, farbe:e.farbe, vb, welt: weltVon(e),
       da: stuecke.filter(x=>x.gesammelt), offen: stuecke.filter(x=>!x.gesammelt) });
   }
   const gesamt = gruppen.reduce((a,g)=>a+g.da.length,0);
@@ -6633,9 +6637,15 @@ async function forscherbuch(){
    * Jetzt hat er eine eigene Zeile in der FUSS-Rolle. Damit bricht er
    * dort, wo ein Satz bricht - und die linke Spalte hat die Form, die
    * das Buch ohnehin behauptet: Titel, Zusatz, Balken, Fusssatz. */
-  const buchSeite = ({ id, titel, zusatz = '', balken = '', zeigt, fuss = '' }) => `
-    <section class="buchseite" data-seite="${id}">
+  /* `zurueck` und `versteckt` seit den Welten (B12).
+     Eine Weltseite haelt mehrere dieser Abschnitte: die Uebersicht und
+     je einen fuer ihre Ebenen. Sichtbar ist genau einer - dieselbe
+     Mechanik wie im Tierkapitel, eine Ebene hoeher. */
+  const buchSeite = ({ id, titel, zusatz = '', balken = '', zeigt, fuss = '',
+                       zurueck = '', versteckt = false }) => `
+    <section class="buchseite" data-seite="${id}"${versteckt ? ' hidden' : ''}>
       <div class="buchspalte">
+        ${zurueck}
         <h3 class="gruppe">${titel}</h3>
         ${zusatz ? `<p class="gruppenzusatz">${zusatz}</p>` : ''}
         ${balken}
@@ -7162,11 +7172,40 @@ async function forscherbuch(){
         const satz = `Noch ${a.fehlt===1?'eins':a.fehlt}, dann heißt es: ${a.titel}`;
         return `<p class="buchsatz" data-lesen="${satz}">${satz}</p>`;
       })() }) });
-  for (const g of vollen) kapitel.push({
-    id:g.id, titel:g.titel, farbe:g.farbe,
-    zahl:g.da.length, gesamt:g.da.length + g.offen.length,
-    lesen:`${g.titel}. ${g.da.length===1?'Ein Aufkleber':`${g.da.length} Aufkleber`}.`,
-    inhalt: buchSeite({ id:g.id, titel:g.titel,
+  /* --- DAS BUCH BEKOMMT WELTEN (B12) --------------------------------
+   *
+   * Bis v428 war jede Ebene ein Kapitel. Das trug, solange es fuenf
+   * waren, und es bricht mit dem Fortschritt: gemessen an einem Profil
+   * mit Fortschritt auf ALLEN Ebenen stehen SIEBZEHN Reiter im Streifen,
+   * davon zwoelf sichtbar - auf dem Zielgeraet, nicht in einem
+   * Randfall. Fuenf Kapitel waren ohne Rollen nicht zu erreichen, und
+   * der Streifen nahm 109 von 390 Punkten.
+   *
+   * Das ist derselbe Fehler, den Q44 einmal behoben hat, eine Ebene
+   * hoeher: ein Bildschirm, dessen Bedienleiste mit dem Fortschritt
+   * waechst, sperrt irgendwann jedes Kind aus. Und Rollen ist hier so
+   * wenig eine Loesung wie dort - ein Kind, das nicht liest, rollt nicht
+   * auf Verdacht.
+   *
+   * Also GROEBER GESCHNITTEN: ein Reiter je WELT. Das ist keine neue
+   * Ordnung, sondern die, welche die App auf der Weltenwahl ohnehin hat,
+   * und sie kommt aus derselben Regel (`weltVon`). Aus siebzehn Reitern
+   * werden sieben, und sie waechst nicht mehr mit der zwanzigsten Ebene.
+   *
+   * WAS DARIN LIEGT, ist der Bau des Tierkapitels, noch einmal: links
+   * was die Seite sagt, rechts ein Raster aus Zellen; ein Tipp tauscht
+   * das Raster gegen die Ebene. KEINE zweite Reiterzeile - „eine
+   * Reiterzeile ueber einer Reiterzeile war die auffaelligste Unruhe im
+   * Buch" steht seit Runde 3 im Tierkapitel, und sie gilt hier genauso.
+   *
+   * Eine Welt mit EINER Ebene bekommt kein Raster: sie zeigt die Ebene
+   * gleich. Ein Raster vor einer einzigen Zelle ist eine Tuer mehr vor
+   * demselben Inhalt - dieselbe Ueberlegung wie bei `OHNE_REITER`. */
+  const gruppenSeite = (g, { inWelt = false, seiteId = g.id } = {}) => buchSeite({
+    id: seiteId, titel: g.titel, versteckt: inWelt,
+    zurueck: inWelt ? `<button class="raumzu" data-weltzu
+        data-lesen="Zurück zu allen Ebenen" aria-label="Zurück"
+        >${ZURUECK}</button>` : '',
       /* Nur das, was der Reiter NICHT sagt. Er traegt „16/16"; die
          Zahl der Aufkleber noch einmal davorzusetzen waere dieselbe
          Auskunft zweimal - was zweimal dasteht, veraltet einmal
@@ -7205,7 +7244,43 @@ async function forscherbuch(){
             Trefferflaeche, die kein Finger trifft (`beruehrung`). */
         satzGebiete(g).length ? `<p class="buchsatz" data-gruppe="${g.id}"
           data-lesen="${Saetze.satzZu(satzGebiete(g)[0].id)}"
-          >${Saetze.satzZu(satzGebiete(g)[0].id)}</p>` : ''}` }) });
+          >${Saetze.satzZu(satzGebiete(g)[0].id)}</p>` : ''}` });
+
+  const weltName = (id) => (WELTEN.find(w => w.id === id) || {}).name || id;
+  for (const w of WELTEN) {
+    const gs = vollen.filter(g => g.welt === w.id);
+    if (!gs.length) continue;
+    const zahl   = gs.reduce((a, g) => a + g.da.length, 0);
+    const gesamt = gs.reduce((a, g) => a + g.da.length + g.offen.length, 0);
+    const id = `welt:${w.id}`;
+    /* EINE Ebene: keine Uebersicht, die Ebene steht gleich da. Der
+       Reiter traegt trotzdem den Weltnamen - er ist der Ort, und die
+       Ueberschrift darunter sagt, was drinliegt. */
+    if (gs.length === 1) {
+      kapitel.push({ id, titel: w.name, farbe: w.farbe, zahl, gesamt,
+        lesen: `${gs[0].titel}. ${gs[0].da.length===1?'Ein Aufkleber'
+          :`${gs[0].da.length} Aufkleber`}.`,
+        inhalt: gruppenSeite(gs[0], { seiteId: id }) });
+      continue;
+    }
+    kapitel.push({ id, titel: w.name, farbe: w.farbe, zahl, gesamt,
+      lesen: `${w.name}. ${zahl} von ${gesamt} Aufklebern.`,
+      inhalt: buchSeite({ id, titel: w.name,
+        /* Die Zelle traegt DEN UMRISS DER EBENE, nicht ein Zeichen
+           daneben: `silhouette` zeichnet genau das, was die Kachel auf
+           der Ebenenwahl zeigt - ein Kind, das nicht liest, erkennt
+           Afrika wieder. Und die Zahl, die der Reiter nicht mehr traegt:
+           er zaehlt jetzt die ganze Welt. */
+        zeigt: `<div class="raumgitter">${gs.map(g => `
+          <button class="raumzelle ebenenzelle${g.da.length ? '' : ' leer'}"
+                  data-ebenenwahl="${g.id}"
+                  style="--ton:var(${FL[(g.farbe - 1 + 7) % 7]})"
+                  data-lesen="${g.titel}. ${g.da.length} von ${
+                    g.da.length + g.offen.length}."
+            >${silhouette(g.id)}<span>${g.titel}</span><small>${g.da.length}/${
+              g.da.length + g.offen.length}</small></button>`).join('')}</div>`,
+      }) + gs.map(g => gruppenSeite(g, { inWelt: true })).join('') });
+  }
   /* Die Vorschau steht nur da, wo die Karte sie nicht schon zeigt.
      Auf der Albumkarte liegt jedes offene Gebiet blass darunter -
      dieselbe Auskunft, an derselben Stelle, ohne Fragezeichen. Der
@@ -7423,10 +7498,27 @@ async function forscherbuch(){
       wo.querySelectorAll('[data-raumseite]').forEach(seite => {
         seite.hidden = seite.dataset.raumseite !== raum; });
     };
-    wo.querySelectorAll('.raumzelle').forEach(b => b.addEventListener('click',
+    wo.querySelectorAll('[data-raumwahl]').forEach(b => b.addEventListener('click',
       () => raumZeigen(b.dataset.raumwahl)));
     wo.querySelectorAll('[data-raumzu]').forEach(b => b.addEventListener('click',
       () => raumZeigen(null)));
+    /* Dasselbe eine Ebene hoeher: die Weltseite (B12).
+       Hier wird nicht ein Raster gegen einen Kasten getauscht, sondern
+       ein ganzer `.buchseite`-Abschnitt gegen einen anderen - die
+       Uebersicht traegt links den Weltnamen, eine Ebene links ihren
+       eigenen Titel samt Fusssatz. Ohne das waere der Satz zum
+       Mitnehmen heimatlos geworden, und der Grundriss der Seite („EINE
+       Seite, fuenfmal") haette eine sechste Fassung bekommen. */
+    const weltZeigen = (id) => {
+      wo.querySelectorAll('.buchseite').forEach(seite => {
+        const uebersicht = String(seite.dataset.seite || '').startsWith('welt:');
+        seite.hidden = id === null ? !uebersicht : seite.dataset.seite !== id;
+      });
+    };
+    wo.querySelectorAll('[data-ebenenwahl]').forEach(b => b.addEventListener('click',
+      () => weltZeigen(b.dataset.ebenenwahl)));
+    wo.querySelectorAll('[data-weltzu]').forEach(b => b.addEventListener('click',
+      () => weltZeigen(null)));
   };
   /* Ein Tipp auf die Albumkarte blaettert den Satz weiter (Q46).
    *

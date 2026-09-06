@@ -406,6 +406,23 @@ const ueberAlleKapitel = async (p, lies) => {
   for (let i = 0; i < n; i++) {
     await p.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
     aus.push(await p.evaluate(lies));
+    /* Seit B12 ist ein Kapitel eine WELT, und die Ebenen liegen eine
+     * Stufe tiefer: die Weltseite zeigt zuerst ein Raster, ein Tipp
+     * tauscht es gegen die Ebene.
+     *
+     * Wer hier stehenbleibt, sieht von „Erdkunde" nur das Raster - also
+     * KEINE Albumkarte, KEINE Rechentafel und keinen Satz zum Mitnehmen.
+     * Genau so sind bei Q44 drei Pruefungen still geworden, als die
+     * Kapitel kamen: sie zaehlten ploetzlich nur noch die offene Seite.
+     * Dieselbe Falle, eine Ebene tiefer - deshalb blaettert dieser
+     * Durchgang jetzt auch dort. */
+    const m = await p.$$eval('.schirm.da .ebenenzelle', z => z.length).catch(() => 0);
+    for (let j = 0; j < m; j++) {
+      await p.$$eval('.schirm.da .ebenenzelle', (z, k) => z[k].click(), j);
+      aus.push(await p.evaluate(lies));
+      await p.$$eval('.schirm.da .buchseite:not([hidden]) [data-weltzu]',
+        b => b[0] && b[0].click());
+    }
   }
   await p.$$eval('.schirm.da [data-kap]', rs => rs[0].click());
   return aus;
@@ -2495,6 +2512,7 @@ if (laeuft('ablage')) try {
                   Anteilig an der eigenen Breite (Regel 2), damit ein
                   langer Name nicht mit demselben Saum durchkommt wie ein
                   kurzer. */
+               kaps: [...st.querySelectorAll('[data-kap]')].map(r => r.dataset.kap),
                teils: [...st.querySelectorAll('[data-kap]')].map(r => {
                  const k = r.getBoundingClientRect();
                  return { was: (r.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 22),
@@ -2513,6 +2531,32 @@ if (laeuft('ablage')) try {
         + 'obwohl fünf Ebenen gepflanzt wurden — dann prüft dieser Abschnitt die '
         + 'Kapitel gar nicht, er findet nur keine'));
     else {
+      /* --- EIN REITER IST EINE WELT, KEINE EBENE (B12) --------------
+       *
+       * Die eigentliche Zusage dieser Runde, und sie ist eine ueber das
+       * WACHSTUM: der Streifen darf nicht mit jeder neuen Ebene laenger
+       * werden. Gemessen an einem Profil mit Fortschritt auf allen
+       * Ebenen waren es siebzehn Reiter, zwoelf davon sichtbar - auf dem
+       * Zielgeraet.
+       *
+       * Geprueft wird die FORM der Kennung und nicht die Zahl der
+       * Reiter: eine Obergrenze („hoechstens acht") waere wieder eine
+       * Zahl, die mit dem naechsten Profil falsch wird. „Jeder Reiter
+       * ist eine Welt oder eines der drei festen Kapitel" gilt fuer
+       * jedes Profil und fuer jede Ebene, die noch kommt. */
+      const FESTE_KAPITEL = ['tiere', 'abzeichen', 'naechstes'];
+      const ebenenReiter = streifen.kaps.filter(k =>
+        !FESTE_KAPITEL.includes(k) && !String(k).startsWith('welt:'));
+      if (ebenenReiter.length)
+        merke('forscherbuch', new Error(`${ebenenReiter.length} von ${streifen.reiter} `
+          + `Kapitelreitern tragen eine Ebene statt einer Welt (${ebenenReiter.join(' · ')}) `
+          + '— dann wächst der Streifen wieder mit jeder neuen Ebene'));
+      /* Und die Blindprobe: ohne einen einzigen Weltreiter hat die Zeile
+         darüber nichts geprüft, sie hat nur nichts gefunden (Regel 1). */
+      if (!streifen.kaps.some(k => String(k).startsWith('welt:')))
+        merke('forscherbuch', new Error('kein einziger Weltreiter im Buch — dann beweist '
+          + '„keine Ebene im Streifen" nichts, es gibt dort gar keine Sammlung'));
+
       /* --- RAGT EIN KAPITELNAME ÜBER SEINEN EIGENEN REITER (B4b)? ---
        *
        * Nicht dasselbe wie „steht der Reiter im Streifen": der Kasten kann
@@ -2521,13 +2565,16 @@ if (laeuft('ablage')) try {
        * nicht die Zeile, und ein Finger auf dem letzten Buchstaben trifft
        * den Nachbarn.
        *
-       * GEMESSEN WIRD AUF 667 x 375, dem kleinsten unterstützten Schirm,
+       * GEMESSEN WIRD AUF 390 x 844, dem schmalsten unterstützten Schirm,
        * und nicht auf dem Zielgerät (Regel 5: die Zahl und ihre Messstelle
        * gehören zusammen). Der Grund ist die Blindprobe darunter: auf 844
-       * Punkten sind sieben Reiter breit genug, dass kein Name je gedrängt
-       * wird - die Zusage wäre dort erfüllt, ohne je etwas geprüft zu
-       * haben. Eng wird nicht der Schirm, sondern der REITER, und eng
-       * werden sie hier.
+       * Punkten sind sechs Weltreiter breit genug, dass kein Name je
+       * gedrängt wird - die Zusage wäre dort erfüllt, ohne je etwas
+       * geprüft zu haben. Eng wird nicht der Schirm, sondern der REITER,
+       * und eng werden sie hier: 66 Punkte, der Boden aus `min-width`.
+       * (Bis B12 stand hier 667 x 375. Mit siebzehn Ebenenreitern war das
+       * eng genug; mit sechs Weltreitern ist es das nicht mehr - die
+       * Messstelle ist mit der Sache gewandert.)
        *
        * Warum überhaupt hier und nicht im Fremdgriff: der misst, wieviel
        * PROZENT eines Wortes unter fremdem Griff liegen, und ob seine 5 %
@@ -2539,12 +2586,12 @@ if (laeuft('ablage')) try {
          ist erst dann neu vermessen, wenn er schmaler geworden ist. Eine
          feste Pause wäre auf dem schnellen Rechner verschenkt und auf dem
          langsamen zu kurz - und der Rauchtest zählt sie mit. */
-      await q.setViewportSize({ width: 667, height: 375 });
+      await q.setViewportSize({ width: 390, height: 844 });
       if (!await bis(q, () => {
         const st = document.querySelector('.schirm.da .buchreiter');
-        return !!st && st.getBoundingClientRect().width <= 667;
+        return !!st && st.getBoundingClientRect().width <= 390;
       }))
-        merke('forscherbuch', new Error('der Kapitelstreifen ist auf 667 Punkten nicht '
+        merke('forscherbuch', new Error('der Kapitelstreifen ist auf 390 Punkten nicht '
           + 'schmaler geworden — dann ist nicht gemessen, was gemessen werden sollte'));
       const namen = await q.evaluate(() => {
         const st = document.querySelector('.schirm.da .buchreiter');
@@ -2578,14 +2625,14 @@ if (laeuft('ablage')) try {
       await q.setViewportSize({ width: 844, height: 390 });
       await bis(q, () => {
         const st = document.querySelector('.schirm.da .buchreiter');
-        return !!st && st.getBoundingClientRect().width > 667;
+        return !!st && st.getBoundingClientRect().width > 390;
       });
       /* Erst die Blindprobe, dann die Zusage: ist kein einziger Name
          breiter als sein Reiter, hat der Umbruch nichts zu tun gehabt
          und „nichts ragt heraus" beweist nichts. */
       const enge = namen.filter(x => x.eng);
       if (!enge.length)
-        merke('forscherbuch', new Error(`auf 667 x 375 ist kein einziger Kapitelname `
+        merke('forscherbuch', new Error(`auf 390 x 844 ist kein einziger Kapitelname `
           + `breiter als sein Reiter (${streifen.reiter} Reiter) — dann prüft der Umbruch `
           + 'hier nichts, er findet nur nichts'));
       const raus = namen.filter(x => x.raus > 1);
@@ -2602,11 +2649,29 @@ if (laeuft('ablage')) try {
       /* Und jetzt jede Seite einzeln. Gemessen wird nach dem Klick am
          WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
          welche Seite wie hoch wird, entscheidet der Bildschirm. */
-      const eng = [], gleich = [], genutzt = [], ohneBalken = [], tafeln = [];
-      const seiten = new Set();
+      const eng = [], gleich = [], genutzt = [], ohneBalken = [], tafeln = [], stumm = [];
+      const seiten = new Map();
+      const merkeSeite = (seite) => {
+        if (seite.seiteId === 'naechstes' && !seite.balken) ohneBalken.push(seite.was);
+        if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
+        if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
+        if (seite.tafel && seite.tafel.length) tafeln.push(seite);
+        /* ZWEI Faelle, und sie meinen Verschiedenes (B12).
+           Traegt eine Seite denselben Abdruck wie eine aus einem ANDEREN
+           Kapitel, blaettert der Reiterstreifen nicht. Traegt sie ihn wie
+           eine aus DEMSELBEN, blaettert das Raster der Weltseite nicht -
+           man tippt eine Ebene an und es passiert nichts. Eine Meldung
+           fuer beides waere eine Meldung, die nicht sagt, wo man suchen
+           soll; und zwei Gegenproben koennten sich nicht auf sie
+           berufen, ohne dasselbe zu beweisen. */
+        const schon = seiten.get(seite.abdruck);
+        if (schon && schon.was === seite.was) stumm.push(`„${seite.was}"`);
+        else if (schon) gleich.push(`„${seite.was}"`);
+        else seiten.set(seite.abdruck, { was: seite.was, seiteId: seite.seiteId });
+      };
       for (let i = 0; i < streifen.reiter; i++) {
         await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
-        const seite = await q.evaluate(() => {
+        const liesSeite = () => q.evaluate(() => {
           const r = document.querySelector('.schirm.da .rollen');
           const rk = r.getBoundingClientRect();
           /* EINMAL die Inhaltskaesten der Seite - ohne die Spalten
@@ -2698,12 +2763,20 @@ if (laeuft('ablage')) try {
                       das stellt die Gegenprobe „ein Kapitelreiter
                       blaettert nicht" her, und sie hat diese Luecke
                       gefunden. */
-                   abdruck: (r.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+                   /* DER FINGERABDRUCK GILT DER SICHTBAREN SEITE (B12).
+                      `r.textContent` nimmt auch die verborgenen
+                      Abschnitte mit - und eine Weltseite haelt sie alle.
+                      Damit trugen die Uebersicht und jede ihrer Ebenen
+                      denselben Abdruck, und die Zusage „ein Reiter
+                      blaettert" schlug auf jedem Kapitel an, das mehr
+                      als eine Ebene hat. */
+                   abdruck: ((r.querySelector('.buchseite:not([hidden])') || r).textContent
+                     || '').replace(/\s+/g, ' ').trim().slice(0, 120),
                    /* WELCHE Seite das ist und ob sie einen Balken traegt.
                       Fuer die eine Zusage aus G15c, die bis v423 kein Tor
                       gehalten hat - siehe unten. */
-                   seiteId: r.querySelector('.buchseite')?.dataset.seite || '',
-                   balken: !!r.querySelector('.balken'),
+                   seiteId: r.querySelector('.buchseite:not([hidden])')?.dataset.seite || '',
+                   balken: !!r.querySelector('.buchseite:not([hidden]) .balken'),
                    /* Die Rechentafel und der Reiter darueber (B4b).
                       Gelesen wird `data-da`/`data-gesamt` und nicht der
                       Text: „+ 28 von 45" ist eine Bildunterschrift, und
@@ -2711,19 +2784,43 @@ if (laeuft('ablage')) try {
                       misst die Sprache und nicht die Zahl. */
                    tafel: [...r.querySelectorAll('.tafelfeld')].map(t =>
                      ({ da: +t.dataset.da, gesamt: +t.dataset.gesamt })),
+                   /* WOGEGEN die Tafel gezaehlt wird (B12).
+                      Bis v428 war das der Reiter darueber. Seit die
+                      Reiter WELTEN sind, zaehlt er mehrere Ebenen
+                      zusammen - „Rechnen 64/162" gegen eine Tafel mit
+                      100 Feldern waere ein Vergleich zweier
+                      verschiedener Dinge. Genommen wird deshalb die
+                      Zelle, die auf der Weltseite zu dieser Ebene
+                      fuehrt; sie traegt dieselbe Zahl, die frueher am
+                      Reiter stand, und sie kommt weiterhin aus einer
+                      ANDEREN Rechnung als die Tafel. Wo es keine Zelle
+                      gibt (eine Welt mit genau einer Ebene), ist der
+                      Reiter weiter der Zeuge. */
                    reiterZahl: (() => {
-                     const z = document.querySelector(
+                     const eigen = r.querySelector('.buchseite:not([hidden])');
+                     const zelle = eigen && document.querySelector(
+                       `.schirm.da .ebenenzelle[data-ebenenwahl="${
+                         eigen.dataset.seite}"] small`);
+                     const z = zelle || document.querySelector(
                        '.schirm.da .buchreiter [data-kap].da .reiterzahl');
                      const m = z && z.textContent.match(/(\d+)\s*\/\s*(\d+)/);
-                     return m ? { da: +m[1], gesamt: +m[2] } : null;
+                     return m ? { da: +m[1], gesamt: +m[2], wo: zelle ? 'Zelle' : 'Reiter' } : null;
                    })() };
         });
-        if (seite.seiteId === 'naechstes' && !seite.balken) ohneBalken.push(seite.was);
-        if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
-        if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
-        if (seite.tafel && seite.tafel.length) tafeln.push(seite);
-        if (seiten.has(seite.abdruck)) gleich.push(`„${seite.was}"`);
-        seiten.add(seite.abdruck);
+        merkeSeite(await liesSeite());
+        /* Und die Ebenen DARIN (B12). Eine Weltseite zeigt nur ihr
+           Raster; Albumkarte, Rechentafel und Fusssatz liegen eine
+           Stufe tiefer. Wer hier stehenbliebe, maesse von „Erdkunde"
+           die Uebersicht und nie eine Karte - dieselbe Falle wie bei
+           Q44, als die Kapitel kamen und drei Pruefungen still nur noch
+           die offene Seite zaehlten. */
+        const tiefer = await q.$$eval('.schirm.da .ebenenzelle', z => z.length).catch(() => 0);
+        for (let j = 0; j < tiefer; j++) {
+          await q.$$eval('.schirm.da .ebenenzelle', (z, k) => z[k].click(), j);
+          merkeSeite(await liesSeite());
+          await q.$$eval('.schirm.da .buchseite:not([hidden]) [data-weltzu]',
+            b => b[0] && b[0].click());
+        }
       }
       /* DIE VORSCHAUSEITE SAGT, WIE WEIT ES NOCH IST (G15c).
        *
@@ -2815,12 +2912,16 @@ if (laeuft('ablage')) try {
         merke('forscherbuch', new Error(`${gleich.length} von ${streifen.reiter} Kapiteln zeigen `
           + `dieselbe Seite wie ein anderes (${gleich.join(' · ')}) — der Reiter markiert sich, `
           + 'blättert aber nicht'));
+      if (stumm.length)
+        merke('forscherbuch', new Error(`${stumm.length} Ebenen zeigen dieselbe Seite wie die `
+          + `Übersicht ihrer Welt (${stumm.join(' · ')}) — die Zelle lässt sich antippen, `
+          + 'und dahinter steht nichts'));
       if (!eng.length && !gleich.length)
         console.log(`  Buch mit Kapiteln:          ${streifen.reiter} Reiter, alle ganz im `
           + `Streifen; ${seiten.size} verschiedene Seiten, jeder Block ganz im Bild`);
       if (enge.length && !raus.length)
         console.log(`  Kapitelnamen:               ${enge.length} von ${streifen.reiter} `
-          + `sind auf 667 × 375 breiter als ihr Reiter `
+          + `sind auf 390 × 844 breiter als ihr Reiter `
           + `(${enge.map(x => `„${x.was}"`).join(' · ')}) — und keiner ragt hinaus`);
 
       /* Und der Satz zum Mitnehmen im Buch (Q46).
@@ -2835,16 +2936,30 @@ if (laeuft('ablage')) try {
        * Gemessen wird gegen die Satztafel im gebauten Bildschirm, nicht
        * gegen eine Liste hier - sonst prueft der Abschnitt seine eigene
        * Annahme (Regel 14: das Modell haengt sonst am Gemessenen). */
+      /* SEIT B12 LIEGT DIE KARTE EINE STUFE TIEFER.
+         Gesucht wird deshalb nicht mehr der Reiter der Ebene, sondern
+         der Weg dorthin: erst die WELT, in der die Kartenebenen wohnen,
+         dann die Zelle, die zu einer von ihnen fuehrt. Wo eine Welt
+         genau eine Ebene hat, gibt es keine Zelle - dann steht die Karte
+         schon da. Beides muss dieser Abschnitt koennen, sonst prueft er
+         je nach Stand etwas anderes. */
+      const kartenEbene = (x) => x.startsWith('laender')
+        || ['kontinente', 'bundeslaender'].includes(x);
       const mitKarte = await q.evaluate(() => {
         const r = [...document.querySelectorAll('.schirm.da [data-kap]')];
-        return r.findIndex(x => x.dataset.kap.startsWith('laender')
-          || ['kontinente', 'bundeslaender'].includes(x.dataset.kap));
+        return r.findIndex(x => x.dataset.kap === 'welt:erdkunde');
       });
       if (mitKarte < 0)
         merke('forscherbuch', new Error('kein einziges Kapitel mit Landkarte im Buch — dann '
           + 'ist der Satz zum Mitnehmen hier gar nicht geprüft, er fehlt nur nicht'));
       else {
         await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), mitKarte);
+        const zelle = await q.evaluate((pruef) => {
+          const z = [...document.querySelectorAll('.schirm.da .ebenenzelle')];
+          return z.findIndex(x => new Function('x', `return (${pruef})(x)`)(x.dataset.ebenenwahl));
+        }, kartenEbene.toString());
+        if (zelle >= 0)
+          await q.$$eval('.schirm.da .ebenenzelle', (z, k) => z[k].click(), zelle);
         const vorher = await q.evaluate(() => {
           const p = document.querySelector('.schirm.da .buchsatz');
           return { satz: p?.textContent.trim() || '',
@@ -5764,9 +5879,17 @@ if (laeuft('abzeichen')) try {
      Dieselbe Zusage steht ein zweites Mal weiter unten am gestellten
      Stand; wer sie hier aendert, aendert sie dort mit (Regel 6: was
      zweimal dasteht, veraltet einmal). */
-  if (beiFiona.reiterGesamt === null) merke('abzeichen', new Error(
-    'kein Abzeichenreiter im Buch — dann ist nicht zu prüfen, ob die Seite ihn deckt'));
-  else if (beiFiona.da.length + beiFiona.offen.length !== beiFiona.reiterGesamt)
+  /* HIER NUR, WENN ES EINEN REITER GIBT (B12).
+     Dieser gestellte Stand hat drei Kontinente und drei Stadtstaaten -
+     bis v428 waren das zwei Kapitel plus Abzeichen plus Vorschau, also
+     ein Streifen. Seit die Reiter WELTEN sind, fallen beide Ebenen in
+     dieselbe („Erdkunde"), und zwei Kapitel bekommen keinen Streifen.
+     Das ist richtig so und nicht zu reparieren; die strenge Zusage
+     („die Seite deckt den Nenner") steht deshalb weiter unten, am
+     grossen Stand, wo der Streifen wirklich da ist. Hier bleibt, was
+     ohne ihn zu haben ist. */
+  if (beiFiona.reiterGesamt !== null
+      && beiFiona.da.length + beiFiona.offen.length !== beiFiona.reiterGesamt)
     merke('abzeichen', new Error(`der Reiter verspricht ${beiFiona.reiterDa}/`
       + `${beiFiona.reiterGesamt}, die Seite zeigt aber ${beiFiona.da.length} verdiente `
       + `und ${beiFiona.offen.length} offene Abzeichen`));

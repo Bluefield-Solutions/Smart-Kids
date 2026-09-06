@@ -1126,7 +1126,12 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    diesem Zustand heraus, und ein Weg, den man nicht trifft, ist keiner. */
 .raumkopf{display:flex;align-items:center;gap:var(--r2);width:100%;
   margin-bottom:var(--r1)}
-.raumzu{flex:none;width:44px;height:44px;display:grid;place-items:center;
+/* `padding:0` ausdruecklich: ohne die Zeile setzt der Browser einem
+   `button` seine Voreinstellung (1px oben, 6px links), und das waren
+   zwei Sprossen mehr in einer Leiter, die drei hat. Gesehen hat es
+   `tonleiter`, als die Weltseite ihren Rueckweg bekam - im Tierkapitel
+   stand derselbe Knopf schon, nur nie unter der Messung. */
+.raumzu{flex:none;width:44px;height:44px;display:grid;place-items:center;padding:0;
   border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
   background:var(--grund-2);cursor:pointer;color:var(--tinte-2)}
 .raumzu:hover{border-color:var(--tinte-3)}
@@ -3168,6 +3173,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .tierfeld span,
 .rollen.buch .raumauf span,
 .rollen.buch .raumzelle span,
+.rollen.buch .ebenenzelle small,
 .rollen.buch .aufkleber span{font-size:var(--t-name);font-weight:600}
 /* FUSS */
 .rollen.buch .gruppe small,
@@ -3228,6 +3234,22 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    stehen in beiden Faellen in EINER Reihe und fuellen die Breite.
    Vorher standen sie als 74 Punkte breite Kaertchen in einem 628
    Punkte breiten Raster - die Seite sah aus, als fehlte etwas. */
+/* Die Ebenenzelle der Weltseite (B12) - eine Raumzelle mit Umriss und
+   Zahl. Der Umriss kommt aus `silhouette`, also aus demselben Zeichner
+   wie die Kachel auf der Ebenenwahl; er braucht hier nur seine
+   Groesse. */
+.rollen.buch .ebenenzelle .silhouette{width:34px;height:34px;flex:0 0 auto;
+  color:var(--ton)}
+/* Die Fuellung steht `.kachel`-seitig und gilt hier nicht - ohne diese
+   Zeile ist jeder Umriss SCHWARZ (die Voreinstellung von SVG), und zehn
+   schwarze Flecken sind im Buch ein Fremdkoerper. Gesehen auf der ersten
+   Aufnahme der Weltseite. */
+.rollen.buch .ebenenzelle .silhouette path{fill:currentColor}
+.rollen.buch .ebenenzelle .silhouette.gezeichnet path{fill:none}
+.rollen.buch .ebenenzelle small{opacity:.75}
+@media (max-height:440px){
+  .rollen.buch .ebenenzelle .silhouette{width:26px;height:26px}
+}
 .rollen.buch .tierraum .tierwand{display:grid;
   grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--mittel)}
 /* Die Karte hat KEINE feste Breite mehr - bis Runde 3 stand sie

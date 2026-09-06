@@ -22,9 +22,25 @@ const alles = { schrift: {}, radius: {}, luft: {}, farbe: {}, grund: {}, schatte
                 flucht: {}, klassen: {}, jeSeite: [], tafel: false };
 const zaehl = (o, k) => { o[k] = (o[k] || 0) + 1; };
 
+/* Seit B12 ist ein Kapitel eine WELT, und die Ebenen liegen darin. Wer
+   nur die Reiter durchklickt, misst von „Erdkunde" das Raster und nie
+   eine Albumkarte - und die Rechentafel gar nicht. Also je Kapitel: die
+   Seite selbst und danach jede Zelle darin. */
+const seitenFolge = [];
 for (const k of kaps) {
   await s.click(`[data-kap="${k}"]`);
   await s.waitForTimeout(400);
+  seitenFolge.push({ k, zelle: null });
+  const zellen = await s.$$eval('.ebenenzelle', z => z.map(x => x.dataset.ebenenwahl));
+  for (const z of zellen) seitenFolge.push({ k, zelle: z });
+}
+for (const { k, zelle } of seitenFolge) {
+  await s.click(`[data-kap="${k}"]`);
+  await s.waitForTimeout(250);
+  if (zelle) {
+    await s.click(`.ebenenzelle[data-ebenenwahl="${zelle}"]`);
+    await s.waitForTimeout(250);
+  }
   const m = await s.evaluate(() => {
     const schirm = document.querySelector('.schirm.da');
     const kasten = schirm.querySelector('.rollen.buch');
@@ -86,7 +102,7 @@ for (const k of kaps) {
         flucht: m.flucht, klassen: m.klassen }))
     for (const v of liste) zaehl(alles[feld], String(v));
   if (m.tafel) alles.tafel = true;
-  alles.jeSeite.push({ kapitel: k, zeichen: m.zeichen,
+  alles.jeSeite.push({ kapitel: zelle ? `${k} › ${zelle}` : k, zeichen: m.zeichen,
     bildAnteil: m.bildFlaeche / (m.bildFlaeche + m.textFlaeche || 1),
     flucht: [...new Set(m.flucht)].sort((a, c) => a - c),
     klein: m.klein, ohneStimme: m.ohneStimme });
@@ -202,12 +218,14 @@ if (process.argv.includes('--tor')) {
   }
   console.log(`\n  tonleiter grün: ${Object.keys(alles.schrift).length} Schriftstufen, `
     + `${Object.keys(alles.radius).length} Radien, ${Object.keys(alles.luft).length} Abstände `
-    + `im Buch — gemessen an ${kaps.length} Kapitelseiten auf 844 × 390.`);
+    + `im Buch — gemessen an ${alles.jeSeite.length} Seiten in ${kaps.length} `
+    + `Kapiteln auf 844 × 390.`);
   console.log(`    Und ${ln.geprueft} Tiernamen passen in zwei Zeilen `
     + `(Karte ${ln.karte} Punkte breit); die Rechentafel war dabei.`);
   process.exit(0);
 }
-console.log(`\n  Feinmass am Forscherbuch, 844 x 390, voller Stand, ${kaps.length} Kapitel`);
+console.log(`\n  Feinmass am Forscherbuch, 844 x 390, voller Stand, ${kaps.length} Kapitel, `
+  + `${alles.jeSeite.length} Seiten`);
 zeig('Schriftgrössen (Grösse/Schnitt)', alles.schrift);
 zeig('Eckenradien', alles.radius);
 zeig('Abstände (padding · gap · margin)', alles.luft);

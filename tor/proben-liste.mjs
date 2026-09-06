@@ -4095,6 +4095,53 @@ export const PROBEN = [
     an:{ ...DIST, text:'zeigt:`<div class="abzeichen"></div>`' },
     sagt:'Kapitelseiten nutzen weniger als' },
 
+  /* --- B12: ein Reiter ist eine Welt, keine Ebene --------------------
+   *
+   * Zwei Proben. Die erste dreht die Runde zurueck: jede Ebene bekommt
+   * wieder ihr eigenes Kapitel. Gemessen an einem Profil mit Fortschritt
+   * auf allen Ebenen sind das siebzehn Reiter statt sechs, und fuenf
+   * davon stehen auf dem Zielgeraet ausserhalb des Streifens.
+   *
+   * Der Eingriff faellt auf die EINZELNE Ebene zurueck und nicht auf
+   * irgendeine kaputte Kennung: `id` und `titel` kommen dann wieder aus
+   * der Gruppe, genau wie vor B12. Das Buch funktioniert danach - es
+   * waechst nur wieder mit. */
+  { n:'jede Ebene bekommt wieder ihr eigenes Kapitel', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"    kapitel.push({ id, titel: w.name, farbe: w.farbe, zahl, gesamt,\n"
+      + "      lesen: `${w.name}. ${zahl} von ${gesamt} Aufklebern.`,",
+    ersatz:"    for (const g of gs) kapitel.push({ id: g.id, titel: g.titel,\n"
+      + "      farbe: g.farbe, zahl: g.da.length, gesamt: g.da.length + g.offen.length,\n"
+      + "      lesen: `${g.titel}.`, inhalt: gruppenSeite(g) });\n"
+      + "    if (gs.length) continue;\n"
+      + "    kapitel.push({ id, titel: w.name, farbe: w.farbe, zahl, gesamt,\n"
+      + "      lesen: `${w.name}. ${zahl} von ${gesamt} Aufklebern.`,",
+    an:{ ...DIST, text:'for (const g of gs) kapitel.push({ id: g.id, titel: g.titel,' },
+    sagt:'tragen eine Ebene statt einer Welt' },
+
+  /* Und die zweite: der Streifen bleibt grob, aber die Weltseite
+   * BLAETTERT NICHT MEHR. Sie sieht danach vollstaendig aus - sechs
+   * Reiter, ein Raster, jede Zelle zu treffen - und hinter keiner Zelle
+   * steht etwas. Genau die Sorte, die ein Blick nicht meldet: es fehlt
+   * nichts, es passiert nur nichts.
+   *
+   * Angeschlagen wird an der Rechentafel: sie liegt seit B12 eine Stufe
+   * tiefer, und wer nicht hineinkommt, sieht keine. */
+  { n:'die Weltseite blaettert nicht in ihre Ebene', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    /* DER EINGRIFF MUSS „ES PASSIERT NICHTS" HEISSEN, nicht „es passiert
+       etwas anderes". Der erste Anlauf setzte `hidden` auf einen Ausdruck,
+       der immer falsch ist - dann standen ALLE Abschnitte gleichzeitig
+       da, und der Rauchtest wurde rot, aber wegen des Ueberlaufs. Ein
+       Eingriff, der einen anderen Fehler baut als den gemeinten, prueft
+       auch etwas anderes. Jetzt ist die Zuweisung ein Nulleingriff: der
+       Tipp geht ins Leere, die Uebersicht bleibt stehen. */
+    such:"        const uebersicht = String(seite.dataset.seite || '').startsWith('welt:');\n"
+      + "        seite.hidden = id === null ? !uebersicht : seite.dataset.seite !== id;",
+    ersatz:"        seite.hidden = seite.hidden;",
+    an:{ ...DIST, text:'seite.hidden = seite.hidden;' },
+    sagt:'dahinter steht nichts' },
+
   /* --- B4b: der Kapitelname bleibt auf seinem Reiter -----------------
    *
    * Der Rueckfall auf `nowrap` samt Auslassungszeichen. Er ist der

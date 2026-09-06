@@ -228,8 +228,14 @@ const AUFNAHMEN = [
    * dreimal - was zweimal dasteht, veraltet einmal (Regel 6). */
   { name:'quer-buch-abzeichen', spiel:null, quer:true, stand:'tiere',
     wahl:'.schirm.da', tun:'buchkapitel', kap:'abzeichen' },
+  /* Seit B12 ist der Reiter eine WELT und die Ebene liegt darin: die
+     Aufnahme geht deshalb einen Schritt weiter (`zelle`). Und die
+     Uebersicht selbst bekommt ihr eigenes Vorbild - sie ist der
+     Bildschirm, auf dem ein Kind LANDET. */
+  { name:'quer-buch-erdkunde', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'welt:erdkunde' },
   { name:'quer-buch-bundeslaender', spiel:null, quer:true, stand:'tiere',
-    wahl:'.schirm.da', tun:'buchkapitel', kap:'bundeslaender' },
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'welt:erdkunde', zelle:'bundeslaender' },
   { name:'quer-buch-naechstes', spiel:null, quer:true, stand:'tiere',
     wahl:'.schirm.da', tun:'buchkapitel', kap:'naechstes' },
   /* Die Rechentafel (B4b) - die einzige Kapitelseite, die weder Karte
@@ -237,7 +243,7 @@ const AUFNAHMEN = [
      hundert Felder auf einmal zeichnet, ist genau die Art Bildschirm,
      die ohne Vorbild schiefgeht. */
   { name:'quer-buch-rechnen', spiel:null, quer:true, stand:'rechnen',
-    wahl:'.schirm.da', tun:'buchkapitel', kap:'rechnen:plusminus' },
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'welt:rechnen' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -991,6 +997,15 @@ for (const a of MEINE) {
       await seite.waitForSelector('.schirm.da .rollen.buch');
       await seite.click(`.schirm.da .reiter[data-kap="${a.kap}"]`);
       await seite.waitForSelector(`.schirm.da .buchseite[data-seite="${a.kap}"]`);
+      /* Und, wo die Aufnahme es verlangt, eine Stufe tiefer in die
+         Ebene. Die Zelle MUSS da sein - fehlt sie, hat der Stand die
+         Ebene nicht hergegeben, und ein Vorbild von einem Bildschirm,
+         den es nicht gibt, waere ein leeres Bild mit einem Namen. */
+      if (a.zelle) {
+        await seite.click(`.schirm.da .ebenenzelle[data-ebenenwahl="${a.zelle}"]`);
+        await seite.waitForSelector(
+          `.schirm.da .buchseite[data-seite="${a.zelle}"]:not([hidden])`);
+      }
       await seite.waitForTimeout(400);
     } else if (a.tun === 'raumraster' || a.tun === 'tierbuch' || a.tun === 'landschaft') {
       /* Ins Buch, ins Tierkapitel - und dann je nach Aufnahme einen
