@@ -208,7 +208,7 @@ wirklich Gestaltung sind und nicht Ordnung:
 | **B6** Zahlen zählen in verschiedene Richtungen | **erledigt**: „Als Nächstes" trägt keine Zahl mehr, und das Tor sieht am Kapitel nach |
 | **B7** Kein Kapitel zeigt, was fehlt | **erledigt** für die Reiter (`da/gesamt`) |
 | **B8** Der Merksatz hat keinen Ort | **erledigt**: er steht in der linken Spalte |
-| **C1/C2** Alles fett, kein großer Abstand | **offen** — die Tonleiter ist als Runde 0 geplant und noch nicht gefahren |
+| **C1/C2** Alles fett, kein großer Abstand | **erledigt** (Runde 0): drei Schriftrollen (Titel · Name · Fuss), zwei Radien, drei Abstände — mit dem Tor `tonleiter` und drei Gegenproben. Gemessen an fünf Kapitelseiten auf 844 × 390. |
 | **C3** Zwanzig Schatten, die nichts tun | **zurückgezogen, der Befund war falsch.** Der Schatten `0px 0px 0px 0px` ist der RUHEZUSTAND eines Übergangs: `.reiter` hat ihn flach, `.reiter.da` mit Versatz, und dazwischen wird geblendet. Ich hatte die Rolle nicht geprüft, bevor ich ihn „tot" genannt habe. |
 | **C4** Drei Farben umgehen die Marken | **offen**, und mit Ansage: die Aufklebertöne gehören zum Tier |
 | **C5** Sieben Klassen kommen einmal vor | **offen** |
@@ -234,6 +234,37 @@ danach eine Zelle baut, hat nichts mehr zu entscheiden.
 Dazu die Ratsche, die es messbar hält: **höchstens 3 Schriftstufen,
 höchstens 2 Radien, höchstens 5 Abstandswerte im Buch** — gemessen von
 `buch-feinmass`, das dafür ein Tor wird.
+
+**Gefahren, und strenger geworden als geplant** (v420). Es sind drei
+Abstände geworden, nicht fünf: `--eng`, `--mittel`, `--weit`, alle drei
+aus der Rasterleiter der Marken und alle drei mit einer eigenen Sprosse
+im kurzen Querformat. Das Tor steht als `tonleiter` in der Kette und
+sagt: *3 Schriftstufen, 2 Radien, 3 Abstände im Buch — gemessen an fünf
+Kapitelseiten auf 844 × 390.*
+
+Drei Dinge, die dabei herausgekommen sind und ohne die Messung nicht
+aufgefallen wären:
+
+* **Die Marken standen auf dem falschen Kasten.** `--t-titel` und
+  Geschwister lagen zuerst auf `.rollen.buch` — die Reiterzeile
+  `.buchreiter` ist aber ein **Geschwister**, kein Kind. Dort war jede
+  `var()` undefiniert, und eine ungültige Deklaration macht die ganze
+  Regel wirkungslos (Marken, Zeile 15, derselbe Fehler wie damals bei
+  `--r5`). Gemessen: **neun** Schrift-Kombinationen statt drei. Die
+  Marken sitzen jetzt auf `.schirm`, den beide unter sich haben.
+* **Die Reihenfolge im Stylesheet zählt.** Der Block stand *vor* den
+  Kurzformat-Medienabfragen des Buches. Gleiche Spezifität — die spätere
+  Regel gewinnt, und die Tonleiter verlor gegen sich selbst. Er steht
+  jetzt am Ende.
+* **Die erste Gegenprobe bewies nichts.** Sie setzte die ganze Fussnote
+  kleiner und änderte damit nur den *Wert* einer Stufe, nicht ihre
+  *Zahl*: aus 14/400 wurde 11/400, es blieben drei. Das Tor blieb zu
+  Recht grün. Sie schert jetzt **einen** der drei Nutzer aus — genau so,
+  wie es wirklich passiert.
+
+Und einen Preis hat es gekostet: die Leiter war auf 667 × 375 vierundzwanzig
+Punkte zu hoch. `--eng` rückt dort auf die kleinste Sprosse (`--r0`), und
+`passt` ist wieder grün.
 
 Danach unverändert:
 

@@ -597,20 +597,51 @@ export const PROBEN = [
    * hier" etwas Kleineres und schreibt einen `calc`. Genau daraus sind
    * die acht Kombinationen geworden, die Audit II gemessen hat.
    * Der Eingriff macht aus der Fussnote eine eigene Groesse. */
-  { n:'eine vierte Schriftstufe schleicht sich ein', tor:'tonleiter',
+  /* Der erste Anlauf setzte die GANZE Fussnote kleiner - und aenderte
+     damit nur den WERT einer Stufe, nicht ihre Zahl: aus 14/400 wurde
+     11/400, es blieben drei. Das Tor blieb zu Recht gruen, und die Probe
+     hat nichts bewiesen. Eine vierte Stufe entsteht, wenn EINER der drei
+     Nutzer ausschert - genau so, wie es wirklich passiert. */
+  { n:'eine vierte Schriftstufe schleicht sich ein', tor:'tonleiter', bauen:true,
     datei:'prototyp/vorlage.html',
-    such:".rollen.buch .buchsatz,\n.buchreiter .reiterzahl small{font-size:var(--t-name);font-weight:400;",
-    ersatz:".rollen.buch .buchsatz,\n.buchreiter .reiterzahl small{font-size:calc(var(--t-name) * .82);font-weight:400;",
-    an:{ datei:'prototyp/vorlage.html', text:'calc(var(--t-name) * .82)' },
+    such:"/* Die drei Abstaende - und nur diese drei. */",
+    ersatz:".rollen.buch .buchsatz{font-size:calc(var(--t-name) * .82)}\n"
+      + "/* Die drei Abstaende - und nur diese drei. */",
+    an:{ datei:'prototyp/vorlage.html', text:'.rollen.buch .buchsatz{font-size:calc(' },
     sagt:'schrift: 4 verschiedene' },
 
   /* Und ein Radius, den jemand „nur fuer diese eine Zelle" anders setzt. */
-  { n:'ein dritter Radius kommt dazu', tor:'tonleiter',
+  { n:'ein dritter Radius kommt dazu', tor:'tonleiter', bauen:true,
     datei:'prototyp/vorlage.html',
     such:".rollen.buch .tierfeld,\n.rollen.buch .abz,",
     ersatz:".rollen.buch .abz,",
     an:{ datei:'prototyp/vorlage.html', fehlt:'.rollen.buch .tierfeld,\n.rollen.buch .abz,' },
     sagt:'radius: 3 verschiedene' },
+
+  /* Und der dritte Wert der Ratsche, die Abstaende. Der Eingriff ist der
+     Fehler, den Runde 0 wirklich gefunden hat: die Eckzahl trug
+     `padding:0 var(--r1)` - eine feste Zahl neben der Leiter, gemessen
+     4 an drei Stellen. Ohne diese Probe stuende die Grenze `luft` in
+     GRENZEN, ohne dass je jemand geprueft haette, dass sie greift. */
+  { n:'ein Abstand neben der Leiter kommt zurueck', tor:'tonleiter', bauen:true,
+    datei:'prototyp/vorlage.html',
+    such:'.rollen.buch .abz .fehlt{padding:0 var(--eng)}',
+    ersatz:'.rollen.buch .abz .fehlt{padding:0 var(--r1)}',
+    an:{ datei:'prototyp/vorlage.html', text:'.rollen.buch .abz .fehlt{padding:0 var(--r1)}' },
+    sagt:'luft: 4 verschiedene' },
+
+  /* Die zweite Zusage des Tores: kein Tiername braucht drei Zeilen.
+     Der Eingriff nimmt der Karte die sechs Punkte wieder weg, die sie in
+     Runde 0 bekommen hat - genau die Breite, an der „Streifenhoernchen"
+     umgebrochen ist. Ohne diese Probe koennte die Namensmessung leer
+     laufen (kein Tierkapitel, keine sichtbare Karte) und trotzdem gruen
+     melden. */
+  { n:'die Aufkleberkarte wird wieder zu schmal', tor:'tonleiter', bauen:true,
+    datei:'prototyp/vorlage.html',
+    such:'  .tierfeld{width:74px}',
+    ersatz:'  .tierfeld{width:66px}',
+    an:{ datei:'prototyp/vorlage.html', text:'  .tierfeld{width:66px}' },
+    sagt:'brauchen drei Zeilen' },
 
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der

@@ -18,6 +18,7 @@
     "schreiben",
     "smoke",
     "spielprobe",
+    "tonleiter",
     "tor",
     "vergleich",
     "ziehen"
@@ -237,6 +238,26 @@
       "commit": "41e9de2ecb37c44a3838d9d03e8df23d988f3454",
       "zeit": "2026-09-06",
       "s": 55
+    },
+    "eine vierte Schriftstufe schleicht sich ein": {
+      "commit": "8be3355777c1a45075322b976a715888f3160f32",
+      "zeit": "2026-09-06",
+      "s": 19
+    },
+    "ein dritter Radius kommt dazu": {
+      "commit": "8be3355777c1a45075322b976a715888f3160f32",
+      "zeit": "2026-09-06",
+      "s": 11
+    },
+    "ein Abstand neben der Leiter kommt zurueck": {
+      "commit": "8be3355777c1a45075322b976a715888f3160f32",
+      "zeit": "2026-09-06",
+      "s": 11
+    },
+    "die Aufkleberkarte wird wieder zu schmal": {
+      "commit": "8be3355777c1a45075322b976a715888f3160f32",
+      "zeit": "2026-09-06",
+      "s": 11
     },
     "der Lagername vergisst den Ort": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",

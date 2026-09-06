@@ -206,6 +206,15 @@ npm run dienstprobe -- <adresse>   spricht der AUFGESETZTE Dienst das
 npm run zweigeraete  zwei Browser-Kontexte, ein echter Dienst — die eine
                    Naht, die kein Tor bewacht. Braucht einen Bau mit
                    SMARTKIDS_GLEICHLAUF; siehe den Kopf des Werkzeugs.
+npm run tonleiter  die Ratsche des Forscherbuchs: hoechstens 3
+                   Schriftstufen, 2 Radien, 3 Abstaende - gemessen an
+                   fuenf Kapitelseiten auf 844 x 390. Dazu die zweite
+                   Zusage: JEDER der 124 Tiernamen passt in zwei Zeilen
+                   seiner Aufkleberkarte - nicht nur die drei, die
+                   gerade im Bild stehen. Ohne `--tor` zeigt
+                   `node tools/buch-feinmass.mjs` dieselbe Messung im
+                   Ganzen: Farben, Schatten, Fluchtlinien, Bildanteil,
+                   Griffe unter 44 pt und was ohne Ansage bleibt.
 npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
                    zählt, was ihr NICHTS sagt — kein Bild, keine Ziffer,
                    keine Stimme. Schreibt dazu Aufnahmen nach `blick/`,

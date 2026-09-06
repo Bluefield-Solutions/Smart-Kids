@@ -14,6 +14,7 @@
  */
 import fs from 'node:fs';
 import { oeffneBuch, AUS } from './buch-oeffnen.mjs';
+import { TIERE } from '../src/inhalt/tiere.js';
 
 const { b, s, server, kapitel: kaps } = await oeffneBuch();
 
@@ -88,6 +89,47 @@ for (const k of kaps) {
     flucht: [...new Set(m.flucht)].sort((a, c) => a - c),
     klein: m.klein, ohneStimme: m.ohneStimme });
 }
+/* ---------- Zweitens: passt JEDER Name in seine Aufkleberkarte? -------
+ *
+ * Die Tonleiter hat den Tiernamen auf die NAMEN-Rolle gehoben - dieselbe
+ * Groesse wie ueberall sonst. Damit brach „Streifenhoernchen" in drei
+ * Zeilen, die letzte mit einem einzelnen „n". Gesehen hat das der
+ * Bildvergleich, und zwar nur, WEIL dieses eine Tier zufaellig auf dem
+ * Vorbild stand: von 124 Namen stehen drei im Bild.
+ *
+ * Deshalb wird hier nicht der Name gemessen, der gerade dasteht,
+ * sondern jeder: eine sichtbare Karte, der Reihe nach mit jedem Namen
+ * beschriftet, Zeilen gezaehlt. Das faengt beides - eine zu schmale
+ * Karte und ein zu langes neues Tier.
+ *
+ * Der Artikel faellt weg, weil `ohneArtikel` ihn im Spiel auch
+ * wegnimmt (spiel.js). Die Karte wird danach zurueckgesetzt.
+ */
+/* Erst nachsehen, ob es das Kapitel gibt. Ein `click` auf etwas, das
+   nicht da ist, laeuft in die Zeitgrenze und sieht aus wie ein Haenger -
+   das Tor soll aber sagen, dass es NICHTS geprueft hat. */
+if (await s.locator('[data-kap="tiere"]').count()) {
+  await s.click('[data-kap="tiere"]');
+  await s.waitForTimeout(400);
+}
+const NAMEN = [...new Set(TIERE.map(t => String(t.name).replace(/^(der|die|das) /, '')))];
+alles.langeNamen = await s.evaluate((namen) => {
+  const sp = [...document.querySelectorAll('.schirm.da .tierfeld span')]
+    .find(e => e.getBoundingClientRect().width > 1);
+  if (!sp) return null;                       // kein Tierkapitel im Stand
+  const alt = sp.textContent;
+  const zeilenhoehe = parseFloat(getComputedStyle(sp).lineHeight);
+  const zuviel = [];
+  for (const n of namen) {
+    sp.textContent = n;
+    const z = Math.round(sp.getBoundingClientRect().height / zeilenhoehe);
+    if (z > 2) zuviel.push(`${n} (${z} Zeilen)`);
+  }
+  sp.textContent = alt;
+  return { geprueft: namen.length, zuviel,
+    karte: Math.round(sp.closest('.tierfeld').getBoundingClientRect().width) };
+}, NAMEN);
+
 await b.close(); server.close();
 fs.writeFileSync(`${AUS}/feinmass.json`, JSON.stringify(alles, null, 1));
 
@@ -123,6 +165,16 @@ if (process.argv.includes('--tor')) {
       fehler.push(`${feld}: ${werte.length} verschiedene Werte, erlaubt sind ${grenze}`
         + ` — ${werte.map(([v, z]) => `${v}×${z}`).join(' ')}`);
   }
+  /* Und die zweite Zusage: kein Tiername braucht drei Zeilen.
+     Sie steht hier und nicht in `inhalt`, weil sie nur im Browser zu
+     haben ist - eine Zeichenzahl waere ein Ersatz, kein Mass: „Mmmm..."
+     ist bei gleicher Laenge doppelt so breit wie „lllll...". */
+  const ln = alles.langeNamen;
+  if (!ln) fehler.push('kein Tierkapitel im Stand — die Namensprobe hat NICHTS geprüft');
+  else if (ln.zuviel.length)
+    fehler.push(`${ln.zuviel.length} von ${ln.geprueft} Tiernamen brauchen drei Zeilen `
+      + `in der ${ln.karte} Punkte breiten Aufkleberkarte — ${ln.zuviel.join(' · ')}`);
+
   if (fehler.length) {
     console.log('\n  Tor `tonleiter` ROT:');
     fehler.forEach(f => console.log('    ✗ ' + f));
@@ -132,6 +184,8 @@ if (process.argv.includes('--tor')) {
   console.log(`\n  tonleiter grün: ${Object.keys(alles.schrift).length} Schriftstufen, `
     + `${Object.keys(alles.radius).length} Radien, ${Object.keys(alles.luft).length} Abstände `
     + `im Buch — gemessen an ${kaps.length} Kapitelseiten auf 844 × 390.`);
+  console.log(`    Und ${ln.geprueft} Tiernamen passen in zwei Zeilen `
+    + `(Karte ${ln.karte} Punkte breit).`);
   process.exit(0);
 }
 console.log(`\n  Feinmass am Forscherbuch, 844 x 390, voller Stand, ${kaps.length} Kapitel`);
@@ -141,6 +195,12 @@ zeig('Abstände (padding · gap · margin)', alles.luft);
 zeig('Textfarben', alles.farbe);
 zeig('Grundfarben', alles.grund);
 zeig('Schatten', alles.schatten, 6);
+const lnB = alles.langeNamen;
+console.log(`\n  Tiernamen in der Aufkleberkarte (${lnB ? lnB.karte : '?'} Punkte breit): `
+  + (!lnB ? 'kein Tierkapitel im Stand'
+    : lnB.zuviel.length ? `${lnB.zuviel.length} von ${lnB.geprueft} brauchen drei Zeilen — `
+        + lnB.zuviel.join(' · ')
+    : `alle ${lnB.geprueft} passen in zwei Zeilen`));
 console.log(`\n  Klassen: ${Object.keys(alles.klassen).length} verschiedene, `
   + `${Object.values(alles.klassen).filter(z => z === 1).length} kommen genau EINMAL vor`);
 console.log('\n  Je Seite');

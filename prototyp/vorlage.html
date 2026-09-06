@@ -1050,7 +1050,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * gebackener Verlauf reicht). Das Verblassen der fehlenden Tiere ist die
  * einzige Ausnahme - es trifft NUR das SVG, nicht den Aufkleber, und es
  * steht auf einem Bild, das sich nicht bewegt. */
-.tierfeld{width:92px;flex:none;display:flex;flex-direction:column;align-items:center;
+.tierfeld{width:98px;flex:none;display:flex;flex-direction:column;align-items:center;
   gap:var(--r0);padding:var(--r1) var(--r1) var(--r0);
   border-radius:var(--r4);border:var(--kante-flach) solid var(--papier);
   background:var(--ton,var(--grund-2));box-shadow:var(--schatten-kleber);
@@ -1313,11 +1313,15 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   .tierraum{margin-bottom:var(--r1)}
   .tierraum h4{margin-bottom:var(--r0)}
   .tierwand{gap:var(--r1)}
-  .tierfeld{width:66px}
-  /* Gemessen auf 390 Punkten: „Schmetterling" ist der laengste Name eines
-     gemalten Tieres und braucht bei .8 noch 68 Punkte - zwei zuviel fuer
-     die 66, die im Aufkleber Platz haben. Bei .72 sind es 62. */
-  .tierfeld span{font-size:calc(var(--s-klein) * .72)}
+  /* 66 waren es, solange der Name hier .72 der kleinen Groesse trug.
+     Die Tonleiter (Runde 0) hebt ihn auf die NAMEN-Rolle - dieselbe
+     Groesse wie ueberall sonst im Buch - und damit passte
+     „Streifenhoernchen" nicht mehr in zwei Zeilen, sondern brach in
+     drei, mit einem einzelnen „n" auf der letzten. Gemessen an allen
+     Tiernamen: ab 74 Punkten sind es wieder zwei (`npm run tonleiter`
+     prueft das jetzt an JEDEM Namen, nicht an dem, der gerade
+     dasteht). */
+  .tierfeld{width:74px}
   .tierfeld{padding:var(--r0)}
   /* Und das Tierbild von 58 auf 44 Punkte.
      Gemessen nach dem Buch-Umbau: 241 Punkte Inhalt in einem 224 hohen
@@ -3094,7 +3098,12 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   --eng:var(--r2); --mittel:var(--r4); --weit:var(--r6);
 }
 @media (max-height:440px){
-  .schirm{ --eng:var(--r1); --mittel:var(--r2); --weit:var(--r4); }
+  /* ENG rueckt hier auf `--r0`, die kleinste Sprosse, die es laut Marken
+     geben darf - nicht auf einen ausgedachten Wert. Gemessen: mit
+     `--r1` stand das Tierkapitel auf 667 x 375 vierundzwanzig Punkte
+     unter dem Rand. Drei Sprossen statt zwei sind immer noch die
+     Leiter; ein `calc` waere es nicht. */
+  .schirm{ --eng:var(--r0); --mittel:var(--r2); --weit:var(--r4); }
 }
 /* TITEL */
 .rollen.buch .gruppe,
@@ -3135,14 +3144,17 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .tierwand{gap:var(--eng)}
 .rollen.buch .raumwahl{gap:var(--eng);margin-bottom:var(--eng)}
 .buchreiter{gap:var(--eng)}
-/* Die letzten Zweier: Raumreiter und Tuer trugen `--r0`, den Wert, der
-   laut Marken „die kleinste Stufe ist, die es geben darf". Im Buch gibt
-   es sie jetzt nicht mehr - ENG ist auf kurzen Schirmen 4, und das ist
-   eine Sprosse der Leiter statt eines Sonderfalls. */
+/* Die letzten Einzelwerte. `--r0` und `--r1` standen hier als feste
+   Zahlen, weil sie einmal gepasst haben - nicht, weil sie eine Sprosse
+   waeren. Sie sind es jetzt: ENG ist `--r2`, auf kurzen Schirmen `--r0`,
+   und beides kommt aus derselben Leiter. */
 .rollen.buch .raumchip{padding:var(--eng);gap:var(--eng)}
 .rollen.buch .raumauf{padding:var(--eng) var(--mittel);gap:var(--mittel)}
 .rollen.buch .tierfeld{padding:var(--eng);gap:var(--eng)}
 .rollen.buch .abz{padding:var(--mittel);gap:var(--eng)}
+/* Die Eckzahl trug `padding:0 var(--r1)` - der eine Wert, der nach der
+   Tonleiter noch neben der Leiter stand (gemessen 4 an drei Stellen). */
+.rollen.buch .abz .fehlt{padding:0 var(--eng)}
 @media (min-aspect-ratio:8/5){
   .buchseite{column-gap:var(--weit);row-gap:0}
 }
