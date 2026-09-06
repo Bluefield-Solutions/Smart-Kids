@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-05",
+  "zeit": "2026-09-06",
   "tore": [
     "anker",
     "ansicht",
@@ -851,7 +851,7 @@
     "die Karten im Vorlauf sagen nichts": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
       "zeit": "2026-09-05",
-      "s": 49
+      "s": 53
     },
     "der Vorlauf zeigt die falsche Zahl an Gebieten": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
@@ -1549,9 +1549,9 @@
       "s": 70
     },
     "im Buch stehen wieder alle offenen Abzeichen": {
-      "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
-      "zeit": "2026-09-05",
-      "s": 35
+      "commit": "1be8611cfbd63914f84e9e023ccc046035ff9f98",
+      "zeit": "2026-09-06",
+      "s": 55
     },
     "das neue Abzeichen wird nicht gesagt": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",

@@ -2389,8 +2389,16 @@ export const PROBEN = [
      im Vorlauf. Genau diese Dopplung hat dann auch gekostet: der
      „Zurueck"-Knopf verlor seine Aufgabe, ich habe die eine Stelle
      geflickt, und der Rauchtest hat die zweite gemeldet. */
+  /* ZWEI Abschnitte, und das ist keine Bequemlichkeit.
+     `--nur=spielen` allein ist rot, und zwar ohne jeden Eingriff: die
+     Fremdgriff-Pruefung sieht in diesem Abschnitt keinen ruhenden
+     Aufgabenbildschirm und meldet zu Recht, dass sie nichts beweist
+     (Regel 1). Eine Probe auf einem Lauf, der schon vorher rot ist,
+     beweist ebenfalls nichts - der Laeufer sagt das auch so. Mit
+     `ablage` daneben ist der Lauf gruen, und der Eingriff ist wieder
+     der einzige Unterschied. */
   { n:'die Karten im Vorlauf sagen nichts', tor:'smoke', bauen:true,
-    args:['--nur=spielen'], datei:D,
+    args:['--nur=spielen,ablage'], datei:D,
     such:"  b.addEventListener('click', () => vorlesen(b.dataset.lesen, b.dataset.sprache || 'de'));",
     ersatz:"  b.addEventListener('click', () => {});",
     an:{ ...DIST, text:"b.addEventListener('click', () => {})" },
