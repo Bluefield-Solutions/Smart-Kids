@@ -111,6 +111,14 @@ for (const k of kaps) {
 if (await s.locator('[data-kap="tiere"]').count()) {
   await s.click('[data-kap="tiere"]');
   await s.waitForTimeout(400);
+  /* Seit Runde 3 steht zuerst das Raumraster da; eine Aufkleberkarte
+     gibt es erst IM Raum. Ohne diesen Tipp faende die Messung keine
+     sichtbare Karte und meldete „NICHTS geprueft" - richtig, aber
+     nutzlos. */
+  if (await s.locator('.schirm.da .raumzelle').count()) {
+    await s.locator('.schirm.da .raumzelle').first().click();
+    await s.waitForTimeout(300);
+  }
 }
 const NAMEN = [...new Set(TIERE.map(t => String(t.name).replace(/^(der|die|das) /, '')))];
 alles.langeNamen = await s.evaluate((namen) => {

@@ -1373,12 +1373,15 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await p.waitForSelector('.schirm.da .rollen.buch');
   const tierReiter = await p.$('.schirm.da .reiter[data-kap="tiere"]');
   if (tierReiter) await tierReiter.click();
-  await p.waitForSelector('.schirm.da .tierraum:not([hidden])');
+  await p.waitForSelector('.schirm.da .raumgitter:not([hidden])');
   await schau('Forscherbuch (Tiere)');
-  /* Offen steht der ZULETZT fertige Raum. Zum Meer fuehrt der
-     Raumreiter - und damit ist auch er einmal gedrueckt. */
-  await p.waitForSelector('.schirm.da .raumchip[data-raumwahl="Im Meer"]');
-  await tipp('.schirm.da .raumchip[data-raumwahl="Im Meer"]');
+  /* Seit Runde 3 steht zuerst das Raumraster da. Zum Meer fuehrt die
+     Zelle - und damit ist auch sie einmal gedrueckt. Der zweite Blick
+     (`schau`) gilt dem geoeffneten Raum, wo die Tuer und der Weg
+     zurueck stehen. */
+  await tipp('.schirm.da .raumzelle[data-raumwahl="Im Meer"]');
+  await p.waitForSelector('.schirm.da .tierraum:not([hidden])');
+  await schau('Forscherbuch (ein Raum)');
   await p.waitForSelector('.schirm.da .raumauf[data-raum="Im Meer"]');
   await tipp('.schirm.da .raumauf[data-raum="Im Meer"]');
   await p.waitForSelector('.schirm.da .platz.voll');

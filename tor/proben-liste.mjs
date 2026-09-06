@@ -610,12 +610,18 @@ export const PROBEN = [
     an:{ datei:'prototyp/vorlage.html', text:'.rollen.buch .buchsatz{font-size:calc(' },
     sagt:'schrift: 4 verschiedene' },
 
-  /* Und ein Radius, den jemand „nur fuer diese eine Zelle" anders setzt. */
+  /* Und ein Radius, den jemand „nur fuer diese eine Zelle" anders setzt.
+     Der Eingriff traf bis Runde 3 die Aufkleberkarte - die steht seit
+     dem Umbau aber erst IM Raum, und die Zaehlung geht die Kapitel ab,
+     ohne einen zu oeffnen. Die Probe schlug damit nicht mehr an, und
+     zwar zu Recht: nicht das Tor war schwaecher geworden, der Eingriff
+     stand nur nicht mehr im Bild. Jetzt trifft er die Raumzelle, die
+     auf der Tierseite von Anfang an dasteht. */
   { n:'ein dritter Radius kommt dazu', tor:'tonleiter', bauen:true,
     datei:'prototyp/vorlage.html',
-    such:".rollen.buch .tierfeld,\n.rollen.buch .abz,",
-    ersatz:".rollen.buch .abz,",
-    an:{ datei:'prototyp/vorlage.html', fehlt:'.rollen.buch .tierfeld,\n.rollen.buch .abz,' },
+    such:".rollen.buch .raumzelle,\n.rollen.buch .raumzu,",
+    ersatz:".rollen.buch .raumzu,",
+    an:{ datei:'prototyp/vorlage.html', fehlt:'.rollen.buch .raumzelle,\n.rollen.buch .raumzu,' },
     sagt:'radius: 3 verschiedene' },
 
   /* Und der dritte Wert der Ratsche, die Abstaende. Der Eingriff ist der
@@ -631,16 +637,20 @@ export const PROBEN = [
     sagt:'luft: 4 verschiedene' },
 
   /* Die zweite Zusage des Tores: kein Tiername braucht drei Zeilen.
-     Der Eingriff nimmt der Karte die sechs Punkte wieder weg, die sie in
-     Runde 0 bekommen hat - genau die Breite, an der „Streifenhoernchen"
-     umgebrochen ist. Ohne diese Probe koennte die Namensmessung leer
-     laufen (kein Tierkapitel, keine sichtbare Karte) und trotzdem gruen
+     Der Eingriff macht die Spalte der Aufkleberkarte wieder so schmal,
+     wie sie vor Runde 0 war - genau die Breite, an der
+     „Streifenhoernchen" umgebrochen ist. Seit Runde 3 steht diese
+     Breite in der Mindestbreite des Rasters und nicht mehr an der
+     Karte; die Probe ist mitgezogen, sonst haette sie einen toten Wert
+     geaendert und WAERE STILL GEBLIEBEN. Ohne sie koennte die
+     Namensmessung ausserdem leer laufen (kein Tierkapitel, kein
+     geoeffneter Raum, keine sichtbare Karte) und trotzdem gruen
      melden. */
   { n:'die Aufkleberkarte wird wieder zu schmal', tor:'tonleiter', bauen:true,
     datei:'prototyp/vorlage.html',
-    such:'  .tierfeld{width:74px}',
-    ersatz:'  .tierfeld{width:66px}',
-    an:{ datei:'prototyp/vorlage.html', text:'  .tierfeld{width:66px}' },
+    such:'  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--mittel)}',
+    ersatz:'  grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:var(--mittel)}',
+    an:{ datei:'prototyp/vorlage.html', text:'minmax(66px,1fr)' },
     sagt:'brauchen drei Zeilen' },
 
   /* --- pwa: der Lagername ------------------------------------------- */

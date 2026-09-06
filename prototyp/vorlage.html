@@ -1050,7 +1050,7 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * gebackener Verlauf reicht). Das Verblassen der fehlenden Tiere ist die
  * einzige Ausnahme - es trifft NUR das SVG, nicht den Aufkleber, und es
  * steht auf einem Bild, das sich nicht bewegt. */
-.tierfeld{width:98px;flex:none;display:flex;flex-direction:column;align-items:center;
+.tierfeld{flex:none;display:flex;flex-direction:column;align-items:center;
   gap:var(--r0);padding:var(--r1) var(--r1) var(--r0);
   border-radius:var(--r4);border:var(--kante-flach) solid var(--papier);
   background:var(--ton,var(--grund-2));box-shadow:var(--schatten-kleber);
@@ -1084,39 +1084,47 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 /* ---------- Die Landschaft (T2) ---------------------------------------
    Ein voller Raum wird zur TUER: die Ueberschrift traegt die Kulisse als
    Streifen. Ein Kind, das nicht liest, sieht am Bild, wohin es geht. */
-/* Die Raumreiter. Gemessen auf dem Zielgeraet: zehn Chips à 104 Punkte
-   passen in zwei Reihen von je 44 - zusammen 96 Punkte. Ein Raum
-   UNTEREINANDER kostet 160; fuenf davon lagen 689 Punkte unter dem
-   Rand. */
-/* Umgebrochen, nicht geschoben.
+/* DAS RAUMRASTER (Runde 3, B2 und K2).
  *
- * Der Versuch, die fuenfzehn Reiter in EINE schiebende Zeile zu legen
- * (wie `.buchreiter` darueber), ist an `passt` gescheitert - und zwar
- * zu Recht: was rechts aus der Zeile laeuft, ist fuer ein Kind nicht da.
- * `.buchreiter` faellt nur deshalb nicht auf, weil fuenf Kapitelreiter
- * nie ueber die Breite hinausgehen; die Regel ist dort nie geprueft
- * worden. Ein Kind rollt nicht auf Verdacht - auch nicht seitwaerts. */
-.raumwahl{display:flex;flex-wrap:wrap;gap:var(--r1);width:100%;
-  margin-bottom:var(--r2)}
-.raumchip{display:flex;align-items:center;gap:var(--r1);
-  padding:var(--r0) var(--r1) var(--r0) var(--r0);
+ * Hier stand bis v420 eine zweite Reiterzeile: fuenfzehn Chips, 32
+ * Punkte breit, ueber der Kapitelzeile. Zwei Reiterzeilen uebereinander
+ * waren die auffaelligste Unruhe im Buch, und 32 Punkte sind unter der
+ * Daumengrenze von 44.
+ *
+ * Jetzt ist es ein RASTER wie auf den anderen vier Seiten - dieselbe
+ * Zelle, dieselbe Kante, derselbe Radius. Gemessen auf den beiden
+ * kurzen Geraeten: bei 88 Punkten Mindestbreite werden aus 628 sieben
+ * Spalten und aus 481 fuenf; fuenfzehn Zellen stehen damit in beiden
+ * Faellen in DREI Reihen, und drei Reihen à 70 passen in die 244 (bzw.
+ * 229) Punkte, die das Raster hoch ist.
+ *
+ * `auto-fill` und nicht `auto-fit`: bei `auto-fit` zieht eine einzelne
+ * Zelle sich ueber die ganze Breite, sobald ein Profil nur einen Raum
+ * offen hat. */
+.raumgitter{display:grid;width:100%;
+  grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:var(--r2)}
+.raumzelle{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:var(--r0);padding:var(--r1);
   border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
-  background:var(--grund-2);cursor:pointer;font:inherit;min-height:44px;
-  color:var(--tinte-3)}
-/* Das Tier auf dem Reiter: quadratisch wie auf dem Aufkleber, nur
-   kleiner. Kein eigener Grund darunter - der Reiter hat schon einen,
-   und zwei Kaesten ineinander sind bei 30 Punkten nur noch Rand. */
-.raumchip .raumzeichen{width:30px;height:30px;flex:none;display:block}
-.raumchip.leer .raumzeichen{opacity:.3;filter:grayscale(1)}
-/* KEIN NAME auf dem Reiter. Zehn Reiter mit Namen brauchten auf dem
-   Zielgeraet drei Reihen, und das Kapitel lag 92 Punkte unter dem Rand.
-   Der Streifen ist die Auskunft - er zeigt die Landschaft selbst -, der
-   Name steht darunter an der Tuer und wird beim Tippen gesprochen. */
-.raumchip span{display:none}
-.raumchip small{font-family:var(--f-ui);font-size:calc(var(--s-klein) * .74);
-  color:var(--tinte-3)}
-.raumchip.da{background:var(--papier);border-color:var(--tinte-3);color:var(--tinte)}
-.raumchip.da small{color:var(--tinte-2)}
+  background:var(--grund-2);cursor:pointer;font:inherit;
+  min-height:44px;color:var(--tinte-2);text-align:center}
+/* Das Tier in der Zelle: quadratisch wie auf dem Aufkleber, nur
+   kleiner. Kein eigener Grund darunter - die Zelle hat schon einen,
+   und zwei Kaesten ineinander sind bei 34 Punkten nur noch Rand. */
+.raumzelle .raumzeichen{width:34px;height:34px;flex:none;display:block}
+.raumzelle.leer .raumzeichen{opacity:.3;filter:grayscale(1)}
+.raumzelle span{line-height:1.1;overflow-wrap:anywhere;hyphens:auto}
+.raumzelle:hover{border-color:var(--tinte-3)}
+/* Der Kopf eines geoeffneten Raumes: der Weg zurueck, dann die Tuer.
+   Der Pfeil ist 44 breit und 44 hoch - er ist der einzige Weg aus
+   diesem Zustand heraus, und ein Weg, den man nicht trifft, ist keiner. */
+.raumkopf{display:flex;align-items:center;gap:var(--r2);width:100%;
+  margin-bottom:var(--r1)}
+.raumzu{flex:none;width:44px;height:44px;display:grid;place-items:center;
+  border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
+  background:var(--grund-2);cursor:pointer;color:var(--tinte-2)}
+.raumzu:hover{border-color:var(--tinte-3)}
+.raumkopf h4{margin:0}
 .raumauf{display:flex;align-items:center;gap:var(--r2);width:100%;
   margin:0 0 var(--r1);padding:var(--r0) var(--r2) var(--r0) var(--r0);
   border:var(--kante-flach) solid var(--linie);border-radius:var(--r4);
@@ -1235,33 +1243,23 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Bei 56 waren es dort acht Reihen und 416 Punkte. */
 @media (max-height:440px){
   .raumauf svg.raumstreifen{width:52px;height:30px}
-  .raumwahl{gap:var(--r0);margin-bottom:var(--r1)}
-  .raumchip{padding:var(--r0);gap:var(--r0)}
-  /* Auf kurzen Schirmen traegt der Reiter NUR das Tier.
-   *
-   * Fuenfzehn Reiter mit Namen brechen auf 726 Punkten (dem Zielgeraet
-   * mit seinen sicheren Raendern) in zwei hohe Zeilen um - 90 Punkte,
-   * und damit stand die Tierwand darunter 6 Punkte unter dem Rand.
-   *
-   * Der Name ist damit nicht weg: die TUER darunter traegt ihn
-   * ausgeschrieben, und die Ansage sagt ihn („Im Riff. 3 von drei.").
-   * Fuer Fiona ist das Tier ohnehin das, was sie liest - genau deshalb
-   * steht es seit v396 auf dem Reiter und nicht die Kulisse. */
-  .raumchip span{display:none}
-  /* 24 statt 26, und das sind die zehn Punkte, die ueber EINE oder ZWEI
-     Reihen entscheiden. Gerechnet: fuenfzehn Reiter zu 34 Punkten mit
-     zwei Punkten Abstand sind 538 in 528 verfuegbaren - zwei Reihen zu
-     44, also 90 statt 44. Mit 24er Zeichen sind es 508, eine Reihe, und
-     die Tierwand darunter passt wieder. Der Reiter bleibt 44 hoch; das
-     ist die Fingergrenze und wird nicht angetastet. */
-  .raumchip .raumzeichen{width:24px;height:24px}
-  /* Die beiden eigenen Abstaende der Bloecke im Tierkapitel bleiben weg -
-     das RASTER setzt seine Zeilen ohnehin auseinander. Beim Buch-Umbau
-     hatte ich sie mit den anderen Notmassnahmen gestrichen, und `passt`
+  /* Auf kurzen Schirmen traegt die Zelle ein kleineres Tier - der Name
+     bleibt, er ist der Grund fuer das Raster.
+     Gerechnet auf den beiden kurzen Geraeten: 34er Zeichen, zwei Zeilen
+     Name und der schmale Rand ergeben eine Zelle von rund 70 Punkten;
+     drei Reihen davon sind 214 (mit dem engen Abstand) in den 244 bzw.
+     229 Punkten, die das Raster hoch ist. */
+  /* 30 statt 34 auf kurzen Schirmen. Gemessen: mit 34 stand das Raster
+     auf 667 x 375 genau 228 Punkte hoch in 229 verfuegbaren - ein Punkt
+     Luft ist keine Luft, sondern der naechste rote Lauf. Mit 30 sind es
+     214. */
+  .raumzelle .raumzeichen{width:30px;height:30px}
+  /* Der eigene Abstand der Bloecke im Tierkapitel bleibt weg - das
+     RASTER setzt seine Zeilen ohnehin auseinander. Beim Buch-Umbau
+     hatte ich ihn mit den anderen Notmassnahmen gestrichen, und `passt`
      hat sofort gemeldet, was das kostet: auf 667 x 375 standen die drei
      Tierzellen 9 Punkte ueber dem Rand. Nicht jede Zeile in diesem
-     Block war eine Notmassnahme; diese zwei sind gemessene Abstaende. */
-  .raumwahl{margin-bottom:0}
+     Block war eine Notmassnahme; diese ist ein gemessener Abstand. */
   .tierraum{margin-bottom:0}
   /* Die letzten fuenfzehn Punkte auf dem KLEINSTEN Geraet (667 x 375):
      die eigenen Abstaende der drei Bloecke fallen weg - das Raster des
@@ -1313,15 +1311,6 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   .tierraum{margin-bottom:var(--r1)}
   .tierraum h4{margin-bottom:var(--r0)}
   .tierwand{gap:var(--r1)}
-  /* 66 waren es, solange der Name hier .72 der kleinen Groesse trug.
-     Die Tonleiter (Runde 0) hebt ihn auf die NAMEN-Rolle - dieselbe
-     Groesse wie ueberall sonst im Buch - und damit passte
-     „Streifenhoernchen" nicht mehr in zwei Zeilen, sondern brach in
-     drei, mit einem einzelnen „n" auf der letzten. Gemessen an allen
-     Tiernamen: ab 74 Punkten sind es wieder zwei (`npm run tonleiter`
-     prueft das jetzt an JEDEM Namen, nicht an dem, der gerade
-     dasteht). */
-  .tierfeld{width:74px}
   .tierfeld{padding:var(--r0)}
   /* Und das Tierbild von 58 auf 44 Punkte.
      Gemessen nach dem Buch-Umbau: 241 Punkte Inhalt in einem 224 hohen
@@ -3115,7 +3104,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .abz .fehlt,
 .rollen.buch .tierfeld span,
 .rollen.buch .raumauf span,
-.rollen.buch .raumchip span,
+.rollen.buch .raumzelle span,
 .rollen.buch .aufkleber span{font-size:var(--t-name);font-weight:600}
 /* FUSS */
 .rollen.buch .gruppe small,
@@ -3127,7 +3116,8 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    Punkten sieht niemand einen Unterschied, der etwas BEDEUTET - er sagt
    nur, dass zwei Leute zu verschiedenen Zeiten entschieden haben.
    (Der Achter kam von einem SVG und ist kein Kasten des Buches.) */
-.rollen.buch .raumchip,
+.rollen.buch .raumzelle,
+.rollen.buch .raumzu,
 .rollen.buch .raumauf,
 .rollen.buch .tierfeld,
 .rollen.buch .abz,
@@ -3142,13 +3132,36 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .abzeichen,
 .rollen.buch .kleber{gap:var(--mittel)}
 .rollen.buch .tierwand{gap:var(--eng)}
-.rollen.buch .raumwahl{gap:var(--eng);margin-bottom:var(--eng)}
+.rollen.buch .raumgitter{gap:var(--eng)}
 .buchreiter{gap:var(--eng)}
 /* Die letzten Einzelwerte. `--r0` und `--r1` standen hier als feste
    Zahlen, weil sie einmal gepasst haben - nicht, weil sie eine Sprosse
    waeren. Sie sind es jetzt: ENG ist `--r2`, auf kurzen Schirmen `--r0`,
    und beides kommt aus derselben Leiter. */
-.rollen.buch .raumchip{padding:var(--eng);gap:var(--eng)}
+.rollen.buch .raumzelle{padding:var(--eng);gap:var(--eng)}
+.rollen.buch .raumkopf{gap:var(--eng);margin-bottom:var(--eng)}
+/* IM GEOEFFNETEN RAUM sind die drei Tiere der Inhalt, nicht eine Zeile
+   unter etwas anderem. Sie bekommen deshalb dasselbe Raster wie die
+   Raumzellen davor - nur mit breiteren Spalten, weil es drei sind und
+   nicht fuenfzehn. Gemessen auf dem Zielgeraet: aus 628 Punkten werden
+   bei 140 Mindestbreite vier Spalten, aus 481 drei; die drei Karten
+   stehen in beiden Faellen in EINER Reihe und fuellen die Breite.
+   Vorher standen sie als 74 Punkte breite Kaertchen in einem 628
+   Punkte breiten Raster - die Seite sah aus, als fehlte etwas. */
+.rollen.buch .tierraum .tierwand{display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--mittel)}
+/* Die Karte hat KEINE feste Breite mehr - bis Runde 3 stand sie
+   zweimal da (98 lang, 74 kurz), und beide Werte waren nach dem Umbau
+   wirkungslos: das Raster setzt die Spalte. Ein toter Wert mit einer
+   gemessenen Begruendung daneben ist schlimmer als gar keiner - er
+   sieht aus, als gaebe er noch Auskunft. Was zweimal dasteht, veraltet
+   einmal (Regel 6) - und ein Wert, den niemand mehr liest, ist der
+   Sonderfall davon.
+   Was die Begruendung SAGTE, gilt weiter und steht jetzt in der
+   Mindestbreite oben: „Streifenhoernchen" braucht seinen Platz, sonst
+   bricht es in drei Zeilen. `npm run tonleiter` misst das an JEDEM der
+   124 Namen, nicht an dem, der gerade dasteht. */
+.rollen.buch .tierraum .tierfeld svg{width:72px;height:72px}
 .rollen.buch .raumauf{padding:var(--eng) var(--mittel);gap:var(--mittel)}
 .rollen.buch .tierfeld{padding:var(--eng);gap:var(--eng)}
 .rollen.buch .abz{padding:var(--mittel);gap:var(--eng)}

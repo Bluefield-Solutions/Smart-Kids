@@ -6920,17 +6920,33 @@ async function forscherbuch(){
      * ein Kind rollt nicht in einer Liste, von der es nicht weiss, dass
      * sie weitergeht.
      *
-     * Also dasselbe Mittel wie beim Buch selbst, eine Ebene tiefer:
-     * Reiter. Sie tragen den Kulissenstreifen und die Zahl „2/3" - ein
-     * Kind, das nicht liest, sieht daran, wo es weitermachen kann. Die
-     * Seiten stehen alle im Markup und werden nur ein- und ausgeblendet;
-     * ein Neuaufbau des Buches waere fuer einen Reiterwechsel dieselbe
-     * Wartezeit wie fuers Aufschlagen. */
+     * Also dasselbe Mittel wie beim Buch selbst, eine Ebene tiefer -
+     * aber NICHT als zweite Reiterzeile (Runde 3, Befund B2).
+     *
+     * Eine Reiterzeile ueber einer Reiterzeile war die auffaelligste
+     * Unruhe im Buch: dieselbe Geste, zwei Bedeutungen, uebereinander.
+     * Und sie war zu klein - die fuenfzehn Raumreiter waren 32 Punkte
+     * breit, wo 44 die Grenze sind (Befund K2). Beides faellt hier weg.
+     *
+     * Jetzt hat die Seite denselben Bau wie die vier anderen: LINKS,
+     * was sie sagt, RECHTS ein Raster aus Zellen. Das Raster zeigt
+     * zuerst die fuenfzehn RAEUME; ein Tipp tauscht es gegen die drei
+     * Tiere dieses Raumes und die Tuer. Zwei Zustaende derselben Seite,
+     * kein zweiter Reiter.
+     *
+     * Der Preis ist ein Tipp mehr bis zu einem Tier - dafuer stehen die
+     * Raumnamen zum ersten Mal DA statt nur gesprochen zu werden, und
+     * jede Zelle ist mit dem Daumen zu treffen.
+     *
+     * Der Bauplan aus dem Audit („alle fuenfzehn Raeume untereinander,
+     * Rollen ist hier richtig") ist NICHT gebaut, und zwar gemessen:
+     * fuenfzehn Baender brauchen rund 1950 Punkte in einem Raster, das
+     * auf dem Zielgeraet 244 hoch ist. `passt` geht von jedem Knopf zum
+     * ersten rollenden Vorfahren hinauf - das waeren vierzig rote
+     * Knoepfe gewesen. Dieselbe Zeile steht seit T2 hier: ein Kind
+     * rollt nicht in einer Liste, von der es nicht weiss, dass sie
+     * weitergeht. */
     const raumVoll = (r) => r.stuecke.every(t => habe.has(t.id));
-    /* Offen steht der LETZTE, an dem etwas passiert ist - nicht der
-       erste. Wer gerade „Das Outback" fertig gemacht hat, sucht das
-       Outback, nicht das Meer. */
-    const zuerst = Math.max(0, raeume.map(raumVoll).lastIndexOf(true));
     if (dabei.length) kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:6,
       zahl:dabei.length, gesamt:alle.length,
       lesen:`Deine Tiere. Du hast ${dabei.length === 1 ? 'eins'
@@ -6961,30 +6977,27 @@ async function forscherbuch(){
               steht, waere ein Versprechen, das die Seite nicht haelt.
               Die Landschaft traegt weiter die TUER darunter - dorthin
               fuehrt sie, und dort ist sie gross genug. */''}
-        ${raeume.length > 1 ? `<div class="raumwahl" role="tablist">${raeume.map((r, i) => {
+        ${/* DAS RASTER, ERSTER ZUSTAND: die fuenfzehn Raeume.
+             Eine Zelle traegt ein Tier aus dem Raum und den Namen -
+             den VOLLEN Namen, denselben, den die Tuer traegt und den
+             die Ansage spricht. Ohne Artikel waeren drei von fuenfzehn
+             eine Zeile kuerzer, aber „Dschungel" auf der Zelle und
+             „Der Dschungel" an der Tuer waeren zwei Namen fuer einen
+             Raum - was zweimal dasteht, veraltet einmal (Regel 6). Das Raster gleicht die Zeilenhoehe ohnehin
+             aus.
+             Das Tier ist blass, solange keines gesammelt ist; die Zahl
+             „0 von drei" steht in der Ansage, nicht im Bild. */''}
+        <div class="raumgitter">${raeume.map((r) => {
           const meins = r.stuecke.filter(t => habe.has(t.id));
           const zeichen = meins[0] || r.stuecke[0];
           return `
-          <button class="raumchip${i === zuerst ? ' da' : ''}${meins.length ? '' : ' leer'}"
+          <button class="raumzelle${meins.length ? '' : ' leer'}"
                   data-raumwahl="${r.titel}"
-                  role="tab" aria-selected="${i === zuerst}"
                   data-lesen="${r.titel}. ${meins.length} von drei."
-            ${/* KEINE ZAHL auf dem Reiter mehr.
-                 Bei dreizehn Raeumen stand die Reihe auf dem kleinsten
-                 Geraet in zwei Zeilen und das Kapitel 32 Punkte unter
-                 dem Rand. Die Zahl sagt ausserdem fast nichts: ein Raum
-                 gibt seine drei Tiere AUF EINMAL, sie ist also 0/3 oder
-                 3/3 - und beides steht schon da, weil das Tier auf dem
-                 Reiter blass ist, solange keines gesammelt ist. Gesagt
-                 wird sie weiterhin (`data-lesen`), fuer Fiona.
-                 Bleibt der Fall 1/3 oder 2/3: den gibt es nur bei einem
-                 Profil, das seine Tiere bekommen hat, BEVOR der Raum
-                 fertig gemalt war. Die Wand darunter zeigt ihn genau. */''}
             >${zeichen ? tierBild(zeichen, 'raumzeichen') : ''
-            }<span>${r.titel}</span></button>`;
-        }).join('')}</div>` : ''}
-        ${raeume.map((r, i) => `<div class="tierraum" data-raumseite="${r.titel}"${
-            i === zuerst ? '' : ' hidden'}>
+            }<span>${ohneArtikel(r.titel)}</span></button>`;
+        }).join('')}</div>
+        ${raeume.map((r) => `<div class="tierraum" data-raumseite="${r.titel}" hidden>
           ${/* EIN VOLLER RAUM WIRD ZUR TUER (T2).
                 Solange etwas fehlt, ist die Zeile eine Ueberschrift; ist
                 der Raum voll, ist sie der Knopf in die Landschaft - und
@@ -6993,6 +7006,14 @@ async function forscherbuch(){
                 daneben: eine Zeile, die manchmal etwas kann, ist
                 weniger zu lernen als zwei Zeilen, von denen eine
                 meistens fehlt. */''}
+          ${/* Der Weg zurueck ins Raster steht VOR der Zeile, nicht
+                daneben: er gehoert zur Seite, nicht zum Raum. Er traegt
+                denselben Pfeil wie „Zurueck" in der Kopfzeile - eine
+                Geste, eine Bedeutung. */''}
+          <div class="raumkopf">
+            <button class="raumzu" data-raumzu
+                    data-lesen="Zurück zu allen Räumen"
+                    aria-label="Alle Räume">${ZURUECK}</button>
           ${raumVoll(r) && Tiere.kulisseZu(r.titel)
             ? `<button class="raumauf" data-raum="${r.titel}"
                  data-lesen="${r.titel} anschauen"
@@ -7001,6 +7022,7 @@ async function forscherbuch(){
                  >${Tiere.kulisseZu(r.titel).bild}</svg><span>${r.titel}</span>
                  ${ZEI('auge', 20)}</button>`
             : `<h4>${r.titel}</h4>`}
+          </div>
           <div class="tierwand">${r.stuecke.map(t => `
             <button class="tierfeld${habe.has(t.id) ? ' da' : ''}"
                     style="--ton:${t.ton}"
@@ -7241,18 +7263,25 @@ async function forscherbuch(){
        `onclick` der Zeile darueber, sonst waere die Tuer stumm. */
     wo.querySelectorAll('.raumauf').forEach(b => b.addEventListener('click',
       () => zeige(() => landschaft(b.dataset.raum, forscherbuch))));
-    /* Der Raumreiter blendet um, statt neu zu bauen - dieselbe
-       Entscheidung wie bei den Kapitelreitern (Q44), aus demselben
-       Grund. `hidden` und nicht `display`, damit die Seite auch fuer
-       den Vorleser weg ist. */
-    wo.querySelectorAll('.raumchip').forEach(b => b.addEventListener('click', () => {
-      const raum = b.dataset.raumwahl;
-      wo.querySelectorAll('.raumchip').forEach(c => {
-        c.classList.toggle('da', c === b);
-        c.setAttribute('aria-selected', String(c === b)); });
+    /* Das Raster blendet um, statt neu zu bauen - dieselbe Entscheidung
+       wie bei den Kapitelreitern (Q44), aus demselben Grund. `hidden`
+       und nicht `display`, damit die Seite auch fuer den Vorleser weg
+       ist.
+       Seit Runde 3 sind es ZWEI Zustaende derselben Seite und keine
+       Reiterzeile mehr: entweder steht das Raumraster da oder ein Raum.
+       Deshalb wird auch das Raster selbst geschaltet - haette es nur
+       `data-raumseite`, waere es beim ersten Tipp mitverschwunden und
+       nie wiedergekommen. */
+    const raumZeigen = (raum) => {
+      const gitter = wo.querySelector('.raumgitter');
+      if (gitter) gitter.hidden = raum !== null;
       wo.querySelectorAll('[data-raumseite]').forEach(seite => {
         seite.hidden = seite.dataset.raumseite !== raum; });
-    }));
+    };
+    wo.querySelectorAll('.raumzelle').forEach(b => b.addEventListener('click',
+      () => raumZeigen(b.dataset.raumwahl)));
+    wo.querySelectorAll('[data-raumzu]').forEach(b => b.addEventListener('click',
+      () => raumZeigen(null)));
   };
   /* Ein Tipp auf die Albumkarte blaettert den Satz weiter (Q46).
    *

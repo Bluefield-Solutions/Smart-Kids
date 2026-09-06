@@ -126,7 +126,30 @@ Tierkapitel mit fünfzehn Bändern, die Abzeichen mit Medaillen. **Ein**
 Bauplan, drei Füllungen.
 
 Damit fällt auch B2 aus Audit I: die zweite Reiterzeile im Tierkapitel
-braucht es nicht mehr, weil das Raster untereinander läuft.
+braucht es nicht mehr.
+
+**Nachtrag aus Runde 3 (v421): „fünfzehn Bänder" ist nicht gebaut, und
+zwar gemessen.** Ein Band aus Kulisse, drei Tieren und Tür steht rund
+130 Punkte hoch; fünfzehn davon sind rund 1950 in einem Raster, das auf
+dem Zielgerät 244 hoch ist. `passt` geht von jedem Knopf zum ersten
+rollenden Vorfahren hinauf und verlangt, dass er darin liegt — das wären
+rund vierzig rote Knöpfe gewesen. Der Satz „Rollen ist hier richtig,
+es ist **eine** Liste" war eine Behauptung ohne Messung; die Zeile
+dagegen steht seit T2 im Tor: *ein Kind rollt nicht in einer Liste, von
+der es nicht weiß, dass sie weitergeht.*
+
+Gebaut ist statt dessen dasselbe Raster in **zwei Zuständen**: es zeigt
+zuerst die fünfzehn **Räume** als Zellen, ein Tipp tauscht es gegen die
+drei Tiere dieses Raumes und die Tür. Beide Zustände haben den Bauplan
+der anderen vier Seiten — links, was die Seite sagt, rechts ein Raster
+aus Zellen. Gemessen: Zelle 103 × 71 auf dem Zielgerät, 95 × 71 auf dem
+kleinsten, drei Reihen in 216 von 244 bzw. 229 Punkten, **keine** unter
+der Fingergrenze.
+
+Der Preis ist **ein Tipp mehr** bis zu einem Tier. Dafür stehen die
+fünfzehn Raumnamen zum ersten Mal *da*, statt nur gesprochen zu werden,
+und die drei Tiere eines Raumes sind von 74 auf 151 Punkte breite Karten
+gewachsen — sie sind der Inhalt der Seite und sehen jetzt auch so aus.
 
 ---
 
@@ -201,7 +224,7 @@ wirklich Gestaltung sind und nicht Ordnung:
 
 | | Stand |
 |---|---|
-| **B1/B2** Vier Grundrisse, zwei Reiterzeilen | Grundriss **erledigt** (Runde 1): alle fünf Seiten haben denselben Bauplan. Die zweite Reiterzeile steht noch — Runde 3. |
+| **B1/B2** Vier Grundrisse, zwei Reiterzeilen | **erledigt.** Grundriss in Runde 1, die zweite Reiterzeile in Runde 3: aus den fünfzehn Raumreitern ist ein Raster aus fünfzehn Zellen geworden, das im selben Kasten steht wie die Abzeichen und die Karten der anderen Seiten. |
 | **B3** Kopfzahl widerspricht den Reitern | **erledigt** (Runde 2), mit Tor und zwei Gegenproben |
 | **B4** Halbleere Seiten | **teilweise**: kein Überlauf mehr, 95 % genutzte Höhe auf allen Seiten. Die Tinte auf den Kartenseiten bleibt bei 6–8 % — eine Karte ist eine Karte, und ein größerer weißer Kasten ist nicht voller. Der Rest hängt an Runde 3. |
 | **B5** Drei von fünf Seiten rollen | **erledigt**: keine |
@@ -213,7 +236,7 @@ wirklich Gestaltung sind und nicht Ordnung:
 | **C4** Drei Farben umgehen die Marken | **offen**, und mit Ansage: die Aufklebertöne gehören zum Tier |
 | **C5** Sieben Klassen kommen einmal vor | **offen** |
 | **K1** Abzeichenseite zu 92 % Text | **erledigt**: 312 → 169 Zeichen, 8 % → 14 % Bild |
-| **K2** Fünfzehn Griffe unter 44 pt | **offen** — fällt mit Runde 3 weg |
+| **K2** Fünfzehn Griffe unter 44 pt | **erledigt** (Runde 3): die Zellen sind auf dem Zielgerät 103 × 71 und auf dem kleinsten 95 × 71 — gemessen, keine darunter. |
 | **K3** „Zurück" wird nicht angesagt | **erledigt** — und dabei kam heraus, dass die Ansage bis dahin die AUFGABE eines Knopfes überschrieben hat |
 | **K4** Die Zahl 45 ist für Fiona keine Zahl | **teilweise**: `45/45` ist für sie nicht lesbarer als `45`. Das Bild auf dem Reiter, das im Tierkapitel schon steht, fehlt den anderen vier weiterhin. |
 

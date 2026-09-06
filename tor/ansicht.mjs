@@ -199,6 +199,13 @@ const AUFNAHMEN = [
    * Aufgenommen wird der VOLLE Stand: dreissig Tiere, zehn Raeume, das
    * Bild besetzt. Ein halber Stand zeigt einen Grundriss, den es nach
    * ein paar Wochen nicht mehr gibt. */
+  /* ZWEI Zustaende, zwei Vorbilder (Runde 3).
+     Das Raumraster ist der Zustand, auf dem ein Kind LANDET - es hatte
+     bis hierher kein Vorbild, weil es ihn bis hierher nicht gab. Ein
+     Bildschirm ohne Vorbild ist genau der, auf dem in der Audit-Runde
+     die Fehler standen. */
+  { name:'quer-buch-raeume', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'raumraster' },
   { name:'quer-buch-tiere', spiel:null, quer:true, stand:'tiere',
     wahl:'.schirm.da', tun:'tierbuch' },
   { name:'quer-landschaft', spiel:null, quer:true, stand:'tiere',
@@ -925,19 +932,24 @@ for (const a of MEINE) {
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen');
       await seite.waitForTimeout(400);
-    } else if (a.tun === 'tierbuch' || a.tun === 'landschaft') {
-      /* Ins Buch, ins Tierkapitel, auf den Raum „In der Stadt" - und bei
-         `landschaft` noch durch die Tuer. Beides derselbe Weg bis auf
-         den letzten Schritt; zweimal geschrieben waere er zweimal zu
-         pflegen (Regel 6). */
+    } else if (a.tun === 'raumraster' || a.tun === 'tierbuch' || a.tun === 'landschaft') {
+      /* Ins Buch, ins Tierkapitel - und dann je nach Aufnahme einen
+         Schritt weiter: `raumraster` bleibt beim Raster stehen (das ist
+         der Bildschirm, auf dem ein Kind LANDET), `tierbuch` oeffnet den
+         Raum „In der Stadt", `landschaft` geht noch durch die Tuer.
+         Derselbe Weg mit verschieden weiten Enden; dreimal geschrieben
+         waere er dreimal zu pflegen - was zweimal dasteht, veraltet
+         einmal (Regel 6). */
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen.buch');
       const reiter = await seite.$('.schirm.da .reiter[data-kap="tiere"]');
       if (reiter) await reiter.click();
-      await seite.waitForSelector('.schirm.da .tierraum:not([hidden])');
-      await seite.click('.schirm.da .raumchip[data-raumwahl="In der Stadt"]');
-      await seite.waitForSelector(
-        '.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="In der Stadt"]');
+      await seite.waitForSelector('.schirm.da .raumgitter:not([hidden])');
+      if (a.tun !== 'raumraster') {
+        await seite.click('.schirm.da .raumzelle[data-raumwahl="In der Stadt"]');
+        await seite.waitForSelector(
+          '.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="In der Stadt"]');
+      }
       if (a.tun === 'landschaft') {
         await seite.click('.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="In der Stadt"]');
         await seite.waitForSelector('.schirm.da .platz.voll');

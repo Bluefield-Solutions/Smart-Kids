@@ -5747,8 +5747,10 @@ if (laeuft('landschaft')) try {
     await p.waitForSelector('.schirm.da .rollen.buch', { timeout: 25000 });
     const r = await p.$('.schirm.da .reiter[data-kap="tiere"]');
     if (r) await r.click();
-    await p.waitForSelector('.schirm.da .tierraum:not([hidden])', { timeout: 15000 });
-    await p.click('.schirm.da .raumchip[data-raumwahl="Im Meer"]').catch(() => {});
+    /* Seit Runde 3 steht zuerst das RAUMRASTER da, nicht ein offener
+       Raum: ein Tipp auf die Zelle tauscht es gegen den Raum. */
+    await p.waitForSelector('.schirm.da .raumgitter:not([hidden])', { timeout: 15000 });
+    await p.click('.schirm.da .raumzelle[data-raumwahl="Im Meer"]');
     await bis(p, () => !!document.querySelector(
       '.schirm.da .tierraum:not([hidden]) .raumauf[data-raum="Im Meer"]'));
   };
@@ -5815,7 +5817,9 @@ if (laeuft('landschaft')) try {
      ist ein Bildschirmschoner und kein Bild. Geprueft ueber einen
      ECHTEN Neustart der Seite, nicht ueber den Stand im Speicher. */
   await p.click('.schirm.da #zur');
-  await p.waitForSelector('.schirm.da .raumauf', { timeout: 15000 });
+  /* Zurueck aus der Landschaft baut das Buch neu auf - und seit Runde 3
+     steht dann wieder das Raumraster da, nicht der offene Raum. */
+  await p.waitForSelector('.schirm.da .raumgitter:not([hidden])', { timeout: 15000 });
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForSelector('[data-profil="fiona"]');
   await p.click('[data-profil="fiona"]');
@@ -5866,6 +5870,10 @@ if (laeuft('landschaft')) try {
   await q.waitForSelector('.schirm.da .rollen.buch');
   const rq = await q.$('.schirm.da .reiter[data-kap="tiere"]');
   if (rq) await rq.click();
+  /* Dieses Profil hat ALLE Tiere, also ist jeder Raum voll und jeder
+     traegt eine Tuer - die erste Zelle genuegt. */
+  await q.waitForSelector('.schirm.da .raumgitter:not([hidden])');
+  await q.click('.schirm.da .raumzelle');
   await q.waitForSelector('.schirm.da .tierraum:not([hidden]) .raumauf');
   await q.click('.schirm.da .tierraum:not([hidden]) .raumauf');
   await q.waitForSelector('.schirm.da .szene');
