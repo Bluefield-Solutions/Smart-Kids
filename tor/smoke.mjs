@@ -2513,13 +2513,24 @@ if (laeuft('ablage')) try {
       /* Und jetzt jede Seite einzeln. Gemessen wird nach dem Klick am
          WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
          welche Seite wie hoch wird, entscheidet der Bildschirm. */
-      const eng = [], gleich = [], genutzt = [];
+      const eng = [], gleich = [], genutzt = [], ohneBalken = [];
       const seiten = new Set();
       for (let i = 0; i < streifen.reiter; i++) {
         await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
         const seite = await q.evaluate(() => {
           const r = document.querySelector('.schirm.da .rollen');
           const rk = r.getBoundingClientRect();
+          /* EINMAL die Inhaltskaesten der Seite - ohne die Spalten
+             selbst, die den Kasten immer fuellen. Beide Messungen
+             darunter arbeiten auf derselben Menge; zweimal dieselbe
+             Auswahl waere zweimal zu pflegen (Regel 6: was zweimal
+             dasteht, veraltet einmal). */
+          const huellen = new Set(
+            [...r.querySelectorAll('.buchseite, .buchspalte, .buchraster')]);
+          const inhalt = [...r.querySelectorAll('*')]
+            .filter(e => !huellen.has(e))
+            .map(e => e.getBoundingClientRect())
+            .filter(k => k.height > 2 && k.width > 2);
           return { was: document.querySelector('.schirm.da [data-kap].da')?.textContent
                      .trim().replace(/\s+/g, ' ').slice(0, 22) || '(keins offen)',
                    /* Nur Bloecke, die es WIRKLICH gibt (> 2 px).
@@ -2530,28 +2541,30 @@ if (laeuft('ablage')) try {
                       Pruefung meldete eine Ueberschrift als unsichtbar,
                       die gar nicht da sein soll. */
                    bloecke: (() => {
-                     /* DIESELBE STELLE WIE BEI `genutzt` (v423).
+                     /* DIESELBE STELLE WIE BEI `genutzt` (v423/v424).
                       *
-                      * Auch hier stand `r.children`, und auch hier ist das
-                      * seit dem Buch-Umbau die eine Seite, die den Kasten
-                      * fuellt: ihr Anteil ist immer 1, sie fiel immer aus
-                      * dem Filter, und die Zahl war immer 0. Die
-                      * Gegenprobe „eine Kapitelseite ist zu hoch fuer den
-                      * Bildschirm" liess das Album auf 300 Punkte wachsen
-                      * und bekam trotzdem gruen.
+                      * Zuerst stand hier `r.children`, und das war seit
+                      * dem Buch-Umbau die eine Seite, die den Kasten
+                      * fuellt: ihr Anteil war immer 1, sie fiel immer aus
+                      * dem Filter, die Zahl war immer 0.
                       *
-                      * Gezaehlt werden jetzt die Bloecke IN den Spalten -
-                      * die Karte, das Raster, der Balken, der Fusssatz. */
-                     const spalten = [...r.querySelectorAll('.buchspalte, .buchraster')];
-                     const kinder = spalten.length
-                       ? spalten.flatMap(sp => [...sp.children])
-                       : [...r.children];
-                     return kinder
-                       .map(e => ({ k: e.getBoundingClientRect() }))
-                       .filter(x => x.k.height > 2)
-                       .map(x => ({ anteil: Math.max(0, Math.min(x.k.bottom, rk.bottom)
-                         - Math.max(x.k.top, rk.top)) / x.k.height }))
-                       .filter(x => x.anteil < 1).length;
+                      * Der zweite Anlauf zaehlte die Kinder der beiden
+                      * Spalten - und war fuer den Fall, den die Gegenprobe
+                      * herstellt, immer noch blind: die Albumkarte ist
+                      * seit Runde 1 `height:100%`, ihr KASTEN bleibt also
+                      * 244 hoch, auch wenn das Bild darin auf 600 waechst.
+                      * Gemessen, nicht vermutet: die Karte steht mit 140 x
+                      * 244 im Raster, das Bild darin mit 122 x 165.
+                      *
+                      * Gezaehlt wird jetzt jeder INHALT ausser den
+                      * Spalten selbst - dieselbe Menge wie bei `genutzt`.
+                      * Ein Bild, das oben aus der Seite haengt, ist genau
+                      * das, was die Zusage meint: es steht nicht im
+                      * Bild. */
+                     return inhalt
+                       .map(k => ({ anteil: Math.max(0, Math.min(k.bottom, rk.bottom)
+                         - Math.max(k.top, rk.top)) / k.height }))
+                       .filter(x => x.anteil < 0.999).length;
                    })(),
                    /* WIEVIEL DER SEITE BENUTZT WIRD (G15b).
                     *
@@ -2583,14 +2596,8 @@ if (laeuft('ablage')) try {
                       * Stelle, an der der Inhalt wirklich aufhoert.
                       * Regel 1: eine Pruefung, die immer dieselbe Zahl
                       * meldet, prueft nichts. */
-                     const spalten = new Set(
-                       [...r.querySelectorAll('.buchseite, .buchspalte, .buchraster')]);
-                     const bs = [...r.querySelectorAll('*')]
-                       .filter(e => !spalten.has(e))
-                       .map(e => e.getBoundingClientRect())
-                       .filter(k => k.height > 2 && k.width > 2);
-                     if (!bs.length || rk.height <= 0) return null;
-                     const unten = Math.max(...bs.map(k => k.bottom));
+                     if (!inhalt.length || rk.height <= 0) return null;
+                     const unten = Math.max(...inhalt.map(k => k.bottom));
                      return Math.round(100 * (unten - rk.top) / rk.height);
                    })(),
                    ganz: [...r.children].filter(e =>
@@ -2602,13 +2609,34 @@ if (laeuft('ablage')) try {
                       das stellt die Gegenprobe „ein Kapitelreiter
                       blaettert nicht" her, und sie hat diese Luecke
                       gefunden. */
-                   abdruck: (r.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120) };
+                   abdruck: (r.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+                   /* WELCHE Seite das ist und ob sie einen Balken traegt.
+                      Fuer die eine Zusage aus G15c, die bis v423 kein Tor
+                      gehalten hat - siehe unten. */
+                   seiteId: r.querySelector('.buchseite')?.dataset.seite || '',
+                   balken: !!r.querySelector('.balken') };
         });
+        if (seite.seiteId === 'naechstes' && !seite.balken) ohneBalken.push(seite.was);
         if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
         if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
         if (seiten.has(seite.abdruck)) gleich.push(`„${seite.was}"`);
         seiten.add(seite.abdruck);
       }
+      /* DIE VORSCHAUSEITE SAGT, WIE WEIT ES NOCH IST (G15c).
+       *
+       * Die Zusage steht seit G15c im Quelltext: die Seite sagt „als
+       * Naechstes" - dann gehoert dazu, wie weit es noch ist, und zwar
+       * als Zeile UND als Balken. Ein Tor dafuer gab es nicht. Die
+       * Gegenprobe nahm den Balken weg und erwartete, dass die
+       * Halbleer-Ratsche anschlaegt; gemessen steht die Seite mit
+       * Balken bei 42 % und ohne bei 38 - beide weit ueber der Ratsche.
+       * Sie hat also zwei Fassungen lang eine Zusage geprueft, die kein
+       * Tor gab (Regel 1: eine Pruefung, die nie etwas meldet, ist kein
+       * Beweis). Jetzt gibt es sie. */
+      if (ohneBalken.length)
+        merke('forscherbuch', new Error(`die Vorschauseite (${ohneBalken.join(' · ')}) `
+          + 'traegt keinen Fortschrittsbalken — sie sagt „als Naechstes" und verschweigt, '
+          + 'wie weit es noch ist'));
       if (eng.length)
         merke('forscherbuch', new Error(`auf ${eng.length} von ${streifen.reiter} Kapitelseiten `
           + `steht nicht alles im Bild (${eng.join(' · ')}) — dann hat das Blättern das `

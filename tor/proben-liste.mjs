@@ -956,6 +956,18 @@ export const PROBEN = [
   { n:'die Werkzeugspalte rutscht auf die Antwortliste', tor:'smoke',
     args:['--teil=0/4'], bauen:true, datei:V,
     such:'  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}',
+    /* DIESE PROBE SCHLAEGT SEIT v422 NICHT MEHR AN, und zwei Anlaeufe
+       haben es nicht behoben - festgehalten, damit der dritte nicht
+       wieder bei null anfaengt:
+       - `-60px` allein: still.
+       - `-160px` mit `position:relative;z-index:2`, weil die
+         Antwortliste im Markup dahintersteht und darueber malen
+         koennte: ebenfalls still. GEMESSEN mit dem Eingriff im Bau:
+         „Fremdgriff geprueft: 8 ruhende Bildschirme (6x wahl,
+         2x aufgabe), 69 in Bewegung uebersprungen" - und kein Befund.
+       Die Spalte deckt die Antworten also gar nicht zu; woran das
+       liegt, ist am Bildschirm zu sehen und nicht am Selektor zu
+       erraten. Bis dahin steht hier der urspruengliche Eingriff. */
     ersatz:'  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}\n'
          + '  .werkzeug{margin-left:-60px}',
     an:{ ...DIST, text:'.werkzeug{margin-left:-60px}' },
@@ -2923,14 +2935,20 @@ export const PROBEN = [
      und faellt durch die Bildmessung. */
   { n:'die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße',
     tor:'passt', bauen:true, args:['--teil=0/5'], datei:V,
+    /* DIE REGEL WEGZUNEHMEN LAESST DIE KARTE WACHSEN, nicht schrumpfen -
+       und die Pruefung schlaegt nur bei Schrumpfen an. Der Eingriff war
+       zwei Fassungen lang verkehrt herum, und das ist am Stylesheet
+       auszurechnen: faellt `height:125px` weg, greift die Grundregel
+       `clamp(120px, 42vh, 340px)`, und 42 vh sind auf dem Zielgeraet
+       (390 hoch) 164 Punkte. Der Stand haelt 125 fest
+       (`tor/masse-stand.json`), 164 ist mehr, und `ist < war` war nie
+       wahr.
+       Jetzt setzt der Eingriff eine KLEINE Hoehe. Das ist der Fehler,
+       den die Probe im Namen traegt: die Karte schrumpft auf
+       Briefmarkengroesse. */
     such:'  .rollen.buch:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:125px}',
-    ersatz:'',
-    /* Der HOEHENWERT gehoert dazu, nicht nur der Aufhaenger: seit Q44 gibt
-       es eine zweite Regel mit demselben Anfang (`.rollen.buch.kapitel:...`,
-       200 Punkte). „`.albumkarte ~ *)) .albumkarte svg` fehlt" war damit
-       nie wahr, und `proben` hat es gemeldet: der Eingriff kam an, die
-       Nachfrage sagte nein, und die Probe bewies nichts. */
-    an:{ ...DIST, fehlt:'.albumkarte svg{height:125px}' },
+    ersatz:'  .rollen.buch:not(:has(.albumkarte ~ *:not(.buchsatz))) .albumkarte svg{height:40px}',
+    an:{ ...DIST, text:'.albumkarte svg{height:40px}' },
     sagt:'Albumkarte ist auf' },
 
   /* --- Der Gleichlauf (Q29) -------------------------------------------
@@ -4028,7 +4046,7 @@ export const PROBEN = [
     such:"          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) : ''; })()}",
     ersatz:"          anteil: dran.da.filter(x => x.gekonnt).length / gesamt }) \u0026\u0026 '' : ''; })()}",
     an:{ ...DIST, text:"gesamt }) && ''" },
-    sagt:'Kapitelseiten nutzen weniger als' },
+    sagt:'verschweigt, wie weit es noch ist' },
 
   /* --- G15b: eine Kapitelseite darf nicht halb leer sein ---------------
    *
@@ -4071,11 +4089,16 @@ export const PROBEN = [
    * dann nur „bleibt gruen" melden, ohne zu sagen, warum. */
   { n:'die Nutzungsmessung misst wieder den Kasten statt den Inhalt',
     tor:'smoke', args:['--nur=ablage'], bauen:true, datei:'tor/smoke.mjs',
-    such:"                     const bs = [...r.querySelectorAll('*')]\n"
-      + "                       .filter(e => !spalten.has(e))",
-    ersatz:"                     const bs = [...r.children]\n"
-      + "                       .filter(e => true)",
-    an:{ datei:'tor/smoke.mjs', text:'const bs = [...r.children]' },
+    /* Der Suchtext ist mit v424 mitgewandert: die Auswahl steht jetzt
+       EINMAL als `inhalt` vor beiden Messungen statt zweimal in ihnen.
+       `inhalt` hat es gemeldet - der Eingriff waere nicht angekommen,
+       und der Wachhund haette still gruen gemeldet. Genau davor warnt
+       er selbst. */
+    such:"          const inhalt = [...r.querySelectorAll('*')]\n"
+      + "            .filter(e => !huellen.has(e))",
+    ersatz:"          const inhalt = [...r.children]\n"
+      + "            .filter(e => true)",
+    an:{ datei:'tor/smoke.mjs', text:'const inhalt = [...r.children]' },
     sagt:'melden denselben Wert' },
 
   /* --- G14: der Lohn gehoert den Kindern ------------------------------

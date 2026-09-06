@@ -357,7 +357,7 @@
     "die Werkzeugspalte rutscht auf die Antwortliste": {
       "commit": "1e52c4bff47b825ec09dfdcc01873a539a570fa5",
       "zeit": "2026-09-04",
-      "s": 128
+      "s": 123
     },
     "der Fremdgriff sieht die Aufgabe nicht mehr": {
       "commit": "c19fb08b2e68074d3d37f562d1280f9c710bbea8",
@@ -820,9 +820,9 @@
       "s": 7
     },
     "eine Kapitelseite im Buch ist zu hoch für den Bildschirm": {
-      "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
-      "zeit": "2026-09-05",
-      "s": 69
+      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
+      "zeit": "2026-09-06",
+      "s": 152
     },
     "der leere Kopf nimmt wieder Platz weg": {
       "commit": "c19fb08b2e68074d3d37f562d1280f9c710bbea8",
@@ -1020,9 +1020,9 @@
       "s": 68
     },
     "die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße": {
-      "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
-      "zeit": "2026-09-05",
-      "s": 55
+      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
+      "zeit": "2026-09-06",
+      "s": 97
     },
     "beim Zusammenführen fällt der Aufkleber zurück": {
       "commit": "c19fb08b2e68074d3d37f562d1280f9c710bbea8",
@@ -1430,9 +1430,9 @@
       "s": 63
     },
     "die Vorschauseite verschweigt wieder den Fortschritt": {
-      "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
-      "zeit": "2026-09-05",
-      "s": 69
+      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
+      "zeit": "2026-09-06",
+      "s": 129
     },
     "eine Kapitelseite im Buch ist wieder halb leer": {
       "commit": "c19fb08b2e68074d3d37f562d1280f9c710bbea8",
@@ -1440,9 +1440,9 @@
       "s": 135
     },
     "die Nutzungsmessung misst wieder den Kasten statt den Inhalt": {
-      "commit": "c19fb08b2e68074d3d37f562d1280f9c710bbea8",
+      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
       "zeit": "2026-09-06",
-      "s": 134
+      "s": 129
     },
     "der Lohn feiert auch bei den Eltern": {
       "commit": "c19fb08b2e68074d3d37f562d1280f9c710bbea8",
