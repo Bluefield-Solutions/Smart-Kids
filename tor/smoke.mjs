@@ -24,6 +24,52 @@ const AB_RAEUME = RAEUME.filter(r => r.ab);
  * Der ganze AUFRUF steht hier und nicht nur der Ausleser: eine Funktion
  * aus dem Tor kann `page.evaluate` nicht mitnehmen, also muss das, was
  * geteilt wird, die Auswertung selbst sein. */
+/**
+ * Die Kopfzahl des Buches gegen die Summe der Reiter.
+ *
+ * Bis v414 stand oben „20 Aufkleber", waehrend die Reiter 45 + 3 + 4 +
+ * 16 sagten: die Kopfzahl zaehlte nur die Ebenen-Aufkleber, Tiere und
+ * Abzeichen waren nicht darin. Zwei Zahlen ueber demselben Inhalt, in
+ * verschiedenen Einheiten - und kein Tor hat es gesehen, weil beide fuer
+ * sich richtig gerechnet waren.
+ *
+ * Geprueft wird deshalb die BEZIEHUNG und nicht der Wert. Und der
+ * Bericht sagt, wieviele Reiter dabei waren: ohne Reiter ist der
+ * Vergleich still gruen und beweist nichts (Regel 1) - der erste Anlauf
+ * stand genau so in `ablage`, wo Fionas Buch nur ein Kapitel hat.
+ */
+async function kopfGegenReiter(seite, wo) {
+  const z = await seite.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const marke = (s.querySelector('.marke')?.textContent || '').match(/(\d+)\D+(\d+)/);
+    const reiter = [...s.querySelectorAll('.buchreiter .reiterzahl')].map(x => {
+      const m = x.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+      return m ? { da: +m[1], gesamt: +m[2] } : null;
+    });
+    return { kopf: marke ? { da: +marke[1], gesamt: +marke[2] } : null,
+             reiter, ohneZahl: reiter.filter(x => !x).length,
+             reiterZahl: s.querySelectorAll('.buchreiter [data-kap]').length };
+  });
+  if (!z.kopf) {
+    merke('forscherbuch', new Error(`im Kopf des Buches (${wo}) steht keine Zahl `
+      + '„x von y" — dann sagt der Bildschirm nicht, wie weit die Sammlung ist'));
+  } else if (z.ohneZahl) {
+    merke('forscherbuch', new Error(`${z.ohneZahl} Reiter (${wo}) tragen eine Zahl, die `
+      + 'nicht „gesammelt / gesamt" ist — dann zählt eine davon in die andere Richtung'));
+  } else if (z.reiter.length) {
+    const summe = z.reiter.reduce((a, r) => ({ da: a.da + r.da, gesamt: a.gesamt + r.gesamt }),
+      { da: 0, gesamt: 0 });
+    if (summe.da !== z.kopf.da || summe.gesamt !== z.kopf.gesamt)
+      merke('forscherbuch', new Error(`der Kopf sagt ${z.kopf.da} von ${z.kopf.gesamt}, `
+        + `die Reiter zusammen ${summe.da} von ${summe.gesamt} (${wo}) — `
+        + 'zwei Zahlen über demselben Inhalt'));
+  }
+  console.log(`  Kopfzahl gegen Reiter:      ${wo}: ${
+    z.kopf ? `${z.kopf.da} von ${z.kopf.gesamt}` : '(keine)'} bei ${
+    z.reiterZahl} Reitern${z.reiter.length ? '' : ' — NICHTS VERGLICHEN'}`);
+  return z.reiter.length;
+}
+
 const abzeichenSagen = (seite) => seite.evaluate(() => {
   const s = document.querySelector('.schirm.da');
   const sagt = (x) => (x.dataset.lesen || x.textContent).replace(/\s+/g, ' ').trim();
@@ -1666,6 +1712,8 @@ if (laeuft('ablage')) try {
    * `vorlauf` hatte `ebenenwahl` fest eingebaut, und mit einem Knopf, der
    * einfach `vorlauf(id)` aufruft, faellt man in einen fremden
    * Bildschirm. Das sieht wie ein Fehlgriff aus und ist keiner. */
+  await kopfGegenReiter(p, 'nach dem ersten Spiel');
+
   const zumVorlauf = await p.$('.schirm.da #allesehen');
   if (!zumVorlauf) {
     merke('forscherbuch', new Error('kein Weg zurück in den Vorlauf — seit das Auge '
@@ -5448,6 +5496,7 @@ if (laeuft('abzeichen')) try {
   await p.click('#buch');
   await p.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
   const beiFiona = await abzeichenSagen(p);
+  const verglichen = await kopfGegenReiter(p, 'Buch mit Abzeichen');
   if (!beiFiona.da.some(t => /drei Stadtstaaten/.test(t))) merke('abzeichen', new Error(
     `das verdiente Abzeichen fehlt — im Buch steht ${JSON.stringify(beiFiona.da)}`));
   if (beiFiona.da.some(t => /alle Kontinente/.test(t))) merke('abzeichen', new Error(

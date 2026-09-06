@@ -6931,11 +6931,17 @@ async function forscherbuch(){
        erste. Wer gerade „Das Outback" fertig gemacht hat, sucht das
        Outback, nicht das Meer. */
     const zuerst = Math.max(0, raeume.map(raumVoll).lastIndexOf(true));
-    if (dabei.length) kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:6, zahl:dabei.length,
+    if (dabei.length) kapitel.push({ id:'tiere', titel:'Meine Tiere', farbe:6,
+      zahl:dabei.length, gesamt:alle.length,
       lesen:`Deine Tiere. Du hast ${dabei.length === 1 ? 'eins'
         : dabei.length ? dabei.length : 'noch keins'} von ${alle.length}.`,
+      /* OHNE Zahl in der Ueberschrift: der Reiter darueber traegt sie
+         seit Runde 2 als `45/45`. Zweimal dieselbe Auskunft auf einem
+         Bildschirm ist keine Betonung, sondern Rauschen (Regel 6).
+         Bei den Ebenenkapiteln bleibt der Zusatz stehen - dort sagt er
+         etwas ANDERES als der Reiter, naemlich wieviele davon sicher
+         sind. */
       inhalt: buchSeite({ id:'tiere', titel:'Meine Tiere',
-        zusatz:` <small>${dabei.length} von ${alle.length}</small>`,
         fuss: TierStand.gorilla ? `<p class="buchsatz" data-lesen="${
             `Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal' : TierStand.gorilla + '-mal'} da und hat mit dir geübt.`
           }">Der Gorilla war schon ${TierStand.gorilla === 1 ? 'einmal'
@@ -7004,14 +7010,16 @@ async function forscherbuch(){
         </div>`).join('')}` }) });
   }
   if (verdient.length) kapitel.push({
-    id:'abzeichen', titel:'Abzeichen', farbe:2, zahl:verdient.length,
+    id:'abzeichen', titel:'Abzeichen', farbe:2,
+    zahl:verdient.length, gesamt:marken.length,
     lesen:`Deine Abzeichen. Du hast ${verdient.length===1?'eins':verdient.length}.`,
     inhalt: buchSeite({ id:'abzeichen', titel:'Deine Abzeichen',
       zusatz:` <small>${verdient.length} verdient</small>`,
       zeigt:`<div class="abzeichen">${verdient.map(markeBild).join('')}${
         naechste.map(markeBild).join('')}</div>` }) });
   for (const g of vollen) kapitel.push({
-    id:g.id, titel:g.titel, farbe:g.farbe, zahl:g.da.length,
+    id:g.id, titel:g.titel, farbe:g.farbe,
+    zahl:g.da.length, gesamt:g.da.length + g.offen.length,
     lesen:`${g.titel}. ${g.da.length===1?'Ein Aufkleber':`${g.da.length} Aufkleber`}.`,
     inhalt: buchSeite({ id:g.id, titel:g.titel,
       zusatz: g.da.filter(x=>x.gekonnt).length
@@ -7037,7 +7045,13 @@ async function forscherbuch(){
      Knopf oben rechts (Q20) bleibt davon unberuehrt: er haengt an
      `vorschau`, und die wird weiter gerechnet. */
   if (vorschau.length && !(dran && vollen.includes(dran) && hatKarte(dran))) kapitel.push({
-    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe, zahl:vorschau.length,
+    /* Ohne Zahl, und das ist der Punkt (Buch-Audit II, B6).
+       Hier stand `vorschau.length` - die Menge der OFFENEN Stuecke. Sie
+       stand gleich gross und gleich gewichtet neben „45", „16" und „4",
+       die alle das GESAMMELTE zaehlen: dieselbe Stelle, dieselbe Form,
+       die Gegenrichtung. „Als Naechstes" ist auch keine Sammlung,
+       sondern ein Hinweis - ein Reiter ohne Zahl sagt das von selbst. */
+    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe,
     lesen:`Als Nächstes: ${dran.titel}.`,
     inhalt: buchSeite({ id:'naechstes', titel:`Als Nächstes: ${dran.titel}`,
       zusatz:`${
@@ -7112,15 +7126,40 @@ async function forscherbuch(){
      Die Zahl steht gross und in der Farbe der Ebene: Fiona liest den Namen
      nicht, aber sie erkennt „ihre" Farbe wieder und sieht, wieviel darin
      steckt. Angesagt wird beides (`data-lesen`), damit sie es auch hoert. */
+  /* Auf dem Reiter steht `da/gesamt`, nicht `da`.
+   *
+   * Die nackte Zahl sagte nur die Haelfte: „45" heisst 45 von 124, „16"
+   * heisst 16 von 16 - das eine ist ein Anfang, das andere fertig, und
+   * beide sahen gleich aus. Mit dem Nenner sieht ein Kind zum ersten Mal,
+   * WIEVIEL ES UEBERHAUPT GIBT; das ist der Punkt, an dem das Buch von
+   * seinen drei Vorbildern am weitesten weg war (Panini, Pokedex,
+   * Fitness zeigen alle „142 / 151").
+   *
+   * Ein Kapitel OHNE `gesamt` ist keine Sammlung („Als Naechstes") und
+   * bekommt gar keine Zahl - sonst zaehlte eine davon in die andere
+   * Richtung. */
   const reiter = (k) => `
       <button class="reiter${k.id===offen?' da':''}" data-kap="${k.id}" role="tab"
               aria-selected="${k.id===offen}" data-lesen="${k.lesen}">
-        <span class="reiterzahl" style="color:var(${FL[(k.farbe-1+7)%7]})">${k.zahl}</span>
+        ${k.gesamt ? `<span class="reiterzahl" style="color:var(${FL[(k.farbe-1+7)%7]})"
+          >${k.zahl}<small>/${k.gesamt}</small></span>` : ''}
         <span class="was">${k.titel}</span>
       </button>`;
 
   s.innerHTML = kopf({ links: zurueckKnopf(),
-    mitte:`<span class="marke">${gesamt} Aufkleber</span>`,
+    /* DIE KOPFZAHL IST DIE SUMME DER REITER (Buch-Audit II, B3).
+     *
+     * Hier stand „20 Aufkleber", waehrend die Reiter 45 + 3 + 4 + 16
+     * sagten: `gesamt` zaehlte nur die Ebenen-Aufkleber, Tiere und
+     * Abzeichen waren nicht darin. Zwei Zahlen ueber demselben Inhalt,
+     * in verschiedenen Einheiten, ohne dass es dastand.
+     *
+     * Jetzt wird sie AUS den Kapiteln gerechnet und nicht daneben. Sie
+     * kann den Reitern damit nicht mehr widersprechen - nicht, weil
+     * jemand aufpasst, sondern weil es dieselbe Zahl ist. */
+    mitte:`<span class="marke">${
+      kapitel.reduce((a, k) => a + (k.gesamt ? k.zahl : 0), 0)} von ${
+      kapitel.reduce((a, k) => a + (k.gesamt || 0), 0)} gesammelt</span>`,
     /* Der Weg zurueck in den Vorlauf steht im KOPF, nicht im Fluss (Q20).
      *
      * Der erste Anlauf setzte ihn unter die Vorschau. Der Rauchtest hat

@@ -567,6 +567,30 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/tiere.js', text:'if (!r.ab) continue;' },
     sagt:'öffnet sich schon bei' },
 
+  /* --- Die Kopfzahl gegen die Reiter (Buch-Audit II, B3) ------------ *
+   *
+   * Der Eingriff stellt genau den Zustand her, der bis v414 ausgeliefert
+   * war: der Kopf zaehlt nur die Ebenen-Aufkleber, die Reiter zaehlen
+   * alles. Beide Zahlen sind fuer sich richtig gerechnet - deshalb hat
+   * es kein Tor gesehen, und deshalb prueft der Rauchtest jetzt die
+   * BEZIEHUNG. */
+  { n:'die Kopfzahl zählt etwas anderes als die Reiter', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:"      kapitel.reduce((a, k) => a + (k.gesamt ? k.zahl : 0), 0)} von ${",
+    ersatz:"      gesamt} von ${",
+    an:{ ...DIST, fehlt:'k.gesamt ? k.zahl : 0' },
+    sagt:'zwei Zahlen über demselben Inhalt' },
+
+  /* Und die andere Haelfte: ein Reiter, der in die Gegenrichtung zaehlt.
+     „Als Naechstes" trug bis v414 die Menge der OFFENEN Stuecke, gleich
+     gross und gleich gewichtet neben denen, die das Gesammelte zaehlen. */
+  { n:'ein Reiter zählt in die Gegenrichtung', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:"    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe,",
+    ersatz:"    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe, zahl:vorschau.length, gesamt:vorschau.length,",
+    an:{ ...DIST, text:"zahl:vorschau.length, gesamt:vorschau.length" },
+    sagt:'zwei Zahlen über demselben Inhalt' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.
