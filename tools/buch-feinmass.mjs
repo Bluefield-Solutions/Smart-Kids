@@ -19,7 +19,7 @@ import { TIERE } from '../src/inhalt/tiere.js';
 const { b, s, server, kapitel: kaps } = await oeffneBuch();
 
 const alles = { schrift: {}, radius: {}, luft: {}, farbe: {}, grund: {}, schatten: {},
-                flucht: {}, klassen: {}, jeSeite: [] };
+                flucht: {}, klassen: {}, jeSeite: [], tafel: false };
 const zaehl = (o, k) => { o[k] = (o[k] || 0) + 1; };
 
 for (const k of kaps) {
@@ -78,12 +78,14 @@ for (const k of kaps) {
       }
     }
     raus.kasten = { b: Math.round(rk.width), h: Math.round(rk.height) };
+    raus.tafel = !!schirm.querySelector('.rechentafel .tafelfeld');
     return raus;
   });
   for (const [feld, liste] of Object.entries({ schrift: m.schrift, radius: m.radius,
         luft: m.luft, farbe: m.farbe, grund: m.grund, schatten: m.schatten,
         flucht: m.flucht, klassen: m.klassen }))
     for (const v of liste) zaehl(alles[feld], String(v));
+  if (m.tafel) alles.tafel = true;
   alles.jeSeite.push({ kapitel: k, zeichen: m.zeichen,
     bildAnteil: m.bildFlaeche / (m.bildFlaeche + m.textFlaeche || 1),
     flucht: [...new Set(m.flucht)].sort((a, c) => a - c),
@@ -177,6 +179,15 @@ if (process.argv.includes('--tor')) {
      Sie steht hier und nicht in `inhalt`, weil sie nur im Browser zu
      haben ist - eine Zeichenzahl waere ein Ersatz, kein Mass: „Mmmm..."
      ist bei gleicher Laenge doppelt so breit wie „lllll...". */
+  /* Und die zweite Blindprobe: ohne eine Ebene OHNE Landkarte hat die
+     Tonleiter die Rechentafel nie gesehen. Genau so ist der Rechenkleber
+     jahrelang neben der Leiter gestanden (20/700, Radius 10, Polster 4) -
+     nicht weil das Tor zu lasch war, sondern weil sein gestellter Stand
+     die Seite gar nicht enthielt. Eine Prüfung, die etwas nie sieht,
+     meldet darüber auch nichts und ist insoweit kein Beweis (Regel 1). */
+  if (!alles.tafel)
+    fehler.push('keine Rechentafel unter den Kapiteln — der gestellte Stand hat keine '
+      + 'Ebene ohne Landkarte, und dann ist die Seite mit der eigenen Bildsprache ungemessen');
   const ln = alles.langeNamen;
   if (!ln) fehler.push('kein Tierkapitel im Stand — die Namensprobe hat NICHTS geprüft');
   else if (ln.zuviel.length)
@@ -193,7 +204,7 @@ if (process.argv.includes('--tor')) {
     + `${Object.keys(alles.radius).length} Radien, ${Object.keys(alles.luft).length} Abstände `
     + `im Buch — gemessen an ${kaps.length} Kapitelseiten auf 844 × 390.`);
   console.log(`    Und ${ln.geprueft} Tiernamen passen in zwei Zeilen `
-    + `(Karte ${ln.karte} Punkte breit).`);
+    + `(Karte ${ln.karte} Punkte breit); die Rechentafel war dabei.`);
   process.exit(0);
 }
 console.log(`\n  Feinmass am Forscherbuch, 844 x 390, voller Stand, ${kaps.length} Kapitel`);

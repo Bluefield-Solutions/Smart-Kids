@@ -953,24 +953,43 @@ export const PROBEN = [
    * eine Kachel angetippt. Kurzlebige Bildschirme sind Sache von `passt`,
    * das sie einzeln ansteuert; der Rauchtest ist fuer die, auf denen
    * gespielt wird. */
+  /* `ohneSofort`, weil eine ECHTE Ueberdeckung immer auch die Bedienung
+     stoert - das ist ja der Grund, warum es den Fremdgriff gibt. Mit
+     `--sofort` bricht der Rauchtest schon beim Ziehen ab („Thueringen
+     auf den Anker gezogen, aber nach 10 s kein Lob") und kommt gar nicht
+     bis zu der Meldung, die diese Probe meint. */
   { n:'die Werkzeugspalte rutscht auf die Antwortliste', tor:'smoke',
-    args:['--teil=0/4'], bauen:true, datei:V,
-    such:'  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}',
-    /* DIESE PROBE SCHLAEGT SEIT v422 NICHT MEHR AN, und zwei Anlaeufe
-       haben es nicht behoben - festgehalten, damit der dritte nicht
-       wieder bei null anfaengt:
-       - `-60px` allein: still.
-       - `-160px` mit `position:relative;z-index:2`, weil die
-         Antwortliste im Markup dahintersteht und darueber malen
-         koennte: ebenfalls still. GEMESSEN mit dem Eingriff im Bau:
-         „Fremdgriff geprueft: 8 ruhende Bildschirme (6x wahl,
-         2x aufgabe), 69 in Bewegung uebersprungen" - und kein Befund.
-       Die Spalte deckt die Antworten also gar nicht zu; woran das
-       liegt, ist am Bildschirm zu sehen und nicht am Selektor zu
-       erraten. Bis dahin steht hier der urspruengliche Eingriff. */
-    ersatz:'  .seite{width:clamp(307px,45vw,380px);flex-direction:row;align-items:stretch;gap:var(--r2)}\n'
-         + '  .werkzeug{margin-left:-60px}',
-    an:{ ...DIST, text:'.werkzeug{margin-left:-60px}' },
+    args:['--teil=0/4'], bauen:true, datei:V, ohneSofort:true,
+    /* DER EINGRIFF WAR WIRKUNGSLOS, und zwar dreimal aus demselben
+       Grund - der dritten Verfallsart: die Regel wurde ueberschrieben.
+       Er stand im Block `@media (orientation:landscape) and
+       (max-height:440px)` bei Zeile 1554. Weiter unten, bei 2012, steht
+       `@media (orientation:landscape){ .werkzeug{… margin-inline:auto} }`
+       - dieselbe Spezifitaet, spaeter im Blatt, und `margin-inline`
+       setzt `margin-left` mit. GEMESSEN am laufenden Aufgabenbildschirm
+       mit dem Eingriff im Bau: `getComputedStyle(.werkzeug).marginLeft`
+       ist „0px", die Spalte steht bei 711..844 wie immer, und `ansicht`
+       meldete 49 gruen, 0 rot - kein einziger Bildpunkt anders.
+       Und ein negativer RAND war ohnehin das falsche Mittel: in einem
+       Flex-Kasten fester Breite nimmt ihn `.wahlliste{flex:1}` auf, die
+       Liste wird breiter, und die Spalte steht wieder rechts. Ueberdeckt
+       wird nur, was aus dem Fluss geht - `transform` verschiebt, ohne
+       das Layout zu aendern, und genau so sieht der Fehler in echt aus.
+       Der Eingriff sitzt jetzt in der Regel, die WIRKLICH gilt.
+
+       80 UND NICHT 160 - auch das ist gemessen. Bei 160 legt sich die
+       Spalte auf die Mitte der Antwortknoepfe, und dann ist das Spiel
+       lahm: der Rauchtest meldete zwoelf andere Dinge („auf den Anker
+       gezogen, aber nach 10 s kein Lob", „kein einziger Aufkleber nach
+       zwei Sitzungen") und kam gar nicht bis zum Fremdgriff. Das ist die
+       Lehre dieser Probe: der Fremdgriff ist die FEINERE Pruefung - er
+       soll die Ueberdeckungen finden, die das Spiel NICHT lahmlegen, und
+       eine Probe fuer ihn muss sich in derselben Groessenordnung halten.
+       Bei 80 trifft die Spalte die Wortenden, die Knopfmitte bleibt
+       frei, und die Meldung ist die richtige. */
+    such:'  .werkzeug{flex-direction:column;flex-wrap:nowrap;',
+    ersatz:'  .werkzeug{transform:translateX(-80px);flex-direction:column;flex-wrap:nowrap;',
+    an:{ ...DIST, text:'.werkzeug{transform:translateX(-80px)' },
     sagt:'des Wortes greift' },
 
   /* ZWEITENS: sieht er die AUFGABE? Das ist der ganze Grund, warum die
@@ -4075,6 +4094,77 @@ export const PROBEN = [
     ersatz:"zeigt:`<div class=\"abzeichen\"></div>`",
     an:{ ...DIST, text:'zeigt:`<div class="abzeichen"></div>`' },
     sagt:'Kapitelseiten nutzen weniger als' },
+
+  /* --- B4b: die Abzeichenseite deckt ihren Reiter --------------------
+   *
+   * Vier Proben. Die ersten beiden gehoeren zur Abzeichenseite, die
+   * beiden danach zur Rechentafel - den zwei Seiten, die vor B4b 25 %
+   * und 29 % ihrer Hoehe nutzten.
+   *
+   * 1. Der Rueckfall auf `slice(0, 3)`. Das ist nicht irgendein Fehler,
+   *    sondern GENAU der Zustand vor der Runde: der Reiter versprach
+   *    „3/9", die Seite zeigte sechs Zellen, und die damalige Zusage
+   *    („hoechstens drei offene") bestaetigte das noch. Eine feste Zahl
+   *    kann diesen Bruch nicht melden - sie ist er. */
+  { n:'die Abzeichenseite zeigt wieder nur drei offene Abzeichen', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:"    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt) : [];",
+    ersatz:"    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt).slice(0, 3) : [];",
+    an:{ ...DIST, text:'a.fehlt-b.fehlt).slice(0, 3)' },
+    sagt:'der Reiter verspricht' },
+
+  /* 2. Der Fusssatz faellt aus. Neun bernsteinfarbene Zellen mit je
+   *    einer Zahl stehen dann da, und WELCHE als naechste faellt, steht
+   *    nur noch in einer Sortierung - die sieht niemand. */
+  { n:'die Abzeichenseite sagt nicht mehr, welches als nächstes fällt', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:"        const satz = `Noch ${a.fehlt===1?'eins':a.fehlt}, dann heißt es: ${a.titel}`;",
+    ersatz:"        const satz = '';",
+    an:{ ...DIST, text:"const satz = ''" },
+    sagt:'dann heißt es' },
+
+  /* 3. Die Rechentafel rechnet an ihrem Reiter vorbei. Sie ist die
+   *    einzige Stelle im Buch, an der eine Zahl aus einer EIGENEN
+   *    Rechnung kommt - und ein falsches Muster sieht aus wie ein
+   *    richtiges.
+   *
+   *    DER ERSTE HEBEL WAR EIN NULLEINGRIFF: er zaehlte statt der
+   *    gesammelten die SICHEREN, und im gestellten Stand sind das
+   *    dieselben vier (Fach 5). Die Datei war geaendert, das Bild nicht -
+   *    die teuerste Verfallsart, weil sie wie ein schwaches Tor aussieht.
+   *    Jetzt der Nenner: er nimmt den ganzen Vorrat statt den der
+   *    Rechenart, und weil „Plus und Minus" IMMER zwei Arten hat, zaehlt
+   *    die Tafel danach 200 statt 100. Ein Vertippen, das jedem
+   *    passieren kann - und eines, das nicht am Stand haengt. */
+  { n:'die Rechentafel zählt an ihrem Reiter vorbei', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'              data-da="${da}" data-gesamt="${teil.length}"',
+    ersatz:'              data-da="${da}" data-gesamt="${alle.length}"',
+    an:{ ...DIST, text:'data-gesamt="${alle.length}"' },
+    sagt:'dasselbe zweimal gerechnet' },
+
+  /* 4. Und die Blindprobe: faellt die Tafel ganz aus, faellt die Seite
+   *    auf die Aufkleberwand zurueck - gemessen 29 % statt 95 %. Die
+   *    Halbleer-Ratsche steht bei 24 % und schlaegt dabei NICHT an; ohne
+   *    die eigene Zusage waere der Ausfall also still (Regel 1: eine
+   *    Prüfung, die nie etwas meldet, ist kein Beweis). */
+  { n:'die Rechentafel fällt aus und niemand merkt es', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"    const alle = [...g.da, ...g.offen];\n    if (!alle.length || !alle.every(x => RECHENZEICHEN[x.rechenart]",
+    ersatz:"    const alle = [];\n    if (!alle.length || !alle.every(x => RECHENZEICHEN[x.rechenart]",
+    an:{ ...DIST, text:'const alle = [];' },
+    sagt:'keine einzige Rechentafel' },
+
+  /* 5. Und dieselbe Blindstelle eine Ebene tiefer, im GESTELLTEN Stand
+   *    der Tonleiter. So ist der Rechenkleber jahrelang neben der Leiter
+   *    gestanden: nicht weil das Tor zu lasch war, sondern weil sein
+   *    Stand die Seite gar nicht enthielt. */
+  { n:'der Tonleiter fehlt die Ebene ohne Landkarte', tor:'tonleiter',
+    bauen:true, datei:'tools/buch-oeffnen.mjs',
+    such:"      'fiona:rechnen:plusminus': RECHENSTAND,",
+    ersatz:"",
+    an:{ datei:'tools/buch-oeffnen.mjs', fehlt:"'fiona:rechnen:plusminus': RECHENSTAND," },
+    sagt:'keine Rechentafel unter den Kapiteln' },
 
   /* UND DIE MESSUNG SELBST (v423).
    *

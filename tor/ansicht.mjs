@@ -19,7 +19,7 @@ import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe,
          zielUndEtikett } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
-import { ELTERN_VERGLEICH } from './gestellt.mjs';
+import { ELTERN_VERGLEICH, RECHENSTAND } from './gestellt.mjs';
 
 // IndexedDB braucht eine echte Herkunft, sonst faellt die Ablage still auf
 // nichts zurueck und der Prototyp startet jedesmal anders. Also derselbe
@@ -232,6 +232,12 @@ const AUFNAHMEN = [
     wahl:'.schirm.da', tun:'buchkapitel', kap:'bundeslaender' },
   { name:'quer-buch-naechstes', spiel:null, quer:true, stand:'tiere',
     wahl:'.schirm.da', tun:'buchkapitel', kap:'naechstes' },
+  /* Die Rechentafel (B4b) - die einzige Kapitelseite, die weder Karte
+     noch Aufkleberwand zeigt. Sie hatte kein Vorbild, und ein Bild, das
+     hundert Felder auf einmal zeichnet, ist genau die Art Bildschirm,
+     die ohne Vorbild schiefgeht. */
+  { name:'quer-buch-rechnen', spiel:null, quer:true, stand:'rechnen',
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'rechnen:plusminus' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -879,6 +885,28 @@ for (const a of MEINE) {
         };
         auf.onerror = () => nein(auf.error);
       }), { wer: a.kind || 'fiona', tiere: ALLE_TIERE });
+      await seite.reload({ waitUntil:'domcontentloaded' });
+      await seite.waitForSelector('[data-profil="fiona"]');
+    } else if (a.stand === 'rechnen') {
+      /* Kontinente UND Plus und Minus: die Rechentafel soll in einem Buch
+         stehen, das auch Reiter hat - allein waere sie ein Bildschirm,
+         den es so nie gibt. */
+      await seite.evaluate(({ wer, kont, rechnen }) => new Promise((ja, nein) => {
+        const auf = indexedDB.open('lernkiste', 1);
+        auf.onupgradeneeded = () => {
+          for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+            if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+        };
+        auf.onsuccess = () => {
+          const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+          t.objectStore('fortschritt').put(kont, `${wer}:kontinente`);
+          t.objectStore('fortschritt').put(rechnen, `${wer}:rechnen:plusminus`);
+          t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+            [`${wer}:kontinente`]: true, [`${wer}:rechnen:plusminus`]: true } }, 'alles');
+          t.oncomplete = ja; t.onerror = () => nein(t.error);
+        };
+        auf.onerror = () => nein(auf.error);
+      }), { wer: a.kind || 'fiona', kont: STAND, rechnen: RECHENSTAND });
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
     } else if (a.stand === 'voll') {

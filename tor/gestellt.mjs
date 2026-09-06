@@ -44,3 +44,27 @@ export const ELTERN_VERGLEICH = [
   { profil:'violeta', ebene:'laender:europa', gebietId:'ESP',    ergebnis:'gezeigt',
     versuch:3, dauerMs:11400 },
 ];
+
+/**
+ * Der Rechenstand fuer die Rechentafel (B4b).
+ *
+ * Zwei Werkzeuge brauchen ihn: `ansicht` fuer das Vorbild
+ * `quer-buch-rechnen`, `buch-feinmass` fuer die Tonleiter. Ohne diese
+ * Datei staende die Rechnung zweimal da - und `doppelt` haette sie
+ * gefunden.
+ *
+ * Er wird GERECHNET und nicht aufgezaehlt: hundert Kennungen von Hand
+ * hinzuschreiben hiesse, `Rechnen.vorrat()` ein zweites Mal zu fuehren.
+ *
+ * Die Stufe haengt an der GROESSE der Aufgabe, damit die Tafel ein
+ * Muster zeigt und keinen Zufall - kleine sicher (Fach 5), mittlere
+ * gesammelt (Fach 3), grosse offen (Fach 1). Alle drei Staerken der
+ * Tafel stehen damit auf jedem Bild; ein gewuerfelter Stand saehe bei
+ * jedem Lauf anders aus, und `ansicht` vergleicht Bildpunkte.
+ */
+export const RECHENSTAND = Object.fromEntries(
+  (await import('../src/inhalt/rechnen.js')).vorrat().map(x => {
+    const gross = x.rechenart === 'plus' ? x.a + x.b : x.a;
+    const fach = gross <= 5 ? 5 : gross <= 8 ? 3 : 1;
+    return [x.id, { fach, hoechstes: fach, faellig: 0, richtig: fach, falsch: 0, zuletzt: 0 }];
+  }));

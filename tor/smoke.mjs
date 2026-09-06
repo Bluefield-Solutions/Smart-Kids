@@ -84,8 +84,15 @@ async function kopfGegenReiter(seite, wo) {
 const abzeichenSagen = (seite) => seite.evaluate(() => {
   const s = document.querySelector('.schirm.da');
   const sagt = (x) => (x.dataset.lesen || x.textContent).replace(/\s+/g, ' ').trim();
+  /* Und was der REITER verspricht (B4b). „3/9" steht ueber der Seite;
+     ob die Seite neun Zellen zeigt, ist die eigentliche Zusage - eine
+     feste Obergrenze („hoechstens drei") haette den Bruch zwischen
+     Nenner und Inhalt nie gemeldet, denn sie war es, die ihn verlangte. */
+  const reiter = s.querySelector('.buchreiter [data-kap="abzeichen"] .reiterzahl');
+  const zahl = reiter ? (reiter.textContent.match(/(\d+)\s*\/\s*(\d+)/) || []) : [];
   return { da: [...s.querySelectorAll('.abz.da')].map(sagt),
-           offen: [...s.querySelectorAll('.abz.offen')].map(sagt) };
+           offen: [...s.querySelectorAll('.abz.offen')].map(sagt),
+           reiterDa: zahl[1] ? +zahl[1] : null, reiterGesamt: zahl[2] ? +zahl[2] : null };
 });
 import * as Rechnen from '../src/inhalt/rechnen.js';
 // Welche Kontinente in welcher Runde kommen, steht in den Daten.
@@ -2513,7 +2520,7 @@ if (laeuft('ablage')) try {
       /* Und jetzt jede Seite einzeln. Gemessen wird nach dem Klick am
          WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
          welche Seite wie hoch wird, entscheidet der Bildschirm. */
-      const eng = [], gleich = [], genutzt = [], ohneBalken = [];
+      const eng = [], gleich = [], genutzt = [], ohneBalken = [], tafeln = [];
       const seiten = new Set();
       for (let i = 0; i < streifen.reiter; i++) {
         await q.$$eval('.schirm.da [data-kap]', (rs, k) => rs[k].click(), i);
@@ -2614,11 +2621,25 @@ if (laeuft('ablage')) try {
                       Fuer die eine Zusage aus G15c, die bis v423 kein Tor
                       gehalten hat - siehe unten. */
                    seiteId: r.querySelector('.buchseite')?.dataset.seite || '',
-                   balken: !!r.querySelector('.balken') };
+                   balken: !!r.querySelector('.balken'),
+                   /* Die Rechentafel und der Reiter darueber (B4b).
+                      Gelesen wird `data-da`/`data-gesamt` und nicht der
+                      Text: „+ 28 von 45" ist eine Bildunterschrift, und
+                      eine Pruefung, die Bildunterschriften zerlegt,
+                      misst die Sprache und nicht die Zahl. */
+                   tafel: [...r.querySelectorAll('.tafelfeld')].map(t =>
+                     ({ da: +t.dataset.da, gesamt: +t.dataset.gesamt })),
+                   reiterZahl: (() => {
+                     const z = document.querySelector(
+                       '.schirm.da .buchreiter [data-kap].da .reiterzahl');
+                     const m = z && z.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+                     return m ? { da: +m[1], gesamt: +m[2] } : null;
+                   })() };
         });
         if (seite.seiteId === 'naechstes' && !seite.balken) ohneBalken.push(seite.was);
         if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
         if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
+        if (seite.tafel && seite.tafel.length) tafeln.push(seite);
         if (seiten.has(seite.abdruck)) gleich.push(`„${seite.was}"`);
         seiten.add(seite.abdruck);
       }
@@ -2670,6 +2691,44 @@ if (laeuft('ablage')) try {
             + `(${schlecht.map(([w, a]) => `„${w}" ${a} %`).join(' · ')}) — `
             + 'das Forscherbuch ist die Sammlung, und eine halbleere Seite zeigt sie nicht'));
       }
+      /* --- Die Rechentafel deckt ihren Reiter (B4b) ------------------
+       *
+       * Eine Ebene ohne Landkarte zeigt statt der Aufkleberwand eine
+       * Tafel: ein Feld je Rechenart, darin ein Kaestchen je Aufgabe.
+       * Sie ist die einzige Stelle im Buch, an der eine ZAHL aus einer
+       * eigenen Rechnung kommt und nicht aus derselben Quelle wie der
+       * Reiter - also die einzige, die auseinanderlaufen kann.
+       *
+       * Geprueft wird deshalb genau das: die Summe ueber alle Felder
+       * muss den Reiter treffen, in beiden Zahlen. Ohne diesen Vergleich
+       * koennte die Tafel jede beliebige Menge zeichnen und saehe dabei
+       * richtig aus - sie ist ein Muster, kein Text, und ein falsches
+       * Muster faellt niemandem auf.
+       *
+       * Und die Blindprobe darunter (Regel 1): steht im gestellten Stand
+       * keine Ebene ohne Karte, hat diese Pruefung nichts gesehen und
+       * meldet deshalb auch nichts - dann ist „kein Befund" kein Beweis. */
+      const mitTafel = tafeln;
+      if (!mitTafel.length)
+        merke('forscherbuch', new Error('keine einzige Rechentafel im Buch — der gestellte '
+          + 'Stand hat keine Ebene ohne Landkarte, und dann beweist „kein Befund" hier nichts'));
+      for (const x of mitTafel) {
+        const summe = x.tafel.reduce((a, t) => ({ da: a.da + t.da,
+                                                  gesamt: a.gesamt + t.gesamt }), { da:0, gesamt:0 });
+        if (!x.reiterZahl)
+          merke('forscherbuch', new Error(`die Rechentafel „${x.seiteId}" hat keinen Reiter `
+            + 'mit Zahl — dann ist nicht zu prüfen, ob sie ihn deckt'));
+        else if (summe.da !== x.reiterZahl.da || summe.gesamt !== x.reiterZahl.gesamt)
+          merke('forscherbuch', new Error(`die Rechentafel „${x.seiteId}" zählt `
+            + `${summe.da} von ${summe.gesamt}, der Reiter darüber ${x.reiterZahl.da} von `
+            + `${x.reiterZahl.gesamt} — dasselbe zweimal gerechnet, einmal falsch`));
+      }
+      if (mitTafel.length)
+        console.log(`  Rechentafeln im Buch:       ${mitTafel.length} Seite`
+          + `${mitTafel.length === 1 ? '' : 'n'}, `
+          + mitTafel.map(x => `${x.seiteId} ${x.tafel.map(t =>
+              `${t.da}/${t.gesamt}`).join(' + ')}`).join(' · ')
+          + ' — deckt den Reiter');
       if (gleich.length)
         merke('forscherbuch', new Error(`${gleich.length} von ${streifen.reiter} Kapiteln zeigen `
           + `dieselbe Seite wie ein anderes (${gleich.join(' · ')}) — der Reiter markiert sich, `
@@ -5612,13 +5671,21 @@ if (laeuft('abzeichen')) try {
     `das verdiente Abzeichen fehlt — im Buch steht ${JSON.stringify(beiFiona.da)}`));
   if (beiFiona.da.some(t => /alle Kontinente/.test(t))) merke('abzeichen', new Error(
     'Fiona hat „alle Kontinente" verdient — sie hat drei von sechs, die Menge ist nicht voll'));
-  /* Auch hier hoechstens drei statt genau eines (G15b) - dieselbe Zusage,
-     an der zweiten Stelle. Sie stand doppelt da; die eine mitzuziehen und
-     die andere zu vergessen ist genau die Verfallsart, gegen die Regel 6
-     geschrieben ist (was zweimal dasteht, veraltet einmal). Gemeldet hat
-     es die Kette, nicht ich. */
-  if (beiFiona.offen.length < 1 || beiFiona.offen.length > 3) merke('abzeichen', new Error(
-    `${beiFiona.offen.length} offene Abzeichen auf einmal — es sollen eins bis drei sein`));
+  /* Der Reiter ist der Zeuge, nicht eine feste Zahl (B4b).
+     Vorher stand hier „eins bis drei" - und genau diese Grenze war der
+     Fehler: der Reiter versprach „3/9", die Seite zeigte 6 Zellen, und
+     die Zusage bestaetigte es. Jetzt muss die Seite den Nenner decken.
+     Dieselbe Zusage steht ein zweites Mal weiter unten am gestellten
+     Stand; wer sie hier aendert, aendert sie dort mit (Regel 6: was
+     zweimal dasteht, veraltet einmal). */
+  if (beiFiona.reiterGesamt === null) merke('abzeichen', new Error(
+    'kein Abzeichenreiter im Buch — dann ist nicht zu prüfen, ob die Seite ihn deckt'));
+  else if (beiFiona.da.length + beiFiona.offen.length !== beiFiona.reiterGesamt)
+    merke('abzeichen', new Error(`der Reiter verspricht ${beiFiona.reiterDa}/`
+      + `${beiFiona.reiterGesamt}, die Seite zeigt aber ${beiFiona.da.length} verdiente `
+      + `und ${beiFiona.offen.length} offene Abzeichen`));
+  if (!beiFiona.offen.length) merke('abzeichen', new Error(
+    'kein einziges offenes Abzeichen — dann ist der nächste Schritt unsichtbar'));
   if (!/fehlen noch 3/.test(beiFiona.offen[0] || '')) merke('abzeichen', new Error(
     `das offene Abzeichen sagt „${beiFiona.offen[0]}" — gezählt werden muss gegen die `
     + 'ganze Menge (sechs Kontinente, drei fehlen), nicht gegen Fionas erste Runde'));
@@ -5706,32 +5773,47 @@ if (laeuft('abzeichen')) try {
   await q.waitForSelector('.schirm.da .abzeichen', { timeout: 25000 });
   const buch = await q.evaluate(() => {
     const s = document.querySelector('.schirm.da');
+    const reiter = s.querySelector('.buchreiter [data-kap="abzeichen"] .reiterzahl');
+    const zahl = reiter ? (reiter.textContent.match(/(\d+)\s*\/\s*(\d+)/) || []) : [];
     return { da: [...s.querySelectorAll('.abz.da')].map(x =>
                (x.dataset.lesen || x.textContent).replace(/\s+/g,' ').trim()),
              offen: s.querySelectorAll('.abz.offen').length,
              bilder: [...s.querySelectorAll('.abz svg')].filter(x => x.children.length).length,
-             knoepfe: s.querySelectorAll('button.abz').length };
+             knoepfe: s.querySelectorAll('button.abz').length,
+             reiterGesamt: zahl[2] ? +zahl[2] : null,
+             fuss: (s.querySelector('.buchseite[data-seite="abzeichen"] .buchsatz')
+                    || {}).textContent };
   });
   if (!buch.da.some(t => /alle sechzehn Bundesländer/.test(t))) merke('abzeichen', new Error(
     `im Buch fehlt das verdiente Abzeichen — dort steht ${JSON.stringify(buch.da)}`));
   if (!buch.da.some(t => /ohne Fehler/.test(t))) merke('abzeichen', new Error(
     'eine Runde ohne einen Fehlversuch bringt kein Abzeichen — '
     + `im Buch steht ${JSON.stringify(buch.da)}`));
-  /* HOECHSTENS DREI offene, seit G15b - und die Zahl ist die Zusage.
+  /* ALLE, und der Reiter ist das Mass (B4b).
    *
-   * Bis v361 stand hier „genau eines". Das war richtig, solange das Buch
-   * EINE rollende Seite war und jede Zeile mit den Aufkleberreihen um
-   * denselben Platz stritt. Seit Q44 haben die Abzeichen ein eigenes
-   * Kapitel, und das nutzte gemessen 18 % seiner Hoehe - den
-   * schlechtesten Wert aller sieben Seiten.
+   * Vorgeschichte: bis v361 „genau eines", seit G15b „hoechstens drei" -
+   * beides Platzrechnungen aus der Zeit, als das Buch EINE rollende
+   * Seite war. Das SOLL in `src/inhalt/abzeichen.js` verlangt seit dem
+   * ersten Tag das Gegenteil („sichtbar, BEVOR man es hat"), und die
+   * Obergrenze hat den Bruch zwischen Reiter und Seite nicht nur
+   * durchgelassen, sondern verlangt.
    *
-   * Die Obergrenze bleibt, nur hoeher: „sechzig leere Kaesten" ist die
-   * Lehre, die dieser Bildschirm schon einmal teuer bezahlt hat. Ohne
-   * Grenze waere aus dem naechsten Schritt wieder eine Mangelliste. */
-  if (buch.offen > 3) merke('abzeichen', new Error(
-    `${buch.offen} offene Abzeichen im Buch — es sollen höchstens drei sein`));
+   * Die Lehre von den „sechzig leeren Kaesten" bleibt: sie haengt an
+   * der ZAHL. Hoechstens sechzehn Abzeichen kann ein Profil haben, und
+   * sechzehn sind zu Ende zu bringen. Deshalb hier keine feste Grenze
+   * mehr, sondern die Deckung des Nenners. */
+  if (buch.reiterGesamt === null) merke('abzeichen', new Error(
+    'kein Abzeichenreiter im Buch — dann ist nicht zu prüfen, ob die Seite ihn deckt'));
+  else if (buch.knoepfe !== buch.reiterGesamt) merke('abzeichen', new Error(
+    `der Reiter verspricht ${buch.reiterGesamt} Abzeichen, die Seite zeigt ${buch.knoepfe}`));
   if (buch.offen === 0) merke('abzeichen', new Error(
     'kein einziges offenes Abzeichen im Buch — dann ist der nächste Schritt unsichtbar'));
+  /* Und der Fusssatz, der sagt, WELCHES als naechstes faellt. Ohne ihn
+     stehen sechs bernsteinfarbene Zellen mit je einer Zahl da, und die
+     Reihenfolge ist eine Sortierung, die man nicht sieht. */
+  if (!/^Noch /.test((buch.fuss || '').trim())) merke('abzeichen', new Error(
+    `auf der Abzeichenseite steht kein „Noch N, dann heißt es …" — dort steht `
+    + `„${(buch.fuss || '').trim().slice(0, 60)}"`));
   if (buch.bilder !== buch.knoepfe) merke('abzeichen', new Error(
     `${buch.knoepfe - buch.bilder} Abzeichen stehen ohne Bild da`));
 

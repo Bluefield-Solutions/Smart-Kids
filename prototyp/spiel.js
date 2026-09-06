@@ -6739,21 +6739,92 @@ async function forscherbuch(){
     </button>`;
   };
 
+  /* --- Die Rechentafel (B4b) ----------------------------------------
+   *
+   * Das Gegenstueck zur Albumkarte, fuer die Ebenen, die keine haben.
+   *
+   * GEMESSEN, nicht vermutet: von den sieben Kapitelseiten nutzten zwei
+   * unter 30 % ihrer Hoehe - die Abzeichen 25 % und „Plus und Minus"
+   * 29 %. Die Kartenseiten liegen bei 95 %, und der Unterschied ist
+   * nicht Schmuck: die Albumkarte zeigt die GANZE Menge auf einmal, das
+   * Gesammelte in Farbe und das Offene blass darunter. Die Rechenseite
+   * zeigte nur das Gesammelte - eine Reihe Aufkleber am oberen Rand,
+   * darunter nichts, und nirgends eine Vorstellung davon, wie gross die
+   * Sache ist.
+   *
+   * Der naheliegende Griff waere gewesen, die offenen Aufkleber blass
+   * danebenzustellen, so wie es die Karte tut. Er ist gemessen falsch:
+   * `Rechnen.vorrat()` liefert fuer „Plus und Minus" 45 Additionen und
+   * 55 Subtraktionen. Hundert blasse Kaesten sind buchstaeblich die
+   * „sechzig leeren Kaesten", die dieser Bildschirm schon einmal teuer
+   * bezahlt hat.
+   *
+   * Der Unterschied zwischen der Karte und den sechzig Kaesten ist
+   * nicht die Zahl der Stuecke, sondern dass die Karte eine FORM hat:
+   * man liest sie als Bild und nicht als Liste. Genau das kann eine
+   * Rechentafel auch - `a` nach unten, `b` nach rechts, ein Feld je
+   * Aufgabe. Sie ist ein Bild, kein Verzeichnis: hundert Felder darin
+   * ergeben ein Muster, das ein Kind auf einen Blick liest („die linke
+   * obere Ecke ist voll"), und ein Elternteil auch.
+   *
+   * Ein KNOPF je Rechenart, nicht je Feld. Ein Feld waere auf dem
+   * Telefon 14 Punkte breit, und `beruehrung` misst Trefferflaechen an
+   * Bedienelementen - dieselbe Ueberlegung wie bei der Albumkarte, die
+   * ebenfalls EIN Knopf ist und nicht sechzehn.
+   *
+   * Die Regel steht ueber den DATEN und nicht ueber einer Liste von
+   * Ebenenkennungen: was `a`, `b` und eine Rechenart hat, bekommt eine
+   * Tafel. Damit gilt sie auch fuer die Reihen und fuer „Grosse Zahlen",
+   * und fuer die naechste Rechenebene, die noch niemand geschrieben hat.
+   * Wo auch nur ein Stueck nicht dazu passt, gibt es keine Tafel -
+   * lieber die Aufkleberwand als eine Tafel mit Loechern, die keine
+   * sind. */
+  const RECHENZEICHEN = { plus:'+', minus:'−', mal:'×', durch:':', quadrat:'²' };
+  const RECHENWORT = { plus:'Plus', minus:'Minus', mal:'Mal', durch:'Geteilt', quadrat:'Quadrat' };
+  const rechenTafel = (g) => {
+    const alle = [...g.da, ...g.offen];
+    if (!alle.length || !alle.every(x => RECHENZEICHEN[x.rechenart]
+        && Number.isInteger(x.a) && Number.isInteger(x.b) && x.a > 0 && x.b > 0)) return '';
+    const arten = [];
+    for (const x of alle) if (!arten.includes(x.rechenart)) arten.push(x.rechenart);
+    /* Ein Feld ist 10 Einheiten breit, das Kaestchen darin 8 - der Rest
+       ist die Fuge. Absolute Einheiten sind hier keine Sorge: die
+       `viewBox` skaliert, und das Kaestchen bekommt seine Punktgroesse
+       erst aus der Spaltenbreite. */
+    return `<div class="rechentafel">${arten.map(art => {
+      const teil = alle.filter(x => x.rechenart === art);
+      const breit = Math.max(...teil.map(x => x.b));
+      const hoch  = Math.max(...teil.map(x => x.a));
+      const da = teil.filter(x => x.gesammelt).length;
+      const satz = `${RECHENWORT[art]}: ${da} von ${teil.length}`;
+      return `
+      <button class="tafelfeld" data-art="${art}" data-lesen="${satz} gesammelt."
+              data-da="${da}" data-gesamt="${teil.length}"
+              style="--ton:var(${FL[(g.farbe - 1 + 7) % 7]})">
+        <svg viewBox="0 0 ${breit * 10} ${hoch * 10}" role="img" aria-label="${satz}"
+             style="aspect-ratio:${breit} / ${hoch}">${teil.map(x => `
+          <rect x="${(x.b - 1) * 10 + 1}" y="${(x.a - 1) * 10 + 1}" width="8" height="8" rx="2"
+                class="tafel${x.gesammelt ? (x.gekonnt ? 'sicher' : 'da') : 'zu'}"/>`).join('')}
+        </svg>
+        <span class="tafelfuss"><b>${RECHENZEICHEN[art]}</b> ${da} von ${teil.length}</span>
+      </button>`;
+    }).join('')}</div>`;
+  };
+
   /* --- Die Abzeichen (D2) ------------------------------------------
    *
    * Sie stehen OBEN, vor den Aufklebern: das Abzeichen ist die Aussage,
    * der Aufkleber der Beleg. Wer das Buch aufschlaegt, soll zuerst
    * lesen, was er kann, und danach, woraus es besteht.
    *
-   * Gezeigt werden alle verdienten - und genau EINES, das noch fehlt.
-   * Nicht alle offenen: der Bildschirm hat sich diese Lehre schon einmal
-   * teuer erkauft (siehe oben, sechzig leere Kaesten). Eine Liste
-   * dessen, was man noch nicht kann, gehoert nicht an den Ort, der
-   * belohnt. Eines ist der naechste Schritt, zehn sind eine Mahnung.
+   * Gezeigt werden ALLE - die verdienten zuerst, danach die offenen,
+   * sortiert nach dem, was noch fehlt. Warum nicht mehr nur eines oder
+   * drei, steht ausfuehrlich unten bei `naechste`: es ist die Forderung
+   * des Referenzabgleichs („sichtbar, BEVOR man es hat") und keine
+   * Platzrechnung.
    *
-   * Welches eine: das mit den WENIGSTEN fehlenden Stuecken. Bei
-   * Gleichstand entscheidet die Reihenfolge der Tafel, damit es sich
-   * nicht von Aufruf zu Aufruf aendert - `ansicht` vergleicht
+   * Bei Gleichstand entscheidet die Reihenfolge der Tafel, damit sie
+   * sich nicht von Aufruf zu Aufruf aendert - `ansicht` vergleicht
    * Bildpunkte.
    */
   const marken = [];
@@ -6787,22 +6858,33 @@ async function forscherbuch(){
    * - dieselbe Auskunft, nur mit Bildern. Wer schon eines hat, hat den
    * Block ohnehin, und eine Zeile mehr kostet eine Zeile.
    */
-  /* DREI naechste statt einem - seit die Abzeichen eine eigene Seite haben
-   * (G15b).
+  /* ALLE offenen, nicht drei (B4b). Und die Begruendung kommt aus dem
+   * Referenzabgleich, nicht aus dem freien Platz.
    *
-   * Die Begruendung darueber gilt weiter, aber ihre Voraussetzung ist weg:
-   * sie stammt aus der Zeit, als das ganze Buch EINE rollende Seite war
-   * und jede Zeile mit den Aufkleberreihen um denselben Platz stritt. Seit
-   * Q44 hat der Abzeichenblock ein eigenes Kapitel - und das nutzte
-   * gemessen 18 % seiner Hoehe, den schlechtesten Wert aller sieben
-   * Seiten. Ein Bildschirm, der zu 82 % leer ist, hat kein Platzproblem.
+   * Vorgeschichte: erst EINES (als das ganze Buch eine rollende Seite war
+   * und jede Zeile mit den Aufkleberreihen um denselben Platz stritt),
+   * seit Q44 drei (das eigene Kapitel nutzte gemessen 18 % seiner Hoehe).
+   * Beide Zahlen waren Platzrechnungen, und beide Male stand daneben die
+   * Sorge vor „sechzig leeren Kaesten".
    *
-   * Drei und nicht alle: „sechzig leere Kaesten" ist die Lehre, die dieser
-   * Bildschirm schon einmal teuer bezahlt hat, und sie steht. Drei ist die
-   * Zahl, die die Seite fuellt, ohne eine Liste zu werden - und es sind die
-   * drei NAECHSTEN, also die, die am wenigsten fehlen. */
+   * Das SOLL in `src/inhalt/abzeichen.js` sagt seit dem ersten Tag etwas
+   * anderes, und es steht dort als abgeleitete Forderung, nicht als
+   * Meinung: „Es ist sichtbar, BEVOR man es hat, mit dem, was noch
+   * fehlt." Der Duolingo-Abgleich begruendet sie: „Ein Abzeichen, das erst
+   * beim Erreichen erscheint, ist bis dahin unsichtbar." Mit `slice(0, 3)`
+   * war genau das der Fall - auf der gemessenen Seite standen 6 von 9,
+   * waehrend der Reiter darueber „3/9" versprach. Der Nenner war da, die
+   * Sache dahinter nicht.
+   *
+   * Die Lehre von den sechzig Kaesten bleibt unverletzt, weil sie an der
+   * ZAHL haengt und nicht am leeren Kasten - dieselbe Unterscheidung wie
+   * im Tierkapitel. Die Tafel hat elf Eintraege, einer davon fuenfmal
+   * gestuft: hoechstens sechzehn Abzeichen kann ein Profil ueberhaupt
+   * haben, und sechzehn sind zu Ende zu bringen. Hundert waeren es nicht -
+   * genau deshalb bekommt die Rechenseite eine Tafel und keine hundert
+   * blassen Aufkleber. */
   const naechste = verdient.length
-    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt).slice(0, 3) : [];
+    ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt) : [];
   /* Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert.
      Ein `div` mit `data-lesen` waere fuer sie stumm - der Rundgang bindet
      zwar den Klick, aber `beruehrung` misst Trefferflaechen nur an
@@ -7054,7 +7136,32 @@ async function forscherbuch(){
          Dieselbe Entscheidung wie beim Tierkapitel in Runde 2; sie
          faellt hier erst auf, seit die Seite ein Vorbild hat. */
       zeigt:`<div class="abzeichen">${verdient.map(markeBild).join('')}${
-        naechste.map(markeBild).join('')}</div>` }) });
+        naechste.map(markeBild).join('')}</div>`,
+      /* DER FUSSSATZ IST DER SATZ SELBST (B4b).
+       *
+       * Was auf dieser Seite fehlt, ist kein Platz, sondern eine
+       * Auskunft: neun bernsteinfarbene Zellen tragen je eine Zahl, und
+       * keine sagt, WELCHE davon als naechste faellt. Die Reihenfolge
+       * steht zwar im Raster (sortiert nach `fehlt`), aber eine
+       * Sortierung ist nichts, was ein Kind sieht.
+       *
+       * Und es ist zugleich die Stelle, an der der Khan-Abgleich zum
+       * ersten Mal wirklich eingeloest wird: „der Text ist die
+       * Belohnung, nicht das Bild". Der ganze Titelsatz („Du kennst alle
+       * Doppelten.") stand bisher NUR in der Ansage - Fiona hoert ihn,
+       * Lea liest ihn nirgends. */
+      fuss: (() => {
+        /* „Noch 5, dann heisst es: ..." und nicht „Fast geschafft:
+           ...". Der erste Anlauf setzte den Titelsatz direkt hinter
+           die Anrede, und dann stand da „Fast geschafft: Du kannst
+           alle Verdopplungen" - also die Belohnung im Praesens,
+           obwohl sie noch nicht gilt. Gesehen auf dem Vorbild. */
+        if (!naechste.length) return `<p class="buchsatz"
+          data-lesen="Du hast alle Abzeichen.">Du hast alle Abzeichen.</p>`;
+        const a = naechste[0];
+        const satz = `Noch ${a.fehlt===1?'eins':a.fehlt}, dann heißt es: ${a.titel}`;
+        return `<p class="buchsatz" data-lesen="${satz}">${satz}</p>`;
+      })() }) });
   for (const g of vollen) kapitel.push({
     id:g.id, titel:g.titel, farbe:g.farbe,
     zahl:g.da.length, gesamt:g.da.length + g.offen.length,
@@ -7068,9 +7175,26 @@ async function forscherbuch(){
       zusatz: g.da.filter(x=>x.gekonnt).length
         ? `${g.da.filter(x=>x.gekonnt).length} davon sicher`
         : '',
-      zeigt: hatKarte(g) ? albumKarte(g)
-        : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`,
-      fuss:`${/* Ein Satz zum Mitnehmen, hier zum NACHLESEN (Q46).
+      /* Karte, Tafel, Wand - in dieser Reihenfolge, und die Tafel
+         ERSETZT die Wand statt ueber ihr zu stehen. Das ist kein
+         Geschmack: `passt` verlangt, dass jeder Aufkleber innerhalb
+         seines rollenden Kastens liegt („ein Kind scrollt nicht in
+         einer Liste, von der es nicht weiss, dass sie weitergeht"),
+         und eine Tafel darueber schiebt die letzte Reihe der Wand
+         hinaus. Beides zusammen ginge nur auf Kosten der Wand. */
+      zeigt: hatKarte(g) ? albumKarte(g) : (rechenTafel(g)
+        || `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`),
+      fuss:`${/* DIE BILDUNTERSCHRIFT DER TAFEL (B4b).
+            Ein Raster aus hundert Kaestchen ist keine Sprache, die ein
+            Kind schon kennt - die Landkarte ist eine, das hier nicht.
+            Also steht daneben, was ein Kaestchen IST und was die drei
+            Staerken heissen. Genau ein Satz, und nur dort, wo die Tafel
+            wirklich steht: auf einer Kartenseite waere er falsch. */
+        (!hatKarte(g) && rechenTafel(g))
+          ? `<p class="buchsatz" data-lesen="Jedes Kästchen ist eine Aufgabe. Die kräftigen kannst du sicher, die blassen hast du schon geübt."
+             >Jedes Kästchen ist eine Aufgabe. Die kräftigen kannst du sicher,
+              die blassen hast du schon geübt.</p>` : ''}${
+          /* Ein Satz zum Mitnehmen, hier zum NACHLESEN (Q46).
             Im Spiel steht er einen Augenblick und ist dann weg - genau
             dann, wenn das Kind noch mit dem Treffer beschaeftigt ist. Das
             Buch ist der Ort, an dem man nachschaut; also steht er hier

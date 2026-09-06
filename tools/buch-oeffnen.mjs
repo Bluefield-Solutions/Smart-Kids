@@ -14,6 +14,7 @@ import { starte, serviere, stelleAblage } from '../tor/chromium.mjs';
 import { sammelbar } from '../src/inhalt/tiere.js';
 import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
 import { STAEDTE } from '../src/geo/staedte.js';
+import { RECHENSTAND } from '../tor/gestellt.mjs';
 
 /** Wohin die Bilder gehen. `blick/` ist der Ort fuer Blickwerkzeuge -
     kein Tor liest hier etwas, ein Mensch sieht es an (Regel 4). */
@@ -52,11 +53,19 @@ export async function oeffneBuch({ breite = 844, hoehe = 390, szenen = {} } = {}
       'fiona:bundeslaender':  voll(STAEDTE.map(x => x.id)),
       'fiona:laender:europa': halb(LAENDER.europa.map(x => x.a3)),
       'fiona:laender:afrika': halb(LAENDER.afrika.map(x => x.a3)),
+      /* Und eine Ebene OHNE Landkarte (B4b). Ohne sie hat die Tonleiter
+         die Rechentafel nie gesehen - fuenf Kapitel, alle mit Karte oder
+         Aufklebern, und der eine Bildschirm mit einer eigenen Bildsprache
+         stand ungemessen daneben. Eine Prüfung, die ihn nie sieht,
+         meldet über ihn auch nichts und ist insoweit kein Beweis
+         (Regel 1). */
+      'fiona:rechnen:plusminus': RECHENSTAND,
     },
     einstellungen: {
       'tiere:fiona': { ids: sammelbar().map(t => t.id), gorilla: 3, szenen },
       alles: { vorlaufGezeigt: { 'fiona:kontinente': true, 'fiona:bundeslaender': true,
-        'fiona:laender:europa': true, 'fiona:laender:afrika': true } },
+        'fiona:laender:europa': true, 'fiona:laender:afrika': true,
+        'fiona:rechnen:plusminus': true } },
     } });
   await s.reload({ waitUntil: 'domcontentloaded' });
   await s.waitForSelector('[data-profil="fiona"]');

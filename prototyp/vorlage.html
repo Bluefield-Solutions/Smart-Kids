@@ -945,18 +945,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Kapiteln gesehen hat. Rollen waere hier keine Loesung - ein Reiter,
    der aus dem Streifen gerollt ist, ist fuer dieses Tor genauso weg wie
    einer unter dem Rand. */
-.reiter .was{font-size:var(--s-klein);font-weight:700;white-space:nowrap;
-  max-width:min(13ch, 100%);overflow:hidden;text-overflow:ellipsis}
-/* SCHMAL wird UMGEBROCHEN statt abgeschnitten.
-   Auf 390 Punkten teilen sich fuenf Kapitel die Breite und jeder Reiter
-   ist 66 Punkte breit - „Bundesländer" braucht 95. Das Auslassungs-
-   zeichen versteckt das nur: gemessen griff das Wort mit 8 % in den
-   Nachbarn, weil die Schrift ueber ihre Zelle hinausreicht, auch wo sie
-   beschnitten wird. Zwei kurze Zeilen sind haesslicher und richtig. */
-@media (max-width:430px){
-  .reiter .was{white-space:normal;overflow-wrap:anywhere;max-width:100%;
-    font-size:calc(var(--s-klein) * .84);line-height:1.05}
-}
+/* UMGEBROCHEN, NICHT ABGESCHNITTEN - und zwar ueberall (B4b).
+   Das Auslassungszeichen versteckt einen Ueberlauf nur: die Schrift
+   reicht ueber ihre Zelle hinaus, auch wo sie beschnitten wird, und ein
+   Finger auf dem letzten Buchstaben von „Bundesländer" trifft den
+   Nachbarreiter. Gemessen wurde das zuerst auf 390 Punkten mit fuenf
+   Kapiteln, und die Antwort war eine Regel fuer schmale SCHIRME.
+   Das war die falsche Messstelle (Regel 5): eng wird nicht der Schirm,
+   sondern der REITER. Auf 844 Punkten mit acht Kapiteln sind es 66 bis
+   116 Punkte je Reiter, und „Bundesländer" braucht 95 - dieselbe Enge
+   auf dem doppelt so breiten Schirm. Der Rauchtest hat sie gemeldet,
+   aber nur unter Last: ob die 5 % ueberschritten sind, entscheidet die
+   Schrift, die im Augenblick der Messung gerade geladen ist.
+   Also bricht der Name immer um, wenn er nicht passt. Zwei kurze Zeilen
+   sind haesslicher und richtig; `white-space:normal` kostet nichts, wo
+   der Name ohnehin in eine Zeile geht. */
+.reiter .was{font-size:var(--s-klein);font-weight:700;
+  white-space:normal;overflow-wrap:anywhere;
+  max-width:min(13ch, 100%)}
 /* Offen und zu sprechen dieselbe Sprache wie alle Knoepfe hier: das
    geschlossene Kapitel liegt flach, das offene steht auf seiner Kante und
    traegt volle Tinte. Die FARBE traegt schon die Zahl - ein zweiter
@@ -2324,6 +2330,13 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
     box-sizing:border-box;display:grid;place-items:center;height:100%;min-height:0}
   .buchraster > .albumkarte svg{height:100%;width:auto;
     max-width:100%;margin:0 auto}
+  /* Dieselbe Rechnung fuer die Rechentafel: sie ist der Gegenstand ihrer
+     Seite, genau wie die Karte. Die Hoehe kommt aus der Spalte, die
+     Breite aus der `viewBox` am Bild - deshalb `flex` an das SVG und
+     nicht eine zweite Hoehenangabe daneben. */
+  .buchraster > .rechentafel{align-items:stretch;align-content:stretch}
+  .buchraster > .rechentafel .tafelfeld{height:100%;min-height:0}
+  .buchraster > .rechentafel .tafelfeld svg{height:100%;width:auto;min-height:0}
 }
 .gruppe{font-family:var(--f-ui);font-size:var(--s1);font-weight:800;margin:var(--r6) 0 var(--r3);
   letter-spacing:-.01em}
@@ -2421,6 +2434,42 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   box-shadow:0 var(--kante-flach) 0 var(--tiefe-farbe);cursor:pointer;
   transition:transform var(--d-tipp) var(--k-standard)}
 .albumkarte:active{transform:scale(.99)}
+/* ---------- Die Rechentafel (B4b) -----------------------------------
+ *
+ * Das Gegenstueck zur Albumkarte fuer die Ebenen ohne Landkarte. Warum
+ * eine Tafel und keine hundert blassen Aufkleber, steht bei
+ * `rechenTafel` in spiel.js.
+ *
+ * Sie borgt sich die Form der Albumkarte - Papier, Kante, Schatten,
+ * derselbe Radius -, denn sie steht an derselben Stelle und tut
+ * dasselbe: EIN Bild, das die ganze Menge zeigt. Zwei verschiedene
+ * Kastenformen an einer Stelle waeren zwei Entscheidungen, wo es eine
+ * gibt. */
+.rechentafel{display:flex;flex-wrap:wrap;justify-content:center;
+  align-content:start;align-items:start;height:100%;min-height:0}
+.tafelfeld{background:var(--papier);border:var(--strich) solid var(--linie);
+  padding:var(--mittel);display:grid;grid-template-rows:1fr auto;justify-items:center;
+  gap:var(--eng);min-width:0;max-width:100%;min-height:0;
+  box-shadow:0 var(--kante-flach) 0 var(--tiefe-farbe);cursor:pointer;
+  transition:transform var(--d-tipp) var(--k-standard)}
+.tafelfeld:active{transform:scale(.99)}
+@media (prefers-reduced-motion:reduce){ .tafelfeld:active{transform:none} }
+/* Dieselbe Rechnung wie bei der Albumkarte: die Hoehe steht, die Breite
+   kommt aus der `viewBox` am Bild. */
+.tafelfeld svg{height:clamp(72px, 26vh, 220px);width:auto;max-width:100%;display:block}
+/* Das Rechenzeichen traegt KEINE Flaechenfarbe: `--ton` stand mit
+   2,17:1 auf Weiss da, und `lesbarkeit` hat es beim ersten Lauf
+   gemeldet. Die Farbe liegt in den Kaestchen darueber, wo sie eine
+   Flaeche ist und keine Schrift. Auch kein eigener Schnitt - das waere
+   eine vierte Schriftstufe, und die Tonleiter hat drei. */
+.tafelfuss{white-space:nowrap}
+.tafelfuss b{font-weight:inherit}
+/* Drei Stufen desselben Bildes und keine drei Farben: offen, gesammelt,
+   sicher. Der Ton kommt von der Gruppe (`--ton` am Knopf), damit die
+   Tafel zum Reiter darueber gehoert. */
+.tafelzu{fill:var(--linie);opacity:.45}
+.tafelda{fill:var(--ton);opacity:.5}
+.tafelsicher{fill:var(--ton)}
 /* Die Albumseite darf den Platz nehmen, den sie hat: auf dem Schreibtisch
    ist das Buch sonst zu zwei Dritteln leer, und eine Weltkarte in
    Briefmarkengroesse ist kein Album. Nach oben begrenzt, damit zwei
@@ -3101,6 +3150,15 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 }
 /* TITEL */
 .rollen.buch .gruppe,
+/* Der Rechenkleber ist im Buch ein BILD - er steht dort, wo bei einem
+   Gebiet der Umriss steht, und ist deshalb so gross wie der Titel und
+   nicht so gross wie ein Name.
+   Er stand bis B4b ausserhalb der Leiter (20/700, Radius 10, Polster 4),
+   und niemand hat es gesehen: der gestellte Stand der Tonleiter hatte
+   keine Ebene ohne Landkarte, also kam auf keiner der fuenf gemessenen
+   Seiten je einer vor. Gefunden hat ihn nicht das Auge, sondern der
+   sechste Kapitelreiter. */
+.rollen.buch .rechenkleber,
 .buchreiter .reiterzahl{font-size:var(--t-titel);font-weight:800;
   letter-spacing:-.01em}
 /* NAME */
@@ -3115,6 +3173,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .gruppe small,
 .rollen.buch .gruppenzusatz,
 .rollen.buch .buchsatz,
+.rollen.buch .tafelfuss,
 .buchreiter .reiterzahl small{font-size:var(--t-name);font-weight:400;
   color:var(--tinte-3)}
 /* ZWEI Radien statt vier: eine Kante fuer alles, was eine Zelle ist,
@@ -3128,6 +3187,8 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .tierfeld,
 .rollen.buch .abz,
 .rollen.buch .albumkarte,
+.rollen.buch .tafelfeld,
+.rollen.buch .rechenkleber,
 .buchreiter .reiter{border-radius:var(--rund-karte)}
 .rollen.buch .abz .fehlt,
 .rollen.buch .balken{border-radius:var(--rund-voll)}
@@ -3136,7 +3197,20 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .buchspalte{gap:var(--mittel)}
 .buchraster{--luft:var(--mittel)}
 .rollen.buch .abzeichen,
+.rollen.buch .rechentafel,
 .rollen.buch .kleber{gap:var(--mittel)}
+/* Der Abstand IM Aufkleber - zwischen Bild und Namen. Er stand auf
+   `--r1` und war damit die vierte Sprosse; gesehen hat ihn erst der
+   Kapitelreiter der Rechenebene, denn auf allen anderen Seiten fasst
+   eine Albumkarte die Aufkleber zusammen und es gibt gar keinen. */
+.rollen.buch .aufkleber{gap:var(--eng)}
+/* Die eine Ausnahme von der FUSS-Farbe, und sie ist gemessen (Regel 5:
+   jede Zahl traegt ihre Messstelle). Der Fusssatz der Tafel steht auf
+   dem KARTENGRUND, nicht auf dem Seitengrund - und der ist im Abendbild
+   dunkler. `--tinte-3` kam dort auf 3,9:1, noetig sind 4,5. Groesse und
+   Schnitt bleiben die der FUSS-Rolle; nur die Tinte ist eine Stufe
+   kraeftiger. */
+.rollen.buch .tafelfuss{color:var(--tinte-2)}
 .rollen.buch .tierwand{gap:var(--eng)}
 .rollen.buch .raumgitter{gap:var(--eng)}
 .buchreiter{gap:var(--eng)}

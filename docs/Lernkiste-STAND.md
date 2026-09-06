@@ -10311,3 +10311,128 @@ seit Q34 mit Begründung. Fünf Nächte lang hat das niemand gelesen, weil im
 Protokoll nur „war schon vorher rot" stand.
 
 270 Gegenproben · Kette grün nach 132,8 s.
+
+---
+
+## B4b · Die zwei halbleeren Seiten — mit Auskunft gefüllt, nicht mit Luft
+
+Gemessen war der Befund seit v423, und er war neu, weil die Messung vorher
+den **Kasten** zählte statt den Inhalt: `25 · 95 · 95 · 29 · 46 · 46 · 42`.
+Die Abzeichenseite bei 25 %, „Plus und Minus" bei 29 %.
+
+Der naheliegende Griff wäre gewesen, die Kästen größer zu machen. Er steht
+seit G15c als Warnung im Quelltext: *eine Kennzahl, die sich durch einen
+höheren leeren Kasten erfüllen lässt, misst den Kasten.* Also zweimal mehr
+**Auskunft**.
+
+**Die Abzeichenseite zeigt jetzt alle Abzeichen.** Die Begründung kommt nicht
+vom freien Platz, sondern aus dem Referenzabgleich, der seit dem ersten Tag in
+`src/inhalt/abzeichen.js` steht: *„Es ist sichtbar, BEVOR man es hat, mit dem,
+was noch fehlt."* Und aus dem Duolingo-Abgleich darüber: *„Ein Abzeichen, das
+erst beim Erreichen erscheint, ist bis dahin unsichtbar."* Mit `slice(0, 3)`
+war genau das der Fall — der Reiter versprach „3/9", die Seite zeigte sechs
+Zellen. Der Nenner war da, die Sache dahinter nicht.
+
+Die Lehre von den „sechzig leeren Kästen" bleibt unverletzt: sie hängt an der
+**Zahl**, nicht am leeren Kasten. Die Tafel hat elf Einträge, einer davon
+fünfmal gestuft — höchstens sechzehn Abzeichen kann ein Profil haben, und
+sechzehn sind zu Ende zu bringen.
+
+Dazu ein Fußsatz, der bisher nur in der **Ansage** stand: „Noch 5, dann heißt
+es: Du kannst alle Verdopplungen." Das ist der Khan-Satz des Abgleichs (*der
+Text ist die Belohnung, nicht das Bild*) — Fiona hört ihn, Lea liest ihn jetzt
+auch. Der erste Anlauf schrieb „Fast geschafft: Du kannst alle
+Verdopplungen" und stellte damit die Belohnung ins Präsens, obwohl sie noch
+nicht gilt; gesehen auf dem Vorbild, nicht im Kopf.
+
+**„Plus und Minus" bekommt eine Rechentafel.** Sie ist das Gegenstück zur
+Albumkarte für die Ebenen ohne Landkarte: `a` nach unten, `b` nach rechts, ein
+Kästchen je Aufgabe, drei Stärken — sicher, gesammelt, offen. Ein Knopf je
+Rechenart, nicht je Feld (ein Feld wäre 14 Punkte breit; dieselbe Überlegung
+wie bei der Albumkarte, die ebenfalls EIN Knopf ist).
+
+Warum nicht einfach die offenen Aufkleber blass daneben, so wie es die Karte
+tut: `Rechnen.vorrat()` liefert **45 Additionen und 55 Subtraktionen**. Hundert
+blasse Kästen sind buchstäblich die sechzig leeren Kästen. Der Unterschied
+zwischen der Karte und einer Liste ist nicht die Zahl der Stücke, sondern dass
+die Karte eine **Form** hat — man liest sie als Bild. Genau das kann eine
+Rechentafel auch: hundert Felder ergeben ein Muster („die linke obere Ecke ist
+voll"), und das liest ein Kind auf einen Blick.
+
+Die Regel steht über den **Daten**, nicht über einer Liste von Ebenenkennungen:
+was `a`, `b` und eine Rechenart hat, bekommt eine Tafel. Damit gilt sie auch
+für die Reihen, für „Große Zahlen" und für die nächste Rechenebene, die noch
+niemand geschrieben hat. Wo auch nur ein Stück nicht dazu passt, gibt es keine
+Tafel — lieber die Aufkleberwand als eine Tafel mit Löchern, die keine sind.
+
+Danach: `53 · 95 · 95 · 95 · 45 · 45 · 42`.
+
+### Was die Tore dabei gefunden haben
+
+Drei Funde, und keiner davon war der geplante.
+
+*Der Rechenkleber stand seit Jahren neben der Tonleiter.* Die Tafel brauchte
+ein Vorbild, das Vorbild einen gestellten Stand mit einer Ebene **ohne**
+Landkarte — und mit dem sechsten Kapitel meldete `tonleiter` plötzlich fünf
+Schriftstufen, drei Radien und vier Abstände statt 3/2/3. Die neuen Werte kamen
+nicht von der Tafel: `20/700`, Radius `10` und Polster `4` gehörten dem
+**Rechenkleber** und dem Abstand *innerhalb* eines Aufklebers. Beide waren nie
+gemessen worden, weil auf allen fünf bis dahin gestellten Seiten eine
+Albumkarte die Aufkleber zusammenfasst und es dort gar keinen gibt. Nicht das
+Tor war zu lasch — sein Stand enthielt die Seite nicht. Deshalb hat `tonleiter`
+jetzt eine zweite Blindprobe: **ohne Rechentafel unter den Kapiteln ist es
+rot** (Regel 1 — eine Prüfung, die etwas nie sieht, meldet darüber nichts).
+
+*Die Farbe des Rechenzeichens.* `lesbarkeit` hat das `+` der Bildunterschrift
+mit **2,17:1** auf Weiß gemessen; nötig sind 4,5. Die Flächenfarbe liegt jetzt
+nur noch in den Kästchen darüber, wo sie eine Fläche ist und keine Schrift. Und
+der Fußsatz selbst kam im Abendbild auf 3,9:1 — er steht auf dem **Kartengrund**
+und nicht auf dem Seitengrund, und der ist dort dunkler. Eine Stufe kräftiger,
+gemessen an der Stelle, an der der Text wirklich steht (Regel 5).
+
+*Die alte Zusage war der Fehler.* Der Rauchtest versprach „höchstens drei
+offene Abzeichen". Diese Zahl konnte den Bruch zwischen Reiter und Seite nicht
+melden — sie **war** er. Jetzt ist der Reiter das Maß: die Seite muss seinen
+Nenner decken. Dieselbe Form bekam die Tafel: die Summe über alle ihre Felder
+muss den Reiter treffen, in beiden Zahlen. Sie ist die einzige Stelle im Buch,
+an der eine Zahl aus einer **eigenen** Rechnung kommt — und ein falsches Muster
+fällt niemandem auf.
+
+Fünf neue Gegenproben: der Rückfall auf `slice(0, 3)`, der ausgefallene
+Fußsatz, die Tafel, die an ihrem Reiter vorbeirechnet, die Tafel, die ganz
+ausfällt (die Halbleer-Ratsche schlägt dabei **nicht** an — 29 % gegen 24 %),
+und der gestellte Stand der Tonleiter ohne die Ebene ohne Landkarte.
+
+### Ein vierter Fund, den erst die Last gezeigt hat
+
+Mit der Rechentafel war die Kette zweimal rot an einer Stelle, die mit ihr
+nichts zu tun hat: **die Kapitelreiter greifen ineinander.** „Bundesländer"
+stand mit 6 bis 8 % seines Wortes über dem Nachbarreiter — gemeldet vom
+Fremdgriff im Rauchtest, und zwar **nur im vollen Kettenlauf**, nie beim
+Einzellauf desselben Tors.
+
+Der Grund ist keine Flanke: `.reiter .was` schnitt einen zu langen Namen mit
+einem Auslassungszeichen ab. Das versteckt den Überlauf nur — die Schrift
+reicht über ihre Zelle hinaus, auch wo sie beschnitten wird, und ein Finger
+auf dem letzten Buchstaben trifft den Nachbarn. Gemessen worden war das schon
+einmal, auf 390 Punkten mit fünf Kapiteln, und die Antwort war eine Regel für
+schmale **Schirme** (`@media (max-width:430px)`).
+
+Das war die falsche Messstelle (Regel 5): eng wird nicht der Schirm, sondern
+der **Reiter**. Auf 844 Punkten mit acht Kapiteln sind es 66 bis 116 Punkte je
+Reiter, und „Bundesländer" braucht 95 — dieselbe Enge auf dem doppelt so
+breiten Schirm. Ob die 5 % überschritten sind, entscheidet dann die Schrift,
+die im Augenblick der Messung gerade geladen ist; deshalb nur unter Last.
+
+Der Name bricht jetzt immer um, wenn er nicht passt. Die Sonderregel für
+schmale Schirme ist weg — sie sagte dasselbe für einen Teilfall, und was
+zweimal dasteht, veraltet einmal (Regel 6). Alle 50 Aufnahmen bleiben
+Bildpunkt für Bildpunkt gleich: in keinem der gestellten Stände war ein Reiter
+je so eng, dass es auffiel.
+
+**Ohne Gegenprobe, und das steht hier ausdrücklich.** Der Eingriff (zurück auf
+`nowrap` samt Auslassungszeichen) macht den Rauchtest im Einzellauf **nicht**
+rot — er war es ja nur unter Last. Eine Gegenprobe, die von der Rechnerlast
+abhängt, ist keine. Das Loch ist zu stopfen, indem `passt` einen Stand mit
+acht Kapiteln auf 390 Punkten bekommt; dort wäre der Überlauf deterministisch.
+Bis dahin ist die Zusage geschrieben und nicht bewiesen.

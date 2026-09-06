@@ -98,7 +98,7 @@ const SUCHE = () => {
   // dafuer nichts eintragen.
   const bedienbar = '.schirm.da button, .schirm.da .kachel, .schirm.da .etikett, '
     + '.schirm.da .knopf, .schirm.da .mikro, .schirm.da .zi, .schirm.da .eingabe, '
-    + '.schirm.da .hinweis, .schirm.da .aufkleber';
+    + '.schirm.da .hinweis, .schirm.da .aufkleber, .schirm.da .tafelfeld';
   for (const el of document.querySelectorAll(bedienbar)) {
     const eb = el.getBoundingClientRect();
     if (eb.width === 0 && eb.height === 0) continue;         // nicht sichtbar
