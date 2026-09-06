@@ -653,9 +653,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Begruendung, dass die Farbe die Einordnung mittraegt; jetzt gilt das
    ueberall, statt auf dem grossen Schirm etwas anderes zu zeigen. */
 .wahl.ebenen .kachel .ueber{display:none}
+/* KEIN `display:flex` hier - und das ist gemessen, nicht Geschmack.
+   
+   Der erste Entwurf zentrierte den Namen mit Flexbox in seinem
+   Zwei-Zeilen-Kasten. Damit war die WAISENMESSUNG blind: `passt` legt
+   einen Range ueber den Textinhalt und zaehlt die Zeilenkaesten
+   (`getClientRects`). Ein Flex-Container liefert EINEN Kasten statt einen
+   je Zeile, also war `zeilen.length` immer 1, und die Pruefung „bricht
+   ein Name auf einen einzelnen Buchstaben um" sprang nie mehr an.
+   
+   Gemeldet hat das die stehende Gegenprobe zu Q31 - „TOR BLEIBT GRUEN".
+   Ohne sie waere eine Zusage still verschwunden: das Tor haette weiter
+   gemeldet, nur nichts mehr gesehen.
+   
+   `align-content` zentriert auch im Blocksatz (Chromium 123, Safari
+   17.6) und laesst die Zeilenkaesten in Ruhe. Wo es fehlt, steht der
+   Name oben im Kasten - unschoen, aber nicht falsch. */
 .wahl.ebenen .kachel .name{font-size:var(--s0);text-align:center;width:100%;
-  line-height:1.15;min-height:2.3em;display:flex;align-items:center;
-  justify-content:center}
+  line-height:1.15;min-height:2.3em;align-content:center}
 /* Platz fuer das Auge unten rechts - eine Trefferflaeche breit. */
 .wahl.ebenen .kachelfuss{padding-right:var(--r8)}
 /* Das Auge bleibt nackt - als einzige Bedienstelle der App, und mit
