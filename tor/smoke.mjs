@@ -4407,8 +4407,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            * laengst, und ein Blick auf „steht der Name irgendwo drin"
            * war deshalb immer wahr. Die Probe, die die Ansage entfernt,
            * blieb gruen: gemessen wurde die Vorgeschichte, nicht die
-           * Frage (Regel 1 - wer eine Wirkung misst, schaltet sie zuerst
-           * ab, und hier hat genau das nichts geaendert).
+           * Frage. Eine Pruefung, die nie etwas meldet, ist kein Beweis
+           * (Regel 1) - abgeschaltet hat sie sich nicht geruehrt.
            *
            * Gesucht wird „Wo ist die Flagge?" - dieser Satz faellt NUR
            * hier und nur aus `ansagen`. Und zwar OHNE den Landesnamen
@@ -4460,7 +4460,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * Ein Muster auf den Namen traf auch das LOB („Klasse! Italien.")
          * - der Zaehler stand dann richtig, obwohl die Ansage fehlte, und
          * die Gegenprobe konnte nichts beweisen. Wer eine Wirkung misst,
-         * muss sie abschalten koennen (Regel 1); der Fragesatz faellt nur
+         * muss sie abschalten koennen - sonst meldet die Pruefung nie etwas
+         * und ist kein Beweis (Regel 1). Der Fragesatz faellt nur
          * aus `ansagen`. */
         const wieHoert = zeigt ? /Wo ist die Flagge\?/ : /(?!)/;
         await abgeschlossen(p, wer, ebene, wieHoert, 'die Flagge zugeordnet');

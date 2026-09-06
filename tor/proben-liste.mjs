@@ -5423,7 +5423,8 @@ export const PROBEN = [
      mit der falschen Meldung: Honduras hat noch fuenf Sterne, also blieb
      ein Unterschied ueber dem Boden, und angeschlagen hat stattdessen das
      Paar Nicaragua/El Salvador ueber das SOLL. Rot aus einem anderen
-     Grund ist kein Nachweis (Regel 1). */
+     Grund ist kein Nachweis - eine Pruefung, die nie das meldet, wofuer
+     sie steht, ist kein Beweis (Regel 1). */
   { n:'einer Flagge fehlt ihr unterscheidendes Zeichen', tor:'inhalt', deckt:'flaggen',
     datei:'src/inhalt/flaggen.js',
     /* Der Suchtext bleibt als Anker-Kommentar stehen. `inhalt` prueft

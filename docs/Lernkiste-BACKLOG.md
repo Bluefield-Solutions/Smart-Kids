@@ -267,7 +267,8 @@ kaputtgeht, wird stillschweigend übersprungen. Der Durchgang muss verlangen,
 dass jede Ebene, die er betritt, auch **eine Antwort abgibt** — sonst zählt er
 Ebenen und misst nichts. Eine Gegenprobe dafür steht deshalb noch nicht in der
 Liste: eine Probe auf ein Tor, das an dieser Stelle nichts beweist, wäre selbst
-nur eine Behauptung (Regel 1).
+nur eine Behauptung: eine Prüfung, die nie etwas meldet, ist kein Beweis
+(Regel 1).
 
 **Warum das Sprechen eine eigene Runde ist (F2b) und nicht in F2 steckt.**
 Der Sprachweg — Mikrofon, Rückfrage bei unsicherer Erkennung, gerettetes

@@ -1851,24 +1851,29 @@
       "s": 6
     },
     "einer Flagge fehlt ihr unterscheidendes Zeichen": {
-      "commit": "8f049c39b3c3dd62cf395e1ff4b42d4d566220eb",
+      "commit": "fed1e1895fbf5dc16f4d8bbc4ec4a5b897855fbb",
       "zeit": "2026-09-06",
       "s": 9
     },
     "eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden": {
-      "commit": "8f049c39b3c3dd62cf395e1ff4b42d4d566220eb",
+      "commit": "fed1e1895fbf5dc16f4d8bbc4ec4a5b897855fbb",
       "zeit": "2026-09-06",
       "s": 3
     },
     "ein Land hat keine Flagge mehr": {
-      "commit": "8f049c39b3c3dd62cf395e1ff4b42d4d566220eb",
+      "commit": "fed1e1895fbf5dc16f4d8bbc4ec4a5b897855fbb",
       "zeit": "2026-09-06",
       "s": 3
     },
     "immer mehr Flaggen umgehen die Formsprache": {
-      "commit": "8f049c39b3c3dd62cf395e1ff4b42d4d566220eb",
+      "commit": "fed1e1895fbf5dc16f4d8bbc4ec4a5b897855fbb",
       "zeit": "2026-09-06",
       "s": 3
+    },
+    "die Flaggenfrage wird nicht mehr angesagt": {
+      "commit": "fed1e1895fbf5dc16f4d8bbc4ec4a5b897855fbb",
+      "zeit": "2026-09-06",
+      "s": 186
     },
     "die Stimme wird durch keine Beruehrung mehr freigegeben": {
       "commit": "d8c91460969b0d66b24f3b38edd21781af7c66ec",

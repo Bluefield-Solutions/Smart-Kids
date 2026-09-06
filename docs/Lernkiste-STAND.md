@@ -11065,3 +11065,48 @@ gemeldeten Fehlern darin (F13, F14, F15). Ihn nachzubauen hieße, eine zweite
 Fassung zu haben, die dieselben vier Fehler wieder bekommt. Er gehört
 herausgelöst — und das ist erst fällig, seit es einen zweiten Aufrufer gibt.
 Steht als **F2b** im Backlog, direkt nach F2.
+
+### Nachtrag zu F2: fünf Gegenproben, und drei davon bewiesen erst nichts
+
+Regel 1: *eine Prüfung, die nie etwas meldet, ist kein Beweis.* Drei der fünf
+neuen Flaggen-Gegenproben waren genau das, und jede aus einem anderen Grund.
+Sie stehen hier, weil jede Ursache wiederkommt.
+
+**1. Rot aus dem falschen Grund.** Die Probe nahm Nicaragua sein Dreieck. Das
+Tor wurde rot — aber Honduras hat noch fünf Sterne, also blieb ein Unterschied
+über dem Boden, und angeschlagen hat stattdessen das Paar Nicaragua/El Salvador
+über das *Soll*. Genommen wird jetzt **Ecuador**, und das ist gemessen: Ecuador
+*ist* Kolumbien mit Wappen — dieselben Streifen, dieselben Breiten. Ohne die
+Andeutung ist der Unterschied null.
+
+Dazu: `inhalt` prüft **selbst**, ob jede Gegenprobe ihren Suchtext noch findet.
+Ohne einen `//Anker:`-Kommentar, der den Originaltext stehen lässt, fällt das
+Tor genau daran durch statt an der Flagge.
+
+**2. Die Kurzliste ließ die neue Ebene aus — zum dritten Mal.** `proben` hängt
+`--kurz` an, und die Filterzeile im Durchgang kannte die Flaggen nicht: Fiona
+spielte 4 Ebenen statt 23, keine davon eine Flaggenebene. Von Hand nachgestellt
+schlug das Tor an und gab Rückgabewert 1.
+
+Im Kommentar über dieser Zeile steht, dass genau das schon **zweimal** passiert
+ist — bei den Länderebenen (R4) und bei Englisch (E3), dort binnen einer
+Stunde. Es ist die Stelle, an der eine neue Ebene unsichtbar wird. Der
+Kommentar trägt den dritten Fall jetzt mit, und die Lehre steht dabei: **wer
+eine neue Art von Bildschirm baut, trägt sie hier nach** — sonst kann keine
+Gegenprobe darauf je etwas beweisen.
+
+**3. Die Stimme zerlegt eine Ansage in Sätze.** Im Mitschnitt stehen zwei
+Einträge, `"Vereinigtes Königreich."` und `"Wo ist die Flagge?"`, nicht einer.
+Ein Vergleich auf den ganzen Satz traf deshalb nie.
+
+Und der Zähler daneben maß etwas Lauteres: ein Muster auf den *Landesnamen*
+traf auch das Lob („Klasse! Italien."). Der Zähler stand dann richtig, obwohl
+die Ansage fehlte. Beides hängt jetzt am Fragesatz — der fällt nur auf diesem
+Bildschirm und nur aus `ansagen`.
+
+**Und noch ein Fund, für den es keine Probe gibt.** Nimmt man `flaggen:
+flaggenschirm` aus `schirmZu`, fällt die Ebene auf den Kartenbildschirm zurück
+— und der Durchgang bleibt **grün**. Er findet weder Flaggenkarte noch Rechnung
+noch Karte und geht still zur nächsten Ebene. Das gilt für **jede** Ebene,
+deren Bildschirm kaputtgeht. Der Durchgang zählt dann Ebenen und misst nichts.
+Steht als Punkt in F5; eine Probe darauf wäre heute selbst nur eine Behauptung.
