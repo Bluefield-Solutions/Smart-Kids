@@ -37,7 +37,8 @@
     "dienstprobe": "node tools/dienstprobe.mjs",
     "ohneschrift": "node tools/ohne-schrift.mjs",
     "bildprompt": "node tools/bildprompt.mjs",
-    "buch-audit": "node tools/buch-audit.mjs && node tools/buch-tinte.mjs && node tools/buch-feinmass.mjs"
+    "buch-audit": "node tools/buch-audit.mjs && node tools/buch-tinte.mjs && node tools/buch-feinmass.mjs",
+    "tonleiter": "node tools/buch-feinmass.mjs --tor"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",

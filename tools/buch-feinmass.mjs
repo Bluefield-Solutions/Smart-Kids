@@ -31,7 +31,14 @@ for (const k of kaps) {
     const raus = { schrift: [], radius: [], luft: [], farbe: [], grund: [],
                    schatten: [], flucht: [], klassen: [], klein: [], ohneStimme: [],
                    zeichen: 0, bildFlaeche: 0, textFlaeche: 0 };
-    const alle = [...schirm.querySelectorAll('*')];
+    /* GEMESSEN WIRD DAS BUCH, nicht der Bildschirm.
+       Audit II hat den ganzen Schirm gezaehlt und dabei die Kopfzeile
+       der App mitgenommen („Zurueck", „Ansehen", die Marke) - die steht
+       auf JEDEM Bildschirm und gehoert nicht zur Tonleiter des Buches.
+       Die Zahlen hier sind deshalb NICHT die aus Audit II; die
+       Messstelle ist enger (Regel 5). */
+    const buch = [...schirm.querySelectorAll('.rollen.buch, .buchreiter')];
+    const alle = buch.flatMap(k => [k, ...k.querySelectorAll('*')]);
     for (const e of alle) {
       const r = e.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) continue;
@@ -46,8 +53,11 @@ for (const k of kaps) {
         raus.zeichen += eigenerText.length;
         raus.textFlaeche += r.width * r.height;
       }
+      /* Radien nur an KAESTEN. Ein SVG kann eine Ecke tragen, ohne dass
+         sie im Bild eine Kante ist - der eine Achter, der hier lange
+         uebrig blieb, kam von einem Kulissenstreifen. */
       const rad = parseFloat(c.borderTopLeftRadius);
-      if (rad > 0.5) raus.radius.push(Math.round(rad));
+      if (rad > 0.5 && !(e instanceof SVGElement)) raus.radius.push(Math.round(rad));
       if (c.backgroundColor !== 'rgba(0, 0, 0, 0)') raus.grund.push(c.backgroundColor);
       if (c.boxShadow && c.boxShadow !== 'none') raus.schatten.push(c.boxShadow);
       for (const v of [c.paddingTop, c.paddingLeft, c.gap, c.marginTop])
@@ -86,6 +96,44 @@ const zeig = (name, o, n = 99) => {
   console.log(`\n  ${name}: ${e.length} verschiedene`);
   console.log('    ' + e.slice(0, n).map(([v, z]) => `${v}×${z}`).join('  ').slice(0, 460));
 };
+/* ---------- Die Ratsche (Runde 0) ------------------------------------
+ *
+ * Sie zaehlt WERTE, nicht Geschmack: wieviele verschiedene
+ * Schriftstufen, Radien und Abstaende das Buch traegt. Wenige,
+ * wiederkehrende Werte sehen gemacht aus; viele, einmalige sehen
+ * gewachsen aus - das war der ganze Befund aus Audit II.
+ *
+ * Die Grenzen sind das, was nach Runde 0 GEMESSEN dasteht, nicht ein
+ * Wunsch: 3 Schriftstufen (Titel, Name, Fussnote), 2 Radien (Kasten und
+ * Pille), 3 Abstaende (eng, mittel, weit). Eine Ratsche darf nur
+ * strenger werden - wer eine vierte Stufe braucht, muss sie begruenden
+ * und die Zahl hier hochsetzen.
+ *
+ * Gemessen wird das BUCH, nicht der Bildschirm: die Kopfzeile der App
+ * steht auf jedem Schirm und gehoert nicht zur Tonleiter des Buches.
+ * Die Zahlen aus Audit II sind deshalb groesser - andere Messstelle
+ * (Regel 5).
+ */
+const GRENZEN = { schrift: 3, radius: 2, luft: 3 };
+if (process.argv.includes('--tor')) {
+  const fehler = [];
+  for (const [feld, grenze] of Object.entries(GRENZEN)) {
+    const werte = Object.entries(alles[feld]).sort((a, b) => b[1] - a[1]);
+    if (werte.length > grenze)
+      fehler.push(`${feld}: ${werte.length} verschiedene Werte, erlaubt sind ${grenze}`
+        + ` — ${werte.map(([v, z]) => `${v}×${z}`).join(' ')}`);
+  }
+  if (fehler.length) {
+    console.log('\n  Tor `tonleiter` ROT:');
+    fehler.forEach(f => console.log('    ✗ ' + f));
+    console.log('');
+    process.exit(1);
+  }
+  console.log(`\n  tonleiter grün: ${Object.keys(alles.schrift).length} Schriftstufen, `
+    + `${Object.keys(alles.radius).length} Radien, ${Object.keys(alles.luft).length} Abstände `
+    + `im Buch — gemessen an ${kaps.length} Kapitelseiten auf 844 × 390.`);
+  process.exit(0);
+}
 console.log(`\n  Feinmass am Forscherbuch, 844 x 390, voller Stand, ${kaps.length} Kapitel`);
 zeig('Schriftgrössen (Grösse/Schnitt)', alles.schrift);
 zeig('Eckenradien', alles.radius);

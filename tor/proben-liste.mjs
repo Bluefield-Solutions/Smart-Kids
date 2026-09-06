@@ -591,6 +591,27 @@ export const PROBEN = [
     an:{ ...DIST, text:"zahl:vorschau.length, gesamt:vorschau.length" },
     sagt:'trägt eine Zahl' },
 
+  /* --- Die Tonleiter des Buches (Runde 0) --------------------------- *
+   *
+   * Eine vierte Schriftstufe, so wie sie entsteht: jemand braucht „nur
+   * hier" etwas Kleineres und schreibt einen `calc`. Genau daraus sind
+   * die acht Kombinationen geworden, die Audit II gemessen hat.
+   * Der Eingriff macht aus der Fussnote eine eigene Groesse. */
+  { n:'eine vierte Schriftstufe schleicht sich ein', tor:'tonleiter',
+    datei:'prototyp/vorlage.html',
+    such:".rollen.buch .buchsatz,\n.buchreiter .reiterzahl small{font-size:var(--t-name);font-weight:400;",
+    ersatz:".rollen.buch .buchsatz,\n.buchreiter .reiterzahl small{font-size:calc(var(--t-name) * .82);font-weight:400;",
+    an:{ datei:'prototyp/vorlage.html', text:'calc(var(--t-name) * .82)' },
+    sagt:'schrift: 4 verschiedene' },
+
+  /* Und ein Radius, den jemand „nur fuer diese eine Zelle" anders setzt. */
+  { n:'ein dritter Radius kommt dazu', tor:'tonleiter',
+    datei:'prototyp/vorlage.html',
+    such:".rollen.buch .tierfeld,\n.rollen.buch .abz,",
+    ersatz:".rollen.buch .abz,",
+    an:{ datei:'prototyp/vorlage.html', fehlt:'.rollen.buch .tierfeld,\n.rollen.buch .abz,' },
+    sagt:'radius: 3 verschiedene' },
+
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
   // anderen den Offline-Vorrat ab - die Vorschau dem Spiel der Kinder.

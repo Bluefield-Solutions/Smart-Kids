@@ -18,6 +18,7 @@
 #     ansicht      Bildvergleich
 #     pwa/offline  startet ohne Netz
 #     nachschub    erneuert sich auf einer lahmen Leitung
+#     tonleiter    wieviele Stufen das Forscherbuch traegt
 #     smoke        spielt die App wirklich durch
 #
 # Eine Vorschau kann also auf dem Gerät kaputt sein. Deshalb steht unten

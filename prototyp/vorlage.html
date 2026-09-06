@@ -3052,6 +3052,100 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
  * Der Hebel fuer das Bild waere `max-width`, nicht die Hoehe - und der
  * gehoert in eine eigene Runde, weil er den Umriss unter den Namen
  * schiebt und `lesbarkeit` darueber zu urteilen hat. */
+
+/* ---------- Die Tonleiter des Buches (Audit II, C1/C2) ---------------
+ *
+ * Gemessen standen im Buch ACHT Schrift-Kombinationen fuer SECHS Rollen
+ * - 24/800, 20/800, 17/800, 17/700, 14/800, 14/700, 14/600, 10/400 -
+ * und von 82 Textknoten waren 66 fett. Wenn alles fett ist, kann nichts
+ * hervortreten; wenn jede Rolle ihre eigene Groesse hat, ist keine mehr
+ * eine Aussage.
+ *
+ * Jetzt ZWEI Groessen und drei Rollen. Den Unterschied zwischen Name und
+ * Fussnote tragen Gewicht und Farbe, nicht eine dritte Groesse - so
+ * machen es Setzer seit jeher, und es kostet keine Stufe.
+ *
+ *   TITEL     was die Seite ist          --s1 / 800
+ *   NAME      was ein Ding heisst        --s-klein / 600
+ *   FUSS      was man dazu wissen kann   --s-klein / 400, blasser
+ *
+ * Und DREI Abstaende statt vier beliebiger Werte, mit einer Regel, die
+ * man aussprechen kann: ENG innerhalb einer Zelle, MITTEL zwischen
+ * Zellen, WEIT zwischen den Teilen der Seite. Auf kurzen Schirmen
+ * ruecken alle drei um EINE Sprosse derselben Leiter herunter - das ist
+ * der Unterschied zu vorher: da standen dort 2 und `calc(* .8)`, Werte,
+ * die nirgends sonst vorkommen. Eine engere Leiter ist ein System, eine
+ * Ausnahme ist keins.
+ *
+ * ZWEI DINGE HABEN DEN ERSTEN ANLAUF GEKOSTET, beide vom Feinmass
+ * gemeldet (neun Kombinationen statt drei):
+ *
+ *   - Die Marken standen an `.rollen.buch`, die Kapitelreiter sind
+ *     dessen GESCHWISTER. Dort war `var(--t-titel)` undefiniert, die
+ *     ganze Deklaration damit ungueltig, und die Reiter fielen auf die
+ *     geerbte Groesse zurueck. Marken gehoeren an den gemeinsamen
+ *     Vorfahren.
+ *   - Und die Regeln standen VOR den Medienregeln des Buches, die
+ *     dieselben Eigenschaften noch einmal setzen. Gleiche Spezifitaet,
+ *     spaeter im Blatt gewinnt. Deshalb steht dieser Block als letzter.
+ */
+.schirm{
+  --t-titel:var(--s1); --t-name:var(--s-klein);
+  --eng:var(--r2); --mittel:var(--r4); --weit:var(--r6);
+}
+@media (max-height:440px){
+  .schirm{ --eng:var(--r1); --mittel:var(--r2); --weit:var(--r4); }
+}
+/* TITEL */
+.rollen.buch .gruppe,
+.buchreiter .reiterzahl{font-size:var(--t-titel);font-weight:800;
+  letter-spacing:-.01em}
+/* NAME */
+.buchreiter .was,
+.rollen.buch .abz .was,
+.rollen.buch .abz .fehlt,
+.rollen.buch .tierfeld span,
+.rollen.buch .raumauf span,
+.rollen.buch .raumchip span,
+.rollen.buch .aufkleber span{font-size:var(--t-name);font-weight:600}
+/* FUSS */
+.rollen.buch .gruppe small,
+.rollen.buch .buchsatz,
+.buchreiter .reiterzahl small{font-size:var(--t-name);font-weight:400;
+  color:var(--tinte-3)}
+/* ZWEI Radien statt vier: eine Kante fuer alles, was eine Zelle ist,
+   und die runde fuer alles, was eine Pille ist. Zwischen 12 und 20
+   Punkten sieht niemand einen Unterschied, der etwas BEDEUTET - er sagt
+   nur, dass zwei Leute zu verschiedenen Zeiten entschieden haben.
+   (Der Achter kam von einem SVG und ist kein Kasten des Buches.) */
+.rollen.buch .raumchip,
+.rollen.buch .raumauf,
+.rollen.buch .tierfeld,
+.rollen.buch .abz,
+.rollen.buch .albumkarte,
+.buchreiter .reiter{border-radius:var(--rund-karte)}
+.rollen.buch .abz .fehlt,
+.rollen.buch .balken{border-radius:var(--rund-voll)}
+/* Die drei Abstaende - und nur diese drei. */
+.buchseite{gap:var(--mittel)}
+.buchspalte{gap:var(--mittel)}
+.buchraster{--luft:var(--mittel)}
+.rollen.buch .abzeichen,
+.rollen.buch .kleber{gap:var(--mittel)}
+.rollen.buch .tierwand{gap:var(--eng)}
+.rollen.buch .raumwahl{gap:var(--eng);margin-bottom:var(--eng)}
+.buchreiter{gap:var(--eng)}
+/* Die letzten Zweier: Raumreiter und Tuer trugen `--r0`, den Wert, der
+   laut Marken „die kleinste Stufe ist, die es geben darf". Im Buch gibt
+   es sie jetzt nicht mehr - ENG ist auf kurzen Schirmen 4, und das ist
+   eine Sprosse der Leiter statt eines Sonderfalls. */
+.rollen.buch .raumchip{padding:var(--eng);gap:var(--eng)}
+.rollen.buch .raumauf{padding:var(--eng) var(--mittel);gap:var(--mittel)}
+.rollen.buch .tierfeld{padding:var(--eng);gap:var(--eng)}
+.rollen.buch .abz{padding:var(--mittel);gap:var(--eng)}
+@media (min-aspect-ratio:8/5){
+  .buchseite{column-gap:var(--weit);row-gap:0}
+}
 </style></head>
 <body><!-- Der Glanz der Aufkleber (Q28). EIN Verlauf fuer alle: eine
      Verlaufsmarke gilt im Dokument, nicht im einzelnen SVG, und eine

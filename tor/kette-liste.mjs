@@ -108,6 +108,10 @@ export const MIT_BROWSER = [
   { name: 'ziehen',     datei: 'tor/ziehen.mjs',     ms:  57000 },
   { name: 'lesbarkeit', datei: 'tor/lesbarkeit.mjs', ms:   9000 },
   { name: 'pwa',        datei: 'tor/pwa.mjs',        ms:   4000 },
+  /* Die Tonleiter des Forscherbuchs (Buch-Audit II, Runde 0): wieviele
+     verschiedene Schriftstufen, Radien und Abstaende es traegt. Eine
+     Ratsche, kein Soll - sie darf nur strenger werden. */
+  { name: 'tonleiter',  datei: 'tools/buch-feinmass.mjs', args: ['--tor'], ms: 20000 },
 ];
 
 /* Ein geteiltes Tor OHNE Deckungsart waere still ungeprueft - genau die
