@@ -210,6 +210,28 @@ const AUFNAHMEN = [
     wahl:'.schirm.da', tun:'tierbuch' },
   { name:'quer-landschaft', spiel:null, quer:true, stand:'tiere',
     wahl:'.schirm.da', tun:'landschaft' },
+  /* DIE DREI KAPITELSEITEN OHNE ZEUGEN (Runde 4).
+   *
+   * Bis v421 hatte das Buch sechs Bildschirme und drei Vorbilder: die
+   * Kontinenteseite (ueber `quer-buch`) und die beiden Zustaende des
+   * Tierkapitels. „Abzeichen", „Bundeslaender" und „Als Naechstes"
+   * waren nie fotografiert - und genau solche Bildschirme hatten in der
+   * Audit-Runde die Fehler.
+   *
+   * Alle drei mit demselben Stand wie die Tierseiten: voll. Ein Vorbild
+   * mit halbem Stand zeigt einen Grundriss, den es nach ein paar Wochen
+   * nicht mehr gibt - und bei den Abzeichen entscheidet der Stand
+   * ueberhaupt erst, ob eine Zelle verdient oder offen ist.
+   *
+   * Der Weg ist derselbe wie bei den Tieren, nur mit einem anderen
+   * Reiter; er steht deshalb in EINEM Zweig (`buchkapitel`) und nicht
+   * dreimal - was zweimal dasteht, veraltet einmal (Regel 6). */
+  { name:'quer-buch-abzeichen', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'abzeichen' },
+  { name:'quer-buch-bundeslaender', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'bundeslaender' },
+  { name:'quer-buch-naechstes', spiel:null, quer:true, stand:'tiere',
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'naechstes' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -931,6 +953,16 @@ for (const a of MEINE) {
     if (a.tun === 'buch') {
       await seite.click('#buch');
       await seite.waitForSelector('.schirm.da .rollen');
+      await seite.waitForTimeout(400);
+    } else if (a.tun === 'buchkapitel') {
+      /* Ins Buch und auf den benannten Reiter. Der Reiter MUSS da sein -
+         fehlt er, hat der Stand ihn nicht hergegeben, und ein Vorbild
+         von einem Bildschirm, den es nicht gibt, waere ein leeres Bild
+         mit einem Namen. */
+      await seite.click('#buch');
+      await seite.waitForSelector('.schirm.da .rollen.buch');
+      await seite.click(`.schirm.da .reiter[data-kap="${a.kap}"]`);
+      await seite.waitForSelector(`.schirm.da .buchseite[data-seite="${a.kap}"]`);
       await seite.waitForTimeout(400);
     } else if (a.tun === 'raumraster' || a.tun === 'tierbuch' || a.tun === 'landschaft') {
       /* Ins Buch, ins Tierkapitel - und dann je nach Aufnahme einen

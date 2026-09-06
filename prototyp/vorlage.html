@@ -2439,6 +2439,11 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   stroke-width:1.2;vector-effect:non-scaling-stroke}
 .albumgrund{fill:var(--linie);fill-opacity:.3}
 .gruppe small{font-weight:600;font-size:var(--s-klein);color:var(--tinte-3)}
+/* Der Zusatz unter der Ueberschrift (Runde 4). Er traegt KEINE eigenen
+   Werte: Groesse, Schnitt und Farbe kommen aus der FUSS-Rolle weiter
+   unten, der Abstand aus der Spalte. Hier steht nur, dass er kein
+   Absatzmass mitbringt - `p` haette sonst seinen eigenen. */
+.gruppenzusatz{margin:0}
 @media (prefers-reduced-motion:reduce){ .albumkarte:active{transform:none} }
 
 /* --- Der Familienschluessel (Q29) --------------------------------------
@@ -3108,6 +3113,7 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .aufkleber span{font-size:var(--t-name);font-weight:600}
 /* FUSS */
 .rollen.buch .gruppe small,
+.rollen.buch .gruppenzusatz,
 .rollen.buch .buchsatz,
 .buchreiter .reiterzahl small{font-size:var(--t-name);font-weight:400;
   color:var(--tinte-3)}

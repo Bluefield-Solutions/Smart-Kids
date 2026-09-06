@@ -139,6 +139,23 @@ zeigt nur das Tierkapitel. Drei der fünf Seiten sind von keinem Tor je
 angesehen worden. Das ist der Grund, warum B1 bis B9 so lange stehen
 konnten.
 
+**Erledigt in Runde 4 (v422).** „Abzeichen", „Bundesländer" und „Als
+Nächstes" haben ein Vorbild bekommen, alle drei mit vollem Stand — 49
+Aufnahmen statt 46. Damit ist jeder der sechs Buchbildschirme bezeugt.
+
+Und der Befund hat sich sofort bestätigt: **beim ersten Ansehen standen
+auf zwei der drei neuen Seiten Sätze, die mitten im Wort umbrachen.**
+Der Zusatz war ein `<small>` IM Titel und brach dort, wo die schmale
+linke Spalte gerade endete — „Deine Abzeichen 3 / verdient" und „Als
+Nächstes: Europa 0 von 3 / gesammelt". Kein Tor hatte je hingesehen; die
+Tonleiter zählt Werte, `passt` misst Ränder, und beides war grün.
+
+Der Zusatz ist jetzt eine eigene Zeile in der Fuß-Rolle. Dabei fiel
+zweierlei auf, was ohne das Bild nicht aufgefallen wäre: „3 verdient"
+sagt dasselbe wie der Reiter „3/9" und ist weg, und „16 Aufkleber, 2
+davon sicher" ist auf „2 davon sicher" gekürzt — die 16 steht schon
+oben.
+
 ---
 
 ## Was daraus folgt

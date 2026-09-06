@@ -6622,10 +6622,22 @@ async function forscherbuch(){
    * linksbuendig unter einer mittigen Karte und gehoerte optisch zu
    * nichts (Audit I, B8).
    */
+  /* DER ZUSATZ IST EINE ZEILE, kein Anhaengsel (Runde 4).
+   *
+   * Er stand als `<small>` IM Titel und ist damit umgebrochen, wo die
+   * Spalte gerade endete: „Deine Abzeichen 3 / verdient" und „Als
+   * Naechstes: Europa 0 von 3 / gesammelt" - beide Male mitten im Satz,
+   * beide Male sah es aus wie ein abgeschnittener Text. Gesehen haben
+   * das die drei Vorbilder, die es bis Runde 4 nicht gab.
+   *
+   * Jetzt hat er eine eigene Zeile in der FUSS-Rolle. Damit bricht er
+   * dort, wo ein Satz bricht - und die linke Spalte hat die Form, die
+   * das Buch ohnehin behauptet: Titel, Zusatz, Balken, Fusssatz. */
   const buchSeite = ({ id, titel, zusatz = '', balken = '', zeigt, fuss = '' }) => `
     <section class="buchseite" data-seite="${id}">
       <div class="buchspalte">
-        <h3 class="gruppe">${titel}${zusatz}</h3>
+        <h3 class="gruppe">${titel}</h3>
+        ${zusatz ? `<p class="gruppenzusatz">${zusatz}</p>` : ''}
         ${balken}
         ${fuss}
       </div>
@@ -7036,7 +7048,11 @@ async function forscherbuch(){
     zahl:verdient.length, gesamt:marken.length,
     lesen:`Deine Abzeichen. Du hast ${verdient.length===1?'eins':verdient.length}.`,
     inhalt: buchSeite({ id:'abzeichen', titel:'Deine Abzeichen',
-      zusatz:` <small>${verdient.length} verdient</small>`,
+      /* KEIN Zusatz. Der Reiter darueber traegt „3/9" - „3 verdient"
+         sagt dasselbe noch einmal, und ob eine Zelle verdient oder
+         offen ist, steht im Raster selbst (gruen gegen bernstein).
+         Dieselbe Entscheidung wie beim Tierkapitel in Runde 2; sie
+         faellt hier erst auf, seit die Seite ein Vorbild hat. */
       zeigt:`<div class="abzeichen">${verdient.map(markeBild).join('')}${
         naechste.map(markeBild).join('')}</div>` }) });
   for (const g of vollen) kapitel.push({
@@ -7044,8 +7060,13 @@ async function forscherbuch(){
     zahl:g.da.length, gesamt:g.da.length + g.offen.length,
     lesen:`${g.titel}. ${g.da.length===1?'Ein Aufkleber':`${g.da.length} Aufkleber`}.`,
     inhalt: buchSeite({ id:g.id, titel:g.titel,
+      /* Nur das, was der Reiter NICHT sagt. Er traegt „16/16"; die
+         Zahl der Aufkleber noch einmal davorzusetzen waere dieselbe
+         Auskunft zweimal - was zweimal dasteht, veraltet einmal
+         (Regel 6). „Sicher" ist die zweite Stufe und steht nirgends
+         sonst. */
       zusatz: g.da.filter(x=>x.gekonnt).length
-        ? ` <small>${g.da.length} Aufkleber, ${g.da.filter(x=>x.gekonnt).length} davon sicher</small>`
+        ? `${g.da.filter(x=>x.gekonnt).length} davon sicher`
         : '',
       zeigt: hatKarte(g) ? albumKarte(g)
         : `<div class="kleber gross">${g.da.map(x=>kleber(g,x,false)).join('')}</div>`,
@@ -7095,7 +7116,7 @@ async function forscherbuch(){
          * wie auf den anderen Kapitelseiten; nichts Neues, nur nicht
          * mehr weggelassen. */
         (() => { const gesamt = dran.da.length + dran.offen.length;
-          return gesamt ? ` <small>${dran.da.length} von ${gesamt} gesammelt</small>` : ''; })()
+          return gesamt ? `${dran.da.length} von ${gesamt} gesammelt` : ''; })()
         }`,
       balken:`${(() => { const gesamt = dran.da.length + dran.offen.length;
         return gesamt ? fortschrittBalken({ gesammelt: dran.da.length, gesamt,
