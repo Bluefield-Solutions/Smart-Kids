@@ -1850,18 +1850,23 @@
       "zeit": "2026-09-06",
       "s": 6
     },
+    "einer Flagge fehlt ihr unterscheidendes Zeichen": {
+      "commit": "db69832429966b793a6e607a68f9b137f35bde8f",
+      "zeit": "2026-09-06",
+      "s": 9
+    },
     "eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden": {
-      "commit": "ec4bcab29c3f9ce9a4a23ea5862552275eed65b9",
+      "commit": "db69832429966b793a6e607a68f9b137f35bde8f",
       "zeit": "2026-09-06",
       "s": 3
     },
     "ein Land hat keine Flagge mehr": {
-      "commit": "ec4bcab29c3f9ce9a4a23ea5862552275eed65b9",
+      "commit": "db69832429966b793a6e607a68f9b137f35bde8f",
       "zeit": "2026-09-06",
       "s": 3
     },
     "immer mehr Flaggen umgehen die Formsprache": {
-      "commit": "ec4bcab29c3f9ce9a4a23ea5862552275eed65b9",
+      "commit": "db69832429966b793a6e607a68f9b137f35bde8f",
       "zeit": "2026-09-06",
       "s": 3
     },

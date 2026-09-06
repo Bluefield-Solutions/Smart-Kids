@@ -5495,7 +5495,11 @@ export const PROBEN = [
     such:"  if (zeigen) ansagen(`${ziel.name}. Wo ist die Flagge?`);",
     ersatz:"  if (false) ansagen(`${ziel.name}. Wo ist die Flagge?`);",
     an:{ ...DIST, text:"if (false) ansagen(" },
-    sagt:'vorgelesen' },
+    /* Der Rauchtest sagt „wurde nicht gesagt", nicht „vorgelesen" - und
+       ein Suchwort, das die Meldung nicht enthaelt, macht aus einer
+       anschlagenden Probe eine, die nichts beweist. Nachgelesen an der
+       echten Meldung und nicht geraten. */
+    sagt:'wurde nicht gesagt' },
 
   /* Die Stimme wird durch eine Beruehrung freigegeben (S1t).
    *
