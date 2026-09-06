@@ -1375,6 +1375,35 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   if (tierReiter) await tierReiter.click();
   await p.waitForSelector('.schirm.da .raumgitter:not([hidden])');
   await schau('Forscherbuch (Tiere)');
+  /* --- ALLE RAUMZELLEN SIND GLEICH HOCH (B15) ------------------------
+   *
+   * Die Zusage klingt kleinlich und ist die, deren Verletzung neun
+   * Auslieferungen gekostet hat. Fuenf der fuenfzehn Raumnamen liegen
+   * mit 99 bis 107 Punkten genau an der Kante der 106 Punkte breiten
+   * Zelle; auf welcher Seite sie fallen, entscheidet die Rundung des
+   * jeweiligen Chromium. Damit hing die HOEHE der ganzen Wand an der
+   * Schriftrundung - dieses Tor war lokal gruen (13 Punkte Luft) und
+   * auf dem Runner rot (3 Punkte zu wenig), neun Auslieferungen lang.
+   *
+   * Geprueft wird deshalb nicht der Ueberlauf - den faengt die
+   * Randmessung ohnehin, aber eben nur dort, wo er gerade auftritt -
+   * sondern seine URSACHE: sind alle Zellen gleich hoch, kann keine
+   * Rundung mehr eine Reihe wachsen lassen. Das ist auf jedem Rechner
+   * dieselbe Aussage, und sie faellt hier an, wo alle fuenfzehn Raeume
+   * wirklich stehen. */
+  {
+    const h = await p.$$eval('.schirm.da .raumgitter:not([hidden]) .raumzelle',
+      z => z.map(x => Math.round(x.getBoundingClientRect().height)));
+    const hoehen = [...new Set(h)];
+    if (h.length < 10)
+      meldungen.push(`${name}: nur ${h.length} Raumzellen im Raster — dann beweist `
+        + '„alle gleich hoch" nichts, der volle Tierstand ist nicht angekommen');
+    else if (hoehen.length > 1)
+      meldungen.push(`${name}: die ${h.length} Raumzellen sind ${hoehen.length} verschiedene `
+        + `Höhen hoch (${hoehen.sort((a, b) => a - b).join(' · ')}) — dann entscheidet die `
+        + 'Schriftrundung, wie hoch die Wand wird, und dieses Tor urteilt auf zwei Rechnern '
+        + 'verschieden');
+  }
   /* Seit Runde 3 steht zuerst das Raumraster da. Zum Meer fuehrt die
      Zelle - und damit ist auch sie einmal gedrueckt. Der zweite Blick
      (`schau`) gilt dem geoeffneten Raum, wo die Tuer und der Weg

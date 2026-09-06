@@ -10789,3 +10789,87 @@ funktioniert danach vollständig, sie ist nur wieder zu drei Vierteln leer, und
 die Halbleer-Ratsche (24 %) hätte 28 % durchgelassen.
 
 362 von 362 Gegenproben mit Nachweis.
+
+---
+
+## B15 · Neun Auslieferungen lang kam nichts an
+
+Der wichtigste Befund dieser Sitzung, und er stand nicht im Code, sondern im
+Lauf. Rückmeldung der Familie: *„Wir sehen weiterhin Version 420."* Zum
+dritten Mal. Ich hatte es zweimal als Cache abgetan.
+
+Es war kein Cache. **Die letzten neun Auslieferungen sind alle rot**, zuletzt
+ausgeliefert wurde Lauf #200 (`4d27af0`, Runde 0). Alles seither — Runde 3
+(Tierkapitel), Runde 4, B4b, B12, B12b, B13, B14 — liegt in `main` und war nie
+auf einem Gerät. Der Service Worker ist unschuldig; er liefert korrekt aus,
+was Pages hat, und Pages hat v420.
+
+### Die Ursache: ein Tor, das auf zwei Rechnern verschieden urteilt
+
+```
+ROT   iPhone quer, Leiste 844×390 — 5 nicht erreichbar
+        Forscherbuch (Tiere): „Der Bauernhof" — 3 px über den Rand von .buchraster
+        …
+```
+
+Lokal war dieselbe Prüfung grün. Gemessen ist der Unterschied 16 Punkte, und
+das ist genau eine Textzeile:
+
+| Raumname | braucht | Zelle |
+|---|---|---|
+| Wald und Wiese | 107,0 | 106 |
+| Vor der Haustür | 103,7 | 106 |
+| Der Regenwald | 102,3 | 106 |
+| Wald und Fluss | 99,3 | 106 |
+
+Fünf der fünfzehn Namen liegen **an der Kante der Zelle**. Auf welcher Seite
+sie fallen, entscheidet die Sub-Pixel-Rundung des jeweiligen Chromium. Damit
+hing die **Höhe der ganzen Wand** an der Schriftrundung: hier 13 Punkte Luft,
+dort 3 zu wenig — und die letzte Reihe fiel unter den Rand.
+
+Auf dem Gerät mit sicherer Fläche (die 21 Punkte oben und unten, die das
+iPhone für Uhr und Wischstreifen nimmt) ist das Raster nur 214 Punkte hoch.
+Drei Reihen zu 71 sind 213. Es war nie Luft da, es war Glück.
+
+### Der Weg, der nicht funktioniert hat
+
+Breiter machen. Mit 112 Punkten Spaltenbreite passt **jeder** Name in eine
+Zeile — aber es sind dann nur noch vier Spalten und damit vier Reihen: 14
+Punkte zu viel. Gemessen, verworfen.
+
+### Der Weg, der funktioniert
+
+Der Kasten des Namens ist **immer zwei Zeilen hoch**, ob er sie braucht oder
+nicht, und das Merkzeichen schrumpft auf dem kurzen Querformat von 30 auf 24
+Punkte. Damit ist die Höhe der Wand eine **Konstante**: 15 Zellen zu je 66
+Punkten, drei Reihen, 11 Punkte Luft — auf jedem Rechner dieselbe.
+
+Die Zusage dazu prüft nicht den Überlauf (den fängt die Randmessung ohnehin,
+aber eben nur dort, wo er gerade auftritt), sondern seine **Ursache**: *alle
+Raumzellen sind gleich hoch.* Das ist auf jedem Rechner dieselbe Aussage, und
+sie steht in `passt`, wo alle fünfzehn Räume wirklich stehen.
+
+### Und warum es neun Läufe lang niemand nachlesen konnte
+
+Der Ablauf sichert bei Rot das volle Protokoll als Artefakt — aus `.kette/`.
+Der Ordner fängt mit einem Punkt an, und `upload-artifact@v4` überspringt
+versteckte Dateien von sich aus. Im Lauf stand jedes Mal:
+
+```
+No files were found with the provided path: .kette/. No artifacts will be uploaded.
+```
+
+Es gab also neun rote Auslieferungen und kein einziges Protokoll dazu.
+`include-hidden-files: true` behebt das.
+
+### Die Lehre
+
+Zwei Regeln haben hier gleichzeitig versagt, und keine davon war neu:
+
+* **Regel 5 (jede Zahl trägt ihre Messstelle mit):** „Kette grün" hieß in
+  neun Berichten „auf meinem Rechner grün". Die Messstelle des Runners kam in
+  keinem vor.
+* **Und die Zusage, die keiner geprüft hat:** dass das Ausgelieferte auch
+  ankommt. Es gibt 362 Gegenproben für das, was die App tut, und keine
+  einzige dafür, dass sie das Gerät erreicht. Der Fassungsstempel steht auf
+  jedem Bildschirm — gelesen hat ihn nur die Familie.

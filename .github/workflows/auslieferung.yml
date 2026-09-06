@@ -104,12 +104,22 @@ jobs:
       # will, was das Tor SONST noch gemessen hat - die Zahl daneben, den
       # Lauf davor -, braucht die ganze Ausgabe, und die schreibt die Kette
       # seit Q40 nach `.kette/`.
+      #
+      # `include-hidden-files` ist der Unterschied zwischen einem
+      # Protokoll und keinem. `.kette` faengt mit einem Punkt an, und
+      # `upload-artifact` ueberspringt versteckte Dateien seit v4 von
+      # sich aus - im Lauf stand dann „No files were found with the
+      # provided path: .kette/". Neun rote Auslieferungen lang gab es
+      # deshalb keinen Weg, nachzulesen, WARUM sie rot waren; es blieb
+      # der Auszug auf dem Bildschirm. Gefunden hat das erst der Blick
+      # in den Lauf selbst.
       - name: Protokoll des Laufs sichern
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: kettenprotokoll
           path: .kette/
+          include-hidden-files: true
           if-no-files-found: ignore
       # Die Vorschau wird MITGENOMMEN, nicht weggeräumt.
       #
