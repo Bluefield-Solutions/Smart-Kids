@@ -352,6 +352,46 @@ const kleberMarke = (n, gesamt, vonWieviel = false) => `<span class="klebermarke
  *     zugewandt statt vorlesend. Darueber wird es schrill.
  */
 let stimme=null, tonAn=true, entsperrt=false;
+/* DIE STIMME WIRD DURCH EINE BERUEHRUNG FREIGEGEBEN, nicht durch den
+ * ersten Satz (S1t).
+ *
+ * Rueckmeldung vom iPad: „kein Ton". Nachgestellt und gemessen, nicht
+ * geraten - vor dem ersten Tipp ruft die App dreimal `speak` auf:
+ *
+ *     { text: "",                                  nachGeste: 0 }
+ *     { text: "Wer möchte spielen?",               nachGeste: 0 }
+ *     { text: "Fiona, Lea, Stephan oder Violeta?", nachGeste: 0 }
+ *
+ * iOS gibt `speechSynthesis` erst nach einer Beruehrung frei und wirft
+ * dabei keinen Fehler - es passiert einfach nichts. Bis hierher stand
+ * die Freigabe IM ersten `vorlesen`, also genau in dem Aufruf, der auf
+ * dem Begruessungsbildschirm faellt: er wurde abgelehnt, und die Zeile
+ * daneben setzte `entsperrt = true`. Damit war die Stimme fuer die
+ * ganze Sitzung still, und niemand hat es je wieder versucht.
+ *
+ * Auf dem Schreibtisch gibt es die Sperre nicht - deshalb war der
+ * Fehler hier unsichtbar und dort vollstaendig.
+ *
+ * Jetzt haengt die Freigabe an der BERUEHRUNG. `capture` und alle drei
+ * Arten, weil iOS je nach Fassung `touchend` und `click` verschieden
+ * behandelt; die Marke selbst verhindert, dass es zweimal passiert.
+ * `cancel()` davor ist der uebliche Griff gegen eine Warteschlange, die
+ * nach einem abgelehnten Satz haengengeblieben ist.
+ *
+ * Die Begruessung VOR dem ersten Tipp bleibt stehen: auf iOS ist sie
+ * ohnehin verloren (dort darf vorher nichts sprechen), auf jedem
+ * anderen Geraet ist sie das erste, was ein Kind hoert, das nicht
+ * liest. Sie wegzunehmen hiesse, einen Verlust zu verallgemeinern. */
+function stimmeEntsperren(){
+  if (entsperrt || !('speechSynthesis' in window)) return;
+  entsperrt = true;
+  try {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+  } catch(e){}
+}
+for (const art of ['pointerdown', 'touchend', 'click'])
+  addEventListener(art, stimmeEntsperren, { capture: true, passive: true });
 
 /**
  * Welche Stimme?
@@ -525,8 +565,7 @@ function vorlesen(text, sprache = 'de'){
      wuerde die deutsche einspringen und „cat" als „katt" sagen. Wer das
      merkt, ist nicht das Kind. */
   if (sprache === 'en' && !stimmeEn) return;
-  try{ if(!entsperrt){ speechSynthesis.speak(new SpeechSynthesisUtterance('')); entsperrt=true; }
-    speechSynthesis.cancel();
+  try{ speechSynthesis.cancel();
     // Der Jubel darf eine Spur hoeher liegen als die Sache danach. Das ist
     // der Unterschied zwischen „Klasse!" und „Klasse."
     const saetze = String(text).split(/(?<=[.!?])\s+/).filter(Boolean);

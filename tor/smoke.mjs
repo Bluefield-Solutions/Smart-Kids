@@ -512,7 +512,7 @@ async function mitLage(p, wahl, e) {
     + (lage ? `Lage: ${JSON.stringify(lage)}` : 'Die Seite antwortet nicht mehr.');
 }
 
-async function neueSeite(viewport, ctx, flott = true) {
+async function neueSeite(viewport, ctx, flott = true, vorlauf = null) {
   /* `ctx.newPage()` nimmt KEINE Optionen.
    *
    * Hier stand `ctx.newPage({ viewport, deviceScaleFactor: 2 })`. Beides
@@ -813,6 +813,16 @@ async function neueSeite(viewport, ctx, flott = true) {
       return true;
     };
   });
+  /* Ein eigener VORLAUF, falls ein Abschnitt einen braucht (S1t).
+   *
+   * Er muss VOR `goto` stehen - ein Skript, das erst nach dem Laden
+   * angemeldet wird, sieht die ersten Aufrufe der App nicht mehr, und
+   * genau die sind hier die Frage. Deshalb ein Haken an dieser Stelle
+   * und nicht `addInitScript` an der Aufrufstelle.
+   *
+   * Er kommt NACH den Nachbauten oben, ueberschreibt sie also
+   * absichtlich: wer einen eigenen Mitschnitt braucht, bekommt ihn. */
+  if (vorlauf) await p.addInitScript(vorlauf);
   // `?flott` kuerzt die Schaupausen. Der Abschnitt `pausen` braucht die
   // Seite OHNE den Schalter - sonst misst er die Abkuerzung statt der Sache.
   await p.goto(ADRESSE + (flott ? '?flott' : ''), { waitUntil: 'domcontentloaded' });
@@ -6546,6 +6556,64 @@ if (laeuft('landschaft')) try {
 } catch (e) { merke('landschaft', e); }
 
 if (laeuft('sprechen')) try {
+  /* --- DIE STIMME WIRD DURCH EINE BERUEHRUNG FREIGEGEBEN (S1t) -------
+   *
+   * Rueckmeldung vom iPad: „kein Ton". iOS gibt `speechSynthesis` erst
+   * nach einer Beruehrung frei und wirft dabei keinen Fehler - es
+   * passiert einfach nichts. Bis v432 stand die Freigabe IM ersten
+   * `vorlesen`, also in dem Aufruf, der auf dem Begruessungsbildschirm
+   * faellt, lange vor dem ersten Tipp: er wurde abgelehnt, die Zeile
+   * daneben setzte die Marke trotzdem, und die App war fuer die ganze
+   * Sitzung still.
+   *
+   * DIESE SPERRE GIBT ES IN CHROMIUM NICHT - nachgestellt werden kann
+   * sie hier also nicht. Geprueft wird deshalb die Sache, die sie
+   * verlangt und die auf jedem Rechner dieselbe ist: die Freigabe faellt
+   * INNERHALB der ersten Beruehrung. Gezaehlt werden dafuer die Gesten
+   * und JEDER `speak`-Aufruf, auch der leere - der gewoehnliche
+   * Mitschnitt oben laesst leere Aeusserungen absichtlich weg, und die
+   * Freigabe ist genau eine.
+   *
+   * Eine eigene Seite mit eigenem Mitschnitt, damit `__gesagt` seine
+   * dreizehn Leser behaelt (Regel 6: was zweimal dasteht, veraltet
+   * einmal - deshalb steht es hier DANEBEN und nicht darin). */
+  {
+    const t = await neueSeite({ width: 844, height: 390 }, ctx, true, () => {
+      window.__gesten = 0;
+      window.__rufe = [];
+      for (const art of ['pointerdown', 'touchend', 'click'])
+        addEventListener(art, () => { window.__gesten++; }, true);
+      speechSynthesis.speak = (u) => {
+        window.__rufe.push({ text: u && u.text, nachGeste: window.__gesten });
+      };
+      speechSynthesis.cancel = () => {};
+      speechSynthesis.getVoices = () => [{ name:'Anna', lang:'de-DE', localService:true }];
+      window.SpeechSynthesisUtterance = class {
+        constructor(text) { this.text = text; this.lang = ''; this.rate = 1;
+          this.pitch = 1; this.voice = null; }
+      };
+    });
+    await t.waitForSelector('[data-profil="fiona"]');
+    await t.click('[data-profil="fiona"]');
+    await bis(t, () => window.__gesten > 0);
+    const m = await t.evaluate(() => ({ rufe: window.__rufe.slice(), gesten: window.__gesten }));
+    const frei = m.rufe.filter(x => !x.text);
+    if (!m.gesten)
+      merke('sprechen', new Error('der Tipp auf das Profil wurde nicht als Geste gezählt — '
+        + 'dann beweist „die Freigabe kam nach der Berührung" nichts'));
+    else if (!frei.length)
+      merke('sprechen', new Error('die Stimme wird nirgends freigegeben — auf iOS bleibt sie '
+        + 'damit die ganze Sitzung stumm, ohne dass ein Fehler auftritt'));
+    else if (frei[0].nachGeste === 0)
+      merke('sprechen', new Error('die Stimme wird VOR der ersten Berührung freigegeben '
+        + `(${frei[0].nachGeste} Gesten) — iOS lehnt das ab, und danach versucht es niemand `
+        + 'wieder: genau so war das iPad stumm'));
+    else
+      console.log(`  Stimme freigegeben:         mit der ersten Berührung `
+        + `(${m.rufe.length} Aufrufe, Freigabe nach Geste ${frei[0].nachGeste})`);
+    await t.close();
+  }
+
   const p = await neueSeite({ width: 844, height: 390 }, ctx);
 
   /* Welche Stimme die App von allein waehlt (M4s).

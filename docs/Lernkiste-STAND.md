@@ -10873,3 +10873,76 @@ Zwei Regeln haben hier gleichzeitig versagt, und keine davon war neu:
   ankommt. Es gibt 362 Gegenproben für das, was die App tut, und keine
   einzige dafür, dass sie das Gerät erreicht. Der Fassungsstempel steht auf
   jedem Bildschirm — gelesen hat ihn nur die Familie.
+
+## S1t · Warum das iPad stumm blieb — und es kein Gerätefehler war
+
+Gemeldet: *„im iPad keinen Ton."* Die naheliegende Erklärung wäre der
+Stummschalter oder eine fehlende deutsche Stimme gewesen. Es war weder.
+
+`speechSynthesis` gibt auf iOS erst nach einer **Berührung** frei. Wird
+vorher gesprochen, wirft nichts — es passiert einfach nichts. Bis v432
+stand die Freigabe **in** `vorlesen`:
+
+```js
+if (!entsperrt) { speechSynthesis.speak(new SpeechSynthesisUtterance('')); entsperrt = true; }
+```
+
+Der erste `vorlesen`-Aufruf fällt aber auf dem Begrüßungsbildschirm, lange
+vor dem ersten Tipp. iOS lehnte ihn ab, die Zeile daneben setzte `entsperrt`
+trotzdem — und danach hat es **niemand mehr versucht**. Ein einziger
+abgelehnter Aufruf hat die App für die ganze Sitzung stumm gemacht.
+
+Gemessen vor der Änderung, mit einem Zähler auf `pointerdown`/`touchend`/
+`click` und einem Mitschnitt **jedes** `speak`, auch der leeren:
+
+```
+{"text":"","nachGeste":0}
+{"text":"Wer möchte spielen?","nachGeste":0}
+{"text":"Fiona, Lea, Stephan oder Violeta?","nachGeste":0}
+```
+
+Drei Aufrufe, alle vor der ersten Geste. Danach liegt die Freigabe bei
+`nachGeste: 1`.
+
+Die Freigabe hängt jetzt an einem eigenen Horcher auf der ersten Berührung,
+`capture` und `passiv`, für alle drei Ereignisarten — welche davon zuerst
+fällt, entscheidet das Gerät, nicht die App. Die Begrüßung **vor** dem ersten
+Tipp bleibt stehen: auf iOS ist sie ohnehin verloren, auf jedem anderen Gerät
+ist sie das Erste, was ein Kind hört, das nicht liest. Sie wegzunehmen hieße,
+einen Verlust zu verallgemeinern.
+
+### Die Zusage, und woran sie nicht hängt
+
+**Chromium kennt diese Sperre nicht.** Sie hier nachzustellen wäre ein
+Nachbau, der beweist, was der Nachbau annimmt. Geprüft wird deshalb die
+Sache, die die Sperre verlangt und die auf jedem Rechner dieselbe ist: *die
+Freigabe fällt innerhalb der ersten Berührung.* Der Rauchtest zählt dafür die
+Gesten und schreibt jeden `speak`-Aufruf mit — auch den leeren, den der
+gewöhnliche Mitschnitt absichtlich weglässt, denn die Freigabe ist genau
+einer.
+
+Der Abschnitt `sprechen` sagt jetzt:
+
+```
+Stimme freigegeben:         mit der ersten Berührung (4 Aufrufe, Freigabe nach Geste 1)
+```
+
+Die Gegenprobe nimmt die **Anmeldung** des Horchers weg und lässt die
+Funktion stehen — so bleibt der Bau grün und nur die Sache selbst fällt aus.
+Das Tor meldet dann „die Stimme wird nirgends freigegeben".
+
+Dafür hat `neueSeite` im Rauchtest einen **Vorlauf-Haken** bekommen. Er
+musste einer sein: ein Skript, das erst nach `goto` angemeldet wird, sieht
+die ersten Aufrufe der App nicht mehr — und genau die sind hier die Frage.
+
+### Offen: Gleichlauf über die Geräte
+
+Der Fortschritt liegt in der IndexedDB des jeweiligen Geräts, und
+`gleichlauf` ist im gebauten Bündel leer. Fiona hat ihre Tiere deshalb auf
+dem Tablet und nicht auf dem Handy — kein Fehler, sondern der Bauzustand.
+
+Aufgenommen als **Q52**: ein Profil soll auf allen Geräten der Familie
+denselben Stand haben. Das ist keine Kleinigkeit — es braucht einen Ort, an
+dem der Stand liegt, eine Antwort auf „zwei Geräte, zwei Stände" und die
+Zusage aus dem Bedrohungsmodell (Q29: nichts verlässt das Gerät), die dann
+neu zu fassen ist. Bis dahin bleibt es, wie es ist.

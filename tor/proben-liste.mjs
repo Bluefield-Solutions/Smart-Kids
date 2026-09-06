@@ -5397,4 +5397,19 @@ export const PROBEN = [
       + "  //Anker:  return r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));",
     an:{ datei:'src/inhalt/tiere.js', text:"filter(t => t && t.bild);" },
     sagt:'beim ZWEITEN Mal' },
+
+  /* Die Stimme wird durch eine Beruehrung freigegeben (S1t).
+   *
+   * Ohne den Horcher faellt die Freigabe nirgends mehr - und auf iOS
+   * bleibt die App die ganze Sitzung stumm, ohne dass ein Fehler
+   * auftritt. Genau das war vom iPad gemeldet. Der Eingriff nimmt die
+   * ANMELDUNG weg und laesst die Funktion stehen: so bleibt der Bau
+   * gruen, und nur die Sache selbst faellt aus. */
+  { n:'die Stimme wird durch keine Beruehrung mehr freigegeben', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"for (const art of ['pointerdown', 'touchend', 'click'])\n"
+      + "  addEventListener(art, stimmeEntsperren, { capture: true, passive: true });\n",
+    ersatz:"/*Anker: keine Anmeldung von stimmeEntsperren*/\n",
+    an:{ ...DIST, fehlt:"addEventListener(art, stimmeEntsperren" },
+    sagt:'nirgends freigegeben' },
 ];
