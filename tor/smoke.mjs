@@ -4034,10 +4034,29 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * wird der englische gesagt und steht nirgends. Eine der beiden
      * auszulassen hiesse, die Haelfte der Zusagen dieses Bildschirms
      * ungeprueft zu lassen - genau der Fehler, der hier schon zweimal
-     * drinstand. */
+     * drinstand.
+     *
+     * UND EIN DRITTES MAL, mit F2. Die Gegenprobe „die Flaggenfrage wird
+     * nicht mehr angesagt" meldete „`smoke` bleibt gruen, obwohl der
+     * Fehler drin ist". Von Hand nachgestellt schlug das Tor an und gab
+     * Rueckgabewert 1 - im Probenlauf spielte Fiona 4 Ebenen statt 23,
+     * und keine davon war eine Flaggenebene.
+     *
+     * Dreimal derselbe Weg: neue Art von Bildschirm gebaut, Gegenprobe
+     * geschrieben, Gegenprobe beweist nichts, weil DIESE Zeile die Ebene
+     * auslaesst. Die Liste ist die Stelle, an der eine neue Ebene
+     * unsichtbar wird - wer eine baut, traegt sie hier nach.
+     *
+     * `flaggen:europa` und nicht alle sieben: es ist EINE Art von
+     * Bildschirm, und Europa ist die Karte mit der groessten Tiefe. Sie
+     * ist die SECHSTE Art (Karte, Rechnung, Schreibblatt, Hoeren,
+     * getippter Satz, Flagge) und traegt ausserdem als einzige ZWEI
+     * Antwortrichtungen an einem Bildschirm - Fiona tippt eine Flagge an,
+     * Lea schreibt den Namen. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'laender:europa' || e.startsWith('rechnen')
+                    || e === 'flaggen:europa'
                     || e.startsWith('englisch') || e.startsWith('freunde')
                     || e === 'wendungen' || e === 'hoersatz')
       : da;
