@@ -2637,7 +2637,9 @@ console.log('\n  Tor `flaggen`');
    * gebildet wird - Rumaenien steht nie neben Nigeria. Ein Vergleich aller
    * gegen alle waere strenger, als das Spiel es verlangt, und wuerde
    * Aenderungen erzwingen, die niemand sieht. */
-  const aehnlich = new Set(FL.AEHNLICH.map(([a, b]) => [a, b].sort().join('/')));
+  const aehnlich = new Set(FL.AEHNLICH.map(x => [...x.paar].sort().join('/')));
+  const nichtFragbar = new Set(FL.AEHNLICH.filter(x => x.fragbar === false)
+    .map(x => [...x.paar].sort().join('/')));
   let engste = { anteil: 1 }, gemessen = 0, unterSoll = [];
   for (const [kont, liste] of Object.entries(I.LAENDER))
     for (let i = 0; i < liste.length; i++)
@@ -2676,8 +2678,9 @@ console.log('\n  Tor `flaggen`');
      Was bleibt, ist der BAULICHE Grund der Verwechslung - gleiche Bauart,
      gleiche Zahl und Richtung der Streifen. Das ist prüfbar, und es ist
      die Aussage, die stimmt. */
-  let geprueftePaare = 0, wartend = 0;
-  for (const [a3a, a3b] of FL.AEHNLICH) {
+  let geprueftePaare = 0, wartend = 0, stumm = 0;
+  for (const x of FL.AEHNLICH) {
+    const [a3a, a3b] = x.paar;
     const a = FL.flaggeVon(a3a), b = FL.flaggeVon(a3b);
     if (!a || !b) { wartend++; continue; }
     geprueftePaare++;
@@ -2686,6 +2689,32 @@ console.log('\n  Tor `flaggen`');
       ff.push(`${a3a}/${a3b} steht in \`AEHNLICH\`, ist aber verschieden gebaut `
         + `(${ma} gegen ${mb}) — dann fehlt der Grund, warum man sie verwechseln `
         + 'sollte, und das Paar gehört überprüft');
+    if (!x.grund)
+      ff.push(`${a3a}/${a3b} sagt nicht, WORAN man die beiden unterscheidet — `
+        + 'die Ebene zeigt das Paar dann ohne Erklärung');
+    /* Die BEIDEN Richtungen der Ausnahme (Regel 1: wer eine Wirkung
+     * misst, schaltet sie zuerst ab).
+     *
+     * Ein Paar, das man nicht sehen kann, MUSS `fragbar:false` tragen -
+     * sonst stellt die Ebene eine Frage, die kein Kind beantworten kann
+     * und die es nur raten lehrt.
+     *
+     * Und umgekehrt: ein Paar mit `fragbar:false`, das man sehr wohl
+     * unterscheiden kann, ist eine Bequemlichkeit. Ohne diese zweite
+     * Hälfte wäre `fragbar:false` ein Freibrief, mit dem sich jede zu
+     * ähnliche Zeichnung stillstellen ließe - und genau dafür ist der
+     * Boden nicht da. */
+    const u = FL.unterschied(a.bau, b.bau);
+    const zuNah = u.anteil < BODEN;
+    if (x.fragbar === false) stumm++;
+    if (zuNah && x.fragbar !== false)
+      ff.push(`${a3a}/${a3b}: nur ${(u.anteil * 100).toFixed(1)} % der Fläche stehen `
+        + `anders da (Boden ${BODEN * 100} %) — das ist nicht zu sehen und gehört `
+        + 'als `fragbar:false` gekennzeichnet, statt gefragt zu werden');
+    if (!zuNah && x.fragbar === false)
+      ff.push(`${a3a}/${a3b} trägt \`fragbar:false\`, unterscheidet sich aber auf `
+        + `${(u.anteil * 100).toFixed(1)} % der Fläche — man kann es sehen, also `
+        + 'gehört die Ausnahme weg. Sonst ist sie ein Freibrief');
   }
 
   if (ff.length) {
@@ -2698,8 +2727,19 @@ console.log('\n  Tor `flaggen`');
   console.log(`    ${gemessen} Paare je Karte gemessen · engstes ${engste.paar} `
     + `(${engste.kont}, ${(engste.anteil * 100).toFixed(1)} % deutlich anders, `
     + `Boden ${BODEN * 100} %, Soll ${SOLL * 100} %)`);
-  console.log(`    Verwechslungen: ${geprueftePaare} Paare nachgemessen, `
-    + `${wartend} warten auf F3 (Länder ohne Umriss)`);
+  /* Die acht ohne Kartenumriss duerfen in „Auf die Karte" (F4) nicht
+     vorkommen - dort wuerde nach einem Ort gefragt, den es auf keiner
+     Karte dieser App gibt. Geprueft wird die Zusage, nicht der gute
+     Wille: kein `FLAGGEN_EXTRA`-Land darf in `LAENDER` stehen. */
+  for (const f of FL.FLAGGEN_EXTRA)
+    if (laender.has(f.a3))
+      ff.push(`${f.a3} steht in \`FLAGGEN_EXTRA\` UND in \`LAENDER\` — dann ist `
+        + 'unklar, ob es einen Kartenumriss hat, und „Auf die Karte" (F4) fragt '
+        + 'vielleicht nach einem Ort, den es nicht gibt');
+  console.log(`    Verwechslungen: ${geprueftePaare} Paare nachgemessen `
+    + `(${stumm} nur zum Zeigen, nicht zum Fragen), ${wartend} ohne Flagge`);
+  console.log(`    Ohne Kartenumriss: ${FL.FLAGGEN_EXTRA.length} Flaggen für die `
+    + 'Verwechslungen — keine davon in `LAENDER`');
 }
 
 /* =================================================== Tor `betroffen` ==== *

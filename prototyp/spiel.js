@@ -4152,9 +4152,12 @@ function flaggenschirm(){
    * Lernen mehr, sondern Raten mit besserer Begruendung. */
   const ablenker = () => {
     const andere = ganzeKarte.filter(x => x.id !== ziel.id);
-    const nah = new Set(Flaggen.AEHNLICH
-      .filter(paar => paar.includes(ziel.a3))
-      .map(paar => paar.find(a => a !== ziel.a3)));
+    /* `nahDran` und nicht die Liste selbst durchsuchen: sie haelt seit F3
+       auch Paare, die man NICHT fragen kann (Rumaenien und der Tschad
+       unterscheiden sich nur im Blauton). Die Auswahl darf zwei davon
+       nie nebeneinanderstellen - dann waere die Aufgabe geraten und
+       nicht gekonnt. `nahDran` gibt nur, was sich unterscheiden LAESST. */
+    const nah = Flaggen.nahDran(ziel.a3);
     const muster = Flaggen.baumuster(Flaggen.flaggeVon(ziel.a3).bau);
     const gleich = (x) => Flaggen.baumuster(Flaggen.flaggeVon(x.a3).bau) === muster;
     const misch = (l) => mischenMit(l, st.keim + st.i * 7919);

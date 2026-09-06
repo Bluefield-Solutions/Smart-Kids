@@ -734,10 +734,27 @@ const SUCHE = () => {
             + `(${Math.round(rest)} von ${Math.round(kasten)} pt in der letzten Zeile)`);
         }
       };
+      /* AB elf, nicht BEI genau elf.
+       *
+       * Hier stand `=== 11`, und das war richtig, solange die Wand
+       * hoechstens zehn Kacheln trug: geklont wurde bis elf, und dort
+       * wurde gemessen. Mit der Flaggenkachel (F2) hat die Wand SELBST
+       * elf - `heute + i + 1` faengt bei zwoelf an und trifft die Elf
+       * nie mehr. Die Waisenmessung lief ab da nicht mehr, und die
+       * stehende Gegenprobe zu Q31 meldete „TOR BLEIBT GRUEN".
+       *
+       * Eine Zusage waere still verschwunden. Das Tor haette weiter
+       * gemeldet, nur nichts mehr angesehen - und keine Zahl im Bericht
+       * haette sich geaendert.
+       *
+       * Gemessen wird jetzt beim ERSTEN Stand ab elf, also heute vor dem
+       * ersten Klon. Damit ist die Zahl elf, was sie sein soll: eine
+       * Schwelle und keine Punktlandung. */
+      if (heute >= 11) namenMessen();
       if (!laeuftRaus()) for (let i = 0; i < 8; i++) {
         const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);
         neuHaengen();
-        if (heute + i + 1 === 11) namenMessen();
+        if (heute < 11 && heute + i + 1 === 11) namenMessen();
         if (laeuftRaus()) break;
         passt = heute + i + 1;
       }

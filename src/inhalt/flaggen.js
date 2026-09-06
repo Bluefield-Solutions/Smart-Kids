@@ -767,32 +767,56 @@ function guyana(){
     vieleck([[0, HOCH * 0.07], [BREIT * 0.46, HOCH / 2], [0, HOCH * 0.93]], rot) ];
 }
 
+/* ---------- Die Laender ohne Umriss (F3) ---------------------------------
+ *
+ * Acht Flaggen, die es in dieser App NICHT auf der Karte gibt - und sie
+ * stehen hier trotzdem, weil die Ebene „Verwechslungen" sie braucht.
+ *
+ * Rumaenien ohne den Tschad ist kein Paar. Irland ohne die
+ * Elfenbeinkueste auch nicht. Wer die acht weglaesst, hat eine Ebene
+ * ueber Verwechslungen, in der die Haelfte der Verwechslungen fehlt.
+ *
+ * SIE DUERFEN IN „AUF DIE KARTE" (F4) NICHT VORKOMMEN. Ein Land ohne
+ * Umriss laesst sich nicht auf sein Gebiet ziehen; gefragt wuerde nach
+ * einem Ort, den es auf keiner Karte dieser App gibt. Das Tor `flaggen`
+ * setzt es durch, statt sich darauf zu verlassen, dass jemand daran
+ * denkt.
+ *
+ * Der NAME steht hier - anders als bei den 69, deren Namen aus `LAENDER`
+ * kommen. Das ist keine zweite Faktenliste, sondern die einzige: fuer
+ * diese acht gibt es nirgendwo sonst einen Eintrag. `aussprache` fehlt,
+ * weil sie nur in der Wahlform vorkommen und dort nichts gesprochen
+ * beantwortet wird. */
+export const FLAGGEN_EXTRA = [
+  { a3:'TCD', name:'Tschad',
+    bau:{ art:'streifen', hoch:true, farben:['#002664', '#FECB00', '#C60C30'] } },
+  { a3:'IRL', name:'Irland',
+    bau:{ art:'streifen', hoch:true, farben:['#169B62', W, '#FF883E'] } },
+  { a3:'CIV', name:'Elfenbeinküste', aliasse:['Cote d\'Ivoire', 'Elfenbeinkueste'],
+    bau:{ art:'streifen', hoch:true, farben:['#FF8200', W, '#009A44'] } },
+  { a3:'NOR', name:'Norwegen',
+    bau:{ art:'nordkreuz', grund:'#BA0C2F', kreuz:W, innen:'#00205B' } },
+  { a3:'ISL', name:'Island',
+    bau:{ art:'nordkreuz', grund:'#02529C', kreuz:W, innen:'#DC1E35' } },
+  { a3:'MCO', name:'Monaco',
+    bau:{ art:'streifen', farben:['#CE1126', W] } },
+  { a3:'SVN', name:'Slowenien',
+    bau:{ art:'streifen', farben:[W, '#005DA4', '#D50000'],
+          zeichen:{ form:'schild', x:0.28, y:0.36, gross:0.28, farbe:'#005DA4' } } },
+  { a3:'SVK', name:'Slowakei',
+    bau:{ art:'streifen', farben:[W, '#0B4EA2', '#EE1C25'],
+          zeichen:{ form:'schild', x:0.34, y:0.5, gross:0.34, farbe:'#EE1C25' } } },
+];
+
 /* ---------- Nachschlagen ------------------------------------------------- */
 
-const NACH_A3 = new Map(FLAGGEN.map(f => [f.a3, f]));
+/* Nachgeschlagen wird ueber BEIDE Listen. Wer eine Flagge sucht, will
+   die Flagge - ob das Land einen Kartenumriss hat, ist eine andere Frage
+   und wird dort gestellt, wo sie zaehlt (`FLAGGEN_EXTRA`). */
+const NACH_A3 = new Map([...FLAGGEN, ...FLAGGEN_EXTRA].map(f => [f.a3, f]));
 export const flaggeVon = (a3) => NACH_A3.get(a3) || null;
 export const hatFlagge = (a3) => NACH_A3.has(a3);
 
-/**
- * Die Paare, die man wirklich verwechselt (F3).
- *
- * Sie stehen HIER und nicht im Tor: sie sind eine Aussage ueber die WELT,
- * keine ueber die App. Das Tor liest sie und prueft sie nach - jedes Paar,
- * dessen beide Flaggen es schon gibt, muss sich im Raster tatsaechlich
- * aehnlich sehen. Sonst behauptet die Liste etwas, das die Zeichnung nicht
- * einloest, und die Ebene „Verwechslungen" zeigte zwei Flaggen, die
- * niemand verwechselt.
- *
- * Die Auswahl im Spiel liest sie ebenfalls: neben Rumaenien soll der
- * Tschad stehen und nicht Belgien (Soll 4 des Referenzabgleichs). Solange
- * es die eigene Ebene noch nicht gibt, wirkt die Liste schon in der
- * Grundform - als BEVORZUGTER Ablenker.
- *
- * Paare mit einem Land, das es hier noch nicht gibt, warten auf F3: dort
- * kommt `FLAGGEN_EXTRA` dazu (Irland, Norwegen, Island, der Tschad,
- * Monaco, die Elfenbeinkueste, Slowenien, die Slowakei). Das Tor zaehlt
- * sie getrennt, statt sie stillschweigend zu ueberspringen.
- */
 /**
  * Das BAUMUSTER einer Flagge - dieselbe Bauart, dasselbe Streifenbild.
  *
@@ -802,10 +826,10 @@ export const hatFlagge = (a3) => NACH_A3.has(a3);
  * das Tor verlangte, dass sich zwei „aehnliche" Flaggen auf hoechstens
  * 30 % der Flaeche unterscheiden. Es meldete daraufhin, die Niederlande
  * und Luxemburg (31 %) und Indonesien und Polen (100 %) verwechsle
- * niemand. Beide sind Schulbeispiele der Verwechslung: das eine sind zwei
- * Blautoene, das andere ist dieselbe Flagge auf dem Kopf. Ein Bildpunkt
- * sieht bei einer Umkehrung den groesstmoeglichen Unterschied, ein Mensch
- * sieht zweimal Rot und Weiss.
+ * niemand. Beide sind Schulbeispiele: das eine sind zwei Blautoene, das
+ * andere ist dieselbe Flagge auf dem Kopf. Ein Bildpunkt sieht bei einer
+ * Umkehrung den groesstmoeglichen Unterschied, ein Mensch sieht zweimal
+ * Rot und Weiss.
  *
  * Was BLEIBT, ist der bauliche Grund der Verwechslung: gleiche Bauart,
  * gleiche Zahl und Richtung der Streifen. Das ist pruefbar, und es ist
@@ -819,18 +843,62 @@ export function baumuster(bau){
   return teile.join('/');
 }
 
+/**
+ * Die Paare, die man wirklich verwechselt (F3).
+ *
+ * Sie stehen HIER und nicht im Tor: sie sind eine Aussage ueber die WELT,
+ * keine ueber die App.
+ *
+ * `fragbar:false` HEISST: DIESES PAAR KANN MAN NICHT FRAGEN.
+ *
+ * Und das ist die wichtigste Zeile dieser Liste. Zwei Beispiele, beide
+ * gemessen und nicht vermutet:
+ *
+ *   Rumaenien und der Tschad unterscheiden sich NUR im Blauton
+ *   (#002B7F gegen #002664). Im Raster sind sie zu 0,0 % verschieden.
+ *   Monaco und Indonesien unterscheiden sich NUR im Seitenverhaeltnis -
+ *   und in dieser App stehen alle Flaggen im selben Rahmen (siehe Kopf).
+ *   Also ebenfalls 0,0 %.
+ *
+ * „Welche ist Rumaenien?" hat dann keine Antwort, die man SEHEN kann.
+ * Wer sie trotzdem stellt, bringt einem Kind bei zu raten und nennt das
+ * Lernen. Diese Paare werden GEZEIGT und erklaert - „diese beiden sind
+ * praktisch gleich, der Unterschied ist der Blauton" -, aber nie
+ * abgefragt. Das ist kein Rueckzug, sondern der ehrlichere Inhalt: dass
+ * es Flaggen gibt, die man nicht auseinanderhalten kann, ist selbst
+ * etwas, das man ueber Flaggen lernen kann.
+ *
+ * Das Tor setzt beides durch: ein Paar unter dem Boden MUSS
+ * `fragbar:false` tragen, und ein Paar mit `fragbar:false` muss auch
+ * wirklich zu nah sein - sonst waere die Ausnahme eine Bequemlichkeit.
+ *
+ * `grund` ist der Satz, den die Ebene zeigt. Er steht bei den Daten, weil
+ * er zur Sache gehoert und nicht zur Anzeige.
+ */
 export const AEHNLICH = [
-  ['NLD', 'LUX'],
-  ['IDN', 'POL'],
-  ['ROU', 'TCD'],
-  ['IRL', 'CIV'],
-  ['NOR', 'ISL'],
-  ['AUS', 'NZL'],
-  ['ECU', 'COL'],
-  ['SVN', 'SVK'],
-  ['MCO', 'IDN'],
-  ['ITA', 'MEX'],
-  ['CRI', 'THA'],
-  ['HND', 'NIC'],
-  ['CHN', 'VNM'],
+  { paar:['NLD', 'LUX'], grund:'Luxemburgs Blau ist heller.' },
+  { paar:['IDN', 'POL'], grund:'Dieselben Farben, andere Reihenfolge: Polen ist weiß oben.' },
+  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.', fragbar:false },
+  { paar:['IRL', 'CIV'], grund:'Spiegelbild: Irland ist grün am Mast, die Elfenbeinküste orange.' },
+  { paar:['NOR', 'ISL'], grund:'Dieselben drei Farben, vertauscht.' },
+  { paar:['AUS', 'NZL'], grund:'Australien hat sechs weiße Sterne, Neuseeland vier rote.' },
+  { paar:['ECU', 'COL'], grund:'Ecuador trägt ein Wappen, Kolumbien nicht.' },
+  { paar:['SVN', 'SVK'], grund:'Das Wappen sitzt anders und hat andere Farben.' },
+  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',
+    fragbar:false },
+  { paar:['ITA', 'MEX'], grund:'Mexiko trägt einen Adler in der Mitte.' },
+  { paar:['CRI', 'THA'], grund:'Dieselben Streifen, andere Farbe in der Mitte.' },
+  { paar:['HND', 'NIC'], grund:'Honduras hat fünf Sterne, Nicaragua ein Dreieck.' },
+  { paar:['CHN', 'VNM'], grund:'China hat fünf Sterne in der Ecke, Vietnam einen in der Mitte.' },
 ];
+
+/** Die Paare, nach denen man FRAGEN kann - der Vorrat der Ebene F3. */
+export const fragbarePaare = () => AEHNLICH.filter(x => x.fragbar !== false);
+
+/** Zu welchem Land ist DIESES hier zu verwechseln? Fuer die Ablenkerwahl. */
+export function nahDran(a3){
+  const aus = new Set();
+  for (const x of AEHNLICH)
+    if (x.paar.includes(a3)) aus.add(x.paar.find(y => y !== a3));
+  return aus;
+}
