@@ -1791,6 +1791,70 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    blauen Kaesten sind zehn Mischungen. Der neutrale Grund ist hier keine
    Gestaltung, sondern Teil der Aufgabe - so wie der weisse Rand um einen
    Aufkleber. */
+/* ---- Die Flaggen (F2) --------------------------------------------------
+   
+   Der Aufbau ist der der Englischwahl - vier Karten, eine stimmt -, und
+   deshalb haengen die Zustaende an denselben Klassen statt daneben
+   geschrieben zu werden.
+   
+   WAS ANDERS IST: eine Flagge ist ein RECHTECK und kein Fleck. Sie fuellt
+   ihre Karte bis an den Rand, denn was auf einer Flagge zu sehen ist,
+   sitzt oft am Rand - der Kanton der USA, der Keil Tschechiens, der
+   Stern der DR Kongo. Eine Flagge mit Innenabstand waere kleiner und
+   damit schwerer, ohne dass jemand das entschieden haette.
+   
+   UND SIE VERBLASST NIE. Dieselbe Lehre wie beim Farbfleck (G18): eine
+   Flagge mit 45 % Deckung ist eine ANDERE Flagge - aus Rot wird Rosa,
+   und ein Kind, das danach noch einmal hinsieht, lernt das Falsche.
+   Zurueck tritt der KASTEN, nie das Bild. */
+.flaggenfeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r5);padding:0 var(--r4) var(--r4);min-height:0}
+.flaggenwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}
+.flaggenkarte{display:block;padding:0;overflow:hidden;cursor:pointer;
+  background:var(--papier);border:var(--strich) solid var(--linie);
+  border-radius:var(--rund-karte);width:150px;line-height:0;
+  box-shadow:0 var(--kante) 0 var(--linie);
+  transition:transform var(--d-tipp) var(--k-standard),
+             box-shadow var(--d-tipp) var(--k-standard)}
+.flaggenkarte:active{transform:translateY(3px);box-shadow:0 0 0 var(--linie)}
+.flaggenkarte[disabled]{cursor:default}
+.flaggenkarte[disabled]:not(.stimmt){box-shadow:none;pointer-events:none;
+  transform:translateY(var(--kante));border-color:var(--grund)}
+.flaggenkarte.stimmt{border-color:var(--gut);box-shadow:0 0 0 var(--strich-stark) var(--gut)}
+.flaggenkarte.falsch{animation:wackeln var(--d-wackeln) var(--k-standard)}
+@media (prefers-reduced-motion:reduce){.flaggenkarte.falsch{animation:none}}
+.flaggenkarte svg,.flaggengross svg{display:block;width:100%;height:auto}
+/* Die EINE grosse Flagge der Nennrichtung. Breiter als eine Wahlkarte,
+   weil hier nichts danebensteht - und gedeckelt, damit sie im kurzen
+   Querformat nicht das Eingabefeld aus dem Bild schiebt. */
+.flaggengross{width:min(280px,60vw);border:var(--strich) solid var(--linie);
+  border-radius:var(--rund-karte);overflow:hidden;line-height:0;
+  box-shadow:0 var(--kante) 0 var(--linie)}
+@media (max-height:440px){
+  .flaggenkarte{width:118px}
+  .flaggengross{width:min(210px,44vw)}
+}
+/* Der Aufkleber im Buch und im Vorlauf. Er traegt den Stanzrand NICHT:
+   der entsteht aus einem Pfad, und eine Flagge ist keiner. Was bleibt,
+   ist der Rahmen - und der steckt schon im Bild selbst (`flaggeSvg`),
+   weil eine weisse Flagge sonst keine Kontur haette. */
+/* Die HOEHE ist hier die knappe Groesse, nicht die Breite.
+   
+   Der erste Anlauf gab der Flagge `width:100%`. Eine Karte ist rund 100
+   Punkte breit, eine Flagge ist 3:2 - also 67 Punkte hoch, und dazu der
+   Name darunter. Im Vorlauf standen dadurch zwei Reihen, von denen die
+   zweite unten abgeschnitten war. Die Flagge bekommt deshalb eine
+   Hoechsthoehe und behaelt ihr Seitenverhaeltnis; sie darf schmaler
+   werden als die Karte. */
+.flaggenkleber{width:100%;display:flex;align-items:center;justify-content:center}
+.flaggenkleber svg{width:auto;height:100%;max-width:100%;max-height:46px;
+  border-radius:2px}
+.rollen.buch .flaggenkleber svg{max-height:56px}
+.flaggenkleber.offen{opacity:.3;filter:grayscale(.7)}
+/* Das Wasserzeichen der Kachel. Es liegt hinter dem Namen und darf ihn
+   nicht ueberstrahlen - deshalb blass, wie jeder andere Umriss dort. */
+.flaggensilhouette{display:block}
+.flaggensilhouette svg{display:block;width:100%;height:auto}
 .englischfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r6);padding:0 var(--r4) var(--r4);min-height:0}
 .engwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}

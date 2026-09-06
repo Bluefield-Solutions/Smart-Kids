@@ -1127,6 +1127,44 @@ const EBENEN = [
    * `mischung` steht in `docs/Lernkiste-ABGLEICH-ANTON.md`, Reihe C, und
    * das Tor `doku` legt beides nebeneinander.
    */
+  /* Die Flaggen (F2) - sieben Ebenen, EINE Kachel.
+   *
+   * `gruppe:'flaggen'` ist derselbe Mechanismus, den sich die beiden
+   * Hauptstadt-Ebenen seit Q17 teilen: die Wand zeigt eine Kachel, ein
+   * Tipp darauf fragt „wo?". Ohne ihn waere die Erdkundewand siebzehn
+   * Kacheln hoch, und gemessen traegt sie zwoelf (Q13/Q27). So geht sie
+   * von zehn auf elf.
+   *
+   * `wo` ist der Name der KARTE, nicht der Ebene - innerhalb einer Gruppe
+   * heisst die Kachel nach dem Ort. Er kommt aus `KONT_TITEL`, derselben
+   * Quelle wie bei den Laenderebenen; eine zweite Namensliste hier waere
+   * die, die bei der achten Karte veraltet.
+   *
+   * `art:'flagge'` und nicht ein Schalter an der Laenderebene: gefragt
+   * wird anders (ein Bild statt eines Umrisses), und die Ebene braucht
+   * einen eigenen Leitner-Stand. Wer Rumaenien auf der Karte findet, kennt
+   * darum noch nicht seine Flagge - das ist ein anderes Koennen.
+   *
+   * KEIN `wer`: die Flaggen gelten fuer alle vier Profile, wie gewuenscht.
+   * Was sich je Profil unterscheidet, ist die ANTWORTFORM und die Tiefe -
+   * und beides steht schon im Profil (`eingabe`, `kandidaten`,
+   * `laenderTiefe`). Ein `wer` hier waere eine dritte Stelle, an der
+   * dasselbe noch einmal entschieden wird. */
+  /* `titel` heisst bei ALLEN sieben „Flaggen", `wo` nennt die Karte -
+     und das ist nicht vertauscht, sondern genau die Form, die `gruppiert`
+     und `ebenenwahl(gruppe)` erwarten:
+     
+       auf der Wand   steht die Gruppenkachel mit dem `titel` des ERSTEN
+                      Teils. Hiesse er „Europa", stuende auf der Kachel
+                      fuer alle sieben Karten „Europa" - genau das war der
+                      erste Anlauf, und kein Tor konnte es melden.
+       in der Gruppe  wird getauscht: `ueber` wird zum Titel, `titel` zum
+                      Ueberbegriff. Dort steht dann „Flaggen / Europa".
+     
+     Die beiden Hauptstadt-Ebenen machen es seit Q17 genauso. */
+  ...Object.keys(D.laender).map((k) => ({ id:`flaggen:${k}`, ueber:'Die Welt',
+    titel:'Flaggen', farbe: KONT_FARBE[k], art:'flaggen',
+    gruppe:'flaggen', wo: KONT_TITEL[k] || k })),
   { id:'rechnen:plusminus', ueber:'Rechnen', titel:'Plus und Minus', farbe:4,
     art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },
   /* Leas Reihen.
@@ -1391,6 +1429,25 @@ const MATHEBILD = {
  * Dekoration und keine Auskunft.
  */
 function silhouette(ebeneId) {
+  /* Die Flaggenkachel (F2) zeigt eine ECHTE Flagge - keine gezeichnete
+   * Fahne an einem Mast.
+   *
+   * Welche: die ERSTE dieser Karte, also die, nach der auch als erstes
+   * gefragt wird. Fuer Europa Russland, fuer Asien Indien. Ein eigenes
+   * Schmuckbild waere schoener zu bauen und eine Luege (Regel 6) -
+   * dieselbe Ueberlegung wie beim Kachelbuchstaben, der genau der Zug
+   * ist, den Fiona gleich nachfaehrt.
+   *
+   * Und die GRUPPENKACHEL (`flaggen`) zeigt Deutschland: sie steht fuer
+   * alle sieben Karten, und keine davon ist die richtige Antwort auf
+   * „welche Flagge steht hier stellvertretend". Die des eigenen Landes
+   * ist die einzige, die ein Kind hier schon kennt. */
+  if (ebeneId === 'flaggen' || ebeneId.startsWith('flaggen:')) {
+    const kont = ebeneId.split(':')[1];
+    const erste = kont && (D.laender[kont] || []).find(l => Flaggen.hatFlagge(l.a3));
+    return `<span class="silhouette flaggensilhouette"
+      >${Flaggen.flaggeSvg(erste ? erste.a3 : 'DEU')}</span>`;
+  }
   /* Die Schreibwelt zeigt Buchstaben - und zwar DIE Buchstaben.
    *
    * Gezeichnet aus `Schreiben.BUCHSTABEN`, nicht aus einem zweiten,
@@ -1486,7 +1543,7 @@ function silhouette(ebeneId) {
  * Ebenen traegt - zwei Bildschirme waeren zwei Stellen, an denen die
  * naechste Aenderung einmal vergessen wird. */
 const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,
-  englisch: englischschirm, freunde: freundeschirm,
+  englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,
   wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören. */
@@ -1732,6 +1789,16 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
    * Der Farbfleck traegt seinen Ton als Marke am Markup, nicht im
    * Stilblatt: welche zehn Farben es gibt, steht in den Daten, und eine
    * Liste im Stylesheet daneben waere dieselbe Auskunft an zwei Orten. */
+  /* Die Flagge (F2). Sie kommt VOR allem anderen ausser dem Umriss:
+     ein Flaggen-Gegenstand hat keinen `pfad`, kein `frage` und kein
+     `farbton`, und ohne diese Zeile fiele er auf den Rechenkasten
+     durch - ein leerer Kasten mit `undefined` darin.
+     
+     Was OFFEN ist, wird blass. Das ist dieselbe Auskunft wie beim
+     blassen Umriss: im Buch stehen gesammelte und offene nebeneinander,
+     und der Unterschied ist der ganze Sinn der Seite. */
+  : x.flagge   ? `<div class="flaggenkleber${offen ? ' offen' : ''}"
+                    >${Flaggen.flaggeSvg(x.flagge)}</div>`
   : x.luecke || x.deutsch
                  ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
   : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
@@ -1749,7 +1816,12 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
 /** Was unter dem Bild steht. Beim Buchstaben sein Merkwort. */
 /* Beim englischen Gegenstand steht das WORT darunter - und zwar nur im
    Vorlauf und im Buch, nie in der Aufgabe. Dort waere es die Antwort. */
-const stueckFuss = (x) => x.pfad ? x.name : x.zeichenFolge ? x.wort
+/* Unter einer Flagge steht ihr Land - ohne „=". Das Gleichzeichen gehoert
+   zur Rechenaufgabe („3 + 4 = 7"), und dorthin faellt jeder Gegenstand
+   durch, der keinen eigenen Zweig hat. Genau das ist hier passiert: im
+   Vorlauf stand „= Frankreich" unter der Trikolore. */
+const stueckFuss = (x) => x.flagge ? x.name
+                        : x.pfad ? x.name : x.zeichenFolge ? x.wort
                         : x.sorte ? x.wort
                         /* Beim falschen Freund steht die FALLE darunter, nicht
                            die Uebersetzung: der Aufkleber ist das PAAR
@@ -1806,6 +1878,26 @@ function vorrat(ebeneId, stand = Stand, voll = false){
   // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
   // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
   // Leitner-Stand über Sitzungen trägt.
+  /* Der Flaggenvorrat (F2) sind DIESELBEN Laender wie auf der Karte.
+   *
+   * Name, Schreibweisen und Aussprache kommen aus `LAENDER` und werden
+   * dort gepflegt (Konzept 1.2) - eine zweite Faktenliste waere die, die
+   * beim naechsten Namen veraltet. `rang` traegt die Tiefe je Profil mit,
+   * ohne einen neuen Regler.
+   *
+   * `pfad` wird ABSICHTLICH NICHT mitgereicht. Er ist der Kartenumriss,
+   * und wer ihn im Gegenstand hat, bekommt im Buch und im Vorlauf den
+   * Umriss statt der Flagge gezeigt - die Kartenkarte kennt genau diese
+   * Weiche. Hier ist die Flagge das Bild, und der Umriss waere die halbe
+   * Antwort.
+   *
+   * `voll` gilt wie bei den Laendern: die Menge eines Abzeichens darf
+   * nicht mit der Tiefe des Profils wackeln (D2b). */
+  if (art==='flaggen')
+    return (D.laender[kont] || []).filter(l => (voll || l.rang<=P.laenderTiefe)
+        && Flaggen.hatFlagge(l.a3))
+      .map(l=>({ id:`fl:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
+                 aussprache:l.aussprache, flagge:l.a3 }));
   if (art==='rechnen')
     return kont==='reihen' ? Rechnen.reihenVorrat()
          : kont==='gross'  ? Rechnen.grossVorrat()
@@ -2865,6 +2957,18 @@ function vorlaufSatz(ebeneId){
   if (art === 'hauptstaedte')
     return 'Berlin, Hamburg und Bremen fehlen hier: sie sind <strong>Stadtstaaten</strong>, '
       + 'die Stadt ist das ganze Bundesland. Sie <em>sind</em> ihre Hauptstadt.';
+  /* Der Satz der Flaggenebene (F2). Er sagt die VEREINFACHUNG mit an:
+     alle Flaggen stehen hier im selben Rechteck, obwohl die Schweiz in
+     Wirklichkeit quadratisch ist. Das Konzept haelt fest, dass eine
+     Vereinfachung ausgesprochen und nicht verschwiegen wird - und der
+     Vorlauf ist die Stelle, an der man sie hoert. */
+  if (art === 'flaggen')
+    return P.eingabe.includes('tippen')
+      ? 'Gleich siehst du eine Flagge und tippst den Namen des Landes. '
+        + 'Alle stehen im <strong>gleichen Rechteck</strong> — die Schweiz ist in '
+        + 'Wirklichkeit quadratisch. Tippe hier eine an, dann hörst du das Land.'
+      : 'Gleich sage ich dir ein Land, und du tippst auf seine <strong>Flagge</strong>. '
+        + 'Tippe hier eine an, dann hörst du schon mal, wie sie heißt.';
   if (art === 'rechnen')
     return `So sehen die Aufgaben aus — hier ein paar davon, `
       + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
@@ -3958,6 +4062,263 @@ function englischschirm(){
     const b = nochHoerenKnopf(ziel.wort, 'en');
     if (b) s.querySelector('.werkzeug')?.appendChild(b);
   }
+  return s;
+}
+
+/* ---------- Der Flaggenschirm (F2) ---------------------------------------
+ *
+ * EINE Ebene, VIER Erfahrungen - und genau das ist der Entwurf (Konzept
+ * 1.3). Die Ebene sagt, WAS gefragt wird; das Profil sagt, WIE geantwortet
+ * wird. Dieselbe Regel, nach der `spielschirm` seit jeher gebaut ist
+ * (`kannLesen`, `kandidaten`, `umgekehrt`).
+ *
+ *   Fiona     Die App SAGT „Deutschland", vier Flaggen stehen da, eine
+ *             wird angetippt. Kein Wort Schrift - sie liest noch nicht,
+ *             und ohne diese Richtung koennte sie nicht mitspielen.
+ *   Lea       Die Flagge steht da, der Name wird getippt.
+ *   Die Eltern  Dasselbe ohne Auswahl (`kandidaten:0`) - vier
+ *             Moeglichkeiten sind die groesste Hilfe, die das Spiel kennt.
+ *
+ * ZWEI RICHTUNGEN, EIN LEITNER-STAND. „Zeig mir Deutschland" und „Wie
+ * heisst das?" sind zwei Fragen an DASSELBE Wissen, und die zweite ist die
+ * schwerere. Zwei Ebenen daraus zu machen hiesse: wer die Flagge
+ * Rumaeniens angetippt kennt, muesste sie getippt von vorn lernen.
+ *
+ * Die schwerere Richtung ist bei Fiona jede DRITTE und nie die erste -
+ * dieselbe Stelle und derselbe Grund wie `umgekehrt` auf der Karte.
+ *
+ * WAS HIER NOCH FEHLT: das Sprechen. Es steht als F2b im Backlog, und der
+ * Grund ist kein Vergessen: der Sprachweg (Mikrofon, Rueckfrage,
+ * Zwischenergebnis, der EINE Ausgang aus F13) sitzt in `spielschirm`
+ * eingewachsen. Ihn hier nachzubauen waere eine zweite Fassung von
+ * dreihundert Zeilen, in denen vier gemeldete Fehler stecken (F13, F14,
+ * F15) - und die zweite Fassung haette sie wieder. Er gehoert
+ * herausgeloest, und das ist eine eigene Runde am groessten Bildschirm der
+ * App.
+ */
+function flaggenschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+
+  const kannLesen = P.eingabe.includes('tippen');
+  /* Die Auswahl schlaegt die Ebene vor, das Profil kann sie verbieten -
+     und im TEST gibt es sie nie (B2). Wortgleich zu `spielschirm`. */
+  const darfWaehlen = P.kandidaten > 0 && !st.test;
+  /* WELCHE RICHTUNG - und die Voreinstellung ist die SCHWERERE.
+   *
+   * Wer lesen und schreiben kann, bekommt „Wie heisst das Land?" und
+   * tippt den Namen. Das ist derselbe Weg, den Lea auf der Karte laengst
+   * geht (`kandidaten:99` heisst dort: kein Auswahlzwang, sie schreibt).
+   * Die leichtere Richtung - vier Flaggen, eine antippen - kommt bei ihr
+   * jede DRITTE; sie ist die Abwechslung, nicht der Normalfall.
+   *
+   * Der erste Anlauf hatte es umgekehrt, und das war an einer Runde zu
+   * sehen: Lea bekam dreimal hintereinander vier Flaggen zum Antippen.
+   * Aus „welches Land ist das" wird damit „welches von diesen vieren",
+   * und das ist die groesste Hilfe, die das Spiel kennt (B2) - als
+   * Regelfall verschenkt sie die Ebene.
+   *
+   * Wer NICHT liest, bekommt immer die Auswahl: die andere Richtung
+   * verlangt einen getippten Namen, und den kann Fiona nicht geben. */
+  const zeigen = !kannLesen || (darfWaehlen && st.i % 3 === 2);
+
+  const r1 = rnd(st.keim + st.i * 7919);
+  const alle = vorrat(st.ebeneId);
+  /* Die ABLENKER kommen aus dem ganzen Vorrat der Karte, nicht aus der
+   * Tiefe des Profils.
+   *
+   * Fiona lernt in Europa drei Laender (`laenderTiefe:3`). Zoege die
+   * Auswahl nur daraus, staenden DREI Flaggen da statt vier - und nach
+   * zwei Runden waere die Aufgabe, sich drei Plaetze zu merken. Ein
+   * Ablenker muss nicht lernbar sein, er muss falsch sein.
+   *
+   * `voll` ist genau dafuer da und wird an anderen Stellen schon so
+   * benutzt (D2b). */
+  const ganzeKarte = vorrat(st.ebeneId, Stand, true);
+
+  /* Die Ablenker sind GEWAEHLT, nicht gewuerfelt (Soll 4).
+   *
+   * Zuerst eine wirklich verwechselbare Flagge, dann eine gleich GEBAUTE,
+   * dann der Rest. Ohne den ersten Schritt stuende neben Rumaenien nie der
+   * Tschad und neben Honduras nie Nicaragua - und die Ebene uebte genau
+   * das nicht, was schwer ist.
+   *
+   * HOECHSTENS EINE verwechselbare. Zwei davon in einer Auswahl sind kein
+   * Lernen mehr, sondern Raten mit besserer Begruendung. */
+  const ablenker = () => {
+    const andere = ganzeKarte.filter(x => x.id !== ziel.id);
+    const nah = new Set(Flaggen.AEHNLICH
+      .filter(paar => paar.includes(ziel.a3))
+      .map(paar => paar.find(a => a !== ziel.a3)));
+    const muster = Flaggen.baumuster(Flaggen.flaggeVon(ziel.a3).bau);
+    const gleich = (x) => Flaggen.baumuster(Flaggen.flaggeVon(x.a3).bau) === muster;
+    const misch = (l) => mischenMit(l, st.keim + st.i * 7919);
+    const eine = misch(andere.filter(x => nah.has(x.a3))).slice(0, 1);
+    const rest = andere.filter(x => !eine.includes(x));
+    return [...eine, ...misch(rest.filter(gleich)), ...misch(rest.filter(x => !gleich(x)))]
+      .slice(0, 3);
+  };
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: zeigen ? 'antippen' : 'tippen' });
+  const weiter = () => weiterIn(st);
+
+  const auswahl = zeigen
+    ? mischenMit([ziel, ...ablenker()], st.keim + st.i * 7919) : [];
+
+  /* Die Frage.
+   *
+   * In der Zeigerichtung steht der Landesname DA - auch fuer Fiona, die
+   * ihn nicht liest: er wird ihr gesagt, und wer daneben sitzt, soll
+   * mitlesen koennen. In der Nennrichtung darf er nirgends stehen, sonst
+   * ist er die Antwort. */
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">${zeigen
+      /* Der NAME STEHT VORN, und das ist kein Geschmack, sondern
+         Grammatik: „die Flagge von Vereinigtes Koenigreich" ist falsch,
+         und richtig waere „vom Vereinigten Koenigreich" - also je nach
+         Land ein anderer Fall und ein anderer Artikel. Die Tuerkei, die
+         Schweiz, die Niederlande, die Ukraine, die USA: fuenfzehn der 69
+         Namen tragen einen Artikel. Eine Beugungstabelle waere eine
+         zweite Faktenliste fuer einen Satz.
+         
+         Vorangestellt steht jeder Name im Nominativ, so wie er in den
+         Daten steht - und der Satz stimmt fuer alle 69. Gesprochen klingt
+         er sogar besser: „Vereinigtes Koenigreich. Wo ist die Flagge?" */
+      ? `<strong>${ziel.name}</strong> — wo ist die Flagge?`
+      : 'Zu welchem Land gehört diese Flagge?'}</div>
+    <div class="flaggenfeld">${zeigen ? `
+      <div class="flaggenwahl" id="auswahl">${auswahl.map(x =>
+        `<button class="flaggenkarte" data-id="${x.id}" aria-label="${x.name}"
+          >${Flaggen.flaggeSvg(x.flagge)}</button>`).join('')}</div>` : `
+      <div class="flaggengross">${Flaggen.flaggeSvg(ziel.flagge, { titel:'Flagge' })}</div>
+      <div class="tippfeld">
+        <input class="eingabe" id="rein" inputmode="text" autocomplete="off"
+               autocorrect="off" autocapitalize="off" spellcheck="false"
+               aria-label="Name des Landes">
+        <button class="knopf haupt" id="pruef">Prüfen</button>
+      </div>`}
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const rein = s.querySelector('#rein');
+  const ausschalten = () => {
+    s.querySelectorAll('.flaggenkarte').forEach(k => k.disabled = true);
+    if (rein) { rein.disabled = true; s.querySelector('#pruef').disabled = true; }
+  };
+  const richtigeZeigen = () => {
+    const k = s.querySelector(`.flaggenkarte[data-id="${ziel.id}"]`);
+    if (k) k.classList.add('stimmt');
+  };
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', rein ? rein.value : '', fachVorher);
+    ausschalten();
+    richtigeZeigen();
+    const f = s.querySelector('#frage');
+    /* Beim Aufloesen steht in der NENNrichtung die Flagge schon da - was
+       fehlt, ist der Name. In der Zeigerichtung ist es umgekehrt. Beide
+       Male wird genau das nachgeliefert, was das Kind nicht hatte. */
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem. Das ist `
+      + `<strong>${ziel.name}</strong>.</span>`;
+    sagen(`Kein Problem. Das ist ${ziel.name}.`);
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function gutschreiben(ergebnis, roh, fachVorher, nebenbei){
+    erledigt = beendet(s);
+    const neuerAufkleber = werten(ziel, ergebnis, versuch);
+    kopfNachziehenIn(s);
+    protokollieren(ergebnis, roh, fachVorher);
+    ausschalten();
+    richtigeZeigen();
+    const spruch = ergebnis === 'richtig' ? lob() : null;
+    lobsatz(s, `<strong>${ziel.name}</strong>.`, null, spruch, nebenbei || '',
+      neuerAufkleber);
+    if (spruch) sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  /** Die Zeigerichtung: eine von vier Flaggen ist angetippt. */
+  function gewaehlt(id, knopf){
+    if (erledigt) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (id === ziel.id) { if (knopf) knopf.classList.add('stimmt');
+      return gutschreiben('richtig', id, fachVorher); }
+    protokollieren('falsch', id, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    wackelt(knopf);
+    /* Der Hinweis nennt, was WIRKLICH angetippt wurde - nicht „leider
+       nein". Ein Kind, das auf Luxemburg tippt und „das ist Luxemburg"
+       hoert, hat in diesem Augenblick zwei Flaggen gelernt statt keiner.
+       Dieselbe Bauart wie der Zughinweis auf der Karte (A3). */
+    const daneben = ganzeKarte.find(x => x.id === id);
+    const satz = daneben ? `Das ist ${daneben.name}.` : 'Nicht ganz — schau noch einmal hin.';
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+  }
+
+  /** Die Nennrichtung: der Name ist getippt. */
+  function getippt(){
+    if (erledigt || !rein) return;
+    const roh = rein.value.trim();
+    if (!roh) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    /* Dieselbe Nachsicht wie auf der Karte, und aus derselben Stelle:
+       `Vergleich.rechtschreibung` kennt die Aliasse und laesst einen
+       Tippfehler als „fast" durch. Ein zweiter Abgleich hier waere eine
+       zweite Nachsicht, und eine der beiden waere die strengere - ohne
+       dass jemand entschieden haette, welche. */
+    const r = Vergleich.rechtschreibung(roh, ziel);
+    if (r.urteil === 'richtig' || r.urteil === 'fast')
+      return gutschreiben(r.urteil === 'richtig' ? 'richtig' : 'fast', roh, fachVorher,
+        r.urteil === 'richtig' ? (r.nebenbei || '') : '');
+    protokollieren('falsch', roh, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    /* Und auch hier: sagen, was es GEWESEN waere. `abgleich` sucht das
+       naechstliegende Land aus dem Vorrat dieser Ebene - wer „Rumänien"
+       tippt und den Tschad vor sich hat, soll das erfahren. */
+    const t = Vergleich.abgleich(roh, alle);
+    const satz = t.art === 'nochmal'
+      ? 'Das kenne ich noch nicht — schau noch mal hin.'
+      : t.id === ziel.id ? 'Fast! Schau noch mal ganz genau hin.'
+      : `Das wäre ${t.name}.`;
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+    rein.select();
+  }
+
+  s.querySelectorAll('.flaggenkarte').forEach(k =>
+    k.onclick = () => gewaehlt(k.dataset.id, k));
+  if (rein) {
+    s.querySelector('#pruef').onclick = getippt;
+    rein.addEventListener('keydown', e => { if (e.key === 'Enter') getippt(); });
+    setTimeout(() => rein.focus(), 360);
+  }
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+
+  /* Angesagt wird nur die ZEIGErichtung. In der Nennrichtung waere der
+     Landesname die Antwort - vorgelesen waere die Aufgabe geloest, bevor
+     sie gestellt ist. */
+  if (zeigen) ansagen(`${ziel.name}. Wo ist die Flagge?`);
   return s;
 }
 
