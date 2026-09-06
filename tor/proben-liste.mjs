@@ -92,6 +92,26 @@ const wurzelCommit = () => execSync('git rev-list --max-parents=0 HEAD', { encod
   .trim().split('\n')[0];
 export const DIST = { datei: 'dist/index.html' };
 
+/* WELCHE TEILMENGE DES RAUCHTESTS EINE PROBE FAHREN DARF.
+ *
+ * `--nur=` schneidet den Rauchtest auf einen Teil zu; das spart bei 350
+ * Proben Stunden. Der Zuschnitt muss aber einen Lauf ergeben, der OHNE
+ * Eingriff gruen ist - sonst prueft die Probe nichts, sie stellt einen
+ * bestehenden Fehler nach.
+ *
+ * `--nur=spielen` allein ist genau so ein Fall und war es zwoelfmal:
+ *
+ *     ✗ Der Fremdgriff hat keinen einzigen Aufgabenbildschirm gesehen
+ *
+ * Der Teil spielt zwar Aufgaben, aber ohne `ablage` laeuft er so schnell
+ * durch, dass keiner der 53 besuchten Bildschirme je zur Ruhe kommt -
+ * und der Fremdgriff meldet zu Recht, dass er nichts geprueft hat: eine
+ * Pruefung, die nie etwas meldet, ist kein Beweis (Regel 1). Zwoelf Proben hingen daran und meldeten im vollen Lauf
+ * „`smoke` ist schon OHNE Eingriff rot".
+ *
+ * Gemessen: `--nur=spielen,ablage` ist gruen und prueft alles, was diese
+ * zwoelf behaupten - Lob, Satz zum Mitnehmen, Sterne, Fortschrittsband.
+ * Wer hier eine Teilmenge einsetzt, faehrt sie EINMAL ohne Eingriff. */
 export const PROBEN = [
   /* --- inhalt ------------------------------------------------------- */
   { n:'zwei Gebiete mit derselben ID', tor:'inhalt', deckt:'inhalt', datei:E,
@@ -514,7 +534,12 @@ export const PROBEN = [
     such:"    mehr.hidden = seiten < 2;",
     ersatz:"    mehr.hidden = true;  //Anker: mehr.hidden = seiten < 2;",
     an:{ ...DIST, text:'mehr.hidden = true;' },
-    sagt:'passen 33 Tiere' },
+    /* OHNE ZAHL. Der Text hiess einmal 33 Tiere; inzwischen sind es 45,
+       und die Probe fiel auf ihre eigene Meldung herein - sie las nur die
+       falsche Zahl darin. Was sie meint, ist die FORM der Meldung, nicht
+       der Stand des Vorrats: eine Grenze gehoert anteilig formuliert, nie
+       absolut (Regel 2). */
+    sagt:'Tiere angeblich auf eine Seite' },
 
   /* Und die andere Haelfte derselben Zusage: der Knopf ist da, blaettert
      aber im Kreis derselben Seite. Am Bildschirm ist das nicht zu
@@ -1079,7 +1104,7 @@ export const PROBEN = [
    * macht ihn groesser, indem sie dem Lob eine Zeile mehr gibt.
    */
   { n:'das Lob schiebt die Karte noch weiter weg', tor:'smoke',
-    args:['--nur=spielen'], bauen:true, datei:V,
+    args:['--nur=spielen,ablage'], bauen:true, datei:V,
     /* Der Eingriff nimmt genau die Zeile zurueck, die den Sprung von 47
        auf 21 gebracht hat: das Lob steht dann wieder UEBER der Sache
        statt daneben, und die Karte rueckt wieder 47 Punkte.
@@ -1131,7 +1156,7 @@ export const PROBEN = [
    *    nicht mehr hingeschrieben - fuer Lea ist er dann weg, fuer Fiona
    *    ebenso, und `inhalt` sieht davon nichts: die Tabelle ist ja heil. */
   { n:'der Satz zum Mitnehmen kommt nicht auf den Bildschirm', tor:'smoke',
-    args:['--nur=spielen'], bauen:true, datei:D,
+    args:['--nur=spielen,ablage'], bauen:true, datei:D,
     such:'          nebenbei || Saetze.satzZu(ziel.id) || \x27\x27, neuerAufkleber);',
     ersatz:'          nebenbei, neuerAufkleber);',
     an:{ ...DIST, fehlt:'nebenbei || Saetze.satzZu(ziel.id)' },
@@ -1140,7 +1165,7 @@ export const PROBEN = [
   /* 5. ... und der andere Weg: er steht da, wird aber nicht gesprochen.
    *    Fiona liest nicht; fuer sie ist er damit gar nicht da. */
   { n:'der Satz zum Mitnehmen wird nicht gesprochen', tor:'smoke',
-    args:['--nur=spielen'], bauen:true, datei:D,
+    args:['--nur=spielen,ablage'], bauen:true, datei:D,
     such:"          + (mitnehmen ? ` ${mitnehmen}` : ''));",
     ersatz:"          );",
     an:{ ...DIST, fehlt:'(mitnehmen ? ` ${mitnehmen}`' },
@@ -1159,7 +1184,7 @@ export const PROBEN = [
    * Ratsche: eine Millisekunde kostet nichts und muss trotzdem anschlagen.
    * Stuende die Grenze bei einer Sekunde, waere sie umgehbar. */
   { n:'eine feste Pause schleicht sich in den Rauchtest zurueck', tor:'smoke',
-    args:['--nur=spielen'], bauen:true, datei:'tor/smoke.mjs',
+    args:['--nur=spielen,ablage'], bauen:true, datei:'tor/smoke.mjs',
     such:'  p.messtakt = (ms) => { messtakt.ms += ms; messtakt.n++; return festWarten(ms); };',
     /* OHNE `await`: `uhrenBuchfuehrung` ist nicht async, und ein `await`
        darin waere ein Syntaxfehler - der Rauchtest waere rot, aber aus
@@ -1874,7 +1899,7 @@ export const PROBEN = [
    * schon vor dem Eingriff rot. Die Probe meldete das selbst: „ist schon
    * OHNE Eingriff rot". */
   { n:'der Bildausschnitt wird wieder verworfen', tor:'smoke', bauen:true,
-    args:['--nur=spielen'], datei:'tor/smoke.mjs',
+    args:['--nur=spielen,ablage'], datei:'tor/smoke.mjs',
     such:'  await p.setViewportSize(viewport);',
     ersatz:'  // (Bildausschnitt nicht gesetzt)',
     an:{ datei:'tor/smoke.mjs', fehlt:'await p.setViewportSize(viewport);' },
@@ -2408,7 +2433,7 @@ export const PROBEN = [
   // sie sich nicht mehr in die Karte klemmen und haengt heraus. Gesehen
   // hat das erst der Rauchtest, seit er die Groesse misst, die er nennt.
   { n:'die Namensfahne bricht nicht mehr um', tor:'smoke', bauen:true,
-    args:['--nur=spielen'], datei:D,
+    args:['--nur=spielen,ablage'], datei:D,
     such:'  if (!passt && tb.width + luft*2 > vbB.width * 0.98) {',
     ersatz:'  if (false) {',
     an:{ ...DIST, fehlt:'vbB.width * 0.98' },
@@ -2464,7 +2489,7 @@ export const PROBEN = [
   /* --- Der Vorlauf (R3) ----------------------------------------------- */
   // Er kommt gar nicht mehr.
   { n:'der Vorlauf erscheint beim ersten Betreten nicht', tor:'smoke', bauen:true,
-    args:['--nur=spielen'], datei:D,
+    args:['--nur=spielen,ablage'], datei:D,
     such:'    if (!Einst.vorlaufGezeigt[`${P.id}:${id}`]) zeige(()=>vorlauf(id));',
     ersatz:'    if (false) zeige(()=>vorlauf(id));',
     an:{ ...DIST, text:'if (false) zeige' }, sagt:'kommt kein Vorlauf' },
@@ -2491,7 +2516,7 @@ export const PROBEN = [
     sagt:'sagt nichts' },
   // Er zeigt nicht, was die Ebene enthaelt.
   { n:'der Vorlauf zeigt die falsche Zahl an Gebieten', tor:'smoke', bauen:true,
-    args:['--nur=spielen'], datei:D,
+    args:['--nur=spielen,ablage'], datei:D,
     // `vorlaufVorrat`, nicht `vorrat`: seit der Vorlauf bei den Rechenebenen
     // nur noch Beispiele zeigt, geht er durch eine eigene Funktion. Der alte
     // Suchtext fand nichts mehr.
@@ -3305,7 +3330,7 @@ export const PROBEN = [
   /* --- smoke -------------------------------------------------------- */
   // Das Doppelbild: nimmt man dem neuen Bildschirm seinen Takt Vorsprung,
   // blenden beide gleichzeitig und treffen sich bei etwa 0,5.
-  { n:'beide Bildschirme blenden gleichzeitig', tor:'smoke', args:['--nur=spielen'], bauen:true, datei:V,
+  { n:'beide Bildschirme blenden gleichzeitig', tor:'smoke', args:['--nur=spielen,ablage'], bauen:true, datei:V,
     such:'  transition-delay:calc(var(--d-schirm) / 2)}', ersatz:'}',
     an:{ ...DIST, fehlt:'transition-delay:calc(var(--d-schirm) / 2)}' },
     sagt:'Doppelbild' },
@@ -3390,7 +3415,7 @@ export const PROBEN = [
   // ebenfalls auf drei Sterne - der Rauchtest blieb gruen, obwohl der
   // Fehler drin war. Geteilt wird jetzt durch die ganze Liste: ein Stern
   // im Kopf gegen drei am Ende, genau die gemessene Urfassung.
-  { n:'Kopf und Endbildschirm rechnen wieder verschieden', tor:'smoke', args:['--nur=spielen'], bauen:true, datei:D,
+  { n:'Kopf und Endbildschirm rechnen wieder verschieden', tor:'smoke', args:['--nur=spielen,ablage'], bauen:true, datei:D,
     // Die Zeile ist in der Mathe-Runde nach `kopfNachziehenIn()` gewandert -
     // eine Einrückung weniger. Der Eingriff kam nicht mehr an, und `proben`
     // hat genau das gemeldet, statt grün zu bleiben. Die Probe gilt jetzt
@@ -3403,7 +3428,7 @@ export const PROBEN = [
   // Und: der Kopf muss auf die Antwort reagieren, nicht erst beim naechsten Bild.
   // Ebenfalls gewandert - nach `werten()`, dem einen Ort, an dem eine
   // Antwort etwas bewirkt. Damit trifft die Probe jetzt Karte UND Rechnen.
-  { n:'das Fortschrittsband färbt sich nicht mehr', tor:'smoke', args:['--nur=spielen'], bauen:true, datei:D,
+  { n:'das Fortschrittsband färbt sich nicht mehr', tor:'smoke', args:['--nur=spielen,ablage'], bauen:true, datei:D,
     such:"  st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';",
     ersatz:'',
     an:{ ...DIST, fehlt:"st.wie[st.i] = (ergebnis === 'richtig'" },
@@ -3422,7 +3447,7 @@ export const PROBEN = [
   // Sie stand als nackte Zwei zweimal in spiel.js, unter dem Namen
   // `gekonnt` - den das Forscherbuch fuer Fach 5 benutzt. Jetzt steht sie
   // einmal in leitner.js; wer sie dort verstellt, muss die Karte aendern.
-  { n:'die Karte zeigt den Fortschritt erst viel später', tor:'smoke', args:['--nur=spielen'],
+  { n:'die Karte zeigt den Fortschritt erst viel später', tor:'smoke', args:['--nur=spielen,ablage'],
     bauen:true, datei:'src/kern/leitner.js',
     such:'export const SITZT = 2;', ersatz:'export const SITZT = 5;',
     an:{ ...DIST, text:'const SITZT = 5' },
@@ -4010,12 +4035,48 @@ export const PROBEN = [
    * Die Ratsche haelt fest, was gemessen ist. Der Eingriff nimmt den
    * Abzeichen-Kapiteln zwei ihrer drei naechsten Schritte - genau der
    * Zustand von vor G15b, in dem die Seite 18 % ihrer Hoehe nutzte. */
+  /* ZWEI Hebel sind an dieser Probe schon gestorben, beide leise:
+     - bis v423 schnitt sie die drei Vorschaukarten auf „Als Naechstes"
+       von drei auf eine. Sobald die naechste Gruppe eine Karte hat - und
+       Europa hat eine -, zeigt die Seite die KARTE und gar keine
+       Kaertchen; der Schnitt ging ins Leere. Gemessen: die Seite steht
+       bei 42 %, weit ueber der Ratsche.
+     - der zweite Anlauf schnitt die Abzeichen von sechs auf eines. In
+       diesem Durchgang traegt die Seite ohnehin nur EINES („1/10"), der
+       Eingriff war ein Nulleingriff. Gemessen: 25 % mit und ohne.
+     Beide Male hat der Eingriff die Datei erreicht und das Bild nicht
+     veraendert - die dritte Verfallsart, und die teuerste, weil sie wie
+     ein schwaches Tor aussieht.
+     Jetzt bleibt das Raster LEER. Das ist der aeusserste Fall dessen,
+     was die Pruefung meint, und er haengt an keinem Stand: eine Seite
+     ohne Inhalt kann keine Hoehe nutzen. */
   { n:'eine Kapitelseite im Buch ist wieder halb leer', tor:'smoke',
     args:['--nur=ablage'], bauen:true, datei:D,
-    such:'.sort((a,b)=>a.fehlt-b.fehlt).slice(0, 3) : [];',
-    ersatz:'.sort((a,b)=>a.fehlt-b.fehlt).slice(0, 1) : [];',
-    an:{ ...DIST, text:'.slice(0, 1) : []' },
+    such:"zeigt:`<div class=\"abzeichen\">${verdient.map(markeBild).join('')}${\n"
+      + "        naechste.map(markeBild).join('')}</div>`",
+    ersatz:"zeigt:`<div class=\"abzeichen\"></div>`",
+    an:{ ...DIST, text:'zeigt:`<div class="abzeichen"></div>`' },
     sagt:'Kapitelseiten nutzen weniger als' },
+
+  /* UND DIE MESSUNG SELBST (v423).
+   *
+   * Die drei Proben darueber drehen am INHALT und erwarten, dass die
+   * Nutzungszahl faellt. Genau das ging zwei Fassungen lang nicht: die
+   * Messung nahm `r.children`, und seit dem Buch-Umbau ist das einzige
+   * Kind die Seite, die den Kasten immer fuellt. Alle sieben Seiten
+   * meldeten `95 %` - dieselbe Zahl, egal was darin stand.
+   *
+   * Diese Probe stellt genau das wieder her. Sie ist die einzige, die
+   * merkt, wenn die Messung aufhoert zu messen: die drei anderen wuerden
+   * dann nur „bleibt gruen" melden, ohne zu sagen, warum. */
+  { n:'die Nutzungsmessung misst wieder den Kasten statt den Inhalt',
+    tor:'smoke', args:['--nur=ablage'], bauen:true, datei:'tor/smoke.mjs',
+    such:"                     const bs = [...r.querySelectorAll('*')]\n"
+      + "                       .filter(e => !spalten.has(e))",
+    ersatz:"                     const bs = [...r.children]\n"
+      + "                       .filter(e => true)",
+    an:{ datei:'tor/smoke.mjs', text:'const bs = [...r.children]' },
+    sagt:'melden denselben Wert' },
 
   /* --- G14: der Lohn gehoert den Kindern ------------------------------
    *

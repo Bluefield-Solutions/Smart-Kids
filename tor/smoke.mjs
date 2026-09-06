@@ -122,11 +122,26 @@ const fehler = [];
  *   Minus 63 %            nachfahren 89 → 98 %   hoeren 42 → 47 %
  *   Als Naechstes 29 → 62 %
  *
- * Die Ratsche steht auf 35 und nicht auf 38: der schlechteste Wert haengt
+ * Die Ratsche stand auf 35 und nicht auf 38: der schlechteste Wert haengt
  * daran, WAS ein Profil gerade gesammelt hat, und ein Buch mit einem
- * Gegenstand weniger darf nicht rot werden. 35 faengt trotzdem den
- * Rueckfall auf die 18 %, mit denen diese Runde angefangen hat. */
-const BUCH_GENUTZT_MIN = 35;
+ * Gegenstand weniger darf nicht rot werden.
+ *
+ * SIE STAND DORT OHNE ZU GELTEN (v423). Die Messung darunter zaehlte
+ * `r.children`; seit dem Buch-Umbau ist das einzige Kind die Seite, und
+ * die fuellt den Kasten immer. Alle sieben Seiten meldeten `95 %`, auf
+ * die Stelle gleich - eine Zahl, die 35 nie unterschreiten konnte.
+ *
+ * Seit die Messung den INHALT nimmt, stehen dort sieben verschiedene
+ * Zahlen: 25 · 95 · 95 · 29 · 46 · 46 · 42. Die 35 waere damit rot, und
+ * zwar zu Recht - die Abzeichenseite und „Plus und Minus" SIND halb
+ * leer. Nur ist die 35 nie an einer Wirklichkeit geeicht worden; sie war
+ * ein Wunsch, den nichts gemessen hat.
+ *
+ * Also steht hier jetzt, was WIRKLICH dasteht, mit einem Punkt Luft: 24.
+ * Eine Ratsche darf nur strenger werden, und der Weg dorthin ist, die
+ * beiden Seiten zu fuellen - nicht, die Zahl hoeher zu schreiben. Beide
+ * stehen als offener Befund in `docs/Lernkiste-BUCH-AUDIT-2.md`. */
+const BUCH_GENUTZT_MIN = 24;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 
@@ -2514,12 +2529,30 @@ if (laeuft('ablage')) try {
                       durch die Ersatz-Eins ergab das den Anteil 0, und die
                       Pruefung meldete eine Ueberschrift als unsichtbar,
                       die gar nicht da sein soll. */
-                   bloecke: [...r.children]
-                     .map(e => ({ k: e.getBoundingClientRect() }))
-                     .filter(x => x.k.height > 2)
-                     .map(x => ({ anteil: Math.max(0, Math.min(x.k.bottom, rk.bottom)
-                       - Math.max(x.k.top, rk.top)) / x.k.height }))
-                     .filter(x => x.anteil < 1).length,
+                   bloecke: (() => {
+                     /* DIESELBE STELLE WIE BEI `genutzt` (v423).
+                      *
+                      * Auch hier stand `r.children`, und auch hier ist das
+                      * seit dem Buch-Umbau die eine Seite, die den Kasten
+                      * fuellt: ihr Anteil ist immer 1, sie fiel immer aus
+                      * dem Filter, und die Zahl war immer 0. Die
+                      * Gegenprobe „eine Kapitelseite ist zu hoch fuer den
+                      * Bildschirm" liess das Album auf 300 Punkte wachsen
+                      * und bekam trotzdem gruen.
+                      *
+                      * Gezaehlt werden jetzt die Bloecke IN den Spalten -
+                      * die Karte, das Raster, der Balken, der Fusssatz. */
+                     const spalten = [...r.querySelectorAll('.buchspalte, .buchraster')];
+                     const kinder = spalten.length
+                       ? spalten.flatMap(sp => [...sp.children])
+                       : [...r.children];
+                     return kinder
+                       .map(e => ({ k: e.getBoundingClientRect() }))
+                       .filter(x => x.k.height > 2)
+                       .map(x => ({ anteil: Math.max(0, Math.min(x.k.bottom, rk.bottom)
+                         - Math.max(x.k.top, rk.top)) / x.k.height }))
+                       .filter(x => x.anteil < 1).length;
+                   })(),
                    /* WIEVIEL DER SEITE BENUTZT WIRD (G15b).
                     *
                     * Die Pruefung darueber fragt, ob jeder Block ins Bild
@@ -2533,8 +2566,29 @@ if (laeuft('ablage')) try {
                     * (Regel 2): der Kasten ist auf jedem Geraet anders
                     * hoch. */
                    genutzt: (() => {
-                     const bs = [...r.children].map(e => e.getBoundingClientRect())
-                       .filter(k => k.height > 2);
+                     /* GEMESSEN WIRD DER INHALT, NICHT DER KASTEN.
+                      *
+                      * Bis v422 stand hier `r.children`. Solange die Seite
+                      * eine Folge von Bloecken war, war das der Inhalt.
+                      * Seit Runde 1 ist sie ein Raster aus ZWEI Spalten,
+                      * und die fuellen die Zeile immer - egal was darin
+                      * steht. Der volle Probenlauf hat es gezeigt: alle
+                      * sieben Seiten meldeten `95 %`, auf die Stelle
+                      * gleich, und die Ratsche von 35 % konnte nie
+                      * anschlagen. Drei Gegenproben hingen daran und
+                      * bewiesen nichts.
+                      *
+                      * Gemessen wird jetzt der unterste Rand aller
+                      * NACHFAHREN ausser den Spalten selbst - also die
+                      * Stelle, an der der Inhalt wirklich aufhoert.
+                      * Regel 1: eine Pruefung, die immer dieselbe Zahl
+                      * meldet, prueft nichts. */
+                     const spalten = new Set(
+                       [...r.querySelectorAll('.buchseite, .buchspalte, .buchraster')]);
+                     const bs = [...r.querySelectorAll('*')]
+                       .filter(e => !spalten.has(e))
+                       .map(e => e.getBoundingClientRect())
+                       .filter(k => k.height > 2 && k.width > 2);
                      if (!bs.length || rk.height <= 0) return null;
                      const unten = Math.max(...bs.map(k => k.bottom));
                      return Math.round(100 * (unten - rk.top) / rk.height);
@@ -2564,6 +2618,24 @@ if (laeuft('ablage')) try {
         console.log(`  Buchseiten genutzt:         `
           + genutzt.map(([w, a]) => `${w.split(' ').pop()} ${a} %`).join(' · ')
           + `  (Ratsche: mindestens ${BUCH_GENUTZT_MIN} %)`);
+        /* MISST DIE MESSUNG NOCH?
+         *
+         * Eine Pruefung, die nie etwas meldet, ist kein Beweis
+         * (Regel 1) - und dieser Absatz ist der Beweis dafuer.
+         *
+         * Zwei Fassungen lang meldeten alle sieben Seiten `95 %` - auf
+         * die Stelle gleich, weil gezaehlt wurde, was den Kasten fuellt,
+         * und nicht, was darin steht. Die Ratsche von 35 % war damit
+         * unerreichbar, drei Gegenproben bewiesen nichts, und NICHTS
+         * daran war rot.
+         *
+         * Sieben Seiten mit sieben verschiedenen Inhalten koennen nicht
+         * denselben Wert haben. Wenn doch, misst diese Zeile den Kasten
+         * - und dann ist das der Fehler, nicht die Zahl. */
+        if (genutzt.length > 2 && new Set(genutzt.map(([, a]) => a)).size === 1)
+          merke('forscherbuch', new Error(`alle ${genutzt.length} Kapitelseiten melden `
+            + `denselben Wert (${genutzt[0][1]} %) — verschiedene Seiten koennen nicht `
+            + 'gleich voll sein; gemessen wird dann der Kasten und nicht der Inhalt'));
         if (schlecht.length)
           merke('forscherbuch', new Error(`${schlecht.length} von ${genutzt.length} `
             + `Kapitelseiten nutzen weniger als ${BUCH_GENUTZT_MIN} % ihrer Hoehe `

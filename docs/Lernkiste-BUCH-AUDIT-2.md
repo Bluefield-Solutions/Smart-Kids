@@ -233,6 +233,7 @@ wirklich Gestaltung sind und nicht Ordnung:
 | **B8** Der Merksatz hat keinen Ort | **erledigt**: er steht in der linken Spalte |
 | **C1/C2** Alles fett, kein großer Abstand | **erledigt** (Runde 0): drei Schriftrollen (Titel · Name · Fuss), zwei Radien, drei Abstände — mit dem Tor `tonleiter` und drei Gegenproben. Gemessen an fünf Kapitelseiten auf 844 × 390. |
 | **C3** Zwanzig Schatten, die nichts tun | **zurückgezogen, der Befund war falsch.** Der Schatten `0px 0px 0px 0px` ist der RUHEZUSTAND eines Übergangs: `.reiter` hat ihn flach, `.reiter.da` mit Versatz, und dazwischen wird geblendet. Ich hatte die Rolle nicht geprüft, bevor ich ihn „tot" genannt habe. |
+| **B4b** Zwei Seiten sind wirklich halb leer | **offen, und zum ersten Mal gemessen** (v423). Die Nutzungsprüfung zählte seit Runde 1 die beiden Spalten statt den Inhalt und meldete für **alle sieben** Seiten `95 %` — auf die Stelle gleich. Seit sie den Inhalt nimmt: `25 · 95 · 95 · 29 · 46 · 46 · 42`. Die Abzeichenseite (25 %) und „Plus und Minus" (29 %) sind die zwei, die es wirklich sind. Die Ratsche steht auf 24 — dem Gemessenen, nicht einem Wunsch; strenger wird sie durch Füllen. |
 | **C4** Drei Farben umgehen die Marken | **offen**, und mit Ansage: die Aufklebertöne gehören zum Tier |
 | **C5** Sieben Klassen kommen einmal vor | **offen** |
 | **K1** Abzeichenseite zu 92 % Text | **erledigt**: 312 → 169 Zeichen, 8 % → 14 % Bild |
