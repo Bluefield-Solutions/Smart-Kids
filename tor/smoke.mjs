@@ -2500,7 +2500,8 @@ if (laeuft('ablage')) try {
                  return { was: (r.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 22),
                           anteil: Math.max(0, Math.min(k.right, sk.right) - Math.max(k.left, sk.left))
                             / (k.width || 1) };
-               }) };
+               }),
+               };
     });
     /* Die Blindprobe: ohne genug Kapitel misst dieser Block nichts.
        Drei ist die Grenze, ab der es den Streifen ueberhaupt gibt - steht
@@ -2512,6 +2513,87 @@ if (laeuft('ablage')) try {
         + 'obwohl fünf Ebenen gepflanzt wurden — dann prüft dieser Abschnitt die '
         + 'Kapitel gar nicht, er findet nur keine'));
     else {
+      /* --- RAGT EIN KAPITELNAME ÜBER SEINEN EIGENEN REITER (B4b)? ---
+       *
+       * Nicht dasselbe wie „steht der Reiter im Streifen": der Kasten kann
+       * sitzen und die Schrift darin trotzdem hinausreichen. Ein
+       * Auslassungszeichen versteckt das nur - beschnitten wird das BILD,
+       * nicht die Zeile, und ein Finger auf dem letzten Buchstaben trifft
+       * den Nachbarn.
+       *
+       * GEMESSEN WIRD AUF 667 x 375, dem kleinsten unterstützten Schirm,
+       * und nicht auf dem Zielgerät (Regel 5: die Zahl und ihre Messstelle
+       * gehören zusammen). Der Grund ist die Blindprobe darunter: auf 844
+       * Punkten sind sieben Reiter breit genug, dass kein Name je gedrängt
+       * wird - die Zusage wäre dort erfüllt, ohne je etwas geprüft zu
+       * haben. Eng wird nicht der Schirm, sondern der REITER, und eng
+       * werden sie hier.
+       *
+       * Warum überhaupt hier und nicht im Fremdgriff: der misst, wieviel
+       * PROZENT eines Wortes unter fremdem Griff liegen, und ob seine 5 %
+       * überschritten sind, entscheidet bei 2 bis 19 Punkten Überstand die
+       * Schrift, die im Augenblick der Messung gerade geladen ist. Er hat
+       * den Fehler gemeldet - aber nur im vollen Kettenlauf, nie im
+       * Einzellauf. Die Zahl hier hängt an nichts als am Umbruch. */
+      /* Gewartet wird auf die SACHE, nicht auf eine Frist: der Streifen
+         ist erst dann neu vermessen, wenn er schmaler geworden ist. Eine
+         feste Pause wäre auf dem schnellen Rechner verschenkt und auf dem
+         langsamen zu kurz - und der Rauchtest zählt sie mit. */
+      await q.setViewportSize({ width: 667, height: 375 });
+      if (!await bis(q, () => {
+        const st = document.querySelector('.schirm.da .buchreiter');
+        return !!st && st.getBoundingClientRect().width <= 667;
+      }))
+        merke('forscherbuch', new Error('der Kapitelstreifen ist auf 667 Punkten nicht '
+          + 'schmaler geworden — dann ist nicht gemessen, was gemessen werden sollte'));
+      const namen = await q.evaluate(() => {
+        const st = document.querySelector('.schirm.da .buchreiter');
+        if (!st) return [];
+        return [...st.querySelectorAll('[data-kap]')].map(r => {
+          const sp = r.querySelector('.was');
+          if (!sp) return null;
+          const rb = r.getBoundingClientRect();
+          /* Die ZEILENKÄSTEN des Textknotens (`Range.getClientRects`) und
+             nicht der Kasten des `span`: der ist bei `overflow:hidden`
+             genau so breit wie sein Reiter, und die Zusage wäre immer
+             erfüllt. */
+          const rng = document.createRange();
+          rng.selectNodeContents(sp);
+          const raus = Math.max(0, ...[...rng.getClientRects()].map(k =>
+            Math.max(k.right - rb.right, rb.left - k.left)));
+          /* Und wie breit der Name OHNE Umbruch wäre - die zweite Zahl,
+             ohne die „nichts ragt heraus" kein Beweis wäre, sondern eine
+             Selbstverständlichkeit (Regel 1). */
+          const probe = sp.cloneNode(true);
+          probe.style.cssText = 'position:absolute;visibility:hidden;'
+            + 'white-space:nowrap;max-width:none;width:auto';
+          sp.parentElement.appendChild(probe);
+          const natur = probe.getBoundingClientRect().width;
+          probe.remove();
+          return { was: sp.textContent.trim().replace(/\s+/g, ' ').slice(0, 24),
+                   raus: Math.round(raus * 10) / 10,
+                   eng: natur > rb.width };
+        }).filter(Boolean);
+      });
+      await q.setViewportSize({ width: 844, height: 390 });
+      await bis(q, () => {
+        const st = document.querySelector('.schirm.da .buchreiter');
+        return !!st && st.getBoundingClientRect().width > 667;
+      });
+      /* Erst die Blindprobe, dann die Zusage: ist kein einziger Name
+         breiter als sein Reiter, hat der Umbruch nichts zu tun gehabt
+         und „nichts ragt heraus" beweist nichts. */
+      const enge = namen.filter(x => x.eng);
+      if (!enge.length)
+        merke('forscherbuch', new Error(`auf 667 x 375 ist kein einziger Kapitelname `
+          + `breiter als sein Reiter (${streifen.reiter} Reiter) — dann prüft der Umbruch `
+          + 'hier nichts, er findet nur nichts'));
+      const raus = namen.filter(x => x.raus > 1);
+      if (raus.length)
+        merke('forscherbuch', new Error(`${raus.length} Kapitelname${raus.length===1?'':'n'} `
+          + `ragen über ihren eigenen Reiter hinaus (${raus.map(x =>
+              `„${x.was}" ${String(x.raus).replace('.', ',')} Punkte`).join(' · ')}) — `
+          + 'ein Finger auf dem letzten Buchstaben trifft den Nachbarn'));
       const halb = streifen.teils.filter(x => x.anteil < 1);
       if (halb.length)
         merke('forscherbuch', new Error(`${halb.length} von ${streifen.reiter} Kapiteln stehen `
@@ -2736,6 +2818,10 @@ if (laeuft('ablage')) try {
       if (!eng.length && !gleich.length)
         console.log(`  Buch mit Kapiteln:          ${streifen.reiter} Reiter, alle ganz im `
           + `Streifen; ${seiten.size} verschiedene Seiten, jeder Block ganz im Bild`);
+      if (enge.length && !raus.length)
+        console.log(`  Kapitelnamen:               ${enge.length} von ${streifen.reiter} `
+          + `sind auf 667 × 375 breiter als ihr Reiter `
+          + `(${enge.map(x => `„${x.was}"`).join(' · ')}) — und keiner ragt hinaus`);
 
       /* Und der Satz zum Mitnehmen im Buch (Q46).
        *

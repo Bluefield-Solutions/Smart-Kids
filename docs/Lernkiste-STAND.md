@@ -10436,3 +10436,68 @@ rot — er war es ja nur unter Last. Eine Gegenprobe, die von der Rechnerlast
 abhängt, ist keine. Das Loch ist zu stopfen, indem `passt` einen Stand mit
 acht Kapiteln auf 390 Punkten bekommt; dort wäre der Überlauf deterministisch.
 Bis dahin ist die Zusage geschrieben und nicht bewiesen.
+
+### Der Zeuge dafür — und was beim Bauen daneben lag
+
+Die Zusage aus B4b („kein Kapitelname ragt über seinen Reiter") war
+geschrieben und nicht bewiesen. Jetzt ist sie bewiesen, aber an einer anderen
+Stelle als geplant.
+
+**Geplant war `passt` auf 390 Punkten.** Gemessen wurde vorher, und die
+Messung hat den Plan verworfen: `passt` fährt sieben Größen, und ein Stand mit
+acht Kapiteln macht auf **390 × 844 drei Reiter unerreichbar** — acht Reiter
+zu je 66 Punkten (dem Boden aus `min-width`) sind 528 Punkte auf einem 390
+Punkte breiten Schirm. Der Streifen rollt dann (`overflow-x:auto`), und ein
+gerollter Reiter ist für `passt` genauso weg wie einer unter dem Rand. Der
+Zeuge hätte also nicht die Zusage geprüft, sondern ein zweites, größeres
+Problem aufgeworfen (siehe unten).
+
+**Gemessen wird jetzt im Rauchtest auf 667 × 375**, dem kleinsten
+unterstützten Schirm. Der Grund ist die Blindprobe: auf 844 Punkten sind
+sieben Reiter breit genug, dass **kein** Name je gedrängt wird — die Zusage
+wäre dort erfüllt, ohne je etwas geprüft zu haben. Auf 667 sind alle sieben
+Namen breiter als ihr Reiter, und genau das steht jetzt auch im grünen Lauf:
+
+```
+Kapitelnamen:  7 von 7 sind auf 667 × 375 breiter als ihr Reiter
+               („Abzeichen" · „Kontinente" · „Bundesländer" · „Plus und Minus"
+                · „Buchstaben nachfahren" · „Buchstaben hören" · „Als Nächstes")
+               — und keiner ragt hinaus
+```
+
+Gemessen wird an den **Zeilenkästen des Textknotens**
+(`Range.getClientRects`), nicht am Kasten des `span`: der ist bei
+`overflow:hidden` genau so breit wie sein Reiter, und die Zusage wäre immer
+erfüllt. Ohne Umbruch ragen die Namen 14 bis 54 Punkte hinaus (667 × 375) bzw.
+2 bis 19 (844 × 390) — deterministisch, ohne jede Abhängigkeit von der
+Rechnerlast. Die Gegenprobe schlägt an.
+
+### Offen: acht Kapitel auf einem hochkant gehaltenen Telefon
+
+Nebenbefund derselben Messung, **nicht** von dieser Runde verursacht und nicht
+behoben:
+
+| Schirm | Reiter | breiteste | Reiter außerhalb des Streifens |
+|---|---|---|---|
+| 844 × 390 | 8 | 154 px | 0 |
+| 667 × 375 | 8 |  115 px | 0 |
+| **390 × 844** | 8 | 66 px (Boden) | **3** |
+| 1180 × 820 | 8 | 170 px | 0 |
+| 700 × 850 | 8 | 107 px | 0 |
+
+Auf 390 Punkten Breite passen acht Reiter nicht mehr nebeneinander. Der
+Streifen rollt — das ist so gebaut („wird es noch enger, rollt der Streifen
+statt zu quetschen"), widerspricht aber der Begründung der zugehörigen
+Gegenprobe („ein Reiter, der aus dem Streifen gerollt ist, ist für dieses Tor
+genauso weg wie einer unter dem Rand") und Fionas ausdrücklichem Wunsch, immer
+**alle** zu sehen. Zu entscheiden ist, ob der Streifen bei Enge in zwei Reihen
+umbricht oder ob das Rollen bleibt; erst danach kann `passt` einen Stand mit
+acht Kapiteln bekommen.
+
+**Und die Gegenprobe selbst hatte den Fehler, den sie prüfen soll.** Ihre
+Nachfrage ans gebaute Bündel („ist der Eingriff angekommen?") suchte
+`white-space:nowrap;overflow:hidden;text-overflow:ellipsis` — und genau das
+steht dort schon **ohne** Eingriff, an `.marke`. „Angekommen" wäre wahr
+gewesen, bevor etwas passiert ist. Gemeldet hat es das Tor `anker` (Q48),
+bevor ein einziger Browser lief. Jetzt gehört die Zeile danach mit dazu:
+`13ch` gibt es nur am Reiter.

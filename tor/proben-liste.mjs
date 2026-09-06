@@ -4095,6 +4095,34 @@ export const PROBEN = [
     an:{ ...DIST, text:'zeigt:`<div class="abzeichen"></div>`' },
     sagt:'Kapitelseiten nutzen weniger als' },
 
+  /* --- B4b: der Kapitelname bleibt auf seinem Reiter -----------------
+   *
+   * Der Rueckfall auf `nowrap` samt Auslassungszeichen. Er ist der
+   * Zustand von vor B4b, und er ist teuer gewesen: gemeldet hat ihn der
+   * Fremdgriff, aber NUR im vollen Kettenlauf - im Einzellauf desselben
+   * Tors war er gruen. Bei 2 bis 19 Punkten Ueberstand entscheidet ueber
+   * seine 5-Prozent-Grenze die Schrift, die im Augenblick der Messung
+   * gerade geladen ist, und die haengt an der Rechnerlast.
+   *
+   * Diese Probe haengt an nichts als am Umbruch: auf 667 x 375 stehen
+   * sieben Reiter, und alle sieben Namen sind breiter als ihr Reiter.
+   * Ohne Umbruch ragen sie 14 bis 54 Punkte hinaus - gemessen, und
+   * gemessen wird an den Zeilenkaesten und nicht am Kasten des `span`,
+   * der bei `overflow:hidden` genau so breit ist wie sein Reiter. */
+  { n:'der Kapitelname wird wieder abgeschnitten statt umgebrochen', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:V,
+    such:"  white-space:normal;overflow-wrap:anywhere;\n  max-width:min(13ch, 100%)}",
+    ersatz:"  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\n"
+      + "  max-width:min(13ch, 100%)}",
+    /* DIE NACHFRAGE MUSS DEN EINGRIFF MEINEN, nicht seinen Wortlaut.
+       Der erste Anlauf suchte `white-space:nowrap;overflow:hidden;
+       text-overflow:ellipsis` - und genau das steht schon OHNE Eingriff
+       im Buendel, an `.marke`. „Angekommen" waere damit wahr gewesen,
+       bevor etwas passiert ist; gemeldet hat es das Tor `anker` (Q48).
+       Jetzt die ZEILE DANACH mit dazu: `13ch` gibt es nur am Reiter. */
+    an:{ ...DIST, text:'text-overflow:ellipsis;\n  max-width:min(13ch, 100%)}' },
+    sagt:'ragen über ihren eigenen Reiter hinaus' },
+
   /* --- B4b: die Abzeichenseite deckt ihren Reiter --------------------
    *
    * Vier Proben. Die ersten beiden gehoeren zur Abzeichenseite, die
