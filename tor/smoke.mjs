@@ -4410,10 +4410,16 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            * Frage (Regel 1 - wer eine Wirkung misst, schaltet sie zuerst
            * ab, und hier hat genau das nichts geaendert).
            *
-           * Der Satz „… Wo ist die Flagge?" faellt nur hier. */
+           * Gesucht wird „Wo ist die Flagge?" - dieser Satz faellt NUR
+           * hier und nur aus `ansagen`. Und zwar OHNE den Landesnamen
+           * davor: die Stimme zerlegt eine Ansage in Saetze, und im
+           * Mitschnitt stehen zwei Eintraege („Vereinigtes Koenigreich."
+           * und „Wo ist die Flagge?") statt eines. Ein Vergleich auf den
+           * ganzen Satz traf deshalb nie - nachgestellt und nachgelesen,
+           * nicht vermutet. */
           const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
-          const frage = `${auf.name}. Wo ist die Flagge?`;
-          if (VORLESEN[wer] && !gesagt.some(x => String(x).trim() === frage))
+          const FRAGESATZ = 'Wo ist die Flagge?';
+          if (VORLESEN[wer] && !gesagt.some(x => String(x).includes(FRAGESATZ)))
             merke('durchgang', new Error(`${wer}/${ebene}: „${auf.name}" wurde nicht `
               + 'gesagt — in dieser Richtung IST der Landesname die Frage, und wer '
               + `nicht liest, sieht sonst vier Flaggen ohne Aufgabe `
@@ -4449,8 +4455,14 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * In der NENNrichtung wird nichts angesagt, und das ist richtig:
          * der Landesname waere dort die Antwort. Dort bleibt das Muster
          * deshalb eines, das nie zutrifft. */
-        const wieHoert = zeigt ? new RegExp(auf.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-                               : /(?!)/;
+        /* GEZAEHLT WIRD DIE FRAGE, nicht der Landesname.
+         *
+         * Ein Muster auf den Namen traf auch das LOB („Klasse! Italien.")
+         * - der Zaehler stand dann richtig, obwohl die Ansage fehlte, und
+         * die Gegenprobe konnte nichts beweisen. Wer eine Wirkung misst,
+         * muss sie abschalten koennen (Regel 1); der Fragesatz faellt nur
+         * aus `ansagen`. */
+        const wieHoert = zeigt ? /Wo ist die Flagge\?/ : /(?!)/;
         await abgeschlossen(p, wer, ebene, wieHoert, 'die Flagge zugeordnet');
         continue;
       }
