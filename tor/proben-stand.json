@@ -30,6 +30,7 @@
     "doku",
     "englisch",
     "farben",
+    "flaggen",
     "inhalt",
     "marken",
     "saetze",
@@ -1848,6 +1849,21 @@
       "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
       "zeit": "2026-09-06",
       "s": 6
+    },
+    "eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden": {
+      "commit": "131e378ca5c269a44518755d734406548ea198e2",
+      "zeit": "2026-09-06",
+      "s": 3
+    },
+    "ein Land hat keine Flagge mehr": {
+      "commit": "131e378ca5c269a44518755d734406548ea198e2",
+      "zeit": "2026-09-06",
+      "s": 3
+    },
+    "immer mehr Flaggen umgehen die Formsprache": {
+      "commit": "131e378ca5c269a44518755d734406548ea198e2",
+      "zeit": "2026-09-06",
+      "s": 3
     },
     "die Stimme wird durch keine Beruehrung mehr freigegeben": {
       "commit": "d8c91460969b0d66b24f3b38edd21781af7c66ec",

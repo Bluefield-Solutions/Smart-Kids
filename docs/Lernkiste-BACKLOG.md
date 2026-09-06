@@ -256,7 +256,18 @@ im Konzept:
 | **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Fiona sagt „Deutschland" statt zu tippen; der Kartenbildschirm verhält sich unverändert | mittel |
 | **F3** | „Verwechslungen" — achter Gruppeneintrag, acht Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad, und das Tor beweist, dass sie sich ähnlich **sehen** | mittel |
 | **F4** | „Auf die Karte" — die Flagge wird auf ihr Land gezogen | Nur Länder mit Umriss und über der Fingergrenze (P7/P10) | groß |
-| **F5** | Abzeichen, Doku, volle Torkette, Gegenproben | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+| **F5** | Abzeichen, Doku, volle Torkette, Gegenproben — **und die Lücke unten** | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+
+**Eine Lücke im Rauchtest, gefunden beim Gegenproben (für F5).** Nimmt man
+`flaggen: flaggenschirm` aus `schirmZu`, fällt die Ebene auf den
+Kartenbildschirm zurück — und der Abschnitt `durchgang` bleibt **grün**. Er
+findet weder Flaggenkarte noch Rechnung noch Karte und geht still zur nächsten
+Ebene. Das gilt nicht nur für die Flaggen: **jede** Ebene, deren Bildschirm
+kaputtgeht, wird stillschweigend übersprungen. Der Durchgang muss verlangen,
+dass jede Ebene, die er betritt, auch **eine Antwort abgibt** — sonst zählt er
+Ebenen und misst nichts. Eine Gegenprobe dafür steht deshalb noch nicht in der
+Liste: eine Probe auf ein Tor, das an dieser Stelle nichts beweist, wäre selbst
+nur eine Behauptung (Regel 1).
 
 **Warum das Sprechen eine eigene Runde ist (F2b) und nicht in F2 steckt.**
 Der Sprachweg — Mikrofon, Rückfrage bei unsicherer Erkennung, gerettetes

@@ -5414,11 +5414,21 @@ export const PROBEN = [
    * statt eines Dreiecks: gemessen 3,5 % Unterschied. Das Tor hat es
    * gemeldet, bevor es jemand gesehen hat - und diese Probe haelt fest,
    * dass es das kann. */
+  /* Genommen wird ECUADOR und nicht Nicaragua, und das ist gemessen und
+     nicht geraten: Ecuador IST Kolumbien mit Wappen - dieselben drei
+     Streifen, dieselben Breiten. Ohne die Andeutung ist der Unterschied
+     NULL, und die Probe faellt unter den Boden.
+     
+     Der erste Anlauf nahm Nicaragua sein Dreieck. Das Tor wurde rot, aber
+     mit der falschen Meldung: Honduras hat noch fuenf Sterne, also blieb
+     ein Unterschied ueber dem Boden, und angeschlagen hat stattdessen das
+     Paar Nicaragua/El Salvador ueber das SOLL. Rot aus einem anderen
+     Grund ist kein Nachweis (Regel 1). */
   { n:'einer Flagge fehlt ihr unterscheidendes Zeichen', tor:'inhalt', deckt:'flaggen',
     datei:'src/inhalt/flaggen.js',
-    such:"                    zeichen:{ form:'dreieckchen', gross:0.50, farbe:'#0067C6' } } },",
-    ersatz:"                    zeichen:{ form:'dreieckchen', gross:0.02, farbe:'#0067C6' } } },",
-    an:{ datei:'src/inhalt/flaggen.js', text:"form:'dreieckchen', gross:0.02" },
+    such:"                    zeichen:{ form:'vogel', gross:0.46, farbe:'#7F5000' } } },",
+    ersatz:"                    zeichen:{ form:'vogel', gross:0.02, farbe:'#7F5000' } } },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"form:'vogel', gross:0.02" },
     sagt:'nicht zu beantworten' },
 
   /* 2. Eine Flagge zeichnet mit `<rect>` statt mit einem Pfad.
@@ -5461,18 +5471,25 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/flaggen.js', text:"art:'eigen', teile:() => [rechteck(0,0,BREIT,HOCH" },
     sagt:'umgehen die Formsprache' },
 
-  /* 5. Die Flaggenebene faellt aus dem Rauchtest.
+  /* 5. DIE FRAGE WIRD NICHT MEHR ANGESAGT.
    *
-   * Ohne den Bildschirm findet `schirmZu` nichts und faellt auf den
-   * Kartenbildschirm zurueck - der wartet auf eine Karte, die es nicht
-   * gibt. Die Probe haelt fest, dass der Durchgang das merkt und nicht
-   * still weiterlaeuft. */
-  { n:'die Flaggenebene landet auf dem Kartenbildschirm', tor:'smoke',
+   * Fiona liest nicht. In der Zeigerichtung ist der Landesname die ganze
+   * Aufgabe - ohne ihn stehen vier Flaggen da und nichts dazu, und die
+   * Ebene ist fuer sie nicht spielbar. Der Durchgang zaehlt es und meldet
+   * „Fiona bekam nur N von 23 Aufgaben vorgelesen".
+   *
+   * NICHT geprobt wird hier der fehlende BILDSCHIRM (`flaggen:
+   * flaggenschirm` aus `schirmZu` nehmen). Ausprobiert: der Durchgang
+   * bleibt dabei GRUEN - er findet weder Flaggenkarte noch Rechnung und
+   * geht still weiter. Das ist eine Luecke im Rauchtest und keine in der
+   * App; sie steht als Punkt in F5. Eine Probe auf ein Tor, das an dieser
+   * Stelle nichts beweist, waere selbst nur eine Behauptung. */
+  { n:'die Flaggenfrage wird nicht mehr angesagt', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,",
-    ersatz:"englisch: englischschirm, freunde: freundeschirm,",
-    an:{ ...DIST, fehlt:"flaggen: flaggenschirm" },
-    sagt:'durchgang' },
+    such:"  if (zeigen) ansagen(`${ziel.name}. Wo ist die Flagge?`);",
+    ersatz:"  if (false) ansagen(`${ziel.name}. Wo ist die Flagge?`);",
+    an:{ ...DIST, text:"if (false) ansagen(" },
+    sagt:'vorgelesen' },
 
   /* Die Stimme wird durch eine Beruehrung freigegeben (S1t).
    *
