@@ -48,11 +48,22 @@ async function kopfGegenReiter(seite, wo) {
     });
     return { kopf: marke ? { da: +marke[1], gesamt: +marke[2] } : null,
              reiter, ohneZahl: reiter.filter(x => !x).length,
+             /* „Als Naechstes" ist ein HINWEIS und keine Sammlung. Ob es
+                eine Zahl traegt, ist am Kapitel abzulesen und nicht an
+                der Summe: die stimmt auch dann, wenn der Hinweis
+                mitzaehlt - beide Seiten rechnen ja dieselben Werte. Der
+                erste Anlauf hat genau das uebersehen, und die Gegenprobe
+                blieb still gruen. */
+             hinweisMitZahl: !!s.querySelector('[data-kap="naechstes"] .reiterzahl'),
              reiterZahl: s.querySelectorAll('.buchreiter [data-kap]').length };
   });
   if (!z.kopf) {
     merke('forscherbuch', new Error(`im Kopf des Buches (${wo}) steht keine Zahl `
       + '„x von y" — dann sagt der Bildschirm nicht, wie weit die Sammlung ist'));
+  } else if (z.hinweisMitZahl) {
+    merke('forscherbuch', new Error(`der Reiter „Als Nächstes" trägt eine Zahl (${wo}) — `
+      + 'er ist keine Sammlung, sondern ein Hinweis, und seine Zahl zählte '
+      + 'die OFFENEN Stücke: dieselbe Stelle, dieselbe Form, die Gegenrichtung'));
   } else if (z.ohneZahl) {
     merke('forscherbuch', new Error(`${z.ohneZahl} Reiter (${wo}) tragen eine Zahl, die `
       + 'nicht „gesammelt / gesamt" ist — dann zählt eine davon in die andere Richtung'));

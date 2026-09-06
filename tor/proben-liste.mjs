@@ -589,7 +589,7 @@ export const PROBEN = [
     such:"    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe,",
     ersatz:"    id:'naechstes', titel:'Als Nächstes', farbe:dran.farbe, zahl:vorschau.length, gesamt:vorschau.length,",
     an:{ ...DIST, text:"zahl:vorschau.length, gesamt:vorschau.length" },
-    sagt:'zwei Zahlen über demselben Inhalt' },
+    sagt:'trägt eine Zahl' },
 
   /* --- pwa: der Lagername ------------------------------------------- */
   // Zurueck auf einen festen Lagernamen. Dann raeumt jede Installation der
