@@ -849,9 +849,9 @@
       "s": 58
     },
     "die Karten im Vorlauf sagen nichts": {
-      "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
-      "zeit": "2026-09-05",
-      "s": 53
+      "commit": "6d2cbc9b225963ef92130bddb6b22d4607b92da1",
+      "zeit": "2026-09-06",
+      "s": 93
     },
     "der Vorlauf zeigt die falsche Zahl an Gebieten": {
       "commit": "3ec6a12c8eeb5d31ba79389a00447dd350dc3c25",
