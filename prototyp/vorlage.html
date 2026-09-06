@@ -642,10 +642,31 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    oder nicht, und der Abzug nennt beide. Das kostet Bildhoehe - und
    kauft dafuer, dass die Zahl auf jedem Rechner dieselbe ist. Eine
    Ratsche, die je nach Maschine anders steht, misst die Maschine. */
-.wahl.ebenen .kachel .silhouette{left:50%;right:auto;top:var(--r1);bottom:auto;
-  height:calc(100% - var(--kachelabzug));translate:-50% 0;max-width:82%;opacity:.9}
-.wahl.ebenen{--kachelabzug:86px}
-@media (max-height:440px), (max-width:430px){ .wahl.ebenen{--kachelabzug:78px} }
+/* DAS BILD STEHT IM FLUSS, nicht absolut - und das ist der dritte Anlauf
+   an derselben Stelle.
+   
+   Vorher hing seine Hoehe an einer ZAHL: `calc(100% - 62px)`, wobei die
+   62 „Namenszeile plus Fortschrittszeile plus Rand" sein sollten. Eine
+   Namenszeile. Mit der elften Kachel bricht „Bundeslaender" auf den
+   schmalen Formaten um, und das Bild lag zu 10 % unter dem eigenen Namen.
+   
+   Der zweite Anlauf machte den Namenskasten zwei Zeilen hoch und die Zahl
+   groesser (86 bzw. 78). Der Runner meldete DENSELBEN Befund weiter: die
+   Zahl war wieder geraten, nur groesser. Jede Zahl an dieser Stelle ist
+   eine Annahme darueber, wie hoch Schrift auf einem fremden Rechner
+   ausfaellt - und die stimmt irgendwann nicht.
+   
+   Jetzt rechnet das Layout: die Kachel ist eine Spalte, das Bild ein
+   Element darin mit `flex:1`, Name und Fussleiste darunter. Was uebrig
+   bleibt, bekommt das Bild - nicht mehr und nicht weniger. Ein Ueberlappen
+   ist damit nicht mehr unwahrscheinlich, sondern UNMOEGLICH: zwei
+   Geschwister im Fluss koennen einander nicht ueberdecken.
+   
+   `min-height:0` gehoert dazu - ohne die Zeile nimmt ein Flex-Element
+   seine Inhaltsgroesse als Untergrenze und schrumpft nicht. */
+.wahl.ebenen .kachel .silhouette{position:static;flex:1 1 0;min-height:0;
+  height:auto;width:auto;max-width:82%;max-height:100%;align-self:center;
+  translate:none;opacity:.9;-webkit-mask-image:none;mask-image:none}
 /* Die Ueberzeile („LÄNDER IN", „DEUTSCHLAND") faellt hier weg. Sie stand
    bisher OBEN in der Kachel - dort liegt jetzt das Bild, und `lesbarkeit`
    hat sofort gemeldet, was das kostet: 4,34:1 statt 4,5 am Tag, 3,35:1 am
@@ -1922,7 +1943,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    sonst legt sie sich auf den Namen. `max-height` und nicht `height`:
    eine gestauchte Flagge waere eine andere. */
 .flaggensilhouette{display:block;width:100%;height:auto;
-  max-height:calc(100% - var(--kachelabzug, 86px))}
+  max-height:100%}
 .englischfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r6);padding:0 var(--r4) var(--r4);min-height:0}
 .engwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}

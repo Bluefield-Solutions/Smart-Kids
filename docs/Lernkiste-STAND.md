@@ -11214,3 +11214,28 @@ Teil dahinter. `schreiben:diktat` macht es genauso.
 
 Alle drei hat ein Tor gemeldet, keiner ein Blick. Das ist die Sorte Fehler, für
 die die Kette da ist.
+
+
+### Dritter Anlauf an derselben Stelle — und diesmal ohne Zahl
+
+Der Runner meldete nach dem zweiten Anlauf **denselben Befund weiter**:
+„Bundesländer — Bild unterm Namen % steht auf 10 statt 0". Der
+Zwei-Zeilen-Kasten und der größere Abzug hatten nichts geändert.
+
+Der Grund ist einfach und war die ganze Zeit da: **jede Zahl an dieser Stelle
+ist eine Annahme darüber, wie hoch Schrift auf einem fremden Rechner
+ausfällt.** Erst waren es 62 Punkte, dann 86 bzw. 78 — die zweite Zahl war
+nicht richtiger als die erste, nur größer.
+
+Jetzt rechnet das Layout. Das Bild steht **im Fluss** statt absolut: die Kachel
+ist eine Spalte, das Bild ein Element darin mit `flex:1`, Name und Fußleiste
+darunter. Was übrig bleibt, bekommt das Bild — nicht mehr und nicht weniger.
+
+**Ein Überlappen ist damit nicht mehr unwahrscheinlich, sondern unmöglich:**
+zwei Geschwister im Fluss können einander nicht überdecken. Das ist kein
+besserer Schätzwert, sondern das Ende des Schätzens.
+
+Die Lehre, und sie gilt über diese Stelle hinaus: **wo ein absolut gesetztes
+Element neben fließendem Text steht, ist jede Abstandszahl eine Wette auf die
+Schriftmetrik.** Wer sie gewinnt, hat nichts bewiesen — er hatte denselben
+Browser.
