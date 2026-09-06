@@ -4142,6 +4142,61 @@ export const PROBEN = [
     an:{ ...DIST, text:'seite.hidden = seite.hidden;' },
     sagt:'dahinter steht nichts' },
 
+  /* --- B14: die Weltuebersicht fuellt und weist den Weg -------------
+   *
+   * Zwei Proben. Die erste faellt auf `auto-fill` zurueck - der Zustand
+   * vor B14, in dem zwei Ebenen als zwei Briefmarken links oben in
+   * einer Spalte standen, die fuenf Zellen breit ist, und der Umriss
+   * von „Kontinente" ein blauer Fleck war.
+   *
+   * Ohne die eigene Zusage waere das still: die Seite nutzte damit 28 %
+   * ihrer Hoehe, und die Halbleer-Ratsche steht bei 24. Genau die Art
+   * Rueckfall, die wie ein bestandenes Tor aussieht. */
+  { n:'das Weltraster laesst wieder leere Spalten stehen', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:V,
+    such:".rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}",
+    ersatz:".rollen.buch .raumgitter{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}",
+    an:{ ...DIST, text:'.rollen.buch .raumgitter{grid-template-columns:repeat(auto-fill' },
+    sagt:'legt leere Spalten an' },
+
+  /* Und die zweite: der Wegweiser faellt aus. Dann steht auf der
+   * Uebersicht nur noch der Weltname - und den traegt der Reiter
+   * darueber schon. Die Seite funktioniert weiter und sagt nichts mehr. */
+  { n:'die Weltuebersicht sagt nicht mehr, wo es weitergeht', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    /* DER EINGRIFF MUSS DEN SATZ WEGNEHMEN, nicht seinen Zweig
+       umlegen. Der erste Anlauf setzte die Bedingung auf `false` - dann
+       lief der ANDERE Zweig („Diese Welt hast du ganz."), und ein
+       Fusssatz stand weiter da. Das Tor blieb zu Recht gruen, und die
+       Probe hat es gemeldet. Jetzt faellt der ganze Ausdruck weg. */
+    such:"        fuss: weiter\n"
+      + "          ? `<p class=\"buchsatz\" data-lesen=\"Als Nächstes hier: ${weiter.titel}. Noch ${\n"
+      + "               weiter.offen.length}.\">Als Nächstes hier: ${weiter.titel}. Noch ${\n"
+      + "               weiter.offen.length}.</p>`\n"
+      + "          : `<p class=\"buchsatz\" data-lesen=\"Diese Welt hast du ganz.\"\n"
+      + "             >Diese Welt hast du ganz.</p>`,",
+    ersatz:"        fuss: '' /* ohne Wegweiser */,",
+    an:{ ...DIST, text:'/* ohne Wegweiser */' },
+    sagt:'wo es in dieser Welt weitergeht' },
+
+  /* --- B13: der Abzeichenname bricht nicht mitten im Wort ------------
+   *
+   * Zurueck auf 112 Punkte Spaltenbreite. Auf dem hochkant gehaltenen
+   * Telefon stehen die Zellen dann 114 breit, davon 90 innen - und drei
+   * der moeglichen Namen brauchen mehr („Bundeslaender" 94,3,
+   * „Siebenerreihe" 94,1, „Stadtstaaten" 90,3). Weil `.abz .was` auf
+   * `overflow-wrap:anywhere` steht, brechen sie mitten im Wort.
+   *
+   * Der Eingriff ist die Zahl selbst, nicht ein kaputter Wert: 112 stand
+   * dort bis v430 und hat funktioniert, solange niemand hochkant
+   * hingesehen hat. */
+  { n:'der Abzeichenname bricht wieder mitten im Wort', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:V,
+    such:".abzeichen{display:grid;grid-template-columns:repeat(auto-fill,minmax(119px,1fr));",
+    ersatz:".abzeichen{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));",
+    an:{ ...DIST, text:'.abzeichen{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px' },
+    sagt:'brechen dann mitten im Wort' },
+
   /* --- B12b: der Streifen bricht um, statt einen Reiter auszusperren -
    *
    * Sechs Reiter zu je 66 Punkten (dem Boden aus `min-width`) sind 396

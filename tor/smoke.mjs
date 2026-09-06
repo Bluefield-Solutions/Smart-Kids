@@ -100,6 +100,12 @@ import { KONTINENTE, LAENDER } from '../src/inhalt/erdkunde.js';
 // Die sechzehn Kennungen der Bundeslaender - gebraucht, um einen Stand zu
 // stellen, in dem ein Abzeichen verdient IST.
 import { STAEDTE } from '../src/geo/staedte.js';
+/* Die Abzeichentafel - fuer die Namensprobe unten. Gemessen wird der
+   BREITESTE moegliche Name und nicht der breiteste sichtbare: welche
+   Abzeichen ein Kind gerade hat, entscheidet sein Fortschritt, und eine
+   Pruefung, die nur die heutigen sieht, faellt beim naechsten um.
+   Dieselbe Ueberlegung wie bei den 124 Tiernamen in `tonleiter`. */
+import { TAFEL as ABZ_TAFEL } from '../src/inhalt/abzeichen.js';
 import { hoerAbgleich, GRENZE_NAH } from '../src/vergleich/vergleich.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -2639,11 +2645,64 @@ if (laeuft('ablage')) try {
                    luft: Math.round((rb.width - natur) * 10) / 10 };
         }).filter(Boolean);
       });
+      /* --- UND DIE ABZEICHENNAMEN, am selben schmalen Schirm (B13) ---
+       *
+       * Sie stehen in einer Zelle mit `overflow-wrap:anywhere`, brechen
+       * also mitten im Wort, sobald sie nicht passen - gemessen stand da
+       * „Stadtstaate/n". Der Fehler faellt nur auf dem HOHEN Schirm an:
+       * dort ist das Polster der Zelle groesser (`--mittel` ist `--r4`
+       * statt `--r2`), die Zelle also innen schmaler. Deshalb hier und
+       * nicht auf dem Zielgeraet: die Zahl gilt nur an ihrer Messstelle
+       * (Regel 5).
+       *
+       * Geprueft werden ALLE moeglichen Namen aus der Tafel, nicht die
+       * gerade sichtbaren - mit dem laengsten Profilnamen, den es gibt. */
+      const abzNamen = await q.evaluate(async (namen) => {
+        const reiter = document.querySelector('.schirm.da .buchreiter [data-kap="abzeichen"]');
+        if (!reiter) return null;
+        reiter.click();
+        await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)));
+        const zelle = document.querySelector('.schirm.da .abz');
+        const sp = zelle && zelle.querySelector('.was');
+        if (!sp) return null;
+        const k = zelle.getBoundingClientRect();
+        const cs = getComputedStyle(zelle);
+        const innen = k.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        const probe = sp.cloneNode(true);
+        probe.style.cssText = 'position:absolute;visibility:hidden;'
+          + 'white-space:nowrap;max-width:none;width:auto';
+        zelle.appendChild(probe);
+        const zuviel = [];
+        let knapp = null;
+        for (const n of namen) {
+          probe.textContent = n;
+          const w = probe.getBoundingClientRect().width;
+          if (w > innen) zuviel.push(`„${n}" ${Math.round(w)} von ${Math.round(innen)}`);
+          if (!knapp || innen - w < knapp.luft)
+            knapp = { n, luft: Math.round((innen - w) * 10) / 10 };
+        }
+        probe.remove();
+        return { geprueft: namen.length, zuviel, knapp, zelle: Math.round(k.width) };
+      }, [...new Set(ABZ_TAFEL.flatMap(e => (e.je || [null]).map(w =>
+           e.kurz(w, { name: 'Violeta' }))).concat('Ohne Fehler'))]);
+      if (!abzNamen)
+        merke('forscherbuch', new Error('kein Abzeichenkapitel auf 390 x 844 — dann ist die '
+          + 'Namensprobe der Abzeichen nicht gelaufen, sie hat nur nichts gefunden'));
+      else if (abzNamen.zuviel.length)
+        merke('forscherbuch', new Error(`${abzNamen.zuviel.length} von ${abzNamen.geprueft} `
+          + `Abzeichennamen passen nicht in ihre ${abzNamen.zelle} Punkte breite Zelle `
+          + `(${abzNamen.zuviel.join(' · ')}) — sie brechen dann mitten im Wort`));
+      else
+        console.log(`  Abzeichennamen auf 390:     alle ${abzNamen.geprueft} passen in die `
+          + `${abzNamen.zelle} Punkte breite Zelle; knappster „${abzNamen.knapp.n}" mit `
+          + `${abzNamen.knapp.luft} Punkten Luft`);
+
       await q.setViewportSize({ width: 844, height: 390 });
       await bis(q, () => {
         const st = document.querySelector('.schirm.da .buchreiter');
         return !!st && st.getBoundingClientRect().width > 390;
       });
+      await q.$$eval('.schirm.da [data-kap]', rs => rs[0] && rs[0].click());
       /* JEDER REITER STEHT AUF DEM SCHMALEN SCHIRM IM STREIFEN (B12b).
        *
        * Das ist seit dem Umbruch die scharfe Zusage dieser Stelle, und
@@ -2683,13 +2742,15 @@ if (laeuft('ablage')) try {
       /* Und jetzt jede Seite einzeln. Gemessen wird nach dem Klick am
          WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
          welche Seite wie hoch wird, entscheidet der Bildschirm. */
-      const eng = [], gleich = [], genutzt = [], ohneBalken = [], tafeln = [], stumm = [];
+      const eng = [], gleich = [], genutzt = [], ohneBalken = [], tafeln = [], stumm = [],
+            welten = [];
       const seiten = new Map();
       const merkeSeite = (seite) => {
         if (seite.seiteId === 'naechstes' && !seite.balken) ohneBalken.push(seite.was);
         if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
         if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
         if (seite.tafel && seite.tafel.length) tafeln.push(seite);
+        if (seite.weltraster) welten.push({ ...seite.weltraster, was: seite.was });
         /* ZWEI Faelle, und sie meinen Verschiedenes (B12).
            Traegt eine Seite denselben Abdruck wie eine aus einem ANDEREN
            Kapitel, blaettert der Reiterstreifen nicht. Traegt sie ihn wie
@@ -2811,6 +2872,38 @@ if (laeuft('ablage')) try {
                       gehalten hat - siehe unten. */
                    seiteId: r.querySelector('.buchseite:not([hidden])')?.dataset.seite || '',
                    balken: !!r.querySelector('.buchseite:not([hidden]) .balken'),
+                   /* --- DIE WELTUEBERSICHT (B14) ---------------------
+                    *
+                    * Zwei Zusagen, und beide waeren ohne Tor still: die
+                    * Seite nutzte gemessen 28 % ihrer Hoehe, und die
+                    * Halbleer-Ratsche steht bei 24 - sie haette den
+                    * Rueckfall durchgelassen.
+                    *
+                    * 1. Die Zellen FUELLEN die Breite. Mit `auto-fill`
+                    *    legt das Raster so viele Spalten an, wie
+                    *    hineinpassen, und laesst die leeren stehen -
+                    *    zwei Ebenen standen als zwei Briefmarken links
+                    *    oben. Gemessen wird der Platz rechts neben der
+                    *    letzten Zelle; mehr als eine Fuge ist keiner.
+                    * 2. Sie sagt, WO ES WEITERGEHT. Das ist die eine
+                    *    Auskunft, die es hier und nur hier gibt: das
+                    *    Kapitel „Als Naechstes" waehlt eine Ebene fuer
+                    *    das ganze Buch. */
+                   weltraster: (() => {
+                     const seite = r.querySelector('.buchseite:not([hidden])');
+                     const gitter = seite && seite.querySelector('.raumgitter');
+                     if (!gitter || !gitter.querySelector('.ebenenzelle')) return null;
+                     const zellen = [...gitter.querySelectorAll('.ebenenzelle')];
+                     const gk = gitter.getBoundingClientRect();
+                     const rechts = Math.max(0, gk.right
+                       - Math.max(...zellen.map(z => z.getBoundingClientRect().right)));
+                     return { zellen: zellen.length, rechts: Math.round(rechts),
+                              fuge: Math.round(parseFloat(getComputedStyle(gitter).columnGap) || 0),
+                              satz: !!seite.querySelector('.buchsatz'),
+                              bild: Math.round(Math.min(...zellen.map(z =>
+                                (z.querySelector('svg') || { getBoundingClientRect: () =>
+                                  ({ height: 0 }) }).getBoundingClientRect().height))) };
+                   })(),
                    /* Die Rechentafel und der Reiter darueber (B4b).
                       Gelesen wird `data-da`/`data-gesamt` und nicht der
                       Text: „+ 28 von 45" ist eine Bildunterschrift, und
@@ -2904,6 +2997,26 @@ if (laeuft('ablage')) try {
             + `(${schlecht.map(([w, a]) => `„${w}" ${a} %`).join(' · ')}) — `
             + 'das Forscherbuch ist die Sammlung, und eine halbleere Seite zeigt sie nicht'));
       }
+      /* --- Die Weltuebersicht fuellt und sagt, wo es weitergeht (B14) - */
+      if (!welten.length)
+        merke('forscherbuch', new Error('keine einzige Weltübersicht im Buch — der gestellte '
+          + 'Stand hat keine Welt mit mehr als einer Ebene, und dann beweist „kein Befund" '
+          + 'hier nichts'));
+      for (const w of welten) {
+        if (w.rechts > w.fuge + 1)
+          merke('forscherbuch', new Error(`die Übersicht „${w.was}" lässt neben ihren `
+            + `${w.zellen} Zellen ${w.rechts} Punkte frei (Fuge ${w.fuge}) — das Raster legt `
+            + 'leere Spalten an, statt die Zellen die Breite nehmen zu lassen'));
+        if (!w.satz)
+          merke('forscherbuch', new Error(`die Übersicht „${w.was}" sagt nicht, wo es in `
+            + 'dieser Welt weitergeht — dann steht dort nur der Weltname, und den trägt '
+            + 'der Reiter schon'));
+      }
+      if (welten.length && welten.every(w => w.rechts <= w.fuge + 1 && w.satz))
+        console.log(`  Weltübersichten:            ${welten.length} `
+          + `(${welten.map(w => `${w.was.split(' ').pop()} ${w.zellen} Zellen, `
+              + `Umriss ${w.bild} px`).join(' · ')}) — gefüllt, mit Wegweiser`);
+
       /* --- Die Rechentafel deckt ihren Reiter (B4b) ------------------
        *
        * Eine Ebene ohne Landkarte zeigt statt der Aufkleberwand eine
@@ -2996,7 +3109,14 @@ if (laeuft('ablage')) try {
         if (zelle >= 0)
           await q.$$eval('.schirm.da .ebenenzelle', (z, k) => z[k].click(), zelle);
         const vorher = await q.evaluate(() => {
-          const p = document.querySelector('.schirm.da .buchsatz');
+          /* DER SATZ DER SICHTBAREN SEITE (B14).
+             Seit die Weltseiten mehrere `.buchseite`-Abschnitte halten
+             und die Uebersicht selbst einen Fusssatz traegt („Als
+             Nächstes hier: ..."), traf `querySelector` den ERSTEN im
+             Kasten - also den der verborgenen Uebersicht, nicht den der
+             Ebene. Gemeldet hat es diese Prüfung selbst, beim ersten
+             Lauf nach der Änderung. */
+          const p = document.querySelector('.schirm.da .buchseite:not([hidden]) .buchsatz');
           return { satz: p?.textContent.trim() || '',
                    /* Wieviele Gebiete dieser Gruppe ueberhaupt einen Satz
                       haben - unter zweien gibt es nichts zu blaettern,
@@ -3012,7 +3132,8 @@ if (laeuft('ablage')) try {
         else {
           await q.click('.schirm.da .albumkarte');
           const nachher = await q.evaluate(() =>
-            document.querySelector('.schirm.da .buchsatz')?.textContent.trim() || '');
+            document.querySelector(
+              '.schirm.da .buchseite:not([hidden]) .buchsatz')?.textContent.trim() || '');
           if (nachher === vorher.satz)
             merke('forscherbuch', new Error(`ein Tipp auf die Albumkarte blättert den Satz `
               + `nicht weiter — es bleibt bei „${vorher.satz.slice(0, 50)}…", obwohl `

@@ -1449,6 +1449,21 @@
       "zeit": "2026-09-06",
       "s": 112
     },
+    "das Weltraster laesst wieder leere Spalten stehen": {
+      "commit": "9a41f272bee2c7196354ccd1272c61b4a0f0fcf3",
+      "zeit": "2026-09-06",
+      "s": 129
+    },
+    "die Weltuebersicht sagt nicht mehr, wo es weitergeht": {
+      "commit": "9a41f272bee2c7196354ccd1272c61b4a0f0fcf3",
+      "zeit": "2026-09-06",
+      "s": 128
+    },
+    "der Abzeichenname bricht wieder mitten im Wort": {
+      "commit": "9a41f272bee2c7196354ccd1272c61b4a0f0fcf3",
+      "zeit": "2026-09-06",
+      "s": 128
+    },
     "der Kapitelstreifen sperrt auf dem schmalen Schirm einen Reiter aus": {
       "commit": "a6d0495e38fe41caa68bcc753b9991fcc5215c91",
       "zeit": "2026-09-06",

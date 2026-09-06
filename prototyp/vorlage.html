@@ -1004,7 +1004,20 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Dieselbe Kante, dieselbe Groesse und dieselbe Anordnung wie ein
    Aufkleber - eine Sammlung sieht aus wie eine Sammlung, wenn die
    Fassung immer dieselbe ist (Audit II, S2). */
-.abzeichen{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));
+/* 119 PUNKTE, UND DIE ZAHL IST GEMESSEN (B13).
+   Bei 112 stand die Zelle auf dem hochkant gehaltenen Telefon 114 breit,
+   davon 90 innen - und drei der moeglichen Namen brauchen mehr:
+   „Bundeslaender" 94,3, „Siebenerreihe" 94,1, „Stadtstaaten" 90,3. Sie
+   brachen dann mitten im Wort („Stadtstaate/n"), weil `.abz .was` auf
+   `overflow-wrap:anywhere` steht.
+   Gemessen wurde der BREITESTE moegliche Name, nicht der breiteste
+   sichtbare: welche Abzeichen ein Kind gerade hat, entscheidet sein
+   Fortschritt, und ein Tor, das nur die heutigen prueft, faellt beim
+   naechsten um (dieselbe Ueberlegung wie bei den 124 Tiernamen).
+   95 Punkte fuer den Namen plus 24 Punkte Polster - das Polster ist auf
+   dem HOHEN Schirm groesser (`--mittel` ist dort `--r4`), also bindet
+   er. `npm run tonleiter` haelt die Zahl. */
+.abzeichen{display:grid;grid-template-columns:repeat(auto-fill,minmax(119px,1fr));
   gap:var(--r3);width:100%;align-content:start}
 .abz{position:relative;display:flex;flex-direction:column;align-items:center;
   justify-content:flex-start;gap:var(--r2);text-align:center;
@@ -3261,8 +3274,19 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    Zahl. Der Umriss kommt aus `silhouette`, also aus demselben Zeichner
    wie die Kachel auf der Ebenenwahl; er braucht hier nur seine
    Groesse. */
-.rollen.buch .ebenenzelle .silhouette{width:34px;height:34px;flex:0 0 auto;
-  color:var(--ton)}
+/* DIE ZELLE IST EIN BILD MIT EINER UNTERSCHRIFT, kein Kaestchen mit
+   einem Zeichen darin (B14).
+   Gemessen: eine Weltseite mit zwei Ebenen nutzte 28 % ihrer Hoehe, und
+   der Umriss stand mit 34 Punkten in einer Zelle, die 250 breit sein
+   koennte - „Kontinente" war ein blauer Fleck. Das ist derselbe Befund
+   wie bei der Albumkarte (Audit I, B4): eine Albumseite mit einer
+   Briefmarke darauf ist keine Albumseite.
+   Also waechst der Umriss mit dem Platz, nach oben begrenzt. Die Hoehe
+   kommt aus dem KASTEN und nicht aus dem Fenster - `vh` weiss nichts
+   von der Kopfzeile und dem Reiterstreifen darueber (dieselbe Falle wie
+   bei `42vh` an der Albumkarte). */
+.rollen.buch .ebenenzelle .silhouette{width:auto;height:72px;flex:0 0 auto;
+  max-width:100%;color:var(--ton)}
 /* Die Fuellung steht `.kachel`-seitig und gilt hier nicht - ohne diese
    Zeile ist jeder Umriss SCHWARZ (die Voreinstellung von SVG), und zehn
    schwarze Flecken sind im Buch ein Fremdkoerper. Gesehen auf der ersten
@@ -3270,9 +3294,27 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .ebenenzelle .silhouette path{fill:currentColor}
 .rollen.buch .ebenenzelle .silhouette.gezeichnet path{fill:none}
 .rollen.buch .ebenenzelle small{opacity:.75}
+/* AUTO-FIT statt AUTO-FILL, und nur im Buch: `auto-fill` legt so viele
+   Spalten an, wie hineinpassen, und laesst die leeren stehen - zwei
+   Ebenen standen damit als zwei Briefmarken links oben in einer Spalte,
+   die fuenf Zellen breit ist. `auto-fit` faltet die leeren zusammen,
+   und die zwei nehmen die Breite, die da ist.
+   Fuer das Tierkapitel aendert das nichts: fuenfzehn Raeume fuellen die
+   Spalten ohnehin. */
+.rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}
+/* Auf dem kurzen Querformat ist der Umriss kleiner - dort sind 244
+   Punkte Raster da, nicht 600. Zwei Werte und keine Rechnung: welcher
+   gilt, entscheidet dieselbe Grenze, die auch die Tonleiter umschaltet. */
 @media (max-height:440px){
-  .rollen.buch .ebenenzelle .silhouette{width:26px;height:26px}
+  .rollen.buch .ebenenzelle .silhouette{height:56px}
 }
+/* Die Zelle, bei der es weitergeht - dieselbe Sprache wie beim offenen
+   Kapitelreiter: sie steht auf ihrer Kante und traegt volle Tinte. Kein
+   zweites Zeichen daneben; der Satz links sagt es fuer Lea, die Kante
+   fuer Fiona. */
+.rollen.buch .ebenenzelle.dran{color:var(--tinte);border-color:var(--knopf-kante);
+  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),
+             inset 0 var(--strich) 0 var(--knopf-licht)}
 .rollen.buch .tierraum .tierwand{display:grid;
   grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--mittel)}
 /* Die Karte hat KEINE feste Breite mehr - bis Runde 3 stand sie

@@ -10706,3 +10706,86 @@ die Zahl der Reiter gedrittelt hat. Der Stand trägt jetzt eine vierte Welt
 (Englisch, sechs Aufkleber), und damit sechs Reiter — die Zahl, bei der die
 Zusage überhaupt etwas behauptet. Nebenbei prüft der Rauchtest damit zum
 ersten Mal alle vier Welten statt dreien.
+
+---
+
+## B13 · Der Abzeichenname bricht nicht mehr mitten im Wort
+
+Gesehen auf dem Hochkant-Bild aus B12b: „Stadtstaate/n". Gemessen ist die
+Ursache eine Zahl. Die Spalte stand auf `minmax(112px, 1fr)`; auf dem hochkant
+gehaltenen Telefon ergibt das eine Zelle von 114 Punkten, davon **90 innen** —
+und drei der möglichen Namen brauchen mehr:
+
+| Name | braucht |
+|---|---|
+| Bundesländer | 94,3 |
+| Siebenerreihe | 94,1 |
+| Stadtstaaten | 90,3 |
+
+Weil `.abz .was` auf `overflow-wrap:anywhere` steht, brechen sie dann **mitten
+im Wort**. Auf dem Zielgerät fiel es nie auf: dort ist das Polster der Zelle
+kleiner (`--mittel` ist auf kurzen Schirmen `--r2` statt `--r4`), also die
+Zelle innen breiter — 103 statt 90. Wieder einmal die falsche Messstelle: die
+Zahl gilt nur dort, wo sie gemessen wurde (Regel 5).
+
+Die Spalte steht jetzt auf **119** = 95 Punkte für den Namen plus 24 Punkte
+Polster. Auf dem Zielgerät ändert sich nichts (weiter vier Spalten), hochkant
+werden aus drei Spalten zwei.
+
+Geprüft werden **alle 16 möglichen** Namen aus `TAFEL`, nicht die gerade
+sichtbaren — welche Abzeichen ein Kind hat, entscheidet sein Fortschritt, und
+ein Tor, das nur die heutigen sieht, fällt beim nächsten um. Dieselbe
+Überlegung wie bei den 124 Tiernamen in `tonleiter`; gemessen wird auf
+390 × 844, weil dort die Zelle enger ist.
+
+---
+
+## B14 · Die Weltübersicht füllt und weist den Weg
+
+Gemessen: eine Weltseite mit zwei Ebenen nutzte **28 %** ihrer Höhe
+(Schreiben 34 %). Zwei Ursachen, und keine davon war „zu wenig Platz".
+
+**Erstens standen die Zellen als Briefmarken links oben.** `auto-fill` legt so
+viele Spalten an, wie hineinpassen, und lässt die leeren stehen — zwei Ebenen
+belegten zwei von fünf. Der Umriss von „Kontinente" war mit 34 Punkten ein
+blauer Fleck. Das ist derselbe Befund wie bei der Albumkarte (Audit I, B4):
+*eine Albumseite mit einer Briefmarke darauf ist keine Albumseite.* Mit
+`auto-fit` falten sich die leeren Spalten zusammen, die zwei Zellen nehmen die
+Breite, und der Umriss wächst auf 56 Punkte (72 auf hohen Schirmen) — groß
+genug, dass ein Kind Deutschland wiedererkennt.
+
+**Zweitens sagte die Seite nichts, was nicht schon auf dem Reiter stand.** Die
+eine Auskunft, die es hier und nur hier gibt, ist die *Richtung*: das Kapitel
+„Als Nächstes" wählt EINE Ebene für das ganze Buch, und innerhalb einer Welt
+ist danach nicht mehr zu sehen, wo man stehengeblieben ist. Jetzt steht dort
+„Als Nächstes hier: Kontinente. Noch 2." — nach derselben Regel gewählt wie im
+globalen Kapitel, und die Zelle dieser Ebene steht auf ihrer Kante, damit auch
+Fiona es sieht. Dazu „N davon sicher", dasselbe Wort wie auf den Ebenenseiten.
+
+Danach: Erdkunde **28 → 46 %**, Schreiben **34 → 53 %**.
+
+Beides hätte ohne eigene Zusage still zurückfallen können — die
+Halbleer-Ratsche steht bei 24 %, und 28 % hätten sie erfüllt. Der Rauchtest
+misst deshalb jetzt den Platz rechts neben der letzten Zelle (mehr als eine
+Fuge ist keiner) und verlangt den Wegweiser.
+
+**Und die Prüfung, die es selbst gemeldet hat:** der Satz zum Mitnehmen wurde
+mit `querySelector('.schirm.da .buchsatz')` gesucht — seit die Weltseiten
+mehrere Abschnitte halten und die Übersicht selbst einen Fußsatz trägt, traf
+das den **verborgenen** der Übersicht statt den der Ebene. Gemeldet beim
+ersten Lauf nach der Änderung, in derselben Minute.
+
+### Zwei Gegenproben, die sich selbst gemeldet haben
+
+*Der Wegweiser fällt aus.* Der erste Eingriff setzte die Bedingung auf
+`false` — dann lief der **andere** Zweig („Diese Welt hast du ganz."), und ein
+Fußsatz stand weiter da. Das Tor blieb zu Recht grün. Dieselbe Lehre wie bei
+der Weltseite in B12: ein Eingriff muss die Sache **wegnehmen**, nicht ihren
+Zweig umlegen.
+
+*Und einer, der schon beim ersten Anlauf richtig war:* der Rückfall auf
+`auto-fill`. Er ist die Sorte, für die es `npm run proben` gibt — die Seite
+funktioniert danach vollständig, sie ist nur wieder zu drei Vierteln leer, und
+die Halbleer-Ratsche (24 %) hätte 28 % durchgelassen.
+
+362 von 362 Gegenproben mit Nachweis.

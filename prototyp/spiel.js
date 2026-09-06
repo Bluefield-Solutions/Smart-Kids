@@ -7263,16 +7263,43 @@ async function forscherbuch(){
         inhalt: gruppenSeite(gs[0], { seiteId: id }) });
       continue;
     }
+    /* WO ES IN DIESER WELT WEITERGEHT (B14).
+     *
+     * Die Uebersicht nutzte gemessen 28 % ihrer Hoehe, und der Grund
+     * war nicht nur der Platz: sie sagte ausser dem Weltnamen NICHTS,
+     * was nicht schon auf dem Reiter stand. Die eine Auskunft, die es
+     * hier und nur hier gibt, ist die Richtung - das Kapitel „Als
+     * Naechstes" waehlt EINE Ebene fuer das ganze Buch, und innerhalb
+     * einer Welt ist danach nicht mehr zu sehen, wo man stehengeblieben
+     * ist.
+     *
+     * Gewaehlt wird nach derselben Regel wie dort: die Ebene mit den
+     * meisten Aufklebern, die noch nicht fertig ist. Zwei Regeln fuer
+     * dieselbe Frage waeren zwei, die eines Tages auseinanderlaufen. */
+    const weiter = gs.filter(g => g.offen.length)
+      .sort((a, b) => b.da.length - a.da.length)[0];
+    const sicher = gs.reduce((a, g) => a + g.da.filter(x => x.gekonnt).length, 0);
     kapitel.push({ id, titel: w.name, farbe: w.farbe, zahl, gesamt,
       lesen: `${w.name}. ${zahl} von ${gesamt} Aufklebern.`,
       inhalt: buchSeite({ id, titel: w.name,
+        /* Dasselbe Wort wie auf den Ebenenseiten: „sicher" ist die
+           zweite Stufe und steht nirgends sonst. Der Reiter traegt die
+           erste (`20/20`). */
+        zusatz: sicher ? `${sicher} davon sicher` : '',
+        fuss: weiter
+          ? `<p class="buchsatz" data-lesen="Als Nächstes hier: ${weiter.titel}. Noch ${
+               weiter.offen.length}.">Als Nächstes hier: ${weiter.titel}. Noch ${
+               weiter.offen.length}.</p>`
+          : `<p class="buchsatz" data-lesen="Diese Welt hast du ganz."
+             >Diese Welt hast du ganz.</p>`,
         /* Die Zelle traegt DEN UMRISS DER EBENE, nicht ein Zeichen
            daneben: `silhouette` zeichnet genau das, was die Kachel auf
            der Ebenenwahl zeigt - ein Kind, das nicht liest, erkennt
            Afrika wieder. Und die Zahl, die der Reiter nicht mehr traegt:
            er zaehlt jetzt die ganze Welt. */
         zeigt: `<div class="raumgitter">${gs.map(g => `
-          <button class="raumzelle ebenenzelle${g.da.length ? '' : ' leer'}"
+          <button class="raumzelle ebenenzelle${g.da.length ? '' : ' leer'}${
+                    weiter && g.id === weiter.id ? ' dran' : ''}"
                   data-ebenenwahl="${g.id}"
                   style="--ton:var(${FL[(g.farbe - 1 + 7) % 7]})"
                   data-lesen="${g.titel}. ${g.da.length} von ${
