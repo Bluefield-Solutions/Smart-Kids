@@ -2485,7 +2485,16 @@ if (laeuft('ablage')) try {
         'fiona:bundeslaender': aus(D.deutschland.slice(0, 3).map(x => x.id)),
         'fiona:rechnen:plusminus': aus(Rechnen.vorrat().slice(0, 4).map(x => x.id)),
         'fiona:schreiben:buchstaben': aus(['bu:P', 'bu:F', 'bu:X', 'bu:O']),
-        'fiona:schreiben:diktat':     aus(['di:P', 'di:F', 'di:X']) };
+        'fiona:schreiben:diktat':     aus(['di:P', 'di:F', 'di:X']),
+        /* Und die VIERTE Welt (B12b). Sie kostet den gestellten Stand
+           fast nichts und ist der Unterschied zwischen fuenf und sechs
+           Kapitelreitern - und damit zwischen „passt auf 390 in eine
+           Reihe" und „passt nicht". Ohne sie war die Zusage aus B12b
+           zwar geschrieben, aber von keinem Stand herstellbar: die
+           Gegenprobe nahm den Umbruch weg, und fuenf Reiter standen
+           trotzdem alle im Streifen. */
+        'fiona:englisch:hoeren': aus(['en:farbe:black', 'en:farbe:blue',
+          'en:farbe:brown', 'en:farbe:green', 'en:farbe:grey', 'en:farbe:orange']) };
     });
     await stelleAblage(q, { fortschritt: viele });
     await q.reload();
@@ -2617,9 +2626,17 @@ if (laeuft('ablage')) try {
           sp.parentElement.appendChild(probe);
           const natur = probe.getBoundingClientRect().width;
           probe.remove();
+          /* Und ob der Reiter ueberhaupt im Streifen steht (B12b). Auf
+             dem schmalen Schirm ist das die eigentliche Frage: sechs
+             Reiter zu je 66 Punkten sind 396 auf 390, und was nicht
+             mehr hinpasst, ist fuer ein Kind, das nicht liest, so gut
+             wie nicht da. */
+          const sk = st.getBoundingClientRect();
           return { was: sp.textContent.trim().replace(/\s+/g, ' ').slice(0, 24),
                    raus: Math.round(raus * 10) / 10,
-                   eng: natur > rb.width };
+                   eng: natur > rb.width,
+                   drin: rb.left >= sk.left - 1 && rb.right <= sk.right + 1,
+                   luft: Math.round((rb.width - natur) * 10) / 10 };
         }).filter(Boolean);
       });
       await q.setViewportSize({ width: 844, height: 390 });
@@ -2627,14 +2644,31 @@ if (laeuft('ablage')) try {
         const st = document.querySelector('.schirm.da .buchreiter');
         return !!st && st.getBoundingClientRect().width > 390;
       });
-      /* Erst die Blindprobe, dann die Zusage: ist kein einziger Name
-         breiter als sein Reiter, hat der Umbruch nichts zu tun gehabt
-         und „nichts ragt heraus" beweist nichts. */
+      /* JEDER REITER STEHT AUF DEM SCHMALEN SCHIRM IM STREIFEN (B12b).
+       *
+       * Das ist seit dem Umbruch die scharfe Zusage dieser Stelle, und
+       * sie hat einen Zeugen, den die Rechnerlast nicht kippt: sechs
+       * Reiter zu je 66 Punkten (dem Boden aus `min-width`) sind 396 auf
+       * einem 390 Punkte breiten Schirm. Ohne `flex-wrap:wrap` steht
+       * einer draussen, mit ihm stehen sie in zwei Reihen.
+       *
+       * Warum nicht rollen: `overflow-x` ist da, aber ein Reiter, der aus
+       * dem Streifen gerollt ist, ist fuer ein Kind, das nicht liest, so
+       * gut wie nicht da - dieselbe Zeile steht seit Q44 im Buch. */
+      if (!namen.length)
+        merke('forscherbuch', new Error('auf 390 x 844 hat kein Kapitelreiter einen Namen — '
+          + 'dann ist hier nichts gemessen worden, es wurde nur nichts gefunden'));
+      const draussen = namen.filter(x => !x.drin);
+      if (draussen.length)
+        merke('forscherbuch', new Error(`${draussen.length} von ${namen.length} Kapitelreitern `
+          + `stehen auf 390 × 844 ausserhalb des Streifens (${draussen.map(x =>
+              `„${x.was}"`).join(' · ')}) — ein Kind, das nicht liest, findet sie nicht`));
+      /* Und der Name bleibt auf seinem Reiter. Seit die Reiter umbrechen,
+         ist das kaum noch zu verletzen - die Zusage steht trotzdem, denn
+         sie kostet nichts und haelt den Fall, den ein langer Weltname
+         wieder herstellen wuerde. Damit ein Abrutschen SICHTBAR wird
+         statt nur ungeprueft, meldet der gruene Lauf die knappste Luft. */
       const enge = namen.filter(x => x.eng);
-      if (!enge.length)
-        merke('forscherbuch', new Error(`auf 390 x 844 ist kein einziger Kapitelname `
-          + `breiter als sein Reiter (${streifen.reiter} Reiter) — dann prüft der Umbruch `
-          + 'hier nichts, er findet nur nichts'));
       const raus = namen.filter(x => x.raus > 1);
       if (raus.length)
         merke('forscherbuch', new Error(`${raus.length} Kapitelname${raus.length===1?'':'n'} `
@@ -2919,10 +2953,11 @@ if (laeuft('ablage')) try {
       if (!eng.length && !gleich.length)
         console.log(`  Buch mit Kapiteln:          ${streifen.reiter} Reiter, alle ganz im `
           + `Streifen; ${seiten.size} verschiedene Seiten, jeder Block ganz im Bild`);
-      if (enge.length && !raus.length)
-        console.log(`  Kapitelnamen:               ${enge.length} von ${streifen.reiter} `
-          + `sind auf 390 × 844 breiter als ihr Reiter `
-          + `(${enge.map(x => `„${x.was}"`).join(' · ')}) — und keiner ragt hinaus`);
+      if (namen.length && !raus.length && !draussen.length)
+        console.log(`  Kapitelreiter auf 390:      alle ${namen.length} im Streifen; `
+          + `knappster Name „${namen.reduce((a, x) => x.luft < a.luft ? x : a).was}" mit `
+          + `${namen.reduce((a, x) => x.luft < a.luft ? x : a).luft} Punkten Luft`
+          + (enge.length ? ` (${enge.length} umgebrochen)` : ''));
 
       /* Und der Satz zum Mitnehmen im Buch (Q46).
        *

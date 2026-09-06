@@ -916,7 +916,23 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * sonst nimmt ihm ein volles Buch genau die Hoehe, wegen der es ihn
  * gibt. Und `min-height` statt einer festen Hoehe, weil der Name auf
  * schmalen Geraeten umbricht. */
-.buchreiter{flex:0 0 auto;display:flex;gap:var(--r2);overflow-x:auto;overflow-y:hidden;
+/* DER STREIFEN BRICHT UM, statt einen Reiter auszusperren (B12b).
+   Gemessen auf 390 x 844: sechs Reiter zu je 66 Punkten (dem Boden aus
+   `min-width` darunter) sind 396 - es fehlt buchstaeblich ein Reiter
+   breit, und einer stand draussen. `overflow-x` faengt ihn zwar auf,
+   aber ein Reiter, der aus dem Streifen gerollt ist, ist fuer ein Kind,
+   das nicht liest, so gut wie nicht da; dieselbe Zeile steht seit Q44
+   im Buch.
+   Der andere Weg waere ein niedrigerer Boden gewesen. Er ist gemessen
+   und verworfen: bei 44 Punkten passen alle sechs in eine Reihe, aber
+   die Namen brechen mitten im Wort („Mein/e Tiere", „Abze/ichen",
+   „Erdk/unde"). Zwei Reihen mit ganzen Woertern sind fuer ein Kind, das
+   lesen lernt, das Richtige.
+   Der Preis steht in Zahlen: der Streifen waechst auf dem schmalen
+   Schirm von 78 auf 125 Punkte. Auf dem Zielgeraet (844 x 390) bleibt
+   er bei 62 - dort passen sechs Reiter ohnehin in eine Reihe, und
+   `flex-wrap` tut nichts. */
+.buchreiter{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:var(--r2);overflow-x:auto;overflow-y:hidden;
   padding:0 var(--r4) var(--r2);-webkit-overflow-scrolling:touch;touch-action:pan-x;
   scrollbar-width:none}
 .buchreiter::-webkit-scrollbar{display:none}
@@ -959,7 +975,14 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Schrift, die im Augenblick der Messung gerade geladen ist.
    Also bricht der Name immer um, wenn er nicht passt. Zwei kurze Zeilen
    sind haesslicher und richtig; `white-space:normal` kostet nichts, wo
-   der Name ohnehin in eine Zeile geht. */
+   der Name ohnehin in eine Zeile geht.
+   SEIT B12b IST DAS EINE RUECKVERSICHERUNG und keine Zusage mehr, die
+   ein Tor halten koennte: der Streifen bricht jetzt selbst um, die
+   Reiter sind auf 390 zwischen 104 und 132 Punkte breit, und der
+   laengste Name braucht 85. Die Gegenprobe dazu ist deshalb abgeloest
+   worden - eine, die nicht mehr anschlagen kann, ist keine. Der gruene
+   Lauf meldet stattdessen die knappste Luft, damit ein Abrutschen
+   sichtbar wird, bevor es ein Fehler ist. */
 .reiter .was{font-size:var(--s-klein);font-weight:700;
   white-space:normal;overflow-wrap:anywhere;
   max-width:min(13ch, 100%)}

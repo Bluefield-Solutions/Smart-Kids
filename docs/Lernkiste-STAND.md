@@ -10626,3 +10626,83 @@ gleichzeitig gehen nicht.** Beide arbeiten in derselben Wegwerf-Kopie
 (`.probenbaum`); der zweite Lauf hat dem ersten den Baum unter den Füßen
 weggezogen, und heraus kam ein „schlägt nicht an", das nichts mit der Probe zu
 tun hatte. Zwanzig Minuten Fehlersuche an der falschen Stelle.
+
+---
+
+## B12b · Der Streifen bricht um, statt einen Reiter auszusperren
+
+Der Rest aus B12: auf 390 × 844 stand einer von sechs Reitern außerhalb des
+Streifens. Sechs mal 66 Punkte (der Boden aus `min-width`) sind 396 auf einem
+390 Punkte breiten Schirm — es fehlte buchstäblich ein Reiter breit.
+
+**Der naheliegende Weg war ein niedrigerer Boden, und er ist gemessen und
+verworfen.** Durchprobiert von 66 bis 44:
+
+| Boden | im Streifen | Streifen | Breiten |
+|---|---|---|---|
+| 66 | 5 von 6 | 78 px | 66 × 6 |
+| 60 | 5 von 6 | 78 px | 60 × 6 |
+| 54 | 6 von 6 | 93 px | 54 54 54 54 54 56 |
+| 44 | 6 von 6 | 93 px | 57 54 51 48 53 62 |
+
+Es hätte funktioniert — und es sah falsch aus. Bei 48 bis 57 Punkten brechen
+die Namen **mitten im Wort**: „Mein/e Tiere", „Abze/ichen", „Erdk/unde",
+„Rec/hnen", „Als Nächs/tes". Für ein Kind, das lesen lernt, ist das schlimmer
+als ein Reiter, der gerollt werden muss. Die Zahl war grün, das Bild nicht —
+und in diesem Verzeichnis entscheidet in so einem Fall das Bild.
+
+**Also bricht der Streifen um** (`flex-wrap:wrap`). Auf 390 stehen die sechs
+Reiter in zwei Reihen zu drei, jeder 104 bis 132 Punkte breit, jeder Name in
+einer Zeile:
+
+| Schirm | Reiter | im Streifen | Streifen |
+|---|---|---|---|
+| **844 × 390 (Zielgerät)** | 6 | 6 | **62 px — unverändert** |
+| 1180 × 820 | 6 | 6 | 70 px |
+| **390 × 844** | 6 | **6** | 125 px (vorher 78, einer draußen) |
+
+Auf dem Zielgerät ändert sich **nichts**: dort passen sechs Reiter ohnehin in
+eine Reihe, und `flex-wrap` tut nichts. Der Preis fällt nur dort an, wo es
+vorher kaputt war — 125 von 844 Punkten im Hochformat, wo Höhe reichlich ist.
+
+### Eine Gegenprobe hat eine andere abgelöst
+
+Die Probe aus dem vorletzten Commit („der Kapitelname wird wieder
+abgeschnitten statt umgebrochen") **kann nicht mehr anschlagen**. Sie bewies,
+dass ein zu langer Name nicht auf den Nachbarreiter ragt; seit der Streifen
+umbricht, sind die Reiter auf 390 zwischen 104 und 132 Punkte breit und der
+längste Name braucht 85. Der Eingriff ändert dort nichts mehr, was er zeigen
+könnte.
+
+Eine Gegenprobe, die nicht mehr anschlagen kann, ist keine — sie ist genau die
+Verfallsart, gegen die `npm run proben` geschrieben ist, nur diesmal von der
+richtigen Seite: **die Sache ist besser geworden, nicht die Probe schlechter.**
+Sie ist deshalb ersetzt worden durch die, welche die Zusage eine Stufe früher
+hält: ohne `flex-wrap:wrap` steht auf 390 ein Reiter draußen, und der
+Rauchtest sagt es.
+
+Der Umbruch am Namen bleibt trotzdem im Stylesheet stehen — er kostet nichts
+und fängt den Fall, den ein langer Weltname wieder herstellen würde. Damit ein
+Abrutschen dorthin **sichtbar** wird, statt nur ungeprüft zu sein, meldet der
+grüne Lauf jetzt die knappste Luft:
+
+```
+Kapitelreiter auf 390:  alle 5 im Streifen; knappster Name „Abzeichen"
+                        mit 19,4 Punkten Luft
+```
+
+### Und der gestellte Stand musste den Fall überhaupt erst herstellen
+
+Die neue Gegenprobe schlug beim ersten Lauf **nicht** an — und die Ursache lag
+nicht an ihr. Der gestellte Stand des Rauchtests hatte seit B12 nur noch
+**fünf** Kapitelreiter (Abzeichen, Erdkunde, Rechnen, Schreiben, Als
+Nächstes), und fünf mal 66 Punkte sind 362 auf 366 verfügbaren: sie passen in
+eine Reihe, mit oder ohne `flex-wrap`. Der Eingriff kam an, änderte aber
+nichts.
+
+Das ist genau die Verfallsart aus Q36 und Q38 in neuem Kleid: **eine Probe
+stirbt nicht am Fehler, sondern am Umzug** — hier daran, dass die Runde davor
+die Zahl der Reiter gedrittelt hat. Der Stand trägt jetzt eine vierte Welt
+(Englisch, sechs Aufkleber), und damit sechs Reiter — die Zahl, bei der die
+Zusage überhaupt etwas behauptet. Nebenbei prüft der Rauchtest damit zum
+ersten Mal alle vier Welten statt dreien.

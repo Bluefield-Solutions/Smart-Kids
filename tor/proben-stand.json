@@ -1449,10 +1449,10 @@
       "zeit": "2026-09-06",
       "s": 112
     },
-    "der Kapitelname wird wieder abgeschnitten statt umgebrochen": {
-      "commit": "81f91dd904cd154af0c28d0e938fe4e92ae8cb47",
+    "der Kapitelstreifen sperrt auf dem schmalen Schirm einen Reiter aus": {
+      "commit": "a6d0495e38fe41caa68bcc753b9991fcc5215c91",
       "zeit": "2026-09-06",
-      "s": 127
+      "s": 128
     },
     "die Abzeichenseite zeigt wieder nur drei offene Abzeichen": {
       "commit": "b704fd4e5240cb64183e3809e6b0a0787ce39a86",
