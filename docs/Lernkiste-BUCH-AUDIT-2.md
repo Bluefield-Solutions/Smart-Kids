@@ -197,6 +197,28 @@ wirklich Gestaltung sind und nicht Ordnung:
 
 ---
 
+## Nachtrag: was davon umgesetzt ist (v415)
+
+| | Stand |
+|---|---|
+| **B1/B2** Vier Grundrisse, zwei Reiterzeilen | Grundriss **erledigt** (Runde 1): alle fünf Seiten haben denselben Bauplan. Die zweite Reiterzeile steht noch — Runde 3. |
+| **B3** Kopfzahl widerspricht den Reitern | **erledigt** (Runde 2), mit Tor und zwei Gegenproben |
+| **B4** Halbleere Seiten | **teilweise**: kein Überlauf mehr, 95 % genutzte Höhe auf allen Seiten. Die Tinte auf den Kartenseiten bleibt bei 6–8 % — eine Karte ist eine Karte, und ein größerer weißer Kasten ist nicht voller. Der Rest hängt an Runde 3. |
+| **B5** Drei von fünf Seiten rollen | **erledigt**: keine |
+| **B6** Zahlen zählen in verschiedene Richtungen | **erledigt**: „Als Nächstes" trägt keine Zahl mehr, und das Tor sieht am Kapitel nach |
+| **B7** Kein Kapitel zeigt, was fehlt | **erledigt** für die Reiter (`da/gesamt`) |
+| **B8** Der Merksatz hat keinen Ort | **erledigt**: er steht in der linken Spalte |
+| **C1/C2** Alles fett, kein großer Abstand | **offen** — die Tonleiter ist als Runde 0 geplant und noch nicht gefahren |
+| **C3** Zwanzig Schatten, die nichts tun | **zurückgezogen, der Befund war falsch.** Der Schatten `0px 0px 0px 0px` ist der RUHEZUSTAND eines Übergangs: `.reiter` hat ihn flach, `.reiter.da` mit Versatz, und dazwischen wird geblendet. Ich hatte die Rolle nicht geprüft, bevor ich ihn „tot" genannt habe. |
+| **C4** Drei Farben umgehen die Marken | **offen**, und mit Ansage: die Aufklebertöne gehören zum Tier |
+| **C5** Sieben Klassen kommen einmal vor | **offen** |
+| **K1** Abzeichenseite zu 92 % Text | **erledigt**: 312 → 169 Zeichen, 8 % → 14 % Bild |
+| **K2** Fünfzehn Griffe unter 44 pt | **offen** — fällt mit Runde 3 weg |
+| **K3** „Zurück" wird nicht angesagt | **erledigt** — und dabei kam heraus, dass die Ansage bis dahin die AUFGABE eines Knopfes überschrieben hat |
+| **K4** Die Zahl 45 ist für Fiona keine Zahl | **teilweise**: `45/45` ist für sie nicht lesbarer als `45`. Das Bild auf dem Reiter, das im Tierkapitel schon steht, fehlt den anderen vier weiterhin. |
+
+---
+
 ## Was das für den Umbau ändert
 
 Der Plan aus Audit I bleibt in der Reihenfolge richtig, bekommt aber
