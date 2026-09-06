@@ -225,7 +225,7 @@ npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
 ```
 
 Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
+`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` · `anker` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` · `nachschub` · `tonleiter` → `smoke`.

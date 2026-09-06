@@ -284,8 +284,8 @@ export const PROBEN = [
   // Beginn JEDER Sitzung gelesen.
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `betroffen` · `doku` → `vergleich` → `bauen` →',
+    such:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `vergleich` → `bauen` →',
     an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 

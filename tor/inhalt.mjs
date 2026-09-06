@@ -36,6 +36,7 @@ import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
 import { ALLE as KETTE, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
 import * as EN from '../src/inhalt/englisch.js';
 import * as TI from '../src/inhalt/tiere.js';
+import * as FL from '../src/inhalt/flaggen.js';
 import * as BP from '../tools/bildprompt.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
@@ -2515,6 +2516,168 @@ console.log('\n  Tor `englisch`');
     + `${r.tiere.filter(id => TI.tierMit(id).bild).length}/3`).join(' · '));
   console.log(`    ${Object.keys(TI.KULISSEN).length} Kulissen à ${TI.PLAETZE} Plätze — `
     + `${fertig.filter(r => TI.kulisseZu(r.titel)).length} Landschaften sind zu öffnen`);
+}
+
+/* ==================================================== Tor `flaggen` ==== *
+ *
+ * Die Flaggen sind BAUANWEISUNGEN, keine Bilder (F1, Konzept 1.1). Das
+ * macht sie klein und lesbar - und es macht eine Art Fehler moeglich, die
+ * es bei einem Foto nicht gibt: eine Flagge kann RICHTIG BESCHRIEBEN und
+ * trotzdem nicht zu erkennen sein.
+ *
+ * Sechs der 69 unterscheiden sich von einer anderen NUR durch ihr Wappen.
+ * Ein Wappen wird nicht gezeichnet, sondern angedeutet; ist die Andeutung
+ * zu klein, sind Ecuador und Kolumbien zwei gleiche Bilder mit zwei
+ * Namen, und die Aufgabe ist nicht schwer, sondern unbeantwortbar.
+ *
+ * DESHALB WIRD AM RASTER GEMESSEN UND NICHT AN DER BESCHREIBUNG. Zwei
+ * Beschreibungen sind immer verschieden - sie stehen in verschiedenen
+ * Zeilen. Verschieden AUSSEHEN ist etwas anderes, und nur das zaehlt
+ * (Regel 12: jede Zahl traegt ihre Messstelle mit). Das Raster kommt aus
+ * denselben Formen, aus denen auch das Bild entsteht; eine zweite
+ * Uebersetzung waere eine zweite Wahrheit, und die gemessene waere nicht
+ * die gezeigte.
+ *
+ * ZWEI SCHWELLEN, und beide haben eine Bedeutung:
+ *
+ *   BODEN  3 % der Flaeche. Darunter ist die Aufgabe nicht zu
+ *          beantworten - auch dann nicht, wenn die beiden Flaggen sich in
+ *          Wirklichkeit aehnlich sehen SOLLEN. Gilt ohne Ausnahme.
+ *   SOLL   6 % der Flaeche fuer jedes Paar, das NICHT in `AEHNLICH` steht.
+ *          Faellt eines darunter, ist entweder die Zeichnung zu grob oder
+ *          das Paar gehoert in die Liste - beides ist zu entscheiden, und
+ *          das Tor erzwingt die Entscheidung, statt sie zu verschweigen.
+ *
+ * Was die Schwellen NICHT sind: eine Zusage, dass eine Flagge richtig
+ * aussieht. Das sieht ein Auge, kein Tor (Regel 8).
+ */
+console.log('\n  Tor `flaggen`');
+{
+  const ff = [];
+  const BODEN = 0.03, SOLL = 0.06;
+
+  /* Vollzaehligkeit gegen `LAENDER`, in BEIDE Richtungen.
+   *
+   * Nur „hat jedes Land eine Flagge" zu pruefen liesse eine Flagge fuer
+   * ein Land durch, das es gar nicht gibt - sie waere nie zu sehen, und
+   * niemand wuesste, ob das ein Fehler ist oder Absicht. Dieselbe Lehre
+   * wie beim Lebensraum ohne Ebene. */
+  const laender = new Map();
+  for (const [kont, liste] of Object.entries(I.LAENDER))
+    for (const l of liste) laender.set(l.a3, { ...l, kont });
+  for (const [a3, l] of laender)
+    if (!FL.hatFlagge(a3)) ff.push(`„${l.name}" (${a3}, ${l.kont}) hat keine Flagge`);
+  for (const f of FL.FLAGGEN)
+    if (!laender.has(f.a3))
+      ff.push(`die Flagge ${f.a3} gehoert zu keinem Land in \`LAENDER\` — `
+        + 'sie waere nie zu sehen');
+
+  /* Jede Bauanweisung muss sich BAUEN lassen, und ihre Bauart bekannt
+     sein. Ein Tippfehler in `art` waere sonst ein Absturz beim ersten
+     Aufschlagen der Ebene - auf dem Geraet, nicht hier. */
+  let eigene = 0, formen = 0;
+  for (const f of FL.FLAGGEN) {
+    if (!FL.BAUARTEN.includes(f.bau.art))
+      { ff.push(`${f.a3}: unbekannte Bauart „${f.bau.art}"`); continue; }
+    if (f.bau.art === 'eigen') eigene++;
+    let teile;
+    try { teile = FL.flaggeTeile(f.bau); }
+    catch (e) { ff.push(`${f.a3} laesst sich nicht bauen: ${e.message}`); continue; }
+    formen += teile.length;
+    if (!teile.length) ff.push(`${f.a3} besteht aus keiner einzigen Form`);
+    for (const t of teile)
+      if (!/^#[0-9a-f]{6}$/i.test(String(t.farbe)))
+        ff.push(`${f.a3}: „${t.farbe}" ist keine Farbe — `
+          + 'die Flaggenfarben stehen roh da und kommen nicht aus den Marken');
+  }
+  /* Der Notausgang wird GEZAEHLT, nicht nur erlaubt (siehe `flaggen.js`).
+     Waechst die Zahl, ist nicht diese Flagge besonders, sondern die
+     Formsprache zu eng - und dann gehoert sie erweitert. */
+  const EIGENE_MAX = 5;
+  if (eigene > EIGENE_MAX)
+    ff.push(`${eigene} Flaggen umgehen die Formsprache (\`art:'eigen'\`, erlaubt sind `
+      + `${EIGENE_MAX}) — dann ist nicht die Flagge besonders, sondern die Sprache zu eng`);
+
+  /* Der KONTRAST zum Grund der Karte.
+   *
+   * Japan ist weiss mit einer roten Scheibe. Auf einer weissen Karte ohne
+   * Rand steht dort eine rote Scheibe und sonst nichts - das Kind sieht
+   * kein Rechteck mehr. Der Rand steckt deshalb in `flaggeSvg` und nicht
+   * im Stilblatt; hier wird nachgesehen, dass er da ist. */
+  const beispiel = FL.flaggeSvg('JPN');
+  if (!/stroke=/.test(beispiel))
+    ff.push('die Flagge kommt ohne Rand — eine weisse Flagge auf weisser Karte '
+      + 'hat dann keine Kontur mehr, und Japan ist nur noch ein roter Punkt');
+
+  /* Die eigentliche Pruefung: sieht man den Unterschied?
+   *
+   * Gemessen wird je KARTE, weil eine Auswahl nie ueber Karten hinweg
+   * gebildet wird - Rumaenien steht nie neben Nigeria. Ein Vergleich aller
+   * gegen alle waere strenger, als das Spiel es verlangt, und wuerde
+   * Aenderungen erzwingen, die niemand sieht. */
+  const aehnlich = new Set(FL.AEHNLICH.map(([a, b]) => [a, b].sort().join('/')));
+  let engste = { anteil: 1 }, gemessen = 0, unterSoll = [];
+  for (const [kont, liste] of Object.entries(I.LAENDER))
+    for (let i = 0; i < liste.length; i++)
+      for (let j = i + 1; j < liste.length; j++) {
+        const a = FL.flaggeVon(liste[i].a3), b = FL.flaggeVon(liste[j].a3);
+        if (!a || !b) continue;
+        const u = FL.unterschied(a.bau, b.bau);
+        gemessen++;
+        const paar = [a.a3, b.a3].sort().join('/');
+        if (u.anteil < engste.anteil) engste = { ...u, paar, kont };
+        if (u.anteil < BODEN)
+          ff.push(`${paar} (${kont}): nur ${(u.anteil * 100).toFixed(1)} % der Fläche `
+            + `stehen deutlich anders da (Boden ${BODEN * 100} %) — diese Aufgabe ist `
+            + 'nicht schwer, sondern nicht zu beantworten');
+        else if (u.anteil < SOLL && !aehnlich.has(paar)) unterSoll.push(`${paar} `
+          + `(${kont}, ${(u.anteil * 100).toFixed(1)} %)`);
+      }
+  if (unterSoll.length)
+    ff.push(`${unterSoll.length} Paare unter dem Soll von ${SOLL * 100} %, ohne in `
+      + `\`AEHNLICH\` zu stehen: ${unterSoll.join(', ')} — entweder ist die Zeichnung `
+      + 'zu grob, oder das Paar gehört in die Liste. Beides ist zu entscheiden.');
+
+  /* Und die Gegenrichtung (Regel 13: wer eine Wirkung misst, schaltet sie
+     zuerst ab). `AEHNLICH` behauptet etwas - was davon ist zu prüfen?
+     
+     NICHT, ob Menschen die beiden verwechseln. Der erste Anlauf hat es
+     versucht und verlangt, dass sich ein „ähnliches" Paar auf höchstens
+     30 % der Fläche unterscheidet. Er meldete daraufhin, die Niederlande
+     und Luxemburg (31 %) und Indonesien und Polen (100 %) verwechsle
+     niemand - beides sind Schulbeispiele. Ein Bildpunkt sieht bei einer
+     umgedrehten Flagge den größtmöglichen Unterschied, ein Mensch sieht
+     zweimal Rot und Weiß. Eine Prüfung, die das Falsche misst, ist
+     schlimmer als keine: sie hätte hier drei richtige Einträge aus der
+     Liste getrieben.
+     
+     Was bleibt, ist der BAULICHE Grund der Verwechslung - gleiche Bauart,
+     gleiche Zahl und Richtung der Streifen. Das ist prüfbar, und es ist
+     die Aussage, die stimmt. */
+  let geprueftePaare = 0, wartend = 0;
+  for (const [a3a, a3b] of FL.AEHNLICH) {
+    const a = FL.flaggeVon(a3a), b = FL.flaggeVon(a3b);
+    if (!a || !b) { wartend++; continue; }
+    geprueftePaare++;
+    const ma = FL.baumuster(a.bau), mb = FL.baumuster(b.bau);
+    if (ma !== mb)
+      ff.push(`${a3a}/${a3b} steht in \`AEHNLICH\`, ist aber verschieden gebaut `
+        + `(${ma} gegen ${mb}) — dann fehlt der Grund, warum man sie verwechseln `
+        + 'sollte, und das Paar gehört überprüft');
+  }
+
+  if (ff.length) {
+    console.log('    ' + ff.join('\n    '));
+    console.error('\n  flaggen ROT: der Flaggenvorrat (F1) stimmt nicht.');
+    process.exit(1);
+  }
+  console.log(`    ${FL.FLAGGEN.length} Flaggen aus ${FL.BAUARTEN.length - 1} Bauarten `
+    + `(${eigene} eigene, erlaubt ${EIGENE_MAX}) · ${formen} Formen · Rahmen ${FL.RAHMEN}`);
+  console.log(`    ${gemessen} Paare je Karte gemessen · engstes ${engste.paar} `
+    + `(${engste.kont}, ${(engste.anteil * 100).toFixed(1)} % deutlich anders, `
+    + `Boden ${BODEN * 100} %, Soll ${SOLL * 100} %)`);
+  console.log(`    Verwechslungen: ${geprueftePaare} Paare nachgemessen, `
+    + `${wartend} warten auf F3 (Länder ohne Umriss)`);
 }
 
 /* =================================================== Tor `betroffen` ==== *

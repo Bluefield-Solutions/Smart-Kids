@@ -187,7 +187,9 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 
 | # | Punkt | wer merkt es | Nutzen | Aufwand | hängt an |
 |---|---|---|---|---|---|
+| 1 | **F1–F2** Flaggen — Vorrat und die Ebene | alle vier | hoch | groß | Konzept steht |
 | 1 | **E4b** Die 86 Bilder wirklich malen — der Plan und die Prompts stehen | Fiona, Lea | hoch | groß | Bildermacher, kein Code |
+| 2 | **F3–F5** Flaggen — Verwechslungen, auf die Karte, Abnahme | Lea, ihr beide | hoch | groß | F2 |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
 | 3 | **T3** Die restlichen 79 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
 | 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
@@ -221,6 +223,52 @@ und aus Rang 2 gestrichen).*
 **A4** hiess doppelt. „Heute schon geübt" aus dem ANTON-Katalog und die
 Runde A4 im STAND (Sprechen in allen Profilen, Hörknopf für Fiona) sind
 zwei verschiedene Dinge; der Katalogpunkt heisst deshalb jetzt **A4h**.
+
+---
+
+### F0–F5 · Flaggen — die fünfte Reihe in der Erdkundewelt
+
+**Das Konzept steht vollständig in `docs/Lernkiste-KONZEPT-FLAGGEN.md`** —
+Referenzabgleich, die vier Festlegungen, Spielformen, Datenmodell, Tore. Hier
+steht nur, was zu tun ist und woran es abgenommen wird; die Begründungen stehen
+dort und nicht zweimal (Regel 6, sonst veraltet eine der beiden Fassungen).
+
+**Die vier Festlegungen, die alles andere tragen** — je ein Satz, nachzulesen
+im Konzept:
+
+1. **Gezeichnet aus einer Bauanweisung**, nicht fotografiert und nicht gemalt.
+   Eine Flagge ist eine Bauanweisung; „drei Querstreifen: schwarz, rot, gold"
+   ist die ganze Wahrheit über die deutsche. Rahmen für alle: `0 0 48 32`.
+2. **Der Vorrat sind die 69 Länder, die `LAENDER` schon hält** — Europa mit
+   17 am tiefsten. Keine zweite Faktenliste, und `rang` trägt die Tiefe je
+   Profil mit, ohne einen neuen Regler.
+3. **Die Ebene sagt WAS, das Profil sagt WIE.** Fiona hört das Land und tippt
+   eine von vier Flaggen; Lea und die Eltern sehen die Flagge und tippen oder
+   sprechen den Namen. Eine Ebene, vier Erfahrungen, ein Leitner-Stand.
+4. **Eine Kachel, nicht sieben** (`gruppe:'flaggen'`, der Mechanismus von Q17).
+   Die Erdkundewand geht von zehn auf elf; gemessen trägt sie zwölf.
+
+| Runde | Was | Abnahme | Aufwand |
+|---|---|---|---|
+| **F0** | Referenzabgleich — Seterra, Montessori, Anton; fünf Soll-Sätze | steht im Konzept, § 0 | **erledigt** |
+| **F1** | `src/inhalt/flaggen.js`: Formsprache, 69 Bauanweisungen, `flaggeTeile`/`flaggeSvg`; Tor `flaggen` | Das Tor misst die **Unterscheidbarkeit am Raster** und schlägt an, wenn einer Flagge ihr unterscheidendes Zeichen fehlt | mittel |
+| **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | groß |
+| **F3** | „Verwechslungen" — achter Gruppeneintrag, acht Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad, und das Tor beweist, dass sie sich ähnlich **sehen** | mittel |
+| **F4** | „Auf die Karte" — die Flagge wird auf ihr Land gezogen | Nur Länder mit Umriss und über der Fingergrenze (P7/P10) | groß |
+| **F5** | Abzeichen, Doku, volle Torkette, Gegenproben | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+
+**Warum die Reihenfolge so und nicht anders.** F1 ist unsichtbar und trägt
+trotzdem alles: ohne einen Vorrat, dessen Flaggen sich nachweislich
+unterscheiden, ist jede Spielform eine Ratewand. F2 ist die Runde, nach der die
+Familie etwas hat. F3 ist die, die den Unterschied zu einer Bildchen-App macht.
+F4 ist die teuerste und steht deshalb hinten — sie greift in `spielschirm()`
+ein, den größten Bildschirm der App.
+
+**Die eine Zusage, an der es hängt** (Konzept § 3.3): sechs der 69 Flaggen
+unterscheiden sich von einer anderen **nur** durch ihr Wappen. Ein Wappen wird
+nicht gezeichnet, sondern angedeutet — und ob die Andeutung reicht, entscheidet
+kein Auge, sondern das Tor: zwei Flaggen, die zusammen in einer Auswahl stehen
+können, dürfen im Raster nicht zu nah beieinander liegen.
 
 ---
 
