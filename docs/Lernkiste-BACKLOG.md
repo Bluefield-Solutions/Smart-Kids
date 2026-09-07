@@ -192,7 +192,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 2 | **F3–F5** Flaggen — Verwechslungen, auf die Karte, Abnahme | Lea, ihr beide | hoch | groß | F2 |
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
 | 3 | **T3** Die restlichen 79 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
-| 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
 | 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
@@ -509,22 +508,50 @@ Kapitelseiten (53 · 46 · 95 · 95 · 67 · 53 · 56 · 45 · 37 · 42) steht s
 jetzt auf **34** — drei Punkte unter dem schlechtesten Wert, aus demselben
 Grund wie damals: was ein Profil gesammelt hat, verschiebt ihn.
 
-### Neu offen seit v350 — vier Punkte aus den Runden Q48/Q49
+### Neu seit v350 — vier Punkte aus den Runden Q48/Q49, einer davon erledigt
 
-**Q50 · Die dreizehn ausgelassenen Proben.** Der nächtliche Lauf vom
-04.09. meldet dreizehn Gegenproben als *„hier nicht zu beweisen und
-deshalb ausgelassen (kein Nachweis, sie altern weiter)"*. Zwölf davon
-gehören zu `ansicht`, das auf dem Runner abgeschaltet ist — das ist
-gewollt und in Q39 entschieden. Die dreizehnte ist **„der leere Kopf
-nimmt wieder Platz weg"**, und die ist genau der Anker, den `anker` in
-Q48 als tot gemeldet und den ich repariert habe. Ob sie seither wieder
-etwas beweist, ist **nicht nachgemessen** — sie steht auf einem Nachweis
-von vor der Reparatur.
+**Q50 · Die ausgelassenen Proben · ERLEDIGT.** Der nächtliche Lauf vom
+04.09. meldete dreizehn Gegenproben als *„hier nicht zu beweisen und
+deshalb ausgelassen (kein Nachweis, sie altern weiter)"*. Sie gehören zu
+`ansicht`, das auf dem Runner abgeschaltet ist — das ist gewollt und in
+Q39 entschieden.
 
-*Abnahme:* die dreizehn einzeln durchgehen, jede mit einem Satz, warum
-sie ausgelassen wird. Wo der Grund nicht mehr gilt, fährt sie wieder
-mit. Wo er gilt, gehört er in den Quelltext der Probe, nicht in ein
-Protokoll, das morgen weg ist.
+**Es sind nicht dreizehn, sondern sechzehn von 377** — gezählt aus
+`tor/proben-liste.mjs`, nicht abgeschrieben: fünfzehn mit `tor:'ansicht'`
+und eine mit `nurMitAnsicht` (die Waisenmessung in `passt`). Die
+dreizehn im Protokoll waren der Stand einer älteren Liste; in
+`tor/proben.mjs` stand „zwölf von 268", in `tor/rhythmus.mjs` „dreizehn
+von 270". Beide Schranken sind anteilig (höchstens ein Fünftel), also
+sind sie nie rot geworden — sie haben nur seit drei Runden eine falsche
+Zahl erzählt. **Regel 6: was zweimal dasteht, veraltet einmal** — die
+Zahl steht jetzt an beiden Stellen als gezählte, mit dem Verhältnis
+daneben.
+
+**Jede der sechzehn sagt den Grund jetzt an ihrer eigenen Stelle**, im
+Quelltext der Probe und nicht in einem Protokoll, das morgen weg ist. So
+hatte es die Waisenmessung schon vorgemacht.
+
+**Der eigentliche Fund: zwei der `ansicht`-Proben vergleichen gar keine
+Bildpunkte.** Die eine prüft, dass eine grüne Aufnahme ihr
+Abweichungsbild nicht liegen lässt; die andere, dass die Entwürfe ihre
+Schrift lokal holen und nicht von `fonts.googleapis.com`. Beide fallen
+nur unter die pauschale Regel — der Verdacht war, dass die zu weit
+greift. **Am Quelltext nachgeprüft: sie greift genau richtig.**
+`tor/ansicht.mjs` beendet sich unter `SMARTKIDS_OHNE_ANSICHT=1` in Zeile
+58 mit `process.exit(0)`; das Aufräumen steht in Zeile 763, die
+Schriftprüfung in Zeile 1144. Das Tor kommt dort an keiner von beiden
+vorbei. Eine Ausnahme für die zwei hätte sie auf dem Runner mitfahren
+lassen, wo sie „TOR BLEIBT GRÜN" gemeldet hätten — **eine Ausnahme, die
+nichts beweist, ist schlimmer als keine.** Sie bleiben ausgelassen, und
+der Grund steht jetzt bei ihnen.
+
+**Die dreizehnte Probe beweist wieder etwas.** „Der leere Kopf nimmt
+wieder Platz weg" hängt am Anker, den `anker` in Q48 als tot gemeldet
+hat. Nach der Reparatur war das nicht nachgemessen. Jetzt ist es das:
+`tor/proben-stand.json` trägt für sie `"zeit": "2026-09-07"` — sie ist
+ortsfest gefahren worden und hat angeschlagen. Alle sechzehn haben an
+diesem Tag einen frischen Nachweis; auf dem Runner altern sie weiter,
+und genau dafür nennt `rhythmus` sie beim Namen, statt sie zu zählen.
 
 **G13 · Die restlichen 21 Punkte Kartensprung** *(grafisch)*. Q45 hat 47
 Punkte gemessen, Q45b hat 26 davon geholt. Was bleibt, ist der Satz zum

@@ -176,7 +176,8 @@ if (verschollen.length)
     + 'Datum (`zeit`) — ohne das ist „wie alt" keine Frage, die sich beantworten lässt.');
 /* Wo die Probe zu fahren ist, gehoert in den Befund (Q39).
  *
- * Zwoelf Proben haengen an `ansicht`, und `ansicht` laeuft auf dem Runner
+ * Sechzehn der 377 Proben haengen an `ansicht` oder an einer Messung,
+ * die derselbe Schalter stilllegt - und `ansicht` laeuft auf dem Runner
  * nicht (`SMARTKIDS_OHNE_ANSICHT=1`, Regel 16: die Vorbilder entstehen auf
  * dem Arbeitsrechner, der Runner rastert anders). Der naechtliche Lauf
  * laesst sie seit Q39 ausdruecklich aus - sie altern also weiter, und
@@ -187,7 +188,7 @@ const nurHier = new Set(PROBEN.filter(p => p.tor === 'ansicht' || p.nurMitAnsich
   .map(p => p.n));
 /* Und WO dieses Tor laeuft, entscheidet, worueber es urteilen darf (Q39e).
  *
- * Die dreizehn Nachweise oben koennen nur auf dem Arbeitsrechner
+ * Die sechzehn Nachweise oben koennen nur auf dem Arbeitsrechner
  * entstehen. Der naechtliche Lauf laesst ihre Proben aus - also altern
  * sie dort zwangslaeufig, und nach drei Tagen waere der Lauf rot fuer
  * etwas, das er nicht abstellen kann. Das ist genau das Rot, das man
@@ -207,7 +208,8 @@ if (dortNichtZuHolen.length) {
 }
 /* Und die Schranke darunter, dieselbe wie in `proben`: eine Ausnahme, die
  * zu viel umfasst, macht einen Lauf gruen, der nichts mehr mahnt. Mehr als
- * ein Fuenftel ist keine Ausnahme mehr - heute sind es dreizehn von 270. */
+ * ein Fuenftel ist keine Ausnahme mehr - heute sind es sechzehn von 377
+ * (gezaehlt, nicht geschrieben: Q50). */
 if (dortNichtZuHolen.length * 5 > namen.length)
   fehler.push(`${dortNichtZuHolen.length} von ${namen.length} Nachweisen sind hier `
     + 'ausgenommen — mehr als ein Fünftel. Eine Ausnahme, die so weit reicht, '
@@ -242,7 +244,7 @@ if (fehler.length) {
   process.exit(1);
 }
 /* Der Schlusssatz sagt, WORUEBER geurteilt wurde. „Kein Nachweis ist
- * aelter" waere auf dem Runner falsch: dort altern die dreizehn ja weiter,
+ * aelter" waere auf dem Runner falsch: dort altern die sechzehn ja weiter,
  * sie werden nur nicht angemahnt. Ein gruener Satz, der mehr behauptet als
  * der Lauf geprueft hat, ist die stillste Art, ein Tor abzuschalten. */
 console.log(`  rhythmus grün: kein Nachweis ist älter als ${GRENZE} Tage`

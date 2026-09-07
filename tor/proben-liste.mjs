@@ -514,6 +514,8 @@ export const PROBEN = [
      richtige.
      Der Eingriff nimmt den Tuerklick weg - stehen bleibt das
      Tierkapitel, und das ist ein anderes Bild. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Aufnahme der Landschaft bleibt im Buch stehen', tor:'ansicht',
     args:['--nur=quer-landschaft'], datei:'tor/ansicht.mjs',
     such:"      if (a.tun === 'landschaft') {",
@@ -1381,6 +1383,12 @@ export const PROBEN = [
    * kostet 12,5 s Zeitueberschreitung. Genau das war jahrelang so, ohne
    * dass ein Tor etwas gesagt haette: die Schriftpruefung lief nur fuer
    * die App-Bildschirme. */
+  /* Auf dem Runner ausgelassen, und in Q50 nachgeprueft, ob das zu weit
+     greift: sie vergleicht zwar keine Bildpunkte, aber `ansicht` beendet
+     sich unter SMARTKIDS_OHNE_ANSICHT sofort (tor/ansicht.mjs:58) - lange
+     vor der Schriftpruefung in Zeile 1144. Eine Ausnahme fuer sie braechte
+     also nichts; es bleibt beim Grund der uebrigen, der Runner rastert
+     anders (Regel 16). */
   { n:'die Entwürfe holen ihre Schrift aus dem Netz', tor:'ansicht', args:['--nur=mg-,karte-deutschland'], bauen:true,
     datei:'entwuerfe/mg.html',
     such:'<link rel="stylesheet" href="./schrift.css">',
@@ -1874,6 +1882,8 @@ export const PROBEN = [
   // Faellt die Ableitung aus, liegt der Deutschland-Rahmen um eine
   // Europakarte - und KEIN anderes Tor sagt etwas dazu: gespielt wird sie
   // weiter, sie sieht nur falsch aus.
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Hauptstädte-Ebene bekommt den falschen Rahmen', tor:'ansicht', args:['--nur=quer-hauptstaedte-eu'],
     bauen:true, datei:D,
     such:"  return art === 'kontinente' ? D.vbK : kont ? D.vbL[kont] : D.vbD;",
@@ -1945,6 +1955,8 @@ export const PROBEN = [
   //
   // Der Bereich hatte bis hierher gar kein Vorbild - ausgerechnet der,
   // der zuletzt um zwei Tabellen gewachsen ist.
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Übersicht im Elternbereich fällt weg', tor:'ansicht', args:['--nur=quer-eltern'], bauen:true, datei:D,
     such:'      <table class="tab" style="margin-top:var(--r3)"><thead><tr><th>Profil</th>',
     ersatz:'      <table class="tab" hidden><thead><tr><th>Profil</th>',
@@ -1969,6 +1981,8 @@ export const PROBEN = [
   // Drei Sterne heissen „alles auf Anhieb richtig" - und genau das steht
   // eine Zeile tiefer, nur genauer. Auf dem Endbildschirm der Kinder sind
   // sie richtig, bei den Eltern doppelt.
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Siegsterne kommen bei den Eltern zurück', tor:'ansicht', args:['--nur=quer-ende-eltern'], bauen:true, datei:D,
     // Seit B2 steht davor die Weiche „Test oder Uebung"; getauscht wird
     // nur der Uebungszweig.
@@ -2026,6 +2040,8 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'const stuecke = vorlaufVorrat(ebeneId)' },
     sagt:'kein Blättern' },
   // Und der Vorlauf einer Rechenebene sieht anders aus.
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Beispielkarten verlieren ihre Form', tor:'ansicht', args:['--nur=quer-vorlauf-rechnen'], bauen:true, datei:V,
     // Eindeutig, nicht `.rechenkleber{`: das steht auch als Nachfahren-
     // Regel im Vorlauf-Abschnitt, und ein zweideutiger Suchtext trifft
@@ -2409,6 +2425,10 @@ export const PROBEN = [
    *
    * Auf dem Zielgeraet sind das 17 % der Bildschirmhoehe, und der ganze
    * Block darunter steht dann wieder unter der Mitte. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). Ortsfest
+     gefahren am 07.09.2026 und angeschlagen - der in Q48 reparierte
+     Anker haelt wieder (tor/proben-stand.json). */
   { n:'der leere Kopf nimmt wieder Platz weg', tor:'ansicht', // Endbildschirm und Pause sind die beiden, die `kopf({})` rufen - das
     // steht ueber der Funktion, und der erste Anlauf hat es trotzdem auf
     // Profil- und Weltenwahl geraten. Die haben eine Kopfzeile mit Inhalt.
@@ -2423,6 +2443,8 @@ export const PROBEN = [
     sagt:'quer-ende' },
   /* Und die Pause verliert ihre Warnung. Der Knopf daneben loescht alles,
    * was das Kind in dieser Uebung gesammelt hat. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Pause warnt nicht mehr vor „von vorne"', tor:'ansicht', args:['--nur=quer-pause'], bauen:true, datei:D,
     such:'      <div class="unter" id="was">Bei „von vorne" verschwindet alles, was du',
     ersatz:'      <div class="unter" id="was">Bei „von vorne" geht es weiter, was du',
@@ -2433,6 +2455,8 @@ export const PROBEN = [
    *
    * Dann stehen sechs Rechenaufgaben linksbuendig in einer Reihe von acht,
    * mit einem Loch von vierhundert Punkten rechts. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'der Vorlauf verteilt die Karten wieder auf acht Spuren', tor:'ansicht', args:['--nur=quer-vorlauf'],
     bauen:true, datei:D,
     such:'  const gitter = vorlaufGitter(stuecke.length);',
@@ -2444,6 +2468,8 @@ export const PROBEN = [
    *
    * Dann haengen die Karten wieder oben, der Knopf unten, und dazwischen
    * steht ein Drittel leeres Band. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Beispielkarten füllen das Band nicht mehr', tor:'ansicht', args:['--nur=quer-vorlauf'], bauen:true, datei:V,
     such:'  grid-auto-rows:minmax(min-content,1fr);justify-content:center;',
     ersatz:'  grid-auto-rows:min-content;justify-content:center;',
@@ -3303,6 +3329,8 @@ export const PROBEN = [
   // alte Probe suchte einen Text, den es nicht mehr gibt. Sie ist damit auch
   // die Gegenprobe auf die Ableitung selbst - greift sie nicht durch,
   // haengen die Farben doch nicht an der Marke.
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'die Karte wechselt die Farbe', tor:'ansicht', args:['--nur=quer-spiel'], bauen:true, datei:'src/marken/marken.css',
     such:'  --flaeche-l: 0.74; --flaeche-c: 0.135;',
     ersatz:'  --flaeche-l: 0.74; --flaeche-c: 0.020;',
@@ -3319,6 +3347,8 @@ export const PROBEN = [
    * `--nur=quer-nordamerika`, nicht der ganze Lauf: die Aufnahme ist die
    * einzige, die Nordamerika als LAENDERkarte zeigt, und drei Minuten
    * Vorbilder fuer einen Befund waeren verschwendet. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'Grönland ist wieder nur Umgebung', tor:'ansicht', bauen:true,
     args:['--nur=quer-nordamerika'], datei:E,
     such:"    { a3:'GRL', name:'Grönland', rang:4, aliasse:['Groenland','Greenland'],\n      aussprache:['grönland','groenland','grünland'] },\n",
@@ -3541,6 +3571,8 @@ export const PROBEN = [
   // Die Aufnahmen vom Zielgeraet. Geaendert wird etwas, das NUR im kurzen
   // Querformat sichtbar ist - bei 1240 x 1000 greift die Regel gar nicht.
   // Bleibt `ansicht` dabei gruen, fotografiert es das Zielgeraet nicht.
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'auf dem Zielgerät verschwindet der Kachelbalken', tor:'ansicht', args:['--nur=quer-ebenen-voll'],
     bauen:true, datei:V,
     such:'  .kachel .balken{height:5px;flex:1;min-width:40px}',
@@ -4832,6 +4864,12 @@ export const PROBEN = [
    * bezeugt, ohne ihn je geprueft zu haben. Sie dreht deshalb
    * `abwegLoeschen` UM: die Aufnahme hinterlaesst eine Datei, statt sie
    * wegzunehmen. Genau der Zustand, den QS9 beschreibt. */
+  /* Auf dem Runner ausgelassen, und in Q50 nachgeprueft, ob das zu weit
+     greift: sie vergleicht keine Bildpunkte, sondern das Aufraeumen -
+     aber `ansicht` beendet sich unter SMARTKIDS_OHNE_ANSICHT sofort
+     (tor/ansicht.mjs:58), also lange vor `abwegLoeschen` in Zeile 763.
+     Eine Ausnahme fuer sie braechte nichts; es bleibt beim Grund der
+     uebrigen, der Runner rastert anders (Regel 16). */
   { n:'eine gruene Aufnahme laesst ihr Abweichungsbild liegen', tor:'ansicht',
     args:['--nur=quer-buch'], bauen:true, datei:'tor/ansicht.mjs',
     such:'  abwegLoeschen(a.name);',
@@ -5624,6 +5662,8 @@ export const PROBEN = [
    * gesehen hat es die erste Aufnahme von „Auf die Karte" (Regel 4: kein
    * Tor ersetzt den Blick). Seither ist es ein Vorbild, und ein Vorbild
    * meldet sich. */
+  /* Auf dem Runner ausgelassen: `ansicht` vergleicht Bildpunkte gegen
+     Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'bei der umgekehrten Frage steht wieder ein Mikrofon', tor:'ansicht',
     args:['--nur=quer-flaggen-karte'], bauen:true, datei:D,
     such:'  if (!umgekehrt) sprachweg({ spricht, werkzeug, liste, bewerte });',

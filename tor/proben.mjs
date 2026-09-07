@@ -636,6 +636,18 @@ const OHNE_ANSICHT = process.env.SMARTKIDS_OHNE_ANSICHT === '1';
  * Falle wie die zwoelf `ansicht`-Proben: das Tor blieb gruen, obwohl der
  * Fehler drin war, und der Lauf meldete es als Befund.
  *
+ * Die Zahlen oben sind die von damals. Heute sind es SECHZEHN von 377
+ * Proben, die hier ausgelassen werden: fuenfzehn mit `tor:'ansicht'` und
+ * diese eine mit `nurMitAnsicht`. Jede von ihnen sagt den Grund jetzt an
+ * ihrer eigenen Stelle in `tor/proben-liste.mjs` (Q50).
+ *
+ * Nachgezaehlt wurde dabei auch, ob der Grund zu weit greift: zwei der
+ * `ansicht`-Proben vergleichen gar keine Bildpunkte (die Schriftpruefung
+ * der Entwuerfe und das Aufraeumen der Abweichungsbilder). Sie fallen
+ * trotzdem zu Recht darunter - `tor/ansicht.mjs` beendet sich unter
+ * diesem Schalter in Zeile 58, also vor BEIDEN Pruefungen. Eine Ausnahme
+ * fuer sie waere eine, die nichts beweist.
+ *
  * Aufgefallen ist es erst, nachdem Q39a die zwoelf offensichtlichen Faelle
  * weggeraeumt hatte - der eine, der uebrig blieb, war derselbe Fall in
  * einem anderen Tor. Eine Probe sagt es jetzt selbst: `nurMitAnsicht`. */
@@ -964,8 +976,8 @@ console.log(`\n  ${ok} schlagen an, ${blind} beweisen nichts, `
   + `${nichtAngekommen} kamen nicht an`
   + (ausgelassen ? `, ${ausgelassen} ausgelassen` : '') + '.\n');
 /* Ausgelassen wird beim Namen genannt. Eine Zahl in der Bilanz kann man
- * ueberlesen; eine Liste von zwoelf Namen nicht - und genau diese zwoelf
- * haben hier keinen Nachweis bekommen. */
+ * ueberlesen; eine Liste von sechzehn Namen nicht - und genau diese
+ * sechzehn haben hier keinen Nachweis bekommen. */
 if (ausgelassen) {
   console.log(`  Hier nicht zu beweisen und deshalb ausgelassen (kein Nachweis, `
     + `sie altern weiter):`);
@@ -974,7 +986,8 @@ if (ausgelassen) {
 }
 /* Und die Schranke darunter: ein Auslass-Grund, der zu viel greift, macht
  * einen Lauf gruen, der nichts mehr geprueft hat. Ein Fuenftel ist die
- * Grenze - heute sind es zwoelf von 268, also ein Zweiundzwanzigstel.
+ * Grenze - heute sind es sechzehn von 377, also knapp ein
+ * Dreiundzwanzigstel (gezaehlt, nicht geschrieben: Q50).
  * Anteilig, damit sie mit der Liste mitwaechst (Regel 2), und nur im
  * vollen Lauf: eine Auswahl von einer Probe darf ganz ausfallen. */
 if (!NUR.length && ausgelassen * 5 > PROBEN.length)
