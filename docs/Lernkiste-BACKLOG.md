@@ -193,6 +193,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
 | 3 | **T3** Die restlichen 79 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
 | 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
+| 4 | **Q54** Drei Gegenproben im Forscherbuch beweisen nichts mehr | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
 | 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
@@ -461,6 +462,31 @@ jederzeit machbar und deshalb nie dringend.
 Rechnung), der Rauchtest spielt sie einmal durch.
 
 ---
+
+### Q54 · Drei Gegenproben im Forscherbuch beweisen nichts mehr
+
+Der Probenlauf auf v451 hat sie gefunden — sie waren seit **v420** nicht
+mehr gefahren worden, weil `--geaendert` ihre Dateien nicht anfasste, und
+ihr Nachweis stammt von damals. Die Runden B4b, B12, B12b und G15b haben
+das Buch seither umgebaut; die drei Proben zielen auf einen Zustand, den
+es nicht mehr gibt:
+
+| Probe | Was sie meldet |
+|---|---|
+| *eine Kapitelseite im Buch ist wieder halb leer* | `smoke` wird rot — **aber mit einer anderen Meldung**, fällt also vielleicht aus einem anderen Grund durch |
+| *der letzte Kapitelreiter steht halb im Streifen* | `smoke` bleibt grün: seit B12b **bricht der Streifen um**, statt einen Reiter auszusperren — die Falle, die sie stellt, gibt es nicht mehr |
+| *im Buch stehen wieder alle offenen Abzeichen* | `smoke` bleibt grün |
+
+Das ist **kein Fehler in der App**, sondern derselbe Verfall wie bei der
+Probe auf `neuHaengen()`: die Welt ist an der Probe vorbeigezogen. Der
+Unterschied ist, dass hier eine Zusage dahintersteht, die noch gilt — die
+Buchseiten sollen sich füllen, der Streifen soll keinen Reiter
+verschlucken, und im Buch sollen nicht alle offenen Abzeichen stehen. Sie
+brauchen also eine neue Falle, keinen Nachruf.
+
+*Abnahme:* alle drei schlagen wieder an, jede mit der Meldung, die sie
+meint — und im Quelltext der Probe steht, welcher Umbau die alte Falle
+entwertet hat.
 
 ### Neu offen seit v350 — vier Punkte aus den Runden Q48/Q49
 
