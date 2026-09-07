@@ -283,6 +283,12 @@ const AUFNAHMEN = [
      damit ihre Hoehe behaelt - sieht man nur hier. */
   { name:'quer-flaggen-karte', spiel:'flaggen:karte', kind:'lea', quer:true,
     wahl:'.schirm.da' },
+  /* „Sag es" (E6): der einzige Bildschirm der App, auf dem NICHTS zu
+     tippen ist ausser dem Weiterweg. Ob das leer wirkt oder ruhig,
+     entscheidet ein Auge - und die Reihenfolge der Knoepfe (Mikrofon
+     vor „Gesagt") ist genau das, was hier zu sehen sein muss. */
+  { name:'quer-sagen', spiel:'englisch:sagen', kind:'fiona', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -700,6 +706,11 @@ const OHNE_KARTE = {
   rechnen:   '.schirm.da .rechnung',
   schreiben: '.schirm.da .schreibblatt',
   englisch:  '.schirm.da .engkarte',
+  /* „Sag es" (E6) traegt dieselbe ART und zeigt etwas anderes: ein
+     grosses Bild, ein Mikrofon, sonst nichts. Der Eintrag steht deshalb
+     auf der ganzen Kennung, nicht auf der Art - dieselbe Stelle und
+     derselbe Grund wie bei `flaggen:karte`. */
+  'englisch:sagen': '.schirm.da #sagenbild',
   freunde:   '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',

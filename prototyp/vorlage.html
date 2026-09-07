@@ -2025,6 +2025,26 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    Der deutsche Satz steht darüber und zurückgenommen: er ist die Vorlage,
    gearbeitet wird am englischen. Bei E12 fehlt er ganz — dort IST der Ton
    die Aufgabe. */
+/* --- „Sag es" (E6) ---------------------------------------------------
+   EIN grosses Bild, sonst nichts. Der Bildschirm hat hier nur eine
+   Aufgabe, und sie ist nicht zu lesen: sag, was du siehst.
+   Das Aufbluehen ist die EINZIGE Rueckmeldung der Ebene - es gibt kein
+   Urteil, also muss man sehen, dass etwas angekommen ist. Wer es
+   abschaltet (`prefers-reduced-motion`), bekommt denselben Zustand ohne
+   Bewegung: der Fleck bleibt gross und bekommt seinen Ring. */
+.sagenbild{display:flex;align-items:center;justify-content:center;
+  transition:transform var(--d-tipp) var(--k-standard)}
+.sagenbild .farbfleck.gross{width:132px;height:132px}
+.sagenbild .ziffernbild.gross{font-size:var(--s5)}
+.sagenbild.gesagt{transform:scale(1.12)}
+.sagenbild.gesagt .farbfleck.gross{box-shadow:0 0 0 var(--r2) var(--gut)}
+@media (prefers-reduced-motion:reduce){
+  .sagenbild{transition:none}
+  .sagenbild.gesagt{transform:scale(1.12)}
+}
+.sagenwort{font-family:var(--f-ui);font-size:var(--s3);font-weight:800;
+  color:var(--tinte);letter-spacing:.01em}
+@media (max-height:440px){ .sagenbild .farbfleck.gross{width:96px;height:96px} }
 .satzfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r4);padding:0 var(--r4) var(--r4);min-height:0}
 .satzdeutsch{font-size:var(--s2);color:var(--tinte);text-align:center;max-width:32ch}

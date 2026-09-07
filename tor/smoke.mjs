@@ -4418,6 +4418,53 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         await abgeschlossen(p, wer, ebene, /(?!)/, 'das gehörte Bild getippt');
         continue;
       }
+      /* „Sag es" (E6) - die Ebene, die kein Urteil faellt.
+       *
+       * Sie hat weder Karte noch Rechnung noch Auswahl: ein Bild, ein
+       * Mikrofon, ein Knopf. Ohne diesen Zweig liefe der Durchgang in
+       * den Zeitablauf des Kartenzweigs - dieselbe Falle, in die
+       * `flaggen:karte` gelaufen ist, nur eine Runde spaeter.
+       *
+       * GESPIELT WIRD UEBER „GESAGT" UND NICHT UEBER DAS MIKROFON. Der
+       * Nachbau des Erkenners steht nur im Abschnitt `sprechen`; hier
+       * geht es um die Zusage, die ohne ihn gilt und die eigentlich
+       * teuer ist: die Ebene muss OHNE Mikrofon zu Ende zu spielen sein.
+       * Ein Kind ohne Sprachmodus oder ohne Erlaubnis darf nicht vor
+       * einer Aufgabe stehen, die sich nicht abschliessen laesst.
+       *
+       * Und das englische Wort muss gesagt worden sein - es ist das
+       * VORBILD, das nachgesprochen wird. Ohne es steht ein Farbfleck da
+       * und die Aufforderung, etwas zu sagen, das nie zu hoeren war.
+       * Gezaehlt wird es in `gehoertEn` wie bei der Schwesterebene, nach
+       * derselben Zeile der Profiltabelle. */
+      if (await p.$('.schirm.da #sagenbild')) {
+        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
+                                              wort: Sitzung?.liste[Sitzung.i]?.wort || '' }));
+        if (!auf.id) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
+          continue;
+        }
+        if (!(await p.$('.schirm.da #gesagt')))
+          merke('durchgang', new Error(`${wer}/${ebene}: es gibt keinen Weg ohne Mikrofon — `
+            + 'wer nicht sprechen darf oder kann, steht vor einer Aufgabe, die sich '
+            + 'nicht abschließen lässt'));
+        const gesagtEn = await p.evaluate(() => (window.__gesagt || []).slice());
+        const kamEn = gesagtEn.some(x => String(x).trim() === auf.wort);
+        if (TON_GEGENSTAND[wer] && !kamEn)
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde nicht `
+            + 'gesagt — es ist das Vorbild, das nachgesprochen wird, und ohne es '
+            + `steht da nur die Aufforderung (gehört: ${gesagtEn.join(' | ') || 'nichts'})`));
+        else if (kamEn) gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+        await p.$eval('.schirm.da #gesagt', x => x.click());
+        wege.add(`${wer}: gesagt`);
+        await bewertet(p);
+        /* Und die Wertung ist IMMER positiv - das ist die Zusage der
+           Ebene und nicht ein Zufall des Durchlaufs. `abgeschlossen`
+           verlangt den Haken; bekaeme die Ebene ein Urteil, faellt der
+           Haken weg und dieser Zweig wird rot. */
+        await abgeschlossen(p, wer, ebene, /(?!)/, 'auf „Gesagt" getippt');
+        continue;
+      }
       /* Die Flaggenebene (F2) - ZWEI Formen, und beide werden gespielt.
        *
        * Welche kommt, entscheidet das Profil und die laufende Nummer der

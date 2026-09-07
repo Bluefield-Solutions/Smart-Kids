@@ -11272,6 +11272,56 @@ keiner Karte dieser App gibt. Der Vorrat filtert über `hatFlagge` gegen
 Gruppe „Flaggen" hält neun Einträge — sieben Karten, die Verwechslungen und die
 Landkarte —, und auf der Erdkundewand steht dafür **eine** Kachel.
 
+## E6 · „Sag es" — die erste Ebene, auf der ein Kind spricht
+
+Ein Bild, das englische Wort als Vorbild im Ohr, ein Mikrofon. Und kein
+Urteil.
+
+**Sie hat nichts gekostet, weil F2b vorher passiert ist.** Der Sprachweg —
+Mikrofon, Frist, Zwischenergebnis, der eine Ausgang — steht seit einer Runde
+als Bauteil daneben, und der Vorrat (zehn Farben, fünfzehn Zahlen) trägt sein
+Bild in sich. Neu sind der Bildschirm und die drei Zusagen, sonst nichts. Genau
+dafür löst man etwas heraus.
+
+**Kein Urteil ist die schwerste der drei.** Eine Sechsjährige, die zum ersten
+Mal „blue" sagt, spricht es falsch aus — das ist der Normalfall, nicht der
+Fehlerfall. Eine App, die ihr dafür ein Kreuz zeigt, bringt ihr bei, den Mund
+zu halten. Jede Äußerung zählt deshalb als getan. Das ist nicht geschummelt:
+die Aufgabe lautete *sag es*, nicht *sag es richtig*. Was hier ausdrücklich
+**nicht** passiert, ist eine Aussprachebewertung — die könnte diese App nicht,
+und wo sie es könnte, sollte sie es nicht. Der Ort dafür ist ein Mensch, der
+danebensitzt.
+
+**Ohne Urteil braucht es eine andere Rückmeldung**, sonst spricht das Kind ins
+Leere. Der Fleck blüht auf, sobald etwas ankommt. Das ist die ganze Antwort,
+und sie ist genug.
+
+**Der zweite Benutzer hat dem Bauteil gezeigt, was ihm fehlte.** `sprachweg`
+beendete einen Anlauf ohne Ergebnis bisher still im Mikrofon: die Sprachzeile
+sagte es, sonst niemand. Für die Karte reicht das — dort ist die Aufgabe erst
+zu Ende, wenn etwas gewertet wurde. „Sag es" kennt höchstens zwei Anläufe und
+könnte den zweiten damit nicht zählen; ein Kind stünde vor einem Knopf, der nie
+weitergeht. Das Bauteil hat jetzt einen Ausgang dafür.
+
+**Und wieder die Knopfreihenfolge.** Der erste Anlauf hatte „Gesagt" als großen
+Hauptknopf oben und das Mikrofon darunter — auf dem Bildschirmfoto sofort
+falsch: auf einer Ebene, die *Sag es* heißt, ist Sprechen die Hauptsache und
+Weitergehen der Ausweg. Wer den Ausweg groß macht, bekommt ihn benutzt. Das ist
+in dieser Nacht der **zweite** Befund derselben Art (der erste war das Mikrofon
+neben der Landkarte), und beide hat kein Tor gemeldet, sondern eine Aufnahme
+bei 844 × 390.
+
+Der Rauchtest spielt die Ebene **über „Gesagt"** und nicht über das Mikrofon.
+Das ist Absicht: die teure Zusage ist nicht „das Mikrofon geht", sondern „es
+geht auch ohne". Ein Kind ohne Sprachmodus darf nicht in einer Sackgasse
+stehen.
+
+**Nebenbei hat `inhalt` sofort gemeldet**, dass mein neues `const stumm =
+!englischHoerbar()` die Zeile zum zweiten Mal in die Datei brachte — und dass
+damit eine bestehende Gegenprobe nicht mehr weiß, welche der beiden sie
+verstellt. Im selben Augenblick, in dem die Doppelung entstand. Dafür ist das
+Tor da.
+
 ## Q54 · Vier stille Gegenproben — und was sie über Ratschen sagen
 
 Der Probenlauf auf v451 fand vier Gegenproben, die nichts mehr beweisen. Alle

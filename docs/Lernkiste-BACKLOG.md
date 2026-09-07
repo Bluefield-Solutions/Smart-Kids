@@ -391,13 +391,66 @@ veraltet eine der beiden Fassungen).
 | **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommen soll |
 | **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommt |
 | **E5** | „Zwei Wörter, ein Laut Unterschied" — Lautpaare mit Grund | Tor E-a, alle vier Stolperstellen vertreten |
-| **E6** | „Sag es" — zwei Anläufe, kein Urteil, eigene Stimme | Tore E-b und E-d |
+| **E6** | „Sag es" — zwei Anläufe, kein Urteil | **GEFAHREN** — siehe Block unten |
 | **E7** | Lea liest: Wort zum Bild | am Gerät |
 | **E8** | Lea schreibt: Abschreiben mit Vorlage | am Gerät, `passt` für die Buchstabenkarten |
 | **E9** | Der Satz zum Selbersagen + Abzeichen je Themengebiet | Abzeichen erscheint erst bei vollem Gebiet |
 | **E10** | **Eltern: falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tore E-f und E-g |
 | **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | **GEFAHREN v376** — siehe Block unten |
 | **E12** | **Eltern: Hoeren und schreiben** — ganzer Satz, normales Tempo | **GEFAHREN v376** — siehe Block unten |
+
+### E6 · „Sag es" — GEFAHREN
+
+**Die erste Ebene, auf der ein Kind etwas SAGT.** Ein Bild, das englische
+Wort als Vorbild im Ohr, ein Mikrofon — und kein Urteil. Sie hing an
+nichts: `sprachweg` steht seit F2b als eigenes Bauteil da, und der Vorrat
+(zehn Farben, fünfzehn Zahlen) hat sein Bild aus sich selbst. Gebaut ist
+sie deshalb aus lauter Vorhandenem; neu sind der Bildschirm und drei
+Zusagen:
+
+| Zusage | wie sie gehalten wird |
+|---|---|
+| **Kein Urteil** | jede Äußerung zählt als getan (`ergebnis:'richtig'`) — die Aufgabe lautete „sag es", nicht „sag es richtig" |
+| **Höchstens zwei Anläufe** | gemeint ist der Fall, dass gar nichts ankommt; beim zweiten Mal geht es weiter, ohne Auflösung und ohne Trostsatz |
+| **Etwas Sichtbares** | der Fleck blüht auf, sobald etwas ankommt — ohne Urteil braucht es eine andere Rückmeldung, sonst spricht das Kind ins Leere |
+
+**Und sie ist ohne Mikrofon zu Ende zu spielen.** Der Sprachmodus ist eine
+Einstellung, die Erlaubnis kann fehlen, der Browser kann es nicht — dann
+steht „Gesagt" da und tut dasselbe. Der Knopf ist immer da, nicht nur
+ersatzweise: auch wer sprechen darf, darf einfach weitergehen. Der
+Rauchtest spielt die Ebene **über diesen Knopf** und nicht über das
+Mikrofon; genau das ist die Zusage, die etwas kostet, wenn sie bricht.
+
+**Was der zweite Benutzer am Bauteil gezeigt hat.** `sprachweg` endete
+einen Anlauf ohne Ergebnis bisher still im Mikrofon — die Sprachzeile
+sagte es, sonst niemand. Für die Karte reicht das (dort ist die Aufgabe
+erst zu Ende, wenn etwas gewertet wurde); „Sag es" könnte ihren zweiten
+Anlauf damit nicht zählen. Das Bauteil hat jetzt einen Ausgang dafür.
+Genau dafür löst man etwas heraus: der zweite Benutzer zeigt, was dem
+ersten gefehlt hat.
+
+**Die Reihenfolge der Knöpfe ist die Aussage.** Der erste Anlauf hatte
+„Gesagt" als großen Hauptknopf oben und das Mikrofon darunter — auf dem
+Bildschirmfoto bei 844 × 390 sofort falsch: auf einer Ebene, die „Sag es"
+heißt, ist Sprechen die Hauptsache und Weitergehen der Ausweg. Wer den
+Ausweg groß macht, bekommt ihn benutzt. Kein Tor ersetzt den Blick
+(Regel 4) — gemeldet hat es keines.
+
+**E5–E9 hängen NICHT alle an E4b.** Die Rangliste sagte das pauschal;
+nachgemessen am Quelltext stimmt es nur für zwei:
+
+| Runde | hängt an E4b? |
+|---|---|
+| E6 · Sag es | **nein** — Farbfleck und Ziffer sind fertige Bilder |
+| E9 · Satz zum Selbersagen | **nein** — die Chunks sind Sätze, und sie stehen amtlich in `THEMENGEBIETE` |
+| E8 · Abschreiben | **nein** — die Vorlage ist das Wort, nicht das Bild |
+| E5 · Lautpaare | **halb** — ohne Bilder nur für Lea, und dann gegen die Form |
+| E7 · Wort zum Bild | **ja** — die Aufgabe *ist* „Wort zu einem von vier Bildern" |
+
+Empfohlene Reihenfolge für den Rest: **E9** (Inhalt liegt amtlich da),
+dann **E8** (das Legebauteil, das E9 mitbenutzt), dann **E5**, zuletzt
+**E7**. E7 ist codeseitig die billigste und steht trotzdem hinten — ohne
+E4b existiert sie nicht.
 
 **E1 zuerst, und es ist blockiert.** Die vollständige ISB-Wortliste liegt
 noch nicht vor: der Netzzugang dieser Umgebung sperrt `isb.bayern.de` und

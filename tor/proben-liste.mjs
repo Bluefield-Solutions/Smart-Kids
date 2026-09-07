@@ -5671,6 +5671,44 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'if (!umgekehrt) sprachweg(' },
     sagt:'quer-flaggen-karte' },
 
+  /* --- „Sag es" (E6) ---------------------------------------------------
+   *
+   * Drei Zusagen, drei Fallen. Die Ebene ist die einzige, die kein
+   * Urteil faellt - und genau deshalb ist sie die, bei der ein
+   * stillschweigender Rueckfall am wenigsten auffiele.
+   *
+   * 1. SIE FAELLT DOCH EIN URTEIL. Ein Kind, das „blue" mit deutschem
+   *    Akzent sagt, bekaeme ein Kreuz - und lernt, den Mund zu halten.
+   *    Auf dem Bildschirm sieht das aus wie eine ganz normale Wertung. */
+  { n:'„Sag es" wertet wieder', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"    const neuerAufkleber = werten(ziel, 'richtig', 1);\n    kopfNachziehenIn(s);\n    protokollieren('richtig', roh, fachVorher, eingabeart);",
+    ersatz:"    const neuerAufkleber = werten(ziel, 'falsch', 1);\n    kopfNachziehenIn(s);\n    protokollieren('falsch', roh, fachVorher, eingabeart);",
+    an:{ ...DIST, text:"werten(ziel, 'falsch', 1)" },
+    sagt:'auf „Gesagt" getippt' },
+
+  /* 2. DER WEG OHNE MIKROFON FAELLT WEG. Wer keinen Sprachmodus hat,
+   *    keine Erlaubnis gibt oder einen Browser ohne Erkennung benutzt,
+   *    steht dann vor einer Aufgabe, die sich nicht abschliessen laesst.
+   *    Der Bildschirm sieht dabei vollkommen heil aus. */
+  { n:'„Sag es" hat keinen Weg mehr ohne Mikrofon', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  werkzeug.appendChild(fertig);",
+    ersatz:"  if (0) werkzeug.appendChild(fertig);",
+    an:{ ...DIST, text:'if (0) werkzeug.appendChild(fertig);' },
+    sagt:'kein Weg ohne Mikrofon' },
+
+  /* 3. DAS VORBILD BLEIBT AUS. Ohne das gesprochene Wort steht ein
+   *    Farbfleck da und die Aufforderung, etwas zu sagen, das nie zu
+   *    hoeren war. Fuer ein Kind, das nicht liest, ist die Ebene damit
+   *    leer - und kein Bildpunkt aendert sich. */
+  { n:'„Sag es" sagt das englische Wort nicht mehr vor', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"     Vorlesehilfe fuer ein Kind, das nicht liest, sondern die Aufgabe\n     selbst - Lea bekommt es genauso. */\n  vorlesen(ziel.wort, 'en');",
+    ersatz:"     Vorlesehilfe fuer ein Kind, das nicht liest, sondern die Aufgabe\n     selbst - Lea bekommt es genauso. */",
+    an:{ ...DIST, fehlt:"selbst - Lea bekommt es genauso. */\n  vorlesen(ziel.wort, 'en');" },
+    sagt:'wurde nicht' },
+
   /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
    *
    * 1. DAS MIKROFON WIRD NICHT ANGEBAUT. Der Bildschirm bleibt heil, das

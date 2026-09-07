@@ -1279,6 +1279,24 @@ const EBENEN = [
    * sie nebenan in der Schreibwelt. */
   { id:'englisch:hoeren', ueber:'Englisch', titel:'Hören und zeigen', farbe:3,
     art:'englisch', wer:['fiona','lea'] },
+  /* „Sag es" (E6) - die erste Ebene, auf der ein Kind etwas SAGT.
+   *
+   * `art:'englisch'` wie die Schwester daneben, und unterschieden wird am
+   * Teil hinter dem Doppelpunkt - genau die Regel des Hauses (der Teil
+   * davor ist Gruppe UND Art, der dahinter sagt, wie gefragt wird).
+   * `englischschirm` stellt die Weiche, damit `schirmZu` eine Zeile je
+   * Art behaelt.
+   *
+   * KEINE Gruppenkachel: die Englischwelt der Kinder traegt damit zwei
+   * Kacheln statt einer, und zwei sind noch keine Wand. Eine Gruppe
+   * versteckt die zweite Ebene hinter einem Tipp mehr, ohne Platz zu
+   * sparen, den es hier zu sparen gaebe.
+   *
+   * `wer`: Fiona und Lea. Fuer die Eltern waere sie sinnlos - „sag blue"
+   * ist kein Problem, das sie haben; ihre Englischebenen sind die drei
+   * mit den Fallen. */
+  { id:'englisch:sagen', ueber:'Englisch', titel:'Sag es', farbe:7,
+    art:'englisch', wer:['fiona','lea'] },
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -1464,9 +1482,25 @@ const SCHREIBBILD = {
   'schreiben:ziffern':     ['1','2'],
   'schreiben:zahlen':      ['ton','7'],
 };
-/* Welche Kennungen das Englischbild tragen: die Welt und ihre eine Ebene.
-   Ein Satz und keine Tabelle - es gibt (noch) nichts zu unterscheiden. */
-const ENGLISCHBILD = new Set(['englisch', 'englisch:hoeren']);
+/* Welche Kennungen ein Englischbild tragen - und WELCHES.
+ *
+ * Bis E6 stand hier ein Satz und der Vermerk „keine Tabelle, es gibt
+ * (noch) nichts zu unterscheiden". Mit der zweiten Kinderebene stimmt das
+ * nicht mehr: „Hoeren und zeigen" und „Sag es" stehen nebeneinander in
+ * derselben Welt, und wer beide mit demselben Ohr bemalt, sagt einem
+ * Kind, das nicht liest, sie seien dasselbe.
+ *
+ * Links das Zeichen, rechts der Fleck. Der Fleck ist in beiden derselbe -
+ * er steht fuer das Bild, auf das es hinauslaeuft; das Zeichen davor
+ * sagt, was das Kind damit TUT: hinhoeren oder sprechen. */
+const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
+                          'englisch:sagen':'mikro' };
+/* Das Mikrofon als PFADE, nicht als `<rect>`.
+   Dieselbe Messstelle wie ueberall (Regel 5): `passt` misst die
+   gezeichnete Ausdehnung je Pfad; ein `<rect>` findet es gar nicht
+   erst, und die Kachel meldete ein Bild von null Punkten. */
+const MIKROSTRICH = '<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/>'
+  + '<path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/>';
 /* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
    Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
@@ -1576,11 +1610,12 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/><path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
-  if (ENGLISCHBILD.has(ebeneId))
+  if (ENGLISCHZEICHEN[ebeneId])
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-      stroke-linejoin="round">${ZEICHEN.tonAn}<path
+      stroke-linejoin="round">${ENGLISCHZEICHEN[ebeneId] === 'mikro'
+        ? MIKROSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
@@ -2038,6 +2073,19 @@ function vorrat(ebeneId, stand = Stand, voll = false){
   // Fuenfundzwanzig, und sie stehen nicht hier: die zehn Farben und die 15
   // Zahlen leiten sich aus den amtlichen Listen ab (E3). Waechst der Vorrat
   // mit E4, aendert sich an dieser Zeile nichts.
+  /* „Sag es" (E6) spielt DENSELBEN Vorrat - und bekommt trotzdem einen
+     eigenen Leitner-Stand.
+     
+     Die Kennung wird deshalb umgehaengt (`sg:blue` statt `blue`). Ohne
+     das teilten sich zwei Ebenen ein Fach: wer „blue" gehoert und
+     gezeigt hat, haette es damit auch gesagt. Dieselbe Ueberlegung und
+     dieselbe Bauart wie bei „Auf die Karte" (`fk:ITA`).
+     
+     Die ENGERE Bedingung zuerst - die allgemeine darunter schluckt sie
+     sonst, und die Ebene bekaeme den Vorrat der Schwester samt ihren
+     Kennungen. Das hat bei den Flaggen eine Runde gekostet. */
+  if (art==='englisch' && kont==='sagen')
+    return Englisch.vorratHoeren().map(x => ({ ...x, id:`sg:${x.id}` }));
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -3103,6 +3151,17 @@ function vorlaufSatz(ebeneId){
         + 'Wirklichkeit quadratisch. Tippe hier eine an, dann hörst du das Land.'
       : 'Gleich sage ich dir ein Land, und du tippst auf seine <strong>Flagge</strong>. '
         + 'Tippe hier eine an, dann hörst du schon mal, wie sie heißt.';
+  /* „Sag es" (E6). Der Satz nennt die Zusage, auf die es ankommt: es
+     wird NICHT bewertet. Wer das nicht ausspricht, laesst ein Kind
+     glauben, da sitze ein Pruefer - und dann sagt es lieber nichts. */
+  if (art === 'englisch' && kont === 'sagen')
+    return englischHoerbar()
+      ? 'Du hörst ein Wort und sagst es nach. Es wird <strong>nicht bewertet</strong> — '
+        + 'niemand zählt hier Fehler. Wenn du magst, tippe auf das Mikrofon; '
+        + 'sonst tippst du einfach auf „Gesagt".'
+      : 'Hier steht ein englisches Wort, und du sagst es laut. Es wird '
+        + '<strong>nicht bewertet</strong>. Vorlesen kann dir dieses Gerät es leider '
+        + 'nicht — ihm fehlt eine englische Stimme.';
   if (art === 'rechnen')
     return `So sehen die Aufgaben aus — hier ein paar davon, `
       + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
@@ -4095,7 +4154,168 @@ function freundeschirm(){
   return s;
 }
 
+/* ---------- „Sag es" (E6) ------------------------------------------------
+ *
+ * Die erste Ebene, auf der ein Kind etwas SAGT statt zu tippen, zu ziehen
+ * oder anzutippen - und die einzige, die kein Urteil faellt.
+ *
+ * DREI REGELN AUS DEM KONZEPT (Form 3), und alle drei stehen gegen das,
+ * was eine Lern-App sonst tut:
+ *
+ *   KEIN URTEIL. Was das Mikrofon versteht, wird nicht bewertet. Eine
+ *   Sechsjaehrige, die zum ersten Mal „blue" sagt, spricht es falsch aus;
+ *   das ist der Normalfall und nicht der Fehlerfall. Eine App, die ihr
+ *   dafuer ein rotes Kreuz zeigt, bringt ihr bei, den Mund zu halten -
+ *   und das ist das Gegenteil dessen, wofuer diese Ebene da ist. Jede
+ *   Aeusserung zaehlt deshalb als getan: die Aufgabe war „sag es", und
+ *   sie hat es gesagt.
+ *
+ *   HOECHSTENS ZWEI ANLAEUFE. Gemeint ist der Fall, in dem gar nichts
+ *   ankommt - Stille, ein zu leises Kind, ein Mikrofon, das abbricht.
+ *   Beim zweiten Mal geht es weiter, ohne Aufloesung und ohne Trostsatz.
+ *   Wer dreimal aufgefordert wird, dasselbe noch einmal zu sagen, hoert
+ *   eine Bewertung, auch wenn keine ausgesprochen wird.
+ *
+ *   ETWAS SICHTBARES PASSIERT. Ohne Urteil braucht es eine andere
+ *   Rueckmeldung, sonst spricht das Kind ins Leere. Der Fleck blueht auf,
+ *   sobald etwas ankommt. Das ist die ganze Antwort, und sie ist genug.
+ *
+ * UND SIE IST OHNE MIKROFON ZU ENDE ZU SPIELEN. Der Sprachmodus ist eine
+ * Einstellung, die Erlaubnis kann fehlen, der Browser kann es nicht. Dann
+ * steht „Gesagt" da und tut dasselbe. Eine Ebene, die ohne Mikrofon in
+ * einer Sackgasse endet, ist fuer das Kind ein kaputtes Spiel - und der
+ * Knopf steht IMMER da, nicht nur ersatzweise: auch wer sprechen darf,
+ * darf einfach weitergehen.
+ *
+ * WAS SIE NICHT TUT: die Aussprache messen. Kein Prozentwert, keine
+ * Sterne fuer „gut gesprochen". Das koennte diese App nicht, und wo sie
+ * es koennte, sollte sie es nicht - der Ort dafuer ist ein Mensch, der
+ * daneben sitzt.
+ */
+function sagenschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false, leer = 0;
+  /* Wie oft ein Anlauf ins Leere gehen darf, bevor es weitergeht. */
+  const ANLAEUFE = 2;
+
+  /* Ohne englische Stimme steht das Wort da - sonst waere gar nicht zu
+     erfahren, WAS zu sagen ist. Mit Stimme steht es nirgends: gehoert und
+     nachgesprochen ist die Aufgabe, gelesen waere es eine andere.
+     
+     Der Aufruf steht hier AUSGESCHRIEBEN und nicht in einer zweiten
+     Marke `stumm`. Die gibt es nebenan im Hoerschirm, und `inhalt` hat
+     die Doppelung im selben Augenblick gemeldet, in dem sie entstand:
+     eine Gegenprobe sucht genau diese Zeile, und bei zwei Fundstellen
+     entscheidet die Reihenfolge, welche sie verstellt. */
+  const bild = (x) => x.farbton
+    ? `<span class="farbfleck gross" style="--farbton:${x.farbton}"></span>`
+    : `<span class="ziffernbild gross">${x.ziffern}</span>`;
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Sag es auf Englisch.</div>
+    <div class="englischfeld">
+      <div class="sagenbild" id="sagenbild">${bild(ziel)}</div>
+      ${englischHoerbar() ? '' : `<div class="sagenwort" lang="en">${ziel.wort}</div>`}
+      <div class="werkzeug"></div>
+      <div class="sprachzeile" id="sprachzeile"></div>
+    </div>`;
+
+  const protokollieren = (ergebnis, roh, fachVorher, eingabeart) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn, eingabeart });
+  const weiter = () => weiterIn(st);
+
+  /** Der Fleck blueht auf - die einzige Rueckmeldung, die es hier gibt. */
+  const aufbluehen = () => s.querySelector('#sagenbild')?.classList.add('gesagt');
+
+  /**
+   * Gesagt. Mehr wird nicht geprueft, und das ist die Zusage der Ebene.
+   *
+   * `ergebnis:'richtig'` und nicht ein eigenes Wort: das Protokoll
+   * sammelt nur `richtig` und `gezeigt` ins Forscherbuch (Regel 6 - eine
+   * zweite Liste erlaubter Werte waere die, die beim naechsten Umbau
+   * veraltet). Und es ist auch nicht geschummelt: die Aufgabe lautete
+   * „sag es", nicht „sag es richtig".
+   */
+  function gutschreiben(roh, eingabeart){
+    if (erledigt) return;
+    versuch++;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    const neuerAufkleber = werten(ziel, 'richtig', 1);
+    kopfNachziehenIn(s);
+    protokollieren('richtig', roh, fachVorher, eingabeart);
+    aufbluehen();
+    ausschalten();
+    const spruch = lob();
+    lobsatz(s, `<strong lang="en">${ziel.wort}</strong>.`, null, spruch, '', neuerAufkleber);
+    sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    // Und das Wort noch einmal auf Englisch - als letztes, was im Ohr
+    // bleibt, steht das Vorbild und nicht der eigene Versuch.
+    vorlesen(ziel.wort, 'en');
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  const ausschalten = () => {
+    const g = s.querySelector('#gesagt'); if (g) g.disabled = true;
+    const m = s.querySelector('#mikro'); if (m) m.disabled = true;
+  };
+
+  /** Nichts angekommen. Beim zweiten Mal geht es trotzdem weiter. */
+  function insLeere(){
+    if (erledigt) return;
+    leer++;
+    if (leer < ANLAEUFE) return;
+    const satz = 'Ich habe dich nicht gehört — macht nichts.';
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+    gutschreiben('', 'sprechen');
+  }
+
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+
+  /* DIE REIHENFOLGE IST DIE AUSSAGE.
+   *
+   * Erst das Mikrofon, dann das Ohr, zuletzt „Gesagt". Der erste Anlauf
+   * hatte „Gesagt" als grossen Hauptknopf ganz oben und das Mikrofon
+   * darunter - auf dem Bildschirmfoto bei 844 x 390 sofort falsch: auf
+   * einer Ebene, die „Sag es" heisst, ist Sprechen die Hauptsache und
+   * Weitergehen der Ausweg. Wer den Ausweg gross macht, bekommt ihn
+   * benutzt. (Regel 4 - kein Tor ersetzt den Blick; gemeldet hat es
+   * keines.)
+   *
+   * Und „Gesagt" ist NUR dann leise, wenn es ein Mikrofon gibt. Ohne
+   * eines ist es der einzige Weg weiter und muss aussehen wie einer. */
+  const werkzeug = s.querySelector('.werkzeug');
+  sprachweg({ spricht: P.eingabe.includes('sprechen'), werkzeug,
+    liste: s.querySelector('#sprachzeile'),
+    bewerte: (roh) => gutschreiben(roh, 'sprechen'),
+    ohneErgebnis: insLeere });
+  {
+    const b = nochHoerenKnopf(ziel.wort, 'en');
+    if (b) werkzeug.appendChild(b);
+  }
+  const mitMikro = !!s.querySelector('#mikro');
+  const fertig = el('button', mitMikro ? 'knopf leise' : 'knopf haupt', 'Gesagt');
+  fertig.id = 'gesagt';
+  fertig.onclick = () => gutschreiben('', 'antippen');
+  werkzeug.appendChild(fertig);
+
+  /* Das Vorbild zuerst. `vorlesen` und nicht `ansagen`: es ist keine
+     Vorlesehilfe fuer ein Kind, das nicht liest, sondern die Aufgabe
+     selbst - Lea bekommt es genauso. */
+  vorlesen(ziel.wort, 'en');
+  return s;
+}
+
 function englischschirm(){
+  /* Zwei Ebenen, ein Einstieg - unterschieden am Teil hinter dem
+     Doppelpunkt, wie beim Schreib- und beim Flaggenschirm. Die Weiche
+     steht HIER und nicht in `schirmZu`: dort haengt sie an `art`, und
+     `art` ist bei beiden `englisch`. */
+  if (String(Sitzung.ebeneId).split(':')[1] === 'sagen') return sagenschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
@@ -5079,7 +5299,7 @@ function erhoert(roh, ctx, { kand, ziel, stelle, bewerte, unverstanden }) {
  * sich seinen Platz selbst sucht, findet auf dem naechsten Bildschirm den
  * falschen.
  */
-function sprachweg({ spricht, werkzeug, liste, bewerte }) {
+function sprachweg({ spricht, werkzeug, liste, bewerte, ohneErgebnis }) {
   // Das Mikrofon wird nur gezeigt, wenn es auch etwas TUT.
   //
   // Vorher stand es immer da, grau, mit dem Satz "Sprachmodus ist aus. Im
@@ -5218,6 +5438,7 @@ function sprachweg({ spricht, werkzeug, liste, bewerte }) {
           : was==='no-speech'
             ? 'Ich habe nichts gehört — tipp noch mal und sag es laut.'
             : 'Das hat nicht geklappt — tipp noch mal auf das Mikrofon.');
+        if (ohneErgebnis) ohneErgebnis(was || 'fehler');
       };
       /* Der Ausgang, der gefehlt hat. Er kommt IMMER - auch wenn das
        * Betriebssystem die Erkennung von sich aus beendet.
@@ -5238,6 +5459,17 @@ function sprachweg({ spricht, werkzeug, liste, bewerte }) {
           return;
         }
         aufhoeren('Fertig. Ich habe nichts verstanden — tipp noch mal auf das Mikrofon.');
+        /* UND DIE EBENE ERFAEHRT ES (E6).
+         *
+         * Bis hierher endete ein Anlauf ohne Ergebnis still im Mikrofon:
+         * die Sprachzeile sagte es, sonst niemand. Fuer die Karte reicht
+         * das - dort ist die Aufgabe erst zu Ende, wenn etwas gewertet
+         * wurde. „Sag es" faellt gar kein Urteil und kennt stattdessen
+         * hoechstens zwei Anlaeufe; ohne diesen Ausgang koennte sie den
+         * zweiten nicht zaehlen und ein Kind stuende vor einem Knopf,
+         * der nie weitergeht. Der zweite Benutzer eines Bauteils zeigt,
+         * was dem ersten gefehlt hat. */
+        if (ohneErgebnis) ohneErgebnis('nichts');
       };
       try{
         hoerenBeginnt();        // Lautsprecher aus, BEVOR das Mikrofon angeht
