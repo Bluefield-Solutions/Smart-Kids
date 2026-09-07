@@ -3331,6 +3331,12 @@ const VORLAUF_JE = (art, ebeneId) =>
     ebeneId === 'englisch:laute' ? 3
   : ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3
   : ebeneId === 'englisch:legen' ? 12
+  /* „Lies das Wort" (E7): ZWOELF von sechzehn, dieselbe Zahl wie beim
+     Legen und aus demselben Grund. Mit sechzehn farbigen Bildern lief die
+     Wand auf dem iPhone SE quer 47 Punkte aus dem Kasten - gemessen von
+     `passt`, nicht geschaetzt. Solange die Bilder Umrisse in Tinte waren,
+     passten sie; seit sie Bilder sind, brauchen sie Platz. */
+  : ebeneId === 'englisch:lesen' ? 12
   : ['rechnen', 'freunde'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;

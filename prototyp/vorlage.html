@@ -2066,7 +2066,14 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    NICHT den Kartenweg mit Schatten, Rand und Glanz: die Farben sind hier
    die Auskunft, und ein Aufkleberton haette sie durch einen einzigen
    ersetzt. Offen wird es blass wie alles Ungesammelte im Buch. */
-.bildkleber{display:flex;align-items:center;justify-content:center}
+.bildkleber{width:100%;display:flex;align-items:center;justify-content:center}
+/* DIE GROESSE KOMMT VOM KASTEN, nicht vom Bild. `.wortbild` ist 76 Punkte
+   gross - das ist die Zahl fuer die AUFGABE, wo vier Kaesten nebeneinander
+   stehen. Im Vorlauf stehen sechzehn, und mit 76 Punkten je Stueck lief die
+   Wand um bis zu 384 Punkte aus dem Bild. Dieselben drei Zeilen wie beim
+   Flaggenkleber, und aus demselben Grund. */
+.bildkleber svg{width:auto;height:100%;max-width:100%;max-height:46px}
+.rollen.buch .bildkleber svg{max-height:56px}
 .bildkleber.offen{opacity:.35;filter:grayscale(.6)}
 /* Dieselbe Karte mit einem BILD darauf - fuer wen nicht liest (E5).
    Sie wird hoeher und die Zeichnung groesser als bei „Hören und zeigen":
@@ -3432,6 +3439,22 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     .wahl.ebenen>*{flex-basis:118px}
     .wahl.ebenen .kachel .name{font-size:var(--s-klein)}
   }
+  /* EINE DRITTE STUFE AB DREIZEHN — versucht, gemessen, zurueckgenommen.
+   *
+   * `passt` meldet „die Wand ist voll — 11 Kacheln stehen da, 12 passen".
+   * Der Versuch war eine dritte Dichtestufe ab der dreizehnten Kachel:
+   * `flex-basis` von 118 auf 106, `min-height` von 112 auf 96, der Kreis
+   * von 44 auf 40. Danach meldete `passt` unveraendert ZWOELF.
+   *
+   * Es liegt also nicht an der Groesse der Kachel. Die Zeilen stuenden
+   * hier als Regel, die nichts tut - und eine Regel, die nichts tut, ist
+   * schlimmer als keine: der naechste, der die Wand enger machen will,
+   * haelt sie fuer die Loesung und sucht woanders weiter.
+   *
+   * Was als naechstes zu messen waere: wieviel Hoehe Kopfzeile, Titel und
+   * der Weg zurueck von den 375 Punkten wegnehmen - die Kacheln teilen
+   * sich nur den Rest, und drei Reihen passen dort auch mit 96 Punkten
+   * nicht. Der Hebel liegt vermutlich ueber der Wand, nicht in ihr. */
   /* Die letzte Kachelreihe lag 3 Punkte im Streifen des iPhone. Die vier
      Punkte kommen aus dem Abstand ZWISCHEN den Kacheln, nicht aus der
      Auskunft in ihnen. */
