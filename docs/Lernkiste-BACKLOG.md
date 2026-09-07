@@ -193,7 +193,6 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 2 | **E5–E9** Englisch — der Rest der Welt | Lea, Fiona | hoch | groß | E4b |
 | 3 | **T3** Die restlichen 79 Tiere des Plans malen (Stapel zu sieben) | alle vier | mittel | groß | Zeichenbank steht |
 | 4 | **Q50** Die 13 ausgelassenen Proben | nur ich | mittel | klein | — |
-| 4 | **Q54** Drei Gegenproben im Forscherbuch beweisen nichts mehr | nur ich | mittel | klein | — |
 | 4 | **G13** Die restlichen 21 Punkte Kartensprung | Fiona, Lea | mittel | mittel | Blick am Gerät |
 | 5 | **D3b** Der Satz zum Mitnehmen auf der Ebenenkachel | Fiona, Lea | mittel | klein | — |
 | 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
@@ -467,7 +466,7 @@ Rechnung), der Rauchtest spielt sie einmal durch.
 
 ---
 
-### Q54 · Drei Gegenproben im Forscherbuch beweisen nichts mehr
+### Q54 · Drei Gegenproben im Forscherbuch beweisen nichts mehr — GEFAHREN (v46x)
 
 Der Probenlauf auf v451 hat sie gefunden — sie waren seit **v420** nicht
 mehr gefahren worden, weil `--geaendert` ihre Dateien nicht anfasste, und
@@ -491,6 +490,24 @@ brauchen also eine neue Falle, keinen Nachruf.
 *Abnahme:* alle drei schlagen wieder an, jede mit der Meldung, die sie
 meint — und im Quelltext der Probe steht, welcher Umbau die alte Falle
 entwertet hat.
+
+**Gefahren, und jede der drei endete anders:**
+
+| Probe | Ausgang |
+|---|---|
+| *halb leere Kapitelseite* | Der Eingriff leerte die **Abzeichen** und machte das Tor rot — mit der Meldung „kein Abzeichenkapitel auf 390 × 844": die Seite verschwand ganz, statt dünn zu werden. Er nimmt jetzt die **Rechentafel** weg, die eine Hälfte von B4b, und trifft die Zusage „keine einzige Rechentafel im Buch". |
+| *Kapitelreiter halb im Streifen* | **Entfernt, mit dem Grund an ihrer Stelle.** Seit B12b bricht der Streifen um, statt einen Reiter auszusperren — schmale Reiter stehen jetzt alle ganz drin (nachgemessen: „alle 6 im Streifen"). Die Zusage hängt an genau diesem `flex-wrap`, und die Probe darauf steht schon oben. |
+| *alle offenen Abzeichen* | **Umgedreht.** Sie setzte ein, was die App seit B4b ohnehin tut — ein Eingriff, der nichts ändert, bezeugt nichts. Jetzt nimmt sie die offenen **weg** und trifft „kein einziges offenes Abzeichen — dann ist der nächste Schritt unsichtbar". |
+
+**Und ein vierter Fund fiel dabei ab: die Füllungsratsche stand seit B4b
+falsch.** `BUCH_GENUTZT_MIN` war 24 — der gemessene Stand *vor* B4b, mit
+einem Punkt Luft. Der Quelltext sagte dazu ausdrücklich: *der Weg nach oben
+ist, die Seiten zu füllen, nicht die Zahl höher zu schreiben.* Gefüllt sind
+sie seit B4b; nachgezogen wurde die Zahl nie. Bei 24 ließ die Ratsche genau
+den Zustand durch, den B4b beseitigt hat. Nachgemessen über alle zehn
+Kapitelseiten (53 · 46 · 95 · 95 · 67 · 53 · 56 · 45 · 37 · 42) steht sie
+jetzt auf **34** — drei Punkte unter dem schlechtesten Wert, aus demselben
+Grund wie damals: was ein Profil gesammelt hat, verschiebt ihn.
 
 ### Neu offen seit v350 — vier Punkte aus den Runden Q48/Q49
 
