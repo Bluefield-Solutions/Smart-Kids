@@ -3975,7 +3975,15 @@ async function abgeschlossen(p, wer, ebene, hoert, wie, eigen = null) {
    und schreiben" (E12) sagen die Frage. Der Unterschied entscheidet
    ZWEIMAL: diese Ebenen zaehlen nicht im Soll der Vorlesehilfe mit, und
    in `gehoertEn` muessen sie es. */
-const SAGT_ENGLISCH = (e) => String(e).startsWith('englisch') || e === 'hoersatz';
+/* „Lies das Wort" (E7) ist die eine Englischebene, auf der der Gegenstand
+   NICHT gesagt wird - dort steht er geschrieben da, und wer ihn hoerte,
+   muesste ihn nicht mehr lesen. Sie gehoert deshalb auf dieselbe Seite wie
+   „Wendungen": in `gehoertEn` darf sie nicht im Soll stehen, sonst meldete
+   der Durchgang „Lea bekam 4 von 5 Woertern gesagt" fuer eine Ebene, die
+   absichtlich schweigt. Dass sie schweigt, wird trotzdem geprueft - im
+   Zweig der Englischkarten, und zwar als Zusage und nicht als Luecke. */
+const SAGT_ENGLISCH = (e) => (String(e).startsWith('englisch') || e === 'hoersatz')
+  && e !== 'englisch:lesen';
 /* „Zwei Wörter, ein Laut" (E5) steht bei DREI Profilen - Lea und beiden
    Eltern. Es muss bei allen dreien stehen, und nicht nur bei einem: die
    Fremdpruefung unten meldet jede Ebene, die einem anderen gehoert und
@@ -3998,7 +4006,12 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freund
                           heisst zweierlei: bei Lea muss die Kachel da sein,
                           und bei jedem anderen darf sie es nicht. */
                        lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren',
-                             'englisch:legen', 'englisch:bauen', 'englisch:laute'] };
+                             'englisch:legen', 'englisch:bauen', 'englisch:laute',
+                             /* „Lies das Wort" (E7) gehoert Lea allein, aus
+                                demselben Grund wie das Legen: Fiona liest
+                                nicht, und ein Wort, das man nicht lesen
+                                kann, ist als Frage keine Frage. */
+                             'englisch:lesen'] };
 /* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
  * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
@@ -4534,15 +4547,47 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       if (await p.$('.schirm.da .engkarte')) {
         const auf = await ausDerSitzung(p, wer, ebene, ['id', 'wort']);
         if (!auf) continue;
-        // Auf dieser Ebene IST das Wort die Frage - siehe `englischGehoert`.
-        await englischGehoert(p, wer, ebene, auf.wort,
-          'auf dieser Ebene IST das Wort die Frage, und ohne es stehen vier Bilder '
-          + 'ohne Aufgabe da');
+        /* ZWEI EBENEN, EIN BILDSCHIRM - und der Unterschied ist genau eine
+           Zusage, die sich umdreht.
+           „Hören und zeigen" (E3): das Wort wird GESAGT und steht nirgends.
+           „Lies das Wort" (E7):    das Wort STEHT DA und wird nicht gesagt.
+           Beide Male sind es vier Bilder und ein Tipp; die Weiche steht
+           deshalb hier und nicht in einem zweiten Zweig - was zweimal
+           dasteht, veraltet einmal (Regel 6), und ein zweiter Zweig waere
+           beim naechsten Umbau der, den keiner mitpflegt. */
+        const liest = ebene.endsWith(':lesen');
+        if (liest) {
+          /* DAS WORT MUSS DASTEHEN. Ohne es sind es vier Bilder ohne Frage -
+             und geraten wird trotzdem mit einem Viertel Trefferquote, der
+             Bildschirm bliebe also heil. Kein anderes Tor faengt das ab. */
+          const frage = await p.$eval('.schirm.da .frage', e => e.textContent)
+            .catch(() => '');
+          if (!new RegExp(`\\b${auf.wort}\\b`, 'i').test(frage))
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" steht nicht in `
+              + `der Frage („${frage.trim()}") — dann stehen vier Bilder ohne Aufgabe da`));
+          /* UND ES DARF NICHT GESAGT WERDEN - das ist die ganze Ebene.
+             Wer das Wort hoert, muss es nicht mehr lesen; sie pruefte dann
+             dasselbe wie ihre Schwesterebene, und niemand saehe es. Nach
+             der Antwort wird es sehr wohl gesagt (das ist die Bestaetigung,
+             nicht die Frage) - deshalb wird HIER gemessen, vor dem Tipp. */
+          const bisher = await p.evaluate(() => (window.__gesagt || []).slice());
+          if (bisher.some(x => String(x).trim() === auf.wort))
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde `
+              + 'vorgelesen, bevor geantwortet war — wer es hört, muss es nicht mehr '
+              + 'lesen, und die Ebene misst dann dasselbe wie „Hören und zeigen"'));
+        } else {
+          // Auf dieser Ebene IST das Wort die Frage - siehe `englischGehoert`.
+          await englischGehoert(p, wer, ebene, auf.wort,
+            'auf dieser Ebene IST das Wort die Frage, und ohne es stehen vier Bilder '
+            + 'ohne Aufgabe da');
+        }
         await p.$eval(`.schirm.da .engkarte[data-id="${auf.id}"]`, x => x.click());
-        wege.add(`${wer}: englisch gehört und getippt`);
+        wege.add(liest ? `${wer}: englisch gelesen und getippt`
+                       : `${wer}: englisch gehört und getippt`);
         await bewertet(p);
         // Ein Muster, das nie zutrifft: `gehoert` bleibt hier unberuehrt.
-        await abgeschlossen(p, wer, ebene, /(?!)/, 'das gehörte Bild getippt');
+        await abgeschlossen(p, wer, ebene, /(?!)/,
+          liest ? 'das gelesene Wort zugeordnet' : 'das gehörte Bild getippt');
         continue;
       }
       /* „Leg das Wort" (E8) - die Ebene, auf der GEZOGEN wird.

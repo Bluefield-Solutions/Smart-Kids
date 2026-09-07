@@ -1963,6 +1963,34 @@ console.log('\n  Tor `englisch`');
   console.log('    (kein Wort trägt ein Themengebiet — die Zuordnung steht in keiner '
     + 'der beiden Quellen)');
 
+  /* Die Ablenkerprobe - EINMAL fuer beide Ebenen, die vier Kaesten zeigen.
+   *
+   * „Hoeren und zeigen" (E3) und „Lies das Wort" (E7) stellen dieselbe
+   * Frage an ihren Vorrat: kommen drei Ablenker heraus, ist das Ziel
+   * nicht darunter, und taugt jeder einzelne als Kasten? Sie stand nach
+   * E7 zweimal Zeile fuer Zeile da, und `doppelt` hat es im selben Lauf
+   * gemeldet - was zweimal dasteht, veraltet einmal (Regel 6).
+   *
+   * Was die Ebenen unterscheidet, ist die Frage an den EINZELNEN Ablenker,
+   * und die kommt deshalb als `jeder` von aussen: beim Hoeren muss er die
+   * Sorte des Ziels haben, beim Lesen eine Zeichnung. Eine Liste hier
+   * waere die zweite Fassung derselben Auskunft.
+   *
+   * Der Wuerfel ist ein fester: dieselbe Auswahl bei jedem Lauf, sonst
+   * meldete das Tor mal etwas und mal nicht - und eine Pruefung, die
+   * wuerfelt, ob sie prueft, ist kein Beweis (Regel 1).
+   */
+  const ablenkerPruefen = (vorrat, melde, jeder = () => null) => {
+    for (const x of vorrat) {
+      let k = 1;
+      const w = () => { k = (k * 1664525 + 1013904223) >>> 0; return k / 4294967296; };
+      const ab = EN.ablenkerFuer(x, w);
+      if (ab.length !== 3) melde(`„${x.wort}" bekommt ${ab.length} Ablenker statt drei`);
+      if (ab.some(y => y.id === x.id)) melde(`„${x.wort}" steht unter seinen eigenen Ablenkern`);
+      for (const y of ab) { const satz = jeder(x, y); if (satz) melde(satz); }
+    }
+  };
+
   /* ---- Der Vorrat von „Hoeren und zeigen" (E3, Tor E-a in klein) -------
    *
    * Die Ebene fragt 25 Gegenstaende ab. Geprueft wird hier dreierlei, und
@@ -2011,18 +2039,9 @@ console.log('\n  Tor `englisch`');
        Geprueft an JEDEM Gegenstand und nicht an einem Beispiel - die
        Zahlen sind 15, die Farben 10, und bei kleiner Menge geht so etwas
        zuerst kaputt. */
-    for (const x of vorrat) {
-      let k = 1;
-      const w = () => { k = (k * 1664525 + 1013904223) >>> 0; return k / 4294967296; };
-      const ab = EN.ablenkerFuer(x, w);
-      if (ab.length !== 3)
-        eng.push(`„${x.wort}" bekommt ${ab.length} Ablenker statt drei`);
-      if (ab.some(y => y.id === x.id))
-        eng.push(`„${x.wort}" steht unter seinen eigenen Ablenkern`);
-      if (ab.some(y => y.sorte !== x.sorte))
-        eng.push(`„${x.wort}" bekommt einen Ablenker anderer Sorte — dann ist die `
-          + 'Aufgabe ohne ein Wort Englisch zu lösen');
-    }
+    ablenkerPruefen(vorrat, (s) => eng.push(s), (x, y) => y.sorte !== x.sorte
+      && `„${x.wort}" bekommt einen Ablenker anderer Sorte — dann ist die `
+         + 'Aufgabe ohne ein Wort Englisch zu lösen');
     /* CIELAB, von Hand: sRGB -> linear -> XYZ (D65) -> Lab. Zwanzig Zeilen
        statt einer Abhaengigkeit, und sie stehen hier statt in den Daten -
        ein Tor, das seine Formel aus dem Prüfling holt, prüft sie nicht. */
@@ -2637,6 +2656,203 @@ console.log('\n  Tor `englisch`');
       + `${EN.STOLPERSTELLEN.length} Stolperstellen (${EN.STOLPERSTELLEN
         .map(x => `${x.id} ${jeStolper.get(x.id)}`).join(', ')}) · jede Ersetzung `
       + `nachgerechnet · ${vla.length} Gegenstände in beiden Richtungen`);
+
+    /* --- „Lies das Wort" (E7): die Zeichnungen ------------------------
+     *
+     * Die Ebene ist die Umkehrung von „Hören und zeigen": oben steht das
+     * englische Wort, unten stehen vier Bilder. Sie steht und faellt
+     * damit, dass man die vier AUSEINANDERHAELT - und drei Arten, wie das
+     * kaputtgeht, sieht man dem Bildschirm nicht an:
+     *
+     *   1. ZWEI WOERTER, EIN UMRISS. Ein `pfad` doppelt hingeschrieben,
+     *      und zwei Karten zeigen dasselbe Bild. Eine davon ist richtig,
+     *      die andere auch - und wer die falsche tippt, bekommt gesagt,
+     *      er habe sich geirrt. Der Bildschirm bleibt heil.
+     *   2. DIE ZEICHNUNG LAEUFT AUS DEM RAHMEN. `<svg>` schneidet an
+     *      seinem viewBox ab: was ausserhalb von 0..64 liegt, ist
+     *      einfach weg. Ein halber Apfel sieht aus wie ein Entwurf.
+     *   3. DIE ZEICHNUNG IST ZU KLEIN. Fuellt sie nur ein Viertel ihres
+     *      Rahmens, steht sie als Fleck neben drei ausgewachsenen
+     *      Bildern - und die Aufgabe ist ohne ein Wort Englisch zu
+     *      loesen: das kleine ist das andere.
+     *
+     * DIE MESSSTELLE (Regel 5): gerechnet wird am PFAD, nicht am Bild -
+     * es gibt hier keinen Browser. Kurven werden abgetastet, Boegen ueber
+     * die Mittelpunktsform ausgerechnet. Damit diese Rechnung nicht still
+     * falsch wird, prueft sie sich zuerst an zwei Rahmen, deren Mass
+     * bekannt ist: eine Rechnung ohne Selbstprobe meldet fuer JEDEN Pfad
+     * dasselbe und sieht dabei aus wie ein Beweis (Regel 1).
+     */
+    const ef = [];
+    /* Nur die Befehle, die die Zeichnungen wirklich benutzen - und bei
+       allen anderen bricht die Rechnung ab, statt sich zu verzaehlen.
+       Ein Parser, der `s` ueberliest, misst ab da Unsinn und meldet
+       trotzdem eine Zahl. */
+    const KENNT = /^[MmLlHhVvCcSsAaZz]$/;
+    const pfadKasten = (d) => {
+      let x = 0, y = 0, sx = 0, sy = 0;
+      // Der zweite Stuetzpunkt der letzten Kurve - `s` spiegelt ihn.
+      // Ohne dieses Gedaechtnis waere `s` eine Kurve mit falschem Bauch,
+      // und die Rechnung meldete eine Zahl, die keiner nachschaut.
+      let lcx = null, lcy = null;
+      let links = 1e9, oben = 1e9, rechts = -1e9, unten = -1e9;
+      const nimm = (a, b) => { links = Math.min(links, a); rechts = Math.max(rechts, a);
+                               oben = Math.min(oben, b); unten = Math.max(unten, b); };
+      // Bezier: abgetastet. Die Stuetzpunkte selbst liegen oft weit
+      // ausserhalb der Kurve - wer sie misst, meldet „laeuft aus dem
+      // Rahmen" fuer eine Zeichnung, die drinbleibt.
+      const kurve = (x0, y0, a, b, c, e, f, g) => {
+        for (let t = 0; t <= 1.0001; t += 0.02) {
+          const u = 1 - t, p1 = u * u * u, p2 = 3 * u * u * t, p3 = 3 * u * t * t, p4 = t * t * t;
+          nimm(p1 * x0 + p2 * a + p3 * c + p4 * f, p1 * y0 + p2 * b + p3 * e + p4 * g);
+        }
+      };
+      // Bogen: Endpunkt- in Mittelpunktsform (SVG-Anhang F.6.5), dann
+      // abgetastet. Der bequeme Weg - Mittelpunkt plus beide Radien -
+      // liegt bis zu einem ganzen Radius daneben und hat beim Teeglas
+      // „x -7" gemeldet, wo x 6 steht.
+      const bogen = (x0, y0, rx, ry, dreh, gross, uhr, x1, y1) => {
+        if (!rx || !ry) return nimm(x1, y1);
+        const w = dreh * Math.PI / 180, cs = Math.cos(w), sn = Math.sin(w);
+        const dx = (x0 - x1) / 2, dy = (y0 - y1) / 2;
+        const ax = cs * dx + sn * dy, ay = -sn * dx + cs * dy;
+        rx = Math.abs(rx); ry = Math.abs(ry);
+        const zuklein = (ax * ax) / (rx * rx) + (ay * ay) / (ry * ry);
+        if (zuklein > 1) { rx *= Math.sqrt(zuklein); ry *= Math.sqrt(zuklein); }
+        const zaehler = rx * rx * ry * ry - rx * rx * ay * ay - ry * ry * ax * ax;
+        const nenner = rx * rx * ay * ay + ry * ry * ax * ax;
+        let k = Math.sqrt(Math.max(0, zaehler / nenner));
+        if (gross === uhr) k = -k;
+        const cxp = k * rx * ay / ry, cyp = -k * ry * ax / rx;
+        const cx = cs * cxp - sn * cyp + (x0 + x1) / 2;
+        const cy = sn * cxp + cs * cyp + (y0 + y1) / 2;
+        const t1 = Math.atan2((ay - cyp) / ry, (ax - cxp) / rx);
+        const t2 = Math.atan2((-ay - cyp) / ry, (-ax - cxp) / rx);
+        let dt = t2 - t1;
+        if (!uhr && dt > 0) dt -= 2 * Math.PI; else if (uhr && dt < 0) dt += 2 * Math.PI;
+        for (let i = 0; i <= 40; i++) {
+          const t = t1 + dt * i / 40;
+          const px = rx * Math.cos(t), py = ry * Math.sin(t);
+          nimm(cx + cs * px - sn * py, cy + sn * px + cs * py);
+        }
+      };
+      const teile = String(d).match(/[A-Za-z]|-?\d*\.?\d+/g) || [];
+      let i = 0, cmd = 'M';
+      while (i < teile.length) {
+        if (/[A-Za-z]/.test(teile[i])) {
+          cmd = teile[i++];
+          if (!KENNT.test(cmd)) return { fremd: cmd };
+        }
+        const rel = cmd === cmd.toLowerCase(), C = cmd.toUpperCase();
+        if (C === 'Z') { x = sx; y = sy; continue; }
+        const z = (n) => { const v = teile.slice(i, i + n).map(Number); i += n; return v; };
+        if (C === 'M') { const [a, b] = z(2); x = rel ? x + a : a; y = rel ? y + b : b;
+          sx = x; sy = y; nimm(x, y); cmd = rel ? 'l' : 'L'; lcx = lcy = null; }
+        else if (C === 'L') { const [a, b] = z(2); x = rel ? x + a : a; y = rel ? y + b : b;
+          nimm(x, y); lcx = lcy = null; }
+        else if (C === 'H') { const [a] = z(1); x = rel ? x + a : a; nimm(x, y); lcx = lcy = null; }
+        else if (C === 'V') { const [a] = z(1); y = rel ? y + a : a; nimm(x, y); lcx = lcy = null; }
+        else if (C === 'C') { const v = z(6), px = rel ? x : 0, py = rel ? y : 0;
+          kurve(x, y, px + v[0], py + v[1], px + v[2], py + v[3], px + v[4], py + v[5]);
+          lcx = px + v[2]; lcy = py + v[3]; x = px + v[4]; y = py + v[5]; }
+        else if (C === 'S') { const v = z(4), px = rel ? x : 0, py = rel ? y : 0;
+          // Der erste Stuetzpunkt IST die Spiegelung des letzten - genau
+          // das bedeutet `s`. Ohne Vorgaenger liegt er auf dem Punkt.
+          const s1x = lcx === null ? x : 2 * x - lcx, s1y = lcy === null ? y : 2 * y - lcy;
+          kurve(x, y, s1x, s1y, px + v[0], py + v[1], px + v[2], py + v[3]);
+          lcx = px + v[0]; lcy = py + v[1]; x = px + v[2]; y = py + v[3]; }
+        else { const v = z(7);
+          const nx = rel ? x + v[5] : v[5], ny = rel ? y + v[6] : v[6];
+          bogen(x, y, v[0], v[1], v[2], v[3], v[4], nx, ny); x = nx; y = ny;
+          lcx = lcy = null; }
+      }
+      return { links, oben, rechts, unten };
+    };
+    /* Die Selbstprobe: zwei Rahmen, deren Mass ich kenne - einer voll,
+       einer eingerueckt, und der zweite mit Bogen statt Ecken. Faellt die
+       Rechnung aus, melden alle sechzehn Zeichnungen brav „passt". */
+    for (const [d, soll] of [['M0 0h64v64H0Z', '0,0,64,64'],
+                             ['M8 8h48v48H8Z', '8,8,56,56'],
+                             ['M32 8a24 24 0 1 0 0 48 24 24 0 1 0 0-48Z', '8,8,56,56'],
+                             /* Ein `s`, dessen gespiegelter Stuetzpunkt das
+                                Mass bestimmt: wird die Spiegelung
+                                weggelassen, misst diese Zeile 8..47 statt
+                                8..56 - der Zweig hat damit eine eigene
+                                Probe und nicht nur eine Zeile Code. */
+                             ['M8 56c0-32 24-48 24-48s24 16 24 48Z', '8,8,56,56']]) {
+      const k = pfadKasten(d);
+      const ist = [k.links, k.oben, k.rechts, k.unten].map(v => Math.round(v)).join(',');
+      if (ist !== soll) ef.push(`die Rahmenrechnung misst „${d}" als ${ist} statt ${soll} `
+        + '— dann sagt sie über die Zeichnungen darunter nichts');
+    }
+    if (ef.length) {
+      console.log('    ' + ef.join('\n    '));
+      console.error('\n  englisch ROT: die Rahmenrechnung (E7) misst falsch.');
+      process.exit(1);
+    }
+    const vls = EN.vorratLesen();
+    /* Vier, weil der Bildschirm vier Karten zeigt: das Ziel und drei
+       Ablenker. Bei dreien stünde eine Karte leer oder doppelt da, und
+       die Ebene versteckt sich statt rot zu werden - `wenn()` blendet sie
+       aus. Genau das ist die stille Verfallsart, die hier laut wird. */
+    const NOETIG = 4;
+    if (vls.length < NOETIG)
+      ef.push(`nur ${vls.length} gezeichnete Wörter (nötig ${NOETIG}) — „Lies das Wort" `
+        + 'blendet sich dann selbst aus, und niemand sieht, dass eine Ebene fehlt');
+    const gesehen = new Map();
+    const [RB_L, RB_O, RB_R, RB_U] = String(EN.BILD_RAHMEN).trim().split(/\s+/).map(Number);
+    for (const x of vls) {
+      if (!String(x.id).startsWith('ls:'))
+        ef.push(`„${x.id}" trägt nicht die eigene Kennung ls: — dann teilt sich `
+          + '„Lies das Wort" den Leitner-Stand mit einer anderen Ebene');
+      if (x.sorte !== 'bild')
+        ef.push(`„${x.wort}" hat die Sorte „${x.sorte}" — dann kommen die Ablenker `
+          + 'aus der falschen Menge');
+      if (gesehen.has(x.pfad))
+        ef.push(`„${x.wort}" und „${gesehen.get(x.pfad)}" sind dieselbe Zeichnung — `
+          + 'zwei Karten sähen gleich aus, und eine richtige Antwort gälte als falsch');
+      gesehen.set(x.pfad, x.wort);
+      const k = pfadKasten(x.pfad);
+      if (k.fremd) { ef.push(`die Zeichnung „${x.wort}" benutzt den Befehl „${k.fremd}", `
+        + 'den die Rahmenrechnung nicht kennt — sie misst ab dort Unsinn'); continue; }
+      if (k.links < RB_L - 0.01 || k.oben < RB_O - 0.01
+          || k.rechts > RB_L + RB_R + 0.01 || k.unten > RB_O + RB_U + 0.01)
+        ef.push(`„${x.wort}" liegt bei x ${k.links.toFixed(1)}..${k.rechts.toFixed(1)}, `
+          + `y ${k.oben.toFixed(1)}..${k.unten.toFixed(1)} und damit ausserhalb des `
+          + `Rahmens „${EN.BILD_RAHMEN}" — was draussen liegt, schneidet das SVG ab`);
+      /* Anteilig am Rahmen und nicht in absoluten Punkten (Regel 2):
+         wird der Rahmen einmal groesser, wandert die Grenze mit.
+         55 % ist keine Schoenheitsgrenze, sondern der Abstand zum
+         kleinsten, das heute steht - „dog" mit 63 %. Wer darunter
+         faellt, steht als Fleck neben drei ausgewachsenen Bildern. */
+      const fuellt = Math.max(k.rechts - k.links, k.unten - k.oben) / Math.max(RB_R, RB_U);
+      if (fuellt < 0.55)
+        ef.push(`„${x.wort}" füllt nur ${(fuellt * 100).toFixed(0)} % seines Rahmens — `
+          + 'neben drei ausgewachsenen Bildern ist das kleine erkennbar das andere, '
+          + 'und die Aufgabe ist ohne ein Wort Englisch zu lösen');
+    }
+    /* Die Ablenker kommen aus DIESEM Vorrat und nicht aus den Farben:
+       `ablenkerFuer` waehlt den Topf an der Sorte, und diese Weiche ist
+       eine Zeile, die still umkippt. Stünden Farbflecken neben einem
+       Apfel, waere die Aufgabe ohne Englisch zu loesen. */
+    ablenkerPruefen(vls, (s) => ef.push(s), (x, y) => !y.pfad
+      && `„${x.wort}" bekommt einen Ablenker ohne Zeichnung — ein leerer Kasten `
+         + 'ist als Antwort nicht zu erkennen');
+    if (ef.length) {
+      console.log('    ' + ef.join('\n    '));
+      console.error('\n  englisch ROT: die Zeichnungen für „Lies das Wort" (E7) stimmen nicht.');
+      process.exit(1);
+    }
+    const kleinstes = vls.reduce((a, b) => {
+      const ka = pfadKasten(a.pfad), kb = pfadKasten(b.pfad);
+      return Math.max(kb.rechts - kb.links, kb.unten - kb.oben)
+           < Math.max(ka.rechts - ka.links, ka.unten - ka.oben) ? b : a;
+    });
+    const kk = pfadKasten(kleinstes.pfad);
+    console.log(`    Lies das Wort (E7): ${vls.length} von ${EN.BILDER.length} Wörtern `
+      + `gezeichnet · jede Zeichnung eigen und im Rahmen „${EN.BILD_RAHMEN}" · kleinste `
+      + `„${kleinstes.wort}" mit ${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
+        / Math.max(RB_R, RB_U) * 100).toFixed(0)} % (Grenze 55 %)`);
   }
 }
 

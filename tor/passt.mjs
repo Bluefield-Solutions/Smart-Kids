@@ -377,8 +377,14 @@ const SUCHE = () => {
       + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, '
       /* Die Luecken beim Legen (E8). Sie sind keine Knoepfe und tragen
          kein `.etikett` - ohne diesen Eintrag misst hier nichts, ob eine
-         Reihe von sieben Luecken sich selbst ueberlappt. */
-      + '.schirm.da .leerstelle')) {
+         Reihe von sieben Luecken sich selbst ueberlappt.
+
+         Und die Englischkarten (E3, E7): vier Kaesten nebeneinander, seit
+         E7 mit einer 76 Punkte grossen Zeichnung darin. Auch sie tragen
+         weder `.knopf` noch `.etikett` - die Reihe war damit auf keinem
+         Bildschirm gemessen, und ob sie auf 390 Punkten Hoehe unter Frage
+         und ueber dem Ausweg noch Platz hat, stand nirgends. */
+      + '.schirm.da .leerstelle, .schirm.da .engkarte')) {
       const cs = getComputedStyle(el);
       if (cs.position === 'absolute' || cs.position === 'fixed') continue;
       if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
@@ -483,7 +489,7 @@ const SUCHE = () => {
       for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
         + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
         + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, .schirm.da .karte, '
-        + '.schirm.da .leerstelle')) {
+        + '.schirm.da .leerstelle, .schirm.da .engkarte')) {
         const cs = getComputedStyle(el);
         if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
         const k = el.getBoundingClientRect();
@@ -989,7 +995,7 @@ for (const g of MEINE) {
         const raus = [];
         for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .knopf, '
           + '.schirm.da .etikett, .schirm.da .zi, .schirm.da .mikro, .schirm.da .sterne, '
-          + '.schirm.da .leerstelle')) {
+          + '.schirm.da .leerstelle, .schirm.da .engkarte')) {
           const b = el.getBoundingClientRect();
           if (b.width === 0 && b.height === 0) continue;
           const fehlt = Math.max(si.oben - b.top, si.links - b.left,
@@ -1515,6 +1521,14 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      muessen Frage, Karten, Ausweg und Hoerknopf uebereinander passen. */
   await ebeneAnsehen('englisch:laute', '.schirm.da .lautkarte', 'Zwei Wörter',
     { vorlaufName: 'Vorlauf laute' });
+  /* Und „Lies das Wort" (E7): dieselben vier Kaesten wie beim Hoeren, aber
+     mit einer 76 Punkte grossen Zeichnung darin statt eines Farbflecks.
+     Das ist eine ANDERE Zahl, und sie entscheidet im kurzen Querformat:
+     vier Bilder nebeneinander, darueber die Frage mit dem englischen
+     Wort, darunter der Ausweg - auf 390 Punkten Hoehe. Der Gang beim
+     Hoeren beweist darueber nichts, er misst Flecken. */
+  await ebeneAnsehen('englisch:lesen', '.schirm.da .wortbild', 'Lies das Wort',
+    { vorlaufName: 'Vorlauf lesen' });
 
   /* Und die Elternebene (E10) - als STEPHAN, denn ihm gehoert sie.
    *

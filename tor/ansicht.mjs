@@ -313,6 +313,14 @@ const AUFNAHMEN = [
      kein Tor - das ist ein Blick. */
   { name:'quer-laute', spiel:'englisch:laute', kind:'lea', quer:true,
     wahl:'.schirm.da' },
+  /* „Lies das Wort" (E7): derselbe Bildschirm wie „Hören und zeigen",
+     nur umgedreht - oben steht das englische Wort, unten stehen vier
+     gezeichnete Bilder. Fotografiert wird er, weil kein Tor sagen kann,
+     ob die sechzehn Zeichnungen als Bild durchgehen: eine Kachel, ein
+     Umriss, eine Farbe. Ob man „bread" von „cheese" unterscheidet, ist
+     ein Blick und keine Zahl (Regel 4: kein Tor ersetzt den Blick). */
+  { name:'quer-lesen', spiel:'englisch:lesen', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },

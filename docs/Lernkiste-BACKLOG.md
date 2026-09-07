@@ -487,6 +487,71 @@ Wort da (Rechnen, Englisch, Legen, Laute) — jetzt `nochHoerenIns`.
 
 Sechs Gegenproben, eine neue Aufnahme `quer-laute`.
 
+### E7 · „Lies das Wort" — GEFAHREN
+
+**Sie ist die Umkehrung von „Hören und zeigen", und der Unterschied ist
+genau eine Zusage, die sich umdreht.** Dort wird das Wort *gesagt* und darf
+nirgends stehen; hier *steht* es und darf nicht gesagt werden. Vier Bilder
+darunter, eines gehört dazu. Beide Ebenen teilen sich denselben Bildschirm
+und denselben Zweig im Rauchtest — ein zweiter wäre die Fassung, die beim
+nächsten Umbau keiner mitpflegt: was zweimal dasteht, veraltet einmal
+(Regel 6).
+
+**Und deshalb schweigt sie, auch wenn eine englische Stimme da ist.** Wer
+das Wort hört, muss es nicht mehr lesen: die Ebene prüfte dann dasselbe wie
+ihre Schwester, und **auf dem Bildschirm wäre das nicht zu sehen**. Einen
+Nachhör-Knopf gibt es aus demselben Grund nicht. Nach der Antwort wird das
+Wort sehr wohl gesprochen — das ist die Bestätigung und nicht die Frage, und
+genau deshalb misst der Rauchtest **vor** dem Tipp.
+
+**Sechzehn Zeichnungen, von Hand, ohne E4b.** Die Rangliste sagte „E7 hängt
+an E4b — die Aufgabe *ist* Wort zu einem von vier Bildern". Das stimmt, und
+es war trotzdem kein Grund zu warten: die Bilder, die diese Ebene braucht,
+sind **Umrisse**, nicht Illustrationen — ein Fisch, ein Stuhl, ein Glas
+Wasser. Sechzehn davon liegen jetzt als `pfad` in `BILDER` (cat, dog, fish,
+apple, bread, cheese, egg, strawberry, tea, tomato, water, board, book,
+chair, shirt, shoes). E4b bleibt die Runde für die **restlichen 70** und für
+alles, was mehr sein soll als ein Umriss.
+
+**Drei Verfallsarten, die man dem Bildschirm nicht ansieht** — und für jede
+eine Zahl statt eines Blicks:
+
+| Was schiefgeht | Wie es aussieht | Was misst |
+|---|---|---|
+| Zwei Wörter, ein `pfad` | zwei gleiche Karten, eine „falsche" richtige Antwort | `inhalt`: jede Zeichnung genau einmal |
+| Die Zeichnung läuft aus dem Rahmen | ein halber Apfel — `<svg>` schneidet am viewBox ab | `inhalt`: Kasten des Pfades gegen `BILD_RAHMEN` |
+| Die Zeichnung ist zu klein | ein Fleck neben drei ausgewachsenen Bildern, und das kleine ist erkennbar das andere | `inhalt`: mindestens 55 % des Rahmens |
+
+**Die Rahmenrechnung prüft sich zuerst selbst.** Sie tastet Kurven ab und
+rechnet Bögen über die Mittelpunktsform aus — der bequeme Weg (Mittelpunkt
+plus beide Radien) lag beim Teeglas um einen ganzen Radius daneben und
+meldete `x -7`, wo `x 6` steht. Eine Rechnung, die still falsch wird, meldet
+für **jeden** Pfad dasselbe und sieht dabei aus wie ein Beweis (Regel 1).
+Also läuft sie zuerst über drei Rahmen, deren Maß bekannt ist — einen vollen,
+einen eingerückten, einen aus Bögen — und über eine Kurve mit `s`, deren
+Maß nur stimmt, wenn die Spiegelung des Stützpunkts stimmt.
+
+**Beim ersten Lauf hat sie sechs Zeichnungen abgelehnt**, weil sie `s`
+benutzen und die Rechnung `s` nicht kannte. Das ist der richtige Ausgang:
+ein Parser, der einen Befehl überliest, verzählt sich ab dort und meldet
+trotzdem eine Zahl. Lieber laut abbrechen als leise messen.
+
+**Der Blick hat eine Zeichnung zurückgeschickt** (Regel 4). Die Katze hatte
+einen Schwanz, der über ihren Körper lief — und `fill-rule="evenodd"` macht
+aus jeder Überlappung ein **Loch**. Auf dem Bildschirm sah das aus wie eine
+heraushängende Zunge, und kein Tor hat etwas gesagt: der Pfad ist gültig, im
+Rahmen, groß genug und eigen. Der Schwanz sitzt jetzt links **neben** dem
+Körper.
+
+**Und eine Messstelle, die es bis hierher nicht gab:** die vier
+Englischkarten standen in keiner der drei Klassenlisten, mit denen `passt`
+misst — sie sind weder `.knopf` noch `.etikett`. Solange ein Farbfleck darin
+saß, hat das niemandem gefehlt; mit einer 76 Punkte großen Zeichnung
+entscheidet die Reihe über das kurze Querformat. `.engkarte` steht jetzt in
+allen dreien, und das gilt rückwirkend auch für „Hören und zeigen".
+
+Sieben Gegenproben, eine neue Aufnahme `quer-lesen`.
+
 ### E8 · „Leg das Wort" — GEFAHREN
 
 **Der Lehrplan schreibt die Form vor**, und das ist der ganze Entwurf: für
@@ -661,12 +726,18 @@ nachgemessen am Quelltext stimmt es nur für zwei:
 | E9 · Satz zum Selbersagen | **nein** — die Chunks sind Sätze, und sie stehen amtlich in `THEMENGEBIETE` |
 | E8 · Abschreiben | **nein** — die Vorlage ist das Wort, nicht das Bild |
 | E5 · Lautpaare | **halb** — ohne Bilder nur für Lea, und dann gegen die Form |
-| E7 · Wort zum Bild | **ja** — die Aufgabe *ist* „Wort zu einem von vier Bildern" |
+| E7 · Wort zum Bild | **war „ja", ist erledigt** — siehe unten |
+
+**Nachtrag zu E7 (gefahren):** die Zeile stimmte und war trotzdem kein Grund
+zu warten. Die Bilder, die „Lies das Wort" braucht, sind **Umrisse** und
+keine Illustrationen; sechzehn davon sind von Hand gezeichnet, und die Ebene
+läuft. E4b bleibt die Runde für die restlichen 70.
 
 Empfohlene Reihenfolge für den Rest: **E9** (Inhalt liegt amtlich da),
 dann **E8** (das Legebauteil, das E9 mitbenutzt), dann **E5**, zuletzt
-**E7**. E7 ist codeseitig die billigste und steht trotzdem hinten — ohne
-E4b existiert sie nicht.
+**E7**. *Alle vier sind gefahren.* E7 stand hinten, weil es „ohne E4b nicht
+existiert" — das war die Fehleinschätzung dieser Rangliste: sechzehn
+Umrisse zu zeichnen war billiger als die Runde, auf die sie warten sollte.
 
 **E1 zuerst, und es ist blockiert.** Die vollständige ISB-Wortliste liegt
 noch nicht vor: der Netzzugang dieser Umgebung sperrt `isb.bayern.de` und

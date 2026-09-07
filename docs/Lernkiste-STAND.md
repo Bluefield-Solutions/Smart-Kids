@@ -11780,3 +11780,88 @@ Ausnahme richtig war.
 urteilte. `vorratLaute` schlägt den Grund an der Stolperstelle nach; fehlt
 sie, wirft es. Ein geworfener Fehler ist kein Befund — er sagt niemandem,
 was falsch ist. Erst urteilen, dann bauen.
+
+## E7 · „Lies das Wort" — dieselbe Ebene, andersherum gelesen
+
+**Der Unterschied zu „Hören und zeigen" ist genau eine Zusage, und sie
+dreht sich um.** Dort wird das Wort *gesagt* und darf nirgends stehen; hier
+*steht* es und darf nicht gesagt werden. Vier Bilder darunter, eines gehört
+dazu. Beide Ebenen teilen sich denselben Bildschirm, dieselbe Weiche im
+Vorrat und denselben Zweig im Rauchtest — ein zweiter Zweig wäre die
+Fassung, die beim nächsten Umbau keiner mitpflegt: was zweimal dasteht,
+veraltet einmal (Regel 6).
+
+**Sie schweigt auch dann, wenn eine englische Stimme da ist.** Wer das Wort
+hört, muss es nicht mehr lesen: die Ebene prüfte dann dasselbe wie ihre
+Schwester, und auf dem Bildschirm wäre das nicht zu sehen — beide zeigen
+vier Kästen und eine Frage. Einen Nachhör-Knopf gibt es aus demselben
+Grund nicht. **Nach** der Antwort wird das Wort sehr wohl gesprochen; das
+ist die Bestätigung und nicht die Frage, und genau deshalb misst der
+Rauchtest **vor** dem Tipp.
+
+Damit fällt sie im Rauchtest auf dieselbe Seite wie „Wendungen": in
+`gehoertEn` darf sie nicht im Soll stehen. Stünde sie dort, meldete der
+Durchgang *„Lea bekam 4 von 5 Wörtern gesagt"* für eine Ebene, die
+absichtlich schweigt.
+
+### Sechzehn Zeichnungen, und E4b musste dafür nicht kommen
+
+Die Rangliste im Rückstandsverzeichnis sagte: *E7 hängt an E4b — die
+Aufgabe ist „Wort zu einem von vier Bildern".* Das stimmt und war trotzdem
+kein Grund zu warten. Die Bilder, die diese Ebene braucht, sind **Umrisse**
+und keine Illustrationen: ein Fisch, ein Stuhl, ein Glas Wasser. Sechzehn
+davon liegen jetzt als `pfad` in `BILDER`. E4b bleibt die Runde für die
+restlichen 70 — und für alles, was mehr sein soll als ein Umriss.
+
+### Drei Verfallsarten, die man dem Bildschirm nicht ansieht
+
+| Was schiefgeht | Wie es aussieht | Was misst |
+|---|---|---|
+| Zwei Wörter, ein `pfad` | zwei gleiche Karten — eine richtige Antwort gilt als falsch | jede Zeichnung genau einmal |
+| Der Pfad läuft aus dem Rahmen | ein halber Apfel: `<svg>` schneidet am viewBox ab | Kasten des Pfades gegen `BILD_RAHMEN` |
+| Der Pfad ist zu klein | ein Fleck neben drei ausgewachsenen Bildern — das kleine ist erkennbar das andere | mindestens 55 % des Rahmens |
+
+Die 55 % sind kein Geschmack und keine runde Zahl: sie liegen unter dem
+kleinsten, das heute steht (`dog` mit 63 %) und anteilig am Rahmen, nicht
+in Punkten. Wird der Rahmen einmal größer, wandert die Grenze mit
+(Regel 2).
+
+### Die Rechnung prüft sich zuerst selbst
+
+`inhalt` hat keinen Browser, also wird der Kasten **am Pfad** gerechnet:
+Kurven abgetastet, Bögen über die Mittelpunktsform. Der bequeme Weg —
+Mittelpunkt plus beide Radien — lag beim Teeglas um einen ganzen Radius
+daneben und meldete `x -7`, wo `x 6` steht.
+
+Eine solche Rechnung wird still falsch: sie meldet dann für **jeden** Pfad
+dasselbe und sieht dabei aus wie ein Beweis (Regel 1). Also läuft sie
+zuerst über vier Formen, deren Maß bekannt ist — einen vollen Rahmen, einen
+eingerückten, einen aus vier Bögen und eine Kurve mit `s`, deren Maß nur
+stimmt, wenn die Spiegelung des Stützpunkts stimmt. Fällt eine davon aus,
+bricht das Tor ab, statt sechzehn Zeichnungen freizusprechen.
+
+**Beim ersten Lauf hat sie sechs Zeichnungen abgelehnt**, weil sie `s`
+benutzen und die Rechnung `s` nicht kannte. Das ist der richtige Ausgang:
+ein Parser, der einen Befehl überliest, verzählt sich ab dort und meldet
+trotzdem eine Zahl. Lieber laut abbrechen als leise messen — die Rechnung
+kann `s` jetzt, und die Selbstprobe hat den Zweig.
+
+### Was nur der Blick gefunden hat
+
+Die Katze hatte einen Schwanz, der über ihren Körper lief. `fill-rule="evenodd"`
+macht aus jeder Überlappung ein **Loch**: auf dem Bildschirm sah das aus wie
+eine heraushängende Zunge. Kein Tor hat etwas gesagt, und keines hätte etwas
+sagen können — der Pfad ist gültig, im Rahmen, groß genug und eigen. Der
+Schwanz sitzt jetzt links **neben** dem Körper. Kein Tor ersetzt den Blick
+(Regel 4).
+
+### Und eine Messstelle, die es bis hierher nicht gab
+
+Die vier Englischkarten standen in **keiner** der drei Klassenlisten, mit
+denen `passt` misst: sie sind weder `.knopf` noch `.etikett`. Solange ein
+Farbfleck darin saß, hat das niemandem gefehlt. Mit einer 76 Punkte großen
+Zeichnung entscheidet die Reihe über das kurze Querformat — und ob sie dort
+unter der Frage und über dem Ausweg noch Platz hat, stand nirgends.
+`.engkarte` steht jetzt in allen drei Listen, und das gilt rückwirkend auch
+für „Hören und zeigen". `passt` misst damit 41 Bildschirme statt 35 und
+bleibt grün.

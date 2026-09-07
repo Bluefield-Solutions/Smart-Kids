@@ -164,7 +164,7 @@
   },
   {
     "dateien": "src/inhalt/englisch.js · src/inhalt/tiere.js",
-    "token": 687,
+    "token": 700,
     "wo": [
       "src/inhalt/englisch.js:881",
       "src/inhalt/englisch.js:883",
@@ -217,25 +217,25 @@
       "src/inhalt/tiere.js:279",
       "src/inhalt/tiere.js:280"
     ],
-    "warum": "Zwei DATENTABELLEN, die sich nur in der Form gleichen: die zwanzig Saetze zum Selbersagen (E9) tragen id/satz/gebiet/quelle, die Tierzeilen id/name/ton/raum. Eine Tabelle besteht aus gleichfoermigen Zeilen — das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Zusammenlegen hiesse hier, englische Redemittel mit Tierdaten zu verheiraten; die beiden haben ausser der Form nichts gemeinsam. Dieselbe Begruendung wie bei den Laenderlisten in erdkunde.js weiter oben. — Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die MENGE an Dopplung: sie waechst, wenn eine Tabelle laenger wird, und faellt nicht, wenn eine andere aufgeraeumt wird. Wer sie hochsetzt, zaehlt zuerst die Zeilen."
+    "warum": "Zwei DATENTABELLEN, die sich nur in der Form gleichen: die zwanzig Saetze zum Selbersagen (E9) tragen id/satz/gebiet/quelle, die Tierzeilen id/name/ton/raum. Eine Tabelle besteht aus gleichfoermigen Zeilen — das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Zusammenlegen hiesse hier, englische Redemittel mit Tierdaten zu verheiraten; die beiden haben ausser der Form nichts gemeinsam. Dieselbe Begruendung wie bei den Laenderlisten in erdkunde.js weiter oben. — Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die MENGE an Dopplung: sie waechst, wenn eine Tabelle laenger wird, und faellt nicht, wenn eine andere aufgeraeumt wird. Wer sie hochsetzt, zaehlt zuerst die Zeilen. — Nachgetragen in E7: sechzehn Zeilen des Bildplans haben ein `pfad`-Feld dazubekommen, und der gleichfoermige Lauf ist damit von 687 auf 700 Token gewachsen. Wieder nur Daten und keine Logik: die Zahl misst die LAENGE des Laufs, nicht die Menge an Dopplung."
   },
   {
     "dateien": "tor/ansicht.mjs",
-    "token": 179,
+    "token": 201,
     "wo": [
       "tor/ansicht.mjs:273",
       "tor/ansicht.mjs:335"
     ],
-    "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8, E9c und E5 sind es 62, und der Lauf ist von 113 ueber 135 und 157 auf 179 Token gewachsen - jede neue Szene verlaengert ihn."
+    "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8, E9c und E5 sind es 62, und der Lauf ist von 113 ueber 135 und 157 auf 179 Token gewachsen - jede neue Szene verlaengert ihn. — Nachgetragen in E7: die Szene `quer-lesen` ist die naechste Zeile derselben Tabelle, und mit ihr ist der Lauf von 179 auf 201 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste."
   },
   {
     "dateien": "src/inhalt/englisch.js · tor/ansicht.mjs",
-    "token": 202,
+    "token": 297,
     "wo": [
       "src/inhalt/englisch.js:398",
       "src/inhalt/englisch.js:406",
       "tor/ansicht.mjs:87"
     ],
-    "warum": "Drei Tabellen, die sich nur in der FORM gleichen: zwei Stellen im Bildplan (`{ wort, gebiet, pfad, motiv }`) und die Szenenliste der Aufnahmen (`{ name, spiel, kind, quer, wahl }`). Der Lauf ist mit E4b entstanden, weil vier Woerter einen `pfad` bekommen haben und ihre Eintraege damit vierzeilig sind wie eine Szene - inhaltlich haben ein Apfel und ein Bildschirmfoto nichts miteinander zu tun. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die Menge an Dopplung: sie waechst mit jedem weiteren gezeichneten Wort, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Woerter mit `pfad` (`npm run inhalt` sagt „gezeichnet: N von 86\")."
+    "warum": "Drei Tabellen, die sich nur in der FORM gleichen: zwei Stellen im Bildplan (`{ wort, gebiet, pfad, motiv }`) und die Szenenliste der Aufnahmen (`{ name, spiel, kind, quer, wahl }`). Der Lauf ist mit E4b entstanden, weil vier Woerter einen `pfad` bekommen haben und ihre Eintraege damit vierzeilig sind wie eine Szene - inhaltlich haben ein Apfel und ein Bildschirmfoto nichts miteinander zu tun. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die Menge an Dopplung: sie waechst mit jedem weiteren gezeichneten Wort, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Woerter mit `pfad` (`npm run inhalt` sagt „gezeichnet: N von 86\"). — Nachgetragen in E7: mit den sechzehn gezeichneten Woertern ist der Lauf von 202 auf 297 Token gewachsen. Es ist derselbe Fall wie zuvor — Datenzeilen mit ausgerichteten Feldern, in zwei Verzeichnissen mit verschiedenen Aufgaben; zusammenlegen hiesse, den Bildplan an die Szenenliste eines Tores zu binden."
   }
 ]

@@ -5071,7 +5071,12 @@ export const PROBEN = [
    * zu machen: die Zahlen werden besser. */
   { n:'die Ablenker der Englischebene kommen aus der falschen Sorte', tor:'inhalt',
     datei:'src/inhalt/englisch.js',
-    such:"  const andere = vorratHoeren().filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
+    /* Seit E7 heisst der Topf `topf` und nicht mehr `vorratHoeren()`:
+       „Lies das Wort" zieht aus den gezeichneten Bildern, alles andere aus
+       dem Hoervorrat. Der EINGRIFF ist derselbe geblieben - er nimmt die
+       Sortenschranke weg - und er kommt bei den Farben und Zahlen an, die
+       sich einen Topf teilen. */
+    such:"  const andere = topf.filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
     /* Der Suchtext ueberlebt im Ersatz, als Kommentar darunter - und zwar
        WORTWOERTLICH. Der erste Anlauf hat nur ein Bruchstueck gerettet
        („x.sorte === ziel.sorte"), und `inhalt` meldete daraufhin den
@@ -5079,8 +5084,8 @@ export const PROBEN = [
        zwar der vierte in diesem Verzeichnis. Zwei Leerzeichen hinter dem
        „//" sind kein Zufall - sie machen den Suchtext samt seiner
        Einrueckung wieder auffindbar. */
-    ersatz:"  const andere = vorratHoeren().filter(x => x.id !== ziel.id);\n"
-      + "  //Anker:  const andere = vorratHoeren().filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
+    ersatz:"  const andere = topf.filter(x => x.id !== ziel.id);\n"
+      + "  //Anker:  const andere = topf.filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
     an:{ datei:'src/inhalt/englisch.js', text:'filter(x => x.id !== ziel.id);' },
     deckt:'englisch',
     sagt:'Ablenker anderer Sorte' },
@@ -5106,8 +5111,12 @@ export const PROBEN = [
    * fest: das Wort steht genau dann da, wenn es nicht zu hoeren ist. */
   { n:'ohne englische Stimme steht das Wort nirgends', tor:'smoke',
     args:['--nur=englisch'], bauen:true, datei:D,
-    such:'  const stumm = !englischHoerbar();',
-    ersatz:'  const stumm = false; // Anker: !englischHoerbar()',
+    /* Seit E7 steht `liest ||` davor - „Lies das Wort" ist immer stumm,
+       ganz gleich ob eine englische Stimme da ist. Der Eingriff bleibt
+       derselbe: die Notschrift faellt weg, und die Ebene steht stumm und
+       leer da. */
+    such:'  const stumm = liest || !englischHoerbar();',
+    ersatz:'  const stumm = false; // Anker: liest || !englischHoerbar()',
     an:{ ...DIST, text:'const stumm = false;' },
     sagt:'vier Bilder ohne Frage' },
 
@@ -5134,16 +5143,17 @@ export const PROBEN = [
    * Aussprache, die geuebt wird, ist die falsche. */
   { n:'das englische Wort wird deutsch ausgesprochen', tor:'smoke',
     args:['--nur=englisch'], bauen:true, datei:D,
-    /* Der Anker ist das ENDE des Kommentars darueber und nicht die Zeile
-       selbst: seit E5 endet auch `lauteschirm` auf `vorlesen(ziel.wort,
-       'en')` samt Nachhoer-Knopf, und ein Suchtext, der zweimal passt,
-       verstellt die falsche Stelle. Dieselbe Klammer benutzt die Probe
-       „die Englischebene sagt das Wort gar nicht mehr" ein Stueck weiter
-       unten - zwei Proben duerfen sich einen Suchtext teilen, zwei
-       STELLEN nicht. */
-    such:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n  vorlesen(ziel.wort, 'en');",
-    ersatz:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n  vorlesen(ziel.wort);",
-    an:{ ...DIST, fehlt:"ist. */\n  vorlesen(ziel.wort, 'en');" },
+    /* Der Anker ist die BEDINGUNG darueber und nicht die Zeile selbst:
+       `vorlesen(ziel.wort, 'en')` steht neunmal in dieser Datei, und ein
+       Suchtext, der mehrfach passt, verstellt die falsche Stelle. Seit E7
+       haengt der Aufruf an `if (!liest) {` - dem Zweig, den „Lies das
+       Wort" nicht nimmt -, und diese Klammer gibt es genau einmal.
+       Dieselbe benutzt die Probe „die Englischebene sagt das Wort gar
+       nicht mehr" ein Stueck weiter unten - zwei Proben duerfen sich einen
+       Suchtext teilen, zwei STELLEN nicht. */
+    such:"  if (!liest) {\n    vorlesen(ziel.wort, 'en');",
+    ersatz:"  if (!liest) {\n    vorlesen(ziel.wort);",
+    an:{ ...DIST, fehlt:"if (!liest) {\n    vorlesen(ziel.wort, 'en');" },
     sagt:'übt die falsche Aussprache ein' },
 
   /* Die Englischebene sagt gar nichts mehr.
@@ -5161,9 +5171,8 @@ export const PROBEN = [
    * Suchtext waeren nicht mehr auseinanderzuhalten. */
   { n:'die Englischebene sagt das Wort gar nicht mehr', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n  vorlesen(ziel.wort, 'en');",
-    ersatz:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n"
-      + "  //Anker:  vorlesen(ziel.wort, 'en');",
+    such:"  if (!liest) {\n    vorlesen(ziel.wort, 'en');",
+    ersatz:"  if (!liest) {\n    //Anker:  vorlesen(ziel.wort, 'en');",
     an:{ ...DIST, text:"//Anker:  vorlesen(ziel.wort, 'en');" },
     sagt:'IST das Wort die Frage' },
 
@@ -5908,6 +5917,95 @@ export const PROBEN = [
     ersatz:'    .map(x => ({ ...x }));',
     an:{ datei:'src/inhalt/englisch.js', text:'.map(x => ({ ...x }));' },
     sagt:'teilt sich' },
+
+  /* --- „Lies das Wort" (E7) --------------------------------------------
+   *
+   * Die Ebene ist die UMKEHRUNG von „Hoeren und zeigen", und alles, was
+   * an ihr kaputtgehen kann, geht leise kaputt: der Bildschirm bleibt in
+   * jedem dieser sechs Faelle vollstaendig heil.
+   *
+   * 1. DAS WORT WIRD DOCH VORGELESEN. Dann ist es wieder eine
+   *    Hoeraufgabe, und niemand sieht den Unterschied - es steht ja
+   *    trotzdem da. Geprueft wird VOR dem Tipp: nach der Antwort wird es
+   *    sehr wohl gesagt, das ist die Bestaetigung und nicht die Frage. */
+  { n:'beim Lesen wird das Wort doch vorgelesen', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  if (!liest) {\n    vorlesen(ziel.wort, 'en');",
+    ersatz:"  if (true) { //Anker:  if (!liest) {\n    vorlesen(ziel.wort, 'en');",
+    an:{ ...DIST, text:'if (true) { //Anker:  if (!liest) {' },
+    sagt:'wurde vorgelesen, bevor geantwortet war' },
+
+  /* 2. UND DIE GEGENRICHTUNG: das Wort steht gar nicht mehr da. `liest`
+   *    ist die eine Zeile, an der die ganze Ebene haengt; faellt sie aus,
+   *    wird die Frage zu „Tippe auf das Bild, das du hoerst" - vier
+   *    Zeichnungen und nichts zu lesen. */
+  { n:'beim Lesen steht das Wort nicht mehr in der Frage', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  const liest = String(st.ebeneId).endsWith(':lesen');",
+    ersatz:"  const liest = false; // Anker: String(st.ebeneId).endsWith(':lesen')",
+    an:{ ...DIST, text:'const liest = false;' },
+    sagt:'steht nicht in der Frage' },
+
+  /* 3. ZWEI WOERTER, EINE ZEICHNUNG. Ein `pfad` doppelt hingeschrieben,
+   *    und zwei Karten zeigen dasselbe Bild. Eine davon ist richtig, die
+   *    andere auch - und wer die falsche tippt, bekommt gesagt, er habe
+   *    sich geirrt. */
+  { n:'zwei englische Wörter teilen sich eine Zeichnung', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { wort: 'dog',      gebiet: 'tiere',\n    pfad: 'M32 12c-6 0-11 5-11 11v10c0 9 5 15 11 15s11-6 11-15V23c0-6-5-11-11-11Z",
+    ersatz:"  { wort: 'dog',      gebiet: 'tiere',\n    pfad: 'M3 32c9-16 28-21 41-13l13-11-4 24 4 24-13-11C31 53 12 48 3 32Zm38-6a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z',\n    weg: 'M32 12c-6 0-11 5-11 11v10c0 9 5 15 11 15s11-6 11-15V23c0-6-5-11-11-11Z",
+    an:{ datei:'src/inhalt/englisch.js', text:"weg: 'M32 12c-6 0-11 5-11 11" },
+    sagt:'sind dieselbe Zeichnung' },
+
+  /* 4. EINE ZEICHNUNG LAEUFT AUS DEM RAHMEN. `<svg>` schneidet an seinem
+   *    viewBox ab - was draussen liegt, ist einfach weg, und ein halbes
+   *    Brot sieht aus wie ein Entwurf. Der Eingriff schiebt es um dreissig
+   *    Punkte nach unten, das ist knapp die Haelfte. */
+  { n:'eine Zeichnung läuft aus ihrem Rahmen', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"    pfad: 'M8 36c0-12 11-21 24-21s24 9 24 21v12",
+    ersatz:"    pfad: 'M8 66c0-12 11-21 24-21s24 9 24 21v12",
+    an:{ datei:'src/inhalt/englisch.js', text:"pfad: 'M8 66c0-12" },
+    sagt:'ausserhalb des Rahmens' },
+
+  /* 5. UND DAS TOR SELBST: die Rahmenrechnung verliert die Spiegelung,
+   *    die `s` ausmacht. Danach misst sie sechs der sechzehn Zeichnungen
+   *    falsch - und meldet trotzdem eine Zahl. Genau das ist die Sorte
+   *    Verfall, gegen die die Selbstprobe an den drei bekannten Rahmen
+   *    steht: eine Pruefung, die nie etwas meldet, ist kein Beweis
+   *    (Regel 1). Der Eingriff sitzt im TOR, nicht in der App. */
+  { n:'die Rahmenrechnung verliert ihre Spiegelung', tor:'inhalt',
+    deckt:'englisch', datei:'tor/inhalt.mjs',
+    such:"          const s1x = lcx === null ? x : 2 * x - lcx, s1y = lcy === null ? y : 2 * y - lcy;",
+    ersatz:"          const s1x = x, s1y = y; // Anker: lcx === null ? x : 2 * x - lcx",
+    an:{ datei:'tor/inhalt.mjs', text:'const s1x = x, s1y = y;' },
+    sagt:'die Rahmenrechnung misst' },
+
+  /* 6. DIE ABLENKER BEIM LESEN KOMMEN AUS DEM HOERVORRAT. Dann stuenden
+   *    drei Farbflecke neben einem Apfel, und die Aufgabe waere „welches
+   *    ist kein Fleck?" - ohne ein Wort Englisch zu loesen. Die Weiche ist
+   *    eine Zeile, und sie kippt lautlos um. */
+  { n:'die Ablenker beim Lesen kommen aus dem Hörvorrat', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  const topf = ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
+    ersatz:"  const topf = vorratHoeren(); // Anker: ziel.sorte === 'bild' ? vorratLesen()",
+    an:{ datei:'src/inhalt/englisch.js', text:'const topf = vorratHoeren();' },
+    sagt:'Ablenker statt drei' },
+
+  /* 7. UND DIE MESSSTELLE IN `passt`: die vier Englischkarten stehen in
+   *    keiner der drei Klassenlisten, mit denen `passt` misst - sie sind
+   *    weder `.knopf` noch `.etikett`. Bis E7 hat das niemandem gefehlt,
+   *    weil ein Farbfleck klein ist; mit einer 76 Punkte grossen
+   *    Zeichnung darin entscheidet die Reihe ueber das kurze Querformat.
+   *    Der Eingriff macht die Zeichnung breit: laeuft die Reihe dann
+   *    ueber den Rand und `passt` sagt nichts, misst es die Ebene nicht.
+   *    Eine Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1) -
+   *    wer eine Wirkung misst, schaltet sie zuerst ab. */
+  { n:'die Englischkarten laufen über den Rand', tor:'passt', bauen:true, datei:V,
+    such:'.wortbild{display:block;width:76px;height:76px;fill:var(--tinte)}',
+    ersatz:'.wortbild{display:block;width:376px;height:76px;fill:var(--tinte)}',
+    an:{ ...DIST, text:'width:376px' },
+    sagt:'läuft über den Rand' },
 
   /* --- Die vier Satz-Abzeichen (E9b) ----------------------------------
    *

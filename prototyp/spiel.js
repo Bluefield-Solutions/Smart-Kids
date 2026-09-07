@@ -1370,6 +1370,20 @@ const EBENEN = [
    * `wenn`: nur mit englischer Stimme. Siehe `meineEbenen`. */
   { id:'englisch:laute', ueber:'Englisch', titel:'Zwei Wörter, ein Laut', farbe:4,
     art:'englisch', wer:['lea','stephan','violeta'], wenn: () => englischHoerbar() },
+  /* „Lies das Wort" (E7) - der Lehrplan sieht ab Klasse 3 Lesen im
+   * Wortumfang ausdruecklich vor: das geschriebene `cat` zu einem von
+   * vier Bildern.
+   *
+   * `wer`: nur Lea. Fuer Fiona gibt es das nicht, und das steht so im
+   * Konzept - sie liest noch kein Deutsch.
+   *
+   * `wenn`: nur, solange es ueberhaupt Bilder gibt. Der Vorrat sind die
+   * gezeichneten Woerter (heute sechzehn von sechsundachtzig); waere er
+   * leer, stuende eine Kachel da, hinter der nichts ist. Dieselbe
+   * Ueberlegung wie bei den Lautpaaren, nur mit einem anderen Grund. */
+  { id:'englisch:lesen', ueber:'Englisch', titel:'Lies das Wort', farbe:6,
+    art:'englisch', wer:['lea'],
+    wenn: () => Englisch.vorratLesen().length >= 4 },
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -1570,7 +1584,8 @@ const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
                           'englisch:sagen':'mikro', 'englisch:satz':'blase',
                           'englisch:legen':'karten',
                           'englisch:bauen':'satzkarten',
-                          'englisch:laute':'zweiton' };
+                          'englisch:laute':'zweiton',
+                          'englisch:lesen':'lupe' };
 /* Das Mikrofon als PFADE, nicht als `<rect>`.
    Dieselbe Messstelle wie ueberall (Regel 5): `passt` misst die
    gezeichnete Ausdehnung je Pfad; ein `<rect>` findet es gar nicht
@@ -1600,6 +1615,12 @@ const SATZKARTENSTRICH = '<path d="M2 12h13v10H2zM19 12h14v10H19z"/>'
    Lautsprecher, und drei Kacheln mit demselben Zeichen sagen einem Kind,
    sie seien dasselbe. */
 const ZWEITONSTRICH = '<path d="M4 8v8M10 4v16M16 9v6M22 6v12M28 10v4M34 7v10"/>';
+/* Und fuers Lesen (E7): eine Lupe ueber drei Schriftzeilen - gelesen wird
+   ein WORT, und gesucht wird das Bild dazu. Kein Buch: das Buch ist im
+   Haus schon das Forscherbuch, und zwei Dinge mit demselben Zeichen sagen
+   einem Kind, sie seien dasselbe. */
+const LUPENSTRICH = '<path d="M2 6h16M2 12h13M2 18h16"/>'
+  + '<path d="M28 4a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM34 18l6 6"/>';
 /* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
    Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
@@ -1717,7 +1738,8 @@ function silhouette(ebeneId) {
         : ENGLISCHZEICHEN[ebeneId] === 'blase' ? BLASENSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'karten' ? KARTENSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'satzkarten' ? SATZKARTENSTRICH
-        : ENGLISCHZEICHEN[ebeneId] === 'zweiton' ? ZWEITONSTRICH : ZEICHEN.tonAn}<path
+        : ENGLISCHZEICHEN[ebeneId] === 'zweiton' ? ZWEITONSTRICH
+        : ENGLISCHZEICHEN[ebeneId] === 'lupe' ? LUPENSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
@@ -2235,6 +2257,11 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      Richtungen. Sie tragen ihre Kennung selbst mit (`lt:…`). */
   if (art==='englisch' && kont==='laute')
     return Englisch.vorratLaute();
+  /* Die gezeichneten Woerter (E7). Der Vorrat waechst mit den Bildern -
+     heute sechzehn. Eigene Kennung (`ls:`), wie ueberall: gehoert ist
+     nicht gelesen. */
+  if (art==='englisch' && kont==='lesen')
+    return Englisch.vorratLesen();
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -3365,6 +3392,11 @@ function vorlaufSatz(ebeneId){
   /* „Leg das Wort" (E8). Der Satz nennt BEIDE Wege - ohne ihn findet ein
      Kind den Tippweg nicht, weil eine Karte, die man ziehen kann, nicht
      danach aussieht, als koenne man sie auch antippen. */
+  /* „Lies das Wort" (E7). Der Satz sagt die Richtung - ohne ihn sieht die
+     Ebene aus wie „Hören und zeigen", und sie ist dessen Umkehrung. */
+  if (art === 'englisch' && kont === 'lesen')
+    return 'Ein englisches Wort steht da, und du suchst das <strong>Bild</strong> '
+      + 'dazu. Vorgelesen wird hier nichts — sonst müsstest du es ja nicht lesen.';
   /* „Zwei Wörter, ein Laut" (E5). Der Satz sagt, WORUM es geht - ohne
      ihn sieht die Ebene aus wie eine Vokabelabfrage mit zwei Antworten.
      Und er sagt die Zusage mit: die Erklaerung kommt immer, auch wenn man
@@ -4567,15 +4599,30 @@ function englischschirm(){
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
+  /* DIE DRITTE EBENE AUF DIESEM BILDSCHIRM: „Lies das Wort" (E7).
+   *
+   * Sie ist die UMKEHRUNG von „Hören und zeigen", und der Unterschied ist
+   * genau eine Zeile: dort ist das geschriebene Wort die Antwort und darf
+   * nirgends stehen, hier IST es die Frage und muss stehen. Vier Bilder
+   * darunter, eines gehoert dazu.
+   *
+   * Und deshalb wird hier NICHT vorgelesen. Wer das Wort hoert, muss es
+   * nicht mehr lesen - die Ebene pruefte dann dasselbe wie die
+   * Schwesterebene, und niemand saehe den Unterschied. Ein Knopf zum
+   * Nachhoeren gibt es aus demselben Grund nicht. */
+  const liest = String(st.ebeneId).endsWith(':lesen');
   // Ohne englische Stimme steht das Wort da. MIT Stimme steht es nirgends -
   // geschrieben waere es die Antwort, und geprueft wuerde Lesen statt Hoeren.
-  const stumm = !englischHoerbar();
+  const stumm = liest || !englischHoerbar();
 
   const r1 = rnd(st.keim + st.i * 7919);
   const auswahl = mischenMit([ziel, ...Englisch.ablenkerFuer(ziel, r1)],
                              st.keim + st.i * 7919);
 
-  const bild = (x) => x.farbton
+  const bild = (x) => x.pfad
+    ? `<svg class="wortbild" viewBox="${Englisch.BILD_RAHMEN}" aria-hidden="true"
+        ><path d="${x.pfad}" fill-rule="evenodd"/></svg>`
+    : x.farbton
     ? `<span class="farbfleck" style="--farbton:${x.farbton}"></span>`
     : `<span class="ziffernbild">${x.ziffern}</span>`;
 
@@ -4647,12 +4694,13 @@ function englischschirm(){
     if (versuch >= 3) return aufloesen();
     wackelt(knopf);
     const f = s.querySelector('#frage');
-    const satz = 'Nicht ganz — hör noch einmal hin.';
+    const satz = liest ? 'Nicht ganz — lies noch einmal.'
+                       : 'Nicht ganz — hör noch einmal hin.';
     if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
     sagen(satz);
     // Und dann das Wort noch einmal - ohne es waere „hoer noch einmal hin"
-    // eine Aufforderung ohne Gegenstand.
-    vorlesen(ziel.wort, 'en');
+    // eine Aufforderung ohne Gegenstand. Beim LESEN steht es ja da.
+    if (!liest) vorlesen(ziel.wort, 'en');
   }
 
   s.querySelectorAll('.engkarte').forEach(k =>
@@ -4661,9 +4709,16 @@ function englischschirm(){
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
 
   /* Die Frage selbst - siehe den Kopf dieser Funktion: `vorlesen` und nicht
-     `ansagen`, weil sie kein Vorlesehelfer ist. */
-  vorlesen(ziel.wort, 'en');
-  nochHoerenIns(s, ziel.wort, 'en');
+     `ansagen`, weil sie kein Vorlesehelfer ist.
+
+     BEIM LESEN (E7) NICHT: dort ist das geschriebene Wort die Frage. Wer
+     es hoert, muss es nicht mehr lesen - die Ebene pruefte dann dasselbe
+     wie ihre Schwester, und niemand saehe den Unterschied. Der
+     Nachhoerknopf faellt aus demselben Grund weg. */
+  if (!liest) {
+    vorlesen(ziel.wort, 'en');
+    nochHoerenIns(s, ziel.wort, 'en');
+  }
   return s;
 }
 

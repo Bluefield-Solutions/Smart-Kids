@@ -332,6 +332,26 @@ export const LAUTPAARE = [
 ];
 
 /**
+ * Der Vorrat zum LESEN (E7): die Woerter, die schon ein Bild haben.
+ *
+ * Der Lehrplan sieht ab Klasse 3 Lesen im Wortumfang ausdruecklich vor:
+ * das geschriebene `cat` zu einem von vier Bildern. Fuer Fiona gibt es
+ * das nicht - sie liest noch kein Deutsch.
+ *
+ * Der Vorrat WAECHST mit den Zeichnungen und steht nicht als Liste
+ * daneben. Solange erst sechzehn Woerter einen Pfad haben, sind es
+ * sechzehn; mit dem naechsten gezeichneten Wort sind es siebzehn, ohne
+ * dass hier eine Zeile zu aendern waere. Eine zweite Liste ware genau die
+ * Sorte, die veraltet (Regel 6): sie stuende neben `BILDER` und muesste
+ * mitwachsen.
+ */
+export function vorratLesen(){
+  return BILDER.filter(b => b.pfad).map(b => ({
+    id: `ls:${b.wort}`, name: b.wort, wort: b.wort,
+    sorte: 'bild', gebiet: b.gebiet, pfad: b.pfad }));
+}
+
+/**
  * Der Vorrat der Lautpaare (E5) - ZWEI Gegenstaende je Paar.
  *
  * Gefragt wird einmal nach dem einen und einmal nach dem anderen Wort.
@@ -399,7 +419,14 @@ export function vorratBauen(){
  * etwas anderes da.
  */
 export function ablenkerFuer(ziel, wuerfel, wieviel = 3){
-  const andere = vorratHoeren().filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);
+  /* Aus welchem Topf die Ablenker kommen, entscheidet die SORTE.
+   *
+   * „Lies das Wort" (E7) zieht aus den gezeichneten Bildern, alle anderen
+   * aus dem Hoervorrat. Ohne diese Zeile bekaeme ein Bild drei Farbflecke
+   * daneben - und dann waere die Aufgabe „welches ist kein Fleck?" und
+   * nicht „welches Bild heisst `cat`?". */
+  const topf = ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();
+  const andere = topf.filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);
   for (let i = andere.length - 1; i > 0; i--) {
     const j = Math.floor(wuerfel() * (i + 1));
     [andere[i], andere[j]] = [andere[j], andere[i]];
@@ -481,9 +508,13 @@ export const BILDGEBIETE = [
 export const BILD_RAHMEN = '0 0 64 64';
 export const BILDER = [
   // --- Tiere ---
-  { wort: 'cat',      gebiet: 'tiere', motiv: 'a cat sitting upright, seen from the side, tail curled around its paws' },
+  { wort: 'cat',      gebiet: 'tiere',
+    pfad: 'M14 26c0-8 3-14 6-18l4 8h20l4-8c3 4 6 10 6 18 0 6-3 11-7 14 2 3 3 7 3 11v3H18v-3c0-4 1-8 3-11-4-3-7-8-7-14Zm9 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm18 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM2 52c8 0 12-4 12-9h5c0 9-7 14-17 14Z',
+    motiv: 'a cat sitting upright, seen from the side, tail curled around its paws' },
   { wort: 'chicken',  gebiet: 'tiere', motiv: 'a hen standing, seen from the side, with a comb and a rounded body' },
-  { wort: 'dog',      gebiet: 'tiere', motiv: 'a dog sitting upright, seen from the side, with floppy ears' },
+  { wort: 'dog',      gebiet: 'tiere',
+    pfad: 'M32 12c-6 0-11 5-11 11v10c0 9 5 15 11 15s11-6 11-15V23c0-6-5-11-11-11ZM21 20c-5 1-9 7-9 14s4 13 9 14V20ZM43 20c5 1 9 7 9 14s-4 13-9 14V20ZM27 27a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM37 27a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM32 37a4 3 0 1 0 0 6 4 3 0 0 0 0-6Z',
+    motiv: 'a dog sitting upright, seen from the side, with floppy ears' },
   { wort: 'fish',     gebiet: 'tiere',
     pfad: 'M3 32c9-16 28-21 41-13l13-11-4 24 4 24-13-11C31 53 12 48 3 32Zm38-6a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z',
     motiv: 'a single fish seen from the side, with a fan tail and one round eye' },
@@ -496,30 +527,46 @@ export const BILDER = [
   { wort: 'apple',      gebiet: 'essen',
     pfad: 'M32 18C26 9 12 11 9 24 6 38 15 57 25 57c3 0 4-2 7-2s4 2 7 2c10 0 19-19 16-33C56 11 42 9 36 18ZM30 4c1 5 1 10 1 15h4c-1-5-1-10 0-15ZM35 13c7-7 15-6 19-4-2 9-11 12-18 8Z',
     motiv: 'one apple seen from the front, with a short stalk and one leaf' },
-  { wort: 'bread',      gebiet: 'essen', motiv: 'a whole loaf of bread seen from the side, with a rounded top' },
+  { wort: 'bread',      gebiet: 'essen',
+    pfad: 'M8 36c0-12 11-21 24-21s24 9 24 21v12a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4Zm10-9 5-8 3 2-5 8Zm11 0 5-8 3 2-5 8Zm11 0 5-8 3 2-5 8Z',
+    motiv: 'a whole loaf of bread seen from the side, with a rounded top' },
   { wort: 'butter',     gebiet: 'essen', motiv: 'a rectangular block of butter on a small dish, seen from the side' },
-  { wort: 'cheese',     gebiet: 'essen', motiv: 'a triangular wedge of cheese seen from the side, with three round holes' },
+  { wort: 'cheese',     gebiet: 'essen',
+    pfad: 'M6 44 50 16c5 3 8 8 8 14v14ZM20 40a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm18-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+    motiv: 'a triangular wedge of cheese seen from the side, with three round holes' },
   { wort: 'chips',      gebiet: 'essen', motiv: 'a paper cone of chips (french fries) standing upright, seen from the front' },
   { wort: 'chocolate',  gebiet: 'essen', motiv: 'a bar of chocolate seen from above, divided into six squares, one corner broken off' },
   { wort: 'drink',      gebiet: 'essen', motiv: 'a tall glass with a bent drinking straw, seen from the side' },
   { wort: 'eat',        gebiet: 'essen', motiv: 'a round empty plate seen from above with a fork on its left and a knife on its right' },
-  { wort: 'egg',        gebiet: 'essen', motiv: 'a boiled egg standing in an egg cup, seen from the side' },
+  { wort: 'egg',        gebiet: 'essen',
+    pfad: 'M18 40c0-13 6-26 14-26s14 13 14 26c0 8-6 14-14 14s-14-6-14-14Z',
+    motiv: 'a boiled egg standing in an egg cup, seen from the side' },
   { wort: 'fruit',      gebiet: 'essen', motiv: 'a bowl seen from the side, filled with an apple, a pear and a bunch of grapes' },
   { wort: 'ham',        gebiet: 'essen', motiv: 'two overlapping oval slices of ham lying flat, seen from above' },
   { wort: 'plum',       gebiet: 'essen', motiv: 'one plum seen from the front, with a short stalk and one leaf, and a vertical groove' },
   { wort: 'salad',      gebiet: 'essen', motiv: 'a bowl seen from the side, heaped with leaves of lettuce' },
-  { wort: 'strawberry', gebiet: 'essen', motiv: 'one strawberry seen from the front, pointing down, with a leafy crown and seed dots' },
+  { wort: 'strawberry', gebiet: 'essen',
+    pfad: 'M32 58c-9-4-16-13-16-22 0-5 4-9 9-9 2 0 5 1 7 3 2-2 5-3 7-3 5 0 9 4 9 9 0 9-7 18-16 22ZM30 6c0-1 1-2 2-2s2 1 2 2v6l8-3-2 6 7 1-8 5H27l-8-5 7-1-2-6 8 3Zm-4 30a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm12 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-6 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z',
+    motiv: 'one strawberry seen from the front, pointing down, with a leafy crown and seed dots' },
   { wort: 'sweets',     gebiet: 'essen', motiv: 'three wrapped sweets with twisted ends, lying flat, seen from above' },
-  { wort: 'tea',        gebiet: 'essen', motiv: 'a teacup on a saucer, seen from the side, with a teabag string over the rim' },
-  { wort: 'tomato',     gebiet: 'essen', motiv: 'one tomato seen from the front, with a five-pointed star of leaves on top' },
-  { wort: 'water',      gebiet: 'essen', motiv: 'a plain glass half filled with water, seen from the side' },
+  { wort: 'tea',        gebiet: 'essen',
+    pfad: 'M10 20h34v18a17 17 0 0 1-34 0Zm36 4h6a9 9 0 0 1 0 18h-3a24 24 0 0 0 1-6v-1h2a4 4 0 0 0 0-8h-6ZM6 52h44v6H6Z',
+    motiv: 'a teacup on a saucer, seen from the side, with a teabag string over the rim' },
+  { wort: 'tomato',     gebiet: 'essen',
+    pfad: 'M12 36c0-11 9-19 20-19s20 8 20 19-9 19-20 19-20-8-20-19Zm18-24c0-3 1-5 2-6 1 1 2 3 2 6l7-4-3 7 8 1-7 4 4 5-8-2-3 6-3-6-8 2 4-5-7-4 8-1-3-7Z',
+    motiv: 'one tomato seen from the front, with a five-pointed star of leaves on top' },
+  { wort: 'water',      gebiet: 'essen',
+    pfad: 'M14 12h36l-4 42a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6Zm3 22h30l-2 20a2 2 0 0 1-2 2H21a2 2 0 0 1-2-2Z',
+    motiv: 'a plain glass half filled with water, seen from the side' },
   // --- In der Schule ---
-  { wort: 'board',            gebiet: 'schule', motiv: 'a classroom board on two legs, seen from the front, empty' },
+  { wort: 'board',            gebiet: 'schule',
+    pfad: 'M4 6h56v32H4Zm2 32h52v4H6ZM14 42l-6 18h6l4-14Zm36 0 6 18h-6l-4-14Z',
+    motiv: 'a classroom board on two legs, seen from the front, empty' },
   { wort: 'book',             gebiet: 'schule',
     pfad: 'M3 14c10-3 19-2 25 4v34c-6-6-15-7-25-4Zm58 0c-10-3-19-2-25 4v34c6-6 15-7 25-4Z',
     motiv: 'an open book seen from the front, both pages blank' },
   { wort: 'chair',            gebiet: 'schule',
-    pfad: 'M12 4h9v35h-9Zm9 7h16v6H21Zm0 12h16v6H21Zm-9 12h39v7H12Zm0 7h9v21h-9Zm30 0h9v21h-9Z',
+    pfad: 'M16 4h26a4 4 0 0 1 4 4v26H12V8a4 4 0 0 1 4-4Zm-6 30h44v8H10Zm4 8h8v18h-8Zm28 0h8v18h-8Z',
     motiv: 'a simple wooden chair with a straight back, seen from the side' },
   { wort: 'class/classroom',  gebiet: 'schule', motiv: 'a classroom seen from the front: a board on the wall and two desks with chairs' },
   { wort: 'pen/pencil',       gebiet: 'schule', motiv: 'a pencil and a pen lying crossed over each other, seen from above' },
@@ -531,8 +578,12 @@ export const BILDER = [
   { wort: 'dress',    gebiet: 'kleidung', motiv: 'a dress on a coat hanger, seen from the front' },
   { wort: 'jeans',    gebiet: 'kleidung', motiv: 'a pair of jeans lying flat, seen from the front, with pockets and a belt loop' },
   { wort: 'pullover', gebiet: 'kleidung', motiv: 'a knitted pullover lying flat, seen from the front, arms spread' },
-  { wort: 'shirt',    gebiet: 'kleidung', motiv: 'a shirt with a collar and buttons lying flat, seen from the front' },
-  { wort: 'shoes',    gebiet: 'kleidung', motiv: 'a pair of lace-up shoes standing side by side, seen from the side' },
+  { wort: 'shirt',    gebiet: 'kleidung',
+    pfad: 'M22 10h20l14 8-6 12-6-3v27H20V27l-6 3-6-12Z',
+    motiv: 'a shirt with a collar and buttons lying flat, seen from the front' },
+  { wort: 'shoes',    gebiet: 'kleidung',
+    pfad: 'M4 40c0-3 2-6 5-7l3-9h5l1 8 10 4c3 1 4 3 4 6v3H4Zm28 0c0-3 2-6 5-7l3-9h5l1 8 10 4c3 1 4 3 4 6v3H32Z',
+    motiv: 'a pair of lace-up shoes standing side by side, seen from the side' },
   // --- Menschen und Familie ---
   { wort: 'boy',     gebiet: 'menschen', motiv: 'a boy standing, seen from the front, short hair, arms at his sides' },
   { wort: 'brother', gebiet: 'menschen', motiv: 'two boys standing side by side, seen from the front, one a head taller' },
