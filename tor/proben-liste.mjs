@@ -5943,9 +5943,16 @@ export const PROBEN = [
    *    Probe bewiese die erste nur die Haelfte. */
   { n:'auch wer liest, bekommt beim Lautpaar Bilder', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
+    /* Der Eingriff nimmt die GANZE Bedingung weg und nicht nur das
+       Profil. Der erste Anlauf liess `zwei.every(x => bildZu(x.wort))`
+       stehen - und bewies nichts: Leas Vorrat hat alle siebzehn Paare,
+       und dreizehn davon haben keine Zeichnung, also blieb `mitBild`
+       falsch und der Bildschirm unveraendert. „TOR BLEIBT GRUEN", und
+       der Laeufer hatte recht. So herum bekommt jedes Profil Bildkarten,
+       und bei Lea schlaegt die Richtung an, um die es geht. */
     such:"  const mitBild = !!P.vorlesen && zwei.every(x => bildZu(x.wort));",
-    ersatz:"  const mitBild = true && zwei.every(x => bildZu(x.wort)); //Anker: !!P.vorlesen",
-    an:{ ...DIST, text:'const mitBild = true &&' },
+    ersatz:"  const mitBild = zwei.every(x => true); //Anker: !!P.vorlesen && bildZu(x.wort)",
+    an:{ ...DIST, text:'const mitBild = zwei.every(x => true);' },
     sagt:'dieses Profil liest' },
 
   /* 3. DER VORRAT GIBT DIE FALSCHEN PAARE HER. Der Bildschirm ist heil,

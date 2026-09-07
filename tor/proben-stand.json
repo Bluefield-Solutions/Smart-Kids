@@ -1931,9 +1931,9 @@
       "s": 7
     },
     "die Lautpaare stehen auch ohne englische Stimme da": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
       "zeit": "2026-09-07",
-      "s": 41
+      "s": 27
     },
     "passt bekommt keine englische Stimme mehr": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
@@ -1977,6 +1977,36 @@
     },
     "der Legevorrat teilt sich den Leitner-Stand": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "Fiona bekommt beim Lautpaar wieder Buchstaben": {
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "zeit": "2026-09-07",
+      "s": 398
+    },
+    "der Lautvorrat filtert für das falsche Profil": {
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "zeit": "2026-09-07",
+      "s": 100
+    },
+    "ein Lautpaar verliert eine seiner beiden Zeichnungen": {
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "zeit": "2026-09-07",
+      "s": 17
+    },
+    "ein gemaltes Lautpaar zeigt zweimal dasselbe Bild": {
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "die Zahl der nötigen Lautbilder wird nicht aus spiel.js gelesen": {
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "eine Lautzeichnung gehört zu keinem Paar": {
+      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
       "zeit": "2026-09-07",
       "s": 5
     },
