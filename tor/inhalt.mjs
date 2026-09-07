@@ -1980,6 +1980,30 @@ console.log('\n  Tor `englisch`');
    * meldete das Tor mal etwas und mal nicht - und eine Pruefung, die
    * wuerfelt, ob sie prueft, ist kein Beweis (Regel 1).
    */
+  /* CIELAB, von Hand: sRGB -> linear -> XYZ (D65) -> Lab. Zwanzig Zeilen
+     statt einer Abhaengigkeit, und sie stehen hier statt in den Daten -
+     ein Tor, das seine Formel aus dem Prüfling holt, prüft sie nicht.
+     ZWEI ZUSAGEN BRAUCHEN SIE: der Mindestabstand der zehn Farbflecken
+     (E3) und die Frage, ob zwei Bildfarben derselbe Ton sind (E7c).
+     Deshalb steht sie hier und nicht in einer der beiden - was zweimal
+     dasteht, veraltet einmal (Regel 6). */
+  const linear = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92
+    : Math.pow((c + 0.055) / 1.055, 2.4); };
+  const lab = (hex) => {
+    const r = linear(parseInt(hex.slice(1, 3), 16)),
+          g = linear(parseInt(hex.slice(3, 5), 16)),
+          b = linear(parseInt(hex.slice(5, 7), 16));
+    const X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
+    const Y =  0.2126 * r + 0.7152 * g + 0.0722 * b;
+    const Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
+    const f = (u) => u > 0.008856 ? Math.cbrt(u) : 7.787 * u + 16 / 116;
+    return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
+  };
+  const labAbstand = (hexA, hexB) => {
+    const a = lab(hexA), b = lab(hexB);
+    return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+  };
+
   const ablenkerPruefen = (vorrat, melde, jeder = () => null) => {
     for (const x of vorrat) {
       let k = 1;
@@ -2042,26 +2066,10 @@ console.log('\n  Tor `englisch`');
     ablenkerPruefen(vorrat, (s) => eng.push(s), (x, y) => y.sorte !== x.sorte
       && `„${x.wort}" bekommt einen Ablenker anderer Sorte — dann ist die `
          + 'Aufgabe ohne ein Wort Englisch zu lösen');
-    /* CIELAB, von Hand: sRGB -> linear -> XYZ (D65) -> Lab. Zwanzig Zeilen
-       statt einer Abhaengigkeit, und sie stehen hier statt in den Daten -
-       ein Tor, das seine Formel aus dem Prüfling holt, prüft sie nicht. */
-    const linear = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92
-      : Math.pow((c + 0.055) / 1.055, 2.4); };
-    const lab = (hex) => {
-      const r = linear(parseInt(hex.slice(1, 3), 16)),
-            g = linear(parseInt(hex.slice(3, 5), 16)),
-            b = linear(parseInt(hex.slice(5, 7), 16));
-      const X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
-      const Y =  0.2126 * r + 0.7152 * g + 0.0722 * b;
-      const Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
-      const f = (u) => u > 0.008856 ? Math.cbrt(u) : 7.787 * u + 16 / 116;
-      return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
-    };
     let engster = Infinity, engstesPaar = '';
     for (let i = 0; i < EN.FARBEN.length; i++)
       for (let j = i + 1; j < EN.FARBEN.length; j++) {
-        const a = lab(EN.FARBEN[i].farbton), b = lab(EN.FARBEN[j].farbton);
-        const d = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+        const d = labAbstand(EN.FARBEN[i].farbton, EN.FARBEN[j].farbton);
         if (d < engster) { engster = d; engstesPaar = `${EN.FARBEN[i].wort}/${EN.FARBEN[j].wort}`; }
       }
     /* 25 und nicht 31,3 (der gemessene Wert): eine Ratsche mit Luft. Bei
@@ -2984,21 +2992,75 @@ console.log('\n  Tor `englisch`');
        mit sich (ganz gleich), derselbe Rahmen in einer anderen Farbe
        (gleiche Zellen, keine gleiche Farbe: 0 %), und eine Haelfte gegen
        das Ganze (die Haelfte deckt die halbe Vereinigung: 50 %). */
+    /* ZWEI FARBEN SIND DERSELBE TON, wenn sie weniger als 22 CIELAB
+       auseinanderliegen. Der erste Anlauf hat NAMEN verglichen, und das
+       ging still daneben: `rot` und `rotDunkel` sind 15,6 auseinander -
+       nebeneinander dieselbe rote Flaeche, fuer die Rechnung aber zwei
+       verschiedene Dinge. Ein Bild, das ein anderes nur heller
+       nachzeichnet, kam so durch.
+
+       DIE 22 IST GEMESSEN UND NICHT GEWAEHLT: alle neun Hell/Dunkel-Paare
+       von BILDFARBEN liegen zwischen 11,0 und 20,6, das naechste Paar
+       zweier wirklich verschiedener Farben (`grau`/`wolke`) bei 22,4. Die
+       Grenze liegt in dieser Luecke - darunter ist alles ein Tonpaar,
+       darueber beginnen die Farben. Die Tafel ist klein und die Antwort
+       haengt nur an zwei Namen, also wird sie gemerkt. */
+    const TON_GLEICH = 22;
+    const tonTafel = new Map();
+    const selberTon = (a, b) => {
+      if (a === b) return true;
+      const k = a < b ? `${a}|${b}` : `${b}|${a}`;
+      if (tonTafel.has(k)) return tonTafel.get(k);
+      const ha = EN.BILDFARBEN[a], hb = EN.BILDFARBEN[b];
+      // Ein unbekannter Name faellt beim Zeichnen auf Tinte zurueck, und
+      // genau so wird er hier gerechnet - sonst misst das Tor ein Bild,
+      // das es so nie gibt. Gemeldet wird der Name eine Zusage weiter oben.
+      const v = labAbstand(ha || EN.BILDFARBEN.tinte, hb || EN.BILDFARBEN.tinte)
+        < TON_GLEICH;
+      tonTafel.set(k, v); return v;
+    };
+    /* NUR DIE FLAECHE, ohne Farbe. Der Zellvergleich oben braucht Form UND
+       Ton; wer eine Zeichnung KOPIERT und umfaerbt, kommt bei ihm mit 0 %
+       durch. Auf dem Vier-Karten-Schirm ist das richtig - dort trennt die
+       Farbe die Karten. Auf dem Zwei-Karten-Schirm der Lautpaare ist es
+       falsch: Fiona liest nicht, und zwei Taxis in zwei Farben sind fuer
+       sie zwei Taxis. Dort wird deshalb die Silhouette gemessen. */
+    const deckung = (a, b) => {
+      let schnitt = 0, ver = 0;
+      for (let k = 0; k < N_RASTER * N_RASTER; k++) {
+        const x = !!a[k], y = !!b[k];
+        if (x && y) schnitt++;
+        if (x || y) ver++;
+      }
+      return ver ? schnitt / ver : 0;
+    };
     const gleichheit = (a, b) => {
       let gleich = 0, ver = 0;
       for (let k = 0; k < N_RASTER * N_RASTER; k++) {
         const x = a[k], y = b[k];
         if (!x && !y) continue;
-        ver++; if (x === y) gleich++;
+        ver++; if (x && y && selberTon(x, y)) gleich++;
       }
       return ver ? gleich / ver : 0;
     };
     const voll = bildRaster([{ f: 'rot', d: 'M0 0h64v64H0Z' }]);
     const vollBlau = bildRaster([{ f: 'blau', d: 'M0 0h64v64H0Z' }]);
+    const vollRotDunkel = bildRaster([{ f: 'rotDunkel', d: 'M0 0h64v64H0Z' }]);
     const halb = bildRaster([{ f: 'rot', d: 'M0 0h64v32H0Z' }]);
     for (const [was, ist, soll] of [
       ['der volle Rahmen mit sich selbst', gleichheit(voll, voll), 1],
       ['derselbe Rahmen in einer anderen Farbe', gleichheit(voll, vollBlau), 0],
+      /* Die beiden Faelle, die den TONVERGLEICH pruefen und nicht das
+         Raster: `rot` gegen `rotDunkel` ist derselbe Ton (15,6 CIELAB),
+         `rot` gegen `blau` nicht (76,0). Ohne sie waere ein Vergleich, der
+         wieder nur Namen zaehlt, von aussen nicht zu unterscheiden - er
+         bestuende alle vier anderen Faelle. */
+      ['denselben Rahmen in einem helleren Ton derselben Farbe',
+        gleichheit(voll, vollRotDunkel), 1],
+      ['den Abstand von rot zu rotDunkel unter der Tongrenze',
+        labAbstand(EN.BILDFARBEN.rot, EN.BILDFARBEN.rotDunkel) < TON_GLEICH ? 1 : 0, 1],
+      ['den Abstand von rot zu blau über der Tongrenze',
+        labAbstand(EN.BILDFARBEN.rot, EN.BILDFARBEN.blau) >= TON_GLEICH ? 1 : 0, 1],
       ['die obere Hälfte gegen den vollen Rahmen', gleichheit(halb, voll), 0.5],
       ['die gefüllte Fläche des vollen Rahmens',
         voll.filter(Boolean).length / (N_RASTER * N_RASTER), 1],
@@ -3006,15 +3068,31 @@ console.log('\n  Tor `englisch`');
       ef.push(`der Zellvergleich misst ${was} als ${(ist * 100).toFixed(0)} % statt `
         + `${(soll * 100).toFixed(0)} % — dann sagt er über die Zeichnungen nichts`);
 
-    /* Die Grenze. 55 % ist keine runde Zahl, sondern gemessen: der
-       hoechste Wert im heutigen Vorrat liegt bei 49 % („bye" gegen
-       „colour" - Hand gegen Palette, dem Auge nach unverwechselbar), der
-       Median bei 1 %, das 99. Hundertstel bei 32 %. Die beiden Paare, die
-       darueber lagen, sind in dieser Runde geaendert worden: „ham" gegen
-       „tomato" mit 58 % und „jeans" gegen „shirt" mit 54 %. Eine Ratsche
-       also, kein Soll - sie haelt fest, was heute erreicht ist, und sechs
-       Punkte Luft trennen sie vom naechsten Bild. */
-    const GLEICH_MAX = 0.55;
+    /* Die Grenze, und sie ist mit dem Tonvergleich neu gemessen: Median
+       3 %, 99. Hundertstel 42 %, hoechstes Paar 61 % („bread" gegen
+       „chocolate"). Vier Punkte Luft, dieselbe Ratsche wie vorher.
+
+       WARUM SIE NICHT NIEDRIGER LIEGT, obwohl 61 % viel klingt: das Mass
+       hat FALSCHE TREFFER. „apple" gegen „pullover" (58 %) und „chicken"
+       gegen „eat" (53 %) sind auf dem Blatt nicht zu verwechseln - beide
+       Male ist nur die Hauptfarbe dieselbe und die Masse aehnlich verteilt.
+       Ein falscher Treffer kostet eine Zeichnung, eine verpasste Falle
+       kostet ein Kind: deshalb das strengere Mass MIT der loseren Grenze,
+       und deshalb nennt der Bericht die DREI hoechsten Paare in jedem Lauf.
+       Das Tor faengt den groben Fall; das Abdriften sieht ein Mensch
+       (Regel 4 - kein Tor ersetzt den Blick).
+
+       Zwei Paare lagen darueber und sind geaendert worden: „boy" gegen
+       „old" mit 60 % - zwei Menschen mit creme Kopf und blauem Rumpf, die
+       sich nur in der Haarfarbe unterschieden - und, schon vorher, „ham"
+       gegen „tomato" und „jeans" gegen „shirt". */
+    const GLEICH_MAX = 0.65;
+    /* Die Grenze fuer den Zwei-Karten-Schirm der Lautpaare (E5b). Sie
+       steht hier neben ihrer Schwester, damit man beide Zahlen zusammen
+       sieht und nicht eine davon vergisst; begruendet ist sie dort, wo
+       sie greift. */
+    const LAUT_GLEICH_MAX = 0.30;
+    const LAUT_DECKUNG_MAX = 0.90;
     /* DIE EINE AUSNAHME, und sie ist keine Nachsicht: auf dem Blatt „Wo?"
        SOLLEN die Bilder sich gleichen. Der Hinweis in BILDGEBIETE sagt es
        woertlich - dieselbe Kiste, derselbe Ball, und der einzige
@@ -3023,12 +3101,19 @@ console.log('\n  Tor `englisch`');
        „auf, unter, hinter". Die Ausnahme gilt nur, wenn BEIDE Woerter
        dort stehen. */
     const WO = 'wo';
-    let hoechste = null;
+    /* Einmal rastern und nicht je Paar: 84 Bilder ergeben 3486 Paare, und
+       ohne diese Zeile waere jedes Bild 83-mal gerastert worden. */
+    const gerastert = vls.map(x => bildRaster(x.bild));
+    const spitze = [];
     for (let i = 0; i < vls.length; i++) for (let j = i + 1; j < vls.length; j++) {
       const a = vls[i], b = vls[j];
       const beideWo = a.gebiet === WO && b.gebiet === WO;
-      const g = gleichheit(bildRaster(a.bild), bildRaster(b.bild));
-      if (!beideWo && (!hoechste || g > hoechste.g)) hoechste = { a: a.wort, b: b.wort, g };
+      const g = gleichheit(gerastert[i], gerastert[j]);
+      if (!beideWo) {
+        spitze.push({ a: a.wort, b: b.wort, g });
+        spitze.sort((x, y) => y.g - x.g);
+        if (spitze.length > 3) spitze.pop();
+      }
       if (beideWo || g < GLEICH_MAX) continue;
       ef.push(`„${a.wort}" und „${b.wort}" sind zu ${(g * 100).toFixed(0)} % `
         + `zellgleich (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) — zwei Karten, die `
@@ -3065,11 +3150,12 @@ console.log('\n  Tor `englisch`');
       + `kleinste „${kleinstes.wort}" mit `
       + `${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
         / Math.max(RB_R, RB_U) * 100).toFixed(0)} % (Grenze 55 %)`);
-    console.log(`    Sehen zwei Karten gleich aus (E7b): `
+    console.log(`    Sehen zwei Karten gleich aus (E7c): `
       + `${vls.length * (vls.length - 1) / 2} Paare zellweise verglichen `
-      + `(${N_RASTER}×${N_RASTER} über „${EN.BILD_RAHMEN}") · ähnlichstes Paar `
-      + `„${hoechste.a}"/„${hoechste.b}" mit ${(hoechste.g * 100).toFixed(0)} % `
-      + `(Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) · ausgenommen sind nur die `
+      + `(${N_RASTER}×${N_RASTER} über „${EN.BILD_RAHMEN}", Töne unter `
+      + `${TON_GLEICH} CIELAB gelten als einer) · die drei ähnlichsten: `
+      + spitze.map(p => `„${p.a}"/„${p.b}" ${(p.g * 100).toFixed(0)} %`).join(', ')
+      + ` (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) · ausgenommen sind nur die `
       + `Bilder des Blatts „Wo?", die sich gleichen sollen`);
 
     /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 fuer Fiona) ----------
@@ -3130,6 +3216,44 @@ console.log('\n  Tor `englisch`');
       if (abdruckVon(a) === abdruckVon(b))
         lbf.push(`„${paar.a}/${paar.b}" zeigt zweimal dieselbe Zeichnung — dann ist `
           + 'jeder Tipp so richtig wie der andere');
+      /* UND DER VIEL WAHRSCHEINLICHERE FALL: nicht dieselbe Zeichnung,
+         sondern eine aehnliche. Derselbe Zellvergleich wie bei „Lies das
+         Wort" (E7c), aber mit einer STRENGEREN Grenze, und das ist keine
+         Willkuer: dort stehen vier Karten und das gelesene Wort engt ein;
+         hier stehen ZWEI, und das Bild IST die Antwort. Fiona liest nicht -
+         gleichen sich die beiden Bilder, ist die Hoeraufgabe eine Muenze,
+         und sie sieht genauso aus wie eine, die funktioniert.
+
+         30 % ist eine Ratsche mit viel Luft, weil das Feld heute weit
+         darunter liegt: „three"/„tree" 0 %, „wine"/„vine" 0 %,
+         „cab"/„cap" 10 %, „pan"/„pen" 7 %. Vier Paare sind zu wenige fuer
+         eine Verteilung; die Zahl sagt deshalb etwas ueber die SACHE - auf
+         einem Schirm mit zwei Karten darf ein Drittel gleich sein, mehr
+         nicht. */
+      const rA = bildRaster(a), rB = bildRaster(b);
+      const gL = gleichheit(rA, rB);
+      if (gL >= LAUT_GLEICH_MAX)
+        lbf.push(`„${paar.a}/${paar.b}" zeigt zwei Zeichnungen, die zu `
+          + `${(gL * 100).toFixed(0)} % zellgleich sind (Grenze `
+          + `${(LAUT_GLEICH_MAX * 100).toFixed(0)} %) — auf einem Schirm mit nur zwei `
+          + 'Karten ist das Bild die ganze Antwort, und Fiona liest nicht');
+      /* DIE ZWEITE ZUSAGE, und sie fragt etwas ganz anderes: ist das
+         DIESELBE Zeichnung, nur umgefaerbt? Der Zellvergleich sagt dazu
+         0 %, weil keine Zelle denselben Ton traegt - genau deshalb braucht
+         es die Silhouette daneben.
+
+         DIE GRENZE IST HOCH, und das ist der ganze Punkt. Als Mass fuer
+         „sieht aehnlich aus" taugt die Silhouette nicht: „cab" und „cap"
+         decken sich zu 60 %, weil ein Taxi und eine Muetze beide breit und
+         unten im Rahmen sitzen - unverwechselbar sind sie trotzdem. Bei
+         90 % ist es keine Aehnlichkeit mehr, sondern eine Kopie. Heute
+         hoechster Wert: 60 %. */
+      const dL = deckung(rA, rB);
+      if (dL >= LAUT_DECKUNG_MAX)
+        lbf.push(`„${paar.a}/${paar.b}" zeigt zwei Umrisse, die sich zu `
+          + `${(dL * 100).toFixed(0)} % decken (Grenze `
+          + `${(LAUT_DECKUNG_MAX * 100).toFixed(0)} %) — das ist dieselbe Zeichnung in `
+          + 'zwei Farben, und für ein Kind, das nicht liest, sind es zwei gleiche Dinge');
       for (const [wort, d] of [[paar.a, a], [paar.b, b]]) {
         const k = bildKasten(d);
         if (k.unbekannt.size)
@@ -3167,6 +3291,19 @@ console.log('\n  Tor `englisch`');
     const jeStolperBild = new Map();
     for (const p of malbar)
       jeStolperBild.set(p.stolper, (jeStolperBild.get(p.stolper) || 0) + 1);
+    const lautMass = malbar.map(p => {
+      const rA = bildRaster(EN.bildFuerLaut(p.a)), rB = bildRaster(EN.bildFuerLaut(p.b));
+      return { p, g: gleichheit(rA, rB), d: deckung(rA, rB) };
+    });
+    const spitzeG = [...lautMass].sort((x, y) => y.g - x.g)[0];
+    const spitzeD = [...lautMass].sort((x, y) => y.d - x.d)[0];
+    console.log(`    Sehen die zwei Karten gleich aus (E5b): ähnlichstes Paar `
+      + `„${spitzeG.p.a}/${spitzeG.p.b}" mit ${(spitzeG.g * 100).toFixed(0)} % zellgleich `
+      + `(Grenze ${(LAUT_GLEICH_MAX * 100).toFixed(0)} % — strenger als die `
+      + `${(GLEICH_MAX * 100).toFixed(0)} % bei vier Karten, weil hier nur zwei stehen) · `
+      + `deckungsgleichste Umrisse „${spitzeD.p.a}/${spitzeD.p.b}" mit `
+      + `${(spitzeD.d * 100).toFixed(0)} % (Grenze `
+      + `${(LAUT_DECKUNG_MAX * 100).toFixed(0)} %, dort wäre es eine umgefärbte Kopie)`);
     console.log(`    Zwei Wörter, ein Laut mit Bildern (E5): ${malbar.length} von `
       + `${EN.LAUTPAARE.length} Paaren gemalt (nötig ${NOETIG_BILD}, aus spiel.js) · `
       + `${[...jeStolperBild].map(([s, n]) => `${s} ${n}`).join(', ')} · `

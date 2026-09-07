@@ -6064,8 +6064,9 @@ export const PROBEN = [
    *
    *    BEIDE Flaechen, nicht eine: bliebe die dunkle lila, waere das Bild
    *    zweifarbig-fremd und der Zellvergleich faende es nicht - die Probe
-   *    bewiese dann nichts. Gemessen mit dem Eingriff: 64 % gegen
-   *    „apple", 58 % gegen „tomato", Grenze 55 %. */
+   *    bewiese dann nichts. Gemessen mit dem Eingriff: 68 % gegen
+   *    „apple", 66 % gegen „tomato", Grenze 65 %. Drei Punkte Abstand -
+   *    wer die Grenze anfasst, muss hier nachmessen. */
   { n:'zwei englische Zeichnungen sehen einander zu ähnlich', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
     such:"      { f:'lila',   d:'M32 16c10 0 18 9 18 20s-8 22-18 22-18-11-18-22 8-20 18-20Z' },\n"
@@ -6104,6 +6105,89 @@ export const PROBEN = [
       + "    ohneBildX: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '",
     an:{ datei:'src/inhalt/englisch.js', text:'ohneBildX:' },
     sagt:'weder eine Zeichnung noch ein' },
+
+  /* 6. DER VERGLEICH ZAEHLT WIEDER NAMEN STATT TOENE. Das war der erste
+   *    Anlauf, und er ging still daneben: `rot` und `rotDunkel` liegen
+   *    15,6 CIELAB auseinander - nebeneinander dieselbe rote Flaeche, fuer
+   *    eine Namensgleichheit aber zwei verschiedene Dinge. Ein Bild, das
+   *    ein anderes nur heller nachzeichnet, kam so durch, und die Zahl im
+   *    Bericht sah dabei besser aus als vorher.
+   *
+   *    Der Eingriff setzt die Tongrenze auf null; damit ist „derselbe Ton"
+   *    wieder „derselbe Name". Anschlagen muessen die drei Faelle der
+   *    Selbstprobe, die genau das pruefen - ohne sie waere ein Vergleich,
+   *    der wieder nur Namen zaehlt, von aussen nicht zu unterscheiden. */
+  { n:'der Bildvergleich zählt wieder Namen statt Töne', tor:'inhalt',
+    deckt:'englisch', datei:'tor/inhalt.mjs',
+    such:"    const TON_GLEICH = 22;",
+    ersatz:"    const TON_GLEICH = 0; // Anker: const TON_GLEICH = 22;",
+    an:{ datei:'tor/inhalt.mjs', text:'const TON_GLEICH = 0;' },
+    sagt:'in einem helleren Ton derselben Farbe' },
+
+  /* 7. ZWEI LAUTKARTEN SEHEN GLEICH AUS. Fionas Lautschirm zeigt genau
+   *    ZWEI Karten, und sie liest nicht - das Bild IST die Antwort.
+   *    Gleichen sich die beiden, ist die Hoeraufgabe eine Muenze, und sie
+   *    sieht dabei aus wie eine, die funktioniert.
+   *
+   *    Der Eingriff gibt dem Stift die Flaechen der Pfanne, mitsamt ihren
+   *    Farben bis auf eine - die Sorte Fehler, die beim Kopieren eines
+   *    Blocks entsteht. Eine Farbe muss anders bleiben, sonst faengt es
+   *    die aeltere Zusage „zeigt zweimal dieselbe Zeichnung" ab, und die
+   *    Probe bewiese etwas anderes als das Aufgeschriebene. Gemessen:
+   *    96 % zellgleich, Grenze 30 %. */
+  { n:'zwei gemalte Lautkarten sehen einander zu ähnlich', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  pen: [\n"
+      + "    { f:'gruen',      d:'M25 4h14v32H25Z' },\n"
+      + "    { f:'gruenDunkel',d:'M33 4h6v32h-6Z' },\n"
+      + "    { f:'grauDunkel', d:'M39 10h6v16h-6Z' },\n"
+      + "    { f:'grau',       d:'M25 38h14l-7 12Z' },\n"
+      + "    { f:'tinte',      d:'M30 46h4l-2 12Z' },\n"
+      + "  ],",
+    ersatz:"  pen: [\n"
+      + "    { f:'braunDunkel',d:'M42 26h20v7H42Z' },\n"
+      + "    { f:'grauDunkel', d:'M8 22h34v11c0 8-6 14-14 14h-6c-8 0-14-6-14-14Z' },\n"
+      + "    { f:'grau',       d:'M13 26h24v7c0 5-4 9-9 9h-6c-5 0-9-4-9-9Z' },\n"
+      + "    { f:'gruen',      d:'M16 28c1 5 4 9 8 11-6-1-10-6-10-11Z' },\n"
+      + "  ],",
+    an:{ datei:'src/inhalt/englisch.js', text:"pen: [\n    { f:'braunDunkel'" },
+    sagt:'zellgleich sind' },
+
+  /* 8. UND DIESELBE ZEICHNUNG, NUR UMGEFAERBT. Der Zellvergleich aus 7
+   *    sagt dazu NULL Prozent - keine Zelle traegt denselben Ton, obwohl
+   *    beide Karten dasselbe Ding zeigen. Genau dafuer steht die
+   *    Silhouette daneben, und sie hat eine viel hoehere Grenze: als Mass
+   *    fuer „aehnlich" taugt sie nicht („cab" und „cap" decken sich zu
+   *    60 % und sind unverwechselbar), als Mass fuer „kopiert" schon.
+   *
+   *    Der Eingriff gibt dem Stift die Flaechen der Pfanne und laesst ihm
+   *    EIGENE Farben. Gemessen: 100 % Deckung bei niedriger
+   *    Zellgleichheit - es schlaegt also die Zusage an, die gemeint ist,
+   *    und nicht die aus 7. */
+  { n:'ein Lautpaar zeigt dieselbe Zeichnung in zwei Farben', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    /* Der Eingriff sitzt auf der PFANNE und nicht auf dem Stift: Probe 7
+       nimmt den Stift-Block als Anker, und zwei Anker, von denen einer im
+       anderen steckt, verstellen einander. */
+    such:"  pan: [\n"
+      + "    { f:'braunDunkel',d:'M42 26h20v7H42Z' },\n"
+      + "    { f:'grauDunkel', d:'M8 22h34v11c0 8-6 14-14 14h-6c-8 0-14-6-14-14Z' },\n"
+      + "    { f:'grau',       d:'M13 26h24v7c0 5-4 9-9 9h-6c-5 0-9-4-9-9Z' },\n"
+      + "    { f:'licht',      d:'M16 28c1 5 4 9 8 11-6-1-10-6-10-11Z' },\n"
+      + "  ],",
+    /* Die Flaechen des Stifts, aber in EIGENEN Farben - und zwar in
+       welchen, die von denen des Stifts weit weg liegen. Naehmen beide
+       dieselben Toene, schluege auch die Zusage aus 7 an, und die Probe
+       bewiese nicht die, die daneben steht. */
+    ersatz:"  pan: [\n"
+      + "    { f:'rot',        d:'M25 4h14v32H25Z' },\n"
+      + "    { f:'rotDunkel',  d:'M33 4h6v32h-6Z' },\n"
+      + "    { f:'gelb',       d:'M39 10h6v16h-6Z' },\n"
+      + "    { f:'gelbDunkel', d:'M25 38h14l-7 12Z' },\n"
+      + "    { f:'blau',       d:'M30 46h4l-2 12Z' },\n"
+      + "  ],",
+    an:{ datei:'src/inhalt/englisch.js', text:"pan: [\n    { f:'rot',        d:'M25 4h14v32H25Z'" },
+    sagt:'decken (Grenze' },
 
   /* --- „Lies das Wort" (E7) --------------------------------------------
    *

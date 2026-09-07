@@ -1134,14 +1134,23 @@ export const BILDER = [
       { f:'tinte',  d:'M27 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
     ],
     motiv: 'a grown woman standing, seen from the front, arms at her sides' },
+  /* GEBEUGT UND IN BRAUN, wie das Motiv es immer schon sagte. Gezeichnet
+     war eine aufrechte Figur mit creme Kopf und dunkelblauem Rumpf - also
+     dasselbe wie „boy", nur mit grauem Haar und einem Stock daneben. Der
+     Zellvergleich mass beide zu 60 % gleich, sobald Toene statt Namen
+     verglichen werden (`blau` und `blauDunkel` sind 15,7 CIELAB
+     auseinander und damit derselbe Ton). Zwei Menschen, die sich nur in
+     der Haarfarbe unterscheiden, sind fuer ein Kind eine Muenze. Jetzt
+     entscheidet die HALTUNG, und die sieht man auch klein noch. */
   { wort: 'old',     gebiet: 'menschen',
     bild: [
-      { f:'grau',   d:'M30 4c9 0 14 5 14 13H16c0-8 5-13 14-13Z' },
-      { f:'creme',  d:'M30 8a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
-      { f:'grau',   d:'M22 22h16v4H22Z' },
-      { f:'blauDunkel', d:'M30 30c9 0 15 7 15 16v16H15V46c0-9 6-16 15-16Z' },
-      { f:'braun',  d:'M50 26h4v34h-4Z' },
-      { f:'braun',  d:'M46 24h12v5H46Z' },
+      { f:'grau',       d:'M22 6c9 0 13 5 13 12H9c0-7 4-12 13-12Z' },
+      { f:'creme',      d:'M22 10a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z' },
+      { f:'grau',       d:'M14 24h14v4H14Z' },
+      { f:'braun',      d:'M12 62c-1-14 1-25 8-33 8 2 15 10 19 20 3 5 4 9 4 13Z' },
+      { f:'braunDunkel',d:'M26 34c7 4 12 11 15 19 1 3 2 6 2 9h-8c0-9-4-20-9-28Z' },
+      { f:'tinte',      d:'M50 28h4v34h-4Z' },
+      { f:'tinte',      d:'M46 26h12v5H46Z' },
     ],
     motiv: 'an old person standing bent forward, seen from the side, leaning on a walking stick' },
   { wort: 'sister',  gebiet: 'menschen',
