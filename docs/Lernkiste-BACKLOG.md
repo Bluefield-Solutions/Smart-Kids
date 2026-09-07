@@ -6754,14 +6754,22 @@ hat:
 
 Was daraus NEU offen ist:
 
-- **Das Maß hat falsche Treffer.** `apple`/`pullover` (58 %) und
-  `chicken`/`eat` (53 %) sind auf dem Blatt unverwechselbar und stehen trotzdem
-  weit oben. Der Grund: gleiche Hauptfarbe, ähnlich verteilte Masse. Solange
-  das so ist, kann die Grenze nicht unter 65 % — und ein wirklich schlechtes
-  Paar bei 62 % käme durch. Ein Maß, das die FORM stärker gewichtet als die
-  Flächenverteilung (Momente, Umrisslänge), würde beides trennen.
-- **Der Vier-Karten-Schirm kennt die Kopie-Prüfung nicht.** Die Silhouette mit
-  90 % greift nur bei den Lautpaaren. Bei „Lies das Wort" wäre sie heute falsch:
-  die Flaggen von England und Deutschland füllen beide den ganzen Rahmen und
-  decken sich zu 100 %. Erst mit einem Maß, das den Rahmen füllende Bilder
-  ausnimmt, ließe sich das übertragen.
+- ~~Das Maß hat falsche Treffer.~~ Erledigt (v505): nicht durch ein besseres
+  Einzelmaß, sondern durch zwei zusammen — 55 % zellgleich UND 75 % Deckung,
+  an zehn beurteilten Paaren gemessen. Zusätzlich zur alten Grenze, nicht
+  statt ihrer.
+- ~~Der Vier-Karten-Schirm kennt die Kopie-Prüfung nicht.~~ Erledigt (v505),
+  aber anders als geplant: die Rahmenfüllung trennt die neun berechtigten
+  Paare über 90 % Deckung NICHT (34–58 %, Median 38 %). Statt eines
+  Schwellwerts prüft es jetzt exakt, ob zwei Bilder dieselben Pfade haben.
+
+Was daraus NEU offen ist:
+
+- **Die Zwei-Bedingung ist an drei Fallen geeicht.** Drei sind wenige. Jede
+  weitere Zeichnung, die aus einem echten Grund geändert werden muss, gehört
+  in diese Tabelle — sonst wandert das Soll mit meiner eigenen Leistung mit
+  (Regel 3).
+- **Die exakte Kopie-Prüfung sieht nur GANZE Übereinstimmung.** Wer eine
+  Zeichnung kopiert und eine Koordinate verschiebt, kommt bei ihr durch; auf
+  dem Zwei-Karten-Schirm fängt ihn die Deckung mit 90 %, auf dem
+  Vier-Karten-Schirm heute niemand.

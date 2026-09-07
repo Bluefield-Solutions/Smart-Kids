@@ -12249,3 +12249,74 @@ nachgesehen hatte.
 3. **Die Pfanne bekommt die Flächen des Stifts in eigenen, weit entfernten
    Farben** — 100 % Deckung bei niedriger Zellgleichheit. Es schlägt also die
    Zusage an, die gemeint ist, und nicht die aus 2.
+
+## E7c, dritter Anlauf · Zwei Zahlen trennen, was eine nicht trennt
+
+Zwei offene Punkte, und beide sind an einer Messung entschieden worden statt an
+einem Urteil.
+
+### Eine Zahl konnte es nicht
+
+Das Problem des letzten Anlaufs: die Zellgleichheit hatte falsche Treffer, also
+musste die Grenze bei 65 % liegen — und ein wirklich schlechtes Paar bei 62 %
+wäre durchgekommen. Nachgemessen an zehn Paaren, deren Urteil vom **Blatt**
+kommt und nicht von der Rechnung (Regel 3):
+
+| | zellgleich | Deckung |
+|---|---|---|
+| **Falle** `ham`/`tomato` | 63 % | 77 % |
+| **Falle** `old`/`boy` | 60 % | 77 % |
+| **Falle** `shirt`/`jeans` | 60 % | 81 % |
+| harmlos `bread`/`chocolate` | 61 % | 67 % |
+| harmlos `apple`/`pullover` | 58 % | 69 % |
+| harmlos `chair`/`school/schoolbag` | 55 % | 65 % |
+| harmlos `chicken`/`eat` | 53 % | 55 % |
+| harmlos `bye`/`colour` | 49 % | 69 % |
+| harmlos `o‘clock`/`football` | 46 % | 99 % |
+| harmlos `happy`/`sad` | 11 % | 100 % |
+
+**Zellgleich allein trennt nicht:** `bread`/`chocolate` liegt mit 61 % über zwei
+der drei Fallen. **Deckung allein auch nicht:** `happy` und `sad` sind derselbe
+Kreis. **Zusammen trennen sie sauber** — alle drei Fallen liegen über 55 %
+zellgleich *und* über 75 % Deckung, alle sieben harmlosen reißen mindestens eine
+der beiden.
+
+Die neue Bedingung kommt **zusätzlich** zur alten Grenze und ersetzt sie nicht:
+was bei 65 % schon rot war, bleibt rot. Das Tor wird damit strenger und nicht
+anders. Heute trifft sie nichts; der nächste harmlose Fall liegt sechs Punkte
+Deckung darunter.
+
+Die Gegenprobe dazu holt einen **echten** Fehler zurück: `shirt` wird wieder
+blau. Drei Fassungen lang stand es so da, und die alte Grenze hat es
+durchgelassen.
+
+### Die Kopie: ein Schwellwert war der falsche Weg
+
+Die Silhouette mit 90 % fängt bei den Lautpaaren die umgefärbte Kopie. Auf den
+Vier-Karten-Schirm ließ sie sich **nicht** übertragen, und die Zahlen sagen
+warum: heute liegen dort **neun** Paare über 90 % Deckung, und jedes einzelne
+ist in Ordnung.
+
+| Paar | Deckung | zellgleich | Rahmenfüllung |
+|---|---|---|---|
+| `o‘clock`/`happy`/`sad`/`football` | 99–100 % | 1–46 % | 58 % |
+| `England`/`Germany` (Flaggen) | 100 % | 25 % | 46 % |
+| `big`/`small` | 96 % | 0 % | 49 % |
+| `water`/`jeans` | 92 % | 49 % | 34–37 % |
+
+Die naheliegende Rettung — „nimm die rahmenfüllenden Bilder aus" — trägt nicht:
+ihre Füllung liegt bei 34 bis 58 %, mitten im Üblichen (Median 38 %, Maximum
+76 %).
+
+Was eine Kopie wirklich auszeichnet, ist kein Schwellwert, sondern dass die
+**Pfade dieselben sind**. Das ist genau zu prüfen, hat keine falschen Treffer,
+und heute trifft es nichts — weder bei den 84 Wortbildern noch bei den acht
+Lautbildern. Es steht jetzt auf beiden Schirmen.
+
+| Zusage | Schirm | Art | Grenze |
+|---|---|---|---|
+| zu ähnlich | 4 Karten | Form + Ton | 65 % |
+| zu ähnlich | 4 Karten | Form + Ton **und** Silhouette | 55 % + 75 % |
+| zu ähnlich | 2 Karten | Form + Ton | 30 % |
+| kopiert | 2 Karten | Silhouette | 90 % |
+| kopiert | beide | **dieselben Pfade** | exakt |

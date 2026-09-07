@@ -2026,9 +2026,9 @@
       "s": 15
     },
     "zwei englische Zeichnungen sehen einander zu ähnlich": {
-      "commit": "ee13793849289b4466b81718ff32c6bdbe0ddc83",
+      "commit": "371c325ee7eac46b3970b554546e54a5d32a4757",
       "zeit": "2026-09-07",
-      "s": 9
+      "s": 10
     },
     "der Zellvergleich der Bilder füllt nichts mehr": {
       "commit": "ee13793849289b4466b81718ff32c6bdbe0ddc83",
@@ -2046,12 +2046,22 @@
       "s": 31
     },
     "zwei gemalte Lautkarten sehen einander zu ähnlich": {
-      "commit": "ee13793849289b4466b81718ff32c6bdbe0ddc83",
+      "commit": "371c325ee7eac46b3970b554546e54a5d32a4757",
       "zeit": "2026-09-07",
-      "s": 3
+      "s": 10
     },
     "ein Lautpaar zeigt dieselbe Zeichnung in zwei Farben": {
-      "commit": "ee13793849289b4466b81718ff32c6bdbe0ddc83",
+      "commit": "371c325ee7eac46b3970b554546e54a5d32a4757",
+      "zeit": "2026-09-07",
+      "s": 10
+    },
+    "zwei Zeichnungen reissen beide Grenzen zusammen": {
+      "commit": "371c325ee7eac46b3970b554546e54a5d32a4757",
+      "zeit": "2026-09-07",
+      "s": 10
+    },
+    "zwei englische Wörter teilen sich eine umgefärbte Zeichnung": {
+      "commit": "371c325ee7eac46b3970b554546e54a5d32a4757",
       "zeit": "2026-09-07",
       "s": 10
     },
