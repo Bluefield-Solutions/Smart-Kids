@@ -2879,7 +2879,7 @@ console.log('\n  Tor `englisch`');
     if (vls.length < NOETIG)
       ef.push(`nur ${vls.length} gezeichnete Wörter (nötig ${NOETIG}) — „Lies das Wort" `
         + 'blendet sich dann selbst aus, und niemand sieht, dass eine Ebene fehlt');
-    const gesehen = new Map();
+    const gesehen = new Map(), nurFormen = new Map();
     const [RB_L, RB_O, RB_R, RB_U] = String(EN.BILD_RAHMEN).trim().split(/\s+/).map(Number);
     for (const x of vls) {
       if (!String(x.id).startsWith('ls:'))
@@ -2895,6 +2895,28 @@ console.log('\n  Tor `englisch`');
         ef.push(`„${x.wort}" und „${gesehen.get(abdruck)}" sind dieselbe Zeichnung — `
           + 'zwei Karten sähen gleich aus, und eine richtige Antwort gälte als falsch');
       gesehen.set(abdruck, x.wort);
+      /* UND DIESELBE ZEICHNUNG IN ANDEREN FARBEN. Das ist die Kopie, die
+         der Vergleich weiter unten NICHT findet: er zaehlt Zellen mit
+         gleichem Ton, und davon hat eine umgefaerbte Kopie keine einzige.
+
+         WARUM HIER EXAKT UND NICHT UEBER EINE SCHWELLE: bei den Lautpaaren
+         faengt eine Deckung ab 90 % die Kopie, weil dort nur zwei Karten
+         stehen. Auf diesem Schirm geht das nicht - nachgemessen liegen
+         heute NEUN Paare ueber 90 % Deckung, und jedes einzelne ist in
+         Ordnung: „happy"/„sad"/„o‘clock"/„football" sind alle derselbe
+         Kreis (100 %), die Flaggen von England und Deutschland fuellen
+         beide denselben Rahmen (100 %), „big"/„small" sind zwei Kreise
+         (96 %). Auch die Rahmenfuellung trennt sie nicht - sie liegt bei
+         34 bis 58 %, mitten im Ueblichen (Median 38 %).
+         Was eine Kopie wirklich auszeichnet, ist nicht ein Schwellwert,
+         sondern dass die PFADE dieselben sind. Das ist genau zu pruefen,
+         hat keine falschen Treffer, und heute trifft es nichts. */
+      const nurPfade = (x.bild || []).map(s => s.d).sort().join('~');
+      if (nurFormen.has(nurPfade))
+        ef.push(`„${x.wort}" und „${nurFormen.get(nurPfade)}" sind dieselbe Zeichnung `
+          + 'in anderen Farben — dieselben Flächen, nur umgefärbt, und das ist eine '
+          + 'Kopie und keine zweite Zeichnung');
+      nurFormen.set(nurPfade, x.wort);
       const k = bildKasten(x.bild);
       if (k.unbekannt.size)
         ef.push(`die Zeichnung „${x.wort}" nennt die Farbe `
@@ -3100,6 +3122,36 @@ console.log('\n  Tor `englisch`');
        gezeichnet, lernte ein Kind „mal eine Kiste, mal ein Korb" statt
        „auf, unter, hinter". Die Ausnahme gilt nur, wenn BEIDE Woerter
        dort stehen. */
+    /* DIE ZWEITE FANGBEDINGUNG, und sie ist der eigentliche Fortschritt.
+     *
+     * Eine einzelne Zahl trennt die Faelle nicht. Nachgemessen an zehn
+     * Paaren, deren Urteil vom BLATT kommt und nicht von der Rechnung
+     * (Regel 3) - drei davon sind Fallen, die ich deshalb ersetzt habe,
+     * sieben sind hoch gemessene, aber unverwechselbare Paare:
+     *
+     *                          zellgleich   Deckung
+     *   FALLE  ham/tomato          63 %      77 %
+     *   FALLE  old/boy             60 %      77 %
+     *   FALLE  shirt/jeans         60 %      81 %
+     *   harmlos apple/pullover     58 %      69 %
+     *   harmlos bread/chocolate    61 %      67 %
+     *   harmlos chair/schoolbag    55 %      65 %
+     *   harmlos bye/colour         49 %      69 %
+     *   harmlos chicken/eat        53 %      55 %
+     *   harmlos o‘clock/football   46 %      99 %
+     *   harmlos happy/sad          11 %     100 %
+     *
+     * ZELLGLEICH ALLEIN TRENNT NICHT: „bread/chocolate" liegt mit 61 %
+     * ueber zwei der drei Fallen. DECKUNG ALLEIN AUCH NICHT: „happy/sad"
+     * ist derselbe Kreis. ZUSAMMEN aber trennen sie sauber - alle drei
+     * Fallen liegen ueber 55 % zellgleich UND ueber 75 % Deckung, alle
+     * sieben harmlosen reissen mindestens eine der beiden.
+     *
+     * Sie kommt ZUSAETZLICH zur alten Grenze und ersetzt sie nicht: was
+     * bei 65 % zellgleich schon rot war, bleibt rot. Damit wird das Tor
+     * strenger und nicht anders. Heute trifft die neue Bedingung nichts;
+     * der naechste harmlose Fall liegt sechs Punkte Deckung darunter. */
+    const GLEICH_ENG = 0.55, DECKUNG_ENG = 0.75;
     const WO = 'wo';
     /* Einmal rastern und nicht je Paar: 84 Bilder ergeben 3486 Paare, und
        ohne diese Zeile waere jedes Bild 83-mal gerastert worden. */
@@ -3109,16 +3161,23 @@ console.log('\n  Tor `englisch`');
       const a = vls[i], b = vls[j];
       const beideWo = a.gebiet === WO && b.gebiet === WO;
       const g = gleichheit(gerastert[i], gerastert[j]);
+      const d = deckung(gerastert[i], gerastert[j]);
       if (!beideWo) {
-        spitze.push({ a: a.wort, b: b.wort, g });
+        spitze.push({ a: a.wort, b: b.wort, g, d });
         spitze.sort((x, y) => y.g - x.g);
         if (spitze.length > 3) spitze.pop();
       }
-      if (beideWo || g < GLEICH_MAX) continue;
+      if (beideWo) continue;
+      const eng = g >= GLEICH_ENG && d >= DECKUNG_ENG;
+      if (g < GLEICH_MAX && !eng) continue;
       ef.push(`„${a.wort}" und „${b.wort}" sind zu ${(g * 100).toFixed(0)} % `
-        + `zellgleich (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) — zwei Karten, die `
-        + 'nebeneinander gleich aussehen, und wer die falsche antippt, hat nichts '
-        + 'falsch gemacht');
+        + `zellgleich bei ${(d * 100).toFixed(0)} % Deckung — `
+        + (eng && g < GLEICH_MAX
+            ? `beides zusammen über der Grenze (${(GLEICH_ENG * 100).toFixed(0)} % und `
+              + `${(DECKUNG_ENG * 100).toFixed(0)} %)`
+            : `über der Grenze von ${(GLEICH_MAX * 100).toFixed(0)} %`)
+        + ' — zwei Karten, die nebeneinander gleich aussehen, und wer die falsche '
+        + 'antippt, hat nichts falsch gemacht');
     }
 
     /* Die Ablenker kommen aus DIESEM Vorrat und nicht aus den Farben:
@@ -3154,8 +3213,11 @@ console.log('\n  Tor `englisch`');
       + `${vls.length * (vls.length - 1) / 2} Paare zellweise verglichen `
       + `(${N_RASTER}×${N_RASTER} über „${EN.BILD_RAHMEN}", Töne unter `
       + `${TON_GLEICH} CIELAB gelten als einer) · die drei ähnlichsten: `
-      + spitze.map(p => `„${p.a}"/„${p.b}" ${(p.g * 100).toFixed(0)} %`).join(', ')
-      + ` (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) · ausgenommen sind nur die `
+      + spitze.map(p => `„${p.a}"/„${p.b}" ${(p.g * 100).toFixed(0)} % bei `
+        + `${(p.d * 100).toFixed(0)} % Deckung`).join(', ')
+      + ` (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %, oder `
+      + `${(GLEICH_ENG * 100).toFixed(0)} % zusammen mit `
+      + `${(DECKUNG_ENG * 100).toFixed(0)} % Deckung) · ausgenommen sind nur die `
       + `Bilder des Blatts „Wo?", die sich gleichen sollen`);
 
     /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 fuer Fiona) ----------
@@ -3216,6 +3278,15 @@ console.log('\n  Tor `englisch`');
       if (abdruckVon(a) === abdruckVon(b))
         lbf.push(`„${paar.a}/${paar.b}" zeigt zweimal dieselbe Zeichnung — dann ist `
           + 'jeder Tipp so richtig wie der andere');
+      /* Dieselbe Frage farbenblind. Die Deckung weiter unten faengt auch
+         die verschobene Kopie; diese hier faengt die exakte, und sie sagt
+         es genauer - „dieselben Pfade" ist eine Aussage, „92 % Deckung"
+         eine Schaetzung. */
+      const formVon = (st) => (st || []).map(s => s.d).sort().join('~');
+      if (formVon(a) === formVon(b))
+        lbf.push(`„${paar.a}/${paar.b}" zeigt dieselbe Zeichnung in zwei Farben — `
+          + 'dieselben Flächen, nur umgefärbt, und für ein Kind, das nicht liest, '
+          + 'sind es zwei gleiche Dinge');
       /* UND DER VIEL WAHRSCHEINLICHERE FALL: nicht dieselbe Zeichnung,
          sondern eine aehnliche. Derselbe Zellvergleich wie bei „Lies das
          Wort" (E7c), aber mit einer STRENGEREN Grenze, und das ist keine

@@ -6189,6 +6189,53 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:"pan: [\n    { f:'rot',        d:'M25 4h14v32H25Z'" },
     sagt:'decken (Grenze' },
 
+  /* 9. DIE ZWEITE FANGBEDINGUNG - und diese Probe holt einen ECHTEN
+   *    Fehler zurueck. Bis zu dieser Runde war „shirt" blau wie „jeans",
+   *    zwei blaue Kleidungsstuecke nebeneinander: 60 % zellgleich bei
+   *    81 % Deckung. Die alte Grenze (65 % zellgleich) haette das
+   *    durchgelassen - sie hat es durchgelassen, drei Fassungen lang.
+   *
+   *    Der Eingriff faerbt das Hemd zurueck. Anschlagen muss die
+   *    Meldung „beides zusammen ueber der Grenze"; kaeme stattdessen die
+   *    alte, wuerde die Probe die alte Zusage bezeugen und die neue nicht. */
+  { n:'zwei Zeichnungen reissen beide Grenzen zusammen', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"      { f:'gruen',       d:'M22 10h20l14 8-6 13-6-3v28H20V28l-6 3-6-13Z' },\n"
+      + "      { f:'gruenDunkel', d:'M42 10l14 8-6 13-6-3v28h-8V10Z' },",
+    ersatz:"      { f:'blau',        d:'M22 10h20l14 8-6 13-6-3v28H20V28l-6 3-6-13Z' },\n"
+      + "      { f:'blauDunkel',  d:'M42 10l14 8-6 13-6-3v28h-8V10Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'blau',        d:'M22 10h20l14 8" },
+    sagt:'beides zusammen über der Grenze' },
+
+  /* 10. DIESELBE ZEICHNUNG IN ANDEREN FARBEN. Der Zellvergleich findet
+   *     sie NICHT - er zaehlt Zellen mit gleichem Ton, und davon hat eine
+   *     umgefaerbte Kopie keine einzige.
+   *
+   *     Geprueft wird sie deshalb EXAKT und nicht ueber einen Schwellwert.
+   *     Nachgemessen: neun Paare liegen heute ueber 90 % Deckung, und
+   *     jedes ist in Ordnung - „happy", „sad", „o‘clock" und „football"
+   *     sind alle derselbe Kreis, die Flaggen fuellen beide den Rahmen.
+   *     Auch die Rahmenfuellung trennt sie nicht (34 bis 58 %, Median 38).
+   *     Was eine Kopie ausmacht, sind dieselben PFADE, und das ist eine
+   *     Aussage und keine Schaetzung.
+   *
+   *     Der Eingriff gibt dem Wasserglas die Flaechen der Erdbeere in
+   *     fuenf anderen Farben - die Sorte Fehler, die beim Kopieren eines
+   *     Blocks und Umfaerben entsteht. */
+  { n:'zwei englische Wörter teilen sich eine umgefärbte Zeichnung', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"      { f:'grau',       d:'M14 12h36l-4 42a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6Z' },\n"
+      + "      { f:'blau',       d:'M17 30h30l-2 24a4 4 0 0 1-4 4H23a4 4 0 0 1-4-4Z' },\n"
+      + "      { f:'blauDunkel', d:'M17 30h30l-1 6H18Z' },\n"
+      + "      { f:'licht',      d:'M22 16h4l2 38h-4Z' },",
+    ersatz:"      { f:'gruen', d:'M32 8c1 4 1 7 1 9h-2c0-2 0-5 1-9Z' },\n"
+      + "      { f:'gruenDunkel', d:'M32 20c-6-8-14-8-19-6 2 6 8 10 14 10h10c6 0 12-4 14-10-5-2-13-2-19 6Z' },\n"
+      + "      { f:'gelb', d:'M32 24c9 0 17 5 17 12 0 9-9 20-17 24-8-4-17-15-17-24 0-7 8-12 17-12Z' },\n"
+      + "      { f:'blau', d:'M38 25c7 2 11 6 11 11 0 9-9 20-17 24 6-6 12-15 12-22 0-5-2-10-6-13Z' },\n"
+      + "      { f:'rot', d:'M25 34a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm15 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'gruen', d:'M32 8c1 4 1 7 1 9h-2c0-2 0-5 1-9Z' }" },
+    sagt:'dieselbe Zeichnung in anderen Farben' },
+
   /* --- „Lies das Wort" (E7) --------------------------------------------
    *
    * Die Ebene ist die UMKEHRUNG von „Hoeren und zeigen", und alles, was
