@@ -89,6 +89,23 @@ stumm geworden ist, beantwortet dafür `inhalt` in einer Millisekunde:
 **findet jede Gegenprobe ihren Suchtext noch?** Fünf der sieben stummen
 Proben hätten genau daran angeschlagen.
 
+**Und `--geaendert` misst jetzt den BLOCK, nicht die Datei.** Bis hierher
+galt: wurde die Datei einer Probe angefasst, ist ihr Nachweis überholt.
+`prototyp/spiel.js` ist die Datei von rund drei Vierteln aller Gegenproben
+— wer dort irgendwo etwas ändert, macht damit alle stumm, auch die, deren
+Eingriff dreitausend Zeilen entfernt sitzt. **Gemessen an einer Runde mit
+vier neuen Ebenen: 271 von 398 Proben.**
+
+Verglichen wird deshalb die **Funktion**, in der der Suchtext steht (bei
+JavaScript; in einem Stilblatt gibt es keine, dort bleibt es beim groben
+Maßstab). Ändert sich etwas darin, fährt die Probe. Ändert sich etwas
+anderswo in derselben Datei, ist die Wirkung **mittelbar** — und dafür gibt
+es den vollen Lauf und die Frist. Dieselbe Runde: **119 statt 271.**
+
+**Einmal je Runde, am Ende.** Nicht nach jedem Commit — an einem Tag mit
+vier Commits sind das vier Läufe, und der letzte deckt ohnehin alles ab,
+was die drei davor gefunden hätten.
+
 ## Befehle
 
 ```

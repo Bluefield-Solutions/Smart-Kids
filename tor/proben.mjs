@@ -472,6 +472,64 @@ const seitCommit = (() => {
   };
 })();
 
+/* Hat sich die Stelle geaendert, an der eine Probe eingreift — oder nur
+ * IRGENDWO in ihrer Datei?
+ *
+ * Das ist der Unterschied zwischen 271 und ein paar Dutzend Proben je
+ * Runde. `prototyp/spiel.js` ist die Datei von rund drei Vierteln aller
+ * Gegenproben; wer dort irgendetwas anfasst, macht damit alle ihre
+ * Nachweise „ueberholt" - auch die, deren Eingriff dreitausend Zeilen
+ * entfernt sitzt.
+ *
+ * Verglichen wird deshalb der BLOCK: die Funktion (oder der oberste
+ * Kommentarblock), in der der Suchtext steht. Aendert sich etwas darin,
+ * faehrt die Probe. Aendert sich etwas anderswo in derselben Datei, ist
+ * die Wirkung MITTELBAR - und dafuer gibt es den vollen Lauf und die
+ * Frist in `rhythmus`. Genau diese Unterscheidung stand schon in der
+ * Begruendung von `--geaendert`; sie war nur noch nicht gerechnet.
+ *
+ * NUR fuer JavaScript. In einem Stilblatt gibt es keine Funktionen, an
+ * denen man einen Block festmachen koennte - dort bleibt es beim alten,
+ * groberen Massstab: Datei angefasst heisst fahren.
+ */
+const BLOCKANFANG = /^(?:export\s+)?(?:async\s+)?(?:function |class |const |let |var |\/\* )/;
+const blockUm = (text, stelle) => {
+  const bisHier = text.slice(0, stelle).split('\n');
+  const zeile = bisHier.length;                  // 1-basiert
+  const zeilen = text.split('\n');
+  let von = 1;
+  for (let i = zeile - 1; i >= 0; i--)
+    if (BLOCKANFANG.test(zeilen[i])) { von = i + 1; break; }
+  let bis = zeilen.length;
+  for (let i = zeile; i < zeilen.length; i++)
+    if (BLOCKANFANG.test(zeilen[i])) { bis = i; break; }
+  return { von, bis };
+};
+
+/** Die geaenderten ZEILEN einer Datei seit einem Commit - oder `null`,
+ *  wenn sich das nicht bestimmen laesst (dann gilt: angefasst). */
+const zeilenSeit = (() => {
+  const merker = new Map();
+  return (commit, datei) => {
+    const schluessel = commit + '\u0000' + datei;
+    if (merker.has(schluessel)) return merker.get(schluessel);
+    let aus = null;
+    try {
+      const roh = execSync(`git diff -U0 ${commit} -- ${JSON.stringify(datei)}`,
+        { encoding:'utf8', stdio:['ignore','pipe','ignore'] });
+      aus = [];
+      for (const m of roh.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm)) {
+        const start = +m[1], wieviel = m[2] === undefined ? 1 : +m[2];
+        // `+c,0` heisst: hier wurde nur geloescht. Die Naht liegt trotzdem
+        // an dieser Zeile, sonst faellt eine Loeschung durch jedes Raster.
+        aus.push([start, start + Math.max(wieviel, 1) - 1]);
+      }
+    } catch { aus = null; }
+    merker.set(schluessel, aus);
+    return aus;
+  };
+})();
+
 /** Der Nachweis, den eine Probe mitbringt — oder keiner. */
 const nachweisVon = (() => {
   const stand = fs.existsSync(STAND)
@@ -498,19 +556,46 @@ if (GEAENDERT) {
    */
   const still = !!TEIL;
   const ohneNachweis = [], veraltet = [];
+  /* Wieviele der Blockvergleich WEGGELASSEN hat - und zwar in jedem Lauf
+     sichtbar. Eine Auswahl, die stiller wird, ohne dass jemand die Zahl
+     sieht, ist genau die Sorte Verfall, gegen die dieses Verzeichnis
+     seine Gegenproben hat. */
+  let fernAb = 0;
   for (const p of PROBEN) {
     const nw = nachweisVon(p);
     if (!nw) { ohneNachweis.push(p); continue; }
     const dateien = seitCommit(nw.commit);
     if (!dateien) { veraltet.push(p); continue; }   // Commit weg → sicherheitshalber fahren
     const alle = [p.datei, ...(p.kopie || [])].filter(Boolean);
-    if (dateien.has(`tor/${p.tor}.mjs`) || alle.some(d => dateien.has(d))) veraltet.push(p);
+    // Das TOR selbst: dort gibt es keinen Block, an dem sich etwas
+    // festmachen liesse - eine geaenderte Zeile irgendwo im Tor kann jede
+    // seiner Zusagen betreffen.
+    if (dateien.has(`tor/${p.tor}.mjs`)) { veraltet.push(p); continue; }
+    const beruehrt = alle.filter(d => dateien.has(d));
+    if (!beruehrt.length) continue;
+    /* Und jetzt genauer: liegt die Aenderung im selben BLOCK wie der
+       Eingriff? Nur bei JavaScript und nur mit Suchtext - eine Kopie
+       (`p.kopie`) legt eine ganze Datei ueber eine andere, da gibt es
+       keine Stelle. */
+    const nahDran = beruehrt.some(d => {
+      if (p.kopie || p.such === undefined || !/\.(mjs|js)$/.test(d)) return true;
+      const hunks = zeilenSeit(nw.commit, d);
+      if (!hunks) return true;
+      let text; try { text = fs.readFileSync(d, 'utf8'); } catch { return true; }
+      const stelle = text.indexOf(p.such);
+      if (stelle < 0) return true;               // Suchtext weg - `inhalt` sagt es
+      const b = blockUm(text, stelle);
+      return hunks.some(([a, e]) => e >= b.von && a <= b.bis);
+    });
+    if (nahDran) veraltet.push(p);
+    else fernAb++;
   }
   vorauswahl = [...ohneNachweis, ...veraltet];
   geaendertGrund = `${ohneNachweis.length} neu, ${veraltet.length} veraltet`;
   if (!still) console.log(`\n  --geaendert: ${ohneNachweis.length} Probe`
     + `${ohneNachweis.length === 1 ? '' : 'n'} ohne Nachweis, ${veraltet.length} mit einem, `
-    + 'der überholt ist.');
+    + `der überholt ist${fernAb ? `; ${fernAb} liegen in einer angefassten Datei, aber `
+      + 'nicht im selben Block' : ''}.`);
   if (still) { /* still */ }
   else if (!vorauswahl.length)
     console.log('  Es gibt nichts nachzuweisen.');
