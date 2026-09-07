@@ -6074,8 +6074,18 @@ function spielschirm(){
   }
 
   /* Der Sprachweg steht seit F2b als eigenes Bauteil daneben - er ist
-     nicht mehr die Sache dieses Bildschirms, sondern die des Mikrofons. */
-  sprachweg({ spricht, werkzeug, liste, bewerte });
+     nicht mehr die Sache dieses Bildschirms, sondern die des Mikrofons.
+     
+     NICHT bei der umgekehrten Frage. Dort IST die Karte die Antwortliste
+     (siehe unten): getippt wird auf ein Gebiet, und es gibt nichts zu
+     sagen. Der Satz „kein Etikett, kein Feld, kein Mikrofon" stand seit
+     B3 im Quelltext - das Mikrofon stand trotzdem da, denn angehaengt
+     wurde es weiter oben und ohne Bedingung. Aufgefallen ist es an der
+     ersten Aufnahme von „Auf die Karte" (F4): dort ist JEDE Frage die
+     umgekehrte, und da stand ein Mikrofon neben einer Landkarte. Kein
+     Tor ersetzt den Blick (Regel 4) - siebzehn davon liefen daran
+     vorbei. */
+  if (!umgekehrt) sprachweg({ spricht, werkzeug, liste, bewerte });
 
   /**
    * Wohin zeigt der Finger? MIT Nachsicht.

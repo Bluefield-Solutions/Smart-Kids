@@ -11347,6 +11347,23 @@ Profildurchlauf hängt, **nennt die Ebene**, bei der er zugeschlagen hat. Der
 erste Lauf mit dieser einen Zeile mehr zeigte die Stelle sofort — sie lag nicht
 auf `flaggen:karte`, sondern auf der Ebene **danach**.
 
+### Ein Mikrofon neben einer Landkarte — siebzehn Tore liefen daran vorbei
+
+Die erste Aufnahme von „Auf die Karte" zeigte es sofort: neben der Europakarte
+stand ein **Mikrofon**. Auf dieser Ebene ist die Karte die Antwortliste — man
+tippt auf ein Land, es gibt nichts zu sagen.
+
+Das Bemerkenswerte ist nicht der Fehler, sondern sein Alter. Im Quelltext steht
+seit B3, bei der umgekehrten Frage: *„Kein Etikett, kein Feld, kein Mikrofon."*
+Angehängt wurde es trotzdem, zweihundert Zeilen weiter oben und ohne Bedingung.
+Der Satz war richtig, das Programm tat etwas anderes, und **niemand hat je
+hingesehen** — die umgekehrte Frage ist in den Erdkundeebenen erst die dritte,
+und keine einzige Aufnahme hatte sie je erwischt.
+
+Kein Tor ersetzt den Blick (Regel 4). Seit dieser Runde gibt es das Vorbild,
+und das Vorbild meldet sich — samt Gegenprobe, die das Mikrofon wieder
+anhängt.
+
 ### Und die Lücke, die schon im Backlog stand — nachgemessen
 
 Dort stand: nimmt man einer Ebene ihren Bildschirm (`schirmZu`), bleibt der

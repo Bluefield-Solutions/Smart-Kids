@@ -708,7 +708,13 @@ const OHNE_KARTE = {
      Beide muessen hier stehen - ein Vorbild, das nur auf die Wahlform
      wartet, liefe bei Lea in den Zeitablauf. */
   flaggen:   '.schirm.da .flaggenkarte, .schirm.da .flaggengross',
-
+  /* „Auf die Karte" (F4) traegt dieselbe ART und zeigt das Gegenteil:
+     eine Landkarte - und zwar OHNE hervorgehobenes Gebiet, denn die
+     Frage IST die Flagge in der Zeile. Der Eintrag steht deshalb auf der
+     ganzen Kennung, nicht auf der Art, und die Kennung wird zuerst
+     gefragt. Ohne ihn wartete die Aufnahme fuenfundzwanzig Sekunden auf
+     eine Flaggenkarte, die dort nie kommt, und riss den Lauf ab. */
+  'flaggen:karte': '.schirm.da .karte svg',
 };
 
 const STIMMEN_NACHBAU = () => {
@@ -1113,7 +1119,10 @@ for (const a of MEINE) {
       // Eine Rechenebene hat keine Karte, auf die man warten könnte.
       // Jede Sorte hat ihr eigenes Kennzeichen: die Rechnung, das
       // Schreibfeld oder das Zielgebiet auf der Karte.
-      const steht = OHNE_KARTE[String(a.spiel).split(':')[0]];
+      // Erst die ganze Kennung, dann die Art: `flaggen:karte` zeigt
+      // etwas anderes als die uebrigen `flaggen`-Ebenen.
+      const steht = Object.prototype.hasOwnProperty.call(OHNE_KARTE, a.spiel)
+        ? OHNE_KARTE[a.spiel] : OHNE_KARTE[String(a.spiel).split(':')[0]];
       await seite.waitForSelector(steht || '.schirm.da .karte svg path.ziel');
       const ohneKarte = !!steht;
       await seite.waitForTimeout(ohneKarte ? 300 : 0);

@@ -5587,6 +5587,21 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'flaggen: flaggenschirm' },
     sagt:'/flaggen:europa: ' },
 
+  /* Und das Mikrofon steht wieder bei der UMGEKEHRTEN Frage.
+   *
+   * Dort ist die Karte die Antwortliste: getippt wird auf ein Gebiet, es
+   * gibt nichts zu sagen. Der Satz stand seit B3 im Quelltext, das
+   * Mikrofon stand trotzdem da - siebzehn Tore liefen daran vorbei, und
+   * gesehen hat es die erste Aufnahme von „Auf die Karte" (Regel 4: kein
+   * Tor ersetzt den Blick). Seither ist es ein Vorbild, und ein Vorbild
+   * meldet sich. */
+  { n:'bei der umgekehrten Frage steht wieder ein Mikrofon', tor:'ansicht',
+    args:['--nur=quer-flaggen-karte'], bauen:true, datei:D,
+    such:'  if (!umgekehrt) sprachweg({ spricht, werkzeug, liste, bewerte });',
+    ersatz:'  sprachweg({ spricht, werkzeug, liste, bewerte });',
+    an:{ ...DIST, fehlt:'if (!umgekehrt) sprachweg(' },
+    sagt:'quer-flaggen-karte' },
+
   /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
    *
    * 1. DAS MIKROFON WIRD NICHT ANGEBAUT. Der Bildschirm bleibt heil, das
