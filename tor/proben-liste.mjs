@@ -5560,25 +5560,26 @@ export const PROBEN = [
     an:{ ...DIST, text:'const umgekehrt = false' },
     sagt:'durchgang' },
 
-  /* --- Die Luecke, die F5 geschlossen hat -----------------------------
+  /* --- Eine Ebene verliert ihren Bildschirm (F5) -----------------------
    *
-   * DIE EBENE VERLIERT IHREN BILDSCHIRM. `schirmZu` faellt auf den
-   * Kartenbildschirm zurueck, und der ist voellig heil - er bekommt nur
-   * einen Vorrat ohne Umrisse. Nichts bricht, nichts ist leer, und bis
-   * F5 ging der `durchgang` STILL daran vorbei: er fand weder
-   * Flaggenkarte noch Rechnung noch Karte und zaehlte die Ebene
-   * trotzdem als besucht.
+   * `schirmZu` faellt dann auf den Kartenbildschirm zurueck, und der ist
+   * voellig heil - er bekommt nur einen Vorrat ohne Umrisse. Der
+   * Durchgang laeuft in einen Zeitablauf, und bis zu dieser Runde stand
+   * in der Meldung nichts als „Timeout 8000ms exceeded": WELCHE der
+   * zwanzig Ebenen ihn ausgeloest hat, blieb offen, und der ganze
+   * Profildurchlauf endete daran.
    *
-   * Das ist die eigentliche Zusage, die diese Probe prueft - nicht „die
-   * Flaggen gehen", sondern „eine Ebene, deren Bildschirm kaputtgeht,
-   * faellt nicht mehr lautlos aus". Sie gilt fuer jede Ebene; genommen
-   * wird die Flaggenebene, weil sie die ist, an der es aufgefallen ist. */
+   * Die Zusage, die diese Probe prueft, ist deshalb nicht „es wird rot"
+   * - das war es auch vorher -, sondern „es wird rot AN DER RICHTIGEN
+   * STELLE". Der `catch`, an dem der Profildurchlauf haengt, nennt seit
+   * F4 die Ebene, und ohne diesen Namen kostet ein Zeitablauf einen
+   * ganzen Lauf, nur um die Stelle zu finden. */
   { n:'die Flaggenebene verliert ihren Bildschirm', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
     such:"englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,",
     ersatz:"englisch: englischschirm, freunde: freundeschirm,",
     an:{ ...DIST, fehlt:'flaggen: flaggenschirm' },
-    sagt:'keine einzige Antwort abgegeben' },
+    sagt:'lea/flaggen:europa' },
 
   /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
    *

@@ -1060,11 +1060,6 @@
       "zeit": "2026-09-07",
       "s": 53
     },
-    "die Kapazitätsmessung hängt die Wand nicht mehr neu ein": {
-      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
-      "zeit": "2026-09-06",
-      "s": 49
-    },
     "die Kachel verliert ihre Höhe": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
       "zeit": "2026-09-07",
@@ -1884,6 +1879,16 @@
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
       "zeit": "2026-09-07",
       "s": 77
+    },
+    "auf dem Flaggenschirm fehlt das Mikrofon wieder": {
+      "commit": "51f66f2db819c8585521e55256761888b67883d6",
+      "zeit": "2026-09-07",
+      "s": 79
+    },
+    "nicht verstanden kostet auf dem Flaggenschirm wieder einen Versuch": {
+      "commit": "51f66f2db819c8585521e55256761888b67883d6",
+      "zeit": "2026-09-07",
+      "s": 44
     },
     "ein Paar, das man nicht sehen kann, wird trotzdem gefragt": {
       "commit": "e0732af50df014f4c657000cfe26a155dce3a207",

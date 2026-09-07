@@ -4079,30 +4079,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       : da;
     gespielt[wer] = zuSpielen.length;
     gespieltEnglisch[wer] = zuSpielen.filter(SAGT_ENGLISCH).length;
-    /* Was die VORIGE Ebene abgegeben hat - und die Luecke, die das
-     * schliesst (F5).
-     *
-     * Gefunden beim Gegenproben: nimmt man einer Ebene ihren Bildschirm
-     * (`schirmZu`), faellt sie auf einen fremden zurueck. Der Durchgang
-     * findet dort weder das, worauf er wartet, noch etwas, worueber er
-     * klagen koennte - und geht STILL zur naechsten. Er zaehlte Ebenen
-     * und mass nichts. Das gilt nicht nur fuer die Flaggen: JEDE Ebene,
-     * deren Bildschirm kaputtgeht, fiel so aus.
-     *
-     * Die Zusage ist deshalb nicht mehr „ich habe sie betreten", sondern
-     * „sie hat geantwortet": `durchgespielt` muss zwischen zwei Ebenen
-     * gewachsen sein. Eine Pruefung, die nie etwas meldet, ist kein
-     * Beweis (Regel 1) - und diese meldete nie etwas. */
-    let vorige = null;
-    const nachgezaehlt = () => {
-      if (vorige && durchgespielt === vorige.zaehler)
-        merke('durchgang', new Error(`${wer}/${vorige.ebene}: betreten und keine einzige `
-          + 'Antwort abgegeben — der Durchgang ist still an der Ebene vorbeigelaufen'));
-      vorige = null;
-    };
     for (const ebene of zuSpielen) {
-      nachgezaehlt();
-      vorige = { ebene, zaehler: durchgespielt };
       /* Merken, WO wir sind. Der ganze Profildurchlauf haengt an EINEM
        * `catch` - ein Zeitablauf darin meldete bisher nur „Timeout
        * 15000ms exceeded" und liess offen, welche der zwanzig Ebenen ihn
@@ -4721,9 +4698,6 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       await abgeschlossen(p, wer, ebene, /Wie heißt/, `„${eingabe}" richtig `
         + (z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'));
     }
-    // Und die LETZTE Ebene - ohne sie bliebe genau eine je Profil
-    // ungeprueft, und zwar immer dieselbe.
-    nachgezaehlt();
     /* --- Steht die Aufgabe im Protokoll mit ihrem Namen? (R7) --------
      *
      * `NAMEN` war aus ZWEI Vorraeten gebaut, seit R4 gibt es drei: fuer

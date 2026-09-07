@@ -287,18 +287,22 @@ Flaggen gibt, die man nicht auseinanderhalten kann, ist selbst etwas, das man
 dem Boden *muss* die Kennzeichnung tragen, und ein Paar mit der Kennzeichnung
 muss auch wirklich zu nah sein — sonst wäre die Ausnahme ein Freibrief.
 
-**Eine Lücke im Rauchtest, gefunden beim Gegenproben — und geschlossen.**
-Nahm man `flaggen: flaggenschirm` aus `schirmZu`, fiel die Ebene auf den
-Kartenbildschirm zurück, und der Abschnitt `durchgang` blieb **grün**. Er fand
-weder Flaggenkarte noch Rechnung noch Karte und ging still zur nächsten Ebene.
-Das galt nicht nur für die Flaggen: **jede** Ebene, deren Bildschirm kaputtging,
-wurde stillschweigend übersprungen — der Durchgang zählte Ebenen und maß nichts.
+**Die Lücke im Rauchtest — nachgemessen, und sie sah anders aus als notiert.**
+Hier stand: nimmt man `flaggen: flaggenschirm` aus `schirmZu`, bleibt der
+Abschnitt `durchgang` **grün**. Nachgestellt stimmt das nicht — er wird rot.
+Was fehlte, war nicht die Meldung, sondern die **Stelle**: der ganze
+Profildurchlauf hängt an *einem* `catch`, und der meldete „Timeout 8000ms
+exceeded", ohne zu sagen, welche der zwanzig Ebenen ihn ausgelöst hat. Das
+kostet einen ganzen Lauf, nur um die Stelle zu finden — genau so ist es in
+dieser Runde zweimal passiert.
 
-Die Zusage heißt jetzt nicht mehr „ich habe sie betreten", sondern **„sie hat
-geantwortet"**: zwischen zwei Ebenen muss `durchgespielt` gewachsen sein, sonst
-ist die vorige rot. Die Gegenprobe dazu steht in der Liste und nimmt genau das
-weg, woran es aufgefallen ist — eine Prüfung, die nie etwas meldet, ist kein
-Beweis (Regel 1), und diese meldete nie etwas.
+Der `catch` nennt jetzt die Ebene, und die Gegenprobe prüft **das**: nicht
+„es wird rot" (das war es vorher auch), sondern „es wird rot an der richtigen
+Stelle". Ein Rückhalt, der die Ebene ohne Antwort auch dann meldet, wenn nichts
+wirft, stand kurz daneben und ist wieder heraus: er konnte nicht anschlagen,
+weil jeder unerkannte Bildschirm ohnehin in den Zeitablauf läuft — eine
+Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1), auch als
+Sicherheitsnetz nicht.
 
 Der zweite Fund derselben Art kam aus F4: der Zweig für die **umgekehrte
 Frage** war seit B3 nie gelaufen (sie ist in den Erdkundeebenen erst die

@@ -11347,25 +11347,31 @@ Profildurchlauf hängt, **nennt die Ebene**, bei der er zugeschlagen hat. Der
 erste Lauf mit dieser einen Zeile mehr zeigte die Stelle sofort — sie lag nicht
 auf `flaggen:karte`, sondern auf der Ebene **danach**.
 
-### Und die Lücke, die schon im Backlog stand, ist damit auch zu
+### Und die Lücke, die schon im Backlog stand — nachgemessen
 
-Beim Gegenproben von F2 war aufgefallen: nimmt man einer Ebene ihren Bildschirm
-(`schirmZu`), fällt sie auf einen fremden zurück — und der `durchgang` bleibt
-**grün**. Er findet dort weder das, worauf er wartet, noch etwas, worüber er
-klagen könnte, und geht still zur nächsten. Er zählte Ebenen und maß nichts.
-Das galt für **jede** Ebene, nicht nur für die Flaggen.
+Dort stand: nimmt man einer Ebene ihren Bildschirm (`schirmZu`), bleibt der
+`durchgang` **grün**. Nachgestellt stimmt das nicht — er wird rot. Was fehlte,
+war nicht die Meldung, sondern die **Stelle**: „Timeout 8000ms exceeded", ohne
+zu sagen, welche der zwanzig Ebenen. Genau daran sind in dieser Runde zwei
+Läufe draufgegangen, und deshalb ist der Name der Ebene im `catch` die
+eigentliche Reparatur.
 
-Die Zusage heißt jetzt **„sie hat geantwortet"** statt „ich habe sie betreten":
-zwischen zwei Ebenen muss `durchgespielt` gewachsen sein. Zwei Zeilen, eine
-Gegenprobe — und das dritte Beispiel in einer Woche für dieselbe Verfallsart:
-**eine Messung geht nicht rot, sie geht leise.** Die Liste dieser Woche:
+Ein Rückhalt daneben — *zwischen zwei Ebenen muss `durchgespielt` gewachsen
+sein* — stand eine Stunde lang im Tor und ist wieder heraus: er kann nicht
+anschlagen, weil jeder unerkannte Bildschirm ohnehin in den Zeitablauf läuft.
+Eine Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1) — auch als
+Sicherheitsnetz nicht, und ein Netz, das man für gespannt hält, ist schlimmer
+als keines.
+
+Bleibt der Befund, für den es sich gelohnt hat: **eine Messung geht nicht rot,
+sie geht leise.** Die Liste dieser Woche:
 
 | Wo | Wie es leise wurde |
 |---|---|
 | `--kurz`-Liste im Rauchtest | die neue Ebene stand nicht drin, also lief sie nie |
 | `heute === 11` in `passt` | die Waisenmessung sprang nur an genau einem Tag an |
 | `<rect>` statt `<path>` | die Wasserzeichenmessung sah die Flaggen gar nicht |
-| `durchgang` ohne Antwortzwang | eine Ebene ohne Bildschirm fiel lautlos aus |
+| der `catch` ohne Ebenennamen | ein Zeitablauf sagte, DASS, aber nicht WO |
 
 Alle vier hätten sich als „grünes Tor" gemeldet. Keine einzige davon war ein
 Fehler in der App.
