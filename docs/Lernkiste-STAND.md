@@ -11478,3 +11478,42 @@ sie geht leise.** Die Liste dieser Woche:
 
 Alle vier hätten sich als „grünes Tor" gemeldet. Keine einzige davon war ein
 Fehler in der App.
+
+## E9b · Vier Abzeichen für die Sätze — und die erste Menge aus einer Herkunft
+
+**Was gebaut wurde.** Vier Einträge in `TAFEL`, ein Zeichen (`blase`), ein
+Eintrag im Vorrat des Tores `abzeichen`. Die Mechanik blieb unberührt:
+`abzeichenDer` kann `je:[…]` seit den Malreihen, `stand` rechnet ohnehin nur
+über `teile`. Gemessen an der Abzeichenseite: **19 statt 15 Abzeichen**, vier
+neue Kacheln in der zweiten Reihe — Familie · Schule · Feste · Einkauf, je
+fünf Sätze.
+
+**Die erste Menge, die nicht an einem MERKMAL hängt.** Alle bisherigen wählen
+an etwas, das der Gegenstand *ist*: `stadtstaat`, `nachbarDE`,
+`rechenart === 'minus'`, ein Vokal in `AEIOU`. Ein Satz ist nichts davon — er
+*stammt* aus einem Themengebiet. `gebiet` trägt genau das, seit E9, weil jeder
+Satz seine Quelle nachweisen muss. Das Abzeichen war damit schon bezahlt,
+bevor es gebaut wurde; das ist der Grund, warum es unter fünfzig Zeilen
+gekostet hat.
+
+**„Die Sätze", nicht „alle Sätze".** Zum Thema Schule gibt es mehr englische
+Sätze als die fünf, die hier stehen. In D2b ist an genau dieser Stelle „alle
+Länder in Asien" ausgefallen (zwölf von achtundvierzig): ein Abzeichen, dessen
+Satz das Kind eines Tages als Lüge erlebt, ist schlechter als keines. „Die
+Sätze" meint die, die es hier gab — und die hat es dann wirklich alle gesagt.
+Der Unterschied ist ein Wort und kostet nichts.
+
+**Die neue Doppelung und ihre Wache.** Die deutschen Gebietsnamen stehen jetzt
+zweimal: amtlich in `THEMENGEBIETE`, und noch einmal in `abzeichen.js`. Das ist
+Absicht — das Modul hat keine Einfuhren, damit es sich ohne Profil und ohne
+Vorrat prüfen lässt. Aber was zweimal dasteht, veraltet einmal, und deshalb
+vergleicht das Tor `abzeichen` jetzt die vier Kennungen gegen die amtliche
+Tafel. Wer dort ein Gebiet hinzufügt oder umnummeriert, bekommt es gesagt,
+statt ein namenloses Abzeichen zu erben.
+
+**Das Zeichen.** Eine Sprechblase, gefüllt mit Kontur, die zwei Zeilen darin
+ohne Füllung — dieselbe Bildsprache wie `stadt` und `schild`. Der Blick auf
+die Aufnahme war nötig: `schild` ist ebenfalls ein Rechteck mit Strichen, und
+bei 34 Punkten ist der Schwanz der Blase der einzige Unterschied, den man
+sieht. Er reicht — auf `quer-buch-abzeichen` stehen beide nebeneinander
+(Fiona · Familie) und sind auseinanderzuhalten.

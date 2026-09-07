@@ -2672,6 +2672,14 @@ const ABZEICHENBILD = {
      dem A, liest sich das freistehende O als Buchstabe. */
   vokal: '<ellipse cx="12" cy="12" rx="6.8" ry="8.6"/>'
        + '<ellipse cx="12" cy="12" rx="2.9" ry="4.3" fill="none"/>',
+  /* Die Sprechblase der Satzebene (E9b). Sie ist im Spiel schon die
+     Kachel von „Sag den Satz" (`BLASENSTRICH`) - hier dieselbe Form in
+     der Abzeichensprache: gefuellt mit Kontur, die Zeilen darin ohne
+     Fuellung. `schild` ist ebenfalls ein Rechteck mit Strichen, aber
+     ohne Schwanz; bei 34 Punkten ist der Schwanz der Unterschied, den
+     man sieht. */
+  blase: '<path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-5 4v-4h-.5A2.5 2.5 0 0 1 3 13.5z"/>'
+       + '<path d="M7 7.4h10M7 11h6" fill="none" stroke-linecap="round"/>',
   medaille: '<path d="M8.2 2.6 12 9.4 15.8 2.6" fill="none" stroke-linecap="round"/>'
           + '<circle cx="12" cy="15.4" r="6.2"/>'
           + '<path d="M9.4 15.6l1.9 1.9 3.4-3.9" fill="none" stroke-linecap="round"/>',

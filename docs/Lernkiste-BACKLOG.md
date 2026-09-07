@@ -399,7 +399,7 @@ veraltet eine der beiden Fassungen).
 | **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | **GEFAHREN v376** — siehe Block unten |
 | **E12** | **Eltern: Hoeren und schreiben** — ganzer Satz, normales Tempo | **GEFAHREN v376** — siehe Block unten |
 
-### E9 · „Der Satz zum Selbersagen" — GEFAHREN (die Sätze; die Abzeichen als E9b)
+### E9 · „Der Satz zum Selbersagen" — GEFAHREN (die Sätze; die Abzeichen als E9b — auch gefahren)
 
 **Zwanzig Sätze, und keiner davon ist erfunden.** `THEMENGEBIETE` hält die
 amtlichen Redemittel — aber als **Schablonen**: *„This is my (little)
@@ -432,11 +432,39 @@ Mikrofon und einen Knopf, beide sagen ihr Englisch vor, beide werten. Ohne
 diese Zeile bliebe ein Durchlauf grün, während „Sag den Satz" still nach
 Farben fragt.
 
-**Offen als E9b: die Abzeichen je Themengebiet.** Die Mechanik trägt sie ohne
-eine Zeile Änderung (`abzeichenDer`, `stand`), was fehlt sind vier Einträge in
-der Tafel und vier Zeichen. Und die eigentliche Form aus dem Konzept — den
-Satz aus Wortkarten **zusammensetzen** — braucht dasselbe Legebauteil wie E8;
-das ist der Grund, warum beide zusammen gehören und nicht einzeln.
+### E9b · Vier Abzeichen für die Sätze — GEFAHREN
+
+Die Vorhersage stimmte: **keine Zeile an der Mechanik.** `abzeichenDer` kann
+`je:[…]` seit den Malreihen, `stand` rechnet ohnehin nur über `teile`. Was
+dazukam, sind vier Einträge in `TAFEL`, ein Zeichen (`blase`) und ein Eintrag
+im Vorrat des Tores — zusammen unter fünfzig Zeilen.
+
+**Die Menge kommt zum ersten Mal aus der HERKUNFT, nicht aus einem Merkmal.**
+Alle bisherigen Abzeichen wählen an etwas, das der Gegenstand *ist*:
+`stadtstaat`, `nachbarDE`, `rechenart === 'minus'`, ein Vokal. Ein Satz ist
+nichts davon — er *stammt* aus einem Themengebiet, und `gebiet` trägt genau
+das. Fünf Sätze je Gebiet, vier Gebiete.
+
+**Der Titel sagt „die Sätze", nicht „alle Sätze".** Das ist dieselbe
+Entscheidung, an der in D2b „alle Länder in Asien" gescheitert ist: es gibt
+zum Thema Schule mehr englische Sätze als fünf. „Alle" wäre ein Satz, den das
+Kind eines Tages als Lüge erlebt; „die Sätze" meint die, die es hier gab — und
+die hat es dann wirklich alle gesagt.
+
+**Und die eine neue Doppelung, samt Wache.** Die deutschen Gebietsnamen
+stehen jetzt in `abzeichen.js` ein zweites Mal, weil das Modul ohne Einfuhren
+bleiben soll (nur so lässt es sich ohne Profil und ohne Vorrat prüfen). Was
+zweimal dasteht, veraltet einmal — Regel 6 verlangt dafür eine Wache, und
+hier ist sie: das Tor `abzeichen` vergleicht die vier Kennungen
+gegen `THEMENGEBIETE`. Wer dort ein Gebiet hinzufügt, bekommt es gesagt,
+statt ein namenloses Abzeichen zu erben.
+
+Zwei Gegenproben: die Menge fällt leer aus (Tippfehler im Feldnamen), und die
+Abdeckung veraltet (ein Gebiet weniger in `je`).
+
+**Was von E9 offen bleibt:** die eigentliche Form aus dem Konzept — den Satz
+aus Wortkarten **zusammensetzen** (E9c). Sie braucht dasselbe Legebauteil wie
+E8; das ist der Grund, warum beide zusammen gehören und nicht einzeln.
 
 ### E6 · „Sag es" — GEFAHREN
 

@@ -5727,6 +5727,31 @@ export const PROBEN = [
     an:{ ...DIST, text:"kont==='satz')\n    return Englisch.vorratHoeren();" },
     sagt:'und kein Satz' },
 
+  /* --- Die vier Satz-Abzeichen (E9b) ----------------------------------
+   *
+   * 1. DIE MENGE FAELLT LEER AUS. Die Saetze sind die erste Menge dieser
+   *    Tafel, die nicht an einem Merkmal des Gegenstands haengt, sondern
+   *    an seiner Herkunft - ein Tippfehler im Feldnamen waehlt still
+   *    nichts aus, und dann gibt es die vier Abzeichen einfach nicht.
+   *    Genau die Verfallsart, gegen die das Tor `abzeichen` gebaut ist;
+   *    hier bekommt sie ihren Fall auf der neuen Ebene. */
+  { n:'die Satz-Abzeichen wählen nichts aus', tor:'inhalt', deckt:'abzeichen', datei:A,
+    such:'    waehlt: (v, g) => v.filter(x => x.gebiet === g) },',
+    ersatz:'    waehlt: (v, g) => v.filter(x => x.gebiete === g) },',
+    an:{ datei:A, text:'x.gebiete === g' }, sagt:'unerreichbar' },
+
+  /* 2. DIE DOPPELUNG VERALTET. Die Gebietsnamen stehen in `abzeichen.js`
+   *    ein zweites Mal, damit das Modul einfuhrfrei bleibt. Wer in der
+   *    amtlichen Tafel ein Gebiet hinzufuegt oder streicht, bekaeme ohne
+   *    diese Pruefung ein Abzeichen ohne Namen oder gar keines - und
+   *    zwar lautlos, denn die drei uebrigen sehen heil aus. */
+  { n:'die Satz-Abzeichen decken die Themengebiete nicht mehr ab',
+    tor:'inhalt', deckt:'abzeichen', datei:A,
+    such:"    je:['4.1','4.2','4.3','4.4'],",
+    ersatz:"    je:['4.1','4.2','4.3'],",
+    an:{ datei:A, text:"je:['4.1','4.2','4.3']," },
+    sagt:'die amtlichen Themengebiete sind' },
+
   /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
    *
    * 1. DAS MIKROFON WIRD NICHT ANGEBAUT. Der Bildschirm bleibt heil, das

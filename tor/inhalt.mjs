@@ -491,7 +491,23 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
     'rechnen:reihen': R.reihenVorrat(),
     'rechnen:plusminus': R.vorrat(),
     'schreiben:buchstaben': SCHR.vorrat(),
+    /* Die Saetze zum Selbersagen (E9b). `vorratChunks()` ist genau das,
+       was `vorrat('englisch:satz')` im Spiel zurueckgibt - und es traegt
+       `gebiet`, woran die vier Abzeichen haengen. */
+    'englisch:satz': EN.vorratChunks(),
   };
+  /* Die Gebietsnamen stehen in `abzeichen.js` ein zweites Mal, weil das
+     Modul einfuhrfrei bleiben soll. Was zweimal dasteht, veraltet einmal
+     (Regel 6) - hier steht die Bewachung, die es nicht tun laesst:
+     wer in der amtlichen Tafel ein Gebiet hinzufuegt oder umnummeriert,
+     bekommt es gesagt, statt ein Abzeichen ohne Namen zu erben. */
+  {
+    const amtlich = EN.THEMENGEBIETE.map(g => g.nr).sort().join(',');
+    const beiUns = (AB.TAFEL.find(e => e.ebene === 'englisch:satz')?.je || [])
+      .slice().sort().join(',');
+    pruefe(amtlich === beiUns, `die Satz-Abzeichen decken „${beiUns}" ab, `
+      + `die amtlichen Themengebiete sind „${amtlich}"`);
+  }
   let geprueft = 0;
   for (const e of AB.TAFEL) {
     const v = VORRAT[e.ebene];

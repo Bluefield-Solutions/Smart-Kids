@@ -74,6 +74,27 @@
 const REIHENWORT = { 2:'Zweier', 3:'Dreier', 4:'Vierer', 5:'Fünfer', 6:'Sechser',
                      7:'Siebener', 8:'Achter', 9:'Neuner', 10:'Zehner' };
 
+/** Die vier Themengebiete des Lehrplans, kurz und lang.
+ *
+ * Die Namen stehen amtlich in `THEMENGEBIETE` (src/inhalt/englisch.js).
+ * Sie stehen hier trotzdem ein zweites Mal. Was zweimal dasteht,
+ * veraltet einmal (Regel 6) - es sei denn, es wird bewacht. Dieses
+ * Modul hat keine Einfuhren, damit es sich ohne Profil und ohne Vorrat
+ * pruefen laesst, und das soll so bleiben. Bewacht wird die Doppelung im Tor
+ * `inhalt`: die vier Kennungen hier muessen genau die vier Nummern der
+ * amtlichen Tafel sein, sonst faellt das Tor. Eine Doppelung, die eine
+ * Pruefung hat, veraltet nicht still.
+ *
+ * `lang` steht hinter „zum Thema" - deshalb ohne Artikel, und deshalb
+ * traegt es fuer alle vier dieselbe Fuge. „Du hast die Saetze zur
+ * Schule gesagt" haette je Gebiet einen anderen Fall gebraucht. */
+const GEBIETSWORT = {
+  '4.1': { kurz: 'Familie', lang: 'Familie und Freunde' },
+  '4.2': { kurz: 'Schule',  lang: 'Schule' },
+  '4.3': { kurz: 'Feste',   lang: 'Freizeit und Feste' },
+  '4.4': { kurz: 'Einkauf', lang: 'Einkaufen' },
+};
+
 /* Die Tafel.
  *
  * Je Eintrag:
@@ -208,6 +229,26 @@ export const TAFEL = [
     kurz: () => 'Vokale',
     titel: () => 'Du kennst alle Vokale.',
     waehlt: (v) => v.filter(x => 'AEIOU'.includes(x.zeichen)) },
+
+  /* --- E9b: vier Abzeichen fuer die Saetze zum Selbersagen ------------ *
+   *
+   * Die erste Menge dieser Tafel, die nicht aus einem Merkmal am
+   * Gegenstand faellt, sondern aus seiner HERKUNFT: jeder Satz traegt
+   * die Nummer des Themengebiets, aus dessen Redemitteln er stammt.
+   * Fuenf Saetze je Gebiet - klein genug, um sie zu Ende zu bringen,
+   * und das war die Lehre aus dem Panini-Album.
+   *
+   * Der Titel sagt „die Saetze", nicht „alle Saetze". Der Unterschied
+   * ist derselbe wie bei „alle Laender in Asien" ein Stueck weiter
+   * oben: es gibt zum Thema Schule mehr englische Saetze als fuenf, und
+   * ein Kind, das das eines Tages merkt, soll das Abzeichen nicht als
+   * Luege erleben. „Die Saetze" meint die, die es hier gab - und die
+   * hat es dann wirklich alle gesagt. */
+  { ebene:'englisch:satz', id:(g)=>`saetze-${g}`, zeichen:'blase',
+    je:['4.1','4.2','4.3','4.4'],
+    kurz: (g) => GEBIETSWORT[g].kurz,
+    titel: (g) => `Du hast die Sätze zum Thema ${GEBIETSWORT[g].lang} gesagt.`,
+    waehlt: (v, g) => v.filter(x => x.gebiet === g) },
 ];
 
 /**
