@@ -353,9 +353,18 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   const { PROBEN } = await import('./proben-liste.mjs');
   pruefe(PROBEN.length > 50, `Nur ${PROBEN.length} Gegenproben gefunden — `
     + 'die Liste ist nicht die, die gemeint war');
-  let geprueftD = 0;
+  /* Die Probe, die GERADE laeuft, ist ausgenommen.
+   *
+   * `tor/proben.mjs` reicht ihren Namen herein, waehrend ihr Eingriff im
+   * Baum steht - und dann ist ihr Suchtext mit Absicht weg. Ohne diese
+   * Zeile faellt das Tor genau dort, wo die Probe etwas beweisen will,
+   * bricht ab, und das gemeinte Tor laeuft nicht mehr: rot, aber nicht
+   * deswegen. */
+  const laeuftGerade = process.env.SMARTKIDS_PROBE || '';
+  let geprueftD = 0, ausgenommen = 0;
   for (const p of PROBEN) {
     if (!p.datei) continue;
+    if (p.n === laeuftGerade) { ausgenommen++; continue; }
     if (!fs.existsSync(p.datei)) {
       pruefe(false, `Gegenprobe „${p.n}": die Datei ${p.datei} gibt es nicht`);
       continue;
@@ -435,11 +444,15 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
    * Gezaehlt wird gegen die Zahl der Proben, die eine Datei NENNEN - eine
    * feste Zahl waere die naechste, die veraltet. */
   const mitDatei = PROBEN.filter(p => p.datei).length;
-  pruefe(geprueftD === mitDatei, `Nur ${geprueftD} von ${mitDatei} Gegenproben mit Datei `
-    + 'wurden angesehen — die Prüfung greift ins Leere und beweist nichts');
+  /* Die ausgenommene zaehlt MIT - sonst schlaegt diese Zusage bei jedem
+     Probenlauf an, und zwar genau dann, wenn die Ausnahme richtig war. */
+  pruefe(geprueftD + ausgenommen === mitDatei,
+    `Nur ${geprueftD} von ${mitDatei} Gegenproben mit Datei wurden angesehen `
+    + `(${ausgenommen} ausgenommen) — die Prüfung greift ins Leere und beweist nichts`);
   const mehrfach = PROBEN.filter(p => p.mehrfach).length;
   console.log(`    Gegenproben: ${geprueftD} von ${PROBEN.length} greifen genau einmal `
-    + `in ihre Datei (${mehrfach} ausdrücklich mehrfach)`);
+    + `in ihre Datei (${mehrfach} ausdrücklich mehrfach`
+    + `${ausgenommen ? `, ${ausgenommen} läuft gerade` : ''})`);
 }
 
 /* --- Abzeichen: kann man sie ueberhaupt bekommen? (D2) -----------------
@@ -2588,6 +2601,17 @@ console.log('\n  Tor `englisch`');
           + `${JE_STOLPER_MIN}) — mit weniger ist sie in einer Sitzung nicht zu üben`);
       if (!st.grund || st.grund.length < 40)
         lf.push(`die Stolperstelle „${st.name}" hat keinen Grund, der sie erklärt`);
+    }
+    /* ERST URTEILEN, DANN DEN VORRAT BAUEN.
+       `vorratLaute` schlaegt den Grund an der Stolperstelle nach; fehlt
+       sie, wirft es. Ein geworfener Fehler ist kein Befund - er sagt
+       niemandem, WAS falsch ist, und der Rest des Tores laeuft gar nicht
+       mehr. Gemessen an der Gegenprobe „eine der vier Stolperstellen
+       faellt weg": sie war rot, aber nicht deswegen. */
+    if (lf.length) {
+      console.log('    ' + lf.join('\n    '));
+      console.error('\n  englisch ROT: die Lautpaare (E5) stimmen nicht.');
+      process.exit(1);
     }
     /* Und der Vorrat: ZWEI Gegenstaende je Paar, jeder mit dem Gegenwort
        und dem Grund. Ohne diese Zeilen koennte `vorratLaute` eine

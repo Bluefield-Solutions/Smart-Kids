@@ -11749,3 +11749,34 @@ dieselbe Regel eine Ebene tiefer.
 **Und die Bündelgröße** ist von 433,6 auf 464,6 KB gewachsen (+7,1 %) — vier
 neue Ebenen, sechzehn Lautpaare, zwanzig Sätze, vier Abzeichensätze und vier
 gezeichnete Bilder. Von 700 KB Deckel sind das zwei Drittel; bestätigt.
+
+
+## Vier Gegenproben, die rot waren — aber nicht deswegen
+
+Der Lauf über die geänderten Proben hat sofort etwas gemeldet, und es war
+kein Fehler in E5, sondern einer im **Probenlauf selbst**.
+
+`inhalt` prüft seit Q39c, ob jede Gegenprobe ihren Suchtext noch findet —
+die billigste Prüfung des Verzeichnisses und eine der wertvollsten. Nur:
+**während eine Probe läuft, ist ihr eigener Suchtext mit Absicht weg.** Das
+Tor meldete also „der Eingriff käme nicht an", brach ab — und alles, was
+nach dieser Prüfung kommt, lief gar nicht mehr. Darunter das Untertor
+`englisch`, das die vier neuen Proben eigentlich meinen. Der Läufer nannte
+es genau richtig: **rot, aber nicht deswegen.**
+
+Warum das bis jetzt niemandem aufgefallen ist: die älteren Proben, die in
+`src/inhalt/*.js` eingreifen, kamen durch, weil ihr Suchtext im Rest der
+Datei noch ein zweites Mal vorkam — also aus Zufall und nicht aus Bauart.
+E5 ist die erste Runde, die eine Datei anfasst und ein Tor **nach** dieser
+Prüfung meint.
+
+Jetzt reicht `tor/proben.mjs` den Namen der laufenden Probe als
+`SMARTKIDS_PROBE` herein, und `inhalt` nimmt genau diese eine aus. Die
+Zählzusage daneben („so viele wurden angesehen") zählt die Ausnahme mit —
+sonst schlüge sie bei jedem Probenlauf an, und zwar genau dann, wenn die
+Ausnahme richtig war.
+
+**Und ein zweiter, kleiner:** die E5-Prüfung baute den Vorrat, *bevor* sie
+urteilte. `vorratLaute` schlägt den Grund an der Stolperstelle nach; fehlt
+sie, wirft es. Ein geworfener Fehler ist kein Befund — er sagt niemandem,
+was falsch ist. Erst urteilen, dann bauen.

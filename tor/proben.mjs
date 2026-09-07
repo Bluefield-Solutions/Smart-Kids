@@ -803,7 +803,20 @@ for (const p of welche) {
   }
 
   /* --- Schlägt das Tor an? ---------------------------------------- */
-  const r = lauf(p.tor, { ...p.stets, ...p.umgebung }, p.args, p.ohneSofort);
+  /* DER NAME DER LAUFENDEN PROBE GEHT MIT.
+   *
+   * `inhalt` prueft, ob jede Gegenprobe ihren Suchtext noch findet - und
+   * waehrend eine Probe laeuft, ist ihr eigener Suchtext MIT ABSICHT weg.
+   * Ohne diese Auskunft meldet das Tor „der Eingriff kaeme nicht an",
+   * bricht ab, und alles, was danach kaeme, laeuft gar nicht mehr. Die
+   * Probe war dann rot - aber nicht deswegen.
+   *
+   * Aufgefallen an den ersten Proben, die in `src/inhalt/englisch.js`
+   * eingreifen und ein Tor NACH dieser Pruefung meinen (E5). Die aelteren
+   * kamen durch, weil ihr Suchtext im Rest der Datei noch ein zweites Mal
+   * vorkam - also aus Zufall und nicht aus Bauart. */
+  const r = lauf(p.tor, { ...p.stets, ...p.umgebung, SMARTKIDS_PROBE: p.n },
+                 p.args, p.ohneSofort);
   wiederherstellen(p.bauen);
 
   // Erst jetzt fragen, ob es ohne Eingriff gruen gewesen waere: der Baum
