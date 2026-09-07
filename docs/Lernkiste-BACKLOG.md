@@ -251,12 +251,12 @@ im Konzept:
 | Runde | Was | Abnahme | Aufwand |
 |---|---|---|---|
 | **F0** | Referenzabgleich — Seterra, Montessori, Anton; fünf Soll-Sätze | steht im Konzept, § 0 | **erledigt** |
-| **F1** | `src/inhalt/flaggen.js`: Formsprache, 69 Bauanweisungen, `flaggeTeile`/`flaggeSvg`; Tor `flaggen` | Das Tor misst die **Unterscheidbarkeit am Raster** und schlägt an, wenn einer Flagge ihr unterscheidendes Zeichen fehlt | mittel |
-| **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | groß |
+| **F1** | `src/inhalt/flaggen.js`: Formsprache, 69 Bauanweisungen, `flaggeTeile`/`flaggeSvg`; Tor `flaggen` | Das Tor misst die **Unterscheidbarkeit am Raster** und schlägt an, wenn einer Flagge ihr unterscheidendes Zeichen fehlt | **gefahren** |
+| **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | **gefahren** |
 | **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Lea sagt „Italien" statt zu tippen; der Kartenbildschirm verhält sich unverändert | **gefahren** |
 | **F3** | „Verwechslungen" — achter Gruppeneintrag, dreizehn Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad — und zwei Paare kann man **gar nicht** fragen | **gefahren** |
 | **F4** | „Auf die Karte" — die Flagge steht in der Frage, getippt wird auf das Land | Läuft auf dem `spielschirm`, nicht auf einem eigenen | **gefahren** |
-| **F5** | Abzeichen, Doku, volle Torkette, Gegenproben — **und die Lücke unten** | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
+| **F5** | Abzeichen, Doku, volle Torkette, Gegenproben — **und die Lücke unten** | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | **gefahren** |
 
 **F4 ist billiger geworden als geplant — weil sie den `spielschirm` BENUTZT
 statt ihn zu kopieren.** Die umgekehrte Frage („Wo liegt X?", Tippen auf die
