@@ -1466,9 +1466,9 @@
       "s": 70
     },
     "die Abzeichenseite zeigt wieder nur drei offene Abzeichen": {
-      "commit": "0b4a7d546f977479e1249c83010458052481fd38",
+      "commit": "83c00415a490debd3fe01cee7dd7d877e9a01a2d",
       "zeit": "2026-09-07",
-      "s": 52
+      "s": 53
     },
     "die Abzeichenseite sagt nicht mehr, welches als nächstes fällt": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",

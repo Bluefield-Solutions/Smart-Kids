@@ -4695,11 +4695,20 @@ export const PROBEN = [
      Forderung („sichtbar, BEVOR man es hat"). Gemessen wird das an
      derselben Zahl wie bei der Rechenseite. */
   { n:'die Abzeichenseite zeigt wieder nur die verdienten', tor:'smoke',
-    args:['--nur=ablage'], bauen:true, datei:D,
+    args:['--nur=abzeichen'], bauen:true, datei:D,
     such:"        naechste.map(markeBild).join('')}</div>`",
     ersatz:"        ''}</div>`",
     an:{ ...DIST, fehlt:'naechste.map(markeBild)' },
-    sagt:'Kapitelseiten nutzen weniger als' },
+    /* Nicht die Fuellung, sondern das FEHLENDE. Nachgemessen faellt die
+       Abzeichenseite ohne die offenen von 53 auf 35 % - die Ratsche
+       steht bei 34, also bleibt sie knapp darueber. Die Zahl misst
+       richtig (18 Punkte Ausschlag), sie ist nur nicht die schaerfste
+       Zusage an dieser Stelle.
+       Die schaerfste ist die daneben: „kein einziges offenes Abzeichen -
+       dann ist der naechste Schritt unsichtbar". Sie sagt genau das, was
+       der Referenzabgleich fordert (sichtbar, BEVOR man es hat), und sie
+       haengt an keiner Prozentzahl. */
+    sagt:'kein einziges offenes Abzeichen' },
 
   { n:'das neue Abzeichen wird nicht gesagt', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:D,
