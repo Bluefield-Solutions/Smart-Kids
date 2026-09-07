@@ -102,6 +102,31 @@ export async function starte(opt = {}) {
  * das ist auf dem Geraet der Kinder monatelang niemandem aufgefallen -
  * es sah ja aus, als liefe alles.
  */
+/* Die Stimmen, die Chromium hier NICHT hat.
+ *
+ * Ohne Nachbau ist `speechSynthesis.getVoices()` leer, und dann verhaelt
+ * sich die App wie auf einem Geraet ohne Sprachausgabe: „Sag es" faellt
+ * auf seine Notfassung zurueck, und „Zwei Woerter, ein Laut" (E5) gibt es
+ * gar nicht - die Ebene prueft das Ohr und wird ohne Stimme nicht
+ * angeboten. Ein Tor, das sie deshalb nie zu Gesicht bekommt, misst sie
+ * auch nie.
+ *
+ * Die Liste steht EINMAL. `smoke` baut daneben noch die Aeusserung selbst
+ * nach (es schreibt mit, WAS gesagt wurde); `passt` braucht nur, dass es
+ * die Stimmen gibt. Zwei Listen waeren zwei Wahrheiten darueber, welche
+ * Sprachen dieses Geraet kann.
+ */
+export const STIMMEN = [
+  { name: 'Anna', lang: 'de-DE', localService: true },
+  { name: 'Daniel', lang: 'en-GB', localService: true },
+];
+
+/** Die Stimmen einer Seite unterschieben - VOR dem Laden. */
+export const stimmenUnterschieben = (seite) => seite.addInitScript((v) => {
+  window.__stimmen = v;
+  speechSynthesis.getVoices = () => window.__stimmen;
+}, STIMMEN);
+
 export async function serviere(wurzel, erreichbar = () => true, verzug = () => 0) {
   const { default: fs2 } = await import('node:fs');
   const { default: path2 } = await import('node:path');

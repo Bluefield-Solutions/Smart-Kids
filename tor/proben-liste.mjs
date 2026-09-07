@@ -5134,9 +5134,16 @@ export const PROBEN = [
    * Aussprache, die geuebt wird, ist die falsche. */
   { n:'das englische Wort wird deutsch ausgesprochen', tor:'smoke',
     args:['--nur=englisch'], bauen:true, datei:D,
-    such:"  vorlesen(ziel.wort, 'en');\n  {\n    const b = nochHoerenKnopf(ziel.wort, 'en');",
-    ersatz:"  vorlesen(ziel.wort);\n  {\n    const b = nochHoerenKnopf(ziel.wort, 'en');",
-    an:{ ...DIST, fehlt:"  vorlesen(ziel.wort, 'en');\n  {\n    const b" },
+    /* Der Anker ist das ENDE des Kommentars darueber und nicht die Zeile
+       selbst: seit E5 endet auch `lauteschirm` auf `vorlesen(ziel.wort,
+       'en')` samt Nachhoer-Knopf, und ein Suchtext, der zweimal passt,
+       verstellt die falsche Stelle. Dieselbe Klammer benutzt die Probe
+       „die Englischebene sagt das Wort gar nicht mehr" ein Stueck weiter
+       unten - zwei Proben duerfen sich einen Suchtext teilen, zwei
+       STELLEN nicht. */
+    such:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n  vorlesen(ziel.wort, 'en');",
+    ersatz:"     `ansagen`, weil sie kein Vorlesehelfer ist. */\n  vorlesen(ziel.wort);",
+    an:{ ...DIST, fehlt:"ist. */\n  vorlesen(ziel.wort, 'en');" },
     sagt:'übt die falsche Aussprache ein' },
 
   /* Die Englischebene sagt gar nichts mehr.
@@ -5726,6 +5733,86 @@ export const PROBEN = [
     ersatz:"  if (art==='englisch' && kont==='satz')\n    return Englisch.vorratHoeren();",
     an:{ ...DIST, text:"kont==='satz')\n    return Englisch.vorratHoeren();" },
     sagt:'und kein Satz' },
+
+  /* --- „Zwei Wörter, ein Laut" (E5) -------------------------------------
+   *
+   * 1. DAS GESUCHTE WORT STEHT IN DER FRAGE. Damit ist die ganze Ebene
+   *    weg: gehoert wird nicht mehr, gelesen schon. Der Bildschirm bleibt
+   *    dabei vollstaendig heil - zwei Karten, ein Hoerknopf, ein Lob -,
+   *    und die Aufgabe ist geloest, bevor sie gestellt ist. */
+  { n:'das gesuchte Wort steht in der Frage', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'<div class="frage" id="frage">Welches Wort hörst du?</div>',
+    ersatz:'<div class="frage" id="frage">Welches Wort hörst du? ${ziel.wort}</div>',
+    an:{ ...DIST, text:'Welches Wort hörst du? ${ziel.wort}' },
+    sagt:'steht in der Frage' },
+
+  /* 2. DER GRUND FAELLT WEG. Er ist der eigentliche Inhalt: dass man
+   *    einmal richtig geraten hat, nimmt niemand mit, „im Deutschen gibt
+   *    es das th nicht" schon. Ohne ihn bleibt eine Ratefrage mit zwei
+   *    Moeglichkeiten, und sie sieht genauso aus. */
+  { n:'die Lautpaare sagen nicht mehr, woran man sie unterscheidet', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"    + `<strong lang=\"en\">${ziel.gegen}</strong>. ${ziel.grund}`;",
+    ersatz:"    + `<strong lang=\"en\">${ziel.gegen}</strong>.`;",
+    an:{ ...DIST, fehlt:'${ziel.gegen}</strong>. ${ziel.grund}' },
+    sagt:'steht der Grund nicht da' },
+
+  /* 3. DIE ZWEITE KARTE IST NICHT DAS GEGENWORT. Dann stehen zweimal
+   *    dieselben Buchstaben da, und was geuebt wird, ist gar nichts -
+   *    jeder Tipp ist richtig. */
+  { n:'das Lautpaar zeigt zweimal dasselbe Wort', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"                           { wort: ziel.gegen, gesucht: false }],",
+    ersatz:"                           { wort: ziel.wort, gesucht: false }],",
+    an:{ ...DIST, text:'{ wort: ziel.wort, gesucht: false }' },
+    sagt:'auf dem Bildschirm stehen' },
+
+  /* 4. EIN PAAR UNTERSCHEIDET SICH ANDERSWO als an seiner Stolperstelle.
+   *    „wine/vine" unter „Das englische th" waere eine Uebung, die etwas
+   *    anderes uebt als ihr Grund behauptet - und beide Woerter stehen
+   *    richtig da. Das Tor rechnet die Ersetzung nach; ohne sie waere die
+   *    Zuordnung eine Behauptung. */
+  { n:'ein Lautpaar steht unter der falschen Stolperstelle', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { a: 'wine',  b: 'vine',  stolper: 'wv' },",
+    ersatz:"  { a: 'wine',  b: 'vine',  stolper: 'th' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"b: 'vine',  stolper: 'th'" },
+    sagt:'unterscheidet sich nicht an seiner Stolperstelle' },
+
+  /* 5. EINE STOLPERSTELLE FAELLT WEG. Das Konzept nennt VIER, und die
+   *    Abnahme heisst „alle vier sind vertreten". Wer eine streicht,
+   *    streicht sie lautlos - niemand vermisst, was nie dastand. */
+  { n:'eine der vier Stolperstellen fällt weg', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { id: 'ea', name: 'a gegen e',",
+    ersatz:"  { id: 'ea-alt', name: 'a gegen e',",
+    an:{ datei:'src/inhalt/englisch.js', text:"id: 'ea-alt'" },
+    sagt:'die es nicht gibt' },
+
+  /* 6. DIE EBENE WIRD AUCH OHNE ENGLISCHE STIMME ANGEBOTEN. Dann steht
+   *    sie in Leas Wand und hat nichts zu sagen: „tippe das Wort an, das
+   *    daneben steht". Hier hat Chromium eine englische Stimme, also ist
+   *    das nur an der EINEN Stelle zu sehen, die sie wegnimmt. */
+  { n:'die Lautpaare stehen auch ohne englische Stimme da', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:"wer:['lea','stephan','violeta'], wenn: () => englischHoerbar() },",
+    ersatz:"wer:['lea','stephan','violeta'], wenn: () => true },",
+    an:{ ...DIST, text:'wenn: () => true },' },
+    sagt:'vergäbe Sterne für nichts' },
+
+  /* 7. UND DAS TOR SELBST: `passt` bekommt seine Stimmen nicht mehr.
+   *    Dann gibt es „Zwei Wörter, ein Laut" in seinem Browser nicht, und
+   *    das Tor misst eine Ebene, die es nie zu sehen bekommt - genau die
+   *    Luecke, durch die der Vorlauf der Satzebenen eine Runde lang
+   *    gefallen ist. Der Eingriff sitzt im TOR und nicht in der App: die
+   *    Frage ist, ob das Tor hinsieht. */
+  { n:'passt bekommt keine englische Stimme mehr', tor:'passt', bauen:true,
+    datei:'tor/passt.mjs',
+    such:'  await stimmenUnterschieben(p);',
+    ersatz:'',
+    an:{ datei:'tor/passt.mjs', fehlt:'await stimmenUnterschieben(p);' },
+    sagt:'steht gar nicht in der Wand' },
 
   /* --- „Leg das Wort" (E8) ---------------------------------------------
    *

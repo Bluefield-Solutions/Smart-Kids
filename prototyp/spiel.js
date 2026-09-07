@@ -654,6 +654,24 @@ function nochHoerenKnopf(text, sprache = 'de', zaehlen = false){
   return b;
 }
 
+/** Den Nachhoer-Knopf ins Werkzeug haengen - wenn es einen gibt.
+ *
+ * Mit E5 stand derselbe Vierzeiler zum VIERTEN Mal da (Rechnen, Englisch,
+ * Legen, Laute). Wenig Text, und trotzdem vier Stellen, an denen dasselbe
+ * zu wissen ist: der Knopf gehoert ins `.werkzeug`, und `nochHoerenKnopf`
+ * gibt `null` zurueck, wenn es nichts zu hoeren gibt. Wer die zweite
+ * Haelfte an einer der vier vergisst, haengt `null` an - und zwar genau
+ * auf den Geraeten ohne englische Stimme, also nie hier.
+ *
+ * NICHT erfasst sind die zwei Stellen, die in ein anderes Werkzeug
+ * haengen (`sagenschirm` und `spielschirm` halten es als Variable). Sie
+ * mit einem Zweig aufzunehmen hiesse, dem Bauteil eine Frage zu stellen,
+ * die es nicht hat. */
+const nochHoerenIns = (s, text, sprache = 'de') => {
+  const b = nochHoerenKnopf(text, sprache);
+  if (b) s.querySelector('.werkzeug')?.appendChild(b);
+};
+
 /* Was die App VON SICH AUS sagt: das Lob, die Hinweise beim Ziehen, die
  * Nachfrage vor dem Loeschen, die Bestaetigung des Namens.
  *
@@ -1335,6 +1353,23 @@ const EBENEN = [
    * kann Wortkarten nicht unterscheiden. */
   { id:'englisch:bauen', ueber:'Englisch', titel:'Bau den Satz', farbe:1,
     art:'englisch', wer:['lea'] },
+  /* „Zwei Wörter, ein Laut" (E5) - die wichtigste Form des Konzepts.
+   *
+   * Vier Stolperstellen, an denen deutschsprachige Kinder VORHERSAGBAR
+   * stolpern (Konzept § 2, Befund 4). Es ist die einzige Form, die den
+   * Unterschied uebt, OHNE dass die App die Aussprache eines Kindes
+   * beurteilen muss: sie hat das Wort gesagt, sie weiss welches, und ein
+   * richtiger Tipp ist richtig.
+   *
+   * `wer`: Lea und die Eltern - NICHT Fiona, und das ist eine Absage auf
+   * Zeit. Das Konzept sieht zwei BILDER vor; ohne sie stehen zwei
+   * geschriebene Woerter da, und die kann eine Sechsjaehrige nicht lesen.
+   * Sie kommt dazu, wenn E4b die Bilder bringt. Fuer die Eltern ist die
+   * Ebene keine Zugabe: § 2b sagt, ihr Problem ist das HOEREN.
+   *
+   * `wenn`: nur mit englischer Stimme. Siehe `meineEbenen`. */
+  { id:'englisch:laute', ueber:'Englisch', titel:'Zwei Wörter, ein Laut', farbe:4,
+    art:'englisch', wer:['lea','stephan','violeta'], wenn: () => englischHoerbar() },
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -1534,7 +1569,8 @@ const SCHREIBBILD = {
 const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
                           'englisch:sagen':'mikro', 'englisch:satz':'blase',
                           'englisch:legen':'karten',
-                          'englisch:bauen':'satzkarten' };
+                          'englisch:bauen':'satzkarten',
+                          'englisch:laute':'zweiton' };
 /* Das Mikrofon als PFADE, nicht als `<rect>`.
    Dieselbe Messstelle wie ueberall (Regel 5): `passt` misst die
    gezeichnete Ausdehnung je Pfad; ein `<rect>` findet es gar nicht
@@ -1558,6 +1594,12 @@ const KARTENSTRICH = '<path d="M2 8h9v14H2zM24 8h9v14h-9z"/>'
    demselben Zeichen wuerden einem Kind sagen, sie seien dasselbe. */
 const SATZKARTENSTRICH = '<path d="M2 12h13v10H2zM19 12h14v10H19z"/>'
   + '<path d="M8 2h17v8H8z"/>';
+/* Und fuer die Lautpaare (E5): ZWEI Schallwellen, eine gross und eine
+   klein - zwei Woerter, die fast gleich klingen. Kein Ohr und kein
+   Lautsprecher: die beiden anderen Englischkacheln tragen schon einen
+   Lautsprecher, und drei Kacheln mit demselben Zeichen sagen einem Kind,
+   sie seien dasselbe. */
+const ZWEITONSTRICH = '<path d="M4 8v8M10 4v16M16 9v6M22 6v12M28 10v4M34 7v10"/>';
 /* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
    Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
@@ -1674,7 +1716,8 @@ function silhouette(ebeneId) {
       stroke-linejoin="round">${ENGLISCHZEICHEN[ebeneId] === 'mikro' ? MIKROSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'blase' ? BLASENSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'karten' ? KARTENSTRICH
-        : ENGLISCHZEICHEN[ebeneId] === 'satzkarten' ? SATZKARTENSTRICH : ZEICHEN.tonAn}<path
+        : ENGLISCHZEICHEN[ebeneId] === 'satzkarten' ? SATZKARTENSTRICH
+        : ENGLISCHZEICHEN[ebeneId] === 'zweiton' ? ZWEITONSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
@@ -1713,8 +1756,16 @@ const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm
   englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,
   wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);
 
-/** Die Ebenen, die DIESEM Kind gehören. */
-const meineEbenen = () => EBENEN.filter(e => !e.wer || e.wer.includes(P.id));
+/** Die Ebenen, die DIESEM Kind gehören.
+ *
+ * `wenn` kam mit E5 dazu, und es ist kein Schalter fuer Geschmack: die
+ * Lautpaare pruefen das OHR. Ohne englische Stimme gibt es nichts zu
+ * hoeren, und die Aufgabe waere „tippe das Wort an, das danebensteht" -
+ * eine Ebene, die nichts prueft und trotzdem Sterne vergibt. Lieber gar
+ * nicht angeboten. Gefragt wird bei JEDEM Aufbau der Wand, nicht einmal
+ * beim Laden: welche Stimmen es gibt, weiss der Browser erst spaeter. */
+const meineEbenen = () => EBENEN.filter(e =>
+  (!e.wer || e.wer.includes(P.id)) && (!e.wenn || e.wenn()));
 /** Wie wird auf dieser Ebene gefragt? Karte, wenn nichts anderes dasteht. */
 const ebeneArt = (id) => EBENEN.find(e => e.id === id)?.art || 'karte';
 /**
@@ -1973,6 +2024,15 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
      Weg wie bei der Flagge, und aus demselben Grund. */
   : x.sorte === 'chunk'
                  ? `<div class="wortkleber satzkleber" style="--ton:${ton}">${x.wort}</div>`
+  /* Das Lautpaar (E5) zeigt BEIDE Woerter, nicht eines. Der Vorlauf sagt,
+     wie die Aufgabe aussieht - und die Aufgabe IST das Paar. Ein Kaestchen
+     mit „think" allein waere eine Vokabel und keine Hoeruebung; genau
+     dieselbe Ueberlegung steht beim falschen Freund ein Stueck weiter
+     unten. Ohne diesen Zweig fiel das Stueck auf den Rechenkasten durch
+     und zeigte `undefined` - gemeldet von `passt`, sechzehnmal. */
+  : x.sorte === 'laut'
+                 ? `<div class="wortkleber lautkleber" style="--ton:${ton}"
+                      lang="en">${x.wort} · ${x.gegen}</div>`
   : x.luecke || x.deutsch
                  ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
   : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
@@ -1996,6 +2056,11 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
    Vorlauf stand „= Frankreich" unter der Trikolore. */
 const stueckFuss = (x) => x.flagge ? x.name
                         : x.pfad ? x.name : x.zeichenFolge ? x.wort
+                        /* Unter dem Lautpaar steht, WORUM es geht - „Das
+                           englische th" -, nicht noch einmal ein Wort. Die
+                           beiden Woerter stehen schon im Kasten, und ihr
+                           Name ist die Stolperstelle. */
+                        : x.sorte === 'laut' ? x.stolperName
                         : x.sorte ? x.wort
                         /* Beim falschen Freund steht die FALLE darunter, nicht
                            die Uebersetzung: der Aufkleber ist das PAAR
@@ -2166,6 +2231,10 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      aus demselben Grund: gesagt ist nicht gebaut. */
   if (art==='englisch' && kont==='bauen')
     return Englisch.vorratBauen();
+  /* Die 32 Lautpaar-Gegenstaende (E5): sechzehn Paare, jedes in beiden
+     Richtungen. Sie tragen ihre Kennung selbst mit (`lt:…`). */
+  if (art==='englisch' && kont==='laute')
+    return Englisch.vorratLaute();
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -3193,8 +3262,14 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
  *
  * Drei ist keine neue Zahl: „Wendungen" und „Hoeren und schreiben" tragen
  * sie seit E11, und aus demselben Grund - ihre Kaesten sind auch Saetze. */
+/* Und die Lautpaare: drei. Zweiunddreissig Gegenstaende sind sechzehn
+ * Paare in zwei Richtungen - im Vorlauf stuende jedes Paar ZWEIMAL da,
+ * denn der Kasten zeigt das Paar und nicht die Richtung. Drei Beispiele
+ * zeigen, wie die Aufgabe aussieht; das ist die ganze Aufgabe des
+ * Vorlaufs. */
 const VORLAUF_JE = (art, ebeneId) =>
-    ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3
+    ebeneId === 'englisch:laute' ? 3
+  : ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3
   : ebeneId === 'englisch:legen' ? 12
   : ['rechnen', 'freunde'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
@@ -3290,6 +3365,14 @@ function vorlaufSatz(ebeneId){
   /* „Leg das Wort" (E8). Der Satz nennt BEIDE Wege - ohne ihn findet ein
      Kind den Tippweg nicht, weil eine Karte, die man ziehen kann, nicht
      danach aussieht, als koenne man sie auch antippen. */
+  /* „Zwei Wörter, ein Laut" (E5). Der Satz sagt, WORUM es geht - ohne
+     ihn sieht die Ebene aus wie eine Vokabelabfrage mit zwei Antworten.
+     Und er sagt die Zusage mit: die Erklaerung kommt immer, auch wenn man
+     richtig lag. */
+  if (art === 'englisch' && kont === 'laute')
+    return 'Zwei Wörter, die sich fast gleich anhören — eines wird gesagt, und '
+      + 'du tippst es an. Danach steht immer da, <strong>woran</strong> man sie '
+      + 'unterscheidet. Tippe hier eins an, dann hörst du es schon mal.';
   /* „Bau den Satz" (E9c). Der Satz nennt, was ANDERS ist als nebenan -
      und die Notfassung gleich mit: ohne englische Stimme steht der Satz
      da, und dann ist es Abschreiben statt Zuhoeren. Das auszusprechen
@@ -3994,10 +4077,7 @@ function rechenschirm(){
   /* Auch hier - und hier braucht es ihn am meisten: auf der Karte steht
      die Frage wenigstens noch als Bild da, eine Rechenaufgabe mit vier
      gesprochenen Moeglichkeiten ist ohne Ton weg. */
-  {
-    const b = nochHoerenKnopf(ansageText);
-    if (b) s.querySelector('.werkzeug')?.appendChild(b);
-  }
+  nochHoerenIns(s, ansageText);
   return s;
 }
 
@@ -4482,6 +4562,7 @@ function englischschirm(){
     return sagenschirm();
   if (['legen', 'bauen'].includes(String(Sitzung.ebeneId).split(':')[1]))
     return legeschirm();
+  if (String(Sitzung.ebeneId).split(':')[1] === 'laute') return lauteschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
@@ -4582,10 +4663,7 @@ function englischschirm(){
   /* Die Frage selbst - siehe den Kopf dieser Funktion: `vorlesen` und nicht
      `ansagen`, weil sie kein Vorlesehelfer ist. */
   vorlesen(ziel.wort, 'en');
-  {
-    const b = nochHoerenKnopf(ziel.wort, 'en');
-    if (b) s.querySelector('.werkzeug')?.appendChild(b);
-  }
+  nochHoerenIns(s, ziel.wort, 'en');
   return s;
 }
 
@@ -4799,10 +4877,134 @@ function legeschirm(){
      ohne ihn steht eine Reihe Wortkarten da und nichts, was sagt, was
      daraus werden soll. */
   vorlesen(wort, 'en');
-  {
-    const b = nochHoerenKnopf(wort, 'en');
-    if (b) s.querySelector('.werkzeug')?.appendChild(b);
+  nochHoerenIns(s, wort, 'en');
+  return s;
+}
+
+/* ---------- „Zwei Wörter, ein Laut" (E5) ---------------------------------
+ *
+ * Die wichtigste Form des Englischkonzepts, und die einzige, bei der die
+ * Maschine keinen Messfehler hat: sie hat das Wort gesagt, sie weiss
+ * welches, ein richtiger Tipp ist richtig. Beurteilt wird das OHR und
+ * nicht die Aussprache eines Kindes.
+ *
+ * Gebaut wie `paarschirm` (die Verwechslungen, F3), und das ist kein
+ * Zufall: es ist dieselbe Aufgabe in einem anderen Sinn. Zwei
+ * Moeglichkeiten, die sich fast gleichen; die Seite wird gewuerfelt; und
+ * der GRUND wird immer genannt, ob richtig oder falsch geantwortet wurde.
+ * Der Grund ist der eigentliche Inhalt - dass man einmal richtig geraten
+ * hat, nimmt niemand mit.
+ *
+ * EIN Versuch und nicht drei, aus demselben Grund wie dort: bei zwei
+ * Moeglichkeiten waere der zweite kein Versuch, sondern der Rest.
+ *
+ * WAS HIER ANDERS IST als bei den Flaggen: die Frage steht nicht da. Sie
+ * wird GESPROCHEN, und sie muss noch einmal zu hoeren sein - deshalb der
+ * Knopf zum Nachhoeren, und deshalb gibt es die Ebene ohne englische
+ * Stimme gar nicht (`wenn` in ihrem Eintrag).
+ */
+function lauteschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+
+  /* Die Seite wird GEWUERFELT, mit dem Keim der Aufgabe. Ohne das stuende
+     das gefragte Wort immer links, sobald es in den Daten links steht -
+     und die Ebene pruefte, ob man die Liste auswendig kann. */
+  const zwei = mischenMit([{ wort: ziel.wort, gesucht: true },
+                           { wort: ziel.gegen, gesucht: false }],
+                          st.keim + st.i * 7919);
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'antippen' });
+  const weiter = () => weiterIn(st);
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Welches Wort hörst du?</div>
+    <div class="englischfeld">
+      <div class="engwahl lautwahl" id="auswahl">${zwei.map(x =>
+        `<button class="engkarte lautkarte" data-wort="${x.wort}"
+                 lang="en" aria-label="${x.wort}">${x.wort}</button>`).join('')}</div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const ausschalten = () => s.querySelectorAll('.lautkarte')
+    .forEach(k => k.disabled = true);
+  /* NACH der Antwort wird die richtige hervorgehoben - beide bleiben
+     lesbar. Wer sieht, WELCHES der beiden es war, hat in dem Augenblick
+     das Paar gelernt und nicht nur seine Haelfte. */
+  const zeigen = () => {
+    const k = s.querySelector(`.lautkarte[data-wort="${ziel.wort}"]`);
+    if (k) k.classList.add('stimmt');
+  };
+  /* Der Grund gehoert zur STOLPERSTELLE, nicht zum Paar - er steht in den
+     Daten einmal und gilt fuer alle vier Paare darunter (Regel 6). Was
+     das Paar dazutut, ist der Fall: „think — nicht sink". */
+  const erklaerung = () => `<strong lang="en">${ziel.wort}</strong> — nicht `
+    + `<strong lang="en">${ziel.gegen}</strong>. ${ziel.grund}`;
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten(); zeigen();
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">${erklaerung()}</span>`;
+    // Das englische Wortpaar und der deutsche Grund sind ZWEI
+    // Aeusserungen - in einem Satz gemischt liefe „think" durch die
+    // deutsche Stimme.
+    vorlesen(ziel.wort, 'en');
+    sagen(ziel.grund);
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
   }
+
+  function bewerte(wort, knopf){
+    if (erledigt) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (wort === ziel.wort) {
+      erledigt = beendet(s);
+      const neuerAufkleber = werten(ziel, 'richtig', versuch);
+      kopfNachziehenIn(s);
+      protokollieren('richtig', wort, fachVorher);
+      ausschalten(); zeigen();
+      const spruch = lob();
+      /* Der Grund steht NEBEN dem Lob und nicht statt seiner - `nebenbei`
+         ist genau dafuer da. Wer richtig lag, soll trotzdem erfahren,
+         WORAN es lag. */
+      lobsatz(s, `<strong lang="en">${ziel.wort}</strong>.`, null, spruch,
+        erklaerung(), neuerAufkleber);
+      sagen(spruch + '. ' + ziel.grund);
+      vorlesen(ziel.wort, 'en');
+      standSichern(st.ebeneId);
+      setTimeout(weiter, LOBPAUSE);
+      return;
+    }
+    protokollieren('falsch', wort, fachVorher);
+    klangZu('falsch');
+    /* NUR EIN Versuch bei zwei Moeglichkeiten - derselbe Grund wie bei den
+       Verwechslungen: ein zweiter waere kein Versuch, sondern der Rest. */
+    wackelt(knopf);
+    setTimeout(aufloesen, 260);
+  }
+
+  s.querySelectorAll('.lautkarte').forEach(k =>
+    k.onclick = () => bewerte(k.dataset.wort, k));
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+
+  /* Die Frage IST das gesprochene Wort. `vorlesen` und nicht `ansagen`:
+     es ist keine Vorlesehilfe fuer ein Kind, das nicht liest, sondern die
+     Aufgabe selbst - und ohne sie steht der Bildschirm ohne Frage da. */
+  vorlesen(ziel.wort, 'en');
+  nochHoerenIns(s, ziel.wort, 'en');
   return s;
 }
 

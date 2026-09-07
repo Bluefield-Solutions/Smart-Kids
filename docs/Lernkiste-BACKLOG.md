@@ -390,7 +390,7 @@ veraltet eine der beiden Fassungen).
 | **E2** | Englische Stimme: `sagen()` je Ebene, Stimmensuche, Auskunft bei fehlender Stimme | Tor E-c |
 | **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommen soll |
 | **E4** | Die Bilder — ein SVG je Wort | `inhalt` meldet jedes Wort ohne Bild, das Fiona bekommt |
-| **E5** | „Zwei Wörter, ein Laut Unterschied" — Lautpaare mit Grund | Tor E-a, alle vier Stolperstellen vertreten |
+| **E5** | „Zwei Wörter, ein Laut Unterschied" — Lautpaare mit Grund | **GEFAHREN** — siehe Block unten |
 | **E6** | „Sag es" — zwei Anläufe, kein Urteil | **GEFAHREN** — siehe Block unten |
 | **E7** | Lea liest: Wort zum Bild | am Gerät |
 | **E8** | Lea schreibt: Abschreiben mit Vorlage | **GEFAHREN** — siehe Block unten |
@@ -431,6 +431,61 @@ Fällt die Weiche im Vorrat weg, spielt sie den Wortvorrat der Schwester — und
 Mikrofon und einen Knopf, beide sagen ihr Englisch vor, beide werten. Ohne
 diese Zeile bliebe ein Durchlauf grün, während „Sag den Satz" still nach
 Farben fragt.
+
+### E5 · „Zwei Wörter, ein Laut" — GEFAHREN
+
+**Die wichtigste Form des Konzepts, und die sauberste Aufgabe der ganzen
+App.** Die Maschine hat hier keinen Messfehler: sie hat das Wort gesagt,
+sie weiß welches, ein richtiger Tipp ist richtig. Kein Erkenner, keine
+Unsicherheit, kein Urteil über die Aussprache eines Kindes — beurteilt wird
+das **Ohr**, und das kann sie sauber.
+
+**Sechzehn Paare an vier Stolperstellen**, je vier: `th` (think/sink,
+three/free, thin/fin, thing/sing) · `w gegen v` (wine/vine, west/vest,
+wet/vet, wiper/viper) · **Auslautverhärtung** (dog/dock, bad/bat, cab/cap,
+leave/leaf) · `a gegen e` (pat/pet, pan/pen, man/men, bad/bed). Die vier
+kommen aus § 2 Befund 4 des Konzepts, wortwörtlich — es ist keine
+Fehlerliste zum Anstreichen, sondern eine **Bauliste für Höraufgaben**.
+
+**In den Daten steht NICHT, welcher Buchstabe getauscht wird.** Das Tor
+rechnet es nach: aus `a` mit der deutschen Ersetzung muss `b` werden, und
+zwar genau. `wine/vine` unter „Das englische th" fällt damit auf — beide
+Wörter stünden richtig da, und die Übung übte etwas anderes als ihr Grund
+behauptet. Eine zweite Fassung derselben Auskunft daneben wäre die
+nächste Verfallsart: was zweimal dasteht, veraltet einmal (Regel 6).
+
+**Der Grund gehört der Stolperstelle, nicht dem Paar.** Vier Sätze für
+sechzehn Paare; was das Paar dazutut, ist der Fall: *„think — nicht sink."*
+Er wird **immer** genannt, ob richtig oder falsch geantwortet wurde — dass
+man einmal richtig geraten hat, nimmt niemand mit.
+
+**Ein Versuch und nicht drei**, wie bei den Verwechslungen (F3): bei zwei
+Möglichkeiten wäre der zweite kein Versuch, sondern der Rest.
+
+**Ohne englische Stimme gibt es die Ebene nicht.** Sie prüft das Ohr;
+ohne Stimme bliebe „tippe das Wort an, das daneben steht" — eine Ebene,
+die nichts prüft und trotzdem Sterne vergibt. Dafür hat `meineEbenen` ein
+neues Feld `wenn` bekommen. Das ist die einzige Zusage der Runde, die
+**hier** nicht zu sehen ist (Chromium hat eine englische Stimme), und
+deshalb misst sie der Rauchtest an der einen Stelle, die sie wegnimmt:
+im Abschnitt ohne englische Stimme darf die Kachel nicht dastehen.
+
+**Fiona ist nicht dabei, und das ist eine Absage auf Zeit.** Das Konzept
+sieht zwei **Bilder** vor; ohne sie stehen zwei geschriebene Wörter da, und
+die kann eine Sechsjährige nicht lesen. Sie kommt dazu, wenn E4b die Bilder
+bringt. Für die Eltern ist die Ebene keine Zugabe — § 2b sagt, ihr Problem
+ist genau das Hören.
+
+**Die Wörter stehen absichtlich NICHT im amtlichen Wortschatz.** Der
+Wortschatz ist die Liste, die Lea können soll; diese hier ist eine Liste
+von Ohrenübungen. *think* und *sink* lernt man nicht als Vokabeln, man
+lernt, sie auseinanderzuhalten. Ihre Kennungen tragen `lt:` und können mit
+keinem Vokabelfach kollidieren.
+
+Nebenbei herausgelöst: der Nachhör-Knopf stand zum **vierten** Mal Wort für
+Wort da (Rechnen, Englisch, Legen, Laute) — jetzt `nochHoerenIns`.
+
+Sechs Gegenproben, eine neue Aufnahme `quer-laute`.
 
 ### E8 · „Leg das Wort" — GEFAHREN
 

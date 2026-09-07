@@ -2041,6 +2041,23 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    einzeln zu sehen sein, beim Satz die WOERTER. */
 .vorlage.satzvorlage{letter-spacing:0;font-size:var(--s1);max-width:100%;
   text-align:center}
+/* --- „Zwei Wörter, ein Laut" (E5) ------------------------------------
+   Dieselbe Karte wie bei „Hören und zeigen" (`.engkarte`), nur mit einem
+   WORT darauf statt einem Bild - alle Zustaende (`stimmt`, `falsch`,
+   `[disabled]`) gelten damit ohne eine Zeile mehr.
+   Quadratisch waere hier falsch: ein Wort ist breit und flach, und eine
+   124 Punkte hohe Karte mit „wet" in der Mitte ist ein leerer Kasten. */
+.lautkarte{min-height:96px;min-width:180px;
+  font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;color:var(--tinte)}
+/* Zwei nebeneinander und nicht vier im Gitter: der Reiz liegt darin, dass
+   die beiden NEBENEINANDER stehen und man trotzdem hinhören muss -
+   dieselbe Begruendung wie bei den Flaggenpaaren. */
+.lautwahl{gap:var(--r5)}
+/* Der Kasten im Vorlauf und im Buch: das PAAR, nicht ein Wort. Er ist
+   deshalb breiter gesetzt als ein Wortkasten und darf umbrechen - „leave ·
+   leaf" passt in eine Zeile, „wiper · viper" auf dem schmalsten Geraet
+   nicht mehr. */
+.lautkleber{font-size:var(--s-klein);line-height:1.25;white-space:normal}
 /* Der Farbfleck traegt IMMER einen dunklen Ring - nicht nur `white`.
    Ein Ring nur ums Weisse waere ein zweites Merkmal, an dem man „white"
    erkennt, ohne die Farbe zu kennen. Er ist rund, weil ein Quadrat auf
@@ -2341,6 +2358,20 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    * hoechstens 300 breit. In einer Reihe war sie es nicht, deshalb steht
    * diese Regel im Querformat und nicht in der Grundregel. */
   .werkzeug .leise{align-self:stretch}
+  /* AUSSER beim Legen: dort stehen der Ausweg und der Hörknopf
+     NEBENEINANDER.
+     Gemessen von `passt` auf „iPhone quer, Leiste": drei Reihen (Vorlage,
+     Lücken, Karten) und darunter eine Spalte aus zwei Knöpfen — der runde
+     Hörknopf lag 12 Punkte im Streifen des Telefons, also sichtbar und
+     nicht zu treffen. Eine Reihe spart die 44 Punkte des zweiten Knopfes
+     und kostet nichts: der Grund für die Spalte war, dass der feine
+     Strich unter „Weiß ich nicht" sonst quer über den Bildschirm läuft —
+     und der Deckel von 300 Punkten darüber verhindert das weiterhin.
+     Aufgefallen ist es erst, als `passt` eine englische Stimme bekam:
+     ohne sie gibt es den Hörknopf gar nicht, und das Tor hat drei Runden
+     lang einen Bildschirm gemessen, den es so nie gibt. */
+  .legefeld .werkzeug{flex-direction:row;flex-wrap:nowrap;gap:var(--r4)}
+  .legefeld .werkzeug .leise{align-self:center}
 }
 /* Der leise Ausweg. Er soll erreichbar sein, aber nicht einladen: kein
    Fuellton, kein Rand, nur Text - und trotzdem 44 Punkte hoch, damit ein
@@ -3283,6 +3314,9 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .freundluecke{font-size:var(--s1);line-height:1.9}
   .freundluecke .luecke{font-size:var(--s1)}
   .engkarte{min-height:104px;min-width:104px;padding:var(--r2)}
+  /* Zwei Wortkarten, die Frage darueber und der Ausweg darunter muessen
+     auf 390 Punkte Hoehe passen - dieselbe Rechnung wie ueberall. */
+  .lautkarte{min-height:84px;min-width:150px;font-size:var(--s1)}
   /* Drei Reihen uebereinander (Vorlage, Luecken, Vorrat) plus Kopf,
      Frage und Ausweg - bei 390 Punkten Hoehe ist das die Rechnung, die
      kippt. Die Karten gehen auf 48, bleiben damit ueber der

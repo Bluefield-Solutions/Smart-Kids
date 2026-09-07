@@ -307,6 +307,12 @@ const AUFNAHMEN = [
      umbrechen, sieht man nur an diesem Bild. */
   { name:'quer-bauen', spiel:'englisch:bauen', kind:'lea', quer:true,
     wahl:'.schirm.da' },
+  /* „Zwei Wörter, ein Laut" (E5): der einzige Bildschirm der App mit
+     genau ZWEI grossen Wortkarten und ohne Bild. Ob zwei Woerter
+     nebeneinander bei 390 Punkten Hoehe ruhig wirken oder leer, sagt
+     kein Tor - das ist ein Blick. */
+  { name:'quer-laute', spiel:'englisch:laute', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -735,6 +741,7 @@ const OHNE_KARTE = {
      Vorrat schon, bevor die Reihe gebaut ist. */
   'englisch:legen': '.schirm.da #legereihe',
   'englisch:bauen': '.schirm.da #legereihe',
+  'englisch:laute': '.schirm.da .lautkarte',
   freunde:   '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',

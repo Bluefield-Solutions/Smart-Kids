@@ -21,6 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe,
+  stimmenUnterschieben,
   stelleAblage } from './chromium.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 import { fremdgriff } from './fremdgriff.mjs';
@@ -885,6 +886,12 @@ for (const g of MEINE) {
   const ctx = await b.newContext({ hasTouch: g.touch, isMobile: g.touch, locale: 'de-DE',
     viewport: { width: g.w, height: g.h }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const p = await ctx.newPage();
+  /* Die Stimmen unterschieben, BEVOR etwas laedt. Ohne sie sieht dieses
+     Tor die Ebene „Zwei Wörter, ein Laut" (E5) nie: sie prueft das Ohr
+     und wird ohne englische Stimme gar nicht angeboten. Ein Tor, das eine
+     Ebene nicht betritt, misst sie nicht - genau daran ist der Vorlauf
+     der Satzebenen eine Runde lang vorbeigelaufen. */
+  await stimmenUnterschieben(p);
   // `env(safe-area-inset-*)` laesst sich von aussen nicht setzen - kein
   // Browser bietet das an. Die VERKABELUNG dahinter schon: die App liest
   // die Werte über Marken, und die sind zu setzen. Geprueft wird damit
@@ -1261,6 +1268,18 @@ nicht liest, ist die Kachel damit unbeschriftet`);
    * viermal da und musste viermal stimmen. */
   const ebeneAnsehen = async (ebene, steht, name,
       { vorlaufName = null, dazwischen = null } = {}) => {
+    /* Erst nachsehen, ob die Kachel ueberhaupt dasteht.
+     *
+     * Ohne diese drei Zeilen wirft `tipp` „Failed to find element" und
+     * das ganze Tor bricht ab - ein Abbruch ist kein Befund, er sagt
+     * niemandem, WAS fehlt. Und der Fall ist seit E5 wirklich moeglich:
+     * „Zwei Wörter, ein Laut" gibt es ohne englische Stimme nicht, und
+     * dieses Tor bekommt sie erst seit derselben Runde untergeschoben. */
+    if (!(await p.$(`.schirm.da [data-ebene="${ebene}"]`))) {
+      meldungen.push(`${g.n}: die Ebene „${ebene}" steht gar nicht in der Wand — `
+        + 'dann misst dieses Tor sie nie, und sie kann aussehen, wie sie will');
+      return;
+    }
     await tipp(`[data-ebene="${ebene}"]`);
     await p.waitForSelector(`.schirm.da #los, ${steht}`, { timeout: 20000 });
     if (await p.$('.schirm.da #los')) {
@@ -1490,6 +1509,12 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      an anderen Zahlen als bei sieben Buchstaben. */
   await ebeneAnsehen('englisch:bauen', '.schirm.da #legereihe', 'Satz bauen',
     { vorlaufName: 'Vorlauf bauen' });
+  /* Und „Zwei Wörter, ein Laut" (E5): der einzige Bildschirm der App mit
+     genau ZWEI grossen Wortkarten. Sie sind 180 Punkte breit und stehen
+     nebeneinander - 360 plus Abstand von 844, und im kurzen Querformat
+     muessen Frage, Karten, Ausweg und Hoerknopf uebereinander passen. */
+  await ebeneAnsehen('englisch:laute', '.schirm.da .lautkarte', 'Zwei Wörter',
+    { vorlaufName: 'Vorlauf laute' });
 
   /* Und die Elternebene (E10) - als STEPHAN, denn ihm gehoert sie.
    *

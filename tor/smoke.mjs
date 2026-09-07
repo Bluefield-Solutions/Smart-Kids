@@ -3,7 +3,8 @@
 // Forscherbuch fuellt, dass der Elternbereich Zahlen zeigt.
 import { istUmgekehrt, zeigeAufKarte, zielPunkt, starte, zurEbenenwahl, durchGruppe,
          WELT_VON, durchVorlauf, serviere, schreibVorlage, zeichneZug,
-         ausAblage, standVon, standGroesse, stelleAblage } from './chromium.mjs';
+         ausAblage, standVon, standGroesse, stelleAblage,
+         STIMMEN } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
@@ -714,7 +715,7 @@ async function neueSeite(viewport, ctx, flott = true, vorlauf = null) {
   // kein Schoenheitsmerkmal, sondern die Frage, ob sie das Spiel ueberhaupt
   // bedienen kann - und das laesst sich nur hier messen: `speechSynthesis`
   // gibt nichts zurueck, was man ansehen koennte.
-  await p.addInitScript(() => {
+  await p.addInitScript((stimmen) => {
     window.__gesagt = [];
     window.__abgebrochen = 0;
     /* Zweiter Mitschnitt, mit Sprache und Stimme (E2).
@@ -740,10 +741,9 @@ async function neueSeite(viewport, ctx, flott = true, vorlauf = null) {
        Hinweis - und zwar auch auf DEUTSCH, weil ohne Nachbau
        `getVoices()` hier leer ist und `u.voice` nie gesetzt wurde. Mein
        Nachbau hat also erst den Fehler gebaut, den er messen wollte. */
-    window.__stimmen = [
-      { name: 'Anna', lang: 'de-DE', localService: true },
-      { name: 'Daniel', lang: 'en-GB', localService: true },
-    ];
+    // Die Liste selbst steht in `tor/chromium.mjs` und wird hereingereicht -
+    // zwei Listen waeren zwei Wahrheiten darueber, was dieses Geraet kann.
+    window.__stimmen = stimmen;
     speechSynthesis.getVoices = () => window.__stimmen;
     window.SpeechSynthesisUtterance = class {
       constructor(text) { this.text = text; this.lang = ''; this.rate = 1;
@@ -830,7 +830,7 @@ async function neueSeite(viewport, ctx, flott = true, vorlauf = null) {
       if (e.onend) e.onend();
       return true;
     };
-  });
+  }, STIMMEN);
   /* Ein eigener VORLAUF, falls ein Abschnitt einen braucht (S1t).
    *
    * Er muss VOR `goto` stehen - ein Skript, das erst nach dem Laden
@@ -3976,10 +3976,15 @@ async function abgeschlossen(p, wer, ebene, hoert, wie, eigen = null) {
    ZWEIMAL: diese Ebenen zaehlen nicht im Soll der Vorlesehilfe mit, und
    in `gehoertEn` muessen sie es. */
 const SAGT_ENGLISCH = (e) => String(e).startsWith('englisch') || e === 'hoersatz';
+/* „Zwei Wörter, ein Laut" (E5) steht bei DREI Profilen - Lea und beiden
+   Eltern. Es muss bei allen dreien stehen, und nicht nur bei einem: die
+   Fremdpruefung unten meldet jede Ebene, die einem anderen gehoert und
+   trotzdem dasteht. Fiona hat sie nicht (zwei geschriebene Woerter kann
+   sie nicht lesen), und das ist hier die Aussage. */
 const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
-                                 'wendungen', 'hoersatz'],
+                                 'wendungen', 'hoersatz', 'englisch:laute'],
                        violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
-                                 'wendungen', 'hoersatz'],
+                                 'wendungen', 'hoersatz', 'englisch:laute'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
                                // Die Schreibwelt gehoert nur ihr (N2a, N3).
                                // Ohne diese beiden prueft `durchgang` zwar,
@@ -3993,7 +3998,7 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freund
                           heisst zweierlei: bei Lea muss die Kachel da sein,
                           und bei jedem anderen darf sie es nicht. */
                        lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren',
-                             'englisch:legen', 'englisch:bauen'] };
+                             'englisch:legen', 'englisch:bauen', 'englisch:laute'] };
 /* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
  * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
@@ -4476,6 +4481,54 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
           .replace(/[’‘]/g, "'").replace(/[.!?]+$/, '').replace(/ /g, '  ');
         await tippeAntwort(p, wer, ebene, wieGetippt,
           'ganzen Satz getippt', 'den ganzen Satz getippt', auf.satzEn);
+        continue;
+      }
+      /* „Zwei Wörter, ein Laut" (E5) - VOR dem Zweig der Englischkarten.
+       *
+       * Die Lautkarten TRAGEN `.engkarte` (sie sind dieselbe Karte mit
+       * einem Wort darauf), also faengt der Zweig darunter sie sonst ab
+       * und sucht `[data-id]`, das es hier nicht gibt. Die engere
+       * Bedingung zuerst - dieselbe Regel wie im Vorrat, und sie hat bei
+       * den Flaggen schon einmal eine Runde gekostet.
+       */
+      if (await p.$('.schirm.da .lautkarte')) {
+        const auf = await ausDerSitzung(p, wer, ebene, ['id', 'wort', 'gegen', 'grund']);
+        if (!auf) continue;
+        /* DIE FRAGE DARF NICHT DASTEHEN. Das ist die ganze Ebene: gehoert
+           wird, nicht gelesen. Stuende das gesuchte Wort in der Frage,
+           bliebe der Bildschirm heil und die Aufgabe waere geloest, bevor
+           sie gestellt ist - und keine andere Zusage faengt das ab. */
+        const frage = await p.$eval('.schirm.da .frage', e => e.textContent).catch(() => '');
+        if (new RegExp(`\\\\b${auf.wort}\\\\b`, 'i').test(frage))
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" steht in der `
+            + `Frage („${frage.trim()}") — dann ist nichts mehr zu hören`));
+        /* Und die beiden Karten sind das PAAR. Eine dritte oder eine
+           fremde waere eine andere Aufgabe, und man saehe es nicht. */
+        const drauf = await p.$$eval('.schirm.da .lautkarte',
+          ks => ks.map(k => k.dataset.wort).sort());
+        const soll = [auf.wort, auf.gegen].sort();
+        if (drauf.join('|') !== soll.join('|'))
+          merke('durchgang', new Error(`${wer}/${ebene}: auf dem Bildschirm stehen `
+            + `„${drauf.join(', ')}", das Paar ist „${soll.join(', ')}"`));
+        // Das Wort IST die Frage - ohne es steht die Ebene ohne Aufgabe da.
+        await englischGehoert(p, wer, ebene, auf.wort,
+          'das gesprochene Wort IST die Frage, und ohne es stehen zwei Wörter ohne '
+          + 'Aufgabe da');
+        await p.$eval(`.schirm.da .lautkarte[data-wort="${auf.wort}"]`, x => x.click());
+        wege.add(`${wer}: Laut unterschieden`);
+        await bewertet(p);
+        /* DER GRUND WIRD IMMER GENANNT - das ist der eigentliche Inhalt.
+           Dass man einmal richtig geraten hat, nimmt niemand mit; „im
+           Deutschen gibt es das th nicht" schon. Geprueft wird er AM
+           BILDSCHIRM und nicht am Gesagten: Lea bekommt nichts vorgelesen,
+           und eine Zusage, die nur fuer ein Profil gilt, ist keine. */
+        const nachher = await p.$eval('.schirm.da .frage', e => e.textContent)
+          .catch(() => '');
+        if (!nachher.includes(String(auf.grund).slice(0, 30)))
+          merke('durchgang', new Error(`${wer}/${ebene}: nach der Antwort steht der `
+            + `Grund nicht da („${nachher.trim().slice(0, 70)}") — dann bleibt von der `
+            + 'Aufgabe nur, dass man einmal richtig geraten hat'));
+        await abgeschlossen(p, wer, ebene, /(?!)/, 'das gehörte Wort getippt', auf.wort);
         continue;
       }
       if (await p.$('.schirm.da .engkarte')) {
@@ -8054,6 +8107,20 @@ if (laeuft('englisch')) try {
     await q.waitForSelector('[data-profil="lea"]', { timeout: 20000 });
     await q.click('[data-profil="lea"]');
     await zurEbenenwahl(q, 'englisch:hoeren');
+    /* UND „Zwei Wörter, ein Laut" (E5) STEHT HIER GAR NICHT.
+     *
+     * Sie prueft das OHR: die App sagt eines von zwei Woertern, das Kind
+     * tippt das gehoerte. Ohne englische Stimme bleibt davon „tippe das
+     * Wort an, das daneben steht" - eine Ebene, die nichts prueft und
+     * trotzdem Sterne vergibt. Sie wird deshalb gar nicht erst angeboten
+     * (`wenn` an ihrem Eintrag), und DAS ist hier die Messung: ohne diese
+     * Zeile koennte die Bedingung wegfallen, ohne dass ein Tor es merkt -
+     * hier hat Chromium eine englische Stimme, und die Ebene steht immer
+     * da. */
+    if (await q.$('.schirm.da [data-ebene="englisch:laute"]'))
+      merke('englisch', new Error('ohne englische Stimme steht „Zwei Wörter, ein Laut" '
+        + 'trotzdem in der Wand — dort wird gehört, und ohne Stimme gibt es nichts zu '
+        + 'hören: die Ebene vergäbe Sterne für nichts'));
     await q.click('[data-ebene="englisch:hoeren"]');
     await durchVorlaufWenn(q);
     await q.waitForSelector('.schirm.da .engkarte', { timeout: 20000 });
@@ -8073,7 +8140,7 @@ if (laeuft('englisch')) try {
       merke('englisch', new Error('ohne englische Stimme steht „noch einmal hören" da — '
         + 'ein Knopf, der schweigt, ist schlimmer als keiner'));
     console.log(`  Ohne englische Stimme:      geschwiegen, „${l.wort}" steht `
-      + `geschrieben da, kein Hörknopf`);
+      + 'geschrieben da, kein Hörknopf, keine Lautpaar-Ebene');
     await q.close();
   }
   /* Falsche Freunde (E10) - die Falle wird ERKANNT, nicht angeboten.

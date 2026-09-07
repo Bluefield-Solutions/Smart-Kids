@@ -11652,3 +11652,59 @@ breit wie ihr Wort, verriete die Reihe der Breiten die Lösung, ohne dass
 ein Kind ein Wort gelesen hätte — „das lange gehört nach hinten". Dieselbe
 Überlegung steckt hinter dem Wortspeicher bei Duolingo, wo die Lücken eine
 schlichte Linie sind.
+
+## E5 · „Zwei Wörter, ein Laut" — die einzige Aufgabe ohne Messfehler
+
+**Warum sie die wichtigste Form des Konzepts ist**, steht dort in einem
+Satz: die Maschine hat hier keinen Messfehler. Sie hat das Wort gesagt,
+sie weiß welches, und ein richtiger Tipp ist richtig. Kein Erkenner, keine
+Unsicherheit, kein Urteil über die Aussprache eines Kindes — beurteilt wird
+das **Ohr**. Alles andere in dieser Welt muss irgendwo eine Nachsicht
+tragen; hier keine.
+
+**Sechzehn Paare an vier Stolperstellen**, je vier. Die vier stehen nicht
+in meinem Kopf, sondern in § 2 Befund 4 des Konzepts: *th*, *w gegen v*,
+die Auslautverhärtung und /e/ gegen /æ/. Und das Konzept sagt auch, was sie
+NICHT sind — keine Fehlerliste zum Anstreichen, sondern eine Bauliste für
+Höraufgaben.
+
+**Die Zuordnung wird nachgerechnet, nicht geglaubt.** In den Daten steht
+nirgends, welcher Buchstabe getauscht wird; das Tor bildet die deutsche
+Ersetzung selbst und verlangt, dass aus `a` genau `b` wird. `wine/vine`
+unter „Das englische th" fällt damit auf — und das ist ein Ausfall, den man
+sonst nirgends sieht: beide Wörter stünden richtig da, und die Übung übte
+etwas anderes als ihr Grund behauptet.
+
+**Der Grund gehört der Stolperstelle, nicht dem Paar** — vier Sätze für
+sechzehn Paare. Was das Paar dazutut, ist der Fall: *„think — nicht sink."*
+Und er kommt **immer**, ob richtig oder falsch geantwortet wurde; dass man
+einmal richtig geraten hat, nimmt niemand mit.
+
+**Eine Ebene, die es manchmal nicht gibt — das ist neu.** Ohne englische
+Stimme prüft sie nichts: „tippe das Wort an, das daneben steht". Deshalb
+hat `meineEbenen` ein Feld `wenn` bekommen, und die Ebene wird gar nicht
+erst angeboten. Das ist die einzige Zusage dieser Runde, die **hier** nicht
+zu sehen ist — Chromium bekommt von den Toren eine englische Stimme
+untergeschoben, also steht die Kachel immer da. Gemessen wird sie deshalb
+an der einen Stelle, die die Stimme wegnimmt: im Abschnitt „ohne englische
+Stimme" des Rauchtests darf die Kachel nicht dastehen. Eine Bedingung, die
+kein Tor je falsch sehen kann, ist keine.
+
+**Und das hat gleich etwas gekostet, im guten Sinn.** `passt` startet
+seinen Browser ohne Stimmen — und lief damit sofort auf „Ebene nicht
+gefunden". Genau richtig: ein Tor, das eine Ebene nicht betreten kann, misst
+sie nicht. Die Stimmenliste steht jetzt einmal in `tor/chromium.mjs`, und
+`passt` schiebt sie sich unter wie der Rauchtest. Zwei Listen wären zwei
+Wahrheiten darüber, was dieses Gerät kann.
+
+**Fiona ist nicht dabei.** Das Konzept sieht zwei Bilder vor; ohne sie
+stehen zwei geschriebene Wörter da. Sie kommt dazu, wenn E4b die Bilder
+bringt. Für die Eltern ist die Ebene keine Zugabe — § 2b sagt, ihr Problem
+ist genau das Hören.
+
+**Nebenbei herausgelöst:** der Nachhör-Knopf stand zum vierten Mal Wort für
+Wort da (Rechnen, Englisch, Legen, Laute). Vier Zeilen sind wenig, aber es
+sind vier Stellen, an denen dasselbe zu wissen ist — und `nochHoerenKnopf`
+gibt `null` zurück, wenn es nichts zu hören gibt: wer die zweite Hälfte
+vergisst, hängt `null` an, und zwar genau auf den Geräten ohne englische
+Stimme, also nie hier.

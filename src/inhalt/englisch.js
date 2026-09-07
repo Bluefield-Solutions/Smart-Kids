@@ -264,6 +264,93 @@ export function vorratHoeren(){
   ];
 }
 
+/* ---------- Die vier Stolperstellen (E5) --------------------------------
+ *
+ * QUELLE: `docs/Lernkiste-KONZEPT-ENGLISCH.md`, § 2, Befund 4. Er nennt
+ * genau vier Stellen, an denen deutschsprachige Kinder VORHERSAGBAR
+ * stolpern - und das Wort „vorhersagbar" ist der ganze Grund, warum es
+ * diese Ebene gibt: eine Fehlerliste zum Anstreichen waere sie nicht,
+ * eine BAULISTE FUER HOERAUFGABEN ist sie.
+ *
+ * WARUM DAS DIE SAUBERSTE AUFGABE DER GANZEN WELT IST: die Maschine hat
+ * hier keinen Messfehler. Sie hat das Wort gesagt, sie weiss welches, und
+ * ein richtiger Tipp ist richtig. Kein Erkenner, keine Unsicherheit, kein
+ * Urteil ueber die Aussprache eines Kindes - beurteilt wird das OHR.
+ *
+ * Die Paare stehen als Daten, nicht als Zufallsauswahl: ein zufaelliges
+ * Paar prueft eine zufaellige Sache.
+ */
+export const STOLPERSTELLEN = [
+  { id: 'th', name: 'Das englische th',
+    grund: 'Diesen Laut gibt es im Deutschen nicht. Wer ihn durch s oder f '
+         + 'ersetzt, sagt ein anderes Wort.' },
+  { id: 'wv', name: 'w gegen v',
+    grund: 'Das deutsche w klingt wie das englische v. Wer englisches w '
+         + 'deutsch anfängt, landet beim anderen Wort.' },
+  { id: 'auslaut', name: 'Hart am Wortende',
+    grund: 'Im Deutschen wird am Wortende hart gesprochen — „Hund" klingt wie '
+         + '„Hunt". Im Englischen ändert das das Wort.' },
+  { id: 'ea', name: 'a gegen e',
+    grund: 'Das englische a liegt zwischen deutschem ä und a. Wer es wie ein e '
+         + 'spricht, sagt das andere Wort.' },
+];
+
+/* Die Paare. `a` ist immer das Wort mit der SCHWIERIGEN Stelle, `b` das,
+ * was daraus wird, wenn man sie deutsch spricht. Die Richtung ist keine
+ * Ordnungsfrage: sie ist die Aussage.
+ *
+ * WAS HIER ABSICHTLICH FEHLT: eine Angabe, WELCHER Buchstabe getauscht
+ * wird. Sie waere abzuschreiben, und Abgeschriebenes veraltet - das Tor
+ * `inhalt` rechnet es stattdessen nach und faellt, wenn ein Paar sich
+ * nicht an seiner eigenen Stolperstelle unterscheidet.
+ *
+ * Und: die Woerter stehen NICHT im amtlichen Wortschatz, und das ist
+ * richtig so. Der Wortschatz ist die Liste, die Lea koennen soll; diese
+ * hier ist eine Liste von OHREN-Uebungen. „think" und „sink" lernt man
+ * nicht als Vokabeln, man lernt, sie auseinanderzuhalten. Ihre Kennungen
+ * tragen deshalb `lt:` und koennen mit keinem Vokabelfach kollidieren. */
+export const LAUTPAARE = [
+  { a: 'think', b: 'sink',  stolper: 'th' },
+  { a: 'three', b: 'free',  stolper: 'th' },
+  { a: 'thin',  b: 'fin',   stolper: 'th' },
+  { a: 'thing', b: 'sing',  stolper: 'th' },
+
+  { a: 'wine',  b: 'vine',  stolper: 'wv' },
+  { a: 'west',  b: 'vest',  stolper: 'wv' },
+  { a: 'wet',   b: 'vet',   stolper: 'wv' },
+  { a: 'wiper', b: 'viper', stolper: 'wv' },
+
+  { a: 'dog',   b: 'dock',  stolper: 'auslaut' },
+  { a: 'bad',   b: 'bat',   stolper: 'auslaut' },
+  { a: 'cab',   b: 'cap',   stolper: 'auslaut' },
+  { a: 'leave', b: 'leaf',  stolper: 'auslaut' },
+
+  { a: 'pat',   b: 'pet',   stolper: 'ea' },
+  { a: 'pan',   b: 'pen',   stolper: 'ea' },
+  { a: 'man',   b: 'men',   stolper: 'ea' },
+  { a: 'bad',   b: 'bed',   stolper: 'ea' },
+];
+
+/**
+ * Der Vorrat der Lautpaare (E5) - ZWEI Gegenstaende je Paar.
+ *
+ * Gefragt wird einmal nach dem einen und einmal nach dem anderen Wort.
+ * Nur eine Richtung waere die halbe Uebung: wer „think" heraushoert,
+ * hoert deshalb noch lange nicht „sink" heraus - und im Leitner stuende
+ * ein Paar, das zur Haelfte nie geprueft wurde.
+ */
+export function vorratLaute(){
+  const aus = [];
+  for (const p of LAUTPAARE) {
+    const st = STOLPERSTELLEN.find(s => s.id === p.stolper);
+    for (const wort of [p.a, p.b])
+      aus.push({ id: `lt:${p.a}-${p.b}:${wort}`, name: wort, wort,
+        sorte: 'laut', gegen: wort === p.a ? p.b : p.a,
+        stolper: p.stolper, stolperName: st.name, grund: st.grund });
+  }
+  return aus;
+}
+
 /**
  * Der Vorrat zum LEGEN (E8): dieselben Woerter, Buchstabe fuer Buchstabe.
  *

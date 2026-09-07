@@ -2520,6 +2520,99 @@ console.log('\n  Tor `englisch`');
     const meiste = Math.max(...vb.map(x => String(x.wort).split(' ').length));
     console.log(`    Bau den Satz (E9c): ${vb.length} Sätze, längster ${meiste} Wortkarten `
       + '· jeder Satz hat mindestens zwei');
+
+    /* --- „Zwei Wörter, ein Laut" (E5) --------------------------------
+     *
+     * Ein Lautpaar faellt still aus, und zwar auf eine Art, die man dem
+     * Bildschirm nicht ansieht: die beiden Woerter unterscheiden sich an
+     * einer ANDEREN Stelle als der, die daruebersteht. „dog/dock" unter
+     * „w gegen v" waere eine Uebung, die etwas anderes uebt als ihr
+     * Grund behauptet - und beide Woerter stehen ja richtig da.
+     *
+     * Deshalb wird die Stolperstelle NACHGERECHNET und nicht geglaubt.
+     * Regel: `a` mit der deutschen Ersetzung ergibt `b`, und zwar genau.
+     * Welcher Buchstabe getauscht wird, steht nirgends in den Daten - es
+     * waere eine zweite Fassung derselben Auskunft (Regel 6), und die
+     * veraltet.
+     */
+    const lf = [];
+    /* Die Ersetzungen, je Stolperstelle. Sie stehen HIER und nicht in
+       `englisch.js`: sie sind die PRUEFUNG, nicht die Sache. Stuenden sie
+       neben den Daten, prueften sie sich selbst. */
+    const ERSATZ = {
+      // Das th wird durch einen der Laute ersetzt, die es im Deutschen
+      // gibt - s, f, d, t oder z.
+      th: (a) => [...'sfdtz'].map(x => a.replace('th', x)),
+      // Deutsches w klingt wie englisches v.
+      wv: (a) => [a.replace('w', 'v')],
+      // Am Wortende hart: stimmhaft -> stimmlos. Die Schreibung folgt
+      // dem Laut, nicht umgekehrt - deshalb eine Tabelle von ENDUNGEN.
+      auslaut: (a) => {
+        const paare = { g: ['ck', 'k'], d: ['t'], b: ['p'], ve: ['f'], z: ['s'] };
+        const aus = [];
+        for (const [ende, statt] of Object.entries(paare))
+          if (a.endsWith(ende))
+            for (const x of statt) aus.push(a.slice(0, -ende.length) + x);
+        return aus;
+      },
+      // Englisches a (zwischen ä und a) wird zu deutschem e.
+      ea: (a) => [a.replace('a', 'e')],
+    };
+    const stolperIds = new Set(EN.STOLPERSTELLEN.map(x => x.id));
+    const jeStolper = new Map();
+    const gesehenePaare = new Set();
+    for (const p of EN.LAUTPAARE) {
+      const wo = `${p.a}/${p.b}`;
+      if (!stolperIds.has(p.stolper))
+        { lf.push(`„${wo}" nennt die Stolperstelle „${p.stolper}", die es nicht gibt`);
+          continue; }
+      if (p.a === p.b) lf.push(`„${wo}" ist zweimal dasselbe Wort`);
+      if (gesehenePaare.has(wo)) lf.push(`das Paar „${wo}" steht zweimal da`);
+      gesehenePaare.add(wo);
+      const moeglich = ERSATZ[p.stolper](p.a);
+      if (!moeglich.includes(p.b))
+        lf.push(`„${wo}" unterscheidet sich nicht an seiner Stolperstelle `
+          + `„${p.stolper}" — aus „${p.a}" würde ${moeglich.length
+            ? moeglich.map(x => `„${x}"`).join(' oder ') : 'gar nichts'}, nicht „${p.b}"`);
+      jeStolper.set(p.stolper, (jeStolper.get(p.stolper) || 0) + 1);
+    }
+    /* Alle VIER muessen vertreten sein - das ist die Abnahme aus dem
+       Konzept, wortwoertlich: „die vier Stolperstellen aus § 2 sind alle
+       vertreten". Drei davon zu haben hiesse, die vierte still
+       wegzulassen; niemand vermisst, was nie dastand. */
+    const JE_STOLPER_MIN = 3;
+    for (const st of EN.STOLPERSTELLEN) {
+      const hat = jeStolper.get(st.id) || 0;
+      if (hat < JE_STOLPER_MIN)
+        lf.push(`nur ${hat} Paare zur Stolperstelle „${st.name}" (nötig `
+          + `${JE_STOLPER_MIN}) — mit weniger ist sie in einer Sitzung nicht zu üben`);
+      if (!st.grund || st.grund.length < 40)
+        lf.push(`die Stolperstelle „${st.name}" hat keinen Grund, der sie erklärt`);
+    }
+    /* Und der Vorrat: ZWEI Gegenstaende je Paar, jeder mit dem Gegenwort
+       und dem Grund. Ohne diese Zeilen koennte `vorratLaute` eine
+       Richtung verlieren, ohne dass etwas rot wird - die Daten waeren
+       dann in Ordnung und die Haelfte der Uebung fiele aus. */
+    const vla = EN.vorratLaute();
+    if (vla.length !== EN.LAUTPAARE.length * 2)
+      lf.push(`der Vorrat hat ${vla.length} Gegenstände, ${EN.LAUTPAARE.length} Paare `
+        + `in zwei Richtungen wären ${EN.LAUTPAARE.length * 2}`);
+    for (const x of vla) {
+      const fehlt = ['id', 'wort', 'gegen', 'grund'].filter(f => !x[f]);
+      if (fehlt.length) lf.push(`dem Lautstück „${x.id || '?'}" fehlt ${fehlt.join(', ')}`);
+      if (!String(x.id).startsWith('lt:'))
+        lf.push(`„${x.id}" trägt nicht die eigene Kennung lt: — dann kann es mit `
+          + 'einem Vokabelfach kollidieren');
+    }
+    if (lf.length) {
+      console.log('    ' + lf.join('\n    '));
+      console.error('\n  englisch ROT: die Lautpaare (E5) stimmen nicht.');
+      process.exit(1);
+    }
+    console.log(`    Zwei Wörter, ein Laut (E5): ${EN.LAUTPAARE.length} Paare an `
+      + `${EN.STOLPERSTELLEN.length} Stolperstellen (${EN.STOLPERSTELLEN
+        .map(x => `${x.id} ${jeStolper.get(x.id)}`).join(', ')}) · jede Ersetzung `
+      + `nachgerechnet · ${vla.length} Gegenstände in beiden Richtungen`);
   }
 }
 
