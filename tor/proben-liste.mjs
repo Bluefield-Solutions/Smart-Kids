@@ -3096,17 +3096,27 @@ export const PROBEN = [
    * bewacht die REGEL, die andere die MESSUNG. Beide sinken auf dieselbe
    * Zahl, und ohne die zweite haette das Tor die Regel jahrelang
    * bezeugen koennen, ohne sie je zu sehen. */
-  { n:'die Kapazitätsmessung hängt die Wand nicht mehr neu ein',
-    // `bauen:true`, obwohl der Eingriff im TOR steht und nicht im
-    // Stylesheet: `dist/` ist nicht eingecheckt, und ohne Bau hat die
-    // Wegwerf-Kopie gar keine Datei zum Messen. Der erste Anlauf lief
-    // ohne und meldete „wird rot, aber aus einem anderen Grund".
-    tor:'passt', bauen:true, args:['--teil=0/5'], datei:'tor/passt.mjs',
-    such:'        const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);\n'
-       + '        neuHaengen();\n',
-    ersatz:'        const k = muster.cloneNode(true); kopien.push(k); w.appendChild(k);\n',
-    an:{ datei:'tor/passt.mjs', fehlt:'w.appendChild(k);\n        neuHaengen();' },
-    sagt:'Platz verloren' },
+  /* HIER STAND EINE PROBE AUF `neuHaengen()` - und sie ist mit F2
+     gestorben, nicht kaputtgegangen.
+     
+     Sie nahm den Anstoss heraus und erwartete, dass die Kapazitaet
+     faellt. Das ging, solange die Ebenenwand HOECHSTENS ZEHN Kacheln
+     trug: geklont wurde bis elf, die Regel griff erst dabei, und ohne
+     das Wiedereinhaengen mass das Tor die alte Breite weiter.
+     
+     Seit die Flaggenkachel dazugekommen ist, hat die Wand SELBST elf.
+     Die Regel greift damit schon an der Wand, die die App gebaut hat -
+     ein Klon kann die Schwelle nicht mehr ueberschreiten, und das
+     Wiedereinhaengen aendert keine Zahl mehr. Nachgemessen und nicht
+     vermutet: `passt --teil=0/5` liefert mit und ohne `neuHaengen()`
+     Zeile fuer Zeile dieselben Kapazitaeten.
+     
+     Der Anstoss bleibt trotzdem im Tor: er ist der Weg, auf dem die App
+     ihre Waende baut, und die Schwelle kann wieder unterschritten
+     werden. Was ihn NICHT braucht, ist eine Gegenprobe - eine, die nie
+     etwas meldet, ist kein Beweis (Regel 1), und die Zusage dahinter
+     (die Wand verliert keinen Platz) haelt die Ratsche in
+     `masse-stand.json`, bewacht von der Probe darueber. */
 
   /* Das Kachelbild liegt wieder unter dem Vorschau-Knopf (Q4).
    *
