@@ -12049,3 +12049,110 @@ damit die nächste Ebene kein Umbau ist, sondern eine Zeile.
 **Warum der erste Anlauf scheiterte:** er hat die *Kachel* verändert und die
 *Reihe* gemeint. Zwischen 112 und 96 Punkten Höhe liegt keine Reihengrenze;
 zwischen 80 und 74 liegt sie. Ohne die Rechnung darüber war das Raten.
+
+## E7c · Sehen zwei Karten gleich aus? — die Frage, die kein Tor gestellt hat
+
+Bis hierher hat `inhalt` bei den Wortbildern nur nach **gleichen** Zeichnungen
+gesucht: Zeichen für Zeichen dieselbe Flächenliste. Das ist die eine
+Verfallsart, die nie eintritt. Die wirkliche ist die **ähnliche** — und die
+stand schon im Vorrat.
+
+### Der erste Anlauf hat am Auge vorbeigemessen
+
+Naheliegend war, Form und Farbe getrennt zu rechnen: Deckungsgrad der
+Silhouette, daneben der Abstand der Farbanteile. Das ging an zwei Stellen
+daneben, und beide Male hat das Blatt es gesagt (Regel 4 — kein Tor ersetzt
+den Blick):
+
+| Paar | Umriss | Farbabstand | Was zu sehen ist |
+|---|---|---|---|
+| `happy` · `sad` | 100 % | 87 % | derselbe Kreis, und trotzdem unverwechselbar |
+| `bye` · `colour` | 69 % | 13 % | Hand gegen Palette — nichts ist ähnlich |
+| `ham` · `tomato` | 77 % | 25 % | **zwei rote Kugeln** — und die Zahl sagt „in Ordnung" |
+
+Zwei getrennte Zahlen beantworten die Frage nicht, weil ein Kind Form und
+Farbe nicht getrennt sieht. Erst **eine** Zahl trifft: *wieviele Zellen
+tragen in beiden Bildern dieselbe Farbe?* Damit rutschten `ham`/`tomato` auf
+Platz zwei der ganzen Liste und `bye`/`colour` in die Mitte — die Rangfolge
+stimmte mit dem Blatt überein.
+
+### Die Messstelle
+
+24 × 24 Zellen über dem Rahmen `0 0 64 64`, je Zelle die Farbe der **zuletzt**
+gezeichneten Fläche — so, wie ein SVG malt. Gezählt wird über die Vereinigung
+beider Bilder; leere Zellen zählen nicht mit. Zwei Töne, die sich nur im Namen
+unterscheiden (`rot` und `rotDunkel`), gelten als verschieden — die Zahl ist
+damit eher zu niedrig als zu hoch. Woran gemessen wurde, trägt sie mit
+(Regel 5: jede Zahl trägt ihre Messstelle mit).
+
+Gefüllt wird zeilenweise über die Gerade-ungerade-Regel, und zwar über die
+Kanten **aller** Teilpfade eines `<path>` zusammen. Je Teilpfad zu füllen
+hieße, jedes Loch zu verlieren — Auge, Fenster, Griff.
+
+Dafür ist der Pfad-Parser umgebaut: er gibt jetzt **Linienzüge** zurück, und
+Rahmen wie Fläche fallen beide daraus ab. Zwei Parser nebeneinander wären der
+Fall aus Regel 6 — was zweimal dasteht, veraltet einmal: gepflegt wird der
+eine, gerechnet hat der andere.
+
+### Die Grenze ist eine Ratsche, kein Soll
+
+| | Zellgleichheit |
+|---|---|
+| Median über alle 3486 Paare | 1 % |
+| 99. Hundertstel | 32 % |
+| höchstes Paar heute (`bye`/`colour`) | **49 %** |
+| Grenze | **55 %** |
+
+Darüber lagen zwei Paare, und beide sind in dieser Runde geändert worden:
+
+- **`ham` 58 % gegen `tomato`.** Das Motiv war schuld, nicht die Ausführung:
+  „zwei ovale Scheiben von oben" ist bei 76 Bildpunkten ein roter Ball. Jetzt
+  eine Keule mit Knochen — schief, mit hellem Rand, mit nichts zu verwechseln.
+- **`jeans` 54 % gegen `shirt`.** Zwei blaue Kleidungsstücke. Jeans sind blau,
+  das steckt im Wort; ein Hemd hat jede Farbe. Also trägt das Hemd die
+  Änderung und ist grün.
+
+### Die eine Ausnahme, und sie ist keine Nachsicht
+
+Auf dem Blatt **„Wo?"** *sollen* die Bilder sich gleichen: dieselbe Kiste,
+derselbe Ball, und der einzige Unterschied ist, wo der Ball liegt. `behind`
+und `in` sind zu 71 % zellgleich — das ist die Lehre und nicht der Fehler.
+Wären sie verschieden gezeichnet, lernte ein Kind „mal eine Kiste, mal ein
+Korb" statt „auf, unter, hinter". Die Ausnahme greift nur, wenn **beide**
+Wörter dort stehen, und der Bericht sagt sie in jedem Lauf mit.
+
+### „84 von 86" waren nie zwei offene Posten
+
+`pet` und `little` bekommen mit Absicht kein Bild — ein Sammelbegriff und ein
+Synonym von `small` ergäben zwei Karten, die gleich aussehen und verschieden
+heißen. Der Grund stand als **Kommentar**, und ein Kommentar ist für ein
+Werkzeug nicht da: ein vergessenes Wort und ein absichtlich weggelassenes
+sahen im Datensatz gleich aus. Einen Unterschied, den keine Prüfung sehen
+kann, meldet auch nie eine (Regel 1).
+
+Jetzt trägt jedes Wort entweder `bild` oder `ohneBild` mit dem Grund, und der
+Bericht liest sich anders:
+
+```
+Lies das Wort (E7): 84 gezeichnet + 2 mit Grund ohne Bild = 86 von 86
+Wörtern entschieden · …
+Sehen zwei Karten gleich aus (E7b): 3486 Paare zellweise verglichen
+(24×24 über „0 0 64 64") · ähnlichstes Paar „bye"/„colour" mit 49 %
+(Grenze 55 %) · ausgenommen sind nur die Bilder des Blatts „Wo?"
+```
+
+### Drei Gegenproben, und eine davon prüft das Werkzeug selbst
+
+1. **Die Pflaume wird rot.** Kein Zeichen wird falsch — der Pfad stimmt, die
+   Farbe steht in `BILDFARBEN`, das Bild füllt seinen Rahmen. Nur steht neben
+   dem Apfel jetzt eine zweite rote Kugel mit grünem Zipfel: 64 % gegen
+   `apple`, 58 % gegen `tomato`.
+2. **Das Raster füllt nichts mehr.** Die gefährlichste Fassung des Werkzeugs:
+   eines, das läuft, eine Zahl meldet und nichts geprüft hat. Ein leeres
+   Raster gibt für jedes Paar 0 %, und der Bericht schriebe „ähnlichstes Paar
+   0 %" — was wie ein besonders gutes Ergebnis aussieht. Die Selbstprobe hat
+   vier Fälle, deren Ausgang ohne sie feststeht: derselbe Rahmen mit sich
+   (100 %), derselbe Rahmen in anderer Farbe (0 %), die obere Hälfte gegen das
+   Ganze (50 %), und die gefüllte Fläche des vollen Rahmens (100 %).
+3. **`ohneBild` heißt plötzlich anders.** Dann ist `pet` wieder ein
+   vergessenes Wort.

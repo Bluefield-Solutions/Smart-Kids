@@ -6054,6 +6054,57 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:"{ f:'rot', d:'M17 36a11" },
     sagt:'ist sie wieder eine Silhouette' },
 
+  /* 3. ZWEI ZEICHNUNGEN SEHEN EINANDER ZU AEHNLICH. Das ist die Sorte
+   *    Fehler, die keine Zeile falsch macht: die Pflaume bekommt die
+   *    Farbe der Tomate, und alles bleibt gueltig - der Pfad stimmt, die
+   *    Farbe steht in BILDFARBEN, das Bild fuellt seinen Rahmen. Nur
+   *    steht jetzt neben dem Apfel eine zweite rote Kugel mit gruenem
+   *    Zipfel, und wer beim Wort „apple" auf die Pflaume tippt, bekommt
+   *    gesagt, er habe sich geirrt.
+   *
+   *    BEIDE Flaechen, nicht eine: bliebe die dunkle lila, waere das Bild
+   *    zweifarbig-fremd und der Zellvergleich faende es nicht - die Probe
+   *    bewiese dann nichts. Gemessen mit dem Eingriff: 64 % gegen
+   *    „apple", 58 % gegen „tomato", Grenze 55 %. */
+  { n:'zwei englische Zeichnungen sehen einander zu ähnlich', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"      { f:'lila',   d:'M32 16c10 0 18 9 18 20s-8 22-18 22-18-11-18-22 8-20 18-20Z' },\n"
+      + "      { f:'lilaDunkel', d:'M38 18c7 4 12 11 12 18 0 11-8 22-18 22 8-4 14-13 14-22 0-7-3-13-8-18Z' },",
+    ersatz:"      { f:'rot',   d:'M32 16c10 0 18 9 18 20s-8 22-18 22-18-11-18-22 8-20 18-20Z' },\n"
+      + "      { f:'rotDunkel', d:'M38 18c7 4 12 11 12 18 0 11-8 22-18 22 8-4 14-13 14-22 0-7-3-13-8-18Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'rot',   d:'M32 16c10" },
+    sagt:'zellgleich' },
+
+  /* 4. DER ZELLVERGLEICH FUELLT NICHTS MEHR. Die gefaehrlichste Fassung
+   *    des Werkzeugs aus 3: eines, das laeuft, eine Zahl meldet und
+   *    nichts geprueft hat. Ein leeres Raster gibt fuer JEDES Paar 0 %,
+   *    und 0 % liegt unter jeder Grenze - der Bericht schreibt dann
+   *    „ähnlichstes Paar 0 %" und sieht aus wie ein besonders gutes
+   *    Ergebnis. Deshalb hat die Rechnung eine Selbstprobe an vier
+   *    Faellen, deren Ausgang ohne sie feststeht (Regel 1: was nie etwas
+   *    meldet, ist kein Beweis). */
+  { n:'der Zellvergleich der Bilder füllt nichts mehr', tor:'inhalt',
+    deckt:'englisch', datei:'tor/inhalt.mjs',
+    such:"              if (x >= xs[k] && x <= xs[k + 1]) feld[r * N_RASTER + c] = st.f;",
+    ersatz:"              if (false && x >= xs[k] && x <= xs[k + 1]) feld[r * N_RASTER + c] = st.f;",
+    an:{ datei:'tor/inhalt.mjs', text:'if (false && x >= xs[k]' },
+    sagt:'die gefüllte Fläche des vollen Rahmens' },
+
+  /* 5. EIN WORT IST WEDER GEZEICHNET NOCH BEGRUENDET. „pet" und „little"
+   *    haben mit Absicht kein Bild, und der Grund steht als `ohneBild` im
+   *    Datensatz. Faellt der Schluessel weg, sieht das Wort aus wie ein
+   *    vergessenes - und die Zaehlung „84 von 86" liest sich wieder wie
+   *    zwei offene Posten. Der Eingriff benennt den Schluessel nur um;
+   *    der Text bleibt stehen, damit die Probe nicht ihren eigenen Anker
+   *    loescht. */
+  { n:'ein Wort im Bildplan ist weder gezeichnet noch begründet', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"    ohneBild: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '",
+    ersatz:"    /* Anker der Gegenprobe: ohneBild: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere ' */\n"
+      + "    ohneBildX: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '",
+    an:{ datei:'src/inhalt/englisch.js', text:'ohneBildX:' },
+    sagt:'weder eine Zeichnung noch ein' },
+
   /* --- „Lies das Wort" (E7) --------------------------------------------
    *
    * Die Ebene ist die UMKEHRUNG von „Hoeren und zeigen", und alles, was

@@ -6739,3 +6739,19 @@ den Fortschritt wieder weg und schlägt an.
 
 **Der schlechteste Wert ist von 18 auf 38 % gestiegen, der Schnitt von 60
 auf 70 %.** Keine Seite ist dabei über den Rand gelaufen.
+
+## E7c erledigt (v501) — und was daraus offen bleibt
+
+Der Zellvergleich steht, `ham` und `shirt` sind neu, `pet` und `little` tragen
+ihren Grund im Datensatz. Offen bleiben zwei Dinge, die er sichtbar gemacht
+hat:
+
+- **Der Vergleich kennt nur Namen, keine Töne.** `rot` und `rotDunkel` gelten
+  als verschieden, obwohl sie nebeneinander fast gleich aussehen. Die Zahl ist
+  dadurch eher zu niedrig; ein Paar, das sich nur in der Helligkeit
+  unterscheidet, käme heute durch. Zu beheben wäre das über den Abstand der
+  Farbwerte statt über die Namensgleichheit — dann müsste die Grenze neu
+  gemessen werden.
+- **Er prüft nur „Lies das Wort".** Die Lautbilder (E5b) und die Farbflecken
+  (E3) laufen durch denselben Bildschirm, stehen aber in eigenen Töpfen und
+  werden nicht gegeneinander gemessen.

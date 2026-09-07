@@ -2689,15 +2689,22 @@ console.log('\n  Tor `englisch`');
        Ein Parser, der `s` ueberliest, misst ab da Unsinn und meldet
        trotzdem eine Zahl. */
     const KENNT = /^[MmLlHhVvCcSsAaZz]$/;
-    const pfadKasten = (d) => {
+    /* EIN Parser, zwei Fragen.
+     *
+     * `pfadZug` laeuft den Pfad ab und gibt die abgetasteten LINIENZUEGE
+     * zurueck - je Teilpfad einen. Daraus faellt der Rahmen (`pfadKasten`)
+     * genauso ab wie die gefuellte Flaeche (`bildRaster` weiter unten).
+     * Zwei Parser nebeneinander waeren der Fall, den Regel 6 beschreibt -
+     * was zweimal dasteht, veraltet einmal: gepflegt wird der eine,
+     * gerechnet hat der andere. */
+    const pfadZug = (d) => {
       let x = 0, y = 0, sx = 0, sy = 0;
       // Der zweite Stuetzpunkt der letzten Kurve - `s` spiegelt ihn.
       // Ohne dieses Gedaechtnis waere `s` eine Kurve mit falschem Bauch,
       // und die Rechnung meldete eine Zahl, die keiner nachschaut.
       let lcx = null, lcy = null;
-      let links = 1e9, oben = 1e9, rechts = -1e9, unten = -1e9;
-      const nimm = (a, b) => { links = Math.min(links, a); rechts = Math.max(rechts, a);
-                               oben = Math.min(oben, b); unten = Math.max(unten, b); };
+      const zuege = []; let zug = null;
+      const nimm = (a, b) => { if (!zug) { zug = []; zuege.push(zug); } zug.push([a, b]); };
       // Bezier: abgetastet. Die Stuetzpunkte selbst liegen oft weit
       // ausserhalb der Kurve - wer sie misst, meldet „laeuft aus dem
       // Rahmen" fuer eine Zeichnung, die drinbleibt.
@@ -2744,10 +2751,10 @@ console.log('\n  Tor `englisch`');
           if (!KENNT.test(cmd)) return { fremd: cmd };
         }
         const rel = cmd === cmd.toLowerCase(), C = cmd.toUpperCase();
-        if (C === 'Z') { x = sx; y = sy; continue; }
+        if (C === 'Z') { x = sx; y = sy; nimm(x, y); zug = null; continue; }
         const z = (n) => { const v = teile.slice(i, i + n).map(Number); i += n; return v; };
         if (C === 'M') { const [a, b] = z(2); x = rel ? x + a : a; y = rel ? y + b : b;
-          sx = x; sy = y; nimm(x, y); cmd = rel ? 'l' : 'L'; lcx = lcy = null; }
+          sx = x; sy = y; zug = null; nimm(x, y); cmd = rel ? 'l' : 'L'; lcx = lcy = null; }
         else if (C === 'L') { const [a, b] = z(2); x = rel ? x + a : a; y = rel ? y + b : b;
           nimm(x, y); lcx = lcy = null; }
         else if (C === 'H') { const [a] = z(1); x = rel ? x + a : a; nimm(x, y); lcx = lcy = null; }
@@ -2765,6 +2772,19 @@ console.log('\n  Tor `englisch`');
           const nx = rel ? x + v[5] : v[5], ny = rel ? y + v[6] : v[6];
           bogen(x, y, v[0], v[1], v[2], v[3], v[4], nx, ny); x = nx; y = ny;
           lcx = lcy = null; }
+      }
+      return { zuege };
+    };
+    /* Der Rahmen ist jetzt eine Auswertung des Linienzugs und keine
+       zweite Rechnung - faellt der Parser aus, faellt beides aus, und die
+       Selbstprobe darunter sagt es fuer beide. */
+    const pfadKasten = (d) => {
+      const z = pfadZug(d);
+      if (z.fremd) return { fremd: z.fremd };
+      let links = 1e9, oben = 1e9, rechts = -1e9, unten = -1e9;
+      for (const zug of z.zuege) for (const [a, b] of zug) {
+        links = Math.min(links, a); rechts = Math.max(rechts, a);
+        oben = Math.min(oben, b); unten = Math.max(unten, b);
       }
       return { links, oben, rechts, unten };
     };
@@ -2828,6 +2848,20 @@ console.log('\n  Tor `englisch`');
        unterscheiden gewesen. Anteilig laesst sich das nicht sagen; es ist
        eine Aussage ueber die Sache und nicht ueber eine Groesse. */
     const FARBEN_MIN = 2;
+    /* JEDES Wort im Bildplan ist ENTSCHIEDEN: es hat eine Zeichnung oder
+       einen Grund, warum nicht. Vorher sah ein vergessenes Wort im
+       Datensatz genau aus wie ein absichtlich weggelassenes - ein
+       Unterschied, den keine Pruefung sehen konnte, also hat ihn auch nie
+       eine gemeldet (Regel 1). Der Grund steht als Text und nicht als
+       Kommentar, weil ein Kommentar fuer ein Werkzeug nicht da ist. */
+    const unentschieden = EN.BILDER.filter(b => !(b.bild && b.bild.length) && !b.ohneBild);
+    for (const b of unentschieden)
+      ef.push(`„${b.wort}" hat weder eine Zeichnung noch ein „ohneBild" mit dem Grund `
+        + '— vergessen und absichtlich weggelassen sehen im Datensatz dann gleich aus');
+    const ohneGrund = EN.BILDER.filter(b => b.ohneBild && (b.bild && b.bild.length));
+    for (const b of ohneGrund)
+      ef.push(`„${b.wort}" hat eine Zeichnung UND ein „ohneBild" — der Grund `
+        + 'widerspricht dem Bild, und einer von beiden ist veraltet');
     const vls = EN.vorratLesen();
     /* Vier, weil der Bildschirm vier Karten zeigt: das Ziel und drei
        Ablenker. Bei dreien stünde eine Karte leer oder doppelt da, und
@@ -2880,6 +2914,128 @@ console.log('\n  Tor `englisch`');
           + 'neben drei ausgewachsenen Bildern ist das kleine erkennbar das andere, '
           + 'und die Aufgabe ist ohne ein Wort Englisch zu lösen');
     }
+    /* --- Sehen zwei Karten gleich aus? (E7b) -------------------------
+     *
+     * Bis hierher hat das Tor nur GLEICHE Zeichnungen gefunden - Zeichen
+     * fuer Zeichen dieselbe. Das ist die eine Verfallsart, die nie
+     * eintritt. Die wirkliche ist die AEHNLICHE: „ham" war zwei ovale
+     * Scheiben von oben, „tomato" ist eine Kugel mit Blatt, und bei 76
+     * Bildpunkten sind beide ein roter Ball. Wer „ham" liest und die
+     * Tomate antippt, hat nichts falsch gemacht - die Aufgabe war die
+     * falsche.
+     *
+     * GEMESSEN WIRD ZELLWEISE, und das ist der Kern. Der erste Anlauf hat
+     * Umriss und Farbe GETRENNT gerechnet: Deckungsgrad der Silhouette,
+     * daneben der Abstand der Farbanteile. Das ging an zwei Stellen am
+     * Auge vorbei - „happy" und „sad" decken sich zu 100 %, weil beide
+     * derselbe Kreis sind, und sind trotzdem nicht zu verwechseln; „bye"
+     * (Hand) und „colour" (Palette) galten als aehnlich, weil beide viel
+     * Creme haben, sehen aber voellig verschieden aus. Erst die Frage
+     * „wieviele Zellen tragen in BEIDEN Bildern dieselbe Farbe?" bringt
+     * Form und Farbe in EINE Zahl - und die Rangfolge stimmt dann mit
+     * dem ueberein, was auf dem Blatt zu sehen ist (Regel 4: kein Tor
+     * ersetzt den Blick; hier hat der Blick das Mass ausgesucht).
+     *
+     * DIE MESSSTELLE (Regel 5): 24 x 24 Zellen ueber dem Rahmen
+     * „0 0 64 64", je Zelle die Farbe der ZULETZT gezeichneten Flaeche -
+     * so, wie ein SVG malt. Gezaehlt wird ueber die Vereinigung beider
+     * Bilder, leere Zellen zaehlen nicht mit. Zwei Toene, die sich nur im
+     * Namen unterscheiden (`rot` und `rotDunkel`), gelten als
+     * verschieden; die Zahl ist damit eher zu niedrig als zu hoch.
+     */
+    const N_RASTER = 24;
+    const bildRaster = (stuecke) => {
+      const feld = new Array(N_RASTER * N_RASTER).fill(null);
+      for (const st of stuecke || []) {
+        const z = pfadZug(st.d);
+        if (z.fremd) continue;
+        // Die Kanten aller Teilpfade EINES Stuecks zusammen - `evenodd`
+        // gilt ueber das ganze `<path>`, nicht je Teilpfad. Wer je
+        // Teilpfad fuellt, verliert jedes Loch (Auge, Fenster, Griff).
+        const kanten = [];
+        for (const zug of z.zuege) {
+          for (let i = 0; i + 1 < zug.length; i++) kanten.push([zug[i], zug[i + 1]]);
+          if (zug.length > 2) kanten.push([zug[zug.length - 1], zug[0]]);
+        }
+        // Zeilenweise: je Zeilenmitte die Schnittpunkte sammeln, sortieren,
+        // und zwischen je zwei aufeinanderfolgenden fuellen. Das IST die
+        // Gerade-ungerade-Regel.
+        for (let r = 0; r < N_RASTER; r++) {
+          const y = RB_O + (r + 0.5) * RB_U / N_RASTER;
+          const xs = [];
+          for (const [[x1, y1], [x2, y2]] of kanten) {
+            if ((y1 <= y) === (y2 <= y)) continue;
+            xs.push(x1 + (y - y1) * (x2 - x1) / (y2 - y1));
+          }
+          xs.sort((a, b) => a - b);
+          for (let k = 0; k + 1 < xs.length; k += 2) {
+            for (let c = 0; c < N_RASTER; c++) {
+              const x = RB_L + (c + 0.5) * RB_R / N_RASTER;
+              if (x >= xs[k] && x <= xs[k + 1]) feld[r * N_RASTER + c] = st.f;
+            }
+          }
+        }
+      }
+      return feld;
+    };
+    /* SELBSTPROBE (Regel 1). Ein Raster, das nichts fuellt, meldet fuer
+       JEDES Paar 0 % - und sieht dabei aus wie ein bestandener Vergleich.
+       Drei Faelle, deren Ausgang ohne Rechnung feststeht: derselbe Rahmen
+       mit sich (ganz gleich), derselbe Rahmen in einer anderen Farbe
+       (gleiche Zellen, keine gleiche Farbe: 0 %), und eine Haelfte gegen
+       das Ganze (die Haelfte deckt die halbe Vereinigung: 50 %). */
+    const gleichheit = (a, b) => {
+      let gleich = 0, ver = 0;
+      for (let k = 0; k < N_RASTER * N_RASTER; k++) {
+        const x = a[k], y = b[k];
+        if (!x && !y) continue;
+        ver++; if (x === y) gleich++;
+      }
+      return ver ? gleich / ver : 0;
+    };
+    const voll = bildRaster([{ f: 'rot', d: 'M0 0h64v64H0Z' }]);
+    const vollBlau = bildRaster([{ f: 'blau', d: 'M0 0h64v64H0Z' }]);
+    const halb = bildRaster([{ f: 'rot', d: 'M0 0h64v32H0Z' }]);
+    for (const [was, ist, soll] of [
+      ['der volle Rahmen mit sich selbst', gleichheit(voll, voll), 1],
+      ['derselbe Rahmen in einer anderen Farbe', gleichheit(voll, vollBlau), 0],
+      ['die obere Hälfte gegen den vollen Rahmen', gleichheit(halb, voll), 0.5],
+      ['die gefüllte Fläche des vollen Rahmens',
+        voll.filter(Boolean).length / (N_RASTER * N_RASTER), 1],
+    ]) if (Math.abs(ist - soll) > 0.02)
+      ef.push(`der Zellvergleich misst ${was} als ${(ist * 100).toFixed(0)} % statt `
+        + `${(soll * 100).toFixed(0)} % — dann sagt er über die Zeichnungen nichts`);
+
+    /* Die Grenze. 55 % ist keine runde Zahl, sondern gemessen: der
+       hoechste Wert im heutigen Vorrat liegt bei 49 % („bye" gegen
+       „colour" - Hand gegen Palette, dem Auge nach unverwechselbar), der
+       Median bei 1 %, das 99. Hundertstel bei 32 %. Die beiden Paare, die
+       darueber lagen, sind in dieser Runde geaendert worden: „ham" gegen
+       „tomato" mit 58 % und „jeans" gegen „shirt" mit 54 %. Eine Ratsche
+       also, kein Soll - sie haelt fest, was heute erreicht ist, und sechs
+       Punkte Luft trennen sie vom naechsten Bild. */
+    const GLEICH_MAX = 0.55;
+    /* DIE EINE AUSNAHME, und sie ist keine Nachsicht: auf dem Blatt „Wo?"
+       SOLLEN die Bilder sich gleichen. Der Hinweis in BILDGEBIETE sagt es
+       woertlich - dieselbe Kiste, derselbe Ball, und der einzige
+       Unterschied ist, wo der Ball liegt. Waeren sie verschieden
+       gezeichnet, lernte ein Kind „mal eine Kiste, mal ein Korb" statt
+       „auf, unter, hinter". Die Ausnahme gilt nur, wenn BEIDE Woerter
+       dort stehen. */
+    const WO = 'wo';
+    let hoechste = null;
+    for (let i = 0; i < vls.length; i++) for (let j = i + 1; j < vls.length; j++) {
+      const a = vls[i], b = vls[j];
+      const beideWo = a.gebiet === WO && b.gebiet === WO;
+      const g = gleichheit(bildRaster(a.bild), bildRaster(b.bild));
+      if (!beideWo && (!hoechste || g > hoechste.g)) hoechste = { a: a.wort, b: b.wort, g };
+      if (beideWo || g < GLEICH_MAX) continue;
+      ef.push(`„${a.wort}" und „${b.wort}" sind zu ${(g * 100).toFixed(0)} % `
+        + `zellgleich (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) — zwei Karten, die `
+        + 'nebeneinander gleich aussehen, und wer die falsche antippt, hat nichts '
+        + 'falsch gemacht');
+    }
+
     /* Die Ablenker kommen aus DIESEM Vorrat und nicht aus den Farben:
        `ablenkerFuer` waehlt den Topf an der Sorte, und diese Weiche ist
        eine Zeile, die still umkippt. Stünden Farbflecken neben einem
@@ -2900,13 +3056,21 @@ console.log('\n  Tor `englisch`');
     const kk = bildKasten(kleinstes.bild);
     const flaechen = vls.reduce((n, x) => n + (x.bild || []).length, 0);
     const jeFarbe = vls.reduce((n, x) => n + bildKasten(x.bild).farben.size, 0);
-    console.log(`    Lies das Wort (E7): ${vls.length} von ${EN.BILDER.length} Wörtern `
-      + `gezeichnet · ${flaechen} Flächen aus ${Object.keys(EN.BILDFARBEN).length} Farben, `
-      + `im Schnitt ${(jeFarbe / vls.length).toFixed(1)} Farben je Bild (nötig `
+    const mitGrund = EN.BILDER.filter(b => b.ohneBild).length;
+    console.log(`    Lies das Wort (E7): ${vls.length} gezeichnet + ${mitGrund} mit `
+      + `Grund ohne Bild = ${vls.length + mitGrund} von ${EN.BILDER.length} Wörtern `
+      + `entschieden · ${flaechen} Flächen aus ${Object.keys(EN.BILDFARBEN).length} `
+      + `Farben, im Schnitt ${(jeFarbe / vls.length).toFixed(1)} Farben je Bild (nötig `
       + `${FARBEN_MIN}) · jede Zeichnung eigen und im Rahmen „${EN.BILD_RAHMEN}" · `
       + `kleinste „${kleinstes.wort}" mit `
       + `${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
         / Math.max(RB_R, RB_U) * 100).toFixed(0)} % (Grenze 55 %)`);
+    console.log(`    Sehen zwei Karten gleich aus (E7b): `
+      + `${vls.length * (vls.length - 1) / 2} Paare zellweise verglichen `
+      + `(${N_RASTER}×${N_RASTER} über „${EN.BILD_RAHMEN}") · ähnlichstes Paar `
+      + `„${hoechste.a}"/„${hoechste.b}" mit ${(hoechste.g * 100).toFixed(0)} % `
+      + `(Grenze ${(GLEICH_MAX * 100).toFixed(0)} %) · ausgenommen sind nur die `
+      + `Bilder des Blatts „Wo?", die sich gleichen sollen`);
 
     /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 fuer Fiona) ----------
      *

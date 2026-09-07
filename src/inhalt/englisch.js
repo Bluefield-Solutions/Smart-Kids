@@ -564,6 +564,15 @@ export function ablenkerFuer(ziel, wuerfel, wieviel = 3){
  * Mengen zusammen und verlangt, dass sie die 151 genau einmal decken - eine
  * Einteilung, die man vergessen kann, waere in einem Jahr keine mehr.
  *
+ * EIN WORT AUS `BILDER` HAT ENTWEDER `bild` ODER `ohneBild`, nie keins von
+ * beiden. `bild` ist die Zeichnung, `ohneBild` der GRUND, warum es keine
+ * gibt - als Text und nicht als Kommentar, weil ein Kommentar fuer ein
+ * Werkzeug nicht da ist. Vorher war beides dasselbe: ein vergessenes Wort
+ * und ein absichtlich weggelassenes sahen im Datensatz gleich aus, und die
+ * Zaehlung „84 von 86" las sich wie zwei offene Posten, obwohl der Plan
+ * fertig war. Eine Pruefung, die den Unterschied nicht sehen kann, meldet
+ * ihn nie (Regel 1) - `inhalt` verlangt jetzt eines von beiden.
+ *
  * WAS HIER MEINE ENTSCHEIDUNG IST, und das gehoert dazu: die Einteilung
  * selbst. Das ISB sagt nicht, welches Wort man malen kann - beide amtlichen
  * Listen kennen den Unterschied gar nicht. Amtlich ist die Wortliste; die
@@ -751,11 +760,12 @@ export const BILDER = [
       { f:'rot',    d:'M42 40h6l-3 4Z' },
     ],
     motiv: 'a mouse seen from the side, with big round ears and a long thin tail' },
-  /* KEIN BILD, mit Absicht: „pet" ist eine Sammelbezeichnung, und jedes
-     Bild dafuer waere eine Katze oder ein Hund - beide stehen schon in
-     dieser Liste. Drei Karten mit demselben Tier und drei verschiedenen
-     Woertern darunter machen aus „Lies das Wort" ein Ratespiel. */
-  { wort: 'pet',      gebiet: 'tiere', motiv: 'a child seen from the front holding a small cat in both arms' },
+  { wort: 'pet',      gebiet: 'tiere',
+    ohneBild: '„pet" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '
+      + 'eine Katze oder ein Hund - beide stehen schon in dieser Liste. Drei '
+      + 'Karten mit demselben Tier und drei verschiedenen Woertern darunter '
+      + 'machen aus „Lies das Wort" ein Ratespiel.',
+    motiv: 'a child seen from the front holding a small cat in both arms' },
   { wort: 'rabbit',   gebiet: 'tiere',
     bild: [
       { f:'creme',  d:'M20 4c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S16 4 20 4Zm24 0c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S40 4 44 4Z' },
@@ -846,15 +856,23 @@ export const BILDER = [
       { f:'braunDunkel', d:'M6 38h52v6H6Z' },
     ],
     motiv: 'a bowl seen from the side, filled with an apple, a pear and a bunch of grapes' },
+  /* KEINE SCHEIBEN MEHR, sondern eine Keule mit Knochen. Die alte
+     Zeichnung war „zwei ovale Scheiben von oben" - bei 76 Bildpunkten ist
+     das ein roter Ball, und der Zellvergleich hat sie mit „tomato" zu
+     58 % gleich gemessen (Grenze 55 %). Beides rund, beides rot: wer
+     „ham" liest und auf die Tomate tippt, hat nichts falsch gemacht. Die
+     Keule ist schief, hat einen Knochen und ist mit nichts sonst im
+     Vorrat zu verwechseln. */
   { wort: 'ham',        gebiet: 'essen',
     bild: [
-      { f:'creme',  d:'M40 4h12v8H40Z' },
-      { f:'creme',  d:'M43 8h6v16h-6Z' },
-      { f:'rot',    d:'M32 18c12 0 21 9 21 21s-9 21-21 21-21-9-21-21 9-21 21-21Z' },
-      { f:'rotDunkel', d:'M38 20c9 3 15 10 15 19 0 12-9 21-21 21 9-3 16-10 16-21 0-8-4-15-10-19Z' },
-      { f:'creme',  d:'M32 18c5 0 10 2 13 4-4 2-8 3-13 3s-9-1-13-3c3-2 8-4 13-4Z' },
+      { f:'creme',     d:'M13 51a24 15 -45 1 1 34-34 24 15 -45 1 1-34 34Z' },
+      { f:'rot',       d:'M15 49a21 12 -45 1 1 30-30 21 12 -45 1 1-30 30Z' },
+      { f:'rotDunkel', d:'M24 40a14 5 -45 1 1 20-20 14 5 -45 1 1-20 20Z' },
+      { f:'creme',     d:'M45 25 40 20 52 8 57 13Z' },
+      { f:'creme',     d:'M57 8a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
+      { f:'creme',     d:'M51 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
     ],
-    motiv: 'two overlapping oval slices of ham lying flat, seen from above' },
+    motiv: 'a ham on the bone lying at an angle, seen from the side, with a pale rind and the bone sticking out at the narrow end' },
   { wort: 'plum',       gebiet: 'essen',
     bild: [
       { f:'lila',   d:'M32 16c10 0 18 9 18 20s-8 22-18 22-18-11-18-22 8-20 18-20Z' },
@@ -1022,10 +1040,14 @@ export const BILDER = [
       { f:'creme',  d:'M20 52h24v6H20Z' },
     ],
     motiv: 'a knitted pullover lying flat, seen from the front, arms spread' },
+  /* GRUEN UND NICHT BLAU: neben „jeans" stand hier ein zweites blaues
+     Kleidungsstueck, und der Zellvergleich mass beide zu 54 % gleich.
+     Jeans sind blau - das ist am Wort; ein Hemd hat jede Farbe, also
+     traegt hier das Hemd die Aenderung. */
   { wort: 'shirt',    gebiet: 'kleidung',
     bild: [
-      { f:'blau',       d:'M22 10h20l14 8-6 13-6-3v28H20V28l-6 3-6-13Z' },
-      { f:'blauDunkel', d:'M42 10l14 8-6 13-6-3v28h-8V10Z' },
+      { f:'gruen',       d:'M22 10h20l14 8-6 13-6-3v28H20V28l-6 3-6-13Z' },
+      { f:'gruenDunkel', d:'M42 10l14 8-6 13-6-3v28h-8V10Z' },
       { f:'creme',      d:'M26 10h12l-6 8Z' },
       { f:'licht',      d:'M31 28h2v3h-2Zm0 8h2v3h-2Zm0 8h2v3h-2Z' },
     ],
@@ -1273,11 +1295,12 @@ export const BILDER = [
       { f:'rot',    d:'M52 46a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z' },
     ],
     motiv: 'two balls side by side, one very large and one very small; the small one is solid black, the large one is only an outline' },
-  /* KEIN BILD, mit Absicht: „little" heisst dasselbe wie „small", und
-     beide bekaemen dieselbe Zeichnung. Zwei Karten, die gleich aussehen
-     und verschieden heissen, sind keine Aufgabe - eine davon waere immer
-     falsch, ohne dass ein Kind einen Fehler gemacht haette. */
-  { wort: 'little', gebiet: 'gegensaetze', motiv: 'a grown cat and a kitten side by side, seen from the side; the kitten is solid black, the grown cat is only an outline' },
+  { wort: 'little', gebiet: 'gegensaetze',
+    ohneBild: '„little" heisst dasselbe wie „small", und beide bekaemen '
+      + 'dieselbe Zeichnung. Zwei Karten, die gleich aussehen und verschieden '
+      + 'heissen, sind keine Aufgabe - eine davon waere immer falsch, ohne '
+      + 'dass ein Kind einen Fehler gemacht haette.',
+    motiv: 'a grown cat and a kitten side by side, seen from the side; the kitten is solid black, the grown cat is only an outline' },
   { wort: 'cold',   gebiet: 'gegensaetze',
     bild: [
       { f:'blau',   d:'M29 2h6v60h-6Z' },
