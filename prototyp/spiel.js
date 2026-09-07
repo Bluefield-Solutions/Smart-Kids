@@ -2033,7 +2033,14 @@ const buchstabenBild = (x, ton) => {
  * Was noch nicht gesammelt ist, bekommt nichts davon: es ist der SCHATTEN
  * des Aufklebers, nicht der Aufkleber. */
 const stueckBild = (x, ton, rahmen, offen = false) =>
-    x.pfad  ? `<svg viewBox="${rahmen}" aria-hidden="true">${offen ? '' : `
+  /* Das gezeichnete Wort (E7/E5b) kommt VOR dem Kartenumriss: es traegt
+     seine Farben selbst, und der Aufkleberweg darunter wuerde sie durch
+     EINEN Ton ersetzen - genau die Auskunft, die das Bild ausmacht.
+     Was noch nicht gesammelt ist, wird blass wie ueberall im Buch; die
+     Farben bleiben, damit man sieht, WAS dort zu holen ist. */
+    x.bild  ? `<div class="bildkleber${offen ? ' offen' : ''}"
+                >${Englisch.bildSvg(x.bild, 'wortbild')}</div>`
+  : x.pfad  ? `<svg viewBox="${rahmen}" aria-hidden="true">${offen ? '' : `
                 <path d="${x.pfad}" fill-rule="evenodd" class="kleberschatten"/>
                 <path d="${x.pfad}" fill-rule="evenodd" class="kleberrand"/>`}
                <path d="${x.pfad}" fill-rule="evenodd"
@@ -2098,6 +2105,7 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
    durch, der keinen eigenen Zweig hat. Genau das ist hier passiert: im
    Vorlauf stand „= Frankreich" unter der Trikolore. */
 const stueckFuss = (x) => x.flagge ? x.name
+                        : x.bild ? x.wort
                         : x.pfad ? x.name : x.zeichenFolge ? x.wort
                         /* Unter dem Lautpaar steht, WORUM es geht - „Das
                            englische th" -, nicht noch einmal ein Wort. Die
@@ -4644,9 +4652,12 @@ function englischschirm(){
   const auswahl = mischenMit([ziel, ...Englisch.ablenkerFuer(ziel, r1)],
                              st.keim + st.i * 7919);
 
-  const bild = (x) => x.pfad
-    ? `<svg class="wortbild" viewBox="${Englisch.BILD_RAHMEN}" aria-hidden="true"
-        ><path d="${x.pfad}" fill-rule="evenodd"/></svg>`
+  /* Das Bild einer Moeglichkeit. Die gezeichneten Woerter (E7) kommen
+     ueber `bildSvg` - EINE Stelle fuer alle drei Bildschirme, die
+     dieselben Zeichnungen zeigen (Regel 6: was zweimal dasteht, veraltet
+     einmal). */
+  const bild = (x) => x.bild
+    ? Englisch.bildSvg(x.bild)
     : x.farbton
     ? `<span class="farbfleck" style="--farbton:${x.farbton}"></span>`
     : `<span class="ziffernbild">${x.ziffern}</span>`;
@@ -4993,8 +5004,8 @@ function lauteschirm(){
      Pfade daneben, und wer hier noch einmal suchte, haette die zweite
      Fassung derselben Zuordnung (Regel 6: was zweimal dasteht, veraltet
      einmal). */
-  const bildZu = (w) => w === ziel.wort ? ziel.pfad
-    : w === ziel.gegen ? ziel.gegenPfad : null;
+  const bildZu = (w) => w === ziel.wort ? ziel.bild
+    : w === ziel.gegen ? ziel.gegenBild : null;
 
   /* Die Seite wird GEWUERFELT, mit dem Keim der Aufgabe. Ohne das stuende
      das gefragte Wort immer links, sobald es in den Daten links steht -
@@ -5025,9 +5036,7 @@ function lauteschirm(){
    * Geraets soll etwas zu sagen haben, und die Tore finden die Karte an
    * `data-wort` wie zuvor. */
   const mitBild = !!P.vorlesen && zwei.every(x => bildZu(x.wort));
-  const bildZuKarte = (w) => `<svg class="wortbild lautbildchen"
-      viewBox="${Englisch.BILD_RAHMEN}" aria-hidden="true"
-      ><path d="${bildZu(w)}" fill-rule="evenodd"/></svg>`;
+  const bildZuKarte = (w) => Englisch.bildSvg(bildZu(w), 'wortbild lautbildchen');
 
   s.innerHTML = aufgabenKopf(st) + `
     <div class="frage" id="frage">Welches Wort hörst du?</div>

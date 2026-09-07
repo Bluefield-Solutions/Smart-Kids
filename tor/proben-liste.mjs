@@ -5972,18 +5972,25 @@ export const PROBEN = [
    *    Sorte Ausfall, die man an der Kachelwand nicht sieht. */
   { n:'ein Lautpaar verliert eine seiner beiden Zeichnungen', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  vine:  'M30 6h4v10h-4Z",
-    ersatz:"  vineX: 'M30 6h4v10h-4Z",
-    an:{ datei:'src/inhalt/englisch.js', text:"vineX: 'M30 6h4v10h-4Z" },
+    such:"  vine: [",
+    ersatz:"  vineX: [",
+    an:{ datei:'src/inhalt/englisch.js', text:'vineX: [' },
     sagt:'gemalte Lautpaare' },
 
   /* 5. BEIDE KARTEN ZEIGEN DASSELBE BILD. Dann ist jeder Tipp so richtig
    *    wie der andere, und der Bildschirm sieht aus wie immer. */
   { n:'ein gemaltes Lautpaar zeigt zweimal dasselbe Bild', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  cap:   'M12 34c0-12 8-20 20-20s20 8 20 20ZM6 34h50c4 0 6 3 6 6H6Z',",
-    ersatz:"  cap:   'M26 12h12v8H26ZM16 20h26l8 14H8ZM2 34h60v12H2Zm12 12a6 6 0 1 0 0 12 6 6 0 1 0 0-12Zm36 0a6 6 0 1 0 0 12 6 6 0 1 0 0-12Z',",
-    an:{ datei:'src/inhalt/englisch.js', text:"cap:   'M26 12h12v8H26Z" },
+    such:"  cap: [\n    { f:'blau',       d:'M12 36c0-13 9-22 20-22s20 9 20 22Z' },",
+    ersatz:"  cap: [\n    { f:'gelb',       d:'M26 8h12v8H26Z' },\n"
+      + "    { f:'gelb',       d:'M16 18h26l9 14H7Z' },\n"
+      + "    { f:'gelb',       d:'M2 32h60v14H2Z' },\n"
+      + "    { f:'blauDunkel', d:'M19 21h11v9H12Zm15 0h6l6 9H34Z' },\n"
+      + "    { f:'gelbDunkel', d:'M2 40h60v6H2Z' },\n"
+      + "    { f:'tinte',      d:'M14 42a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm36 0a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z' },\n"
+      + "    { f:'grau',       d:'M14 46a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm36 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },\n"
+      + "    { f:'weg',        d:'M12 36c0-13 9-22 20-22s20 9 20 22Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"f:'weg'," },
     sagt:'zweimal dieselbe Zeichnung' },
 
   /* 6. UND DIE ZAHL, unter der sich die Ebene ausblendet: sie steht in
@@ -6002,11 +6009,42 @@ export const PROBEN = [
    *    sein Paar sich still fuer unmalbar haelt. */
   { n:'eine Lautzeichnung gehört zu keinem Paar', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  pan:   'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',",
-    ersatz:"  pan:   'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',\n"
-      + "  pfanne: 'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',",
-    an:{ datei:'src/inhalt/englisch.js', text:"pfanne: 'M8 24h34v10c0 7" },
+    such:"  pan: [",
+    ersatz:"  pfanne: [\n    { f:'grau', d:'M13 26h24v7c0 5-4 9-9 9h-6c-5 0-9-4-9-9Z' },\n"
+      + "    { f:'tinte', d:'M42 26h20v7H42Z' },\n  ],\n  pan: [",
+    an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
+
+  /* --- Die Farben der Bilder (E7b) --------------------------------------
+   *
+   * Zwei Zusagen, und beide gehen leise kaputt - das Bild wird dabei
+   * nicht falsch, es wird nur wieder das, was es vorher war: eine
+   * schwarze Silhouette. Genau das war der Anlass der Runde.
+   *
+   * 1. EIN FARBNAME, DEN ES NICHT GIBT. `bildSvg` faellt dann auf Tinte
+   *    zurueck - mit Absicht, denn ein Bild ohne `fill` waere schwarz und
+   *    ein Bild mit `fill="undefined"` unsichtbar. Der Rueckfall ist
+   *    richtig und macht den Tippfehler unsichtbar; deshalb muss ihn das
+   *    Tor sagen. */
+  { n:'eine Zeichnung nennt eine Farbe, die es nicht gibt', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"    { f:'braun',      d:'M28 40h8v20h-8Z' },",
+    ersatz:"    { f:'braunn',     d:'M28 40h8v20h-8Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"f:'braunn'," },
+    sagt:'steht nicht in BILDFARBEN' },
+
+  /* 2. EIN BILD WIRD WIEDER EINFARBIG. Drei Baelle in drei Farben sind
+   *    „three"; drei Baelle in einer Farbe sind ein Muster. Der Eingriff
+   *    macht genau das - und auf dem Bildschirm sieht es aus wie eine
+   *    Gestaltungsentscheidung. */
+  { n:'eine Zeichnung ist wieder einfarbig', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"    { f:'blau', d:'M17 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },",
+    ersatz:"    { f:'rot', d:'M17 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },\n"
+      + "    { f:'rot', d:'M47 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },\n"
+      + "    { f:'weg', d:'M0 0Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'weg', d:'M0 0Z' }," },
+    sagt:'ist sie wieder eine Silhouette' },
 
   /* --- „Lies das Wort" (E7) --------------------------------------------
    *
@@ -6040,11 +6078,19 @@ export const PROBEN = [
    *    und zwei Karten zeigen dasselbe Bild. Eine davon ist richtig, die
    *    andere auch - und wer die falsche tippt, bekommt gesagt, er habe
    *    sich geirrt. */
+  /* Seit die Bilder mehrteilig sind, ist „dieselbe Zeichnung" die ganze
+     Liste und nicht ein Pfad: zwei Bilder duerfen sich einen Kreis teilen,
+     nur nicht alles. Der Eingriff gibt dem Kaese die Flaechen des Brotes -
+     die Sorte Fehler, die beim Kopieren einer Zeile entsteht. */
   { n:'zwei englische Wörter teilen sich eine Zeichnung', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  { wort: 'dog',      gebiet: 'tiere',\n    pfad: 'M32 12c-6 0-11 5-11 11v10c0 9 5 15 11 15s11-6 11-15V23c0-6-5-11-11-11Z",
-    ersatz:"  { wort: 'dog',      gebiet: 'tiere',\n    pfad: 'M3 32c9-16 28-21 41-13l13-11-4 24 4 24-13-11C31 53 12 48 3 32Zm38-6a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z',\n    weg: 'M32 12c-6 0-11 5-11 11v10c0 9 5 15 11 15s11-6 11-15V23c0-6-5-11-11-11Z",
-    an:{ datei:'src/inhalt/englisch.js', text:"weg: 'M32 12c-6 0-11 5-11 11" },
+    such:"      { f:'gelb',       d:'M6 46 50 16c5 3 8 9 8 15v15Z' },\n"
+      + "      { f:'gelbDunkel', d:'M6 46h52v6H6Z' },\n"
+      + "      { f:'creme',      d:'M22 40a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm18-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },",
+    ersatz:"      { f:'braun',      d:'M8 38c0-13 11-22 24-22s24 9 24 22v10a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },\n"
+      + "      { f:'braunDunkel',d:'M8 44h48v4a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },\n"
+      + "      { f:'creme',      d:'M18 30l6-8 3 2-6 8Zm11 0 6-8 3 2-6 8Zm11 0 6-8 3 2-6 8Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"'essen',\n    bild: [\n      { f:'braun',      d:'M8 38c0-13" },
     sagt:'sind dieselbe Zeichnung' },
 
   /* 4. EINE ZEICHNUNG LAEUFT AUS DEM RAHMEN. `<svg>` schneidet an seinem
@@ -6053,9 +6099,9 @@ export const PROBEN = [
    *    Punkte nach unten, das ist knapp die Haelfte. */
   { n:'eine Zeichnung läuft aus ihrem Rahmen', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"    pfad: 'M8 36c0-12 11-21 24-21s24 9 24 21v12",
-    ersatz:"    pfad: 'M8 66c0-12 11-21 24-21s24 9 24 21v12",
-    an:{ datei:'src/inhalt/englisch.js', text:"pfad: 'M8 66c0-12" },
+    such:"      { f:'braun',      d:'M8 38c0-13 11-22 24-22s24 9 24 22v10a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },",
+    ersatz:"      { f:'braun',      d:'M8 68c0-13 11-22 24-22s24 9 24 22v10a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"d:'M8 68c0-13" },
     sagt:'ausserhalb des Rahmens' },
 
   /* 5. UND DAS TOR SELBST: die Rahmenrechnung verliert die Spiegelung,

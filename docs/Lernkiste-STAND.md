@@ -11928,3 +11928,54 @@ Fällt die Zahl unter vier — weil eine Zeichnung wegfällt —, blendet sich
 die Ebene bei Fiona **selbst aus**. Das ist die stille Verfallsart dieser
 Runde, und sie ist der Grund für die vierte Gegenprobe: an der Kachelwand
 sieht niemand, dass eine Kachel fehlt.
+
+## E7b · Die Bilder noch einmal — vierundzwanzig Zeichnungen in Farbe
+
+**Der Befund kam vom Nutzer und war richtig.** Die ersten vierundzwanzig
+Zeichnungen waren je eine einzige Fläche in Tinte. Das war schnell
+gezeichnet und schlecht zu erkennen: als schwarzer Umriss sind ein Apfel
+und eine Tomate fast dasselbe, und ein Kind, das ein Wort noch nicht kennt,
+hat nichts als die Silhouette.
+
+**Farbe ist hier kein Schmuck, sondern der zweite Hinweis neben der Form.**
+Rot und rund mit Blatt ist ein Apfel; rot und flach mit grüner Krone eine
+Tomate; rot und spitz mit Kernen eine Erdbeere. Ohne Farbe tragen alle drei
+dieselbe Auskunft.
+
+**Aus einer Fläche wurden Listen von Flächen.** Ein Bild ist jetzt
+`bild: [{ f:'rot', d:'M…' }, …]` — 83 Flächen für die sechzehn Lesewörter,
+34 für die acht Lautbilder, im Schnitt 3,8 Farben je Bild. Zwei Töne je
+Farbe, hell und dunkel: der dunkle liegt als Schattenseite rechts, und
+daraus wird aus einer Scheibe ein Körper.
+
+**Was der Umbau nebenbei einfacher gemacht hat:** `fill-rule="evenodd"`
+war bisher die Falle dieser Runden — überlappende Teilpfade in *einem*
+Pfad stanzen Löcher, und daran sind Hund und Katze schon zweimal
+gescheitert. Bei getrennten Flächen ist Überlappung erwünscht: sie ist die
+Reihenfolge, in der gemalt wird.
+
+### Zwei neue Zusagen, weil zwei neue Fehler möglich sind
+
+| Was schiefgeht | Wie es aussieht | Was misst |
+|---|---|---|
+| Ein Farbname, den es nicht gibt | `bildSvg` fällt auf Tinte zurück — das Bild sieht aus wie früher | jeder `f` steht in `BILDFARBEN` |
+| Ein Bild wird wieder einfarbig | eine Silhouette, und das war der Anlass der Runde | mindestens zwei Farben je Bild |
+
+Der Rückfall auf Tinte ist **richtig** — ein Bild ohne `fill` wäre schwarz,
+eines mit `fill="undefined"` unsichtbar. Genau deshalb muss ihn das Tor
+sagen: er macht den Tippfehler unsichtbar.
+
+Und der Kasten wird jetzt über **alle** Flächen gerechnet. Eine einzelne zu
+messen hieße, ein Bild an seinem Stiel zu beurteilen.
+
+### Was der Blick geändert hat
+
+Vier von vierundzwanzig gingen zurück, und kein Tor hätte eines davon
+gemeldet: der **Fisch** lief mit der Schwanzflosse aus dem Rahmen, die
+**Katze** hatte einen cremefarbenen Latz statt einer Schnauze, das **Ei**
+war ein gelber Kreis (jetzt ein Spiegelei mit Eiweiß), und die **Schuhe**
+waren zwei Klumpen ohne Sohle und Schnürung. Die **Pfanne** hat einen
+braunen Holzgriff bekommen — grau auf grau war zu leise.
+
+**Der offene Punkt „wine" ist damit erledigt.** Der Kelch war als schwarzer
+Umriss ein Glas; mit rotem Wein darin ist er ein Weinglas.

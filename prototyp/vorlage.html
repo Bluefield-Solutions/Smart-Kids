@@ -2057,7 +2057,17 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    Farbfleck: 76 Punkte, und im kurzen Querformat 64 - dieselben Zahlen,
    damit sich die beiden Ebenen gleich anfuehlen. Gefuellt in Tinte, ohne
    Kontur: die Zeichnung IST eine Flaeche. */
-.wortbild{display:block;width:76px;height:76px;fill:var(--tinte)}
+/* KEIN `fill` mehr: seit die Zeichnungen mehrteilig und farbig sind,
+   traegt jede Flaeche ihre Farbe am Markup (`BILDFARBEN` in englisch.js).
+   Ein `fill` hier hat sie alle ueberschrieben - ein Bild, das aussieht wie
+   vorher, naemlich einfarbig. */
+.wortbild{display:block;width:76px;height:76px}
+/* Das gezeichnete Wort als Aufkleber im Vorlauf und im Buch. Es bekommt
+   NICHT den Kartenweg mit Schatten, Rand und Glanz: die Farben sind hier
+   die Auskunft, und ein Aufkleberton haette sie durch einen einzigen
+   ersetzt. Offen wird es blass wie alles Ungesammelte im Buch. */
+.bildkleber{display:flex;align-items:center;justify-content:center}
+.bildkleber.offen{opacity:.35;filter:grayscale(.6)}
 /* Dieselbe Karte mit einem BILD darauf - fuer wen nicht liest (E5).
    Sie wird hoeher und die Zeichnung groesser als bei „Hören und zeigen":
    dort stehen VIER Kaesten nebeneinander, hier zwei, und der Platz, den

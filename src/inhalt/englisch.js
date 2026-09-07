@@ -353,9 +353,9 @@ export const LAUTPAARE = [
  * mitwachsen.
  */
 export function vorratLesen(){
-  return BILDER.filter(b => b.pfad).map(b => ({
+  return BILDER.filter(b => b.bild).map(b => ({
     id: `ls:${b.wort}`, name: b.wort, wort: b.wort,
-    sorte: 'bild', gebiet: b.gebiet, pfad: b.pfad }));
+    sorte: 'bild', gebiet: b.gebiet, bild: b.bild }));
 }
 
 /**
@@ -380,26 +380,64 @@ export function vorratLesen(){
  */
 export const LAUTBILDER = {
   // th: aus „three" wird im Deutschen „tree".
-  three: 'M22 16a10 10 0 1 0 20 0 10 10 0 1 0-20 0ZM8 44a10 10 0 1 0 20 0 10 10 0 1 0-20 0Zm28 0a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z',
-  tree:  'M32 4c14 0 24 12 24 22s-10 18-24 18-24-8-24-18 10-22 24-22ZM28 44h8v16h-8Z',
+  three: [
+    { f:'rot',  d:'M32 6a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+    { f:'blau', d:'M17 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+    { f:'gelb', d:'M47 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+  ],
+  tree: [
+    { f:'braun',      d:'M28 40h8v20h-8Z' },
+    { f:'gruen',      d:'M32 4c14 0 24 11 24 21s-10 19-24 19S8 35 8 25 18 4 32 4Z' },
+    { f:'gruenDunkel',d:'M40 6c10 3 16 11 16 19 0 10-10 19-24 19 12-2 20-10 20-19 0-8-4-15-12-19Z' },
+  ],
   // w gegen v: das deutsche w klingt wie das englische v.
-  wine:  'M16 8h32v10c0 12-7 20-16 20s-16-8-16-20ZM29 38h6v14h-6ZM18 52h28v6H18Z',
-  vine:  'M30 6h4v10h-4Zm4 4c8-4 16-2 18 4-6 6-14 6-18-4ZM14 24a6 6 0 1 0 12 0 6 6 0 1 0-12 0Zm12 0a6 6 0 1 0 12 0 6 6 0 1 0-12 0Zm12 0a6 6 0 1 0 12 0 6 6 0 1 0-12 0ZM20 36a6 6 0 1 0 12 0 6 6 0 1 0-12 0Zm12 0a6 6 0 1 0 12 0 6 6 0 1 0-12 0ZM26 48a6 6 0 1 0 12 0 6 6 0 1 0-12 0Z',
+  wine: [
+    { f:'grau',       d:'M29 38h6v14h-6ZM18 52h28v6H18Z' },
+    { f:'licht',      d:'M16 8h32v10c0 12-7 20-16 20s-16-8-16-20Z' },
+    { f:'rot',        d:'M17 18h30c0 12-7 20-15 20s-15-8-15-20Z' },
+    { f:'rotDunkel',  d:'M38 18h9c0 12-7 20-15 20 8-3 6-12 6-20Z' },
+  ],
+  vine: [
+    { f:'braun',      d:'M30 4h4v12h-4Z' },
+    { f:'gruen',      d:'M34 8c8-5 17-3 19 2-6 7-16 7-19-2Z' },
+    { f:'lila',       d:'M20 22a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm24 0a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM32 22a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM26 36a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm12 0a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM32 50a7 7 0 1 0 0 12 7 7 0 0 0 0-12Z' },
+    { f:'lilaDunkel', d:'M22 24a7 7 0 0 1 5 12c4-1 6-4 6-7 0-4-4-7-8-7-1 0-2 1-3 2Zm12 0a7 7 0 0 1 5 12c4-1 6-4 6-7 0-4-4-7-8-7-1 0-2 1-3 2Zm-6 14a7 7 0 0 1 5 12c4-1 6-4 6-7 0-4-4-7-8-7-1 0-2 1-3 2Z' },
+  ],
   // Auslautverhaertung: das b am Ende klingt wie p.
-  cab:   'M26 12h12v8H26ZM16 20h26l8 14H8ZM2 34h60v12H2Zm12 12a6 6 0 1 0 0 12 6 6 0 1 0 0-12Zm36 0a6 6 0 1 0 0 12 6 6 0 1 0 0-12Z',
-  cap:   'M12 34c0-12 8-20 20-20s20 8 20 20ZM6 34h50c4 0 6 3 6 6H6Z',
+  cab: [
+    { f:'gelb',       d:'M26 8h12v8H26Z' },
+    { f:'gelb',       d:'M16 18h26l9 14H7Z' },
+    { f:'gelb',       d:'M2 32h60v14H2Z' },
+    { f:'blauDunkel', d:'M19 21h11v9H12Zm15 0h6l6 9H34Z' },
+    { f:'gelbDunkel', d:'M2 40h60v6H2Z' },
+    { f:'tinte',      d:'M14 42a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm36 0a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z' },
+    { f:'grau',       d:'M14 46a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm36 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },
+  ],
+  cap: [
+    { f:'blau',       d:'M12 36c0-13 9-22 20-22s20 9 20 22Z' },
+    { f:'blauDunkel', d:'M32 14c11 0 20 9 20 22h-9c0-12-5-20-11-22Z' },
+    { f:'blauDunkel', d:'M6 36h50c4 0 6 3 6 7H6Z' },
+    { f:'licht',      d:'M30 10h4v5h-4Z' },
+  ],
   // a gegen e: das englische a zwischen ae und a wird zum deutschen e.
-  pan:   'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',
-  /* Der Schaft, ein schmaler Spalt, die Feder - und der Clip rechts.
-     Der erste Anlauf hatte Schaft und Feder in EINEM Umriss: das sah
-     auf dem Bildschirm aus wie ein Messer. Der Spalt macht aus der
-     Spitze eine Feder, und der Clip sagt „Stift" und nicht „Stab". */
-  pen:   'M25 4h14v34H25ZM26 40h12l-6 18ZM39 10h5v16h-5Z',
+  pan: [
+    { f:'braunDunkel',d:'M42 26h20v7H42Z' },
+    { f:'grauDunkel', d:'M8 22h34v11c0 8-6 14-14 14h-6c-8 0-14-6-14-14Z' },
+    { f:'grau',       d:'M13 26h24v7c0 5-4 9-9 9h-6c-5 0-9-4-9-9Z' },
+    { f:'licht',      d:'M16 28c1 5 4 9 8 11-6-1-10-6-10-11Z' },
+  ],
+  pen: [
+    { f:'gruen',      d:'M25 4h14v32H25Z' },
+    { f:'gruenDunkel',d:'M33 4h6v32h-6Z' },
+    { f:'grauDunkel', d:'M39 10h6v16h-6Z' },
+    { f:'grau',       d:'M25 38h14l-7 12Z' },
+    { f:'tinte',      d:'M30 46h4l-2 12Z' },
+  ],
 };
 
 /** Die Zeichnung zu einem Lautwort - erst die eigene, dann der Bildplan. */
 export function bildFuerLaut(wort){
-  return LAUTBILDER[wort] || (BILDER.find(b => b.wort === wort) || {}).pfad || null;
+  return LAUTBILDER[wort] || (BILDER.find(b => b.wort === wort) || {}).bild || null;
 }
 
 /**
@@ -436,7 +474,7 @@ export function vorratLaute({ nurMalbar = false } = {}){
          muessen, welches Bild zu welchem Wort gehoert. */
       aus.push({ id: `lt:${p.a}-${p.b}:${wort}`, name: wort, wort,
         sorte: 'laut', gegen,
-        pfad: bildFuerLaut(wort), gegenPfad: bildFuerLaut(gegen),
+        bild: bildFuerLaut(wort), gegenBild: bildFuerLaut(gegen),
         stolper: p.stolper, stolperName: st.name, grund: st.grund });
     }
   }
@@ -575,20 +613,99 @@ export const BILDGEBIETE = [
  * ein Bildermacher zeichnet dann zehnmal etwas anderes, mal von vorn, mal
  * springend, und die zehn Felder passen nicht zusammen. Deshalb steht die
  * Ansicht dabei. */
-/** Der Rahmen, in dem ein `pfad` gezeichnet ist. Quadratisch, 64 Einheiten -
+/** Der Rahmen, in dem ein Bild gezeichnet ist. Quadratisch, 64 Einheiten -
  *  dieselbe Groesse fuer alle 86, sonst laesst sich kein Blatt schneiden. */
 export const BILD_RAHMEN = '0 0 64 64';
+
+/**
+ * Die Farben der Bilder - EINE Tafel fuer alle.
+ *
+ * Vorher war jedes Bild eine einzige Flaeche in Tinte. Das war schnell
+ * gezeichnet und schlecht zu erkennen: ein Apfel und eine Tomate sind als
+ * schwarzer Umriss fast dasselbe, und ein Kind, das ein Wort noch nicht
+ * kennt, hat nichts als die Silhouette. Farbe ist hier kein Schmuck,
+ * sondern der zweite Hinweis neben der Form - rot und rund mit Blatt ist
+ * ein Apfel, rot und flach mit gruener Krone eine Tomate.
+ *
+ * ZWEI TOENE JE FARBE, hell und dunkel: der dunkle liegt als Schattenseite
+ * auf der rechten Haelfte, und daraus wird aus einer Scheibe ein Koerper.
+ * Ohne ihn sehen zwoelf flache Kreise aus wie zwoelf Aufkleber.
+ *
+ * SIE STEHT HIER UND NICHT IM STILBLATT. Ein Bild wird als `<path fill>`
+ * gezeichnet, nicht als Klasse - sonst braeuchte jede der sechzehn
+ * Zeichnungen eigene Regeln im CSS, und die Farbtafel stuende an zwei
+ * Orten (Regel 6: was zweimal dasteht, veraltet einmal).
+ */
+export const BILDFARBEN = {
+  rot:'#E4572E', rotDunkel:'#B23A18',
+  gruen:'#3FA34D', gruenDunkel:'#2A7638',
+  blau:'#3D7DD6', blauDunkel:'#2A5AA3',
+  gelb:'#F2B705', gelbDunkel:'#C99000',
+  braun:'#A9703F', braunDunkel:'#7C4E27',
+  lila:'#8E5AA8', lilaDunkel:'#6B3F82',
+  grau:'#9AA7B4', grauDunkel:'#6B7784',
+  tinte:'#2B3440', creme:'#FBEFD8', wolke:'#DCE3EA', licht:'#FFFFFF',
+};
+
+/**
+ * Ein Bild als SVG - die EINZIGE Stelle, an der aus Flaechen Markup wird.
+ *
+ * Drei Bildschirme zeigen dieselben Zeichnungen: „Lies das Wort" (E7),
+ * „Zwei Wörter, ein Laut" mit Bildern (E5b) und der Vorlauf. Drei
+ * Fassungen waeren drei Urteile darueber, wie ein Bild aussieht, und beim
+ * naechsten Umbau veraltet eines davon (Regel 6).
+ *
+ * Eine unbekannte Farbe wird NICHT stillschweigend schwarz: sie faellt auf
+ * `tinte` zurueck, und das Tor `inhalt` meldet sie. Ein Tippfehler im
+ * Farbnamen ist sonst ein Bild, das aussieht wie vorher - einfarbig.
+ */
+export function bildSvg(stuecke, klasse = 'wortbild'){
+  return `<svg class="${klasse}" viewBox="${BILD_RAHMEN}" aria-hidden="true">`
+    + (stuecke || []).map(s =>
+        `<path d="${s.d}" fill="${BILDFARBEN[s.f] || BILDFARBEN.tinte}" fill-rule="evenodd"/>`
+      ).join('')
+    + '</svg>';
+}
 export const BILDER = [
   // --- Tiere ---
   { wort: 'cat',      gebiet: 'tiere',
-    pfad: 'M14 26c0-8 3-14 6-18l4 8h20l4-8c3 4 6 10 6 18 0 6-3 11-7 14 2 3 3 7 3 11v3H18v-3c0-4 1-8 3-11-4-3-7-8-7-14Zm9 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm18 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM2 52c8 0 12-4 12-9h5c0 9-7 14-17 14Z',
+    bild: [
+      { f:'braun',      d:'M2 56c9 0 14-6 14-13h5c0 11-8 18-19 18Z' },
+      { f:'braun',      d:'M20 34h24a6 6 0 0 1 6 6v18H14V40a6 6 0 0 1 6-6Z' },
+      { f:'creme',      d:'M32 42c4 0 6 3 6 7v9H26v-9c0-4 2-7 6-7Z' },
+      { f:'braun',      d:'M17 20 14 5l13 5Z' },
+      { f:'braun',      d:'M47 20 50 5 37 10Z' },
+      { f:'braun',      d:'M32 8c-9 0-16 6-16 14s7 14 16 14 16-6 16-14S41 8 32 8Z' },
+      { f:'braunDunkel',d:'M40 9c5 2 8 7 8 13 0 8-7 14-16 14 7-2 12-7 12-14 0-5-2-10-4-13Z' },
+      { f:'rot',        d:'M19 16 17 8l7 3Z' },
+      { f:'rot',        d:'M45 16 47 8l-7 3Z' },
+      { f:'creme',      d:'M32 26c5 0 9 2 9 5s-4 5-9 5-9-2-9-5 4-5 9-5Z' },
+      { f:'gruen',      d:'M25 17a3 4 0 1 0 0 8 3 4 0 0 0 0-8Z' },
+      { f:'gruen',      d:'M39 17a3 4 0 1 0 0 8 3 4 0 0 0 0-8Z' },
+      { f:'tinte',      d:'M25 18a1 3 0 1 0 0 6 1 3 0 0 0 0-6Z' },
+      { f:'tinte',      d:'M39 18a1 3 0 1 0 0 6 1 3 0 0 0 0-6Z' },
+      { f:'rot',        d:'M29 27h6l-3 4Z' },
+    ],
     motiv: 'a cat sitting upright, seen from the side, tail curled around its paws' },
   { wort: 'chicken',  gebiet: 'tiere', motiv: 'a hen standing, seen from the side, with a comb and a rounded body' },
   { wort: 'dog',      gebiet: 'tiere',
-    pfad: 'M32 12c-6 0-11 5-11 11v10c0 9 5 15 11 15s11-6 11-15V23c0-6-5-11-11-11ZM21 20c-5 1-9 7-9 14s4 13 9 14V20ZM43 20c5 1 9 7 9 14s-4 13-9 14V20ZM27 27a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM37 27a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM32 37a4 3 0 1 0 0 6 4 3 0 0 0 0-6Z',
+    bild: [
+      { f:'braunDunkel',d:'M21 20c-5 1-9 7-9 14s4 13 9 14ZM43 20c5 1 9 7 9 14s-4 13-9 14Z' },
+      { f:'braun',      d:'M32 10c-7 0-12 5-12 12v11c0 10 5 17 12 17s12-7 12-17V22c0-7-5-12-12-12Z' },
+      { f:'creme',      d:'M32 32c5 0 9 3 9 7s-4 8-9 8-9-4-9-8 4-7 9-7Z' },
+      { f:'tinte',      d:'M26 22a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },
+      { f:'tinte',      d:'M32 34c3 0 5 2 5 3 0 2-2 3-5 3s-5-1-5-3c0-1 2-3 5-3Z' },
+    ],
     motiv: 'a dog sitting upright, seen from the side, with floppy ears' },
   { wort: 'fish',     gebiet: 'tiere',
-    pfad: 'M3 32c9-16 28-21 41-13l13-11-4 24 4 24-13-11C31 53 12 48 3 32Zm38-6a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z',
+    bild: [
+      { f:'blauDunkel', d:'M40 22 58 10l-4 22 4 22-18-12Z' },
+      { f:'blau',       d:'M6 32c9-14 26-18 37-11 5 3 9 7 11 11-2 4-6 8-11 11-11 7-28 3-37-11Z' },
+      { f:'blauDunkel', d:'M26 16c5-4 11-5 15-2-5 0-10 2-13 5Z' },
+      { f:'creme',      d:'M12 38c9 7 22 9 30 4-8 8-22 6-30-4Z' },
+      { f:'licht',      d:'M18 23a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z' },
+      { f:'tinte',      d:'M19 26a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },
+    ],
     motiv: 'a single fish seen from the side, with a fan tail and one round eye' },
   { wort: 'hamster',  gebiet: 'tiere', motiv: 'a hamster sitting on its hind legs, seen from the side, holding a seed' },
   { wort: 'horse',    gebiet: 'tiere', motiv: 'a horse standing, seen from the side, with a mane and a tail' },
@@ -597,48 +714,104 @@ export const BILDER = [
   { wort: 'rabbit',   gebiet: 'tiere', motiv: 'a rabbit sitting, seen from the side, with two long upright ears' },
   // --- Essen und Trinken ---
   { wort: 'apple',      gebiet: 'essen',
-    pfad: 'M32 18C26 9 12 11 9 24 6 38 15 57 25 57c3 0 4-2 7-2s4 2 7 2c10 0 19-19 16-33C56 11 42 9 36 18ZM30 4c1 5 1 10 1 15h4c-1-5-1-10 0-15ZM35 13c7-7 15-6 19-4-2 9-11 12-18 8Z',
+    bild: [
+      { f:'braunDunkel', d:'M30 6h4v14h-4Z' },
+      { f:'gruen',       d:'M34 10c7-5 15-3 17 2-5 6-14 6-17-2Z' },
+      { f:'rot',         d:'M32 18c-5-5-14-4-17 4-3 9 2 24 9 30 3 2 5 2 8 0 7-6 12-21 9-30-3-8-12-9-9-4Z' },
+      { f:'rot',         d:'M32 18c5-5 14-4 17 4 3 9-2 24-9 30-3 2-5 2-8 0V18Z' },
+      { f:'rotDunkel',   d:'M38 20c5 0 9 3 11 8 2 8-2 20-8 26 5-8 8-19 6-26-1-4-5-7-9-8Z' },
+      { f:'licht',       d:'M20 28c1-4 4-6 7-6 2 0 2 3 0 3-3 1-4 2-5 4-1 2-3 1-2-1Z' },
+    ],
     motiv: 'one apple seen from the front, with a short stalk and one leaf' },
   { wort: 'bread',      gebiet: 'essen',
-    pfad: 'M8 36c0-12 11-21 24-21s24 9 24 21v12a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4Zm10-9 5-8 3 2-5 8Zm11 0 5-8 3 2-5 8Zm11 0 5-8 3 2-5 8Z',
+    bild: [
+      { f:'braun',      d:'M8 38c0-13 11-22 24-22s24 9 24 22v10a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },
+      { f:'braunDunkel',d:'M8 44h48v4a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },
+      { f:'creme',      d:'M18 30l6-8 3 2-6 8Zm11 0 6-8 3 2-6 8Zm11 0 6-8 3 2-6 8Z' },
+    ],
     motiv: 'a whole loaf of bread seen from the side, with a rounded top' },
   { wort: 'butter',     gebiet: 'essen', motiv: 'a rectangular block of butter on a small dish, seen from the side' },
   { wort: 'cheese',     gebiet: 'essen',
-    pfad: 'M6 44 50 16c5 3 8 8 8 14v14ZM20 40a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm18-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+    bild: [
+      { f:'gelb',       d:'M6 46 50 16c5 3 8 9 8 15v15Z' },
+      { f:'gelbDunkel', d:'M6 46h52v6H6Z' },
+      { f:'creme',      d:'M22 40a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm18-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+    ],
     motiv: 'a triangular wedge of cheese seen from the side, with three round holes' },
   { wort: 'chips',      gebiet: 'essen', motiv: 'a paper cone of chips (french fries) standing upright, seen from the front' },
   { wort: 'chocolate',  gebiet: 'essen', motiv: 'a bar of chocolate seen from above, divided into six squares, one corner broken off' },
   { wort: 'drink',      gebiet: 'essen', motiv: 'a tall glass with a bent drinking straw, seen from the side' },
   { wort: 'eat',        gebiet: 'essen', motiv: 'a round empty plate seen from above with a fork on its left and a knife on its right' },
   { wort: 'egg',        gebiet: 'essen',
-    pfad: 'M18 40c0-13 6-26 14-26s14 13 14 26c0 8-6 14-14 14s-14-6-14-14Z',
+    bild: [
+      { f:'wolke',      d:'M14 34c0-11 8-20 18-20 4 0 8 2 11 2 8 0 13 5 13 11 0 5-3 8-6 10 1 7-5 12-11 12-5 0-8-2-10-6-7 2-15-2-15-9Z' },
+      { f:'gelb',       d:'M32 24a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z' },
+      { f:'gelbDunkel', d:'M36 25c4 2 6 5 6 9 0 5-4 9-10 10 4-2 7-6 7-10 0-3-1-6-3-9Z' },
+    ],
     motiv: 'a boiled egg standing in an egg cup, seen from the side' },
   { wort: 'fruit',      gebiet: 'essen', motiv: 'a bowl seen from the side, filled with an apple, a pear and a bunch of grapes' },
   { wort: 'ham',        gebiet: 'essen', motiv: 'two overlapping oval slices of ham lying flat, seen from above' },
   { wort: 'plum',       gebiet: 'essen', motiv: 'one plum seen from the front, with a short stalk and one leaf, and a vertical groove' },
   { wort: 'salad',      gebiet: 'essen', motiv: 'a bowl seen from the side, heaped with leaves of lettuce' },
   { wort: 'strawberry', gebiet: 'essen',
-    pfad: 'M32 58c-9-4-16-13-16-22 0-5 4-9 9-9 2 0 5 1 7 3 2-2 5-3 7-3 5 0 9 4 9 9 0 9-7 18-16 22ZM30 6c0-1 1-2 2-2s2 1 2 2v6l8-3-2 6 7 1-8 5H27l-8-5 7-1-2-6 8 3Zm-4 30a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm12 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-6 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z',
+    bild: [
+      { f:'gruen',      d:'M32 8c1 4 1 7 1 9h-2c0-2 0-5 1-9Z' },
+      { f:'gruen',      d:'M32 20c-6-8-14-8-19-6 2 6 8 10 14 10h10c6 0 12-4 14-10-5-2-13-2-19 6Z' },
+      { f:'rot',        d:'M32 24c9 0 17 5 17 12 0 9-9 20-17 24-8-4-17-15-17-24 0-7 8-12 17-12Z' },
+      { f:'rotDunkel',  d:'M38 25c7 2 11 6 11 11 0 9-9 20-17 24 6-6 12-15 12-22 0-5-2-10-6-13Z' },
+      { f:'gelb',       d:'M25 34a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm15 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+    ],
     motiv: 'one strawberry seen from the front, pointing down, with a leafy crown and seed dots' },
   { wort: 'sweets',     gebiet: 'essen', motiv: 'three wrapped sweets with twisted ends, lying flat, seen from above' },
   { wort: 'tea',        gebiet: 'essen',
-    pfad: 'M10 20h34v18a17 17 0 0 1-34 0Zm36 4h6a9 9 0 0 1 0 18h-3a24 24 0 0 0 1-6v-1h2a4 4 0 0 0 0-8h-6ZM6 52h44v6H6Z',
+    bild: [
+      { f:'grau',       d:'M6 52h44v6H6Z' },
+      { f:'rot',        d:'M10 20h34v18a17 17 0 0 1-34 0Z' },
+      { f:'rotDunkel',  d:'M36 20h8v18a17 17 0 0 1-17 17c9-2 9-9 9-17Z' },
+      { f:'rot',        d:'M46 24h6a9 9 0 0 1 0 18h-4a20 20 0 0 0 2-6h2a4 4 0 0 0 0-8h-6Z' },
+      { f:'braun',      d:'M14 24h26v6a13 13 0 0 1-26 0Z' },
+    ],
     motiv: 'a teacup on a saucer, seen from the side, with a teabag string over the rim' },
   { wort: 'tomato',     gebiet: 'essen',
-    pfad: 'M12 36c0-11 9-19 20-19s20 8 20 19-9 19-20 19-20-8-20-19Zm18-24c0-3 1-5 2-6 1 1 2 3 2 6l7-4-3 7 8 1-7 4 4 5-8-2-3 6-3-6-8 2 4-5-7-4 8-1-3-7Z',
+    bild: [
+      { f:'rot',        d:'M32 20c12 0 21 8 21 18s-9 18-21 18-21-8-21-18 9-18 21-18Z' },
+      { f:'rotDunkel',  d:'M40 22c8 3 13 9 13 16 0 9-9 18-21 18 12-2 19-9 19-18 0-7-4-13-11-16Z' },
+      { f:'gruen',      d:'M32 12c1 0 2 2 2 5l7-3-2 6 8 1-8 4 3 5-8-2-2 6-3-6-8 2 3-5-8-4 8-1-2-6 7 3c0-3 1-5 3-5Z' },
+      { f:'licht',      d:'M19 32c2-4 6-6 10-6 2 0 2 3 0 3-4 1-6 2-8 5-1 2-3 0-2-2Z' },
+    ],
     motiv: 'one tomato seen from the front, with a five-pointed star of leaves on top' },
   { wort: 'water',      gebiet: 'essen',
-    pfad: 'M14 12h36l-4 42a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6Zm3 22h30l-2 20a2 2 0 0 1-2 2H21a2 2 0 0 1-2-2Z',
+    bild: [
+      { f:'grau',       d:'M14 12h36l-4 42a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6Z' },
+      { f:'blau',       d:'M17 30h30l-2 24a4 4 0 0 1-4 4H23a4 4 0 0 1-4-4Z' },
+      { f:'blauDunkel', d:'M17 30h30l-1 6H18Z' },
+      { f:'licht',      d:'M22 16h4l2 38h-4Z' },
+    ],
     motiv: 'a plain glass half filled with water, seen from the side' },
   // --- In der Schule ---
   { wort: 'board',            gebiet: 'schule',
-    pfad: 'M4 6h56v32H4Zm2 32h52v4H6ZM14 42l-6 18h6l4-14Zm36 0 6 18h-6l-4-14Z',
+    bild: [
+      { f:'braun',      d:'M2 6h60v38H2Z' },
+      { f:'gruen',      d:'M6 10h52v30H6Z' },
+      { f:'braun',      d:'M14 44l-6 16h6l4-12Zm36 0 6 16h-6l-4-12Z' },
+      { f:'licht',      d:'M12 18h26v3H12Zm0 8h34v3H12Zm0 8h18v3H12Z' },
+    ],
     motiv: 'a classroom board on two legs, seen from the front, empty' },
   { wort: 'book',             gebiet: 'schule',
-    pfad: 'M3 14c10-3 19-2 25 4v34c-6-6-15-7-25-4Zm58 0c-10-3-19-2-25 4v34c6-6 15-7 25-4Z',
+    bild: [
+      { f:'blauDunkel', d:'M29 14h6v38h-6Z' },
+      { f:'blau',       d:'M3 12c10-3 19-2 26 4v34c-7-6-16-7-26-4Z' },
+      { f:'blau',       d:'M61 12c-10-3-19-2-26 4v34c7-6 16-7 26-4Z' },
+      { f:'creme',      d:'M8 18c7-2 13-1 18 3v27c-5-4-11-5-18-3Zm48 0c-7-2-13-1-18 3v27c5-4 11-5 18-3Z' },
+    ],
     motiv: 'an open book seen from the front, both pages blank' },
   { wort: 'chair',            gebiet: 'schule',
-    pfad: 'M16 4h26a4 4 0 0 1 4 4v26H12V8a4 4 0 0 1 4-4Zm-6 30h44v8H10Zm4 8h8v18h-8Zm28 0h8v18h-8Z',
+    bild: [
+      { f:'braun',      d:'M16 4h26a5 5 0 0 1 5 5v25H11V9a5 5 0 0 1 5-5Z' },
+      { f:'braunDunkel',d:'M8 34h48v9H8Z' },
+      { f:'braun',      d:'M13 43h8v17h-8Zm30 0h8v17h-8Z' },
+      { f:'creme',      d:'M18 11h22v4H18Zm0 8h22v4H18Z' },
+    ],
     motiv: 'a simple wooden chair with a straight back, seen from the side' },
   { wort: 'class/classroom',  gebiet: 'schule', motiv: 'a classroom seen from the front: a board on the wall and two desks with chairs' },
   { wort: 'pen/pencil',       gebiet: 'schule', motiv: 'a pencil and a pen lying crossed over each other, seen from above' },
@@ -651,10 +824,24 @@ export const BILDER = [
   { wort: 'jeans',    gebiet: 'kleidung', motiv: 'a pair of jeans lying flat, seen from the front, with pockets and a belt loop' },
   { wort: 'pullover', gebiet: 'kleidung', motiv: 'a knitted pullover lying flat, seen from the front, arms spread' },
   { wort: 'shirt',    gebiet: 'kleidung',
-    pfad: 'M22 10h20l14 8-6 12-6-3v27H20V27l-6 3-6-12Z',
+    bild: [
+      { f:'blau',       d:'M22 10h20l14 8-6 13-6-3v28H20V28l-6 3-6-13Z' },
+      { f:'blauDunkel', d:'M42 10l14 8-6 13-6-3v28h-8V10Z' },
+      { f:'creme',      d:'M26 10h12l-6 8Z' },
+      { f:'licht',      d:'M31 28h2v3h-2Zm0 8h2v3h-2Zm0 8h2v3h-2Z' },
+    ],
     motiv: 'a shirt with a collar and buttons lying flat, seen from the front' },
   { wort: 'shoes',    gebiet: 'kleidung',
-    pfad: 'M4 40c0-3 2-6 5-7l3-9h5l1 8 10 4c3 1 4 3 4 6v3H4Zm28 0c0-3 2-6 5-7l3-9h5l1 8 10 4c3 1 4 3 4 6v3H32Z',
+    bild: [
+      { f:'rot',        d:'M6 30c0-2 2-4 4-4h4l3 9 10 4c3 1 4 3 4 6v2H5Z' },
+      { f:'licht',      d:'M5 47h26v5H5Z' },
+      { f:'tinte',      d:'M5 51h26v2H5Z' },
+      { f:'tinte',      d:'M12 31h9v2h-9Zm2 5h9v2h-9Z' },
+      { f:'rot',        d:'M35 30c0-2 2-4 4-4h4l3 9 10 4c3 1 4 3 4 6v2H34Z' },
+      { f:'licht',      d:'M34 47h26v5H34Z' },
+      { f:'tinte',      d:'M34 51h26v2H34Z' },
+      { f:'tinte',      d:'M41 31h9v2h-9Zm2 5h9v2h-9Z' },
+    ],
     motiv: 'a pair of lace-up shoes standing side by side, seen from the side' },
   // --- Menschen und Familie ---
   { wort: 'boy',     gebiet: 'menschen', motiv: 'a boy standing, seen from the front, short hair, arms at his sides' },

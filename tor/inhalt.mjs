@@ -2801,6 +2801,33 @@ console.log('\n  Tor `englisch`');
       console.error('\n  englisch ROT: die Rahmenrechnung (E7) misst falsch.');
       process.exit(1);
     }
+    /* Kasten UND Farbtafel eines mehrteiligen Bildes.
+     *
+     * Seit die Zeichnungen aus mehreren Flaechen bestehen, ist der Kasten
+     * die Vereinigung aller - eine einzelne Flaeche zu messen hiesse, ein
+     * Bild an seinem Stiel zu beurteilen. Und die Farben werden gleich
+     * mitgezaehlt: ein Name, den `BILDFARBEN` nicht kennt, faellt beim
+     * Zeichnen still auf Tinte zurueck, und das Bild sieht aus wie
+     * vorher - einfarbig. Genau das war der Anlass dieser Runde. */
+    const bildKasten = (stuecke) => {
+      let links = 1e9, oben = 1e9, rechts = -1e9, unten = -1e9, fremd = null;
+      const farben = new Set(), unbekannt = new Set();
+      for (const s of (stuecke || [])) {
+        if (EN.BILDFARBEN[s.f]) farben.add(s.f); else unbekannt.add(String(s.f));
+        const k = pfadKasten(s.d);
+        if (k.fremd) { fremd = k.fremd; continue; }
+        links = Math.min(links, k.links); oben = Math.min(oben, k.oben);
+        rechts = Math.max(rechts, k.rechts); unten = Math.max(unten, k.unten);
+      }
+      return { links, oben, rechts, unten, fremd, farben, unbekannt,
+               teile: (stuecke || []).length };
+    };
+    /* Zwei Farben ist das Mindeste, und die Zahl ist keine Schoenheit:
+       EINE Farbe heisst, dass das Bild wieder eine Silhouette ist - und
+       genau deshalb sind Apfel und Tomate als Umriss kaum zu
+       unterscheiden gewesen. Anteilig laesst sich das nicht sagen; es ist
+       eine Aussage ueber die Sache und nicht ueber eine Groesse. */
+    const FARBEN_MIN = 2;
     const vls = EN.vorratLesen();
     /* Vier, weil der Bildschirm vier Karten zeigt: das Ziel und drei
        Ablenker. Bei dreien stünde eine Karte leer oder doppelt da, und
@@ -2819,11 +2846,22 @@ console.log('\n  Tor `englisch`');
       if (x.sorte !== 'bild')
         ef.push(`„${x.wort}" hat die Sorte „${x.sorte}" — dann kommen die Ablenker `
           + 'aus der falschen Menge');
-      if (gesehen.has(x.pfad))
-        ef.push(`„${x.wort}" und „${gesehen.get(x.pfad)}" sind dieselbe Zeichnung — `
+      /* Verglichen wird die GANZE Zeichnung, nicht eine Flaeche daraus:
+         zwei Bilder duerfen sich einen Kreis teilen, nur nicht alles. */
+      const abdruck = (x.bild || []).map(s => `${s.f}|${s.d}`).join('~');
+      if (gesehen.has(abdruck))
+        ef.push(`„${x.wort}" und „${gesehen.get(abdruck)}" sind dieselbe Zeichnung — `
           + 'zwei Karten sähen gleich aus, und eine richtige Antwort gälte als falsch');
-      gesehen.set(x.pfad, x.wort);
-      const k = pfadKasten(x.pfad);
+      gesehen.set(abdruck, x.wort);
+      const k = bildKasten(x.bild);
+      if (k.unbekannt.size)
+        ef.push(`die Zeichnung „${x.wort}" nennt die Farbe `
+          + `„${[...k.unbekannt].join('", „')}", und die steht nicht in BILDFARBEN — `
+          + 'sie wird beim Zeichnen still zu Tinte, und das Bild sieht aus wie früher');
+      if (k.farben.size < FARBEN_MIN)
+        ef.push(`die Zeichnung „${x.wort}" hat nur ${k.farben.size} Farbe — dann ist sie `
+          + 'wieder eine Silhouette, und ein Apfel ist von einer Tomate kaum zu '
+          + 'unterscheiden');
       if (k.fremd) { ef.push(`die Zeichnung „${x.wort}" benutzt den Befehl „${k.fremd}", `
         + 'den die Rahmenrechnung nicht kennt — sie misst ab dort Unsinn'); continue; }
       if (k.links < RB_L - 0.01 || k.oben < RB_O - 0.01
@@ -2834,7 +2872,7 @@ console.log('\n  Tor `englisch`');
       /* Anteilig am Rahmen und nicht in absoluten Punkten (Regel 2):
          wird der Rahmen einmal groesser, wandert die Grenze mit.
          55 % ist keine Schoenheitsgrenze, sondern der Abstand zum
-         kleinsten, das heute steht - „dog" mit 63 %. Wer darunter
+         kleinsten, das heute steht - „egg" mit 66 %. Wer darunter
          faellt, steht als Fleck neben drei ausgewachsenen Bildern. */
       const fuellt = Math.max(k.rechts - k.links, k.unten - k.oben) / Math.max(RB_R, RB_U);
       if (fuellt < 0.55)
@@ -2846,7 +2884,7 @@ console.log('\n  Tor `englisch`');
        `ablenkerFuer` waehlt den Topf an der Sorte, und diese Weiche ist
        eine Zeile, die still umkippt. Stünden Farbflecken neben einem
        Apfel, waere die Aufgabe ohne Englisch zu loesen. */
-    ablenkerPruefen(vls, (s) => ef.push(s), (x, y) => !y.pfad
+    ablenkerPruefen(vls, (s) => ef.push(s), (x, y) => !(y.bild && y.bild.length)
       && `„${x.wort}" bekommt einen Ablenker ohne Zeichnung — ein leerer Kasten `
          + 'ist als Antwort nicht zu erkennen');
     if (ef.length) {
@@ -2855,14 +2893,19 @@ console.log('\n  Tor `englisch`');
       process.exit(1);
     }
     const kleinstes = vls.reduce((a, b) => {
-      const ka = pfadKasten(a.pfad), kb = pfadKasten(b.pfad);
+      const ka = bildKasten(a.bild), kb = bildKasten(b.bild);
       return Math.max(kb.rechts - kb.links, kb.unten - kb.oben)
            < Math.max(ka.rechts - ka.links, ka.unten - ka.oben) ? b : a;
     });
-    const kk = pfadKasten(kleinstes.pfad);
+    const kk = bildKasten(kleinstes.bild);
+    const flaechen = vls.reduce((n, x) => n + (x.bild || []).length, 0);
+    const jeFarbe = vls.reduce((n, x) => n + bildKasten(x.bild).farben.size, 0);
     console.log(`    Lies das Wort (E7): ${vls.length} von ${EN.BILDER.length} Wörtern `
-      + `gezeichnet · jede Zeichnung eigen und im Rahmen „${EN.BILD_RAHMEN}" · kleinste `
-      + `„${kleinstes.wort}" mit ${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
+      + `gezeichnet · ${flaechen} Flächen aus ${Object.keys(EN.BILDFARBEN).length} Farben, `
+      + `im Schnitt ${(jeFarbe / vls.length).toFixed(1)} Farben je Bild (nötig `
+      + `${FARBEN_MIN}) · jede Zeichnung eigen und im Rahmen „${EN.BILD_RAHMEN}" · `
+      + `kleinste „${kleinstes.wort}" mit `
+      + `${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
         / Math.max(RB_R, RB_U) * 100).toFixed(0)} % (Grenze 55 %)`);
 
     /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 fuer Fiona) ----------
@@ -2917,13 +2960,20 @@ console.log('\n  Tor `englisch`');
       if (!inPaaren.has(wort))
         lbf.push(`für „${wort}" ist eine Zeichnung da, aber kein Lautpaar fragt danach `
           + '— sie liegt für immer ungenutzt da');
+    const abdruckVon = (st) => (st || []).map(s => `${s.f}|${s.d}`).join('~');
     for (const paar of malbar) {
       const a = EN.bildFuerLaut(paar.a), b = EN.bildFuerLaut(paar.b);
-      if (a === b)
+      if (abdruckVon(a) === abdruckVon(b))
         lbf.push(`„${paar.a}/${paar.b}" zeigt zweimal dieselbe Zeichnung — dann ist `
           + 'jeder Tipp so richtig wie der andere');
       for (const [wort, d] of [[paar.a, a], [paar.b, b]]) {
-        const k = pfadKasten(d);
+        const k = bildKasten(d);
+        if (k.unbekannt.size)
+          lbf.push(`die Zeichnung „${wort}" nennt die Farbe `
+            + `„${[...k.unbekannt].join('", „')}", und die steht nicht in BILDFARBEN`);
+        if (k.farben.size < FARBEN_MIN)
+          lbf.push(`die Zeichnung „${wort}" hat nur ${k.farben.size} Farbe — dann ist sie `
+            + 'wieder eine Silhouette, und zwei davon nebeneinander sind zwei Umrisse');
         if (k.fremd) { lbf.push(`die Zeichnung „${wort}" benutzt den Befehl „${k.fremd}", `
           + 'den die Rahmenrechnung nicht kennt'); continue; }
         if (k.links < RB_L - 0.01 || k.oben < RB_O - 0.01
@@ -2942,7 +2992,7 @@ console.log('\n  Tor `englisch`');
        BEIDE Pfade. Ohne den zweiten wuesste der Bildschirm nicht, was er
        auf die andere Karte malen soll, und zeigte dort das Wort. */
     for (const x of EN.vorratLaute({ nurMalbar: true }))
-      if (!x.pfad || !x.gegenPfad)
+      if (!(x.bild && x.bild.length) || !(x.gegenBild && x.gegenBild.length))
         lbf.push(`dem Lautstück „${x.id}" fehlt eine der beiden Zeichnungen — dann `
           + 'stünde ein Bild neben einem Wort, und die Antwort wäre „das mit dem Bild"');
     if (lbf.length) {
@@ -2957,7 +3007,8 @@ console.log('\n  Tor `englisch`');
       + `${EN.LAUTPAARE.length} Paaren gemalt (nötig ${NOETIG_BILD}, aus spiel.js) · `
       + `${[...jeStolperBild].map(([s, n]) => `${s} ${n}`).join(', ')} · `
       + `${Object.keys(EN.LAUTBILDER).length} eigene Zeichnungen, `
-      + `${malbar.length * 2 - Object.keys(EN.LAUTBILDER).length} aus dem Bildplan`);
+      + `${malbar.length * 2 - Object.keys(EN.LAUTBILDER).length} aus dem Bildplan · `
+      + `${Object.values(EN.LAUTBILDER).reduce((n, s) => n + s.length, 0)} Flächen`);
   }
 }
 
