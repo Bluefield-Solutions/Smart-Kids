@@ -3213,6 +3213,28 @@ console.log('\n  Tor `flaggen`');
       if (ohneRand.includes(verboten))
         { ff.push(`${f.a3} zeichnet mit „${verboten}" statt mit einem Pfad — `
           + 'dann misst `passt` das Wasserzeichen nicht und meldet nichts'); break; }
+    /* Und der Inhalt jedes `d`, nicht nur die Art des Elements.
+     *
+     * Ein Pfad, der nicht mit `M` anfaengt oder ein fremdes Zeichen
+     * traegt, ist fuer den Browser KEIN Fehler: er zeichnet ihn einfach
+     * nicht. Die Flagge waere dann leer, das SVG heil, und alle Zaehlungen
+     * darunter stimmten weiter - sie zaehlen Elemente, nicht Bilder.
+     *
+     * Gefunden hat es die Gegenprobe „eine Flagge zeichnet wieder mit
+     * Rechtecken statt mit Pfaden": ihr Eingriff setzt `<!--` vor den
+     * Pfad, und das Tor blieb gruen. Es prueft seither nicht mehr nur,
+     * WOMIT gezeichnet wird, sondern auch WAS. */
+    for (const m of svg.matchAll(/ d="([^"]*)"/g)) {
+      const d = m[1].trim();
+      if (!/^[Mm][\s\-0-9.]/.test(d))
+        ff.push(`${f.a3} hat einen Pfad, der nicht mit einem Setzbefehl anfängt `
+          + `(„${d.slice(0, 24)}…") — der Browser zeichnet ihn nicht, und die Flagge `
+          + 'bliebe leer, ohne dass etwas rot wird');
+      else if (/[^MmLlHhVvCcSsQqTtAaZz0-9.,\-\s]/.test(d))
+        ff.push(`${f.a3} hat einen Pfad mit einem Zeichen, das kein Pfadbefehl ist `
+          + `(„${d.slice(0, 24)}…") — der Browser bricht dort ab, und der Rest der `
+          + 'Flagge fehlt, ohne dass etwas rot wird');
+    }
   }
 
   /* Die eigentliche Pruefung: sieht man den Unterschied?

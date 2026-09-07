@@ -6002,9 +6002,17 @@ export const PROBEN = [
    *    Eine Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1) -
    *    wer eine Wirkung misst, schaltet sie zuerst ab. */
   { n:'die Englischkarten laufen über den Rand', tor:'passt', bauen:true, datei:V,
-    such:'.wortbild{display:block;width:76px;height:76px;fill:var(--tinte)}',
-    ersatz:'.wortbild{display:block;width:376px;height:76px;fill:var(--tinte)}',
-    an:{ ...DIST, text:'width:376px' },
+    /* Der Eingriff macht die KARTE breit und nicht die Zeichnung darin.
+       Der erste Anlauf verbreiterte `.wortbild` auf 376 Punkte, und `passt`
+       blieb gruen: `.engwahl` bricht um (`flex-wrap`), und ein SVG, das
+       ueber seinen Knopf hinausragt, schneidet der Knopf ab - beides ohne
+       einen einzigen Punkt ausserhalb des Fensters. Die Probe bewies damit
+       nichts, und der Laeufer hat es gesagt: TOR BLEIBT GRUEN.
+       900 Punkte sind mehr als die 844 des Zielgeraets, und daran hilft
+       kein Umbruch: eine Karte je Zeile, und jede ragt hinaus. */
+    such:'  border-radius:var(--rund-karte);min-width:124px;min-height:124px;',
+    ersatz:'  border-radius:var(--rund-karte);min-width:900px;min-height:124px;',
+    an:{ ...DIST, text:'min-width:900px' },
     sagt:'läuft über den Rand' },
 
   /* --- Die vier Satz-Abzeichen (E9b) ----------------------------------

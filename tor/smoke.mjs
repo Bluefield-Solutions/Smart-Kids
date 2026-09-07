@@ -4512,7 +4512,13 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            bliebe der Bildschirm heil und die Aufgabe waere geloest, bevor
            sie gestellt ist - und keine andere Zusage faengt das ab. */
         const frage = await p.$eval('.schirm.da .frage', e => e.textContent).catch(() => '');
-        if (new RegExp(`\\\\b${auf.wort}\\\\b`, 'i').test(frage))
+        /* `\\b` und nicht `\\\\b`: im Schablonentext ist `\\\\b` ein
+           GESCHUETZTER Backslash gefolgt von einem b - also der Ausdruck
+           „Backslash, dann b" und nicht die Wortgrenze. Die Pruefung hat
+           damit nie zutreffen koennen, und der Bildschirm sah richtig aus.
+           Gefunden hat es die Gegenprobe „das gesuchte Wort steht in der
+           Frage": TOR BLEIBT GRUEN. */
+        if (new RegExp(`\\b${auf.wort}\\b`, 'i').test(frage))
           merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" steht in der `
             + `Frage („${frage.trim()}") — dann ist nichts mehr zu hören`));
         /* Und die beiden Karten sind das PAAR. Eine dritte oder eine

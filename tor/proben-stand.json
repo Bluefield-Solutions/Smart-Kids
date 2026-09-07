@@ -1721,9 +1721,9 @@
       "s": 6
     },
     "die Ablenker der Englischebene kommen aus der falschen Sorte": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
-      "s": 6
+      "s": 17
     },
     "das gesuchte englische Wort steht auf dem Bildschirm": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1731,9 +1731,9 @@
       "s": 28
     },
     "ohne englische Stimme steht das Wort nirgends": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
-      "s": 19
+      "s": 27
     },
     "die verbrauchten Farbflecken verlieren ihre Farbe": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1741,14 +1741,14 @@
       "s": 21
     },
     "das englische Wort wird deutsch ausgesprochen": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
-      "s": 21
+      "s": 16
     },
     "die Englischebene sagt das Wort gar nicht mehr": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
-      "s": 54
+      "s": 385
     },
     "ein Wort fällt aus dem Bildplan heraus": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
@@ -1905,6 +1905,16 @@
       "zeit": "2026-09-07",
       "s": 98
     },
+    "die Lautpaare sagen nicht mehr, woran man sie unterscheidet": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 206
+    },
+    "das Lautpaar zeigt zweimal dasselbe Wort": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 206
+    },
     "ein Lautpaar steht unter der falschen Stolperstelle": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
       "zeit": "2026-09-07",
@@ -1962,6 +1972,36 @@
     },
     "der Legevorrat teilt sich den Leitner-Stand": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "beim Lesen wird das Wort doch vorgelesen": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 208
+    },
+    "beim Lesen steht das Wort nicht mehr in der Frage": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 207
+    },
+    "zwei englische Wörter teilen sich eine Zeichnung": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "eine Zeichnung läuft aus ihrem Rahmen": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "die Rahmenrechnung verliert ihre Spiegelung": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "die Ablenker beim Lesen kommen aus dem Hörvorrat": {
+      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
       "s": 5
     },
