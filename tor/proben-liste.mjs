@@ -5576,10 +5576,16 @@ export const PROBEN = [
    * ganzen Lauf, nur um die Stelle zu finden. */
   { n:'die Flaggenebene verliert ihren Bildschirm', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
+    /* `ohneSofort`, weil der Eingriff MEHRERE Pruefungen ausloest: die
+       Ebene faellt bei jedem der vier Profile aus, und dazu meldet der
+       Lauf am Ende, dass Fiona zu wenig vorgelesen bekam. Mit `--sofort`
+       ist die erste Meldung die, die gerade zuerst faellt - und nicht
+       die, um die es geht. */
+    ohneSofort:true,
     such:"englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,",
     ersatz:"englisch: englischschirm, freunde: freundeschirm,",
     an:{ ...DIST, fehlt:'flaggen: flaggenschirm' },
-    sagt:'lea/flaggen:europa' },
+    sagt:'/flaggen:europa: ' },
 
   /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
    *
