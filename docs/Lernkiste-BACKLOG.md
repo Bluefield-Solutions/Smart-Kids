@@ -518,6 +518,55 @@ Rechnung), der Rauchtest spielt sie einmal durch.
 
 ---
 
+### Q55 · Der Faden nach Luxemburg — gemessen, versucht, zurückgenommen
+
+**Der Befund am Bild.** Auf „Auf die Karte" (Europa) liegen zwei
+Trefferköpfe weit draußen im Atlantik, mit langen Linien quer über
+Frankreich nach Belgien und Luxemburg. Das sieht aus wie ein Fehler.
+
+**Gemessen** (`npm run ziehen -- --nur=treffer`): Karte 334 × 276,
+längster Faden **64 pt = 19 % der Kartenbreite**, engster Kopfabstand
+100,3 pt, kein Verzicht. Die Suche steht in `nadelplanFuer`: ein Kopf
+braucht eine freie Scheibe von 44 pt, die **auf keinem fremden Land**
+liegen darf, und der Radius wächst von 44 in Zehnerschritten bis 170.
+
+**Zwei Reparaturen versucht, beide zurückgenommen:**
+
+| Versuch | Ergebnis |
+|---|---|
+| Abstand **anteilig** statt absolut (20 % der Kartenbreite statt fester 170) | ändert heute keine Zahl — 170 wird nie erreicht, weil der erste freie Platz schon bei 53 bzw. 64 liegt |
+| Faden bevorzugen, der **kein fremdes Land kreuzt**; dazu der engste Fall zuerst | Faden bleibt bei 64, Kopfabstand fällt von 100,3 auf **81,7** — eine Zahl gegen eine schlechtere getauscht |
+
+**Warum es so bleiben muss, und das ist der eigentliche Ertrag dieser
+Messung: Luxemburg hat kein Meer.** Die Bedingung „der Kopf liegt auf
+keinem fremden Land" ist für ein eingeschlossenes Land erst dort erfüllbar,
+wo die nächste offene See beginnt — und jede Linie dorthin *muss* über
+Nachbarländer laufen. Die 64 pt sind nicht die Folge einer schlechten
+Suche, sondern der **kürzeste** Abstand, an dem die Regel überhaupt
+erfüllbar ist; der Radius wächst von innen nach außen, der erste Treffer
+gewinnt. Es gibt nichts zu verkürzen.
+
+Damit ist es keine Platzierungsfrage mehr, sondern eine Entwurfsfrage mit
+genau drei Antworten:
+
+1. **So lassen.** Der lange Faden ist der Preis dafür, dass ein Kopf nie
+   auf einem fremden Land liegt — und diese Regel schützt die Antwort:
+   ein Kopf auf Frankreich wäre beim Tippen nicht zu unterscheiden.
+2. **Den Kopf kleiner machen** (`MIN_PT`, heute 44). Kleiner heißt näher,
+   heißt auch: schwerer zu treffen. 44 pt sind die gemessene Daumengröße,
+   das ist keine Zahl, an der man dreht.
+3. **Köpfe auf fremdem Land erlauben**, dafür mit deutlichem Rand und
+   Vorrang beim Treffertest. Das ist die einzige Antwort, die den Faden
+   wirklich kurz macht — und die einzige, die eine Entscheidung braucht,
+   weil sie eine Zusage aufgibt.
+
+*Offen ist nur (3), und es ist eine Entscheidung am Gerät, keine
+Rechnung.* Was **nicht** offen ist: dass das Tor den Faden nur als Ratsche
+führt (`tor/nadeln-stand.json`, 64 pt) und keine anteilige Obergrenze
+kennt. Solange (1) gilt, ist das richtig so — eine Obergrenze, die
+niemand unterschreiten kann, würde nur Verzicht erzwingen, und Verzicht
+heißt: ein Land, das gar nicht mehr zu treffen ist.
+
 ### Q54 · Drei Gegenproben im Forscherbuch beweisen nichts mehr — GEFAHREN (v46x)
 
 Der Probenlauf auf v451 hat sie gefunden — sie waren seit **v420** nicht
