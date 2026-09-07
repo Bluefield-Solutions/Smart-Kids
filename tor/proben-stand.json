@@ -1996,9 +1996,9 @@
       "s": 100
     },
     "ein Lautpaar verliert eine seiner beiden Zeichnungen": {
-      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "commit": "b67946a1921a971b09617766fb99cafed23c7ece",
       "zeit": "2026-09-07",
-      "s": 17
+      "s": 16
     },
     "ein gemaltes Lautpaar zeigt zweimal dasselbe Bild": {
       "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
@@ -2011,7 +2011,12 @@
       "s": 5
     },
     "eine Lautzeichnung gehört zu keinem Paar": {
-      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "commit": "b67946a1921a971b09617766fb99cafed23c7ece",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
+    "eine Zeichnung nennt eine Farbe, die es nicht gibt": {
+      "commit": "b67946a1921a971b09617766fb99cafed23c7ece",
       "zeit": "2026-09-07",
       "s": 5
     },
@@ -2031,7 +2036,7 @@
       "s": 5
     },
     "eine Zeichnung läuft aus ihrem Rahmen": {
-      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "commit": "b67946a1921a971b09617766fb99cafed23c7ece",
       "zeit": "2026-09-07",
       "s": 5
     },
@@ -2041,7 +2046,7 @@
       "s": 5
     },
     "die Ablenker beim Lesen kommen aus dem Hörvorrat": {
-      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "commit": "b67946a1921a971b09617766fb99cafed23c7ece",
       "zeit": "2026-09-07",
       "s": 5
     },

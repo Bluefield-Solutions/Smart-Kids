@@ -5988,9 +5988,12 @@ export const PROBEN = [
       + "    { f:'blauDunkel', d:'M19 21h11v9H12Zm15 0h6l6 9H34Z' },\n"
       + "    { f:'gelbDunkel', d:'M2 40h60v6H2Z' },\n"
       + "    { f:'tinte',      d:'M14 42a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm36 0a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z' },\n"
-      + "    { f:'grau',       d:'M14 46a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm36 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },\n"
-      + "    { f:'weg',        d:'M12 36c0-13 9-22 20-22s20 9 20 22Z' },",
-    an:{ datei:'src/inhalt/englisch.js', text:"f:'weg'," },
+      + "    { f:'grau',       d:'M14 46a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm36 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },",
+    /* KEINE Merkflaeche obendrauf: der Abdruck muss GENAU der von `cab`
+       sein, sonst sind die beiden Bilder verschieden und die Probe
+       prueft nichts. Angekommen ist der Eingriff daran, dass die Kuppe
+       der Muetze verschwunden ist. */
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"M12 36c0-13 9-22 20-22s20 9 20 22Z" },
     sagt:'zweimal dieselbe Zeichnung' },
 
   /* 6. UND DIE ZAHL, unter der sich die Ebene ausblendet: sie steht in
@@ -6039,11 +6042,13 @@ export const PROBEN = [
    *    Gestaltungsentscheidung. */
   { n:'eine Zeichnung ist wieder einfarbig', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"    { f:'blau', d:'M17 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },",
+    such:"    { f:'blau', d:'M17 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },\n"
+      + "    { f:'gelb', d:'M47 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },",
     ersatz:"    { f:'rot', d:'M17 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },\n"
-      + "    { f:'rot', d:'M47 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },\n"
-      + "    { f:'weg', d:'M0 0Z' },",
-    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'weg', d:'M0 0Z' }," },
+      + "    { f:'rot', d:'M47 36a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },",
+    /* BEIDE Baelle, nicht einer: bliebe der gelbe stehen, haette `three`
+       noch zwei Farben und die Probe bewiese nichts. */
+    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'rot', d:'M17 36a11" },
     sagt:'ist sie wieder eine Silhouette' },
 
   /* --- „Lies das Wort" (E7) --------------------------------------------
@@ -6087,10 +6092,15 @@ export const PROBEN = [
     such:"      { f:'gelb',       d:'M6 46 50 16c5 3 8 9 8 15v15Z' },\n"
       + "      { f:'gelbDunkel', d:'M6 46h52v6H6Z' },\n"
       + "      { f:'creme',      d:'M22 40a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm18-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },",
-    ersatz:"      { f:'braun',      d:'M8 38c0-13 11-22 24-22s24 9 24 22v10a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },\n"
-      + "      { f:'braunDunkel',d:'M8 44h48v4a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5Z' },\n"
-      + "      { f:'creme',      d:'M18 30l6-8 3 2-6 8Zm11 0 6-8 3 2-6 8Zm11 0 6-8 3 2-6 8Z' },",
-    an:{ datei:'src/inhalt/englisch.js', text:"'essen',\n    bild: [\n      { f:'braun',      d:'M8 38c0-13" },
+    /* Das EI und nicht das Brot: die Flaechen des Brotes sind der Anker
+       der Probe „eine Zeichnung laeuft aus ihrem Rahmen", und ein
+       Suchtext, der nach dem Eingriff zweimal dasteht, macht `inhalt`
+       aus einem anderen Grund rot. Gemeldet vom Laeufer, beim ersten
+       Lauf dieser Probe. */
+    ersatz:"      { f:'wolke',      d:'M14 34c0-11 8-20 18-20 4 0 8 2 11 2 8 0 13 5 13 11 0 5-3 8-6 10 1 7-5 12-11 12-5 0-8-2-10-6-7 2-15-2-15-9Z' },\n"
+      + "      { f:'gelb',       d:'M32 24a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z' },\n"
+      + "      { f:'gelbDunkel', d:'M36 25c4 2 6 5 6 9 0 5-4 9-10 10 4-2 7-6 7-10 0-3-1-6-3-9Z' },",
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"M6 46 50 16c5 3 8 9 8 15v15Z" },
     sagt:'sind dieselbe Zeichnung' },
 
   /* 4. EINE ZEICHNUNG LAEUFT AUS DEM RAHMEN. `<svg>` schneidet an seinem
