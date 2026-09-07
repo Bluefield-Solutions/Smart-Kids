@@ -2774,12 +2774,23 @@ console.log('\n  Tor `englisch`');
     for (const [d, soll] of [['M0 0h64v64H0Z', '0,0,64,64'],
                              ['M8 8h48v48H8Z', '8,8,56,56'],
                              ['M32 8a24 24 0 1 0 0 48 24 24 0 1 0 0-48Z', '8,8,56,56'],
-                             /* Ein `s`, dessen gespiegelter Stuetzpunkt das
-                                Mass bestimmt: wird die Spiegelung
-                                weggelassen, misst diese Zeile 8..47 statt
-                                8..56 - der Zweig hat damit eine eigene
-                                Probe und nicht nur eine Zeile Code. */
-                             ['M8 56c0-32 24-48 24-48s24 16 24 48Z', '8,8,56,56']]) {
+                             /* Ein `s`, dessen GESPIEGELTER Stuetzpunkt das
+                                Mass bestimmt: ohne die Spiegelung misst
+                                diese Zeile x bis 42 statt bis 50.
+                                Der erste Anlauf stand hier mit
+                                `M8 56c0-32 24-48 24-48s24 16 24 48Z` und
+                                hat nichts bewiesen - dort faellt der
+                                zweite Stuetzpunkt der ersten Kurve auf
+                                ihren Endpunkt, und die Spiegelung ergibt
+                                denselben Punkt. Die Gegenprobe hat es
+                                gemeldet: TOR BLEIBT GRUEN.
+
+                                DAS SOLL KOMMT AUS DER REFERENZ, nicht aus
+                                dieser Rechnung (Regel 3): die vier Zahlen
+                                sind mit `getBBox()` in Chromium abgelesen,
+                                also an der SVG-Maschine, die die Zeichnung
+                                spaeter wirklich malt. */
+                             ['M32 8C8 8 8 32 32 32S56 56 32 56Z', '14,8,50,56']]) {
       const k = pfadKasten(d);
       const ist = [k.links, k.oben, k.rechts, k.unten].map(v => Math.round(v)).join(',');
       if (ist !== soll) ef.push(`die Rahmenrechnung misst „${d}" als ${ist} statt ${soll} `
