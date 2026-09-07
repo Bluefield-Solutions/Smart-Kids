@@ -4120,7 +4120,12 @@ export const PROBEN = [
     such:'      zeigt: hatKarte(g) ? albumKarte(g) : (rechenTafel(g)',
     ersatz:'      zeigt: hatKarte(g) ? albumKarte(g) : (null',
     an:{ ...DIST, text:'zeigt: hatKarte(g) ? albumKarte(g) : (null' },
-    sagt:'Kapitelseiten nutzen weniger als' },
+    /* Nicht die Fuellung, sondern die TAFEL: nachgemessen faellt die
+       Rechenseite ohne sie auf 67 %, und die Ratsche steht bei 24. Der
+       Rauchtest hat aber eine eigene, genauere Zusage - „keine einzige
+       Rechentafel im Buch, und dann beweist ,kein Befund' hier nichts".
+       Die ist es, die anschlaegt, und sie sagt genauer, was fehlt. */
+    sagt:'keine einzige Rechentafel' },
 
   /* --- B12: ein Reiter ist eine Welt, keine Ebene --------------------
    *

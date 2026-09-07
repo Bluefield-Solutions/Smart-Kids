@@ -201,9 +201,9 @@
       "s": 151
     },
     "die Aufnahme der Landschaft bleibt im Buch stehen": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 6
+      "s": 9
     },
     "die Bank blättert nicht mehr": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -366,9 +366,9 @@
       "s": 270
     },
     "das Buch verliert den Weg zurück in den Vorlauf": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 141
+      "s": 135
     },
     "„Zurück\" aus dem Vorlauf fällt in die Ebenenwahl": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -396,9 +396,9 @@
       "s": 29
     },
     "der Satz zum Mitnehmen fehlt im Buch": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 71
+      "s": 67
     },
     "ein Tipp auf die Albumkarte blaettert den Satz nicht mehr": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -691,9 +691,9 @@
       "s": 12
     },
     "Aufkleber fallen wieder aus dem Buch": {
-      "commit": "821b2b2017160860ebd5e9939f90b5c04a3ea591",
-      "zeit": "2026-09-06",
-      "s": 1
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
+      "zeit": "2026-09-07",
+      "s": 6
     },
     "eine offene Kontinentrunde geht wieder zu": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -786,9 +786,9 @@
       "s": 0
     },
     "das Buch zeigt Karten ohne Umriss": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 72
+      "s": 68
     },
     "der Schalter kürzt keine Schaupause mehr": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -821,9 +821,9 @@
       "s": 3
     },
     "eine Kapitelseite im Buch ist zu hoch für den Bildschirm": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 71
+      "s": 67
     },
     "der leere Kopf nimmt wieder Platz weg": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -996,9 +996,9 @@
       "s": 146
     },
     "bei elf Kacheln bricht der Name wieder auf einen Buchstaben": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 52
+      "s": 99
     },
     "„heute schon geübt\" überlebt den Neustart nicht": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -1236,9 +1236,9 @@
       "s": 20
     },
     "die Buchstabenerkennung nimmt alles an": {
-      "commit": "821b2b2017160860ebd5e9939f90b5c04a3ea591",
-      "zeit": "2026-09-06",
-      "s": 13
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
+      "zeit": "2026-09-07",
+      "s": 18
     },
     "die Sieben verliert ihre Form mit Querstrich": {
       "commit": "821b2b2017160860ebd5e9939f90b5c04a3ea591",
@@ -1266,9 +1266,9 @@
       "s": 7
     },
     "das Soll der Buchstabenerkennung fehlt im Backlog": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 14
+      "s": 6
     },
     "das Diktat zeigt die Vorlage doch": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -1276,9 +1276,9 @@
       "s": 97
     },
     "die Diktat-Frage nennt den gesuchten Buchstaben": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 57
+      "s": 106
     },
     "das Diktat sagt nicht, dass der Ton fehlt": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -1291,9 +1291,9 @@
       "s": 43
     },
     "die Ziffern werden gegen die Buchstaben gehalten": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 61
+      "s": 58
     },
     "auf Anhieb richtig heisst nur noch richtig": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -1421,19 +1421,14 @@
       "s": 42
     },
     "die Buchstabenkarten rutschen wieder zusammen": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
-      "s": 51
+      "s": 49
     },
     "die Vorschauseite verschweigt wieder den Fortschritt": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
       "zeit": "2026-09-07",
       "s": 73
-    },
-    "eine Kapitelseite im Buch ist wieder halb leer": {
-      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
-      "zeit": "2026-09-06",
-      "s": 71
     },
     "jede Ebene bekommt wieder ihr eigenes Kapitel": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
@@ -1621,7 +1616,7 @@
       "s": 30
     },
     "das Buch rollt wieder statt zu blaettern": {
-      "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
+      "commit": "d58e69c006bed8af822f2fae74752d1926001311",
       "zeit": "2026-09-07",
       "s": 67
     },
@@ -1629,16 +1624,6 @@
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
       "zeit": "2026-09-07",
       "s": 67
-    },
-    "der letzte Kapitelreiter steht halb im Streifen": {
-      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
-      "zeit": "2026-09-06",
-      "s": 68
-    },
-    "im Buch stehen wieder alle offenen Abzeichen": {
-      "commit": "737b6a988a46bff6b89739613dd0a76ce2fa308b",
-      "zeit": "2026-09-06",
-      "s": 30
     },
     "das neue Abzeichen wird nicht gesagt": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
