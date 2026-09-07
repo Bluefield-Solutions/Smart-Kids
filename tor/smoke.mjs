@@ -3835,6 +3835,77 @@ async function tippeAntwort(p, wer, ebene, text, weg, wie, eigen = null) {
   await abgeschlossen(p, wer, ebene, /(?!)/, wie, eigen);
 }
 
+/**
+ * Das englische Wort MUSS gesagt worden sein - und WER es hoeren muss,
+ * steht in der Profiltabelle (Zeile „Ton als Gegenstand"), nicht hier
+ * (QS3, Regel 3: das Soll kommt aus der Referenz).
+ *
+ * Es zaehlt deshalb NICHT in `gehoert`: der Zaehler dort meint die
+ * Vorlesehilfe, und die haengt am Profil („Lea bekam eine Aufgabe
+ * vorgelesen, obwohl ihr Profil vorlesen:false sagt"). Hier ist das Wort
+ * die FRAGE beziehungsweise das VORBILD. Wuerde es dort mitgezaehlt,
+ * meldete der Durchgang bei Lea einen Fehler, wo die App genau richtig
+ * ist - und beim Ausschalten ohne Ersatz haette niemand mehr gemessen,
+ * dass sie es ueberhaupt hoert.
+ *
+ * Geprueft wird in BEIDE Richtungen: wer „ja" traegt, muss es hoeren;
+ * wer „nein" traegt, darf es nicht hoeren. Ohne die zweite Haelfte waere
+ * die Zeile eine Notiz und keine Eingabe - man koennte sie auf „nein"
+ * stellen, und nichts wuerde rot.
+ *
+ * STAND SEIT E6 AN ZWEI STELLEN und ist deshalb hier: „Hoeren und
+ * zeigen" und „Sag es" verlangen dasselbe aus verschiedenen Gruenden
+ * (dort die Frage, hier das Vorbild). Zwei Fassungen waeren zwei
+ * Urteile, von denen eines beim naechsten Umbau veraltet - was zweimal
+ * dasteht, veraltet einmal (Regel 6). Der Unterschied steht als Satz im
+ * Aufruf, nicht als zweite Rechnung.
+ */
+async function englischGehoert(p, wer, ebene, wort, wozu){
+  const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
+  const kam = gesagt.some(x => String(x).trim() === wort);
+  if (TON_GEGENSTAND[wer] && !kam)
+    merke('durchgang', new Error(`${wer}/${ebene}: „${wort}" wurde nicht gesagt — ${wozu} `
+      + `(gehört: ${gesagt.join(' | ') || 'nichts'})`));
+  else if (!TON_GEGENSTAND[wer] && kam)
+    merke('durchgang', new Error(`${wer}/${ebene}: „${wort}" wurde gesagt, obwohl die `
+      + 'Profiltabelle für dieses Profil „nein" trägt — dann hängt der Ton nicht an '
+      + 'der Tabelle, sondern am Bildschirm'));
+  else if (kam) gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+}
+
+/**
+ * Was die Sitzung gerade fragt - oder `null`, wenn sie nichts nennt.
+ *
+ * Drei Zweige des Durchgangs brauchten denselben Vorspann: den laufenden
+ * Gegenstand aus `Sitzung` holen, und wenn keiner dasteht, das melden und
+ * die Ebene ueberspringen. Mit „Sag es" (E6) waere es der dritte gewesen -
+ * was zweimal dasteht, veraltet einmal (Regel 6), und `doppelt` hat es im
+ * selben Lauf gemeldet, in dem der dritte entstand.
+ *
+ * BARE VARIABLE, kein `window.Sitzung`: die App haelt die Sitzung im
+ * Modulrahmen, nicht am Fenster - dieselbe Stelle wie in `zeigeAufKarte`.
+ *
+ * Welche Felder gebraucht werden, sagt der Aufrufer. Alles zurueckzugeben
+ * waere bequemer und falsch: `Sitzung.liste[i]` traegt je nach Ebene
+ * Umrisse und Anker, und die durch die Bruecke zu schicken kostet bei
+ * jeder Aufgabe ein Vielfaches der Zeit, die die Aufgabe selbst braucht.
+ */
+async function ausDerSitzung(p, wer, ebene, felder){
+  const auf = await p.evaluate((f) => {
+    const x = (typeof Sitzung !== 'undefined' && Sitzung && Sitzung.liste)
+      ? Sitzung.liste[Sitzung.i] : null;
+    if (!x) return null;
+    const aus = {};
+    for (const k of f) aus[k] = x[k] ?? '';
+    return aus;
+  }, felder);
+  if (!auf || !auf.id) {
+    merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
+    return null;
+  }
+  return auf;
+}
+
 async function abgeschlossen(p, wer, ebene, hoert, wie, eigen = null) {
   /* `eigen` ist der Satz, der die AUFGABE IST - und der wird hier
    * abgezogen, bevor geurteilt wird.
@@ -4376,41 +4447,12 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         continue;
       }
       if (await p.$('.schirm.da .engkarte')) {
-        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
-                                              wort: Sitzung?.liste[Sitzung.i]?.wort || '' }));
-        if (!auf.id) {
-          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
-          continue;
-        }
-        /* DAS WORT MUSS GEHOERT WORDEN SEIN - und zwar bei JEDEM Profil.
-         *
-         * Es zaehlt deshalb NICHT in `gehoert`: der Zaehler dort meint die
-         * Vorlesehilfe, und die haengt am Profil („Lea bekam eine Aufgabe
-         * vorgelesen, obwohl ihr Profil vorlesen:false sagt"). Hier ist
-         * das Wort die FRAGE. Wuerde es dort mitgezaehlt, meldete der
-         * Durchgang bei Lea einen Fehler, wo die App genau richtig ist -
-         * und beim Ausschalten ohne Ersatz haette niemand mehr gemessen,
-         * dass sie es ueberhaupt hoert. Also ein eigener Zaehler und ein
-         * eigenes Urteil, statt einer Ausnahme. */
-        const gesagt = await p.evaluate(() => (window.__gesagt || []).slice());
-        const kam = gesagt.some(x => String(x).trim() === auf.wort);
-        /* WER es hoeren muss, steht in der Profiltabelle - Zeile „Ton als
-           Gegenstand (Englisch)" - und nicht hier (QS3, Regel 3: das Soll
-           kommt aus der Referenz). Geprueft wird in beide Richtungen: wer
-           „ja" traegt, muss es hoeren; wer „nein" traegt, darf es nicht
-           hoeren. Ohne die zweite Haelfte waere die Zeile eine Notiz und
-           keine Eingabe - man koennte sie auf „nein" stellen, und nichts
-           wuerde rot. */
-        if (TON_GEGENSTAND[wer] && !kam)
-          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde nicht `
-            + `gesagt — auf dieser Ebene IST das Wort die Frage, und die `
-            + `Profiltabelle sagt für ${wer} „ja" `
-            + `(gehört: ${gesagt.join(' | ') || 'nichts'})`));
-        else if (!TON_GEGENSTAND[wer] && kam)
-          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde gesagt, `
-            + 'obwohl die Profiltabelle für dieses Profil „nein" trägt — dann hängt '
-            + 'der Ton nicht an der Tabelle, sondern am Bildschirm'));
-        else if (kam) gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+        const auf = await ausDerSitzung(p, wer, ebene, ['id', 'wort']);
+        if (!auf) continue;
+        // Auf dieser Ebene IST das Wort die Frage - siehe `englischGehoert`.
+        await englischGehoert(p, wer, ebene, auf.wort,
+          'auf dieser Ebene IST das Wort die Frage, und ohne es stehen vier Bilder '
+          + 'ohne Aufgabe da');
         await p.$eval(`.schirm.da .engkarte[data-id="${auf.id}"]`, x => x.click());
         wege.add(`${wer}: englisch gehört und getippt`);
         await bewertet(p);
@@ -4438,23 +4480,30 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * Gezaehlt wird es in `gehoertEn` wie bei der Schwesterebene, nach
        * derselben Zeile der Profiltabelle. */
       if (await p.$('.schirm.da #sagenbild')) {
-        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
-                                              wort: Sitzung?.liste[Sitzung.i]?.wort || '' }));
-        if (!auf.id) {
-          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
-          continue;
-        }
+        const auf = await ausDerSitzung(p, wer, ebene, ['id', 'wort', 'sorte']);
+        if (!auf) continue;
+        /* UND DIE SATZEBENE FRAGT SAETZE (E9).
+         *
+         * Sie teilt sich den Bildschirm mit „Sag es" und unterscheidet
+         * sich NUR am Gegenstand. Faellt die Weiche im Vorrat weg,
+         * spielt sie den Wortvorrat der Schwester - und auf dem
+         * Bildschirm ist das nicht zu sehen: beide zeigen ein Bild, ein
+         * Mikrofon und einen Knopf, beide sagen ihr Englisch vor, beide
+         * werten. Ein Durchlauf, der nur zaehlt, bliebe gruen, und die
+         * Ebene „Sag den Satz" fragte still nach Farben. */
+        if (String(ebene).endsWith(':satz') && auf.sorte !== 'chunk')
+          merke('durchgang', new Error(`${wer}/${ebene}: der Gegenstand ist `
+            + `„${auf.sorte || 'ohne Sorte'}" und kein Satz — die Ebene spielt den `
+            + 'Vorrat der Schwesterebene, und auf dem Bildschirm sieht man es nicht'));
         if (!(await p.$('.schirm.da #gesagt')))
           merke('durchgang', new Error(`${wer}/${ebene}: es gibt keinen Weg ohne Mikrofon — `
             + 'wer nicht sprechen darf oder kann, steht vor einer Aufgabe, die sich '
             + 'nicht abschließen lässt'));
-        const gesagtEn = await p.evaluate(() => (window.__gesagt || []).slice());
-        const kamEn = gesagtEn.some(x => String(x).trim() === auf.wort);
-        if (TON_GEGENSTAND[wer] && !kamEn)
-          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" wurde nicht `
-            + 'gesagt — es ist das Vorbild, das nachgesprochen wird, und ohne es '
-            + `steht da nur die Aufforderung (gehört: ${gesagtEn.join(' | ') || 'nichts'})`));
-        else if (kamEn) gehoertEn[wer] = (gehoertEn[wer] || 0) + 1;
+        // Hier ist das Wort das VORBILD, das nachgesprochen wird - dieselbe
+        // Zusage, ein anderer Grund. Beide stehen in `englischGehoert`.
+        await englischGehoert(p, wer, ebene, auf.wort,
+          'es ist das Vorbild, das nachgesprochen wird, und ohne es steht da nur '
+          + 'die Aufforderung');
         await p.$eval('.schirm.da #gesagt', x => x.click());
         wege.add(`${wer}: gesagt`);
         await bewertet(p);
@@ -4542,12 +4591,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         continue;
       }
       if (await p.$('.schirm.da .flaggenkarte, .schirm.da .flaggengross')) {
-        const auf = await p.evaluate(() => ({ id: Sitzung?.liste[Sitzung.i]?.id || '',
-                                              name: Sitzung?.liste[Sitzung.i]?.name || '' }));
-        if (!auf.id) {
-          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Ziel`));
-          continue;
-        }
+        const auf = await ausDerSitzung(p, wer, ebene, ['id', 'name']);
+        if (!auf) continue;
         const zeigt = !!(await p.$('.schirm.da .flaggenkarte'));
         if (zeigt) {
           /* Der Landesname MUSS gesagt worden sein. Fuer Fiona ist diese

@@ -798,3 +798,163 @@ export function vorratHoersaetze(){
       richtig: w.richtig, deutsch: w.deutsch };
   });
 }
+
+/* ---------- Die Saetze zum Selbersagen (E9) ------------------------------
+ *
+ * DAS PROBLEM, und es steht dreissig Zeilen weiter oben in den Daten
+ * selbst: die amtlichen Redemittel sind SCHABLONEN, keine Saetze.
+ *
+ *   'This is my (little) brother/sister … . His/Her name is … . He/She is 5/…'
+ *
+ * Das kann niemand nachsprechen. Ein Kind liest die Schraegstriche nicht
+ * als Auswahl, sondern spricht sie mit; die Klammer wird zur Pause und das
+ * Auslassungszeichen zum Stocken. Die Schablone ist fuer die Lehrkraft
+ * geschrieben, nicht fuer die Lernende - und genau das macht sie als
+ * Vorlage zum Selbersagen unbrauchbar.
+ *
+ * EIN CHUNK ist deshalb die Schablone EINMAL AUSGEFUELLT: ein ganzer,
+ * kurzer Satz, hoechstens sieben Woerter, ohne Platzhalter, ohne
+ * Schraegstrich. „This is my little brother." statt der Zeile darueber.
+ *
+ * WAS AMTLICH IST und was nicht - dieselbe Trennung wie ueberall in dieser
+ * Datei, und sie ist hier die ganze Zusage:
+ *   amtlich  die Schablone (`quelle`), Wort fuer Wort aus THEMENGEBIETE.
+ *            Und jedes Wort des Satzes: es steht in WOERTER oder in
+ *            NUR_WORT, sonst nirgends.
+ *   MEINE    welche Schablone ausgefuellt wird und womit. Das ISB sagt
+ *            nicht, welcher Satz sich zum Nachsprechen eignet.
+ *
+ * `quelle` ist deshalb kein Beleg zum Angucken, sondern das, was das Tor
+ * nachrechnet: der String muss WOERTLICH in THEMENGEBIETE stehen, und das
+ * Gebiet daneben muss dasselbe sein, in dem er steht. Ohne dieses Feld
+ * waere jeder Satz eine Behauptung - und ein erfundener saehe genau aus
+ * wie ein abgeleiteter, weil er neben amtlichen Daten steht. Das ist
+ * Regel 3 (das Soll kommt aus der Referenz, nicht aus mir) in der Form,
+ * die sie bei Vokabeln annimmt.
+ *
+ * WAS NICHT GEHT, und warum kein Satz es versucht - drei Verzichte, jeder
+ * an einer Schablone gemessen, die sich angeboten haette:
+ *
+ *   NAMEN. 'My name is … . What’s your name?' braucht einen Namen, und
+ *   kein Name steht im Wortschatz. „My name is Lea." waere ein erfundenes
+ *   Wort in einem amtlich aussehenden Satz.
+ *
+ *   ZIFFERN. 'I go to school at 7 o’clock.' steht so in der Quelle - die 7
+ *   steht aber in ZAHLEN und nicht in WOERTER, und die Wortprobe des Tors
+ *   meldet sie. Der Satz heisst deshalb „I go to school." Die Zahlen sind
+ *   in E3 zuhause, wo die Ziffer das Bild ist.
+ *
+ *   KURZFORMEN, DIE DIE LISTE NICHT KENNT. „It’s", „What’s", „You’re"
+ *   stehen in den Redemitteln, aber nicht im Wortschatz - der kennt
+ *   `I’m`, `can‘t`, `don‘t` und `haven’t`, sonst keine. Deshalb „How are
+ *   you?" und nicht „What’s your name?", und deshalb „This is my room."
+ *   und nicht „It’s small."
+ *
+ * UND EINE SCHABLONE BLEIBT GANZ AUS, obwohl sie die ergiebigste waere:
+ * 'Do you like …? Yes, I do. / No, I don’t.' steht in 4.3 UND in 4.4,
+ * Zeichen fuer Zeichen gleich. Ein Satz daraus koennte sein Gebiet nicht
+ * beweisen - das Tor faende die Quelle in beiden und muesste jedes der
+ * beiden Gebiete durchgehen lassen. Eine Pruefung, die bei einem Eintrag
+ * nichts mehr entscheidet, ist fuer diesen Eintrag kein Beweis (Regel 1).
+ *
+ * FUENF JE GEBIET, nicht so viele wie moeglich. Vier verlangt das Tor,
+ * damit es je Gebiet ein Abzeichen geben kann; der fuenfte ist die
+ * Reserve, damit das Streichen eines einzelnen Satzes nicht sofort die
+ * Ebene kippt. Mehr waere leicht - es gibt rund zwanzig weitere
+ * ausfuellbare Schablonen -, aber ein Vorrat, der in einer Sitzung nie
+ * zweimal dasselbe zeigt, uebt auch nichts zweimal.
+ *
+ * EINS NOCH, gemessen und nicht vermutet: diese Tabelle laesst `npm run
+ * doppelt` anschlagen. Zwanzig gleichfoermige Zeilen (id, gebiet, satz,
+ * quelle) ergeben einen Tokenlauf von 687, der sich mit den Tierzeilen in
+ * `src/inhalt/tiere.js` deckt - ohne den Block sind es 0. Das ist
+ * derselbe Fall wie bei den Laenderlisten in `src/inhalt/erdkunde.js`:
+ * eine Tabelle SOLL gleichfoermig sein, sonst kann man ihre Zeilen nicht
+ * nebeneinander lesen, und Zusammenlegen hiesse sie zu verstecken. Der
+ * Eintrag dafuer gehoert nach `tor/doppelt-erlaubt.json` und ist noch
+ * nicht drin - solange er fehlt, ist `doppelt` rot, und zwar zu Recht:
+ * die Liste ist die Stelle, an der jemand HINSCHREIBT, warum etwas
+ * zweimal dastehen darf.
+ */
+export const CHUNKS = [
+  // --- 4.1 Familie und Freunde ---
+  { id: 'c-familie', gebiet: '4.1', satz: 'This is my family.',
+    quelle: 'This is my family. I have/I’ve (got) … .' },
+  { id: 'c-bruder', gebiet: '4.1', satz: 'This is my little brother.',
+    quelle: 'This is my (little) brother/sister … . His/Her name is … . He/She is 5/… How many brothers/sisters/… have you got?' },
+  { id: 'c-haustier', gebiet: '4.1', satz: 'This is my pet.',
+    quelle: 'This is my pet. Have you got a pet? Yes, I/we have/haven’t got a … .' },
+  { id: 'c-alter', gebiet: '4.1', satz: 'How old are you?',
+    quelle: 'I’m … . How old are you? I’m from Germany/… . Where are you from?' },
+  { id: 'c-woher', gebiet: '4.1', satz: 'Where are you from?',
+    quelle: 'I’m … . How old are you? I’m from Germany/… . Where are you from?' },
+  // --- 4.2 Schule ---
+  { id: 'c-morgen', gebiet: '4.2', satz: 'Good morning.',
+    quelle: 'Hello. Good morning. Bye-bye.' },
+  { id: 'c-wiegehts', gebiet: '4.2', satz: 'How are you?',
+    quelle: 'How are you? I’m fine, thanks. And you? I’m (very) happy/sad/okay.' },
+  { id: 'c-gutdanke', gebiet: '4.2', satz: "I'm fine, thanks.",
+    quelle: 'How are you? I’m fine, thanks. And you? I’m (very) happy/sad/okay.' },
+  { id: 'c-schule', gebiet: '4.2', satz: 'I go to school.',
+    quelle: 'I like German/English/sports/… . I go to school at 7 o’clock.' },
+  { id: 'c-buch', gebiet: '4.2', satz: 'Can I have a book, please?',
+    quelle: 'Can I have a/your red/… book/…, please? Yes. Here you are.' },
+  // --- 4.3 Freizeit und Feste ---
+  { id: 'c-party', gebiet: '4.3', satz: 'Can you come to my party?',
+    quelle: 'Can you come to my party? Yes. Thank you. / No. I’m sorry.' },
+  { id: 'c-geburtstag', gebiet: '4.3', satz: 'Happy birthday!',
+    quelle: 'Happy birthday! Merry Christmas!' },
+  { id: 'c-weihnachten', gebiet: '4.3', satz: 'Merry Christmas!',
+    quelle: 'Happy birthday! Merry Christmas!' },
+  { id: 'c-wann', gebiet: '4.3', satz: 'When is your birthday?',
+    quelle: 'When is your birthday? My birthday is … .' },
+  { id: 'c-tennis', gebiet: '4.3', satz: 'I like tennis.',
+    quelle: 'What’s your hobby? It‘s … . I play/like tennis/… . And you? What about you?' },
+  // --- 4.4 Einkaufen ---
+  { id: 'c-helfen', gebiet: '4.4', satz: 'Can I help you?',
+    quelle: 'Can I help you? Yes, please. / No, thank you. I take/I’d like … to eat/drink.' },
+  { id: 'c-bitte', gebiet: '4.4', satz: 'Yes, please.',
+    quelle: 'Can I help you? Yes, please. / No, thank you. I take/I’d like … to eat/drink.' },
+  { id: 'c-danke', gebiet: '4.4', satz: 'Thank you.',
+    quelle: 'Thank you. You’re welcome.' },
+  { id: 'c-hier', gebiet: '4.4', satz: 'Here you are.',
+    quelle: 'Can I have …, please? Yes. Here you are.' },
+  { id: 'c-kaufen', gebiet: '4.4', satz: 'Can I have tea, please?',
+    quelle: 'Can I have …, please? Yes. Here you are.' },
+];
+
+/**
+ * Der Vorrat der Ebene „Der Satz zum Selbersagen".
+ *
+ * WELCHES FELD DEN SATZ TRAEGT, und warum es drei sind - jedes davon liest
+ * eine andere Stelle, und keine davon kann ich hier aendern:
+ *
+ *   `satzEn`  der Satz selbst, benannt wie bei `vorratHoersaetze()`. Wer
+ *             beide Ebenen nebeneinander liest, soll nicht zwei Namen fuer
+ *             dieselbe Sache lernen.
+ *   `name`    was im Buch, im Vorlauf-Titel und im Lobsatz steht. Ohne ihn
+ *             stuende dort `undefined`.
+ *   `wort`    was ANGESAGT wird. `vorlaufAnsage` sagt bei einem Gegenstand
+ *             mit `sorte` genau dieses Feld an, und die Kachel wird auf
+ *             Englisch gestellt - das ist bei einem englischen Satz
+ *             richtig. Deshalb traegt der Gegenstand auch `sorte`: ohne
+ *             sie fiele er auf den Zweig `if (x.gebiet)` durch und die App
+ *             saegte „Die Hauptstadt von 4.1 ist undefined."
+ *
+ * Alle drei kommen aus DEMSELBEN `c.satz` - es steht also nichts zweimal
+ * da, was auseinanderlaufen koennte (Regel 6). Drei Leser derselben Zeile
+ * sind keine drei Quellen.
+ *
+ * DAS GEBIET GEHT HIER MIT, anders als bei `vorratWendungen()` einen
+ * Abschnitt weiter oben, wo es aus zwei guten Gruenden draussen bleibt.
+ * Der Grund fuer die Ausnahme: E9 verspricht ein Abzeichen JE
+ * THEMENGEBIET, und ein Gegenstand, der sein Gebiet nicht traegt, kann
+ * keines verdienen. Der Preis ist genau der, den der Kommentar dort nennt
+ * - `gebiet` heisst anderswo in dieser App das LAND einer Hauptstadt. Wer
+ * die Spielebene baut, muss deshalb die Kachel ansehen: sie schreibt
+ * `gebiet` als eigene Zeile unter den Aufkleber, und dort stuende „4.1".
+ */
+export function vorratChunks(){
+  return CHUNKS.map(c => ({ id: `en:chunk:${c.id}`, name: c.satz, satzEn: c.satz,
+    wort: c.satz, sorte: 'chunk', gebiet: c.gebiet }));
+}

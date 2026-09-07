@@ -289,6 +289,12 @@ const AUFNAHMEN = [
      vor „Gesagt") ist genau das, was hier zu sehen sein muss. */
   { name:'quer-sagen', spiel:'englisch:sagen', kind:'fiona', quer:true,
     wahl:'.schirm.da' },
+  /* Und derselbe Bildschirm mit einem ganzen SATZ (E9). Zwei Aufnahmen
+     desselben Aufbaus sind hier keine Doppelung: der eine zeigt einen
+     Farbfleck, der andere eine Sprechblase und darunter eine Zeile, die
+     umbrechen kann - und ob die umbricht, sieht man nur hier. */
+  { name:'quer-satz', spiel:'englisch:satz', kind:'fiona', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -711,6 +717,7 @@ const OHNE_KARTE = {
      auf der ganzen Kennung, nicht auf der Art - dieselbe Stelle und
      derselbe Grund wie bei `flaggen:karte`. */
   'englisch:sagen': '.schirm.da #sagenbild',
+  'englisch:satz':  '.schirm.da #sagenbild',
   freunde:   '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',

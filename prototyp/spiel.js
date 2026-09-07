@@ -1297,6 +1297,20 @@ const EBENEN = [
    * mit den Fallen. */
   { id:'englisch:sagen', ueber:'Englisch', titel:'Sag es', farbe:7,
     art:'englisch', wer:['fiona','lea'] },
+  /* „Der Satz zum Selbersagen" (E9) - dieselbe Form wie „Sag es", eine
+   * Stufe darueber: kein Wort, sondern ein ganzer Satz.
+   *
+   * Sie teilt sich den Bildschirm mit „Sag es" und unterscheidet sich am
+   * Gegenstand (`sorte:'chunk'`), nicht am Aufbau - das ist der Grund,
+   * warum sie fast nichts gekostet hat. Was sie mitbringt, sind die
+   * zwanzig Saetze, und jeder davon ist auf ein amtliches Redemittel
+   * zurueckzufuehren; das Tor `englisch` haelt das nach.
+   *
+   * `wer`: Fiona und Lea, wie die Schwester. Fuer eine Sechsjaehrige ist
+   * „I've got a brother." kein schwererer Satz als „brother" - sie
+   * spricht ohnehin nach, was sie hoert. */
+  { id:'englisch:satz', ueber:'Englisch', titel:'Sag den Satz', farbe:2,
+    art:'englisch', wer:['fiona','lea'] },
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -1494,13 +1508,18 @@ const SCHREIBBILD = {
  * er steht fuer das Bild, auf das es hinauslaeuft; das Zeichen davor
  * sagt, was das Kind damit TUT: hinhoeren oder sprechen. */
 const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
-                          'englisch:sagen':'mikro' };
+                          'englisch:sagen':'mikro', 'englisch:satz':'blase' };
 /* Das Mikrofon als PFADE, nicht als `<rect>`.
    Dieselbe Messstelle wie ueberall (Regel 5): `passt` misst die
    gezeichnete Ausdehnung je Pfad; ein `<rect>` findet es gar nicht
    erst, und die Kachel meldete ein Bild von null Punkten. */
 const MIKROSTRICH = '<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/>'
   + '<path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/>';
+/* Und die Sprechblase fuer den ganzen Satz (E9): dieselbe Aussage eine
+   Stufe groesser - nicht ein Wort, sondern etwas Gesagtes. Auch sie als
+   PFAD, aus demselben Grund. */
+const BLASENSTRICH = '<path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-5 4v-4H4'
+  + 'a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M7 10h10M7 13h6"/>';
 /* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
    Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
@@ -1614,8 +1633,8 @@ function silhouette(ebeneId) {
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-      stroke-linejoin="round">${ENGLISCHZEICHEN[ebeneId] === 'mikro'
-        ? MIKROSTRICH : ZEICHEN.tonAn}<path
+      stroke-linejoin="round">${ENGLISCHZEICHEN[ebeneId] === 'mikro' ? MIKROSTRICH
+        : ENGLISCHZEICHEN[ebeneId] === 'blase' ? BLASENSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
@@ -1907,6 +1926,13 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
      und der Unterschied ist der ganze Sinn der Seite. */
   : x.flagge   ? `<div class="flaggenkleber${offen ? ' offen' : ''}"
                     >${Flaggen.flaggeSvg(x.flagge)}</div>`
+  /* Der Satz zum Selbersagen (E9) hat weder Umriss noch Farbe noch
+     Ziffer - er IST ein Satz. Er bekommt denselben Wortkasten wie die
+     Wendungen der Eltern, nur enger gesetzt. Ohne diesen Zweig fiele er
+     auf den Rechenkasten durch und zeigte `undefined` - genau derselbe
+     Weg wie bei der Flagge, und aus demselben Grund. */
+  : x.sorte === 'chunk'
+                 ? `<div class="wortkleber satzkleber" style="--ton:${ton}">${x.wort}</div>`
   : x.luecke || x.deutsch
                  ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
   : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
@@ -2086,6 +2112,10 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      Kennungen. Das hat bei den Flaggen eine Runde gekostet. */
   if (art==='englisch' && kont==='sagen')
     return Englisch.vorratHoeren().map(x => ({ ...x, id:`sg:${x.id}` }));
+  /* Die zwanzig Saetze (E9). Sie tragen ihre Kennung selbst mit (`en:chunk:…`)
+     und brauchen deshalb kein Umhaengen wie „Sag es". */
+  if (art==='englisch' && kont==='satz')
+    return Englisch.vorratChunks();
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -3154,6 +3184,19 @@ function vorlaufSatz(ebeneId){
   /* „Sag es" (E6). Der Satz nennt die Zusage, auf die es ankommt: es
      wird NICHT bewertet. Wer das nicht ausspricht, laesst ein Kind
      glauben, da sitze ein Pruefer - und dann sagt es lieber nichts. */
+  /* Der Satz zum Selbersagen (E9). Dieselbe Zusage wie bei „Sag es" -
+     und ein Satz mehr dazu, WOHER die Saetze kommen: sie sind nicht
+     erfunden, sondern Instanzen amtlicher Redemittel. Das steht hier,
+     weil der Vorlauf die Stelle ist, an der ein Kind (und ein Elternteil
+     daneben) erfaehrt, womit es zu tun hat. */
+  if (art === 'englisch' && kont === 'satz')
+    return englischHoerbar()
+      ? 'Du hörst einen ganzen Satz und sagst ihn nach. Auch hier wird '
+        + '<strong>nicht bewertet</strong>. Die Sätze stehen so im Lehrplan — '
+        + 'sie sind das, was man in der vierten Klasse sagen können soll.'
+      : 'Hier steht ein englischer Satz, und du sagst ihn laut. Es wird '
+        + '<strong>nicht bewertet</strong>. Vorlesen kann dir dieses Gerät ihn '
+        + 'leider nicht — ihm fehlt eine englische Stimme.';
   if (art === 'englisch' && kont === 'sagen')
     return englischHoerbar()
       ? 'Du hörst ein Wort und sagst es nach. Es wird <strong>nicht bewertet</strong> — '
@@ -4208,12 +4251,22 @@ function sagenschirm(){
      die Doppelung im selben Augenblick gemeldet, in dem sie entstand:
      eine Gegenprobe sucht genau diese Zeile, und bei zwei Fundstellen
      entscheidet die Reihenfolge, welche sie verstellt. */
-  const bild = (x) => x.farbton
+  /* Ein ganzer Satz (E9) hat kein Bild - er IST etwas Gesagtes. An die
+     Stelle des Flecks tritt deshalb die Sprechblase, dasselbe Zeichen
+     wie auf der Kachel: das Kind sieht, dass hier gesprochen wird, und
+     nicht, WAS - das kommt aus dem Ohr. */
+  const istSatz = ziel.sorte === 'chunk';
+  const bild = (x) => istSatz
+    ? `<span class="satzblase gross"><svg width="120" height="120" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+         stroke-linejoin="round" aria-hidden="true">${BLASENSTRICH}</svg></span>`
+    : x.farbton
     ? `<span class="farbfleck gross" style="--farbton:${x.farbton}"></span>`
     : `<span class="ziffernbild gross">${x.ziffern}</span>`;
 
   s.innerHTML = aufgabenKopf(st) + `
-    <div class="frage" id="frage">Sag es auf Englisch.</div>
+    <div class="frage" id="frage">${istSatz
+      ? 'Sag den Satz auf Englisch.' : 'Sag es auf Englisch.'}</div>
     <div class="englischfeld">
       <div class="sagenbild" id="sagenbild">${bild(ziel)}</div>
       ${englischHoerbar() ? '' : `<div class="sagenwort" lang="en">${ziel.wort}</div>`}
@@ -4315,7 +4368,8 @@ function englischschirm(){
      Doppelpunkt, wie beim Schreib- und beim Flaggenschirm. Die Weiche
      steht HIER und nicht in `schirmZu`: dort haengt sie an `art`, und
      `art` ist bei beiden `englisch`. */
-  if (String(Sitzung.ebeneId).split(':')[1] === 'sagen') return sagenschirm();
+  if (['sagen', 'satz'].includes(String(Sitzung.ebeneId).split(':')[1]))
+    return sagenschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;

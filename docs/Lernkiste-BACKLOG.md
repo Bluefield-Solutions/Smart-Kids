@@ -394,10 +394,49 @@ veraltet eine der beiden Fassungen).
 | **E6** | „Sag es" — zwei Anläufe, kein Urteil | **GEFAHREN** — siehe Block unten |
 | **E7** | Lea liest: Wort zum Bild | am Gerät |
 | **E8** | Lea schreibt: Abschreiben mit Vorlage | am Gerät, `passt` für die Buchstabenkarten |
-| **E9** | Der Satz zum Selbersagen + Abzeichen je Themengebiet | Abzeichen erscheint erst bei vollem Gebiet |
+| **E9** | Der Satz zum Selbersagen | **GEFAHREN** — die Abzeichen je Gebiet stehen noch aus (E9b) |
 | **E10** | **Eltern: falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tore E-f und E-g |
 | **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | **GEFAHREN v376** — siehe Block unten |
 | **E12** | **Eltern: Hoeren und schreiben** — ganzer Satz, normales Tempo | **GEFAHREN v376** — siehe Block unten |
+
+### E9 · „Der Satz zum Selbersagen" — GEFAHREN (die Sätze; die Abzeichen als E9b)
+
+**Zwanzig Sätze, und keiner davon ist erfunden.** `THEMENGEBIETE` hält die
+amtlichen Redemittel — aber als **Schablonen**: *„This is my (little)
+brother/sister … . His/Her name is … ."* Das kann niemand nachsprechen. E9
+braucht ganze Sätze, und jeder von ihnen ist eine **Instanz** einer solchen
+Schablone. Genau das prüft das Tor: `quelle` muss wörtlich in
+`THEMENGEBIETE` stehen, **und im genannten Gebiet**. Kein Satz ohne
+Herkunft.
+
+Dazu: jedes Wort steht in `WOERTER` oder `NUR_WORT`, höchstens sieben Wörter,
+kein Platzhalter, mindestens vier Sätze je Gebiet. Gemessen: **20 Sätze, fünf
+je Gebiet, längster sechs Wörter.**
+
+**Was dabei ausgefallen ist, und warum das richtig war.** Kein Wort wurde
+erfunden — stattdessen sind Sätze weggefallen: Namen (`My name is …` braucht
+einen, und keiner steht im Wortschatz), Ziffern (`at 7 o'clock` — die 7 steht
+in `ZAHLEN`, nicht in `WOERTER`), und die Kurzformen `it's`, `what's`,
+`who's`, `you're`, die die amtliche Liste nicht führt. Eine Schablone bleibt
+ganz aus: *`Do you like …?`* steht zeichengleich in **4.3 und 4.4** — ein Satz
+daraus könnte sein Gebiet nicht beweisen, und ein Tor, das beide durchgehen
+lässt, prüft nichts mehr.
+
+**Die Ebene selbst hat fast nichts gekostet.** Sie teilt sich den Bildschirm
+mit „Sag es" und unterscheidet sich nur am Gegenstand — statt Farbfleck eine
+Sprechblase, statt Wort ein Satz. Genau deshalb bekam sie eine eigene Zusage
+im Rauchtest: *auf `englisch:satz` muss der Gegenstand ein `chunk` sein.*
+Fällt die Weiche im Vorrat weg, spielt sie den Wortvorrat der Schwester — und
+**auf dem Bildschirm ist das nicht zu sehen**: beide zeigen ein Bild, ein
+Mikrofon und einen Knopf, beide sagen ihr Englisch vor, beide werten. Ohne
+diese Zeile bliebe ein Durchlauf grün, während „Sag den Satz" still nach
+Farben fragt.
+
+**Offen als E9b: die Abzeichen je Themengebiet.** Die Mechanik trägt sie ohne
+eine Zeile Änderung (`abzeichenDer`, `stand`), was fehlt sind vier Einträge in
+der Tafel und vier Zeichen. Und die eigentliche Form aus dem Konzept — den
+Satz aus Wortkarten **zusammensetzen** — braucht dasselbe Legebauteil wie E8;
+das ist der Grund, warum beide zusammen gehören und nicht einzeln.
 
 ### E6 · „Sag es" — GEFAHREN
 

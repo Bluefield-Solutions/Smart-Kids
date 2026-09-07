@@ -5709,6 +5709,19 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:"selbst - Lea bekommt es genauso. */\n  vorlesen(ziel.wort, 'en');" },
     sagt:'wurde nicht' },
 
+  /* --- „Der Satz zum Selbersagen" (E9) ---------------------------------
+   *
+   * Die Ebene teilt sich den Bildschirm mit „Sag es" und unterscheidet
+   * sich nur am Gegenstand. Genau deshalb braucht sie eine eigene Falle:
+   * faellt die Weiche weg, spielt sie den Bildschirm der Schwester mit
+   * deren Vorrat - und niemand sieht es, weil beide gleich aussehen. */
+  { n:'die Satzebene bekommt den Vorrat der Wortebene', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  if (art==='englisch' && kont==='satz')\n    return Englisch.vorratChunks();",
+    ersatz:"  if (art==='englisch' && kont==='satz')\n    return Englisch.vorratHoeren();",
+    an:{ ...DIST, text:"kont==='satz')\n    return Englisch.vorratHoeren();" },
+    sagt:'und kein Satz' },
+
   /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
    *
    * 1. DAS MIKROFON WIRD NICHT ANGEBAUT. Der Bildschirm bleibt heil, das

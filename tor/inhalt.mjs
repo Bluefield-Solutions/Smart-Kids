@@ -2281,6 +2281,154 @@ console.log('\n  Tor `englisch`');
     console.log(`    Hören und schreiben (E12): ${hs.length} Diktatsätze, alle aus `
       + `den Wendungen · längster ${laengste} Wörter (Grenze ${LAENGSTER})`);
   }
+
+  /* --- E9: die Saetze zum Selbersagen --------------------------------- *
+   *
+   * Ein Chunk ist ein Redemittel, EINMAL AUSGEFUELLT. Die Gefahr liegt
+   * nicht im Ausfuellen, sondern daneben: ein Satz, der gut klingt und in
+   * keiner amtlichen Zeile steht, sieht in der Datendatei aus wie einer,
+   * der abgeleitet ist - er steht ja zwischen zwanzig anderen, die es
+   * sind. Genau so entsteht erfundener Wortschatz, der amtlich aussieht,
+   * weil er neben amtlichen Daten liegt.
+   *
+   * Deshalb traegt jeder Chunk seine `quelle` mit, und deshalb wird sie
+   * hier WOERTLICH gesucht statt geglaubt. Drei Zusagen, jede einzeln
+   * geprueft, weil jede fuer sich brechen kann:
+   *
+   *   ABGELEITET  Die Quelle steht Zeichen fuer Zeichen in THEMENGEBIETE,
+   *               und die stehen ihrerseits Satz fuer Satz in der
+   *               amtlichen Redemittel-Liste - das prueft dieses Tor
+   *               dreissig Zeilen weiter oben. Die Kette reicht damit vom
+   *               nachgesprochenen Satz bis zur PDF des ISB.
+   *   AM RICHTIGEN ORT  Und zwar in DEM Gebiet, das der Chunk nennt, nicht
+   *               irgendeinem der vier. Ohne diese Haelfte waere `gebiet`
+   *               ein freies Feld - und an ihm haengt das Abzeichen je
+   *               Themengebiet, das die Ebene verspricht.
+   *   NACHSPRECHBAR  Kein Platzhalter, hoechstens sieben Woerter, und
+   *               jedes Wort aus dem amtlichen Wortschatz.
+   *
+   * DIE WORTPROBE IST DIE TEUERSTE UND DIE WICHTIGSTE. Ein Satz aus
+   * lauter amtlichen Woertern ist einer, den das Kind in der Schule
+   * wiedertrifft; ein einziges dazuerfundenes Wort macht ihn zu meinem
+   * Englisch. Gesucht wird in BEIDEN Listen, WOERTER und NUR_WORT -
+   * zusammen sind das dieselben 151, aufgeteilt nach „malbar" und „nicht
+   * malbar". Diese Aufteilung ist eine Frage der Bilder (E4) und geht
+   * einen gesprochenen Satz nichts an.
+   *
+   * DIE LISTEN MUESSEN DAFUER ZERLEGT WERDEN, und das ist keine Freiheit,
+   * sondern die Bauart der Quelle: ihre Eintraege sind Buendel und keine
+   * Woerter. „a/an" sind zwei, „be (am, are, is)" sind vier, „thank(s)"
+   * sind zwei, „next to" ist eines aus zwei Teilen. Wer ungeteilt
+   * vergleicht, findet kein einziges Wort wieder und muesste die Probe
+   * abschalten - und eine abgeschaltete Probe ist kein Beweis (Regel 1).
+   * Zerlegt wird nach genau den drei Zeichen, die die Quelle selbst
+   * benutzt: Schraegstrich (Auswahl), Klammer (Beugung), Leerzeichen
+   * (mehrteiliger Eintrag).
+   *
+   * Die Apostrophe werden dabei vereinheitlicht. Die amtliche Liste
+   * traegt DREI verschiedene - „I’m" (U+2019), „can‘t" (U+2018) und
+   * „hasn´t" (U+00B4) -, und ein Satz, der den geraden benutzt, waere
+   * sonst aus lauter unbekannten Woertern gebaut. Dieselbe Behandlung wie
+   * in `wieGesagt`, aus demselben Grund.
+   */
+  {
+    const cf = [], ids = new Set();
+    /* Sieben Woerter. Die Grenze ist NICHT von den Diktatsaetzen (neun)
+       geerbt, sondern eine andere Messung: dort hoert ein Erwachsener
+       einen Satz, hier spricht eine Sechsjaehrige ihn nach. Gemessen am
+       heutigen Vorrat sind die laengsten sechs Woerter lang; die Grenze
+       laesst einen Schritt Luft und faengt den Satz, der beim Ausfuellen
+       einer Schablone lang geworden ist. */
+    const WORTGRENZE = 7;
+    const apo = (t) => String(t).replace(/[‘’´`]/g, "'");
+    /** Ein amtlicher Eintrag -> die Woerter, die er zulaesst. */
+    const zerlegen = (eintrag) => apo(eintrag).split('/').flatMap(t => {
+      /* „thank(s)" ist der eine Fall, in dem die Klammer ein Wort
+         VERLAENGERT statt eines danebenzustellen. Ohne diesen Zweig
+         entstuende „thanks" nicht, und „I’m fine, thanks." fiele durch. */
+      const gebeugt = t.trim().match(/^([A-Za-z']+)\(([A-Za-z']+)\)$/);
+      return gebeugt ? [gebeugt[1], gebeugt[1] + gebeugt[2]]
+                     : t.replace(/[()]/g, ' ').split(/[\s,]+/);
+    }).map(w => w.toLowerCase()).filter(Boolean);
+    const erlaubt = new Set([...EN.WOERTER, ...EN.NUR_WORT].flatMap(zerlegen));
+    /** Ein Satz -> seine Woerter, ohne Satzzeichen, klein. */
+    const satzWoerter = (satz) => apo(satz).toLowerCase().split(/[^a-z']+/)
+      .map(w => w.replace(/^'+|'+$/g, '')).filter(Boolean);
+    /* Welches Redemittel steht in welchem Gebiet? Aus den Themengebieten
+       gelesen und nicht aus den Chunks - sonst prueften sich die Chunks
+       an sich selbst (Regel 14: das Modell darf nicht vom Gemessenen
+       abhaengen). Ein Redemittel kann in ZWEI Gebieten stehen; deshalb
+       eine Menge und kein einzelner Wert. */
+    const wo = new Map();
+    for (const g of EN.THEMENGEBIETE)
+      for (const h of g.handlungen)
+        for (const s of h.saetze) wo.set(s, (wo.get(s) || new Set()).add(g.nr));
+
+    const jeGebiet = new Map();
+    for (const c of EN.CHUNKS) {
+      const fehlt = ['id', 'satz', 'gebiet', 'quelle'].filter(f => !c[f]);
+      if (fehlt.length) {
+        cf.push(`einem Chunk („${c.id || c.satz || '?'}") fehlt ${fehlt.join(', ')}`);
+        continue;
+      }
+      if (ids.has(c.id)) cf.push(`die Kennung „${c.id}" gibt es zweimal`);
+      ids.add(c.id);
+      /* Die drei Zeichen der Schablone. Ein Kind liest den Schraegstrich
+         nicht als Auswahl - es spricht ihn mit. */
+      const rest = c.satz.match(/[…\/→]/);
+      if (rest) cf.push(`„${c.satz}" trägt noch „${rest[0]}" aus der Schablone — `
+        + 'das ist keine Auswahl mehr, sondern etwas zum Mitsprechen');
+      const n = c.satz.trim().split(/\s+/).length;
+      if (n > WORTGRENZE)
+        cf.push(`„${c.satz}" hat ${n} Wörter — ab ${WORTGRENZE + 1} ist das kein `
+          + 'Satz zum Nachsprechen mehr, sondern einer zum Vorlesen');
+      const steht = wo.get(c.quelle);
+      if (!steht)
+        cf.push(`die Quelle zu „${c.id}" steht in KEINEM Redemittel: `
+          + `„${c.quelle.slice(0, 70)}"`);
+      else if (!steht.has(c.gebiet))
+        cf.push(`„${c.id}" nennt das Gebiet ${c.gebiet}, seine Quelle steht aber in `
+          + `${[...steht].join(' und ')}`);
+      for (const w of satzWoerter(c.satz))
+        if (!erlaubt.has(w))
+          cf.push(`„${w}" steht weder in WOERTER noch in NUR_WORT — aus „${c.satz}" `
+            + `(${c.id})`);
+      jeGebiet.set(c.gebiet, (jeGebiet.get(c.gebiet) || 0) + 1);
+    }
+    /* Vier je Gebiet. Die Zahl ist keine Schoenheit: ein Abzeichen, das
+       nach drei Saetzen faellt, ist in der ersten Sitzung verdient und
+       danach nie wieder etwas wert. */
+    const JE_GEBIET_MIN = 4;
+    for (const g of EN.THEMENGEBIETE) {
+      const hat = jeGebiet.get(g.nr) || 0;
+      if (hat < JE_GEBIET_MIN)
+        cf.push(`nur ${hat} Sätze zum Themengebiet ${g.nr} (${g.titel}) — unter `
+          + `${JE_GEBIET_MIN} gibt es dort kein Abzeichen zu verdienen`);
+    }
+    /* Der Vorrat traegt, was die Ebene braucht. Ohne diese drei Zeilen
+       koennte `vorratChunks()` ein Feld verlieren, ohne dass etwas rot
+       wird - die Daten waeren dann in Ordnung und die Ebene leer. */
+    const vc = EN.vorratChunks();
+    if (vc.length !== EN.CHUNKS.length)
+      cf.push(`der Vorrat hat ${vc.length} Gegenstände, die Daten ${EN.CHUNKS.length}`);
+    for (const x of vc) {
+      const fehlt = ['id', 'gebiet', 'satzEn'].filter(f => !x[f]);
+      if (fehlt.length) cf.push(`dem Vorratsstück „${x.id || '?'}" fehlt ${fehlt.join(', ')}`);
+    }
+
+    if (cf.length) {
+      console.log('    ' + cf.join('\n    '));
+      console.error('\n  englisch ROT: die Sätze zum Selbersagen (E9) stimmen nicht.');
+      process.exit(1);
+    }
+    const laengster = Math.max(...EN.CHUNKS.map(c => c.satz.trim().split(/\s+/).length));
+    const wenigste = Math.min(...[...jeGebiet.values()]);
+    console.log(`    Satz zum Selbersagen (E9): ${EN.CHUNKS.length} Sätze in `
+      + `${jeGebiet.size} Gebieten, alle auf ein Redemittel zurückgeführt · `
+      + `je Gebiet mindestens ${wenigste} (nötig ${JE_GEBIET_MIN}) · längster `
+      + `${laengster} Wörter (Grenze ${WORTGRENZE}) · kein Wort außerhalb der `
+      + 'amtlichen Listen');
+  }
 }
 
 /* ============================================= Tor `tiere` (T1) ========= *

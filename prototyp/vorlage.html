@@ -2043,8 +2043,26 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   .sagenbild.gesagt{transform:scale(1.12)}
 }
 .sagenwort{font-family:var(--f-ui);font-size:var(--s3);font-weight:800;
-  color:var(--tinte);letter-spacing:.01em}
-@media (max-height:440px){ .sagenbild .farbfleck.gross{width:96px;height:96px} }
+  color:var(--tinte);letter-spacing:.01em;text-align:center;max-width:28ch;
+  line-height:1.15}
+/* Der ganze Satz (E9) hat kein Bild - er IST etwas Gesagtes, und die
+   Sprechblase sagt genau das. Sie steht in der Farbe der Marke und nicht
+   bunt: bunt waere ein Gegenstand, und der Gegenstand ist der Satz. */
+.satzblase{display:flex;align-items:center;justify-content:center;color:var(--akzent)}
+/* Und im Buch: derselbe Wortkasten wie bei den Wendungen, nur enger
+   gesetzt - „Can I have a book, please?" ist laenger als „blue". */
+.satzkleber{font-size:var(--s-klein);line-height:1.15;padding:var(--r2)}
+/* Im kurzen Querformat steht unter dem Bild eine SPALTE aus drei Knoepfen
+   (Mikrofon, noch einmal hoeren, Gesagt) - beim Satz einer mehr als beim
+   Wort, weil dort das Ohr fehlt. Gemessen auf 844 x 390: die Blase mit
+   120 Punkten schob „Gesagt" an den unteren Rand. Also gibt das Bild
+   nach und nicht der Weiterweg; ein Knopf, den man nicht sieht, ist
+   schlimmer als ein kleineres Bild. */
+@media (max-height:440px){
+  .sagenbild .farbfleck.gross{width:96px;height:96px}
+  .sagenbild .satzblase svg{width:84px;height:84px}
+  .sagenbild{margin-top:calc(-1 * var(--r3))}
+}
 .satzfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r4);padding:0 var(--r4) var(--r4);min-height:0}
 .satzdeutsch{font-size:var(--s2);color:var(--tinte);text-align:center;max-width:32ch}
