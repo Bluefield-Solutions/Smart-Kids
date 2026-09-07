@@ -265,6 +265,30 @@ export function vorratHoeren(){
 }
 
 /**
+ * Der Vorrat zum LEGEN (E8): dieselben Woerter, Buchstabe fuer Buchstabe.
+ *
+ * Der Lehrplan sagt fuer Jahrgangsstufe 3 „abschreibend, mit Vorlage" -
+ * also nicht frei buchstabieren, sondern das Wort danebenliegen haben und
+ * es legen. Der Vorrat ist deshalb derselbe wie beim Hoeren; neu ist nur,
+ * was damit getan wird.
+ *
+ * EIN Wort faellt heraus, und zwar gemessen, nicht nach Gefuehl:
+ * `forty-five` ist das einzige mit einem Zeichen, das kein Buchstabe ist.
+ * Ein Bindestrich als Karte waere keine Schreibuebung, sondern ein
+ * Raetsel darueber, wo der Strich hingehoert - und ihn stillschweigend
+ * wegzulassen hiesse, ein falsches Wort zum Abschreiben vorzulegen.
+ * Bleiben 24 Woerter, das laengste `fifteen` mit sieben Buchstaben.
+ *
+ * Eigene Kennung (`lg:`) aus demselben Grund wie bei „Sag es": wer
+ * `blue` gehoert und gezeigt hat, hat es damit nicht geschrieben.
+ */
+export function vorratLegen(){
+  return vorratHoeren()
+    .filter(x => /^[a-z]+$/.test(x.wort))
+    .map(x => ({ ...x, id: `lg:${x.id}` }));
+}
+
+/**
  * Drei Ablenker zu einem Gegenstand - aus derselben Sorte, gewuerfelt mit
  * dem Keim der Aufgabe.
  *

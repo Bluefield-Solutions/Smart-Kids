@@ -295,6 +295,12 @@ const AUFNAHMEN = [
      umbrechen kann - und ob die umbricht, sieht man nur hier. */
   { name:'quer-satz', spiel:'englisch:satz', kind:'fiona', quer:true,
     wahl:'.schirm.da' },
+  /* „Leg das Wort" (E8): drei Reihen uebereinander - Vorlage, Luecken,
+     Buchstabenvorrat - und darunter noch der Ausweg. Ob das bei 390
+     Punkten Hoehe uebereinander passt, sagt kein Tor, sondern dieses
+     Bild. Lea und nicht Fiona: die Ebene gehoert ihr allein. */
+  { name:'quer-legen', spiel:'englisch:legen', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -718,6 +724,10 @@ const OHNE_KARTE = {
      derselbe Grund wie bei `flaggen:karte`. */
   'englisch:sagen': '.schirm.da #sagenbild',
   'englisch:satz':  '.schirm.da #sagenbild',
+  /* Und „Leg das Wort" (E8) zeigt wieder etwas anderes: die Luecken.
+     Auf `#legereihe` und nicht auf eine Karte - die Karten stehen im
+     Vorrat schon, bevor die Reihe gebaut ist. */
+  'englisch:legen': '.schirm.da #legereihe',
   freunde:   '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',

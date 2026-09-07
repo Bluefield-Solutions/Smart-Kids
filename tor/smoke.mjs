@@ -3987,7 +3987,13 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freund
                                // dass die eigenen ueberhaupt da sind.
                                'schreiben:buchstaben', 'schreiben:diktat',
                                'schreiben:ziffern', 'schreiben:zahlen'],
-                       lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren'] };
+                       /* „Leg das Wort" (E8) gehoert Lea ALLEIN - Fiona liest
+                          nicht, und ein Wort abzuschreiben, das man nicht
+                          lesen kann, ist Formenvergleich. Hier zu stehen
+                          heisst zweierlei: bei Lea muss die Kachel da sein,
+                          und bei jedem anderen darf sie es nicht. */
+                       lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren',
+                             'englisch:legen'] };
 /* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
  * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
@@ -4268,6 +4274,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
         + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da .freundluecke, '
         + '.schirm.da .satzfeld, .schirm.da .flaggenkarte, .schirm.da .flaggengross, '
+        + '.schirm.da #legereihe, '
         + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
@@ -4483,6 +4490,80 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         await bewertet(p);
         // Ein Muster, das nie zutrifft: `gehoert` bleibt hier unberuehrt.
         await abgeschlossen(p, wer, ebene, /(?!)/, 'das gehörte Bild getippt');
+        continue;
+      }
+      /* „Leg das Wort" (E8) - die Ebene, auf der GEZOGEN wird.
+       *
+       * Gespielt wird ueber den TIPPWEG, nicht ueber das Ziehen. Das ist
+       * keine Bequemlichkeit: der Ziehweg hat ein eigenes Tor
+       * (`tor/ziehen.mjs`), das ihn mit echten Zeigerereignissen und in
+       * Bildpunkten misst. Hier geht es um die Zusage, die ohne ihn
+       * gilt - dieselbe wie bei „Sag es": die Ebene muss OHNE die
+       * schwierige Bedienung zu Ende zu spielen sein. Auf einem Telefon
+       * ist Ziehen die fehleranfaellige Art, und ein Kind, das eine
+       * Karte nicht ans Ziel bekommt, darf nicht vor einer Aufgabe
+       * stehen, die sich nicht abschliessen laesst.
+       */
+      if (await p.$('.schirm.da #legereihe')) {
+        const auf = await ausDerSitzung(p, wer, ebene, ['id', 'wort']);
+        if (!auf) continue;
+        const wort = String(auf.wort || '');
+        /* DIE VORLAGE MUSS DASTEHEN. Ohne sie ist es nicht mehr
+           „abschreibend, mit Vorlage", sondern freies Buchstabieren -
+           eine andere und viel schwerere Aufgabe, und auf dem
+           Bildschirm faellt der Unterschied nur auf, wenn man ihn
+           sucht. */
+        const vorlage = await p.$eval('.schirm.da #vorlage',
+          e => e.textContent.trim()).catch(() => null);
+        if (vorlage !== wort)
+          merke('durchgang', new Error(`${wer}/${ebene}: die Vorlage zeigt `
+            + `„${vorlage ?? 'nichts'}", gelegt werden soll „${wort}" — ohne Vorlage `
+            + 'ist das freies Buchstabieren und nicht Abschreiben'));
+        /* UND DAS WORT MUSS LEGBAR SEIN. Fehlt ein Buchstabe im Vorrat
+           oder liegt einer zuviel da, ist die Aufgabe unloesbar bzw.
+           mehrdeutig - und sie sieht in beiden Faellen normal aus. */
+        const stand0 = await p.evaluate(() => ({
+          luecken: document.querySelectorAll('.schirm.da .leerstelle').length,
+          karten: [...document.querySelectorAll('.schirm.da .legekarte')]
+            .map(k => k.dataset.b).sort().join(''),
+        }));
+        if (stand0.luecken !== wort.length)
+          merke('durchgang', new Error(`${wer}/${ebene}: ${stand0.luecken} Lücken für `
+            + `„${wort}" (${wort.length} Buchstaben)`));
+        if (stand0.karten !== [...wort].sort().join(''))
+          merke('durchgang', new Error(`${wer}/${ebene}: der Vorrat trägt `
+            + `„${stand0.karten}", gelegt werden soll „${wort}" — das Wort ist so nicht `
+            + 'zu legen'));
+        // Hier ist das Wort geschrieben zu sehen; gesprochen kommt es
+        // dazu, damit das Kind weiss, welches Wort es gerade schreibt.
+        await englischGehoert(p, wer, ebene, wort,
+          'gelegt wird ein englisches Wort, und ohne es gehört zu haben weiß ein Kind '
+          + 'nicht, welches');
+        /* EIN FALSCHER BUCHSTABE BLEIBT DRAUSSEN. Das ist die Zusage der
+           Ebene: in der Luecke steht nie etwas Falsches. Sie ist von
+           aussen nicht zu sehen - eine Fassung, die den Buchstaben
+           liegen laesst und nur wackelt, sieht fast gleich aus. */
+        const falsch = await p.evaluate((w) => {
+          const k = [...document.querySelectorAll('.schirm.da .legekarte')]
+            .find(x => x.dataset.b !== w[0]);
+          if (!k) return null;
+          k.click();
+          const l = document.querySelector('.schirm.da .leerstelle');
+          return { b: k.dataset.b, drin: l.textContent.trim() };
+        }, wort);
+        if (falsch && falsch.drin)
+          merke('durchgang', new Error(`${wer}/${ebene}: „${falsch.b}" ist in der ersten `
+            + `Lücke gelandet, gesucht war „${wort[0]}" — abgeschrieben wird richtig `
+            + 'oder gar nicht'));
+        // Und jetzt der Reihe nach. Getippt springt jede Karte an die
+        // naechste freie Luecke, also legt die Reihenfolge des Wortes es.
+        for (const c of wort)
+          await p.evaluate((b) => [...document.querySelectorAll('.schirm.da .legekarte')]
+            .find(k => k.dataset.b === b && !k.classList.contains('weg'))?.click(), c);
+        wege.add(`${wer}: Wort gelegt`);
+        await bewertet(p);
+        await abgeschlossen(p, wer, ebene, /(?!)/, 'das Wort Buchstabe für Buchstabe gelegt',
+          wort);
         continue;
       }
       /* „Sag es" (E6) - die Ebene, die kein Urteil faellt.

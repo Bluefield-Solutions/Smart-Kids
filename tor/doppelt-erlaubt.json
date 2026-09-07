@@ -221,11 +221,11 @@
   },
   {
     "dateien": "tor/ansicht.mjs",
-    "token": 113,
+    "token": 135,
     "wo": [
       "tor/ansicht.mjs:273",
-      "tor/ansicht.mjs:317"
+      "tor/ansicht.mjs:323"
     ],
-    "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen."
+    "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8 („Leg das Wort\") sind es 60, und der Lauf ist von 113 auf 135 Token gewachsen."
   }
 ]

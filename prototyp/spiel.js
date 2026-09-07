@@ -1311,6 +1311,19 @@ const EBENEN = [
    * spricht ohnehin nach, was sie hoert. */
   { id:'englisch:satz', ueber:'Englisch', titel:'Sag den Satz', farbe:2,
     art:'englisch', wer:['fiona','lea'] },
+  /* „Leg das Wort" (E8) - abschreibend, mit Vorlage.
+   *
+   * Der Lehrplan verlangt fuer Jahrgangsstufe 3 genau diese Form: das
+   * Wort steht da, geschrieben wird es nicht aus dem Kopf, sondern
+   * abgeschrieben. Deshalb liegt die Vorlage die ganze Zeit oben - sie zu
+   * verstecken waere eine andere, schwerere Aufgabe.
+   *
+   * `wer`: nur Lea. Fiona liest nicht, und ein Wort abzuschreiben, das
+   * man nicht lesen kann, ist Formenvergleich und kein Englisch. Sie hat
+   * mit „Hoeren und zeigen" und „Sag es" zwei Ebenen in dieser Welt, die
+   * ohne Schrift auskommen. */
+  { id:'englisch:legen', ueber:'Englisch', titel:'Leg das Wort', farbe:5,
+    art:'englisch', wer:['lea'] },
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -1508,7 +1521,8 @@ const SCHREIBBILD = {
  * er steht fuer das Bild, auf das es hinauslaeuft; das Zeichen davor
  * sagt, was das Kind damit TUT: hinhoeren oder sprechen. */
 const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
-                          'englisch:sagen':'mikro', 'englisch:satz':'blase' };
+                          'englisch:sagen':'mikro', 'englisch:satz':'blase',
+                          'englisch:legen':'karten' };
 /* Das Mikrofon als PFADE, nicht als `<rect>`.
    Dieselbe Messstelle wie ueberall (Regel 5): `passt` misst die
    gezeichnete Ausdehnung je Pfad; ein `<rect>` findet es gar nicht
@@ -1520,6 +1534,12 @@ const MIKROSTRICH = '<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-
    PFAD, aus demselben Grund. */
 const BLASENSTRICH = '<path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-5 4v-4H4'
   + 'a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M7 10h10M7 13h6"/>';
+/* Und die Karten fuers Legen (E8): drei Buchstabenkarten in einer Reihe,
+   die mittlere angehoben - sie ist gerade unterwegs. Nicht ein Stift und
+   nicht ein Blatt: geschrieben wird hier nicht, gelegt wird. Auch sie als
+   PFADE, aus demselben Grund wie das Mikrofon. */
+const KARTENSTRICH = '<path d="M2 8h9v14H2zM24 8h9v14h-9z"/>'
+  + '<path d="M13 3h9v14h-9z"/>';
 /* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
    Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
@@ -1634,7 +1654,8 @@ function silhouette(ebeneId) {
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round">${ENGLISCHZEICHEN[ebeneId] === 'mikro' ? MIKROSTRICH
-        : ENGLISCHZEICHEN[ebeneId] === 'blase' ? BLASENSTRICH : ZEICHEN.tonAn}<path
+        : ENGLISCHZEICHEN[ebeneId] === 'blase' ? BLASENSTRICH
+        : ENGLISCHZEICHEN[ebeneId] === 'karten' ? KARTENSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
@@ -2116,6 +2137,12 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      und brauchen deshalb kein Umhaengen wie „Sag es". */
   if (art==='englisch' && kont==='satz')
     return Englisch.vorratChunks();
+  /* Die 24 Woerter zum Legen (E8). Eigene Kennung (`lg:`) und eigener
+     Leitner-Stand, wie bei „Sag es" - und aus demselben Grund: gehoert
+     ist nicht geschrieben. Der Vorrat filtert selbst, welche Woerter sich
+     ueberhaupt aus Buchstabenkarten legen lassen. */
+  if (art==='englisch' && kont==='legen')
+    return Englisch.vorratLegen();
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -3113,13 +3140,30 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
  *
  * Und warum ueberhaupt gekuerzt wird, steht darueber: der Vorlauf zeigt
  * Beispiele, nicht den Vorrat. */
-const VORLAUF_JE = (art) =>
-    ['rechnen', 'freunde'].includes(art) ? P.sitzung
+/* Und „Leg das Wort" (E8) - zwoelf, und die Zahl ist gemessen.
+ *
+ * Vierundzwanzig Karten wollen bei 88 Punkten Mindestbreite ACHT Spalten.
+ * Auf dem iPhone SE quer (667 breit, 643 fuers Gitter) passen davon nur
+ * sieben - `auto-fit` legt sieben an, aus drei Reihen werden vier, und in
+ * den 174 Punkten Bandhoehe misst eine Karte dann 23 Punkte. Gemessen von
+ * `passt`, nicht gerechnet: die Fingergrenze ist 44.
+ *
+ * Warum nicht die enge Spaltenbreite wie bei neun Spalten (`.kleber.viel`,
+ * 56 statt 88): die 88 stehen dort aus einem eigenen Grund - bei 76 brach
+ * „Niedersachsen" mitten im Wort. Eine Grenze anzuruehren, die einen
+ * anderen Fall traegt, waere der teuerste Weg zur schmalsten Karte.
+ *
+ * Zwoelf wollen sechs Spalten (528 Punkte) und zwei Reihen. Und es
+ * entspricht dem, was der Vorlauf ueberhaupt tut: er zeigt BEISPIELE,
+ * nicht den Vorrat - derselbe Satz steht drei Absaetze weiter oben. */
+const VORLAUF_JE = (art, ebeneId) =>
+    ebeneId === 'englisch:legen' ? 12
+  : ['rechnen', 'freunde'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;
 function vorlaufVorrat(ebeneId){
   const alle = vorrat(ebeneId);
-  const wieviel = VORLAUF_JE(ebeneArt(ebeneId));
+  const wieviel = VORLAUF_JE(ebeneArt(ebeneId), ebeneId);
   if (!wieviel || alle.length <= wieviel) return alle;
   const schritt = Math.floor(alle.length / wieviel);
   return alle.filter((_, i) => i % schritt === 0).slice(0, wieviel);
@@ -3205,6 +3249,13 @@ function vorlaufSatz(ebeneId){
       : 'Hier steht ein englischer Satz, und du sagst ihn laut. Es wird '
         + '<strong>nicht bewertet</strong>. Vorlesen kann dir dieses Gerät ihn '
         + 'leider nicht — ihm fehlt eine englische Stimme.';
+  /* „Leg das Wort" (E8). Der Satz nennt BEIDE Wege - ohne ihn findet ein
+     Kind den Tippweg nicht, weil eine Karte, die man ziehen kann, nicht
+     danach aussieht, als koenne man sie auch antippen. */
+  if (art === 'englisch' && kont === 'legen')
+    return 'Das Wort steht oben, und du legst es aus Buchstaben. '
+      + 'Du kannst eine Karte <strong>ziehen</strong> oder sie einfach '
+      + '<strong>antippen</strong> — dann springt sie an die nächste Lücke.';
   if (art === 'englisch' && kont === 'sagen')
     return englischHoerbar()
       ? 'Du hörst ein Wort und sagst es nach. Es wird <strong>nicht bewertet</strong> — '
@@ -4378,6 +4429,7 @@ function englischschirm(){
      `art` ist bei beiden `englisch`. */
   if (['sagen', 'satz'].includes(String(Sitzung.ebeneId).split(':')[1]))
     return sagenschirm();
+  if (String(Sitzung.ebeneId).split(':')[1] === 'legen') return legeschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
@@ -4480,6 +4532,199 @@ function englischschirm(){
   vorlesen(ziel.wort, 'en');
   {
     const b = nochHoerenKnopf(ziel.wort, 'en');
+    if (b) s.querySelector('.werkzeug')?.appendChild(b);
+  }
+  return s;
+}
+
+/* ---------- „Leg das Wort" (E8) ------------------------------------------
+ *
+ * REFERENZABGLEICH. Drei Vorbilder, und was sie WIRKLICH tun:
+ *
+ * 1. Das Montessori-Bewegliche-Alphabet. Buchstaben liegen als
+ *    Gegenstaende da, das Wort wird GELEGT, nicht geschrieben. Was es
+ *    tut: es trennt die Rechtschreibung von der Handschrift - ein Kind,
+ *    das den Stift noch nicht fuehrt, kann trotzdem richtig schreiben.
+ *    Zu uebernehmen: Buchstaben als Karten, und die Vorlage bleibt
+ *    liegen.
+ *
+ * 2. ANTON, „Wort legen". Karten werden GEZOGEN. Was es tut: die
+ *    Bewegung ist die Antwort, und wo die Karte landet, ist die
+ *    Entscheidung - nicht nur WELCHE Karte, sondern auch WOHIN.
+ *    Zu uebernehmen: das Ziehen mit Nachsicht, das die App aus der Karte
+ *    schon hat.
+ *
+ * 3. Duolingo, „word bank". Getippt, nicht gezogen: die Karte springt an
+ *    die naechste freie Stelle. Was es tut: es macht die Aufgabe auf
+ *    einem Telefon mit einer Hand loesbar - Ziehen ist auf kleinen
+ *    Bildschirmen die fehleranfaellige Bedienung, nicht die bequeme.
+ *    Zu uebernehmen: der Tippweg NEBEN dem Ziehweg, nicht statt seiner.
+ *
+ * DAS SOLL, daraus abgeleitet:
+ *   - Die Vorlage steht die ganze Zeit da (Lehrplan: „abschreibend, mit
+ *     Vorlage"). Sie zu verstecken waere eine andere Aufgabe.
+ *   - Beide Wege fuehren zum Ziel: ziehen UND tippen.
+ *   - Eine falsch gelegte Karte kommt zurueck. In der Luecke steht nie
+ *     ein falscher Buchstabe - abgeschrieben wird richtig oder gar
+ *     nicht.
+ *
+ * ABSTAND ZUM STAND VOR DER RUNDE: null von drei. Es gab kein Legen.
+ *
+ * WARUM NICHT FREI TIPPEN: das kann die App laengst (Flaggen, Wendungen,
+ * Diktat), und es ist die schwerere Aufgabe. Der Lehrplan verlangt fuer
+ * Jahrgangsstufe 3 ausdruecklich das Abschreiben.
+ */
+function legeschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+  const wort = ziel.wort;
+  /* Genau die Buchstaben des Wortes, gemischt - keine Ablenker.
+     Abschreiben ist kein Raetsel: die Vorlage steht daneben, und wer
+     Ablenker dazulegt, prueft das Suchen statt das Schreiben. */
+  const karten = mischenMit([...wort], st.keim + st.i * 7919);
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Leg das Wort.</div>
+    <div class="legefeld">
+      <div class="vorlage" id="vorlage" lang="en">${wort}</div>
+      <div class="legereihe" id="legereihe">${[...wort].map((c, i) =>
+        `<span class="leerstelle" data-i="${i}" data-b="${c}"></span>`).join('')}</div>
+      <div class="legevorrat" id="legevorrat">${karten.map((c, i) =>
+        `<button class="etikett legekarte" data-b="${c}" data-k="${i}"
+                 lang="en" aria-label="${c}">${c}</button>`).join('')}</div>
+      <div class="werkzeug"><button class="leise" id="weissnicht">${
+        ZEI('frage', 20)}Weiß ich nicht</button></div>
+    </div>`;
+
+  const stellen = () => [...s.querySelectorAll('.leerstelle')];
+  const offen = () => stellen().find(x => !x.classList.contains('voll')) || null;
+  const ausschalten = () => s.querySelectorAll('.legekarte').forEach(k => k.disabled = true);
+
+  const protokollieren = (ergebnis, roh, fachVorher, eingabeart) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn, eingabeart });
+
+  const weiter = () => weiterIn(st);
+
+  /* Was unter dem Finger liegt, leuchtet auf - dieselbe Zusage wie auf der
+     Karte: Nachsicht ohne Anzeige waere Zauberei. */
+  let drueber = null;
+  const zeigen = (stelle) => {
+    if (drueber === stelle) return;
+    if (drueber) drueber.classList.remove('drueber');
+    drueber = stelle;
+    if (stelle) stelle.classList.add('drueber');
+  };
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher, 'ziehen');
+    ausschalten();
+    stellen().forEach(x => { x.textContent = x.dataset.b; x.classList.add('voll','gezeigt'); });
+    const f = s.querySelector('#frage');
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem. So schreibt man `
+      + `<strong lang="en">${wort}</strong>.</span>`;
+    // Der deutsche Trost und das englische Wort sind ZWEI Aeusserungen -
+    // in einem Satz gemischt liefe „fifteen" durch die deutsche Stimme.
+    sagen('Kein Problem. So schreibt man:');
+    vorlesen(wort, 'en');
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function fertig(eingabeart){
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    const neuerAufkleber = werten(ziel, 'richtig', versuch + 1);
+    kopfNachziehenIn(s);
+    protokollieren('richtig', wort, fachVorher, eingabeart);
+    ausschalten();
+    const spruch = lob();
+    lobsatz(s, `<strong lang="en">${wort}</strong>.`, null, spruch, '', neuerAufkleber);
+    sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    vorlesen(wort, 'en');
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  /**
+   * Eine Karte auf eine Luecke.
+   *
+   * Passt sie, bleibt sie liegen. Passt sie nicht, kommt sie zurueck -
+   * in der Luecke steht NIE ein falscher Buchstabe. Das ist keine
+   * Bequemlichkeit, sondern die Aufgabe: wer abschreibt, sieht am Ende
+   * das richtige Wort, nicht seinen Fehler.
+   */
+  function legen(karte, stelle, eingabeart, von){
+    if (erledigt || !stelle || karte.classList.contains('weg')) return;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (stelle.dataset.b === karte.dataset.b) {
+      stelle.textContent = karte.dataset.b;
+      stelle.classList.add('voll');
+      karte.classList.add('weg');
+      if (!offen()) fertig(eingabeart);
+      return;
+    }
+    versuch++;
+    protokollieren('falsch', karte.dataset.b, fachVorher, eingabeart);
+    klangZu('falsch');
+    if (von) zurueckFliegen(karte, von);
+    if (versuch >= 3) return aufloesen();
+    wackelt(karte);
+    const f = s.querySelector('#frage');
+    const satz = 'Nicht ganz — schau noch einmal auf das Wort.';
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+  }
+
+  /* Der Treffertest fuers Legen: eine Luecke, die noch frei ist. Volle
+     Luecken zaehlen nicht - sonst faengt die naechstbeste schon besetzte
+     Stelle den Zug ab, und das Kind sieht nicht, warum nichts passiert. */
+  const lueckeUnter = (x, y) => {
+    const treffer = (px, py) => {
+      const e = document.elementFromPoint(px, py);
+      if (!e || !e.closest) return null;
+      const l = e.closest('.leerstelle');
+      return l && !l.classList.contains('voll') ? l : null;
+    };
+    const t = nachsichtig(treffer, x, y);
+    return t ? t.marke : null;
+  };
+
+  s.querySelectorAll('.legekarte').forEach(karte => {
+    /* Der Ziehweg (ANTON) und der Tippweg (Duolingo) nebeneinander.
+       Getippt springt die Karte an die NAECHSTE freie Stelle - gezogen
+       entscheidet der Finger, welche es ist. */
+    ziehbar(karte, {
+      ueber: lueckeUnter,
+      zeigen,
+      abgelegt: (stelle, ctx) => legen(karte, stelle, 'ziehen', ctx.von),
+      insLeere: (b, von) => {
+        zurueckFliegen(b, von);
+        /* Nach dem Lob nicht mehr: der Satz stuende dann statt „Richtig!"
+           da, und gewertet ist laengst. Dieselbe Vorsicht wie in `legen`. */
+        if (erledigt) return;
+        const f = s.querySelector('#frage');
+        if (f) f.innerHTML = '<span class="fastText">Lass ihn auf einer Lücke los.</span>';
+        sagen('Lass ihn auf einer Lücke los.');
+      },
+    });
+    karte.onclick = () => legen(karte, offen(), 'antippen', null);
+  });
+
+  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+
+  /* Das Wort einmal hoeren, bevor es gelegt wird. Abgeschrieben wird das
+     GESCHRIEBENE - deshalb steht es da; gesprochen kommt es dazu, damit
+     das Kind weiss, welches Wort es gerade schreibt. */
+  vorlesen(wort, 'en');
+  {
+    const b = nochHoerenKnopf(wort, 'en');
     if (b) s.querySelector('.werkzeug')?.appendChild(b);
   }
   return s;
@@ -5548,6 +5793,213 @@ function sprachweg({ spricht, werkzeug, liste, bewerte, ohneErgebnis }) {
   }
 }
 
+/* ---------- Das Legebauteil: Ziehen mit Nachsicht (E8) -----------------
+ *
+ * Es hat drei Jahre lang genau EINEN Benutzer gehabt und wohnte deshalb
+ * mitten in `spielschirm`: das Etikett, das auf ein Land gezogen wird.
+ * Mit E8 (Buchstaben in Leerstellen legen) bekommt es einen zweiten, und
+ * damit stellt sich dieselbe Frage wie bei `sprachweg`: nachbauen oder
+ * herausloesen.
+ *
+ * Nachbauen waere teurer, als es aussieht. In diesen hundert Zeilen
+ * stecken sechs gemessene Befunde, und keiner davon ist zu erraten: die
+ * 6-Punkte-Schwelle zwischen Tippen und Ziehen, die abgeschaltete
+ * Einlauf-Animation (eine CSS-Animation steht ueber dem Inline-Stil,
+ * auch abgelaufen), die Drosselung der Umkreissuche auf ein Bild, das
+ * Zuhoeren am Fenster statt `setPointerCapture`, das Haengen UNTER dem
+ * Finger und die Grenze der Nachsicht. Eine zweite Fassung haette sie
+ * alle wieder - und `tor/ziehen.mjs` misst nur die erste.
+ *
+ * Herausgeloest sind vier Nahtstellen, und sie sind genau das, was die
+ * KARTE ausmacht:
+ *
+ *   ueber(x,y)        was liegt dort? Eine Marke, oder nichts. Was eine
+ *                     Marke ist, weiss nur der Aufrufer - auf der Karte
+ *                     eine Gebiets-Kennung, beim Legen eine Leerstelle.
+ *   zeigen(marke)     was aufleuchtet. Nachsicht ohne Anzeige waere
+ *                     Zauberei; ohne diese Nahtstelle koennte man sie
+ *                     vergessen, und niemand saehe es.
+ *   abgelegt(marke)   was eine Antwort IST. Der Aufrufer entscheidet.
+ *   insLeere(b, von)  ins Nichts gezogen: keine falsche Antwort, sondern
+ *                     gar keine. Der Satz dazu gehoert dem Aufrufer, denn
+ *                     „Lass es auf dem Land los" gilt nur auf der Karte.
+ *
+ * Was NICHT herausgeloest ist: die Ringsuche selbst. Sie traegt die eine
+ * Nachsichtszahl, und zwei Zahlen waeren zwei Nachsichten. Wer nachsichtig
+ * treffen will, gibt seinen eigenen Treffertest hinein.
+ */
+
+/* Warum ueberhaupt Nachsicht: ein Kind zielt mit dem Daumen, und Luxemburg
+ * ist auf der Europakarte kleiner als sein Fingerkuppenabdruck. Ohne
+ * Nachsicht landet der Zug im Nachbarland oder im Meer, das Kind hat
+ * richtig gedacht und falsch getroffen - und erfaehrt nie warum.
+ *
+ * Nachsicht heisst hier NICHT „die Flaeche wird groesser gerechnet".
+ * Getestet wird weiter mit echtem Treffertest an echten Umrissen - nur
+ * eben nicht an einem Punkt, sondern auf Ringen um ihn herum, von innen
+ * nach aussen. Der erste Treffer gewinnt, also gewinnt immer das
+ * naechstgelegene Ziel. Die Form bleibt die Form; nur der Finger darf
+ * dicker sein als ein Bildpunkt.
+ *
+ * Der Ring hoert bei NACHSICHT auf. Ohne Grenze traefe jeder Wurf
+ * irgendetwas, und ein Fehlgriff mitten im Meer wuerde als falsche
+ * Antwort gewertet - das kostet einen der drei Versuche fuer etwas, das
+ * gar keine Antwort war.
+ */
+const NACHSICHT = 60;                      // Bildpunkte
+/**
+ * Ringsuche um einen Punkt. `treffer(px,py)` gibt eine Marke oder nichts.
+ *
+ * Gibt `{ marke, genau }` zurueck - `genau` sagt, ob schon der Punkt selbst
+ * getroffen hat. Die Karte braucht das fuer ihren Hinweis „liegt weiter
+ * oben"; wer es nicht braucht, sieht es nicht an.
+ */
+function nachsichtig(treffer, x, y){
+  const genau = treffer(x, y);
+  if (genau) return { marke: genau, genau: true };
+  for (let r = 10; r <= NACHSICHT; r += 10) {
+    for (let i = 0; i < 16; i++) {
+      const w = i * Math.PI / 8;
+      const m = treffer(x + Math.cos(w) * r, y + Math.sin(w) * r);
+      if (m) return { marke: m, genau: false };
+    }
+  }
+  return null;
+}
+
+/**
+ * Wo haengt das Gezogene, waehrend es am Finger ist?
+ *
+ * NICHT unter dem Finger. Ein Bildschirmfoto vom iPhone quer zeigt den
+ * Grund: das groesste Etikett war 240 x 160 Punkte gross (bis A5
+ * „Australien und Ozeanien", zweizeilig), Australien auf der Weltkarte
+ * 60 x 50 - mittig am Finger deckt das Etikett sein eigenes Ziel
+ * VOLLSTAENDIG zu. Das Aufleuchten nuetzt dann nichts, weil niemand es
+ * sieht.
+ *
+ * Es haengt deshalb UNTER dem Finger, waagerecht mittig. Oben bleibt
+ * frei, und genau dort liegt die Karte. Passt es unten nicht mehr hin,
+ * klappt es nach oben; seitlich wird es ins Fenster geschoben.
+ */
+const LUFT = 22;
+function haengen(basis, gross, x, y){
+  let dy = y + LUFT - basis.top;
+  if (basis.top + dy + gross.h > innerHeight - 4) dy = y - LUFT - gross.h - basis.top;
+  const links = Math.max(4, Math.min(x - gross.b/2, innerWidth - gross.b - 4));
+  return `translate3d(${(links - basis.left).toFixed(1)}px,${dy.toFixed(1)}px,0) rotate(-1.5deg)`;
+}
+
+/** Das Gezogene fliegt sichtbar an seinen Platz zurueck statt zu blinken. */
+function zurueckFliegen(b, von){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const nach = b.getBoundingClientRect();
+  const dx = von.left - nach.left, dy = von.top - nach.top;
+  if (!dx && !dy) return;
+  b.animate([{ transform:`translate3d(${dx}px,${dy}px,0) scale(1.06)` },
+             { transform:'none' }],
+    { duration: 260, easing:'cubic-bezier(.2,0,0,1)' });
+}
+
+/**
+ * Macht ein Element ziehbar. Die vier Nahtstellen stehen im Kopf oben.
+ *
+ * `beimAufheben` ist die fuenfte und die kleinste: die Karte liest den
+ * Namen vor, sobald das Etikett am Finger haengt. Ein Buchstabe hat
+ * nichts vorzulesen, was ein Kind weiterbraechte.
+ */
+function ziehbar(b, { ueber, zeigen, abgelegt, insLeere, beimAufheben }){
+  // Nicht `setPointerCapture`: das Gezogene klebt am Finger und faengt
+  // damit jeden Treffertest ab. Es hoert waehrend des Zuges auf,
+  // anfassbar zu sein (`.zieht{pointer-events:none}`) - und dann liefe
+  // der Fang ins Leere. Das Fenster hoert stattdessen zu; das haelt den
+  // Zug auch, wenn der Finger das Element verlaesst.
+  //
+  // Aufgehoben wird erst nach 6 Punkten Weg. Vorher ist es ein Tippen,
+  // und Tippen soll den Namen vorlesen, nicht das Element verschieben -
+  // sonst zuckt es bei jeder Beruehrung.
+  let start=null, heim=null, zeiger=null, auf=false, zug=null;
+  // Das Element folgt dem Finger in JEDEM Ereignis - das ist billig und
+  // darf nicht ruckeln. Die Umkreissuche dagegen kostet ueber dem Meer
+  // bis zu 96 Treffertests, und jeder davon erzwingt einen Durchlauf des
+  // Stylings. Einmal je Bild reicht: schneller als das Auge ist ohnehin
+  // keine Anzeige.
+  let angemeldet=false, zuletzt=null;
+  // Beim Aufheben wird aus der Antwortkachel ein SCHILD.
+  //
+  // Die Kachel war bis A5 240 x 160 Punkte gross („Australien und
+  // Ozeanien" brach auf zwei Zeilen), Australien auf der Weltkarte
+  // 60 x 50 - am Finger deckt sie mehrere Gebiete auf einmal zu. Als
+  // einzeiliges Schild ist sie rund ein Drittel so gross. Die Breite wird
+  // deshalb NICHT festgehalten: ohne Breite schrumpft ein
+  // `position:fixed` Kasten auf seinen Inhalt.
+  const aufheben=()=>{ auf=true;
+    // Die Einlauf-Animation muss WEG, bevor das Schild dem Finger folgt.
+    //
+    // Eine CSS-Animation steht in der Kaskade ueber dem Inline-Stil - auch
+    // wenn sie laengst abgelaufen ist und nur noch ihren Endzustand haelt
+    // (`both`). `herein` endet auf `transform: none`, und genau das ist
+    // die Eigenschaft, mit der das Schild am Finger haengt. Das Ergebnis
+    // sah harmlos aus: das Ziel leuchtete richtig auf (die Suche haengt am
+    // Finger, nicht am Schild), nur das Schild blieb in der Liste stehen.
+    // Kein Tor hat es gesehen, und im erneuerten Vorbild stand es drin.
+    b.style.animation='none';
+    b.classList.add('zieht'); b.style.position='fixed';
+    /* Solange etwas am Finger haengt, sind die Lupenknoepfe TAUB.
+     *
+     * Sie liegen ueber der Karte, und wer sein Etikett dort ablegt,
+     * legt es auf einen Knopf statt auf ein Land - `elementFromPoint`
+     * liefert den Knopf, die Umkreissuche findet nichts, und die
+     * Antwort ist weg. Gemessen von `ziehen`: von oben traf man nur
+     * noch bis 30 statt 40 Punkte, sobald die Knoepfe dastanden. */
+    document.body.dataset.zieht = '1';
+    b.style.left=heim.left+'px'; b.style.top=heim.top+'px'; b.style.margin='0';
+    const z=b.getBoundingClientRect(); zug={b:z.width,h:z.height};
+    if (beimAufheben) beimAufheben(); };
+  const bewegen=(ev)=>{ if(!start||ev.pointerId!==zeiger) return;
+    if(!auf){ if(Math.hypot(ev.clientX-start.x, ev.clientY-start.y) < 6) return; aufheben(); }
+    b.style.transform = haengen(heim, zug, ev.clientX, ev.clientY);
+    zuletzt={x:ev.clientX,y:ev.clientY};
+    if (angemeldet) return;
+    angemeldet=true;
+    requestAnimationFrame(()=>{ angemeldet=false;
+      if(!start||!zuletzt) return;
+      zeigen(ueber(zuletzt.x, zuletzt.y));
+    });
+  };
+  const aufraeumen=()=>{
+    delete document.body.dataset.zieht;
+    b.classList.remove('zieht'); b.style.position=''; b.style.left='';
+    b.style.top=''; b.style.width=''; b.style.margin=''; b.style.transform='';
+    b.style.animation='';
+    zeigen(null); start=null; zeiger=null; auf=false; zug=null;
+    removeEventListener('pointermove',bewegen);
+    removeEventListener('pointerup',los);
+    removeEventListener('pointercancel',abbruch);
+  };
+  const abbruch=()=>aufraeumen();
+  const los=(ev)=>{ if(!start||ev.pointerId!==zeiger) return;
+    // Nie aufgehoben: das war ein Tippen. Der Klickhandler liest vor.
+    if(!auf){ aufraeumen(); return; }
+    const t = ueber(ev.clientX, ev.clientY);
+    const von = b.getBoundingClientRect();
+    aufraeumen();
+    // Der Ablegepunkt wandert mit: aus ihm und dem Anker des gesuchten
+    // Gebiets wird der Hinweis „liegt weiter oben" (A3).
+    if (t) { abgelegt(t, { etikett:b, punkt:{ x:ev.clientX, y:ev.clientY }, von }); return; }
+    // Ins Leere gezogen. Das ist keine falsche Antwort - es war gar
+    // keine. Es kostet keinen Versuch, aber es bleibt sichtbar.
+    insLeere(b, von);
+  };
+  b.addEventListener('pointerdown',ev=>{
+    if(b.classList.contains('weg')||start) return;
+    start={x:ev.clientX,y:ev.clientY};
+    zeiger=ev.pointerId; heim=b.getBoundingClientRect(); auf=false;
+    addEventListener('pointermove',bewegen);
+    addEventListener('pointerup',los);
+    addEventListener('pointercancel',abbruch);
+  });
+}
+
 function spielschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const [art, kont] = st.ebeneId.split(':');
@@ -6312,7 +6764,23 @@ function spielschirm(){
       // soll nicht ins Leere greifen.
       b.onclick=()=>{ if (weise==='antippen' && !erledigt) bewerte(k.name,'antippen',{ etikett:b });
                       else vorlesen(k.name); };
-      ziehbar(b,k); liste.appendChild(b); });
+      ziehbar(b, {
+        ueber: zielUnter,
+        zeigen: (t) => drueberSetzen(t ? t.id : null),
+        abgelegt: (t, ctx) => bewerte(k.name, 'ziehen',
+          { etikett:b, getroffen:t.id, punkt:ctx.punkt }),
+        insLeere: (el_, von) => {
+          zurueckFliegen(el_, von);
+          const h = liste.querySelector('.hinweis') || liste.appendChild(el('div','hinweis'));
+          h.className='hinweis nochmal';
+          // Kurz genug fuer eine Zeile: der Satz stand auf dem iPhone quer
+          // zweizeilig am unteren Rand und schob die Antwortliste hoch.
+          h.textContent='Lass es auf dem Land los.';
+          sagen('Lass es auf dem Land los.');
+        },
+        beimAufheben: () => vorlesen(k.name),
+      });
+      liste.appendChild(b); });
   }
 
   /* Der leise Ausweg. Er steht bewusst klein und ohne Farbe da: er soll
@@ -6402,7 +6870,6 @@ function spielschirm(){
    * Antwort gewertet - das kostet einen der drei Versuche fuer etwas, das
    * gar keine Antwort war.
    */
-  const NACHSICHT = 60;                      // Bildpunkte
   function zielUnter(x, y){
     const treffer = (px, py) => {
       const e = document.elementFromPoint(px, py);
@@ -6415,16 +6882,8 @@ function spielschirm(){
       const pfad = e.closest('path.geb');
       return pfad ? pfad.dataset.id : null;
     };
-    const genau = treffer(x, y);
-    if (genau) return { id: genau, genau: true };
-    for (let r = 10; r <= NACHSICHT; r += 10) {
-      for (let i = 0; i < 16; i++) {
-        const w = i * Math.PI / 8;
-        const id = treffer(x + Math.cos(w) * r, y + Math.sin(w) * r);
-        if (id) return { id, genau: false };
-      }
-    }
-    return null;
+    const t = nachsichtig(treffer, x, y);
+    return t ? { id: t.marke, genau: t.genau } : null;
   }
 
   /**
@@ -6444,141 +6903,6 @@ function spielschirm(){
     if (neu) neu.classList.add('drueber');
   }
 
-  /**
-   * Wo haengt das Etikett, waehrend es gezogen wird?
-   *
-   * NICHT unter dem Finger. Ein Bildschirmfoto vom iPhone quer zeigt den
-   * Grund: das groesste Etikett war 240 x 160 Punkte
-   * gross (bis A5 "Australien und Ozeanien", zweizeilig), Australien auf
-   * der Weltkarte 60 x 50 - mittig am Finger deckt
-   * das Etikett sein eigenes Ziel VOLLSTAENDIG zu. Das Aufleuchten nuetzt
-   * dann nichts, weil niemand es sieht.
-   *
-   * Es haengt deshalb UNTER dem Finger, waagerecht mittig. Oben bleibt
-   * frei, und genau dort liegt die Karte. Passt es unten nicht mehr hin,
-   * klappt es nach oben; seitlich wird es ins Fenster geschoben.
-   */
-  const LUFT = 22;
-  function haengen(basis, gross, x, y){
-    let dy = y + LUFT - basis.top;
-    if (basis.top + dy + gross.h > innerHeight - 4) dy = y - LUFT - gross.h - basis.top;
-    const links = Math.max(4, Math.min(x - gross.b/2, innerWidth - gross.b - 4));
-    return `translate3d(${(links - basis.left).toFixed(1)}px,${dy.toFixed(1)}px,0) rotate(-1.5deg)`;
-  }
-
-  function ziehbar(b,k){
-    // Nicht `setPointerCapture`: das Etikett klebt am Finger und faengt
-    // damit jeden Treffertest ab. Es hoert waehrend des Zuges auf,
-    // anfassbar zu sein (`.zieht{pointer-events:none}`) - und dann liefe
-    // der Fang ins Leere. Das Fenster hoert stattdessen zu; das haelt den
-    // Zug auch, wenn der Finger das Etikett verlaesst.
-    //
-    // Aufgehoben wird erst nach 6 Punkten Weg. Vorher ist es ein Tippen,
-    // und Tippen soll den Namen vorlesen, nicht das Etikett verschieben -
-    // sonst zuckt es bei jeder Beruehrung.
-    let start=null, heim=null, zeiger=null, auf=false, zug=null;
-    // Das Etikett folgt dem Finger in JEDEM Ereignis - das ist billig und
-    // darf nicht ruckeln. Die Umkreissuche dagegen kostet ueber dem Meer
-    // bis zu 96 Treffertests, und jeder davon erzwingt einen Durchlauf des
-    // Stylings. Einmal je Bild reicht: schneller als das Auge ist ohnehin
-    // keine Anzeige.
-    let angemeldet=false, zuletzt=null;
-    // Beim Aufheben wird aus der Antwortkachel ein SCHILD.
-    //
-    // Die Kachel war bis A5 240 x 160 Punkte gross ("Australien und
-    // Ozeanien" brach auf zwei Zeilen), Australien auf der Weltkarte
-    // 60 x 50 - am
-    // Finger deckt sie mehrere Gebiete auf einmal zu. Als einzeiliges
-    // Schild ist sie rund ein Drittel so gross. Die Breite wird deshalb
-    // NICHT festgehalten: ohne Breite schrumpft ein `position:fixed`
-    // Kasten auf seinen Inhalt.
-    const aufheben=()=>{ auf=true;
-      // Die Einlauf-Animation muss WEG, bevor das Schild dem Finger folgt.
-      //
-      // Eine CSS-Animation steht in der Kaskade ueber dem Inline-Stil - auch
-      // wenn sie laengst abgelaufen ist und nur noch ihren Endzustand haelt
-      // (`both`). `herein` endet auf `transform: none`, und genau das ist
-      // die Eigenschaft, mit der das Schild am Finger haengt. Das Ergebnis
-      // sah harmlos aus: das Ziel leuchtete richtig auf (die Suche haengt am
-      // Finger, nicht am Schild), nur das Schild blieb in der Liste stehen.
-      // Kein Tor hat es gesehen, und im erneuerten Vorbild stand es drin.
-      b.style.animation='none';
-      b.classList.add('zieht'); b.style.position='fixed';
-      /* Solange ein Etikett am Finger haengt, sind die Lupenknoepfe TAUB.
-       *
-       * Sie liegen ueber der Karte, und wer sein Etikett dort ablegt,
-       * legt es auf einen Knopf statt auf ein Land - `elementFromPoint`
-       * liefert den Knopf, die Umkreissuche findet nichts, und die
-       * Antwort ist weg. Gemessen von `ziehen`: von oben traf man nur
-       * noch bis 30 statt 40 Punkte, sobald die Knoepfe dastanden. */
-      document.body.dataset.zieht = '1';
-      b.style.left=heim.left+'px'; b.style.top=heim.top+'px'; b.style.margin='0';
-      const z=b.getBoundingClientRect(); zug={b:z.width,h:z.height};
-      vorlesen(k.name); };
-    const bewegen=(ev)=>{ if(!start||ev.pointerId!==zeiger) return;
-      if(!auf){ if(Math.hypot(ev.clientX-start.x, ev.clientY-start.y) < 6) return; aufheben(); }
-      b.style.transform = haengen(heim, zug, ev.clientX, ev.clientY);
-      zuletzt={x:ev.clientX,y:ev.clientY};
-      if (angemeldet) return;
-      angemeldet=true;
-      requestAnimationFrame(()=>{ angemeldet=false;
-        if(!start||!zuletzt) return;
-        const t = zielUnter(zuletzt.x, zuletzt.y);
-        drueberSetzen(t ? t.id : null);
-      });
-    };
-    const aufraeumen=()=>{
-      delete document.body.dataset.zieht;
-      b.classList.remove('zieht'); b.style.position=''; b.style.left='';
-      b.style.top=''; b.style.width=''; b.style.margin=''; b.style.transform='';
-      b.style.animation='';
-      drueberSetzen(null); start=null; zeiger=null; auf=false; zug=null;
-      removeEventListener('pointermove',bewegen);
-      removeEventListener('pointerup',los);
-      removeEventListener('pointercancel',abbruch);
-    };
-    const abbruch=()=>aufraeumen();
-    const los=(ev)=>{ if(!start||ev.pointerId!==zeiger) return;
-      // Nie aufgehoben: das war ein Tippen. Der Klickhandler liest vor.
-      if(!auf){ aufraeumen(); return; }
-      const t = zielUnter(ev.clientX, ev.clientY);
-      const von = b.getBoundingClientRect();
-      aufraeumen();
-      // Der Ablegepunkt wandert mit: aus ihm und dem Anker des gesuchten
-      // Gebiets wird der Hinweis „liegt weiter oben" (A3).
-      if (t) { bewerte(k.name,'ziehen',
-        { etikett:b, getroffen:t.id, punkt:{ x:ev.clientX, y:ev.clientY } }); return; }
-      // Ins Leere gezogen. Das ist keine falsche Antwort - es war gar
-      // keine. Es kostet keinen Versuch, aber es bleibt sichtbar: das
-      // Etikett fliegt an seinen Platz zurueck und sagt, was fehlt.
-      zurueckFliegen(b, von);
-      const h = liste.querySelector('.hinweis') || liste.appendChild(el('div','hinweis'));
-      h.className='hinweis nochmal';
-      // Kurz genug fuer eine Zeile: der Satz stand auf dem iPhone quer
-      // zweizeilig am unteren Rand und schob die Antwortliste hoch.
-      h.textContent='Lass es auf dem Land los.';
-      sagen('Lass es auf dem Land los.');
-    };
-    b.addEventListener('pointerdown',ev=>{
-      if(b.classList.contains('weg')||start) return;
-      start={x:ev.clientX,y:ev.clientY};
-      zeiger=ev.pointerId; heim=b.getBoundingClientRect(); auf=false;
-      addEventListener('pointermove',bewegen);
-      addEventListener('pointerup',los);
-      addEventListener('pointercancel',abbruch);
-    });
-  }
-
-  /** Das Etikett fliegt sichtbar an seinen Platz zurueck statt zu blinken. */
-  function zurueckFliegen(b, von){
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const nach = b.getBoundingClientRect();
-    const dx = von.left - nach.left, dy = von.top - nach.top;
-    if (!dx && !dy) return;
-    b.animate([{ transform:`translate3d(${dx}px,${dy}px,0) scale(1.06)` },
-               { transform:'none' }],
-      { duration: 260, easing:'cubic-bezier(.2,0,0,1)' });
-  }
 
   /**
    * Kopf nachziehen, sobald geantwortet wurde.

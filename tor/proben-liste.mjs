@@ -2679,7 +2679,7 @@ export const PROBEN = [
     sagt:'untere Hälfte des Suchradius' },
   { n:'das gezogene Schild folgt dem Finger nicht mehr', tor:'ziehen', bauen:true,
     args:['--nur=anzeige'], datei:D,
-    such:"      b.style.animation='none';", ersatz:'',
+    such:"    b.style.animation='none';", ersatz:'',
     an:{ ...DIST, fehlt:"b.style.animation='none';" },
     sagt:'folgt ihm nicht' },
   { n:'ein Fehlwurf bleibt stumm', tor:'ziehen', bauen:true, args:['--nur=meer'], datei:D,
@@ -5726,6 +5726,78 @@ export const PROBEN = [
     ersatz:"  if (art==='englisch' && kont==='satz')\n    return Englisch.vorratHoeren();",
     an:{ ...DIST, text:"kont==='satz')\n    return Englisch.vorratHoeren();" },
     sagt:'und kein Satz' },
+
+  /* --- „Leg das Wort" (E8) ---------------------------------------------
+   *
+   * 1. DIE VORLAGE VERSCHWINDET. Der Lehrplan sagt „abschreibend, MIT
+   *    Vorlage" - ohne sie ist es freies Buchstabieren, eine ganz andere
+   *    und viel schwerere Aufgabe. Auf dem Bildschirm fehlt dann eine
+   *    Zeile, sonst sieht alles normal aus: Luecken, Karten, Lob. */
+  { n:'die Vorlage steht nicht mehr da', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'<div class="vorlage" id="vorlage" lang="en">${wort}</div>',
+    ersatz:'<div class="vorlage" id="vorlage" lang="en"></div>',
+    an:{ ...DIST, text:'id="vorlage" lang="en"></div>' },
+    sagt:'ohne Vorlage' },
+
+  /* 2. EIN FALSCHER BUCHSTABE BLEIBT LIEGEN. Die Zusage der Ebene ist,
+   *    dass in der Luecke nie etwas Falsches steht - wer abschreibt,
+   *    sieht am Ende das richtige Wort und nicht seinen Fehler. Eine
+   *    Fassung, die den Buchstaben annimmt und nur wackelt, sieht im
+   *    Bild fast gleich aus und ist eine andere Aufgabe. */
+  { n:'ein falscher Buchstabe bleibt in der Lücke liegen', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'    if (stelle.dataset.b === karte.dataset.b) {',
+    ersatz:'    if (stelle.dataset.b || karte.dataset.b) {',
+    an:{ ...DIST, text:'stelle.dataset.b || karte.dataset.b' },
+    sagt:'abgeschrieben wird richtig' },
+
+  /* 3. DER TIPPWEG FAELLT WEG. Dann bleibt nur das Ziehen - und Ziehen
+   *    ist auf einem Telefon die fehleranfaellige Bedienung, nicht die
+   *    bequeme. Duolingo tippt aus genau diesem Grund. Ein Kind, das
+   *    eine Karte nicht ans Ziel bekommt, stuende vor einer Aufgabe, die
+   *    sich nicht abschliessen laesst; im Bild ist davon nichts zu
+   *    sehen, denn die Karten stehen ja da. */
+  { n:'die Buchstabenkarten lassen sich nur noch ziehen', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"    karte.onclick = () => legen(karte, offen(), 'antippen', null);",
+    ersatz:'    karte.onclick = () => {};',
+    an:{ ...DIST, text:'karte.onclick = () => {};' },
+    sagt:'Buchstabe für Buchstabe gelegt' },
+
+  /* 4. DER VORLAUF ZEIGT WIEDER DEN GANZEN VORRAT. Vierundzwanzig Karten
+   *    wollen acht Spalten zu 88 Punkten; auf dem iPhone SE quer passen
+   *    sieben in die 643 Punkte Gitterbreite, aus drei Reihen werden
+   *    vier, und eine Karte misst 23 statt 44. Auf dem Zielgeraet (844)
+   *    faellt davon nichts auf - genau deshalb faehrt `passt` sieben
+   *    Groessen und nicht eine. */
+  { n:'der Vorlauf zum Legen zeigt wieder alle Wörter', tor:'passt', bauen:true, datei:D,
+    such:"    ebeneId === 'englisch:legen' ? 12",
+    ersatz:"    ebeneId === 'englisch:legen' ? 24",
+    an:{ ...DIST, text:"'englisch:legen' ? 24" },
+    sagt:'ein Aufkleber muss 44 messen' },
+
+  /* 5. DER FILTER LAESST DURCH, WAS SICH NICHT LEGEN LAESST. `forty-five`
+   *    traegt einen Bindestrich, und eine Karte dafuer gibt es nicht -
+   *    das Wort waere unloesbar. Ein Filter faellt still aus. */
+  { n:'ein Wort ohne Karte kommt in den Legevorrat', tor:'inhalt', deckt:'englisch',
+    datei:'src/inhalt/englisch.js',
+    such:'    .filter(x => /^[a-z]+$/.test(x.wort))',
+    ersatz:'    .filter(x => /^[a-z-]+$/.test(x.wort))',
+    an:{ datei:'src/inhalt/englisch.js', text:'/^[a-z-]+$/' },
+    sagt:'kein Buchstabe ist' },
+
+  /* 6. UND DIE EIGENE KENNUNG FAELLT WEG. Dann teilen sich „Leg das
+   *    Wort" und „Hoeren und zeigen" ein Leitner-Fach: wer `blue`
+   *    gehoert und gezeigt hat, haette es damit geschrieben. Zu sehen
+   *    ist das an nichts - der Fortschrittsbalken steht nur weiter, als
+   *    er sollte. */
+  { n:'der Legevorrat teilt sich den Leitner-Stand', tor:'inhalt', deckt:'englisch',
+    datei:'src/inhalt/englisch.js',
+    such:'    .map(x => ({ ...x, id: `lg:${x.id}` }));',
+    ersatz:'    .map(x => ({ ...x }));',
+    an:{ datei:'src/inhalt/englisch.js', text:'.map(x => ({ ...x }));' },
+    sagt:'teilt sich' },
 
   /* --- Die vier Satz-Abzeichen (E9b) ----------------------------------
    *

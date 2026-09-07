@@ -1905,6 +1905,16 @@
       "zeit": "2026-09-07",
       "s": 356
     },
+    "die Satz-Abzeichen wählen nichts aus": {
+      "commit": "0c5bfcca65788468c4a9643035278e4ea3a974e5",
+      "zeit": "2026-09-07",
+      "s": 15
+    },
+    "die Satz-Abzeichen decken die Themengebiete nicht mehr ab": {
+      "commit": "0c5bfcca65788468c4a9643035278e4ea3a974e5",
+      "zeit": "2026-09-07",
+      "s": 5
+    },
     "auf dem Flaggenschirm fehlt das Mikrofon wieder": {
       "commit": "a2e4647342f6a7085bf1b7cc436a2581d4ed1a85",
       "zeit": "2026-09-07",

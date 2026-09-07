@@ -11517,3 +11517,72 @@ die Aufnahme war nötig: `schild` ist ebenfalls ein Rechteck mit Strichen, und
 bei 34 Punkten ist der Schwanz der Blase der einzige Unterschied, den man
 sieht. Er reicht — auf `quer-buch-abzeichen` stehen beide nebeneinander
 (Fiona · Familie) und sind auseinanderzuhalten.
+
+## E8 · „Leg das Wort" — und ein Bauteil, das drei Jahre einen Benutzer hatte
+
+**Die Aufgabe ist vorgeschrieben, nicht entworfen.** Der Lehrplan sagt für
+Jahrgangsstufe 3 *abschreibend, mit Vorlage*. Das Wort steht oben, die
+Buchstaben liegen darunter, das Kind legt es. Die Vorlage bleibt stehen —
+sie wegzunehmen wäre freies Buchstabieren und damit eine andere Aufgabe.
+
+**Der Referenzabgleich hat etwas geändert, und das ist der Sinn von
+Schritt 0.** Zwei der drei Vorbilder ziehen (Montessori-Alphabet, ANTON),
+das dritte tippt (Duolingo: die Karte springt an die nächste freie Lücke).
+Der Grund für das Tippen ist kein Geschmack — auf einem Telefon ist Ziehen
+die fehleranfällige Bedienung. Also beides. Und der Tippweg ist nicht die
+Notlösung: er ist der, den der Rauchtest spielen kann. Was sich nur ziehen
+lässt, lässt sich von keinem Tor spielen.
+
+**Das Ziehen wurde herausgelöst, nicht nachgebaut.** Es saß in
+`spielschirm` und hatte seit drei Jahren genau einen Benutzer. Nachbauen
+wäre teurer gewesen, als es aussieht: in den hundert Zeilen stecken sechs
+gemessene Befunde — die 6-Punkte-Schwelle zwischen Tippen und Ziehen, die
+abgeschaltete Einlauf-Animation (eine CSS-Animation steht über dem
+Inline-Stil, auch abgelaufen), die Drosselung der Umkreissuche auf ein
+Bild, das Zuhören am Fenster statt `setPointerCapture`, das Hängen *unter*
+dem Finger, die Grenze der Nachsicht. Eine zweite Fassung hätte sie alle
+wieder, und `tor/ziehen.mjs` misst nur die erste. Dieselbe Rechnung wie
+bei `sprachweg` in F2b, und dasselbe Ergebnis.
+
+Herausgelöst sind vier Nahtstellen: `ueber` (was liegt dort), `zeigen`
+(was leuchtet auf), `abgelegt` (was eine Antwort ist), `insLeere` (ins
+Nichts gezogen). Was **nicht** geteilt wurde, ist die Ringsuche selbst —
+sie trägt die eine Nachsichtszahl, und zwei Zahlen wären zwei Nachsichten.
+Wer nachsichtig treffen will, gibt seinen eigenen Treffertest hinein.
+
+**Die Abnahme des Umbaus war `npm run ziehen`, nicht eine Behauptung.**
+Es misst die Nachsicht in Bildpunkten, das Aufleuchten, die Trefferflächen
+und die Nadelratsche — und war nach dem Herauslösen unverändert grün.
+
+**Ein Wort fällt heraus, und das Tor sagt welches.** `forty-five` ist das
+einzige der 25 mit einem Zeichen, das kein Buchstabe ist. Ein Bindestrich
+als Karte wäre kein Schreiben, sondern ein Rätsel; ihn wegzulassen hieße,
+ein falsches Wort zum Abschreiben vorzulegen. Bleiben 24 Wörter, das
+längste `fifteen` mit sieben Karten. Ein Filter, der still aussortiert,
+ist die nächste Verfallsart — deshalb steht das ausgefallene Wort in der
+Torausgabe, nicht nur im Kommentar.
+
+**Der Befund, den `passt` sofort gebracht hat — und er lag nicht am
+Aufgabenbildschirm, sondern am Vorlauf.** Auf dem iPhone SE quer maßen die
+Beispielkarten **23 Punkte**, die Fingergrenze ist 44. Der Grund ist eine
+Rechnung, die seit langem dasteht und erst hier kippte: 24 Karten wollen bei
+88 Punkten Mindestbreite acht Spalten, in 643 Punkten Gitterbreite passen
+sieben, `auto-fit` legt sieben an — und aus den drei Reihen, mit denen
+`vorlaufGitter` rechnet, werden vier. In 174 Punkten Bandhöhe sind vier
+Reihen 23 Punkte je Karte. Bei **25** Karten (der Schwesterebene) greift
+`.kleber.viel` mit 56 statt 88 Punkten, neun Spalten passen, drei Reihen
+bleiben drei — deshalb ist „Hören und zeigen" mit *einer Karte mehr* grün.
+
+Repariert wurde es nicht an der Spaltenbreite: die 88 tragen einen anderen
+Fall (bei 76 brach „Niedersachsen" mitten im Wort). Repariert wurde es dort,
+wo der Vorlauf ohnehin schon sagt, was er ist — **er zeigt Beispiele, nicht
+den Vorrat**: zwölf statt vierundzwanzig, sechs Spalten, zwei Reihen,
+gemessen **85 Punkte**. Dieselbe Deckelung, die „Wendungen" und „Hören und
+schreiben" längst haben.
+
+**Wo welche Zahl gemessen wird (Regel 5).** Ob die Reihe auf den
+Bildschirm passt, ist eine Frage in Bildpunkten, und ihre Messstelle ist
+`passt` — dort wird die Ebene seit dieser Runde wirklich betreten, und
+`.leerstelle` steht jetzt in den drei Klassenlisten (Überlappung,
+Fassungsstempel, Sicherheitsbereich). Im Tor `inhalt` steht keine Zahl in
+Punkten: sie wäre geraten und sähe aus wie gemessen.

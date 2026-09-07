@@ -1987,6 +1987,43 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .engkarte.falsch{background:var(--abgelehnt);border-color:var(--warn);
   animation:wackeln var(--d-wackeln) var(--k-standard)}
 @media (prefers-reduced-motion:reduce){.engkarte.falsch{animation:none}}
+/* --- „Leg das Wort" (E8) ---------------------------------------------
+   Drei Zeilen uebereinander: die Vorlage, die Luecken, der Vorrat. Die
+   Karten sind `.etikett` und dazu `.legekarte` - nicht eine zweite Sorte
+   Ziehbares. Damit gelten fuer sie ohne eine Zeile mehr: `.zieht`
+   (`pointer-events:none`, sonst faengt die Karte am Finger jeden
+   Treffertest ab), `.weg`, der Sicherheitsbereich im kurzen Querformat
+   und die drei Klassenlisten in `passt`. */
+.legefeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r5);padding:0 var(--r4) var(--r4);min-height:0}
+/* Die Vorlage. Sie steht die ganze Zeit da - „abschreibend, mit Vorlage"
+   ist die Aufgabe, nicht eine Hilfe, die man wegnimmt. Gesperrt gesetzt,
+   damit die Buchstaben einzeln zu sehen sind: als normales Wort liest man
+   die Gestalt, und abgeschrieben wird Buchstabe fuer Buchstabe. */
+.vorlage{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;
+  letter-spacing:.18em;color:var(--tinte);padding:var(--r3) var(--r4);
+  background:var(--papier);border:var(--strich) solid var(--linie);
+  border-radius:var(--rund-karte)}
+.legereihe,.legevorrat{display:flex;gap:var(--r4);flex-wrap:wrap;
+  justify-content:center;max-width:100%}
+/* Die Luecke ist so gross wie eine Karte - sonst sieht das gelegte Wort
+   anders aus als die Vorlage, und der Vergleich, um den es geht, wird
+   schwerer statt leichter. */
+.leerstelle{display:flex;align-items:center;justify-content:center;
+  min-width:52px;min-height:56px;font-family:var(--f-lesen);
+  font-size:var(--s1);font-weight:700;color:var(--tinte);
+  border:var(--strich-stark) dashed var(--linie);border-radius:var(--rund-karte);
+  background:var(--grund);
+  transition:background var(--d-zustand) var(--k-standard),
+             border-color var(--d-zustand) var(--k-standard)}
+/* Was unter dem Finger liegt, leuchtet auf - dieselbe Zusage wie das
+   Land auf der Karte. Ohne sie waere die Nachsicht Zauberei. */
+.leerstelle.drueber{background:var(--akzent-h);border-color:var(--akzent)}
+.leerstelle.voll{border-style:solid;border-color:var(--gut);
+  background:var(--gut-h)}
+.leerstelle.gezeigt{border-color:var(--linie);background:var(--papier)}
+.legekarte{min-width:52px;min-height:56px;padding:var(--r3) var(--r4);
+  font-family:var(--f-lesen);letter-spacing:0}
 /* Der Farbfleck traegt IMMER einen dunklen Ring - nicht nur `white`.
    Ein Ring nur ums Weisse waere ein zweites Merkmal, an dem man „white"
    erkennt, ohne die Farbe zu kennen. Er ist rund, weil ein Quadrat auf
@@ -3229,6 +3266,15 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .freundluecke{font-size:var(--s1);line-height:1.9}
   .freundluecke .luecke{font-size:var(--s1)}
   .engkarte{min-height:104px;min-width:104px;padding:var(--r2)}
+  /* Drei Reihen uebereinander (Vorlage, Luecken, Vorrat) plus Kopf,
+     Frage und Ausweg - bei 390 Punkten Hoehe ist das die Rechnung, die
+     kippt. Die Karten gehen auf 48, bleiben damit ueber der
+     Fingergrenze von 44, und das laengste Wort (`fifteen`, sieben
+     Buchstaben) braucht 7 x 48 plus Luecken = rund 400 von 844. */
+  .legefeld{gap:var(--r3)}
+  .vorlage{font-size:var(--s1);padding:var(--r2) var(--r3)}
+  .leerstelle,.legekarte{min-width:48px;min-height:48px}
+  .legekarte{padding:var(--r2) var(--r3)}
   .farbfleck{width:64px;height:64px}
   .ziffernbild{font-size:var(--s3)}
   .tippfeld .eingabe{min-height:64px;font-size:var(--s2);min-width:130px}

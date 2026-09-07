@@ -373,7 +373,11 @@ const SUCHE = () => {
     const kasten = [];
     for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
       + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
-      + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar')) {
+      + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, '
+      /* Die Luecken beim Legen (E8). Sie sind keine Knoepfe und tragen
+         kein `.etikett` - ohne diesen Eintrag misst hier nichts, ob eine
+         Reihe von sieben Luecken sich selbst ueberlappt. */
+      + '.schirm.da .leerstelle')) {
       const cs = getComputedStyle(el);
       if (cs.position === 'absolute' || cs.position === 'fixed') continue;
       if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
@@ -477,7 +481,8 @@ const SUCHE = () => {
           + `${b.right.toFixed(0)}|${b.bottom.toFixed(0)} in ${innerWidth}×${innerHeight})`);
       for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
         + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
-        + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, .schirm.da .karte')) {
+        + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, .schirm.da .karte, '
+        + '.schirm.da .leerstelle')) {
         const cs = getComputedStyle(el);
         if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
         const k = el.getBoundingClientRect();
@@ -976,7 +981,8 @@ for (const g of MEINE) {
       const drin = await p.evaluate((si) => {
         const raus = [];
         for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .knopf, '
-          + '.schirm.da .etikett, .schirm.da .zi, .schirm.da .mikro, .schirm.da .sterne')) {
+          + '.schirm.da .etikett, .schirm.da .zi, .schirm.da .mikro, .schirm.da .sterne, '
+          + '.schirm.da .leerstelle')) {
           const b = el.getBoundingClientRect();
           if (b.width === 0 && b.height === 0) continue;
           const fehlt = Math.max(si.oben - b.top, si.links - b.left,
@@ -1461,6 +1467,23 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await tipp('.schirm.da [data-welt="erdkunde"]');
   await p.waitForSelector('.schirm.da [data-ebene]');
   await schau('Ebenenwahl (Lea)');
+
+  /* Und „Leg das Wort" (E8) - Leas Ebene allein.
+   *
+   * Drei Reihen uebereinander, und die unterste ist die laengste: bei
+   * `fifteen` liegen sieben Karten und darueber sieben Luecken. Das ist
+   * die breiteste Zeile, die diese App auf 844 Punkten baut - breiter
+   * als jede Kachelwand, weil hier nichts umbrechen SOLL. Ohne diesen
+   * Gang misst kein Tor sie: `passt` sieht nur, was es betritt.
+   *
+   * Erst zurueck in die Weltenwahl: die Zeile darueber laesst uns in
+   * Leas ERDKUNDE-Wand stehen, und `zurEbenenwahl` faengt bei den
+   * Welten an. */
+  await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da [data-welt]');
+  await zurEbenenwahl(p, 'englisch:legen');
+  await ebeneAnsehen('englisch:legen', '.schirm.da #legereihe', 'Wort legen',
+    { vorlaufName: 'Vorlauf legen' });
 
   /* Und die Elternebene (E10) - als STEPHAN, denn ihm gehoert sie.
    *

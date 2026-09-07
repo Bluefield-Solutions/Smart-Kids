@@ -2445,6 +2445,53 @@ console.log('\n  Tor `englisch`');
       + `${laengster} Wörter (Grenze ${WORTGRENZE}) · kein Wort außerhalb der `
       + 'amtlichen Listen');
   }
+
+  /* --- „Leg das Wort" (E8): was sich legen laesst ---------------------
+   *
+   * Der Vorrat ist derselbe wie beim Hoeren, gefiltert auf das, was aus
+   * Buchstabenkarten zu legen ist. Ein Filter faellt still aus - er
+   * nimmt entweder zuviel weg (die Ebene wird duenn) oder zuwenig (ein
+   * Wort mit Bindestrich stuende da, und die Karte dafuer gibt es
+   * nicht). Beides sieht auf dem Bildschirm normal aus.
+   *
+   * WAS HIER NICHT GEMESSEN WIRD: ob die Reihe auf den Bildschirm passt.
+   * Das ist eine Frage in Bildpunkten, und sie hat ihre Messstelle in
+   * `passt` - dort wird die Ebene seit E8 wirklich betreten. Eine Zahl
+   * hier waere geraten und saehe aus wie gemessen.
+   */
+  {
+    const cf = [];
+    const vl = EN.vorratLegen();
+    const alle = EN.vorratHoeren();
+    /* Zwanzig ist keine Schoenheit, sondern die Untergrenze einer Ebene:
+       Leas Sitzung hat je nach Einstellung bis zu zwoelf Aufgaben, und
+       ein Vorrat, der kaum groesser ist, wiederholt sich in der zweiten
+       Sitzung vollstaendig. */
+    const MINDESTENS = 20;
+    if (vl.length < MINDESTENS)
+      cf.push(`nur ${vl.length} Wörter zum Legen (nötig ${MINDESTENS}) — der Filter `
+        + `nimmt zuviel weg, ${alle.length} stehen im Vorrat`);
+    for (const x of vl) {
+      if (!/^[a-z]+$/.test(x.wort))
+        cf.push(`„${x.wort}" trägt ein Zeichen, das kein Buchstabe ist — dafür gibt es `
+          + 'keine Karte, und das Wort wäre nicht zu legen');
+      /* Eigene Kennung, sonst teilen sich zwei Ebenen ein Leitner-Fach:
+         wer `blue` gehoert und gezeigt hat, haette es damit geschrieben. */
+      if (!String(x.id).startsWith('lg:'))
+        cf.push(`„${x.id}" trägt nicht die eigene Kennung lg: — dann teilt sich `
+          + '„Leg das Wort" den Leitner-Stand mit „Hören und zeigen"');
+    }
+    if (cf.length) {
+      console.log('    ' + cf.join('\n    '));
+      console.error('\n  englisch ROT: der Vorrat zum Legen (E8) stimmt nicht.');
+      process.exit(1);
+    }
+    const raus = alle.filter(a => !vl.some(b => b.wort === a.wort)).map(a => a.wort);
+    const laengstes = vl.reduce((a, b) => b.wort.length > a.wort.length ? b : a).wort;
+    console.log(`    Leg das Wort (E8): ${vl.length} von ${alle.length} Wörtern sind aus `
+      + `Buchstabenkarten zu legen · längstes „${laengstes}" mit ${laengstes.length} `
+      + `Karten · draußen: ${raus.join(', ') || '(keins)'}`);
+  }
 }
 
 /* ============================================= Tor `tiere` (T1) ========= *

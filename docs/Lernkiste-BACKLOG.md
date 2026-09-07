@@ -393,7 +393,7 @@ veraltet eine der beiden Fassungen).
 | **E5** | „Zwei Wörter, ein Laut Unterschied" — Lautpaare mit Grund | Tor E-a, alle vier Stolperstellen vertreten |
 | **E6** | „Sag es" — zwei Anläufe, kein Urteil | **GEFAHREN** — siehe Block unten |
 | **E7** | Lea liest: Wort zum Bild | am Gerät |
-| **E8** | Lea schreibt: Abschreiben mit Vorlage | am Gerät, `passt` für die Buchstabenkarten |
+| **E8** | Lea schreibt: Abschreiben mit Vorlage | **GEFAHREN** — siehe Block unten |
 | **E9** | Der Satz zum Selbersagen | **GEFAHREN** — die Abzeichen je Gebiet stehen noch aus (E9b) |
 | **E10** | **Eltern: falsche Freunde** — rund 30 Fallen, zwei Fassungen je Falle | Tore E-f und E-g |
 | **E11** | **Eltern: Wendungen** je Themengebiet, mehrere gueltige Antworten | **GEFAHREN v376** — siehe Block unten |
@@ -431,6 +431,75 @@ Fällt die Weiche im Vorrat weg, spielt sie den Wortvorrat der Schwester — und
 Mikrofon und einen Knopf, beide sagen ihr Englisch vor, beide werten. Ohne
 diese Zeile bliebe ein Durchlauf grün, während „Sag den Satz" still nach
 Farben fragt.
+
+### E8 · „Leg das Wort" — GEFAHREN
+
+**Der Lehrplan schreibt die Form vor**, und das ist der ganze Entwurf: für
+Jahrgangsstufe 3 heißt es *abschreibend, mit Vorlage*. Also nicht frei
+buchstabieren — das Wort steht oben, die Buchstaben liegen darunter, das Kind
+legt es. Die Vorlage bleibt die ganze Zeit stehen; sie wegzunehmen wäre eine
+andere und viel schwerere Aufgabe.
+
+**Der Referenzabgleich hat eine Entscheidung geändert.** Montessori (das
+bewegliche Alphabet) und ANTON legen und ziehen; Duolingo **tippt** — die
+Karte springt an die nächste freie Lücke. Der Grund dafür ist kein
+Geschmack: auf einem Telefon ist Ziehen die fehleranfällige Bedienung, nicht
+die bequeme. Also **beides**, und der Tippweg ist nicht die Notlösung,
+sondern der, den der Rauchtest spielt. Was sich nur ziehen lässt, lässt sich
+von keinem Tor spielen — und ein Kind, das eine Karte nicht ans Ziel bekommt,
+stünde vor einer Aufgabe, die sich nicht abschließen lässt.
+
+**Das Ziehen ist nicht neu gebaut, sondern herausgelöst.** Es saß seit drei
+Jahren mitten in `spielschirm` und hatte genau einen Benutzer: das Etikett,
+das auf ein Land gezogen wird. In diesen hundert Zeilen stecken sechs
+gemessene Befunde, und keiner davon ist zu erraten — die 6-Punkte-Schwelle
+zwischen Tippen und Ziehen, die abgeschaltete Einlauf-Animation, die
+Drosselung der Umkreissuche auf ein Bild, das Zuhören am Fenster statt
+`setPointerCapture`, das Hängen *unter* dem Finger, die Grenze der Nachsicht.
+Eine zweite Fassung hätte sie alle wieder, und `tor/ziehen.mjs` misst nur die
+erste. Herausgelöst sind vier Nahtstellen — `ueber`, `zeigen`, `abgelegt`,
+`insLeere` —, und sie sind genau das, was die Karte ausmacht. Die Ringsuche
+selbst bleibt ungeteilt: sie trägt die eine Nachsichtszahl, und zwei Zahlen
+wären zwei Nachsichten. **`npm run ziehen` ist nach dem Umbau unverändert
+grün** — das war die Abnahme des Umbaus, nicht eine Behauptung darüber.
+
+**Ein Wort fällt heraus, gemessen und nicht nach Gefühl.** `forty-five` ist
+das einzige der 25 mit einem Zeichen, das kein Buchstabe ist. Ein Bindestrich
+als Karte wäre keine Schreibübung, sondern ein Rätsel darüber, wo der Strich
+hingehört — und ihn wegzulassen hieße, ein falsches Wort zum Abschreiben
+vorzulegen. Bleiben **24 Wörter, das längste `fifteen` mit sieben Karten**.
+Das Tor nennt das ausgefallene Wort beim Namen; ein Filter, der still
+aussortiert, ist die nächste Verfallsart.
+
+**In der Lücke steht nie ein falscher Buchstabe.** Eine falsch gelegte Karte
+kommt zurück und kostet einen Versuch; nach dreien steht die Lösung da. Wer
+abschreibt, soll am Ende das richtige Wort sehen und nicht seinen Fehler.
+Das ist von außen nicht zu erkennen — eine Fassung, die den Buchstaben liegen
+lässt und nur wackelt, sieht im Bild fast gleich aus —, deshalb misst der
+Rauchtest es ausdrücklich.
+
+**Nur für Lea.** Fiona liest nicht, und ein Wort abzuschreiben, das man nicht
+lesen kann, ist Formenvergleich und kein Englisch. Im Rauchtest steht die
+Ebene deshalb in Leas eigener Liste: bei ihr muss die Kachel da sein, bei
+jedem anderen darf sie es nicht.
+
+Fünf Gegenproben: die Vorlage verschwindet · ein falscher Buchstabe bleibt
+liegen · der Tippweg fällt weg · der Filter lässt ein unlegbares Wort durch ·
+die eigene Kennung `lg:` fällt weg (dann teilt sich die Ebene den
+Leitner-Stand mit „Hören und zeigen").
+
+**Und ein Befund, der nicht am neuen Bildschirm lag.** `passt` meldete auf
+dem iPhone SE quer 23 Punkte für die Beispielkarten des **Vorlaufs** — die
+Fingergrenze ist 44. 24 Karten wollen acht Spalten zu 88 Punkten, in 643
+passen sieben, und aus drei Reihen werden vier; die Schwesterebene mit
+*einer Karte mehr* rutscht in `.kleber.viel` (56 statt 88 Punkte Spalte) und
+bleibt bei drei. Repariert an der Stelle, wo der Vorlauf ohnehin sagt, was er
+ist — er zeigt Beispiele, nicht den Vorrat: zwölf statt vierundzwanzig,
+gemessen 85 Punkte.
+
+**Was daraus fast herausfällt: E9c**, den Satz aus Wortkarten
+zusammensetzen. Dasselbe Bauteil, andere Karten — statt Buchstaben Wörter,
+statt eines Wortes ein Satz.
 
 ### E9b · Vier Abzeichen für die Sätze — GEFAHREN
 
