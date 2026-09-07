@@ -3906,6 +3906,31 @@ async function ausDerSitzung(p, wer, ebene, felder){
   return auf;
 }
 
+/**
+ * Eine frische Seite, ein Profil, eine Ebene - mit eingeschaltetem
+ * Sprachmodus.
+ *
+ * Stand seit E6 zweimal im Abschnitt `sprechen`: einmal fuer den
+ * Flaggenschirm, einmal fuer „Sag es". Beide brauchen genau dieselben
+ * sechs Schritte, und `doppelt` hat es im selben Lauf gemeldet, in dem
+ * der zweite entstand - was zweimal dasteht, veraltet einmal (Regel 6).
+ *
+ * `steht` ist das Kennzeichen der Aufgabe: worauf gewartet wird, weiss
+ * die Ebene und nicht dieser Helfer. Eine Liste hier waere die zweite
+ * Fassung von `OHNE_KARTE`.
+ */
+async function sprechseite(ctx, wer, ebene, steht){
+  const q = await neueSeite({ width: 844, height: 390 }, ctx);
+  await stelleAblage(q, { einstellungen: { alles: { sprachmodus: true } } });
+  await q.click(`[data-profil="${wer}"]`);
+  await zurEbenenwahl(q, ebene);
+  await q.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
+  await q.waitForSelector(`.schirm.da #los, ${steht}`, { timeout: 25000 });
+  await durchVorlaufWenn(q);
+  await q.waitForSelector(steht, { timeout: 15000 });
+  return q;
+}
+
 async function abgeschlossen(p, wer, ebene, hoert, wie, eigen = null) {
   /* `eigen` ist der Satz, der die AUFGABE IST - und der wird hier
    * abgezogen, bevor geurteilt wird.
@@ -7584,14 +7609,7 @@ if (laeuft('sprechen')) try {
    * darf das Mikrofon auch nicht dastehen. Beide Richtungen werden
    * gemessen, sonst bezeugte die Pruefung nur die eine Haelfte. */
   {
-    const q = await neueSeite({ width: 844, height: 390 }, ctx);
-    await stelleAblage(q, { einstellungen: { alles: { sprachmodus: true } } });
-    await q.click('[data-profil="lea"]');
-    await zurEbenenwahl(q, 'flaggen:europa');
-    await q.$eval('.schirm.da [data-ebene="flaggen:europa"]', x => x.click());
-    await q.waitForSelector('.schirm.da #los, .schirm.da .flaggenfeld', { timeout: 25000 });
-    await durchVorlaufWenn(q);
-    await q.waitForSelector('.schirm.da .flaggenfeld', { timeout: 15000 });
+    const q = await sprechseite(ctx, 'lea', 'flaggen:europa', '.schirm.da .flaggenfeld');
     const lage = await q.evaluate(() => ({
       nennen: !!document.querySelector('.schirm.da #rein'),
       mikro: !!document.querySelector('.schirm.da #mikro'),
@@ -7669,6 +7687,49 @@ if (laeuft('sprechen')) try {
     if (zeigt && zeigt.mikro)
       merke('sprechen', new Error('in der Zeigerichtung steht das Mikrofon da, obwohl der '
         + 'Landesname in der Frage steht — gesprochen wäre das Vorlesen, nicht Antworten'));
+    await q.close();
+  }
+
+  /* --- „Sag es" faellt KEIN URTEIL (E6) --------------------------------
+   *
+   * Das ist die Zusage der Ebene, und sie ist hier gemessen und nicht im
+   * Durchgang: der spielt sie ueber „Gesagt", und wer nicht spricht,
+   * bekommt auch kein Urteil. Ob eines gefaellt wird, sieht man nur,
+   * wenn wirklich etwas gesagt wurde.
+   *
+   * GESAGT WIRD KAUDERWELSCH, und zwar mit Absicht. Eine Sechsjaehrige,
+   * die zum ersten Mal „blue" sagt, klingt fuer eine Erkennung nicht wie
+   * „blue" - das ist der Normalfall dieser Ebene. Wird die Aeusserung
+   * trotzdem gewertet, haelt die App ihre Zusage. Wird sie es nicht,
+   * lernt ein Kind, dass Sprechen bestraft wird, und sagt beim naechsten
+   * Mal nichts mehr.
+   *
+   * Und der Fleck muss AUFBLUEHEN. Ohne Urteil ist er die einzige
+   * Rueckmeldung, die es gibt; ohne ihn spricht das Kind ins Leere. */
+  {
+    const q = await sprechseite(ctx, 'fiona', 'englisch:sagen', '.schirm.da #sagenbild');
+    if (!(await q.$('.schirm.da #mikro'))) {
+      merke('sprechen', new Error('auf „Sag es" steht kein Mikrofon, obwohl der '
+        + 'Sprachmodus an ist — dann ist die Ebene, die vom Sprechen handelt, stumm'));
+    } else {
+      await q.click('.schirm.da #mikro');
+      await q.evaluate(() => window.__sprich('bluh', true));
+      const gewertet = await bis(q,
+        () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+      if (!gewertet)
+        merke('sprechen', new Error('„bluh" auf „Sag es" gesagt und NICHT gewertet — '
+          + 'die Ebene fällt ein Urteil über die Aussprache. Genau das soll sie nicht: '
+          + 'ein Kind, das zum ersten Mal ein englisches Wort sagt, spricht es falsch '
+          + 'aus, und ein Kreuz dafür bringt ihm bei, den Mund zu halten'));
+      else {
+        const blueht = await q.$('.schirm.da #sagenbild.gesagt');
+        if (!blueht)
+          merke('sprechen', new Error('nach dem Sprechen blüht der Fleck nicht auf — '
+            + 'ohne Urteil ist er die einzige Rückmeldung, die es gibt'));
+        else console.log('  Sag es (E6):                „bluh" gewertet, Fleck blüht auf '
+          + '— kein Urteil über die Aussprache');
+      }
+    }
     await q.close();
   }
 

@@ -5680,12 +5680,17 @@ export const PROBEN = [
    * 1. SIE FAELLT DOCH EIN URTEIL. Ein Kind, das „blue" mit deutschem
    *    Akzent sagt, bekaeme ein Kreuz - und lernt, den Mund zu halten.
    *    Auf dem Bildschirm sieht das aus wie eine ganz normale Wertung. */
+  /* Gemessen wird im Abschnitt `sprechen` und nicht im Durchgang: der
+     spielt die Ebene ueber „Gesagt", und wer nicht spricht, bekommt auch
+     kein Urteil. Der erste Anlauf zielte auf den Durchgang und blieb
+     gruen - die Wertung haengt am Lobsatz, nicht an `werten`, und der
+     kam weiter. Eine Probe, die das Falsche verstellt, meldet nichts. */
   { n:'„Sag es" wertet wieder', tor:'smoke',
-    args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"    const neuerAufkleber = werten(ziel, 'richtig', 1);\n    kopfNachziehenIn(s);\n    protokollieren('richtig', roh, fachVorher, eingabeart);",
-    ersatz:"    const neuerAufkleber = werten(ziel, 'falsch', 1);\n    kopfNachziehenIn(s);\n    protokollieren('falsch', roh, fachVorher, eingabeart);",
-    an:{ ...DIST, text:"werten(ziel, 'falsch', 1)" },
-    sagt:'auf „Gesagt" getippt' },
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"    bewerte: (roh) => gutschreiben(roh, 'sprechen'),",
+    ersatz:"    bewerte: (roh) => { if (roh === ziel.wort) gutschreiben(roh, 'sprechen'); },",
+    an:{ ...DIST, text:"if (roh === ziel.wort) gutschreiben(roh, 'sprechen');" },
+    sagt:'fällt ein Urteil über die Aussprache' },
 
   /* 2. DER WEG OHNE MIKROFON FAELLT WEG. Wer keinen Sprachmodus hat,
    *    keine Erlaubnis gibt oder einen Browser ohne Erkennung benutzt,
@@ -5696,7 +5701,7 @@ export const PROBEN = [
     such:"  werkzeug.appendChild(fertig);",
     ersatz:"  if (0) werkzeug.appendChild(fertig);",
     an:{ ...DIST, text:'if (0) werkzeug.appendChild(fertig);' },
-    sagt:'kein Weg ohne Mikrofon' },
+    sagt:'keinen Weg ohne Mikrofon' },
 
   /* 3. DAS VORBILD BLEIBT AUS. Ohne das gesprochene Wort steht ein
    *    Farbfleck da und die Aufforderung, etwas zu sagen, das nie zu
