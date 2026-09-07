@@ -4319,9 +4319,13 @@ function flaggenschirm(){
       .slice(0, 3);
   };
 
-  const protokollieren = (ergebnis, roh, fachVorher) =>
+  /* Die Eingabeart wird MITGEGEBEN, seit es drei gibt (F2b): antippen,
+     tippen, sprechen. Sie aus `zeigen` abzuleiten liesse zwei davon als
+     eine durchgehen - und das Protokoll ist die einzige Stelle, an der
+     jemals nachzusehen ist, welchen Weg ein Kind wirklich genommen hat. */
+  const protokollieren = (ergebnis, roh, fachVorher, eingabeart) =>
     eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
-      eingabeart: zeigen ? 'antippen' : 'tippen' });
+      eingabeart: eingabeart || (zeigen ? 'antippen' : 'tippen') });
   const weiter = () => weiterIn(st);
 
   const auswahl = zeigen
@@ -4360,7 +4364,8 @@ function flaggenschirm(){
         <button class="knopf haupt" id="pruef">Prüfen</button>
       </div>`}
       <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+        ZEI('frage', 20)}Weiß ich nicht</button></div>${zeigen ? '' : `
+      <div class="sprachzeile" id="sprachzeile"></div>`}
     </div>`;
 
   const rein = s.querySelector('#rein');
@@ -4394,11 +4399,11 @@ function flaggenschirm(){
     setTimeout(weiter, LOBPAUSE);
   }
 
-  function gutschreiben(ergebnis, roh, fachVorher, nebenbei){
+  function gutschreiben(ergebnis, roh, fachVorher, nebenbei, eingabeart){
     erledigt = beendet(s);
     const neuerAufkleber = werten(ziel, ergebnis, versuch);
     kopfNachziehenIn(s);
-    protokollieren(ergebnis, roh, fachVorher);
+    protokollieren(ergebnis, roh, fachVorher, eingabeart);
     ausschalten();
     richtigeZeigen();
     const spruch = ergebnis === 'richtig' ? lob() : null;
@@ -4431,45 +4436,94 @@ function flaggenschirm(){
     sagen(satz);
   }
 
-  /** Die Nennrichtung: der Name ist getippt. */
-  function getippt(){
-    if (erledigt || !rein) return;
-    const roh = rein.value.trim();
-    if (!roh) return;
+  /**
+   * Die Nennrichtung - GETIPPT ODER GESPROCHEN, ein Ort (F2b).
+   *
+   * Der Sprachweg war die eine Antwortform aus dem Wunsch, die die
+   * Flaggen noch nicht hatten („zum Eintippen, zum Einsprechen"). Er
+   * bekommt hier keine eigene Fassung: `sprachweg` (Mikrofon, Frist,
+   * Ausstieg) und `erhoert` (was aus dem Gehoerten wird) stehen seit
+   * dieser Runde als Bauteile daneben und werden von der Karte und von
+   * hier benutzt. Was diese Ebene beisteuert, ist der Vorrat, gegen den
+   * gehoert wird - `alle`, also genau die Laender dieser Karte.
+   *
+   * Der Unterschied zwischen den beiden Wegen ist EINER: getippt wird
+   * die Rechtschreibung bewertet (sie ist Lerninhalt), gesprochen der
+   * gemeinte Ort. „Rumänien" mit ie ist beim Tippen ein Hinweis wert und
+   * beim Sprechen gar nicht zu hoeren.
+   */
+  function benannt(roh, eingabeart = 'tippen', ctx = {}){
+    if (erledigt) return;
+    const text = String(roh || '').trim();
+    if (!text) { if (rein) { wackelt(rein); rein.focus(); } return; }
+    let gehoert = null;
+    if (eingabeart === 'sprechen') {
+      gehoert = erhoert(text, ctx, { kand: alle, ziel, bewerte: benannt,
+        stelle: s.querySelector('#sprachzeile'),
+        unverstanden: () => eintragen(st, ziel, { ergebnis:'unverstanden',
+          roh:text, fachVorher: Stand[ziel.id]?.fach ?? 1, versuch, beginn,
+          eingabeart:'sprechen' }) });
+      if (!gehoert) return;
+    }
     versuch++;
     const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (gehoert) {
+      if (gehoert.id === ziel.id)
+        return gutschreiben('richtig', gehoert.gehoert || text, fachVorher, '', 'sprechen');
+      protokollieren('falsch', text, fachVorher, 'sprechen');
+      klangZu('falsch');
+      if (versuch >= 3) return aufloesen();
+      return hinweis(`Das wäre ${gehoert.name}.`);
+    }
     /* Dieselbe Nachsicht wie auf der Karte, und aus derselben Stelle:
        `Vergleich.rechtschreibung` kennt die Aliasse und laesst einen
        Tippfehler als „fast" durch. Ein zweiter Abgleich hier waere eine
        zweite Nachsicht, und eine der beiden waere die strengere - ohne
        dass jemand entschieden haette, welche. */
-    const r = Vergleich.rechtschreibung(roh, ziel);
+    const r = Vergleich.rechtschreibung(text, ziel);
     if (r.urteil === 'richtig' || r.urteil === 'fast')
-      return gutschreiben(r.urteil === 'richtig' ? 'richtig' : 'fast', roh, fachVorher,
+      return gutschreiben(r.urteil === 'richtig' ? 'richtig' : 'fast', text, fachVorher,
         r.urteil === 'richtig' ? (r.nebenbei || '') : '');
-    protokollieren('falsch', roh, fachVorher);
+    protokollieren('falsch', text, fachVorher);
     klangZu('falsch');
     if (versuch >= 3) return aufloesen();
     /* Und auch hier: sagen, was es GEWESEN waere. `abgleich` sucht das
        naechstliegende Land aus dem Vorrat dieser Ebene - wer „Rumänien"
        tippt und den Tschad vor sich hat, soll das erfahren. */
-    const t = Vergleich.abgleich(roh, alle);
-    const satz = t.art === 'nochmal'
+    const t = Vergleich.abgleich(text, alle);
+    hinweis(t.art === 'nochmal'
       ? 'Das kenne ich noch nicht — schau noch mal hin.'
       : t.id === ziel.id ? 'Fast! Schau noch mal ganz genau hin.'
-      : `Das wäre ${t.name}.`;
+      : `Das wäre ${t.name}.`);
+    if (rein) rein.select();
+  }
+
+  /** Was nach einem Fehlversuch in der Fragezeile steht - und gesagt wird. */
+  function hinweis(satz){
     const f = s.querySelector('#frage');
     if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
     sagen(satz);
-    rein.select();
   }
 
   s.querySelectorAll('.flaggenkarte').forEach(k =>
     k.onclick = () => gewaehlt(k.dataset.id, k));
   if (rein) {
-    s.querySelector('#pruef').onclick = getippt;
-    rein.addEventListener('keydown', e => { if (e.key === 'Enter') getippt(); });
+    const pruefen = () => benannt(rein.value, 'tippen');
+    s.querySelector('#pruef').onclick = pruefen;
+    rein.addEventListener('keydown', e => { if (e.key === 'Enter') pruefen(); });
     setTimeout(() => rein.focus(), 360);
+    /* Und der Sprachweg daneben - nur in der Nennrichtung. In der
+       Zeigerichtung STEHT der Landesname in der Frage; ihn auszusprechen
+       waere keine Antwort, sondern Vorlesen.
+       
+       Das Mikrofon steht in der EINGABEZEILE, neben „Prüfen" - nicht
+       unten bei „Weiß ich nicht". Es ist der zweite Weg zur Antwort und
+       nicht der zweite Weg zum Aufgeben; wer es dorthin stellt, wo man
+       hinsieht, wenn man nicht weiterweiss, sagt etwas anderes, als er
+       meint. */
+    sprachweg({ spricht: P.eingabe.includes('sprechen'),
+      werkzeug: s.querySelector('.tippfeld'),
+      liste: s.querySelector('#sprachzeile'), bewerte: benannt });
   }
   s.querySelector('#weissnicht').onclick = () => aufloesen();
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
@@ -4923,6 +4977,283 @@ function schreibschirm(){
 }
 
 /* ---------- Der Spielbildschirm ------------------------------------------ */
+/**
+ * „Ich habe X verstanden. Stimmt das?" - mit zwei Knoepfen. (F2b)
+ *
+ * Sie stehen unter der Sprachzeile, nicht in der Antwortliste: was das
+ * Geraet verstanden hat, gehoert zum Mikrofon, nicht zur Karte. `stelle`
+ * ist der Rueckfall fuer Bildschirme ohne Sprachzeile.
+ */
+function rueckfrage(t, roh, ctx, { ziel, stelle, bewerte }) {
+  const wo = ctx.status || stelle;
+  if (ctx.status) ctx.status.textContent = t.id === ziel.id
+    ? `Meintest du ${t.name}?` : `Ich habe „${t.name}" verstanden. Stimmt das?`;
+  sagen(ctx.status ? ctx.status.textContent : '');
+  let kasten = wo.parentNode.querySelector('#nachfrage');
+  if (!kasten) {
+    kasten = el('div','nachfrage'); kasten.id = 'nachfrage';
+    wo.parentNode.insertBefore(kasten, wo.nextSibling);
+  }
+  kasten.innerHTML = '';
+  const weg = ()=>{ kasten.remove(); };
+  const ja = el('button','leise','Ja');
+  ja.id = 'jaSicher';
+  ja.onclick = ()=>{ weg(); bewerte(roh,'sprechen',{ ...ctx, bestaetigt:t }); };
+  const nein = el('button','leise','Nein');
+  nein.id = 'neinNochmal';
+  // „Nein" kostet nichts. Der Irrtum lag beim Geraet, nicht beim Kind.
+  nein.onclick = ()=>{ weg();
+    if (ctx.status) ctx.status.textContent = 'Dann sag es noch einmal — tipp auf das Mikrofon.'; };
+  kasten.append(ja, nein);
+}
+
+/**
+ * Was aus einer Aeusserung wird - VOR dem Versuchszaehler. (F2b)
+ *
+ * NICHT VERSTANDEN IST KEIN FEHLVERSUCH.
+ *
+ * Der Abgleich stand bis F14 unter dem Zaehler: eine Aeusserung, die die
+ * Erkennung verschluckt hat, kostete einen der drei Versuche - und nach
+ * dreien loeste die App die Aufgabe auf. Wer dreimal hintereinander
+ * undeutlich verstanden wurde, bekam die Antwort gezeigt, ohne ein
+ * einziges Mal falsch geraten zu haben.
+ *
+ * Das ist nicht dasselbe wie eine falsche Antwort: „ich habe dich nicht
+ * gehoert" ist eine Aussage ueber MICH, nicht ueber das Kind. Es steht
+ * deshalb VOR dem Zaehler und geht ohne Wertung wieder heraus -
+ * protokolliert wird es trotzdem, denn genau diese Zeilen sind das
+ * Rohmaterial fuer den eingefrorenen Korpus (M4r). Die Protokollzeile
+ * schreibt die EBENE (`unverstanden`): sie allein weiss, welche Felder
+ * ihr Gegenstand hat.
+ *
+ * Und der Satz nennt, WAS angekommen ist. „Das habe ich nicht verstanden"
+ * sagt niemandem, ob das Mikrofon nichts gehoert hat oder ob der Abgleich
+ * das Gehoerte nicht zuordnen konnte - genau daran ist die Fehlersuche
+ * vom Zielgeraet haengengeblieben.
+ *
+ * DIE RUECKFRAGE WIRD GESTELLT - UND BEANTWORTBAR (F15). Der Abgleich
+ * kennt drei Ausgaenge, und der mittlere ist der wichtigste: er
+ * verwandelt eine Erkennungsschwaeche in eine Bestaetigungsfrage. Sie
+ * kostet nichts, bis sie beantwortet ist:
+ *   Ja   -> gewertet wie gesprochen (richtig, wenn es das Ziel war;
+ *           falsch, wenn das Kind einen anderen Namen bestaetigt)
+ *   Nein -> kein Versuch verbraucht, noch einmal sprechen
+ * Warum „Ja" bei einem FREMDEN Namen trotzdem falsch zaehlt: sonst waere
+ * die Rueckfrage ein Freifahrtschein. Bestaetigt wird, was verstanden
+ * wurde - nicht, dass es stimmt.
+ *
+ * Gibt `null` zurueck, wenn schon reagiert wurde - dann ist die Aufgabe
+ * noch offen und hat nichts gekostet.
+ */
+function erhoert(roh, ctx, { kand, ziel, stelle, bewerte, unverstanden }) {
+  /* Eine BESTAETIGTE Rueckfrage kommt ein zweites Mal herein - dann steht
+     das Urteil schon fest und wird nicht neu erhoert. */
+  if (ctx.bestaetigt) return { ...ctx.bestaetigt, art:'angenommen' };
+  const t = Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);
+  if (t.art === 'nochmal') {
+    const satz = roh ? `Ich habe „${roh}“ verstanden. Sag es noch einmal.`
+                     : 'Ich habe nichts gehört. Sag es noch einmal.';
+    if (ctx.status) ctx.status.textContent = satz;
+    sagen(satz);
+    if (unverstanden) unverstanden(roh);
+    return null;
+  }
+  if (t.art === 'rueckfrage') { rueckfrage(t, roh, ctx, { ziel, stelle, bewerte }); return null; }
+  return t;
+}
+
+/* ---------- Der Sprachweg als BAUTEIL (F2b) ------------------------------
+ *
+ * Er sass bis hierher in `spielschirm` eingewachsen: Mikrofon,
+ * Zwischenergebnis, Frist, der EINE Ausgang aus F13. Hundertsiebzig
+ * Zeilen, in denen vier gemeldete Fehler stecken (F13, F14, F15) - und
+ * jede zweite Fassung davon haette sie wieder.
+ *
+ * Damit sprechen jetzt ZWEI Bildschirme: die Karte und die Flaggen. Der
+ * Aufrufer stellt nur `bewerte(roh, 'sprechen', { status, varianten })` -
+ * was aus dem Gehoerten wird, weiss die Ebene, nicht das Mikrofon.
+ *
+ * `werkzeug` ist die Zeile mit den Knoepfen, `liste` die Stelle darunter,
+ * an der die Sprachzeile stehen darf. Beide werden mitgegeben und nicht
+ * gesucht: der Flaggenschirm hat keine Antwortliste, und ein Bauteil, das
+ * sich seinen Platz selbst sucht, findet auf dem naechsten Bildschirm den
+ * falschen.
+ */
+function sprachweg({ spricht, werkzeug, liste, bewerte }) {
+  // Das Mikrofon wird nur gezeigt, wenn es auch etwas TUT.
+  //
+  // Vorher stand es immer da, grau, mit dem Satz "Sprachmodus ist aus. Im
+  // Elternbereich einschalten." darunter - eine Anweisung an die Eltern,
+  // auf dem Spielbildschirm des Kindes. Zusammen kosteten die beiden bis
+  // zu 120 Punkte Hoehe, und die Karte hatte sie noetig: sie fuellte im
+  // Hochformat nur 16 bis 45 Prozent des Feldes.
+  //
+  // Ein dauerhaft abgeschalteter Knopf ist kein Hinweis, sondern ein
+  // Hindernis. Wo es wirklich nicht geht - der Browser kann es nicht -,
+  // bleibt der Hinweis stehen; das ist eine Auskunft und keine Aufforderung.
+  const Erk = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const kannSprechen = spricht && Einst.sprachmodus;
+  if (spricht && !Erk && Einst.sprachmodus) {
+    const status=el('div','unter'); status.style.fontSize='var(--s-klein)';
+    status.textContent='Sprechen geht in diesem Browser nicht — sag es laut, dann zieh.';
+    werkzeug.appendChild(status);
+  }
+  /* Der Sprachweg - und warum er einen Zustand braucht (F13).
+   *
+   * Gemeldet vom Zielgeraet, gefunden von keinem Tor: „Ich habe den
+   * Sprachmodus angeschaltet, im Spiel auf das Mikrofon getippt, es ging
+   * los, ich habe reingesprochen - und konnte den Modus nicht mehr
+   * beenden. Es kam keine Auswertung."
+   *
+   * Nachgesehen: der Knopf war ein EINWEG-Schalter. Er baute bei jedem
+   * Tipp einen neuen Erkenner, startete ihn und vergass ihn sofort. Damit
+   * fehlten drei Dinge auf einmal, und jedes einzelne haette gereicht:
+   *
+   *   1. KEIN AUSSTIEG. Es gab nirgends ein `stop()`. Wer fertig
+   *      gesprochen hatte, konnte das der App nicht sagen. Ein zweiter
+   *      Tipp baute einen ZWEITEN Erkenner neben den ersten - auf iOS
+   *      wirft das, und der Fang war weg.
+   *   2. KEIN `onend`. Endet die Erkennung ohne Ergebnis - Stille, ein
+   *      Abbruch durch das Betriebssystem, ein Wechsel in eine andere
+   *      App -, dann feuert `onresult` nie. Die Zeile „… ich hoere" blieb
+   *      stehen, fuer immer. Genau das war zu sehen.
+   *   3. KEINE FRIST. Ohne Ergebnis und ohne Ende wartete die Anzeige
+   *      unbegrenzt.
+   *
+   * Dazu ein vierter, den man nur sieht: der atmende Ring am Mikrofon lief
+   * IMMER, auch wenn gar nicht zugehoert wurde. Die App sah also aus, als
+   * hoerte sie zu, waehrend sie es nicht tat - und als hoerte sie weiter
+   * zu, nachdem sie aufgehoert hatte. Der Ring atmet jetzt nur noch
+   * waehrend des Zuhoerens.
+   *
+   * Der Knopf ist deshalb ein SCHALTER: der erste Tipp hoert zu, der
+   * zweite sagt „fertig". Und jeder Weg heraus - Ergebnis, Fehler, Ende,
+   * Frist - fuehrt durch `aufhoeren()`, damit es keinen Zustand gibt, aus
+   * dem man nicht herauskommt.
+   */
+  if (kannSprechen && Erk) {
+    const mik=el('button','mikro',MIKRO);
+    mik.id = 'mikro';
+    mik.setAttribute('aria-label','Antwort sprechen');
+    const status=el('div','unter'); status.id='sprachstand';
+    status.style.fontSize='var(--s-klein)';
+    /* Wie lange hoechstens zugehoert wird.
+     *
+     * Nicht laenger: ein Kind spricht einen Landesnamen in zwei Sekunden.
+     * Nicht kuerzer: ein langer Name mit einer Denkpause davor
+     * braucht seine Zeit, und ein Fenster, das mitten im Wort zufaellt,
+     * ist schlimmer als eines, das zu lange offen steht. */
+    const HOERDAUER = 8000;
+    let laeuft = null, uhr = null, gehoert = false, zwischen = null;
+    /** Der EINE Weg heraus. Jeder Ausgang geht hier durch. */
+    const aufhoeren = (satz) => {
+      if (uhr) { clearTimeout(uhr); uhr = null; }
+      laeuft = null;
+      hoerenEndet();            // ab jetzt darf die App wieder reden
+      mik.classList.remove('hoert');
+      mik.setAttribute('aria-label','Antwort sprechen');
+      if (satz) status.textContent = satz;
+    };
+    mik.onclick=()=>{
+      // Zweiter Tipp heisst „fertig". `stop()` liefert das, was bis hierher
+      // verstanden wurde - anders als `abort()`, das es wegwirft.
+      if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }
+      const e=new Erk();
+      e.lang='de-DE'; e.maxAlternatives=3; e.continuous=false;
+      // Zwischenergebnisse: sie beweisen dem Kind, dass etwas ankommt.
+      // Wo der Browser sie nicht kann, aendert die Zeile nichts.
+      e.interimResults=true;
+      gehoert = false; zwischen = null;
+      e.onresult=(ev)=>{
+        /* ALLE Lesarten UND ALLE Abschnitte.
+         *
+         * Zwei Dinge, die frueher weggeworfen wurden:
+         *
+         * `maxAlternatives = 3` steht seit dem ersten Tag da - und es
+         * wurde nur `r[0]` gelesen. Die Erkennung liefert ihre
+         * Unsicherheit frei Haus, und die Menge der moeglichen Antworten
+         * ist geschlossen: wir muessen nicht raten, welche Lesart stimmt,
+         * wir koennen alle fragen.
+         *
+         * Und `ev.results` kann MEHRERE Abschnitte haben - das Geraet
+         * schneidet eine Aeusserung an einer Atempause. Gelesen wurde nur
+         * der letzte. Wer „Ich glaube | das ist Asien" sagte, verlor die
+         * eine Haelfte; wer „Asien | glaube ich" sagte, verlor die
+         * andere - und welche, hing an der Atempause. Jetzt kommen beide
+         * mit, einzeln und aneinandergehaengt. */
+        const varianten = [], stuecke = [];
+        for (let n = 0; n < ev.results.length; n++) {
+          const r = ev.results[n];
+          for (let i = 0; i < r.length; i++) {
+            const t = String(r[i].transcript).trim();
+            if (t && !varianten.includes(t)) varianten.push(t);
+            if (i === 0 && t) stuecke.push(t);
+          }
+        }
+        const ganz = stuecke.join(' ').trim();
+        if (ganz && !varianten.includes(ganz)) varianten.unshift(ganz);
+        const roh = ganz || varianten[0] || '';
+        if (!ev.results[ev.results.length-1].isFinal) {
+          // Das Zwischenergebnis wird AUFGEHOBEN, nicht nur angezeigt:
+          // wenn die Erkennung danach ohne Endergebnis abbricht - auf dem
+          // Telefon der Normalfall bei Stille -, ist es alles, was wir
+          // haben. Es wegzuwerfen hiesse, das Kind noch einmal sprechen
+          // zu lassen, obwohl wir es verstanden haben.
+          if (roh) zwischen = { roh, varianten };
+          status.textContent = `… ${roh}`;
+          return;
+        }
+        gehoert = true;
+        zwischen = null;
+        status.textContent=`gehört: „${roh}“`;
+        try{ e.stop(); }catch(err){}
+        aufhoeren();
+        bewerte(roh,'sprechen',{status, varianten});
+      };
+      e.onerror=(ev)=>{
+        const was = ev && ev.error;
+        aufhoeren(
+          was==='not-allowed' || was==='service-not-allowed'
+            ? 'Das Mikrofon ist nicht erlaubt. Bitte in den Einstellungen freigeben.'
+          : was==='no-speech'
+            ? 'Ich habe nichts gehört — tipp noch mal und sag es laut.'
+            : 'Das hat nicht geklappt — tipp noch mal auf das Mikrofon.');
+      };
+      /* Der Ausgang, der gefehlt hat. Er kommt IMMER - auch wenn das
+       * Betriebssystem die Erkennung von sich aus beendet.
+       *
+       * Und er wirft nicht weg, was schon da war: endet die Erkennung
+       * ohne Endergebnis, aber mit einem Zwischenergebnis, wird DAS
+       * gewertet. Auf dem Telefon endet die Erkennung bei Stille von
+       * selbst, und das letzte Zwischenergebnis ist dann oft der volle
+       * Satz - er ging bisher verloren, und das Kind wurde gebeten, noch
+       * einmal zu sagen, was es gerade gesagt hatte. */
+      e.onend=()=>{
+        if (gehoert) return aufhoeren();
+        if (zwischen) {
+          const z = zwischen; zwischen = null;
+          status.textContent = `gehört: „${z.roh}“`;
+          aufhoeren();
+          bewerte(z.roh,'sprechen',{status, varianten:z.varianten});
+          return;
+        }
+        aufhoeren('Fertig. Ich habe nichts verstanden — tipp noch mal auf das Mikrofon.');
+      };
+      try{
+        hoerenBeginnt();        // Lautsprecher aus, BEVOR das Mikrofon angeht
+        e.start();
+        laeuft = e;
+        mik.classList.add('hoert');
+        mik.setAttribute('aria-label','Fertig — das Gesagte prüfen');
+        status.textContent='… ich höre. Tipp noch mal, wenn du fertig bist.';
+        uhr = setTimeout(()=>{ if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } } },
+          HOERDAUER);
+      }catch(err){ aufhoeren('Mikrofon nicht verfügbar.'); }
+    };
+    werkzeug.appendChild(mik); liste.appendChild(status);
+  }
+}
+
 function spielschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const [art, kont] = st.ebeneId.split(':');
@@ -5742,178 +6073,9 @@ function spielschirm(){
     werkzeug.appendChild(um);
   }
 
-  // Das Mikrofon wird nur gezeigt, wenn es auch etwas TUT.
-  //
-  // Vorher stand es immer da, grau, mit dem Satz "Sprachmodus ist aus. Im
-  // Elternbereich einschalten." darunter - eine Anweisung an die Eltern,
-  // auf dem Spielbildschirm des Kindes. Zusammen kosteten die beiden bis
-  // zu 120 Punkte Hoehe, und die Karte hatte sie noetig: sie fuellte im
-  // Hochformat nur 16 bis 45 Prozent des Feldes.
-  //
-  // Ein dauerhaft abgeschalteter Knopf ist kein Hinweis, sondern ein
-  // Hindernis. Wo es wirklich nicht geht - der Browser kann es nicht -,
-  // bleibt der Hinweis stehen; das ist eine Auskunft und keine Aufforderung.
-  const Erk = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const kannSprechen = spricht && Einst.sprachmodus;
-  if (spricht && !Erk && Einst.sprachmodus) {
-    const status=el('div','unter'); status.style.fontSize='var(--s-klein)';
-    status.textContent='Sprechen geht in diesem Browser nicht — sag es laut, dann zieh.';
-    werkzeug.appendChild(status);
-  }
-  /* Der Sprachweg - und warum er einen Zustand braucht (F13).
-   *
-   * Gemeldet vom Zielgeraet, gefunden von keinem Tor: „Ich habe den
-   * Sprachmodus angeschaltet, im Spiel auf das Mikrofon getippt, es ging
-   * los, ich habe reingesprochen - und konnte den Modus nicht mehr
-   * beenden. Es kam keine Auswertung."
-   *
-   * Nachgesehen: der Knopf war ein EINWEG-Schalter. Er baute bei jedem
-   * Tipp einen neuen Erkenner, startete ihn und vergass ihn sofort. Damit
-   * fehlten drei Dinge auf einmal, und jedes einzelne haette gereicht:
-   *
-   *   1. KEIN AUSSTIEG. Es gab nirgends ein `stop()`. Wer fertig
-   *      gesprochen hatte, konnte das der App nicht sagen. Ein zweiter
-   *      Tipp baute einen ZWEITEN Erkenner neben den ersten - auf iOS
-   *      wirft das, und der Fang war weg.
-   *   2. KEIN `onend`. Endet die Erkennung ohne Ergebnis - Stille, ein
-   *      Abbruch durch das Betriebssystem, ein Wechsel in eine andere
-   *      App -, dann feuert `onresult` nie. Die Zeile „… ich hoere" blieb
-   *      stehen, fuer immer. Genau das war zu sehen.
-   *   3. KEINE FRIST. Ohne Ergebnis und ohne Ende wartete die Anzeige
-   *      unbegrenzt.
-   *
-   * Dazu ein vierter, den man nur sieht: der atmende Ring am Mikrofon lief
-   * IMMER, auch wenn gar nicht zugehoert wurde. Die App sah also aus, als
-   * hoerte sie zu, waehrend sie es nicht tat - und als hoerte sie weiter
-   * zu, nachdem sie aufgehoert hatte. Der Ring atmet jetzt nur noch
-   * waehrend des Zuhoerens.
-   *
-   * Der Knopf ist deshalb ein SCHALTER: der erste Tipp hoert zu, der
-   * zweite sagt „fertig". Und jeder Weg heraus - Ergebnis, Fehler, Ende,
-   * Frist - fuehrt durch `aufhoeren()`, damit es keinen Zustand gibt, aus
-   * dem man nicht herauskommt.
-   */
-  if (kannSprechen && Erk) {
-    const mik=el('button','mikro',MIKRO);
-    mik.id = 'mikro';
-    mik.setAttribute('aria-label','Antwort sprechen');
-    const status=el('div','unter'); status.id='sprachstand';
-    status.style.fontSize='var(--s-klein)';
-    /* Wie lange hoechstens zugehoert wird.
-     *
-     * Nicht laenger: ein Kind spricht einen Landesnamen in zwei Sekunden.
-     * Nicht kuerzer: ein langer Name mit einer Denkpause davor
-     * braucht seine Zeit, und ein Fenster, das mitten im Wort zufaellt,
-     * ist schlimmer als eines, das zu lange offen steht. */
-    const HOERDAUER = 8000;
-    let laeuft = null, uhr = null, gehoert = false, zwischen = null;
-    /** Der EINE Weg heraus. Jeder Ausgang geht hier durch. */
-    const aufhoeren = (satz) => {
-      if (uhr) { clearTimeout(uhr); uhr = null; }
-      laeuft = null;
-      hoerenEndet();            // ab jetzt darf die App wieder reden
-      mik.classList.remove('hoert');
-      mik.setAttribute('aria-label','Antwort sprechen');
-      if (satz) status.textContent = satz;
-    };
-    mik.onclick=()=>{
-      // Zweiter Tipp heisst „fertig". `stop()` liefert das, was bis hierher
-      // verstanden wurde - anders als `abort()`, das es wegwirft.
-      if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } return; }
-      const e=new Erk();
-      e.lang='de-DE'; e.maxAlternatives=3; e.continuous=false;
-      // Zwischenergebnisse: sie beweisen dem Kind, dass etwas ankommt.
-      // Wo der Browser sie nicht kann, aendert die Zeile nichts.
-      e.interimResults=true;
-      gehoert = false; zwischen = null;
-      e.onresult=(ev)=>{
-        /* ALLE Lesarten UND ALLE Abschnitte.
-         *
-         * Zwei Dinge, die frueher weggeworfen wurden:
-         *
-         * `maxAlternatives = 3` steht seit dem ersten Tag da - und es
-         * wurde nur `r[0]` gelesen. Die Erkennung liefert ihre
-         * Unsicherheit frei Haus, und die Menge der moeglichen Antworten
-         * ist geschlossen: wir muessen nicht raten, welche Lesart stimmt,
-         * wir koennen alle fragen.
-         *
-         * Und `ev.results` kann MEHRERE Abschnitte haben - das Geraet
-         * schneidet eine Aeusserung an einer Atempause. Gelesen wurde nur
-         * der letzte. Wer „Ich glaube | das ist Asien" sagte, verlor die
-         * eine Haelfte; wer „Asien | glaube ich" sagte, verlor die
-         * andere - und welche, hing an der Atempause. Jetzt kommen beide
-         * mit, einzeln und aneinandergehaengt. */
-        const varianten = [], stuecke = [];
-        for (let n = 0; n < ev.results.length; n++) {
-          const r = ev.results[n];
-          for (let i = 0; i < r.length; i++) {
-            const t = String(r[i].transcript).trim();
-            if (t && !varianten.includes(t)) varianten.push(t);
-            if (i === 0 && t) stuecke.push(t);
-          }
-        }
-        const ganz = stuecke.join(' ').trim();
-        if (ganz && !varianten.includes(ganz)) varianten.unshift(ganz);
-        const roh = ganz || varianten[0] || '';
-        if (!ev.results[ev.results.length-1].isFinal) {
-          // Das Zwischenergebnis wird AUFGEHOBEN, nicht nur angezeigt:
-          // wenn die Erkennung danach ohne Endergebnis abbricht - auf dem
-          // Telefon der Normalfall bei Stille -, ist es alles, was wir
-          // haben. Es wegzuwerfen hiesse, das Kind noch einmal sprechen
-          // zu lassen, obwohl wir es verstanden haben.
-          if (roh) zwischen = { roh, varianten };
-          status.textContent = `… ${roh}`;
-          return;
-        }
-        gehoert = true;
-        zwischen = null;
-        status.textContent=`gehört: „${roh}“`;
-        try{ e.stop(); }catch(err){}
-        aufhoeren();
-        bewerte(roh,'sprechen',{status, varianten});
-      };
-      e.onerror=(ev)=>{
-        const was = ev && ev.error;
-        aufhoeren(
-          was==='not-allowed' || was==='service-not-allowed'
-            ? 'Das Mikrofon ist nicht erlaubt. Bitte in den Einstellungen freigeben.'
-          : was==='no-speech'
-            ? 'Ich habe nichts gehört — tipp noch mal und sag es laut.'
-            : 'Das hat nicht geklappt — tipp noch mal auf das Mikrofon.');
-      };
-      /* Der Ausgang, der gefehlt hat. Er kommt IMMER - auch wenn das
-       * Betriebssystem die Erkennung von sich aus beendet.
-       *
-       * Und er wirft nicht weg, was schon da war: endet die Erkennung
-       * ohne Endergebnis, aber mit einem Zwischenergebnis, wird DAS
-       * gewertet. Auf dem Telefon endet die Erkennung bei Stille von
-       * selbst, und das letzte Zwischenergebnis ist dann oft der volle
-       * Satz - er ging bisher verloren, und das Kind wurde gebeten, noch
-       * einmal zu sagen, was es gerade gesagt hatte. */
-      e.onend=()=>{
-        if (gehoert) return aufhoeren();
-        if (zwischen) {
-          const z = zwischen; zwischen = null;
-          status.textContent = `gehört: „${z.roh}“`;
-          aufhoeren();
-          bewerte(z.roh,'sprechen',{status, varianten:z.varianten});
-          return;
-        }
-        aufhoeren('Fertig. Ich habe nichts verstanden — tipp noch mal auf das Mikrofon.');
-      };
-      try{
-        hoerenBeginnt();        // Lautsprecher aus, BEVOR das Mikrofon angeht
-        e.start();
-        laeuft = e;
-        mik.classList.add('hoert');
-        mik.setAttribute('aria-label','Fertig — das Gesagte prüfen');
-        status.textContent='… ich höre. Tipp noch mal, wenn du fertig bist.';
-        uhr = setTimeout(()=>{ if (laeuft) { try{ laeuft.stop(); }catch(err){ aufhoeren('Fertig.'); } } },
-          HOERDAUER);
-      }catch(err){ aufhoeren('Mikrofon nicht verfügbar.'); }
-    };
-    werkzeug.appendChild(mik); liste.appendChild(status);
-  }
+  /* Der Sprachweg steht seit F2b als eigenes Bauteil daneben - er ist
+     nicht mehr die Sache dieses Bildschirms, sondern die des Mikrofons. */
+  sprachweg({ spricht, werkzeug, liste, bewerte });
 
   /**
    * Wohin zeigt der Finger? MIT Nachsicht.
@@ -6167,101 +6329,26 @@ function spielschirm(){
     return teile.join(' ');
   }
 
-  /**
-   * „Ich habe X verstanden. Stimmt das?" - mit zwei Knoepfen.
-   *
-   * Sie stehen unter der Sprachzeile, nicht in der Antwortliste: was das
-   * Geraet verstanden hat, gehoert zum Mikrofon, nicht zur Karte.
-   */
-  function nachfragen(t, roh, ctx){
-    const stelle = ctx.status || liste;
-    if (ctx.status) ctx.status.textContent = t.id === ziel.id
-      ? `Meintest du ${t.name}?` : `Ich habe „${t.name}" verstanden. Stimmt das?`;
-    sagen(ctx.status ? ctx.status.textContent : '');
-    let kasten = stelle.parentNode.querySelector('#nachfrage');
-    if (!kasten) {
-      kasten = el('div','nachfrage'); kasten.id = 'nachfrage';
-      stelle.parentNode.insertBefore(kasten, stelle.nextSibling);
-    }
-    kasten.innerHTML = '';
-    const weg = ()=>{ kasten.remove(); };
-    const ja = el('button','leise','Ja');
-    ja.id = 'jaSicher';
-    ja.onclick = ()=>{ weg(); bewerte(roh,'sprechen',{ ...ctx, bestaetigt:t }); };
-    const nein = el('button','leise','Nein');
-    nein.id = 'neinNochmal';
-    // „Nein" kostet nichts. Der Irrtum lag beim Geraet, nicht beim Kind.
-    nein.onclick = ()=>{ weg();
-      if (ctx.status) ctx.status.textContent = 'Dann sag es noch einmal — tipp auf das Mikrofon.'; };
-    kasten.append(ja, nein);
-  }
-
   /* --- Bewertung. EIN Ort, egal welcher Eingabeweg. --- */
   async function bewerte(roh, eingabeart, ctx){
     if (erledigt) return;
 
-    /* NICHT VERSTANDEN IST KEIN FEHLVERSUCH.
-     *
-     * Der Abgleich stand bis hierher unter dem Zaehler: eine Aeusserung,
-     * die die Erkennung verschluckt hat, kostete einen der drei Versuche -
-     * und nach dreien loeste die App die Aufgabe auf. Wer dreimal
-     * hintereinander undeutlich verstanden wurde, bekam die Antwort
-     * gezeigt, ohne ein einziges Mal falsch geraten zu haben.
-     *
-     * Das ist nicht dasselbe wie eine falsche Antwort: „ich habe dich
-     * nicht gehoert" ist eine Aussage ueber MICH, nicht ueber das Kind.
-     * Es steht deshalb VOR dem Zaehler und geht ohne Wertung wieder
-     * heraus - protokolliert wird es trotzdem, denn genau diese Zeilen
-     * sind das Rohmaterial fuer den eingefrorenen Korpus (M4r).
-     *
-     * Und der Satz nennt, WAS angekommen ist. „Das habe ich nicht
-     * verstanden" sagt niemandem, ob das Mikrofon nichts gehoert hat oder
-     * ob der Abgleich das Gehoerte nicht zuordnen konnte - genau daran
-     * ist die Fehlersuche vom Zielgeraet haengengeblieben.
-     */
+    /* Der Sprachweg steht VOR dem Versuchszaehler, und warum, steht bei
+       `erhoert` - einmal, fuer beide Bildschirme: was zweimal dasteht,
+       veraltet einmal (Regel 6). */
     let vorurteil = null;
     if (eingabeart==='sprechen') {
-      /* Eine BESTAETIGTE Rueckfrage kommt hier ein zweites Mal herein -
-       * dann steht das Urteil schon fest und wird nicht neu erhoert. */
-      vorurteil = ctx.bestaetigt
-        ? { ...ctx.bestaetigt, art:'angenommen' }
-        : Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);
-      if (vorurteil.art==='nochmal') {
-        const satz = roh ? `Ich habe „${roh}“ verstanden. Sag es noch einmal.`
-                         : 'Ich habe nichts gehört. Sag es noch einmal.';
-        if (ctx.status) ctx.status.textContent = satz;
-        sagen(satz);
-        Protokoll.schreiben(Protokoll.eintrag({
+      vorurteil = erhoert(roh, ctx, { kand, ziel, bewerte, stelle: liste,
+        unverstanden: () => Protokoll.schreiben(Protokoll.eintrag({
           zeit: Date.now(), profil: P.id, ebene: st.ebeneId, gebietId: ziel.id,
           eingabeart, ergebnis: 'unverstanden', roheingabe: roh,
           sicherheit: null, dauerMs: Date.now()-beginn, versuch,
           fachVorher: Stand[ziel.id]?.fach ?? 1,
           fachNachher: Stand[ziel.id]?.fach ?? 1,
-        }));
-        return;
-      }
-      /* DIE RUECKFRAGE WIRD GESTELLT - UND BEANTWORTBAR.
-       *
-       * Der Abgleich kennt drei Ausgaenge, und der mittlere ist laut
-       * seinem eigenen Kommentar der wichtigste: er „verwandelt eine
-       * Erkennungsschwaeche in eine Bestaetigungsfrage - und die kann ein
-       * Kind beantworten". Konnte es aber nicht. Die Frage „Meintest du
-       * Hessen?" stand auf dem Schirm, und im selben Augenblick war die
-       * Aufgabe vorbei und als nicht gekonnt verbucht.
-       *
-       * Gemessen am erfundenen Korpus: 3 von 121 RICHTIGEN Aeusserungen
-       * enden so - „hessn", „hesen", „chiena". Das Kind hat den Namen
-       * gesagt; unsicher war das Geraet, bezahlt hat das Kind.
-       *
-       * Jetzt kostet die Rueckfrage nichts, bis sie beantwortet ist:
-       *   Ja   -> gewertet wie gesprochen (richtig, wenn es das Ziel war;
-       *           falsch, wenn das Kind einen anderen Namen bestaetigt)
-       *   Nein -> kein Versuch verbraucht, noch einmal sprechen
-       *
-       * Warum „Ja" bei einem FREMDEN Namen trotzdem falsch zaehlt: sonst
-       * waere die Rueckfrage ein Freifahrtschein. Bestaetigt wird, was
-       * verstanden wurde - nicht, dass es stimmt. */
-      if (vorurteil.art==='rueckfrage') { nachfragen(vorurteil, roh, ctx); return; }
+        })) });
+      // `null` heisst: es ist schon reagiert, die Aufgabe ist noch offen
+      // und hat nichts gekostet.
+      if (!vorurteil) return;
     }
 
     versuch++;

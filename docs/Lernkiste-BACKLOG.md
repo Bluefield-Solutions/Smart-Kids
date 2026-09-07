@@ -253,7 +253,7 @@ im Konzept:
 | **F0** | Referenzabgleich — Seterra, Montessori, Anton; fünf Soll-Sätze | steht im Konzept, § 0 | **erledigt** |
 | **F1** | `src/inhalt/flaggen.js`: Formsprache, 69 Bauanweisungen, `flaggeTeile`/`flaggeSvg`; Tor `flaggen` | Das Tor misst die **Unterscheidbarkeit am Raster** und schlägt an, wenn einer Flagge ihr unterscheidendes Zeichen fehlt | mittel |
 | **F2** | Die Ebene: Gruppenkachel + sieben Karten, `art:'flagge'`, `flaggenschirm()`, Vorlauf, Forscherbuch | Alle vier Profile spielen eine Runde durch; Fiona **ohne ein Wort Schrift** | groß |
-| **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Fiona sagt „Deutschland" statt zu tippen; der Kartenbildschirm verhält sich unverändert | mittel |
+| **F2b** | Den Sprachweg aus `spielschirm` herauslösen, dann auch die Flagge SPRECHEN | Lea sagt „Italien" statt zu tippen; der Kartenbildschirm verhält sich unverändert | **gefahren** |
 | **F3** | „Verwechslungen" — achter Gruppeneintrag, dreizehn Paare, `FLAGGEN_EXTRA` | Neben Rumänien steht der Tschad — und zwei Paare kann man **gar nicht** fragen | **gefahren** |
 | **F4** | „Auf die Karte" — die Flagge steht in der Frage, getippt wird auf das Land | Läuft auf dem `spielschirm`, nicht auf einem eigenen | **gefahren** |
 | **F5** | Abzeichen, Doku, volle Torkette, Gegenproben — **und die Lücke unten** | `npm run tor` grün, jede neue Prüfung mit stehender Gegenprobe | mittel |
@@ -286,17 +286,27 @@ Flaggen gibt, die man nicht auseinanderhalten kann, ist selbst etwas, das man
 dem Boden *muss* die Kennzeichnung tragen, und ein Paar mit der Kennzeichnung
 muss auch wirklich zu nah sein — sonst wäre die Ausnahme ein Freibrief.
 
-**Eine Lücke im Rauchtest, gefunden beim Gegenproben (für F5).** Nimmt man
-`flaggen: flaggenschirm` aus `schirmZu`, fällt die Ebene auf den
-Kartenbildschirm zurück — und der Abschnitt `durchgang` bleibt **grün**. Er
-findet weder Flaggenkarte noch Rechnung noch Karte und geht still zur nächsten
-Ebene. Das gilt nicht nur für die Flaggen: **jede** Ebene, deren Bildschirm
-kaputtgeht, wird stillschweigend übersprungen. Der Durchgang muss verlangen,
-dass jede Ebene, die er betritt, auch **eine Antwort abgibt** — sonst zählt er
-Ebenen und misst nichts. Eine Gegenprobe dafür steht deshalb noch nicht in der
-Liste: eine Probe auf ein Tor, das an dieser Stelle nichts beweist, wäre selbst
-nur eine Behauptung: eine Prüfung, die nie etwas meldet, ist kein Beweis
-(Regel 1).
+**Eine Lücke im Rauchtest, gefunden beim Gegenproben — und geschlossen.**
+Nahm man `flaggen: flaggenschirm` aus `schirmZu`, fiel die Ebene auf den
+Kartenbildschirm zurück, und der Abschnitt `durchgang` blieb **grün**. Er fand
+weder Flaggenkarte noch Rechnung noch Karte und ging still zur nächsten Ebene.
+Das galt nicht nur für die Flaggen: **jede** Ebene, deren Bildschirm kaputtging,
+wurde stillschweigend übersprungen — der Durchgang zählte Ebenen und maß nichts.
+
+Die Zusage heißt jetzt nicht mehr „ich habe sie betreten", sondern **„sie hat
+geantwortet"**: zwischen zwei Ebenen muss `durchgespielt` gewachsen sein, sonst
+ist die vorige rot. Die Gegenprobe dazu steht in der Liste und nimmt genau das
+weg, woran es aufgefallen ist — eine Prüfung, die nie etwas meldet, ist kein
+Beweis (Regel 1), und diese meldete nie etwas.
+
+Der zweite Fund derselben Art kam aus F4: der Zweig für die **umgekehrte
+Frage** war seit B3 nie gelaufen (sie ist in den Erdkundeebenen erst die
+dritte Aufgabe, der Durchgang spielt nur die erste). Als er zum ersten Mal
+lief, prüfte er das Lob nicht und verließ die Ebene nicht — eine zweite,
+unvollständige Fassung von `abgeschlossen()`. Und der `catch`, an dem der ganze
+Profildurchlauf hängt, nennt seither die **Ebene**, bei der er zugeschlagen
+hat; ein nackter Zeitablauf kostete sonst einen ganzen Lauf, nur um die Stelle
+zu finden.
 
 **Warum das Sprechen eine eigene Runde ist (F2b) und nicht in F2 steckt.**
 Der Sprachweg — Mikrofon, Rückfrage bei unsicherer Erkennung, gerettetes
@@ -311,6 +321,28 @@ Er gehört **herausgelöst**, einmal, mit den Gegenproben des Kartenbildschirms
 als Netz: derselbe Weg, dieselbe Rückfrage, zwei Aufrufer. Das ist eine Runde
 für sich, und sie ist erst dann fällig, wenn es einen zweiten Aufrufer
 wirklich gibt — den gibt es seit F2.
+
+**Gefahren.** Herausgelöst sind drei Stücke, und die Aufteilung ist die
+eigentliche Arbeit gewesen:
+
+| Bauteil | Was es kann | Wer es benutzt |
+|---|---|---|
+| `sprachweg` | Mikrofon, Zwischenergebnis, Frist, der *eine* Ausgang (F13) | Karte, Flaggen |
+| `erhoert` | was aus dem Gehörten wird — **vor** dem Versuchszähler (F14), Rückfrage (F15) | Karte, Flaggen |
+| `rueckfrage` | „Ich habe X verstanden. Stimmt das?" mit Ja und Nein | `erhoert` |
+
+Was die *Ebene* beisteuert, ist der Vorrat, gegen den gehört wird, und ihre
+Protokollzeile. Der Unterschied zwischen Tippen und Sprechen bleibt genau
+einer: getippt wird die **Rechtschreibung** bewertet, weil sie Lerninhalt ist —
+gesprochen der gemeinte **Ort**. „Rumänien" mit ie ist beim Tippen einen Hinweis
+wert und beim Sprechen gar nicht zu hören.
+
+Das Mikrofon steht in der **Eingabezeile**, neben „Prüfen", nicht unten bei
+„Weiß ich nicht": es ist der zweite Weg zur Antwort und nicht der zweite Weg
+zum Aufgeben. Und in der **Zeigerichtung** steht es gar nicht da — dort nennt
+die Frage den Landesnamen, ihn auszusprechen wäre Vorlesen. Der Rauchtest misst
+beide Hälften; ohne die zweite hieße die Zusage nur „irgendwo ist ein
+Mikrofon".
 
 **Warum die Reihenfolge so und nicht anders.** F1 ist unsichtbar und trägt
 trotzdem alles: ohne einen Vorrat, dessen Flaggen sich nachweislich

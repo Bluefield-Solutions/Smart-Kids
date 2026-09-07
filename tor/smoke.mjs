@@ -4079,7 +4079,30 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       : da;
     gespielt[wer] = zuSpielen.length;
     gespieltEnglisch[wer] = zuSpielen.filter(SAGT_ENGLISCH).length;
+    /* Was die VORIGE Ebene abgegeben hat - und die Luecke, die das
+     * schliesst (F5).
+     *
+     * Gefunden beim Gegenproben: nimmt man einer Ebene ihren Bildschirm
+     * (`schirmZu`), faellt sie auf einen fremden zurueck. Der Durchgang
+     * findet dort weder das, worauf er wartet, noch etwas, worueber er
+     * klagen koennte - und geht STILL zur naechsten. Er zaehlte Ebenen
+     * und mass nichts. Das gilt nicht nur fuer die Flaggen: JEDE Ebene,
+     * deren Bildschirm kaputtgeht, fiel so aus.
+     *
+     * Die Zusage ist deshalb nicht mehr „ich habe sie betreten", sondern
+     * „sie hat geantwortet": `durchgespielt` muss zwischen zwei Ebenen
+     * gewachsen sein. Eine Pruefung, die nie etwas meldet, ist kein
+     * Beweis (Regel 1) - und diese meldete nie etwas. */
+    let vorige = null;
+    const nachgezaehlt = () => {
+      if (vorige && durchgespielt === vorige.zaehler)
+        merke('durchgang', new Error(`${wer}/${vorige.ebene}: betreten und keine einzige `
+          + 'Antwort abgegeben — der Durchgang ist still an der Ebene vorbeigelaufen'));
+      vorige = null;
+    };
     for (const ebene of zuSpielen) {
+      nachgezaehlt();
+      vorige = { ebene, zaehler: durchgespielt };
       /* Merken, WO wir sind. Der ganze Profildurchlauf haengt an EINEM
        * `catch` - ein Zeitablauf darin meldete bisher nur „Timeout
        * 15000ms exceeded" und liess offen, welche der zwanzig Ebenen ihn
@@ -4632,7 +4655,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * ueber `#zur` auf den Pausenschirm statt auf eine Wand und lief
          * in einen Zeitablauf — der Rest der Runde des Profils fiel
          * aus. Eine eigene Fassung desselben Ablaufs, und sie war die
-         * unvollstaendige (Regel 6). */
+         * unvollstaendige: was zweimal dasteht, veraltet einmal
+         * (Regel 6). */
         await abgeschlossen(p, wer, ebene, /Wohin gehört|Wo liegt/,
           `auf ${gesucht} getippt`);
         continue;
@@ -4697,6 +4721,9 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       await abgeschlossen(p, wer, ebene, /Wie heißt/, `„${eingabe}" richtig `
         + (z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'));
     }
+    // Und die LETZTE Ebene - ohne sie bliebe genau eine je Profil
+    // ungeprueft, und zwar immer dieselbe.
+    nachgezaehlt();
     /* --- Steht die Aufgabe im Protokoll mit ihrem Namen? (R7) --------
      *
      * `NAMEN` war aus ZWEI Vorraeten gebaut, seit R4 gibt es drei: fuer
@@ -7452,6 +7479,113 @@ if (laeuft('sprechen')) try {
     if (gewertet) console.log(`  Sprechen:                   an, beendet, ohne Ergebnis beendet, `
       + `3× nicht verstanden ohne Versuch, „${SATZ(name)}." gewertet `
       + `(zwischendurch: „${zwischen}"), ${zweite}, ${rueck}, ${gerettet}`);
+  }
+
+  /* --- Die Flagge wird BENANNT, gesprochen (F2b) ----------------------
+   *
+   * Der Wunsch nannte drei Wege: zuordnen, eintippen, einsprechen. Der
+   * dritte fehlte, weil der Sprachweg im Kartenbildschirm eingewachsen
+   * war; seit F2b steht er als Bauteil daneben (`sprachweg`, `erhoert`)
+   * und wird von beiden benutzt.
+   *
+   * Geprueft wird deshalb genau das, was ein zweiter Benutzer beweisen
+   * muss: dass das Mikrofon auf dem Flaggenschirm STEHT, dass eine
+   * Aeusserung dort GEWERTET wird - und dass eine unverstandene keinen
+   * Versuch kostet. Der letzte Punkt ist der, der beim Nachbauen
+   * verlorenginge (F14): er steht in `erhoert`, und wenn der
+   * Flaggenschirm ihn nicht mitbenutzt, faellt er hier auf.
+   *
+   * NUR IN DER NENNRICHTUNG. Zeigt der Bildschirm vier Flaggen und nennt
+   * den Namen, waere Sprechen kein Antworten, sondern Vorlesen - dann
+   * darf das Mikrofon auch nicht dastehen. Beide Richtungen werden
+   * gemessen, sonst bezeugte die Pruefung nur die eine Haelfte. */
+  {
+    const q = await neueSeite({ width: 844, height: 390 }, ctx);
+    await stelleAblage(q, { einstellungen: { alles: { sprachmodus: true } } });
+    await q.click('[data-profil="lea"]');
+    await zurEbenenwahl(q, 'flaggen:europa');
+    await q.$eval('.schirm.da [data-ebene="flaggen:europa"]', x => x.click());
+    await q.waitForSelector('.schirm.da #los, .schirm.da .flaggenfeld', { timeout: 25000 });
+    await durchVorlaufWenn(q);
+    await q.waitForSelector('.schirm.da .flaggenfeld', { timeout: 15000 });
+    const lage = await q.evaluate(() => ({
+      nennen: !!document.querySelector('.schirm.da #rein'),
+      mikro: !!document.querySelector('.schirm.da #mikro'),
+      // Bare Variable, kein `window.` - die App haelt die Sitzung im
+      // Modulrahmen, nicht am Fenster (dieselbe Stelle wie in
+      // `zeigeAufKarte`).
+      name: ((typeof Sitzung !== 'undefined' && Sitzung && Sitzung.liste
+              ? Sitzung.liste[Sitzung.i] : null) || {}).name || null }));
+    if (!lage.nennen) {
+      merke('sprechen', new Error('Leas erste Flaggenaufgabe ist nicht die Nennrichtung — '
+        + 'dann ist hier nichts zu sprechen, und die Prüfung hätte nichts geprüft'));
+    } else if (!lage.mikro) {
+      merke('sprechen', new Error('auf dem Flaggenschirm steht kein Mikrofon, obwohl der '
+        + 'Sprachmodus an ist — „einsprechen" war einer der drei gewünschten Wege'));
+    } else if (!lage.name) {
+      merke('sprechen', new Error('die Sitzung nennt kein Land — ohne den Namen lässt sich '
+        + 'nicht sagen, ob das Gesprochene gewertet wurde'));
+    } else {
+      /* a) Kauderwelsch kostet KEINEN Versuch (F14, ueber `erhoert`).
+       *
+       * DREIMAL, nicht einmal - und das ist der ganze Beweis. Ein
+       * einzelner Fehlversuch beendet die Aufgabe ohnehin nicht; erst
+       * beim dritten loest die App auf. Wer nur einmal nuschelt, misst
+       * also nichts - eine Pruefung, die nie etwas meldet, ist kein
+       * Beweis (Regel 1). */
+      for (let i = 0; i < 3; i++) {
+        await q.click('.schirm.da #mikro');
+        await q.evaluate(() => window.__sprich('krxbl frnz', true));
+        await bis(q, () => !document.querySelector('.schirm.da #mikro.hoert'), 3000);
+      }
+      const nachKauder = await q.evaluate(() => ({
+        satz: document.querySelector('.schirm.da #sprachstand')?.textContent.trim() || '',
+        offen: !document.querySelector('.schirm.da .frage .richtigText')
+               && !document.querySelector('.schirm.da .frage .loesung') }));
+      if (!nachKauder.offen)
+        merke('sprechen', new Error('drei unverstandene Äußerungen haben die Flaggenaufgabe '
+          + 'aufgelöst — dann kostet „ich habe dich nicht gehört" einen der drei Versuche'));
+      if (!/verstanden|gehört/.test(nachKauder.satz))
+        merke('sprechen', new Error(`nach dem Kauderwelsch steht auf dem Flaggenschirm `
+          + `„${nachKauder.satz}" — es nennt nicht, was angekommen ist`));
+      /* b) Der Name wird gewertet. */
+      await q.click('.schirm.da #mikro');
+      await q.evaluate((n) => window.__sprich(n, true), lage.name);
+      const gewertet = await bis(q,
+        () => !!document.querySelector('.schirm.da .frage .richtigText'), 6000);
+      if (!gewertet)
+        merke('sprechen', new Error(`„${lage.name}" auf den Flaggenschirm gesprochen und `
+          + 'nicht gewertet — der zweite Benutzer des Sprachwegs bekommt kein Urteil'));
+      else console.log(`  Flagge gesprochen (F2b):    „${lage.name}" gewertet, `
+        + '3× Kauderwelsch ohne Versuch');
+    }
+    /* Und die Gegenrichtung: vier Flaggen, der Name steht in der Frage -
+       dort darf das Mikrofon nicht stehen. Ohne diese Haelfte hiesse die
+       Zusage nur „irgendwo ist ein Mikrofon". */
+    let zeigt = null;
+    for (let i = 0; i < 8 && !zeigt; i++) {
+      if (await q.$('.schirm.da .flaggenwahl')) {
+        zeigt = { mikro: !!(await q.$('.schirm.da #mikro')) }; break;
+      }
+      if (!(await q.$('.schirm.da #weissnicht'))) break;
+      // Ueber `$eval` und nicht ueber einen Griff: zwischen `$` und
+      // `click` kann der Bildschirm gewechselt haben, und ein Griff auf
+      // ein abgehaengtes Element wirft „not attached to the DOM".
+      await q.$eval('.schirm.da #weissnicht', x => x.click());
+      // Auf die NAECHSTE Aufgabe warten - erst muss die Loesung da sein,
+      // dann wieder weg. Nur auf das Verschwinden zu warten waere sofort
+      // erfuellt, und der naechste Griff ginge in den alten Bildschirm.
+      await bis(q, () => !!document.querySelector('.schirm.da .frage .loesung'), 4000);
+      await bis(q, () => !document.querySelector('.schirm.da .frage .loesung')
+        && !!document.querySelector('.schirm.da .flaggenfeld'), 9000);
+    }
+    if (!zeigt)
+      merke('sprechen', new Error('in acht Aufgaben kam die Zeigerichtung nicht vor — '
+        + 'dann ist ungeprüft, ob das Mikrofon dort ausbleibt'));
+    if (zeigt && zeigt.mikro)
+      merke('sprechen', new Error('in der Zeigerichtung steht das Mikrofon da, obwohl der '
+        + 'Landesname in der Frage steht — gesprochen wäre das Vorlesen, nicht Antworten'));
+    await q.close();
   }
 
   /* --- Die Sprechprobe im Elternbereich (M4r) ------------------------

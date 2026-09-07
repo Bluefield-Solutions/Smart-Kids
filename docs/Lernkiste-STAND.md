@@ -11272,6 +11272,51 @@ keiner Karte dieser App gibt. Der Vorrat filtert über `hatFlagge` gegen
 Gruppe „Flaggen" hält neun Einträge — sieben Karten, die Verwechslungen und die
 Landkarte —, und auf der Erdkundewand steht dafür **eine** Kachel.
 
+## F2b · Einsprechen — der Sprachweg bekommt einen zweiten Benutzer
+
+Der Wunsch nannte drei Wege: **zuordnen, eintippen, einsprechen**. Zwei standen
+nach F2, der dritte nicht — und zwar nicht aus Vergessen. Der Sprachweg saß in
+`spielschirm` eingewachsen: Mikrofon, Zwischenergebnis, Frist, der *eine*
+Ausgang. Hundertsiebzig Zeilen, in denen **vier gemeldete Fehler** stecken
+(F13, F14, F15) und ihre Reparaturen. Ihn im Flaggenschirm nachzubauen hätte
+eine zweite Fassung ergeben — und die zweite Fassung bekommt dieselben vier
+Fehler wieder, weil niemand sie beim Nachbauen kennt: was zweimal dasteht,
+veraltet einmal (Regel 6).
+
+Herausgelöst sind drei Stücke:
+
+| Bauteil | Was es kann | Wer es benutzt |
+|---|---|---|
+| `sprachweg` | Mikrofon, Zwischenergebnis, Frist, der *eine* Ausgang (F13) | Karte, Flaggen |
+| `erhoert` | was aus dem Gehörten wird — **vor** dem Versuchszähler (F14), Rückfrage (F15) | Karte, Flaggen |
+| `rueckfrage` | „Ich habe X verstanden. Stimmt das?" mit Ja und Nein | `erhoert` |
+
+Die Ebene steuert bei, was nur sie weiß: den **Vorrat**, gegen den gehört wird
+(bei den Flaggen die Länder genau dieser Karte), und ihre Protokollzeile. Der
+Unterschied zwischen den beiden Antwortwegen bleibt genau einer: getippt wird
+die **Rechtschreibung** bewertet, weil sie Lerninhalt ist — gesprochen der
+gemeinte **Ort**. „Rumänien" mit ie ist beim Tippen einen Hinweis wert und beim
+Sprechen gar nicht zu hören.
+
+**Das Mikrofon steht in der Eingabezeile, neben „Prüfen".** Der erste Anlauf
+hängte es unten an die Werkzeugzeile, wo „Weiß ich nicht" steht — auf dem
+Bildschirmfoto bei 844 × 390 sofort zu sehen und sofort falsch: es ist der
+zweite Weg zur **Antwort** und nicht der zweite Weg zum **Aufgeben**. Wer es
+dorthin stellt, wo man hinsieht, wenn man nicht weiterweiß, sagt etwas anderes,
+als er meint. Kein Tor ersetzt den Blick (Regel 4) — gemeldet hat es keines.
+
+**Und in der Zeigerichtung steht es gar nicht da.** Dort nennt die Frage den
+Landesnamen; ihn auszusprechen wäre Vorlesen, nicht Antworten. Der Rauchtest
+misst **beide** Hälften — ohne die zweite hieße die Zusage nur „irgendwo ist
+ein Mikrofon".
+
+Gemessen im Abschnitt `sprechen`: **„Italien" gesprochen und gewertet, dreimal
+Kauderwelsch ohne einen einzigen Versuch.** Der zweite Teil ist der teure: er
+ist F14, und er wäre in einer Nachbaufassung als Erstes verlorengegangen.
+Dreimal, nicht einmal — ein einzelner Fehlversuch beendet die Aufgabe ohnehin
+nicht, wer nur einmal nuschelt, misst also nichts — eine Prüfung, die nie
+etwas meldet, ist kein Beweis (Regel 1).
+
 ### Und dann fand die Ebene einen toten Zweig im Rauchtest
 
 Der Umbau am Spielbildschirm war eine Zeile. Drei Runden kostete das, was
@@ -11301,3 +11346,26 @@ Das ist jetzt behoben, und zwar an beiden Enden: der Zweig geht durch
 Profildurchlauf hängt, **nennt die Ebene**, bei der er zugeschlagen hat. Der
 erste Lauf mit dieser einen Zeile mehr zeigte die Stelle sofort — sie lag nicht
 auf `flaggen:karte`, sondern auf der Ebene **danach**.
+
+### Und die Lücke, die schon im Backlog stand, ist damit auch zu
+
+Beim Gegenproben von F2 war aufgefallen: nimmt man einer Ebene ihren Bildschirm
+(`schirmZu`), fällt sie auf einen fremden zurück — und der `durchgang` bleibt
+**grün**. Er findet dort weder das, worauf er wartet, noch etwas, worüber er
+klagen könnte, und geht still zur nächsten. Er zählte Ebenen und maß nichts.
+Das galt für **jede** Ebene, nicht nur für die Flaggen.
+
+Die Zusage heißt jetzt **„sie hat geantwortet"** statt „ich habe sie betreten":
+zwischen zwei Ebenen muss `durchgespielt` gewachsen sein. Zwei Zeilen, eine
+Gegenprobe — und das dritte Beispiel in einer Woche für dieselbe Verfallsart:
+**eine Messung geht nicht rot, sie geht leise.** Die Liste dieser Woche:
+
+| Wo | Wie es leise wurde |
+|---|---|
+| `--kurz`-Liste im Rauchtest | die neue Ebene stand nicht drin, also lief sie nie |
+| `heute === 11` in `passt` | die Waisenmessung sprang nur an genau einem Tag an |
+| `<rect>` statt `<path>` | die Wasserzeichenmessung sah die Flaggen gar nicht |
+| `durchgang` ohne Antwortzwang | eine Ebene ohne Bildschirm fiel lautlos aus |
+
+Alle vier hätten sich als „grünes Tor" gemeldet. Keine einzige davon war ein
+Fehler in der App.

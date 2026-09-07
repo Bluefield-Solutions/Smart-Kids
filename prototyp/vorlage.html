@@ -1880,6 +1880,12 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .flaggenfeld{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:safe center;gap:var(--r5);padding:0 var(--r4) var(--r4);min-height:0}
 .flaggenwahl{display:flex;gap:var(--r4);flex-wrap:wrap;justify-content:center}
+/* Wo der Sprachstand steht (F2b). Der Kartenschirm haengt ihn an die
+   Antwortliste; hier gibt es keine, also bekommt er eine eigene Zeile.
+   Leer nimmt sie keinen Platz - sonst schoebe sie die Flagge nach oben,
+   auch bei einem Kind, das gar nicht spricht. */
+.sprachzeile{width:100%;display:flex;flex-direction:column;align-items:center}
+.sprachzeile:empty{display:none}
 .flaggenkarte{display:block;padding:0;overflow:hidden;cursor:pointer;
   background:var(--papier);border:var(--strich) solid var(--linie);
   border-radius:var(--rund-karte);width:150px;line-height:0;

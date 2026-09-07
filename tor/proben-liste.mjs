@@ -3937,10 +3937,11 @@ export const PROBEN = [
   { n:'ein ganzer Satz wird nicht mehr verstanden', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
     // Seit F15 steht davor die Abkuerzung fuer eine bestaetigte
-    // Rueckfrage; getauscht wird nur das Erhoeren selbst.
-    such:'        : Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);',
-    ersatz:'        : Vergleich.abgleich(roh, kand);',
-    an:{ ...DIST, text:': Vergleich.abgleich(roh, kand);' },
+    // Rueckfrage; getauscht wird nur das Erhoeren selbst. Seit F2b sitzt
+    // es in `erhoert`, dem Bauteil, das beide Sprechbildschirme benutzen.
+    such:'  const t = Vergleich.hoerAbgleich(ctx.varianten || [roh], kand);',
+    ersatz:'  const t = Vergleich.abgleich(roh, kand);',
+    an:{ ...DIST, text:'const t = Vergleich.abgleich(roh, kand);' },
     sagt:'gesprochen und nichts gewertet' },
 
   // 2. Nicht verstanden zaehlt wieder als Fehlversuch. Nach drei
@@ -3951,9 +3952,12 @@ export const PROBEN = [
   //    und beide bezeugen dasselbe.
   { n:'nicht verstanden kostet wieder einen Versuch', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:'          fachNachher: Stand[ziel.id]?.fach ?? 1,\n        }));\n        return;\n',
-    ersatz:'          fachNachher: Stand[ziel.id]?.fach ?? 1,\n        }));\n',
-    an:{ ...DIST, fehlt:'        }));\n        return;' },
+    /* Der Ausstieg selbst faellt weg: ohne ihn laeuft die Aeusserung, die
+       niemand verstanden hat, in den Versuchszaehler. Seit F2b steht er
+       in `erhoert` und heisst `return null`. */
+    such:'    if (unverstanden) unverstanden(roh);\n    return null;\n',
+    ersatz:'    if (unverstanden) unverstanden(roh);\n',
+    an:{ ...DIST, fehlt:'unverstanden(roh);\n    return null;' },
     sagt:'aufgelöst' },
 
   // 3. Nur die erste Lesart wird gelesen - die anderen beiden holt sich
@@ -3968,8 +3972,8 @@ export const PROBEN = [
   // 4. Die Meldung verschweigt wieder, was angekommen ist.
   { n:'die Meldung sagt nicht mehr, was angekommen ist', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:'        const satz = roh ? `Ich habe \u201e${roh}\u201c verstanden. Sag es noch einmal.`',
-    ersatz:"        const satz = roh ? 'Das habe ich nicht verstanden.'",
+    such:'    const satz = roh ? `Ich habe \u201e${roh}\u201c verstanden. Sag es noch einmal.`',
+    ersatz:"    const satz = roh ? 'Das habe ich nicht verstanden.'",
     an:{ ...DIST, text:"const satz = roh ? 'Das habe ich nicht verstanden.'" },
     sagt:'nennt nicht, was angekommen ist' },
 
@@ -4023,9 +4027,9 @@ export const PROBEN = [
   //    Augenblick als nicht gekonnt verbucht.
   { n:'die Rückfrage ist wieder eine Sackgasse', tor:'smoke',
     args:['--nur=sprechen'], bauen:true, datei:D,
-    such:"      if (vorurteil.art==='rueckfrage') { nachfragen(vorurteil, roh, ctx); return; }\n",
+    such:"  if (t.art === 'rueckfrage') { rueckfrage(t, roh, ctx, { ziel, stelle, bewerte }); return null; }\n",
     ersatz:'',
-    an:{ ...DIST, fehlt:'nachfragen(vorurteil, roh, ctx); return;' },
+    an:{ ...DIST, fehlt:"if (t.art === 'rueckfrage') { rueckfrage(" },
     sagt:'keine Rückfrage bekommen' },
 
   /* --- S3: die Untergrenze ueberstimmt den Wunsch ---------------------
@@ -4396,8 +4400,9 @@ export const PROBEN = [
     /* NUR der zweite Summand faellt weg, nicht die ganze Zeile: seit F4
        steht darueber `const umgekehrt = aufKarte`, und ein Ersatz, der
        die Deklaration mitbringt, erzeugte eine zweite davon - die App
-       liesse sich gar nicht mehr bauen, und das Tor waere aus dem
-       falschen Grund rot (Regel 10). */
+       liesse sich gar nicht mehr bauen. Das Tor waere rot, aber aus dem
+       falschen Grund: der Eingriff soll ANKOMMEN, nicht den Bau
+       verhindern (Regel 10). */
     ersatz:'    || false;',
     an:{ ...DIST, text:'|| false;' },
     sagt:'kommt gar nicht vor' },
@@ -5535,14 +5540,59 @@ export const PROBEN = [
    *
    * Genau dieser Zweig war bis F4 tot - er lief in keinem einzigen Lauf,
    * weil die umgekehrte Frage in den Erdkundeebenen erst die dritte ist
-   * und der Durchgang nur die erste spielt. Diese Probe ist der Beweis,
-   * dass er jetzt laeuft (Regel 1). */
+   * und der Durchgang nur die erste spielt. Eine Pruefung, die nie etwas
+   * meldet, ist kein Beweis (Regel 1) - diese Probe ist der, dass er
+   * jetzt laeuft. */
   { n:'„Auf die Karte" stellt wieder die gewoehnliche Frage', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
     such:'  const umgekehrt = aufKarte',
     ersatz:'  const umgekehrt = false',
     an:{ ...DIST, text:'const umgekehrt = false' },
     sagt:'durchgang' },
+
+  /* --- Die Luecke, die F5 geschlossen hat -----------------------------
+   *
+   * DIE EBENE VERLIERT IHREN BILDSCHIRM. `schirmZu` faellt auf den
+   * Kartenbildschirm zurueck, und der ist voellig heil - er bekommt nur
+   * einen Vorrat ohne Umrisse. Nichts bricht, nichts ist leer, und bis
+   * F5 ging der `durchgang` STILL daran vorbei: er fand weder
+   * Flaggenkarte noch Rechnung noch Karte und zaehlte die Ebene
+   * trotzdem als besucht.
+   *
+   * Das ist die eigentliche Zusage, die diese Probe prueft - nicht „die
+   * Flaggen gehen", sondern „eine Ebene, deren Bildschirm kaputtgeht,
+   * faellt nicht mehr lautlos aus". Sie gilt fuer jede Ebene; genommen
+   * wird die Flaggenebene, weil sie die ist, an der es aufgefallen ist. */
+  { n:'die Flaggenebene verliert ihren Bildschirm', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,",
+    ersatz:"englisch: englischschirm, freunde: freundeschirm,",
+    an:{ ...DIST, fehlt:'flaggen: flaggenschirm' },
+    sagt:'keine einzige Antwort abgegeben' },
+
+  /* --- Einsprechen auf dem Flaggenschirm (F2b) ------------------------
+   *
+   * 1. DAS MIKROFON WIRD NICHT ANGEBAUT. Der Bildschirm bleibt heil, das
+   *    Eingabefeld tut es auch, und der dritte gewuenschte Antwortweg ist
+   *    schlicht weg - lautlos. */
+  { n:'auf dem Flaggenschirm fehlt das Mikrofon wieder', tor:'smoke',
+    args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"    sprachweg({ spricht: P.eingabe.includes('sprechen'),\n      werkzeug: s.querySelector('.tippfeld'),",
+    ersatz:"    if (0) sprachweg({ spricht: P.eingabe.includes('sprechen'),\n      werkzeug: s.querySelector('.tippfeld'),",
+    an:{ ...DIST, text:"if (0) sprachweg({" },
+    sagt:'kein Mikrofon' },
+
+  /* 2. UND DER TEURE TEIL: die Ebene benutzt `erhoert` nicht mehr richtig,
+   *    sondern zaehlt jede Aeusserung mit. Damit kostet „ich habe dich
+   *    nicht verstanden" einen der drei Versuche - genau der Fehler, den
+   *    F14 auf der Karte behoben hat und den eine zweite Fassung des
+   *    Sprachwegs mitgebracht haette. */
+  { n:'nicht verstanden kostet auf dem Flaggenschirm wieder einen Versuch',
+    tor:'smoke', args:['--nur=sprechen'], bauen:true, datei:D,
+    such:"      if (!gehoert) return;\n    }\n    versuch++;",
+    ersatz:"      if (!gehoert) gehoert = { id:'--', name:'nichts' };\n    }\n    versuch++;",
+    an:{ ...DIST, text:"gehoert = { id:'--', name:'nichts' };" },
+    sagt:'aufgelöst' },
 
   /* --- Die Verwechslungen (F3) ---------------------------------------
 
