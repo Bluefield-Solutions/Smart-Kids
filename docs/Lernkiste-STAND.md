@@ -11272,6 +11272,42 @@ keiner Karte dieser App gibt. Der Vorrat filtert über `hatFlagge` gegen
 Gruppe „Flaggen" hält neun Einträge — sieben Karten, die Verwechslungen und die
 Landkarte —, und auf der Erdkundewand steht dafür **eine** Kachel.
 
+## Q54 · Vier stille Gegenproben — und was sie über Ratschen sagen
+
+Der Probenlauf auf v451 fand vier Gegenproben, die nichts mehr beweisen. Alle
+vier waren seit Wochen nicht gefahren, weil `--geaendert` ihre Dateien nicht
+anfasste — und alle vier waren **nicht kaputt, sondern überholt**. Die Welt war
+an ihnen vorbeigezogen, und niemand hatte es gemerkt, weil eine Probe, die
+nichts meldet, genauso aussieht wie eine, die alles in Ordnung findet.
+
+| Probe | Was ihr die Falle nahm | Ausgang |
+|---|---|---|
+| `neuHaengen()` in der Kapazitätsmessung | **F2**: die Flaggenkachel machte die Ebenenwand elf Kacheln lang — die Regel greift jetzt schon vor dem ersten Klon | entfernt, Grund an ihrer Stelle |
+| halb leere Kapitelseite | **B4b** füllte beide Seiten | neue Falle: die Rechentafel fällt weg |
+| Kapitelreiter halb im Streifen | **B12b** ließ den Streifen umbrechen | entfernt, die Zusage hängt am `flex-wrap` und hat dort ihre Probe |
+| alle offenen Abzeichen | **B4b** zeigt sie absichtlich alle | umgedreht: jetzt fehlen sie |
+
+**Der eigentliche Fund steckte in der vierten.** `BUCH_GENUTZT_MIN` stand auf
+**24** — dem gemessenen Stand *vor* B4b, mit einem Punkt Luft. Im Quelltext
+stand ausdrücklich daneben: *„Eine Ratsche darf nur strenger werden, und der
+Weg dorthin ist, die beiden Seiten zu füllen — nicht, die Zahl höher zu
+schreiben."* Genau das ist dann passiert: B4b füllte die Seiten, und die Zahl
+blieb stehen. Sie ließ damit **den Zustand durch, gegen den sie aufgestellt
+worden war**.
+
+Das ist die dritte Verfallsart in dieser Woche, und die unangenehmste: eine
+Ratsche verfällt nicht, sie **schläft ein**. Sie meldet weiter, sie steht
+weiter da, sie ist nur nicht mehr an der Wirklichkeit. Nachgemessen über alle
+zehn Kapitelseiten (53 · 46 · 95 · 95 · 67 · 53 · 56 · 45 · 37 · 42) steht sie
+jetzt auf 34.
+
+Und noch ein Satz zu den beiden entfernten Proben. Eine Probe zu löschen fühlt
+sich falsch an — sie ist ja ein Beweis. Aber ein Beweis, der nichts mehr
+beweist, ist schlimmer als keiner: er zählt in der Statistik mit, er kostet
+Laufzeit, und er lässt glauben, eine Stelle sei bewacht. Beide gingen deshalb
+**mit ihrem Grund an ihrer Stelle** — im Quelltext, wo der nächste hinsieht,
+und nicht in einem Protokoll, das morgen weg ist.
+
 ## F2b · Einsprechen — der Sprachweg bekommt einen zweiten Benutzer
 
 Der Wunsch nannte drei Wege: **zuordnen, eintippen, einsprechen**. Zwei standen
