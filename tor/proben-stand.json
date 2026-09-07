@@ -2001,9 +2001,9 @@
       "s": 16
     },
     "ein gemaltes Lautpaar zeigt zweimal dasselbe Bild": {
-      "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
+      "commit": "c77d6e56c5ca51bcefe3f61fc97d12a2d4d0a849",
       "zeit": "2026-09-07",
-      "s": 6
+      "s": 15
     },
     "die Zahl der nötigen Lautbilder wird nicht aus spiel.js gelesen": {
       "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
