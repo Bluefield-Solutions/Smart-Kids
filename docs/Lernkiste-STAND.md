@@ -12156,3 +12156,96 @@ Sehen zwei Karten gleich aus (E7b): 3486 Paare zellweise verglichen
    Ganze (50 %), und die gefüllte Fläche des vollen Rahmens (100 %).
 3. **`ohneBild` heißt plötzlich anders.** Dann ist `pet` wieder ein
    vergessenes Wort.
+
+## E7c, zweiter Anlauf · Töne statt Namen — und ein eigenes Maß für den Zwei-Karten-Schirm
+
+Zwei offene Punkte aus der letzten Runde, und beide haben unterwegs etwas
+gezeigt, das nicht im Plan stand.
+
+### Der Vergleich zählte Namen, nicht Farben
+
+`rot` und `rotDunkel` sind 15,6 CIELAB auseinander — nebeneinander dieselbe
+rote Fläche, für eine Namensgleichheit aber zwei verschiedene Dinge. Ein Bild,
+das ein anderes nur heller nachzeichnet, kam durch, und die Zahl im Bericht sah
+dabei besser aus als vorher.
+
+**Die neue Grenze ist gemessen, nicht gewählt.** Alle neun Hell/Dunkel-Paare
+von `BILDFARBEN` liegen zwischen 11,0 und 20,6; das nächste Paar zweier
+wirklich verschiedener Farben (`grau`/`wolke`) bei 22,4. **22** liegt in dieser
+Lücke.
+
+`lab()` stand bis dahin im E3-Block und wird jetzt von zwei Zusagen gebraucht —
+dem Mindestabstand der zehn Farbflecken und der Tonfrage hier. Also steht sie
+eine Ebene höher: was zweimal dasteht, veraltet einmal (Regel 6).
+
+### Der Tonvergleich ändert die Rangfolge — und das Auge musste entscheiden
+
+| Paar | mit Namen | mit Tönen | was auf dem Blatt zu sehen ist |
+|---|---|---|---|
+| `boy` · `old` | 43 % | **60 %** | zwei Menschen, creme Kopf, blauer Rumpf — nur die Haarfarbe trennt sie |
+| `strawberry` · `tomato` | 46 % | 55 % | beide rot, rund, mit grünem Schopf |
+| `apple` · `pullover` | 44 % | 58 % | Apfel gegen Pullover — **nicht** zu verwechseln |
+| `chicken` · `eat` | 40 % | 53 % | Huhn gegen Besteck — **nicht** zu verwechseln |
+
+Das strengere Maß findet also echte Fallen, die das alte übersah, und
+überschätzt zugleich Paare, die nur dieselbe Hauptfarbe haben. **Ein falscher
+Treffer kostet eine Zeichnung, eine verpasste Falle kostet ein Kind** — deshalb
+das strengere Maß, aber mit der loseren Grenze (65 % statt 55 %), und deshalb
+nennt der Bericht jetzt die **drei** ähnlichsten Paare in jedem Lauf. Das Tor
+fängt den groben Fall; das Abdriften sieht ein Mensch (Regel 4).
+
+**`old` ist neu gezeichnet.** Das Motiv sagte immer schon „gebeugt, von der
+Seite, auf einen Stock gestützt" — gezeichnet war eine aufrechte Figur mit
+dunkelblauem Rumpf, also `boy` mit grauen Haaren. Jetzt entscheidet die
+Haltung, und die sieht man auch klein noch: brauner Mantel, gekrümmter Rücken,
+dunkler Stock.
+
+### Der Zwei-Karten-Schirm braucht zwei Maße, nicht eines
+
+Fionas Lautschirm zeigt genau **zwei** Karten, und sie liest nicht — das Bild
+*ist* die Antwort. Geprüft wurde dort bisher nur, ob zweimal exakt dieselbe
+Zeichnung steht.
+
+Der Zellvergleich kommt dazu, mit einer **strengeren** Grenze (30 % statt
+65 %): bei vier Karten engt das gelesene Wort ein, bei zweien nicht. Das Feld
+liegt weit darunter — `three`/`tree` 0 %, `wine`/`vine` 0 %, `cab`/`cap` 10 %,
+`pan`/`pen` 7 %.
+
+**Und dabei fiel eine Lücke auf, die ich nicht gesucht hatte.** Wer eine
+Zeichnung *kopiert und umfärbt*, kommt beim Zellvergleich mit **0 %** durch —
+keine Zelle trägt denselben Ton, obwohl beide Karten dasselbe Ding zeigen. Für
+den Vier-Karten-Schirm ist das richtig, dort trennt die Farbe. Für Fiona nicht:
+zwei Taxis in zwei Farben sind für sie zwei Taxis.
+
+Also steht daneben ein zweites Maß — die **Silhouette**, colour-blind. Der
+erste Versuch, sie einfach mitzuzählen, war falsch und wurde sofort rot:
+`cab`/`cap` decken sich zu 60 %, weil ein Taxi und eine Mütze beide breit und
+unten im Rahmen sitzen. Als Maß für „ähnlich" taugt sie nicht. Als Maß für
+**„kopiert"** schon — bei **90 %** ist es keine Ähnlichkeit mehr. Heute
+höchster Wert: 60 %.
+
+| Schirm | Karten | Maß | Grenze | heute |
+|---|---|---|---|---|
+| Lies das Wort (E7) | 4 | Form + Ton | 65 % | 61 % |
+| Zwei Wörter, ein Laut (E5b) | 2 | Form + Ton | 30 % | 10 % |
+| Zwei Wörter, ein Laut (E5b) | 2 | nur Form | 90 % | 60 % |
+
+### Die Farbflecken brauchten nichts
+
+Der dritte Topf, der durch denselben Bildschirm läuft, ist E3 — die zehn
+Farbflecken. Dort steht der Mindestabstand seit langem: **25 CIELAB**,
+gemessen, mit einer Ratsche. Das war die eine Stelle, an der schon jemand
+nachgesehen hatte.
+
+### Drei Gegenproben, jede auf ihre eigene Zusage
+
+1. **Die Tongrenze fällt auf null** — der Vergleich zählt wieder Namen. Drei
+   Fälle der Selbstprobe schlagen an; ohne sie wäre das von außen nicht zu
+   sehen.
+2. **Der Stift bekommt die Flächen der Pfanne, mitsamt ihren Farben bis auf
+   eine** — 96 % zellgleich. Eine Farbe *muss* anders bleiben, sonst fängt es
+   die ältere Zusage „zeigt zweimal dieselbe Zeichnung" ab, und die Probe wiese
+   etwas anderes nach als das Aufgeschriebene.
+3. **Die Pfanne bekommt die Flächen des Stifts in eigenen, weit entfernten
+   Farben** — 100 % Deckung bei niedriger Zellgleichheit. Es schlägt also die
+   Zusage an, die gemeint ist, und nicht die aus 2.

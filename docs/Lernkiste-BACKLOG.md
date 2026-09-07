@@ -6746,12 +6746,22 @@ Der Zellvergleich steht, `ham` und `shirt` sind neu, `pet` und `little` tragen
 ihren Grund im Datensatz. Offen bleiben zwei Dinge, die er sichtbar gemacht
 hat:
 
-- **Der Vergleich kennt nur Namen, keine Töne.** `rot` und `rotDunkel` gelten
-  als verschieden, obwohl sie nebeneinander fast gleich aussehen. Die Zahl ist
-  dadurch eher zu niedrig; ein Paar, das sich nur in der Helligkeit
-  unterscheidet, käme heute durch. Zu beheben wäre das über den Abstand der
-  Farbwerte statt über die Namensgleichheit — dann müsste die Grenze neu
-  gemessen werden.
-- **Er prüft nur „Lies das Wort".** Die Lautbilder (E5b) und die Farbflecken
-  (E3) laufen durch denselben Bildschirm, stehen aber in eigenen Töpfen und
-  werden nicht gegeneinander gemessen.
+- ~~Der Vergleich kennt nur Namen, keine Töne.~~ Erledigt (v503): Tongrenze
+  22 CIELAB, aus der Lücke zwischen den Hell/Dunkel-Paaren (bis 20,6) und dem
+  ersten Paar verschiedener Farben (22,4).
+- ~~Er prüft nur „Lies das Wort".~~ Erledigt (v503): die Lautpaare haben zwei
+  eigene Maße, die Farbflecken hatten ihres schon.
+
+Was daraus NEU offen ist:
+
+- **Das Maß hat falsche Treffer.** `apple`/`pullover` (58 %) und
+  `chicken`/`eat` (53 %) sind auf dem Blatt unverwechselbar und stehen trotzdem
+  weit oben. Der Grund: gleiche Hauptfarbe, ähnlich verteilte Masse. Solange
+  das so ist, kann die Grenze nicht unter 65 % — und ein wirklich schlechtes
+  Paar bei 62 % käme durch. Ein Maß, das die FORM stärker gewichtet als die
+  Flächenverteilung (Momente, Umrisslänge), würde beides trennen.
+- **Der Vier-Karten-Schirm kennt die Kopie-Prüfung nicht.** Die Silhouette mit
+  90 % greift nur bei den Lautpaaren. Bei „Lies das Wort" wäre sie heute falsch:
+  die Flaggen von England und Deutschland füllen beide den ganzen Rahmen und
+  decken sich zu 100 %. Erst mit einem Maß, das den Rahmen füllende Bilder
+  ausnimmt, ließe sich das übertragen.
