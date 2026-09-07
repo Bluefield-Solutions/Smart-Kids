@@ -1140,17 +1140,28 @@ async function loese(p) {
   if (info.idx < 0) throw new Error(`Etikett "${info.name}" fehlt unter ${info.namen.join(', ')}`);
   const et = (await p.$$('.schirm.da .etikett'))[info.idx];
   const a = await et.boundingBox();
+  /* Und der KASTEN DES ZIELS vor dem Zug. Er wird nach einem Fehlschlag
+     noch einmal geholt: hat sich die Karte zwischen Zielpunkt und
+     Ablegen bewegt, war der Punkt richtig gerechnet und trotzdem
+     falsch. */
+  const kastenVorher = await p.evaluate(() => {
+    const z = document.querySelector('.schirm.da path.ziel');
+    if (!z) return null; const r = z.getBoundingClientRect();
+    return { x: Math.round(r.x), y: Math.round(r.y),
+             b: Math.round(r.width), h: Math.round(r.height) };
+  }).catch(() => null);
   /* Ein Merker im Fenster, der NICHTS anhaelt: er horcht auf die Klasse,
      die `ziehbar` beim Aufheben setzt, und schreibt eine Eins. Beobachten
      kostet nichts; nachsehen erst hinterher. */
   await p.evaluate(() => {
+    window.__zugGesehen = false; window.__lobGesehen = false;
     if (window.__zugWache) return;
-    window.__zugGesehen = false;
     window.__zugWache = new MutationObserver(() => {
       if (document.body.dataset.zieht) window.__zugGesehen = true;
+      if (document.querySelector('.schirm.da .frage .richtigText')) window.__lobGesehen = true;
     });
-    window.__zugWache.observe(document.body, { attributes: true,
-      attributeFilter: ['data-zieht'] });
+    window.__zugWache.observe(document.body, { attributes: true, childList: true,
+      subtree: true, attributeFilter: ['data-zieht', 'class'] });
   });
   await p.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
   await p.mouse.down();
@@ -1195,8 +1206,39 @@ async function loese(p) {
    * sagt nicht, worauf gewartet wurde; ich habe eine halbe Runde
    * gebraucht, um die Stelle zu finden. Dieselbe Lehre wie in Q40, nur
    * an einer Stelle, die sie noch nicht hatte. */
+  /* GEWARTET WIRD AUF DEN MERKER, NICHT AUF DEN AUGENBLICK.
+   *
+   * Hier stand die Abfrage allein - und das war der Fehler, den drei
+   * Kettenlaeufe gekostet haben. Das Lob steht nur `LOBPAUSE` lang da;
+   * `waitForFunction` sieht zwischen zwei Bildern nach, und wenn die
+   * Maschine voll ist, liegen zwischen zwei Bildern mehr als diese
+   * Pause. Dann war die Antwort gewertet, das Lob gekommen UND gegangen,
+   * die naechste Aufgabe stand da - und der Rauchtest meldete „nicht
+   * gewertet".
+   *
+   * Gefunden hat es die Messung in der Meldung: am Ablegepunkt lag
+   * `path[DE-BB].geb ziel` - Brandenburg, und mit der Klasse `ziel`.
+   * Das ist die NAECHSTE Frage. Die Karte war nicht gewandert, die App
+   * war weiter.
+   *
+   * Ein Beobachter haelt das Lob jetzt fest, sobald es einmal da war.
+   * Damit haengt die Zusage nicht mehr daran, WANN nachgesehen wird -
+   * und das ist keine groessere Frist, sondern eine andere Frage.
+   *
+   * ABGESCHALTET NACHGEMESSEN (Regel 1): sechs Rauchtests nebeneinander
+   * auf vier Kernen, derselbe Abschnitt.
+   *
+   *     ohne den Merker   5 von 6 rot
+   *     mit dem Merker    0 von 6 rot
+   *
+   * Und was NICHT die Ursache war, steht hier, damit es niemand zweimal
+   * sucht: die Frist (verdoppelt, dieselbe Meldung), die Nachsicht von
+   * `gemessen()` (greift nur, wenn die Maschine HINTERHER noch langsam
+   * misst - eine Lastspitze ist bis dahin vorbei), und eine wandernde
+   * Karte (sie wandert nicht, es war die naechste Frage). */
   const gewertet = await p.waitForFunction(
-    () => !!document.querySelector('.schirm.da .frage .richtigText'),
+    () => !!window.__lobGesehen
+       || !!document.querySelector('.schirm.da .frage .richtigText'),
     null, { timeout: 10000 }).then(() => true).catch(() => false);
   if (!gewertet) {
     /* UND DIE FRAGE, DIE DIE RUNDE OFFEN GELASSEN HAT: hat das Etikett
@@ -1210,19 +1252,36 @@ async function loese(p) {
        macht den Fall, den sie messen soll, erst kaputt - beim ersten
        Anlauf war genau das passiert, und der Abschnitt fiel dann auch
        allein gefahren durch. */
-    const lage = await p.evaluate(() => {
+    const lage = await p.evaluate(({ x, y }) => {
       const s = document.querySelector('.schirm.da');
+      const z = s?.querySelector('path.ziel');
+      const r = z ? z.getBoundingClientRect() : null;
+      const unten = document.elementFromPoint(x, y);
       return { frage: (s?.querySelector('#frage')?.textContent || '').slice(0, 40),
                hinweis: (s?.querySelector('.hinweis')?.textContent || '').slice(0, 40),
                etiketten: s ? s.querySelectorAll('.etikett').length : -1,
                haengtNoch: !!document.body.dataset.zieht,
-               abgehoben: !!(window.__zugGesehen) };
-    }).catch(() => ({}));
+               abgehoben: !!(window.__zugGesehen),
+               kasten: r ? { x: Math.round(r.x), y: Math.round(r.y),
+                             b: Math.round(r.width), h: Math.round(r.height) } : null,
+               drunter: unten ? `${unten.tagName.toLowerCase()}`
+                 + `${unten.id ? '#' + unten.id : ''}`
+                 + `${unten.getAttribute && unten.getAttribute('data-id')
+                     ? '[' + unten.getAttribute('data-id') + ']' : ''}`
+                 + `${unten.className && unten.className.baseVal !== undefined
+                     ? '.' + unten.className.baseVal : ''}` : 'nichts' };
+    }, { x: info.x, y: info.y }).catch(() => ({}));
+    const gewandert = (kastenVorher && lage.kasten)
+      ? Math.abs(kastenVorher.x - lage.kasten.x) + Math.abs(kastenVorher.y - lage.kasten.y)
+        + Math.abs(kastenVorher.b - lage.kasten.b) + Math.abs(kastenVorher.h - lage.kasten.h)
+      : -1;
     throw new Error(`„${info.name}" auf den Anker gezogen, aber nach 10 s kein Lob — `
       + `Frage „${lage.frage}", Hinweis „${lage.hinweis || '—'}", `
       + `${lage.etiketten} Etiketten, abgehoben: ${lage.abgehoben ? 'ja' : 'NEIN'}`
-      + `${lage.haengtNoch ? ', hängt noch am Zeiger' : ''}. `
-      + 'Die Antwort wurde nicht gewertet.');
+      + `${lage.haengtNoch ? ', hängt noch am Zeiger' : ''}, `
+      + `am Ablegepunkt (${Math.round(info.x)}|${Math.round(info.y)}) liegt `
+      + `„${lage.drunter}", der Kasten des Ziels hat sich um ${gewandert} Punkte `
+      + 'geändert. Die Antwort wurde nicht gewertet.');
   }
   return info.name;
 }
