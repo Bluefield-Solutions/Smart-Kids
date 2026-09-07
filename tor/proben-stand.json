@@ -1430,6 +1430,11 @@
       "zeit": "2026-09-07",
       "s": 73
     },
+    "die Rechenseite im Buch verliert ihre Tafel": {
+      "commit": "b73f83af2644ff5c57d1bf3906d35af1f441d009",
+      "zeit": "2026-09-07",
+      "s": 132
+    },
     "jede Ebene bekommt wieder ihr eigenes Kapitel": {
       "commit": "12ea6372de0988ae49ff95e6de2c9caddd26c941",
       "zeit": "2026-09-07",
