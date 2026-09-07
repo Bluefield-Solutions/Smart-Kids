@@ -4107,12 +4107,19 @@ export const PROBEN = [
      Jetzt bleibt das Raster LEER. Das ist der aeusserste Fall dessen,
      was die Pruefung meint, und er haengt an keinem Stand: eine Seite
      ohne Inhalt kann keine Hoehe nutzen. */
-  { n:'eine Kapitelseite im Buch ist wieder halb leer', tor:'smoke',
+  /* B4b hat ZWEI halbleere Seiten gefuellt, und beide brauchen ihre
+     eigene Falle. Die erste ist die Rechenseite: ohne die Tafel bleibt
+     dort die Aufkleberwand, und die Seite fiel auf 29 % ihrer Hoehe.
+     
+     Hier stand vorher ein Eingriff, der die ABZEICHEN leerte. Er machte
+     das Tor rot, aber mit einer anderen Meldung („kein Abzeichenkapitel
+     auf 390 x 844") - die Seite verschwand ganz, statt duenn zu werden,
+     und was die Probe meint, wurde nie gemessen. */
+  { n:'die Rechenseite im Buch verliert ihre Tafel', tor:'smoke',
     args:['--nur=ablage'], bauen:true, datei:D,
-    such:"zeigt:`<div class=\"abzeichen\">${verdient.map(markeBild).join('')}${\n"
-      + "        naechste.map(markeBild).join('')}</div>`",
-    ersatz:"zeigt:`<div class=\"abzeichen\"></div>`",
-    an:{ ...DIST, text:'zeigt:`<div class="abzeichen"></div>`' },
+    such:'      zeigt: hatKarte(g) ? albumKarte(g) : (rechenTafel(g)',
+    ersatz:'      zeigt: hatKarte(g) ? albumKarte(g) : (null',
+    an:{ ...DIST, text:'zeigt: hatKarte(g) ? albumKarte(g) : (null' },
     sagt:'Kapitelseiten nutzen weniger als' },
 
   /* --- B12: ein Reiter ist eine Welt, keine Ebene --------------------
@@ -4652,34 +4659,42 @@ export const PROBEN = [
    *    Reiter nicht mehr in den Streifen (gemessen 78 % bei sieben
    *    Kapiteln auf 844 Punkten). Er ist dann noch da und noch zu
    *    treffen - aber ein Kind, das nicht liest, sieht ihn nicht. */
-  { n:'der letzte Kapitelreiter steht halb im Streifen', tor:'smoke',
-    args:['--nur=ablage'], bauen:true, datei:V,
-    such:'.reiter{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;',
-    ersatz:'.reiter{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;',
-    an:{ ...DIST, text:'.reiter{flex:0 0 auto' },
-    sagt:'im Streifen' },
+  /* HIER STAND EINE PROBE AUF `.reiter{flex:1 1 auto}` - und B12b hat
+     ihr die Falle weggenommen.
+     
+     Sie machte die Reiter schmal und erwartete, dass der letzte halb aus
+     dem Streifen faellt. Das ging, solange der Streifen NICHT umbrach:
+     sieben Reiter mit fester Breite waren 78 % des letzten. Seit B12b
+     traegt `.buchreiter` ein `flex-wrap:wrap` - schmale Reiter brechen
+     jetzt um und stehen alle ganz im Streifen. Nachgemessen: der Lauf
+     meldet „alle 6 im Streifen".
+     
+     Die Zusage („kein Reiter faellt aus dem Streifen") ist damit nicht
+     ungedeckt: sie haengt an genau diesem `flex-wrap`, und die Probe
+     darauf steht oben („der Kapitelstreifen sperrt auf dem schmalen
+     Schirm einen Reiter aus"). Zwei Proben auf dieselbe Zusage, von
+     denen eine nie etwas meldet, sind eine zuviel (Regel 1). */
 
-  { n:'im Buch stehen wieder alle offenen Abzeichen', tor:'smoke',
-    args:['--nur=abzeichen'], bauen:true, datei:D,
-    /* Die Einrueckung ist mit Q44 um zwei Stellen gewandert: die Abzeichen
-       stehen jetzt im Kapitel-Aufbau statt unmittelbar im `innerHTML`.
-       `inhalt` hat es gemeldet - der Eingriff waere sonst nicht angekommen
-       und das Tor haette gruen gemeldet, ohne etwas zu pruefen.
-       Mit G15b sind aus dem EINEN naechsten Abzeichen DREI geworden, weil
-       die Abzeichen seit Q44 eine eigene Seite haben und die nur zu 18 %
-       genutzt war. Wieder von `inhalt` gemeldet, wieder derselbe Grund:
-       der Anker haengt an einer Zeile, die sich geaendert hat. Die Probe
-       selbst bleibt richtig - „alle" ist weiter falsch, drei sind es
-       nicht.
-       DRITTES MAL beim Buch-Umbau: der Anker hing an der ZEILE samt
-       Einrueckung und schliessender Klammer, und beides gehoert zum
-       Grundriss, nicht zur Sache. Jetzt haengt er an dem, was die Probe
-       wirklich meint - dem Aufruf selbst. Der ueberlebt jeden Umbau des
-       Seitenaufbaus und ist im Baum eindeutig. */
-    such:"naechste.map(markeBild).join('')",
-    ersatz:"marken.filter(a => !a.verdient).map(markeBild).join('')",
-    an:{ ...DIST, text:"marken.filter(a => !a.verdient).map(markeBild)" },
-    sagt:'offene Abzeichen' },
+  /* Die zweite Haelfte von B4b: die ABZEICHENSEITE.
+     
+     Hier stand eine Probe „im Buch stehen wieder alle offenen
+     Abzeichen" - und die ist nicht kaputtgegangen, sondern von B4b
+     ueberholt worden: seither stehen dort ABSICHTLICH alle offenen
+     Abzeichen, weil die Seite sonst zu 25 % ihrer Hoehe genutzt war.
+     Der Eingriff setzte genau das ein, was die App ohnehin tut - eine
+     Probe, die nichts aendert, bezeugt nichts (Regel 10: jede Probe
+     prueft zuerst, ob ihr Eingriff angekommen ist).
+     
+     Umgedreht ist sie wieder eine: NIMMT man die offenen weg, faellt die
+     Seite unter die Ratsche, und der Referenzabgleich verliert seine
+     Forderung („sichtbar, BEVOR man es hat"). Gemessen wird das an
+     derselben Zahl wie bei der Rechenseite. */
+  { n:'die Abzeichenseite zeigt wieder nur die verdienten', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:"        naechste.map(markeBild).join('')}</div>`",
+    ersatz:"        ''}</div>`",
+    an:{ ...DIST, fehlt:'naechste.map(markeBild)' },
+    sagt:'Kapitelseiten nutzen weniger als' },
 
   { n:'das neue Abzeichen wird nicht gesagt', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:D,
