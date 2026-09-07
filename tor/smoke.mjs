@@ -1140,6 +1140,18 @@ async function loese(p) {
   if (info.idx < 0) throw new Error(`Etikett "${info.name}" fehlt unter ${info.namen.join(', ')}`);
   const et = (await p.$$('.schirm.da .etikett'))[info.idx];
   const a = await et.boundingBox();
+  /* Ein Merker im Fenster, der NICHTS anhaelt: er horcht auf die Klasse,
+     die `ziehbar` beim Aufheben setzt, und schreibt eine Eins. Beobachten
+     kostet nichts; nachsehen erst hinterher. */
+  await p.evaluate(() => {
+    if (window.__zugWache) return;
+    window.__zugGesehen = false;
+    window.__zugWache = new MutationObserver(() => {
+      if (document.body.dataset.zieht) window.__zugGesehen = true;
+    });
+    window.__zugWache.observe(document.body, { attributes: true,
+      attributeFilter: ['data-zieht'] });
+  });
   await p.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
   await p.mouse.down();
   await p.mouse.move(info.x, info.y, { steps: 10 });
@@ -1161,19 +1173,23 @@ async function loese(p) {
    * noch einen zweiten Anlauf mit gemessener Nachsicht gibt - darueber
    * gibt es keinen mehr.
    *
-   * ZWANZIG, UND DAMIT OHNE ZWEITEN ANLAUF. Der zweite Anlauf hat hier
-   * nie stattgefunden: `gemessen()` gibt ihn nur, wenn die Maschine
-   * NACH dem Fehlschlag noch langsam misst (`jetzt > faktor * 1.3`), und
-   * die Lastspitze eines Kettenlaufs ist bis dahin vorbei. Dreimal im
-   * vollen Lauf rot, dreimal allein gefahren gruen, einmal als
-   * `--teil=1/4` allein gefahren gruen - es ist die Nebenlaeufigkeit,
-   * acht Browser auf vier Kernen.
+   * ZWANZIG SEKUNDEN WAREN DER VERSUCH - UND SIE HABEN NICHTS GEHOLFEN.
    *
-   * Ein Anlauf mit doppelter Frist ist deshalb mehr wert als zwei mit
-   * halber: die Frist kostet nichts, solange das Lob kommt, und sie ist
-   * genau dann da, wenn die Maschine gerade keine Luft hat. Was sie
-   * NICHT tut: einen echten Ausfall verschweigen - der dauert dann
-   * zwanzig Sekunden statt zehn und wird genauso gemeldet.
+   * Der Befund: `ablage/eltern` scheitert im vollen Lauf (acht Browser
+   * auf vier Kernen) an dieser Stelle, allein gefahren nicht - auch nicht
+   * als `--teil=1/4` mit genau demselben Abschnitt. Dreimal rot, viermal
+   * gruen, bei normaler Laufzeit der Kette (373 s).
+   *
+   * Naheliegend war eine zu knappe Frist. Also verdoppelt - und die
+   * Meldung kam unveraendert wieder, nur mit „nach 20 s" statt „nach
+   * 10 s". Damit ist es KEINE Zeitfrage: das Lob kommt nicht spaeter, es
+   * kommt gar nicht. Der Zug landet nicht.
+   *
+   * Zurueck auf zehn, denn eine Frist, die nichts rettet, verschleppt nur
+   * den Bericht - dieselbe Ueberlegung wie bei einer Regel, die nichts
+   * bewirkt. Was bleibt, ist die MESSUNG unten: die Meldung sagt jetzt,
+   * ob das Etikett ueberhaupt abgehoben hat. Damit ist die naechste Runde
+   * nicht wieder beim Raten.
    *
    * Und die MELDUNG. „page.waitForFunction: Timeout 4000ms exceeded"
    * sagt nicht, worauf gewartet wurde; ich habe eine halbe Runde
@@ -1181,17 +1197,32 @@ async function loese(p) {
    * an einer Stelle, die sie noch nicht hatte. */
   const gewertet = await p.waitForFunction(
     () => !!document.querySelector('.schirm.da .frage .richtigText'),
-    null, { timeout: 20000 }).then(() => true).catch(() => false);
+    null, { timeout: 10000 }).then(() => true).catch(() => false);
   if (!gewertet) {
+    /* UND DIE FRAGE, DIE DIE RUNDE OFFEN GELASSEN HAT: hat das Etikett
+       ueberhaupt abgehoben?
+       `ziehbar` hebt erst nach sechs Punkten Weg auf und setzt dabei
+       `document.body.dataset.zieht`. Steht der nie, war die Bewegung fuer
+       die App ein TIPP - dann wartet alles danach auf etwas, das nicht
+       kommt, und keine noch so lange Frist hilft.
+       Gemessen wird NACH dem Fehlschlag und nicht mitten im Zug: eine
+       Pruefung zwischen `down()` und `move()` haelt den Zeiger an und
+       macht den Fall, den sie messen soll, erst kaputt - beim ersten
+       Anlauf war genau das passiert, und der Abschnitt fiel dann auch
+       allein gefahren durch. */
     const lage = await p.evaluate(() => {
       const s = document.querySelector('.schirm.da');
       return { frage: (s?.querySelector('#frage')?.textContent || '').slice(0, 40),
                hinweis: (s?.querySelector('.hinweis')?.textContent || '').slice(0, 40),
-               etiketten: s ? s.querySelectorAll('.etikett').length : -1 };
+               etiketten: s ? s.querySelectorAll('.etikett').length : -1,
+               haengtNoch: !!document.body.dataset.zieht,
+               abgehoben: !!(window.__zugGesehen) };
     }).catch(() => ({}));
-    throw new Error(`„${info.name}" auf den Anker gezogen, aber nach 20 s kein Lob — `
+    throw new Error(`„${info.name}" auf den Anker gezogen, aber nach 10 s kein Lob — `
       + `Frage „${lage.frage}", Hinweis „${lage.hinweis || '—'}", `
-      + `${lage.etiketten} Etiketten. Die Antwort wurde nicht gewertet.`);
+      + `${lage.etiketten} Etiketten, abgehoben: ${lage.abgehoben ? 'ja' : 'NEIN'}`
+      + `${lage.haengtNoch ? ', hängt noch am Zeiger' : ''}. `
+      + 'Die Antwort wurde nicht gewertet.');
   }
   return info.name;
 }
