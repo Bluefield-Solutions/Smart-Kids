@@ -5981,8 +5981,11 @@ export const PROBEN = [
    *    wie der andere, und der Bildschirm sieht aus wie immer. */
   { n:'ein gemaltes Lautpaar zeigt zweimal dasselbe Bild', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  cap: [\n    { f:'blau',       d:'M12 36c0-13 9-22 20-22s20 9 20 22Z' },",
-    ersatz:"  cap: [\n    { f:'gelb',       d:'M26 8h12v8H26Z' },\n"
+    such:"    { f:'blau',       d:'M12 36c0-13 9-22 20-22s20 9 20 22Z' },\n"
+      + "    { f:'blauDunkel', d:'M32 14c11 0 20 9 20 22h-9c0-12-5-20-11-22Z' },\n"
+      + "    { f:'blauDunkel', d:'M6 36h50c4 0 6 3 6 7H6Z' },\n"
+      + "    { f:'licht',      d:'M30 10h4v5h-4Z' },",
+    ersatz:"    { f:'gelb',       d:'M26 8h12v8H26Z' },\n"
       + "    { f:'gelb',       d:'M16 18h26l9 14H7Z' },\n"
       + "    { f:'gelb',       d:'M2 32h60v14H2Z' },\n"
       + "    { f:'blauDunkel', d:'M19 21h11v9H12Zm15 0h6l6 9H34Z' },\n"

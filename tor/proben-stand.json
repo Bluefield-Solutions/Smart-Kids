@@ -2003,7 +2003,7 @@
     "ein gemaltes Lautpaar zeigt zweimal dasselbe Bild": {
       "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
       "zeit": "2026-09-07",
-      "s": 5
+      "s": 6
     },
     "die Zahl der nötigen Lautbilder wird nicht aus spiel.js gelesen": {
       "commit": "09e0a6ed4765318551e8d68db5efd5a3e7fe1225",
@@ -2020,6 +2020,11 @@
       "zeit": "2026-09-07",
       "s": 5
     },
+    "eine Zeichnung ist wieder einfarbig": {
+      "commit": "0b85cfb2459db26216513f5f813232674a3a3d14",
+      "zeit": "2026-09-07",
+      "s": 15
+    },
     "beim Lesen wird das Wort doch vorgelesen": {
       "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
@@ -2031,7 +2036,7 @@
       "s": 207
     },
     "zwei englische Wörter teilen sich eine Zeichnung": {
-      "commit": "334c225f9335214002d9ef249a693b796b7594e9",
+      "commit": "0b85cfb2459db26216513f5f813232674a3a3d14",
       "zeit": "2026-09-07",
       "s": 5
     },
