@@ -1157,9 +1157,23 @@ async function loese(p) {
    * und macht aus Rechnerlast einen Befund, sobald sie es nicht tut.
    * Genau das ist passiert: `ablage/eltern` riss die vier Sekunden im
    * vollen Lauf (acht Browser auf vier Kernen) und hielt sie allein
-   * gefahren. Zehn Sekunden sind die Obergrenze, bis zu der `gemessen()`
+   * gefahren. Zehn Sekunden waren die Obergrenze, bis zu der `gemessen()`
    * noch einen zweiten Anlauf mit gemessener Nachsicht gibt - darueber
-   * gaebe es keinen mehr.
+   * gibt es keinen mehr.
+   *
+   * ZWANZIG, UND DAMIT OHNE ZWEITEN ANLAUF. Der zweite Anlauf hat hier
+   * nie stattgefunden: `gemessen()` gibt ihn nur, wenn die Maschine
+   * NACH dem Fehlschlag noch langsam misst (`jetzt > faktor * 1.3`), und
+   * die Lastspitze eines Kettenlaufs ist bis dahin vorbei. Dreimal im
+   * vollen Lauf rot, dreimal allein gefahren gruen, einmal als
+   * `--teil=1/4` allein gefahren gruen - es ist die Nebenlaeufigkeit,
+   * acht Browser auf vier Kernen.
+   *
+   * Ein Anlauf mit doppelter Frist ist deshalb mehr wert als zwei mit
+   * halber: die Frist kostet nichts, solange das Lob kommt, und sie ist
+   * genau dann da, wenn die Maschine gerade keine Luft hat. Was sie
+   * NICHT tut: einen echten Ausfall verschweigen - der dauert dann
+   * zwanzig Sekunden statt zehn und wird genauso gemeldet.
    *
    * Und die MELDUNG. „page.waitForFunction: Timeout 4000ms exceeded"
    * sagt nicht, worauf gewartet wurde; ich habe eine halbe Runde
@@ -1167,7 +1181,7 @@ async function loese(p) {
    * an einer Stelle, die sie noch nicht hatte. */
   const gewertet = await p.waitForFunction(
     () => !!document.querySelector('.schirm.da .frage .richtigText'),
-    null, { timeout: 10000 }).then(() => true).catch(() => false);
+    null, { timeout: 20000 }).then(() => true).catch(() => false);
   if (!gewertet) {
     const lage = await p.evaluate(() => {
       const s = document.querySelector('.schirm.da');
@@ -1175,7 +1189,7 @@ async function loese(p) {
                hinweis: (s?.querySelector('.hinweis')?.textContent || '').slice(0, 40),
                etiketten: s ? s.querySelectorAll('.etikett').length : -1 };
     }).catch(() => ({}));
-    throw new Error(`„${info.name}" auf den Anker gezogen, aber nach 10 s kein Lob — `
+    throw new Error(`„${info.name}" auf den Anker gezogen, aber nach 20 s kein Lob — `
       + `Frage „${lage.frage}", Hinweis „${lage.hinweis || '—'}", `
       + `${lage.etiketten} Etiketten. Die Antwort wurde nicht gewertet.`);
   }
