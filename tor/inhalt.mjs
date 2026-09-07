@@ -2491,6 +2491,35 @@ console.log('\n  Tor `englisch`');
     console.log(`    Leg das Wort (E8): ${vl.length} von ${alle.length} Wörtern sind aus `
       + `Buchstabenkarten zu legen · längstes „${laengstes}" mit ${laengstes.length} `
       + `Karten · draußen: ${raus.join(', ') || '(keins)'}`);
+
+    /* --- „Bau den Satz" (E9c) ---------------------------------------
+     *
+     * Derselbe Bildschirm, andere Karten - und deshalb dieselben zwei
+     * Fragen: laesst sich jedes Stueck legen, und traegt es eine eigene
+     * Kennung? Ein Satz aus EINEM Wort waere hier die stille
+     * Verfallsart: eine Luecke, eine Karte, und die Aufgabe ist gelöst,
+     * bevor sie gestellt ist. */
+    const vb = EN.vorratBauen();
+    const bf = [];
+    if (vb.length !== EN.CHUNKS.length)
+      bf.push(`der Vorrat zum Bauen hat ${vb.length} Sätze, die Daten ${EN.CHUNKS.length}`);
+    for (const x of vb) {
+      const teile = String(x.wort).split(' ');
+      if (teile.length < 2)
+        bf.push(`„${x.wort}" ist ein Satz aus einem Wort — eine Lücke, eine Karte, `
+          + 'und es gibt nichts zusammenzusetzen');
+      if (!String(x.id).startsWith('bs:'))
+        bf.push(`„${x.id}" trägt nicht die eigene Kennung bs: — dann teilt sich `
+          + '„Bau den Satz" den Leitner-Stand mit „Sag den Satz"');
+    }
+    if (bf.length) {
+      console.log('    ' + bf.join('\n    '));
+      console.error('\n  englisch ROT: der Vorrat zum Bauen (E9c) stimmt nicht.');
+      process.exit(1);
+    }
+    const meiste = Math.max(...vb.map(x => String(x.wort).split(' ').length));
+    console.log(`    Bau den Satz (E9c): ${vb.length} Sätze, längster ${meiste} Wortkarten `
+      + '· jeder Satz hat mindestens zwei');
   }
 }
 

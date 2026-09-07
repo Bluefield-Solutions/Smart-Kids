@@ -289,6 +289,21 @@ export function vorratLegen(){
 }
 
 /**
+ * Der Vorrat zum BAUEN (E9c): dieselben zwanzig Saetze, Wort fuer Wort.
+ *
+ * Eine Stufe ueber „Leg das Wort": dort sind die Karten Buchstaben und
+ * das Ziel ein Wort, hier sind die Karten Woerter und das Ziel ein Satz.
+ * Dasselbe Bauteil, andere Karten - das ist der ganze Unterschied, und
+ * deshalb hat die Ebene fast nichts gekostet.
+ *
+ * Eigene Kennung (`bs:`), wie ueberall: wer einen Satz GESAGT hat, hat
+ * ihn damit nicht zusammengesetzt.
+ */
+export function vorratBauen(){
+  return vorratChunks().map(x => ({ ...x, id: `bs:${x.id}` }));
+}
+
+/**
  * Drei Ablenker zu einem Gegenstand - aus derselben Sorte, gewuerfelt mit
  * dem Keim der Aufgabe.
  *
@@ -374,19 +389,26 @@ export const BILDGEBIETE = [
  * ein Bildermacher zeichnet dann zehnmal etwas anderes, mal von vorn, mal
  * springend, und die zehn Felder passen nicht zusammen. Deshalb steht die
  * Ansicht dabei. */
+/** Der Rahmen, in dem ein `pfad` gezeichnet ist. Quadratisch, 64 Einheiten -
+ *  dieselbe Groesse fuer alle 86, sonst laesst sich kein Blatt schneiden. */
+export const BILD_RAHMEN = '0 0 64 64';
 export const BILDER = [
   // --- Tiere ---
   { wort: 'cat',      gebiet: 'tiere', motiv: 'a cat sitting upright, seen from the side, tail curled around its paws' },
   { wort: 'chicken',  gebiet: 'tiere', motiv: 'a hen standing, seen from the side, with a comb and a rounded body' },
   { wort: 'dog',      gebiet: 'tiere', motiv: 'a dog sitting upright, seen from the side, with floppy ears' },
-  { wort: 'fish',     gebiet: 'tiere', motiv: 'a single fish seen from the side, with a fan tail and one round eye' },
+  { wort: 'fish',     gebiet: 'tiere',
+    pfad: 'M3 32c9-16 28-21 41-13l13-11-4 24 4 24-13-11C31 53 12 48 3 32Zm38-6a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z',
+    motiv: 'a single fish seen from the side, with a fan tail and one round eye' },
   { wort: 'hamster',  gebiet: 'tiere', motiv: 'a hamster sitting on its hind legs, seen from the side, holding a seed' },
   { wort: 'horse',    gebiet: 'tiere', motiv: 'a horse standing, seen from the side, with a mane and a tail' },
   { wort: 'mouse',    gebiet: 'tiere', motiv: 'a mouse seen from the side, with big round ears and a long thin tail' },
   { wort: 'pet',      gebiet: 'tiere', motiv: 'a child seen from the front holding a small cat in both arms' },
   { wort: 'rabbit',   gebiet: 'tiere', motiv: 'a rabbit sitting, seen from the side, with two long upright ears' },
   // --- Essen und Trinken ---
-  { wort: 'apple',      gebiet: 'essen', motiv: 'one apple seen from the front, with a short stalk and one leaf' },
+  { wort: 'apple',      gebiet: 'essen',
+    pfad: 'M32 18C26 9 12 11 9 24 6 38 15 57 25 57c3 0 4-2 7-2s4 2 7 2c10 0 19-19 16-33C56 11 42 9 36 18ZM30 4c1 5 1 10 1 15h4c-1-5-1-10 0-15ZM35 13c7-7 15-6 19-4-2 9-11 12-18 8Z',
+    motiv: 'one apple seen from the front, with a short stalk and one leaf' },
   { wort: 'bread',      gebiet: 'essen', motiv: 'a whole loaf of bread seen from the side, with a rounded top' },
   { wort: 'butter',     gebiet: 'essen', motiv: 'a rectangular block of butter on a small dish, seen from the side' },
   { wort: 'cheese',     gebiet: 'essen', motiv: 'a triangular wedge of cheese seen from the side, with three round holes' },
@@ -406,8 +428,12 @@ export const BILDER = [
   { wort: 'water',      gebiet: 'essen', motiv: 'a plain glass half filled with water, seen from the side' },
   // --- In der Schule ---
   { wort: 'board',            gebiet: 'schule', motiv: 'a classroom board on two legs, seen from the front, empty' },
-  { wort: 'book',             gebiet: 'schule', motiv: 'an open book seen from the front, both pages blank' },
-  { wort: 'chair',            gebiet: 'schule', motiv: 'a simple wooden chair with a straight back, seen from the side' },
+  { wort: 'book',             gebiet: 'schule',
+    pfad: 'M3 14c10-3 19-2 25 4v34c-6-6-15-7-25-4Zm58 0c-10-3-19-2-25 4v34c6-6 15-7 25-4Z',
+    motiv: 'an open book seen from the front, both pages blank' },
+  { wort: 'chair',            gebiet: 'schule',
+    pfad: 'M12 4h9v35h-9Zm9 7h16v6H21Zm0 12h16v6H21Zm-9 12h39v7H12Zm0 7h9v21h-9Zm30 0h9v21h-9Z',
+    motiv: 'a simple wooden chair with a straight back, seen from the side' },
   { wort: 'class/classroom',  gebiet: 'schule', motiv: 'a classroom seen from the front: a board on the wall and two desks with chairs' },
   { wort: 'pen/pencil',       gebiet: 'schule', motiv: 'a pencil and a pen lying crossed over each other, seen from above' },
   { wort: 'picture',          gebiet: 'schule', motiv: 'a framed picture hanging on a wall, seen from the front, showing a mountain and a sun' },

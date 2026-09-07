@@ -5735,10 +5735,20 @@ export const PROBEN = [
    *    Zeile, sonst sieht alles normal aus: Luecken, Karten, Lob. */
   { n:'die Vorlage steht nicht mehr da', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
-    such:'<div class="vorlage" id="vorlage" lang="en">${wort}</div>',
-    ersatz:'<div class="vorlage" id="vorlage" lang="en"></div>',
-    an:{ ...DIST, text:'id="vorlage" lang="en"></div>' },
+    such:'  const zeigtVorlage = !istSatz || !englischHoerbar();',
+    ersatz:'  const zeigtVorlage = istSatz && !englischHoerbar();',
+    an:{ ...DIST, text:'const zeigtVorlage = istSatz &&' },
     sagt:'ohne Vorlage' },
+
+  /* Und die Gegenrichtung (E9c): der SATZ steht da, obwohl er zu hoeren
+   * war. Dann ist „Bau den Satz" dieselbe Aufgabe wie „Leg das Wort",
+   * eine Nummer groesser - und im Bild ist der Unterschied eine Zeile. */
+  { n:'der zu hörende Satz steht trotzdem daneben', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'  const zeigtVorlage = !istSatz || !englischHoerbar();',
+    ersatz:'  const zeigtVorlage = true;',
+    an:{ ...DIST, text:'const zeigtVorlage = true;' },
+    sagt:'obwohl er zu hören war' },
 
   /* 2. EIN FALSCHER BUCHSTABE BLEIBT LIEGEN. Die Zusage der Ebene ist,
    *    dass in der Luecke nie etwas Falsches steht - wer abschreibt,

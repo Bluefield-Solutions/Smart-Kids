@@ -1324,6 +1324,17 @@ const EBENEN = [
    * ohne Schrift auskommen. */
   { id:'englisch:legen', ueber:'Englisch', titel:'Leg das Wort', farbe:5,
     art:'englisch', wer:['lea'] },
+  /* „Bau den Satz" (E9c) - dieselbe Form eine Stufe hoeher.
+   *
+   * Bei „Leg das Wort" sind die Karten Buchstaben und das Ziel ein Wort;
+   * hier sind die Karten Woerter und das Ziel ein Satz. Ein Bildschirm,
+   * zwei Ebenen - unterschieden am Teil hinter dem Doppelpunkt, wie
+   * ueberall in diesem Verzeichnis.
+   *
+   * `wer`: nur Lea, aus demselben Grund wie nebenan - wer nicht liest,
+   * kann Wortkarten nicht unterscheiden. */
+  { id:'englisch:bauen', ueber:'Englisch', titel:'Bau den Satz', farbe:1,
+    art:'englisch', wer:['lea'] },
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -1522,7 +1533,8 @@ const SCHREIBBILD = {
  * sagt, was das Kind damit TUT: hinhoeren oder sprechen. */
 const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
                           'englisch:sagen':'mikro', 'englisch:satz':'blase',
-                          'englisch:legen':'karten' };
+                          'englisch:legen':'karten',
+                          'englisch:bauen':'satzkarten' };
 /* Das Mikrofon als PFADE, nicht als `<rect>`.
    Dieselbe Messstelle wie ueberall (Regel 5): `passt` misst die
    gezeichnete Ausdehnung je Pfad; ein `<rect>` findet es gar nicht
@@ -1540,6 +1552,12 @@ const BLASENSTRICH = '<path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-5 4v-4H
    PFADE, aus demselben Grund wie das Mikrofon. */
 const KARTENSTRICH = '<path d="M2 8h9v14H2zM24 8h9v14h-9z"/>'
   + '<path d="M13 3h9v14h-9z"/>';
+/* Und fuers Satzbauen (E9c) dieselbe Aussage eine Stufe groesser: nicht
+   drei schmale Karten, sondern zwei breite in einer Zeile und eine
+   angehobene darueber - Woerter statt Buchstaben. Zwei Ebenen mit
+   demselben Zeichen wuerden einem Kind sagen, sie seien dasselbe. */
+const SATZKARTENSTRICH = '<path d="M2 12h13v10H2zM19 12h14v10H19z"/>'
+  + '<path d="M8 2h17v8H8z"/>';
 /* Die Kachel der Elternebene (E10). Zwei ineinandergreifende Ringe: zwei
    Woerter, die sich aehnlich sehen und Verschiedenes heissen. Kein
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
@@ -1655,7 +1673,8 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round">${ENGLISCHZEICHEN[ebeneId] === 'mikro' ? MIKROSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'blase' ? BLASENSTRICH
-        : ENGLISCHZEICHEN[ebeneId] === 'karten' ? KARTENSTRICH : ZEICHEN.tonAn}<path
+        : ENGLISCHZEICHEN[ebeneId] === 'karten' ? KARTENSTRICH
+        : ENGLISCHZEICHEN[ebeneId] === 'satzkarten' ? SATZKARTENSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
@@ -2143,6 +2162,10 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      ueberhaupt aus Buchstabenkarten legen lassen. */
   if (art==='englisch' && kont==='legen')
     return Englisch.vorratLegen();
+  /* Die zwanzig Saetze zum Zusammensetzen (E9c). Eigene Kennung (`bs:`)
+     aus demselben Grund: gesagt ist nicht gebaut. */
+  if (art==='englisch' && kont==='bauen')
+    return Englisch.vorratBauen();
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -3252,6 +3275,19 @@ function vorlaufSatz(ebeneId){
   /* „Leg das Wort" (E8). Der Satz nennt BEIDE Wege - ohne ihn findet ein
      Kind den Tippweg nicht, weil eine Karte, die man ziehen kann, nicht
      danach aussieht, als koenne man sie auch antippen. */
+  /* „Bau den Satz" (E9c). Der Satz nennt, was ANDERS ist als nebenan -
+     und die Notfassung gleich mit: ohne englische Stimme steht der Satz
+     da, und dann ist es Abschreiben statt Zuhoeren. Das auszusprechen
+     kostet eine Zeile und erspart einem Kind die Frage, warum es hier
+     einmal so und einmal anders ist. */
+  if (art === 'englisch' && kont === 'bauen')
+    return englischHoerbar()
+      ? 'Du hörst einen englischen Satz, und du legst ihn aus <strong>Wortkarten</strong>. '
+        + 'Du kannst eine Karte ziehen oder sie antippen — dann springt sie an die '
+        + 'nächste Lücke. Den Satz kannst du dir so oft anhören, wie du magst.'
+      : 'Der Satz steht oben, und du legst ihn aus <strong>Wortkarten</strong>. '
+        + 'Vorlesen kann dir dieses Gerät ihn leider nicht — ihm fehlt eine '
+        + 'englische Stimme; deshalb steht er da.';
   if (art === 'englisch' && kont === 'legen')
     return 'Das Wort steht oben, und du legst es aus Buchstaben. '
       + 'Du kannst eine Karte <strong>ziehen</strong> oder sie einfach '
@@ -4429,7 +4465,8 @@ function englischschirm(){
      `art` ist bei beiden `englisch`. */
   if (['sagen', 'satz'].includes(String(Sitzung.ebeneId).split(':')[1]))
     return sagenschirm();
-  if (String(Sitzung.ebeneId).split(':')[1] === 'legen') return legeschirm();
+  if (['legen', 'bauen'].includes(String(Sitzung.ebeneId).split(':')[1]))
+    return legeschirm();
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
@@ -4579,19 +4616,36 @@ function legeschirm(){
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
   const wort = ziel.wort;
-  /* Genau die Buchstaben des Wortes, gemischt - keine Ablenker.
-     Abschreiben ist kein Raetsel: die Vorlage steht daneben, und wer
+  /* ZWEI EBENEN, EIN BILDSCHIRM. Bei „Leg das Wort" (E8) sind die Karten
+     Buchstaben und das Ziel ein Wort, bei „Bau den Satz" (E9c) sind die
+     Karten Woerter und das Ziel ein Satz. Alles andere ist gleich - das
+     Ziehen, das Tippen, die drei Versuche, die Aufloesung. */
+  const istSatz = String(st.ebeneId).endsWith(':bauen');
+  const teile = istSatz ? wort.split(' ') : [...wort];
+  /* UND EIN UNTERSCHIED, DER KEINE FORMSACHE IST: die Vorlage.
+     „Abschreibend, mit Vorlage" ist beim Wort der Auftrag des Lehrplans;
+     beim Satz heisst die Aufgabe „hoeren, zusammensetzen, sagen" - da
+     waere der Satz danebengeschrieben die Loesung. Er steht deshalb nur
+     da, wenn dieses Geraet ihn nicht sprechen kann. Dieselbe Notfassung
+     wie bei „Sag es" und „Sag den Satz", und aus demselben Grund: eine
+     Aufgabe, die man weder hoeren noch lesen kann, ist keine. */
+  const zeigtVorlage = !istSatz || !englischHoerbar();
+  /* Genau die Teile des Ziels, gemischt - keine Ablenker.
+     Abschreiben ist kein Raetsel, und Zusammensetzen auch nicht: wer
      Ablenker dazulegt, prueft das Suchen statt das Schreiben. */
-  const karten = mischenMit([...wort], st.keim + st.i * 7919);
+  const karten = mischenMit(teile, st.keim + st.i * 7919);
 
   s.innerHTML = aufgabenKopf(st) + `
-    <div class="frage" id="frage">Leg das Wort.</div>
+    <div class="frage" id="frage">${istSatz ? 'Bau den Satz.' : 'Leg das Wort.'}</div>
     <div class="legefeld">
-      <div class="vorlage" id="vorlage" lang="en">${wort}</div>
-      <div class="legereihe" id="legereihe">${[...wort].map((c, i) =>
-        `<span class="leerstelle" data-i="${i}" data-b="${c}"></span>`).join('')}</div>
+      ${zeigtVorlage ? `<div class="vorlage${istSatz ? ' satzvorlage' : ''}"
+        id="vorlage" lang="en">${wort}</div>` : ''}
+      <div class="legereihe" id="legereihe">${teile.map((c, i) =>
+        `<span class="leerstelle${istSatz ? ' wortluecke' : ''}"
+               data-i="${i}" data-b="${c}"></span>`).join('')}</div>
       <div class="legevorrat" id="legevorrat">${karten.map((c, i) =>
-        `<button class="etikett legekarte" data-b="${c}" data-k="${i}"
+        `<button class="etikett legekarte${istSatz ? ' wortkarte' : ''}"
+                 data-b="${c}" data-k="${i}"
                  lang="en" aria-label="${c}">${c}</button>`).join('')}</div>
       <div class="werkzeug"><button class="leise" id="weissnicht">${
         ZEI('frage', 20)}Weiß ich nicht</button></div>
@@ -4627,11 +4681,12 @@ function legeschirm(){
     ausschalten();
     stellen().forEach(x => { x.textContent = x.dataset.b; x.classList.add('voll','gezeigt'); });
     const f = s.querySelector('#frage');
-    if (f) f.innerHTML = `<span class="loesung">Kein Problem. So schreibt man `
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem. So `
+      + `${istSatz ? 'heißt der Satz' : 'schreibt man'}: `
       + `<strong lang="en">${wort}</strong>.</span>`;
     // Der deutsche Trost und das englische Wort sind ZWEI Aeusserungen -
     // in einem Satz gemischt liefe „fifteen" durch die deutsche Stimme.
-    sagen('Kein Problem. So schreibt man:');
+    sagen(istSatz ? 'Kein Problem. So heißt der Satz:' : 'Kein Problem. So schreibt man:');
     vorlesen(wort, 'en');
     standSichern(st.ebeneId);
     setTimeout(weiter, LOBPAUSE);
@@ -4676,7 +4731,10 @@ function legeschirm(){
     if (versuch >= 3) return aufloesen();
     wackelt(karte);
     const f = s.querySelector('#frage');
-    const satz = 'Nicht ganz — schau noch einmal auf das Wort.';
+    const satz = istSatz
+      ? (zeigtVorlage ? 'Nicht ganz — schau noch einmal auf den Satz.'
+                      : 'Nicht ganz — hör noch einmal hin.')
+      : 'Nicht ganz — schau noch einmal auf das Wort.';
     if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
     sagen(satz);
   }
@@ -4709,8 +4767,10 @@ function legeschirm(){
            da, und gewertet ist laengst. Dieselbe Vorsicht wie in `legen`. */
         if (erledigt) return;
         const f = s.querySelector('#frage');
-        if (f) f.innerHTML = '<span class="fastText">Lass ihn auf einer Lücke los.</span>';
-        sagen('Lass ihn auf einer Lücke los.');
+        const sagt = istSatz ? 'Lass es auf einer Lücke los.'
+                             : 'Lass ihn auf einer Lücke los.';
+        if (f) f.innerHTML = `<span class="fastText">${sagt}</span>`;
+        sagen(sagt);
       },
     });
     karte.onclick = () => legen(karte, offen(), 'antippen', null);
@@ -4719,9 +4779,10 @@ function legeschirm(){
   s.querySelector('#weissnicht').onclick = () => aufloesen();
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
 
-  /* Das Wort einmal hoeren, bevor es gelegt wird. Abgeschrieben wird das
-     GESCHRIEBENE - deshalb steht es da; gesprochen kommt es dazu, damit
-     das Kind weiss, welches Wort es gerade schreibt. */
+  /* Einmal hoeren, bevor gelegt wird. Beim Wort ist das eine Zutat -
+     abgeschrieben wird das Geschriebene. Beim Satz ist es die AUFGABE:
+     ohne ihn steht eine Reihe Wortkarten da und nichts, was sagt, was
+     daraus werden soll. */
   vorlesen(wort, 'en');
   {
     const b = nochHoerenKnopf(wort, 'en');

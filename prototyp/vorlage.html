@@ -2024,6 +2024,23 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .leerstelle.gezeigt{border-color:var(--linie);background:var(--papier)}
 .legekarte{min-width:52px;min-height:56px;padding:var(--r3) var(--r4);
   font-family:var(--f-lesen);letter-spacing:0}
+/* „Bau den Satz" (E9c): dieselben Karten, nur breiter - ein Wort ist
+   kein Buchstabe. Die Breite kommt vom INHALT (`min-width` faellt weg,
+   `white-space:nowrap` haelt das Wort zusammen); die Hoehe bleibt, damit
+   die beiden Ebenen sich gleich anfuehlen. */
+/* Die Luecken sind ALLE GLEICH BREIT, die Karten nicht.
+   Waere jede Luecke so breit wie ihr Wort, verriete die Reihe der Breiten
+   die Loesung, ohne dass ein Kind ein Wort gelesen haette - „das lange
+   gehoert nach hinten". Dieselbe Ueberlegung steckt hinter dem
+   Wortspeicher bei Duolingo, wo die Luecken eine schlichte Linie sind. */
+.legekarte.wortkarte,.leerstelle.wortluecke{min-width:64px;padding-inline:var(--r4);
+  white-space:nowrap;font-size:var(--s0)}
+.legekarte.wortkarte{width:auto}
+/* Der ganze Satz als Vorlage ist laenger als ein Wort: er darf umbrechen,
+   und er wird nicht gesperrt gesetzt - beim Wort sollen die Buchstaben
+   einzeln zu sehen sein, beim Satz die WOERTER. */
+.vorlage.satzvorlage{letter-spacing:0;font-size:var(--s1);max-width:100%;
+  text-align:center}
 /* Der Farbfleck traegt IMMER einen dunklen Ring - nicht nur `white`.
    Ein Ring nur ums Weisse waere ein zweites Merkmal, an dem man „white"
    erkennt, ohne die Farbe zu kennen. Er ist rund, weil ein Quadrat auf
@@ -3275,6 +3292,8 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .vorlage{font-size:var(--s1);padding:var(--r2) var(--r3)}
   .leerstelle,.legekarte{min-width:48px;min-height:48px}
   .legekarte{padding:var(--r2) var(--r3)}
+  .legekarte.wortkarte,.leerstelle.wortluecke{min-width:56px;font-size:var(--s-klein)}
+  .vorlage.satzvorlage{font-size:var(--s0)}
   .farbfleck{width:64px;height:64px}
   .ziffernbild{font-size:var(--s3)}
   .tippfeld .eingabe{min-height:64px;font-size:var(--s2);min-width:130px}

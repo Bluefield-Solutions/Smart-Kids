@@ -3993,7 +3993,7 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freund
                           heisst zweierlei: bei Lea muss die Kachel da sein,
                           und bei jedem anderen darf sie es nicht. */
                        lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren',
-                             'englisch:legen'] };
+                             'englisch:legen', 'englisch:bauen'] };
 /* Gespielt wird mit JEDEM Profil, das die Tabelle nennt - seit N1 sind das
  * vier. Eine feste Liste hier haette Violeta uebersprungen, und ein Profil,
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
@@ -4508,31 +4508,57 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         const auf = await ausDerSitzung(p, wer, ebene, ['id', 'wort']);
         if (!auf) continue;
         const wort = String(auf.wort || '');
-        /* DIE VORLAGE MUSS DASTEHEN. Ohne sie ist es nicht mehr
-           „abschreibend, mit Vorlage", sondern freies Buchstabieren -
-           eine andere und viel schwerere Aufgabe, und auf dem
-           Bildschirm faellt der Unterschied nur auf, wenn man ihn
-           sucht. */
+        /* ZWEI EBENEN AUF EINEM BILDSCHIRM: „Leg das Wort" legt
+           Buchstaben, „Bau den Satz" legt Woerter. Woraus die Stuecke
+           bestehen, entscheidet die Ebene - und daran haengt jede Zahl
+           weiter unten. */
+        const stueckIst = String(ebene).endsWith(':bauen');
+        const stuecke = stueckIst ? wort.split(' ') : [...wort];
+        /* DIE VORLAGE. Beim WORT muss sie dastehen: ohne sie ist es
+           nicht mehr „abschreibend, mit Vorlage", sondern freies
+           Buchstabieren - eine andere und viel schwerere Aufgabe, und
+           auf dem Bildschirm faellt der Unterschied nur auf, wenn man
+           ihn sucht.
+           Beim SATZ ist es umgekehrt: dort waere der Satz danebengeschrieben
+           die Loesung, er steht nur da, wenn das Geraet ihn nicht sprechen
+           kann. Verlangt wird deshalb das ODER - entweder er steht da oder
+           er war zu hoeren. Steht er weder noch, ist die Aufgabe unloesbar,
+           und genau das sieht man dem Bildschirm nicht an: eine Reihe
+           Wortkarten sieht in beiden Faellen gleich aus. */
         const vorlage = await p.$eval('.schirm.da #vorlage',
           e => e.textContent.trim()).catch(() => null);
-        if (vorlage !== wort)
+        const gehoertJetzt = (await p.evaluate(() => (window.__gesagt || []).slice()))
+          .some((x) => String(x).trim() === wort);
+        if (!stueckIst && vorlage !== wort)
           merke('durchgang', new Error(`${wer}/${ebene}: die Vorlage zeigt `
             + `„${vorlage ?? 'nichts'}", gelegt werden soll „${wort}" — ohne Vorlage `
             + 'ist das freies Buchstabieren und nicht Abschreiben'));
+        if (stueckIst && vorlage !== wort && !gehoertJetzt)
+          merke('durchgang', new Error(`${wer}/${ebene}: „${wort}" steht nicht da `
+            + 'und war auch nicht zu hören — dann stehen Wortkarten da und nichts, '
+            + 'was sagt, was daraus werden soll'));
+        /* Und die Gegenrichtung, die genauso still ausfaellt: war der
+           Satz ZU HOEREN, darf er nicht auch danebenstehen. Sonst ist
+           „Bau den Satz" dieselbe Aufgabe wie „Leg das Wort", eine
+           Nummer groesser - abgeschrieben statt zugehoert -, und im Bild
+           sieht man nur eine Zeile mehr. */
+        if (stueckIst && gehoertJetzt && vorlage !== null)
+          merke('durchgang', new Error(`${wer}/${ebene}: „${wort}" steht da, obwohl er `
+            + 'zu hören war — dann ist die Ebene Abschreiben und nicht Zuhören'));
         /* UND DAS WORT MUSS LEGBAR SEIN. Fehlt ein Buchstabe im Vorrat
            oder liegt einer zuviel da, ist die Aufgabe unloesbar bzw.
            mehrdeutig - und sie sieht in beiden Faellen normal aus. */
         const stand0 = await p.evaluate(() => ({
           luecken: document.querySelectorAll('.schirm.da .leerstelle').length,
           karten: [...document.querySelectorAll('.schirm.da .legekarte')]
-            .map(k => k.dataset.b).sort().join(''),
+            .map(k => k.dataset.b).sort().join('|'),
         }));
-        if (stand0.luecken !== wort.length)
+        if (stand0.luecken !== stuecke.length)
           merke('durchgang', new Error(`${wer}/${ebene}: ${stand0.luecken} Lücken für `
-            + `„${wort}" (${wort.length} Buchstaben)`));
-        if (stand0.karten !== [...wort].sort().join(''))
+            + `„${wort}" (${stuecke.length} Stücke)`));
+        if (stand0.karten !== stuecke.slice().sort().join('|'))
           merke('durchgang', new Error(`${wer}/${ebene}: der Vorrat trägt `
-            + `„${stand0.karten}", gelegt werden soll „${wort}" — das Wort ist so nicht `
+            + `„${stand0.karten}", gelegt werden soll „${wort}" — so ist es nicht `
             + 'zu legen'));
         // Hier ist das Wort geschrieben zu sehen; gesprochen kommt es
         // dazu, damit das Kind weiss, welches Wort es gerade schreibt.
@@ -4543,27 +4569,28 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            Ebene: in der Luecke steht nie etwas Falsches. Sie ist von
            aussen nicht zu sehen - eine Fassung, die den Buchstaben
            liegen laesst und nur wackelt, sieht fast gleich aus. */
-        const falsch = await p.evaluate((w) => {
+        const falsch = await p.evaluate((erstes) => {
           const k = [...document.querySelectorAll('.schirm.da .legekarte')]
-            .find(x => x.dataset.b !== w[0]);
+            .find(x => x.dataset.b !== erstes);
           if (!k) return null;
           k.click();
           const l = document.querySelector('.schirm.da .leerstelle');
           return { b: k.dataset.b, drin: l.textContent.trim() };
-        }, wort);
+        }, stuecke[0]);
         if (falsch && falsch.drin)
           merke('durchgang', new Error(`${wer}/${ebene}: „${falsch.b}" ist in der ersten `
-            + `Lücke gelandet, gesucht war „${wort[0]}" — abgeschrieben wird richtig `
+            + `Lücke gelandet, gesucht war „${stuecke[0]}" — abgeschrieben wird richtig `
             + 'oder gar nicht'));
         // Und jetzt der Reihe nach. Getippt springt jede Karte an die
-        // naechste freie Luecke, also legt die Reihenfolge des Wortes es.
-        for (const c of wort)
+        // naechste freie Luecke, also legt die Reihenfolge des Ziels es.
+        for (const c of stuecke)
           await p.evaluate((b) => [...document.querySelectorAll('.schirm.da .legekarte')]
             .find(k => k.dataset.b === b && !k.classList.contains('weg'))?.click(), c);
-        wege.add(`${wer}: Wort gelegt`);
+        wege.add(`${wer}: ${stueckIst ? 'Satz gebaut' : 'Wort gelegt'}`);
         await bewertet(p);
-        await abgeschlossen(p, wer, ebene, /(?!)/, 'das Wort Buchstabe für Buchstabe gelegt',
-          wort);
+        await abgeschlossen(p, wer, ebene, /(?!)/,
+          stueckIst ? 'den Satz Wort für Wort gelegt'
+                    : 'das Wort Buchstabe für Buchstabe gelegt', wort);
         continue;
       }
       /* „Sag es" (E6) - die Ebene, die kein Urteil faellt.

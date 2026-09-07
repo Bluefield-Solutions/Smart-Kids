@@ -1484,6 +1484,12 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await zurEbenenwahl(p, 'englisch:legen');
   await ebeneAnsehen('englisch:legen', '.schirm.da #legereihe', 'Wort legen',
     { vorlaufName: 'Vorlauf legen' });
+  /* Und derselbe Bildschirm mit WORTKARTEN (E9c). Kein zweiter Gang aus
+     Gruendlichkeit: die Karten sind hier so breit wie ihr Wort, und ob
+     sechs davon in eine Zeile passen oder umbrechen, entscheidet sich
+     an anderen Zahlen als bei sieben Buchstaben. */
+  await ebeneAnsehen('englisch:bauen', '.schirm.da #legereihe', 'Satz bauen',
+    { vorlaufName: 'Vorlauf bauen' });
 
   /* Und die Elternebene (E10) - als STEPHAN, denn ihm gehoert sie.
    *

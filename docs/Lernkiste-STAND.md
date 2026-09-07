@@ -11586,3 +11586,69 @@ Bildschirm passt, ist eine Frage in Bildpunkten, und ihre Messstelle ist
 `.leerstelle` steht jetzt in den drei Klassenlisten (Überlappung,
 Fassungsstempel, Sicherheitsbereich). Im Tor `inhalt` steht keine Zahl in
 Punkten: sie wäre geraten und sähe aus wie gemessen.
+
+## Q55 und E4b · Zwei Entscheidungen, vorbereitet statt getroffen
+
+Beide Punkte sind keine Rechnung, sondern eine Wahl. Was hier steht, ist
+das, was eine Wahl braucht: gebaute Zustände und gemessene Zahlen.
+
+**Q55 · Der Faden nach Luxemburg.** Möglichkeit (3) aus dem Backlog — der
+Nadelkopf darf auf fremdem Land liegen — ist gebaut und fotografiert, aber
+nicht ausgeliefert. Gemessen am gebauten Bündel (iPhone quer 844 × 390,
+Lea, Europa), einmal mit und einmal ohne die Bedingung `freiVonFlaeche`:
+
+| | Fäden | engster Kopfabstand | Kopf liegt auf |
+|---|---|---|---|
+| heute | 54 und **64** pt | 48,3 | — |
+| Möglichkeit (3) | 44 und **54** pt | 44,5 | **FRA, FRA** |
+
+Zehn Punkte kürzerer Faden, und dafür liegen **beide Köpfe auf
+Frankreich**. Das ist der ganze Tausch, und er steht im Bild deutlicher da
+als in der Tabelle. Dazu kommt: das Tor `ziehen` meldet genau diesen Fall
+heute als Fehler — wer (3) will, ändert nicht nur die App, sondern auch
+die Regel des Tores. Meine Empfehlung ist (1), also so lassen; die
+Entscheidung gehört dem Nutzer.
+
+Gemessen wurde am **gebauten Bündel**, nicht am Quelltext (Regel 5): der
+Nadelplan entsteht erst im Browser, aus wirklichen Kastenmaßen und
+`elementsFromPoint`. Eine Zahl aus Node wäre hier gar keine.
+
+**E4b · Vier Muster von Hand.** `apple`, `fish`, `book` und `chair` haben
+einen `pfad` bekommen — konstruiert wie die Flaggen, eine Fläche in
+`BILD_RAHMEN` (0 0 64 64), keine Striche. Eingebaut sind sie nirgends;
+`inhalt` zählt sie, sonst nichts. Angesehen in drei Größen (44, 76, 124
+Punkte) sagt die Stichprobe: **Essen und Tiere gehen von Hand, Möbel
+wahrscheinlich nicht.** `chair` ist bei 44 Punkten fast ein „E".
+
+Das ist der Ertrag einer Stichprobe: nicht „geht" oder „geht nicht",
+sondern *wofür* es geht. Der Plan mit den elf erzeugten Blättern bleibt
+richtig für alles, was mehr als einen Umriss braucht.
+
+## E9c · „Bau den Satz" — der zweite Benutzer, den ein Bauteil braucht
+
+**Fast nichts, und das war die Vorhersage.** „Leg das Wort" und „Bau den
+Satz" sind EIN Bildschirm; der Unterschied ist eine Zeile:
+`istSatz ? wort.split(' ') : [...wort]`. Alles andere gilt für beide — das
+Ziehen, das Tippen, die drei Versuche, die Auflösung, die Zusage, dass in
+der Lücke nie etwas Falsches steht. So sieht es aus, wenn ein Bauteil im
+selben Zug seinen zweiten Benutzer bekommt, in dem es entsteht: E8 hat das
+Ziehen herausgelöst, E9c hat es sofort benutzt und dabei nichts daran
+ändern müssen.
+
+**Ein Unterschied ist keine Formsache.** Beim Wort ist „abschreibend, mit
+Vorlage" der Auftrag; beim Satz heißt die Aufgabe *hören, zusammensetzen,
+sagen*, und da wäre der Satz danebengeschrieben die Lösung. Er steht
+deshalb nur da, wenn das Gerät ihn nicht sprechen kann.
+
+Der Rauchtest verlangt **beide Richtungen**, und die zweite ist die, die
+man vergisst: ohne Stimme muss der Satz dastehen, mit Stimme darf er es
+nicht. Eine Fassung, die ihn immer zeigt, wäre nicht kaputt — sie wäre
+eine andere, leichtere Aufgabe, und auf dem Bildschirm ist der Unterschied
+eine Zeile. Genau die Sorte Änderung, die ein Tor grün durchlässt, wenn es
+nur in eine Richtung fragt.
+
+**Alle Lücken sind gleich breit, die Karten nicht.** Wäre jede Lücke so
+breit wie ihr Wort, verriete die Reihe der Breiten die Lösung, ohne dass
+ein Kind ein Wort gelesen hätte — „das lange gehört nach hinten". Dieselbe
+Überlegung steckt hinter dem Wortspeicher bei Duolingo, wo die Lücken eine
+schlichte Linie sind.

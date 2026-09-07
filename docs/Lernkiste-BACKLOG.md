@@ -497,6 +497,31 @@ bleibt bei drei. Repariert an der Stelle, wo der Vorlauf ohnehin sagt, was er
 ist — er zeigt Beispiele, nicht den Vorrat: zwölf statt vierundzwanzig,
 gemessen 85 Punkte.
 
+### E9c · „Bau den Satz" — GEFAHREN
+
+**Dieselbe Vorhersage, dieselbe Bestätigung wie bei E9b: fast nichts.**
+„Leg das Wort" und „Bau den Satz" sind EIN Bildschirm. Der Unterschied ist
+eine Zeile — `istSatz ? wort.split(' ') : [...wort]` —, und alles andere
+gilt für beide: das Ziehen, das Tippen, die drei Versuche, die Auflösung,
+die Zusage, dass in der Lücke nie etwas Falsches steht.
+
+**Ein Unterschied ist aber keine Formsache: die Vorlage.** Beim Wort ist
+„abschreibend, mit Vorlage" der Auftrag des Lehrplans. Beim Satz heißt die
+Aufgabe *hören, zusammensetzen, sagen* — da wäre der Satz danebengeschrieben
+die Lösung. Er steht deshalb nur da, wenn das Gerät ihn nicht sprechen kann;
+dieselbe Notfassung wie bei „Sag es" und „Sag den Satz". Der Rauchtest
+verlangt beide Richtungen: ohne Stimme **muss** er dastehen, mit Stimme darf
+er es **nicht** — sonst ist die Ebene Abschreiben und nicht Zuhören, und im
+Bild ist der Unterschied eine Zeile.
+
+**Alle Lücken sind gleich breit, die Karten nicht.** Wäre jede Lücke so
+breit wie ihr Wort, verriete die Reihe der Breiten die Lösung, ohne dass ein
+Kind ein Wort gelesen hätte. Dieselbe Überlegung steckt hinter dem
+Wortspeicher bei Duolingo.
+
+Zwanzig Sätze, längster sechs Wortkarten, eigene Kennung `bs:` (gesagt ist
+nicht gebaut). Zwei Gegenproben, eine neue Aufnahme `quer-bauen`.
+
 **Was daraus fast herausfällt: E9c**, den Satz aus Wortkarten
 zusammensetzen. Dasselbe Bauteil, andere Karten — statt Buchstaben Wörter,
 statt eines Wortes ein Satz.
@@ -696,8 +721,30 @@ genau drei Antworten:
    wirklich kurz macht — und die einzige, die eine Entscheidung braucht,
    weil sie eine Zusage aufgibt.
 
-*Offen ist nur (3), und es ist eine Entscheidung am Gerät, keine
-Rechnung.* Was **nicht** offen ist: dass das Tor den Faden nur als Ratsche
+**Möglichkeit (3) ist jetzt GEBAUT und FOTOGRAFIERT — nicht ausgeliefert.**
+Gemessen wurde am gebauten Bündel, iPhone quer 844 × 390, Lea, Europa, mit
+und ohne die eine Bedingung `freiVonFlaeche`:
+
+| | Fäden | engster Kopfabstand | Kopf liegt auf |
+|---|---|---|---|
+| **heute** (Kopf nur im Meer) | 54 und **64** pt | 48,3 pt | — |
+| **(3)** (Kopf auch auf fremdem Land) | 44 und **54** pt | 44,5 pt | **FRA, FRA** |
+
+Der Gewinn sind **zehn Punkte Faden** (19 % → 16 % der Kartenbreite). Der
+Preis steht im Bild: **beide Köpfe liegen dann auf Frankreich** — einer an
+der Atlantikküste, einer in Südfrankreich, und der Haken „geschafft" für
+ein anderes Land klebt mitten auf französischem Boden. Das ist nicht nur
+eine Ansichtssache: das Tor `ziehen` meldet genau diesen Fall heute als
+Fehler (*„die Nadel von X liegt auf Y — eine Trefferfläche, die einem
+anderen Gebiet seine Fläche nimmt"*). Wer (3) will, gibt also nicht nur
+eine Zusage auf, sondern muss auch die Regel des Tores ändern.
+
+**Empfehlung: bei (1) bleiben.** Zehn Punkte kürzerer Faden gegen zwei
+fremde Marken auf Frankreich ist kein guter Tausch — und der Faden IST
+der Wegweiser, er darf lang sein. *Die Entscheidung gehört dem Nutzer;
+die zwei Bilder liegen dafür bereit.*
+
+Was **nicht** offen ist: dass das Tor den Faden nur als Ratsche
 führt (`tor/nadeln-stand.json`, 64 pt) und keine anteilige Obergrenze
 kennt. Solange (1) gilt, ist das richtig so — eine Obergrenze, die
 niemand unterschreiten kann, würde nur Verzicht erzwingen, und Verzicht
@@ -5257,8 +5304,28 @@ Zeit (9) · Wo? (6) · Gegensätze und Gefühle (8) · Spielen und Sport (8) ·
 Länder und Übriges (5).
 
 **Was offen bleibt (E4b):** die Bilder selbst. Der Fortschritt ist jetzt
-eine Zahl und kein Gefühl — `inhalt` meldet „gezeichnet: 0 von 86", und
+eine Zahl und kein Gefühl — `inhalt` meldet „gezeichnet: 4 von 86", und
 die Zahl steigt, sobald ein Wort seinen Pfad bekommt.
+
+**Vier Muster sind gezeichnet — und sie stellen eine Frage.** `apple`,
+`fish`, `book` und `chair` haben einen `pfad` bekommen, gebaut wie die
+Flaggen: von Hand konstruierte Pfade in `BILD_RAHMEN` (0 0 64 64), eine
+Fläche, keine Striche. Sie sind sonst noch nirgends eingebaut — kein
+Bildschirm zeigt sie, `inhalt` zählt sie nur.
+
+Der Zweck ist eine Entscheidung: **konstruieren statt malen lassen?** Der
+Plan sieht elf erzeugte Blätter à zehn Felder vor, geschnitten und
+nachgezeichnet. Die vier Muster zeigen, was der andere Weg kostet und
+bringt. Angesehen in drei Größen (44, 76 und 124 Punkte):
+
+* `apple`, `fish` und `book` lesen sich in allen drei Größen eindeutig.
+* `chair` ist der schwächste — Möbel sind in einer Silhouette dünn, die
+  Rückenlehne liest sich bei 44 Punkten fast als „E". Das ist die
+  ehrliche Auskunft dieser Stichprobe: **Essen und Tiere gehen von Hand,
+  Möbel und Menschen wahrscheinlich nicht.**
+
+*Die Entscheidung gehört dem Nutzer.* Möglich ist auch ein Gemisch: das,
+was sich als Umriss sagen lässt, von Hand; der Rest über die Blätter.
 
 ### QS3 · „Ton als Gegenstand" ist eine Eingabe geworden — GEFAHREN (v374)
 

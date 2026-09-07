@@ -301,6 +301,12 @@ const AUFNAHMEN = [
      Bild. Lea und nicht Fiona: die Ebene gehoert ihr allein. */
   { name:'quer-legen', spiel:'englisch:legen', kind:'lea', quer:true,
     wahl:'.schirm.da' },
+  /* Und „Bau den Satz" (E9c) auf demselben Bildschirm mit anderen Karten.
+     Zwei Aufnahmen sind hier keine Doppelung: dort sieben Buchstaben,
+     hier bis zu sechs WORTKARTEN, und ob die in eine Zeile passen oder
+     umbrechen, sieht man nur an diesem Bild. */
+  { name:'quer-bauen', spiel:'englisch:bauen', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   // Der erste Bildschirm ohne Karte. Er hatte kein Vorbild, und genau die
   // hatten in der Audit-Runde die Fehler.
   { name:'quer-rechnen', spiel:'rechnen:plusminus', quer:true, wahl:'.schirm.da' },
@@ -728,6 +734,7 @@ const OHNE_KARTE = {
      Auf `#legereihe` und nicht auf eine Karte - die Karten stehen im
      Vorrat schon, bevor die Reihe gebaut ist. */
   'englisch:legen': '.schirm.da #legereihe',
+  'englisch:bauen': '.schirm.da #legereihe',
   freunde:   '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',
