@@ -5781,9 +5781,22 @@ export const PROBEN = [
    *    vier, und eine Karte misst 23 statt 44. Auf dem Zielgeraet (844)
    *    faellt davon nichts auf - genau deshalb faehrt `passt` sieben
    *    Groessen und nicht eine. */
+  /* Und dieselbe Falle bei den SAETZEN, nur groesser: ein Satzkasten ist
+   * drei Zeilen hoch. Zwanzig davon sind sieben Reihen, das Band hat
+   * Platz fuer drei - sechs Kaesten liefen auf dem Zielgeraet 31 Punkte
+   * ueber den Rand, auf dem iPhone SE quer 159, und einer lag zu 78
+   * Prozent auf „Jetzt starten". Der Befund ist aelter als „Bau den
+   * Satz": „Sag den Satz" hatte ihn seit v46x, und kein Tor hat ihn
+   * gesehen, weil keines die Ebene betreten hat. */
+  { n:'der Vorlauf zeigt wieder alle zwanzig Sätze', tor:'passt', bauen:true, datei:D,
+    such:"    ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3",
+    ersatz:"    ['englisch:satz'].includes(ebeneId) ? 3",
+    an:{ ...DIST, text:"['englisch:satz'].includes(ebeneId) ? 3" },
+    sagt:'über den Rand' },
+
   { n:'der Vorlauf zum Legen zeigt wieder alle Wörter', tor:'passt', bauen:true, datei:D,
-    such:"    ebeneId === 'englisch:legen' ? 12",
-    ersatz:"    ebeneId === 'englisch:legen' ? 24",
+    such:"  : ebeneId === 'englisch:legen' ? 12",
+    ersatz:"  : ebeneId === 'englisch:legen' ? 24",
     an:{ ...DIST, text:"'englisch:legen' ? 24" },
     sagt:'ein Aufkleber muss 44 messen' },
 

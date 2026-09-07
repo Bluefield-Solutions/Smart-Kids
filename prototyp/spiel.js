@@ -3179,8 +3179,23 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
  * Zwoelf wollen sechs Spalten (528 Punkte) und zwei Reihen. Und es
  * entspricht dem, was der Vorlauf ueberhaupt tut: er zeigt BEISPIELE,
  * nicht den Vorrat - derselbe Satz steht drei Absaetze weiter oben. */
+/* Und die beiden SATZEBENEN: drei, wie bei den Wendungen der Eltern.
+ *
+ * Auch das ist gemessen, und der Befund ist aelter als die Ebene, die ihn
+ * ans Licht gebracht hat: „Sag den Satz" (E9) zeigt seit v46x alle zwanzig
+ * Saetze im Vorlauf, und `passt` hat es nie gesehen - das Tor misst nur,
+ * was es BETRITT, und diese Ebene hat es nie betreten. Mit „Bau den Satz"
+ * (E9c) kam sie in den Gang, und dann standen die Zahlen da: auf dem
+ * Zielgeraet liefen sechs Kaesten 31 Punkte ueber den Rand des Bandes,
+ * auf dem iPhone SE quer 159, und einer lag zu 78 Prozent auf „Jetzt
+ * starten". Ein Satzkasten ist drei Zeilen hoch, zwanzig davon sind
+ * sieben Reihen, und das Band hat Platz fuer drei.
+ *
+ * Drei ist keine neue Zahl: „Wendungen" und „Hoeren und schreiben" tragen
+ * sie seit E11, und aus demselben Grund - ihre Kaesten sind auch Saetze. */
 const VORLAUF_JE = (art, ebeneId) =>
-    ebeneId === 'englisch:legen' ? 12
+    ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3
+  : ebeneId === 'englisch:legen' ? 12
   : ['rechnen', 'freunde'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;
