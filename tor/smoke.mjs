@@ -150,11 +150,29 @@ const fehler = [];
  * leer. Nur ist die 35 nie an einer Wirklichkeit geeicht worden; sie war
  * ein Wunsch, den nichts gemessen hat.
  *
- * Also steht hier jetzt, was WIRKLICH dasteht, mit einem Punkt Luft: 24.
- * Eine Ratsche darf nur strenger werden, und der Weg dorthin ist, die
- * beiden Seiten zu fuellen - nicht, die Zahl hoeher zu schreiben. Beide
- * stehen als offener Befund in `docs/Lernkiste-BUCH-AUDIT-2.md`. */
-const BUCH_GENUTZT_MIN = 24;
+ * Also stand hier eine Zeitlang, was WIRKLICH dastand, mit einem Punkt
+ * Luft: 24. Eine Ratsche darf nur strenger werden, und der Weg dorthin
+ * ist, die beiden Seiten zu FUELLEN - nicht, die Zahl hoeher zu
+ * schreiben.
+ *
+ * GEFUELLT SIND SIE SEIT B4b: die Rechenseite bekam ihre Tafel, die
+ * Abzeichenseite alle offenen Abzeichen. Nachgemessen am 07.09. ueber
+ * alle zehn Kapitelseiten:
+ *
+ *   Abzeichen 53 · Erdkunde 46 · 95 · 95 · Rechnen 67
+ *   Schreiben 53 · 56 · 45 · Englisch 37 · Naechstes 42
+ *
+ * Der schlechteste Wert ist 37, und die Ratsche geht deshalb auf 34 -
+ * drei Punkte Luft, aus demselben Grund wie damals: der schlechteste
+ * Wert haengt daran, WAS ein Profil gerade gesammelt hat, und ein Buch
+ * mit einem Gegenstand weniger darf nicht rot werden.
+ *
+ * Warum das nachgezogen gehoert und nicht bloss nett ist: bei 24 liess
+ * die Ratsche genau den Zustand durch, den B4b beseitigt hat. Nimmt man
+ * der Abzeichenseite die offenen Abzeichen wieder weg, faellt sie auf
+ * 25 % - und blieb gruen. Die Gegenprobe dazu meldete „das Tor beweist
+ * an dieser Stelle nichts", und sie hatte recht. */
+const BUCH_GENUTZT_MIN = 34;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 
