@@ -5876,8 +5876,8 @@ export const PROBEN = [
    * Satz": „Sag den Satz" hatte ihn seit v46x, und kein Tor hat ihn
    * gesehen, weil keines die Ebene betreten hat. */
   { n:'der Vorlauf zeigt wieder alle zwanzig Sätze', tor:'passt', bauen:true, datei:D,
-    such:"    ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3",
-    ersatz:"    ['englisch:satz'].includes(ebeneId) ? 3",
+    such:"  : ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3",
+    ersatz:"  : ['englisch:satz'].includes(ebeneId) ? 3",
     an:{ ...DIST, text:"['englisch:satz'].includes(ebeneId) ? 3" },
     sagt:'über den Rand' },
 

@@ -11708,3 +11708,44 @@ sind vier Stellen, an denen dasselbe zu wissen ist — und `nochHoerenKnopf`
 gibt `null` zurück, wenn es nichts zu hören gibt: wer die zweite Hälfte
 vergisst, hängt `null` an, und zwar genau auf den Geräten ohne englische
 Stimme, also nie hier.
+
+
+## Zwei Befunde aus dem vollen Probenlauf — und einer davon war ein Tor, das zu viel sah
+
+Der volle Lauf über alle 391 Gegenproben (v479) meldete **377 anschlagen,
+14 nicht** — und die vierzehn hatten nur zwei Ursachen.
+
+**Erstens: die Buchseite und die dreizehn Abzeichen.** In `forscherbuch`
+stand ein gezählter Satz: *„die Tafel hat elf Einträge, einer davon fünfmal
+gestuft: höchstens sechzehn Abzeichen kann ein Profil überhaupt haben."*
+Mit E9b sind es fünfzehn Einträge, einer fünffach und einer vierfach
+gestuft — bis zu dreiundzwanzig. Fiona bekam dreizehn statt neun, das
+Raster wurde 208 Punkte hoch in einem Kasten von 153, und die dritte Reihe
+rollte hinaus.
+
+Und dann kam die Frage, die zwei Runden hätte kosten können: **soll die
+Seite weniger zeigen?** Nein — B4b hat das schon entschieden. Der Reiter
+darüber trägt den Nenner („6/14"), und eine Seite, die weniger zeigt als er
+verspricht, ist dieselbe Lüge in die andere Richtung; die Zusage im
+Rauchtest sagt es wörtlich und hat meinen ersten Versuch sofort abgewiesen
+(*„der Reiter verspricht 14 Abzeichen, die Seite zeigt 10"*). Was mehr wird,
+rollt in seinem Kasten — genau wie die fünfzehn Räume im Tierkapitel.
+Geblieben ist die Korrektur des Kommentars: eine gezählte Zahl veraltet
+genau dann, wenn niemand mehr nachzählt.
+
+**Zweitens: die Fremdgriff-Prüfung sah etwas, das niemand sieht.** Sie hat
+die drei abgerollten Abzeichennamen als *„liegt auf einer Ebenenkachel"*
+gemeldet. Das stimmte geometrisch und nicht in der Sache:
+`Range.getClientRects` liefert Zeilenkästen auch für Text, den ein rollender
+Kasten längst abgeschnitten hat, und an so einer Stelle antwortet
+`elementFromPoint` mit dem, was **wirklich** dort liegt. Ein Befund über
+einen Text, den niemand sieht, ist keiner.
+
+Die Prüfung kannte die Fenstergrenze schon — Punkte außerhalb des Fensters
+zählt sie nicht. Jetzt kennt sie auch die Grenzen **nach innen**: den
+Schnitt aller klemmenden Vorfahren. Das ist keine Lockerung, sondern
+dieselbe Regel eine Ebene tiefer.
+
+**Und die Bündelgröße** ist von 433,6 auf 464,6 KB gewachsen (+7,1 %) — vier
+neue Ebenen, sechzehn Lautpaare, zwanzig Sätze, vier Abzeichensätze und vier
+gezeichnete Bilder. Von 700 KB Deckel sind das zwei Drittel; bestätigt.

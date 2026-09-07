@@ -8575,11 +8575,22 @@ async function forscherbuch(){
    *
    * Die Lehre von den sechzig Kaesten bleibt unverletzt, weil sie an der
    * ZAHL haengt und nicht am leeren Kasten - dieselbe Unterscheidung wie
-   * im Tierkapitel. Die Tafel hat elf Eintraege, einer davon fuenfmal
-   * gestuft: hoechstens sechzehn Abzeichen kann ein Profil ueberhaupt
-   * haben, und sechzehn sind zu Ende zu bringen. Hundert waeren es nicht -
-   * genau deshalb bekommt die Rechenseite eine Tafel und keine hundert
-   * blassen Aufkleber. */
+   * im Tierkapitel. Hundert waeren es nicht - genau deshalb bekommt die
+   * Rechenseite eine Tafel und keine hundert blassen Aufkleber.
+   *
+   * HIER STAND EINE ZAHL, DIE AUFGEHOERT HAT ZU STIMMEN: „die Tafel hat
+   * elf Eintraege, einer davon fuenfmal gestuft: hoechstens sechzehn
+   * Abzeichen kann ein Profil ueberhaupt haben". Mit E9b sind es fuenfzehn
+   * Eintraege, einer fuenffach und einer vierfach gestuft - bis zu
+   * dreiundzwanzig, und Fiona hatte danach dreizehn statt neun.
+   *
+   * Die Seite zeigt sie trotzdem ALLE, und zwar aus dem Grund, den B4b
+   * aufgeschrieben hat: der Reiter darueber traegt den Nenner, und eine
+   * Seite, die weniger zeigt als er verspricht, ist dieselbe Luege in die
+   * andere Richtung. Was mehr wird, rollt in seinem Kasten - genauso wie
+   * die fuenfzehn Raeume im Tierkapitel. Eine gezaehlte Zahl in einem
+   * Kommentar veraltet genau dann, wenn niemand mehr nachzaehlt; diese
+   * hier ist jetzt keine Grenze mehr, sondern eine Geschichte. */
   const naechste = verdient.length
     ? marken.filter(a => !a.verdient).sort((a,b)=>a.fehlt-b.fehlt) : [];
   /* Ein Knopf, kein Kasten: Fiona liest nicht, sie tippt an und hoert.

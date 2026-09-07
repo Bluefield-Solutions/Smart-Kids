@@ -65,10 +65,38 @@ export function fremdgriff() {
       for (const x of r.getClientRects())
         if (x.width > 2 && x.height > 2) kaesten.push(x);
     }
+    /* Was ein KLEMMENDER Vorfahr wegschneidet, ist nicht da.
+     *
+     * `Range.getClientRects` liefert die Zeilenkaesten geometrisch - auch
+     * fuer Text, den ein rollender Kasten darueber laengst abgeschnitten
+     * hat. An so einer Stelle antwortet `elementFromPoint` natuerlich mit
+     * dem, was WIRKLICH dort liegt, und das ist meist der naechste
+     * Abschnitt. Das ist kein Fremdgriff, sondern der Rand eines Rollers.
+     *
+     * Gefunden im Forscherbuch: mit den vier Satz-Abzeichen (E9b) bekam
+     * Fiona dreizehn statt neun, die dritte Reihe rollte aus dem Kasten,
+     * und drei Abzeichennamen wurden als „greift die Ebenenkachel"
+     * gemeldet - obwohl sie gar nicht zu sehen sind. Ein Befund ueber
+     * einen Text, den niemand sieht, ist kein Befund.
+     *
+     * Die FENSTERGRENZE ein Stueck weiter unten sagt dasselbe fuer den
+     * aeussersten Rahmen; das hier ist ihre Fortsetzung nach innen. */
+    let sicht = null;
+    for (let a = k.parentElement; a; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (!/auto|scroll|hidden/.test(cs.overflowY + ' ' + cs.overflowX)) continue;
+      const b = a.getBoundingClientRect();
+      sicht = sicht
+        ? { left: Math.max(sicht.left, b.left), top: Math.max(sicht.top, b.top),
+            right: Math.min(sicht.right, b.right), bottom: Math.min(sicht.bottom, b.bottom) }
+        : { left: b.left, top: b.top, right: b.right, bottom: b.bottom };
+    }
     let punkte = 0, fremd = 0; const wer = new Set(); let ersterFremder = null;
     for (const x of kaesten) for (let i = 0; i < 12; i++) for (let j = 0; j < 3; j++) {
       const px = x.left + x.width * (i + .5) / 12, py = x.top + x.height * (j + .5) / 3;
       if (px < 0 || py < 0 || px > innerWidth || py > innerHeight) continue;
+      if (sicht && (px < sicht.left || px > sicht.right
+                 || py < sicht.top  || py > sicht.bottom)) continue;
       punkte++;
       const e = eignerVon(document.elementFromPoint(px, py));
       if (!e || e === k || k.contains(e) || e.contains(k)) continue;
