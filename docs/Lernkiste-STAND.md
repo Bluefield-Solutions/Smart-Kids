@@ -11979,3 +11979,73 @@ braunen Holzgriff bekommen — grau auf grau war zu leise.
 
 **Der offene Punkt „wine" ist damit erledigt.** Der Kelch war als schwarzer
 Umriss ein Glas; mit rotem Wein darin ist er ein Weinglas.
+
+## E4b · Der Bildplan ist gezeichnet — 84 von 86
+
+Die Runde davor hat vierundzwanzig Bilder gebracht und die Form dafür
+gefunden: Flächen mit Farben aus einer Tafel, `bildSvg` als einzige Stelle,
+die daraus Markup macht, und ein Tor, das Rahmen, Größe, Eigenheit und
+Farbzahl nachrechnet. Damit kostet ein neues Bild nur noch das Zeichnen —
+und deshalb sind jetzt alle da: **403 Flächen, im Schnitt 4,0 Farben je
+Bild.**
+
+„Lies das Wort" zieht seine vier Karten damit aus **84 Bildern statt aus
+sechzehn**. Das ist der Unterschied zwischen einer Ebene, die man in zwei
+Sitzungen auswendig kann, und einer, die trägt.
+
+### Zwei bekommen keins, und das ist eine Entscheidung
+
+| Wort | warum nicht |
+|---|---|
+| `pet` | eine Sammelbezeichnung — jedes Bild dafür wäre eine Katze oder ein Hund, und beide stehen schon in der Liste |
+| `little` | heißt dasselbe wie `small` und bekäme dieselbe Zeichnung |
+
+Beides ist derselbe Fehler in zwei Gestalten: **zwei Karten, die gleich
+aussehen und verschieden heißen.** Eine davon wäre immer falsch, ohne dass
+ein Kind einen Fehler gemacht hätte. Der Grund steht jetzt in den Daten
+neben dem Wort, nicht in diesem Dokument allein — dort wird er gelesen.
+
+### Was beim Zeichnen die Arbeit gemacht hat
+
+Nicht die Formen, sondern die **Verwechslungen**. Sechs Zeichnungen gingen
+nach dem Blick zurück, und keine davon hätte ein Tor gemeldet:
+
+- `mouse` sah aus wie ein Koala (ein Ohr links, der Schwanz rechts wie ein
+  Rüssel) — jetzt zwei Ohren oben und ein dünner Schwanz unten rechts,
+- `hamster` sah aus wie ein Bär — kleinere Ohren, breiteres Gesicht, Pfoten,
+- `eat` zeigte einen weißen Teller auf weißem Grund, also Besteck ohne
+  Teller — der Teller ist jetzt `wolke` mit hellem Inneren,
+- `salad` hatte dieselbe unsichtbare Schüssel,
+- `dress` war ein Fleck am Bügel, `teacher` stand halb außerhalb.
+
+Und eine Gruppe ist mit Absicht einander ähnlich: die sechs
+Ortsangaben (`in`, `on`, `under`, `behind`, `in front of`, `next to`)
+zeigen **dieselbe Kiste und denselben Ball** in sechs Lagen. Das ist keine
+Nachlässigkeit, sondern die Aufgabe: was diese Wörter unterscheidet, ist
+genau die Lage. Vier davon nebeneinander sind eine schwere Karte — und die
+richtige.
+
+### Die Kachelwand: über der Wand gemessen statt in ihr
+
+Der erste Anlauf machte die Kacheln kleiner und änderte nichts. Diesmal
+zuerst gemessen, auf dem iPhone SE quer:
+
+```
+Fenster 375 · Kopfzeile 60 · Titel 31 · Polster und Abstand 22
+bleiben 236 Punkte für die Wand
+eine Kachelreihe ist 114 hoch, dazu 8 Abstand
+236 reichen für ZWEI Reihen — und zwölf Kacheln sind zwei Reihen
+```
+
+Eine dritte Reihe braucht also `3 × h + 16 ≤ 250`, also `h ≤ 78`.
+Nachgemessen, indem Kacheln geklont und die Höhe durchprobiert wurde:
+**96 → 12, 88 → 12, 80 → 12, 74 → 15.** Der Sprung liegt genau dort, wo die
+Rechnung ihn hinlegt.
+
+Die Stufe steht jetzt bei 74 und greift **erst ab der dreizehnten Kachel**.
+Wer heute spielt, sieht sie nie — die vollste Wand hat elf. Sie steht da,
+damit die nächste Ebene kein Umbau ist, sondern eine Zeile.
+
+**Warum der erste Anlauf scheiterte:** er hat die *Kachel* verändert und die
+*Reihe* gemeint. Zwischen 112 und 96 Punkten Höhe liegt keine Reihengrenze;
+zwischen 80 und 74 liegt sie. Ohne die Rechnung darüber war das Raten.

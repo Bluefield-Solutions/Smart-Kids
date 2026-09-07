@@ -3439,22 +3439,38 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     .wahl.ebenen>*{flex-basis:118px}
     .wahl.ebenen .kachel .name{font-size:var(--s-klein)}
   }
-  /* EINE DRITTE STUFE AB DREIZEHN — versucht, gemessen, zurueckgenommen.
+  /* EINE DRITTE STUFE AB DREIZEHN — und diesmal an der richtigen Zahl.
    *
    * `passt` meldet „die Wand ist voll — 11 Kacheln stehen da, 12 passen".
-   * Der Versuch war eine dritte Dichtestufe ab der dreizehnten Kachel:
-   * `flex-basis` von 118 auf 106, `min-height` von 112 auf 96, der Kreis
-   * von 44 auf 40. Danach meldete `passt` unveraendert ZWOELF.
+   * Der erste Anlauf machte die Kacheln kleiner (118 → 106 breit,
+   * 112 → 96 hoch) und aenderte NICHTS: es blieb bei zwoelf. Gemessen
+   * wurde dann ueber der Wand statt in ihr, auf dem iPhone SE quer:
    *
-   * Es liegt also nicht an der Groesse der Kachel. Die Zeilen stuenden
-   * hier als Regel, die nichts tut - und eine Regel, die nichts tut, ist
-   * schlimmer als keine: der naechste, der die Wand enger machen will,
-   * haelt sie fuer die Loesung und sucht woanders weiter.
+   *     Fenster 375 · Kopfzeile 60 · Titel 31 · Polster und Abstand 22
+   *     bleiben 236 Punkte fuer die Wand
+   *     eine Kachelreihe ist 114 hoch, dazu 8 Abstand
+   *     236 reichen fuer ZWEI Reihen, und zwoelf Kacheln sind zwei Reihen
    *
-   * Was als naechstes zu messen waere: wieviel Hoehe Kopfzeile, Titel und
-   * der Weg zurueck von den 375 Punkten wegnehmen - die Kacheln teilen
-   * sich nur den Rest, und drei Reihen passen dort auch mit 96 Punkten
-   * nicht. Der Hebel liegt vermutlich ueber der Wand, nicht in ihr. */
+   * Eine dritte Reihe braucht also eine Kachel mit 3 x h + 16 <= 250,
+   * also h <= 78. Nachgemessen, indem Kacheln in die Wand geklont und die
+   * Hoehe durchprobiert wurde:
+   *
+   *     96 hoch → 12 passen      80 hoch → 12 passen
+   *     88 hoch → 12 passen      74 hoch → 15 passen
+   *
+   * Der Sprung liegt zwischen 80 und 74, genau wo die Rechnung ihn
+   * hinlegt. Also 74 - drei Reihen zu fuenf, fuenfzehn Kacheln.
+   *
+   * DIE STUFE GREIFT NUR AB DREIZEHN. Wer heute spielt, sieht sie nie:
+   * die vollste Wand hat elf. Sie steht hier, damit die naechste Ebene
+   * kein Umbau ist, sondern eine Zeile.
+   *
+   * Der Kreis geht auf 40 Punkte. Er ist kein Ziel fuer sich - getroffen
+   * wird die ganze Kachel, und die ist mit 74 x 106 weit ueber der
+   * Fingergrenze; `beruehrung` rechnet es nach. */
+  .wahl.ebenen:has(> :nth-child(13))>*{flex-basis:106px}
+  .wahl.ebenen:has(> :nth-child(13)) .kachel{min-height:74px}
+  .wahl.ebenen:has(> :nth-child(13)) .kachel .kreis{width:40px;height:40px}
   /* Die letzte Kachelreihe lag 3 Punkte im Streifen des iPhone. Die vier
      Punkte kommen aus dem Abstand ZWISCHEN den Kacheln, nicht aus der
      Auskunft in ihnen. */
