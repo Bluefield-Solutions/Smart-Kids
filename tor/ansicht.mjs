@@ -313,6 +313,15 @@ const AUFNAHMEN = [
      kein Tor - das ist ein Blick. */
   { name:'quer-laute', spiel:'englisch:laute', kind:'lea', quer:true,
     wahl:'.schirm.da' },
+  /* Und DIESELBE Ebene bei Fiona: zwei Bilder statt zwei Woertern.
+     Zwei Aufnahmen und nicht eine, weil es zwei verschiedene Bildschirme
+     sind - eine Wortkarte ist breit und flach, eine Bildkarte hoch und
+     quadratisch, und ob zwei davon mit Frage und Ausweg auf 390 Punkte
+     passen, ist eine andere Rechnung. Ob man „wine" und „vine" als Bild
+     auseinanderhaelt, sagt ohnehin keines: kein Tor ersetzt den Blick
+     (Regel 4). */
+  { name:'quer-laute-bild', spiel:'englisch:laute', kind:'fiona', quer:true,
+    wahl:'.schirm.da' },
   /* „Lies das Wort" (E7): derselbe Bildschirm wie „Hören und zeigen",
      nur umgedreht - oben steht das englische Wort, unten stehen vier
      gezeichnete Bilder. Fotografiert wird er, weil kein Tor sagen kann,

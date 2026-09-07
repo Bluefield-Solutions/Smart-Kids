@@ -487,6 +487,51 @@ Wort da (Rechnen, Englisch, Legen, Laute) — jetzt `nochHoerenIns`.
 
 Sechs Gegenproben, eine neue Aufnahme `quer-laute`.
 
+**Nachtrag: Fiona ist dabei.** Die Absage war eine auf Zeit, und sie ist
+aufgehoben — siehe „E5b" weiter unten.
+
+### E5b · Fiona bei den Lautpaaren — mit Bildern statt Buchstaben
+
+**Die Absage lautete: „ohne Bilder nur für Lea".** Sie ist eingelöst, und
+zwar ohne E4b. Was Fiona braucht, sind acht **Umrisse** — dieselbe
+Einsicht wie bei E7: die Bilder dieser App sind Silhouetten und keine
+Illustrationen.
+
+**Vier Paare, eines je Stolperstelle**, und die Auswahl ist gemessen und
+nicht gewählt: von den siebzehn Paaren lassen sich genau diese vier malen.
+
+| Stolperstelle | Paar | warum die anderen nicht |
+|---|---|---|
+| `th` | **three / tree** | *think*, *thin*, *thing* sind keine Dinge |
+| `w gegen v` | **wine / vine** | *west*, *wet*, *wiper* sind kein Bild für ein Kind |
+| Auslaut | **cab / cap** | *bad*, *leave*, *dog/dock* — ein Wort des Paares fehlt |
+| `a gegen e` | **pan / pen** | *pat*, *man*, *bad* haben kein Gegenstück |
+
+**`three/tree` ist neu und musste es sein.** Die wichtigste Stolperstelle
+hatte kein malbares Paar. Der nächste Kandidat wäre `mouth/mouse` gewesen —
+und er **fällt durch das Tor**: aus „mouth" wird mit der deutschen
+Ersetzung „mous" und nicht „mouse". Die Zuordnung wird nachgerechnet, nicht
+geglaubt, und hier hat sie eine Idee zurückgewiesen, die plausibel aussah.
+
+**`dock` war gezeichnet und ist wieder herausgeflogen.** Der Steg sah aus
+wie ein Tisch. Kein Tor hätte das gesagt — der Pfad war gültig, im Rahmen,
+groß genug und eigen (Regel 4: kein Tor ersetzt den Blick). Damit hat der
+Auslaut ein Paar statt zwei.
+
+**Zwei Weichen, nicht eine** — und das ist der Grund für zwei Gegenproben
+statt einer: der **Vorrat** gibt einem Kind, das nicht liest, nur gemalte
+Paare, und der **Bildschirm** malt sie. Fällt eine der beiden aus, steht
+Fiona wieder vor zwei geschriebenen Wörtern, und die andere merkt nichts
+davon.
+
+**Die Ebene blendet sich aus, wenn es zu wenige sind.** Vier, weil Fionas
+Sitzung sechs Aufgaben hat: vier Paare sind acht Gegenstände, und damit
+wiederholt sich in einer Sitzung nichts vollständig. Die Zahl steht in
+`spiel.js` (`LAUTPAARE_FUER_BILDER`), und das Tor **liest sie dort** — eine
+zweite Fassung daneben wäre die, die veraltet.
+
+Sieben Gegenproben, eine neue Aufnahme `quer-laute-bild`.
+
 ### E7 · „Lies das Wort" — GEFAHREN
 
 **Sie ist die Umkehrung von „Hören und zeigen", und der Unterschied ist
@@ -725,7 +770,7 @@ nachgemessen am Quelltext stimmt es nur für zwei:
 | E6 · Sag es | **nein** — Farbfleck und Ziffer sind fertige Bilder |
 | E9 · Satz zum Selbersagen | **nein** — die Chunks sind Sätze, und sie stehen amtlich in `THEMENGEBIETE` |
 | E8 · Abschreiben | **nein** — die Vorlage ist das Wort, nicht das Bild |
-| E5 · Lautpaare | **halb** — ohne Bilder nur für Lea, und dann gegen die Form |
+| E5 · Lautpaare | **war „halb"** — vier Paare sind gemalt, Fiona ist dabei (E5b) |
 | E7 · Wort zum Bild | **war „ja", ist erledigt** — siehe unten |
 
 **Nachtrag zu E7 (gefahren):** die Zeile stimmte und war trotzdem kein Grund

@@ -312,6 +312,13 @@ export const STOLPERSTELLEN = [
 export const LAUTPAARE = [
   { a: 'think', b: 'sink',  stolper: 'th' },
   { a: 'three', b: 'free',  stolper: 'th' },
+  /* three/tree ist das EINZIGE Paar an der wichtigsten Stolperstelle,
+     das sich malen laesst - und deshalb steht es hier. Ohne es hat
+     Fiona zum `th` gar nichts. `mouth/mouse` waere das naechste
+     gewesen und faellt durch: aus „mouth" wird mit der deutschen
+     Ersetzung „mous" und nicht „mouse", und die Zuordnung wird
+     nachgerechnet und nicht geglaubt. */
+  { a: 'three', b: 'tree',  stolper: 'th' },
   { a: 'thin',  b: 'fin',   stolper: 'th' },
   { a: 'thing', b: 'sing',  stolper: 'th' },
 
@@ -352,6 +359,65 @@ export function vorratLesen(){
 }
 
 /**
+ * Die Zeichnungen der Lautpaare (E5 fuer Fiona).
+ *
+ * WARUM SIE NICHT IN `BILDER` STEHEN: `BILDER` ist der Bildplan zum
+ * amtlichen Wortschatz - 86 Woerter, die Lea koennen soll. Die Lautpaare
+ * sind bewusst KEINE Vokabeln, sondern Ohrenuebungen; „vine" und „cab"
+ * haetten dort nichts verloren und wuerden die Zaehlung „x von 86
+ * gezeichnet" verfaelschen.
+ *
+ * WER SCHON EIN BILD HAT, BEKOMMT KEIN ZWEITES: `dog` steht im Bildplan,
+ * und `bildFuerLaut` holt es dort. Eine zweite Zeichnung desselben Hundes
+ * waere die, die beim naechsten Nachbessern auseinanderlaeuft (Regel 6:
+ * was zweimal dasteht, veraltet einmal).
+ *
+ * ES SIND ACHT UND NICHT ZEHN. `dock` war gezeichnet und ist wieder
+ * herausgeflogen: der Steg sah aus wie ein Tisch, und ein Bild, das ein
+ * Kind falsch benennt, macht die Hoeraufgabe zur Ratefrage. Kein Tor
+ * haette das gesagt - der Pfad war gueltig, im Rahmen, gross genug und
+ * eigen (Regel 4: kein Tor ersetzt den Blick).
+ */
+export const LAUTBILDER = {
+  // th: aus „three" wird im Deutschen „tree".
+  three: 'M22 16a10 10 0 1 0 20 0 10 10 0 1 0-20 0ZM8 44a10 10 0 1 0 20 0 10 10 0 1 0-20 0Zm28 0a10 10 0 1 0 20 0 10 10 0 1 0-20 0Z',
+  tree:  'M32 4c14 0 24 12 24 22s-10 18-24 18-24-8-24-18 10-22 24-22ZM28 44h8v16h-8Z',
+  // w gegen v: das deutsche w klingt wie das englische v.
+  wine:  'M16 8h32v10c0 12-7 20-16 20s-16-8-16-20ZM29 38h6v14h-6ZM18 52h28v6H18Z',
+  vine:  'M30 6h4v10h-4Zm4 4c8-4 16-2 18 4-6 6-14 6-18-4ZM14 24a6 6 0 1 0 12 0 6 6 0 1 0-12 0Zm12 0a6 6 0 1 0 12 0 6 6 0 1 0-12 0Zm12 0a6 6 0 1 0 12 0 6 6 0 1 0-12 0ZM20 36a6 6 0 1 0 12 0 6 6 0 1 0-12 0Zm12 0a6 6 0 1 0 12 0 6 6 0 1 0-12 0ZM26 48a6 6 0 1 0 12 0 6 6 0 1 0-12 0Z',
+  // Auslautverhaertung: das b am Ende klingt wie p.
+  cab:   'M26 12h12v8H26ZM16 20h26l8 14H8ZM2 34h60v12H2Zm12 12a6 6 0 1 0 0 12 6 6 0 1 0 0-12Zm36 0a6 6 0 1 0 0 12 6 6 0 1 0 0-12Z',
+  cap:   'M12 34c0-12 8-20 20-20s20 8 20 20ZM6 34h50c4 0 6 3 6 6H6Z',
+  // a gegen e: das englische a zwischen ae und a wird zum deutschen e.
+  pan:   'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',
+  /* Der Schaft, ein schmaler Spalt, die Feder - und der Clip rechts.
+     Der erste Anlauf hatte Schaft und Feder in EINEM Umriss: das sah
+     auf dem Bildschirm aus wie ein Messer. Der Spalt macht aus der
+     Spitze eine Feder, und der Clip sagt „Stift" und nicht „Stab". */
+  pen:   'M25 4h14v34H25ZM26 40h12l-6 18ZM39 10h5v16h-5Z',
+};
+
+/** Die Zeichnung zu einem Lautwort - erst die eigene, dann der Bildplan. */
+export function bildFuerLaut(wort){
+  return LAUTBILDER[wort] || (BILDER.find(b => b.wort === wort) || {}).pfad || null;
+}
+
+/**
+ * Die Paare, die sich MALEN lassen - beide Woerter, nicht nur eines.
+ *
+ * Fiona (6) liest nicht. Zwei geschriebene Woerter sind fuer sie kein
+ * Bildschirm, sondern zwei Muster; die Ebene gaebe es dann nur dem
+ * Anschein nach. Mit Bildern ist es dieselbe Aufgabe: hoeren und zeigen,
+ * und was sie unterscheidet, ist genau ein Laut.
+ *
+ * EIN Wort mit Bild reicht nicht - dann stuende ein Bild neben einem
+ * Wort, und die Antwort waere „das mit dem Bild".
+ */
+export function lautpaareMalbar(){
+  return LAUTPAARE.filter(p => bildFuerLaut(p.a) && bildFuerLaut(p.b));
+}
+
+/**
  * Der Vorrat der Lautpaare (E5) - ZWEI Gegenstaende je Paar.
  *
  * Gefragt wird einmal nach dem einen und einmal nach dem anderen Wort.
@@ -359,14 +425,20 @@ export function vorratLesen(){
  * hoert deshalb noch lange nicht „sink" heraus - und im Leitner stuende
  * ein Paar, das zur Haelfte nie geprueft wurde.
  */
-export function vorratLaute(){
+export function vorratLaute({ nurMalbar = false } = {}){
   const aus = [];
-  for (const p of LAUTPAARE) {
+  for (const p of (nurMalbar ? lautpaareMalbar() : LAUTPAARE)) {
     const st = STOLPERSTELLEN.find(s => s.id === p.stolper);
-    for (const wort of [p.a, p.b])
+    for (const wort of [p.a, p.b]) {
+      const gegen = wort === p.a ? p.b : p.a;
+      /* Beide Zeichnungen haengen am STUECK und nicht am Bildschirm: der
+         Schirm bekommt zwei Karten und darf nicht selbst nachschlagen
+         muessen, welches Bild zu welchem Wort gehoert. */
       aus.push({ id: `lt:${p.a}-${p.b}:${wort}`, name: wort, wort,
-        sorte: 'laut', gegen: wort === p.a ? p.b : p.a,
+        sorte: 'laut', gegen,
+        pfad: bildFuerLaut(wort), gegenPfad: bildFuerLaut(gegen),
         stolper: p.stolper, stolperName: st.name, grund: st.grund });
+    }
   }
   return aus;
 }

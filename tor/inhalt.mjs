@@ -2864,6 +2864,100 @@ console.log('\n  Tor `englisch`');
       + `gezeichnet · jede Zeichnung eigen und im Rahmen „${EN.BILD_RAHMEN}" · kleinste `
       + `„${kleinstes.wort}" mit ${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
         / Math.max(RB_R, RB_U) * 100).toFixed(0)} % (Grenze 55 %)`);
+
+    /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 fuer Fiona) ----------
+     *
+     * Fiona (6) liest nicht. Zwei geschriebene Woerter sind fuer sie kein
+     * Bildschirm, sondern zwei Muster - die Ebene gaebe es nur dem
+     * Anschein nach. Mit Bildern ist es dieselbe Aufgabe: hoeren und
+     * zeigen, und was die beiden unterscheidet, ist genau ein Laut.
+     *
+     * Vier Arten, wie das leise kaputtgeht:
+     *
+     *   1. EIN WORT DES PAARES HAT KEIN BILD. Dann stuende ein Bild
+     *      neben einem leeren Kasten, und die Antwort waere „das mit dem
+     *      Bild" - ohne ein Wort Englisch. `lautpaareMalbar` haelt das
+     *      auseinander, und hier wird nachgerechnet, dass es das tut.
+     *   2. EINE ZEICHNUNG GEHOERT ZU KEINEM PAAR. Ein Tippfehler im
+     *      Schluessel, und das Bild liegt fuer immer ungenutzt da,
+     *      waehrend das Paar sich still fuer unmalbar haelt.
+     *   3. DIE ZEICHNUNGEN EINES PAARES SIND DIESELBE. Dann sind beide
+     *      Karten gleich, und jeder Tipp ist richtig oder falsch, je
+     *      nachdem welchen man erwischt.
+     *   4. ES SIND ZU WENIGE. Unter der Zahl aus `spiel.js` blendet sich
+     *      die Ebene bei Fiona selbst aus - und niemand sieht, dass eine
+     *      Ebene fehlt. Genau das ist hier laut zu machen.
+     *
+     * Rahmen und Groesse werden mit derselben Rechnung geprueft wie bei
+     * E7 - sie steht einmal, und das ist der Grund, warum dieser Block
+     * hinter jenem steht und nicht davor.
+     */
+    const lbf = [];
+    /* DIE ZAHL KOMMT AUS `spiel.js` und steht nicht hier: sie ist eine
+       Aussage ueber Fionas Sitzung, und eine zweite Fassung daneben waere
+       die, die veraltet (Regel 6: was zweimal dasteht, veraltet einmal).
+       Findet der Ausdruck sie nicht, ist das ein Befund und keine
+       Voreinstellung - eine stillschweigende Vier waere die Zahl, die ab
+       dann nichts mehr prueft. */
+    const spielQuelle = fs.readFileSync('prototyp/spiel.js', 'utf8');
+    const noetigTreffer = spielQuelle.match(/const LAUTPAARE_FUER_BILDER = (\d+);/);
+    if (!noetigTreffer)
+      lbf.push('`LAUTPAARE_FUER_BILDER` steht nicht mehr in spiel.js — die Zahl, '
+        + 'unter der sich die Ebene bei Fiona selbst ausblendet, ist damit '
+        + 'ungeprüft');
+    const NOETIG_BILD = noetigTreffer ? +noetigTreffer[1] : null;
+    const malbar = EN.lautpaareMalbar();
+    if (NOETIG_BILD !== null && malbar.length < NOETIG_BILD)
+      lbf.push(`nur ${malbar.length} gemalte Lautpaare (nötig ${NOETIG_BILD}) — `
+        + '„Zwei Wörter, ein Laut" blendet sich bei Fiona dann selbst aus, und '
+        + 'niemand sieht, dass eine Ebene fehlt');
+    /* Jede Zeichnung gehoert zu einem Wort, das wirklich gefragt wird. */
+    const inPaaren = new Set(EN.LAUTPAARE.flatMap(x => [x.a, x.b]));
+    for (const wort of Object.keys(EN.LAUTBILDER))
+      if (!inPaaren.has(wort))
+        lbf.push(`für „${wort}" ist eine Zeichnung da, aber kein Lautpaar fragt danach `
+          + '— sie liegt für immer ungenutzt da');
+    for (const paar of malbar) {
+      const a = EN.bildFuerLaut(paar.a), b = EN.bildFuerLaut(paar.b);
+      if (a === b)
+        lbf.push(`„${paar.a}/${paar.b}" zeigt zweimal dieselbe Zeichnung — dann ist `
+          + 'jeder Tipp so richtig wie der andere');
+      for (const [wort, d] of [[paar.a, a], [paar.b, b]]) {
+        const k = pfadKasten(d);
+        if (k.fremd) { lbf.push(`die Zeichnung „${wort}" benutzt den Befehl „${k.fremd}", `
+          + 'den die Rahmenrechnung nicht kennt'); continue; }
+        if (k.links < RB_L - 0.01 || k.oben < RB_O - 0.01
+            || k.rechts > RB_L + RB_R + 0.01 || k.unten > RB_O + RB_U + 0.01)
+          lbf.push(`„${wort}" liegt ausserhalb des Rahmens „${EN.BILD_RAHMEN}" `
+            + `(x ${k.links.toFixed(1)}..${k.rechts.toFixed(1)}, `
+            + `y ${k.oben.toFixed(1)}..${k.unten.toFixed(1)}) — was draussen liegt, `
+            + 'schneidet das SVG ab');
+        const fuellt = Math.max(k.rechts - k.links, k.unten - k.oben) / Math.max(RB_R, RB_U);
+        if (fuellt < 0.55)
+          lbf.push(`„${wort}" füllt nur ${(fuellt * 100).toFixed(0)} % seines Rahmens — `
+            + 'neben einem ausgewachsenen Bild ist das kleine erkennbar das andere');
+      }
+    }
+    /* Und der Vorrat, den das Spiel wirklich baut: jedes Stueck traegt
+       BEIDE Pfade. Ohne den zweiten wuesste der Bildschirm nicht, was er
+       auf die andere Karte malen soll, und zeigte dort das Wort. */
+    for (const x of EN.vorratLaute({ nurMalbar: true }))
+      if (!x.pfad || !x.gegenPfad)
+        lbf.push(`dem Lautstück „${x.id}" fehlt eine der beiden Zeichnungen — dann `
+          + 'stünde ein Bild neben einem Wort, und die Antwort wäre „das mit dem Bild"');
+    if (lbf.length) {
+      console.log('    ' + lbf.join('\n    '));
+      console.error('\n  englisch ROT: die gemalten Lautpaare (E5 für Fiona) stimmen nicht.');
+      process.exit(1);
+    }
+    const jeStolperBild = new Map();
+    for (const p of malbar)
+      jeStolperBild.set(p.stolper, (jeStolperBild.get(p.stolper) || 0) + 1);
+    console.log(`    Zwei Wörter, ein Laut mit Bildern (E5): ${malbar.length} von `
+      + `${EN.LAUTPAARE.length} Paaren gemalt (nötig ${NOETIG_BILD}, aus spiel.js) · `
+      + `${[...jeStolperBild].map(([s, n]) => `${s} ${n}`).join(', ')} · `
+      + `${Object.keys(EN.LAUTBILDER).length} eigene Zeichnungen, `
+      + `${malbar.length * 2 - Object.keys(EN.LAUTBILDER).length} aus dem Bildplan`);
   }
 }
 

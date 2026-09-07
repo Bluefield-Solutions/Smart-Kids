@@ -1365,6 +1365,17 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await zurEbenenwahl(p, 'englisch:hoeren');
   await ebeneAnsehen('englisch:hoeren', '.schirm.da .engkarte', 'Englisch',
     { vorlaufName: 'Vorlauf englisch' });
+  /* Und „Zwei Wörter, ein Laut" bei FIONA (E5 mit Bildern).
+   *
+   * Derselbe Bildschirm wie bei Lea und trotzdem ein anderer: dort zwei
+   * breite Wortkarten, hier zwei quadratische mit einer 108 Punkte
+   * grossen Zeichnung darin. Das ist eine andere Rechnung fuer 390
+   * Punkte Hoehe, und der Gang bei Lea beweist darueber nichts - er misst
+   * Schrift. Gewartet wird auf `.lautkarte.mitbild`: waere die Weiche
+   * kaputt und Fiona bekaeme Buchstaben, stuende hier ein Befund und
+   * nicht ein Bildschirm, der zufaellig passt. */
+  await ebeneAnsehen('englisch:laute', '.schirm.da .lautkarte.mitbild',
+    'Zwei Wörter mit Bild', { vorlaufName: 'Vorlauf laute (Bild)' });
   await tipp('.schirm.da #zur');
   await p.waitForSelector('.schirm.da [data-welt]');
 

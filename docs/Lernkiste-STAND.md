@@ -11865,3 +11865,66 @@ unter der Frage und über dem Ausweg noch Platz hat, stand nirgends.
 `.engkarte` steht jetzt in allen drei Listen, und das gilt rückwirkend auch
 für „Hören und zeigen". `passt` misst damit 41 Bildschirme statt 35 und
 bleibt grün.
+
+## E5b · Fiona bei den Lautpaaren — die Absage war eine auf Zeit
+
+Bei E5 stand: *„Fiona ist nicht dabei, und das ist eine Absage auf Zeit.
+Das Konzept sieht zwei **Bilder** vor; ohne sie stehen zwei geschriebene
+Wörter da, und die kann eine Sechsjährige nicht lesen. Sie kommt dazu, wenn
+E4b die Bilder bringt."*
+
+E4b kam nicht, und es musste auch nicht. Was diese Ebene braucht, sind acht
+**Umrisse** — dieselbe Einsicht wie eine Runde vorher bei E7.
+
+### Die Auswahl ist gemessen, nicht gewählt
+
+Von siebzehn Paaren lassen sich genau vier malen, eines je Stolperstelle:
+**three/tree** (`th`), **wine/vine** (`w gegen v`), **cab/cap** (Auslaut),
+**pan/pen** (`a gegen e`). Alle anderen scheitern daran, dass mindestens
+eines der beiden Wörter kein Ding ist: *think*, *thin*, *bad*, *leave*,
+*wet*, *pat*, *man*.
+
+**`three/tree` ist neu, und es musste neu sein.** Die wichtigste
+Stolperstelle hatte kein malbares Paar. Der nächste Kandidat wäre
+`mouth/mouse` gewesen, und er **fällt durch das Tor**: aus „mouth" wird mit
+der deutschen Ersetzung „mous" und nicht „mouse". Die Zuordnung wird
+nachgerechnet und nicht geglaubt — hier hat diese Prüfung eine Idee
+zurückgewiesen, die beim Hinsehen richtig aussah.
+
+**`dock` war gezeichnet und ist wieder herausgeflogen.** Der Steg sah aus
+wie ein Tisch, und ein Bild, das ein Kind falsch benennt, macht aus der
+Höraufgabe eine Ratefrage. Kein Tor hätte etwas gesagt — der Pfad war
+gültig, im Rahmen, groß genug und eigen: kein Tor ersetzt den Blick
+(Regel 4). Damit hat der Auslaut ein Paar statt zwei.
+
+### Zwei Weichen, und keine sagt etwas über die andere
+
+Der **Vorrat** gibt einem Kind, das nicht liest, nur gemalte Paare
+(`vorratLaute({ nurMalbar })`), und der **Bildschirm** malt sie
+(`mitBild`). Fällt eine der beiden aus, steht Fiona wieder vor zwei
+geschriebenen Wörtern — und die jeweils andere merkt davon nichts. Deshalb
+zwei Gegenproben und nicht eine.
+
+Und die Gegenrichtung dazu, die man vergisst: **auch wer liest, darf keine
+Bilder bekommen.** Für Lea wäre das die leichtere Aufgabe — wer zwei Bilder
+unterscheidet, muss das geschriebene Wort nicht mehr lesen —, und auf dem
+Bildschirm sieht es aus wie eine Verbesserung. Der Rauchtest fragt
+deshalb nicht eine Liste, sondern die App selbst: `P.vorlesen` ist genau
+das Kennzeichen, an dem der Bildschirm entscheidet.
+
+### Die Zahl, unter der sich die Ebene selbst ausblendet
+
+Vier. Fionas Sitzung hat sechs Aufgaben; vier Paare sind acht Gegenstände,
+und damit wiederholt sich in einer Sitzung nichts vollständig. Bei dreien
+sähe sie in jeder Sitzung alles.
+
+Sie steht in `spiel.js` als `LAUTPAARE_FUER_BILDER`, weil sie eine Aussage
+über **Fionas Sitzung** ist und nicht über einen Bildschirm — und das Tor
+**liest sie dort**, statt eine zweite Fassung neben sich zu halten. Findet
+es sie nicht, ist das ein Befund und keine Voreinstellung: eine
+stillschweigende Vier wäre die Zahl, die ab dann nichts mehr prüft.
+
+Fällt die Zahl unter vier — weil eine Zeichnung wegfällt —, blendet sich
+die Ebene bei Fiona **selbst aus**. Das ist die stille Verfallsart dieser
+Runde, und sie ist der Grund für die vierte Gegenprobe: an der Kachelwand
+sieht niemand, dass eine Kachel fehlt.

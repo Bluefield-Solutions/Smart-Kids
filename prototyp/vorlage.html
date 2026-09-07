@@ -2058,6 +2058,14 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    damit sich die beiden Ebenen gleich anfuehlen. Gefuellt in Tinte, ohne
    Kontur: die Zeichnung IST eine Flaeche. */
 .wortbild{display:block;width:76px;height:76px;fill:var(--tinte)}
+/* Dieselbe Karte mit einem BILD darauf - fuer wen nicht liest (E5).
+   Sie wird hoeher und die Zeichnung groesser als bei „Hören und zeigen":
+   dort stehen VIER Kaesten nebeneinander, hier zwei, und der Platz, den
+   die anderen zwei nicht brauchen, gehoert dem Bild. Zwei Klassen im
+   Waehler, damit die Zahl im kurzen Querformat nicht von `.wortbild`
+   ueberschrieben wird - dort steht sie ein zweites Mal, weiter unten. */
+.lautkarte.mitbild{min-height:152px;min-width:152px;padding:var(--r3)}
+.wortbild.lautbildchen{width:108px;height:108px}
 /* Der Kasten im Vorlauf und im Buch: das PAAR, nicht ein Wort. Er ist
    deshalb breiter gesetzt als ein Wortkasten und darf umbrechen - „leave ·
    leaf" passt in eine Zeile, „wiper · viper" auf dem schmalsten Geraet
@@ -3322,6 +3330,10 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   /* Zwei Wortkarten, die Frage darueber und der Ausweg darunter muessen
      auf 390 Punkte Hoehe passen - dieselbe Rechnung wie ueberall. */
   .lautkarte{min-height:84px;min-width:150px;font-size:var(--s1)}
+  /* Mit Bild ist dieselbe Rechnung enger: die Karte traegt keine
+     Schriftzeile, sondern eine Flaeche, und die kann nicht umbrechen. */
+  .lautkarte.mitbild{min-height:116px;min-width:132px}
+  .wortbild.lautbildchen{width:88px;height:88px}
   /* Drei Reihen uebereinander (Vorlage, Luecken, Vorrat) plus Kopf,
      Frage und Ausweg - bei 390 Punkten Hoehe ist das die Rechnung, die
      kippt. Die Karten gehen auf 48, bleiben damit ueber der

@@ -1361,15 +1361,26 @@ const EBENEN = [
    * beurteilen muss: sie hat das Wort gesagt, sie weiss welches, und ein
    * richtiger Tipp ist richtig.
    *
-   * `wer`: Lea und die Eltern - NICHT Fiona, und das ist eine Absage auf
-   * Zeit. Das Konzept sieht zwei BILDER vor; ohne sie stehen zwei
-   * geschriebene Woerter da, und die kann eine Sechsjaehrige nicht lesen.
-   * Sie kommt dazu, wenn E4b die Bilder bringt. Fuer die Eltern ist die
-   * Ebene keine Zugabe: § 2b sagt, ihr Problem ist das HOEREN.
+   * `wer`: alle vier - seit die Paare Bilder haben auch FIONA. Bis dahin
+   * stand hier eine Absage auf Zeit: das Konzept sieht zwei BILDER vor,
+   * und ohne sie standen zwei geschriebene Woerter da, die eine
+   * Sechsjaehrige nicht lesen kann. Vier Paare sind gemalt, und fuer sie
+   * ist es dieselbe Aufgabe mit Bildern statt Buchstaben. Fuer die Eltern
+   * ist die Ebene keine Zugabe: § 2b sagt, ihr Problem ist das HOEREN.
    *
-   * `wenn`: nur mit englischer Stimme. Siehe `meineEbenen`. */
+   * `wenn`: nur mit englischer Stimme - und fuer wen nicht liest,
+   * zusaetzlich nur, wenn es genug GEMALTE Paare gibt. Ohne diese zweite
+   * Haelfte stuende die Kachel bei Fiona in dem Augenblick da, in dem die
+   * letzte Zeichnung herausfaellt, und zeigte ihr Buchstaben. Die Zahl
+   * steht nicht hier, sondern in `LAUTPAARE_FUER_BILDER` - sie ist eine
+   * Aussage ueber den Vorrat und keine ueber diesen Bildschirm.
+   *
+   * Siehe `meineEbenen`. */
   { id:'englisch:laute', ueber:'Englisch', titel:'Zwei Wörter, ein Laut', farbe:4,
-    art:'englisch', wer:['lea','stephan','violeta'], wenn: () => englischHoerbar() },
+    art:'englisch', wer:['fiona','lea','stephan','violeta'],
+    wenn: () => englischHoerbar()
+      && (!P.vorlesen
+          || Englisch.lautpaareMalbar().length >= LAUTPAARE_FUER_BILDER) },
   /* „Lies das Wort" (E7) - der Lehrplan sieht ab Klasse 3 Lesen im
    * Wortumfang ausdruecklich vor: das geschriebene `cat` zu einem von
    * vier Bildern.
@@ -1580,6 +1591,16 @@ const SCHREIBBILD = {
  * Links das Zeichen, rechts der Fleck. Der Fleck ist in beiden derselbe -
  * er steht fuer das Bild, auf das es hinauslaeuft; das Zeichen davor
  * sagt, was das Kind damit TUT: hinhoeren oder sprechen. */
+/* Wieviele gemalte Paare es braucht, damit die Ebene fuer ein Kind, das
+   nicht liest, ueberhaupt eine ist.
+   VIER, weil Fionas Sitzung sechs Aufgaben hat: vier Paare sind acht
+   Gegenstaende, und damit wiederholt sich in einer Sitzung nichts
+   vollstaendig. Bei dreien saehe sie in jeder Sitzung alles.
+   Die Zahl steht HIER und nicht im Ebeneneintrag: sie ist eine Aussage
+   ueber den Vorrat, und wenn `sitzung` sich aendert, sucht man sie an
+   dieser Stelle. */
+const LAUTPAARE_FUER_BILDER = 4;
+
 const ENGLISCHZEICHEN = { 'englisch':'ton', 'englisch:hoeren':'ton',
                           'englisch:sagen':'mikro', 'englisch:satz':'blase',
                           'englisch:legen':'karten',
@@ -2253,10 +2274,14 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      aus demselben Grund: gesagt ist nicht gebaut. */
   if (art==='englisch' && kont==='bauen')
     return Englisch.vorratBauen();
-  /* Die 32 Lautpaar-Gegenstaende (E5): sechzehn Paare, jedes in beiden
-     Richtungen. Sie tragen ihre Kennung selbst mit (`lt:…`). */
+  /* Die Lautpaar-Gegenstaende (E5): jedes Paar in beiden Richtungen. Sie
+     tragen ihre Kennung selbst mit (`lt:…`).
+     WER NICHT LIEST, BEKOMMT NUR DIE GEMALTEN. Der Filter sitzt hier und
+     nicht auf dem Bildschirm: eine Aufgabe, die erst beim Zeichnen
+     merkt, dass sie kein Bild hat, koennte nur noch einen leeren Kasten
+     zeigen - und der sieht aus wie eine Antwortmoeglichkeit. */
   if (art==='englisch' && kont==='laute')
-    return Englisch.vorratLaute();
+    return Englisch.vorratLaute({ nurMalbar: !!P.vorlesen });
   /* Die gezeichneten Woerter (E7). Der Vorrat waechst mit den Bildern -
      heute sechzehn. Eigene Kennung (`ls:`), wie ueberall: gehoert ist
      nicht gelesen. */
@@ -4963,6 +4988,14 @@ function lauteschirm(){
   const beginn = Date.now();
   let versuch = 0, erledigt = false;
 
+  /* Die Zeichnung zu einem der beiden Woerter. Sie kommt aus dem STUECK
+     und nicht aus einer zweiten Nachschlagerei: `vorratLaute` legt beide
+     Pfade daneben, und wer hier noch einmal suchte, haette die zweite
+     Fassung derselben Zuordnung (Regel 6: was zweimal dasteht, veraltet
+     einmal). */
+  const bildZu = (w) => w === ziel.wort ? ziel.pfad
+    : w === ziel.gegen ? ziel.gegenPfad : null;
+
   /* Die Seite wird GEWUERFELT, mit dem Keim der Aufgabe. Ohne das stuende
      das gefragte Wort immer links, sobald es in den Daten links steht -
      und die Ebene pruefte, ob man die Liste auswendig kann. */
@@ -4975,12 +5008,34 @@ function lauteschirm(){
       eingabeart: 'antippen' });
   const weiter = () => weiterIn(st);
 
+  /* MIT BILDERN statt Buchstaben, wenn das Kind nicht liest.
+   *
+   * Fiona (6) sieht zwei geschriebene Woerter nicht als Woerter, sondern
+   * als zwei Muster - die Ebene gaebe es fuer sie nur dem Anschein nach.
+   * Mit Bildern ist es genau dieselbe Aufgabe: hoeren und zeigen, und was
+   * die beiden unterscheidet, ist ein einziger Laut.
+   *
+   * BEIDE oder KEINES. Stuende ein Bild neben einem Wort, waere die
+   * Antwort „das mit dem Bild" - deshalb haengt es an beiden Pfaden und
+   * nicht an einem. Der Vorrat gibt fuer dieses Profil ohnehin nur
+   * gemalte Paare her; die Bedingung hier ist die zweite Haelfte
+   * derselben Zusage und faengt den Fall ab, in dem der Filter ausfaellt.
+   *
+   * `aria-label` bleibt das WORT, auch beim Bild: die Vorlesehilfe des
+   * Geraets soll etwas zu sagen haben, und die Tore finden die Karte an
+   * `data-wort` wie zuvor. */
+  const mitBild = !!P.vorlesen && zwei.every(x => bildZu(x.wort));
+  const bildZuKarte = (w) => `<svg class="wortbild lautbildchen"
+      viewBox="${Englisch.BILD_RAHMEN}" aria-hidden="true"
+      ><path d="${bildZu(w)}" fill-rule="evenodd"/></svg>`;
+
   s.innerHTML = aufgabenKopf(st) + `
     <div class="frage" id="frage">Welches Wort hörst du?</div>
     <div class="englischfeld">
-      <div class="engwahl lautwahl" id="auswahl">${zwei.map(x =>
-        `<button class="engkarte lautkarte" data-wort="${x.wort}"
-                 lang="en" aria-label="${x.wort}">${x.wort}</button>`).join('')}</div>
+      <div class="engwahl lautwahl${mitBild ? ' lautbilder' : ''}" id="auswahl">${zwei.map(x =>
+        `<button class="engkarte lautkarte${mitBild ? ' mitbild' : ''}" data-wort="${x.wort}"
+                 lang="en" aria-label="${x.wort}">${
+          mitBild ? bildZuKarte(x.wort) : x.wort}</button>`).join('')}</div>
       <div class="werkzeug"><button class="leise" id="weissnicht">${
         ZEI('frage', 20)}Weiß ich nicht</button></div>
     </div>`;

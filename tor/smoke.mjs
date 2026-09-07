@@ -3994,6 +3994,13 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freund
                        violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
                                  'wendungen', 'hoersatz', 'englisch:laute'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
+                               /* „Zwei Wörter, ein Laut" (E5) - seit die
+                                  Paare Bilder haben auch bei ihr. Hier zu
+                                  stehen heisst: bei Fiona muss die Kachel
+                                  da sein. Ob sie dort BILDER zeigt und
+                                  keine Buchstaben, prueft der Durchgang
+                                  im Zweig der Lautkarten. */
+                               'englisch:laute',
                                // Die Schreibwelt gehoert nur ihr (N2a, N3).
                                // Ohne diese beiden prueft `durchgang` zwar,
                                // dass keine FREMDE Ebene dasteht, aber nicht,
@@ -4521,10 +4528,39 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         if (new RegExp(`\\b${auf.wort}\\b`, 'i').test(frage))
           merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" steht in der `
             + `Frage („${frage.trim()}") — dann ist nichts mehr zu hören`));
+        /* BUCHSTABEN ODER BILDER - und zwar an dem, was das PROFIL sagt.
+         *
+         * Fiona (6) liest nicht: zwei geschriebene Woerter sind fuer sie
+         * zwei Muster, und die Ebene gaebe es nur dem Anschein nach. Sie
+         * bekommt deshalb zwei Zeichnungen. Lea und die Eltern lesen und
+         * bekommen die Woerter - fuer sie waeren Bilder die leichtere
+         * Aufgabe, und der Unterschied faellt niemandem auf.
+         *
+         * Gefragt wird die APP und nicht eine Liste hier: `P.vorlesen`
+         * ist dasselbe Kennzeichen, an dem der Bildschirm entscheidet.
+         * Eine zweite Liste waere die, die beim naechsten Profil veraltet
+         * (Regel 6: was zweimal dasteht, veraltet einmal).
+         *
+         * BEIDE RICHTUNGEN, und die zweite ist die, die man vergisst:
+         * ohne sie bliebe gruen, wer ALLEN Bilder gibt. */
+        const liestNicht = await p.evaluate(() => !!(typeof P !== 'undefined' && P && P.vorlesen));
+        const karten = await p.$$eval('.schirm.da .lautkarte', ks => ks.map(k => ({
+          wort: k.dataset.wort, bild: !!k.querySelector('svg'),
+          text: k.textContent.trim() })));
+        for (const k of karten) {
+          if (liestNicht && (!k.bild || k.text))
+            merke('durchgang', new Error(`${wer}/${ebene}: die Karte „${k.wort}" zeigt `
+              + `${k.bild ? `ein Bild UND den Text „${k.text}"` : `den Text „${k.text}"`} — `
+              + 'dieses Profil liest nicht, und zwei geschriebene Wörter sind für es '
+              + 'zwei Muster'));
+          if (!liestNicht && (k.bild || k.text !== k.wort))
+            merke('durchgang', new Error(`${wer}/${ebene}: die Karte „${k.wort}" zeigt `
+              + `${k.bild ? 'ein Bild' : `„${k.text}"`} statt des Wortes — dieses Profil `
+              + 'liest, und mit Bildern wäre es die leichtere Aufgabe'));
+        }
         /* Und die beiden Karten sind das PAAR. Eine dritte oder eine
            fremde waere eine andere Aufgabe, und man saehe es nicht. */
-        const drauf = await p.$$eval('.schirm.da .lautkarte',
-          ks => ks.map(k => k.dataset.wort).sort());
+        const drauf = karten.map(k => k.wort).sort();
         const soll = [auf.wort, auf.gegen].sort();
         if (drauf.join('|') !== soll.join('|'))
           merke('durchgang', new Error(`${wer}/${ebene}: auf dem Bildschirm stehen `

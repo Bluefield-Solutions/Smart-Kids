@@ -5805,9 +5805,12 @@ export const PROBEN = [
    *    das nur an der EINEN Stelle zu sehen, die sie wegnimmt. */
   { n:'die Lautpaare stehen auch ohne englische Stimme da', tor:'smoke',
     args:['--nur=englisch'], bauen:true, datei:D,
-    such:"wer:['lea','stephan','violeta'], wenn: () => englischHoerbar() },",
-    ersatz:"wer:['lea','stephan','violeta'], wenn: () => true },",
-    an:{ ...DIST, text:'wenn: () => true },' },
+    /* Seit Fiona dabei ist, steht die Bedingung ueber drei Zeilen und
+       traegt eine zweite Haelfte (genug GEMALTE Paare). Der Eingriff
+       bleibt derselbe: `wenn` sagt immer ja. */
+    such:"    wenn: () => englischHoerbar()",
+    ersatz:"    wenn: () => true || englischHoerbar()",
+    an:{ ...DIST, text:'wenn: () => true || englischHoerbar()' },
     sagt:'vergäbe Sterne für nichts' },
 
   /* 7. UND DAS TOR SELBST: `passt` bekommt seine Stimmen nicht mehr.
@@ -5917,6 +5920,86 @@ export const PROBEN = [
     ersatz:'    .map(x => ({ ...x }));',
     an:{ datei:'src/inhalt/englisch.js', text:'.map(x => ({ ...x }));' },
     sagt:'teilt sich' },
+
+  /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 für Fiona) --------------
+   *
+   * Fuenf Arten, wie die Ebene fuer ein Kind, das nicht liest, leise
+   * wieder zu dem wird, was sie vorher war: zwei Muster nebeneinander.
+   *
+   * 1. DER BILDSCHIRM ZEIGT DOCH BUCHSTABEN. Eine Zeile, und Fiona steht
+   *    wieder vor zwei geschriebenen Woertern - der Bildschirm bleibt
+   *    dabei vollstaendig heil, und sie tippt eines von beiden an. */
+  { n:'Fiona bekommt beim Lautpaar wieder Buchstaben', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  const mitBild = !!P.vorlesen && zwei.every(x => bildZu(x.wort));",
+    ersatz:"  const mitBild = false; // Anker: !!P.vorlesen && zwei.every(x => bildZu",
+    an:{ ...DIST, text:'const mitBild = false;' },
+    sagt:'dieses Profil liest nicht' },
+
+  /* 2. UND DIE GEGENRICHTUNG: die Bilder stehen bei ALLEN. Fuer Lea und
+   *    die Eltern waere das die leichtere Aufgabe - wer zwei Bilder
+   *    unterscheidet, muss das geschriebene Wort nicht mehr lesen -, und
+   *    auf dem Bildschirm sieht es aus wie eine Verbesserung. Ohne diese
+   *    Probe bewiese die erste nur die Haelfte. */
+  { n:'auch wer liest, bekommt beim Lautpaar Bilder', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"  const mitBild = !!P.vorlesen && zwei.every(x => bildZu(x.wort));",
+    ersatz:"  const mitBild = true && zwei.every(x => bildZu(x.wort)); //Anker: !!P.vorlesen",
+    an:{ ...DIST, text:'const mitBild = true &&' },
+    sagt:'dieses Profil liest' },
+
+  /* 3. DER VORRAT GIBT DIE FALSCHEN PAARE HER. Der Bildschirm ist heil,
+   *    die Weiche darin auch - nur bekommt Fiona die dreizehn Paare, die
+   *    KEINE Bilder haben, und faellt damit auf die Buchstaben zurueck.
+   *    Zwei Weichen, zwei Proben: die eine sagt nichts ueber die andere. */
+  { n:'der Lautvorrat filtert für das falsche Profil', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"    return Englisch.vorratLaute({ nurMalbar: !!P.vorlesen });",
+    ersatz:"    return Englisch.vorratLaute({ nurMalbar: !P.vorlesen });",
+    an:{ ...DIST, text:'nurMalbar: !P.vorlesen' },
+    sagt:'dieses Profil liest nicht' },
+
+  /* 4. EIN PAAR VERLIERT EINE SEINER BEIDEN ZEICHNUNGEN. Dann ist es
+   *    nicht mehr malbar, die Zahl faellt unter die aus `spiel.js`, und
+   *    die Ebene blendet sich bei Fiona SELBST AUS - lautlos. Genau die
+   *    Sorte Ausfall, die man an der Kachelwand nicht sieht. */
+  { n:'ein Lautpaar verliert eine seiner beiden Zeichnungen', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  vine:  'M30 6h4v10h-4Z",
+    ersatz:"  vineX: 'M30 6h4v10h-4Z",
+    an:{ datei:'src/inhalt/englisch.js', text:"vineX: 'M30 6h4v10h-4Z" },
+    sagt:'gemalte Lautpaare' },
+
+  /* 5. BEIDE KARTEN ZEIGEN DASSELBE BILD. Dann ist jeder Tipp so richtig
+   *    wie der andere, und der Bildschirm sieht aus wie immer. */
+  { n:'ein gemaltes Lautpaar zeigt zweimal dasselbe Bild', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  cap:   'M12 34c0-12 8-20 20-20s20 8 20 20ZM6 34h50c4 0 6 3 6 6H6Z',",
+    ersatz:"  cap:   'M26 12h12v8H26ZM16 20h26l8 14H8ZM2 34h60v12H2Zm12 12a6 6 0 1 0 0 12 6 6 0 1 0 0-12Zm36 0a6 6 0 1 0 0 12 6 6 0 1 0 0-12Z',",
+    an:{ datei:'src/inhalt/englisch.js', text:"cap:   'M26 12h12v8H26Z" },
+    sagt:'zweimal dieselbe Zeichnung' },
+
+  /* 6. UND DIE ZAHL, unter der sich die Ebene ausblendet: sie steht in
+   *    `spiel.js`, weil sie eine Aussage ueber Fionas Sitzung ist. Das
+   *    Tor holt sie dort - und wenn es sie NICHT dort holte, sondern eine
+   *    zweite Fassung neben sich haette, bliebe es hier gruen. */
+  { n:'die Zahl der nötigen Lautbilder wird nicht aus spiel.js gelesen',
+    tor:'inhalt', deckt:'englisch', datei:D,
+    such:'const LAUTPAARE_FUER_BILDER = 4;',
+    ersatz:'const LAUTPAARE_FUER_BILDER = 9;',
+    an:{ datei:D, text:'LAUTPAARE_FUER_BILDER = 9' },
+    sagt:'gemalte Lautpaare' },
+
+  /* 7. EINE ZEICHNUNG GEHOERT ZU KEINEM PAAR. Ein Tippfehler im
+   *    Schluessel, und das Bild liegt fuer immer ungenutzt da, waehrend
+   *    sein Paar sich still fuer unmalbar haelt. */
+  { n:'eine Lautzeichnung gehört zu keinem Paar', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  pan:   'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',",
+    ersatz:"  pan:   'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',\n"
+      + "  pfanne: 'M8 24h34v10c0 7-5 12-12 12h-10c-7 0-12-5-12-12ZM42 26h20v6H42Z',",
+    an:{ datei:'src/inhalt/englisch.js', text:"pfanne: 'M8 24h34v10c0 7" },
+    sagt:'kein Lautpaar fragt danach' },
 
   /* --- „Lies das Wort" (E7) --------------------------------------------
    *

@@ -221,12 +221,12 @@
   },
   {
     "dateien": "tor/ansicht.mjs",
-    "token": 201,
+    "token": 227,
     "wo": [
       "tor/ansicht.mjs:273",
       "tor/ansicht.mjs:335"
     ],
-    "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8, E9c und E5 sind es 62, und der Lauf ist von 113 ueber 135 und 157 auf 179 Token gewachsen - jede neue Szene verlaengert ihn. — Nachgetragen in E7: die Szene `quer-lesen` ist die naechste Zeile derselben Tabelle, und mit ihr ist der Lauf von 179 auf 201 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste."
+    "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8, E9c und E5 sind es 62, und der Lauf ist von 113 ueber 135 und 157 auf 179 Token gewachsen - jede neue Szene verlaengert ihn. — Nachgetragen in E7: die Szene `quer-lesen` ist die naechste Zeile derselben Tabelle, und mit ihr ist der Lauf von 179 auf 201 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste. — Nachgetragen in E5b: `quer-laute-bild` ist die naechste Zeile derselben Tabelle (dieselbe Ebene bei Fiona, mit Bildern statt Buchstaben), und mit ihr ist der Lauf von 201 auf 227 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste."
   },
   {
     "dateien": "src/inhalt/englisch.js · tor/ansicht.mjs",
