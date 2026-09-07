@@ -1846,9 +1846,9 @@
       "s": 6
     },
     "eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
+      "commit": "e3b77d013b21ee2172063e89225819e025488bfb",
       "zeit": "2026-09-07",
-      "s": 6
+      "s": 16
     },
     "ein Land hat keine Flagge mehr": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
@@ -1904,6 +1904,11 @@
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
       "zeit": "2026-09-07",
       "s": 98
+    },
+    "das gesuchte Wort steht in der Frage": {
+      "commit": "e3b77d013b21ee2172063e89225819e025488bfb",
+      "zeit": "2026-09-07",
+      "s": 504
     },
     "die Lautpaare sagen nicht mehr, woran man sie unterscheidet": {
       "commit": "334c225f9335214002d9ef249a693b796b7594e9",
@@ -2004,6 +2009,11 @@
       "commit": "334c225f9335214002d9ef249a693b796b7594e9",
       "zeit": "2026-09-07",
       "s": 5
+    },
+    "die Englischkarten laufen über den Rand": {
+      "commit": "e3b77d013b21ee2172063e89225819e025488bfb",
+      "zeit": "2026-09-07",
+      "s": 395
     },
     "die Satz-Abzeichen wählen nichts aus": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
