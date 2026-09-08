@@ -237,5 +237,26 @@
       "tor/ansicht.mjs:87"
     ],
     "warum": "Drei Tabellen, die sich nur in der FORM gleichen: zwei Stellen im Bildplan (`{ wort, gebiet, pfad, motiv }`) und die Szenenliste der Aufnahmen (`{ name, spiel, kind, quer, wahl }`). Der Lauf ist mit E4b entstanden, weil vier Woerter einen `pfad` bekommen haben und ihre Eintraege damit vierzeilig sind wie eine Szene - inhaltlich haben ein Apfel und ein Bildschirmfoto nichts miteinander zu tun. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die Menge an Dopplung: sie waechst mit jedem weiteren gezeichneten Wort, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Woerter mit `pfad` (`npm run inhalt` sagt „gezeichnet: N von 86\"). — Nachgetragen in E7: mit den sechzehn gezeichneten Woertern ist der Lauf von 202 auf 297 Token gewachsen. Es ist derselbe Fall wie zuvor — Datenzeilen mit ausgerichteten Feldern, in zwei Verzeichnissen mit verschiedenen Aufgaben; zusammenlegen hiesse, den Bildplan an die Szenenliste eines Tores zu binden."
+  },
+  {
+    "dateien": "tor/bildurteile.mjs",
+    "token": 364,
+    "wo": [
+      "tor/bildurteile.mjs:51",
+      "tor/bildurteile.mjs:57",
+      "tor/bildurteile.mjs:59",
+      "tor/bildurteile.mjs:61",
+      "tor/bildurteile.mjs:63",
+      "tor/bildurteile.mjs:65",
+      "tor/bildurteile.mjs:67",
+      "tor/bildurteile.mjs:69",
+      "tor/bildurteile.mjs:71",
+      "tor/bildurteile.mjs:73",
+      "tor/bildurteile.mjs:75",
+      "tor/bildurteile.mjs:77",
+      "tor/bildurteile.mjs:79",
+      "tor/bildurteile.mjs:81"
+    ],
+    "warum": "Die Urteilstabelle IST eine Tabelle: je Zeile ein Paar, ein Urteil und der Satz, warum es auf dem Blatt so aussieht. Neunzehn davon lauten „harmlos\", und die Zeilen gleichen sich deshalb in ihrer Form. Zusammenlegen hiesse hier, die Faelle zu Gruppen zu verrechnen - und genau das darf nicht passieren: jede Zeile ist EIN angesehenes Paar, und ihr Wert liegt darin, dass jemand hingesehen hat. Wer sie kuerzt, kuerzt die Eichung."
   }
 ]

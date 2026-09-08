@@ -12320,3 +12320,68 @@ Lautbildern. Es steht jetzt auf beiden Schirmen.
 | zu ähnlich | 2 Karten | Form + Ton | 30 % |
 | kopiert | 2 Karten | Silhouette | 90 % |
 | kopiert | beide | **dieselben Pfade** | exakt |
+
+## E7d · Die Eichung wird nachgerechnet — und die verschobene Kopie
+
+Zwei offene Punkte, und der erste hat sich selbst gebraucht.
+
+### Drei beurteilte Fälle waren zu wenige — jetzt sind es 22
+
+Die Grenzen standen auf zehn Paaren, deren Urteil vom Blatt kommt. Aber das
+Urteil stand nur als **Kommentar**, und ein Kommentar hält nichts fest: wer eine
+der drei Zahlen verschiebt, verschiebt sie ungestraft, und die Eichung ist still
+weg.
+
+Jetzt stehen die beurteilten Paare als Daten in `tor/bildurteile.mjs` — 22
+Stück, darunter die **alten Flächen** der drei Zeichnungen, die deswegen ersetzt
+worden sind. Ein Rückfallvorrat also, und der einzige Grund, warum überhaupt
+noch „Fallen" darin vorkommen; im heutigen Bildvorrat gibt es keine mehr. Zwölf
+weitere Paare sind für diese Runde angesehen und als harmlos beurteilt worden —
+`o‘clock`/`football`, `water`/`jeans`, `apple`/`tomato`, `cat`/`schoolbag` und
+neun andere.
+
+Das Tor ordnet jedes mit der heutigen Regel ein und vergleicht:
+
+```
+Die Eichung nachgerechnet: 22 beurteilte Paare (3 Fallen aus dem
+Rückfallvorrat), alle richtig eingeordnet · engste Falle „old"/„boy" mit
+2 Punkten Luft, engstes harmloses Paar „bread"/„chocolate" mit 4
+```
+
+**Die Luft ist keine einfache Differenz.** Es gibt zwei Wege, rot zu werden —
+die alte Grenze allein oder beide neuen zusammen. Für ein harmloses Paar zählt
+der **kürzeste** Weg dorthin, für eine Falle der **längste** (sie bleibt
+gefangen, solange einer hält). Der erste Anlauf hat das Maximum genommen und
+damit den bequemsten Weg gemeldet: „apple/pullover 7", wo 6 richtig ist — und
+`bread`/`chocolate` gar nicht, obwohl es mit 4 das engste Paar von allen ist.
+Eine Kennzahl, die zu gut aussieht, ist schlimmer als keine.
+
+**Und die Prüfung stand hinter dem Ausstieg.** Der erste Anlauf hat sie hinter
+das `if (ef.length)` gesetzt, das bei gefüllter Fehlerliste abbricht. Sie schrieb
+damit in eine Liste, die niemand mehr liest — eine Prüfung, die nicht anschlagen
+*kann*, und zwar ausgerechnet die, die das Anschlagen der anderen sichert.
+Aufgefallen ist es nur, weil ihre Gegenprobe stumm blieb (Regel 1).
+
+### Die verschobene Kopie: das Raster kann es nicht
+
+Der erste Anlauf war eine **Flächenkarte** — je Zelle die Nummer der Fläche
+statt ihrer Farbe, also die Bauart des Bildes ohne jede Farbe. Gemessen:
+
+| | Übereinstimmung |
+|---|---|
+| Erdbeere gegen sich selbst, um 1 Punkt verschoben | 84 % |
+| dieselbe, um 2 Punkte | **73 %** |
+| `happy` gegen `sad` (zwei echte Bilder) | **92 %** |
+
+Also unbrauchbar: drei Prozent Versatz sind in einem 24×24-Raster schon eine
+halbe Zelle, und zwei Bilder derselben Bauart schlagen jede verschobene Kopie.
+
+Gemessen wird deshalb an der **Bauart der Pfade** — gleiche Befehlsfolge, gleiche
+Anzahl Zahlen, und alle Zahlen dicht beieinander. Das trennt scharf:
+
+> Verschobene Kopien (E7d): **4 von 3486** Paaren überhaupt gleich gebaut ·
+> engstes `behind`/`on` mit **10** Punkten (Grenze **5**)
+
+Und alle vier stehen auf dem Blatt „Wo?", wo dieselbe Kiste und derselbe Ball die
+Lehre sind. Die Grenze liegt bei 5 — der Hälfte des Abstands zum nächsten
+berechtigten Fall. Bei den acht Lautbildern ist **kein** Paar gleich gebaut.

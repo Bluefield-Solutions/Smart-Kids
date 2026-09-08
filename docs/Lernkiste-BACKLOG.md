@@ -6765,11 +6765,19 @@ Was daraus NEU offen ist:
 
 Was daraus NEU offen ist:
 
-- **Die Zwei-Bedingung ist an drei Fallen geeicht.** Drei sind wenige. Jede
-  weitere Zeichnung, die aus einem echten Grund geändert werden muss, gehört
-  in diese Tabelle — sonst wandert das Soll mit meiner eigenen Leistung mit
-  (Regel 3).
-- **Die exakte Kopie-Prüfung sieht nur GANZE Übereinstimmung.** Wer eine
-  Zeichnung kopiert und eine Koordinate verschiebt, kommt bei ihr durch; auf
-  dem Zwei-Karten-Schirm fängt ihn die Deckung mit 90 %, auf dem
-  Vier-Karten-Schirm heute niemand.
+- ~~Die Zwei-Bedingung ist an drei Fallen geeicht.~~ Erledigt (v507): 22
+  beurteilte Paare als Daten in `tor/bildurteile.mjs`, mit den alten Flächen
+  der drei ersetzten Zeichnungen als Rückfallvorrat. Das Tor rechnet sie nach.
+- ~~Die exakte Kopie-Prüfung sieht nur GANZE Übereinstimmung.~~ Erledigt
+  (v507): gemessen an der Bauart der Pfade, Grenze 5 Punkte Versatz. Vier von
+  3486 Paaren sind überhaupt gleich gebaut, alle auf dem Blatt „Wo?".
+
+Was daraus NEU offen ist:
+
+- **Die engste Falle hat nur 2 Punkte Luft.** `old`/`boy` liegt bei 77 %
+  Deckung, die Grenze bei 75. Wer die Zahl anfasst, verliert sie — die
+  Gegenprobe sagt es, aber eng ist es trotzdem. Mehr beurteilte Fallen würden
+  zeigen, ob 75 die richtige Stelle ist oder nur die, die zu diesen dreien passt.
+- **Die 19 harmlosen Urteile sind von mir.** Sie sind angesehen, aber von
+  einem einzigen Paar Augen und nicht von einem Kind. Für `strawberry`/`tomato`
+  (55 % bei 66 %) würde ich Fionas Urteil gern kennen.

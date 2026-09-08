@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-07",
+  "zeit": "2026-09-08",
   "tore": [
     "anker",
     "ansicht",
@@ -2064,6 +2064,16 @@
       "commit": "371c325ee7eac46b3970b554546e54a5d32a4757",
       "zeit": "2026-09-07",
       "s": 10
+    },
+    "die Eichung der Bildgrenzen wird verschoben": {
+      "commit": "341047b72d8a475969f2751e3457b3ed88441929",
+      "zeit": "2026-09-08",
+      "s": 11
+    },
+    "zwei englische Wörter teilen sich eine verschobene Zeichnung": {
+      "commit": "341047b72d8a475969f2751e3457b3ed88441929",
+      "zeit": "2026-09-08",
+      "s": 11
     },
     "beim Lesen wird das Wort doch vorgelesen": {
       "commit": "334c225f9335214002d9ef249a693b796b7594e9",
