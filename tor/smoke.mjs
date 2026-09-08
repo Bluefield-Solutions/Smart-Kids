@@ -172,8 +172,25 @@ const fehler = [];
  * die Ratsche genau den Zustand durch, den B4b beseitigt hat. Nimmt man
  * der Abzeichenseite die offenen Abzeichen wieder weg, faellt sie auf
  * 25 % - und blieb gruen. Die Gegenprobe dazu meldete „das Tor beweist
- * an dieser Stelle nichts", und sie hatte recht. */
-const BUCH_GENUTZT_MIN = 34;
+ * an dieser Stelle nichts", und sie hatte recht.
+ *
+ * UND NACHGEZOGEN IN N12 (08.09.). Die Zahlen oben sagen es schon: die
+ * drei Seiten bei 95 waren die Albumkarte und die Rechentafel - genau
+ * die beiden, die „nimm die Hoehe deiner Spalte" bekommen hatten. Alle
+ * anderen waren Raster mit fester Stueckgroesse, oben ausgerichtet.
+ * Seit die Sammlung dieselbe Rechnung bekommt, steht dort:
+ *
+ *   Abzeichen 81 · Erdkunde 95 · 95 · 95 · Rechnen 95
+ *   Schreiben 95 · 95 · 95 · Englisch 95 · Naechstes 95
+ *
+ * Der schlechteste Wert ist 81, die Ratsche geht auf 70 - elf Punkte
+ * Luft, weil der schlechteste Wert weiter daran haengt, WAS ein Profil
+ * gerade gesammelt hat.
+ *
+ * Und die Ratsche allein reicht hier NICHT: eine Seite fuellt sich auch
+ * mit einem hoeheren leeren Kasten. Was daneben gemessen werden muss,
+ * ist der BILDANTEIL - `npm run tonleiter` haelt ihn seit N12. */
+const BUCH_GENUTZT_MIN = 70;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 

@@ -6051,6 +6051,35 @@ export const PROBEN = [
     an:{ ...DIST, text:'const OHNE_GRUND = new Set([]);' },
     sagt:'noch nicht betreten hat' },
 
+  /* --- Das Buch (N12) ----------------------------------------------------
+   *
+   * 1. DIE SAMMLUNG FUELLT IHRE SEITE NICHT MEHR. Zurueck in den
+   *    Zustand, in dem eine Kapitelseite eine kurze Reihe am Kopf war
+   *    und darunter die halbe Seite leer. Nichts wird falsch; es sieht
+   *    nur wieder aus wie eine Liste und nicht wie ein Album. Gemessen
+   *    faellt die Fuellung von 95 auf 37 bis 56 %. */
+  { n:'die Sammlung fuellt ihre Buchseite nicht mehr', tor:'smoke',
+    args:['--nur=spielen,ablage'], bauen:true, datei:V,
+    such:"  .buchraster > .raumgitter{min-height:100%;align-content:stretch;",
+    ersatz:"  .buchraster > .raumgitter{min-height:0;align-content:start;",
+    an:{ ...DIST, text:".buchraster > .raumgitter{min-height:0;align-content:start;" },
+    sagt:'ihrer Hoehe' },
+
+  /* 2. DER KASTEN WAECHST, DAS BILD NICHT. Die gefaehrlichere Fassung,
+   *    und sie ist gemessen und nicht erfunden: genau so lag N12
+   *    zwischendurch im Bündel. Die Zellen fuellten die Seite, und darin
+   *    klebte dieselbe briefmarkengrosse Weltkarte wie vorher - die
+   *    Fuellung meldete 95 %, und die Seite war leerer als je zuvor.
+   *    Eine Kennzahl, die sich durch einen hoeheren leeren Kasten
+   *    erfuellen laesst, misst den Kasten. Deshalb misst `tonleiter`
+   *    daneben den BILDANTEIL, und diese Probe zieht ihn zurueck. */
+  { n:'der Kasten waechst, das Bild bleibt briefmarkengross', tor:'tonleiter',
+    bauen:true, datei:V,
+    such:"  .buchraster > .raumgitter .raumzelle .raumzeichen{width:100%;height:auto;",
+    ersatz:"  .buchraster > .raumgitter .raumzelle .raumzeichen--aus{width:100%;height:auto;",
+    an:{ ...DIST, text:".raumzeichen--aus{width:100%;height:auto;" },
+    sagt:'weniger als 35 % Bild' },
+
   /* --- Der Moment (N10) --------------------------------------------------
    *
    * 1. DAS JA BEWEGT SICH NICHT MEHR. Zurueck in den Zustand, in dem in

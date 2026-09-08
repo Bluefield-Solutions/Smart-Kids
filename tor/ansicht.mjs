@@ -244,6 +244,13 @@ const AUFNAHMEN = [
      die ohne Vorbild schiefgeht. */
   { name:'quer-buch-rechnen', spiel:null, quer:true, stand:'rechnen',
     wahl:'.schirm.da', tun:'buchkapitel', kap:'welt:rechnen' },
+  /* Die AUFKLEBERWAND (N12) - die dritte Sorte Kapitelseite, und die
+     einzige, die bis hierher keinen Zeugen hatte. Karte und Rechentafel
+     fuellen ihre Seite seit Runde 1; dieses Raster stand oben in einer
+     kurzen Reihe, und darunter war die halbe Seite leer. Vier Seiten
+     hingen daran, und keine war je fotografiert. */
+  { name:'quer-buch-schreiben', spiel:null, quer:true, stand:'schreiben',
+    wahl:'.schirm.da', tun:'buchkapitel', kap:'welt:schreiben' },
   /* Die Flaggen (F2) - VIER Aufnahmen, weil es vier verschiedene Bilder
    * sind und nicht eines mit Varianten:
    *
@@ -1023,6 +1030,61 @@ for (const a of MEINE) {
         };
         auf.onerror = () => nein(auf.error);
       }), { wer: a.kind || 'fiona', kont: STAND, rechnen: RECHENSTAND });
+      await seite.reload({ waitUntil:'domcontentloaded' });
+      await seite.waitForSelector('[data-profil="fiona"]');
+    } else if (a.stand === 'schreiben') {
+      /* DIE AUFKLEBERWAND OHNE KARTE (N12).
+       *
+       * Bis hierher hatte das Buch drei Sorten Kapitelseite und Vorbilder
+       * fuer zwei: die Albumkarte (Kontinente, Bundeslaender) und die
+       * Rechentafel. Die dritte - ein Raster aus Aufklebern - stand auf
+       * den Schreib- und Englischseiten und ist NIE fotografiert worden.
+       * Genau die vier Seiten hat N12 veraendert, und genau bei ihnen
+       * haette es niemand gesehen.
+       *
+       * Gebucht wird Fionas Buchstabenebene: sie hat keine Landkarte,
+       * jedes Stueck ist ein gezeichneter Buchstabe, und sie gehoert dem
+       * Profil, das nicht liest. */
+      /* Die Zeichen kommen aus dem BUENDEL, nicht aus `#daten`: die
+         Buchstaben stehen in `src/inhalt/schreiben.js` und werden
+         mitgebaut, nicht als Datenblock mitgeliefert. Der erste Anlauf
+         las `D.schreiben`, bekam eine leere Liste, und der Reiter
+         erschien nie - die Aufnahme lief in eine Zeitgrenze statt in ein
+         leeres Bild. Das ist der bessere Fehler, aber ein Fehler. */
+      /* Kontinente KOMMEN MIT, und das ist kein Beiwerk: mit nur einem
+         Kapitel gibt es keinen Reiterstreifen - das Buch zeigt die eine
+         Seite dann direkt. Ein Vorbild davon zeigte einen Bildschirm,
+         den ein Kind mit zwei Ebenen nie sieht. Gemessen, nicht
+         vermutet: der erste Anlauf lief in die Zeitgrenze, weil er auf
+         einen Reiter wartete, den es nicht gab. */
+      await seite.evaluate(({ wer, kont }) => new Promise((ja, nein) => {
+        /* Und die KENNUNG ist `bu:A`, nicht `A` - `Schreiben.vorrat()`
+           haengt sie um, damit ein Buchstabe einen eigenen Leitner-Stand
+           bekommt. Der zweite Anlauf buchte `A` und bekam ein Buch ganz
+           OHNE Reiter: gesammelt war nichts, weil nichts zusammenpasste.
+           Gefragt wird deshalb der Vorrat selbst und nicht die Tabelle
+           dahinter. */
+        const ids = (typeof Schreiben !== 'undefined' && Schreiben.vorrat
+          ? Schreiben.vorrat() : []).map(x => x.id).filter(Boolean);
+        const auf = indexedDB.open('lernkiste', 1);
+        auf.onupgradeneeded = () => {
+          for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+            if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+        };
+        auf.onsuccess = () => {
+          const t = auf.result.transaction(['fortschritt','einstellungen'], 'readwrite');
+          const st = {};
+          ids.slice(0, 9).forEach((z, i) => { const fach = 1 + (i % 5);
+            st[z] = { fach, hoechstes: fach, faellig: 0, richtig: fach, falsch: 0, zuletzt: 0 }; });
+          t.objectStore('fortschritt').put(st, `${wer}:schreiben:buchstaben`);
+          t.objectStore('fortschritt').put(kont, `${wer}:kontinente`);
+          t.objectStore('einstellungen').put({ vorlaufGezeigt: {
+            [`${wer}:schreiben:buchstaben`]: true,
+            [`${wer}:kontinente`]: true } }, 'alles');
+          t.oncomplete = ja; t.onerror = () => nein(t.error);
+        };
+        auf.onerror = () => nein(auf.error);
+      }), { wer: a.kind || 'fiona', kont: STAND });
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
     } else if (a.stand === 'voll') {

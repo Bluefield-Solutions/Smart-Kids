@@ -2904,6 +2904,56 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   .buchraster > .rechentafel{align-items:stretch;align-content:stretch}
   .buchraster > .rechentafel .tafelfeld{height:100%;min-height:0}
   .buchraster > .rechentafel .tafelfeld svg{height:100%;width:auto;min-height:0}
+  /* UND DIE SAMMLUNG FUELLT IHRE SEITE AUCH (N12).
+   *
+   * Gemessen VOR dieser Runde, 844 x 390, zehn Kapitelseiten:
+   *   Abzeichen 81 · Erdkunde 46 · Erdkunde 95 · Erdkunde 95 ·
+   *   Rechnen 95 · Schreiben 53 · 56 · 45 · Englisch 37 · Naechstes 42
+   *
+   * Die drei bei 95 sind die Albumkarte und die Rechentafel - genau die
+   * beiden, die drei Zeilen weiter oben „nimm die Hoehe deiner Spalte"
+   * bekommen haben. Alles andere ist ein Raster mit fester
+   * Stueckgroesse, oben ausgerichtet: eine kurze Reihe am Kopf der
+   * Seite, darunter nichts. Das Soll kommt hier also nicht aus mir,
+   * sondern aus den zwei Seiten, die es schon koennen (Regel 3).
+   *
+   * Und es waechst das BILD, nicht der Kasten: `flex` an das SVG, keine
+   * zweite Hoehenangabe an den Aufkleber. Ein hoeherer leerer Kasten
+   * erfuellt jede Fuellungszahl und sagt nichts - dieselbe Falle, in die
+   * der erste Anlauf der Albumkarte gelaufen ist („Groesser ist nicht
+   * voller"), und dieselbe, vor der die Notiz zu G15c warnt.
+   *
+   * KEIN Boden an `grid-auto-rows`, und das ist gemessen: mit einem von
+   * 132 Punkten stieg die Englischseite von 37 auf 106 % - die zweite
+   * Reihe hing unten heraus, und der Rauchtest hat es gemeldet („auf 1
+   * von 6 Kapitelseiten steht nicht alles im Bild"). Eine Kapitelseite
+   * soll PASSEN; das Buch blaettert, es rollt nicht. `1fr` teilt die
+   * Hoehe unter den Reihen auf, die es wirklich gibt - damit fuellt sie
+   * jede Seite und kann keine ueberlaufen.
+   * `min-height` und nicht `height`: waechst ein Kapitel doch einmal
+   * ueber die Seite hinaus, bleibt das Rollen als Auffanglinie. Und ob
+   * die Aufkleber dabei zu klein werden, sagt kein Geschmack, sondern
+   * `beruehrung`: unter 44 Punkten ist ein Griff keiner mehr. */
+  .buchraster > .kleber,
+  .buchraster > .raumgitter{min-height:100%;align-content:stretch;
+    grid-auto-rows:1fr}
+  .buchraster > .kleber .aufkleber,
+  .buchraster > .raumgitter .raumzelle{min-height:0}
+  /* `flex:1 1 0` und BREITE, nicht `flex:1 1 auto`: ein SVG mit
+     Grundlage „auto" bringt seine eigene Hoehe mit, und die kommt aus
+     dem Seitenverhaeltnis mal der vollen Breite - beim Umriss darunter
+     ist es damit ueber den Kasten hinausgeschossen und stand
+     angeschnitten da. Mit Grundlage 0 rechnet der Flexkasten die Hoehe
+     aus dem freien Platz, die Breite steht daneben, und das Bild passt
+     sich in beides ein (`preserveAspectRatio`, Voreinstellung). Dieselbe
+     Rechnung wie an der Albumkarte, nur andersherum aufgeschrieben. */
+  .buchraster > .kleber .aufkleber svg{width:100%;height:auto;
+    flex:1 1 0;min-height:0}
+  /* Der Umriss der Ebenenzelle waechst AUCH mit - die Regel dafuer steht
+     aber weiter unten, direkt neben der festen Groesse, die sie
+     ueberschreibt. Hier stuende sie mit derselben Kennzahl und weiter
+     oben, also wirkungslos: gebaut, ausgeliefert, ohne Wirkung. Genau
+     das ist bei N10 dem Huepfen passiert. */
 }
 .gruppe{font-family:var(--f-ui);font-size:var(--s1);font-weight:800;margin:var(--r6) 0 var(--r3);
   letter-spacing:-.01em}
@@ -3928,6 +3978,22 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
 .rollen.buch .abz .fehlt{padding:0 var(--eng)}
 @media (min-aspect-ratio:8/5){
   .buchseite{column-gap:var(--weit);row-gap:0}
+  /* UND JETZT WAECHST DER UMRISS WIRKLICH (N12).
+   *
+   * Die Regel darueber sagt seit B14, der Umriss solle „mit dem Platz
+   * wachsen" - und setzt ihn auf 72 Punkte fest. Die Begruendung war
+   * richtig, die Zeile hat sie nie eingeloest: gemessen stand die
+   * Erdkunde-Uebersicht bei 46 % ihrer Hoehe, und nachdem die Zellen
+   * die Seite fuellten, standen zwei grosse leere Kaesten da, in denen
+   * dieselben 72 Punkte Weltkarte klebten. „Groesser ist nicht voller" -
+   * die Notiz an der Albumkarte hat es vorhergesagt.
+   *
+   * Nur im breiten Format: dort hat die Zelle eine gerechnete Hoehe.
+   * Hochkant hat sie keine, und `flex:1` an einem SVG ohne Hoehe ist
+   * eine Einladung an den Browser, sich etwas auszudenken. */
+  .buchraster > .raumgitter .ebenenzelle .silhouette,
+  .buchraster > .raumgitter .raumzelle .raumzeichen{width:100%;height:auto;
+    min-height:0;flex:1 1 0}
 }
 </style></head>
 <body><!-- Der Glanz der Aufkleber (Q28). EIN Verlauf fuer alle: eine

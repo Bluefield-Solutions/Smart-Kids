@@ -183,6 +183,34 @@ const zeig = (name, o, n = 99) => {
  * (Regel 5).
  */
 const GRENZEN = { schrift: 3, radius: 2, luft: 3 };
+/* DER BILDANTEIL EINER SAMMELSEITE (N12).
+ *
+ * Die Ratsche im Rauchtest fragt, wieviel der Seite BENUTZT wird. Das
+ * ist die halbe Frage: eine Seite fuellt sich auch mit einem hoeheren
+ * leeren Kasten, und genau in diese Falle ist N12 zwischendurch gelaufen
+ * - zwei grosse Zellen mit derselben briefmarkengrossen Weltkarte darin,
+ * Fuellung 95 %, Bildanteil unveraendert.
+ *
+ * Gemessen wird deshalb daneben, wieviel der beschriebenen Flaeche BILD
+ * ist. Vorher und nachher, 844 x 390, voller Stand:
+ *
+ *   tiere 12 → 45   welt:erdkunde 26 → 84   kontinente 69   rechnen 69
+ *   bundeslaender 44   abzeichen 19   naechstes 0
+ *
+ * 35 und nicht 44: der schlechteste Wert unter den Bildseiten ist
+ * `bundeslaender` mit 44, und ein Buch mit einem Gegenstand weniger darf
+ * nicht rot werden - dieselbe Luft wie bei der Ratsche nebenan.
+ *
+ * ZWEI AUSNAHMEN, beide gemessen und beide offen:
+ *   `naechstes`  0 %  - die Vorschauseite zeigt in diesem Stand nur
+ *                       Text; sie hat gar kein Bild zu zeigen.
+ *   `abzeichen` 19 %  - die Abzeichenwand ist das dritte Raster, das
+ *                       N12 nicht bekommen hat. Sie steht als naechster
+ *                       Schritt und nicht als Ausnahme fuer immer.
+ * Ausnahmen mit Namen und Zahl, nicht ein weicherer Grenzwert: ein
+ * Grenzwert, der beide durchlaesst, laesst auch alles andere durch. */
+const BILD_MIN = 35;
+const OHNE_BILDPFLICHT = new Set(['naechstes', 'abzeichen']);
 if (process.argv.includes('--tor')) {
   const fehler = [];
   for (const [feld, grenze] of Object.entries(GRENZEN)) {
@@ -201,6 +229,14 @@ if (process.argv.includes('--tor')) {
      nicht weil das Tor zu lasch war, sondern weil sein gestellter Stand
      die Seite gar nicht enthielt. Eine Prüfung, die etwas nie sieht,
      meldet darüber auch nichts und ist insoweit kein Beweis (Regel 1). */
+  const blass = alles.jeSeite
+    .filter(x => !OHNE_BILDPFLICHT.has(x.kapitel))
+    .map(x => ({ was: x.kapitel, anteil: Math.round(x.bildAnteil * 100) }))
+    .filter(x => x.anteil < BILD_MIN);
+  if (blass.length)
+    fehler.push(`${blass.length} Sammelseiten zeigen weniger als ${BILD_MIN} % Bild `
+      + `(${blass.map(x => `${x.was} ${x.anteil} %`).join(' · ')}) — eine Albumseite `
+      + 'mit einer Briefmarke darauf ist keine Albumseite');
   if (!alles.tafel)
     fehler.push('keine Rechentafel unter den Kapiteln — der gestellte Stand hat keine '
       + 'Ebene ohne Landkarte, und dann ist die Seite mit der eigenen Bildsprache ungemessen');
@@ -222,6 +258,10 @@ if (process.argv.includes('--tor')) {
     + `Kapiteln auf 844 × 390.`);
   console.log(`    Und ${ln.geprueft} Tiernamen passen in zwei Zeilen `
     + `(Karte ${ln.karte} Punkte breit); die Rechentafel war dabei.`);
+  console.log('    Bildanteil je Seite: ' + alles.jeSeite
+    .map(x => `${x.kapitel.split('›').pop().trim()} ${Math.round(x.bildAnteil * 100)} %`)
+    .join(' · ') + `  (Ratsche: mindestens ${BILD_MIN} %, ohne `
+    + `${[...OHNE_BILDPFLICHT].join(' und ')})`);
   process.exit(0);
 }
 console.log(`\n  Feinmass am Forscherbuch, 844 x 390, voller Stand, ${kaps.length} Kapitel, `
