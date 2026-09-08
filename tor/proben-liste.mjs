@@ -6025,6 +6025,26 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
 
+  /* --- Der Aufkleber-Satz im Ton des Profils (N3-Fund) ------------------
+   *
+   * EIN ALTER FEHLER, den der Bogen freigelegt hat. „ Neuer Aufkleber!"
+   * stand an ACHT Stellen fest im Quelltext - mit Ausrufezeichen, auch
+   * fuer die Profile, die sachlich angesprochen werden. Das Tor prueft
+   * seit langem „das Lob ruft nicht", und es hat den Fehler nie gesehen:
+   * die Eltern bekamen im geprueften Durchgang einfach nie einen neuen
+   * Aufkleber. Erst die neue Reihenfolge hat sie einen bekommen lassen.
+   *
+   * Das ist die Sorte Luecke, gegen die eine Gegenprobe da ist: das Tor
+   * war richtig, seine Frage war richtig, und trotzdem kam der Fall nie
+   * vor. Der Eingriff setzt das Ausrufezeichen zurueck in den sachlichen
+   * Ton - dann muss es auffallen. */
+  { n:'der Aufkleber-Satz ruft auch im sachlichen Ton', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"    kleberSagt: ' Neuer Aufkleber.',",
+    ersatz:"    kleberSagt: ' Neuer Aufkleber!', // Anker: kleberSagt: ' Neuer Aufkleber.',",
+    an:{ ...DIST, text:"kleberSagt: ' Neuer Aufkleber!', // Anker" },
+    sagt:'das Lob ruft' },
+
   /* --- Der Bogen der Sitzung (N3) ---------------------------------------
    *
    * Drei Zusagen, und alle drei gehen leise kaputt: die Runde laeuft in

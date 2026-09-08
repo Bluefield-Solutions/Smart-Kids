@@ -736,6 +736,14 @@ const TON = {
     ende: 'Geschafft!',
     ersterKleber: 'Beim zweiten Mal richtig gibt es einen Aufkleber.',
     neueKleber: (n) => `${n} neu${n === 1 ? '' : 'e'}!`,
+    /* Der ANGESAGTE Aufkleber-Satz. Er stand bis hierher als
+       „ Neuer Aufkleber!" an ACHT Stellen fest im Quelltext - also mit
+       Ausrufezeichen, auch fuer die Profile, die sachlich angesprochen
+       werden. Das Tor prueft „das Lob ruft nicht", und es hat den Fehler
+       jahrelang nicht gesehen, weil die Eltern im geprueften Durchgang
+       nie einen neuen Aufkleber bekamen. Erst der Bogen (N3) hat die
+       Reihenfolge so geaendert, dass sie einen bekamen. */
+    kleberSagt: ' Neuer Aufkleber!',
   },
   sachlich: {
     spricht: false,
@@ -755,8 +763,14 @@ const TON = {
     ende: 'Sitzung beendet.',
     ersterKleber: 'Ab dem zweiten Mal richtig kommt ein Gebiet ins Buch.',
     neueKleber: (n) => `${n} neu`,
+    kleberSagt: ' Neuer Aufkleber.',
   },
 };
+/** Was zum neuen Aufkleber GESAGT wird - im Ton des Profils, an einer
+ *  Stelle. Acht feste Zeichenketten waren acht Gelegenheiten, den Ton zu
+ *  vergessen; genau eine davon hat ihn vergessen. */
+const kleberSatz = (neu) => neu ? ton().kleberSagt : '';
+
 /** Der Ton des laufenden Profils. Vor der Profilwahl gilt der kindliche. */
 const ton = () => TON[P?.ton] || TON.kind;
 /* Hier stand ausserdem `FAST_LOB = ['Fast!', 'Ganz nah dran!', 'Beinahe!']`.
@@ -3984,15 +3998,21 @@ const aufgabenKopf = (st) => kopf({
   links: schliessenKnopf('Übung beenden'),
   mitte:`<div class="bandreihe"><div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
     st.liste.map((_,i)=>`<i class="${
-      i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}${
+      i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"${
       /* DIE KNACKNUSS im Band (N3). Das letzte Feld ist groesser und
          traegt einen Ring - ohne ein Wort, denn Fiona liest nicht. Man
          sieht von der ersten Aufgabe an, dass am Ende etwas wartet, und
          genau das ist der Bogen: ein Ende, auf das man zulaeuft.
          Erst ab vier Aufgaben, weil `bogen` darunter nicht gliedert -
          ein Ring, hinter dem keine Knacknuss steht, waere ein
-         Versprechen, das die Runde nicht haelt. */
-      (i === st.liste.length - 1 && st.liste.length >= 4) ? ' knack' : ''}"></i>`).join('')
+         Versprechen, das die Runde nicht haelt.
+
+         ALS MERKMAL UND NICHT ALS KLASSE: der Rauchtest liest die
+         Klassen der Punkte, um den Stand der Runde zu zaehlen, und hat
+         eine zusaetzliche Klasse als „schon erledigt" gelesen. Die
+         Knacknuss ist kein ZUSTAND des Punktes, sondern eine Eigenschaft
+         der Aufgabe dahinter - sie gehoert nicht in dieselbe Spalte. */
+      (i === st.liste.length - 1 && st.liste.length >= 4) ? ' data-knack' : ''}></i>`).join('')
   }</div>${serieZeichen(st.serie)}</div>`,
   rechts: sterne(sterneFuer(st.glatt, st.liste.length)) });
 
@@ -4087,7 +4107,11 @@ function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
     ? `<span class="fastText">${fastText}</span>`
     : `<span class="richtigText${ton().feier ? ' feier' : ''}"><b class="jubel">${
         spruch || 'Richtig!'}</b> ${sache}</span>`
-      + (neuerAufkleber ? `<span class="neuerkleber">${letzterKleber()}<b>Neuer Aufkleber!</b></span>` : '')
+      + (neuerAufkleber ? `<span class="neuerkleber">${letzterKleber()}<b>${
+          /* Auch GESCHRIEBEN im Ton des Profils: derselbe Satz, dieselbe
+             Quelle. Ein Ausrufezeichen auf dem Schirm und keines in der
+             Ansage waere zweierlei Mass fuer dieselbe Nachricht. */
+          ton().kleberSagt.trim()}</b></span>` : '')
       + (nebenbei ? `<span class="nebenbei">${nebenbei}</span>` : '');
 }
 
@@ -4251,7 +4275,7 @@ function rechenschirm(){
       if (knopf) knopf.classList.add('stimmt');
       const spruch = lob();
       lobsatz(s, `${ziel.frage} = ${ziel.wert}.`, null, spruch, '', neuerAufkleber);
-      sagen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      sagen(`${spruch} ${ziel.geloest}.` + kleberSatz(neuerAufkleber));
       setTimeout(weiter, LOBPAUSE);
       return;
     }
@@ -4743,7 +4767,7 @@ function sagenschirm(){
     ausschalten();
     const spruch = lob();
     lobsatz(s, `<strong lang="en">${ziel.wort}</strong>.`, null, spruch, '', neuerAufkleber);
-    sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    sagen(spruch + kleberSatz(neuerAufkleber));
     // Und das Wort noch einmal auf Englisch - als letztes, was im Ohr
     // bleibt, steht das Vorbild und nicht der eigene Versuch.
     vorlesen(ziel.wort, 'en');
@@ -4906,7 +4930,7 @@ function englischschirm(){
       if (knopf) knopf.classList.add('stimmt');
       const spruch = lob();
       lobsatz(s, `<strong lang="en">${ziel.wort}</strong>.`, null, spruch, '', neuerAufkleber);
-      sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      sagen(spruch + kleberSatz(neuerAufkleber));
       vorlesen(ziel.wort, 'en');
       setTimeout(weiter, LOBPAUSE);
       return;
@@ -5071,7 +5095,7 @@ function legeschirm(){
     ausschalten();
     const spruch = lob();
     lobsatz(s, `<strong lang="en">${wort}</strong>.`, null, spruch, '', neuerAufkleber);
-    sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    sagen(spruch + kleberSatz(neuerAufkleber));
     vorlesen(wort, 'en');
     setTimeout(weiter, LOBPAUSE);
   }
@@ -5519,7 +5543,7 @@ function flaggenschirm(){
     const spruch = ergebnis === 'richtig' ? lob() : null;
     lobsatz(s, `<strong>${ziel.name}</strong>.`, null, spruch, nebenbei || '',
       neuerAufkleber);
-    if (spruch) sagen(spruch + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+    if (spruch) sagen(spruch + kleberSatz(neuerAufkleber));
     standSichern(st.ebeneId);
     setTimeout(weiter, LOBPAUSE);
   }
@@ -6016,7 +6040,7 @@ function schreibschirm(){
       const spruch = lob();
       lobsatz(s, `${folge.length > 1 ? 'Das ist die' : 'Das ist ein'} ${ziel.zeichen}.`,
         null, spruch, '', neuerAufkleber);
-      sagen(`${spruch} ${ziel.geloest}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : ''));
+      sagen(`${spruch} ${ziel.geloest}.` + kleberSatz(neuerAufkleber));
       setTimeout(weiter, LOBPAUSE);
       return;
     }
@@ -7634,7 +7658,7 @@ function spielschirm(){
          dem Gebiet. */
       const mitnehmen = ergebnis === 'richtig' && !nebenbei ? Saetze.satzZu(ziel.id) : null;
       sagen(ergebnis==='fast' ? text
-        : `${spruch} Das ist ${ziel.name}.` + (neuerAufkleber ? ' Neuer Aufkleber!' : '')
+        : `${spruch} Das ist ${ziel.name}.` + kleberSatz(neuerAufkleber)
           + (mitnehmen ? ` ${mitnehmen}` : ''));
     } else if (st.test) {
       /* Im Test ist EIN Versuch alles (B2).

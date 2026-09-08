@@ -12551,3 +12551,24 @@ Drei Gegenproben: der Bogen wird gar nicht angewendet, die Knacknuss steht
 nicht am Ende, und — die gefährlichste — er **verliert** eine Aufgabe. Dann ist
 die Runde um eine kürzer, und das sieht aus wie eine kurze Runde statt wie ein
 Fehler.
+
+### Zwei Befunde, die der Bogen freigelegt hat
+
+**Die Knacknuss als Klasse verwirrte eine Zählung.** Der Rauchtest liest die
+Klassen der Punkte im Fortschrittsband, um den Stand der Runde zu zählen, und
+las die zusätzliche Klasse `knack` als „schon erledigt" — die Pausenprüfung
+meldete „die Sitzung zählt weiter statt neu anzufangen". Die Knacknuss ist kein
+**Zustand** des Punktes, sondern eine Eigenschaft der Aufgabe dahinter; sie
+steht jetzt als `data-knack` und nicht in derselben Spalte.
+
+**Und ein alter Fehler kam ans Licht.** „ Neuer Aufkleber**!**" stand an **acht**
+Stellen fest im Quelltext — mit Ausrufezeichen, auch für Stephan und Violeta,
+die sachlich angesprochen werden. Das Tor prüft seit langem „das Lob ruft
+nicht", und es hat den Fehler nie gesehen: die Eltern bekamen im geprüften
+Durchgang schlicht nie einen neuen Aufkleber. Erst die neue Reihenfolge hat
+ihnen einen gegeben.
+
+Das ist die Sorte Lücke, gegen die eine Gegenprobe da ist: das Tor war richtig,
+seine Frage war richtig, und trotzdem kam der Fall nie vor. Der Satz steht
+jetzt **einmal** im Ton — gesprochen und geschrieben aus derselben Quelle —
+und eine Gegenprobe setzt das Ausrufezeichen zurück.
