@@ -6111,11 +6111,20 @@ export const PROBEN = [
    *    das Kind kommt aus einer Aufgabe, die es nicht kann, gar nicht
    *    mehr heraus - und genau dafuer gibt es den Knopf. Sichtbar ist
    *    davon nichts; der Knopf reagiert ja. */
+  /* Der erste Anlauf dieser Probe nahm die Stufenpruefung heraus
+     (`if (tipp && tipp())` statt `if (k.dataset.stufe === 'tipp' && …)`)
+     - und das Tor blieb GRUEN, zu Recht: beim zweiten Druck gibt es
+     nichts mehr wegzunehmen, `tippWegnehmen` meldet `false`, und der
+     Knopf faellt von selbst auf die Loesung durch. Die Probe hat also
+     keinen Fehler hergestellt, sondern eine Robustheit vorgefuehrt.
+     Der Eingriff sitzt jetzt dort, wo er wirklich weh tut: der Tipp
+     BEHAUPTET, etwas weggenommen zu haben. Dann bleibt der Knopf ewig
+     in der ersten Stufe. */
   { n:'der zweite Druck loest nicht mehr auf', tor:'smoke',
     args:['--nur=regler'], bauen:true, datei:D,
-    such:"    if (k.dataset.stufe === 'tipp' && tipp && tipp()) {\n      k.dataset.stufe = 'loesung';",
-    ersatz:"    if (tipp && tipp()) {\n      k.dataset.stufe = 'loesung';",
-    an:{ ...DIST, text:'if (tipp && tipp()) {' },
+    such:"  if (nehmen < 1) return false;",
+    ersatz:"  if (nehmen < 1) return true; // Anker: if (nehmen < 1) return false;",
+    an:{ ...DIST, text:'if (nehmen < 1) return true; // Anker:' },
     sagt:'löst nicht auf' },
 
   /* 3. DER TIPP NIMMT ALLES WEG. Dann ist er die Loesung, nur ohne den
