@@ -3785,11 +3785,11 @@ if (laeuft('regler')) try {
         + '— eine Anzeige, die fast immer da ist, sagt nichts mehr'));
     if (gesehen[2] < 3)
       merke('regler', new Error(
-        'nach drei richtigen Antworten am Stueck zeigt der Kopf keine Serie — '
+        'nach drei richtigen Antworten am Stück zeigt der Kopf keine Serie — '
         + 'der Moment, auf den es ankommt, bleibt aus'));
     if (nachher !== 0)
       merke('regler', new Error(
-        `ein Fehler loescht die Serie nicht (sie steht noch auf ${nachher}) — `
+        `ein Fehler löscht die Serie nicht (sie steht noch auf ${nachher}) — `
         + 'dann ist sie nichts wert, weil man sie nicht verlieren kann'));
   }
 
