@@ -1267,6 +1267,18 @@ const EBENEN = [
    * gibt es keinen. */
   { id:'rechnen:gross', ueber:'Rechnen', titel:'Großes Einmaleins', farbe:2,
     art:'rechnen', wer:['stephan','violeta'] },
+  /* --- I4: drei neue Rechenarten (Inhalt-Audit) ----------------------
+   *
+   * Nicht mehr Aufgaben, sondern eine andere FRAGE. Fionas Vorrat war nie
+   * knapp (100 Aufgaben, 16,7 Runden) - knapp war die Art: sie rechnet
+   * seit einem Jahr Plus und Minus. Jede der drei Ebenen fragt auf dem
+   * Stoff, den es schon gibt, etwas anderes. */
+  { id:'rechnen:verdoppeln', ueber:'Rechnen', titel:'Doppelt und halb', farbe:1,
+    art:'rechnen', wer:['fiona'] },
+  { id:'rechnen:luecke', ueber:'Rechnen', titel:'Was fehlt?', farbe:5,
+    art:'rechnen', wer:['lea'] },
+  { id:'rechnen:prozent', ueber:'Rechnen', titel:'Prozent im Kopf', farbe:7,
+    art:'rechnen', wer:['stephan','violeta'] },
   /* Schreiben - nur fuer Fiona (N2a).
    *
    * Sie ist sechs und liest noch nicht. Alles andere in dieser App macht
@@ -1680,6 +1692,14 @@ const MATHEBILD = {
   'rechnen:plusminus': ['plus','minus'],
   'rechnen:reihen':    ['mal','durch'],
   'rechnen:gross':     ['mal','plus'],
+  /* Die drei aus I4. Jede bekommt das Zeichenpaar, das ihre Frage
+     ausmacht - „Doppelt und halb" ist Mal-Zwei und Durch-Zwei, „Was
+     fehlt?" ist Mal mit einer Luecke (also Mal und Minus), „Prozent im
+     Kopf" ist Durch und Mal. Fiona liest die Ueberschrift nicht; das
+     Zeichenpaar ist fuer sie der Name der Kachel. */
+  'rechnen:verdoppeln': ['mal','durch'],
+  'rechnen:luecke':     ['mal','minus'],
+  'rechnen:prozent':    ['durch','mal'],
 };
 
 /**
@@ -2334,8 +2354,11 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    * `FLAGGEN_EXTRA`: acht dieser Laender haben in dieser App keinen
    * Kartenumriss und stehen deshalb nur dort. */
   if (art==='rechnen')
-    return kont==='reihen' ? Rechnen.reihenVorrat()
-         : kont==='gross'  ? Rechnen.grossVorrat()
+    return kont==='reihen'     ? Rechnen.reihenVorrat()
+         : kont==='gross'      ? Rechnen.grossVorrat()
+         : kont==='verdoppeln' ? Rechnen.verdoppelnVorrat()
+         : kont==='luecke'     ? Rechnen.lueckenVorrat()
+         : kont==='prozent'    ? Rechnen.prozentVorrat()
          : Rechnen.vorrat();
   // Sechsundzwanzig, gezaehlt und von Natur aus begrenzt - dieselbe Regel
   // wie beim Rechenvorrat (Backlog Paragraf 5.2).

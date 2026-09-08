@@ -5768,18 +5768,40 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * Ausbleiben ist genauso beweisbar wie vorher - nur ohne dass
          * jede der 27 Runden 900 ms dafuer bezahlt. */
         if (VORLESEN[wer])
-          await bis(p, () => (window.__gesagt || []).some(t => /Was ist/.test(t)), 4000);
+          await bis(p, () => (window.__gesagt || [])
+            .some(t => /Was ist|wieviel ist|Wieviel sind/.test(t)), 4000);
         const r = await p.evaluate(() => {
           const s = document.querySelector('.schirm.da');
           const t = s.querySelector('.rechnung').textContent;
           // Vier Zeichen, weil es vier Rechenarten gibt. Stünde hier
           // weiter nur [+−], liefe Leas Ebene durch, ohne dass irgendetwas
           // gerechnet würde - und der Rauchtest wäre grün.
-          const m = t.match(/(\d+)\s*([+−×:])\s*(\d+)/);
-          if (!m) return null;
-          const a = +m[1], b = +m[3];
-          const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
-                     : m[2] === '×' ? a * b : a / b;
+          /* NACHGERECHNET, nicht abgelesen - und seit I4 in sieben
+             Formen statt in vier.
+             
+             Die drei neuen Rechenarten fragen anders: „Doppelt 3",
+             „Halb 8", „3 + ? = 10", „6 × ? = 42", „20 % von 250". Der
+             alte Ausdruck traf keine davon, und das Tor meldete für alle
+             drei Ebenen „die richtige Antwort ? steht nicht unter —".
+             Das war kein Fehlalarm: es KONNTE die Ebene nicht spielen.
+             
+             Gerechnet wird weiter hier und nicht in der App geholt. Ein
+             Nachrechner, der die geprüfte Funktion benutzt, prüft nichts. */
+          let soll = null;
+          let m = t.match(/(\d+)\s*([+−×:])\s*\?\s*=\s*(\d+)/);
+          if (m) soll = m[2] === '+' ? +m[3] - +m[1] : m[2] === '−' ? +m[1] - +m[3]
+                      : m[2] === '×' ? +m[3] / +m[1] : +m[1] / +m[3];
+          if (soll === null && (m = t.match(/Doppelt\s+(\d+)/))) soll = +m[1] * 2;
+          if (soll === null && (m = t.match(/Halb\s+(\d+)/))) soll = +m[1] / 2;
+          if (soll === null && (m = t.match(/(\d+)\s*%\s*von\s*(\d+)/)))
+            soll = (+m[2] * +m[1]) / 100;
+          if (soll === null) {
+            m = t.match(/(\d+)\s*([+−×:])\s*(\d+)/);
+            if (!m) return null;
+            const a = +m[1], b = +m[3];
+            soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
+                 : m[2] === '×' ? a * b : a / b;
+          }
           // Lea SCHREIBT das Ergebnis. Die vier Zahlen stehen zwar im
           // Papier, sind aber versteckt - wer sie hier anklickt, klickt
           // ins Nichts.
@@ -5810,7 +5832,14 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         }
         wege.add(`${wer}: rechnen ${r.tippt ? 'geschrieben' : 'angetippt'}`);
         await bewertet(p);
-        await abgeschlossen(p, wer, ebene, /Was ist/, `${r.soll} angetippt`);
+        /* Drei Anfaenge, nicht einer (I4). „Was ist sieben plus vier?"
+           deckte die vier alten Rechenarten; die neuen fragen anders -
+           „Drei plus wieviel ist zehn?" und „Wieviel sind 20 Prozent von
+           250?". Der alte Ausdruck haette gemeldet, Fiona bekomme ihre
+           Aufgabe nicht vorgelesen, und das waere falsch gewesen: sie
+           bekommt sie, nur mit anderen Worten. */
+        await abgeschlossen(p, wer, ebene, /Was ist|wieviel ist|Wieviel sind/,
+          `${r.soll} angetippt`);
         continue;
       }
       /* Die umgekehrte Frage (B3) - und sie wird HIER auch gezaehlt.

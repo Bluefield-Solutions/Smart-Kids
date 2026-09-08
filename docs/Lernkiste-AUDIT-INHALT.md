@@ -302,6 +302,38 @@ trennt. Statt die Schwelle zu senken (dann fände das Tor nichts mehr) oder
 das Paar auszunehmen (dann stünde eine unlösbare Aufgabe im Spiel), steht
 dort jetzt das Grasgrün, das die meisten Darstellungen ohnehin zeigen.
 
+### I4 · Drei neue Rechenarten — **gebaut (v558)**
+
+Nicht mehr Aufgaben, sondern eine andere **Frage**. Fionas Vorrat war nie
+knapp — 100 Aufgaben, 16,7 Runden. Knapp war die *Art*: sie rechnet seit
+einem Jahr Plus und Minus. Drei neue Ebenen, eine je Könnensstufe, und jede
+fragt auf dem Stoff, den es schon gibt, etwas anderes:
+
+| Ebene | für | Aufgaben | was sie fragt |
+|---|---|---|---|
+| **Doppelt und halb** | Fiona | 29 | „Doppelt 7" · „Halb 14" · „3 + ? = 10" |
+| **Was fehlt?** | Lea | 45 | „7 × ? = 42" — dieselben Reihen, umgedrehte Frage |
+| **Prozent im Kopf** | Eltern | 50 | „25 % von 320" |
+
+„Was fehlt?" ist nicht dieselbe Aufgabe wie „7 × 6": wer die Reihe aufsagen
+kann, kommt bei der ersten Form durch — bei dieser muss er suchen. Deshalb
+eine eigene Ebene und keine Beimischung.
+
+**Und der Rauchtest musste rechnen lernen.** Er liest die Frage vom Schirm
+und **rechnet selbst nach** — „ein Nachrechner, der die geprüfte Funktion
+benutzt, prüft nichts". Sein Ausdruck traf vier Formen (`3 + 4`, `7 × 8`);
+die drei neuen traf er nicht, und er meldete für alle drei Ebenen *„die
+richtige Antwort ? steht nicht unter —"*. Das war kein Fehlalarm: er **konnte
+die Ebene nicht spielen**. Jetzt kennt er sieben Formen — und die Ansage
+darf auf drei Arten anfangen statt auf einer, denn „Drei plus wieviel ist
+zehn?" ist genauso eine vorgelesene Frage wie „Was ist sieben plus vier?".
+
+**Ein Anker wurde mehrdeutig, und das Tor hat es gefangen.** Fiona hat jetzt
+zwei Rechenebenen; `art:'rechnen', wer:['fiona']` steht damit zweimal im
+Bündel. Eine stehende Gegenprobe hätte ihren Eingriff nur zur Hälfte
+angebracht und für immer „kam nicht an" gemeldet — `anker` hat es beim ersten
+Lauf gefunden, bevor eine Sitzung damit vertan war.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

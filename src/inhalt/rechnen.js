@@ -301,6 +301,8 @@ export function ablenkerFuer(auf, wuerfel) {
   if (auf.rechenart === 'mal-gross' || auf.rechenart === 'quadrat'
       || auf.rechenart === 'geteilt-gross')
     return ablenkerGross(auf, wuerfel);
+  if (['doppelt', 'haelfte', 'zerlegen', 'luecke', 'prozent'].includes(auf.rechenart))
+    return ablenkerNeu(auf, wuerfel);
   return ablenkerReihen(auf, wuerfel);
 }
 
@@ -393,4 +395,133 @@ export function ablenkerGross(auf, wuerfel) {
     if (k !== w && k > 0 && !aus.includes(k)) aus.push(k);
   }
   return aus.slice(0, 3);
+}
+
+/* ---------- I4: drei neue Rechenarten (Inhalt-Audit) ---------------------
+ *
+ * Der Vorrat der Rechenebenen war nie das Problem - Fiona hat 100
+ * Aufgaben und damit 16,7 Runden. Was fehlte, war die ART: sie rechnet
+ * seit einem Jahr Plus und Minus, und das ist EINE Sache, wieder und
+ * wieder. Der Auftrag zum Inhalt-Audit hat ausdruecklich nach
+ * Spielvarianten gefragt, nicht nur nach mehr Zeilen.
+ *
+ * Drei neue Ebenen, eine je Koennensstufe, und jede ist eine andere
+ * FRAGE auf dem Stoff, den es schon gibt:
+ *
+ *   Verdoppeln (Fiona)  Doppelt, Haelfte, „was fehlt zur Zehn" - die drei
+ *                       Rechnungen, die im ersten Schuljahr auswendig
+ *                       sitzen sollen, weil alles andere darauf aufbaut.
+ *   Was fehlt? (Lea)    `7 · ? = 42`. Dieselben Reihen, umgedrehte
+ *                       Frage - und die ist schwerer, weil man die Reihe
+ *                       nicht aufsagen kann, sondern suchen muss.
+ *   Prozent (Eltern)    Zehn, zwanzig, fuenfundzwanzig, fuenfzig,
+ *                       fuenfundsiebzig Prozent von runden Zahlen. Die
+ *                       eine Rechnung, die im Alltag wirklich vorkommt.
+ *
+ * Alle drei sind ERZEUGT und nicht aufgelistet - dieselbe Entscheidung
+ * wie oben: hundert Rechenaufgaben schreibt niemand hin.
+ */
+
+/* Fionas Verdoppeln, Halbieren und Zerlegen: 10 + 10 + 9 = 29 Aufgaben.
+ *
+ * Die Frage steht in Worten und nicht als Rechenzeichen: „Doppelt 4" ist
+ * fuer eine Sechsjaehrige eine andere Aufgabe als „4 + 4", auch wenn
+ * dieselbe Zahl herauskommt. Genau darum geht es - das Doppelte soll
+ * SITZEN und nicht gerechnet werden. */
+export function verdoppelnVorrat() {
+  const aus = [];
+  for (let a = 1; a <= 10; a++)
+    aus.push({ id: `d${a}`, rechenart: 'doppelt', a, b: a, wert: a * 2,
+      frage: `Doppelt ${a}`, name: String(a * 2),
+      gesagt: `Was ist das Doppelte von ${gesprochen(a)}?`,
+      geloest: `das Doppelte von ${gesprochen(a)} ist ${gesprochen(a * 2)}` });
+  for (let a = 2; a <= 20; a += 2)
+    aus.push({ id: `h${a}`, rechenart: 'haelfte', a, b: 2, wert: a / 2,
+      frage: `Halb ${a}`, name: String(a / 2),
+      gesagt: `Was ist die Hälfte von ${gesprochen(a)}?`,
+      geloest: `die Hälfte von ${gesprochen(a)} ist ${gesprochen(a / 2)}` });
+  for (let a = 1; a <= 9; a++)
+    aus.push({ id: `z${a}`, rechenart: 'zerlegen', a, b: 10, wert: 10 - a,
+      frage: `${a} + ? = 10`, name: String(10 - a),
+      gesagt: `${gesprochen(a)} plus wieviel ist zehn?`,
+      geloest: `${gesprochen(a)} plus ${gesprochen(10 - a)} ist zehn` });
+  return aus;
+}
+
+/* Leas Luecken: 45 Aufgaben, aus denselben Reihen 6 bis 10.
+ *
+ * `7 · ? = 42` ist nicht dieselbe Aufgabe wie `7 · 6`. Wer die Reihe
+ * aufsagen kann, kommt bei der ersten Form durch - bei dieser muss er
+ * suchen. Deshalb eine eigene Ebene und keine Beimischung. */
+export function lueckenVorrat() {
+  const aus = [];
+  for (const r of REIHEN)
+    for (let b = 2; b <= 10; b++)
+      aus.push({ id: `l${r}*${b}`, rechenart: 'luecke', a: r, b, wert: b,
+        frage: `${r} × ? = ${r * b}`, name: String(b),
+        gesagt: `${gesprochen(r)} mal wieviel ist ${gesprochen(r * b)}?`,
+        geloest: `${gesprochen(r)} mal ${gesprochen(b)} ist ${gesprochen(r * b)}` });
+  return aus;
+}
+
+/* Prozente fuer die Eltern: 50 Aufgaben.
+ *
+ * Fuenf Saetze mal zehn Grundwerte - und alle zehn sind durch vier
+ * teilbar, damit auch 25 und 75 Prozent aufgehen. Eine Kopfrechenaufgabe
+ * mit Komma waere keine Kopfrechenaufgabe. */
+export const PROZENTE = [10, 20, 25, 50, 75];
+export const GRUNDWERTE = [20, 40, 60, 80, 120, 160, 200, 240, 320, 400];
+export function prozentVorrat() {
+  const aus = [];
+  for (const p of PROZENTE)
+    for (const g of GRUNDWERTE)
+      aus.push({ id: `pz${p}v${g}`, rechenart: 'prozent', a: p, b: g,
+        wert: (g * p) / 100, frage: `${p} % von ${g}`, name: String((g * p) / 100),
+        gesagt: `Wieviel sind ${p} Prozent von ${g}?`,
+        geloest: `${p} Prozent von ${g} sind ${(g * p) / 100}` });
+  return aus;
+}
+
+/* Die Ablenker der drei neuen Arten.
+ *
+ * Dieselbe Regel wie ueberall: genommen wird, wonach jemand WIRKLICH
+ * danebengreift, nicht was ein Wuerfel ausspuckt.
+ *
+ *   doppelt    die Zahl selbst (nicht verdoppelt) und Nachbarn des
+ *              Ergebnisses - der haeufigste Fehler ist, die Aufgabe gar
+ *              nicht auszufuehren
+ *   haelfte    das Doppelte statt der Haelfte - die Verwechslung der
+ *              Richtung
+ *   zerlegen   die Zahl selbst und die Gegenzahl zur Zwanzig
+ *   luecke     Nachbarn des gesuchten Faktors und der andere Faktor
+ *   prozent    das Ergebnis mit falschem Komma (mal zehn, durch zehn) und
+ *              der Grundwert minus das Ergebnis
+ */
+export function ablenkerNeu(auf, wuerfel) {
+  const w = auf.wert;
+  let roh;
+  if (auf.rechenart === 'doppelt') roh = [auf.a, w - 1, w + 1, w - 2, w + 2];
+  else if (auf.rechenart === 'haelfte') roh = [auf.a * 2, auf.a, w + 1, w - 1, w + 2];
+  else if (auf.rechenart === 'zerlegen') roh = [auf.a, w + 1, w - 1, 20 - auf.a, w + 2];
+  else if (auf.rechenart === 'luecke') roh = [auf.a, w + 1, w - 1, w + 2, w - 2];
+  else roh = [w * 10, w / 10, auf.b - w, w + 10, w - 10];
+  const gut = [];
+  for (const x of roh)
+    if (Number.isInteger(x) && x >= 0 && x !== w && !gut.includes(x)) gut.push(x);
+  // Aufgefuellt wird nur, wenn die Fehlerliste zu kurz war - das kommt bei
+  // kleinen Zahlen vor („Doppelt 1" hat wenig Nachbarn ueber null).
+  let n = 1;
+  while (gut.length < 3) {
+    for (const x of [w + n + 2, w - n - 2])
+      if (x >= 0 && x !== w && !gut.includes(x) && gut.length < 3) gut.push(x);
+    if (++n > 20) break;
+  }
+  // Gemischt wie ueberall, damit die richtige Antwort nicht immer an
+  // derselben Stelle steht.
+  const drei = gut.slice(0, 3);
+  for (let i = drei.length - 1; i > 0; i--) {
+    const j = Math.floor(wuerfel() * (i + 1));
+    [drei[i], drei[j]] = [drei[j], drei[i]];
+  }
+  return drei;
 }

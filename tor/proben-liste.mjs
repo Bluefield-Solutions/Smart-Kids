@@ -384,7 +384,13 @@ export const PROBEN = [
   { n:'die Rechenebene gehört plötzlich beiden Kindern', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
     such:"    art:'rechnen', wer:['fiona'], mischung: Rechnen.MISCHUNG_FIONA },",
     ersatz:"    art:'rechnen', mischung: Rechnen.MISCHUNG_FIONA },",
-    an:{ ...DIST, fehlt:"art:'rechnen', wer:['fiona']" },
+    /* Die Nachfrage nennt die MISCHUNG mit. Mit I4 hat Fiona eine zweite
+       Rechenebene („Doppelt und halb"), und `art:'rechnen', wer:['fiona']`
+       steht seither zweimal im Buendel - der Eingriff nimmt aber nur eine
+       weg, und die Probe haette fuer immer „kam nicht an" gemeldet. Das
+       Tor `anker` hat es beim ersten Lauf gefunden, bevor eine Sitzung
+       damit vertan war. */
+    an:{ ...DIST, fehlt:"art:'rechnen', wer:['fiona'], mischung" },
     sagt:'gehört fiona' },
 
   /* Und die Weiche selbst: ohne sie landet die Rechenaufgabe auf dem
