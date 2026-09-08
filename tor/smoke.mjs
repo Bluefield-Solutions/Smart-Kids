@@ -1095,6 +1095,49 @@ async function weitergegangen(p, ms = 8000) {
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
 
+/* Eine Rechenrunde zu Ende spielen - EINMAL aufgeschrieben.
+ *
+ * Zwei Abschnitte brauchen einen Endbildschirm, und der kuerzeste Weg
+ * dorthin ist eine Rechenebene: geantwortet wird mit einem Tipp auf die
+ * richtige Zahl, und die laesst sich ausrechnen. Bis N10 stand diese
+ * Schleife zweimal da, Zeile fuer Zeile gleich - `doppelt` hat es
+ * gemeldet (Regel 6). Zwei Fassungen heisst hier: die naechste Aenderung
+ * an der Rechenanzeige repariert eine davon, und die andere hoert leise
+ * auf, bis zum Ende zu kommen.
+ *
+ * Zurueck kommt, wieviele Aufgaben wirklich gespielt wurden - eine Zahl,
+ * die in jede Fehlermeldung gehoert: „nach 0 Aufgaben kein
+ * Endbildschirm" sagt etwas ganz anderes als „nach 20".
+ */
+async function bisZumEnde(seite, hoechstens = 20) {
+  let n = 0;
+  while (n < hoechstens && !(await seite.$('.schirm.da .buchstand'))) {
+    const r = await seite.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const t = s.querySelector('.rechnung'); if (!t) return null;
+      const m = t.textContent.match(/(\d+)\s*([+−×:])\s*(\d+)/); if (!m) return null;
+      const a = +m[1], b = +m[3];
+      const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
+                 : m[2] === '×' ? a * b : a / b;
+      const zahlen = [...s.querySelectorAll('#auswahl .zahl')].map(x => +x.textContent);
+      return { i: zahlen.indexOf(soll) };
+    });
+    if (!r || r.i < 0) break;
+    await seite.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
+    await bewertet(seite);
+    /* Auf die NAECHSTE Aufgabe warten und nicht nur auf das Urteil.
+       Nach einer richtigen Antwort steht die geloeste Rechnung noch
+       einen Augenblick da („2 + 4 = 6"), und die vier Zahlen darunter
+       auch: der naechste Durchgang der Schleife tippt dann ein zweites
+       Mal in dieselbe Aufgabe. Gemessen kamen so auf neun Runden drei
+       geloeste Aufgaben - die Sitzung war nach zwanzig noch nicht zu
+       Ende, und der Abschnitt meldete „kein Endbildschirm". */
+    await weitergegangen(seite);
+    n++;
+  }
+  return n;
+}
+
 /** Eine Aufgabe loesen: das passende Etikett auf den Anker des Ziels ziehen. */
 async function loese(p) {
   /* Die umgekehrte Frage (B3) hat kein hervorgehobenes Gebiet und keine
@@ -3835,24 +3878,7 @@ if (laeuft('regler')) try {
       new MutationObserver(schau).observe(document.body,
         { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
     });
-    let n10 = 0;
-    while (n10 < 20 && !(await p.$('.schirm.da .buchstand'))) {
-      const r = await p.evaluate(() => {
-        const s = document.querySelector('.schirm.da');
-        const t = s.querySelector('.rechnung'); if (!t) return null;
-        const m = t.textContent.match(/(\d+)\s*([+−×:])\s*(\d+)/); if (!m) return null;
-        const a = +m[1], b = +m[3];
-        const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
-                   : m[2] === '×' ? a * b : a / b;
-        return { i: [...s.querySelectorAll('#auswahl .zahl')]
-          .map(x => +x.textContent).indexOf(soll) };
-      });
-      if (!r || r.i < 0) break;
-      await p.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
-      await bewertet(p);
-      await weitergegangen(p);
-      n10++;
-    }
+    const n10 = await bisZumEnde(p);
     const huepft = await p.evaluate(() => window.__huepft);
     const buehne = await p.evaluate(() => window.__buehne);
     /* Und der Endzustand: nach dem Auftritt steht alles da. Gewartet
@@ -3874,7 +3900,8 @@ if (laeuft('regler')) try {
         huepft === null ? '(nicht gemessen)' : huepft.filter(Boolean).join(', ') || '(nichts)'}`);
     if (huepft === null) merke('regler', new Error(
       `nach ${n10} Aufgaben trug keine richtige Antwort je die Klasse „stimmt" — `
-      + 'dann sagt „das Ja bewegt sich" hier nichts (Regel 1)'));
+      + 'dann sagt „das Ja bewegt sich" hier nichts: eine Prüfung, die nie '
+      + 'etwas meldet, ist kein Beweis (Regel 1)'));
     else if (!huepft.includes('huepft')) merke('regler', new Error(
       'die richtige Antwort bekommt keine Bewegung — dann wackelt in dieser App '
       + 'weiter nur das Nein, und ein Kind hört den ganzen Tag nur, was nicht stimmt'));
@@ -7553,31 +7580,7 @@ if (laeuft('landschaft')) try {
   await zurEbenenwahl(z, 'rechnen:plusminus');
   await z.click('.schirm.da [data-ebene="rechnen:plusminus"]');
   await durchVorlaufWenn(z);
-  let aufgaben = 0;
-  while (aufgaben < 20 && !(await z.$('.schirm.da .buchstand'))) {
-    const r = await z.evaluate(() => {
-      const s = document.querySelector('.schirm.da');
-      const t = s.querySelector('.rechnung'); if (!t) return null;
-      const m = t.textContent.match(/(\d+)\s*([+−×:])\s*(\d+)/); if (!m) return null;
-      const a = +m[1], b = +m[3];
-      const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
-                 : m[2] === '×' ? a * b : a / b;
-      const zahlen = [...s.querySelectorAll('#auswahl .zahl')].map(x => +x.textContent);
-      return { i: zahlen.indexOf(soll) };
-    });
-    if (!r || r.i < 0) break;
-    await z.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
-    await bewertet(z);
-    /* Auf die NAECHSTE Aufgabe warten und nicht nur auf das Urteil.
-       Nach einer richtigen Antwort steht die geloeste Rechnung noch
-       einen Augenblick da („2 + 4 = 6"), und die vier Zahlen darunter
-       auch: der naechste Durchgang der Schleife tippt dann ein zweites
-       Mal in dieselbe Aufgabe. Gemessen kamen so auf neun Runden drei
-       geloeste Aufgaben - die Sitzung war nach zwanzig noch nicht zu
-       Ende, und der Abschnitt meldete „kein Endbildschirm". */
-    await weitergegangen(z);
-    aufgaben++;
-  }
+  const aufgaben = await bisZumEnde(z);
   const ende = await z.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     const zeile = s.querySelector('.tierneu');
