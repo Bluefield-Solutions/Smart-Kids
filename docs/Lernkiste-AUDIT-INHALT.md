@@ -575,6 +575,43 @@ voll, die Kachel ist da. Gefunden hat es `vielfalt` mit einer Zeile
 „0 Gegenstände". Jetzt fragt die Ebene selbst, ob ihre Karte überhaupt eine
 Flagge hat — wer die sieben morgen zeichnet, bekommt die Kachel von selbst.
 
+### I12 · Fünf Flaggen für Südosteuropa — **gebaut (v565)**
+
+Die leere Kachel aus I11, gefüllt. **Fünf** von sieben — und die zwei, die
+fehlen, fehlen mit einem Grund, der älter ist als dieses Paket: die
+Slowakei und Slowenien stehen seit F3 unter „nur zum Zeigen, nicht zum
+Fragen", weil beide dieselbe weiß-blau-rote Trikolore tragen wie Russland
+und sich nur durch ein Wappen unterscheiden, das auf 48 × 32 Punkten ein
+Fleck ist. Das war gemessen, nicht gefühlt, und es gilt weiter. Wer sie
+fragbar machen will, muss das Raster ändern, nicht die Zeichnung.
+
+**Kroatien ist der Grenzfall, der es geschafft hat.** Rot-weiß-blau hat
+auch die Niederlande, in derselben Reihenfolge — was die beiden trennt,
+ist das Schachbrett. Es ist deshalb *groß*, viel größer als in
+Wirklichkeit, und es hat fünf mal fünf Felder statt der echten dreizehn
+Reihen: bei 48 Punkten Breite wäre ein Feld der echten Teilung einen
+halben Punkt breit, und fünf ist das Feinste, was auf diesem Raster noch
+als Muster zu sehen ist statt als Grauwert.
+
+**Ein Tor hat einen Ausweg verweigert, und es hatte recht.** Bosnien
+brauchte ein großes Dreieck von oben rechts nach unten links; der erste
+Anlauf nahm dafür `art:'eigen'` — die Tür, durch die eine Flagge an der
+Formsprache vorbei gezeichnet wird. Die Antwort war: *„6 Flaggen umgehen
+die Formsprache (erlaubt sind 5) — dann ist nicht die Flagge besonders,
+sondern die Sprache zu eng."* Jetzt gibt es die Form `keil` mit frei
+gesetzten Ecken, und sie taugt für jede nächste.
+
+**Und eine Farbe steht bewusst falsch.** Serbiens Wappen ist in
+Wirklichkeit rot. Auf dem roten Oberstreifen ist ein rotes Schild aber
+nicht da — man sieht nur den Zipfel, der ins Blau ragt, und eine Andeutung,
+die zur Hälfte unsichtbar ist, ist keine. Es ist jetzt gold, wie die Krone
+darauf.
+
+**Drei neue Verwechslungspaare** (Kroatien/Niederlande, Serbien/Niederlande,
+Serbien/Russland). Sie stehen auf *verschiedenen Karten* und begegnen sich
+in einer Flaggenrunde nie — genau dafür gibt es diese Liste: sie ist eine
+Aussage über die Welt, nicht über den Vorrat einer Ebene.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

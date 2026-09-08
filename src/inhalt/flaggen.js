@@ -279,6 +279,28 @@ function zeichenTeile(z){
      * Grundfarbe; gemessen lagen Nicaragua und Honduras danach 0,035
      * auseinander, also praktisch gleich. Das Tor hat es gemeldet, bevor
      * es jemand gesehen hat. */
+    /* Das Schachbrett (I12) - Kroatiens Wappen und das EINZIGE, woran es
+       von den Niederlanden zu unterscheiden ist: rot-weiss-blau haben
+       beide, in derselben Reihenfolge. Fuenf mal fuenf statt der echten
+       dreizehn Reihen: bei 48 Punkten Breite ist ein Feld der echten
+       Teilung ein halber Punkt breit, und fuenf ist das Feinste, was auf
+       diesem Raster noch als Muster zu sehen ist statt als Grauwert. */
+    /* Ein grosses Dreieck mit frei gesetzten Ecken (I12).
+       Bosnien braucht eines von oben rechts nach unten links, und das
+       Tor hatte recht, als es den Ausweg `art:'eigen'` verweigert hat:
+       „dann ist nicht die Flagge besonders, sondern die Sprache zu eng".
+       Die Ecken stehen in ANTEILEN der Flagge, damit die Form fuer jede
+       naechste taugt und nicht fuer diese eine. */
+    case 'keil': return [vieleck((z.punkte || []).map(([a, b]) =>
+      [+(a * BREIT).toFixed(2), +(b * HOCH).toFixed(2)]), z.farbe)];
+    case 'schach': {
+      const n = z.felder ?? 5, k = (r * 2) / n, aus = [];
+      aus.push(rechteck(x - r, y - r, r * 2, r * 2, z.grund ?? W));
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++)
+        if ((i + j) % 2 === 0)
+          aus.push(rechteck(x - r + i * k, y - r + j * k, k, k, z.farbe));
+      return aus;
+    }
     case 'dreieckchen': return [vieleck([[x, y - r],
       [x + r * 0.95, y + r * 0.65], [x - r * 0.95, y + r * 0.65]], z.farbe)];
     default: throw new Error(`Unbekanntes Zeichen „${z.form}"`);
@@ -518,6 +540,59 @@ export const FLAGGEN = [
   { a3:'GRC', bau:{ art:'streifen',
                     farben:['#0D5EAF', W, '#0D5EAF', W, '#0D5EAF', W, '#0D5EAF', W, '#0D5EAF'],
                     ecke:{ breit:0.375, hoch:0.5555, farbe:'#0D5EAF', kreuz:W } } },
+
+  /* --- Suedosteuropa: fuenf von sieben (I12) ---------------------------- *
+   *
+   * Mit der Karte aus I11 stand eine Flaggenkachel da, hinter der nichts
+   * lag. Sieben Laender - und nur fuenf davon lassen sich auf 48 x 32
+   * Punkten so zeichnen, dass sie von den anderen zu UNTERSCHEIDEN sind.
+   *
+   * Die Slowakei und Slowenien fehlen hier mit Absicht: sie stehen seit
+   * F3 in `FLAGGEN_EXTRA` („nur zum Zeigen, nicht zum Fragen"), weil
+   * beide dieselbe weiss-blau-rote Trikolore tragen wie Russland und sich
+   * nur durch ein Wappen unterscheiden, das auf diesem Raster ein Fleck
+   * ist. Das war gemessen, nicht gefuehlt, und es gilt weiter. Wer sie
+   * fragbar machen will, muss das Raster aendern, nicht die Zeichnung -
+   * und dann steht diese Entscheidung neu an.
+   *
+   * Kroatien ist der Grenzfall, der es geschafft hat: rot-weiss-blau hat
+   * auch die Niederlande, in derselben Reihenfolge. Was die beiden
+   * trennt, ist das Schachbrett - und deshalb ist es GROSS, viel groesser
+   * als in Wirklichkeit. Eine Andeutung, die zu klein ist, macht aus zwei
+   * Flaggen eine. */
+  /* Serbiens Wappen ist GOLD und nicht rot, obwohl das echte Schild rot
+     ist. Der Grund steht im Bild: ein rotes Schild auf dem roten
+     Oberstreifen ist dort nicht da, und man sieht nur den Zipfel, der ins
+     Blau ragt - eine Andeutung, die zur Haelfte unsichtbar ist, ist
+     keine. Gold hebt sich von allen drei Streifen ab, und Gold ist die
+     Krone, die auf dem echten Wappen sitzt. */
+  { a3:'SRB', bau:{ art:'streifen', farben:['#C6363C', '#0C4076', W],
+                    zeichen:{ form:'schild', x:0.33, y:0.5, gross:0.44,
+                              farbe:'#EDB92E' } } },
+  { a3:'HRV', bau:{ art:'streifen', farben:['#FF0000', W, '#171796'],
+                    zeichen:{ form:'schach', x:0.5, y:0.5, gross:0.68,
+                              farbe:'#FF0000', grund:W } } },
+  /* Bosnien: blau, ein gelber Keil von oben rechts nach unten links, und
+     eine Reihe weisser Sterne DIAGONAL an seiner langen Kante entlang -
+     die einzige Diagonale unter allen Flaggen dieser App, und damit das,
+     was sie unverwechselbar macht.
+     Die echte Flagge zeigt neun Sterne, zwei davon halb ueber den Rand
+     geschnitten. Hier sind es fuenf ganze: ein halber Stern auf 32
+     Punkten Hoehe ist kein halber Stern, sondern ein Fleck. */
+  { a3:'BIH', bau:{ art:'einfarbig', farben:['#002F6C'],
+                    zeichen:[{ form:'keil', farbe:'#FECB00',
+                               punkte:[[0.30, 0], [1, 0], [1, 1]] },
+                             { form:'sterne', farbe:W,
+                               liste:[[0.13, 0.10, 0.17], [0.305, 0.295, 0.17],
+                                      [0.48, 0.49, 0.17], [0.655, 0.685, 0.17],
+                                      [0.83, 0.88, 0.17]] }] } },
+  /* Albanien: der Doppeladler ist auf diesem Raster ein Adler. Dieselbe
+     Andeutung wie bei Mexiko und Guatemala, und dieselbe Ehrlichkeit -
+     mehr behauptet die Form `vogel` nicht. */
+  { a3:'ALB', bau:{ art:'einfarbig', farben:['#E41E20'],
+                    zeichen:{ form:'vogel', gross:0.66, farbe:SW } } },
+  { a3:'MKD', bau:{ art:'einfarbig', farben:['#D20000'],
+                    zeichen:{ form:'sonne', gross:0.74, farbe:'#FFE600' } } },
 
   /* --- Asien: zwoelf --------------------------------------------------- */
   { a3:'IND', bau:{ art:'streifen', farben:['#FF9933', W, '#138808'],
@@ -1067,6 +1142,16 @@ export const AEHNLICH = [
   { paar:['AUS', 'NZL'], grund:'Australien hat sechs weiße Sterne, Neuseeland vier rote.' },
   { paar:['ECU', 'COL'], grund:'Ecuador trägt ein Wappen, Kolumbien nicht.' },
   { paar:['SVN', 'SVK'], grund:'Das Wappen sitzt anders und hat andere Farben.' },
+  /* Die drei aus I12. Sie stehen auf VERSCHIEDENEN Karten - Kroatien und
+     Serbien in Suedosteuropa, die Niederlande und Russland in Europa -,
+     und in einer Flaggenrunde ihrer eigenen Karte begegnen sie sich
+     deshalb nie. Genau dafuer ist diese Liste da: sie ist eine Aussage
+     ueber die WELT, nicht ueber den Vorrat einer Ebene. Wer Kroatien und
+     die Niederlande nebeneinander gesehen hat, verwechselt sie danach
+     nicht mehr - das ist der ganze Zweck von F3. */
+  { paar:['HRV', 'NLD'], grund:'Kroatien trägt das rot-weiße Schachbrett in der Mitte.' },
+  { paar:['SRB', 'NLD'], grund:'Serbien hat Blau in der Mitte, die Niederlande Weiß.' },
+  { paar:['SRB', 'RUS'], grund:'Dieselben drei Farben, umgekehrte Reihenfolge — Serbien ist rot oben.' },
   { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',
     fragbar:false },
   { paar:['ITA', 'MEX'], grund:'Mexiko trägt einen Adler in der Mitte.' },

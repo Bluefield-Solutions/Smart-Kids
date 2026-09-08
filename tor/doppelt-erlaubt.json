@@ -257,5 +257,14 @@
       "src/inhalt/rechnen.js:552"
     ],
     "warum": "Die EINHEITEN-Tafel IST eine Tabelle: jede Zeile hat von/nach/mal/werte, und sieben Zeilen mit denselben Feldern sehen sich aehnlich - das ist ihr Zweck und keine Dopplung. Dieselbe Lage wie bei der EBENEN-Tafel in spiel.js. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die Menge an Dopplung; sie waechst mit jeder weiteren Groessensorte. Wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - hier waren es bei I10 die sieben Zeilen samt ihren je zehn Werten."
+  },
+  {
+    "dateien": "src/inhalt/flaggen.js",
+    "token": 186,
+    "wo": [
+      "src/inhalt/flaggen.js:1137",
+      "src/inhalt/flaggen.js:1153"
+    ],
+    "warum": "Die AEHNLICH-Tafel IST eine Tabelle: jede Zeile ist ein Paar und ein Satz, und zweiundzwanzig Zeilen mit derselben Form sehen sich aehnlich - das ist ihr Zweck. Dieselbe Lage wie bei EBENEN in spiel.js und EINHEITEN in rechnen.js. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs und waechst mit jedem weiteren Paar; wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - hier waren es bei I12 die drei neuen Paare mitten in der Liste, die zwei bestehende Laeufe zu einem verbunden haben."
   }
 ]
