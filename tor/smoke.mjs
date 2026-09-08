@@ -3193,13 +3193,34 @@ if (laeuft('ablage')) try {
          * unerreichbar, drei Gegenproben bewiesen nichts, und NICHTS
          * daran war rot.
          *
-         * Sieben Seiten mit sieben verschiedenen Inhalten koennen nicht
-         * denselben Wert haben. Wenn doch, misst diese Zeile den Kasten
-         * - und dann ist das der Fehler, nicht die Zahl. */
-        if (genutzt.length > 2 && new Set(genutzt.map(([, a]) => a)).size === 1)
+         * Hier stand: „Sieben Seiten mit sieben verschiedenen Inhalten
+         * koennen nicht denselben Wert haben." Das war richtig, solange
+         * die Seiten VERSCHIEDEN voll waren - und seit N12 sind sie es
+         * nicht mehr: alle zehn fuellen ihre Seite, alle zehn melden
+         * 95 %. Die Bedingung hat damit den Erfolg gemeldet.
+         *
+         * Der Zweck bleibt und die Bedingung wird enger: gleich sein
+         * DUERFEN sie nur oben. Melden alle denselben Wert und liegt der
+         * UNTER der Ratsche, dann fuellt nichts und die Zahl kommt
+         * trotzdem aus einer Quelle - das ist der Fehler von damals,
+         * nur in die andere Richtung.
+         *
+         * Und was oben davon uebrigbleibt, traegt jetzt die stehende
+         * Gegenprobe: „die Sammlung fuellt ihre Buchseite nicht mehr"
+         * drueckt die zehn Werte auf 37 bis 56 %, jedes Mal gemessen.
+         * Eine Pruefung, die sich nachweislich zum Anschlagen bringen
+         * laesst, ist kein Selbstlaeufer mehr (Regel 1).
+         *
+         * Die Unterscheidung selbst ist damit nicht verschwunden, sie
+         * ist nur umgezogen: `tonleiter` misst den BILDANTEIL, und der
+         * steht bei 45 · 55 · 84 · 69 · 44 · 69 · 0 - sieben Seiten,
+         * sieben Zahlen. */
+        if (genutzt.length > 2 && new Set(genutzt.map(([, a]) => a)).size === 1
+            && genutzt[0][1] < BUCH_GENUTZT_MIN)
           merke('forscherbuch', new Error(`alle ${genutzt.length} Kapitelseiten melden `
-            + `denselben Wert (${genutzt[0][1]} %) — verschiedene Seiten koennen nicht `
-            + 'gleich voll sein; gemessen wird dann der Kasten und nicht der Inhalt'));
+            + `denselben Wert (${genutzt[0][1]} %), und der liegt unter der Ratsche — `
+            + 'dann fuellt keine Seite, und die Zahl kommt trotzdem aus einer Quelle: '
+            + 'gemessen wird der Kasten und nicht der Inhalt'));
         if (schlecht.length)
           merke('forscherbuch', new Error(`${schlecht.length} von ${genutzt.length} `
             + `Kapitelseiten nutzen weniger als ${BUCH_GENUTZT_MIN} % ihrer Hoehe `
