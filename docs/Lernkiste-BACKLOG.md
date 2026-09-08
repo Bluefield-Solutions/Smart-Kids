@@ -6790,3 +6790,25 @@ Was daraus NEU offen ist:
   einer einzigen richtigen Antwort darauf — das ist machbar, aber es braucht
   einen Einstieg in die Ablage je Ebene, den der Rauchtest heute nur für die
   Einstellungen hat.
+
+## Nebenbefund aus der Nacht: die Kommentare fahren mit
+
+Das Budget-Tor hat nach vier Runden angeschlagen: 464,6 → 488,7 KB, +5,2 %.
+Nachgesehen, wodurch — und die Antwort ist unbequem: **`dist/index.html`
+enthält 6512 Kommentarzeilen.** Der Bauschritt fügt zusammen und minimiert
+nicht.
+
+Dieses Verzeichnis kommentiert absichtlich ausführlich, und das soll so
+bleiben — aber es gehört in den **Quelltext**, nicht auf Fionas Telefon. Jede
+Runde dieser Nacht hat einige Kilobyte Begründung mitgeliefert, die dort
+niemand liest.
+
+**Warum es nicht in dieser Nacht behoben wurde:** ein Kommentarentferner, der
+`//` in einer Zeichenkette oder in einem regulären Ausdruck für einen
+Kommentar hält, liefert eine kaputte App an zwei Kinder aus. Die Torkette
+würde es fangen (der Rauchtest fährt die gebaute Datei), aber es ist eine
+eigene Runde mit eigenen Gegenproben und keine Nebensache.
+
+**Was dafür spricht, es bald zu tun:** die App wird von zwei Kindern auf
+Telefonen geladen, und jede weitere Runde macht das Bündel größer. Der Gewinn
+wächst mit jeder Begründung, die ich schreibe.
