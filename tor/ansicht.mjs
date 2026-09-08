@@ -508,6 +508,13 @@ const AUFNAHMEN = [
      Tor. */
   { name:'quer-verben', spiel:'verben', kind:'stephan', quer:true,
     wahl:'.schirm.da' },
+  /* Und die dritte Ebene dieser Bauform (I9). Sie kommt mit, weil das
+     Eingabefeld hier fuer ein Wort mit drei Zeichen dasteht - der Satz
+     drumherum ist laenger als bei den anderen beiden, und wo die Luecke
+     sitzt, entscheidet der Umbruch. Ob das nach einer Luecke aussieht
+     oder nach einem zerrissenen Satz, sagt nur das Bild. */
+  { name:'quer-praeposition', spiel:'praeposition', kind:'stephan', quer:true,
+    wahl:'.schirm.da' },
   /* Wendungen (E11) und Hoeren und schreiben (E12) - EIN Bildschirm in
    * zwei Ausfuehrungen, und der Unterschied ist genau das, was man sehen
    * muss: bei der einen steht der deutsche Satz ueber dem Feld, bei der
@@ -790,6 +797,7 @@ const OHNE_KARTE = {
   'englisch:laute': '.schirm.da .lautkarte',
   freunde:   '.schirm.da .freundluecke',
   verben:    '.schirm.da .freundluecke',
+  praeposition: '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',
   /* Die Flaggenebene (F2) zeigt je nach Profil ZWEI verschiedene Dinge:

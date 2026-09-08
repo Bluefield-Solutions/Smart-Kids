@@ -1468,6 +1468,17 @@ const EBENEN = [
    * ist die andere Frage, auf demselben Stoff. */
   { id:'verben', ueber:'Englisch', titel:'Gestern und heute', farbe:3,
     art:'verben', wer:['stephan','violeta'] },
+  /* Das kleine Wort (I9) - die Praepositionen.
+   *
+   * Die dritte Ebene in dieser Bauform und die, an der man am haeufigsten
+   * erkannt wird: ein Deutscher, der fliessend Englisch spricht, sagt
+   * „I am waiting on the bus" - nicht, weil ihm ein Wort fehlt, sondern
+   * weil er das deutsche „auf" mituebersetzt. Wieder eine eigene `art`
+   * und aus demselben Grund wie bei den Verben: derselbe Bildschirm,
+   * aber ein eigener Vorlaufsatz, ein eigenes Zeichen, eine eigene Frage
+   * und ein eigener Leitner-Stand. */
+  { id:'praeposition', ueber:'Englisch', titel:'Das kleine Wort', farbe:7,
+    art:'praeposition', wer:['stephan','violeta'] },
   /* Die Wendung, nicht das Wort (E11). Deutsch steht da, Englisch wird
    * getippt - aber nie ein Einzelwort, und MEHRERE Loesungen gelten.
    *
@@ -1543,6 +1554,7 @@ const WELTEN = [
  * eigene `art` sind. */
 const WELT_VON_ART = { rechnen:'rechnen', schreiben:'schreiben',
                        englisch:'englisch', freunde:'englisch', verben:'englisch',
+                       praeposition:'englisch',
                        wendungen:'englisch', hoersatz:'englisch' };
 const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
@@ -1698,6 +1710,12 @@ const FREUNDEBILD = new Set(['freunde']);
    das Zeichen sagt genau das, ohne ein Wort zu brauchen. Kein Kalender
    und keine Uhr: beide hiessen „Datum" und nicht „Vergangenheit". */
 const VERBENBILD = new Set(['verben']);
+/* Die Kachel von „Das kleine Wort" (I9): ein langes Wort, ein kurzes,
+   ein langes - und das kurze in der Mitte hervorgehoben. Es geht um das
+   winzige Wort zwischen zwei grossen, und genau so sieht es aus. Kein
+   Pfeil und kein Ortszeichen: eine Praeposition ist nicht immer ein Ort
+   („good at maths" ist keiner). */
+const PRAEPBILD = new Set(['praeposition']);
 /* Die Kachel der Wendungen (E11): zwei Sprechblasen - es geht um das, was
    man SAGT, und nicht um einzelne Woerter. Und die von „Hören und
    schreiben" (E12): der Lautsprecher und drei Schriftzeilen, in dieser
@@ -1816,6 +1834,12 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round"><path d="M4 8h40"/><path d="M11 3 4 8l7 5"/><path
       d="M44 18H14"/><path d="M38 13l6 5-6 5"/></svg>`;
+  if (PRAEPBILD.has(ebeneId))
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M3 12h13"/><path d="M32 12h13"/><rect
+      x="19" y="6" width="10" height="12" rx="3"/></svg>`;
   if (ENGLISCHZEICHEN[ebeneId])
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -1862,6 +1886,7 @@ function silhouette(ebeneId) {
  * naechste Aenderung einmal vergessen wird. */
 const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,
   englisch: englischschirm, freunde: freundeschirm, verben: freundeschirm,
+  praeposition: freundeschirm,
   flaggen: flaggenschirm,
   wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);
 
@@ -2445,6 +2470,8 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     return Englisch.vorratFreunde();
   if (art==='verben')
     return Englisch.vorratVerben();
+  if (art==='praeposition')
+    return Englisch.vorratPraepositionen();
   if (art==='wendungen')
     return Englisch.vorratWendungen();
   if (art==='hoersatz')
@@ -3776,7 +3803,7 @@ const VORLAUF_JE = (art, ebeneId) =>
      `passt`, nicht geschaetzt. Solange die Bilder Umrisse in Tinte waren,
      passten sie; seit sie Bilder sind, brauchen sie Platz. */
   : ebeneId === 'englisch:lesen' ? 12
-  : ['rechnen', 'freunde', 'verben'].includes(art) ? P.sitzung
+  : ['rechnen', 'freunde', 'verben', 'praeposition'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;
 function vorlaufVorrat(ebeneId){
@@ -3940,6 +3967,15 @@ function vorlaufSatz(ebeneId){
     return 'Ein deutscher Satz, daneben derselbe auf <strong>Englisch</strong> — '
       + 'mit einer Lücke. Genau dort sitzt die Falle. Tippe hier eine an, '
       + 'dann siehst du sie ganz.';
+  if (art === 'praeposition')
+    /* Auch hier nennt der Satz die Falle vorher - und zwar die GATTUNG
+       der Falle: es ist immer das deutsche Wort, das mituebersetzt wird.
+       Wer das weiss, prueft beim Tippen nach; wer es nicht weiss, faellt
+       jedes Mal auf dieselbe Art herein und lernt nur, dass er sich
+       irrt. */
+    return 'Ein deutscher Satz, daneben der englische — es fehlt genau '
+      + '<strong>ein kleines Wort</strong>. Die Falle ist jedes Mal die '
+      + 'wörtliche Übersetzung. Tippe hier eins an.';
   if (art === 'verben')
     /* Der Satz nennt die Falle beim Namen, und zwar VOR der ersten
        Aufgabe. Das ist bei dieser Ebene der halbe Lerninhalt: wer weiss,
@@ -5067,9 +5103,18 @@ function satzschirm(){
  * ueber „He ___ me his number." waere dort schlicht falsch - der Satz
  * steht ja bereits auf Englisch.
  */
+/* Welche Ebenen ein SCHMALES Lueckenfeld bekommen.
+ *
+ * Die Breite ist je Ebene fest und verraet deshalb nichts - aber sie muss
+ * zur laengsten Antwort DIESER Ebene passen. Bei den Praepositionen ist
+ * das „about" mit fuenf Zeichen; mit den fuenfzehn der falschen Freunde
+ * zerriss der Satz auf dem Zielgeraet in zwei Zeilen. */
+const SCHMAL_LUECKE = new Set(['praeposition']);
+
 const FRAGE_LUECKE = {
   freunde: 'Wie heißt der Satz auf Englisch?',
   verben:  'Wie heißt das Verb in der Vergangenheit?',
+  praeposition: 'Welches kleine Wort fehlt?',
 };
 
 function freundeschirm(){
@@ -5095,7 +5140,8 @@ function freundeschirm(){
       || FRAGE_LUECKE.freunde}</div>
     <div class="freundefeld">
       <div class="freundsatz">${ziel.satz}</div>
-      <div class="freundluecke" lang="en">${satzMitFeld}</div>
+      <div class="freundluecke${SCHMAL_LUECKE.has(ebeneArt(st.ebeneId)) ? ' eng' : ''}"
+           lang="en">${satzMitFeld}</div>
       <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>
       ${WEISSNICHT}
     </div>`;

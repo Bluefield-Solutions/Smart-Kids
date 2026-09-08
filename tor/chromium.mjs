@@ -171,7 +171,8 @@ export async function serviere(wurzel, erreichbar = () => true, verzug = () => 0
  * Rauchtest sieht deshalb zusaetzlich nach, dass keine Kachel in der
  * falschen Welt steht und dass es beide Welten gibt.
  */
-const ENGLISCHE_EBENEN = ['englisch', 'freunde', 'verben', 'wendungen', 'hoersatz'];
+const ENGLISCHE_EBENEN = ['englisch', 'freunde', 'verben', 'praeposition',
+                          'wendungen', 'hoersatz'];
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
                                 : String(ebene).startsWith('schreiben') ? 'schreiben'
                                 : ENGLISCHE_EBENEN.some(e => String(ebene).startsWith(e))

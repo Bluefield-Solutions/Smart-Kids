@@ -401,8 +401,15 @@ export const PROBEN = [
    * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
    * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm, verben: freundeschirm,\n  flaggen: flaggenschirm,\n  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);",
-    ersatz:"const schirmZu = (ebeneId) => spielschirm;",
+    /* Der Eingriff nennt NUR die eine Zeile, die er umlegt.
+       Bis I9 stand hier die ganze Weiche als Suchtext, und sie ist mit
+       jeder neuen Ebene laenger geworden: zweimal in Folge (I8, I9) fiel
+       die Probe aus, weil ein Bildschirm dazukam - `anker` hat es beide
+       Male gefangen, und beide Male war an der Probe nichts falsch ausser
+       ihrer Laenge. Ein Suchtext, der bei jeder Erweiterung bricht, ist
+       eine Probe, die man irgendwann streicht statt sie zu pflegen. */
+    such:"{ rechnen: rechenschirm, schreiben: schreibschirm,",
+    ersatz:"{ rechnen: spielschirm, schreiben: schreibschirm,",
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
 
@@ -1883,6 +1890,42 @@ export const PROBEN = [
     ersatz:"  englisch: englischschirm, freunde: freundeschirm,",
     an:{ ...DIST, fehlt:'verben: freundeschirm' },
     sagt:'freundluecke' },
+
+  /* --- I9: Das kleine Wort --------------------------------------------- *
+   *
+   * Die Ebene verspricht im Vorlauf, dass genau EIN KLEINES WORT fehlt.
+   * Wer dort eine Wendung eintraegt, bricht das - und zwar lautlos: die
+   * Aufgabe laesst sich weiter spielen, sie ist nur keine
+   * Praepositionsaufgabe mehr. */
+  { n:'in „Das kleine Wort" steht eine ganze Wendung',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"richtig: ['for'], falle: 'on',\n    warum: 'Das deutsche „auf\" ist hier nicht „on\"",
+    ersatz:"richtig: ['for the'], falle: 'on',\n    warum: 'Das deutsche „auf\" ist hier nicht „on\"",
+    an:{ datei:'src/inhalt/englisch.js', text:"richtig: ['for the']" },
+    sagt:'keine Wendung' },
+
+  /* Und das Lueckenfeld bleibt schmal.
+   *
+   * Mit der Breite der falschen Freunde (15 Zeichen) zerriss „They accused
+   * him ___ fraud." auf dem Zielgeraet in zwei Zeilen - „fraud." stand
+   * allein darunter. Das ist genau der Fehler, gegen den dieser
+   * Bildschirm gebaut ist: die Luecke sitzt IM Satz, sonst ist sie ein
+   * Formular.
+   *
+   * Der erste Anlauf haengte die Probe an `passt` - und `passt` blieb
+   * gruen, denn ein Umbruch ist kein Ueberlauf: nichts steht ueber dem
+   * Rand, nichts ist verdeckt, es sieht nur falsch aus. Genau der Fall,
+   * fuer den es die Vorbilder gibt (Regel 4: kein Tor ersetzt den Blick,
+   * und kein Blick die Tore). `ansicht` vergleicht Bildpunkte und sieht
+   * die zweite Zeile sofort.
+   *
+   * Auf dem Runner ausgelassen: `ansicht` ist dort abgeschaltet (Q39). */
+  { n:'das Lueckenfeld der Praepositionen wird wieder breit', tor:'ansicht',
+    args:['--nur=quer-praeposition'], bauen:true, datei:V,
+    such:'.freundluecke.eng .wort-eingabe{width:8ch}',
+    ersatz:'.freundluecke.eng .wort-eingabe{width:15ch}',
+    an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
+    sagt:'quer-praeposition' },
 
   /* --- I7: der Vorrat als Ratsche ------------------------------------- *
    *
@@ -5382,9 +5425,15 @@ export const PROBEN = [
        traf beide. Welche Stelle verstellt wird, haette dann die
        Reihenfolge entschieden - und die Probe haette am Ende die falsche
        Ebene geprueft, ohne dass es jemandem auffaellt. */
-    such:'      <div class="freundluecke" lang="en">${satzMitFeld}</div>\n'
+    /* Der Suchtext nennt nur noch die ZWEITE der beiden Zeilen und dazu
+       das `lang="en"` der ersten - genug, um vom Satzbildschirm zu
+       unterscheiden, und kurz genug, um eine Aenderung an der Lueckenzeile
+       zu ueberstehen. Mit der ganzen Zeile fiel die Probe bei I9 aus (die
+       Zeile bekam eine Klasse); `anker` hat es gefangen, an der Probe war
+       nichts falsch ausser ihrer Laenge. */
+    such:'lang="en">${satzMitFeld}</div>\n'
       + '      <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>',
-    ersatz:'      <div class="freundluecke" lang="en">${satzMitFeld}</div>\n'
+    ersatz:'lang="en">${satzMitFeld}</div>\n'
       + '      <div class="tippfeld"><button class="zahl">${ziel.falle}</button>'
       + '<button class="knopf haupt" id="pruef">Prüfen</button></div>',
     an:{ ...DIST, text:'<button class="zahl">' },

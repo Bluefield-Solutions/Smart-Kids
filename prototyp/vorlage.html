@@ -2471,6 +2471,18 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   vertical-align:baseline;border-width:var(--strich)}
 .freundluecke .luecke{font-family:var(--f-lesen);font-size:inherit;
   min-width:15ch;vertical-align:baseline}
+/* „Das kleine Wort" (I9) bekommt ein SCHMALERES Feld - und das ist kein
+   Widerspruch zum Absatz darueber, sondern dieselbe Regel: die Breite ist
+   fuer ALLE Aufgaben EINER Ebene gleich und verraet deshalb nichts. Sie
+   richtet sich nach der laengsten Antwort der Ebene, und die ist hier
+   „about" mit fuenf Zeichen statt „grammar school" mit vierzehn.
+   Gemessen und nicht geschaetzt: mit den fuenfzehn Zeichen der falschen
+   Freunde lief „They accused him ___ fraud." auf 844 x 390 in ZWEI
+   Zeilen, und „fraud." stand allein darunter - der Satz war zerrissen,
+   genau das, was der Absatz oben verhindern soll. Mit acht Zeichen
+   passt er in eine Zeile. */
+.freundluecke.eng .wort-eingabe{width:8ch}
+.freundluecke.eng .luecke{min-width:8ch}
 /* Der Aufkleber eines falschen Freundes: das englische Wort. Dieselbe
    Bauart wie der Rechen- und der Ziffernaufkleber - was hier klebt, ist ein
    Wort und kein Umriss, und drei Formen fuer dieselbe Sache waeren zwei zu

@@ -1569,6 +1569,12 @@ nicht liest, ist die Kachel damit unbeschriftet`);
    * vorn lag - alle drei Teile des Tors liefen in denselben Zeitablauf. */
   await ebeneAnsehen('verben', '.schirm.da .freundluecke', 'Gestern und heute',
     { vorlaufName: 'Vorlauf verben' });
+  /* Und die dritte (I9). Sie hat den KUERZESTEN Einsatz der App - „for",
+     drei Zeichen - und trotzdem dasselbe Eingabefeld mitten im Satz. Ob
+     ein Feld, das breiter ist als sein Inhalt, den Satz auseinanderreisst,
+     entscheidet sich auf 844 x 390 und nirgends sonst. */
+  await ebeneAnsehen('praeposition', '.schirm.da .freundluecke', 'Das kleine Wort',
+    { vorlaufName: 'Vorlauf kleines Wort' });
 
   /* Und die beiden Satzebenen (E11/E12) - auch sie gehoeren Stephan.
    *

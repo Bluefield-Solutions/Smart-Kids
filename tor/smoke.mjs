@@ -4810,9 +4810,11 @@ const SAGT_ENGLISCH = (e) => (String(e).startsWith('englisch') || e === 'hoersat
    trotzdem dasteht. Fiona hat sie nicht (zwei geschriebene Woerter kann
    sie nicht lesen), und das ist hier die Aussage. */
 const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
-                                 'verben', 'wendungen', 'hoersatz', 'englisch:laute'],
+                                 'verben', 'praeposition', 'wendungen', 'hoersatz',
+                                 'englisch:laute'],
                        violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
-                                 'verben', 'wendungen', 'hoersatz', 'englisch:laute'],
+                                 'verben', 'praeposition', 'wendungen', 'hoersatz',
+                                 'englisch:laute'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
                                /* „Zwei Wörter, ein Laut" (E5) - seit die
                                   Paare Bilder haben auch bei ihr. Hier zu
@@ -5040,7 +5042,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
                     || e === 'laender:europa' || e.startsWith('rechnen')
                     || e === 'flaggen:europa' || e === 'flaggen:paare' || e === 'flaggen:karte'
                     || e.startsWith('englisch') || e.startsWith('freunde')
-                    || e === 'verben'
+                    || e === 'verben' || e === 'praeposition'
                     || e === 'wendungen' || e === 'hoersatz')
       : da;
     gespielt[wer] = zuSpielen.length;
@@ -9093,7 +9095,8 @@ if (laeuft('englisch')) try {
    * waere Regel 6. Der Ebenenname steht in der Meldung, sonst waere bei
    * Rot nicht zu sehen, welche der beiden es war. */
   for (const [ebene, wie] of [['freunde', 'Falsche Freunde (E10)'],
-                              ['verben', 'Gestern und heute (I8)']]) {
+                              ['verben', 'Gestern und heute (I8)'],
+                              ['praeposition', 'Das kleine Wort (I9)']]) {
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
     await q.waitForSelector('[data-profil="stephan"]', { timeout: 20000 });
     await q.click('[data-profil="stephan"]');

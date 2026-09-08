@@ -449,6 +449,41 @@ Rauchtest, die die Falle tippt und die Erklärung erwartet. Ein zweiter,
 abgeschriebener Block wäre Regel 6 — und zwar besonders leise, weil eine
 Kopie beim ersten Lauf grün ist.
 
+### I9 · Das kleine Wort — **gebaut (v562)**
+
+Die dritte Ebene in der Lückenbauform, und die, an der man am häufigsten
+erkannt wird. Ein Deutscher, der fließend Englisch spricht, sagt „I am
+waiting **on** the bus" — nicht, weil ihm ein Wort fehlt, sondern weil er
+das deutsche „auf" mitübersetzt. Es ist der eine Fehler, den Jahre im
+Ausland nicht abschleifen: die Präposition hängt am Verb, nicht am Sinn,
+und muss deshalb *paarweise* gelernt werden.
+
+**58 Fallen, knapp fünf Runden**, geordnet nach der deutschen Präposition
+und nicht nach dem englischen Verb: auf, von, an, über, mit, vor, in, zu.
+Wer die Liste pflegt, sieht dann sofort, welche Gruppe dünn ist. Die Falle
+ist immer die **wörtliche Übersetzung**, und in jedem Grund steht, *welches
+deutsche Wort* in die Irre führt — ohne diesen Halbsatz wäre die Auskunft
+„so heißt es eben", und das lernt niemand.
+
+**Was das Tor hier prüft, ist neu:** die Ebene verspricht „es fehlt genau
+ein kleines Wort". Das bricht auf zwei lautlose Arten — jemand trägt eine
+Wendung als richtige Antwort ein („for the"), und die Lücke ist keine mehr;
+oder jemand erfindet eine Falle, die es im Englischen gar nicht gibt, und
+sie ist dann kein Fehler, den jemand *macht*. `inhalt` hält beides gegen
+eine **geschlossene Liste von 44 englischen Präpositionen**: gefragt werden
+10 verschiedene, als Falle stehen 16 — alle daraus.
+
+**Und ein Befund, den nur der Blick gefunden hat.** Das Eingabefeld ist
+15 Zeichen breit, für alle Aufgaben gleich — mit gutem Grund: ein Feld, das
+so breit ist wie die Lösung, verrät ihre Länge. Bei den Präpositionen ist
+die längste Antwort aber „about" mit fünf Zeichen, und mit fünfzehn zerriss
+„They accused him ___ fraud." auf 844 × 390 in zwei Zeilen — „fraud." stand
+allein darunter. Die Breite ist jetzt **je Ebene** fest (acht Zeichen hier)
+und verrät damit genauso wenig. `passt` blieb dabei grün, und zu Recht: ein
+Umbruch ist kein Überlauf. Gefunden hat es das Bild, gehalten wird es vom
+Bildvergleich — die Gegenprobe macht das Feld wieder breit und verlangt,
+dass `ansicht` es sieht.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

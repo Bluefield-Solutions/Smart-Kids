@@ -2284,7 +2284,9 @@ console.log('\n  Tor `englisch`');
   for (const buch of [{ was:'Falsche Freunde (E10)', kurz:'die falschen Freunde (E10)',
                         liste: EN.FREUNDE },
                       { was:'Gestern und heute (I8)', kurz:'die unregelmäßigen Verben (I8)',
-                        liste: EN.VERBEN }]) {
+                        liste: EN.VERBEN },
+                      { was:'Das kleine Wort (I9)', kurz:'die Präpositionen (I9)',
+                        liste: EN.PRAEPOSITIONEN }]) {
     const ff = [];
     const ids = new Set();
     for (const f of buch.liste) {
@@ -2352,6 +2354,50 @@ console.log('\n  Tor `englisch`');
     console.log(`    ${buch.was}: ${buch.liste.length} Fallen, jede mit `
       + `beiden Fassungen · ${mehrere} halten mehrere gültige Antworten · `
       + 'keine Falle steht unter den richtigen');
+  }
+
+  /* ---- Und was die Praepositionen zusagen (I9) ------------------------
+   *
+   * Der Vorlauf sagt: „es fehlt genau EIN KLEINES WORT". Das ist eine
+   * Zusage ueber die Daten, und sie bricht auf zwei Arten, die beide
+   * lautlos sind: jemand traegt eine Wendung als richtige Antwort ein
+   * („for the"), und die Luecke ist ploetzlich keine mehr; oder jemand
+   * erfindet eine Falle, die es im Englischen gar nicht gibt - dann ist
+   * sie kein Fehler, den jemand macht, sondern einer, den niemand macht.
+   *
+   * Geprueft wird gegen eine GESCHLOSSENE Liste englischer Praepositionen.
+   * Sie steht hier und nicht in den Daten: die Daten sagen, was gefragt
+   * wird, dieses Tor sagt, was ueberhaupt eine Praeposition IST. Wer sie
+   * erweitern muss, hat entweder eine vergessen - dann gehoert sie dazu -
+   * oder er wollte gerade eine Wendung eintragen.
+   */
+  {
+    const pp = [];
+    const KLEIN = new Set(['about', 'above', 'across', 'after', 'against', 'along',
+      'among', 'around', 'as', 'at', 'before', 'behind', 'below', 'beside',
+      'between', 'beyond', 'by', 'during', 'except', 'for', 'from', 'in',
+      'inside', 'into', 'near', 'of', 'off', 'on', 'onto', 'out', 'outside',
+      'over', 'past', 'since', 'through', 'to', 'towards', 'under', 'until',
+      'up', 'upon', 'with', 'within', 'without']);
+    for (const f of EN.PRAEPOSITIONEN) {
+      for (const r of f.richtig)
+        if (!KLEIN.has(r))
+          pp.push(`„${f.id}": „${r}" ist keine Präposition aus der Liste — die Ebene `
+            + 'verspricht EIN kleines Wort, keine Wendung');
+      if (!KLEIN.has(f.falle))
+        pp.push(`„${f.id}": die Falle „${f.falle}" ist keine englische Präposition — `
+          + 'dann ist sie kein Fehler, den jemand wirklich macht');
+    }
+    if (pp.length) {
+      console.log('    ' + pp.join('\n    '));
+      console.error('\n  englisch ROT: in „Das kleine Wort" steht etwas, das kein kleines Wort ist.');
+      process.exit(1);
+    }
+    const gestellt = new Set(EN.PRAEPOSITIONEN.flatMap(f => f.richtig));
+    const fallen = new Set(EN.PRAEPOSITIONEN.map(f => f.falle));
+    console.log(`    Das kleine Wort (I9): ${gestellt.size} verschiedene Präpositionen `
+      + `gefragt, ${fallen.size} verschiedene Fallen — alle aus der Liste der `
+      + `${KLEIN.size} englischen Präpositionen`);
   }
 
   /* ---- Und was die Verben ZUSAETZLICH zusagen (I8) --------------------
