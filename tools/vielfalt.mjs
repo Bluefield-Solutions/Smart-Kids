@@ -35,7 +35,38 @@ const TOR = process.argv.includes('--tor');
    Audit gefunden hat („Hoeren und schreiben": 12 Saetze, 12 Aufgaben). */
 const RUNDEN_MIN = 2;
 
-const { adresse, schliessen } = await serviere(new URL('../dist', import.meta.url).pathname);
+/* WO DIE GRENZE GILT - UND WO SIE UNSINN IST.
+ *
+ * Der erste Lauf hat 78 von 100 Profil-Ebenen bemaengelt, und ein Teil
+ * davon war nie ein Mangel. „Laender in Nordamerika" hat vier Eintraege,
+ * weil Nordamerika vier Laender hat; Deutschland hat sechzehn
+ * Bundeslaender; das Alphabet hat sechsundzwanzig Buchstaben. Eine Ebene,
+ * deren Vorrat DIE WELT ist, kann nicht wachsen - und sie soll es nicht:
+ * wer sie „repariert", erfindet Laender.
+ *
+ * Innerhalb einer Sitzung wiederholt sich ohnehin nichts:
+ * `Leitner.sitzung` schneidet auf `Math.min(laenge, alle.length)`. Wer
+ * vier Laender hat, bekommt eine Runde mit vier Aufgaben, nicht zwoelf
+ * mit dreimal denselben. Und dass dieselben vier in der naechsten Sitzung
+ * wiederkommen, ist bei einem Leitner-Kasten kein Fehler, sondern der
+ * Sinn - er lebt von Wiederholung mit Abstand.
+ *
+ * Die Grenze gilt deshalb nur dort, wo der Vorrat eine LISTE ist, die
+ * jemand geschrieben hat: Saetze, Wendungen, Vokabeln, Fallen,
+ * Verwechslungspaare, Rechenaufgaben. Die kann immer laenger werden, und
+ * wenn sie kuerzer ist als eine Sitzung, hat jemand aufgehoert zu
+ * schreiben.
+ *
+ * Das ist keine Abschwaechung, sondern die Trennung, ohne die die Zahl
+ * nichts wert waere: „78 von 100" klingt nach einer kaputten App und war
+ * zur Haelfte eine Landkarte. */
+const WELT = [
+  /^kontinente$/, /^bundeslaender$/, /^hauptstaedte$/,
+  /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/,
+];
+const istWelt = (id) => WELT.some(r => r.test(id));
+
+const { adresse, server } = await serviere(new URL('../dist', import.meta.url).pathname);
 const b = await starte();
 const ctx = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
 const p = await ctx.newPage();
@@ -99,16 +130,23 @@ for (const z of zeilen) {
      Gegenstaenden - sie ist eine, die mitwaechst. Wer den Anfang misst,
      misst den ersten Tag und nennt ihn das Spiel. */
   const runden = z.sitzung ? z.leiter / z.sitzung : 0;
-  const knapp = runden < RUNDEN_MIN;
+  const welt = istWelt(z.id);
+  const knapp = runden < RUNDEN_MIN && !welt;
   console.log(`      ${(z.id + ' · ' + z.titel).padEnd(30).slice(0, 30)} `
     + `${String(z.n).padStart(6)}  ${String(z.leiter).padStart(6)}  `
     + `${String(z.voll).padStart(6)}  ${runden.toFixed(1).padStart(6)}`
-    + `${knapp ? '   ←' : ''}`);
+    + `${knapp ? '   ←' : welt && runden < RUNDEN_MIN ? '   ·' : ''}`);
   if (knapp) mangel.push({ ...z, runden });
 }
 
+const weltKnapp = zeilen.filter(z => istWelt(z.id)
+  && z.sitzung && z.leiter / z.sitzung < RUNDEN_MIN).length;
 console.log(`\n    ${zeilen.length} Profil-Ebenen gemessen, `
   + `${mangel.length} unter ${RUNDEN_MIN} Runden Vorrat`);
+console.log(`    ${weltKnapp} weitere liegen darunter, weil ihr Vorrat DIE WELT ist —`);
+console.log('    vier Länder in Nordamerika, sechzehn Bundesländer, sechsundzwanzig');
+console.log('    Buchstaben. Dort ist die Grenze kein Maß, sondern ein Irrtum; sie');
+console.log('    stehen mit · statt mit ←.');
 if (mangel.length) {
   console.log('\n    Zu wenig Vorrat — die zweite Runde ist fast die erste:');
   for (const m of mangel)
@@ -117,7 +155,7 @@ if (mangel.length) {
 }
 
 await b.close();
-await schliessen?.();
+server.close();
 if (TOR && mangel.length) {
   console.log(`\n  vielfalt ROT: ${mangel.length} Ebenen haben weniger als `
     + `${RUNDEN_MIN} Runden Vorrat.\n`);

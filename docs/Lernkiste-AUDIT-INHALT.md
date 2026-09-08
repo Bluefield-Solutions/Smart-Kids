@@ -13,6 +13,9 @@ gleichen Sätze?"
 
 > **78 von 100 Profil-Ebenen tragen weniger als zwei volle Runden Vorrat.**
 
+*(Diese Zahl war zur Hälfte falsch — siehe I6 am Ende. Die Hälfte, die
+stimmte, ist mit I1 bis I5 abgearbeitet; übrig sind zwei.)*
+
 Eine Runde ist bei Fiona 6 Aufgaben, bei Lea 8, bei den Eltern 12. Eine
 Ebene mit zwölf Gegenständen ist für einen Elternteil damit **eine** Runde:
 die zweite Sitzung zeigt dieselben zwölf, nur gemischt. Das ist keine
@@ -333,6 +336,41 @@ zwei Rechenebenen; `art:'rechnen', wer:['fiona']` steht damit zweimal im
 Bündel. Eine stehende Gegenprobe hätte ihren Eingriff nur zur Hälfte
 angebracht und für immer „kam nicht an" gemeldet — `anker` hat es beim ersten
 Lauf gefunden, bevor eine Sitzung damit vertan war.
+
+### I6 · Was ein Mangel ist und was die Welt — **die Kennzahl war zur Hälfte falsch**
+
+Die Schlagzeile dieses Audits — *78 von 100 Profil-Ebenen unter zwei Runden* —
+war zur Hälfte kein Befund. „Länder in Nordamerika" hat vier Einträge, weil
+Nordamerika vier Länder hat. Deutschland hat sechzehn Bundesländer. Das
+Alphabet hat sechsundzwanzig Buchstaben. Eine Ebene, deren Vorrat **die Welt**
+ist, kann nicht wachsen — und sie soll es nicht: wer sie „repariert",
+erfindet Länder.
+
+Dazu kommt, was beim ersten Zählen niemand nachgesehen hat:
+`Leitner.sitzung` schneidet auf `Math.min(laenge, alle.length)`. Wer vier
+Länder hat, bekommt eine Runde mit **vier** Aufgaben, nicht zwölf mit dreimal
+denselben. Und dass dieselben vier in der nächsten Sitzung wiederkommen, ist
+bei einem Leitner-Kasten kein Fehler, sondern der Sinn — er lebt von
+Wiederholung mit Abstand.
+
+Die Grenze gilt deshalb ab jetzt nur, wo der Vorrat eine **Liste ist, die
+jemand geschrieben hat**: Sätze, Wendungen, Vokabeln, Fallen,
+Verwechslungspaare, Rechenaufgaben. Die kann immer länger werden, und wenn
+sie kürzer ist als eine Sitzung, hat jemand aufgehört zu schreiben.
+
+**Gemessen nach allen fünf Paketen:**
+
+> **2 von 104 Profil-Ebenen** liegen unter zwei Runden — beide dieselbe:
+> „Hauptstädte in Europa" für die Eltern, 17 Städte bei 12 Aufgaben je Runde
+> (1,4 Runden). 44 weitere liegen darunter, weil ihr Vorrat die Welt ist.
+
+**Und das ist der nächste Schritt**, denn diese eine ist wirklich eine Liste:
+die neun europäischen Länder aus I3 haben keine gebackene Hauptstadt. Lissabon,
+Stockholm, Budapest, Minsk, Sofia, Helsinki, Oslo, Dublin, Reykjavík von Hand
+einzutragen ist keine große Sache — aber die **Stadtlage** (der Punkt auf der
+Karte) kommt aus Natural Earth, und ohne sie stünde die Nadel im Nichts. Das
+ist zu tun, wenn die Rohdaten wieder da sind, zusammen mit dem Europa-Ausschnitt
+für die zehn zurückgestellten Länder.
 
 ## Das Werkzeug
 
