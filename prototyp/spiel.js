@@ -6120,7 +6120,18 @@ function schreibschirm(){
       <button class="knopf haupt" id="fertigknopf" hidden>Fertig</button>${ansage ? `
       <button class="knopf" id="hoeren">${
         tonAn ? 'Noch mal hören' : 'Ton einschalten'}</button>` : ''}
-      <button class="leise" id="nochmal">Noch mal</button>
+      ${/* Auch dieser Knopf traegt jetzt sein Zeichen (S12b).
+           Er stand neben dem Ausweg, und seit der sein Fragezeichen hat,
+           war er der einzige ohne - auf Fionas Bildschirm, und sie ist
+           sechs und liest nicht. „Jeder Knopf traegt ein Zeichen" ist
+           die haerteste Zusage dieser App; sie gilt nicht nur fuer die
+           Knoepfe, an die man gerade denkt.
+           Der Kreispfeil und nicht der Papierkorb: der Knopf wischt zwar
+           die Striche weg, aber er tut es, damit derselbe Buchstabe noch
+           einmal drankommt - dasselbe wie „Noch mal" auf dem
+           Endbildschirm, nur eine Ebene kleiner. Ein Papierkorb hiesse
+           „weg damit", und das ist es nicht. */
+        ''}<button class="leise" id="nochmal">${ZEI('nochmal', 20)}Noch mal</button>
       ${/* Hier stand derselbe Knopf OHNE Zeichen - als einziger von neun.
            Und ausgerechnet auf Fionas Bildschirm: sie ist sechs und
            liest nicht, „Weiß ich nicht" ist fuer sie ein Muster. Die
