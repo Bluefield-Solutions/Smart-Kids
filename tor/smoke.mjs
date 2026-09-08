@@ -4,7 +4,7 @@
 import { istUmgekehrt, zeigeAufKarte, zielPunkt, starte, zurEbenenwahl, durchGruppe,
          WELT_VON, durchVorlauf, serviere, schreibVorlage, zeichneZug,
          ausAblage, standVon, standGroesse, stelleAblage,
-         STIMMEN } from './chromium.mjs';
+         STIMMEN, inEbene } from './chromium.mjs';
 import * as Schreiben from '../src/inhalt/schreiben.js';
 import * as Protokoll from '../src/protokoll/protokoll.js';
 import { ELTERN_VERGLEICH } from './gestellt.mjs';
@@ -3621,6 +3621,103 @@ if (laeuft('ablage')) try {
         + `(${vorher.bandHinter} gegen ${vorher.bandVor}) — dann sagt es nicht, `
         + 'wie weit man ist'));
     await w.close();
+  }
+
+  /* DIE LEITER (I2) — und zwar daran, dass sie sich BEWEGT.
+   *
+   * Befund U2 des Inhalt-Audits: Fiona sah in Europa drei Länder, heute,
+   * morgen und in einem Jahr. Die Tiefe hing am Profil und nicht am
+   * Können. Zugesagt ist jetzt dreierlei, und jedes einzeln geprüft:
+   *
+   *   1. Am Anfang stehen drei — die Leiter fängt nicht oben an.
+   *   2. Wer die drei kann, sieht sechs — sie steigt.
+   *   3. Wer ZWEI von dreien kann, sieht weiter drei — sie steigt nicht
+   *      von selbst. Ohne diesen dritten Arm bewiese der zweite nur, dass
+   *      irgendein Stand irgendetwas öffnet — eine Prüfung, die nie
+   *      etwas meldet, ist kein Beweis (Regel 1).
+   *
+   * Gemessen wird `vorrat()` unmittelbar, mit gestellten Ständen. Über den
+   * Bildschirm zu spielen hieße, dreimal sechs Aufgaben richtig zu
+   * beantworten, um eine Division zu prüfen.
+   */
+  {
+    const v = await neueSeite({ width: 844, height: 390 }, ctx);
+    await v.click('[data-profil="fiona"]');
+    await v.waitForSelector('.schirm.da [data-welt]', { timeout: 8000 });
+    const leiter = await v.evaluate(() => {
+      const fach = (n) => ({ fach: n, hoechstes: n, faellig: 0,
+                             richtig: n, falsch: 0, zuletzt: 0 });
+      const alle = vorrat('laender:europa', {}, true);
+      const offen = vorrat('laender:europa', {}, false);
+      const stand = {}, halb = {};
+      offen.forEach((g, i) => { stand[g.id] = fach(4); if (i > 0) halb[g.id] = fach(4); });
+      const ganz = {};
+      alle.forEach(g => { ganz[g.id] = fach(5); });
+      return {
+        anfang: offen.length,
+        nachStufe: vorrat('laender:europa', stand, false).length,
+        beiHalb:   vorrat('laender:europa', halb, false).length,
+        ganz:      vorrat('laender:europa', ganz, false).length,
+        alle: alle.length,
+      };
+    });
+    console.log(`  Leiter (Europa, Fiona):     ${leiter.anfang} → ${leiter.nachStufe} `
+      + `→ ganz ${leiter.ganz} von ${leiter.alle} · mit einer Lücke bleibt es bei `
+      + `${leiter.beiHalb}`);
+    if (leiter.anfang !== 3)
+      merke('leiter', new Error(`Fiona fängt mit ${leiter.anfang} Ländern an, `
+        + 'erwartet sind drei — die Leiter fängt nicht mehr unten an'));
+    else if (leiter.nachStufe <= leiter.anfang)
+      merke('leiter', new Error(`wer die ersten ${leiter.anfang} Länder kann, sieht `
+        + `weiterhin ${leiter.nachStufe} — die Tiefe hängt wieder am Profil `
+        + 'statt am Können (U2)'));
+    else if (leiter.beiHalb !== leiter.anfang)
+      merke('leiter', new Error(`mit einer ungekonnten Lücke öffnet die Leiter `
+        + `trotzdem auf ${leiter.beiHalb} — dann öffnet sie nicht das Können, `
+        + 'sondern irgendetwas'));
+    else if (leiter.ganz !== leiter.alle)
+      merke('leiter', new Error(`wer alles kann, sieht ${leiter.ganz} von `
+        + `${leiter.alle} Ländern — die Leiter endet vor dem Ende`));
+
+    /* UND EINE FLAGGE VON MORGEN.
+     *
+     * Der Auftrag zum Inhalt-Audit hat es vorgeschlagen: erst zeigen, was
+     * später drankommt, dann danach fragen. Genau eine der drei falschen
+     * Antworten kommt deshalb aus dem, was die Leiter noch NICHT geöffnet
+     * hat. Zwei wären zu viel — dann fiele die Aufgabe wieder durch
+     * Ausschluss („das kenne ich nicht, also ist es das nicht"). */
+    /* Eine EIGENE Seite: `v` steht schon in der Weltenwahl, und der Weg
+       in eine Ebene fängt bei der Profilwahl an. */
+    const f = await neueSeite({ width: 844, height: 390 }, ctx);
+    await f.click('[data-profil="fiona"]');
+    await zurEbenenwahl(f, 'flaggen:europa');
+    await durchGruppe(f, 'flaggen:europa');
+    await f.click('.schirm.da [data-ebene="flaggen:europa"]:not([data-gruppe])');
+    await durchVorlaufWenn(f);
+    await f.waitForSelector('.schirm.da #auswahl .flaggenkarte', { timeout: 15000 });
+    const wahl = await f.evaluate(() => {
+      const karten = [...document.querySelectorAll('.schirm.da #auswahl .flaggenkarte')]
+        .map(k => k.dataset.id).filter(Boolean);
+      // Die Karte trägt `x.id` (also `fl:DEU`), nicht den Landescode —
+      // der erste Anlauf verglich `fl:DEU` gegen `DEU` und meldete prompt
+      // „4 von 4 liegen jenseits der Leiter", die richtige Antwort
+      // eingeschlossen. Eine Zahl, die auch das Ziel mitzählt, misst
+      // nicht die Ablenker.
+      const offen = new Set(vorrat('flaggen:europa', Stand, false).map(g => g.id));
+      return { n: karten.length, morgen: karten.filter(a => !offen.has(a)).length };
+    });
+    console.log(`  Flagge von morgen:          ${wahl.morgen} von ${wahl.n} `
+      + 'Antworten liegen jenseits der Leiter (erwartet genau eine)');
+    if (!wahl.n)
+      merke('leiter', new Error('auf dem Flaggenschirm steht keine Auswahl — '
+        + 'dann ist über die Ablenker nichts zu sagen'));
+    else if (wahl.morgen !== 1)
+      merke('leiter', new Error(`${wahl.morgen} der ${wahl.n} Antworten kommen von `
+        + 'jenseits der Leiter, erwartet ist genau eine — bei null sieht ein Kind '
+        + 'nie, was als nächstes kommt, ab zwei ist die Aufgabe durch Ausschluss '
+        + 'zu lösen'));
+    await f.close();
+    await v.close();
   }
 
   await p.close();
@@ -7550,8 +7647,23 @@ if (laeuft('abzeichen')) try {
   if (!/fehlt noch eins/.test(beiLea.offen.join(' ')))
     merke('abzeichen', new Error('acht von neun Nachbarn, aber die Zahl daneben sagt '
       + `nicht „fehlt noch eins": ${JSON.stringify(beiLea.offen)}`));
-  /* Fiona: dieselbe Lage, nur mit Tiefe 3. Ihre drei erreichbaren Laender
-     sind gesammelt - und trotzdem darf das Abzeichen nicht auftauchen.
+  /* Fiona: DASSELBE ABZEICHEN, UND JETZT BEKOMMT SIE ES (I2).
+     
+     Hier stand bis zum Inhalt-Audit das Gegenteil: „sie spielt Europa nur
+     bis Rang 3 und käme nie hin". Das war richtig, solange die
+     Ländertiefe eine feste Zahl am Profil war - Deutschlands neun
+     Nachbarn liegen auf den Rängen 4 bis 12, Fionas Tiefe war 3, und ein
+     Abzeichen darauf wäre ein Ziel gewesen, das ewig offen steht.
+     
+     Mit der Leiter ist die Tiefe der ANFANG und nicht die Grenze: wer die
+     offenen Länder kann, bekommt drei dazu, bis der Kontinent zu Ende
+     ist. Damit ist jedes Land für jedes Profil erreichbar, und die Regel
+     hat ihren einzigen Fall verloren.
+     
+     Geprüft wird deshalb ab hier die Gegenrichtung, und sie kann genauso
+     fehlschlagen: das Abzeichen muss DA sein. Verschwindet es wieder,
+     hängt `erreichbar` erneut an einer festen Tiefe - und Fiona sammelt
+     Länder, für die es keine Auszeichnung mehr gibt.
 
      Ihre Kontinente sind hier ALLE gesammelt, und das ist kein Beiwerk:
      im Buch steht genau EIN offenes Abzeichen, naemlich das mit den
@@ -7572,17 +7684,18 @@ if (laeuft('abzeichen')) try {
       'rechnen:plusminus': Rechnen.vorrat().map(x => x.id),
       'schreiben:buchstaben': Schreiben.vorrat().map(x => x.id),
       'laender:europa': ['RUS','DEU','GBR'] });
-  if (/Nachbarn von Deutschland/.test((beiFionaEU.da.join(' ') + beiFionaEU.offen.join(' '))))
-    merke('abzeichen', new Error('Fiona bekommt „alle Nachbarn von Deutschland" angeboten — '
-      + 'sie spielt Europa nur bis Rang 3 und käme nie hin'));
+  if (!/Nachbarn von Deutschland/.test((beiFionaEU.da.join(' ') + beiFionaEU.offen.join(' '))))
+    merke('abzeichen', new Error('Fiona bekommt „alle Nachbarn von Deutschland" NICHT '
+      + 'angeboten — die Leiter führt sie hin, also gehört das Abzeichen ihr; '
+      + `offen steht ${JSON.stringify(beiFionaEU.offen)}`));
 
   console.log(`  Abzeichen:                  Fiona ${beiFiona.da.length} verdient, 1 offen („${
     (beiFiona.offen[0] || '').replace(/\s+/g, ' ')}") · `
     + `nach der Runde ${buch.da.length} verdient, alle mit Bild`);
   console.log(`  Nachbarn-Abzeichen:         Lea „${
     (beiLea.offen[0] || '(keins)').replace(/\s+/g, ' ')}" · `
-    + `Fiona bekommt es nicht (${beiFionaEU.da.length} verdient, offen: „${
-      (beiFionaEU.offen[0] || '(keins)').replace(/\s+/g, ' ')}")`);
+    + `Fiona bekommt es seit der Leiter auch (${beiFionaEU.da.length} verdient, `
+    + `offen: „${(beiFionaEU.offen[0] || '(keins)').replace(/\s+/g, ' ')}")`);
   await p.close(); await q.close();
 } catch (e) { merke('abzeichen', e); }
 

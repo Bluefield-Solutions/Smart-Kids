@@ -50,12 +50,35 @@ for (const wer of PROFILE) {
   await p.waitForSelector(`[data-profil="${wer}"]`);
   await p.click(`[data-profil="${wer}"]`);
   await p.waitForSelector('.schirm.da [data-welt]', { timeout: 8000 }).catch(() => {});
+  /* DREI ZAHLEN, nicht eine - und die mittlere ist der ganze Grund, aus
+     dem es dieses Werkzeug gibt (I2).
+
+       Anfang   der Vorrat mit LEEREM Lernstand: was ein Kind am ersten
+                Tag vor sich hat
+       Leiter   der Vorrat, wenn alles Offene gekonnt ist: wohin die
+                Leiter fuehrt. Gerechnet mit einem gestellten Stand, in
+                dem JEDER Gegenstand in Fach 5 liegt - das ist die
+                Bedingung, unter der `leiterTiefe` bis oben laeuft.
+       Ganz     alles, was es auf dieser Ebene ueberhaupt gibt
+
+     Vorher stand hier nur „Anfang", und damit haette diese Runde
+     ausgesehen wie keine Aenderung: Fionas Europa faengt weiter bei drei
+     an. Was sich geaendert hat, ist, dass es dort nicht mehr aufhoert. */
   const aus = await p.evaluate(() => meineEbenen().map(e => {
-    let n = 0, voll = 0;
+    let n = 0, voll = 0, leiter = 0;
     try { n = vorrat(e.id, {}, false).length; } catch (err) { n = -1; }
     try { voll = vorrat(e.id, {}, true).length; } catch (err) { voll = -1; }
+    try {
+      // Ein Stand, in dem alles gekonnt ist - fuer JEDE Kennung, die auf
+      // dieser Ebene vorkommen kann. Die Kennungen der noch geschlossenen
+      // Stufen stehen im vollen Vorrat.
+      const koennen = {};
+      for (const g of vorrat(e.id, {}, true))
+        koennen[g.id] = { fach: 5, hoechstes: 5, faellig: 0, richtig: 5, falsch: 0, zuletzt: 0 };
+      leiter = vorrat(e.id, koennen, false).length;
+    } catch (err) { leiter = -1; }
     return { id: e.id, titel: `${e.wo || e.titel}`, welt: e.art || 'karte',
-             n, voll, sitzung: P.sitzung, kandidaten: P.kandidaten };
+             n, leiter, voll, sitzung: P.sitzung, kandidaten: P.kandidaten };
   }));
   for (const e of aus) zeilen.push({ wer, ...e });
 }
@@ -68,14 +91,19 @@ for (const z of zeilen) {
   if (z.wer !== letzter) {
     console.log(`\n    ${z.wer.toUpperCase()}  (Sitzung ${z.sitzung} Aufgaben, `
       + `${z.kandidaten ? z.kandidaten + ' Kandidaten' : 'ohne Auswahl'})`);
-    console.log('      Ebene                          Vorrat  Runden  Ablenker');
+    console.log('      Ebene                          Anfang  Leiter    Ganz  Runden');
     letzter = z.wer;
   }
-  const runden = z.sitzung ? z.n / z.sitzung : 0;
+  /* Gemessen wird die LEITER, nicht der Anfang. Eine Ebene, die bei drei
+     anfaengt und bei siebzehn endet, ist keine Ebene mit drei
+     Gegenstaenden - sie ist eine, die mitwaechst. Wer den Anfang misst,
+     misst den ersten Tag und nennt ihn das Spiel. */
+  const runden = z.sitzung ? z.leiter / z.sitzung : 0;
   const knapp = runden < RUNDEN_MIN;
   console.log(`      ${(z.id + ' · ' + z.titel).padEnd(30).slice(0, 30)} `
-    + `${String(z.n).padStart(6)}  ${runden.toFixed(1).padStart(6)}  `
-    + `${String(Math.max(0, z.voll - 1)).padStart(8)}${knapp ? '   ←' : ''}`);
+    + `${String(z.n).padStart(6)}  ${String(z.leiter).padStart(6)}  `
+    + `${String(z.voll).padStart(6)}  ${runden.toFixed(1).padStart(6)}`
+    + `${knapp ? '   ←' : ''}`);
   if (knapp) mangel.push({ ...z, runden });
 }
 

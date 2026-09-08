@@ -1986,6 +1986,60 @@ function kontinentRunde(stand){
  * las `kontinentRunde` den Stand der zuletzt gespielten Ebene und zeigte auf
  * der Kachel eine falsche Zahl.
  */
+
+/* ---------- Die Leiter (I2) ----------------------------------------------
+ *
+ * Befund U2 des Inhalt-Audits: „Die Tiefe waechst nicht mit."
+ *
+ * Jedes Profil hatte eine FESTE `laenderTiefe` - Fiona 3, Lea 13, die
+ * Eltern 17. Fiona sah in Europa drei Laender: heute, morgen und in einem
+ * Jahr. Gemessen waren das 0,5 Runden Vorrat; acht ihrer Laenderebenen und
+ * alle sieben Flaggenebenen standen auf demselben Wert.
+ *
+ * Fuer die KONTINENTE gibt es die Loesung seit langem und eine Zeile
+ * darueber: `kontinentRunde` oeffnet Runde fuer Runde, sobald das Kind die
+ * offenen kann. Fuer Laender und Flaggen hat es nie jemand nachgezogen.
+ * Das hier ist dieselbe Bewegung, mit denselben zwei Entscheidungen:
+ *
+ *   `warGesessen`, NICHT `istGesessen`. Eine Stufe, die einmal offen war,
+ *   geht nicht wieder zu. Bei den Kontinenten ist genau das gemessen
+ *   worden: an 47 von 208 Sitzungen war Runde 2 wieder verschlossen, weil
+ *   das Kind einmal danebengeraten hatte.
+ *
+ *   Die Tiefe des Profils ist der ANFANG, nicht die Grenze. Wer heute
+ *   anfaengt, sieht drei; wer die drei kann, sieht sechs.
+ *
+ * WARUM DREI AUF EINMAL und nicht eins: bei einem waere die Stufe kein
+ * Ereignis, sondern ein Rauschen - und der Vorrat waechst so langsam, dass
+ * die Sitzung ihn weiter ueberholt. Drei ist die Zahl, mit der Fionas
+ * Ebene nach der ersten gekonnten Stufe von 0,5 auf 1,0 Runden geht und
+ * nach der zweiten darueber.
+ *
+ * WAS ES KOSTET, und das steht hier, weil es auffaellt: der
+ * Fortschrittsbalken kann SINKEN. Wer zwei von drei Laendern gesammelt hat
+ * und die dritte Stufe oeffnet, steht bei zwei von sechs. Das ist der
+ * Preis dafuer, dass der Balken zeigt, was OFFEN ist, und nicht, was es
+ * auf der Welt gibt.
+ *
+ * Der schlimmste Fall ist dabei ausgeschlossen, und zwar rechnerisch: ein
+ * VOLLER Balken kann nicht einbrechen. Damit er voll ist, muss jedes
+ * offene Land einen Aufkleber haben (Fach 3), und Fach 3 heisst auch Fach
+ * 2 - die Stufe waere also laengst offen. „Alles gesammelt" und „es kommt
+ * noch etwas" koennen nicht gleichzeitig gelten. Der Haken auf der
+ * Station (N11) wird deshalb nie zurueckgenommen.
+ */
+const LEITER_STUFE = 3;
+
+function leiterTiefe(liste, stand, grund, kennung){
+  let tiefe = Math.max(1, grund);
+  while (tiefe < liste.length) {
+    const offen = liste.filter(x => x.rang <= tiefe);
+    if (!offen.length) break;
+    if (!offen.every(x => Leitner.warGesessen(stand, kennung(x)))) break;
+    tiefe += LEITER_STUFE;
+  }
+  return Math.min(tiefe, Math.max(...liste.map(x => x.rang || 0), 0));
+}
 /* Ein Rahmen, der NUR dieses eine Stueck zeigt.
  *
  * Stand bis R3 im Forscherbuch und wird seit dem Vorlauf an zwei Stellen
@@ -2171,13 +2225,15 @@ function vorrat(ebeneId, stand = Stand, voll = false){
       .map(k=>({ id:k.id, name:k.name, aliasse:k.aliasse, aussprache:k.aussprache,
                  pfad:k.pfad, anker:k.anker }));
   }
-  if (art==='laender')
+  if (art==='laender') {
     // `nachbarDE` wird mitgereicht, damit das Abzeichen „alle Nachbarn von
     // Deutschland" seine Menge aus den DATEN nimmt (D2b) - wie
     // `stadtstaat` bei den Bundesländern.
-    return D.laender[kont].filter(l=>voll || l.rang<=P.laenderTiefe)
+    const tiefe = leiterTiefe(D.laender[kont] || [], stand, P.laenderTiefe, l => l.a3);
+    return D.laender[kont].filter(l=>voll || l.rang<=tiefe)
       .map(l=>({ id:l.a3, name:l.name, aliasse:l.aliasse, aussprache:l.aussprache,
                  pfad:l.pfad, anker:l.anker, nachbarDE:l.nachbarDE }));
+  }
   if (art==='bundeslaender')
     // `stadtstaat` wird mitgereicht, damit das Abzeichen „die drei
     // Stadtstaaten" seine Menge aus den DATEN nimmt und nicht aus einer
@@ -2218,11 +2274,14 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    * nicht auftauchen - sonst fragte die Ebene nach einem Ort, den es auf
    * keiner Karte dieser App gibt. Das Tor `flaggen` haelt beide Listen
    * getrennt; hier wirkt die Trennung. */
-  if (art==='flaggen' && kont==='karte')
-    return (D.laender.europa || []).filter(l => (voll || l.rang<=P.laenderTiefe)
+  if (art==='flaggen' && kont==='karte') {
+    const tiefe = leiterTiefe(D.laender.europa || [], stand, P.laenderTiefe,
+      l => `fk:${l.a3}`);
+    return (D.laender.europa || []).filter(l => (voll || l.rang<=tiefe)
         && Flaggen.hatFlagge(l.a3))
       .map(l=>({ id:`fk:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3, pfad:l.pfad, anker:l.anker }));
+  }
   if (art==='flaggen' && kont==='paare') {
     const namen = new Map();
     for (const liste of Object.values(D.laender))
@@ -2239,11 +2298,14 @@ function vorrat(ebeneId, stand = Stand, voll = false){
       }
     return aus;
   }
-  if (art==='flaggen')
-    return (D.laender[kont] || []).filter(l => (voll || l.rang<=P.laenderTiefe)
+  if (art==='flaggen') {
+    const tiefe = leiterTiefe(D.laender[kont] || [], stand, P.laenderTiefe,
+      l => `fl:${l.a3}`);
+    return (D.laender[kont] || []).filter(l => (voll || l.rang<=tiefe)
         && Flaggen.hatFlagge(l.a3))
       .map(l=>({ id:`fl:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3 }));
+  }
   /* Die Verwechslungen (F3).
    *
    * EIN Gegenstand je Paar und Richtung: „Welche ist Rumaenien?" und
@@ -2333,7 +2395,9 @@ function vorrat(ebeneId, stand = Stand, voll = false){
       // `voll` gilt hier genauso wie bei den Ländern: die Menge eines
       // Abzeichens darf nicht mit der Tiefe des Profils wackeln. Diese
       // Zeile hat `voll` bis D2b stillschweigend übergangen.
-      return D.laender[kont].filter(l=>(voll || l.rang<=P.laenderTiefe) && l.hauptstadt)
+      return D.laender[kont].filter(l=>(voll
+          || l.rang<=leiterTiefe(D.laender[kont], stand, P.laenderTiefe, l2 => l2.a3))
+          && l.hauptstadt)
         .map(l=>({ id:l.a3, name:l.hauptstadt,
           aliasse:[], aussprache:[l.hauptstadt.toLowerCase()], pfad:l.pfad, anker:l.anker,
           ort:l.ort, gebiet:l.name, wovon:l.wovon, ablenker:l.ablenker||[], falle:l.falle }));
@@ -2346,17 +2410,23 @@ function vorrat(ebeneId, stand = Stand, voll = false){
 /**
  * Was dieses Profil je zu sehen bekommt - oder `null` fuer „alles".
  *
- * Gebraucht von den Abzeichen (D2b). NICHT dasselbe wie
- * `vorrat(id, stand, false)`: Fionas Kontinentrunde WAECHST, ihre sechs
- * Kontinente sind also alle erreichbar, auch wenn heute nur vier
- * drankommen. Die Laendertiefe waechst nicht - was ueber `laenderTiefe`
- * liegt, sieht dieses Profil nie, und ein Abzeichen darauf waere ein
- * Ziel, das ewig offen steht.
+ * Gebraucht von den Abzeichen (D2b): ein Abzeichen darf nichts verlangen,
+ * was ein Profil nie zu Gesicht bekommt - das waere ein Ziel, das ewig
+ * offen steht.
+ *
+ * SEIT DER LEITER (I2) IST DAS FUER ALLE DASSELBE, naemlich alles. Hier
+ * stand vorher eine Menge, die an `P.laenderTiefe` haengt, und daneben
+ * der Satz „Die Laendertiefe waechst nicht". Genau das stimmt nicht mehr:
+ * sie ist der Anfang und nicht die Grenze, und wer die offenen Laender
+ * kann, bekommt drei dazu, bis der Kontinent zu Ende ist.
+ *
+ * Die Zeile hier war damit die zweite Stelle, an der die alte Annahme
+ * stand - und die stillste: sie haette Fiona die Abzeichen fuer Europa
+ * dauerhaft vorenthalten, waehrend sie die Laender laengst gefragt
+ * bekommt. Kein Tor haette es gemeldet; ein Abzeichen, das nicht
+ * erscheint, sieht aus wie eins, das noch nicht verdient ist.
  */
 function erreichbar(ebeneId){
-  const [art, kont] = ebeneId.split(':');
-  if ((art === 'laender' || art === 'hauptstaedte') && kont)
-    return new Set(D.laender[kont].filter(l => l.rang <= P.laenderTiefe).map(l => l.a3));
   return null;
 }
 /* Die Fingergrenze und der Boden, den die App fuer eine noch brauchbare
@@ -5801,19 +5871,53 @@ function flaggenschirm(){
    * Lernen mehr, sondern Raten mit besserer Begruendung. */
   const ablenker = () => {
     const andere = ganzeKarte.filter(x => x.id !== ziel.id);
-    /* `nahDran` und nicht die Liste selbst durchsuchen: sie haelt seit F3
-       auch Paare, die man NICHT fragen kann (Rumaenien und der Tschad
-       unterscheiden sich nur im Blauton). Die Auswahl darf zwei davon
-       nie nebeneinanderstellen - dann waere die Aufgabe geraten und
-       nicht gekonnt. `nahDran` gibt nur, was sich unterscheiden LAESST. */
+    /* Zwei von HEUTE, eine von MORGEN — und das ist der zweite Anlauf.
+     *
+     * Der erste zog alle drei aus dem ganzen Kontinent und legte nur EINE
+     * ausdrücklich hinter die Leiter. Der Rauchtest hat nachgemessen und
+     * das Gegenteil gefunden: bei drei offenen Ländern liegen vierzehn
+     * von siebzehn Flaggen jenseits der Leiter, also kamen im Schnitt
+     * DREI von vier Antworten von dort.
+     *
+     * Das ist keine Kleinigkeit, sondern eine andere Aufgabe. Wer drei
+     * Flaggen sieht, die er noch nie gesehen hat, und eine, die er kennt,
+     * braucht den Namen in der Frage gar nicht zu lesen - er tippt auf
+     * die bekannte. Die Ebene misst dann Vertrautheit statt Wissen, und
+     * sie meldet sich nie: die Antworten sind richtig.
+     *
+     * Also umgekehrt: die Ablenker kommen aus dem, was das Kind GERADE
+     * lernt, und genau eine kommt von jenseits der Leiter.
+     *
+     *   heute   zwingt zum Unterscheiden - drei Flaggen, die alle
+     *           bekannt sind, lassen sich nur über den Namen trennen
+     *   morgen  eine einzige, als Vorschau. Wiedererkennen kommt vor
+     *           benennen: wer Portugal dreimal danebenliegen sah, hat es
+     *           schon halb gelernt, wenn es zum ersten Mal gefragt wird.
+     *
+     * Reicht `heute` nicht (Fiona hat am ersten Tag zwei andere Länder),
+     * wird von morgen aufgefüllt. Das ist der Anfang und geht vorbei -
+     * die Leiter macht daraus in wenigen Sitzungen eine echte Auswahl. */
+    const heuteDrin = new Set(alle.map(x => x.id));
     const nah = Flaggen.nahDran(ziel.a3);
     const muster = Flaggen.baumuster(Flaggen.flaggeVon(ziel.a3).bau);
     const gleich = (x) => Flaggen.baumuster(Flaggen.flaggeVon(x.a3).bau) === muster;
     const misch = (l) => mischenMit(l, st.keim + st.i * 7919);
-    const eine = misch(andere.filter(x => nah.has(x.a3))).slice(0, 1);
-    const rest = andere.filter(x => !eine.includes(x));
-    return [...eine, ...misch(rest.filter(gleich)), ...misch(rest.filter(x => !gleich(x)))]
-      .slice(0, 3);
+    /* Die Reihenfolge INNERHALB eines Topfes: erst die verwechselbare,
+       dann die mit demselben Bauplan, dann der Rest. `nahDran` gibt nur,
+       was sich unterscheiden LÄSST - Rumänien und der Tschad trennen sich
+       nur im Blauton und stehen deshalb nie nebeneinander. */
+    const ordnen = (l) => [...misch(l.filter(x => nah.has(x.a3))),
+                           ...misch(l.filter(x => !nah.has(x.a3) && gleich(x))),
+                           ...misch(l.filter(x => !nah.has(x.a3) && !gleich(x)))];
+    const heute  = ordnen(andere.filter(x => heuteDrin.has(x.id)));
+    const morgen = ordnen(andere.filter(x => !heuteDrin.has(x.id)));
+    const aus = [...heute.slice(0, 2), ...morgen.slice(0, 1)];
+    // Aufgefüllt wird aus dem, was übrig ist - erst morgen, dann heute.
+    for (const x of [...morgen, ...heute]) {
+      if (aus.length >= 3) break;
+      if (!aus.includes(x)) aus.push(x);
+    }
+    return aus.slice(0, 3);
   };
 
   /* Die Eingabeart wird MITGEGEBEN, seit es drei gibt (F2b): antippen,

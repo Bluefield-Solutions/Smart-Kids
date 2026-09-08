@@ -1645,10 +1645,25 @@
       "zeit": "2026-09-07",
       "s": 36
     },
-    "ein unerreichbares Abzeichen wird angeboten": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 37
+    "die Erreichbarkeit haengt wieder an einer festen Tiefe": {
+      "commit": "fa9ba5b04a9c2c85cdf33ac9d03dc3c11bb8244f",
+      "zeit": "2026-09-08",
+      "s": 54
+    },
+    "die Leiter steigt nicht mehr": {
+      "commit": "fa9ba5b04a9c2c85cdf33ac9d03dc3c11bb8244f",
+      "zeit": "2026-09-08",
+      "s": 160
+    },
+    "die Leiter oeffnet ohne Koennen": {
+      "commit": "fa9ba5b04a9c2c85cdf33ac9d03dc3c11bb8244f",
+      "zeit": "2026-09-08",
+      "s": 163
+    },
+    "alle Ablenker kommen von jenseits der Leiter": {
+      "commit": "fa9ba5b04a9c2c85cdf33ac9d03dc3c11bb8244f",
+      "zeit": "2026-09-08",
+      "s": 81
     },
     "ein Nachbarland verliert seine Fahne": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",

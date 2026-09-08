@@ -120,11 +120,97 @@ Diktatsätze, gerechnet aus der Sitzungslänge der Eltern (Regel 2: Grenzen
 anteilig, nie absolut). Nachgeprüft: auf zwölf zurückgedreht meldet das Tor
 „nur 12 Diktatsätze — das sind 1.0 Runden, nötig sind 2".
 
+### I2 · Die Leiter — **gebaut (v555)**
+
+`laenderTiefe` war eine feste Zahl am Profil. Sie ist jetzt ein **Anfang**:
+wer die offenen Länder kann, bekommt drei dazu. Dieselbe Bewegung, die es
+für die Kontinente seit langem gibt (`kontinentRunde`) und die für Länder
+und Flaggen nie jemand nachgezogen hat — bis auf die Zeile, die dort schon
+steht: `warGesessen`, nicht `istGesessen`. Eine Stufe, die einmal offen war,
+geht nicht wieder zu.
+
+| | vorher | jetzt |
+|---|---|---|
+| Fionas Europa | 3, für immer | 3 → 6 → … → 17 |
+| Fionas Afrika/Asien/Südamerika | 3 | 3 → 12 |
+| Leas Europa | 13 | 13 → 17 |
+| Ebenen unter zwei Runden | 78 von 100 | **63 von 100** |
+
+Die fünfzehn, die dadurch aus der Mängelliste fallen, sind Fionas und Leas
+Länder- und Flaggenebenen. Die verbleibenden 63 sind fast alle Elternebenen,
+und deren Leiter steht schon oben — ihr Vorrat wächst nur noch mit I3.
+
+**Der Fortschrittsbalken kann dabei sinken**, und das steht hier, weil es
+auffällt: wer zwei von drei Ländern gesammelt hat und die nächste Stufe
+öffnet, steht bei zwei von sechs. Der schlimmste Fall ist trotzdem
+ausgeschlossen, und zwar rechnerisch: ein **voller** Balken kann nicht
+einbrechen. Damit er voll ist, braucht jedes offene Land einen Aufkleber
+(Fach 3) — und Fach 3 heißt auch Fach 2, die Stufe wäre also längst offen.
+„Alles gesammelt" und „es kommt noch etwas" können nicht gleichzeitig
+gelten. Der Haken auf der Station (N11) wird nie zurückgenommen.
+
+### Und die Ablenker: zwei von heute, eine von morgen
+
+Der Auftrag hat es vorgeschlagen — erst zeigen, was später drankommt, dann
+danach fragen. Der erste Anlauf legte genau **eine** der drei falschen
+Antworten hinter die Leiter. Der Rauchtest hat nachgemessen und das
+Gegenteil gefunden: bei drei offenen Ländern liegen vierzehn von siebzehn
+Flaggen jenseits der Leiter, also kamen im Schnitt **drei von vier**
+Antworten von dort.
+
+Das ist keine Kleinigkeit, sondern eine andere Aufgabe. Wer drei Flaggen
+sieht, die er noch nie gesehen hat, und eine, die er kennt, braucht den
+Namen in der Frage gar nicht zu lesen — er tippt auf die bekannte. Die Ebene
+misst dann Vertrautheit statt Wissen, und sie meldet sich nie: die Antworten
+sind ja richtig.
+
+Also umgekehrt: **zwei Ablenker aus dem, was das Kind gerade lernt, und
+genau einer von jenseits der Leiter.** Zwei bekannte zwingen zum
+Unterscheiden, der eine unbekannte ist die Vorschau. Gemessen im Rauchtest:
+`1 von 4 Antworten liegen jenseits der Leiter`.
+
+### Und ein Abzeichen, das seit D2c niemand bekommen konnte
+
+Die Leiter hat einen zweiten Fehler mitgenommen, den niemand suchte.
+`erreichbar()` sagte den Abzeichen, was ein Profil je zu sehen bekommt —
+gerechnet aus der **festen** Ländertiefe, mit dem Satz „Die Ländertiefe
+wächst nicht" daneben. Deutschlands neun Nachbarn liegen auf den Rängen 4
+bis 12, Fionas Tiefe war 3: „Du kennst alle Nachbarn von Deutschland" war
+für sie ausgeschlossen — zu Recht, damals.
+
+Mit der Leiter ist es das nicht mehr, und die Zeile wäre die zweite Stelle
+gewesen, an der die alte Annahme steht — die stillste noch dazu: ein
+Abzeichen, das nicht erscheint, sieht aus wie eines, das noch nicht verdient
+ist. Im Buch stehen für Fiona jetzt **14 statt 12** Abzeichen; dazugekommen
+sind „Nachbarn" (9) und „Hauptstädte" (13).
+
+Das Tor hielt dieselbe Annahme fest („sie käme nie hin") und ist mitgewandert
+— es prüft ab jetzt die Gegenrichtung, die genauso fehlschlagen kann: das
+Abzeichen **muss** da sein. Die stehende Gegenprobe dazu wurde umgedreht;
+ihr Eingriff ist die alte Fassung von `erreichbar`.
+
+**Drei Arme im Nachweis**, weil zwei nichts bewiesen hätten: die Leiter fängt
+bei drei an · wer die drei kann, sieht sechs · wer **zwei von dreien** kann,
+sieht weiter drei. Ohne den dritten Arm hätte der zweite nur gezeigt, dass
+irgendein Stand irgendetwas öffnet — eine Prüfung, die nie etwas meldet,
+ist kein Beweis (Regel 1). Gemessen: `3 → 6 → ganz 17 von 17 · mit einer Lücke
+bleibt es bei 3`.
+
+**Vier stehende Gegenproben** halten I2 fest: die Leiter steigt nicht mehr ·
+die Leiter öffnet ohne Können · alle Ablenker kommen von jenseits der Leiter ·
+die Erreichbarkeit hängt wieder an einer festen Tiefe. Alle vier schlagen an.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die
 **gebaute** Datei und fragt für jedes Profil `vorrat()` — nicht die
 Datenmodule. Der Unterschied ist der ganze Befund U2: `src/inhalt/erdkunde.js`
 kennt 17 europäische Länder, Fiona sieht drei.
+
+Seit I2 nennt es **drei** Zahlen statt einer: *Anfang* (der Vorrat am ersten
+Tag), *Leiter* (wohin er wächst, wenn alles Offene gekonnt ist) und *Ganz*
+(was es überhaupt gibt). Gemessen wird die **Leiter** — eine Ebene, die bei
+drei anfängt und bei siebzehn endet, ist keine Ebene mit drei Gegenständen.
+Wer den Anfang misst, misst den ersten Tag und nennt ihn das Spiel.
 
 `--tor` macht daraus eine Prüfung mit der Grenze von zwei Runden.

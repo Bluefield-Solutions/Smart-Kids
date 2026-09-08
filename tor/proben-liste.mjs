@@ -4762,17 +4762,67 @@ export const PROBEN = [
 
   /* --- D2b ---------------------------------------------------------- */
 
-  /* Die Erreichbarkeitsregel. Sie stand in D2 schon einmal hier, fiel
-   * mangels Fall wieder heraus, und hat seit D2c wieder genau einen:
-   * Fiona spielt Europa bis Rang 3, Deutschlands Nachbarn stehen auf 4
-   * bis 12. Ohne die Regel bekommt sie ein Ziel angeboten, das sie nie
-   * erreicht - und das ist am Buch zu sehen, nicht am Modul. */
-  { n:'ein unerreichbares Abzeichen wird angeboten', tor:'smoke',
-    args:['--nur=abzeichen'], bauen:true, datei:A,
-    such:'      if (umfeld.erreichbar && teile.some(id => !umfeld.erreichbar.has(id))) continue;',
-    ersatz:'',
-    an:{ ...DIST, fehlt:'umfeld.erreichbar && teile.some' },
-    sagt:'käme nie hin' },
+  /* DIE ERREICHBARKEIT, UMGEDREHT (I2).
+   *
+   * Hier stand bis zum Inhalt-Audit die Gegenrichtung: „ein unerreichbares
+   * Abzeichen wird angeboten". Die Regel hatte genau einen Fall - Fiona
+   * spielte Europa bis Rang 3, Deutschlands Nachbarn stehen auf 4 bis 12 -
+   * und die Leiter hat ihn abgeschafft: jede Tiefe waechst jetzt mit dem
+   * Koennen, also ist jedes Land fuer jedes Profil erreichbar.
+   *
+   * Eine Probe, die einen Fall prueft, den es nicht mehr gibt, ist keine.
+   * Geprueft wird deshalb die NEUE Zusage, und der Eingriff ist die alte
+   * Fassung: haengt `erreichbar` wieder an einer festen Tiefe, verliert
+   * Fiona ein Abzeichen, das sie sich erspielen kann. */
+  { n:'die Erreichbarkeit haengt wieder an einer festen Tiefe', tor:'smoke',
+    args:['--nur=abzeichen'], bauen:true, datei:D,
+    such:'function erreichbar(ebeneId){\n  return null;\n}',
+    ersatz:`function erreichbar(ebeneId){
+  const [art, kont] = ebeneId.split(':');
+  if ((art === 'laender' || art === 'hauptstaedte') && kont)
+    return new Set(D.laender[kont].filter(l => l.rang <= P.laenderTiefe).map(l => l.a3));
+  return null;
+}`,
+    an:{ ...DIST, text:'l.rang <= P.laenderTiefe).map(l => l.a3)' },
+    sagt:'NICHT angeboten' },
+
+  /* --- I2: die Leiter ------------------------------------------------ */
+
+  /* Sie STEIGT. Ohne diese Zeile ist `leiterTiefe` die alte feste Zahl -
+   * und weil sie dann genau das zurueckgibt, was vorher dastand, aendert
+   * sich am Bildschirm nichts Sichtbares. Genau deshalb braucht es hier
+   * eine Probe: der Befund U2 war ein Jahr lang unsichtbar. */
+  { n:'die Leiter steigt nicht mehr', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'    tiefe += LEITER_STUFE;',
+    ersatz:'    break;',
+    an:{ ...DIST, fehlt:'tiefe += LEITER_STUFE' },
+    sagt:'die Tiefe hängt wieder am Profil' },
+
+  /* Und sie steigt NUR beim Koennen. Ohne `warGesessen` oeffnet sie sich
+   * von selbst, und Fiona bekommt am ersten Tag siebzehn Laender - das
+   * waere keine Leiter, sondern eine abgeschaffte Tiefe. */
+  { n:'die Leiter oeffnet ohne Koennen', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'    if (!offen.every(x => Leitner.warGesessen(stand, kennung(x)))) break;',
+    ersatz:'    if (false) break;',
+    an:{ ...DIST, fehlt:'offen.every(x => Leitner.warGesessen' },
+    /* Gemeldet wird der ERSTE Arm, nicht der dritte: oeffnet die Leiter
+       ohne Koennen, dann steht Fiona schon am ersten Tag bei siebzehn -
+       und das faellt frueher auf als die Luecke. */
+    sagt:'die Leiter fängt nicht mehr unten an' },
+
+  /* Die Ablenker kommen aus dem, was das Kind GERADE lernt. Ohne die
+   * zwei von heute sind es wieder drei von morgen - und dann ist die
+   * richtige Antwort die einzige bekannte Flagge unter vieren. Die
+   * Aufgabe ist dann ohne den Namen zu loesen und meldet sich nie: die
+   * Antworten sind ja richtig. */
+  { n:'alle Ablenker kommen von jenseits der Leiter', tor:'smoke',
+    args:['--nur=ablage'], bauen:true, datei:D,
+    such:'    const aus = [...heute.slice(0, 2), ...morgen.slice(0, 1)];',
+    ersatz:'    const aus = [...morgen.slice(0, 3)];',
+    an:{ ...DIST, text:'const aus = [...morgen.slice(0, 3)]' },
+    sagt:'jenseits der Leiter' },
 
   /* Und die Menge selbst: sie kommt aus der Fahne `nachbarDE` an den
    * Laendern, nicht aus einer Liste von Kennungen. Faellt eine Fahne weg,
