@@ -69,18 +69,39 @@ gutes System, das niemand bemerkt, ist ein halbes.
 Zeichen (kein Text — Fiona liest nicht). Wer etwas neu sicher kann, erfährt es
 am Ende. Beides mit Gegenproben.
 
-### N5 · Der Einsatz — drei Herzen
+### N5 · Der Einsatz — **verworfen, mit Begründung**
 *Befund S1 · S12*
 
-Eine Runde hat **drei Herzen**. Jede falsche Antwort kostet eines. Bei null
-ist die Runde vorbei — ohne Strafe, ohne Häme, mit einem freundlichen
-Bildschirm und einem Knopf „noch einmal". „Weiß ich nicht" kostet **kein**
-Herz, gibt aber einen Tipp: das bleibt der sichere Ausweg.
+Geplant waren drei Herzen (fünf für Fiona), die eine Runde vorzeitig beenden.
+Beim Bauen habe ich mich dagegen entschieden, und das gehört aufgeschrieben,
+weil es eine Entscheidung ist und kein Vergessen.
 
-Für Fiona sind es **fünf** Herzen, nicht drei — sie ist sechs.
+**Erstens wären sie redundant.** Die Sterne sagen schon, wieviel auf Anhieb
+saß; Herzen sagen dasselbe von hinten. Zwei Zahlen für dieselbe Sache sind in
+diesem Verzeichnis schon einmal auseinandergelaufen — die zwei Sternformeln,
+die das erste Audit gefunden hat. Ein zweiter Zähler ist keine Spannung,
+sondern eine zweite Wahrheit.
 
-**Abnahme:** Der Rauchtest verliert absichtlich alle Herzen und landet auf
-dem richtigen Bildschirm; die Zahl je Profil steht in einer Tabelle.
+**Zweitens brechen sie die Runde ab, und das kostet mehr, als es bringt.** Der
+Leitner-Kasten lernt aus jeder Antwort. Eine Runde, die nach drei Fehlern
+endet, nimmt ihm genau die Aufgaben weg, die er am dringendsten braucht — und
+sie nimmt dem Kind, das gerade Mühe hat, den Rest der Übung. Das ist die
+falsche Richtung.
+
+**Drittens passt es nicht zu diesem Haus.** Die App sagt an keiner Stelle
+„verloren". „Weiß ich nicht" ist ausdrücklich kostenlos, der Abgleich schließt
+Streak-Zwang aus, und die Zeile „heute schon geübt" wurde entfernt, *weil* sie
+ein täglicher Vorwurf werden konnte. Ein Bildschirm „Keine Herzen mehr" wäre
+der erste Vorwurf im ganzen Spiel — ausgerechnet an eine Sechsjährige.
+
+**Was den Befund S1 stattdessen erledigt:** die Serie aus N1. Sie ist ein
+echter Einsatz — man kann sie verlieren, und man sieht sie verschwinden — und
+sie kostet nichts, wenn man sie verliert. Genau das ist die Form, die hier
+trägt.
+
+Der Tipp gegen „Weiß ich nicht" (S12) bleibt offen: er berührt neun
+Aufrufstellen, und jede Aufgabenart bräuchte einen eigenen Tipp. Das ist eine
+eigene Runde, keine Nebensache.
 
 ### N6 · Die Geschwister — was die andere heute geschafft hat
 *Befund S11 · S6*

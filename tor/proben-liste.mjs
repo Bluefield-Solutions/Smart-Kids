@@ -6025,6 +6025,31 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
 
+  /* --- Der Grund der Welt (N7) ------------------------------------------
+   *
+   * 1. ES BLEIBT ALLES WEISS. Die Ableitung wird nicht gesetzt, und die
+   *    Flaeche hat wieder keinen Ort. Nichts wird falsch, nichts wird
+   *    rot - genau die Verfallsart, gegen die eine Ableitung gebaut ist. */
+  { n:'der Grund der Welt wird nicht gesetzt', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"  if (w && !OHNE_GRUND.has(bau && bau.name)) d.setAttribute('data-welt', String(w.farbe));",
+    ersatz:"  if (false) d.setAttribute('data-welt', String(w.farbe)); "
+      + "// Anker: if (w && !OHNE_GRUND.has(bau && bau.name)) d.setAttribute('data-welt', String(w.farbe));",
+    an:{ ...DIST, text:"if (false) d.setAttribute('data-welt'" },
+    sagt:'traegt der Grund keinen Ton' },
+
+  /* 2. ER STEHT SCHON UEBER DEN WELTEN. Die Weltenwahl in Erdkunde-Blau,
+   *    weil `Welt` ab Werk auf der ersten Welt steht - eine Auskunft ueber
+   *    einen Ort, den man noch nicht betreten hat. Genau das ist beim
+   *    ersten Anlauf passiert, und es sah dabei gut aus. */
+  { n:'der Grund färbt auch die Bildschirme über den Welten', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"const OHNE_GRUND = new Set(['profilwahl', 'weltenwahl', 'forscherbuch', 'elternTor']);",
+    ersatz:"const OHNE_GRUND = new Set([]); "
+      + "// Anker: const OHNE_GRUND = new Set(['profilwahl', 'weltenwahl', 'forscherbuch', 'elternTor']);",
+    an:{ ...DIST, text:'const OHNE_GRUND = new Set([]);' },
+    sagt:'noch nicht betreten hat' },
+
   /* --- Was zurueckkommt (N4) --------------------------------------------
    *
    * Das Zeichen im Kopf sagt „die kennst du schon - die kommt noch mal".

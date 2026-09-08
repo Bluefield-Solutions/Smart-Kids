@@ -3713,6 +3713,40 @@ if (laeuft('regler')) try {
     return p.evaluate(() => window.__toene.length);
   };
 
+  /* DER GRUND DER WELT (N7).
+   *
+   * Zwei Zusagen, und beide gehen leise kaputt - die Flaeche ist in
+   * jedem Fall da, sie sagt nur das Falsche:
+   *
+   *   1. In einer Welt traegt der Grund IHREN Ton. Ohne das ist wieder
+   *      alles weiss, und es gibt keinen Ort.
+   *   2. UEBER den Welten traegt er keinen. Die Weltenwahl in
+   *      Erdkunde-Blau waere eine Auskunft ueber einen Ort, den man noch
+   *      nicht betreten hat - falscher als gar keine.
+   *
+   * Gemessen am Merkmal am Wurzelelement und nicht an einem Bildpunkt:
+   * die Farbe selbst prueft `lesbarkeit` (Kontrast) und `ansicht` (Bild).
+   * Hier geht es darum, ob die ABLEITUNG greift.
+   */
+  {
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    await p.click('[data-profil="lea"]');
+    await p.waitForSelector('[data-welt]');
+    const beiWelten = await p.evaluate(() => document.documentElement.getAttribute('data-welt'));
+    await p.click('[data-welt="rechnen"]');
+    await p.waitForSelector('[data-ebene]');
+    const inRechnen = await p.evaluate(() => document.documentElement.getAttribute('data-welt'));
+    console.log(`  Grund: Weltenwahl ${beiWelten === null ? 'ohne' : `„${beiWelten}"`} `
+      + `· in Rechnen „${inRechnen}"`);
+    if (beiWelten !== null) merke('regler', new Error(
+      `die Weltenwahl traegt schon den Grund der Welt „${beiWelten}" — das ist eine `
+      + 'Auskunft ueber einen Ort, den man noch nicht betreten hat'));
+    if (!inRechnen) merke('regler', new Error(
+      'in einer Welt traegt der Grund keinen Ton — dann ist wieder alles weiss, '
+      + 'und es gibt keinen Ort'));
+  }
+
   /* DAS TAGESZIEL (N2) — der Grund, morgen wiederzukommen.
    *
    * Zugesagt sind drei Dinge:

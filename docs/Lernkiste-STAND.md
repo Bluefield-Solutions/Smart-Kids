@@ -12624,3 +12624,50 @@ Rückstandsverzeichnis.
 
 Der Kopf liest sich jetzt auf einen Blick: **↺ · ● ○ ○ ⭕ · ☆☆☆** — Wiedersehen,
 Stand der Runde, Knacknuss, Sterne.
+
+## N7 · Der Grund und die Tiefe — die Fläche bekommt einen Ort
+
+Befund G1: alles steht auf Weiß. Kein Ort, keine Atmosphäre, kein Unterschied
+zwischen „ich bin in der Erdkunde" und „ich rechne".
+
+**Die Maschine stand schon da und war nur abgeschaltet.** `body` hat seit
+langem einen Verlauf von `--grund` nach `--grund-2` — und beide standen im
+Hellmodus auf **reinem Weiß**. Es fehlte nicht die Technik, es fehlte die
+Farbe.
+
+Jetzt trägt jede Welt ihren Ton im Grund. Die Zahl ist die **Flächenfarbe der
+Welt** (`farbe: 5` bei Erdkunde), also genau der Ton, den ihre Kachel schon
+hat — kein zweiter Farbwert für dieselbe Welt.
+
+**Nur der zweite Ton färbt sich**, der erste bleibt fast weiß: der Verlauf
+läuft von oben (Kopfzeile, viel Text) nach unten (Kacheln, wenig Text). So
+bekommt die Fläche einen Ort, ohne dass die Zeile darüber Kontrast verliert.
+`lesbarkeit` misst das wirklich und bleibt grün.
+
+**Gesetzt wird er am Wurzelelement**, an der einen Stelle, durch die jeder
+Bildschirmwechsel läuft — kein Schalter, den man an jedem Bildschirm umlegen
+muss. Wer die Welt verlässt, verliert den Grund von selbst.
+
+**Und über den Welten gibt es keinen.** Der erste Anlauf hat das übersehen: die
+Weltenwahl stand in Erdkunde-Blau da, weil `Welt` ab Werk auf der ersten Welt
+steht. Ein Ort, den man noch nicht betreten hat, darf keine Farbe haben — sonst
+sagt der Grund etwas **Falsches**, und das ist schlimmer, als wenn er nichts
+sagt.
+
+### G2 war auch zu hart
+
+„Nichts hat Tiefe" stimmte so nicht: die Kacheln haben längst eine harte
+Unterkante, einen Innenglanz und einen Druckzustand. Was **fehlte**, war der
+geworfene Schatten — damit lagen sie *auf* dem Grund statt *darüber*.
+
+Jetzt drei Lagen, und jede sagt etwas anderes: die Unterkante gibt Dicke, der
+Innenglanz gibt Wölbung, der geworfene Schatten hebt ab. Gedrückt sinkt die
+Kachel ein **und** ihr Schatten schrumpft — ohne das zweite wäre die Bewegung
+nur ein Rutschen, kein Druck.
+
+**Gemessen:**
+
+```
+Grund: Weltenwahl ohne · in Rechnen „4"
+lesbarkeit grün: jeder Text erreicht seine WCAG-Grenze
+```

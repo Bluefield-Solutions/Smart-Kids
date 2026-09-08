@@ -934,16 +934,25 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    werden aus zwei Profilen zwei 550 Punkte breite Balken. */
 .kachel{background:var(--papier);border:var(--strich) solid var(--knopf-rand);
   border-radius:var(--rund-flaeche);
-  box-shadow:0 var(--kante) 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht);
+  /* Drei Lagen, und jede sagt etwas anderes: die harte Unterkante gibt
+     der Kachel Dicke, der Innenglanz gibt ihr Woelbung, und der geworfene
+     Schatten hebt sie vom Grund ab. Die dritte ist neu (N7) - vorher lag
+     die Kachel auf der Flaeche statt darueber. */
+  box-shadow:0 var(--kante) 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht),
+    var(--schatten-kachel);
   padding:var(--r6) var(--r8);
   min-width:0;width:100%;max-width:280px;justify-self:center;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:var(--r2);
   transition:transform var(--d-tipp) var(--k-standard),box-shadow var(--d-tipp) var(--k-standard),
     border-color var(--d-tipp) var(--k-standard)}
+/* Gedrueckt sinkt sie ein UND ihr Schatten schrumpft - ohne das zweite
+   waere die Bewegung nur ein Rutschen, kein Druck. */
 .kachel:active{transform:translateY(3px);
-  box-shadow:0 0 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht)}
+  box-shadow:0 0 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht),
+    var(--schatten-kachel-tief)}
 @media (hover:hover){.kachel:hover{border-color:var(--primaer-rand);
-  box-shadow:0 var(--kante) 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht),0 0 0 var(--ring) var(--akzent-h)}}
+  box-shadow:0 var(--kante) 0 var(--knopf-kante),inset 0 var(--strich) 0 var(--knopf-licht),
+    0 0 0 var(--ring) var(--akzent-h),var(--schatten-kachel)}}
 /* Ohne `min-width:0` ist ein Flex-Kind mindestens so breit wie sein
    laengstes Wort - "Landeshauptstaedte" stand dann quer ueber den Rand
    der eigenen Kachel hinaus. Die Kachel selbst sass richtig, ihr Inhalt

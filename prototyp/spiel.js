@@ -2655,6 +2655,48 @@ const wartezeichen = () => {
  * Eine Nummer je Aufruf genuegt. Der Bau eines ueberholten Aufrufs wird
  * still verworfen - sein Bildschirm kommt gar nicht erst an die Buehne. */
 let zeigeLauf = 0;
+/* ---------- Der Grund der Welt (N7) --------------------------------------
+ *
+ * Befund G1 aus dem Grafik-Audit: alles steht auf Weiss. Es gibt keinen
+ * Ort, keine Atmosphaere, keinen Unterschied zwischen „ich bin in der
+ * Erdkunde" und „ich rechne". Weiss ist die Farbe von Papier, nicht von
+ * Spielen.
+ *
+ * DIE MASCHINE STAND SCHON DA und war nur abgeschaltet: `body` hat seit
+ * langem einen Verlauf von `--grund` nach `--grund-2`, und beide standen
+ * im Hellmodus auf reinem Weiss. Es fehlte nicht die Technik, es fehlte
+ * die Farbe.
+ *
+ * GESETZT WIRD SIE AM WURZELELEMENT, genau wie der Abendmodus, und aus
+ * derselben Ueberlegung wie beim Menue-Balken: kein Schalter, den man an
+ * jedem Bildschirm umlegen muss, sondern eine ABLEITUNG an der einen
+ * Stelle, durch die jeder Bildschirmwechsel laeuft. Wer die Welt
+ * verlaesst, verliert den Grund von selbst - es gibt keinen Ort, an dem
+ * man das vergessen kann.
+ *
+ * DIE ZAHL IST DIE FLAECHENFARBE DER WELT (`farbe: 5` bei Erdkunde), also
+ * genau der Ton, den ihre Kachel schon traegt. Ein zweiter Farbwert
+ * daneben waere eine zweite Wahrheit ueber dieselbe Welt.
+ */
+/* VOR der Weltenwahl gibt es keine Welt - auch dann nicht, wenn `Welt`
+   noch den Wert von vorhin traegt. Der erste Anlauf hat das uebersehen:
+   die Weltenwahl stand in Erdkunde-Blau da, weil `Welt` ab Werk auf der
+   ersten Welt steht. Ein Ort, den man noch nicht betreten hat, darf keine
+   Farbe haben - sonst sagt der Grund etwas Falsches, und das ist
+   schlimmer, als wenn er nichts sagt.
+
+   Die Liste steht hier und nicht als Merkmal an jedem Bildschirm: es sind
+   die vier Bildschirme, die UEBER den Welten liegen, und die aendern sich
+   seltener als die Welten darunter. */
+const OHNE_GRUND = new Set(['profilwahl', 'weltenwahl', 'forscherbuch', 'elternTor']);
+
+function grundSetzen(bau){
+  const w = WELTEN.find(x => x.id === Welt);
+  const d = document.documentElement;
+  if (w && !OHNE_GRUND.has(bau && bau.name)) d.setAttribute('data-welt', String(w.farbe));
+  else d.removeAttribute('data-welt');
+}
+
 function zeige(bau){
   const meins = ++zeigeLauf;
   const fertig = Promise.resolve(bau());
@@ -2674,6 +2716,10 @@ function zeige(bau){
     // zweimal kurz hintereinander gerufen, bleibt sonst einer haengen -
     // im Elternbereich schimmerten drei Bildschirme uebereinander.
     const alte = [...buehne.querySelectorAll('.schirm')];
+    /* DER GRUND, an der einen Stelle, durch die jeder Bildschirmwechsel
+       laeuft. Vor dem Einhaengen, damit der neue Bildschirm nicht kurz
+       auf dem alten Grund steht. */
+    grundSetzen(bau);
     neu.classList.add('schirm'); buehne.appendChild(neu);
     requestAnimationFrame(()=>{
       neu.classList.add('da');

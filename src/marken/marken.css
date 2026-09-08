@@ -92,8 +92,17 @@
      Beide Marken bleiben stehen, obwohl sie am Tag gleich sind: der
      Abendmodus setzt sie unterschiedlich, und der Verlauf im Rumpf liest
      beide. */
-  --grund:    oklch(1 0 0);
-  --grund-2:  oklch(1 0 0);
+  /* DER GRUND (N7). Bis hierher waren beide reinweiss - `body` hat seit
+     langem einen Verlauf von `--grund` nach `--grund-2`, und der war
+     damit unsichtbar. Weiss ist die Farbe von Papier, nicht von Spielen.
+
+     WARUM SO HELL: darauf steht Text, und `lesbarkeit` misst den Kontrast
+     wirklich. 0,985 auf 0,955 ist ein Hauch - genug, damit die Flaeche
+     einen Ort hat, und wenig genug, dass jede gemessene Zusage haelt.
+     Ein satter Grund waere ein anderes Projekt: dann muessten alle
+     Schriftfarben mitwandern, und das ist eine eigene Runde. */
+  --grund:    oklch(0.985 0.006 255);
+  --grund-2:  oklch(0.955 0.014 255);
   --papier:   oklch(1     0      0);
   /* Das Licht auf einem Aufkleber (Q28). Es ist reines Weiss und bleibt
      es auch im dunklen Anstrich: ein Glanzpunkt ist eine Spiegelung, kein
@@ -215,6 +224,16 @@
      schweben laesst. Eine Lage allein sieht nach Kasten aus, zwei nach
      etwas, das aufgeklebt ist. */
   --schatten-kleber: 0 2px 4px oklch(0 0 0/.10), 0 10px 18px -10px oklch(0 0 0/.45);
+  /* DIE KACHEL WIRFT EINEN SCHATTEN (N7). Sie hatte schon eine harte
+     Unterkante und einen Druckzustand - Tiefe also, aber die einer
+     aufgeklebten Flaeche. Was fehlte, war der GEWORFENE Schatten: damit
+     liegt sie nicht mehr AUF dem Grund, sondern DARUEBER, und erst dann
+     laedt sie zum Druecken ein.
+     Weit und weich, nicht eng und hart: eine enge Lage sieht nach Rahmen
+     aus, eine weite nach Abstand. Und schwach - der Grund ist hell, ein
+     kraeftiger Schatten waere ein Fleck. */
+  --schatten-kachel: 0 4px 10px -4px oklch(0 0 0/.16), 0 1px 2px oklch(0 0 0/.06);
+  --schatten-kachel-tief: 0 1px 3px -1px oklch(0 0 0/.14);
   /* Der Glanz auf einem Aufkleber: eine Ecke Licht von links oben, nicht
      die halbe Flaeche. Der erste Anlauf ging bis 34 % mit 55 % Deckung
      und hat jedes Tier ausgewaschen - gesehen an der Zeichenbank, nicht
@@ -304,6 +323,25 @@
   --d-warten-versatz: 180ms;   /* Abstand, in dem sie nacheinander atmen */
   --k-standard: cubic-bezier(.2, 0, 0, 1);
 }
+
+/* DIE WELT FAERBT DEN GRUND (N7).
+ *
+ * `data-welt` traegt die FLAECHENFARBE der Welt (`farbe: 5` bei Erdkunde),
+ * also genau die Zahl, die ihre Kachel schon benutzt - kein zweiter
+ * Farbwert fuer dieselbe Welt. Die Winkel sind die von `--f1` bis `--f5`,
+ * eine Zeile hoeher nachzulesen; `--f6` ist der sechste, den die Welt
+ * „Schreiben" traegt.
+ *
+ * Nur der zweite Ton faerbt sich, der erste bleibt fast weiss: der Verlauf
+ * laeuft von oben (Kopfzeile, viel Text) nach unten (Kacheln, wenig Text).
+ * So bekommt die Flaeche einen Ort, ohne dass die Zeile darueber Kontrast
+ * verliert. */
+:root[data-welt="1"] { --grund-2: oklch(0.945 0.030  25); }
+:root[data-welt="2"] { --grund-2: oklch(0.945 0.030  75); }
+:root[data-welt="3"] { --grund-2: oklch(0.945 0.030 130); }
+:root[data-welt="4"] { --grund-2: oklch(0.945 0.030 175); }
+:root[data-welt="5"] { --grund-2: oklch(0.945 0.030 230); }
+:root[data-welt="6"] { --grund-2: oklch(0.945 0.030 285); }
 
 /* Abendmodus: nicht umkehren, sondern die Gesamthelligkeit senken.
    In OKLCH ist das ein Griff. */

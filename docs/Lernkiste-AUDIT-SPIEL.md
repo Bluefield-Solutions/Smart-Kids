@@ -148,7 +148,7 @@ Nach Wirkung je Aufwand, für **diese zwei Kinder** auf **diesem Gerät**:
 | 3 | S5 Tagesziel | hoch | klein |
 | 4 | S2 Bogen der Sitzung | hoch | mittel |
 | 5 | S7/S8 Weg statt Wand | hoch | groß |
-| 6 | S1 Einsatz | mittel | mittel |
+| 6 | ~~S1 Einsatz durch Herzen~~ — verworfen, S1 erledigt die Serie | — | — |
 | 7 | S11 Geschwister | mittel | mittel |
 | 8 | S9 Überraschung | mittel | klein |
 | 9 | S10 Leitner zeigen | mittel | klein |
