@@ -191,6 +191,6 @@ Dazu kommen drei Dinge, die es heute nicht gibt:
 | 5 | G5/G6 Kacheln werden Orte | hoch | groß |
 | 6 | G14 Bewegung als Rückmeldung | hoch | mittel |
 | 7 | G8/G9 Fortschritt sichtbar | mittel | klein |
-| 8 | G10 Das Buch wird ein Buch | mittel | groß |
+| 8 | G10 Das Buch wird ein Buch — **erledigt (N12)** | mittel | groß |
 | 9 | G7/G13 Fläche und Karten füllen | mittel | mittel |
 | 10 | G11 Schrift bekommt eine Stimme | mittel | klein |

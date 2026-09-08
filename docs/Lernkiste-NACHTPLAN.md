@@ -226,6 +226,46 @@ Die größte Runde des Plans, und die letzte inhaltliche.
 Das Forscherbuch bekommt Seiten, Sammelplätze und Lücken. Es sieht aus wie
 etwas, das man vollmachen will.
 
+**Gebaut (v540).** Keine Lücken — die hat Q28 mit Grund abgeschafft
+(„sechzig leere Kästen sahen nach Arbeit aus"). Was fehlte, war die
+**Seite**: gemessen nutzten sechs von zehn Kapitelseiten 37 bis 56 %
+ihrer Höhe. Die drei bei 95 % waren die Albumkarte und die Rechentafel —
+genau die beiden, die eine frühere Runde „nimm die Höhe deiner Spalte"
+bekommen hatten. Das Soll kam damit nicht von mir, sondern von den zwei
+Seiten, die es schon konnten.
+
+Jetzt bekommen Aufkleberwand und Raumgitter dieselbe Rechnung. Zehn von
+zehn Seiten stehen bei 95 %, eine bei 81 %.
+
+**Zweimal gescheitert, und beide Male lehrreich:**
+
+1. Ein Boden von 132 Punkten je Reihe trieb die Englischseite auf 106 % —
+   die zweite Reihe hing unten heraus. Eine Kapitelseite soll *passen*;
+   das Buch blättert, es rollt nicht.
+2. Danach füllten zwei große Zellen die Erdkunde-Übersicht, und darin
+   klebte dieselbe briefmarkengroße Weltkarte wie vorher. Die Füllung
+   meldete 95 %, und die Seite war leerer als je zuvor. Die Regel dort
+   sagt seit B14, der Umriss solle „mit dem Platz wachsen" — und setzte
+   ihn auf 72 Punkte fest.
+
+Deshalb **zwei Ratschen statt einer**: `smoke` hält die Füllung (34 → 70
+%), `tonleiter` hält neu den **Bildanteil** (mindestens 35 %). Eine
+Kennzahl, die sich durch einen höheren leeren Kasten erfüllen lässt,
+misst den Kasten. Der Bildanteil sagt es als zweite, unabhängige Zahl:
+*tiere 12 → 45 %*, *Erdkunde-Übersicht 26 → 84 %*.
+
+**Und ein Vorbild für die dritte Sorte Kapitelseite.** Karte und
+Rechentafel sind seit langem fotografiert; die Aufkleberwand stand auf
+vier Seiten und auf keinem Bild — genau die vier, die diese Runde
+verändert hat. `quer-buch-schreiben`, mit eigenem gestelltem Stand.
+
+**Offen und benannt:** die Abzeichenwand (81 % Füllung, 19 % Bild) ist
+das dritte Raster und hat die Rechnung nicht bekommen. Sie steht als
+Ausnahme *mit Namen und Zahl* im Tor, nicht als weicherer Grenzwert.
+
+**Zwei stehende Gegenproben:** die Sammlung füllt ihre Seite nicht mehr ·
+der Kasten wächst, das Bild bleibt briefmarkengroß.
+
 ---
 
 ## Was NICHT in diesem Plan steht
