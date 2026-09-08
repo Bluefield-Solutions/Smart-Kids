@@ -208,14 +208,50 @@ I.ECHTE_FALLEN.forEach(id => {
   const gebackenEU = new Map(LAENDER_EUROPA_GROB.map(l => [l.a3, l]));
   const meta = new Map(I.LAENDER.europa.map(l => [l.a3, l]));
   let drin = 0;
+  /* RATSCHE, kein Soll: so viele europaeische Laender tragen heute eine
+     gebackene Hauptstadt und stehen damit auf der Ebene. Sinkt die Zahl,
+     ist eine Hauptstadt aus dem Backen gefallen - genau der Fehler, den
+     dieser Abschnitt seit D2c faengt. Steigt sie, gehoert sie erhoeht. */
+  const HAUPTSTAEDTE_EU = 17;
+  let ohneHauptstadt = 0;
   for (const m of I.LAENDER.europa) {
     const l = gebackenEU.get(m.a3);
     pruefe(l, `${m.a3} (${m.name}) wird gespielt und ist nicht gebacken — `
       + '`npm run backen` mit den Rohdaten trägt es nach');
     if (!l) continue;
-    pruefe(l.name === m.name, `${m.a3}: gebacken steht „${l.name}", `
+    /* Der gebackene Name darf FEHLEN, aber nicht widersprechen (I3).
+     *
+     * `src/geo/` haelt jeden Umriss seines Kontinents; einen Namen bekommt
+     * dort nur, was zur Zeit des Backens in `erdkunde.js` stand. Seit I3
+     * stehen 55 Laender mehr dort, und ihre Umrisse tragen `name: null` -
+     * das ist kein Widerspruch, sondern ein Umriss, der aelter ist als
+     * sein Name. `bauen.mjs` sagt es selbst: „Was gespielt wird,
+     * entscheidet `erdkunde.js` - hier und nirgends sonst."
+     *
+     * Was weiter geprueft wird, ist der echte Fall: zwei VERSCHIEDENE
+     * Namen fuer dasselbe Land. */
+    pruefe(!l.name || l.name === m.name, `${m.a3}: gebacken steht „${l.name}", `
       + `in erdkunde.js „${m.name}" — zwei Namen für dasselbe Land`);
-    pruefe(l.hauptstadt, `${l.a3}: keine Hauptstadt gebacken`);
+    /* Die HAUPTSTADT ist keine Eigenschaft des Landes, sondern der Ebene.
+     *
+     * Sie kommt aus Natural Earth und wird beim Backen angehaengt; die
+     * Laender aus I3 haben keine, weil das Backen Rohdaten braucht, die
+     * nicht im Verzeichnis liegen. `vorrat('hauptstaedte:europa')` siebt
+     * genau danach - wer keine hat, steht dort nicht.
+     *
+     * Hier stand `pruefe(l.hauptstadt, ...)` fuer JEDES europaeische Land,
+     * und das war richtig, solange jedes europaeische Land auf der
+     * Hauptstaedte-Ebene stand. Wer es so liesse, muesste 19 Laender
+     * wieder streichen, damit ein Tor gruen wird - und das ist die
+     * Reihenfolge, in der Daten falsch werden.
+     *
+     * Die Zeile, die den alten Fehler weiter faengt, steht unten: eine
+     * RATSCHE auf der Zahl der Hauptstaedte. Prag, Wien, Bern, Kopenhagen
+     * und Luxemburg sind damals aus der Ebene gefallen, ohne dass etwas
+     * rot wurde - das kann nicht mehr passieren, denn die Zahl darf nicht
+     * sinken. */
+    if (!l.hauptstadt) continue;
+    ohneHauptstadt++;
     pruefe(l.ort, `${l.a3}: keine Stadtlage gebacken`);
     if (l.ort) {
       const polys = pfadZuPolys(l.pfad);
@@ -256,7 +292,12 @@ I.ECHTE_FALLEN.forEach(id => {
     if (l.wovon) pruefe(/^vo[nm] /.test(l.wovon),
       `${l.a3}: \`wovon\` ist „${l.wovon}" — die Frage lautet „Wie heißt die Hauptstadt …?"`);
   const sitze = I.LAENDER.europa.filter(m => gebackenEU.get(m.a3)?.regierungssitz).length;
-  console.log(`    Hauptstädte in Europa: ${I.LAENDER.europa.length} Länder, ${drin} Stadtlagen im `
+  pruefe(ohneHauptstadt >= HAUPTSTAEDTE_EU,
+    `nur noch ${ohneHauptstadt} europäische Länder tragen eine gebackene Hauptstadt, `
+    + `es waren ${HAUPTSTAEDTE_EU} — eine ist aus dem Backen gefallen und damit `
+    + 'still von der Ebene „Hauptstädte in Europa" verschwunden');
+  console.log(`    Hauptstädte in Europa: ${ohneHauptstadt} von ${I.LAENDER.europa.length} `
+    + `Ländern tragen eine (Ratsche ${HAUPTSTAEDTE_EU}), ${drin} Stadtlagen im `
     + `eigenen Land, ${sitze} abweichender Regierungssitz`);
 }
 pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
@@ -3845,10 +3886,37 @@ console.log('\n  Tor `flaggen`');
    * niemand wuesste, ob das ein Fehler ist oder Absicht. Dieselbe Lehre
    * wie beim Lebensraum ohne Ebene. */
   const laender = new Map();
+  const ohneFlagge = [];
+  /* RATSCHE: so viele Laender werden heute nach ihrer Flagge gefragt.
+     Sie darf nicht sinken - wer eine Flagge herausnimmt, faellt auf. Wer
+     eine dazuzeichnet, erhoeht sie hier. */
+  const FLAGGEN_GEFRAGT = 69;
   for (const [kont, liste] of Object.entries(I.LAENDER))
     for (const l of liste) laender.set(l.a3, { ...l, kont });
   for (const [a3, l] of laender)
-    if (!FL.hatFlagge(a3)) ff.push(`„${l.name}" (${a3}, ${l.kont}) hat keine Flagge`);
+    /* GEFRAGT, nicht gezeichnet (I3).
+     *
+     * Hier stand `hatFlagge`, und das war richtig, solange jedes benannte
+     * Land eine gefragte Flagge hatte. Mit den 55 Laendern aus I3 stimmt
+     * es nicht mehr: ihre Umrisse lagen gebacken im Baum, ihre Flaggen
+     * nicht - die werden gezeichnet, und das ist Handarbeit.
+     *
+     * Die Regel „jedes Land hat eine Flagge" haette hier zwei Auswege
+     * gelassen: 55 Flaggen an einem Nachmittag zeichnen, oder 55 Laender
+     * wieder streichen, damit ein Tor gruen wird. Das zweite ist die
+     * Reihenfolge, in der Daten falsch werden.
+     *
+     * Also die Regel, die wirklich gilt: `vorrat('flaggen:*')` siebt nach
+     * `flaggeFragbar`, ein Land ohne Flagge steht dort nicht - und die
+     * RATSCHE unten haelt fest, dass die Zahl der gefragten Flaggen nicht
+     * sinkt. Wer eine Flagge herausnimmt, faellt auf; wer ein Land ohne
+     * Flagge dazulegt, nicht. */
+    if (!FL.flaggeFragbar(a3)) ohneFlagge.push(`${l.name} (${a3}, ${l.kont})`);
+  const gefragt = laender.size - ohneFlagge.length;
+  if (gefragt < FLAGGEN_GEFRAGT)
+    ff.push(`nur noch ${gefragt} Länder werden nach ihrer Flagge gefragt, `
+      + `es waren ${FLAGGEN_GEFRAGT} — eine Flagge ist aus \`FLAGGEN\` gefallen `
+      + 'und damit still aus der Ebene verschwunden');
   for (const f of FL.FLAGGEN)
     if (!laender.has(f.a3))
       ff.push(`die Flagge ${f.a3} gehoert zu keinem Land in \`LAENDER\` — `
@@ -3948,6 +4016,13 @@ console.log('\n  Tor `flaggen`');
   for (const [kont, liste] of Object.entries(I.LAENDER))
     for (let i = 0; i < liste.length; i++)
       for (let j = i + 1; j < liste.length; j++) {
+        /* Verglichen wird, was NEBENEINANDER STEHEN KANN - also der
+           gefragte Vorrat (I3). Die acht aus `FLAGGEN_EXTRA` stehen nie
+           in einer Auswahl; sie sind das Gegenstueck in den
+           Verwechslungen, wo daneben steht, worauf zu achten ist.
+           Irland gegen Italien dort zu messen hiesse, eine Aufgabe zu
+           pruefen, die es nicht gibt. */
+        if (!FL.flaggeFragbar(liste[i].a3) || !FL.flaggeFragbar(liste[j].a3)) continue;
         const a = FL.flaggeVon(liste[i].a3), b = FL.flaggeVon(liste[j].a3);
         if (!a || !b) continue;
         const u = FL.unterschied(a.bau, b.bau);

@@ -817,6 +817,27 @@ const NACH_A3 = new Map([...FLAGGEN, ...FLAGGEN_EXTRA].map(f => [f.a3, f]));
 export const flaggeVon = (a3) => NACH_A3.get(a3) || null;
 export const hatFlagge = (a3) => NACH_A3.has(a3);
 
+/* GEZEICHNET IST NICHT GEFRAGT (I3).
+ *
+ * `FLAGGEN_EXTRA` sagt es eine Seite weiter oben selbst: diese acht sind
+ * „nur zum Zeigen, nicht zum Fragen" - sie stehen als Gegenstueck in den
+ * Verwechslungen und haben deshalb keine `aussprache`. Solange keines
+ * ihrer Laender in `erdkunde.js` einen Namen hatte, war das ohne Folgen:
+ * `hatFlagge` und „wird gefragt" trafen dieselbe Menge.
+ *
+ * Mit I3 haben sie Namen. Irland, Slowenien und die Slowakei standen
+ * damit ploetzlich in der Flaggenwahl - und das Tor hat sofort gemeldet,
+ * warum das nicht geht: Irland gegen Italien und Russland gegen
+ * Slowenien sind auf dem Raster nicht zu unterscheiden. Ihre
+ * Zeichnungen sind fuer den NEBENEINANDER-Fall gemacht, wo daneben steht,
+ * worauf zu achten ist.
+ *
+ * Also zwei Mengen statt einer. Was gefragt wird, steht in `FLAGGEN` -
+ * und ein Land aus I3 kommt in die Flaggenebene, sobald jemand seine
+ * Flagge dort eintraegt, nicht vorher. */
+const FRAGBAR = new Set(FLAGGEN.map(f => f.a3));
+export const flaggeFragbar = (a3) => FRAGBAR.has(a3);
+
 /**
  * Das BAUMUSTER einer Flagge - dieselbe Bauart, dasselbe Streifenbild.
  *

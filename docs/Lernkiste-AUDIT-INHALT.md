@@ -200,6 +200,60 @@ bleibt es bei 3`.
 die Leiter öffnet ohne Können · alle Ablenker kommen von jenseits der Leiter ·
 die Erreichbarkeit hängt wieder an einer festen Tiefe. Alle vier schlagen an.
 
+### I3 · Die Welt wird größer — **gebaut (v556)**
+
+45 Länder mehr, ohne eine einzige Zeile Kartenarbeit: **Asien 12 → 30,
+Afrika 12 → 30, Europa 17 → 26**. Die Umrisse lagen alle schon gebacken im
+Baum; `prototyp/bauen.mjs` sagt es selbst — *„Was gespielt wird, entscheidet
+`erdkunde.js` — hier und nirgends sonst."* Ein neues Land kostet einen Namen,
+einen Rang und eine Aussprache.
+
+Dazu **45 neue Sätze zum Mitnehmen**, einer je Land: *„Kasachstan ist das
+größte Land der Erde ohne Meer."* · *„Auf Madagaskar leben Lemuren — sonst
+nirgends auf der Welt."* · *„In Island gibt es Vulkane und heiße Quellen
+mitten im Eis."* Keine Einwohnerzahlen (die veralten), keine Hauptstädte (das
+ist eine eigene Ebene) — das eine Bild, das ein Kind mit dem Namen verbindet.
+
+| | vorher | jetzt |
+|---|---|---|
+| Länder | 69 | **114** |
+| Gebiete gesamt | 107 | **152** |
+| Ebenen unter zwei Runden | 63 von 100 | **54 von 100** |
+
+**Europa hat eine Grenze, und sie ist gemessen.** Der erste Versuch legte
+19 europäische Länder dazu (36 gesamt). `ziehen` hat es sofort gemeldet:
+Griechenland fiel mit **18,1 pt** unter den Finger und bekam keine Nadel
+mehr, Ungarn und die Slowakei lagen mit ihren Nadelköpfen **12,3 pt**
+auseinander. Europas Karte trägt auf 844 × 390 keine 36 antippbaren Länder.
+
+Zurückgestellt sind deshalb die zehn kleinsten — Serbien, Slowakei, Kroatien,
+Bosnien und Herzegowina, Litauen, Albanien, Slowenien, Lettland,
+Nordmazedonien, Estland. **Ihre Sätze bleiben geschrieben**: sie kosten
+nichts und sparen die Arbeit an dem Tag, an dem Europa einen eigenen
+Ausschnitt bekommt, wie ihn Mittelamerika schon hat. Das ist der nächste
+Schritt für diesen Kontinent, und er braucht die Rohdaten.
+
+**Zwei Tore hielten Annahmen fest, die mit den Ländern gefallen sind:**
+
+*Jedes Land hat eine Flagge.* Das stimmte, solange jedes benannte Land eine
+gezeichnete hatte. Die 45 neuen haben keine — Flaggen sind Handarbeit in
+`flaggen.js`. Die Regel hätte zwei Auswege gelassen: 45 Flaggen an einem
+Nachmittag zeichnen, oder 45 Länder wieder streichen, damit ein Tor grün
+wird. Das zweite ist die Reihenfolge, in der Daten falsch werden. Jetzt
+trennt `flaggeFragbar` das Gezeichnete vom Gefragten (`FLAGGEN_EXTRA` sagt es
+selbst: „nur zum Zeigen, nicht zum Fragen"), und eine **Ratsche** hält fest,
+dass die Zahl der gefragten Flaggen nicht sinkt. Das hat nebenbei einen
+echten Fund freigelegt: Irland gegen Italien und Russland gegen Slowenien
+sind auf dem Raster **nicht zu unterscheiden** — sie standen plötzlich in
+derselben Auswahl, weil ihre Länder Namen bekamen.
+
+*Jedes europäische Land steht auf der Hauptstädte-Ebene.* Die Hauptstadt
+kommt gebacken aus Natural Earth; die neun neuen haben keine. Auch hier eine
+Ratsche statt einer Blankoregel: **17** europäische Länder tragen eine, und
+die Zahl darf nicht sinken — genau der Fehler, an dem Prag, Wien, Bern,
+Kopenhagen und Luxemburg einmal eine ganze Fassung lang aus der Ebene
+gefallen sind.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

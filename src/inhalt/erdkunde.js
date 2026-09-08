@@ -74,6 +74,55 @@ export const LAENDER = {
     { a3:'IRN', name:'Iran', rang:10, aussprache:['iran','iiran'] },
     { a3:'THA', name:'Thailand', rang:11, aussprache:['thailand','tailand'] },
     { a3:'MMR', name:'Myanmar', rang:12, aliasse:['Birma'], aussprache:['myanmar','birma'] },
+    /* --- I3: die Welt wird groesser (Inhalt-Audit) -------------------
+     *
+     * Die Umrisse dieser Laender liegen seit je gebacken in `src/geo/` -
+     * gezeichnet wird der ganze Kontinent, gefragt wurde nur, was hier
+     * einen Namen hat. Gemessen: 200 Umrisse ohne Namen, davon rund
+     * hundert echte Staaten.
+     *
+     * Ein neues Land kostet damit einen Namen, einen Rang und eine
+     * Aussprache - keine Rohdaten (die 79 MB Natural Earth liegen nicht
+     * im Verzeichnis) und keine Kartenarbeit. `prototyp/bauen.mjs` sagt
+     * es selbst: „Was gespielt wird, entscheidet `erdkunde.js` - hier und
+     * nirgends sonst."
+     *
+     * Der RANG ist die Reihenfolge der Leiter (I2), und er folgt der
+     * Einwohnerzahl wie bei den ersten. Wer anfaengt, bekommt die
+     * Laender, die ein Kind ohnehin schon einmal gehoert hat.
+     *
+     * KEINE FLAGGE, KEINE HAUPTSTADT. Beides haengt nicht am Namen: die
+     * Flaggen werden in `flaggen.js` gezeichnet (`hatFlagge` siebt), die
+     * Hauptstaedte kommen fuer Europa gebacken aus Natural Earth und
+     * fehlen den Neuen. Beide Ebenen ueberspringen sie deshalb still -
+     * und das ist richtig so, bis jemand sie zeichnet. */
+    { a3:'KOR', name:'Südkorea', rang:13, aliasse:['Korea','Republik Korea','Suedkorea'],
+      aussprache:['südkorea','suedkorea','korea'] },
+    { a3:'IRQ', name:'Irak', rang:14, aussprache:['irak','irack'] },
+    { a3:'AFG', name:'Afghanistan', rang:15, aussprache:['afghanistan','afganistan'] },
+    { a3:'SAU', name:'Saudi-Arabien', rang:16, aliasse:['Saudi Arabien','Saudiarabien'],
+      aussprache:['saudi-arabien','saudi arabien'] },
+    { a3:'UZB', name:'Usbekistan', rang:17, aliasse:['Uzbekistan'],
+      aussprache:['usbekistan','uzbekistan'] },
+    { a3:'YEM', name:'Jemen', rang:18, aliasse:['Yemen'], aussprache:['jemen','yemen'] },
+    { a3:'MYS', name:'Malaysia', rang:19, aussprache:['malaysia','malaisia'] },
+    { a3:'NPL', name:'Nepal', rang:20, aussprache:['nepal','neppal'] },
+    { a3:'PRK', name:'Nordkorea', rang:21, aussprache:['nordkorea','nord korea'] },
+    { a3:'SYR', name:'Syrien', rang:22, aussprache:['syrien','sürien'] },
+    { a3:'LKA', name:'Sri Lanka', rang:23, aliasse:['Srilanka'],
+      aussprache:['sri lanka','srilanka'] },
+    { a3:'KAZ', name:'Kasachstan', rang:24, aliasse:['Kazachstan'],
+      aussprache:['kasachstan','kazachstan'] },
+    { a3:'KHM', name:'Kambodscha', rang:25, aussprache:['kambodscha','kambodja'] },
+    { a3:'JOR', name:'Jordanien', rang:26, aussprache:['jordanien','jordanjen'] },
+    { a3:'AZE', name:'Aserbaidschan', rang:27, aliasse:['Aserbaidschaan'],
+      aussprache:['aserbaidschan','aserbeidschan'] },
+    { a3:'TJK', name:'Tadschikistan', rang:28, aliasse:['Tadschikistaan'],
+      aussprache:['tadschikistan','tadjikistan'] },
+    { a3:'ISR', name:'Israel', rang:29, aussprache:['israel','israell'] },
+    { a3:'ARE', name:'Vereinigte Arabische Emirate', rang:30,
+      aliasse:['Emirate','VAE'],
+      aussprache:['vereinigte arabische emirate','emirate'] },
   ],
   afrika:[
     { a3:'NGA', name:'Nigeria', rang:1, aussprache:['nigeria','nigeeria'] },
@@ -88,6 +137,54 @@ export const LAENDER = {
     { a3:'SDN', name:'Sudan', rang:10, aussprache:['sudan','suudan'] },
     { a3:'MAR', name:'Marokko', rang:11, aliasse:['Marocco'], aussprache:['marokko','marocco'] },
     { a3:'AGO', name:'Angola', rang:12, aussprache:['angola','anggola'] },
+    /* --- I3: die Welt wird groesser (Inhalt-Audit) -------------------
+     *
+     * Die Umrisse dieser Laender liegen seit je gebacken in `src/geo/` -
+     * gezeichnet wird der ganze Kontinent, gefragt wurde nur, was hier
+     * einen Namen hat. Gemessen: 200 Umrisse ohne Namen, davon rund
+     * hundert echte Staaten.
+     *
+     * Ein neues Land kostet damit einen Namen, einen Rang und eine
+     * Aussprache - keine Rohdaten (die 79 MB Natural Earth liegen nicht
+     * im Verzeichnis) und keine Kartenarbeit. `prototyp/bauen.mjs` sagt
+     * es selbst: „Was gespielt wird, entscheidet `erdkunde.js` - hier und
+     * nirgends sonst."
+     *
+     * Der RANG ist die Reihenfolge der Leiter (I2), und er folgt der
+     * Einwohnerzahl wie bei den ersten. Wer anfaengt, bekommt die
+     * Laender, die ein Kind ohnehin schon einmal gehoert hat.
+     *
+     * KEINE FLAGGE, KEINE HAUPTSTADT. Beides haengt nicht am Namen: die
+     * Flaggen werden in `flaggen.js` gezeichnet (`hatFlagge` siebt), die
+     * Hauptstaedte kommen fuer Europa gebacken aus Natural Earth und
+     * fehlen den Neuen. Beide Ebenen ueberspringen sie deshalb still -
+     * und das ist richtig so, bis jemand sie zeichnet. */
+    { a3:'GHA', name:'Ghana', rang:13, aussprache:['ghana','gana'] },
+    { a3:'MOZ', name:'Mosambik', rang:14, aliasse:['Mozambik'],
+      aussprache:['mosambik','mozambik'] },
+    { a3:'MDG', name:'Madagaskar', rang:15, aliasse:['Madagascar'],
+      aussprache:['madagaskar','madagascar'] },
+    { a3:'CIV', name:'Elfenbeinküste', rang:16, aliasse:['Elfenbeinkueste'],
+      aussprache:['elfenbeinküste','elfenbeinkueste'] },
+    { a3:'CMR', name:'Kamerun', rang:17, aussprache:['kamerun','kammerun'] },
+    { a3:'NER', name:'Niger', rang:18, aussprache:['niger','nieger'] },
+    { a3:'MLI', name:'Mali', rang:19, aussprache:['mali','malli'] },
+    { a3:'BFA', name:'Burkina Faso', rang:20, aliasse:['Burkinafaso'],
+      aussprache:['burkina faso','burkinafaso'] },
+    { a3:'MWI', name:'Malawi', rang:21, aussprache:['malawi','malawii'] },
+    { a3:'ZMB', name:'Sambia', rang:22, aliasse:['Zambia'],
+      aussprache:['sambia','zambia'] },
+    { a3:'TCD', name:'Tschad', rang:23, aliasse:['Chad'],
+      aussprache:['tschad','tschadd'] },
+    { a3:'SOM', name:'Somalia', rang:24, aussprache:['somalia','somalja'] },
+    { a3:'SEN', name:'Senegal', rang:25, aussprache:['senegal','senegall'] },
+    { a3:'ZWE', name:'Simbabwe', rang:26, aliasse:['Zimbabwe'],
+      aussprache:['simbabwe','zimbabwe'] },
+    { a3:'GIN', name:'Guinea', rang:27, aussprache:['guinea','ginea'] },
+    { a3:'RWA', name:'Ruanda', rang:28, aliasse:['Rwanda'],
+      aussprache:['ruanda','rwanda'] },
+    { a3:'BEN', name:'Benin', rang:29, aussprache:['benin','bennin'] },
+    { a3:'TUN', name:'Tunesien', rang:30, aussprache:['tunesien','tunesjen'] },
   ],
   /* Europa: Deutschland und dann SEINE NACHBARN.
    *
@@ -160,6 +257,38 @@ export const LAENDER = {
       wovon:'von der Ukraine' },
     { a3:'ROU', name:'Rumänien', rang:16, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
     { a3:'GRC', name:'Griechenland', rang:17, aussprache:['griechenland','griechnland'] },
+    /* --- I3: die Welt wird groesser (Inhalt-Audit) -------------------
+     *
+     * Die Umrisse dieser Laender liegen seit je gebacken in `src/geo/` -
+     * gezeichnet wird der ganze Kontinent, gefragt wurde nur, was hier
+     * einen Namen hat. Gemessen: 200 Umrisse ohne Namen, davon rund
+     * hundert echte Staaten.
+     *
+     * Ein neues Land kostet damit einen Namen, einen Rang und eine
+     * Aussprache - keine Rohdaten (die 79 MB Natural Earth liegen nicht
+     * im Verzeichnis) und keine Kartenarbeit. `prototyp/bauen.mjs` sagt
+     * es selbst: „Was gespielt wird, entscheidet `erdkunde.js` - hier und
+     * nirgends sonst."
+     *
+     * Der RANG ist die Reihenfolge der Leiter (I2), und er folgt der
+     * Einwohnerzahl wie bei den ersten. Wer anfaengt, bekommt die
+     * Laender, die ein Kind ohnehin schon einmal gehoert hat.
+     *
+     * KEINE FLAGGE, KEINE HAUPTSTADT. Beides haengt nicht am Namen: die
+     * Flaggen werden in `flaggen.js` gezeichnet (`hatFlagge` siebt), die
+     * Hauptstaedte kommen fuer Europa gebacken aus Natural Earth und
+     * fehlen den Neuen. Beide Ebenen ueberspringen sie deshalb still -
+     * und das ist richtig so, bis jemand sie zeichnet. */
+    { a3:'PRT', name:'Portugal', rang:18, aussprache:['portugal','portugall'] },
+    { a3:'SWE', name:'Schweden', rang:19, aussprache:['schweden','sweden'] },
+    { a3:'HUN', name:'Ungarn', rang:20, aussprache:['ungarn','ungaren'] },
+    { a3:'BLR', name:'Belarus', rang:21, aliasse:['Weißrussland','Weissrussland'],
+      aussprache:['belarus','weißrussland','weissrussland'] },
+    { a3:'BGR', name:'Bulgarien', rang:22, aussprache:['bulgarien','bulgarjen'] },
+    { a3:'FIN', name:'Finnland', rang:23, aussprache:['finnland','finland'] },
+    { a3:'NOR', name:'Norwegen', rang:24, aussprache:['norwegen','norweegen'] },
+    { a3:'IRL', name:'Irland', rang:25, aussprache:['irland','irrland'] },
+    { a3:'ISL', name:'Island', rang:26, aussprache:['island','iesland'] },
   ],
   /* --- Nordamerika: die drei grossen ------------------------------ *
    *

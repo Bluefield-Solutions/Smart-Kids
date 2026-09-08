@@ -19,13 +19,13 @@
   },
   {
     "dateien": "src/inhalt/erdkunde.js",
-    "token": 322,
+    "token": 572,
     "wo": [
       "src/inhalt/erdkunde.js:66",
       "src/inhalt/erdkunde.js:86",
       "src/inhalt/erdkunde.js:258"
     ],
-    "warum": "Die SIEBEN Länderlisten (Q11: Ozeanien ist die siebte). Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben. Die Zahl wächst mit jeder Karte: 250 bei fünf Listen, 322 bei sieben. Wer sie hier hochsetzt, prüft zuerst, ob wirklich nur eine LISTE dazugekommen ist und nicht Logik."
+    "warum": "Die SIEBEN Länderlisten (Q11: Ozeanien ist die siebte). Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben. Die Zahl wächst mit jeder Karte: 250 bei fünf Listen, 322 bei sieben. Wer sie hier hochsetzt, prüft zuerst, ob wirklich nur eine LISTE dazugekommen ist und nicht Logik. Mit I3 sind es 124 Länder statt 69 — dieselbe Tabelle, nur länger."
   },
   {
     "dateien": "tools/backen-kontinente.mjs · tools/backen-laender.mjs",
@@ -74,7 +74,7 @@
   },
   {
     "dateien": "src/inhalt/saetze.js",
-    "token": 279,
+    "token": 499,
     "wo": [
       "src/inhalt/saetze.js:75",
       "src/inhalt/saetze.js:78",
@@ -117,7 +117,7 @@
       "src/inhalt/saetze.js:126",
       "src/inhalt/saetze.js:127"
     ],
-    "warum": "Die Satztafel IST eine Tabelle: eine Zeile je Gebiet, immer Kennung und EIN Satz. Einundneunzig Zeilen derselben Form - das ist ihr Zweck, nicht ihr Mangel: wer einen Satz sucht, liest eine Zeile, und wer einen nachtraegt, schreibt eine. Zusammenlegen gaebe es hier gar nicht zusammenzulegen; was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderer. Die Zahl waechst mit jeder Karte, die dazukommt - Ozeanien hat sie zuletzt um drei Zeilen verlaengert. Wer sie hier hochsetzt, prueft zuerst, ob wirklich nur Saetze dazugekommen sind und nicht Logik."
+    "warum": "Die Satztafel IST eine Tabelle: eine Zeile je Gebiet, immer Kennung und EIN Satz. Einundneunzig Zeilen derselben Form - das ist ihr Zweck, nicht ihr Mangel: wer einen Satz sucht, liest eine Zeile, und wer einen nachtraegt, schreibt eine. Zusammenlegen gaebe es hier gar nicht zusammenzulegen; was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderer. Die Zahl waechst mit jeder Karte, die dazukommt - Ozeanien hat sie zuletzt um drei Zeilen verlaengert. Wer sie hier hochsetzt, prueft zuerst, ob wirklich nur Saetze dazugekommen sind und nicht Logik. Mit I3 kamen 55 Sätze dazu — dieselbe Tabelle, nur länger."
   },
   {
     "dateien": "src/inhalt/englisch.js",

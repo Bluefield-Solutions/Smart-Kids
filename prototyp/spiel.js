@@ -1708,7 +1708,7 @@ function silhouette(ebeneId) {
    * ist die einzige, die ein Kind hier schon kennt. */
   if (ebeneId === 'flaggen' || ebeneId.startsWith('flaggen:')) {
     const kont = ebeneId.split(':')[1];
-    const erste = kont && (D.laender[kont] || []).find(l => Flaggen.hatFlagge(l.a3));
+    const erste = kont && (D.laender[kont] || []).find(l => Flaggen.flaggeFragbar(l.a3));
     /* Die Klasse sitzt am SVG selbst und nicht an einer Huelle darum.
        `passt` sucht `.kachel .silhouette` und ruft darauf `getScreenCTM()` -
        auf einem `<span>` gibt es das nicht, und das Tor stuerzte ab. */
@@ -2278,7 +2278,7 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     const tiefe = leiterTiefe(D.laender.europa || [], stand, P.laenderTiefe,
       l => `fk:${l.a3}`);
     return (D.laender.europa || []).filter(l => (voll || l.rang<=tiefe)
-        && Flaggen.hatFlagge(l.a3))
+        && Flaggen.flaggeFragbar(l.a3))
       .map(l=>({ id:`fk:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3, pfad:l.pfad, anker:l.anker }));
   }
@@ -2302,7 +2302,7 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     const tiefe = leiterTiefe(D.laender[kont] || [], stand, P.laenderTiefe,
       l => `fl:${l.a3}`);
     return (D.laender[kont] || []).filter(l => (voll || l.rang<=tiefe)
-        && Flaggen.hatFlagge(l.a3))
+        && Flaggen.flaggeFragbar(l.a3))
       .map(l=>({ id:`fl:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3 }));
   }

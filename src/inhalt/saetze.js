@@ -156,6 +156,94 @@ export const SAETZE = {
   PNG: 'In Papua-Neuguinea werden mehr als achthundert Sprachen gesprochen.',
   AUS: 'In Australien leben Kängurus und Koalas — wild sonst nirgends.',
   NZL: 'Neuseeland besteht aus zwei großen Inseln.',
+  /* --- I3: die fuenfundfuenfzig Laender aus dem Inhalt-Audit ----------
+   *
+   * Dieselbe Regel wie oben: EINE Sache, die man behaelt, und nichts,
+   * was anderswo schon steht. Keine Einwohnerzahlen (die veralten), keine
+   * Hauptstaedte (das ist eine eigene Ebene, Regel 6: was zweimal
+   * dasteht, veraltet einmal) - sondern das eine Bild, das ein Kind mit
+   * dem Namen verbindet.
+   *
+   * Geprueft wird jeder Satz vom Tor `saetze`: Laenge, Satzzeichen und
+   * dass es zu jedem gespielten Gebiet genau einen gibt. */
+
+  /* --- Europa: neun gespielt, zehn auf Vorrat ------------------------
+   *
+   * Geschrieben wurden neunzehn. Neun stehen im Spiel, zehn nicht - und
+   * der Grund ist gemessen, nicht ueberlegt: Europas Karte traegt auf
+   * 844 x 390 keine sechsunddreissig antippbaren Laender. Das Tor
+   * `ziehen` hat es beim ersten Versuch gemeldet - Griechenland fiel mit
+   * 18,1 Punkten unter den Finger und bekam keine Nadel mehr, Ungarn und
+   * die Slowakei lagen mit ihren Nadelkoepfen 12,3 Punkte auseinander.
+   *
+   * Zurueckgestellt sind deshalb die zehn kleinsten: Serbien, die
+   * Slowakei, Kroatien, Bosnien und Herzegowina, Litauen, Albanien,
+   * Slowenien, Lettland, Nordmazedonien und Estland. Ihre Saetze bleiben
+   * hier stehen, weil sie fertig sind - sie kosten nichts und sparen die
+   * Arbeit an dem Tag, an dem Europa einen eigenen Ausschnitt bekommt,
+   * wie ihn Mittelamerika schon hat. Bis dahin gehoert zu ihnen kein
+   * Gebiet, und `saetze` prueft nur die Gegenrichtung: dass zu jedem
+   * GEBIET ein Satz gehoert. */
+  // --- Europa, die neun gespielten ---------------------------------------
+  PRT: 'An Portugals Küste liegt der westlichste Punkt des europäischen Festlands.',
+  SWE: 'Schweden hat fast hunderttausend Seen.',
+  HUN: 'Durch Ungarn fließt die Donau, und dort liegt der größte See Mitteleuropas.',
+  BLR: 'Belarus hat kein Meer und sehr viel Wald.',
+  SRB: 'Serbien liegt mitten auf dem Balkan und hat kein Meer.',
+  BGR: 'In Bulgarien wird aus Rosen Öl gemacht — mehr als irgendwo sonst.',
+  FIN: 'In Finnlands Norden geht im Sommer die Sonne wochenlang nicht unter.',
+  NOR: 'Norwegens Küste ist voller Fjorde — schmaler Meeresarme zwischen Bergen.',
+  SVK: 'Die Slowakei ist fast ganz von Bergen bedeckt.',
+  IRL: 'Irland ist so grün, dass man es die grüne Insel nennt.',
+  HRV: 'Zu Kroatien gehören mehr als tausend Inseln.',
+  BIH: 'In Bosnien und Herzegowina steht eine berühmte alte Brücke aus Stein.',
+  LTU: 'An Litauens Küste findet man Bernstein im Sand.',
+  ALB: 'Albanien hat mehr Bunker als Dörfer — sie stehen noch überall herum.',
+  SVN: 'Unter Slowenien liegen riesige Tropfsteinhöhlen.',
+  LVA: 'Lettland ist zur Hälfte von Wald bedeckt.',
+  MKD: 'In Nordmazedonien liegt einer der ältesten Seen der Erde.',
+  EST: 'Estland hat mehr als zweitausend Inseln.',
+  ISL: 'In Island gibt es Vulkane und heiße Quellen mitten im Eis.',
+
+  // --- Asien, die achtzehn dazu -----------------------------------------
+  KOR: 'In Südkorea steht die Stadt Seoul, in der jeder fünfte Koreaner wohnt.',
+  IRQ: 'Im Irak lag Mesopotamien — dort entstand die erste Schrift der Welt.',
+  AFG: 'Afghanistan besteht fast ganz aus Bergen und hat kein Meer.',
+  SAU: 'Saudi-Arabien ist fast ganz Wüste.',
+  UZB: 'Durch Usbekistan führte die Seidenstraße.',
+  YEM: 'Im Jemen stehen Häuser aus Lehm, die wie Hochhäuser aussehen.',
+  MYS: 'Malaysia liegt auf zwei Seiten des Meeres.',
+  NPL: 'In Nepal steht der Mount Everest, der höchste Berg der Erde.',
+  PRK: 'Nordkorea und Südkorea sind durch einen bewachten Streifen getrennt.',
+  SYR: 'In Syrien steht Damaskus, eine der ältesten Städte der Welt.',
+  LKA: 'Sri Lanka ist eine Insel und sieht auf der Karte aus wie eine Träne.',
+  KAZ: 'Kasachstan ist das größte Land der Erde ohne Meer.',
+  KHM: 'In Kambodscha steht Angkor Wat, die größte Tempelanlage der Welt.',
+  JOR: 'In Jordanien liegt Petra, eine Stadt, die in Felsen gehauen ist.',
+  AZE: 'In Aserbaidschan brennen an manchen Stellen Feuer aus dem Boden.',
+  TJK: 'Tadschikistan besteht fast ganz aus hohen Bergen.',
+  ISR: 'In Israel liegt das Tote Meer — der tiefste Punkt an Land.',
+  ARE: 'In den Vereinigten Arabischen Emiraten steht das höchste Haus der Erde.',
+
+  // --- Afrika, die achtzehn dazu ----------------------------------------
+  GHA: 'In Ghana liegt einer der größten Stauseen der Erde.',
+  MOZ: 'Mosambik hat eine sehr lange Küste am Indischen Ozean.',
+  MDG: 'Auf Madagaskar leben Lemuren — sonst nirgends auf der Welt.',
+  CIV: 'Aus der Elfenbeinküste kommt der meiste Kakao der Erde.',
+  CMR: 'Kamerun wird die kleine Ausgabe Afrikas genannt: dort gibt es Wüste, Wald und Berge.',
+  NER: 'Niger ist fast ganz Sahara.',
+  MLI: 'In Mali steht Timbuktu, eine alte Stadt mitten in der Wüste.',
+  BFA: 'Burkina Faso heißt übersetzt Land der aufrichtigen Menschen.',
+  MWI: 'Fast ein Fünftel von Malawi ist ein einziger großer See.',
+  ZMB: 'An Sambias Grenze stürzen die Victoriafälle in die Tiefe.',
+  TCD: 'Im Tschad lag einmal ein riesiger See, der fast verschwunden ist.',
+  SOM: 'Somalia hat die längste Küste des afrikanischen Festlands.',
+  SEN: 'Senegal ist der westlichste Zipfel Afrikas.',
+  ZWE: 'In Simbabwe stehen die Ruinen einer alten Stadt ganz aus Stein.',
+  GIN: 'In Guinea entspringt der Niger, einer der großen Flüsse Afrikas.',
+  RWA: 'Ruanda wird das Land der tausend Hügel genannt.',
+  BEN: 'In Benin stehen Häuser auf Pfählen mitten im Wasser.',
+  TUN: 'In Tunesien wurden Filme gedreht, weil die Wüste dort wie ein fremder Stern aussieht.',
 };
 
 /**

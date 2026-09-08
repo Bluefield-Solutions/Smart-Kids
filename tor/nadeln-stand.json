@@ -1,6 +1,10 @@
 {
+  "laender:asien": {
+    "eng": 140.7,
+    "faden": 94
+  },
   "laender:europa": {
-    "eng": 100.3,
+    "eng": 68.2,
     "faden": 64
   }
 }
