@@ -16,7 +16,7 @@ gleichen Sätze?"
 *(Diese Zahl war zur Hälfte falsch — siehe I6. Die Hälfte, die stimmte,
 ist abgearbeitet.)*
 
-**Stand nach allen vierzehn Paketen (v567):**
+**Stand nach allen fünfzehn Paketen (v570):**
 
 > **0 von 122 Profil-Ebenen** unter zwei Runden Vorrat. 55 weitere liegen
 > darunter, weil ihr Vorrat die Welt ist.
@@ -50,6 +50,8 @@ heutigen Stand:
 | Falsche Freunde · Wendungen · Hörsätze | 30 · 20 · 12 | **60 · 60 · 34** |
 | Unregelmäßige Verben · Präpositionen | — | **72 · 58** |
 | Nachgerechnete Rechenantworten (`spielprobe`) | 8 588 | **10 498** |
+| Lebensräume · sammelbare Tiere | 15 · 45 | **17 · 51** |
+| Ebenen, die nie ein Tier geben | 26 von 48 | **0 von 48** |
 
 Und in `vielfalt` ein Tor, das die Zahl oben von jetzt an messbar hält.
 
@@ -736,6 +738,76 @@ Ausgabe, die der Sache hinterherhinkt, sieht genauso aus wie eine Sache,
 die nicht passiert ist. Sie läuft jetzt über jede Karte mit dem Schalter,
 und die Zeile darunter zählt die Karten statt „fünf Kontinente" zu sagen,
 während es acht sind.
+
+### I15 · Jede Ebene führt in einen Lebensraum — **gebaut (v570)**
+
+Der nächste Schritt sollte „die 71 fehlenden Tierbilder" sein: 124 im Plan,
+53 gemalt. Nachgemessen war er **falsch gestellt** — und das ist der
+wertvollste Befund dieses Pakets.
+
+`sammelbar()` gibt nur zurück, was in einem **Lebensraum** steht. Die
+Räume brauchen 45 Tiere, gemalt waren 53, und **kein einziges** der 71
+ungemalten stand in einem Raum. Sie zu malen hätte 122 KB Pfaddaten ins
+Bündel gelegt, die kein Kind je sieht: ein Vorrat ohne Leser. Die Tiere
+haben nicht ihre Bilder verloren, sondern ihr **Zuhause**.
+
+Umgekehrt gefragt kam der eigentliche Fund heraus:
+
+> **26 von 48 Ebenen hängen an keinem Lebensraum und geben deshalb nie
+> ein Tier.**
+
+Alle zehn Flaggenebenen. Die drei Ebenen der achten Karte. Sechs
+Rechenarten aus I4, I10 und I13. Sechs Englischebenen. „Gestern und
+heute" und „Das kleine Wort". Man kann sie spielen und fertig machen —
+der Endbildschirm sagt „Gut gemacht" und sonst nichts.
+
+**Der Kopfkommentar in `tiere.js` behauptet diese Prüfung seit T1.** Wörtlich:
+*„Ein Raum ohne Ebene wäre nie zu öffnen, eine Ebene ohne Raum gäbe nie
+etwas — `inhalt` prüft beide Richtungen gegen die Ebenenliste."* Geprüft
+wurde immer nur die **erste**. Ein Kommentar, der eine Prüfung
+beschreibt, ist keine — dieselbe Lehre wie bei den vier Ablenkern aus I13,
+nur dass sie hier vier Monate stehen durfte.
+
+**Und die Erkennung selbst war halb blind.** Sie kannte die erzeugten
+Länderebenen (`id:\`laender:${k}\``) und nicht die erzeugten
+Flaggenebenen, die seit F2 danebenstehen und genauso gebaut werden. Sie
+sucht jetzt nach der **Form** und nicht nach dem Wort: was
+`id:\`<stamm>:${k}\`` schreibt, gilt für jede Karte.
+
+**Ein Raum hält jetzt eine Liste von Ebenen.** Vorher stand `ebene` im
+Singular da, und dieselbe Tierliste stand dreimal (Bauernhof), viermal
+(Weide) und viermal (Riff) untereinander — Regel 6, und beim Nachtragen
+wird eine davon vergessen. Vier Stellen, die nach Titel entdoppeln
+mussten, brauchen es nicht mehr; ein Tor setzt statt dessen durch, dass
+jeder Titel genau einmal dasteht.
+
+**Zwei neue Räume, sechs neue Tiere, zwei neue Landschaften:**
+
+| Raum | Für welche Ebenen | Tiere |
+|---|---|---|
+| **Im Gebirge** | Länder in Südosteuropa | Wolf, Dachs, Widder |
+| **Im Vogelpark** | alle zehn Flaggenebenen | Pfau, Flamingo, Schwan |
+
+Das Gebirge ist das, was die achte Karte von Europa unterscheidet — die
+Dinariden und das Balkangebirge; der Widder steht für das Mufflon, das
+Wildschaf dieser Berge. Und die Flaggenwelt bekommt **einen** Raum und
+nicht sieben: eine Flagge zu erkennen ist eine andere Fertigkeit als ein
+Land zu finden (Farbe und Muster statt Form und Ort), und wer sie hat,
+hat sie für alle Karten. Pfau, Flamingo und Schwan sind die drei Vögel,
+die man an ihrer **Farbe** erkennt und nicht an ihrer Gestalt — derselbe
+Blick, den die Ebene übt.
+
+**Und die zwei Schwellen wandern mit** (Regel 2: Grenzen anteilig, nie
+absolut). Das knappste Profil erreichte bei T6 zwölf Räume, also 36
+Tiere, und „In der Tiefsee" stand bei 30 — fünf Sechstel davon. Jetzt
+sind es vierzehn Räume und 42 Tiere: die Tiefsee öffnet bei **35**, „Vor
+langer Zeit" bei **42**. Wären sie stehen geblieben, wären beide still
+leichter geworden, ohne dass etwas rot wird.
+
+Der Vorrat wächst damit von **45 auf 51 sammelbare Tiere**, und alle 48
+Ebenen geben etwas. Die restlichen 65 ungemalten Tiere sind jetzt genau
+das, was sie sein sollten: **der Plan für die nächsten Räume** — und
+nicht 122 KB, die niemand sieht.
 
 ## Das Werkzeug
 

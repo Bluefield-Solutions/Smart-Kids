@@ -5749,11 +5749,29 @@ export const PROBEN = [
        jeder Probenanker noch dasteht; ein Eingriff, der seinen eigenen
        Anker verstellt, laesst das Tor ueber den fehlenden Anker klagen
        statt ueber den Befund. Siebtes Mal in diesem Verzeichnis. */
-    such:"  { ebene:'laender:australien',  titel:'Das Outback',",
-    ersatz:"  { ebene:'laender:ozeanien',  titel:'Das Outback',\n"
-      + "//Anker:  { ebene:'laender:australien',  titel:'Das Outback',",
-    an:{ datei:'src/inhalt/tiere.js', text:"ebene:'laender:ozeanien'" },
+    such:"  { ebenen:['laender:australien'],    titel:'Das Outback',",
+    ersatz:"  { ebenen:['laender:ozeanien'],    titel:'Das Outback',\n"
+      + "//Anker:  { ebenen:['laender:australien'],    titel:'Das Outback',",
+    an:{ datei:'src/inhalt/tiere.js', text:"'laender:ozeanien'" },
     sagt:'die es in spiel.js nicht gibt' },
+
+  /* UND DIE ZWEITE RICHTUNG (I15): eine Ebene, die in keinen Raum
+   * fuehrt.
+   *
+   * Das ist die Pruefung, die der Kopfkommentar von `tiere.js` ab T1
+   * behauptet hat und die es nie gab. Als sie gebaut wurde, waren 26
+   * der 48 Ebenen ohne Raum - alle zehn Flaggenebenen darunter.
+   *
+   * Der Eingriff nimmt „Auf die Karte" aus dem Vogelpark. Nicht die
+   * erste Ebene der Liste, sondern die LETZTE: ein Tor, das nur den
+   * ersten Eintrag anschaut, bliebe dabei gruen, und genau das war der
+   * Fehler in der Bauart davor. */
+  { n:'eine Ebene fuehrt in keinen Lebensraum mehr', tor:'inhalt', deckt:'tiere',
+    datei:'src/inhalt/tiere.js',
+    such:"'flaggen:paare', 'flaggen:karte'], titel:'Im Vogelpark',",
+    ersatz:"'flaggen:paare'], titel:'Im Vogelpark',",
+    an:{ datei:'src/inhalt/tiere.js', fehlt:"'flaggen:karte'" },
+    sagt:'führen in keinen Lebensraum' },
 
   /* Der Gorilla wird gesammelt.
    *

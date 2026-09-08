@@ -97,7 +97,9 @@ export const TIERE = [
   { id:'ente', name:'die Ente', art:'tier', zeichen:'🦆',
     ton:'#e9f2f6',
     bild:'<path d="M33.6 31.6c3.8 1.8 6.4 5.2 7.6 10.2-3.8-2.4-7.8-3.8-12-4.4z" fill="#dfe4e2"/><path d="M22.6 21.8c7.56 0 12.20 5.39 12.20 9.80s-4.64 9.80-12.20 9.80-12.20-4.41-12.20-9.80 4.64-9.80 12.20-9.80z" fill="#fbfaf5"/><path d="M16.4 14.6c1.6 4 2.4 7.4 2.4 10.2 0 2-.4 4-1.2 6h-6.2c1-2.8 1.6-5.4 1.8-7.8.2-2.8-.1-5.6-.8-8.4z" fill="#fbfaf5"/><path d="M15.6 5.6c4.59 0 7.40 3.85 7.40 7.00s-2.81 7.00-7.40 7.00-7.40-3.15-7.40-7.00 2.81-7.00 7.40-7.00z" fill="#fbfaf5"/><path d="M22.6 41.4c-6.6 0-10.8-2.6-12-7.4 3 4 7 6 12 6s9-2 12-6c-1.2 4.8-5.4 7.4-12 7.4z" fill="#e6e9e4"/><path d="M15.6 19.6c-3.4 0-5.6-1.4-6.6-4 1.6 2.2 3.8 3.2 6.6 3.2s5-1 6.6-3.2c-1 2.6-3.2 4-6.6 4z" fill="#e6e9e4"/><path d="M20.6 27.6c4.6 0 7.6 2.6 7.6 6.4 0 3-2 4.8-5.4 4.8h-4c-3.4 0-5.4-1.8-5.4-4.8 0-3.8 3-6.4 7.2-6.4z" fill="#eff1ec"/><path d="M21.4 11.0c4.6 0 7.6 1.3 7.6 2.8s-3 3-7.6 3c-1.2 0-2.3-.1-3.2-.3v-5.2c.9-.2 2-.3 3.2-.3z" fill="#efa53c"/><path d="M21.0 12.2c2.8 0 4.8.6 4.8 1.2s-2 1.3-4.8 1.3c-.8 0-1.5-.1-2-.2v-2.1c.5-.1 1.2-.2 2-.2z" fill="#f8c46f"/><path d="M13.4 10.0c1.36 0 2.20 1.21 2.20 2.20s-0.84 2.20-2.20 2.20-2.20-0.99-2.20-2.20 0.84-2.20 2.20-2.20z" fill="#2c2820"/><path d="M12.67 10.48c0.55 0 0.88 0.48 0.88 0.88s-0.33 0.88-0.88 0.88-0.88-0.40-0.88-0.88 0.33-0.88 0.88-0.88z" fill="#ffffff"/><path d="M14.0 41.6l4.6 1.8-4.6 1.8zM23.0 41.6l4.6 1.8-4.6 1.8z" fill="#efa53c"/><path d="M16.0 40.4c1.61 0 2.60 1.21 2.60 2.20s-0.99 2.20-2.60 2.20-2.60-0.99-2.60-2.20 0.99-2.20 2.60-2.20z" fill="#efa53c"/><path d="M25.0 40.4c1.61 0 2.60 1.21 2.60 2.20s-0.99 2.20-2.60 2.20-2.60-0.99-2.60-2.20 0.99-2.20 2.60-2.20z" fill="#efa53c"/>' },
-  { id:'wolf', name:'der Wolf', art:'tier', zeichen:'🐺' },
+  { id:'wolf', name:'der Wolf', art:'tier', zeichen:'🐺',
+    ton:'#eceef2',
+    bild:'<path d="M13.6,3.2L19.8,13.6L9.8,14.6z" fill="#5f6874"/><path d="M34.4,3.2L38.2,14.6L28.2,13.6z" fill="#5f6874"/><path d="M14.2,6.6L18.2,13.4L12.2,13.8z" fill="#b3bac6"/><path d="M33.8,6.6L35.8,13.8L29.8,13.4z" fill="#b3bac6"/><path d="M11.8 30.4c-3.4.8-5.4 3.6-5.4 7.6 0 3.4 1.4 5.6 3.4 6 1.9.4 3.2-1 3.2-3.2V31.2z" fill="#6e7783"/><path d="M36.2 30.4c3.4.8 5.4 3.6 5.4 7.6 0 3.4-1.4 5.6-3.4 6-1.9.4-3.2-1-3.2-3.2V31.2z" fill="#6e7783"/><path d="M24 24.6c6.74 0 12.2 4.3 12.2 9.6c0 5.3 -5.46 9.6 -12.2 9.6c-6.74 0 -12.2 -4.3 -12.2 -9.6c0 -5.3 5.46 -9.6 12.2 -9.6z" fill="#7d8794"/><path d="M24 31.2c3.87 0 7 2.78 7 6.2c0 3.42 -3.13 6.2 -7 6.2c-3.87 0 -7 -2.78 -7 -6.2c0 -3.42 3.13 -6.2 7 -6.2z" fill="#e2e7ed"/><path d="M24 9.6c6.41 0 11.6 4.57 11.6 10.2c0 5.63 -5.19 10.2 -11.6 10.2c-6.41 0 -11.6 -4.57 -11.6 -10.2c0 -5.63 5.19 -10.2 11.6 -10.2z" fill="#8b95a2"/><path d="M24 10.6c5 0 8.6 2.6 10 7.4-2.8-2.6-6-4-10-4s-7.2 1.4-10 4c1.4-4.8 5-7.4 10-7.4z" fill="#9ba4b0"/><path d="M24 19.2c4.2 0 7.6 2.78 7.6 6.2c0 3.42 -3.4 6.2 -7.6 6.2c-4.2 0 -7.6 -2.78 -7.6 -6.2c0 -3.42 3.4 -6.2 7.6 -6.2z" fill="#eef1f5"/><path d="M19.4 15.85c1.3 0 2.35 1.05 2.35 2.35c0 1.3 -1.05 2.35 -2.35 2.35c-1.3 0 -2.35 -1.05 -2.35 -2.35c0 -1.3 1.05 -2.35 2.35 -2.35z" fill="#2b3038"/><path d="M18.62 16.74c0.52 0 0.94 0.42 0.94 0.94c0 0.52 -0.42 0.94 -0.94 0.94c-0.52 0 -0.94 -0.42 -0.94 -0.94c0 -0.52 0.42 -0.94 0.94 -0.94z" fill="#ffffff"/><path d="M28.6 15.85c1.3 0 2.35 1.05 2.35 2.35c0 1.3 -1.05 2.35 -2.35 2.35c-1.3 0 -2.35 -1.05 -2.35 -2.35c0 -1.3 1.05 -2.35 2.35 -2.35z" fill="#2b3038"/><path d="M27.82 16.74c0.52 0 0.94 0.42 0.94 0.94c0 0.52 -0.42 0.94 -0.94 0.94c-0.52 0 -0.94 -0.42 -0.94 -0.94c0 -0.52 0.42 -0.94 0.94 -0.94z" fill="#ffffff"/><path d="M24 21.8c1.44 0 2.6 0.9 2.6 2c0 1.1 -1.16 2 -2.6 2c-1.44 0 -2.6 -0.9 -2.6 -2c0 -1.1 1.16 -2 2.6 -2z" fill="#3b434d"/><path d="M20.8 26.6c1.1 1.2 2.2 1.8 3.2 1.8s2.1-.6 3.2-1.8c-.5 2.2-1.6 3.3-3.2 3.3s-2.7-1.1-3.2-3.3z" fill="#8d97a3"/>' },
   { id:'einhorn', name:'das Einhorn', art:'tier', zeichen:'🦄',
     ton:'#f0e7fb',
     bild:'<path d="M32.6 27c5.4 1.2 8.8 4.8 10.2 10.8l-3.4.8c-1.2-4.8-3.6-7.6-7.2-8.4z" fill="#8fc7ef"/><path d="M33 30.6c3.8 1.4 6.2 4.2 7.2 8.4l-3.2.8c-.8-3.2-2.6-5.4-5.4-6.4z" fill="#f2a8cf"/><path d="M33.4 34c2.4 1.2 4 3 4.8 5.6l-3 .8c-.6-2-1.8-3.4-3.4-4.2z" fill="#ffd98a"/><path d="M17.6 32h4.2v10.4h-4.2zM26.6 32h4.2v10.4h-4.2z" fill="#f2eff8"/><path d="M16.8 40.6h5.8v3.2h-5.8zM25.8 40.6h5.8v3.2h-5.8z" fill="#bfb2d2"/><path d="M24.6 21.200000000000003c6.45 0 10.40 4.07 10.40 7.40s-3.95 7.40-10.40 7.40-10.40-3.33-10.40-7.40 3.95-7.40 10.40-7.40z" fill="#fbfaff"/><path d="M15.6 31c3.6 3.4 7.4 5 11.4 4.8-4.2 2.2-8 .6-11.4-4.8z" fill="#eae6f2"/><path d="M17 26.6c-1-5.4-.6-9.8 1.4-13.2 1.6-2.8 4-4.2 7.2-4.2l3.4 5.4c-2.4 0-4.2.8-5.2 2.6-1.4 2.4-1.8 5.6-1.2 9.4z" fill="#fbfaff"/><path d="M23.4 9.4c4.2-.4 6.8 1.4 7.6 5 .6 2.6-.6 4.4-3.4 5.2l-4.2 1.2-14.4 4.4c-1.6-2.4-1.6-4.6.2-6.4l14.2-9.4z" fill="#fbfaff"/><path d="M9 24.2c1.8-1.8 4.4-3.4 7.8-4.8l1.4 3.2c-3 1.4-5.4 2.6-7.2 3.6-1-.4-1.6-1.1-2-2z" fill="#f6dbe4"/><path d="M10.6 23.4l1.6-.6.4 1.4z" fill="#c99bab"/><path d="M28.6 8.6l1-4.6 3.2 3.6z" fill="#fbfaff"/><path d="M24.6 8.4l-1.4-8 5 6.6z" fill="#f6c85f"/><path d="M23.8 5l2.2.8-.6 1.4zM23.2 2.4l1.8.6-.4 1.2z" fill="#d8a02f"/><path d="M27.6 11.6c3.4 3 5 7.2 4.6 12.6l-3.6-.8c.4-4.4-.6-7.8-3.2-10z" fill="#f2a8cf"/><path d="M29.8 15c2.8 2.6 4 6 3.6 10.2l-3.4-.8c.4-3.4-.4-6.2-2.6-8.2z" fill="#b8a4ee"/><path d="M31.6 19c2.2 2.2 3 5 2.8 8.2l-3.2-.8c.2-2.6-.4-4.8-2-6.4z" fill="#8fc7ef"/><path d="M24.6 10.8c1.74 0 2.80 1.54 2.80 2.80s-1.06 2.80-2.80 2.80-2.80-1.26-2.80-2.80 1.06-2.80 2.80-2.80z" fill="#4a3a52"/><path d="M23.68 11.42c0.69 0 1.12 0.62 1.12 1.12s-0.43 1.12-1.12 1.12-1.12-0.50-1.12-1.12 0.43-1.12 1.12-1.12z" fill="#ffffff"/>' },
@@ -186,7 +188,9 @@ export const TIERE = [
   { id:'kuh', name:'die Kuh', art:'tier', zeichen:'🐄',
     ton:'#f6efdf',
     bild:'<path d="M13.4 30.6c-3.4.6-5.6 3.4-5.6 7.4 0 3.2 1.4 5.2 3.4 5.6 1.9.4 3.2-1 3.2-3.1V31.4z" fill="#d7dbe2"/><path d="M34.6 30.6c3.4.6 5.6 3.4 5.6 7.4 0 3.2-1.4 5.2-3.4 5.6-1.9.4-3.2-1-3.2-3.1V31.4z" fill="#d7dbe2"/><path d="M24 24.6c7.6 0 12.2 4.2 12.2 10.8v3.2c0 3-2 4.8-5.4 4.8H17.2c-3.4 0-5.4-1.8-5.4-4.8v-3.2c0-6.6 4.6-10.8 12.2-10.8z" fill="#e6eaf0"/><path d="M24 32.800000000000004c4.34 0 7.00 2.64 7.00 4.80s-2.66 4.80-7.00 4.80-7.00-2.16-7.00-4.80 2.66-4.80 7.00-4.80z" fill="#fbfcfd"/><path d="M11.8 34.4c0-4 1.4-7 4.2-8.8 1.8 1.4 2.6 3.2 2.4 5.4-.2 2.6-2.4 4.2-6.6 4.8z" fill="#3d434c"/><path d="M36.2 36.6c-3.4-.4-5.2-1.8-5.4-4 0-2 1-3.6 3.2-4.8 1.6 2 2.4 5 2.2 8.8z" fill="#3d434c"/><path d="M13.8 9c-2-.8-3.4-.4-4 1.2 1.2 1.4 2.6 1.8 4.4 1.2zM34.2 9c2-.8 3.4-.4 4 1.2-1.2 1.4-2.6 1.8-4.4 1.2z" fill="#e2d3ab"/><path d="M11.6 12.399999999999999c2.85 0 4.60 1.76 4.60 3.20s-1.75 3.20-4.60 3.20-4.60-1.44-4.60-3.20 1.75-3.20 4.60-3.20z" fill="#d7dbe2"/><path d="M36.4 12.399999999999999c2.85 0 4.60 1.76 4.60 3.20s-1.75 3.20-4.60 3.20-4.60-1.44-4.60-3.20 1.75-3.20 4.60-3.20z" fill="#d7dbe2"/><path d="M11.6 13.9c1.49 0 2.40 0.94 2.40 1.70s-0.91 1.70-2.40 1.70-2.40-0.77-2.40-1.70 0.91-1.70 2.40-1.70z" fill="#e8b6b0"/><path d="M36.4 13.9c1.49 0 2.40 0.94 2.40 1.70s-0.91 1.70-2.40 1.70-2.40-0.77-2.40-1.70 0.91-1.70 2.40-1.70z" fill="#e8b6b0"/><path d="M24 7.200000000000001c7.07 0 11.40 5.72 11.40 10.40s-4.33 10.40-11.40 10.40-11.40-4.68-11.40-10.40 4.33-10.40 11.40-10.40z" fill="#e6eaf0"/><path d="M24 9c4.4 0 7.4 2.2 8.6 6.6-2.4-2.2-5.2-3.4-8.6-3.4s-6.2 1.2-8.6 3.4c1.2-4.4 4.2-6.6 8.6-6.6z" fill="#fbfcfd"/><path d="M14.6 12.4c2.6-.6 4.6.2 6 2.4-1.2 1.4-2.8 2-4.8 1.8-1.4-1.2-1.8-2.6-1.2-4.2z" fill="#3d434c"/><path d="M19.0 13.7c1.43 0 2.30 1.26 2.30 2.30s-0.87 2.30-2.30 2.30-2.30-1.03-2.30-2.30 0.87-2.30 2.30-2.30z" fill="#20242b"/><path d="M18.24 14.21c0.57 0 0.92 0.51 0.92 0.92s-0.35 0.92-0.92 0.92-0.92-0.41-0.92-0.92 0.35-0.92 0.92-0.92z" fill="#ffffff"/><path d="M29.0 13.7c1.43 0 2.30 1.26 2.30 2.30s-0.87 2.30-2.30 2.30-2.30-1.03-2.30-2.30 0.87-2.30 2.30-2.30z" fill="#20242b"/><path d="M28.24 14.21c0.57 0 0.92 0.51 0.92 0.92s-0.35 0.92-0.92 0.92-0.92-0.41-0.92-0.92 0.35-0.92 0.92-0.92z" fill="#ffffff"/><path d="M24 20.0c4.34 0 7.00 2.42 7.00 4.40s-2.66 4.40-7.00 4.40-7.00-1.98-7.00-4.40 2.66-4.40 7.00-4.40z" fill="#efc0c2"/><path d="M21.2 22.8c1.1 0 1.8.8 1.8 1.7s-.7 1.6-1.8 1.6-1.8-.7-1.8-1.6.7-1.7 1.8-1.7zM26.8 22.8c1.1 0 1.8.8 1.8 1.7s-.7 1.6-1.8 1.6-1.8-.7-1.8-1.6.7-1.7 1.8-1.7z" fill="#d59396"/>' },
-  { id:'widder', name:'der Widder', art:'tier', zeichen:'🐏' },
+  { id:'widder', name:'der Widder', art:'tier', zeichen:'🐏',
+    ton:'#f5efe2',
+    bild:'<path d="M10.4 8.8c3.53 0 6.4 3.04 6.4 6.8c0 3.76 -2.87 6.8 -6.4 6.8c-3.53 0 -6.4 -3.04 -6.4 -6.8c0 -3.76 2.87 -6.8 6.4 -6.8z" fill="#b8965c"/><path d="M37.6 8.8c3.53 0 6.4 3.04 6.4 6.8c0 3.76 -2.87 6.8 -6.4 6.8c-3.53 0 -6.4 -3.04 -6.4 -6.8c0 -3.76 2.87 -6.8 6.4 -6.8z" fill="#b8965c"/><path d="M11.6 12.4c1.88 0 3.4 1.7 3.4 3.8c0 2.1 -1.52 3.8 -3.4 3.8c-1.88 0 -3.4 -1.7 -3.4 -3.8c0 -2.1 1.52 -3.8 3.4 -3.8z" fill="#d8bc84"/><path d="M36.4 12.4c1.88 0 3.4 1.7 3.4 3.8c0 2.1 -1.52 3.8 -3.4 3.8c-1.88 0 -3.4 -1.7 -3.4 -3.8c0 -2.1 1.52 -3.8 3.4 -3.8z" fill="#d8bc84"/><path d="M11.9 14.9c0.83 0 1.5 0.76 1.5 1.7c0 0.94 -0.67 1.7 -1.5 1.7c-0.83 0 -1.5 -0.76 -1.5 -1.7c0 -0.94 0.67 -1.7 1.5 -1.7z" fill="#b8965c"/><path d="M36.1 14.9c0.83 0 1.5 0.76 1.5 1.7c0 0.94 -0.67 1.7 -1.5 1.7c-0.83 0 -1.5 -0.76 -1.5 -1.7c0 -0.94 0.67 -1.7 1.5 -1.7z" fill="#b8965c"/><path d="M14 32.8c2 0 3.4 1.4 3.4 3.6v4.4c0 1.6-1.1 2.6-2.6 2.6s-2.6-1-2.6-2.6v-4.4c0-2.2.4-3.6 1.8-3.6z" fill="#c9bda6"/><path d="M34 32.8c2 0 3.4 1.4 3.4 3.6v4.4c0 1.6-1.1 2.6-2.6 2.6s-2.6-1-2.6-2.6v-4.4c0-2.2.4-3.6 1.8-3.6z" fill="#c9bda6"/><path d="M24 23.8c6.96 0 12.6 4.39 12.6 9.8c0 5.41 -5.64 9.8 -12.6 9.8c-6.96 0 -12.6 -4.39 -12.6 -9.8c0 -5.41 5.64 -9.8 12.6 -9.8z" fill="#efe7d6"/><path d="M15.4 27.4c2.4-2 5.2-3 8.6-3s6.2 1 8.6 3c-2.8-1-5.6-1.4-8.6-1.4s-5.8.4-8.6 1.4z" fill="#fbf6ec"/><path d="M24 10.6c5.63 0 10.2 4.21 10.2 9.4c0 5.19 -4.57 9.4 -10.2 9.4c-5.63 0 -10.2 -4.21 -10.2 -9.4c0 -5.19 4.57 -9.4 10.2 -9.4z" fill="#d5c3a4"/><path d="M24 19.6c3.87 0 7 2.51 7 5.6c0 3.09 -3.13 5.6 -7 5.6c-3.87 0 -7 -2.51 -7 -5.6c0 -3.09 3.13 -5.6 7 -5.6z" fill="#f3ece0"/><path d="M19.6 16c1.22 0 2.2 0.98 2.2 2.2c0 1.22 -0.98 2.2 -2.2 2.2c-1.22 0 -2.2 -0.98 -2.2 -2.2c0 -1.22 0.98 -2.2 2.2 -2.2z" fill="#3b2e20"/><path d="M18.87 16.84c0.49 0 0.88 0.39 0.88 0.88c0 0.49 -0.39 0.88 -0.88 0.88c-0.49 0 -0.88 -0.39 -0.88 -0.88c0 -0.49 0.39 -0.88 0.88 -0.88z" fill="#ffffff"/><path d="M28.4 16c1.22 0 2.2 0.98 2.2 2.2c0 1.22 -0.98 2.2 -2.2 2.2c-1.22 0 -2.2 -0.98 -2.2 -2.2c0 -1.22 0.98 -2.2 2.2 -2.2z" fill="#3b2e20"/><path d="M27.67 16.84c0.49 0 0.88 0.39 0.88 0.88c0 0.49 -0.39 0.88 -0.88 0.88c-0.49 0 -0.88 -0.39 -0.88 -0.88c0 -0.49 0.39 -0.88 0.88 -0.88z" fill="#ffffff"/><path d="M24 22.2c1.33 0 2.4 0.81 2.4 1.8c0 0.99 -1.07 1.8 -2.4 1.8c-1.33 0 -2.4 -0.81 -2.4 -1.8c0 -0.99 1.07 -1.8 2.4 -1.8z" fill="#a08462"/><path d="M20.8 26.4c1.1 1.1 2.2 1.7 3.2 1.7s2.1-.6 3.2-1.7c-.5 2.1-1.6 3.2-3.2 3.2s-2.7-1.1-3.2-3.2z" fill="#b79a76"/>' },
   { id:'pferd', name:'das Pferd', art:'tier', zeichen:'🐎',
     ton:'#f7ecdf',
     bild:'<path d="M12.6 30.6c-3.2.6-5.4 3.4-5.4 7.4 0 3.2 1.4 5.2 3.4 5.6 1.9.4 3.2-1 3.2-3.1V31.4z" fill="#8a6038"/><path d="M35.4 30.6c3.2.6 5.4 3.4 5.4 7.4 0 3.2-1.4 5.2-3.4 5.6-1.9.4-3.2-1-3.2-3.1V31.4z" fill="#8a6038"/><path d="M24 24.6c7.4 0 12 4.2 12 10.8v3.2c0 3-2 4.8-5.4 4.8H17.4c-3.4 0-5.4-1.8-5.4-4.8v-3.2c0-6.6 4.6-10.8 12-10.8z" fill="#9c6d40"/><path d="M24 32.4c4.34 0 7.00 2.75 7.00 5.00s-2.66 5.00-7.00 5.00-7.00-2.25-7.00-5.00 2.66-5.00 7.00-5.00z" fill="#d9b78c"/><path d="M16.4 6.6c1.4 0 2.4 1.8 2.4 4.4 0 2.2-1 3.6-2.4 3.6s-2.4-1.4-2.4-3.6c0-2.6 1-4.4 2.4-4.4z" fill="#8a6038"/><path d="M31.6 6.6c1.4 0 2.4 1.8 2.4 4.4 0 2.2-1 3.6-2.4 3.6s-2.4-1.4-2.4-3.6c0-2.6 1-4.4 2.4-4.4z" fill="#8a6038"/><path d="M16.4 8.8c.7 0 1.2 1 1.2 2.4 0 1.2-.5 2-1.2 2s-1.2-.8-1.2-2c0-1.4.5-2.4 1.2-2.4zM31.6 8.8c.7 0 1.2 1 1.2 2.4 0 1.2-.5 2-1.2 2s-1.2-.8-1.2-2c0-1.4.5-2.4 1.2-2.4z" fill="#e2b4a8"/><path d="M24 7.6c4.6 0 7.6 2.4 8.8 7.2-1.2-1.4-2.6-2.4-4.2-3l.6-3.6-2.6 3c-.8-.2-1.7-.3-2.6-.3s-1.8.1-2.6.3l-2.6-3 .6 3.6c-1.6.6-3 1.6-4.2 3 1.2-4.8 4.2-7.2 8.8-7.2z" fill="#5a3c22"/><path d="M24 8.600000000000001c6.45 0 10.40 5.50 10.40 10.00s-3.95 10.00-10.40 10.00-10.40-4.50-10.40-10.00 3.95-10.00 10.40-10.00z" fill="#a8763f"/><path d="M24 10.6c4.2 0 7 2.2 8.2 6.4-2.3-2.1-5-3.2-8.2-3.2s-5.9 1.1-8.2 3.2c1.2-4.2 4-6.4 8.2-6.4z" fill="#bb8a52"/><path d="M22.6 11.4h2.8l-.6 12h-1.6z" fill="#e8dcc8"/><path d="M19.4 15.3c1.43 0 2.30 1.26 2.30 2.30s-0.87 2.30-2.30 2.30-2.30-1.03-2.30-2.30 0.87-2.30 2.30-2.30z" fill="#2c2118"/><path d="M18.64 15.81c0.57 0 0.92 0.51 0.92 0.92s-0.35 0.92-0.92 0.92-0.92-0.41-0.92-0.92 0.35-0.92 0.92-0.92z" fill="#ffffff"/><path d="M28.6 15.3c1.43 0 2.30 1.26 2.30 2.30s-0.87 2.30-2.30 2.30-2.30-1.03-2.30-2.30 0.87-2.30 2.30-2.30z" fill="#2c2118"/><path d="M27.84 15.81c0.57 0 0.92 0.51 0.92 0.92s-0.35 0.92-0.92 0.92-0.92-0.41-0.92-0.92 0.35-0.92 0.92-0.92z" fill="#ffffff"/><path d="M24 21.6c3.84 0 6.20 2.20 6.20 4.00s-2.36 4.00-6.20 4.00-6.20-1.80-6.20-4.00 2.36-4.00 6.20-4.00z" fill="#c9a06a"/><path d="M21.6 24.6c.9 0 1.5.6 1.5 1.3s-.6 1.3-1.5 1.3-1.5-.6-1.5-1.3.6-1.3 1.5-1.3zM26.4 24.6c.9 0 1.5.6 1.5 1.3s-.6 1.3-1.5 1.3-1.5-.6-1.5-1.3.6-1.3 1.5-1.3z" fill="#7a5730"/>' },
@@ -211,16 +215,24 @@ export const TIERE = [
   { id:'hahn', name:'der Hahn', art:'tier', zeichen:'🐓' },
   { id:'truthahn', name:'der Truthahn', art:'tier', zeichen:'🦃' },
   { id:'dodo', name:'der Dodo', art:'tier', zeichen:'🦤' },
-  { id:'pfau', name:'der Pfau', art:'tier', zeichen:'🦚' },
+  { id:'pfau', name:'der Pfau', art:'tier', zeichen:'🦚',
+    ton:'#ddeef2',
+    bild:'<path d="M24 4.4c11.6 0 21 8.33 21 18.6c0 10.27 -9.4 18.6 -21 18.6c-11.6 0 -21 -8.33 -21 -18.6c0 -10.27 9.4 -18.6 21 -18.6z" fill="#2a9384"/><path d="M24 8.4c9.06 0 16.4 6.54 16.4 14.6c0 8.06 -7.34 14.6 -16.4 14.6c-9.06 0 -16.4 -6.54 -16.4 -14.6c0 -8.06 7.34 -14.6 16.4 -14.6z" fill="#37a894"/><path d="M24 12.6c6.41 0 11.6 4.66 11.6 10.4c0 5.74 -5.19 10.4 -11.6 10.4c-6.41 0 -11.6 -4.66 -11.6 -10.4c0 -5.74 5.19 -10.4 11.6 -10.4z" fill="#4dbca4"/><path d="M11.2 13c1.55 0 2.8 1.25 2.8 2.8c0 1.55 -1.25 2.8 -2.8 2.8c-1.55 0 -2.8 -1.25 -2.8 -2.8c0 -1.55 1.25 -2.8 2.8 -2.8z" fill="#f0c34c"/><path d="M36.8 13c1.55 0 2.8 1.25 2.8 2.8c0 1.55 -1.25 2.8 -2.8 2.8c-1.55 0 -2.8 -1.25 -2.8 -2.8c0 -1.55 1.25 -2.8 2.8 -2.8z" fill="#f0c34c"/><path d="M8.6 24.4c1.55 0 2.8 1.25 2.8 2.8c0 1.55 -1.25 2.8 -2.8 2.8c-1.55 0 -2.8 -1.25 -2.8 -2.8c0 -1.55 1.25 -2.8 2.8 -2.8z" fill="#f0c34c"/><path d="M39.4 24.4c1.55 0 2.8 1.25 2.8 2.8c0 1.55 -1.25 2.8 -2.8 2.8c-1.55 0 -2.8 -1.25 -2.8 -2.8c0 -1.55 1.25 -2.8 2.8 -2.8z" fill="#f0c34c"/><path d="M24 3c1.55 0 2.8 1.25 2.8 2.8c0 1.55 -1.25 2.8 -2.8 2.8c-1.55 0 -2.8 -1.25 -2.8 -2.8c0 -1.55 1.25 -2.8 2.8 -2.8z" fill="#f0c34c"/><path d="M11.2 14.5c0.72 0 1.3 0.58 1.3 1.3c0 0.72 -0.58 1.3 -1.3 1.3c-0.72 0 -1.3 -0.58 -1.3 -1.3c0 -0.72 0.58 -1.3 1.3 -1.3z" fill="#1f5f8c"/><path d="M36.8 14.5c0.72 0 1.3 0.58 1.3 1.3c0 0.72 -0.58 1.3 -1.3 1.3c-0.72 0 -1.3 -0.58 -1.3 -1.3c0 -0.72 0.58 -1.3 1.3 -1.3z" fill="#1f5f8c"/><path d="M8.6 25.9c0.72 0 1.3 0.58 1.3 1.3c0 0.72 -0.58 1.3 -1.3 1.3c-0.72 0 -1.3 -0.58 -1.3 -1.3c0 -0.72 0.58 -1.3 1.3 -1.3z" fill="#1f5f8c"/><path d="M39.4 25.9c0.72 0 1.3 0.58 1.3 1.3c0 0.72 -0.58 1.3 -1.3 1.3c-0.72 0 -1.3 -0.58 -1.3 -1.3c0 -0.72 0.58 -1.3 1.3 -1.3z" fill="#1f5f8c"/><path d="M24 4.5c0.72 0 1.3 0.58 1.3 1.3c0 0.72 -0.58 1.3 -1.3 1.3c-0.72 0 -1.3 -0.58 -1.3 -1.3c0 -0.72 0.58 -1.3 1.3 -1.3z" fill="#1f5f8c"/><path d="M24 24.8c4.75 0 8.6 4.3 8.6 9.6c0 5.3 -3.85 9.6 -8.6 9.6c-4.75 0 -8.6 -4.3 -8.6 -9.6c0 -5.3 3.85 -9.6 8.6 -9.6z" fill="#2f8cc4"/><path d="M24 29.8c2.87 0 5.2 2.95 5.2 6.6c0 3.65 -2.33 6.6 -5.2 6.6c-2.87 0 -5.2 -2.95 -5.2 -6.6c0 -3.65 2.33 -6.6 5.2 -6.6z" fill="#63b0dc"/><path d="M22.4 8.6c0-2.6 1-3.8 1.6-4.8.6 1 1.6 2.2 1.6 4.8zM17.8 9.8c-.8-2.4-.2-3.8 0-4.8.8.9 2.2 2 2.6 4.4zM30.2 9.8c.8-2.4.2-3.8 0-4.8-.8.9-2.2 2-2.6 4.4z" fill="#f0c34c"/><path d="M24 11.2c3.65 0 6.6 2.78 6.6 6.2c0 3.42 -2.95 6.2 -6.6 6.2c-3.65 0 -6.6 -2.78 -6.6 -6.2c0 -3.42 2.95 -6.2 6.6 -6.2z" fill="#2f8cc4"/><path d="M21.5 14c1.22 0 2.2 0.98 2.2 2.2c0 1.22 -0.98 2.2 -2.2 2.2c-1.22 0 -2.2 -0.98 -2.2 -2.2c0 -1.22 0.98 -2.2 2.2 -2.2z" fill="#14171c"/><path d="M20.77 14.84c0.49 0 0.88 0.39 0.88 0.88c0 0.49 -0.39 0.88 -0.88 0.88c-0.49 0 -0.88 -0.39 -0.88 -0.88c0 -0.49 0.39 -0.88 0.88 -0.88z" fill="#ffffff"/><path d="M26.5 14c1.22 0 2.2 0.98 2.2 2.2c0 1.22 -0.98 2.2 -2.2 2.2c-1.22 0 -2.2 -0.98 -2.2 -2.2c0 -1.22 0.98 -2.2 2.2 -2.2z" fill="#14171c"/><path d="M25.77 14.84c0.49 0 0.88 0.39 0.88 0.88c0 0.49 -0.39 0.88 -0.88 0.88c-0.49 0 -0.88 -0.39 -0.88 -0.88c0 -0.49 0.39 -0.88 0.88 -0.88z" fill="#ffffff"/><path d="M24,20.2L28.2,22.4L24,24.4z" fill="#e8a13c"/>' },
   { id:'papagei', name:'der Papagei', art:'tier', zeichen:'🦜',
     ton:'#e7f3e3',
     bild:'<path d="M33.6 30.6c3.8 3.4 6 8.2 6.4 14.2-3.6-4-7.4-6.8-11.4-8.2z" fill="#3f8a4a"/><path d="M12.6 25.6c-4.2 1.8-6.6 5.8-6.6 11.4 0 4.4 2.4 7.2 6 7.2 1.8 0 3.2-.6 4.2-1.8z" fill="#2f7a3f"/><path d="M23 16c8 0 13 5 13 13.4v5c0 3.4-2.1 5.4-5.6 5.4H15.6c-3.5 0-5.6-2-5.6-5.4v-5C10 21 15 16 23 16z" fill="#4a9e52"/><path d="M23 24.4c4.4 0 7.4 2.9 7.4 7.4v2.8c0 2.9-1.7 4.6-4.6 4.6h-5.6c-2.9 0-4.6-1.7-4.6-4.6v-2.8c0-4.5 3-7.4 7.4-7.4z" fill="#f0d24e"/><path d="M23 30.4c3.2 0 5.2 2.1 5.2 5.2v1.4c0 2-1.2 3.2-3.2 3.2h-4c-2 0-3.2-1.2-3.2-3.2v-1.4c0-3.1 2-5.2 5.2-5.2z" fill="#e2643f"/><path d="M21.6 2.4000000000000004c7.07 0 11.40 6.16 11.40 11.20s-4.33 11.20-11.40 11.20-11.40-5.04-11.40-11.20 4.33-11.20 11.40-11.20z" fill="#4a9e52"/><path d="M21.6 4.4c4.6 0 7.8 2.4 9.2 6.8-2.6-2.4-5.6-3.6-9.2-3.6s-6.6 1.2-9.2 3.6c1.4-4.4 4.6-6.8 9.2-6.8z" fill="#5fb266"/><path d="M17.6 2.4c1-.9 2.1-.8 3.2.3l3 3.2c-2.1.1-4 .5-5.7 1.2l-1.1-2.6c-.4-.9-.2-1.6.6-2.1z" fill="#f0d24e"/><path d="M19.6 10.1c1.55 0 2.50 1.38 2.50 2.50s-0.95 2.50-2.50 2.50-2.50-1.12-2.50-2.50 0.95-2.50 2.50-2.50z" fill="#243020"/><path d="M18.78 10.65c0.62 0 1.00 0.55 1.00 1.00s-0.38 1.00-1.00 1.00-1.00-0.45-1.00-1.00 0.38-1.00 1.00-1.00z" fill="#ffffff"/><path d="M30.6 10.6c3.4 0 5.6 2 5.6 5.2 0 3.4-2.4 6.6-6.2 8.8.8-1.8 1.2-3.4 1.2-4.8-2.6 0-4.4-1-5.4-3 1-3.8 2.6-6.2 4.8-6.2z" fill="#3b414a"/><path d="M30.4 12.4c2.2 0 3.6 1.3 3.6 3.4 0 2-1.1 3.9-3.2 5.6.3-1.2.4-2.3.3-3.2-1.6-.2-2.7-.9-3.3-2.2.7-2.4 1.5-3.6 2.6-3.6z" fill="#565e68"/>' },
-  { id:'schwan', name:'der Schwan', art:'tier', zeichen:'🦢' },
-  { id:'flamingo', name:'der Flamingo', art:'tier', zeichen:'🦩' },
+  { id:'schwan', name:'der Schwan', art:'tier', zeichen:'🦢',
+    ton:'#e6f0f6',
+    bild:'<path d="M22.6 23c7.18 0 13 4.3 13 9.6c0 5.3 -5.82 9.6 -13 9.6c-7.18 0 -13 -4.3 -13 -9.6c0 -5.3 5.82 -9.6 13 -9.6z" fill="#e4e9ee"/><path d="M21 26.4c5.19 0 9.4 3.13 9.4 7c0 3.87 -4.21 7 -9.4 7c-5.19 0 -9.4 -3.13 -9.4 -7c0 -3.87 4.21 -7 9.4 -7z" fill="#f2f5f8"/><path d="M10.2 27.4c-3 1.4-5.4 3.6-7.2 6.6 3.6-1 6.8-1.4 9.6-1.2z" fill="#e4e9ee"/><path d="M22.4 26.4c0-9.6 4.8-15.4 11.6-15.4 3.8 0 6.2 1.8 6.2 4.4 0 2.2-1.6 3.4-3.8 3.4-3.6 0-6.2 3-6.4 8.8z" fill="#fdfdfd"/><path d="M34.4 8.6c2.76 0 5 2.06 5 4.6c0 2.54 -2.24 4.6 -5 4.6c-2.76 0 -5 -2.06 -5 -4.6c0 -2.54 2.24 -4.6 5 -4.6z" fill="#fdfdfd"/><path d="M38.6,12.8L45.2,15.6L38.4,17.6z" fill="#e8853c"/><path d="M37.2,11.4L40,12.6L37.2,14z" fill="#2b3038"/><path d="M32.8 10.4c0.99 0 1.8 0.81 1.8 1.8c0 0.99 -0.81 1.8 -1.8 1.8c-0.99 0 -1.8 -0.81 -1.8 -1.8c0 -0.99 0.81 -1.8 1.8 -1.8z" fill="#14171c"/><path d="M32.21 11.08c0.4 0 0.72 0.32 0.72 0.72c0 0.4 -0.32 0.72 -0.72 0.72c-0.4 0 -0.72 -0.32 -0.72 -0.72c0 -0.4 0.32 -0.72 0.72 -0.72z" fill="#ffffff"/><path d="M29.8 9.4c1.6-1.4 3-2 4.4-2s2.6.4 3.8 1.4c-1.4-.4-2.6-.6-3.8-.6s-2.6.4-4.4 1.2z" fill="#eef1f4"/><path d="M22.6 42.4h2.4v4.8h-2.4zM20.4 46.2h7v1.6h-7z" fill="#e8853c"/>' },
+  { id:'flamingo', name:'der Flamingo', art:'tier', zeichen:'🦩',
+    ton:'#fce4ec',
+    bild:'<path d="M19.8 25.6c-.8-9 3.6-14.8 11.4-15.6 4-.4 6.6 1.2 6.8 3.8.2 2.2-1.4 3.6-3.8 3.8-3.8.4-6.2 3-6.4 8.6z" fill="#ef8fa8"/><path d="M21.6 22.8c6.85 0 12.4 4.48 12.4 10c0 5.52 -5.55 10 -12.4 10c-6.85 0 -12.4 -4.48 -12.4 -10c0 -5.52 5.55 -10 12.4 -10z" fill="#ef8fa8"/><path d="M19.8 26.2c4.42 0 8 2.95 8 6.6c0 3.65 -3.58 6.6 -8 6.6c-4.42 0 -8 -2.95 -8 -6.6c0 -3.65 3.58 -6.6 8 -6.6z" fill="#fbdde5"/><path d="M20.4 42.2h2.6v5.2h-2.6zM17.8 46.4h7.8v1.6h-7.8z" fill="#e8a13c"/><path d="M25.6 42c2.6.6 4 2 4 4-1.6-1.4-3-2-4-1.8z" fill="#e8a13c"/><path d="M9.6 30.4c-3.2 1.6-5.4 4.2-6.4 7.6 3-2 6-3.4 9-4.2z" fill="#fbdde5"/><path d="M35.2 6.6c2.87 0 5.2 2.15 5.2 4.8c0 2.65 -2.33 4.8 -5.2 4.8c-2.87 0 -5.2 -2.15 -5.2 -4.8c0 -2.65 2.33 -4.8 5.2 -4.8z" fill="#ef8fa8"/><path d="M39.2,11.4L46,14.4L38.8,16.4z" fill="#f4aec0"/><path d="M42.8,13L46,14.4L41.6,15.8z" fill="#2b3038"/><path d="M34.2 8.3c1.05 0 1.9 0.85 1.9 1.9c0 1.05 -0.85 1.9 -1.9 1.9c-1.05 0 -1.9 -0.85 -1.9 -1.9c0 -1.05 0.85 -1.9 1.9 -1.9z" fill="#14171c"/><path d="M33.57 9.02c0.42 0 0.76 0.34 0.76 0.76c0 0.42 -0.34 0.76 -0.76 0.76c-0.42 0 -0.76 -0.34 -0.76 -0.76c0 -0.42 0.34 -0.76 0.76 -0.76z" fill="#ffffff"/><path d="M30.8 7.6c1.8-1.4 3.4-2 5-2s2.8.4 4 1.4c-1.6-.4-2.8-.6-4-.6s-2.8.4-5 1.2z" fill="#fbdde5"/>' },
   { id:'taube', name:'die Taube', art:'tier', zeichen:'🕊️',
     ton:'#e9eef5',
     bild:'<path d="M33.4 29.6c4 2 7 5.6 9 10.8-4.2-2.6-8.4-4.2-12.6-4.8z" fill="#7f92a9"/><path d="M13.6 26.6c-3.6 1.6-5.6 5.2-5.6 9.8 0 4 2.2 6.6 5.6 6.6 1.6 0 2.9-.5 3.9-1.5z" fill="#8497ae"/><path d="M22.4 20.799999999999997c7.69 0 12.40 5.83 12.40 10.60s-4.71 10.60-12.40 10.60-12.40-4.77-12.40-10.60 4.71-10.60 12.40-10.60z" fill="#93a5bb"/><path d="M20.6 24.2c5.4 0 9 3.4 9 8.6v2.4c0 3.4-2.2 5.4-5.6 5.4h-6.8c-3.4 0-5.6-2-5.6-5.4v-2.4c0-5.2 3.6-8.6 9-8.6z" fill="#dfe3ea"/><path d="M20.6 27.6c4 0 6.6 2.4 6.6 5.8 0 3-2 4.8-5 4.8h-3.2c-3 0-5-1.8-5-4.8 0-3.4 2.6-5.8 6.6-5.8z" fill="#ebdcdd"/><path d="M22.6 17.4c2.4 1 3.8 3.4 4.2 7 .2 2-.1 3.8-.9 5.4-.6-3.6-1.5-6.3-2.7-8.2-.9-1.4-2.1-2.6-3.6-3.6z" fill="#7d90a8"/><path d="M19.4 5.3999999999999995c4.71 0 7.60 3.96 7.60 7.20s-2.89 7.20-7.60 7.20-7.60-3.24-7.60-7.20 2.89-7.20 7.60-7.20z" fill="#8497ae"/><path d="M19.4 6.6c3.4 0 5.8 1.8 6.8 5.4-2-1.8-4.3-2.8-6.8-2.8s-4.8 1-6.8 2.8c1-3.6 3.4-5.4 6.8-5.4z" fill="#a3b3c6"/><path d="M16.8 9.600000000000001c1.74 0 2.80 1.54 2.80 2.80s-1.06 2.80-2.80 2.80-2.80-1.26-2.80-2.80 1.06-2.80 2.80-2.80z" fill="#e07f2e"/><path d="M16.8 10.5c1.18 0 1.90 1.04 1.90 1.90s-0.72 1.90-1.90 1.90-1.90-0.85-1.90-1.90 0.72-1.90 1.90-1.90z" fill="#20242b"/><path d="M16.17 10.92c0.47 0 0.76 0.42 0.76 0.76s-0.29 0.76-0.76 0.76-0.76-0.34-0.76-0.76 0.29-0.76 0.76-0.76z" fill="#ffffff"/><path d="M24.8 11.4c4.4.4 7.2 1.4 7.2 2.4s-2.8 2-7.2 2.4z" fill="#5f656e"/><path d="M25.2 10.5c1.18 0 1.90 0.94 1.90 1.70s-0.72 1.70-1.90 1.70-1.90-0.77-1.90-1.70 0.72-1.70 1.90-1.70z" fill="#eceff3"/><path d="M18.4 40.0c1.49 0 2.40 1.21 2.40 2.20s-0.91 2.20-2.40 2.20-2.40-0.99-2.40-2.20 0.91-2.20 2.40-2.20z" fill="#e8756a"/><path d="M26.4 40.0c1.49 0 2.40 1.21 2.40 2.20s-0.91 2.20-2.40 2.20-2.40-0.99-2.40-2.20 0.91-2.20 2.40-2.20z" fill="#e8756a"/>' },
-  { id:'dachs', name:'der Dachs', art:'tier', zeichen:'🦡' },
+  { id:'dachs', name:'der Dachs', art:'tier', zeichen:'🦡',
+    ton:'#eef0f2',
+    bild:'<path d="M11.8 7.4c2.32 0 4.2 1.79 4.2 4c0 2.21 -1.88 4 -4.2 4c-2.32 0 -4.2 -1.79 -4.2 -4c0 -2.21 1.88 -4 4.2 -4z" fill="#5d636c"/><path d="M36.2 7.4c2.32 0 4.2 1.79 4.2 4c0 2.21 -1.88 4 -4.2 4c-2.32 0 -4.2 -1.79 -4.2 -4c0 -2.21 1.88 -4 4.2 -4z" fill="#5d636c"/><path d="M11.8 10.9c0.88 0 1.6 0.67 1.6 1.5c0 0.83 -0.72 1.5 -1.6 1.5c-0.88 0 -1.6 -0.67 -1.6 -1.5c0 -0.83 0.72 -1.5 1.6 -1.5z" fill="#cfd4da"/><path d="M36.2 10.9c0.88 0 1.6 0.67 1.6 1.5c0 0.83 -0.72 1.5 -1.6 1.5c-0.88 0 -1.6 -0.67 -1.6 -1.5c0 -0.83 0.72 -1.5 1.6 -1.5z" fill="#cfd4da"/><path d="M12.6 30c-3.4.6-5.6 3.4-5.6 7.4 0 3.4 1.4 5.6 3.4 6 1.9.4 3.2-1 3.2-3.2V30.8z" fill="#5d636c"/><path d="M35.4 30c3.4.6 5.6 3.4 5.6 7.4 0 3.4-1.4 5.6-3.4 6-1.9.4-3.2-1-3.2-3.2V30.8z" fill="#5d636c"/><path d="M24 24c6.85 0 12.4 4.39 12.4 9.8c0 5.41 -5.55 9.8 -12.4 9.8c-6.85 0 -12.4 -4.39 -12.4 -9.8c0 -5.41 5.55 -9.8 12.4 -9.8z" fill="#6f757e"/><path d="M24 30.8c3.98 0 7.2 2.78 7.2 6.2c0 3.42 -3.22 6.2 -7.2 6.2c-3.98 0 -7.2 -2.78 -7.2 -6.2c0 -3.42 3.22 -6.2 7.2 -6.2z" fill="#d9dde3"/><path d="M24 9.2c6.19 0 11.2 4.48 11.2 10c0 5.52 -5.01 10 -11.2 10c-6.19 0 -11.2 -4.48 -11.2 -10c0 -5.52 5.01 -10 11.2 -10z" fill="#f6f7f9"/><path d="M16.6,10.2L21.4,12.6L20.2,26.4L15,23.4z" fill="#2b3038"/><path d="M31.4,10.2L33,23.4L27.8,26.4L26.6,12.6z" fill="#2b3038"/><path d="M19 15.4c1.22 0 2.2 0.98 2.2 2.2c0 1.22 -0.98 2.2 -2.2 2.2c-1.22 0 -2.2 -0.98 -2.2 -2.2c0 -1.22 0.98 -2.2 2.2 -2.2z" fill="#14171c"/><path d="M18.27 16.24c0.49 0 0.88 0.39 0.88 0.88c0 0.49 -0.39 0.88 -0.88 0.88c-0.49 0 -0.88 -0.39 -0.88 -0.88c0 -0.49 0.39 -0.88 0.88 -0.88z" fill="#ffffff"/><path d="M29 15.4c1.22 0 2.2 0.98 2.2 2.2c0 1.22 -0.98 2.2 -2.2 2.2c-1.22 0 -2.2 -0.98 -2.2 -2.2c0 -1.22 0.98 -2.2 2.2 -2.2z" fill="#14171c"/><path d="M28.27 16.24c0.49 0 0.88 0.39 0.88 0.88c0 0.49 -0.39 0.88 -0.88 0.88c-0.49 0 -0.88 -0.39 -0.88 -0.88c0 -0.49 0.39 -0.88 0.88 -0.88z" fill="#ffffff"/><path d="M24 22.7c1.38 0 2.5 0.85 2.5 1.9c0 1.05 -1.12 1.9 -2.5 1.9c-1.38 0 -2.5 -0.85 -2.5 -1.9c0 -1.05 1.12 -1.9 2.5 -1.9z" fill="#3b434d"/><path d="M20.8 27.2c1.1 1.1 2.2 1.7 3.2 1.7s2.1-.6 3.2-1.7c-.5 2.1-1.6 3.2-3.2 3.2s-2.7-1.1-3.2-3.2z" fill="#a9aeb5"/>' },
   { id:'stinktier', name:'das Stinktier', art:'tier', zeichen:'🦨' },
   { id:'waschbaer', name:'der Waschbär', art:'tier', zeichen:'🦝',
     ton:'#eceff3',
@@ -301,61 +313,100 @@ export const TIERE = [
  * Giraffe und Löwe"), und drei sind wenig genug, dass ein Raum, dessen
  * Bilder noch fehlen, nicht die halbe Sammlung blockiert.
  *
- * Die Kennungen sind die der EBENEN aus `spiel.js`. Ein Raum ohne Ebene
- * waere nie zu oeffnen, eine Ebene ohne Raum gaebe nie etwas - `inhalt`
- * prueft beide Richtungen gegen die Ebenenliste.
+ * Die Kennungen sind die der EBENEN aus `spiel.js`, und ein Raum haelt
+ * eine LISTE davon: die Rechenwelt hat neun Ebenen und einen Hof.
+ * Vorher stand `ebene` im Singular da, und dieselbe Tierliste stand
+ * dreimal (Hof), viermal (Weide) und viermal (Riff) untereinander -
+ * Regel 6, und beim Nachtragen wird eine davon vergessen.
+ *
+ * Ein Raum ohne Ebene waere nie zu oeffnen, eine Ebene ohne Raum gaebe
+ * nie etwas - `inhalt` prueft BEIDE Richtungen. Die zweite stand hier
+ * ab T1 als Behauptung und gab es nie; als I15 sie gebaut hat, waren
+ * 26 der 48 Ebenen ohne Raum, darunter alle zehn Flaggenebenen. Ein
+ * Kommentar, der eine Pruefung beschreibt, ist keine.
  */
 export const RAEUME = [
-  { ebene:'kontinente',          titel:'Im Meer',
+  { ebenen:['kontinente'],            titel:'Im Meer',
     tiere:['wal', 'delfin', 'pinguin'] },
-  { ebene:'laender:europa',      titel:'Wald und Wiese',
+  { ebenen:['laender:europa'],        titel:'Wald und Wiese',
     tiere:['fuchs', 'igel', 'eule'] },
-  { ebene:'laender:afrika',      titel:'Die Savanne',
+  { ebenen:['laender:afrika'],        titel:'Die Savanne',
     tiere:['elefant', 'giraffe', 'loewe'] },
-  { ebene:'laender:australien',  titel:'Das Outback',
+  { ebenen:['laender:australien'],    titel:'Das Outback',
     tiere:['kaenguru', 'koala', 'schlange'] },
-  { ebene:'laender:mittelamerika', titel:'Die Karibik',
+  { ebenen:['laender:mittelamerika'], titel:'Die Karibik',
     tiere:['schildkroete', 'krabbe', 'krokodil'] },
-  /* Ab hier fehlen noch Bilder. Die Raeume stehen trotzdem schon da:
-     sie sind die Liste dessen, was zu malen ist - und `inhalt` zaehlt
-     sie ab, damit „noch nicht gemalt" eine Zahl hat und keine
-     Erinnerung. */
-  { ebene:'laender:asien',       titel:'Der Dschungel',
+  { ebenen:['laender:asien'],         titel:'Der Dschungel',
     tiere:['tiger', 'panda', 'orang-utan'] },
-  { ebene:'laender:nordamerika', titel:'Wald und Fluss',
+  { ebenen:['laender:nordamerika'],   titel:'Wald und Fluss',
     tiere:['waschbaer', 'adler', 'biber'] },
-  { ebene:'laender:suedamerika', titel:'Der Regenwald',
+  { ebenen:['laender:suedamerika'],   titel:'Der Regenwald',
     tiere:['papagei', 'faultier', 'schmetterling'] },
-  { ebene:'bundeslaender',       titel:'Vor der Haustür',
+  { ebenen:['bundeslaender'],         titel:'Vor der Haustür',
     tiere:['hase', 'amsel', 'katze'] },
-  /* Beide Hauptstadt-Ebenen fuehren in DENSELBEN Raum. Wer Europas
-     Hauptstaedte kann, hat die Stadt aufgemacht; die deutschen noch
-     einmal zu verlangen waere dieselbe Muehe fuer dieselben drei
-     Tiere. */
-  { ebene:'hauptstaedte:europa', titel:'In der Stadt',
+
+  /* DAS GEBIRGE - der Raum der achten Karte (I15).
+   *
+   * Suedosteuropa hat seit I11 Laender, seit I12 Flaggen und seit I14
+   * Hauptstaedte, und gab bis hierher nichts: es war die einzige Region
+   * mit eigener Karte und ohne eigenen Raum. Die Dinariden und das
+   * Balkangebirge sind das, was diese Karte von Europa unterscheidet -
+   * Wolf, Dachs und Mufflon leben dort, und alle drei leben nicht in
+   * „Wald und Wiese", wo Fuchs, Igel und Eule sitzen. */
+  { ebenen:['laender:suedosteuropa'], titel:'Im Gebirge',
+    tiere:['wolf', 'dachs', 'widder'] },
+
+  /* DER VOGELPARK - der Raum der Flaggenwelt (I15).
+   *
+   * ZEHN Ebenen, und keine hat bis hierher etwas gegeben: die sieben
+   * Karten, die Verwechslungspaare und „Auf die Karte". Das war der
+   * groesste einzelne Posten der 26 Ebenen ohne Raum.
+   *
+   * Alle zehn fuehren in DENSELBEN Raum, nicht je Karte in den Raum
+   * ihrer Region. Der Grund ist die Sache: eine Flagge zu erkennen ist
+   * eine andere Fertigkeit als ein Land zu finden - Farbe und Muster
+   * statt Form und Ort -, und wer sie hat, hat sie fuer alle Karten.
+   * Sie ist EINE Welt und bekommt EINEN Raum.
+   *
+   * Pfau, Flamingo und Schwan sind die drei Voegel, die man an ihrer
+   * FARBE erkennt und nicht an ihrer Gestalt. Das ist derselbe Blick,
+   * den die Flaggenebene uebt. */
+  { ebenen:['flaggen:europa', 'flaggen:suedosteuropa', 'flaggen:afrika',
+            'flaggen:asien', 'flaggen:nordamerika', 'flaggen:mittelamerika',
+            'flaggen:suedamerika', 'flaggen:australien',
+            'flaggen:paare', 'flaggen:karte'], titel:'Im Vogelpark',
+    tiere:['pfau', 'flamingo', 'schwan'] },
+
+  /* ALLE Hauptstadt-Ebenen fuehren in DENSELBEN Raum. Wer Europas
+     Hauptstaedte kann, hat die Stadt aufgemacht; die deutschen oder die
+     suedosteuropaeischen noch einmal zu verlangen waere dieselbe Muehe
+     fuer dieselben drei Tiere. */
+  { ebenen:['hauptstaedte', 'hauptstaedte:europa',
+            'hauptstaedte:suedosteuropa'], titel:'In der Stadt',
     tiere:['taube', 'ratte', 'streifenhoernchen'] },
-  { ebene:'hauptstaedte',        titel:'In der Stadt',
-    tiere:['taube', 'ratte', 'streifenhoernchen'] },
+
   /* DER ERSTE RAUM AUSSERHALB DER ERDKUNDE (T4).
    *
-   * Er haengt an allen DREI Rechenebenen, weil die Rechenwelt EINE Welt
-   * ist, die je Profil eine andere Ebene zeigt: Fiona Plus und Minus,
-   * Lea die Reihen, die Eltern das grosse Einmaleins. Eine Ebene zu
-   * waehlen hiesse, drei von vier Profilen den Hof zu verschliessen -
-   * und ausgerechnet Lea, die von den Kindern am meisten rechnet.
-   * Dieselbe Bauart wie bei den beiden Hauptstadt-Ebenen darueber:
-   * mehrere Ebenen, EIN Raum, dieselbe Liste. */
-  { ebene:'rechnen:plusminus',   titel:'Der Bauernhof',
+   * Er haengt an ALLEN Rechenebenen, weil die Rechenwelt EINE Welt ist,
+   * die je Profil eine andere Ebene zeigt: Fiona Plus und Minus, Lea die
+   * Reihen, die Eltern das grosse Einmaleins. Eine Ebene zu waehlen
+   * hiesse, drei von vier Profilen den Hof zu verschliessen - und
+   * ausgerechnet Lea, die von den Kindern am meisten rechnet.
+   *
+   * Seit I4, I10 und I13 sind es neun statt drei. Sechs davon standen
+   * hier nicht und gaben deshalb nichts; dass sie fehlten, hat kein Tor
+   * gesagt, weil es die zweite Richtung nicht geprueft hat (I15). */
+  { ebenen:['rechnen:plusminus', 'rechnen:reihen', 'rechnen:gross',
+            'rechnen:verdoppeln', 'rechnen:luecke', 'rechnen:prozent',
+            'rechnen:zehner', 'rechnen:einheiten', 'rechnen:nachbar'],
+    titel:'Der Bauernhof',
     tiere:['kuh', 'pferd', 'schwein'] },
-  { ebene:'rechnen:reihen',      titel:'Der Bauernhof',
-    tiere:['kuh', 'pferd', 'schwein'] },
-  { ebene:'rechnen:gross',       titel:'Der Bauernhof',
-    tiere:['kuh', 'pferd', 'schwein'] },
+
   /* ENGLISCH gibt das Riff, SCHREIBEN die Weide - jede WELT einen Raum,
    * gleich welche ihrer Ebenen fertig wird. Dieselbe Ableitung wie beim
-   * Bauernhof: die vier Englischebenen sind auf die Profile verteilt
-   * (Fiona und Lea hoeren, die Eltern haben die drei anderen), und wer
-   * eine davon durch hat, hat die Welt durch genug fuer drei Tiere.
+   * Bauernhof: die Englischebenen sind auf die Profile verteilt (Fiona
+   * und Lea hoeren, die Eltern haben die anderen), und wer eine davon
+   * durch hat, hat die Welt durch genug fuer drei Tiere.
    *
    * Bei SCHREIBEN sind alle vier Ebenen Fionas - die Welt gibt es nur
    * fuer sie (`wer:['fiona']`, siehe spiel.js). Der Raum ist damit als
@@ -363,40 +414,34 @@ export const RAEUME = [
    * die hier entsteht, sondern eine, die es schon gibt: Lea hat keine
    * Schreibwelt. Und es ist die Welt, die Fiona am schwersten faellt -
    * ein Lohn gehoert eher dorthin als in die leichte. */
-  { ebene:'englisch:hoeren',     titel:'Im Riff',
+  { ebenen:['englisch:hoeren', 'englisch:legen', 'englisch:bauen',
+            'englisch:laute', 'englisch:lesen', 'englisch:sagen',
+            'englisch:satz', 'freunde', 'verben', 'praeposition',
+            'wendungen', 'hoersatz'], titel:'Im Riff',
     tiere:['korallenfisch', 'kugelfisch', 'krake'] },
-  { ebene:'freunde',             titel:'Im Riff',
-    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
-  { ebene:'wendungen',           titel:'Im Riff',
-    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
-  { ebene:'hoersatz',            titel:'Im Riff',
-    tiere:['korallenfisch', 'kugelfisch', 'krake'] },
-  { ebene:'schreiben:buchstaben', titel:'Auf der Weide',
+  { ebenen:['schreiben:buchstaben', 'schreiben:diktat',
+            'schreiben:ziffern', 'schreiben:zahlen'], titel:'Auf der Weide',
     tiere:['schaf', 'esel', 'hund'] },
-  { ebene:'schreiben:diktat',     titel:'Auf der Weide',
-    tiere:['schaf', 'esel', 'hund'] },
-  { ebene:'schreiben:ziffern',    titel:'Auf der Weide',
-    tiere:['schaf', 'esel', 'hund'] },
-  { ebene:'schreiben:zahlen',     titel:'Auf der Weide',
-    tiere:['schaf', 'esel', 'hund'] },
+
   /* DER ERSTE RAUM OHNE EBENE (T6).
    *
-   * Es ist keine mehr frei: die zehn Erdkundeebenen, die drei
-   * Rechenebenen, die vier Englisch- und die vier Schreibebenen sind
-   * vergeben. Statt eine zu teilen, oeffnet diesen Raum die SAMMLUNG
-   * selbst - wer dreissig Tiere hat, bekommt die Tiefsee dazu.
+   * Ihn oeffnet die SAMMLUNG selbst - wer dreissig Tiere hat, bekommt
+   * die Tiefsee dazu.
    *
-   * Das ist der Sache nach richtig und nicht nur ein Ausweg: die
-   * anderen dreizehn Raeume sind der Lohn fuer EINE Sache, die man
-   * fertig gemacht hat. Dieser ist der Lohn fuer das Sammeln selbst -
-   * und damit der erste, der nicht an einer Welt haengt, sondern an
-   * allen.
+   * Das ist der Sache nach richtig und nicht nur ein Ausweg: die anderen
+   * Raeume sind der Lohn fuer EINE Sache, die man fertig gemacht hat.
+   * Dieser ist der Lohn fuer das Sammeln selbst - und damit der erste,
+   * der nicht an einer Welt haengt, sondern an allen.
    *
-   * DREISSIG ist gemessen und nicht gesetzt: das knappste Profil
-   * erreicht zwoelf Raeume, also 36 Tiere. Dreissig sind zehn Raeume -
-   * weit, aber fuer jedes der vier Kinder und Eltern erreichbar. `inhalt`
-   * rechnet das nach, statt es zu glauben. */
-  { ab: 30,                      titel:'In der Tiefsee',
+   * DIE ZAHL IST GEMESSEN UND WANDERT MIT (Regel 2: Grenzen anteilig,
+   * nie absolut). Das knappste Profil erreichte bei T6 zwoelf Raeume,
+   * also 36 Tiere, und die Schwelle stand bei 30 - fuenf Sechstel davon.
+   * Mit I15 sind es vierzehn Raeume und 42 Tiere; blieben es 30, waere
+   * die Schwelle still leichter geworden, ohne dass etwas rot wird.
+   * Genau die Falle, die dieses Verzeichnis dreimal bezahlt hat. Also
+   * fuenf Sechstel von 42: FUENFUNDDREISSIG. `inhalt` rechnet die
+   * Erreichbarkeit je Profil nach, statt sie zu glauben. */
+  { ab: 35,                           titel:'In der Tiefsee',
     tiere:['fisch', 'hai', 'orca'] },
 
   /* Der zweite Raum, den die Sammlung selbst oeffnet - und der einzige,
@@ -413,12 +458,12 @@ export const RAEUME = [
    * der beides mischt, nimmt dem Gedanken die Spitze. Fuer sie kommt
    * ein eigener.
    *
-   * SECHSUNDDREISSIG ist wieder gemessen: das knappste Profil erreicht
-   * ueber seine Ebenen 36 Tiere, und die Tiefsee legt bei 30 noch drei
-   * dazu. Wer also elf seiner zwoelf Raeume voll hat, ist da - es
-   * verlangt Ausdauer, aber keine Vollstaendigkeit. `inhalt` rechnet es
-   * je Profil nach, statt es zu glauben. */
-  { ab: 36,                      titel:'Vor langer Zeit',
+   * ZWEIUNDVIERZIG, und zwar aus derselben Rechnung wie die Tiefsee
+   * darueber: es ist genau die Reichweite des knappsten Profils. Wer
+   * dreizehn seiner vierzehn Raeume voll hat, kommt mit den drei Tieren
+   * der Tiefsee darauf - es verlangt Ausdauer, aber keine
+   * Vollstaendigkeit. Bei T7 hiess dieselbe Aussage 36. */
+  { ab: 42,                           titel:'Vor langer Zeit',
     tiere:['tyrannosaurus', 'langhalssaurier', 'mammut'] },
 ];
 
@@ -430,7 +475,7 @@ export const tierMit = (id) => TIERE.find(t => t.id === id) || null;
 
 /** Der Lebensraum einer Ebene - oder `null`, wenn sie keinen hat. */
 export const raumZu = (ebeneId) =>
-  (ebeneId && RAEUME.find(r => r.ebene === ebeneId)) || null;
+  (ebeneId && RAEUME.find(r => (r.ebenen || []).includes(ebeneId))) || null;
 
 /**
  * Welcher Raum sich durch die SAMMLUNG oeffnet (T6).
@@ -557,7 +602,14 @@ export const KULISSEN = {
     bild:'<path d="M0 0h160v30H0z" fill="#16233f"/><path d="M0 30h160v30H0z" fill="#1d2d4e"/><path d="M0 60h160v30H0z" fill="#26375c"/><path d="M70 0l10 62-26 0z" fill="#27395f"/><path d="M0 78c20-6 36 2 58 0s34-6 56-4 30 4 46 2v14H0z" fill="#33456b"/><path d="M8 78c0-8 3-13 3-20h5c0 7 3 12 3 20z" fill="#3d5178"/><path d="M12 50c1.8 0 2.6 1.2 2.6 2.6s-.8 2.6-2.6 2.6-2.6-1.2-2.6-2.6.8-2.6 2.6-2.6zM14 40c1.4 0 2 1 2 2s-.6 2-2 2-2-1-2-2 .6-2 2-2zM11 32c1 0 1.6.8 1.6 1.6s-.6 1.6-1.6 1.6-1.6-.8-1.6-1.6.6-1.6 1.6-1.6z" fill="#5f7ba8"/><path d="M142 40c6 0 10 4 10 8s-4 6-10 6-10-2-10-6 4-8 10-8z" fill="#6fd8c6"/><path d="M136 54c0 8-1 14-2 20h2c2-6 3-12 2-20zM142 54c0 9 0 15-.6 20h2c1-5 1-11 .6-20zM148 54c1 8 1 14 .6 20h-2c-.6-6-.6-12-1-20z" fill="#8fe6d6"/><path d="M120 22c4 0 6.6 2.6 6.6 5.2s-2.6 4-6.6 4-6.6-1.4-6.6-4 2.6-5.2 6.6-5.2z" fill="#7fd2e0"/><path d="M116 31c0 5-.6 9-1.2 13h1.4c1.2-4 1.8-8 1.2-13zM120 31c0 6 0 10-.4 13h1.4c.6-3 .6-7 .4-13z" fill="#a0e2ec"/><path d="M36 24c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM96 44c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM52 66c1 0 1.6.7 1.6 1.6s-.6 1.6-1.6 1.6-1.6-.7-1.6-1.6.6-1.6 1.6-1.6z" fill="#8fd8e8"/>' },
   "Vor langer Zeit": {
     ton:'#f6e6d2',
-    bild:'<path d="M0 0h160v22H0z" fill="#f2c79a"/><path d="M0 22h160v14H0z" fill="#f0b98a"/><path d="M0 36c22-10 38 2 60-2s44-12 66-4 26 6 34 4v10H0z" fill="#a8785c"/><path d="M0 44h160v46H0z" fill="#c9a578"/><path d="M0 52c30 6 56-6 88-2s44 8 72 4v36H0z" fill="#d8b78a"/><path d="M112 44l20-30 20 30z" fill="#8a6248"/><path d="M126 22l6-8 6 8z" fill="#c05a3c"/><path d="M124 24c5-3 11-3 16 0-5 2-11 2-16 0z" fill="#e07a48"/><path d="M132 13c-2.6-4-1-7 2.4-8.6-.8 2.8 0 4.4 1.6 5.8-1.6 1.2-3.2 2-4 2.8z" fill="#eddcc8"/><path d="M136.6 6.6c-1.6-2.6 0-4 2.2-4.8-.6 2 0 2.8.8 3.6-1 .6-2.2 1-3 1.2z" fill="#f4e8da"/><path d="M96 44l12-18 12 18z" fill="#9a7156"/><path d="M14.6 60V38h2.8v22z" fill="#5c7a3e"/><path d="M16 40c-13 -2 -15 2 -16 6 12 -2 10 -3 10 -4z" fill="#6f9450"/><path d="M16 40c13 -2 15 2 16 6 -12 -2 -10 -3 -10 -4z" fill="#5c7a3e"/><path d="M16 45c-11 -2 -13 2 -14 6 10 -2 8 -3 8 -4z" fill="#6f9450"/><path d="M16 45c11 -2 13 2 14 6 -10 -2 -8 -3 -8 -4z" fill="#5c7a3e"/><path d="M16 50c-9 -2 -11 2 -12 6 8 -2 6 -3 6 -4z" fill="#6f9450"/><path d="M16 50c9 -2 11 2 12 6 -8 -2 -6 -3 -6 -4z" fill="#5c7a3e"/><path d="M16 55c-7 -2 -9 2 -10 6 6 -2 4 -3 4 -4z" fill="#6f9450"/><path d="M16 55c7 -2 9 2 10 6 -6 -2 -4 -3 -4 -4z" fill="#5c7a3e"/><path d="M40.6 62V46h2.4v16z" fill="#5c7a3e"/><path d="M41.8 48c-9 -1.6 -11 1.6 -12 4.6 8 -1.6 6 -2.4 6 -3z" fill="#79a058"/><path d="M41.8 53c-7 -1.6 -9 1.6 -10 4.6 6 -1.6 4 -2.4 4 -3z" fill="#79a058"/><path d="M41.8 57c-5 -1.6 -7 1.6 -8 4.6 4 -1.6 2 -2.4 2 -3z" fill="#79a058"/><path d="M0 90c0-10 6-16 14-16s16 6 16 16z" fill="#a8896c"/><path d="M4 82c2-4 6-6 10-6s7 1 9 3c-6-1-13 0-19 3z" fill="#bd9d7e"/><path d="M132 90c0-8 6-13 14-13s14 5 14 13z" fill="#a8896c"/><path d="M136 84c2-3 6-5 10-5s7 1 9 2c-6-1-13 0-19 3z" fill="#bd9d7e"/><path d="M34 84c2.6 0 4 1.2 4 2.6s-1.4 2.6-4 2.6-4-1.2-4-2.6 1.4-2.6 4-2.6z" fill="#b89a7c"/><path d="M120 86c2 0 3 1 3 2s-1 2-3 2-3-1-3-2 1-2 3-2z" fill="#b89a7c"/>' },};
+    bild:'<path d="M0 0h160v22H0z" fill="#f2c79a"/><path d="M0 22h160v14H0z" fill="#f0b98a"/><path d="M0 36c22-10 38 2 60-2s44-12 66-4 26 6 34 4v10H0z" fill="#a8785c"/><path d="M0 44h160v46H0z" fill="#c9a578"/><path d="M0 52c30 6 56-6 88-2s44 8 72 4v36H0z" fill="#d8b78a"/><path d="M112 44l20-30 20 30z" fill="#8a6248"/><path d="M126 22l6-8 6 8z" fill="#c05a3c"/><path d="M124 24c5-3 11-3 16 0-5 2-11 2-16 0z" fill="#e07a48"/><path d="M132 13c-2.6-4-1-7 2.4-8.6-.8 2.8 0 4.4 1.6 5.8-1.6 1.2-3.2 2-4 2.8z" fill="#eddcc8"/><path d="M136.6 6.6c-1.6-2.6 0-4 2.2-4.8-.6 2 0 2.8.8 3.6-1 .6-2.2 1-3 1.2z" fill="#f4e8da"/><path d="M96 44l12-18 12 18z" fill="#9a7156"/><path d="M14.6 60V38h2.8v22z" fill="#5c7a3e"/><path d="M16 40c-13 -2 -15 2 -16 6 12 -2 10 -3 10 -4z" fill="#6f9450"/><path d="M16 40c13 -2 15 2 16 6 -12 -2 -10 -3 -10 -4z" fill="#5c7a3e"/><path d="M16 45c-11 -2 -13 2 -14 6 10 -2 8 -3 8 -4z" fill="#6f9450"/><path d="M16 45c11 -2 13 2 14 6 -10 -2 -8 -3 -8 -4z" fill="#5c7a3e"/><path d="M16 50c-9 -2 -11 2 -12 6 8 -2 6 -3 6 -4z" fill="#6f9450"/><path d="M16 50c9 -2 11 2 12 6 -8 -2 -6 -3 -6 -4z" fill="#5c7a3e"/><path d="M16 55c-7 -2 -9 2 -10 6 6 -2 4 -3 4 -4z" fill="#6f9450"/><path d="M16 55c7 -2 9 2 10 6 -6 -2 -4 -3 -4 -4z" fill="#5c7a3e"/><path d="M40.6 62V46h2.4v16z" fill="#5c7a3e"/><path d="M41.8 48c-9 -1.6 -11 1.6 -12 4.6 8 -1.6 6 -2.4 6 -3z" fill="#79a058"/><path d="M41.8 53c-7 -1.6 -9 1.6 -10 4.6 6 -1.6 4 -2.4 4 -3z" fill="#79a058"/><path d="M41.8 57c-5 -1.6 -7 1.6 -8 4.6 4 -1.6 2 -2.4 2 -3z" fill="#79a058"/><path d="M0 90c0-10 6-16 14-16s16 6 16 16z" fill="#a8896c"/><path d="M4 82c2-4 6-6 10-6s7 1 9 3c-6-1-13 0-19 3z" fill="#bd9d7e"/><path d="M132 90c0-8 6-13 14-13s14 5 14 13z" fill="#a8896c"/><path d="M136 84c2-3 6-5 10-5s7 1 9 2c-6-1-13 0-19 3z" fill="#bd9d7e"/><path d="M34 84c2.6 0 4 1.2 4 2.6s-1.4 2.6-4 2.6-4-1.2-4-2.6 1.4-2.6 4-2.6z" fill="#b89a7c"/><path d="M120 86c2 0 3 1 3 2s-1 2-3 2-3-1-3-2 1-2 3-2z" fill="#b89a7c"/>' },
+  "Im Gebirge": {
+    ton:'#eaeef2',
+    bild:'<path d="M0 0h160v30H0z" fill="#c2d8ea"/><path d="M0 20h160v26H0z" fill="#a3adb9"/><path d="M0 30l26-22 22 18 18-14 26 22 22-16 26 20v14H0z" fill="#8f9aa8"/><path d="M26 8l12 10-24 0zM66 12l10 8-20 0zM118 14l12 9-24 0z" fill="#f2f5f8"/><path d="M0 44c26-8 46 4 72-2s52-10 88 0v48H0z" fill="#6f8a6a"/><path d="M0 50h160v40H0z" fill="#6f8a6a"/><path d="M0 52c28 6 52-6 82-2s48 8 78 4v36H0z" fill="#83a077"/><path d="M0 66c30 8 54-4 86 2s44 4 74 0v22H0z" fill="#96b287"/><path d="M126 6c6 0 10 4 10 9s-4 9-10 9-10-4-10-9 4-9 10-9z" fill="#f7e08e"/><path d="M12.4 60v-9h3.2v9zM14 38l7 12H7z" fill="#3f6b48"/><path d="M14 44l5.4 9H8.6z" fill="#4f8355"/><path d="M148.4 62v-9h3.2v9zM150 40l7.6 13h-15.2z" fill="#3f6b48"/><path d="M150 46l5.6 9h-11.2z" fill="#4f8355"/><path d="M38 82c0-3 2-5 5-5s5 2 5 5zM110 84c0-3 2-5 5-5s5 2 5 5z" fill="#a8b4a0"/><path d="M72 86c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2e07a"/>' },
+  "Im Vogelpark": {
+    ton:'#eaf2e6',
+    bild:'<path d="M0 0h160v34H0z" fill="#bfe2f4"/><path d="M0 34c26-10 46 4 72-2s52-12 88 0v12H0z" fill="#8dc47e"/><path d="M0 44h160v46H0z" fill="#a3d18a"/><path d="M0 56c30 6 54-6 84-2s48 8 76 4v32H0z" fill="#b5de9c"/><path d="M132 10c6 0 10 4 10 9s-4 9-10 9-10-4-10-9 4-9 10-9z" fill="#fbe27a"/><path d="M0 66c14-4 26 0 36 6s10 12 8 18H0z" fill="#7fc0dc"/><path d="M0 70c12-3 22 0 30 5s8 8 7 13H0z" fill="#a8d8ec"/><path d="M146 54V42h3.4v12z" fill="#8a6238"/><path d="M147.6 24c7 0 10.4 5 10.4 10s-4.4 9-10.4 9-10.4-4-10.4-9 3.4-10 10.4-10z" fill="#5aa05a"/><path d="M147.6 26c4.6 0 7.4 2.6 8.8 6-2.6-2.4-5.4-3.6-8.8-3.6s-6.2 1.2-8.8 3.6c1.4-3.4 4.2-6 8.8-6z" fill="#75b972"/><path d="M116 64v-10h2.6v10zM108 42h19l-4 12h-11z" fill="#c4a06a"/><path d="M110 46h15l-2 6h-11z" fill="#e0c48f"/><path d="M8 20c4-4 8-4 11-1-3-1-6 0-8 3-1-3-2-3-3-2zM19 21c4-4 8-4 11-1-3-1-6 0-8 3-1-3-2-3-3-2z" fill="#6f8a9c"/><path d="M92 14c4-4 8-4 11-1-3-1-6 0-8 3-1-3-2-3-3-2z" fill="#6f8a9c"/><path d="M54 84c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2zM126 82c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2e07a"/>' },
+};
 
 /** Die Landschaft eines Raumes - oder `null`, wenn es noch keine gibt. */
 export const kulisseZu = (titel) => KULISSEN[titel] || null;

@@ -3784,8 +3784,14 @@ console.log('\n  Tor `englisch`');
      Kennungen aus derselben Quelle wie im Spiel: den geladenen Karten.
      Eine abgeschriebene Liste waere die, die bei der achten Karte
      veraltet. */
-  if (/id:`laender:\$\{k\}`/.test(spiel))
-    for (const k of Object.keys(KARTEN_GROB)) ebenen.add(`laender:${k}`);
+  /* Seit F2 werden auch die FLAGGENEBENEN so erzeugt (`id:\`flaggen:${k}\``).
+     Die Erkennung lief nur auf `laender:` und kannte deshalb keine
+     einzige Flaggenkarte - dieselbe Falle wie bei der achten Karte, nur
+     eine Zeile weiter unten. Gesucht wird jetzt nach der FORM und nicht
+     nach dem Wort: was `id:\`<stamm>:${k}\`` schreibt, gilt fuer jede
+     Karte. */
+  for (const m of spiel.matchAll(/id:`([a-z]+):\$\{k\}`/g))
+    for (const k of Object.keys(KARTEN_GROB)) ebenen.add(`${m[1]}:${k}`);
   if (ebenen.size < 8) tf.push(`nur ${ebenen.size} Ebenen in spiel.js gefunden — `
     + 'die Erkennung greift ins Leere, und alles darunter beweist nichts');
 
@@ -3827,15 +3833,28 @@ console.log('\n  Tor `englisch`');
    * beidem gaebe es zwei Wege zu denselben drei Tieren, und welcher
    * zuerst greift, entschiede die Reihenfolge in der Liste. */
   const raumTitel = new Map();
+  const titelGesehen = new Set();
   for (const r of TI.RAEUME) {
-    if (!!r.ebene === !!r.ab)
-      tf.push(`„${r.titel}" hängt ${r.ebene ? 'an einer Ebene UND an einer Zahl'
+    const hatEbenen = Array.isArray(r.ebenen) && r.ebenen.length > 0;
+    if (hatEbenen === !!r.ab)
+      tf.push(`„${r.titel}" hängt ${hatEbenen ? 'an Ebenen UND an einer Zahl'
         : 'weder an einer Ebene noch an einer Zahl'} — genau eines von beidem`);
     if (r.ab !== undefined && !(Number.isInteger(r.ab) && r.ab > 0))
       tf.push(`„${r.titel}" öffnet sich bei „${r.ab}" — das ist keine Anzahl`);
-    if (r.ebene && !ebenen.has(r.ebene))
-      tf.push(`der Lebensraum „${r.titel}" haengt an der Ebene „${r.ebene}", `
-        + 'die es in spiel.js nicht gibt — er waere nie zu öffnen');
+    /* EIN TITEL, EIN RAUM. Vor I15 durften sich zwei Eintraege einen
+       Titel teilen (die beiden Hauptstadt-Ebenen taten es), und ihre
+       Tierlisten mussten dann von Hand gleich sein. Seit ein Raum eine
+       LISTE von Ebenen haelt, gibt es dafuer keinen Grund mehr - und
+       vier Stellen, die vorher nach Titel entdoppeln mussten, brauchen
+       es nicht mehr. */
+    if (titelGesehen.has(r.titel))
+      tf.push(`„${r.titel}" steht zweimal in RAEUME — ein Raum hält seine `
+        + 'Ebenen jetzt als Liste, zwei Einträge sind zwei Wahrheiten');
+    titelGesehen.add(r.titel);
+    for (const e of (r.ebenen || []))
+      if (!ebenen.has(e))
+        tf.push(`der Lebensraum „${r.titel}" haengt an der Ebene „${e}", `
+          + 'die es in spiel.js nicht gibt — sie waere nie zu öffnen');
     if (r.tiere.length !== 3)
       tf.push(`„${r.titel}" hat ${r.tiere.length} Tiere, nicht drei`);
     for (const id of r.tiere)
@@ -3852,6 +3871,31 @@ console.log('\n  Tor `englisch`');
       raumTitel.set(id, r.titel);
     }
   }
+  /* UND DIE ZWEITE RICHTUNG: JEDE EBENE FUEHRT IN EINEN RAUM (I15).
+   *
+   * Der Kopfkommentar in `tiere.js` hat sie ab T1 behauptet, und es gab
+   * sie nie. Beim ersten Lauf waren 26 der 48 Ebenen ohne Raum: alle
+   * zehn Flaggenebenen, die drei Ebenen der achten Karte, sechs
+   * Rechenarten aus I4/I10/I13, sechs Englischebenen, „Gestern und
+   * heute" und „Das kleine Wort".
+   *
+   * Eine Ebene ohne Raum ist nicht kaputt - man kann sie spielen und
+   * fertig machen. Sie gibt nur nie etwas, und zwar STILL: der
+   * Endbildschirm sagt „Gut gemacht" und sonst nichts, und niemand
+   * merkt, dass hier ein Lohn fehlt. Das ist genau die Verfallsart, die
+   * mit jeder neuen Ebene wieder auftritt - deshalb ein Tor und keine
+   * Erinnerung.
+   *
+   * Geprueft wird ueber `raumZu`, also ueber genau den Weg, den das
+   * Spiel geht (`spiel.js` fragt ihn im Endbildschirm). Eine eigene
+   * Suche hier waere eine zweite Wahrheit. */
+  {
+    const ohne = [...ebenen].filter(e => !TI.raumZu(e)).sort();
+    if (ohne.length)
+      tf.push(`${ohne.length} Ebenen führen in keinen Lebensraum und geben `
+        + `deshalb nie ein Tier: ${ohne.join(', ')}`);
+  }
+
   /* JEDE SCHWELLE MUSS FUER JEDES PROFIL ERREICHBAR SEIN (T6).
    *
    * Ein Raum, der sich bei dreissig Tieren oeffnet, ist fuer ein Kind,
@@ -3872,9 +3916,13 @@ console.log('\n  Tor `englisch`');
     const profile = [...new Set([...werVon.values()].filter(Boolean).flat())];
     for (const r of TI.RAEUME.filter(x => x.ab)) {
       for (const p of profile) {
+        /* Ein Raum zaehlt fuer ein Profil, wenn IRGENDEINE seiner
+           Ebenen ihm gehoert - der Hof gehoert Fiona ueber
+           `rechnen:plusminus`, auch wenn acht der neun Rechenebenen
+           nicht ihre sind. */
         const raeume = new Set(TI.RAEUME
-          .filter(x => x.ebene && (werVon.get(x.ebene) === null
-            || !werVon.has(x.ebene) || werVon.get(x.ebene).includes(p)))
+          .filter(x => (x.ebenen || []).some(e => werVon.get(e) === null
+            || !werVon.has(e) || werVon.get(e).includes(p)))
           .map(x => x.titel));
         const holbar = raeume.size * 3;
         if (holbar < r.ab)
@@ -3917,15 +3965,18 @@ console.log('\n  Tor `englisch`');
       tf.push(`„${r.titel}" gibt seine Tiere ein ZWEITES Mal`);
   }
 
-  for (const r of TI.RAEUME.filter(x => x.ebene)) {
-    const ersteMal = TI.raumTiere(r.ebene, []);
+  /* JEDE Ebene des Raumes und nicht nur die erste: der Hof hat neun,
+     das Riff zwoelf, und eine davon koennte falsch geschrieben sein -
+     dann gaebe genau sie nichts, und die acht anderen deckten es zu. */
+  for (const r of TI.RAEUME.filter(x => x.ebenen)) for (const e of r.ebenen) {
+    const ersteMal = TI.raumTiere(e, []);
     const gemaltImRaum = r.tiere.filter(id => TI.tierMit(id) && TI.tierMit(id).bild);
     if (ersteMal.length !== gemaltImRaum.length)
-      tf.push(`„${r.titel}" gibt beim ersten Mal ${ersteMal.length} statt `
-        + `${gemaltImRaum.length} Tiere`);
-    const zweitesMal = TI.raumTiere(r.ebene, ersteMal.map(t => t.id));
+      tf.push(`„${r.titel}" gibt über „${e}" beim ersten Mal ${ersteMal.length} `
+        + `statt ${gemaltImRaum.length} Tiere`);
+    const zweitesMal = TI.raumTiere(e, ersteMal.map(t => t.id));
     if (zweitesMal.length)
-      tf.push(`„${r.titel}" gibt beim ZWEITEN Mal noch einmal `
+      tf.push(`„${r.titel}" gibt über „${e}" beim ZWEITEN Mal noch einmal `
         + `${zweitesMal.length} Tiere — dann ist der Lohn keiner`);
   }
 
@@ -3940,7 +3991,7 @@ console.log('\n  Tor `englisch`');
    * eigenen Koordinatenraum), nur im groesseren Rahmen. Dazu die eine
    * Regel, die diese zehn Bilder gemeinsam haben: in der MITTE steht
    * nichts - dort liegen die neun Plaetze. */
-  const raumTitelAlle = [...new Set(TI.RAEUME.map(r => r.titel))];
+  const raumTitelAlle = TI.RAEUME.map(r => r.titel);
   for (const titel of raumTitelAlle) {
     const voll = TI.RAEUME.find(r => r.titel === titel)
       .tiere.every(id => TI.tierMit(id) && TI.tierMit(id).bild);
@@ -3974,7 +4025,7 @@ console.log('\n  Tor `englisch`');
     console.error('\n  tiere ROT: die Tiere (T1) stimmen nicht.');
     process.exit(1);
   }
-  const raeume = TI.RAEUME.filter((r, i, a) => a.findIndex(x => x.titel === r.titel) === i);
+  const raeume = TI.RAEUME;
   const fertig = raeume.filter(r => r.tiere.every(id => TI.tierMit(id).bild));
   console.log('\n  Tor `tiere`');
   console.log(`    ${TI.TIERE.length} im Plan, ${TI.gemalt().length} gemalt · `

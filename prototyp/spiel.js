@@ -9789,8 +9789,12 @@ async function forscherbuch(){
        mit drei Fragezeichen, den man nicht oeffnen kann, waere kein
        Versprechen, sondern eine Mahnung - dieselbe Lehre wie bei den
        sechzig leeren Kaesten. */
+    /* Kein Entdoppeln nach Titel mehr: seit I15 haelt ein Raum seine
+       Ebenen als LISTE, und damit steht jeder Titel genau einmal in
+       `RAEUME` - `inhalt` setzt es durch. Der Filter davor war die
+       Stelle, die beim Zusammenlegen des Bauernhofs (drei Eintraege) und
+       des Riffs (vier) noetig war. */
     const fertig = Tiere.RAEUME
-      .filter((r, i, alleR) => alleR.findIndex(x => x.titel === r.titel) === i)
       .map(r => ({ ...r, stuecke: r.tiere.map(Tiere.tierMit).filter(t => t && t.bild) }))
       .filter(r => r.stuecke.length === r.tiere.length);
     /* DIE OFFENEN UND EINER MEHR - gemessen und nicht entschieden.
