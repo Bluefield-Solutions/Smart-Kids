@@ -366,14 +366,14 @@
       "s": 391
     },
     "das Buch verliert den Weg zurück in den Vorlauf": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 182
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 172
     },
     "„Zurück\" aus dem Vorlauf fällt in die Ebenenwahl": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 120
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 96
     },
     "eine Ebenenkachel hat kein Bild mehr": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
@@ -396,14 +396,14 @@
       "s": 39
     },
     "der Satz zum Mitnehmen fehlt im Buch": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 91
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 90
     },
     "ein Tipp auf die Albumkarte blaettert den Satz nicht mehr": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 85
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 95
     },
     "das Lob schiebt die Karte noch weiter weg": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -496,9 +496,9 @@
       "s": 34
     },
     "ein langes Warten bleibt stumm": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 84
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 88
     },
     "ein Suchtext wird zweideutig": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
@@ -696,8 +696,8 @@
       "s": 1
     },
     "eine offene Kontinentrunde geht wieder zu": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
       "s": 86
     },
     "eine Regel fehlt in CLAUDE.md, die Verweise bleiben stehen": {
@@ -706,9 +706,9 @@
       "s": 1
     },
     "das Auge startet die Ebene statt sie zu zeigen": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 70
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 67
     },
     "der Wegweiser bleibt aus": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -766,9 +766,9 @@
       "s": 84
     },
     "der Rückfall wird gar nicht mehr gestellt": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 87
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 85
     },
     "die Aufkleberprobe zählt keine Gelegenheiten mehr": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -786,9 +786,9 @@
       "s": 1
     },
     "das Buch zeigt Karten ohne Umriss": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 82
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 89
     },
     "der Schalter kürzt keine Schaupause mehr": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -821,9 +821,9 @@
       "s": 5
     },
     "eine Kapitelseite im Buch ist zu hoch für den Bildschirm": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 85
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 88
     },
     "der leere Kopf nimmt wieder Platz weg": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
@@ -866,14 +866,14 @@
       "s": 271
     },
     "die Wackelkandidaten stehen unter keinem Namen": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 87
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 88
     },
     "es gibt nur einen Löschknopf": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 84
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 87
     },
     "der Vorlauf erscheint beim ersten Betreten nicht": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -891,14 +891,14 @@
       "s": 34
     },
     "„von vorne\" in der Pause löscht nichts": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 84
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 88
     },
     "nach „von vorne\" läuft die alte Sitzung weiter": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 87
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 89
     },
     "der Boden verschluckt wieder den Nachbarn": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1141,9 +1141,9 @@
       "s": 89
     },
     "„von vorne\" steht wieder an der Kachel": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 84
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 86
     },
     "Antippen antwortet nicht mehr": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1166,9 +1166,9 @@
       "s": 645
     },
     "das Forscherbuch zeigt wieder alles": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 80
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 90
     },
     "Kopf und Endbildschirm rechnen wieder verschieden": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1181,9 +1181,9 @@
       "s": 91
     },
     "die geänderte PIN wird nicht gespeichert": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 86
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 91
     },
     "die Karte zeigt den Fortschritt erst viel später": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1191,19 +1191,19 @@
       "s": 32
     },
     "die Ebenenwahl zeigt keine Aufkleber mehr": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 86
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 92
     },
     "die Sterne kommen auf die Ebenenkachel zurueck": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 82
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 91
     },
     "Balken und Aufkleberzahl laufen wieder auseinander": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 85
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 86
     },
     "auf dem Zielgerät verschwindet der Kachelbalken": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
@@ -1426,44 +1426,44 @@
       "s": 68
     },
     "die Vorschauseite verschweigt wieder den Fortschritt": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 79
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 82
     },
     "die Rechenseite im Buch verliert ihre Tafel": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
       "s": 78
     },
     "jede Ebene bekommt wieder ihr eigenes Kapitel": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 78
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "die Weltseite blaettert nicht in ihre Ebene": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 55
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 57
     },
     "das Weltraster laesst wieder leere Spalten stehen": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 91
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 78
     },
     "die Weltuebersicht sagt nicht mehr, wo es weitergeht": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 75
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 78
     },
     "der Abzeichenname bricht wieder mitten im Wort": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 87
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "der Kapitelstreifen sperrt auf dem schmalen Schirm einen Reiter aus": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 87
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 76
     },
     "die Abzeichenseite zeigt wieder nur drei offene Abzeichen": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
@@ -1476,14 +1476,14 @@
       "s": 42
     },
     "die Rechentafel zählt an ihrem Reiter vorbei": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 75
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "die Rechentafel fällt aus und niemand merkt es": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 75
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "der Tonleiter fehlt die Ebene ohne Landkarte": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1491,9 +1491,9 @@
       "s": 26
     },
     "die Nutzungsmessung misst wieder den Kasten statt den Inhalt": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 87
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "der Lohn feiert auch bei den Eltern": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -1621,13 +1621,13 @@
       "s": 50
     },
     "das Buch rollt wieder statt zu blaettern": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
-      "s": 76
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "ein Kapitelreiter blaettert nicht": {
-      "commit": "6850af3871588056bad68c78e57ed290ee965473",
-      "zeit": "2026-09-07",
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
       "s": 76
     },
     "die Abzeichenseite zeigt wieder nur die verdienten": {
@@ -1696,9 +1696,9 @@
       "s": 6
     },
     "die ruhenden Antwortknoepfe behalten ihre volle Deckkraft": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 89
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 77
     },
     "ein englisches Wort weicht von der amtlichen Liste ab": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
@@ -2024,6 +2024,16 @@
       "commit": "bf45efb29e71ab77849e973140bb3976a030ba6b",
       "zeit": "2026-09-08",
       "s": 51
+    },
+    "die Sammlung fuellt ihre Buchseite nicht mehr": {
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 142
+    },
+    "der Kasten waechst, das Bild bleibt briefmarkengross": {
+      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
+      "zeit": "2026-09-08",
+      "s": 24
     },
     "die richtige Antwort huepft nicht mehr": {
       "commit": "9dfb7a7615d1f3aca68ea03b776e576ffec488b3",
