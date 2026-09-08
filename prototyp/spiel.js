@@ -3826,7 +3826,7 @@ async function starten(ebeneId, alsTest = false){
      Beides gehoert der Sitzung und nicht dem Kind - eine Serie ueber Tage
      waere eine andere Zusage und braucht die Ablage. */
   Sitzung = { ebeneId, alle, liste: testListe || listeMitBogen, i:0, glatt:0, wie:[],
-              serie:0, besteSerie:0,
+              serie:0, besteSerie:0, neuSicher:[],
               aufkleber:0, neueKleber:[], keim, begonnen:Date.now(), test: alsTest,
               abzVorher: new Set(verdiente(ebeneId, Stand).map(a => a.id)) };
   zeige(schirmZu(ebeneId));
@@ -3907,6 +3907,7 @@ function werten(ziel, ergebnis, versuch){
   // Fach, und weil das zurueckfaellt, meldete der Endbildschirm denselben
   // Aufkleber ein zweites und drittes Mal als "neu".
   const hatteVorher = Leitner.istGesammelt(Stand, ziel.id);
+  const sicherVorher = Leitner.istGekonnt(Stand, ziel.id);
   Stand = Leitner.verschieben(Stand, ziel.id, ergebnis === 'richtig', Date.now());
   /* DIE SERIE. Sie haengt an derselben Bedingung wie `glatt` - auf Anhieb
      richtig - und steht deshalb genau hier und an keiner zweiten Stelle.
@@ -3939,6 +3940,13 @@ function werten(ziel, ergebnis, versuch){
   st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
   const neuerAufkleber = !hatteVorher && Leitner.istGesammelt(Stand, ziel.id);
   if (neuerAufkleber) { st.aufkleber++; st.neueKleber.push(ziel.id); }
+  /* NEU SICHER (N4). Dieselbe Bauart wie der Aufkleber daneben - vorher
+     gefragt, nachher gefragt, Unterschied gemerkt. Und aus demselben
+     Grund: ohne das „vorher" waere jede weitere richtige Antwort auf
+     denselben Gegenstand ein zweites „jetzt sitzt es".
+     Fach 5 ist die Schwelle, weil `istGekonnt` sie setzt - dieselbe, an
+     der das Buch „davon sicher" zaehlt, nicht eine zweite daneben. */
+  if (!sicherVorher && Leitner.istGekonnt(Stand, ziel.id)) st.neuSicher.push(ziel.id);
   standSichern(st.ebeneId);
   return neuerAufkleber;
 }
@@ -3993,10 +4001,30 @@ function kopfNachziehenIn(s){
   serieZeigen();
 }
 
+/* DAS WIEDERSEHEN (N4).
+ *
+ * „Die kennst du schon - die kommt noch mal." Ein Pfeil im Kreis, kein
+ * Wort: Fiona liest nicht, und ein Satz wie „diese Aufgabe war letztes
+ * Mal falsch" waere ausserdem ein Vorwurf. Der Pfeil sagt dasselbe
+ * freundlich - es ist eine WIEDERHOLUNG und keine Strafe.
+ *
+ * ER STEHT IM KOPF und nicht an der Frage, und das ist die ganze
+ * Entscheidung dieser Runde: `aufgabenKopf` ist der eine Ort, den JEDE
+ * Aufgabenart passiert. An der Frage haette er in acht Bildschirmen
+ * nachgetragen werden muessen, und beim neunten haette ihn jemand
+ * vergessen - so wie `kopfNachziehenIn` im Falsch-Zweig vergessen wurde. */
+const wiederZeichen = (st) => {
+  const ziel = st.liste[st.i];
+  if (!ziel || !Leitner.kommtZurueck(Stand, ziel.id)) return '';
+  return '<span class="wieder" aria-label="Die kennst du schon — die kommt noch einmal">'
+    + '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor"'
+    + ' d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></svg></span>';
+};
+
 /** Der Kopf, den jede Aufgabe trägt - Band und Sterne aus einer Hand. */
 const aufgabenKopf = (st) => kopf({
   links: schliessenKnopf('Übung beenden'),
-  mitte:`<div class="bandreihe"><div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
+  mitte:`<div class="bandreihe">${wiederZeichen(st)}<div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
     st.liste.map((_,i)=>`<i class="${
       i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"${
       /* DIE KNACKNUSS im Band (N3). Das letzte Feld ist groesser und
@@ -8209,6 +8237,17 @@ function endschirm(){
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
+      ${/* NEU SICHER (N4). Der Kasten sagt zum ersten Mal, was er weiss:
+           „das kannst du jetzt". Genannt wird es nur, wenn es DIESE Runde
+           passiert ist, und hoechstens drei Namen - wer fuenf Zeilen
+           vorgelesen bekommt, hoert bei der dritten nicht mehr zu (das
+           steht schon beim Abzeichen daneben und gilt hier genauso). */
+        st.neuSicher.length ? `<div class="neusicher"><i class="siegel"></i><span>${
+          st.neuSicher.length === 1 ? 'Das kannst du jetzt sicher: '
+            : `${st.neuSicher.length} kannst du jetzt sicher: `}${
+          aufzaehlen(st.neuSicher.slice(0, 3).map(id =>
+            (st.alle.find(x => x.id === id) || {}).name || id), 'und')}${
+          st.neuSicher.length > 3 ? ' …' : ''}</span></div>` : ''}
       ${/* DAS TAGESZIEL (N2). Es steht unter dem Ergebnis der Runde, weil
            es vom TAG erzaehlt und nicht von dieser Uebung - und es steht
            nur ausserhalb des Tests: ein Test ist eine Pruefung, kein

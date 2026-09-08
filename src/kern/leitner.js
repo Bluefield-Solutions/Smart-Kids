@@ -103,6 +103,29 @@ export const warGesessen = (stand, id) => hoechstes(stand, id) >= SITZT;
 export const istGekonnt = (stand, id) => (stand[id]?.fach ?? 1) >= 5;
 
 /**
+ * KOMMT DAS HIER ZURUECK, weil es letztes Mal danebenging? (N4)
+ *
+ * Befund S10 aus dem Spiel-Audit: der Kasten arbeitet unsichtbar. Ein Kind
+ * sieht nie, dass eine Aufgabe wiederkommt, WEIL es sie nicht konnte - und
+ * damit ist die eine Sache, die dieses System besser macht als eine
+ * Zufallsliste, fuer das Kind nicht vorhanden.
+ *
+ * DIE FRAGE IST NICHT „ist es schwer", sondern „war es schon einmal
+ * falsch". Ein Gegenstand, der noch nie gefragt wurde, kommt nicht
+ * zurueck - er kommt zum ersten Mal. Und einer, der laengst sitzt, kommt
+ * zur Auffrischung und nicht wegen eines Fehlers; ihn zu markieren waere
+ * ein Vorwurf ohne Anlass.
+ *
+ * Fach 3 ist die Grenze, weil dort der Aufkleber haengt: was ihn hat, ist
+ * fuer das Kind „geschafft", und was ihn nicht hat, ist noch unterwegs.
+ * Dieselbe Schwelle wie im Buch, nicht eine zweite daneben.
+ */
+export const kommtZurueck = (stand, id) => {
+  const e = stand[id];
+  return !!e && (e.falsch ?? 0) > 0 && (e.fach ?? 1) < 3;
+};
+
+/**
  * Ab wann es einen Aufkleber gibt.
  *
  * NICHT erst bei Fach 5. Dorthin braucht ein Gegenstand vier richtige

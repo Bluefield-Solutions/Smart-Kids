@@ -12572,3 +12572,55 @@ Das ist die Sorte Lücke, gegen die eine Gegenprobe da ist: das Tor war richtig,
 seine Frage war richtig, und trotzdem kam der Fall nie vor. Der Satz steht
 jetzt **einmal** im Ton — gesprochen und geschrieben aus derselben Quelle —
 und eine Gegenprobe setzt das Ausrufezeichen zurück.
+
+## N4 · Der Kasten wird sichtbar — und ein Befund, der falsch war
+
+Diese Runde sollte dem Forscherbuch **Lücken** geben (Befund S4). Beim Bauen
+zeigte sich: **die hat es längst.** Die Rechenseite zeigt ein Raster aus
+kräftigen, blassen und leeren Feldern, die Tierseite graue Plätze, die
+Kartenseiten die ganze Karte mit dem Gesammelten in Farbe und dem Rest blass
+darunter — das ist Q28, und es ist ausdrücklich **gegen** den
+Kästen-mit-Fragezeichen-Entwurf entschieden worden, weil der „nach Arbeit
+aussah".
+
+Ich hatte die Zahl „2 von 4 gesammelt" in der Kopfzeile gelesen und daraus
+geschlossen, dass es dabei bleibt. Der Befund steht im Audit stehen geblieben,
+mit Nachtrag — ein Audit, das seine Irrtümer wegräumt, sieht hinterher klüger
+aus, als es war.
+
+### Was wirklich fehlte
+
+Der Leitner-Kasten arbeitet **unsichtbar** (S10). Ein Kind sieht nie, dass eine
+Aufgabe zurückkommt, weil sie letztes Mal danebenging — und nie, dass etwas
+jetzt sitzt.
+
+**Das Wiedersehen.** Ein Pfeil im Kreis, links vom Fortschrittsband. Kein Wort:
+Fiona liest nicht, und „diese Aufgabe war letztes Mal falsch" wäre ein Vorwurf.
+Der Pfeil sagt dasselbe freundlich — es ist eine Wiederholung, keine Strafe.
+Ruhig und blau, nicht rot.
+
+Er steht **im Kopf** und nicht an der Frage, und das ist die Entscheidung
+dieser Runde: `aufgabenKopf` ist der eine Ort, den jede Aufgabenart passiert.
+An der Frage hätte er in acht Bildschirmen nachgetragen werden müssen, und beim
+neunten hätte ihn jemand vergessen — so wie `kopfNachziehenIn` im Falsch-Zweig
+vergessen wurde.
+
+**Die Grenze ist Fach 3**, weil dort der Aufkleber hängt: dieselbe Schwelle wie
+im Buch, nicht eine zweite daneben. Gemessen an fünf Fällen:
+
+```
+Wiedersehen: noch nie gefragt: —  ·  einmal falsch, Fach 1: Zeichen
+             falsch, aber Fach 3: —  ·  nie falsch, Fach 1: —  ·  sitzt (Fach 5): —
+```
+
+**Neu sicher.** Wer in dieser Runde etwas auf Fach 5 gebracht hat, erfährt es am
+Ende — mit demselben grünen Siegel, das im Buch daran hängt. Ein zweites Symbol
+für dieselbe Sache wäre ein zweites Versprechen.
+
+**Offen und ehrlich:** „neu sicher" ist von **keinem Tor** geprüft, nur
+angesehen. Ein Gegenstand erreicht Fach 5 erst nach mehreren Sitzungen, und ein
+Rauchtest, der so weit spielt, wäre teurer als der Befund. Es steht im
+Rückstandsverzeichnis.
+
+Der Kopf liest sich jetzt auf einen Blick: **↺ · ● ○ ○ ⭕ · ☆☆☆** — Wiedersehen,
+Stand der Runde, Knacknuss, Sterne.

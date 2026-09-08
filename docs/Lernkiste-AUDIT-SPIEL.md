@@ -56,9 +56,21 @@ Sterne. Zwischendurch sagt niemand: „du bist gerade richtig gut."
 
 ### S4 · Das Sammeln hat keine Lücken
 
-Das Forscherbuch sagt „2 von 4 gesammelt". Eine Zahl. Was fehlt, sieht man
-nicht — und **die Lücke ist der Sog**, nicht der Besitz. Ein Sammelalbum
-wirkt, weil man die leeren Felder sieht.
+> **NACHTRAG (08.09.2026, beim Bauen von N4): dieser Befund war weitgehend
+> falsch.** Ich habe die Zahl „2 von 4 gesammelt" in der Kopfzeile gelesen und
+> daraus geschlossen, dass es dabei bleibt. Es bleibt nicht dabei: die
+> Rechenseite zeigt ein Raster aus kräftigen, blassen und leeren Feldern, die
+> Tierseite zeigt graue Plätze, und die Kartenseiten zeigen die ganze Karte
+> mit den gesammelten Gebieten in Farbe und dem Rest blass darunter. Das ist
+> Q28, und es ist ausdrücklich gegen den Kästen-mit-Fragezeichen-Entwurf
+> entschieden worden, weil der „nach Arbeit aussah".
+>
+> **Was bleibt**, ist eine schmalere Sache: auf den Kartenseiten ist das
+> Blasse so blass, dass die Lücke kaum zieht. Das gehört zum Grafikteil
+> (G10), nicht hierher.
+>
+> Der Befund steht hier stehen geblieben, statt gelöscht zu werden: ein Audit,
+> das seine Irrtümer wegräumt, sieht hinterher klüger aus, als es war.
 
 ### S5 · Es gibt kein Morgen
 
@@ -132,7 +144,7 @@ Nach Wirkung je Aufwand, für **diese zwei Kinder** auf **diesem Gerät**:
 | | Befund | Wirkung | Aufwand |
 |---|---|---|---|
 | 1 | S3 Serie sichtbar machen | sehr hoch | klein |
-| 2 | S4 Sammeln mit Lücken | sehr hoch | mittel |
+| 2 | ~~S4 Sammeln mit Lücken~~ — war schon da (Q28) | — | — |
 | 3 | S5 Tagesziel | hoch | klein |
 | 4 | S2 Bogen der Sitzung | hoch | mittel |
 | 5 | S7/S8 Weg statt Wand | hoch | groß |

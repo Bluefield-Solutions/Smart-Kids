@@ -160,6 +160,18 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .tagesende.voll{font-weight:700;color:var(--tinte)}
 .tagesende .tagesziel{margin-top:0}
 .bandreihe{display:flex;gap:var(--r3);align-items:center}
+/* DAS WIEDERSEHEN (N4) — links vom Band, weil es zur AUFGABE gehoert und
+   nicht zum Stand der Runde. Ruhig und blau: es ist ein Hinweis, keine
+   Warnung. Rot waere ein Vorwurf, und der Kasten macht keinen. */
+/* NEU SICHER (N4) — dasselbe gruene Siegel wie im Buch, damit ein Kind
+   die Verbindung sieht: was hier genannt wird, traegt dort das Zeichen.
+   Ein zweites Symbol fuer dieselbe Sache waere ein zweites Versprechen. */
+.neusicher{display:flex;align-items:center;justify-content:center;gap:var(--r2);
+  margin:var(--r2) 0;color:var(--tinte-2)}
+.neusicher .siegel{position:static;width:14px;height:14px;border-radius:50%;
+  background:var(--gut);border:var(--strich-stark) solid var(--papier);flex:0 0 auto}
+.wieder{display:inline-flex;align-items:center;color:var(--ziel)}
+.wieder svg{width:18px;height:18px;display:block}
 /* Auf dem Endbildschirm ist die Serie kein Statuszeichen mehr, sondern
    ein Satz — deshalb groesser und mit Text daneben. */
 .serieende{display:flex;align-items:center;justify-content:center;gap:var(--r2);

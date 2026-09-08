@@ -53,15 +53,21 @@ Sortierung, er wird nicht verändert.
 **Abnahme:** Ein Tor misst an einer gebauten Liste, dass die ersten zwei aus
 dem oberen Fach kommen und die letzte aus dem unteren.
 
-### N4 · Das Sammeln bekommt Lücken
-*Befund S4 · S10*
+### N4 · Der Kasten wird sichtbar
+*Befund S10 — S4 fiel weg, siehe den Nachtrag im Spiel-Audit*
 
-Das Forscherbuch zeigt **leere Plätze**: was fehlt, hat einen Umriss mit
-Fragezeichen statt gar nichts. Und wer eine Aufgabe wiedersieht, weil sie
-letztes Mal danebenging, erfährt es — ein Zeichen an der Frage, kein Text.
+Ursprünglich sollte diese Runde dem Forscherbuch Lücken geben. Beim Bauen
+zeigte sich: **die hat es längst** (Q28 — Karte statt Kästen, kräftig und
+blass statt gefüllt und leer). Der Befund war falsch gelesen.
 
-**Abnahme:** Bildabnahme mit gemischtem Stand (gesammelt und leer);
-Gegenprobe, dass ein leerer Platz nicht verschwindet.
+Was bleibt, ist der zweite Teil, und er ist der wichtigere: der Leitner-Kasten
+arbeitet **unsichtbar**. Ein Kind sieht nie, dass eine Aufgabe *zurückkommt*,
+weil sie letztes Mal danebenging — und nie, dass etwas jetzt **sitzt**. Ein
+gutes System, das niemand bemerkt, ist ein halbes.
+
+**Abnahme:** Eine Aufgabe, die zuletzt danebenging, trägt an der Frage ein
+Zeichen (kein Text — Fiona liest nicht). Wer etwas neu sicher kann, erfährt es
+am Ende. Beides mit Gegenproben.
 
 ### N5 · Der Einsatz — drei Herzen
 *Befund S1 · S12*

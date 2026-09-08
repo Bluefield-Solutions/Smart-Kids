@@ -726,6 +726,39 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   geprueft += 4;
 }
 
+/* ---------- Was zurueckkommt (N4) ----------------------------------------
+ *
+ * Befund S10: der Kasten arbeitet unsichtbar. Das Zeichen im Kopf sagt
+ * „die kennst du schon - die kommt noch mal", und es muss GENAU dann
+ * kommen. Drei Faelle, und jeder einzelne kippt die Aussage:
+ *
+ *   noch nie gefragt   kein Zeichen - das kommt zum ERSTEN Mal
+ *   war falsch, wackelt Zeichen - genau darum geht es
+ *   sitzt laengst      kein Zeichen - eine Auffrischung ist kein Vorwurf
+ */
+{
+  const faelle = [
+    ['noch nie gefragt',       undefined,                                   false],
+    ['einmal falsch, Fach 1',  { fach:1, richtig:0, falsch:1 },             true ],
+    ['falsch, aber Fach 3',    { fach:3, richtig:3, falsch:1 },             false],
+    ['nie falsch, Fach 1',     { fach:1, richtig:0, falsch:0 },             false],
+    ['sitzt (Fach 5)',         { fach:5, richtig:6, falsch:2 },             false],
+  ];
+  const zeigt = [];
+  for (const [was, eintrag, soll] of faelle) {
+    const stand = eintrag ? { x: eintrag } : {};
+    const ist = L.kommtZurueck(stand, 'x');
+    zeigt.push(`${was}: ${ist ? 'Zeichen' : '—'}`);
+    if (ist !== soll) fehler.push(`„${was}" bekommt ${ist ? 'ein' : 'kein'} `
+      + `Wiedersehen-Zeichen, richtig waere ${soll ? 'eins' : 'keins'} — `
+      + (soll ? 'dann bleibt der Kasten unsichtbar, und die eine Sache, die ihn '
+              + 'besser macht als eine Zufallsliste, merkt niemand'
+              : 'dann steht das Zeichen fast immer da und ist ein Vorwurf ohne Anlass'));
+  }
+  console.log(`    Wiedersehen: ${zeigt.join(' · ')}`);
+  geprueft += faelle.length;
+}
+
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);
 if (hinweise.length) {
   console.log(`    ${hinweise.length} nur mit Rückfrage:`);

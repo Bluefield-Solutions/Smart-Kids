@@ -6025,6 +6025,32 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
 
+  /* --- Was zurueckkommt (N4) --------------------------------------------
+   *
+   * Das Zeichen im Kopf sagt „die kennst du schon - die kommt noch mal".
+   * Es kann auf zwei Arten kaputtgehen, und beide sind still.
+   *
+   * 1. ES KOMMT NIE. Dann arbeitet der Kasten wieder unsichtbar, und die
+   *    eine Sache, die ihn besser macht als eine Zufallsliste, merkt
+   *    niemand. Der Bildschirm bleibt vollstaendig heil. */
+  { n:'das Wiedersehen-Zeichen kommt nie', tor:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:"  return !!e && (e.falsch ?? 0) > 0 && (e.fach ?? 1) < 3;",
+    ersatz:"  return false; // Anker: return !!e && (e.falsch ?? 0) > 0 && (e.fach ?? 1) < 3;",
+    an:{ datei:'src/kern/leitner.js', text:'return false; // Anker: return !!e' },
+    sagt:'dann bleibt der Kasten unsichtbar' },
+
+  /* 2. ES KOMMT IMMER. Die freundlichere und schlimmere Fassung: das
+   *    Zeichen steht an jeder Aufgabe, auch an der, die zum ersten Mal
+   *    gefragt wird. Damit ist es kein Hinweis mehr, sondern ein
+   *    taeglicher Vorwurf - und es sieht dabei aus, als funktioniere es. */
+  { n:'das Wiedersehen-Zeichen steht an jeder Aufgabe', tor:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:"export const kommtZurueck = (stand, id) => {",
+    ersatz:"export const kommtZurueck = (stand, id) => { if (true) return true;",
+    an:{ datei:'src/kern/leitner.js', text:'{ if (true) return true;' },
+    sagt:'ein Vorwurf ohne Anlass' },
+
   /* --- Der Aufkleber-Satz im Ton des Profils (N3-Fund) ------------------
    *
    * EIN ALTER FEHLER, den der Bogen freigelegt hat. „ Neuer Aufkleber!"

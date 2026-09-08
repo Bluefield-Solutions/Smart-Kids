@@ -6781,3 +6781,12 @@ Was daraus NEU offen ist:
 - **Die 19 harmlosen Urteile sind von mir.** Sie sind angesehen, aber von
   einem einzigen Paar Augen und nicht von einem Kind. Für `strawberry`/`tomato`
   (55 % bei 66 %) würde ich Fionas Urteil gern kennen.
+
+## Aus N4 offen
+
+- **„Neu sicher" ist von keinem Tor geprüft.** Ein Gegenstand erreicht Fach 5
+  erst nach mehreren Sitzungen; ein Rauchtest, der so weit spielt, wäre teurer
+  als der Befund. Zu schließen wäre es mit einem gestellten Stand (Fach 4) und
+  einer einzigen richtigen Antwort darauf — das ist machbar, aber es braucht
+  einen Einstieg in die Ablage je Ebene, den der Rauchtest heute nur für die
+  Einstellungen hat.
