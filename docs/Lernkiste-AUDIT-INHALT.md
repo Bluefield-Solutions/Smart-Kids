@@ -13,8 +13,43 @@ gleichen Sätze?"
 
 > **78 von 100 Profil-Ebenen tragen weniger als zwei volle Runden Vorrat.**
 
-*(Diese Zahl war zur Hälfte falsch — siehe I6 am Ende. Die Hälfte, die
-stimmte, ist mit I1 bis I5 abgearbeitet; übrig sind zwei.)*
+*(Diese Zahl war zur Hälfte falsch — siehe I6. Die Hälfte, die stimmte,
+ist abgearbeitet.)*
+
+**Stand nach allen dreizehn Paketen (v566):**
+
+> **0 von 119 Profil-Ebenen** unter zwei Runden Vorrat. 52 weitere liegen
+> darunter, weil ihr Vorrat die Welt ist.
+
+Aus 100 Profil-Ebenen sind 119 geworden. Acht davon sind **neue Fragen**
+und nicht längere Listen:
+
+| | Ebene | Für wen | Vorrat |
+|---|---|---|---|
+| I4 | Doppelt und halb | Fiona | 29 |
+| I4 | Was fehlt? | Lea | 45 |
+| I4 | Prozent im Kopf | Eltern | 50 |
+| I8 | Gestern und heute | Eltern | 72 |
+| I9 | Das kleine Wort | Eltern | 58 |
+| I10 | Zehn und drüber | Lea | 129 |
+| I10 | Meter und Gramm | Lea | 140 |
+| I13 | Vorher und nachher | Fiona | 38 |
+
+Dazu zwei weitere Ebenen, die eine ganze Karte mitbringen (Länder und
+Flaggen in Südosteuropa, I11/I12), und gezählt am heutigen Stand:
+
+| | vorher | heute |
+|---|---|---|
+| Länder mit Namen | 69 | **124** |
+| Karten | 7 | **8** |
+| Hauptstädte in Europa | 17 | **29** |
+| Gezeichnete Flaggen | 69 | **109** |
+| Verwechslungspaare | 13 | **22** |
+| Falsche Freunde · Wendungen · Hörsätze | 30 · 20 · 12 | **60 · 60 · 34** |
+| Unregelmäßige Verben · Präpositionen | — | **72 · 58** |
+| Nachgerechnete Rechenantworten (`spielprobe`) | 8 588 | **10 498** |
+
+Und in `vielfalt` ein Tor, das die Zahl oben von jetzt an messbar hält.
 
 Eine Runde ist bei Fiona 6 Aufgaben, bei Lea 8, bei den Eltern 12. Eine
 Ebene mit zwölf Gegenständen ist für einen Elternteil damit **eine** Runde:
