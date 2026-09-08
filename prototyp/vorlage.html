@@ -756,6 +756,37 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    Begruendung, dass die Farbe die Einordnung mittraegt; jetzt gilt das
    ueberall, statt auf dem grossen Schirm etwas anderes zu zeigen. */
 .wahl.ebenen .kachel .ueber{display:none}
+/* DIE AUFKLEBERZAHL BLEIBT AUF DEM GROSSEN SCHIRM - und das ist gegen
+ * die Absicht dieser Runde entschieden, weil es GEMESSEN teurer war
+ * (N11, Befund G5).
+ *
+ * Sie sollte fallen. Auf dem Telefon ist sie seit Q23 weg, und derselbe
+ * Bildschirm sollte auf dem iPad nicht etwas anderes sagen als auf dem
+ * Telefon - dieselbe Ueberlegung wie eine Zeile darueber bei der
+ * Ueberzeile.
+ *
+ * Sie fiel auch, und `lesbarkeit` hat den Preis sofort genannt: alle zehn
+ * Kachelnamen auf 2,33:1 statt 3:1, in Tag und Abend. Der Grund war nicht
+ * die Farbe, sondern die Geometrie. Die Zahl haelt den Kachelfuss 35
+ * Punkte hoch; ohne sie sind es 8, und die 27 Punkte gehen an das Bild
+ * (gemessen 103x56 -> 152x82 auf 1240 x 1000). Der NAME rutscht dabei um
+ * 27 Punkte nach unten - in den Kasten des Vorschau-Auges, das unten
+ * rechts an der Kachel klebt. Die Tinte des Auges liegt dann auf den
+ * letzten Buchstaben.
+ *
+ * Drei Auswege, und alle drei sind teurer als der Gewinn:
+ *   - Dem Auge unten 44 Punkte freihalten gibt genau die Hoehe zurueck,
+ *     die das Bild gewonnen hat.
+ *   - Das Auge nach aussen setzen hilft nicht: sein Kasten schneidet den
+ *     Namen weiterhin.
+ *   - Das Auge ganz streichen - wie auf dem Telefon - waere die
+ *     sauberste Kachel, nimmt aber einen Knopf weg, den zwei stehende
+ *     Gegenproben halten. In einer Runde ohne Probenlauf ist das nicht
+ *     redlich zu machen.
+ *
+ * Also bleibt sie, und G5 bleibt auf dem grossen Schirm offen. Was
+ * gewonnen ist, steht daneben: das Band sagt den Fortschritt als ORT, und
+ * das braucht keine Zahl. */
 /* `align-content` statt Flexbox - und die BEGRUENDUNG dafuer war beim
    ersten Anlauf falsch.
    
@@ -786,6 +817,89 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    sein Aussehen. */
 .wahl.ebenen .kachelpaar .schau{top:auto;bottom:var(--r0);right:var(--r0);
   background:transparent;border-color:transparent;box-shadow:none}
+/* ---- Der Weg (N11) ---------------------------------------------------
+ *
+ * Befunde G6, S8, S7: elf gleich schwere Rechtecke, kein Anfang, kein
+ * Ziel, und der Fortschritt eine Zahl statt eines Ortes. Die Wand wird
+ * eine Strecke: zwischen den Stationen liegt ein Band, hinter der
+ * Station, auf der man steht, ist es voll, davor blass.
+ *
+ * DAS BAND IST EIN RASTERFELD, kein absolut gesetzter Kasten - und das
+ * ist der Unterschied zwischen „liegt in der Mitte der Kachel" und
+ * „liegt in der Mitte des Kachelpaars". Das Paar ist um die
+ * Testknopfzeile hoeher als die Kachel selbst; ein `top:50%` darauf
+ * haette das Band bei genau den Stationen nach unten geknickt, die einen
+ * Test offen haben - also bei den geschafften. Als Rasterfeld in
+ * derselben Zeile wie die Kachel, mit `align-self:center`, kommt die
+ * Mitte von der Kachel, ohne eine einzige Zahl.
+ *
+ * Der negative Rand ist die HALBE Luecke: so stossen die Baender zweier
+ * Nachbarn genau aneinander, statt sich zu ueberlappen. Ueberlappten
+ * sie, deckte am Uebergang von „hinter" zu „davor" das blasse das volle
+ * zu - und die Stelle, auf die es ankommt, waere die einzige falsche.
+ *
+ * Am Zeilenende steht ein halber Stumpf. Er bleibt: eine Schlange mit
+ * Kehren braucht die Stelle, an der die Zeile umbricht, und die haengt an
+ * der Fensterbreite. Sieben Fensterformate waeren sieben Zahlen, die bei
+ * der zwoelften Ebene alle falsch sind. */
+.wahl.ebenen.weg .station{display:grid;grid-template-rows:auto auto}
+.wahl.ebenen.weg .station>.kachel{grid-row:1;grid-column:1;z-index:1}
+.wahl.ebenen.weg .station>.kachelknoepfe{grid-row:2;grid-column:1}
+.wahl.ebenen.weg .station::before{content:'';grid-row:1;grid-column:1;
+  align-self:center;z-index:0;height:var(--weg-dicke);
+  margin-inline:calc(var(--r3) / -2);
+  border-radius:var(--rund-voll);background:var(--weg-vor)}
+.wahl.ebenen.weg .station.hinter::before{background:var(--weg-hinter)}
+/* WAS NOCH WARTET, ist ruhiger - nicht gesperrt. „Zu weit" als Schloss zu
+   lesen waere der naechstliegende Entwurf und der falsche: ein Kind, das
+   heute Afrika will, bekaeme eine Tuer statt einer Uebung. Der
+   Unterschied zwischen „das ist neu" und „das darfst du nicht" kostet
+   nichts, wenn man ihn nur MALT.
+   Das BILD bleibt dabei fast voll da: fuer Fiona ist es der Name, und ein
+   blasser Name ist keiner. Zurueck geht die Kante, nicht das Motiv. */
+.wahl.ebenen.weg .station.wartet>.kachel{
+  border-color:color-mix(in oklab, var(--ton) 28%, var(--papier));
+  box-shadow:0 var(--kante) 0 color-mix(in oklab, var(--ton) 32%, var(--tinte-3)),
+             inset 0 var(--strich) 0 var(--knopf-licht)}
+.wahl.ebenen.weg .station.wartet .silhouette{opacity:.72}
+/* WO ES WEITERGEHT, leuchtet: ein Hof in der eigenen Farbe, und zweimal
+   ein Heben. Nicht endlos - eine Kachel, die dauernd pulst, ist nach
+   zehn Sekunden Tapete und kostet dabei Strom. Zweimal reicht, um das
+   Auge zu holen, und danach steht der Hof still weiter da. */
+.wahl.ebenen.weg .station.dran>.kachel{
+  border-color:color-mix(in oklab, var(--ton) 90%, var(--tinte));
+  box-shadow:0 var(--kante) 0 color-mix(in oklab, var(--ton) 62%, var(--tinte-3)),
+             inset 0 var(--strich) 0 var(--knopf-licht),
+             0 0 0 var(--ring) color-mix(in oklab, var(--ton) 42%, var(--papier));
+  animation:wegpuls var(--d-weg) var(--k-standard) 2}
+/* `scale` und nicht `transform`: `.kachel:active` setzt `transform`, und
+   zwei Regeln auf derselben Eigenschaft heisst, dass die Bewegung beim
+   Druecken aussetzt. Dieselbe Falle wie beim Huepfen des Ja (N10). */
+@keyframes wegpuls{0%,100%{scale:1} 45%{scale:1.035}}
+/* Die Marke sitzt in der AUSSENECKE oben links, nicht in der Kachel -
+   und das ist der zweite Anlauf.
+
+   Der erste legte sie innen in dieselbe Ecke: dort beanspruche den Platz
+   weder das Bild (mittig) noch der Name (unten) noch das Auge (unten
+   rechts). `passt` hat es gemessen und widerlegt - die Weltkarte auf
+   „Kontinente" fuellt ihre Kachel bis in die Ecken, und die Scheibe
+   deckte 12 bis 14 % davon zu; erlaubt sind 6. Genau dafuer ist das Tor
+   da: die Ueberlegung war plausibel und falsch.
+
+   Draussen liegt sie in der Rundung der Kachelecke - dort, wo ohnehin
+   nichts steht. Sie gehoert deshalb der Station und nicht der Kachel:
+   `.kachel.bunt` schneidet ab, was ueber ihren Rand hinausragt (das
+   braucht das Wasserzeichen), und innen waere die Scheibe angeschnitten. */
+.wahl.ebenen.weg .station>.wegmarke{position:absolute;z-index:3;
+  left:calc(var(--r1) * -1);top:calc(var(--r1) * -1);
+  display:flex;align-items:center;justify-content:center;line-height:0;
+  width:var(--weg-marke);height:var(--weg-marke);border-radius:var(--rund-voll);
+  background:var(--papier);border:var(--strich) solid var(--knopf-rand);
+  box-shadow:var(--schatten-auf)}
+.wahl.ebenen.weg .station>.wegmarke.fertig{color:var(--gut);
+  border-color:color-mix(in oklab, var(--gut) 45%, var(--papier))}
+.wahl.ebenen.weg .station>.wegmarke.hier{
+  border-color:color-mix(in oklab, var(--ton) 60%, var(--papier))}
 .kachel.welt .silhouette{height:80%;max-width:76%}
 /* Auf dem GROSSEN Schirm darf die Ebenenkachel hoeher sein (Q26).
  *
@@ -3527,7 +3641,11 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    * nichts mehr zu holen: 24 beziehungsweise 12 Punkte, und beides ist
    * innerhalb dessen, was zwei Browser verschieden rechnen.
    *
-   * Also hier. Der Balken bleibt und sagt weiter, wie weit die Ebene ist -
+   * Also hier - und NUR hier: auf dem grossen Schirm haelt dieselbe Zahl
+   * den Namen aus dem Kasten des Vorschau-Auges heraus. Die Begruendung
+   * steht oben bei der Regel, die es einmal ueberall versucht hat (N11).
+   *
+   * Der Balken bleibt und sagt weiter, wie weit die Ebene ist -
    * anteilig, was fuer Fiona ohnehin die einzige lesbare Form ist. Die
    * genaue Zahl steht im Forscherbuch, wo die Aufkleber liegen.
    *

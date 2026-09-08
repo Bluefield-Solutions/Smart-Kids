@@ -160,6 +160,11 @@ const ZEICHEN = {
      Abschluss macht daraus einen Punkt. */
   frage:'<path d="M9.1 8.8a2.9 2.9 0 1 1 3.6 2.9c-.8.2-1.2.8-1.2 1.6v.8"/>'
       + '<path d="M11.5 17.6v.01"/>',
+  /* Der Haken auf einer Station, die hinter einem liegt (N11). Er sagt
+     „das kannst du schon" - und er sagt es OHNE Zahl, was der ganze
+     Punkt ist. Kein Stern (der gehoert der Sitzung, S1) und kein Pokal
+     (der gehoert dem Test, B2): drei Auszeichnungen, drei Zeichen. */
+  haken:'<path d="M4.5 12.6 9.6 17.7 19.5 6.8"/>',
   /* Lupe groesser und kleiner. Bis Q34 stand dort ein nacktes „+" und
      „−". Beide sind Rechenzeichen, und in einer App mit einer Rechenwelt
      ist das die falsche Auskunft; ausserdem hat Audit A gemessen, dass
@@ -3319,6 +3324,106 @@ function gruppiert(balken){
   return aus;
 }
 
+/* ---------- Der Weg (N11) -------------------------------------------------
+ *
+ * Befunde G6, S8, S7 - und alle drei sagen dasselbe von verschiedenen
+ * Seiten: „Elf identisch grosse, identisch schwere Kacheln. Keine
+ * Hierarchie, kein Anfang, kein Ziel. Das Auge hat keinen Einstieg."
+ * „Nichts sagt fang hier an, nichts sagt das kannst du schon, nichts sagt
+ * das ist neu." „Fortschritt ist eine Zahl, kein Ort - es gibt keinen Weg,
+ * auf dem man weiter vorne stuende als gestern."
+ *
+ * Aus der Wand wird eine Strecke. Jede Ebene ist eine STATION mit einem
+ * von drei Zustaenden:
+ *
+ *   geschafft  alles gesammelt - liegt hinter einem, traegt einen Haken
+ *   dran       hier geht es weiter - leuchtet, und die Figur steht dort
+ *   wartet     kommt noch - ruhiger Rand, blasses Bild
+ *
+ * Und zwischen den Stationen liegt ein BAND. Hinter der Station, auf der
+ * man steht, ist es voll, davor blass: der Fortschritt ist damit ein ORT
+ * auf dem Schirm und keine Zahl mehr (S7).
+ *
+ * ES WIRD NICHTS GESPERRT, und das ist eine Entscheidung gegen den
+ * naechstliegenden Entwurf. „Was noch zu weit ist, wartet" haette man als
+ * Schloss lesen koennen; ein Kind, das heute Afrika will, bekaeme dann
+ * eine Tuer statt einer Uebung. Der Unterschied zwischen „das ist neu"
+ * und „das darfst du nicht" kostet nichts, wenn man ihn nur MALT: das
+ * Auge bekommt seinen Einstieg, der Finger behaelt alle elf.
+ *
+ * WELCHE STATION IST DRAN? Die ERSTE, die noch nicht fertig ist - und
+ * das ist der zweite Entwurf. Der erste nahm die zuletzt begonnene:
+ * „dort hat das Kind aufgehoert, dorthin will es zurueck." Angesehen war
+ * es falsch, und zwar sichtbar. Leas Stand geht quer durch die Welt -
+ * Kontinente unberuehrt, Hauptstaedte halb -, und damit lag hinter der
+ * Station, auf der sie steht, ein volles Band ueber vier Kacheln mit
+ * LEEREM Fortschrittsbalken. Zwei Aussagen auf einer Kachel, die
+ * einander widersprechen: das Band sagte „schon gegangen", der Balken
+ * „noch nichts". Dieselbe Falle, an der schon die Sterne und die
+ * Aufkleberzahl haengengeblieben sind (S1, S2).
+ *
+ * Mit der ERSTEN offenen Station stimmt es von selbst: alles davor ist
+ * fertig, weil es sonst selbst die erste offene waere. Was hinter einem
+ * liegt, ist damit genau das, was man kann - und das Band sagt dasselbe
+ * wie der Haken darauf.
+ *
+ * Es ist eine EMPFEHLUNG, keine Reihenfolge: wer Afrika will, tippt auf
+ * Afrika. Ist alles fertig, ist keine Station dran und das Band ist auf
+ * ganzer Laenge voll.
+ *
+ * Der Weg laeuft in der LESEREIHENFOLGE, nicht als Schlange mit
+ * Kehren. Eine Schlange braucht die Stelle, an der die Zeile umbricht -
+ * und die kennt das Stilblatt nicht: sie haengt an der Fensterbreite. Wer
+ * sie in Zahlen je Fensterformat aufschreibt, hat sieben Zahlen, die bei
+ * der zwoelften Ebene alle falsch sind. Das Band verbindet deshalb, was
+ * nebeneinander steht, und bricht mit der Zeile um.
+ */
+const stationFertig = (b) => b.gesamt > 0 && b.gesammelt >= b.gesamt;
+
+function wegStationen(balken){
+  const dran = balken.find(b => !stationFertig(b)) || null;
+  // Ohne offene Station liegt ALLES hinter einem - dann ist `bisHier` die
+  // ganze Laenge und das Band durchgehend voll.
+  const bisHier = dran ? balken.indexOf(dran) : balken.length;
+  return balken.map((b, i) => ({ b,
+    /* Vier Zustaende, drei davon sichtbar verschieden. `offen` ist eine
+       Station HINTER dem Weg, an der schon gearbeitet wurde - sie sieht
+       aus wie eine gewoehnliche Kachel, denn sie ist keine. Sie blass zu
+       machen hiesse, einen halbvollen Balken auszugrauen. */
+    zustand: stationFertig(b) ? 'geschafft'
+           : b === dran       ? 'dran'
+           : b.gesammelt > 0  ? 'offen' : 'wartet',
+    hinter: i <= bisHier }));
+}
+
+/* Die Marke auf der Station. Sie sitzt in der AUSSENECKE oben links,
+ * nicht in der Kachel - und das ist der zweite Anlauf.
+ *
+ * Der erste legte sie innen in dieselbe Ecke, mit der Ueberlegung, dort
+ * beanspruche den Platz weder das Bild (mittig) noch der Name (unten)
+ * noch das Auge (unten rechts). `passt` hat es gemessen und widerlegt:
+ * die Weltkarte auf „Kontinente" fuellt ihre Kachel bis in die Ecken, und
+ * die Scheibe deckte 12 bis 14 % davon zu - erlaubt sind 6. Fuer Fiona
+ * IST das Bild der Name; ein Siebtel davon fuer eine Marke herzugeben,
+ * die dasselbe in klein sagt, waere ein schlechter Tausch.
+ *
+ * Draussen liegt sie in der Rundung der Kachelecke, also dort, wo ohnehin
+ * nichts steht - und ueber den Rand der Wand laeuft sie nicht: vier
+ * Punkte, und die Wand sitzt in einem Kasten mit Polsterung.
+ *
+ * Die Figur steht nur bei den Kindern - derselbe Schalter wie beim Jubel
+ * und auf dem Endbildschirm (N9). Fuer Stephan waere sie Zierde; fuer
+ * Fiona ist sie das Einzige auf diesem Bildschirm, das ohne ein Wort
+ * sagt „hier bist du". */
+const stationMarke = (zustand) =>
+  zustand === 'geschafft'
+    ? `<span class="wegmarke fertig" role="img" aria-label="schon geschafft">${
+        ZEI('haken', 18)}</span>`
+: zustand === 'dran'
+    ? `<span class="wegmarke hier" role="img" aria-label="hier geht es weiter">${
+    ton().feier ? figur('freut', 22) : ZEI('weiter', 18)}</span>`
+: '';
+
 async function ebenenwahl(gruppe = null){
   const s = el('div');
   // Nur die Ebenen DIESER Welt. Ohne den Filter wäre die Weltenwahl eine
@@ -3334,13 +3439,19 @@ async function ebenenwahl(gruppe = null){
   const frage = gruppe
     ? (alle.find(b => b.gruppe === gruppe)?.titel || welt.name) + ' — wo?'
     : 'Womit möchtest du anfangen?';
+  // Der Weg wird EINMAL gerechnet: das Markup braucht ihn, die Ansage
+  // braucht dieselbe Station, und zweimal gerechnet waeren es zwei, die
+  // getrennt veralten (Regel 6).
+  const stationen = wegStationen(balken);
+  const hier = stationen.find(x => x.zustand === 'dran');
   s.innerHTML = wahlKopf(gruppe ? welt.name : welt.name) + `
     <div class="mitte">
       <div class="titel">${frage}</div>
-      <div class="wahl ebenen">${balken.map(b=>`
-        <div class="kachelpaar">
+      <div class="wahl ebenen weg">${stationen.map(({ b, zustand, hinter })=>`
+        <div class="kachelpaar station ${zustand}${hinter ? ' hinter' : ''}">
         <button class="kachel bunt" data-ebene="${b.id}"${
           b.gruppenKachel ? ` data-gruppe="${b.gruppenKachel}"` : ''
+        }${zustand === 'dran' ? ' aria-current="step"' : ''
         } style="--ton:var(--f${b.farbe})">
           ${silhouette(b.id)}
           <div class="ueber">${b.ueber}</div>
@@ -3358,6 +3469,7 @@ async function ebenenwahl(gruppe = null){
         ${b.gruppenKachel ? '' : `
         <button class="knopf rund schau" data-schau="${b.id}"
                 aria-label="${b.titel} anschauen" title="Anschauen">${ZEI('auge', 22)}</button>`}
+        ${stationMarke(zustand)}
         <div class="kachelknoepfe">${
           /* Der Test steht erst da, wenn die Ebene ganz gesammelt ist (B2).
              Vorher waere er kein „Test am Ende", sondern eine zweite Art
@@ -3403,8 +3515,12 @@ async function ebenenwahl(gruppe = null){
    * nur an Kacheln MIT Fortschritt: das kostete rund 37 Punkte je Reihe
    * und liess die Reihe ausfransen, weil die Zeile mal da war und mal
    * nicht. Ohne ihn passt die hohe Kachelform, mit ihr nicht. */
+  /* Und die Stimme sagt, WO man steht. Fuer Fiona ist die Ansage der
+     zweite Weg auf diesen Bildschirm: sie sieht die Figur an der Station
+     und hoert denselben Namen. */
   ansagen(`${gruppe ? frage : welt.name + '. ' + frage} `
-    + `${aufzaehlen(balken.map(b=>b.titel))}?`);
+    + `${aufzaehlen(balken.map(b=>b.titel))}?`
+    + (hier ? ` Du bist bei ${hier.b.titel}.` : ''));
   return s;
 }
 

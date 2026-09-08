@@ -155,6 +155,20 @@ const AUFNAHMEN = [
      Aufkleberzahlen und Balken nebeneinander. Der Fall nach ein paar
      Wochen, und bis hierher ohne Vorbild. */
   { name:'quer-ebenen-voll', spiel:null, quer:true, stand:'voll', wahl:'.schirm.da' },
+  /* DER WEG, WENN MAN IHN SCHON GEGANGEN IST (N11).
+   *
+   * Die beiden Aufnahmen darueber zeigen den Weg nur von vorne: bei
+   * `quer-ebenen` ist die erste Station dran, bei `quer-ebenen-voll`
+   * ebenfalls - denn dort steht keine Ebene auf „gesammelt", die Faecher
+   * wandern von 1 bis 5 und ein Aufkleber faengt bei Fach 3 an. Kein
+   * Haken, kein volles Band, und damit von der halben Bildsprache dieser
+   * Runde kein Bild (Regel 1: eine Pruefung, die nie etwas meldet, ist kein Beweis).
+   *
+   * Hier stehen alle drei Zustaende nebeneinander: vier Stationen fertig
+   * mit Haken und vollem Band, die fuenfte dran mit Hof und Figur, der
+   * Rest wartet. Genau der Bildschirm, den ein Kind nach ein paar Wochen
+   * sieht. */
+  { name:'quer-ebenen-weg', spiel:null, quer:true, stand:'weg', wahl:'.schirm.da' },
   /* Der Fassungsstempel (Q13) — die einzige Aufnahme, die den GANZEN
      Rumpf zeigt.
      Alle anderen fotografieren `.schirm.da`, also den Bildschirm in der
@@ -1087,8 +1101,28 @@ for (const a of MEINE) {
       }), { wer: a.kind || 'fiona', kont: STAND });
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
-    } else if (a.stand === 'voll') {
-      await seite.evaluate((wer) => new Promise((ja, nein) => {
+    } else if (a.stand === 'voll' || a.stand === 'weg') {
+      /* ZWEI GESTELLTE LERNSTAENDE, EIN ZWEIG.
+       *
+       * `voll` streut: Fuellgrad und Fachhoehe wandern von Ebene zu Ebene,
+       * damit null, halb und ganz nebeneinanderstehen. Der Fall nach ein
+       * paar Wochen, und bis Q20 ohne Vorbild.
+       *
+       * `weg` staffelt: vier Ebenen GANZ gesammelt, die fuenfte
+       * angefangen, der Rest unberuehrt. Er zeigt den Weg (N11) mit allen
+       * drei Zustaenden nebeneinander - und ist dafuer noetig, weil in
+       * `voll` keine Ebene je fertig wird: die Faecher wandern dort von 1
+       * bis 5, und ein Aufkleber faengt bei Fach 3 an. Ohne diesen Stand
+       * gaebe es von Haken und vollem Band kein einziges Bild.
+       *
+       * Sie unterscheiden sich in ZWEI Zeilen - dem Fuellgrad und der
+       * Fachhoehe. Als zwei Zweige waeren es zwei Abschriften derselben
+       * dreissig Zeilen, und die naechste Ebene fiele in einer davon
+       * heraus (Regel 6: was zweimal dasteht, veraltet einmal).
+       *
+       * Die Ebenen kommen aus den DATEN der Seite, nicht aus einer Liste
+       * hier - sonst waere die naechste Ebene wieder nicht dabei. */
+      await seite.evaluate(({ wer, art }) => new Promise((ja, nein) => {
         const D = JSON.parse(document.getElementById('daten').textContent);
         const ebenen = [['kontinente', D.kontinente.map(k => k.id)],
           ...Object.entries(D.laender).map(([k, l]) => [`laender:${k}`, l.map(x => x.a3)]),
@@ -1101,12 +1135,16 @@ for (const a of MEINE) {
         };
         auf.onsuccess = () => {
           const t = auf.result.transaction(['fortschritt'], 'readwrite');
-          // Anteil und Fachhoehe wandern von Ebene zu Ebene: 0, 1/7, 2/7 …
+          const FERTIG = 4;   // so viele Stationen liegen im Weg-Stand hinter einem
           ebenen.forEach(([id, ids], i) => {
-            const anteil = i / (ebenen.length - 1);
+            const anteil = art === 'weg'
+              ? (i < FERTIG ? 1 : i === FERTIG ? 0.4 : 0)
+              : i / (ebenen.length - 1);
             const st = {};
             ids.slice(0, Math.round(ids.length * anteil)).forEach((g, j) => {
-              const fach = 1 + ((i + j) % 5);
+              // Fach 4 heisst „gesammelt" (ab Fach 3); die wandernden
+              // Faecher von `voll` erreichen das nur bei dreien von fuenf.
+              const fach = art === 'weg' ? 4 : 1 + ((i + j) % 5);
               st[g] = { fach, hoechstes: fach, faellig: 0, richtig: fach, falsch: 0, zuletzt: 0 };
             });
             t.objectStore('fortschritt').put(st, `${wer}:${id}`);
@@ -1114,7 +1152,7 @@ for (const a of MEINE) {
           t.oncomplete = ja; t.onerror = () => nein(t.error);
         };
         auf.onerror = () => nein(auf.error);
-      }), a.kind || 'fiona');
+      }), { wer: a.kind || 'fiona', art: a.stand });
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
     } else if (a.stand) {

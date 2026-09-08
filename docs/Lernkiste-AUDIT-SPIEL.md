@@ -83,18 +83,29 @@ wie jemand, der nie gespielt hat.
 Erdkunde, Rechnen, Schreiben und Englisch stehen nebeneinander wie vier
 Programme. Nichts verbindet sie, nichts belohnt es, in zweien zu spielen.
 
-### S7 · Fortschritt ist eine Zahl, kein Ort
+### S7 · Fortschritt ist eine Zahl, kein Ort — **erledigt (N11)**
 
 „17 ÜBUNGEN · 2/75". Für Lea (8) ist das lesbar, für Fiona (6) bedeutungslos.
 Und selbst für Lea sagt es nur, *wieviel*, nie *wo* — es gibt keinen Weg,
 auf dem man weiter vorne stünde als gestern.
 
-### S8 · Elf Ebenen liegen gleichzeitig offen
+Jetzt gibt es ihn. Zwischen den Stationen liegt ein Band: hinter der Station,
+auf der man steht, voll, davor blass. Der Rauchtest misst genau das — nicht
+die Klassennamen, sondern die Bewegung: `dran „Kontinente" → nach dem Sammeln
+dran „Europa"`. Die Zahl ist von der Kachel verschwunden (G5).
+
+### S8 · Elf Ebenen liegen gleichzeitig offen — **erledigt (N11)**
 
 Die Ebenenwahl zeigt alle elf Kacheln von Anfang an, gleich groß und gleich
 gewichtet. Nichts sagt „fang hier an", nichts sagt „das kannst du schon",
 nichts sagt „das ist neu". Für ein Kind ist das keine Auswahl, sondern eine
 Wand.
+
+Alle drei sagt jetzt jemand: der Hof mit der Figur sagt „fang hier an", der
+Haken sagt „das kannst du schon", die ruhige Kante sagt „das ist neu". Offen
+liegen sie weiterhin alle elf — gesperrt wird nichts, und das ist eine
+Entscheidung: ein Kind, das heute Afrika will, bekäme sonst eine Tür statt
+einer Übung.
 
 ### S9 · Es gibt keine Überraschung
 
@@ -162,7 +173,7 @@ Nach Wirkung je Aufwand, für **diese zwei Kinder** auf **diesem Gerät**:
 | 2 | ~~S4 Sammeln mit Lücken~~ — war schon da (Q28) | — | — |
 | 3 | S5 Tagesziel | hoch | klein |
 | 4 | S2 Bogen der Sitzung | hoch | mittel |
-| 5 | S7/S8 Weg statt Wand | hoch | groß |
+| 5 | S7/S8 Weg statt Wand — **erledigt (N11)** | hoch | groß |
 | 6 | ~~S1 Einsatz durch Herzen~~ — verworfen, S1 erledigt die Serie | — | — |
 | 7 | S11 Geschwister | mittel | mittel |
 | 8 | S9 Überraschung | mittel | klein |

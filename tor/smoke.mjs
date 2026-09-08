@@ -3539,6 +3539,89 @@ if (laeuft('ablage')) try {
     await q.close();
   }
 
+  /* DER WEG (N11) — und zwar daran, dass sich der ORT bewegt.
+   *
+   * Befund S7 sagt: „Fortschritt ist eine Zahl, kein Ort — es gibt keinen
+   * Weg, auf dem man weiter vorne stünde als gestern." Die Antwort darauf
+   * ist genau EINE Zusage, und sie ist zu messen: wer eine Station fertig
+   * hat, steht danach auf der nächsten.
+   *
+   * Gemessen wird deshalb ZWEIMAL, mit demselben Bildschirm und einem
+   * gesammelten Lernstand dazwischen — nicht einmal mit einer Liste von
+   * Klassennamen. Eine Aufnahme, auf der die richtigen Klassen stehen,
+   * beweist, dass sie irgendwann einmal gesetzt wurden; sie beweist
+   * nicht, dass sie sich je wieder ändern. Genau das ist der Unterschied
+   * zwischen einer Prüfung und einem Abdruck (Regel 1: eine Prüfung, die
+   * nie etwas meldet, ist kein Beweis).
+   *
+   * Und das BAND wird an seiner Farbe gemessen, nicht an seiner Klasse:
+   * `::before` ist der einzige Teil dieser Runde, den kein Bild und kein
+   * Kasten trägt. Stünde die Regel im Stilblatt und würde von einer
+   * späteren überschrieben, bliebe die Klasse stehen und die Farbe
+   * verschwände — die Falle, in der das Hüpfen des Ja gesteckt hat (N10).
+   */
+  {
+    const w = await neueSeite({ width: 844, height: 390 }, ctx);
+    await w.click('[data-profil="fiona"]');
+    await zurEbenenwahl(w, 'kontinente');
+    const wegStand = () => w.evaluate(() => {
+      const st = [...document.querySelectorAll('.schirm.da .wahl.ebenen .station')];
+      const name = (e) => ((e.querySelector('.name') || {}).textContent || '').trim();
+      const grund = (e) => e ? getComputedStyle(e, '::before').backgroundColor : null;
+      return {
+        n: st.length,
+        dran:      st.filter(e => e.classList.contains('dran')).map(name),
+        geschafft: st.filter(e => e.classList.contains('geschafft')).map(name),
+        wartet:    st.filter(e => e.classList.contains('wartet')).length,
+        haken:     st.filter(e => e.querySelector('.wegmarke.fertig')).map(name),
+        hier:      st.filter(e => e.querySelector('.wegmarke.hier')).length,
+        bandHinter: grund(st.find(e => e.classList.contains('hinter'))),
+        bandVor:    grund(st.find(e => !e.classList.contains('hinter'))),
+      };
+    });
+    const vorher = await wegStand();
+    // Kontinente GANZ gesammelt. Fach 4 heisst „hat einen Aufkleber"
+    // (ab Fach 3) - darunter ist eine Station nicht fertig.
+    await stelleAblage(w, { fortschritt: { 'fiona:kontinente':
+      Object.fromEntries(KONTINENTE.map(k => [k.id,
+        { fach: 4, hoechstes: 4, faellig: 0, richtig: 4, falsch: 0, zuletzt: 0 }])) } });
+    await w.reload({ waitUntil: 'domcontentloaded' });
+    await w.click('[data-profil="fiona"]');
+    await zurEbenenwahl(w, 'kontinente');
+    const nachher = await wegStand();
+    console.log(`  Weg: ${vorher.n} Stationen, dran „${vorher.dran[0] || '—'}" `
+      + `→ nach dem Sammeln dran „${nachher.dran[0] || '—'}", `
+      + `${nachher.geschafft.length} geschafft, ${nachher.wartet} warten`);
+    console.log(`  Band:                       hinter ${vorher.bandHinter} · `
+      + `davor ${vorher.bandVor}`);
+    if (!vorher.n)
+      merke('weg', new Error('die Ebenenwahl hat keine Stationen mehr — '
+        + 'aus dem Weg ist wieder eine Wand geworden'));
+    else if (vorher.dran.length !== 1 || nachher.dran.length !== 1)
+      merke('weg', new Error(`es sind ${vorher.dran.length} bzw. ${nachher.dran.length} `
+        + 'Stationen „dran" — genau eine sagt „hier geht es weiter", '
+        + 'keine sagt es gar nicht und zwei sagen es doppelt'));
+    else if (vorher.geschafft.length)
+      merke('weg', new Error(`ohne Lernstand stehen schon ${vorher.geschafft.length} `
+        + 'Stationen auf „geschafft" — dann heisst der Haken nichts'));
+    else if (!nachher.geschafft.includes(vorher.dran[0]))
+      merke('weg', new Error(`„${vorher.dran[0]}" ist ganz gesammelt und liegt trotzdem `
+        + 'nicht hinter einem — der Weg merkt sich nicht, wo man war'));
+    else if (nachher.dran[0] === vorher.dran[0])
+      merke('weg', new Error(`nach einer fertigen Station steht man immer noch auf `
+        + `„${nachher.dran[0]}" — der Ort bewegt sich nicht, und damit ist der `
+        + 'Fortschritt wieder eine Zahl statt eines Ortes (S7)'));
+    else if (!nachher.haken.includes(vorher.dran[0]) || nachher.hier !== 1)
+      merke('weg', new Error(`die geschaffte Station trägt keinen Haken `
+        + `(${nachher.haken.length}) oder die neue keine Figur (${nachher.hier}) — `
+        + 'für ein Kind, das nicht liest, ist die Marke die ganze Auskunft'));
+    else if (!vorher.bandHinter || !vorher.bandVor
+             || vorher.bandHinter === vorher.bandVor)
+      merke('weg', new Error(`das Band ist vor und hinter der Station gleich gefärbt `
+        + `(${vorher.bandHinter} gegen ${vorher.bandVor}) — dann sagt es nicht, `
+        + 'wie weit man ist'));
+    await w.close();
+  }
 
   await p.close();
 } catch (e) { merke('ablage/eltern', e); }

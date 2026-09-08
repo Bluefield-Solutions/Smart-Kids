@@ -187,6 +187,21 @@
   --stern-an: oklch(0.80  0.140  85);
   --stern-aus:oklch(0.93  0.010 250);
 
+  /* --- Der Weg (N11) ---------------------------------------------------
+     Die Ebenenwahl ist eine Strecke mit Stationen, kein Raster. Das Band
+     dazwischen sagt, wie weit man ist: hinter der Station, auf der man
+     steht, ist es voll, davor blass.
+
+     Die Farben sind NICHT die der Kacheln. Eine Kachel traegt ihren
+     Fachton (Afrika rot, Asien orange) - haette das Band ihn auch, hiesse
+     Farbe an dieser Stelle zweierlei: einmal „welches Fach", einmal „wie
+     weit". Das Band spricht deshalb in der Sprache, die im ganzen
+     Programm „geschafft" heisst: das Gruen von --gut und --treffer. */
+  --weg-hinter: oklch(0.78 0.090 155);  /* schon gegangen */
+  --weg-vor:    oklch(0.90 0.012 250);  /* liegt noch vor einem */
+  --weg-dicke:  10px;                   /* das Band zwischen zwei Stationen */
+  --weg-marke:  28px;                   /* die Scheibe an einer Station */
+
   /* --- Der Streu auf den Profilkacheln (G12) ---------------------------
      Jedes Kind bekommt sein eigenes Muster auf die Kachel: Fiona Meer und
      Himmel, Lea die Totenkoepfe aus Mexiko. Die Farben sind ABSICHTLICH
@@ -322,6 +337,7 @@
   --d-wackeln: 400ms;   /* das Nein eines abgelehnten Etiketts */
   --d-staffel:  45ms;   /* Abstand, in dem die Antworten hereinkommen */
   --d-auftritt: 90ms;   /* Abstand, in dem der Endbildschirm sich aufbaut */
+  --d-weg: 1600ms;      /* wie lange die Station leuchtet, die dran ist */
 
   /* --- Der sichere Bereich ---------------------------------------------
    * Was das Telefon selbst belegt: Uhr, Akku, Kamerainsel, Streifen unten.
@@ -365,6 +381,10 @@
   --papier:  oklch(0.94 0.010 255);
   /* Nur zwei Zahlen, nicht sieben Farben: die sieben leiten sich ab. */
   --flaeche-l: 0.66; --flaeche-c: 0.115;
+  /* Das blasse Band muss auch am Abend noch ein Band sein: auf einem
+     Papier von 0.94 waere 0.90 kaum ein Unterschied. */
+  --weg-vor:    oklch(0.80 0.018 255);
+  --weg-hinter: oklch(0.70 0.100 155);
 }
 
 @media (prefers-reduced-motion: reduce) {

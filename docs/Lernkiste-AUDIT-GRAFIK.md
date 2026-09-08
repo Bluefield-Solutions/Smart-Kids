@@ -88,17 +88,39 @@ Seit N10 tritt der Bildschirm zeilenweise auf — erst die Sterne, dann die
 Figur, dann die Zahl (gemessen: 0 ms gegen 270 ms). Und im Spiel bewegt
 sich seither auch das **Ja**: bis dahin wackelte nur die Ablehnung.
 
-### G5 · Die Kacheln sprechen in Zahlen
+### G5 · Die Kacheln sprechen in Zahlen — **halb erledigt (Q8/Q23), Rest gemessen offen (N11)**
 
 „Erdkunde · 17 ÜBUNGEN · 2/75". Fiona liest nichts davon. Das Bild in der
 Kachel ist klein, blass und randständig; die Zahl ist groß und bedeutungslos.
 Auf einer Spielkachel gehört das Bild nach vorn.
 
-### G6 · Elf gleiche Rechtecke
+Das Bild kam mit Q8 nach vorn (70 bis 73 % der Kachelbreite, gemessen von
+`passt`), die Überzeile fiel mit ihm, und die Aufkleberzahl fiel mit Q23 —
+**auf dem Telefon**, dem Zielgerät. Auf dem großen Schirm steht sie noch.
+
+N11 hat versucht, sie auch dort zu streichen, und ist an einer Messung
+gescheitert: die Zahl hält den Kachelfuß 35 Punkte hoch, ohne sie sind es 8,
+und der Name rutscht um die 27 Punkte nach unten in den Kasten des
+Vorschau-Auges. `lesbarkeit` meldete alle zehn Kachelnamen mit 2,33:1 statt
+3:1. Das Bild gewinnt dabei 103×56 → 152×82 — es ist also ein echter Tausch
+und keine Kleinigkeit.
+
+**Offen bleibt genau ein Schritt**: das Vorschau-Auge auch auf dem großen
+Schirm streichen, wie auf dem Telefon. Dann passt beides. Es hängt an zwei
+stehenden Gegenproben, die dabei umzuschreiben sind — und damit an einem
+Probenlauf.
+
+### G6 · Elf gleiche Rechtecke — **erledigt (N11)**
 
 Die Ebenenwahl ist ein Raster aus elf identisch großen, identisch schweren
 Kacheln. Keine Hierarchie, kein Anfang, kein Ziel. Das Auge hat keinen
 Einstieg.
+
+Aus der Wand ist eine Strecke geworden: **geschafft** (Haken, volles Band),
+**dran** (Hof in der eigenen Farbe, die Figur steht dort) und **wartet**
+(ruhigere Kante, blasses Band). Der Einstieg ist die eine Station, die
+leuchtet. Gesperrt ist nichts — der Unterschied zwischen „das ist neu" und
+„das darfst du nicht" kostet nichts, wenn man ihn nur malt.
 
 ### G7 · Der Frage-Bildschirm ist zur Hälfte leer
 
@@ -188,7 +210,7 @@ Dazu kommen drei Dinge, die es heute nicht gibt:
 | 2 | G3 Eine Figur, die dabei ist | sehr hoch | mittel |
 | 3 | G1/G12 Welten bekommen einen Grund | hoch | mittel |
 | 4 | G2 Tiefe für alles Drückbare | hoch | klein |
-| 5 | G5/G6 Kacheln werden Orte | hoch | groß |
+| 5 | G5/G6 Kacheln werden Orte — **G6 erledigt (N11), G5 halb** | hoch | groß |
 | 6 | G14 Bewegung als Rückmeldung | hoch | mittel |
 | 7 | G8/G9 Fortschritt sichtbar | mittel | klein |
 | 8 | G10 Das Buch wird ein Buch — **erledigt (N12)** | mittel | groß |

@@ -249,6 +249,93 @@ Die größte Runde des Plans, und die letzte inhaltliche.
 **Abnahme:** Alle elf Stationen sind mit dem Daumen zu treffen, nichts läuft
 über den Rand, und der Weg funktioniert in beiden Fensterformaten.
 
+**Gebaut (v553).** `passt` meldet auf allen sieben Größen grün — die Abnahme
+steht.
+
+Jede Ebene ist jetzt eine **Station** mit einem von drei Zuständen, und
+zwischen den Stationen liegt ein **Band**: hinter der Station, auf der man
+steht, ist es voll, davor blass.
+
+| Zustand | woran man ihn sieht |
+|---|---|
+| geschafft | grüner Haken in der Ecke, volles Band, voller Balken |
+| dran | Hof in der eigenen Farbe, zweimal ein Heben, die Figur steht dort |
+| wartet | ruhigere Kante, blasses Band |
+
+**Es wird nichts gesperrt.** „Was noch zu weit ist, wartet" war als Schloss
+zu lesen und wäre der falsche Entwurf gewesen: ein Kind, das heute Afrika
+will, bekäme eine Tür statt einer Übung. Der Unterschied zwischen „das ist
+neu" und „das darfst du nicht" kostet nichts, wenn man ihn nur *malt* — das
+Auge bekommt seinen Einstieg (G6), der Finger behält alle elf.
+
+**Zweimal umgebaut, und beide Male hat es etwas gezeigt:**
+
+1. **Dran war zuerst die zuletzt begonnene Station.** „Dort hat das Kind
+   aufgehört, dorthin will es zurück." Angesehen war es sichtbar falsch:
+   Leas Stand geht quer durch die Welt, und damit lag hinter ihrer Station
+   ein volles Band über vier Kacheln mit **leerem** Fortschrittsbalken —
+   zwei Aussagen auf einer Kachel, die einander widersprechen. Mit der
+   **ersten offenen** Station stimmt es von selbst: alles davor ist fertig,
+   weil es sonst selbst die erste offene wäre.
+2. **Die Marke lag zuerst innen in der Ecke** — dort beanspruche den Platz
+   weder Bild noch Name noch Auge. `passt` hat es gemessen und widerlegt:
+   die Weltkarte auf „Kontinente" füllt ihre Kachel bis in die Ecken, und
+   die Scheibe deckte **12 bis 14 %** davon zu; erlaubt sind 6. Draußen in
+   der Rundung der Kachelecke sind es **0 bis 3 %**. Für Fiona *ist* das
+   Bild der Name; ein Siebtel davon herzugeben, um dasselbe in klein zu
+   sagen, wäre ein schlechter Tausch.
+
+**Die Zahl sollte von der Kachel fallen (G5) — und bleibt, gemessen.** „2/75"
+stand nur noch auf dem großen Schirm; auf dem Telefon ist sie seit Q23 weg,
+und derselbe Bildschirm sollte auf dem iPad nicht etwas anderes sagen. Sie
+fiel auch, und `lesbarkeit` nannte den Preis sofort: **alle zehn Kachelnamen
+auf 2,33:1 statt 3:1**, in Tag und Abend.
+
+Der Grund war nicht die Farbe, sondern die Geometrie. Die Zahl hält den
+Kachelfuß 35 Punkte hoch; ohne sie sind es 8, und die 27 Punkte gehen an das
+Bild (gemessen **103×56 → 152×82** auf 1240 × 1000). Der **Name** rutscht
+dabei um dieselben 27 Punkte nach unten — in den Kasten des Vorschau-Auges,
+das unten rechts an der Kachel klebt.
+
+Drei Auswege, alle drei teurer als der Gewinn: dem Auge 44 Punkte freihalten
+gibt genau die Höhe zurück, die das Bild gewonnen hat; das Auge nach außen
+setzen hilft nicht, sein Kasten schneidet den Namen weiterhin; das Auge ganz
+streichen — wie auf dem Telefon — wäre die sauberste Kachel, nimmt aber einen
+Knopf weg, den **zwei stehende Gegenproben** halten, und in einer Runde ohne
+Probenlauf ist das nicht redlich zu machen.
+
+**G5 bleibt damit auf dem großen Schirm offen**, und das ist der nächste
+Schritt: das Auge streichen, die zwei Gegenproben umschreiben, den Probenlauf
+fahren. Was diese Runde trotzdem gewonnen hat, steht daneben — das Band sagt
+den Fortschritt als **Ort**, und das braucht keine Zahl.
+
+**Ein Vorbild mit gegangenem Weg.** Die beiden vorhandenen Aufnahmen zeigen
+ihn nur von vorne — auch `quer-ebenen-voll`, denn dort wandern die Fächer von
+1 bis 5 und ein Aufkleber fängt bei Fach 3 an, also wird keine Ebene je
+fertig. Von Haken und vollem Band gäbe es kein einziges Bild.
+`quer-ebenen-weg` stellt den Stand, den ein Kind nach ein paar Wochen hat:
+vier Stationen fertig, die fünfte dran, der Rest wartet.
+
+**Gemessen im Rauchtest, und zwar am Ort, nicht an den Klassennamen:**
+`Weg: 11 Stationen, dran „Kontinente" → nach dem Sammeln dran „Europa",
+1 geschafft, 8 warten`. Der Bildschirm wird zweimal gelesen, mit einem
+gesammelten Lernstand dazwischen — eine Aufnahme mit den richtigen Klassen
+darauf bewiese nur, dass sie einmal gesetzt wurden, nicht dass sie sich je
+wieder ändern. Das Band wird an seiner **Farbe** gemessen
+(`oklch(0.78 0.09 155)` gegen `oklch(0.9 0.012 250)`), nicht an seiner
+Klasse: eine Regel, die eine spätere überschreibt, lässt die Klasse stehen
+und die Farbe verschwinden — die Falle, in der das Hüpfen des Ja steckte.
+
+**Keine Schlange mit Kehren.** Die bräuchte die Stelle, an der die Zeile
+umbricht, und die hängt an der Fensterbreite: sieben Fensterformate wären
+sieben Zahlen, die bei der zwölften Ebene alle falsch sind. Das Band
+verbindet, was nebeneinander steht, und bricht mit der Zeile um.
+
+**Ohne stehende Gegenprobe** — ausdrücklich so gewünscht („1 ohne große
+Proben"). Was der Rauchtest hält, hält er; was keine Gegenprobe hält, ist
+die Frage, ob der Rauchtest es noch hielte, wenn jemand den Weg wieder
+ausbaut.
+
 ### N12 · Das Buch — Seiten statt Spalten
 *Befund G10*
 
