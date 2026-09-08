@@ -1830,6 +1830,23 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   white-space:nowrap;font-size:var(--s0);padding:var(--r3) var(--r5);
   min-height:0;width:auto;justify-content:center}
 .etikett.weg{visibility:hidden;pointer-events:none}
+/* Was der Tipp weggenommen hat (S12).
+   NICHT unsichtbar, sondern deutlich blass - und das ist gemessen und
+   nicht Geschmack: der erste Anlauf setzte `visibility:hidden`, und im
+   Bild sah man dann eine Reihe, in der zwei Antworten einfach nicht
+   mehr da waren. Ein Kind, das nicht liest, kann daraus nicht schliessen,
+   dass sein Druck etwas bewirkt hat. Blass heisst „die habe ICH dir
+   weggenommen"; leer heisst „hier war nie etwas".
+   Der Platz bleibt in jedem Fall stehen: sonst wandert die Antwort, auf
+   die das Kind gerade zeigt, unter dem Finger weg. */
+/* Ueber `#auswahl` und nicht ueber die Klasse allein: `.zahl[disabled]`
+   setzt seine eigene Deckkraft (0,45) und steht weiter unten im Blatt -
+   bei gleicher Kennzahl gewinnt die spaetere Zeile. Gemessen, nicht
+   vermutet: der erste Anlauf schrieb 0,22 und im Bild standen 0,45.
+   Der Ausweg gibt seinen Tipp immer INNERHALB der Auswahl; die Kennung
+   ist damit keine Schummelei, sondern die Wahrheit ueber die Stelle. */
+#auswahl .zahl.weg,#auswahl .engkarte.weg,#auswahl .flaggenkarte.weg{
+  opacity:.22;pointer-events:none}
 /* Was nach der Aufgabe stehen bleibt, ruht (G18).
  *
  * Die uebrigen Antwortknoepfe waren im Lob nicht zu unterscheiden von

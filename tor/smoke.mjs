@@ -3853,6 +3853,67 @@ if (laeuft('regler')) try {
       + 'angesprochen, und ein Begleiter ist dort Zierde'));
   }
 
+  /* DER AUSWEG HAT ZWEI STUFEN (S12).
+   *
+   * „Weiß ich nicht" kostete nichts und brachte nichts. Jetzt nimmt der
+   * erste Druck falsche Antworten weg, und erst der zweite loest auf.
+   *
+   * Drei Zusagen, und die erste ist die, die still kaputtgeht:
+   *
+   *   1. Der erste Druck loest NICHT auf. Tut er es doch, ist der Tipp
+   *      verschwunden und niemandem faellt es auf - der Knopf tut ja
+   *      etwas.
+   *   2. Er nimmt wirklich etwas weg. Ein Knopf, der beim ersten Druck
+   *      nichts tut, ist schlimmer als der alte.
+   *   3. Der zweite Druck loest auf. Ohne das kaeme ein Kind nicht mehr
+   *      aus einer Aufgabe heraus, die es nicht kann - und genau dafuer
+   *      gibt es den Knopf.
+   */
+  {
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="fiona"]');
+    await p.click('[data-profil="fiona"]');
+    await zurEbenenwahl(p, 'rechnen:plusminus');
+    await p.click('.schirm.da [data-ebene="rechnen:plusminus"]:not([data-gruppe])');
+    await durchVorlaufWenn(p);
+    await p.waitForSelector('.schirm.da #auswahl .zahl');
+    const lage = () => p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      const k = s.querySelector('#weissnicht');
+      return { offen: [...s.querySelectorAll('#auswahl .zahl')]
+                 .filter(x => !x.classList.contains('weg')).length,
+               stufe: k ? k.dataset.stufe : null,
+               geloest: !!s.querySelector('.loesung') };
+    });
+    const vorher = await lage();
+    await p.click('.schirm.da #weissnicht');
+    const nachTipp = await lage();
+    await p.click('.schirm.da #weissnicht');
+    await bewertet(p);
+    const nachLoesung = await lage();
+    console.log(`  Ausweg: ${vorher.offen} Antworten → ${nachTipp.offen} nach dem Tipp`
+      + ` (${nachTipp.geloest ? 'schon gelöst' : 'noch offen'}) → `
+      + `${nachLoesung.geloest ? 'gelöst' : 'immer noch offen'}`);
+    if (vorher.offen < 3) merke('regler', new Error(
+      `der Rechenschirm bietet nur ${vorher.offen} Antworten — bei so wenigen nimmt der `
+      + 'Tipp nichts weg, und dieser Abschnitt hat die Stufe gar nicht gesehen (Regel 1: '
+      + 'eine Prüfung, die nie etwas meldet, ist kein Beweis)'));
+    else {
+      if (nachTipp.geloest) merke('regler', new Error(
+        'der erste Druck auf „Weiß ich nicht" löst schon auf — dann gibt es die '
+        + 'Tippstufe nicht, und der Ausweg kostet wieder nichts'));
+      if (nachTipp.offen >= vorher.offen) merke('regler', new Error(
+        `nach dem Tipp stehen weiter ${nachTipp.offen} von ${vorher.offen} Antworten da — `
+        + 'ein Knopf, der beim ersten Druck nichts tut, ist ein kaputter Knopf'));
+      if (nachTipp.offen < 2) merke('regler', new Error(
+        `nach dem Tipp steht nur noch ${nachTipp.offen} Antwort da — das ist die Lösung `
+        + 'und kein Tipp'));
+      if (!nachLoesung.geloest) merke('regler', new Error(
+        'auch der zweite Druck löst nicht auf — dann kommt ein Kind aus einer Aufgabe, '
+        + 'die es nicht kann, gar nicht mehr heraus'));
+    }
+  }
+
   /* DIE BUEHNE (N10) — der Endbildschirm baut sich AUF.
    *
    * Zwei Zusagen, und die zweite ist die, die still kaputtgeht:

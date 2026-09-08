@@ -6095,6 +6095,40 @@ export const PROBEN = [
     an:{ ...DIST, text:".abz > svg--aus{width:100%;height:auto;" },
     sagt:'weniger als 35 % Bild' },
 
+  /* --- Der Ausweg (S12) --------------------------------------------------
+   *
+   * 1. DER ERSTE DRUCK LOEST WIEDER AUF. Zurueck in den Zustand, in dem
+   *    „Weiß ich nicht" nichts kostet und nichts bringt. Der Knopf tut
+   *    etwas, der Bildschirm sieht heil aus, und die Stufe ist weg. */
+  { n:'der erste Druck loest schon auf', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"    if (k.dataset.stufe === 'tipp' && tipp && tipp()) {",
+    ersatz:"    if (false) { // Anker: if (k.dataset.stufe === 'tipp' && tipp && tipp()) {",
+    an:{ ...DIST, text:'if (false) { // Anker: if (k.dataset.stufe' },
+    sagt:'löst schon auf' },
+
+  /* 2. DER ZWEITE DRUCK LOEST NICHT MEHR AUF. Die schlimmere Fassung:
+   *    das Kind kommt aus einer Aufgabe, die es nicht kann, gar nicht
+   *    mehr heraus - und genau dafuer gibt es den Knopf. Sichtbar ist
+   *    davon nichts; der Knopf reagiert ja. */
+  { n:'der zweite Druck loest nicht mehr auf', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"    if (k.dataset.stufe === 'tipp' && tipp && tipp()) {\n      k.dataset.stufe = 'loesung';",
+    ersatz:"    if (tipp && tipp()) {\n      k.dataset.stufe = 'loesung';",
+    an:{ ...DIST, text:'if (tipp && tipp()) {' },
+    sagt:'löst nicht auf' },
+
+  /* 3. DER TIPP NIMMT ALLES WEG. Dann ist er die Loesung, nur ohne den
+   *    Satz dazu - bei zwei Antworten bliebe genau die richtige stehen.
+   *    Das faellt im Bild nicht auf: ein Bildschirm mit einer Antwort
+   *    sieht aus wie einer, auf dem eben richtig getippt wurde. */
+  { n:'der Tipp nimmt alle falschen weg', tor:'spielprobe',
+    datei:'src/kern/tipp.js',
+    such:"  return Math.min(Math.ceil(f / 2), f - 1);",
+    ersatz:"  return f; // Anker: Math.min(Math.ceil(f / 2), f - 1)",
+    an:{ datei:'src/kern/tipp.js', text:'return f; // Anker:' },
+    sagt:'das ist die Loesung und kein Tipp' },
+
   /* --- Das Haus (N6) -----------------------------------------------------
    *
    * 1. ES ZAEHLT NUR DAS EINE KIND. Die stillste Fassung: die Zeile

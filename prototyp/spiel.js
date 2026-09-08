@@ -4357,6 +4357,78 @@ function eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn, einga
  * Möglichkeiten zum Antippen". Der Umschalter „Lieber ziehen" erscheint
  * hier deshalb nicht.
  */
+/* DER AUSWEG KOSTET UND GIBT ETWAS (S12).
+ *
+ * „Weiß ich nicht" ist richtig - ein Kind muss aussteigen duerfen. Nur
+ * kostete der Knopf nichts und brachte nichts: ein Druck, die Loesung
+ * steht da, weiter. Wer ihn zweimal gedrueckt hat, druckt ihn beim
+ * dritten Mal, bevor er die Frage gelesen hat.
+ *
+ * Jetzt hat er zwei Stufen. Der erste Druck nimmt falsche Antworten
+ * WEG - das ist der Tipp, und er kostet: die Aufgabe zaehlt danach
+ * nicht mehr als „auf Anhieb". Der zweite loest auf wie bisher.
+ *
+ * OHNE EIN WORT verstanden: es sind einfach weniger. Fiona ist sechs
+ * und liest nicht; „Tipp" auf einem Knopf waere fuer sie ein Muster.
+ *
+ * UND ER STAND NEUNMAL DA. Neun Bildschirme, neunmal dasselbe Markup,
+ * neunmal dieselbe Verdrahtung (Regel 6). Jetzt einmal - wer einen
+ * zehnten Aufgabenschirm baut, bekommt den Ausweg mit, ohne daran zu
+ * denken.
+ */
+const WEISSNICHT_KNOPF = `<button class="leise" id="weissnicht" data-stufe="tipp"
+  >${ZEI('frage', 20)}Weiß ich nicht</button>`;
+/* Acht Bildschirme stellen den Knopf allein in seine Leiste, der
+   Schreibschirm haengt ihn neben „Fertig" und „Noch mal". Deshalb zwei
+   Marken und nicht zwei Knoepfe: die Leiste ist verschieden, der Knopf
+   ist derselbe. */
+const WEISSNICHT = `<div class="werkzeug">${WEISSNICHT_KNOPF}</div>`;
+
+/** Der Tipp: falsche Antworten verschwinden - hoechstens die Haelfte.
+ *
+ * Gibt zurueck, ob wirklich etwas weggefallen ist. Bei zwei Antworten
+ * faellt nichts weg: „eine wegnehmen" waere dort die Loesung und kein
+ * Tipp. Das entscheidet die Rechnung und kein Bildschirm einzeln -
+ * sonst muesste jeder neue Schirm daran denken.
+ */
+function tippWegnehmen(s, wahl, istRichtig){
+  const alle = [...s.querySelectorAll(wahl)]
+    .filter(x => !x.disabled && !x.classList.contains('weg'));
+  const falsch = alle.filter(x => !istRichtig(x));
+  /* WIEVIELE, rechnet `Tipp.tippMenge` - und zwar dort, weil es eine
+     Regel ist und kein Bildschirm. Sie gilt an fuenf Auswahlschirmen
+     gleich, und ohne Browser laesst sie sich nachrechnen: `spielprobe`
+     tut das an sechs Faellen. */
+  const nehmen = Tipp.tippMenge(falsch.length);
+  if (nehmen < 1) return false;
+  /* Weggenommen wird von HINTEN, nicht gewuerfelt: zweimal derselbe
+     Bildschirm soll zweimal dasselbe tun, sonst ist der Tipp ein
+     Glueckspiel und der Rauchtest misst Rauschen. */
+  falsch.slice(-nehmen).forEach(x => {
+    x.classList.add('weg'); x.disabled = true; });
+  return true;
+}
+
+/** Den Ausweg verdrahten - EINE Stelle fuer neun Bildschirme.
+ *
+ * `tipp` ist wahlfrei: wo es nichts wegzunehmen gibt (ein Tippfeld, ein
+ * freies Schreibfeld, ein Wort zum Legen), loest der Knopf sofort auf.
+ * Das ist ehrlicher als eine erste Stufe, die nichts tut - ein Knopf,
+ * der beim ersten Druck nichts macht, ist ein kaputter Knopf.
+ */
+function ausweg(s, aufloesen, tipp){
+  const k = s.querySelector('#weissnicht'); if (!k) return;
+  k.onclick = () => {
+    if (k.dataset.stufe === 'tipp' && tipp && tipp()) {
+      k.dataset.stufe = 'loesung';
+      k.innerHTML = ZEI('auge', 20) + 'Zeig es mir';
+      sagen('Ich nehme welche weg. Probier noch einmal.');
+      return;
+    }
+    aufloesen();
+  };
+}
+
 function rechenschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
@@ -4394,8 +4466,7 @@ function rechenschirm(){
                placeholder="?" aria-label="Ergebnis">
         <button class="knopf haupt" id="pruef">Prüfen</button>
       </div>` : ''}
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const luecke = s.querySelector('#luecke');
@@ -4488,7 +4559,8 @@ function rechenschirm(){
     if (weise==='tippen') setTimeout(()=>rein.focus(), 360);
   }
 
-  s.querySelector('#weissnicht').onclick = ()=> aufloesen('aufgegeben');
+  ausweg(s, () => aufloesen('aufgegeben'),
+    () => tippWegnehmen(s, '#auswahl .zahl', x => +x.dataset.zahl === ziel.wert));
   s.querySelector('#zur').onclick = ()=> zeige(pauseSchirm);
 
   /* Der Umschalter steht nur da, wo er etwas zu schalten hat.
@@ -4606,8 +4678,7 @@ function satzschirm(){
              autocomplete="off" autocorrect="off" autocapitalize="off"
              spellcheck="false" aria-label="der englische Satz">
       <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const rein = s.querySelector('#rein');
@@ -4694,7 +4765,7 @@ function satzschirm(){
   const pruefen = () => bewerte(rein.value);
   s.querySelector('#pruef').onclick = pruefen;
   rein.addEventListener('keydown', e => { if (e.key === 'Enter') pruefen(); });
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen);
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
   setTimeout(() => rein.focus(), 360);
 
@@ -4749,8 +4820,7 @@ function freundeschirm(){
       <div class="freundsatz">${ziel.satz}</div>
       <div class="freundluecke" lang="en">${satzMitFeld}</div>
       <div class="tippfeld"><button class="knopf haupt" id="pruef">Prüfen</button></div>
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const rein = s.querySelector('#rein');
@@ -4830,7 +4900,7 @@ function freundeschirm(){
   const pruefen = () => bewerte(rein.value);
   s.querySelector('#pruef').onclick = pruefen;
   rein.addEventListener('keydown', e => { if (e.key === 'Enter') pruefen(); });
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen);
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
   setTimeout(() => rein.focus(), 360);
   // Angesagt wird der DEUTSCHE Satz - er ist die Aufgabe. Fuer Stephan und
@@ -5058,8 +5128,7 @@ function englischschirm(){
       <div class="engwahl" id="auswahl">${auswahl.map(x =>
         `<button class="engkarte" data-id="${x.id}" aria-label="${x.wort}"
                  lang="en">${bild(x)}</button>`).join('')}</div>
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const ausschalten = () => s.querySelectorAll('.engkarte').forEach(k => k.disabled = true);
@@ -5129,7 +5198,8 @@ function englischschirm(){
 
   s.querySelectorAll('.engkarte').forEach(k =>
     k.onclick = () => bewerte(k.dataset.id, k));
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen,
+    () => tippWegnehmen(s, '#auswahl .engkarte', x => x.dataset.id === ziel.id));
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
 
   /* Die Frage selbst - siehe den Kopf dieser Funktion: `vorlesen` und nicht
@@ -5219,8 +5289,7 @@ function legeschirm(){
         `<button class="etikett legekarte${istSatz ? ' wortkarte' : ''}"
                  data-b="${c}" data-k="${i}"
                  lang="en" aria-label="${c}">${c}</button>`).join('')}</div>
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const stellen = () => [...s.querySelectorAll('.leerstelle')];
@@ -5348,7 +5417,7 @@ function legeschirm(){
     karte.onclick = () => legen(karte, offen(), 'antippen', null);
   });
 
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen);
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
 
   /* Einmal hoeren, bevor gelegt wird. Beim Wort ist das eine Zutat -
@@ -5433,8 +5502,7 @@ function lauteschirm(){
         `<button class="engkarte lautkarte${mitBild ? ' mitbild' : ''}" data-wort="${x.wort}"
                  lang="en" aria-label="${x.wort}">${
           mitBild ? bildZuKarte(x.wort) : x.wort}</button>`).join('')}</div>
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const ausschalten = () => s.querySelectorAll('.lautkarte')
@@ -5504,7 +5572,8 @@ function lauteschirm(){
 
   s.querySelectorAll('.lautkarte').forEach(k =>
     k.onclick = () => bewerte(k.dataset.wort, k));
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen,
+    () => tippWegnehmen(s, '#auswahl .lautkarte', x => x.dataset.wort === ziel.wort));
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
 
   /* Die Frage IST das gesprochene Wort. `vorlesen` und nicht `ansagen`:
@@ -5675,8 +5744,7 @@ function flaggenschirm(){
                aria-label="Name des Landes">
         <button class="knopf haupt" id="pruef">Prüfen</button>
       </div>`}
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>${zeigen ? '' : `
+      ${WEISSNICHT}${zeigen ? '' : `
       <div class="sprachzeile" id="sprachzeile"></div>`}
     </div>`;
 
@@ -5837,7 +5905,8 @@ function flaggenschirm(){
       werkzeug: s.querySelector('.tippfeld'),
       liste: s.querySelector('#sprachzeile'), bewerte: benannt });
   }
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen,
+    () => tippWegnehmen(s, '#auswahl .flaggenkarte', x => x.dataset.id === ziel.id));
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
 
   /* Angesagt wird nur die ZEIGErichtung. In der Nennrichtung waere der
@@ -5891,8 +5960,7 @@ function paarschirm(){
       <div class="flaggenwahl paare" id="auswahl">${zwei.map(x =>
         `<button class="flaggenkarte gross" data-id="${x.id}" aria-label="${x.name}"
           >${Flaggen.flaggeSvg(x.a3)}</button>`).join('')}</div>
-      <div class="werkzeug"><button class="leise" id="weissnicht">${
-        ZEI('frage', 20)}Weiß ich nicht</button></div>
+      ${WEISSNICHT}
     </div>`;
 
   const ausschalten = () => s.querySelectorAll('.flaggenkarte')
@@ -5964,7 +6032,8 @@ function paarschirm(){
 
   s.querySelectorAll('.flaggenkarte').forEach(k =>
     k.onclick = () => bewerte(k.dataset.id, k));
-  s.querySelector('#weissnicht').onclick = () => aufloesen();
+  ausweg(s, aufloesen,
+    () => tippWegnehmen(s, '#auswahl .flaggenkarte', x => x.dataset.id === ziel.id));
   s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
   ansagen(`Welche ist ${ziel.name}?`);
   return s;
@@ -6052,7 +6121,11 @@ function schreibschirm(){
       <button class="knopf" id="hoeren">${
         tonAn ? 'Noch mal hören' : 'Ton einschalten'}</button>` : ''}
       <button class="leise" id="nochmal">Noch mal</button>
-      <button class="leise" id="weissnicht">Weiß ich nicht</button>
+      ${/* Hier stand derselbe Knopf OHNE Zeichen - als einziger von neun.
+           Und ausgerechnet auf Fionas Bildschirm: sie ist sechs und
+           liest nicht, „Weiß ich nicht" ist fuer sie ein Muster. Die
+           Zusage „jeder Knopf traegt ein Zeichen" gilt seit S12 auch
+           hier, weil es nur noch EINEN Knopf gibt. */ WEISSNICHT_KNOPF}
     </div></div>`;
 
   const blaetter = [...s.querySelectorAll('.schreibblatt')];
@@ -6280,7 +6353,7 @@ function schreibschirm(){
     else { fertig = []; zugNr = 0; }
     malen();
   };
-  s.querySelector('#weissnicht').onclick = ()=> aufloesen();
+  ausweg(s, aufloesen);
   s.querySelector('#zur').onclick = ()=> zeige(pauseSchirm);
 
   malen();

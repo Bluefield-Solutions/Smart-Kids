@@ -131,7 +131,7 @@
   },
   {
     "dateien": "prototyp/bauen.mjs",
-    "token": 235,
+    "token": 252,
     "wo": [
       "prototyp/bauen.mjs:319",
       "prototyp/bauen.mjs:320",
@@ -140,7 +140,7 @@
       "prototyp/bauen.mjs:326",
       "prototyp/bauen.mjs:327"
     ],
-    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung. — Nachgetragen in F1: `flaggen.js` ist das dreizehnte Modul, und mit ihm ist der gleichfoermige Lauf von 201 auf 235 Token gewachsen. Wieder genau EINE `inline`-Zeile mehr, nachgezaehlt und nicht geschaetzt: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung."
+    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung. — Nachgetragen in F1: `flaggen.js` ist das dreizehnte Modul, und mit ihm ist der gleichfoermige Lauf von 201 auf 235 Token gewachsen. Wieder genau EINE `inline`-Zeile mehr, nachgezaehlt und nicht geschaetzt: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung. — Nachgetragen mit S12: die Regel, wieviel der Tipp wegnimmt, ist ein eigenes Modul (`src/kern/tipp.js`) und damit eine Zeile mehr in dieser Tabelle. Von 235 auf 252 Token, und wieder nur eine Zeile: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung."
   },
   {
     "dateien": "src/inhalt/englisch.js · tools/backen-kontinente.mjs",

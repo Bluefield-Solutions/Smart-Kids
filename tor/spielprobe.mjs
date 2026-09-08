@@ -15,6 +15,7 @@ import fs from 'node:fs';
 import * as I from '../src/inhalt/erdkunde.js';
 import * as R from '../src/inhalt/rechnen.js';
 import * as L from '../src/kern/leitner.js';
+import { tippMenge } from '../src/kern/tipp.js';
 import { STAEDTE } from '../src/geo/staedte.js';
 import * as V from '../src/vergleich/vergleich.js';
 import * as Ri from '../src/kern/richtung.js';
@@ -724,6 +725,35 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     fehler.push('der Bogen ordnet auch eine Runde mit drei Aufgaben um — dort ist '
       + 'nichts zu gliedern, und die Umordnung nimmt nur dem Mischen seine Wirkung');
   geprueft += 4;
+}
+
+/* ---------- Der Tipp nimmt weg, aber nie alles (S12) ---------------------
+ *
+ * Befund S12: „Weiß ich nicht" kostete nichts und brachte nichts. Seit
+ * S12 nimmt der erste Druck falsche Antworten weg - und die Frage,
+ * WIEVIELE, ist eine Rechnung mit zwei Kanten:
+ *
+ *   zu wenig  ist kein Tipp - vier Antworten bleiben vier
+ *   zu viel   ist die LOESUNG - bei zwei Antworten waere „eine weg"
+ *             der ganze Rest
+ *
+ * Die zweite Kante ist die, an der es kippt, und sie faellt im Browser
+ * nicht auf: der Bildschirm mit zwei Antworten sieht danach aus wie
+ * einer, auf dem das Kind eben richtig getippt hat. Hier wird sie
+ * nachgerechnet, ohne Browser und an allen Faellen auf einmal.
+ */
+{
+  const soll = [[0, 0], [1, 0], [2, 1], [3, 2], [4, 2], [5, 3], [6, 3]];
+  const ist = soll.map(([f]) => tippMenge(f));
+  console.log(`    Tipp nimmt weg: ${soll.map(([f], i) => `${f}→${ist[i]}`).join(' · ')}`);
+  for (const [i, [f, w]] of soll.entries()) {
+    if (ist[i] !== w)
+      fehler.push(`bei ${f} falschen Antworten nimmt der Tipp ${ist[i]} weg statt ${w}`);
+    if (f >= 1 && ist[i] >= f)
+      fehler.push(`bei ${f} falschen Antworten nimmt der Tipp alle weg — das ist `
+        + 'die Loesung und kein Tipp');
+  }
+  geprueft += soll.length;
 }
 
 /* ---------- Was zurueckkommt (N4) ----------------------------------------

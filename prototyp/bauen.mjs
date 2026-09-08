@@ -327,6 +327,7 @@ const module = [
   inline(new URL('../src/inhalt/flaggen.js', import.meta.url), 'Flaggen'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),
   inline(new URL('../src/kern/richtung.js', import.meta.url), 'Richtung'),
+  inline(new URL('../src/kern/tipp.js', import.meta.url), 'Tipp'),
   inline(new URL('../src/kern/gleichlauf.js', import.meta.url), 'Gleichlauf'),
   inline(new URL('../src/profil/ablage.js', import.meta.url), 'Ablage'),
   inline(new URL('../src/protokoll/protokoll.js', import.meta.url), 'Protokoll',
