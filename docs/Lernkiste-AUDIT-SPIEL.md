@@ -114,11 +114,26 @@ Lea und Fiona spielen dasselbe Spiel auf demselben Gerät und erfahren
 nichts voneinander. Geschwister sind der stärkste Antrieb, den dieses
 Projekt gratis herumliegen hat.
 
-### S12 · „Weiß ich nicht" ist ein Ausweg ohne Preis
+### S12 · „Weiß ich nicht" ist ein Ausweg ohne Preis — **erledigt (v552)**
 
 Der Knopf ist richtig — ein Kind muss aussteigen dürfen. Aber er kostet
 nichts und bringt nichts. Er könnte einen **Tipp** kosten und dafür einen
 geben.
+
+Seit v552 hat er zwei Stufen: der erste Druck nimmt falsche Antworten
+weg, der zweite löst auf. Gemessen auf dem Rechenschirm: *vier Antworten
+→ zwei nach dem Tipp, noch nicht gelöst → gelöst.*
+
+Wieviele weggenommen werden, ist eine Rechnung und kein Entschluss je
+Bildschirm: höchstens die Hälfte der falschen, aber nie so viele, dass
+keine falsche übrig bleibt. Bei zwei Antworten fällt die erste Stufe
+damit ganz aus — „eine wegnehmen" wäre dort die Lösung. Die Regel steht
+in `src/kern/tipp.js` und wird ohne Browser an sechs Fällen
+nachgerechnet.
+
+Dabei ist der Knopf von neun Stellen auf eine geschrumpft — und ein
+alter Befund fiel auf: auf dem **Schreibschirm** trug er als einziger
+von neun kein Zeichen. Ausgerechnet dort, wo Fiona schreibt.
 
 ---
 
