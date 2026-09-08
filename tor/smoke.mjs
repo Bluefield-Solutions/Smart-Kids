@@ -3772,6 +3772,129 @@ if (laeuft('regler')) try {
       + 'angesprochen, und ein Begleiter ist dort Zierde'));
   }
 
+  /* DIE BUEHNE (N10) — der Endbildschirm baut sich AUF.
+   *
+   * Zwei Zusagen, und die zweite ist die, die still kaputtgeht:
+   *
+   *   1. Am Ende steht alles da. Ein Auftritt, der haengenbleibt, waere
+   *      ein leerer Endbildschirm - schlimmer als gar keiner.
+   *   2. Die ZAHL kommt nicht zuerst. Sie ist das Zeugnis; erst kommen
+   *      die Sterne, dann die Figur, dann die Zahl. Faellt der Versatz
+   *      weg, steht wieder alles auf einmal da, und nichts wird rot: es
+   *      SIEHT genauso aus, es dauert nur nicht mehr.
+   *
+   * Gemessen wird im ERSTEN Bild, in dem es den Endbildschirm gibt, und
+   * nicht nach einer Frist. Ein Blick zur falschen Zeit meldet „kein
+   * Versatz", wo einer war - dieselbe Falle wie bei der Serie und beim
+   * Lob, und sie hat dort drei Anlaeufe gekostet. Der Beobachter wird
+   * deshalb VOR der letzten Antwort gesetzt und schreibt die Deckkraft
+   * in dem Augenblick auf, in dem die Zeile in den Baum kommt.
+   */
+  {
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="fiona"]');
+    await p.click('[data-profil="fiona"]');
+    await zurEbenenwahl(p, 'rechnen:plusminus');
+    await p.click('.schirm.da [data-ebene="rechnen:plusminus"]:not([data-gruppe])');
+    await durchVorlaufWenn(p);
+    /* Die beiden Beobachter, BEVOR gespielt wird.
+     *
+     * Sie schreiben je einmal auf, was im ersten Bild zu sehen war:
+     * einmal, als die erste richtige Antwort ihre Klasse bekam, und
+     * einmal, als der Endbildschirm entstand. Danach schauen sie weg.
+     * `getAnimations()` gibt zurueck, was der Browser WIRKLICH angelegt
+     * hat - nicht, was im Stylesheet steht. */
+    await p.evaluate(() => {
+      window.__huepft = null; window.__buehne = null;
+      const schau = () => {
+        if (window.__huepft === null) {
+          const el = document.querySelector('.schirm.da .stimmt');
+          if (el) window.__huepft = el.getAnimations().map(a => a.animationName);
+        }
+        if (window.__buehne === null) {
+          const s = document.querySelector('.schirm.da');
+          const u = s && s.querySelector('.unter');
+          const st = s && s.querySelector('.siegsterne');
+          if (s && s.querySelector('.buchstand') && u && st) {
+            /* Gelesen wird der VERSATZ der Animation, die der Browser
+               wirklich angelegt hat - nicht die Deckkraft.
+               Die Deckkraft war der erste Anlauf und taugte nicht: im
+               ersten Bild steht ALLES auf 0, auch die Zeile ohne
+               Versatz, denn `auftritt` faengt bei 0 an. Der Vergleich
+               war damit 0 gegen 0 und haette auch ohne Buehne gepasst.
+               `getComputedTiming().delay` ist dagegen die Zahl, nach der
+               der Browser wirklich wartet. */
+            const takt = (el) => {
+              const a = el.getAnimations().find(x => x.animationName === 'auftritt');
+              return a ? Math.round(a.effect.getComputedTiming().delay) : null;
+            };
+            window.__buehne = { zahl: takt(u), sterne: takt(st) };
+          }
+        }
+      };
+      new MutationObserver(schau).observe(document.body,
+        { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    });
+    let n10 = 0;
+    while (n10 < 20 && !(await p.$('.schirm.da .buchstand'))) {
+      const r = await p.evaluate(() => {
+        const s = document.querySelector('.schirm.da');
+        const t = s.querySelector('.rechnung'); if (!t) return null;
+        const m = t.textContent.match(/(\d+)\s*([+−×:])\s*(\d+)/); if (!m) return null;
+        const a = +m[1], b = +m[3];
+        const soll = m[2] === '+' ? a + b : m[2] === '−' ? a - b
+                   : m[2] === '×' ? a * b : a / b;
+        return { i: [...s.querySelectorAll('#auswahl .zahl')]
+          .map(x => +x.textContent).indexOf(soll) };
+      });
+      if (!r || r.i < 0) break;
+      await p.$$eval('.schirm.da #auswahl .zahl', (els, i) => els[i].click(), r.i);
+      await bewertet(p);
+      await weitergegangen(p);
+      n10++;
+    }
+    const huepft = await p.evaluate(() => window.__huepft);
+    const buehne = await p.evaluate(() => window.__buehne);
+    /* Und der Endzustand: nach dem Auftritt steht alles da. Gewartet
+       wird auf das Ende der Animationen, nicht auf eine Frist - die
+       endlosen ausgenommen, sonst waere das Warten nie vorbei. */
+    await p.waitForFunction(() => !document.getAnimations().some(a =>
+      a.playState === 'running' && a.effect?.getTiming().iterations !== Infinity),
+      null, { timeout: 8000 }).catch(() => {});
+    const danach = await p.evaluate(() => {
+      const s = document.querySelector('.schirm.da');
+      if (!s) return null;
+      const teile = [...s.querySelectorAll('.buehne > *')];
+      return { n: teile.length,
+               blass: teile.filter(x => +getComputedStyle(x).opacity < 0.99).length };
+    });
+    console.log(`  Bühne: ${danach ? `${danach.n} Zeilen, ${danach.blass} blass` : '(keine)'}`
+      + ` · Sterne nach ${buehne ? buehne.sterne : '?'} ms, Zahl nach `
+      + `${buehne ? buehne.zahl : '?'} ms · richtig hüpft: ${
+        huepft === null ? '(nicht gemessen)' : huepft.filter(Boolean).join(', ') || '(nichts)'}`);
+    if (huepft === null) merke('regler', new Error(
+      `nach ${n10} Aufgaben trug keine richtige Antwort je die Klasse „stimmt" — `
+      + 'dann sagt „das Ja bewegt sich" hier nichts (Regel 1)'));
+    else if (!huepft.includes('huepft')) merke('regler', new Error(
+      'die richtige Antwort bekommt keine Bewegung — dann wackelt in dieser App '
+      + 'weiter nur das Nein, und ein Kind hört den ganzen Tag nur, was nicht stimmt'));
+    if (!buehne) merke('regler', new Error(
+      `nach ${n10} Aufgaben wurde der Endbildschirm nie in seinem ersten Bild `
+      + 'gesehen — dann beweist der Versatz darunter nichts (Regel 1)'));
+    else if (buehne.zahl === null || buehne.sterne === null) merke('regler', new Error(
+      'auf dem Endbildschirm läuft kein Auftritt — dann gibt es die Bühne nicht, '
+      + 'und der Bildschirm kommt wieder als Ganzes'));
+    else if (!(buehne.zahl > buehne.sterne)) merke('regler', new Error(
+      `Sterne und Zahl treten beide nach ${buehne.sterne} ms auf — der `
+      + 'Endbildschirm kommt als Ganzes, und damit ist er wieder ein Zeugnis '
+      + 'und kein Augenblick'));
+    if (!danach || !danach.n) merke('regler', new Error(
+      'der Endbildschirm hat keine Bühne — bei einem Kinderprofil soll er eine haben'));
+    else if (danach.blass) merke('regler', new Error(
+      `nach dem Auftritt sind ${danach.blass} von ${danach.n} Zeilen noch blass — `
+      + 'ein Auftritt, der hängenbleibt, ist schlimmer als gar keiner'));
+  }
+
   /* DER GRUND DER WELT (N7).
    *
    * Zwei Zusagen, und beide gehen leise kaputt - die Flaeche ist in

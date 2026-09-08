@@ -8325,8 +8325,11 @@ function endschirm(){
   if (st.glatt === st.liste.length) glattStand().then(alt => { if (!alt) glattSetzen(
     { zeit: Date.now(), ebene: st.ebeneId, ebeneTitel: (EBENEN.find(e => e.id === st.ebeneId) || {}).titel || st.ebeneId,
       von: st.liste.length }); });
+  /* Die BUEHNE nur bei den Kinderprofilen (N10) - derselbe Schalter wie
+     bei Jubel, Sternen und Figur. Stephan bekommt seinen Bildschirm als
+     Ganzes: er will das Ergebnis lesen, nicht ihm zusehen. */
   s.innerHTML=kopf({}) + `
-    <div class="mitte">
+    <div class="mitte${ton().feier ? ' buehne' : ''}">
       ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
         : ton().siegsterne ? `<div class="siegsterne${ton().feier ? ' feier' : ''}"
              >${sterne(n,56)}</div>` : ''}

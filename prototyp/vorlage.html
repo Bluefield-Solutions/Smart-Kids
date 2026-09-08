@@ -1847,8 +1847,18 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
  * wirkungslos, jetzt sieht man es. */
 .knopf[disabled]{opacity:.42;box-shadow:none;pointer-events:none;
   transform:translateY(var(--kante));animation:none}
-[data-fertig] .etikett:not(.weg),
-[data-fertig] .zahl{opacity:.42;box-shadow:none;pointer-events:none;
+/* `:not(.stimmt)` seit N10, und zwar aus zwei Gruenden.
+   Der sichtbare: die RICHTIGE Antwort ist kein verbrauchter Knopf. Sie
+   soll stehenbleiben und hell sein - `.zahl.stimmt{opacity:1}` sagte das
+   schon, aber nur fuer die Deckkraft.
+   Der stille: dieselbe Regel setzte `animation:none`, und zwar mit
+   hoeherer Kennzahl als `.stimmt`. Das Huepfen war damit gebaut, im
+   Bündel und wirkungslos - `animationName` rechnete sich zu `none`.
+   Gemessen im Browser, nicht vermutet; ein Tor haette hier nichts
+   gemeldet, denn die Regel STAND ja da. Dasselbe `:not(.stimmt)` steht
+   seit je an `.engkarte[disabled]`; hier hat es gefehlt. */
+[data-fertig] .etikett:not(.weg):not(.stimmt),
+[data-fertig] .zahl:not(.stimmt){opacity:.42;box-shadow:none;pointer-events:none;
   transform:translateY(var(--kante));
   /* `animation:none` ist hier kein Schoenheitsfehler, sondern der Grund,
      warum die Zeile darueber ueberhaupt wirkt: die Etiketten laufen mit
@@ -1866,6 +1876,29 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   0%,100%{translate:0}
   15%{translate:-7px} 35%{translate:6px} 55%{translate:-4px} 75%{translate:2px}
 }
+/* Und das JA (N10). Bis hierher hat sich in dieser App nur das NEIN
+   bewegt: das abgelehnte Etikett wackelt, die falsche Zahl wackelt, die
+   falsche Flaggenkarte wackelt - fuenf Stellen. Auf eine richtige Antwort
+   passierte nichts. Eine Oberflaeche, deren einzige Bewegung die
+   Ablehnung ist, sagt einem Kind den ganzen Tag „nein" und nie „ja".
+   EINE Regel fuer alle fuenf Stellen, nicht fuenf: `stimmt` ist die
+   Klasse, die das Spiel an die richtige Antwort haengt - an sieben
+   Stellen im Quelltext, mit einem Namen. Wer eine sechste Aufgabenart
+   baut und `stimmt` setzt, bekommt das Huepfen mit, ohne es zu wissen. */
+/* Bewegt werden `translate` und `scale` als EIGENE Merkmale, nicht
+   `transform`. Das ist kein Geschmack: die Knoepfe tragen ein
+   `transform:translateY(var(--kante))`, wenn sie eingedrueckt sind, und
+   eine Animation auf `transform` wuerfe das weg - am Ende des Huepfens
+   spraenge der Knopf um die Kante zurueck. Als eigene Merkmale
+   ueberlagern sich beide, und die Kante bleibt, wo sie ist. Dasselbe
+   macht `wackeln` seit je. */
+@keyframes huepft{
+  0%,100%{translate:0;scale:1}
+  30%{translate:0 -8px;scale:1.05}
+  55%{translate:0;scale:1}
+  75%{translate:0 -3px;scale:1}}
+.stimmt{animation:huepft var(--d-belohnung) var(--k-standard)}
+@media (prefers-reduced-motion:reduce){.stimmt{animation:none}}
 @media (prefers-reduced-motion:reduce){.etikett.falsch{animation:none}}
 
 /* --- Rechnen: die Aufgabe ohne Karte ---------------------------------
@@ -2583,6 +2616,32 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    mehr, sondern ein Bild. */
 .figurgross{display:flex;justify-content:center;margin-bottom:var(--r1)}
 .figurgross .figur{margin:0;animation-delay:calc(var(--d-staffel) * 6)}
+/* DIE BUEHNE (N10). Der Endbildschirm kam bisher als GANZES: Sterne,
+   Figur, Zahl, Abzeichen, Balken, Aufkleber, drei Knoepfe - alles im
+   selben Bild. Das ist ein Zeugnis, kein Augenblick. Wer alles auf einmal
+   zeigt, zeigt nichts: das Auge hat keinen Ort, an dem es anfaengt.
+   Jetzt tritt jede Zeile fuer sich auf, in der Reihenfolge, in der sie im
+   Markup steht - erst die Sterne, dann die Figur, dann die ZAHL, dann der
+   Rest, zuletzt die Knoepfe. Genau das war die Zusage: die Zahl kommt
+   nicht zuerst.
+   Der Versatz ist bei sechs gedeckelt. Ohne Deckel dauerte der Aufbau bei
+   neun Zeilen ueber eine Sekunde, und so lange darf kein Kind auf den
+   Knopf warten, den es schon sucht.
+   Bewegt werden nur `opacity` und `transform` - und die Skalierung geht
+   von .92 auf 1, waechst also nie ueber die Endgroesse hinaus. Das ist
+   kein Schoenheitsentscheid: `passt` misst Huellen, und ein Element, das
+   waehrend seines Auftritts groesser ist als danach, liefe kurz ueber den
+   Rand. Unter `prefers-reduced-motion` steht `--d-auftritt` auf 0 und
+   `--d-belohnung` auf 1 ms, damit faellt der ganze Auftritt aus. */
+@keyframes auftritt{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.buehne>*{animation:auftritt var(--d-belohnung) var(--k-standard) both}
+.buehne>*:nth-child(2){animation-delay:var(--d-auftritt)}
+.buehne>*:nth-child(3){animation-delay:calc(var(--d-auftritt) * 2)}
+.buehne>*:nth-child(4){animation-delay:calc(var(--d-auftritt) * 3)}
+.buehne>*:nth-child(5){animation-delay:calc(var(--d-auftritt) * 4)}
+.buehne>*:nth-child(6){animation-delay:calc(var(--d-auftritt) * 5)}
+.buehne>*:nth-child(n+7){animation-delay:calc(var(--d-auftritt) * 6)}
+@media (prefers-reduced-motion:reduce){.buehne>*{animation:none}}
 .frage .richtigText{color:var(--gut)}
 /* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
    Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */

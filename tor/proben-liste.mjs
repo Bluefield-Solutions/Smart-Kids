@@ -5134,8 +5134,9 @@ export const PROBEN = [
    * Mintton und Grau von Weiss nicht mehr zu unterscheiden. */
   { n:'die verbrauchten Farbflecken verlieren ihre Farbe', tor:'smoke',
     args:['--nur=englisch'], bauen:true, datei:V,
-    such:'[data-fertig] .etikett:not(.weg),\n[data-fertig] .zahl{',
-    ersatz:'[data-fertig] .etikett:not(.weg),\n[data-fertig] .engkarte,\n[data-fertig] .zahl{',
+    such:'[data-fertig] .etikett:not(.weg):not(.stimmt),\n[data-fertig] .zahl:not(.stimmt){',
+    ersatz:'[data-fertig] .etikett:not(.weg):not(.stimmt),\n[data-fertig] .engkarte,\n'
+      + '[data-fertig] .zahl:not(.stimmt){',
     an:{ ...DIST, text:'[data-fertig] .engkarte,' },
     sagt:'verblassen nach der Antwort' },
 
@@ -6049,6 +6050,56 @@ export const PROBEN = [
       + "// Anker: const OHNE_GRUND = new Set(['profilwahl', 'weltenwahl', 'forscherbuch', 'elternTor']);",
     an:{ ...DIST, text:'const OHNE_GRUND = new Set([]);' },
     sagt:'noch nicht betreten hat' },
+
+  /* --- Der Moment (N10) --------------------------------------------------
+   *
+   * 1. DAS JA BEWEGT SICH NICHT MEHR. Zurueck in den Zustand, in dem in
+   *    dieser App nur die Ablehnung eine Bewegung hatte. Nichts wird
+   *    falsch; das Kind bekommt nur den ganzen Tag zu sehen, was NICHT
+   *    stimmt. */
+  { n:'die richtige Antwort huepft nicht mehr', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:V,
+    such:'.stimmt{animation:huepft var(--d-belohnung) var(--k-standard)}',
+    ersatz:'.stimmt{animation:none} '
+      + '/* Anker: .stimmt{animation:huepft var(--d-belohnung) var(--k-standard)} */',
+    an:{ ...DIST, text:'.stimmt{animation:none} /* Anker:' },
+    sagt:'bekommt keine Bewegung' },
+
+  /* 2. DIE AUSNAHME WIRD WEGGERAEUMT. Die gefaehrlichere Fassung, und
+   *    sie ist nicht erfunden: genau so lag es im ersten Anlauf von N10
+   *    im Bündel. `[data-fertig] .zahl` setzt `animation:none` mit
+   *    hoeherer Kennzahl als `.stimmt` - das Huepfen steht dann da, ist
+   *    gebaut, kommt mit und wirkt nicht. Kein Tor sieht so etwas an der
+   *    Regel; nur der Browser weiss, was er wirklich angelegt hat. */
+  { n:'die verbrauchten Knoepfe ersticken das Huepfen wieder', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:V,
+    such:'[data-fertig] .zahl:not(.stimmt){opacity:.42;',
+    ersatz:'[data-fertig] .zahl{opacity:.42;',
+    an:{ ...DIST, text:'[data-fertig] .zahl{opacity:.42;' },
+    sagt:'bekommt keine Bewegung' },
+
+  /* 3. DER ENDBILDSCHIRM KOMMT WIEDER ALS GANZES. Der Versatz faellt
+   *    weg, alles tritt zugleich auf - und es SIEHT genauso aus. Nur ist
+   *    es dann kein Augenblick mehr, sondern ein Bild. Das ist die
+   *    Verfallsart, gegen die diese Runde gebaut ist. */
+  { n:'die Buehne tritt ohne Versatz auf', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:V,
+    such:'.buehne>*:nth-child(4){animation-delay:calc(var(--d-auftritt) * 3)}',
+    ersatz:'.buehne>*:nth-child(4){animation-delay:0ms} '
+      + '/* Anker: nth-child(4) hatte calc(var(--d-auftritt) * 3) */',
+    an:{ ...DIST, text:'.buehne>*:nth-child(4){animation-delay:0ms}' },
+    sagt:'kommt als Ganzes' },
+
+  /* 4. DER AUFTRITT BLEIBT HAENGEN. Die Zeilen kommen herein und werden
+   *    nie ganz da - ein halb sichtbarer Endbildschirm ist schlimmer als
+   *    gar kein Auftritt, und er sieht aus wie ein Ladefehler. */
+  { n:'der Auftritt bleibt auf halbem Weg stehen', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:V,
+    such:'@keyframes auftritt{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}',
+    ersatz:'@keyframes auftritt{from{opacity:0;transform:scale(.92)}'
+      + 'to{opacity:.4;transform:none}}',
+    an:{ ...DIST, text:'to{opacity:.4;transform:none}}' },
+    sagt:'noch blass' },
 
   /* --- Die Figur (N9) ---------------------------------------------------
    *
