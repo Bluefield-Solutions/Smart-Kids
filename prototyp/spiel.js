@@ -1303,6 +1303,15 @@ const EBENEN = [
    * Stoff, den es schon gibt, etwas anderes. */
   { id:'rechnen:verdoppeln', ueber:'Rechnen', titel:'Doppelt und halb', farbe:1,
     art:'rechnen', wer:['fiona'] },
+  /* Vorher und nachher (I13) - Fionas dritte Rechenart, und die einzige,
+   * bei der nicht gerechnet wird. „Was kommt nach sieben?" ist eine Frage
+   * an die ZAHLENREIHE. Wer sie beantwortet, indem er eins dazuzaehlt,
+   * hat sie noch nicht verstanden; wer die Reihe kann, sagt es sofort.
+   *
+   * Zahlenraum zwanzig statt zehn - die Reihe hoert bei zehn nicht auf,
+   * und die schwierige Stelle ist genau der Uebergang. */
+  { id:'rechnen:nachbar', ueber:'Rechnen', titel:'Vorher und nachher', farbe:6,
+    art:'rechnen', wer:['fiona'] },
   { id:'rechnen:luecke', ueber:'Rechnen', titel:'Was fehlt?', farbe:5,
     art:'rechnen', wer:['lea'] },
   /* --- I10: zwei Rechenarten fuer Lea (Inhalt-Audit) -----------------
@@ -1768,6 +1777,11 @@ const PRAEPBILD = new Set(['praeposition']);
    es ist keines der vier Rechenzeichen. Ein Lineal waere schoener und in
    dieser Groesse nicht mehr zu erkennen. */
 const EINHEITENBILD = new Set(['rechnen:einheiten']);
+/* Die Kachel von „Vorher und nachher" (I13): ein Zahlenstrahl - eine
+   Linie mit vier Kerben und einem Pfeil nach rechts. Kein Rechenzeichen,
+   weil nicht gerechnet wird; und fuer Fiona, die nicht liest, IST das
+   Zeichen der Name der Kachel. */
+const REIHEBILD = new Set(['rechnen:nachbar']);
 /* Die Kachel der Wendungen (E11): zwei Sprechblasen - es geht um das, was
    man SAGT, und nicht um einzelne Woerter. Und die von „Hören und
    schreiben" (E12): der Lautsprecher und drei Schriftzeilen, in dieser
@@ -1913,6 +1927,12 @@ function silhouette(ebeneId) {
         : ENGLISCHZEICHEN[ebeneId] === 'zweiton' ? ZWEITONSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'lupe' ? LUPENSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
+  if (REIHEBILD.has(ebeneId))
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M4 15h38"/><path d="M36 9l6 6-6 6"/><path
+      d="M9 9v6M18 9v6M27 9v6"/></svg>`;
   if (EINHEITENBILD.has(ebeneId))
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -2481,6 +2501,7 @@ function vorrat(ebeneId, stand = Stand, voll = false){
          : kont==='prozent'    ? Rechnen.prozentVorrat()
          : kont==='zehner'     ? Rechnen.zehnerVorrat()
          : kont==='einheiten'  ? Rechnen.einheitenVorrat()
+         : kont==='nachbar'    ? Rechnen.nachbarVorrat()
          : Rechnen.vorrat();
   // Sechsundzwanzig, gezaehlt und von Natur aus begrenzt - dieselbe Regel
   // wie beim Rechenvorrat (Backlog Paragraf 5.2).

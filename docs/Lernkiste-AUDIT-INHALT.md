@@ -612,6 +612,40 @@ Serbien/Russland). Sie stehen auf *verschiedenen Karten* und begegnen sich
 in einer Flaggenrunde nie — genau dafür gibt es diese Liste: sie ist eine
 Aussage über die Welt, nicht über den Vorrat einer Ebene.
 
+### I13 · Vorher und nachher — **gebaut (v566)**
+
+Aus diesem Audit hat Lea vier neue Ebenen bekommen, die Eltern drei — und
+Fiona eine. Sie ist sechs und liest nicht; jede Ebene für sie muss ohne
+Text auskommen, und das ist der Grund, warum es für sie am schwersten ist.
+
+„Vorher und nachher" ist die **einzige Rechenart der App, bei der nicht
+gerechnet wird.** „Was kommt nach sieben?" ist eine Frage an die
+*Zahlenreihe*. Wer sie beantwortet, indem er eins dazuzählt, hat sie noch
+nicht verstanden; wer die Reihe kann, sagt es sofort. Das ist der Stoff,
+auf dem alles andere steht — der Zehnerübergang, den Lea seit I10 übt, ist
+ohne eine sitzende Zahlenreihe nicht zu machen.
+
+**Zahlenraum zwanzig**, obwohl Fionas Plus und Minus bis zehn geht: die
+Reihe hört bei zehn nicht auf, und die schwierige Stelle ist genau der
+Übergang. „Was kommt nach neun?" und „Was kommt vor zwanzig?" sind die
+zwei Fragen, an denen man merkt, ob die Reihe sitzt oder ob jemand bis
+zehn auswendig aufsagt. **38 Aufgaben**, von Natur aus begrenzt wie die
+Kontinente.
+
+**Und eine Prüfung, die es vorher nicht gab.** Drei Ebenen haben nicht
+irgendwelche Ablenker, sondern *einen bestimmten* — den Fehler, den ein
+Kind dort wirklich macht: bei der Zahlenreihe die Zahl selbst (wer die
+Frage nicht verstanden hat, tippt sie), beim Zehnerübergang das Ergebnis
+ohne Übertrag. Steht er nicht unter den vier Möglichkeiten, funktioniert
+die Aufgabe weiter und prüft etwas anderes. Bis hierher stand das nur in
+Kommentaren — ein Kommentar ist keine Prüfung. Jetzt rechnet `spielprobe`
+es nach.
+
+Die Gegenprobe dazu hat im ersten Anlauf **nichts bewiesen**: sie strich
+die Zahl aus der Ablenkerliste, und bei „Nach 7" kam die Sieben als
+*Ergebnis minus eins* durch die Hintertür zurück. Das Tor blieb zu Recht
+grün. Erst der zweite Eingriff nimmt sie auf jedem Weg heraus.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

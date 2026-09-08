@@ -1891,6 +1891,29 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'verben: freundeschirm' },
     sagt:'freundluecke' },
 
+  /* --- I13: der Fehler, um den es geht --------------------------------- *
+   *
+   * „Vorher und nachher" prueft die Zahlenreihe, und der Fehler, den ein
+   * Kind dort macht, ist die Zahl SELBST: wer die Frage „Was kommt nach
+   * sieben?" nicht verstanden hat, tippt sieben. Steht diese Zahl nicht
+   * unter den vier Moeglichkeiten, prueft die Ebene nur noch, ob jemand
+   * ungefaehr zaehlen kann.
+   *
+   * Der Eingriff nimmt sie heraus. Bis I13 haette das kein Tor gemerkt -
+   * die Aufgabe funktioniert weiter, sie prueft nur etwas anderes.
+   *
+   * Der ERSTE Eingriff strich nur `a` aus der Liste und bewies nichts:
+   * bei „Nach 7" ist `w - 1` wieder die Sieben, sie kam durch die
+   * Hintertuer zurueck. Das Tor blieb zu Recht gruen. Der Eingriff muss
+   * die Zahl auf JEDEM Weg herausnehmen - deshalb stehen jetzt nur noch
+   * Zahlen ueber dem Ergebnis da. */
+  { n:'der Fehler, um den es geht, faellt aus den Moeglichkeiten',
+    tor:'spielprobe', datei:'src/inhalt/rechnen.js',
+    such:"  const roh = [a, gegen, w + 1, w - 1, w + 2];",
+    ersatz:"  const roh = [gegen, w + 2, w + 3, w + 4];",
+    an:{ datei:'src/inhalt/rechnen.js', text:'const roh = [gegen, w + 2' },
+    sagt:'der Fehler, um den es geht' },
+
   /* --- I11: keine leere Kachel ----------------------------------------- *
    *
    * Die Flaggenebenen entstehen aus den Kartenschluesseln, die Flaggen

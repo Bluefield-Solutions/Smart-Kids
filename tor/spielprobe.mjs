@@ -315,7 +315,7 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   // vollstaendig und in derselben Reihenfolge wie `vorrat()` im Spiel.
   const alle = [...R.vorrat(), ...R.reihenVorrat(), ...R.grossVorrat(),
                 ...R.verdoppelnVorrat(), ...R.lueckenVorrat(), ...R.prozentVorrat(),
-                ...R.zehnerVorrat(), ...R.einheitenVorrat()];
+                ...R.zehnerVorrat(), ...R.einheitenVorrat(), ...R.nachbarVorrat()];
   /* Der Zahlenraum je Sorte.
    *
    * Frueher stand hier `?? 100` als Auffangwert - fuer Leas Reihen
@@ -346,6 +346,9 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
        3000. Genau der Fehler, um den es dort geht - eine Grenze von
        hundert haette ihn verboten und die Ebene entschaerft. */
     'doppelt': 42, 'zerlegen': 22, 'luecke': 12, 'prozent': 3000,
+    /* Die Zahlenreihe geht bis zwanzig; der Ablenker „zwei weiter" bei
+       zwanzig ist zweiundzwanzig. */
+    'nachher': 22, 'vorher': 22,
     /* „Halb 20" ist zehn - und der Ablenker, um den es geht, ist das
        DOPPELTE statt der Haelfte, also vierzig. Die Grenze liegt deshalb
        beim Doppelten der groessten Aufgabe und nicht bei der groessten
@@ -376,6 +379,25 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
       if (!Number.isInteger(z))
         fehler.push(`${auf.frage}: die Möglichkeit ${z} ist keine ganze Zahl`);
     }
+    /* DER FEHLER, UM DEN ES GEHT, MUSS DABEISTEHEN (I13).
+     *
+     * Drei Ebenen haben nicht irgendwelche Ablenker, sondern EINEN
+     * bestimmten - den Fehler, den ein Kind an dieser Stelle wirklich
+     * macht. Steht er nicht unter den vier Moeglichkeiten, prueft die
+     * Ebene nur noch, ob jemand ungefaehr richtig rechnet, und das tut
+     * die Ebene daneben schon. Sie funktioniert dann weiter; sie prueft
+     * nur etwas anderes als das, wofuer sie da ist.
+     *
+     * Bis hierher stand das nur in Kommentaren. Ein Kommentar ist keine
+     * Pruefung. */
+    const MUSS = auf.rechenart === 'nachher' ? auf.a
+      : auf.rechenart === 'vorher'   ? auf.a
+      : auf.rechenart === 'plus100'  ? auf.wert - 10
+      : auf.rechenart === 'minus100' ? auf.wert + 10 : null;
+    if (MUSS !== null && !falsche.includes(MUSS))
+      fehler.push(`${auf.frage}: der Fehler, um den es geht (${MUSS}), steht nicht `
+        + `unter den Möglichkeiten (${falsche.join(', ')})`);
+
     // Und die Rechnung selbst, gegen die zweite Meinung von JavaScript.
     /* Die Umrechnung wird nachgerechnet wie jede andere Aufgabe - und
        zwar in der Richtung, die die Aufgabe SELBST angibt (`hin`). Sie
@@ -391,6 +413,8 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
          Liste oben. */
       : auf.rechenart === 'doppelt'  ? auf.a * 2
       : auf.rechenart === 'haelfte'  ? auf.a / 2
+      : auf.rechenart === 'nachher'  ? auf.a + 1
+      : auf.rechenart === 'vorher'   ? auf.a - 1
       : auf.rechenart === 'zerlegen' ? 10 - auf.a
       : auf.rechenart === 'luecke'   ? auf.b
       : auf.rechenart === 'prozent'  ? (auf.b * auf.a) / 100

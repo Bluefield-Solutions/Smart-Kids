@@ -306,6 +306,8 @@ export function ablenkerFuer(auf, wuerfel) {
   if (auf.rechenart === 'einheit') return ablenkerEinheit(auf, wuerfel);
   if (auf.rechenart === 'plus100' || auf.rechenart === 'minus100')
     return ablenkerZehner(auf, wuerfel);
+  if (auf.rechenart === 'nachher' || auf.rechenart === 'vorher')
+    return ablenkerNachbar(auf, wuerfel);
   return ablenkerReihen(auf, wuerfel);
 }
 
@@ -690,6 +692,76 @@ export function ablenkerZehner(auf, wuerfel) {
      Gegenstand: eine Pruefung, die nie etwas meldet, ist kein Beweis
      (Regel 1), und eine Ebene, deren Fehler nur manchmal dabeisteht,
      meldet nur manchmal etwas. */
+  for (let i = drei.length - 1; i > 0; i--) {
+    const j = Math.floor(wuerfel() * (i + 1));
+    [drei[i], drei[j]] = [drei[j], drei[i]];
+  }
+  return drei;
+}
+
+/* ---------- I13: Vorher und nachher, fuer Fiona -------------------------
+ *
+ * Die dritte Rechenart fuer eine Sechsjaehrige, die noch nicht liest -
+ * und die einzige, die gar nicht gerechnet wird. „Was kommt nach sieben?"
+ * ist eine Frage an die ZAHLENREIHE, nicht an das Addieren. Wer sie
+ * beantwortet, indem er eins dazuzaehlt, hat sie noch nicht verstanden;
+ * wer die Reihe kann, sagt es, ohne zu ueberlegen.
+ *
+ * Das ist der Stoff, auf dem alles andere steht: der Zehneruebergang, den
+ * Lea seit I10 uebt, ist ohne eine sitzende Zahlenreihe nicht zu machen.
+ *
+ * Zahlenraum ZWANZIG und nicht zehn, obwohl Fionas Plus und Minus bis
+ * zehn geht. Der Grund ist die Sache selbst: die Reihe hoert bei zehn
+ * nicht auf, und die schwierige Stelle ist genau der Uebergang - „Was
+ * kommt nach neun?" und „Was kommt vor zwanzig?" sind die zwei Fragen,
+ * an denen man merkt, ob die Reihe sitzt oder ob jemand nur bis zehn
+ * auswendig aufsagt.
+ *
+ * DIE FRAGE STEHT IN WORTEN, nicht als Pfeil. „Nach 7" und „Vor 7" -
+ * genauso wie „Doppelt 4" und „Halb 8" eine Zeile weiter oben. Der erste
+ * Anlauf schrieb `7 → ?` und `? ← 7`; die beiden Pfeile sind Zeichen
+ * ausserhalb des geladenen Schriftschnitts, und das Tor `schrift` haette
+ * sie gemeldet. Sie waeren auch das falsche Bild: ein Pfeil sagt
+ * „weiter", die Frage meint „welche Zahl".
+ *
+ * ZWEI FRAGEN JE ZAHL, also achtunddreissig Aufgaben - die Reihe ist von
+ * Natur aus begrenzt, wie die Kontinente. Mehr gibt es nicht, und mehr
+ * soll es nicht geben.
+ */
+export const REIHE_BIS = 20;
+export function nachbarVorrat() {
+  const aus = [];
+  for (let a = 1; a < REIHE_BIS; a++)
+    aus.push({ id: `nn${a}`, rechenart: 'nachher', a, b: 1, wert: a + 1,
+      frage: `Nach ${a}`, name: String(a + 1),
+      gesagt: `Was kommt nach ${gesprochen(a)}?`,
+      geloest: `nach ${gesprochen(a)} kommt ${gesprochen(a + 1)}` });
+  for (let a = 2; a <= REIHE_BIS; a++)
+    aus.push({ id: `nv${a}`, rechenart: 'vorher', a, b: 1, wert: a - 1,
+      frage: `Vor ${a}`, name: String(a - 1),
+      gesagt: `Was kommt vor ${gesprochen(a)}?`,
+      geloest: `vor ${gesprochen(a)} kommt ${gesprochen(a - 1)}` });
+  return aus;
+}
+
+/* Die Ablenker der Zahlenreihe - und hier ist der Fehler besonders klar.
+ *
+ * Wer „Was kommt nach sieben?" falsch beantwortet, sagt SIEBEN (die Zahl
+ * selbst, weil er die Frage nicht verstanden hat) oder SECHS (die
+ * Gegenrichtung). Beide muessen dastehen, sonst prueft die Ebene nur, ob
+ * jemand ungefaehr in der Naehe zaehlen kann.
+ *
+ * Der dritte ist zwei Schritte weiter - der Fehler dessen, der zaehlt und
+ * sich verzaehlt.
+ */
+export function ablenkerNachbar(auf, wuerfel) {
+  const w = auf.wert, a = auf.a;
+  const gegen = auf.rechenart === 'nachher' ? a - 1 : a + 1;
+  const roh = [a, gegen, w + 1, w - 1, w + 2];
+  const gut = [];
+  for (const x of roh)
+    if (Number.isInteger(x) && x >= 0 && x !== w && !gut.includes(x)) gut.push(x);
+  const drei = gut.slice(0, 3);
   for (let i = drei.length - 1; i > 0; i--) {
     const j = Math.floor(wuerfel() * (i + 1));
     [drei[i], drei[j]] = [drei[j], drei[i]];

@@ -5772,7 +5772,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * jede der 27 Runden 900 ms dafuer bezahlt. */
         if (VORLESEN[wer])
           await bis(p, () => (window.__gesagt || [])
-            .some(t => /Was ist|wieviel ist|Wieviel sind/.test(t)), 4000);
+            .some(t => /Was ist|wieviel ist|Wieviel sind|Was kommt/.test(t)), 4000);
         const r = await p.evaluate(() => {
           const s = document.querySelector('.schirm.da');
           const t = s.querySelector('.rechnung').textContent;
@@ -5796,6 +5796,10 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
                       : m[2] === '×' ? +m[3] / +m[1] : +m[1] / +m[3];
           if (soll === null && (m = t.match(/Doppelt\s+(\d+)/))) soll = +m[1] * 2;
           if (soll === null && (m = t.match(/Halb\s+(\d+)/))) soll = +m[1] / 2;
+          /* I13: die Zahlenreihe. „Nach 7" und „Vor 7" - in Worten und
+             nicht als Pfeil, siehe `nachbarVorrat`. */
+          if (soll === null && (m = t.match(/Nach\s+(\d+)/))) soll = +m[1] + 1;
+          if (soll === null && (m = t.match(/Vor\s+(\d+)/))) soll = +m[1] - 1;
           if (soll === null && (m = t.match(/(\d+)\s*%\s*von\s*(\d+)/)))
             soll = (+m[2] * +m[1]) / 100;
           /* I10: „3 m = ? cm". Die Umrechnung wird hier WIRKLICH
@@ -5859,7 +5863,13 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            250?". Der alte Ausdruck haette gemeldet, Fiona bekomme ihre
            Aufgabe nicht vorgelesen, und das waere falsch gewesen: sie
            bekommt sie, nur mit anderen Worten. */
-        await abgeschlossen(p, wer, ebene, /Was ist|wieviel ist|Wieviel sind/,
+        /* VIER Anfaenge seit I13. „Was kommt nach sieben?" ist die
+           Zahlenreihe - keine Rechnung, und deshalb faengt sie mit
+           anderen Worten an. Der Ausdruck von I4 haette gemeldet, Fiona
+           bekomme EINE ihrer Aufgaben nicht vorgelesen, und das waere
+           falsch gewesen: sie bekommt sie, nur anders. Genau so ist es
+           gekommen - 26 von 27. */
+        await abgeschlossen(p, wer, ebene, /Was ist|wieviel ist|Wieviel sind|Was kommt/,
           `${r.soll} angetippt`);
         continue;
       }
