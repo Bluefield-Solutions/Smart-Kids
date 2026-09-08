@@ -2731,24 +2731,90 @@ const heute = () => {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-`
        + `${String(d.getDate()).padStart(2,'0')}`;
 };
-const GEUEBT = (id) => `geuebt:${id}`;
-let geuebtStand = {};
+/* DIESE MARKE IST ABGELOEST (N2). Die Zeile „heute schon geuebt" ist dem
+ * Tagesziel gewichen: es sagt dasselbe und mehr, und Fiona kann es lesen -
+ * drei Sterne, von denen zwei leuchten, sind eine Auskunft, ein Satz ist
+ * fuer sie ein Muster. Was oben ueber „kein Streak-Zwang" steht, gilt
+ * unveraendert weiter und ist der Grund, warum das Tagesziel jeden Tag bei
+ * null anfaengt: es kann fehlen, ohne dass etwas verloren geht.
+ *
+ * Der Schluessel `geuebt:` wird nicht mehr geschrieben und nicht mehr
+ * gelesen. Alte Eintraege bleiben liegen und stoeren nicht - ein
+ * Aufraeumlauf ueber die Ablage waere mehr Risiko als Gewinn. */
+
+/* ---------- Das Tagesziel (N2) -------------------------------------------
+ *
+ * Befund S5 aus dem Spiel-Audit: es gibt kein Morgen. Wer gestern alles
+ * richtig hatte, hat heute dieselbe Ausgangslage wie jemand, der nie
+ * gespielt hat - und damit keinen Grund, die App noch einmal zu oeffnen.
+ *
+ * DREI STERNE JE TAG, je Kind. Eine abgeschlossene Uebung fuellt einen.
+ * Warum drei und nicht fuenf: eine Uebung sind vier bis acht Fragen, drei
+ * davon sind zehn bis fuenfzehn Minuten. Das ist fuer eine Sechsjaehrige
+ * ein Tagespensum und kein Programm - und ein Ziel, das man NICHT
+ * erreichen kann, ist schlimmer als keins.
+ *
+ * WARUM EIN EIGENER SCHLUESSEL und nicht `geuebt:` weitergenutzt: dort
+ * stand ein blosses Datum, und der Vergleich darauf lief an zwei Stellen.
+ * Den Wert zu einem Objekt zu machen haette beide still gebrochen. Der
+ * alte Schluessel ist inzwischen ganz abgeloest - die Zeile „heute schon
+ * geuebt", die er trug, ist dem Tagesziel gewichen.
+ */
+const TAGESZIEL = 3;
+const TAGESKEY = (id) => `tagesziel:${id}`;
+let tagesStand = {};
+
+/* NUR KINDER, und das steht an EINER Stelle. Die Eltern tippen hier
+   gelegentlich etwas nach - ein Tagespensum waere fuer sie eine
+   Aufforderung, die niemand gestellt hat, und drei leere Sterne unter
+   „Stephan" sehen aus wie eine Mahnung. Gefragt wird nach `alter`, weil
+   das der Unterschied IST; ein zweites Merkmal „istKind" waere eine
+   Wahrheit, die man vergessen kann nachzutragen. */
+const istKind = (p) => !!(p && p.alter);
+
+/** Wieviele Sterne hat dieses Kind HEUTE - gestrige zaehlen nicht. */
+function tagesSterne(id){
+  const e = tagesStand[TAGESKEY(id)];
+  return (e && e.tag === heute()) ? Math.min(e.zahl || 0, TAGESZIEL) : 0;
+}
+
+/** Drei Sterne als Zeichen - gefuellt, was heute geschafft ist.
+ *
+ * KEIN TEXT, und das ist der Punkt: Fiona liest nicht. „2 von 3" waere
+ * fuer sie ein Muster; drei Sterne, von denen zwei leuchten, sind eine
+ * Auskunft. */
+const tagesZeichen = (id) => {
+  const n = tagesSterne(id);
+  return `<div class="tagesziel${n >= TAGESZIEL ? ' voll' : ''}" aria-label="${
+    n} von ${TAGESZIEL} Tagessternen">${
+    Array.from({ length: TAGESZIEL }, (_, i) =>
+      STERN(i < n ? 'var(--stern-an)' : 'var(--stern-aus)', 16)).join('')}</div>`;
+};
+
+/** Eine Uebung ist zu Ende: ein Stern mehr - hoechstens bis zum Ziel.
+ *
+ * Gibt zurueck, ob DIESER Schritt das Ziel voll gemacht hat. Der
+ * Endbildschirm braucht das, und er soll es nicht selbst ausrechnen
+ * muessen: zwei Stellen, die dieselbe Schwelle pruefen, sind zwei
+ * Schwellen, sobald eine davon einmal angefasst wird. */
+async function tagesSchritt(){
+  if (!istKind(P)) return false;
+  const k = TAGESKEY(P.id), t = heute();
+  const alt = tagesStand[k];
+  const vorher = (alt && alt.tag === t) ? (alt.zahl || 0) : 0;
+  if (vorher >= TAGESZIEL) return false;
+  const jetzt = vorher + 1;
+  tagesStand[k] = { tag: t, zahl: jetzt };
+  try { await Ablage.setze('einstellungen', k, tagesStand[k]); } catch(e){}
+  return jetzt === TAGESZIEL;
+}
 
 async function geuebtLaden(){
-  geuebtStand = {};
+  tagesStand = {};
   try {
     for (const [k, w] of await Ablage.alleMitSchluessel('einstellungen'))
-      if (String(k).startsWith('geuebt:')) geuebtStand[k] = w;
+      if (String(k).startsWith('tagesziel:')) tagesStand[k] = w;
   } catch(e){}
-}
-/** Nach einer gewerteten Antwort: heute ist geuebt. Hoechstens ein
- *  Schreibvorgang je Kind und Tag - die Abfrage davor ist der Punkt. */
-async function geuebtMerken(){
-  if (!P) return;
-  const k = GEUEBT(P.id), t = heute();
-  if (geuebtStand[k] === t) return;
-  geuebtStand[k] = t;
-  try { await Ablage.setze('einstellungen', k, t); } catch(e){}
 }
 
 function profilwahl(){
@@ -2764,8 +2830,17 @@ function profilwahl(){
           <div class="kreis" style="background:var(${p.farbe})">${p.name[0]}</div>
           <div class="name">${p.name}</div>
           <div class="rolle">${profilzeile(p)}</div>
-          ${geuebtStand[GEUEBT(p.id)] === heute()
-            ? '<div class="heute">heute schon geübt</div>' : ''}
+          ${/* DAS TAGESZIEL ERSETZT DEN SATZ „heute schon geuebt" - es sagt
+               dasselbe und mehr, und Fiona kann es lesen. Beides
+               untereinander hat die Kachel so hoch gemacht, dass auf dem
+               kleinsten Geraet (iPhone SE quer, 667 x 375) „Violeta"
+               18 Punkte ueber den Rand lief und die Wand von acht
+               Kacheln auf vier fiel. Das Tor hat es gemeldet.
+
+               Es steht auf JEDER Kinderkachel, auch bei null: ein Ziel,
+               das erst erscheint, wenn man es angefangen hat, laedt
+               niemanden ein, es anzufangen. */
+            istKind(p) ? tagesZeichen(p.id) : ''}
         </button>`).join('')}</div>
     </div>`;
   s.querySelector('#ton').onclick=(e)=>{ tonAn=!tonAn; Einst.ton=tonAn; einstSichern();
@@ -3846,7 +3921,6 @@ function werten(ziel, ergebnis, versuch){
   st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
   const neuerAufkleber = !hatteVorher && Leitner.istGesammelt(Stand, ziel.id);
   if (neuerAufkleber) { st.aufkleber++; st.neueKleber.push(ziel.id); }
-  geuebtMerken();
   standSichern(st.ebeneId);
   return neuerAufkleber;
 }
@@ -8073,6 +8147,15 @@ function endschirm(){
      dabei abgelegt. Ein Aufruf, nicht zwei: `tierFuer` merkt sich das
      Ergebnis an der Sitzung. */
   const tier = tierFuer(st);   // { raum, neu:[…] } oder { gorilla } oder null
+  /* DER TAGESSTERN (N2). Er wird HIER vergeben und nicht beim letzten
+     Lob: „die Uebung ist zu Ende" ist genau dieser Bildschirm, und ein
+     Kind, das mitten in einer Runde aufhoert, hat sie nicht zu Ende
+     gebracht.
+     Der Aufruf ist absichtlich NICHT abgewartet - der Bildschirm soll
+     nicht auf die Ablage warten. Was er anzeigt, steht schon in
+     `tagesStand`, denn `tagesSchritt` setzt es, bevor es schreibt. */
+  const zielVollDanach = tagesSchritt();
+  const tagesJetzt = P ? tagesSterne(P.id) : 0;
   /* Eine ganze Runde ohne einen einzigen Fehlversuch. Kein Mengen-
      abzeichen, sondern ein Ereignis - und deshalb abgelegt. Es zaehlt das
      ERSTE Mal: „einmal ganz ohne Fehler" ist ein Tag, kein Zustand. */
@@ -8090,6 +8173,14 @@ function endschirm(){
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
+      ${/* DAS TAGESZIEL (N2). Es steht unter dem Ergebnis der Runde, weil
+           es vom TAG erzaehlt und nicht von dieser Uebung - und es steht
+           nur ausserhalb des Tests: ein Test ist eine Pruefung, kein
+           Tagespensum. */
+        !st.test && istKind(P) ? `<div class="tagesende${tagesJetzt >= TAGESZIEL ? ' voll' : ''}">${
+          tagesZeichen(P ? P.id : '')}<span>${
+            tagesJetzt >= TAGESZIEL ? 'Tagesziel geschafft!'
+            : `${tagesJetzt} von ${TAGESZIEL} heute`}</span></div>` : ''}
       ${/* DIE BESTE SERIE (N1). Sie steht nur da, wenn es eine GAB - eine
            Zeile „beste Serie: 1" waere die Mitteilung, dass nichts
            passiert ist. Und sie steht ueber dem Abzeichen, weil sie

@@ -1735,19 +1735,25 @@ if (laeuft('ablage')) try {
    * nichts, und sie waere genau der Streak-Zwang, den der Abgleich
    * ausdruecklich nicht will - jeden Tag ein Vorwurf fuer den, der
    * nicht gespielt hat. */
+  /* SEIT N2 SIND ES DIE TAGESSTERNE und nicht mehr die Zeile „heute schon
+     geübt" - dieselbe Abnahme an der Nachfolgerin. Fiona hat gerade eine
+     Übung zu Ende gespielt, Lea nicht: bei Fiona muss ein Stern stehen,
+     bei Lea keiner. Nur „es steht etwas da" wäre kein Beweis - drei
+     leuchtende Sterne auf jeder Kachel sagen nichts, und sie wären genau
+     der Streak-Zwang, den der Abgleich ausdrücklich nicht will. */
   await p.waitForSelector('.schirm.da [data-profil]');
   const geuebt = await p.evaluate(() => Object.fromEntries(
     [...document.querySelectorAll('.schirm.da [data-profil]')]
-      .map(k => [k.dataset.profil, !!k.querySelector('.heute')])));
-  console.log(`  Heute schon geübt:          `
-    + Object.entries(geuebt).map(([k, v]) => `${k} ${v ? 'ja' : 'nein'}`).join(', ')
-    + ' (nach Neustart)');
+      .map(k => [k.dataset.profil, [...k.querySelectorAll('.tagesziel svg path')]
+        .filter(x => (x.getAttribute('fill') || '').includes('stern-an')).length])));
+  console.log(`  Tagessterne nach Neustart:  `
+    + Object.entries(geuebt).map(([k, v]) => `${k} ${v}`).join(', '));
   if (!geuebt.fiona)
-    merke('ablage', new Error('nach dem Neustart steht bei Fiona nicht „heute schon '
-      + 'geübt", obwohl sie gerade gespielt hat'));
+    merke('ablage', new Error('nach dem Neustart hat Fiona keinen Tagesstern, '
+      + 'obwohl sie gerade eine Übung zu Ende gespielt hat'));
   if (geuebt.lea)
-    merke('ablage', new Error('„heute schon geübt" steht auch bei Lea, die noch gar '
-      + 'nicht gespielt hat — eine Zeile auf jeder Kachel sagt nichts'));
+    merke('ablage', new Error(`Lea hat ${geuebt.lea} Tagessterne, obwohl sie noch gar `
+      + 'nicht gespielt hat — ein Ziel, das von allein wächst, sagt nichts'));
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'bundeslaender');
   /* Die Ebenenwahl trägt Aufkleber und einen Balken statt der Zeile
@@ -3706,6 +3712,57 @@ if (laeuft('regler')) try {
     await bewertet(p);
     return p.evaluate(() => window.__toene.length);
   };
+
+  /* DAS TAGESZIEL (N2) — der Grund, morgen wiederzukommen.
+   *
+   * Zugesagt sind drei Dinge:
+   *
+   *   1. Eine abgeschlossene Uebung fuellt EINEN Stern.
+   *   2. Der Stand ueberlebt einen Neustart - sonst waere er kein Ziel,
+   *      sondern eine Anzeige.
+   *   3. Gestern zaehlt nicht. Ein Stand mit altem Datum steht auf null.
+   *
+   * Die dritte ist die, die still kippt: sie faellt nur an einem
+   * Datumswechsel auf, und den erlebt kein Testlauf. Deshalb wird sie
+   * hier GESTELLT - ein Stand von gestern in die Ablage, und dann
+   * nachgesehen, was der Bildschirm sagt.
+   */
+  {
+    const sterneAmProfil = (id) => p.evaluate((i) => {
+      const k = document.querySelector(`[data-profil="${i}"] .tagesziel`);
+      if (!k) return -1;
+      return [...k.querySelectorAll('svg')].filter(
+        s => (s.querySelector('path')?.getAttribute('fill') || '').includes('stern-an')).length;
+    }, id);
+    const gestern = new Date(Date.now() - 36e5 * 30).toISOString().slice(0, 10);
+    await stelleAblage(p, { einstellungen: {
+      'tagesziel:lea': { tag: gestern, zahl: 3 } } });
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    const vonGestern = await sterneAmProfil('lea');
+    console.log(`  Tagesziel von gestern:      ${vonGestern} Sterne (erwartet 0)`);
+    if (vonGestern !== 0) merke('regler', new Error(
+      `ein Tagesziel von gestern steht heute noch mit ${vonGestern} Sternen da — `
+      + 'dann ist es kein Tagesziel, sondern eine Summe'));
+
+    const heute = new Date().toISOString().slice(0, 10);
+    await stelleAblage(p, { einstellungen: {
+      'tagesziel:lea': { tag: heute, zahl: 2 } } });
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    const vonHeute = await sterneAmProfil('lea');
+    console.log(`  Tagesziel von heute:        ${vonHeute} Sterne (erwartet 2)`);
+    if (vonHeute !== 2) merke('regler', new Error(
+      `ein Tagesziel von heute mit zwei Sternen zeigt ${vonHeute} — `
+      + 'der Stand ueberlebt den Neustart nicht'));
+
+    /* Und die Eltern haben keins. Drei leere Sterne unter „Stephan" waeren
+       eine Aufforderung, die niemand gestellt hat. */
+    const beiEltern = await sterneAmProfil('stephan');
+    if (beiEltern !== -1) merke('regler', new Error(
+      'auch die Eltern haben ein Tagesziel — das ist eine Aufforderung, '
+      + 'um die niemand gebeten hat'));
+  }
 
   /* DIE SERIE (N1) — und zwar an dem, was sie verspricht.
    *

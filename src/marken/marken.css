@@ -153,6 +153,9 @@
      OKLCH nachgezogen, damit sie im Abendmodus mitwandern. Sie sind
      absichtlich WAERMER als alles andere im Kopf: die Serie soll auffallen,
      ohne mit „richtig" (gruen) oder „gesucht" (blau) verwechselt zu werden. */
+  /* Der warme Grund hinter dem vollen Tagesziel - hell genug, dass die
+     Sterne darauf noch stehen, und der einzige Zustand, der auffallen soll. */
+  --stern-grund: oklch(0.94 0.070 95);
   --serie:      oklch(0.62  0.170  38);   /* die Flamme */
   --serie-kern: oklch(0.79  0.160  82);   /* ihr heller Kern */
   --serie-satz: oklch(0.50  0.150  35);   /* der Satz am Ende */

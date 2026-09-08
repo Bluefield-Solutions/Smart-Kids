@@ -12444,3 +12444,62 @@ richtig so, und die Vorbilder sind erneuert. Angesehen wurde es trotzdem, und
 der Blick fand etwas, das keine Zahl gemeldet hätte: auf dem Endbildschirm
 stand „(Flamme) 4 · 4 am Stück richtig!" — dieselbe Vier zweimal nebeneinander.
 Das Zeichen trägt dort jetzt keine Zahl mehr, weil sie schon im Satz steht.
+
+## N2 · Das Tagesziel — ein Grund für morgen
+
+Befund S5: Wer gestern alles richtig hatte, hat heute dieselbe Ausgangslage
+wie jemand, der nie gespielt hat.
+
+**Drei Sterne je Tag, je Kind.** Eine abgeschlossene Übung füllt einen. Sie
+stehen auf der Profilkachel und auf dem Endbildschirm, sie überleben den
+Neustart, und gestrige zählen nicht.
+
+**Warum drei.** Eine Übung sind vier bis acht Fragen, drei davon zehn bis
+fünfzehn Minuten. Das ist für eine Sechsjährige ein Tagespensum und kein
+Programm — und ein Ziel, das man **nicht** erreichen kann, ist schlimmer als
+keins.
+
+**Warum ein eigener Schlüssel.** Unter `geuebt:<kind>` steht ein Datum, und
+`geuebtStand[k] === heute()` liest es an zwei Stellen. Wer den Wert zu einem
+Objekt macht, bricht beide still — der Vergleich wäre ab dann immer falsch.
+Zwei Schlüssel sind billiger als eine Wanderung.
+
+**Nur Kinder.** Drei leere Sterne unter „Stephan" wären eine Aufforderung, um
+die niemand gebeten hat. Gefragt wird nach `alter`, weil das der Unterschied
+**ist**; ein zweites Merkmal „istKind" wäre eine Wahrheit, die man vergisst
+nachzutragen.
+
+### Das Layout-Tor hat zweimal recht gehabt
+
+Die Sterne unter dem Satz „heute schon geübt" machten die Profilkachel so
+hoch, dass auf dem **iPhone SE quer** (667 × 375) „Violeta" 18 Punkte über den
+Rand lief und die Wand von acht Kacheln auf vier fiel. Verkleinern half nur
+auf 8 Punkte.
+
+Die Lösung war nicht kleiner, sondern **anders**: die Sterne **ersetzen** den
+Satz — sie sagen dasselbe und mehr, und Fiona kann sie lesen — und sie liegen
+auf der Kachel, statt eine Zeile zu belegen. Danach ist die Kachel mit 131
+statt 151 Punkten **kleiner als vor der Runde**.
+
+Dass das Auflegen zunächst wirkungslos blieb, lag an einer Zeile weiter unten:
+`.kachel.wer>*:not(.silhouette,.streu)` setzt alles in der Kachel auf
+`position:relative`, steht später und ist gleich stark. Das Tagesziel steht
+jetzt in derselben Ausnahme — dort, wo die Regel gemacht wird, nicht daneben.
+
+**Gemessen:**
+
+```
+Tagesziel von gestern:      0 Sterne (erwartet 0)
+Tagesziel von heute:        2 Sterne (erwartet 2)
+passt: auf allen 7 Größen ist alles im Bild
+```
+
+**Der alte Merker ist abgelöst.** `geuebt:<kind>` trug die Zeile „heute schon
+geübt" und wurde danach geschrieben, ohne noch gelesen zu werden — toter Code.
+Er ist heraus, und die beiden Gegenproben, die auf ihm standen, haben den
+Besitzer gewechselt: die **Zusage** ist dieselbe geblieben (eine Auskunft, die
+den Neustart überlebt und **nicht** auf jeder Kachel steht), also bleiben auch
+die Proben — sie zeigen jetzt auf die Sterne. Was im alten Kommentar über
+„kein Streak-Zwang" stand, gilt unverändert und ist der Grund, warum das
+Tagesziel jeden Tag bei null anfängt: es darf fehlen, ohne dass etwas verloren
+geht.

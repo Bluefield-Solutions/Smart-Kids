@@ -2904,36 +2904,40 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.kachel .name{letter-spacing:-.02em}' },
     sagt:'ein einzelner Buchstabe' },
 
-  /* --- „Heute schon geübt" (A4h) ---------------------------------------
+  /* --- Der Tagesstern nach dem Neustart (N2, vormals A4h) ---------------
    *
-   * Zwei Proben, und die zweite ist die wichtigere.
+   * DIESE ZWEI PROBEN HABEN DEN BESITZER GEWECHSELT. Sie standen auf der
+   * Zeile „heute schon geuebt"; die ist in N2 dem Tagesziel gewichen, weil
+   * es dasselbe sagt und mehr - und weil Fiona drei Sterne lesen kann und
+   * einen Satz nicht. Die ZUSAGE ist dieselbe geblieben, deshalb bleiben
+   * auch die Proben: es geht um eine Auskunft, die den Neustart ueberlebt
+   * und die NICHT auf jeder Kachel steht.
    *
-   * 1. Die Zeile ueberlebt den Neustart nicht. Der Eingriff schreibt die
-   *    Marke gar nicht erst - die Zeile stuende dann waehrend der Runde
-   *    da (der Zustand im Kopf reicht dafuer) und waere nach dem
-   *    Neustart weg. Genau die Abnahme aus dem Backlog: „die Zeile
-   *    stimmt nach einem Neustart". */
-  { n:'„heute schon geübt" überlebt den Neustart nicht', tor:'smoke',
-    bauen:true, args:['--teil=0/4'], datei:D,
-    such:"  try { await Ablage.setze('einstellungen', k, t); } catch(e){}",
-    ersatz:"  try { if (false) await Ablage.setze('einstellungen', k, t); } catch(e){}",
-    an:{ ...DIST, text:"if (false) await Ablage.setze('einstellungen', k, t)" },
-    sagt:'nicht „heute schon geübt"' },
+   * 1. Der Stern ueberlebt den Neustart nicht. Der Eingriff schreibt gar
+   *    nicht erst - waehrend der Runde stuende er da (der Zustand im Kopf
+   *    reicht dafuer) und waere nach dem Neustart weg. */
+  { n:'der Tagesstern überlebt den Neustart nicht', tor:'smoke',
+    bauen:true, args:['--nur=ablage'], datei:D,
+    such:"  try { await Ablage.setze('einstellungen', k, tagesStand[k]); } catch(e){}",
+    ersatz:"  try { if (false) await Ablage.setze('einstellungen', k, tagesStand[k]); } catch(e){}",
+    an:{ ...DIST, text:"if (false) await Ablage.setze('einstellungen', k, tagesStand[k])" },
+    sagt:'keinen Tagesstern' },
 
-  /* 2. Sie steht auf JEDER Kachel.
-   *
-   *    Das ist die Sorte Fehler, die freundlich aussieht: die Zeile ist
-   *    da, sie ist gruen, sie sagt etwas Nettes - und sie sagt es auch
-   *    dem Kind, das heute nicht gespielt hat. Damit ist sie kein
-   *    Hinweis mehr, sondern ein taeglicher Vorwurf, und genau den
-   *    schliesst der Abgleich aus („kein Streak-Zwang"). Der Eingriff
-   *    laesst den Tagesvergleich weg. */
-  { n:'„heute schon geübt" steht auf jeder Kachel', tor:'smoke',
-    bauen:true, args:['--teil=0/4'], datei:D,
-    such:"          ${geuebtStand[GEUEBT(p.id)] === heute()",
-    ersatz:"          ${true",
-    an:{ ...DIST, text:'${true\n            ?' },
-    sagt:'die noch gar nicht gespielt hat' },
+  /* 2. ER STEHT AUF JEDER KACHEL. Das ist die Sorte Fehler, die
+   *    freundlich aussieht: die Sterne sind da, sie leuchten, sie sagen
+   *    etwas Nettes - und sie sagen es auch dem Kind, das heute nicht
+   *    gespielt hat. Damit sind sie kein Ziel mehr, sondern ein
+   *    taeglicher Vorwurf, und genau den schliesst der Abgleich aus
+   *    („kein Streak-Zwang"). Der Eingriff laesst den Tagesschritt jedes
+   *    Kind auf einmal fuellen. */
+  { n:'der Tagesstern steht auf jeder Kachel', tor:'smoke',
+    bauen:true, args:['--nur=ablage'], datei:D,
+    such:"  const e = tagesStand[TAGESKEY(id)];\n"
+      + "  return (e && e.tag === heute()) ? Math.min(e.zahl || 0, TAGESZIEL) : 0;",
+    ersatz:"  const e = tagesStand[TAGESKEY(id)];\n"
+      + "  return TAGESZIEL; // Anker: return (e && e.tag === heute()) ? Math.min(e.zahl || 0, TAGESZIEL) : 0;",
+    an:{ ...DIST, text:'return TAGESZIEL; // Anker' },
+    sagt:'obwohl sie noch gar nicht gespielt hat' },
 
   /* --- Der Groessenwaechter im Korpus (P3) -----------------------------
    *
@@ -4604,9 +4608,9 @@ export const PROBEN = [
      des Streus auf der Kachel; ohne die Regel faellt sie auf null. */
   { n:'der Streu rutscht aus seiner absoluten Lage', tor:'smoke',
     args:['--nur=streu'], bauen:true, datei:V,
-    such:'.kachel.wer>*:not(.silhouette,.streu){position:relative}',
-    ersatz:'.kachel.wer>*:not(.silhouette){position:relative}',
-    an:{ ...DIST, fehlt:':not(.silhouette,.streu){position:relative}' },
+    such:'.kachel.wer>*:not(.silhouette,.streu,.tagesziel){position:relative}',
+    ersatz:'.kachel.wer>*:not(.silhouette,.tagesziel){position:relative}',
+    an:{ ...DIST, fehlt:':not(.silhouette,.streu,.tagesziel){position:relative}' },
     sagt:'der Streu deckt nur' },
 
   /* --- D2: die Abzeichen ---------------------------------------------
@@ -6020,6 +6024,31 @@ export const PROBEN = [
       + "    { f:'tinte', d:'M42 26h20v7H42Z' },\n  ],\n  pan: [",
     an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
+
+  /* --- Das Tagesziel (N2) -----------------------------------------------
+   *
+   * 1. GESTERN ZAEHLT MIT. Das ist die Verfallsart, die still ist: sie
+   *    faellt nur an einem Datumswechsel auf, und den erlebt kein
+   *    Testlauf von selbst. Faellt der Datumsvergleich weg, wird aus dem
+   *    Tagesziel eine Summe - und die steht nach einer Woche dauerhaft
+   *    auf drei, also sagt sie nie wieder etwas. */
+  { n:'das Tagesziel zählt gestrige Sterne mit', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"  return (e && e.tag === heute()) ? Math.min(e.zahl || 0, TAGESZIEL) : 0;",
+    ersatz:"  return e ? Math.min(e.zahl || 0, TAGESZIEL) : 0; "
+      + "// Anker: return (e && e.tag === heute()) ? Math.min(e.zahl || 0, TAGESZIEL) : 0;",
+    an:{ ...DIST, text:'return e ? Math.min(e.zahl || 0, TAGESZIEL) : 0;' },
+    sagt:'sondern eine Summe' },
+
+  /* 2. DIE ELTERN BEKOMMEN EINS. Drei leere Sterne unter „Stephan" sind
+   *    eine Aufforderung, um die niemand gebeten hat - und sie stuenden
+   *    da, ohne dass irgendetwas kaputt waere. */
+  { n:'auch die Eltern bekommen ein Tagesziel', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"const istKind = (p) => !!(p && p.alter);",
+    ersatz:"const istKind = (p) => !!p; // Anker: const istKind = (p) => !!(p && p.alter);",
+    an:{ ...DIST, text:'const istKind = (p) => !!p;' },
+    sagt:'um die niemand gebeten hat' },
 
   /* --- Die Serie (N1) ---------------------------------------------------
    *

@@ -135,6 +135,30 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    verdraengt. `.serie.leer` haelt die Breite frei, damit das Band nicht
    springt, sobald die Serie erscheint — ein huepfendes Band waere eine
    Bewegung, die nichts bedeutet. */
+/* DAS TAGESZIEL (N2) — drei Sterne auf der Profilkachel und im Weltenkopf.
+   Klein, ruhig, ohne Text: es ist eine Auskunft und keine Aufforderung.
+   `voll` gibt ihm einen warmen Grund, sobald alle drei stehen — der
+   einzige Zustand, der auffallen SOLL. */
+/* SIE LIEGEN AUF DER KACHEL, statt eine Zeile zu belegen. Untereinander
+   gestellt war die Profilkachel so hoch, dass auf dem iPhone SE quer
+   „Violeta" ueber den Rand lief - erst 18, nach dem Verkleinern noch
+   8 Punkte. Eine Auskunft, die eine Kachel sprengt, ist die falsche
+   Auskunft; abgesetzt gestellt kostet sie gar nichts.
+   `bottom` sitzt im Polster der Kachel, also unter dem letzten Text und
+   noch innerhalb des runden Randes. */
+.wahl .kachel.wer{position:relative}
+.tagesziel{display:flex;gap:var(--r1);justify-content:center;
+  padding:0 var(--r2);border-radius:var(--r5)}
+.kachel.wer .tagesziel{position:absolute;left:50%;bottom:var(--r1);
+  transform:translateX(-50%);z-index:2}
+.tagesziel svg{display:block}
+.tagesziel.voll{background:var(--stern-grund)}
+/* Auf dem Endbildschirm steht das Tagesziel mit einem Satz daneben -
+   dort ist Platz, und dort ist es die Antwort auf „und jetzt?". */
+.tagesende{display:flex;align-items:center;justify-content:center;
+  gap:var(--r2);margin:var(--r2) 0;color:var(--tinte-2)}
+.tagesende.voll{font-weight:700;color:var(--tinte)}
+.tagesende .tagesziel{margin-top:0}
 .bandreihe{display:flex;gap:var(--r3);align-items:center}
 /* Auf dem Endbildschirm ist die Serie kein Statuszeichen mehr, sondern
    ein Satz — deshalb groesser und mit Text daneben. */
@@ -785,7 +809,13 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    `.kachel .silhouette`), es wurde zum Flex-Element in seiner
    Eigengroesse, und die Kacheln wuchsen auf das Vierfache. */
 .kachel.bunt>*:not(.silhouette),.kachel.welt>*:not(.silhouette),
-.kachel.wer>*:not(.silhouette,.streu){position:relative}
+/* Das Tagesziel steht in dieser Ausnahme, weil es LIEGT und nicht in der
+   Reihe steht: es ist der einzige Teil der Kachel, der keinen eigenen
+   Platz bekommen soll. Ohne den Eintrag hier gewinnt diese Zeile - sie
+   steht spaeter und ist gleich stark -, das Zeichen bekaeme wieder eine
+   Zeile, und die Profilkachel liefe auf dem iPhone SE quer ueber den
+   Rand. Genau so ist es passiert. */
+.kachel.wer>*:not(.silhouette,.streu,.tagesziel){position:relative}
 /* ---- Der Streu auf den Profilkacheln (G12) ---------------------------
    `.streu` muss in `:not()` stehen, genau wie `.silhouette` darueber -
    diese Zeile hat drei Klassen und schlaegt `.kachel .streu` mit zweien.
