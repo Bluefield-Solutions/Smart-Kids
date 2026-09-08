@@ -3863,8 +3863,13 @@ function werten(ziel, ergebnis, versuch){
  * brauchen - dem Kopf und dem Endbildschirm. */
 const SERIE_AB = 3;
 
-/** Das Serienzeichen - Flamme und Zahl, oder nichts. */
-const serieZeichen = (n) => n < SERIE_AB ? '<span class="serie leer"></span>'
+/** Das Serienzeichen - Flamme und Zahl, oder nichts.
+ *
+ * `mitZahl` ist aus, wo die Zahl schon im SATZ daneben steht. Auf dem
+ * Endbildschirm stand sonst „(Flamme) 4  4 am Stueck richtig!" - dieselbe
+ * Vier zweimal nebeneinander, und das liest sich wie ein Fehler. Im Kopf
+ * dagegen gibt es keinen Satz, dort IST die Zahl die Auskunft. */
+const serieZeichen = (n, mitZahl = true) => n < SERIE_AB ? '<span class="serie leer"></span>'
   : `<span class="serie" aria-label="${n} richtige hintereinander">`
     + '<svg viewBox="0 0 24 24" aria-hidden="true">'
     /* `currentColor` und eine Klasse statt zweier Zahlen: die Farben
@@ -3872,7 +3877,7 @@ const serieZeichen = (n) => n < SERIE_AB ? '<span class="serie leer"></span>'
        Quelltext waere der Ton, den der Abendmodus nicht mitnimmt. */
     + '<path fill="currentColor" d="M12 2c1 5-3 6-3 10a3 3 0 0 0 6 0c0-2-1-3-1-4 3 2 5 5 5 8a7 7 0 0 1-14 0c0-5 4-8 7-14Z"/>'
     + '<path class="kern" d="M12 12c1 2 2 3 2 5a2 2 0 0 1-4 0c0-2 1-3 2-5Z"/>'
-    + `</svg><b>${n}</b></span>`;
+    + '</svg>' + (mitZahl ? `<b>${n}</b>` : '') + '</span>';
 
 /** Das Serienzeichen im sichtbaren Bildschirm auffrischen - von ueberall. */
 function serieZeigen(){
@@ -8090,7 +8095,7 @@ function endschirm(){
            passiert ist. Und sie steht ueber dem Abzeichen, weil sie
            von DIESER Runde erzaehlt und das Abzeichen vom Ganzen. */
         st.besteSerie >= SERIE_AB ? `<div class="serieende">${
-          serieZeichen(st.besteSerie)}<span>${st.besteSerie} am Stück richtig!</span></div>` : ''}
+          serieZeichen(st.besteSerie, false)}<span>${st.besteSerie} am Stück richtig!</span></div>` : ''}
       ${abzNeu ? `<div class="abzneu">${ABZ(abzNeu.zeichen, true, 40)}
         <span>Neues Abzeichen: ${abzNeu.titel}</span></div>` : ''}
       ${/* Die Tiere (T1). Sie stehen UEBER dem Balken und unter dem Satz:

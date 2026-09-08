@@ -12437,3 +12437,10 @@ Serie nach 1/2/3 richtig:   0 / 0 / 3  →  nach einem Fehler: 0
 
 Zwei Gegenproben: der Bruch wird ausser Kraft gesetzt, und die Schwelle fällt
 auf eins.
+
+**Nachtrag zur Bildabnahme.** Die Kette wurde beim ersten Lauf rot: 31 der 64
+Aufnahmen haben sich geändert, weil das Serienzeichen im Kopf Platz hält —
+richtig so, und die Vorbilder sind erneuert. Angesehen wurde es trotzdem, und
+der Blick fand etwas, das keine Zahl gemeldet hätte: auf dem Endbildschirm
+stand „(Flamme) 4 · 4 am Stück richtig!" — dieselbe Vier zweimal nebeneinander.
+Das Zeichen trägt dort jetzt keine Zahl mehr, weil sie schon im Satz steht.
