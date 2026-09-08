@@ -129,6 +129,32 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    kommt. Und sie sagen zusaetzlich, WIE es lief: glatt beim ersten
    Versuch, geschafft mit Hilfe, oder gezeigt. Das ist derselbe
    Fortschritt, nur ohne Lesen. */
+/* DIE SERIE (N1) — Flamme und Zahl neben dem Fortschrittsband.
+   Sie sitzt in derselben Zeile und nicht daneben: der Kopf hat links das
+   Kreuz, rechts die Sterne, und ein vierter Platz haette eines der drei
+   verdraengt. `.serie.leer` haelt die Breite frei, damit das Band nicht
+   springt, sobald die Serie erscheint — ein huepfendes Band waere eine
+   Bewegung, die nichts bedeutet. */
+.bandreihe{display:flex;gap:var(--r3);align-items:center}
+/* Auf dem Endbildschirm ist die Serie kein Statuszeichen mehr, sondern
+   ein Satz — deshalb groesser und mit Text daneben. */
+.serieende{display:flex;align-items:center;justify-content:center;gap:var(--r2);
+  margin:var(--r2) 0;font-weight:700;color:var(--serie-satz)}
+.serieende .serie svg{width:26px;height:26px}
+.serieende .serie b{font-size:19px}
+.serie{display:inline-flex;align-items:center;gap:var(--r1);min-width:34px;
+  justify-content:center;color:var(--serie)}
+.serie.leer{visibility:hidden}
+.serie svg{width:20px;height:20px;display:block}
+.serie .kern{fill:var(--serie-kern)}
+.serie b{font-size:15px;font-weight:800;color:var(--serie);font-variant-numeric:tabular-nums}
+/* Das Auftauchen IST die Belohnung. Kurz, einmal, ohne Nachschwingen —
+   eine Anzeige, die dauernd pulsiert, wird zur Tapete, und die Ruhepruefung
+   im Rauchtest haette recht, wenn sie anschlaegt. */
+@keyframes serieAuf{from{transform:scale(.4);opacity:0}
+  60%{transform:scale(1.25);opacity:1}to{transform:scale(1);opacity:1}}
+.serie:not(.leer){animation:serieAuf var(--d-belohnung) ease-out both}
+@media (prefers-reduced-motion:reduce){.serie:not(.leer){animation:none}}
 .band{display:flex;gap:var(--r2);align-items:center}
 .band i{width:12px;height:12px;border-radius:50%;background:var(--linie-2);
   transition:background var(--d-zustand) var(--k-standard),

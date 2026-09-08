@@ -6021,6 +6021,41 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
 
+  /* --- Die Serie (N1) ---------------------------------------------------
+   *
+   * Zwei Zusagen, und beide gehen leise kaputt - der Bildschirm bleibt in
+   * beiden Faellen vollstaendig heil, es fehlt nur der Moment.
+   *
+   * 1. EIN FEHLER LOESCHT SIE. Das ist die ganze Spannung: die Serie ist
+   *    etwas wert, WEIL man sie verlieren kann. Bleibt sie stehen, ist sie
+   *    eine Zierde.
+   *
+   *    Der Eingriff setzt den Bruch ausser Kraft. Er sitzt in `klangZu`,
+   *    weil das die einzige Stelle ist, die JEDE Antwort passiert - auch
+   *    die falsche, nach der man es noch einmal versuchen darf. `werten`
+   *    laeuft dort nicht, und genau daran ist der erste Anlauf
+   *    gescheitert. */
+  { n:'ein Fehler löscht die Serie nicht mehr', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"  if (ergebnis === 'falsch' && Sitzung && Sitzung.serie) { Sitzung.serie = 0; serieZeigen(); }",
+    ersatz:"  if (false) { Sitzung.serie = 0; serieZeigen(); } "
+      + "// Anker: if (ergebnis === 'falsch' && Sitzung && Sitzung.serie) { Sitzung.serie = 0; serieZeigen(); }",
+    an:{ ...DIST, text:'if (false) { Sitzung.serie = 0;' },
+    sagt:'löscht die Serie nicht' },
+
+  /* 2. SIE ERSCHEINT ERST AB DREI. Bei zwei richtigen ist noch nichts
+   *    passiert - das kann jedem unterlaufen. Eine Anzeige, die fast
+   *    immer dasteht, sagt nichts mehr, und der Moment des Auftauchens
+   *    IST die Belohnung.
+   *
+   *    Der Eingriff laesst sie ab der ersten erscheinen. */
+  { n:'die Serie erscheint schon nach der ersten richtigen Antwort', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"const SERIE_AB = 3;",
+    ersatz:"const SERIE_AB = 1; // Anker: const SERIE_AB = 3;",
+    an:{ ...DIST, text:'const SERIE_AB = 1;' },
+    sagt:'richtigen Antworten da' },
+
   /* --- Die Farben der Bilder (E7b) --------------------------------------
    *
    * Zwei Zusagen, und beide gehen leise kaputt - das Bild wird dabei

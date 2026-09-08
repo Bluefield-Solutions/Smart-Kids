@@ -3707,6 +3707,92 @@ if (laeuft('regler')) try {
     return p.evaluate(() => window.__toene.length);
   };
 
+  /* DIE SERIE (N1) — und zwar an dem, was sie verspricht.
+   *
+   * Zugesagt sind zwei Dinge, und beide gehen leise kaputt:
+   *
+   *   1. Ab DREI richtigen am Stueck ist sie da. Vorher nicht - eine
+   *      Anzeige, die immer steht, sagt nichts.
+   *   2. EIN Fehler loescht sie. Das ist die ganze Spannung: sie ist
+   *      etwas wert, weil man sie verlieren kann.
+   *
+   * Gemessen wird am Rechnen und nicht an der Karte: dort ist die
+   * richtige Antwort aus der Frage AUSRECHENBAR, also braucht der Test
+   * kein Wissen ueber den Vorrat und keine Ziehbewegung.
+   */
+  {
+    const soll = () => p.evaluate(() => {
+      const m = document.querySelector('.schirm.da .rechnung').textContent
+        .match(/(\d+)\s*([+−×:])\s*(\d+)/);
+      const a = +m[1], b = +m[3];
+      return m[2] === '×' ? a * b : m[2] === ':' ? a / b : m[2] === '+' ? a + b : a - b;
+    });
+    /* GEWARTET WIRD AUF EINE NEUE, OFFENE AUFGABE - und das brauchte drei
+       Anlaeufe, die alle dasselbe gemeldet haben („nach drei richtigen
+       keine Serie"), waehrend im Fenster eine Drei stand.
+
+         1. `waitForSelector('.rechnung')` kehrte SOFORT zurueck: das
+            Element steht ohnehin da.
+         2. „warte, bis sich der Text aendert" traf das LOB - aus
+            „80 : 10 = ?" wird beim Loben „80 : 10 = 8", und das ist eine
+            Textaenderung, aber keine neue Aufgabe.
+         3. Erst „warte, bis wieder ein Fragezeichen dasteht" trifft den
+            Zustand, den ein Kind vor sich hat.
+
+       Nicht die Sache war kaputt, sondern der Zeitpunkt des Hinsehens -
+       derselbe Fehler wie beim nicht gewerteten Ziehen, und deshalb steht
+       er hier aufgeschrieben. */
+    const offeneAufgabe = () => p.waitForFunction(() => {
+      const r = document.querySelector('.schirm.da .rechnung');
+      return (r && /\?\s*$/.test(r.textContent))
+        || !!document.querySelector('.schirm.da #nochmal');
+    }, null, { timeout: 12000 }).catch(() => {});
+    const antworte = async (richtig) => {
+      const s = await soll();
+      const wert = richtig ? s : (s + 1 > 100 ? s - 1 : s + 1);
+      await p.fill('.schirm.da #rein', String(wert));
+      await p.click('.schirm.da #pruef');
+      await bewertet(p);
+      await offeneAufgabe();
+    };
+    /* Die Serie liest sich aus dem KOPF und nicht aus einer Zaehlvariablen
+       im Fenster: geprueft ist, was ein Kind sieht. `.serie.leer` haelt
+       nur die Breite frei und zaehlt als „nicht da". */
+    const serie = () => p.evaluate(() => {
+      const e = document.querySelector('.schirm.da .serie:not(.leer) b');
+      return e ? +e.textContent : 0;
+    });
+    await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5 } } });
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    await p.click('[data-profil="lea"]');
+    await zurEbenenwahl(p, 'rechnen:reihen');
+    await p.click('[data-ebene="rechnen:reihen"]');
+    await durchVorlaufWenn(p);
+    await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
+
+    const gesehen = [];
+    for (let i = 0; i < 3; i++) { await antworte(true); gesehen.push(await serie()); }
+    /* Und jetzt der Verlust. Er wird an DERSELBEN Sitzung gemessen -
+       eine zweite Sitzung haette die Serie ohnehin auf null, und die
+       Probe bewiese nichts. */
+    await antworte(false);
+    const nachher = await serie();
+    console.log(`  Serie nach 1/2/3 richtig:   ${gesehen.join(' / ')}  →  nach einem Fehler: ${nachher}`);
+    if (gesehen[0] !== 0 || gesehen[1] !== 0)
+      merke('regler', new Error(
+        `die Serie steht schon nach ${gesehen[0] ? 'einer' : 'zwei'} richtigen Antworten da `
+        + '— eine Anzeige, die fast immer da ist, sagt nichts mehr'));
+    if (gesehen[2] < 3)
+      merke('regler', new Error(
+        'nach drei richtigen Antworten am Stueck zeigt der Kopf keine Serie — '
+        + 'der Moment, auf den es ankommt, bleibt aus'));
+    if (nachher !== 0)
+      merke('regler', new Error(
+        `ein Fehler loescht die Serie nicht (sie steht noch auf ${nachher}) — `
+        + 'dann ist sie nichts wert, weil man sie nicht verlieren kann'));
+  }
+
   // Der grosse Schalter: „Ton aus" heisst nicht „nur die Stimme aus" -
   // auch ein eingeschalteter Rueckmeldeton bleibt dann still.
   {

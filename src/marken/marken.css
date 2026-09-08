@@ -148,6 +148,14 @@
   /* --- Was auf der Karte passiert -------------------------------------- */
   --ziel:     oklch(0.68  0.185 258);   /* das gesuchte Gebiet */
   --treffer:  oklch(0.74  0.150 155);   /* geschafft */
+  /* DIE SERIE (N1). Zwei Toene einer Flamme, aus dem Bildvorrat der
+     Wortbilder uebernommen (`rot` #E4572E und `gelb` #F2B705) und hier in
+     OKLCH nachgezogen, damit sie im Abendmodus mitwandern. Sie sind
+     absichtlich WAERMER als alles andere im Kopf: die Serie soll auffallen,
+     ohne mit „richtig" (gruen) oder „gesucht" (blau) verwechselt zu werden. */
+  --serie:      oklch(0.62  0.170  38);   /* die Flamme */
+  --serie-kern: oklch(0.79  0.160  82);   /* ihr heller Kern */
+  --serie-satz: oklch(0.50  0.150  35);   /* der Satz am Ende */
   --drueber:  oklch(0.80  0.170 95);    /* liegt gerade unter dem Finger */
   --drueber-rand: oklch(0.55 0.150 75);
   --wasch:    oklch(0.80  0.120 155);   /* die Welle beim Richtig */

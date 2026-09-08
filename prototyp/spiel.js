@@ -3728,7 +3728,12 @@ async function starten(ebeneId, alsTest = false){
   /* `neueKleber` haelt die KENNUNGEN, nicht die Gegenstaende.
      Der Gegenstand steht in `alle`, und zwar genau einmal - eine zweite
      Kopie waere eine zweite Wahrheit, sobald der Leitner ihn verschiebt. */
+  /* `serie` und `besteSerie` (N1): wieviele Aufgaben AM STUECK auf Anhieb
+     gesessen haben, und wieviele es im besten Lauf dieser Runde waren.
+     Beides gehoert der Sitzung und nicht dem Kind - eine Serie ueber Tage
+     waere eine andere Zusage und braucht die Ablage. */
   Sitzung = { ebeneId, alle, liste: testListe || liste, i:0, glatt:0, wie:[],
+              serie:0, besteSerie:0,
               aufkleber:0, neueKleber:[], keim, begonnen:Date.now(), test: alsTest,
               abzVorher: new Set(verdiente(ebeneId, Stand).map(a => a.id)) };
   zeige(schirmZu(ebeneId));
@@ -3770,8 +3775,29 @@ function mischenMit(liste, keim){
  * machte aus dem Ausweg eine Niederlage. Eine „fast" richtige Antwort
  * ebenso: sie bekommt eine Rueckfrage, keine Wertung.
  */
+/* JEDE Antwort geht hier durch - auch die falsche, die keine Wertung
+ * ausloest, weil das Kind es noch einmal versuchen darf. Genau deshalb
+ * gehoert die Serie hierher und nicht in `werten`:
+ *
+ *   `werten` laeuft erst, wenn eine Aufgabe ERLEDIGT ist. Ein Fehlgriff,
+ *   nach dem man es noch einmal probiert, kommt dort nie an - und die
+ *   Serie blieb nach einem Danebengriff sichtbar stehen. Das Tor hat es
+ *   gemeldet: „nach einem Fehler steht sie noch auf 3".
+ *
+ * DER MOMENT IST DER FEHLGRIFF, nicht das Ende der Aufgabe. Wer daneben
+ * tippt, soll die Flamme in derselben Sekunde ausgehen sehen, in der er
+ * es merkt - alles andere waere eine Buchhaltung und kein Spiel.
+ *
+ * Sechzehn Aufrufstellen, EIN Ort: die Serie an sechzehn Zweigen
+ * nachzutragen ist genau die Sorte Pflege, die beim siebzehnten
+ * Bildschirm vergessen wird.
+ */
 function klangZu(ergebnis){
   // Zwei Schalter, und beide muessen an sein: `tonAn` ist der grosse in
+  /* Der Serienbruch steht VOR dem Ausstieg fuer den Ton. Stuende er
+     dahinter, haette „Ton aus" die Serie unsterblich gemacht - eine
+     Einstellung, die still eine Spielregel aendert. */
+  if (ergebnis === 'falsch' && Sitzung && Sitzung.serie) { Sitzung.serie = 0; serieZeigen(); }
   // der Kopfzeile (aus heisst alles aus), `Einst.klang` der kleine im
   // Elternbereich, der ab Werk auf aus steht.
   if (hoertZu || !tonAn || !Einst.klang) return;
@@ -3789,7 +3815,34 @@ function werten(ziel, ergebnis, versuch){
   // Aufkleber ein zweites und drittes Mal als "neu".
   const hatteVorher = Leitner.istGesammelt(Stand, ziel.id);
   Stand = Leitner.verschieben(Stand, ziel.id, ergebnis === 'richtig', Date.now());
-  if (ergebnis === 'richtig' && versuch === 1) st.glatt++;
+  /* DIE SERIE. Sie haengt an derselben Bedingung wie `glatt` - auf Anhieb
+     richtig - und steht deshalb genau hier und an keiner zweiten Stelle.
+     Zwei Zaehler fuer dieselbe Sache an zwei Orten sind in diesem
+     Verzeichnis schon einmal auseinandergelaufen (die Sternformel), und
+     eine Serie, die der Kopf anders zaehlt als der Endbildschirm, ist
+     schlimmer als keine.
+
+     EIN FEHLER SETZT SIE AUF NULL, auch der zweite Versuch, der dann
+     sitzt. Das ist die ganze Spannung: sie ist etwas wert, WEIL man sie
+     verlieren kann. */
+  if (ergebnis === 'richtig' && versuch === 1) {
+    st.glatt++;
+    st.serie++;
+    if (st.serie > st.besteSerie) st.besteSerie = st.serie;
+  } else if (ergebnis === 'falsch' || versuch > 1) {
+    st.serie = 0;
+  }
+  /* UND DIE ANZEIGE GLEICH MIT, hier und nicht an den Aufrufstellen.
+   *
+   * `kopfNachziehenIn` steht an acht Orten - und im FALSCH-Zweig steht es
+   * an keinem. Die Serie blieb deshalb nach einem Fehlgriff stehen: der
+   * Zaehler war null, das Zeichen zeigte weiter eine Drei. Das Tor hat es
+   * gemeldet, und die Lehre ist dieselbe wie beim Menue, das im Spiel
+   * sichtbar blieb: kein Schalter, den man an acht Stellen umlegen muss,
+   * sondern eine ABLEITUNG an der einen Stelle, an der die Sache
+   * entschieden wird. Wer hier vorbeikommt, hat die Serie geaendert - also
+   * wird sie hier auch gezeigt. */
+  serieZeigen();
   st.wie[st.i] = (ergebnis === 'richtig' && versuch === 1) ? 'glatt' : 'geschafft';
   const neuerAufkleber = !hatteVorher && Leitner.istGesammelt(Stand, ziel.id);
   if (neuerAufkleber) { st.aufkleber++; st.neueKleber.push(ziel.id); }
@@ -3798,22 +3851,58 @@ function werten(ziel, ergebnis, versuch){
   return neuerAufkleber;
 }
 
-/** Kopf nachziehen: Sterne und Fortschrittsband, auf jedem Bildschirm. */
+/* AB DREI, und die Zahl ist nicht beliebig.
+ *
+ * Bei zwei richtigen hintereinander ist noch nichts passiert - das kann
+ * jedem unterlaufen, und ein Zeichen, das staendig da ist, sagt nichts.
+ * Bei drei faengt es an, sich nach etwas anzufuehlen, und genau da soll
+ * es AUFTAUCHEN: der Moment des Erscheinens ist die Belohnung, nicht die
+ * Anzeige selbst.
+ *
+ * Sie steht EINMAL hier und wird von beiden Stellen gelesen, die sie
+ * brauchen - dem Kopf und dem Endbildschirm. */
+const SERIE_AB = 3;
+
+/** Das Serienzeichen - Flamme und Zahl, oder nichts. */
+const serieZeichen = (n) => n < SERIE_AB ? '<span class="serie leer"></span>'
+  : `<span class="serie" aria-label="${n} richtige hintereinander">`
+    + '<svg viewBox="0 0 24 24" aria-hidden="true">'
+    /* `currentColor` und eine Klasse statt zweier Zahlen: die Farben
+       stehen in `marken.css`, wie alle anderen auch. Ein Sechserwert im
+       Quelltext waere der Ton, den der Abendmodus nicht mitnimmt. */
+    + '<path fill="currentColor" d="M12 2c1 5-3 6-3 10a3 3 0 0 0 6 0c0-2-1-3-1-4 3 2 5 5 5 8a7 7 0 0 1-14 0c0-5 4-8 7-14Z"/>'
+    + '<path class="kern" d="M12 12c1 2 2 3 2 5a2 2 0 0 1-4 0c0-2 1-3 2-5Z"/>'
+    + `</svg><b>${n}</b></span>`;
+
+/** Das Serienzeichen im sichtbaren Bildschirm auffrischen - von ueberall. */
+function serieZeigen(){
+  const s = document.querySelector('.schirm.da');
+  const ser = s && s.querySelector('.serie');
+  if (ser) ser.outerHTML = serieZeichen(Sitzung ? Sitzung.serie : 0);
+}
+
+/** Kopf nachziehen: Sterne, Fortschrittsband und Serie, auf jedem Bildschirm. */
 function kopfNachziehenIn(s){
   const st = Sitzung;
   const st1 = s.querySelector('.sterne');
   if (st1) st1.outerHTML = sterne(sterneFuer(st.glatt, st.liste.length));
   const punkt = s.querySelectorAll('.band i')[st.i];
   if (punkt) punkt.className = st.wie[st.i] || 'weiter';
+  /* Die Serie wird ERSETZT und nicht nur beschriftet: das neue Element
+     startet damit seine Auftauch-Bewegung von vorn. Wer nur die Zahl
+     tauscht, bekommt beim Sprung von drei auf vier keine Regung, und
+     genau die ist gemeint. Derselbe Weg wie in `werten` - eine Funktion,
+     nicht zwei Zeilen an zwei Orten. */
+  serieZeigen();
 }
 
 /** Der Kopf, den jede Aufgabe trägt - Band und Sterne aus einer Hand. */
 const aufgabenKopf = (st) => kopf({
   links: schliessenKnopf('Übung beenden'),
-  mitte:`<div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
+  mitte:`<div class="bandreihe"><div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
     st.liste.map((_,i)=>`<i class="${
       i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"></i>`).join('')
-  }</div>`,
+  }</div>${serieZeichen(st.serie)}</div>`,
   rechts: sterne(sterneFuer(st.glatt, st.liste.length)) });
 
 /* ---------- Die Pause (R1) ----------------------------------------------
@@ -7996,6 +8085,12 @@ function endschirm(){
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
+      ${/* DIE BESTE SERIE (N1). Sie steht nur da, wenn es eine GAB - eine
+           Zeile „beste Serie: 1" waere die Mitteilung, dass nichts
+           passiert ist. Und sie steht ueber dem Abzeichen, weil sie
+           von DIESER Runde erzaehlt und das Abzeichen vom Ganzen. */
+        st.besteSerie >= SERIE_AB ? `<div class="serieende">${
+          serieZeichen(st.besteSerie)}<span>${st.besteSerie} am Stück richtig!</span></div>` : ''}
       ${abzNeu ? `<div class="abzneu">${ABZ(abzNeu.zeichen, true, 40)}
         <span>Neues Abzeichen: ${abzNeu.titel}</span></div>` : ''}
       ${/* Die Tiere (T1). Sie stehen UEBER dem Balken und unter dem Satz:

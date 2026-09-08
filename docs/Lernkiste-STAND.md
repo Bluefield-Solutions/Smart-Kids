@@ -12385,3 +12385,55 @@ Anzahl Zahlen, und alle Zahlen dicht beieinander. Das trennt scharf:
 Und alle vier stehen auf dem Blatt „Wo?", wo dieselbe Kiste und derselbe Ball die
 Lehre sind. Die Grenze liegt bei 5 — der Hälfte des Abstands zum nächsten
 berechtigten Fall. Bei den acht Lautbildern ist **kein** Paar gleich gebaut.
+
+## N1 · Die Serie — „du bist gerade richtig gut"
+
+Erste Runde aus dem Nachtplan, Befund S3 aus dem Spiel-Audit: drei richtige
+Antworten hintereinander sind für ein Kind ein Erlebnis, und die App hat es
+nicht bemerkt.
+
+Jetzt läuft ein Serienzähler mit. Ab **drei** taucht eine Flamme mit der Zahl
+neben dem Fortschrittsband auf und wächst mit jeder weiteren; ein Fehlgriff
+löscht sie. Am Ende steht die beste Serie der Runde auf dem Endbildschirm —
+aber nur, wenn es eine **gab**: „beste Serie: 1" wäre die Mitteilung, dass
+nichts passiert ist.
+
+**Warum ab drei.** Bei zweien ist noch nichts passiert, das kann jedem
+unterlaufen. Eine Anzeige, die fast immer dasteht, sagt nichts mehr — und der
+Moment des **Auftauchens** ist die Belohnung, nicht die Anzeige selbst.
+
+### Drei Fehler auf dem Weg, und alle drei gehören zum Befund
+
+**Der Test hat dreimal zum falschen Zeitpunkt hingesehen.** Er meldete „nach
+drei richtigen keine Serie", während im Fenster eine Drei stand:
+
+1. `waitForSelector('.rechnung')` kehrte sofort zurück — das Element steht
+   ohnehin da.
+2. „warte, bis sich der Text ändert" traf das **Lob**: aus „80 : 10 = ?" wird
+   beim Loben „80 : 10 = 8". Eine Textänderung, aber keine neue Aufgabe.
+3. Erst „warte, bis wieder ein Fragezeichen dasteht" trifft den Zustand, den
+   ein Kind vor sich hat.
+
+Dieselbe Falle wie beim nicht gewerteten Ziehen — nicht die Sache war kaputt,
+sondern der Zeitpunkt des Hinsehens.
+
+**Und dann fand das Tor einen echten Fehler:** die Serie blieb nach einem
+Fehlgriff stehen. `kopfNachziehenIn` steht an acht Orten, und im Falsch-Zweig
+an keinem. Die Anzeige ist deshalb jetzt eine **Ableitung** — wer die Serie
+ändert, zeigt sie auch.
+
+**Der zweite Anlauf war immer noch falsch.** Der Bruch stand in `werten()`,
+und `werten()` läuft erst, wenn eine Aufgabe **erledigt** ist. Ein Fehlgriff,
+nach dem man es noch einmal versuchen darf, kommt dort nie an. Die einzige
+Stelle, die **jede** Antwort passiert, ist `klangZu` — sechzehn Aufrufstellen,
+ein Ort. Dort steht der Bruch jetzt, und zwar **vor** dem Ausstieg für den
+Ton: dahinter hätte „Ton aus" die Serie unsterblich gemacht.
+
+**Gemessen** (`npm run smoke -- --nur=regler`):
+
+```
+Serie nach 1/2/3 richtig:   0 / 0 / 3  →  nach einem Fehler: 0
+```
+
+Zwei Gegenproben: der Bruch wird ausser Kraft gesetzt, und die Schwelle fällt
+auf eins.
