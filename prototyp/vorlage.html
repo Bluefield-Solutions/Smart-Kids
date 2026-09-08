@@ -2935,10 +2935,19 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    * die Aufkleber dabei zu klein werden, sagt kein Geschmack, sondern
    * `beruehrung`: unter 44 Punkten ist ein Griff keiner mehr. */
   .buchraster > .kleber,
-  .buchraster > .raumgitter{min-height:100%;align-content:stretch;
+  .buchraster > .raumgitter,
+  .buchraster > .abzeichen{min-height:100%;align-content:stretch;
     grid-auto-rows:1fr}
   .buchraster > .kleber .aufkleber,
-  .buchraster > .raumgitter .raumzelle{min-height:0}
+  .buchraster > .raumgitter .raumzelle,
+  .buchraster > .abzeichen .abz{min-height:0}
+  /* Das Abzeichen war die letzte Ausnahme im Bildanteil-Tor: 81 %
+     Fuellung bei 19 % Bild - die Wand stand fast ganz da, und darin
+     klebten 44 Punkte Zeichen unter einem gleich grossen Namen. Ein
+     Abzeichen ist ein ZEICHEN mit einer Unterschrift, nicht eine
+     Unterschrift mit einem Zeichen daneben. */
+  .buchraster > .abzeichen .abz > svg{width:100%;height:auto;
+    flex:1 1 0;min-height:0}
   /* `flex:1 1 0` und BREITE, nicht `flex:1 1 auto`: ein SVG mit
      Grundlage „auto" bringt seine eigene Hoehe mit, und die kommt aus
      dem Seitenverhaeltnis mal der vollen Breite - beim Umriss darunter

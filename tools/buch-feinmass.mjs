@@ -194,23 +194,27 @@ const GRENZEN = { schrift: 3, radius: 2, luft: 3 };
  * Gemessen wird deshalb daneben, wieviel der beschriebenen Flaeche BILD
  * ist. Vorher und nachher, 844 x 390, voller Stand:
  *
- *   tiere 12 → 45   welt:erdkunde 26 → 84   kontinente 69   rechnen 69
- *   bundeslaender 44   abzeichen 19   naechstes 0
+ *   tiere 12 → 45   welt:erdkunde 26 → 84   abzeichen 19 → 55
+ *   kontinente 69   rechnen 69   bundeslaender 44   naechstes 0
  *
  * 35 und nicht 44: der schlechteste Wert unter den Bildseiten ist
  * `bundeslaender` mit 44, und ein Buch mit einem Gegenstand weniger darf
  * nicht rot werden - dieselbe Luft wie bei der Ratsche nebenan.
  *
- * ZWEI AUSNAHMEN, beide gemessen und beide offen:
- *   `naechstes`  0 %  - die Vorschauseite zeigt in diesem Stand nur
- *                       Text; sie hat gar kein Bild zu zeigen.
- *   `abzeichen` 19 %  - die Abzeichenwand ist das dritte Raster, das
- *                       N12 nicht bekommen hat. Sie steht als naechster
- *                       Schritt und nicht als Ausnahme fuer immer.
- * Ausnahmen mit Namen und Zahl, nicht ein weicherer Grenzwert: ein
- * Grenzwert, der beide durchlaesst, laesst auch alles andere durch. */
+ * EINE AUSNAHME, und sie liegt am gestellten Stand und nicht an der
+ * Seite: `naechstes` steht hier bei 0 %, weil die Vorschau in DIESEM
+ * Stand nur Text zeigt - dieselbe Seite traegt anderswo eine Albumkarte
+ * (`quer-buch-naechstes`). Sie hat also nichts, was wachsen koennte.
+ *
+ * `abzeichen` war die zweite und ist es nicht mehr: 19 → 55 %. Die Wand
+ * stand mit 81 % Fuellung fast ganz da, und darin klebten 44 Punkte
+ * Zeichen unter einem gleich grossen Namen. Ein Abzeichen ist ein
+ * ZEICHEN mit einer Unterschrift, nicht umgekehrt.
+ *
+ * Eine Ausnahme mit Namen und Zahl, nicht ein weicherer Grenzwert: ein
+ * Grenzwert, der sie durchlaesst, laesst auch alles andere durch. */
 const BILD_MIN = 35;
-const OHNE_BILDPFLICHT = new Set(['naechstes', 'abzeichen']);
+const OHNE_BILDPFLICHT = new Set(['naechstes']);
 if (process.argv.includes('--tor')) {
   const fehler = [];
   for (const [feld, grenze] of Object.entries(GRENZEN)) {

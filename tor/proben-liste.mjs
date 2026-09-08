@@ -6080,6 +6080,18 @@ export const PROBEN = [
     an:{ ...DIST, text:".raumzeichen--aus{width:100%;height:auto;" },
     sagt:'weniger als 35 % Bild' },
 
+  /* 3. DAS ABZEICHEN SCHRUMPFT WIEDER. Die letzte Ausnahme im
+   *    Bildanteil-Tor ist gefallen (19 → 55 %), und diese Probe haelt
+   *    sie unten: die Wand fuellt ihre Seite auch dann, wenn das Zeichen
+   *    darin 44 Punkte gross bleibt - 81 % Fuellung bei 19 % Bild. Nur
+   *    der Bildanteil sieht den Unterschied. */
+  { n:'das Abzeichen bleibt klein in seiner Zelle', tor:'tonleiter',
+    bauen:true, datei:V,
+    such:"  .buchraster > .abzeichen .abz > svg{width:100%;height:auto;",
+    ersatz:"  .buchraster > .abzeichen .abz > svg--aus{width:100%;height:auto;",
+    an:{ ...DIST, text:".abz > svg--aus{width:100%;height:auto;" },
+    sagt:'weniger als 35 % Bild' },
+
   /* --- Der Moment (N10) --------------------------------------------------
    *
    * 1. DAS JA BEWEGT SICH NICHT MEHR. Zurueck in den Zustand, in dem in
