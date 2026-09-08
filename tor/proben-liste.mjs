@@ -6236,6 +6236,55 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:"{ f:'gruen', d:'M32 8c1 4 1 7 1 9h-2c0-2 0-5 1-9Z' }" },
     sagt:'dieselbe Zeichnung in anderen Farben' },
 
+  /* 11. DIE EICHUNG WIRD VERSCHOBEN. Die Grenzen stehen auf drei Fallen
+   *     und neunzehn beurteilten harmlosen Paaren; wer eine der Zahlen
+   *     anfasst, faellt aus dieser Eichung heraus. Der Eingriff hebt die
+   *     Deckungsgrenze von 75 auf 85 - damit sind zwei der drei Fallen
+   *     nicht mehr gefangen, und die Tabelle in `tor/bildurteile.mjs`
+   *     sagt es.
+   *
+   *     DIESE PROBE HAT SICH SELBST GEBRAUCHT: der erste Anlauf hat die
+   *     Nachrechnung HINTER den Ausstieg gesetzt, der bei gefuellter
+   *     Fehlerliste abbricht. Sie schrieb damit in eine Liste, die
+   *     niemand mehr liest - eine Pruefung, die nicht anschlagen KANN,
+   *     und zwar ausgerechnet die, die das Anschlagen der anderen
+   *     sichert. Aufgefallen ist es nur, weil diese Probe stumm blieb. */
+  { n:'die Eichung der Bildgrenzen wird verschoben', tor:'inhalt',
+    deckt:'englisch', datei:'tor/inhalt.mjs',
+    such:"    const GLEICH_ENG = 0.55, DECKUNG_ENG = 0.75;",
+    ersatz:"    const GLEICH_ENG = 0.55, DECKUNG_ENG = 0.85; "
+      + "// Anker: const GLEICH_ENG = 0.55, DECKUNG_ENG = 0.75;",
+    an:{ datei:'tor/inhalt.mjs', text:'DECKUNG_ENG = 0.85;' },
+    sagt:'beurteilt ist es als falle' },
+
+  /* 12. EINE VERSCHOBENE KOPIE. Der Abdruck findet nur die exakte, das
+   *     Raster gar keine - eine um zwei Punkte verschobene Erdbeere kommt
+   *     auf 73 % Flaechenuebereinstimmung, „happy" gegen „sad" auf 92 %.
+   *     Drei Prozent Versatz sind in einem 24x24-Raster schon eine halbe
+   *     Zelle.
+   *
+   *     Gemessen wird deshalb an der BAUART der Pfade: gleiche
+   *     Befehlsfolge, gleiche Anzahl Zahlen, und alle Zahlen dicht
+   *     beieinander. Im ganzen Vorrat sind nur vier von 3486 Paaren
+   *     ueberhaupt gleich gebaut, alle vier auf dem Blatt „Wo?", wo es
+   *     die Lehre ist - ihr kleinster Abstand ist 10, die Grenze 5.
+   *
+   *     Der Eingriff gibt dem Salat die Pfade der Tomate, um DREI Punkte
+   *     verschoben und in vier anderen Farben. */
+  { n:'zwei englische Wörter teilen sich eine verschobene Zeichnung', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"      { f:'gruen',  d:'M14 34c-4-8 2-15 9-13-1-7 9-11 13-6 5-4 13 0 12 6 7 2 8 9 4 13Z' },\n"
+      + "      { f:'gruenDunkel', d:'M40 21c6 2 7 9 3 13h-9c4-3 7-8 6-13Z' },\n"
+      + "      { f:'rot',    d:'M22 24a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm22 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },\n"
+      + "      { f:'licht',  d:'M6 34h52c0 13-11 22-26 22S6 47 6 34Z' },\n"
+      + "      { f:'wolke',  d:'M6 34h52v5H6Z' },",
+    ersatz:"      { f:'gruen', d:'M35 20c12 0 21 8 21 18s-9 18-21 18-21-8-21-18 9-18 21-18Z' },\n"
+      + "      { f:'gruenDunkel', d:'M43 22c8 3 13 9 13 16 0 9-9 18-21 18 12-2 19-9 19-18 0-7-4-13-11-16Z' },\n"
+      + "      { f:'licht', d:'M35 12c1 0 2 2 2 5l7-3-2 6 8 1-8 4 3 5-8-2-2 6-3-6-8 2 3-5-8-4 8-1-2-6 7 3c0-3 1-5 3-5Z' },\n"
+      + "      { f:'wolke', d:'M22 32c2-4 6-6 10-6 2 0 2 3 0 3-4 1-6 2-8 5-1 2-3 0-2-2Z' },",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ f:'gruen', d:'M35 20c12 0 21 8 21 18" },
+    sagt:'gleich gebaut und liegen nur' },
+
   /* --- „Lies das Wort" (E7) --------------------------------------------
    *
    * Die Ebene ist die UMKEHRUNG von „Hoeren und zeigen", und alles, was

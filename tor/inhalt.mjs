@@ -9,6 +9,7 @@ import { PNG } from 'pngjs';
 import * as I from '../src/inhalt/erdkunde.js';
 import * as R from '../src/inhalt/rechnen.js';
 import * as AB from '../src/inhalt/abzeichen.js';
+import { BILDURTEILE as URTEILE } from './bildurteile.mjs';
 import * as SCHR from '../src/inhalt/schreiben.js';
 import * as S from '../src/inhalt/saetze.js';
 import { STAEDTE } from '../src/geo/staedte.js';
@@ -2004,6 +2005,45 @@ console.log('\n  Tor `englisch`');
     return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
   };
 
+  /* IST DAS EINE KOPIE? Nicht „sieht aehnlich aus" - das messen die
+     Raster weiter unten -, sondern: ist es DIESELBE Zeichnung, nur
+     umgefaerbt und ein Stueck verschoben?
+     
+     GEMESSEN WIRD AN DEN PFADEN und nicht am Raster, und das ist ein
+     Befund: der erste Anlauf hat eine „Flaechenkarte" gebaut (je Zelle die
+     Nummer der Flaeche statt ihrer Farbe) und ist daran gescheitert - eine
+     um zwei Punkte verschobene Erdbeere kam auf 73 % Uebereinstimmung,
+     „happy" gegen „sad" auf 92 %. Ein 24x24-Raster kann eine verschobene
+     Kopie nicht von zwei Bildern derselben Bauart unterscheiden; drei
+     Prozent Versatz sind darin schon eine halbe Zelle.
+
+     Die Bauart eines Pfades - seine Befehlsfolge und die ANZAHL seiner
+     Zahlen - trennt es dagegen scharf: im ganzen Bildvorrat sind nur VIER
+     von 3486 Paaren gleich gebaut, und alle vier stehen auf dem Blatt
+     „Wo?", wo dieselbe Kiste und derselbe Ball die Lehre sind. Ihr
+     kleinster Abstand ist 10. */
+  const pfadBauart = (d) => {
+    const teile = String(d).match(/[A-Za-z]|-?\d*\.?\d+/g) || [];
+    return { befehle: teile.filter(t => /[A-Za-z]/.test(t)).join(''),
+             zahlen: teile.filter(t => !/[A-Za-z]/.test(t)).map(Number) };
+  };
+  /** Groesster Zahlenabstand zweier GLEICH GEBAUTER Bilder - sonst `null`. */
+  const kopieAbstand = (A, B) => {
+    if (!A || !B || A.length !== B.length || !A.length) return null;
+    let groesst = 0;
+    for (let i = 0; i < A.length; i++) {
+      const a = pfadBauart(A[i].d), b = pfadBauart(B[i].d);
+      if (a.befehle !== b.befehle || a.zahlen.length !== b.zahlen.length) return null;
+      for (let k = 0; k < a.zahlen.length; k++)
+        groesst = Math.max(groesst, Math.abs(a.zahlen[k] - b.zahlen[k]));
+    }
+    return groesst;
+  };
+  /* Fuenf, und nicht zehn: die Haelfte des Abstands zum naechsten
+     berechtigten Fall. Ein Versatz bis zu fuenf Punkten - acht Prozent des
+     Rahmens - ist eine verschobene Kopie und keine zweite Zeichnung. */
+  const KOPIE_ABSTAND = 5;
+
   const ablenkerPruefen = (vorrat, melde, jeder = () => null) => {
     for (const x of vorrat) {
       let k = 1;
@@ -3090,6 +3130,28 @@ console.log('\n  Tor `englisch`');
       ef.push(`der Zellvergleich misst ${was} als ${(ist * 100).toFixed(0)} % statt `
         + `${(soll * 100).toFixed(0)} % — dann sagt er über die Zeichnungen nichts`);
 
+    /* DIE EICHUNG WIRD NACHGERECHNET, nicht behauptet.
+     *
+     * Die Tabelle unten stand bis hierher als Kommentar. Ein Kommentar
+     * haelt aber nichts fest: wer eine der drei Zahlen verschiebt,
+     * verschiebt sie ungestraft, und die Eichung ist still weg - genau
+     * die Verfallsart, gegen die dieses Verzeichnis seine Gegenproben
+     * hat (Regel 1: was nie etwas meldet, ist kein Beweis).
+     *
+     * Jetzt stehen die beurteilten Paare als Daten in
+     * `tor/bildurteile.mjs`, samt den ALTEN Flaechen der drei
+     * Zeichnungen, die deswegen ersetzt worden sind - ein
+     * Rueckfallvorrat. Hier wird jedes mit der heutigen Regel
+     * eingeordnet und mit dem Urteil vom Blatt verglichen.
+     */
+    const urteilRaster = (e, welche) => {
+      const eigen = welche === 'a' ? e.bildA : e.bildB;
+      if (eigen) return bildRaster(eigen);
+      const w = welche === 'a' ? e.a : e.b;
+      const x = vls.find(v => v.wort === w);
+      return x ? bildRaster(x.bild) : null;
+    };
+
     /* Die Grenze, und sie ist mit dem Tonvergleich neu gemessen: Median
        3 %, 99. Hundertstel 42 %, hoechstes Paar 61 % („bread" gegen
        „chocolate"). Vier Punkte Luft, dieselbe Ratsche wie vorher.
@@ -3167,6 +3229,15 @@ console.log('\n  Tor `englisch`');
         spitze.sort((x, y) => y.g - x.g);
         if (spitze.length > 3) spitze.pop();
       }
+      /* Die verschobene Kopie. Sie steht HIER und nicht oben beim
+         Abdruck, weil sie die Ausnahme fuer das Blatt „Wo?" braucht: dort
+         sind vier Paare gleich gebaut, und das ist die Lehre. */
+      const kA = kopieAbstand(a.bild, b.bild);
+      if (!beideWo && kA !== null && kA <= KOPIE_ABSTAND)
+        ef.push(`„${a.wort}" und „${b.wort}" sind gleich gebaut und liegen nur `
+          + `${kA} Punkte auseinander (Grenze ${KOPIE_ABSTAND}) — dieselbe Zeichnung, `
+          + 'verschoben und umgefärbt, und das ist eine Kopie und keine zweite '
+          + 'Zeichnung');
       if (beideWo) continue;
       const eng = g >= GLEICH_ENG && d >= DECKUNG_ENG;
       if (g < GLEICH_MAX && !eng) continue;
@@ -3187,6 +3258,76 @@ console.log('\n  Tor `englisch`');
     ablenkerPruefen(vls, (s) => ef.push(s), (x, y) => !(y.bild && y.bild.length)
       && `„${x.wort}" bekommt einen Ablenker ohne Zeichnung — ein leerer Kasten `
          + 'ist als Antwort nicht zu erkennen');
+    /* Und die Probe aufs Exempel: ordnet die Regel die beurteilten Paare
+       noch so ein, wie sie auf dem Blatt aussehen?
+
+       SIE STEHT HIER UND NICHT WEITER UNTEN, und das hat eine Runde
+       gekostet: der erste Anlauf hat sie hinter den Ausstieg gesetzt, der
+       bei gefuellten `ef` abbricht. Damit schrieb sie in eine Liste, die
+       niemand mehr liest - eine Pruefung, die nicht anschlagen KANN, und
+       zwar ausgerechnet die, die das Anschlagen der anderen sichert. Ihre
+       Gegenprobe hat es gemeldet (Regel 1). */
+    let engsteFalle = null, engstesHarmlos = null, falschEin = 0;
+    for (const e of URTEILE) {
+      const ra = urteilRaster(e, 'a'), rb = urteilRaster(e, 'b');
+      if (!ra || !rb) {
+        ef.push(`das beurteilte Paar „${e.a}"/„${e.b}" findet seine Zeichnung nicht `
+          + '— dann prüft die Eichung ein Paar weniger, ohne dass es jemand merkt');
+        continue;
+      }
+      const g = gleichheit(ra, rb), d = deckung(ra, rb);
+      const rot = g >= GLEICH_MAX || (g >= GLEICH_ENG && d >= DECKUNG_ENG);
+      if (rot !== (e.urteil === 'falle')) {
+        falschEin++;
+        ef.push(`die Regel ordnet „${e.a}"/„${e.b}" als ${rot ? 'Falle' : 'harmlos'} ein, `
+          + `beurteilt ist es als ${e.urteil} (${(g * 100).toFixed(0)} % zellgleich bei `
+          + `${(d * 100).toFixed(0)} % Deckung) — ${e.warum}`);
+      }
+      /* WIEVIEL LUFT? Es gibt ZWEI Wege, rot zu werden - die alte Grenze
+         allein, oder beide neuen zusammen -, und deshalb ist die Luft
+         nicht einfach ein Abstand.
+
+         Fuer ein harmloses Paar zaehlt der KUERZESTE Weg dorthin: entweder
+         steigt die Zellgleichheit bis 65 %, oder es reisst beide neuen
+         Grenzen, und dann kostet das so viel, wie die groessere der beiden
+         Luecken misst. Der erste Anlauf hat hier das Maximum genommen und
+         damit den BEQUEMSTEN Weg gemeldet - „apple/pullover 7", wo 6
+         richtig ist, und „bread/chocolate" gar nicht, obwohl es mit 4 das
+         engste Paar von allen ist. Eine Kennzahl, die zu gut aussieht,
+         ist schlimmer als keine.
+
+         Fuer eine Falle umgekehrt: sie bleibt gefangen, solange EINER der
+         beiden Wege haelt, also zaehlt der laengere. */
+      const nachOben = Math.max(0, GLEICH_MAX - g);
+      const nachBeiden = Math.max(Math.max(0, GLEICH_ENG - g),
+                                  Math.max(0, DECKUNG_ENG - d));
+      if (e.urteil === 'falle') {
+        const luft = Math.max(g - GLEICH_MAX, Math.min(g - GLEICH_ENG, d - DECKUNG_ENG));
+        if (!engsteFalle || luft < engsteFalle.luft) engsteFalle = { e, luft, g, d };
+      } else {
+        const luft = Math.min(nachOben, nachBeiden);
+        if (!engstesHarmlos || luft < engstesHarmlos.luft)
+          engstesHarmlos = { e, luft, g, d };
+      }
+    }
+
+    console.log(`    Sehen zwei Karten gleich aus (E7c): `
+      + `${vls.length * (vls.length - 1) / 2} Paare zellweise verglichen `
+      + `(${N_RASTER}×${N_RASTER} über „${EN.BILD_RAHMEN}", Töne unter `
+      + `${TON_GLEICH} CIELAB gelten als einer) · die drei ähnlichsten: `
+      + spitze.map(p => `„${p.a}"/„${p.b}" ${(p.g * 100).toFixed(0)} % bei `
+        + `${(p.d * 100).toFixed(0)} % Deckung`).join(', ')
+      + ` (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %, oder `
+      + `${(GLEICH_ENG * 100).toFixed(0)} % zusammen mit `
+      + `${(DECKUNG_ENG * 100).toFixed(0)} % Deckung) · ausgenommen sind nur die `
+      + `Bilder des Blatts „Wo?", die sich gleichen sollen`);
+    let gleichGebaut = 0, engsteBauart = Infinity, engstesBauartPaar = '';
+    for (let i = 0; i < vls.length; i++) for (let j = i + 1; j < vls.length; j++) {
+      const k = kopieAbstand(vls[i].bild, vls[j].bild);
+      if (k === null) continue;
+      gleichGebaut++;
+      if (k < engsteBauart) { engsteBauart = k; engstesBauartPaar = `${vls[i].wort}/${vls[j].wort}`; }
+    }
     if (ef.length) {
       console.log('    ' + ef.join('\n    '));
       console.error('\n  englisch ROT: die Zeichnungen für „Lies das Wort" (E7) stimmen nicht.');
@@ -3209,16 +3350,19 @@ console.log('\n  Tor `englisch`');
       + `kleinste „${kleinstes.wort}" mit `
       + `${(Math.max(kk.rechts - kk.links, kk.unten - kk.oben)
         / Math.max(RB_R, RB_U) * 100).toFixed(0)} % (Grenze 55 %)`);
-    console.log(`    Sehen zwei Karten gleich aus (E7c): `
-      + `${vls.length * (vls.length - 1) / 2} Paare zellweise verglichen `
-      + `(${N_RASTER}×${N_RASTER} über „${EN.BILD_RAHMEN}", Töne unter `
-      + `${TON_GLEICH} CIELAB gelten als einer) · die drei ähnlichsten: `
-      + spitze.map(p => `„${p.a}"/„${p.b}" ${(p.g * 100).toFixed(0)} % bei `
-        + `${(p.d * 100).toFixed(0)} % Deckung`).join(', ')
-      + ` (Grenze ${(GLEICH_MAX * 100).toFixed(0)} %, oder `
-      + `${(GLEICH_ENG * 100).toFixed(0)} % zusammen mit `
-      + `${(DECKUNG_ENG * 100).toFixed(0)} % Deckung) · ausgenommen sind nur die `
-      + `Bilder des Blatts „Wo?", die sich gleichen sollen`);
+    console.log(`    Verschobene Kopien (E7d): ${gleichGebaut} von `
+      + `${vls.length * (vls.length - 1) / 2} Paaren überhaupt gleich gebaut`
+      + (gleichGebaut
+          ? ` · engstes „${engstesBauartPaar}" mit ${engsteBauart} Punkten `
+            + `(Grenze ${KOPIE_ABSTAND})`
+          : ''));
+    console.log(`    Die Eichung nachgerechnet: ${URTEILE.length} beurteilte Paare `
+      + `(${URTEILE.filter(e => e.urteil === 'falle').length} Fallen aus dem `
+      + `Rückfallvorrat), ${falschEin === 0 ? 'alle' : URTEILE.length - falschEin} `
+      + `richtig eingeordnet · engste Falle „${engsteFalle.e.a}"/„${engsteFalle.e.b}" `
+      + `mit ${(engsteFalle.luft * 100).toFixed(0)} Punkten Luft, engstes harmloses `
+      + `Paar „${engstesHarmlos.e.a}"/„${engstesHarmlos.e.b}" mit `
+      + `${(engstesHarmlos.luft * 100).toFixed(0)}`);
 
     /* --- „Zwei Wörter, ein Laut" MIT BILDERN (E5 fuer Fiona) ----------
      *
@@ -3287,6 +3431,14 @@ console.log('\n  Tor `englisch`');
         lbf.push(`„${paar.a}/${paar.b}" zeigt dieselbe Zeichnung in zwei Farben — `
           + 'dieselben Flächen, nur umgefärbt, und für ein Kind, das nicht liest, '
           + 'sind es zwei gleiche Dinge');
+      /* Und die VERSCHOBENE Kopie, die der Abdruck darueber nicht sieht.
+         Kein Lautbildpaar ist heute gleich gebaut - hier ist die Ausnahme
+         fuer „Wo?" also gar nicht noetig. */
+      const kL = kopieAbstand(a, b);
+      if (kL !== null && kL <= KOPIE_ABSTAND)
+        lbf.push(`„${paar.a}/${paar.b}" zeigt zwei gleich gebaute Zeichnungen, nur `
+          + `${kL} Punkte auseinander (Grenze ${KOPIE_ABSTAND}) — eine verschobene `
+          + 'Kopie, und für Fiona zweimal dasselbe Ding');
       /* UND DER VIEL WAHRSCHEINLICHERE FALL: nicht dieselbe Zeichnung,
          sondern eine aehnliche. Derselbe Zellvergleich wie bei „Lies das
          Wort" (E7c), aber mit einer STRENGEREN Grenze, und das ist keine
