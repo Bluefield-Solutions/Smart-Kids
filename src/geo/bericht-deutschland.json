@@ -27,7 +27,7 @@
       "punkte": 12993,
       "bytes": 157674,
       "gzip": 57030,
-      "sekunden": 0.4
+      "sekunden": 0.3
     },
     {
       "stufe": "fein",
@@ -40,7 +40,7 @@
       "punkte": 13485,
       "bytes": 163569,
       "gzip": 58854,
-      "sekunden": 0.4
+      "sekunden": 0.3
     }
   ]
 }

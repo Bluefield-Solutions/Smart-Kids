@@ -11,24 +11,24 @@
       "breitePx": 200,
       "hausdorffPxMax": 0.721,
       "punkte": 7139,
-      "bytes": 83186,
-      "gzip": 30401
+      "bytes": 83173,
+      "gzip": 30377
     },
     {
       "stufe": "mittel",
       "breitePx": 800,
       "hausdorffPxMax": 0.708,
       "punkte": 30229,
-      "bytes": 347039,
-      "gzip": 107492
+      "bytes": 347026,
+      "gzip": 107480
     },
     {
       "stufe": "fein",
       "breitePx": 2000,
       "hausdorffPxMax": 0.737,
       "punkte": 40303,
-      "bytes": 462562,
-      "gzip": 137454
+      "bytes": 462549,
+      "gzip": 137435
     }
   ]
 }

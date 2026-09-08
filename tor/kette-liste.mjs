@@ -77,6 +77,17 @@ export const NACH_DEM_BAU = [
      Sekunde und haette den Groenland-Fall in dieser Zeit gefunden - der
      volle Probenlauf brauchte 150 Minuten dafuer. */
   { name: 'anker', datei: 'tor/anker.mjs' },
+  /* `vielfalt` haelt fest, was der Inhalt-Audit gemessen hat: keine Ebene
+     darf weniger als zwei volle Runden Vorrat haben. Ohne diese Zeile
+     waere der Audit eine Momentaufnahme - der Befund, den er gefunden hat
+     („beim zweiten Start kommen dieselben Saetze"), kann jederzeit
+     zurueckkehren, und zwar leise: eine Ebene fuer ein neues Profil
+     freigeben kostet eine Zeile und halbiert den Vorrat nicht sichtbar.
+
+     Es steht hier und nicht bei den Browsertoren, obwohl es Chromium
+     startet: es misst `vorrat()` im GEBAUTEN Buendel und ist in 1,9 s
+     durch - es laedt die Seite einmal und zeichnet nichts. */
+  { name: 'vielfalt', datei: 'tools/vielfalt.mjs', args: ['--tor'] },
 ];
 
 /* Die Browsertore, laengstes zuerst.

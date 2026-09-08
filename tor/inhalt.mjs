@@ -212,7 +212,7 @@ I.ECHTE_FALLEN.forEach(id => {
      gebackene Hauptstadt und stehen damit auf der Ebene. Sinkt die Zahl,
      ist eine Hauptstadt aus dem Backen gefallen - genau der Fehler, den
      dieser Abschnitt seit D2c faengt. Steigt sie, gehoert sie erhoeht. */
-  const HAUPTSTAEDTE_EU = 17;
+  const HAUPTSTAEDTE_EU = 26;
   let ohneHauptstadt = 0;
   for (const m of I.LAENDER.europa) {
     const l = gebackenEU.get(m.a3);

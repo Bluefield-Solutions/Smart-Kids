@@ -364,13 +364,45 @@ sie kürzer ist als eine Sitzung, hat jemand aufgehört zu schreiben.
 > „Hauptstädte in Europa" für die Eltern, 17 Städte bei 12 Aufgaben je Runde
 > (1,4 Runden). 44 weitere liegen darunter, weil ihr Vorrat die Welt ist.
 
-**Und das ist der nächste Schritt**, denn diese eine ist wirklich eine Liste:
-die neun europäischen Länder aus I3 haben keine gebackene Hauptstadt. Lissabon,
-Stockholm, Budapest, Minsk, Sofia, Helsinki, Oslo, Dublin, Reykjavík von Hand
-einzutragen ist keine große Sache — aber die **Stadtlage** (der Punkt auf der
-Karte) kommt aus Natural Earth, und ohne sie stünde die Nadel im Nichts. Das
-ist zu tun, wenn die Rohdaten wieder da sind, zusammen mit dem Europa-Ausschnitt
-für die zehn zurückgestellten Länder.
+**Und das war der nächste Schritt** — I7, gleich unten: die neun europäischen
+Länder aus I3 hatten keine gebackene Hauptstadt, weil sie zur Zeit des letzten
+Backens noch nicht in `erdkunde.js` standen.
+
+### I7 · Die neun Hauptstädte — **gebaut (v559)**
+
+Der letzte gemessene Mangel des Audits, und er brauchte keine einzige neue
+Zeile Inhalt: die neun europäischen Länder aus I3 (Portugal, Schweden, Ungarn,
+Belarus, Bulgarien, Finnland, Norwegen, Irland, Island) trugen keine
+Hauptstadt, weil `src/geo/` seit vor I3 nicht neu gebacken worden war. Ein
+Umriss bekommt dort Name, Rang, Hauptstadt und **Stadtlage** nur, wenn er zur
+Zeit des Backens in `erdkunde.js` steht — die neun standen im Spiel und nicht
+in den Daten.
+
+`npm run backen` trägt sie nach, aus derselben Quelle wie die siebzehn davor:
+Natural Earth führt sie als `Admin-0 capital` samt deutschem Namen. Von Hand
+geschrieben ist nur, was sich nicht rechnen lässt — die **zwei Ablenker** je
+Land, nach der Regel, die schon für die siebzehn galt: die Stadt, die jemand
+für die Hauptstadt *halten* könnte, weil sie größer oder bekannter ist.
+Göteborg gegen Stockholm, Porto gegen Lissabon, Cork gegen Dublin.
+
+**Island bekommt keine** und steht deshalb bei Luxemburg unter
+`HAUPTSTADT_OHNE_ABLENKER`: nach Reykjavík kommt Kópavogur, und das ist ein
+Vorort davon; die größte Stadt außerhalb des Hauptstadtgebiets ist Akureyri
+mit 19 000 Einwohnern. Ein Ablenker, den niemand kennt, ist keiner — das steht
+seit R6 dort, und es gilt für Island genauso.
+
+> **Gemessen: 0 von 104 Profil-Ebenen unter zwei Runden.**
+> „Hauptstädte in Europa" steht bei 26 Städten — 2,2 Runden für die Eltern,
+> 3,3 für Lea. Die Ratsche in `inhalt` ist von 17 auf 26 gestiegen.
+
+**Und die Zahl bleibt jetzt gemessen.** `npm run vielfalt --tor` steht seit
+dieser Runde **in der Torkette**, direkt hinter `anker`: 1,9 Sekunden, weil es
+die Seite einmal lädt und nichts zeichnet. Ohne diese Zeile wäre der ganze
+Audit eine Momentaufnahme — und der Befund, mit dem er anfing, kann leise
+zurückkehren: eine Ebene für ein weiteres Profil freizugeben kostet eine Zeile
+und halbiert den Vorrat, ohne dass irgendetwas rot wird. Die stehende
+Gegenprobe schneidet die Hörsätze auf acht (bei zwölf Aufgaben je Sitzung) und
+verlangt, dass das Tor es sagt.
 
 ## Das Werkzeug
 

@@ -19,6 +19,8 @@
 #     pwa/offline  startet ohne Netz
 #     nachschub    erneuert sich auf einer lahmen Leitung
 #     tonleiter    wieviele Stufen das Forscherbuch traegt
+#     vielfalt     wieviele Runden Vorrat jede Ebene traegt — es misst im
+#                  Browser, und der laeuft hier nicht
 #     smoke        spielt die App wirklich durch
 #
 # Eine Vorschau kann also auf dem Gerät kaputt sein. Deshalb steht unten

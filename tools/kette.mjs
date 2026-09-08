@@ -225,7 +225,7 @@ for (const t of (PROBE ? [] : OHNE_BROWSER)) {
   melde({ ...letzte, name: BAU.name, ms });
 }
 for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
-  const r = await mitZeit(t.name, t.datei);
+  const r = await mitZeit(t.name, t.datei, t.args || []);
   if (r.code !== 0) abbruch(r);
   melde(r);
 }

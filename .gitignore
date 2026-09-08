@@ -9,6 +9,12 @@ dist/
 # gebackene Ergebnis in src/geo/.
 roh/
 
+# Antarktika wird von `npm run backen` erzeugt und von NIEMANDEM gelesen:
+# `bauen.mjs` nimmt die Kontinente aus `kontinente.grob.js` und schliesst
+# Antarktika dort ausdruecklich aus. Eingecheckt waere es ein Vorrat ohne
+# Leser - drei Dateien, die bei jedem Backen wackeln und nichts beweisen.
+src/geo/antarktika.*.js
+
 # Ausschuss der Gegenprobe - entsteht bei jedem roten Lauf neu.
 tor/abweichungen/
 

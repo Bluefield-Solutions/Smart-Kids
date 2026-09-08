@@ -253,13 +253,15 @@ npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
                    — `src/inhalt/erdkunde.js` kennt 17 europäische Länder,
                    Fiona sieht drei. Das ist der ganze Befund U2 des
                    Inhalt-Audits. `--tor` macht daraus eine Prüfung mit
-                   der Grenze von zwei Runden.
+                   der Grenze von zwei Runden — und die steht seit I7 IN
+                   DER KETTE, hinter `anker`. 1,9 s: es lädt die Seite
+                   einmal und zeichnet nichts.
 ```
 
 Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
 `schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
-`budget` · `anker` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
+`budget` · `anker` · `vielfalt` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` · `nachschub` · `tonleiter` → `smoke`.
 
 ### Zwei Wege ins Netz

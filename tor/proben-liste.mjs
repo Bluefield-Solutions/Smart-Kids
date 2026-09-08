@@ -1856,6 +1856,29 @@ export const PROBEN = [
     an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
     sagt:'Länder im Vorlauf' },
 
+  /* --- I7: der Vorrat als Ratsche ------------------------------------- *
+   *
+   * `vielfalt` ist das Tor, das den Inhalt-Audit am Leben haelt: keine
+   * Ebene darf weniger als zwei volle Runden Vorrat haben. Der Befund, den
+   * der Audit gefunden hat, war leise - „beim zweiten Start kommen dieselben
+   * Saetze" sieht kein Rauchtest, kein Bildvergleich und kein Kontrasttor.
+   *
+   * Der Eingriff schneidet den Vorrat der Hoersaetze auf acht. Die Eltern
+   * bekommen zwoelf Aufgaben je Sitzung; acht Gegenstaende sind damit
+   * WENIGER als eine Runde, und die zweite Sitzung waere Satz fuer Satz
+   * die erste. Genau das soll das Tor sagen.
+   *
+   * `hoersatz` und nicht `laender:nordamerika`: der Vorrat der Hoersaetze
+   * ist eine Liste, die jemand geschrieben hat, und nur dort gilt die
+   * Grenze (I6). Ein Eingriff an einer Ebene, deren Vorrat die Welt ist,
+   * duerfte nichts ausloesen - und wuerde damit auch nichts beweisen. */
+  { n:'der Vorrat einer Ebene reicht nicht fuer zwei Runden',
+    tor:'vielfalt', args:['--tor'], bauen:true, datei:D,
+    such:"    return Englisch.vorratHoersaetze();",
+    ersatz:"    return Englisch.vorratHoersaetze().slice(0, 8);",
+    an:{ ...DIST, text:'vorratHoersaetze().slice(0, 8)' },
+    sagt:'Zu wenig Vorrat' },
+
   /* --- Hauptstädte in Europa (R6) -------------------------------------- */
   // Die Stadtlage liegt neben ihrem Land.
   //

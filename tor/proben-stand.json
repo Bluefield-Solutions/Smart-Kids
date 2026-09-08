@@ -21,6 +21,7 @@
     "tonleiter",
     "tor",
     "vergleich",
+    "vielfalt",
     "ziehen"
   ],
   "unterTore": [
@@ -614,6 +615,11 @@
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
       "zeit": "2026-09-07",
       "s": 24
+    },
+    "der Vorrat einer Ebene reicht nicht fuer zwei Runden": {
+      "commit": "d3503968730d51377278aaea8358fc578320c984",
+      "zeit": "2026-09-08",
+      "s": 15
     },
     "eine Hauptstadt liegt neben ihrem Land": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",

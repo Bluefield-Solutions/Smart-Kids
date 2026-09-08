@@ -19,29 +19,47 @@
         "Türkei",
         "Iran",
         "Thailand",
-        "Myanmar"
+        "Myanmar",
+        "Südkorea",
+        "Irak",
+        "Afghanistan",
+        "Saudi-Arabien",
+        "Usbekistan",
+        "Jemen",
+        "Malaysia",
+        "Nepal",
+        "Nordkorea",
+        "Syrien",
+        "Sri Lanka",
+        "Kasachstan",
+        "Kambodscha",
+        "Jordanien",
+        "Aserbaidschan",
+        "Tadschikistan",
+        "Israel",
+        "Vereinigte Arabische Emirate"
       ],
       "stufen": [
         {
           "stufe": "grob",
           "laender": 59,
           "hausdorffPx": 0.685,
-          "punkte": 25199,
-          "gzip": 100214
+          "punkte": 25205,
+          "gzip": 100582
         },
         {
           "stufe": "mittel",
           "laender": 59,
           "hausdorffPx": 0.658,
-          "punkte": 56326,
-          "gzip": 199568
+          "punkte": 56336,
+          "gzip": 200007
         },
         {
           "stufe": "fein",
           "laender": 59,
           "hausdorffPx": 0.663,
-          "punkte": 86387,
-          "gzip": 275008
+          "punkte": 86400,
+          "gzip": 275502
         }
       ]
     },
@@ -60,7 +78,25 @@
         "Algerien",
         "Sudan",
         "Marokko",
-        "Angola"
+        "Angola",
+        "Ghana",
+        "Mosambik",
+        "Madagaskar",
+        "Elfenbeinküste",
+        "Kamerun",
+        "Niger",
+        "Mali",
+        "Burkina Faso",
+        "Malawi",
+        "Sambia",
+        "Tschad",
+        "Somalia",
+        "Senegal",
+        "Simbabwe",
+        "Guinea",
+        "Ruanda",
+        "Benin",
+        "Tunesien"
       ],
       "stufen": [
         {
@@ -68,21 +104,21 @@
           "laender": 55,
           "hausdorffPx": 0.66,
           "punkte": 16469,
-          "gzip": 69331
+          "gzip": 69618
         },
         {
           "stufe": "mittel",
           "laender": 55,
           "hausdorffPx": 0.691,
           "punkte": 35529,
-          "gzip": 135322
+          "gzip": 135682
         },
         {
           "stufe": "fein",
           "laender": 55,
           "hausdorffPx": 0.628,
           "punkte": 43806,
-          "gzip": 158716
+          "gzip": 159089
         }
       ]
     },
@@ -106,7 +142,16 @@
         "Spanien",
         "Ukraine",
         "Rumänien",
-        "Griechenland"
+        "Griechenland",
+        "Portugal",
+        "Schweden",
+        "Ungarn",
+        "Belarus",
+        "Bulgarien",
+        "Finnland",
+        "Norwegen",
+        "Irland",
+        "Island"
       ],
       "stufen": [
         {
@@ -114,21 +159,21 @@
           "laender": 51,
           "hausdorffPx": 0.68,
           "punkte": 27254,
-          "gzip": 110585
+          "gzip": 110949
         },
         {
           "stufe": "mittel",
           "laender": 51,
           "hausdorffPx": 0.728,
           "punkte": 52175,
-          "gzip": 192042
+          "gzip": 192248
         },
         {
           "stufe": "fein",
           "laender": 51,
           "hausdorffPx": 0.65,
           "punkte": 68327,
-          "gzip": 225906
+          "gzip": 226080
         }
       ]
     },
@@ -279,7 +324,7 @@
   ],
   "hauptstaedte": {
     "stufe": "grob",
-    "anzahl": 17,
+    "anzahl": 26,
     "regierungssitze": [
       "Niederlande: Den Haag"
     ]

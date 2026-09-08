@@ -471,8 +471,14 @@ export const ECHTE_FALLEN = ['DE-HE','DE-NW','DE-SN','DE-ST','DE-MV'];
  * Die Aufgabe steht trotzdem: die drei uebrigen Moeglichkeiten sind dann
  * Hauptstaedte anderer Laender. Sie ist damit leichter als die anderen
  * sechzehn, und das ist die Wahrheit ueber Luxemburg, keine Luecke. */
-export const HAUPTSTADT_OHNE_ABLENKER = { LUX:
-  'keine zweite Stadt, die bekannt genug waere — Esch an der Alzette hat 36 000 Einwohner' };
+export const HAUPTSTADT_OHNE_ABLENKER = {
+  LUX: 'keine zweite Stadt, die bekannt genug waere — Esch an der Alzette hat 36 000 Einwohner',
+  /* Island ist derselbe Fall, nur noch deutlicher: nach Reykjavik kommt
+     Kopavogur, und das ist ein Vorort davon. Die groesste Stadt ausserhalb
+     des Hauptstadtgebiets ist Akureyri mit 19 000 Einwohnern - im
+     deutschsprachigen Raum kennt sie niemand. */
+  ISL: 'keine zweite Stadt, die bekannt genug waere — Akureyri hat 19 000 Einwohner',
+};
 
 export const HAUPTSTADT_ABLENKER_EUROPA = {
   RUS:['Sankt Petersburg','Nowosibirsk'],
@@ -499,4 +505,18 @@ export const HAUPTSTADT_ABLENKER_EUROPA = {
   // sondern ein Ablenker wie jeder andere.
   CHE:['Zürich','Genf'],
   DNK:['Aarhus','Odense'],
+  /* Die neun aus I3 (Raenge 18 bis 26). Dieselbe Regel wie oben: die
+   * Stadt, die jemand fuer die Hauptstadt HALTEN koennte, weil sie
+   * groesser oder bekannter ist. Goeteborg gegen Stockholm, Porto gegen
+   * Lissabon, Cork gegen Dublin - das sind die Verwechslungen, die es
+   * wirklich gibt. Island steht nicht dabei, sondern unten bei den
+   * Laendern ohne Ablenker. */
+  PRT:['Porto','Braga'],
+  SWE:['Göteborg','Malmö'],
+  HUN:['Debrecen','Szeged'],
+  BLR:['Gomel','Brest'],
+  BGR:['Plowdiw','Warna'],
+  FIN:['Tampere','Turku'],
+  NOR:['Bergen','Trondheim'],
+  IRL:['Cork','Galway'],
 };
