@@ -114,6 +114,35 @@ einen Bonus für beide.
 **Abnahme:** Zwei Profile, beide Stände sichtbar, keine Vermischung der
 Leitner-Kästen.
 
+**Gebaut (v544).** Die **Hälfte stand schon**: das Tagesziel steht seit N2
+auf jeder Kinderkachel, und damit sieht jedes Kind, was das andere heute
+geschafft hat. Der Plan wollte dort einen Satz („Lea hat heute drei
+Sterne"); drei Sterne sind für Fiona die bessere Auskunft. Nachgebaut
+wurde nichts.
+
+Was fehlte, ist das **gemeinsame Ziel**. Es steht jetzt neben der Frage
+„Wer spielt?": eine Reihe Sterne für alle Kinder zusammen, ein Satz, wenn
+sie voll ist, und eine Ansage dazu — ein Farbwechsel allein kommt bei
+einem Kind, das nicht liest, nicht an.
+
+**Kein Wettbewerb.** Gezählt wird die Summe, nicht der Vorsprung. Eine
+Rangliste zwischen einer Sechs- und einer Achtjährigen hätte immer
+dieselbe Siegerin.
+
+**Die Zahl im Plan war falsch.** Acht Sterne sind bei drei je Kind und
+zwei Kindern nicht zu erreichen, und ein Ziel, das niemand erreichen
+kann, ist schlimmer als keines. `TAGESZIEL` mal Anzahl der Kinder ist
+heute sechs und morgen neun, wenn ein drittes Kind dazukommt.
+
+**Und es kostet keine Zeile.** Als eigene Zeile unter der Überschrift
+kostet das Haus 28 Punkte, und auf dem kleinsten Gerät (iPhone SE quer)
+fällt „Violeta" damit unter den Rand — genau die Falle, in die schon das
+Tagesziel gelaufen ist. Gemessen, mit und ohne, im selben Lauf. In der
+Titelzeile kostet es nichts.
+
+**Drei stehende Gegenproben:** das Haus zählt nur ein Kind · es zählt die
+Eltern mit · das volle Haus bleibt stumm.
+
 ---
 
 ## Teil II · Die Grafik (Runden N7 bis N12)
