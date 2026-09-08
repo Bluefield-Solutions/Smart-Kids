@@ -6117,14 +6117,20 @@ export const PROBEN = [
      nichts mehr wegzunehmen, `tippWegnehmen` meldet `false`, und der
      Knopf faellt von selbst auf die Loesung durch. Die Probe hat also
      keinen Fehler hergestellt, sondern eine Robustheit vorgefuehrt.
-     Der Eingriff sitzt jetzt dort, wo er wirklich weh tut: der Tipp
-     BEHAUPTET, etwas weggenommen zu haben. Dann bleibt der Knopf ewig
-     in der ersten Stufe. */
+     Der zweite Anlauf liess `tippWegnehmen` immer `true` melden - auch
+     gruen, und wieder zu Recht: die Stufe war da schon auf „loesung"
+     gesetzt, der zweite Druck kam an der Bedingung gar nicht mehr
+     vorbei. ZWEI Sicherungen also, und beide muessen weg, damit der
+     Fehler entsteht.
+     Der Eingriff sitzt jetzt an der Bedingung selbst: sie ist immer
+     wahr, der Knopf gibt bei JEDEM Druck einen Tipp und loest nie auf.
+     Ein Kind kommt aus einer Aufgabe, die es nicht kann, nicht mehr
+     heraus - und genau dafuer gibt es den Knopf. */
   { n:'der zweite Druck loest nicht mehr auf', tor:'smoke',
     args:['--nur=regler'], bauen:true, datei:D,
-    such:"  if (nehmen < 1) return false;",
-    ersatz:"  if (nehmen < 1) return true; // Anker: if (nehmen < 1) return false;",
-    an:{ ...DIST, text:'if (nehmen < 1) return true; // Anker:' },
+    such:"    if (k.dataset.stufe === 'tipp' && tipp && tipp()) {",
+    ersatz:"    if (true) { // Anker: if (k.dataset.stufe === 'tipp' && tipp && tipp()) {",
+    an:{ ...DIST, text:'if (true) { // Anker: if (k.dataset.stufe' },
     sagt:'löst nicht auf' },
 
   /* 3. DER TIPP NIMMT ALLES WEG. Dann ist er die Loesung, nur ohne den
