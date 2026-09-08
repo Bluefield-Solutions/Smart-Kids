@@ -6092,6 +6092,45 @@ export const PROBEN = [
     an:{ ...DIST, text:".abz > svg--aus{width:100%;height:auto;" },
     sagt:'weniger als 35 % Bild' },
 
+  /* --- Das Haus (N6) -----------------------------------------------------
+   *
+   * 1. ES ZAEHLT NUR DAS EINE KIND. Die stillste Fassung: die Zeile
+   *    steht da, die Sterne stimmen sogar - nur sind es dieselben, die
+   *    einen Fingerbreit tiefer auf der Kachel stehen. Aus zwei
+   *    Geschwistern werden wieder zwei Einzelkinder, und kein Tor sieht
+   *    einen Unterschied, wenn es nur EIN Profil bestueckt. */
+  { n:'das Haus zaehlt nur ein Kind', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"const hausSterne = () => hausKinder().reduce((n, p) => n + tagesSterne(p.id), 0);",
+    ersatz:"const hausSterne = () => tagesSterne(hausKinder()[0].id); "
+      + "// Anker: hausKinder().reduce((n, p) => n + tagesSterne(p.id), 0)",
+    an:{ ...DIST, text:'const hausSterne = () => tagesSterne(hausKinder()[0].id);' },
+    sagt:'zaehlt nicht beide zusammen' },
+
+  /* 2. ES ZAEHLT DIE ELTERN MIT. Dann steht das Ziel auf zwoelf, und
+   *    zwoelf sind nicht zu erreichen: Stephan und Violeta bekommen
+   *    keinen Tagesstern, und zwar mit Absicht. Ein Ziel, das niemand
+   *    erreichen kann, ist schlimmer als keines - es sieht nur aus wie
+   *    eines. */
+  { n:'das Haus zaehlt die Eltern mit', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"const hausKinder = () => Object.values(PROFILE).filter(istKind);",
+    ersatz:"const hausKinder = () => Object.values(PROFILE); "
+      + "// Anker: Object.values(PROFILE).filter(istKind)",
+    an:{ ...DIST, text:'const hausKinder = () => Object.values(PROFILE);' },
+    sagt:'das Ziel ist nicht zu erreichen' },
+
+  /* 3. DAS VOLLE HAUS SAGT NICHTS. Es faerbt sich nur - und ein
+   *    Farbwechsel kommt bei einem Kind, das nicht liest, ueber die
+   *    Ansage an oder gar nicht. Fiona ist sechs. */
+  { n:'das volle Haus bleibt stumm', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"    }${voll ? '<span>Das Haus ist voll!</span>' : ''}</div>`;",
+    ersatz:"    }${voll ? '' : ''}</div>`; "
+      + "// Anker: ${voll ? '<span>Das Haus ist voll!</span>' : ''}",
+    an:{ ...DIST, text:"}${voll ? '' : ''}</div>`;" },
+    sagt:'nicht in Worten' },
+
   /* --- Der Moment (N10) --------------------------------------------------
    *
    * 1. DAS JA BEWEGT SICH NICHT MEHR. Zurueck in den Zustand, in dem in

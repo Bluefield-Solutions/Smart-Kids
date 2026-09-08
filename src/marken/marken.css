@@ -165,6 +165,11 @@
   /* Der warme Grund hinter dem vollen Tagesziel - hell genug, dass die
      Sterne darauf noch stehen, und der einzige Zustand, der auffallen soll. */
   --stern-grund: oklch(0.94 0.070 95);
+  /* Und die Schrift darauf: dunkel genug fuer den warmen Grund. Sie
+     steht nur an EINER Stelle - im vollen Haus (N6) -, aber sie steht
+     hier und nicht dort: eine Farbe im Stilblatt ist ein Wert, den das
+     Tor `marken` nicht kennt. */
+  --stern-satz: oklch(0.42 0.09 75);
   /* DIE FIGUR (N9). Zwei Toene einer Farbe und ein dunkler Zug fuer
      Augen und Mund - genau die Bauart der Wortbilder. Warmgelb, weil es
      mit keiner Zusage kollidiert: gruen heisst richtig, rot heisst

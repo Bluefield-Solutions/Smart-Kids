@@ -153,6 +153,21 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
   transform:translateX(-50%);z-index:2}
 .tagesziel svg{display:block}
 .tagesziel.voll{background:var(--stern-grund)}
+/* DAS HAUS (N6) - was alle Kinder heute zusammen haben.
+   Eine Zeile, keine Kachel: es gehoert zu allen und darf deshalb keinem
+   Kind naeher stehen als dem anderen. Und sie ist FLACH gebaut - die
+   Profilwahl ist der eine Bildschirm, auf dem schon einmal eine zweite
+   Zeile die Kachelwand von acht auf vier hat fallen lassen (iPhone SE
+   quer, „Violeta" 18 Punkte ueber dem Rand). */
+.titelzeile{display:flex;align-items:center;justify-content:center;
+  gap:var(--r4);flex-wrap:wrap}
+.titelzeile .titel{margin:0}
+.haus{display:flex;gap:var(--r1);align-items:center;justify-content:center;
+  flex-wrap:wrap;padding:0 var(--r2);border-radius:var(--r5)}
+.haus svg{display:block}
+.haus.voll{background:var(--stern-grund)}
+.haus span{font-family:var(--f-ui);font-size:var(--s-klein);font-weight:700;
+  color:var(--stern-satz);margin-left:var(--r1)}
 /* Auf dem Endbildschirm steht das Tagesziel mit einem Satz daneben -
    dort ist Platz, und dort ist es die Antwort auf „und jetzt?". */
 .tagesende{display:flex;align-items:center;justify-content:center;

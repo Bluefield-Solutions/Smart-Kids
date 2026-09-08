@@ -2851,6 +2851,42 @@ const tagesZeichen = (id) => {
       STERN(i < n ? 'var(--stern-an)' : 'var(--stern-aus)', 16)).join('')}</div>`;
 };
 
+/* DAS HAUS (N6) — was ALLE Kinder heute zusammen geschafft haben.
+ *
+ * Das Tagesziel steht auf jeder Kachel und gilt fuer ein Kind. Daneben
+ * fehlte das, was zwei Geschwister zu einer Sache macht: eine Zahl, an
+ * der beide arbeiten. Wer als Zweite kommt, sieht dann nicht nur ihre
+ * eigenen drei Sterne, sondern auch, dass die andere schon da war.
+ *
+ * KEIN Wettbewerb und keine Rangliste. Gezaehlt wird die SUMME, nicht
+ * der Vorsprung: „vier von sechs im Haus" sagt, dass noch etwas fehlt,
+ * und nicht, wer weiter ist. Eine Rangliste zwischen einer Sechs- und
+ * einer Achtjaehrigen haette immer dieselbe Siegerin.
+ *
+ * DIE ZAHL WIRD ABGELEITET, nicht geschrieben. Der Nachtplan nannte
+ * acht Sterne - das ist bei drei je Kind und zwei Kindern nicht zu
+ * erreichen, und ein Ziel, das niemand erreichen kann, ist schlimmer als
+ * keines. `TAGESZIEL` mal Anzahl der Kinder ist heute sechs und morgen
+ * neun, wenn ein drittes Kind dazukommt - ohne dass jemand daran denken
+ * muss (Regel 6). */
+const hausKinder = () => Object.values(PROFILE).filter(istKind);
+const hausZiel = () => TAGESZIEL * hausKinder().length;
+const hausSterne = () => hausKinder().reduce((n, p) => n + tagesSterne(p.id), 0);
+
+/** Das Haus als Zeichenreihe - und ein Wort, wenn es voll ist.
+ *
+ * Die Sterne sind fuer Fiona, das Wort fuer Lea. Ohne Wort waere „voll"
+ * nur ein Farbwechsel; ohne Sterne waere es nur ein Satz. */
+const hausZeichen = () => {
+  const ziel = hausZiel(); if (!ziel) return '';
+  const n = hausSterne(), voll = n >= ziel;
+  return `<div class="haus${voll ? ' voll' : ''}" data-haus="${n}/${ziel}"
+       aria-label="${n} von ${ziel} Sternen im Haus">${
+    Array.from({ length: ziel }, (_, i) =>
+      STERN(i < n ? 'var(--stern-an)' : 'var(--stern-aus)', 14)).join('')
+    }${voll ? '<span>Das Haus ist voll!</span>' : ''}</div>`;
+};
+
 /** Eine Uebung ist zu Ende: ein Stern mehr - hoechstens bis zum Ziel.
  *
  * Gibt zurueck, ob DIESER Schritt das Ziel voll gemacht hat. Der
@@ -2883,7 +2919,17 @@ function profilwahl(){
       zeichenKnopf('ton', tonAn?'tonAn':'tonAus', tonAn?'Ton ausschalten':'Ton einschalten')
     + zeichenKnopf('abend', Einst.abend?'abend':'tag', Einst.abend?'Heller machen':'Dunkler machen') }) + `
     <div class="mitte">
-      <div class="titel">Wer spielt?</div>
+      ${/* Das Haus steht NEBEN der Frage, nicht darunter.
+           Gemessen: als eigene Zeile kostet es 28 Punkte, und auf dem
+           kleinsten Geraet (iPhone SE quer, 667 x 375) faellt „Violeta"
+           damit unter den Rand - genau die Falle, in die schon das
+           Tagesziel gelaufen ist. In der Titelzeile kostet es nichts:
+           die Zeile ist ohnehin so hoch wie die Ueberschrift, und quer
+           ist daneben Platz. */''}
+      <div class="titelzeile">
+        <div class="titel">Wer spielt?</div>
+        ${hausZeichen()}
+      </div>
       <div class="wahl">${Object.values(PROFILE).map(p=>`
         <button class="kachel wer" data-profil="${p.id}" style="--ton:var(${p.farbe})">
           ${streu(p.id)}
@@ -2920,6 +2966,11 @@ function profilwahl(){
   // Hier ist noch kein Kind gewaehlt - also wird immer angesagt. Wer lesen
   // kann, hoert einen Satz zuviel; wer nicht liest, kaeme sonst nicht los.
   ansagen(`Wer möchte spielen? ${aufzaehlen(Object.values(PROFILE).map(x=>x.name))}?`);
+  /* Und das Haus wird GESAGT, nicht nur gezeigt - wer nicht liest,
+     bekommt es sonst nur als Farbe mit. Nur wenn es voll ist: ein
+     „vier von sechs" bei jedem Start waere eine Mahnung. */
+  if (hausZiel() && hausSterne() >= hausZiel())
+    ansagen('Das Haus ist voll! Ihr habt heute alle Sterne zusammen.');
   return s;
 }
 

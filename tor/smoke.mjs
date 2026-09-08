@@ -4022,6 +4022,57 @@ if (laeuft('regler')) try {
     if (beiEltern !== -1) merke('regler', new Error(
       'auch die Eltern haben ein Tagesziel — das ist eine Aufforderung, '
       + 'um die niemand gebeten hat'));
+
+    /* DAS HAUS (N6) — die Summe beider Kinder.
+     *
+     * Drei Zusagen, und alle drei gehen still kaputt:
+     *
+     *   1. Es zaehlt BEIDE. Zaehlte es nur das offene Profil, waere es
+     *      dasselbe wie das Tagesziel auf der Kachel - eine Auskunft
+     *      zweimal, und die Geschwister blieben, was sie waren.
+     *   2. Es zaehlt nur KINDER. Die Eltern haben keinen Tagesstand;
+     *      taeten sie es, waere das Ziel nie zu erreichen.
+     *   3. Es sagt Bescheid, wenn es voll ist. Ohne das ist es ein
+     *      Farbwechsel, und wer nicht liest, bekommt ihn nicht mit.
+     *
+     * Gemessen wird am `data-haus`, nicht an gezaehlten Sternen: die
+     * Zeile traegt ihren Stand selbst, und eine Klasse ist eine Zusage
+     * des Programms, wo ein Bild eine Auslegung waere. */
+    const hausStand = () => p.evaluate(() => {
+      const h = document.querySelector('.schirm.da .haus');
+      return h ? { stand: h.dataset.haus, voll: h.classList.contains('voll'),
+                   satz: /voll/.test(h.textContent) } : null;
+    });
+    await stelleAblage(p, { einstellungen: {
+      'tagesziel:fiona': { tag: heute, zahl: 3 },
+      'tagesziel:lea':   { tag: heute, zahl: 1 } } });
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    const halb = await hausStand();
+    await stelleAblage(p, { einstellungen: {
+      'tagesziel:fiona': { tag: heute, zahl: 3 },
+      'tagesziel:lea':   { tag: heute, zahl: 3 } } });
+    await p.reload({ waitUntil: 'domcontentloaded' });
+    await p.waitForSelector('[data-profil="lea"]');
+    const ganz = await hausStand();
+    console.log(`  Haus: ${halb ? halb.stand : '(keins)'} → ${ganz ? ganz.stand : '(keins)'}`
+      + `${ganz && ganz.voll ? ' voll' : ''}${ganz && ganz.satz ? ', gesagt' : ''}`);
+    if (!halb || !ganz) merke('regler', new Error(
+      'auf der Profilwahl steht kein Haus — dann sieht keines der Kinder, '
+      + 'dass das andere heute schon da war'));
+    else {
+      if (halb.stand !== '4/6') merke('regler', new Error(
+        `Fiona hat drei Sterne und Lea einen, und das Haus sagt „${halb.stand}" statt `
+        + '„4/6" — es zaehlt nicht beide zusammen'));
+      if (halb.voll) merke('regler', new Error(
+        `das Haus steht bei ${halb.stand} schon auf „voll" — dann ist die Schwelle keine`));
+      if (ganz.stand !== '6/6' || !ganz.voll) merke('regler', new Error(
+        `beide Kinder haben ihre drei Sterne, und das Haus sagt „${ganz.stand}"`
+        + `${ganz.voll ? '' : ' und steht nicht auf „voll"'} — das Ziel ist nicht zu erreichen`));
+      if (!ganz.satz) merke('regler', new Error(
+        'das volle Haus sagt es nicht in Worten — ein Farbwechsel allein '
+        + 'kommt bei einem Kind, das nicht liest, gar nicht an'));
+    }
   }
 
   /* DIE SERIE (N1) — und zwar an dem, was sie verspricht.

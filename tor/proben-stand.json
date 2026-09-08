@@ -2035,6 +2035,11 @@
       "zeit": "2026-09-08",
       "s": 24
     },
+    "das Abzeichen bleibt klein in seiner Zelle": {
+      "commit": "fa198fdb8da19014f5832405541b6354778bcfe2",
+      "zeit": "2026-09-08",
+      "s": 25
+    },
     "die richtige Antwort huepft nicht mehr": {
       "commit": "9dfb7a7615d1f3aca68ea03b776e576ffec488b3",
       "zeit": "2026-09-08",
