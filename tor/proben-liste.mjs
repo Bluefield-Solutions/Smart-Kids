@@ -6062,9 +6062,9 @@ export const PROBEN = [
    *    fehlt. Genau so hat es vor N9 ausgesehen. */
   { n:'im Lob steht keine Figur mehr', tor:'smoke',
     args:['--nur=regler'], bauen:true, datei:D,
-    such:"  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
+    such:"  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut', 32) : '';",
     ersatz:"  const wer = ''; "
-      + "// Anker: const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
+      + "// Anker: const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut', 32) : '';",
     an:{ ...DIST, text:"const wer = ''; // Anker: const wer = ton().feier" },
     sagt:'steht keine Figur' },
 
@@ -6074,10 +6074,10 @@ export const PROBEN = [
    *    Profil aus - sie ist dann Zierde, und Zierde veraltet. */
   { n:'die Figur steht auch im Lob der Eltern', tor:'smoke',
     args:['--nur=regler'], bauen:true, datei:D,
-    such:"  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
-    ersatz:"  const wer = figur(fastText ? 'staunt' : 'freut'); "
-      + "// Anker: const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
-    an:{ ...DIST, text:"const wer = figur(fastText ? 'staunt' : 'freut'); // Anker:" },
+    such:"  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut', 32) : '';",
+    ersatz:"  const wer = figur(fastText ? 'staunt' : 'freut', 32); "
+      + "// Anker: const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut', 32) : '';",
+    an:{ ...DIST, text:"const wer = figur(fastText ? 'staunt' : 'freut', 32); // Anker:" },
     sagt:'auch bei Stephan steht eine Figur' },
 
   /* --- Was zurueckkommt (N4) --------------------------------------------

@@ -149,6 +149,25 @@ bei richtig, staunt bei falsch, feiert am Ende. Vier Haltungen, mehr nicht.
 **Abnahme:** Die Figur wird gezeichnet und gegen den Vorrat auf
 Verwechselbarkeit geprüft; sie darf keine Berührungsfläche verdecken.
 
+**Gebaut (v530).** Drei Stimmungen statt vier — `freut`, `staunt`,
+`feiert` —, weil die vierte („schaut zu") keinen Augenblick hat, an dem
+sie erscheint. Eine Zeichnung, drei Zustände: sie unterscheiden sich in
+Mund, Augengröße und Braue, nicht im Bild. Sie steht im Lobsatz und groß
+auf dem Endbildschirm, und **nur bei den Kinderprofilen** — derselbe
+Schalter wie beim Jubel.
+
+**Was der Blick nicht gesehen hat.** Inline gebaut kostete sie auf der
+Karte **40 Punkte Sprung beim Lob**: `.frage .jubel` ist ein Block, die
+Figur davor bekam eine eigene Zeile, und die gezeichnete Fläche wanderte
+von 92/273 auf 132/233 — genau in dem Augenblick, in dem das Kind auf die
+Form schaut, die es eben getroffen hat. Auf dem Bildschirmfoto sah die
+Zeile gut aus; gemeldet hat es der Rauchtest (Q45, Deckel 30). Jetzt
+steht die Figur absolut im Fragefeld und nicht in seinem Fluss: die
+Lobzeile ist Punkt für Punkt so hoch wie die Frage davor.
+
+**Zwei stehende Gegenproben:** die Figur kommt nie · die Figur kommt zu
+allen.
+
 ### N10 · Der Moment — die Belohnung hört auf, ein Zeugnis zu sein
 *Befund G4 · G14*
 

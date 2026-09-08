@@ -239,6 +239,14 @@ npm run ohneschrift  AUDIT A: geht Fionas Weg auf dem Zielgerät ab und
                    Bildschirm aus, wenn man ihn nicht lesen kann. Kein
                    Tor, ein Blickwerkzeug — `--selbst` prüft nur den
                    Messer selbst.
+npm run lobmass    was eine Zeile im Lob KOSTET: misst die Höhe des
+                   Fragefelds und die Hülle der gezeichneten Karte, vor
+                   dem Lob, mit Figur und ohne — im selben Lauf, im
+                   angegebenen Format (`-- '{"width":1400,"height":900}'`).
+                   Kein Tor. Es beantwortet die eine Frage, an der N9
+                   dreimal gescheitert ist: rückt die Karte, und um
+                   wieviel? Blind nachjustieren heißt hier, durch ein
+                   Schlüsselloch zu schauen.
 ```
 
 Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·

@@ -4226,11 +4226,14 @@ function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
   /* Die Figur nur bei den Kinderprofilen - derselbe Schalter wie beim
      Jubel. Ein Begleiter, der Stephan beim Nachtragen zusieht, waere
      Zierde; bei Fiona ist er der Grund, es noch einmal zu machen. */
-  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';
+  /* 32 Punkte, nicht 44: so hoch wie die Lobzeile selbst. Groesser
+     waere die Figur der Grund, aus dem die Karte darunter springt -
+     gemessen, nicht befuerchtet. */
+  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut', 32) : '';
   frage.innerHTML = fastText
     ? `<span class="fastText">${wer}${fastText}</span>`
-    : `<span class="richtigText${ton().feier ? ' feier' : ''}">${wer}<b class="jubel">${
-        spruch || 'Richtig!'}</b> ${sache}</span>`
+    : `<span class="richtigText${ton().feier ? ' feier' : ''}"><b class="jubel">${
+        wer}${spruch || 'Richtig!'}</b> ${sache}</span>`
       + (neuerAufkleber ? `<span class="neuerkleber">${letzterKleber()}<b>${
           /* Auch GESCHRIEBEN im Ton des Profils: derselbe Satz, dieselbe
              Quelle. Ein Ausrufezeichen auf dem Schirm und keines in der

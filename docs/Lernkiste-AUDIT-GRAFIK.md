@@ -67,11 +67,16 @@ Flächen sind Rechtecke mit 1 px Rand. Kein Schatten, keine Erhebung, kein
 Lichteinfall, keine Ebene über einer anderen. Alles liegt auf demselben
 Blatt. Ein Knopf, der sich nicht **hebt**, lädt nicht zum Drücken ein.
 
-### G3 · Es ist niemand da
+### G3 · Es ist niemand da — **erledigt in N9 (v530)**
 
 Kein Gesicht, keine Figur, kein Begleiter. Für ein sechsjähriges Kind ist
 das der größte Einzelmangel der ganzen Oberfläche: es gibt niemanden, der
 sich mitfreut, niemanden, dem man etwas zeigt.
+
+Seit N9 gibt es ihn: drei Stimmungen aus einer Zeichnung, im Lobsatz und
+groß auf dem Endbildschirm, nur bei den Kinderprofilen. Zwei stehende
+Gegenproben halten beide Verfallsarten fest — sie kommt nie, sie kommt zu
+allen.
 
 ### G4 · Die Belohnung ist ein Bericht
 

@@ -2530,9 +2530,43 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 /* DIE FIGUR (N9) — im Stil der Wortbilder: flaechig, zwei Toene, keine
    Umrisslinien, Licht von oben links. `k1` ist die belichtete Haelfte,
    `k2` die Schattenseite, `a` sind Augen und Mund.
-   Sie steht INLINE im Lobsatz und nicht daneben: so nimmt sie keine
-   eigene Zeile und kann keine Bedienflaeche verdecken. */
-.figur{display:inline-block;vertical-align:-0.35em;margin-right:var(--r2)}
+   Sie steht IN der Lobzeile - neben dem Wort, nicht darueber und nicht
+   am Bildschirmrand.
+   Drei Anlaeufe hat das gekostet, und alle drei standen im selben
+   Konflikt: die Zeile darf nicht hoeher werden. Gemessen wird das an der
+   gezeichneten Karte, die beim Lob nicht ruecken darf (Q45, Deckel 30
+   Punkte) - der Rauchtest meldet es, der Blick nicht: auf dem Bild sah
+   die Zeile jedes Mal gut aus, und die Karte darunter war einfach
+   kleiner.
+
+     1. INLINE, 44 Punkte. `.frage .jubel` ist ein Block, die Figur davor
+        bekam eine eigene Zeile. 40 Punkte Sprung (92/273 auf 132/233).
+     2. ABSOLUT am linken Rand des Fragefelds. Die Karte stand still, und
+        das Vorbild zeigte, warum das trotzdem falsch war: die Figur
+        klebte allein in der Ecke, einen halben Bildschirm von dem Satz
+        entfernt, zu dem sie gehoert. Ein Begleiter, der nicht neben dem
+        steht, was er begleitet, ist keiner.
+     3. IN der Zeile, 32 Punkte fest. 54 Punkte Sprung - schlimmer als
+        (1). Der Grund stand siebenhundert Zeilen weiter unten: im kurzen
+        Querformat steht der Jubel in EINER Zeile und damit `inline`
+        (Q45), also in `--s1` und rund 29 Punkten. Eine 32 Punkte hohe
+        Figur passt da nicht hinein und bricht um. Dieselbe Regel stand
+        zweimal, gepflegt wurde die obere (Regel 6).
+
+   Jetzt kommt die Groesse aus der ZEILE und nicht aus einer Zahl: 1,15 em
+   der Schrift, in der das Lob gerade steht. Im kurzen Querformat sind das
+   rund 29 Punkte, auf dem Schreibtisch rund 36 - und die Lobzeile waechst
+   dadurch um 1 beziehungsweise 2 Punkte. Gemessen mit
+   `tools/lobmass.mjs`, in beiden Formaten, mit und ohne Figur. */
+.figur{display:inline-block;vertical-align:middle;flex:none;margin:0}
+/* Die Groesse kommt aus der ZEILE, nicht aus einer Zahl: 1,15 em der
+   Schrift, in der das Lob steht. Im kurzen Querformat steht der Jubel
+   in `--s1` und in einer Zeile, auf dem Schreibtisch in `--s2` und in
+   zweien - die Figur waechst und schrumpft mit. Eine feste Zahl stuende
+   damit zweimal da, einmal hier und einmal in der Zeile, und sie
+   veraltet dann an der Stelle, die niemand pflegt (Regel 6): der erste
+   Anlauf war 32 gegen eine 29 Punkte hohe Zeile. */
+.frage .figur{width:1.15em;height:1.15em}
 .figur .k1{fill:var(--figur-hell)}
 .figur .k2{fill:var(--figur-dunkel)}
 .figur .a{fill:var(--figur-zug);color:var(--figur-zug)}
@@ -2552,7 +2586,12 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .frage .richtigText{color:var(--gut)}
 /* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
    Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */
-.frage .jubel{display:block;font-size:var(--s2);font-weight:800;line-height:1.1}
+/* `flex` und nicht `block`: die Figur steht als Geschwister NEBEN dem
+   Wort (N9). Als Block bekaeme sie eine eigene Zeile, und die kostet auf
+   der Karte 40 Punkte - die Rechnung steht oben bei `.figur`. */
+.frage .jubel{display:flex;align-items:center;justify-content:center;gap:var(--r2);
+  font-size:var(--s2);font-weight:800;line-height:1.1}
+.frage .fastText{display:flex;align-items:center;justify-content:center;gap:var(--r2)}
 /* Der Aufkleber bekommt einen eigenen Augenblick - er ist das einzige,
    was ueber diese Aufgabe hinaus bleibt. */
 /* Seit Q28 steht hier der Aufkleber SELBST, mit dem Wort darunter. Der
