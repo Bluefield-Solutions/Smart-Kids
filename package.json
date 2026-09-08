@@ -22,6 +22,7 @@
     "tor": "node tools/kette.mjs",
     "tor:runner": "SMARTKIDS_OHNE_ANSICHT=1 npm run tor",
     "passt": "node tor/passt.mjs",
+    "vielfalt": "node tools/vielfalt.mjs",
     "spielprobe": "node tor/spielprobe.mjs",
     "schreiben": "node tor/schreiben.mjs",
     "lesbarkeit": "node tor/lesbarkeit.mjs",

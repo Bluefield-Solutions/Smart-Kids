@@ -247,6 +247,13 @@ npm run lobmass    was eine Zeile im Lob KOSTET: misst die Höhe des
                    dreimal gescheitert ist: rückt die Karte, und um
                    wieviel? Blind nachjustieren heißt hier, durch ein
                    Schlüsselloch zu schauen.
+npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
+                   und Ebene: Vorrat, Sitzungslänge, Vorrat/Sitzung. An
+                   der GEBAUTEN Datei gemessen, nicht an den Datenmodulen
+                   — `src/inhalt/erdkunde.js` kennt 17 europäische Länder,
+                   Fiona sieht drei. Das ist der ganze Befund U2 des
+                   Inhalt-Audits. `--tor` macht daraus eine Prüfung mit
+                   der Grenze von zwei Runden.
 ```
 
 Kette: `rhythmus` → `inhalt` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·

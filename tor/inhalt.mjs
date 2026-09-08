@@ -43,6 +43,19 @@ import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
 
 /** Alles, was gebacken wird - damit eine Pruefung nicht die Haelfte auslaesst. */
+/* WIEVIEL VORRAT BRAUCHT EINE EBENE? (Inhalt-Audit I1)
+ *
+ * Eine Sitzung der Eltern ist zwoelf Aufgaben lang - das steht in der
+ * Profiltabelle in `spiel.js` und ist hier die Einheit, in der gerechnet
+ * wird. Eine Ebene mit zwoelf Gegenstaenden ist damit EINE Runde: die
+ * zweite Sitzung zeigt dieselben zwoelf, nur gemischt.
+ *
+ * Absolute Zahlen haben genau das verdeckt („mindestens 25 Fallen"). Ab
+ * hier steht die Grenze in Runden - wer die Sitzungslaenge aendert,
+ * aendert die Grenze mit (Regel 2: Grenzen anteilig, nie absolut). */
+const SITZUNG_ELTERN = 12;
+const RUNDEN_VORRAT = 4;
+
 const GEBACKEN = {
   kontinente:   KONTINENTE_FEIN,
   deutschland:  DEUTSCHLAND_FEIN,
@@ -2267,9 +2280,18 @@ console.log('\n  Tor `englisch`');
         ff.push(`der englische Satz zu „${f.id}" enthält die Falle „${f.falle}" `
           + 'schon — dann ist sie zu lesen statt zu erkennen');
     }
-    if (EN.FREUNDE.length < 25)
-      ff.push(`nur ${EN.FREUNDE.length} falsche Freunde — das Konzept nennt rund `
-        + 'dreißig, und darunter trägt die Ebene keine Sitzung');
+    /* RATSCHE, in SITZUNGEN gerechnet und nicht in Stueck (Regel 2:
+       Grenzen anteilig, nie absolut).
+       Vorher stand hier 25 - „das Konzept nennt rund dreissig". Das Mass
+       war die Liste, nicht das Spiel. Der Inhalt-Audit hat nachgerechnet:
+       bei zwoelf Aufgaben je Elternsitzung waren dreissig Fallen 2,5
+       Runden, und danach kam jede ein zweites Mal. Gemessen wird deshalb
+       in Runden, und die Ratsche steht bei VIER - eine unter dem, was
+       heute dasteht. */
+    if (EN.FREUNDE.length < RUNDEN_VORRAT * SITZUNG_ELTERN)
+      ff.push(`nur ${EN.FREUNDE.length} falsche Freunde — das sind `
+        + `${(EN.FREUNDE.length / SITZUNG_ELTERN).toFixed(1)} Runden, `
+        + `nötig sind ${RUNDEN_VORRAT}`);
     if (ff.length) {
       console.log('    ' + ff.join('\n    '));
       console.error('\n  englisch ROT: die falschen Freunde (E10) stimmen nicht.');
@@ -2347,10 +2369,17 @@ console.log('\n  Tor `englisch`');
     }
     if (new Set(EN.HOERSAETZE).size !== EN.HOERSAETZE.length)
       wf.push('eine Kennung steht zweimal unter den Diktatsätzen');
-    // Eine Sitzung der Eltern ist zwölf Aufgaben lang (Profiltabelle).
-    // Darunter wiederholte sich der Vorrat innerhalb einer Sitzung.
-    if (hs.length < 12)
-      wf.push(`nur ${hs.length} Diktatsätze — eine Sitzung ist zwölf Aufgaben lang`);
+    /* Die Diktatsaetze waren der schaerfste Einzelbefund des
+       Inhalt-Audits: zwoelf Saetze bei zwoelf Aufgaben je Sitzung - die
+       zweite Sitzung war Satz fuer Satz die erste. Die alte Grenze („12")
+       hat das nicht gemeldet, sie hat es FESTGESCHRIEBEN. */
+    if (hs.length < 2 * SITZUNG_ELTERN)
+      wf.push(`nur ${hs.length} Diktatsätze — das sind `
+        + `${(hs.length / SITZUNG_ELTERN).toFixed(1)} Runden, nötig sind 2`);
+    if (EN.WENDUNGEN.length < RUNDEN_VORRAT * SITZUNG_ELTERN)
+      wf.push(`nur ${EN.WENDUNGEN.length} Wendungen — das sind `
+        + `${(EN.WENDUNGEN.length / SITZUNG_ELTERN).toFixed(1)} Runden, `
+        + `nötig sind ${RUNDEN_VORRAT}`);
     const hgebiete = new Set(hs.map(w => w.gebiet));
     for (const g of ['4.1', '4.2', '4.3', '4.4'])
       if (!hgebiete.has(g)) wf.push(`kein Diktatsatz zum Themengebiet ${g}`);
