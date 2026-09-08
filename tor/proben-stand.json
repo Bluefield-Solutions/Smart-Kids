@@ -2015,6 +2015,11 @@
       "zeit": "2026-09-07",
       "s": 5
     },
+    "ein Fehler löscht die Serie nicht mehr": {
+      "commit": "37a18cfdbf9b7b03074bc2ec77d52f9b98730bbc",
+      "zeit": "2026-09-08",
+      "s": 50
+    },
     "die Serie erscheint schon nach der ersten richtigen Antwort": {
       "commit": "06171ac344f357d579f98715cb404380cb0f7a8c",
       "zeit": "2026-09-08",
