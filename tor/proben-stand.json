@@ -1000,15 +1000,15 @@
       "zeit": "2026-09-07",
       "s": 73
     },
-    "„heute schon geübt\" überlebt den Neustart nicht": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 79
+    "der Tagesstern überlebt den Neustart nicht": {
+      "commit": "d6797cd6549c5d258e3a965f552f07d484b7d5a8",
+      "zeit": "2026-09-08",
+      "s": 147
     },
-    "„heute schon geübt\" steht auf jeder Kachel": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 80
+    "der Tagesstern steht auf jeder Kachel": {
+      "commit": "d6797cd6549c5d258e3a965f552f07d484b7d5a8",
+      "zeit": "2026-09-08",
+      "s": 148
     },
     "der Größenwächter im Korpus urteilt falsch herum": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
@@ -2014,6 +2014,16 @@
       "commit": "b67946a1921a971b09617766fb99cafed23c7ece",
       "zeit": "2026-09-07",
       "s": 5
+    },
+    "das Tagesziel zählt gestrige Sterne mit": {
+      "commit": "d6797cd6549c5d258e3a965f552f07d484b7d5a8",
+      "zeit": "2026-09-08",
+      "s": 50
+    },
+    "auch die Eltern bekommen ein Tagesziel": {
+      "commit": "d6797cd6549c5d258e3a965f552f07d484b7d5a8",
+      "zeit": "2026-09-08",
+      "s": 50
     },
     "ein Fehler löscht die Serie nicht mehr": {
       "commit": "37a18cfdbf9b7b03074bc2ec77d52f9b98730bbc",
