@@ -165,6 +165,14 @@
   /* Der warme Grund hinter dem vollen Tagesziel - hell genug, dass die
      Sterne darauf noch stehen, und der einzige Zustand, der auffallen soll. */
   --stern-grund: oklch(0.94 0.070 95);
+  /* DIE FIGUR (N9). Zwei Toene einer Farbe und ein dunkler Zug fuer
+     Augen und Mund - genau die Bauart der Wortbilder. Warmgelb, weil es
+     mit keiner Zusage kollidiert: gruen heisst richtig, rot heisst
+     Serie, blau heisst gesucht. Die Figur soll nichts BEDEUTEN, sie soll
+     dabei sein. */
+  --figur-hell:   oklch(0.86 0.130  85);
+  --figur-dunkel: oklch(0.74 0.140  75);
+  --figur-zug:    oklch(0.32 0.060  60);
   --serie:      oklch(0.62  0.170  38);   /* die Flamme */
   --serie-kern: oklch(0.79  0.160  82);   /* ihr heller Kern */
   --serie-satz: oklch(0.50  0.150  35);   /* der Satz am Ende */

@@ -4174,12 +4174,62 @@ const letzterKleber = () => {
   return i < 0 ? '' : kleberBild(st.alle[i], i, st.ebeneId);
 };
 
+/* ---------- Die Figur (N9) -----------------------------------------------
+ *
+ * Befund G3, und er ist der einzige des Grafik-Audits, der die Nachpruefung
+ * am Quelltext unbeschadet ueberstanden hat: NULL Treffer fuer eine Figur
+ * im ganzen Verzeichnis. Es ist niemand da. Fuer ein sechsjaehriges Kind
+ * ist das der groesste Einzelmangel der Oberflaeche - es gibt niemanden,
+ * der sich mitfreut und niemanden, dem man etwas zeigt.
+ *
+ * SIE STEHT NICHT STAENDIG DA, und das ist eine Entscheidung gegen den
+ * ersten Entwurf. Eine Figur am Rand des Aufgabenbildschirms haette auf
+ * 844 x 390 entweder die Karte verdeckt oder den Mikrofonknopf - und eine
+ * Bedienflaeche zu verdecken ist teurer als eine Figur wert ist. Sie
+ * kommt DORT, wo sie zaehlt: im Augenblick der Rueckmeldung und auf dem
+ * Endbildschirm. Ein Begleiter, der nur dann auftaucht, wenn etwas
+ * passiert, ist ausserdem mehr wert als einer, der immer herumsteht.
+ *
+ * IM STIL DER WORTBILDER: flaechig, zwei Toene je Farbe, keine
+ * Umrisslinien, Licht von oben links. Das ist der Stilanker, den das
+ * Grafik-Audit benannt hat - ein zweiter Stil daneben waere genau der
+ * Bruch, den es vermeiden soll.
+ *
+ * DREI STIMMUNGEN, mehr nicht. Der Unterschied liegt im MUND und in den
+ * Augen, nicht im Koerper: wer die Figur zweimal neu zeichnet, hat zwei
+ * Figuren. */
+const FIGUR = {
+  freut:  { mund: 'M24 40c3 4 9 4 12 0', auge: 3.2, braue: '' },
+  staunt: { mund: 'M30 41a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z', auge: 3.6,
+            braue: 'M20 23h7M33 23h7' },
+  feiert: { mund: 'M22 38c4 7 12 7 16 0Z', auge: 3.2, braue: '' },
+};
+const figur = (stimmung = 'freut', groesse = 44) => {
+  const f = FIGUR[stimmung] || FIGUR.freut;
+  return `<svg class="figur figur-${stimmung}" width="${groesse}" height="${groesse}"`
+    + ' viewBox="0 0 60 60" aria-hidden="true">'
+    /* Der Koerper: eine Flaeche, ein Ton, ein dunkler Rand unten - so
+       bekommt er Volumen ohne Verlauf und ohne Filter (die Safari-Falle
+       aus dem Schwesterprojekt gilt hier genauso). */
+    + '<path class="k2" d="M30 6c13 0 22 9 22 22s-9 26-22 26S8 46 8 28 17 6 30 6Z"/>'
+    + '<path class="k1" d="M30 6c11 0 19 7 21 18-3 9-11 15-21 15s-18-6-21-15C11 13 19 6 30 6Z"/>'
+    + `<circle class="a" cx="23" cy="31" r="${f.auge}"/>`
+    + `<circle class="a" cx="37" cy="31" r="${f.auge}"/>`
+    + (f.braue ? `<path class="a" d="${f.braue}" stroke-width="2" fill="none" stroke="currentColor"/>` : '')
+    + `<path class="a" d="${f.mund}" ${stimmung === 'staunt' ? '' : 'fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"'}/>`
+    + '</svg>';
+};
+
 function lobsatz(s, sache, fastText, spruch, nebenbei, neuerAufkleber){
   const frage = s.querySelector('#frage');
   if (!frage) return;
+  /* Die Figur nur bei den Kinderprofilen - derselbe Schalter wie beim
+     Jubel. Ein Begleiter, der Stephan beim Nachtragen zusieht, waere
+     Zierde; bei Fiona ist er der Grund, es noch einmal zu machen. */
+  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';
   frage.innerHTML = fastText
-    ? `<span class="fastText">${fastText}</span>`
-    : `<span class="richtigText${ton().feier ? ' feier' : ''}"><b class="jubel">${
+    ? `<span class="fastText">${wer}${fastText}</span>`
+    : `<span class="richtigText${ton().feier ? ' feier' : ''}">${wer}<b class="jubel">${
         spruch || 'Richtig!'}</b> ${sache}</span>`
       + (neuerAufkleber ? `<span class="neuerkleber">${letzterKleber()}<b>${
           /* Auch GESCHRIEBEN im Ton des Profils: derselbe Satz, dieselbe
@@ -8277,6 +8327,11 @@ function endschirm(){
       ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
         : ton().siegsterne ? `<div class="siegsterne${ton().feier ? ' feier' : ''}"
              >${sterne(n,56)}</div>` : ''}
+      ${/* Die Figur feiert mit (N9) - gross, ueber der Zeile, nur bei den
+           Kinderprofilen. Auf dem Endbildschirm ist Platz, und hier ist
+           sie am meisten wert: das ist der Augenblick, in dem ein Kind
+           jemandem etwas zeigen moechte. */
+        ton().feier ? `<div class="figurgross">${figur('feiert', 64)}</div>` : ''}
       <div class="gross">${st.test
         ? (bestanden ? 'Test bestanden!' : 'Noch nicht ganz.') : ton().ende}</div>
       <div class="unter">${st.test

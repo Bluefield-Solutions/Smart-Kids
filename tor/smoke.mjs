@@ -3713,6 +3713,65 @@ if (laeuft('regler')) try {
     return p.evaluate(() => window.__toene.length);
   };
 
+  /* DIE FIGUR (N9) — sie ist da, und sie ist nur bei den Kindern da.
+   *
+   * Zwei Zusagen:
+   *
+   *   1. Im Lob steht sie. Ohne sie ist wieder niemand da, und das ist
+   *      der einzige Befund des Grafik-Audits, der die Nachpruefung am
+   *      Quelltext unbeschadet ueberstanden hat.
+   *   2. Bei den Eltern steht sie NICHT. Derselbe Schalter wie beim
+   *      Jubel: ein Begleiter, der Stephan beim Nachtragen zusieht, waere
+   *      Zierde.
+   *
+   * Gemessen an demselben Rechenschirm wie die Serie - dort ist die
+   * richtige Antwort ausrechenbar, und das Lob steht danach fest.
+   */
+  {
+    /* Die Ebene je Profil, nicht eine fuer beide.
+     *
+     * `rechnen:reihen` traegt `wer:['lea']` - Stephan sieht die Kachel
+     * nie. Mit ihr gemessen liefe das Tor in eine Zeitgrenze und meldete
+     * „Zeitgrenze" statt „keine Figur": ein Tor, das an der Messstelle
+     * scheitert, sagt ueber die Zusage gar nichts (Regel 1). */
+    const lobFigur = async (profil, ebene) => {
+      await stelleAblage(p, { einstellungen: { alles: { reihenGeteilt: 0.5 } } });
+      await p.reload({ waitUntil: 'domcontentloaded' });
+      await p.waitForSelector(`[data-profil="${profil}"]`);
+      await p.click(`[data-profil="${profil}"]`);
+      await zurEbenenwahl(p, ebene);
+      await p.click(`.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`);
+      await durchVorlaufWenn(p);
+      await p.waitForSelector('.schirm.da .rechnung', { timeout: 15000 });
+      const soll = await p.evaluate(() => {
+        const m = document.querySelector('.schirm.da .rechnung').textContent
+          .match(/(\d+)\s*([+−×:])\s*(\d+)/);
+        const a = +m[1], b = +m[3];
+        return m[2] === '×' ? a * b : m[2] === ':' ? a / b : m[2] === '+' ? a + b : a - b;
+      });
+      await p.fill('.schirm.da #rein', String(soll));
+      await p.click('.schirm.da #pruef');
+      await bewertet(p);
+      /* Gewartet wird auf das LOB und nicht auf eine Frist: es steht nur
+         `LOBPAUSE` lang da, und ein Blick zur falschen Zeit meldet
+         „keine Figur", wo eine war. Dieselbe Falle wie bei der Serie. */
+      await p.waitForFunction(
+        () => !!document.querySelector('.schirm.da .richtigText, .schirm.da .figur'),
+        null, { timeout: 8000 }).catch(() => {});
+      return p.evaluate(() => !!document.querySelector('.schirm.da .figur'));
+    };
+    const beiLea = await lobFigur('lea', 'rechnen:reihen');
+    const beiStephan = await lobFigur('stephan', 'rechnen:gross');
+    console.log(`  Figur im Lob:               Lea ${beiLea ? 'ja' : 'nein'} · `
+      + `Stephan ${beiStephan ? 'ja' : 'nein'}`);
+    if (!beiLea) merke('regler', new Error(
+      'im Lob steht keine Figur — dann ist wieder niemand da, und das ist der '
+      + 'größte Einzelmangel der Oberfläche für ein Kind'));
+    if (beiStephan) merke('regler', new Error(
+      'auch bei Stephan steht eine Figur im Lob — das Profil wird sachlich '
+      + 'angesprochen, und ein Begleiter ist dort Zierde'));
+  }
+
   /* DER GRUND DER WELT (N7).
    *
    * Zwei Zusagen, und beide gehen leise kaputt - die Flaeche ist in

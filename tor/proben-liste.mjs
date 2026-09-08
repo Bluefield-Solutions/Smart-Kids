@@ -6050,6 +6050,36 @@ export const PROBEN = [
     an:{ ...DIST, text:'const OHNE_GRUND = new Set([]);' },
     sagt:'noch nicht betreten hat' },
 
+  /* --- Die Figur (N9) ---------------------------------------------------
+   *
+   * Ein Begleiter im Lob ist der eine Grafikbefund, der sich am Quelltext
+   * bestaetigt hat: es war niemand da. Beide Verfallsarten sind still -
+   * der Lobsatz steht in jedem Fall, er ist nur wieder leer bzw. an der
+   * falschen Stelle voll.
+   *
+   * 1. SIE KOMMT NIE. Zurueck zum Ausgangszustand, ohne dass ein Tor
+   *    etwas merkt: der Satz ist da, der Jubel ist da, nur der Begleiter
+   *    fehlt. Genau so hat es vor N9 ausgesehen. */
+  { n:'im Lob steht keine Figur mehr', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
+    ersatz:"  const wer = ''; "
+      + "// Anker: const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
+    an:{ ...DIST, text:"const wer = ''; // Anker: const wer = ton().feier" },
+    sagt:'steht keine Figur' },
+
+  /* 2. SIE KOMMT ZU ALLEN. Die freundlich aussehende Fassung: der
+   *    Begleiter jubelt auch Stephan zu, waehrend das Profil sachlich
+   *    angesprochen wird. Damit sagt die Figur nichts mehr ueber das
+   *    Profil aus - sie ist dann Zierde, und Zierde veraltet. */
+  { n:'die Figur steht auch im Lob der Eltern', tor:'smoke',
+    args:['--nur=regler'], bauen:true, datei:D,
+    such:"  const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
+    ersatz:"  const wer = figur(fastText ? 'staunt' : 'freut'); "
+      + "// Anker: const wer = ton().feier ? figur(fastText ? 'staunt' : 'freut') : '';",
+    an:{ ...DIST, text:"const wer = figur(fastText ? 'staunt' : 'freut'); // Anker:" },
+    sagt:'auch bei Stephan steht eine Figur' },
+
   /* --- Was zurueckkommt (N4) --------------------------------------------
    *
    * Das Zeichen im Kopf sagt „die kennst du schon - die kommt noch mal".

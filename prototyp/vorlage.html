@@ -2527,6 +2527,28 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
              border-color var(--d-tipp) var(--k-standard)}
 .leise:active{color:var(--tinte);background:var(--akzent-h);border-color:var(--akzent)}
 @media (hover:hover){.leise:hover{color:var(--tinte);border-color:var(--akzent)}}
+/* DIE FIGUR (N9) — im Stil der Wortbilder: flaechig, zwei Toene, keine
+   Umrisslinien, Licht von oben links. `k1` ist die belichtete Haelfte,
+   `k2` die Schattenseite, `a` sind Augen und Mund.
+   Sie steht INLINE im Lobsatz und nicht daneben: so nimmt sie keine
+   eigene Zeile und kann keine Bedienflaeche verdecken. */
+.figur{display:inline-block;vertical-align:-0.35em;margin-right:var(--r2)}
+.figur .k1{fill:var(--figur-hell)}
+.figur .k2{fill:var(--figur-dunkel)}
+.figur .a{fill:var(--figur-zug);color:var(--figur-zug)}
+/* Sie kommt HEREIN, sie steht nicht ploetzlich da. Kurz und einmal -
+   dieselbe Dauer wie die landenden Sterne, damit der Bildschirm einen
+   Takt hat und nicht drei. */
+@keyframes figurAuf{from{transform:scale(.5) rotate(-8deg);opacity:0}
+  60%{transform:scale(1.12) rotate(3deg);opacity:1}
+  to{transform:scale(1) rotate(0);opacity:1}}
+.figur{animation:figurAuf var(--d-belohnung) var(--k-standard) both}
+/* Auf dem Endbildschirm steht sie fuer sich, mit etwas Verzoegerung:
+   erst die Sterne, dann die Figur, dann die Zahl. Ein Takt, drei Schritte -
+   ohne den Versatz kaeme alles auf einmal, und dann ist es kein Moment
+   mehr, sondern ein Bild. */
+.figurgross{display:flex;justify-content:center;margin-bottom:var(--r1)}
+.figurgross .figur{margin:0;animation-delay:calc(var(--d-staffel) * 6)}
 .frage .richtigText{color:var(--gut)}
 /* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
    Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */
