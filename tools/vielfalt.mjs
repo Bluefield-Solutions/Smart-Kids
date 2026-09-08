@@ -59,9 +59,17 @@ const RUNDEN_MIN = 2;
  *
  * Das ist keine Abschwaechung, sondern die Trennung, ohne die die Zahl
  * nichts wert waere: „78 von 100" klingt nach einer kaputten App und war
- * zur Haelfte eine Landkarte. */
+ * zur Haelfte eine Landkarte.
+ *
+ * `hauptstaedte` steht mit `(:|$)` da, weil es die Ebene seit I14 zweimal
+ * gibt: Europa mit 29 und Suedosteuropa mit 7. Sieben sind weniger als
+ * eine Sitzung - und trotzdem kein Mangel, denn die Karte hat genau
+ * sieben Laender mit einer Hauptstadtfrage. Dass keines davon still
+ * herausfaellt, prueft nicht diese Grenze, sondern die Ratsche je Karte
+ * im Tor `inhalt` (europa 29, suedosteuropa 7). Zwei Zahlen, zwei Tore -
+ * diese hier wuerde beim Verlust eines Landes nicht einmal zucken. */
 const WELT = [
-  /^kontinente$/, /^bundeslaender$/, /^hauptstaedte$/,
+  /^kontinente$/, /^bundeslaender$/, /^hauptstaedte(:|$)/,
   /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/,
 ];
 const istWelt = (id) => WELT.some(r => r.test(id));

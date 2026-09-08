@@ -16,12 +16,12 @@ gleichen Sätze?"
 *(Diese Zahl war zur Hälfte falsch — siehe I6. Die Hälfte, die stimmte,
 ist abgearbeitet.)*
 
-**Stand nach allen dreizehn Paketen (v566):**
+**Stand nach allen vierzehn Paketen (v567):**
 
-> **0 von 119 Profil-Ebenen** unter zwei Runden Vorrat. 52 weitere liegen
+> **0 von 122 Profil-Ebenen** unter zwei Runden Vorrat. 55 weitere liegen
 > darunter, weil ihr Vorrat die Welt ist.
 
-Aus 100 Profil-Ebenen sind 119 geworden. Acht davon sind **neue Fragen**
+Aus 100 Profil-Ebenen sind 122 geworden. Acht davon sind **neue Fragen**
 und nicht längere Listen:
 
 | | Ebene | Für wen | Vorrat |
@@ -35,14 +35,16 @@ und nicht längere Listen:
 | I10 | Meter und Gramm | Lea | 140 |
 | I13 | Vorher und nachher | Fiona | 38 |
 
-Dazu zwei weitere Ebenen, die eine ganze Karte mitbringen (Länder und
-Flaggen in Südosteuropa, I11/I12), und gezählt am heutigen Stand:
+Dazu drei weitere Ebenen auf der Karte, die I11 mitgebracht hat — Länder,
+Flaggen und seit I14 auch Hauptstädte in Südosteuropa —, und gezählt am
+heutigen Stand:
 
 | | vorher | heute |
 |---|---|---|
 | Länder mit Namen | 69 | **124** |
 | Karten | 7 | **8** |
 | Hauptstädte in Europa | 17 | **29** |
+| Hauptstädte in Südosteuropa | — | **7** |
 | Gezeichnete Flaggen | 69 | **109** |
 | Verwechslungspaare | 13 | **22** |
 | Falsche Freunde · Wendungen · Hörsätze | 30 · 20 · 12 | **60 · 60 · 34** |
@@ -680,6 +682,60 @@ Die Gegenprobe dazu hat im ersten Anlauf **nichts bewiesen**: sie strich
 die Zahl aus der Ablenkerliste, und bei „Nach 7" kam die Sieben als
 *Ergebnis minus eins* durch die Hintertür zurück. Das Tor blieb zu Recht
 grün. Erst der zweite Eingriff nimmt sie auf jedem Weg heraus.
+
+### I14 · Hauptstädte in Südosteuropa — **gebaut (v567)**
+
+Die Karte, die I11 gebracht hat, hatte sieben Länder mit Namen und Umriss
+— und keine einzige Stadt. Der Grund stand in einer einzigen Zeile: der
+Schalter `hauptstaedte` in `tools/backen-laender.mjs` stand nur bei
+Europa. **Jetzt steht er bei zweien**, und damit ist er das, was er sein
+sollte: ein Schalter je Karte und kein Sonderfall für eine.
+
+Belgrad, Bratislava, Zagreb, Sarajevo, Tirana, Ljubljana, Skopje —
+**sieben Stadtlagen**, alle aus derselben Quelle wie die neunundzwanzig
+europäischen (`ne_10m_populated_places`, Rang „Admin-0 capital", deutscher
+Name aus `NAME_DE`), alle in der Kegelprojektion dieser Karte gerechnet
+und alle im eigenen Land gelandet. Das Tor `inhalt` prüft es je Karte mit
+einer eigenen Ratsche: **Europa 29, Südosteuropa 7**. Vorher stand dort
+eine Zahl für alles; die hätte nicht gezuckt, wenn eine Karte still leer
+geblieben wäre.
+
+**Sieben Aufgaben sind weniger als eine Runde — und trotzdem kein
+Mangel.** Die Karte hat genau sieben Länder, die eine Hauptstadtfrage
+tragen; mehr gibt es dort nicht, und wer sie „repariert", erfindet
+Staaten. `vielfalt` zählt die Ebene deshalb zur Welt (`·`, nicht `←`) und
+nicht zu den Listen. Dass keines der sieben still herausfällt, sagt nicht
+diese Grenze, sondern die Ratsche im Tor `inhalt`: zwei Zahlen, zwei
+Tore, und keine von beiden mit dem Auftrag der anderen.
+
+**Der Satz über dem Gitter war für Europa geschrieben und wurde von
+Südosteuropa zur Lüge gemacht.** Er hieß: *„Gesucht ist die Hauptstadt —
+nicht die größte Stadt. Bei einem Land hier sind das zwei verschiedene."*
+Für Europa stimmt das (Bern ist kleiner als Zürich, Den Haag ist der
+Regierungssitz zu Amsterdam). Für Südosteuropa stimmt **kein Teil** davon:
+alle sieben Hauptstädte sind die größte Stadt ihres Landes, und jeder der
+vierzehn Ablenker ist kleiner. Regel 6 in Reinform — nur dass der Satz
+nicht zweimal *dastand*, sondern zweimal *gelesen* wurde.
+
+Er wird jetzt abgeleitet. Der Nachsatz hängt an `falle`, und `falle` hängt
+am abweichenden Regierungssitz aus den gebackenen Daten. Europa hat einen,
+Südosteuropa keinen, und die vierte Karte bekommt ihren Satz, ohne dass
+jemand ihn schreibt.
+
+**Zwei Vorbilder und zwei Gegenproben, weil eine Ableitung mit einem Bild
+nicht zu beweisen ist.** Ein Satz ohne Nachsatz sieht genauso aus wie ein
+fest hingeschriebener Satz ohne Nachsatz. Erst das Paar
+(`quer-hauptstaedte-so` und `quer-hauptstaedte-eu-vorlauf`) zeigt, dass
+dieselbe Zeile zwei verschiedene Sätze ergibt — und die zwei Gegenproben
+erzwingen jede eine Richtung: der Nachsatz, wo er nicht hingehört, und
+sein Fehlen, wo er hingehört.
+
+**Und das Backwerkzeug hat sieben Stadtlagen gebacken und nichts davon
+gemeldet.** Die Berichtszeile stand fest auf `ausgabe.europa` — eine
+Ausgabe, die der Sache hinterherhinkt, sieht genauso aus wie eine Sache,
+die nicht passiert ist. Sie läuft jetzt über jede Karte mit dem Schalter,
+und die Zeile darunter zählt die Karten statt „fünf Kontinente" zu sagen,
+während es acht sind.
 
 ## Das Werkzeug
 

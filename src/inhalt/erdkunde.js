@@ -532,7 +532,15 @@ export const HAUPTSTADT_OHNE_ABLENKER = {
   ISL: 'keine zweite Stadt, die bekannt genug waere — Akureyri hat 19 000 Einwohner',
 };
 
-export const HAUPTSTADT_ABLENKER_EUROPA = {
+/* DIE TAFEL HIESS BIS I14 `..._EUROPA`, und der Name war falsch geworden.
+ *
+ * Sie ist nach dem Landeskuerzel indiziert, also nach etwas, das weltweit
+ * eindeutig ist - und mit der Suedosteuropakarte stehen sieben Laender
+ * darin, die auf der Europaebene nicht gefragt werden. Zwei Tafeln waeren
+ * dieselbe Auskunft an zwei Orten (Regel 6: was zweimal dasteht, veraltet
+ * einmal); eine Tafel mit einem Namen, der die Haelfte ihres Inhalts
+ * ausschliesst, ist der leisere Fehler von beiden. */
+export const HAUPTSTADT_ABLENKER_LAND = {
   RUS:['Sankt Petersburg','Nowosibirsk'],
   DEU:['Hamburg','München'],
   GBR:['Manchester','Birmingham'],
@@ -581,4 +589,24 @@ export const HAUPTSTADT_ABLENKER_EUROPA = {
   LTU:['Kaunas','Klaipėda'],
   LVA:['Daugavpils','Liepāja'],
   EST:['Tartu','Narva'],
+
+  /* --- Suedosteuropa: die sieben (I14) -------------------------------- *
+   *
+   * Dieselbe Regel wie bei allen anderen: die Stadt, die jemand fuer die
+   * Hauptstadt HALTEN koennte. Auf dem Balkan ist das oft die
+   * zweitgroesste Stadt einer anderen Landesteilhaelfte - Split gegen
+   * Zagreb, Nis gegen Belgrad, Bitola gegen Skopje.
+   *
+   * Bosnien ist der Sonderfall, und er ist kein Ablenkerproblem, sondern
+   * Landeskunde: Banja Luka ist die Hauptstadt der Republika Srpska und
+   * damit fuer viele die „andere Hauptstadt". Genau deshalb steht sie
+   * vorn - wer sie waehlt, hat nicht geraten, sondern etwas Halbrichtiges
+   * gewusst. */
+  SRB:['Novi Sad','Niš'],
+  SVK:['Košice','Nitra'],
+  HRV:['Split','Rijeka'],
+  BIH:['Banja Luka','Mostar'],
+  ALB:['Durrës','Vlora'],
+  SVN:['Maribor','Celje'],
+  MKD:['Bitola','Kumanovo'],
 };

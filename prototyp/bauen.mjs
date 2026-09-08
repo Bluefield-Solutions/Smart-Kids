@@ -110,7 +110,7 @@ const D = {
       // Ablenker dazu - und `falle` wird ABGELEITET, nicht behauptet:
       // wahr genau dort, wo Natural Earth einen abweichenden
       // Regierungssitz kennt.
-      ablenker: I.HAUPTSTADT_ABLENKER_EUROPA[l.a3] || [],
+      ablenker: I.HAUPTSTADT_ABLENKER_LAND[l.a3] || [],
       falle: !!l.regierungssitz })))])),
   deutschland: DEUTSCHLAND_MITTEL.map(b=>{
     const s = STAEDTE.find(x=>x.id===b.id);

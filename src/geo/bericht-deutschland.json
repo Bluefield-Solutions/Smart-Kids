@@ -14,7 +14,7 @@
       "punkte": 7671,
       "bytes": 93355,
       "gzip": 35118,
-      "sekunden": 0.4
+      "sekunden": 0.3
     },
     {
       "stufe": "mittel",
@@ -40,7 +40,7 @@
       "punkte": 13485,
       "bytes": 163569,
       "gzip": 58854,
-      "sekunden": 0.3
+      "sekunden": 0.4
     }
   ]
 }

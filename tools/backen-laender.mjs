@@ -136,10 +136,15 @@ const EBENEN = [
   { id:'asien', name:'Asien', ne:'Asia', projektion:'kegel' },
   { id:'afrika', name:'Afrika', ne:'Africa', projektion:'azimutal' },
   /* `hauptstaedte` backt zusaetzlich die Lage der Hauptstadt je Zielland
-   * (R6). Nur hier, nicht ueberall: es sind siebzehn Punkte zu je rund
-   * 45 Byte, und fuer die vier anderen Kontinente gibt es keine Ebene,
-   * die sie braucht. Ein Vorrat, den niemand liest, ist Ballast im
-   * Nachladepaket. */
+   * (R6). Nicht ueberall: es sind Punkte zu je rund 45 Byte, und fuer die
+   * vier Kontinente ohne Hauptstadtebene waeren sie ein Vorrat, den
+   * niemand liest - Ballast im Nachladepaket.
+   *
+   * Seit I14 steht der Schalter bei ZWEI Karten: Europa und
+   * Suedosteuropa. Beide haben eine Hauptstadtebene, und die
+   * Suedosteuropakarte ist der Grund, warum es sie ueberhaupt zweimal
+   * gibt - Belgrad liegt in Europa, aber auf der Europakarte hat Serbien
+   * keinen Rang und damit keinen gebackenen Punkt. */
   { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true,
     hauptstaedte:true },
   { id:'nordamerika', name:'Nordamerika', ne:'North America', projektion:'kegel' },
@@ -161,7 +166,8 @@ const EBENEN = [
    * Welt ab, und dieser Ausschnitt liegt ganz in ihr. Zweimal
    * hintereinander schneiden waere eine Rechnung ohne Wirkung. */
   { id:'suedosteuropa', name:'Südosteuropa', ne:'Europe',
-    maske:'/tmp/suedosteuropa-maske.json', projektion:'kegel' },
+    maske:'/tmp/suedosteuropa-maske.json', projektion:'kegel',
+    hauptstaedte:true },
   { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal' },
   /* Ozeanien. Der Erdteil heisst in den Rohdaten „Oceania", die Kennung
    * hier `australien` - so heisst auch der Kontinent auf der Weltkarte,
@@ -318,15 +324,24 @@ for (const [id, zeilen] of Object.entries(ausgabe))
 }
 if (fehlendeStaedte.length)
   throw new Error(`Keine Hauptstadt gefunden fuer: ${fehlendeStaedte.join(', ')} — `
-    + 'die Ebene „Hauptstädte in Europa" haette dort eine leere Antwort.');
+    + 'die Hauptstadt-Ebene dieser Karte haette dort eine leere Antwort.');
+/* Der Bericht laeuft ueber ALLE Karten mit `hauptstaedte`, nicht ueber
+ * Europa allein. Er stand hier fest auf `ausgabe.europa`, und als
+ * Suedosteuropa dazukam, buk das Werkzeug sieben Lagen und meldete
+ * nichts davon: eine Ausgabe, die der Sache hinterherhinkt, sieht
+ * genauso aus wie eine Sache, die nicht passiert ist. */
 {
-  const mit = ausgabe.europa?.grob?.filter(x => x.hauptstadt) || [];
-  bericht.hauptstaedte = { stufe:'grob', anzahl:mit.length,
-    regierungssitze: mit.filter(x=>x.regierungssitz).map(x=>`${x.name}: ${x.regierungssitz}`) };
-  console.log(`\n  Hauptstädte in Europa: ${mit.length} Lagen (Stufe grob, die das Spiel zeichnet)`);
-  console.log(`    ${mit.map(x=>x.hauptstadt).join(' · ')}`);
-  for (const x of mit.filter(x=>x.regierungssitz))
-    console.log(`    Regierungssitz abweichend: ${x.name} — ${x.regierungssitz} statt ${x.hauptstadt}`);
+  const karten = EBENEN.filter(k => k.hauptstaedte)
+    .map(k => ({ k, mit: (ausgabe[k.id]?.grob || []).filter(x => x.hauptstadt) }));
+  bericht.hauptstaedte = { stufe:'grob', karten: karten.map(({k,mit}) => ({
+    id: k.id, anzahl: mit.length,
+    regierungssitze: mit.filter(x=>x.regierungssitz).map(x=>`${x.name}: ${x.regierungssitz}`) })) };
+  for (const { k, mit } of karten) {
+    console.log(`\n  Hauptstädte in ${k.name}: ${mit.length} Lagen (Stufe grob, die das Spiel zeichnet)`);
+    console.log(`    ${mit.map(x=>x.hauptstadt).join(' · ')}`);
+    for (const x of mit.filter(x=>x.regierungssitz))
+      console.log(`    Regierungssitz abweichend: ${x.name} — ${x.regierungssitz} statt ${x.hauptstadt}`);
+  }
 }
 fs.writeFileSync(path.join(AUS,'bericht-laender.json'), JSON.stringify(bericht,null,2));
-console.log(`\n  Summe mittlere Stufe über alle fünf Kontinente: ${(gesamtGz/1024).toFixed(1)} KB gzip`);
+console.log(`\n  Summe mittlere Stufe über alle ${Object.keys(ausgabe).length} Karten: ${(gesamtGz/1024).toFixed(1)} KB gzip`);

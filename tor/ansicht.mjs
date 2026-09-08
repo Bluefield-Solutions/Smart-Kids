@@ -364,6 +364,30 @@ const AUFNAHMEN = [
    * Fiona hat sie nicht. */
   { name:'quer-hauptstaedte-eu', spiel:'hauptstaedte:europa', kind:'lea',
     quer:true, wahl:'.schirm.da' },
+  /* Hauptstädte in Südosteuropa (I14) — und zwar der VORLAUF, nicht die
+   * Frage.
+   *
+   * Zwei Dinge stehen hier in einem Bild, die es vorher beide nicht gab:
+   * die sieben Stadtlagen auf der neuen Karte (gebacken, seit
+   * `hauptstaedte:true` auch bei Südosteuropa steht) und der Satz über
+   * dem Gitter, der seit I14 abgeleitet wird statt geschrieben. Auf
+   * dieser Karte gibt es kein Land mit abweichendem Regierungssitz —
+   * der Zusatz, den Europa bekommt, muss hier also FEHLEN. Genau das
+   * hält die Aufnahme fest; die Gegenprobe dazu zwingt den Zusatz
+   * herbei und erwartet Rot. */
+  { name:'quer-hauptstaedte-so', spiel:'hauptstaedte:suedosteuropa', kind:'lea',
+    quer:true, wahl:'.schirm.da', tun:'vorlauf' },
+  /* Und derselbe Vorlauf für Europa — die ANDERE Seite der Ableitung.
+   *
+   * Ein einziges Bild könnte nicht zeigen, dass hier abgeleitet wird und
+   * nicht geschrieben: der Satz ohne Zusatz sieht genauso aus wie ein
+   * fest hingeschriebener Satz ohne Zusatz. Erst das Paar beweist es —
+   * dieselbe Zeile Code, zwei Karten, zwei verschiedene Sätze. Europa
+   * bekommt den Nachsatz über die Niederlande, Südosteuropa nicht, und
+   * jede der beiden Aufnahmen hat ihre eigene Gegenprobe (Regel 1: wer
+   * eine Wirkung misst, schaltet sie zuerst ab). */
+  { name:'quer-hauptstaedte-eu-vorlauf', spiel:'hauptstaedte:europa', kind:'lea',
+    quer:true, wahl:'.schirm.da', tun:'vorlauf' },
   /* Die Gruppenkachel (Q17) — der einzige Bildschirm, den man NUR sieht,
      wenn man zwei Ebenen hat, die sich eine Kachel teilen.
      Er entsteht seit Q17 zwischen Wand und Ebene: „Hauptstädte — wo?",

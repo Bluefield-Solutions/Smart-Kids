@@ -22,6 +22,7 @@ import { LAENDER_EUROPA_FEIN } from '../src/geo/laender-europa.fein.js';
 // und weil nur dort die Stadtlagen gebacken sind (Regel 5: die Zahl und
 // ihre Messstelle gehoeren zusammen).
 import { LAENDER_EUROPA_GROB } from '../src/geo/laender-europa.grob.js';
+import { LAENDER_SUEDOSTEUROPA_GROB } from '../src/geo/laender-suedosteuropa.grob.js';
 /* Und die uebrigen groben Stufen. `bauen.mjs` backt genau diese ein - die
  * feinen sind der Vorrat, nicht die Ware. Ein Anker, der in der feinen
  * Stufe im Gebiet liegt, kann in der groben davor liegen: vereinfachen
@@ -174,7 +175,7 @@ I.ECHTE_FALLEN.forEach(id => {
   pruefe(a.length >= 1, `${id} ist als echte Falle geführt, hat aber keinen Ablenker`);
 });
 
-/* Ebene „Hauptstädte in Europa" (R6).
+/* Die Hauptstadtebenen der LAENDER (R6, seit I14 zwei).
  *
  * Geprueft wird das, was diese Ebene kaputt machen kann, ohne dass es
  * auffaellt:
@@ -205,16 +206,34 @@ I.ECHTE_FALLEN.forEach(id => {
    * „Hauptstaedte in Europa", ohne dass irgendetwas rot wurde.
    *
    * Wer den Vorrat nach dem Vorrat fragt, bekommt immer ja. */
-  const gebackenEU = new Map(LAENDER_EUROPA_GROB.map(l => [l.a3, l]));
-  const meta = new Map(I.LAENDER.europa.map(l => [l.a3, l]));
+  /* ZWEI Karten seit I14, EIN Pruefblock.
+   *
+   * „Hauptstädte in Europa" und „Hauptstädte in Südosteuropa" stellen
+   * dieselbe Frage und koennen auf dieselben Arten kaputtgehen. Ein
+   * zweiter, abgeschriebener Block waere Regel 6 - und zwar besonders
+   * leise, weil eine Kopie beim ersten Lauf gruen ist.
+   *
+   * Die RATSCHE steht je Karte, weil sie eine Aussage ueber DIESE Karte
+   * ist: sinkt die Zahl, ist dort eine Hauptstadt aus dem Backen
+   * gefallen. */
+  const KARTEN = [
+    { id:'europa', wie:'Europa', gebacken: LAENDER_EUROPA_GROB, ratsche: 29 },
+    { id:'suedosteuropa', wie:'Südosteuropa',
+      gebacken: LAENDER_SUEDOSTEUROPA_GROB, ratsche: 7 },
+  ];
+  /* Wer ueberhaupt eine Hauptstadtfrage bekommt - ueber BEIDE Karten.
+     Die Tafel `HAUPTSTADT_ABLENKER_LAND` ist nach Landeskuerzel indiziert
+     und kennt keine Karten; die Pruefung „Ablenker fuer ein Land, das es
+     auf keiner Ebene gibt" muss deshalb ueber alle fragen. */
+  const alleMeta = new Map(KARTEN.flatMap(k =>
+    (I.LAENDER[k.id] || []).map(l => [l.a3, l])));
+  for (const karte of KARTEN) {
+  const gebackenEU = new Map(karte.gebacken.map(l => [l.a3, l]));
+  const meta = new Map(I.LAENDER[karte.id].map(l => [l.a3, l]));
   let drin = 0;
-  /* RATSCHE, kein Soll: so viele europaeische Laender tragen heute eine
-     gebackene Hauptstadt und stehen damit auf der Ebene. Sinkt die Zahl,
-     ist eine Hauptstadt aus dem Backen gefallen - genau der Fehler, den
-     dieser Abschnitt seit D2c faengt. Steigt sie, gehoert sie erhoeht. */
-  const HAUPTSTAEDTE_EU = 29;
+  const HAUPTSTAEDTE_EU = karte.ratsche;
   let ohneHauptstadt = 0;
-  for (const m of I.LAENDER.europa) {
+  for (const m of I.LAENDER[karte.id]) {
     const l = gebackenEU.get(m.a3);
     pruefe(l, `${m.a3} (${m.name}) wird gespielt und ist nicht gebacken — `
       + '`npm run backen` mit den Rohdaten trägt es nach');
@@ -262,7 +281,7 @@ I.ECHTE_FALLEN.forEach(id => {
         + `(${l.ort.join(', ')}) — der Stadtpunkt erschiene neben dem Land`);
       if (trifft) drin++;
     }
-    const ab = I.HAUPTSTADT_ABLENKER_EUROPA[l.a3] || [];
+    const ab = I.HAUPTSTADT_ABLENKER_LAND[l.a3] || [];
     /* Zwei Ablenker - oder ein Satz, warum es keine gibt.
      *
      * Die Ausnahme ist keine Abschwaechung, sondern die Bedingung dafuer,
@@ -285,20 +304,27 @@ I.ECHTE_FALLEN.forEach(id => {
         `${l.a3}: Natural Earth kennt „${l.regierungssitz}" als Regierungssitz, `
         + `unter den Ablenkern steht vorn aber „${ab[0]}" — die eigentliche Falle fiele aus`);
   }
-  const fremd = Object.keys(I.HAUPTSTADT_ABLENKER_EUROPA)
-    .filter(a3 => !meta.has(a3));
-  pruefe(!fremd.length, `Ablenker für Länder, die es auf der Ebene nicht gibt: ${fremd.join(', ')}`);
-  for (const l of I.LAENDER.europa)
+  for (const l of I.LAENDER[karte.id])
     if (l.wovon) pruefe(/^vo[nm] /.test(l.wovon),
       `${l.a3}: \`wovon\` ist „${l.wovon}" — die Frage lautet „Wie heißt die Hauptstadt …?"`);
-  const sitze = I.LAENDER.europa.filter(m => gebackenEU.get(m.a3)?.regierungssitz).length;
+  const sitze = I.LAENDER[karte.id].filter(m => gebackenEU.get(m.a3)?.regierungssitz).length;
   pruefe(ohneHauptstadt >= HAUPTSTAEDTE_EU,
-    `nur noch ${ohneHauptstadt} europäische Länder tragen eine gebackene Hauptstadt, `
-    + `es waren ${HAUPTSTAEDTE_EU} — eine ist aus dem Backen gefallen und damit `
-    + 'still von der Ebene „Hauptstädte in Europa" verschwunden');
-  console.log(`    Hauptstädte in Europa: ${ohneHauptstadt} von ${I.LAENDER.europa.length} `
+    `auf der Karte ${karte.wie} tragen nur noch ${ohneHauptstadt} Länder eine `
+    + `gebackene Hauptstadt, es waren ${HAUPTSTAEDTE_EU} — eine ist aus dem Backen `
+    + 'gefallen und damit still von der Ebene verschwunden');
+  console.log(`    Hauptstädte in ${karte.wie}: ${ohneHauptstadt} von `
+    + `${I.LAENDER[karte.id].length} `
     + `Ländern tragen eine (Ratsche ${HAUPTSTAEDTE_EU}), ${drin} Stadtlagen im `
     + `eigenen Land, ${sitze} abweichender Regierungssitz`);
+  }
+  /* Und zuletzt EINMAL fuer beide Karten: eine Zeile in der Tafel, die zu
+     keinem gefragten Land gehoert. Sie stand vorher in der Schleife und
+     haette mit zwei Karten jedes Land der einen als „fremd" auf der
+     anderen gemeldet. */
+  const fremd = Object.keys(I.HAUPTSTADT_ABLENKER_LAND)
+    .filter(a3 => !alleMeta.has(a3));
+  pruefe(!fremd.length,
+    `Ablenker für Länder, die es auf keiner Hauptstadtebene gibt: ${fremd.join(', ')}`);
 }
 pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
   `Datenstand ${I.STAND.jahr} ist älter als drei Jahre`);

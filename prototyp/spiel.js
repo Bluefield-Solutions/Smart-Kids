@@ -1163,6 +1163,19 @@ const EBENEN = [
    * einmal mit den Rohdaten gelaufen ist. */
   { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,
     wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa' },
+  /* Und dieselbe Frage auf der Suedosteuropakarte (I14).
+   *
+   * Sieben Hauptstaedte, und der Grund fuer eine EIGENE Ebene ist derselbe
+   * wie fuer die eigene Karte: Belgrad liegt in Europa, aber auf der
+   * Europakarte hat Serbien keinen Rang - und ohne Rang bekommt ein Umriss
+   * beim Backen keine Stadtlage. Der Punkt, der nach der richtigen Antwort
+   * erscheint, gaebe es dort also nicht.
+   *
+   * Sie steht in derselben Gruppe wie die anderen beiden: eine dritte
+   * Kachel auf der Wand waere eine, die dasselbe fragt. */
+  { id:'hauptstaedte:suedosteuropa', ueber:'Südosteuropa', titel:'Hauptstädte',
+    farbe: KONT_FARBE.suedosteuropa,
+    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Südosteuropa' },
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
@@ -3943,9 +3956,25 @@ const vorlaufGitter = (n) => {
 /** Der eine Satz, den dieser Vorlauf mitgibt. Abgeleitet, nicht gesammelt. */
 function vorlaufSatz(ebeneId){
   const [art, kont] = ebeneId.split(':');
-  if (art === 'hauptstaedte' && kont)
-    return 'Gesucht ist die <strong>Hauptstadt</strong> — nicht die größte Stadt. '
-      + 'Bei einem Land hier sind das zwei verschiedene.';
+  /* Der Satz der Kontinent-Hauptstädte wird ABGELEITET, seit es die
+     Ebene zweimal gibt (I14: Europa und Südosteuropa). Vorher stand hier
+     ein Satz, der für Europa geschrieben war — „nicht die größte Stadt,
+     bei einem Land hier sind das zwei verschiedene". Für Südosteuropa ist
+     er schlicht falsch: alle sieben Hauptstädte SIND die größte Stadt
+     ihres Landes, und die Ablenker sind durchweg kleiner. Ein Satz, den
+     die zweite Karte still zur Lüge macht, ist Regel 6 in Reinform.
+
+     Der Zusatz hängt an `falle`, und `falle` hängt an `regierungssitz`
+     aus den gebackenen Daten (Niederlande: Den Haag). Damit sagt der Satz
+     genau das, was in den Daten steht — nicht mehr. */
+  if (art === 'hauptstaedte' && kont) {
+    const liste = D.laender[karteVon(ebeneId)] || [];
+    return 'Zur Auswahl stehen echte Städte des Landes — gesucht ist die '
+      + '<strong>Hauptstadt</strong>.'
+      + (liste.some(l => l.falle)
+         ? ' Ein Land hier ist besonders: die Regierung sitzt in einer '
+           + 'anderen Stadt als die Hauptstadt.' : '');
+  }
   if (art === 'hauptstaedte')
     return 'Berlin, Hamburg und Bremen fehlen hier: sie sind <strong>Stadtstaaten</strong>, '
       + 'die Stadt ist das ganze Bundesland. Sie <em>sind</em> ihre Hauptstadt.';

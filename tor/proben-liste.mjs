@@ -2000,6 +2000,43 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
     sagt:'quer-praeposition' },
 
+  /* --- I14: der abgeleitete Vorlaufsatz, in beide Richtungen ---------- *
+   *
+   * Seit es die Ebene „Hauptstädte" auf ZWEI Kontinentkarten gibt, wird
+   * ihr Vorlaufsatz abgeleitet statt geschrieben. Vorher stand dort ein
+   * Satz, der für Europa richtig war („nicht die groesste Stadt - bei
+   * einem Land hier sind das zwei verschiedene") und den Suedosteuropa
+   * still zur Luege gemacht haette: dort ist jede der sieben Hauptstaedte
+   * die groesste Stadt ihres Landes, und jeder Ablenker ist kleiner.
+   * Regel 6 - was zweimal dasteht, veraltet einmal; hier haette es
+   * gereicht, dass es EINMAL dastand und zweimal gelesen wird.
+   *
+   * Der Nachsatz haengt an `falle`, und `falle` haengt an dem
+   * abweichenden Regierungssitz aus den gebackenen Daten. Europa hat
+   * einen (Niederlande - Den Haag), Suedosteuropa keinen.
+   *
+   * ZWEI Proben und nicht eine, weil eine Ableitung mit einem Bild nicht
+   * zu beweisen ist: ein Satz ohne Nachsatz sieht genauso aus wie ein
+   * fest hingeschriebener Satz ohne Nachsatz. Erst beide Richtungen
+   * zeigen, dass dieselbe Zeile zwei verschiedene Saetze ergibt (Regel 1:
+   * wer eine Wirkung misst, schaltet sie zuerst ab).
+   *
+   * `passt` waere hier das falsche Tor - ein laengerer Satz laeuft nicht
+   * ueber den Rand, er bricht um. Genau der Fall, fuer den es die
+   * Vorbilder gibt. Auf dem Runner ausgelassen: `ansicht` ist dort
+   * abgeschaltet (Q39). */
+  { n:'Suedosteuropa erbt den Nachsatz, den nur Europa hat', tor:'ansicht',
+    args:['--nur=quer-hauptstaedte-so'], bauen:true, datei:D,
+    such:'liste.some(l => l.falle)', ersatz:'true',
+    an:{ ...DIST, fehlt:'liste.some(l => l.falle)' },
+    sagt:'quer-hauptstaedte-so' },
+
+  { n:'Europa verliert den Nachsatz ueber den Regierungssitz', tor:'ansicht',
+    args:['--nur=quer-hauptstaedte-eu-vorlauf'], bauen:true, datei:D,
+    such:'liste.some(l => l.falle)', ersatz:'false',
+    an:{ ...DIST, fehlt:'liste.some(l => l.falle)' },
+    sagt:'quer-hauptstaedte-eu-vorlauf' },
+
   /* --- I7: der Vorrat als Ratsche ------------------------------------- *
    *
    * `vielfalt` ist das Tor, das den Inhalt-Audit am Leben haelt: keine
@@ -2075,8 +2112,13 @@ export const PROBEN = [
        (`flaggenpaare`); ein Eingriff, der eine von zweien entfernt,
        laesst die andere stehen, und die Probe meldete fuer immer "kam
        nicht an". Das Tor `anker` hat es gesagt, bevor der naechste
-       Probenlauf es gekostet haette. */
-    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta'], gruppe:'hauptstaedte'" },
+       Probenlauf es gekostet haette.
+
+       UND EIN ZWEITES MAL, mit I14: die Hauptstadt-Ebene fuer
+       Suedosteuropa hat dieselbe `wer`-Liste und dieselbe Gruppe. Die
+       Nachfrage nennt deshalb auch das `wo` - das ist der einzige Teil
+       der Zeile, der die beiden Karten unterscheidet. */
+    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa'" },
     sagt:'steht aber in fionas Auswahl' },
 
   /* --- Ton je Profil und der Elternbereich als Bild -------------------- */

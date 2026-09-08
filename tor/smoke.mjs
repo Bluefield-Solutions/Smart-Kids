@@ -4809,10 +4809,12 @@ const SAGT_ENGLISCH = (e) => (String(e).startsWith('englisch') || e === 'hoersat
    Fremdpruefung unten meldet jede Ebene, die einem anderen gehoert und
    trotzdem dasteht. Fiona hat sie nicht (zwei geschriebene Woerter kann
    sie nicht lesen), und das ist hier die Aussage. */
-const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
+const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa',
+                                 'hauptstaedte:suedosteuropa', 'freunde',
                                  'verben', 'praeposition', 'wendungen', 'hoersatz',
                                  'englisch:laute'],
-                       violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
+                       violeta: ['rechnen:gross', 'hauptstaedte:europa',
+                                 'hauptstaedte:suedosteuropa', 'freunde',
                                  'verben', 'praeposition', 'wendungen', 'hoersatz',
                                  'englisch:laute'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
@@ -4834,7 +4836,8 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freund
                           lesen kann, ist Formenvergleich. Hier zu stehen
                           heisst zweierlei: bei Lea muss die Kachel da sein,
                           und bei jedem anderen darf sie es nicht. */
-                       lea: ['rechnen:reihen', 'hauptstaedte:europa', 'englisch:hoeren',
+                       lea: ['rechnen:reihen', 'hauptstaedte:europa',
+                             'hauptstaedte:suedosteuropa', 'englisch:hoeren',
                              'englisch:legen', 'englisch:bauen', 'englisch:laute',
                              /* „Lies das Wort" (E7) gehoert Lea allein, aus
                                 demselben Grund wie das Legen: Fiona liest

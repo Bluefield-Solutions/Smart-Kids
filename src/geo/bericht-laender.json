@@ -269,7 +269,7 @@
           "laender": 21,
           "hausdorffPx": 0.662,
           "punkte": 8364,
-          "gzip": 37180
+          "gzip": 37411
         },
         {
           "stufe": "mittel",
@@ -363,9 +363,19 @@
   ],
   "hauptstaedte": {
     "stufe": "grob",
-    "anzahl": 29,
-    "regierungssitze": [
-      "Niederlande: Den Haag"
+    "karten": [
+      {
+        "id": "europa",
+        "anzahl": 29,
+        "regierungssitze": [
+          "Niederlande: Den Haag"
+        ]
+      },
+      {
+        "id": "suedosteuropa",
+        "anzahl": 7,
+        "regierungssitze": []
+      }
     ]
   }
 }
