@@ -688,7 +688,13 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
      5), `e` und `f` wackeln (Fach 1, mehrfach daneben), `c` und `d`
      liegen dazwischen. Der Bogen muss also mit a/b anfangen und mit dem
      schwersten von e/f aufhoeren. */
-  const liste = ['a','b','c','d','e','f'].map(id => ({ id }));
+  /* DIE EINGANGSREIHENFOLGE IST ABSICHTLICH DURCHEINANDER. Der erste
+     Anlauf hat `['a','b','c','d','e','f']` genommen - also genau die
+     Reihenfolge, die herauskommen soll. Ein Eingriff, der den Bogen ganz
+     ausschaltet und die Liste durchreicht, lieferte damit dasselbe
+     Ergebnis, und die Gegenprobe meldete TOR BLEIBT GRUEN. Eine Probe,
+     deren Eingang schon das Soll ist, prueft nichts. */
+  const liste = ['f','c','a','e','d','b'].map(id => ({ id }));
   const stand = {
     a: { fach: 5, richtig: 5, falsch: 0 },
     b: { fach: 5, richtig: 4, falsch: 0 },
@@ -712,9 +718,9 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   /* UND ER LAESST KURZE RUNDEN IN RUHE. Bei drei Aufgaben waeren zwei
      zum Aufwaermen und eine als Knacknuss die ganze Runde - „Aufwaermen"
      hiesse dann nur, dass die Reihenfolge feststeht. */
-  const kurz = ['x','y','z'].map(id => ({ id }));
+  const kurz = ['z','x','y'].map(id => ({ id }));
   const kurzAus = L.bogen(kurz, {}).map(x => x.id);
-  if (kurzAus.join() !== 'x,y,z')
+  if (kurzAus.join() !== 'z,x,y')
     fehler.push('der Bogen ordnet auch eine Runde mit drei Aufgaben um — dort ist '
       + 'nichts zu gliedern, und die Umordnung nimmt nur dem Mischen seine Wirkung');
   geprueft += 4;

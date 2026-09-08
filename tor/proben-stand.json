@@ -2015,6 +2015,16 @@
       "zeit": "2026-09-07",
       "s": 5
     },
+    "die schwerste Aufgabe steht nicht mehr am Ende": {
+      "commit": "e1699dbf38e55c835477d793f7009f4ad237ed45",
+      "zeit": "2026-09-08",
+      "s": 6
+    },
+    "der Bogen verliert eine Aufgabe": {
+      "commit": "e1699dbf38e55c835477d793f7009f4ad237ed45",
+      "zeit": "2026-09-08",
+      "s": 6
+    },
     "das Tagesziel zählt gestrige Sterne mit": {
       "commit": "d6797cd6549c5d258e3a965f552f07d484b7d5a8",
       "zeit": "2026-09-08",
