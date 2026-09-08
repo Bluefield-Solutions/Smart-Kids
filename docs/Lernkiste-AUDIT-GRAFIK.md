@@ -13,9 +13,43 @@ Problem gelöst hat und nie *die Fläche* gestaltet wurde.
 
 ---
 
+---
+
+## NACHTRAG, noch in derselben Nacht: vier von vierzehn Befunden waren zu hart
+
+Dieses Audit ist an **64 statischen PNG** entstanden. Beim Bauen der Runden
+habe ich die Befunde am Quelltext nachgeprüft, und dabei fielen vier durch:
+
+| | Behauptet | Wirklich |
+|---|---|---|
+| **G2** | „Nichts hat Tiefe" | Kacheln haben harte Unterkante, Innenglanz und Druckzustand. Es fehlte nur der **geworfene** Schatten — nachgetragen in N7. |
+| **G4** | „Die Belohnung ist ein Bericht, keine Bewegung" | Der Endbildschirm lässt die drei Sterne **gestaffelt landen** und den Buchknopf winken. Ein fliegender Aufkleber war erwogen und mit Begründung verworfen. |
+| **G11** | „Eine einzige Schrift, eine einzige Größe" | **Drei** Schriften (`--f-lesen` Andika für das, was das Kind liest, `--f-ui`, `--f-mono`) und eine **sechsstufige** Größenleiter. |
+| **G14** | „Nichts bewegt sich" | **Fünfzehn** Animationen: Bildschirmwechsel, Hüpfen bei richtig, Wackeln bei falsch, landende Sterne, winkender Buchknopf, atmender Ring, gemalte Buchstaben. |
+
+**Die Ursache ist die Messstelle**, und sie steht als Regel schon im Haus: ein
+Standbild kann keine Bewegung zeigen, keinen Druckzustand, nichts, was über
+Zeit passiert. Ich habe vierzehn Aussagen aus Belegen gezogen, die nur einen
+Teil davon tragen konnten — genau der Fehler, den die Regel „jede Zahl trägt
+ihre Messstelle mit" verhindern soll, nur mit Bildern statt mit Zahlen.
+
+**Was das nicht entkräftet:** der Gesamteindruck stimmt. Die App sieht auf dem
+ersten Blick nicht aus wie ein Spiel. Aber der Grund ist enger, als dieses
+Audit ihn gemacht hat — und die Runden, die daraus folgen, sind weniger und
+gezielter.
+
+**Geprüft und bestätigt** sind: G1 (alles weiß — erledigt in N7), **G3 (es ist
+niemand da — null Treffer für eine Figur im ganzen Quelltext)**, G5, G6, G7,
+G13. Teilweise: G8, G9, G12.
+
+---
+
 ## Der Gesamteindruck in einem Satz
 
 **Weiß, flach, textgetrieben, menschenleer.**
+
+> Nach der Nachprüfung genauer: **weiß, ortlos und menschenleer.** „Flach" und
+> „textgetrieben" waren zu hart.
 
 ---
 
