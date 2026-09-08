@@ -127,8 +127,8 @@ export const PROBEN = [
    * findet. Diese Probe nimmt die Erklaerung weg. */
   { n:'ein Kartenschlüssel ist weder Kontinent noch erklärter Ausschnitt',
     tor:'inhalt', deckt:'inhalt', datei:E,
-    such:"export const AUSSCHNITTE = { mittelamerika: 'nordamerika' };",
-    ersatz:"export const AUSSCHNITTE = {};",
+    such:"export const AUSSCHNITTE = { mittelamerika: 'nordamerika',",
+    ersatz:"export const AUSSCHNITTE = { unbekannt: 'nordamerika',",
     an:{ datei:E, text:'export const AUSSCHNITTE = {};' },
     sagt:'Elternknoten' },
 
@@ -1890,6 +1890,24 @@ export const PROBEN = [
     ersatz:"  englisch: englischschirm, freunde: freundeschirm,",
     an:{ ...DIST, fehlt:'verben: freundeschirm' },
     sagt:'freundluecke' },
+
+  /* --- I11: keine leere Kachel ----------------------------------------- *
+   *
+   * Die Flaggenebenen entstehen aus den Kartenschluesseln, die Flaggen
+   * selbst sind Handarbeit. Als Suedosteuropa dazukam, stand dort eine
+   * achte Flaggenkachel, hinter der NICHTS lag - sie liess sich oeffnen
+   * und zeigte eine leere Sitzung. Genau die Sorte Fehler, die kein Tor
+   * von selbst sieht: die Wand ist voll, die Kachel ist da, und erst wer
+   * sie antippt, merkt es.
+   *
+   * Der Eingriff nimmt die Bedingung weg. Danach steht die leere Kachel
+   * wieder da, und der Rauchtest muss darueber stolpern. */
+  { n:'eine Flaggenkachel steht ohne eine einzige Flagge da', tor:'smoke',
+    args:['--nur=durchgang', '--kurz'], bauen:true, datei:D,
+    such:"    wenn: () => (D.laender[k] || []).some(l => Flaggen.flaggeFragbar(l.a3)) })),",
+    ersatz:"  })),",
+    an:{ ...DIST, fehlt:'flaggeFragbar(l.a3)) }))' },
+    sagt:'flaggen:suedosteuropa' },
 
   /* --- I10: Zehn und drueber, Meter und Gramm --------------------------- *
    *

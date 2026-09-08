@@ -151,7 +151,10 @@
         "Finnland",
         "Norwegen",
         "Irland",
-        "Island"
+        "Island",
+        "Litauen",
+        "Lettland",
+        "Estland"
       ],
       "stufen": [
         {
@@ -159,21 +162,21 @@
           "laender": 51,
           "hausdorffPx": 0.68,
           "punkte": 27254,
-          "gzip": 110949
+          "gzip": 111009
         },
         {
           "stufe": "mittel",
           "laender": 51,
           "hausdorffPx": 0.728,
           "punkte": 52175,
-          "gzip": 192248
+          "gzip": 192251
         },
         {
           "stufe": "fein",
           "laender": 51,
           "hausdorffPx": 0.65,
           "punkte": 68327,
-          "gzip": 226080
+          "gzip": 226089
         }
       ]
     },
@@ -245,6 +248,42 @@
           "hausdorffPx": 0.709,
           "punkte": 15424,
           "gzip": 60874
+        }
+      ]
+    },
+    {
+      "id": "suedosteuropa",
+      "name": "Südosteuropa",
+      "ziele": [
+        "Serbien",
+        "Slowakei",
+        "Kroatien",
+        "Bosnien und Herzegowina",
+        "Albanien",
+        "Slowenien",
+        "Nordmazedonien"
+      ],
+      "stufen": [
+        {
+          "stufe": "grob",
+          "laender": 21,
+          "hausdorffPx": 0.662,
+          "punkte": 8364,
+          "gzip": 37180
+        },
+        {
+          "stufe": "mittel",
+          "laender": 21,
+          "hausdorffPx": 0.669,
+          "punkte": 13813,
+          "gzip": 61340
+        },
+        {
+          "stufe": "fein",
+          "laender": 21,
+          "hausdorffPx": 0.674,
+          "punkte": 14337,
+          "gzip": 63571
         }
       ]
     },
@@ -324,7 +363,7 @@
   ],
   "hauptstaedte": {
     "stufe": "grob",
-    "anzahl": 26,
+    "anzahl": 29,
     "regierungssitze": [
       "Niederlande: Den Haag"
     ]

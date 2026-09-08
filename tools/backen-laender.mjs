@@ -56,6 +56,33 @@ fs.writeFileSync('/tmp/mittelamerika-maske.json', JSON.stringify(
   { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
     geometry:{ type:'Polygon', coordinates:MITTELAMERIKA_MASKE } }] }));
 
+/* SUEDOSTEUROPA - der zweite Ausschnitt, aus demselben Grund wie der
+ * erste (I11).
+ *
+ * Sieben Laender, die auf der Europakarte nicht zu treffen sind. Ihre
+ * Ausdehnung in den Rohdaten:
+ *
+ *     SVN 13,4-16,5 / 45,4-46,9      SVK 16,8-22,5 / 47,8-49,6
+ *     HRV 13,5-19,4 / 42,4-46,5      SRB 18,8-23,0 / 42,2-46,2
+ *     BIH 15,7-19,6 / 42,6-45,3      MKD 20,4-23,0 / 40,8-42,4
+ *     ALB 19,3-21,0 / 39,6-42,7
+ *
+ * Das Rechteck 12 bis 24 Grad Ost, 38 bis 51 Grad Nord umschliesst alle
+ * sieben vollstaendig und ist mit 12 x 13 Grad fast quadratisch - eine
+ * Karte, die den Kasten fuellt statt ihn zu einem Streifen zu machen.
+ *
+ * Ein Grad Rand nach jeder Seite ist ABSICHT und keine Nachlaessigkeit:
+ * ein Kartenrand, der genau an der Grenze eines Ziellands endet, sieht
+ * aus wie das Ende der Welt. Italien, Oesterreich, Ungarn, Rumaenien,
+ * Bulgarien und Griechenland stehen dadurch angeschnitten als Umgebung
+ * dabei - so wie Mexiko und Kolumbien bei Mittelamerika. */
+const SUEDOSTEUROPA_MASKE = [[
+  [12,38],[24,38],[24,51],[12,51],[12,38]
+]];
+fs.writeFileSync('/tmp/suedosteuropa-maske.json', JSON.stringify(
+  { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
+    geometry:{ type:'Polygon', coordinates:SUEDOSTEUROPA_MASKE } }] }));
+
 /* OZEANIEN endet bei 180 Grad - und zwar, weil die Erde dort aufhoert,
  * gerechnet zu werden.
  *
@@ -128,6 +155,13 @@ const EBENEN = [
   { id:'mittelamerika', name:'Mittelamerika', ne:'North America',
     dazu:'South America', maske:'/tmp/mittelamerika-maske.json',
     projektion:'kegel' },
+  /* Suedosteuropa - derselbe Erdteil wie Europa, eigener Massstab.
+   *
+   * Kein `klippen`: die Europamaske schneidet den Erdteil vom Rest der
+   * Welt ab, und dieser Ausschnitt liegt ganz in ihr. Zweimal
+   * hintereinander schneiden waere eine Rechnung ohne Wirkung. */
+  { id:'suedosteuropa', name:'Südosteuropa', ne:'Europe',
+    maske:'/tmp/suedosteuropa-maske.json', projektion:'kegel' },
   { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal' },
   /* Ozeanien. Der Erdteil heisst in den Rohdaten „Oceania", die Kennung
    * hier `australien` - so heisst auch der Kontinent auf der Weltkarte,

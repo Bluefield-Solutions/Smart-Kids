@@ -40,12 +40,13 @@ function ankerFuer(liste){
 }
 
 const kont = new Map(I.KONTINENTE.map(k=>[k.id,k]));
-/** Die Laenderkarten. Fuenf Kontinente - Australien hat keine - und EIN
- *  Ausschnitt: Mittelamerika, weil neun Laender dort auf der
- *  Nordamerikakarte nicht zu treffen waren (A6, Tafel in
- *  `tools/backen-laender.mjs`). Die Reihenfolge ist die der Kacheln in der
- *  Ebenenwahl; Mittelamerika steht neben Nordamerika, wo es hingehoert. */
-const KACHELFOLGE = ['europa', 'afrika', 'asien',
+/** Die Laenderkarten. Fuenf Kontinente - Australien hat keine - und ZWEI
+ *  Ausschnitte: Mittelamerika, weil neun Laender dort auf der
+ *  Nordamerikakarte nicht zu treffen waren (A6), und Suedosteuropa aus
+ *  demselben gemessenen Grund (I11). Beide Tafeln stehen in
+ *  `tools/backen-laender.mjs`. Die Reihenfolge ist die der Kacheln in der
+ *  Ebenenwahl; jeder Ausschnitt steht neben seinem Kontinent. */
+const KACHELFOLGE = ['europa', 'suedosteuropa', 'afrika', 'asien',
                     'nordamerika', 'mittelamerika', 'suedamerika', 'australien'];
 /* Die Umrisse kommen aus dem ERZEUGTEN Verzeichnis, die Reihenfolge von
  * hier. Wer eine Karte backt und hier zu nennen vergisst, faellt sofort
@@ -119,6 +120,11 @@ const D = {
              falle: I.ECHTE_FALLEN.includes(b.id) };
   }),
   farben: vierfaerben(DEUTSCHLAND_MITTEL.map(b=>b.id)),
+  /* Welche Karte ein Ausschnitt ist und woraus (I11). Im Buendel, weil
+     `spiel.js` es fuer die Kachelfarbe braucht - dieselbe Auskunft wie
+     `AUSSCHNITTE` in `erdkunde.js`, und deshalb VON DORT genommen und
+     nicht daneben aufgeschrieben. */
+  ausschnitte: I.AUSSCHNITTE,
 };
 // Die Weltkarte wird auf das GERAHMT, was gespielt wird.
 //
@@ -198,6 +204,7 @@ const silhouette = (pfad, n) => {
    * soll - genau das hat die Gegenprobe gezeigt. */
   const kontinentUmriss = (id, pfad) => (ausKontinent[id] = pfad);
   const mittelamerikaUmriss = zielUmriss('mittelamerika');
+  const suedosteuropaUmriss = zielUmriss('suedosteuropa');
   /* Ozeanien ebenso - und aus demselben Grund (Q24).
    *
    * Die Ebene fragt nach Papua-Neuguinea, Australien und Neuseeland; das
@@ -221,6 +228,13 @@ const silhouette = (pfad, n) => {
      * einem Strich. */
     mittelamerika: { d: silhouette(mittelamerikaUmriss, 6),
                      vb: sichtfeld([{ pfad: mittelamerikaUmriss }]) },
+    /* Suedosteuropa ebenso: ein Ausschnitt hat keinen Kontinentumriss,
+       und der Umriss Europas waere auf dieser Kachel eine Luege - Fiona
+       liest den Titel nicht, fuer sie IST das Bild der Name. Sieben
+       Laenderformen, zusammengelegt und fein ausgeduennt wie bei
+       Mittelamerika: Slowenien ist kleiner als Panama. */
+    suedosteuropa: { d: silhouette(suedosteuropaUmriss, 6),
+                     vb: sichtfeld([{ pfad: suedosteuropaUmriss }]) },
     suedamerika: { d: silhouette(kontinentUmriss('suedamerika', roh.suedamerika), 16),  vb: sichtfeld([{ pfad: ausKontinent.suedamerika }]) },
     /* Ozeanien hat elf Fassungen lang GEFEHLT (Q23).
      *

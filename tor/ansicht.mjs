@@ -395,6 +395,14 @@ const AUFNAHMEN = [
    * nicht wie ein Fehler -, sagt kein Tor. */
   { name:'quer-mittelamerika', spiel:'laender:mittelamerika', kind:'stephan',
     quer:true, wahl:'.schirm.da' },
+  /* Der zweite Ausschnitt (I11) - und aus demselben Grund im Bild wie der
+     erste. `ziehen` sagt, dass sechs der sieben Laender ohne Nadel zu
+     treffen sind; ob die Karte AUSSIEHT wie Suedosteuropa, sagt es nicht.
+     Genau hier laesst sich das nicht rechnen: der Rand schneidet durch
+     Italien, Oesterreich, Ungarn, Rumaenien und Griechenland, und ob das
+     ein Kartenrand ist oder ein Fehler, sieht nur das Auge. */
+  { name:'quer-suedosteuropa', spiel:'laender:suedosteuropa', kind:'stephan',
+    quer:true, wahl:'.schirm.da' },
   /* Nordamerika mit Groenland (Q3). Vier Ziele statt drei, und das vierte
    * ist die groesste Form auf der Karte - ob sie neben USA und Kanada noch
    * eine Karte ergibt oder das Bild kippt, sagt kein Tor.

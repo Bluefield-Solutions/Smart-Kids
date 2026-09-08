@@ -90,7 +90,7 @@ beschriften, Listen anlegen —, nicht frei.
 **Was daraus zu übernehmen ist.** Der **Wortschatz selbst**, und zwar
 vollständig. 140 Wörter über zwei Schuljahre sind so wenig, dass die App
 sie **zu Ende bringen** kann. Das ist ein seltener Luxus: bei Erdkunde
-sind es 152 Gebiete und die Welt hört dort nicht auf; hier gibt es eine
+sind es 162 Gebiete und die Welt hört dort nicht auf; hier gibt es eine
 Liste, die ein Kind wirklich leerspielen kann.
 
 Und zum Vergleich, damit die Zahl eine **Messstelle** hat (Regel 5):

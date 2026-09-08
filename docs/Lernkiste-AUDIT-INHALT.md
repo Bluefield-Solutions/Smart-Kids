@@ -233,8 +233,11 @@ Zurückgestellt sind deshalb die zehn kleinsten — Serbien, Slowakei, Kroatien,
 Bosnien und Herzegowina, Litauen, Albanien, Slowenien, Lettland,
 Nordmazedonien, Estland. **Ihre Sätze bleiben geschrieben**: sie kosten
 nichts und sparen die Arbeit an dem Tag, an dem Europa einen eigenen
-Ausschnitt bekommt, wie ihn Mittelamerika schon hat. Das ist der nächste
-Schritt für diesen Kontinent, und er braucht die Rohdaten.
+Ausschnitt bekommt, wie ihn Mittelamerika schon hat.
+
+*(Dieser Tag ist I11, gleich unten. Der Satz „und er braucht die Rohdaten",
+der hier stand, war falsch — sie liegen unter `roh/`, und I7 hat sie
+benutzt.)*
 
 **Zwei Tore hielten Annahmen fest, die mit den Ländern gefallen sind:**
 
@@ -538,6 +541,39 @@ und Gramm" trug zuerst dasselbe Mal-und-Durch wie „Reihen 6 bis 10" —
 zwei Kacheln nebeneinander, die sich nur in der Farbe unterschieden. Jetzt
 zeigt sie einen langen Strich, ein Gleichheitszeichen und drei kurze: *das
 eine ist so viel wie das andere, nur kleiner gestückelt.*
+
+### I11 · Südosteuropa bekommt eine Karte — **gebaut (v564)**
+
+Der Ausweg, den I3 aufgeschrieben und nicht genommen hat. Sieben der zehn
+zurückgestellten Länder liegen dicht beieinander — 13 bis 23 Grad Ost, 39
+bis 50 Grad Nord — und ergeben eine fast quadratische Karte. Auf ihr hat
+jedes den Maßstab, den es auf der Europakarte nicht bekommen kann.
+
+> **Gemessen von `ziehen`:** auf der neuen Karte (202 × 276 pt) ist **eines
+> von sieben** unter der Fingergrenze (Nordmazedonien, 28,9 pt), **keine
+> Nadel**, engster Hakenabstand 18,8 pt. Auf der Europakarte wären alle
+> sieben darunter gewesen.
+
+**Und drei der zehn waren nie das Problem.** Litauen, Lettland und Estland
+sind auf der Europakarte so groß wie Österreich und Tschechien, die seit
+Langem dabei sind — sie fielen bei I3 nur *im Paket* mit den anderen
+sieben. Sie stehen jetzt als Rang 27 bis 29 auf der Europakarte, und
+`ziehen` misst dort **29 Länder, 2 an der Nadel, engster Kopfabstand
+68,2 pt** — gegen 12,3 pt beim gescheiterten Versuch mit 36.
+Europa trägt damit auch drei Hauptstädte mehr: Vilnius, Riga, Tallinn.
+
+**Der Name ist „Südosteuropa" und nicht „Balkan"**, weil die Slowakei und
+Slowenien nicht auf der Balkanhalbinsel liegen. Ein Kartenname, der zwei
+seiner sieben Länder ausschließt, ist falsch, auch wenn er kürzer ist.
+
+**Ein Fehler, den erst das Messen sichtbar gemacht hat.** Die Flaggenebenen
+entstehen aus den Kartenschlüsseln, die Flaggen selbst sind Handarbeit —
+mit der achten Karte stand eine achte Flaggenkachel da, hinter der *nichts*
+lag: sieben Länder, null gezeichnete Flaggen. Sie ließ sich öffnen und
+zeigte eine leere Sitzung. Kein Tor sieht so etwas von selbst; die Wand ist
+voll, die Kachel ist da. Gefunden hat es `vielfalt` mit einer Zeile
+„0 Gegenstände". Jetzt fragt die Ebene selbst, ob ihre Karte überhaupt eine
+Flagge hat — wer die sieben morgen zeichnet, bekommt die Kachel von selbst.
 
 ## Das Werkzeug
 

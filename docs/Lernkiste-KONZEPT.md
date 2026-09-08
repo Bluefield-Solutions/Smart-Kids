@@ -46,7 +46,7 @@ blockiert M0.
 | | |
 |---|---|
 | Ebenen | 4 |
-| Gebiete gesamt | **152** (6 Kontinente + 114 Länder + 16 Bundesländer + 16 Städte) |
+| Gebiete gesamt | **162** (6 Kontinente + 124 Länder + 16 Bundesländer + 16 Städte) |
 | Eingabewege | 3 (Ziehen · Sprechen · Tippen) |
 | Tore in der Kette | **22** |
 

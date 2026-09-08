@@ -4,6 +4,7 @@ import { LAENDER_AFRIKA_GROB } from './laender-afrika.grob.js';
 import { LAENDER_EUROPA_GROB } from './laender-europa.grob.js';
 import { LAENDER_NORDAMERIKA_GROB } from './laender-nordamerika.grob.js';
 import { LAENDER_MITTELAMERIKA_GROB } from './laender-mittelamerika.grob.js';
+import { LAENDER_SUEDOSTEUROPA_GROB } from './laender-suedosteuropa.grob.js';
 import { LAENDER_SUEDAMERIKA_GROB } from './laender-suedamerika.grob.js';
 import { LAENDER_AUSTRALIEN_GROB } from './laender-australien.grob.js';
 
@@ -15,6 +16,7 @@ export const KARTEN_GROB = {
   europa: LAENDER_EUROPA_GROB,
   nordamerika: LAENDER_NORDAMERIKA_GROB,
   mittelamerika: LAENDER_MITTELAMERIKA_GROB,
+  suedosteuropa: LAENDER_SUEDOSTEUROPA_GROB,
   suedamerika: LAENDER_SUEDAMERIKA_GROB,
   australien: LAENDER_AUSTRALIEN_GROB,
 };

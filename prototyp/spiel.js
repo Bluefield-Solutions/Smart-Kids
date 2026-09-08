@@ -1080,6 +1080,7 @@ const BEREICH_ELTERN = 'Für Eltern';
 // waren fuenf Kontinente, in der Ebenenwahl standen zwei.
 const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
   nordamerika:'Nordamerika', mittelamerika:'Mittelamerika', suedamerika:'Südamerika',
+  suedosteuropa:'Südosteuropa',
   /* Die Kennung heisst `australien` wie der Kontinent auf der Weltkarte,
    * die EBENE heisst „Ozeanien": gefragt wird nach Australien,
    * Papua-Neuguinea und Neuseeland, und eine Ebene „Australien", in der
@@ -1114,10 +1115,21 @@ const KONT_TITEL = { europa:'Europa', afrika:'Afrika', asien:'Asien',
  * veraltet einmal) - `KONT_FARBE` wird aus derselben Liste gerechnet, die
  * die Karte zeichnet. Kommt ein Kontinent dazu, wandert seine Kachel von
  * selbst mit. */
+/* Aus welchem Kontinent ein Ausschnitt geschnitten ist - dieselbe
+   Auskunft wie `AUSSCHNITTE` in `erdkunde.js`, hier im Buendel. */
+const AUSSCHNITT_VON = D.ausschnitte || {};
 const KONT_FARBE = Object.fromEntries(
   D.kontinente.map((k, i) => [k.id, (i % 7) + 1]));
-KONT_FARBE.mittelamerika = KONT_FARBE.mittelamerika
-  ?? [1,2,3,4,5,6,7].find(f => !Object.values(KONT_FARBE).includes(f));
+/* Die Ausschnitte stehen nicht in `D.kontinente` und bekommen deshalb
+   den Ton, den die sechs Kontinente frei lassen. Mit dem ZWEITEN
+   Ausschnitt (I11) ist keiner mehr frei - sieben Toene, sieben Karten -,
+   und dann teilt sich Suedosteuropa den Ton mit dem Kontinent, aus dem es
+   geschnitten ist. Das ist keine Verlegenheit, sondern richtig: die
+   beiden Kacheln gehoeren zusammen und stehen nebeneinander. */
+for (const id of ['mittelamerika', 'suedosteuropa'])
+  KONT_FARBE[id] = KONT_FARBE[id]
+    ?? [1,2,3,4,5,6,7].find(f => !Object.values(KONT_FARBE).includes(f))
+    ?? KONT_FARBE[AUSSCHNITT_VON[id]];
 
 const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
@@ -1199,9 +1211,25 @@ const EBENEN = [
                       Ueberbegriff. Dort steht dann „Flaggen / Europa".
      
      Die beiden Hauptstadt-Ebenen machen es seit Q17 genauso. */
+  /* `wenn` haelt eine LEERE Kachel von der Wand fern (I11).
+   *
+   * Die Flaggenebenen entstehen aus den Kartenschluesseln, die Flaggen
+   * selbst aber sind Handarbeit in `flaggen.js`. Beides kann
+   * auseinandergehen: als Suedosteuropa dazukam, stand dort eine achte
+   * Flaggenkachel, hinter der NICHTS lag - sieben Laender, null
+   * gezeichnete Flaggen. Sie liess sich oeffnen und zeigte eine leere
+   * Sitzung.
+   *
+   * Kein Sonderfall und keine Ausnahmeliste: gefragt wird, ob diese Karte
+   * ueberhaupt eine fragbare Flagge hat. Wer morgen die sieben zeichnet,
+   * bekommt die Kachel von selbst - und wer eine Karte ohne Flaggen
+   * anlegt, bekommt keine. `vorrat()` ist dieselbe Quelle, aus der die
+   * Sitzung gefuellt wird; eine zweite Zaehlung daneben stuende zweimal
+   * da und veraltete einmal (Regel 6). */
   ...Object.keys(D.laender).map((k) => ({ id:`flaggen:${k}`, ueber:'Die Welt',
     titel:'Flaggen', farbe: KONT_FARBE[k], art:'flaggen',
-    gruppe:'flaggen', wo: KONT_TITEL[k] || k })),
+    gruppe:'flaggen', wo: KONT_TITEL[k] || k,
+    wenn: () => (D.laender[k] || []).some(l => Flaggen.flaggeFragbar(l.a3)) })),
   /* Verwechslungen (F3) - der achte Eintrag DERSELBEN Gruppe.
    *
    * Keine neunte Kachel auf der Wand: sie steht hinter „Flaggen", neben

@@ -57,7 +57,8 @@ export const KONTINENTE = [
  * Tafel steht in `tools/backen-laender.mjs`. Eine Nebenkarte in der Ecke
  * bringt keines davon ueber die Fingergrenze; nur ein eigener Massstab
  * tut es, und ein eigener Massstab ist eine eigene Karte. */
-export const AUSSCHNITTE = { mittelamerika: 'nordamerika' };
+export const AUSSCHNITTE = { mittelamerika: 'nordamerika',
+                             suedosteuropa: 'europa' };
 
 /** Ebene 2. rang 1..5; Fiona sieht 1..3, Lea 1..5. */
 export const LAENDER = {
@@ -289,6 +290,22 @@ export const LAENDER = {
     { a3:'NOR', name:'Norwegen', rang:24, aussprache:['norwegen','norweegen'] },
     { a3:'IRL', name:'Irland', rang:25, aussprache:['irland','irrland'] },
     { a3:'ISL', name:'Island', rang:26, aussprache:['island','iesland'] },
+    /* Die drei baltischen (I11).
+     *
+     * Sie standen bei I3 mit auf der Streichliste der zehn kleinsten und
+     * sind es NICHT: gemessen an ihrer Ausdehnung auf der Europakarte
+     * liegen sie zwischen Kroatien und Bulgarien, nicht bei Slowenien.
+     * Zurueckgestellt wurden sie damals im Paket - `ziehen` meldete
+     * Griechenland und das Paar Ungarn/Slowakei, und die zehn fielen
+     * gemeinsam, ohne dass jemand nachgesehen haette, welche davon
+     * schuld waren.
+     *
+     * Ihre Sätze standen seither geschrieben und wurden nicht gespielt.
+     * Was `ziehen` jetzt dazu sagt, steht im Kommentar bei
+     * `suedosteuropa`. */
+    { a3:'LTU', name:'Litauen', rang:27, aussprache:['litauen','littauen'] },
+    { a3:'LVA', name:'Lettland', rang:28, aussprache:['lettland','letland'] },
+    { a3:'EST', name:'Estland', rang:29, aussprache:['estland','esstland'] },
   ],
   /* --- Nordamerika: die drei grossen ------------------------------ *
    *
@@ -349,6 +366,41 @@ export const LAENDER = {
     { a3:'SLV', name:'El Salvador', rang:7, aliasse:['Salvador'], aussprache:['el salvador','salvador'] },
     { a3:'CRI', name:'Costa Rica', rang:8, aliasse:['Kostarika'], aussprache:['costa rica','kostarika'] },
     { a3:'PAN', name:'Panama', rang:9, aussprache:['panama','pannama'] },
+  ],
+  /* --- Suedosteuropa: der zweite Ausschnitt ------------------------ *
+   *
+   * Derselbe Ausweg wie bei Mittelamerika, aus demselben gemessenen
+   * Grund. Bei I3 sollten neunzehn europaeische Laender dazukommen;
+   * `ziehen` hat es abgewiesen: Griechenland fiel mit 18,1 Punkten unter
+   * die Fingergrenze, und die Nadelkoepfe von Ungarn und der Slowakei
+   * lagen 12,3 Punkte auseinander. Europas Karte traegt auf 844 x 390
+   * keine sechsunddreissig antippbaren Laender - das ist kein Fehler der
+   * Daten, sondern die Groesse des Bildschirms.
+   *
+   * Sieben davon liegen dicht beieinander (13 bis 23 Grad Ost, 39 bis 50
+   * Grad Nord) und ergeben eine fast quadratische Karte. Auf ihr hat
+   * jedes von ihnen den Massstab, den es auf der Europakarte nicht
+   * bekommen kann.
+   *
+   * Warum der Name „Suedosteuropa" und nicht „Balkan": die Slowakei und
+   * Slowenien liegen nicht auf der Balkanhalbinsel. Ein Kartenname, der
+   * zwei seiner sieben Laender ausschliesst, ist falsch, auch wenn er
+   * kuerzer ist.
+   *
+   * Der Rang faengt wieder bei eins an - wie bei Mittelamerika, weil
+   * `laenderTiefe` je Profil von oben zaehlt. */
+  suedosteuropa:[
+    { a3:'SRB', name:'Serbien', rang:1, aussprache:['serbien','serbjen'] },
+    { a3:'SVK', name:'Slowakei', rang:2, aliasse:['Die Slowakei'],
+      aussprache:['slowakei','slovakei'] },
+    { a3:'HRV', name:'Kroatien', rang:3, aussprache:['kroatien','kroazien'] },
+    { a3:'BIH', name:'Bosnien und Herzegowina', rang:4,
+      aliasse:['Bosnien','Bosnien-Herzegowina'],
+      aussprache:['bosnien und herzegowina','bosnien','bosnien herzegowina'] },
+    { a3:'ALB', name:'Albanien', rang:5, aussprache:['albanien','albanjen'] },
+    { a3:'SVN', name:'Slowenien', rang:6, aussprache:['slowenien','slovenien'] },
+    { a3:'MKD', name:'Nordmazedonien', rang:7, aliasse:['Mazedonien'],
+      aussprache:['nordmazedonien','mazedonien'] },
   ],
   /* --- Ozeanien: drei, und mehr geht nicht ------------------------ *
    *
@@ -519,4 +571,14 @@ export const HAUPTSTADT_ABLENKER_EUROPA = {
   FIN:['Tampere','Turku'],
   NOR:['Bergen','Trondheim'],
   IRL:['Cork','Galway'],
+  /* Die drei baltischen (I11). Hier ist die Regel schwerer zu erfuellen
+     als sonst: die zweitgroesste Stadt Estlands (Tartu, 92 000) kennt im
+     deutschsprachigen Raum kaum jemand. Genommen ist sie trotzdem, und
+     zwar zusammen mit einer Stadt, die man KENNT, aber falsch verortet -
+     Narva liegt an der russischen Grenze, Klaipeda heisst auf deutsch
+     Memel, Daugavpils war Duenaburg. Der Ablenker soll nicht raetselhaft
+     sein, aber auch nicht die richtige Antwort verschenken. */
+  LTU:['Kaunas','Klaipėda'],
+  LVA:['Daugavpils','Liepāja'],
+  EST:['Tartu','Narva'],
 };
