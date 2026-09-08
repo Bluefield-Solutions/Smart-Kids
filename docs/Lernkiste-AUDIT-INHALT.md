@@ -254,6 +254,54 @@ die Zahl darf nicht sinken — genau der Fehler, an dem Prag, Wien, Bern,
 Kopenhagen und Luxemburg einmal eine ganze Fassung lang aus der Ebene
 gefallen sind.
 
+### I5 · Die Flaggen — **gebaut (v557)**
+
+35 Flaggen mehr (69 → 104), gezeichnet im vorhandenen Formenvorrat — keine
+neue Bauart, kein Sonderfall. Dazu **sechs neue Verwechslungspaare**, und
+die sind nicht erfunden, sondern echt: Mali gegen Guinea (Spiegelbild), Mali
+gegen Senegal (nur der Stern), Irak gegen Syrien, Ungarn gegen Bulgarien.
+Die Ebene „Verwechslungen" wächst damit von 22 auf **34** Gegenstände.
+
+| Ebene | vorher | jetzt (Leiter) |
+|---|---|---|
+| Flaggen Europa | 17 | **23** |
+| Flaggen Afrika | 12 | **28** |
+| Flaggen Asien | 12 | **25** |
+| Verwechslungen | 22 | **34** |
+| Ebenen unter zwei Runden | 54 von 100 | **46 von 100** |
+
+**Was der Blick gefunden hat, und kein Tor.** Drei Fehler standen in
+Zeichnungen, die alle Prüfungen bestanden hatten:
+
+- **Simbabwe** hatte keinen weißen Keil. `keil` gehört zur Bauart `dreieck`;
+  bei `streifen` wird er stillschweigend ignoriert. Die Flagge war heil, nur
+  falsch.
+- **Syrien** war rot-weiß-schwarz. Seit Dezember 2024 führt das Land die
+  Unabhängigkeitsflagge — grün oben, drei rote Sterne. Der Datenstand dieser
+  App ist 2025; die alte wäre keine Vereinfachung gewesen, sondern eine
+  falsche Auskunft.
+- **Afghanistan** steht gar nicht mehr da. Welche Flagge das Land heute
+  führt, ist umstritten. Eine Lern-App, die ein Kind auf eine der beiden
+  festlegt, behauptet etwas, das nicht feststeht.
+
+**Und ein Fehler in der Leiter, den erst die Flaggen sichtbar machten.**
+`leiterTiefe` lief über *alle* Länder eines Kontinents, die Flaggenebene
+fragt aber nur die mit gezeichneter Flagge. Ein Land ohne Flagge kommt
+damit nie in eine Sitzung, wird nie gekonnt — und die Leiter blieb an ihm
+hängen. Afrika hörte bei **15 von 28** auf, ohne dass etwas rot wurde: der
+Vorrat war da, er wurde nur nie geöffnet. Dasselbe galt für die Hauptstädte.
+Die Leiter läuft jetzt über das, was die Ebene wirklich fragt.
+
+**Zwei Farbtöne stehen heller da, als die Fähnchenbücher sie führen.** Das
+Raster misst den Abstand zweier Farben als geraden Weg durch den RGB-Würfel,
+und dieser Weg unterschätzt genau eine Nachbarschaft: Blau gegen Grün.
+Bulgariens amtliches `#00966E` liegt von Russlands `#0039A6` **108,6**
+Einheiten entfernt — die Schwelle sind **110**. Zwei Einheiten, und das Tor
+meldete „nicht zu beantworten" für ein Paar, das jeder Mensch auf Anhieb
+trennt. Statt die Schwelle zu senken (dann fände das Tor nichts mehr) oder
+das Paar auszunehmen (dann stünde eine unlösbare Aufgabe im Spiel), steht
+dort jetzt das Grasgrün, das die meisten Darstellungen ohnehin zeigen.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

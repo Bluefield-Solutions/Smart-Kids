@@ -2030,15 +2030,28 @@ function kontinentRunde(stand){
  */
 const LEITER_STUFE = 3;
 
+/* `liste` sind die Gegenstaende, die DIESE Ebene fragt - nicht alle
+ * Laender des Kontinents. Der Unterschied hat beim ersten Anlauf gebissen:
+ * die Flaggenebene fragt nur Laender MIT gezeichneter Flagge, die Leiter
+ * lief aber ueber alle. Ein Land ohne Flagge kommt damit nie in eine
+ * Sitzung, wird nie gekonnt - und die Leiter blieb an ihm haengen. Afrika
+ * hoerte bei fuenfzehn von achtundzwanzig auf, ohne dass etwas rot wurde:
+ * der Vorrat war ja da, er wurde nur nie geoeffnet.
+ *
+ * Und die Obergrenze ist der groesste RANG, nicht die Laenge der Liste.
+ * Bei einer gesiebten Liste sind das zwei verschiedene Zahlen (28 Eintraege,
+ * Raenge bis 30), und die Laenge waere die falsche: die Leiter haette zwei
+ * Raenge vor dem Ende angehalten. */
 function leiterTiefe(liste, stand, grund, kennung){
+  const hoechster = Math.max(...liste.map(x => x.rang || 0), 0);
   let tiefe = Math.max(1, grund);
-  while (tiefe < liste.length) {
+  while (tiefe < hoechster) {
     const offen = liste.filter(x => x.rang <= tiefe);
     if (!offen.length) break;
     if (!offen.every(x => Leitner.warGesessen(stand, kennung(x)))) break;
     tiefe += LEITER_STUFE;
   }
-  return Math.min(tiefe, Math.max(...liste.map(x => x.rang || 0), 0));
+  return Math.min(tiefe, hoechster);
 }
 /* Ein Rahmen, der NUR dieses eine Stueck zeigt.
  *
@@ -2275,10 +2288,9 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    * keiner Karte dieser App gibt. Das Tor `flaggen` haelt beide Listen
    * getrennt; hier wirkt die Trennung. */
   if (art==='flaggen' && kont==='karte') {
-    const tiefe = leiterTiefe(D.laender.europa || [], stand, P.laenderTiefe,
-      l => `fk:${l.a3}`);
-    return (D.laender.europa || []).filter(l => (voll || l.rang<=tiefe)
-        && Flaggen.flaggeFragbar(l.a3))
+    const mitFlagge = (D.laender.europa || []).filter(l => Flaggen.flaggeFragbar(l.a3));
+    const tiefe = leiterTiefe(mitFlagge, stand, P.laenderTiefe, l => `fk:${l.a3}`);
+    return mitFlagge.filter(l => voll || l.rang<=tiefe)
       .map(l=>({ id:`fk:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3, pfad:l.pfad, anker:l.anker }));
   }
@@ -2299,10 +2311,9 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     return aus;
   }
   if (art==='flaggen') {
-    const tiefe = leiterTiefe(D.laender[kont] || [], stand, P.laenderTiefe,
-      l => `fl:${l.a3}`);
-    return (D.laender[kont] || []).filter(l => (voll || l.rang<=tiefe)
-        && Flaggen.flaggeFragbar(l.a3))
+    const mitFlagge = (D.laender[kont] || []).filter(l => Flaggen.flaggeFragbar(l.a3));
+    const tiefe = leiterTiefe(mitFlagge, stand, P.laenderTiefe, l => `fl:${l.a3}`);
+    return mitFlagge.filter(l => voll || l.rang<=tiefe)
       .map(l=>({ id:`fl:${l.a3}`, a3:l.a3, name:l.name, aliasse:l.aliasse,
                  aussprache:l.aussprache, flagge:l.a3 }));
   }
@@ -2395,12 +2406,16 @@ function vorrat(ebeneId, stand = Stand, voll = false){
       // `voll` gilt hier genauso wie bei den Ländern: die Menge eines
       // Abzeichens darf nicht mit der Tiefe des Profils wackeln. Diese
       // Zeile hat `voll` bis D2b stillschweigend übergangen.
-      return D.laender[kont].filter(l=>(voll
-          || l.rang<=leiterTiefe(D.laender[kont], stand, P.laenderTiefe, l2 => l2.a3))
-          && l.hauptstadt)
+    {
+      // Dieselbe Falle wie bei den Flaggen: gefragt wird nur, wer eine
+      // gebackene Hauptstadt hat - also laeuft die Leiter auch nur ueber die.
+      const mitStadt = D.laender[kont].filter(l => l.hauptstadt);
+      const tiefe = leiterTiefe(mitStadt, stand, P.laenderTiefe, l => l.a3);
+      return mitStadt.filter(l => voll || l.rang<=tiefe)
         .map(l=>({ id:l.a3, name:l.hauptstadt,
           aliasse:[], aussprache:[l.hauptstadt.toLowerCase()], pfad:l.pfad, anker:l.anker,
           ort:l.ort, gebiet:l.name, wovon:l.wovon, ablenker:l.ablenker||[], falle:l.falle }));
+    }
     return D.deutschland.filter(b=>!b.stadtstaat).map(b=>({ id:b.id, name:b.hauptstadt,
       aliasse:[], aussprache:[b.hauptstadt.toLowerCase()], pfad:b.pfad, anker:b.anker,
       ort:b.ort, gebiet:b.name, ablenker:b.ablenker||[], falle:b.falle }));

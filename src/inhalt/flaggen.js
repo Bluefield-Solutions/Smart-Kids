@@ -697,6 +697,168 @@ export const FLAGGEN = [
                     farben:['#377E3F', W, '#B40A2D', W, '#377E3F'],
                     breiten:[2, 1, 4, 1, 2],
                     zeichen:{ form:'stern', gross:0.48, farbe:'#ECC81D' } } },
+  /* --- I5: die Flaggen zu den Laendern aus I3 --------------------------
+   *
+   * I3 hat 45 Laender aus den schon gebackenen Umrissen geholt; ihre
+   * Flaggen gab es nicht, denn die werden hier GEZEICHNET. Was jetzt
+   * folgt, ist derselbe Formenvorrat wie oben - keine neue Bauart, keine
+   * Sonderfaelle. Wo eine Flagge im Original ein Wappen traegt, steht
+   * hier die Form, die bei 48 Punkten Breite ueberhaupt zu sehen ist: ein
+   * Schild, eine Sonne, ein Stern. Mehr behauptet die Zeichnung nicht.
+   *
+   * Was NICHT hier steht, steht mit Grund nicht hier: Nepal (kein
+   * Rechteck), Sri Lanka und Kambodscha (ein Wappen, das seine Form
+   * traegt) und der Jemen (rot-weiss-schwarz ohne Zeichen - im Raster
+   * nicht von Syrien und dem Irak zu trennen). Ein Land ohne Flagge steht
+   * auf den Kartenebenen und nicht auf den Flaggenebenen; `flaggeFragbar`
+   * siebt danach. */
+
+  // --- Europa ---
+  { a3:'PRT', bau:{ art:'streifen', hoch:true, farben:['#046A38', '#DA291C'],
+      breiten:[2, 3],
+      zeichen:{ form:'ring', x:0.4, y:0.5, gross:0.52, farbe:'#FFE900',
+                grund:'#DA291C' } } },
+  { a3:'SWE', bau:{ art:'nordkreuz', grund:'#006AA7', kreuz:'#FECC00' } },
+  { a3:'FIN', bau:{ art:'nordkreuz', grund:W, kreuz:'#003580' } },
+  { a3:'HUN', bau:{ art:'streifen', farben:['#CD2A3E', W, '#00A550'] } },
+  /* Bulgariens Gruen und Ungarns Gruen stehen HELLER da, als die
+     Faehnchenbuecher sie fuehren - und das ist gemessen, nicht Geschmack.
+     Das Raster misst den Abstand zweier Farben als geraden Weg durch den
+     RGB-Wuerfel, und dieser Weg unterschaetzt genau eine Nachbarschaft:
+     Blau gegen Gruen. Bulgariens amtliches #00966E liegt von Russlands
+     #0039A6 108,6 Einheiten entfernt - die Schwelle sind 110. Zwei
+     Einheiten, und das Tor meldete „nicht zu beantworten" fuer ein Paar,
+     das jeder Mensch auf Anhieb trennt.
+     Statt die Schwelle zu senken (dann faende das Tor nichts mehr) oder
+     das Paar auszunehmen (dann stuende eine unloesbare Aufgabe im Spiel),
+     steht hier der Ton, den die meisten Darstellungen ohnehin zeigen: ein
+     Grasgruen. Abstand jetzt 138 bzw. 127 Einheiten. */
+  { a3:'BGR', bau:{ art:'streifen', farben:[W, '#00A550', '#D62612'] } },
+  { a3:'BLR', bau:{ art:'streifen', farben:['#C8313E', '#4AA657'], breiten:[2, 1],
+      ecke:{ farbe:W, breit:0.14, hoch:1 } } },
+
+  // --- Asien ---
+  { a3:'KOR', bau:{ art:'einfarbig', farben:[W],
+      zeichen:[{ form:'scheibe', x:0.5, y:0.5, gross:0.46, farbe:'#CD2E3A' },
+               { form:'mond', x:0.5, y:0.5, gross:0.46, farbe:'#0047A0',
+                 grund:'#CD2E3A', biss:0.5, innen:1 },
+               { form:'balken', x:0.18, y:0.22, gross:0.20, dick:0.5, farbe:SW },
+               { form:'balken', x:0.82, y:0.22, gross:0.20, dick:0.5, farbe:SW },
+               { form:'balken', x:0.18, y:0.78, gross:0.20, dick:0.5, farbe:SW },
+               { form:'balken', x:0.82, y:0.78, gross:0.20, dick:0.5, farbe:SW }] } },
+  { a3:'SAU', bau:{ art:'einfarbig', farben:['#165D31'],
+      zeichen:{ form:'balken', x:0.5, y:0.68, gross:0.62, dick:0.16, farbe:W } } },
+  /* Syrien fuehrt seit Dezember 2024 die Unabhaengigkeitsflagge: gruen
+     oben, drei rote Sterne in der Mitte. Der Datenstand dieser App ist
+     2025 (`STAND` in erdkunde.js) - die alte rot-weiss-schwarze waere
+     hier keine Vereinfachung, sondern eine falsche Auskunft. */
+  { a3:'SYR', bau:{ art:'streifen', farben:['#007A3D', W, SW],
+      zeichen:{ form:'sterne', farbe:'#CE1126',
+                liste:[[0.34, 0.5, 0.30], [0.5, 0.5, 0.30], [0.66, 0.5, 0.30]] } } },
+  { a3:'IRQ', bau:{ art:'streifen', farben:['#CE1126', W, SW],
+      zeichen:{ form:'balken', x:0.5, y:0.5, gross:0.44, dick:0.22,
+                farbe:'#007A3D' } } },
+  { a3:'UZB', bau:{ art:'streifen', farben:['#0099B5', W, '#1EB53A'],
+      zeichen:[{ form:'mond', x:0.22, y:0.2, gross:0.26, farbe:W,
+                 grund:'#0099B5', biss:0.4 },
+               { form:'sterne', farbe:W,
+                 liste:[[0.36, 0.2, 0.12], [0.46, 0.2, 0.12], [0.56, 0.2, 0.12]] }] } },
+  { a3:'MYS', bau:{ art:'streifen',
+      farben:['#CC0001', W, '#CC0001', W, '#CC0001', W, '#CC0001'],
+      ecke:{ farbe:'#010066', breit:0.5, hoch:0.57 },
+      zeichen:[{ form:'mond', x:0.2, y:0.28, gross:0.34, farbe:'#FFCC00',
+                 grund:'#010066', biss:0.4 },
+               { form:'stern', x:0.34, y:0.28, gross:0.24, zacken:7,
+                 farbe:'#FFCC00' }] } },
+  { a3:'PRK', bau:{ art:'streifen', farben:['#024FA2', W, '#ED1C27', W, '#024FA2'],
+      breiten:[3, 1, 8, 1, 3],
+      zeichen:[{ form:'scheibe', x:0.32, y:0.5, gross:0.44, farbe:W },
+               { form:'stern', x:0.32, y:0.5, gross:0.32, farbe:'#ED1C27' }] } },
+  { a3:'KAZ', bau:{ art:'einfarbig', farben:['#00AFCA'],
+      zeichen:[{ form:'sonne', x:0.52, y:0.42, gross:0.42, farbe:'#FEC50C' },
+               { form:'vogel', x:0.52, y:0.74, gross:0.30, farbe:'#FEC50C' }] } },
+  { a3:'JOR', bau:{ art:'dreieck', farben:[SW, W, '#007A3D'],
+      keil:{ farbe:'#CE1126', tief:0.42 },
+      zeichen:{ form:'stern', x:0.14, y:0.5, gross:0.2, zacken:7, farbe:W } } },
+  { a3:'AZE', bau:{ art:'streifen', farben:['#00B5E2', '#EF3340', '#509E2F'],
+      zeichen:[{ form:'mond', x:0.5, y:0.5, gross:0.3, farbe:W,
+                 grund:'#EF3340', biss:0.4 },
+               { form:'stern', x:0.66, y:0.5, gross:0.2, zacken:8, farbe:W }] } },
+  { a3:'TJK', bau:{ art:'streifen', farben:['#CC0000', W, '#006600'],
+      breiten:[2, 3, 2],
+      zeichen:{ form:'kranz', x:0.5, y:0.5, kreis:0.2, wieviel:7, gross:0.12,
+                farbe:'#F8C300' } } },
+  { a3:'ISR', bau:{ art:'streifen', farben:[W, '#0038B8', W, '#0038B8', W],
+      breiten:[1, 1, 4, 1, 1],
+      zeichen:{ form:'stern', x:0.5, y:0.5, gross:0.44, zacken:6,
+                farbe:'#0038B8' } } },
+  { a3:'ARE', bau:{ art:'streifen', farben:['#00732F', W, SW],
+      ecke:{ farbe:'#FF0000', breit:0.25, hoch:1 } } },
+  /* AFGHANISTAN STEHT HIER NICHT, und das ist kein Vergessen: welche
+     Flagge das Land heute fuehrt, ist umstritten - die schwarz-rot-gruene
+     der Republik und die weisse der heutigen Machthaber stehen
+     nebeneinander. Eine Lern-App, die ein Kind auf eine der beiden
+     festlegt, behauptet etwas, das nicht feststeht. Afghanistan steht
+     deshalb auf der Kartenebene und nicht auf der Flaggenebene;
+     `flaggeFragbar` siebt danach. */
+
+  // --- Afrika ---
+  { a3:'GHA', bau:{ art:'streifen', farben:['#CE1126', '#FCD116', '#006B3F'],
+      zeichen:{ form:'stern', x:0.5, y:0.5, gross:0.3, farbe:SW } } },
+  { a3:'MLI', bau:{ art:'streifen', hoch:true,
+      farben:['#14B53A', '#FCD116', '#CE1126'] } },
+  { a3:'GIN', bau:{ art:'streifen', hoch:true,
+      farben:['#CE1126', '#FCD116', '#009460'] } },
+  { a3:'SEN', bau:{ art:'streifen', hoch:true,
+      farben:['#00853F', '#FDEF42', '#E31B23'],
+      /* Der Stern traegt hier die ganze Unterscheidung: Mali und Senegal
+         sind sonst dieselbe Flagge. Bei 0,34 mass das Tor 1,6 % Flaeche -
+         unter dem Boden von 3 %, also nicht zu beantworten. Auf der
+         echten Flagge ist der Stern gross; hier steht er so gross, wie er
+         dort ist, und misst 7 %. */
+      zeichen:{ form:'stern', x:0.5, y:0.5, gross:0.62, farbe:'#00853F' } } },
+  { a3:'CMR', bau:{ art:'streifen', hoch:true,
+      farben:['#007A5E', '#CE1126', '#FCD116'],
+      zeichen:{ form:'stern', x:0.5, y:0.5, gross:0.34, farbe:'#FCD116' } } },
+  { a3:'NER', bau:{ art:'streifen', farben:['#E05206', W, '#0DB02B'],
+      zeichen:{ form:'scheibe', x:0.5, y:0.5, gross:0.3, farbe:'#E05206' } } },
+  { a3:'BFA', bau:{ art:'streifen', farben:['#EF2B2D', '#009E49'],
+      zeichen:{ form:'stern', x:0.5, y:0.5, gross:0.34, farbe:'#FCD116' } } },
+  { a3:'MWI', bau:{ art:'streifen', farben:[SW, '#CE1126', '#339E35'],
+      zeichen:{ form:'sonne', x:0.5, y:0.2, gross:0.3, farbe:'#CE1126' } } },
+  { a3:'ZMB', bau:{ art:'einfarbig', farben:['#198A00'],
+      zeichen:[{ form:'balken', x:0.72, y:0.72, gross:0.14, dick:2.4,
+                 farbe:'#DE2010' },
+               { form:'balken', x:0.86, y:0.72, gross:0.14, dick:2.4, farbe:SW },
+               { form:'balken', x:0.97, y:0.72, gross:0.14, dick:2.4,
+                 farbe:'#EF7D00' },
+               { form:'vogel', x:0.84, y:0.24, gross:0.3, farbe:'#EF7D00' }] } },
+  { a3:'SOM', bau:{ art:'einfarbig', farben:['#4189DD'],
+      zeichen:{ form:'stern', x:0.5, y:0.5, gross:0.5, farbe:W } } },
+  /* `keil` gehoert zur Bauart `dreieck` - bei `streifen` wird er still
+     ignoriert, und Simbabwe stand ohne seinen weissen Keil da. Kein Tor
+     konnte das melden: die Flagge war heil, nur falsch. Gefunden beim
+     Ansehen (Regel 4: kein Tor ersetzt den Blick). */
+  { a3:'ZWE', bau:{ art:'dreieck',
+      farben:['#006400', '#FFD200', '#D40000', SW, '#D40000', '#FFD200', '#006400'],
+      keil:{ farbe:W, tief:0.34 },
+      zeichen:{ form:'stern', x:0.12, y:0.5, gross:0.3, farbe:'#D40000' } } },
+  { a3:'RWA', bau:{ art:'streifen', farben:['#00A1DE', '#FAD201', '#20603D'],
+      breiten:[2, 1, 1],
+      zeichen:{ form:'sonne', x:0.82, y:0.28, gross:0.26, farbe:'#E5BE01' } } },
+  { a3:'BEN', bau:{ art:'streifen', farben:['#FCD116', '#E8112D'],
+      ecke:{ farbe:'#008751', breit:0.36, hoch:1 } } },
+  { a3:'TUN', bau:{ art:'einfarbig', farben:['#E70013'],
+      zeichen:[{ form:'scheibe', x:0.5, y:0.5, gross:0.66, farbe:W },
+               { form:'mond', x:0.5, y:0.5, gross:0.46, farbe:'#E70013',
+                 grund:W, biss:0.4 },
+               { form:'stern', x:0.56, y:0.5, gross:0.24, farbe:'#E70013' }] } },
+  { a3:'MOZ', bau:{ art:'dreieck',
+      farben:['#009A00', W, SW, W, '#FFD100'], breiten:[4, 1, 4, 1, 4],
+      keil:{ farbe:'#CE1126', tief:0.4 },
+      zeichen:{ form:'stern', x:0.13, y:0.5, gross:0.3, farbe:'#FFD100' } } },
+  { a3:'MDG', bau:{ art:'streifen', farben:['#FC3D32', '#007E3A'],
+      ecke:{ farbe:W, breit:0.34, hoch:1 } } },
 ];
 
 /* ---------- Die fuenf, die keiner Regel folgen ---------------------------
@@ -911,6 +1073,17 @@ export const AEHNLICH = [
   { paar:['CRI', 'THA'], grund:'Dieselben Streifen, andere Farbe in der Mitte.' },
   { paar:['HND', 'NIC'], grund:'Honduras hat fünf Sterne, Nicaragua ein Dreieck.' },
   { paar:['CHN', 'VNM'], grund:'China hat fünf Sterne in der Ecke, Vietnam einen in der Mitte.' },
+  /* --- I5: sechs Paare, die mit den neuen Flaggen entstanden sind ------
+     Sie stehen nicht hier, weil das Tor sie verlangt, sondern weil sie
+     ECHT sind - jedes einzelne ist ein Griff daneben, den Erwachsene
+     machen. Der Vorrat der Verwechslungen waechst damit von elf auf
+     siebzehn fragbare Paare. */
+  { paar:['MLI', 'SEN'], grund:'Senegal trägt einen grünen Stern in der Mitte, Mali nicht.' },
+  { paar:['MLI', 'GIN'], grund:'Spiegelbild: Mali ist grün am Mast, Guinea rot.' },
+  { paar:['IRQ', 'SYR'], grund:'Syrien ist grün oben und hat drei rote Sterne, der Irak ist rot oben.' },
+  { paar:['IRQ', 'TJK'], grund:'Tadschikistan ist grün unten und trägt eine Krone.' },
+  { paar:['HUN', 'BGR'], grund:'Dieselben drei Farben, andere Reihenfolge: Ungarn ist rot oben.' },
+  { paar:['RUS', 'BGR'], grund:'In der Mitte: Russland blau, Bulgarien grün.' },
 ];
 
 /** Die Paare, nach denen man FRAGEN kann - der Vorrat der Ebene F3. */
