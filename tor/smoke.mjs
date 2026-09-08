@@ -5798,6 +5798,24 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
           if (soll === null && (m = t.match(/Halb\s+(\d+)/))) soll = +m[1] / 2;
           if (soll === null && (m = t.match(/(\d+)\s*%\s*von\s*(\d+)/)))
             soll = (+m[2] * +m[1]) / 100;
+          /* I10: „3 m = ? cm". Die Umrechnung wird hier WIRKLICH
+             gerechnet und nicht aus der App geholt - die Faktoren stehen
+             deshalb ein zweites Mal da. Was zweimal dasteht, veraltet
+             einmal (Regel 6) - hier ist genau das der Zweck: ein
+             Nachrechner, der die geprüfte Tabelle benutzt, rechnet nichts
+             nach. Weicht eine Zeile hier von `EINHEITEN` ab, wird das Tor
+             rot, und dann ist eine der beiden falsch. */
+          if (soll === null && (m = t.match(/(\d+)\s*(\w+)\s*=\s*\?\s*(\w+)/))) {
+            /* Alles in EINER Grundeinheit je Sorte - Meter, Gramm,
+               Sekunde, Milliliter. Dass „m" und „min" verschiedene Sorten
+               sind, spielt keine Rolle: gefragt wird nie ueber Sorten
+               hinweg, und ein Verhaeltnis innerhalb einer Sorte ist ein
+               Verhaeltnis. */
+            const F = { m:1, cm:0.01, mm:0.001, km:1000, kg:1000, g:1,
+                        h:3600, min:60, s:1, l:1000, ml:1 };
+            const von = F[m[2]], nach = F[m[3]];
+            if (von && nach) soll = (+m[1] * von) / nach;
+          }
           if (soll === null) {
             m = t.match(/(\d+)\s*([+−×:])\s*(\d+)/);
             if (!m) return null;

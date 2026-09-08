@@ -248,5 +248,14 @@
       "tor/bildurteile.mjs:81"
     ],
     "warum": "Die Urteilstabelle IST eine Tabelle: je Zeile ein Paar, ein Urteil und der Satz, warum es auf dem Blatt so aussieht. Neunzehn davon lauten „harmlos\", und die Zeilen gleichen sich deshalb in ihrer Form. Zusammenlegen hiesse hier, die Faelle zu Gruppen zu verrechnen - und genau das darf nicht passieren: jede Zeile ist EIN angesehenes Paar, und ihr Wert liegt darin, dass jemand hingesehen hat. Wer sie kuerzt, kuerzt die Eichung."
+  },
+  {
+    "dateien": "src/inhalt/rechnen.js",
+    "token": 294,
+    "wo": [
+      "src/inhalt/rechnen.js:548",
+      "src/inhalt/rechnen.js:552"
+    ],
+    "warum": "Die EINHEITEN-Tafel IST eine Tabelle: jede Zeile hat von/nach/mal/werte, und sieben Zeilen mit denselben Feldern sehen sich aehnlich - das ist ihr Zweck und keine Dopplung. Dieselbe Lage wie bei der EBENEN-Tafel in spiel.js. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die Menge an Dopplung; sie waechst mit jeder weiteren Groessensorte. Wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - hier waren es bei I10 die sieben Zeilen samt ihren je zehn Werten."
   }
 ]

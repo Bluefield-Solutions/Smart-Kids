@@ -305,7 +305,17 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   // Reihe, nicht ±1).
   // Und seit R4 die 158 der Eltern. Derselbe Grund wie oben: ein Vorrat, den
   // niemand nachrechnet, ist ein Vorrat, dem man glaubt.
-  const alle = [...R.vorrat(), ...R.reihenVorrat(), ...R.grossVorrat()];
+  // Und seit I10 ALLE. Das war eine Luecke, und zwar eine, die dieses Tor
+  // selbst gerissen hat: mit I4 kamen drei Vorraete dazu (Verdoppeln,
+  // Luecke, Prozent) und mit I10 zwei weitere - keiner davon stand in
+  // dieser Zeile, und keiner wurde nachgerechnet. Das Tor meldete
+  // trotzdem gruen, weil es zaehlte, was es geprueft hat, und nicht, was
+  // es haette pruefen muessen. Die Liste steht deshalb ab jetzt so da,
+  // dass ein vergessener Vorrat auffaellt: sie nennt die Griffe
+  // vollstaendig und in derselben Reihenfolge wie `vorrat()` im Spiel.
+  const alle = [...R.vorrat(), ...R.reihenVorrat(), ...R.grossVorrat(),
+                ...R.verdoppelnVorrat(), ...R.lueckenVorrat(), ...R.prozentVorrat(),
+                ...R.zehnerVorrat(), ...R.einheitenVorrat()];
   /* Der Zahlenraum je Sorte.
    *
    * Frueher stand hier `?? 100` als Auffangwert - fuer Leas Reihen
@@ -324,7 +334,28 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
      * „welche Antworten es gibt". Fuer Fionas geschlossenen Raum bis 10
      * war beides dasselbe; hier ist es das nicht mehr, und das Tor hat
      * mich zu Recht darauf gestossen. */
-    'geteilt-gross': R.GROSS_BIS + 2 };
+    'geteilt-gross': R.GROSS_BIS + 2,
+    /* I10, „Zehn und drueber": der Uebertragsfehler beim Minus liegt
+       ZEHN UEBER dem Ergebnis (23 - 8 wird zu 25). Bei 99 - 6 = 93 sind
+       das 103 - ausserhalb von hundert und trotzdem genau der Fehler,
+       den ein Kind macht. Die Grenze meint auch hier die plausible
+       Nachbarschaft und nicht den Vorrat. */
+    'plus100': 100, 'minus100': 110,
+    /* Die fuenf aus I4. „Prozent" reicht am weitesten: der Ablenker mit
+       falschem Komma ist das Ergebnis MAL ZEHN, bei 75 % von 400 also
+       3000. Genau der Fehler, um den es dort geht - eine Grenze von
+       hundert haette ihn verboten und die Ebene entschaerft. */
+    'doppelt': 42, 'zerlegen': 22, 'luecke': 12, 'prozent': 3000,
+    /* „Halb 20" ist zehn - und der Ablenker, um den es geht, ist das
+       DOPPELTE statt der Haelfte, also vierzig. Die Grenze liegt deshalb
+       beim Doppelten der groessten Aufgabe und nicht bei der groessten
+       Antwort; sie meint die plausible Nachbarschaft, wie ueberall in
+       dieser Tabelle. */
+    'haelfte': 40,
+    /* Und bei den Groessen ist die plausible Nachbarschaft ein Faktor
+       zehn: „25 kg = ? g" sind 25 000, ein Zehner daneben 250 000. Der
+       Zahlenraum dieser Ebene IST gross - das ist ihr Gegenstand. */
+    'einheit': 250000 };
   let vier = 0;
   for (const auf of alle) {
     geprueft++;
@@ -346,8 +377,23 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
         fehler.push(`${auf.frage}: die Möglichkeit ${z} ist keine ganze Zahl`);
     }
     // Und die Rechnung selbst, gegen die zweite Meinung von JavaScript.
-    const soll = auf.rechenart === 'plus' ? auf.a + auf.b
-      : auf.rechenart === 'minus' ? auf.a - auf.b
+    /* Die Umrechnung wird nachgerechnet wie jede andere Aufgabe - und
+       zwar in der Richtung, die die Aufgabe SELBST angibt (`hin`). Sie
+       aus den Zahlen zu erraten waere hier besonders verfuehrerisch und
+       besonders falsch: bei „100 cm = ? m" sind a und b beide 100. */
+    const soll = (auf.rechenart === 'plus' || auf.rechenart === 'plus100') ? auf.a + auf.b
+      : (auf.rechenart === 'minus' || auf.rechenart === 'minus100') ? auf.a - auf.b
+      : auf.rechenart === 'einheit' ? (auf.hin ? auf.a * auf.b : auf.a / auf.b)
+      /* Die fuenf aus I4. Jede rechnet anders, und jede musste hier
+         nachgetragen werden - vorher fielen sie in den letzten Zweig
+         (`a mal b`) und waeren, haette dieses Tor sie je gesehen, sofort
+         rot geworden. Es hat sie nie gesehen: sie standen nicht in der
+         Liste oben. */
+      : auf.rechenart === 'doppelt'  ? auf.a * 2
+      : auf.rechenart === 'haelfte'  ? auf.a / 2
+      : auf.rechenart === 'zerlegen' ? 10 - auf.a
+      : auf.rechenart === 'luecke'   ? auf.b
+      : auf.rechenart === 'prozent'  ? (auf.b * auf.a) / 100
       : (auf.rechenart === 'geteilt' || auf.rechenart === 'geteilt-gross') ? auf.a / auf.b
       : auf.a * auf.b;
     // Eine Division, die nicht aufgeht, hat in Leas Reihen nichts zu

@@ -1277,6 +1277,24 @@ const EBENEN = [
     art:'rechnen', wer:['fiona'] },
   { id:'rechnen:luecke', ueber:'Rechnen', titel:'Was fehlt?', farbe:5,
     art:'rechnen', wer:['lea'] },
+  /* --- I10: zwei Rechenarten fuer Lea (Inhalt-Audit) -----------------
+   *
+   * Leas Rechenwelt war bis hierher das Einmaleins - drei Ebenen, alle
+   * mal und geteilt. Was fehlte, ist das, woran das zweite und dritte
+   * Schuljahr wirklich haengt: der Zehneruebergang und die Groessen.
+   *
+   * „Zehn und drueber" fragt NUR Aufgaben MIT Uebergang. Ohne ihn waeren
+   * es zwei Ziffern nebeneinander und keine Aufgabe - und der Ablenker
+   * ist genau der Fehler, um den es geht: 23 + 8 wird zu 21, weil der
+   * Uebertrag vergessen wird.
+   *
+   * „Wie viel ist das?" fragt Groessen in BEIDE Richtungen. Dass ein
+   * Meter hundert Zentimeter hat, ist Wissen mit einer Multiplikation
+   * dahinter - genau das, wofuer ein Leitner-Kasten da ist. */
+  { id:'rechnen:zehner', ueber:'Rechnen', titel:'Zehn und drüber', farbe:2,
+    art:'rechnen', wer:['lea'] },
+  { id:'rechnen:einheiten', ueber:'Rechnen', titel:'Meter und Gramm', farbe:4,
+    art:'rechnen', wer:['lea'] },
   { id:'rechnen:prozent', ueber:'Rechnen', titel:'Prozent im Kopf', farbe:7,
     art:'rechnen', wer:['stephan','violeta'] },
   /* Schreiben - nur fuer Fiona (N2a).
@@ -1716,6 +1734,12 @@ const VERBENBILD = new Set(['verben']);
    Pfeil und kein Ortszeichen: eine Praeposition ist nicht immer ein Ort
    („good at maths" ist keiner). */
 const PRAEPBILD = new Set(['praeposition']);
+/* Die Kachel von „Meter und Gramm" (I10): ein langer Strich, ein
+   Gleichheitszeichen, vier kurze. „Das eine ist so viel wie das andere,
+   nur kleiner gestueckelt" - das ist die ganze Ebene in einem Bild, und
+   es ist keines der vier Rechenzeichen. Ein Lineal waere schoener und in
+   dieser Groesse nicht mehr zu erkennen. */
+const EINHEITENBILD = new Set(['rechnen:einheiten']);
 /* Die Kachel der Wendungen (E11): zwei Sprechblasen - es geht um das, was
    man SAGT, und nicht um einzelne Woerter. Und die von „Hören und
    schreiben" (E12): der Lautsprecher und drei Schriftzeilen, in dieser
@@ -1736,6 +1760,16 @@ const MATHEBILD = {
      Kopf" ist Durch und Mal. Fiona liest die Ueberschrift nicht; das
      Zeichenpaar ist fuer sie der Name der Kachel. */
   'rechnen:verdoppeln': ['mal','durch'],
+  /* I10: „Zehn und drueber" ist Plus und Minus - dieselben zwei Zeichen
+     wie bei Fiona, und das ist richtig so: es IST dieselbe Rechenart,
+     nur ueber den Zehner. „Meter und Gramm" bekommt Mal und Durch, weil
+     eine Umrechnung genau das ist, in beide Richtungen. */
+  'rechnen:zehner':     ['plus','minus'],
+  /* „Meter und Gramm" steht NICHT hier, obwohl eine Umrechnung ein Mal
+     und ein Durch ist. Der Grund ist das Bild und nicht die Rechnung:
+     „Reihen 6 bis 10" traegt dasselbe Paar, und die beiden Kacheln
+     stuenden in derselben Wand nebeneinander und saehen gleich aus. Die
+     Ebene bekommt deshalb ein eigenes Zeichen - siehe EINHEITENBILD. */
   'rechnen:luecke':     ['mal','minus'],
   'rechnen:prozent':    ['durch','mal'],
 };
@@ -1851,6 +1885,12 @@ function silhouette(ebeneId) {
         : ENGLISCHZEICHEN[ebeneId] === 'zweiton' ? ZWEITONSTRICH
         : ENGLISCHZEICHEN[ebeneId] === 'lupe' ? LUPENSTRICH : ZEICHEN.tonAn}<path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
+  if (EINHEITENBILD.has(ebeneId))
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M4 12h11"/><path d="M20 9h6M20 15h6"/><path
+      d="M31 12h2M36 12h2M41 12h2"/></svg>`;
   const zeichen = MATHEBILD[ebeneId];
   if (zeichen) {
     const teile = zeichen.map((n, i) =>
@@ -2411,6 +2451,8 @@ function vorrat(ebeneId, stand = Stand, voll = false){
          : kont==='verdoppeln' ? Rechnen.verdoppelnVorrat()
          : kont==='luecke'     ? Rechnen.lueckenVorrat()
          : kont==='prozent'    ? Rechnen.prozentVorrat()
+         : kont==='zehner'     ? Rechnen.zehnerVorrat()
+         : kont==='einheiten'  ? Rechnen.einheitenVorrat()
          : Rechnen.vorrat();
   // Sechsundzwanzig, gezaehlt und von Natur aus begrenzt - dieselbe Regel
   // wie beim Rechenvorrat (Backlog Paragraf 5.2).

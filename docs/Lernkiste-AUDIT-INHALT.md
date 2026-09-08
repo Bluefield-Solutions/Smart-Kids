@@ -484,6 +484,61 @@ Umbruch ist kein Überlauf. Gefunden hat es das Bild, gehalten wird es vom
 Bildvergleich — die Gegenprobe macht das Feld wieder breit und verlangt,
 dass `ansicht` es sieht.
 
+### I10 · Zehn und drüber · Meter und Gramm — **gebaut (v563)**
+
+Leas Rechenwelt war bis hierher das Einmaleins: drei Ebenen, alle mal und
+geteilt. Was fehlte, ist das, woran das zweite und dritte Schuljahr
+wirklich hängen — der **Zehnerübergang** und die **Größen**.
+
+**„Zehn und drüber" fragt nur Aufgaben MIT Übergang** — 129 davon. Ohne
+ihn wären es zwei Ziffern nebeneinander und keine Aufgabe. Und der
+Ablenker ist nicht ein Nachbar, sondern *der Fehler selbst*: wer 23 + 8
+falsch rechnet, rechnet **21** — Einer addiert, Übertrag vergessen. Beim
+Minus spiegelbildlich: 23 − 8 wird zu 25, weil 8 − 3 statt 13 − 8
+gerechnet wird. Steht diese eine Zahl nicht unter den vieren, prüft die
+Ebene nur noch, ob jemand ungefähr richtig rechnet — und das tut die Ebene
+daneben schon. Deshalb bleibt sie beim Mischen drin; gemischt wird nur ihre
+Lage.
+
+**„Meter und Gramm" fragt in beide Richtungen** — 140 Aufgaben aus sieben
+Paaren (m/cm, km/m, cm/mm, kg/g, h/min, min/s, l/ml). „3 m = ? cm" kann man
+sich zusammenreimen, „300 cm = ? m" verlangt dieselbe Regel rückwärts. Nur
+ganze Zahlen: „2500 g = ? kg" wäre 2,5, und das Eingabefeld dieser Ebene
+trägt `inputmode="numeric"`. Die Ablenker sind **Faktorfehler**, nichts
+sonst — die Zahl unverändert, ein Zehner zu wenig, einer zu viel. Ein
+zufälliger Nachbar wäre hier ein Geschenk: wer 300 rechnet und 301
+danebenstehen sieht, hat keine Wahl zu treffen.
+
+**Und ein Vorrat kann auch zu GROSS sein.** Der erste Anlauf ging bei
+„Zehn und drüber" über alle Zehner von 20 bis 99 und kam auf 319 Aufgaben.
+Das ist keine Fülle, sondern eine Halde: bei zwölf Aufgaben je Sitzung sieht
+Lea dieselbe erst nach sechsundzwanzig Runden wieder, und ein Leitner-Kasten
+lebt von Wiederholung *mit Abstand* — er wird durch einen größeren Vorrat
+nicht besser, sondern wirkungslos. Dazu kommt, was die 319 wirklich waren:
+der Kern dieser Aufgabe ist das Paar aus Einer und Summand (3 + 8 geht über
+zehn), der Zehner wird nur mitgeschleppt. Achtzig Zehner sind achtzigmal
+dieselbe Frage. Drei genügen — 20, 50, 80 —, damit die Antwort nicht
+auswendig gelernt werden kann: **129 Aufgaben, elf Runden.** Diese Grenze
+misst kein Tor, und sie sollte auch keins: sie ist eine Aussage über
+Lernen, nicht über Daten. Aufgefallen ist sie am Weltenbild — „Rechnen ·
+0/644" stand da, wo vorher 0/185 stand.
+
+**Und ein Fund, den dieses Paket nebenbei gemacht hat.** `spielprobe`
+rechnet jede Aufgabe und jede angebotene Zahl nach — aber nur die aus
+`vorrat()`, `reihenVorrat()` und `grossVorrat()`. Die **fünf Vorräte aus I4**
+(Verdoppeln, Halbieren, Zerlegen, Lücke, Prozent) standen seit ihrer
+Entstehung nicht in dieser Zeile und wurden **nie nachgerechnet** — das Tor
+meldete trotzdem grün, weil es zählte, was es geprüft hat, und nicht, was
+es hätte prüfen müssen. Sie stehen jetzt alle darin, jede mit ihrer eigenen
+Rechnung und ihrer eigenen Grenze: **10 920 nachgerechnete Antworten statt
+8 588**.
+
+**Zwei Zeichen mussten neu**, und einer davon war ein Befund am Bild: „Meter
+und Gramm" trug zuerst dasselbe Mal-und-Durch wie „Reihen 6 bis 10" —
+zwei Kacheln nebeneinander, die sich nur in der Farbe unterschieden. Jetzt
+zeigt sie einen langen Strich, ein Gleichheitszeichen und drei kurze: *das
+eine ist so viel wie das andere, nur kleiner gestückelt.*
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

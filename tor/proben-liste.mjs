@@ -1891,6 +1891,38 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'verben: freundeschirm' },
     sagt:'freundluecke' },
 
+  /* --- I10: Zehn und drueber, Meter und Gramm --------------------------- *
+   *
+   * Die Ebene „Zehn und drueber" prueft den UEBERGANG und sonst nichts.
+   * Ihr Ablenker ist deshalb kein Nachbar, sondern der Fehler selbst: wer
+   * 23 + 8 falsch rechnet, rechnet 21 - Einer addiert, Uebertrag
+   * vergessen. Steht diese Zahl nicht unter den vieren, prueft die Ebene
+   * nur noch, ob jemand ungefaehr richtig rechnet, und das tut die
+   * Ebene daneben schon.
+   *
+   * Der Eingriff dreht das Vorzeichen um: der Uebertragsfehler wird zum
+   * Ergebnis PLUS zehn, also zu einer Zahl, die niemand hinschreibt.
+   * `spielprobe` faengt ihn an der Grenze von hundert - 98 + 10 ist 108. */
+  { n:'der Uebertragsfehler faellt aus den Moeglichkeiten',
+    tor:'spielprobe', datei:'src/inhalt/rechnen.js',
+    such:"  const uebertrag = auf.rechenart === 'plus100' ? w - 10 : w + 10;",
+    ersatz:"  const uebertrag = auf.rechenart === 'plus100' ? w + 10 : w - 10;",
+    an:{ datei:'src/inhalt/rechnen.js', text:"'plus100' ? w + 10 : w - 10" },
+    sagt:'außerhalb des Zahlenraums' },
+
+  /* Und die Umrechnung wird in BEIDE Richtungen richtig gerechnet.
+   *
+   * `hin` sagt, ob mal oder geteilt. Ohne dieses Feld muesste man die
+   * Richtung aus den Zahlen erraten - und bei „100 cm = ? m" sind a und b
+   * beide 100. Der Eingriff dreht die Richtung fest auf „mal"; danach
+   * behauptet die Ruecksicht 10 000 statt 1. */
+  { n:'die Umrechnung geht nur noch in eine Richtung',
+    tor:'spielprobe', datei:'tor/spielprobe.mjs',
+    such:"      : auf.rechenart === 'einheit' ? (auf.hin ? auf.a * auf.b : auf.a / auf.b)",
+    ersatz:"      : auf.rechenart === 'einheit' ? auf.a * auf.b",
+    an:{ datei:'tor/spielprobe.mjs', text:"'einheit' ? auf.a * auf.b" },
+    sagt:'gerechnet' },
+
   /* --- I9: Das kleine Wort --------------------------------------------- *
    *
    * Die Ebene verspricht im Vorlauf, dass genau EIN KLEINES WORT fehlt.

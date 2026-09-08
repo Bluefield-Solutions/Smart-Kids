@@ -303,6 +303,9 @@ export function ablenkerFuer(auf, wuerfel) {
     return ablenkerGross(auf, wuerfel);
   if (['doppelt', 'haelfte', 'zerlegen', 'luecke', 'prozent'].includes(auf.rechenart))
     return ablenkerNeu(auf, wuerfel);
+  if (auf.rechenart === 'einheit') return ablenkerEinheit(auf, wuerfel);
+  if (auf.rechenart === 'plus100' || auf.rechenart === 'minus100')
+    return ablenkerZehner(auf, wuerfel);
   return ablenkerReihen(auf, wuerfel);
 }
 
@@ -519,6 +522,174 @@ export function ablenkerNeu(auf, wuerfel) {
   // Gemischt wie ueberall, damit die richtige Antwort nicht immer an
   // derselben Stelle steht.
   const drei = gut.slice(0, 3);
+  for (let i = drei.length - 1; i > 0; i--) {
+    const j = Math.floor(wuerfel() * (i + 1));
+    [drei[i], drei[j]] = [drei[j], drei[i]];
+  }
+  return drei;
+}
+
+/* ---------- I10: Groessen und der Zehneruebergang ------------------------
+ *
+ * Zwei Arten, die der Inhalt-Audit gefordert hat und die keine laengere
+ * Liste sind, sondern eine andere FRAGE - beide fuer Lea.
+ *
+ * GROESSEN. Der Stoff der dritten Klasse und der eine, an dem das
+ * Kopfrechnen aufhoert, eine Rechnung zu sein: dass ein Meter hundert
+ * Zentimeter hat, ist Wissen mit einer Multiplikation dahinter. Genau das
+ * gehoert in einen Leitner-Kasten.
+ *
+ * Gefragt wird in BEIDE Richtungen, und das ist der Lernwert: „3 m = ? cm"
+ * kann man sich zusammenreimen, „300 cm = ? m" verlangt dieselbe Regel
+ * rueckwaerts. Nur ganze Zahlen - „2500 g = ? kg" waere 2,5, und das
+ * Eingabefeld dieser Ebene traegt `inputmode="numeric"`.
+ */
+export const EINHEITEN = [
+  { id:'mcm',  von:'m',   nach:'cm',  mal:100,  werte:[1,2,3,5,7,10,12,20,25,40] },
+  { id:'kmm',  von:'km',  nach:'m',   mal:1000, werte:[1,2,3,4,5,6,8,10,15,20] },
+  { id:'cmmm', von:'cm',  nach:'mm',  mal:10,   werte:[3,5,8,12,15,24,30,45,60,90] },
+  { id:'kgg',  von:'kg',  nach:'g',   mal:1000, werte:[1,2,3,4,5,7,9,12,16,25] },
+  { id:'hmin', von:'h',   nach:'min', mal:60,   werte:[1,2,3,4,5,6,8,10,12,24] },
+  { id:'mins', von:'min', nach:'s',   mal:60,   werte:[1,2,3,4,5,6,7,10,15,20] },
+  { id:'lml',  von:'l',   nach:'ml',  mal:1000, werte:[1,2,3,4,5,6,8,10,12,20] },
+];
+
+/** 140 Aufgaben: sieben Paare mal zehn Werte mal zwei Richtungen. */
+export function einheitenVorrat() {
+  const aus = [];
+  for (const e of EINHEITEN)
+    for (const w of e.werte) {
+      const gross = w * e.mal;
+      /* `hin` sagt, in welche Richtung gerechnet wird - mal oder geteilt.
+         Ohne dieses Feld muesste `spielprobe` es aus den Zahlen erraten,
+         und raten ist genau das, was eine Nachrechnung nicht tun darf. */
+      aus.push({ id: `eh${e.id}h${w}`, rechenart: 'einheit', hin: true, a: w, b: e.mal,
+        wert: gross, frage: `${w} ${e.von} = ? ${e.nach}`, name: String(gross),
+        gesagt: `Wieviel ${e.nach} sind ${w} ${e.von}?`,
+        geloest: `${w} ${e.von} sind ${gross} ${e.nach}` });
+      aus.push({ id: `eh${e.id}r${w}`, rechenart: 'einheit', hin: false, a: gross, b: e.mal,
+        wert: w, frage: `${gross} ${e.nach} = ? ${e.von}`, name: String(w),
+        gesagt: `Wieviel ${e.von} sind ${gross} ${e.nach}?`,
+        geloest: `${gross} ${e.nach} sind ${w} ${e.von}` });
+    }
+  return aus;
+}
+
+/* DER ZEHNERUEBERGANG. Leas Reihen sind Malaufgaben; Plus und Minus hat
+ * bei ihr nur Fiona - im Zahlenraum zehn. Was dazwischen fehlt, ist genau
+ * die Stelle, an der das Rechnen im zweiten Schuljahr haengt: 47 + 8 geht
+ * ueber die Fuenfzig, 63 - 7 unter die Sechzig.
+ *
+ * NUR Aufgaben MIT Uebergang. Ohne ihn waeren es zwei Ziffern nebeneinander
+ * und keine Aufgabe - und die Ebene hiesse „Plus und Minus bis 100", was
+ * sie nicht ist. Der Einer der ersten Zahl plus der Einer der zweiten muss
+ * ueber zehn gehen; beim Minus muss der Einer des Abzugs groesser sein.
+ */
+/* DREI Zehner und nicht acht - gerechnet, nicht gegriffen.
+ *
+ * Der erste Anlauf ging ueber alle Zehner von 20 bis 99 und kam auf 319
+ * Aufgaben. Das ist kein Vorrat, sondern eine Halde: bei zwoelf Aufgaben
+ * je Sitzung sieht Lea dieselbe erst nach sechsundzwanzig Runden wieder,
+ * und ein Leitner-Kasten lebt von Wiederholung mit Abstand. Er wird durch
+ * einen groesseren Vorrat nicht besser, sondern wirkungslos.
+ *
+ * Dazu kommt, was die 319 wirklich waren: der KERN dieser Aufgabe ist das
+ * Paar aus Einer und Summand (3 + 8 geht ueber zehn). Der Zehner wird nur
+ * mitgeschleppt. Achtzig Zehner sind deshalb achtzigmal dieselbe Frage.
+ *
+ * Drei genuegen - 20, 50, 80 -, damit die Antwort nicht auswendig
+ * gelernt werden kann und der Uebergang trotzdem in jedem Zehner
+ * geuebt wird. Gemessen: 129 Aufgaben (75 plus, 54 minus), knapp elf
+ * volle Runden. */
+export function zehnerVorrat() {
+  const aus = [];
+  for (const z of [2, 5, 8])
+    for (let e = 3; e <= 9; e++) {
+      const a = z * 10 + e;
+      for (const b of [6, 7, 8, 9]) {
+        if (e + b <= 10) continue;               // kein Uebergang, keine Aufgabe
+        if (a + b > 100) continue;
+        aus.push({ id: `zp${a}+${b}`, rechenart: 'plus100', a, b, wert: a + b,
+          frage: `${a} + ${b}`, name: String(a + b),
+          gesagt: `Wieviel ist ${a} plus ${b}?`,
+          geloest: `${a} plus ${b} ist ${a + b}` });
+      }
+      for (const b of [6, 7, 8, 9]) {
+        if (b <= e) continue;                    // kein Uebergang nach unten
+        aus.push({ id: `zm${a}-${b}`, rechenart: 'minus100', a, b, wert: a - b,
+          frage: `${a} − ${b}`, name: String(a - b),
+          gesagt: `Wieviel ist ${a} minus ${b}?`,
+          geloest: `${a} minus ${b} ist ${a - b}` });
+      }
+    }
+  return aus;
+}
+
+/* Die Ablenker der Groessen - und hier ist das WICHTIGE, nicht die
+ * Rechnung.
+ *
+ * Der Fehler, den ein Kind bei „3 m = ? cm" macht, ist nie „302". Er ist
+ * immer einer von dreien, und alle drei sind FAKTORFEHLER:
+ *
+ *   - die Zahl unveraendert stehen lassen (3 statt 300)
+ *   - den falschen Faktor nehmen (30 oder 3000 statt 300)
+ *   - in die falsche RICHTUNG rechnen (bei „300 cm = ? m" 30 000 statt 3)
+ *
+ * Ein zufaelliger Nachbar waere hier kein Ablenker, sondern ein Geschenk:
+ * wer 300 rechnet und 301 danebenstehen sieht, hat keine Wahl zu treffen.
+ * Die Ebene prueft den Faktor, also muessen die falschen Antworten
+ * falsche Faktoren sein.
+ */
+export function ablenkerEinheit(auf, wuerfel) {
+  const w = auf.wert;
+  /* Die Reihenfolge ist die Rangfolge: erst die Zahl unveraendert (der
+     haeufigste Fehler), dann ein Zehner zu wenig, dann einer zu viel.
+     Der erste Anlauf hatte `w * b` mit dabei - bei „25 kg = ? g" waren
+     das 25 Millionen, und eine Zahl, die niemand je antippt, ist kein
+     Ablenker, sondern eine geschenkte Ausschlussmoeglichkeit. */
+  const roh = [auf.a, w / 10, w * 10, w / 100, w * 100, w * 1000, w / 1000];
+  const gut = [];
+  for (const x of roh)
+    if (Number.isInteger(x) && x > 0 && x !== w && !gut.includes(x)) gut.push(x);
+  /* Kommt hier nichts mehr zusammen, ist die Aufgabe falsch gebaut - ein
+     Nachbar waere kein Faktorfehler und damit kein Ablenker dieser Ebene.
+     Gemessen: bei allen 140 Aufgaben reichen die sieben oben. */
+  while (gut.length < 3) gut.push(w * (10 ** (gut.length + 2)));
+  const drei = gut.slice(0, 3);
+  for (let i = drei.length - 1; i > 0; i--) {
+    const j = Math.floor(wuerfel() * (i + 1));
+    [drei[i], drei[j]] = [drei[j], drei[i]];
+  }
+  return drei;
+}
+
+/* Die Ablenker des Zehneruebergangs - und auch hier ist der Fehler der
+ * Gegenstand, nicht die Nachbarschaft.
+ *
+ * Wer 23 + 8 falsch rechnet, rechnet fast nie 30 oder 33. Er rechnet
+ * ZWANZIGEINS: er addiert die Einer (3 + 8 = 11), schreibt die Eins hin
+ * und vergisst den Uebertrag. Das ist w minus zehn.
+ * Beim Minus ist es spiegelbildlich: 23 - 8 wird zu 25, weil er 8 - 3
+ * rechnet statt 13 - 8 und den Zehner stehen laesst. Das ist w plus zehn.
+ *
+ * Diese eine Zahl MUSS unter den vier stehen, sonst prueft die Ebene den
+ * Uebergang nicht - sie prueft dann nur, ob jemand ungefaehr richtig
+ * rechnet. Die beiden anderen sind Verzaehler um eins; sie stehen dabei,
+ * damit die richtige Antwort nicht die einzige „runde" ist.
+ */
+export function ablenkerZehner(auf, wuerfel) {
+  const w = auf.wert;
+  const uebertrag = auf.rechenart === 'plus100' ? w - 10 : w + 10;
+  const roh = [uebertrag, w - 1, w + 1, w - 2, w + 2];
+  const gut = [];
+  for (const x of roh)
+    if (Number.isInteger(x) && x >= 0 && x !== w && !gut.includes(x)) gut.push(x);
+  const drei = gut.slice(0, 3);
+  /* Der Uebertragsfehler bleibt drin - gemischt wird nur seine Lage.
+     Ein Mischen, das ihn herauswerfen kann, nimmt der Ebene ihren
+     Gegenstand: eine Pruefung, die nie etwas meldet, ist kein Beweis
+     (Regel 1), und eine Ebene, deren Fehler nur manchmal dabeisteht,
+     meldet nur manchmal etwas. */
   for (let i = drei.length - 1; i > 0; i--) {
     const j = Math.floor(wuerfel() * (i + 1));
     [drei[i], drei[j]] = [drei[j], drei[i]];
