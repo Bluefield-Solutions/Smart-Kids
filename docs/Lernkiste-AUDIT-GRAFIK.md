@@ -78,11 +78,15 @@ groß auf dem Endbildschirm, nur bei den Kinderprofilen. Zwei stehende
 Gegenproben halten beide Verfallsarten fest — sie kommt nie, sie kommt zu
 allen.
 
-### G4 · Die Belohnung ist ein Bericht
+### G4 · Die Belohnung ist ein Bericht — **erledigt in N10 (v535)**
 
 „Geschafft!" · drei Sterne · ein grüner Balken · „4 von 4 auf Anhieb
 richtig" · „2 von 4 im Buch" · drei Knöpfe. Das ist ein **Zeugnis**. Keine
 Bewegung, kein Zufliegen, kein Aufleuchten, kein Moment.
+
+Seit N10 tritt der Bildschirm zeilenweise auf — erst die Sterne, dann die
+Figur, dann die Zahl (gemessen: 0 ms gegen 270 ms). Und im Spiel bewegt
+sich seither auch das **Ja**: bis dahin wackelte nur die Ablehnung.
 
 ### G5 · Die Kacheln sprechen in Zahlen
 

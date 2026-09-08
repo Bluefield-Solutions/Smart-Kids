@@ -178,6 +178,36 @@ Bewegung als Rückmeldung im Spiel: richtig hüpft, falsch wackelt.
 **Abnahme:** Die Bildabnahme nimmt den Endbildschirm in zwei Zuständen ab;
 die Bewegung darf die Ruheprüfung nicht dauerhaft brechen.
 
+**Gebaut (v535).** Zwei Sachen, ein Befund: bis hierher hat sich in
+dieser App nur die **Ablehnung** bewegt — fünf Stellen wackeln bei einer
+falschen Antwort, keine einzige bei einer richtigen.
+
+*Das Ja hüpft.* Eine Regel für alle Aufgabenarten, an der Klasse
+`stimmt`. Dabei kam ein stiller Fehler heraus, der schon im Bündel lag:
+`[data-fertig] .zahl` setzt `animation:none` mit höherer Kennzahl als
+`.stimmt` (0-2-0 gegen 0-1-0) — das Hüpfen war gebaut, ausgeliefert und
+wirkungslos. An der Regel ist das nicht zu sehen; nur der Browser weiß,
+was er wirklich angelegt hat. Und weil die richtige Antwort kein
+verbrauchter Knopf ist, bleibt sie jetzt auch hell stehen.
+
+*Die Bühne.* Der Endbildschirm tritt zeilenweise auf: erst die Sterne,
+dann die Figur, dann die **Zahl**. Gemessen: Sterne nach 0 ms, Zahl nach
+270 ms. Der Versatz ist bei sechs Stufen gedeckelt.
+
+Das Tor misst den **Versatz, den der Browser angelegt hat**, nicht die
+Deckkraft. Die Deckkraft war der erste Anlauf und taugte nicht: im ersten
+Bild steht alles auf 0, auch die Zeile ohne Versatz — der Vergleich war
+0 gegen 0 und hätte auch ohne Bühne gepasst.
+
+*Was nicht gebaut wurde:* der fliegende Aufkleber. Er steht seit Q45 als
+abgelehnt im Quelltext — er bräuchte die Lage beider Elemente zur
+Laufzeit und ein Element, das über den Bildschirm wandert, und `passt`
+misst Hüllen. Der winkende Buch-Knopf sagt dasselbe.
+
+**Vier stehende Gegenproben:** das Ja hüpft nicht · die verbrauchten
+Knöpfe ersticken das Hüpfen wieder · die Bühne tritt ohne Versatz auf ·
+der Auftritt bleibt auf halbem Weg stehen.
+
 ### N11 · Der Weg — aus der Wand wird eine Strecke
 *Befund G5 · G6 · S7 · S8*
 
