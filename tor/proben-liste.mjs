@@ -6060,9 +6060,12 @@ export const PROBEN = [
    *    faellt die Fuellung von 95 auf 37 bis 56 %. */
   { n:'die Sammlung fuellt ihre Buchseite nicht mehr', tor:'smoke',
     args:['--nur=spielen,ablage'], bauen:true, datei:V,
-    such:"  .buchraster > .raumgitter{min-height:100%;align-content:stretch;",
-    ersatz:"  .buchraster > .raumgitter{min-height:0;align-content:start;",
-    an:{ ...DIST, text:".buchraster > .raumgitter{min-height:0;align-content:start;" },
+    /* Angefasst wird die letzte Zeile der Auswahlliste, also die
+       Deklaration selbst - damit faellt die Fuellung fuer ALLE drei
+       Raster weg, nicht nur fuer eines. */
+    such:"  .buchraster > .abzeichen{min-height:100%;align-content:stretch;",
+    ersatz:"  .buchraster > .abzeichen{min-height:0;align-content:start;",
+    an:{ ...DIST, text:".buchraster > .abzeichen{min-height:0;align-content:start;" },
     sagt:'ihrer Hoehe' },
 
   /* 2. DER KASTEN WAECHST, DAS BILD NICHT. Die gefaehrlichere Fassung,
