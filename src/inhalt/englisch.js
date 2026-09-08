@@ -1775,9 +1775,289 @@ export const wieGetippt = (t) => String(t).toLowerCase().trim()
 
 /** Der Vorrat der Ebene „Falsche Freunde". */
 export function vorratFreunde(){
-  return FREUNDE.map(f => ({ id: `en:freund:${f.id}`, name: f.richtig[0],
-    satz: f.satz, luecke: f.luecke, richtig: f.richtig, falle: f.falle,
-    warum: f.warum }));
+  return luecken(FREUNDE, 'freund');
+}
+
+/* Aus einer Fallenliste wird ein Vorrat. EINE Stelle fuer beide Ebenen
+ * (I8): „Falsche Freunde" und „Gestern und heute" tragen dieselben
+ * Felder, weil sie dieselbe Aufgabe stellen - deutscher Satz, englische
+ * Luecke, eine Falle, die nicht angeboten, sondern ERKANNT wird. Zwei
+ * gleichlautende `map`-Aufrufe waeren Regel 6: was zweimal dasteht,
+ * veraltet einmal. */
+const luecken = (liste, sorte) => liste.map(f => ({
+  id: `en:${sorte}:${f.id}`, name: f.richtig[0],
+  satz: f.satz, luecke: f.luecke, richtig: f.richtig, falle: f.falle,
+  warum: f.warum }));
+
+/* ---------- Gestern und heute: die unregelmaessigen Verben (I8) ----------
+ *
+ * WARUM DIESE EBENE UND NICHT MEHR FALSCHE FREUNDE.
+ *
+ * Der Inhalt-Audit hat gefragt, wie oft sich etwas wiederholt, und die
+ * Antwort fuer die Eltern war: zu oft. Die erste Reaktion darauf war, die
+ * bestehenden Listen zu verlaengern (I1). Das hilft gegen die
+ * Wiederholung und nicht gegen das Zweite, was der Nutzer gesagt hat:
+ * „es muss noch viel mehr Varianten geben". Eine laengere Liste ist keine
+ * Variante - es ist dieselbe Frage mit mehr Zetteln.
+ *
+ * Die unregelmaessigen Verben sind die andere FRAGE, und sie sind der
+ * eine Stoff, an dem deutschsprachige Erwachsene lebenslang haengen
+ * bleiben: man weiss, dass „buy" unregelmaessig ist, und schreibt unter
+ * Druck trotzdem „buyed". Genau darum tragen sie hier dieselbe Bauform
+ * wie die falschen Freunde: die Falle wird nicht angeboten, sondern
+ * ERKANNT. Wer „catched" tippt, bekommt an genau dieser Stelle die drei
+ * Formen zu sehen, statt nur „falsch".
+ *
+ * DIE FALLE IST IMMER DIE REGELMAESSIGE FORM. Das ist keine Bequemlichkeit,
+ * sondern der Fehler, den es wirklich gibt: niemand schreibt „boughted",
+ * alle schreiben „buyed". Drei Ausnahmen stehen unten - dort, wo BEIDE
+ * Formen zugelassen sind (learnt/learned), waere die regelmaessige Form
+ * richtig, und die Falle ist deshalb eine dritte, falsch geschriebene.
+ *
+ * GEORDNET NACH KLANG, nicht nach Alphabet: die -ought/-aught-Gruppe, die
+ * Reihe i-a-u, die o-e-Gruppe, das -ew, die -t-Endungen und zuletzt die
+ * vier, die sich gar nicht aendern. Wer sie in dieser Reihenfolge sieht,
+ * lernt Muster; wer sie alphabetisch sieht, lernt Einzelstuecke. Der
+ * Leitner mischt sie ohnehin - die Ordnung ist fuer den, der die Liste
+ * pflegt.
+ */
+export const VERBEN = [
+  // --- Die -ought/-aught-Gruppe: dieselbe Endung, sechs Verben ---
+  { id: 'v-buy',    satz: 'Ich habe das Buch gestern gekauft.',
+    luecke: 'I ___ the book yesterday.', richtig: ['bought'], falle: 'buyed',
+    warum: '„buy" ist unregelmäßig: buy — bought — bought.' },
+  { id: 'v-bring',  satz: 'Sie hat den Kuchen mitgebracht.',
+    luecke: 'She ___ the cake.', richtig: ['brought'], falle: 'bringed',
+    warum: '„bring" ist unregelmäßig: bring — brought — brought.' },
+  { id: 'v-catch',  satz: 'Er hat den Ball gefangen.',
+    luecke: 'He ___ the ball.', richtig: ['caught'], falle: 'catched',
+    warum: '„catch" ist unregelmäßig: catch — caught — caught.' },
+  { id: 'v-teach',  satz: 'Sie hat uns Englisch beigebracht.',
+    luecke: 'She ___ us English.', richtig: ['taught'], falle: 'teached',
+    warum: '„teach" ist unregelmäßig: teach — taught — taught.' },
+  { id: 'v-think',  satz: 'Ich dachte, du kommst später.',
+    luecke: 'I ___ you were coming later.', richtig: ['thought'], falle: 'thinked',
+    warum: '„think" ist unregelmäßig: think — thought — thought.' },
+  { id: 'v-fight',  satz: 'Die beiden haben sich darum gestritten.',
+    luecke: 'They ___ about it.', richtig: ['fought'], falle: 'fighted',
+    warum: '„fight" ist unregelmäßig: fight — fought — fought.' },
+
+  // --- i — a — u: die Reihe, die man einmal lernt ---
+  { id: 'v-begin',  satz: 'Der Film hat um acht angefangen.',
+    luecke: 'The film ___ at eight.', richtig: ['began'], falle: 'beginned',
+    warum: '„begin" ist unregelmäßig: begin — began — begun.' },
+  { id: 'v-drink',  satz: 'Er hat den ganzen Kaffee getrunken.',
+    luecke: 'He ___ all the coffee.', richtig: ['drank'], falle: 'drinked',
+    warum: '„drink" ist unregelmäßig: drink — drank — drunk.' },
+  { id: 'v-sing',   satz: 'Wir haben zusammen gesungen.',
+    luecke: 'We ___ together.', richtig: ['sang'], falle: 'singed',
+    warum: '„sing" ist unregelmäßig: sing — sang — sung.' },
+  { id: 'v-swim',   satz: 'Sie ist bis zur Insel geschwommen.',
+    luecke: 'She ___ to the island.', richtig: ['swam'], falle: 'swimmed',
+    warum: '„swim" ist unregelmäßig: swim — swam — swum.' },
+  { id: 'v-ring',   satz: 'Das Telefon hat zweimal geklingelt.',
+    luecke: 'The phone ___ twice.', richtig: ['rang'], falle: 'ringed',
+    warum: '„ring" ist unregelmäßig: ring — rang — rung.' },
+  { id: 'v-run',    satz: 'Er ist zum Bahnhof gerannt.',
+    luecke: 'He ___ to the station.', richtig: ['ran'], falle: 'runned',
+    warum: '„run" ist unregelmäßig: run — ran — run.' },
+  { id: 'v-win',    satz: 'Unsere Mannschaft hat gewonnen.',
+    luecke: 'Our team ___ the game.', richtig: ['won'], falle: 'winned',
+    warum: '„win" ist unregelmäßig: win — won — won.' },
+  { id: 'v-sit',    satz: 'Ich saß die ganze Zeit hinten.',
+    luecke: 'I ___ at the back the whole time.', richtig: ['sat'], falle: 'sitted',
+    warum: '„sit" ist unregelmäßig: sit — sat — sat.' },
+
+  // --- o-e: der Vokal wandert nach hinten ---
+  { id: 'v-write',  satz: 'Ich habe ihr gestern geschrieben.',
+    luecke: 'I ___ to her yesterday.', richtig: ['wrote'], falle: 'writed',
+    warum: '„write" ist unregelmäßig: write — wrote — written.' },
+  { id: 'v-drive',  satz: 'Wir sind die ganze Nacht gefahren.',
+    luecke: 'We ___ all night.', richtig: ['drove'], falle: 'drived',
+    warum: '„drive" ist unregelmäßig: drive — drove — driven.' },
+  { id: 'v-ride',   satz: 'Sie ist mit dem Rad zur Arbeit gefahren.',
+    luecke: 'She ___ her bike to work.', richtig: ['rode'], falle: 'rided',
+    warum: '„ride" ist unregelmäßig: ride — rode — ridden.' },
+  { id: 'v-choose', satz: 'Er hat das billigere Zimmer gewählt.',
+    luecke: 'He ___ the cheaper room.', richtig: ['chose'], falle: 'choosed',
+    warum: '„choose" ist unregelmäßig: choose — chose — chosen.' },
+  { id: 'v-freeze', satz: 'Der See ist über Nacht zugefroren.',
+    luecke: 'The lake ___ overnight.', richtig: ['froze'], falle: 'freezed',
+    warum: '„freeze" ist unregelmäßig: freeze — froze — frozen.' },
+  { id: 'v-speak',  satz: 'Ich habe schon mit ihm gesprochen.',
+    luecke: 'I ___ to him already.', richtig: ['spoke'], falle: 'speaked',
+    warum: '„speak" ist unregelmäßig: speak — spoke — spoken.' },
+  { id: 'v-break',  satz: 'Sie hat sich den Arm gebrochen.',
+    luecke: 'She ___ her arm.', richtig: ['broke'], falle: 'breaked',
+    warum: '„break" ist unregelmäßig: break — broke — broken.' },
+  { id: 'v-steal',  satz: 'Jemand hat mein Fahrrad gestohlen.',
+    luecke: 'Someone ___ my bike.', richtig: ['stole'], falle: 'stealed',
+    warum: '„steal" ist unregelmäßig: steal — stole — stolen.' },
+  { id: 'v-wake',   satz: 'Ich bin um sechs aufgewacht.',
+    luecke: 'I ___ up at six.', richtig: ['woke'], falle: 'waked',
+    warum: '„wake" ist unregelmäßig: wake — woke — woken.' },
+  { id: 'v-wear',   satz: 'Er hat einen blauen Mantel getragen.',
+    luecke: 'He ___ a blue coat.', richtig: ['wore'], falle: 'weared',
+    warum: '„wear" ist unregelmäßig: wear — wore — worn.' },
+  { id: 'v-tear',   satz: 'Sie hat den Brief zerrissen.',
+    luecke: 'She ___ up the letter.', richtig: ['tore'], falle: 'teared',
+    warum: '„tear" ist unregelmäßig: tear — tore — torn.' },
+
+  // --- ew: fliegen, wachsen, wissen, werfen ---
+  { id: 'v-fly',    satz: 'Wir sind letztes Jahr nach Kanada geflogen.',
+    luecke: 'We ___ to Canada last year.', richtig: ['flew'], falle: 'flied',
+    warum: '„fly" ist unregelmäßig: fly — flew — flown; „flied" gibt es nicht.' },
+  { id: 'v-grow',   satz: 'Die Firma ist schnell gewachsen.',
+    luecke: 'The company ___ quickly.', richtig: ['grew'], falle: 'growed',
+    warum: '„grow" ist unregelmäßig: grow — grew — grown.' },
+  { id: 'v-know',   satz: 'Ich wusste die Antwort nicht.',
+    luecke: 'I did not ___ the answer.', richtig: ['know'], falle: 'knowed',
+    warum: '„know" ist unregelmäßig: know — knew — known. Nach „did" steht wieder die Grundform.' },
+  { id: 'v-throw',  satz: 'Er hat den Zettel weggeworfen.',
+    luecke: 'He ___ the note away.', richtig: ['threw'], falle: 'throwed',
+    warum: '„throw" ist unregelmäßig: throw — threw — thrown.' },
+  { id: 'v-draw',   satz: 'Sie hat einen Plan gezeichnet.',
+    luecke: 'She ___ a plan.', richtig: ['drew'], falle: 'drawed',
+    warum: '„draw" ist unregelmäßig: draw — drew — drawn.' },
+  { id: 'v-blow',   satz: 'Der Wind hat den Schirm umgeweht.',
+    luecke: 'The wind ___ the umbrella over.', richtig: ['blew'], falle: 'blowed',
+    warum: '„blow" ist unregelmäßig: blow — blew — blown.' },
+
+  // --- Einzelgänger ---
+  { id: 'v-see',    satz: 'Ich habe sie gestern gesehen.',
+    luecke: 'I ___ her yesterday.', richtig: ['saw'], falle: 'seed',
+    warum: '„see" ist unregelmäßig: see — saw — seen.' },
+  { id: 'v-eat',    satz: 'Wir haben schon gegessen.',
+    luecke: 'We ___ before we came.', richtig: ['ate'], falle: 'eated',
+    warum: '„eat" ist unregelmäßig: eat — ate — eaten.' },
+  { id: 'v-fall',   satz: 'Die Preise sind stark gefallen.',
+    luecke: 'Prices ___ sharply.', richtig: ['fell'], falle: 'falled',
+    warum: '„fall" ist unregelmäßig: fall — fell — fallen.' },
+  { id: 'v-come',   satz: 'Sie kam eine Stunde zu spät.',
+    luecke: 'She ___ an hour late.', richtig: ['came'], falle: 'comed',
+    warum: '„come" ist unregelmäßig: come — came — come.' },
+  { id: 'v-give',   satz: 'Er hat mir seine Nummer gegeben.',
+    luecke: 'He ___ me his number.', richtig: ['gave'], falle: 'gived',
+    warum: '„give" ist unregelmäßig: give — gave — given.' },
+  { id: 'v-take',   satz: 'Das hat drei Stunden gedauert.',
+    luecke: 'It ___ three hours.', richtig: ['took'], falle: 'taked',
+    warum: '„take" ist unregelmäßig: take — took — taken.' },
+  { id: 'v-stand',  satz: 'Wir standen zwanzig Minuten in der Schlange.',
+    luecke: 'We ___ in line for twenty minutes.', richtig: ['stood'], falle: 'standed',
+    warum: '„stand" ist unregelmäßig: stand — stood — stood.' },
+  { id: 'v-under',  satz: 'Ich habe kein Wort verstanden.',
+    luecke: 'I ___ nothing at all.', richtig: ['understood'], falle: 'understanded',
+    warum: '„understand" ist unregelmäßig: understand — understood — understood.' },
+  { id: 'v-hold',   satz: 'Sie hielt die Tür für mich auf.',
+    luecke: 'She ___ the door for me.', richtig: ['held'], falle: 'holded',
+    warum: '„hold" ist unregelmäßig: hold — held — held.' },
+  { id: 'v-find',   satz: 'Wir haben den Schlüssel wiedergefunden.',
+    luecke: 'We ___ the key again.', richtig: ['found'], falle: 'finded',
+    warum: '„find" ist unregelmäßig: find — found — found.' },
+  { id: 'v-hear',   satz: 'Ich habe kein Wort davon gehört.',
+    luecke: 'I ___ nothing about it.', richtig: ['heard'], falle: 'heared',
+    warum: '„hear" ist unregelmäßig: hear — heard — heard.' },
+  { id: 'v-hide',   satz: 'Er hat den Schlüssel unter der Matte versteckt.',
+    luecke: 'He ___ the key under the mat.', richtig: ['hid'], falle: 'hided',
+    warum: '„hide" ist unregelmäßig: hide — hid — hidden.' },
+  { id: 'v-bite',   satz: 'Der Hund hat den Briefträger gebissen.',
+    luecke: 'The dog ___ the postman.', richtig: ['bit'], falle: 'bited',
+    warum: '„bite" ist unregelmäßig: bite — bit — bitten.' },
+  { id: 'v-hang',   satz: 'Der Mantel hing hinter der Tür.',
+    luecke: 'The coat ___ behind the door.', richtig: ['hung'], falle: 'hanged',
+    warum: '„hang" ist unregelmäßig: hang — hung — hung. „hanged" gibt es nur beim Hängen am Galgen.' },
+  { id: 'v-stick',  satz: 'Der Zettel klebte am Kühlschrank.',
+    luecke: 'The note ___ to the fridge.', richtig: ['stuck'], falle: 'sticked',
+    warum: '„stick" ist unregelmäßig: stick — stuck — stuck.' },
+  { id: 'v-lead',   satz: 'Diese Straße führte direkt zum Hafen.',
+    luecke: 'This road ___ straight to the harbour.', richtig: ['led'], falle: 'leaded',
+    warum: '„lead" ist unregelmäßig: lead — led — led.' },
+
+  // --- -t statt -ed: die halbregelmäßigen ---
+  { id: 'v-feel',   satz: 'Ich fühlte mich den ganzen Tag müde.',
+    luecke: 'I ___ tired all day.', richtig: ['felt'], falle: 'feeled',
+    warum: '„feel" ist unregelmäßig: feel — felt — felt.' },
+  { id: 'v-keep',   satz: 'Sie hat alle Briefe aufgehoben.',
+    luecke: 'She ___ all the letters.', richtig: ['kept'], falle: 'keeped',
+    warum: '„keep" ist unregelmäßig: keep — kept — kept.' },
+  { id: 'v-sleep',  satz: 'Ich habe kaum geschlafen.',
+    luecke: 'I hardly ___ at all.', richtig: ['slept'], falle: 'sleeped',
+    warum: '„sleep" ist unregelmäßig: sleep — slept — slept.' },
+  { id: 'v-leave',  satz: 'Er ist ohne ein Wort gegangen.',
+    luecke: 'He ___ without a word.', richtig: ['left'], falle: 'leaved',
+    warum: '„leave" ist unregelmäßig: leave — left — left.' },
+  { id: 'v-lose',   satz: 'Ich habe meinen Ausweis verloren.',
+    luecke: 'I ___ my ID.', richtig: ['lost'], falle: 'losed',
+    warum: '„lose" ist unregelmäßig: lose — lost — lost.' },
+  { id: 'v-mean',   satz: 'So habe ich das nicht gemeint.',
+    luecke: 'That is not what I ___.', richtig: ['meant'], falle: 'meaned',
+    warum: '„mean" ist unregelmäßig: mean — meant — meant.' },
+  { id: 'v-meet',   satz: 'Wir haben uns letzten Sommer kennengelernt.',
+    luecke: 'We ___ last summer.', richtig: ['met'], falle: 'meeted',
+    warum: '„meet" ist unregelmäßig: meet — met — met.' },
+  { id: 'v-pay',    satz: 'Sie hat für alle bezahlt.',
+    luecke: 'She ___ for everyone.', richtig: ['paid'], falle: 'payed',
+    warum: '„pay" ist unregelmäßig: pay — paid — paid.' },
+  { id: 'v-say',    satz: 'Er hat nichts dazu gesagt.',
+    luecke: 'He ___ nothing about it.', richtig: ['said'], falle: 'sayed',
+    warum: '„say" ist unregelmäßig: say — said — said.' },
+  { id: 'v-sell',   satz: 'Wir haben das Auto letzten Monat verkauft.',
+    luecke: 'We ___ the car last month.', richtig: ['sold'], falle: 'selled',
+    warum: '„sell" ist unregelmäßig: sell — sold — sold.' },
+  { id: 'v-tell',   satz: 'Sie hat mir alles erzählt.',
+    luecke: 'She ___ me everything.', richtig: ['told'], falle: 'telled',
+    warum: '„tell" ist unregelmäßig: tell — told — told.' },
+  { id: 'v-send',   satz: 'Ich habe die Rechnung gestern geschickt.',
+    luecke: 'I ___ the invoice yesterday.', richtig: ['sent'], falle: 'sended',
+    warum: '„send" ist unregelmäßig: send — sent — sent.' },
+  { id: 'v-spend',  satz: 'Wir haben zu viel Geld ausgegeben.',
+    luecke: 'We ___ too much money.', richtig: ['spent'], falle: 'spended',
+    warum: '„spend" ist unregelmäßig: spend — spent — spent.' },
+  { id: 'v-build',  satz: 'Sie haben das Haus selbst gebaut.',
+    luecke: 'They ___ the house themselves.', richtig: ['built'], falle: 'builded',
+    warum: '„build" ist unregelmäßig: build — built — built.' },
+  { id: 'v-lend',   satz: 'Er hat mir zwanzig Euro geliehen.',
+    luecke: 'He ___ me twenty euros.', richtig: ['lent'], falle: 'lended',
+    warum: '„lend" ist unregelmäßig: lend — lent — lent.' },
+  { id: 'v-feed',   satz: 'Ich habe die Katze schon gefüttert.',
+    luecke: 'I ___ the cat already.', richtig: ['fed'], falle: 'feeded',
+    warum: '„feed" ist unregelmäßig: feed — fed — fed.' },
+
+  // --- Die vier, die sich gar nicht ändern: die schwerste Gruppe ---
+  { id: 'v-put',    satz: 'Ich habe den Schlüssel auf den Tisch gelegt.',
+    luecke: 'I ___ the key on the table.', richtig: ['put'], falle: 'putted',
+    warum: '„put" ändert sich nicht: put — put — put.' },
+  { id: 'v-cut',    satz: 'Sie hat sich in den Finger geschnitten.',
+    luecke: 'She ___ her finger.', richtig: ['cut'], falle: 'cutted',
+    warum: '„cut" ändert sich nicht: cut — cut — cut.' },
+  { id: 'v-cost',   satz: 'Die Reparatur hat dreihundert Euro gekostet.',
+    luecke: 'The repair ___ three hundred euros.', richtig: ['cost'], falle: 'costed',
+    warum: '„cost" ändert sich nicht: cost — cost — cost.' },
+  { id: 'v-hurt',   satz: 'Mein Rücken hat den ganzen Tag wehgetan.',
+    luecke: 'My back ___ all day.', richtig: ['hurt'], falle: 'hurted',
+    warum: '„hurt" ändert sich nicht: hurt — hurt — hurt.' },
+  { id: 'v-let',    satz: 'Sie haben uns nicht hinein gelassen.',
+    luecke: 'They did not ___ us in.', richtig: ['let'], falle: 'letted',
+    warum: '„let" ändert sich nicht: let — let — let.' },
+  { id: 'v-read',   satz: 'Ich habe das Buch letzten Sommer gelesen.',
+    luecke: 'I ___ the book last summer.', richtig: ['read'], falle: 'readed',
+    warum: '„read" ändert sich in der Schrift nicht: read — read — read. Gesprochen wird die Vergangenheit wie „red".' },
+
+  // --- Zwei Formen sind erlaubt: beides zählt ---
+  { id: 'v-learn',  satz: 'Sie hat Spanisch in der Schule gelernt.',
+    luecke: 'She ___ Spanish at school.', richtig: ['learnt', 'learned'], falle: 'learnd',
+    warum: '„learn" hat zwei Formen: learnt (britisch) und learned (amerikanisch). „learnd" ist keine davon.' },
+  { id: 'v-dream',  satz: 'Ich habe letzte Nacht seltsam geträumt.',
+    luecke: 'I ___ strange things last night.', richtig: ['dreamt', 'dreamed'], falle: 'dremt',
+    warum: '„dream" hat zwei Formen: dreamt und dreamed. „dremt" ist keine davon.' },
+  { id: 'v-burn',   satz: 'Der Kuchen ist im Ofen verbrannt.',
+    luecke: 'The cake ___ in the oven.', richtig: ['burnt', 'burned'], falle: 'brunt',
+    warum: '„burn" hat zwei Formen: burnt und burned. „brunt" ist etwas anderes.' },
+];
+
+/** Der Vorrat der Ebene „Gestern und heute". */
+export function vorratVerben(){
+  return luecken(VERBEN, 'verb');
 }
 
 /* ---------- Wendungen (E11) und Hoersaetze (E12) --------------------------

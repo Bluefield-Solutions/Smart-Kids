@@ -404,6 +404,51 @@ und halbiert den Vorrat, ohne dass irgendetwas rot wird. Die stehende
 Gegenprobe schneidet die Hörsätze auf acht (bei zwölf Aufgaben je Sitzung) und
 verlangt, dass das Tor es sagt.
 
+### I8 · Gestern und heute — **gebaut (v560)**
+
+Bis hierher hat dieses Audit **Listen verlängert**. Das war die halbe
+Antwort auf das, was der Auftrag sagte: „Es muss noch viel mehr Varianten
+geben." Eine längere Liste ist keine Variante — es ist dieselbe Frage mit
+mehr Zetteln. Die andere Hälfte ist eine **neue Frage auf demselben
+Stoff**, und für die Eltern ist das der eine Stoff, an dem
+deutschsprachige Erwachsene lebenslang hängen bleiben: die
+unregelmäßigen Verben. Man *weiß*, dass „buy" unregelmäßig ist, und
+schreibt unter Druck trotzdem „buyed".
+
+**72 Verben, sechs volle Runden** — geordnet nach Klang und nicht nach
+Alphabet: die -ought/-aught-Gruppe, die Reihe i–a–u, die o-e-Gruppe, das
+-ew, die -t-Endungen und zuletzt die vier, die sich gar nicht ändern
+(put — put — put). Wer sie so sieht, lernt Muster; wer sie alphabetisch
+sieht, lernt Einzelstücke.
+
+**Dieselbe Bauform wie die falschen Freunde, und das ist der Grund für die
+Ebene.** Die Falle wird nicht angeboten, sondern *erkannt*: wer „catched"
+tippt, bekommt an genau dieser Stelle die drei Formen zu sehen, statt nur
+„falsch". Der Bildschirm ist derselbe; die `art` ist trotzdem eine eigene,
+weil Vorlaufsatz, Kachelzeichen, Frage und Leitner-Stand es nicht sind.
+Über „He ___ me his number." stünde sonst „Wie heißt der Satz auf
+Englisch?" — der Satz steht ja schon auf Englisch. Er lautet jetzt „Wie
+heißt das Verb in der Vergangenheit?".
+
+**Die Zusage wird geprüft, nicht behauptet.** Der Vorlauf sagt wörtlich:
+„Die Falle ist jedes Mal dieselbe: die regelmäßige Form auf -ed." Das ist
+eine Aussage über Daten, und Daten wachsen — der zwölfte, der hier ein Verb
+nachträgt, schreibt eine Falle hin, die ihm einfällt, und die Aufgabe
+funktioniert weiter. `inhalt` **rechnet die regelmäßige Form aus der
+Grundform** (die im Grund steht, nicht in einer zweiten Spalte) und
+vergleicht: 69 von 72 stimmen mit der gerechneten Form überein, drei
+stehen namentlich als Ausnahme, weil dort *beide* Formen gelten
+(learnt/learned) und die Falle deshalb eine falsch geschriebene dritte ist.
+
+Beim ersten Lauf war die Regel unvollständig und nicht die Daten: sie
+wollte „flyed" sehen, wo „flied" stand — -y nach Konsonant wird -ied. Das
+ist die erfreulichere Richtung.
+
+**Der Prüfblock ist EINER für beide Ebenen**, ebenso die Schleife im
+Rauchtest, die die Falle tippt und die Erklärung erwartet. Ein zweiter,
+abgeschriebener Block wäre Regel 6 — und zwar besonders leise, weil eine
+Kopie beim ersten Lauf grün ist.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

@@ -38,12 +38,12 @@
   },
   {
     "dateien": "prototyp/spiel.js",
-    "token": 285,
+    "token": 345,
     "wo": [
       "prototyp/spiel.js:1224",
       "prototyp/spiel.js:1299"
     ],
-    "warum": "Die EBENEN-Tafel IST eine Tabelle: jede Zeile hat id/ueber/titel/farbe/art/wer. Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck. DIESER Eintrag hat mit E8 und E9c seinen Gegenstand GEWECHSELT: bis dahin war der laengste gleichfoermige Lauf in dieser Datei das Paar der Umschalter fuer die Antwortweise (125 Token), jetzt sind es die zwei Straenge der Ebenentafel links und rechts der zwei neuen Ebenen (234 Token). Die Zahl ist die LAENGE des laengsten Laufs, nicht die Menge an Dopplung: sie waechst mit jeder neuen Ebene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - der alte Grund kann laengst nicht mehr gelten. Mit I4 kamen drei Rechenebenen dazu — dieselbe Tabelle, nur länger."
+    "warum": "Die EBENEN-Tafel IST eine Tabelle: jede Zeile hat id/ueber/titel/farbe/art/wer. Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck. DIESER Eintrag hat mit E8 und E9c seinen Gegenstand GEWECHSELT: bis dahin war der laengste gleichfoermige Lauf in dieser Datei das Paar der Umschalter fuer die Antwortweise (125 Token), jetzt sind es die zwei Straenge der Ebenentafel links und rechts der zwei neuen Ebenen (234 Token). Die Zahl ist die LAENGE des laengsten Laufs, nicht die Menge an Dopplung: sie waechst mit jeder neuen Ebene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - der alte Grund kann laengst nicht mehr gelten. Mit I4 kamen drei Rechenebenen dazu — dieselbe Tabelle, nur länger. Mit I8 die Ebene Gestern und heute, und damit 345."
   },
   {
     "dateien": "prototyp/spiel.js · tor/schreiben.mjs",

@@ -1453,6 +1453,21 @@ const EBENEN = [
    * `WELT_VON_ART`. Die Kennung muss das nicht auch noch sagen. */
   { id:'freunde', ueber:'Englisch', titel:'Falsche Freunde', farbe:1,
     art:'freunde', wer:['stephan','violeta'] },
+  /* Gestern und heute (I8) - die unregelmaessigen Verben.
+   *
+   * Dieselbe Bauform wie die falschen Freunde und deshalb eine EIGENE
+   * `art`, kein zweiter Eintrag mit `art:'freunde'`: der Bildschirm ist
+   * derselbe, aber der Vorlaufsatz, das Kachelzeichen und der
+   * Leitner-Stand sind es nicht. Wer die Art teilt, teilt alle vier -
+   * dann stuende ueber den Verben „Genau dort sitzt die Falle" und
+   * darunter die Ringe der falschen Freunde.
+   *
+   * Warum eine neue Ebene und nicht mehr Fallen in der alten: eine
+   * laengere Liste ist keine neue Frage. Der Audit hat beides bemaengelt
+   * - die Wiederholung (dagegen half I1) und die Einfoermigkeit. Das hier
+   * ist die andere Frage, auf demselben Stoff. */
+  { id:'verben', ueber:'Englisch', titel:'Gestern und heute', farbe:3,
+    art:'verben', wer:['stephan','violeta'] },
   /* Die Wendung, nicht das Wort (E11). Deutsch steht da, Englisch wird
    * getippt - aber nie ein Einzelwort, und MEHRERE Loesungen gelten.
    *
@@ -1527,7 +1542,7 @@ const WELTEN = [
  * die richtige Voreinstellung, weil die Kartenebenen die einzigen ohne
  * eigene `art` sind. */
 const WELT_VON_ART = { rechnen:'rechnen', schreiben:'schreiben',
-                       englisch:'englisch', freunde:'englisch',
+                       englisch:'englisch', freunde:'englisch', verben:'englisch',
                        wendungen:'englisch', hoersatz:'englisch' };
 const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
@@ -1678,6 +1693,11 @@ const LUPENSTRICH = '<path d="M2 6h16M2 12h13M2 18h16"/>'
    Warnzeichen und kein Kreuz - die Ebene zeigt eine Falle, sie verbietet
    nichts. */
 const FREUNDEBILD = new Set(['freunde']);
+/* Die Kachel von „Gestern und heute" (I8): zwei Pfeile auf einer Linie -
+   der lange zurueck, der kurze nach vorn. Es geht um die Zeitform, und
+   das Zeichen sagt genau das, ohne ein Wort zu brauchen. Kein Kalender
+   und keine Uhr: beide hiessen „Datum" und nicht „Vergangenheit". */
+const VERBENBILD = new Set(['verben']);
 /* Die Kachel der Wendungen (E11): zwei Sprechblasen - es geht um das, was
    man SAGT, und nicht um einzelne Woerter. Und die von „Hören und
    schreiben" (E12): der Lautsprecher und drei Schriftzeilen, in dieser
@@ -1790,6 +1810,12 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/><path
       d="M44 12a8 8 0 1 1-16 0 8 8 0 1 1 16 0"/></svg>`;
+  if (VERBENBILD.has(ebeneId))
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M4 8h40"/><path d="M11 3 4 8l7 5"/><path
+      d="M44 18H14"/><path d="M38 13l6 5-6 5"/></svg>`;
   if (ENGLISCHZEICHEN[ebeneId])
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -1835,7 +1861,8 @@ function silhouette(ebeneId) {
  * Ebenen traegt - zwei Bildschirme waeren zwei Stellen, an denen die
  * naechste Aenderung einmal vergessen wird. */
 const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,
-  englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,
+  englisch: englischschirm, freunde: freundeschirm, verben: freundeschirm,
+  flaggen: flaggenschirm,
   wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören.
@@ -2416,6 +2443,8 @@ function vorrat(ebeneId, stand = Stand, voll = false){
   // Einzelstueck, es gibt keine Regel, aus der man sie rechnen koennte.
   if (art==='freunde')
     return Englisch.vorratFreunde();
+  if (art==='verben')
+    return Englisch.vorratVerben();
   if (art==='wendungen')
     return Englisch.vorratWendungen();
   if (art==='hoersatz')
@@ -3747,7 +3776,7 @@ const VORLAUF_JE = (art, ebeneId) =>
      `passt`, nicht geschaetzt. Solange die Bilder Umrisse in Tinte waren,
      passten sie; seit sie Bilder sind, brauchen sie Platz. */
   : ebeneId === 'englisch:lesen' ? 12
-  : ['rechnen', 'freunde'].includes(art) ? P.sitzung
+  : ['rechnen', 'freunde', 'verben'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;
 function vorlaufVorrat(ebeneId){
@@ -3911,6 +3940,15 @@ function vorlaufSatz(ebeneId){
     return 'Ein deutscher Satz, daneben derselbe auf <strong>Englisch</strong> — '
       + 'mit einer Lücke. Genau dort sitzt die Falle. Tippe hier eine an, '
       + 'dann siehst du sie ganz.';
+  if (art === 'verben')
+    /* Der Satz nennt die Falle beim Namen, und zwar VOR der ersten
+       Aufgabe. Das ist bei dieser Ebene der halbe Lerninhalt: wer weiss,
+       dass gleich „buyed" in der Luft liegt, greift beim Tippen einen
+       Wimpernschlag lang nach. Genau dieser Wimpernschlag fehlt im
+       Ernstfall. */
+    return 'Ein deutscher Satz in der <strong>Vergangenheit</strong>, daneben '
+      + 'derselbe auf Englisch — mit einer Lücke. Die Falle ist jedes Mal '
+      + 'dieselbe: die regelmäßige Form auf <em>-ed</em>. Tippe hier eins an.';
   if (art === 'englisch')
     return englischHoerbar()
       ? 'Gleich sage ich dir ein Wort auf <strong>Englisch</strong>, und du '
@@ -5020,6 +5058,20 @@ function satzschirm(){
  * dort die Auskunft, was das Wort wirklich heisst - und dieser Fehlversuch
  * zaehlt wie jeder andere. Er wird nicht bestraft und nicht geschenkt.
  */
+/* Die Frage ueber der Luecke - je Ebene eine andere (I8).
+ *
+ * Beide Ebenen teilen sich diesen Bildschirm, aber nicht die Aufgabe: bei
+ * den falschen Freunden ist der ganze SATZ zu uebersetzen und die Luecke
+ * nur die Stelle, an der es schiefgeht. Bei den Verben steht der Satz
+ * schon da; gesucht ist EINE Form. „Wie heißt der Satz auf Englisch?"
+ * ueber „He ___ me his number." waere dort schlicht falsch - der Satz
+ * steht ja bereits auf Englisch.
+ */
+const FRAGE_LUECKE = {
+  freunde: 'Wie heißt der Satz auf Englisch?',
+  verben:  'Wie heißt das Verb in der Vergangenheit?',
+};
+
 function freundeschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const beginn = Date.now();
@@ -5039,7 +5091,8 @@ function freundeschirm(){
     + 'spellcheck="false" lang="en" aria-label="das fehlende Wort">');
 
   s.innerHTML = aufgabenKopf(st) + `
-    <div class="frage" id="frage">Wie heißt der Satz auf Englisch?</div>
+    <div class="frage" id="frage">${FRAGE_LUECKE[ebeneArt(st.ebeneId)]
+      || FRAGE_LUECKE.freunde}</div>
     <div class="freundefeld">
       <div class="freundsatz">${ziel.satz}</div>
       <div class="freundluecke" lang="en">${satzMitFeld}</div>

@@ -4810,9 +4810,9 @@ const SAGT_ENGLISCH = (e) => (String(e).startsWith('englisch') || e === 'hoersat
    trotzdem dasteht. Fiona hat sie nicht (zwei geschriebene Woerter kann
    sie nicht lesen), und das ist hier die Aussage. */
 const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
-                                 'wendungen', 'hoersatz', 'englisch:laute'],
+                                 'verben', 'wendungen', 'hoersatz', 'englisch:laute'],
                        violeta: ['rechnen:gross', 'hauptstaedte:europa', 'freunde',
-                                 'wendungen', 'hoersatz', 'englisch:laute'],
+                                 'verben', 'wendungen', 'hoersatz', 'englisch:laute'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
                                /* „Zwei Wörter, ein Laut" (E5) - seit die
                                   Paare Bilder haben auch bei ihr. Hier zu
@@ -5040,6 +5040,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
                     || e === 'laender:europa' || e.startsWith('rechnen')
                     || e === 'flaggen:europa' || e === 'flaggen:paare' || e === 'flaggen:karte'
                     || e.startsWith('englisch') || e.startsWith('freunde')
+                    || e === 'verben'
                     || e === 'wendungen' || e === 'hoersatz')
       : da;
     gespielt[wer] = zuSpielen.length;
@@ -9084,13 +9085,20 @@ if (laeuft('englisch')) try {
    *      erste Grossschreibung macht die Tastatur von allein. Eine
    *      Aufgabe, die daran scheitert, prueft die Tastatur.
    *
-   * Gespielt wird als Stephan - die Ebene gehoert ihm und Violeta. */
-  {
+   * Gespielt wird als Stephan - die Ebene gehoert ihm und Violeta.
+   *
+   * BEIDE Lueckenebenen, in derselben Schleife (I8). „Gestern und heute"
+   * gibt dieselben zwei Zusagen und haette sonst keinen einzigen Zeugen
+   * am laufenden Bildschirm - und ein zweiter, abgeschriebener Block
+   * waere Regel 6. Der Ebenenname steht in der Meldung, sonst waere bei
+   * Rot nicht zu sehen, welche der beiden es war. */
+  for (const [ebene, wie] of [['freunde', 'Falsche Freunde (E10)'],
+                              ['verben', 'Gestern und heute (I8)']]) {
     const q = await neueSeite({ width: 844, height: 390 }, ctx);
     await q.waitForSelector('[data-profil="stephan"]', { timeout: 20000 });
     await q.click('[data-profil="stephan"]');
-    await zurEbenenwahl(q, 'freunde');
-    await q.click('[data-ebene="freunde"]');
+    await zurEbenenwahl(q, ebene);
+    await q.click(`[data-ebene="${ebene}"]`);
     await durchVorlaufWenn(q);
     await q.waitForSelector('.schirm.da .freundluecke', { timeout: 20000 });
     const auf = await q.evaluate(() => ({
@@ -9105,7 +9113,7 @@ if (laeuft('englisch')) try {
     const nachFalle = await q.$eval('.schirm.da .frage', e => e.textContent.trim())
       .catch(() => '');
     if (!nachFalle.includes(auf.warum))
-      merke('englisch', new Error(`„${auf.falle}" getippt, und die App sagt `
+      merke('englisch', new Error(`${wie}: „${auf.falle}" getippt, und die App sagt `
         + `„${nachFalle}" — sie muss dort sagen, was das Wort wirklich heißt `
         + `(„${auf.warum}"), sonst ist die Falle nur eine falsche Antwort`));
     /* Und jetzt richtig - GROSS geschrieben und mit Punkt. Beides muss
@@ -9117,9 +9125,9 @@ if (laeuft('englisch')) try {
       null, { timeout: 4000 }).catch(() => {});
     const gewertet = !!(await q.$('.schirm.da .frage .richtigText'));
     if (!gewertet)
-      merke('englisch', new Error(`„${auf.wort.toUpperCase()}." wurde nicht gewertet — `
-        + 'Groß-/Kleinschreibung und der Schlusspunkt sollen egal sein'));
-    console.log(`  Falsche Freunde (E10):      „${auf.falle}" → „${auf.warum}" · `
+      merke('englisch', new Error(`${wie}: „${auf.wort.toUpperCase()}." wurde nicht `
+        + 'gewertet — Groß-/Kleinschreibung und der Schlusspunkt sollen egal sein'));
+    console.log(`  ${wie.padEnd(26)}„${auf.falle}" → „${auf.warum}" · `
       + `„${auf.wort.toUpperCase()}." ${gewertet ? 'gewertet' : 'NICHT gewertet'}`);
     await q.close();
   }

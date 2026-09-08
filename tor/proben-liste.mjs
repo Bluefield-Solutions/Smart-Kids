@@ -401,7 +401,7 @@ export const PROBEN = [
    * EINER Stelle - der Eingriff sitzt jetzt dort, und er trifft damit
    * alle drei Wege statt einen. */
   { n:'die Rechenaufgabe landet auf dem Kartenbildschirm', tor:'smoke', args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,\n  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);",
+    such:"const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm,\n  englisch: englischschirm, freunde: freundeschirm, verben: freundeschirm,\n  flaggen: flaggenschirm,\n  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);",
     ersatz:"const schirmZu = (ebeneId) => spielschirm;",
     an:{ ...DIST, fehlt:"rechnen: rechenschirm" },
     sagt:'durchgang' },
@@ -1855,6 +1855,34 @@ export const PROBEN = [
     ersatz:"kandidaten:4, laenderTiefe:12,",
     an:{ ...DIST, text:'kandidaten:4, laenderTiefe:12' },
     sagt:'Länder im Vorlauf' },
+
+  /* --- I8: Gestern und heute ------------------------------------------ *
+   *
+   * Die Zusage dieser Ebene steht woertlich im Vorlauf: „Die Falle ist
+   * jedes Mal dieselbe: die regelmäßige Form auf -ed." Sie ist eine
+   * Aussage ueber DATEN, und Daten wachsen - der zwoelfte, der hier ein
+   * Verb nachtraegt, schreibt eine Falle hin, die ihm einfaellt. Die
+   * Aufgabe funktioniert dann weiter, nur die Zusage nicht mehr. */
+  { n:'die Falle eines Verbs ist nicht mehr die regelmaessige Form',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"richtig: ['bought'], falle: 'buyed',",
+    ersatz:"richtig: ['bought'], falle: 'buyd',",
+    an:{ datei:'src/inhalt/englisch.js', text:"falle: 'buyd'" },
+    sagt:'die regelmäßige Form' },
+
+  /* Und die Ebene bekommt wirklich den Lueckenbildschirm.
+   *
+   * `verben` und `freunde` zeigen dasselbe Bild und stehen trotzdem als
+   * zwei Zeilen in `schirmZu`. Faellt die eine weg, faellt die Ebene auf
+   * `spielschirm` zurueck - und der zeichnet eine KARTE. Kein Tor ausser
+   * dem Rauchtest sieht das: die Kachel ist da, die Ebene laesst sich
+   * oeffnen, es steht nur das Falsche darauf. */
+  { n:'Gestern und heute verliert seinen Bildschirm', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:"  englisch: englischschirm, freunde: freundeschirm, verben: freundeschirm,",
+    ersatz:"  englisch: englischschirm, freunde: freundeschirm,",
+    an:{ ...DIST, fehlt:'verben: freundeschirm' },
+    sagt:'freundluecke' },
 
   /* --- I7: der Vorrat als Ratsche ------------------------------------- *
    *
@@ -5749,8 +5777,8 @@ export const PROBEN = [
        ist die erste Meldung die, die gerade zuerst faellt - und nicht
        die, um die es geht. */
     ohneSofort:true,
-    such:"englisch: englischschirm, freunde: freundeschirm, flaggen: flaggenschirm,",
-    ersatz:"englisch: englischschirm, freunde: freundeschirm,",
+    such:"  flaggen: flaggenschirm,\n  wendungen: satzschirm",
+    ersatz:"  wendungen: satzschirm",
     an:{ ...DIST, fehlt:'flaggen: flaggenschirm' },
     sagt:'/flaggen:europa: ' },
 

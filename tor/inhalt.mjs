@@ -2274,10 +2274,20 @@ console.log('\n  Tor `englisch`');
    * Und: der Grund muss die Falle NENNEN. „Das ist falsch" hilft nicht;
    * die Ebene lebt davon, dass dort steht, was `become` wirklich heisst.
    */
-  {
+  /* EINE Schleife fuer BEIDE Lueckenebenen (I8).
+   *
+   * „Falsche Freunde" (E10) und „Gestern und heute" (I8) tragen dieselben
+   * Felder, weil sie dieselbe Aufgabe stellen. Ein zweiter, abgeschriebener
+   * Pruefblock waere Regel 6: was zweimal dasteht, veraltet einmal - und
+   * zwar hier besonders leise, weil die Kopie beim ersten Lauf gruen ist.
+   * Was die Verben ZUSAETZLICH zusagen, steht darunter als eigener Block. */
+  for (const buch of [{ was:'Falsche Freunde (E10)', kurz:'die falschen Freunde (E10)',
+                        liste: EN.FREUNDE },
+                      { was:'Gestern und heute (I8)', kurz:'die unregelmäßigen Verben (I8)',
+                        liste: EN.VERBEN }]) {
     const ff = [];
     const ids = new Set();
-    for (const f of EN.FREUNDE) {
+    for (const f of buch.liste) {
       if (ids.has(f.id)) ff.push(`die Falle „${f.id}" gibt es zweimal`);
       ids.add(f.id);
       if (!f.satz || !/[.!?]$/.test(f.satz))
@@ -2329,19 +2339,81 @@ console.log('\n  Tor `englisch`');
        Runden, und danach kam jede ein zweites Mal. Gemessen wird deshalb
        in Runden, und die Ratsche steht bei VIER - eine unter dem, was
        heute dasteht. */
-    if (EN.FREUNDE.length < RUNDEN_VORRAT * SITZUNG_ELTERN)
-      ff.push(`nur ${EN.FREUNDE.length} falsche Freunde — das sind `
-        + `${(EN.FREUNDE.length / SITZUNG_ELTERN).toFixed(1)} Runden, `
+    if (buch.liste.length < RUNDEN_VORRAT * SITZUNG_ELTERN)
+      ff.push(`nur ${buch.liste.length} Fallen — das sind `
+        + `${(buch.liste.length / SITZUNG_ELTERN).toFixed(1)} Runden, `
         + `nötig sind ${RUNDEN_VORRAT}`);
     if (ff.length) {
       console.log('    ' + ff.join('\n    '));
-      console.error('\n  englisch ROT: die falschen Freunde (E10) stimmen nicht.');
+      console.error(`\n  englisch ROT: ${buch.kurz} stimmen nicht.`);
       process.exit(1);
     }
-    const mehrere = EN.FREUNDE.filter(f => f.richtig.length > 1).length;
-    console.log(`    Falsche Freunde (E10): ${EN.FREUNDE.length} Fallen, jede mit `
+    const mehrere = buch.liste.filter(f => f.richtig.length > 1).length;
+    console.log(`    ${buch.was}: ${buch.liste.length} Fallen, jede mit `
       + `beiden Fassungen · ${mehrere} halten mehrere gültige Antworten · `
       + 'keine Falle steht unter den richtigen');
+  }
+
+  /* ---- Und was die Verben ZUSAETZLICH zusagen (I8) --------------------
+   *
+   * Der Vorlauf sagt es woertlich: „Die Falle ist jedes Mal dieselbe: die
+   * regelmäßige Form auf -ed." Das ist eine Zusage an den Spieler, und
+   * ohne diese Pruefung ist sie ein Satz, den die Daten nach der dritten
+   * Ergaenzung nicht mehr halten - schweigend, denn die Aufgabe
+   * FUNKTIONIERT auch mit einer beliebigen anderen Falle.
+   *
+   * Gerechnet wird die regelmaessige Form aus der Grundform, und die
+   * Grundform steht im Grund („buy" ist unregelmäßig: buy — bought). Wo
+   * beide Formen gelten (learnt/learned), kann die Falle nicht die
+   * regelmaessige sein - dort ist sie eine falsch geschriebene dritte,
+   * und das steht als AUSNAHME mit Namen da, nicht als Luecke in der
+   * Regel.
+   */
+  {
+    const vv = [];
+    const AUSNAHME = new Set(['v-learn', 'v-dream', 'v-burn']);
+    /* Die Endung nach der Schulregel: -e faellt weg, Konsonant nach
+       kurzem Vokal verdoppelt sich. Grob, und das reicht: geprueft wird,
+       ob die Falle NACH DIESER REGEL gebaut ist, nicht ob sie ein
+       englisches Wort waere - sie ist ja keines. */
+    const regelmaessig = (grund) => {
+      /* -y nach Konsonant wird -ied (try — tried, fly — flied). Nach
+         einem Vokal nicht: buy — buyed, pay — payed. Diese Zeile fehlte
+         im ersten Anlauf, und das Tor hat sie sofort verlangt: es wollte
+         „flyed" sehen, wo „flied" stand. Die Daten waren richtig und die
+         Regel unvollstaendig - herum ist es der haeufigere Fall. */
+      if (/[^aeiou]y$/.test(grund)) return grund.slice(0, -1) + 'ied';
+      if (/e$/.test(grund)) return grund + 'd';
+      if (/^[a-z]*[^aeiou][aeiou][^aeiouwxy]$/.test(grund))
+        return grund + grund.slice(-1) + 'ed';
+      return grund + 'ed';
+    };
+    for (const f of EN.VERBEN) {
+      if (AUSNAHME.has(f.id)) continue;
+      /* Die Grundform steht als erstes Wort in Anfuehrungszeichen im
+         Grund - dieselbe Stelle, an der die allgemeine Pruefung oben die
+         Falle sucht. Eine zweite Spalte `grund:` waere dieselbe Auskunft
+         an zwei Orten. */
+      const m = (f.warum || '').match(/[„"]([a-z]+)"/);
+      if (!m) { vv.push(`„${f.id}": der Grund nennt keine Grundform in Anführungszeichen`);
+                continue; }
+      const soll = regelmaessig(m[1]);
+      if (f.falle !== soll)
+        vv.push(`„${f.id}": die Falle ist „${f.falle}", die regelmäßige Form von `
+          + `„${m[1]}" wäre aber „${soll}" — der Vorlauf sagt zu, dass die Falle `
+          + 'jedes Mal die Form auf -ed ist');
+    }
+    for (const id of AUSNAHME)
+      if (!EN.VERBEN.some(f => f.id === id))
+        vv.push(`„${id}" steht als Ausnahme von der -ed-Regel, gibt es aber nicht mehr`);
+    if (vv.length) {
+      console.log('    ' + vv.join('\n    '));
+      console.error('\n  englisch ROT: die Falle der Verben ist nicht mehr die regelmäßige Form.');
+      process.exit(1);
+    }
+    console.log(`    Gestern und heute (I8): bei ${EN.VERBEN.length - AUSNAHME.size} von `
+      + `${EN.VERBEN.length} Verben ist die Falle die gerechnete Form auf -ed · `
+      + `${AUSNAHME.size} Ausnahmen mit Namen (dort gelten beide Formen)`);
   }
 
   /* --- E11/E12: die Wendungen und die Diktatsaetze -------------------- *

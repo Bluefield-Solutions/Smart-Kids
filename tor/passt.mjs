@@ -1554,6 +1554,21 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await zurEbenenwahl(p, 'freunde');
   await ebeneAnsehen('freunde', '.schirm.da .freundluecke', 'Falsche Freunde',
     { vorlaufName: 'Vorlauf freunde' });
+  /* Und dieselbe Bauform mit dem laengsten Satz (I8).
+   *
+   * „Gestern und heute" teilt sich den Bildschirm mit den falschen
+   * Freunden und braucht trotzdem eine eigene Messung: der GRUND ist hier
+   * laenger („buy" ist unregelmäßig: buy — bought — bought.) und steht
+   * nach dem Aufgeben in derselben Zeile wie die Loesung. Was bei einer
+   * Ebene passt, passt bei der anderen deshalb nicht von selbst.
+   *
+   * Kein `zurEbenenwahl` davor - aus demselben Grund wie bei den drei
+   * Ebenen darunter: `ebeneAnsehen` laesst die Wand stehen, in der die
+   * Ebene liegt. Der erste Anlauf rief es trotzdem und wartete danach
+   * fuenfzehn Sekunden auf eine Weltenwahl, die zwei Schritte weiter
+   * vorn lag - alle drei Teile des Tors liefen in denselben Zeitablauf. */
+  await ebeneAnsehen('verben', '.schirm.da .freundluecke', 'Gestern und heute',
+    { vorlaufName: 'Vorlauf verben' });
 
   /* Und die beiden Satzebenen (E11/E12) - auch sie gehoeren Stephan.
    *

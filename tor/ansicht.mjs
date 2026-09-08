@@ -500,6 +500,14 @@ const AUFNAHMEN = [
    * die einzige Aufnahme eines Aufgabenbildschirms im SACHLICHEN Ton. */
   { name:'quer-freunde', spiel:'freunde', kind:'stephan', quer:true,
     wahl:'.schirm.da' },
+  /* Dieselbe Bauform, andere Ebene (I8): „Gestern und heute". Sie kommt
+     mit ins Bild, weil hier der laengste GRUND der ganzen App steht -
+     drei Verbformen mit Gedankenstrichen - und weil das Kachelzeichen
+     (zwei Pfeile auf einer Linie) nur hier zu sehen ist. Ob es nach
+     „Vergangenheit" aussieht oder nach einem Umschaltknopf, sagt kein
+     Tor. */
+  { name:'quer-verben', spiel:'verben', kind:'stephan', quer:true,
+    wahl:'.schirm.da' },
   /* Wendungen (E11) und Hoeren und schreiben (E12) - EIN Bildschirm in
    * zwei Ausfuehrungen, und der Unterschied ist genau das, was man sehen
    * muss: bei der einen steht der deutsche Satz ueber dem Feld, bei der
@@ -781,6 +789,7 @@ const OHNE_KARTE = {
   'englisch:bauen': '.schirm.da #legereihe',
   'englisch:laute': '.schirm.da .lautkarte',
   freunde:   '.schirm.da .freundluecke',
+  verben:    '.schirm.da .freundluecke',
   wendungen: '.schirm.da .satzfeld',
   hoersatz:  '.schirm.da .satzfeld',
   /* Die Flaggenebene (F2) zeigt je nach Profil ZWEI verschiedene Dinge:
