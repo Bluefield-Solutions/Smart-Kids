@@ -172,6 +172,66 @@ export function sitzung(alle, stand, laenge, jetzt, keim) {
 }
 
 /**
+ * Der Bogen einer Sitzung (N3): Aufwaermen - Mitte - Knacknuss.
+ *
+ * Befund S2 aus dem Spiel-Audit: Frage 1 und Frage 8 sind heute
+ * ununterscheidbar. Gleiche Schwierigkeit, gleiches Gewicht, gleiche
+ * Anzeige - die letzte Frage fuehlt sich an wie die dritte. Eine Runde
+ * ohne Bogen hat kein Ende, sie hoert nur auf.
+ *
+ * DREI TEILE, und jeder hat einen Grund:
+ *
+ *   Aufwaermen  Die ZWEI leichtesten zuerst. Wer mit einem Fehler
+ *               anfaengt, spielt die Runde in einem anderen Gefuehl zu
+ *               Ende - und bei einer Sechsjaehrigen entscheidet das
+ *               darueber, ob es eine zweite Runde gibt.
+ *   Mitte       Alles andere, in der Reihenfolge, die `sitzung` schon
+ *               gefunden hat (hoechstens zwei Schwere am Stueck).
+ *   Knacknuss   Die schwerste zuletzt. Sie ist das Ende, auf das man
+ *               zulaeuft.
+ *
+ * WARUM DAS HIER STEHT und nicht in `sitzung`: beim Rechnen wird die
+ * Liste aus mehreren Sitzungen ZUSAMMENGESETZT (eine je Rechenart) und
+ * danach noch einmal gemischt. Ein Bogen in `sitzung` waere dort dreimal
+ * gebaut und einmal zerstoert worden. Er gehoert auf die FERTIGE Liste,
+ * einmal, ganz am Ende.
+ *
+ * WAS ER NICHT TUT: er aendert keine Wertung. Die Knacknuss zaehlt so
+ * viel wie jede andere Aufgabe. Zwei Gewichte waeren eine zweite
+ * Sternformel, und dieses Verzeichnis hat schon einmal zwei gehabt.
+ */
+export function bogen(liste, stand) {
+  /* Unter vier Aufgaben gibt es nichts zu gliedern: zwei zum Aufwaermen
+     und eine als Knacknuss waeren die ganze Runde, und „Aufwaermen" hiesse
+     dann nur, dass die Reihenfolge feststeht. */
+  if (!Array.isArray(liste) || liste.length < 4) return liste;
+  /* Wie schwer ist ein Gegenstand? Das Fach sagt es am besten - es ist
+     genau die Zahl, die der Kasten ueber ihn gelernt hat. Bei gleichem
+     Fach entscheidet, wie oft er danebenging: zwei Gegenstaende in Fach 2
+     sind nicht gleich schwer, wenn einer dreimal falsch war.
+     Neu (kein Eintrag) liegt in der Mitte, nicht unten: etwas, das noch
+     nie gefragt wurde, ist nicht schwer - es ist unbekannt, und als
+     Knacknuss waere es eine Zumutung statt einer Herausforderung. */
+  const NEU_HAERTE = 2.5;
+  const haerte = (g) => {
+    const e = stand[g.id];
+    if (!e) return NEU_HAERTE;
+    const fach = e.fach ?? 1;
+    const daneben = (e.falsch ?? 0) - (e.richtig ?? 0);
+    return -fach + Math.max(-0.9, Math.min(0.9, daneben * 0.3));
+  };
+  const nachHaerte = liste.map((g, i) => ({ g, i, h: haerte(g) }))
+    /* Bei gleicher Haerte bleibt die urspruengliche Reihenfolge stehen -
+       `sitzung` hat sie nicht zufaellig gewaehlt (sie entzerrt die
+       Schweren), und ein zweites Mischen hier waere ein zweiter Wille. */
+    .sort((a, b) => a.h - b.h || a.i - b.i);
+  const leicht = nachHaerte.slice(0, 2).map(x => x.g);
+  const schwerste = nachHaerte[nachHaerte.length - 1].g;
+  const mitte = liste.filter(g => !leicht.includes(g) && g !== schwerste);
+  return [...leicht, ...mitte, schwerste];
+}
+
+/**
  * Wieviel ist geschafft. Drei Zahlen, nicht eine:
  *   gesammelt  hat einen Aufkleber (Fach 3+)   - was das Kind SIEHT
  *   gekonnt    Fach 5                          - was es WIRKLICH kann

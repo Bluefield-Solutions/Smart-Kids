@@ -670,6 +670,56 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   console.log(`    Richtungen: 8 Himmelsrichtungen und die Nähe (${Ri.NAH} px) geprüft`);
 }
 
+/* ---------- Der Bogen einer Sitzung (N3) ---------------------------------
+ *
+ * Zugesagt sind drei Dinge, und alle drei gehen leise kaputt - die Runde
+ * laeuft in jedem Fall durch, sie fuehlt sich nur an wie vorher:
+ *
+ *   1. Die ersten ZWEI sind die leichtesten.
+ *   2. Die LETZTE ist die schwerste.
+ *   3. Es geht nichts verloren und nichts kommt doppelt vor.
+ *
+ * Gemessen an einer GEBAUTEN Liste mit gebautem Stand, nicht an einer
+ * gespielten Runde: so steht die Antwort vorher fest, und das Tor prueft
+ * die Ordnung und nicht den Zufall des Tages.
+ */
+{
+  /* Sechs Gegenstaende, deren Haerte ich kenne: `a` und `b` sitzen (Fach
+     5), `e` und `f` wackeln (Fach 1, mehrfach daneben), `c` und `d`
+     liegen dazwischen. Der Bogen muss also mit a/b anfangen und mit dem
+     schwersten von e/f aufhoeren. */
+  const liste = ['a','b','c','d','e','f'].map(id => ({ id }));
+  const stand = {
+    a: { fach: 5, richtig: 5, falsch: 0 },
+    b: { fach: 5, richtig: 4, falsch: 0 },
+    c: { fach: 3, richtig: 3, falsch: 1 },
+    d: { fach: 3, richtig: 2, falsch: 1 },
+    e: { fach: 1, richtig: 0, falsch: 2 },
+    f: { fach: 1, richtig: 0, falsch: 4 },
+  };
+  const aus = L.bogen(liste, stand).map(x => x.id);
+  console.log(`    Bogen der Sitzung: ${aus.join(' → ')}`);
+  if (!(aus[0] === 'a' || aus[0] === 'b') || !(aus[1] === 'a' || aus[1] === 'b'))
+    fehler.push(`die Runde faengt mit ${aus[0]}/${aus[1]} an statt mit den zwei `
+      + 'leichtesten — wer mit einem Fehler anfaengt, spielt die ganze Runde in '
+      + 'einem anderen Gefuehl zu Ende');
+  if (aus[aus.length - 1] !== 'f')
+    fehler.push(`die letzte Aufgabe ist ${aus[aus.length - 1]} und nicht die `
+      + 'schwerste — dann hat die Runde kein Ende, sie hoert nur auf');
+  if (aus.length !== liste.length || new Set(aus).size !== liste.length)
+    fehler.push(`der Bogen macht aus ${liste.length} Aufgaben ${aus.length} `
+      + `(${new Set(aus).size} verschiedene) — er darf umordnen, nicht verlieren`);
+  /* UND ER LAESST KURZE RUNDEN IN RUHE. Bei drei Aufgaben waeren zwei
+     zum Aufwaermen und eine als Knacknuss die ganze Runde - „Aufwaermen"
+     hiesse dann nur, dass die Reihenfolge feststeht. */
+  const kurz = ['x','y','z'].map(id => ({ id }));
+  const kurzAus = L.bogen(kurz, {}).map(x => x.id);
+  if (kurzAus.join() !== 'x,y,z')
+    fehler.push('der Bogen ordnet auch eine Runde mit drei Aufgaben um — dort ist '
+      + 'nichts zu gliedern, und die Umordnung nimmt nur dem Mischen seine Wirkung');
+  geprueft += 4;
+}
+
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);
 if (hinweise.length) {
   console.log(`    ${hinweise.length} nur mit Rückfrage:`);

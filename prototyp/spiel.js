@@ -3777,6 +3777,10 @@ async function starten(ebeneId, alsTest = false){
     });
     return mischenMit(aus, keim);
   })() : Leitner.sitzung(alle, Stand, P.sitzung, Date.now(), keim);
+  /* DER BOGEN (N3) - einmal, auf die fertige Liste. Beim Rechnen ist sie
+     aus mehreren Sitzungen zusammengesetzt und danach gemischt; nur hier
+     steht sie so da, wie das Kind sie spielen wird. */
+  const listeMitBogen = Leitner.bogen(liste, Stand);
   // `glatt`: beim ERSTEN Versuch richtig, ohne Hilfe. Das ist die Zahl,
   // aus der die Sterne kommen - „richtig" allein waere auch die Aufgabe,
   // die nach zwei Fehlversuchen saß.
@@ -3807,7 +3811,7 @@ async function starten(ebeneId, alsTest = false){
      gesessen haben, und wieviele es im besten Lauf dieser Runde waren.
      Beides gehoert der Sitzung und nicht dem Kind - eine Serie ueber Tage
      waere eine andere Zusage und braucht die Ablage. */
-  Sitzung = { ebeneId, alle, liste: testListe || liste, i:0, glatt:0, wie:[],
+  Sitzung = { ebeneId, alle, liste: testListe || listeMitBogen, i:0, glatt:0, wie:[],
               serie:0, besteSerie:0,
               aufkleber:0, neueKleber:[], keim, begonnen:Date.now(), test: alsTest,
               abzVorher: new Set(verdiente(ebeneId, Stand).map(a => a.id)) };
@@ -3980,7 +3984,15 @@ const aufgabenKopf = (st) => kopf({
   links: schliessenKnopf('Übung beenden'),
   mitte:`<div class="bandreihe"><div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
     st.liste.map((_,i)=>`<i class="${
-      i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}"></i>`).join('')
+      i<st.i ? (st.wie[i]||'weiter') : i===st.i ? 'jetzt' : 'offen'}${
+      /* DIE KNACKNUSS im Band (N3). Das letzte Feld ist groesser und
+         traegt einen Ring - ohne ein Wort, denn Fiona liest nicht. Man
+         sieht von der ersten Aufgabe an, dass am Ende etwas wartet, und
+         genau das ist der Bogen: ein Ende, auf das man zulaeuft.
+         Erst ab vier Aufgaben, weil `bogen` darunter nicht gliedert -
+         ein Ring, hinter dem keine Knacknuss steht, waere ein
+         Versprechen, das die Runde nicht haelt. */
+      (i === st.liste.length - 1 && st.liste.length >= 4) ? ' knack' : ''}"></i>`).join('')
   }</div>${serieZeichen(st.serie)}</div>`,
   rechts: sterne(sterneFuer(st.glatt, st.liste.length)) });
 

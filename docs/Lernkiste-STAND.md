@@ -12503,3 +12503,51 @@ die Proben — sie zeigen jetzt auf die Sterne. Was im alten Kommentar über
 „kein Streak-Zwang" stand, gilt unverändert und ist der Grund, warum das
 Tagesziel jeden Tag bei null anfängt: es darf fehlen, ohne dass etwas verloren
 geht.
+
+## N3 · Der Bogen — Aufwärmen, Mitte, Knacknuss
+
+Befund S2: Frage 1 und Frage 8 sind ununterscheidbar. Gleiche Schwierigkeit,
+gleiches Gewicht, gleiche Anzeige — die letzte Frage fühlt sich an wie die
+dritte. Eine Runde ohne Bogen hat kein Ende, sie **hört nur auf**.
+
+Die fertige Fragenliste wird jetzt einmal geordnet:
+
+| | | |
+|---|---|---|
+| **Aufwärmen** | die zwei leichtesten | Wer mit einem Fehler anfängt, spielt die ganze Runde in einem anderen Gefühl zu Ende — und bei einer Sechsjährigen entscheidet das darüber, ob es eine zweite gibt. |
+| **Mitte** | alles andere | in der Reihenfolge, die `sitzung` schon gefunden hat (höchstens zwei Schwere am Stück) |
+| **Knacknuss** | die schwerste | Sie ist das Ende, auf das man zuläuft. |
+
+**Die Härte kommt aus dem Fach**, also aus genau der Zahl, die der Kasten über
+einen Gegenstand gelernt hat; bei gleichem Fach entscheidet, wie oft er daneben
+ging. **Neues liegt in der Mitte, nicht unten:** etwas, das noch nie gefragt
+wurde, ist nicht schwer — es ist unbekannt, und als Knacknuss wäre es eine
+Zumutung statt einer Herausforderung.
+
+**Warum `bogen` neben `sitzung` steht und nicht darin.** Beim Rechnen wird die
+Liste aus mehreren Sitzungen zusammengesetzt (eine je Rechenart) und danach
+noch einmal gemischt. Ein Bogen in `sitzung` wäre dort dreimal gebaut und
+einmal zerstört worden. Er gehört auf die **fertige** Liste, einmal, ganz am
+Ende.
+
+**Was er nicht tut:** er ändert keine Wertung. Die Knacknuss zählt so viel wie
+jede andere Aufgabe. Zwei Gewichte wären eine zweite Sternformel, und dieses
+Verzeichnis hat schon einmal zwei gehabt.
+
+**Sichtbar** ist er im Fortschrittsband: das letzte Feld ist größer und trägt
+einen Ring — ohne ein Wort, denn Fiona liest nicht. Man sieht von der ersten
+Aufgabe an, dass am Ende etwas wartet. Erst ab vier Aufgaben, weil `bogen`
+darunter nicht gliedert: ein Ring, hinter dem keine Knacknuss steht, wäre ein
+Versprechen, das die Runde nicht hält.
+
+**Gemessen** an einer gebauten Liste mit gebautem Stand — so steht die Antwort
+vorher fest, und das Tor prüft die Ordnung statt den Zufall des Tages:
+
+```
+Bogen der Sitzung: a → b → c → d → e → f
+```
+
+Drei Gegenproben: der Bogen wird gar nicht angewendet, die Knacknuss steht
+nicht am Ende, und — die gefährlichste — er **verliert** eine Aufgabe. Dann ist
+die Runde um eine kürzer, und das sieht aus wie eine kurze Runde statt wie ein
+Fehler.

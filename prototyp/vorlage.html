@@ -199,6 +199,11 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .kachel .pokal svg{width:22px;height:22px}
 .band i.weiter{background:var(--linie)}
 .band i.jetzt{background:var(--ziel);transform:scale(1.5)}
+/* Die Knacknuss (N3) — das letzte Feld ist groesser und hat einen Ring.
+   Der Ring bleibt auch, wenn das Feld schon gefaerbt ist: er sagt „das
+   war die schwerste", nicht „die kommt noch". */
+.band i.knack{box-shadow:0 0 0 2px var(--serie);transform:scale(1.25)}
+.band i.knack.jetzt{transform:scale(1.6)}
 @media (max-width:420px){ .band i{width:9px;height:9px} .band{gap:var(--r1)} }
 
 .kopf{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;

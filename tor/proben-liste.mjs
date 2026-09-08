@@ -6025,6 +6025,47 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:'pfanne: [' },
     sagt:'kein Lautpaar fragt danach' },
 
+  /* --- Der Bogen der Sitzung (N3) ---------------------------------------
+   *
+   * Drei Zusagen, und alle drei gehen leise kaputt: die Runde laeuft in
+   * jedem Fall durch, sie fuehlt sich nur an wie vorher.
+   *
+   * 1. DER BOGEN WIRD GAR NICHT ANGEWENDET. Der billigste Verfall
+   *    ueberhaupt - eine Zeile, die die fertige Liste durchreicht statt
+   *    sie zu ordnen. Nichts wird falsch, nichts wird rot, und die
+   *    Reihenfolge ist wieder die von vorher. */
+  { n:'der Bogen wird auf die Liste gar nicht angewendet', tor:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:"  const leicht = nachHaerte.slice(0, 2).map(x => x.g);",
+    ersatz:"  return liste; // Anker: const leicht = nachHaerte.slice(0, 2).map(x => x.g);\n"
+      + "  const leicht = nachHaerte.slice(0, 2).map(x => x.g);",
+    an:{ datei:'src/kern/leitner.js', text:'return liste; // Anker: const leicht' },
+    sagt:'statt mit den zwei leichtesten' },
+
+  /* 2. DIE KNACKNUSS FEHLT. Der Anfang stimmt, das Ende nicht - und
+   *    genau das ist der Fall, den eine Probe auf „faengt leicht an"
+   *    allein durchlassen wuerde. Der Eingriff haengt die schwerste
+   *    wieder in die Mitte. */
+  { n:'die schwerste Aufgabe steht nicht mehr am Ende', tor:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:"  return [...leicht, ...mitte, schwerste];",
+    ersatz:"  return [...leicht, schwerste, ...mitte]; // Anker: return [...leicht, ...mitte, schwerste];",
+    an:{ datei:'src/kern/leitner.js', text:'return [...leicht, schwerste, ...mitte];' },
+    sagt:'hoert nur auf' },
+
+  /* 3. ER VERLIERT EINE AUFGABE. Die gefaehrlichste Fassung: die Runde
+   *    ist danach um eine kuerzer, das Fortschrittsband hat ein Feld
+   *    weniger, und es sieht aus wie eine kurze Runde statt wie ein
+   *    Fehler. Der Eingriff laesst die Mitte den Ueberschneidungstest
+   *    weg. */
+  { n:'der Bogen verliert eine Aufgabe', tor:'spielprobe',
+    datei:'src/kern/leitner.js',
+    such:"  const mitte = liste.filter(g => !leicht.includes(g) && g !== schwerste);",
+    ersatz:"  const mitte = liste.filter(g => !leicht.includes(g) && g !== schwerste).slice(1);"
+      + " // Anker: const mitte = liste.filter(g => !leicht.includes(g) && g !== schwerste);",
+    an:{ datei:'src/kern/leitner.js', text:'g !== schwerste).slice(1);' },
+    sagt:'er darf umordnen, nicht verlieren' },
+
   /* --- Das Tagesziel (N2) -----------------------------------------------
    *
    * 1. GESTERN ZAEHLT MIT. Das ist die Verfallsart, die still ist: sie
