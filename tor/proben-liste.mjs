@@ -2000,6 +2000,29 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
     sagt:'quer-praeposition' },
 
+  /* --- I17: der Fingerzeig von `regeln` ------------------------------- *
+   *
+   * Die Ratsche ist eine ZAHL, und der Bericht nannte als „die neuen"
+   * den Schwanz der Liste. Das ist die Reihenfolge der Dateien: `src`,
+   * `tools`, `tor`, `prototyp`, `docs`. Ein neuer Verweis in `src`
+   * liess das Tor also auf `docs` zeigen - bei I16 genau so passiert,
+   * und die Suche danach hat eine Viertelstunde gekostet.
+   *
+   * DIESE PROBE PRUEFT NICHT, DASS ES ROT WIRD, sondern WOHIN es zeigt.
+   * Der Eingriff schreibt einen Verweis ohne Stichwort in die ERSTE
+   * Wurzel; `sagt` verlangt, dass die Meldung genau diese Datei nennt.
+   * Mit der alten Bauart wuerde sie rot und meldete eine Datei aus
+   * `docs` - die Probe waere gruen, obwohl das Tor in die Irre zeigt,
+   * und genau deshalb steht hier der Dateiname und nicht „ohne
+   * Stichwort". */
+  { n:'der Fingerzeig von `regeln` zeigt auf die falsche Datei', tor:'regeln',
+    datei:E,
+    such:'export const HAUPTSTADT_LAND = {',
+    ersatz:'// Nur zum Messen: ein Verweis ohne Stichwort (Regel 6).\n'
+      + 'export const HAUPTSTADT_LAND = {',
+    an:{ datei:E, text:'Nur zum Messen: ein Verweis ohne Stichwort' },
+    sagt:'src/inhalt/erdkunde.js' },
+
   /* --- I16: die Hauptstadt kommt aus dem Inhalt ----------------------- *
    *
    * Bis I15 kam sie aus Natural Earths `Admin-0 capital` - und die ist

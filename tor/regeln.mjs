@@ -110,8 +110,30 @@ for (const w of WURZELN) for (const f of dateien(w)) {
     }
     const um = t.slice(Math.max(0, m.index - FENSTER), m.index + FENSTER).toLowerCase();
     if (WORTE.get(n).some(x => um.includes(x))) { belegt++; continue; }
-    ohneWort.push(`${f}:${zeile} — „Regel ${n}" (${REGELN.get(n)}) — `
-      + `kein Stichwort daneben (${WORTE.get(n).slice(0, 4).join(', ')})`);
+    /* DER SCHLUESSEL IST DIE ZEILE, NICHT IHRE NUMMER (I17).
+     *
+     * Die Ratsche ist eine ZAHL, und der Bericht nannte deshalb den
+     * Schwanz der Liste als „die neuen" - `ohneWort.slice(stand)`. Das
+     * ist die Reihenfolge der Dateien, nicht die Reihenfolge des
+     * Entstehens: bei I16 zeigte das Tor auf `docs/Lernkiste-STAND.md`,
+     * waehrend der neue Verweis in `src/inhalt/erdkunde.js` stand. Der
+     * Befund war richtig, der Fingerzeig falsch - und ein Tor, das den
+     * Fehler findet und woandershin zeigt, kostet jedes Mal denselben
+     * Umweg.
+     *
+     * Gemerkt wird jetzt die ZEILE selbst, getrimmt. Nicht ihre Nummer:
+     * die verschiebt sich, sobald jemand darueber etwas einfuegt, und
+     * dann waeren alle 47 „neu". Nicht die Umgebung: die aendert sich
+     * schon, wenn zwei Zeilen weiter oben ein Wort anders steht. Die
+     * Zeile ist genau das, was jemand SCHREIBT, wenn er einen Verweis
+     * schreibt - wer sie umformuliert, hat einen neuen Verweis
+     * geschrieben und soll gefragt werden. */
+    ohneWort.push({
+      wo: `${f}:${zeile}`,
+      schluessel: `${f}|${n}|${t.split('\n')[zeile - 1].trim()}`,
+      text: `${f}:${zeile} — „Regel ${n}" (${REGELN.get(n)}) — `
+        + `kein Stichwort daneben (${WORTE.get(n).slice(0, 4).join(', ')})`,
+    });
   }
 }
 
@@ -138,12 +160,27 @@ console.log(`    ${REGELN.size} Eiserne Regeln, ${gesamt} Verweise, ${belegt} mi
 for (const x of ohneNummer) fehler.push(`diese Regel gibt es nicht: ${x}`);
 if (process.argv.includes('--neu')) {
   fs.writeFileSync(STAND, JSON.stringify({ ohneWort: ohneWort.length,
-    verweise: gesamt, regeln: REGELN.size }, null, 2) + '\n');
+    verweise: gesamt, regeln: REGELN.size,
+    stellen: ohneWort.map(x => x.schluessel).sort() }, null, 2) + '\n');
   console.log(`    Stand neu bestätigt: ${ohneWort.length} Verweise ohne Stichwort`);
 } else if (stand && ohneWort.length > stand.ohneWort) {
+  /* Die Ratsche bleibt die ZAHL - daran aendert sich nichts. Neu ist
+     nur, dass der Bericht die richtige Stelle nennen kann. */
+  const bekannt = new Set(stand.stellen || []);
+  const neu = ohneWort.filter(x => !bekannt.has(x.schluessel));
+  const wieviel = ohneWort.length - stand.ohneWort;
   fehler.push(`${ohneWort.length} Verweise ohne Stichwort, bestätigt sind ${stand.ohneWort} — `
-    + `die ${ohneWort.length - stand.ohneWort} neuen: `
-    + ohneWort.slice(stand.ohneWort).slice(0, 3).join(' · '));
+    + `die ${wieviel} neuen: `
+    + (stand.stellen
+       ? (neu.length ? neu.slice(0, 3).map(x => x.text).join(' · ')
+          /* Die Zahl ist gestiegen, und trotzdem ist keine Stelle neu:
+             dann steht dieselbe Zeile jetzt oefter da. */
+          : 'dieselbe Zeile steht jetzt mehrfach — ' + ohneWort
+              .filter(x => ohneWort.filter(y => y.schluessel === x.schluessel).length > 1)
+              .slice(0, 3).map(x => x.wo).join(' · '))
+       : ohneWort.slice(stand.ohneWort).slice(0, 3).map(x => x.text).join(' · ')
+         + ' — GERATEN: der bestätigte Stand hält keine Stellen, `npm run regeln -- --neu`'
+         + ' trägt sie nach'));
 }
 
 if (fehler.length) {
