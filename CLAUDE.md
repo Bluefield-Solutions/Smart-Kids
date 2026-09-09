@@ -210,6 +210,11 @@ npm run ansicht    Bildvergleich. Nur ortsfest, nicht auf dem Runner.
                    `--aktualisieren` erneuert die Vorbilder — bewusst, und
                    im SELBEN Commit einchecken.
 npm run backen     Karten neu rechnen
+npm run backen-flaechen  die WIRKLICHEN Länderflächen aus den unvereinfachten
+                   Umrissen rechnen (`d3.geoArea` mal Erdradius²) — sie sind
+                   NICHT die Fläche des gemalten Pfades: Russland zeigt die
+                   Europakarte zu 23 %. Ergebnis: `prototyp/flaechen.json`,
+                   eingecheckt. Braucht `roh/`.
 npm run schrift    Andika und Plus Jakarta Sans holen
 npm run symbol     App-Symbol neu backen
 npm run schreiben  misst die Buchstabenerkennung: erkennt sich jede Vorlage
@@ -258,7 +263,7 @@ npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
                    einmal und zeichnet nichts.
 ```
 
-Kette: `rhythmus` → `inhalt` · `nachbarn` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
+Kette: `rhythmus` → `inhalt` · `nachbarn` · `groesser` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
 `schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `budget` · `anker` · `vielfalt` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·

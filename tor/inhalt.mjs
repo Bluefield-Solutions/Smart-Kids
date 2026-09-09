@@ -879,6 +879,115 @@ console.log('\n  Tor `nachbarn`');
       .slice(0, 2).map(id => `${namen.get(id)} (${roh[id].length})`).join(', ')}`);
 }
 
+/* ================================================== Was ist groesser? =====
+ *
+ * Die Ebene macht eine Zusage, die man ihr nicht ansieht: was sie fragt,
+ * ist WAHR (die wirkliche Flaeche) und zugleich am Bild NACHZUPRUEFEN
+ * (die gemalte). Beides faellt auseinander, und zwar messbar - Russland
+ * ist auf der Europakarte ein Fuenftel seiner selbst. Ein Paar, bei dem
+ * das Bild anders herum aussieht als die Welt, waere keine Aufgabe,
+ * sondern eine Falle.
+ *
+ * Geprueft wird gegen das GEBAUTE Buendel und nicht gegen den Prototyp
+ * (Regel 7) - und mit derselben
+ * Funktion, die die Paare erzeugt (`groesserPaare`) - eine zweite
+ * Fassung hier waere die, die gruen bleibt, waehrend die App etwas
+ * anderes rechnet.
+ *
+ * Was hier NICHT steht und anderswo geprueft wird: dass jede dieser
+ * Ebenen in einen Lebensraum fuehrt (Tor `tiere`) und dass man sie
+ * spielen kann (Rauchtest).
+ */
+console.log('\n  Tor `groesser`');
+{
+  const FL = JSON.parse(fs.readFileSync(
+    new URL('../prototyp/flaechen.json', import.meta.url), 'utf8')).km2;
+  const paare = paareAusBuendel();
+  pruefe(!!paare, 'die Paartafel steht nicht im gebauten Bündel');
+  if (paare) {
+    let ges = 0, engstesVerh = Infinity, engstes = '', knappTraegt = Infinity,
+        knappTraegtWer = '', knappDraussen = 0, knappDraussenWer = '', karten = 0;
+    const draussen = [];
+    for (const [karte, liste] of Object.entries(paare)) {
+      const datei = new URL(`../dist/daten/laender-${karte}.json`, import.meta.url);
+      if (!fs.existsSync(datei)) { pruefe(false, `keine Karte „${karte}"`); continue; }
+      const laender = JSON.parse(fs.readFileSync(datei, 'utf8')).laender
+        .filter(l => l.rang && FL[l.a3]);
+      const roh = laender.map(l => ({ a3: l.a3, km2: FL[l.a3], px: I.pfadFlaeche(l.pfad) }));
+      const namen = new Map(laender.map(l => [l.a3, l.name]));
+      /* REGEL 10 auf der Ebene des Tors: erst nachrechnen, ob die
+         Tafel ueberhaupt aus dieser Rechnung stammt. Steht hier eine
+         von Hand gepflegte Liste, beweisen alle Zeilen darunter nichts. */
+      const soll = I.groesserPaare(roh);
+      pruefe(JSON.stringify(soll) === JSON.stringify(liste),
+        `„${karte}": die Paare im Bündel sind nicht die, die `
+        + `\`groesserPaare\` aus denselben Daten rechnet (${liste.length} gegen ${soll.length})`);
+      /* Und die Treue, an der die Auswahl haengt - mit BEIDEN Raendern,
+         damit ein Neubacken der Karten sie nicht still verschiebt. */
+      for (const t of I.groesserTreue(roh)) {
+        if (t.treue >= I.GROESSER_TREUE) {
+          if (t.treue < knappTraegt) { knappTraegt = t.treue; knappTraegtWer = namen.get(t.a3); }
+        } else {
+          draussen.push(`${namen.get(t.a3)} ${t.treue.toFixed(2)}`);
+          if (t.treue > knappDraussen) { knappDraussen = t.treue; knappDraussenWer = namen.get(t.a3); }
+        }
+      }
+      const km2Von = new Map(roh.map(l => [l.a3, l.km2]));
+      const pxVon = new Map(roh.map(l => [l.a3, l.px]));
+      const treueVon = new Map(I.groesserTreue(roh).map(t => [t.a3, t.treue]));
+      for (const [g, k, mal] of liste) {
+        if (!km2Von.has(g) || !km2Von.has(k)) {
+          pruefe(false, `„${karte}": Paar ${g}-${k} nennt ein Land, das die Karte nicht führt`);
+          continue;
+        }
+        const wahr = km2Von.get(g) / km2Von.get(k);
+        const bild = pxVon.get(g) / pxVon.get(k);
+        pruefe(wahr >= I.GROESSER_FAKTOR,
+          `${namen.get(g)} ist nur ${wahr.toFixed(2)}-mal so groß wie ${namen.get(k)}`);
+        pruefe(bild >= I.GROESSER_FAKTOR,
+          `im BILD ist ${namen.get(g)} nur ${bild.toFixed(2)}-mal so groß wie `
+          + `${namen.get(k)} — das Kind sieht etwas anderes, als der Satz sagt`);
+        pruefe(Math.abs(mal - Math.round(wahr * 10) / 10) < 0.05,
+          `„${namen.get(g)} ist ${mal}-mal so groß" — gerechnet sind es ${wahr.toFixed(1)}`);
+        /* UND DIE TREUE, ausdrücklich je Paar.
+         *
+         * Sie steht schon in `groesserPaare` als Filter, und genau
+         * deshalb steht sie hier noch einmal: nimmt jemand sie dort
+         * heraus, fällt keine der drei Zeilen darüber. Nachgemessen -
+         * ohne den Filter kommen zwölf Paare dazu, und ALLE erfüllen
+         * den Faktor auch im Bild. Ein Tor, das dabei grün bleibt,
+         * bezeugt eine Regel, die es nie geprüft hat: eine Prüfung, die
+         * nie etwas meldet, ist kein Beweis (Regel 1).
+         *
+         * Der Satz, den diese Zeile schützt, ist nicht „X ist größer",
+         * sondern „X ist 27-mal so groß" — auf einer Karte, die von X
+         * ein Fünftel zeigt. */
+        for (const a3 of [g, k]) pruefe((treueVon.get(a3) ?? 0) >= I.GROESSER_TREUE,
+          `${namen.get(a3)} steht in einem Paar, wird von der Karte aber nur zu `
+          + `${((treueVon.get(a3) ?? 0) * 100).toFixed(0)} % gezeigt — der Satz `
+          + 'nennt eine Zahl, die im Bild nicht steht');
+        if (bild < engstesVerh) {
+          engstesVerh = bild; engstes = `${namen.get(g)} / ${namen.get(k)}`;
+        }
+        ges++;
+      }
+      if (liste.length) karten++;
+    }
+    /* Die Ratsche. 149 Paare sind heute da; faellt die Zahl, ist eine
+       Karte still aus der Ebene gefallen - und die Ebene selbst mit
+       ihr, wenn sie unter die kuerzeste Sitzung rutscht. */
+    pruefe(ges >= 140, `nur ${ges} Paare — waren 149`);
+    console.log(`    ${ges} Paare auf ${karten} von ${Object.keys(paare).length} Karten, `
+      + `jedes in der Welt UND im Bild mindestens ${I.GROESSER_FAKTOR}-mal so groß`);
+    console.log(`    engstes Paar im Bild: ${engstes} mit ${engstesVerh.toFixed(2)} · `
+      + `Treue ≥ ${I.GROESSER_TREUE}: knappster Träger ${knappTraegtWer} `
+      + `${knappTraegt.toFixed(3)}, knappster Ausgeschlossener ${knappDraussenWer} `
+      + `${knappDraussen.toFixed(3)}`);
+    console.log(`    von der Karte zu klein gezeigt und deshalb draußen (${draussen.length}): `
+      + draussen.sort().join(' · '));
+  }
+}
+
 console.log('\n  Tor `saetze`');
 {
   /* Gemessen wird gegen die WIRKLICH gespielten Gebiete (Regel 5), also
@@ -3919,6 +4028,21 @@ console.log('\n  Tor `englisch`');
  * Die ZAHL der gemalten steht mit da. Sie ist der Stand des Plans, und
  * ohne sie waere „noch nicht gemalt" eine Erinnerung statt einer Zahl.
  */
+/* Die Paartafel aus dem GEBAUTEN Buendel - genau das, was die App liest.
+   Geprueft wird `dist/` und nicht der Prototyp (Regel 7). */
+function paareAusBuendel() {
+  const h = fs.readFileSync('dist/index.html', 'utf8');
+  const i = h.indexOf('"paare":');
+  if (i < 0) return null;
+  const s = h.slice(i);
+  let tiefe = 0, a = s.indexOf('{'), b = a;
+  for (; b < s.length; b++) {
+    if (s[b] === '{') tiefe++;
+    else if (s[b] === '}') { tiefe--; if (!tiefe) break; }
+  }
+  try { return JSON.parse(s.slice(a, b + 1)); } catch (e) { return null; }
+}
+
 {
   const tf = [];
   const spiel = fs.readFileSync('prototyp/spiel.js', 'utf8');
@@ -3945,6 +4069,29 @@ console.log('\n  Tor `englisch`');
      Karte. */
   for (const m of spiel.matchAll(/id:`([a-z]+):\$\{k\}`/g))
     for (const k of Object.keys(KARTEN_GROB)) ebenen.add(`${m[1]}:${k}`);
+  /* ... UND DIE EINE FAMILIE, DIE NICHT AUF JEDER KARTE ENTSTEHT (I22).
+   *
+   * „Was ist groesser?" steht mit demselben `id:\`groesser:${k}\`` da wie
+   * die anderen, hat davor aber einen Filter: eine Karte bekommt die
+   * Ebene nur, wenn sie mindestens so viele Paare hat wie die kuerzeste
+   * Sitzung Aufgaben (Nordamerika hat drei, Australien zwei). Ohne
+   * diesen Absatz meldete das Tor zwei Ebenen ohne Lebensraum, die es
+   * gar nicht gibt - eine Ueberschaetzung, die genau das kaputtmacht,
+   * wofuer die Pruefung da ist: sie meldet dann IMMER etwas.
+   *
+   * Beide Zahlen kommen von dort, wo das Spiel sie auch herhat: die
+   * Paare aus dem gebauten Buendel, die Sitzungslaengen aus `PROFILE`.
+   * Eine dritte Fassung des Filters hier waere die, die auseinanderlaeuft. */
+  if ([...ebenen].some(e => e.startsWith('groesser:'))) {
+    const kurz = Math.min(...[...spiel.matchAll(/sitzung:\s*(\d+)/g)].map(m => +m[1]));
+    const paare = paareAusBuendel();
+    if (!paare) tf.push('die Paartafel `paare` steht nicht im gebauten Bündel — '
+      + 'ohne sie ist jede Aussage über „Was ist größer?" geraten');
+    else for (const e of [...ebenen]) {
+      if (!e.startsWith('groesser:')) continue;
+      if ((paare[e.slice(9)] || []).length < kurz) ebenen.delete(e);
+    }
+  }
   if (ebenen.size < 8) tf.push(`nur ${ebenen.size} Ebenen in spiel.js gefunden — `
     + 'die Erkennung greift ins Leere, und alles darunter beweist nichts');
 

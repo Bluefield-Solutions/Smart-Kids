@@ -7,6 +7,7 @@
   "scripts": {
     "geo-holen": "node tools/geo-holen.mjs",
     "backen": "node --max-old-space-size=6144 tools/backen-kontinente.mjs && node --max-old-space-size=6144 tools/backen-deutschland.mjs && node --max-old-space-size=6144 tools/backen-laender.mjs && node --max-old-space-size=4096 tools/backen-antarktika.mjs && node tools/backen-staedte.mjs",
+    "backen-flaechen": "node tools/backen-flaechen.mjs",
     "schrift": "node tools/holen-schrift.mjs",
     "symbol": "node tools/backen-symbol.mjs && node tools/backen-symbol-png.mjs",
     "symbol:png": "node tools/backen-symbol-png.mjs",

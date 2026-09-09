@@ -12,6 +12,11 @@ import { polDerUnzugaenglichkeit, pfadZuRingen,
          ringeZuPolygonen, sichtfeld } from '../tools/geo-backen.mjs';
 
 const NACHBARN = JSON.parse(fs.readFileSync(new URL('./nachbarn.json', import.meta.url)));
+/* Die WIRKLICHEN Flaechen - gebacken von `tools/backen-flaechen.mjs` aus
+   den unvereinfachten Umrissen. Warum sie nicht aus dem gemalten Pfad
+   kommen duerfen, steht bei `groesserPaare` in `erdkunde.js`. */
+const FLAECHEN = JSON.parse(fs.readFileSync(new URL('./flaechen.json', import.meta.url))).km2;
+
 function vierfaerben(ids){
   const reihe=[...ids].sort((a,b)=>(NACHBARN[b]||[]).length-(NACHBARN[a]||[]).length), f={};
   for(const id of reihe){ const belegt=new Set((NACHBARN[id]||[]).map(n=>f[n]).filter(x=>x!==undefined));
@@ -136,6 +141,25 @@ const D = {
      nicht daneben aufgeschrieben. */
   ausschnitte: I.AUSSCHNITTE,
 };
+
+/* „Was ist groesser?" (I22) - die Paare je Karte.
+ *
+ * HIER und nicht im Spiel, weil hier BEIDE Flaechen zusammenkommen: die
+ * wirkliche aus `flaechen.json` und die gemalte aus genau dem Pfad, der
+ * gleich ausgeliefert wird. Ein Paar, das im Bild anders herum aussieht
+ * als in der Welt, entsteht damit gar nicht erst.
+ *
+ * Die REGEL steht in `erdkunde.js` und wird von hier und vom Tor
+ * `inhalt` derselbe Weg gerufen - zwei Fassungen derselben Paarung
+ * waeren zwei Wahrheiten, und die im Tor waere die, die gruen bleibt:
+ * was zweimal dasteht, veraltet einmal (Regel 6).
+ *
+ * Ins Buendel geht NUR das Ergebnis: `[gross, klein, mal]`, drei kurze
+ * Felder je Paar. Die beiden Flaechen selbst braucht das Spiel nicht -
+ * es fragt, welches Land groesser ist, und sagt um wieviel. */
+D.paare = Object.fromEntries(Object.keys(D.laender).map(k =>
+  [k, I.groesserPaare(D.laender[k].map(l =>
+    ({ a3: l.a3, km2: FLAECHEN[l.a3] || 0, px: I.pfadFlaeche(l.pfad) })))]));
 // Die Weltkarte wird auf das GERAHMT, was gespielt wird.
 //
 // Frueher wurde sie knapp unterhalb von Antarktikas Eiskante beschnitten -

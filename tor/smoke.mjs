@@ -4589,7 +4589,12 @@ const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
      gefragte Land ist hervorgehoben, die Frage wird gesprochen, getippt
      wird auf eine Flaeche daneben. Wer sie einem Profil vorenthaelt,
      nimmt sie ausgerechnet dem, fuer das sie gebaut ist. */
-  'bundeslaender', 'hauptstaedte', 'nachbarn'];
+  /* Und `groesser:europa` (I22) aus demselben Grund: sie ist die zweite
+     Aufgabe, die ohne ein gelesenes Wort geht, und die einzige, bei der
+     ZWEI Gebiete markiert sind und genau eines davon die Antwort ist.
+     EINE der sechs Karten genuegt hier - es ist derselbe Bildschirm,
+     und Europa ist die mit den meisten Paaren nach Afrika und Asien. */
+  'bundeslaender', 'hauptstaedte', 'nachbarn', 'groesser:europa'];
 // Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
 /* Seit R4 spielt auch das Profil „Eltern" mit. Es kommt in denselben
@@ -5082,10 +5087,17 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * und die Gegenprobe „ein Nachbar wird nicht mehr als richtig
      * gewertet" bewies zweimal nichts. Sie ist die einzige Art, bei der
      * MEHRERE Antworten richtig sind; genau das faellt aus, wenn sie
-     * fehlt. */
+     * fehlt.
+     *
+     * `groesser:europa` (I22) ist die NEUNTE, und sie steht hier von
+     * Anfang an - nicht aus Tugend, sondern weil I21 die Rechnung
+     * vorgemacht hat: die Gegenprobe „das kleinere Land wird als
+     * richtig gewertet" beweist nur dann etwas, wenn der Kurzlauf die
+     * Ebene auch aufschlaegt. Sie ist die einzige Art, bei der zwei
+     * Gebiete markiert sind und genau eines die Antwort ist. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
-                    || e === 'nachbarn'
+                    || e === 'nachbarn' || e === 'groesser:europa'
                     || e === 'laender:europa' || e.startsWith('rechnen')
                     || e === 'flaggen:europa' || e === 'flaggen:paare' || e === 'flaggen:karte'
                     || e.startsWith('englisch') || e.startsWith('freunde')
@@ -5943,12 +5955,21 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * ein Durchlauf ohne Aussage: die Gegenprobe „ein Nachbar wird
          * nicht mehr als richtig gewertet" lief zweimal ins Leere, weil
          * eine falsche Antwort hier nichts kostete. */
-        const richtig = await p.evaluate(() =>
-          !!document.querySelector('.schirm.da .frage .richtigText'));
-        if (!richtig) merke('durchgang', new Error(
+        const urteil = await p.evaluate(() => {
+          const s = document.querySelector('.schirm.da');
+          return { richtig: !!s.querySelector('.frage .richtigText'),
+                   /* WAS das Spiel verstanden hat - sonst steht in der
+                      Meldung nur „nicht gewertet", und die Suche faengt
+                      bei null an. Der Hinweis nennt das getroffene
+                      Gebiet, der Fragetext sagt, ob die Aufgabe noch
+                      offen ist. */
+                   hinweis: (s.querySelector('.hinweis')?.textContent || '').trim(),
+                   frage: (s.querySelector('.frage')?.textContent || '').trim() };
+        });
+        if (!urteil.richtig) merke('durchgang', new Error(
           `${wer}/${ebene}: der Tipp auf „${gesucht}" wurde nicht als richtig `
           + 'gewertet — getippt wurde auf die Stelle, die das Spiel selbst '
-          + 'als Antwort führt'));
+          + `als Antwort führt. Das Spiel sagt: „${urteil.hinweis}" · „${urteil.frage}"`));
         /* Und dann RAUS — ueber `abgeschlossen`, wie jeder andere Zweig.
          *
          * Bis F4 war dieser Zweig tot: in den Erdkundeebenen kommt die
@@ -5967,7 +5988,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
            dazu; ohne es hier meldete der Rauchtest „Fiona bekam nur 27
            von 28 Aufgaben vorgelesen", und das war kein Fehlalarm,
            sondern eine Zeile, die die neue Frage nicht kannte. */
-        await abgeschlossen(p, wer, ebene, /Wohin gehört|Wo liegt|grenzt an/,
+        await abgeschlossen(p, wer, ebene, /Wohin gehört|Wo liegt|grenzt an|ist größer/,
           `auf ${gesucht} getippt`);
         continue;
       }

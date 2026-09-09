@@ -197,7 +197,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 6 | **D3c** Die 91 Sätze mit echter Stimme hören | Fiona | mittel | klein | Gerät, kein Tor |
 | 7 | **Q12** Fionas Länderrunde ist 3 statt 6 | Fiona | mittel | klein | Entscheidung am Gerät |
 | 8 | **N2b** Der Klassifikator als Auffangnetz | Fiona | mittel | mittel | echte Züge |
-| 9 | **B3r** Nachbarn · größer/kleiner · Puzzle · Steckbrief | Lea | mittel | mittel | je Form einzeln |
+| 9 | **B3r** ~~Nachbarn~~ (I21) · ~~größer/kleiner~~ (I22) · Puzzle · Steckbrief | Lea | mittel | mittel | zwei von vier gefahren |
 | 10 | **Q24** „Kontinentumriss" ist eine Zusage | nur ich | gering | mittel | Weg 2 verworfen (Q25) |
 | 11 | **G14b** Der Aufkleber FLIEGT ins Forscherbuch statt zu winken | Fiona, Lea | gering | mittel | Lage zur Laufzeit |
 | 12 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
@@ -824,6 +824,17 @@ ist das kein Schulfach, sondern ein Spiel mit Klängen.
 ---
 
 ### B3r · Nachbarn · groesser/kleiner · Puzzle · Steckbrief
+
+> **Zwei von vier sind gefahren.** „Nachbarn" mit I21, „größer/kleiner"
+> mit I22. Offen sind **Puzzle** und **Steckbrief**.
+>
+> Und der Vermerk „die Flächen stehen in der Geometrie" in der Tabelle
+> unten war **falsch**, nachgemessen bei I22: es gibt zwei Flächen, die
+> wirkliche und die gemalte, und sie weichen bei sieben Ländern um mehr
+> als 14 % voneinander ab (Russland auf der Europakarte um 77 %). Die
+> wirkliche musste eigens gerechnet werden — `npm run backen-flaechen`,
+> `d3.geoArea` auf dem unvereinfachten Umriss. Wer **Steckbrief** angeht,
+> braucht sie ebenfalls, und sie liegt jetzt eingecheckt da.
 
 > *Stand bis v355 in der Rangliste, hatte aber als einziger Punkt
 > **keinen Block**, der sagt was er ist.* Gefunden in der Pruefschleife QS

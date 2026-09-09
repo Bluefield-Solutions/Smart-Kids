@@ -357,8 +357,13 @@ export async function istUmgekehrt(seite) {
        allerdings SEHR WOHL ein `path.ziel` - das gefragte Land ist
        hervorgehoben, es ist ja der Bezugspunkt. Deshalb steht die
        Erkennung hier am Fragetext und nicht an der Markierung. */
+    /* VIER seit I22: „Welches Land ist größer?" nennt gar kein Gebiet
+       im Text und hat ZWEI `path.ziel` - beide gefragten Länder sind
+       markiert, genau eines ist die Antwort. Auch sie wird mit einem
+       Tipp auf die Karte beantwortet. */
     return /^Wo liegt /.test(t) || /^Wohin gehört /.test(t)
-        || /^Welches Bundesland grenzt an /.test(t);
+        || /^Welches Bundesland grenzt an /.test(t)
+        || /^Welches Land ist größer\?/.test(t);
   });
 }
 
@@ -612,6 +617,13 @@ export async function zeigeAufKarte(seite) {
        einen seiner Nachbarn. Genommen wird der erste - welcher, ist
        gleichgueltig, sie sind alle richtig, und „irgendeiner" waere im
        Bericht nicht nachvollziehbar. */
+    /* Bei „Was ist groesser?" (I22) steht die richtige Antwort am
+       Gegenstand: `gross` ist die Kennung des groesseren Landes. Sie
+       wird GENOMMEN und nicht gesucht - der Rauchtest prueft danach,
+       ob das Spiel sie auch als richtig wertet, und ein Helfer, der
+       selbst raet, koennte das nicht mehr beweisen. */
+    if (lauf && lauf.gross && s.querySelector(`path.geb[data-id="${lauf.gross}"]`))
+      vonSitzung = { id: lauf.gross, name: lauf.name || lauf.gross };
     if (lauf && Array.isArray(lauf.grenzt) && lauf.grenzt.length) {
       const el = s.querySelector(`path.geb[data-id="${lauf.grenzt[0]}"]`);
       if (el) { const b = el.getBoundingClientRect();
@@ -662,9 +674,26 @@ export async function zeigeAufKarte(seite) {
     const pf = s.querySelector(`path.geb[data-id="${id}"]`);
     if (!pf) return null;
     const bb = pf.getBoundingClientRect();
+    /* DIESELBE VORFAHRT WIE IM SPIEL: der Nadelkopf schlaegt die Flaeche.
+     *
+     * Hier stand nur die Flaeche, und der Helfer fand daraufhin einen
+     * Punkt mitten IN Belarus, ueber dem der Nadelkopf LITAUENS lag.
+     * `zielUnter` im Spiel fragt den Kreis zuerst - es wertete also
+     * Litauen, und der Rauchtest meldete „Welches Land ist größer?" sei
+     * nicht loesbar. Aufgefallen ist das erst bei I22, weil dort zum
+     * ersten Mal geprueft wird, ob der Tipp AUCH richtig gewertet wird;
+     * bei der umgekehrten Frage und den Nachbarn lag der Fehler
+     * dieselbe Zeit lang genauso da und kostete nur einen Fehlversuch.
+     *
+     * Ein Helfer, der eine andere Vorfahrt kennt als das Spiel, sucht
+     * eine Stelle, die es nicht gibt - was zweimal dasteht, veraltet
+     * einmal (Regel 6). */
     const trifft = (x, y) => {
       const e = document.elementFromPoint(x, y);
-      const p = e && e.closest && e.closest('path.geb');
+      if (!e || !e.closest) return false;
+      const kreis = e.closest('#treffer circle');
+      if (kreis) return kreis.dataset.id === id;
+      const p = e.closest('path.geb');
       return !!p && p.dataset.id === id;
     };
     for (let n = 0; n <= 6; n++) for (let m = 0; m <= 6; m++) {

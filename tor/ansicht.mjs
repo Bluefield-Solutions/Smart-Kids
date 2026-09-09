@@ -421,6 +421,27 @@ const AUFNAHMEN = [
      und ohne Aufnahme entschiede sie unbeobachtet. */
   { name:'quer-gruppe-bundeslaender', spiel:null, kind:'lea', quer:true,
     wahl:'.schirm.da', tun:'gruppe', gruppe:'bundeslaender' },
+  /* Und die vierte Gruppe (I22): „Was ist größer? — wo?" mit sechs
+     Karten. Sie steht hier, weil ihre Zahl NICHT feststeht: eine Karte
+     bekommt die Ebene nur, wenn sie genug Paare hat, und die Reihenfolge
+     ist nach Paarzahl. Faellt eine Karte heraus oder wandert eine nach
+     vorn, aendert sich dieses Bild - und nur dieses. */
+  { name:'quer-gruppe-groesser', spiel:null, kind:'lea', quer:true,
+    wahl:'.schirm.da', tun:'gruppe', gruppe:'groesser' },
+  /* Die fuenfte, und die groesste: „Länder — wo?" mit acht Karten (I22).
+     Bis dahin standen die acht als einzelne Kacheln in der Wand; das
+     war die Stelle, an der die dreizehnte Kachel gescheitert waere. */
+  { name:'quer-gruppe-laender', spiel:null, kind:'lea', quer:true,
+    wahl:'.schirm.da', tun:'gruppe', gruppe:'laender' },
+  /* DIE NEUE AUFGABE SELBST (I22).
+   *
+   * „Welches Land ist größer?" ist der einzige Spielbildschirm, auf dem
+   * ZWEI Gebiete hervorgehoben sind und beide einen Zeiger tragen -
+   * genau eines davon ist die Antwort. Ob das als Bild funktioniert
+   * (sind beide gleich stark markiert? erschlaegt der zweite Zeiger die
+   * Karte?), sagt kein Tor. Deshalb hier. */
+  { name:'quer-groesser', spiel:'groesser:afrika', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
   /* Die Nadeln (P10) — der einzige Bildschirm, auf dem eine Trefferflaeche
    * zu SEHEN ist. Zwei Gebiete haengen hier neben der Karte, mit Faden
    * und farbigem Kopf. Dass sie da sind, misst `ziehen --nur=treffer`;

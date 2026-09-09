@@ -708,6 +708,29 @@ function sagen(text){ if (!P || ton().spricht) vorlesen(text); }
    der Aufruf fällt auf die Zahl zurück, und mehr als fünf abweichende
    Regierungssitze auf EINER Karte hätte ohnehin einen anderen Satz
    verdient. */
+/* WIEVIEL GROESSER - in Worten, die ein sechsjaehriges Kind kennt (I22).
+ *
+ * `mal` ist das wirkliche Verhaeltnis der Flaechen auf eine
+ * Nachkommastelle (siehe `groesserPaare` in erdkunde.js). Eine nackte
+ * Zahl waere hier falsch verstanden: „1,6-mal so gross" sagt einem
+ * Erstklaessler nichts, und „doppelt so gross" bei 1,6 waere gelogen.
+ *
+ * Die Stufen sind so gelegt, dass jede Aussage stimmt: bis 1,75 heisst
+ * es „eineinhalbmal" (hoechstens 17 % daneben), bis 2,25 „doppelt"
+ * (hoechstens 12 %), darueber die gerundete Zahl mit einem
+ * ausdruecklichen „ungefaehr". Der Faktor beginnt bei 1,5 - darunter
+ * gibt es kein Paar.
+ */
+const groesserSatz = (z) => {
+  const m = z.mal;
+  const wie = m < 1.75 ? 'eineinhalbmal so groß'
+            : m < 2.25 ? 'doppelt so groß'
+            : m < 2.75 ? 'zweieinhalbmal so groß'
+            : m < 3.5  ? 'dreimal so groß'
+            : `ungefähr ${Math.round(m)}-mal so groß`;
+  return `${z.name} ist ${wie} wie ${z.kleinName}.`;
+};
+
 const ZAHLWORT = [null, 'Ein', 'Zwei', 'Drei', 'Vier', 'Fünf'];
 const aufzaehlen = (namen, wort = 'oder') => namen.length < 2 ? (namen[0] || '')
   : namen.slice(0, -1).join(', ') + ` ${wort} ` + namen[namen.length - 1];
@@ -1137,10 +1160,41 @@ for (const id of ['mittelamerika', 'suedosteuropa'])
     ?? [1,2,3,4,5,6,7].find(f => !Object.values(KONT_FARBE).includes(f))
     ?? KONT_FARBE[AUSSCHNITT_VON[id]];
 
+/* Die kuerzeste Sitzung, die es gibt - Fionas sechs.
+ *
+ * Abgeleitet aus `PROFILE` und nicht danebengeschrieben: sie ist die
+ * Untergrenze dafuer, wieviele Aufgaben eine Ebene ueberhaupt haben
+ * muss, damit eine Runde darin keine Wiederholung ist. „Was ist
+ * groesser?" benutzt sie, um zu entscheiden, welche Karte eine Ebene
+ * bekommt. Stuende hier eine Sechs, waere sie beim naechsten
+ * Sitzungsregler falsch (Regel 6). */
+const SITZUNG_KURZ = Math.min(...Object.values(PROFILE).map(p => p.sitzung));
+
 const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
-  ...Object.keys(D.laender).map((k)=>({ id:`laender:${k}`, ueber:'Länder in',
-    titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })),
+  /* DIE ACHT LAENDERKARTEN TEILEN SICH SEIT I22 EINE KACHEL.
+   *
+   * Nicht aus Ordnungsliebe - gemessen. Die Erdkunde-Wand traegt ZWOELF
+   * Kacheln; mit der dreizehnten greift `:has(> :nth-child(13))` im
+   * Stilblatt, und die Bilder fallen auf dem kleinsten Geraet von 73 auf
+   * 19 Punkte. Fuer ein Kind, das nicht liest, ist die Kachel dann kein
+   * Bild mehr, sondern ein Punkt. Genau daran ist I21 schon einmal
+   * vorbeigekommen (dort teilte sich „Wer grenzt an wen?" die Kachel mit
+   * „Bundesländer"), und mit „Was ist größer?" waere es die dreizehnte
+   * gewesen.
+   *
+   * ES WAR DIE INKONSEQUENTE STELLE. Hauptstädte (neun Ebenen) und
+   * Flaggen (zehn) liegen seit Q17 und F2 hinter EINER Kachel mit der
+   * Frage „wo?"; nur die Länder standen als acht einzelne da. Dieselbe
+   * Frage auf acht Karten ist EINE Sache - und die Wand geht damit von
+   * zwölf auf sechs, also von zwei engen Reihen auf eine ruhige.
+   *
+   * `ueber` und `titel` tauschen die Plaetze und stehen jetzt wie bei
+   * den Hauptstaedten: die Kachel heisst nach der SACHE („Länder"), die
+   * Überzeile nach dem ORT. Ohne den Tausch hiesse die Gruppenkachel
+   * „Europa" - nach dem ersten Teil, den sie zufaellig zuerst findet. */
+  ...Object.keys(D.laender).map((k)=>({ id:`laender:${k}`, ueber: KONT_TITEL[k] || k,
+    titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })),
   { id:'bundeslaender', ueber:'Deutschland', titel:'Bundesländer',      farbe:1,
     gruppe:'bundeslaender', wo:'Wie heißen sie?' },
   /* WER GRENZT AN WEN (I21, aus B3r).
@@ -1221,6 +1275,46 @@ const EBENEN = [
       titel:'Hauptstädte', farbe: KONT_FARBE[k],
       wer:['lea','stephan','violeta'], gruppe:'hauptstaedte',
       wo: KONT_TITEL[k] || k })),
+  /* WAS IST GROESSER? (I22, aus B3r).
+   *
+   * Die erste Erdkundeaufgabe, die nicht nach einem NAMEN fragt.
+   * Kontinente, Länder, Bundesländer, Hauptstädte, Flaggen, Nachbarn -
+   * alle sechs Formen davor prüfen, ob ein Kind eine Bezeichnung mit
+   * einer Form verbindet. Diese hier fragt nach einer EIGENSCHAFT, und
+   * zwar nach der einzigen, die man einer Karte ansehen kann, ohne
+   * etwas zu wissen: wie groß etwas ist.
+   *
+   * Deshalb hat sie KEINE Leiter. Alle anderen Länderebenen zeigen je
+   * nach Können die fünf, zehn oder dreißig größten; hier stehen von
+   * Anfang an alle Paare der Karte. Wer zwei Flächen sieht, kann sagen,
+   * welche größer ist - dazu muss man weder Ungarn kennen noch lesen.
+   * Dieselbe Überlegung wie bei den Verwechslungspaaren (F3), die auch
+   * keine Tiefe haben.
+   *
+   * FÜR ALLE VIER, und für Fiona die zweite Aufgabe ohne ein Wort:
+   * beide Länder stehen hervorgehoben da, die Frage wird gesprochen,
+   * getippt wird auf eine Fläche.
+   *
+   * SECHS KARTEN, NICHT ACHT - und die Zahl ist abgeleitet, nicht
+   * gewählt. Eine Karte braucht mindestens so viele Paare, wie die
+   * kürzeste Sitzung Aufgaben hat (Fionas sechs); darunter ist eine
+   * Runde ein Karussell aus denselben zwei Fragen. Nordamerika hat
+   * drei Paare, Australien zwei - beide bekommen keine Ebene. Was
+   * die anderen sechs haben, steht in `D.paare`; die Regel, die sie
+   * erzeugt, in `groesserPaare` (erdkunde.js). */
+  /* NACH PAARZAHL GEORDNET, und das ist keine Ordnungsliebe: die
+     Gruppenkachel uebernimmt Bild und Farbe ihres ERSTEN Teils. In
+     Kartenreihenfolge waere das Europa - und daneben stuende „Länder"
+     mit demselben Europa in derselben gruenen Familie. Fuer ein Kind,
+     das nicht liest, waeren das zwei Kacheln mit demselben Bild.
+     Afrika hat mit 43 die meisten Paare, ist orange und sieht anders
+     aus als alles andere auf der Wand. */
+  ...Object.keys(D.laender)
+    .filter(k => (D.paare[k] || []).length >= SITZUNG_KURZ)
+    .sort((a, b) => D.paare[b].length - D.paare[a].length)
+    .map(k => ({ id:`groesser:${k}`, ueber: KONT_TITEL[k] || k,
+      titel:'Was ist größer?', farbe: KONT_FARBE[k], art:'groesser',
+      gruppe:'groesser', wo: KONT_TITEL[k] || k })),
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
@@ -2486,6 +2580,28 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     return D.deutschland.map(b=>({ id:b.id, name:b.name, aliasse:[],
       aussprache:[b.name.toLowerCase()], pfad:b.pfad, anker:b.anker,
       stadtstaat:b.stadtstaat, grenzt:b.grenzt || [] }));
+  /* „Was ist groesser?" (I22) - EIN Gegenstand je PAAR, nicht je Land.
+   *
+   * Das ist die Sache selbst: gelernt wird nicht „Polen", sondern
+   * „Spanien ist groesser als Polen". Ein Gegenstand je Land waere ein
+   * Leitner-Stand fuer etwas, das es nicht gibt - ein Land ist nicht
+   * fuer sich gross, sondern immer im Vergleich.
+   *
+   * KEINE TIEFE (`voll` wird nicht gefragt). Warum, steht bei der Ebene
+   * selbst: zwei Flaechen zu vergleichen setzt kein Wissen voraus.
+   *
+   * `pfad` bleibt DRAUSSEN. Der Gegenstand ist ein Paar und hat keinen
+   * eigenen Umriss; die Umrisse holt sich der Bildschirm aus
+   * `D.laender[kont]`, weil beide Laender ihren eigenen brauchen. Ein
+   * `pfad` hier waere die halbe Antwort im Buch und im Vorlauf - genau
+   * die Weiche, die der Flaggenvorrat eine Zeile weiter unten kennt. */
+  if (art==='groesser') {
+    const namen = new Map((D.laender[kont] || []).map(l => [l.a3, l]));
+    return (D.paare[kont] || []).filter(([g,k]) => namen.has(g) && namen.has(k))
+      .map(([g,k,mal]) => ({ id:`gr:${kont}:${g}-${k}`, gross:g, klein:k, mal,
+        name: namen.get(g).name, kleinName: namen.get(k).name,
+        aliasse: namen.get(g).aliasse, aussprache: namen.get(g).aussprache }));
+  }
   // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
   // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
   // Leitner-Stand über Sitzungen trägt.
@@ -2768,6 +2884,11 @@ const NAMEN = {};
 D.kontinente.forEach(k=>NAMEN[k.id]=k.name);
 Object.values(D.laender).flat().forEach(l=>NAMEN[l.a3]=l.name);
 D.deutschland.forEach(b=>NAMEN[b.id]=b.name);
+/* Und die Paare aus „Was ist groesser?" (I22). Ohne diese Zeile stuende
+   im Elternprotokoll `gr:europa:ESP-POL` - dieselbe Luecke, die die
+   Rechenaufgaben zwei Absaetze weiter unten schon einmal hatten. */
+for (const [k, paare] of Object.entries(D.paare || {}))
+  for (const [g, kl] of paare) NAMEN[`gr:${k}:${g}-${kl}`] = `${NAMEN[g]} oder ${NAMEN[kl]}`;
 // Auch die Rechenaufgaben: sonst steht im Elternprotokoll `p3+4` statt
 // „3 + 4". Das Protokoll ist das eine, was Eltern wirklich lesen.
 //
@@ -4403,7 +4524,11 @@ async function ebeneLaden(ebeneId){
   /* `flaggen:karte` (F4) braucht dieselbe Karte wie `laender:europa` -
      sie steht in `KARTE_ZU`, nicht hinter dem Doppelpunkt. */
   const karte = karteVon(ebeneId);
-  if ((art!=='laender' && art!=='hauptstaedte' && ebeneId!=='flaggen:karte')
+  /* `groesser` holt dieselbe Karte wie `laender` (I22) - ohne diese
+     Zeile stand die Ebene mit leeren Umrissen da, und der Bildschirm
+     zeichnete acht unsichtbare Laender. */
+  if ((art!=='laender' && art!=='hauptstaedte' && art!=='groesser'
+       && ebeneId!=='flaggen:karte')
       || !karte || geholt.has(karte)) return true;
   try {
     const t = await (await fetch(`./daten/laender-${karte}.json`)).json();
@@ -7510,6 +7635,17 @@ function spielschirm(){
      Hessen unsichtbar - „Welches Bundesland grenzt an Hessen?" auf einer
      Karte ohne Hessen. */
   const istNachbar = art==='nachbarn';
+  /* „Was ist groesser?" (I22) - und warum `istNachbar` dafuer NICHT das
+     Vorbild ist, obwohl beide auf der Karte beantwortet werden:
+       bei den Nachbarn ist das markierte Gebiet der BEZUG der Frage und
+          nie die Antwort;
+       hier sind ZWEI Gebiete markiert, und genau eines davon IST die
+          Antwort.
+     Deshalb steht ueberall dort, wo bisher „das gesuchte Gebiet" stand,
+     jetzt `zielIds` - eine Liste, die bei allen anderen Ebenen genau ein
+     Stueck lang ist. */
+  const istGroesser = art==='groesser';
+  const zielIds = istGroesser ? [ziel.gross, ziel.klein] : [ziel.id];
   /* Der Schalter steht HIER, weil die Flaechen ihn schon brauchen.
    *
    * Er stand zuerst weiter unten bei den Antwortwegen - dort, wo er
@@ -7540,8 +7676,9 @@ function spielschirm(){
      ganzer Zweck. Sonst bleibt es bei jeder dritten (B3). */
   const aufKarte = art === 'flaggen' && kont === 'karte';
   const umgekehrt = aufKarte
-    || (kannLesen && !istHaupt && !istNachbar && st.i % 3 === 2 && tippbar(ziel.id));
-  const karteAntwortet = umgekehrt || istNachbar;
+    || (kannLesen && !istHaupt && !istNachbar && !istGroesser
+        && st.i % 3 === 2 && tippbar(ziel.id));
+  const karteAntwortet = umgekehrt || istNachbar || istGroesser;
   // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
   // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
   // Namen gleichzeitig zu lesen ist eine andere.
@@ -7629,7 +7766,14 @@ function spielschirm(){
   // aus statt nach einer Auswahl. Die Runde begrenzt, WONACH gefragt wird -
   // nicht, was es auf der Welt gibt.
   const alleKontinente = D.kontinente.map(k=>({ id:k.id, name:k.name, pfad:k.pfad, anker:k.anker }));
-  const formen = art==='kontinente' ? alleKontinente : st.alle;
+  /* Bei „Was ist groesser?" sind die Gegenstaende PAARE und haben
+     keinen Umriss - gezeichnet werden die Laender der Karte, und zwar
+     ALLE Ziele, nicht die eines Lerntiefe-Ausschnitts: die Ebene hat
+     keine Leiter (siehe `vorrat`). */
+  const formen = art==='kontinente' ? alleKontinente
+    : istGroesser ? (D.laender[kont] || []).map(l =>
+        ({ id:l.a3, name:l.name, pfad:l.pfad, anker:l.anker }))
+    : st.alle;
   const vb = vbVon(st.ebeneId);
   // Die Vierfaerbung gilt fuer die deutsche Karte - `D.farben` kennt nur
   // Bundeslaender. Auf der Europakarte gilt derselbe Farbkreis wie bei
@@ -7708,7 +7852,7 @@ function spielschirm(){
    * Frage „Wo liegt Berlin?" haette Berlin angemalt. Kein Tor haette das
    * gemeldet - sie messen Groessen und Zustaende, nicht den Sinn. */
   const flaechen = formen.map((g,i)=>`<path class="geb ${
-      g.id===ziel.id && !umgekehrt ? 'ziel'
+      zielIds.includes(g.id) && !umgekehrt ? 'ziel'
         : gesessen(g.id) ? 'gesessen' : 'ruhig'}" data-id="${g.id}"
       d="${g.pfad}" fill-rule="evenodd" fill="${farbeVon(g,i)}"/>`).join('');
   // Ein Haken auf jedem Gebiet, das schon einmal sass. Farbe allein sagt "anders",
@@ -7717,7 +7861,7 @@ function spielschirm(){
   // Und der Haken auch: fehlte er nur beim gesuchten Gebiet, waere GENAU
   // DAS der Hinweis - unter lauter abgehakten Nachbarn.
   const haken = formen.filter(g=>g.anker && gesessen(g.id)
-      && (umgekehrt || g.id!==ziel.id))
+      && (umgekehrt || !zielIds.includes(g.id)))
     .map(g=>`<g class="haken" data-id="${g.id}" data-x="${g.anker[0]}" data-y="${g.anker[1]}">
         <circle r="13" fill="var(--gut)" stroke="var(--papier)" stroke-width="2.5"/>
         <path d="M-6 0 L-2 4.5 L6.5 -4.5" fill="none" stroke="var(--papier)"
@@ -7728,18 +7872,38 @@ function spielschirm(){
   // darueber ein pulsierender. Ohne das ist bei sieben Pastellflaechen nicht
   // zu erkennen, welche gemeint ist.
   const zielForm = formen.find(g=>g.id===ziel.id) || ziel;
+  /* Was hervorgehoben wird. Bei allen Ebenen ausser „Was ist groesser?"
+     ist das genau ein Umriss - dann steht hier dieselbe Liste wie
+     bisher, nur als Liste. */
+  const zielFormen = istGroesser
+    ? zielIds.map(id => formen.find(g => g.id === id)).filter(Boolean)
+    : [zielForm];
   // Der Zeiger wird in BILDSCHIRMPUNKTEN gezeichnet, nicht in
   // Kartenkoordinaten: sonst schrumpft er mit dem Massstab und ist auf
   // Thueringen nur noch ein blauer Fleck.
   // Und kein Zeiger: er sagt, WO das gesuchte Gebiet liegt - im Test ist
   // genau das die Frage.
-  const zeiger = zielForm.anker && !st.test
-    ? `<g class="zeiger" data-x="${zielForm.anker[0]}" data-y="${zielForm.anker[1]}">
+  /* BEIDE bekommen einen Zeiger (I22), nicht nur einer.
+     Fiona liest nicht: fuer sie ist der Zeiger das Wort „diese hier".
+     Einer allein waere die Antwort. */
+  const zeigerFuer = (f) => f.anker && !st.test
+    ? `<g class="zeiger" data-id="${f.id}" data-x="${f.anker[0]}" data-y="${f.anker[1]}">
          <path d="M0 -2 L-9 -17 L9 -17 Z" fill="var(--akzent)"/>
          <circle cy="-26" r="11" fill="var(--akzent)" stroke="white" stroke-width="2.5"/>
          <path d="M0 -32 L0 -21 M0 -18.5 L0 -18.4" stroke="white" stroke-width="2.6"
                stroke-linecap="round" fill="none"/>
        </g>` : '';
+  const zeiger = zielFormen.map(zeigerFuer).join('');
+  /* Der dicke Rand und der pulsierende darueber - je Gebiet, das zur
+     Frage gehoert. Sie standen hier einzeln im Markup; als Liste sind
+     es zwei Zeilen weniger und ein Sonderfall statt keinem. */
+  const markierung = zielFormen.map(f => `
+          <path class="zielrand" d="${f.pfad}" fill="none" fill-rule="evenodd"
+                stroke="var(--tinte)" stroke-width="3.5" stroke-linejoin="round"
+                vector-effect="non-scaling-stroke"/>
+          <path class="zielpuls" d="${f.pfad}" fill="none" fill-rule="evenodd"
+                stroke="var(--akzent)" stroke-width="3" stroke-linejoin="round"
+                vector-effect="non-scaling-stroke"/>`).join('');
   // Ebene 4 fragt nach der Hauptstadt, nicht nach der Schreibweise. Eine Stadt
   // zu tippen, die man noch nie gesehen hat, prueft das Buchstabieren - nicht
   // das Wissen, um das es hier geht. Deshalb ist diese Ebene fuer BEIDE
@@ -7791,6 +7955,7 @@ function spielschirm(){
           { klasse:'frageflagge', titel:'Flagge' })}`
     : umgekehrt ? `Wo liegt ${ziel.name}?`
     : istNachbar ? `Welches Bundesland grenzt an ${ziel.name}?`
+    : istGroesser ? 'Welches Land ist größer?'
     : istHaupt ? `Wie heißt die Hauptstadt ${ziel.wovon || `von ${ziel.gebiet}`}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
     : art==='laender' ? 'Wie heißt dieses Land?' : 'Wie heißt dieses Bundesland?';
@@ -7841,13 +8006,7 @@ function spielschirm(){
           <path id="belohn" d="" fill="var(--wasch)" clip-path="url(#wasch)" style="display:none"/>
           <g fill="none" stroke="var(--tinte)" stroke-opacity=".5" stroke-width="1.1"
              vector-effect="non-scaling-stroke">${konturen}</g>
-          ${umgekehrt ? '' : `
-          <path class="zielrand" d="${zielForm.pfad}" fill="none" fill-rule="evenodd"
-                stroke="var(--tinte)" stroke-width="3.5" stroke-linejoin="round"
-                vector-effect="non-scaling-stroke"/>
-          <path class="zielpuls" d="${zielForm.pfad}" fill="none" fill-rule="evenodd"
-                stroke="var(--akzent)" stroke-width="3" stroke-linejoin="round"
-                vector-effect="non-scaling-stroke"/>
+          ${umgekehrt ? '' : `${markierung}
           ${zeiger}`}
           <path id="kontur" d="" fill="none" stroke="var(--tinte)" stroke-width="2.4"
                 vector-effect="non-scaling-stroke" stroke-linejoin="round" style="display:none"/>
@@ -7996,9 +8155,10 @@ function spielschirm(){
     // und Brandenburg war an seiner besten Stelle nicht mehr zu treffen.
     // "Das kleinere gewinnt" heisst nicht "das kleinere sperrt aus".
     // Der Zeiger hilft bei kleinen Gebieten und stoert bei grossen.
-    const zg = s.querySelector('.zeiger');
-    if (zg) {
-      const zp = s.querySelector(`path.geb[data-id="${ziel.id}"]`);
+    /* ZWEI Zeiger sind moeglich (I22) - `querySelector` nahm den ersten
+       und liess den zweiten in Kartengroesse stehen, also winzig. */
+    for (const zg of s.querySelectorAll('.zeiger')) {
+      const zp = s.querySelector(`path.geb[data-id="${zg.dataset.id || zielIds[0]}"]`);
       const zb = zp ? zp.getBBox() : {width:0,height:0};
       const gross = Math.max(zb.width, zb.height) * k;
       zg.style.display = gross < 190 ? '' : 'none';
@@ -8111,7 +8271,7 @@ function spielschirm(){
        * NUR wenn das Ziel ohnehin markiert ist. Bei der umgekehrten Frage
        * („Wo liegt Guatemala?") ist die Karte die Antwort - ein leuchtender
        * Faden waere sie auch. Dieselbe Bedingung wie beim Zielrand. */
-      const wegweiser = !umgekehrt && n.x.id === ziel.id ? ' nadelziel' : '';
+      const wegweiser = !umgekehrt && zielIds.includes(n.x.id) ? ' nadelziel' : '';
       return amOrt + `
         <line class="nadelfaden${wegweiser}" x1="${n.x.anker[0]}" y1="${n.x.anker[1]}"
               x2="${nadel.x}" y2="${nadel.y}"/>
@@ -8444,6 +8604,21 @@ function spielschirm(){
    * oben" waere dort falscher als nichts - es schickte ihn weg von der
    * Stelle, an der er fast richtig lag. Dann sagt der Satz genau das.
    */
+  /* Der Hinweis bei „Was ist groesser?" (I22).
+   *
+   * `zugHinweis` taugt hier nicht: er nennt eine RICHTUNG zum gesuchten
+   * Gebiet, und die gibt es nicht - beide stehen ja markiert da. Wer das
+   * kleinere getippt hat, hat die Frage verstanden und sich vertan; wer
+   * daneben getippt hat, hat sie nicht verstanden. Zwei verschiedene
+   * Lagen, zwei verschiedene Saetze. */
+  function groesserHinweis(ctx){
+    if (ctx.getroffen === ziel.klein)
+      return `Das ist ${ziel.kleinName}. Das andere Land ist größer.`;
+    const wo = NAMEN[ctx.getroffen];
+    return (wo ? `Das ist ${wo}. ` : '')
+      + `Es geht um ${ziel.name} und ${ziel.kleinName}.`;
+  }
+
   function zugHinweis(roh, ctx){
     const wo = NAMEN[ctx.getroffen];
     const fremd = wo && ctx.getroffen !== ziel.id;
@@ -8517,9 +8692,12 @@ function spielschirm(){
          der das gefragte Land beruehrt. Die Liste steht am Gebiet und
          kommt aus derselben Tafel wie die Vierfaerbung; hier steht keine
          zweite. */
-      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)
+      /* Und bei „Was ist groesser?" ist genau EINES der beiden
+         markierten Laender richtig (I22). */
+      if (istGroesser ? ctx.getroffen===ziel.gross
+        : istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)
                      : ctx.getroffen===ziel.id) ergebnis='richtig';
-      else text = zugHinweis('', ctx);
+      else text = istGroesser ? groesserHinweis(ctx) : zugHinweis('', ctx);
     } else if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
       else text = zugHinweis(roh, ctx);
@@ -8560,11 +8738,16 @@ function spielschirm(){
          gefunden; „Das ist Bayern" waere die Antwort auf eine Frage, die
          niemand gestellt hat. Der Leitner-Stand bleibt am gefragten Land:
          geuebt wird „Bayerns Nachbarn", nicht „Hessen". */
-      const gelobt = istNachbar && ctx.getroffen
+      /* Und bei „Was ist groesser?" ist es das groessere Land - der
+         Aufkleber gehoert auf die Flaeche, die die Antwort war (I22). */
+      const gelobt = istGroesser
+        ? (zielFormen.find(f => f.id === ziel.gross) || ziel)
+        : istNachbar && ctx.getroffen
         ? (st.alle.find(x => x.id === ctx.getroffen) || ziel) : ziel;
       belohnung(s, gelobt, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
                 neuerAufkleber,
-                istNachbar && gelobt !== ziel
+                istGroesser ? groesserSatz(ziel)
+                : istNachbar && gelobt !== ziel
                   ? `${gelobt.name} grenzt an ${ziel.name}.` : null);
       /* Und Fiona HOERT den Satz - sie liest nicht (D3).
          Derselbe Vorrang wie auf dem Bildschirm: wo die umgekehrte Frage
@@ -8572,7 +8755,11 @@ function spielschirm(){
          ZULETZT, nach dem Aufkleber: das Lob gehoert dem Kind, der Satz
          dem Gebiet. */
       const mitnehmen = ergebnis === 'richtig' && !nebenbei ? Saetze.satzZu(ziel.id) : null;
+      /* „Das ist Spanien" waere hier keine Antwort auf die Frage - sie
+         hiess ja nicht, wie das Land heisst (I22). Gesagt wird, was
+         herausgekommen ist, und um wieviel. */
       sagen(ergebnis==='fast' ? text
+        : istGroesser ? `${spruch} ${groesserSatz(ziel)}` + kleberSatz(neuerAufkleber)
         : `${spruch} Das ist ${ziel.name}.` + kleberSatz(neuerAufkleber)
           + (mitnehmen ? ` ${mitnehmen}` : ''));
     } else if (st.test) {

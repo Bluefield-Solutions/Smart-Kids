@@ -2494,16 +2494,16 @@ export const PROBEN = [
    * Verrat. */
   { n:'der Wegweiser bleibt aus', tor:'smoke', args:['--nur=umgekehrt'],
     bauen:true, datei:D,
-    such:"      const wegweiser = !umgekehrt && n.x.id === ziel.id ? ' nadelziel' : '';",
+    such:"      const wegweiser = !umgekehrt && zielIds.includes(n.x.id) ? ' nadelziel' : '';",
     ersatz:"      const wegweiser = '';",
     an:{ ...DIST, text:"const wegweiser = '';" },
     sagt:'ohne hervorgehobenen Faden' },
 
   { n:'der Wegweiser leuchtet auch bei der umgekehrten Frage', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"      const wegweiser = !umgekehrt && n.x.id === ziel.id ? ' nadelziel' : '';",
-    ersatz:"      const wegweiser = n.x.id === ziel.id ? ' nadelziel' : '';",
-    an:{ ...DIST, text:"const wegweiser = n.x.id === ziel.id" },
+    such:"      const wegweiser = !umgekehrt && zielIds.includes(n.x.id) ? ' nadelziel' : '';",
+    ersatz:"      const wegweiser = zielIds.includes(n.x.id) ? ' nadelziel' : '';",
+    an:{ ...DIST, text:"const wegweiser = zielIds.includes(n.x.id)" },
     sagt:'das ist die Antwort' },
 
   /* Und die VORAUSSETZUNG des Abschnitts (A6).
@@ -4791,9 +4791,13 @@ export const PROBEN = [
      * dem falschen Grund, und die Probe beweist nichts (Regel 1). Gilt
      * fuer jede Probe, die eine Datei aendert, an der `inhalt` selbst
      * haengt. */
-    such:'titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })),',
-    ersatz:'titel: KONT_TITEL[k] || k, farbe: [3,2,4,7,6][0] })),'
-      + ' /* titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })), */',
+    /* Der Suchtext ist mit I22 gewandert: die Laenderebenen heissen jetzt
+       `titel:'Länder'` und tragen den Ort in `ueber`. Der Eingriff bleibt
+       derselbe - die Kachel bekommt einen Ton, der nicht der Kartenton
+       ist. */
+    such:"    titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })),",
+    ersatz:"    titel:'Länder', farbe: [3,2,4,7,6][0], gruppe:'laender', wo: KONT_TITEL[k] || k })),"
+      + " /* titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })), */",
     an:{ datei:'prototyp/spiel.js', text:'farbe: [3,2,4,7,6][0]' },
     sagt:'nimmt wieder einen eigenen Ton' },
 
@@ -4824,7 +4828,8 @@ export const PROBEN = [
   // 1. Es gibt sie nicht mehr - jede Aufgabe fragt wieder nach dem Namen.
   { n:'die umgekehrte Frage kommt nicht mehr vor', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"    || (kannLesen && !istHaupt && !istNachbar && st.i % 3 === 2 && tippbar(ziel.id));",
+    such:"    || (kannLesen && !istHaupt && !istNachbar && !istGroesser\n"
+      + "        && st.i % 3 === 2 && tippbar(ziel.id));",
     /* NUR der zweite Summand faellt weg, nicht die ganze Zeile: seit F4
        steht darueber `const umgekehrt = aufKarte`, und ein Ersatz, der
        die Deklaration mitbringt, erzeugte eine zweite davon - die App
@@ -4839,17 +4844,18 @@ export const PROBEN = [
   //    „Wo liegt Berlin?" selbst.
   { n:'die umgekehrte Frage verrät ihre Antwort', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"      g.id===ziel.id && !umgekehrt ? 'ziel'",
-    ersatz:"      g.id===ziel.id ? 'ziel'",
-    an:{ ...DIST, fehlt:"g.id===ziel.id && !umgekehrt ? 'ziel'" },
+    such:"      zielIds.includes(g.id) && !umgekehrt ? 'ziel'",
+    ersatz:"      zielIds.includes(g.id) ? 'ziel'",
+    an:{ ...DIST, fehlt:"zielIds.includes(g.id) && !umgekehrt ? 'ziel'" },
     sagt:'beantwortet sich selbst' },
 
   // 3. Der Tipp auf das richtige Gebiet wird nicht mehr gewertet.
   { n:'der Tipp auf die Karte wird nicht mehr gewertet', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)\n"
+    such:"      if (istGroesser ? ctx.getroffen===ziel.gross\n"
+      + "        : istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)\n"
       + "                     : ctx.getroffen===ziel.id) ergebnis='richtig';\n"
-      + "      else text = zugHinweis('', ctx);",
+      + "      else text = istGroesser ? groesserHinweis(ctx) : zugHinweis('', ctx);",
     ersatz:"      text = zugHinweis('', ctx);",
     an:{ ...DIST, fehlt:"ctx.getroffen===ziel.id) ergebnis='richtig';" },
     sagt:'nicht gewertet' },
@@ -4870,9 +4876,9 @@ export const PROBEN = [
 
   { n:'im Test steht wieder der Zeiger auf der Karte', tor:'smoke',
     args:['--nur=test'], bauen:true, datei:D,
-    such:'  const zeiger = zielForm.anker && !st.test',
-    ersatz:'  const zeiger = zielForm.anker',
-    an:{ ...DIST, fehlt:'zielForm.anker && !st.test' },
+    such:'  const zeigerFuer = (f) => f.anker && !st.test',
+    ersatz:'  const zeigerFuer = (f) => f.anker',
+    an:{ ...DIST, fehlt:'f.anker && !st.test' },
     sagt:'Zeiger auf der Karte' },
 
   { n:'im Test gibt es wieder eine Auswahl', tor:'smoke',
@@ -7505,22 +7511,83 @@ export const PROBEN = [
    * Das Tor blieb gruen, zu Recht, und die Probe sagte nichts. */
   { n:'ein Nachbar wird nicht mehr als richtig gewertet', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)\n"
+    such:"      if (istGroesser ? ctx.getroffen===ziel.gross\n"
+      + "        : istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)\n"
       + "                     : ctx.getroffen===ziel.id) ergebnis='richtig';",
     ersatz:"      if (ctx.getroffen===ziel.id) ergebnis='richtig';",
     an:{ ...DIST, fehlt:'ziel.grenzt || []).includes(ctx.getroffen)' },
     sagt:'nachbarn' },
 
-  /* 3. Die neue Kachel bekommt ihre eigene Kachel zurueck.
+  /* 3. Die Wand bleibt bei zwoelf Kacheln.
    *
-   * Sie teilt sich seit I21 eine mit „Bundesländer", und das ist keine
-   * Ordnungsfrage: die Erdkunde-Wand traegt zwoelf Kacheln, mit der
-   * dreizehnten fallen die Bilder auf dem kleinsten Geraet von 73 auf
-   * 19 Punkte. Genau das stellt der Eingriff wieder her. */
-  { n:'die dreizehnte Kachel drueckt die Bilder aus der Wand', tor:'passt',
+   * Der Eingriff hiess bis I22 „die dreizehnte Kachel", und er nahm
+   * `nachbarn` die Gruppe weg. Seit I22 beweist das nichts mehr: mit
+   * der Ländergruppe stehen nur noch sechs Kacheln in der Wand, und
+   * sieben tun keinem weh. Die Stelle, an der die Zahl heute kippt, ist
+   * die Ländergruppe selbst - ohne sie stehen wieder dreizehn da, und
+   * die Bilder fallen auf dem kleinsten Geraet von 73 auf 19 Punkte.
+   *
+   * Dieselbe Aussage, dieselbe Grenze, andere Schraube. Eine Probe, die
+   * ihren Gegenstand verliert, meldet nichts mehr - `anker` haette es
+   * gemeldet, weil der Suchtext blieb, aber die WIRKUNG war weg. */
+  { n:'ohne die Laendergruppe stehen dreizehn Kacheln in der Wand', tor:'passt',
     args:['--teil=1/5'], bauen:true, datei:D,
-    such:"    art:'nachbarn', gruppe:'bundeslaender', wo:'Wer grenzt an wen?' },",
-    ersatz:"    art:'nachbarn' },",
-    an:{ ...DIST, fehlt:"wo:'Wer grenzt an wen?'" },
+    such:"    titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })),",
+    ersatz:"    titel:'Länder', farbe: KONT_FARBE[k] })),",
+    an:{ ...DIST, fehlt:"gruppe:'laender'" },
     sagt:'Bild pt steht auf' },
+
+  /* --- I22: „Was ist groesser?" ---------------------------------------
+   *
+   * Drei Proben, und jede haengt an einer anderen der drei Bedingungen,
+   * aus denen ein Paar entsteht. Sie sind NICHT austauschbar: gemessen
+   * faellt bei zweien von ihnen genau eine Zeile des Tors, und bei der
+   * dritten ueberhaupt keine, wenn man sie weglaesst.
+   */
+
+  /* 1. Das Bild darf dem Satz widersprechen.
+   *
+   * Ohne die zweite Haelfte von `gilt` entsteht ein Paar, dessen
+   * Groessenunterschied in der Welt gilt und im BILD nicht - gemessen
+   * die Tuerkei gegen Thailand mit 1,47 statt 1,50. Ein Kind, das
+   * hinsieht, kann diese Aufgabe nicht loesen. */
+  { n:'ein Paar zeigt im Bild in die andere Richtung', tor:'inhalt',
+    bauen:true, datei:E,
+    such:"    gross.km2 / klein.km2 >= GROESSER_FAKTOR && gross.px / klein.px >= GROESSER_FAKTOR;",
+    ersatz:"    gross.km2 / klein.km2 >= GROESSER_FAKTOR;",
+    an:{ datei:'dist/index.html', fehlt:'gross.px / klein.px >= GROESSER_FAKTOR' },
+    sagt:'im BILD ist' },
+
+  /* 2. Ein Land, von dem die Karte ein Fuenftel zeigt, darf mitspielen.
+   *
+   * Der Treue-Filter faellt, und Russland kommt auf die Europakarte
+   * zurueck - mit dem Satz „ungefaehr 27-mal so gross wie Frankreich"
+   * neben einem Umriss, der ein Fuenftel davon zeigt.
+   *
+   * DIESE PROBE IST DER GRUND fuer die ausdrueckliche Treue-Zeile im
+   * Tor. Nachgemessen kommen ohne den Filter zwoelf Paare dazu, und
+   * ALLE erfuellen den Faktor auch im Bild - die drei Zeilen davor
+   * bleiben also gruen. Ohne die vierte waere hier eine Regel, die nie
+   * geprueft wird - eine Pruefung, die nie etwas meldet, ist kein
+   * Beweis (Regel 1). */
+  { n:'ein Land, das die Karte kaum zeigt, darf verglichen werden', tor:'inhalt',
+    bauen:true, datei:E,
+    such:'export const GROESSER_TREUE = 0.86;',
+    ersatz:'export const GROESSER_TREUE = 0;',
+    an:{ datei:'dist/index.html', fehlt:'GROESSER_TREUE = 0.86' },
+    sagt:'wird von der Karte aber nur zu' },
+
+  /* 3. Das kleinere Land gilt als richtig.
+   *
+   * Der Rauchtest spielt `groesser:europa` bei allen vier Profilen und
+   * tippt auf das Land, das das Spiel selbst als Antwort fuehrt. Danach
+   * prueft er, dass es AUCH so gewertet wurde - genau die Zeile, die
+   * bei I21 zweimal gefehlt hat. Dreht man die Antwort um, ist die
+   * Aufgabe nicht mehr zu loesen. */
+  { n:'das kleinere Land wird als richtig gewertet', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:'      if (istGroesser ? ctx.getroffen===ziel.gross',
+    ersatz:'      if (istGroesser ? ctx.getroffen===ziel.klein',
+    an:{ ...DIST, fehlt:'istGroesser ? ctx.getroffen===ziel.gross' },
+    sagt:'nicht als richtig gewertet' },
 ];

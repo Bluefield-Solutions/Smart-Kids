@@ -1184,6 +1184,111 @@ ist das Ohr nur noch zwei Punkte breit — dort ist Platz).
 Damit: **80 von 124 gemalt**, 72 sammelbar, 24 Räume, 24 Kulissen — und die
 Reichweite des knappsten Profils steigt von 42 auf **45**.
 
+---
+
+## I22 · „Was ist größer?" — und der Befund, an dem sie fast gescheitert wäre
+
+**Der Auftrag war Schritt 2**: neue Ebenen statt neuer Aufkleber. Die
+Reichweite des knappsten Profils ist gemessen und begrenzt die Zahl der
+Räume; mehr Räume gibt es nur über mehr Ebenen. Genommen wurde die
+nächste Form aus B3r — *größer/kleiner*, mit dem Vermerk „die Flächen
+stehen in der Geometrie".
+
+**Nachgemessen war dieser Vermerk falsch, und das ist der eigentliche
+Ertrag dieser Runde.** Es gibt zwei Flächen, nicht eine:
+
+| | woher | was sie ist |
+|---|---|---|
+| **`km2`** | `d3.geoArea` auf dem unvereinfachten Natural-Earth-Umriss, mal Erdradius² | die wirkliche Fläche |
+| **`px`** | der gemalte Pfad, den diese App ausliefert | die Fläche im Bild |
+
+Die Projektion ist flächentreu, beide *sollten* proportional sein. Sie
+sind es nicht:
+
+| Land | Karte zeigt | Grund |
+|---|---|---|
+| Russland | **23 %** | die Europamaske schneidet Asien ab |
+| Philippinen | 68 % | die kleinen Inseln fallen beim Vereinfachen weg |
+| Norwegen | 80 % | Schären und Fjorde |
+| Griechenland | 81 % | |
+| Japan | 82 % | |
+| Frankreich | 85 % | ohne die Übersee-Departements |
+| Dänemark | 85 % | |
+
+Ein Kind beantwortet diese Frage, indem es **hinsieht**. „Russland ist
+27-mal so groß wie Frankreich" auf einer Karte, die von Russland ein
+Fünftel zeigt, ist keine Aufgabe, sondern eine Falle — der Satz stimmt,
+und das Bild widerlegt ihn.
+
+**Drei Bedingungen, und jede hält etwas anderes fest.** Ein Paar entsteht
+nur, wenn (1) beide Länder von ihrer Karte zu mindestens 86 % gezeigt
+werden, (2) das eine in Wirklichkeit mindestens anderthalbmal so groß ist
+und (3) im **Bild** ebenfalls.
+
+Die **0,86** ist nicht scharf gestellt: zwischen Dänemark (0,850) und
+Indonesien (0,872) liegt die einzige Lücke im ganzen Feld von 124 Ländern,
+und sie ist nach beiden Seiten 2,2 Punkte breit. Der Wert könnte irgendwo
+darin stehen und sortierte dieselben sieben aus. Die **1,5** dagegen ist
+*gewählt* und steht so im Quelltext: anderthalbmal so groß heißt bei
+gleicher Form 22 % Unterschied in der Breite, und weniger will diese App
+nicht sichtbar nennen.
+
+**Die Paarung ist die engste, die noch gilt** — zu jedem Land das
+nächstgrößere *und* das nächstkleinere, das den Faktor erreicht.
+„Russland oder Luxemburg" lehrt nichts; „Deutschland oder Rumänien"
+(1,50 im Bild, das engste Paar überhaupt) ist die Frage, an der man etwas
+über Europa lernt. Und die zweite Richtung ist kein Schmuck: nach oben
+allein käme Mexiko auf der Nordamerikakarte in **keinem einzigen** Paar
+vor.
+
+**Sechs Karten, nicht acht**, und die Zahl ist abgeleitet: eine Karte
+bekommt die Ebene nur, wenn sie mindestens so viele Paare hat, wie die
+kürzeste Sitzung Aufgaben hat (Fionas sechs). Nordamerika hat drei,
+Australien zwei.
+
+    europa 33 · suedosteuropa 6 · afrika 43 · asien 40 ·
+    mittelamerika 8 · suedamerika 14        = 144 Aufgaben in 6 Ebenen
+
+**Keine Leiter.** Alle anderen Länderebenen zeigen je nach Können die
+fünf, dreizehn oder dreißig größten. Hier stehen von Anfang an alle Paare
+der Karte: zwei Flächen zu vergleichen setzt kein Wissen voraus — dazu
+muss man weder Ungarn kennen noch lesen. Dieselbe Überlegung wie bei den
+Verwechslungspaaren (F3).
+
+**Für alle vier, und für Fiona die zweite Aufgabe ohne ein Wort.** Beide
+Länder sind hervorgehoben, beide tragen einen Zeiger, die Frage wird
+gesprochen, getippt wird auf eine Fläche. Das Lob nennt nicht den Namen
+(„Das ist Spanien" wäre die Antwort auf eine Frage, die niemand gestellt
+hat), sondern das Ergebnis: *„Spanien ist eineinhalbmal so groß wie
+Polen."* Die Stufen des Satzes sind so gelegt, dass jede Aussage stimmt —
+bis 1,75 „eineinhalbmal" (höchstens 17 % daneben), bis 2,25 „doppelt"
+(höchstens 12 %), darüber die gerundete Zahl mit einem ausdrücklichen
+„ungefähr".
+
+**Das Tor `groesser`** rechnet die Paartafel aus dem **gebauten** Bündel
+mit derselben Funktion nach, die sie erzeugt, und prüft dann jedes Paar
+einzeln gegen alle drei Bedingungen. Die dritte Zeile steht ausdrücklich
+noch einmal da, obwohl sie schon im Erzeuger steht — und der Grund ist
+gemessen: nimmt man den Treue-Filter heraus, kommen zwölf Paare dazu
+(Russland voran), und **alle** erfüllen den Faktor auch im Bild. Ein Tor,
+das dabei grün bliebe, bezeugte eine Regel, die es nie geprüft hat —
+eine Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1).
+
+**Zwei neue Räume, sechs neue Bilder** (Schritt 3). „Am Wasserloch"
+(Nashorn · Nilpferd · Zebra) hängt an allen sechs Größenebenen — ein
+Wasserloch ist der eine Ort, an dem die großen Tiere nebeneinander
+stehen, und genau darum geht die Ebene. „Im Blumenbeet" (Tulpe · Rose ·
+Sonnenblume) ist die **neunte Schwelle**, bei 45, und der erste Raum ohne
+ein Lebewesen, das sich bewegt: der Bildplan hält achtzehn Pflanzen, und
+keine einzige war bisher zu holen.
+
+Der Zebrakopf ist beim ersten Anlauf **verschwunden** — weiß auf hellem
+Aufkleber, sichtbar waren nur die Streifen. Es steht jetzt ein Ring in
+Grau dahinter; er ist kein Schmuck, er ist der Umriss.
+
+Damit: **86 von 124 gemalt**, 78 sammelbar, 26 Räume, 26 Kulissen — und
+die Reichweite des knappsten Profils steigt von 45 auf **48**.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

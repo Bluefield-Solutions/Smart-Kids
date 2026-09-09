@@ -895,3 +895,164 @@ export const HAUPTSTADT_ABLENKER_LAND = {
   PNG:['Lae','Mount Hagen'],
   NZL:['Auckland','Christchurch'],
 };
+
+/* ===================================================================== *
+ * WAS IST GROESSER? - die Paare, und warum sie so und nicht anders sind  *
+ * ===================================================================== *
+ *
+ * Die Frage „Welches Land ist groesser - Frankreich oder Spanien?" steht
+ * seit B3r im Rueckstandsverzeichnis mit der Bemerkung „die Flaechen
+ * stehen in der Geometrie". Nachgemessen war das FALSCH, und der Irrtum
+ * ist der ganze Inhalt dieses Blocks.
+ *
+ * ZWEI FLAECHEN, NICHT EINE.
+ *
+ *   `km2`  ist die WIRKLICHE Flaeche - `d3.geoArea` auf dem
+ *          unvereinfachten Umriss von Natural Earth, mal dem
+ *          Erdradius im Quadrat. Nachgeschlagen stimmt sie: Deutschland
+ *          356 379 gegen 357 592 amtlich, Spanien 506 327 gegen 505 990,
+ *          Luxemburg 2 600 gegen 2 586.
+ *   `px`   ist die GEMALTE Flaeche - der Inhalt des Umrisses, den diese
+ *          App wirklich zeichnet, in den Koordinaten der Karte.
+ *
+ * Die Projektion ist flaechentreu (`geoConicEqualArea`), beide sollten
+ * also proportional sein. Gemessen sind sie es NICHT, und zwar deutlich:
+ *
+ *     Russland auf der Europakarte   -77 %   (die Maske schneidet Asien ab)
+ *     Philippinen auf der Asienkarte -32 %   (die kleinen Inseln fallen weg)
+ *     Norwegen                       -21 %   (Schaeren und Fjorde)
+ *     Griechenland                   -19 %
+ *     Japan                          -18 %
+ *     Chile                          -12 %
+ *     Kanada                         -10 %   (die Arktisinseln fallen weg)
+ *
+ * Ein Kind beantwortet diese Frage, indem es HINSIEHT. Eine Aufgabe, die
+ * nach der wirklichen Flaeche fragt und ein Bild zeigt, das etwas anderes
+ * sagt, ist keine Aufgabe, sondern eine Falle - „Russland ist groesser
+ * als Kanada" auf einer Karte, die von Russland ein Fuenftel zeigt.
+ *
+ * DESHALB MUSS EIN PAAR BEIDE PRUEFUNGEN BESTEHEN: in der Wirklichkeit
+ * UND im Bild muss dasselbe Land das groessere sein, und in beidem mit
+ * demselben Abstand. Was uebrig bleibt, ist eine Frage, deren Antwort
+ * wahr ist und die man sehen kann.
+ *
+ * DER FAKTOR IST GEWAEHLT, NICHT GEMESSEN - und das steht hier, weil es
+ * der einzige Punkt ist, an dem dieser Block etwas behauptet. Anderthalb
+ * mal so gross heisst: das kleinere Land passt eineinhalb Mal in das
+ * groessere. Bei gleicher Form sind das 22 % Unterschied in der Breite.
+ * Weniger will diese App nicht sichtbar nennen.
+ *
+ * DIE PAARUNG IST DIE ENGSTE, DIE NOCH GILT. Zu jedem Land das naechste
+ * groessere und das naechste kleinere, das den Faktor erreicht - nicht
+ * das erstbeste. „Russland oder Luxemburg" lehrt nichts; „Frankreich
+ * oder Norwegen" ist die Frage, an der man etwas ueber Europa lernt.
+ * Und die Paarung in BEIDE Richtungen ist kein Schmuck: nach oben allein
+ * kaeme Mexiko auf der Nordamerikakarte in keinem einzigen Paar vor.
+ */
+/* Der Inhalt eines gemalten Umrisses, in den Koordinaten der Karte.
+ *
+ * Gaussche Trapezformel ueber jeden Teilzug. Die Pfade bestehen
+ * ausschliesslich aus `M`, `L` und `Z` - das setzt `svgPfad` in
+ * `tools/geo-backen.mjs` so, und `tor/inhalt.mjs` prueft es nach: eine
+ * Kurve darin wuerde hier still falsch gerechnet.
+ *
+ * Loecher (der Enklaven-Fall) drehen sich andersherum und heben sich
+ * beim Summieren von selbst ab - das ist derselbe `evenodd`-Gedanke, mit
+ * dem die Fläche auch gezeichnet wird. */
+export function pfadFlaeche(d) {
+  let ges = 0;
+  for (const teil of String(d).replace(/Z/g, '').split('M').slice(1)) {
+    if (!teil) continue;
+    const pkt = teil.split('L').map(p => p.split(',').map(Number));
+    let a = 0;
+    for (let i = 0; i < pkt.length; i++) {
+      const [x1, y1] = pkt[i], [x2, y2] = pkt[(i + 1) % pkt.length];
+      a += x1 * y2 - x2 * y1;
+    }
+    ges += a / 2;
+  }
+  return Math.abs(ges);
+}
+
+export const GROESSER_FAKTOR = 1.5;
+
+/* WIEVIEL VON EINEM LAND DIE KARTE ZEIGEN MUSS, damit es hier mitspielt.
+ *
+ * Gemessen an allen 124 Zielen: `px / (km2 * Massstab)`, wobei der
+ * Massstab der Mittelwert der Karte ist (der mittlere Wert, nicht das
+ * Mittel - ein Ausreisser wie Russland zoege ihn sonst mit). Die
+ * Verteilung hat an genau einer Stelle eine Luecke:
+ *
+ *     Russland (Europa)       0,227   die Maske schneidet Asien ab
+ *     Philippinen             0,682   die kleinen Inseln fallen weg
+ *     Norwegen                0,795   Schaeren und Fjorde
+ *     Griechenland            0,814
+ *     Japan                   0,824
+ *     Frankreich              0,848   ohne die Uebersee-Departements
+ *     Daenemark               0,850
+ *     ----------------------- 0,86 ----------------------------------
+ *     Indonesien              0,872
+ *     Chile                   0,881
+ *     Vereinigtes Koenigreich 0,900
+ *     ... 115 weitere bis 1,04
+ *
+ * 0,86 liegt in dieser Luecke, und sie ist mit 2,2 Punkten nach beiden
+ * Seiten die einzige im ganzen Feld - der Wert ist also nicht scharf
+ * gestellt: er koennte zwischen 0,851 und 0,872 stehen und dieselben
+ * sieben Laender aussortieren. Das Tor `inhalt` meldet den knappsten
+ * Traeger und den knappsten Ausgeschlossenen, damit ein Neubacken der
+ * Karten es nicht still verschiebt.
+ *
+ * Die sieben bleiben in JEDER anderen Erdkundeebene. Sie fehlen nur
+ * dort, wo die Aufgabe verlangt, dass man das Bild glauben darf. */
+export const GROESSER_TREUE = 0.86;
+
+/**
+ * Die Paare einer Karte - aus `[{ a3, km2, px }]`, sortiert und stabil.
+ *
+ * Gibt `[[grossA3, kleinA3, mal], ...]` zurueck; `mal` ist das WIRKLICHE
+ * Verhaeltnis auf eine Nachkommastelle, denn das ist die Zahl, die der
+ * Satz danach nennt („ungefaehr viermal so gross").
+ *
+ * DREI BEDINGUNGEN, und jede haelt etwas anderes fest:
+ *   1. beide Laender werden von der Karte treu gezeigt (`GROESSER_TREUE`)
+ *   2. in Wirklichkeit ist das eine mindestens anderthalbmal so gross
+ *   3. im BILD ebenfalls - sonst zeigt die Karte etwas anderes als der Satz
+ *
+ * DIE REIHENFOLGE HAENGT NICHT AM PROFIL. Gepaart wird ueber ALLE Ziele
+ * der Karte, gefiltert wird erst danach (`vorrat`) - sonst hiesse
+ * dasselbe Paar bei Fiona anders als bei Lea, und der Leitner-Stand
+ * ginge bei jedem Tiefensprung verloren.
+ */
+export function groesserPaare(liste) {
+  const da = liste.filter(l => l.km2 > 0 && l.px > 0);
+  if (da.length < 2) return [];
+  const q = da.map(l => l.px / l.km2).sort((a, b) => a - b);
+  const massstab = q[Math.floor(q.length / 2)];
+  const z = da.filter(l => l.px / l.km2 / massstab >= GROESSER_TREUE)
+    .slice().sort((a, b) => b.km2 - a.km2 || (a.a3 < b.a3 ? -1 : 1));
+  const gilt = (gross, klein) =>
+    gross.km2 / klein.km2 >= GROESSER_FAKTOR && gross.px / klein.px >= GROESSER_FAKTOR;
+  const aus = new Map();
+  const merke = (gross, klein) => {
+    const id = `${gross.a3}-${klein.a3}`;
+    if (!aus.has(id)) aus.set(id, [gross.a3, klein.a3,
+      Math.round(gross.km2 / klein.km2 * 10) / 10]);
+  };
+  for (let i = 0; i < z.length; i++) {
+    // nach unten: das naechstkleinere, das noch deutlich kleiner ist
+    for (let j = i + 1; j < z.length; j++) if (gilt(z[i], z[j])) { merke(z[i], z[j]); break; }
+    // nach oben: das naechstgroessere, das noch deutlich groesser ist
+    for (let j = i - 1; j >= 0; j--) if (gilt(z[j], z[i])) { merke(z[j], z[i]); break; }
+  }
+  return [...aus.values()];
+}
+
+/** Die Treue jedes Landes einer Karte - fuer das Tor und fuer den Bericht. */
+export function groesserTreue(liste) {
+  const da = liste.filter(l => l.km2 > 0 && l.px > 0);
+  if (!da.length) return [];
+  const q = da.map(l => l.px / l.km2).sort((a, b) => a - b);
+  const massstab = q[Math.floor(q.length / 2)];
+  return da.map(l => ({ a3: l.a3, treue: l.px / l.km2 / massstab }));
+}
