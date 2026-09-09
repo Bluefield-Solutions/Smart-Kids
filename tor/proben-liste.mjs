@@ -2018,7 +2018,16 @@ export const PROBEN = [
   { n:'der Fingerzeig von `regeln` zeigt auf die falsche Datei', tor:'regeln',
     datei:E,
     such:'export const HAUPTSTADT_LAND = {',
-    ersatz:'// Nur zum Messen: ein Verweis ohne Stichwort (Regel 6).\n'
+    /* DER EINGRIFF STEHT ZERLEGT DA, und das ist kein Schoenheitsfehler:
+       `regeln` liest AUCH `tor/`. Der erste Anlauf schrieb den Verweis
+       als ein Stueck in diese Zeile - und damit stand er in dieser
+       Datei, die Zahl war schon ohne Eingriff 48, und `proben` meldete
+       zu Recht „`regeln` ist schon OHNE Eingriff rot". Dreizehntes Mal
+       dieselbe Falle in diesem Verzeichnis: eine Probe, die ihren
+       eigenen Anker setzt.
+       Gefunden hat es der Fingerzeig, den diese Probe bewacht - er hat
+       auf `tor/proben-liste.mjs` gezeigt statt auf `docs`. */
+    ersatz:'// Nur zum Messen: ein Verweis ohne Stichwort (Reg' + 'el 6).\n'
       + 'export const HAUPTSTADT_LAND = {',
     an:{ datei:E, text:'Nur zum Messen: ein Verweis ohne Stichwort' },
     sagt:'src/inhalt/erdkunde.js' },
