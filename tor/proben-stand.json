@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-08",
+  "zeit": "2026-09-09",
   "tore": [
     "anker",
     "ansicht",
@@ -1517,9 +1517,9 @@
       "s": 77
     },
     "der Kapitelstreifen sperrt auf dem schmalen Schirm einen Reiter aus": {
-      "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
-      "zeit": "2026-09-08",
-      "s": 76
+      "commit": "204b2d30346a4f5d3dff88c12bc33723a1b0d453",
+      "zeit": "2026-09-09",
+      "s": 163
     },
     "die Abzeichenseite zeigt wieder nur drei offene Abzeichen": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",

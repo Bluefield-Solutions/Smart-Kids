@@ -2004,40 +2004,52 @@ export const PROBEN = [
    *
    * Siebzehn Raeume statt fuenfzehn sind auf 390 x 844 sechs Reihen
    * statt fuenf, und das Kapitel brauchte 693 Punkte in 658
-   * verfuegbaren. Das Bild in der Zelle ist deshalb dort 24 Punkte gross
-   * und nicht 34 - dieselbe Zahl wie im kurzen Querformat.
+   * verfuegbaren. Zwei Sachen zusammen machen daraus 561: das kleinere
+   * Bild in der Zelle und das knappere Polster.
    *
-   * Der Eingriff gibt ihm die 34 zurueck. `passt` muss dann melden, dass
-   * das Kapitel ueber den Rand laeuft; ohne diese Probe waere die
-   * Zahl 24 eine Zeile, die niemand mehr erklaeren kann. */
-  { n:'das Bild in der Raumzelle wird auf dem schmalen Schirm wieder gross',
+   * DER EINGRIFF NIMMT BEIDE WEG, und das ist nachgemessen und nicht
+   * vorsichtshalber: nur das Bild ergibt 633, nur das Polster 621, und
+   * der Rand liegt bei 658. Eine Probe, die nur eine der beiden
+   * wegnimmt, bliebe gruen und wuerde nichts beweisen - beim ersten
+   * Anlauf waren es genau zwei solche Proben, und `proben` hat beide mit
+   * „beweist nichts" gemeldet (Regel 1: wer eine Wirkung misst, schaltet
+   * sie zuerst ab - und wenn zwei sie zusammen tragen, dann beide). */
+  { n:'die Raumwand auf dem schmalen Schirm bekommt ihren Platz zurueck',
     tor:'passt', bauen:true, datei:V,
-    such:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}',
+    such:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}\n'
+      + '  .rollen.buch .raumzelle{padding:var(--r0)}',
     ersatz:'  .rollen.buch .raumzelle .raumzeichen{width:34px;height:34px}',
-    an:{ ...DIST, text:'.rollen.buch .raumzelle .raumzeichen{width:34px' },
+    an:{ ...DIST, fehlt:'.rollen.buch .raumzelle{padding:var(--r0)}' },
     sagt:'über den Rand' },
 
-  /* UND DIE ANDERE HAELFTE DERSELBEN STELLE: gleich hohe Zellen (B15).
+  /* UND DIE ANDERE ZUSAGE DERSELBEN STELLE: gleich hohe Zellen (B15).
    *
-   * Vier Spalten statt drei waeren der bequemere Weg gewesen - fuenf
-   * Reihen, 93 Punkte Luft - und er ist falsch: bei 81 Punkten
-   * Zellbreite wird „Bauernhof" dreizeilig, und aus siebzehn gleich
-   * hohen Zellen werden zwei Hoehen. Damit haengt die Hoehe der Wand
-   * wieder an der Schriftrundung, und genau das hat bei B15 neun
-   * Auslieferungen gekostet.
+   * Vier Spalten statt drei gehen, seit das Polster knapper ist. Mit dem
+   * ALTEN Polster gingen sie nicht: 65 Punkte fuer den Text, und
+   * „Bauernhof" braucht 70 - also drei Zeilen bei manchen Namen und
+   * zwei bei anderen. Aus siebzehn gleich hohen Zellen werden zwei
+   * Hoehen (84 und 100), und damit haengt die Hoehe der Wand wieder an
+   * der Schriftrundung. Das ist der Fehler, der bei B15 neun
+   * Auslieferungen gekostet hat.
+   *
+   * Der Eingriff stellt genau diese Kombination her. Er laesst das
+   * Kapitel dabei INNERHALB des Randes (517 von 658) - es meldet also
+   * die ungleichen Hoehen und nicht den Ueberlauf, und das ist die
+   * Zusage, um die es hier geht.
    *
    * Diese Probe ist die, die den Zweig ueberhaupt zum ersten Mal
    * erreicht hat. Er stand seit B15 da und haette mit
    * „ReferenceError: name is not defined" abgebrochen statt zu melden -
    * `name` ist der Parameter von `schau`, und der Block steht daneben.
-   * Eine Pruefung, die im Befundfall abstuerzt, hat nie etwas bewiesen
-   * (Regel 1). Ohne diese Gegenprobe waere die Reparatur selbst wieder
-   * eine Behauptung. */
+   * Eine Pruefung, die im Befundfall abstuerzt, hat nie etwas bewiesen.
+   * Ohne diese Gegenprobe waere die Reparatur selbst wieder eine
+   * Behauptung. */
   { n:'die Raumzellen werden auf dem schmalen Schirm ungleich hoch',
     tor:'passt', bauen:true, datei:V,
-    such:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}',
-    ersatz:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}\n'
-      + '  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(76px,1fr))}',
+    such:'  .rollen.buch .raumzelle{padding:var(--r0)}',
+    ersatz:'  .rollen.buch .raumzelle{padding:var(--r0)}\n'
+      + '  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(76px,1fr))}\n'
+      + '  .rollen.buch .raumzelle{padding:var(--eng)}',
     an:{ ...DIST, text:'minmax(76px,1fr)' },
     sagt:'verschiedene Höhen hoch' },
 
