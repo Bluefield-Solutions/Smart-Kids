@@ -2820,7 +2820,38 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .buehne>*:nth-child(5){animation-delay:calc(var(--d-auftritt) * 4)}
 .buehne>*:nth-child(6){animation-delay:calc(var(--d-auftritt) * 5)}
 .buehne>*:nth-child(n+7){animation-delay:calc(var(--d-auftritt) * 6)}
-@media (prefers-reduced-motion:reduce){.buehne>*{animation:none}}
+/* Der Takt zaehlt ZEILEN, nicht Kaesten (I18).
+ *
+ * Seit die drei Jubelzeilen in `.siegkopf` und die zwei Standzeilen in
+ * `.siegstand` sitzen, sind sie fuer `.buehne>*` je EIN Kind - und traten
+ * gemeinsam auf. Der Rauchtest hat es gemeldet, nicht das Auge: er liest
+ * den Versatz, den der Browser an den Sternen wirklich angelegt hat, und
+ * fand keinen mehr. Genau dafuer ist er da; ein Kasten, den jemand aus
+ * Layoutgruenden einzieht, sieht im Bild aus wie vorher.
+ *
+ * Die Kaesten treten deshalb gar nicht auf, ihre Zeilen dafuer einzeln -
+ * und was danach kommt, ruecht um die verbrauchten Takte nach hinten.
+ * Die Reihenfolge ist damit dieselbe wie vor dem Umbau: Sterne, Figur,
+ * „Geschafft!", die Zahl, „das kannst du sicher", Tagesziel und Serie,
+ * dann der Rest. */
+.buehne>.siegkopf,.buehne>.siegstand{animation:none}
+.buehne>.siegkopf>*,.buehne>.siegstand>*{
+  animation:auftritt var(--d-belohnung) var(--k-standard) both}
+.buehne>.siegkopf>*:nth-child(2){animation-delay:var(--d-auftritt)}
+.buehne>.siegkopf>*:nth-child(3){animation-delay:calc(var(--d-auftritt) * 2)}
+.buehne:has(>.siegkopf)>.unter{animation-delay:calc(var(--d-auftritt) * 3)}
+.buehne:has(>.siegkopf)>.neusicher{animation-delay:calc(var(--d-auftritt) * 4)}
+.buehne>.siegstand>*{animation-delay:calc(var(--d-auftritt) * 5)}
+.buehne:has(>.siegkopf)>.tierneu,
+.buehne:has(>.siegkopf)>.balken,
+.buehne:has(>.siegkopf)>.buchstand,
+.buehne:has(>.siegkopf)>.siegwahl,
+.buehne:has(>.siegkopf)>.reihe{animation-delay:calc(var(--d-auftritt) * 6)}
+/* EINE Stelle, an der der Auftritt ausfaellt - sonst stuende dieselbe
+   Abschaltung zweimal da und wuerde einmal vergessen (Regel 6). */
+@media (prefers-reduced-motion:reduce){
+  .buehne>*,.buehne>.siegkopf>*,.buehne>.siegstand>*{animation:none}
+}
 .frage .richtigText{color:var(--gut)}
 /* Das Lob traegt die Zeile, der Name die Sache. Ein Kind liest das erste
    Wort und weiss Bescheid, bevor es den Satz zu Ende gelesen hat. */

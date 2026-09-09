@@ -975,6 +975,20 @@ mit der Leiste des Telefons: **318 Punkte in 348**, 15 oben und 15 unten.
 Drei stehende Gegenproben: die Schwelle rechnet den fälligen Raum mit, der
 Satz fällt aus, die Regel für die enge Spalte verschwindet.
 
+**Und ein dritter Fund, den der Probenlauf gebracht hat.** Nach dem Commit
+meldeten dreißig Gegenproben dasselbe: „`smoke` ist schon OHNE Eingriff
+rot". Die Ursache war mein eigener Kasten. Seit Sterne, Figur und
+„Geschafft!" in `.siegkopf` sitzen, sind sie für `.buehne > *` **ein** Kind
+— und traten gemeinsam auf. Die Bühne (N10) hatte ihren Takt verloren, und
+zu **sehen** war das nicht: im Bild steht danach dasselbe da. Gemeldet hat
+es der Rauchtest, der den Versatz liest, den der Browser an den Sternen
+wirklich angelegt hat.
+
+Der Takt zählt jetzt **Zeilen statt Kästen**: die Kästen treten gar nicht
+auf, ihre Zeilen einzeln, und was danach kommt, rückt um die verbrauchten
+Takte nach hinten. Die Reihenfolge ist damit dieselbe wie vor dem Umbau —
+nachgemessen: Sterne nach 0 ms, die Zahl nach 270 ms.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die
