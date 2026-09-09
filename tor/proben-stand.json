@@ -2441,6 +2441,11 @@
       "commit": "81948043995cad03752ed9b1ced164ca44e53a90",
       "zeit": "2026-09-09",
       "s": 14
+    },
+    "ein Nachbar wird nicht mehr als richtig gewertet": {
+      "commit": "db7e442fd7fcc90a64d00393d2038a371a84f0ad",
+      "zeit": "2026-09-09",
+      "s": 414
     }
   }
 }
