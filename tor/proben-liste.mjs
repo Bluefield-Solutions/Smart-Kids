@@ -2000,6 +2000,47 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
     sagt:'quer-praeposition' },
 
+  /* --- I15: die Raumwand auf dem schmalen Schirm ---------------------- *
+   *
+   * Siebzehn Raeume statt fuenfzehn sind auf 390 x 844 sechs Reihen
+   * statt fuenf, und das Kapitel brauchte 693 Punkte in 658
+   * verfuegbaren. Das Bild in der Zelle ist deshalb dort 24 Punkte gross
+   * und nicht 34 - dieselbe Zahl wie im kurzen Querformat.
+   *
+   * Der Eingriff gibt ihm die 34 zurueck. `passt` muss dann melden, dass
+   * das Kapitel ueber den Rand laeuft; ohne diese Probe waere die
+   * Zahl 24 eine Zeile, die niemand mehr erklaeren kann. */
+  { n:'das Bild in der Raumzelle wird auf dem schmalen Schirm wieder gross',
+    tor:'passt', bauen:true, datei:V,
+    such:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}',
+    ersatz:'  .rollen.buch .raumzelle .raumzeichen{width:34px;height:34px}',
+    an:{ ...DIST, text:'.rollen.buch .raumzelle .raumzeichen{width:34px' },
+    sagt:'über den Rand' },
+
+  /* UND DIE ANDERE HAELFTE DERSELBEN STELLE: gleich hohe Zellen (B15).
+   *
+   * Vier Spalten statt drei waeren der bequemere Weg gewesen - fuenf
+   * Reihen, 93 Punkte Luft - und er ist falsch: bei 81 Punkten
+   * Zellbreite wird „Bauernhof" dreizeilig, und aus siebzehn gleich
+   * hohen Zellen werden zwei Hoehen. Damit haengt die Hoehe der Wand
+   * wieder an der Schriftrundung, und genau das hat bei B15 neun
+   * Auslieferungen gekostet.
+   *
+   * Diese Probe ist die, die den Zweig ueberhaupt zum ersten Mal
+   * erreicht hat. Er stand seit B15 da und haette mit
+   * „ReferenceError: name is not defined" abgebrochen statt zu melden -
+   * `name` ist der Parameter von `schau`, und der Block steht daneben.
+   * Eine Pruefung, die im Befundfall abstuerzt, hat nie etwas bewiesen
+   * (Regel 1). Ohne diese Gegenprobe waere die Reparatur selbst wieder
+   * eine Behauptung. */
+  { n:'die Raumzellen werden auf dem schmalen Schirm ungleich hoch',
+    tor:'passt', bauen:true, datei:V,
+    such:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}',
+    ersatz:'  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}\n'
+      + '  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(76px,1fr))}',
+    an:{ ...DIST, text:'minmax(76px,1fr)' },
+    sagt:'verschiedene Höhen hoch' },
+
   /* --- I14: der abgeleitete Vorlaufsatz, in beide Richtungen ---------- *
    *
    * Seit es die Ebene „Hauptstädte" auf ZWEI Kontinentkarten gibt, wird

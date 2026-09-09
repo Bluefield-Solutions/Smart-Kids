@@ -809,6 +809,33 @@ Ebenen geben etwas. Die restlichen 65 ungemalten Tiere sind jetzt genau
 das, was sie sein sollten: **der Plan für die nächsten Räume** — und
 nicht 122 KB, die niemand sieht.
 
+**Und zwei Räume mehr sprengen die Raumwand auf dem schmalen Schirm.**
+`passt` hat es gemeldet: auf 390 × 844 stehen siebzehn Räume in sechs
+Reihen statt fünf, und das Kapitel brauchte 693 Punkte in 658
+verfügbaren. Das Bild in der Zelle ist dort jetzt 24 Punkte groß statt
+34 — dieselbe Zahl wie im kurzen Querformat, und aus demselben Grund:
+in der Zelle ist es ein Merkzeichen neben dem Namen, die Tiere selbst
+stehen groß *im* Raum. Dazu weniger Polster: 561 von 658 Punkten, also
+97 Punkte Luft. Sechs Reihen tragen achtzehn Räume; der neunzehnte
+braucht eine siebte, und das steht jetzt im Stylesheet, damit es nicht
+wieder ein roter Lauf sagen muss.
+
+**Vier Spalten wären der bequemere Weg gewesen — und `passt` hat sie
+abgelehnt.** Fünf Reihen, 93 Punkte Luft, und bei 81 Punkten Zellbreite
+wird „Bauernhof" dreizeilig: aus siebzehn gleich hohen Zellen werden
+zwei Höhen (84 und 100), und damit hängt die Höhe der Wand wieder an der
+Schriftrundung. Das ist der Fehler, der bei B15 **neun Auslieferungen**
+gekostet hat.
+
+**Diese Ablehnung hat einen zweiten Fund mitgebracht.** Der Zweig, der
+sie melden sollte, stürzte ab: `ReferenceError: name is not defined` —
+`name` ist der Parameter von `schau`, und der Block steht daneben. Der
+Zweig stand seit B15 da und wurde nie erreicht, weil die Zellen bis
+hierher immer gleich hoch waren. Eine Prüfung, die im Befundfall
+abstürzt, hat nie etwas bewiesen (Regel 1). Beide Stellen tragen jetzt
+eine Gegenprobe — die zweite ist die, die den Zweig überhaupt zum ersten
+Mal erreicht hat.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

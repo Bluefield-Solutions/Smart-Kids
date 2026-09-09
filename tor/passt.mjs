@@ -1451,14 +1451,24 @@ nicht liest, ist die Kachel damit unbeschriftet`);
    * dieselbe Aussage, und sie faellt hier an, wo alle fuenfzehn Raeume
    * wirklich stehen. */
   {
+    /* `name` gab es hier nie: das ist der Parameter von `schau`, und
+       dieser Block steht daneben. Beide Zweige haetten mit
+       „ReferenceError: name is not defined" abgebrochen statt zu
+       melden - eine Pruefung, die im Befundfall abstuerzt, hat nie
+       etwas bewiesen (Regel 1). Aufgefallen ist es erst mit I15, als
+       die siebzehn Raeume die Zellen zum ersten Mal ungleich hoch
+       machten; bis dahin war der Zweig nie erreicht. Der Name des
+       Bildschirms steht ausgeschrieben da - derselbe, mit dem `schau`
+       drei Zeilen darueber aufgerufen wird. */
+    const WO = 'Forscherbuch (Tiere)';
     const h = await p.$$eval('.schirm.da .raumgitter:not([hidden]) .raumzelle',
       z => z.map(x => Math.round(x.getBoundingClientRect().height)));
     const hoehen = [...new Set(h)];
     if (h.length < 10)
-      meldungen.push(`${name}: nur ${h.length} Raumzellen im Raster — dann beweist `
+      meldungen.push(`${WO}: nur ${h.length} Raumzellen im Raster — dann beweist `
         + '„alle gleich hoch" nichts, der volle Tierstand ist nicht angekommen');
     else if (hoehen.length > 1)
-      meldungen.push(`${name}: die ${h.length} Raumzellen sind ${hoehen.length} verschiedene `
+      meldungen.push(`${WO}: die ${h.length} Raumzellen sind ${hoehen.length} verschiedene `
         + `Höhen hoch (${hoehen.sort((a, b) => a - b).join(' · ')}) — dann entscheidet die `
         + 'Schriftrundung, wie hoch die Wand wird, und dieses Tor urteilt auf zwei Rechnern '
         + 'verschieden');

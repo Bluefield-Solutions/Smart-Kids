@@ -4100,6 +4100,34 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    Fuer das Tierkapitel aendert das nichts: fuenfzehn Raeume fuellen die
    Spalten ohnehin. */
 .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}
+@media (max-width:560px){
+  /* SCHMAL UND HOCH: das Bild in der Zelle wird zum Merkzeichen (I15).
+     Gemessen auf 390 x 844 mit vollem Stand: drei Spalten, und mit
+     siebzehn Raeumen sind das sechs Reihen. Mit 34 Punkten Bild braucht
+     das Kapitel 693 Punkte in 658 verfuegbaren - 35 zu viel, gemeldet
+     von `passt`. Mit 24 sind es 633, also 25 Punkte Luft.
+     Es sind dieselben 24 Punkte wie im kurzen Querformat weiter unten,
+     und aus demselben Grund: das Bild ist in der Zelle ein Merkzeichen
+     neben dem Namen, die Tiere selbst stehen gross IM Raum.
+     VIER SPALTEN waeren der andere Weg gewesen - fuenf Reihen statt
+     sechs, 93 Punkte Luft - und `passt` hat sie abgelehnt: bei 81 Punkten
+     Zellbreite bleiben 65 fuer den Text, „Bauernhof" braucht 70, und der
+     Name wird DREIZEILIG. Aus siebzehn gleich hohen Zellen wurden zwei
+     Hoehen (84 und 100), und damit haengt die Hoehe der Wand wieder an
+     der Schriftrundung - genau der Fehler, der bei B15 neun
+     Auslieferungen gekostet hat. Die Zusage „alle Zellen gleich hoch"
+     ist hier mehr wert als die Luft. */
+  .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}
+  /* Und weniger Polster je Zelle: das Raster steht damit 473 Punkte
+     hoch statt 545, das Kapitel braucht 561 von 658, und es sind 97
+     Punkte Luft statt 25. Die Zelle bleibt 72 Punkte hoch und damit
+     weit ueber den 44, die ein Daumen braucht.
+     97 Punkte sind eineinhalb Reihen: sechs Reihen tragen achtzehn
+     Raeume, und der neunzehnte braucht eine siebte - dann ist hier
+     wieder zu messen. Das steht hier, damit es nicht wieder ein
+     roter Lauf sagen muss. */
+  .rollen.buch .raumzelle{padding:var(--r0)}
+}
 /* ZWEI ZEILEN, IMMER - fuer die Raumzellen (B15).
    Der Fehler war nicht, DASS ein Name umbricht, sondern dass die Hoehe
    der ganzen Wand davon abhing, WELCHE umbrechen. Fuenf der fuenfzehn
