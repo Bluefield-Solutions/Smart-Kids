@@ -4044,6 +4044,50 @@ console.log('\n  Tor `englisch`');
       tf.push(`„${r.titel}" gibt seine Tiere ein ZWEITES Mal`);
   }
 
+  /* ---------- Was als NAECHSTES zu holen ist (I18) ----------------------
+   *
+   * Der Endbildschirm einer fertigen Ebene sagte bis I18 nichts: alle
+   * Tiere des Raumes lagen schon im Buch, also fiel der Lohn aus, und
+   * ein Kind, das alles richtig hatte, sah weniger als eines mit einem
+   * Fehler. `naechsteSchwelle` beantwortet die Frage, die statt dessen
+   * dasteht - wieviele Tiere noch fehlen und welcher Ort dann kommt.
+   *
+   * Drei Zeilen, und die dritte ist die, an der die erste Fassung
+   * gescheitert ist: sie rechnete `Math.max(1, ab - habe)` und meldete
+   * „noch ein Tier" fuer einen Raum, dessen Schwelle laengst erreicht
+   * war und der nur auf seine eigenen Tiere wartet. Ein Versprechen,
+   * das beim naechsten Mal nicht eingeloest wird, ist schlimmer als
+   * keines. */
+  {
+    const alle = TI.sammelbar().map(t => t.id);
+    const schwellen = TI.RAEUME.filter(r => r.ab).sort((a, b) => a.ab - b.ab);
+    const erste = schwellen[0];
+    const leer = TI.naechsteSchwelle([]);
+    if (!erste) tf.push('kein Lebensraum hat mehr eine Schwelle — dann ist auf dem '
+      + 'Endbildschirm nichts mehr in Aussicht');
+    else if (!leer || leer.raum.titel !== erste.titel || leer.fehlt !== erste.ab)
+      tf.push(`ohne ein einziges Tier ist „${erste.titel}" nicht in ${erste.ab} Tieren `
+        + `in Aussicht, sondern ${leer ? `„${leer.raum.titel}" in ${leer.fehlt}` : 'nichts'}`);
+    for (const r of schwellen) {
+      const fremd = alle.filter(id => !r.tiere.includes(id));
+      /* Einen unter der Schwelle: dann fehlt genau eines. */
+      const knapp = TI.naechsteSchwelle(fremd.slice(0, r.ab - 1));
+      if (knapp && knapp.raum.titel === r.titel && knapp.fehlt !== 1)
+        tf.push(`einen unter der Schwelle sagt „${r.titel}", es fehlten `
+          + `${knapp.fehlt} Tiere statt einem`);
+      /* Und AUF der Schwelle, ohne die eigenen Tiere: dieser Raum ist
+         faellig, nicht in Aussicht. Wer ihn hier noch nennt, verspricht
+         etwas, das schon offen ist. */
+      const drauf = TI.naechsteSchwelle(fremd.slice(0, r.ab));
+      if (drauf && drauf.raum.titel === r.titel)
+        tf.push(`„${r.titel}" steht bei ${r.ab} Tieren noch in Aussicht, `
+          + 'obwohl seine Schwelle erreicht ist');
+    }
+    if (TI.naechsteSchwelle(alle))
+      tf.push('mit allen Tieren ist noch ein Ort in Aussicht — '
+        + `„${TI.naechsteSchwelle(alle).raum.titel}"`);
+  }
+
   /* JEDE Ebene des Raumes und nicht nur die erste: der Hof hat neun,
      das Riff zwoelf, und eine davon koennte falsch geschrieben sein -
      dann gaebe genau sie nichts, und die acht anderen deckten es zu. */

@@ -524,6 +524,44 @@ export function raumTiere(ebeneId, habe = []) {
   return r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));
 }
 
+/**
+ * Der naechste Raum, den die SAMMLUNG oeffnet - und wieviele Tiere noch
+ * fehlen (I18).
+ *
+ * Gemessen: von Leas vierzig Ebenen zahlen sechsundzwanzig nichts. Neun
+ * Hauptstadtebenen fuehren in EINE Stadt, zehn Flaggenebenen in EINEN
+ * Vogelpark, sieben Englischebenen in EIN Riff - wer die zweite fertig
+ * macht, bekommt nichts und hoert nichts. Der Endbildschirm sagt „Gut
+ * gemacht" und sonst gar nichts, und das ist die Stelle, an der ein Kind
+ * aufhoert zu fragen, wofuer es das tut.
+ *
+ * Der Lohn wird deshalb nicht groesser, sondern SICHTBAR: was es nicht
+ * mehr zu holen gibt, wird zu dem, was als naechstes zu holen ist. Und
+ * das gibt es wirklich - die beiden Raeume mit Schwelle sind der Lohn
+ * fuer das Sammeln selbst.
+ *
+ * `null` heisst: es ist alles geholt. Auch das ist eine Auskunft, und
+ * eine bessere als Schweigen.
+ */
+export function naechsteSchwelle(habe = []) {
+  const da = new Set(habe);
+  for (const r of RAEUME) {
+    if (!r.ab) continue;
+    /* Ein Raum, dessen Tiere schon alle da sind, ist keine Schwelle mehr
+       - auch wenn eine spaetere noch offen ist. Deshalb weiter und nicht
+       abbrechen. */
+    if (r.tiere.every(id => da.has(id))) continue;
+    /* Und ein Raum, dessen Schwelle schon ERREICHT ist, ist auch keine:
+       er ist faellig und wird von `raumAbZahl` vergeben. Der erste
+       Anlauf schrieb hier `Math.max(1, ...)` und sagte damit „noch ein
+       Tier" ueber einen Raum, der laengst zu haben war - eine Zahl, die
+       nicht luegen darf, weil ein Kind sie zaehlt. */
+    if (r.ab <= da.size) continue;
+    return { raum: r, fehlt: r.ab - da.size };
+  }
+  return null;
+}
+
 /** Alles, was ueberhaupt zu sammeln ist: die Tiere der Raeume, gemalt. */
 export const sammelbar = () => {
   const ids = new Set(RAEUME.flatMap(r => r.tiere));

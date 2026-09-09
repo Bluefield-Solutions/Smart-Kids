@@ -3425,7 +3425,60 @@ function tierFuer(st){
     tiereSichern();
     return (st.tiere = { gorilla: Tiere.tierMit(Tiere.GORILLA) });
   }
+  /* DER LOHN, DER NICHTS SAGTE (I18).
+   *
+   * Gemessen: von Leas vierzig Ebenen zahlen sechsundzwanzig nichts.
+   * Neun Hauptstadtebenen fuehren in EINE Stadt, zehn Flaggenebenen in
+   * EINEN Vogelpark, sieben Englischebenen in EIN Riff. Wer die zweite
+   * fertig macht, bekam bis hierher nichts - und hoerte nichts. Der
+   * Bildschirm sagte „Gut gemacht" und schwieg, und das ist die Stelle,
+   * an der ein Kind aufhoert zu fragen, wofuer es das tut.
+   *
+   * Es GIBT etwas zu holen, es steht nur weiter weg: die beiden Raeume
+   * mit Schwelle sind der Lohn fuer das Sammeln selbst. Also sagt der
+   * Bildschirm, wie weit es noch ist - kein neuer Lohn, sondern der
+   * vorhandene, sichtbar gemacht.
+   *
+   * NUR WENN DIE EBENE FERTIG IST. Nach einer Runde mitten in einer
+   * Ebene waere es keine Nachricht, sondern eine Mahnung; und nach einer
+   * Runde mit Fehlern kommt der Gorilla, der steht darueber. Zwei
+   * Nachrichten auf einem Endbildschirm sind fuer ein sechsjaehriges
+   * Kind keine zwei, sondern keine - dieselbe Ueberlegung wie bei T6. */
+  if (f.gesamt && f.gesammelt === f.gesamt) {
+    const weiter = Tiere.naechsteSchwelle(TierStand.ids);
+    const schon = Tiere.raumZu(st.ebeneId);
+    if (schon || weiter) return (st.tiere = { schon, weiter });
+  }
   return (st.tiere = null);
+}
+
+/**
+ * Der Satz, wenn es diesmal nichts zu holen gab (I18).
+ *
+ * EIN Satz und nicht zwei: „Der Vogelpark ist schon offen" allein ist
+ * eine Feststellung ueber die Vergangenheit, „noch vier Tiere" allein
+ * haengt in der Luft. Zusammen sind sie eine Auskunft: das hier ist
+ * geschafft, und das da kommt als naechstes.
+ *
+ * Er steht hier EINMAL und wird zweimal gelesen - vom Bildschirm und von
+ * der Ansage. Zwei Fassungen desselben Satzes waeren die naechste, die
+ * auseinanderlaeuft (Regel 6: was zweimal dasteht, veraltet einmal), und
+ * ausgerechnet fuer Fiona waere die gesprochene die falsche.
+ */
+function weiterSatz(tier){
+  /* „X ist schon offen" und nicht „X hast du schon": die Raumtitel sind
+     Ortsangaben („In der Stadt", „Vor der Haustuer"), und die stehen im
+     Deutschen nicht als Objekt. Dieselbe Wendung wie in der gruenen
+     Zeile darueber - „In der Stadt ist offen: Taube, Ratte und
+     Streifenhoernchen" -, nur mit „schon". */
+  const schon = tier.schon ? `${tier.schon.titel} ist schon offen.` : '';
+  if (!tier.weiter) return `${schon} Du hast alle Tiere!`.trim();
+  const n = tier.weiter.fehlt;
+  /* Und der zweite Halbsatz nennt den naechsten Ort als NAMEN nach einem
+     Doppelpunkt, statt ihn zu beugen: „dann geht In der Tiefsee auf"
+     waere kein Satz. */
+  return `${schon} Noch ${n === 1 ? 'ein Tier' : `${n} Tiere`} — `
+    + `dann kommt ein neuer Ort: ${tier.weiter.raum.titel}.`;
 }
 
 /* Auf der Kachel steht der Name OHNE Artikel, gesprochen wird er MIT.
@@ -8940,6 +8993,16 @@ function endschirm(){
      Ganzes: er will das Ergebnis lesen, nicht ihm zusehen. */
   s.innerHTML=kopf({}) + `
     <div class="mitte${ton().feier ? ' buehne' : ''}">
+      ${/* STERNE, FIGUR UND ZEILE IN EINEM KASTEN (I18).
+           Untereinander sind sie 156 der 364 Punkte, die dieser
+           Bildschirm im vollsten Fall braucht - und auf 844 x 390 stehen
+           378 zur Verfuegung. Der Kasten aendert daran hier nichts; er
+           gibt dem kurzen Querformat die Moeglichkeit, aus drei
+           Bloecken EINE Reihe zu machen (siehe `@media`). Ohne ihn
+           liesse sich das mit Stilblatt allein nicht sagen: drei
+           Geschwister in einer Spalte werden nicht zur Reihe, ohne dass
+           alle anderen es auch werden. */''}
+      <div class="siegkopf">
       ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
         : ton().siegsterne ? `<div class="siegsterne${ton().feier ? ' feier' : ''}"
              >${sterne(n,56)}</div>` : ''}
@@ -8950,6 +9013,7 @@ function endschirm(){
         ton().feier ? `<div class="figurgross">${figur('feiert', 64)}</div>` : ''}
       <div class="gross">${st.test
         ? (bestanden ? 'Test bestanden!' : 'Noch nicht ganz.') : ton().ende}</div>
+      </div>
       <div class="unter">${st.test
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
@@ -8965,6 +9029,11 @@ function endschirm(){
           aufzaehlen(st.neuSicher.slice(0, 3).map(id =>
             (st.alle.find(x => x.id === id) || {}).name || id), 'und')}${
           st.neuSicher.length > 3 ? ' …' : ''}</span></div>` : ''}
+      ${/* Tagesziel und beste Serie stehen in EINEM Kasten (I18) - aus
+           demselben Grund wie der Jubelkopf: zwei kleine Zeilen, die auf
+           dem kurzen Querformat nebeneinander passen und untereinander
+           55 Punkte kosten. */''}
+      <div class="siegstand">
       ${/* DAS TAGESZIEL (N2). Es steht unter dem Ergebnis der Runde, weil
            es vom TAG erzaehlt und nicht von dieser Uebung - und es steht
            nur ausserhalb des Tests: ein Test ist eine Pruefung, kein
@@ -8979,6 +9048,7 @@ function endschirm(){
            von DIESER Runde erzaehlt und das Abzeichen vom Ganzen. */
         st.besteSerie >= SERIE_AB ? `<div class="serieende">${
           serieZeichen(st.besteSerie, false)}<span>${st.besteSerie} am Stück richtig!</span></div>` : ''}
+      </div>
       ${abzNeu ? `<div class="abzneu">${ABZ(abzNeu.zeichen, true, 40)}
         <span>Neues Abzeichen: ${abzNeu.titel}</span></div>` : ''}
       ${/* Die Tiere (T1). Sie stehen UEBER dem Balken und unter dem Satz:
@@ -8987,7 +9057,12 @@ function endschirm(){
           tier.neu.map(t => tierBild(t)).join('')}
         <span>${tier.raum.titel} ist offen: ${aufzaehlen(tier.neu.map(t => t.name), 'und')}!</span></div>`
         : tier && tier.gorilla ? `<div class="tierneu hilft">${tierBild(tier.gorilla)}
-        <span>${tier.gorilla.name} übt mit dir weiter.</span></div>` : ''}
+        <span>${tier.gorilla.name} übt mit dir weiter.</span></div>`
+        : tier && tier.weiter ? `<div class="tierneu noch">${
+            tierBild(Tiere.tierMit(tier.weiter.raum.tiere[0]))}
+        <span>${weiterSatz(tier)}</span></div>`
+        : tier && tier.schon ? `<div class="tierneu noch"><span>${weiterSatz(tier)}</span></div>`
+        : ''}
       ${fortschrittBalken(f, 'breit')}
       ${/* `data-neu` traegt die ZAHL der neuen Aufkleber ins Markup.
            Der Rauchtest hat sie vorher aus dem Satz gelesen - und der
@@ -9046,6 +9121,10 @@ function endschirm(){
     ansagen(`${tier.raum.titel} ist offen! Du bekommst ${aufzaehlen(tier.neu.map(t => t.name), 'und')}.`);
   else if (tier && tier.gorilla)
     ansagen(`${tier.gorilla.name} kommt vorbei und übt mit dir weiter.`);
+  /* Fiona liest nicht - fuer sie IST die Ansage der Satz, und dieser
+     hier ist der einzige, den sie nach einer fertigen Ebene ueberhaupt
+     zu hoeren bekam. */
+  else if (tier && (tier.weiter || tier.schon)) ansagen(weiterSatz(tier));
   ansagen(`Du hast ${st.glatt} von ${st.liste.length} auf Anhieb richtig. `
     + (st.aufkleber ? `${st.aufkleber} neue Aufkleber! `
        : f.gesammelt ? '' : `${ton().ersterKleber} `)

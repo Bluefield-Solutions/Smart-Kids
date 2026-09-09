@@ -535,6 +535,18 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .mitte{flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:center;justify-content:safe center;
   gap:var(--r4);padding:var(--r4);min-height:0}
+/* Der Jubelkopf des Endbildschirms: Sterne, Figur, „Geschafft!" (I18).
+   Auf hohen Schirmen bleibt er, was er war - drei Bloecke untereinander,
+   mit denselben Abstaenden wie zuvor. Der Kasten ist dafuer da, dass das
+   kurze Querformat daraus EINE Reihe machen kann. */
+.siegkopf{display:flex;flex-direction:column;align-items:center;
+  gap:var(--r4);width:100%}
+/* Und dasselbe fuer Tagesziel und beste Serie. Leer ist er nicht im
+   Weg: ohne Kinder gibt es kein Tagesziel und ohne Serie keine Serie,
+   und ein Kasten ohne Inhalt ist 0 hoch (`:empty`). */
+.siegstand{display:flex;flex-direction:column;align-items:center;
+  gap:var(--r4);width:100%}
+.siegkopf:empty,.siegstand:empty{display:none}
 .titel{font-family:var(--f-ui);font-size:var(--s3);font-weight:800;letter-spacing:-.02em;text-align:center}
 .unter{font-family:var(--f-ui);font-size:var(--s0);color:var(--tinte-2);text-align:center;max-width:34ch}
 /* Raster statt umbrechender Reihe. Als Reihe stapelten sich die fuenf
@@ -1345,6 +1357,15 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    ruhigen Ton und nicht im gruenen. Kein Rot: er ist kein Fehler, er ist
    der, der wiederkommt. */
 .tierneu.hilft{background:var(--grund-2);border-color:var(--linie)}
+/* Und die dritte Form (I18): es gab diesmal nichts zu holen, aber es
+   gibt etwas ZU HOLEN. Derselbe ruhige Ton wie beim Gorilla - gruen ist
+   der Kasten, in dem ein Tier WIRKLICH dazugekommen ist, und wer das
+   verwaessert, nimmt dem Gruen seine Aussage.
+   Das Tier darin ist das des naechsten Raumes und deshalb blass: es
+   gehoert dem Kind noch nicht. Dieselbe Sprache wie die leere Raumzelle
+   im Buch, damit „habe ich noch nicht" ueberall gleich aussieht. */
+.tierneu.noch{background:var(--grund-2);border-color:var(--linie)}
+.tierneu.noch .tierbild{opacity:.3;filter:grayscale(1)}
 .tierneu .tierbild{width:44px;flex:none}
 /* Ein Lebensraum ist die Einheit: Ueberschrift und drei Tiere darunter.
    Die Reihe steht fuer sich, damit man sieht, was zusammengehoert. */
@@ -3790,6 +3811,36 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .ziffernbild{font-size:var(--s3)}
   .tippfeld .eingabe{min-height:64px;font-size:var(--s2);min-width:130px}
   .tippfeld .knopf{min-height:64px}
+  /* DER VOLLE ENDBILDSCHIRM AUF 844 x 390 (I18).
+     Gemessen mit dem vollsten Fall, den es gibt: eine fertige Ebene,
+     fehlerfrei durchgespielt, mit Tagesziel, bester Serie, „das kannst
+     du jetzt sicher" und der Zeile, was als naechstes zu holen ist.
+     Zwoelf Bloecke untereinander brauchen 528 Punkte; 378 sind da.
+     Und dieser Zustand war bis I18 von KEINEM Tor fotografiert - der
+     Endbildschirm der Vorbilder kommt aus einer Runde mit sechs
+     Aufgaben, und dort passt er.
+
+     Zwei Kaesten werden hier zu REIHEN. Der Jubelkopf (Sterne, Figur,
+     „Geschafft!") kostet untereinander 184 Punkte und nebeneinander 52;
+     Tagesziel und beste Serie kosten 55 und nebeneinander 26. Das ist
+     kein Verstecken - es steht alles noch da, nur in der Richtung, in
+     der auf diesem Geraet Platz ist. */
+  .siegkopf,.siegstand{flex-direction:row;justify-content:center;
+    gap:var(--r3);flex-wrap:wrap}
+  /* Und die Spalte selbst rueckt zusammen — nur auf DIESEM Bildschirm.
+     Gemessen im Tor, mit der Leiste des Telefons: acht Bloecke brauchen
+     339 Punkte, im sicheren Bereich stehen 348, und der Hauptknopf lag
+     3 Punkte im Wischstreifen. Sieben Abstaende von 12 auf 4 und der
+     Rand oben und unten von 12 auf 8 holen es auf 318 - nachgemessen im
+     Tor, mit 15 Punkten Luft oben wie unten.
+     Der Rand SEITLICH bleibt: dort ist Platz, und ohne ihn
+     klebte die lange Tierzeile am Bildrand.
+     `:has()` statt einer Klasse im Markup: „ist das der Endbildschirm"
+     steht schon im Baum, und eine zweite Auskunft daneben veraltet
+     einmal (Regel 6). */
+  .mitte:has(> .siegkopf){gap:var(--r1);padding:var(--r2) var(--r4)}
+  .siegkopf .figurgross{margin-bottom:0}
+  .siegkopf .figurgross svg{width:48px;height:48px}
   .siegsterne svg{width:40px;height:40px}
   .siegwahl{margin-top:var(--r3)}
   .buchstand{font-size:var(--s-klein)}

@@ -7340,4 +7340,52 @@ export const PROBEN = [
     ersatz:"/*Anker: keine Anmeldung von stimmeEntsperren*/\n",
     an:{ ...DIST, fehlt:"addEventListener(art, stimmeEntsperren" },
     sagt:'nirgends freigegeben' },
+
+  /* --- I18: der Lohn, der nichts sagt, und der volle Endbildschirm ----- *
+   *
+   * Drei Proben, weil drei verschiedene Dinge kaputtgehen koennen: die
+   * Rechnung (welcher Ort kommt als naechstes), der Satz auf dem Schirm,
+   * und der Platz, in dem er stehen muss. */
+
+  /* 1. Die Schwelle rechnet den faelligen Raum mit.
+   *
+   * Die erste Fassung tat genau das: `Math.max(1, ab - habe)` versprach
+   * „noch ein Tier" fuer einen Ort, dessen Schwelle laengst erreicht war
+   * und der nur noch auf seine eigenen Tiere wartet. Beim naechsten Mal
+   * stand dieselbe Zeile wieder da. */
+  { n:'ein Ort steht noch in Aussicht, obwohl seine Schwelle erreicht ist',
+    tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
+    such:'    if (r.ab <= da.size) continue;',
+    ersatz:'    if (r.ab <= da.size - 99) continue;',
+    an:{ datei:'src/inhalt/tiere.js', text:'r.ab <= da.size - 99' },
+    sagt:'obwohl seine Schwelle erreicht ist' },
+
+  /* 2. Der Satz faellt aus.
+   *
+   * Das ist der Zustand VOR I18: eine fertige Ebene, fehlerfrei
+   * gespielt, alle Tiere ihres Raumes schon im Buch - und der
+   * Endbildschirm sagt nichts mehr dazu. Der Eingriff laesst den Kasten
+   * stehen und nimmt nur den Satz heraus; sonst faende die Probe eine
+   * fehlende Zeile statt einer leeren.
+   *
+   * `--teil=1/5`: die Groesse „iPhone quer, Leiste" ist die sechste von
+   * sieben und faellt bei fuenf Teilen auf den zweiten. */
+  { n:'die fertige Ebene sagt nicht mehr, was als naechstes zu holen ist',
+    tor:'passt', args:['--teil=1/5'], bauen:true, datei:D,
+    such:'  const schon = tier.schon ? `${tier.schon.titel} ist schon offen.` : \'\';',
+    ersatz:'  const schon = \'\'; if (tier) return \'\';',
+    an:{ ...DIST, text:"if (tier) return ''" },
+    sagt:'was als nächstes' },
+
+  /* 3. Der Bildschirm laeuft wieder ueber.
+   *
+   * Gemessen, bevor die Regel da war: der Hauptknopf lag 3 Punkte im
+   * Wischstreifen des Telefons. Kein Vorbild zeigt diesen Zustand - die
+   * Runde der Vorbilder hat sechs Aufgaben, und dort passt alles. */
+  { n:'der volle Endbildschirm laeuft wieder in den Streifen des Telefons',
+    tor:'passt', args:['--teil=1/5'], bauen:true, datei:V,
+    such:'  .mitte:has(> .siegkopf){gap:var(--r1);padding:var(--r2) var(--r4)}',
+    ersatz:'  .mitte:has(> .siegkopf){gap:var(--r3);padding:var(--r4)}',
+    an:{ ...DIST, fehlt:'.mitte:has(> .siegkopf){gap:var(--r1)' },
+    sagt:'im Bereich des Telefons' },
 ];

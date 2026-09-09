@@ -911,6 +911,70 @@ hinten hatte** (Malaysia, Sri Lanka, Chile).
   übernimmt sie jetzt anhand des Dateisatzes und sagt, wie viele es
   behalten hat.
 
+### I17 · Der Fingerzeig von `regeln` zeigt auf die Stelle — **gebaut (v578)**
+
+I16 hat eine Viertelstunde gekostet, die keine sein musste. `regeln` meldete
+„eine Regelnummer ohne Stichwort", nannte aber nur die letzte Fundstelle des
+Laufs — und die war eine alte, unveränderte. Ich habe an der falschen Datei
+gesucht, bis mir auffiel, dass die Meldung gar nicht meine Zeile meint.
+
+`regeln` merkt sich jetzt jede unbeschriftete Stelle als **Schlüssel** aus
+Datei, Nummer und Zeilentext und vergleicht beim Scheitern gegen den Stand:
+was NEU dazugekommen ist, steht oben in der Meldung. Findet es keinen
+Zuwachs (weil jemand den Stand mit `--neu` überschrieben hat), fällt es auf
+die alte Auskunft zurück und schreibt **GERATEN** dazu — eine Auskunft, von
+der man nicht weiß, ob sie stimmt, ist schlimmer als keine.
+
+### I18 · Der Lohn, der nichts sagt — und der Endbildschirm, der überläuft — **gebaut (v579)**
+
+Zwei Funde in einem Paket, und der zweite ist der ältere.
+
+**Der Lohn.** Wer eine Ebene *fertig* hatte, sah auf dem Endbildschirm
+weniger als jemand mit einem Fehler: die Tiere des Raumes lagen alle schon
+im Buch, also fiel die grüne Zeile aus, und übrig blieben Sterne und eine
+Zahl. Für ein Kind, das alles richtig hat, ist das die falsche Antwort.
+
+Jetzt steht dort, **was als nächstes zu holen ist**: welcher Ort schon
+offen ist, wie viele Tiere bis zum nächsten fehlen und wie er heißt — „In
+der Stadt ist schon offen. Noch 32 Tiere — dann kommt ein neuer Ort: In der
+Tiefsee." Der Satz steht **einmal** im Quelltext und wird zweimal gelesen,
+vom Bildschirm und von der Ansage; zwei Fassungen wären die nächste, die
+auseinanderläuft (Regel 6).
+
+Gerechnet wird er von `naechsteSchwelle` in `src/inhalt/tiere.js`. Die
+**erste Fassung war falsch** und hat es selbst gezeigt: sie rechnete
+`Math.max(1, ab - habe)` und versprach „noch ein Tier" für einen Ort, dessen
+Schwelle längst erreicht war und der nur auf seine eigenen Tiere wartet.
+Ein Versprechen, das beim nächsten Mal wieder dasteht, ist schlimmer als
+keines. `inhalt` prüft die drei Zeilen jetzt einzeln nach — ohne ein Tier,
+einen unter der Schwelle, auf der Schwelle —, und die mittlere ist die, an
+der die erste Fassung gescheitert wäre.
+
+**Der Überlauf.** Beim Nachrechnen der neuen Zeile fiel auf, dass der
+Endbildschirm im vollsten Fall **schon vorher nicht passte**: eine fertige
+Ebene, fehlerfrei gespielt, mit Tagesziel, bester Serie und „das kannst du
+jetzt sicher" braucht auf 844 × 390 mehr Höhe, als da ist. Und **kein Tor
+hatte diesen Bildschirm je angesehen** — `passt` betrat ihn auf keiner
+einzigen Größe, und die Vorbilder in `ansicht` zeigen eine Runde mit sechs
+Aufgaben, in der alles passt.
+
+Das ist das Loch, und es ist geschlossen: `passt` spielt jetzt Deutschlands
+Hauptstädte einmal komplett durch — die richtige Antwort steht in den
+gebackenen Daten, sie lässt sich aus der Frage **ausrechnen** statt raten —
+und misst den Endbildschirm auf allen sieben Größen. Beim ersten Lauf hat es
+den Fehler gemeldet, den es messen sollte: der Hauptknopf „Noch einmal" lag
+**3 Punkte im Wischstreifen** des Telefons.
+
+Repariert an zwei Stellen. Sterne, Figur und „Geschafft!" stehen im kurzen
+Querformat in **einer Reihe** statt untereinander (184 Punkte auf 52),
+Tagesziel und beste Serie ebenso (55 auf 26) — das ist kein Verstecken,
+es steht alles noch da. Und die Spalte selbst rückt zusammen, aber nur auf
+diesem einen Bildschirm: `.mitte:has(> .siegkopf)`. Nachgemessen im Tor,
+mit der Leiste des Telefons: **318 Punkte in 348**, 15 oben und 15 unten.
+
+Drei stehende Gegenproben: die Schwelle rechnet den fälligen Raum mit, der
+Satz fällt aus, die Regel für die enge Spalte verschwindet.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

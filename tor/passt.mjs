@@ -25,7 +25,7 @@ import { starte, zurEbenenwahl, durchVorlauf, serviere, schriftDa, durchGruppe,
   stelleAblage } from './chromium.mjs';
 import { teilVon, meldeTeil } from './teilen.mjs';
 import { fremdgriff } from './fremdgriff.mjs';
-import { sammelbar } from '../src/inhalt/tiere.js';
+import { sammelbar, RAEUME } from '../src/inhalt/tiere.js';
 /** Alles, was ein Kind ueberhaupt sammeln kann - der teuerste Fall (T2). */
 const ALLE_TIERE = sammelbar().map(t => t.id);
 
@@ -1514,6 +1514,105 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await p.waitForSelector('.schirm.da [data-ebene]');
   await schau('Ebenenwahl (Lea)');
 
+  /* --- DER VOLLE ENDBILDSCHIRM (I18) --------------------------------- *
+   *
+   * Dieses Tor hat den Endbildschirm bis I18 auf KEINER Groesse
+   * angesehen. Gefunden wurde es beim Nachrechnen einer neuen Zeile: der
+   * vollste Fall braucht 520 Punkte, auf 844 x 390 sind 378 da - der
+   * Bildschirm lief seit langem ueber, und die Vorbilder in `ansicht`
+   * zeigen ihn nicht, weil ihre Runde sechs Aufgaben hat und dort alles
+   * passt.
+   *
+   * DER VOLLSTE FALL, und jedes Stueck davon ist noetig:
+   *   - eine FERTIGE Ebene, sonst fehlen „das kannst du jetzt sicher"
+   *     und die Zeile, was als naechstes zu holen ist,
+   *   - FEHLERFREI, sonst kommt der Gorilla statt der Zeile und die
+   *     beste Serie fehlt,
+   *   - mit einem Raum, der SCHON offen ist, sonst steht dort die
+   *     gruene Zeile mit drei Tieren statt der langen,
+   *   - und als Kind, sonst fehlt das Tagesziel.
+   *
+   * Gespielt wird Deutschlands Hauptstaedte: dreizehn Raetsel, acht je
+   * Sitzung, und die richtige Antwort steht in den gebackenen Daten -
+   * sie laesst sich also aus der Frage AUSRECHNEN und muss nicht geraten
+   * werden. */
+  {
+    const stadt = RAEUME.find(r => r.titel === 'In der Stadt').tiere;
+    const voll = await p.evaluate(() => {
+      const D = JSON.parse(document.getElementById('daten').textContent);
+      return Object.fromEntries(D.deutschland.filter(b => !b.stadtstaat)
+        .map(b => [b.id, { fach: 4, faellig: 0 }]));
+    });
+    await stelleAblage(p, { fortschritt: { 'lea:hauptstaedte': voll },
+      einstellungen: { 'tiere:lea': { ids: stadt, gorilla: 0, szenen: {} },
+        alles: { vorlaufGezeigt: { 'fiona:kontinente': true,
+          'fiona:bundeslaender': true, 'lea:hauptstaedte': true } } } });
+    await p.goto(ADRESSE, { waitUntil: 'load' });
+    await p.waitForSelector('[data-profil="lea"]');
+    await tipp('[data-profil="lea"]');
+    await p.waitForSelector('.schirm.da [data-welt]');
+    await tipp('.schirm.da [data-welt="erdkunde"]');
+    await p.waitForSelector('.schirm.da [data-ebene]');
+    const gruppe = await p.$('.schirm.da [data-ebene="hauptstaedte"][data-gruppe]');
+    if (gruppe) { await gruppe.click(); await p.waitForTimeout(300); }
+    await tipp('.schirm.da [data-ebene="hauptstaedte"]:not([data-gruppe])');
+    /* Durchgespielt wird mit der RICHTIGEN Antwort, und gewartet wird auf
+       den Bildschirm, nicht auf die Uhr: zwischen zwei Fragen steht das
+       Lob, und wer da blind alle 300 ms zugreift, verbraucht drei
+       Durchgaenge je Aufgabe und kommt nie an. Acht Fragen hat eine
+       Sitzung; zwoelf Runden lassen Luft, ohne endlos zu warten. */
+    await p.waitForSelector('.schirm.da .frage, .schirm.da #nochmal',
+      { timeout: 15000 });
+    const offen = () => p.waitForFunction(() => {
+      const f = document.querySelector('.schirm.da .frage');
+      return !!document.querySelector('.schirm.da #nochmal')
+        || !!(f && /von (.+)\?/.test(f.innerText));
+    }, null, { timeout: 15000 });
+    for (let i = 0; i < 12; i++) {
+      await offen();
+      if (await p.$('.schirm.da #nochmal')) break;
+      const ziel = await p.evaluate(() => {
+        const f = document.querySelector('.schirm.da .frage');
+        const m = f && f.innerText.match(/von (.+)\?/);
+        if (!m) return null;
+        const D = JSON.parse(document.getElementById('daten').textContent);
+        const land = D.deutschland.find(b => b.name === m[1].trim());
+        return land ? land.hauptstadt : null;
+      });
+      /* Die Antworten sind `div.etikett`, keine Knoepfe - gesucht wird
+         nach dem TEXT, und zwar das innerste Element, das ihn traegt. */
+      const traf = ziel && await p.evaluate((z) => {
+        const el = [...document.querySelectorAll('.schirm.da *')]
+          .filter(e => e.textContent.trim() === z && e.children.length < 3).pop();
+        if (!el) return false;
+        el.click(); return true;
+      }, ziel);
+      if (!traf) { meldungen.push(`Endbildschirm: „${ziel}" war nicht zu treffen`); break; }
+    }
+    if (await p.$('.schirm.da #nochmal')) {
+      /* Und nicht nur MESSEN, sondern nachsehen, ob die Zeile ueberhaupt
+         dasteht. Dieses Tor misst sonst Ueberlauf; hier ist es die
+         einzige Stelle im ganzen Haus, die diesen Bildschirm je erreicht,
+         und eine Messung an einem Bildschirm ohne Inhalt ist gruen und
+         beweist nichts (Regel 1). */
+      const lohn = await p.$eval('.schirm.da .tierneu', e => e.innerText.trim())
+        .catch(() => '');
+      if (!/neuer Ort|alle Tiere/.test(lohn))
+        meldungen.push('Endbildschirm: die fertige Ebene sagt nicht, was als nächstes '
+          + `zu holen ist — dort steht „${lohn.slice(0, 40)}"`);
+      await schau('Endbildschirm');
+    }
+    else meldungen.push('Endbildschirm: nach 30 Antworten kein Ende erreicht — '
+      + 'der vollste Bildschirm dieser App bleibt ungemessen');
+    /* Und zurueck auf den Stand, auf dem der naechste Abschnitt aufsetzt:
+       Lea in der Weltenwahl. Vom Endbildschirm fuehrt kein `#zur` dorthin -
+       seine Knoepfe heissen „nochmal" und „weiter". Also neu laden. */
+    await p.goto(ADRESSE, { waitUntil: 'load' });
+    await p.waitForSelector('[data-profil="lea"]');
+    await tipp('[data-profil="lea"]');
+    await p.waitForSelector('.schirm.da [data-welt]');
+  }
+
   /* Und „Leg das Wort" (E8) - Leas Ebene allein.
    *
    * Drei Reihen uebereinander, und die unterste ist die laengste: bei
@@ -1522,11 +1621,8 @@ nicht liest, ist die Kachel damit unbeschriftet`);
    * als jede Kachelwand, weil hier nichts umbrechen SOLL. Ohne diesen
    * Gang misst kein Tor sie: `passt` sieht nur, was es betritt.
    *
-   * Erst zurueck in die Weltenwahl: die Zeile darueber laesst uns in
-   * Leas ERDKUNDE-Wand stehen, und `zurEbenenwahl` faengt bei den
-   * Welten an. */
-  await tipp('.schirm.da #zur');
-  await p.waitForSelector('.schirm.da [data-welt]');
+   * Der Abschnitt darueber laesst uns in Leas Weltenwahl stehen, und
+   * genau dort faengt `zurEbenenwahl` an. */
   await zurEbenenwahl(p, 'englisch:legen');
   await ebeneAnsehen('englisch:legen', '.schirm.da #legereihe', 'Wort legen',
     { vorlaufName: 'Vorlauf legen' });

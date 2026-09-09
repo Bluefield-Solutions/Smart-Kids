@@ -656,6 +656,11 @@
       "zeit": "2026-09-08",
       "s": 16
     },
+    "der Fingerzeig von `regeln` zeigt auf die falsche Datei": {
+      "commit": "57e9e24e3f2bd44773dc2a5b238ab81b7e68a8a0",
+      "zeit": "2026-09-09",
+      "s": 5
+    },
     "die Hauptstadt weicht von der gebackenen Lage ab": {
       "commit": "2a7ba052dd4d6a1850db4cde0c62c5f3d8a037c6",
       "zeit": "2026-09-09",
