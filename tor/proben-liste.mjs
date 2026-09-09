@@ -7486,9 +7486,9 @@ export const PROBEN = [
    * weniger, und wer auf Bayern tippt, bekaeme ein Nein. */
   { n:'eine Nachbarschaft gilt nur in eine Richtung', tor:'inhalt',
     deckt:'nachbarn', datei:'prototyp/nachbarn.json',
-    such:'  "DE-BY",\n  "DE-NW",\n  "DE-RP",\n  "DE-BW"',
-    ersatz:'  "DE-NW",\n  "DE-RP",\n  "DE-BW"',
-    an:{ datei:'prototyp/nachbarn.json', fehlt:'  "DE-BY",\n  "DE-NW",' },
+    such:'  "DE-TH",\n  "DE-BY",\n  "DE-BW",',
+    ersatz:'  "DE-TH",\n  "DE-BW",',
+    an:{ datei:'prototyp/nachbarn.json', fehlt:'  "DE-TH",\n  "DE-BY",' },
     sagt:'einseitige Nachbarschaft' },
 
   /* 2. Nur EIN Nachbar zaehlt.
