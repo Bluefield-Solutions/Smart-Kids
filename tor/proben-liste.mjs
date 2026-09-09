@@ -2160,15 +2160,33 @@ export const PROBEN = [
    * abgeschaltet (Q39). */
   { n:'Suedosteuropa erbt den Nachsatz, den nur Europa hat', tor:'ansicht',
     args:['--nur=quer-hauptstaedte-so'], bauen:true, datei:D,
-    such:'liste.some(l => l.falle)', ersatz:'true',
-    an:{ ...DIST, fehlt:'liste.some(l => l.falle)' },
+    such:'liste.filter(l => l.hauptstadt && l.falle && l.regierungssitz)',
+    ersatz:"liste.filter(l => l.hauptstadt).slice(0, 1)"
+      + ".map(l => ({ ...l, regierungssitz: 'Anderswo' }))",
+    an:{ ...DIST, fehlt:'l.falle && l.regierungssitz' },
     sagt:'quer-hauptstaedte-so' },
 
   { n:'Europa verliert den Nachsatz ueber den Regierungssitz', tor:'ansicht',
     args:['--nur=quer-hauptstaedte-eu-vorlauf'], bauen:true, datei:D,
-    such:'liste.some(l => l.falle)', ersatz:'false',
-    an:{ ...DIST, fehlt:'liste.some(l => l.falle)' },
+    such:'liste.filter(l => l.hauptstadt && l.falle && l.regierungssitz)',
+    ersatz:'[]',
+    an:{ ...DIST, fehlt:'l.falle && l.regierungssitz' },
     sagt:'quer-hauptstaedte-eu-vorlauf' },
+
+  /* --- I19: und die Karte mit ZWEIEN ---------------------------------- *
+   *
+   * Der Fehler, den I19 behoben hat, war nicht, dass der Satz fehlte -
+   * er stand da und sagte „Ein Land hier ist besonders", auf acht Karten,
+   * und war auf dreien falsch. Ein Eingriff, der den Satz WEGNIMMT,
+   * beweist das nicht; er muss die ZAHL verfaelschen. Hier faellt das
+   * zweite Land aus der Liste, und die Aufnahme muss es merken. */
+  { n:'die Karte mit zwei Besonderheiten nennt nur eine', tor:'ansicht',
+    args:['--nur=quer-hauptstaedte-as-vorlauf'], bauen:true, datei:D,
+    such:'const besonders = liste.filter(l => l.hauptstadt && l.falle && l.regierungssitz);',
+    ersatz:'const besonders = liste.filter(l => l.hauptstadt && l.falle && l.regierungssitz)'
+      + '.slice(0, 1);',
+    an:{ ...DIST, text:'l.regierungssitz).slice(0, 1)' },
+    sagt:'quer-hauptstaedte-as-vorlauf' },
 
   /* --- I7: der Vorrat als Ratsche ------------------------------------- *
    *

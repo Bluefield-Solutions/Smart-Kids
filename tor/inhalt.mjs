@@ -236,6 +236,18 @@ I.ECHTE_FALLEN.forEach(id => {
   const RATSCHE = { europa:29, suedosteuropa:7, asien:30, afrika:30,
                     nordamerika:3, mittelamerika:9, suedamerika:12,
                     australien:3 };
+  /* Wieviele Länder je Karte einen abweichenden Regierungssitz haben (I19).
+   *
+   * Keine Ratsche, sondern eine GENAUE Zahl - anders als bei den
+   * Hauptstädten zählt hier auch das Wachsen. Seit I19 sagt der
+   * Vorlaufsatz die Zahl und die Namen; kommt einer dazu, ohne dass
+   * jemand hinsieht, stimmt der Satz wieder nicht, und das war der
+   * ganze Fund: „Ein Land hier ist besonders" stand auf acht Karten und
+   * war auf dreien falsch. Ein Fehler, den man nur sieht, wenn man ihn
+   * ZÄHLT - im Bild steht ein plausibler Satz. */
+  const SITZE = { europa:1, suedosteuropa:0, asien:2, afrika:2,
+                  nordamerika:0, mittelamerika:0, suedamerika:2,
+                  australien:0 };
   const KARTEN = Object.entries(KARTEN_GROB)
     .filter(([id]) => (I.LAENDER[id] || []).length)
     .map(([id, gebacken]) => ({ id, wie: KARTEN_NAME[id] || id, gebacken,
@@ -387,6 +399,19 @@ I.ECHTE_FALLEN.forEach(id => {
     if (l.wovon) pruefe(/^vo[nm] /.test(l.wovon),
       `${l.a3}: \`wovon\` ist „${l.wovon}" — die Frage lautet „Wie heißt die Hauptstadt …?"`);
   const sitze = I.LAENDER[karte.id].filter(m => gebackenEU.get(m.a3)?.regierungssitz).length;
+  pruefe(sitze === SITZE[karte.id],
+    `auf der Karte ${karte.wie} haben ${sitze} Länder einen abweichenden `
+    + `Regierungssitz, eingetragen sind ${SITZE[karte.id]} — der Vorlaufsatz `
+    + 'nennt ihre Zahl und ihre Namen, er wäre damit falsch');
+  /* Und jeder von ihnen braucht BEIDE Städte. Der Satz stellt sie
+     einander gegenüber („die Regierung sitzt in X, Hauptstadt ist
+     trotzdem Y"); fehlt eine, stünde dort ein Halbsatz. */
+  for (const m of I.LAENDER[karte.id]) {
+    const l = gebackenEU.get(m.a3);
+    if (l && l.regierungssitz) pruefe(l.hauptstadt && l.hauptstadt !== l.regierungssitz,
+      `${m.a3}: Regierungssitz „${l.regierungssitz}", Hauptstadt „${l.hauptstadt || '—'}" `
+      + '— der Vorlaufsatz stellt beide einander gegenüber und bräuchte zwei');
+  }
   pruefe(ohneHauptstadt >= HAUPTSTAEDTE_EU,
     `auf der Karte ${karte.wie} tragen nur noch ${ohneHauptstadt} Länder eine `
     + `gebackene Hauptstadt, es waren ${HAUPTSTAEDTE_EU} — eine ist aus dem Backen `

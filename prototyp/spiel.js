@@ -703,6 +703,12 @@ function sagen(text){ if (!P || ton().spricht) vorlesen(text); }
    AUFZAEHLUNG mit „und" („Kaenguru, Koala und Schlange"). Der erste
    Anlauf hatte nur „oder" und sagte damit „das Kaenguru, der Koala ODER
    die Schlange" ueber drei Tiere, die man alle drei bekommt. */
+/* Zahlwörter bis fünf, für Sätze, in denen eine Ziffer stören würde
+   („2 Länder hier sind besonders"). Darüber gibt es nichts zu schreiben:
+   der Aufruf fällt auf die Zahl zurück, und mehr als fünf abweichende
+   Regierungssitze auf EINER Karte hätte ohnehin einen anderen Satz
+   verdient. */
+const ZAHLWORT = [null, 'Ein', 'Zwei', 'Drei', 'Vier', 'Fünf'];
 const aufzaehlen = (namen, wort = 'oder') => namen.length < 2 ? (namen[0] || '')
   : namen.slice(0, -1).join(', ') + ` ${wort} ` + namen[namen.length - 1];
 
@@ -4017,14 +4023,38 @@ function vorlaufSatz(ebeneId){
 
      Der Zusatz hängt an `falle`, und `falle` hängt an `regierungssitz`
      aus den gebackenen Daten (Niederlande: Den Haag). Damit sagt der Satz
-     genau das, was in den Daten steht — nicht mehr. */
+     genau das, was in den Daten steht — nicht mehr.
+
+     Seit I19 zählt er sie AUCH und nennt sie beim Namen. „Ein Land hier
+     ist besonders" stand auf allen acht Karten — und war auf dreien
+     falsch: Asien hat zwei (Malaysia, Sri Lanka), Afrika zwei
+     (Elfenbeinküste, Benin), Südamerika zwei (Chile, Bolivien). Genau
+     dieselbe Falle wie in I14, nur eine Ebene weiter: ein Satz, der für
+     die erste Karte geschrieben wurde und den die zweite still zur Lüge
+     macht.
+
+     Und bei EINEM Land steht das Besondere ganz da, mit beiden Städten —
+     bei zweien wäre das ein Absatz statt eines Satzes, und ein Vorlauf,
+     den niemand zu Ende liest, ist keiner. */
   if (art === 'hauptstaedte' && kont) {
     const liste = D.laender[karteVon(ebeneId)] || [];
-    return 'Zur Auswahl stehen echte Städte des Landes — gesucht ist die '
-      + '<strong>Hauptstadt</strong>.'
-      + (liste.some(l => l.falle)
-         ? ' Ein Land hier ist besonders: die Regierung sitzt in einer '
-           + 'anderen Stadt als die Hauptstadt.' : '');
+    const besonders = liste.filter(l => l.hauptstadt && l.falle && l.regierungssitz);
+    const basis = 'Zur Auswahl stehen echte Städte des Landes — gesucht ist die '
+      + '<strong>Hauptstadt</strong>.';
+    if (!besonders.length) return basis;
+    if (besonders.length === 1) {
+      const l = besonders[0];
+      /* Der Ländername steht hinter einem Gedankenstrich und nicht hinter
+         einer Präposition: „in Niederlande" wäre falsch, „in den
+         Niederlanden" bräuchte den Artikel und den Fall je Land. Ein
+         gebeugter Ländername ist eine Auskunft, die in den Daten nicht
+         steht — und was nicht dasteht, wird hier nicht erfunden. */
+      return `${basis} Ein Land hier ist besonders — ${l.name}: die Regierung `
+        + `sitzt in ${l.regierungssitz}, Hauptstadt ist trotzdem ${l.hauptstadt}.`;
+    }
+    return `${basis} ${ZAHLWORT[besonders.length] || besonders.length} Länder hier `
+      + `sind besonders — ${aufzaehlen(besonders.map(l => l.name), 'und')}: dort `
+      + 'sitzt die Regierung in einer anderen Stadt als der Hauptstadt.';
   }
   if (art === 'hauptstaedte')
     return 'Berlin, Hamburg und Bremen fehlen hier: sie sind <strong>Stadtstaaten</strong>, '

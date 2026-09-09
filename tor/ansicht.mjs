@@ -388,6 +388,19 @@ const AUFNAHMEN = [
    * eine Wirkung misst, schaltet sie zuerst ab). */
   { name:'quer-hauptstaedte-eu-vorlauf', spiel:'hauptstaedte:europa', kind:'lea',
     quer:true, wahl:'.schirm.da', tun:'vorlauf' },
+  /* Und die DRITTE Gestalt desselben Satzes (I19): zwei Länder.
+   *
+   * Bis I19 stand auf allen acht Karten „Ein Land hier ist besonders" —
+   * und das war auf dreien falsch. Asien hat zwei (Malaysia, Sri Lanka),
+   * Afrika zwei (Elfenbeinküste, Benin), Südamerika zwei (Chile,
+   * Bolivien). Der Satz nennt sie jetzt beim Namen, und bei einem Land
+   * steht das Besondere ganz da, mit beiden Städten.
+   *
+   * Drei Gestalten, drei Aufnahmen: Südosteuropa hat keine, Europa eine,
+   * Asien zwei. Mit zweien allein wäre die Zählung nicht zu sehen — „ein"
+   * gegen „kein" beweist nur, DASS gezählt wird, nicht wie weit. */
+  { name:'quer-hauptstaedte-as-vorlauf', spiel:'hauptstaedte:asien', kind:'lea',
+    quer:true, wahl:'.schirm.da', tun:'vorlauf' },
   /* Die Gruppenkachel (Q17) — der einzige Bildschirm, den man NUR sieht,
      wenn man zwei Ebenen hat, die sich eine Kachel teilen.
      Er entsteht seit Q17 zwischen Wand und Ebene: „Hauptstädte — wo?",

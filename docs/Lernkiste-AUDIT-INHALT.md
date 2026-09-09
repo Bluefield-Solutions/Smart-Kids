@@ -989,6 +989,52 @@ auf, ihre Zeilen einzeln, und was danach kommt, rückt um die verbrauchten
 Takte nach hinten. Die Reihenfolge ist damit dieselbe wie vor dem Umbau —
 nachgemessen: Sterne nach 0 ms, die Zahl nach 270 ms.
 
+### I19 · „Ein Land hier ist besonders" — auf dreien von acht Karten falsch — **gebaut (v581)**
+
+Der Vorlaufsatz der Hauptstadt-Ebenen wird seit I14 abgeleitet statt
+geschrieben. Er sagte: *„Ein Land hier ist besonders: die Regierung sitzt in
+einer anderen Stadt als die Hauptstadt."* Das hing an `liste.some(l =>
+l.falle)` — an einem **Ob**, nicht an einem **Wieviel**. Und die Zahl stimmt
+auf drei der acht Karten nicht:
+
+| Karte | Länder mit abweichendem Regierungssitz |
+|---|---|
+| Asien | 2 — Malaysia (Putrajaya), Sri Lanka (Sri Jayewardenepura Kotte) |
+| Afrika | 2 — Elfenbeinküste (Abidjan), Benin (Cotonou) |
+| Südamerika | 2 — Chile (Valparaíso), Bolivien (La Paz) |
+| Europa | 1 — Niederlande (Den Haag) |
+| Südosteuropa · Nordamerika · Mittelamerika · Ozeanien | 0 |
+
+Genau dieselbe Falle wie in I14, nur eine Ebene weiter: ein Satz, der für die
+erste Karte geschrieben wurde und den die zweite still zur Lüge macht. Und er
+ist **nicht zu sehen** — im Bild steht ein plausibler deutscher Satz.
+
+Der Satz zählt jetzt und nennt sie beim Namen. Bei **einem** Land steht das
+Besondere ganz da, mit beiden Städten: *„Ein Land hier ist besonders —
+Niederlande: die Regierung sitzt in Den Haag, Hauptstadt ist trotzdem
+Amsterdam."* Bei **zweien** wäre das ein Absatz statt eines Satzes, deshalb
+nur die Namen: *„Zwei Länder hier sind besonders — Malaysia und Sri Lanka:
+dort sitzt die Regierung in einer anderen Stadt als der Hauptstadt."*
+
+Der Ländername steht hinter einem Gedankenstrich und nicht hinter einer
+Präposition. „in Niederlande" wäre falsch, „in den Niederlanden" bräuchte
+Artikel und Fall je Land — eine Auskunft, die in den Daten nicht steht.
+
+**Gemessen wird es an drei Stellen**, weil eine Zählung mit einem Bild nicht
+zu beweisen ist:
+
+- `inhalt` hält die Zahl der abweichenden Regierungssitze **je Karte** fest —
+  als *genaue* Zahl, nicht als Ratsche: hier zählt auch das Wachsen, denn ein
+  Sitz, der dazukommt, macht den Satz genauso falsch wie einer, der wegfällt.
+  Und jeder von ihnen braucht beide Städte, sonst stünde dort ein Halbsatz.
+- Drei Aufnahmen statt zwei: Südosteuropa (keine), Europa (eine), **Asien
+  (zwei, neu)**. Mit zweien allein wäre nur zu sehen, *dass* gezählt wird,
+  nicht wie weit.
+- Drei Gegenproben: der Nachsatz erscheint, wo keiner hingehört; er
+  verschwindet, wo einer hingehört; und die Karte mit zweien nennt nur eine.
+  Die dritte ist die eigentliche I19-Probe — ein Eingriff, der den Satz
+  *wegnimmt*, hätte den Fehler nie gefunden.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die
