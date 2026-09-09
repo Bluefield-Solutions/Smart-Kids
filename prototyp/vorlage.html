@@ -4220,6 +4220,34 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      reichen bis zum achtzehnten Raum. */
   .rollen.buch .raumzelle .raumzeichen{width:24px;height:24px}
   .rollen.buch .raumzelle{padding:var(--r0)}
+  /* UND MIT DREIUNDZWANZIG RAEUMEN VIER SPALTEN (I20).
+     Der Absatz darueber hat es vorausgesagt: „sechs Reihen tragen
+     achtzehn Raeume, und der neunzehnte braucht eine siebte - dann ist
+     hier wieder zu messen." Es sind jetzt 23, und acht Reihen brauchten
+     738 Punkte in 658 - `passt` hat es beim ersten Lauf gemeldet.
+
+     Vier Spalten sind sechs Reihen. Der Preis stand auch schon da: die
+     Zelle wird von 112 auf 87 Punkte schmal, und dann brauchen die
+     laengsten Namen drei Zeilen statt zwei - genau die ungleichen
+     Hoehen, die B15 neun Auslieferungen gekostet haben. Deshalb GEHT
+     die Schrift ein Stueck zurueck: bei 86 Prozent passt „Pokalschrank"
+     in eine Zeile, und die Wand ist wieder eine Konstante.
+
+     Der laengste Titel ist damit die eigentliche Grenze, nicht die
+     Spaltenzahl - und zwar sein laengstes WORT, denn nur dort kann die
+     Zeile nicht brechen. Gemessen an allen 23: bei 87 Punkten Zelle
+     passen Woerter bis elf Zeichen in eine Zeile. Zwei Namen lagen
+     darueber und wurden in derselben Runde umbenannt, weil ein Name,
+     der die Wand ungleich hoch macht, ein Inhaltsfehler ist und kein
+     Layoutfall: „Auf dem Siegertreppchen" heisst „Auf dem Treppchen",
+     „Im Pokalschrank" heisst „Bei den Pokalen". */
+  /* `auto-fit` mit kleinerer Mindestbreite und NICHT `repeat(4,1fr)`.
+     Die feste Spaltenzahl war der erste Anlauf, und der Rauchtest hat
+     sofort gemeldet, was sie kostet: dasselbe Raster traegt auch die
+     Ebenenuebersicht der anderen Kapitel, und „5/20 Erdkunde" hat zwei
+     Zellen. Mit vier festen Spalten standen daneben zwei leere. */
+  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}
+  .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.86)}
 }
 /* ZWEI ZEILEN, IMMER - fuer die Raumzellen (B15).
    Der Fehler war nicht, DASS ein Name umbricht, sondern dass die Hoehe
@@ -4240,6 +4268,27 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    gilt, entscheidet dieselbe Grenze, die auch die Tonleiter umschaltet. */
 @media (max-height:440px){
   .rollen.buch .ebenenzelle .silhouette{height:56px}
+  /* UND DIE RAUMWAND MIT DREIUNDZWANZIG RAEUMEN (I20).
+     Gemessen auf 844 x 390: das Raster ist hier 570 Punkte breit, und
+     mit einer Mindestbreite von 88 sind das SECHS Spalten. Siebzehn
+     Raeume gingen darin in drei Reihen auf, dreiundzwanzig brauchen
+     vier - 175 Punkte in 141. Vier Reihen unterzubringen ginge nur
+     ueber die Zellenhoehe, und die liegt mit 42 Punkten schon unter
+     dem, was ein Daumen braucht; die Zelle ist trotzdem breit genug,
+     `beruehrung` rechnet es nach.
+     Also acht Spalten statt sechs: drei Reihen, 71 Punkte je Zelle,
+     und die Schrift geht dieselben 14 Prozent zurueck wie auf dem
+     schmalen Schirm. Vierundzwanzig Plaetze fuer dreiundzwanzig
+     Raeume - der naechste braucht wieder eine Messung. */
+  /* Auch hier `auto-fit`: acht Spalten entstehen aus der Mindestbreite,
+     und ein Raster mit zwei Zellen faltet die leeren zusammen.
+     70 und nicht 64: bei 64 packt `auto-fit` NEUN Spalten, die Zelle
+     wird 63 Punkte schmal, und dann brauchen zwei Namen drei Zeilen -
+     147 Punkte in 141. Die Mindestbreite ist hier also keine
+     Mindestbreite, sondern die Spaltenzahl, rueckwaerts geschrieben. */
+  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}
+  .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.78)}
+  .rollen.buch .raumzelle .raumzeichen{width:20px;height:20px}
 }
 /* Die Zelle, bei der es weitergeht - dieselbe Sprache wie beim offenen
    Kapitelreiter: sie steht auf ihrer Kante und traegt volle Tinte. Kein

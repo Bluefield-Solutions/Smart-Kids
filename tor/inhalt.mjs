@@ -4056,15 +4056,27 @@ console.log('\n  Tor `englisch`');
      einen weniger gibt sie nichts, und beim zweiten Mal auch nichts. Die
      mittlere Zeile ist die wichtige - ohne sie waere „ab 30" von „ab 1"
      nicht zu unterscheiden. */
+  /* Gerechnet wird mit einem Stand, in dem alle TIEFEREN Schwellen schon
+     geholt sind - sonst prueft die Zeile den falschen Raum.
+     Bis I20 gab es zwei Schwellen, und ein Stand von 42 Tieren ohne die
+     der Tiefsee war eindeutig. Mit acht ist er es nicht mehr: wer 18
+     Tiere hat und den Obstgarten (ab 12) noch nicht abgeholt hat,
+     bekommt den Obstgarten - richtig so, aber es beweist nichts ueber
+     den Fruchtstand. Sieben Meldungen auf einmal, und keine davon war
+     ein Fehler im Spiel. */
   for (const r of TI.RAEUME.filter(x => x.ab)) {
-    const fremd = TI.sammelbar().map(t => t.id).filter(id => !r.tiere.includes(id));
-    const knapp = TI.raumAbZahl(fremd.slice(0, r.ab - 1));
+    const tiefer = TI.RAEUME.filter(x => x.ab && x.ab < r.ab).flatMap(x => x.tiere);
+    const fremd = TI.sammelbar().map(t => t.id)
+      .filter(id => !r.tiere.includes(id) && !tiefer.includes(id));
+    const stand = (n) => [...tiefer, ...fremd.slice(0, n - tiefer.length)];
+    const knapp = TI.raumAbZahl(stand(r.ab - 1));
     if (knapp && knapp.raum.titel === r.titel)
       tf.push(`„${r.titel}" öffnet sich schon bei ${r.ab - 1} Tieren`);
-    const genau = TI.raumAbZahl(fremd.slice(0, r.ab));
+    const genau = TI.raumAbZahl(stand(r.ab));
     if (!genau || genau.raum.titel !== r.titel)
-      tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren nicht`);
-    const zweitesMal = TI.raumAbZahl([...fremd.slice(0, r.ab), ...r.tiere]);
+      tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren nicht`
+        + (genau ? ` — stattdessen „${genau.raum.titel}"` : ''));
+    const zweitesMal = TI.raumAbZahl([...stand(r.ab), ...r.tiere]);
     if (zweitesMal && zweitesMal.raum.titel === r.titel)
       tf.push(`„${r.titel}" gibt seine Tiere ein ZWEITES Mal`);
   }
@@ -4094,16 +4106,25 @@ console.log('\n  Tor `englisch`');
       tf.push(`ohne ein einziges Tier ist „${erste.titel}" nicht in ${erste.ab} Tieren `
         + `in Aussicht, sondern ${leer ? `„${leer.raum.titel}" in ${leer.fehlt}` : 'nichts'}`);
     for (const r of schwellen) {
-      const fremd = alle.filter(id => !r.tiere.includes(id));
+      /* Derselbe Stand wie oben: alle tieferen Schwellen abgeholt, dazu
+         so viele fremde Tiere, dass die Zahl genau stimmt. Ohne das
+         nennt `naechsteSchwelle` immer die unterste offene, und jede
+         Zeile darunter prüfte denselben Raum. */
+      const tiefer = schwellen.filter(x => x.ab < r.ab).flatMap(x => x.tiere);
+      const fremd = alle.filter(id => !r.tiere.includes(id) && !tiefer.includes(id));
+      const stand = (n) => [...tiefer, ...fremd.slice(0, n - tiefer.length)];
       /* Einen unter der Schwelle: dann fehlt genau eines. */
-      const knapp = TI.naechsteSchwelle(fremd.slice(0, r.ab - 1));
-      if (knapp && knapp.raum.titel === r.titel && knapp.fehlt !== 1)
+      const knapp = TI.naechsteSchwelle(stand(r.ab - 1));
+      if (!knapp || knapp.raum.titel !== r.titel)
+        tf.push(`einen unter der Schwelle von „${r.titel}" steht `
+          + `${knapp ? `„${knapp.raum.titel}"` : 'nichts'} in Aussicht`);
+      else if (knapp.fehlt !== 1)
         tf.push(`einen unter der Schwelle sagt „${r.titel}", es fehlten `
           + `${knapp.fehlt} Tiere statt einem`);
       /* Und AUF der Schwelle, ohne die eigenen Tiere: dieser Raum ist
          faellig, nicht in Aussicht. Wer ihn hier noch nennt, verspricht
          etwas, das schon offen ist. */
-      const drauf = TI.naechsteSchwelle(fremd.slice(0, r.ab));
+      const drauf = TI.naechsteSchwelle(stand(r.ab));
       if (drauf && drauf.raum.titel === r.titel)
         tf.push(`„${r.titel}" steht bei ${r.ab} Tieren noch in Aussicht, `
           + 'obwohl seine Schwelle erreicht ist');

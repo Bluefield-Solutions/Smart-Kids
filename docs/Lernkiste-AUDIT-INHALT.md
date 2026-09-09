@@ -1035,6 +1035,83 @@ zu beweisen ist:
   Die dritte ist die eigentliche I19-Probe — ein Eingriff, der den Satz
   *wegnimmt*, hätte den Fehler nie gefunden.
 
+### I20 · Achtzehn Bilder, sechs Räume — und wo die Grenze wirklich liegt — **gebaut (v584)**
+
+Der Bildplan hielt 124 Einträge, 59 waren gemalt. Von den 65 offenen waren
+**neunzehn** keine Tiere, sondern Obst und Preise — die Sorte Aufkleber, die
+ein Kind auch dann versteht, wenn es die Savanne noch nie gesehen hat.
+
+Gemalt sind jetzt **achtzehn** davon: Apfel, Birne, Melone, Erdbeere,
+Weintrauben, Kiwi, Ananas · Gold-, Silber- und Bronzemedaille, Medaille,
+Pokal, Orden, Rosette, Schleife, Eintrittskarte, Kinokarte, Zirkuszelt.
+Die neunzehnte, die Milchflasche, ist gezeichnet und **nicht** eingebaut:
+achtzehn sind sechs volle Räume, neunzehn wären fünf volle und ein Rest.
+
+Die vier Medaillen unterscheiden sich in **drei** Dingen, nicht nur in der
+Farbe — Band, Metall und Zeichen (Stern, Ring, Dreieck) —, und „die
+Medaille" ohne Beiwort ist gar keine Scheibe, sondern ein Schild am
+Halsband. Auf einem Telefon ist ein Farbton allein zu wenig, und ein Kind,
+das nicht liest, hat nichts anderes.
+
+**Sechs neue Räume, und sie liegen UNTEN.** Bis I20 gab die Sammlung selbst
+nur zwei Räume her, beide oben: 35 und 42. Wer bei zwölf Tieren war, hatte
+dreiundzwanzig vor sich, bevor überhaupt etwas kam, das nicht an einer Ebene
+hing. Jetzt liegt alle sechs Tiere einer — ungefähr zwei fertige Ebenen:
+
+| ab | Ort | darin |
+|---|---|---|
+| 12 | Im Obstgarten | Apfel, Birne, Erdbeere |
+| 18 | Am Fruchtstand | Melone, Kiwi, Ananas |
+| 24 | Beim Sommerfest | Weintrauben, Rosette, Schleife |
+| 28 | Auf dem Treppchen | Gold-, Silber-, Bronzemedaille |
+| 31 | Bei den Pokalen | Pokal, Orden, Medaille |
+| 35 | In der Tiefsee | *(schon da)* |
+| 38 | Ein Abend aus | Eintrittskarte, Kinokarte, Zirkuszelt |
+| 42 | Vor langer Zeit | *(schon da)* |
+
+**Warum keine höher als 42.** `inhalt` rechnet je Profil nach, wie viele
+Tiere aus **Ebenen** zu holen sind; Räume mit Schwelle zählen dabei nicht
+mit, sonst hielte sich eine Schwelle an der nächsten fest und die letzten
+Räume wären ein Selbstläufer ohne eine einzige gelernte Sache dahinter. Das
+knappste Profil (Lea, Stephan, Violeta) kommt auf vierzehn Räume, also 42.
+Das ist die Grenze — sie ist gemessen, nicht gewählt, und sie sagt zugleich,
+woher die nächsten Räume kommen müssen: **aus neuen Ebenen**, nicht aus
+neuen Aufklebern.
+
+Dazu sechs Kulissen: Obstgarten, Marktstand, Sommerfest, Siegertreppchen,
+Pokalvitrine, Kinosaal.
+
+**Was die Tore dazu gesagt haben** — fünf Befunde, keiner davon geraten:
+
+- `smoke` meldete sechsmal „die Sammlung öffnet X nicht". Zu Recht: der
+  Aufbau verließ sich darauf, dass die Tiere der tieferen Schwellen in der
+  Reihenfolge von `TIERE` ohnehin vorn stehen. Mit zwei Schwellen ging das
+  auf, mit acht nicht mehr. Dieselbe Stelle stand auch in `inhalt`.
+- `passt` meldete die Raumwand auf 390 × 844: acht Reihen brauchen 738
+  Punkte in 658. Der Absatz im Stilblatt hatte es vorausgesagt — „sechs
+  Reihen tragen achtzehn Räume, und der neunzehnte braucht eine siebte".
+  Jetzt vier Spalten statt drei.
+- Und dieselbe Wand auf 844 × 390: sechs Spalten, vier Reihen, 175 in 141.
+  Acht Spalten machen daraus drei Reihen. Die Mindestbreite ist dort keine
+  Mindestbreite, sondern die Spaltenzahl, rückwärts geschrieben: bei 64
+  packt `auto-fit` neun Spalten, und dann brechen zwei Namen dreizeilig um.
+- **Zwei Namen waren ein Inhaltsfehler, kein Layoutfall.** „Auf dem
+  Siegertreppchen" und „Im Pokalschrank" haben Wörter mit 15 und 12
+  Zeichen; in einer 87 Punkte breiten Zelle brauchen sie drei Zeilen, und
+  dann hängt die Höhe der ganzen Wand an der Schriftrundung — der Fehler,
+  der bei B15 neun Auslieferungen gekostet hat. Sie heißen jetzt „Auf dem
+  Treppchen" und „Bei den Pokalen".
+- Der erste Anlauf setzte feste Spaltenzahlen (`repeat(4,1fr)`), und
+  `smoke` meldete sofort, was das kostet: dasselbe Raster trägt auch die
+  Ebenenübersicht der anderen Kapitel, und „5/20 Erdkunde" hat zwei Zellen.
+  Daneben standen zwei leere Spalten.
+
+Der Preis, offen gesagt: auf dem Zielgerät ist die Zelle jetzt 71 Punkte
+breit, ihr Bild 20 und ihre Schrift 10,9 Punkte. Das ist klein. Vierundzwanzig
+Plätze für dreiundzwanzig Räume — **der nächste Raum passt nicht mehr**, und
+dann ist die Antwort nicht noch eine Stufe kleiner, sondern eine Seite mehr:
+die Tierwand blättert längst, die Raumwand nicht.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

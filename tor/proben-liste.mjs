@@ -7406,4 +7406,51 @@ export const PROBEN = [
     ersatz:'  .mitte:has(> .siegkopf){gap:var(--r3);padding:var(--r4)}',
     an:{ ...DIST, fehlt:'.mitte:has(> .siegkopf){gap:var(--r1)' },
     sagt:'im Bereich des Telefons' },
+
+  /* --- I20: achtzehn Bilder, sechs Raeume, zwei Wandmasse ------------- *
+   *
+   * Der Lohn der Sammlung selbst stand bis I20 ganz oben: 35 und 42.
+   * Wer bei zwoelf Tieren war, hatte dreiundzwanzig vor sich, bevor
+   * ueberhaupt etwas kam, das nicht an einer Ebene hing. */
+
+  /* 1. Die Obergrenze der Schwellen.
+   *
+   * Sie ist gemessen und nicht gewaehlt: `inhalt` rechnet je Profil
+   * nach, wieviele Tiere aus EBENEN zu holen sind, und Raeume mit
+   * Schwelle zaehlen dabei nicht mit. Das knappste Profil kommt auf 42.
+   * Der Eingriff hebt eine Schwelle darueber - dann waere der Raum fuer
+   * Lea im Buch der naechste Ort und nie zu erreichen. */
+  { n:'ein Raum oeffnet sich erst hinter der Reichweite des Profils',
+    tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
+    such:"  { ab: 38,                           titel:'Ein Abend aus',",
+    ersatz:"  { ab: 48,                           titel:'Ein Abend aus',",
+    an:{ datei:'src/inhalt/tiere.js', text:"{ ab: 48," },
+    sagt:'nie zu erreichen' },
+
+  /* 2. Die Wand im Buch, schmal und hoch.
+   *
+   * Mit dreiundzwanzig Raeumen und drei Spalten sind es acht Reihen -
+   * 738 Punkte in 658. Der Eingriff nimmt die vierte Spalte weg und
+   * stellt genau das wieder her. Die kleinere Schrift bleibt stehen:
+   * sie allein macht aus acht Reihen keine sechs, und eine Probe, die
+   * zwei Dinge auf einmal wegnimmt, sagt nicht, welches gewirkt hat. */
+  { n:'die Raumwand faellt auf dem schmalen Schirm auf drei Spalten zurueck',
+    tor:'passt', args:['--teil=2/5'], bauen:true, datei:V,
+    such:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}',
+    ersatz:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}',
+    an:{ ...DIST, text:'minmax(120px,1fr)' },
+    sagt:'über den Rand' },
+
+  /* 3. Und dieselbe Wand im kurzen Querformat.
+   *
+   * Hier ist es die Mindestbreite selbst, die die Spaltenzahl setzt:
+   * 70 gibt acht Spalten und drei Reihen, 64 gibt neun, und mit neun
+   * brauchen zwei Namen drei Zeilen. Der Eingriff setzt sie auf 88
+   * zurueck - sechs Spalten, vier Reihen, 175 Punkte in 141. */
+  { n:'die Raumwand im Querformat faellt auf sechs Spalten zurueck',
+    tor:'passt', args:['--teil=1/5'], bauen:true, datei:V,
+    such:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}',
+    ersatz:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}',
+    an:{ ...DIST, text:'minmax(88px,1fr)}\n  .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.78)' },
+    sagt:'über den Rand' },
 ];

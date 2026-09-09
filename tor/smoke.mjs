@@ -7995,11 +7995,18 @@ if (laeuft('landschaft')) try {
   const z = await neueSeite({ width: 844, height: 390 }, ctx);
   await z.waitForSelector('[data-profil="fiona"]');
   /* Genau die Schwelle - und keines der Tiere DIESES Raumes.
-     Die Tiere der frueheren Raeume sind mit drin, sonst schlaegt der
-     erste zu und der gepruefte kaeme nie an die Reihe. */
+     Die Tiere der TIEFEREN Schwellen sind mit drin, sonst schlaegt die
+     erste zu und der gepruefte Raum kaeme nie an die Reihe. Das stand
+     hier schon, verliess sich aber auf die Reihenfolge in `TIERE`: mit
+     zwei Schwellen ging das auf, mit acht nicht mehr, und sechs
+     Meldungen sagten „die Sammlung oeffnet X nicht", obwohl sie den
+     Obstgarten oeffnete - vollkommen zu Recht. Jetzt stehen sie
+     ausdruecklich da (I20). */
   const SCHWELLE = raum.ab;
-  const vorRaum = ALLE_TIERE
-    .filter(id => !raum.tiere.includes(id)).slice(0, SCHWELLE);
+  const tiefer = AB_RAEUME.filter(r => r.ab < raum.ab).flatMap(r => r.tiere);
+  const vorRaum = [...tiefer, ...ALLE_TIERE
+    .filter(id => !raum.tiere.includes(id) && !tiefer.includes(id))
+    .slice(0, SCHWELLE - tiefer.length)];
   if (vorRaum.length < SCHWELLE)
     merke('landschaft', new Error(`fuer „${raum.titel}" gibt es nur `
       + `${vorRaum.length} andere Tiere, die Schwelle ist ${SCHWELLE} — `
