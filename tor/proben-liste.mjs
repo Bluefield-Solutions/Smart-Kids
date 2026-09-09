@@ -7438,7 +7438,10 @@ export const PROBEN = [
     tor:'passt', args:['--teil=2/5'], bauen:true, datei:V,
     such:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}',
     ersatz:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}',
-    an:{ ...DIST, text:'minmax(120px,1fr)' },
+    /* Der Anker sucht das VERSCHWINDEN: „120px" steht schon zweimal im
+       Buendel, „80px" genau einmal - und nach dem Eingriff nicht mehr.
+       `anker` hat es gemeldet, bevor ein Browser lief. */
+    an:{ ...DIST, fehlt:'minmax(80px,1fr)' },
     sagt:'über den Rand' },
 
   /* 3. Und dieselbe Wand im kurzen Querformat.

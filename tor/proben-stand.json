@@ -2430,6 +2430,11 @@
       "commit": "c7a74b628ac9b2efbde1cfc750ee5eb1f12534c0",
       "zeit": "2026-09-09",
       "s": 99
+    },
+    "die Raumwand im Querformat verliert ihr eigenes Mass": {
+      "commit": "5b36ec9d1c01f61a4e82c20fe3c85ee4ed62c370",
+      "zeit": "2026-09-09",
+      "s": 185
     }
   }
 }

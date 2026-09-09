@@ -203,6 +203,7 @@ Ein Blick, keine Suche. Die Blöcke darunter sagen, was jeder Punkt ist.
 | 12 | **G18b** Welche Knöpfe im Lob wirklich tot sind — gemessen statt geschlossen | Fiona, Lea | gering | klein | — |
 | 13 | **G19** Das Wasserzeichen der Weltenkachel liegt hochkant zu 100 % hinter dem Namen | niemand am Zielgerät | gering | klein | — |
 | 14 | **E10b** Die Fallen im Elternbereich nachzählen — welche wirklich getippt werden | ihr beide | gering | klein | ein paar Sitzungen |
+| 5 | **T8** Die Raumwand blättert, statt enger zu werden — und eine Zelle unter dem Fingermaß ist kein Hinweis | Fiona | mittel | mittel | I20 hat die Grenze erreicht |
 | 15 | **D1** Ein Begleiter | Fiona | mittel | groß | Bilder — also ihr |
 
 **Die Rangliste trägt ab hier NUR NOCH OFFENES.** Bis v352 standen hier
@@ -2894,6 +2895,32 @@ setzen ließe, wäre ein Weg, die Aufkleber eines Kindes anderswohin zu
 schicken.
 
 ---
+
+### T8 · Die Raumwand blättert, statt enger zu werden
+
+**Woher der Punkt kommt.** I20 hat die Räume von 17 auf 23 gebracht, und
+beide Wandmaße mussten nachgeben: auf 390 × 844 vier Spalten statt drei,
+auf 844 × 390 acht statt sechs. Auf dem **Zielgerät** ist die Zelle damit
+71 Punkte breit, ihr Bild 20 und ihre Schrift 10,9 Punkte. Vierundzwanzig
+Plätze für dreiundzwanzig Räume — der nächste passt nicht mehr.
+
+**Warum nicht noch eine Stufe kleiner.** Weil die Antwort dann jedes Mal
+dieselbe wäre und das Ende absehbar ist. Die **Tierwand blättert längst**
+(gemessen: 69 Tiere, 25 auf der ersten Seite, drei Seiten); die Raumwand
+tut es nicht. Das ist der Unterschied, nicht die Schriftgröße.
+
+**Und ein Befund, der beim Messen nebenbei herausgefallen ist.** Das
+Raster steht auf `grid-auto-rows:1fr` mit `min-height:100%` — es läuft
+nicht über, es **drückt die Zellen zusammen**. Bei sechs Spalten und
+kleiner Schrift waren sie 41 Punkte hoch, also unter dem Fingermaß, und
+`passt` meldet das als **HINWEIS**, nicht als Fehler. Ein Überlauf ist
+rot, eine unerreichbare Zelle nur grau — dabei ist das zweite auf einem
+Telefon dasselbe Problem. Genau daran ist die erste Fassung der
+Gegenprobe zu I20 grün geblieben.
+
+**Was zu tun ist:** die Raumwand paginieren wie die Tierwand, und in
+`passt` aus dem Hinweis „zu klein" einen Fehler machen — beides in einer
+Runde, weil das zweite ohne das erste die Wand rot färbt.
 
 ## § 4 · Was bewusst nicht kommt
 
