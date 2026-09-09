@@ -4336,6 +4336,67 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .buchraster > .raumgitter .raumzelle .raumzeichen{width:100%;height:auto;
     min-height:0;flex:1 1 0}
 }
+
+/* ===== SECHS KACHELN ODER WENIGER - EINE REIHE, GANZE HOEHE (I22) =====
+ *
+ * EIGENER Block, und das ist der ganze Witz daran: der Block darueber
+ * heisst `(max-height:440px), (max-width:430px)` und faengt damit AUCH
+ * das Hochformat. Dort ist die Wand 366 Punkte breit, ein Sechstel davon
+ * sind 55 - gemessen wurde die Kachel 56 x 424 mit einem Bild von
+ * 41 x 358. Sechs Kacheln nebeneinander auf einem Telefon im Hochformat
+ * sind sechs Streifen. `passt` hat es an zwei Groessen gemeldet.
+ *
+ * Also die Bedingung, die wirklich gemeint ist: ein LIEGENDES Telefon,
+ * breit genug fuer sechs Kacheln. 640 ist die Untergrenze - das iPhone SE
+ * quer hat 667, mit Uhr und Wischstreifen 726.
+ */
+@media (max-height:440px) and (min-width:640px){
+  /* SECHS ODER WENIGER: eine Reihe statt zweier.
+   *
+   * Die 134 sind fuer NEUN Ebenen gerechnet. Mit sechs Kacheln - so
+   * viele traegt die Erdkundewand seit I22 - stehen fuenf oben und
+   * eine allein darunter, und die Kachel bleibt so schmal wie bei
+   * zwoelf: gemessen 139 x 116 mit einem Bild von 80 x 43, wo vorher 85
+   * Punkte standen. Die Wand ist leerer geworden und das Bild KLEINER,
+   * also das Gegenteil des Gewollten - `passt` hat es an acht Kacheln
+   * auf einmal gemeldet.
+   *
+   * Drei je Reihe waere die naechstliegende Antwort und bringt NICHTS:
+   * gemessen wird die Kachel 277 breit, das Bild bleibt 80 x 43. Es ist
+   * nicht die Breite, die es begrenzt (`max-width:82%` von 277 sind
+   * 227), sondern die HOEHE der Reihe - und zwei Reihen teilen sich die
+   * 236 Punkte der Wand, wie sie es bei zwoelf Kacheln auch taten.
+   *
+   * Also EINE Reihe. Sechs je Reihe ist dieselbe Aufteilung, die ab elf
+   * Kacheln gilt (ein Sechstel der Wand); bei genau sechs ist das eine
+   * Reihe statt zwei, und die Kachel dehnt sich auf die ganze Hoehe der
+   * Wand - `align-items:stretch` bei einer einzigen Flusszeile. Das Bild
+   * waechst damit auf ein Vielfaches.
+   *
+   * Anteilig und nicht in Punkten (Regel 2: Grenzen anteilig, nie
+   * absolut): ein Sechstel der Wand gilt auf 844 wie auf 667. */
+  .wahl.ebenen:not(:has(> :nth-child(7)))>*{
+    flex-basis:calc((100% - 5 * var(--r3)) / 6)}
+  /* Und die Reihe nimmt die HOEHE, die dasteht.
+   *
+   * Ohne diese zwei Zeilen ist die Wand mit sechs Kacheln 114 Punkte
+   * hoch, und die untere Haelfte des Bildschirms bleibt leer - die
+   * Kachel bleibt so flach wie bei zwoelf, und das Bild mit ihr
+   * (gemessen 73 Punkte Farbe statt 85). `align-content:stretch` gibt
+   * der einzigen Flusszeile die ganze Hoehe, `align-items` dehnt die
+   * Kacheln darauf. Bei ZWEI Zeilen (sieben Kacheln und mehr) gilt es
+   * nicht - dort teilen sich die Zeilen die Hoehe schon von selbst. */
+  .wahl.ebenen:not(:has(> :nth-child(7))){flex:1 1 auto;align-content:stretch}
+  /* Und derselbe Namensschliff wie ab elf Kacheln - sechs je Reihe sind
+     sechs je Reihe, gleich ob es sechs Kacheln sind oder zwoelf. Ohne
+     ihn brach „Bundesländer" auf dem iPhone SE quer als
+     „Bundesländ/er" um, und zwei Buchstaben in der zweiten Zeile sehen
+     aus wie ein Fehler. Gesehen im Bild, nicht gemessen. */
+  .wahl.ebenen:not(:has(> :nth-child(7))) .kachel .name{
+    font-size:var(--s-klein);letter-spacing:-.02em}
+  .wahl.ebenen:not(:has(> :nth-child(7))) .kachel{
+    padding-left:var(--r0);padding-right:var(--r0)}
+}
 </style></head>
 <body><!-- Der Glanz der Aufkleber (Q28). EIN Verlauf fuer alle: eine
      Verlaufsmarke gilt im Dokument, nicht im einzelnen SVG, und eine

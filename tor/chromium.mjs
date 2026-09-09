@@ -664,16 +664,8 @@ export async function zeigeAufKarte(seite) {
        Nadeln der Kopf neben der Karte - der Anker selbst ist vier
        Bildpunkte gross, und ein Tor, das ihn punktgenau trifft, bewiese
        etwas, das kein Finger kann. */
-    const kreise = [...s.querySelectorAll(`#treffer circle[data-id="${id}"]`)]
-      .map(c => c.getBoundingClientRect()).sort((a, b) => b.width - a.width);
-    if (kreise.length) { const k = kreise[0];
-      return { name, id, x: k.left + k.width / 2, y: k.top + k.height / 2,
-               breit: +k.width.toFixed(1) }; }
-
-    // Sonst eine Stelle IM Gebiet, an der das Spiel es auch erkennt.
     const pf = s.querySelector(`path.geb[data-id="${id}"]`);
-    if (!pf) return null;
-    const bb = pf.getBoundingClientRect();
+    const bb = pf ? pf.getBoundingClientRect() : null;
     /* DIESELBE VORFAHRT WIE IM SPIEL: der Nadelkopf schlaegt die Flaeche.
      *
      * Hier stand nur die Flaeche, und der Helfer fand daraufhin einen
@@ -696,6 +688,25 @@ export async function zeigeAufKarte(seite) {
       const p = e.closest('path.geb');
       return !!p && p.dataset.id === id;
     };
+    /* DER EIGENE NADELKOPF - aber nur, wenn er auch wirklich obenauf
+     * liegt.
+     *
+     * Bis I22 wurde er ohne Nachfrage genommen, und das war der Fehler:
+     * Nadelkoepfe stehen nebeneinander im Meer, und der spaeter
+     * gezeichnete deckt den frueheren. Belarus' Kopf lag unter dem
+     * Litauens; das Spiel wertete Litauen, und die Aufgabe war nicht zu
+     * loesen. Bei „Wo liegt X?" kostete derselbe Fehler nur einen
+     * Fehlversuch und fiel deshalb nie auf. */
+    const kreise = [...s.querySelectorAll(`#treffer circle[data-id="${id}"]`)]
+      .map(c => c.getBoundingClientRect()).sort((a, b) => b.width - a.width);
+    for (const k of kreise) {
+      const mx = k.left + k.width / 2, my = k.top + k.height / 2;
+      if (trifft(mx, my))
+        return { name, id, x: mx, y: my, breit: +k.width.toFixed(1) };
+    }
+
+    // Sonst eine Stelle IM Gebiet, an der das Spiel es auch erkennt.
+    if (!pf) return null;
     for (let n = 0; n <= 6; n++) for (let m = 0; m <= 6; m++) {
       const x = bb.left + bb.width * (n + .5) / 7, y = bb.top + bb.height * (m + .5) / 7;
       if (trifft(x, y)) return { name, id, x, y, breit: 0 };

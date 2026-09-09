@@ -1073,10 +1073,35 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      * Es ist kein Soll, sondern ein Stand: was einmal gepasst hat, muss
      * weiter passen. Wer absichtlich enger baut, bestaetigt mit
      * `npm run passt -- --neu`. */
+    /* UND DIE MESSGRENZE, die dieselbe Ratsche fast unbrauchbar gemacht
+     * hat (I22).
+     *
+     * Geklont werden hoechstens ACHT Kacheln. Solange die Wand zwoelf
+     * trug, hiess das „bis 20 messbar" und fiel nie auf. Mit I22 stehen
+     * sechs Kacheln in der Erdkundewand, und damit ist bei 6 + 8 = 14
+     * Schluss - das Tor meldete auf vier Groessen „die Wand trägt nur
+     * noch 14 Kacheln statt 18, sie hat Platz verloren". Verloren hat
+     * sie nichts: die Zahl STOESST AN, sie sagt nur noch „mindestens
+     * vierzehn".
+     *
+     * `gedeckelt` stand schon in der Messung und wurde nirgends
+     * gelesen. Eine Zahl an ihrer Messgrenze ist kein Befund - und sie
+     * darf auch nicht als neuer Stand festgeschrieben werden, sonst
+     * senkt der naechste `--neu`-Lauf die Ratsche auf 14 (Regel 5: jede
+     * Zahl traegt ihre Messstelle mit). */
     if (r.wand) {
       const k = `${g.n} · ${name} · Kacheln`;
       const war = MASS_STAND[k];
-      if (NEU) wandNeu[k] = r.wand.passt;
+      if (r.wand.gedeckelt) {
+        if (NEU && war !== undefined) wandNeu[k] = war;
+        else if (NEU) wandNeu[k] = r.wand.passt;
+        else if (war !== undefined && r.wand.passt < war)
+          console.log(`          ${name}: HINWEIS die Kapazität stößt an die `
+            + `Messgrenze (${r.wand.heute} Kacheln + 8 Klone = ${r.wand.passt}) — `
+            + `der Stand von ${war} bleibt stehen, weil ${r.wand.passt} nur noch `
+            + '„mindestens" heißt');
+      }
+      else if (NEU) wandNeu[k] = r.wand.passt;
       else if (war !== undefined && r.wand.passt < war)
         meldungen.push(`${name}: die Wand trägt nur noch ${r.wand.passt} Kacheln statt `
           + `${war} — sie hat Platz verloren. War das Absicht, dann `

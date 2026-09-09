@@ -902,6 +902,22 @@ console.log('\n  Tor `groesser`');
 {
   const FL = JSON.parse(fs.readFileSync(
     new URL('../prototyp/flaechen.json', import.meta.url), 'utf8')).km2;
+  /* DAS SOLL STEHT IM TOR, nicht im Prüfling (Regel 14: das Modell darf
+   * nicht vom Gemessenen abhängen).
+   *
+   * Der erste Anlauf las die Grenze aus `erdkunde.js` und verglich sie
+   * mit sich selbst: die Gegenprobe setzte `GROESSER_TREUE = 0`, und das
+   * Tor prüfte daraufhin brav, ob jedes Land zu mindestens 0 % gezeigt
+   * wird — grün, mit Russland und seinen 23 % mitten drin. Gemeldet hat
+   * es die Probe („TOR BLEIBT GRÜN"), und genau dafür ist sie da.
+   *
+   * Die Zahl steht damit an ZWEI Stellen, und das ist hier keine
+   * Doppelung, die veraltet: die erste Zeile darunter vergleicht sie,
+   * und wer eine ändert, wird von ihr geschickt. */
+  const TREUE_SOLL = 0.86;
+  pruefe(I.GROESSER_TREUE === TREUE_SOLL,
+    `\`GROESSER_TREUE\` steht auf ${I.GROESSER_TREUE}, das Tor rechnet mit `
+    + `${TREUE_SOLL} — wer die Grenze verschiebt, verschiebt beide`);
   const paare = paareAusBuendel();
   pruefe(!!paare, 'die Paartafel steht nicht im gebauten Bündel');
   if (paare) {
@@ -925,7 +941,7 @@ console.log('\n  Tor `groesser`');
       /* Und die Treue, an der die Auswahl haengt - mit BEIDEN Raendern,
          damit ein Neubacken der Karten sie nicht still verschiebt. */
       for (const t of I.groesserTreue(roh)) {
-        if (t.treue >= I.GROESSER_TREUE) {
+        if (t.treue >= TREUE_SOLL) {
           if (t.treue < knappTraegt) { knappTraegt = t.treue; knappTraegtWer = namen.get(t.a3); }
         } else {
           draussen.push(`${namen.get(t.a3)} ${t.treue.toFixed(2)}`);
@@ -962,7 +978,7 @@ console.log('\n  Tor `groesser`');
          * Der Satz, den diese Zeile schützt, ist nicht „X ist größer",
          * sondern „X ist 27-mal so groß" — auf einer Karte, die von X
          * ein Fünftel zeigt. */
-        for (const a3 of [g, k]) pruefe((treueVon.get(a3) ?? 0) >= I.GROESSER_TREUE,
+        for (const a3 of [g, k]) pruefe((treueVon.get(a3) ?? 0) >= TREUE_SOLL,
           `${namen.get(a3)} steht in einem Paar, wird von der Karte aber nur zu `
           + `${((treueVon.get(a3) ?? 0) * 100).toFixed(0)} % gezeigt — der Satz `
           + 'nennt eine Zahl, die im Bild nicht steht');
@@ -980,7 +996,7 @@ console.log('\n  Tor `groesser`');
     console.log(`    ${ges} Paare auf ${karten} von ${Object.keys(paare).length} Karten, `
       + `jedes in der Welt UND im Bild mindestens ${I.GROESSER_FAKTOR}-mal so groß`);
     console.log(`    engstes Paar im Bild: ${engstes} mit ${engstesVerh.toFixed(2)} · `
-      + `Treue ≥ ${I.GROESSER_TREUE}: knappster Träger ${knappTraegtWer} `
+      + `Treue ≥ ${TREUE_SOLL}: knappster Träger ${knappTraegtWer} `
       + `${knappTraegt.toFixed(3)}, knappster Ausgeschlossener ${knappDraussenWer} `
       + `${knappDraussen.toFixed(3)}`);
     console.log(`    von der Karte zu klein gezeigt und deshalb draußen (${draussen.length}): `

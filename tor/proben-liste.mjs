@@ -7555,7 +7555,12 @@ export const PROBEN = [
     bauen:true, datei:E,
     such:"    gross.km2 / klein.km2 >= GROESSER_FAKTOR && gross.px / klein.px >= GROESSER_FAKTOR;",
     ersatz:"    gross.km2 / klein.km2 >= GROESSER_FAKTOR;",
-    an:{ datei:'dist/index.html', fehlt:'gross.px / klein.px >= GROESSER_FAKTOR' },
+    /* Der Anker steht in der QUELLE, nicht im Buendel: `erdkunde.js`
+       wird von `inhalt` als Modul geladen, und ins Buendel geht nur das
+       ERGEBNIS der Paarung (`D.paare`), nicht die Regel. Der erste
+       Anlauf suchte in `dist/index.html` und traf ohne jeden Eingriff
+       zu - `anker` hat es gemeldet. */
+    an:{ datei:'src/inhalt/erdkunde.js', fehlt:'gross.px / klein.px >= GROESSER_FAKTOR' },
     sagt:'im BILD ist' },
 
   /* 2. Ein Land, von dem die Karte ein Fuenftel zeigt, darf mitspielen.
@@ -7574,7 +7579,7 @@ export const PROBEN = [
     bauen:true, datei:E,
     such:'export const GROESSER_TREUE = 0.86;',
     ersatz:'export const GROESSER_TREUE = 0;',
-    an:{ datei:'dist/index.html', fehlt:'GROESSER_TREUE = 0.86' },
+    an:{ datei:'src/inhalt/erdkunde.js', fehlt:'GROESSER_TREUE = 0.86' },
     sagt:'wird von der Karte aber nur zu' },
 
   /* 3. Das kleinere Land gilt als richtig.
@@ -7590,4 +7595,36 @@ export const PROBEN = [
     ersatz:'      if (istGroesser ? ctx.getroffen===ziel.klein',
     an:{ ...DIST, fehlt:'istGroesser ? ctx.getroffen===ziel.gross' },
     sagt:'nicht als richtig gewertet' },
+
+  /* 4. Die sechs Kacheln stehen wieder in zwei Reihen.
+   *
+   * Mit der Ländergruppe traegt die Erdkundewand sechs statt zwoelf
+   * Kacheln - und wurde dadurch KLEINER: 114 Punkte hoch statt 236, die
+   * untere Haelfte des Bildschirms leer, das Bild 73 Punkte statt 85.
+   * Eine Reihe, die sich auf die ganze Hoehe dehnt, bringt es auf 105.
+   * Der Eingriff nimmt genau diese Dehnung weg. */
+  { n:'die Wand mit sechs Kacheln bleibt flach', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:V,
+    such:'  .wahl.ebenen:not(:has(> :nth-child(7))){flex:1 1 auto;align-content:stretch}',
+    ersatz:'  .wahl.ebenen:not(:has(> :nth-child(7))){align-content:flex-start}',
+    an:{ ...DIST, fehlt:'flex:1 1 auto;align-content:stretch' },
+    sagt:'Bild pt steht auf' },
+
+  /* 5. Die Messgrenze gilt wieder als Platzverlust.
+   *
+   * `passt` klont hoechstens acht Kacheln. Bei sechs echten ist damit
+   * bei vierzehn Schluss, und die Zahl sagt nur noch „mindestens
+   * vierzehn" - gemeldet hat das Tor aber „die Wand trägt nur noch 14
+   * statt 18, sie hat Platz verloren". Der Eingriff schaltet die
+   * Unterscheidung wieder ab; das Tor wird rot, und zwar an einer Wand,
+   * die nichts verloren hat.
+   *
+   * Sie greift in das TOR und nicht in die App - dieselbe Sorte Probe
+   * wie „die Fehlerüberschrift nennt jeden Befund einen Überlauf". */
+  { n:'die Messgrenze der Kachelzahl gilt wieder als Platzverlust', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:'tor/passt.mjs',
+    such:'      if (r.wand.gedeckelt) {',
+    ersatz:'      if (r.wand.gedeckelt && false) {',
+    an:{ datei:'tor/passt.mjs', text:'r.wand.gedeckelt && false' },
+    sagt:'Platz verloren' },
 ];
