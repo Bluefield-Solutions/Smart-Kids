@@ -696,6 +696,11 @@
       "zeit": "2026-09-09",
       "s": 19
     },
+    "die Karte mit zwei Besonderheiten nennt nur eine": {
+      "commit": "562e53d94cb02916c3365fe20b8d074689764267",
+      "zeit": "2026-09-09",
+      "s": 18
+    },
     "der Vorrat einer Ebene reicht nicht fuer zwei Runden": {
       "commit": "d7564046254258d118b26a9fe7f257fe7519b41a",
       "zeit": "2026-09-09",
