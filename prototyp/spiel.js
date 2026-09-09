@@ -1141,7 +1141,48 @@ const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
   ...Object.keys(D.laender).map((k)=>({ id:`laender:${k}`, ueber:'Länder in',
     titel: KONT_TITEL[k] || k, farbe: KONT_FARBE[k] })),
-  { id:'bundeslaender', ueber:'Deutschland', titel:'Bundesländer',      farbe:1 },
+  { id:'bundeslaender', ueber:'Deutschland', titel:'Bundesländer',      farbe:1,
+    gruppe:'bundeslaender', wo:'Wie heißen sie?' },
+  /* WER GRENZT AN WEN (I21, aus B3r).
+   *
+   * Die billigste neue Ebene, die dieses Verzeichnis kennt: sie braucht
+   * kein neues Datum und keinen neuen Bildschirm. Die Nachbarschaften
+   * standen seit je in `nachbarn.json` - sie haben bis I21 nur die
+   * VIERFAERBUNG bedient, also die Frage, welche zwei Gebiete nicht
+   * dieselbe Farbe tragen duerfen. Dieselbe Auskunft beantwortet auch
+   * eine Aufgabe.
+   *
+   * SIE FRAGT ETWAS ANDERES als „Bundesländer". Dort ist die Karte ein
+   * Bilderbuch mit sechzehn Formen, und gelernt wird ein Name je Form.
+   * Hier ist sie eine KARTE: was neben was liegt, ist das Einzige, was
+   * eine Karte weiss und eine Bilderliste nicht.
+   *
+   * MEHRERE ANTWORTEN SIND RICHTIG, und das ist der Punkt. Hessen hat
+   * sechs Nachbarn; wer einen davon findet, hat die Frage beantwortet.
+   * Eine Aufgabe mit genau einer Loesung waere hier eine Faelschung -
+   * sie wuerde nicht Nachbarschaft pruefen, sondern Auswendiglernen
+   * einer willkuerlich herausgegriffenen Paarung.
+   *
+   * FUER ALLE VIER. Fiona liest nicht - aber sie muss hier auch nichts
+   * lesen: das gefragte Land steht hervorgehoben auf der Karte, die
+   * Frage wird gesprochen, und getippt wird auf eine Flaeche, die es
+   * beruehrt. Das ist die erste Erdkunde-Aufgabe, die ohne ein einziges
+   * Wort funktioniert. */
+  /* SIE TEILT SICH DIE KACHEL MIT „Bundesländer" (Q17-Muster).
+   *
+   * Nicht aus Ordnungsliebe, sondern gemessen: die Erdkunde-Wand traegt
+   * ZWOELF Kacheln. Mit der dreizehnten greift `:has(> :nth-child(13))`
+   * im Stilblatt, und die Bilder fallen auf dem kleinsten Geraet von 73
+   * auf 19 Punkte - fuer ein Kind, das nicht liest, ist die Kachel dann
+   * kein Bild mehr, sondern ein Punkt. `passt` hat es beim ersten Lauf
+   * an zweiundzwanzig Kacheln auf einmal gemeldet.
+   *
+   * Die Gruppe kostet einen Zwischenschritt und ist trotzdem die
+   * richtige Antwort: beide Ebenen spielen auf DERSELBEN Karte, und
+   * „Bundesländer" ist die Ueberschrift, unter der ein Kind sie sucht.
+   * Genau dieselbe Ueberlegung wie bei den Hauptstaedten in Q17. */
+  { id:'nachbarn', ueber:'Deutschland', titel:'Bundesländer', farbe:6,
+    art:'nachbarn', gruppe:'bundeslaender', wo:'Wer grenzt an wen?' },
     // "Hauptstädte" statt "Landeshauptstädte": das Wort passt nicht in die
   // Kachel und brach als "Landeshauptstäd/te" um. Die Ueberzeile sagt
   // schon "Deutschland", die Frage sagt "Hauptstadt von Hessen" - das
@@ -1648,7 +1689,14 @@ let Welt = WELTEN[0].id;
  * herausschneidet.
  */
 const SILHOUETTE = { erdkunde:'kontinente', kontinente:'kontinente',
-                     bundeslaender:'deutschland', hauptstaedte:'deutschland' };
+                     bundeslaender:'deutschland', hauptstaedte:'deutschland',
+                     /* „Wer grenzt an wen?" (I21) spielt auf derselben Karte
+                        wie die Bundeslaender und traegt deshalb denselben
+                        Umriss. Ohne diese Zeile stand die Kachel BILDLOS in
+                        der Wand - `passt` hat es gemeldet, und fuer Fiona
+                        waere sie damit die einzige gewesen, die sie nicht
+                        wiedererkennt. */
+                     nachbarn:'deutschland' };
 
 /* Welchen Rahmen trägt die Karte dieser Ebene?
  *
@@ -2430,6 +2478,14 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     // Liste von Kennungen (D2).
     return D.deutschland.map(b=>({ id:b.id, name:b.name, aliasse:[], aussprache:[b.name.toLowerCase()],
       pfad:b.pfad, anker:b.anker, stadtstaat:b.stadtstaat }));
+  /* Wer grenzt an wen (I21). DERSELBE Vorrat wie eine Zeile darueber,
+     nur mit `grenzt` dazu - es ist dieselbe Karte und dieselben sechzehn
+     Gebiete, gefragt wird nur etwas anderes. Ein eigener Datensatz waere
+     die zweite Wahrheit, die beim naechsten Umriss veraltet. */
+  if (art==='nachbarn')
+    return D.deutschland.map(b=>({ id:b.id, name:b.name, aliasse:[],
+      aussprache:[b.name.toLowerCase()], pfad:b.pfad, anker:b.anker,
+      stadtstaat:b.stadtstaat, grenzt:b.grenzt || [] }));
   // Erzeugt statt aufgelistet - hundert Rechenaufgaben schreibt niemand hin.
   // Die Kennung kommt aus der Aufgabe selbst (`p3+4`), damit der
   // Leitner-Stand über Sitzungen trägt.
@@ -3761,8 +3817,18 @@ async function ebenenwahl(gruppe = null){
   const balken = gruppe ? alle.filter(b => b.gruppe === gruppe).map(b => ({ ...b,
                             ueber: b.titel, titel: b.wo || b.titel }))
                         : gruppiert(alle);
+  /* „— wo?" gilt nur, wo die Teile ORTE sind (die Hauptstaedte auf neun
+     Karten). Seit I21 gibt es eine Gruppe, deren Teile zwei FRAGEN sind:
+     „Bundesländer — Wie heißen sie? / Wer grenzt an wen?". Dort waere
+     „Bundesländer — wo?" schlicht falsch, und die Ueberschrift stuende
+     ueber zwei Kacheln, von denen keine einen Ort nennt.
+     Entschieden wird an den Teilen selbst und nicht an einer Liste von
+     Gruppennamen: wo die Kachelnamen mit einem Fragezeichen enden, ist
+     die Ueberschrift schon eine Frage. */
+  const teileGruppe = gruppe ? alle.filter(b => b.gruppe === gruppe) : [];
   const frage = gruppe
-    ? (alle.find(b => b.gruppe === gruppe)?.titel || welt.name) + ' — wo?'
+    ? (alle.find(b => b.gruppe === gruppe)?.titel || welt.name)
+      + (teileGruppe.some(b => /\?$/.test(b.wo || '')) ? ' — was möchtest du?' : ' — wo?')
     : 'Womit möchtest du anfangen?';
   // Der Weg wird EINMAL gerechnet: das Markup braucht ihn, die Ansage
   // braucht dieselbe Station, und zweimal gerechnet waeren es zwei, die
@@ -4314,7 +4380,7 @@ async function ebeneLaden(ebeneId){
   // Ebenen. Beide holen dieselbe Datei; die zweite kommt aus dem Lager.
   // Deutschland nur, wenn die Kennung KEINEN Kontinent nennt:
   // `hauptstaedte:europa` braucht Europa, nicht Deutschland.
-  if (art==='bundeslaender' || (art==='hauptstaedte' && !kont)) {
+  if (art==='bundeslaender' || art==='nachbarn' || (art==='hauptstaedte' && !kont)) {
     if (geholt.has('deutschland')) return true;
     try {
       const t = await (await fetch('./daten/deutschland.json')).json();
@@ -7431,6 +7497,19 @@ function spielschirm(){
   const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
   const [art, kont] = st.ebeneId.split(':');
   const istHaupt = art==='hauptstaedte';
+  /* „Wer grenzt an wen?" (I21) beantwortet man auf der KARTE - wie die
+     umgekehrte Frage, und aus demselben Grund: die Antwort ist ein Ort,
+     kein Name. Sie ist trotzdem nicht dieselbe Frage, und deshalb zwei
+     Namen und nicht einer:
+       `umgekehrt` heisst „das gesuchte Gebiet ist NICHT markiert" -
+          sonst stuende die Antwort auf der Karte.
+       `karteAntwortet` heisst „getippt wird auf die Karte".
+     Bei den Nachbarn ist das erste falsch und das zweite wahr: das
+     gefragte Land MUSS hervorgehoben sein, es ist ja der Bezugspunkt.
+     Der erste Anlauf hatte beides an `umgekehrt` haengen, und damit war
+     Hessen unsichtbar - „Welches Bundesland grenzt an Hessen?" auf einer
+     Karte ohne Hessen. */
+  const istNachbar = art==='nachbarn';
   /* Der Schalter steht HIER, weil die Flaechen ihn schon brauchen.
    *
    * Er stand zuerst weiter unten bei den Antwortwegen - dort, wo er
@@ -7461,7 +7540,8 @@ function spielschirm(){
      ganzer Zweck. Sonst bleibt es bei jeder dritten (B3). */
   const aufKarte = art === 'flaggen' && kont === 'karte';
   const umgekehrt = aufKarte
-    || (kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id));
+    || (kannLesen && !istHaupt && !istNachbar && st.i % 3 === 2 && tippbar(ziel.id));
+  const karteAntwortet = umgekehrt || istNachbar;
   // Auswahl mit VIER Moeglichkeiten - bei den Hauptstaedten und bei den
   // Bundeslaendern. Sechzehn Namen zu kennen ist die Aufgabe; sechzehn
   // Namen gleichzeitig zu lesen ist eine andere.
@@ -7554,7 +7634,7 @@ function spielschirm(){
   // Die Vierfaerbung gilt fuer die deutsche Karte - `D.farben` kennt nur
   // Bundeslaender. Auf der Europakarte gilt derselbe Farbkreis wie bei
   // den Laendern, sonst saehe dieselbe Karte in zwei Ebenen verschieden aus.
-  const farbeVon=(g,i)=> (art==='bundeslaender'||(istHaupt && !kont))
+  const farbeVon=(g,i)=> (art==='bundeslaender'||istNachbar||(istHaupt && !kont))
     ? `var(${VIER[(D.farben[g.id]??i)%4]})` : `var(${FL[i%7]})`;
   const karte = karteVon(st.ebeneId);
   const umgebung = (karte && D.umgebung[karte])
@@ -7691,7 +7771,7 @@ function spielschirm(){
    * Gebiet - „Wo liegt Berlin" waere ein Tippen auf einen Kreis von acht
    * Punkten Durchmesser.
    */
-  const tippt = !umgekehrt && P.eingabe.includes('tippen')
+  const tippt = !karteAntwortet && P.eingabe.includes('tippen')
     && !(istAuswahl && Einst.hauptstadtAuswahl);
   const spricht = P.eingabe.includes('sprechen');
   // Antippen oder Ziehen - je Kind gemerkt, mit der Voreinstellung als
@@ -7710,6 +7790,7 @@ function spielschirm(){
       ? `Wohin gehört diese Flagge? ${Flaggen.flaggeSvg(ziel.flagge,
           { klasse:'frageflagge', titel:'Flagge' })}`
     : umgekehrt ? `Wo liegt ${ziel.name}?`
+    : istNachbar ? `Welches Bundesland grenzt an ${ziel.name}?`
     : istHaupt ? `Wie heißt die Hauptstadt ${ziel.wovon || `von ${ziel.gebiet}`}?`
     : art==='kontinente' ? 'Wie heißt dieser Kontinent?'
     : art==='laender' ? 'Wie heißt dieses Land?' : 'Wie heißt dieses Bundesland?';
@@ -8136,7 +8217,7 @@ function spielschirm(){
     }
   }
 
-  if (umgekehrt) {
+  if (karteAntwortet) {
     /* Die Karte IST die Antwortliste.
      *
      * Kein Etikett, kein Feld, kein Mikrofon - wer „Wo liegt Bayern?"
@@ -8241,7 +8322,7 @@ function spielschirm(){
    * Antwort, es gibt kein Etikett, das man ziehen oder antippen koennte.
    * Gesehen auf dem Bild: „Lieber ziehen" stand neben „Wo liegt Berlin?"
    * und haette nichts getan. */
-  if (!tippt && !umgekehrt) {
+  if (!tippt && !karteAntwortet) {
     const um = el('button','leise');
     um.id = 'weise';
     // Die WEISE steht als Datenfeld dran, nicht nur als Beschriftung. Der
@@ -8274,7 +8355,7 @@ function spielschirm(){
      umgekehrte, und da stand ein Mikrofon neben einer Landkarte. Kein
      Tor ersetzt den Blick (Regel 4) - siebzehn davon liefen daran
      vorbei. */
-  if (!umgekehrt) sprachweg({ spricht, werkzeug, liste, bewerte });
+  if (!karteAntwortet) sprachweg({ spricht, werkzeug, liste, bewerte });
 
   /**
    * Wohin zeigt der Finger? MIT Nachsicht.
@@ -8432,7 +8513,12 @@ function spielschirm(){
        * getroffene Gebiet und die Richtung zum gesuchten. Genau dafuer
        * ist er gebaut, und er passt hier sogar besser - beim Ziehen weiss
        * das Kind schon, wie das Gebiet heisst; hier sucht es danach. */
-      if (ctx.getroffen===ziel.id) ergebnis='richtig';
+      /* Bei den Nachbarn sind MEHRERE Treffer richtig (I21) - jeder,
+         der das gefragte Land beruehrt. Die Liste steht am Gebiet und
+         kommt aus derselben Tafel wie die Vierfaerbung; hier steht keine
+         zweite. */
+      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)
+                     : ctx.getroffen===ziel.id) ergebnis='richtig';
       else text = zugHinweis('', ctx);
     } else if (eingabeart==='ziehen') {
       if (ctx.getroffen===ziel.id && roh===ziel.name) ergebnis='richtig';
@@ -8469,8 +8555,17 @@ function spielschirm(){
       // sagte „4 von 4 richtig" und im selben Atemzug „0 von 4 Aufklebern",
       // und ein Kind konnte daraus nicht schliessen, dass es beim naechsten
       // Mal soweit ist. Jetzt hat der Aufkleber einen Augenblick.
-      belohnung(s, ziel, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
-                neuerAufkleber);
+      /* Gelobt wird, WAS GETIPPT WURDE - bei den Nachbarn ist das nicht
+         das gefragte Land (I21). Wer auf Hessen tippt, hat Hessen
+         gefunden; „Das ist Bayern" waere die Antwort auf eine Frage, die
+         niemand gestellt hat. Der Leitner-Stand bleibt am gefragten Land:
+         geuebt wird „Bayerns Nachbarn", nicht „Hessen". */
+      const gelobt = istNachbar && ctx.getroffen
+        ? (st.alle.find(x => x.id === ctx.getroffen) || ziel) : ziel;
+      belohnung(s, gelobt, ergebnis==='fast' ? text : null, istHaupt, nebenbei, spruch,
+                neuerAufkleber,
+                istNachbar && gelobt !== ziel
+                  ? `${gelobt.name} grenzt an ${ziel.name}.` : null);
       /* Und Fiona HOERT den Satz - sie liest nicht (D3).
          Derselbe Vorrang wie auf dem Bildschirm: wo die umgekehrte Frage
          schon etwas zu sagen hat, tritt die Zugabe zurueck. Und sie kommt
@@ -8746,7 +8841,7 @@ function spielschirm(){
     const teile = [frageText];
     // Bei der umgekehrten Frage waere die Aufzaehlung der Kandidaten die
     // halbe Antwort - gefragt ist ja gerade, WO eines davon liegt.
-    if (!tippt && !umgekehrt) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
+    if (!tippt && !karteAntwortet) teile.push(aufzaehlen(kand.map(k=>k.name)) + '?');
     return teile.join(' ');
   })();
   nochHoerenAnhaengen(ansageText);
@@ -8762,7 +8857,13 @@ function spielschirm(){
    die einmal veraltet (Regel 6). */
 const sacheSatz = (ziel) => `Das ist ${ziel.name}.`;
 
-function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleber){
+/* `stattSatz`: bei den Nachbarn (I21) steht dort nicht „Das ist Hessen",
+   sondern „Hessen grenzt an Bayern" - die Antwort ist keine Benennung,
+   sondern eine Beziehung, und der Lobsatz muss beide Namen halten.
+   Ein Sonderfall IN `sacheSatz` ginge nicht: die Funktion kennt nur EIN
+   Gebiet, und hier sind es zwei. */
+function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleber,
+                   stattSatz){
   // Beim Belohnen wird die Hervorhebung still - sonst blinkt es weiter,
   // waehrend sich der Umriss nachzeichnet.
   const kontur=s.querySelector('#kontur'), fuell=s.querySelector('#belohn'),
@@ -8809,7 +8910,7 @@ function belohnung(s, ziel, fastText, zeigeStadt, nebenbei, spruch, neuerAufkleb
    * Kein Ersatz, wenn es keinen Satz gibt: `satzZu` gibt dann `null`,
    * und `lobsatz` laesst die Zeile weg. Ein Fuellsatz saehe aus wie
    * einer und waere keiner. */
-  lobsatz(s, sacheSatz(ziel), fastText, spruch,
+  lobsatz(s, stattSatz || sacheSatz(ziel), fastText, spruch,
           nebenbei || Saetze.satzZu(ziel.id) || '', neuerAufkleber);
 }
 

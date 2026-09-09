@@ -4824,7 +4824,7 @@ export const PROBEN = [
   // 1. Es gibt sie nicht mehr - jede Aufgabe fragt wieder nach dem Namen.
   { n:'die umgekehrte Frage kommt nicht mehr vor', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"    || (kannLesen && !istHaupt && st.i % 3 === 2 && tippbar(ziel.id));",
+    such:"    || (kannLesen && !istHaupt && !istNachbar && st.i % 3 === 2 && tippbar(ziel.id));",
     /* NUR der zweite Summand faellt weg, nicht die ganze Zeile: seit F4
        steht darueber `const umgekehrt = aufKarte`, und ein Ersatz, der
        die Deklaration mitbringt, erzeugte eine zweite davon - die App
@@ -4847,9 +4847,11 @@ export const PROBEN = [
   // 3. Der Tipp auf das richtige Gebiet wird nicht mehr gewertet.
   { n:'der Tipp auf die Karte wird nicht mehr gewertet', tor:'smoke',
     args:['--nur=umgekehrt'], bauen:true, datei:D,
-    such:"      if (ctx.getroffen===ziel.id) ergebnis='richtig';\n      else text = zugHinweis('', ctx);",
+    such:"      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)\n"
+      + "                     : ctx.getroffen===ziel.id) ergebnis='richtig';\n"
+      + "      else text = zugHinweis('', ctx);",
     ersatz:"      text = zugHinweis('', ctx);",
-    an:{ ...DIST, fehlt:"if (ctx.getroffen===ziel.id) ergebnis='richtig';" },
+    an:{ ...DIST, fehlt:"ctx.getroffen===ziel.id) ergebnis='richtig';" },
     sagt:'nicht gewertet' },
 
   /* --- B2: der Test ohne Hilfen --------------------------------------
@@ -6131,9 +6133,9 @@ export const PROBEN = [
      Vorbilder und ist dort abgeschaltet (Q39, Regel 16). */
   { n:'bei der umgekehrten Frage steht wieder ein Mikrofon', tor:'ansicht',
     args:['--nur=quer-flaggen-karte'], bauen:true, datei:D,
-    such:'  if (!umgekehrt) sprachweg({ spricht, werkzeug, liste, bewerte });',
+    such:'  if (!karteAntwortet) sprachweg({ spricht, werkzeug, liste, bewerte });',
     ersatz:'  sprachweg({ spricht, werkzeug, liste, bewerte });',
-    an:{ ...DIST, fehlt:'if (!umgekehrt) sprachweg(' },
+    an:{ ...DIST, fehlt:'if (!karteAntwortet) sprachweg(' },
     sagt:'quer-flaggen-karte' },
 
   /* --- „Sag es" (E6) ---------------------------------------------------
@@ -7467,4 +7469,54 @@ export const PROBEN = [
     ersatz:'',
     an:{ ...DIST, fehlt:'minmax(70px,1fr)' },
     sagt:'über den Rand' },
+
+  /* --- I21: „Wer grenzt an wen?" -------------------------------------- *
+   *
+   * Die Tafel `nachbarn.json` gibt es seit dem ersten Bau und hat bis
+   * I21 nur die Vierfaerbung bedient. Dort ist eine fehlende Grenze
+   * unsichtbar; seit sie eine Aufgabe beantwortet, ist sie eine falsche
+   * Antwort. Drei Proben, drei verschiedene Bruchstellen. */
+
+  /* 1. Die Nachbarschaft gilt nur in EINE Richtung.
+   *
+   * Der Eingriff nimmt Bayern aus Hessens Liste - Bayern nennt Hessen
+   * weiter. Auf der Karte faellt das nicht auf (die Vierfaerbung kommt
+   * mit einer halben Kante zurecht), in der Aufgabe schon: „Welches
+   * Bundesland grenzt an Hessen?" haette dann einen richtigen Treffer
+   * weniger, und wer auf Bayern tippt, bekaeme ein Nein. */
+  { n:'eine Nachbarschaft gilt nur in eine Richtung', tor:'inhalt',
+    deckt:'nachbarn', datei:'prototyp/nachbarn.json',
+    such:'  "DE-BY",\n  "DE-NW",\n  "DE-RP",\n  "DE-BW"',
+    ersatz:'  "DE-NW",\n  "DE-RP",\n  "DE-BW"',
+    an:{ datei:'prototyp/nachbarn.json', fehlt:'  "DE-BY",\n  "DE-NW",' },
+    sagt:'einseitige Nachbarschaft' },
+
+  /* 2. Nur EIN Nachbar zaehlt.
+   *
+   * Die Ebene lebt davon, dass mehrere Antworten richtig sind - Hessen
+   * hat sechs Nachbarn, und wer einen davon findet, hat die Frage
+   * beantwortet. Der Eingriff schneidet auf den ersten zurueck. Der
+   * Rauchtest tippt auf `grenzt[0]`, also ausgerechnet auf den, der
+   * uebrig bleibt; deshalb prueft die Probe nicht ihn, sondern
+   * `spielprobe` - dort wird JEDE Antwort durchgerechnet, die ein Kind
+   * geben kann. */
+  { n:'nur ein einziger Nachbar wird als richtig gewertet', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:D,
+    such:"      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)",
+    ersatz:"      if (istNachbar ? (ziel.grenzt || []).slice(1).includes(ctx.getroffen)",
+    an:{ ...DIST, text:'grenzt || []).slice(1).includes' },
+    sagt:'nachbarn' },
+
+  /* 3. Die neue Kachel bekommt ihre eigene Kachel zurueck.
+   *
+   * Sie teilt sich seit I21 eine mit „Bundesländer", und das ist keine
+   * Ordnungsfrage: die Erdkunde-Wand traegt zwoelf Kacheln, mit der
+   * dreizehnten fallen die Bilder auf dem kleinsten Geraet von 73 auf
+   * 19 Punkte. Genau das stellt der Eingriff wieder her. */
+  { n:'die dreizehnte Kachel drueckt die Bilder aus der Wand', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:D,
+    such:"    art:'nachbarn', gruppe:'bundeslaender', wo:'Wer grenzt an wen?' },",
+    ersatz:"    art:'nachbarn' },",
+    an:{ ...DIST, fehlt:"wo:'Wer grenzt an wen?'" },
+    sagt:'Bild pt steht auf' },
 ];

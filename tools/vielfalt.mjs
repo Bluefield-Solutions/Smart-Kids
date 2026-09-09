@@ -68,8 +68,14 @@ const RUNDEN_MIN = 2;
  * herausfaellt, prueft nicht diese Grenze, sondern die Ratsche je Karte
  * im Tor `inhalt` (europa 29, suedosteuropa 7). Zwei Zahlen, zwei Tore -
  * diese hier wuerde beim Verlust eines Landes nicht einmal zucken. */
+/* `nachbarn` (I21) steht aus demselben Grund hier wie `bundeslaender`:
+ * es sind DIESELBEN sechzehn Gebiete, gefragt wird nur etwas anderes.
+ * Wer diese Zahl „repariert", erfindet ein siebzehntes Bundesland.
+ * Dass keines still aus der Tafel faellt, prueft nicht diese Grenze,
+ * sondern `inhalt`: dort steht, dass jedes Gebiet mindestens einen
+ * Nachbarn hat und dass die Nachbarschaft in beide Richtungen gilt. */
 const WELT = [
-  /^kontinente$/, /^bundeslaender$/, /^hauptstaedte(:|$)/,
+  /^kontinente$/, /^bundeslaender$/, /^hauptstaedte(:|$)/, /^nachbarn$/,
   /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/,
 ];
 const istWelt = (id) => WELT.some(r => r.test(id));

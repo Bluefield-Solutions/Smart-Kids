@@ -117,7 +117,17 @@ const D = {
     return { id:b.id, name:b.name, pfad:b.pfad, hauptstadt:s.hauptstadt,
              stadtstaat:s.stadtstaat, anker:s.anker,
              ablenker: I.HAUPTSTADT_ABLENKER[b.id] || [],
-             falle: I.ECHTE_FALLEN.includes(b.id) };
+             falle: I.ECHTE_FALLEN.includes(b.id),
+             /* Wer an wen grenzt (I21). Die Tafel gab es schon - sie hat
+                bis hierher nur die VIERFAERBUNG bedient, also die Frage
+                „welche zwei duerfen nicht dieselbe Farbe haben". Dieselbe
+                Auskunft beantwortet auch eine Aufgabe, und das ist die
+                billigste neue Ebene, die dieses Verzeichnis kennt: kein
+                neues Datum, kein neuer Bildschirm.
+                Sie steht AM LAND und nicht als eigene Tafel daneben - so
+                traegt jedes Gebiet, was zu ihm gehoert, und niemand muss
+                zwei Listen gleich halten (Regel 6). */
+             grenzt: NACHBARN[b.id] || [] };
   }),
   farben: vierfaerben(DEUTSCHLAND_MITTEL.map(b=>b.id)),
   /* Welche Karte ein Ausschnitt ist und woraus (I11). Im Buendel, weil

@@ -204,8 +204,28 @@ export async function zurEbenenwahl(seite, ebene = 'kontinente') {
 export async function durchGruppe(seite, ebene) {
   const da = await seite.$(`.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`);
   if (da) return false;
-  const gruppe = String(ebene).split(':')[0];
-  if (!(await seite.$(`.schirm.da [data-gruppe="${gruppe}"]`))) return false;
+  /* WELCHE Gruppe die Ebene traegt, steht nicht in ihrer Kennung.
+   *
+   * Bis I21 hiess die Gruppe wie der Teil vor dem Doppelpunkt
+   * (`hauptstaedte:europa` → `hauptstaedte`) - eine Ableitung, die genau
+   * so lange trug, wie eine Gruppe nur gleichnamige Ebenen hielt. „Wer
+   * grenzt an wen?" heisst `nachbarn` und liegt unter „Bundesländer";
+   * die Ableitung faende dort nichts und meldete „keine Gruppe".
+   *
+   * Also erst raten, dann suchen: die Kennung zuerst (sie stimmt in
+   * acht von neun Faellen und spart den Umweg), danach jede Gruppe, die
+   * auf dem Bildschirm steht. Es sind hoechstens zwei. */
+  const gruppen = await seite.$$eval('.schirm.da [data-gruppe]',
+    els => [...new Set(els.map(e => e.dataset.gruppe))]);
+  for (const g of [...new Set([String(ebene).split(':')[0], ...gruppen])]) {
+    if (!(await seite.$(`.schirm.da [data-gruppe="${g}"]`))) continue;
+    if (await gruppeOeffnen(seite, g, ebene)) return true;
+  }
+  return false;
+}
+
+/** EINE Gruppe oeffnen und nachsehen, ob die Ebene darin liegt. */
+async function gruppeOeffnen(seite, gruppe, ebene) {
   // Nicht ueber einen GRIFF klicken: zwischen `$` und `click` kann der
   // Bildschirm gewechselt haben, und ein Griff auf ein Element, das nicht
   // mehr am Baum haengt, wirft „not attached to the DOM".
@@ -216,10 +236,21 @@ export async function durchGruppe(seite, ebene) {
    * die wir gerade verlassen, traegt dieselbe Kennung und liegt die
    * Ueberblendung lang noch da. Das Warten waere sofort vorbei, und der
    * naechste Griff ginge ins Leere - unter Last zuverlaessig. */
-  await seite.waitForSelector(
-    `.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`, { timeout: 15000 });
-  await alleinIm(seite);
-  return true;
+  const traf = await seite.waitForSelector(
+    `.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`, { timeout: 6000 })
+    .catch(() => null);
+  if (traf) { await alleinIm(seite); return true; }
+  /* Falsche Gruppe - zurueck zur Wand, damit die naechste probiert
+     werden kann. Ohne den Rueckweg staende der Test in der offenen
+     Gruppe und faende dort keine einzige Kachel mehr. */
+  const zur = await seite.$('.schirm.da #zur');
+  if (zur) {
+    await zur.click();
+    await seite.waitForSelector('.schirm.da [data-ebene]', { timeout: 6000 })
+      .catch(() => {});
+    await alleinIm(seite);
+  }
+  return false;
 }
 
 /* Von der Ebenenwahl in die AUFGABE — seit R3 fuehrt er ueber den Vorlauf.
@@ -321,7 +352,13 @@ export async function istUmgekehrt(seite) {
        Karte beantwortet und haben kein `path.ziel` - die zweite kam
        dazu, und ohne diese Zeile lief der Durchgang in den Zeitablauf,
        weil er auf ein hervorgehobenes Ziel wartete, das es nicht gibt. */
-    return /^Wo liegt /.test(t) || /^Wohin gehört /.test(t);
+    /* DREI Formen seit I21: „Welches Bundesland grenzt an X?" wird
+       ebenfalls mit einem Tipp auf die Karte beantwortet. Sie hat
+       allerdings SEHR WOHL ein `path.ziel` - das gefragte Land ist
+       hervorgehoben, es ist ja der Bezugspunkt. Deshalb steht die
+       Erkennung hier am Fragetext und nicht an der Markierung. */
+    return /^Wo liegt /.test(t) || /^Wohin gehört /.test(t)
+        || /^Welches Bundesland grenzt an /.test(t);
   });
 }
 
@@ -570,6 +607,17 @@ export async function zeigeAufKarte(seite) {
      * und der Umriss traegt denselben Wert - `a3` waere `ITA` und faende
      * nichts. Gesucht wird deshalb, was am Bildschirm WIRKLICH steht,
      * statt sich auf eine der beiden zu verlassen. */
+    /* Bei den Nachbarn (I21) ist das gesuchte Gebiet NICHT der Gegenstand
+       der Sitzung: gefragt wird nach Bayern, getippt werden muss auf
+       einen seiner Nachbarn. Genommen wird der erste - welcher, ist
+       gleichgueltig, sie sind alle richtig, und „irgendeiner" waere im
+       Bericht nicht nachvollziehbar. */
+    if (lauf && Array.isArray(lauf.grenzt) && lauf.grenzt.length) {
+      const el = s.querySelector(`path.geb[data-id="${lauf.grenzt[0]}"]`);
+      if (el) { const b = el.getBoundingClientRect();
+        return { x: b.x + b.width / 2, y: b.y + b.height / 2,
+                 name: lauf.grenzt[0] }; }
+    }
     for (const kennung of [lauf && lauf.id, lauf && lauf.a3]) {
       if (!kennung || vonSitzung) continue;
       if (s.querySelector(`#treffer circle[data-id="${kennung}"]`)

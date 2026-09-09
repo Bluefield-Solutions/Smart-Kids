@@ -1556,7 +1556,7 @@ if (laeuft('spielen')) try {
    * Und: fuer Fiona muss jeder Name zu HOEREN sein. Sie liest nicht - ein
    * Bildschirm zum Anschauen, der nur Text zeigt, ist fuer sie leer.
    */
-  await p.click('[data-ebene="bundeslaender"]');
+  await p.click('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
   const vorlaufDa = await p.waitForSelector('.schirm.da #los', { timeout: 25000 })
     .then(() => true).catch(() => false);
   if (!vorlaufDa) merke('vorlauf', new Error(
@@ -1834,7 +1834,11 @@ if (laeuft('ablage')) try {
    * einmal.
    */
   const kachel = await p.evaluate(() => {
-    const k = document.querySelector('[data-ebene="bundeslaender"]');
+    /* Die Kachel OHNE Gruppenkennung: seit I21 liegt „Bundesländer"
+       hinter einer Gruppe, und die Gruppenkachel traegt dieselbe
+       Kennung. Gemessen werden soll der Stand DIESER Ebene, nicht die
+       Summe zweier. */
+    const k = document.querySelector('[data-ebene="bundeslaender"]:not([data-gruppe])');
     if (!k) return null;
     const marke = k.querySelector('.klebermarke');
     const fest  = k.querySelector('.balken i.fest');
@@ -2270,7 +2274,8 @@ if (laeuft('ablage')) try {
       'an der Kachel steht wieder ein „von vorne" — es kostet die Höhe, '
       + 'von der das Kachelbild lebt'));
 
-    await p.click('.schirm.da [data-ebene="bundeslaender"]');
+    await durchGruppe(p, 'bundeslaender');
+    await p.click('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
     await durchVorlaufWenn(p);
     await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
     await p.click('.schirm.da #zur');
@@ -2319,7 +2324,8 @@ if (laeuft('ablage')) try {
     // diese Ebene. Und es trifft sich gut - der Block darueber hat sie
     // gerade leergeraeumt, also ist der Fortschritt, den diese Probe
     // gleich loescht, garantiert IHRER.
-    await p.click('[data-ebene="bundeslaender"]');
+    await durchGruppe(p, 'bundeslaender');
+    await p.click('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
   await durchVorlaufWenn(p);
     await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
     // Zwei Aufgaben loesen, damit es ueberhaupt etwas zu loeschen gibt -
@@ -4578,7 +4584,12 @@ const gespielt = {};
 const gespieltEnglisch = {};
 const EBENEN_ALLE = ['kontinente', 'laender:europa', 'laender:afrika',
   'laender:asien', 'laender:nordamerika', 'laender:suedamerika',
-  'bundeslaender', 'hauptstaedte'];
+  /* `nachbarn` (I21) steht bei ALLEN vier: sie ist die erste
+     Erdkunde-Aufgabe, die ohne ein einziges gelesenes Wort geht - das
+     gefragte Land ist hervorgehoben, die Frage wird gesprochen, getippt
+     wird auf eine Flaeche daneben. Wer sie einem Profil vorenthaelt,
+     nimmt sie ausgerechnet dem, fuer das sie gebaut ist. */
+  'bundeslaender', 'hauptstaedte', 'nachbarn'];
 // Ebenen, die es nur für EIN Kind gibt. Fiona rechnet, Lea (noch) nicht -
 // stünde die Rechenkachel bei beiden, wäre eine davon die falsche.
 /* Seit R4 spielt auch das Profil „Eltern" mit. Es kommt in denselben
@@ -5924,7 +5935,12 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * aus. Eine eigene Fassung desselben Ablaufs, und sie war die
          * unvollstaendige: was zweimal dasteht, veraltet einmal
          * (Regel 6). */
-        await abgeschlossen(p, wer, ebene, /Wohin gehört|Wo liegt/,
+        /* Drei Fragen laufen durch diesen Zweig, und alle drei muessen
+           angesagt werden - Fiona liest nicht. „grenzt an" kam mit I21
+           dazu; ohne es hier meldete der Rauchtest „Fiona bekam nur 27
+           von 28 Aufgaben vorgelesen", und das war kein Fehlalarm,
+           sondern eine Zeile, die die neue Frage nicht kannte. */
+        await abgeschlossen(p, wer, ebene, /Wohin gehört|Wo liegt|grenzt an/,
           `auf ${gesucht} getippt`);
         continue;
       }
@@ -6661,7 +6677,7 @@ if (laeuft('hinweis')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
   await p.click('[data-profil="fiona"]');
   await zurEbenenwahl(p, 'bundeslaender');
-  await p.click('[data-ebene="bundeslaender"]');
+  await p.click('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
   await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 25000 });
   await durchVorlaufWenn(p);
   await p.waitForSelector('.schirm.da .karte svg path.ziel', { timeout: 15000 });
@@ -6901,7 +6917,19 @@ if (laeuft('test')) try {
       // Gewartet wird auf die Ebenenwahl, nicht auf 600 ms (Q42). Ob der
       // Pokal an der Kachel steht, ist die Frage danach - nicht diese.
       await bis(p, () => !!document.querySelector('.schirm.da [data-ebene]'), 10000);
-      const bleibt = await p.evaluate(() => !!document.querySelector('.schirm.da .pokal'));
+      /* DURCH DIE GRUPPE (I21). „Bundesländer" liegt seit I21 hinter
+         einer Gruppenkachel, und die traegt ihren Pokal erst, wenn ALLE
+         ihre Teile bestanden sind - dieselbe Regel wie bei den
+         Hauptstaedten seit Q17. Der Pokal DIESER Ebene steht also an
+         ihrer eigenen Kachel, eine Ebene tiefer. Ohne diesen Schritt
+         suchte der Rauchtest ihn an der Gruppe und meldete zu Recht,
+         dass dort keiner steht. */
+      await durchGruppe(p, 'bundeslaender');
+      const bleibt = await p.evaluate(() => {
+        const k = document.querySelector(
+          '.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
+        return !!(k && k.querySelector('.pokal'));
+      });
       if (!bleibt)
         merke('test', new Error('der Pokal steht nach dem Test nicht an der Kachel — '
           + 'dann sieht niemand, dass er ihn hat'));
@@ -6912,23 +6940,34 @@ if (laeuft('test')) try {
          * Hilfe - ohne sie waere der Test fuer sie keine Pruefung, sondern
          * eine Sperre. Geprueft wird das bei GEFUELLTER Ebene, sonst
          * bezeugte es nur, dass sie noch nichts gesammelt hat. */
+        /* Der Rueckweg ist seit I21 EINEN Schritt laenger: die Zeile
+           darueber steht in der geoeffneten Gruppe, nicht mehr auf der
+           Ebenenwahl. Gewartet wird deshalb auf IRGENDEINE Wand - die
+           Schleife darunter geht ohnehin so weit zurueck, bis Fiona
+           dasteht. Eine feste Erwartung auf „Welten oder Profile" war
+           hier die Zeile, die den Umbau nicht ueberlebt hat. */
         await p.click('.schirm.da #zur');
-        await p.waitForSelector('.schirm.da [data-welt], .schirm.da [data-profil]',
-          { timeout: 8000 });
+        await p.waitForSelector('.schirm.da [data-welt], .schirm.da [data-profil], '
+          + '.schirm.da [data-ebene]', { timeout: 8000 });
         while (!(await p.$('.schirm.da [data-profil="fiona"]'))) {
-          const zur = await p.$('.schirm.da #zur');
-          if (!zur) break;
-          /* Auf das Ende der Blende warten, nicht auf 400 ms (Q42):
-             waehrend sie laeuft stehen zwei Bildschirme, und die Schleife
-             sucht Fiona dann womoeglich auf dem alten. */
-          await zur.click();
+          /* Erst warten, DANN greifen - und nicht ueber einen Griff.
+             Der Rueckweg ist seit I21 einen Schritt laenger, und damit
+             lief die Schleife zum ersten Mal in eine Ueberblendung
+             hinein: `elementHandle.click: Element is not attached to
+             the DOM`. Zwischen `$` und `click` kann der Bildschirm
+             gewechselt haben - dieselbe Falle, vor der `durchGruppe`
+             seit langem warnt. */
+          await bis(p, () => document.querySelectorAll('#buehne .schirm').length === 1, 8000);
+          if (!(await p.$('.schirm.da #zur'))) break;
+          await p.$eval('.schirm.da #zur', x => x.click());
           await bis(p, () => document.querySelectorAll('#buehne .schirm').length === 1, 8000);
         }
         await p.click('[data-profil="fiona"]');
         await zurEbenenwahl(p, 'bundeslaender');
         const f = await p.evaluate(() => ({
           test: !!document.querySelector('[data-test="bundeslaender"]'),
-          gesammelt: (document.querySelector('[data-ebene="bundeslaender"] .stand')
+          gesammelt: (document.querySelector(
+            '[data-ebene="bundeslaender"]:not([data-gruppe]) .stand')
             ?.textContent || '').trim() }));
         if (f.test)
           merke('test', new Error('Fiona bekommt einen Test angeboten — ihre Auswahl aus '
@@ -6961,7 +7000,7 @@ if (laeuft('umgekehrt')) try {
   await p.waitForSelector('[data-profil="lea"]');
   await p.click('[data-profil="lea"]');
   await zurEbenenwahl(p, 'bundeslaender');
-  await p.click('[data-ebene="bundeslaender"]');
+  await p.click('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
   await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg', { timeout: 20000 });
   await durchVorlaufWenn(p);
 
@@ -7593,7 +7632,7 @@ if (laeuft('abzeichen')) try {
   await q.waitForSelector('[data-profil="fiona"]');
   await q.click('[data-profil="fiona"]');
   await zurEbenenwahl(q, 'bundeslaender');
-  await q.click('[data-ebene="bundeslaender"]');
+  await q.click('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])');
   await durchVorlaufWenn(q);
   await q.waitForSelector('.schirm.da .karte svg', { timeout: 25000 });
   await q.evaluate(() => { window.__gesagt = []; });

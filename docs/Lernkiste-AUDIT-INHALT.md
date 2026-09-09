@@ -1112,6 +1112,78 @@ Plätze für dreiundzwanzig Räume — **der nächste Raum passt nicht mehr**, u
 dann ist die Antwort nicht noch eine Stufe kleiner, sondern eine Seite mehr:
 die Tierwand blättert längst, die Raumwand nicht.
 
+### I21 · „Wer grenzt an wen?" — die erste neue Ebene seit I13 — **gebaut (v589)**
+
+I20 hat die Grenze benannt: mehr Räume gibt es nur über **mehr Ebenen**,
+nicht über mehr Aufkleber. Diese hier stand schon im Rückstandsverzeichnis
+— **B3r**, seit Monaten, mit der Begründung, warum sie unten steht: „jede
+Form einzeln, und keine braucht neue Daten — er ist jederzeit machbar und
+deshalb nie dringend."
+
+Die Nachbarschaften der sechzehn Bundesländer liegen seit dem ersten Bau in
+`prototyp/nachbarn.json`. Sie haben bis I21 **nur die Vierfärbung bedient**
+— die Frage, welche zwei Gebiete nicht dieselbe Farbe tragen dürfen.
+Dieselbe Auskunft beantwortet auch eine Aufgabe.
+
+**Was die Ebene fragt, fragt keine andere.** „Bundesländer" ist ein
+Bilderbuch mit sechzehn Formen; gelernt wird ein Name je Form. Hier ist die
+Karte eine **Karte**: was neben was liegt, ist das Einzige, was eine Karte
+weiß und eine Bilderliste nicht.
+
+**Mehrere Antworten sind richtig, und das ist der Punkt.** Hessen hat sechs
+Nachbarn; wer einen davon findet, hat die Frage beantwortet. Eine Aufgabe
+mit genau einer Lösung wäre hier eine Fälschung — sie prüfte nicht
+Nachbarschaft, sondern das Auswendiglernen einer willkürlich
+herausgegriffenen Paarung.
+
+**Und sie ist die erste Erdkunde-Aufgabe, die ohne ein einziges gelesenes
+Wort funktioniert.** Das gefragte Land steht hervorgehoben auf der Karte,
+die Frage wird gesprochen, getippt wird auf eine Fläche daneben. Für Fiona
+ist das der Unterschied zwischen „mitspielen" und „vorgelesen bekommen".
+
+**Gebaut aus dem, was da war.** Kein neuer Bildschirm: derselbe Kartenschirm
+wie „Wo liegt Bayern?", nur mit zwei getrennten Begriffen statt einem —
+`umgekehrt` heißt „das gesuchte Gebiet ist NICHT markiert", `karteAntwortet`
+heißt „getippt wird auf die Karte". Der erste Anlauf hatte beides an einem
+Namen hängen, und damit war Hessen unsichtbar: „Welches Bundesland grenzt an
+Hessen?" auf einer Karte ohne Hessen.
+
+**Vier Befunde, alle von Toren:**
+
+- `passt`: die dreizehnte Kachel drückt die Erdkunde-Wand über ihre Grenze —
+  die Bilder fielen auf dem kleinsten Gerät von **73 auf 19 Punkte**, an 22
+  Kacheln auf einmal. Deshalb teilt sich die neue Ebene eine Kachel mit
+  „Bundesländer", nach dem Muster von Q17: *Bundesländer — Wie heißen sie? /
+  Wer grenzt an wen?*
+- Damit wurde `durchGruppe` in `tor/chromium.mjs` falsch: es leitete die
+  Gruppe aus der Kennung ab (`hauptstaedte:europa` → `hauptstaedte`), und
+  das trug genau so lange, wie eine Gruppe nur gleichnamige Ebenen hielt.
+  Jetzt sucht es die Gruppen, die dastehen.
+- `smoke`: „Fiona bekam nur 27 von 28 Aufgaben vorgelesen" — die Zeile, die
+  gesprochene Fragen zählt, kannte die neue Form nicht. Kein Fehlalarm,
+  sondern eine Prüfung, die nach einer festen Liste sucht.
+- Und der Rückweg aus dem Test ist einen Schritt länger geworden; dabei lief
+  eine Schleife zum ersten Mal in eine Überblendung
+  (`elementHandle.click: Element is not attached to the DOM`) — dieselbe
+  Falle, vor der `durchGruppe` seit langem im Kommentar warnt.
+
+**Ein neues Tor**: `nachbarn` prüft die Tafel, die jetzt eine Aufgabe trägt
+— jedes Gebiet hat mindestens einen Nachbarn, keine Kennung zeigt ins Leere,
+und die Nachbarschaft gilt **in beide Richtungen**. Die letzte Zeile ist die
+eigentliche: eine halbe Eintragung ist auf der Karte nicht zu sehen und in
+der Aufgabe ein Fehler, der nur in einer der beiden Fragen auftaucht.
+Gemessen: 16 Gebiete, **29 Grenzen**, die meisten Nachbarn hat Niedersachsen
+mit neun.
+
+**Und drei neue Bilder** (Schritt 3): der Raum zur neuen Ebene heißt „In der
+Hundeschule" — Pudel, Blindenhund, Rettungshund. Der erste Entwurf sah aus
+wie drei Bären; Hunde brauchen **Schlappohren und eine längere Schnauze**,
+und der Bügel des Blindenhundes steht neben dem Ohr, nicht darauf (bei y=30
+ist das Ohr nur noch zwei Punkte breit — dort ist Platz).
+
+Damit: **80 von 124 gemalt**, 72 sammelbar, 24 Räume, 24 Kulissen — und die
+Reichweite des knappsten Profils steigt von 42 auf **45**.
+
 ## Das Werkzeug
 
 `npm run vielfalt` misst die Tabelle oben bei jedem Lauf neu. Es lädt die

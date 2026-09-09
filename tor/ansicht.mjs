@@ -407,8 +407,20 @@ const AUFNAHMEN = [
      Deutschland und Europa. Ohne Vorbild waere er der einzige
      Bildschirm der App ohne Bild — und ausgerechnet der, den Fiona nie
      zu sehen bekommt und der deshalb beim Durchklicken nicht auffaellt. */
+  /* `gruppe:` ausdruecklich, seit es DREI Gruppenkacheln gibt (I21).
+     Ohne sie nahm die Aufnahme die erste, die dasteht - und das war ab
+     I21 nicht mehr dieselbe. Ein Vorbild, das ohne Zutun ein anderes
+     Motiv zeigt, ist kein Vorbild. */
   { name:'quer-gruppe', spiel:null, kind:'lea', quer:true, wahl:'.schirm.da',
-    tun:'gruppe' },
+    tun:'gruppe', gruppe:'hauptstaedte' },
+  /* Und die neue Gruppe (I21): „Bundesländer — was möchtest du?" mit
+     „Wie heißen sie?" und „Wer grenzt an wen?".
+     Sie ist die erste Gruppe, deren Teile keine ORTE sind, sondern zwei
+     Fragen - und deshalb die einzige mit einer anderen Ueberschrift.
+     Genau die steht hier im Bild; eine Zeile Code entscheidet darueber,
+     und ohne Aufnahme entschiede sie unbeobachtet. */
+  { name:'quer-gruppe-bundeslaender', spiel:null, kind:'lea', quer:true,
+    wahl:'.schirm.da', tun:'gruppe', gruppe:'bundeslaender' },
   /* Die Nadeln (P10) — der einzige Bildschirm, auf dem eine Trefferflaeche
    * zu SEHEN ist. Zwei Gebiete haengen hier neben der Karte, mit Faden
    * und farbigem Kopf. Dass sie da sind, misst `ziehen --nur=treffer`;

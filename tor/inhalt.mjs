@@ -830,6 +830,55 @@ console.log(`    ${ZAHL.kontinente} Kontinente + ${ZAHL.laender} Länder + `
  * laesst die Zeile einfach weg; auf dem Bildschirm ist nichts zu sehen,
  * was ein Fehler waere.
  */
+/* ==================================================== Wer grenzt an wen ===
+ *
+ * Die Tafel `prototyp/nachbarn.json` gibt es seit dem ersten Bau - sie
+ * hat bis I21 nur die VIERFAERBUNG bedient. Dort ist ein Fehler
+ * unsichtbar: wer eine Nachbarschaft vergisst, bekommt vielleicht zwei
+ * gleichfarbige Nachbarn, und das faellt niemandem auf. Seit sie eine
+ * AUFGABE beantwortet, ist derselbe Fehler eine falsche Antwort - und
+ * eine, die das Kind nicht widerlegen kann.
+ *
+ * Drei Zeilen, und jede prueft etwas anderes:
+ *   - jedes Gebiet hat mindestens einen Nachbarn (sonst waere die Frage
+ *     nach seinen Nachbarn unbeantwortbar),
+ *   - keine Kennung zeigt ins Leere,
+ *   - und die Nachbarschaft gilt in BEIDE Richtungen. Das ist die
+ *     eigentliche Zeile: eine halbe Eintragung ist auf der Karte nicht
+ *     zu sehen und in der Aufgabe ein Fehler, der nur in einer der
+ *     beiden Fragen auftaucht.
+ */
+console.log('\n  Tor `nachbarn`');
+{
+  const roh = JSON.parse(fs.readFileSync(
+    new URL('../prototyp/nachbarn.json', import.meta.url), 'utf8'));
+  const ids = new Set(DEUTSCHLAND_FEIN.map(g => g.id));
+  const namen = new Map(DEUTSCHLAND_FEIN.map(g => [g.id, g.name]));
+  const ohne = [...ids].filter(id => !(roh[id] || []).length);
+  pruefe(!ohne.length, `ohne Nachbarn: ${ohne.join(', ')} — die Ebene „Wer grenzt `
+    + 'an wen?" könnte für sie keine Frage stellen');
+  const fremd = Object.keys(roh).filter(id => !ids.has(id));
+  pruefe(!fremd.length, `Nachbarschaften für Gebiete, die es nicht gibt: ${fremd.join(', ')}`);
+  const zeigtInsLeere = Object.entries(roh)
+    .flatMap(([a, ns]) => ns.filter(b => !ids.has(b)).map(b => `${a}→${b}`));
+  pruefe(!zeigtInsLeere.length, `Nachbar ohne Gebiet: ${zeigtInsLeere.join(', ')}`);
+  const einseitig = Object.entries(roh)
+    .flatMap(([a, ns]) => ns.filter(b => !(roh[b] || []).includes(a))
+      .map(b => `${namen.get(a) || a} nennt ${namen.get(b) || b}, umgekehrt nicht`));
+  pruefe(!einseitig.length, `einseitige Nachbarschaft: ${einseitig.join(' · ')}`);
+  /* Und eine Ratsche auf der Zahl: 16 Gebiete, und die Summe der
+     Nachbarschaften ist gerade (jede zaehlt zweimal). Sinkt sie, ist
+     eine Grenze verschwunden, ohne dass eine der Zeilen darueber
+     zuckt - genau die Verfallsart, die dieses Verzeichnis kennt. */
+  const summe = Object.values(roh).reduce((n, ns) => n + ns.length, 0);
+  pruefe(summe >= 48 && summe % 2 === 0,
+    `${summe} Nachbarschaften eingetragen (erwartet mindestens 48, und immer gerade)`);
+  console.log(`    ${ids.size} Gebiete, ${summe / 2} Grenzen, jede in beide Richtungen `
+    + `eingetragen · die meisten Nachbarn: ${[...ids]
+      .sort((a, b) => (roh[b] || []).length - (roh[a] || []).length)
+      .slice(0, 2).map(id => `${namen.get(id)} (${roh[id].length})`).join(', ')}`);
+}
+
 console.log('\n  Tor `saetze`');
 {
   /* Gemessen wird gegen die WIRKLICH gespielten Gebiete (Regel 5), also

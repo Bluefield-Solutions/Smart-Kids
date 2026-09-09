@@ -348,7 +348,7 @@ for (const abend of [false, true]) {
   await p.$eval('[data-profil="fiona"]', e => e.click());
   await p.waitForSelector('.schirm.da [data-welt]'); await schau('Weltenwahl');
   await zurEbenenwahl(p, 'bundeslaender'); await schau('Ebenenwahl');
-  await p.$eval('[data-ebene="bundeslaender"]', e => e.click());
+  await p.$eval('.schirm.da [data-ebene="bundeslaender"]:not([data-gruppe])', e => e.click());
   await p.waitForSelector('.schirm.da #los, .schirm.da .karte svg path.ziel', { timeout: 20000 });
   if (await p.$('.schirm.da #los')) { await schau('Vorlauf'); await durchVorlauf(p); }
   await p.waitForSelector('.schirm.da .karte svg path.ziel'); await schau('Spiel');
