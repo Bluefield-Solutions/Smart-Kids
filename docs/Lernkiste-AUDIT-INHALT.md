@@ -16,12 +16,12 @@ gleichen Sätze?"
 *(Diese Zahl war zur Hälfte falsch — siehe I6. Die Hälfte, die stimmte,
 ist abgearbeitet.)*
 
-**Stand nach allen fünfzehn Paketen (v570):**
+**Stand nach allen sechzehn Paketen (v575):**
 
-> **0 von 122 Profil-Ebenen** unter zwei Runden Vorrat. 55 weitere liegen
+> **0 von 140 Profil-Ebenen** unter zwei Runden Vorrat. 67 weitere liegen
 > darunter, weil ihr Vorrat die Welt ist.
 
-Aus 100 Profil-Ebenen sind 122 geworden. Acht davon sind **neue Fragen**
+Aus 100 Profil-Ebenen sind 140 geworden. Acht davon sind **neue Fragen**
 und nicht längere Listen:
 
 | | Ebene | Für wen | Vorrat |
@@ -43,8 +43,8 @@ heutigen Stand:
 |---|---|---|
 | Länder mit Namen | 69 | **124** |
 | Karten | 7 | **8** |
-| Hauptstädte in Europa | 17 | **29** |
-| Hauptstädte in Südosteuropa | — | **7** |
+| Hauptstädte (alle Karten) | 17 | **123** |
+| Karten mit Hauptstadtebene | 1 | **8** |
 | Gezeichnete Flaggen | 69 | **109** |
 | Verwechslungspaare | 13 | **22** |
 | Falsche Freunde · Wendungen · Hörsätze | 30 · 20 · 12 | **60 · 60 · 34** |
@@ -835,6 +835,81 @@ hierher immer gleich hoch waren. Eine Prüfung, die im Befundfall
 abstürzt, hat nie etwas bewiesen (Regel 1). Beide Stellen tragen jetzt
 eine Gegenprobe — die zweite ist die, die den Zweig überhaupt zum ersten
 Mal erreicht hat.
+
+### I16 · Die Hauptstadt ist Inhalt, nicht Geodatum — **gebaut (v575)**
+
+Der nächste Schritt sollte „Hauptstädte auf den übrigen sechs Karten"
+sein. Beim Nachsehen in den Rohdaten kam etwas anderes heraus.
+
+> **Natural Earths `Admin-0 capital` ist außerhalb Europas in sieben von
+> 88 Fällen nicht die Hauptstadt.**
+
+| Land | stand in den Daten | ist es aber |
+|---|---|---|
+| Myanmar | Rangun | **Naypyidaw** (seit 2005) |
+| Kasachstan | Nur-Sultan | **Astana** (seit 2022 wieder) |
+| Tansania | Daressalam | **Dodoma** (seit 1996) |
+| Elfenbeinküste | Abidjan | **Yamoussoukro** (seit 1983) |
+| Benin | Cotonou | **Porto-Novo** |
+| Südafrika | Kapstadt | **Pretoria** (Regierungssitz) |
+| Bolivien | La Paz | **Sucre** (nach der Verfassung) |
+
+Und die Gegenrichtung ist genauso schief: **`Admin-0 capital alt` heißt
+nicht „Regierungssitz".** Bei Japan steht dort Kyoto, bei Marokko El
+Aaiún, bei Nigeria Lagos, bei den Philippinen Baguio City — eine
+ehemalige Hauptstadt, ein besetztes Gebiet, eine ehemalige Hauptstadt und
+eine Sommerresidenz. Die Ableitung `falle: !!regierungssitz`, die seit R6
+in `bauen.mjs` steht, hätte bei vier Ländern behauptet, die Regierung
+sitze woanders.
+
+**Das Soll kommt aus der Referenz (Regel 3) — aber die Referenz für „was
+ist die Hauptstadt" ist der Schulatlas und nicht ein Kartendatensatz, der
+nach Bevölkerungsschwerpunkten gebaut ist.** Die Antwort steht jetzt in
+`HAUPTSTADT_LAND`: 123 Länder, sieben davon mit ausgeschriebenem
+Regierungssitz. Aus den Geodaten kommt nur noch die **Lage**, gesucht
+über alle Orte des Landes und ohne Rücksicht auf das Kennzeichen — was
+nötig war: **Pjöngjang** steht in diesem Datensatz als `Populated place`
+und **Niamey** als `Admin-1 capital`. Beide hätten das alte Werkzeug zum
+Absturz gebracht, sobald Asien und Afrika Hauptstädte bekommen.
+
+**Sechs neue Ebenen, und sie werden erzeugt statt aufgeschrieben.** Der
+Schalter `hauptstaedte` im Backwerkzeug ist weg: er stand bei R6 bei
+einer Karte, bei I14 bei zwei, und bei acht ist er keine Entscheidung
+mehr, sondern eine Stelle, an der man ihn vergessen kann — genau das ist
+bei I14 passiert.
+
+| Karte | Hauptstädte | Karte | Hauptstädte |
+|---|---|---|---|
+| Asien | 30 | Südamerika | 12 |
+| Afrika | 30 | Mittelamerika | 9 |
+| Europa | 29 | Südosteuropa | 7 |
+| Nordamerika | 3 | Ozeanien | 3 |
+
+**Grönland steht mit Absicht nicht dabei**: Nuuk ist die Hauptstadt einer
+autonomen Region, nicht eines Staates. Das steht als benannter Grund in
+`HAUPTSTADT_OHNE_FRAGE`, und das Tor verlangt für jedes Ziel entweder
+eine Hauptstadt oder einen solchen Grund — „wir haben uns etwas dabei
+gedacht" darf nicht aussehen wie „vergessen".
+
+**176 neue Ablenker**, nach derselben Regel wie in Europa: die Stadt, die
+jemand für die Hauptstadt *halten* könnte. In Asien und Afrika ist das der
+Regelfall — Istanbul gegen Ankara, Mumbai gegen Neu-Delhi, Lagos gegen
+Abuja, Rangun gegen Naypyidaw. Wo die Regierung woanders sitzt, steht
+diese Stadt vorn; **das Tor hat drei Fälle gefunden, in denen ich sie
+hinten hatte** (Malaysia, Sri Lanka, Chile).
+
+**Zwei Funde nebenbei, beide von Toren:**
+
+- `regeln` hat gemeldet, dass ich towerfronts Regelnummern benutzt habe.
+  „Das Soll kommt aus der Referenz" ist in diesem Verzeichnis **Regel 3**;
+  im anderen trägt derselbe Satz die Zehn. Zwei Projekte, zwei
+  Nummerierungen, ein Kopf.
+- `npm run doppelt -- --neu` hat die Begründungen **aller sechzehn**
+  eingetragenen Dopplungen mit „NOCH NICHT BEGRÜNDET" überschrieben. Ein
+  Aufruf, und die einzige Auskunft, die diese Datei wertvoll macht, war
+  weg — das Tor wäre danach grün geblieben, weil die Zahlen stimmen. Es
+  übernimmt sie jetzt anhand des Dateisatzes und sagt, wie viele es
+  behalten hat.
 
 ## Das Werkzeug
 

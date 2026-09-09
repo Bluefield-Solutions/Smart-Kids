@@ -2000,6 +2000,54 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
     sagt:'quer-praeposition' },
 
+  /* --- I16: die Hauptstadt kommt aus dem Inhalt ----------------------- *
+   *
+   * Bis I15 kam sie aus Natural Earths `Admin-0 capital` - und die ist
+   * ausserhalb Europas in sieben von 88 Faellen nicht die Hauptstadt.
+   * Seit I16 steht die Antwort in `HAUPTSTADT_LAND`, und das Tor haelt
+   * den GEBACKENEN Namen dagegen. Ohne diese Zeile koennte das
+   * Backwerkzeug wieder auf die Kartendaten zurueckfallen, ohne dass
+   * etwas rot wird - genau der Zustand, in dem das Verzeichnis
+   * anderthalb Jahre war.
+   *
+   * Der Eingriff traegt Myanmars alte Hauptstadt ein. Rangun war es bis
+   * 2005 und steht bis heute in den Kartendaten; wenn diese Probe nicht
+   * anschlaegt, ist der Weg zurueck dorthin wieder offen. */
+  { n:'die Hauptstadt weicht von der gebackenen Lage ab', tor:'inhalt',
+    deckt:'inhalt', datei:E,
+    such:"  MMR:'Naypyidaw',",
+    ersatz:"  MMR:'Rangun',",
+    an:{ datei:E, text:"MMR:'Rangun'" },
+    sagt:'die Antwort kommt aus der falschen Quelle' },
+
+  /* Ein Ziel ohne Hauptstadt und ohne Grund.
+   *
+   * Groenland ist das einzige der 124 Ziele ohne Hauptstadtfrage - Nuuk
+   * ist die Hauptstadt einer autonomen Region. Das steht als Satz in
+   * `HAUPTSTADT_OHNE_FRAGE`, und der Eingriff nimmt ihn weg. Ohne die
+   * Pruefung saehe „hat keine Hauptstadt, weil wir uns etwas dabei
+   * gedacht haben" genauso aus wie „ist beim Nachtragen vergessen
+   * worden". */
+  { n:'ein Ziel verliert seine Hauptstadt ohne Grund', tor:'inhalt',
+    deckt:'inhalt', datei:E,
+    such:"export const HAUPTSTADT_OHNE_FRAGE = {\n  GRL:",
+    ersatz:"export const HAUPTSTADT_OHNE_FRAGE = {\n  XXX:",
+    an:{ datei:E, fehlt:'  GRL:' },
+    sagt:'ohne Hauptstadt und ohne Grund' },
+
+  /* Und die Ratsche je Karte.
+   *
+   * Acht Karten, acht Zahlen - und die Zahlen sind der einzige Schutz
+   * davor, dass eine Hauptstadt still aus dem Backen faellt (das ist bei
+   * R6 fuenf Staedten passiert). Eine Karte OHNE Ratsche waere die
+   * neunte, die niemand zaehlt. */
+  { n:'eine Karte faehrt ohne Hauptstadt-Ratsche', tor:'inhalt',
+    deckt:'inhalt', datei:'tor/inhalt.mjs',
+    such:"                    australien:3 };",
+    ersatz:"                  };",
+    an:{ datei:'tor/inhalt.mjs', fehlt:'australien:3 };' },
+    sagt:'ohne Hauptstadt-Ratsche' },
+
   /* --- I15: die Raumwand auf dem schmalen Schirm ---------------------- *
    *
    * Siebzehn Raeume statt fuenfzehn sind auf 390 x 844 sechs Reihen
