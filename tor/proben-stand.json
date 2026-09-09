@@ -656,6 +656,16 @@
       "zeit": "2026-09-08",
       "s": 16
     },
+    "die Raumwand auf dem schmalen Schirm bekommt ihren Platz zurueck": {
+      "commit": "c6f89f59a6f00c44c18a15f708d694bd0d733f2d",
+      "zeit": "2026-09-09",
+      "s": 390
+    },
+    "die Raumzellen werden auf dem schmalen Schirm ungleich hoch": {
+      "commit": "c6f89f59a6f00c44c18a15f708d694bd0d733f2d",
+      "zeit": "2026-09-09",
+      "s": 196
+    },
     "Suedosteuropa erbt den Nachsatz, den nur Europa hat": {
       "commit": "51dddd4ae8accecc402f61c4343af032fbb3a5a7",
       "zeit": "2026-09-08",
@@ -1517,9 +1527,9 @@
       "s": 77
     },
     "der Kapitelstreifen sperrt auf dem schmalen Schirm einen Reiter aus": {
-      "commit": "204b2d30346a4f5d3dff88c12bc33723a1b0d453",
+      "commit": "c6f89f59a6f00c44c18a15f708d694bd0d733f2d",
       "zeit": "2026-09-09",
-      "s": 163
+      "s": 161
     },
     "die Abzeichenseite zeigt wieder nur drei offene Abzeichen": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
