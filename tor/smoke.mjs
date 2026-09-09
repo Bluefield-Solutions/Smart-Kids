@@ -5922,6 +5922,24 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         const gesucht = await zeigeAufKarte(p);
         wege.add(`${wer}: umgekehrt gezeigt`);
         await bewertet(p);
+        /* UND ES MUSS RICHTIG SEIN (I21).
+         *
+         * `zeigeAufKarte` tippt nicht irgendwohin: es nimmt die Stelle,
+         * die das Spiel selbst als Antwort fuehrt - bei „Wo liegt X?"
+         * das gesuchte Gebiet, bei den Nachbarn einen aus `grenzt`. Wenn
+         * DAS nicht als richtig gilt, ist die Aufgabe nicht zu loesen.
+         *
+         * Bis I21 stand hier nur `bewertet(p)`, und das ist wahr fuer
+         * jedes Urteil - richtig, fast, aufgeloest. Der Zweig war damit
+         * ein Durchlauf ohne Aussage: die Gegenprobe „ein Nachbar wird
+         * nicht mehr als richtig gewertet" lief zweimal ins Leere, weil
+         * eine falsche Antwort hier nichts kostete. */
+        const richtig = await p.evaluate(() =>
+          !!document.querySelector('.schirm.da .frage .richtigText'));
+        if (!richtig) merke('durchgang', new Error(
+          `${wer}/${ebene}: der Tipp auf „${gesucht}" wurde nicht als richtig `
+          + 'gewertet — getippt wurde auf die Stelle, die das Spiel selbst '
+          + 'als Antwort führt'));
         /* Und dann RAUS — ueber `abgeschlossen`, wie jeder andere Zweig.
          *
          * Bis F4 war dieser Zweig tot: in den Erdkundeebenen kommt die
