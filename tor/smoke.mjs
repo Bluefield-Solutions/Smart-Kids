@@ -5074,9 +5074,18 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * `flaggenpaare` (F3) steht daneben und ist die SIEBTE Art: zwei
      * Flaggen statt vier, ein Versuch statt drei, und danach eine
      * Erklaerung. Sie hier zu vergessen waere derselbe Fehler zum
-     * vierten Mal - deshalb kam sie mit der Ebene und nicht danach. */
+     * vierten Mal - deshalb kam sie mit der Ebene und nicht danach.
+     *
+     * `nachbarn` (I21) ist die ACHTE, und der Fehler kam trotzdem zum
+     * fuenften Mal: die Ebene stand hier nicht, also spielte der
+     * Kurzlauf sie nicht, also blieb `smoke` unter jedem Eingriff gruen -
+     * und die Gegenprobe „ein Nachbar wird nicht mehr als richtig
+     * gewertet" bewies zweimal nichts. Sie ist die einzige Art, bei der
+     * MEHRERE Antworten richtig sind; genau das faellt aus, wenn sie
+     * fehlt. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
+                    || e === 'nachbarn'
                     || e === 'laender:europa' || e.startsWith('rechnen')
                     || e === 'flaggen:europa' || e === 'flaggen:paare' || e === 'flaggen:karte'
                     || e.startsWith('englisch') || e.startsWith('freunde')
