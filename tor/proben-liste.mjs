@@ -7443,17 +7443,25 @@ export const PROBEN = [
 
   /* 3. Und dieselbe Wand im kurzen Querformat.
    *
-   * Hier ist es die Mindestbreite selbst, die die Spaltenzahl setzt:
-   * 70 gibt acht Spalten und drei Reihen, 64 gibt neun, und mit neun
-   * brauchen zwei Namen drei Zeilen. Der Eingriff setzt sie auf 88
-   * zurueck - sechs Spalten, vier Reihen, 175 Punkte in 141. */
-  { n:'die Raumwand im Querformat faellt auf sechs Spalten zurueck',
+   * Der Eingriff nimmt den GANZEN Block weg, alle drei Zeilen, und das
+   * ist nicht Bequemlichkeit: die drei sind EINE Massnahme. Der erste
+   * Anlauf nahm nur die Spaltenzahl zurueck - sechs Spalten statt acht -
+   * und `passt` blieb gruen. Zu Recht: das Raster steht auf
+   * `grid-auto-rows:1fr`, es laeuft nicht ueber, es DRUECKT die Zellen
+   * zusammen. Bei sechs Spalten und kleiner Schrift waren sie 41 Punkte
+   * hoch, und das meldet `passt` nur als Hinweis, weil ein Hinweis kein
+   * Ueberlauf ist. Erst ohne die kleinere Schrift wird aus dem
+   * Zusammendruecken ein Ueberlauf, den das Tor sieht.
+   *
+   * Was dabei herauskommt, ist ein Befund fuer sich und steht im
+   * Rueckstandsverzeichnis: eine Zelle unter dem Fingermass sollte kein
+   * Hinweis sein. */
+  { n:'die Raumwand im Querformat verliert ihr eigenes Mass',
     tor:'passt', args:['--teil=1/5'], bauen:true, datei:V,
-    such:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}',
-    ersatz:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}',
-    /* Der Anker sucht das VERSCHWINDEN und nicht das Neue: „88px" steht
-       ohnehin schon in der Datei (die Grundregel des Rasters), „70px"
-       genau einmal - und nach dem Eingriff gar nicht mehr. */
+    such:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}\n'
+      + '  .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.78)}\n'
+      + '  .rollen.buch .raumzelle .raumzeichen{width:20px;height:20px}\n',
+    ersatz:'',
     an:{ ...DIST, fehlt:'minmax(70px,1fr)' },
     sagt:'über den Rand' },
 ];
