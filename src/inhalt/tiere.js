@@ -379,10 +379,18 @@ export const RAEUME = [
 
   /* ALLE Hauptstadt-Ebenen fuehren in DENSELBEN Raum. Wer Europas
      Hauptstaedte kann, hat die Stadt aufgemacht; die deutschen oder die
-     suedosteuropaeischen noch einmal zu verlangen waere dieselbe Muehe
-     fuer dieselben drei Tiere. */
+     asiatischen noch einmal zu verlangen waere dieselbe Muehe fuer
+     dieselben drei Tiere.
+
+     Seit I16 sind es NEUN: Deutschland und je eine Ebene auf jeder der
+     acht Karten. Taube, Ratte und Streifenhoernchen passen zu allen -
+     es sind die drei Tiere, die dort leben, wo Menschen wohnen, und das
+     ist auf jedem Kontinent dasselbe. */
   { ebenen:['hauptstaedte', 'hauptstaedte:europa',
-            'hauptstaedte:suedosteuropa'], titel:'In der Stadt',
+            'hauptstaedte:suedosteuropa', 'hauptstaedte:asien',
+            'hauptstaedte:afrika', 'hauptstaedte:nordamerika',
+            'hauptstaedte:mittelamerika', 'hauptstaedte:suedamerika',
+            'hauptstaedte:australien'], titel:'In der Stadt',
     tiere:['taube', 'ratte', 'streifenhoernchen'] },
 
   /* DER ERSTE RAUM AUSSERHALB DER ERDKUNDE (T4).

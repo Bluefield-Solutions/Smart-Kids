@@ -532,6 +532,140 @@ export const HAUPTSTADT_OHNE_ABLENKER = {
   ISL: 'keine zweite Stadt, die bekannt genug waere — Akureyri hat 19 000 Einwohner',
 };
 
+/* ---------- DIE HAUPTSTADT IST INHALT, NICHT GEODATUM (I16) ---------- *
+ *
+ * Bis I15 kam die Hauptstadt aus Natural Earth: `Admin-0 capital`, mit
+ * dem deutschen Namen aus `NAME_DE`. In Europa geht das auf. Ausserhalb
+ * Europas nicht, und zwar nicht ein bisschen, sondern in SIEBEN von
+ * achtundachtzig Faellen:
+ *
+ *   Myanmar          Rangun          statt Naypyidaw
+ *   Kasachstan       Nur-Sultan      (heisst seit 2022 wieder Astana)
+ *   Tansania         Daressalam      statt Dodoma
+ *   Elfenbeinkueste  Abidjan         statt Yamoussoukro
+ *   Benin            Cotonou         statt Porto-Novo
+ *   Suedafrika       Kapstadt        statt Pretoria
+ *   Bolivien         La Paz          statt Sucre
+ *
+ * Und die Gegenrichtung ist genauso schief: `Admin-0 capital alt` heisst
+ * NICHT „Regierungssitz". Bei Japan steht dort Kyoto, bei Marokko El
+ * Aaiun, bei Nigeria Lagos, bei den Philippinen Baguio City - eine
+ * ehemalige Hauptstadt, ein besetztes Gebiet, eine ehemalige Hauptstadt
+ * und eine Sommerresidenz. Die Ableitung `falle: !!regierungssitz` haette
+ * also bei vier Laendern behauptet, die Regierung sitze woanders.
+ *
+ * DAS SOLL KOMMT AUS DER REFERENZ (Regel 3) - aber die Referenz fuer
+ * „was ist die Hauptstadt" ist der Schulatlas und nicht ein
+ * Kartendatensatz, der nach Bevoelkerungsschwerpunkten gebaut ist. Die
+ * ANTWORT steht deshalb hier, im Inhalt; aus den Geodaten kommt nur noch
+ * die LAGE. Alle sieben richtigen Staedte liegen dort - nur unter einem
+ * anderen Kennzeichen (`capital alt`, `region capital`).
+ *
+ * Der Wert ist entweder der Name oder ein Satz:
+ *   `ort`   der Name, unter dem die Stadt in den Geodaten steht, wenn er
+ *           vom gelehrten abweicht (Astana liegt dort als Nur-Sultan)
+ *   `sitz`  die andere Stadt, in der die Regierung sitzt - HIER
+ *           aufgeschrieben und nicht geraten. Das ist die Falle dieser
+ *           Ebene, und sie gilt fuer sechs Laender.
+ *
+ * Wer nicht darinsteht, hat keine Hauptstadtfrage. Das ist genau ein
+ * Ziel: Groenland. Nuuk ist die Hauptstadt einer autonomen Region, nicht
+ * eines Staates, und Natural Earth fuehrt sie deshalb zu Recht als
+ * `Admin-0 region capital`. Eine Frage „Wie heisst die Hauptstadt von
+ * Groenland?" waere nicht falsch, aber sie stellt sich in einer Reihe
+ * mit Washington, Ottawa und Mexiko-Stadt falsch. */
+export const HAUPTSTADT_LAND = {
+  /* Europa (R6, I3, I11) - hier stimmte Natural Earth ueberall; die Namen
+     stehen jetzt trotzdem an derselben Stelle wie alle anderen, sonst
+     waere die Tafel eine Ausnahmeliste und keine Antwortliste. */
+  RUS:'Moskau', DEU:'Berlin', GBR:'London', FRA:'Paris', POL:'Warschau',
+  NLD:{ name:'Amsterdam', sitz:'Den Haag' },
+  BEL:'Brüssel', CZE:'Prag', AUT:'Wien', CHE:'Bern', DNK:'Kopenhagen',
+  LUX:'Luxemburg', ITA:'Rom', ESP:'Madrid', UKR:'Kiew', ROU:'Bukarest',
+  GRC:'Athen', PRT:'Lissabon', SWE:'Stockholm', HUN:'Budapest',
+  BLR:'Minsk', BGR:'Sofia', FIN:'Helsinki', NOR:'Oslo', IRL:'Dublin',
+  ISL:'Reykjavík', LTU:'Vilnius', LVA:'Riga', EST:'Tallinn',
+
+  /* Suedosteuropa (I14) */
+  SRB:'Belgrad', SVK:'Bratislava', HRV:'Zagreb', BIH:'Sarajevo',
+  ALB:'Tirana', SVN:'Ljubljana', MKD:'Skopje',
+
+  /* Asien (I16) */
+  IND:'Neu-Delhi', CHN:'Peking', IDN:'Jakarta', PAK:'Islamabad',
+  BGD:'Dhaka', JPN:'Tokio', PHL:'Manila', VNM:'Hanoi', TUR:'Ankara',
+  IRN:'Teheran', THA:'Bangkok',
+  /* Naypyidaw ist seit 2005 Hauptstadt. Rangun steht in den Geodaten und
+     ist der Ablenker, den fast jeder waehlt. */
+  MMR:'Naypyidaw',
+  KOR:'Seoul', IRQ:'Bagdad', AFG:'Kabul', SAU:'Riad', UZB:'Taschkent',
+  YEM:'Sanaa',
+  /* Putrajaya ist wirklich der Regierungssitz - der einzige Fall in
+     Asien, in dem `capital alt` von Natural Earth die Sache trifft. */
+  MYS:{ name:'Kuala Lumpur', sitz:'Putrajaya' },
+  NPL:'Kathmandu', PRK:'Pjöngjang', SYR:'Damaskus',
+  /* Sri Lanka hat zwei, und der Atlas schreibt beide: Colombo ist die
+     groesste Stadt und Sitz der Regierung, das Parlament sitzt in
+     Sri Jayewardenepura Kotte, einem Vorort. */
+  LKA:{ name:'Colombo', sitz:'Sri Jayewardenepura Kotte' },
+  /* Astana - so heisst sie seit 2022 wieder. In den Geodaten steht sie
+     unter dem Namen, den sie von 2019 bis 2022 trug. */
+  KAZ:{ name:'Astana', ort:'Nur-Sultan' },
+  KHM:'Phnom Penh', JOR:'Amman', AZE:'Baku', TJK:'Duschanbe',
+  ISR:'Jerusalem', ARE:'Abu Dhabi',
+
+  /* Afrika (I16) */
+  NGA:'Abuja', ETH:'Addis Abeba', EGY:'Kairo', COD:'Kinshasa',
+  /* Dodoma ist seit 1996 Hauptstadt; Daressalam ist die groesste Stadt
+     und steht in den Geodaten an ihrer Stelle. */
+  TZA:'Dodoma',
+  /* Suedafrika hat drei Hauptstaedte, und die Regierung sitzt in
+     Pretoria. Kapstadt (Parlament) und Bloemfontein (oberstes Gericht)
+     sind deshalb Ablenker und keine falschen Antworten - das steht im
+     Satz zum Mitnehmen. */
+  ZAF:'Pretoria',
+  KEN:'Nairobi', UGA:'Kampala', DZA:'Algier', SDN:'Khartum',
+  MAR:'Rabat', AGO:'Luanda', GHA:'Accra', MOZ:'Maputo',
+  MDG:'Antananarivo',
+  /* Yamoussoukro ist seit 1983 Hauptstadt, Abidjan der Regierungssitz -
+     und die Stadt, die jeder nennt. */
+  CIV:{ name:'Yamoussoukro', sitz:'Abidjan' },
+  CMR:'Yaoundé', NER:'Niamey', MLI:'Bamako', BFA:'Ouagadougou',
+  MWI:'Lilongwe', ZMB:'Lusaka', TCD:'N’Djamena', SOM:'Mogadischu',
+  SEN:'Dakar', ZWE:'Harare', GIN:'Conakry', RWA:'Kigali',
+  /* Porto-Novo ist Hauptstadt, Cotonou Regierungssitz und die groessere
+     Stadt - derselbe Fall wie die Elfenbeinkueste. */
+  BEN:{ name:'Porto-Novo', sitz:'Cotonou' },
+  TUN:'Tunis',
+
+  /* Nordamerika (I16) - Groenland steht mit Absicht nicht dabei. */
+  USA:'Washington', MEX:'Mexiko-Stadt', CAN:'Ottawa',
+
+  /* Mittelamerika (I16) */
+  GTM:'Guatemala-Stadt', HTI:'Port-au-Prince', CUB:'Havanna',
+  DOM:'Santo Domingo', HND:'Tegucigalpa', NIC:'Managua',
+  SLV:'San Salvador', CRI:'San José', PAN:'Panama-Stadt',
+
+  /* Suedamerika (I16) */
+  BRA:'Brasília', COL:'Bogotá', ARG:'Buenos Aires', PER:'Lima',
+  VEN:'Caracas',
+  /* Chile: Regierung und Praesident in Santiago, das Parlament in
+     Valparaíso. */
+  CHL:{ name:'Santiago de Chile', sitz:'Valparaíso' },
+  ECU:'Quito',
+  /* Sucre ist die Hauptstadt nach der Verfassung, La Paz der Sitz von
+     Regierung und Parlament - und die Stadt, die jeder nennt. */
+  BOL:{ name:'Sucre', sitz:'La Paz' },
+  PRY:'Asunción', URY:'Montevideo', GUY:'Georgetown', SUR:'Paramaribo',
+
+  /* Ozeanien (I16) */
+  AUS:'Canberra', PNG:'Port Moresby', NZL:'Wellington',
+};
+
+/* Ziele OHNE Hauptstadtfrage - mit Grund, wie bei den Ablenkern. */
+export const HAUPTSTADT_OHNE_FRAGE = {
+  GRL: 'Nuuk ist die Hauptstadt einer autonomen Region, nicht eines Staates',
+};
+
 /* DIE TAFEL HIESS BIS I14 `..._EUROPA`, und der Name war falsch geworden.
  *
  * Sie ist nach dem Landeskuerzel indiziert, also nach etwas, das weltweit
@@ -609,4 +743,155 @@ export const HAUPTSTADT_ABLENKER_LAND = {
   ALB:['Durrës','Vlora'],
   SVN:['Maribor','Celje'],
   MKD:['Bitola','Kumanovo'],
+  /* --- Asien: die dreissig (I16) --------------------------------------- *
+   *
+   * Dieselbe Regel wie ueberall: die Stadt, die jemand fuer die Hauptstadt
+   * HALTEN koennte, weil sie groesser oder bekannter ist. In Asien ist das
+   * der Regelfall und nicht die Ausnahme - Istanbul gegen Ankara, Mumbai
+   * gegen Neu-Delhi, Schanghai gegen Peking, Ho-Chi-Minh-Stadt gegen
+   * Hanoi. Vier Laender, deren groesste Stadt NICHT die Hauptstadt ist,
+   * stehen allein in Europa; hier sind es zwoelf.
+   *
+   * Deutsche Namen, wo es sie gibt und wo sie gelaeufig sind: Schanghai,
+   * Karatschi, Mossul, Dschidda, Maschhad. Nicht erfunden dort, wo der
+   * fremde Name der gelaeufige ist (Osaka, Cebu, Kandahar). */
+  IND:['Mumbai','Kolkata'],
+  CHN:['Schanghai','Hongkong'],
+  IDN:['Surabaya','Bandung'],
+  PAK:['Karatschi','Lahore'],
+  BGD:['Chittagong','Khulna'],
+  JPN:['Osaka','Kyoto'],
+  PHL:['Cebu','Davao'],
+  VNM:['Ho-Chi-Minh-Stadt','Da Nang'],
+  TUR:['Istanbul','Izmir'],
+  IRN:['Maschhad','Isfahan'],
+  THA:['Chiang Mai','Pattaya'],
+  /* Rangun war bis 2005 Hauptstadt und ist die groesste Stadt - der
+     staerkste Ablenker der ganzen Ebene. */
+  MMR:['Rangun','Mandalay'],
+  KOR:['Busan','Incheon'],
+  IRQ:['Mossul','Basra'],
+  AFG:['Kandahar','Herat'],
+  SAU:['Dschidda','Mekka'],
+  UZB:['Samarkand','Buchara'],
+  YEM:['Aden','Taizz'],
+  /* Putrajaya steht vorn, weil dort die Regierung sitzt - das ist die
+     Falle dieses Landes und nicht Penang. Dieselbe Ordnung wie bei den
+     Niederlanden. */
+  MYS:['Putrajaya','Penang'],
+  NPL:['Pokhara','Lalitpur'],
+  PRK:['Hamhung','Kaesong'],
+  SYR:['Aleppo','Homs'],
+  LKA:['Sri Jayewardenepura Kotte','Kandy'],
+  /* Almaty war bis 1997 Hauptstadt und ist doppelt so gross wie Astana. */
+  KAZ:['Almaty','Schymkent'],
+  KHM:['Siem Reap','Battambang'],
+  JOR:['Aqaba','Irbid'],
+  AZE:['Gandscha','Sumqayit'],
+  TJK:['Chudschand','Kulob'],
+  ISR:['Tel Aviv','Haifa'],
+  ARE:['Dubai','Schardscha'],
+
+  /* --- Afrika: die dreissig (I16) -------------------------------------- *
+   *
+   * Hier steht die Falle besonders oft in den Daten selbst: sieben der
+   * dreissig Hauptstaedte sind NICHT die groesste Stadt ihres Landes, und
+   * bei vier davon fuehrt Natural Earth die groessere als Hauptstadt.
+   * Genau diese Staedte stehen hier als Ablenker - Lagos, Daressalam,
+   * Kapstadt, Abidjan, Cotonou. Wer sie waehlt, hat nicht geraten,
+   * sondern die groesste Stadt genannt. */
+  NGA:['Lagos','Kano'],
+  ETH:['Dire Dawa','Mekele'],
+  EGY:['Alexandria','Gizeh'],
+  COD:['Lubumbashi','Goma'],
+  TZA:['Daressalam','Arusha'],
+  /* Kapstadt und Bloemfontein sind die beiden anderen Hauptstaedte
+     Suedafrikas - Parlament und oberstes Gericht. Sie sind damit die
+     einzigen Ablenker dieser Tafel, die halb richtig sind, und der Satz
+     zum Mitnehmen sagt es an. */
+  ZAF:['Kapstadt','Johannesburg'],
+  KEN:['Mombasa','Kisumu'],
+  UGA:['Gulu','Jinja'],
+  DZA:['Oran','Constantine'],
+  SDN:['Omdurman','Port Sudan'],
+  MAR:['Casablanca','Marrakesch'],
+  AGO:['Huambo','Lobito'],
+  GHA:['Kumasi','Tamale'],
+  MOZ:['Beira','Nampula'],
+  MDG:['Toamasina','Antsirabe'],
+  CIV:['Abidjan','Bouaké'],
+  CMR:['Douala','Bafoussam'],
+  NER:['Zinder','Maradi'],
+  MLI:['Timbuktu','Sikasso'],
+  BFA:['Bobo-Dioulasso','Koudougou'],
+  MWI:['Blantyre','Mzuzu'],
+  ZMB:['Kitwe','Ndola'],
+  TCD:['Moundou','Abéché'],
+  SOM:['Hargeysa','Kismaayo'],
+  SEN:['Thiès','Saint-Louis'],
+  ZWE:['Bulawayo','Mutare'],
+  GIN:['Kankan','Nzérékoré'],
+  RWA:['Butare','Gisenyi'],
+  BEN:['Cotonou','Parakou'],
+  TUN:['Sfax','Sousse'],
+
+  /* --- Nordamerika: die drei (I16) ------------------------------------- *
+   *
+   * Alle drei sind der klassische Fall: die Hauptstadt ist NICHT die
+   * groesste Stadt. New York gegen Washington, Toronto gegen Ottawa - und
+   * Mexiko ist der eine, bei dem beides zusammenfaellt.
+   *
+   * Groenland fehlt, und das ist keine Luecke: Nuuk ist die Hauptstadt
+   * einer autonomen Region (siehe `HAUPTSTADT_OHNE_FRAGE`). */
+  USA:['New York','Los Angeles'],
+  MEX:['Guadalajara','Monterrey'],
+  CAN:['Toronto','Vancouver'],
+
+  /* --- Mittelamerika und die Karibik: die neun (I16) ------------------- *
+   *
+   * Hier ist die Hauptstadt fast immer auch die groesste Stadt - die
+   * Ablenker sind deshalb die zweite und dritte Stadt, und die kennt im
+   * deutschsprachigen Raum kaum jemand. Genommen ist trotzdem, was
+   * WIRKLICH die zweite ist; ein erfundener Name waere schlimmer als ein
+   * unbekannter (dieselbe Ueberlegung wie beim Baltikum, I11). */
+  GTM:['Quetzaltenango','Escuintla'],
+  HTI:['Cap-Haïtien','Les Cayes'],
+  CUB:['Santiago de Cuba','Camagüey'],
+  DOM:['Santiago de los Caballeros','La Romana'],
+  HND:['San Pedro Sula','La Ceiba'],
+  NIC:['León','Granada'],
+  SLV:['Santa Ana','San Miguel'],
+  CRI:['Alajuela','Limón'],
+  PAN:['Colón','David'],
+
+  /* --- Suedamerika: die zwoelf (I16) ----------------------------------- *
+   *
+   * Brasilien ist der beruehmteste Fall der Welt: die Hauptstadt wurde
+   * 1960 in die Mitte des Landes GEBAUT, und die zwei groessten Staedte
+   * liegen an der Kueste. Sao Paulo und Rio de Janeiro stehen deshalb
+   * beide da. */
+  BRA:['São Paulo','Rio de Janeiro'],
+  COL:['Medellín','Cali'],
+  ARG:['Córdoba','Rosario'],
+  PER:['Arequipa','Cusco'],
+  VEN:['Maracaibo','Valencia'],
+  CHL:['Valparaíso','Concepción'],
+  ECU:['Guayaquil','Cuenca'],
+  /* La Paz ist Regierungssitz und die Stadt, die jeder nennt - der
+     staerkste Ablenker Suedamerikas. */
+  BOL:['La Paz','Santa Cruz'],
+  PRY:['Ciudad del Este','Encarnación'],
+  URY:['Salto','Paysandú'],
+  GUY:['Linden','New Amsterdam'],
+  SUR:['Lelydorp','Nieuw Nickerie'],
+
+  /* --- Ozeanien: die drei (I16) ---------------------------------------- *
+   *
+   * Australien und Neuseeland sind wieder der Fall aus Nordamerika:
+   * Sydney gegen Canberra, Auckland gegen Wellington. Canberra wurde
+   * 1913 als Hauptstadt gebaut, weil sich Sydney und Melbourne nicht
+   * einigen konnten - beide stehen deshalb als Ablenker da. */
+  AUS:['Sydney','Melbourne'],
+  PNG:['Lae','Mount Hagen'],
+  NZL:['Auckland','Christchurch'],
 };

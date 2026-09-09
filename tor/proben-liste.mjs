@@ -2158,8 +2158,8 @@ export const PROBEN = [
   // Sie liest noch nicht, und eine Stadt hat keinen Umriss zum Ziehen.
   { n:'Fiona bekommt die Hauptstädte Europas', tor:'smoke', bauen:true,
     args:['--nur=durchgang', '--kurz'], datei:D,
-    such:"    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa' },",
-    ersatz:"    gruppe:'hauptstaedte', wo:'Europa' },",
+    such:"      wer:['lea','stephan','violeta'], gruppe:'hauptstaedte',",
+    ersatz:"      gruppe:'hauptstaedte',",
     /* Die Nachfrage nennt die GANZE Zeile und nicht nur die `wer`-Liste.
        Seit F3 gibt es eine zweite Ebene mit derselben Liste
        (`flaggenpaare`); ein Eingriff, der eine von zweien entfernt,
@@ -2168,10 +2168,14 @@ export const PROBEN = [
        Probenlauf es gekostet haette.
 
        UND EIN ZWEITES MAL, mit I14: die Hauptstadt-Ebene fuer
-       Suedosteuropa hat dieselbe `wer`-Liste und dieselbe Gruppe. Die
-       Nachfrage nennt deshalb auch das `wo` - das ist der einzige Teil
-       der Zeile, der die beiden Karten unterscheidet. */
-    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa'" },
+       Suedosteuropa hat dieselbe `wer`-Liste und dieselbe Gruppe.
+
+       SEIT I16 GIBT ES DIE ZEILE NUR NOCH EINMAL, und das ist besser als
+       jede Unterscheidung: die acht Hauptstadt-Ebenen werden erzeugt,
+       nicht aufgeschrieben. Der Eingriff nimmt `wer` aus der Erzeugung -
+       damit bekommt Fiona nicht eine, sondern ALLE acht, und der
+       Rauchtest meldet die erste, die er findet. */
+    an:{ ...DIST, fehlt:"wer:['lea','stephan','violeta'], gruppe:'hauptstaedte'" },
     sagt:'steht aber in fionas Auswahl' },
 
   /* --- Ton je Profil und der Elternbereich als Bild -------------------- */

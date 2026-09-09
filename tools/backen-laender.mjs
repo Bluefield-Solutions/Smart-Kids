@@ -10,7 +10,8 @@ import zlib from 'node:zlib';
 import * as d3 from 'd3-geo';
 import { STUFEN, rohLesen, AUS, HAUSDORFF_GRENZE, ringe, shaper, bisAufGrenze,
          passe, svgPfad, teileUndLoecher, inselnFiltern } from './geo-backen.mjs';
-import { LAENDER } from '../src/inhalt/erdkunde.js';
+import * as I from '../src/inhalt/erdkunde.js';
+const { LAENDER } = I;
 
 const EUROPA_MASKE = [[
   [-32,36],[-12,34],[10,34],[26,34],[28,35],[41,37],[41,43],[47,44],
@@ -135,18 +136,19 @@ const zieleAus = (id) => (LAENDER[id] || [])
 const EBENEN = [
   { id:'asien', name:'Asien', ne:'Asia', projektion:'kegel' },
   { id:'afrika', name:'Afrika', ne:'Africa', projektion:'azimutal' },
-  /* `hauptstaedte` backt zusaetzlich die Lage der Hauptstadt je Zielland
-   * (R6). Nicht ueberall: es sind Punkte zu je rund 45 Byte, und fuer die
-   * vier Kontinente ohne Hauptstadtebene waeren sie ein Vorrat, den
-   * niemand liest - Ballast im Nachladepaket.
+  /* KEIN SCHALTER `hauptstaedte` MEHR (I16).
    *
-   * Seit I14 steht der Schalter bei ZWEI Karten: Europa und
-   * Suedosteuropa. Beide haben eine Hauptstadtebene, und die
-   * Suedosteuropakarte ist der Grund, warum es sie ueberhaupt zweimal
-   * gibt - Belgrad liegt in Europa, aber auf der Europakarte hat Serbien
-   * keinen Rang und damit keinen gebackenen Punkt. */
-  { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true,
-    hauptstaedte:true },
+   * Er stand bei R6 bei einer Karte, bei I14 bei zwei, und bei I16
+   * haetten alle acht ihn gebraucht - dann ist er kein Schalter, sondern
+   * eine Stelle, an der man ihn vergessen kann. Genau das ist bei I14
+   * passiert: die Karte hatte sieben Laender und keine Stadt, weil eine
+   * Zeile weiter oben stand als das neue Ziel.
+   *
+   * Gebacken wird jetzt, was `HAUPTSTADT_LAND` benennt - eine Wahrheit
+   * an einer Stelle: was zweimal dasteht, veraltet einmal (Regel 6). Die
+   * Punkte kosten je rund 45 Byte; bei 123 Zielen sind das 5,5 KB,
+   * verteilt ueber acht Nachladepakete. */
+  { id:'europa', name:'Europa', ne:'Europe', projektion:'kegel', klippen:true },
   { id:'nordamerika', name:'Nordamerika', ne:'North America', projektion:'kegel' },
   /* Mittelamerika und die Karibik - derselbe Erdteil, eigener Massstab.
    *
@@ -166,8 +168,7 @@ const EBENEN = [
    * Welt ab, und dieser Ausschnitt liegt ganz in ihr. Zweimal
    * hintereinander schneiden waere eine Rechnung ohne Wirkung. */
   { id:'suedosteuropa', name:'Südosteuropa', ne:'Europe',
-    maske:'/tmp/suedosteuropa-maske.json', projektion:'kegel',
-    hauptstaedte:true },
+    maske:'/tmp/suedosteuropa-maske.json', projektion:'kegel' },
   { id:'suedamerika', name:'Südamerika', ne:'South America', projektion:'azimutal' },
   /* Ozeanien. Der Erdteil heisst in den Rohdaten „Oceania", die Kennung
    * hier `australien` - so heisst auch der Kontinent auf der Weltkarte,
@@ -180,27 +181,55 @@ const EBENEN = [
 
 const roh = rohLesen('ne_10m_admin_0_countries');
 
-/* Die Hauptstaedte - aus den Daten, nicht aus meinem Kopf.
+/* Die Hauptstaedte: der NAME kommt aus dem Inhalt, die LAGE aus den Daten
+ * (I16).
  *
- * Natural Earth fuehrt sie als `Admin-0 capital` und traegt den deutschen
- * Namen selbst (`NAME_DE`): Moskau, Kiew, Bukarest, Bruessel. Das ist
- * dieselbe Quelle, aus der die sechzehn Landeshauptstaedte kommen - und
- * dieselbe Regel wie ueberall: das Soll kommt aus der Referenz.
+ * Bis I15 stand hier das Gegenteil: Natural Earths `Admin-0 capital` gab
+ * beides, Name und Lage. In Europa geht das auf. Auf den anderen sieben
+ * Karten nicht - Myanmar stand mit Rangun statt Naypyidaw, Tansania mit
+ * Daressalam statt Dodoma, die Elfenbeinkueste mit Abidjan statt
+ * Yamoussoukro, Suedafrika mit Kapstadt statt Pretoria, Bolivien mit La
+ * Paz statt Sucre. Und `Admin-0 capital alt` heisst nicht
+ * „Regierungssitz": bei Japan steht dort Kyoto, bei Marokko El Aaiun.
  *
- * `Admin-0 capital alt` ist der REGIERUNGSSITZ, wo er nicht in der
- * Hauptstadt liegt. In Europa trifft das genau ein Land: die
- * Niederlande, Den Haag gegen Amsterdam. Das ist die eine echte Falle
- * dieser Ebene, und die Daten sagen sie an - ich musste sie nicht
- * behaupten. */
+ * Zwei Ueberraschungen obendrein, die das alte Werkzeug zum Absturz
+ * gebracht haetten: Pjoengjang steht in diesem Datensatz als
+ * `Populated place` und Niamey als `Admin-1 capital`. Wer die
+ * Klassifizierung liest, verlaesst sich auf eine Einteilung, die er nicht
+ * kontrolliert.
+ *
+ * Also: `HAUPTSTADT_LAND` in `src/inhalt/erdkunde.js` sagt, WIE die
+ * Hauptstadt heisst und wo die Regierung sitzt; hier wird nur noch ihre
+ * Lage gesucht, in ALLEN Orten des Landes und ohne Ruecksicht auf das
+ * Kennzeichen. Findet sie sich nicht, bricht der Lauf ab und nennt sie -
+ * eine stille Null waere ein Punkt im Meer. */
 const orte = rohLesen('ne_10m_populated_places');
-const hauptstadtVon = new Map();
-const sitzVon = new Map();
+const ortLagen = new Map();   // "<a3>|<Name>" -> lonlat
 for (const f of orte.features) {
   const q = f.properties;
-  const ziel = q.FEATURECLA === 'Admin-0 capital' ? hauptstadtVon
-             : q.FEATURECLA === 'Admin-0 capital alt' ? sitzVon : null;
-  if (!ziel || ziel.has(q.ADM0_A3)) continue;
-  ziel.set(q.ADM0_A3, { name: q.NAME_DE || q.NAME, lonlat: f.geometry.coordinates });
+  if (!q.ADM0_A3) continue;
+  for (const n of [q.NAME_DE, q.NAME]) {
+    if (!n) continue;
+    const s = `${q.ADM0_A3}|${n}`;
+    if (!ortLagen.has(s)) ortLagen.set(s, f.geometry.coordinates);
+  }
+}
+const lageVon = (a3, name) => ortLagen.get(`${a3}|${name}`) || null;
+const hauptstadtVon = new Map();
+const sitzVon = new Map();
+for (const [a3, wert] of Object.entries(I.HAUPTSTADT_LAND)) {
+  const name = typeof wert === 'string' ? wert : wert.name;
+  const such = typeof wert === 'string' ? wert : (wert.ort || wert.name);
+  const lage = lageVon(a3, such);
+  if (!lage) throw new Error(`Keine Lage fuer „${name}" (${a3}, gesucht als `
+    + `„${such}") in ne_10m_populated_places — die Hauptstadtfrage dieses `
+    + 'Landes haette einen Punkt im Meer');
+  hauptstadtVon.set(a3, { name, lonlat: lage });
+  if (typeof wert === 'object' && wert.sitz) {
+    const sl = lageVon(a3, wert.sitz);
+    if (!sl) throw new Error(`Keine Lage fuer den Regierungssitz „${wert.sitz}" (${a3})`);
+    sitzVon.set(a3, { name: wert.sitz, lonlat: sl });
+  }
 }
 
 /** G7: Standardparallelen bei 1/6 und 5/6 der Breitenausdehnung. */
@@ -218,7 +247,7 @@ const bericht = { ebene:'laender', quelle:'Natural Earth 1:10m admin_0', standJa
                   grenze:HAUSDORFF_GRENZE, kontinente:[] };
 const ausgabe = {};
 let gesamtGz = 0;
-const fehlendeStaedte = [];
+const ohneLage = [];
 
 for (const k of EBENEN) {
   const ziele = new Map(k.ziele);
@@ -265,12 +294,19 @@ for (const k of EBENEN) {
      * legt und die das Spiel zeichnet. Die anderen beiden werden hier
      * gebacken und nirgends gelesen; ein Punkt darin waere ein Vorrat
      * ohne Leser. */
-    if (k.hauptstaedte && st.name === 'grob') for (const stueck of stuecke) {
+    if (st.name === 'grob') for (const stueck of stuecke) {
       if (!stueck.rang) continue;
+      /* Kein Eintrag heisst: dieses Ziel hat keine Hauptstadtfrage
+         (`HAUPTSTADT_OHNE_FRAGE`, genau Groenland). Das ist kein Fehler,
+         sondern eine Entscheidung aus dem Inhalt - und dass sie dort
+         steht und nicht hier, prueft das Tor `inhalt`. */
       const hs = hauptstadtVon.get(stueck.a3);
-      if (!hs) { fehlendeStaedte.push(stueck.a3); continue; }
+      if (!hs) continue;
       const punkt = proj(hs.lonlat);
-      if (!punkt) { fehlendeStaedte.push(stueck.a3); continue; }
+      /* Die Projektion kann einen Punkt verwerfen, der ausserhalb ihres
+         Ausschnitts liegt - dann fehlt die Lage, obwohl die Stadt in den
+         Daten steht. Zwei verschiedene Ursachen, zwei Meldungen. */
+      if (!punkt) { ohneLage.push(`${stueck.name} (${hs.name}, Karte ${k.id})`); continue; }
       stueck.hauptstadt = hs.name;
       stueck.ort = [+(punkt[0]*skala).toFixed(1), +(punkt[1]*skala).toFixed(1)];
       const sitz = sitzVon.get(stueck.a3);
@@ -322,17 +358,18 @@ for (const [id, zeilen] of Object.entries(ausgabe))
     + `\n};\n`);
   console.log(`\n  Kartenverzeichnis: ${ids.length} Karten in src/geo/karten.grob.js`);
 }
-if (fehlendeStaedte.length)
-  throw new Error(`Keine Hauptstadt gefunden fuer: ${fehlendeStaedte.join(', ')} — `
-    + 'die Hauptstadt-Ebene dieser Karte haette dort eine leere Antwort.');
+if (ohneLage.length)
+  throw new Error(`Hauptstadt liegt ausserhalb der Projektion: ${ohneLage.join(', ')} — `
+    + 'die Hauptstadtfrage dieser Karte haette dort einen Punkt am Rand.');
 /* Der Bericht laeuft ueber ALLE Karten mit `hauptstaedte`, nicht ueber
  * Europa allein. Er stand hier fest auf `ausgabe.europa`, und als
  * Suedosteuropa dazukam, buk das Werkzeug sieben Lagen und meldete
  * nichts davon: eine Ausgabe, die der Sache hinterherhinkt, sieht
  * genauso aus wie eine Sache, die nicht passiert ist. */
 {
-  const karten = EBENEN.filter(k => k.hauptstaedte)
-    .map(k => ({ k, mit: (ausgabe[k.id]?.grob || []).filter(x => x.hauptstadt) }));
+  const karten = EBENEN
+    .map(k => ({ k, mit: (ausgabe[k.id]?.grob || []).filter(x => x.hauptstadt) }))
+    .filter(x => x.mit.length);
   bericht.hauptstaedte = { stufe:'grob', karten: karten.map(({k,mit}) => ({
     id: k.id, anzahl: mit.length,
     regierungssitze: mit.filter(x=>x.regierungssitz).map(x=>`${x.name}: ${x.regierungssitz}`) })) };

@@ -1144,38 +1144,36 @@ const EBENEN = [
      Kachel (Q17). Warum, steht bei `gruppiert()` weiter unten. */
   { id:'hauptstaedte',  ueber:'Deutschland', titel:'Hauptstädte', farbe:2,
     gruppe:'hauptstaedte', wo:'Deutschland' },
-  /* Hauptstädte in Europa (R6).
+  /* Hauptstaedte auf JEDER Karte - erzeugt, nicht aufgeschrieben (R6,
+   * I14, I16).
    *
    * Dieselbe Frage auf einer anderen Karte, und deshalb dieselbe
-   * Kennungsform wie bei den Ländern: `hauptstaedte:europa`. Der Teil vor
-   * dem Doppelpunkt sagt, WIE gefragt wird, der dahinter, WO — und alles
+   * Kennungsform wie bei den Laendern: `hauptstaedte:europa`. Der Teil vor
+   * dem Doppelpunkt sagt, WIE gefragt wird, der dahinter, WO - und alles
    * andere (Karte, Umgebung, Rahmen, Umriss auf der Kachel) leitet sich
-   * daraus ab, statt an fünf Stellen einzeln nachgetragen zu werden.
+   * daraus ab, statt an fuenf Stellen einzeln nachgetragen zu werden.
    *
-   * `wer`: Lea und die Eltern. Fiona nicht — sie liest noch nicht, und
-   * eine Stadt hat keinen Umriss, den man ziehen könnte. Dieselbe Tiefe
-   * wie die Länderebene, und aus demselben Wert — aber gefiltert wird
-   * zusätzlich nach `l.hauptstadt`, und die haben nur die zwölf Länder,
-   * für die sie gebacken wurde. Für Lea sind es seit D2c acht
-   * Städte (Moskau, Berlin, London, Paris, Warschau, Amsterdam, Brüssel,
-   * Rom) statt fünf, für die Eltern zwölf. Die fünf Nachbarn, die
-   * D2c hinzugefügt hat, kommen hier erst dazu, wenn `npm run backen`
-   * einmal mit den Rohdaten gelaufen ist. */
-  { id:'hauptstaedte:europa', ueber:'Europa', titel:'Hauptstädte', farbe:3,
-    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Europa' },
-  /* Und dieselbe Frage auf der Suedosteuropakarte (I14).
+   * BIS I15 STANDEN SIE VON HAND DA, erst eine, dann zwei. Bei I14 hat
+   * das eine Runde gekostet: die Suedosteuropakarte hatte sieben Laender
+   * und keine Stadt, weil der Schalter im Backwerkzeug eine Karte
+   * weiter oben stand. Jetzt entstehen sie aus derselben Schleife wie die
+   * Laenderebenen - eine Karte, deren Umrisse eine Hauptstadt tragen,
+   * bekommt ihre Ebene, und es gibt keine Stelle mehr, an der man sie
+   * vergessen kann.
    *
-   * Sieben Hauptstaedte, und der Grund fuer eine EIGENE Ebene ist derselbe
-   * wie fuer die eigene Karte: Belgrad liegt in Europa, aber auf der
-   * Europakarte hat Serbien keinen Rang - und ohne Rang bekommt ein Umriss
-   * beim Backen keine Stadtlage. Der Punkt, der nach der richtigen Antwort
-   * erscheint, gaebe es dort also nicht.
+   * `l.hauptstadt` und nicht `k in D.laender`: Groenland hat einen Rang
+   * und keine Hauptstadtfrage (Nuuk ist die Hauptstadt einer autonomen
+   * Region). Waere Nordamerika die einzige Karte mit einem solchen Ziel,
+   * stuende hier eine Ebene mit drei Staedten - und genau drei hat sie.
    *
-   * Sie steht in derselben Gruppe wie die anderen beiden: eine dritte
-   * Kachel auf der Wand waere eine, die dasselbe fragt. */
-  { id:'hauptstaedte:suedosteuropa', ueber:'Südosteuropa', titel:'Hauptstädte',
-    farbe: KONT_FARBE.suedosteuropa,
-    wer:['lea','stephan','violeta'], gruppe:'hauptstaedte', wo:'Südosteuropa' },
+   * `wer`: Lea und die Eltern. Fiona nicht - sie liest noch nicht, und
+   * eine Stadt hat keinen Umriss, den man ziehen koennte. */
+  ...Object.keys(D.laender)
+    .filter(k => (D.laender[k] || []).some(l => l.hauptstadt))
+    .map(k => ({ id:`hauptstaedte:${k}`, ueber: KONT_TITEL[k] || k,
+      titel:'Hauptstädte', farbe: KONT_FARBE[k],
+      wer:['lea','stephan','violeta'], gruppe:'hauptstaedte',
+      wo: KONT_TITEL[k] || k })),
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab

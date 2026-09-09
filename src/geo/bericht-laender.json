@@ -45,7 +45,7 @@
           "laender": 59,
           "hausdorffPx": 0.685,
           "punkte": 25205,
-          "gzip": 100582
+          "gzip": 101421
         },
         {
           "stufe": "mittel",
@@ -104,7 +104,7 @@
           "laender": 55,
           "hausdorffPx": 0.66,
           "punkte": 16469,
-          "gzip": 69618
+          "gzip": 70378
         },
         {
           "stufe": "mittel",
@@ -195,7 +195,7 @@
           "laender": 42,
           "hausdorffPx": 0.629,
           "punkte": 19929,
-          "gzip": 76922
+          "gzip": 77055
         },
         {
           "stufe": "mittel",
@@ -233,7 +233,7 @@
           "laender": 34,
           "hausdorffPx": 0.384,
           "punkte": 8256,
-          "gzip": 34646
+          "gzip": 34913
         },
         {
           "stufe": "mittel",
@@ -310,7 +310,7 @@
           "laender": 15,
           "hausdorffPx": 0.738,
           "punkte": 14798,
-          "gzip": 63681
+          "gzip": 64097
         },
         {
           "stufe": "mittel",
@@ -342,7 +342,7 @@
           "laender": 13,
           "hausdorffPx": 0.727,
           "punkte": 3300,
-          "gzip": 15217
+          "gzip": 15327
         },
         {
           "stufe": "mittel",
@@ -365,6 +365,22 @@
     "stufe": "grob",
     "karten": [
       {
+        "id": "asien",
+        "anzahl": 30,
+        "regierungssitze": [
+          "Malaysia: Putrajaya",
+          "Sri Lanka: Sri Jayewardenepura Kotte"
+        ]
+      },
+      {
+        "id": "afrika",
+        "anzahl": 30,
+        "regierungssitze": [
+          "Elfenbeinküste: Abidjan",
+          "Benin: Cotonou"
+        ]
+      },
+      {
         "id": "europa",
         "anzahl": 29,
         "regierungssitze": [
@@ -372,8 +388,31 @@
         ]
       },
       {
+        "id": "nordamerika",
+        "anzahl": 3,
+        "regierungssitze": []
+      },
+      {
+        "id": "mittelamerika",
+        "anzahl": 9,
+        "regierungssitze": []
+      },
+      {
         "id": "suedosteuropa",
         "anzahl": 7,
+        "regierungssitze": []
+      },
+      {
+        "id": "suedamerika",
+        "anzahl": 12,
+        "regierungssitze": [
+          "Chile: Valparaíso",
+          "Bolivien: La Paz"
+        ]
+      },
+      {
+        "id": "australien",
+        "anzahl": 3,
         "regierungssitze": []
       }
     ]

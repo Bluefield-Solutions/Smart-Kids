@@ -18,19 +18,19 @@
   },
   "gesehen": {
     "zeit": "2026-09-09",
-    "start": 546.2,
+    "start": 546.9,
     "geometrie": 27.4,
     "schrift": 51.7,
     "ebenen": {
       "laender-europa.json": 110.3,
-      "laender-asien.json": 99.7,
-      "laender-nordamerika.json": 75.1,
-      "laender-afrika.json": 70,
-      "laender-suedamerika.json": 62.6,
+      "laender-asien.json": 101,
+      "laender-nordamerika.json": 75.3,
+      "laender-afrika.json": 71.3,
+      "laender-suedamerika.json": 63.3,
       "deutschland.json": 56.3,
       "laender-suedosteuropa.json": 37.5,
-      "laender-mittelamerika.json": 33.9,
-      "laender-australien.json": 15
+      "laender-mittelamerika.json": 34.4,
+      "laender-australien.json": 15.1
     }
   }
 }

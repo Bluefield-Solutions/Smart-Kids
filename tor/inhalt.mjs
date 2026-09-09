@@ -32,6 +32,13 @@ import { LAENDER_AFRIKA_GROB } from '../src/geo/laender-afrika.grob.js';
 import { LAENDER_ASIEN_GROB } from '../src/geo/laender-asien.grob.js';
 import { LAENDER_NORDAMERIKA_GROB } from '../src/geo/laender-nordamerika.grob.js';
 import { KARTEN_GROB } from '../src/geo/karten.grob.js';
+/* Der ANZEIGENAME je Karte - aus dem Bericht des Backwerkzeugs und nicht
+   abgeschrieben. `spiel.js` haelt dieselbe Zuordnung als `KONT_TITEL`;
+   die hier ist fuer die Berichtszeilen dieses Tors, und beide kommen aus
+   derselben Schleife, die die Karten schreibt. */
+const KARTEN_NAME = Object.fromEntries(
+  JSON.parse(fs.readFileSync(new URL('../src/geo/bericht-laender.json',
+    import.meta.url), 'utf8')).kontinente.map(k => [k.id, k.name]));
 import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
@@ -216,11 +223,61 @@ I.ECHTE_FALLEN.forEach(id => {
    * Die RATSCHE steht je Karte, weil sie eine Aussage ueber DIESE Karte
    * ist: sinkt die Zahl, ist dort eine Hauptstadt aus dem Backen
    * gefallen. */
-  const KARTEN = [
-    { id:'europa', wie:'Europa', gebacken: LAENDER_EUROPA_GROB, ratsche: 29 },
-    { id:'suedosteuropa', wie:'Südosteuropa',
-      gebacken: LAENDER_SUEDOSTEUROPA_GROB, ratsche: 7 },
-  ];
+  /* ALLE Karten, und die Liste kommt aus dem Kartenverzeichnis (I16).
+   *
+   * Sie stand von Hand da: bei R6 mit einer Karte, bei I14 mit zwei. Bei
+   * I16 haben alle acht eine Hauptstadtebene, und eine Karte, die hier
+   * fehlt, ist eine, die ungeprueft ausgeliefert wird - dieselbe
+   * Verfallsart wie der Schalter im Backwerkzeug, den I16 gestrichen hat.
+   *
+   * Die RATSCHEN stehen weiter von Hand da, und das ist der Punkt: eine
+   * Zahl, die sich aus dem Gebackenen holt, kann nicht bemerken, dass das
+   * Gebackene weniger geworden ist. */
+  const RATSCHE = { europa:29, suedosteuropa:7, asien:30, afrika:30,
+                    nordamerika:3, mittelamerika:9, suedamerika:12,
+                    australien:3 };
+  const KARTEN = Object.entries(KARTEN_GROB)
+    .filter(([id]) => (I.LAENDER[id] || []).length)
+    .map(([id, gebacken]) => ({ id, wie: KARTEN_NAME[id] || id, gebacken,
+      ratsche: RATSCHE[id] }));
+  {
+    const ohneRatsche = KARTEN.filter(k => k.ratsche === undefined).map(k => k.id);
+    pruefe(!ohneRatsche.length, `Karten ohne Hauptstadt-Ratsche: ${ohneRatsche.join(', ')} `
+      + '— dann waechst die Zahl der Hauptstädte ungeprüft');
+    const zuviel = Object.keys(RATSCHE).filter(id => !KARTEN.some(k => k.id === id));
+    pruefe(!zuviel.length, `Ratschen für Karten, die es nicht gibt: ${zuviel.join(', ')}`);
+  }
+  /* DIE ANTWORT KOMMT AUS DEM INHALT (I16).
+   *
+   * Bis I15 kam sie aus Natural Earths `Admin-0 capital` - und die stimmt
+   * ausserhalb Europas in sieben von 88 Faellen nicht (Rangun statt
+   * Naypyidaw, Daressalam statt Dodoma, Kapstadt statt Pretoria …). Jetzt
+   * steht sie in `HAUPTSTADT_LAND`, und die Geodaten geben nur die Lage.
+   *
+   * Hier wird beides gegeneinander gehalten: jedes gefragte Ziel hat
+   * einen Eintrag oder einen benannten Grund, kein Eintrag steht ohne
+   * Ziel da, und - die wichtigste Zeile - der GEBACKENE Name ist der aus
+   * dem Inhalt. Ohne sie koennte das Backwerkzeug wieder auf die
+   * Kartendaten zurueckfallen, ohne dass etwas rot wird. */
+  {
+    const ziele = new Map();
+    for (const [id, liste] of Object.entries(I.LAENDER))
+      for (const l of liste) if (l.rang) ziele.set(l.a3, { id, name: l.name });
+    const ohne = [...ziele.keys()].filter(a3 =>
+      !I.HAUPTSTADT_LAND[a3] && !I.HAUPTSTADT_OHNE_FRAGE[a3]);
+    pruefe(!ohne.length, `Ziele ohne Hauptstadt und ohne Grund: ${ohne.join(', ')} — `
+      + 'entweder in HAUPTSTADT_LAND oder mit Begründung in HAUPTSTADT_OHNE_FRAGE');
+    const fremdeStadt = Object.keys(I.HAUPTSTADT_LAND).filter(a3 => !ziele.has(a3));
+    pruefe(!fremdeStadt.length,
+      `Hauptstädte für Länder, die nirgends gefragt werden: ${fremdeStadt.join(', ')}`);
+    const beides = Object.keys(I.HAUPTSTADT_OHNE_FRAGE)
+      .filter(a3 => I.HAUPTSTADT_LAND[a3]);
+    pruefe(!beides.length, `${beides.join(', ')} steht in HAUPTSTADT_OHNE_FRAGE `
+      + 'und hat trotzdem eine Hauptstadt — einer der beiden Einträge ist veraltet');
+    for (const [a3, wert] of Object.entries(I.HAUPTSTADT_OHNE_FRAGE))
+      pruefe(typeof wert === 'string' && wert.length > 20,
+        `${a3} steht ohne Hauptstadtfrage da, aber ohne Grund`);
+  }
   /* Wer ueberhaupt eine Hauptstadtfrage bekommt - ueber BEIDE Karten.
      Die Tafel `HAUPTSTADT_ABLENKER_LAND` ist nach Landeskuerzel indiziert
      und kennt keine Karten; die Pruefung „Ablenker fuer ein Land, das es
@@ -269,7 +326,25 @@ I.ECHTE_FALLEN.forEach(id => {
      * und Luxemburg sind damals aus der Ebene gefallen, ohne dass etwas
      * rot wurde - das kann nicht mehr passieren, denn die Zahl darf nicht
      * sinken. */
-    if (!l.hauptstadt) continue;
+    /* Kein Eintrag heisst: keine Hauptstadtfrage - und das darf nur
+       bedeuten, dass es dafuer einen benannten Grund gibt. */
+    const soll = I.HAUPTSTADT_LAND[l.a3];
+    if (!l.hauptstadt) {
+      pruefe(!soll, `${l.a3}: „${soll && (soll.name || soll)}" steht im Inhalt, `
+        + 'ist aber nicht gebacken — `npm run backen` trägt es nach');
+      continue;
+    }
+    pruefe(!!soll, `${l.a3}: „${l.hauptstadt}" ist gebacken, steht aber in keinem `
+      + 'Inhaltseintrag — dann kommt die Antwort wieder aus den Kartendaten');
+    if (soll) {
+      const sollName = typeof soll === 'string' ? soll : soll.name;
+      pruefe(l.hauptstadt === sollName, `${l.a3}: gebacken steht „${l.hauptstadt}", `
+        + `im Inhalt „${sollName}" — die Antwort kommt aus der falschen Quelle`);
+      const sollSitz = typeof soll === 'string' ? null : (soll.sitz || null);
+      pruefe((l.regierungssitz || null) === sollSitz,
+        `${l.a3}: gebackener Regierungssitz „${l.regierungssitz || '—'}", `
+        + `im Inhalt „${sollSitz || '—'}"`);
+    }
     ohneHauptstadt++;
     pruefe(l.ort, `${l.a3}: keine Stadtlage gebacken`);
     if (l.ort) {
@@ -299,9 +374,13 @@ I.ECHTE_FALLEN.forEach(id => {
     pruefe(!ab.includes(l.hauptstadt),
       `${l.a3}: „${l.hauptstadt}" steht auch unter den Ablenkern — zwei richtige Antworten`);
     pruefe(new Set(ab).size === ab.length, `${l.a3}: ein Ablenker steht zweimal`);
+    /* Wo die Regierung woanders sitzt, ist DIESE Stadt die Falle - sie
+       steht deshalb vorn unter den Ablenkern. Seit I16 kommt der Sitz
+       aus dem Inhalt und nicht aus einer Klassifizierung, die auch
+       ehemalige Hauptstaedte und Sommerresidenzen umfasst. */
     if (l.regierungssitz)
       pruefe(ab[0] === l.regierungssitz,
-        `${l.a3}: Natural Earth kennt „${l.regierungssitz}" als Regierungssitz, `
+        `${l.a3}: der Regierungssitz ist „${l.regierungssitz}", `
         + `unter den Ablenkern steht vorn aber „${ab[0]}" — die eigentliche Falle fiele aus`);
   }
   for (const l of I.LAENDER[karte.id])

@@ -183,12 +183,31 @@ const befunde = [...paare.values()].sort((a, b) => b.token - a.token);
 console.log('\n  Tor `doppelt`   (was zweimal dasteht, veraltet einmal)\n');
 
 if (NEU) {
+  /* `--neu` HAELT DIE BEGRUENDUNGEN FEST (I16).
+   *
+   * Bis hierher schrieb es die Datei neu und setzte ueberall
+   * „NOCH NICHT BEGRÜNDET" ein - auch bei den sechzehn Eintraegen, die
+   * seit Monaten einen Satz trugen. Ein Aufruf, und die einzige
+   * Auskunft, die diese Datei ueberhaupt wertvoll macht, war weg; das
+   * Tor blieb danach gruen, weil die Zahlen stimmten. Genau der Fall,
+   * vor dem Regel 1 warnt, nur umgekehrt: nicht die Pruefung meldet
+   * nichts, sondern sie hat nichts mehr zu melden.
+   *
+   * Uebernommen wird die Begruendung eines Eintrags mit DEMSELBEN
+   * Dateisatz. Wandert eine Dopplung in andere Dateien, ist es eine
+   * andere Sache und bekommt zu Recht wieder den Platzhalter. */
+  const alt = fs.existsSync(ERLAUBT)
+    ? new Map(JSON.parse(fs.readFileSync(ERLAUBT, 'utf8')).map(e => [e.dateien, e.warum]))
+    : new Map();
+  const behalten = befunde.filter(g => alt.has(g.schluessel)).length;
   fs.writeFileSync(ERLAUBT, JSON.stringify(befunde.map(g => ({
     dateien: g.schluessel, token: g.token,
     wo: g.orte.map(o => `${o.datei}:${o.von}`),
-    warum: 'NOCH NICHT BEGRÜNDET — hier hingehört ein Satz, warum es zweimal dastehen darf',
+    warum: alt.get(g.schluessel)
+      || 'NOCH NICHT BEGRÜNDET — hier hingehört ein Satz, warum es zweimal dastehen darf',
   })), null, 2) + '\n');
-  console.log(`  ${befunde.length} Dopplungen in ${ERLAUBT} festgehalten.\n`);
+  console.log(`  ${befunde.length} Dopplungen in ${ERLAUBT} festgehalten, `
+    + `${behalten} Begründungen übernommen, ${befunde.length - behalten} offen.\n`);
   process.exit(0);
 }
 

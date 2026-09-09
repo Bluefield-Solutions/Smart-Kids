@@ -4810,11 +4810,31 @@ const SAGT_ENGLISCH = (e) => (String(e).startsWith('englisch') || e === 'hoersat
    trotzdem dasteht. Fiona hat sie nicht (zwei geschriebene Woerter kann
    sie nicht lesen), und das ist hier die Aussage. */
 const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa',
-                                 'hauptstaedte:suedosteuropa', 'freunde',
+                                 /* Seit I16 auf allen acht Karten (I16). Alle
+                                    acht stehen hier, nicht nur eine: die
+                                    Fremdpruefung meldet jede Ebene, die einem
+                                    anderen gehoert - eine, die KEINEM gehoert,
+                                    faellt ihr nicht auf. */
+                                 'hauptstaedte:suedosteuropa',
+                                 'hauptstaedte:asien', 'hauptstaedte:afrika',
+                                 'hauptstaedte:nordamerika',
+                                 'hauptstaedte:mittelamerika',
+                                 'hauptstaedte:suedamerika',
+                                 'hauptstaedte:australien', 'freunde',
                                  'verben', 'praeposition', 'wendungen', 'hoersatz',
                                  'englisch:laute'],
                        violeta: ['rechnen:gross', 'hauptstaedte:europa',
-                                 'hauptstaedte:suedosteuropa', 'freunde',
+                                 /* Seit I16 auf allen acht Karten (I16). Alle
+                                    acht stehen hier, nicht nur eine: die
+                                    Fremdpruefung meldet jede Ebene, die einem
+                                    anderen gehoert - eine, die KEINEM gehoert,
+                                    faellt ihr nicht auf. */
+                                 'hauptstaedte:suedosteuropa',
+                                 'hauptstaedte:asien', 'hauptstaedte:afrika',
+                                 'hauptstaedte:nordamerika',
+                                 'hauptstaedte:mittelamerika',
+                                 'hauptstaedte:suedamerika',
+                                 'hauptstaedte:australien', 'freunde',
                                  'verben', 'praeposition', 'wendungen', 'hoersatz',
                                  'englisch:laute'],
                        fiona: ['rechnen:plusminus', 'englisch:hoeren',
@@ -4837,7 +4857,11 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa',
                           heisst zweierlei: bei Lea muss die Kachel da sein,
                           und bei jedem anderen darf sie es nicht. */
                        lea: ['rechnen:reihen', 'hauptstaedte:europa',
-                             'hauptstaedte:suedosteuropa', 'englisch:hoeren',
+                             'hauptstaedte:suedosteuropa', 'hauptstaedte:asien',
+                             'hauptstaedte:afrika', 'hauptstaedte:nordamerika',
+                             'hauptstaedte:mittelamerika',
+                             'hauptstaedte:suedamerika', 'hauptstaedte:australien',
+                             'englisch:hoeren',
                              'englisch:legen', 'englisch:bauen', 'englisch:laute',
                              /* „Lies das Wort" (E7) gehoert Lea allein, aus
                                 demselben Grund wie das Legen: Fiona liest
