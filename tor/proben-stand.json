@@ -656,6 +656,21 @@
       "zeit": "2026-09-08",
       "s": 16
     },
+    "die Hauptstadt weicht von der gebackenen Lage ab": {
+      "commit": "2a7ba052dd4d6a1850db4cde0c62c5f3d8a037c6",
+      "zeit": "2026-09-09",
+      "s": 13
+    },
+    "ein Ziel verliert seine Hauptstadt ohne Grund": {
+      "commit": "2a7ba052dd4d6a1850db4cde0c62c5f3d8a037c6",
+      "zeit": "2026-09-09",
+      "s": 4
+    },
+    "eine Karte faehrt ohne Hauptstadt-Ratsche": {
+      "commit": "2a7ba052dd4d6a1850db4cde0c62c5f3d8a037c6",
+      "zeit": "2026-09-09",
+      "s": 4
+    },
     "die Raumwand auf dem schmalen Schirm bekommt ihren Platz zurueck": {
       "commit": "c6f89f59a6f00c44c18a15f708d694bd0d733f2d",
       "zeit": "2026-09-09",
@@ -682,9 +697,9 @@
       "s": 15
     },
     "eine Hauptstadt liegt neben ihrem Land": {
-      "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
-      "zeit": "2026-09-07",
-      "s": 5
+      "commit": "2a7ba052dd4d6a1850db4cde0c62c5f3d8a037c6",
+      "zeit": "2026-09-09",
+      "s": 4
     },
     "der Regierungssitz steht nicht mehr vorn": {
       "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
