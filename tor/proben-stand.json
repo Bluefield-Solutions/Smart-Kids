@@ -677,9 +677,9 @@
       "s": 6
     },
     "die Raumwand auf dem schmalen Schirm bekommt ihren Platz zurueck": {
-      "commit": "d7564046254258d118b26a9fe7f257fe7519b41a",
+      "commit": "c7a74b628ac9b2efbde1cfc750ee5eb1f12534c0",
       "zeit": "2026-09-09",
-      "s": 329
+      "s": 613
     },
     "die Raumzellen werden auf dem schmalen Schirm ungleich hoch": {
       "commit": "d7564046254258d118b26a9fe7f257fe7519b41a",
@@ -2425,6 +2425,11 @@
       "commit": "ce10839cac2aa26c58932420297f37c707e06a0e",
       "zeit": "2026-09-09",
       "s": 14
+    },
+    "die Raumwand faellt auf dem schmalen Schirm auf drei Spalten zurueck": {
+      "commit": "c7a74b628ac9b2efbde1cfc750ee5eb1f12534c0",
+      "zeit": "2026-09-09",
+      "s": 99
     }
   }
 }

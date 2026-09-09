@@ -7451,6 +7451,9 @@ export const PROBEN = [
     tor:'passt', args:['--teil=1/5'], bauen:true, datei:V,
     such:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}',
     ersatz:'  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}',
-    an:{ ...DIST, text:'minmax(88px,1fr)}\n  .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.78)' },
+    /* Der Anker sucht das VERSCHWINDEN und nicht das Neue: „88px" steht
+       ohnehin schon in der Datei (die Grundregel des Rasters), „70px"
+       genau einmal - und nach dem Eingriff gar nicht mehr. */
+    an:{ ...DIST, fehlt:'minmax(70px,1fr)' },
     sagt:'über den Rand' },
 ];
