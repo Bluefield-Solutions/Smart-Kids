@@ -7491,20 +7491,24 @@ export const PROBEN = [
     an:{ datei:'prototyp/nachbarn.json', fehlt:'  "DE-TH",\n  "DE-BY",' },
     sagt:'einseitige Nachbarschaft' },
 
-  /* 2. Nur EIN Nachbar zaehlt.
+  /* 2. Der Nachbar zaehlt gar nicht mehr.
    *
-   * Die Ebene lebt davon, dass mehrere Antworten richtig sind - Hessen
-   * hat sechs Nachbarn, und wer einen davon findet, hat die Frage
-   * beantwortet. Der Eingriff schneidet auf den ersten zurueck. Der
-   * Rauchtest tippt auf `grenzt[0]`, also ausgerechnet auf den, der
-   * uebrig bleibt; deshalb prueft die Probe nicht ihn, sondern
-   * `spielprobe` - dort wird JEDE Antwort durchgerechnet, die ein Kind
-   * geben kann. */
-  { n:'nur ein einziger Nachbar wird als richtig gewertet', tor:'smoke',
+   * Der Eingriff nimmt die Nachbarschaft aus der Wertung und laesst nur
+   * das gefragte Land selbst gelten - also genau die Regel, die vor I21
+   * galt. Wer dann auf einen Nachbarn tippt, bekommt ein Nein, die Runde
+   * kommt nie zum Ende, und der Durchgang laeuft in seinen Zeitablauf.
+   *
+   * Der erste Anlauf war feiner und bewies nichts: er schnitt die Liste
+   * auf `slice(1)` zurueck, in der Erwartung, dass der Rauchtest genau
+   * den ersten Nachbarn antippt. Das tut er auch - aber eine falsche
+   * Antwort ist im Durchgang kein Fehler, sondern ein erlaubter Zug.
+   * Das Tor blieb gruen, zu Recht, und die Probe sagte nichts. */
+  { n:'ein Nachbar wird nicht mehr als richtig gewertet', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:D,
-    such:"      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)",
-    ersatz:"      if (istNachbar ? (ziel.grenzt || []).slice(1).includes(ctx.getroffen)",
-    an:{ ...DIST, text:'grenzt || []).slice(1).includes' },
+    such:"      if (istNachbar ? (ziel.grenzt || []).includes(ctx.getroffen)\n"
+      + "                     : ctx.getroffen===ziel.id) ergebnis='richtig';",
+    ersatz:"      if (ctx.getroffen===ziel.id) ergebnis='richtig';",
+    an:{ ...DIST, fehlt:'ziel.grenzt || []).includes(ctx.getroffen)' },
     sagt:'nachbarn' },
 
   /* 3. Die neue Kachel bekommt ihre eigene Kachel zurueck.
