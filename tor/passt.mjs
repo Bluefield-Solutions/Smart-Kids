@@ -1286,11 +1286,20 @@ nicht liest, ist die Kachel damit unbeschriftet`);
         return s && s.getBoundingClientRect().width > 20;
       }, null, { timeout: 6000 }).catch(() => {});
       await schau('Ebenenwahl (Ländergruppe)');
-      if (await p.$('.schirm.da #zur')) {
-        await tipp('.schirm.da #zur');
-        await p.waitForSelector('.schirm.da [data-gruppe]', { timeout: 6000 })
-          .catch(() => {});
-      }
+      /* Der Rueckweg aus einer Gruppe landet MEISTENS auf der
+         Ebenenwahl - und manchmal eine Stufe weiter, auf der
+         Weltenwahl. Dann steht dort keine Ebenenkachel mehr, und der
+         naechste Griff geht ins Leere: genau daran ist der zweite
+         Anlauf in der Kette gescheitert.
+         Also erst zurueck, dann NACHSEHEN, wo man gelandet ist - und
+         nur von der Weltenwahl aus den Weg noch einmal gehen.
+         `zurEbenenwahl` faengt dort an und kann von hier aus nicht
+         helfen; derselbe Fall steht in `chromium.mjs` und hat dort
+         schon einmal einen Rauchtest gekostet. */
+      if (await p.$('.schirm.da #zur')) await tipp('.schirm.da #zur');
+      await p.waitForSelector('.schirm.da [data-gruppe], .schirm.da [data-welt]',
+        { timeout: 6000 }).catch(() => {});
+      if (await p.$('.schirm.da [data-welt]')) await zurEbenenwahl(p);
     } else {
       meldungen.push('Ebenenwahl: die Ländergruppe steht nicht auf dem Schirm — '
         + 'dann sieht dieses Tor acht Kachelbilder nicht, und die Gegenprobe '
