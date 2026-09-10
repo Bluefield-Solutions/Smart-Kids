@@ -1061,8 +1061,8 @@ hing. Jetzt liegt alle sechs Tiere einer — ungefähr zwei fertige Ebenen:
 | ab | Ort | darin |
 |---|---|---|
 | 12 | Im Obstgarten | Apfel, Birne, Erdbeere |
-| 18 | Am Fruchtstand | Melone, Kiwi, Ananas |
-| 24 | Beim Sommerfest | Weintrauben, Rosette, Schleife |
+| 18 | Auf dem Markt | Melone, Kiwi, Ananas |
+| 24 | Beim Fest | Weintrauben, Rosette, Schleife |
 | 28 | Auf dem Treppchen | Gold-, Silber-, Bronzemedaille |
 | 31 | Bei den Pokalen | Pokal, Orden, Medaille |
 | 35 | In der Tiefsee | *(schon da)* |
@@ -1078,7 +1078,7 @@ Das ist die Grenze — sie ist gemessen, nicht gewählt, und sie sagt zugleich,
 woher die nächsten Räume kommen müssen: **aus neuen Ebenen**, nicht aus
 neuen Aufklebern.
 
-Dazu sechs Kulissen: Obstgarten, Marktstand, Sommerfest, Siegertreppchen,
+Dazu sechs Kulissen: Obstgarten, Marktstand, Fest, Siegertreppchen,
 Pokalvitrine, Kinosaal.
 
 **Was die Tore dazu gesagt haben** — fünf Befunde, keiner davon geraten:
@@ -1175,8 +1175,8 @@ der Aufgabe ein Fehler, der nur in einer der beiden Fragen auftaucht.
 Gemessen: 16 Gebiete, **29 Grenzen**, die meisten Nachbarn hat Niedersachsen
 mit neun.
 
-**Und drei neue Bilder** (Schritt 3): der Raum zur neuen Ebene heißt „In der
-Hundeschule" — Pudel, Blindenhund, Rettungshund. Der erste Entwurf sah aus
+**Und drei neue Bilder** (Schritt 3): der Raum zur neuen Ebene heißt „Bei den
+Hunden" — Pudel, Blindenhund, Rettungshund. Der erste Entwurf sah aus
 wie drei Bären; Hunde brauchen **Schlappohren und eine längere Schnauze**,
 und der Bügel des Blindenhundes steht neben dem Ohr, nicht darauf (bei y=30
 ist das Ohr nur noch zwei Punkte breit — dort ist Platz).
@@ -1277,7 +1277,7 @@ eine Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1).
 **Zwei neue Räume, sechs neue Bilder** (Schritt 3). „Am Wasserloch"
 (Nashorn · Nilpferd · Zebra) hängt an allen sechs Größenebenen — ein
 Wasserloch ist der eine Ort, an dem die großen Tiere nebeneinander
-stehen, und genau darum geht die Ebene. „Im Blumenbeet" (Tulpe · Rose ·
+stehen, und genau darum geht die Ebene. „Bei den Blumen" (Tulpe · Rose ·
 Sonnenblume) ist die **neunte Schwelle**, bei 45, und der erste Raum ohne
 ein Lebewesen, das sich bewegt: der Bildplan hält achtzehn Pflanzen, und
 keine einzige war bisher zu holen.

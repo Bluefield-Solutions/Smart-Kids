@@ -1486,17 +1486,100 @@ nicht liest, ist die Kachel damit unbeschriftet`);
        Bildschirms steht ausgeschrieben da - derselbe, mit dem `schau`
        drei Zeilen darueber aufgerufen wird. */
     const WO = 'Forscherbuch (Tiere)';
-    const h = await p.$$eval('.schirm.da .raumgitter:not([hidden]) .raumzelle',
-      z => z.map(x => Math.round(x.getBoundingClientRect().height)));
+    /* Mit NAMEN, nicht nur mit Zahlen (Regel 5: jede Zahl traegt ihre
+       Messstelle mit). „Zwei verschiedene Hoehen" laesst offen, WELCHE
+       Zelle aus der Reihe faellt - und genau die muss umbenannt werden.
+       Auf dem Runner hat diese Meldung eine Auslieferung gekostet, und
+       die Suche fing bei sechsundzwanzig Namen an. */
+    const zellen = await p.$$eval('.schirm.da .raumgitter:not([hidden]) .raumzelle',
+      z => z.map(x => {
+        const n = x.querySelector('span') || x;
+        const r = document.createRange(); r.selectNodeContents(n);
+        const kaesten = [...r.getClientRects()].filter(k => k.width > 1);
+        const zs = getComputedStyle(x), ns = getComputedStyle(n);
+        /* Gemessen wird gegen die ZELLE, nicht gegen den Namenskasten:
+           der Kasten schrumpft bei einer einzeiligen Zeile auf den Text
+           und meldete dann 77 von 77 - hundert Prozent, ohne dass etwas
+           eng waere. Die Zelle weiss als einzige, wieviel Platz da ist. */
+        const innen = x.getBoundingClientRect().width
+          - parseFloat(zs.paddingLeft || 0) - parseFloat(zs.paddingRight || 0);
+        /* Das laengste WORT, einzeln gemessen im selben Schriftschnitt.
+           Zwischen Woertern darf umgebrochen werden - das kostet eine
+           Zeile, und die zweite ist vorgehalten. Ein Wort, das allein
+           nicht in die Zeile passt, kostet eine DRITTE. */
+        const mess = document.createElement('span');
+        mess.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:pre';
+        for (const e of ['fontSize', 'fontFamily', 'fontWeight', 'fontStyle',
+                         'letterSpacing', 'fontStretch']) mess.style[e] = ns[e];
+        document.body.appendChild(mess);
+        let wort = 0, wortText = '';
+        for (const w of (n.textContent || '').trim().split(/\s+/)) {
+          mess.textContent = w;
+          const b = mess.getBoundingClientRect().width;
+          if (b > wort) { wort = b; wortText = w; }
+        }
+        mess.textContent = (n.textContent || '').trim().replace(/\s+/g, ' ');
+        const ganz = mess.getBoundingClientRect().width;
+        mess.remove();
+        return { ganz: Math.round(ganz), hoch: Math.round(x.getBoundingClientRect().height),
+                 was: (x.textContent || '').trim().replace(/\s+/g, ' '),
+                 breit: Math.round(kaesten.length ? Math.max(...kaesten.map(k => k.width)) : 0),
+                 innen: Math.round(innen), zeilen: kaesten.length,
+                 wort: Math.round(wort), wortText };
+      }));
+    /* --- UND KEIN NAME BRAUCHT EINE DRITTE ZEILE (I23) ---------------
+     *
+     * Die Hoehenpruefung darunter meldet den Befund erst, wenn er
+     * eingetreten ist - und er tritt auf dem RUNNER ein, nicht hier:
+     * derselbe Stand war lokal gruen und auf dem Runner rot, und die
+     * Auslieferung stand acht Fassungen lang.
+     *
+     * WORAN es liegt, ist von hier aus nicht zu klaeren. Die eigene
+     * Schrift ist es nicht - sie wird geladen, und der Blick darauf
+     * steht oben in diesem Tor. Es bleiben Rasterung, Rundung und die
+     * Breite, die das Raster dort wirklich bekommt. Statt die Ursache
+     * zu raten, verlangt dieses Tor einen ABSTAND: was hier knapp
+     * passt, passt dort vielleicht nicht.
+     *
+     * Der Kasten haelt zwei Zeilen vor. Zwischen zwei Woertern darf
+     * umgebrochen werden, das kostet die zweite - ein WORT, das allein
+     * nicht in die Zeile passt, kostet die dritte, und dann waechst die
+     * Reihe. Geprueft wird deshalb das laengste Wort, nicht der Name;
+     * der ganze Name fuellt hoechstens 69 % seiner zwei Zeilen und ist
+     * nie das Problem gewesen.
+     *
+     * Das Soll kommt aus der Referenz, nicht aus mir (Regel 3) - und
+     * die Referenz ist hier der Runner selbst: mit dem laengsten Wort
+     * bei 89 % der Zellenbreite war er gruen (v588), mit 93 % rot
+     * (v596). Die Grenze liegt dazwischen und ist von hier aus nicht
+     * genauer zu bekommen - 85 % liegt unter dem gruenen Wert und
+     * laesst zwei Buchstaben Luft. Vier Raumnamen haben das gekostet,
+     * alle vier sind kuerzer besser. */
+    const WORT_ANTEIL = 0.85;
+    const zuBreit = zellen.filter(z => z.innen > 0 && z.wort > z.innen * WORT_ANTEIL);
+    if (zuBreit.length)
+      meldungen.push(`${WO}: ${zuBreit.length} Raumname(n) haben ein Wort, das die `
+        + `Zellenbreite zu mehr als ${Math.round(WORT_ANTEIL * 100)} % füllt — auf einer `
+        + 'breiteren Schrift bricht es in eine DRITTE Zeile, und dann ist die Wand '
+        + 'auf dem Runner höher als hier: '
+        + zuBreit.map(z => `„${z.was}" (${z.wortText}: ${z.wort} von ${z.innen}, `
+            + `${Math.round(z.wort / z.innen * 100)} %)`).join(', '));
+    const h = zellen.map(z => z.hoch);
     const hoehen = [...new Set(h)];
     if (h.length < 10)
       meldungen.push(`${WO}: nur ${h.length} Raumzellen im Raster — dann beweist `
         + '„alle gleich hoch" nichts, der volle Tierstand ist nicht angekommen');
-    else if (hoehen.length > 1)
+    else if (hoehen.length > 1) {
+      const haeufig = hoehen.slice().sort((a, b) =>
+        h.filter(x => x === b).length - h.filter(x => x === a).length)[0];
+      const raus = zellen.filter(z => z.hoch !== haeufig)
+        .map(z => `„${z.was}" (${z.hoch})`);
       meldungen.push(`${WO}: die ${h.length} Raumzellen sind ${hoehen.length} verschiedene `
-        + `Höhen hoch (${hoehen.sort((a, b) => a - b).join(' · ')}) — dann entscheidet die `
-        + 'Schriftrundung, wie hoch die Wand wird, und dieses Tor urteilt auf zwei Rechnern '
-        + 'verschieden');
+        + `Höhen hoch (${hoehen.slice().sort((a, b) => a - b).join(' · ')}) — dann entscheidet `
+        + 'die Schriftrundung, wie hoch die Wand wird, und dieses Tor urteilt auf zwei '
+        + `Rechnern verschieden. Aus der Reihe fällt: ${raus.join(', ')} `
+        + `(die übrigen sind ${haeufig} hoch)`);
+    }
   }
   /* Seit Runde 3 steht zuerst das Raumraster da. Zum Meer fuehrt die
      Zelle - und damit ist auch sie einmal gedrueckt. Der zweite Blick

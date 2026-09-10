@@ -3552,7 +3552,21 @@ async function tiereLaden(){
   try { TierStand = { ...TierStand,
     ...(await Ablage.hole('einstellungen', tierSchluessel()) || {}) }; } catch(e){}
   if (!TierStand.szenen || typeof TierStand.szenen !== 'object') TierStand.szenen = {};
+  /* UMBENANNTE RAEUME BEHALTEN IHRE SZENE.
+     Die Szene liegt unter dem NAMEN des Raumes - wird er umbenannt,
+     steht das Zimmer beim naechsten Start leer da, ohne dass etwas
+     kaputt waere. Zwei Namen sind schon einmal ausgeliefert worden,
+     bevor sie zu breit fuer die Zelle waren (I23); dieser Bogen holt
+     ihre Szenen herueber. Er darf wachsen, aber nie schrumpfen. */
+  for (const [alt, neu] of Object.entries(RAUM_UMBENANNT))
+    if (TierStand.szenen[alt] && !TierStand.szenen[neu]) {
+      TierStand.szenen[neu] = TierStand.szenen[alt];
+      delete TierStand.szenen[alt];
+    }
 }
+/** Alter Raumname -> heutiger. Nur fuer schon ausgelieferte Namen. */
+const RAUM_UMBENANNT = { 'Am Fruchtstand': 'Auf dem Markt',
+                         'Beim Sommerfest': 'Beim Fest' };
 function tiereSichern(){
   Ablage.setze('einstellungen', tierSchluessel(), TierStand).catch(()=>{});
   gleichlaufBald();
