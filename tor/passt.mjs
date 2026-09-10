@@ -1548,13 +1548,26 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      * der ganze Name fuellt hoechstens 69 % seiner zwei Zeilen und ist
      * nie das Problem gewesen.
      *
-     * Das Soll kommt aus der Referenz, nicht aus mir (Regel 3) - und
-     * die Referenz ist hier der Runner selbst: mit dem laengsten Wort
-     * bei 89 % der Zellenbreite war er gruen (v588), mit 93 % rot
-     * (v596). Die Grenze liegt dazwischen und ist von hier aus nicht
-     * genauer zu bekommen - 85 % liegt unter dem gruenen Wert und
-     * laesst zwei Buchstaben Luft. Vier Raumnamen haben das gekostet,
-     * alle vier sind kuerzer besser. */
+     * Das Soll kommt aus der Referenz, nicht aus mir (Regel 3), und die
+     * Referenz ist der Runner. Er hat inzwischen SELBST gemessen, und
+     * damit ist die Ursache heraus: er setzt dieselben Namen breiter.
+     * „Regenwald" steht hier auf 60 von 73 Punkten (82 %) und dort auf
+     * 63 von 73 (86 %) - fuenf Prozent, dieselbe Fassung, dieselbe
+     * Schrift, derselbe Chromiumbau. Jede Zahl traegt ihre Messstelle
+     * mit (Regel 5): eine Grenze, die hier gilt, ist dort eine andere.
+     *
+     * Deshalb 92 % und nicht 85 %. Hergeleitet aus drei Messungen:
+     * mit dem laengsten Wort bei 89 % (hier gemessen) war der Runner
+     * gruen, mit 93 % rot; und die breitesten Namen, die heute
+     * ausgeliefert werden, stehen auf dem Runner bei 89 %. 92 % liegt
+     * ueber allem, was heute faehrt, und unter dem, was einmal
+     * gebrochen ist - in BEIDEN Umgebungen, weil die Grenze anteilig
+     * ist und nicht in Punkten (Regel 2).
+     *
+     * Sechs Raumnamen sind trotzdem kuerzer geworden, und sie bleiben
+     * es: „In der Hundeschule" stand hier auf 93 % und waere auf dem
+     * Runner darueber gewesen. Was fuer ein Kind kurz genug ist, ist
+     * ohnehin die bessere Antwort als ein Grenzwert. */
     /* Geprueft wird nur, WO das Zwei-Zeilen-Modell ueberhaupt gilt.
      *
      * Auf den breiten Schirmen ist die Zelle schmaler als auf dem
@@ -1581,7 +1594,7 @@ nicht liest, ist die Kachel damit unbeschriftet`);
          zwei Zeilen vor, er darf also breiter werden, ohne dass die
          Reihe waechst. Wer schon zwei braucht, steht einen Schritt vor
          der dritten - und die kostet. */
-      const WORT_ANTEIL = 0.85;
+      const WORT_ANTEIL = 0.92;
       const zuBreit = zellen.filter(z => z.zeilen === 2 && z.innen > 0
         && z.wort > z.innen * WORT_ANTEIL);
       if (zuBreit.length)

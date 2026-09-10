@@ -2166,16 +2166,20 @@ export const PROBEN = [
    * neue Zweig verlangt stattdessen einen Abstand: das laengste Wort
    * eines Raumnamens darf hoechstens 85 % der Zellenbreite fuellen.
    *
-   * Der Eingriff gibt einem Raum seinen alten, zu langen Namen zurueck -
-   * denselben, der die Auslieferung gekostet hat. Er bricht hier
-   * NICHT um (93 % passen lokal noch in zwei Zeilen), und genau darum
-   * ist er der richtige Eingriff: er zeigt, dass der neue Zweig meldet,
-   * WO die Hoehenpruefung daneben still bleibt. */
+   * Der Eingriff gibt einem Raum ein Wort, das seine Zelle sicher
+   * fuellt - „Rettungshunden", vierzehn Zeichen. Es bricht dabei NICHT
+   * in drei Zeilen um, und genau darum ist es der richtige Eingriff:
+   * er zeigt, dass der neue Zweig meldet, WO die Hoehenpruefung daneben
+   * still bleibt. Der alte Anlauf nahm „In der Hundeschule" - den
+   * Namen, der die Auslieferung wirklich gekostet hat; mit 93 % lag er
+   * einen Punkt ueber der Grenze und haette in der naechsten Umgebung
+   * darunter gelegen. Eine Probe, die von der Messstelle abhaengt,
+   * beweist an einer anderen Stelle nichts (Regel 5). */
   { n:'ein Raumname fuellt seine Zelle wieder bis zum Rand',
     tor:'passt', bauen:true, datei:'src/inhalt/tiere.js',
     such:"titel:'Bei den Hunden',",
-    ersatz:"titel:'In der Hundeschule',",
-    an:{ ...DIST, text:'In der Hundeschule' },
+    ersatz:"titel:'Bei den Rettungshunden',",
+    an:{ ...DIST, text:'Bei den Rettungshunden' },
     sagt:'DRITTE Zeile' },
 
   /* --- I14: der abgeleitete Vorlaufsatz, in beide Richtungen ---------- *

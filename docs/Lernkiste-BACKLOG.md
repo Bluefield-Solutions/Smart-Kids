@@ -6875,3 +6875,21 @@ Zielgerät ist, wäre der falsche Griff.
 Wort orientiert statt an einer runden Zahl — oder eine Schrift, die auf
 diesen Größen mitgeht, so wie sie es auf dem schmalen Schirm schon tut.
 Beides ist eine eigene Runde mit eigener Messung.
+
+### Nachtrag zu B18: der Runner setzt fünf Prozent breiter
+
+Gemessen am Lauf von v612, dieselbe Fassung, derselbe Chromium-Bau,
+dieselbe eingebettete Schrift: „Regenwald" steht in der Raumzelle des
+kurzen Querformats hier auf **60 von 73 Punkten (82 %)** und auf dem
+Runner auf **63 von 73 (86 %)**. Vier von vier langen Namen liegen dort
+um denselben Betrag höher.
+
+Das erklärt rückwirkend, warum die Wandhöhe acht Auslieferungen lang
+lokal grün und auf dem Runner rot war — und es ist der Grund, warum die
+Grenze im Wortabstand **anteilig** ist und großzügig: eine Zahl in
+Punkten wäre in der einen Umgebung richtig und in der anderen falsch.
+
+**Was noch fehlt:** dieselbe Messung auf dem Zielgerät. Weder dieser
+Rechner noch der Runner ist ein iPhone; welche der beiden Zahlen näher
+an Safari liegt, weiß niemand. Zu holen wäre es mit einer Messtafel im
+Spiel, die die Zellenbreite und die breiteste Namenszeile anzeigt.
