@@ -113,6 +113,11 @@
       "zeit": "2026-09-10",
       "s": 5
     },
+    "ein Tor vor dem Bau liest die gebaute Datei": {
+      "commit": "6785c199c46f0725f56b4b04fdd42277e51a3556",
+      "zeit": "2026-09-10",
+      "s": 21
+    },
     "CLAUDE.md verschweigt ein Tor der Kette": {
       "commit": "b8e4a31e324883e321047340a4a63ec0215ca1f3",
       "zeit": "2026-09-10",
