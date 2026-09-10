@@ -2162,24 +2162,30 @@ export const PROBEN = [
   /* --- I23: das lange Wort, BEVOR es eine dritte Zeile kostet -------- *
    *
    * Die Probe darueber faengt den Befund erst, wenn er eingetreten ist -
-   * und er trat nur auf dem Runner ein, acht Auslieferungen lang. Der
+   * und er trat nur auf dem RUNNER ein, acht Auslieferungen lang. Der
    * neue Zweig verlangt stattdessen einen Abstand: das laengste Wort
-   * eines Raumnamens darf hoechstens 85 % der Zellenbreite fuellen.
+   * eines zweizeiligen Raumnamens darf hoechstens 92 % der Zellenbreite
+   * fuellen.
    *
-   * Der Eingriff gibt einem Raum ein Wort, das seine Zelle sicher
-   * fuellt - „Rettungshunden", vierzehn Zeichen. Es bricht dabei NICHT
-   * in drei Zeilen um, und genau darum ist es der richtige Eingriff:
-   * er zeigt, dass der neue Zweig meldet, WO die Hoehenpruefung daneben
-   * still bleibt. Der alte Anlauf nahm „In der Hundeschule" - den
-   * Namen, der die Auslieferung wirklich gekostet hat; mit 93 % lag er
-   * einen Punkt ueber der Grenze und haette in der naechsten Umgebung
-   * darunter gelegen. Eine Probe, die von der Messstelle abhaengt,
-   * beweist an einer anderen Stelle nichts (Regel 5). */
-  { n:'ein Raumname fuellt seine Zelle wieder bis zum Rand',
-    tor:'passt', bauen:true, datei:'src/inhalt/tiere.js',
-    such:"titel:'Bei den Hunden',",
-    ersatz:"titel:'Bei den Rettungshunden',",
-    an:{ ...DIST, text:'Bei den Rettungshunden' },
+   * Der Eingriff setzt die GRENZE herunter, nicht einen Namen hinein -
+   * und das ist hier keine Bequemlichkeit, sondern das Einzige, was in
+   * beiden Umgebungen dasselbe tut. Ein Name muesste zwischen 92 und
+   * 100 Prozent liegen, um zu melden und dabei zweizeilig zu bleiben;
+   * dieses Fenster ist acht Punkte breit, und der Runner setzt fuenf
+   * Prozent breiter als dieser Rechner. „Rettungshunden" ist im ersten
+   * Anlauf durch das Fenster gefallen: es brach in DREI Zeilen um, der
+   * Zweig sagte „hier gilt das Modell nicht" und die Hoehenpruefung
+   * meldete etwas anderes. Eine Probe, die von der Messstelle abhaengt,
+   * beweist an einer anderen Stelle nichts (Regel 5).
+   *
+   * `--teil=0/5` faehrt iPhone quer und das schmale Fenster. Auf dem
+   * ersten gilt das Zwei-Zeilen-Modell, dort meldet es; auf dem zweiten
+   * nicht, dort steht der Hinweis - beide Zweige in einem Lauf. */
+  { n:'der Wortabstand in der Raumwand gilt nicht mehr', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:'tor/passt.mjs',
+    such:'      const WORT_ANTEIL = 0.92;',
+    ersatz:'      const WORT_ANTEIL = 0.5;',
+    an:{ datei:'tor/passt.mjs', text:'const WORT_ANTEIL = 0.5;' },
     sagt:'DRITTE Zeile' },
 
   /* --- I14: der abgeleitete Vorlaufsatz, in beide Richtungen ---------- *

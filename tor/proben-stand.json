@@ -693,10 +693,10 @@
       "zeit": "2026-09-10",
       "s": 305
     },
-    "ein Raumname fuellt seine Zelle wieder bis zum Rand": {
-      "commit": "1db1c7943df002d2f02d1075f355ad6ef32461d3",
+    "der Wortabstand in der Raumwand gilt nicht mehr": {
+      "commit": "4cacdf5007e29330af014c9471716f47f0e1b2b6",
       "zeit": "2026-09-10",
-      "s": 635
+      "s": 183
     },
     "Suedosteuropa erbt den Nachsatz, den nur Europa hat": {
       "commit": "fd0cfd33e35e4da9f3a52fb4f120784f0d6a5c48",
