@@ -129,7 +129,12 @@ export const PROBEN = [
     tor:'inhalt', deckt:'inhalt', datei:E,
     such:"export const AUSSCHNITTE = { mittelamerika: 'nordamerika',",
     ersatz:"export const AUSSCHNITTE = { unbekannt: 'nordamerika',",
-    an:{ datei:E, text:'export const AUSSCHNITTE = {};' },
+    /* Der Nachweis suchte „export const AUSSCHNITTE = {};" - einen
+       Text, den weder die Datei noch der Eingriff je enthaelt. Damit
+       galt der Eingriff IMMER als nicht angekommen, und die Probe hat
+       seit ihrem ersten Tag nichts bewiesen. Gesucht wird jetzt der
+       Schluessel, den der Eingriff wirklich hinsetzt. */
+    an:{ datei:E, text:"AUSSCHNITTE = { unbekannt: 'nordamerika'" },
     sagt:'Elternknoten' },
 
   /* --- topologie ---------------------------------------------------- */
@@ -6083,7 +6088,13 @@ export const PROBEN = [
     such:"  { a3:'POL', bau:{ art:'streifen', farben:[W, '#DC143C'] } },\n",
     ersatz:"",
     an:{ datei:'src/inhalt/flaggen.js', fehlt:"a3:'POL'" },
-    sagt:'hat keine Flagge' },
+    /* Die Meldung heisst nicht mehr „hat keine Flagge": seit I6 sagt
+       das Tor nicht „jedes Land hat eine", sondern haelt mit einer
+       Ratsche fest, dass die ZAHL der gefragten nicht sinkt. Die Probe
+       hat auf einen Satz gewartet, den es seitdem nicht mehr gibt -
+       und dabei nebenbei aufgedeckt, dass die Ratsche vierzig Flaggen
+       Luft hatte. */
+    sagt:'aus `FLAGGEN` gefallen' },
 
   /* 4. Der Notausgang wird zur Gewohnheit.
    *
@@ -7480,14 +7491,22 @@ export const PROBEN = [
    *
    * Sie ist gemessen und nicht gewaehlt: `inhalt` rechnet je Profil
    * nach, wieviele Tiere aus EBENEN zu holen sind, und Raeume mit
-   * Schwelle zaehlen dabei nicht mit. Das knappste Profil kommt auf 42.
-   * Der Eingriff hebt eine Schwelle darueber - dann waere der Raum fuer
-   * Lea im Buch der naechste Ort und nie zu erreichen. */
+   * Schwelle zaehlen dabei nicht mit.
+   *
+   * Der Eingriff hob die Schwelle auf 48 - das war einmal darueber und
+   * ist es nicht mehr: die Decke waechst mit jedem Raum, den eine Ebene
+   * oeffnet, und stand bei I23 laengst hoeher. Der Eingriff kam an und
+   * aenderte nichts.
+   *
+   * Also 999 statt 48, und das ist kein Uebermut, sondern der Verzicht
+   * auf eine Zahl, die mitwandert: eine Schwelle knapp ueber der Decke
+   * muesste bei jedem neuen Raum nachgezogen werden, und genau das ist
+   * hier zweimal vergessen worden. */
   { n:'ein Raum oeffnet sich erst hinter der Reichweite des Profils',
     tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
     such:"  { ab: 38,                           titel:'Ein Abend aus',",
-    ersatz:"  { ab: 48,                           titel:'Ein Abend aus',",
-    an:{ datei:'src/inhalt/tiere.js', text:"{ ab: 48," },
+    ersatz:"  { ab: 999,                          titel:'Ein Abend aus',",
+    an:{ datei:'src/inhalt/tiere.js', text:"{ ab: 999," },
     sagt:'nie zu erreichen' },
 
   /* 2. Die Wand im Buch, schmal und hoch.

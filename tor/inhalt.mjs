@@ -4511,7 +4511,23 @@ console.log('\n  Tor `flaggen`');
   /* RATSCHE: so viele Laender werden heute nach ihrer Flagge gefragt.
      Sie darf nicht sinken - wer eine Flagge herausnimmt, faellt auf. Wer
      eine dazuzeichnet, erhoeht sie hier. */
-  const FLAGGEN_GEFRAGT = 69;
+/* 109 und nicht mehr 69 (I24).
+ *
+ * Die Ratsche stand vier Runden lang auf ihrem Wert von I5, waehrend
+ * die Zahl der gefragten Flaggen ueber I5 und I12 auf 109 stieg. Damit
+ * hatte sie VIERZIG Flaggen Luft: man haette vierzig Stueck aus
+ * `FLAGGEN` nehmen koennen, ohne dass hier etwas rot wird - genau die
+ * Zusage, fuer die sie da ist, und genau die, die sie nicht mehr
+ * gehalten hat.
+ *
+ * Aufgefallen ist es nicht am Tor, sondern an der Gegenprobe: „ein Land
+ * hat keine Flagge mehr" nimmt Polen heraus, und `inhalt` blieb gruen.
+ * Eine Pruefung, die nie etwas meldet, ist kein Beweis (Regel 1) - und
+ * eine Ratsche, die man nicht nachzieht, ist genau das.
+ *
+ * Die Zahl steht ab jetzt auch in der Ausgabe. Ein Wert, den niemand
+ * sieht, faellt beim naechsten Mal wieder zurueck. */
+const FLAGGEN_GEFRAGT = 109;
   for (const [kont, liste] of Object.entries(I.LAENDER))
     for (const l of liste) laender.set(l.a3, { ...l, kont });
   for (const [a3, l] of laender)
@@ -4538,6 +4554,9 @@ console.log('\n  Tor `flaggen`');
     ff.push(`nur noch ${gefragt} Länder werden nach ihrer Flagge gefragt, `
       + `es waren ${FLAGGEN_GEFRAGT} — eine Flagge ist aus \`FLAGGEN\` gefallen `
       + 'und damit still aus der Ebene verschwunden');
+  else
+    console.log(`    ${gefragt} von ${laender.size} Ländern werden nach ihrer Flagge `
+      + `gefragt (Ratsche: mindestens ${FLAGGEN_GEFRAGT})`);
   for (const f of FL.FLAGGEN)
     if (!laender.has(f.a3))
       ff.push(`die Flagge ${f.a3} gehoert zu keinem Land in \`LAENDER\` — `

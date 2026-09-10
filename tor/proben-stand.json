@@ -49,9 +49,9 @@
       "s": 25
     },
     "ein Kartenschlüssel ist weder Kontinent noch erklärter Ausschnitt": {
-      "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
-      "zeit": "2026-09-07",
-      "s": 0
+      "commit": "a5c6fcd67122032c962beb0b4882e77b65b9bb96",
+      "zeit": "2026-09-10",
+      "s": 13
     },
     "ein Anker liegt außerhalb seines Gebiets": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1974,9 +1974,9 @@
       "s": 6
     },
     "ein Land hat keine Flagge mehr": {
-      "commit": "ae8cdbdfd7e5b8a1d812179d7374095c69d6a0c6",
-      "zeit": "2026-09-07",
-      "s": 6
+      "commit": "a5c6fcd67122032c962beb0b4882e77b65b9bb96",
+      "zeit": "2026-09-10",
+      "s": 5
     },
     "immer mehr Flaggen umgehen die Formsprache": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2434,9 +2434,9 @@
       "s": 93
     },
     "ein Raum oeffnet sich erst hinter der Reichweite des Profils": {
-      "commit": "ce10839cac2aa26c58932420297f37c707e06a0e",
-      "zeit": "2026-09-09",
-      "s": 6
+      "commit": "a5c6fcd67122032c962beb0b4882e77b65b9bb96",
+      "zeit": "2026-09-10",
+      "s": 4
     },
     "die Raumwand faellt auf dem schmalen Schirm auf drei Spalten zurueck": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
