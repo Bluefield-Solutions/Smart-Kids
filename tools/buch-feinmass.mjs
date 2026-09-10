@@ -182,7 +182,28 @@ const zeig = (name, o, n = 99) => {
  * Die Zahlen aus Audit II sind deshalb groesser - andere Messstelle
  * (Regel 5).
  */
-const GRENZEN = { schrift: 3, radius: 2, luft: 3 };
+/* VIER Schriftstufen seit I20, nicht mehr drei - und zwar begruendet,
+ * so wie es der Absatz darueber verlangt.
+ *
+ * Die vierte ist 11/600: die Raumwand des Tierkapitels auf dem kurzen
+ * Querformat. Mit dreiundzwanzig Raeumen brauchte sie vier Reihen in
+ * einem Kasten, der drei traegt; die Namen gehen dort dieselben
+ * vierzehn Prozent zurueck wie auf dem schmalen Schirm. Sie steht
+ * heute unter sechsundzwanzig Raumnamen UND unter den zwei
+ * Kapitelnamen - eine Stufe, die zweimal gebraucht wird, ist eine
+ * Stufe und kein Ausrutscher.
+ *
+ * Aufgefallen ist es erst in I23, denn `tonleiter` faehrt nicht in der
+ * Torkette: das Tor stand drei Fassungen lang rot, ohne dass etwas
+ * daran haengen blieb. Angeschlagen hat am Ende nicht das Tor selbst,
+ * sondern die Frist in `rhythmus` - seine Gegenprobe konnte nichts
+ * mehr beweisen, weil das Tor schon vorher rot war (Regel 11: ein
+ * abgestuerztes Tor besteht jede Gegenprobe, und ein dauerhaft rotes
+ * beweist mit keiner mehr etwas).
+ *
+ * Die Ratsche darf nur strenger werden - dies ist die eine Ausnahme,
+ * und sie kostet ihre Begruendung. Die fuenfte gibt es nicht. */
+const GRENZEN = { schrift: 4, radius: 2, luft: 3 };
 /* DER BILDANTEIL EINER SAMMELSEITE (N12).
  *
  * Die Ratsche im Rauchtest fragt, wieviel der Seite BENUTZT wird. Das

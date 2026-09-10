@@ -633,7 +633,7 @@ export const PROBEN = [
 
   /* --- Die Tonleiter des Buches (Runde 0) --------------------------- *
    *
-   * Eine vierte Schriftstufe, so wie sie entsteht: jemand braucht „nur
+   * Eine weitere Schriftstufe, so wie sie entsteht: jemand braucht „nur
    * hier" etwas Kleineres und schreibt einen `calc`. Genau daraus sind
    * die acht Kombinationen geworden, die Audit II gemessen hat.
    * Der Eingriff macht aus der Fussnote eine eigene Groesse. */
@@ -642,13 +642,20 @@ export const PROBEN = [
      11/400, es blieben drei. Das Tor blieb zu Recht gruen, und die Probe
      hat nichts bewiesen. Eine vierte Stufe entsteht, wenn EINER der drei
      Nutzer ausschert - genau so, wie es wirklich passiert. */
-  { n:'eine vierte Schriftstufe schleicht sich ein', tor:'tonleiter', bauen:true,
+  /* Seit I23 sind es VIER Stufen (die Raumwand des kurzen Querformats,
+     begruendet in `tools/buch-feinmass.mjs`) - die Probe sucht also die
+     FUENFTE. Und sie tut es mit `.6` statt mit `.82`: 0,82 mal vierzehn
+     sind gerundet elf, und elf ist seit I20 die vierte Stufe. Der alte
+     Eingriff waere angekommen und haette trotzdem nichts geaendert -
+     genau die Verfallsart, an der schon sein erster Anlauf gescheitert
+     ist. */
+  { n:'eine fünfte Schriftstufe schleicht sich ein', tor:'tonleiter', bauen:true,
     datei:'prototyp/vorlage.html',
     such:"/* Die drei Abstaende - und nur diese drei. */",
-    ersatz:".rollen.buch .buchsatz{font-size:calc(var(--t-name) * .82)}\n"
+    ersatz:".rollen.buch .buchsatz{font-size:calc(var(--t-name) * .6)}\n"
       + "/* Die drei Abstaende - und nur diese drei. */",
     an:{ datei:'prototyp/vorlage.html', text:'.rollen.buch .buchsatz{font-size:calc(' },
-    sagt:'schrift: 4 verschiedene' },
+    sagt:'schrift: 5 verschiedene' },
 
   /* Und ein Radius, den jemand „nur fuer diese eine Zelle" anders setzt.
      Der Eingriff traf bis Runde 3 die Aufkleberkarte - die steht seit

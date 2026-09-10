@@ -519,12 +519,12 @@
       "s": 4
     },
     "der letzte Probenlauf liegt zu lange zurück": {
-      "commit": "9dca60574767321e83185ddce492e0f32ead1f6c",
+      "commit": "12e9651a0e097c99533f05001160d90a112748e4",
       "zeit": "2026-09-10",
-      "s": 0
+      "s": 1
     },
     "eine Probe hat keinen Nachweis, und es faellt nicht auf": {
-      "commit": "9dca60574767321e83185ddce492e0f32ead1f6c",
+      "commit": "12e9651a0e097c99533f05001160d90a112748e4",
       "zeit": "2026-09-10",
       "s": 0
     },
@@ -594,7 +594,7 @@
       "s": 1
     },
     "ein Nachweis, dessen Alter sich nicht bestimmen lässt": {
-      "commit": "9dca60574767321e83185ddce492e0f32ead1f6c",
+      "commit": "12e9651a0e097c99533f05001160d90a112748e4",
       "zeit": "2026-09-10",
       "s": 0
     },
