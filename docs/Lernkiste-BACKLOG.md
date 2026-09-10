@@ -6850,3 +6850,28 @@ eigene Runde mit eigenen Gegenproben und keine Nebensache.
 **Was dafür spricht, es bald zu tun:** die App wird von zwei Kindern auf
 Telefonen geladen, und jede weitere Runde macht das Bündel größer. Der Gewinn
 wächst mit jeder Begründung, die ich schreibe.
+
+## B18 · Die Raumwand auf den breiten Schirmen bricht mitten im Wort
+
+Gefunden beim Reparieren der Auslieferung (I23). Der Namenskasten einer
+Raumzelle hält **zwei Zeilen** vor — genau deshalb ändert ein Umbruch
+zwischen zwei Wörtern die Höhe der Wand nicht. Auf dem Telefon hält das
+Modell: kein Name braucht dort eine dritte Zeile.
+
+Auf iPad quer, iPad hoch und im schmalen Fenster ist die Zelle **schmaler
+als auf dem Telefon** (72 statt 82 Punkte) — die Namen sind dieselben. Dort
+brechen heute neun bis elf von ihnen **innerhalb des Wortes**
+(„Wasserloch" 125 % der Zellenbreite, „Obstgarten" 125 %, „Regenwald"
+121 %) und stehen dreizeilig da. Die Wand ist trotzdem gleich hoch, weil
+in jeder Reihe mindestens ein solcher Name steht — das ist Zufall, kein
+Aufbau.
+
+`npm run passt` sagt das jetzt in jedem Lauf als HINWEIS, mit der Zahl
+daneben, und prüft den Wortabstand auf diesen Größen nicht: elf Räume
+umzubenennen, damit ein Tor auf einem Gerät grün wird, das nicht das
+Zielgerät ist, wäre der falsche Griff.
+
+**Was es wirklich bräuchte:** eine Mindestbreite, die sich am längsten
+Wort orientiert statt an einer runden Zahl — oder eine Schrift, die auf
+diesen Größen mitgeht, so wie sie es auf dem schmalen Schirm schon tut.
+Beides ist eine eigene Runde mit eigener Messung.

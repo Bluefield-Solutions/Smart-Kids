@@ -1555,15 +1555,43 @@ nicht liest, ist die Kachel damit unbeschriftet`);
      * genauer zu bekommen - 85 % liegt unter dem gruenen Wert und
      * laesst zwei Buchstaben Luft. Vier Raumnamen haben das gekostet,
      * alle vier sind kuerzer besser. */
-    const WORT_ANTEIL = 0.85;
-    const zuBreit = zellen.filter(z => z.innen > 0 && z.wort > z.innen * WORT_ANTEIL);
-    if (zuBreit.length)
-      meldungen.push(`${WO}: ${zuBreit.length} Raumname(n) haben ein Wort, das die `
-        + `Zellenbreite zu mehr als ${Math.round(WORT_ANTEIL * 100)} % füllt — auf einer `
-        + 'breiteren Schrift bricht es in eine DRITTE Zeile, und dann ist die Wand '
-        + 'auf dem Runner höher als hier: '
-        + zuBreit.map(z => `„${z.was}" (${z.wortText}: ${z.wort} von ${z.innen}, `
-            + `${Math.round(z.wort / z.innen * 100)} %)`).join(', '));
+    /* Geprueft wird nur, WO das Zwei-Zeilen-Modell ueberhaupt gilt.
+     *
+     * Auf den breiten Schirmen ist die Zelle schmaler als auf dem
+     * Telefon (72 statt 82 Punkte) und die Namen sind dieselben: dort
+     * brechen zehn von ihnen schon heute INNERHALB des Wortes und
+     * stehen dreizeilig da. Diese Schirme haben das Modell verlassen,
+     * lange bevor es diesen Zweig gab - sie hier zu melden hiesse, elf
+     * Raeume umzubenennen, damit ein Tor auf einem Geraet gruen wird,
+     * das nicht das Zielgeraet ist. Das steht als eigener Posten im
+     * Rueckstandsverzeichnis (B18), nicht in dieser Meldung.
+     *
+     * Still uebergangen wird es trotzdem nicht: der Grund steht in der
+     * Ausgabe, mit der Zahl daneben. */
+    const dreiZeilig = zellen.filter(z => z.zeilen > 2);
+    if (dreiZeilig.length)
+      meldungen.push(`${WO}: HINWEIS der Namenskasten hält zwei Zeilen vor, und `
+        + `${dreiZeilig.length} von ${zellen.length} Namen brauchen hier schon drei `
+        + `(${dreiZeilig.slice(0, 3).map(z => `„${z.was}"`).join(', ')}`
+        + `${dreiZeilig.length > 3 ? ' …' : ''}) — auf dieser Größe prüft der `
+        + 'Wortabstand deshalb nicht (B18)');
+    else {
+      /* Der Abstand gilt nur fuer die ZWEIZEILIGEN Namen.
+         Ein einzeiliger hat seinen Schritt noch frei: der Kasten haelt
+         zwei Zeilen vor, er darf also breiter werden, ohne dass die
+         Reihe waechst. Wer schon zwei braucht, steht einen Schritt vor
+         der dritten - und die kostet. */
+      const WORT_ANTEIL = 0.85;
+      const zuBreit = zellen.filter(z => z.zeilen === 2 && z.innen > 0
+        && z.wort > z.innen * WORT_ANTEIL);
+      if (zuBreit.length)
+        meldungen.push(`${WO}: ${zuBreit.length} zweizeilige(r) Raumname(n) haben ein Wort, `
+          + `das die Zellenbreite zu mehr als ${Math.round(WORT_ANTEIL * 100)} % füllt — auf `
+          + 'einer breiteren Schrift bricht es in eine DRITTE Zeile, und dann ist die Wand '
+          + 'auf dem Runner höher als hier: '
+          + zuBreit.map(z => `„${z.was}" (${z.wortText}: ${z.wort} von ${z.innen}, `
+              + `${Math.round(z.wort / z.innen * 100)} %)`).join(', '));
+    }
     const h = zellen.map(z => z.hoch);
     const hoehen = [...new Set(h)];
     if (h.length < 10)

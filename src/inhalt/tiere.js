@@ -514,7 +514,7 @@ export const RAEUME = [
   { ebenen:['nachbarn'],              titel:'Bei den Hunden',
     tiere:['pudel', 'blindenhund', 'rettungshund'] },
 
-  /* AM WASSERLOCH - der Raum der sechs Ebenen „Was ist groesser?" (I22).
+  /* AM WASSER - der Raum der sechs Ebenen „Was ist groesser?" (I22).
    *
    * ALLE SECHS fuehren hierher, wie die zehn Flaggenebenen in EINEN
    * Vogelpark und die neun Hauptstadtebenen in EINE Stadt. Der Grund ist
@@ -529,7 +529,7 @@ export const RAEUME = [
    * nebeneinander legt, sieht das. */
   { ebenen:['groesser:europa', 'groesser:suedosteuropa', 'groesser:afrika',
             'groesser:asien', 'groesser:mittelamerika', 'groesser:suedamerika'],
-    titel:'Am Wasserloch',
+    titel:'Am Wasser',
     tiere:['nashorn', 'nilpferd', 'zebra'] },
 
   /* --- SECHS RAEUME, DIE DAS SAMMELN SELBST OEFFNET (I20) ------------
@@ -554,7 +554,7 @@ export const RAEUME = [
    * achtunddreissig - dazwischen die beiden alten bei 35 und 42. Acht
    * Schwellen auf 42 Tiere, und keine zwei liegen naeher als drei
    * beieinander. */
-  { ab: 12,                           titel:'Im Obstgarten',
+  { ab: 12,                           titel:'Im Garten',
     tiere:['apfel', 'birne', 'erdbeere'] },
   { ab: 18,                           titel:'Auf dem Markt',
     tiere:['melone', 'kiwi', 'ananas'] },
@@ -798,7 +798,7 @@ export const KULISSEN = {
   "Im Vogelpark": {
     ton:'#eaf2e6',
     bild:'<path d="M0 0h160v34H0z" fill="#bfe2f4"/><path d="M0 34c26-10 46 4 72-2s52-12 88 0v12H0z" fill="#8dc47e"/><path d="M0 44h160v46H0z" fill="#a3d18a"/><path d="M0 56c30 6 54-6 84-2s48 8 76 4v32H0z" fill="#b5de9c"/><path d="M132 10c6 0 10 4 10 9s-4 9-10 9-10-4-10-9 4-9 10-9z" fill="#fbe27a"/><path d="M0 66c14-4 26 0 36 6s10 12 8 18H0z" fill="#7fc0dc"/><path d="M0 70c12-3 22 0 30 5s8 8 7 13H0z" fill="#a8d8ec"/><path d="M146 54V42h3.4v12z" fill="#8a6238"/><path d="M147.6 24c7 0 10.4 5 10.4 10s-4.4 9-10.4 9-10.4-4-10.4-9 3.4-10 10.4-10z" fill="#5aa05a"/><path d="M147.6 26c4.6 0 7.4 2.6 8.8 6-2.6-2.4-5.4-3.6-8.8-3.6s-6.2 1.2-8.8 3.6c1.4-3.4 4.2-6 8.8-6z" fill="#75b972"/><path d="M116 64v-10h2.6v10zM108 42h19l-4 12h-11z" fill="#c4a06a"/><path d="M110 46h15l-2 6h-11z" fill="#e0c48f"/><path d="M8 20c4-4 8-4 11-1-3-1-6 0-8 3-1-3-2-3-3-2zM19 21c4-4 8-4 11-1-3-1-6 0-8 3-1-3-2-3-3-2z" fill="#6f8a9c"/><path d="M92 14c4-4 8-4 11-1-3-1-6 0-8 3-1-3-2-3-3-2z" fill="#6f8a9c"/><path d="M54 84c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2zM126 82c1.6 0 2.4 1 2.4 2.2s-.8 2.2-2.4 2.2-2.4-1-2.4-2.2.8-2.2 2.4-2.2z" fill="#f2e07a"/>' },
-  "Im Obstgarten": {
+  "Im Garten": {
     ton:'#eaf3e4',
     bild:'<path d="M0 0h160v34H0z" fill="#cfe6f5"/><path d="M0 34h160v56H0z" fill="#8cbf63"/><path d="M0 34h160v10H0z" fill="#7cb257"/><path d="M16.4 44h3.2v18h-3.2z" fill="#7a5b3a"/><path d="M18 29c7.18 0 13 4.92 13 11c0 6.08 -5.82 11 -13 11c-7.18 0 -13 -4.92 -13 -11c0 -6.08 5.82 -11 13 -11z" fill="#4f8f42"/><path d="M15 31c3.87 0 7 2.69 7 6c0 3.31 -3.13 6 -7 6c-3.87 0 -7 -2.69 -7 -6c0 -3.31 3.13 -6 7 -6z" fill="#63a854"/><path d="M50.4 48h3.2v18h-3.2z" fill="#7a5b3a"/><path d="M52 33c7.18 0 13 4.92 13 11c0 6.08 -5.82 11 -13 11c-7.18 0 -13 -4.92 -13 -11c0 -6.08 5.82 -11 13 -11z" fill="#4f8f42"/><path d="M49 35c3.87 0 7 2.69 7 6c0 3.31 -3.13 6 -7 6c-3.87 0 -7 -2.69 -7 -6c0 -3.31 3.13 -6 7 -6z" fill="#63a854"/><path d="M84.4 44h3.2v18h-3.2z" fill="#7a5b3a"/><path d="M86 29c7.18 0 13 4.92 13 11c0 6.08 -5.82 11 -13 11c-7.18 0 -13 -4.92 -13 -11c0 -6.08 5.82 -11 13 -11z" fill="#4f8f42"/><path d="M83 31c3.87 0 7 2.69 7 6c0 3.31 -3.13 6 -7 6c-3.87 0 -7 -2.69 -7 -6c0 -3.31 3.13 -6 7 -6z" fill="#63a854"/><path d="M118.4 48h3.2v18h-3.2z" fill="#7a5b3a"/><path d="M120 33c7.18 0 13 4.92 13 11c0 6.08 -5.82 11 -13 11c-7.18 0 -13 -4.92 -13 -11c0 -6.08 5.82 -11 13 -11z" fill="#4f8f42"/><path d="M117 35c3.87 0 7 2.69 7 6c0 3.31 -3.13 6 -7 6c-3.87 0 -7 -2.69 -7 -6c0 -3.31 3.13 -6 7 -6z" fill="#63a854"/><path d="M148.4 44h3.2v18h-3.2z" fill="#7a5b3a"/><path d="M150 29c7.18 0 13 4.92 13 11c0 6.08 -5.82 11 -13 11c-7.18 0 -13 -4.92 -13 -11c0 -6.08 5.82 -11 13 -11z" fill="#4f8f42"/><path d="M147 31c3.87 0 7 2.69 7 6c0 3.31 -3.13 6 -7 6c-3.87 0 -7 -2.69 -7 -6c0 -3.31 3.13 -6 7 -6z" fill="#63a854"/><path d="M22 38c1.1 0 2 0.9 2 2c0 1.1 -0.9 2 -2 2c-1.1 0 -2 -0.9 -2 -2c0 -1.1 0.9 -2 2 -2z" fill="#d94141"/><path d="M14 42c1.1 0 2 0.9 2 2c0 1.1 -0.9 2 -2 2c-1.1 0 -2 -0.9 -2 -2c0 -1.1 0.9 -2 2 -2z" fill="#d94141"/><path d="M56 44c1.1 0 2 0.9 2 2c0 1.1 -0.9 2 -2 2c-1.1 0 -2 -0.9 -2 -2c0 -1.1 0.9 -2 2 -2z" fill="#d94141"/><path d="M48 40c1.1 0 2 0.9 2 2c0 1.1 -0.9 2 -2 2c-1.1 0 -2 -0.9 -2 -2c0 -1.1 0.9 -2 2 -2z" fill="#d94141"/><path d="M90 38c1.1 0 2 0.9 2 2c0 1.1 -0.9 2 -2 2c-1.1 0 -2 -0.9 -2 -2c0 -1.1 0.9 -2 2 -2z" fill="#d94141"/><path d="M124 44c1.1 0 2 0.9 2 2c0 1.1 -0.9 2 -2 2c-1.1 0 -2 -0.9 -2 -2c0 -1.1 0.9 -2 2 -2z" fill="#d94141"/><path d="M0 70h160v3H0z" fill="#f3efe2"/><path d="M0 78h160v3H0z" fill="#f3efe2"/><path d="M10 66h3.4v20H10z" fill="#f3efe2"/><path d="M40 66h3.4v20H40z" fill="#f3efe2"/><path d="M70 66h3.4v20H70z" fill="#f3efe2"/><path d="M100 66h3.4v20H100z" fill="#f3efe2"/><path d="M130 66h3.4v20H130z" fill="#f3efe2"/>' },
   "Auf dem Markt": {
@@ -819,10 +819,10 @@ export const KULISSEN = {
   "Bei den Hunden": {
     ton:'#eef4ea',
     bild:'<path d="M0 0h160v34H0z" fill="#cfe6f5"/><path d="M0 34h160v56H0z" fill="#9ecb70"/><path d="M0 34h160v8H0z" fill="#8bbb63"/><path d="M0 26h160v3H0z" fill="#e8e4d8"/><path d="M6 20h3.4v14H6z" fill="#e8e4d8"/><path d="M26 20h3.4v14H26z" fill="#e8e4d8"/><path d="M46 20h3.4v14H46z" fill="#e8e4d8"/><path d="M66 20h3.4v14H66z" fill="#e8e4d8"/><path d="M86 20h3.4v14H86z" fill="#e8e4d8"/><path d="M106 20h3.4v14H106z" fill="#e8e4d8"/><path d="M126 20h3.4v14H126z" fill="#e8e4d8"/><path d="M146 20h3.4v14H146z" fill="#e8e4d8"/><path d="M18 46h3v26h-3zM45 46h3v26h-3z" fill="#c9a06a"/><path d="M14 50h38v4H14z" fill="#e05a5a"/><path d="M14 60h38v4H14z" fill="#f0f0f2"/><path d="M70 44h2.6v26h-2.6z" fill="#5a8fd0"/><path d="M80 46h2.6v26h-2.6z" fill="#e0b74f"/><path d="M90 44h2.6v26h-2.6z" fill="#5a8fd0"/><path d="M100 46h2.6v26h-2.6z" fill="#e0b74f"/><path d="M126 46c9.4 0 15.4 6 15.4 14s-6 14-15.4 14-15.4-6-15.4-14 6-14 15.4-14z" fill="#e07f2e"/><path d="M126 52c5.6 0 9.4 3.6 9.4 8s-3.8 8-9.4 8-9.4-3.6-9.4-8 3.8-8 9.4-8z" fill="#9ecb70"/><path d="M124.6 70h3v16h-3z" fill="#8a6a44"/><path d="M0 84h160v6H0z" fill="#8bbb63"/>' },
-  /* AM WASSERLOCH - der Raum der sechs Groessenebenen (I22). Ein
+  /* AM WASSER - der Raum der sechs Groessenebenen (I22). Ein
      Wasserloch ist der eine Ort der Savanne, an dem alle Tiere
      NEBENEINANDER stehen, und genau darum geht die Ebene. */
-  "Am Wasserloch": {
+  "Am Wasser": {
     ton:'#f8ecd2',
     bild:'<path d="M0 0h160v32H0z" fill="#f6dda6"/><path d="M0 32h160v58H0z" fill="#dcb96e"/><path d="M0 32c30-6 54 6 86 2s44-8 74-2v12H0z" fill="#d2ab5c"/><path d="M0 50c30 6 56-2 88 2s40 4 72 0v38H0z" fill="#e6c682"/><path d="M128 12c8 0 13 5 13 11s-5 11-13 11-13-5-13-11 5-11 13-11z" fill="#f7b850"/><path d="M28 88c-16 0-26-6-26-13s10-13 30-13 34 6 34 13-14 13-38 13z" fill="#6aa8b8"/><path d="M32 74c-14 0-22-2-24-5 4-3 12-5 24-5s22 2 26 5c-4 3-12 5-26 5z" fill="#8fc6d2"/><path d="M14 80c8-2 16-2 24 0-8 2-16 2-24 0zM40 84c8-2 14-2 20 0-6 2-12 2-20 0z" fill="#b6dee6"/><path d="M124 78v-22h3.4v22z" fill="#7a5a34"/><path d="M125.7 60l-9-7 1.6-2 7.4 6zM125.7 62l9-8 1.6 2-9 7z" fill="#7a5a34"/><path d="M108 54c0-5 8-9 18-9s18 4 18 9c0 3-5 4-18 4s-18-1-18-4z" fill="#6f9a52"/><path d="M112 51c3-3 8-4 14-4s11 1 14 4c-4-2-9-3-14-3s-10 1-14 3z" fill="#87b166"/><path d="M74 84l2-9 2 9zM82 88l2-8 2 8zM96 82l2-9 2 9z" fill="#bc9a52"/>' },
   /* BEI DEN BLUMEN - die neunte Schwelle (I22). Die erste Kulisse ohne

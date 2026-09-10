@@ -1060,7 +1060,7 @@ hing. Jetzt liegt alle sechs Tiere einer — ungefähr zwei fertige Ebenen:
 
 | ab | Ort | darin |
 |---|---|---|
-| 12 | Im Obstgarten | Apfel, Birne, Erdbeere |
+| 12 | Im Garten | Apfel, Birne, Erdbeere |
 | 18 | Auf dem Markt | Melone, Kiwi, Ananas |
 | 24 | Beim Fest | Weintrauben, Rosette, Schleife |
 | 28 | Auf dem Treppchen | Gold-, Silber-, Bronzemedaille |
@@ -1078,7 +1078,7 @@ Das ist die Grenze — sie ist gemessen, nicht gewählt, und sie sagt zugleich,
 woher die nächsten Räume kommen müssen: **aus neuen Ebenen**, nicht aus
 neuen Aufklebern.
 
-Dazu sechs Kulissen: Obstgarten, Marktstand, Fest, Siegertreppchen,
+Dazu sechs Kulissen: Garten, Marktstand, Fest, Siegertreppchen,
 Pokalvitrine, Kinosaal.
 
 **Was die Tore dazu gesagt haben** — fünf Befunde, keiner davon geraten:
@@ -1274,7 +1274,7 @@ gemessen: nimmt man den Treue-Filter heraus, kommen zwölf Paare dazu
 das dabei grün bliebe, bezeugte eine Regel, die es nie geprüft hat —
 eine Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1).
 
-**Zwei neue Räume, sechs neue Bilder** (Schritt 3). „Am Wasserloch"
+**Zwei neue Räume, sechs neue Bilder** (Schritt 3). „Am Wasser"
 (Nashorn · Nilpferd · Zebra) hängt an allen sechs Größenebenen — ein
 Wasserloch ist der eine Ort, an dem die großen Tiere nebeneinander
 stehen, und genau darum geht die Ebene. „Bei den Blumen" (Tulpe · Rose ·
