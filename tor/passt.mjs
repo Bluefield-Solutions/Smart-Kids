@@ -1248,6 +1248,49 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await zurEbenenwahl(p);
   await schau('Ebenenwahl');
 
+  /* UND DIE GEOEFFNETE LAENDERGRUPPE (I24).
+   *
+   * Seit I22b liegen die acht Laenderebenen hinter EINER Kachel, und
+   * damit lagen auch ihre acht Umrisse ausserhalb dessen, was dieses
+   * Tor je zu sehen bekommt. Gemeldet hat es die Gegenprobe „eine
+   * Ebenenkachel hat kein Bild mehr": sie nimmt Australien den Umriss
+   * weg, und `passt` blieb gruen - genau der Fall, gegen den sie
+   * gebaut ist („Ozeanien" kam elf Fassungen lang ohne Bild durch).
+   *
+   * Fuer Fiona ist das kein Schoenheitsfehler: sie liest nicht, das
+   * Kachelbild IST der Name. Also wird die Gruppe geoeffnet, angesehen
+   * und wieder geschlossen. */
+  {
+    const gruppe = await p.$('.schirm.da [data-gruppe="laender"]');
+    if (gruppe) {
+      await gruppe.click();
+      await p.waitForSelector('.schirm.da [data-ebene]:not([data-gruppe])',
+        { timeout: 6000 }).catch(() => {});
+      /* Gewartet wird, BIS DIE UMRISSE IHRE GROESSE HABEN.
+         Der erste Anlauf mass sofort nach dem Aufklappen: acht Umrisse
+         zu 4x5 bis 8x6 Punkten, zwei bis drei Prozent der Kachel - und
+         alle acht um denselben Faktor 7,4 zu klein. Das ist keine
+         Wand, das ist eine Wand im Auffalten. Auf dem Zielgeraet war
+         sie schon fertig, im schmalen Fenster nicht; eine Zahl aus der
+         Bewegung haette als Ratsche festgehalten, was nie so aussieht
+         (Regel 5: jede Zahl traegt ihre Messstelle mit). */
+      await p.waitForFunction(() => {
+        const s = document.querySelector('.schirm.da .kachel .silhouette, '
+          + '.schirm.da .kachel svg');
+        return s && s.getBoundingClientRect().width > 20;
+      }, null, { timeout: 6000 }).catch(() => {});
+      await schau('Ebenenwahl (Ländergruppe)');
+      const zur = await p.$('.schirm.da #zur');
+      if (zur) { await zur.click();
+        await p.waitForSelector('.schirm.da [data-gruppe]', { timeout: 6000 })
+          .catch(() => {}); }
+    } else {
+      meldungen.push('Ebenenwahl: die Ländergruppe steht nicht auf dem Schirm — '
+        + 'dann sieht dieses Tor acht Kachelbilder nicht, und die Gegenprobe '
+        + 'dazu beweist nichts');
+    }
+  }
+
   // Auch die WELTKARTE: sie ist querformatig, Deutschland hochformatig -
   // ein Grundriss, der nur mit einer von beiden geprueft wird, ist halb
   // geprueft.

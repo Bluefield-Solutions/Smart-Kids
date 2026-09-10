@@ -761,6 +761,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .wahl.ebenen .kachel .silhouette{position:static;flex:1 1 0;min-height:0;
   height:auto;width:auto;max-width:82%;max-height:100%;align-self:center;
   translate:none;opacity:.9;-webkit-mask-image:none;mask-image:none}
+/* UND EINE UNTERGRENZE, WO PLATZ DA IST (I24).
+   `flex:1 1 0` mit `min-height:0` gibt dem Bild, was uebrigbleibt - und
+   in der geoeffneten Laendergruppe blieb im schmalen Fenster nichts
+   uebrig: 240 x 112 Punkte Kachel, davon 106 fuer Name, Balken und
+   Knopf, und der Umriss stand mit VIER mal SECHS Punkten da. Acht
+   Kacheln, acht unsichtbare Kontinente - auf dem Schreibtisch, dem
+   zweiten unterstuetzten Weg seit v122.
+   Gefunden hat es kein Tor, sondern der Blick auf eine Aufnahme, die es
+   vorher nicht gab: `passt` sieht die geoeffnete Gruppe erst seit
+   dieser Runde an (Regel 4 - kein Tor ersetzt den Blick, und kein Blick
+   die Tore).
+   Die Grenze gilt NICHT im kurzen Querformat: dort ist die Wand die
+   engste Stelle der App, und `min-height:0` ist genau die Zeile, die
+   das Ueberlappen dort unmoeglich macht. Wo die Hoehe knapp ist, bleibt
+   sie knapp; wo sie da ist, bekommt das Bild seinen Anteil. */
+@media (min-height:441px){
+  .wahl.ebenen .kachel .silhouette{min-height:34px}
+}
 /* Die Ueberzeile („LÄNDER IN", „DEUTSCHLAND") faellt hier weg. Sie stand
    bisher OBEN in der Kachel - dort liegt jetzt das Bild, und `lesbarkeit`
    hat sofort gemeldet, was das kostet: 4,34:1 statt 4,5 am Tag, 3,35:1 am

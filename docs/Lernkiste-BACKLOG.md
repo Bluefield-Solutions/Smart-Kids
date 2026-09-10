@@ -6893,3 +6893,32 @@ Punkten wäre in der einen Umgebung richtig und in der anderen falsch.
 Rechner noch der Runner ist ein iPhone; welche der beiden Zahlen näher
 an Safari liegt, weiß niemand. Zu holen wäre es mit einer Messtafel im
 Spiel, die die Zellenbreite und die breiteste Namenszeile anzeigt.
+
+## B19 · Die Ländergruppe ist im Schreibtischfenster voll
+
+Gefunden in I24, dadurch dass `passt` die **geöffnete** Ländergruppe zum
+ersten Mal ansieht — seit I22b liegen die acht Länderebenen hinter einer
+Kachel, und damit lagen ihre acht Umrisse außerhalb dessen, was das Tor
+je zu Gesicht bekam.
+
+**Der Befund:** auf 700 × 850 (Schreibtisch, seit v122 der zweite
+unterstützte Weg) war die Kachel 240 × 112 Punkte groß, davon 106 für
+Name, Balken und Knopf — der Umriss stand mit **4 × 6 Punkten** da. Acht
+Kacheln, acht unsichtbare Kontinente. Auf dem Zielgerät war und ist es
+richtig; nur dort hat je jemand hingesehen.
+
+**Behoben** mit einer Untergrenze von 34 Punkten für das Kachelbild,
+und zwar nur, wo Höhe da ist (`min-height:441px`): im kurzen Querformat
+ist die Wand die engste Stelle der App, dort bleibt `min-height:0`.
+
+**Was das gekostet hat, und was jetzt offen ist:** die Wand im schmalen
+Fenster trägt statt fünfzehn nur noch **acht** Kacheln — genau die acht,
+die es gibt. Die **neunte Karte bricht sie**. `passt` sagt es in jedem
+Lauf als Hinweis („die Wand ist voll — 8 Kacheln stehen da, 8 passen"),
+aber ein Hinweis hält nichts auf.
+
+**Was es braucht:** drei Spalten statt zwei auf dieser Breite. Bei 700
+Punkten wären das Kacheln von rund 155 Punkten, fünf Reihen statt vier
+und damit wieder Luft für fünfzehn. Das ist eine eigene Messung wert —
+die Spaltenzahl entscheidet dort auch über die Namenslänge, und die hat
+in dieser Runde schon einmal acht Auslieferungen gekostet.

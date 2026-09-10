@@ -386,7 +386,7 @@
     "eine Ebenenkachel hat kein Bild mehr": {
       "commit": "d7564046254258d118b26a9fe7f257fe7519b41a",
       "zeit": "2026-09-09",
-      "s": 97
+      "s": 94
     },
     "dem Kachelbild fehlt eines seiner Ziele": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2364,9 +2364,9 @@
       "s": 5
     },
     "die Englischkarten laufen über den Rand": {
-      "commit": "1db1c7943df002d2f02d1075f355ad6ef32461d3",
+      "commit": "5e9fc06f265d05e0f6030ebd6fa3c32acfcb6782",
       "zeit": "2026-09-10",
-      "s": 321
+      "s": 597
     },
     "die Satz-Abzeichen wählen nichts aus": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
