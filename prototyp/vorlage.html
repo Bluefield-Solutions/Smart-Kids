@@ -238,6 +238,24 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .kopf-links{justify-self:start;display:flex;gap:var(--r2);min-width:0}
 .kopf-mitte{justify-self:center;display:flex;align-items:center;gap:var(--r2);min-width:0}
 .kopf-rechts{justify-self:end;display:flex;gap:var(--r2);min-width:0}
+/* DIE UHR IM KOPF (I27) - dort, wo bei den Kindern die Sterne stehen.
+   Zahlen in Tabellenbreite (`tabular-nums`): ohne das wandert die
+   Anzeige bei jeder Sekunde um ein bis zwei Punkte, weil die Eins
+   schmaler ist als die Acht. Eine Uhr, die zappelt, zieht den Blick
+   von der Aufgabe weg - und genau das soll sie nicht. */
+/* DIE PUNKTZEILE des Endbildschirms (I27). Die Summe gross, die
+   Herkunft klein darunter - dieselbe Ordnung wie bei „N von M" und
+   dem Satz daneben: eine Zahl, die man sich merkt, und die
+   Erklaerung fuer den, der sie wissen will. */
+.punkte{display:flex;flex-direction:column;align-items:center;gap:2px;
+  margin-top:var(--r1)}
+.punkte b{font-family:var(--f-ui);font-size:var(--s2);font-weight:800;
+  color:var(--tinte);font-variant-numeric:tabular-nums}
+.punkte span{font-family:var(--f-ui);font-size:var(--s-klein);
+  color:var(--tinte-3);text-align:center}
+.uhr{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;
+  color:var(--tinte-2);font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;white-space:nowrap}
 .marke{font-family:var(--f-ui);font-size:var(--s0);font-weight:700;color:var(--tinte-2);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Der Zaehler ist eine Zahl, kein Satz: gross, mit Ziffern gleicher Breite. */

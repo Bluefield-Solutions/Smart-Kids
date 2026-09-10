@@ -3643,6 +3643,38 @@ function tierFuer(st){
     tiereSichern();
     return (st.tiere = { raum: ausZahl.raum, neu: ausZahl.neu });
   }
+  /* --- OHNE FEHLER: EIN AUFKLEBER, SOFORT (I27) ----------------------
+   *
+   * Bis hierher zahlte nur das FERTIGWERDEN einer Ebene - und das
+   * dauert. Der erste Durchgang brachte nichts, der zweite auf einmal
+   * drei oder sechs. Gemeldet hat es der Nutzer, und er hat recht: ein
+   * Lohn, der beim ersten Mal ausbleibt und beim zweiten in Buendeln
+   * kommt, erklaert sich keinem Kind. Er erklaert sich nicht einmal
+   * einem Erwachsenen, der zusieht.
+   *
+   * Eine fehlerfreie Runde bringt deshalb EINEN Aufkleber aus dem Raum
+   * dieser Ebene - sofort, beim ersten Mal, und wieder, solange dort
+   * noch etwas liegt. Es bleibt bei EINER Nachricht je Bildschirm: die
+   * beiden Faelle darueber sind groesser und stehen deshalb davor.
+   *
+   * „Ohne Fehler" heisst AUF ANHIEB: `st.glatt` zaehlt die Aufgaben,
+   * die ohne Fehlversuch sassen. Wer sich durchprobiert, bekommt den
+   * Gorilla - das war schon so und bleibt so.
+   *
+   * Was dadurch NICHT passiert: der Raum wird nicht groesser. Wer ihn
+   * fehlerfrei leerspielt, bekommt beim Fertigwerden nichts mehr - und
+   * das ist richtig herum. Der Lohn ist nach VORNE gewandert, nicht
+   * vermehrt worden. */
+  if (st.glatt === st.liste.length) {
+    const uebrig = Tiere.raumTiere(st.ebeneId, TierStand.ids);
+    if (uebrig.length) {
+      const eins = uebrig[0];
+      TierStand = { ...TierStand, ids: [...TierStand.ids, eins.id] };
+      tiereSichern();
+      return (st.tiere = { raum: Tiere.raumZu(st.ebeneId), neu: [eins],
+                           grund: 'ohne Fehler' });
+    }
+  }
   if (st.glatt < st.liste.length) {
     TierStand = { ...TierStand, gorilla: (TierStand.gorilla || 0) + 1 };
     tiereSichern();
@@ -4464,10 +4496,28 @@ async function vorlauf(ebeneId, zurueck = null){
   // zurueck - dieselbe Regel wie im Spielbildschirm.
   const ganzeKarte = vbVon(ebeneId);
   const rahmen = (x) => eigenerRahmen(x.pfad) || ganzeKarte;
+  /* WAS ES ZU HOLEN GIBT - VOR DER RUNDE, nicht danach (I27).
+   *
+   * Ein Lohn, von dem man erst hinterher erfaehrt, ist eine
+   * Ueberraschung. Ueberraschungen taugen zum Feiern und nicht zum
+   * Ueben: sie geben keinen Grund, sich JETZT anzustrengen. Wer weiss,
+   * dass eine fehlerfreie Runde einen Aufkleber bringt, hat einen.
+   *
+   * Gesagt wird es nur, wenn dort wirklich noch etwas liegt - ein
+   * Versprechen ins Leere ist schlimmer als keines -, und nur den
+   * Kindern: `ton().feier` ist derselbe Schalter, an dem auch Jubel,
+   * Sterne und Figur haengen. Der Name des Tieres steht dabei, weil
+   * „ein Aufkleber" nichts ist, was man sich vorstellen kann, und „der
+   * Pudel" schon. */
+  const lohnSatz = (() => {
+    if (!ton().feier) return '';
+    const holbar = Tiere.raumTiere(ebeneId, TierStand.ids);
+    return holbar.length ? ` Ohne Fehler gibt es einen Aufkleber: ${holbar[0].name}.` : '';
+  })();
   s.innerHTML = kopf({ links: zurueckKnopf(),
     mitte:`<span class="marke">${ebene ? ebene.titel : 'Anschauen'}</span>` }) + `
     <div class="rollen vorlauf">
-      <div class="unter mitte-satz">${satz}</div>
+      <div class="unter mitte-satz">${satz}${lohnSatz}</div>
       <div class="kleber${gitter.spalten > 8 ? ' viel' : ''}" style="--spalten:${
         gitter.spalten};--reihen:${gitter.reihen}">${stuecke.map((x, i) => `
         <button class="aufkleber da" data-lesen="${vorlaufAnsage(x, ebeneId)}"
@@ -4655,6 +4705,14 @@ async function starten(ebeneId, alsTest = false){
   Sitzung = { ebeneId, alle, liste: testListe || listeMitBogen, i:0, glatt:0, wie:[],
               serie:0, besteSerie:0, neuSicher:[],
               aufkleber:0, neueKleber:[], keim, begonnen:Date.now(), test: alsTest,
+              /* ZEITEN JE AUFGABE (I27) - fuer die Erwachsenen.
+                 Gemessen wird von der vorigen Antwort bis zu dieser, das
+                 Lob dazwischen also mitgezaehlt. Das ist bei jeder
+                 Aufgabe gleich viel und faelscht deshalb keinen
+                 Vergleich; die Alternative waere ein zweiter Zeitpunkt
+                 in drei Bildschirmbauern, und drei Stellen fuer eine
+                 Zahl sind zwei zuviel. */
+              zeiten:[], aufgabeAb: Date.now(),
               abzVorher: new Set(verdiente(ebeneId, Stand).map(a => a.id)) };
   zeige(schirmZu(ebeneId));
 }
@@ -4750,9 +4808,11 @@ function werten(ziel, ergebnis, versuch){
     st.glatt++;
     st.serie++;
     if (st.serie > st.besteSerie) st.besteSerie = st.serie;
+    st.zeiten.push((Date.now() - (st.aufgabeAb || st.begonnen)) / 1000);
   } else if (ergebnis === 'falsch' || versuch > 1) {
     st.serie = 0;
   }
+  if (ergebnis === 'richtig') st.aufgabeAb = Date.now();
   /* UND DIE ANZEIGE GLEICH MIT, hier und nicht an den Aufrufstellen.
    *
    * `kopfNachziehenIn` steht an acht Orten - und im FALSCH-Zweig steht es
@@ -4849,6 +4909,59 @@ const wiederZeichen = (st) => {
 };
 
 /** Der Kopf, den jede Aufgabe trägt - Band und Sterne aus einer Hand. */
+/* --- PUNKTE FUER TEMPO (I27) ------------------------------------------
+ *
+ * „Es muss einen Vorteil bringen, wenn man Aufgaben schnell loest."
+ * Bis hierher brachte es keinen: der Endbildschirm zaehlte richtige
+ * Antworten, und ob sie nach drei oder nach dreissig Sekunden kamen,
+ * stand nirgends.
+ *
+ * Zehn Punkte fuer jede Aufgabe, die AUF ANHIEB sass - das ist der
+ * Boden, und er haengt am Koennen, nicht an der Hast. Dazu ein
+ * Zuschlag, der mit der Zeit faellt: fuenf unter fuenf Sekunden, drei
+ * unter zehn, einer unter zwanzig. Wer richtig UND schnell ist, bekommt
+ * die Haelfte mehr; wer richtig und langsam ist, bekommt trotzdem seine
+ * zehn. Raten wird nicht billiger: ein Fehlversuch kostet die zehn und
+ * den Zuschlag gleich mit.
+ *
+ * Die Stufen sind grob und sollen es sein. Eine stetige Formel waere
+ * genauer und im Kopf nicht nachzurechnen - und was man nicht
+ * nachrechnen kann, spornt nicht an, es aergert nur. */
+const PUNKT_BASIS = 10;
+const TEMPO_STUFEN = [[5, 5], [10, 3], [20, 1]];
+const tempoZuschlag = (sek) => {
+  for (const [bis, punkte] of TEMPO_STUFEN) if (sek <= bis) return punkte;
+  return 0;
+};
+const punkteFuer = (st) => {
+  const basis = st.glatt * PUNKT_BASIS;
+  const tempo = (st.zeiten || []).reduce((a, sek) => a + tempoZuschlag(sek), 0);
+  return { basis, tempo, gesamt: basis + tempo };
+};
+/** m:ss - zweistellig, damit die Zahl beim Laufen nicht springt. */
+const alsUhr = (ms) => {
+  const s = Math.max(0, Math.round(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+/* DIE UHR LAEUFT, sie wird nicht nachgezogen.
+ *
+ * Eine Zeit, die nur bei jeder Antwort weiterspringt, ist keine Zeit,
+ * sondern ein Zaehler. Ein Intervall, das nachsieht, ob es die Anzeige
+ * ueberhaupt gibt, kostet nichts, wenn es sie nicht gibt - und es muss
+ * an keiner Stelle abgeschaltet werden, an der man es vergessen
+ * koennte. Dieselbe Ueberlegung wie bei der Menueleiste: eine
+ * Ableitung in jedem Takt statt eines Schalters an acht Orten.
+ *
+ * UNTER `?flott` STEHT SIE STILL. Die Bildtore vergleichen Aufnahmen
+ * auf den Bildpunkt genau; eine Zahl, die zwischen zwei Laeufen
+ * weiterlaeuft, macht jede von ihnen rot - und zwar zu Recht, ohne
+ * dass etwas kaputt waere. `?flott` setzen nur die Tore. */
+setInterval(() => {
+  if (FLOTT) return;
+  const u = document.querySelector('.schirm.da #uhr');
+  if (u && Sitzung && Sitzung.begonnen) u.textContent = alsUhr(Date.now() - Sitzung.begonnen);
+}, 1000);
+
 const aufgabenKopf = (st) => kopf({
   links: schliessenKnopf('Übung beenden'),
   mitte:`<div class="bandreihe">${wiederZeichen(st)}<div class="band" aria-label="Aufgabe ${st.i+1} von ${st.liste.length}">${
@@ -4869,7 +4982,15 @@ const aufgabenKopf = (st) => kopf({
          der Aufgabe dahinter - sie gehoert nicht in dieselbe Spalte. */
       (i === st.liste.length - 1 && st.liste.length >= 4) ? ' data-knack' : ''}></i>`).join('')
   }</div>${serieZeichen(st.serie)}</div>`,
-  rechts: sterne(sterneFuer(st.glatt, st.liste.length)) });
+  /* Die Uhr steht, wo bei den Kindern die Sterne stehen (I27).
+     Nicht daneben: der Kopf hat drei Faecher, und ein viertes waere auf
+     844 x 390 genau das, was `passt` seit je meldet. Die Erwachsenen
+     bekommen keine Sterne - `sterneFuer` gibt ihnen ohnehin nichts,
+     was sie lesen wollen -, sondern die laufende Zeit. */
+  rechts: ton().feier
+    ? sterne(sterneFuer(st.glatt, st.liste.length))
+    : `<span class="uhr" id="uhr" aria-label="Zeit">${
+        FLOTT ? '0:00' : alsUhr(Date.now() - st.begonnen)}</span>` });
 
 /* ---------- Die Pause (R1) ----------------------------------------------
  *
@@ -9475,6 +9596,22 @@ function endschirm(){
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
+      ${/* PUNKTE UND ZEIT - nur fuer die Erwachsenen (I27).
+           Die Kinder bekommen Sterne, Aufkleber und eine Figur, die
+           mitfeiert; eine vierte Waehrung waere fuer sie keine
+           Nachricht, sondern Rauschen. Fuer Stephan und Violeta ist es
+           umgekehrt: Sterne sagen ihnen nichts, eine Zahl schon.
+           Der Zuschlag steht SEPARAT da und nicht in der Summe
+           versteckt. Wer wissen will, ob sich Tempo lohnt, muss sehen,
+           wieviel es gebracht hat - sonst ist es ein Versprechen ohne
+           Beleg. */''}
+      ${!ton().feier ? (() => {
+        const pk = punkteFuer(st);
+        return `<div class="punkte"><b>${pk.gesamt}</b> Punkte`
+          + `<span>${pk.basis} für richtig`
+          + (pk.tempo ? ` · ${pk.tempo} für Tempo` : ' · kein Tempo-Zuschlag')
+          + ` · ${alsUhr(Date.now() - st.begonnen)} gesamt</span></div>`;
+      })() : ''}
       ${/* NEU SICHER (N4). Der Kasten sagt zum ersten Mal, was er weiss:
            „das kannst du jetzt". Genannt wird es nur, wenn es DIESE Runde
            passiert ist, und hoechstens drei Namen - wer fuenf Zeilen
@@ -9512,7 +9649,11 @@ function endschirm(){
            es ist die Antwort auf „wie lief es", und die steht oben. */
         tier && tier.neu ? `<div class="tierneu">${
           tier.neu.map(t => tierBild(t)).join('')}
-        <span>${tier.raum.titel} ist offen: ${aufzaehlen(tier.neu.map(t => t.name), 'und')}!</span></div>`
+        <span>${tier.grund
+          ? `${tier.grund.charAt(0).toUpperCase()}${tier.grund.slice(1)}! `
+            + `${aufzaehlen(tier.neu.map(t => t.name), 'und')} für dein Buch.`
+          : `${tier.raum.titel} ist offen: ${aufzaehlen(tier.neu.map(t => t.name), 'und')}!`
+        }</span></div>`
         : tier && tier.gorilla ? `<div class="tierneu hilft">${tierBild(tier.gorilla)}
         <span>${tier.gorilla.name} übt mit dir weiter.</span></div>`
         : tier && tier.weiter ? `<div class="tierneu noch">${
