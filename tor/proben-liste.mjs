@@ -4840,8 +4840,14 @@ export const PROBEN = [
    * Der Eingriff gibt der Kachel wieder einen eigenen Ton statt des
    * Kartentons - genau der Zustand von vor v358, in dem sieben von sieben
    * Kontinenten auf der Kachel anders aussahen als auf der Karte. */
+  /* `bauen:true`, seit `groesser` die gebaute Paartafel liest (I22).
+     `inhalt` faehrt sechzehn Pruefungen nacheinander und steigt bei der
+     ersten roten aus - `groesser` ist die zweite. Ohne Bau fehlt ihm
+     das Buendel, es meldet, und alles danach (auch `farben`) laeuft gar
+     nicht erst. Die Probe sah einen roten Lauf und hielt ihn fuer den
+     eigenen. */
   { n:'die Kachel eines Kontinents hat wieder eine eigene Farbe', tor:'inhalt',
-    deckt:'farben',
+    deckt:'farben', bauen:true,
     datei:'prototyp/spiel.js',
     /* Der Ersatz LAESST DEN ANKER STEHEN, in einem Kommentar dahinter.
      *
@@ -4856,8 +4862,19 @@ export const PROBEN = [
        derselbe - die Kachel bekommt einen Ton, der nicht der Kartenton
        ist. */
     such:"    titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })),",
-    ersatz:"    titel:'Länder', farbe: [3,2,4,7,6][0], gruppe:'laender', wo: KONT_TITEL[k] || k })),"
-      + " /* titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })), */",
+    /* Und der stehengelassene Anker steht auf einer EIGENEN Zeile, mit
+       seinen vier fuehrenden Leerzeichen.
+       Vorher stand er hinter `/* ` auf derselben Zeile - damit fehlten
+       genau diese vier Zeichen, und zwei Proben fanden ihren Suchtext
+       nicht mehr: diese hier und „ohne die Laendergruppe stehen
+       dreizehn Kacheln in der Wand". Ihr Tor meldete das, `inhalt`
+       stieg vor `farben` aus, und die Probe sah einen roten Lauf, der
+       von etwas ganz anderem kam. Ein Eingriff, der die Pruefung
+       verschiebt, statt sie zu brechen, beweist nichts (Regel 1). */
+    ersatz:"    titel:'Länder', farbe: [3,2,4,7,6][0], gruppe:'laender', wo: KONT_TITEL[k] || k })),\n"
+      + "/*\n"
+      + "    titel:'Länder', farbe: KONT_FARBE[k], gruppe:'laender', wo: KONT_TITEL[k] || k })),\n"
+      + "*/",
     an:{ datei:'prototyp/spiel.js', text:'farbe: [3,2,4,7,6][0]' },
     sagt:'nimmt wieder einen eigenen Ton' },
 
