@@ -1263,7 +1263,13 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   {
     const gruppe = await p.$('.schirm.da [data-gruppe="laender"]');
     if (gruppe) {
-      await gruppe.click();
+      /* Nicht ueber den GRIFF klicken, sondern im Blatt - dieselbe
+         Regel wie oben bei `tipp`: zwischen `$` und `click` kann der
+         Bildschirm gewechselt haben, und Playwright wartet dann
+         dreissig Sekunden auf ein Element, das nicht mehr am Baum
+         haengt. Genau daran ist der erste Anlauf in der Kette
+         gescheitert - nicht an einem Befund, an einem Zeitablauf. */
+      await tipp('.schirm.da [data-gruppe="laender"]');
       await p.waitForSelector('.schirm.da [data-ebene]:not([data-gruppe])',
         { timeout: 6000 }).catch(() => {});
       /* Gewartet wird, BIS DIE UMRISSE IHRE GROESSE HABEN.
@@ -1280,10 +1286,11 @@ nicht liest, ist die Kachel damit unbeschriftet`);
         return s && s.getBoundingClientRect().width > 20;
       }, null, { timeout: 6000 }).catch(() => {});
       await schau('Ebenenwahl (Ländergruppe)');
-      const zur = await p.$('.schirm.da #zur');
-      if (zur) { await zur.click();
+      if (await p.$('.schirm.da #zur')) {
+        await tipp('.schirm.da #zur');
         await p.waitForSelector('.schirm.da [data-gruppe]', { timeout: 6000 })
-          .catch(() => {}); }
+          .catch(() => {});
+      }
     } else {
       meldungen.push('Ebenenwahl: die Ländergruppe steht nicht auf dem Schirm — '
         + 'dann sieht dieses Tor acht Kachelbilder nicht, und die Gegenprobe '
