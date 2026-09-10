@@ -772,7 +772,17 @@ export async function zeigeAufKarte(seite) {
      *
      * Neun mal neun statt sieben mal sieben: der Abstand ist nur so gut
      * wie die Auswahl, aus der er kommt (Regel 12: ein Raster ist nur so
-     * fein wie sein kleinstes Ziel). */
+     * fein wie sein kleinstes Ziel).
+     *
+     * OHNE GEGENPROBE, und das steht hier, damit es niemand fuer
+     * geprueft haelt (I23): zwei Eingriffe sind dagegen gefahren
+     * worden - die erste Stelle nehmen und die naechste - und der
+     * Rauchtest blieb beide Male gruen. `trifft` laesst eine Stelle
+     * ohnehin nur durch, wenn dort das eigene Gebiet oder der eigene
+     * Nadelkopf obenauf liegt; der Abstand entscheidet also nicht
+     * mehr, WAS getroffen wird. Was er abdeckt, ist Bewegung zwischen
+     * Messen und Klicken - und dagegen stehen daneben das Warten auf
+     * ruhende Nadeln und die Nachfrage unmittelbar vor dem Tipp. */
     if (!pf) return null;
     const fremd = [...s.querySelectorAll('#treffer circle')]
       .filter(c => c.dataset.id !== id)

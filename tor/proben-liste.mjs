@@ -7647,8 +7647,13 @@ export const PROBEN = [
    *
    * Sie greift in das TOR und nicht in die App - dieselbe Sorte Probe
    * wie „die Fehlerüberschrift nennt jeden Befund einen Überlauf". */
+  /* `--teil=3/5` und nicht `1/5`: die Messgrenze wird nur dort
+     erreicht, wo die Wand mehr Platz hat als Kacheln - auf dem iPad,
+     und das ist Groesse 3. Mit `1/5` liefen iPhone SE quer und
+     „iPhone quer, Leiste"; dort gibt es nichts zu decken, der Eingriff
+     kam an und aenderte nichts. */
   { n:'die Messgrenze der Kachelzahl gilt wieder als Platzverlust', tor:'passt',
-    args:['--teil=1/5'], bauen:true, datei:'tor/passt.mjs',
+    args:['--teil=3/5'], bauen:true, datei:'tor/passt.mjs',
     such:'      if (r.wand.gedeckelt) {',
     ersatz:'      if (r.wand.gedeckelt && false) {',
     an:{ datei:'tor/passt.mjs', text:'r.wand.gedeckelt && false' },
@@ -7676,18 +7681,48 @@ export const PROBEN = [
    * Bei „Wo liegt X?" und bei den Nachbarn kostete derselbe Fehler seit
    * je nur einen Fehlversuch und fiel nie auf; erst „Was ist groesser?"
    * prueft, ob der Tipp AUCH richtig gewertet wird. */
-  { n:'der Tipp landet auf der ersten statt auf der freiesten Stelle', tor:'smoke',
-    args:['--nur=durchgang'], bauen:true, datei:'tor/chromium.mjs',
-    such:'      if (d > weiteste) { weiteste = d; beste = { x, y }; }',
-    ersatz:'      if (!beste) { weiteste = d; beste = { x, y }; }',
-    an:{ datei:'tor/chromium.mjs', text:'if (!beste) { weiteste = d;' },
-    sagt:'nicht als richtig gewertet' },
+  /* KEINE Gegenprobe auf die freieste Stelle - und das ist der Befund.
+   *
+   * I22c hat den Tipp auf die Stelle mit dem groessten Abstand zu
+   * jedem fremden Nadelkopf gelegt. Zwei Eingriffe sind dagegen
+   * gefahren worden: die ERSTE Stelle nehmen (der Zustand davor) und
+   * die NAECHSTE (der schlimmste Fall). Beide kamen an, und der
+   * Rauchtest blieb beide Male gruen.
+   *
+   * Der Grund steht in `trifft` (chromium.mjs): die Stelle wird
+   * ohnehin nur genommen, wenn `elementFromPoint` dort das EIGENE
+   * Gebiet oder den EIGENEN Nadelkopf meldet. Ein fremder Kopf faellt
+   * damit schon vorher heraus - der Abstand kann gar nicht mehr
+   * entscheiden, WAS getroffen wird. Er ist Vorsorge gegen Bewegung
+   * zwischen Messen und Klicken, und die ist seit demselben Umbau
+   * durch das Warten auf ruhende Nadeln und die Nachfrage unmittelbar
+   * vor dem Tipp abgedeckt.
+   *
+   * Eine Probe, die nie etwas meldet, ist kein Beweis - also steht
+   * hier keine. Der Abstand bleibt im Code, mit demselben Vermerk
+   * daneben; er kostet nichts und deckt einen Fall ab, den heute
+   * niemand herstellen kann. */
 
-  { n:'der Rueckweg aus einer falschen Gruppe geht zu weit', tor:'smoke',
+  /* Nicht mehr der Wiedereinstieg, sondern das WARTEN danach.
+   *
+   * Der erste Anlauf schaltete den Wiedereinstieg in die Welt ab und
+   * blieb gruen - zu Recht: er ist Vorsorge fuer einen Fall, den dieser
+   * Lauf nicht herstellt. Der Fehler, den I22 wirklich gekostet hat,
+   * lag eine Zeile darueber: gewartet wurde auf `[data-ebene]`, und
+   * das steht auch IN der Gruppe, die gerade verlassen wird. Das
+   * Warten war damit sofort vorbei, die naechste Gruppe wurde auf dem
+   * alten Schirm gesucht, und der Rauchtest meldete „Failed to find
+   * element". Genau diese Zeile nimmt der Eingriff zurueck.
+   *
+   * Der Nachweis fragt nach dem VERSCHWINDEN des heutigen Wartetextes,
+   * nicht nach dem Dasein des alten: `[data-ebene]` steht drei Zeilen
+   * weiter noch einmal da, und danach zu suchen hiesse, jeden
+   * misslungenen Eingriff fuer angekommen zu halten. */
+  { n:'das Warten nach dem Rueckweg endet schon in der offenen Gruppe', tor:'smoke',
     args:['--nur=durchgang'], bauen:true, datei:'tor/chromium.mjs',
-    such:"    if (!(await seite.$('.schirm.da [data-ebene]'))\n"
-      + "        && await seite.$(`.schirm.da [data-welt=\"${WELT_VON(ebene)}\"]`)) {",
-    ersatz:'    if (false) {',
-    an:{ datei:'tor/chromium.mjs', text:'    if (false) {' },
+    such:"    await seite.waitForSelector('.schirm.da [data-gruppe], .schirm.da [data-welt]',",
+    ersatz:"    await seite.waitForSelector('.schirm.da [data-ebene]',",
+    an:{ datei:'tor/chromium.mjs',
+         fehlt:"'.schirm.da [data-gruppe], .schirm.da [data-welt]'" },
     sagt:'ist nicht zu finden' },
 ];
