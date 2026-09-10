@@ -527,8 +527,13 @@ export const RAEUME = [
    * NEBENEINANDER sieht, und genau darum geht die Ebene. Sie sind
    * ausserdem verschieden gross, und ein Kind, das drei Aufkleber
    * nebeneinander legt, sieht das. */
-  { ebenen:['groesser:europa', 'groesser:suedosteuropa', 'groesser:afrika',
-            'groesser:asien', 'groesser:mittelamerika', 'groesser:suedamerika'],
+  /* Vier Ebenen, nicht sechs: Mittelamerika und Suedosteuropa tragen
+     keine Vergleichsebene mehr - acht und sechs Paare reichen fuer
+     keine zwei Runden (I23d). Suedamerika steht hier, obwohl es nur
+     Fiona angeboten wird; ein Raum oeffnet sich, wenn EINE seiner
+     Ebenen gekonnt ist, und fuer Lea sind das die drei anderen. */
+  { ebenen:['groesser:europa', 'groesser:afrika',
+            'groesser:asien', 'groesser:suedamerika'],
     titel:'Am Wasser',
     tiere:['nashorn', 'nilpferd', 'zebra'] },
 

@@ -4089,23 +4089,27 @@ function paareAusBuendel() {
    *
    * „Was ist groesser?" steht mit demselben `id:\`groesser:${k}\`` da wie
    * die anderen, hat davor aber einen Filter: eine Karte bekommt die
-   * Ebene nur, wenn sie mindestens so viele Paare hat wie die kuerzeste
-   * Sitzung Aufgaben (Nordamerika hat drei, Australien zwei). Ohne
-   * diesen Absatz meldete das Tor zwei Ebenen ohne Lebensraum, die es
-   * gar nicht gibt - eine Ueberschaetzung, die genau das kaputtmacht,
-   * wofuer die Pruefung da ist: sie meldet dann IMMER etwas.
+   * Ebene nur, wenn ihre Paare fuer ZWEI volle Sitzungen reichen -
+   * dieselbe Grenze, die `vielfalt` setzt. Es genuegt, dass EIN Profil
+   * das schafft; fuer die anderen steht `wer` an der Ebene.
+   *
+   * Der erste Anlauf (I22) verglich mit der KUERZESTEN Sitzung und
+   * einer statt zwei Runden. Damit standen hier zwei Ebenen mehr, als
+   * es gibt - eine Ueberschaetzung, die genau das kaputtmacht, wofuer
+   * die Pruefung da ist: sie meldet dann IMMER etwas.
    *
    * Beide Zahlen kommen von dort, wo das Spiel sie auch herhat: die
    * Paare aus dem gebauten Buendel, die Sitzungslaengen aus `PROFILE`.
    * Eine dritte Fassung des Filters hier waere die, die auseinanderlaeuft. */
   if ([...ebenen].some(e => e.startsWith('groesser:'))) {
-    const kurz = Math.min(...[...spiel.matchAll(/sitzung:\s*(\d+)/g)].map(m => +m[1]));
+    const sitzungen = [...spiel.matchAll(/sitzung:\s*(\d+)/g)].map(m => +m[1]);
+    const kurz = Math.min(...sitzungen);
     const paare = paareAusBuendel();
     if (!paare) tf.push('die Paartafel `paare` steht nicht im gebauten Bündel — '
       + 'ohne sie ist jede Aussage über „Was ist größer?" geraten');
     else for (const e of [...ebenen]) {
       if (!e.startsWith('groesser:')) continue;
-      if ((paare[e.slice(9)] || []).length < kurz) ebenen.delete(e);
+      if ((paare[e.slice(9)] || []).length < 2 * kurz) ebenen.delete(e);
     }
   }
   if (ebenen.size < 8) tf.push(`nur ${ebenen.size} Ebenen in spiel.js gefunden — `

@@ -1168,7 +1168,28 @@ for (const id of ['mittelamerika', 'suedosteuropa'])
  * groesser?" benutzt sie, um zu entscheiden, welche Karte eine Ebene
  * bekommt. Stuende hier eine Sechs, waere sie beim naechsten
  * Sitzungsregler falsch (Regel 6). */
-const SITZUNG_KURZ = Math.min(...Object.values(PROFILE).map(p => p.sitzung));
+/**
+ * Wer bekommt „Was ist größer?" auf dieser Karte ueberhaupt zu sehen?
+ *
+ * Eine Vergleichsebene hat keine Tiefenleiter: es gibt so viele
+ * Aufgaben, wie es Paare gibt, und zwar fuer jeden gleich viele. Ob sie
+ * reichen, haengt damit allein an der SITZUNGSLAENGE - und die ist je
+ * Profil verschieden (6 bis 12).
+ *
+ * Verlangt werden ZWEI volle Runden, dieselbe Grenze, die `vielfalt`
+ * setzt: wer in der zweiten Runde fast dieselben Paare wiedersieht,
+ * uebt nichts mehr, er erinnert sich. Der erste Anlauf (I22) fragte
+ * nach der KUERZESTEN Sitzung und bot Mittelamerika mit acht Paaren
+ * allen an - fuer Stephan sind das 0,7 Runden. Das Tor hat es gesagt,
+ * und zwar in elf Zeilen.
+ *
+ * Uebrig bleiben Europa (33), Afrika (43) und Asien (40) fuer alle und
+ * Suedamerika (14) fuer Fiona. Mittelamerika (8), Suedosteuropa (6),
+ * Nordamerika (3) und Australien (2) tragen keine Ebene - dort ist die
+ * Karte zu leer, nicht die Regel zu streng.
+ */
+const groesserWer = (k) => Object.values(PROFILE)
+  .filter(p => (D.paare[k] || []).length >= 2 * p.sitzung).map(p => p.id);
 
 const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
@@ -1310,11 +1331,16 @@ const EBENEN = [
      Afrika hat mit 43 die meisten Paare, ist orange und sieht anders
      aus als alles andere auf der Wand. */
   ...Object.keys(D.laender)
-    .filter(k => (D.paare[k] || []).length >= SITZUNG_KURZ)
+    .filter(k => groesserWer(k).length)
     .sort((a, b) => D.paare[b].length - D.paare[a].length)
     .map(k => ({ id:`groesser:${k}`, ueber: KONT_TITEL[k] || k,
       titel:'Was ist größer?', farbe: KONT_FARBE[k], art:'groesser',
-      gruppe:'groesser', wo: KONT_TITEL[k] || k })),
+      gruppe:'groesser', wo: KONT_TITEL[k] || k,
+      /* `wer` nur, wo es wirklich einschraenkt - eine Liste mit allen
+         vier Namen waere dieselbe Aussage wie keine und veraltet beim
+         naechsten Profil. */
+      ...(groesserWer(k).length < Object.keys(PROFILE).length
+          ? { wer: groesserWer(k) } : {}) })),
   /* Das zweite Fach.
    *
    * `art` sagt, WIE gefragt wird - `karte` oder `rechnen`. Bis hierher gab
