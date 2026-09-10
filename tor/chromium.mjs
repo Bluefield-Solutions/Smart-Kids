@@ -246,8 +246,38 @@ async function gruppeOeffnen(seite, gruppe, ebene) {
   const zur = await seite.$('.schirm.da #zur');
   if (zur) {
     await zur.click();
-    await seite.waitForSelector('.schirm.da [data-ebene]', { timeout: 6000 })
-      .catch(() => {});
+    /* UND WENN DER RUECKWEG EINE STUFE ZU WEIT GEHT, wieder hinein.
+     *
+     * Zurueck aus einer Gruppe landet auf der Ebenenwahl - meistens.
+     * Landet es auf der WELTENWAHL, ist die naechste Gruppe von dort
+     * aus nicht zu sehen: die Schleife findet keine mehr, `durchGruppe`
+     * gibt `false`, und der Aufrufer klickt ins Leere.
+     *
+     * Aufgefallen ist das erst mit I22, und der Grund ist lehrreich: bis
+     * dahin lag „Bundesländer" als ERSTE Gruppe auf dem Schirm, und die
+     * Suche nach `nachbarn` traf sie beim ersten Versuch - der Rueckweg
+     * lief nie. Seit die Laendergruppe davor steht, laeuft er, und der
+     * Rauchtest meldete „fiona/nachbarn: Failed to find element". Ein
+     * Weg, der nie gegangen wird, ist nicht geprueft, auch wenn er
+     * dasteht (Regel 1: eine Pruefung, die nie etwas meldet, ist kein
+     * Beweis). */
+    /* GEWARTET WIRD AUF DIE GRUPPENKACHELN, nicht auf irgendeine
+     * Ebenenkachel.
+     *
+     * `[data-ebene]` steht auch IN der Gruppe, die wir gerade verlassen
+     * wollen - das Warten war damit sofort vorbei, und die naechste
+     * Gruppe wurde auf dem alten Schirm gesucht, wo es keine gibt. Die
+     * Schleife lief leer durch und gab auf. Gruppenkacheln tragen
+     * `data-gruppe`, die Teile darin nicht; das ist der Unterschied,
+     * an dem man die Wand erkennt. */
+    await seite.waitForSelector('.schirm.da [data-gruppe], .schirm.da [data-welt]',
+      { timeout: 6000 }).catch(() => {});
+    if (!(await seite.$('.schirm.da [data-ebene]'))
+        && await seite.$(`.schirm.da [data-welt="${WELT_VON(ebene)}"]`)) {
+      await seite.$eval(`.schirm.da [data-welt="${WELT_VON(ebene)}"]`, x => x.click());
+      await seite.waitForSelector('.schirm.da [data-ebene]', { timeout: 6000 })
+        .catch(() => {});
+    }
     await alleinIm(seite);
   }
   return false;
@@ -588,6 +618,29 @@ export async function inEbene(seite, profil, ebene, { vorlauf = true } = {}) {
 
 /** Beantwortet die umgekehrte Frage: auf das gesuchte Gebiet tippen. */
 export async function zeigeAufKarte(seite) {
+  /* ERST WARTEN, BIS DIE NADELN STEHEN.
+   *
+   * `trefferflaechen` setzt die Nadelkoepfe NACH dem ersten Bild - sie
+   * braucht die gerechnete Groesse jeder Flaeche. Wer vorher misst,
+   * findet eine Stelle mitten in Belarus, die einen Wimpernschlag
+   * spaeter unter Litauens Kopf liegt; getippt wird dann Litauen.
+   *
+   * Gefunden bei I22, weil dort zum ersten Mal geprueft wird, ob der
+   * Tipp AUCH richtig gewertet wird. Bei „Wo liegt X?" kostete
+   * derselbe Fehler seit je nur einen Fehlversuch und fiel nie auf.
+   *
+   * Gewartet wird auf eine BEDINGUNG und nicht auf eine Zahl: die
+   * Kopfzahl steht still. Eine feste Pause waere hier eine blinde, und
+   * der Rauchtest zaehlt sie (Q42). */
+  await seite.waitForFunction(() => {
+    const t = document.querySelector('.schirm.da #treffer');
+    if (!t) return true;
+    const n = t.children.length;
+    if (window.__nadelzahl === n) return true;
+    window.__nadelzahl = n;
+    return false;
+  }, null, { timeout: 4000 }).catch(() => {});
+  await seite.evaluate(() => { delete window.__nadelzahl; });
   const punkt = await seite.evaluate(() => {
     const s = document.querySelector('.schirm.da');
     /* WELCHES Gebiet gesucht ist, sagt die SITZUNG - nicht der Fragetext.
@@ -705,15 +758,67 @@ export async function zeigeAufKarte(seite) {
         return { name, id, x: mx, y: my, breit: +k.width.toFixed(1) };
     }
 
-    // Sonst eine Stelle IM Gebiet, an der das Spiel es auch erkennt.
+    /* Sonst eine Stelle IM Gebiet - und zwar die, die am WEITESTEN von
+     * jedem fremden Nadelkopf entfernt liegt.
+     *
+     * Der erste Anlauf nahm die erste Stelle, an der `elementFromPoint`
+     * das Gebiet meldet. Das ist zu wenig: die Nadelkoepfe der kleinen
+     * Nachbarn liegen im Meer UND auf den grossen Flaechen, sie tragen
+     * `pointer-events:all`, und das Spiel fragt sie ZUERST. Eine Stelle
+     * dicht neben so einem Kopf ist eine Stelle, die schon beim
+     * naechsten Bild nicht mehr gilt - gemeldet hat es der Rauchtest
+     * als „der Tipp auf Belarus wurde nicht als richtig gewertet",
+     * waehrend Litauens Kopf drei Punkte daneben lag.
+     *
+     * Neun mal neun statt sieben mal sieben: der Abstand ist nur so gut
+     * wie die Auswahl, aus der er kommt (Regel 12: ein Raster ist nur so
+     * fein wie sein kleinstes Ziel). */
     if (!pf) return null;
-    for (let n = 0; n <= 6; n++) for (let m = 0; m <= 6; m++) {
-      const x = bb.left + bb.width * (n + .5) / 7, y = bb.top + bb.height * (m + .5) / 7;
-      if (trifft(x, y)) return { name, id, x, y, breit: 0 };
+    const fremd = [...s.querySelectorAll('#treffer circle')]
+      .filter(c => c.dataset.id !== id)
+      .map(c => { const b = c.getBoundingClientRect();
+        return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+    let beste = null, weiteste = -1;
+    for (let n = 0; n < 9; n++) for (let m = 0; m < 9; m++) {
+      const x = bb.left + bb.width * (n + .5) / 9, y = bb.top + bb.height * (m + .5) / 9;
+      if (!trifft(x, y)) continue;
+      const d = fremd.length
+        ? Math.min(...fremd.map(f => Math.hypot(f.x - x, f.y - y))) : Infinity;
+      if (d > weiteste) { weiteste = d; beste = { x, y }; }
     }
+    if (beste) return { name, id, x: beste.x, y: beste.y, breit: 0,
+                        abstand: Math.round(Math.min(weiteste, 9999)) };
     return { name, id, x: bb.left + bb.width / 2, y: bb.top + bb.height / 2, breit: 0 };
   });
   if (!punkt) throw new Error('umgekehrte Frage: das gesuchte Gebiet steht nicht in den Daten');
+  /* UNMITTELBAR VOR DEM TIPP NOCH EINMAL NACHSEHEN.
+   *
+   * Zwischen Messen und Klicken vergeht ein Rundgang durch den
+   * Fernsteuerkanal, und in dieser Zeit kann sich die Karte noch
+   * bewegen (die Nadelkoepfe kommen nach dem ersten Bild). Bleibt es
+   * dabei unbemerkt, meldet das aufrufende Tor „der Tipp wurde nicht
+   * als richtig gewertet" - und die Ursache steht nicht dabei.
+   *
+   * Hier steht sie: was liegt an dieser Stelle wirklich obenauf.
+   *
+   * NUR WO ES EINE EINZIGE RICHTIGE ANTWORT GIBT. Bei den Nachbarn
+   * (I21) traegt der Punkt gar keine Kennung - dort ist jeder Nachbar
+   * richtig, und eine Nachfrage „liegt dort genau DAS?" waere falsch.
+   * Der erste Anlauf hatte sie trotzdem gestellt und meldete
+   * „getippt werden sollte „undefined"". */
+  const jetzt = await seite.evaluate(({ x, y }) => {
+    const e = document.elementFromPoint(x, y);
+    const k = e && e.closest && e.closest('#treffer circle');
+    const g = e && e.closest && e.closest('path.geb');
+    return { id: k ? k.dataset.id : (g ? g.dataset.id : null),
+             was: e ? `${e.tagName}.${e.getAttribute('class') || ''}` : '(nichts)' };
+  }, { x: punkt.x, y: punkt.y });
+  if (punkt.id && jetzt.id !== punkt.id) throw new Error(
+    `zeigeAufKarte: bei (${Math.round(punkt.x)}, ${Math.round(punkt.y)}) liegt `
+    + `„${jetzt.id}" obenauf (${jetzt.was}) — getippt werden sollte „${punkt.id}"`);
+  /* Der Punkt bleibt in der Seite stehen - fuer die Meldung des Tors,
+     wenn es hinterher schiefgegangen ist. */
+  await seite.evaluate((q) => { window.__letzterTipp = q; }, punkt);
   await seite.mouse.click(punkt.x, punkt.y);
   return punkt.name;
 }

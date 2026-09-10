@@ -7627,4 +7627,41 @@ export const PROBEN = [
     ersatz:'      if (r.wand.gedeckelt && false) {',
     an:{ datei:'tor/passt.mjs', text:'r.wand.gedeckelt && false' },
     sagt:'Platz verloren' },
+
+  /* 6. Der Rueckweg aus einer falschen Gruppe geht eine Stufe zu weit.
+   *
+   * `durchGruppe` probiert die Gruppen der Reihe nach durch und geht
+   * nach jedem Fehlgriff zurueck. Landet der Rueckweg auf der
+   * WELTENWAHL statt auf der Ebenenwahl, sieht die Schleife keine
+   * weitere Gruppe mehr und gibt auf - der Aufrufer klickt ins Leere.
+   *
+   * Gefunden hat es der Rauchtest, und zwar erst mit I22: bis dahin lag
+   * „Bundesländer" als erste Gruppe da, und die Suche nach `nachbarn`
+   * traf sie beim ersten Versuch. Der Rueckweg lief nie und war damit
+   * nie geprueft, obwohl er seit I21 dasteht. */
+  /* 7. Der Tipp landet wieder auf der ERSTEN passenden Stelle.
+   *
+   * `zeigeAufKarte` sucht die Stelle im Gebiet, die am weitesten von
+   * jedem fremden Nadelkopf entfernt liegt. Der Eingriff nimmt den
+   * ersten Treffer, so wie es bis I22 war - und der liegt bei Belarus
+   * in der oberen linken Ecke, unter Litauens Kopf. Das Spiel wertet
+   * dann Litauen, und die Aufgabe ist nicht zu loesen.
+   *
+   * Bei „Wo liegt X?" und bei den Nachbarn kostete derselbe Fehler seit
+   * je nur einen Fehlversuch und fiel nie auf; erst „Was ist groesser?"
+   * prueft, ob der Tipp AUCH richtig gewertet wird. */
+  { n:'der Tipp landet auf der ersten statt auf der freiesten Stelle', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:'tor/chromium.mjs',
+    such:'      if (d > weiteste) { weiteste = d; beste = { x, y }; }',
+    ersatz:'      if (!beste) { weiteste = d; beste = { x, y }; }',
+    an:{ datei:'tor/chromium.mjs', text:'if (!beste) { weiteste = d;' },
+    sagt:'nicht als richtig gewertet' },
+
+  { n:'der Rueckweg aus einer falschen Gruppe geht zu weit', tor:'smoke',
+    args:['--nur=durchgang'], bauen:true, datei:'tor/chromium.mjs',
+    such:"    if (!(await seite.$('.schirm.da [data-ebene]'))\n"
+      + "        && await seite.$(`.schirm.da [data-welt=\"${WELT_VON(ebene)}\"]`)) {",
+    ersatz:'    if (false) {',
+    an:{ datei:'tor/chromium.mjs', text:'    if (false) {' },
+    sagt:'ist nicht zu finden' },
 ];

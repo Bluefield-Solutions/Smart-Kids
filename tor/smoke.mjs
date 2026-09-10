@@ -5135,6 +5135,20 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       // (Q17). Der Zweig darueber springt `zurEbenenwahl` naemlich, wenn
       // die Kennung schon dasteht - und die GRUPPENKACHEL traegt sie auch.
       await durchGruppe(p, ebene);
+      /* UND WENN SIE DANN NICHT DASTEHT, sagen WELCHE dasteht.
+       *
+       * `$eval` warf bis hierher „Failed to find element matching
+       * selector" und liess offen, wo der Durchgang stand - auf der
+       * falschen Wand, in der falschen Gruppe oder auf der Weltenwahl.
+       * Die Antwort steht auf dem Schirm; sie muss nur mitgemeldet
+       * werden. */
+      if (!(await p.$(`.schirm.da [data-ebene="${ebene}"]`))) {
+        const da = await p.$$eval('.schirm.da [data-ebene]', els => els
+          .map(e => e.dataset.ebene + (e.dataset.gruppe ? ' (Gruppe)' : '')).join(', '));
+        merke('durchgang', new Error(`${wer}: die Kachel „${ebene}" ist nicht zu `
+          + `finden — auf dem Schirm stehen: ${da || '(keine Ebenenkachel)'}`));
+        continue;
+      }
       await p.$eval(`.schirm.da [data-ebene="${ebene}"]`, x => x.click());
       /* Wieviele Laender sieht DIESES Kind wirklich?
        *
@@ -5957,7 +5971,17 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
          * eine falsche Antwort hier nichts kostete. */
         const urteil = await p.evaluate(() => {
           const s = document.querySelector('.schirm.da');
+          const q = window.__letzterTipp;
+          const wo = (x, y) => { const e = document.elementFromPoint(x, y);
+            const k = e && e.closest && e.closest('#treffer circle');
+            if (k) return 'Nadelkopf ' + k.dataset.id;
+            const g = e && e.closest && e.closest('path.geb');
+            return g ? 'Fläche ' + g.dataset.id : '(nichts)'; };
           return { richtig: !!s.querySelector('.frage .richtigText'),
+                   tipp: q ? `${q.id} bei (${Math.round(q.x)}, ${Math.round(q.y)}), `
+                     + `dort liegt jetzt: ${wo(q.x, q.y)} · Fenster `
+                     + `${innerWidth}×${innerHeight}, gerollt ${Math.round(scrollY)}`
+                     : '(kein Punkt gemerkt)',
                    /* WAS das Spiel verstanden hat - sonst steht in der
                       Meldung nur „nicht gewertet", und die Suche faengt
                       bei null an. Der Hinweis nennt das getroffene
@@ -5969,7 +5993,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         if (!urteil.richtig) merke('durchgang', new Error(
           `${wer}/${ebene}: der Tipp auf „${gesucht}" wurde nicht als richtig `
           + 'gewertet — getippt wurde auf die Stelle, die das Spiel selbst '
-          + `als Antwort führt. Das Spiel sagt: „${urteil.hinweis}" · „${urteil.frage}"`));
+          + `als Antwort führt. Das Spiel sagt: „${urteil.hinweis}" · „${urteil.frage}" `
+          + `· getippt: ${urteil.tipp}`));
         /* Und dann RAUS — ueber `abgeschlossen`, wie jeder andere Zweig.
          *
          * Bis F4 war dieser Zweig tot: in den Erdkundeebenen kommt die
