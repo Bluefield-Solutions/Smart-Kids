@@ -53,7 +53,6 @@ export const OHNE_BROWSER = [
    *
    * Es kostet Millisekunden. */
   { name: 'rhythmus',   datei: 'tor/rhythmus.mjs' },
-  { name: 'inhalt',     datei: 'tor/inhalt.mjs' },
   { name: 'regeln',     datei: 'tor/regeln.mjs' },
   { name: 'doppelt',    datei: 'tor/doppelt.mjs' },
   { name: 'spielprobe', datei: 'tor/spielprobe.mjs' },
@@ -70,6 +69,20 @@ export const BAU = { name: 'bauen', dateien: ['entwuerfe/bauen.mjs', 'prototyp/b
 
 /** Misst die gebaute Datei — also nach dem Bau, aber noch ohne Browser. */
 export const NACH_DEM_BAU = [
+  /* `inhalt` STAND BEI DEN BILLIGEN TOREN und gehoert nicht mehr dorthin
+     (I23).
+     Es prueft ueberwiegend die Quelle und lief deshalb vor dem Bau. Seit
+     I22 liest EINE seiner sechzehn Pruefungen die Paartafel „Was ist
+     groesser?" - und die entsteht erst beim Bauen. Hier gab es immer ein
+     `dist/` von vorhin, auf dem Runner nie: dort brach das Tor mit
+     „ENOENT: dist/index.html" ab und riss die ganze Kette mit, eine
+     Sekunde nach dem Start.
+     Ein abgestuerztes Tor besteht jede Gegenprobe (Regel 11) - und
+     dieses ist nicht einmal mehr dazu gekommen. Also faehrt es jetzt
+     nach dem Bau: eine Zeile spaeter, dreieinhalb Sekunden teurer, und
+     es liest, was die Kinder wirklich bekommen - geprueft wird `dist/`
+     und nicht der Prototyp (Regel 7). */
+  { name: 'inhalt', datei: 'tor/inhalt.mjs' },
   { name: 'budget', datei: 'tor/budget.mjs' },
   /* `anker` MUSS hier stehen und nicht bei den billigen Toren (Q48).
      Es liest das gebaute Buendel; vorher gaebe es nichts zu lesen, und ein

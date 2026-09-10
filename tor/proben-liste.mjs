@@ -282,11 +282,30 @@ export const PROBEN = [
   // Die Kette in CLAUDE.md gegen die Kette in package.json. Der
   // Originalfehler: die Datei lag sechs Tore zurueck - und sie wird zu
   // Beginn JEDER Sitzung gelesen.
+  /* --- I23: ein Tor vor dem Bau liest die gebaute Datei -------------- *
+   *
+   * Der Fall, der vier Auslieferungen gekostet hat, und zwar ohne dass
+   * ein einziges Tor etwas gesagt haette: `inhalt` lief vor dem Bau und
+   * las `dist/index.html`. Hier lag immer eines von vorhin, auf dem
+   * Runner nie.
+   *
+   * Der Eingriff setzt genau das wieder ein - in `tor/regeln.mjs`,
+   * einem Tor vor dem Bau, das mit `dist/` nichts zu tun hat. Die Zeile
+   * steht VOR dem eigentlichen Werk, damit sie nichts anderes stoert:
+   * geprueft wird die Erwaehnung, nicht die Wirkung. */
+  { n:'ein Tor vor dem Bau liest die gebaute Datei', tor:'inhalt', deckt:'doku',
+    datei:'tor/regeln.mjs',
+    such:"const WURZELN = ['tor', 'tools', 'src', 'prototyp', 'docs'];",
+    ersatz:"const WURZELN = ['tor', 'tools', 'src', 'prototyp', 'docs'];\n"
+      + "const UNFUG = 'dist/index.html';   // absichtlich falsch (Gegenprobe)",
+    an:{ datei:'tor/regeln.mjs', text:"const UNFUG = 'dist/index.html'" },
+    sagt:'VOR dem Bau und liest' },
+
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `vergleich` → `bauen` →',
-    an:{ datei:'CLAUDE.md', fehlt:'`doku` → `regeln`' },
+    such:'`rhythmus` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`rhythmus` → `vergleich` → `bauen` →',
+    an:{ datei:'CLAUDE.md', fehlt:'`rhythmus` → `regeln`' },
     sagt:'Tore der Kette nicht' },
 
   // Die Vorschau verschweigt ein Tor, das sie nicht faehrt. Der gefaehrlichste

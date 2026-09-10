@@ -263,9 +263,10 @@ npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
                    einmal und zeichnet nichts.
 ```
 
-Kette: `rhythmus` → `inhalt` · `nachbarn` · `groesser` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
+Kette: `rhythmus` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
+`inhalt` · `nachbarn` · `groesser` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
+`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` →
 `budget` · `anker` · `vielfalt` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` · `nachschub` · `tonleiter` → `smoke`.
 

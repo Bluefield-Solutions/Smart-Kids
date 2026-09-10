@@ -42,7 +42,7 @@ const KARTEN_NAME = Object.fromEntries(
 import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
-import { ALLE as KETTE, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
+import { ALLE as KETTE, OHNE_BROWSER, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
 import * as EN from '../src/inhalt/englisch.js';
 import * as TI from '../src/inhalt/tiere.js';
 import * as FL from '../src/inhalt/flaggen.js';
@@ -1969,6 +1969,41 @@ function gegenAbgleich(was, zeilen, rechne) {
  * faehrt. Eine zweite Abschrift waere genau der Fehler, den dieses Tor
  * fangen soll.
  */
+/* KEIN TOR VOR DEM BAU LIEST `dist/` (I23).
+ *
+ * Der Bau steht mitten in der Kette; alles davor prueft die Quelle,
+ * alles danach die gebaute Datei. Diese Trennung stand bisher nur als
+ * Absatz in `kette-liste.mjs` - und ein Absatz haelt nichts.
+ *
+ * Gebrochen hat sie `inhalt` selbst: seit I22 las eine seiner sechzehn
+ * Pruefungen die Paartafel aus `dist/index.html`. Hier lag immer ein
+ * `dist/` von vorhin, auf dem Runner nie - dort brach das Tor mit
+ * „ENOENT" ab und riss die Kette eine Sekunde nach dem Start mit. Vier
+ * Fassungen lang kam nichts bei den Kindern an, und keine einzige
+ * Pruefung hier hat es gesagt.
+ *
+ * Gesucht wird die Zeichenkette `dist/` in der Datei jedes Tores VOR
+ * dem Bau. Das ist grob und genau richtig grob: wer sie erwaehnt, hat
+ * dort etwas zu suchen, was es noch nicht gibt. */
+{
+  const vorm_bau = [];
+  for (const t of OHNE_BROWSER) {
+    if (!t.datei || !fs.existsSync(t.datei)) continue;
+    const roh = fs.readFileSync(t.datei, 'utf8');
+    /* Kommentare heraus: sie erklaeren die Regel und wuerden sie
+       gleichzeitig brechen lassen. */
+    const ohne = roh.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    if (/['"`]dist\//.test(ohne)) vorm_bau.push(t.name);
+  }
+  if (vorm_bau.length)
+    fehler.push(`${vorm_bau.join(', ')} ${vorm_bau.length === 1 ? 'läuft' : 'laufen'} `
+      + 'VOR dem Bau und liest `dist/` — dort gibt es die Datei noch nicht. '
+      + 'Hier steht immer eine von vorhin, auf dem Runner nie: das Tor bricht '
+      + 'dort ab und reißt die Kette mit');
+  else
+    console.log(`    ${OHNE_BROWSER.length} Tore vor dem Bau, keines liest \`dist/\``);
+}
+
 const ANWEISUNG = 'CLAUDE.md';
 if (!fs.existsSync(ANWEISUNG)) {
   fehler.push(`${ANWEISUNG} nicht gefunden — die Kette lässt sich nicht vergleichen`);
