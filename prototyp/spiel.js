@@ -8903,13 +8903,89 @@ function spielschirm(){
     const MAX = 8;
     let k = 1, tx = 0, ty = 0;
 
-    // Immer so verschieben, dass kein Rand ins Leere zeigt.
+    /* WOHIN DIE KARTE UEBERHAUPT DARF: auf das GEZEICHNETE, nicht auf
+     * den Rahmen.
+     *
+     * Bis hierher wurde gegen die `viewBox` geklemmt - also gegen den
+     * Rahmen, den der Kartenschnitt vorgibt. Der ist bei mehreren
+     * Karten deutlich groesser als das Land darin: er haelt Abstand,
+     * damit nichts am Bildrand klebt. Hineingezoomt heisst das, dass
+     * der sichtbare Ausschnitt vollstaendig im Abstand landen kann -
+     * und dann steht da offenes Meer, ohne ein einziges Land. „Beim
+     * Reinzoomen sind ploetzlich die Laender weg."
+     *
+     * Geklemmt wird deshalb gegen den Kasten der SPIELBAREN Flaechen
+     * (`#fl`). Ist er kleiner als der sichtbare Ausschnitt - bei
+     * Massstab 1 immer -, wird mittig gesetzt statt geklemmt; sonst
+     * waere die Grenze eine Fessel und nicht ein Gelaender. */
+    /* SPAETER GEMESSEN, NICHT BEIM BAU.
+     *
+     * Der erste Anlauf holte den Kasten hier, einmal - und bekam
+     * nichts: die Karte wird NACHGELADEN, und beim Bau des
+     * Bildschirms steht in `#fl` noch keine einzige Flaeche. `inhalt`
+     * blieb `null`, die Klemmung fiel auf den Rahmen zurueck, und
+     * alles war wie vorher. Das Tor hat es gemeldet, nicht ich.
+     *
+     * Also bei jedem Gebrauch fragen, bis einmal etwas dasteht - dann
+     * gemerkt. Ein Kasten, der sich waehrend einer Aufgabe aendert,
+     * gibt es nicht: geladen wird einmal. */
+    const flG = svg.querySelector('#fl');
+    let inhalt = null;
+    const inhaltKasten = () => {
+      if (inhalt) return inhalt;
+      try {
+        const bb = flG && flG.getBBox();
+        if (bb && bb.width > 0 && bb.height > 0) inhalt = bb;
+      } catch (e) {}
+      return inhalt;
+    };
+    /** Grenzen fuer die Verschiebung auf EINER Achse. */
+    const spanne = (a0, aw, c0, cw) => {
+      const hi = a0 - k * c0;              // Inhalt beginnt spaetestens am Rand
+      const lo = a0 + aw - k * (c0 + cw);  // und endet fruehestens am anderen
+      return lo > hi ? [(lo + hi) / 2, (lo + hi) / 2] : [lo, hi];
+    };
     const klemmen = () => {
-      tx = Math.min(vx * (1 - k), Math.max((vx + vw) * (1 - k), tx));
-      ty = Math.min(vy * (1 - k), Math.max((vy + vh) * (1 - k), ty));
+      const c = inhaltKasten() || { x: vx, y: vy, width: vw, height: vh };
+      const [lx, hx] = spanne(vx, vw, c.x, c.width);
+      const [ly, hy] = spanne(vy, vh, c.y, c.height);
+      tx = Math.min(hx, Math.max(lx, tx));
+      ty = Math.min(hy, Math.max(ly, ty));
+    };
+    /* UND ZULETZT: ES MUSS ETWAS ZU SEHEN SEIN.
+     *
+     * Klemmen allein reicht nicht. Der Kasten der Flaechen ist ein
+     * RECHTECK, die Karte ist keines: gemessen auf Mittelamerika liegt
+     * der Kasten bei 22,108 und ist 750 x 529 gross - in seiner
+     * oberen linken Ecke ist nichts als Meer. Wer bei vollem Massstab
+     * weit genug zieht, landet genau dort, und die Klemmung sagt
+     * zufrieden ja.
+     *
+     * Also wird nachgesehen, nicht gerechnet: liegt ueberhaupt ein
+     * Anker im Fenster? Jede spielbare Flaeche hat einen, und er liegt
+     * IN ihr. Ist keiner da, rueckt das Fenster auf den naechsten -
+     * das ist kein Zurueckschnappen, denn es geschieht nur in dem
+     * einen Zustand, den niemand haben will: leeres Meer. */
+    const etwasImBlick = () => {
+      const a0 = (vx - tx) / k, a1 = (vx + vw - tx) / k;
+      const b0 = (vy - ty) / k, b1 = (vy + vh - ty) / k;
+      const mx = (a0 + a1) / 2, my = (b0 + b1) / 2;
+      let nah = null, weit = Infinity;
+      for (const f of formen) {
+        if (!f.anker) continue;
+        const [x, y] = f.anker;
+        if (x >= a0 && x <= a1 && y >= b0 && y <= b1) return;
+        const d = (x - mx) * (x - mx) + (y - my) * (y - my);
+        if (d < weit) { weit = d; nah = f.anker; }
+      }
+      if (!nah) return;
+      tx = vx + vw / 2 - k * nah[0];
+      ty = vy + vh / 2 - k * nah[1];
+      klemmen();
     };
     const zeigen = () => {
       klemmen();
+      etwasImBlick();
       g.setAttribute('transform', `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) `
         + `scale(${k.toFixed(4)})`);
       kasten.dataset.lupe = k > 1.01 ? k.toFixed(1) : '';
@@ -8927,10 +9003,33 @@ function spielschirm(){
     };
     /** Um `f` groesser werden - und dabei den Punkt `p` (Kartenkoordinaten)
      *  festhalten. Ohne `p`: die Mitte des sichtbaren Ausschnitts. */
+    /* Ohne Ziel: die Mitte dessen, was gerade an LAND zu sehen ist.
+     *
+     * Vorher war es die Mitte des Rahmens - und die liegt auf mehreren
+     * Karten im offenen Meer. Der Kommentar unten sagt es fuer den
+     * +-Knopf bei der gewoehnlichen Frage; bei der umgekehrten blieb
+     * es dabei, und dort ist es genauso falsch: wer „Wo liegt Kenia?"
+     * beantworten will, drueckt auf +, um genauer hinzusehen - und
+     * bekommt Wasser.
+     *
+     * Genommen wird die Mitte des Stuecks, das sichtbarer Ausschnitt
+     * und gezeichnete Flaeche gemeinsam haben. Das verraet nichts: es
+     * haengt nur daran, wohin schon geschaut wird, nicht daran, wo die
+     * Antwort liegt. */
+    const landmitte = () => {
+      const c = inhaltKasten(); if (!c) return null;
+      const auf = (a0, aw, c0, cw, t) => {
+        const s0 = (a0 - t) / k, s1 = (a0 + aw - t) / k;      // Sichtfenster
+        const l = Math.max(s0, c0), r = Math.min(s1, c0 + cw);
+        const m = l < r ? (l + r) / 2 : c0 + cw / 2;
+        return k * m + t;
+      };
+      return { x: auf(vx, vw, c.x, c.width, tx), y: auf(vy, vh, c.y, c.height, ty) };
+    };
     const um = (f, p) => {
       const neu = Math.max(1, Math.min(MAX, k * f));
       if (Math.abs(neu - k) < 1e-4) return;
-      const halt = p || { x: (vx + vw / 2 - tx) / k * k + tx, y: (vy + vh / 2 - ty) / k * k + ty };
+      const halt = p || landmitte() || { x: vx + vw / 2, y: vy + vh / 2 };
       const cx = (halt.x - tx) / k, cy = (halt.y - ty) / k;
       k = neu; tx = halt.x - k * cx; ty = halt.y - k * cy;
       zeigen();

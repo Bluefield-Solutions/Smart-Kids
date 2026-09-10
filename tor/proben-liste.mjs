@@ -7790,4 +7790,29 @@ export const PROBEN = [
     an:{ datei:'tor/chromium.mjs',
          fehlt:"'.schirm.da [data-gruppe], .schirm.da [data-welt]'" },
     sagt:'ist nicht zu finden' },
+
+  /* --- I25: beim Reinzoomen sind die Laender weg --------------------- *
+   *
+   * Gemeldet hat es der Nutzer, nicht ein Tor. Bei vollem Massstab weit
+   * genug gezogen, stand im Kartenkasten nichts als Meer: die Klemmung
+   * rechnete gegen den RAHMEN der Karte, und der ist groesser als das
+   * Land darin.
+   *
+   * Gegen den Kasten der Flaechen zu klemmen war der erste Schritt und
+   * reichte nicht - ein Kasten ist ein Rechteck, die Karte ist keines,
+   * und in seiner Ecke liegt Meer. Erst der zweite haelt die Zusage:
+   * liegt kein Anker im Fenster, rueckt es auf den naechsten.
+   *
+   * Der Eingriff nimmt genau diesen zweiten Schritt heraus. Der erste
+   * bleibt stehen - sonst wuerde die Probe zeigen, dass IRGENDETWAS
+   * fehlt, statt dass DIESES fehlt. */
+  { n:'bei vollem Massstab ist nur noch Meer zu sehen', tor:'ziehen',
+    args:['--nur=lupe'], bauen:true, datei:D,
+    such:'      klemmen();\n      etwasImBlick();',
+    ersatz:'      klemmen();',
+    /* Der Nachweis fragt nach dem VERSCHWINDEN der beiden Zeilen
+       zusammen: `etwasImBlick` allein steht auch danach noch da - als
+       Erklaerung, die niemand mehr ruft. */
+    an:{ ...DIST, fehlt:'klemmen();\n      etwasImBlick();' },
+    sagt:'offenes Meer' },
 ];

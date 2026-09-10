@@ -790,6 +790,70 @@ if (laeuft('lupe')) {
   if (!(nachher.ganz && nachher.ganz.sichtbar)) fehler.push(
     'nach dem Vergrößern fehlt der Knopf „ganze Karte" — dann kommt ein Kind nicht zurück');
 
+  /* --- UND BEI VOLLEM MASSSTAB IST NOCH LAND ZU SEHEN (I25) ----------
+   *
+   * Die Pruefungen darueber haengen alle am GESUCHTEN Land: die Lupe
+   * zielt darauf, also bleibt es im Bild. Bei der umgekehrten Frage
+   * („Wo liegt Kuba?") gibt es kein Ziel, und dann zielte sie auf die
+   * Mitte des Rahmens - die liegt auf dieser Karte im offenen Meer.
+   * Gemeldet hat es der Nutzer, nicht ein Tor: „beim Reinzoomen sind
+   * ploetzlich die Laender weg."
+   *
+   * Geprueft wird deshalb die Zusage OHNE Ziel: bis zum groessten
+   * Massstab weitergezoomt, muss immer noch eine spielbare Flaeche im
+   * Kartenkasten liegen - und zwar mit mehr als einem Haar. Der Anteil
+   * steht in der Ausgabe, damit die Zahl eine Messstelle hat. */
+  for (let i = 0; i < 6; i++) { await q.click('#lupePlus'); await q.waitForTimeout(160); }
+  /* UND DANN WEIT GEZOGEN.
+     Mit einem Ziel folgt die Lupe dem gesuchten Land und kommt nie in
+     den Rand - die Gegenprobe zur Klemmung blieb deshalb still. Was
+     die Klemmung wirklich haelt, zeigt erst das Ziehen: dreimal die
+     Kastenbreite nach rechts unten, so weit, wie kein Kind zieht. Was
+     danach noch dasteht, ist die Zusage. */
+  {
+    const kb = await q.evaluate(() => {
+      const r = document.querySelector('.schirm.da .karte').getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2, b: r.width, h: r.height };
+    });
+    await q.mouse.move(kb.x, kb.y);
+    await q.mouse.down();
+    for (let i = 1; i <= 12; i++)
+      await q.mouse.move(kb.x + kb.b * 0.25 * i, kb.y + kb.h * 0.25 * i, { steps: 2 });
+    await q.mouse.up();
+    await q.waitForTimeout(300);
+  }
+  /* GEZAEHLT WIRD MIT PUNKTPROBEN, nicht mit Kaesten.
+     Der erste Anlauf addierte die Schnittflaechen der Umrandungskaesten
+     und kam auf 174 Prozent - Kaesten unregelmaessiger Flaechen
+     ueberlappen einander, und die Summe misst dann sich selbst. Neun
+     mal neun Punkte ueber den Kasten gelegt und gefragt, was dort
+     obenauf liegt, ist dieselbe Frage, die auch ein Finger stellt. */
+  const voll = await q.evaluate(() => {
+    const s = document.querySelector('.schirm.da');
+    const kasten = s.querySelector('.karte');
+    const kb = kasten.getBoundingClientRect();
+    let land = 0, gesamt = 0;
+    const wer = new Set();
+    for (let n = 0; n < 9; n++) for (let m = 0; m < 9; m++) {
+      const x = kb.left + kb.width * (n + .5) / 9;
+      const y = kb.top + kb.height * (m + .5) / 9;
+      gesamt++;
+      const e = document.elementFromPoint(x, y);
+      const g = e && e.closest && e.closest('path.geb');
+      if (g) { land++; wer.add(g.dataset.id || '?'); }
+    }
+    return { lupe: +(kasten.dataset.lupe || 1), wie_viele: wer.size,
+             anteil: Math.round(land / gesamt * 100) };
+  });
+  if (!voll.wie_viele) fehler.push(
+    `bei Maßstab ${voll.lupe} liegt keine einzige spielbare Fläche mehr im Kartenkasten — `
+    + 'wer hineinzoomt, sieht offenes Meer');
+  else if (voll.anteil < 25) fehler.push(
+    `bei Maßstab ${voll.lupe} liegen nur ${voll.anteil} % der Punktproben im Kartenkasten `
+    + 'auf einer spielbaren Fläche — beim Hineinzoomen bleibt fast nur Rand übrig');
+  else console.log(`    Bei vollem Maßstab (${voll.lupe}) liegen ${voll.anteil} % des `
+    + `Kartenkastens auf spielbarer Fläche (${voll.wie_viele} verschiedene)`);
+
   /* Der Rueckweg wird nur GEGANGEN, wenn es ihn gibt.
    *
    * Stand hier als nacktes `click('#lupeGanz')` - und als eine Gegenprobe
