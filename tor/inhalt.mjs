@@ -4082,6 +4082,12 @@ console.log('\n  Tor `englisch`');
 /* Die Paartafel aus dem GEBAUTEN Buendel - genau das, was die App liest.
    Geprueft wird `dist/` und nicht der Prototyp (Regel 7). */
 function paareAusBuendel() {
+  /* `null` statt eines Absturzes, wenn es die Datei nicht gibt.
+     Ein abgestuerztes Tor besteht jede Gegenprobe (Regel 11) - und
+     hier hat es nicht einmal das getan, sondern die ganze Kette
+     mitgerissen. Fehlt das Buendel, sagt der Aufrufer das in einem
+     Satz; das Tor wird rot, aber es MELDET. */
+  if (!fs.existsSync('dist/index.html')) return null;
   const h = fs.readFileSync('dist/index.html', 'utf8');
   const i = h.indexOf('"paare":');
   if (i < 0) return null;

@@ -294,7 +294,7 @@ export const PROBEN = [
    * steht VOR dem eigentlichen Werk, damit sie nichts anderes stoert:
    * geprueft wird die Erwaehnung, nicht die Wirkung. */
   { n:'ein Tor vor dem Bau liest die gebaute Datei', tor:'inhalt', deckt:'doku',
-    datei:'tor/regeln.mjs',
+    bauen:true, datei:'tor/regeln.mjs',
     such:"const WURZELN = ['tor', 'tools', 'src', 'prototyp', 'docs'];",
     ersatz:"const WURZELN = ['tor', 'tools', 'src', 'prototyp', 'docs'];\n"
       + "const UNFUG = 'dist/index.html';   // absichtlich falsch (Gegenprobe)",
