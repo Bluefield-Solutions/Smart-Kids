@@ -233,7 +233,7 @@ I.ECHTE_FALLEN.forEach(id => {
    * Die RATSCHEN stehen weiter von Hand da, und das ist der Punkt: eine
    * Zahl, die sich aus dem Gebackenen holt, kann nicht bemerken, dass das
    * Gebackene weniger geworden ist. */
-  const RATSCHE = { europa:29, suedosteuropa:7, asien:30, afrika:30,
+  const RATSCHE = { europa:28, suedosteuropa:7, asien:30, afrika:30,
                     nordamerika:3, mittelamerika:9, suedamerika:12,
                     australien:3 };
   /* Wieviele Länder je Karte einen abweichenden Regierungssitz haben (I19).
@@ -4511,7 +4511,7 @@ console.log('\n  Tor `flaggen`');
   /* RATSCHE: so viele Laender werden heute nach ihrer Flagge gefragt.
      Sie darf nicht sinken - wer eine Flagge herausnimmt, faellt auf. Wer
      eine dazuzeichnet, erhoeht sie hier. */
-/* 109 und nicht mehr 69 (I24).
+/* 108 (I26), davor 109 (I24), davor vier Runden lang 69.
  *
  * Die Ratsche stand vier Runden lang auf ihrem Wert von I5, waehrend
  * die Zahl der gefragten Flaggen ueber I5 und I12 auf 109 stieg. Damit
@@ -4526,8 +4526,15 @@ console.log('\n  Tor `flaggen`');
  * eine Ratsche, die man nicht nachzieht, ist genau das.
  *
  * Die Zahl steht ab jetzt auch in der Ausgabe. Ein Wert, den niemand
- * sieht, faellt beim naechsten Mal wieder zurueck. */
-const FLAGGEN_GEFRAGT = 109;
+ * sieht, faellt beim naechsten Mal wieder zurueck.
+ *
+ * 108 STATT 109 IST EIN RUECKSCHRITT, und er ist gewollt: Russland
+ * steht seit I26 nicht mehr auf der Europakarte (siehe `erdkunde.js`).
+ * Eine Ratsche darf nur strenger werden - wenn der Inhalt kleiner
+ * wird, muss sie nachgeben, sonst haelt sie eine Zahl fest, die es
+ * nicht mehr gibt. Wer sie senkt, schreibt dazu WARUM; ohne das ist
+ * es dasselbe wie Vergessen. */
+const FLAGGEN_GEFRAGT = 108;
   for (const [kont, liste] of Object.entries(I.LAENDER))
     for (const l of liste) laender.set(l.a3, { ...l, kont });
   for (const [a3, l] of laender)

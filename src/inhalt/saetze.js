@@ -77,7 +77,6 @@ export const SAETZE = {
   // --- Europa ----------------------------------------------------------
   FRA: 'In Frankreich steht der Eiffelturm.',
   UKR: 'Die Ukraine ist das größte Land, das ganz in Europa liegt.',
-  RUS: 'Russland ist das größte Land der Erde und reicht bis weit nach Asien.',
   CZE: 'Tschechien hat kein Meer — es ist von allen Seiten von Land umgeben.',
   DEU: 'Deutschland hat neun Nachbarländer.',
   LUX: 'Luxemburg ist eines der kleinsten Länder Europas.',

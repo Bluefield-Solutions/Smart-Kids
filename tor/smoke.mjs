@@ -7882,7 +7882,7 @@ if (laeuft('abzeichen')) try {
       hauptstaedte: STAEDTE.filter(b => !b.stadtstaat).map(b => b.id),
       'rechnen:plusminus': Rechnen.vorrat().map(x => x.id),
       'schreiben:buchstaben': Schreiben.vorrat().map(x => x.id),
-      'laender:europa': ['RUS','DEU','GBR'] });
+      'laender:europa': ['DEU','GBR','FRA'] });
   if (!/Nachbarn von Deutschland/.test((beiFionaEU.da.join(' ') + beiFionaEU.offen.join(' '))))
     merke('abzeichen', new Error('Fiona bekommt „alle Nachbarn von Deutschland" NICHT '
       + 'angeboten — die Leiter führt sie hin, also gehört das Abzeichen ihr; '

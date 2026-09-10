@@ -215,10 +215,8 @@ export const LAENDER = {
    * kein Zufall, sondern haengt an einer Zeile: `if (!stueck.rang)
    * continue;`. */
   europa:[
-    { a3:'RUS', name:'Russland', rang:1, aussprache:['russland','ruslant'],
-      satz:'So groß, dass es auf zwei Kontinente passt.' },
-    { a3:'DEU', name:'Deutschland', rang:2, aussprache:['deutschland','doitschland'] },
-    { a3:'GBR', name:'Vereinigtes Königreich', rang:3, aliasse:['England','Großbritannien','Britannien'],
+    { a3:'DEU', name:'Deutschland', rang:1, aussprache:['deutschland','doitschland'] },
+    { a3:'GBR', name:'Vereinigtes Königreich', rang:2, aliasse:['England','Großbritannien','Britannien'],
       aussprache:['england','großbritannien','vereinigtes königreich'],
       /* `wovon` ist die Praepositionalform fuer die Hauptstadtfrage.
        *
@@ -235,29 +233,29 @@ export const LAENDER = {
      * Kennungen im Abzeichenmodul: dieselbe Regel wie `stadtstaat` bei
      * den Bundeslaendern. Wer ein zehntes Nachbarland eintraegt, setzt
      * die Fahne - und das Abzeichen zaehlt von allein weiter. */
-    { a3:'FRA', name:'Frankreich', rang:4, nachbarDE:true, aussprache:['frankreich','frangreich'] },
-    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','pohlen'] },
-    { a3:'NLD', name:'Niederlande', rang:6, nachbarDE:true, aliasse:['Holland'], aussprache:['niederlande','holland'],
+    { a3:'FRA', name:'Frankreich', rang:3, nachbarDE:true, aussprache:['frankreich','frangreich'] },
+    { a3:'POL', name:'Polen', rang:4, nachbarDE:true, aussprache:['polen','pohlen'] },
+    { a3:'NLD', name:'Niederlande', rang:5, nachbarDE:true, aliasse:['Holland'], aussprache:['niederlande','holland'],
       wovon:'von den Niederlanden' },
-    { a3:'BEL', name:'Belgien', rang:7, nachbarDE:true, aussprache:['belgien','belgjen'] },
-    { a3:'CZE', name:'Tschechien', rang:8, nachbarDE:true, aliasse:['Tschechische Republik','Tschechei'],
+    { a3:'BEL', name:'Belgien', rang:6, nachbarDE:true, aussprache:['belgien','belgjen'] },
+    { a3:'CZE', name:'Tschechien', rang:7, nachbarDE:true, aliasse:['Tschechische Republik','Tschechei'],
       aussprache:['tschechien','tschechjen','tschechei'] },
-    { a3:'AUT', name:'Österreich', rang:9, nachbarDE:true, aliasse:['Oesterreich'],
+    { a3:'AUT', name:'Österreich', rang:8, nachbarDE:true, aliasse:['Oesterreich'],
       aussprache:['österreich','oesterreich','östereich'] },
-    { a3:'CHE', name:'Schweiz', rang:10, nachbarDE:true, aliasse:['Die Schweiz'],
+    { a3:'CHE', name:'Schweiz', rang:9, nachbarDE:true, aliasse:['Die Schweiz'],
       aussprache:['schweiz','die schweiz','schwaiz'],
       wovon:'von der Schweiz' },
-    { a3:'DNK', name:'Dänemark', rang:11, nachbarDE:true, aliasse:['Daenemark'],
+    { a3:'DNK', name:'Dänemark', rang:10, nachbarDE:true, aliasse:['Daenemark'],
       aussprache:['dänemark','daenemark','dehnemark'] },
-    { a3:'LUX', name:'Luxemburg', rang:12, nachbarDE:true, aliasse:[],
+    { a3:'LUX', name:'Luxemburg', rang:11, nachbarDE:true, aliasse:[],
       aussprache:['luxemburg','luxemburch','luxenburg'] },
     /* --- Und der Rest, ebenfalls nach Einwohnerzahl ------------------ */
-    { a3:'ITA', name:'Italien', rang:13, aussprache:['italien','italjen'] },
-    { a3:'ESP', name:'Spanien', rang:14, aussprache:['spanien','spanjen'] },
-    { a3:'UKR', name:'Ukraine', rang:15, aussprache:['ukraine','ukrajine'],
+    { a3:'ITA', name:'Italien', rang:12, aussprache:['italien','italjen'] },
+    { a3:'ESP', name:'Spanien', rang:13, aussprache:['spanien','spanjen'] },
+    { a3:'UKR', name:'Ukraine', rang:14, aussprache:['ukraine','ukrajine'],
       wovon:'von der Ukraine' },
-    { a3:'ROU', name:'Rumänien', rang:16, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
-    { a3:'GRC', name:'Griechenland', rang:17, aussprache:['griechenland','griechnland'] },
+    { a3:'ROU', name:'Rumänien', rang:15, aliasse:['Rumaenien'], aussprache:['rumänien','rumaenien'] },
+    { a3:'GRC', name:'Griechenland', rang:16, aussprache:['griechenland','griechnland'] },
     /* --- I3: die Welt wird groesser (Inhalt-Audit) -------------------
      *
      * Die Umrisse dieser Laender liegen seit je gebacken in `src/geo/` -
@@ -280,16 +278,16 @@ export const LAENDER = {
      * Hauptstaedte kommen fuer Europa gebacken aus Natural Earth und
      * fehlen den Neuen. Beide Ebenen ueberspringen sie deshalb still -
      * und das ist richtig so, bis jemand sie zeichnet. */
-    { a3:'PRT', name:'Portugal', rang:18, aussprache:['portugal','portugall'] },
-    { a3:'SWE', name:'Schweden', rang:19, aussprache:['schweden','sweden'] },
-    { a3:'HUN', name:'Ungarn', rang:20, aussprache:['ungarn','ungaren'] },
-    { a3:'BLR', name:'Belarus', rang:21, aliasse:['Weißrussland','Weissrussland'],
+    { a3:'PRT', name:'Portugal', rang:17, aussprache:['portugal','portugall'] },
+    { a3:'SWE', name:'Schweden', rang:18, aussprache:['schweden','sweden'] },
+    { a3:'HUN', name:'Ungarn', rang:19, aussprache:['ungarn','ungaren'] },
+    { a3:'BLR', name:'Belarus', rang:20, aliasse:['Weißrussland','Weissrussland'],
       aussprache:['belarus','weißrussland','weissrussland'] },
-    { a3:'BGR', name:'Bulgarien', rang:22, aussprache:['bulgarien','bulgarjen'] },
-    { a3:'FIN', name:'Finnland', rang:23, aussprache:['finnland','finland'] },
-    { a3:'NOR', name:'Norwegen', rang:24, aussprache:['norwegen','norweegen'] },
-    { a3:'IRL', name:'Irland', rang:25, aussprache:['irland','irrland'] },
-    { a3:'ISL', name:'Island', rang:26, aussprache:['island','iesland'] },
+    { a3:'BGR', name:'Bulgarien', rang:21, aussprache:['bulgarien','bulgarjen'] },
+    { a3:'FIN', name:'Finnland', rang:22, aussprache:['finnland','finland'] },
+    { a3:'NOR', name:'Norwegen', rang:23, aussprache:['norwegen','norweegen'] },
+    { a3:'IRL', name:'Irland', rang:24, aussprache:['irland','irrland'] },
+    { a3:'ISL', name:'Island', rang:25, aussprache:['island','iesland'] },
     /* Die drei baltischen (I11).
      *
      * Sie standen bei I3 mit auf der Streichliste der zehn kleinsten und
@@ -303,9 +301,9 @@ export const LAENDER = {
      * Ihre Sätze standen seither geschrieben und wurden nicht gespielt.
      * Was `ziehen` jetzt dazu sagt, steht im Kommentar bei
      * `suedosteuropa`. */
-    { a3:'LTU', name:'Litauen', rang:27, aussprache:['litauen','littauen'] },
-    { a3:'LVA', name:'Lettland', rang:28, aussprache:['lettland','letland'] },
-    { a3:'EST', name:'Estland', rang:29, aussprache:['estland','esstland'] },
+    { a3:'LTU', name:'Litauen', rang:26, aussprache:['litauen','littauen'] },
+    { a3:'LVA', name:'Lettland', rang:27, aussprache:['lettland','letland'] },
+    { a3:'EST', name:'Estland', rang:28, aussprache:['estland','esstland'] },
   ],
   /* --- Nordamerika: die drei grossen ------------------------------ *
    *
@@ -578,7 +576,7 @@ export const HAUPTSTADT_LAND = {
   /* Europa (R6, I3, I11) - hier stimmte Natural Earth ueberall; die Namen
      stehen jetzt trotzdem an derselben Stelle wie alle anderen, sonst
      waere die Tafel eine Ausnahmeliste und keine Antwortliste. */
-  RUS:'Moskau', DEU:'Berlin', GBR:'London', FRA:'Paris', POL:'Warschau',
+  DEU:'Berlin', GBR:'London', FRA:'Paris', POL:'Warschau',
   NLD:{ name:'Amsterdam', sitz:'Den Haag' },
   BEL:'Brüssel', CZE:'Prag', AUT:'Wien', CHE:'Bern', DNK:'Kopenhagen',
   LUX:'Luxemburg', ITA:'Rom', ESP:'Madrid', UKR:'Kiew', ROU:'Bukarest',
@@ -675,7 +673,6 @@ export const HAUPTSTADT_OHNE_FRAGE = {
  * einmal); eine Tafel mit einem Namen, der die Haelfte ihres Inhalts
  * ausschliesst, ist der leisere Fehler von beiden. */
 export const HAUPTSTADT_ABLENKER_LAND = {
-  RUS:['Sankt Petersburg','Nowosibirsk'],
   DEU:['Hamburg','München'],
   GBR:['Manchester','Birmingham'],
   FRA:['Marseille','Lyon'],

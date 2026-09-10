@@ -510,7 +510,6 @@ const W = '#FFFFFF', SW = '#000000';
 
 export const FLAGGEN = [
   /* --- Europa: siebzehn, die tiefste Liste (Fokus der Familie) --------- */
-  { a3:'RUS', bau:{ art:'streifen', farben:[W, '#0039A6', '#D52B1E'] } },
   { a3:'DEU', bau:{ art:'streifen', farben:[SW, '#DD0000', '#FFCE00'] } },
   { a3:'GBR', bau:{ art:'eigen', teile:() => unionJack(0, 0, BREIT, HOCH) } },
   { a3:'FRA', bau:{ art:'streifen', hoch:true, farben:['#002395', W, '#ED2939'] } },
@@ -1025,6 +1024,15 @@ function guyana(){
  * weil sie nur in der Wahlform vorkommen und dort nichts gesprochen
  * beantwortet wird. */
 export const FLAGGEN_EXTRA = [
+  /* RUSSLAND steht hier seit I26, und das ist eine INHALTLICHE
+     Entscheidung, keine zeichnerische: es ist von der Europakarte
+     genommen worden (siehe `erdkunde.js`). Die Flagge bleibt, weil zwei
+     Verwechslungspaare an ihr haengen - Serbien und Bulgarien tragen
+     dieselben drei Farben, und ohne die russische Trikolore daneben ist
+     nicht zu zeigen, worin der Unterschied besteht. Gefragt wird sie
+     nicht mehr; dafuer ist diese Liste da. */
+  { a3:'RUS', name:'Russland',
+    bau:{ art:'streifen', farben:[W, '#0039A6', '#D52B1E'] } },
   { a3:'TCD', name:'Tschad',
     bau:{ art:'streifen', hoch:true, farben:['#002664', '#FECB00', '#C60C30'] } },
   { a3:'IRL', name:'Irland',

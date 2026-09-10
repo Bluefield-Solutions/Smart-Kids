@@ -181,7 +181,7 @@ export const PROBEN = [
    * nicht gebacken ist. */
   { n:'ein gespieltes Land ist gar nicht gebacken', tor:'inhalt', deckt:'inhalt',
     datei:E,
-    such:"    { a3:'GRC', name:'Griechenland', rang:17,",
+    such:"    { a3:'GRC', name:'Griechenland', rang:16,",
     ersatz:"    { a3:'GRX', name:'Griechenland', rang:17,",
     an:{ datei:E, text:"a3:'GRX'" },
     sagt:'wird gespielt und ist nicht gebacken' },
@@ -1870,7 +1870,7 @@ export const PROBEN = [
   // stand die Fuenf zweimal fest hingeschrieben da.
   { n:'ein Rang fehlt in der Länderliste', tor:'inhalt', deckt:'inhalt',
     datei:'src/inhalt/erdkunde.js',
-    such:"    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','pohlen'] },",
+    such:"    { a3:'POL', name:'Polen', rang:4, nachbarDE:true, aussprache:['polen','pohlen'] },",
     ersatz:"    { a3:'POL', name:'Polen', rang:99, nachbarDE:true, aussprache:['polen','pohlen'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"name:'Polen', rang:99" },
     // Ein Rang 99 ist seit D2c keine Bereichsverletzung mehr, sondern
@@ -2452,8 +2452,8 @@ export const PROBEN = [
   // Alias, Variante, 213 Formen.
   { n:'eine Aussprachevariante zeigt aufs falsche Land', tor:'vergleich', deckt:'vergleich',
     datei:'src/inhalt/erdkunde.js',
-    such:"    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','pohlen'] },",
-    ersatz:"    { a3:'POL', name:'Polen', rang:5, nachbarDE:true, aussprache:['polen','griechenland'] },",
+    such:"    { a3:'POL', name:'Polen', rang:4, nachbarDE:true, aussprache:['polen','pohlen'] },",
+    ersatz:"    { a3:'POL', name:'Polen', rang:4, nachbarDE:true, aussprache:['polen','griechenland'] },",
     an:{ datei:'src/inhalt/erdkunde.js', text:"aussprache:['polen','griechenland']" },
     sagt:'angenommen wurde' },
 
@@ -5286,7 +5286,7 @@ export const PROBEN = [
    * kommt, ist schlimmer als keines: es behauptet etwas Falsches. */
   { n:'ein Nachbarland verliert seine Fahne', tor:'smoke',
     args:['--nur=abzeichen'], bauen:true, datei:E,
-    such:"{ a3:'LUX', name:'Luxemburg', rang:12, nachbarDE:true,",
+    such:"{ a3:'LUX', name:'Luxemburg', rang:11, nachbarDE:true,",
     ersatz:"{ a3:'LUX', name:'Luxemburg', rang:12,",
     /* Geprueft wird in der NACHGELADENEN Datei, nicht im Startbuendel:
        dort wird `nachbarDE` weggeschnitten, weil im Buendel nur Name,
