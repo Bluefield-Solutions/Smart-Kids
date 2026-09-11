@@ -6950,6 +6950,18 @@ sondern die größte, bei der jede Karte noch über drei Vierteln liegt —
 bei 7 % fällt Südosteuropa auf 73 %. `topologie` hält die drei Viertel
 als Zusage, zwei Gegenproben halten sie am Leben.
 
+**Und was davon auf dem Schirm ankommt** — gemessen mit `npm run
+kartengroesse` auf 844 × 390, weil die Kartenkoordinaten die falsche
+Messstelle sind: dort begrenzt fast überall die **Höhe**, der Kasten ist
+auf jeder Karte 276 Punkte hoch. Größer wird deshalb nur, wo vorher auch
+die Breite band — Südosteuropa +41 %, Mittelamerika +31 %, Nordamerika
++7 %, Europa +1 %, die übrigen vier unverändert. Gewonnen hat die
+**Breite daneben**: der Kartenkasten folgt dem Seitenverhältnis des
+Rahmens und wird schmaler (Nordamerika 347 → 226 pt, Europa 334 → 288),
+und diese Punkte gehören jetzt der Antwortseite. Das ist der wirkliche
+Gewinn, und er stand in keiner der Zahlen, aus denen die Zugabe
+abgeleitet wurde.
+
 Der ursprüngliche Befund, zur Nachvollziehbarkeit:
 
 

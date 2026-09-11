@@ -41,7 +41,8 @@
     "bildprompt": "node tools/bildprompt.mjs",
     "buch-audit": "node tools/buch-audit.mjs && node tools/buch-tinte.mjs && node tools/buch-feinmass.mjs",
     "tonleiter": "node tools/buch-feinmass.mjs --tor",
-    "lobmass": "node tools/lobmass.mjs"
+    "lobmass": "node tools/lobmass.mjs",
+    "kartengroesse": "node tools/kartengroesse.mjs"
   },
   "devDependencies": {
     "d3-geo": "^3.1.1",
