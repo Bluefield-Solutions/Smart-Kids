@@ -1099,7 +1099,7 @@ if (laeuft('rand')) {
      * Gemeldet hat es keine Messung, sondern die FRIST: drei
      * Gegenproben haengen an dieser Zahl, alle drei liessen das Tor
      * gruen, und ihre Nachweise sind ueber die drei Tage gelaufen. Wer
-     * eine Wirkung misst, schaltet sie zuerst ab (Regel 13) - hier war
+     * eine Wirkung misst, schaltet sie zuerst ab (Regel 1) - hier war
      * sie abgeschaltet, und die Zahl blieb dieselbe. Das ist der ganze
      * Befund.
      *
@@ -1113,7 +1113,7 @@ if (laeuft('rand')) {
      * durchsichtig, und durchsichtig rechnet auf 255.
      *
      * Jede dieser Bezugsgroessen ist geraten. Die ungeratene steht in
-     * Regel 13: wer eine Wirkung misst, schaltet sie zuerst ab. Also
+     * Regel 1: wer eine Wirkung misst, schaltet sie zuerst ab. Also
      * zwei Aufnahmen - eine mit der Umgebung, eine ohne sie - und
      * gezaehlt wird, was sich unterscheidet. Was dabei herauskommt,
      * IST die Umgebung, und zwar ohne dass jemand sagen muss, wie sie
