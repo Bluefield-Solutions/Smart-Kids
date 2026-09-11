@@ -1956,11 +1956,33 @@ export const PROBEN = [
    *
    * Der Eingriff nimmt die Bedingung weg. Danach steht die leere Kachel
    * wieder da, und der Rauchtest muss darueber stolpern. */
+  /* I31: DER EINGRIFF WAR EINE TAUTOLOGIE GEWORDEN.
+   *
+   * Er nahm den Waechter weg - und seither hat JEDE der acht Karten
+   * mindestens eine fragbare Flagge (Australien am knappsten mit drei).
+   * Ohne Waechter stand also dieselbe Wand wie mit ihm da, und das Tor
+   * blieb zu Recht gruen. Der Eingriff kam an, er aenderte nur nichts;
+   * gemeldet hat es der Probenlauf und nicht der Nachweis, denn am Text
+   * ist eine Tautologie nicht zu sehen.
+   *
+   * Die Zusage ist ohnehin eine andere. Der Waechter fragt
+   * `flaggeFragbar`, und aus derselben Quelle fuellt sich die Sitzung -
+   * die Kachel steht genau dann da, wenn es etwas zu fragen gibt. Der
+   * Fehler von damals war, dass BEIDE auseinanderlaufen koennen. Genau
+   * das stellt der neue Eingriff her: der Waechter bleibt, wie er ist,
+   * und der Vorrat siebt Suedosteuropa zusaetzlich heraus. Die Kachel
+   * steht da und fragt nichts - der Zustand, den es nie geben darf.
+   *
+   * Eine Karte und nicht alle: so nennt das Tor eine Ebene beim Namen,
+   * und die Probe kann darauf zeigen. */
   { n:'eine Flaggenkachel steht ohne eine einzige Flagge da', tor:'smoke',
     args:['--nur=durchgang', '--kurz'], bauen:true, datei:D,
-    such:"    wenn: () => (D.laender[k] || []).some(l => Flaggen.flaggeFragbar(l.a3)) })),",
-    ersatz:"  })),",
-    an:{ ...DIST, fehlt:'flaggeFragbar(l.a3)) }))' },
+    such:"    const mitFlagge = (D.laender[kont] || []).filter(l => Flaggen.flaggeFragbar(l.a3));\n"
+      + "    const tiefe = leiterTiefe(mitFlagge, stand, P.laenderTiefe, l => `fl:${l.a3}`);",
+    ersatz:"    const mitFlagge = (D.laender[kont] || [])\n"
+      + "      .filter(l => Flaggen.flaggeFragbar(l.a3) && kont !== 'suedosteuropa');\n"
+      + "    const tiefe = leiterTiefe(mitFlagge, stand, P.laenderTiefe, l => `fl:${l.a3}`);",
+    an:{ ...DIST, text:"kont !== 'suedosteuropa'" },
     sagt:'flaggen:suedosteuropa' },
 
   /* --- I10: Zehn und drueber, Meter und Gramm --------------------------- *
@@ -2155,13 +2177,26 @@ export const PROBEN = [
    * Eine Pruefung, die im Befundfall abstuerzt, hat nie etwas bewiesen.
    * Ohne diese Gegenprobe waere die Reparatur selbst wieder eine
    * Behauptung. */
+  /* I31: DER EINGRIFF LOESTE DEN UEBERLAUF AUS, NICHT DIE UNGLEICHE HOEHE.
+   *
+   * Er machte die Spalten schmaler UND das Polster groesser, und beides
+   * zusammen liess die Wand ueber den Rand laufen: `passt` meldete vier
+   * Ueberlaeufe und kam zum Hoehenzweig gar nicht mehr. Rot war das Tor,
+   * bewiesen hat es die andere Zusage - „rot, aber nicht deswegen" ist
+   * derselbe Befund wie ein gruenes Tor, nur schwerer zu sehen.
+   *
+   * Der neue Eingriff nimmt genau die EINE Regel weg, die die Hoehe
+   * konstant haelt: den zwei Zeilen hohen Namenskasten aus B15. Ohne ihn
+   * entscheidet wieder die Schriftrundung, welcher Name umbricht - und
+   * das ist der Rueckfall, um den es hier geht. Die Wand wird dabei
+   * KUERZER, nicht laenger; ein Ueberlauf kann sich nicht mehr
+   * davorschieben. */
   { n:'die Raumzellen werden auf dem schmalen Schirm ungleich hoch',
     tor:'passt', bauen:true, datei:V,
-    such:'  .rollen.buch .raumzelle{padding:var(--r0)}',
-    ersatz:'  .rollen.buch .raumzelle{padding:var(--r0)}\n'
-      + '  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(76px,1fr))}\n'
-      + '  .rollen.buch .raumzelle{padding:var(--eng)}',
-    an:{ ...DIST, text:'minmax(76px,1fr)' },
+    such:'.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;min-height:2.3em;',
+    ersatz:'.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;',
+    an:{ ...DIST,
+         fehlt:'.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;min-height:2.3em' },
     sagt:'verschiedene Höhen hoch' },
 
   /* --- I23: das lange Wort, BEVOR es eine dritte Zeile kostet -------- *
@@ -4650,11 +4685,24 @@ export const PROBEN = [
    * Ohne die eigene Zusage waere das still: die Seite nutzte damit 28 %
    * ihrer Hoehe, und die Halbleer-Ratsche steht bei 24. Genau die Art
    * Rueckfall, die wie ein bestandenes Tor aussieht. */
+  /* I31: DER EINGRIFF LAG IN EINER REGEL, DIE HIER GAR NICHT GILT.
+   *
+   * `.rollen.buch .raumgitter` steht dreimal da - einmal ohne Bedingung
+   * mit 88 Punkten Mindestbreite, einmal unter `max-width:560px` mit 80
+   * und einmal unter `max-height:440px` mit 70. Der Rauchtest misst auf
+   * 844 x 390, dort gilt die DRITTE. Umgelegt wurde die erste: der
+   * Nachweis fand sie im Buendel, die Probe meldete „angekommen", und
+   * gewirkt hat sie an der gemessenen Stelle nie.
+   *
+   * Genau die Verfallsart, vor der Regel 10 warnt - nur eine Stufe
+   * tiefer: der Eingriff IST angekommen, er ist nur nicht in Kraft.
+   * Ein Nachweis am Text kann das nicht sehen; gesehen hat es erst der
+   * Probenlauf, als das Tor gruen blieb. */
   { n:'das Weltraster laesst wieder leere Spalten stehen', tor:'smoke',
     args:['--nur=ablage'], bauen:true, datei:V,
-    such:".rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}",
-    ersatz:".rollen.buch .raumgitter{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}",
-    an:{ ...DIST, text:'.rollen.buch .raumgitter{grid-template-columns:repeat(auto-fill' },
+    such:"  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}",
+    ersatz:"  .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}",
+    an:{ ...DIST, text:'.rollen.buch .raumgitter{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}' },
     sagt:'legt leere Spalten an' },
 
   /* Und die zweite: der Wegweiser faellt aus. Dann steht auf der
@@ -6749,12 +6797,24 @@ export const PROBEN = [
    *    weg, alles tritt zugleich auf - und es SIEHT genauso aus. Nur ist
    *    es dann kein Augenblick mehr, sondern ein Bild. Das ist die
    *    Verfallsart, gegen die diese Runde gebaut ist. */
+  /* I31: DIE ZAEHLUNG NACH POSITION HAT DIE ZEILE VERLOREN.
+   *
+   * Der Eingriff setzte `nth-child(4)` auf null, weil dort die Zahl
+   * stand. Seit die Punktzeile dazugekommen ist (I27), steht dort etwas
+   * anderes - und das Tor vergleicht nicht die vierte Zeile mit der
+   * ersten, sondern `.unter` mit `.siegsterne`. Der Eingriff traf eine
+   * Zeile, die niemand misst.
+   *
+   * Umgelegt wird deshalb die Regel, die den gemessenen Versatz WIRKLICH
+   * setzt: `.buehne:has(>.siegkopf)>.unter`. Sie nennt ihr Ziel beim
+   * Namen statt bei seiner Position, und eine neue Zeile in der Buehne
+   * verschiebt sie nicht mehr. */
   { n:'die Buehne tritt ohne Versatz auf', tor:'smoke',
     args:['--nur=regler'], bauen:true, datei:V,
-    such:'.buehne>*:nth-child(4){animation-delay:calc(var(--d-auftritt) * 3)}',
-    ersatz:'.buehne>*:nth-child(4){animation-delay:0ms} '
-      + '/* Anker: nth-child(4) hatte calc(var(--d-auftritt) * 3) */',
-    an:{ ...DIST, text:'.buehne>*:nth-child(4){animation-delay:0ms}' },
+    such:'.buehne:has(>.siegkopf)>.unter{animation-delay:calc(var(--d-auftritt) * 3)}',
+    ersatz:'.buehne:has(>.siegkopf)>.unter{animation-delay:0ms} '
+      + '/* Anker: .unter hatte calc(var(--d-auftritt) * 3) */',
+    an:{ ...DIST, text:'.buehne:has(>.siegkopf)>.unter{animation-delay:0ms}' },
     sagt:'kommt als Ganzes' },
 
   /* 4. DER AUFTRITT BLEIBT HAENGEN. Die Zeilen kommen herein und werden
