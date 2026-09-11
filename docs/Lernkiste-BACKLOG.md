@@ -6964,8 +6964,9 @@ vermutlich, weil sie jede Karte betrifft.
 
 Kein Torbefund, sondern ein Ablaufbefund — und der teuerste dieser
 Runde. `inhalt` war seit I27 rot (`gap:2px` in der Punktzeile, am
-Markensystem vorbei), `regeln` seit I29 (zwei Verweise auf „Regel 13",
-gemeint war Regel 1). Beide Tore haben funktioniert. Gefahren wurden
+Markensystem vorbei), `regeln` seit I29 (zwei Verweise nannten die
+Safari-Falle und meinten die Regel, nach der eine Prüfung, die nie
+etwas meldet, kein Beweis ist). Beide Tore haben funktioniert. Gefahren wurden
 sie nicht: nach I27 lief bis I30 keine volle Kette mehr, nur einzelne
 Tore.
 
