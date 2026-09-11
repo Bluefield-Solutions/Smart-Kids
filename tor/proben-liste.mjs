@@ -5762,8 +5762,9 @@ export const PROBEN = [
        „//" sind kein Zufall - sie machen den Suchtext samt seiner
        Einrueckung wieder auffindbar. */
     ersatz:"  const andere = topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort);\n"
-      + "  //Anker:  const andere = topf.filter(x => x.sorte === ziel.sorte "
-      + "&& x.id !== ziel.id && x.wort !== ziel.wort);",
+      + "  /* Anker:\n"
+      + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort); */",
     an:{ datei:'src/inhalt/englisch.js',
          text:'filter(x => x.id !== ziel.id && x.wort !== ziel.wort);' },
     deckt:'englisch',
@@ -7489,7 +7490,7 @@ export const PROBEN = [
        meldete den falschen Befund: der Selbsttreffer, und zwar der
        fuenfte in diesem Verzeichnis. */
     such:"'name', 'no/not', 'old',",
-    ersatz:"'name', 'old',\n    // Anker: 'name', 'no/not', 'old',",
+    ersatz:"'name', 'old',\n    /* Anker: 'name', 'no/not', 'old', */",
     an:{ datei:'src/inhalt/englisch.js', fehlt:"'my', 'name', 'no/not', 'old'," },
     sagt:'tragen kein Themengebiet' },
 
@@ -7515,7 +7516,7 @@ export const PROBEN = [
   { n:'ein Themengebiet darf beliebig duenn werden', tor:'inhalt',
     deckt:'englisch', datei:'tor/inhalt.mjs',
     such:'    const THEMA_MIN = 12;',
-    ersatz:'    const THEMA_MIN = 40;\n    //     const THEMA_MIN = 12;',
+    ersatz:'    const THEMA_MIN = 40;\n    /*\n    const THEMA_MIN = 12; */',
     an:{ datei:'tor/inhalt.mjs', text:'const THEMA_MIN = 40;' },
     sagt:'zu wenig gezeichnete' },
 
@@ -7523,14 +7524,16 @@ export const PROBEN = [
     deckt:'englisch', datei:'src/inhalt/englisch.js',
     such:"  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
       + "    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
-    /* DER ANKER STEHT IN EINER ZEILE, nicht in zweien.
-       Der Waechter in `doku` vergleicht mit zusammengezogenen
-       Leerzeichen - ein zweites „// Anker:" mitten im Satz zerreisst
-       ihn, und das Tor meldet den fehlenden Nachweis statt des
-       Befundes. Zwei Anlaeufe hat das gekostet. */
+    /* DER ANKER UEBERLEBT WORTWOERTLICH, in einem BLOCKKOMMENTAR.
+       Der Waechter in `doku` zaehlt `split(such)` auf der eingegriffenen
+       Datei - ohne Leerzeichen zusammenzuziehen und ohne Kommentare zu
+       entfernen. Ein „// Anker:" vor jeder Zeile zerreisst den Text
+       deshalb genauso wie eine zusammengezogene Fassung. Zwei Anlaeufe
+       hat das gekostet, und beide sahen richtig aus. */
     ersatz:"  const topf = vorratHoeren();\n"
-      + "  // Anker:  const topf = ziel.thema ? vorratThema(ziel.thema) "
-      + ": ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
+      + "  /* Anker:\n"
+      + "  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
+      + "    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren(); */",
     an:{ datei:'src/inhalt/englisch.js', text:'const topf = vorratHoeren();' },
     sagt:'Ablenker statt drei' },
 
