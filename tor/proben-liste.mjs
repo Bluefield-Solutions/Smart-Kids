@@ -7482,18 +7482,28 @@ export const PROBEN = [
    *    Themenebene, und kein Bildschirm zeigt es an. */
   { n:'ein Wort traegt kein Themengebiet mehr', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
+    /* DER ANKER UEBERLEBT ALS KOMMENTAR, und zwar wortwoertlich.
+       Ohne ihn schlaegt der statische Waechter in `doku` an - „ihr
+       Suchtext steht nicht mehr da" -, und `inhalt` bricht dort ab,
+       lange bevor `englisch` an die Reihe kommt. Das Tor waere rot und
+       meldete den falschen Befund: der Selbsttreffer, und zwar der
+       fuenfte in diesem Verzeichnis. */
     such:"'name', 'no/not', 'old',",
-    ersatz:"'name', 'old',",
-    an:{ datei:'src/inhalt/englisch.js', fehlt:"'name', 'no/not', 'old'," },
+    ersatz:"'name', 'old',\n    // Anker: 'name', 'no/not', 'old',",
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"'my', 'name', 'no/not', 'old'," },
     sagt:'tragen kein Themengebiet' },
 
   /* 2. Ein Wort steht in zweien. Dann kommt es zweimal dran, und die
    *    Themen sind keine Einteilung mehr, sondern Ueberschriften. */
   { n:'ein Wort steht in zwei Themengebieten', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
+    /* Der Anker bleibt GANZ: „apple" kommt in einer eigenen Zeile dazu,
+       statt sich zwischen zwei Woerter zu schieben. Sonst waere der
+       Suchtext zerrissen und der Waechter in `doku` schluege an, bevor
+       `englisch` laeuft - siehe die Probe darueber. */
     such:"    'bike', 'birthday', 'cold',",
-    ersatz:"    'bike', 'birthday', 'apple', 'cold',",
-    an:{ datei:'src/inhalt/englisch.js', text:"'bike', 'birthday', 'apple', 'cold'," },
+    ersatz:"    'bike', 'birthday', 'cold',\n    'apple',",
+    an:{ datei:'src/inhalt/englisch.js', text:"'cold',\n    'apple'," },
     sagt:'stehen in mehreren' },
 
   /* 3. Die Grenze faellt, unter der ein Themengebiet zu duenn ist.
@@ -7505,7 +7515,7 @@ export const PROBEN = [
   { n:'ein Themengebiet darf beliebig duenn werden', tor:'inhalt',
     deckt:'englisch', datei:'tor/inhalt.mjs',
     such:'    const THEMA_MIN = 12;',
-    ersatz:'    const THEMA_MIN = 40;',
+    ersatz:'    const THEMA_MIN = 40;\n    //     const THEMA_MIN = 12;',
     an:{ datei:'tor/inhalt.mjs', text:'const THEMA_MIN = 40;' },
     sagt:'zu wenig gezeichnete' },
 
