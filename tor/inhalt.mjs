@@ -2664,10 +2664,25 @@ console.log('\n  Tor `englisch`');
     /* Und die Ablenker bleiben im Thema. Geprueft an JEDEM Gegenstand
        jedes Themas - das ist die Zusage, die diese vier Ebenen von
        „Hoeren und zeigen" unterscheidet. */
+    const themaFehler = [];
     for (const nr of themen)
-      ablenkerPruefen(EN.vorratThema(nr), (t) => eng.push(t), (x, y) => y.thema !== x.thema
+      ablenkerPruefen(EN.vorratThema(nr), (t) => themaFehler.push(t), (x, y) =>
+        y.thema !== x.thema
         && `„${x.wort}" bekommt in „${EN.themaTitel(nr)}" einen Ablenker aus `
-           + `„${EN.themaTitel(y.thema)}" — dann ist es wieder eine Bildersuche`);
+           + `„${y.thema ? EN.themaTitel(y.thema) : 'einem Topf ohne Thema'}" — `
+           + 'dann ist es wieder eine Bildersuche');
+    /* DREI MELDUNGEN UND EINE ZAHL, nicht dreihundert Zeilen.
+     *
+     * Der erste Anlauf schob jeden Fall einzeln nach `eng`. Bei einem
+     * Eingriff, der den Topf ganz vertauscht, sind das ueber dreihundert
+     * gleichlautende Zeilen - und sie haben die Meldungen der beiden
+     * aelteren Pruefungen aus der Ausgabe gedraengt. Zwei stehende
+     * Gegenproben schlugen daraufhin „aus einem anderen Grund" fehl,
+     * obwohl das Tor richtig rot war. Eine Meldung, die andere
+     * Meldungen verdeckt, ist ein Befund weniger, nicht mehr. */
+    if (themaFehler.length)
+      eng.push(`${themaFehler.length} Ablenker kommen aus einem fremden Thema. `
+        + `Die ersten drei: ${themaFehler.slice(0, 3).join(' · ')}`);
     if (!ohne.length && !doppelt.length && !fremd.length && !duenn.length)
       console.log(`    Themengebiete: ${EN.WOERTER.length} Wörter auf ${themen.length} `
         + `verteilt (${jeThema.map(([nr, n]) => `${EN.themaTitel(nr)} ${
