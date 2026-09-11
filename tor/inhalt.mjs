@@ -2705,6 +2705,29 @@ console.log('\n  Tor `englisch`');
           ? ` — ohne Kachel: ${duenn.map(([nr, n]) => `${EN.themaTitel(nr)}, `
             + `${THEMA_MIN - n} Zeichnungen fehlen`).join(' · ')}` : ''}`);
     }
+    /* Kein Bezeichner auf dem Bildschirm (E14c).
+     *
+     * `BILDER` ordnet jedes Wort einem Wortfeld zu, mit einem Schluessel:
+     * klein, ASCII, „rest" fuer den Rest. Seit E13 steht dieses Feld als
+     * zweite Zeile auf der Vorlaufkachel, und dort las ein Kind
+     * „gegensaetze". Der Vorrat traegt deshalb `gebietTitel(...)`.
+     *
+     * Geprueft wird BEIDES, und das zweite ist der eigentliche Punkt:
+     * dass jeder Schluessel einen Titel hat (sonst faellt die Zeile
+     * lautlos weg), UND dass im fertigen Vorrat kein Titel steht, der wie
+     * ein Schluessel aussieht. Nur die erste Haelfte zu pruefen hiesse,
+     * die Tafel zu pruefen statt das, was ankommt - wer den Aufruf wieder
+     * gegen `b.gebiet` tauscht, haette eine volle Tafel und trotzdem
+     * „gegensaetze" auf dem Schirm. */
+    const ohneTitel = [...new Set(EN.BILDER.map(b => b.gebiet))]
+      .filter(k => !EN.GEBIET_TITEL[k]);
+    if (ohneTitel.length)
+      eng.push(`${ohneTitel.length} Wortfelder haben keinen deutschen Titel in `
+        + `GEBIET_TITEL: ${ohneTitel.join(', ')}`);
+    const roh = [...new Set(EN.vorratHoeren().map(x => x.gebiet).filter(Boolean))]
+      .filter(t => !Object.values(EN.GEBIET_TITEL).includes(t));
+    if (roh.length)
+      eng.push(`im Hörvorrat steht ein Bezeichner statt eines Titels: ${roh.join(', ')}`);
     if (eng.length) {
       console.log('    ' + eng.join('\n    '));
       console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');
@@ -3930,6 +3953,8 @@ console.log('\n  Tor `englisch`');
      * strenger und nicht anders. Heute trifft die neue Bedingung nichts;
      * der naechste harmlose Fall liegt sechs Punkte Deckung darunter. */
     const GLEICH_ENG = 0.55, DECKUNG_ENG = 0.75;
+    /* Verglichen wird der SCHLUESSEL (`feld`), nicht die Beschriftung
+       (`gebiet`) - siehe die Begruendung in `englisch.js`. */
     const WO = 'wo';
     /* Einmal rastern und nicht je Paar: 84 Bilder ergeben 3486 Paare, und
        ohne diese Zeile waere jedes Bild 83-mal gerastert worden. */
@@ -3937,7 +3962,7 @@ console.log('\n  Tor `englisch`');
     const spitze = [];
     for (let i = 0; i < vls.length; i++) for (let j = i + 1; j < vls.length; j++) {
       const a = vls[i], b = vls[j];
-      const beideWo = a.gebiet === WO && b.gebiet === WO;
+      const beideWo = a.feld === WO && b.feld === WO;
       const g = gleichheit(gerastert[i], gerastert[j]);
       const d = deckung(gerastert[i], gerastert[j]);
       if (!beideWo) {

@@ -2506,9 +2506,18 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
 .sagenbild{display:flex;align-items:center;justify-content:center;
   transition:transform var(--d-tipp) var(--k-standard)}
 .sagenbild .farbfleck.gross{width:132px;height:132px}
+/* Die Zeichnung bekommt DIESELBE Groesse wie der Fleck, nicht die 76
+   Punkte aus der Kachelliste: hier steht sie allein auf dem Schirm und
+   ist das einzige, was die Aufgabe stellt. */
+.sagenbild .wortbild.gross{width:132px;height:132px}
 .sagenbild .ziffernbild.gross{font-size:var(--s5)}
 .sagenbild.gesagt{transform:scale(1.12)}
 .sagenbild.gesagt .farbfleck.gross{box-shadow:0 0 0 var(--r2) var(--gut)}
+/* Derselbe Ring um die Zeichnung - eckig gerundet statt rund, weil das
+   Bild in einem Quadrat sitzt. Ohne ihn bliebe nur das Wachsen, und wer
+   die Bewegung abgeschaltet hat, saehe gar keine Rueckmeldung. */
+.sagenbild.gesagt .wortbild.gross{border-radius:var(--r3);
+  box-shadow:0 0 0 var(--r2) var(--gut)}
 @media (prefers-reduced-motion:reduce){
   .sagenbild{transition:none}
   .sagenbild.gesagt{transform:scale(1.12)}
@@ -2531,6 +2540,7 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    schlimmer als ein kleineres Bild. */
 @media (max-height:440px){
   .sagenbild .farbfleck.gross{width:96px;height:96px}
+  .sagenbild .wortbild.gross{width:96px;height:96px}
   .sagenbild .satzblase svg{width:84px;height:84px}
   .sagenbild{margin-top:calc(-1 * var(--r3))}
 }

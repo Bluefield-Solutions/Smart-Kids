@@ -6604,10 +6604,15 @@ export const PROBEN = [
     an:{ ...DIST, text:"['englisch:satz'].includes(ebeneId) ? 3" },
     sagt:'über den Rand' },
 
+  /* E13: die Zahl gilt seit E13 fuer JEDE Englischebene mit Bildern und
+     nicht mehr fuer „Leg das Wort" allein - vier Kennungen sind zu einer
+     Art geworden. Der Eingriff ist derselbe geblieben: er verdoppelt sie.
+     Der Name auch; er beschreibt, was passiert, und das Legen ist
+     weiterhin die Ebene, an der es zuerst auffaellt. */
   { n:'der Vorlauf zum Legen zeigt wieder alle Wörter', tor:'passt', bauen:true, datei:D,
-    such:"  : ebeneId === 'englisch:legen' ? 12",
-    ersatz:"  : ebeneId === 'englisch:legen' ? 24",
-    an:{ ...DIST, text:"'englisch:legen' ? 24" },
+    such:"  : art === 'englisch' ? 12",
+    ersatz:"  : art === 'englisch' ? 24",
+    an:{ ...DIST, text:"art === 'englisch' ? 24" },
     sagt:'ein Aufkleber muss 44 messen' },
 
   /* 5. DER FILTER LAESST DURCH, WAS SICH NICHT LEGEN LAESST. `forty-five`
@@ -7519,6 +7524,38 @@ export const PROBEN = [
     ersatz:'    const THEMA_MIN = 40;\n    /*\n    const THEMA_MIN = 16; */',
     an:{ datei:'tor/inhalt.mjs', text:'const THEMA_MIN = 40;' },
     sagt:'zu wenig gezeichnete' },
+
+  /* E14c - drei Proben fuer drei Zeilen, und jede greift woanders an.
+     Zusammen decken sie den ganzen Weg vom Schluessel zur Kachel ab:
+     die Tafel, der Aufruf, und der Bezeichner, der kein Titel werden darf. */
+  { n:'ein Wortfeld ohne deutschen Titel fällt lautlos von der Kachel',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  gegensaetze:'Gegensätze', sport:'Sport', rest:'Mehr',",
+    ersatz:"  sport:'Sport',",
+    an:{ datei:'src/inhalt/englisch.js', text:"sport:'Sport',\n};" },
+    sagt:'keinen deutschen Titel' },
+
+  /* Die zweite ist die wichtigere: die Tafel bleibt VOLLSTAENDIG, nur der
+     Aufruf faellt zurueck auf den Schluessel. Genau so ist der Fehler
+     entstanden, und eine Pruefung, die nur die Tafel zaehlt, sieht ihn
+     nicht (Regel 1 - die Wirkung abschalten, nicht die Zutat). */
+  { n:'der Vorrat trägt wieder den Bezeichner statt des Titels',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"      sorte: 'bild', gebiet: gebietTitel(b.gebiet), feld: b.gebiet, bild: b.bild })),",
+    ersatz:"      sorte: 'bild', gebiet: b.gebiet, feld: b.gebiet, bild: b.bild })),",
+    an:{ datei:'src/inhalt/englisch.js',
+         text:"sorte: 'bild', gebiet: b.gebiet, feld: b.gebiet, bild: b.bild })),"  },
+    sagt:'Bezeichner statt eines Titels' },
+
+  /* Und die dritte haelt die Ausnahme fest, die beim Umbau gerissen ist:
+     vergleicht `inhalt` wieder die Beschriftung, trifft das Blatt „Wo?"
+     nicht mehr und vier gewollt gleiche Bilder werden rot gemeldet. */
+  { n:'die Ausnahme für „Wo?" vergleicht wieder die Beschriftung',
+    tor:'inhalt', deckt:'englisch', datei:'tor/inhalt.mjs',
+    such:'      const beideWo = a.feld === WO && b.feld === WO;',
+    ersatz:'      const beideWo = a.gebiet === WO && b.gebiet === WO;',
+    an:{ datei:'tor/inhalt.mjs', text:'a.gebiet === WO && b.gebiet === WO' },
+    sagt:'zellgleich' },
 
   { n:'die Ablenker beim Lesen kommen aus dem Hörvorrat', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',

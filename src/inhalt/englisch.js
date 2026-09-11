@@ -271,6 +271,48 @@ export const THEMA_VON = Object.fromEntries(
 export const themaTitel = (nr) =>
   (THEMENGEBIETE.find(t => t.nr === nr) || {}).titel || nr;
 
+/*
+ * Die Wortfelder auf Deutsch (E14c).
+ *
+ * `BILDER` ordnet jedes Wort einem Feld zu - aber mit einem SCHLUESSEL,
+ * und ein Schluessel ist fuer Maschinen geschrieben: klein, ohne Umlaute,
+ * mit „rest" fuer alles Uebrige. Solange das Feld nur sortierte, war das
+ * einerlei. Seit E13 steht es als zweite Zeile auf der Vorlaufkachel, und
+ * dort las ein Kind „gegensaetze" und „rest".
+ *
+ * Also EINE Tafel hier, und der Vorrat traegt den Titel statt des
+ * Schluessels. Der Bildschirm bekommt damit nie wieder einen Bezeichner
+ * zu sehen - und wer ein Feld dazunimmt, dem faellt die fehlende Zeile
+ * beim Eintragen auf, weil `inhalt` alle Schluessel gegen diese Tafel
+ * haelt.
+ *
+ * Kurz gehalten, alle zehn Punkte oder weniger: die Zeile steht klein
+ * unter dem Bild und teilt sich die Kachelbreite mit dem Wort. „Wo?"
+ * statt „Wo etwas ist", „Mehr" statt „Verschiedenes".
+ */
+export const GEBIET_TITEL = {
+  tiere:'Tiere', essen:'Essen', schule:'Schule', kleidung:'Kleidung',
+  menschen:'Menschen', zuhause:'Zuhause', wo:'Wo?',
+  gegensaetze:'Gegensätze', sport:'Sport', rest:'Mehr',
+};
+/** Der Titel eines Wortfelds. Unbekannt heisst: kein Feld, keine Zeile. */
+export const gebietTitel = (k) => GEBIET_TITEL[k] || '';
+
+/* Der Gegenstand traegt beides: `gebiet` den TITEL, `feld` den Schluessel.
+ *
+ * Nicht aus Bequemlichkeit. `gebiet` ist in dieser App das Feld, das
+ * ANGEZEIGT wird - bei einer Hauptstadt steht dort ein Landesname, und
+ * die Vorlaufkachel setzt es ohne Nachfrage unter das Bild. Ein
+ * Schluessel darf da nicht stehen.
+ *
+ * Ein Werkzeug dagegen will vergleichen und nicht lesen, und ein Titel
+ * ist dafuer der falsche Griff: `inhalt` nimmt die vier Bilder des
+ * Blattes „Wo?" von der Aehnlichkeitspruefung aus, weil sie sich gleichen
+ * SOLLEN. Als der Vorrat kurzzeitig nur den Titel trug, verglich diese
+ * Ausnahme „Wo?" gegen „wo", traf nichts mehr, und das Tor meldete zwei
+ * Bilder als zu aehnlich, die seit Monaten so gewollt sind. Ein
+ * Bezeichner, der sich mit der Beschriftung aendert, ist kein Bezeichner. */
+
 /**
  * Der Vorrat EINES Themengebiets (E14).
  *
@@ -288,7 +330,7 @@ export const themaTitel = (nr) =>
 export function vorratThema(nr){
   return BILDER.filter(b => b.bild && THEMA_VON[b.wort] === nr).map(b => ({
     id: `th:${nr}:${b.wort}`, name: b.wort, wort: b.wort,
-    sorte: 'bild', thema: nr, gebiet: b.gebiet, bild: b.bild }));
+    sorte: 'bild', thema: nr, gebiet: gebietTitel(b.gebiet), feld: b.gebiet, bild: b.bild }));
 }
 
 /* ---------- Was „Hoeren und zeigen" abfragt (E3) -------------------------
@@ -389,7 +431,7 @@ export function vorratHoeren(){
      * schon, fuer „Lies das Wort", und gilt hier unveraendert. */
     ...BILDER.filter(b => b.bild).map(b => ({
       id: `en:bild:${b.wort}`, name: b.wort, wort: b.wort,
-      sorte: 'bild', gebiet: b.gebiet, bild: b.bild })),
+      sorte: 'bild', gebiet: gebietTitel(b.gebiet), feld: b.gebiet, bild: b.bild })),
   ];
 }
 
@@ -484,7 +526,7 @@ export const LAUTPAARE = [
 export function vorratLesen(){
   return BILDER.filter(b => b.bild).map(b => ({
     id: `ls:${b.wort}`, name: b.wort, wort: b.wort,
-    sorte: 'bild', gebiet: b.gebiet, bild: b.bild }));
+    sorte: 'bild', gebiet: gebietTitel(b.gebiet), feld: b.gebiet, bild: b.bild }));
 }
 
 /**

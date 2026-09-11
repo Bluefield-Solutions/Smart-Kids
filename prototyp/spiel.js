@@ -4323,13 +4323,21 @@ const vorlaufSchluessel = (ebeneId) => `${P.id}:${ebeneId}`;
 const VORLAUF_JE = (art, ebeneId) =>
     ebeneId === 'englisch:laute' ? 3
   : ['englisch:satz', 'englisch:bauen'].includes(ebeneId) ? 3
-  : ebeneId === 'englisch:legen' ? 12
-  /* „Lies das Wort" (E7): ZWOELF von sechzehn, dieselbe Zahl wie beim
-     Legen und aus demselben Grund. Mit sechzehn farbigen Bildern lief die
-     Wand auf dem iPhone SE quer 47 Punkte aus dem Kasten - gemessen von
-     `passt`, nicht geschaetzt. Solange die Bilder Umrisse in Tinte waren,
-     passten sie; seit sie Bilder sind, brauchen sie Platz. */
-  : ebeneId === 'englisch:lesen' ? 12
+  /* ZWOELF fuer JEDE Englischebene mit Bildern (E13).
+     Die Zahl ist gemessen und nicht geschaetzt: mit sechzehn farbigen
+     Bildern lief die Wand auf dem iPhone SE quer 47 Punkte aus dem
+     Kasten, gemeldet von `passt`. Solange die Bilder Umrisse in Tinte
+     waren, passten sie; seit sie Bilder sind, brauchen sie Platz.
+
+     Sie stand fuer „Leg das Wort" und „Lies das Wort" einzeln da, und
+     „Hoeren und zeigen" und „Sag es" hatten gar keine - mit
+     fuenfundzwanzig flachen Farbflecken und Ziffern ging das gerade
+     noch. Seit dieselben vierundachtzig Zeichnungen auch dort stehen,
+     ging es nicht mehr: der Vorlauf lief 1307 Punkte ueber den Rand,
+     und die vier neuen Themenebenen waeren stumm dazugekommen.
+     Also eine Zeile fuer die Art statt vier fuer Kennungen - wer eine
+     Englischebene dazuschreibt, muss nicht daran denken. */
+  : art === 'englisch' ? 12
   : ['rechnen', 'freunde', 'verben', 'praeposition'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
   : null;
@@ -5977,10 +5985,21 @@ function sagenschirm(){
      wie auf der Kachel: das Kind sieht, dass hier gesprochen wird, und
      nicht, WAS - das kommt aus dem Ohr. */
   const istSatz = ziel.sorte === 'chunk';
+  /* Die Zeichnung ZUERST. Sie kam mit E13 dazu, und bis dahin hatte der
+     Vorrat nur Farben und Zahlen - jeder Gegenstand trug also entweder
+     `farbton` oder `ziffern`, und das letzte Glied der Kette brauchte
+     keine Bedingung. Mit den 84 Zeichnungen traf es Gegenstaende, die
+     beides nicht haben, und schrieb „undefined" in Schriftgrad s5 auf
+     den Bildschirm. Kein Tor hat es gemeldet: alle drei sahen eine
+     gefuellte Flaeche mit Text darin, und `spielprobe` spielt die Ebene
+     durch, ohne sie anzusehen. Gefunden wurde es am Abnahmebild
+     (Regel 4). */
   const bild = (x) => istSatz
     ? `<span class="satzblase gross"><svg width="120" height="120" viewBox="0 0 24 24"
          fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
          stroke-linejoin="round" aria-hidden="true">${BLASENSTRICH}</svg></span>`
+    : x.bild
+    ? Englisch.bildSvg(x.bild, 'wortbild gross')
     : x.farbton
     ? `<span class="farbfleck gross" style="--farbton:${x.farbton}"></span>`
     : `<span class="ziffernbild gross">${x.ziffern}</span>`;

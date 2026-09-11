@@ -2388,6 +2388,21 @@
       "zeit": "2026-09-11",
       "s": 18
     },
+    "ein Wortfeld ohne deutschen Titel fällt lautlos von der Kachel": {
+      "commit": "18d6fa6aff9c375ee4f79c0a141b825cf3e7d173",
+      "zeit": "2026-09-11",
+      "s": 31
+    },
+    "der Vorrat trägt wieder den Bezeichner statt des Titels": {
+      "commit": "18d6fa6aff9c375ee4f79c0a141b825cf3e7d173",
+      "zeit": "2026-09-11",
+      "s": 31
+    },
+    "die Ausnahme für „Wo?\" vergleicht wieder die Beschriftung": {
+      "commit": "18d6fa6aff9c375ee4f79c0a141b825cf3e7d173",
+      "zeit": "2026-09-11",
+      "s": 31
+    },
     "die Ablenker beim Lesen kommen aus dem Hörvorrat": {
       "commit": "b692534f976f49e4c8ee810f4297765fb4b11090",
       "zeit": "2026-09-11",
