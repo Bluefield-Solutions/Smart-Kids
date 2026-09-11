@@ -2053,6 +2053,25 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
     sagt:'quer-praeposition' },
 
+  /* --- I34: die Uhr steht unter `?flott` still ----------------------- *
+   *
+   * Sie stand an drei Stellen still und an einer vierten nicht: der
+   * Endbildschirm der Erwachsenen trug die Gesamtzeit UND den
+   * Tempo-Zuschlag aus der wirklichen Uhr. Gemeldet hat es das Bildtor
+   * mit 0,495 % Unterschied auf `quer-ende-eltern`.
+   *
+   * Der Eingriff nimmt die Abschaltung aus der EINEN Ableitung heraus,
+   * durch die jetzt jede verstrichene Zeit geht. Dann laeuft die Uhr
+   * waehrend der Aufnahme weiter, und zwei Laeufe derselben Fassung
+   * zeigen verschiedene Zahlen - genau der Zustand, den `?flott`
+   * ausschliessen soll. */
+  { n:'die Uhr laeuft unter `?flott` weiter', tor:'ansicht',
+    args:['--nur=quer-ende-eltern'], bauen:true, datei:D,
+    such:'const seit = (ab) => (FLOTT ? 0 : Date.now() - (ab || 0));',
+    ersatz:'const seit = (ab) => (Date.now() - (ab || 0));',
+    an:{ ...DIST, fehlt:'const seit = (ab) => (FLOTT ? 0 :' },
+    sagt:'quer-ende-eltern' },
+
   /* --- I17: der Fingerzeig von `regeln` ------------------------------- *
    *
    * Die Ratsche ist eine ZAHL, und der Bericht nannte als „die neuen"

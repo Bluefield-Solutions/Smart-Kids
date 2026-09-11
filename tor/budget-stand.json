@@ -17,12 +17,12 @@
     }
   },
   "gesehen": {
-    "zeit": "2026-09-10",
-    "start": 575.2,
-    "geometrie": 27.6,
+    "zeit": "2026-09-11",
+    "start": 580.9,
+    "geometrie": 27.7,
     "schrift": 51.7,
     "ebenen": {
-      "laender-europa.json": 110.3,
+      "laender-europa.json": 110.6,
       "laender-asien.json": 101,
       "laender-nordamerika.json": 75.3,
       "laender-afrika.json": 71.3,

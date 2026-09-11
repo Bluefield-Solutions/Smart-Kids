@@ -4817,7 +4817,7 @@ function werten(ziel, ergebnis, versuch){
     st.glatt++;
     st.serie++;
     if (st.serie > st.besteSerie) st.besteSerie = st.serie;
-    st.zeiten.push((Date.now() - (st.aufgabeAb || st.begonnen)) / 1000);
+    st.zeiten.push(seit(st.aufgabeAb || st.begonnen) / 1000);
   } else if (ergebnis === 'falsch' || versuch > 1) {
     st.serie = 0;
   }
@@ -4936,6 +4936,23 @@ const wiederZeichen = (st) => {
  * Die Stufen sind grob und sollen es sein. Eine stetige Formel waere
  * genauer und im Kopf nicht nachzurechnen - und was man nicht
  * nachrechnen kann, spornt nicht an, es aergert nur. */
+/* EINE STELLE, AN DER DIE UHR UNTER `?flott` STILLSTEHT (I34).
+ *
+ * Sie stand an dreien - und an einer vierten nicht. Der Kopf hatte
+ * seinen eigenen Zweig (`FLOTT ? '0:00' : ...`), das Intervall seinen
+ * eigenen (`if (FLOTT) return`), und der Endbildschirm der Erwachsenen
+ * hatte gar keinen: dort standen die Gesamtzeit UND der
+ * Tempo-Zuschlag, beide aus der wirklichen Uhr. Das Bildtor hat es
+ * gemeldet - `quer-ende-eltern` war 0,495 % anders, erlaubt sind 0,080.
+ *
+ * Was zweimal dasteht, veraltet einmal (Regel 6), und hier stand es
+ * dreimal. Jetzt steht es einmal: jede verstrichene Zeit geht durch
+ * `seit()`, und unter `?flott` ist sie null. Der Zuschlag wird damit
+ * ebenfalls fest - null Sekunden sind die oberste Stufe, und die ist
+ * auf jedem Rechner dieselbe.
+ *
+ * `?flott` setzen nur die Tore; im Spiel laeuft die Uhr. */
+const seit = (ab) => (FLOTT ? 0 : Date.now() - (ab || 0));
 const PUNKT_BASIS = 10;
 const TEMPO_STUFEN = [[5, 5], [10, 3], [20, 1]];
 const tempoZuschlag = (sek) => {
@@ -4966,9 +4983,8 @@ const alsUhr = (ms) => {
  * weiterlaeuft, macht jede von ihnen rot - und zwar zu Recht, ohne
  * dass etwas kaputt waere. `?flott` setzen nur die Tore. */
 setInterval(() => {
-  if (FLOTT) return;
   const u = document.querySelector('.schirm.da #uhr');
-  if (u && Sitzung && Sitzung.begonnen) u.textContent = alsUhr(Date.now() - Sitzung.begonnen);
+  if (u && Sitzung && Sitzung.begonnen) u.textContent = alsUhr(seit(Sitzung.begonnen));
 }, 1000);
 
 const aufgabenKopf = (st) => kopf({
@@ -4999,7 +5015,7 @@ const aufgabenKopf = (st) => kopf({
   rechts: ton().feier
     ? sterne(sterneFuer(st.glatt, st.liste.length))
     : `<span class="uhr" id="uhr" aria-label="Zeit">${
-        FLOTT ? '0:00' : alsUhr(Date.now() - st.begonnen)}</span>` });
+        alsUhr(seit(st.begonnen))}</span>` });
 
 /* ---------- Die Pause (R1) ----------------------------------------------
  *
@@ -9619,7 +9635,7 @@ function endschirm(){
         return `<div class="punkte"><b>${pk.gesamt}</b> Punkte`
           + `<span>${pk.basis} für richtig`
           + (pk.tempo ? ` · ${pk.tempo} für Tempo` : ' · kein Tempo-Zuschlag')
-          + ` · ${alsUhr(Date.now() - st.begonnen)} gesamt</span></div>`;
+          + ` · ${alsUhr(seit(st.begonnen))} gesamt</span></div>`;
       })() : ''}
       ${/* NEU SICHER (N4). Der Kasten sagt zum ersten Mal, was er weiss:
            „das kannst du jetzt". Genannt wird es nur, wenn es DIESE Runde
