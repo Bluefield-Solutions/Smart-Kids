@@ -6939,3 +6939,23 @@ Punkten wären das Kacheln von rund 155 Punkten, fünf Reihen statt vier
 und damit wieder Luft für fünfzehn. Das ist eine eigene Messung wert —
 die Spaltenzahl entscheidet dort auch über die Namenslänge, und die hat
 in dieser Runde schon einmal acht Auslieferungen gekostet.
+
+## B20 · Die Europakarte ist auf den Kontinent gerahmt, nicht auf das Gespielte
+
+Aufgefallen beim Ansehen der Vorbilder nach I26. Russland liegt jetzt als
+Umgebung auf der Karte — grau, richtig so —, aber der Rahmen ist
+derselbe geblieben: `sichtfeld` rechnet in `bauen.mjs` aus `KONT_LAENDER`,
+also aus der **rohen** Geometrie des Kontinents, und nicht aus den
+Ländern, die tatsächlich gefragt werden.
+
+Die Folge ist auf dem Vorbild `quer-hauptstaedte-eu` zu sehen: das
+gespielte Europa sitzt klein in der linken Hälfte, die rechte trägt
+graues Russland. Das war vorher genauso — nur war Russland farbig, und
+deshalb sah es nach Karte aus statt nach Rand.
+
+**Was es brächte:** ein Rahmen auf die gespielten Flächen (mit Zugabe für
+den Zusammenhang) macht Europa spürbar größer, ohne dass eine einzige
+Zeile Inhalt dazukommt. **Was daran hängt:** alle acht Karten, jede
+Ankerlage, jede Nadelmessung in `ziehen` und sechsundsiebzig Vorbilder.
+Das ist eine eigene Runde mit eigener Messung — und sie lohnt sich
+vermutlich, weil sie jede Karte betrifft.

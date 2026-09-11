@@ -9659,8 +9659,15 @@ function endschirm(){
         tier && tier.neu ? `<div class="tierneu">${
           tier.neu.map(t => tierBild(t)).join('')}
         <span>${tier.grund
-          ? `${tier.grund.charAt(0).toUpperCase()}${tier.grund.slice(1)}! `
-            + `${aufzaehlen(tier.neu.map(t => t.name), 'und')} für dein Buch.`
+          ? (() => {
+              /* Beide Anfaenge gross: der Grund faengt einen Satz an, die
+                 Aufzaehlung den naechsten. Ohne das stand dort „Ohne
+                 Fehler! der Wal fuer dein Buch." - der Artikel gehoert
+                 zum Tiernamen und bringt sein kleines d mit. */
+              const gross = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+              return `${gross(tier.grund)}! `
+                + `${gross(aufzaehlen(tier.neu.map(t => t.name), 'und'))} für dein Buch.`;
+            })()
           : `${tier.raum.titel} ist offen: ${aufzaehlen(tier.neu.map(t => t.name), 'und')}!`
         }</span></div>`
         : tier && tier.gorilla ? `<div class="tierneu hilft">${tierBild(tier.gorilla)}

@@ -1201,7 +1201,7 @@
     "der nächtliche Lauf urteilt wieder über `ansicht`": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
       "zeit": "2026-09-07",
-      "s": 18
+      "s": 22
     },
     "die Umgebung reicht auf keiner Karte mehr ins Randband": {
       "commit": "ebc865e4b34e257b8239396a461c5d2631d2e88b",
@@ -1216,7 +1216,7 @@
     "Grönland ist wieder nur Umgebung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 17
+      "s": 19
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
