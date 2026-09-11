@@ -1179,9 +1179,9 @@
       "s": 55
     },
     "die Umgebung ist unsichtbar, das Tor misst ein leeres Bild": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 30
+      "commit": "ebc865e4b34e257b8239396a461c5d2631d2e88b",
+      "zeit": "2026-09-11",
+      "s": 58
     },
     "der langsamere Bildschirmbau räumt den schnelleren weg": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1204,9 +1204,9 @@
       "s": 18
     },
     "die Umgebung reicht auf keiner Karte mehr ins Randband": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 30
+      "commit": "ebc865e4b34e257b8239396a461c5d2631d2e88b",
+      "zeit": "2026-09-11",
+      "s": 31
     },
     "die Karte wechselt die Farbe": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1904,9 +1904,9 @@
       "s": 238
     },
     "die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung": {
-      "commit": "64759a462a3855458481b8594d0e54db125a207a",
-      "zeit": "2026-09-07",
-      "s": 29
+      "commit": "ebc865e4b34e257b8239396a461c5d2631d2e88b",
+      "zeit": "2026-09-11",
+      "s": 31
     },
     "ohne englische Stimme springt die deutsche ein": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
