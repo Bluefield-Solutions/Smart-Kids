@@ -663,6 +663,11 @@
       "zeit": "2026-09-11",
       "s": 20
     },
+    "die Uhr laeuft unter `?flott` weiter": {
+      "commit": "125545c2f51cfda2e7741a3f8202ae879a66442e",
+      "zeit": "2026-09-11",
+      "s": 36
+    },
     "der Fingerzeig von `regeln` zeigt auf die falsche Datei": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
