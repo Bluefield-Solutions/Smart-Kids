@@ -6894,7 +6894,24 @@ Rechner noch der Runner ist ein iPhone; welche der beiden Zahlen näher
 an Safari liegt, weiß niemand. Zu holen wäre es mit einer Messtafel im
 Spiel, die die Zellenbreite und die breiteste Namenszeile anzeigt.
 
-## B19 · Die Ländergruppe ist im Schreibtischfenster voll
+## B19 · Die Ländergruppe ist im Schreibtischfenster voll — GESCHLOSSEN (I28)
+
+**Der Grund war ein anderer als gedacht.** Der Dreispalter für genau
+dieses Fenster stand seit Fassungen im Stilblatt
+(`@media (min-height:441px) and (max-width:780px)`) und hat nie gewirkt:
+er setzt `flex-basis`, und drei Zeilen später setzt `.wahl.ebenen>*`
+die Kurzschreibweise `flex` — die `flex-basis` mitsetzt. Gleiche
+Spezifität, spätere Regel gewinnt. Eine Bedingung in einer Medienabfrage
+macht eine Regel nicht stärker, nur seltener.
+
+Jetzt steht die Ausnahme **danach**, und die Wand trägt wieder **zwölf**
+Kacheln statt acht: drei je Reihe, drei Reihen für die acht Karten. Die
+neunte passt, und drei weitere dazu.
+
+Was unten steht, ist der Befund, wie er aufgeschrieben wurde.
+
+---
+
 
 Gefunden in I24, dadurch dass `passt` die **geöffnete** Ländergruppe zum
 ersten Mal ansieht — seit I22b liegen die acht Länderebenen hinter einer

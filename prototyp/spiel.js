@@ -4511,6 +4511,15 @@ async function vorlauf(ebeneId, zurueck = null){
    * Pudel" schon. */
   const lohnSatz = (() => {
     if (!ton().feier) return '';
+    /* NUR WO PLATZ IST. Der Vorlauf ist die engste Stelle der ganzen
+       App - bis zu sechzehn Kaesten auf einmal, auf dem kleinsten
+       Geraet. Eine Zeile mehr schiebt das Gitter zusammen, und `passt`
+       hat es sofort gesagt: Aufkleber von 44 auf 32 Punkte, ein Name
+       siebzehn Punkte ueber den Rand. Ab zehn Stuecken bleibt der Satz
+       deshalb weg; dort traegt die Nachricht der Endbildschirm, der
+       den Grund ohnehin nennt. Ein Versprechen, das den Bildschirm
+       kaputtmacht, auf dem es steht, ist keines. */
+    if (stuecke.length > 9) return '';
     const holbar = Tiere.raumTiere(ebeneId, TierStand.ids);
     return holbar.length ? ` Ohne Fehler gibt es einen Aufkleber: ${holbar[0].name}.` : '';
   })();

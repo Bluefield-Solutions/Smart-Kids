@@ -668,6 +668,28 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
 .wahl.ebenen{gap:var(--r3);display:flex;flex-wrap:wrap;
   justify-content:center;align-content:flex-start}
 .wahl.ebenen>*{flex:0 0 240px;max-width:100%}
+/* UND DIE DREI SPALTEN IM SCHMALEN FENSTER - jetzt wirklich (I28).
+ *
+ * Der Satz dafuer steht seit Fassungen weiter oben, im Block
+ * `@media (min-height:441px) and (max-width:780px)`, und er hat nie
+ * gewirkt: er setzt `flex-basis`, und die Zeile darueber setzt `flex`
+ * - die KURZSCHREIBWEISE, die `flex-basis` mitsetzt. Beide haben
+ * dieselbe Spezifitaet, und bei gleicher Spezifitaet gewinnt die
+ * spaetere. Eine Bedingung in einer Medienabfrage macht eine Regel
+ * nicht staerker, nur seltener.
+ *
+ * Aufgefallen ist es, weil die Wand im schmalen Fenster mit acht
+ * Kacheln voll war (B19): zwei je Reihe statt drei, vier Reihen statt
+ * drei. Der Kommentar oben rechnet vor, warum drei besser sind - und
+ * er hatte recht, es kam nur nie an.
+ *
+ * Hier statt dort, weil eine Regel, die eine andere aufheben soll,
+ * DANACH stehen muss. Der Block oben behaelt seine Begruendung; sie
+ * gilt weiter, und `.wahl>*` (die Weltenwahl) hat sie immer schon
+ * gebraucht. */
+@media (min-height:441px) and (max-width:780px){
+  .wahl.ebenen>*{flex:0 0 200px}
+}
 /* AB ELF EBENEN wird die Kachel schmaler (Q27).
  *
  * `passt` meldet seit Fassungen als Hinweis: „die Wand ist voll - 10
