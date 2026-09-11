@@ -6959,3 +6959,62 @@ Zeile Inhalt dazukommt. **Was daran hängt:** alle acht Karten, jede
 Ankerlage, jede Nadelmessung in `ziehen` und sechsundsiebzig Vorbilder.
 Das ist eine eigene Runde mit eigener Messung — und sie lohnt sich
 vermutlich, weil sie jede Karte betrifft.
+
+## B21 · Zwei Tore standen drei Fassungen lang rot, und keine Kette hat es gesagt
+
+Kein Torbefund, sondern ein Ablaufbefund — und der teuerste dieser
+Runde. `inhalt` war seit I27 rot (`gap:2px` in der Punktzeile, am
+Markensystem vorbei), `regeln` seit I29 (zwei Verweise auf „Regel 13",
+gemeint war Regel 1). Beide Tore haben funktioniert. Gefahren wurden
+sie nicht: nach I27 lief bis I30 keine volle Kette mehr, nur einzelne
+Tore.
+
+**Was das gekostet hat:** 78 der 418 gefahrenen Gegenproben kamen mit
+„war schon vorher rot" zurück. Ein rotes Tor besteht jede Gegenprobe
+(Regel 11) — die 78 Proben liefen also, dauerten ihre Zeit und bewiesen
+nichts. Darunter die beiden Proben zu „Was ist größer?", weshalb die
+Deckungsanzeige `groesser` als Prüfung ohne jede Gegenprobe führte.
+
+**Woran es lag:** die Kette dauert rund 25 Minuten, und in einer Runde
+mit vier aufeinander folgenden Änderungen ist die Versuchung groß, nur
+das angefasste Tor zu fahren. Das trägt genau so lange, bis eine
+Änderung ein Tor trifft, an das man nicht gedacht hat — hier eine
+Farbmarke im Endbildschirm, die `inhalt` prüft.
+
+**Was dagegen hilft:** nicht eine Regel mehr. `proben` weiß bereits, ob
+ein Tor vor dem Eingriff rot war — es meldet es je Probe. Was fehlt, ist
+dieselbe Auskunft VOR dem Probenlauf: ein Vorlauf, der die Tore der
+ausgewählten Proben einmal ohne Eingriff fährt und abbricht, wenn eines
+schon rot ist. Das kostet einmal, was es sonst 78-mal kostet.
+
+## B22 · Ein angekommener Eingriff ist noch kein wirksamer Eingriff
+
+Fünf der sechs toten Gegenproben dieser Runde haben denselben Bau: der
+Eingriff kam an, `anker` fand ihn im Bündel, und gewirkt hat er
+trotzdem nicht. Regel 10 prüft die **Ankunft** — dass eine angekommene
+Änderung auch etwas ändert, prüft nur der Lauf.
+
+Die fünf Verfallsarten, weil sie sich unterscheiden:
+
+1. **Die Regel gilt an der Messstelle nicht.** `.rollen.buch .raumgitter`
+   steht dreimal da, der Rauchtest misst auf 844 × 390, umgelegt wurde
+   die Fassung ohne Bedingung. (I31)
+2. **Die Position hat sich verschoben.** `nth-child(4)` war einmal die
+   Zahl; seit die Punktzeile dazukam, ist es eine andere Zeile — und das
+   Tor misst ohnehin nach Namen, nicht nach Position. (I31)
+3. **Der Eingriff löst einen anderen Befund früher aus.** Schmalere
+   Spalten *und* größeres Polster ließen die Wand überlaufen; `passt`
+   meldete den Überlauf und kam zum Höhenzweig nie. „Rot, aber nicht
+   deswegen" ist derselbe Befund wie ein grünes Tor. (I31)
+4. **Der Eingriff ist eine Tautologie geworden.** Der Wächter „hat diese
+   Karte eine fragbare Flagge?" traf seit I12/I26 auf alle acht Karten
+   zu; ihn wegzunehmen änderte nichts. (I31)
+5. **Die Zusage selbst ist umgezogen.** Die Bedingung „alle Seiten
+   melden denselben Wert" wurde enger, als seit N12 alle Seiten
+   wirklich füllen — und dabei ist ihr die Gegenprobe abhanden
+   gekommen, ohne dass etwas rot wurde. (I32)
+
+Vier davon sind am Text nicht zu sehen, und genau deshalb ist der volle
+Probenlauf durch keine Abkürzung zu ersetzen. Was er meldet, ist nicht
+„das Tor ist kaputt", sondern „diese Prüfung hat aufgehört, etwas zu
+beweisen" — und das passiert leise.

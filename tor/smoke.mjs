@@ -191,6 +191,19 @@ const fehler = [];
  * mit einem hoeheren leeren Kasten. Was daneben gemessen werden muss,
  * ist der BILDANTEIL - `npm run tonleiter` haelt ihn seit N12. */
 const BUCH_GENUTZT_MIN = 70;
+/* WIE TIEF DIE NUTZUNGSMESSUNG IN DIE SEITE HINEINREICHT (I32).
+ *
+ * Gemessen auf 844 x 390 mit vollem Stand: die flachste der elf
+ * Kapitelseiten wird 14,0-fach tief gemessen - die Messung sieht also
+ * vierzehnmal so viele Bloecke, wie der Kasten direkte Kinder hat.
+ * Beim Rueckfall auf `r.children` ist die Tiefe genau 1,0-fach.
+ *
+ * Die Ratsche steht auf 5 und nicht auf 13: was hier schwanken darf,
+ * ist der INHALT einer Seite (eine Albumkarte mehr, ein Abzeichen
+ * weniger), und das sind ganze Faktoren. Was sie fangen soll, liegt bei
+ * 1,0 - dazwischen ist Platz fuer beides. Ein Wert, der auf 5 faellt,
+ * ist trotzdem ein Befund und keine Schwankung. */
+const MESSTIEFE_MIN = 5;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
 const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
 
@@ -2958,12 +2971,14 @@ if (laeuft('ablage')) try {
          WIRKLICHEN Inhalt des Kastens, nicht an einer Vorausberechnung:
          welche Seite wie hoch wird, entscheidet der Bildschirm. */
       const eng = [], gleich = [], genutzt = [], ohneBalken = [], tafeln = [], stumm = [],
-            welten = [];
+            welten = [], seitenTief = [];
       const seiten = new Map();
       const merkeSeite = (seite) => {
         if (seite.seiteId === 'naechstes' && !seite.balken) ohneBalken.push(seite.was);
         if (seite.bloecke) eng.push(`„${seite.was}" ${seite.bloecke} von ${seite.ganz}`);
         if (seite.genutzt !== null) genutzt.push([seite.was, seite.genutzt]);
+        if (seite.gemessen !== undefined)
+          seitenTief.push({ was: seite.was, gemessen: seite.gemessen, ganz: seite.ganz });
         if (seite.tafel && seite.tafel.length) tafeln.push(seite);
         if (seite.weltraster) welten.push({ ...seite.weltraster, was: seite.was });
         /* ZWEI Faelle, und sie meinen Verschiedenes (B12).
@@ -3066,6 +3081,31 @@ if (laeuft('ablage')) try {
                    })(),
                    ganz: [...r.children].filter(e =>
                      e.getBoundingClientRect().height > 2).length,
+                   /* WIE WEIT DAS MESSGERAET UEBERHAUPT HINEINREICHT
+                    * (I32).
+                    *
+                    * Die beiden Zahlen darueber messen den INHALT der
+                    * Seite. Faellt die Auswahl auf `r.children` zurueck -
+                    * genau der Rueckfall von v422 -, misst sie wieder den
+                    * Kasten, und beide Zahlen sind trotzdem plausibel:
+                    * der Kasten ist voll, also meldet `genutzt` 95 %, und
+                    * `bloecke` meldet null. Nichts daran ist rot.
+                    *
+                    * Frueher fing das die Bedingung „alle Seiten melden
+                    * denselben Wert". Seit N12 fuellen alle zehn Seiten
+                    * ihre Seite wirklich, alle zehn melden 95 %, und die
+                    * Bedingung musste enger werden - damit hatte die
+                    * Gegenprobe nichts mehr, woran sie sich halten
+                    * konnte, und sie hat es gemeldet.
+                    *
+                    * Gezaehlt wird deshalb das Messgeraet selbst: wie
+                    * viele Bloecke es sieht, gegen die Zahl der direkten
+                    * Kinder des Kastens. Beim Rueckfall sind beide Zahlen
+                    * gleich - dann misst die Messung den Kasten. Das ist
+                    * die Zusage, und sie steht nicht an der Zahl, die
+                    * herauskommt, sondern daran, WORAN sie gemessen
+                    * wurde (Regel 5). */
+                   gemessen: inhalt.length,
                    /* Und WAS auf der Seite steht - als Fingerabdruck.
                       Ohne den waere ein Reiter, der die Seite gar nicht
                       austauscht, hier gruen: die Marke wandert, sechs
@@ -3221,6 +3261,19 @@ if (laeuft('ablage')) try {
          * ist nur umgezogen: `tonleiter` misst den BILDANTEIL, und der
          * steht bei 45 · 55 · 84 · 69 · 44 · 69 · 0 - sieben Seiten,
          * sieben Zahlen. */
+        /* Und das Messgeraet selbst (I32) - siehe `gemessen`. */
+        const flach = seitenTief.filter(x => x.gemessen < x.ganz * MESSTIEFE_MIN);
+        if (seitenTief.length)
+          console.log(`  Buchseiten: Messtiefe ${Math.min(...seitenTief.map(x =>
+            x.gemessen / Math.max(1, x.ganz))).toFixed(1)}-fach am flachsten `
+            + `(${seitenTief.length} Seiten, Grenze ${MESSTIEFE_MIN}-fach)`);
+        if (flach.length)
+          merke('forscherbuch', new Error(`${flach.length} von ${seitenTief.length} `
+            + `Kapitelseiten werden nur ${flach.map(x =>
+                `„${x.was}" ${(x.gemessen / Math.max(1, x.ganz)).toFixed(1)}-fach`).join(' · ')} `
+            + `tief gemessen (verlangt ${MESSTIEFE_MIN}-fach) — die Nutzungsmessung sieht `
+            + 'kaum mehr als die direkten Kinder des Kastens, misst also den Kasten und '
+            + 'nicht den Inhalt: dann sind die Zahlen darüber plausibel und bedeutungslos'));
         if (genutzt.length > 2 && new Set(genutzt.map(([, a]) => a)).size === 1
             && genutzt[0][1] < BUCH_GENUTZT_MIN)
           merke('forscherbuch', new Error(`alle ${genutzt.length} Kapitelseiten melden `

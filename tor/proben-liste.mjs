@@ -4862,7 +4862,20 @@ export const PROBEN = [
     ersatz:"          const inhalt = [...r.children]\n"
       + "            .filter(e => true)",
     an:{ datei:'tor/smoke.mjs', text:'const inhalt = [...r.children]' },
-    sagt:'melden denselben Wert' },
+    /* I32: DIE ZUSAGE, AUF DIE SICH DIESE PROBE BERIEF, GIBT ES NICHT MEHR.
+     *
+     * Sie zeigte auf „alle Seiten melden denselben Wert, und der liegt
+     * unter der Ratsche". Beim Rueckfall auf den Kasten melden alle
+     * Seiten 95 % - also UEBER der Ratsche, und das Tor blieb zu Recht
+     * gruen. Die Bedingung war schon vorher enger geworden (seit N12
+     * fuellen alle zehn Seiten wirklich), und dabei ist ihr diese Probe
+     * abhanden gekommen, ohne dass etwas rot wurde.
+     *
+     * Das Tor prueft jetzt das Messgeraet selbst: wie tief die Auswahl
+     * in die Seite hineinreicht, gemessen an den direkten Kindern des
+     * Kastens. Beim Rueckfall ist die Tiefe 1,0-fach. Eine Zahl ist erst
+     * dann ein Beleg, wenn feststeht, WORAN sie gemessen wurde. */
+    sagt:'misst also den Kasten und nicht den Inhalt' },
 
   /* --- G14: der Lohn gehoert den Kindern ------------------------------
    *
