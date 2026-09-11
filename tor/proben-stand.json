@@ -1854,9 +1854,9 @@
       "s": 4
     },
     "die Ablenker der Englischebene kommen aus der falschen Sorte": {
-      "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
+      "commit": "ad118786bb1f2661fa74c411eb3398dc5c00082f",
       "zeit": "2026-09-11",
-      "s": 19
+      "s": 32
     },
     "das gesuchte englische Wort steht auf dem Bildschirm": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
@@ -2374,24 +2374,24 @@
       "s": 4
     },
     "ein Wort traegt kein Themengebiet mehr": {
-      "commit": "7ba28541baf22faabcb6abddf965201f34bef91b",
+      "commit": "ad118786bb1f2661fa74c411eb3398dc5c00082f",
       "zeit": "2026-09-11",
-      "s": 6
+      "s": 18
     },
     "ein Wort steht in zwei Themengebieten": {
-      "commit": "7ba28541baf22faabcb6abddf965201f34bef91b",
+      "commit": "ad118786bb1f2661fa74c411eb3398dc5c00082f",
       "zeit": "2026-09-11",
-      "s": 6
+      "s": 18
     },
     "ein Themengebiet darf beliebig duenn werden": {
-      "commit": "7ba28541baf22faabcb6abddf965201f34bef91b",
+      "commit": "ad118786bb1f2661fa74c411eb3398dc5c00082f",
       "zeit": "2026-09-11",
-      "s": 6
+      "s": 18
     },
     "die Ablenker beim Lesen kommen aus dem Hörvorrat": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
-      "s": 6
+      "s": 18
     },
     "die Englischkarten laufen über den Rand": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",

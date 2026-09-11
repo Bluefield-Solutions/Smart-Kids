@@ -7535,7 +7535,24 @@ export const PROBEN = [
       + "  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
       + "    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren(); */",
     an:{ datei:'src/inhalt/englisch.js', text:'const topf = vorratHoeren();' },
-    sagt:'Ablenker statt drei' },
+    /* E14: DIE ZUSAGE HAT SICH VERSCHOBEN, der Eingriff nicht.
+     *
+     * Bis E13 war „Lies das Wort" die EINZIGE Ebene mit gezeichneten
+     * Gegenstaenden. Wer ihren Topf gegen den Hoervorrat tauschte, fand
+     * dort kein einziges Bild - die Ebene bekam null Ablenker statt
+     * drei, und genau das meldete das Tor.
+     *
+     * Seit die Zeichnungen im Hoervorrat stehen, ist der Topf nicht mehr
+     * leer: der Tausch liefert weiter drei Bilder. Die Zahl stimmt, und
+     * die alte Meldung kommt zu Recht nicht mehr.
+     *
+     * Kaputt macht der Eingriff trotzdem etwas, und zwar mehr als
+     * vorher: die vier Themenebenen bekommen ihre Ablenker aus dem
+     * ganzen Vorrat statt aus ihrem Thema, und damit wird aus einer
+     * Vokabelfrage wieder eine Bildersuche. Darauf zeigt die Probe
+     * jetzt. Der Name bleibt - er beschreibt den Eingriff, und der ist
+     * derselbe. */
+    sagt:'aus einem fremden Thema' },
 
   /* 7. UND DIE MESSSTELLE IN `passt`: die vier Englischkarten stehen in
    *    keiner der drei Klassenlisten, mit denen `passt` misst - sie sind
