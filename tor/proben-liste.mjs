@@ -2053,6 +2053,38 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'.freundluecke.eng .wort-eingabe{width:8ch}' },
     sagt:'quer-praeposition' },
 
+  /* --- I35: der Rahmen sitzt auf dem Gespielten ---------------------- *
+   *
+   * ZWEI Proben, und sie meinen Verschiedenes. Die erste stellt den
+   * Zustand VOR B20 wieder her: gerahmt wird die rohe Geometrie des
+   * Kontinents. Dann faellt Nordamerika auf 49 % und Suedosteuropa auf
+   * 56 %, und das Tor muss beide nennen.
+   *
+   * Der Eingriff nimmt nicht die Zugabe heraus, sondern den ganzen
+   * Zweig - denn genau das stand hier bis I26, und genau dahin faellt
+   * jemand zurueck, der die Zeile „vereinfacht". */
+  { n:'der Kartenrahmen sitzt wieder auf dem rohen Kontinent', tor:'inhalt',
+    deckt:'topologie', bauen:true, datei:'prototyp/bauen.mjs',
+    such:'  const ziele = roh.filter(l => zielAuf(id, l.a3));\n'
+      + '  if (!ziele.length) return [id, sichtfeld(roh)];',
+    ersatz:'  const ziele = roh.filter(l => zielAuf(id, l.a3));\n'
+      + '  if (true) return [id, sichtfeld(roh)];',
+    an:{ datei:'prototyp/bauen.mjs', text:'if (true) return [id, sichtfeld(roh)];' },
+    sagt:'des Kartenbildes' },
+
+  /* Und die zweite: die Zugabe waechst, bis sie die Karte auffrisst.
+   *
+   * Das ist die LEISERE Verfallsart. Der Zweig steht noch da, gerahmt
+   * wird weiter das Gespielte - nur so weitherzig, dass der gespielte
+   * Teil wieder im Rand versinkt. Ohne diese Probe waere die Zahl 0.06
+   * eine Zahl, die jeder verstellen kann, ohne dass etwas rot wird. */
+  { n:'die Zugabe um den gespielten Teil waechst ungeprueft', tor:'inhalt',
+    deckt:'topologie', bauen:true, datei:'prototyp/bauen.mjs',
+    such:'const KARTEN_ZUGABE = 0.06;',
+    ersatz:'const KARTEN_ZUGABE = 0.30;',
+    an:{ datei:'prototyp/bauen.mjs', fehlt:'const KARTEN_ZUGABE = 0.06;' },
+    sagt:'des Kartenbildes' },
+
   /* --- I34: die Uhr steht unter `?flott` still ----------------------- *
    *
    * Sie stand an drei Stellen still und an einer vierten nicht: der

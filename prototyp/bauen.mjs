@@ -9,7 +9,7 @@ import { STAEDTE } from '../src/geo/staedte.js';
 import * as I from '../src/inhalt/erdkunde.js';
 import { inline } from './inline.mjs';
 import { polDerUnzugaenglichkeit, pfadZuRingen,
-         ringeZuPolygonen, sichtfeld } from '../tools/geo-backen.mjs';
+         ringeZuPolygonen, rahmen, sichtfeld } from '../tools/geo-backen.mjs';
 
 const NACHBARN = JSON.parse(fs.readFileSync(new URL('./nachbarn.json', import.meta.url)));
 /* Die WIRKLICHEN Flaechen - gebacken von `tools/backen-flaechen.mjs` aus
@@ -349,7 +349,59 @@ const silhouette = (pfad, n) => {
   console.log(`  Silhouetten fuer die Kacheln: ${kb.toFixed(1)} KB, `
     + `alle Ziele im Bild`);
 }
-D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => [id, sichtfeld(roh)]));
+/* DER RAHMEN SITZT AUF DEM GESPIELTEN, NICHT AUF DEM ROHEN KONTINENT (B20).
+ *
+ * Hier stand `sichtfeld(roh)` - der Rahmen um ALLE Umrisse der Karte,
+ * also um die Ziele UND die Umgebung. Auf den dichten Karten faellt das
+ * nicht auf; auf den duennen kostet es die halbe Flaeche. Gemessen, wie
+ * gross der gespielte Teil im Bild ist:
+ *
+ *     Nordamerika 49 %  Mittelamerika 55 %  Suedosteuropa 56 %
+ *     Europa      74 %  Australien    83 %  Afrika        89 %
+ *     Asien       92 %  Suedamerika   97 %
+ *
+ * Aufgefallen ist es erst, als Russland Umgebung wurde (I26): der Rahmen
+ * war vorher derselbe, aber Russland war bunt, und deshalb sah die
+ * rechte Haelfte nach Karte aus statt nach Rand.
+ *
+ * DIE ZUGABE IST NICHT GERATEN. Ohne sie waere die Umgebung auf einen
+ * Anschnitt zusammengeschnitten - man saehe, WAS gefragt wird, aber
+ * nicht mehr, wo es liegt. Mit ihr faellt der gespielte Anteil wieder.
+ * Gesucht ist also die GROESSTE Zugabe, bei der jede Karte den
+ * gespielten Teil noch ueber drei Viertel des Bildes zeigt. Gemessen:
+ *
+ *     4 % → 83 %   5 % → 79 %   6 % → 76 %   7 % → 73 %   8 % → 70 %
+ *
+ * (jeweils die schlechteste Karte, und das ist jedes Mal Suedosteuropa).
+ * Bei 7 % faellt sie unter das Soll. Also 6 % - anteilig an der laengeren
+ * Seite des gespielten Teils und nicht in Punkten, damit die Zugabe auf
+ * jeder Karte gleich AUSSIEHT (Regel 2).
+ *
+ * Geschnitten wird am rohen Rahmen: ueber ihn hinaus ist nichts
+ * gezeichnet, dort waere die Zugabe nur leerer Grund. */
+const KARTEN_ZUGABE = 0.06;
+D.vbL = Object.fromEntries(KONT_LAENDER.map(([id, roh]) => {
+  const ziele = roh.filter(l => zielAuf(id, l.a3));
+  if (!ziele.length) return [id, sichtfeld(roh)];
+  const rA = rahmen(roh), rZ = rahmen(ziele);
+  const zu = Math.max(Math.max(rZ.w, rZ.h) * KARTEN_ZUGABE, 8);
+  const x0 = Math.max(rA.x0 - 8, rZ.x0 - zu), y0 = Math.max(rA.y0 - 8, rZ.y0 - zu);
+  const x1 = Math.min(rA.x0 + rA.w + 8, rZ.x0 + rZ.w + zu);
+  const y1 = Math.min(rA.y0 + rA.h + 8, rZ.y0 + rZ.h + zu);
+  return [id, `${+x0.toFixed(1)} ${+y0.toFixed(1)} ${+(x1 - x0).toFixed(1)} ${+(y1 - y0).toFixed(1)}`];
+}));
+{
+  /* Und was dabei herauskommt, steht im Lauf - sonst waere die Rechnung
+     darueber eine Behauptung, die niemand nachliest. */
+  const zeilen = KONT_LAENDER.map(([id, roh]) => {
+    const ziele = roh.filter(l => zielAuf(id, l.a3));
+    if (!ziele.length) return null;
+    const rZ = rahmen(ziele), [, , w, h] = D.vbL[id].split(' ').map(Number);
+    return [id, Math.round(100 * rZ.w * rZ.h / (w * h))];
+  }).filter(Boolean).sort((a, b) => a[1] - b[1]);
+  console.log(`  Kartenrahmen auf dem Gespielten (Zugabe ${Math.round(KARTEN_ZUGABE * 100)} %): `
+    + zeilen.map(([id, a]) => `${id} ${a} %`).join(' · '));
+}
 /* Die Kontinentkarte zeigt ALLE Laender des Kontinents als Umgebung (G8),
  * nicht nur die Ziele - sonst kann man durch Ausschluss raten.
  *

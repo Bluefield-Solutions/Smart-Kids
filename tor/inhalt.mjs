@@ -1225,6 +1225,63 @@ console.log(`    ${ankerGeprueft} Anker geprüft — alle gespielten Gebiete, `
   + `davon ${mitLoch} mit Loch im größten Teil; `
   + `${ankerDraussen} außerhalb, ${ankerFehlt} fehlen`);
 
+/* DER RAHMEN SITZT AUF DEM GESPIELTEN (B20).
+ *
+ * Eine Karte wird nicht dadurch falsch, dass sie zuviel zeigt - sie wird
+ * nur klein. Genau deshalb ist das hier eine Zusage und kein Blick: bis
+ * I26 rahmte `bauen.mjs` auf die ROHE Geometrie des Kontinents, und
+ * Nordamerika zeigte den gespielten Teil auf 49 % des Bildes. Rot war
+ * nichts, gemeldet hat es niemand, gesehen hat es erst jemand, als
+ * Russland grau wurde.
+ *
+ * Gemessen wird der Rahmen der gespielten Laender gegen das Sichtfeld,
+ * das im Buendel steht - also am ERGEBNIS des Baus und nicht an seiner
+ * Rechnung (Regel 7). Die Grenze ist dieselbe, aus der die Zugabe
+ * abgeleitet wurde: drei Viertel. Sie ist anteilig und gilt damit auch
+ * fuer die neunte Karte (Regel 2).
+ *
+ * Nach OBEN steht keine Grenze: eine Karte darf ihren gespielten Teil
+ * randlos zeigen, wenn die Umgebung ohnehin nicht weiter reicht
+ * (Suedamerika mit 97 %). Was fehlt, faellt an anderer Stelle auf - die
+ * Umgebung selbst hat ihre eigene Zusage. */
+{
+  const RAHMEN_MIN = 0.75;
+  /* Der Kasten wird HIER gerechnet und nicht aus `geo-backen.mjs`
+     geholt, aus dem die gemessene Zahl stammt. Vier Zeilen, und dafuer
+     haengt das Soll nicht am Gemessenen (Regel 14). */
+  const kastenUm = (pfade) => {
+    const xs = [], ys = [];
+    for (const p of pfade) {
+      const m = p.match(/-?\d+\.?\d*/g).map(Number);
+      for (let i = 0; i < m.length; i += 2) { xs.push(m[i]); ys.push(m[i + 1]); }
+    }
+    return { w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  };
+  const anteile = [];
+  for (const [karte] of Object.entries(KARTEN_GROB)) {
+    const datei = new URL(`../dist/daten/laender-${karte}.json`, import.meta.url);
+    if (!fs.existsSync(datei)) { pruefe(false, `keine Karte „${karte}"`); continue; }
+    const j = JSON.parse(fs.readFileSync(datei, 'utf8'));
+    const ziele = (j.laender || []).filter(l => l.rang);
+    if (!ziele.length || !j.vbL) continue;
+    const r = kastenUm(ziele.map(l => l.pfad));
+    const [, , w, h] = j.vbL.split(' ').map(Number);
+    if (!(w > 0 && h > 0)) { pruefe(false, `„${karte}": das Sichtfeld ist leer (${j.vbL})`); continue; }
+    anteile.push([karte, (r.w * r.h) / (w * h)]);
+  }
+  for (const [karte, a] of anteile) pruefe(a >= RAHMEN_MIN,
+    `„${karte}": der gespielte Teil füllt nur ${(a * 100).toFixed(0)} % des Kartenbildes `
+    + `(verlangt ${RAHMEN_MIN * 100} %) — der Rahmen sitzt auf der rohen Geometrie des `
+    + 'Kontinents statt auf dem, wonach die Ebene fragt, und das Kind sucht in einem Bild, '
+    + 'das zur Hälfte Rand ist');
+  if (anteile.length) {
+    const schlecht = anteile.reduce((m, x) => x[1] < m[1] ? x : m);
+    console.log(`    ${anteile.length} Kartenrahmen: der gespielte Teil füllt mindestens `
+      + `${(schlecht[1] * 100).toFixed(0)} % des Bildes („${schlecht[0]}", verlangt `
+      + `${RAHMEN_MIN * 100} %)`);
+  }
+}
+
 // Nadeln: Schnitte ohne Flaeche.
 //
 // Natural Earth speichert Antarktika fuer eine rechteckige Weltkarte. Der

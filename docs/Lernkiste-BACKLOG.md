@@ -6941,6 +6941,18 @@ die Spaltenzahl entscheidet dort auch über die Namenslänge, und die hat
 in dieser Runde schon einmal acht Auslieferungen gekostet.
 
 ## B20 · Die Europakarte ist auf den Kontinent gerahmt, nicht auf das Gespielte
+**Geschlossen in I35.** Gerahmt wird jetzt der gespielte Teil, mit einer
+Zugabe von 6 % seiner längeren Seite und geschnitten am rohen Rahmen.
+Der gespielte Anteil des Bildes steigt von 49–97 % auf 76–97 %;
+Nordamerika gewinnt am meisten (49 → 80 %), Mittelamerika (55 → 78),
+Südosteuropa (56 → 76), Europa (74 → 86). Die Zugabe ist nicht geraten,
+sondern die größte, bei der jede Karte noch über drei Vierteln liegt —
+bei 7 % fällt Südosteuropa auf 73 %. `topologie` hält die drei Viertel
+als Zusage, zwei Gegenproben halten sie am Leben.
+
+Der ursprüngliche Befund, zur Nachvollziehbarkeit:
+
+
 
 Aufgefallen beim Ansehen der Vorbilder nach I26. Russland liegt jetzt als
 Umgebung auf der Karte — grau, richtig so —, aber der Rahmen ist
