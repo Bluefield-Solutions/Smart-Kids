@@ -42,7 +42,7 @@ const KARTEN_NAME = Object.fromEntries(
 import { LAENDER_SUEDAMERIKA_GROB } from '../src/geo/laender-suedamerika.grob.js';
 import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 import { polDerUnzugaenglichkeit } from '../tools/geo-backen.mjs';
-import { ALLE as KETTE, OHNE_BROWSER, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
+import { ALLE as KETTE, OHNE_BROWSER, MIT_BROWSER, BETRIFFT, betroffeneTore } from './kette-liste.mjs';
 import * as EN from '../src/inhalt/englisch.js';
 import * as TI from '../src/inhalt/tiere.js';
 import * as FL from '../src/inhalt/flaggen.js';
@@ -2099,7 +2099,9 @@ if (!fs.existsSync(ANWEISUNG)) {
    * nimmt, wäre keine Abkürzung, sondern das Ende der Torkette.
    *
    * Drei Zusagen werden hier festgehalten:
-   *   1. Die Auslieferung fährt weiterhin die VOLLE Kette.
+   *   1. Die Auslieferung fährt die Kette (`npm run tor:runner`) - seit P20
+   *      im schnellen Gang, also OHNE die Browsertore. Was sie damit nicht
+   *      mehr sieht, steht in CLAUDE.md; die Prüfung darunter hält es fest.
    *   2. Die Vorschau läuft nicht auf `main`.
    *   3. Was sie NICHT prüft, steht in ihr drin - namentlich, jedes Tor.
    *
@@ -2114,7 +2116,35 @@ if (!fs.existsSync(ANWEISUNG)) {
     const v = fs.readFileSync(VORS, 'utf8');
     const a = fs.existsSync(AUSL) ? fs.readFileSync(AUSL, 'utf8') : '';
     pruefe(/npm run tor:runner/.test(a),
-      `${AUSL} fährt nicht mehr die volle Kette (\`npm run tor:runner\`)`);
+      `${AUSL} fährt die Kette nicht mehr (\`npm run tor:runner\`)`);
+
+    /* WAS DER SCHNELLE GANG NICHT SIEHT, MUSS DASTEHEN (P20).
+     *
+     * Seit der schnelle Gang der Standard ist, prüft ein gewöhnlicher Lauf
+     * - und damit auch die Auslieferung - acht Tore nicht mehr. Das ist
+     * eine Entscheidung und kein Versehen; gefährlich wird sie in dem
+     * Augenblick, in dem jemand sie nicht mehr weiß.
+     *
+     * Dieselbe Bauart wie bei der Vorschau, und aus demselben Grund: eine
+     * Abkürzung, die sich nicht nennt, ist keine Abkürzung mehr, sondern
+     * eine Lücke. Kommt ein Browsertor dazu, fährt der schnelle Gang es
+     * nicht und verschweigt es - genau das fängt diese Zeile.
+     *
+     * Geprüft wird gegen `kette-liste.mjs`, nicht gegen eine Liste hier:
+     * eine zweite Liste veraltet einmal (Regel 6). */
+    const schnellFehlt = [...MIT_BROWSER.map(t => t.name), 'vielfalt'];
+    const stelle = text.match(/Was der schnelle Gang NICHT sieht[\s\S]{0,400}/);
+    if (!stelle) fehler.push(`${ANWEISUNG} sagt nicht, was der schnelle Gang nicht sieht `
+      + '— dann ist die Abkürzung eine Lücke (Absatz „Was der schnelle Gang NICHT sieht")');
+    else {
+      const stumm = schnellFehlt.filter(n => !stelle[0].includes(`\`${n}\``));
+      pruefe(!stumm.length, `${ANWEISUNG} verschweigt ${stumm.length} Tore, die der `
+        + `schnelle Gang nicht fährt: ${stumm.join(', ')} — wer einen grünen Lauf sieht, `
+        + 'hält sie für geprüft');
+      if (!stumm.length)
+        console.log(`    Der schnelle Gang lässt ${schnellFehlt.length} Tore aus, `
+          + 'alle in CLAUDE.md genannt');
+    }
     pruefe(!/branches:\s*\[[^\]]*\bmain\b/.test(v),
       `${VORS} läuft auf \`main\` — dann geht Ungeprüftes dorthin, wo die Kinder spielen`);
 

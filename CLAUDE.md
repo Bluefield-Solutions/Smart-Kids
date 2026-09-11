@@ -28,13 +28,21 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 
 | Bahn | Wann | Dauer | Was |
 |---|---|---|---|
-| **`npm run tor -- --betroffen`** | bei **jeder** Änderung | **14 s bis 200 s**, je nachdem, was `git` meldet | alle billigen Tore plus die Browsertore, die von den geänderten Dateien überhaupt erreicht werden können |
-| `npm run tor` | **einmal** je Runde, vor dem Einchecken | **~3 min** (gemessen 176,6 · 179,6 · 182,4 · 198,6 · 204,0 s am 04.09.) | die volle Kette, alle Größen, alle Bildschirme |
-| Runner, bei jedem Push | automatisch | 3–4 min, ohne dich | dieselbe Kette ohne `ansicht` — und nur bei Grün geht etwas nach `/` |
-| Runner, nachts um 04:00 | automatisch | **~35 min**, ohne dich | die volle Kette **und** alle 378 Gegenproben, 6 nebeneinander |
+| **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
+| `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
+| `npm run tor:voll` | **wenn Stephan es sagt** | **~12 min** (gemessen 749 s am 11.09., 4 Kerne) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 494 Gegenproben. Läuft sonst nirgends mehr |
+| Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
-**Die Regel: du fährst `--betroffen`, einmal je Runde die volle Kette, den
-Rest fährt der Runner.**
+**Die Regel seit P20: der schnelle Gang ist der Standard. Die volle Kette und
+die Gegenproben laufen auf Zuruf, nicht von selbst.** Wenn ein voller Lauf
+fällig wäre, schlage ich ihn vor — entschieden wird er nicht von einem Tor.
+
+**Was der schnelle Gang NICHT sieht**, namentlich: `smoke`, `passt`,
+`ansicht`, `ziehen`, `lesbarkeit`, `pwa`, `tonleiter`, `vielfalt`. Also
+alles, was misst, ob man es **spielen** kann. Ein grüner schneller Lauf sagt:
+der Inhalt stimmt, die Datei baut, die Marken sitzen. Mehr nicht — und der
+Lauf sagt es selbst, in seiner Kopfzeile und unter seinem Ergebnis.
 
 *Die eine Ausnahme, eng gefasst:* berührt eine Runde **ausschließlich**
 `docs/`, `CLAUDE.md`, `README.md` oder `tor/proben-*`, dann ist
@@ -74,11 +82,19 @@ egal was sich geändert hat, ist genau der Schalter, vor dem
 for i in 0 1 2; do node tor/ansicht.mjs --teil=$i/3 & done; wait
 ```
 
-**Die Gegenproben laufen nachts.** Sie prüfen die TORE, nicht die App, und
-sie dauern zwanzig Minuten. `rhythmus` stand deshalb bis hierher vorn in der
-Kette und verlangte, dass kein Nachweis älter als drei **Runden am Code**
-ist — was in einer einzigen Sitzung dreimal einen vollen Lauf mitten in der
-Arbeit ausgelöst hat. Die Frist ist richtig; falsch war, **wer sie bezahlt**.
+**Die Gegenproben laufen gar nicht mehr von selbst (P20).** Sie prüfen die
+TORE, nicht die App, und alle 494 kosten auf diesem Rechner zwei bis vier
+Stunden. `rhythmus` stand vorn in der Kette und hat den Lauf erzwungen —
+genau so, wie es gedacht war, und genau das war die Bremse. Der nächtliche
+Lauf auf dem Runner ist abgeschaltet, `rhythmus` ist aus der Kette heraus.
+
+**Geschrieben werden sie weiter.** Jede neue Zusage bekommt ihre Gegenprobe;
+das kostet zwei Minuten und hält die Liste vollständig. Gefahren werden sie
+auf Zuruf — `npm run proben`, oder mit Namen für eine einzelne.
+
+Was das kostet, steht als **B23** im Rückstandsverzeichnis. Der Absatz
+darunter ist die Geschichte davor und bleibt stehen, weil die Messungen
+darin gelten.
 
 Und falsch war auch die **Größe**: ein Commit ist kein Maß für Veränderung.
 Nach einer Arbeitssitzung stand das Tor auf 47 Runden Rückstand, obwohl jede
@@ -109,11 +125,13 @@ was die drei davor gefunden hätten.
 ## Befehle
 
 ```
+npm run tor        DER SCHNELLE GANG und die normale Runde: rund 30 s, alle
+                   Tore ohne Browser. Er sagt selbst, was er nicht sieht.
+npm run tor:voll   die ganze Kette, rund 12 min auf vier Kernen. Nur auf
+                   Zuruf — sie gibt frei, was der schnelle Gang offenlässt.
 npm run tor -- --betroffen
-                   DIE NORMALE RUNDE. 14 s bis 200 s. Siehe oben.
-npm run tor        die ganze Kette, rund 3 min. Der Runner fährt sie ohnehin
-                   bei jedem Push; hier nur, wenn du sie vorher sehen
-                   willst. Sie schreibt seit Q40 jeden Lauf VOLLSTÄNDIG
+                   dazu die Browsertore, die von den geänderten Dateien
+                   erreicht werden können. 14 s bis 200 s. Sie schreibt seit Q40 jeden Lauf VOLLSTÄNDIG
                    nach `.kette/letzter.log`, einen roten zusätzlich in
                    eine eigene Datei mit Zeitstempel (die letzten fünf
                    bleiben). Der Anlass: ein Lauf war rot, der nächste
@@ -144,16 +162,16 @@ npm run korpus     der Weg zur eingefrorenen Hälfte des Sprachkorpus.
                    liegt Handarbeit, und die ist der Punkt: das Urteil darf
                    NICHT aus `ergebnis` kommen — das ist die Entscheidung
                    des Abgleichs, den der Korpus prüfen soll.
-npm run rhythmus   wie alt die Nachweise sind. Steht seit Q39e wieder VORN
-                   in der Kette und kostet Millisekunden. Der nächtliche
-                   Lauf hält 257 der 270 frisch — die anderen dreizehn
-                   (zwölf an `ansicht`, einer an der Schriftmessung in
-                   `passt`) entstehen nur hier, und dort werden sie
-                   genannt statt angemahnt. Sonst stellte die Frist für
-                   sie niemand.
-npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen.
-                   Läuft nachts auf dem Runner; hier nur, wenn du ein Tor
-                   geändert hast. Sechs Arbeiter, GEWICHTET verteilt: jede
+npm run rhythmus   wie alt die Nachweise sind. Steht seit P20 NICHT mehr in
+                   der Kette und macht nichts mehr rot — es ist eine
+                   Auskunft. Wer wissen will, ob ein voller Probenlauf
+                   fällig wäre, fragt hier; entschieden wird es von
+                   Stephan.
+npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen. Läuft
+                   seit P20 NIRGENDS mehr von selbst — weder nachts auf
+                   dem Runner noch erzwungen durch eine Frist. Nur auf
+                   Zuruf, und für eine einzelne mit ihrem Namen als
+                   Argument. Sechs Arbeiter, GEWICHTET verteilt: jede
                    Probe trägt ihre gemessene Dauer im Stand, und der Läufer
                    packt danach (`-- --arbeiter=N` setzt die Zahl).
                    Vorher reihum und 39 min — dabei lief in den letzten
@@ -263,7 +281,7 @@ npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
                    einmal und zeichnet nichts.
 ```
 
-Kette: `rhythmus` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
+Kette: `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `inhalt` · `nachbarn` · `groesser` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
 `schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` →

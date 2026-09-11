@@ -308,10 +308,29 @@ export const PROBEN = [
 
   { n:'CLAUDE.md verschweigt ein Tor der Kette', tor:'inhalt', deckt:'doku',
     datei:'CLAUDE.md',
-    such:'`rhythmus` → `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
-    ersatz:'`rhythmus` → `vergleich` → `bauen` →',
-    an:{ datei:'CLAUDE.md', fehlt:'`rhythmus` → `regeln`' },
+    such:'`regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →\n`gleichlauf` → `bauen` →',
+    ersatz:'`regeln` → `vergleich` → `bauen` →',
+    an:{ datei:'CLAUDE.md', fehlt:'`regeln` → `doppelt`' },
     sagt:'Tore der Kette nicht' },
+
+  /* P20: der schnelle Gang verschweigt, was er nicht faehrt.
+   *
+   * Dieselbe Bauart wie bei der Vorschau darunter und aus demselben
+   * Grund. Seit der schnelle Gang der Standard ist, prueft ein
+   * gewoehnlicher Lauf acht Tore nicht - das ist eine Entscheidung und
+   * kein Versehen. Gefaehrlich wird sie in dem Augenblick, in dem
+   * jemand sie nicht mehr weiss.
+   *
+   * Der Eingriff nimmt EIN Tor aus dem Absatz in CLAUDE.md. Nicht die
+   * Ueberschrift: dann faele der andere Zweig („sagt nicht, was der
+   * schnelle Gang nicht sieht"), und die Probe bewiese die falsche
+   * Haelfte. */
+  { n:'der schnelle Gang verschweigt ein Tor, das er nicht faehrt', tor:'inhalt',
+    deckt:'doku', datei:'CLAUDE.md',
+    such:'`ansicht`, `ziehen`, `lesbarkeit`, `pwa`, `tonleiter`, `vielfalt`',
+    ersatz:'`ansicht`, `ziehen`, `lesbarkeit`, `pwa`, `tonleiter`',
+    an:{ datei:'CLAUDE.md', fehlt:'`tonleiter`, `vielfalt`' },
+    sagt:'die der schnelle Gang nicht fährt' },
 
   // Die Vorschau verschweigt ein Tor, das sie nicht faehrt. Der gefaehrlichste
   // Fall an der ganzen Abkuerzung: wer eine Vorschau ansieht, in der `smoke`

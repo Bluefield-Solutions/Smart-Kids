@@ -51,6 +51,36 @@ import { mitZeit, s, rot, gruen, grau } from './laeufer.mjs';
 const PROBE = process.env.SMARTKIDS_KETTE_PROBE === '1';
 if (PROBE) process.env.SMARTKIDS_OHNE_ANSICHT = '1';
 
+/* ZWEI GAENGE (P20).
+ *
+ * Bis hierher fuhr `npm run tor` immer alles: zwoelf billige Tore in 26
+ * Sekunden und danach vier Browsertore in zwoelf Minuten. Gemessen am
+ * Lauf vom 11.09.: 26 s gegen 723 s, also 96 % der Zeit in vier Toren.
+ *
+ * Wer eine Anforderung stellt und kurz nachsehen will, wartet damit
+ * zwoelf Minuten auf jede Zeile - und auf dem Runner noch einmal
+ * neunzehn, bis es auf dem Telefon steht. Das ist die Bremse, um die es
+ * geht, und der Nutzer hat entschieden: der SCHNELLE Gang ist der
+ * Standard, der volle laeuft auf Zuruf.
+ *
+ * `--voll` nimmt kein Argument, aus demselben Grund wie `--betroffen`
+ * und `SMARTKIDS_KETTE_PROBE`: ein Schalter, mit dem man sich Tore
+ * aussuchen kann, ist eine Art, die Kette still abzuschalten (Regel 9).
+ * Man kann hier nur das Ganze oder das Billige, und welches von beiden
+ * gelaufen ist, steht in jedem Lauf laut dabei.
+ *
+ * WAS DER SCHNELLE GANG NICHT SIEHT, namentlich und nicht kleingedruckt:
+ * `smoke` (spielt die App wirklich durch), `passt` (laeuft etwas ueber
+ * den Rand), `ansicht` (Bildvergleich), `ziehen` (Karte ziehen und
+ * zoomen), `lesbarkeit` (Kontrast), `pwa` (startet ohne Netz),
+ * `tonleiter` (Bildanteil im Buch) und `vielfalt` (wieviele Runden
+ * Vorrat jede Ebene traegt - es misst im Browser).
+ *
+ * Ein schneller Lauf gibt also nichts frei. Er sagt: der Inhalt stimmt,
+ * die Datei baut, die Marken sitzen. Ob man es SPIELEN kann, sagt er
+ * nicht. */
+const VOLL = process.argv.includes('--voll');
+
 /* `--betroffen`: nur die Browsertore, die von den geaenderten Dateien
  * ueberhaupt erreicht werden koennen.
  *
@@ -188,7 +218,12 @@ console.log(PROBE
   ? `\n  ${rot('Torkette — KURZE Fassung (SMARTKIDS_KETTE_PROBE=1)')}\n`
     + '  Nur `pwa`, `lesbarkeit` und `ansicht` (übersprungen), nur für die '
     + 'Gegenprobe. Kein grüner Lauf.\n'
-  : '\n  Torkette — die volle Runde\n');
+  : VOLL ? '\n  Torkette — die volle Runde\n'
+  : `\n  Torkette — ${rot('der schnelle Gang')}\n`
+    + '  Ohne Browser: es fehlen `smoke`, `passt`, `ansicht`, `ziehen`, '
+    + '`lesbarkeit`,\n  `pwa`, `tonleiter` und `vielfalt` — also alles, '
+    + 'was misst, ob man es SPIELEN kann.\n'
+    + '  Die volle Runde: `npm run tor:voll`.\n');
 
 /* Was ausgelassen wird, steht OBEN und nicht in einer Fussnote.
  *
@@ -224,7 +259,12 @@ for (const t of (PROBE ? [] : OHNE_BROWSER)) {
   }
   melde({ ...letzte, name: BAU.name, ms });
 }
-for (const t of (PROBE ? [] : NACH_DEM_BAU)) {
+/* `vielfalt` steht bei den Toren nach dem Bau und braucht trotzdem einen
+   Browser - es misst den Vorrat im laufenden Spiel. Im schnellen Gang
+   faellt es deshalb mit den Browsertoren weg, nicht mit den billigen. */
+const NACH_DEM_BAU_JETZT = VOLL ? NACH_DEM_BAU
+  : NACH_DEM_BAU.filter(t => t.name !== 'vielfalt');
+for (const t of (PROBE ? [] : NACH_DEM_BAU_JETZT)) {
   const r = await mitZeit(t.name, t.datei, t.args || []);
   if (r.code !== 0) abbruch(r);
   melde(r);
@@ -343,7 +383,7 @@ const BREITE = +(process.env.SMARTKIDS_BECKEN
 const arbeit = [];
 const KURZ = ['pwa', 'lesbarkeit', 'ansicht'];
 for (const t of (PROBE ? MIT_BROWSER.filter(t => KURZ.includes(t.name))
-                       : MIT_BROWSER.filter(t => dran(t.name)))) {
+                       : VOLL ? MIT_BROWSER.filter(t => dran(t.name)) : [])) {
   if (!t.teile) { arbeit.push({ name: t.name, datei: t.datei, args: [], ms: t.ms }); continue; }
   for (let i = 0; i < t.teile; i++)
     arbeit.push({ name: `${t.name} (${i + 1}/${t.teile})`, datei: t.datei,
@@ -351,7 +391,9 @@ for (const t of (PROBE ? MIT_BROWSER.filter(t => KURZ.includes(t.name))
 }
 arbeit.sort((a, b) => b.ms - a.ms);
 
-console.log(grau(`\n    ${arbeit.length} Browserläufe, ${BREITE} nebeneinander `
+/* Im schnellen Gang gibt es keine Browserlaeufe - dann steht hier auch
+   keine Zeile, die von null erzaehlt. */
+if (arbeit.length) console.log(grau(`\n    ${arbeit.length} Browserläufe, ${BREITE} nebeneinander `
   + `(${KERNE} Kerne) — längster zuerst\n`));
 
 const a3 = Date.now();
@@ -372,8 +414,9 @@ const ergebnisse = [];
 for (const w of arbeit) melde(ergebnisse.find(e => e.name === w.name));
 
 const summe = ergebnisse.reduce((n, e) => n + e.ms, 0);
-console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(24)} ${s(Date.now() - a3)} statt `
-  + `${s(summe)} nacheinander`);
+if (arbeit.length)
+  console.log(`    ${''.padEnd(6)}${'nebeneinander'.padEnd(24)} ${s(Date.now() - a3)} statt `
+    + `${s(summe)} nacheinander`);
 
 /* Die Teile eines geteilten Tores muessen ZUSAMMEN alles abdecken.
  *
@@ -499,7 +542,7 @@ if (befunde.length) {
   const wo = protokollSchreiben(false);
   console.log(`\n  Kette ROT nach ${s(Date.now() - t0)} — `
     + `${befunde.length} von `
-    + `${(PROBE ? 1 : OHNE_BROWSER.length + 1 + NACH_DEM_BAU.length) + arbeit.length} `
+    + `${(PROBE ? 1 : OHNE_BROWSER.length + 1 + NACH_DEM_BAU_JETZT.length) + arbeit.length} `
     + 'Läufen.');
   /* Ein roter Lauf OHNE Protokoll ist der Fall, den es nicht geben darf -
    * dann steht der Grund nur im Fenster, und das ist beim naechsten Lauf
@@ -514,4 +557,6 @@ console.log(`  Kette grün nach ${s(Date.now() - t0)}.`);
 console.log(BETROFFEN
   ? `  ${rot('Aber nur die betroffenen Tore.')} Freigegeben ist damit nichts — `
     + 'vor dem Einchecken `npm run tor`.\n'
-  : '');
+  : VOLL ? ''
+  : `  ${rot('Im schnellen Gang.')} Der Inhalt stimmt und die Datei baut; ob man `
+    + 'es spielen kann,\n  hat niemand nachgesehen — dafür `npm run tor:voll`.\n');

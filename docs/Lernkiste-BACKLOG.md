@@ -7043,3 +7043,55 @@ Vier davon sind am Text nicht zu sehen, und genau deshalb ist der volle
 Probenlauf durch keine Abkürzung zu ersetzen. Was er meldet, ist nicht
 „das Tor ist kaputt", sondern „diese Prüfung hat aufgehört, etwas zu
 beweisen" — und das passiert leise.
+
+## B23 · Was der schnelle Gang kostet — die Rechnung dazu
+
+Seit P20 ist der schnelle Gang der Standard und die Gegenproben laufen
+nur noch auf Zuruf. Das ist Stephans Entscheidung, und sie ist richtig:
+ein Werkzeug, das zwei bis vier Stunden braucht, um eine Zeile
+abzusichern, wird nicht benutzt, sondern umgangen. Was es kostet, steht
+trotzdem hier — damit es niemand später für ein Versehen hält.
+
+**Was ein gewöhnlicher Lauf nicht mehr sieht.** Acht Tore: `smoke`
+(spielt die App wirklich durch — 19 Abschnitte, vier Profile), `passt`
+(läuft etwas über den Rand, sieben Größen), `ansicht` (76 Bildvergleiche),
+`ziehen`, `lesbarkeit`, `pwa`, `tonleiter`, `vielfalt`. Zusammen 96 % der
+alten Laufzeit — und alles, was die Frage beantwortet, ob man es
+**spielen** kann.
+
+**Was die Gegenproben nicht mehr beweisen.** 495 stehende Proben, die
+täglich nachwiesen, dass jedes Tor noch anschlägt. Sie werden weiter
+geschrieben, aber nicht gefahren; ihr Nachweis altert. Was sie gefunden
+haben, als sie zuletzt liefen (I30–I34): zwei Tore, die drei Fassungen
+lang rot standen, ohne dass eine Kette es sagte; sechs Proben, die still
+aufgehört hatten, etwas zu beweisen; und eine undichte Stelle in der
+`?flott`-Zusage, die jedes Bildtor zu Recht rot machte.
+
+**Die Gegenrechnung, und deshalb ist die Entscheidung richtig:** Alle
+fünf Befunde kamen aus EINEM Lauf, und dieser Lauf hat einen ganzen
+Arbeitstag gekostet. In derselben Zeit sind in dieser Sitzung zwei
+inhaltliche Runden fertig geworden. Ein Werkzeug muss sich gegen das
+rechnen, was man stattdessen getan hätte.
+
+**Was den Ausfall teilweise auffängt**, ohne etwas zu kosten:
+
+- `inhalt` prüft bei **jedem** Lauf in Millisekunden, ob jede Gegenprobe
+  ihren Suchtext noch findet. Fünf der sieben stummen Proben, die der
+  erste volle Lauf fand, hätten genau daran angeschlagen — und in dieser
+  Runde hat es sofort die Probe erwischt, deren Anker an der Kettenzeile
+  hing.
+- `doku` hält fest, dass CLAUDE.md die acht ausgelassenen Tore **namentlich**
+  nennt. Eine Abkürzung, die sich nicht nennt, ist keine Abkürzung mehr.
+- Der Lauf sagt in seiner Kopfzeile und unter seinem Ergebnis, in welchem
+  Gang er lief. Kein grüner Lauf kann mehr behaupten, er habe alles
+  geprüft.
+
+**Wann ein voller Lauf wieder fällig ist** — ich schlage ihn vor, wenn
+einer dieser Fälle eintritt, und Stephan entscheidet:
+
+1. vor einer Auslieferung, auf die es ankommt (Ferienbeginn, Schulanfang),
+2. nach einer Runde, die Layout, Bildschirme oder Vorbilder anfasst,
+3. wenn `npm run rhythmus` sagt, dass die Nachweise älter als zwei Wochen
+   sind,
+4. wenn mir bei einer Änderung unwohl ist. Das ist keine Messgröße,
+   sondern der ehrlichste Auslöser von den vieren.

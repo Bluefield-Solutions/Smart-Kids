@@ -36,23 +36,25 @@
 
 /** Die billigen Tore. Zusammen unter zehn Sekunden, alle ohne Browser. */
 export const OHNE_BROWSER = [
-  /* `rhythmus` ist zurueck in der Kette (Q39e).
+  /* `rhythmus` IST HIER RAUS (P20) - und diesmal nicht, weil es falsch
+   * zaehlte, sondern weil die Frist selbst weg ist.
    *
-   * Es stand hier schon einmal und ist ausgezogen, weil es in RUNDEN AM
-   * CODE zaehlte: nach einer Arbeitssitzung stand es auf 47 Runden
-   * Rueckstand und loeste mitten in der Arbeit einen 25-Minuten-Lauf aus.
-   * Der Grund ist weg - es zaehlt seit dem Umbau in TAGEN, und der Runner
-   * haelt jede Nacht 257 der 270 Nachweise frisch.
+   * Es stand hier und schlug an, wenn der letzte volle Probenlauf mehr
+   * als drei Tage zurueckliegt. Das hat getan, was es sollte: es hat den
+   * Lauf erzwungen. Nur kostet der Lauf auf diesem Rechner zwei bis vier
+   * Stunden, und der Nutzer will Anforderungen stellen und kurz
+   * nachsehen, nicht auf eine Nacht warten.
    *
-   * Zurueck muss es, weil die anderen dreizehn NUR HIER entstehen koennen:
-   * zwoelf an `ansicht`, einer an der Schriftmessung in `passt`. Der
-   * naechtliche Lauf laesst sie aus und darf sie deshalb auch nicht
-   * anmahnen (das Tor selbst haelt sich daran). Bliebe es nur dort, gaebe
-   * es niemanden, der die Frist fuer diese dreizehn ueberhaupt stellt -
-   * und eine Frist, die niemand stellt, ist keine.
+   * DIE ENTSCHEIDUNG IST SEINE, und sie ist ausdruecklich: die
+   * Gegenproben laufen nur noch, wenn er es sagt. Sie werden weiter
+   * GESCHRIEBEN - jede neue Zusage bekommt ihre Probe, das kostet zwei
+   * Minuten und haelt die Liste vollstaendig. Gefahren werden sie auf
+   * Zuruf.
    *
-   * Es kostet Millisekunden. */
-  { name: 'rhythmus',   datei: 'tor/rhythmus.mjs' },
+   * Was damit verlorengeht, steht in `docs/Lernkiste-BACKLOG.md` unter
+   * B23 - damit es niemand fuer ein Versehen haelt. `npm run rhythmus`
+   * gibt es weiter; wer wissen will, wie alt die Nachweise sind, fragt.
+   */
   { name: 'regeln',     datei: 'tor/regeln.mjs' },
   { name: 'doppelt',    datei: 'tor/doppelt.mjs' },
   { name: 'spielprobe', datei: 'tor/spielprobe.mjs' },

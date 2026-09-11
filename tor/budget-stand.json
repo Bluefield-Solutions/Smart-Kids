@@ -18,14 +18,14 @@
   },
   "gesehen": {
     "zeit": "2026-09-11",
-    "start": 580.9,
+    "start": 581.2,
     "geometrie": 27.7,
     "schrift": 51.7,
     "ebenen": {
       "laender-europa.json": 110.6,
       "laender-asien.json": 101,
       "laender-nordamerika.json": 75.3,
-      "laender-afrika.json": 71.3,
+      "laender-afrika.json": 71.2,
       "laender-suedamerika.json": 63.3,
       "deutschland.json": 56.6,
       "laender-suedosteuropa.json": 37.5,
