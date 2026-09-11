@@ -1659,6 +1659,36 @@ const EBENEN = [
   { id:'englisch:lesen', ueber:'Englisch', titel:'Lies das Wort', farbe:6,
     art:'englisch', wer:['lea'],
     wenn: () => Englisch.vorratLesen().length >= 4 },
+  /* DIE VIER THEMENGEBIETE DES LEHRPLANS (E14).
+   *
+   * Bis hierher hatte die Englischwelt sieben Ebenen nach FERTIGKEIT -
+   * hoeren, sagen, legen, bauen, lesen. Das ist richtig und war
+   * unvollstaendig: der Lehrplan ordnet den Stoff nach vier
+   * Themengebieten, und ein Kind, das gerade „Familie und Freunde" hat,
+   * konnte genau das hier nicht ueben.
+   *
+   * EINE Gruppenkachel und nicht vier einzelne: vier Kacheln mehr waeren
+   * in dieser Welt die Wand, die `passt` seit R2 huetet. Dieselbe
+   * Bauform wie bei Flaggen und Hauptstaedten, und aus demselben Grund.
+   *
+   * Es ist dieselbe Aufgabe wie „Hoeren und zeigen" - und trotzdem eine
+   * andere: die Ablenker kommen aus DEMSELBEN Thema. „apple" gegen
+   * bread, cheese und egg ist eine Vokabelfrage, „apple" gegen dog, shoe
+   * und clock eine Bildersuche. Eigene Kennung (`th:`), eigener
+   * Leitner-Stand; wer ein Wort im Durcheinander erkannt hat, hat es
+   * unter seinesgleichen noch nicht.
+   *
+   * `wenn`: mindestens zwoelf gezeichnete Woerter. Darunter waeren die
+   * drei Ablenker der letzten Aufgaben immer dieselben, und die Ebene
+   * fiele auf „welches hatten wir noch nicht?" zurueck. Gemessen sind es
+   * 22, 22, 15 und 25 - die vier stehen, und eine fuenfte kaeme von
+   * selbst dazu, wenn jemand ein Themengebiet ergaenzt. */
+  ...['4.1', '4.2', '4.3', '4.4'].map(nr => ({
+    id:`englisch:thema:${nr}`, ueber:'Englisch', titel:'Themen',
+    farbe: 1 + ['4.1','4.2','4.3','4.4'].indexOf(nr) * 2,
+    art:'englisch', gruppe:'enthemen', wer:['fiona','lea'],
+    wo: Englisch.themaTitel(nr),
+    wenn: () => Englisch.vorratThema(nr).length >= 12 })),
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *
@@ -2768,6 +2798,11 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      nicht gelesen. */
   if (art==='englisch' && kont==='lesen')
     return Englisch.vorratLesen();
+  /* Die vier Themengebiete des Lehrplans (E14). Der Teil hinter dem
+     Doppelpunkt traegt die Nummer - `englisch:thema:4.1` -, und damit
+     braucht es keine vier Zweige, sondern einen. */
+  if (art==='englisch' && kont.startsWith('thema:'))
+    return Englisch.vorratThema(kont.slice(6));
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein

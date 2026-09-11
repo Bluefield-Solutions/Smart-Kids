@@ -2630,6 +2630,53 @@ console.log('\n  Tor `englisch`');
       console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');
       process.exit(1);
     }
+    /* DIE THEMENZUORDNUNG (E14).
+     *
+     * Sie ist gesetzt und nicht amtlich - genau deshalb steht sie hier.
+     * Was eine Behoerde vorgibt, prueft man gegen ihre Datei; was man
+     * selbst entschieden hat, prueft man gegen seine eigene Zusage, und
+     * die lautet: jedes der 151 Woerter genau einmal, und jedes
+     * Themengebiet traegt genug gezeichnete Woerter fuer eine Ebene.
+     *
+     * Die zwoelf sind dieselbe Zahl wie in `wenn` bei den vier Ebenen -
+     * und sie steht hier NICHT noch einmal, sondern wird von dort
+     * gelesen waere schoener; sie steht in `spiel.js`, das dieses Tor
+     * nicht laedt. Also steht sie zweimal, und die Gegenprobe haelt
+     * beide zusammen: sie setzt die Zahl hier herunter und verlangt,
+     * dass das Tor es sagt. */
+    const THEMA_MIN = 12;
+    const themen = EN.THEMENGEBIETE.map(t => t.nr);
+    const doppelt = [], ohne = [];
+    for (const w of EN.WOERTER) {
+      const n = themen.filter(nr => (EN.THEMA_WOERTER[nr] || []).includes(w)).length;
+      if (n === 0) ohne.push(w);
+      if (n > 1) doppelt.push(w);
+    }
+    if (ohne.length) eng.push(`${ohne.length} Wörter tragen kein Themengebiet `
+      + `(${ohne.slice(0, 6).join(', ')}${ohne.length > 6 ? ' …' : ''}) — dann fehlen sie `
+      + 'in jeder Themenebene, und niemand sieht es');
+    if (doppelt.length) eng.push(`${doppelt.length} Wörter stehen in mehreren `
+      + `Themengebieten (${doppelt.join(', ')}) — dann kommen sie zweimal dran`);
+    const fremd = Object.keys(EN.THEMA_VON).filter(w => !EN.WOERTER.includes(w));
+    if (fremd.length) eng.push(`${fremd.length} Wörter der Thementafel stehen nicht im `
+      + `amtlichen Wortschatz: ${fremd.join(', ')}`);
+    const jeThema = themen.map(nr => [nr, EN.vorratThema(nr).length]);
+    const duenn = jeThema.filter(([, n]) => n < THEMA_MIN);
+    if (duenn.length) eng.push(`${duenn.length} Themengebiete haben zu wenig gezeichnete `
+      + `Wörter (${duenn.map(([nr, n]) => `${EN.themaTitel(nr)} ${n}`).join(', ')}, `
+      + `verlangt ${THEMA_MIN}) — dann stehen in den letzten Aufgaben immer dieselben `
+      + 'drei Ablenker daneben');
+    /* Und die Ablenker bleiben im Thema. Geprueft an JEDEM Gegenstand
+       jedes Themas - das ist die Zusage, die diese vier Ebenen von
+       „Hoeren und zeigen" unterscheidet. */
+    for (const nr of themen)
+      ablenkerPruefen(EN.vorratThema(nr), (t) => eng.push(t), (x, y) => y.thema !== x.thema
+        && `„${x.wort}" bekommt in „${EN.themaTitel(nr)}" einen Ablenker aus `
+           + `„${EN.themaTitel(y.thema)}" — dann ist es wieder eine Bildersuche`);
+    if (!ohne.length && !doppelt.length && !fremd.length && !duenn.length)
+      console.log(`    Themengebiete: ${EN.WOERTER.length} Wörter auf ${themen.length} `
+        + `verteilt (${jeThema.map(([nr, n]) => `${EN.themaTitel(nr)} ${
+            (EN.THEMA_WOERTER[nr] || []).length}/${n} gemalt`).join(' · ')})`);
     console.log(`    „Hören und zeigen" und „Sag es": ${vorrat.length} Gegenstände `
       + `(${EN.FARBEN.length} Farben, ${EN.ZAHLEN.length} Zahlen, ${gemalt} Zeichnungen), `
       + `jeder mit Bild und im amtlichen Wortschatz`);

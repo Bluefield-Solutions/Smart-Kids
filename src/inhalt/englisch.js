@@ -186,6 +186,104 @@ export const THEMENGEBIETE = [
   ] },
 ];
 
+/* ---------- Welches Wort zu welchem Themengebiet (E14) -------------------
+ *
+ * DIESE ZUORDNUNG IST NICHT AMTLICH, und das ist der wichtigste Satz
+ * hier. Der Wortschatz der Behoerde ist alphabetisch, die Redemittel sind
+ * thematisch, und dazwischen gibt es keine Bruecke: von den 151 Woertern
+ * kommen 60 in gar keinem Redemittel vor, 54 in genau einem, 37 in
+ * mehreren. Eine abgeleitete Zuordnung waere fuer zwei Drittel geraten.
+ *
+ * Also ist sie GESETZT, nicht abgeleitet - nach einer Regel, die man
+ * nachlesen und bestreiten kann:
+ *
+ *   1. Wo ein Wort in einem Redemittel vorkommt, gilt dessen Themengebiet.
+ *   2. Kommt es in mehreren vor, gilt das ERSTE - die Reihenfolge 4.1 bis
+ *      4.4 ist die des Lehrplans und damit die des Unterrichts. „black"
+ *      steht zuerst beim Haustier („It's black/..."), danach beim Buch;
+ *      es gehoert hier zu 4.1.
+ *   3. Kommt es in keinem vor (die 60), entscheidet die Sache: „apple"
+ *      ist Essen und damit 4.4, „rabbit" ein Tier und damit 4.1.
+ *
+ * Drei Faelle, bei denen ich anders entschieden habe, als die Regel es
+ * nahelegt - damit sie nicht als Fehler durchgehen:
+ *
+ *   „sports"   steht in 4.2 („I like German/English/sports") - als
+ *              SCHULFACH. Es bleibt dort, obwohl ein Kind zuerst an
+ *              Freizeit denkt; tennis, football, swim und ride stehen in
+ *              4.3 und tragen das Thema.
+ *   „hot/cold" stehen in keinem Redemittel. Sie sind hier 4.3, weil sie
+ *              im Unterricht am Wetter haengen, nicht am Einkauf.
+ *   „England/English" steht bei 4.4 und nicht bei der Person: „I'm from
+ *              Germany" ist 4.1, aber das Wort selbst begegnet einem Kind
+ *              am Etikett.
+ *
+ * Das Untertor `englisch` verlangt, dass jedes der 151 Woerter genau
+ * einmal hier steht. Eine Zuordnung, die man vergessen kann, waere in
+ * einem Jahr keine mehr.
+ */
+export const THEMA_WOERTER = {
+  '4.1': [
+    'a/an', 'and', 'be (am, are, is)', 'big', 'black', 'blue', 'boy',
+    'brother', 'brown', 'cat', 'chicken', 'dog', 'family', 'father', 'fish',
+    'friend', 'from', 'Germany/German', 'girl', 'green', 'grey', 'hamster',
+    'have/has (got)', 'haven’t/ hasn´t (got)', 'he', 'her', 'his', 'horse',
+    'house', 'how', 'I / I’d / I’m / I‘ve', 'it', 'Its', 'little', 'many',
+    'mother', 'mouse', 'my', 'name', 'no/not', 'old', 'orange', 'pet',
+    'pink', 'rabbit', 'red', 'room', 'she', 'sister', 'small', 'the',
+    'they', 'this', 'we', 'what', 'white', 'who', 'yellow', 'yes', 'you',
+    'your',
+  ],
+  '4.2': [
+    'about', 'at', 'behind', 'board', 'book', 'bye', 'can/can‘t', 'chair',
+    'class/classroom', 'come', 'dear', 'do/don‘t', 'fine', 'give', 'good',
+    'great', 'happy', 'hello', 'help', 'here', 'in', 'In front of', 'know',
+    'next to', 'o‘clock', 'okay/OK', 'on', 'pen/pencil', 'picture',
+    'please', 'put', 'rubber', 'sad', 'school/schoolbag', 'sorry', 'sports',
+    'take', 'teacher', 'thank(s)', 'there', 'time', 'to', 'under', 'very',
+    'welcome', 'where',
+  ],
+  '4.3': [
+    'bike', 'birthday', 'cold', 'football', 'go', 'Halloween', 'hobby',
+    'hot', 'like', 'Merry Christmas', 'morning', 'party', 'play', 'ride',
+    'swim', 'tennis', 'weekend', 'when',
+  ],
+  '4.4': [
+    'apple', 'bread', 'butter', 'cheese', 'chips', 'chocolate', 'colour',
+    'dress', 'drink', 'eat', 'egg', 'England/English', 'fruit', 'ham',
+    'jeans', 'much', 'plum', 'pullover', 'salad', 'shirt', 'shoes',
+    'strawberry', 'sweets', 'tea', 'tomato', 'water',
+  ],
+};
+
+/** Das Themengebiet eines Wortes - EINE Tafel, aus den vier Listen. */
+export const THEMA_VON = Object.fromEntries(
+  Object.entries(THEMA_WOERTER).flatMap(([nr, ws]) => ws.map(w => [w, nr])));
+
+/** Der Titel eines Themengebiets - aus THEMENGEBIETE, nicht noch einmal. */
+export const themaTitel = (nr) =>
+  (THEMENGEBIETE.find(t => t.nr === nr) || {}).titel || nr;
+
+/**
+ * Der Vorrat EINES Themengebiets (E14).
+ *
+ * Nur gezeichnete Woerter: die Ebene fragt „wo ist apple?" und zeigt vier
+ * Bilder. Ein Wort ohne Bild waere ein leerer Kasten, und das ist fuer
+ * Fiona keine Aufgabe - dieselbe Einschraenkung wie bei „Hoeren und
+ * zeigen", nur enger gezogen.
+ *
+ * DIE ABLENKER KOMMEN AUS DEMSELBEN THEMA, und das ist der ganze Gewinn
+ * gegenueber der ungeordneten Ebene: „apple" gegen bread, cheese und egg
+ * ist eine Vokabelfrage, „apple" gegen dog, shoe und clock ist eine
+ * Bildersuche. Das faellt `ablenkerFuer` zu, weil die Gegenstaende ihr
+ * Thema mittragen.
+ */
+export function vorratThema(nr){
+  return BILDER.filter(b => b.bild && THEMA_VON[b.wort] === nr).map(b => ({
+    id: `th:${nr}:${b.wort}`, name: b.wort, wort: b.wort,
+    sorte: 'bild', thema: nr, gebiet: b.gebiet, bild: b.bild }));
+}
+
 /* ---------- Was „Hoeren und zeigen" abfragt (E3) -------------------------
  *
  * Die App sagt ein englisches Wort, vier Bilder stehen da, das Kind tippt.
@@ -559,7 +657,12 @@ export function ablenkerFuer(ziel, wuerfel, wieviel = 3){
    * aus dem Hoervorrat. Ohne diese Zeile bekaeme ein Bild drei Farbflecke
    * daneben - und dann waere die Aufgabe „welches ist kein Fleck?" und
    * nicht „welches Bild heisst `cat`?". */
-  const topf = ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();
+  /* Traegt das Ziel ein Thema, kommen die Ablenker aus DIESEM Thema
+     (E14). Das ist kein Sonderfall neben den beiden darunter, sondern
+     eine Verschaerfung: „apple" gegen bread, cheese und egg ist eine
+     Vokabelfrage, „apple" gegen dog, shoe und clock eine Bildersuche. */
+  const topf = ziel.thema ? vorratThema(ziel.thema)
+    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();
   /* Gesiebt wird nach dem WORT und nicht nur nach der Kennung (E13).
      Seit „Hoeren und zeigen" dieselben Zeichnungen benutzt, gibt es
      dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -

@@ -7471,10 +7471,51 @@ export const PROBEN = [
    *    drei Farbflecke neben einem Apfel, und die Aufgabe waere „welches
    *    ist kein Fleck?" - ohne ein Wort Englisch zu loesen. Die Weiche ist
    *    eine Zeile, und sie kippt lautlos um. */
+  /* --- E14: die Themengebiete ---------------------------------------- *
+   *
+   * Drei Zusagen, drei Proben. Die Zuordnung ist GESETZT und nicht
+   * amtlich - genau deshalb braucht sie Proben: was eine Behoerde
+   * vorgibt, prueft man gegen ihre Datei, was man selbst entschieden
+   * hat, gegen seine eigene Zusage.
+   */
+  /* 1. Ein Wort faellt aus der Tafel. Dann fehlt es in jeder
+   *    Themenebene, und kein Bildschirm zeigt es an. */
+  { n:'ein Wort traegt kein Themengebiet mehr', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"'name', 'no/not', 'old',",
+    ersatz:"'name', 'old',",
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"'name', 'no/not', 'old'," },
+    sagt:'tragen kein Themengebiet' },
+
+  /* 2. Ein Wort steht in zweien. Dann kommt es zweimal dran, und die
+   *    Themen sind keine Einteilung mehr, sondern Ueberschriften. */
+  { n:'ein Wort steht in zwei Themengebieten', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"    'bike', 'birthday', 'cold',",
+    ersatz:"    'bike', 'birthday', 'apple', 'cold',",
+    an:{ datei:'src/inhalt/englisch.js', text:"'bike', 'birthday', 'apple', 'cold'," },
+    sagt:'stehen in mehreren' },
+
+  /* 3. Die Grenze faellt, unter der ein Themengebiet zu duenn ist.
+   *
+   *    Sie steht an ZWEI Stellen - hier im Tor und als `wenn` bei den
+   *    vier Ebenen in `spiel.js`, das dieses Tor nicht laedt. Zwei
+   *    Stellen fuer eine Zahl sind eine zuviel; diese Probe ist die
+   *    Klammer, die sie zusammenhaelt. */
+  { n:'ein Themengebiet darf beliebig duenn werden', tor:'inhalt',
+    deckt:'englisch', datei:'tor/inhalt.mjs',
+    such:'    const THEMA_MIN = 12;',
+    ersatz:'    const THEMA_MIN = 40;',
+    an:{ datei:'tor/inhalt.mjs', text:'const THEMA_MIN = 40;' },
+    sagt:'zu wenig gezeichnete' },
+
   { n:'die Ablenker beim Lesen kommen aus dem Hörvorrat', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  const topf = ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
-    ersatz:"  const topf = vorratHoeren(); // Anker: ziel.sorte === 'bild' ? vorratLesen()",
+    such:"  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
+      + "    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
+    ersatz:"  const topf = vorratHoeren();\n"
+      + "  // Anker:  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
+      + "  // Anker:    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
     an:{ datei:'src/inhalt/englisch.js', text:'const topf = vorratHoeren();' },
     sagt:'Ablenker statt drei' },
 
