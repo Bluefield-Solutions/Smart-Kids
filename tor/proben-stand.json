@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-10",
+  "zeit": "2026-09-11",
   "tore": [
     "anker",
     "ansicht",
@@ -1181,7 +1181,7 @@
     "die Umgebung ist unsichtbar, das Tor misst ein leeres Bild": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
       "zeit": "2026-09-07",
-      "s": 33
+      "s": 30
     },
     "der langsamere Bildschirmbau räumt den schnelleren weg": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1206,7 +1206,7 @@
     "die Umgebung reicht auf keiner Karte mehr ins Randband": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
       "zeit": "2026-09-07",
-      "s": 34
+      "s": 30
     },
     "die Karte wechselt die Farbe": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1906,7 +1906,7 @@
     "die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung": {
       "commit": "64759a462a3855458481b8594d0e54db125a207a",
       "zeit": "2026-09-07",
-      "s": 35
+      "s": 29
     },
     "ohne englische Stimme springt die deutsche ein": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",

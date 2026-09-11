@@ -1103,32 +1103,57 @@ if (laeuft('rand')) {
      * sie abgeschaltet, und die Zahl blieb dieselbe. Das ist der ganze
      * Befund.
      *
-     * Der Grund ist die HELLSTE Stelle im Bild, nicht die haeufigste.
-     * Die haeufigste war der erste Anlauf und ging auf Suedosteuropa
-     * schief: dort deckt die Umgebung fast das ganze Feld, sie WAR die
-     * haeufigste Helligkeit, und „dunkler als der Grund" fand null
-     * Punkte. Eine Bezugsgroesse, die mit dem Gemessenen waechst, misst
-     * am Ende sich selbst (Regel 14). Die hellste Stelle ist immer der
-     * unbedeckte Grund - die Umgebung liegt mit 55 % Deckkraft darauf
-     * und ist damit sicher dunkler. Vier Stufen Abstand, damit die
-     * Kantenglaettung nicht mitzaehlt. */
-    let hell = 0, dunkelRand = 255, dunkelAll = 255, tinte = 0;
-    const hell1 = new Float64Array(bild.width * bild.height);
-    for (let y = 0; y < bild.height; y++) for (let x = 0; x < bild.width; x++) {
-      const n = bild.width * y + x, i = n << 2;
-      // Ueber Alpha hinweg auf Weiss rechnen: der Ausschnitt ist an den
-      // Ecken durchsichtig, und ein durchsichtiger Punkt ist Papier.
-      const a = bild.data[i + 3] / 255;
-      const l = (0.299 * bild.data[i] + 0.587 * bild.data[i + 1]
-               + 0.114 * bild.data[i + 2]) * a + 255 * (1 - a);
-      hell1[n] = l;
-      if (l > hell) hell = l;
-      if (l < dunkelAll) dunkelAll = l;
-      if (x < b1 || y < b1 || x >= bild.width - b1 || y >= bild.height - b1)
-        if (l < dunkelRand) dunkelRand = l;
+     * Gemessen wird MIT UND OHNE - und das ist keine Feinheit,
+     * sondern die einzige Fassung, die haelt. Zwei Anlaeufe davor
+     * haben es vorgefuehrt: gegen Weiss gezaehlt kam auf allen acht
+     * Karten 100,00 % heraus (gezaehlt wurde der Kartengrund), gegen
+     * die haeufigste Helligkeit fiel Suedosteuropa auf null (dort IST
+     * die Umgebung die haeufigste), und gegen die hellste Stelle kam
+     * wieder der Grund heraus - der Ausschnitt ist an den Ecken
+     * durchsichtig, und durchsichtig rechnet auf 255.
+     *
+     * Jede dieser Bezugsgroessen ist geraten. Die ungeratene steht in
+     * Regel 13: wer eine Wirkung misst, schaltet sie zuerst ab. Also
+     * zwei Aufnahmen - eine mit der Umgebung, eine ohne sie - und
+     * gezaehlt wird, was sich unterscheidet. Was dabei herauskommt,
+     * IST die Umgebung, und zwar ohne dass jemand sagen muss, wie sie
+     * aussieht.
+     *
+     * „Am Rand" heisst damit auch genau, was es sagt: wie stark die
+     * Umgebung das Randband veraendert. Null heisst, sie reicht nicht
+     * hinein. */
+    const ohne = await q.evaluate(() => {
+      const svg = document.querySelector('.schirm.da .karte > svg');
+      const lupe = svg && svg.querySelector('#lupe');
+      const umg = svg && svg.querySelector('#umg');
+      if (!lupe || !umg) return false;
+      let halte = umg; while (halte.parentNode !== lupe) halte = halte.parentNode;
+      halte.style.display = 'none';
+      return true;
+    });
+    await q.evaluate(() => new Promise(r =>
+      requestAnimationFrame(() => requestAnimationFrame(r))));
+    const bild2 = PNG.sync.read(
+      await q.locator('.schirm.da .karte > svg').first().screenshot());
+    let amRand = 0, inMitte = 0, tinte = 0;
+    if (!ohne || bild2.width !== bild.width || bild2.height !== bild.height) {
+      fehler.push(`rand: auf ${kont} liess sich die Umgebung nicht abschalten — `
+        + 'dann ist die Messung ein Vergleich mit sich selbst');
+    } else {
+      const licht = (d, i) => {
+        const a = d[i + 3] / 255;
+        return (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) * a + 255 * (1 - a);
+      };
+      for (let y = 0; y < bild.height; y++) for (let x = 0; x < bild.width; x++) {
+        const i = (bild.width * y + x) << 2;
+        const d = Math.abs(licht(bild.data, i) - licht(bild2.data, i));
+        if (d > 4) tinte++;
+        if (d > inMitte) inMitte = d;
+        if (x < b1 || y < b1 || x >= bild.width - b1 || y >= bild.height - b1)
+          if (d > amRand) amRand = d;
+      }
+      amRand = Math.round(amRand); inMitte = Math.round(inMitte);
     }
-    for (let n = 0; n < hell1.length; n++) if (hell1[n] < hell - 4) tinte++;
-    const amRand = Math.round(hell - dunkelRand), inMitte = Math.round(hell - dunkelAll);
     const anteilTinte = tinte / (bild.width * bild.height) * 100;
     if (amRand > 0) mitRand++;
     zeilen.push(`      ${kont.padEnd(14)} am Rand ${String(amRand).padStart(3)} `
