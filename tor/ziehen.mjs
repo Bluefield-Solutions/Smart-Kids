@@ -1086,20 +1086,48 @@ if (laeuft('rand')) {
      * Kanten sind geglaettet, und ein Punkt, der eine Stufe unter Weiss
      * liegt, ist Rechenrest und kein Grau. */
     const PAPIER = 250;
+    /* GEZAEHLT WIRD GEGEN DEN GRUND, NICHT GEGEN WEISS (I29).
+     *
+     * Hier stand `if (l < PAPIER) tinte++` - jeder Punkt, der nicht
+     * Papier ist. Das Bild zeigt aber nicht Papier, sondern den
+     * KARTENGRUND: der Ausschnitt ist an den Stellen durchsichtig, an
+     * denen die Umgebung fehlt, und dahinter liegt der Kasten mit
+     * seiner Farbe. Damit zaehlte die Zahl auf allen acht Karten
+     * 100,00 % - und ihre Aussage war „das Bild ist nicht leer", nicht
+     * „die Umgebung ist da".
+     *
+     * Gemeldet hat es keine Messung, sondern die FRIST: drei
+     * Gegenproben haengen an dieser Zahl, alle drei liessen das Tor
+     * gruen, und ihre Nachweise sind ueber die drei Tage gelaufen. Wer
+     * eine Wirkung misst, schaltet sie zuerst ab (Regel 13) - hier war
+     * sie abgeschaltet, und die Zahl blieb dieselbe. Das ist der ganze
+     * Befund.
+     *
+     * Der Grund ist die HELLSTE Stelle im Bild, nicht die haeufigste.
+     * Die haeufigste war der erste Anlauf und ging auf Suedosteuropa
+     * schief: dort deckt die Umgebung fast das ganze Feld, sie WAR die
+     * haeufigste Helligkeit, und „dunkler als der Grund" fand null
+     * Punkte. Eine Bezugsgroesse, die mit dem Gemessenen waechst, misst
+     * am Ende sich selbst (Regel 14). Die hellste Stelle ist immer der
+     * unbedeckte Grund - die Umgebung liegt mit 55 % Deckkraft darauf
+     * und ist damit sicher dunkler. Vier Stufen Abstand, damit die
+     * Kantenglaettung nicht mitzaehlt. */
     let hell = 0, dunkelRand = 255, dunkelAll = 255, tinte = 0;
+    const hell1 = new Float64Array(bild.width * bild.height);
     for (let y = 0; y < bild.height; y++) for (let x = 0; x < bild.width; x++) {
-      const i = (bild.width * y + x) << 2;
+      const n = bild.width * y + x, i = n << 2;
       // Ueber Alpha hinweg auf Weiss rechnen: der Ausschnitt ist an den
       // Ecken durchsichtig, und ein durchsichtiger Punkt ist Papier.
       const a = bild.data[i + 3] / 255;
       const l = (0.299 * bild.data[i] + 0.587 * bild.data[i + 1]
                + 0.114 * bild.data[i + 2]) * a + 255 * (1 - a);
+      hell1[n] = l;
       if (l > hell) hell = l;
       if (l < dunkelAll) dunkelAll = l;
-      if (l < PAPIER) tinte++;
       if (x < b1 || y < b1 || x >= bild.width - b1 || y >= bild.height - b1)
         if (l < dunkelRand) dunkelRand = l;
     }
+    for (let n = 0; n < hell1.length; n++) if (hell1[n] < hell - 4) tinte++;
     const amRand = Math.round(hell - dunkelRand), inMitte = Math.round(hell - dunkelAll);
     const anteilTinte = tinte / (bild.width * bild.height) * 100;
     if (amRand > 0) mitRand++;
