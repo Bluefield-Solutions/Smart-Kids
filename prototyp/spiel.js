@@ -1191,6 +1191,14 @@ for (const id of ['mittelamerika', 'suedosteuropa'])
 const groesserWer = (k) => Object.values(PROFILE)
   .filter(p => (D.paare[k] || []).length >= 2 * p.sitzung).map(p => p.id);
 
+/* Die vier Themenebenen: Kennung zu Nummer (E14).
+ *
+ * EINE Tafel fuer beides - die vier Kacheln und die Weiche im Vorrat.
+ * Zwei Listen waeren die, die einmal auseinandergehen (Regel 6), und
+ * genau das ist im ersten Anlauf passiert, nur anders: dort trug die
+ * Kennung die Nummer selbst, und `split(':')` hat sie verschluckt. */
+const THEMA_EBENEN = { familie:'4.1', schule:'4.2', freizeit:'4.3', einkaufen:'4.4' };
+
 const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
   /* DIE ACHT LAENDERKARTEN TEILEN SICH SEIT I22 EINE KACHEL.
@@ -1683,11 +1691,11 @@ const EBENEN = [
    * fiele auf „welches hatten wir noch nicht?" zurueck. Gemessen sind es
    * 22, 22, 15 und 25 - die vier stehen, und eine fuenfte kaeme von
    * selbst dazu, wenn jemand ein Themengebiet ergaenzt. */
-  ...['4.1', '4.2', '4.3', '4.4'].map(nr => ({
-    id:`englisch:thema:${nr}`, ueber:'Englisch', titel:'Themen',
-    farbe: 1 + ['4.1','4.2','4.3','4.4'].indexOf(nr) * 2,
+  ...Object.entries(THEMA_EBENEN).map(([kont, nr], i) => ({
+    id:`englisch:${kont}`, ueber:'Englisch', titel:'Themen',
+    farbe: 1 + i * 2,
     art:'englisch', gruppe:'enthemen', wer:['fiona','lea'],
-    wo: Englisch.themaTitel(nr),
+    wo: Englisch.themaTitel(nr), frageWort:' — worüber?',
     wenn: () => Englisch.vorratThema(nr).length >= 12 })),
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
@@ -2798,11 +2806,18 @@ function vorrat(ebeneId, stand = Stand, voll = false){
      nicht gelesen. */
   if (art==='englisch' && kont==='lesen')
     return Englisch.vorratLesen();
-  /* Die vier Themengebiete des Lehrplans (E14). Der Teil hinter dem
-     Doppelpunkt traegt die Nummer - `englisch:thema:4.1` -, und damit
-     braucht es keine vier Zweige, sondern einen. */
-  if (art==='englisch' && kont.startsWith('thema:'))
-    return Englisch.vorratThema(kont.slice(6));
+  /* Die vier Themengebiete des Lehrplans (E14) - aus DERSELBEN Tafel,
+     aus der auch die vier Kacheln entstehen.
+     Der erste Anlauf hiess `englisch:thema:4.1` und hat die Nummer
+     hinten angehaengt. `ebeneId.split(':')` nimmt aber das ZWEITE Stueck,
+     also `thema`, und die Nummer fiel weg: die Ebene lief auf den
+     ungeordneten Vorrat, und „Wo ist book?" stand neben shoes, teacher
+     und football. Kein Tor hat das gesagt - die Sitzung war ja gueltig,
+     nur eben die falsche. Gesehen hat es der Blick auf den Bildschirm
+     (Regel 4). Jetzt traegt die Kennung EIN Wort, und das Wort steht in
+     derselben Tafel wie die Kachel. */
+  if (art==='englisch' && THEMA_EBENEN[kont])
+    return Englisch.vorratThema(THEMA_EBENEN[kont]);
   if (art==='englisch')
     return Englisch.vorratHoeren();
   // Dreissig Fallen, aufgeschrieben und nicht erzeugt: eine Falle ist ein
@@ -4092,9 +4107,17 @@ async function ebenenwahl(gruppe = null){
      Gruppennamen: wo die Kachelnamen mit einem Fragezeichen enden, ist
      die Ueberschrift schon eine Frage. */
   const teileGruppe = gruppe ? alle.filter(b => b.gruppe === gruppe) : [];
+  /* Und seit E14 gibt es eine dritte Art: die vier Themengebiete sind
+     weder Orte noch Fragen, sondern Sachen. „Themen — wo?" stand einen
+     Lauf lang ueber „Familie und Freunde, Schule, Freizeit und Feste,
+     Einkaufen" - gesehen im Bild, von keinem Tor gemeldet.
+     Die Ebene sagt es selbst (`frageWort`), statt hier eine Liste von
+     Gruppennamen zu fuehren; das bleibt die Regel des Absatzes darueber:
+     entschieden wird an den Teilen. */
   const frage = gruppe
     ? (alle.find(b => b.gruppe === gruppe)?.titel || welt.name)
-      + (teileGruppe.some(b => /\?$/.test(b.wo || '')) ? ' — was möchtest du?' : ' — wo?')
+      + (teileGruppe.find(b => b.frageWort)?.frageWort
+        || (teileGruppe.some(b => /\?$/.test(b.wo || '')) ? ' — was möchtest du?' : ' — wo?'))
     : 'Womit möchtest du anfangen?';
   // Der Weg wird EINMAL gerechnet: das Markup braucht ihn, die Ansage
   // braucht dieselbe Station, und zweimal gerechnet waeren es zwei, die

@@ -7095,3 +7095,46 @@ einer dieser Fälle eintritt, und Stephan entscheidet:
    sind,
 4. wenn mir bei einer Änderung unwohl ist. Das ist keine Messgröße,
    sondern der ehrlichste Auslöser von den vieren.
+
+## E13 + E14 · Englisch: der Vorrat und die Themenordnung
+
+**Der Befund war einer über die Gewichtung, nicht über die Menge.** Der
+Lehrplan Bayern Jgst. 3/4 gewichtet Hörverstehen und Sprechen am
+höchsten, Lesen und Schreiben haben dienende Funktion. Die App hatte das
+genau andersherum: „Lies das Wort" lief auf 84 Zeichnungen, „Hören und
+zeigen" und „Sag es" auf 25 Gegenständen — zehn Farben und fünfzehn
+Zahlen. Nach zweieinhalb Sitzungen hatte ein Kind alles gesehen.
+
+**E13 hat kein Bild gekostet.** Die 84 Zeichnungen lagen da und wurden
+von einer einzigen Ebene benutzt. Jetzt: 109 Gegenstände für Hören und
+Sprechen, 98 für „Leg das Wort" — 18,2 statt 4 Sitzungen Vorrat.
+
+**E14 ist eine gesetzte Zuordnung, und das steht so im Quelltext.** Die
+Behörde liefert den Wortschatz alphabetisch und die Redemittel
+thematisch; eine Brücke gibt es nicht (60 der 151 Wörter kommen in
+keinem Redemittel vor). Die Regel, nach der ich zugeordnet habe, steht
+in `src/inhalt/englisch.js` — mit den drei Fällen, in denen ich anders
+entschieden habe, als sie nahelegt.
+
+Verteilung: Familie und Freunde 61 Wörter (22 gemalt) · Schule 46 (22) ·
+Freizeit und Feste 18 (15) · Einkaufen 26 (25).
+
+**Was die vier Themenebenen inhaltlich besser machen als die ungeordnete:
+die Ablenker.** „apple" gegen bread, cheese und egg ist eine
+Vokabelfrage; „apple" gegen dog, shoe und clock ist eine Bildersuche.
+Dieselbe Mechanik, eine andere Aufgabe.
+
+**Was offen bleibt:**
+
+- Die vier Themenkacheln tragen **kein Bild**, nur Farbe und Namen. Auf
+  allen anderen Wahlbildschirmen trägt eine Kachel einen Umriss oder ein
+  Zeichen; für Fiona, die nicht liest, sind vier gleich aussehende
+  Kacheln vier gleiche Kacheln. Das ist Malarbeit, kein Code.
+- Nur **gezeichnete** Wörter sind spielbar. 55 der 151 sind
+  Funktionswörter ohne Bild („about", „please", „the") — die lernt man
+  im Satz, und dafür gibt es „Sag den Satz" und „Bau den Satz" mit
+  zusammen 20 Sätzen aus 39 Redemitteln. Dort liegt der nächste
+  inhaltliche Mangel.
+- Die Zuordnung ist **nicht amtlich**. Wenn die ISB-Liste eines Tages
+  eine Zuordnung liefert, ersetzt sie diese — das Tor vergleicht dann
+  gegen die Quelle statt gegen die eigene Zusage.

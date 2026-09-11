@@ -1111,7 +1111,7 @@ bemerkt das schleichende Zunehmen; die feste Grenze ist der Notnagel, falls
 jemand die Ratsche einmal bestätigt, ohne hinzusehen. Ein Notnagel, den man
 nie erreicht, hat seinen Zweck nicht verloren — er hat ihn erfüllt.
 
-*Warum 700 und nicht „weg":* die vierte Welt (Englisch, E1–E12) bringt
+*Warum 700 und nicht „weg":* die vierte Welt (Englisch, E1–E14) bringt
 Wortschatz und **ein SVG je Wort** (E4). Das ist der erste Posten seit den
 Karten, der das Bündel wirklich bewegen kann. 700 KB sind gut das Doppelte von
 heute und lassen dafür Platz, ohne dass die Grenze bedeutungslos wird. Wer
