@@ -1856,7 +1856,7 @@
     "die Ablenker der Englischebene kommen aus der falschen Sorte": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
-      "s": 21
+      "s": 20
     },
     "das gesuchte englische Wort steht auf dem Bildschirm": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
@@ -2373,10 +2373,25 @@
       "zeit": "2026-09-11",
       "s": 4
     },
+    "ein Wort traegt kein Themengebiet mehr": {
+      "commit": "fc96b80f32273c9dfc67efc3028e68c5ae246c3a",
+      "zeit": "2026-09-11",
+      "s": 6
+    },
+    "ein Wort steht in zwei Themengebieten": {
+      "commit": "fc96b80f32273c9dfc67efc3028e68c5ae246c3a",
+      "zeit": "2026-09-11",
+      "s": 6
+    },
+    "ein Themengebiet darf beliebig duenn werden": {
+      "commit": "fc96b80f32273c9dfc67efc3028e68c5ae246c3a",
+      "zeit": "2026-09-11",
+      "s": 6
+    },
     "die Ablenker beim Lesen kommen aus dem Hörvorrat": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
-      "s": 8
+      "s": 6
     },
     "die Englischkarten laufen über den Rand": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",

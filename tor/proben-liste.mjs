@@ -5762,8 +5762,8 @@ export const PROBEN = [
        „//" sind kein Zufall - sie machen den Suchtext samt seiner
        Einrueckung wieder auffindbar. */
     ersatz:"  const andere = topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort);\n"
-      + "  //Anker:  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
-      + "  //Anker:    && x.id !== ziel.id && x.wort !== ziel.wort);",
+      + "  //Anker:  const andere = topf.filter(x => x.sorte === ziel.sorte "
+      + "&& x.id !== ziel.id && x.wort !== ziel.wort);",
     an:{ datei:'src/inhalt/englisch.js',
          text:'filter(x => x.id !== ziel.id && x.wort !== ziel.wort);' },
     deckt:'englisch',
@@ -7523,9 +7523,14 @@ export const PROBEN = [
     deckt:'englisch', datei:'src/inhalt/englisch.js',
     such:"  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
       + "    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
+    /* DER ANKER STEHT IN EINER ZEILE, nicht in zweien.
+       Der Waechter in `doku` vergleicht mit zusammengezogenen
+       Leerzeichen - ein zweites „// Anker:" mitten im Satz zerreisst
+       ihn, und das Tor meldet den fehlenden Nachweis statt des
+       Befundes. Zwei Anlaeufe hat das gekostet. */
     ersatz:"  const topf = vorratHoeren();\n"
-      + "  // Anker:  const topf = ziel.thema ? vorratThema(ziel.thema)\n"
-      + "  // Anker:    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
+      + "  // Anker:  const topf = ziel.thema ? vorratThema(ziel.thema) "
+      + ": ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();",
     an:{ datei:'src/inhalt/englisch.js', text:'const topf = vorratHoeren();' },
     sagt:'Ablenker statt drei' },
 
