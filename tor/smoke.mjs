@@ -6757,11 +6757,11 @@ if (laeuft('schreiben')) try {
   {
     const t = await neueSeite({ width: 844, height: 390 }, eigenerCtx);
     await t.click('[data-profil="fiona"]');
-    // Den Ton abschalten - dort, wo das Kind es auch tut.
-    await t.click('.schirm.da #zur');
-    await t.waitForSelector('.schirm.da #ton');
-    await t.click('.schirm.da #ton');
-    await t.click('[data-profil="fiona"]');
+    /* Den Ton abschalten - dort, wo das Kind es auch tut. Seit P21 ist
+       das der Stummschalter in der Ecke, und der liegt AUSSERHALB der
+       Bildschirme: er braucht keinen Rueckweg zur Profilwahl mehr. */
+    await t.waitForSelector('#stumm');
+    await t.click('#stumm');
     await zurEbenenwahl(t, 'schreiben:diktat');
     await t.click('[data-ebene="schreiben:diktat"]');
     await t.waitForSelector('.schirm.da #los, .schirm.da .schreibblatt', { timeout: 25000 });

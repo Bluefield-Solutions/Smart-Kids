@@ -2975,6 +2975,43 @@ async function einstLaden(){
   tonAn = Einst.ton;
   stimmenWunsch = Einst.stimme || null; stimmeSuchen();
   document.documentElement.setAttribute('data-abend', Einst.abend ? 'an' : 'aus');
+  stummZeichnen();
+}
+
+/* DER STUMMSCHALTER (P21) - oben in der Ecke, auf jedem Bildschirm.
+ *
+ * EIN Schalter fuer alles, was Laut macht: die Rueckmeldetoene, den
+ * kleinen Klang und die Sprachausgabe. Er schaltet `tonAn` um, und das
+ * ist dieselbe Weiche, durch die `vorlesen()` und `klang()` schon
+ * gehen - es kommt kein zweiter Zustand dazu, den man vergessen kann
+ * (Regel 6).
+ *
+ * ER STEHT AUCH BEI DEN KINDERN. Das ist eine Entscheidung und kein
+ * Versehen: Fiona liest nicht, und wer ihr die Ansage abschaltet, nimmt
+ * ihr die halbe App. Dagegen hilft aber kein verstecktes Menue, sondern
+ * dass man SIEHT, dass es stumm ist - der Knopf faerbt sich, solange es
+ * gilt, und er steht an derselben Stelle, an der man ihn zurueckdreht.
+ * Ein Schalter, den man nicht findet, ist schlimmer als einer, den ein
+ * Kind versehentlich drueckt.
+ *
+ * Gesprochen wird beim Umschalten nichts - die Ansage „Ton aus" waere
+ * das Letzte, was die Stimme sagt, und sie kaeme nach dem Abschalten.
+ */
+function stummZeichnen(){
+  const k = document.getElementById('stumm');
+  if (!k) return;
+  const aus = !tonAn;
+  k.dataset.stumm = aus ? 'ja' : 'nein';
+  k.innerHTML = ZEI(aus ? 'tonAus' : 'tonAn');
+  const was = aus ? 'Ton und Sprache einschalten' : 'Alles stumm schalten';
+  k.setAttribute('aria-label', was);
+  k.setAttribute('title', was);
+  k.setAttribute('aria-pressed', aus ? 'true' : 'false');
+}
+function stummUmschalten(){
+  tonAn = !tonAn; Einst.ton = tonAn; einstSichern();
+  if (!tonAn && 'speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch(e){} }
+  stummZeichnen();
 }
 async function einstSichern(){ try{ await Ablage.setze('einstellungen','alles',Einst); }catch(e){} }
 
@@ -3395,9 +3432,12 @@ async function geuebtLaden(){
 
 function profilwahl(){
   const s = el('div');
+  /* Der Tonknopf STAND hier und steht jetzt daneben (P21): seit es den
+     Stummschalter in der Ecke gibt, waere er der zweite auf demselben
+     Bildschirm - und zwei Schalter fuer dieselbe Sache gehen einmal
+     auseinander (Regel 6). Der Abendknopf bleibt; er gilt nur hier. */
   s.innerHTML = kopf({ mitte:'<span class="marke">Smart Kids</span>', rechts:
-      zeichenKnopf('ton', tonAn?'tonAn':'tonAus', tonAn?'Ton ausschalten':'Ton einschalten')
-    + zeichenKnopf('abend', Einst.abend?'abend':'tag', Einst.abend?'Heller machen':'Dunkler machen') }) + `
+      zeichenKnopf('abend', Einst.abend?'abend':'tag', Einst.abend?'Heller machen':'Dunkler machen') }) + `
     <div class="mitte">
       ${/* Das Haus steht NEBEN der Frage, nicht darunter.
            Gemessen: als eigene Zeile kostet es 28 Punkte, und auf dem
@@ -3429,8 +3469,6 @@ function profilwahl(){
             istKind(p) ? tagesZeichen(p.id) : ''}
         </button>`).join('')}</div>
     </div>`;
-  s.querySelector('#ton').onclick=(e)=>{ tonAn=!tonAn; Einst.ton=tonAn; einstSichern();
-    e.target.textContent=tonAn?'Ton an':'Ton aus'; };
   s.querySelector('#abend').onclick=(e)=>{ Einst.abend=!Einst.abend; einstSichern();
     document.documentElement.setAttribute('data-abend',Einst.abend?'an':'aus');
     e.target.textContent=Einst.abend?'Abend':'Tag'; };
@@ -11891,5 +11929,8 @@ async function umzugEltern(){
  * erste Bildschirm darf nicht an einem Netzaufruf haengen. Wer im Zug
  * startet, sieht die Profilwahl sofort; was aus dem Netz kommt, kommt
  * spaeter und aendert nur die Zahlen. */
+/* Der Stummschalter wird EINMAL gebunden, nicht je Bildschirm: er liegt
+   ausserhalb der Bildschirme und ueberlebt jeden Wechsel. */
+document.getElementById('stumm')?.addEventListener('click', stummUmschalten);
 (async ()=>{ await einstLaden(); await geuebtLaden(); await umzugEltern(); zeige(profilwahl);
   if (gleichlaufAn()) gleichlaufFahren(); })();

@@ -476,31 +476,41 @@ const SUCHE = () => {
    * `pointer-events:none` schuetzt den Finger, nicht das Auge: was der
    * Stempel verdeckt, ist verdeckt, auch wenn man hindurchtippen kann. */
   const stempel = [];
-  {
-    const s = document.getElementById('fassung');
+  /* ZWEI Dinge schweben ueber allen Bildschirmen: der Fassungsstempel
+   * unten (Q53) und seit P21 der Stummschalter oben. Beide liegen
+   * ausserhalb der Bildschirme, beide koennen deshalb etwas verdecken,
+   * das gerade erst gebaut wurde - und beide sind auf JEDEM Bildschirm
+   * da, also faellt es nirgends von selbst auf.
+   *
+   * Der Stempel nimmt kein Tipp an (`pointer-events:none`), der Schalter
+   * schon. Fuer das Auge macht das keinen Unterschied: was verdeckt ist,
+   * ist verdeckt. Geprueft wird deshalb dasselbe fuer beide, und aus
+   * einer Schleife statt aus zwei Bloecken - was zweimal dasteht,
+   * veraltet einmal (Regel 6). */
+  for (const [id, wie] of [['fassung', 'der Fassungsstempel'],
+                           ['stumm', 'der Stummschalter']]) {
+    const s = document.getElementById(id);
     const b = s && s.getBoundingClientRect();
-    if (!s) stempel.push('der Fassungsstempel steht gar nicht da');
-    else if (b.width < 2 || b.height < 2) stempel.push('der Fassungsstempel ist leer');
-    else {
-      if (b.right > innerWidth + 1 || b.bottom > innerHeight + 1 || b.left < -1 || b.top < -1)
-        stempel.push(`der Fassungsstempel steht ausserhalb des Fensters `
-          + `(${b.left.toFixed(0)}|${b.top.toFixed(0)} bis `
-          + `${b.right.toFixed(0)}|${b.bottom.toFixed(0)} in ${innerWidth}×${innerHeight})`);
-      for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
-        + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
-        + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, .schirm.da .karte, '
-        + '.schirm.da .leerstelle, .schirm.da .engkarte')) {
-        const cs = getComputedStyle(el);
-        if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
-        const k = el.getBoundingClientRect();
-        if (k.width < 2 || k.height < 2) continue;
-        const breit = Math.min(b.right, k.right) - Math.max(b.left, k.left);
-        const hoch  = Math.min(b.bottom, k.bottom) - Math.max(b.top, k.top);
-        if (breit > 1 && hoch > 1)
-          stempel.push(`der Fassungsstempel liegt ueber „${(el.textContent.trim()
-            || el.className).slice(0, 22).replace(/\s+/g, ' ')}" `
-            + `(${breit.toFixed(0)}×${hoch.toFixed(0)} px)`);
-      }
+    if (!s) { stempel.push(`${wie} steht gar nicht da`); continue; }
+    if (b.width < 2 || b.height < 2) { stempel.push(`${wie} ist leer`); continue; }
+    if (b.right > innerWidth + 1 || b.bottom > innerHeight + 1 || b.left < -1 || b.top < -1)
+      stempel.push(`${wie} steht ausserhalb des Fensters `
+        + `(${b.left.toFixed(0)}|${b.top.toFixed(0)} bis `
+        + `${b.right.toFixed(0)}|${b.bottom.toFixed(0)} in ${innerWidth}×${innerHeight})`);
+    for (const el of document.querySelectorAll('.schirm.da .kachel, .schirm.da .etikett, '
+      + '.schirm.da .knopf, .schirm.da .zi, .schirm.da .eingabe, .schirm.da .hinweis, '
+      + '.schirm.da .titel, .schirm.da .frage, .schirm.da .kachelpaar, .schirm.da .karte, '
+      + '.schirm.da .leerstelle, .schirm.da .engkarte')) {
+      const cs = getComputedStyle(el);
+      if (cs.visibility === 'hidden' || +cs.opacity < 0.05) continue;
+      const k = el.getBoundingClientRect();
+      if (k.width < 2 || k.height < 2) continue;
+      const breit = Math.min(b.right, k.right) - Math.max(b.left, k.left);
+      const hoch  = Math.min(b.bottom, k.bottom) - Math.max(b.top, k.top);
+      if (breit > 1 && hoch > 1)
+        stempel.push(`${wie} liegt ueber „${(el.textContent.trim()
+          || el.className).slice(0, 22).replace(/\s+/g, ' ')}" `
+          + `(${breit.toFixed(0)}×${hoch.toFixed(0)} px)`);
     }
   }
 

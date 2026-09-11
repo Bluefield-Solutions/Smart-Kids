@@ -1332,6 +1332,24 @@ export const PROBEN = [
     an:{ ...DIST, text:'.wahl.ebenen .kachelpaar .schau{display:inline-flex}' },
     sagt:'des Wortes greift' },
 
+  /* --- P21: der Stummschalter ---------------------------------------- *
+   *
+   * Er schwebt ueber allen Bildschirmen, wie der Fassungsstempel unten -
+   * und kann deshalb etwas verdecken, das gerade erst gebaut wurde. Der
+   * Eingriff nimmt ihm das Polster in `.kopf-rechts`: dann rutschen
+   * Sterne und Uhr unter ihn, und `passt` muss sagen, WAS er verdeckt.
+   *
+   * Nicht die Lage des Knopfes wird verstellt, sondern das Polster - das
+   * ist die Zusage. Ein Knopf, der einen Platz frei haelt, ist etwas
+   * anderes als einer, der obenauf liegt, und im Bild sieht man den
+   * Unterschied erst, wenn rechts etwas steht. */
+  { n:'der Stummschalter legt sich wieder ueber die Sterne', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:V,
+    such:'.kopf-rechts{padding-right:var(--stumm-platz)}',
+    ersatz:'.kopf-rechts{padding-right:0}',
+    an:{ ...DIST, text:'.kopf-rechts{padding-right:0}' },
+    sagt:'der Stummschalter liegt ueber' },
+
   { n:'der leise Knopf verliert seine Kante', tor:'passt', bauen:true, datei:V,
     such:'  box-shadow:0 var(--kante-flach) 0 var(--knopf-kante),\n'
        + '             inset 0 var(--strich) 0 var(--knopf-licht);\n'

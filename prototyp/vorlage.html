@@ -69,6 +69,36 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    (iPad, Schreibtischfenster), werden 17 Punkte frei gehalten - dort ist
    Platz fuer achtzehn Kacheln, und siebzehn Punkte aendern daran nichts.
    Beides misst `passt` bei jedem Lauf nach. */
+/* DER STUMMSCHALTER - oben in der Ecke, auf JEDEM Bildschirm (P21).
+ *
+ * Er liegt NEBEN der Buehne, genau wie der Fassungsstempel unten, und
+ * aus demselben Grund: es gibt zwoelf Stellen, an denen ein Bildschirm
+ * gebaut wird, und zehn davon haben eine Kopfzeile. Haette er seinen
+ * Platz in der Kopfzeile, fehlte er auf der Pause und auf dem
+ * Endbildschirm - den beiden, die keine haben -, und das faellt
+ * niemandem auf, bis jemand ihn dort sucht. Ein Element statt zwoelf
+ * Aufrufen ist dieselbe Ueberlegung wie bei der Menueleiste: eine
+ * Ableitung, keine Stelle zum Vergessen.
+ *
+ * ER NIMMT PLATZ, statt etwas zu verdecken. `.kopf-rechts` bekommt
+ * seine Breite als Polster; wo eine Kopfzeile steht, ruecken Sterne und
+ * Uhr nach links, wo keine steht, ist die Ecke ohnehin leer. Der erste
+ * Entwurf lag einfach obenauf - `passt` haette das gefunden, und
+ * gefunden wird es dort weiterhin: der Knopf steht in derselben
+ * Ueberdeckungspruefung wie der Fassungsstempel.
+ *
+ * `--stumm-platz` ist die Trefferflaeche plus eine Fuge und steht
+ * EINMAL da - die Regel darunter und das Polster rechnen mit derselben
+ * Zahl (Regel 6). */
+:root{--stumm-gross:44px; --stumm-platz:52px}
+#stumm{position:fixed;z-index:6;
+  top:calc(var(--sicher-oben) + var(--r2));
+  right:calc(var(--sicher-rechts) + var(--r3));
+  width:var(--stumm-gross);height:var(--stumm-gross);padding:0}
+.kopf-rechts{padding-right:var(--stumm-platz)}
+/* Stumm sieht man an, dass es stumm ist - sonst tippt man zweimal und
+   weiss nicht, was gilt. */
+#stumm[data-stumm="ja"]{background:var(--warn-h);color:var(--warn)}
 :root{--fassung-hoehe:12px}
 #fassung{position:fixed;
   right:calc(var(--sicher-rechts) + var(--r2));
@@ -4469,6 +4499,6 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
     <stop offset=".44" stop-color="var(--glanz-licht)" stop-opacity="0"/>
   </linearGradient>
 </defs></svg>
-<div id="buehne"></div><div id="fassung"></div>
+<div id="buehne"></div><button id="stumm" class="knopf rund"></button><div id="fassung"></div>
 <script id="daten" type="application/json">__DATEN__</script>
 <script id="bau" type="application/json">__BAU__</script>
