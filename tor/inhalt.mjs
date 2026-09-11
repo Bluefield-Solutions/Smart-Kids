@@ -2625,11 +2625,6 @@ console.log('\n  Tor `englisch`');
     if (!EN.FARBEN.every(f => /^#[0-9a-f]{6}$/.test(f.farbton)))
       eng.push('nicht jede Farbe hat einen lesbaren Wert der Form #rrggbb');
 
-    if (eng.length) {
-      console.log('    ' + eng.join('\n    '));
-      console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');
-      process.exit(1);
-    }
     /* DIE THEMENZUORDNUNG (E14).
      *
      * Sie ist gesetzt und nicht amtlich - genau deshalb steht sie hier.
@@ -2677,6 +2672,11 @@ console.log('\n  Tor `englisch`');
       console.log(`    Themengebiete: ${EN.WOERTER.length} Wörter auf ${themen.length} `
         + `verteilt (${jeThema.map(([nr, n]) => `${EN.themaTitel(nr)} ${
             (EN.THEMA_WOERTER[nr] || []).length}/${n} gemalt`).join(' · ')})`);
+    if (eng.length) {
+      console.log('    ' + eng.join('\n    '));
+      console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');
+      process.exit(1);
+    }
     console.log(`    „Hören und zeigen" und „Sag es": ${vorrat.length} Gegenstände `
       + `(${EN.FARBEN.length} Farben, ${EN.ZAHLEN.length} Zahlen, ${gemalt} Zeichnungen), `
       + `jeder mit Bild und im amtlichen Wortschatz`);
