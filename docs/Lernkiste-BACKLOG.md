@@ -7116,8 +7116,26 @@ keinem Redemittel vor). Die Regel, nach der ich zugeordnet habe, steht
 in `src/inhalt/englisch.js` — mit den drei Fällen, in denen ich anders
 entschieden habe, als sie nahelegt.
 
-Verteilung: Familie und Freunde 61 Wörter (22 gemalt) · Schule 46 (22) ·
-Freizeit und Feste 18 (15) · Einkaufen 26 (25).
+Verteilung: Familie und Freunde 61 Wörter (22 gemalt) · Schule 47 (23) ·
+Freizeit und Feste 17 (14) · Einkaufen 26 (25).
+
+**Drei der vier sind spielbar, das vierte fehlt um zwei Zeichnungen.**
+`npm run vielfalt` verlangt von jeder Ebene zwei volle Runden Vorrat —
+bei acht Aufgaben also 16 Gegenstände. Meine erste Schwelle war eine
+erfundene Zwölf, und das Tor hat sie prompt widerlegt: „Freizeit und
+Feste" stand mit 1,9 Runden da. Die Schwelle ist jetzt abgeschrieben
+statt gesetzt, und das Themengebiet bekommt **keine Kachel**, bis zwei
+seiner Wörter gezeichnet sind — dieselbe Bauform wie bei der
+Flaggenkachel, die eine Karte ohne Flaggen nicht bekommt. Seine drei
+ungezeichneten sind „hobby", „like" und „when"; die kann man nicht
+malen, also müssen zwei der 14 anderen Motive her.
+
+**Ein Fehler in meiner eigenen Zuordnung, gefunden durch dieses Tor:**
+„morning" stand bei 4.3, weil ich an den Morgen eines Festtags gedacht
+habe. Es kommt aber in einem Redemittel vor — „Good morning." beim
+Begrüßen —, und das ist 4.2. Regel 1 schlägt meinen Einfall. Aufgefallen
+ist es erst, als `vielfalt` 4.3 als zu dünn meldete und ich die Liste
+noch einmal gegen die Redemittel gelesen habe.
 
 **Was die vier Themenebenen inhaltlich besser machen als die ungeordnete:
 die Ablenker.** „apple" gegen bread, cheese und egg ist eine
@@ -7126,7 +7144,10 @@ Dieselbe Mechanik, eine andere Aufgabe.
 
 **Was offen bleibt:**
 
-- Die vier Themenkacheln tragen **kein Bild**, nur Farbe und Namen. Auf
+- „Freizeit und Feste" braucht **zwei Zeichnungen**, dann erscheint es
+  von selbst. Es ist das Thema, das Kinder am meisten interessiert —
+  Party, Geburtstag, Fußball, Schwimmen —, und ausgerechnet es fehlt.
+- Die drei Themenkacheln tragen **kein Bild**, nur Farbe und Namen. Auf
   allen anderen Wahlbildschirmen trägt eine Kachel einen Umriss oder ein
   Zeichen; für Fiona, die nicht liest, sind vier gleich aussehende
   Kacheln vier gleiche Kacheln. Das ist Malarbeit, kein Code.

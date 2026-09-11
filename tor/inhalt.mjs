@@ -2633,13 +2633,13 @@ console.log('\n  Tor `englisch`');
      * die lautet: jedes der 151 Woerter genau einmal, und jedes
      * Themengebiet traegt genug gezeichnete Woerter fuer eine Ebene.
      *
-     * Die zwoelf sind dieselbe Zahl wie in `wenn` bei den vier Ebenen -
+     * Die sechzehn sind dieselbe Zahl wie in `wenn` bei den vier Ebenen -
      * und sie steht hier NICHT noch einmal, sondern wird von dort
      * gelesen waere schoener; sie steht in `spiel.js`, das dieses Tor
      * nicht laedt. Also steht sie zweimal, und die Gegenprobe haelt
      * beide zusammen: sie setzt die Zahl hier herunter und verlangt,
      * dass das Tor es sagt. */
-    const THEMA_MIN = 12;
+    const THEMA_MIN = 16;
     const themen = EN.THEMENGEBIETE.map(t => t.nr);
     const doppelt = [], ohne = [];
     for (const w of EN.WOERTER) {
@@ -2655,12 +2655,25 @@ console.log('\n  Tor `englisch`');
     const fremd = Object.keys(EN.THEMA_VON).filter(w => !EN.WOERTER.includes(w));
     if (fremd.length) eng.push(`${fremd.length} Wörter der Thementafel stehen nicht im `
       + `amtlichen Wortschatz: ${fremd.join(', ')}`);
+    /* EIN ZU DUENNES THEMENGEBIET IST KEIN FEHLER - es bekommt keine
+     * Kachel, genau wie eine Karte ohne Flaggen keine bekommt. „Freizeit
+     * und Feste" traegt 14 gezeichnete Woerter und braucht 16; seine drei
+     * uebrigen sind „hobby", „like" und „when", und die kann man nicht
+     * malen.
+     *
+     * Ein Fehler waere, wenn die Themenordnung als Ganzes zerfiele. Die
+     * Ratsche steht deshalb auf DREI von vier - faellt ein weiteres
+     * Gebiet unter die Grenze, ist es keine Ordnung mehr, sondern ein
+     * Rest. Und was fehlt, steht in jedem gruenen Lauf da, statt still
+     * zu verschwinden. */
+    const THEMEN_SPIELBAR_MIN = 3;
     const jeThema = themen.map(nr => [nr, EN.vorratThema(nr).length]);
     const duenn = jeThema.filter(([, n]) => n < THEMA_MIN);
-    if (duenn.length) eng.push(`${duenn.length} Themengebiete haben zu wenig gezeichnete `
-      + `Wörter (${duenn.map(([nr, n]) => `${EN.themaTitel(nr)} ${n}`).join(', ')}, `
-      + `verlangt ${THEMA_MIN}) — dann stehen in den letzten Aufgaben immer dieselben `
-      + 'drei Ablenker daneben');
+    if (themen.length - duenn.length < THEMEN_SPIELBAR_MIN)
+      eng.push(`nur ${themen.length - duenn.length} von ${themen.length} Themengebieten `
+        + `tragen ${THEMA_MIN} gezeichnete Wörter (zu dünn: ${duenn.map(([nr, n]) =>
+            `${EN.themaTitel(nr)} ${n}`).join(', ')}) — verlangt sind `
+        + `${THEMEN_SPIELBAR_MIN}, sonst ist es keine Ordnung mehr, sondern ein Rest`);
     /* Und die Ablenker bleiben im Thema. Geprueft an JEDEM Gegenstand
        jedes Themas - das ist die Zusage, die diese vier Ebenen von
        „Hoeren und zeigen" unterscheidet. */
@@ -2683,10 +2696,15 @@ console.log('\n  Tor `englisch`');
     if (themaFehler.length)
       eng.push(`${themaFehler.length} Ablenker kommen aus einem fremden Thema. `
         + `Die ersten drei: ${themaFehler.slice(0, 3).join(' · ')}`);
-    if (!ohne.length && !doppelt.length && !fremd.length && !duenn.length)
+    if (!ohne.length && !doppelt.length && !fremd.length) {
       console.log(`    Themengebiete: ${EN.WOERTER.length} Wörter auf ${themen.length} `
         + `verteilt (${jeThema.map(([nr, n]) => `${EN.themaTitel(nr)} ${
             (EN.THEMA_WOERTER[nr] || []).length}/${n} gemalt`).join(' · ')})`);
+      console.log(`    spielbar sind ${themen.length - duenn.length} davon `
+        + `(ab ${THEMA_MIN} Zeichnungen = zwei Runden)${duenn.length
+          ? ` — ohne Kachel: ${duenn.map(([nr, n]) => `${EN.themaTitel(nr)}, `
+            + `${THEMA_MIN - n} Zeichnungen fehlen`).join(' · ')}` : ''}`);
+    }
     if (eng.length) {
       console.log('    ' + eng.join('\n    '));
       console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');

@@ -1198,6 +1198,9 @@ const groesserWer = (k) => Object.values(PROFILE)
  * genau das ist im ersten Anlauf passiert, nur anders: dort trug die
  * Kennung die Nummer selbst, und `split(':')` hat sie verschluckt. */
 const THEMA_EBENEN = { familie:'4.1', schule:'4.2', freizeit:'4.3', einkaufen:'4.4' };
+/* Zwei Runden Vorrat bei acht Aufgaben - dieselbe Zusage, die
+   `npm run vielfalt` von jeder Ebene verlangt. */
+const THEMA_MIN = 16;
 
 const EBENEN = [
   { id:'kontinente', ueber:'Die Welt', titel:'Kontinente', farbe:5 },
@@ -1686,17 +1689,25 @@ const EBENEN = [
    * Leitner-Stand; wer ein Wort im Durcheinander erkannt hat, hat es
    * unter seinesgleichen noch nicht.
    *
-   * `wenn`: mindestens zwoelf gezeichnete Woerter. Darunter waeren die
-   * drei Ablenker der letzten Aufgaben immer dieselben, und die Ebene
-   * fiele auf „welches hatten wir noch nicht?" zurueck. Gemessen sind es
-   * 22, 22, 15 und 25 - die vier stehen, und eine fuenfte kaeme von
-   * selbst dazu, wenn jemand ein Themengebiet ergaenzt. */
+   * `wenn`: mindestens ZWEI RUNDEN VORRAT, also 16 gezeichnete Woerter
+   * bei acht Aufgaben je Runde. Die Zahl ist nicht gesetzt, sondern
+   * abgeschrieben - `npm run vielfalt` verlangt genau das von jeder
+   * Ebene, und es hat die erste Fassung dieser vier prompt gemeldet:
+   * mit einer erfundenen Zwoelf stand „Freizeit und Feste" mit 1,9
+   * Runden da, und die zweite Runde waere fast die erste gewesen.
+   *
+   * Gemessen sind es 22, 23, 14 und 25. Drei Ebenen stehen; „Freizeit
+   * und Feste" fehlen zwei Zeichnungen, und es ist genau deshalb NICHT
+   * da. Seine drei uebrigen Woerter sind „hobby", „like" und „when" -
+   * die kann man nicht malen. Sobald zwei seiner gemalten dazukommen,
+   * erscheint die Kachel von selbst; das ist dieselbe Bauform wie bei
+   * der Flaggenkachel, die eine Karte ohne Flaggen nicht bekommt. */
   ...Object.entries(THEMA_EBENEN).map(([kont, nr], i) => ({
     id:`englisch:${kont}`, ueber:'Englisch', titel:'Themen',
     farbe: 1 + i * 2,
     art:'englisch', gruppe:'enthemen', wer:['fiona','lea'],
     wo: Englisch.themaTitel(nr), frageWort:' — worüber?',
-    wenn: () => Englisch.vorratThema(nr).length >= 12 })),
+    wenn: () => Englisch.vorratThema(nr).length >= THEMA_MIN })),
   /* Die Englischebene der Eltern (E10) - und die erste Ebene ueberhaupt,
    * die eine FALLE zeigt statt sie zu vermeiden.
    *

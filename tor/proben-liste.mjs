@@ -7515,8 +7515,8 @@ export const PROBEN = [
    *    Klammer, die sie zusammenhaelt. */
   { n:'ein Themengebiet darf beliebig duenn werden', tor:'inhalt',
     deckt:'englisch', datei:'tor/inhalt.mjs',
-    such:'    const THEMA_MIN = 12;',
-    ersatz:'    const THEMA_MIN = 40;\n    /*\n    const THEMA_MIN = 12; */',
+    such:'    const THEMA_MIN = 16;',
+    ersatz:'    const THEMA_MIN = 40;\n    /*\n    const THEMA_MIN = 16; */',
     an:{ datei:'tor/inhalt.mjs', text:'const THEMA_MIN = 40;' },
     sagt:'zu wenig gezeichnete' },
 

@@ -218,6 +218,13 @@ export const THEMENGEBIETE = [
  *              Germany" ist 4.1, aber das Wort selbst begegnet einem Kind
  *              am Etikett.
  *
+ * Ein Fall, den ich nach der Regel KORRIGIERT habe: „morning" stand
+ * zuerst bei 4.3, weil ich an den Morgen eines Festtags gedacht habe.
+ * Es kommt aber in einem Redemittel vor - „Good morning." beim Begruessen
+ * -, und das ist 4.2. Regel 1 schlaegt meinen Einfall; aufgefallen ist es
+ * erst, als `vielfalt` 4.3 als zu duenn meldete und ich die Liste noch
+ * einmal gegen die Redemittel gelesen habe.
+ *
  * Das Untertor `englisch` verlangt, dass jedes der 151 Woerter genau
  * einmal hier steht. Eine Zuordnung, die man vergessen kann, waere in
  * einem Jahr keine mehr.
@@ -238,14 +245,14 @@ export const THEMA_WOERTER = {
     'about', 'at', 'behind', 'board', 'book', 'bye', 'can/can‘t', 'chair',
     'class/classroom', 'come', 'dear', 'do/don‘t', 'fine', 'give', 'good',
     'great', 'happy', 'hello', 'help', 'here', 'in', 'In front of', 'know',
-    'next to', 'o‘clock', 'okay/OK', 'on', 'pen/pencil', 'picture',
+    'morning', 'next to', 'o‘clock', 'okay/OK', 'on', 'pen/pencil', 'picture',
     'please', 'put', 'rubber', 'sad', 'school/schoolbag', 'sorry', 'sports',
     'take', 'teacher', 'thank(s)', 'there', 'time', 'to', 'under', 'very',
     'welcome', 'where',
   ],
   '4.3': [
     'bike', 'birthday', 'cold', 'football', 'go', 'Halloween', 'hobby',
-    'hot', 'like', 'Merry Christmas', 'morning', 'party', 'play', 'ride',
+    'hot', 'like', 'Merry Christmas', 'party', 'play', 'ride',
     'swim', 'tennis', 'weekend', 'when',
   ],
   '4.4': [
