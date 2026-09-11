@@ -46,27 +46,27 @@
     "zwei Gebiete mit derselben ID": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 25
+      "s": 20
     },
     "ein Kartenschlüssel ist weder Kontinent noch erklärter Ausschnitt": {
       "commit": "a5c6fcd67122032c962beb0b4882e77b65b9bb96",
       "zeit": "2026-09-10",
-      "s": 13
+      "s": 5
     },
     "ein Anker liegt außerhalb seines Gebiets": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "ein Anker liegt im Loch seines Gebiets": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 7
     },
     "ein gespieltes Land ist gar nicht gebacken": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "ein gespieltes Land verliert seinen Umriss": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -86,12 +86,12 @@
     "eine benutzte Marke gibt es nicht": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "eine Flächenfarbe hängt sich vom System ab": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 4
     },
     "ein Zeichen außerhalb des geladenen Schnitts": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -106,7 +106,7 @@
     "der Stern des Symbols läuft in die iOS-Maske": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 8
+      "s": 9
     },
     "das Konzept nennt eine andere Gebietszahl": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -126,7 +126,7 @@
     "die Vorschau verschweigt ein Tor, das sie nicht fährt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "die Vorschau läuft auf main": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -141,7 +141,7 @@
     "die Vorschau schiebt einen ungeprüften Stand unter /": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "der Zahlenraum im Code stimmt nicht mehr mit dem Abgleich": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -151,7 +151,7 @@
     "die Null wird wieder Summand": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "eine falsche Möglichkeit ist die richtige Antwort": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -159,34 +159,34 @@
       "s": 1
     },
     "die Rechenebene gehört plötzlich beiden Kindern": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 737
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 741
     },
     "die Rechenaufgabe landet auf dem Kartenbildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 109
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "die Landschaft geht schon bei einem Tier auf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 212
     },
     "ein Tipp ins Bild stellt ein Tier hin, ohne dass eines gewählt war": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 116
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 119
     },
     "die Aufstellung wird nie abgelegt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "Wegräumen leert den Bildschirm, aber nicht die Ablage": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "einem vollen Lebensraum fehlt die Kulisse": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -196,7 +196,7 @@
     "eine Kulisse verschiebt sich mit transform": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "die Landschaften werden vereinigt statt ersetzt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -204,9 +204,9 @@
       "s": 8
     },
     "die Plätze in der Landschaft rutschen unter das Fingermaß": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 278
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 292
     },
     "die Aufnahme der Landschaft bleibt im Buch stehen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -214,24 +214,24 @@
       "s": 18
     },
     "die Bank blättert nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
-    },
-    "das Blättern zeigt immer dieselbe Seite": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 108
     },
+    "das Blättern zeigt immer dieselbe Seite": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 107
+    },
     "die Sammlung öffnet keinen Raum mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 107
     },
     "der zweite Sammlungsraum wird nicht gefahren": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "die Schwelle gilt nicht mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -239,33 +239,33 @@
       "s": 5
     },
     "die Kopfzahl zählt etwas anderes als die Reiter": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 78
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 77
     },
     "ein Reiter zählt in die Gegenrichtung": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 38
     },
     "eine fünfte Schriftstufe schleicht sich ein": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 27
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 25
     },
     "ein dritter Radius kommt dazu": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 17
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 20
     },
     "ein Abstand neben der Leiter kommt zurueck": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 18
     },
     "die Aufkleberkarte wird wieder zu schmal": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 17
     },
     "der Lagername vergisst den Ort": {
@@ -284,49 +284,49 @@
       "s": 2
     },
     "ein Knopf ist breiter als das Fenster": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 189
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 203
     },
     "die Bühne beachtet den sicheren Bereich nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 185
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 191
     },
     "ein Kasten schneidet seine Schrift ab": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 99
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 102
     },
     "die Lupenknöpfe liegen wieder auf der Karte": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 98
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 102
     },
     "zwei Kacheln liegen aufeinander": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 99
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "eine Aufkleberkarte liegt außerhalb des Fensters": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 97
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 103
     },
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 28
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 25
     },
     "das Wasserzeichen unter der Schrift zählt nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 18
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 17
     },
     "der Streu unter der Schrift zählt nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 16
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 21
     },
     "kleiner Text wird zu hell": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -334,29 +334,29 @@
       "s": 16
     },
     "die Profilzeile steht wieder auf dem Streu": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 16
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 21
     },
     "der Fassungsstempel wird zu blass": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 16
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 21
     },
     "der Fassungsstempel deckt die Kachelwand zu": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 632
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 649
     },
     "der Fassungsstempel bleibt leer": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 318
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 327
     },
     "die Hauptstädte stehen wieder als zwei Kacheln da": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 358
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 407
     },
     "der Runner darf wieder einen anderen Browser fahren": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -364,29 +364,29 @@
       "s": 8
     },
     "die Werkzeugspalte rutscht auf die Antwortliste": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 545
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 552
     },
     "der Fremdgriff sieht die Aufgabe nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 548
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 607
     },
     "das Buch verliert den Weg zurück in den Vorlauf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 197
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 210
     },
     "„Zurück\" aus dem Vorlauf fällt in die Ebenenwahl": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 110
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 118
     },
     "eine Ebenenkachel hat kein Bild mehr": {
-      "commit": "7d000570ebfce76a32e87b839c205402bf416aed",
-      "zeit": "2026-09-10",
-      "s": 179
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "dem Kachelbild fehlt eines seiner Ziele": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -399,24 +399,24 @@
       "s": 3
     },
     "die Nachsicht schluckt eine gerissene Frist": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 34
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 36
     },
     "der Satz zum Mitnehmen fehlt im Buch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 111
     },
     "ein Tipp auf die Albumkarte blaettert den Satz nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "das Lob schiebt die Karte noch weiter weg": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 197
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 209
     },
     "ein Gebiet hat keinen Satz zum Mitnehmen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -426,52 +426,52 @@
     "aus einem Satz zum Mitnehmen werden zwei": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "ein Satz zum Mitnehmen nennt sein Gebiet nicht": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 7
     },
     "der Satz zum Mitnehmen kommt nicht auf den Bildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 33
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 32
     },
     "der Satz zum Mitnehmen wird nicht gesprochen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 33
     },
     "eine feste Pause schleicht sich in den Rauchtest zurueck": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "die Ebenenkachel wird auf dem großen Schirm wieder flach": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 98
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "zwei Finger ziehen die Karte nicht mehr auf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 22
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 26
     },
     "das Auge liegt wieder auf dem Kachelnamen": {
-      "commit": "d7564046254258d118b26a9fe7f257fe7519b41a",
-      "zeit": "2026-09-09",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "der leise Knopf verliert seine Kante": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 321
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 332
     },
     "der Bildschirm bleibt halbdurchsichtig": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 54
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 53
     },
     "jemand schreibt eine Funktion ab": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -484,8 +484,8 @@
       "s": 2
     },
     "das Startbündel überschreitet seine Grenze": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 11
     },
     "die Seite wächst unbemerkt": {
@@ -494,9 +494,9 @@
       "s": 10
     },
     "der mitgeschriebene Stand verschwindet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 10
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 12
     },
     "die Entwürfe holen ihre Schrift aus dem Netz": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -504,9 +504,9 @@
       "s": 25
     },
     "ein langes Warten bleibt stumm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 111
     },
     "ein Suchtext wird zweideutig": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -521,37 +521,37 @@
     "die Suchtext-Prüfung liest keine Proben mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "der letzte Probenlauf liegt zu lange zurück": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 1
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 0
     },
     "eine Probe hat keinen Nachweis, und es faellt nicht auf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 0
     },
     "ein Abschnitt fehlt in der Verteilung des Rauchtests": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 79
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 83
     },
     "die Nadelfäden sind länger geworden als bestätigt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 52
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 60
     },
     "zwei Nadelköpfe rücken enger zusammen als bestätigt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 31
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 34
     },
     "ein Teillauf urteilt über ein Profil, das er nicht gespielt hat": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 199
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 256
     },
     "ein Teillauf nennt weder seine Zahl noch einen Grund": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -561,27 +561,27 @@
     "ein geteiltes Tor sagt nicht, wie seine Deckung gezählt wird": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 0
+      "s": 1
     },
     "Stephan darf nicht mehr sprechen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 110
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 147
     },
     "die Spracheingabe verdrängt das Schreibfeld": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 59
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 90
     },
     "Fiona kann die Aufgabe nicht noch einmal hören": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 60
     },
     "der Hörknopf hängt nicht mehr am Profil": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 100
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 59
     },
     "das Becken verschluckt ein rotes Tor": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -599,39 +599,39 @@
       "s": 0
     },
     "ein Nachweis, dessen Alter sich nicht bestimmen lässt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 0
     },
     "Der Vorrat der Eltern wächst still": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "Eltern bekommt doch eine Auswahl": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 330
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 333
     },
     "ein Rang fehlt in der Länderliste": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "Fiona bekommt die Länder der Eltern zu sehen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 18
     },
     "die Falle eines Verbs ist nicht mehr die regelmaessige Form": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "Gestern und heute verliert seinen Bildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 59
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 64
     },
     "der Fehler, um den es geht, faellt aus den Moeglichkeiten": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -641,7 +641,7 @@
     "eine Flaggenkachel steht ohne eine einzige Flagge da": {
       "commit": "042aebc472e2f55e9727cc8010a2892a9d4e9a6e",
       "zeit": "2026-09-08",
-      "s": 541
+      "s": 654
     },
     "der Uebertragsfehler faellt aus den Moeglichkeiten": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -659,14 +659,14 @@
       "s": 4
     },
     "das Lueckenfeld der Praepositionen wird wieder breit": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 19
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 20
     },
     "der Fingerzeig von `regeln` zeigt auf die falsche Datei": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 1
+      "s": 2
     },
     "die Hauptstadt weicht von der gebackenen Lage ab": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -676,27 +676,27 @@
     "ein Ziel verliert seine Hauptstadt ohne Grund": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "eine Karte faehrt ohne Hauptstadt-Ratsche": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "die Raumwand auf dem schmalen Schirm bekommt ihren Platz zurueck": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 316
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 333
     },
     "die Raumzellen werden auf dem schmalen Schirm ungleich hoch": {
       "commit": "9dca60574767321e83185ddce492e0f32ead1f6c",
       "zeit": "2026-09-10",
-      "s": 321
+      "s": 328
     },
     "der Wortabstand in der Raumwand gilt nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 99
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 103
     },
     "Suedosteuropa erbt den Nachsatz, den nur Europa hat": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -726,7 +726,7 @@
     "der Regierungssitz steht nicht mehr vorn": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "die Hauptstädte-Ebene bekommt den falschen Rahmen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -734,24 +734,24 @@
       "s": 21
     },
     "Fiona bekommt die Hauptstädte Europas": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 849
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 678
     },
     "die Eltern bekommen den kindlichen Ton": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 7
     },
     "der sachliche Ton ruft doch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 329
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 400
     },
     "der Bildausschnitt wird wieder verworfen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 35
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 36
     },
     "die Übersicht im Elternbereich fällt weg": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -761,17 +761,17 @@
     "die Beschriftung fällt immer gleich aus": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "die Siegsterne kommen bei den Eltern zurück": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 56
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 55
     },
     "ein Schlüssel fehlt im kindlichen Ton": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 7
+      "s": 5
     },
     "ein Vorsprung allein genügt wieder": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -779,19 +779,19 @@
       "s": 3
     },
     "eine Aussprachevariante zeigt aufs falsche Land": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 2
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 3
     },
     "der Vorlauf zeigt wieder die ganze Tafel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 88
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 87
     },
     "die Beispielkarten verlieren ihre Form": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 15
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 20
     },
     "Aufkleber fallen wieder aus dem Buch": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -799,9 +799,9 @@
       "s": 0
     },
     "eine offene Kontinentrunde geht wieder zu": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "eine Regel fehlt in CLAUDE.md, die Verweise bleiben stehen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -809,69 +809,69 @@
       "s": 0
     },
     "das Auge startet die Ebene statt sie zu zeigen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 70
     },
     "der Wegweiser bleibt aus": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 184
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 187
     },
     "der Wegweiser leuchtet auch bei der umgekehrten Frage": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 97
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 99
     },
     "der Rauchtest stellt einen Stand für eine Karte, die es nicht gibt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 88
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 89
     },
     "der Haken bleibt am Ort statt an der Nadel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 30
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 35
     },
     "die Sprechprobe zaehlt jeden Versuch als verstanden": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 60
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 76
     },
     "die Nadel sucht sich keinen freien Platz mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 30
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 33
     },
     "die Lupe vergrößert gar nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 13
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 18
     },
     "die Lupe zielt auf die Mitte statt auf das Gesuchte": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 14
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 21
     },
     "„ganze Karte\" steht schon vor dem Zoomen da": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 14
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 18
     },
     "kein Gebiet hat mehr eine Trefferstelle": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 33
     },
     "es gibt gar keine Nadeln mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 82
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 86
     },
     "der Rückfall wird gar nicht mehr gestellt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 102
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 113
     },
     "die Aufkleberprobe zählt keine Gelegenheiten mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -889,44 +889,44 @@
       "s": 1
     },
     "das Buch zeigt Karten ohne Umriss": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "der Schalter kürzt keine Schaupause mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 69
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 73
     },
     "das Lob ist weg, bevor ein Kind es gelesen hat": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 36
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 34
     },
     "die Schaupause wird gar nicht mehr mitgeschrieben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 41
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 36
     },
     "eine Schaupause geht wieder an `?flott` vorbei": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "die Schaupausen-Prüfung findet nichts mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "der Rohdatenpfad wird wieder absolut": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "eine Kapitelseite im Buch ist zu hoch für den Bildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 107
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 111
     },
     "der leere Kopf nimmt wieder Platz weg": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -939,14 +939,14 @@
       "s": 17
     },
     "der Vorlauf verteilt die Karten wieder auf acht Spuren": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 26
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 30
     },
     "die Beispielkarten füllen das Band nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 16
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 19
     },
     "die Diphthonge verschwinden wieder": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -954,104 +954,104 @@
       "s": 2
     },
     "die Namensfahne bricht nicht mehr um": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 33
-    },
-    "die App spricht an jedem Profil vorbei": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 326
-    },
-    "das Protokoll kennt die Aufgaben der Eltern nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 517
-    },
-    "die Wackelkandidaten stehen unter keinem Namen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
-    },
-    "es gibt nur einen Löschknopf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 102
-    },
-    "der Vorlauf erscheint beim ersten Betreten nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 58
-    },
-    "die Karten im Vorlauf sagen nichts": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 38
-    },
-    "der Vorlauf zeigt die falsche Zahl an Gebieten": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 36
-    },
-    "„von vorne\" in der Pause löscht nichts": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
-    },
-    "nach „von vorne\" läuft die alte Sitzung weiter": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 100
-    },
-    "der Boden verschluckt wieder den Nachbarn": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 29
-    },
-    "keine Nachsicht — nur der exakte Punkt zählt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 176
-    },
-    "die Nachsicht reicht zu weit — jeder Wurf trifft": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 35
     },
+    "die App spricht an jedem Profil vorbei": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 334
+    },
+    "das Protokoll kennt die Aufgaben der Eltern nicht": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 443
+    },
+    "die Wackelkandidaten stehen unter keinem Namen": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
+    },
+    "es gibt nur einen Löschknopf": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 107
+    },
+    "der Vorlauf erscheint beim ersten Betreten nicht": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 61
+    },
+    "die Karten im Vorlauf sagen nichts": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 40
+    },
+    "der Vorlauf zeigt die falsche Zahl an Gebieten": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 33
+    },
+    "„von vorne\" in der Pause löscht nichts": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
+    },
+    "nach „von vorne\" läuft die alte Sitzung weiter": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 112
+    },
+    "der Boden verschluckt wieder den Nachbarn": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 35
+    },
+    "keine Nachsicht — nur der exakte Punkt zählt": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 180
+    },
+    "die Nachsicht reicht zu weit — jeder Wurf trifft": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 38
+    },
     "das gezogene Schild bleibt anfassbar": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 26
     },
     "das gezogene Schild folgt dem Finger nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 17
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 16
     },
     "ein Fehlwurf bleibt stumm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 20
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 21
     },
     "schon ein Antippen hebt das Etikett auf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 24
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 22
     },
     "das Bild auf der Weltenwahl wird kleiner gezeichnet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 97
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 104
     },
     "die letzte Kachelreihe klebt wieder links": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 100
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 99
     },
     "das schmale Fenster bekommt wieder zwei Spalten": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 100
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "der Familienschlüssel verträgt kein Q mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1094,24 +1094,24 @@
       "s": 0
     },
     "etwas verlässt das Gerät, ohne dass jemand es eingerichtet hat": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 276
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 283
     },
     "bei elf Kacheln bricht der Name wieder auf einen Buchstaben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 97
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 102
     },
     "der Tagesstern überlebt den Neustart nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 104
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "der Tagesstern steht auf jeder Kachel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 104
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "der Größenwächter im Korpus urteilt falsch herum": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1119,14 +1119,14 @@
       "s": 3
     },
     "die vierte Welt bekommt ihre schmale Kachel nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 99
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 106
     },
     "die einzelne Albumkarte schrumpft wieder auf Briefmarkengröße": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 98
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 100
     },
     "beim Zusammenführen fällt der Aufkleber zurück": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1149,34 +1149,34 @@
       "s": 1
     },
     "der Endbildschirm zeigt die neuen Aufkleber nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 34
     },
     "die Albumkarte zeigt das Offene nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 111
     },
     "die elfte Ebene bekommt ihre schmale Kachel nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 100
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 105
     },
     "die Kachel verliert ihre Höhe": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 102
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "die Rückmeldetöne sind wieder ab Werk an": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 124
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 127
     },
     "die Umgebung endet wieder hart am Rahmen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 55
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 62
     },
     "die Umgebung ist unsichtbar, das Tor misst ein leeres Bild": {
       "commit": "ebc865e4b34e257b8239396a461c5d2631d2e88b",
@@ -1184,19 +1184,19 @@
       "s": 58
     },
     "der langsamere Bildschirmbau räumt den schnelleren weg": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 29
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 31
     },
     "die fehlende Länderkarte wird verschwiegen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 33
     },
     "die Fremdgriff-Frage gilt wieder für jeden Ausschnitt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 13
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 15
     },
     "der nächtliche Lauf urteilt wieder über `ansicht`": {
       "commit": "6850af3871588056bad68c78e57ed290ee965473",
@@ -1214,9 +1214,9 @@
       "s": 15
     },
     "Grönland ist wieder nur Umgebung": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 19
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 17
     },
     "ein Symbol im Manifest gibt es nicht": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1239,79 +1239,79 @@
       "s": 6
     },
     "beide Bildschirme blenden gleichzeitig": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 109
     },
     "„von vorne\" steht wieder an der Kachel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 107
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 109
     },
     "Antippen antwortet nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 219
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 156
     },
     "beide Kinder bekommen dieselbe Antwortweise": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 541
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 553
     },
     "die Aufgabe wird nicht mehr vorgelesen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 1074
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 693
     },
     "die Ansage hängt nicht mehr am Kind": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 1238
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 1178
     },
     "das Forscherbuch zeigt wieder alles": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 107
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 113
     },
     "Kopf und Endbildschirm rechnen wieder verschieden": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 107
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "das Fortschrittsband färbt sich nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 104
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 111
     },
     "die geänderte PIN wird nicht gespeichert": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "die Karte zeigt den Fortschritt erst viel später": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 34
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 36
     },
     "die Ebenenwahl zeigt keine Aufkleber mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "die Sterne kommen auf die Ebenenkachel zurueck": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 113
     },
     "Balken und Aufkleberzahl laufen wieder auseinander": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 112
     },
     "auf dem Zielgerät verschwindet der Kachelbalken": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 15
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 17
     },
     "der Rundungsrest fällt wieder auf die letzte Sorte": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1319,24 +1319,24 @@
       "s": 1
     },
     "eine falsche Antwort bleibt stumm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 65
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 64
     },
     "richtig und falsch klingen gleich": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 62
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 60
     },
     "der Ton für „falsch\" steigt statt zu fallen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 62
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 60
     },
     "der Ton spielt auch bei abgeschaltetem Ton": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 69
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 67
     },
     "die Buchstabenerkennung nimmt alles an": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1369,134 +1369,134 @@
       "s": 9
     },
     "das Soll der Buchstabenerkennung fehlt im Backlog": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 7
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 17
     },
     "das Diktat zeigt die Vorlage doch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 104
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 109
     },
     "die Diktat-Frage nennt den gesuchten Buchstaben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 62
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 63
     },
     "das Diktat sagt nicht, dass der Ton fehlt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 64
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 61
     },
     "die Reihenfolge der Ziffern zaehlt nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 69
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 50
     },
     "die Ziffern werden gegen die Buchstaben gehalten": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 68
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 69
     },
     "auf Anhieb richtig heisst nur noch richtig": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "eine Spalte fehlt in der Profiltabelle": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 107
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 113
     },
     "der Fehlgriff auf der Karte wird nicht mehr benannt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 22
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 25
     },
     "der Hinweis zeigt in die falsche Richtung": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 17
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 18
     },
     "alle Ebenen landen in derselben Welt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 11
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 14
     },
     "jede Welt zeigt wieder alle Ebenen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 17
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 18
     },
     "die Zehnerreihe kommt so oft dran wie von selbst": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "der Regler lässt fast nur noch Division zu": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 6
     },
     "die Mischung ergibt nicht mehr eins": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "eine Division geht nicht mehr auf": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 7
     },
     "Lea bekommt die Zahlen vorgesetzt statt zu schreiben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 522
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 794
     },
     "der Rechen-Umschalter behauptet eine andere Weise": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 231
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 232
     },
     "der Regler kommt nicht bis in die Sitzung": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 71
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 70
     },
     "eine richtige Antwort wird nicht mehr gewertet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 18
     },
     "aus dem Sprachmodus kommt man nicht mehr heraus": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 75
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 61
     },
     "endet die Erkennung von selbst, merkt die App es nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 72
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 91
     },
     "ein ganzer Satz wird nicht mehr verstanden": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 68
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 87
     },
     "nicht verstanden kostet wieder einen Versuch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 62
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 90
     },
     "von drei Lesarten zaehlt wieder nur die erste": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 64
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 67
     },
     "die Meldung sagt nicht mehr, was angekommen ist": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 61
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 63
     },
     "der Ausschnitt schneidet wieder Bestimmungswörter ab": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1504,89 +1504,89 @@
       "s": 2
     },
     "die App redet weiter, während sie zuhört": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 71
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 70
     },
     "die laufende Ansage läuft ins Mikrofon weiter": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 59
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 76
     },
     "das Zwischenergebnis wird wieder weggeworfen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 64
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 65
     },
     "die Rückfrage ist wieder eine Sackgasse": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 64
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 69
     },
     "die Buchstabenkarten rutschen wieder zusammen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 100
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 104
     },
     "die Vorschauseite verschweigt wieder den Fortschritt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 108
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 111
     },
     "die Rechenseite im Buch verliert ihre Tafel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "jede Ebene bekommt wieder ihr eigenes Kapitel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 107
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "die Weltseite blaettert nicht in ihre Ebene": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 72
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 70
     },
     "das Weltraster laesst wieder leere Spalten stehen": {
       "commit": "d7564046254258d118b26a9fe7f257fe7519b41a",
       "zeit": "2026-09-09",
-      "s": 105
+      "s": 113
     },
     "die Weltuebersicht sagt nicht mehr, wo es weitergeht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 109
     },
     "der Abzeichenname bricht wieder mitten im Wort": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 107
     },
     "der Kapitelstreifen sperrt auf dem schmalen Schirm einen Reiter aus": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 108
     },
     "die Abzeichenseite zeigt wieder nur drei offene Abzeichen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 37
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 41
     },
     "die Abzeichenseite sagt nicht mehr, welches als nächstes fällt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 39
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 38
     },
     "die Rechentafel zählt an ihrem Reiter vorbei": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "die Rechentafel fällt aus und niemand merkt es": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 106
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 110
     },
     "der Tonleiter fehlt die Ebene ohne Landkarte": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1596,122 +1596,122 @@
     "die Nutzungsmessung misst wieder den Kasten statt den Inhalt": {
       "commit": "3441eaf1b7d8e2ae92020d1f68c3e98659c39193",
       "zeit": "2026-09-08",
-      "s": 106
+      "s": 110
     },
     "der Lohn feiert auch bei den Eltern": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 366
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 311
     },
     "der Lohn bleibt auch bei den Kindern stumm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 12
     },
     "die Kachel eines Kontinents hat wieder eine eigene Farbe": {
       "commit": "ebbfea8ea0541997d9cf439cdf0277c07a32e93e",
       "zeit": "2026-09-10",
-      "s": 19
+      "s": 17
     },
     "die Fehlerüberschrift nennt jeden Befund einen Überlauf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 98
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 105
     },
     "die umgekehrte Frage kommt nicht mehr vor": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 41
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 38
     },
     "die umgekehrte Frage verrät ihre Antwort": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 39
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 37
     },
     "der Tipp auf die Karte wird nicht mehr gewertet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 170
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 192
     },
     "im Test steht wieder „Weiß ich nicht\"": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 62
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 64
     },
     "im Test steht wieder der Zeiger auf der Karte": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 35
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 37
     },
     "im Test gibt es wieder eine Auswahl": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 42
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 43
     },
     "im Test hat man wieder drei Versuche": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 49
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 46
     },
     "der bestandene Test bringt keinen Pokal mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 34
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 33
     },
     "Fiona ist wieder pink statt türkis": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 10
     },
     "zwei Profile bekommen fast denselben Farbton": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 9
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 10
     },
     "auch die Eltern bekommen einen Streu": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 10
     },
     "Fionas Streu hat nur noch eine Farbe": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 12
-    },
-    "die Schildkröten sind wieder alle gleich": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 9
     },
-    "ein Motiv fällt aus Fionas Streu": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+    "die Schildkröten sind wieder alle gleich": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 10
     },
+    "ein Motiv fällt aus Fionas Streu": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 9
+    },
     "die Augen der Totenköpfe verlieren ihren Verlauf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 10
     },
     "der Streu rutscht aus seiner absoluten Lage": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 11
     },
     "ein Abzeichen wählt nichts aus seinem Vorrat": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 7
     },
     "ein Abzeichen wählt gleich den ganzen Vorrat": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 7
     },
     "ein Abzeichen hängt an einer Ebene, die es nicht gibt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 6
     },
     "ein Abzeichen will ein Bild, das es nicht gibt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1719,74 +1719,74 @@
       "s": 5
     },
     "ein Abzeichen zählt nur, was das Kind schon gesehen hat": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 40
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 37
     },
     "das Buch rollt wieder statt zu blaettern": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 106
     },
     "ein Kapitelreiter blaettert nicht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 105
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 106
     },
     "die Abzeichenseite zeigt wieder nur die verdienten": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 39
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 38
     },
     "das neue Abzeichen wird nicht gesagt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 39
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 37
     },
     "eine fehlerfreie Runde wird nicht festgehalten": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 39
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 38
     },
     "die Erreichbarkeit haengt wieder an einer festen Tiefe": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 39
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 40
     },
     "die Leiter steigt nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 107
     },
     "die Leiter oeffnet ohne Koennen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 108
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 109
     },
     "alle Ablenker kommen von jenseits der Leiter": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 103
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 107
     },
     "ein Nachbarland verliert seine Fahne": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 42
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 39
     },
     "ein Anker verlangt ein Verschwinden, das nie eintritt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 12
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 11
     },
     "ein Anker verlangt ein Verschwinden von etwas, das es nicht gibt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 10
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 9
     },
     "ein Anker sucht etwas, das ohne Eingriff schon dasteht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 11
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 9
     },
     "eine gruene Aufnahme laesst ihr Abweichungsbild liegen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1794,29 +1794,29 @@
       "s": 58
     },
     "die Werkzeugspalte wird wieder eine Reihe mit Umbruch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 61
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 58
     },
     "der Antwortknopf wird wieder fast weiss": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 79
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 78
     },
     "das abgelehnte Etikett wird heller als ein ruhendes": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 79
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 80
     },
     "eine unbekannte Datei zieht keine Tore mehr nach sich": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 7
+      "s": 5
     },
     "die ruhenden Antwortknoepfe behalten ihre volle Deckkraft": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 102
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 104
     },
     "ein englisches Wort weicht von der amtlichen Liste ab": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1826,52 +1826,52 @@
     "ein Redemittel wird um einen eigenen Satz ergaenzt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "eine Farbe der Englischebene steht nicht im amtlichen Wortschatz": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 4
     },
     "zwei Farben der Englischebene sind nicht auseinanderzuhalten": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 4
     },
     "die Ablenker der Englischebene kommen aus der falschen Sorte": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "das gesuchte englische Wort steht auf dem Bildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 26
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 28
     },
     "ohne englische Stimme steht das Wort nirgends": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 25
     },
     "die verbrauchten Farbflecken verlieren ihre Farbe": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 26
     },
     "das englische Wort wird deutsch ausgesprochen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 25
     },
     "die Englischebene sagt das Wort gar nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 86
     },
     "ein Wort fällt aus dem Bildplan heraus": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "ein Bildblatt hat nicht zehn Felder": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1884,24 +1884,24 @@
       "s": 6
     },
     "die Falle bekommt keine eigene Auskunft mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 26
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 30
     },
     "Groß- und Kleinschreibung zählt bei den falschen Freunden doch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 38
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 51
     },
     "die Elternebene bietet eine Auswahl an": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 406
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 405
     },
     "die Zeile „Ton als Gegenstand\" wird nicht gelesen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 238
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 237
     },
     "die Umgebung wird ausgeblendet und das Tor merkt es trotz Wiederholung": {
       "commit": "ebc865e4b34e257b8239396a461c5d2631d2e88b",
@@ -1909,34 +1909,34 @@
       "s": 31
     },
     "ohne englische Stimme springt die deutsche ein": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 61
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 58
     },
     "eine Ebenenkachel hat gar keinen Vorrat": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 308
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 306
     },
     "der zu hörende Satz steht mit auf dem Bildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 411
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 409
     },
     "das zweite Hören wird nicht mehr gezählt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 412
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 409
     },
     "der ganze Satz muss aufs Zeichen genau getippt werden": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 418
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 414
     },
     "eine Wendung kennt nur eine einzige Fassung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 4
     },
     "ein Diktatsatz zeigt auf keine Wendung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -1951,97 +1951,97 @@
     "eine Ebene fuehrt in keinen Lebensraum mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 7
+      "s": 5
     },
     "der Gorilla wird zum Sammelstueck": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 7
+      "s": 5
     },
     "die Tiere eines Raums gibt es bei jedem Durchgang neu": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 4
     },
     "einer Flagge fehlt ihr unterscheidendes Zeichen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 4
     },
     "eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 4
     },
     "ein Land hat keine Flagge mehr": {
       "commit": "a5c6fcd67122032c962beb0b4882e77b65b9bb96",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "immer mehr Flaggen umgehen die Formsprache": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 8
+      "s": 7
     },
     "die Flagge verschwindet aus der Frage auf der Karte": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 236
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 234
     },
     "die Kartenebene weiss nicht mehr, welche Karte sie braucht": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 260
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 258
     },
     "„Auf die Karte\" stellt wieder die gewoehnliche Frage": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 228
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 216
     },
     "die Flaggenebene verliert ihren Bildschirm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 138
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 137
     },
     "bei der umgekehrten Frage steht wieder ein Mikrofon": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 19
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 17
     },
     "„Sag es\" wertet wieder": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 66
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 73
     },
     "„Sag es\" hat keinen Weg mehr ohne Mikrofon": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 102
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "„Sag es\" sagt das englische Wort nicht mehr vor": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 110
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 109
     },
     "die Satzebene bekommt den Vorrat der Wortebene": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 134
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 132
     },
     "das gesuchte Wort steht in der Frage": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 135
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 134
     },
     "die Lautpaare sagen nicht mehr, woran man sie unterscheidet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 135
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 133
     },
     "das Lautpaar zeigt zweimal dasselbe Wort": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 135
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 134
     },
     "ein Lautpaar steht unter der falschen Stolperstelle": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2051,47 +2051,47 @@
     "eine der vier Stolperstellen fällt weg": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 7
+      "s": 6
     },
     "die Lautpaare stehen auch ohne englische Stimme da": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 28
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 25
     },
     "passt bekommt keine englische Stimme mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 314
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 321
     },
     "die Vorlage steht nicht mehr da": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 294
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 292
     },
     "der zu hörende Satz steht trotzdem daneben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 302
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 301
     },
     "ein falscher Buchstabe bleibt in der Lücke liegen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 294
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 293
     },
     "die Buchstabenkarten lassen sich nur noch ziehen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 300
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 299
     },
     "der Vorlauf zeigt wieder alle zwanzig Sätze": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 324
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 329
     },
     "der Vorlauf zum Legen zeigt wieder alle Wörter": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 326
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 333
     },
     "ein Wort ohne Karte kommt in den Legevorrat": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2101,22 +2101,22 @@
     "der Legevorrat teilt sich den Leitner-Stand": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 4
     },
     "Fiona bekommt beim Lautpaar wieder Buchstaben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 135
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 134
     },
     "auch wer liest, bekommt beim Lautpaar Bilder": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 304
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 303
     },
     "der Lautvorrat filtert für das falsche Profil": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 135
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 134
     },
     "ein Lautpaar verliert eine seiner beiden Zeichnungen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2126,52 +2126,52 @@
     "ein gemaltes Lautpaar zeigt zweimal dasselbe Bild": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "die Zahl der nötigen Lautbilder wird nicht aus spiel.js gelesen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "eine Lautzeichnung gehört zu keinem Paar": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "der Grund der Welt wird nicht gesetzt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 66
     },
     "der Grund färbt auch die Bildschirme über den Welten": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 66
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 69
     },
     "die Sammlung fuellt ihre Buchseite nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 104
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 107
     },
     "der Kasten waechst, das Bild bleibt briefmarkengross": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 15
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 18
     },
     "das Abzeichen bleibt klein in seiner Zelle": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 15
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 16
     },
     "der erste Druck loest schon auf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 68
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 67
     },
     "der zweite Druck loest nicht mehr auf": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 75
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 84
     },
     "der Tipp nimmt alle falschen weg": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2179,29 +2179,29 @@
       "s": 1
     },
     "das Haus zaehlt nur ein Kind": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 69
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 67
     },
     "das Haus zaehlt die Eltern mit": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 68
     },
     "das volle Haus bleibt stumm": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 68
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 65
     },
     "die richtige Antwort huepft nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 69
     },
     "die verbrauchten Knoepfe ersticken das Huepfen wieder": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 66
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 68
     },
     "die Buehne tritt ohne Versatz auf": {
       "commit": "9dfb7a7615d1f3aca68ea03b776e576ffec488b3",
@@ -2209,19 +2209,19 @@
       "s": 68
     },
     "der Auftritt bleibt auf halbem Weg stehen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 68
-    },
-    "im Lob steht keine Figur mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 69
     },
+    "im Lob steht keine Figur mehr": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 68
+    },
     "die Figur steht auch im Lob der Eltern": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 66
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 68
     },
     "das Wiedersehen-Zeichen kommt nie": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2234,9 +2234,9 @@
       "s": 1
     },
     "der Aufkleber-Satz ruft auch im sachlichen Ton": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 338
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 337
     },
     "der Bogen wird auf die Liste gar nicht angewendet": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2254,59 +2254,59 @@
       "s": 1
     },
     "das Tagesziel zählt gestrige Sterne mit": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 68
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 70
     },
     "auch die Eltern bekommen ein Tagesziel": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 65
-    },
-    "ein Fehler löscht die Serie nicht mehr": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 68
     },
+    "ein Fehler löscht die Serie nicht mehr": {
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 66
+    },
     "die Serie erscheint schon nach der ersten richtigen Antwort": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 64
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 66
     },
     "eine Zeichnung nennt eine Farbe, die es nicht gibt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "eine Zeichnung ist wieder einfarbig": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "zwei englische Zeichnungen sehen einander zu ähnlich": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "der Zellvergleich der Bilder füllt nichts mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "ein Wort im Bildplan ist weder gezeichnet noch begründet": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "der Bildvergleich zählt wieder Namen statt Töne": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 6
     },
     "zwei gemalte Lautkarten sehen einander zu ähnlich": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 6
     },
     "ein Lautpaar zeigt dieselbe Zeichnung in zwei Farben": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2316,17 +2316,17 @@
     "zwei Zeichnungen reissen beide Grenzen zusammen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "zwei englische Wörter teilen sich eine umgefärbte Zeichnung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "die Eichung der Bildgrenzen wird verschoben": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 6
     },
     "zwei englische Wörter teilen sich eine verschobene Zeichnung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2334,24 +2334,24 @@
       "s": 5
     },
     "beim Lesen wird das Wort doch vorgelesen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 305
     },
     "beim Lesen steht das Wort nicht mehr in der Frage": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 305
     },
     "zwei englische Wörter teilen sich eine Zeichnung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "eine Zeichnung läuft aus ihrem Rahmen": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 4
     },
     "die Rahmenrechnung verliert ihre Spiegelung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2364,9 +2364,9 @@
       "s": 5
     },
     "die Englischkarten laufen über den Rand": {
-      "commit": "5e9fc06f265d05e0f6030ebd6fa3c32acfcb6782",
-      "zeit": "2026-09-10",
-      "s": 597
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 323
     },
     "die Satz-Abzeichen wählen nichts aus": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
@@ -2376,127 +2376,127 @@
     "die Satz-Abzeichen decken die Themengebiete nicht mehr ab": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 4
     },
     "auf dem Flaggenschirm fehlt das Mikrofon wieder": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 59
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 54
     },
     "nicht verstanden kostet auf dem Flaggenschirm wieder einen Versuch": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 65
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 59
     },
     "ein Paar, das man nicht sehen kann, wird trotzdem gefragt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 7
+      "s": 5
     },
     "die Ausnahme wird zum Freibrief": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 5
     },
     "ein Verwechslungspaar sagt nicht, woran man es erkennt": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 6
+      "s": 4
     },
     "nach der Antwort bekommt nur die richtige Flagge ihren Namen": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 210
     },
     "die Flaggenfrage wird nicht mehr angesagt": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 18
     },
     "die Stimme wird durch keine Beruehrung mehr freigegeben": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 62
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 70
     },
     "ein Ort steht noch in Aussicht, obwohl seine Schwelle erreicht ist": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 4
     },
     "die fertige Ebene sagt nicht mehr, was als naechstes zu holen ist": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 95
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 98
     },
     "der volle Endbildschirm laeuft wieder in den Streifen des Telefons": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 93
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 98
     },
     "ein Raum oeffnet sich erst hinter der Reichweite des Profils": {
       "commit": "a5c6fcd67122032c962beb0b4882e77b65b9bb96",
       "zeit": "2026-09-10",
-      "s": 4
+      "s": 5
     },
     "die Raumwand faellt auf dem schmalen Schirm auf drei Spalten zurueck": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 92
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 100
     },
     "die Raumwand im Querformat verliert ihr eigenes Mass": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 92
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 101
     },
     "eine Nachbarschaft gilt nur in eine Richtung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 5
+      "s": 7
     },
     "ein Nachbar wird nicht mehr als richtig gewertet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 54
     },
     "ohne die Laendergruppe stehen dreizehn Kacheln in der Wand": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 94
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 100
     },
     "ein Paar zeigt im Bild in die andere Richtung": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 14
+      "s": 17
     },
     "ein Land, das die Karte kaum zeigt, darf verglichen werden": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
-      "s": 14
+      "s": 13
     },
     "das kleinere Land wird als richtig gewertet": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
       "s": 57
     },
     "die Wand mit sechs Kacheln bleibt flach": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 92
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 98
     },
     "die Messgrenze der Kachelzahl gilt wieder als Platzverlust": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 52
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 53
     },
     "das Warten nach dem Rueckweg endet schon in der offenen Gruppe": {
-      "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
-      "zeit": "2026-09-10",
-      "s": 47
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 46
     },
     "bei vollem Massstab ist nur noch Meer zu sehen": {
-      "commit": "33331ecbe5abfdc4237c736cbcb01656d48c06b1",
-      "zeit": "2026-09-10",
-      "s": 24
+      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
+      "zeit": "2026-09-11",
+      "s": 14
     }
   }
 }
