@@ -6153,8 +6153,8 @@ function englischschirm(){
       : 'Tippe auf das Bild, das du hörst.'}</div>
     <div class="englischfeld">
       <div class="engwahl" id="auswahl">${auswahl.map(x =>
-        `<button class="engkarte" data-id="${x.id}" aria-label="${x.wort}"
-                 lang="en">${bild(x)}</button>`).join('')}</div>
+        `<button class="engkarte" data-id="${x.id}" data-sorte="${x.sorte}"
+                 aria-label="${x.wort}" lang="en">${bild(x)}</button>`).join('')}</div>
       ${WEISSNICHT}
     </div>`;
 

@@ -7525,6 +7525,45 @@ export const PROBEN = [
     an:{ datei:'tor/inhalt.mjs', text:'const THEMA_MIN = 40;' },
     sagt:'zu wenig gezeichnete' },
 
+  /* E14d - der Rauchtest prueft, dass die vier Moeglichkeiten DIESELBE
+     Sorte sind: stuenden ein Farbfleck, eine Ziffer und zwei Zeichnungen
+     nebeneinander, waere die gesuchte ohne ein Wort Englisch zu finden.
+     
+     Der Eingriff nimmt dem Sieb die Sorte UND schickt die Bildaufgabe in
+     den gemischten Hoervorrat - beides zusammen, weil eines allein nichts
+     aendert: der Lesevorrat besteht nur aus Zeichnungen, da mischt auch
+     ein Sieb ohne Sorte nichts. Eine Probe, die nur die halbe Ursache
+     setzt, kommt an und bewirkt nichts (Regel 10). */
+  /* `--nur=englisch` wie bei jeder Probe auf `smoke`, und hier hat es
+     Geld gekostet, es zu vergessen: der ganze Rauchtest in EINEM Lauf
+     braucht 51 Minuten statt vier, und in dieser Zeit lief er auch ohne
+     Eingriff rot, waehrend die Kette ihn in vier Teilen gruen meldet.
+     Was da genau umkippt, ist nicht geklaert (B24) - es zu klaeren ist
+     aber nicht die Aufgabe dieser Probe. */
+  { n:'die vier Möglichkeiten dürfen die Sorte mischen', tor:'smoke',
+    args:['--nur=englisch'],
+    deckt:'englisch', datei:'src/inhalt/englisch.js', bauen:true,
+    /* EIN Suchtext ueber BEIDE Stellen samt dem Kommentar dazwischen -
+       eine Probe kennt genau einen Eingriff, und die beiden Zeilen stehen
+       untereinander. Hier muss kein Anker ueberleben: der Waechter in
+       `inhalt` zaehlt den Suchtext im ARBEITSBAUM, und `inhalt` selbst
+       liest die eingegriffene Kopie nicht - anders als bei den Proben,
+       die auf `inhalt` zielen. */
+    such:"    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();\n"
+      + "  /* Gesiebt wird nach dem WORT und nicht nur nach der Kennung (E13).\n"
+      + "     Seit „Hoeren und zeigen\" dieselben Zeichnungen benutzt, gibt es\n"
+      + "     dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -\n"
+      + "     und zwei gleiche Katzen nebeneinander waeren keine Aufgabe, sondern\n"
+      + "     ein Fehler, den das Kind sich selbst erklaeren muesste. */\n"
+      + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort);",
+    ersatz:"    : vorratHoeren();\n"
+      + "  const andere = topf.filter(x =>\n"
+      + "    x.id !== ziel.id && x.wort !== ziel.wort);",
+    an:{ datei:'src/inhalt/englisch.js',
+         text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
+    sagt:'mischen' },
+
   /* E14c - drei Proben fuer drei Zeilen, und jede greift woanders an.
      Zusammen decken sie den ganzen Weg vom Schluessel zur Kachel ab:
      die Tafel, der Aufruf, und der Bezeichner, der kein Titel werden darf. */

@@ -7159,3 +7159,107 @@ Dieselbe Mechanik, eine andere Aufgabe.
 - Die Zuordnung ist **nicht amtlich**. Wenn die ISB-Liste eines Tages
   eine Zuordnung liefert, ersetzt sie diese — das Tor vergleicht dann
   gegen die Quelle statt gegen die eigene Zusage.
+
+---
+
+## E14c + E14d · Zwei Befunde aus einem Abnahmebild — GESCHLOSSEN
+
+**Beide kamen mit E13, beide haben alle Tore passiert, und beide standen
+auf dem ersten Bild, das ich angesehen habe.** Regel 4 steht seit langem
+im Verzeichnis; das hier ist der Beleg, dass sie nicht dekorativ ist.
+
+### „Sag es auf Englisch." zeigte `undefined`
+
+`sagenschirm` wählte das Bild aus drei Fällen: Satz, Farbfleck, sonst
+Ziffer. „Sonst" war bis E13 immer eine Zahl — der Vorrat bestand aus
+zehn Farben und fünfzehn Zahlen, jeder Gegenstand trug also entweder
+`farbton` oder `ziffern`, und das letzte Glied der Kette brauchte keine
+Bedingung. Mit den 84 Zeichnungen traf es Gegenstände, die beides nicht
+haben.
+
+**Warum kein Tor es gemeldet hat**, und das ist der interessantere Teil:
+
+- `spielprobe` spielt die Ebene durch. Sie prüft, dass eine Antwort
+  angenommen wird — nicht, was dabei zu sehen ist.
+- `passt` misst Ränder. „undefined" in Schriftgrad s5 passt bequem.
+- `lesbarkeit` misst Kontrast und Größe. Beides war einwandfrei.
+- `ansicht` vergleicht mit einem Vorbild — und das Vorbild war seit E13
+  ohnehin rot, weil sich der Bildschirm geändert hatte. Rot war erwartet.
+
+Vier Tore sahen eine gefüllte Fläche mit gut lesbarem Text darin. Keines
+kann wissen, dass dieser Text ein Programmierfehler ist. Das ist keine
+Lücke, die sich schließen lässt: ein Tor prüft, was es zu prüfen weiß.
+
+### Auf der Vorlaufkachel stand „gegensaetze"
+
+`BILDER` ordnet jedes Wort einem Wortfeld zu — mit einem **Schlüssel**:
+klein, ASCII, „rest" für alles Übrige. Solange das Feld nur sortierte,
+war das gleichgültig. Seit E13 trägt der Vorrat es als `gebiet`, und
+`gebiet` ist in dieser App das Feld, das **angezeigt** wird (bei einer
+Hauptstadt steht dort ein Landesname). Die Vorlaufkachel setzt es ohne
+Nachfrage unter das Bild.
+
+Neu ist `GEBIET_TITEL`: zehn deutsche Titel, alle unter elf Punkten
+(„Wo?" statt „Wo etwas ist", „Mehr" statt „Verschiedenes"). Der
+Gegenstand trägt jetzt **beides** — `gebiet` den Titel, `feld` den
+Schlüssel.
+
+**Die Trennung ist nicht kosmetisch, und das hat dasselbe Tor bewiesen,
+das ich dabei repariert habe.** `inhalt` nimmt die vier Bilder des
+Blattes „Wo?" von der Ähnlichkeitsprüfung aus, weil sie sich gleichen
+*sollen* — dieselbe Kiste, derselbe Ball, einmal davor und einmal
+dahinter. Diese Ausnahme fand ihr Blatt über `x.gebiet === 'wo'`. Als der
+Vorrat kurzzeitig nur den Titel trug, verglich sie „Wo?" gegen „wo",
+traf nichts mehr, und das Tor meldete zwei Bilder als zu ähnlich, die
+seit Monaten so gewollt sind. **Ein Bezeichner, der sich mit der
+Beschriftung ändert, ist kein Bezeichner.**
+
+### E14d · Der Rauchtest las die Sorte aus der Schreibweise
+
+Im selben Lauf: „die vier Möglichkeiten mischen water und go und hot und
+bild — dann ist die Aufgabe ohne ein Wort Englisch zu lösen". Die
+Aufgabe war in Ordnung; alle vier waren Zeichnungen.
+
+`smoke` las die Sorte als `dataset.id.split(':')[1]`. Das ging gut,
+solange alle vier Möglichkeiten aus demselben Vorrat kamen. Seit E13
+kommt das Ziel einer Bildaufgabe aus dem Hörvorrat (`en:bild:water`) und
+die drei Ablenker aus dem Lesevorrat (`ls:go`) — vier Kennungen mit vier
+verschiedenen zweiten Stellen. Die Karte trägt ihre Sorte jetzt selbst
+(`data-sorte`), und das Tor fragt sie. **Eine Messung, die von der
+Schreibweise des Gemessenen abhängt, misst die Schreibweise** (Regel 14).
+
+Vier stehende Gegenproben kamen dazu. Die lehrreichste ist die zweite:
+sie lässt `GEBIET_TITEL` **vollständig** und dreht nur den Aufruf zurück
+auf `b.gebiet` — genau so, wie der Fehler entstanden ist. Eine Prüfung,
+die nur die Tafel zählt, sieht das nicht.
+
+---
+
+## B24 · Der Rauchtest in einem Stück ist rot, in vier Teilen grün
+
+**Offen, und vorerst nur festgehalten.** Die erste Fassung der
+E14d-Gegenprobe lief ohne `--nur=englisch`, also über alle 19 Abschnitte
+in **einem** Prozess. Ergebnis: 51 Minuten, und der gesunde Lauf — der
+ohne jeden Eingriff — war **rot**. Dieselbe Fassung des Baums meldet in
+der Kette `smoke: gefahren 19 von 19`, grün, in vier Teilen nebeneinander
+in 1394 s.
+
+Zwei Läufe desselben Tors auf demselben Baum, zwei Ergebnisse. Einer von
+beiden lügt.
+
+Der wahrscheinlichste Verdacht ist die Laufzeit: ein Browser, der 25
+Minuten offen bleibt und 19 Abschnitte hintereinander spielt, sammelt
+Zustand an, den die vier kurzen Läufe nicht haben — Speicher, Timer,
+angesammelte Ablage. Belegt ist das nicht, und **ein Verdacht ist keine
+Messung** (Regel 5). Was fehlt, ist der eine Lauf mit `--laut`, der sagt,
+*welcher* Abschnitt umkippt.
+
+Warum es trotzdem nicht sofort dringend ist: die Kette fährt `smoke`
+**immer** geteilt, und alle 27 anderen `smoke`-Gegenproben laufen
+ebenfalls mit `--nur=…`. Der Weg, auf dem es aufgefallen ist, wird sonst
+nirgends beschritten.
+
+Warum es trotzdem aufzuklären ist: wenn der lange Lauf recht hat, gibt es
+einen Fehler, den die Kette **nie** sieht — und das wäre genau die Sorte
+Befund, für die es den Rauchtest gibt. Der nächste Schritt ist ein
+einzelner Lauf `node tor/smoke.mjs --laut` mit der Ausgabe in eine Datei.

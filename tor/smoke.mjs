@@ -9156,7 +9156,21 @@ if (laeuft('englisch')) try {
     return {
       wort: Sitzung?.liste[Sitzung.i]?.wort || '',
       ziel: Sitzung?.liste[Sitzung.i]?.id || '',
-      sorten: karten.map(k => k.dataset.id.split(':')[1]),
+      /* Die Sorte kommt vom GEGENSTAND (`data-sorte`) und nicht mehr aus
+         der Schreibweise seiner Kennung.
+         
+         Bis E14 stand sie an zweiter Stelle der Kennung, und das Tor las
+         sie dort ab. Das ging gut, solange alle vier Moeglichkeiten aus
+         demselben Vorrat kamen. Seit E13 kommt das Ziel einer Bildaufgabe
+         aus dem Hoervorrat (`en:bild:water`) und die drei Ablenker aus dem
+         Lesevorrat (`ls:go`) - vier Kennungen mit vier verschiedenen
+         zweiten Stellen, obwohl alle vier Zeichnungen sind. Das Tor
+         meldete „die vier Moeglichkeiten mischen water und go und hot
+         und bild", und die Aufgabe war in Ordnung.
+         
+         Eine Messung, die von der Schreibweise des Gemessenen abhaengt,
+         misst die Schreibweise. */
+      sorten: karten.map(k => k.dataset.sorte),
       ids: karten.map(k => k.dataset.id),
       text: s.textContent,
       hoerknopf: !!s.querySelector('#nochhoeren'),
