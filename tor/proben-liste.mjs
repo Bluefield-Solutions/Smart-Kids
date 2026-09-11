@@ -2193,10 +2193,28 @@ export const PROBEN = [
    * davorschieben. */
   { n:'die Raumzellen werden auf dem schmalen Schirm ungleich hoch',
     tor:'passt', bauen:true, datei:V,
+    /* I33: DER DRITTE ANLAUF, UND DIE BEIDEN DAVOR STEHEN HIER, WEIL
+     * SIE BEIDE PLAUSIBEL AUSSEHEN.
+     *
+     * Erster Anlauf: schmalere Spalten UND groesseres Polster. Das liess
+     * die Wand ueberlaufen, `passt` meldete vier Ueberlaeufe - und die
+     * Hoehen blieben trotzdem gleich.
+     * Zweiter Anlauf: den zwei Zeilen hohen Namenskasten wegnehmen
+     * (`min-height:2.3em`). Auch das aendert nichts, und der Grund ist
+     * das Raster selbst: Zellen einer Rasterreihe werden auf dieselbe
+     * Hoehe gedehnt. Solange in JEDER Reihe irgendein Name umbricht,
+     * sind alle Reihen gleich hoch - der Kasten faellt weg und niemand
+     * merkt es.
+     *
+     * Was der Zweig wirklich meint, ist EINE Zelle, die eine Zeile mehr
+     * braucht als die anderen. Genau das stellt der Eingriff jetzt her:
+     * die dritte Zelle bekommt drei Zeilen statt zwei. Ihre Reihe waechst
+     * mit, die anderen nicht - und das Tor muss sagen, welche aus der
+     * Reihe faellt. */
     such:'.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;min-height:2.3em;',
-    ersatz:'.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;',
-    an:{ ...DIST,
-         fehlt:'.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;min-height:2.3em' },
+    ersatz:'.rollen.buch .raumzelle:not(.ebenenzelle):nth-child(3) span{min-height:3.45em}\n'
+      + '.rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;min-height:2.3em;',
+    an:{ ...DIST, text:':nth-child(3) span{min-height:3.45em}' },
     sagt:'verschiedene Höhen hoch' },
 
   /* --- I23: das lange Wort, BEVOR es eine dritte Zeile kostet -------- *
@@ -7716,7 +7734,7 @@ export const PROBEN = [
    * die Tuerkei gegen Thailand mit 1,47 statt 1,50. Ein Kind, das
    * hinsieht, kann diese Aufgabe nicht loesen. */
   { n:'ein Paar zeigt im Bild in die andere Richtung', tor:'inhalt',
-    bauen:true, datei:E,
+    deckt:'groesser', bauen:true, datei:E,
     such:"    gross.km2 / klein.km2 >= GROESSER_FAKTOR && gross.px / klein.px >= GROESSER_FAKTOR;",
     ersatz:"    gross.km2 / klein.km2 >= GROESSER_FAKTOR;",
     /* Der Anker steht in der QUELLE, nicht im Buendel: `erdkunde.js`
@@ -7740,7 +7758,7 @@ export const PROBEN = [
    * geprueft wird - eine Pruefung, die nie etwas meldet, ist kein
    * Beweis (Regel 1). */
   { n:'ein Land, das die Karte kaum zeigt, darf verglichen werden', tor:'inhalt',
-    bauen:true, datei:E,
+    deckt:'groesser', bauen:true, datei:E,
     such:'export const GROESSER_TREUE = 0.86;',
     ersatz:'export const GROESSER_TREUE = 0;',
     an:{ datei:'src/inhalt/erdkunde.js', fehlt:'GROESSER_TREUE = 0.86' },
