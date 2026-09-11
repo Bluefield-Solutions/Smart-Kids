@@ -8057,3 +8057,25 @@ export const PROBEN = [
     an:{ ...DIST, fehlt:'klemmen();\n      etwasImBlick();' },
     sagt:'offenes Meer' },
 ];
+
+/* JEDE `inhalt`-PROBE BAUT (P22).
+ *
+ * Seit P20 steht `inhalt` in der Kette NACH dem Bau und liest `dist/` -
+ * die Paartafel von „Was ist groesser?", die Karten, die Flaggen. Eine
+ * Probe ohne `bauen:true` laeuft deshalb in einer Wegwerf-Kopie ohne
+ * gebaute Datei; `groesser` faellt als viertes Unter-Tor durch, und
+ * `inhalt` bricht dort ab - lange bevor die Pruefung drankommt, um die
+ * es der Probe geht.
+ *
+ * Sie meldet dann „rot, aber nicht deswegen", und das sieht aus wie ein
+ * Fehler in der Probe. Er steckt aber im Ablauf, und er trifft 109 von
+ * 116 - je nachdem, ob im Arbeitsbaum gerade ein `dist/` liegt, das
+ * mitkopiert wird. Eine Probe, deren Ergebnis davon abhaengt, beweist
+ * nichts.
+ *
+ * Also EINE Ableitung statt 109 Eintraege: wer eine `inhalt`-Probe
+ * dazuschreibt, muss nicht daran denken. Das kostet je Probe einen Bau
+ * von rund sechs Sekunden - und spart die Stunde, die das Suchen kostet,
+ * wenn es das naechste Mal passiert.
+ */
+for (const p of PROBEN) if (p.tor === 'inhalt') p.bauen = true;
