@@ -261,6 +261,30 @@ export function vorratHoeren(){
       sorte: 'farbe', farbton: f.farbton })),
     ...ZAHLEN.map(z => ({ id: `en:zahl:${z}`, name: ZAHLWORT[z], wort: ZAHLWORT[z],
       sorte: 'zahl', ziffern: String(z) })),
+    /* UND DIE VIERUNDACHTZIG ZEICHNUNGEN (E13).
+     *
+     * Sie lagen da und wurden nur von „Lies das Wort" benutzt - also von
+     * der Fertigkeit, die der Lehrplan am NIEDRIGSTEN gewichtet. Hoeren
+     * und Sprechen, die beiden, auf die es in der dritten Klasse
+     * ankommt, liefen auf zehn Farben und fuenfzehn Zahlen.
+     *
+     * Gemessen war das der ganze Vorrat: 25 Gegenstaende fuer „Hoeren
+     * und zeigen" und dieselben 25 fuer „Sag es". Eine Sitzung hat zehn
+     * Aufgaben; nach zweieinhalb Sitzungen hatte ein Kind alles gesehen,
+     * und danach wiederholte sich der Satz.
+     *
+     * Es ist KEIN neues Bild noetig. Dasselbe Kaetzchen, das Lea liest,
+     * hoert sie jetzt auch - und das ist nicht dieselbe Aufgabe, sondern
+     * die Umkehrung: dort steht das Wort und sie sucht das Bild, hier
+     * klingt das Wort und sie sucht das Bild. Der Leitner-Stand bleibt
+     * getrennt (`en:bild:` gegen `ls:`), weil das zwei Koennen sind.
+     *
+     * `ablenkerFuer` zieht bei `sorte:'bild'` aus demselben Topf - drei
+     * Bilder neben einem Bild, nie ein Farbfleck daneben. Das stand dort
+     * schon, fuer „Lies das Wort", und gilt hier unveraendert. */
+    ...BILDER.filter(b => b.bild).map(b => ({
+      id: `en:bild:${b.wort}`, name: b.wort, wort: b.wort,
+      sorte: 'bild', gebiet: b.gebiet, bild: b.bild })),
   ];
 }
 
@@ -536,7 +560,13 @@ export function ablenkerFuer(ziel, wuerfel, wieviel = 3){
    * daneben - und dann waere die Aufgabe „welches ist kein Fleck?" und
    * nicht „welches Bild heisst `cat`?". */
   const topf = ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();
-  const andere = topf.filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);
+  /* Gesiebt wird nach dem WORT und nicht nur nach der Kennung (E13).
+     Seit „Hoeren und zeigen" dieselben Zeichnungen benutzt, gibt es
+     dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -
+     und zwei gleiche Katzen nebeneinander waeren keine Aufgabe, sondern
+     ein Fehler, den das Kind sich selbst erklaeren muesste. */
+  const andere = topf.filter(x => x.sorte === ziel.sorte
+    && x.id !== ziel.id && x.wort !== ziel.wort);
   for (let i = andere.length - 1; i > 0; i--) {
     const j = Math.floor(wuerfel() * (i + 1));
     [andere[i], andere[j]] = [andere[j], andere[i]];

@@ -2565,17 +2565,39 @@ console.log('\n  Tor `englisch`');
       if (!EN.ZAHLEN.includes(+x))
         eng.push(`„${EN.ZAHLWORT[x]}" steht als Zahlwort da, aber ${x} ist keine `
           + 'Zahl der amtlichen Liste');
-    if (vorrat.length !== EN.FARBEN.length + EN.ZAHLEN.length)
+    /* DREI SORTEN SEIT E13, nicht mehr zwei.
+     *
+     * Der Hoervorrat war die Summe aus Farben und Zahlen - fuenfundzwanzig
+     * Gegenstaende fuer die beiden Fertigkeiten, auf die es in der dritten
+     * Klasse ankommt. Dazu kommen jetzt die gezeichneten Woerter; jedes
+     * von ihnen hat ein Bild, sonst waere es nicht gezeichnet.
+     *
+     * Gerechnet statt gezaehlt: die Zahl steht nicht hier, sondern ergibt
+     * sich aus den drei Listen. Wer ein Bild dazumalt, aendert sie mit -
+     * eine feste Zahl waere in einer Woche falsch (Regel 2: anteilig, nicht
+     * absolut). */
+    const gemalt = EN.BILDER.filter(b => b.bild).length;
+    const sollVorrat = EN.FARBEN.length + EN.ZAHLEN.length + gemalt;
+    if (vorrat.length !== sollVorrat)
       eng.push(`der Hörvorrat hat ${vorrat.length} Gegenstände, erwartet waren `
-        + `${EN.FARBEN.length + EN.ZAHLEN.length}`);
+        + `${sollVorrat} (${EN.FARBEN.length} Farben, ${EN.ZAHLEN.length} Zahlen, `
+        + `${gemalt} Zeichnungen)`);
     const ids = new Set(vorrat.map(x => x.id));
     if (ids.size !== vorrat.length)
       eng.push(`der Hörvorrat hat doppelte Kennungen — der Leitner führte sie als eine`);
+    /* UND DIE WOERTER DUERFEN SICH NICHT DOPPELN (E13).
+       Dasselbe Bild liegt unter zwei Kennungen (`en:bild:cat` gegen
+       `ls:cat`) - im Hoervorrat selbst darf „cat" trotzdem nur einmal
+       stehen, sonst kaeme es als sein eigener Ablenker zurueck. */
+    const woerter = new Set(vorrat.map(x => x.wort));
+    if (woerter.size !== vorrat.length)
+      eng.push(`der Hörvorrat nennt ${vorrat.length - woerter.size} Wörter doppelt — `
+        + 'eines davon stünde als sein eigener Ablenker daneben');
     for (const x of vorrat) {
-      if (!x.farbton && !x.ziffern)
+      if (!x.farbton && !x.ziffern && !x.bild)
         eng.push(`„${x.wort}" hat kein Bild — vier leere Kästen sind keine Aufgabe`);
       if (!x.wort) eng.push(`ein Gegenstand ohne Wort: ${x.id}`);
-      if (!['farbe', 'zahl'].includes(x.sorte))
+      if (!['farbe', 'zahl', 'bild'].includes(x.sorte))
         eng.push(`„${x.wort}" hat die Sorte „${x.sorte}" — dann kommen die Ablenker `
           + 'aus der falschen Menge');
     }
@@ -2608,9 +2630,9 @@ console.log('\n  Tor `englisch`');
       console.error('\n  englisch ROT: der Hörvorrat von „Hören und zeigen" stimmt nicht.');
       process.exit(1);
     }
-    console.log(`    „Hören und zeigen": ${vorrat.length} Gegenstände `
-      + `(${EN.FARBEN.length} Farben, ${EN.ZAHLEN.length} Zahlen), jeder mit Bild und `
-      + `im amtlichen Wortschatz`);
+    console.log(`    „Hören und zeigen" und „Sag es": ${vorrat.length} Gegenstände `
+      + `(${EN.FARBEN.length} Farben, ${EN.ZAHLEN.length} Zahlen, ${gemalt} Zeichnungen), `
+      + `jeder mit Bild und im amtlichen Wortschatz`);
     console.log(`    engste zwei Farben: ${engstesPaar} mit ${engster.toFixed(1)} CIELAB `
       + `(nötig ${ENGSTER_MIN})`);
   }

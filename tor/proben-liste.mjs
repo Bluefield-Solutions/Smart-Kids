@@ -5752,7 +5752,8 @@ export const PROBEN = [
        dem Hoervorrat. Der EINGRIFF ist derselbe geblieben - er nimmt die
        Sortenschranke weg - und er kommt bei den Farben und Zahlen an, die
        sich einen Topf teilen. */
-    such:"  const andere = topf.filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
+    such:"  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort);",
     /* Der Suchtext ueberlebt im Ersatz, als Kommentar darunter - und zwar
        WORTWOERTLICH. Der erste Anlauf hat nur ein Bruchstueck gerettet
        („x.sorte === ziel.sorte"), und `inhalt` meldete daraufhin den
@@ -5760,9 +5761,11 @@ export const PROBEN = [
        zwar der vierte in diesem Verzeichnis. Zwei Leerzeichen hinter dem
        „//" sind kein Zufall - sie machen den Suchtext samt seiner
        Einrueckung wieder auffindbar. */
-    ersatz:"  const andere = topf.filter(x => x.id !== ziel.id);\n"
-      + "  //Anker:  const andere = topf.filter(x => x.sorte === ziel.sorte && x.id !== ziel.id);",
-    an:{ datei:'src/inhalt/englisch.js', text:'filter(x => x.id !== ziel.id);' },
+    ersatz:"  const andere = topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort);\n"
+      + "  //Anker:  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "  //Anker:    && x.id !== ziel.id && x.wort !== ziel.wort);",
+    an:{ datei:'src/inhalt/englisch.js',
+         text:'filter(x => x.id !== ziel.id && x.wort !== ziel.wort);' },
     deckt:'englisch',
     sagt:'Ablenker anderer Sorte' },
 
