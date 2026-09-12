@@ -7263,3 +7263,86 @@ Warum es trotzdem aufzuklären ist: wenn der lange Lauf recht hat, gibt es
 einen Fehler, den die Kette **nie** sieht — und das wäre genau die Sorte
 Befund, für die es den Rauchtest gibt. Der nächste Schritt ist ein
 einzelner Lauf `node tor/smoke.mjs --laut` mit der Ausgabe in eine Datei.
+
+---
+
+## E14e · Die vier Themenkacheln bekommen ein Bild — und zwei neue Zeichnungen
+
+Zwei offene Punkte aus E14, beide grafisch, und sie hingen zusammen:
+„Freizeit und Feste" fehlten **zwei Zeichnungen** für seine Kachel, und die
+drei Kacheln, die es schon gab, trugen **kein Bild**.
+
+### Die zwei Zeichnungen
+
+Von den siebzehn Wörtern des Themas waren vierzehn gemalt; die Schwelle
+liegt bei sechzehn (zwei Runden à acht Aufgaben). Übrig waren „hobby",
+„like" und „when" — und nur zwei davon lassen sich malen:
+
+- **like → ein Herz.** Das naheliegende Bild, und es hat trotzdem nicht
+  auf Anhieb funktioniert (siehe unten).
+- **hobby → eine Gitarre.** Ein Oberbegriff hat kein Bild, das sich von
+  selbst erklärt; es ist eine **Vereinbarung**, so wie „sports" drei
+  Sportgeräte nebeneinander zeigt. Die Malpalette wäre das erste gewesen,
+  woran man denkt, und sie fällt aus: „colour" trägt sie schon.
+- **when** bleibt ungemalt, und das ist entschieden, nicht vergessen. Eine
+  Uhr hat „o‘clock", einen Kalender hat „weekend". Ein dritter Zeitmesser
+  wäre eine Karte, die neben einer der beiden steht und nichts anderes
+  sagt.
+
+### Das rote Herz war ein Schinken
+
+Das Herz war zuerst rot, und `inhalt` meldete sofort: **„big" und „like"
+sind zu 66 % zellgleich bei 67 % Deckung**. Beim Nachsehen — Regel 4, und
+hier hat der Blick die Messung erklärt statt sie zu bestätigen — stand die
+Antwort daneben: **„ham" ist in diesem Zeichenstil bereits ein rotes
+Herz**, mit einem Knochen quer darüber. Und „big" ist eine große rote
+Kugel. Drei rote Flächen derselben Größe auf einem Vier-Karten-Schirm.
+
+Das Herz ist jetzt **lila**. Nicht als Umweg um das Tor, sondern weil das
+Tor recht hatte: wer zwischen einem roten Herz und einem roten Schinken
+wählen soll, rät. Die drei ähnlichsten Paare sind seitdem wieder die
+alten („bread"/„chocolate" mit 61 %).
+
+### Die Kacheln zeigen ihre eigenen Zeichnungen
+
+Kein neues Symbol, sondern eine der Zeichnungen, die **hinter** der Kachel
+vorkommt — dieselbe Überlegung wie beim Kachelbuchstaben, den Fiona gleich
+nachfährt, und wie bei der Flaggenkachel mit der ersten Flagge ihrer
+Karte. Familie und Freunde → `family`, Schule → `book`, Freizeit und Feste
+→ `birthday`, Einkaufen → `dress`.
+
+Ausgesucht und nicht gerechnet, und dafür gibt es einen Grund:
+alphabetisch wäre 4.1 „big" (zwei Bälle) und 4.4 „apple". Einfarbig muss
+es außerdem lesbar bleiben, und das schließt einiges aus — die drei
+Luftballons von „party" verschmelzen zu einer Wolke, die Torte von
+„birthday" bleibt eine Torte. Das Tor prüft dafür drei Dinge: dass jedes
+Thema ein Wasserzeichen hat, dass es gemalt ist, und dass es **zu seinem
+Thema gehört**.
+
+### Die Gruppenkachel zeigte Familie
+
+Im ersten Lauf trug „Themen" die vier Menschen von `family` — die
+Gruppenkachel führt die Kennung ihres ersten Teils. Ein Kind hätte
+gelesen, dahinter liege Familie, und drei der vier Themen wären unsichtbar
+gewesen. Sie trägt jetzt **vier Quadrate**: „hier sind mehrere", ohne
+eines zu nennen.
+
+### Und die Lücke, die dabei aufgefallen ist
+
+Die englische Ebenenwand hatte **kein Vorbild**. Zehn Kacheln, jede mit
+einem eigenen Zeichen, und `ansicht` hat keine davon je gesehen: alle
+englischen Aufnahmen zeigen eine Ebene *im Spiel*, keine den Wähler davor.
+Gemerkt habe ich es, als ich nach der Änderung nachsah, welche Aufnahme
+rot geworden ist — keine.
+
+Zwei Aufnahmen kommen dazu (`quer-englisch-wand`,
+`quer-englisch-themen`), und `ansicht` kann seitdem die Ebenenwand einer
+anderen Welt als Erdkunde fotografieren: `wand:` nennt die Welt, ohne die
+Ebene zu starten. Vorher gab es nur `spiel:`, und das startet sie — die
+Wand war damit durchschritten, bevor die Aufnahme fiel.
+
+**Offen geblieben:** die Zeichnung zu „tea" ist beim Durchsehen der
+Abnahmebilder als einzige aufgefallen — der Henkel sitzt neben der Tasse
+statt an ihr, und die Untertasse ist ein grauer Strich. Sie ist alt und
+gehört nicht zu dieser Runde, aber sie steht als Antwortkarte auf dem
+Vier-Karten-Schirm und ist dort die eine, die nicht zu erkennen ist.

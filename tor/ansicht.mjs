@@ -288,6 +288,29 @@ const AUFNAHMEN = [
      Waehler schon durchschritten, wenn die Aufnahme faellt. */
   { name:'quer-flaggen-gruppe', spiel:null, quer:true,
     wahl:'.schirm.da', tun:'gruppe', gruppe:'flaggen' },
+  /* DIE ENGLISCHE EBENENWAND - und sie hatte bis E14e kein Vorbild.
+   *
+   * Zehn Kacheln, jede mit einem eigenen Zeichen, und `ansicht` hat
+   * keine einzige davon je gesehen: alle englischen Aufnahmen zeigen
+   * eine Ebene im Spiel, keine den Waehler davor. Gemerkt habe ich es
+   * erst, als die vier Themenkacheln ihr Bild bekamen und ich nachsah,
+   * welche Aufnahme sich geaendert hat. Keine. Ein Bildschirm ohne
+   * Vorbild aendert sich unbeobachtet - genau die Luecke, die bei der
+   * Weltenwahl und beim Elternbereich schon einmal aufgefallen ist.
+   *
+   * `wand:` statt `spiel:`, weil `spiel:` die Ebene startet und die
+   * Wand damit durchschritten waere, bevor die Aufnahme faellt. */
+  { name:'quer-englisch-wand', spiel:null, kind:'lea', quer:true,
+    wand:'englisch:hoeren', wahl:'.schirm.da' },
+  /* Und die vier Themenkacheln dahinter (E14e). Sie sind der Grund, aus
+     dem es die Wand-Aufnahme jetzt gibt: bis hierher trugen sie nur
+     Farbe und Namen, und fuer Fiona, die nicht liest, waren vier Kacheln
+     mit Namen vier gleiche Kacheln. Jetzt traegt jede eine ihrer EIGENEN
+     Zeichnungen, und ob die einfarbig noch zu erkennen ist, sagt kein
+     Tor - nur dieses Bild. */
+  { name:'quer-englisch-themen', spiel:null, kind:'lea', quer:true,
+    wand:'englisch:hoeren', wahl:'.schirm.da',
+    tun:'gruppe', gruppe:'enthemen' },
   { name:'quer-flaggen-wahl', spiel:'flaggen:europa', quer:true, wahl:'.schirm.da' },
   { name:'quer-flaggen-tippen', spiel:'flaggen:europa', kind:'lea', quer:true,
     wahl:'.schirm.da' },
@@ -1281,7 +1304,14 @@ for (const a of MEINE) {
     // Die Weltenwahl ist selbst eine Aufnahme wert; wer weiter will,
     // geht durch sie hindurch.
     await seite.waitForSelector('.schirm.da [data-welt]');
-    if (a.tun !== 'welten') await zurEbenenwahl(seite, a.spiel || 'kontinente');
+    /* `wand:` nennt die WELT, ohne eine Ebene zu starten.
+       Vorher gab es dafuer nur `spiel:`, und das startet die Ebene zwei
+       Zweige weiter unten - eine Aufnahme der Ebenenwand einer anderen
+       Welt als Erdkunde war damit nicht zu machen. Aufgefallen ist es an
+       der englischen Wand: zehn Kacheln, und keine davon je fotografiert
+       (E14e). */
+    if (a.tun !== 'welten')
+      await zurEbenenwahl(seite, a.spiel || a.wand || 'kontinente');
     // `tun:'gruppe'` heisst: die Gruppenkachel oeffnen und dort bleiben.
     if (a.tun === 'gruppe') {
       // Seit F2 gibt es ZWEI Gruppenkacheln (Hauptstaedte und Flaggen).

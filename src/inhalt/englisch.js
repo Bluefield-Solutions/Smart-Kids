@@ -293,7 +293,7 @@ export const themaTitel = (nr) =>
 export const GEBIET_TITEL = {
   tiere:'Tiere', essen:'Essen', schule:'Schule', kleidung:'Kleidung',
   menschen:'Menschen', zuhause:'Zuhause', wo:'Wo?',
-  gegensaetze:'Gegensätze', sport:'Sport', rest:'Mehr',
+  gegensaetze:'Gegensätze', sport:'Spielen', rest:'Mehr',
 };
 /** Der Titel eines Wortfelds. Unbekannt heisst: kein Feld, keine Zeile. */
 export const gebietTitel = (k) => GEBIET_TITEL[k] || '';
@@ -312,6 +312,44 @@ export const gebietTitel = (k) => GEBIET_TITEL[k] || '';
  * Ausnahme „Wo?" gegen „wo", traf nichts mehr, und das Tor meldete zwei
  * Bilder als zu aehnlich, die seit Monaten so gewollt sind. Ein
  * Bezeichner, der sich mit der Beschriftung aendert, ist kein Bezeichner. */
+
+/*
+ * Das Wasserzeichen einer Themenkachel (E14e).
+ *
+ * Fiona liest nicht. Vier Kacheln mit Farbe und Namen sind fuer sie vier
+ * gleiche Kacheln, und die Ueberschrift, die den Unterschied traegt, ist
+ * genau die Zeile, die sie nicht lesen kann.
+ *
+ * DIE KACHEL ZEIGT DESHALB EINE DER EIGENEN ZEICHNUNGEN - keine neue,
+ * huebschere. Dieselbe Ueberlegung wie beim Kachelbuchstaben, den Fiona
+ * gleich nachfaehrt, und wie bei der Flaggenkachel, die die erste Flagge
+ * ihrer Karte zeigt: was auf der Kachel steht, kommt gleich auch in der
+ * Aufgabe vor (Regel 6). Ein eigenes Symbol waere schoener zu bauen und
+ * eine zweite Wahrheit.
+ *
+ * Ausgesucht und nicht gerechnet, und zwar EINMAL je Thema. „Das erste
+ * gemalte Wort" waere abgeleitet und damit schoener - aber alphabetisch
+ * ist das bei 4.1 „big" (zwei Baelle) und bei 4.4 „apple". Ein Apfel
+ * sagt nichts ueber Einkaufen, und zwei Baelle nichts ueber Familie.
+ * Einfarbig muss es ausserdem noch lesbar sein, und das schliesst
+ * einiges aus: die drei Luftballons von „party" verschmelzen zu einer
+ * Wolke, die Torte von „birthday" bleibt eine Torte.
+ *
+ * Das Tor prueft, dass jedes der vier Woerter gemalt ist UND zu seinem
+ * Thema gehoert - sonst zeigte die Kachel von 4.4 eines Tages still ein
+ * Wort aus 4.1.
+ */
+export const THEMA_BILD = {
+  '4.1': 'family',    // vier Menschen in einer Reihe
+  '4.2': 'book',      // ein aufgeschlagenes Buch
+  '4.3': 'birthday',  // eine Torte mit Kerzen
+  '4.4': 'dress',     // ein Kleid am Buegel
+};
+/** Die Pfade des Wasserzeichens eines Themas - oder null. */
+export function themaBild(nr){
+  const b = BILDER.find(x => x.wort === THEMA_BILD[nr] && x.bild);
+  return b ? b.bild : null;
+}
 
 /**
  * Der Vorrat EINES Themengebiets (E14).
@@ -1048,7 +1086,7 @@ export const BILDER = [
   { wort: 'ham',        gebiet: 'essen',
     bild: [
       { f:'creme',     d:'M13 51a24 15 -45 1 1 34-34 24 15 -45 1 1-34 34Z' },
-      { f:'rot',       d:'M15 49a21 12 -45 1 1 30-30 21 12 -45 1 1-30 30Z' },
+      { f:'rot',       d:'M32 60C18 48 8 36 8 25 8 16 14 9 22 9c5 0 9 4 10 10 1-6 5-10 10-10 8 0 14 7 14 16 0 11-10 23-24 35Z' },
       { f:'rotDunkel', d:'M24 40a14 5 -45 1 1 20-20 14 5 -45 1 1-20 20Z' },
       { f:'creme',     d:'M45 25 40 20 52 8 57 13Z' },
       { f:'creme',     d:'M57 8a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
@@ -1546,6 +1584,27 @@ export const BILDER = [
       { f:'tinte',  d:'M12 26l6 10-6 8-4-8Zm40 0-6 10 6 8 4-8ZM24 48h16l3 8-11 5-11-5Z' },
     ],
     motiv: 'a football (soccer ball) seen from the front, with its pentagon pattern' },
+  /* „hobby" ist ein OBERBEGRIFF, und dafuer gibt es kein Bild, das sich
+     von selbst erklaert - genauso wenig wie fuer „sports" nebenan, das
+     deshalb drei Sportgeraete nebeneinander zeigt. Hier ist es eine
+     Gitarre, und das ist eine VEREINBARUNG und keine Abbildung: das Kind
+     lernt „hobby = Gitarre", so wie es „sports = Ball, Schlaeger,
+     Brille" lernt.
+     Warum trotzdem die Gitarre und nichts anderes: der Lehrplan nennt
+     als Hobbys Sport und Musik, und der Sport steht auf diesem Blatt
+     schon fuenfmal. Eine Malpalette waere das naechstliegende Bild
+     gewesen und faellt aus - „colour" traegt sie schon, und zwei Woerter
+     mit derselben Zeichnung sind eine Aufgabe, die niemand richtig
+     loesen kann. */
+  { wort: 'hobby',    gebiet: 'sport',
+    bild: [
+      { f:'braunDunkel', d:'M22 2h20v10h-6v20h-8V12h-6Z' },
+      { f:'braun',       d:'M32 28a13 9 0 1 0 0 18 13 9 0 0 0 0-18Z' },
+      { f:'braun',       d:'M32 36a18 13 0 1 0 0 26 18 13 0 0 0 0-26Z' },
+      { f:'braunDunkel', d:'M32 41a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
+      { f:'licht',       d:'M17 53c1-4 4-6 7-6 2 0 2 3 0 3-3 1-4 2-5 4-1 2-3 1-2-1Z' },
+    ],
+    motiv: 'an acoustic guitar standing upright, seen from the front, with a round sound hole' },
   { wort: 'go',       gebiet: 'sport',
     bild: [
       { f:'braunDunkel', d:'M36 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z' },
@@ -1640,6 +1699,20 @@ export const BILDER = [
       { f:'wolke',  d:'M24 45h24v4H24Z' },
     ],
     motiv: 'a hand seen from the side holding out a small wrapped present with a ribbon' },
+  /* „like" liegt auf dem Blatt „Laender und Uebriges" und nicht bei den
+     Gefuehlen, obwohl ein Herz dorthin gehoeren wuerde. Der Grund ist die
+     BESCHRIFTUNG und nicht die Sortierung: die zweite Zeile der
+     Vorlaufkachel zeigt den Titel des Wortfeldes, und das Feld der
+     Gefuehle heisst „Gegensaetze" - es haelt big, small, cold und hot.
+     Ein Herz unter „Gegensaetze" waere genau die falsche Auskunft, die
+     E14c gerade beseitigt hat. Unter „Mehr" steht nichts Falsches. */
+  { wort: 'like',             gebiet: 'rest',
+    bild: [
+      { f:'lila',       d:'M32 56C16 45 6 34 6 23 6 14 13 8 21 8c5 0 9 3 11 7 2-4 6-7 11-7 8 0 15 6 15 15 0 11-10 22-26 33Z' },
+      { f:'lilaDunkel', d:'M43 13c6 0 11 4 11 11 0 8-6 17-16 26 7-9 11-18 10-25-1-6-4-10-9-12Z' },
+      { f:'licht',     d:'M16 20c1-4 4-6 7-6 2 0 2 3 0 3-3 1-4 2-5 4-1 2-3 1-2-1Z' },
+    ],
+    motiv: 'a single upright heart seen from the front, with one round highlight in its upper left' },
 ];
 
 /* Die Funktionswoerter. Sie bekommen KEIN Bild - nicht aus Faulheit,
@@ -1649,7 +1722,7 @@ export const NUR_WORT = [
   'a/an', 'about', 'and', 'at', 'be (am, are, is)', 'can/can‘t', 'come',
   'dear', 'do/don‘t', 'fine', 'from', 'great', 'have/has (got)',
   'haven’t/ hasn´t (got)', 'he', 'hello', 'help', 'her', 'here', 'his',
-  'hobby', 'how', 'I / I’d / I’m / I‘ve', 'it', 'Its', 'know', 'like',
+  'how', 'I / I’d / I’m / I‘ve', 'it', 'Its', 'know',
   'many', 'much', 'my', 'name', 'no/not', 'okay/OK', 'please', 'put',
   'she', 'sorry', 'take', 'thank(s)', 'the', 'there', 'they', 'this',
   'time', 'to', 'very', 'we', 'welcome', 'what', 'when',

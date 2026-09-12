@@ -2704,7 +2704,36 @@ console.log('\n  Tor `englisch`');
         + `(ab ${THEMA_MIN} Zeichnungen = zwei Runden)${duenn.length
           ? ` — ohne Kachel: ${duenn.map(([nr, n]) => `${EN.themaTitel(nr)}, `
             + `${THEMA_MIN - n} Zeichnungen fehlen`).join(' · ')}` : ''}`);
+      console.log('    jede Themenkachel trägt eine eigene Zeichnung: '
+        + jeThema.map(([nr]) => `${EN.themaTitel(nr)} → „${EN.THEMA_BILD[nr]}"`)
+            .join(' · '));
     }
+    /* Das Wasserzeichen der vier Themenkacheln (E14e).
+     *
+     * Es ist AUSGESUCHT und nicht gerechnet - vier Woerter, je Thema
+     * eines. Ausgesuchtes veraltet: faellt „dress" eines Tages aus dem
+     * Wortschatz oder wandert „book" nach 4.1, zeigte die Kachel still
+     * nichts oder etwas Fremdes, und beides faellt nur auf, wenn jemand
+     * genau hinsieht.
+     *
+     * Geprueft wird deshalb DREIERLEI, und das Dritte ist das, was man
+     * vergisst: dass es fuer JEDES spielbare Thema eines gibt. Ohne das
+     * bekaeme ein fuenftes Thema eine Kachel ohne Bild - und stuende
+     * damit genau da, wo die vier vor E14e standen. */
+    for (const [nr] of jeThema) {
+      const wort = EN.THEMA_BILD[nr];
+      if (!wort) { eng.push(`das Thema „${EN.themaTitel(nr)}" hat kein `
+        + 'Wasserzeichen in THEMA_BILD — seine Kachel trägt nur Farbe und Namen, '
+        + 'und für ein Kind, das nicht liest, ist das keine Auskunft'); continue; }
+      if (!EN.themaBild(nr))
+        eng.push(`das Wasserzeichen „${wort}" des Themas „${EN.themaTitel(nr)}" `
+          + 'ist nicht gezeichnet — die Kachel bliebe leer');
+      else if (EN.THEMA_VON[wort] !== nr)
+        eng.push(`das Wasserzeichen „${wort}" gehört zum Thema „${
+          EN.themaTitel(EN.THEMA_VON[wort] || '?')}" und steht auf der Kachel von `
+          + `„${EN.themaTitel(nr)}" — die Kachel zeigt etwas, das dahinter nicht vorkommt`);
+    }
+
     /* Kein Bezeichner auf dem Bildschirm (E14c).
      *
      * `BILDER` ordnet jedes Wort einem Wortfeld zu, mit einem Schluessel:

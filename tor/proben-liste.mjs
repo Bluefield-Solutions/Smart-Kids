@@ -7564,14 +7564,33 @@ export const PROBEN = [
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },
 
+  /* E14e - zwei Proben fuer das Wasserzeichen der Themenkacheln, und sie
+     greifen die zwei Verfallsarten an, die ein AUSGESUCHTER Wert hat:
+     er verschwindet, oder er zeigt auf das Falsche. Die zweite ist die
+     stillere - eine Kachel mit einem Bild aus einem fremden Thema sieht
+     aus wie eine richtige. */
+  { n:'eine Themenkachel darf ihr Bild verlieren', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  '4.4': 'dress',     // ein Kleid am Buegel",
+    ersatz:"  // '4.4': 'dress',",
+    an:{ datei:'src/inhalt/englisch.js', text:"  // '4.4': 'dress'," },
+    sagt:'kein Wasserzeichen in THEMA_BILD' },
+
+  { n:'eine Themenkachel darf ein fremdes Thema zeigen', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  '4.2': 'book',      // ein aufgeschlagenes Buch",
+    ersatz:"  '4.2': 'dress',",
+    an:{ datei:'src/inhalt/englisch.js', text:"  '4.2': 'dress'," },
+    sagt:'dahinter nicht vorkommt' },
+
   /* E14c - drei Proben fuer drei Zeilen, und jede greift woanders an.
      Zusammen decken sie den ganzen Weg vom Schluessel zur Kachel ab:
      die Tafel, der Aufruf, und der Bezeichner, der kein Titel werden darf. */
   { n:'ein Wortfeld ohne deutschen Titel fällt lautlos von der Kachel',
     tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"  gegensaetze:'Gegensätze', sport:'Sport', rest:'Mehr',",
-    ersatz:"  sport:'Sport',",
-    an:{ datei:'src/inhalt/englisch.js', text:"sport:'Sport',\n};" },
+    such:"  gegensaetze:'Gegensätze', sport:'Spielen', rest:'Mehr',",
+    ersatz:"  sport:'Spielen',",
+    an:{ datei:'src/inhalt/englisch.js', text:"sport:'Spielen',\n};" },
     sagt:'keinen deutschen Titel' },
 
   /* Die zweite ist die wichtigere: die Tafel bleibt VOLLSTAENDIG, nur der

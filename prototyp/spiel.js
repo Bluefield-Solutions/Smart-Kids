@@ -2059,7 +2059,7 @@ const MATHEBILD = {
  * Deutschland ein Schmier. Ein Wasserzeichen, das man nicht erkennt, ist
  * Dekoration und keine Auskunft.
  */
-function silhouette(ebeneId) {
+function silhouette(ebeneId, gruppe) {
   /* Die Flaggenkachel (F2) zeigt eine ECHTE Flagge - keine gezeichnete
    * Fahne an einem Mast.
    *
@@ -2150,6 +2150,34 @@ function silhouette(ebeneId) {
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round"><path d="M3 12h13"/><path d="M32 12h13"/><rect
       x="19" y="6" width="10" height="12" rx="3"/></svg>`;
+  /* Die vier Themenkacheln (E14e): eine der eigenen Zeichnungen, einfarbig
+     im Ton der Kachel - genau wie ein Laenderumriss und ohne `gezeichnet`,
+     denn diese Pfade werden GEFUELLT und nicht gezogen. Welche Zeichnung
+     es je Thema ist, steht in `englisch.js` samt Begruendung; hier steht
+     nur der Weg von der Kennung zum Thema, und der ist derselbe wie beim
+     Vorrat (`THEMA_EBENEN`) - zwei Tafeln fuer eine Zuordnung waere die
+     eine, die beim naechsten Umbau veraltet. */
+  /* Die GRUPPENKACHEL der Themen zuerst - und das ist keine Feinheit.
+     Sie traegt die Kennung ihres ersten Teils (`englisch:familie`), und
+     ohne diesen Zweig zeigte „Themen" die vier Menschen von „family".
+     Ein Kind haette daraus gelesen, hinter der Kachel liege Familie -
+     drei der vier Themen waeren unsichtbar geworden. Genau so ist es im
+     ersten Lauf auch passiert; gesehen habe ich es am Bild der Wand.
+     Vier Quadrate sagen „hier sind mehrere" und nennen keines. */
+  if (gruppe === 'enthemen')
+    return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+      preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M5 3h16v8H5Z"/><path d="M27 3h16v8H27Z"/><path
+      d="M5 13h16v8H5Z"/><path d="M27 13h16v8H27Z"/></svg>`;
+  {
+    const nr = THEMA_EBENEN[ebeneId.split(':')[1]];
+    const teile = ebeneId.startsWith('englisch:') && nr && Englisch.themaBild(nr);
+    if (teile)
+      return `<svg class="silhouette" viewBox="${Englisch.BILD_RAHMEN}"
+        preserveAspectRatio="xMidYMid meet" aria-hidden="true">${
+        teile.map(t => `<path d="${t.d}" fill-rule="evenodd"/>`).join('')}</svg>`;
+  }
   if (ENGLISCHZEICHEN[ebeneId])
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -4144,7 +4172,7 @@ async function ebenenwahl(gruppe = null){
           b.gruppenKachel ? ` data-gruppe="${b.gruppenKachel}"` : ''
         }${zustand === 'dran' ? ' aria-current="step"' : ''
         } style="--ton:var(--f${b.farbe})">
-          ${silhouette(b.id)}
+          ${silhouette(b.id, b.gruppenKachel)}
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
           <div class="kachelfuss">

@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-11",
+  "zeit": "2026-09-12",
   "tore": [
     "anker",
     "ansicht",
@@ -2392,6 +2392,16 @@
       "commit": "a4c1881c9bcafdaecd4bc9b18c27b48f793a6733",
       "zeit": "2026-09-11",
       "s": 51
+    },
+    "eine Themenkachel darf ihr Bild verlieren": {
+      "commit": "89250b452b09aae4de2ba90c4d507f9a03e5487b",
+      "zeit": "2026-09-12",
+      "s": 22
+    },
+    "eine Themenkachel darf ein fremdes Thema zeigen": {
+      "commit": "89250b452b09aae4de2ba90c4d507f9a03e5487b",
+      "zeit": "2026-09-12",
+      "s": 12
     },
     "ein Wortfeld ohne deutschen Titel fällt lautlos von der Kachel": {
       "commit": "18d6fa6aff9c375ee4f79c0a141b825cf3e7d173",
