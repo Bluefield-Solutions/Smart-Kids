@@ -7494,3 +7494,47 @@ dieses Themas gesagt", und die Zahl dahinter steigt von 5 auf 7 bis 12.
 Das ist kein Nebeneffekt, sondern dieselbe Aussage bei mehr Inhalt — ein
 Abzeichen, das nach fünf Sätzen fällt, während es zwölf gibt, wäre das
 falschere von beidem.
+
+---
+
+## E15b · `spiel-lob` fotografierte einen halbfertigen Bildschirm
+
+Im vollen Lauf nach E15 rot, mit 0,93 % Unterschied — und wieder ohne
+Bezug zur Änderung. Auf dem Bild standen die Antwortknöpfe **zweimal**:
+einmal an ihrem Platz rechts, einmal fünfhundert Punkte weiter links quer
+über der Karte. Zwei Mikrofone, zwei „Weiß ich nicht", zwei Lupenpaare.
+
+Das ist die Lage, für die es `karteSteht` gibt: die Karte setzt Breite und
+Höhe in zwei aufeinanderfolgenden Bildern, und wer dazwischen
+fotografiert, bekommt die Antwortspalte an der Stelle, an der sie vor dem
+Setzen stand. **Vor** dem Ziehen wird darauf gewartet, **nach** dem Lob
+wurde es nicht — dort standen 600 ms auf der Uhr. Unter acht nebeneinander
+laufenden Browsern reicht das nicht.
+
+Jetzt wird auch nach dem Lob auf den Zustand gewartet: ein einzelner
+`.schirm` (der Wechsel zur nächsten Aufgabe ist nicht im Gang) und
+`karteSteht` (die Karte hat ihre Größe). Vier Läufe hintereinander: null
+Bildpunkte Unterschied.
+
+### Die Gegenprobe, die nichts bewiesen hat — und deshalb draußen ist
+
+Ich hatte zusätzlich ein `throw` geschrieben: *bricht ab, wenn das Lob
+beim Auslösen schon weg ist*. Es sollte den zweiten denkbaren Fall
+abfangen — die Aufnahme fällt in den Wechsel zur nächsten Aufgabe.
+Gegenprobiert habe ich es mit einer verkürzten Lobpause: 100 ms statt
+900.
+
+**Das Bild blieb Punkt für Punkt dasselbe.** Der Zweig ist also gar nicht
+zu erreichen: nach dem Ziehen schaltet dieser Bildschirm nicht von selbst
+weiter, jedenfalls nicht in dem Fenster, in dem die Aufnahme fällt. Eine
+Prüfung, die nie etwas meldet, ist kein Beweis (Regel 1) — sie ist wieder
+draußen.
+
+Das ist die dritte Aufnahme in drei Runden, die ohne Zutun ihr Motiv
+wechseln konnte (`quer-zahlen`, jetzt `spiel-lob`; davor die
+Gruppenkachel). Dreimal dieselbe Bauart: **eine Wartezeit auf der Uhr, wo
+eine Bedingung auf einen Zustand hingehört.** Der Verdacht liegt nahe,
+dass es weitere gibt — 78 Aufnahmen, und `grep` findet in `ansicht.mjs`
+noch ein Dutzend `waitForTimeout`. Das ist der nächste Aufräumschritt,
+und er gehört nicht in diese Runde: jede einzelne dieser Wartezeiten
+braucht die Antwort auf die Frage, WORAUF sie eigentlich wartet.

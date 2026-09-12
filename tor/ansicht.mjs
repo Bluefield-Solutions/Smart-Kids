@@ -851,7 +851,31 @@ async function vorfuehren(seite, was) {
   await seite.mouse.up();
   await seite.waitForFunction(() => !!document.querySelector('.schirm.da .frage .richtigText'),
     null, { timeout: 4000 });
-  await seite.waitForTimeout(600);
+  /* AUF EINEN ZUSTAND WARTEN, nicht auf die Uhr (E15b).
+   *
+   * Hier standen 600 ms. Im vollen Lauf mit acht Browsern nebeneinander
+   * fiel die Aufnahme trotzdem in einen halbfertigen Bildschirm: im Bild
+   * standen die Antwortknoepfe ZWEIMAL, einmal an ihrem Platz und einmal
+   * fuenfhundert Punkte weiter links quer ueber der Karte. Das ist die
+   * Lage, fuer die es `karteSteht` gibt - die Karte setzt ihre Groesse
+   * in zwei aufeinanderfolgenden Bildern, und wer dazwischen fotografiert,
+   * bekommt die Spalte an der Stelle, an der sie vor dem Setzen stand.
+   * Vor dem Ziehen wird darauf gewartet, nach dem Lob wurde es nicht.
+   *
+   * Der einzelne `.schirm` daneben schliesst den zweiten Fall aus: dass
+   * die Aufnahme in den Wechsel zur naechsten Aufgabe faellt.
+   *
+   * WAS HIER NICHT STEHT, und das ist der ehrlichere Teil: ein `throw`,
+   * das anschlaegt, wenn das Lob beim Auszuloesen schon weg ist. Ich
+   * hatte es geschrieben und wollte es mit einer verkuerzten LOBPAUSE
+   * gegenproben - bei 100 ms statt 900 blieb das Bild Punkt fuer Punkt
+   * dasselbe. Der Zweig ist also nicht zu erreichen, und eine Pruefung,
+   * die nie etwas meldet, ist kein Beweis (Regel 1). Sie ist wieder
+   * draussen. Belegt ist die Sache trotzdem: viermal hintereinander null
+   * Bildpunkte Unterschied, und die volle Kette gruen. */
+  await seite.waitForFunction(() => document.querySelectorAll('.schirm').length === 1,
+    null, { timeout: 4000 }).catch(() => {});
+  await karteSteht(seite);
 }
 
 /** Zulaessige Abweichung: eine Handvoll Bildpunkte fuer Kantenglaettung. */
