@@ -7430,3 +7430,67 @@ Das ist die zweite Aufnahme in diesem Verzeichnis, die ohne Zutun ihr
 Motiv wechseln konnte (die erste war die Gruppenkachel, die nach I21 die
 falsche Gruppe traf). Beide Male war die Ursache dieselbe: ein Merkmal,
 das *auf zwei Bildschirmen* zutrifft, als Abbruchbedingung genommen.
+
+---
+
+## E15 · Die Sätze: von 15 auf 33 gesprochene Redemittel
+
+**Der Befund war eine Zahl, die vorher niemand gerechnet hatte.** Die
+amtliche Liste hat 38 verschiedene Redemittel; die Ebene „Der Satz zum
+Selbersagen" trug 20 Sätze, die zusammen **15** davon abdeckten. Die
+übrigen 23 standen in den Daten und wurden nie gesprochen.
+
+Das ist genau der Teil des Wortschatzes, der sonst nirgends vorkommt. 53
+der 151 Wörter sind Funktionswörter ohne Bild — „what", „about",
+„please", „don't", „there" —, und ein Funktionswort lernt man nicht als
+Karte, sondern im Satz. Für sie ist diese Ebene die einzige.
+
+**19 neue Sätze**, je Themengebiet zwischen zwei und sieben: 39 statt 20,
+und 33 der 38 Redemittel haben jetzt einen. „Bau den Satz" wächst im
+selben Zug mit, weil er denselben Vorrat liest — eine Ebene, die nichts
+gekostet hat.
+
+### Die Grenze war nicht der Platz, sondern der Wortschatz
+
+Jeder Satz muss aus Wörtern bestehen, die auf der amtlichen Liste stehen
+— sonst trifft das Kind ihn in der Schule nicht wieder. Gemessen: die
+Liste ergibt zerlegt **173 erlaubte Wortformen**, und was fehlt, entscheidet:
+
+- **Kurzformen.** „What’s" steht in der Redemittel-Zeile, aber nicht im
+  Wortschatz: der kennt „what". Der Satz heißt deshalb „What is your
+  name?" — dieselbe Äußerung, nur langsamer.
+- **Mehrzahl.** „boys", „girls", „dogs" gibt es nicht; die Liste hat
+  „boy", „girl", „dog". Ein Satz wie „7 boys like dogs." ist damit nicht
+  zu bauen.
+- **Eigennamen und Zahlen.** Beides sind keine Wörter der Liste.
+
+### Fünf bleiben ohne Satz — als Liste, nicht als Schwelle
+
+`OHNE_SATZ` nennt sie einzeln mit Grund. Das ist bewusst keine Zahl:
+„mindestens 33 von 38" hielte still, wenn ein Satz verschwindet und ein
+anderer dazukommt. Die Liste hält nicht still — das Tor verlangt für
+**jede** amtliche Zeile eine Entscheidung: entweder ein Satz oder ein
+Eintrag hier. Und es schlägt in beide Richtungen an: ein Eintrag, der
+längst einen Satz hat, behauptet eine Lücke, die es nicht mehr gibt.
+
+| Redemittel | warum kein Satz |
+|---|---|
+| `I’m … . / My name is … .` | braucht einen Eigennamen |
+| `7 boys/girls like/don’t like dogs/…` | braucht Mehrzahl und eine Zahl |
+| `Thanks. You’re welcome.` | „you’re" fehlt; „Welcome." allein ist kein Satz |
+| `Sorry. OK.` | zwei Einzelwörter, keine Äußerung zum Nachsprechen |
+| `It’s 8 £ / $ / €.` | Zahl und Währungszeichen sind keine Wörter |
+
+Lieber fünf offene Zeilen als fünf Sätze mit einem erfundenen Wort darin.
+Ein erfundenes Wort sieht in dieser Datei amtlich aus, weil es zwischen
+amtlichen steht — dieselbe Falle wie bei der Zuordnung Wort →
+Themengebiet, und dort war die Antwort dieselbe: nichts erfinden,
+sondern aufschreiben, was fehlt.
+
+### Was es nebenbei kostet
+
+Die vier Themen-Abzeichen werden schwerer: sie heißen „du hast die Sätze
+dieses Themas gesagt", und die Zahl dahinter steigt von 5 auf 7 bis 12.
+Das ist kein Nebeneffekt, sondern dieselbe Aussage bei mehr Inhalt — ein
+Abzeichen, das nach fünf Sätzen fällt, während es zwölf gibt, wäre das
+falschere von beidem.

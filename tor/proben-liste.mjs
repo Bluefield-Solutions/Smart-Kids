@@ -7564,6 +7564,29 @@ export const PROBEN = [
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },
 
+  /* E15 - zwei Proben, eine je Richtung. Die Pruefung verlangt fuer JEDE
+     amtliche Zeile eine Entscheidung: entweder ein Satz oder ein Eintrag
+     in OHNE_SATZ. Beide Haelften koennen einzeln brechen, also wird auch
+     jede einzeln geprobt. */
+  { n:'ein Redemittel verliert seinen Satz und fällt niemandem auf',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { id: 'c-hilf', gebiet: '4.2', satz: 'Please help.',\n"
+      + "    quelle: 'Please help/… .' },",
+    ersatz:'',
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"{ id: 'c-hilf'" },
+    sagt:'steht nicht in OHNE_SATZ' },
+
+  /* Und die Gegenrichtung, die leichter zu uebersehen ist: ein Eintrag
+     in OHNE_SATZ, der laengst einen Satz hat. Er behauptet eine Luecke,
+     die es nicht mehr gibt - und deckt damit still zu, dass jemand
+     nachgetragen hat. */
+  { n:'eine Lücke wird behauptet, die es nicht mehr gibt',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { quelle: 'Sorry. OK.',",
+    ersatz:"  { quelle: 'Please help/… .',",
+    an:{ datei:'src/inhalt/englisch.js', text:"  { quelle: 'Please help/… '" .slice(0,0) + "  { quelle: 'Please help/… .',\n    warum: 'zwei Einzelwoerter" },
+    sagt:'dazu gibt es längst einen Satz' },
+
   /* B24 - der Abschnitt `landschaft` borgte seine Voraussetzung.
      
      Die Probe faehrt ZWEI Abschnitte, und das ist der ganze Punkt:

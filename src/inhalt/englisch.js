@@ -2980,6 +2980,45 @@ export const CHUNKS = [
     quelle: 'I’m … . How old are you? I’m from Germany/… . Where are you from?' },
   { id: 'c-woher', gebiet: '4.1', satz: 'Where are you from?',
     quelle: 'I’m … . How old are you? I’m from Germany/… . Where are you from?' },
+  /* --- E15: die Redemittel, die noch keinen Satz hatten ---------------
+   *
+   * Gemessen vor dieser Runde: von 39 amtlichen Redemitteln trugen 15
+   * einen Satz. Die restlichen 24 standen da und wurden nie gesprochen -
+   * und weil in ihnen die Funktionswoerter stecken („what", „about",
+   * „please", „don't"), war genau der Teil des Wortschatzes unbespielt,
+   * der kein Bild bekommen kann.
+   *
+   * FUENF BLEIBEN AUCH JETZT OHNE SATZ, und das ist entschieden und
+   * nicht vergessen. Jeder Grund ist derselbe: der amtliche Wortschatz
+   * gibt das Wort nicht her, das die Zeile braucht.
+   *
+   *   „I’m … . / My name is … ."      braucht einen Eigennamen; die
+   *                                   Liste hat keinen.
+   *   „7 boys/girls like/don’t like…" braucht Mehrzahl und eine Zahl;
+   *                                   die Liste hat „boy" und „girl".
+   *   „Thanks. You’re welcome."       „you're" steht nicht darin, und
+   *                                   „Welcome." allein ist kein Satz.
+   *   „Sorry. OK."                    zwei Woerter, keine Aeusserung zum
+   *                                   Nachsprechen.
+   *   „It’s 8 £ / $ / €."             Zahl und Waehrungszeichen sind
+   *                                   keine Woerter.
+   *
+   * Lieber fuenf offene Zeilen als fuenf Saetze mit einem erfundenen
+   * Wort darin: ein Satz aus lauter amtlichen Woertern trifft das Kind in
+   * der Schule wieder, ein Satz mit meinem Wort darin nicht. */
+  { id: 'c-wiename', gebiet: '4.1', satz: 'What is your name?',
+    /* AUSGESCHRIEBEN statt „What’s". Die amtliche Zeile hat die
+       Kurzform, der amtliche Wortschatz hat sie nicht: er kennt „what"
+       und kennt „what's" nicht. Ausgeschrieben ist es dieselbe
+       Aeusserung, nur langsamer - und mit „what's" waere der Satz an
+       seinem wichtigsten Wort nicht mehr amtlich. */
+    quelle: 'My name is … . What’s your name?' },
+  { id: 'c-wiealt-er', gebiet: '4.1', satz: 'How old is he?',
+    quelle: 'Who’s this? What’s your/her/his/its name? How old is he/she?' },
+  { id: 'c-zimmer', gebiet: '4.1', satz: 'This is my room.',
+    quelle: 'We have a big/… house. This is my room. It’s small/… .' },
+  { id: 'c-esistschwarz', gebiet: '4.1', satz: 'It is black.',
+    quelle: 'Its name is … . It’s black/… .' },
   // --- 4.2 Schule ---
   { id: 'c-morgen', gebiet: '4.2', satz: 'Good morning.',
     quelle: 'Hello. Good morning. Bye-bye.' },
@@ -2991,6 +3030,21 @@ export const CHUNKS = [
     quelle: 'I like German/English/sports/… . I go to school at 7 o’clock.' },
   { id: 'c-buch', gebiet: '4.2', satz: 'Can I have a book, please?',
     quelle: 'Can I have a/your red/… book/…, please? Yes. Here you are.' },
+  /* E15 - sieben Saetze fuer die Schule. */
+  { id: 'c-klasse', gebiet: '4.2', satz: 'I am in class.',
+    quelle: 'I’m in class … . My teacher is … . I’m … .' },
+  { id: 'c-woistder', gebiet: '4.2', satz: 'Where is my pen, please?',
+    quelle: 'Where is/are (the/my/your) ..., please?' },
+  { id: 'c-weissnicht', gebiet: '4.2', satz: 'Sorry, I don’t know.',
+    quelle: 'It’s/The … is/They are here/there/under/in front of/in/on/behind/next to Sorry, I don’t know.' },
+  { id: 'c-unddu', gebiet: '4.2', satz: 'What about you?',
+    quelle: 'And you? What about you?' },
+  { id: 'c-wiespaet', gebiet: '4.2', satz: 'What time is it, please?',
+    quelle: 'What time is it, please? It’s 1 → 12 o’clock / 1.30/2.30/… → 12.30 / 1.45/2.45/… → 12.45' },
+  { id: 'c-hastdu', gebiet: '4.2', satz: 'Have you got a pen?',
+    quelle: 'Have you got a …? How many … have you got? I/We have/haven’t got … .' },
+  { id: 'c-hilf', gebiet: '4.2', satz: 'Please help.',
+    quelle: 'Please help/… .' },
   // --- 4.3 Freizeit und Feste ---
   { id: 'c-party', gebiet: '4.3', satz: 'Can you come to my party?',
     quelle: 'Can you come to my party? Yes. Thank you. / No. I’m sorry.' },
@@ -3002,6 +3056,23 @@ export const CHUNKS = [
     quelle: 'When is your birthday? My birthday is … .' },
   { id: 'c-tennis', gebiet: '4.3', satz: 'I like tennis.',
     quelle: 'What’s your hobby? It‘s … . I play/like tennis/… . And you? What about you?' },
+  /* E15 - sechs Saetze fuer Freizeit und Feste. */
+  { id: 'c-einladung', gebiet: '4.3', satz: 'Please, come to my party!',
+    quelle: 'Please, come to my party!' },
+  { id: 'c-wofest', gebiet: '4.3', satz: 'Where is your party?',
+    quelle: 'Where is your party? At my house/… .' },
+  { id: 'c-radfahren', gebiet: '4.3', satz: 'Can you ride a bike?',
+    quelle: 'My hobby is … . Can you play/ride …? I can/I can’t … .' },
+  { id: 'c-magstdu', gebiet: '4.3', satz: 'Do you like football?',
+    /* Dieselbe Quelle steht in 4.3 UND in 4.4 - die amtliche Liste
+       fuehrt sie zweimal. Deshalb steht sie hier zweimal, einmal je
+       Gebiet und mit verschiedenen Saetzen: die Frage bei der Freizeit,
+       die Antwort beim Einkaufen. */
+    quelle: 'Do you like …? Yes, I do. / No, I don’t.' },
+  { id: 'c-meinrad', gebiet: '4.3', satz: 'This is my bike.',
+    quelle: 'This is my skateboard/… . Have you got a …?' },
+  { id: 'c-istrot', gebiet: '4.3', satz: 'It is red.',
+    quelle: 'Yes, I/we have/haven’t got a … . It’s red/… .' },
   // --- 4.4 Einkaufen ---
   { id: 'c-helfen', gebiet: '4.4', satz: 'Can I help you?',
     quelle: 'Can I help you? Yes, please. / No, thank you. I take/I’d like … to eat/drink.' },
@@ -3013,6 +3084,42 @@ export const CHUNKS = [
     quelle: 'Can I have …, please? Yes. Here you are.' },
   { id: 'c-kaufen', gebiet: '4.4', satz: 'Can I have tea, please?',
     quelle: 'Can I have …, please? Yes. Here you are.' },
+  /* E15 - zwei Saetze fuers Einkaufen. */
+  { id: 'c-waskostet', gebiet: '4.4', satz: 'How much is the book?',
+    quelle: 'How many …? 2/…, please. How much is …? Here you are.' },
+  { id: 'c-jagern', gebiet: '4.4', satz: 'Yes, I do.',
+    quelle: 'Do you like …? Yes, I do. / No, I don’t.' },
+];
+
+/*
+ * Die Redemittel, die KEINEN Satz bekommen - und warum (E15).
+ *
+ * Keine Schwelle, sondern eine namentliche Liste, und das ist der
+ * Unterschied: „mindestens 33 von 38" waere eine Zahl, die stillhaelt,
+ * wenn ein Satz verschwindet und ein anderer dazukommt. Diese Liste
+ * haelt nicht still. Das Tor verlangt, dass JEDES Redemittel entweder
+ * einen Satz hat oder hier steht - faellt einer weg, ist sein Redemittel
+ * unbedeckt und nicht eingetragen, und das Tor schlaegt an. Kommt die
+ * amtliche Liste eines Tages mit einer neuen Zeile, schlaegt es
+ * ebenfalls an, und das ist richtig: eine neue Zeile ohne Satz ist eine
+ * Entscheidung, die jemand treffen muss.
+ *
+ * Der Grund ist bei allen fuenf derselbe: der amtliche WORTSCHATZ gibt
+ * das Wort nicht her, das die amtliche REDEMITTEL-Zeile braucht. Die
+ * beiden Listen sind nicht aufeinander abgestimmt - dieselbe Luecke wie
+ * bei der fehlenden Zuordnung Wort → Themengebiet, nur andersherum.
+ */
+export const OHNE_SATZ = [
+  { quelle: 'I’m … . / My name is … .',
+    warum: 'braucht einen Eigennamen; der Wortschatz hat keinen' },
+  { quelle: '5 girls/boys have a brother/sister/… . 7 boys/girls like/don’t like dogs/… .',
+    warum: 'braucht Mehrzahl und eine Zahl; der Wortschatz hat „boy" und „girl"' },
+  { quelle: 'Thanks. You’re welcome.',
+    warum: '„you\'re" steht nicht im Wortschatz, und „Welcome." allein ist kein Satz' },
+  { quelle: 'Sorry. OK.',
+    warum: 'zwei Einzelwoerter, keine Aeusserung zum Nachsprechen' },
+  { quelle: 'It’s 8 £ / $ / €.',
+    warum: 'Zahl und Waehrungszeichen sind keine Woerter' },
 ];
 
 /**

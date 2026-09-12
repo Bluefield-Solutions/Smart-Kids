@@ -117,7 +117,7 @@
   },
   {
     "dateien": "src/inhalt/englisch.js · src/inhalt/tiere.js",
-    "token": 687,
+    "token": 702,
     "wo": [
       "src/inhalt/englisch.js:2718",
       "src/inhalt/englisch.js:2720",
@@ -170,7 +170,7 @@
       "src/inhalt/tiere.js:291",
       "src/inhalt/tiere.js:292"
     ],
-    "warum": "Zwei DATENTABELLEN, die sich nur in der Form gleichen: die zwanzig Saetze zum Selbersagen (E9) tragen id/satz/gebiet/quelle, die Tierzeilen id/name/ton/raum. Eine Tabelle besteht aus gleichfoermigen Zeilen — das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Zusammenlegen hiesse hier, englische Redemittel mit Tierdaten zu verheiraten; die beiden haben ausser der Form nichts gemeinsam. Dieselbe Begruendung wie bei den Laenderlisten in erdkunde.js weiter oben. — Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die MENGE an Dopplung: sie waechst, wenn eine Tabelle laenger wird, und faellt nicht, wenn eine andere aufgeraeumt wird. Wer sie hochsetzt, zaehlt zuerst die Zeilen. — Nachgetragen in E7: sechzehn Zeilen des Bildplans haben ein `pfad`-Feld dazubekommen, und der gleichfoermige Lauf ist damit von 687 auf 700 Token gewachsen. Wieder nur Daten und keine Logik: die Zahl misst die LAENGE des Laufs, nicht die Menge an Dopplung."
+    "warum": "Zwei DATENTABELLEN, die sich nur in der Form gleichen: die zwanzig Saetze zum Selbersagen (E9) tragen id/satz/gebiet/quelle, die Tierzeilen id/name/ton/raum. Eine Tabelle besteht aus gleichfoermigen Zeilen — das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Zusammenlegen hiesse hier, englische Redemittel mit Tierdaten zu verheiraten; die beiden haben ausser der Form nichts gemeinsam. Dieselbe Begruendung wie bei den Laenderlisten in erdkunde.js weiter oben. — Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die MENGE an Dopplung: sie waechst, wenn eine Tabelle laenger wird, und faellt nicht, wenn eine andere aufgeraeumt wird. Wer sie hochsetzt, zaehlt zuerst die Zeilen. — Nachgetragen in E7: sechzehn Zeilen des Bildplans haben ein `pfad`-Feld dazubekommen, und der gleichfoermige Lauf ist damit von 687 auf 700 Token gewachsen. Wieder nur Daten und keine Logik: die Zahl misst die LAENGE des Laufs, nicht die Menge an Dopplung. — Nachgetragen in E15: die CHUNKS-Tafel ist um 19 Zeilen gewachsen (20 Sätze zum Selbersagen wurden 39), und der gleichförmige Lauf damit von 687 auf 702 Token. Wieder nur Datenzeilen derselben Form, je Zeile id/gebiet/satz/quelle; die Zahl misst die Länge des Laufs, nicht die Menge an Dopplung. Wer sie hochsetzt, zählt zuerst die Sätze."
   },
   {
     "dateien": "src/inhalt/englisch.js",

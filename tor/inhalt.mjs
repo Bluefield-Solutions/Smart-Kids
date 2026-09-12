@@ -3269,6 +3269,38 @@ console.log('\n  Tor `englisch`');
         cf.push(`nur ${hat} Sätze zum Themengebiet ${g.nr} (${g.titel}) — unter `
           + `${JE_GEBIET_MIN} gibt es dort kein Abzeichen zu verdienen`);
     }
+    /* JEDES REDEMITTEL HAT EINEN SATZ - oder steht in OHNE_SATZ (E15).
+     *
+     * Vor E15 trugen 15 von 38 amtlichen Redemitteln einen Satz. Die
+     * uebrigen 23 standen da und wurden nie gesprochen - und weil in
+     * ihnen die Funktionswoerter stecken („what", „about", „please",
+     * „don't"), war genau der Teil des Wortschatzes unbespielt, der kein
+     * Bild bekommen kann.
+     *
+     * Geprueft wird ohne Schwelle. „Mindestens 33" waere eine Zahl, die
+     * stillhaelt, wenn ein Satz verschwindet und ein anderer dazukommt;
+     * diese Pruefung haelt nicht still, sie verlangt fuer jede einzelne
+     * Zeile eine Entscheidung. Und sie schlaegt in BEIDE Richtungen an:
+     * ein Eintrag in OHNE_SATZ, der laengst einen Satz hat, ist ebenso
+     * ein Fehler - er wuerde eine Luecke behaupten, die es nicht mehr
+     * gibt. */
+    {
+      const hatSatz = new Set(EN.CHUNKS.map(c => c.quelle));
+      const entschuldigt = new Map(EN.OHNE_SATZ.map(o => [o.quelle, o.warum]));
+      const alleRm = new Set(EN.THEMENGEBIETE
+        .flatMap(g => g.handlungen.flatMap(h => h.saetze)));
+      for (const rm of alleRm)
+        if (!hatSatz.has(rm) && !entschuldigt.has(rm))
+          cf.push(`das Redemittel „${rm.slice(0, 60)}…" hat keinen Satz und steht `
+            + 'nicht in OHNE_SATZ — ein Redemittel ohne Satz wird nie gesprochen');
+      for (const [q] of entschuldigt) {
+        if (!alleRm.has(q))
+          cf.push(`OHNE_SATZ nennt „${q.slice(0, 60)}…", das in keinem Redemittel steht`);
+        else if (hatSatz.has(q))
+          cf.push(`OHNE_SATZ nennt „${q.slice(0, 60)}…" — dazu gibt es längst einen Satz`);
+      }
+    }
+
     /* Der Vorrat traegt, was die Ebene braucht. Ohne diese drei Zeilen
        koennte `vorratChunks()` ein Feld verlieren, ohne dass etwas rot
        wird - die Daten waeren dann in Ordnung und die Ebene leer. */
@@ -3287,11 +3319,16 @@ console.log('\n  Tor `englisch`');
     }
     const laengster = Math.max(...EN.CHUNKS.map(c => c.satz.trim().split(/\s+/).length));
     const wenigste = Math.min(...[...jeGebiet.values()]);
+    const alleRm = new Set(EN.THEMENGEBIETE
+      .flatMap(g => g.handlungen.flatMap(h => h.saetze)));
+    const bedeckt = new Set(EN.CHUNKS.map(c2 => c2.quelle)).size;
     console.log(`    Satz zum Selbersagen (E9): ${EN.CHUNKS.length} Sätze in `
       + `${jeGebiet.size} Gebieten, alle auf ein Redemittel zurückgeführt · `
       + `je Gebiet mindestens ${wenigste} (nötig ${JE_GEBIET_MIN}) · längster `
       + `${laengster} Wörter (Grenze ${WORTGRENZE}) · kein Wort außerhalb der `
       + 'amtlichen Listen');
+    console.log(`    Redemittel gesprochen: ${bedeckt} von ${alleRm.size} · `
+      + `ohne Satz mit Grund: ${EN.OHNE_SATZ.map(o => o.warum.split(';')[0]).join(' · ')}`);
   }
 
   /* --- „Leg das Wort" (E8): was sich legen laesst ---------------------
