@@ -790,14 +790,35 @@ async function vorfuehren(seite, was) {
   /* Weiterblaettern, bis eine zweistellige Zahl kommt. „Weiss ich nicht"
    * loest auf und geht weiter - derselbe Weg, den ein Kind nimmt. */
   if (was === 'zweistellig') {
+    /* ZWEI Bedingungen, und die zweite hat gefehlt: zwei Felder UND keine
+       Aufloesung auf dem Schirm.
+       
+       „Weiss ich nicht" zeigt die Loesung - die Ziffern stehen dann
+       nachgefahren in ihren Feldern, und die Frage lautet „Kein Problem.
+       So geht die 11." Ein zweistelliges davon hat auch zwei Felder, und
+       die alte Bedingung brach genau dort ab. Ob die Aufnahme die leere
+       Aufgabe oder die Loesung traf, entschied eine Wartezeit gegen eine
+       andere: 1500 ms hier gegen LOBPAUSE plus Malzeit dort, unter
+       `?flott` zusammen 1650 bis 1800. Dieselbe Fassung, dasselbe Bild,
+       zwei Motive - je nachdem, wieviele Browser gerade nebeneinander
+       laufen. Aufgefallen im vollen Lauf mit acht.
+       
+       Gewartet wird deshalb nicht auf die Uhr, sondern darauf, dass die
+       Loesung WEG ist. Ein Vorbild, das ohne Zutun ein anderes Motiv
+       zeigt, ist kein Vorbild. */
+    const frisch = async () =>
+      (await seite.$$('.schirm.da .feldkasten')).length > 1
+      && !(await seite.$('.schirm.da .loesung'));
     for (let n = 0; n < 12; n++) {
-      if ((await seite.$$('.schirm.da .feldkasten')).length > 1) break;
+      if (await frisch()) break;
       await seite.$eval('.schirm.da #weissnicht', x => x.click());
-      await seite.waitForTimeout(1500);
+      await seite.waitForFunction(
+        () => !document.querySelector('.schirm.da .loesung'),
+        { timeout: 8000 }).catch(() => {});
       await seite.waitForSelector('.schirm.da .schreibblatt', { timeout: 8000 }).catch(() => {});
     }
-    if ((await seite.$$('.schirm.da .feldkasten')).length < 2)
-      throw new Error('quer-zahlen: nach zwölf Aufgaben kam keine zweistellige');
+    if (!(await frisch()))
+      throw new Error('quer-zahlen: nach zwölf Aufgaben kam keine frische zweistellige');
     await seite.waitForTimeout(400);
     return;
   }

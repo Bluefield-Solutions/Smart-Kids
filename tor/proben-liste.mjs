@@ -7564,6 +7564,23 @@ export const PROBEN = [
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },
 
+  /* E14f - die Aufnahme `quer-zahlen` traf zwei verschiedene Bildschirme.
+     
+     Der Eingriff nimmt der Loesung ihr Weiterschalten: sie bleibt stehen.
+     Mit der Bedingung „zwei Felder UND keine Loesung" laeuft die Aufnahme
+     dann in ihre zwoelf Anlaeufe und meldet es; ohne sie fotografiert sie
+     die Loesung und meldet nur „Bildpunkte anders" - und genau DAS war
+     der alte Zustand, in dem es vom Zufall abhing, welches der beiden
+     Motive im Vorbild landet. Die Probe haengt am Satz der Bedingung und
+     nicht an einer Wartezeit; ein Rennen laesst sich nicht gegenproben,
+     die Weigerung schon. */
+  { n:'die Aufnahme der Zahlen nimmt auch die Auflösung', tor:'ansicht',
+    args:['--nur=quer-zahlen'], bauen:true, datei:D,
+    such:'    setTimeout(weiter, LOBPAUSE + schauPause(zuege * VORMACHEN_JE_ZUG));',
+    ersatz:'    if (zuege < 0) setTimeout(weiter, LOBPAUSE);',
+    an:{ datei:D, text:'if (zuege < 0) setTimeout(weiter, LOBPAUSE);' },
+    sagt:'keine frische zweistellige' },
+
   /* E14e - zwei Proben fuer das Wasserzeichen der Themenkacheln, und sie
      greifen die zwei Verfallsarten an, die ein AUSGESUCHTER Wert hat:
      er verschwindet, oder er zeigt auf das Falsche. Die zweite ist die

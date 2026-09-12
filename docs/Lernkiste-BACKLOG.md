@@ -7346,3 +7346,43 @@ Abnahmebilder als einzige aufgefallen — der Henkel sitzt neben der Tasse
 statt an ihr, und die Untertasse ist ein grauer Strich. Sie ist alt und
 gehört nicht zu dieser Runde, aber sie steht als Antwortkarte auf dem
 Vier-Karten-Schirm und ist dort die eine, die nicht zu erkennen ist.
+
+---
+
+## E14f · Die Aufnahme `quer-zahlen` traf zwei verschiedene Bildschirme
+
+Aufgefallen im vollen Lauf nach E14e: `quer-zahlen` war rot, mit 5 %
+Unterschied — und die Änderung hatte mit Zahlen nichts zu tun. Auf dem
+neuen Bild stand die **Auflösung** („Kein Problem. So geht die 11.", die
+Ziffern nachgefahren), im Vorbild die **leere Aufgabe** („Schreib die
+Zahl, die du hörst.").
+
+Der Grund steht in der Navigation der Aufnahme. Welche Zahl drankommt,
+entscheidet der Leitner, und für ein Bild mit **zwei** Schreibfeldern
+wird weitergeblättert, bis eine zweistellige kommt — mit „Weiß ich
+nicht", also dem Weg, den ein Kind auch nimmt. Die Abbruchbedingung war
+„mehr als ein Feldkasten". Eine aufgelöste zweistellige Zahl hat aber
+auch zwei Feldkästen.
+
+Was dann im Bild landet, entschied eine Wartezeit gegen eine andere:
+1500 ms in der Aufnahme gegen `LOBPAUSE` plus Malzeit in der App, unter
+`?flott` zusammen 1650 bis 1800 ms. Dieselbe Fassung, dieselbe Aufnahme,
+**zwei Motive** — je nachdem, wie viele Browser gerade nebeneinander
+laufen. Beim Lauf mit acht kippte es.
+
+Gewartet wird jetzt nicht auf die Uhr, sondern darauf, dass die Auflösung
+**weg** ist, und abgebrochen wird nur bei zwei Feldern **ohne** Auflösung.
+Dreimal hintereinander gelaufen: dreimal null Bildpunkte Unterschied.
+
+**Die Gegenprobe zielt auf die Weigerung, nicht auf das Rennen.** Ein
+Rennen lässt sich nicht gegenproben — es geht mal so und mal so aus, und
+eine Probe, die mal anschlägt, beweist nichts. Der Eingriff nimmt der
+Auflösung deshalb ihr Weiterschalten: sie bleibt stehen. Mit der neuen
+Bedingung läuft die Aufnahme in ihre zwölf Anläufe und sagt „keine
+frische zweistellige"; ohne sie fotografiert sie die Auflösung und sagt
+nur „Bildpunkte anders" — und genau das war der alte Zustand.
+
+Das ist die zweite Aufnahme in diesem Verzeichnis, die ohne Zutun ihr
+Motiv wechseln konnte (die erste war die Gruppenkachel, die nach I21 die
+falsche Gruppe traf). Beide Male war die Ursache dieselbe: ein Merkmal,
+das *auf zwei Bildschirmen* zutrifft, als Abbruchbedingung genommen.

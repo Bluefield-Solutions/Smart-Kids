@@ -2393,6 +2393,11 @@
       "zeit": "2026-09-11",
       "s": 51
     },
+    "die Aufnahme der Zahlen nimmt auch die Auflösung": {
+      "commit": "ab99eec4210ff511c7db17ca8e3d8b79282b38fb",
+      "zeit": "2026-09-12",
+      "s": 392
+    },
     "eine Themenkachel darf ihr Bild verlieren": {
       "commit": "89250b452b09aae4de2ba90c4d507f9a03e5487b",
       "zeit": "2026-09-12",
