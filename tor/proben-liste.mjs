@@ -7564,6 +7564,24 @@ export const PROBEN = [
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },
 
+  /* B24 - der Abschnitt `landschaft` borgte seine Voraussetzung.
+     
+     Die Probe faehrt ZWEI Abschnitte, und das ist der ganze Punkt:
+     allein war der Abschnitt immer gruen, und genau deshalb ist der
+     Fehler ein halbes Jahr nicht aufgefallen. Der Eingriff nimmt die
+     eine Zeile, die den Fortschritt der gespielten Ebene zuruecksetzt -
+     dann gewinnt der Lohn der fertigen Ebene, und neun von neun Raeumen
+     werden nicht mehr gemeldet. */
+  { n:'die Landschaft borgt sich ihren Fortschritt vom Nachbarn',
+    tor:'smoke', args:['--nur=abzeichen,landschaft'], bauen:true,
+    datei:'tor/smoke.mjs',
+    such:"    alles: { vorlaufGezeigt: { 'fiona:rechnen:plusminus': true } } },\n"
+      + "    fortschritt: { 'fiona:rechnen:plusminus': {} } });",
+    ersatz:"    alles: { vorlaufGezeigt: { 'fiona:rechnen:plusminus': true } } } });",
+    an:{ datei:'tor/smoke.mjs',
+         fehlt:"    fortschritt: { 'fiona:rechnen:plusminus': {} } });" },
+    sagt:'die Sammlung öffnet' },
+
   /* E14f - die Aufnahme `quer-zahlen` traf zwei verschiedene Bildschirme.
      
      Der Eingriff nimmt der Loesung ihr Weiterschalten: sie bleibt stehen.

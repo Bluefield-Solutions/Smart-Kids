@@ -7235,34 +7235,78 @@ die nur die Tafel zählt, sieht das nicht.
 
 ---
 
-## B24 · Der Rauchtest in einem Stück ist rot, in vier Teilen grün
+## B24 · Der Rauchtest in einem Stück ist rot, in vier Teilen grün — GESCHLOSSEN
 
-**Offen, und vorerst nur festgehalten.** Die erste Fassung der
-E14d-Gegenprobe lief ohne `--nur=englisch`, also über alle 19 Abschnitte
-in **einem** Prozess. Ergebnis: 51 Minuten, und der gesunde Lauf — der
-ohne jeden Eingriff — war **rot**. Dieselbe Fassung des Baums meldet in
-der Kette `smoke: gefahren 19 von 19`, grün, in vier Teilen nebeneinander
-in 1394 s.
+**Aufgeklärt, und die Vermutung war falsch.** Sie stand hier so: „der
+wahrscheinlichste Verdacht ist die Laufzeit — ein Browser, der 25 Minuten
+offen bleibt, sammelt Zustand an." Das klang plausibel, war messbar
+falsch, und hätte in die falsche Richtung geführt. Daneben stand schon der
+richtige Satz: *ein Verdacht ist keine Messung.*
 
-Zwei Läufe desselben Tors auf demselben Baum, zwei Ergebnisse. Einer von
-beiden lügt.
+(Und noch eine Ungenauigkeit von derselben Sorte: die Notiz nannte als
+nächsten Schritt `node tor/smoke.mjs --laut`. Diese Marke gibt es im
+Rauchtest nicht, sie gehört zu `proben`. Ein Befehl in einem Dokument,
+den niemand ausprobiert hat, ist eine Vermutung mit
+Eingabeaufforderung.)
 
-Der wahrscheinlichste Verdacht ist die Laufzeit: ein Browser, der 25
-Minuten offen bleibt und 19 Abschnitte hintereinander spielt, sammelt
-Zustand an, den die vier kurzen Läufe nicht haben — Speicher, Timer,
-angesammelte Ablage. Belegt ist das nicht, und **ein Verdacht ist keine
-Messung** (Regel 5). Was fehlt, ist der eine Lauf mit `--laut`, der sagt,
-*welcher* Abschnitt umkippt.
+### Der Befund
 
-Warum es trotzdem nicht sofort dringend ist: die Kette fährt `smoke`
-**immer** geteilt, und alle 27 anderen `smoke`-Gegenproben laufen
-ebenfalls mit `--nur=…`. Der Weg, auf dem es aufgefallen ist, wird sonst
-nirgends beschritten.
+Ein Lauf `node tor/smoke.mjs` ohne `--sofort`, die ganze Ausgabe in eine
+Datei: **neun Fehler, alle im Abschnitt `landschaft`, alle derselbe.** Mit
+12, 18, 24 … 45 Tieren sagt der Endbildschirm jedes Mal „Der Bauernhof ist
+offen: die Kuh und das Pferd!" statt des geprüften Raumes. Nicht einer von
+neun, sondern neun von neun — so sieht kein Rennen aus.
 
-Warum es trotzdem aufzuklären ist: wenn der lange Lauf recht hat, gibt es
-einen Fehler, den die Kette **nie** sieht — und das wäre genau die Sorte
-Befund, für die es den Rauchtest gibt. Der nächste Schritt ist ein
-einzelner Lauf `node tor/smoke.mjs --laut` mit der Ausgabe in eine Datei.
+### Die Ursache
+
+Zwei Läufe haben gereicht:
+
+- `--nur=landschaft` allein → **grün**, alle neun Räume öffnen.
+- `--nur=abzeichen,landschaft` → **rot**, neun von neun.
+
+`abzeichen` füllt für seine Abzeichenrechnung Fionas `rechnen:plusminus`
+**vollständig** — und genau diese Ebene spielt `landschaft`, weil sie der
+kürzeste Weg zu einem Endbildschirm ist. In `tierFuer` gewinnt dann der
+erste Zweig: eine *fertige* Ebene gibt die Tiere ihres eigenen Raumes, und
+der Raum aus der Zahl wartet bis zum nächsten Mal. Der Grund dafür steht
+seit T6 im Code und ist gut: „zwei grüne Zeilen sind für ein Kind keine
+zwei Nachrichten, sondern keine."
+
+**Die App hat sich also richtig verhalten.** Falsch war ein Abschnitt, der
+seine Voraussetzung von einem anderen geborgt hat: er setzte die Tiere und
+liess den Fortschritt stehen, wie er ihn vorfand. Allein lief er deshalb
+immer grün — und das ist der Grund, aus dem es so lange gedauert hat.
+
+### Die Lehre, und sie ist allgemein
+
+`--teil=i/n` verteilt ganze Abschnitte auf vier Prozesse. Welcher
+Abschnitt mit welchem in einem Prozess landet, entscheidet die
+Gewichtsverteilung — also etwas, das sich mit jeder Messung ändert. Ein
+Abschnitt, der eine Voraussetzung nicht selbst setzt, ist damit nicht
+„manchmal rot", sondern **stumm abhängig von einer Zahl in einer
+Tabelle**.
+
+Der Abschnitt setzt jetzt `fortschritt['fiona:rechnen:plusminus']` selbst
+auf leer. Die Gegenprobe fährt beide Abschnitte und nimmt diese eine
+Zeile: neun von neun Räumen fallen wieder aus. Sie ist die erste Probe in
+diesem Verzeichnis, die **zwei** Abschnitte fährt, und sie muss es —
+allein war der Abschnitt nie rot zu bekommen.
+
+### Der Beleg
+
+Derselbe Lauf, der den Befund gebracht hat, noch einmal: `node
+tor/smoke.mjs`, alle 19 Abschnitte in einem Prozess, **grün**. Vorher
+neun Fehler, jetzt keiner — und geändert ist genau eine Zeile in der
+Vorbereitung eines Abschnitts, nichts an der App.
+
+### Was offen bleibt
+
+Geprüft ist jetzt genau ein Abschnitt. Ob die anderen fünfzehn ihre
+Voraussetzungen selbst setzen, weiss niemand; heute fällt keiner auf, und
+mehr ist nicht gemessen. Der ganze Rauchtest in einem Stück kostet 25
+Minuten und gehört deshalb nicht in die Kette — aber er ist der einzige
+Lauf, der so etwas findet, und damit ein Anlass für einen vollen Durchgang
+neben dem Probenlauf.
 
 ---
 

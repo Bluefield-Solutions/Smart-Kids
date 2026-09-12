@@ -8176,9 +8176,32 @@ if (laeuft('landschaft')) try {
     merke('landschaft', new Error(`fuer „${raum.titel}" gibt es nur `
       + `${vorRaum.length} andere Tiere, die Schwelle ist ${SCHWELLE} — `
       + 'der Raum ist nicht zu erreichen'));
+  /* DER STAND DER GESPIELTEN EBENE WIRD MITGESETZT, und zwar auf leer.
+   *
+   * Bis hierher setzte dieser Abschnitt nur die Tiere und liess den
+   * Fortschritt stehen, wie er war. Das ging gut, solange er allein lief
+   * - und es ging schief, sobald `abzeichen` vorher im selben Kontext
+   * gelaufen war: der Abschnitt fuellt fuer seine Abzeichenrechnung
+   * Fionas `rechnen:plusminus` VOLLSTAENDIG, und genau diese Ebene wird
+   * hier gespielt.
+   *
+   * Dann gewinnt in `tierFuer` der erste Zweig: eine FERTIGE Ebene gibt
+   * die Tiere ihres eigenen Raumes, und der Raum aus der Zahl wartet bis
+   * zum naechsten Mal („zwei gruene Zeilen sind fuer ein Kind keine
+   * zwei Nachrichten"). Der Endbildschirm sagte deshalb neunmal „Der
+   * Bauernhof ist offen" statt des geprueften Raumes - und das ist die
+   * App, die sich richtig verhaelt, bei einem Abschnitt, der seine
+   * Voraussetzung von einem anderen geborgt hat.
+   *
+   * Gemessen: allein gruen, mit `abzeichen` davor neun von neun Raeumen
+   * rot. Nicht ein Rennen, nicht die Last, nicht die Laufzeit - eine
+   * Voraussetzung, die nicht gesetzt war. Das ist auch die Lehre fuer
+   * jeden weiteren Abschnitt, der `--teil` ueberlebt: was er braucht,
+   * setzt er selbst (B24). */
   await stelleAblage(z, { einstellungen: {
     'tiere:fiona': { ids: vorRaum, gorilla: 0, szenen: {} },
-    alles: { vorlaufGezeigt: { 'fiona:rechnen:plusminus': true } } } });
+    alles: { vorlaufGezeigt: { 'fiona:rechnen:plusminus': true } } },
+    fortschritt: { 'fiona:rechnen:plusminus': {} } });
   await z.reload({ waitUntil: 'domcontentloaded' });
   await z.waitForSelector('[data-profil="fiona"]');
   await z.click('[data-profil="fiona"]');
