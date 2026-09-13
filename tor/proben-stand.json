@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-12",
+  "zeit": "2026-09-13",
   "tore": [
     "anker",
     "ansicht",
@@ -2392,6 +2392,16 @@
       "commit": "a4c1881c9bcafdaecd4bc9b18c27b48f793a6733",
       "zeit": "2026-09-11",
       "s": 51
+    },
+    "eine Wendung liegt in einem Bereich, den es nicht gibt": {
+      "commit": "866a0d944d7a3616394faa9fe8dfd43fd3bb9ba4",
+      "zeit": "2026-09-13",
+      "s": 18
+    },
+    "die vier Bereiche der Wendungen dürfen ungleich stark sein": {
+      "commit": "866a0d944d7a3616394faa9fe8dfd43fd3bb9ba4",
+      "zeit": "2026-09-13",
+      "s": 18
     },
     "ein Redemittel verliert seinen Satz und fällt niemandem auf": {
       "commit": "935245c5000e9951c4b8bde53544ef8601d81197",

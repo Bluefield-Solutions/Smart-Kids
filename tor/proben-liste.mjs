@@ -7564,6 +7564,25 @@ export const PROBEN = [
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },
 
+  /* E16 - zwei Proben fuer die Bereiche der Wendungen. Die erste faengt
+     den Tippfehler, die zweite das Ungleichgewicht - und die zweite ist
+     die, an die niemand denkt: sie meldet nichts Kaputtes, sondern eine
+     Ebene, die einen ihrer vier Bereiche haeufiger fragt als die
+     anderen. */
+  { n:'eine Wendung liegt in einem Bereich, den es nicht gibt',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { id: 'w-nehmeich',   gebiet: '4.4',",
+    ersatz:"  { id: 'w-nehmeich',   gebiet: '4.5',",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ id: 'w-nehmeich',   gebiet: '4.5'," },
+    sagt:'den es nicht gibt' },
+
+  { n:'die vier Bereiche der Wendungen dürfen ungleich stark sein',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { id: 'w-quittung',   gebiet: '4.4',",
+    ersatz:"  { id: 'w-quittung',   gebiet: '4.1',",
+    an:{ datei:'src/inhalt/englisch.js', text:"{ id: 'w-quittung',   gebiet: '4.1'," },
+    sagt:'ungleich stark' },
+
   /* E15 - zwei Proben, eine je Richtung. Die Pruefung verlangt fuer JEDE
      amtliche Zeile eine Entscheidung: entweder ein Satz oder ein Eintrag
      in OHNE_SATZ. Beide Haelften koennen einzeln brechen, also wird auch

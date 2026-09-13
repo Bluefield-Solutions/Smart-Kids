@@ -3085,13 +3085,38 @@ console.log('\n  Tor `englisch`');
         gesehen.set(n, w.id);
       }
     }
-    /* Vier Themengebiete, und keines darf leer bleiben: der Lehrplan
-       nennt sie einzeln, und eine Ebene, die nur Smalltalk fragt, deckt
-       ihn nicht ab. Die Zahl kommt aus den DATEN und nicht von hier -
-       geprueft wird, dass jedes vorkommt, nicht wie oft. */
-    const gebiete = new Set(EN.WENDUNGEN.map(w => w.gebiet));
-    for (const g of ['4.1', '4.2', '4.3', '4.4'])
-      if (!gebiete.has(g)) wf.push(`kein Satz zum Themengebiet ${g}`);
+    /* Vier Bereiche, und keiner darf leer bleiben: der Lehrplan nennt
+       die Felder einzeln, und eine Ebene, die nur Smalltalk fragt, deckt
+       ihn nicht ab.
+       
+       DIE VIER NUMMERN KOMMEN AUS `WENDUNGSBEREICHE` und nicht mehr als
+       Zeichenkette von hier. Der Unterschied ist nicht die Schreibarbeit:
+       so gibt es genau EINE Stelle, an der steht, welche Bereiche es
+       gibt und wie sie heissen - und die heissen bei zweien von vier
+       anders als das gleichnummerierte Themengebiet der Kinder (E16). */
+    const bereiche = new Set(EN.WENDUNGEN.map(w => w.gebiet));
+    const bekannt = new Set(EN.WENDUNGSBEREICHE.map(b => b.nr));
+    for (const b of EN.WENDUNGSBEREICHE)
+      if (!bereiche.has(b.nr))
+        wf.push(`kein Satz im Bereich ${b.nr} (${b.titel})`);
+    for (const w of EN.WENDUNGEN)
+      if (!bekannt.has(w.gebiet))
+        wf.push(`„${w.id}" liegt im Bereich „${w.gebiet}", den es nicht gibt`);
+
+    /* GLEICH STARK, und das ist kein Schoenheitswunsch: die Ebene
+       wuerfelt aus allen sechzig, und wer einen Bereich doppelt so voll
+       macht wie einen anderen, fragt ihn doppelt so oft. Geprueft wird
+       die BEZIEHUNG und keine absolute Grenze (Regel 2: Grenzen anteilig,
+       nie absolut) - vier gleich grosse Bereiche, wieviele es auch sind.
+       Heute sind es 15. */
+    const jeBereich = new Map();
+    for (const w of EN.WENDUNGEN)
+      jeBereich.set(w.gebiet, (jeBereich.get(w.gebiet) || 0) + 1);
+    const staerken = [...jeBereich.values()];
+    if (staerken.length && Math.min(...staerken) !== Math.max(...staerken))
+      wf.push('die vier Bereiche sind ungleich stark: '
+        + EN.WENDUNGSBEREICHE.map(b => `${b.titel} ${jeBereich.get(b.nr) || 0}`).join(' · ')
+        + ' — dann wird der vollste Bereich am häufigsten gefragt');
 
     /* Die Diktatsaetze sind eine AUSWAHL der Wendungen und keine zweite
        Liste (Regel 6: was zweimal dasteht, veraltet einmal). Ohne diese
@@ -3140,8 +3165,16 @@ console.log('\n  Tor `englisch`');
     }
     const laengste = Math.max(...hs.map(w => woerter(w.richtig[0])));
     console.log(`    Wendungen (E11): ${EN.WENDUNGEN.length} Sätze in `
-      + `${gebiete.size} Themengebieten, jeder mit mindestens zwei gültigen `
-      + 'Fassungen · keine Fassung beantwortet zwei Aufgaben');
+      + `${bereiche.size} gleich starken Bereichen, jeder mit mindestens zwei `
+      + 'gültigen Fassungen · keine Fassung beantwortet zwei Aufgaben');
+    /* BEIDE NAMEN NEBENEINANDER. Die Elternebene teilt die Nummern mit
+       den Kindern und meint bei zweien von vier etwas anderes; wer den
+       Bericht liest, soll das sehen und nicht erst in den Daten
+       nachschlagen. */
+    console.log('    Bereiche der Eltern gegen die Themengebiete der Kinder: '
+      + EN.WENDUNGSBEREICHE.map(b => `${b.nr} ${b.titel}${
+          b.titel === EN.themaTitel(b.nr) ? '' : ` (Kinder: ${EN.themaTitel(b.nr)})`}`)
+          .join(' · '));
     console.log(`    Hören und schreiben (E12): ${hs.length} Diktatsätze, alle aus `
       + `den Wendungen · längster ${laengste} Wörter (Grenze ${LAENGSTER})`);
   }

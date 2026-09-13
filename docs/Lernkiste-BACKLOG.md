@@ -7538,3 +7538,76 @@ dass es weitere gibt — 78 Aufnahmen, und `grep` findet in `ansicht.mjs`
 noch ein Dutzend `waitForTimeout`. Das ist der nächste Aufräumschritt,
 und er gehört nicht in diese Runde: jede einzelne dieser Wartezeiten
 braucht die Antwort auf die Frage, WORAUF sie eigentlich wartet.
+
+---
+
+## E16 · Die Teetasse, und was die Wendungen eigentlich sind
+
+Zwei Sachen, die nichts miteinander zu tun haben außer dem Fach.
+
+### Die Tasse
+
+Beim Durchsehen der Abnahmebilder war sie die eine Karte auf dem
+Vier-Karten-Schirm, die man nicht erkannte. Nachgerechnet am Pfad: der
+Henkel begann bei x=46, die Tasse endete bei x=44 — er **schwebte zwei
+Einheiten daneben**. Die Untertasse war ein grauer Balken unter einer
+Halbkugel, und die Teeoberfläche ein brauner Deckel, der links über den
+Rand stand.
+
+Neu gezeichnet: eine nach unten sich verjüngende Tasse, der Henkel an ihr
+angesetzt statt daneben, die Untertasse eine flache Schale. Der Teebeutel
+ist raus — nicht aus Bequemlichkeit, sondern aus dem Stil: ein Faden ist
+eine dünne Linie, und dünne Linien gibt es auf diesem Blatt nicht. Das
+Motiv sagt das jetzt auch, sonst zeichnete der nächste ihn wieder hin.
+
+### Die Wendungen heißen anders, als sie heißen
+
+Die Messung sollte dieselbe sein wie bei den Sätzen: *decken die 60
+Wendungen die Redemittel ab?* Sie geht nicht — und der Grund ist der
+eigentliche Befund. Die Wendungen sind die **Elternebene**: „Darf ich
+vorstellen — das ist meine Frau.", „Könnten Sie das bitte
+buchstabieren?", „Wann fährt der nächste Zug nach London?" Sie füllen
+keine Redemittel aus und sollen es nicht; der amtliche Kinderwortschatz
+gilt für sie nicht.
+
+Sie tragen aber die **Nummern** der vier Themengebiete, und das ist
+Absicht: der Vater übt neben dem Kind dasselbe Feld. Nur heißen zwei der
+vier für einen Erwachsenen etwas anderes:
+
+| Nr. | Kinder | Eltern |
+|---|---|---|
+| 4.1 | Familie und Freunde | Familie und Freunde |
+| 4.2 | **Schule** | **Sich verständigen** |
+| 4.3 | **Freizeit und Feste** | **Freizeit und unterwegs** |
+| 4.4 | Einkaufen | Einkaufen und Essen |
+
+Für einen Erwachsenen gibt es kein Schulgespräch; sein Gegenstück zu 4.2
+ist das Nachfragen, Buchstabieren-lassen, um-Wiederholung-bitten. Und aus
+Festen wird unterwegs sein: Zug, Museum, Hotel, Weg zum Bahnhof.
+
+**Beide Namen standen bisher nur als Abschnittsüberschrift im Quelltext**
+— an einer Stelle also, die kein Werkzeug liest. Das Tor meldete
+stattdessen „60 Sätze in 4 Themengebieten", und das war die falsche
+Auskunft über die eigenen Daten. Jetzt gibt es `WENDUNGSBEREICHE` mit den
+vier echten Namen, und der Bericht stellt beide nebeneinander:
+
+```
+Bereiche der Eltern gegen die Themengebiete der Kinder:
+  4.1 Familie und Freunde · 4.2 Sich verständigen (Kinder: Schule)
+  · 4.3 Freizeit und unterwegs (Kinder: Freizeit und Feste)
+  · 4.4 Einkaufen und Essen (Kinder: Einkaufen)
+```
+
+Dazu zwei neue Prüfungen. Die erste fängt den Tippfehler: ein Bereich,
+den es nicht gibt. Die zweite ist die, an die niemand denkt — **die vier
+Bereiche müssen gleich stark sein**. Sie melden nichts Kaputtes, sondern
+eine Ebene, die einen ihrer vier Bereiche häufiger fragt als die anderen:
+die Ebene würfelt aus allen sechzig, und wer einen Bereich doppelt so
+voll macht, fragt ihn doppelt so oft. Geprüft wird die Beziehung und
+keine Zahl — vier gleich große Bereiche, wie viele es auch sind (heute
+15).
+
+**Gemessen und nicht beanstandet:** die 34 Diktatsätze sind eine Auswahl
+der Wendungen nach Länge und liegen bei 8 · 10 · 7 · 9. Ungleich, aber
+die Auswahl ist es zu Recht — kurz genug zum Diktieren ist kein Merkmal,
+das sich gleichmäßig verteilt.

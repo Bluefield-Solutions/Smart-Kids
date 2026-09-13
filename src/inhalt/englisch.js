@@ -1128,15 +1128,25 @@ export const BILDER = [
       { f:'licht',  d:'M26 26h6v4h-6Z' },
     ],
     motiv: 'three wrapped sweets with twisted ends, lying flat, seen from above' },
+  /* NEU GEZEICHNET (E16). Der alte Henkel begann bei x=46, die Tasse
+     endete bei x=44 - er schwebte also zwei Einheiten daneben, und die
+     Untertasse war ein grauer Balken unter einer Halbkugel. Auf dem
+     Vier-Karten-Schirm war das die eine Karte, die man nicht erkannte.
+     Jetzt: eine sich nach unten verjuengende Tasse, der Henkel an ihr
+     angesetzt statt daneben, die Untertasse eine flache Schale.
+     Der Teebeutel ist raus, aus dem Stil und nicht aus Bequemlichkeit:
+     ein Faden ist eine duenne Linie, und duenne Linien gibt es auf
+     diesem Blatt nicht. Das Motiv sagt das jetzt auch. */
   { wort: 'tea',        gebiet: 'essen',
     bild: [
-      { f:'grau',       d:'M6 52h44v6H6Z' },
-      { f:'rot',        d:'M10 20h34v18a17 17 0 0 1-34 0Z' },
-      { f:'rotDunkel',  d:'M36 20h8v18a17 17 0 0 1-17 17c9-2 9-9 9-17Z' },
-      { f:'rot',        d:'M46 24h6a9 9 0 0 1 0 18h-4a20 20 0 0 0 2-6h2a4 4 0 0 0 0-8h-6Z' },
-      { f:'braun',      d:'M14 24h26v6a13 13 0 0 1-26 0Z' },
+      { f:'grau',       d:'M6 51h52a4 4 0 0 1-4 6H10a4 4 0 0 1-4-6Z' },
+      { f:'rot',        d:'M44 26c8 0 13 4 13 9s-5 9-13 9v-5c5 0 8-2 8-4s-3-4-8-4Z' },
+      { f:'rot',        d:'M13 20h33l-4 30a4 4 0 0 1-4 4H21a4 4 0 0 1-4-4Z' },
+      { f:'rotDunkel',  d:'M40 20h6l-4 30a4 4 0 0 1-4 4h-5c4-10 7-21 7-34Z' },
+      { f:'braun',      d:'M29.5 18.3a14.5 3.2 0 1 0 0 6.4 14.5 3.2 0 0 0 0-6.4Z' },
+      { f:'licht',      d:'M19 28c1-4 4-6 7-6 2 0 2 3 0 3-3 1-4 2-5 4-1 2-3 1-2-1Z' },
     ],
-    motiv: 'a teacup on a saucer, seen from the side, with a teabag string over the rim' },
+    motiv: 'a teacup standing on a round saucer, seen from the side, with a handle on the right' },
   { wort: 'tomato',     gebiet: 'essen',
     bild: [
       { f:'rot',        d:'M32 20c12 0 21 8 21 18s-9 18-21 18-21-8-21-18 9-18 21-18Z' },
@@ -2616,6 +2626,40 @@ export function vorratPraepositionen(){
  * erfunden: jeder ist die erste zugelassene Antwort einer Wendung. Damit
  * kann E12 nicht von E11 abweichen - und `inhalt` rechnet genau das nach.
  */
+/*
+ * Die vier Bereiche der WENDUNGEN - und warum sie eigene Namen brauchen
+ * (E16).
+ *
+ * Die Wendungen sind die ELTERNEBENE: „Darf ich vorstellen - das ist
+ * meine Frau.", „Können Sie das bitte buchstabieren?", „Wann fährt der
+ * nächste Zug nach London?" Sie tragen die Nummern der vier
+ * Themengebiete des Lehrplans, und das ist Absicht: der Vater übt neben
+ * dem Kind dasselbe Feld.
+ *
+ * ZWEI DER VIER HEISSEN FÜR EINEN ERWACHSENEN ABER ETWAS ANDERES. Das
+ * Kind lernt in 4.2 „Schule"; für einen Erwachsenen gibt es kein
+ * Schulgespräch, sein Gegenstück ist das Sich-Verständigen - nachfragen,
+ * buchstabieren lassen, um Wiederholung bitten. Und aus „Freizeit und
+ * Feste" wird unterwegs sein: Zug, Museum, Hotel, Weg zum Bahnhof.
+ *
+ * Die beiden Namen standen bisher NUR als Abschnittsüberschrift im
+ * Quelltext („--- 4.2 Sich verständigen ---"), also an einer Stelle, die
+ * kein Werkzeug liest. Das Tor meldete dafür „60 Sätze in 4
+ * Themengebieten" - und das war die falsche Auskunft über die eigenen
+ * Daten: es sind vier Bereiche, von denen zwei anders heißen als das
+ * gleichnummerierte Themengebiet. Jetzt steht es hier, und das Tor sagt
+ * beide Namen nebeneinander.
+ */
+export const WENDUNGSBEREICHE = [
+  { nr: '4.1', titel: 'Familie und Freunde' },
+  { nr: '4.2', titel: 'Sich verständigen' },
+  { nr: '4.3', titel: 'Freizeit und unterwegs' },
+  { nr: '4.4', titel: 'Einkaufen und Essen' },
+];
+/** Der Name eines Wendungsbereichs. Unbekannt heisst: gibt es nicht. */
+export const bereichTitel = (nr) =>
+  (WENDUNGSBEREICHE.find(b => b.nr === nr) || {}).titel || '';
+
 export const WENDUNGEN = [
   // --- 4.1 Familie und Freunde ---
   { id: 'w-vorstellen', gebiet: '4.1', deutsch: 'Darf ich vorstellen — das ist meine Frau.',
