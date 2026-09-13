@@ -7564,6 +7564,18 @@ export const PROBEN = [
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },
 
+  /* E17 - und dieselbe Pruefung eine Ebene weiter, fuer die Diktatsaetze.
+     Der Eingriff nimmt EINEN Satz aus dem Bereich „Sich verstaendigen":
+     14 gegen dreimal 15, und die Ebene diktiert aus den drei anderen
+     haeufiger. Das faellt sonst nie auf - eine Ebene mit sechzig Saetzen
+     sieht auch mit neunundfuenfzig voll aus. */
+  { n:'die Diktatsätze dürfen ungleich über die Bereiche liegen',
+    tor:'inhalt', deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  'w-namebuchstaben', 'w-aussprache', 'w-nichtsicher', 'w-lernenoch',",
+    ersatz:"  'w-aussprache', 'w-nichtsicher', 'w-lernenoch',",
+    an:{ datei:'src/inhalt/englisch.js', fehlt:"  'w-namebuchstaben', 'w-aussprache'," },
+    sagt:'ungleich über die Bereiche verteilt' },
+
   /* E16 - zwei Proben fuer die Bereiche der Wendungen. Die erste faengt
      den Tippfehler, die zweite das Ungleichgewicht - und die zweite ist
      die, an die niemand denkt: sie meldet nichts Kaputtes, sondern eine

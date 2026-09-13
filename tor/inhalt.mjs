@@ -3144,9 +3144,24 @@ console.log('\n  Tor `englisch`');
       wf.push(`nur ${EN.WENDUNGEN.length} Wendungen — das sind `
         + `${(EN.WENDUNGEN.length / SITZUNG_ELTERN).toFixed(1)} Runden, `
         + `nötig sind ${RUNDEN_VORRAT}`);
-    const hgebiete = new Set(hs.map(w => w.gebiet));
-    for (const g of ['4.1', '4.2', '4.3', '4.4'])
-      if (!hgebiete.has(g)) wf.push(`kein Diktatsatz zum Themengebiet ${g}`);
+    /* Und die Diktatsaetze gleich stark ueber die Bereiche, aus demselben
+       Grund wie bei den Wendungen (E17).
+       
+       Bis dahin waren es 8, 10, 7 und 9. Das sah nach einer Folge der
+       Neun-Woerter-Grenze aus und war keine: nachgemessen halten ALLE 66
+       damals nicht genommenen Wendungen sie. Die Schieflage war
+       gewachsen, nicht entschieden - genau die Sorte Zahl, die niemand
+       je nachrechnet, weil sie plausibel aussieht. */
+    const jeHBereich = new Map();
+    for (const w of hs) jeHBereich.set(w.gebiet, (jeHBereich.get(w.gebiet) || 0) + 1);
+    for (const b of EN.WENDUNGSBEREICHE)
+      if (!jeHBereich.has(b.nr))
+        wf.push(`kein Diktatsatz im Bereich ${b.nr} (${b.titel})`);
+    const hStaerken = [...jeHBereich.values()];
+    if (hStaerken.length && Math.min(...hStaerken) !== Math.max(...hStaerken))
+      wf.push('die Diktatsätze sind ungleich über die Bereiche verteilt: '
+        + EN.WENDUNGSBEREICHE.map(b => `${b.titel} ${jeHBereich.get(b.nr) || 0}`).join(' · ')
+        + ' — dann diktiert die Ebene aus einem Bereich häufiger als aus den anderen');
     /* RATSCHE, kein Soll. Der Vorlauf verspricht „einmal, in normalem
        Tempo" - ab einer gewissen Laenge misst das nicht mehr das Hoeren,
        sondern das Behalten. Gemessen am heutigen Vorrat: sieben Woerter.
@@ -3176,7 +3191,8 @@ console.log('\n  Tor `englisch`');
           b.titel === EN.themaTitel(b.nr) ? '' : ` (Kinder: ${EN.themaTitel(b.nr)})`}`)
           .join(' · '));
     console.log(`    Hören und schreiben (E12): ${hs.length} Diktatsätze, alle aus `
-      + `den Wendungen · längster ${laengste} Wörter (Grenze ${LAENGSTER})`);
+      + `den Wendungen · ${hStaerken[0]} je Bereich · längster ${laengste} Wörter `
+      + `(Grenze ${LAENGSTER})`);
   }
 
   /* --- E9: die Saetze zum Selbersagen --------------------------------- *

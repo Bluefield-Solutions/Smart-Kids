@@ -2393,6 +2393,11 @@
       "zeit": "2026-09-11",
       "s": 51
     },
+    "die Diktatsätze dürfen ungleich über die Bereiche liegen": {
+      "commit": "158a0b6143234932f88d4269807c369e222f3fab",
+      "zeit": "2026-09-13",
+      "s": 22
+    },
     "eine Wendung liegt in einem Bereich, den es nicht gibt": {
       "commit": "866a0d944d7a3616394faa9fe8dfd43fd3bb9ba4",
       "zeit": "2026-09-13",

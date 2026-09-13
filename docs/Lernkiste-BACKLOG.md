@@ -7611,3 +7611,54 @@ keine Zahl — vier gleich große Bereiche, wie viele es auch sind (heute
 der Wendungen nach Länge und liegen bei 8 · 10 · 7 · 9. Ungleich, aber
 die Auswahl ist es zu Recht — kurz genug zum Diktieren ist kein Merkmal,
 das sich gleichmäßig verteilt.
+
+---
+
+## E17 · Hundert Wendungen, sechzig Diktatsätze — und eine Zahl, die ich gestern falsch erklärt habe
+
+**Der Vorrat.** 60 Wendungen bei zwölf Aufgaben je Sitzung sind fünf
+Runden; danach wiederholt sich alles. Vierzig dazu, **zehn je Bereich**
+— nicht vierzig irgendwohin, denn die vier Bereiche müssen gleich stark
+bleiben, sonst fragt die Ebene den vollsten am häufigsten. Jetzt: 100
+Wendungen, 25 je Bereich, gut acht Runden.
+
+Der Inhalt ist das, was ein Erwachsener auf einer Reise wirklich braucht:
+Gleis und Anschluss, Zimmer frei, Taxi rufen, Speisekarte, „Ich vertrage
+keine Nüsse", „Mir fällt das Wort gerade nicht ein". Jede mit zwei bis
+drei gültigen Fassungen — das ist die Zusage der Ebene, und das Tor
+rechnet nach, dass keine Fassung zwei Aufgaben beantwortet.
+
+### Die Zahl, die ich gestern falsch erklärt habe
+
+In E16 stand hier: *„Gemessen und nicht beanstandet: die 34 Diktatsätze
+liegen bei 8 · 10 · 7 · 9. Ungleich, aber die Auswahl ist es zu Recht —
+kurz genug zum Diktieren ist kein Merkmal, das sich gleichmäßig
+verteilt."*
+
+**Das war eine Erklärung, keine Messung.** Beim Aufstocken habe ich
+nachgezählt: von den 66 damals nicht genommenen Wendungen halten **alle
+66** die Neun-Wörter-Grenze. Der Längenfilter hat also niemanden
+ausgeschlossen; die Schieflage war gewachsen, nicht entschieden. Und die
+Zeile darüber im Quelltext behauptete seit I1 „je Themengebiet drei",
+während es 8, 10, 7 und 9 waren.
+
+Eine plausible Erklärung für eine Zahl ist das Gefährlichste, was man
+einer Zahl antun kann: sie sieht danach geprüft aus. Jetzt sind es **15
+je Bereich**, und `inhalt` prüft die Gleichheit — bei den Wendungen wie
+bei den Diktatsätzen, beide mit eigener Gegenprobe.
+
+### Stand nach dieser Runde
+
+| | vorher | jetzt | Runden bei 12 Aufgaben |
+|---|---|---|---|
+| Wendungen (E11) | 60 | **100** | 5,0 → **8,3** |
+| Diktatsätze (E12) | 34 | **60** | 2,8 → **5,0** |
+
+**Was auffiel und nicht gemacht wurde:** alle 100 Wendungen wären kurz
+genug fürs Diktat. Die Auswahl könnte also eine Ableitung sein statt
+einer Liste — das wäre nach Regel 6 sauberer, denn was zweimal dasteht,
+veraltet einmal. Es würde aber zwei
+bestehende Prüfungen bedeutungslos machen („alle aus den Wendungen", „die
+Neun-Wörter-Grenze"), denn eine Ableitung kann sie nicht verletzen. Eine
+Prüfung gegen eine Ableitung ist keine. Solange die Liste von Hand
+gepflegt wird, prüfen die beiden etwas Echtes; darum bleibt sie.

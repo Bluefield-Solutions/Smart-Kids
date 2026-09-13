@@ -2860,13 +2860,132 @@ export const WENDUNGEN = [
               'Is there anything cheaper?'] },
   { id: 'w-nehmeich',   gebiet: '4.4', deutsch: 'Das nehme ich.',
     richtig: ["I'll take it.", 'I will take it.', "I'll take this one."] },
+
+  // --- E17: vierzig weitere Wendungen, zehn je Bereich -----------------
+  //
+  // Sechzig Wendungen bei zwoelf Aufgaben je Sitzung sind fuenf Runden;
+  // danach wiederholt sich alles. Mit hundert sind es gut acht.
+  //
+  // ZEHN JE BEREICH und nicht vierzig irgendwohin: die vier Bereiche
+  // muessen gleich stark bleiben, sonst fragt die Ebene den vollsten am
+  // haeufigsten - das prueft `inhalt` seit E16.
+
+  // --- 4.1 Familie und Freunde ---
+  { id: 'w-wiealtkinder', gebiet: '4.1', deutsch: 'Wie alt sind deine Kinder?',
+    richtig: ['How old are your children?', 'How old are the children?',
+              'How old are your kids?'] },
+  { id: 'w-sohnschule', gebiet: '4.1', deutsch: 'Mein Sohn geht noch zur Schule.',
+    richtig: ['My son is still at school.', 'My son still goes to school.'] },
+  { id: 'w-seltensehen', gebiet: '4.1', deutsch: 'Wir sehen uns leider selten.',
+    richtig: ['We do not see each other very often.',
+              "We don't see each other very often.",
+              'Unfortunately we rarely see each other.'] },
+  { id: 'w-altefreundin', gebiet: '4.1', deutsch: 'Sie ist eine alte Freundin von mir.',
+    richtig: ['She is an old friend of mine.', "She's an old friend of mine."] },
+  { id: 'w-zehnjahre', gebiet: '4.1', deutsch: 'Wir wohnen seit zehn Jahren hier.',
+    richtig: ['We have lived here for ten years.', "We've lived here for ten years.",
+              'We have been living here for ten years.'] },
+  { id: 'w-frauspaeter', gebiet: '4.1', deutsch: 'Meine Frau kommt später nach.',
+    richtig: ['My wife will join us later.', 'My wife is coming later.'] },
+  { id: 'w-geschwister', gebiet: '4.1', deutsch: 'Ich habe drei Geschwister.',
+    richtig: ['I have three brothers and sisters.', 'I have got three siblings.',
+              "I've got three siblings."] },
+  { id: 'w-grossefamilie', gebiet: '4.1', deutsch: 'Wir sind eine große Familie.',
+    richtig: ['We are a big family.', "We're a big family."] },
+  { id: 'w-bruderaelter', gebiet: '4.1', deutsch: 'Mein Bruder ist zwei Jahre älter als ich.',
+    richtig: ['My brother is two years older than me.',
+              'My brother is two years older than I am.'] },
+  { id: 'w-gutheim', gebiet: '4.1', deutsch: 'Kommt gut nach Hause.',
+    richtig: ['Get home safely.', 'Have a safe trip home.', 'Safe journey home.'] },
+
+  // --- 4.2 Sich verständigen ---
+  { id: 'w-namebuchstaben', gebiet: '4.2', deutsch: 'Wie schreibt man Ihren Namen?',
+    richtig: ['How do you spell your name?', 'How is your name spelled?'] },
+  { id: 'w-andersagen', gebiet: '4.2', deutsch: 'Können Sie das anders sagen?',
+    richtig: ['Could you say that in another way?', 'Can you put that differently?'] },
+  { id: 'w-jetztklar', gebiet: '4.2', deutsch: 'Jetzt verstehe ich, danke.',
+    richtig: ['Now I understand, thank you.', 'I see now, thanks.'] },
+  { id: 'w-wortfehlt', gebiet: '4.2', deutsch: 'Mir fällt das Wort gerade nicht ein.',
+    richtig: ['I cannot think of the word right now.',
+              "I can't think of the word at the moment."] },
+  { id: 'w-aussprache', gebiet: '4.2', deutsch: 'Wie spricht man das aus?',
+    richtig: ['How do you pronounce that?', 'How is that pronounced?'] },
+  { id: 'w-nichtsicher', gebiet: '4.2', deutsch: 'Ich bin mir nicht sicher.',
+    richtig: ['I am not sure.', "I'm not sure.", 'I am not certain.'] },
+  { id: 'w-lernenoch', gebiet: '4.2', deutsch: 'Ich lerne noch Englisch.',
+    richtig: ['I am still learning English.', "I'm still learning English."] },
+  { id: 'w-kurzwarten', gebiet: '4.2', deutsch: 'Können Sie kurz warten?',
+    richtig: ['Could you wait a moment, please?', 'Can you wait a second?'] },
+  { id: 'w-nichtgehoert', gebiet: '4.2', deutsch: 'Ich habe Sie nicht gehört.',
+    richtig: ['I did not hear you.', "I didn't hear you.",
+              'Sorry, I could not hear you.'] },
+  { id: 'w-sorichtig', gebiet: '4.2', deutsch: 'Ist das so richtig?',
+    richtig: ['Is that right?', 'Is this correct?'] },
+
+  // --- 4.3 Freizeit und unterwegs ---
+  { id: 'w-fahrkarte', gebiet: '4.3', deutsch: 'Wo kann ich eine Fahrkarte kaufen?',
+    richtig: ['Where can I buy a ticket?', 'Where do I get a ticket?'] },
+  { id: 'w-gleis', gebiet: '4.3', deutsch: 'Von welchem Gleis fährt der Zug?',
+    richtig: ['Which platform does the train leave from?',
+              'What platform does the train go from?'] },
+  { id: 'w-anschluss', gebiet: '4.3', deutsch: 'Wir haben den Anschluss verpasst.',
+    richtig: ['We have missed our connection.', "We've missed our connection."] },
+  { id: 'w-taxirufen', gebiet: '4.3', deutsch: 'Können Sie uns ein Taxi rufen?',
+    richtig: ['Could you call us a taxi?', 'Can you call a taxi for us, please?'] },
+  { id: 'w-museumauf', gebiet: '4.3', deutsch: 'Wann macht das Museum auf?',
+    richtig: ['When does the museum open?', 'What time does the museum open?'] },
+  { id: 'w-wieweit', gebiet: '4.3', deutsch: 'Wie weit ist es von hier?',
+    richtig: ['How far is it from here?', 'How far away is it?'] },
+  { id: 'w-regen', gebiet: '4.3', deutsch: 'Es soll morgen regnen.',
+    richtig: ['It is supposed to rain tomorrow.', "It's going to rain tomorrow.",
+              'They say it will rain tomorrow.'] },
+  { id: 'w-zimmerfrei', gebiet: '4.3', deutsch: 'Haben Sie noch ein Zimmer frei?',
+    richtig: ['Do you have a room available?', 'Have you got a room free?'] },
+  { id: 'w-parken', gebiet: '4.3', deutsch: 'Wo können wir hier parken?',
+    richtig: ['Where can we park here?', 'Is there somewhere to park here?'] },
+  { id: 'w-schoenertag', gebiet: '4.3', deutsch: 'Das war ein schöner Tag.',
+    richtig: ['That was a lovely day.', 'It was a nice day.',
+              'We had a lovely day.'] },
+
+  // --- 4.4 Einkaufen und Essen ---
+  { id: 'w-speisekarte', gebiet: '4.4', deutsch: 'Könnten wir die Karte haben?',
+    richtig: ['Could we have the menu, please?', 'Can we see the menu, please?'] },
+  { id: 'w-glaswasser', gebiet: '4.4', deutsch: 'Ein Glas Wasser, bitte.',
+    richtig: ['A glass of water, please.',
+              'Could I have a glass of water, please?'] },
+  { id: 'w-zusammen', gebiet: '4.4', deutsch: 'Wir zahlen zusammen.',
+    richtig: ["We'd like to pay together.", 'We will pay together.',
+              'One bill, please.'] },
+  { id: 'w-keinenuesse', gebiet: '4.4', deutsch: 'Ich vertrage keine Nüsse.',
+    richtig: ['I cannot eat nuts.', "I can't eat nuts.",
+              'I am allergic to nuts.'] },
+  { id: 'w-nachbestellen', gebiet: '4.4', deutsch: 'Könnten wir noch etwas bestellen?',
+    richtig: ['Could we order something else?', 'Can we order some more, please?'] },
+  { id: 'w-inblau', gebiet: '4.4', deutsch: 'Haben Sie das auch in Blau?',
+    richtig: ['Do you have this in blue?', 'Have you got this in blue?'] },
+  { id: 'w-passtnicht', gebiet: '4.4', deutsch: 'Das passt mir leider nicht.',
+    richtig: ['It does not fit me.', "It doesn't fit.",
+              'I am afraid it does not fit.'] },
+  { id: 'w-geschenkpapier', gebiet: '4.4', deutsch: 'Können Sie das als Geschenk einpacken?',
+    richtig: ['Could you gift-wrap it, please?', 'Can you wrap it as a present?'] },
+  { id: 'w-wielangeauf', gebiet: '4.4', deutsch: 'Bis wann haben Sie geöffnet?',
+    richtig: ['How long are you open?', 'What time do you close?'] },
+  { id: 'w-barzahlen', gebiet: '4.4', deutsch: 'Ich zahle bar.',
+    richtig: ["I'll pay cash.", 'I will pay in cash.', 'Cash, please.'] },
 ];
 
-/* Die Hoersaetze (E12) - je Themengebiet drei, und JEDER ist die erste
+/* Die Hoersaetze (E12) - fuenfzehn je Bereich, und JEDER ist die erste
    zugelassene Antwort einer Wendung. Erfunden wird hier nichts: die
    Kennung zeigt auf die Wendung, der Satz wird von dort geholt. So kann
    E12 nicht von E11 abweichen, und wer eine Wendung umformuliert, aendert
-   den Hoersatz mit. */
+   den Hoersatz mit.
+   
+   „Je Themengebiet drei" stand hier bis E17 und stimmte seit I1 nicht
+   mehr: es waren 8, 10, 7 und 9. Nachgezaehlt bei der Aufstockung, und
+   die Schieflage war kein Ergebnis der Neun-Woerter-Grenze - ALLE 66
+   damals nicht genommenen Wendungen halten sie. Sie war gewachsen, nicht
+   entschieden. Jetzt sind es fuenfzehn je Bereich, und `inhalt` prueft
+   die Gleichheit, damit es beim naechsten Nachtragen auffaellt. */
 export const HOERSAETZE = [
   'w-vorstellen', 'w-wiegehts', 'w-freutmich',
   'w-nochmal', 'w-verstehe', 'w-wieheisst',
@@ -2883,6 +3002,15 @@ export const HOERSAETZE = [
   'w-wetter', 'w-spiel', 'w-museum', 'w-dauer',
   'w-bestellen', 'w-vegetarisch', 'w-geschmeckt', 'w-guenstiger',
   'w-nehmeich', 'w-quittung',
+  /* E17: sechsundzwanzig dazu, damit es fuenfzehn je Bereich sind. */
+  'w-wiealtkinder', 'w-sohnschule', 'w-altefreundin', 'w-zehnjahre',
+  'w-geschwister', 'w-grossefamilie', 'w-gutheim',
+  'w-namebuchstaben', 'w-aussprache', 'w-nichtsicher', 'w-lernenoch',
+  'w-sorichtig',
+  'w-fahrkarte', 'w-gleis', 'w-anschluss', 'w-taxirufen', 'w-museumauf',
+  'w-wieweit', 'w-zimmerfrei', 'w-parken',
+  'w-speisekarte', 'w-glaswasser', 'w-keinenuesse', 'w-nachbestellen',
+  'w-inblau', 'w-wielangeauf',
 ];
 
 /**
