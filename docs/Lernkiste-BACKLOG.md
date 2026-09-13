@@ -7662,3 +7662,108 @@ bestehende Prüfungen bedeutungslos machen („alle aus den Wendungen", „die
 Neun-Wörter-Grenze"), denn eine Ableitung kann sie nicht verletzen. Eine
 Prüfung gegen eine Ableitung ist keine. Solange die Liste von Hand
 gepflegt wird, prüfen die beiden etwas Echtes; darum bleibt sie.
+
+## E18 · Alle 86 Zeichnungen auf einem Blatt — und die 67, die noch nie jemand angesehen hat
+
+Die Teetasse aus E16 war nicht der Punkt. Der Punkt war, **wie** sie
+gefunden wurde: sie stand zufällig als eine von vier Antwortkarten auf
+`quer-lesen`. Ohne diesen Zufall stünde der Henkel heute noch neben der
+Tasse.
+
+Also die Frage umgedreht: **wie viele Zeichnungen hat überhaupt je
+jemand gesehen?**
+
+### Die Antwort, gemessen
+
+Eine Abschrift von `tor/ansicht.mjs` hat nach jeder der 78 Aufnahmen
+alle `d`-Attribute aus dem Baum geschrieben. Eine Zeichnung gilt als
+sichtbar, wenn **alle** ihre Pfade in einer Aufnahme stehen.
+
+| | |
+|---|---|
+| Zeichnungen | 86 |
+| auf mindestens einem der 78 Vorbilder | **19** |
+| auf keinem | **67** |
+
+Die neunzehn: dog · cheese · eat · salad · tea · book · chair ·
+class/classroom · dress · shirt · family · old · birthday · o'clock ·
+party · small · bike · go · like.
+
+**Im Werkzeugkopf stand „achtundsechzig".** Geschätzt, nicht gezählt,
+und um eins daneben — dieselbe Sorte Zahl, vor der E17 eine Seite weiter
+oben warnt. Jetzt steht die Messstelle daneben (Regel 5).
+
+### `npm run bilderblatt`
+
+Zwei Blätter, und das zweite ist das wichtigere:
+
+- `blick/bilder-gross.png` — 150 Punkte, mit Wort und Wortfeld. Für die
+  Frage: *sitzt jedes Teil an seinem Platz?*
+- `blick/bilder-karte.png` — **64 Punkte**, dicht an dicht, ohne
+  Beschriftung, im weißen Kartenrahmen des Spiels. Für die Frage:
+  *erkennt man es?*
+
+Die 64 sind gemessen und nicht gewählt: `.wortbild` ist 76 Punkte breit,
+aber im kurzen Querformat — und das **ist** das Zielgerät mit 844 × 390 —
+greift `@media (max-height:440px)` und setzt sie auf 64. Wer bei 150
+Punkten urteilt, urteilt über etwas, das kein Kind je sieht.
+
+Es ist **kein Tor**. Es urteilt nicht und schlägt nicht an; darum liegen
+die Blätter in `blick/` und nicht in `tor/vorbilder/`. Ein Vorbild wäre
+die Zusage, dass sich nichts ändert — und hier soll sich etwas ändern.
+
+### Neun Befunde, alle mit dem Auge
+
+| Wort | was daran falsch war | jetzt |
+|---|---|---|
+| `sweets` | las sich als **Fliege** | ein eingewickeltes Bonbon, liegend |
+| `rubber` | ein Band oder ein Lineal | Radiergummi, untere Hälfte dunkler, eine Ecke rund |
+| `room` | unlesbar bei 64 | **ein Bett, groß und allein** |
+| `behind` | von `in` nicht zu unterscheiden | Ball zur Hälfte über dem Kasten |
+| `in` | von `behind` nicht zu unterscheiden | offener Kasten, Ball zwischen den Wänden |
+| `on` | Ball **schwebte** zwei Einheiten über dem Deckel | er liegt auf |
+| `under` | Motiv versprach einen Tisch, gezeichnet war eine schwebende Platte | Tisch mit Beinen |
+| `hamster` | Motiv beschrieb etwas anderes als die Zeichnung | Motiv nachgezogen |
+| `ham` | war ein **Herz** mit einem Knochen quer darüber | Keule am Knochen, Schwarte unten |
+| `old` | armlose Figur neben einem schwarzen **T** in der Luft | Ärmel, Hand, Stock am Boden |
+
+Vier davon sind mehr als Handwerk.
+
+**`room` hat drei Anläufe gebraucht.** Wand mit Fenster und Bett las sich
+als Fahne an einem Mast; ein größeres Bett half nicht. Der dritte Anlauf
+ist eine **Vereinbarung**, so wie die Gitarre für „hobby": bei 64 Punkten
+hat eine Szene keine Chance, ein Gegenstand schon. Der Preis steht im
+Quelltext dabei — wer „room" hört, tippt auf ein Bett.
+
+**`on` und `under` waren Spiegelbilder.** Kasten über Ball, Ball über
+Kasten — das eine war das andere auf dem Kopf. Die Beine machen aus der
+Platte einen Tisch (was das Motiv ohnehin behauptete) und nehmen dem Paar
+die Spiegelbildlichkeit in einem Zug.
+
+**`ham` war ein Herz.** Nicht „sieht aus wie": der Pfad *ist* die
+Lehrbuchkurve eines Herzens, mit einem Knochen quer darüber. Das Motiv
+daneben beschrieb seit E4 eine Keule am Knochen. Seit E17 ist „like"
+ebenfalls ein Herz — zwei Herzen im Vorrat, eines davon hieß Schinken.
+Das Ähnlichkeitstor hat sie nicht zusammengebracht, weil `like` lila ist
+und `ham` rot: es vergleicht Farbe mit.
+
+**Drei Motive logen.** `hamster`, `under`, `ham` — bei allen dreien
+beschrieb der Text etwas anderes als die Pfade daneben. Das Motiv ist
+nicht Beiwerk: `inhalt` prüft damit die Ähnlichkeit der Wörter
+untereinander, und es ist das Einzige, was in Worten sagt, was das Bild
+sein soll. Stimmt es nicht mehr, prüft das Tor etwas, das es nicht gibt.
+
+### Was diese Runde über die Tore sagt
+
+Nach den ersten sieben geänderten Zeichnungen: **78 Vorbilder, 0
+Bildpunkte Unterschied.** Kein einziges davon steht auf einer Aufnahme —
+sechs Fehler und eine Motivlüge, und die gesamte Bildabnahme hat nichts
+gemerkt. Sie *konnte* es nicht. Erst `old` hat eine Aufnahme bewegt
+(`quer-englisch-vorlauf`), und das auch nur, weil es zu den 19 gehört.
+
+Das ist kein Mangel der Tore, sondern ihre Grenze: kein Tor **ersetzt**
+den **Blick** (Regel 4). `inhalt` prüft Motive, Blattgrößen und
+Ähnlichkeit — Handwerk prüft es nicht, und „sieht aus wie eine Fliege"
+ist in keinem Tor formulierbar. Was hilft,
+ist nicht ein neuntes Tor, sondern dass das Ansehen **zwei Minuten
+dauert statt einer Stunde**.

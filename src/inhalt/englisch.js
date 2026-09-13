@@ -956,7 +956,13 @@ export const BILDER = [
       { f:'rot',    d:'M29 33h6l-3 4Z' },
       { f:'gelb',   d:'M32 44a4 5 0 1 0 0 10 4 5 0 0 0 0-10Z' },
     ],
-    motiv: 'a hamster sitting on its hind legs, seen from the side, holding a seed' },
+    /* DAS MOTIV BESCHREIBT, WAS GEZEICHNET IST, und das war es bis E18
+       nicht: es versprach eine Seitenansicht auf den Hinterbeinen, und
+       gezeichnet ist ein Gesicht von vorn. Wer das Blatt danach neu
+       zeichnen laesst, bekaeme ein anderes Bild als das, das im Spiel
+       steht - und merkt es erst am fertigen Blatt. Die Zeichnung bleibt;
+       sie ist in Ordnung, nur eben eine andere als die beschriebene. */
+    motiv: 'a hamster seen from the front: a round face with small round ears, holding a seed in its cheeks' },
   { wort: 'horse',    gebiet: 'tiere',
     bild: [
       { f:'braunDunkel', d:'M8 30c-5 3-6 10-4 16h5c-2-6-1-11 2-13Z' },
@@ -1084,15 +1090,24 @@ export const BILDER = [
      Keule ist schief, hat einen Knochen und ist mit nichts sonst im
      Vorrat zu verwechseln. */
   { wort: 'ham',        gebiet: 'essen',
+    /* Das hier war ein HERZ. Der zweite Pfad war die Lehrbuchkurve eines
+       Herzens, mit einem Knochen quer darueber - und das Motiv daneben
+       beschrieb seit E4 einen Schinken am Knochen. Gemerkt hat es
+       niemand, weil „ham" auf keiner der 78 Aufnahmen steht; aufgefallen
+       ist es erst auf dem Bilderblatt, und da sofort. Dazu kam, dass
+       „like" seit E17 ein Herz ist: zwei Herzen im selben Vorrat, eines
+       davon heisst Schinken.
+       Jetzt ist es, was das Motiv sagt: Keule unten breit, Schwarte
+       ueber dem dicken Ende, Knochen oben aus dem schmalen heraus. */
     bild: [
-      { f:'creme',     d:'M13 51a24 15 -45 1 1 34-34 24 15 -45 1 1-34 34Z' },
-      { f:'rot',       d:'M32 60C18 48 8 36 8 25 8 16 14 9 22 9c5 0 9 4 10 10 1-6 5-10 10-10 8 0 14 7 14 16 0 11-10 23-24 35Z' },
-      { f:'rotDunkel', d:'M24 40a14 5 -45 1 1 20-20 14 5 -45 1 1-20 20Z' },
-      { f:'creme',     d:'M45 25 40 20 52 8 57 13Z' },
-      { f:'creme',     d:'M57 8a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
-      { f:'creme',     d:'M51 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
+      { f:'creme',     d:'M29 2h6v16h-6Z' },
+      { f:'creme',     d:'M27 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm10 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z' },
+      { f:'rot',       d:'M32 14c10 0 18 10 18 23 0 11-8 20-18 20s-18-9-18-20c0-13 8-23 18-23Z' },
+      { f:'rotDunkel', d:'M37 15c8 3 13 12 13 22 0 9-5 16-13 19 5-6 8-13 8-21 0-8-3-15-8-20Z' },
+      { f:'creme',     d:'M17 48a18 20 0 0 0 30 0Z' },
+      { f:'licht',     d:'M22 26c2-4 6-6 8-4 2 1 0 3-2 4-2 1-3 2-4 3-1 2-3 0-2-3Z' },
     ],
-    motiv: 'a ham on the bone lying at an angle, seen from the side, with a pale rind and the bone sticking out at the narrow end' },
+    motiv: 'a ham on the bone standing upright, seen from the side, wide at the bottom with a pale rind and the bone sticking out at the narrow top' },
   { wort: 'plum',       gebiet: 'essen',
     bild: [
       { f:'lila',   d:'M32 16c10 0 18 9 18 20s-8 22-18 22-18-11-18-22 8-20 18-20Z' },
@@ -1119,15 +1134,23 @@ export const BILDER = [
       { f:'gelb',       d:'M25 34a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm15 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
     ],
     motiv: 'one strawberry seen from the front, pointing down, with a leafy crown and seed dots' },
+  /* NEU GEZEICHNET (E18). Der Koerper war 20 Einheiten breit und jedes
+     Wickelende 14 - drei fast gleich grosse Teile nebeneinander, und das
+     ist die Bauform einer FLIEGE. Genau so sah es auch aus. Jetzt ist
+     der Koerper 40 breit und die Enden 10: die Bonbonform entsteht aus
+     dem Groessenverhaeltnis, nicht aus der Farbe.
+     Und EINS statt drei - das Motiv sagt es jetzt auch. Drei Bonbons
+     haetten bei 64 Punkten je elf Punkte Koerper, und elf Punkte sind
+     kein Bonbon mehr, sondern ein Fleck. */
   { wort: 'sweets',     gebiet: 'essen',
     bild: [
-      { f:'rot',    d:'M22 22h20v20H22Z' },
-      { f:'rotDunkel', d:'M32 22h10v20H32Z' },
-      { f:'gruen',  d:'M22 24 8 16v32l14-8Z' },
-      { f:'gruen',  d:'M42 24l14-8v32l-14-8Z' },
-      { f:'licht',  d:'M26 26h6v4h-6Z' },
+      { f:'gelbDunkel', d:'M14 27 4 22v20l10-5Z' },
+      { f:'gelbDunkel', d:'M50 27 60 22v20l-10-5Z' },
+      { f:'gelb',   d:'M22 20h20a10 12 0 0 1 0 24H22a10 12 0 0 1 0-24Z' },
+      { f:'gelbDunkel', d:'M42 20a10 12 0 0 1 0 24h-6a10 12 0 0 0 0-24Z' },
+      { f:'licht',  d:'M20 26c1-3 4-4 6-3 2 1 1 3-1 3-2 1-3 2-3 3-1 2-3 0-2-3Z' },
     ],
-    motiv: 'three wrapped sweets with twisted ends, lying flat, seen from above' },
+    motiv: 'one wrapped sweet lying flat, seen from above, with a twisted end on each side' },
   /* NEU GEZEICHNET (E16). Der alte Henkel begann bei x=46, die Tasse
      endete bei x=44 - er schwebte also zwei Einheiten daneben, und die
      Untertasse war ein grauer Balken unter einer Halbkugel. Auf dem
@@ -1216,14 +1239,19 @@ export const BILDER = [
       { f:'gruenDunkel', d:'M36 40l8-10 10 18H40Z' },
     ],
     motiv: 'a framed picture hanging on a wall, seen from the front, showing a mountain and a sun' },
+  /* NEU GEZEICHNET (E18). Der alte war ein schraeg liegender rot-weisser
+     Balken mit einem Zipfel unten links - auf der Karte ein Band oder
+     ein Lineal, jedenfalls kein Radiergummi. Jetzt der Schulradierer von
+     vorn, wie ihn jedes Kind im Maeppchen hat: helle obere Haelfte,
+     dunkle untere, eine Ecke abgerundet vom Gebrauch. */
   { wort: 'rubber',           gebiet: 'schule',
     bild: [
-      { f:'rot',    d:'M8 24 46 12l10 12-38 14Z' },
-      { f:'rotDunkel', d:'M18 38 8 26v12l10 12Z' },
-      { f:'creme',  d:'M8 26 46 14l4 5-38 13Z' },
-      { f:'licht',  d:'M18 38 8 38v12l10-12Z' },
+      { f:'creme',  d:'M14 22h40v14H10v-10a4 4 0 0 1 4-4Z' },
+      { f:'rot',    d:'M10 36h44v8a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4Z' },
+      { f:'rotDunkel', d:'M44 36h10v8a4 4 0 0 1-4 4h-6Z' },
+      { f:'licht',  d:'M16 26c1-3 5-4 8-3 2 1 1 3-1 3-3 1-4 2-5 3-1 2-3 0-2-3Z' },
     ],
-    motiv: 'a rectangular eraser seen at a slight angle, one corner worn round' },
+    motiv: 'a school eraser seen from the front, the lower half darker, one corner worn round' },
   { wort: 'school/schoolbag', gebiet: 'schule',
     bild: [
       { f:'braunDunkel', d:'M16 14c0-6 7-10 16-10s16 4 16 10v6H16Z' },
@@ -1373,16 +1401,25 @@ export const BILDER = [
      der Haarfarbe unterscheiden, sind fuer ein Kind eine Muenze. Jetzt
      entscheidet die HALTUNG, und die sieht man auch klein noch. */
   { wort: 'old',     gebiet: 'menschen',
+    /* Der Stock war ein schwarzes T, das NEBEN der Figur in der Luft
+       stand, und die Figur hatte keinen Arm: zusammen las sich das als
+       Mensch neben einem Wegweiser. „Leaning on a walking stick" sagte
+       das Motiv - anlehnen kann sich nur, wer den Stock anfasst.
+       Jetzt fuehrt ein Aermel zur Hand, die Hand liegt auf dem Griff,
+       und der Stock steht auf derselben Linie wie der Mantelsaum. Holz
+       statt Tinte, weil Schwarz im ganzen Vorrat sonst nur Umrisse
+       sind. */
     bild: [
-      { f:'grau',       d:'M22 6c9 0 13 5 13 12H9c0-7 4-12 13-12Z' },
-      { f:'creme',      d:'M22 10a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z' },
-      { f:'grau',       d:'M14 24h14v4H14Z' },
-      { f:'braun',      d:'M12 62c-1-14 1-25 8-33 8 2 15 10 19 20 3 5 4 9 4 13Z' },
-      { f:'braunDunkel',d:'M26 34c7 4 12 11 15 19 1 3 2 6 2 9h-8c0-9-4-20-9-28Z' },
-      { f:'tinte',      d:'M50 28h4v34h-4Z' },
-      { f:'tinte',      d:'M46 26h12v5H46Z' },
+      { f:'braun',      d:'M24 28c7 0 12 5 13 12l3 22H8l3-22c1-7 6-12 13-12Z' },
+      { f:'creme',      d:'M24 8a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z' },
+      { f:'grau',       d:'M14 18a10 10 0 0 1 20 0Z' },
+      { f:'grau',       d:'M18 23h12v3H18Z' },
+      { f:'braun',      d:'M29 32c6 2 11 6 14 10l-5 3c-3-4-7-7-11-8Z' },
+      { f:'braunDunkel',d:'M45 40h4v22h-4Z' },
+      { f:'braunDunkel',d:'M40 36h14v4H40Z' },
+      { f:'creme',      d:'M43 34a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z' },
     ],
-    motiv: 'an old person standing bent forward, seen from the side, leaning on a walking stick' },
+    motiv: 'an old person with grey hair and a grey moustache, seen from the front, one hand resting on the handle of a walking stick' },
   { wort: 'sister',  gebiet: 'menschen',
     bild: [
       { f:'braun',  d:'M18 6c8 0 12 6 12 13v17h-5V22H11v14H6V19C6 12 10 6 18 6Z' },
@@ -1404,16 +1441,36 @@ export const BILDER = [
       { f:'gelb',   d:'M35 50a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
     ],
     motiv: 'a small house seen from the front: a pitched roof, a door and two windows' },
+  /* NEU GEZEICHNET (E18), und im zweiten Anlauf anders als im ersten.
+   *
+   * Das Alte waren drei Bloecke - Wand, Boden, roter Kasten -, und was
+   * davon Lampe und was Bett war, stand nur im Motiv. Der erste Anlauf
+   * hat die Szene besser gebaut: Fenster, Bett mit Kopfteil, Kissen,
+   * Decke, Beine. Bei 150 Punkten war das ein Zimmer. Bei 64 - und das
+   * ist die Groesse auf dem Zielgeraet - war es ein Brei aus sieben
+   * Flaechen, von denen keine mehr zu erkennen war.
+   *
+   * ALSO EIN BETT, gross und allein. Das ist eine Vereinbarung wie die
+   * Gitarre fuer „hobby", und sie hat denselben Grund: bei 64 Punkten
+   * hat eine Szene keine Chance, ein Gegenstand schon. Ein Zimmer
+   * erkennt man ohnehin an dem, was darin steht - und in „my room" steht
+   * fuer ein Kind das Bett.
+   *
+   * Der Preis steht dabei: wer „room" hoert, tippt auf ein Bett. Das ist
+   * zu lernen, nicht abzulesen. Der Preis der Szene waere gewesen, dass
+   * gar nichts zu erkennen ist - und das ist keiner, den man zahlen
+   * kann. */
   { wort: 'room',            gebiet: 'zuhause',
     bild: [
-      { f:'wolke',  d:'M4 6h56v38H4Z' },
-      { f:'braun',  d:'M4 44h56v16H4Z' },
-      { f:'blau',   d:'M10 12h18v18H10Z' },
-      { f:'licht',  d:'M18 12h2v18h-2Zm-8 8h18v2H10Z' },
-      { f:'rot',    d:'M34 30h24v14H34Z' },
-      { f:'rotDunkel', d:'M34 24h6v20h-6Z' },
+      { f:'braunDunkel', d:'M6 16h9v36H6Z' },
+      { f:'braunDunkel', d:'M51 28h7v24h-7Z' },
+      { f:'creme',  d:'M13 34h40v9H13Z' },
+      { f:'rot',    d:'M29 34h24v9H29Z' },
+      { f:'licht',  d:'M17 36h9v5h-9Z' },
+      { f:'braun',  d:'M13 43h40v6H13Z' },
+      { f:'braunDunkel', d:'M15 49h5v7h-5Zm31 0h5v7h-5Z' },
     ],
-    motiv: 'a bedroom seen from the front: a bed, a window and a bedside lamp' },
+    motiv: 'a bed seen from the side, with a tall headboard, a pillow and a blanket' },
   { wort: 'birthday',        gebiet: 'zuhause',
     bild: [
       { f:'gelb',   d:'M31 4c1 3 1 5 0 8h2c-1-3-1-5 0-8Z' },
@@ -1479,17 +1536,32 @@ export const BILDER = [
   // --- Wo? Die Praepositionen. Immer DIESELBE Kiste und DERSELBE Ball. ---
   { wort: 'behind',      gebiet: 'wo',
     bild: [
-      { f:'rot',    d:'M32 16a13 13 0 1 0 0 26 13 13 0 0 0 0-26Z' },
+      /* GENAU zur Haelfte, nicht zu zwei Dritteln (E18). Der Ball stand
+         bei y=16 und die Kiste bei y=34: achtzehn von sechsundzwanzig
+         Einheiten schauten heraus, und das sah aus wie ein Ball IN einer
+         offenen Kiste - also wie die Nachbarkarte. Der Mittelpunkt liegt
+         jetzt auf der Kistenkante. */
+      { f:'rot',    d:'M32 21a13 13 0 1 0 0 26 13 13 0 0 0 0-26Z' },
       { f:'grau',   d:'M12 34h40v24H12Z' },
       { f:'grauDunkel', d:'M12 34h40v5H12Z' },
     ],
     motiv: 'a closed box seen from the front with a ball behind it, only the upper half of the ball visible above the box' },
   { wort: 'in',          gebiet: 'wo',
     bild: [
-      { f:'grauDunkel', d:'M10 18h44v8H10Z' },
-      { f:'rot',    d:'M32 22a12 12 0 1 0 0 24 12 12 0 0 0 0-24Z' },
-      { f:'grau',   d:'M10 34h44v24H10Z' },
-      { f:'grauDunkel', d:'M10 34h44v4H10Z' },
+      /* EINE OFFENE KISTE, und zwar als solche zu erkennen (E18).
+         Vorher: ein dunkler Balken oben, der Ball darunter, davor die
+         Vorderwand - zusammen ergab das denselben Anblick wie „behind",
+         naemlich einen Ball, der ueber einem Kasten auftaucht. Die
+         beiden Karten stehen auf demselben Blatt und sollen sich
+         gleichen, aber NICHT in dem einen Zug, der den Unterschied
+         traegt.
+         Jetzt zwei Seitenwaende und ein Boden: der Ball sitzt sichtbar
+         DAZWISCHEN, oben offen. */
+      { f:'grau',   d:'M10 26h9v32h-9Z' },
+      { f:'grau',   d:'M45 26h9v32h-9Z' },
+      { f:'rot',    d:'M32 28a12 12 0 1 0 0 24 12 12 0 0 0 0-24Z' },
+      { f:'grau',   d:'M10 50h44v8H10Z' },
+      { f:'grauDunkel', d:'M10 50h44v3H10Z' },
     ],
     motiv: 'an open box seen from the front with a ball inside it, resting on the bottom of the box' },
   { wort: 'In front of', gebiet: 'wo',
@@ -1507,19 +1579,29 @@ export const BILDER = [
     ],
     motiv: 'a closed box seen from the front with a ball on the ground beside it, to the right, not touching' },
   { wort: 'on',          gebiet: 'wo',
+    /* Der Ball BERUEHRT den Deckel. Vorher endete er bei y=28 und der
+       Kasten begann bei y=30: bei 150 Punkten sah das aus wie ein
+       Aufliegen, bei 64 wie ein Schweben - und „schwebend ueber" ist
+       genau das, was „on" NICHT heisst. */
     bild: [
-      { f:'rot',    d:'M32 6a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+      { f:'rot',    d:'M32 8a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
       { f:'grau',   d:'M14 30h36v26H14Z' },
       { f:'grauDunkel', d:'M14 30h36v5H14Z' },
     ],
     motiv: 'a closed box seen from the front with a ball resting on top of it' },
   { wort: 'under',       gebiet: 'wo',
+    /* Der Tisch hat jetzt Beine. Das Motiv versprach seit E4 einen Tisch,
+       gezeichnet war eine schwebende Platte - derselbe Widerspruch wie
+       beim Hamster. Die Beine tun zweierlei: sie machen aus der Platte
+       einen Tisch, und sie nehmen „under" und „on" ihre Spiegelbildlich-
+       keit. Ohne sie war das eine Bild das andere auf dem Kopf. */
     bild: [
       { f:'grau',   d:'M14 8h36v26H14Z' },
       { f:'grauDunkel', d:'M14 29h36v5H14Z' },
+      { f:'grau',   d:'M16 34h5v22h-5Zm27 0h5v22h-5Z' },
       { f:'rot',    d:'M32 38a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
     ],
-    motiv: 'a table seen from the front with a ball on the floor underneath it' },
+    motiv: 'a table seen from the front with four legs and a ball on the floor underneath it' },
   // --- Gegensaetze und Gefuehle ---
   { wort: 'big',    gebiet: 'gegensaetze',
     bild: [
