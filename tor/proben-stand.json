@@ -1859,9 +1859,9 @@
       "s": 4
     },
     "die Ablenker der Englischebene kommen aus der falschen Sorte": {
-      "commit": "ad118786bb1f2661fa74c411eb3398dc5c00082f",
-      "zeit": "2026-09-11",
-      "s": 32
+      "commit": "58069561790c32ef9942c280500e0525d3951241",
+      "zeit": "2026-09-14",
+      "s": 31
     },
     "das gesuchte englische Wort steht auf dem Bildschirm": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
@@ -2328,6 +2328,16 @@
       "zeit": "2026-09-14",
       "s": 31
     },
+    "die Ablenker sieben nicht mehr nach Bedeutung": {
+      "commit": "58069561790c32ef9942c280500e0525d3951241",
+      "zeit": "2026-09-14",
+      "s": 32
+    },
+    "ein Paar in der Bedeutungstafel zeigt ins Leere": {
+      "commit": "58069561790c32ef9942c280500e0525d3951241",
+      "zeit": "2026-09-14",
+      "s": 32
+    },
     "der Bildvergleich zählt wieder Namen statt Töne": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
@@ -2404,9 +2414,9 @@
       "s": 18
     },
     "die vier Möglichkeiten dürfen die Sorte mischen": {
-      "commit": "a4c1881c9bcafdaecd4bc9b18c27b48f793a6733",
-      "zeit": "2026-09-11",
-      "s": 51
+      "commit": "58069561790c32ef9942c280500e0525d3951241",
+      "zeit": "2026-09-14",
+      "s": 38
     },
     "die Diktatsätze dürfen ungleich über die Bereiche liegen": {
       "commit": "158a0b6143234932f88d4269807c369e222f3fab",

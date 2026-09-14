@@ -2839,6 +2839,66 @@ console.log('\n  Tor `englisch`');
       if (b.motiv && /[äöüßÄÖÜ]/.test(b.motiv))
         e4.push(`das Motiv zu „${b.wort}" ist nicht englisch: „${b.motiv}"`);
     }
+    /* --- Was nicht nebeneinander stehen darf (E21) -------------------
+     *
+     * `NICHT_NEBENEINANDER` nennt 36 Paare, bei denen ein Kind mit
+     * demselben Recht auf die andere Karte tippen kann - „fruit" neben
+     * „apple", „boy" neben „brother". Geprueft wird dreierlei, und die
+     * dritte ist die einzige, die etwas ueber das SPIEL sagt:
+     *
+     *   1. jedes genannte Wort gibt es ueberhaupt,
+     *   2. kein Paar steht doppelt oder zeigt auf sich selbst,
+     *   3. `ablenkerFuer` gibt in KEINEM Topf einen verbotenen Partner
+     *      heraus - und laesst trotzdem ueberall genug uebrig.
+     *
+     * 1. und 2. pruefen die Tafel, 3. prueft die Wirkung. Ohne 3. waere
+     * die ganze Tafel ein Dokument: man koennte den Filter in
+     * `ablenkerFuer` herausnehmen, und alle Pruefungen blieben gruen
+     * (Regel 1). */
+    const alleWoerter = new Set(EN.BILDER.map(b => b.wort));
+    const gesehenePaare = new Set();
+    for (const e of EN.NICHT_NEBENEINANDER) {
+      if (!alleWoerter.has(e.ober))
+        e4.push(`„${e.ober}" steht in NICHT_NEBENEINANDER, aber nicht im Bildplan`);
+      if (!e.warum || e.warum.trim().length < 20)
+        e4.push(`„${e.ober}" in NICHT_NEBENEINANDER hat keinen Grund — `
+          + 'dann weiß der Nächste nicht, ob er das Paar streichen darf');
+      for (const u of e.unter) {
+        if (!alleWoerter.has(u))
+          e4.push(`„${u}" steht unter „${e.ober}" in NICHT_NEBENEINANDER, `
+            + 'aber nicht im Bildplan');
+        if (u === e.ober)
+          e4.push(`„${e.ober}" steht in NICHT_NEBENEINANDER unter sich selbst`);
+        const schluessel = [e.ober, u].sort().join(' | ');
+        if (gesehenePaare.has(schluessel))
+          e4.push(`das Paar „${e.ober}" / „${u}" steht zweimal in NICHT_NEBENEINANDER`);
+        gesehenePaare.add(schluessel);
+      }
+    }
+
+    /* Die Wirkung, an allen sechs Toepfen, die es gibt. `wieviel` auf 999
+       heisst: gib den ganzen gesiebten Topf heraus, nicht drei daraus -
+       damit ist die Pruefung vollstaendig und nicht gewuerfelt. */
+    const TOEPFE = [
+      ['Lies das Wort', EN.vorratLesen()],
+      ['Hören und zeigen', EN.vorratHoeren()],
+      ...['4.1', '4.2', '4.3', '4.4'].map(nr => [`Thema ${nr}`, EN.vorratThema(nr)]),
+    ];
+    const NOETIG = 3;
+    for (const [wie, topf] of TOEPFE) {
+      for (const ziel of topf) {
+        const alle = EN.ablenkerFuer(ziel, () => 0, 999);
+        for (const x of alle)
+          if (EN.verbotenesPaar(ziel.wort, x.wort))
+            e4.push(`in „${wie}" darf „${x.wort}" neben „${ziel.wort}" stehen — `
+              + 'das Kind kann auf beide mit demselben Recht tippen');
+        if (alle.length < NOETIG)
+          e4.push(`in „${wie}" bleiben für „${ziel.wort}" nur ${alle.length} `
+            + `Ablenker übrig, gebraucht werden ${NOETIG} — die Aussortiererei `
+            + 'hat die Ebene ausgehungert');
+      }
+    }
+
     const blaetter = BP.blaetter();
     for (const bl of blaetter)
       if (bl.felder.length !== 10)

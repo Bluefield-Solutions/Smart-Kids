@@ -5773,7 +5773,8 @@ export const PROBEN = [
        Sortenschranke weg - und er kommt bei den Farben und Zahlen an, die
        sich einen Topf teilen. */
     such:"  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
-      + "    && x.id !== ziel.id && x.wort !== ziel.wort);",
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort));",
     /* Der Suchtext ueberlebt im Ersatz, als Kommentar darunter - und zwar
        WORTWOERTLICH. Der erste Anlauf hat nur ein Bruchstueck gerettet
        („x.sorte === ziel.sorte"), und `inhalt` meldete daraufhin den
@@ -5781,12 +5782,14 @@ export const PROBEN = [
        zwar der vierte in diesem Verzeichnis. Zwei Leerzeichen hinter dem
        „//" sind kein Zufall - sie machen den Suchtext samt seiner
        Einrueckung wieder auffindbar. */
-    ersatz:"  const andere = topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort);\n"
+    ersatz:"  const andere = topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort));\n"
       + "  /* Anker:\n"
       + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
-      + "    && x.id !== ziel.id && x.wort !== ziel.wort); */",
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort)); */",
     an:{ datei:'src/inhalt/englisch.js',
-         text:'filter(x => x.id !== ziel.id && x.wort !== ziel.wort);' },
+         text:'filter(x => x.id !== ziel.id && x.wort !== ziel.wort\n    && !verbotenesPaar' },
     deckt:'englisch',
     sagt:'Ablenker anderer Sorte' },
 
@@ -7264,6 +7267,46 @@ export const PROBEN = [
     an:{ datei:'tools/bildprompt.mjs', text:'filter(b => b.gebiet === g.id);' },
     sagt:'ohneBild' },
 
+  /* 5d. DIE ABLENKER SIEBEN NICHT MEHR NACH BEDEUTUNG (E21). Ohne diese
+   *    eine Zeile steht „apple" wieder neben „fruit", „brother" neben
+   *    „boy", „football" neben „sports" - sechsunddreissig Paare, bei
+   *    denen das Kind richtig tippt und ein Nein bekommt. Die Tafel
+   *    `NICHT_NEBENEINANDER` bliebe dabei unberuehrt und vollstaendig:
+   *    sie ist ein Dokument, solange niemand sie anwendet. Genau das
+   *    prueft diese Probe. */
+  { n:'die Ablenker sieben nicht mehr nach Bedeutung', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    /* DER ERSATZ RETTET DEN ANKER DER NACHBARPROBE MIT.
+       Beide Proben greifen dieselbe Filterzeile an. Der erste Anlauf
+       nahm nur die Bedeutungssiebung heraus - und loeschte damit den
+       Suchtext der Sortenprobe, die zwei Zeilen darueber steht. `inhalt`
+       wurde rot, aber wegen des fehlenden Ankers: „rot, aber nicht
+       deswegen". Das ist der Selbsttreffer, vor dem der Kommentar bei
+       der Sortenprobe warnt - jetzt zum zweiten Mal, an derselben
+       Zeile. */
+    such:"  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort));",
+    ersatz:"  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort);\n"
+      + "  /* Anker der Nachbarprobe:\n"
+      + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort)); */",
+    an:{ datei:'src/inhalt/englisch.js', text:'Anker der Nachbarprobe:' },
+    sagt:'demselben Recht' },
+
+  /* 5e. EIN WORT IN DER TAFEL GIBT ES GAR NICHT (E21). Der leise Fall:
+   *    wer ein Wort umbenennt und die Tafel vergisst, hat kein rotes
+   *    Tor, sondern ein Paar, das ins Leere zeigt - und die Falle steht
+   *    wieder offen, obwohl die Tafel gepflegt aussieht. */
+  { n:'ein Paar in der Bedeutungstafel zeigt ins Leere', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"  { ober: 'fruit',  unter: ['apple', 'plum', 'strawberry', 'tomato'],",
+    ersatz:"  { ober: 'fruit',  unter: ['apfel', 'plum', 'strawberry', 'tomato'],",
+    an:{ datei:'src/inhalt/englisch.js', text:"unter: ['apfel'," },
+    sagt:'nicht im Bildplan' },
+
   /* 6. DER VERGLEICH ZAEHLT WIEDER NAMEN STATT TOENE. Das war der erste
    *    Anlauf, und er ging still daneben: `rot` und `rotDunkel` liegen
    *    15,6 CIELAB auseinander - nebeneinander dieselbe rote Flaeche, fuer
@@ -7601,11 +7644,23 @@ export const PROBEN = [
       + "     dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -\n"
       + "     und zwei gleiche Katzen nebeneinander waeren keine Aufgabe, sondern\n"
       + "     ein Fehler, den das Kind sich selbst erklaeren muesste. */\n"
+      + "  /* Und gesiebt wird nach der BEDEUTUNG (E21). „fruit\" neben „apple\" ist\n"
+      + "     keine Aufgabe, sondern eine Falle: das Kind tippt richtig und bekommt\n"
+      + "     ein Nein. Welche Paare das sind, steht in `NICHT_NEBENEINANDER`\n"
+      + "     samt Grund - hier steht nur die Frage, nicht die Liste. */\n"
       + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
-      + "    && x.id !== ziel.id && x.wort !== ziel.wort);",
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort));",
     ersatz:"    : vorratHoeren();\n"
       + "  const andere = topf.filter(x =>\n"
-      + "    x.id !== ziel.id && x.wort !== ziel.wort);",
+      + "    x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort));",
+    /* Der Eingriff nimmt Topfwahl UND Sortenschranke, wie seit je: er
+       misst, ob vier Moeglichkeiten die Sorte mischen duerfen, und dafuer
+       muessen beide fallen. Der erste Anlauf in E21 hat ihn auf die
+       Topfwahl verengt - sauberer gedacht, aber `smoke` blieb gruen, und
+       eine Probe, die nichts beweist, ist keine (Regel 1). Die
+       Bedeutungssiebung bleibt stehen; sie hat ihre eigene Probe. */
     an:{ datei:'src/inhalt/englisch.js',
          text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
     sagt:'mischen' },

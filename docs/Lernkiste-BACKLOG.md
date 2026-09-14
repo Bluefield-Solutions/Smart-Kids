@@ -7981,3 +7981,116 @@ Drei Änderungen, die zusammen die Lücke schließen:
    zuviel ist.
 
 Zwei stehende Gegenproben, beide schlagen an (515 insgesamt).
+
+## E21 · Sechsunddreißig Fallen — und eine Schieflage, die keine war
+
+Zwei Ziele. Das erste war größer als gedacht, das zweite kleiner.
+
+### Die Frage aus E20, weitergestellt
+
+E20 hat `pet` kein Bild gegeben, weil es der **Oberbegriff** zu `cat` und
+`dog` ist: wer „pet" hört und auf die Katze tippt, hat recht — und bekommt
+ein Nein. Die naheliegende Frage danach: *wie viele solche Paare stehen
+noch im Vorrat?*
+
+**Sechsunddreißig.** In vierzehn Gruppen:
+
+| Wort | darf nicht daneben stehen |
+|---|---|
+| `fruit` | apple · plum · strawberry · tomato |
+| `drink` | water · tea |
+| `sweets` | chocolate |
+| `sports` | football · tennis · swim · ride · bike · play |
+| `hobby` | football · tennis · swim · ride · bike · play · sports |
+| `play` | football · tennis |
+| `family` | brother · sister · father · mother |
+| `boy` | brother |
+| `girl` | sister |
+| `bike` | ride |
+| `class/classroom` | board · chair · teacher |
+| `school/schoolbag` | class/classroom · teacher |
+| `party` | birthday |
+| `house` | room |
+
+`ablenkerFuer` hat bis hierher nur nach **Sorte** und **Wort** gesiebt —
+und der Topf für ein Bild ist der *ganze* Lesevorrat. Alle 86 waren also
+gegeneinander erreichbar: „fruit" mit apple, plum und bread daneben ist
+eine Aufgabe mit **zwei richtigen Antworten**, von denen eine als Fehler
+gezählt wird.
+
+Gemerkt hätte es niemand. Die Aufgabe sieht gültig aus, das Kind tippt
+richtig, und es lernt daraus, dass sein richtiger Gedanke falsch war. Das
+ist der Schaden — nicht die Statistik.
+
+**Was nicht in der Tafel steht,** und das gehört dazu: `eat` neben `bread`
+(eine Tätigkeit neben einem Ding), `good` neben `happy` (zwei verschiedene
+Urteile), `Halloween` neben `party` (ein Fest mit eigenem Namen und eigenem
+Bild). Wer jede Nachbarschaft ausschließt, hat am Ende keine Ablenker mehr.
+Jede Gruppe trägt ihren Grund im Klartext mit.
+
+`tomato` steht mit unter `fruit`, obwohl es auf Deutsch Gemüse ist: im
+Englischen ist es eine Frucht, und das Kind soll nicht dafür bestraft
+werden, dass es das weiß.
+
+### Gemessen, nicht nur gebaut
+
+Nach dem Filter, über **alle sechs Töpfe** (Lies das Wort, Hören und
+zeigen, vier Themen):
+
+| | Ziele | verbotene Paare durchgelassen | kleinster Ablenker-Topf |
+|---|---|---|---|
+| Lies das Wort | 86 | 0 | 78 |
+| Hören und zeigen | 111 | 0 | 9 |
+| Thema 4.1 – 4.4 | 22 · 23 · 16 · 25 | 0 | 17 · 18 · 9 · 20 |
+
+Gebraucht werden drei. Das Aussortieren hungert also keine Ebene aus — und
+genau das prüft das Tor als Zweites mit, denn eine Regel, die die Aufgabe
+unmöglich macht, wäre keine Verbesserung.
+
+### Das Tor, und warum es drei Teile hat
+
+`inhalt` prüft: (1) jedes genannte Wort gibt es, (2) kein Paar steht
+doppelt oder zeigt auf sich selbst, (3) **`ablenkerFuer` gibt in keinem
+Topf einen verbotenen Partner heraus** und lässt überall genug übrig.
+
+Nur (3) sagt etwas über das Spiel. Ohne (3) wäre die ganze Tafel ein
+Dokument: man könnte den Filter herausnehmen, und alles bliebe grün
+(Regel 1). Geprüft wird mit `wieviel = 999`, also am **ganzen** gesiebten
+Topf — vollständig statt gewürfelt.
+
+Zwei neue stehende Gegenproben, zwei bestehende nachgezogen (517 gesamt).
+
+**Und ein Selbsttreffer, zum zweiten Mal an derselben Zeile.** Die neue
+Probe nimmt die Bedeutungssiebung heraus — und löschte damit den Suchtext
+der Sortenprobe zwei Zeilen darüber. `inhalt` wurde rot, aber wegen des
+fehlenden Ankers: *„rot, aber nicht deswegen"*. Der Ersatz rettet den
+fremden Anker jetzt als Kommentar mit. Beim Nachziehen der zweiten Probe
+derselbe Fehler von der anderen Seite: ich hatte ihren Eingriff auf die
+Topfwahl verengt, weil ein kombinierter Eingriff unsauber schien — danach
+blieb `smoke` grün, und eine Probe, die nichts beweist, ist keine.
+
+### Die Schieflage, die keine war
+
+Der zweite Schritt hieß: *„Die Wortfelder sind sehr ungleich gefüllt (Essen
+18, Kleidung 5). Beim Würfeln fragt das vollste Feld am häufigsten —
+dieselbe Schieflage, die E17 bei den Wendungen gemessen und behoben hat."*
+
+**Gemessen: es ist nicht dieselbe Schieflage.** Bei den Wendungen wurde aus
+*einem* Topf gewürfelt, und ein vollerer Bereich kam dadurch öfter dran.
+Hier ist es anders gebaut:
+
+- Gefragt wird **je Wort**, über Leitner-Fächer — jedes der 86 Wörter hat
+  sein eigenes Fach. Wie voll sein Wortfeld ist, ändert daran nichts.
+- Die Wortfelder sind kein Fragetopf, sondern die Einteilung der
+  **Bildblätter**. Sie sind ungleich, weil der amtliche Wortschatz
+  ungleich ist — 18 Wörter fürs Essen, 5 für Kleidung.
+- Was wirklich ein Topf ist, sind die vier **Themen**: 22 · 23 · 16 · 25.
+  Und die bewacht `vielfalt` längst: *„165 Profil-Ebenen gemessen, 0 unter
+  2 Runden Vorrat."*
+
+Also keine Änderung. Hätte ich „ausgeglichen", wäre jedes Wort aus
+Kleidung dreimal so oft gefragt worden wie jedes aus Essen — eine
+Verschlechterung, gebaut auf eine Zahl, die ich nicht gemessen hatte. Das
+ist die Lehre aus E17, und sie gilt in beide Richtungen: eine plausible
+Erklärung ist keine Messung, und ein plausibler Missstand ist kein
+Befund.

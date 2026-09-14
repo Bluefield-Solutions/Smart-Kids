@@ -729,6 +729,98 @@ export function vorratBauen(){
   return vorratChunks().map(x => ({ ...x, id: `bs:${x.id}` }));
 }
 
+/* ---------- Was nicht nebeneinander stehen darf (E21) --------------------
+ *
+ * In E20 fiel auf, warum „pet" kein Bild bekommt: es ist der OBERBEGRIFF
+ * zu „cat" und „dog". Wer „pet" hoert und auf die Katze tippt, hat recht -
+ * die App muesste trotzdem Nein sagen. Das ist kein Fehler des Kindes und
+ * keiner der Zeichnung, sondern einer der AUSWAHL.
+ *
+ * Danach die naheliegende Frage: wieviele solche Paare stehen noch im
+ * Vorrat? Sechsunddreissig. „fruit" neben „apple". „sports" neben
+ * „football". „family" neben „sister". „boy" neben „brother". Jedes davon
+ * ist dieselbe Falle, und `ablenkerFuer` hat bis hierher nur nach Sorte
+ * und Wort gesiebt - der Topf fuer ein Bild ist der GANZE Lesevorrat, also
+ * sind alle sechsundachtzig gegeneinander erreichbar.
+ *
+ * Gemerkt haette es niemand: die Aufgabe sieht gueltig aus, das Kind
+ * tippt richtig, und es bekommt ein Nein. Es lernt daraus, dass sein
+ * richtiger Gedanke falsch war.
+ *
+ * WAS HIER STEHT UND WAS NICHT. Aufgenommen ist, wo ein Kind mit demselben
+ * Recht auf die andere Karte tippen kann - Oberbegriff, Synonym, oder
+ * dasselbe Bild unter zwei Woertern („bike" und „ride" zeigen beide ein
+ * Fahrrad). NICHT aufgenommen sind blosse Nachbarschaften: „eat" neben
+ * „bread" ist eine Taetigkeit neben einem Ding, „good" neben „happy" sind
+ * zwei verschiedene Urteile, „Halloween" neben „party" ist ein Fest neben
+ * einer Feier. Wer jede Nachbarschaft ausschliesst, hat am Ende keine
+ * Ablenker mehr - und eine Aufgabe ohne Ablenker ist keine.
+ *
+ * Die Richtung ist egal: was nicht neben dem Oberbegriff stehen darf,
+ * darf den Oberbegriff auch nicht neben sich haben. `verbotenesPaar`
+ * fragt deshalb symmetrisch.
+ */
+export const NICHT_NEBENEINANDER = [
+  { ober: 'fruit',  unter: ['apple', 'plum', 'strawberry', 'tomato'],
+    warum: 'Oberbegriff. „tomato" steht mit dabei, obwohl es auf Deutsch '
+      + 'Gemuese ist - im Englischen ist es eine Frucht, und das Kind soll '
+      + 'nicht dafuer bestraft werden, dass es das weiss.' },
+  { ober: 'drink',  unter: ['water', 'tea'],
+    warum: 'Oberbegriff: beides sind Getraenke.' },
+  { ober: 'sweets', unter: ['chocolate'],
+    warum: 'Oberbegriff: Schokolade ist eine Suessigkeit.' },
+  { ober: 'sports', unter: ['football', 'tennis', 'swim', 'ride', 'bike', 'play'],
+    warum: 'Oberbegriff fuer alles, was auf dem Blatt „Spielen" steht.' },
+  { ober: 'hobby',  unter: ['football', 'tennis', 'swim', 'ride', 'bike', 'play', 'sports'],
+    warum: 'Oberbegriff, und noch weiter als „sports" - ein Hobby kann '
+      + 'jedes dieser Dinge sein. Die Gitarre auf der Karte ist eine '
+      + 'Vereinbarung, kein Gegenbeweis.' },
+  { ober: 'play',   unter: ['football', 'tennis'],
+    warum: 'Man SPIELT Fussball und Tennis - das Wort steckt in der Sache.' },
+  { ober: 'family', unter: ['brother', 'sister', 'father', 'mother'],
+    warum: 'Oberbegriff: alle vier sind Familie.' },
+  { ober: 'boy',    unter: ['brother'],
+    warum: 'Ein Bruder IST ein Junge.' },
+  { ober: 'girl',   unter: ['sister'],
+    warum: 'Eine Schwester IST ein Maedchen.' },
+  { ober: 'bike',   unter: ['ride'],
+    warum: 'Nicht der Begriff, sondern das Bild: auf beiden Karten steht '
+      + 'ein Fahrrad, auf der einen mit jemandem darauf.' },
+  { ober: 'class/classroom', unter: ['board', 'chair', 'teacher'],
+    warum: 'Das Klassenzimmer enthaelt sie - und die Zeichnung dazu ist '
+      + 'eine Tafel mit Tischen, also genau die Tafel von „board".' },
+  { ober: 'school/schoolbag', unter: ['class/classroom', 'teacher'],
+    warum: 'Die Schule enthaelt Klassenzimmer und Lehrerin. Buch, Stift '
+      + 'und Radiergummi stehen NICHT mit dabei: die sind in der Schule, '
+      + 'aber niemand tippt auf einen Radiergummi, wenn er „school" hoert.' },
+  { ober: 'party',  unter: ['birthday'],
+    warum: 'Ein Geburtstag ist eine Feier. „Halloween" und „Merry '
+      + 'Christmas" stehen nicht dabei - das sind Feste mit eigenem Namen, '
+      + 'und ihre Bilder (Kuerbis, Baum) heissen nichts anderes.' },
+  { ober: 'house',  unter: ['room'],
+    warum: 'Das Zimmer ist im Haus. Die Richtung zaehlt hier besonders: '
+      + 'wer „room" hoert und auf das Haus tippt, denkt einen Schritt zu '
+      + 'gross - falsch ist es trotzdem nicht.' },
+];
+
+/* Die Nachschlagetafel, einmal gerechnet statt bei jeder Aufgabe. Beide
+   Richtungen, weil die Falle in beide Richtungen zuschnappt. */
+const VERBOTEN = (() => {
+  const m = new Map();
+  const dazu = (a, b) => {
+    if (!m.has(a)) m.set(a, new Set());
+    m.get(a).add(b);
+  };
+  for (const e of NICHT_NEBENEINANDER)
+    for (const u of e.unter) { dazu(e.ober, u); dazu(u, e.ober); }
+  return m;
+})();
+
+/** Duerfen diese beiden Woerter nebeneinander auf dem Schirm stehen? */
+export function verbotenesPaar(a, b){
+  return !!(VERBOTEN.get(a) && VERBOTEN.get(a).has(b));
+}
+
 /**
  * Drei Ablenker zu einem Gegenstand - aus derselben Sorte, gewuerfelt mit
  * dem Keim der Aufgabe.
@@ -755,8 +847,13 @@ export function ablenkerFuer(ziel, wuerfel, wieviel = 3){
      dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -
      und zwei gleiche Katzen nebeneinander waeren keine Aufgabe, sondern
      ein Fehler, den das Kind sich selbst erklaeren muesste. */
+  /* Und gesiebt wird nach der BEDEUTUNG (E21). „fruit" neben „apple" ist
+     keine Aufgabe, sondern eine Falle: das Kind tippt richtig und bekommt
+     ein Nein. Welche Paare das sind, steht in `NICHT_NEBENEINANDER`
+     samt Grund - hier steht nur die Frage, nicht die Liste. */
   const andere = topf.filter(x => x.sorte === ziel.sorte
-    && x.id !== ziel.id && x.wort !== ziel.wort);
+    && x.id !== ziel.id && x.wort !== ziel.wort
+    && !verbotenesPaar(ziel.wort, x.wort));
   for (let i = andere.length - 1; i > 0; i--) {
     const j = Math.floor(wuerfel() * (i + 1));
     [andere[i], andere[j]] = [andere[j], andere[i]];
