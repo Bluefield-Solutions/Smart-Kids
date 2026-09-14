@@ -1144,7 +1144,15 @@ export function baumuster(bau){
 export const AEHNLICH = [
   { paar:['NLD', 'LUX'], grund:'Luxemburgs Blau ist heller.' },
   { paar:['IDN', 'POL'], grund:'Dieselben Farben, andere Reihenfolge: Polen ist weiß oben.' },
-  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.', fragbar:false },
+  /* WIEDER FRAGBAR (E23). Dieses Paar stand auf „nur zum Zeigen", weil
+     E22 die Schwelle der zehn Farbflecken uebernommen hatte - 25 CIELAB,
+     und die beiden liegen bei 14,1. Die Zahl gehoert aber zu einer
+     anderen Aufgabe: dort tippt man eine Farbe aus dem Gedaechtnis, hier
+     stehen beide Flaggen NEBENEINANDER, 190 Punkte breit. Angesehen
+     (Regel 4) ist das Blau des Tschad deutlich dunkler, auch bei 96
+     Punkten. Ein Kind kann das lernen - und genau dafuer gibt es diese
+     Ebene. Der Grund unten ist die Lernhilfe. */
+  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.' },
   { paar:['IRL', 'CIV'], grund:'Spiegelbild: Irland ist grün am Mast, die Elfenbeinküste orange.' },
   { paar:['NOR', 'ISL'], grund:'Dieselben drei Farben, vertauscht.' },
   { paar:['AUS', 'NZL'], grund:'Australien hat sechs weiße Sterne, Neuseeland vier rote.' },

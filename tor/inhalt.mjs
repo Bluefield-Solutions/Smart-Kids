@@ -4928,66 +4928,6 @@ console.log('\n  Tor `flaggen`');
   const ff = [];
   const BODEN = 0.03, SOLL = 0.06;
 
-  /* --- Ist das Paar ueberhaupt zu trennen? (E22) --------------------
-   *
-   * Die Verwechslungsebene stellt die aehnliche Flagge ABSICHTLICH
-   * daneben - das ist ihr Sinn. Fair ist das nur, solange die Zeichnung
-   * den Unterschied traegt. Monaco und Indonesien unterscheiden sich
-   * allein im Seitenverhaeltnis; in dieser App sind sie dasselbe SVG,
-   * Zeichen fuer Zeichen. „Welche ist Monaco?" ist dann ein Muenzwurf,
-   * und die App sagt beim falschen Wurf Nein.
-   *
-   * Die Schwelle ist NICHT neu erfunden: dieselben 25 CIELAB, mit denen
-   * das Tor weiter oben die zehn Farbflecken auseinanderhaelt („die
-   * Aufgabe waere nicht loesbar"). Gemessen wird nur bei GLEICHEM Bau -
-   * wer andere Streifenzahl oder ein anderes Muster hat, ist an der Form
-   * zu erkennen und braucht keinen Farbabstand.
-   *
-   * Zwei Pruefungen, und die zweite ist die, die etwas ueber das Spiel
-   * sagt: dass `nahDran` ein unfragbares Paar nicht doch als Ablenker
-   * empfiehlt. Ohne sie waere die Eintragung `fragbar:false` ein
-   * Dokument (Regel 1) - genau so stand es bis E22 da. */
-  {
-    const TRENNBAR_MIN = 25;
-    const gemessen = [];
-    const ohneFarben = (b) => JSON.stringify({ ...b, farben: undefined });
-    for (const paarEintrag of FL.AEHNLICH) {
-      const [a, b] = paarEintrag.paar;
-      const fa = FL.flaggeVon(a), fb = FL.flaggeVon(b);
-      if (!fa || !fb) { ff.push(`das Paar „${a}/${b}" nennt eine Flagge, die es nicht gibt`); continue; }
-      const gleicherBau = ohneFarben(fa.bau) === ohneFarben(fb.bau)
-        && (fa.bau.farben || []).length === (fb.bau.farben || []).length;
-      if (!gleicherBau) continue;          // an der Form zu trennen
-      const groesster = Math.max(...(fa.bau.farben || ['#000000'])
-        .map((f, i) => labAbstand(f, fb.bau.farben[i])));
-      const fragbar = paarEintrag.fragbar !== false;
-      if (fragbar && groesster < TRENNBAR_MIN)
-        ff.push(`„${a}" und „${b}" liegen nur ${groesster.toFixed(1)} CIELAB `
-          + `auseinander (nötig sind ${TRENNBAR_MIN}) und werden trotzdem `
-          + 'gefragt — die Aufgabe ist nicht lösbar, das Kind rät');
-      if (!fragbar && groesster >= TRENNBAR_MIN)
-        ff.push(`„${a}" und „${b}" sind mit ${groesster.toFixed(1)} CIELAB gut `
-          + 'zu trennen, stehen aber auf `fragbar:false` — die Ebene lässt '
-          + 'ein Paar aus, das sie üben könnte');
-      if (!fragbar)
-        for (const seite of [a, b])
-          if (FL.nahDran(seite).has(seite === a ? b : a))
-            ff.push(`\`nahDran("${seite}")\` empfiehlt „${seite === a ? b : a}" `
-              + 'als Ablenker, obwohl das Paar nicht zu trennen ist');
-      gemessen.push({ paar: `${a}/${b}`, abstand: groesster, fragbar });
-    }
-    /* Die Zahl steht im Bericht, nicht nur in der Bedingung: eine
-       Schwelle, die man nie neben ihrem Messwert sieht, faellt eines
-       Tages unter den Tisch, ohne dass es auffaellt. */
-    const fragbare = gemessen.filter(g => g.fragbar).sort((x, y) => x.abstand - y.abstand);
-    const stumm = gemessen.filter(g => !g.fragbar);
-    if (fragbare.length)
-      console.log(`    Verwechslungen, gleich gebaut: engstes gefragtes Paar `
-        + `${fragbare[0].paar} mit ${fragbare[0].abstand.toFixed(1)} CIELAB `
-        + `(nötig 25)${stumm.length ? ' · nur zum Zeigen: '
-          + stumm.map(g => `${g.paar} ${g.abstand.toFixed(1)}`).join(', ') : ''}`);
-  }
-
   /* Vollzaehligkeit gegen `LAENDER`, in BEIDE Richtungen.
    *
    * Nur „hat jedes Land eine Flagge" zu pruefen liesse eine Flagge fuer
@@ -5218,17 +5158,62 @@ const FLAGGEN_GEFRAGT = 108;
      * Hälfte wäre `fragbar:false` ein Freibrief, mit dem sich jede zu
      * ähnliche Zeichnung stillstellen ließe - und genau dafür ist der
      * Boden nicht da. */
+    /* ZWEI WEGE, EIN PAAR ZU TRENNEN - und die Fläche ist nur der eine
+     * (E23).
+     *
+     * `unterschied` zählt, wieviel Fläche ANDERS aussieht. Für Rumänien
+     * und den Tschad sagt es 0,0 %, und für Monaco und Indonesien
+     * ebenfalls 0,0 % - obwohl das eine Paar sich im Blauton
+     * unterscheidet und das andere Zeichen für Zeichen dasselbe SVG ist.
+     * Das Maß KANN den Farbton nicht sehen; es fragt nach Flächen.
+     *
+     * E22 hat daraufhin eine zweite Elle danebengestellt (CIELAB) - und
+     * damit zwei Prüfungen, die dieselbe Frage verschieden beantworten.
+     * Was zweimal dasteht, veraltet einmal (Regel 6) - und zwei Ellen für
+     * eine Frage veralten nicht einmal, sie widersprechen sich sofort.
+     * Jetzt ist es EINE Prüfung
+     * mit zwei Wegen: trennbar ist ein Paar, wenn sich genug FLÄCHE
+     * unterscheidet ODER ein Farbton weit genug entfernt liegt.
+     *
+     * Die Farbschwelle ist gemessen und nicht geraten: der eben noch
+     * wahrnehmbare Unterschied liegt bei rund 2,3 CIELAB; verdoppelt,
+     * damit ein Kind auf einem Telefon Luft hat, sind es 5. Sie gilt
+     * hier und nicht bei den zehn Farbflecken - dort sind es 25, weil
+     * dort aus dem GEDÄCHTNIS getippt wird und nichts danebensteht.
+     * Hier stehen beide Flaggen nebeneinander, 190 Punkte breit
+     * (Regel 5: jede Zahl trägt ihre Messstelle mit). */
+    const TON_MIN = 5;
     const u = FL.unterschied(a.bau, b.bau);
-    const zuNah = u.anteil < BODEN;
+    const gleicherBau = ma === mb
+      && (a.bau.farben || []).length === (b.bau.farben || []).length;
+    const tonAbstand = gleicherBau && a.bau.farben
+      ? Math.max(...a.bau.farben.map((f, i) => labAbstand(f, b.bau.farben[i])))
+      : Infinity;
+    const zuNah = u.anteil < BODEN && tonAbstand < TON_MIN;
+    const wieWeit = `${(u.anteil * 100).toFixed(1)} % der Fläche`
+      + (Number.isFinite(tonAbstand) ? `, Farbton ${tonAbstand.toFixed(1)} CIELAB` : '');
     if (x.fragbar === false) stumm++;
     if (zuNah && x.fragbar !== false)
-      ff.push(`${a3a}/${a3b}: nur ${(u.anteil * 100).toFixed(1)} % der Fläche stehen `
-        + `anders da (Boden ${BODEN * 100} %) — das ist nicht zu sehen und gehört `
-        + 'als `fragbar:false` gekennzeichnet, statt gefragt zu werden');
+      ff.push(`${a3a}/${a3b}: nur ${wieWeit} anders (Boden ${BODEN * 100} % `
+        + `bzw. ${TON_MIN} CIELAB) — das ist nicht zu sehen und gehört als `
+        + '`fragbar:false` gekennzeichnet, statt gefragt zu werden');
     if (!zuNah && x.fragbar === false)
-      ff.push(`${a3a}/${a3b} trägt \`fragbar:false\`, unterscheidet sich aber auf `
-        + `${(u.anteil * 100).toFixed(1)} % der Fläche — man kann es sehen, also `
-        + 'gehört die Ausnahme weg. Sonst ist sie ein Freibrief');
+      ff.push(`${a3a}/${a3b} trägt \`fragbar:false\`, unterscheidet sich aber um `
+        + `${wieWeit} — man kann es sehen, also gehört die Ausnahme weg. `
+        + 'Sonst ist sie ein Freibrief');
+    /* Und die WIRKUNG, nicht nur die Eintragung (E22).
+     *
+     * `fragbarePaare()` beachtet `fragbar`, `nahDran()` tat es bis E22
+     * nicht - und `nahDran` ist genau die Funktion, mit der die
+     * Hauptebene die ähnliche Flagge BEVORZUGT danebenstellt. Ohne diese
+     * Zeile wäre `fragbar:false` ein Dokument (Regel 1): man könnte den
+     * Filter herausnehmen, und die beiden Prüfungen darüber blieben
+     * grün. */
+    if (x.fragbar === false)
+      for (const [wer, wen] of [[a3a, a3b], [a3b, a3a]])
+        if (FL.nahDran(wer).has(wen))
+          ff.push(`\`nahDran("${wer}")\` empfiehlt „${wen}" als Ablenker, `
+            + 'obwohl das Paar nicht zu trennen ist');
   }
 
   if (ff.length) {

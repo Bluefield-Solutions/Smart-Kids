@@ -8207,3 +8207,176 @@ zufällig rot — nicht weil die App wackelt, sondern weil seine
 Selbstprüfung an der Grenze des Messbaren sitzt. Nicht in dieser Runde
 behoben: welche Mindestfläche die richtige ist, ist eine eigene Frage,
 und sie blind hochzusetzen hieße, die Prüfung stummzuschalten.
+
+> **Nachgetragen in E23, und es widerlegt die Erklärung oben:** in den
+> nächsten beiden vollen Läufen fiel dieselbe Prüfung auf **nordamerika**
+> (0,92 % Grau) und auf **europa** (13,89 %) aus. Europa hat reichlich
+> Grau — die dünne Schwelle war die zu schnelle Erklärung. Was wirklich
+> dahintersteckt und wie es behoben ist, steht in E23.
+
+## E23 · Zwei Ellen für eine Frage — und `pet` bekommt doch ein Bild
+
+Zwei Ziele, und das erste hat einen Fehler aufgedeckt, den **ich in E22
+eingebaut habe**.
+
+### Die Prämisse war (schon wieder) falsch
+
+Der Schritt hieß: *„Die echten Flaggen unterscheiden sich stärker, als
+unsere Farbwerte es tun; eine Prüfung der hinterlegten Farbtöne gegen die
+amtlichen könnte das Paar spielbar machen."*
+
+Nachgesehen: **die hinterlegten Werte sind die amtlichen.** Rumäniens
+Gesetz schreibt Pantone 280C/116C/186C vor — genau `#002B7F`, `#FCD116`,
+`#CE1126`. Die Werte des Tschad stimmen ebenso. Die beiden Flaggen sind
+wirklich so ähnlich; der Tschad hat 2004 deswegen bei den Vereinten
+Nationen protestiert.
+
+### Der eigentliche Fehler saß in meinem eigenen Tor
+
+Stimmt die Schwelle? In E22 habe ich **25 CIELAB** übernommen — von den
+zehn Farbflecken. Die Zahl gehört aber zu einer anderen Aufgabe:
+
+| | Aufgabe | was das Kind tun muss |
+|---|---|---|
+| Farbflecken | „tippe auf Blau" | die Farbe aus dem **Gedächtnis** treffen |
+| Flaggenpaar | „welche ist Rumänien?" | zwei Bilder **nebeneinander** vergleichen |
+
+Angesehen — kein Tor **ersetzt** den **Blick** (Regel 4): bei 190 Punkten
+nebeneinander ist Tschads Blau deutlich dunkler, auch bei 96 Punkten. 14,1 CIELAB sind nebeneinander zu
+sehen — aus dem Gedächtnis wären sie es nicht.
+
+**Und dann der Fund darunter.** Die Frage „kann man dieses Paar
+unterscheiden?" hatte längst eine Prüfung: `FL.unterschied`, flächenbasiert.
+Sie sagt für Rumänien/Tschad **0,0 %** — und für Monaco/Indonesien
+ebenfalls 0,0 %. Das eine Paar unterscheidet sich im Blauton, das andere
+ist Zeichen für Zeichen dasselbe SVG; das Flächenmaß **kann** den
+Unterschied nicht sehen.
+
+E22 hat daneben eine zweite Elle gestellt. Zwei Prüfungen, dieselbe Frage,
+verschiedene Antworten — was zweimal dasteht, veraltet einmal (Regel 6),
+und zwei Ellen für eine Frage veralten nicht einmal, sie widersprechen
+sich sofort.
+
+Jetzt ist es **eine** Prüfung mit zwei Wegen: trennbar ist ein Paar, wenn
+sich genug Fläche unterscheidet **oder** ein Farbton weit genug entfernt
+liegt. Die Farbschwelle ist gemessen und nicht geraten — der eben noch
+wahrnehmbare Unterschied liegt bei rund 2,3 CIELAB, verdoppelt für ein
+Kind auf einem Telefon sind es 5.
+
+Damit ist **Rumänien/Tschad wieder fragbar** (21 statt 20 Paare), und
+Monaco/Indonesien bleibt „nur zum Zeigen" — bei 0,0 gibt es nichts zu
+lernen. Die alte Gegenprobe hing an Rumänien/Tschad und hätte ab jetzt
+nichts mehr bewiesen; sie hängt jetzt an Monaco/Indonesien. Die in E22
+angelegte Doppel-Probe ist weg.
+
+### `pet` bekommt ein Bild — `little` nicht
+
+E20 hat `pet` das Bild verweigert, weil es der Oberbegriff zu `cat` und
+`dog` ist. Das stimmte — **solange jede der 86 Karten neben jeder anderen
+stehen konnte.** Seit E21 kann sie das nicht mehr.
+
+Also trägt `pet` jetzt das Bild, das E20 gelöscht hat: ein Kind mit einer
+Katze auf dem Arm. Nicht *eine Katze* — das wäre `cat` — sondern
+**jemandes Tier**. Grüner Pullover, damit es auf dem Bilderblatt neben
+`boy` (blau) und `girl` (rot) steht. In der Tafel stehen `pet`↔cat, dog,
+hamster, rabbit sowie `boy`↔pet und `girl`↔pet.
+
+**`little` bleibt ohne Bild**, und der Unterschied ist der ganze Punkt:
+
+- **Oberbegriff** — `pet` und `cat` bedeuten *Verschiedenes*, das eine
+  enthält das andere. Stehen sie nie nebeneinander, ist jede Aufgabe
+  wieder eindeutig, und beide Wörter bleiben lernbar.
+- **Synonym** — `little` und `small` bedeuten *dasselbe*. Zwei Bilder
+  dafür behaupten einen Unterschied, den es nicht gibt.
+
+Eine Auswahlregel kann eine Kollision entschärfen. Eine Bedeutung kann sie
+nicht erfinden.
+
+Damit: **87 Zeichnungen**, ein Wort ohne Bild, 0 verbotene Paare
+durchgelassen, kleinster Ablenker-Topf 79 bei drei gebrauchten.
+
+### Vier Proben umgehängt, und eine davon maß das Falsche
+
+`pet` hat sein `ohneBild` verloren, `little` ist das letzte Wort ohne
+Bild — drei Gegenproben hingen an pets Text und zeigten danach ins Leere.
+Die Ankerwache hat jede einzeln gemeldet.
+
+Bei der dritten reichte das Umhängen nicht: ohne `ohneBild` fehlt `little`
+auch das Motiv, und `inhalt` meldete zuerst *„hat kein beschriebenes
+Motiv"* — richtig, aber nicht das, was die Probe misst. *Rot, aber nicht
+deswegen*, zum dritten Mal in drei Runden. Der Eingriff trägt das Motiv
+jetzt mit, damit genau ein Grund übrig bleibt.
+
+### Und zum dritten Mal dieselbe Stelle: `ziehen` wartete auf das Falsche
+
+Der Randtest misst, wieviel die Umgebung das Randband verändert — als
+**Unterschied zweier Aufnahmen**, eine mit der grauen Umgebung und eine
+ohne sie. Vorher muss gewartet werden, bis gezeichnet ist. Zweimal wurde
+dieses Warten schon geflickt:
+
+| | worauf gewartet wurde | warum es nicht reichte |
+|---|---|---|
+| Q40 | `#umg` hat Pfade im **DOM** | gemessen werden Bildpunkte |
+| Q51 | das **Bild** zeigt irgendetwas | wahr, sobald der Kartengrund steht — die Umgebung kann fehlen |
+| **E23** | die beiden Aufnahmen **unterscheiden sich** | das *ist* die gemessene Größe |
+
+Drei Kettenläufe hintereinander meldeten „überhaupt kein Grau" — auf
+suedamerika (0,01 % Grau), nordamerika (0,92 %) und europa (13,89 %).
+Erst die dritte Karte hat meine Schwellen-Erklärung widerlegt: bei 13,89 %
+ist nichts dünn. Es war nie die Schwelle, es war immer das Warten.
+
+Die Lehre ist dieselbe wie bei der Flaggenschwelle in dieser Runde, nur
+von der anderen Seite: **die Messstelle des Wartens muss die Messstelle
+der Messung sein** (Regel 5). Q40 und Q51 haben sich ihr genähert; E23
+setzt sie gleich.
+
+**Keine stehende Gegenprobe**, und der Grund gehört dazu: der Fehler ist
+ein Wettlauf. Er tritt nur unter Last auf, allein gefahren war das Tor
+jedes Mal grün. Ein Eingriff, der ihn deterministisch auslöst, ist mir
+nicht eingefallen — das alte Warten wieder einzubauen macht das Tor nicht
+zuverlässig rot, sondern nur wieder manchmal. Der Nachweis ist deshalb
+der volle Lauf, und die Zahlen sind vor und nach der Änderung dieselben
+(0,01 · 0,10 · 0,92 · 3,63 · 10,60 · 12,35 · 13,89 · 43,92 %) — die
+Änderung verschiebt das Warten, nicht die Messung.
+
+### Ein Befund, der einmal kam und nicht wiederkam — und trotzdem hier steht
+
+Einer der acht vollen Läufe dieser Runde meldete im Rauchtest:
+
+```
+Fremdgriff — schirm.da: „undefined = " — 9 % des Wortes greift
+.aufkleber.da „undefined " statt den eigenen Knopf
+(erlaubt 5 %, 10 von 108 Punkten)
+```
+
+Er ist **nicht reproduzierbar**. Derselbe Abschnitt allein gefahren:
+*„Fremdgriff geprüft: 273 ruhende Bildschirme … Rauchtest grün"* — kein
+einziges „undefined". Die beiden Läufe danach ebenfalls grün.
+
+Das steht hier, weil ich es sonst wegerklären würde, und weil zwei Dinge
+daran unangenehm sind:
+
+1. **„undefined" auf einer Karte ist kein Formfehler, sondern ein
+   Inhaltsfehler.** Geprüft wird er bisher an **einer** Stelle: im
+   Forscherbuch (`tor/smoke.mjs`, `undef:`). Der Vorlauf zeigt dieselben
+   Aufkleber mit derselben Fußzeile (`stueckFuss`) und wird **nicht**
+   geprüft. Wenn der Befund echt war, kam er von dort — und genau dort
+   sieht niemand hin.
+2. **Der Fremdgriff hat ihn gefunden, obwohl er gar nicht danach sucht.**
+   Er misst Trefferflächen; den Text trägt er nur als Messstelle mit
+   (Regel 5). Ein Werkzeug, das einen Fehler nebenbei findet, ist kein
+   Beweis dafür, dass der Fehler bemerkt WIRD — beim nächsten Mal liegt
+   die Fläche vielleicht richtig.
+
+Die zweite Lesart ist genauso möglich: zwei Bildschirme trugen mitten im
+Überblenden beide `.da`, und der „fremde" Aufkleber stand auf dem
+abgehenden. Dann wäre es derselbe Wettlauf wie bei `ziehen` in dieser
+Runde, nur an einer anderen Stelle. Auch das wäre ein Fehler — nur einer
+im Tor und nicht in der App.
+
+Beides ist zu klären, und beides braucht eine eigene Runde: **„undefined"
+gehört auf JEDEN Bildschirm geprüft, nicht nur im Buch**, und die
+Ruhe-Prüfung des Fremdgriffs muss belegen, dass sie den Überblendfall
+wirklich aussperrt (Regel 1: eine Prüfung, die nie etwas meldet, ist kein
+Beweis). Bis dahin bleibt der Befund hier stehen — ungeklärt und
+aufgeschrieben, nicht abgehakt.

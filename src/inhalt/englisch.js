@@ -779,10 +779,17 @@ export const NICHT_NEBENEINANDER = [
     warum: 'Man SPIELT Fussball und Tennis - das Wort steckt in der Sache.' },
   { ober: 'family', unter: ['brother', 'sister', 'father', 'mother'],
     warum: 'Oberbegriff: alle vier sind Familie.' },
-  { ober: 'boy',    unter: ['brother'],
-    warum: 'Ein Bruder IST ein Junge.' },
-  { ober: 'girl',   unter: ['sister'],
-    warum: 'Eine Schwester IST ein Maedchen.' },
+  { ober: 'boy',    unter: ['brother', 'pet'],
+    warum: 'Ein Bruder IST ein Junge - und auf der Karte zu „pet" ist ein '
+      + 'Kind mit einer Katze im Arm, also auch ein Junge.' },
+  { ober: 'girl',   unter: ['sister', 'pet'],
+    warum: 'Eine Schwester IST ein Maedchen - und das Kind auf der Karte zu '
+      + '„pet" koennte eines sein.' },
+  { ober: 'pet',    unter: ['cat', 'dog', 'hamster', 'rabbit'],
+    warum: 'Oberbegriff, und der Grund, warum dieses Wort bis E23 gar kein '
+      + 'Bild hatte (E20): wer „pet" hoert und auf die Katze tippt, hat '
+      + 'recht. Seit die Tafel die vier fernhaelt, ist die Aufgabe wieder '
+      + 'eindeutig - „pet" steht neben Apfel, Stuhl und Fahrrad.' },
   { ober: 'bike',   unter: ['ride'],
     warum: 'Nicht der Begriff, sondern das Bild: auf beiden Karten steht '
       + 'ein Fahrrad, auf der einen mit jemandem darauf.' },
@@ -1095,23 +1102,40 @@ export const BILDER = [
       { f:'rot',    d:'M42 40h6l-3 4Z' },
     ],
     motiv: 'a mouse seen from the side, with big round ears and a long thin tail' },
-  /* KEIN `motiv` (E20). Bis hierher stand hier eines - „a child holding a
-     small cat" - und `bildprompt` hat es auf Feld 8 des Tierblattes
-     gesetzt. Wer die Blaetter zeichnen laesst, haette das Bild bekommen,
-     das eine Zeile darueber verboten ist.
-
-     Und das Verbot stimmt, aus einem Grund, der schaerfer ist als der
-     Text daneben: „pet" ist der OBERBEGRIFF zu „cat" und „dog". Ein Kind,
-     das „pet" hoert und auf die Katze tippt, hat nicht falsch geraten -
-     es hat recht, und die App sagt Nein. Das ist mit keiner Zeichnung zu
-     beheben, denn der Zusammenfall liegt in der Bedeutung, nicht im
-     Bild. */
+  /* JETZT DOCH EIN BILD (E23) - und was sich geaendert hat, ist nicht
+     die Bedeutung, sondern die AUSWAHL.
+     
+     E20 hat „pet" das Bild verweigert, weil es der Oberbegriff zu „cat"
+     und „dog" ist: wer „pet" hoert und auf die Katze tippt, hat recht,
+     und die App muesste Nein sagen. Das stimmte - solange jede der
+     sechsundachtzig Karten neben jeder anderen stehen konnte.
+     
+     Seit E21 kann sie das nicht mehr. `NICHT_NEBENEINANDER` haelt Katze
+     und Hund von „pet" fern, und die Ebene prueft es. Damit ist die
+     Aufgabe wieder eine: „pet" steht neben Apfel, Stuhl und Fahrrad, und
+     dort ist genau eine Karte richtig.
+     
+     Das Bild ist das Motiv, das E20 geloescht hat: ein Kind mit einer
+     Katze auf dem Arm. Nicht „eine Katze" - das waere `cat` - sondern
+     JEMANDES Tier, und das ist der Unterschied, um den es geht. Es
+     steht in derselben Familie wie `boy` und `girl` (Kopf, Haar, Rumpf),
+     traegt aber einen gruenen Pulli statt Blau oder Rot und hat etwas im
+     Arm: die drei stehen nie nebeneinander, aber auf dem Bilderblatt
+     liegen sie untereinander, und dort soll man sie auseinanderhalten. */
   { wort: 'pet',      gebiet: 'tiere',
-    ohneBild: '„pet" ist der Oberbegriff zu „cat" und „dog", die beide in '
-      + 'dieser Liste stehen. Wer „pet" hoert und auf die Katze tippt, hat '
-      + 'recht - die App muesste trotzdem Nein sagen. Ein eigenes Bild '
-      + '(etwa ein Kind mit einer Katze auf dem Arm) loest das nicht: der '
-      + 'Zusammenfall liegt in der Bedeutung, nicht in der Zeichnung.' },
+    bild: [
+      { f:'braunDunkel', d:'M24 4c8 0 13 5 13 12H11c0-7 5-12 13-12Z' },
+      { f:'creme',  d:'M24 8a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+      { f:'tinte',  d:'M19 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+      { f:'gruen',  d:'M24 30c9 0 16 7 16 16v16H8V46c0-9 7-16 16-16Z' },
+      { f:'gruenDunkel', d:'M28 31c7 2 12 8 12 15v16h-8V42c0-5-2-9-4-11Z' },
+      { f:'gruen',  d:'M38 44h16a5 5 0 0 1 0 10H38Z' },
+      { f:'braun',  d:'M50 30a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z' },
+      { f:'braun',  d:'M42 24l3 8-5-1Zm16 0-3 8 5-1Z' },
+      { f:'creme',  d:'M50 38a5 4 0 1 0 0 8 5 4 0 0 0 0-8Z' },
+      { f:'tinte',  d:'M46 35a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+    ],
+    motiv: 'a child seen from the front holding a small cat in one arm, the cat looking out' },
   { wort: 'rabbit',   gebiet: 'tiere',
     bild: [
       { f:'creme',  d:'M20 4c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S16 4 20 4Zm24 0c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S40 4 44 4Z' },
@@ -1736,18 +1760,31 @@ export const BILDER = [
       { f:'rot',    d:'M52 46a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z' },
     ],
     motiv: 'two balls side by side, one very large and one very small; the small one is solid black, the large one is only an outline' },
-  /* KEIN `motiv` (E20) - aus demselben Grund wie bei „pet", und hier war
-     das alte Motiv besonders verfuehrerisch: eine Katze mit Kaetzchen
-     SIEHT anders aus als die zwei Baelle von „small", also schien die
-     Kollision geloest. Sie ist es nicht. „little" und „small" heissen
-     dasselbe; wer „small" hoert und auf das Kaetzchen tippt, hat recht.
-     Ein anderes Bild verschiebt den Fehler nur dorthin, wo man ihn nicht
-     mehr sieht. */
+  /* UND WARUM „little" TROTZDEM KEINS BEKOMMT (E23).
+  
+     „pet" hat in dieser Runde ein Bild bekommen, weil `NICHT_NEBENEINANDER`
+     seine Verwechslungspartner fernhaelt. Bei „little" hilft dieselbe
+     Tafel NICHT, und der Unterschied ist der ganze Punkt:
+
+       Oberbegriff   „pet" und „cat" bedeuten VERSCHIEDENES, das eine
+                     enthaelt das andere. Stehen sie nie nebeneinander,
+                     ist jede Aufgabe wieder eindeutig - und beide Woerter
+                     bleiben lernbar.
+       Synonym       „little" und „small" bedeuten DASSELBE. Zwei Bilder
+                     dafuer behaupten einen Unterschied, den es nicht
+                     gibt; das Kind lernt aus zwei Karten zwei Sachen,
+                     wo eine steht. Die Tafel macht die Aufgabe fair, das
+                     Bild bleibt trotzdem falsch.
+
+     Eine Auswahlregel kann eine Kollision entschaerfen. Eine Bedeutung
+     kann sie nicht erfinden. */
   { wort: 'little', gebiet: 'gegensaetze',
-    ohneBild: '„little" heisst dasselbe wie „small". Welches Bild es auch '
-      + 'bekaeme - wer das eine Wort hoert und auf die Karte des anderen '
-      + 'tippt, hat recht, und die App muesste Nein sagen. Zwei Karten fuer '
-      + 'eine Bedeutung sind keine Aufgabe, sondern eine Falle.' },
+    ohneBild: '„little" heisst dasselbe wie „small" - es ist ein SYNONYM und '
+      + 'kein Oberbegriff. Zwei Bilder dafuer behaupten einen Unterschied, '
+      + 'den es nicht gibt. Die Tafel `NICHT_NEBENEINANDER` koennte die '
+      + 'beiden Karten auseinanderhalten (so hat „pet" in E23 sein Bild '
+      + 'bekommen), aber sie kann keine Bedeutung erfinden: das Kind lernte '
+      + 'aus zwei Karten zwei Sachen, wo eine steht.' },
   { wort: 'cold',   gebiet: 'gegensaetze',
     bild: [
       { f:'blau',   d:'M29 2h6v60h-6Z' },

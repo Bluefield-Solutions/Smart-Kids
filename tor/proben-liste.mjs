@@ -7235,9 +7235,20 @@ export const PROBEN = [
    *    loescht. */
   { n:'ein Wort im Bildplan ist weder gezeichnet noch begründet', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"    ohneBild: '„pet\" ist der Oberbegriff zu „cat\" und „dog\", die beide in '",
-    ersatz:"    /* Anker der Gegenprobe: ohneBild: '„pet\" ist der Oberbegriff zu „cat\" und „dog\", die beide in ' */\n"
-      + "    ohneBildX: '„pet\" ist der Oberbegriff zu „cat\" und „dog\", die beide in '",
+    /* Seit E23 haengt sie an „little": „pet" hat ein Bild bekommen, weil
+       die Tafel aus E21 seine Verwechslungspartner fernhaelt. „little"
+       ist das letzte Wort ohne Bild - und das einzige, bei dem auch die
+       Tafel nicht hilft, weil es ein Synonym ist und kein Oberbegriff. */
+    such:"    ohneBild: '„little\" heisst dasselbe wie „small\" - es ist ein SYNONYM und '",
+    /* DER EINGRIFF NIMMT NUR DEN SCHLUESSEL, NICHT DAS MOTIV MIT.
+       Ohne die Motivzeile faellt „little" in den anderen Zweig und
+       `inhalt` meldet zuerst „hat kein beschriebenes Motiv" - richtig,
+       aber nicht das, was diese Probe misst („rot, aber nicht
+       deswegen"). Mit Motiv bleibt genau ein Grund uebrig: weder
+       Zeichnung noch Begruendung. */
+    ersatz:"    motiv: 'a grown cat and a kitten side by side, seen from the side',\n"
+      + "    /* Anker der Gegenprobe: ohneBild: '„little\" heisst dasselbe wie „small\" - es ist ein SYNONYM und ' */\n"
+      + "    ohneBildX: '„little\" heisst dasselbe wie „small\" - es ist ein SYNONYM und '",
     an:{ datei:'src/inhalt/englisch.js', text:'ohneBildX:' },
     sagt:'weder eine Zeichnung noch ein' },
 
@@ -7248,10 +7259,11 @@ export const PROBEN = [
    *    child holding a small cat". */
   { n:'ein ungemaltes Wort bestellt trotzdem eine Zeichnung', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"      + 'Zusammenfall liegt in der Bedeutung, nicht in der Zeichnung.' },",
-    ersatz:"      + 'Zusammenfall liegt in der Bedeutung, nicht in der Zeichnung.',\n"
-      + "    motiv: 'a child seen from the front holding a small cat in both arms' },",
-    an:{ datei:'src/inhalt/englisch.js', text:'holding a small cat in both arms' },
+    /* Ebenfalls auf „little" umgehaengt (E23) - siehe die Probe darueber. */
+    such:"      + 'aus zwei Karten zwei Sachen, wo eine steht.' },",
+    ersatz:"      + 'aus zwei Karten zwei Sachen, wo eine steht.',\n"
+      + "    motiv: 'a grown cat and a kitten side by side, seen from the side' },",
+    an:{ datei:'src/inhalt/englisch.js', text:'a grown cat and a kitten side by side' },
     sagt:'trotzdem ein Motiv' },
 
   /* 5c. DAS BLATT NIMMT WIEDER JEDES WORT (E20). Der andere Weg zum
@@ -7319,20 +7331,6 @@ export const PROBEN = [
     ersatz:"    if (x.paar.includes(a3))",
     an:{ datei:'src/inhalt/flaggen.js', text:'    if (x.paar.includes(a3))' },
     sagt:'als Ablenker' },
-
-  /* 5g. EIN UNTRENNBARES PAAR WIRD WIEDER GEFRAGT (E22). Der andere
-   *    Weg: nicht das Werkzeug, sondern die Eintragung. Wer den Haken
-   *    bei Monaco/Indonesien entfernt, bekommt eine Aufgabe, in der
-   *    beide Karten Zeichen fuer Zeichen dasselbe Bild tragen - und die
-   *    App sagt bei der Haelfte der Tipper Nein. */
-  { n:'ein Flaggenpaar wird gefragt, obwohl es dasselbe Bild ist',
-    tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
-    such:"  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',\n"
-      + "    fragbar:false },",
-    ersatz:"  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',\n"
-      + "    fragbar:true },",
-    an:{ datei:'src/inhalt/flaggen.js', text:"fragbar:true }," },
-    sagt:'nicht lösbar' },
 
   /* 6. DER VERGLEICH ZAEHLT WIEDER NAMEN STATT TOENE. Das war der erste
    *    Anlauf, und er ging still daneben: `rot` und `rotDunkel` liegen
@@ -7942,17 +7940,23 @@ export const PROBEN = [
 
    * 1. EIN PAAR, DAS MAN NICHT SEHEN KANN, WIRD TROTZDEM GEFRAGT.
    *
-   * Rumaenien und der Tschad unterscheiden sich in dieser Darstellung um
-   * NULL Prozent - nur im Blauton, und den fasst das Raster nicht. Ohne
-   * `fragbar:false` stellt die Ebene eine Frage, die kein Kind
-   * beantworten kann und die es nur raten lehrt. Das Tor muss es sagen.
-   */
+   * Monaco und Indonesien sind in dieser Darstellung DASSELBE SVG,
+   * Zeichen fuer Zeichen - sie unterscheiden sich nur im
+   * Seitenverhaeltnis, und eine Karte hat nur eines. Ohne `fragbar:false`
+   * stellt die Ebene eine Frage, die kein Kind beantworten kann und die
+   * es nur raten lehrt.
+   *
+   * BIS E23 HING DIESE PROBE AN RUMAENIEN/TSCHAD. Das Paar ist seither
+   * wieder fragbar: sein Blau liegt 14,1 CIELAB auseinander, und das
+   * sieht man nebeneinander sehr wohl - nur die Flaechenmessung kann es
+   * nicht sehen. Der Eingriff waere dort also kein Fehler mehr, und die
+   * Probe haette stillschweigend nichts mehr bewiesen. */
   { n:'ein Paar, das man nicht sehen kann, wird trotzdem gefragt',
     tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
-    such:"  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.', fragbar:false },",
-    ersatz:"  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.' },\n"
-      + "//Anker:  { paar:['ROU', 'TCD'], grund:'Nur der Blauton — der Tschad ist dunkler.', fragbar:false },",
-    an:{ datei:'src/inhalt/flaggen.js', text:"ist dunkler.' },\n//Anker:" },
+    such:"  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',\n"
+      + "    fragbar:false },",
+    ersatz:"  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.' },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"fast quadratisch.' },\n  { paar:" },
     sagt:'nicht zu sehen' },
 
   /* 2. UND DIE GEGENRICHTUNG: `fragbar:false` als Freibrief.

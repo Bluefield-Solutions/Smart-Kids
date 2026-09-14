@@ -2314,19 +2314,19 @@
       "s": 4
     },
     "ein Wort im Bildplan ist weder gezeichnet noch begründet": {
-      "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
-      "zeit": "2026-09-11",
-      "s": 4
+      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
+      "zeit": "2026-09-14",
+      "s": 33
     },
     "ein ungemaltes Wort bestellt trotzdem eine Zeichnung": {
-      "commit": "f04fcf6b2a5653316f7fee61818e8e403dc27e0c",
-      "zeit": "2026-09-14",
-      "s": 32
-    },
-    "der Bildplan nimmt auch die ungemalten Wörter aufs Blatt": {
-      "commit": "f04fcf6b2a5653316f7fee61818e8e403dc27e0c",
+      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
       "zeit": "2026-09-14",
       "s": 31
+    },
+    "der Bildplan nimmt auch die ungemalten Wörter aufs Blatt": {
+      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
+      "zeit": "2026-09-14",
+      "s": 33
     },
     "die Ablenker sieben nicht mehr nach Bedeutung": {
       "commit": "58069561790c32ef9942c280500e0525d3951241",
@@ -2339,14 +2339,9 @@
       "s": 32
     },
     "nahDran empfiehlt ein Paar, das gar nicht zu trennen ist": {
-      "commit": "124fa87d4140cb641af13067f85b2f1d90961da8",
+      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
       "zeit": "2026-09-14",
-      "s": 35
-    },
-    "ein Flaggenpaar wird gefragt, obwohl es dasselbe Bild ist": {
-      "commit": "124fa87d4140cb641af13067f85b2f1d90961da8",
-      "zeit": "2026-09-14",
-      "s": 34
+      "s": 33
     },
     "der Bildvergleich zählt wieder Namen statt Töne": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
@@ -2519,9 +2514,9 @@
       "s": 59
     },
     "ein Paar, das man nicht sehen kann, wird trotzdem gefragt": {
-      "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
-      "zeit": "2026-09-11",
-      "s": 5
+      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
+      "zeit": "2026-09-14",
+      "s": 35
     },
     "die Ausnahme wird zum Freibrief": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",

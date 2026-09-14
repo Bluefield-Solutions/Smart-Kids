@@ -1042,7 +1042,29 @@ if (laeuft('rand')) {
     if (!steht) { fehler.push(`rand: auf ${kont} steht nach 15 s kein einziger `
       + 'Umgebungspfad im Baum — gemessen würde ein Bild, das es noch nicht gibt');
       await q.close(); await ctx.close(); continue; }
-    /* Gewartet wird auf das BILD, nicht auf den Baum (Q51).
+    /* GEWARTET WIRD AUF DIE ZAHL, DIE GEZAEHLT WIRD (E23).
+     *
+     * Dritter Anlauf an derselben Stelle, und die ersten beiden zeigen,
+     * wie der Fehler gewandert ist:
+     *
+     *   Q40  wartete auf den DOM - `#umg` mit mindestens einem Pfad.
+     *        Gemessen werden aber Bildpunkte.
+     *   Q51  wartete auf das BILD, aber nur darauf, dass ueberhaupt etwas
+     *        darauf steht. Das ist schon wahr, sobald der Kartengrund
+     *        gerastert ist - die Umgebung kann dann immer noch fehlen.
+     *
+     * Drei Kettenlaeufe hintereinander meldeten „ueberhaupt kein Grau":
+     * auf suedamerika (0,01 % Grau), auf nordamerika (0,92 %) und auf
+     * europa (13,89 %). Die erste Erklaerung war eine zu duenne Schwelle;
+     * die dritte Karte hat sie widerlegt - europa hat reichlich Grau.
+     *
+     * Gezaehlt wird der UNTERSCHIED zweier Aufnahmen, mit Umgebung und
+     * ohne sie. Also wartet der Anlauf jetzt genau darauf, dass sich die
+     * beiden unterscheiden: die Messstelle des Wartens ist die
+     * Messstelle der Messung (Regel 5). Bleibt es nach drei Anlaeufen bei
+     * null, ist es kein Geduldsfall mehr und der Befund bleibt rot.
+     *
+     * Was Q40 und Q51 dazu aufgeschrieben haben, steht weiter:
      *
      * Q40 hat hier schon einmal geflickt: unter Last wurde gemessen, bevor
      * gezeichnet war. Der Flicken wartet auf `#umg` mit mindestens einem
@@ -1063,22 +1085,38 @@ if (laeuft('rand')) {
      * Wieviele Anlaeufe es brauchte, steht im Bericht. Eine Zahl, die
      * still von 1 auf 3 wandert, waere sonst der naechste Fund in einem
      * halben Jahr. */
-    let roh, bild, anlaeufe = 0;
+    const zeigeUmgebung = (an) => q.evaluate((an) => {
+      const svg = document.querySelector('.schirm.da .karte > svg');
+      const lupe = svg && svg.querySelector('#lupe');
+      const umg = svg && svg.querySelector('#umg');
+      if (!lupe || !umg) return false;
+      let halte = umg; while (halte.parentNode !== lupe) halte = halte.parentNode;
+      halte.style.display = an ? '' : 'none';
+      return true;
+    }, an);
+    const zweiBilder = () => q.evaluate(() => new Promise(r =>
+      requestAnimationFrame(() => requestAnimationFrame(r))));
+    const schuss = async () => PNG.sync.read(
+      await q.locator('.schirm.da .karte > svg').first().screenshot());
+
+    let bild = null, bild2 = null, anlaeufe = 0, ohne = true;
     for (;;) {
       anlaeufe++;
-      roh = await q.locator('.schirm.da .karte > svg').first().screenshot();
-      bild = PNG.sync.read(roh);
-      if (anlaeufe >= 3) break;
-      let etwas = false;
-      for (let i = 0; i < bild.data.length && !etwas; i += 4) {
-        const a = bild.data[i + 3] / 255;
-        const l = (0.299 * bild.data[i] + 0.587 * bild.data[i + 1]
-                 + 0.114 * bild.data[i + 2]) * a + 255 * (1 - a);
-        if (l < 250) etwas = true;
-      }
-      if (etwas) break;
-      await q.evaluate(() => new Promise(r =>
-        requestAnimationFrame(() => requestAnimationFrame(r))));
+      ohne = await zeigeUmgebung(false);
+      await zweiBilder();
+      bild2 = await schuss();
+      await zeigeUmgebung(true);
+      await zweiBilder();
+      bild = await schuss();
+      if (!ohne || anlaeufe >= 3) break;
+      let anders = false;
+      if (bild.width === bild2.width && bild.height === bild2.height)
+        for (let i = 0; i < bild.data.length && !anders; i += 4)
+          if (bild.data[i] !== bild2.data[i] || bild.data[i + 1] !== bild2.data[i + 1]
+            || bild.data[i + 2] !== bild2.data[i + 2] || bild.data[i + 3] !== bild2.data[i + 3])
+            anders = true;
+      if (anders) break;
+      await zweiBilder();
     }
     if (anlaeufe > 1) anlaufSumme += anlaeufe - 1;
     const b1 = Math.max(2, Math.round(Math.min(bild.width, bild.height) * BAND));
@@ -1122,19 +1160,8 @@ if (laeuft('rand')) {
      * „Am Rand" heisst damit auch genau, was es sagt: wie stark die
      * Umgebung das Randband veraendert. Null heisst, sie reicht nicht
      * hinein. */
-    const ohne = await q.evaluate(() => {
-      const svg = document.querySelector('.schirm.da .karte > svg');
-      const lupe = svg && svg.querySelector('#lupe');
-      const umg = svg && svg.querySelector('#umg');
-      if (!lupe || !umg) return false;
-      let halte = umg; while (halte.parentNode !== lupe) halte = halte.parentNode;
-      halte.style.display = 'none';
-      return true;
-    });
-    await q.evaluate(() => new Promise(r =>
-      requestAnimationFrame(() => requestAnimationFrame(r))));
-    const bild2 = PNG.sync.read(
-      await q.locator('.schirm.da .karte > svg').first().screenshot());
+    /* Beide Aufnahmen stehen schon: sie entstehen oben im selben Anlauf,
+       weil erst ihr UNTERSCHIED sagt, ob die Umgebung gerastert ist. */
     let amRand = 0, inMitte = 0, tinte = 0;
     if (!ohne || bild2.width !== bild.width || bild2.height !== bild.height) {
       fehler.push(`rand: auf ${kont} liess sich die Umgebung nicht abschalten — `
