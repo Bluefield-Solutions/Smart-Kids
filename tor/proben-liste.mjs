@@ -7307,6 +7307,33 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/englisch.js', text:"unter: ['apfel'," },
     sagt:'nicht im Bildplan' },
 
+  /* 5f. `nahDran` EMPFIEHLT WIEDER DAS UNTRENNBARE PAAR (E22). Die
+   *    Flaggenebene stellt die aehnliche Flagge absichtlich daneben -
+   *    das ist ihr Sinn. Zwei Paare tragen aber `fragbar:false`, weil
+   *    die Zeichnung den Unterschied nicht traegt: Monaco und
+   *    Indonesien sind dasselbe SVG. `fragbarePaare` hat das beachtet,
+   *    `nahDran` bis E22 nicht. */
+  { n:'nahDran empfiehlt ein Paar, das gar nicht zu trennen ist',
+    tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
+    such:"    if (x.fragbar !== false && x.paar.includes(a3))",
+    ersatz:"    if (x.paar.includes(a3))",
+    an:{ datei:'src/inhalt/flaggen.js', text:'    if (x.paar.includes(a3))' },
+    sagt:'als Ablenker' },
+
+  /* 5g. EIN UNTRENNBARES PAAR WIRD WIEDER GEFRAGT (E22). Der andere
+   *    Weg: nicht das Werkzeug, sondern die Eintragung. Wer den Haken
+   *    bei Monaco/Indonesien entfernt, bekommt eine Aufgabe, in der
+   *    beide Karten Zeichen fuer Zeichen dasselbe Bild tragen - und die
+   *    App sagt bei der Haelfte der Tipper Nein. */
+  { n:'ein Flaggenpaar wird gefragt, obwohl es dasselbe Bild ist',
+    tor:'inhalt', deckt:'flaggen', datei:'src/inhalt/flaggen.js',
+    such:"  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',\n"
+      + "    fragbar:false },",
+    ersatz:"  { paar:['MCO', 'IDN'], grund:'Nur das Seitenverhältnis — Monaco ist fast quadratisch.',\n"
+      + "    fragbar:true },",
+    an:{ datei:'src/inhalt/flaggen.js', text:"fragbar:true }," },
+    sagt:'nicht lösbar' },
+
   /* 6. DER VERGLEICH ZAEHLT WIEDER NAMEN STATT TOENE. Das war der erste
    *    Anlauf, und er ging still daneben: `rot` und `rotDunkel` liegen
    *    15,6 CIELAB auseinander - nebeneinander dieselbe rote Flaeche, fuer

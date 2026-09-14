@@ -2338,6 +2338,16 @@
       "zeit": "2026-09-14",
       "s": 32
     },
+    "nahDran empfiehlt ein Paar, das gar nicht zu trennen ist": {
+      "commit": "124fa87d4140cb641af13067f85b2f1d90961da8",
+      "zeit": "2026-09-14",
+      "s": 35
+    },
+    "ein Flaggenpaar wird gefragt, obwohl es dasselbe Bild ist": {
+      "commit": "124fa87d4140cb641af13067f85b2f1d90961da8",
+      "zeit": "2026-09-14",
+      "s": 34
+    },
     "der Bildvergleich zählt wieder Namen statt Töne": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",

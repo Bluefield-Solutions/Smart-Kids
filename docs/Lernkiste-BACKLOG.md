@@ -8094,3 +8094,116 @@ Verschlechterung, gebaut auf eine Zahl, die ich nicht gemessen hatte. Das
 ist die Lehre aus E17, und sie gilt in beide Richtungen: eine plausible
 Erklärung ist keine Messung, und ein plausibler Missstand ist kein
 Befund.
+
+## E22 · Wo wählt überhaupt etwas Ablenker? — und die zwei Flaggen, die dasselbe Bild sind
+
+Der Schritt hieß: *„Dieselbe Frage für die anderen Ebenen: Wendungen,
+Hörsätze, Präpositionen, falsche Freunde. Überall dort wählt etwas
+Ablenker aus, und überall kann dieselbe Falle stecken."*
+
+**Die Prämisse war falsch — und das ist der erste Teil des Befundes.**
+
+### Die Inventur
+
+| Ebene | Antwort | Ablenker | E21-Falle möglich? |
+|---|---|---|---|
+| Hören und zeigen · Lies das Wort · vier Themen | antippen | aus dem Vorrat | **ja — in E21 geschlossen** |
+| Lautpaare | antippen | das Partnerwort, per Bauart | nein |
+| Rechnen | antippen / tippen | Zahlen | nein, keine Bedeutung |
+| Flaggen · Länder · Hauptstädte · Bundesländer | antippen | gewählt | **hier weiter** |
+| Falsche Freunde · Gestern und heute · Das kleine Wort | **in eine Lücke tippen** | keine | nein |
+| Wendungen · Hören und schreiben | **tippen, ganzer Satz** | keine | nein |
+
+Die vier Ebenen, die ich genannt hatte, teilen sich zwei Bildschirme
+(`freundeschirm`, `satzschirm`) — dort wird **getippt**. Es gibt keine
+vier Karten, also keine zweite richtige Karte.
+
+Drei Messungen dazu, damit es nicht bei der Behauptung bleibt:
+
+- **Präpositionen:** 52 Antwortkollisionen über die 58 Aufgaben — und das
+  ist **harmlos**. Bei einer Lücke wird gegen die Liste *dieser* Aufgabe
+  geprüft; dass „of" in dreißig Sätzen passt, stört keinen. Bei den
+  Wendungen wäre dieselbe Zahl ein Fehler, weil dort der **ganze Satz**
+  die Antwort ist — und genau dafür gibt es dort die Prüfung schon.
+- **Hörsätze:** `HOERSAETZE` ist eine Liste von *Wendungs-Kennungen*. Die
+  Diktatsätze sind Wendungen, also deckt deren Prüfung sie mit ab.
+- **Verben und falsche Freunde:** 0 Kollisionen. Und `v-know` mit
+  `richtig: ['know']` ist kein Fehler, sondern die Aufgabe: *„I did not
+  ___ the answer"* — nach „did" steht die Grundform, und das `warum` sagt
+  es. Ich hatte es für einen Fehler gehalten und nachgesehen, bevor ich
+  es behauptet habe.
+
+Auch „Wer grenzt an wen?" ist sauber gebaut: `(ziel.grenzt || []).includes(…)`
+nimmt **jeden** Nachbarn an, nicht einen bestimmten.
+
+### Und dann die Flaggen
+
+Die Verwechslungsebene stellt die ähnliche Flagge **absichtlich** daneben
+— neben Rumänien gehört der Tschad, sonst übt sie das Leichte. Fair ist
+das nur, solange die Zeichnung den Unterschied trägt. Gemessen mit
+derselben Formel, mit der dieses Tor die zehn Farbflecken auseinanderhält
+(CIELAB; unter 25 gilt dort „die Aufgabe wäre nicht lösbar"):
+
+| Paar | größter Farbabstand |
+|---|---|
+| **MCO/IDN** (Monaco / Indonesien) | **0,0** |
+| **ROU/TCD** (Rumänien / Tschad) | **14,1** |
+| NLD/LUX | 40,7 |
+| alle übrigen gleich gebauten | 87 bis 132 |
+
+**Monaco und Indonesien sind in dieser App Zeichen für Zeichen dasselbe
+SVG** — sie unterscheiden sich nur im Seitenverhältnis, und eine Karte
+hat nur eines. „Welche ist Monaco?" wäre ein Münzwurf.
+
+Das wusste das Verzeichnis schon: beide Paare tragen `fragbar: false`.
+**Aber nur einer der beiden Verbraucher hat es beachtet.**
+`fragbarePaare()` ja — `nahDran()` nicht, und `nahDran` ist genau die
+Funktion, mit der die Hauptebene die ähnliche Flagge *bevorzugt* neben die
+gesuchte stellt.
+
+Gebissen hat es bisher nicht, und auch das ist gemessen: beide unfragbaren
+Paare liegen über Kontinente hinweg, die Ebenen gehen nach Kontinent —
+Rumänien und der Tschad treffen sich nie. **Das ist kein Schutz, sondern
+ein Zufall.** Das nächste unfragbare Paar aus einem Kontinent hätte die
+Ebene still unbeantwortbar gemacht.
+
+### Was jetzt prüft
+
+`nahDran` siebt nach `fragbar`. Und `inhalt` prüft im Flaggentor drei
+Dinge: jedes gleich gebaute Paar ist entweder ≥ 25 CIELAB zu trennen oder
+als „nur zum Zeigen" eingetragen; kein gut trennbares Paar liegt
+unnötig still; und — der Teil, der etwas über das Spiel sagt —
+`nahDran` empfiehlt kein unfragbares Paar. Ohne den letzten wäre
+`fragbar:false` ein Dokument (Regel 1); genau so stand es bis heute da.
+
+Die Messwerte stehen jetzt im Bericht statt nur in der Bedingung:
+*„engstes gefragtes Paar NLD/LUX mit 40.7 CIELAB (nötig 25) · nur zum
+Zeigen: ROU/TCD 14.1, MCO/IDN 0.0"*. Eine Schwelle, die man nie neben
+ihrem Messwert sieht, fällt eines Tages unter den Tisch.
+
+Die CIELAB-Formel steht dafür jetzt auf Modulebene statt im Block des
+Englischtors: das Flaggentor liegt zweitausend Zeilen weiter und hätte
+sonst eine zweite Kopie gebraucht — was **zweimal** dasteht, **veraltet**
+**einmal** (Regel 6).
+
+Zwei stehende Gegenproben, beide schlagen an (519 gesamt).
+
+### Nebenbei gemessen: `ziehen` steht auf 0,01 Prozent
+
+Der erste volle Lauf war rot, und zwar an einer Stelle, die diese Runde
+nicht anfasst: *„rand: auf suedamerika ist überhaupt kein Grau im Bild —
+die Messung beweist nichts."* Allein gefahren ist dasselbe Tor grün.
+
+Der Grund ist kein Zufall, sondern eine **dünne Schwelle**. Das Tor prüft
+sich selbst nach Regel 1: wo keine graue Fläche im Bild ist, misst der
+Randtest nichts, und dann soll er sich melden statt grün zu behaupten.
+Richtig gedacht — nur liegt Südamerika bei **0,01 % Grau**, Australien bei
+0,10 %, Nordamerika bei 0,92 %. Die anderen fünf Karten liegen zwischen
+3,6 und 43,9 %.
+
+Bei einem Hundertstel Prozent entscheiden einzelne Bildpunkte, und unter
+Last rastert der Browser minimal anders. Das Tor wird also weiter
+zufällig rot — nicht weil die App wackelt, sondern weil seine
+Selbstprüfung an der Grenze des Messbaren sitzt. Nicht in dieser Runde
+behoben: welche Mindestfläche die richtige ist, ist eine eigene Frage,
+und sie blind hochzusetzen hieße, die Prüfung stummzuschalten.

@@ -89,6 +89,34 @@ import { vorzeichenFlaeche, ringFlaeche, imPolygon,
 // Punkt IM Gebiet" geht, muessen die Loecher dazu (siehe unten).
 const pfadZuPolys = pfadZuRingen;
 
+/* CIELAB, von Hand: sRGB -> linear -> XYZ (D65) -> Lab. Zwanzig Zeilen
+   statt einer Abhaengigkeit, und sie stehen hier statt in den Daten -
+   ein Tor, das seine Formel aus dem Prüfling holt, prüft sie nicht.
+
+   DREI ZUSAGEN BRAUCHEN SIE: der Mindestabstand der zehn Farbflecken
+   (E3), die Frage, ob zwei Bildfarben derselbe Ton sind (E7c), und seit
+   E22 die Frage, ob zwei verwechselbare Flaggen ueberhaupt zu trennen
+   sind. Wegen der dritten steht sie auf Modulebene statt im Block des
+   Englischtors: das Flaggentor liegt zweitausend Zeilen weiter und
+   haette sonst eine zweite Kopie gebraucht - was zweimal dasteht,
+   veraltet einmal (Regel 6). */
+const linear = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92
+  : Math.pow((c + 0.055) / 1.055, 2.4); };
+const lab = (hex) => {
+  const r = linear(parseInt(hex.slice(1, 3), 16)),
+        g = linear(parseInt(hex.slice(3, 5), 16)),
+        b = linear(parseInt(hex.slice(5, 7), 16));
+  const X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
+  const Y =  0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
+  const f = (u) => u > 0.008856 ? Math.cbrt(u) : 7.787 * u + 16 / 116;
+  return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
+};
+const labAbstand = (hexA, hexB) => {
+  const a = lab(hexA), b = lab(hexB);
+  return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+};
+
 const fehler = [], hinweise = [];
 const pruefe = (b, satz) => { if (!b) fehler.push(satz); };
 
@@ -2461,30 +2489,6 @@ console.log('\n  Tor `englisch`');
    * meldete das Tor mal etwas und mal nicht - und eine Pruefung, die
    * wuerfelt, ob sie prueft, ist kein Beweis (Regel 1).
    */
-  /* CIELAB, von Hand: sRGB -> linear -> XYZ (D65) -> Lab. Zwanzig Zeilen
-     statt einer Abhaengigkeit, und sie stehen hier statt in den Daten -
-     ein Tor, das seine Formel aus dem Prüfling holt, prüft sie nicht.
-     ZWEI ZUSAGEN BRAUCHEN SIE: der Mindestabstand der zehn Farbflecken
-     (E3) und die Frage, ob zwei Bildfarben derselbe Ton sind (E7c).
-     Deshalb steht sie hier und nicht in einer der beiden - was zweimal
-     dasteht, veraltet einmal (Regel 6). */
-  const linear = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92
-    : Math.pow((c + 0.055) / 1.055, 2.4); };
-  const lab = (hex) => {
-    const r = linear(parseInt(hex.slice(1, 3), 16)),
-          g = linear(parseInt(hex.slice(3, 5), 16)),
-          b = linear(parseInt(hex.slice(5, 7), 16));
-    const X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047;
-    const Y =  0.2126 * r + 0.7152 * g + 0.0722 * b;
-    const Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
-    const f = (u) => u > 0.008856 ? Math.cbrt(u) : 7.787 * u + 16 / 116;
-    return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
-  };
-  const labAbstand = (hexA, hexB) => {
-    const a = lab(hexA), b = lab(hexB);
-    return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-  };
-
   /* IST DAS EINE KOPIE? Nicht „sieht aehnlich aus" - das messen die
      Raster weiter unten -, sondern: ist es DIESELBE Zeichnung, nur
      umgefaerbt und ein Stueck verschoben?
@@ -4923,6 +4927,66 @@ console.log('\n  Tor `flaggen`');
 {
   const ff = [];
   const BODEN = 0.03, SOLL = 0.06;
+
+  /* --- Ist das Paar ueberhaupt zu trennen? (E22) --------------------
+   *
+   * Die Verwechslungsebene stellt die aehnliche Flagge ABSICHTLICH
+   * daneben - das ist ihr Sinn. Fair ist das nur, solange die Zeichnung
+   * den Unterschied traegt. Monaco und Indonesien unterscheiden sich
+   * allein im Seitenverhaeltnis; in dieser App sind sie dasselbe SVG,
+   * Zeichen fuer Zeichen. „Welche ist Monaco?" ist dann ein Muenzwurf,
+   * und die App sagt beim falschen Wurf Nein.
+   *
+   * Die Schwelle ist NICHT neu erfunden: dieselben 25 CIELAB, mit denen
+   * das Tor weiter oben die zehn Farbflecken auseinanderhaelt („die
+   * Aufgabe waere nicht loesbar"). Gemessen wird nur bei GLEICHEM Bau -
+   * wer andere Streifenzahl oder ein anderes Muster hat, ist an der Form
+   * zu erkennen und braucht keinen Farbabstand.
+   *
+   * Zwei Pruefungen, und die zweite ist die, die etwas ueber das Spiel
+   * sagt: dass `nahDran` ein unfragbares Paar nicht doch als Ablenker
+   * empfiehlt. Ohne sie waere die Eintragung `fragbar:false` ein
+   * Dokument (Regel 1) - genau so stand es bis E22 da. */
+  {
+    const TRENNBAR_MIN = 25;
+    const gemessen = [];
+    const ohneFarben = (b) => JSON.stringify({ ...b, farben: undefined });
+    for (const paarEintrag of FL.AEHNLICH) {
+      const [a, b] = paarEintrag.paar;
+      const fa = FL.flaggeVon(a), fb = FL.flaggeVon(b);
+      if (!fa || !fb) { ff.push(`das Paar „${a}/${b}" nennt eine Flagge, die es nicht gibt`); continue; }
+      const gleicherBau = ohneFarben(fa.bau) === ohneFarben(fb.bau)
+        && (fa.bau.farben || []).length === (fb.bau.farben || []).length;
+      if (!gleicherBau) continue;          // an der Form zu trennen
+      const groesster = Math.max(...(fa.bau.farben || ['#000000'])
+        .map((f, i) => labAbstand(f, fb.bau.farben[i])));
+      const fragbar = paarEintrag.fragbar !== false;
+      if (fragbar && groesster < TRENNBAR_MIN)
+        ff.push(`„${a}" und „${b}" liegen nur ${groesster.toFixed(1)} CIELAB `
+          + `auseinander (nötig sind ${TRENNBAR_MIN}) und werden trotzdem `
+          + 'gefragt — die Aufgabe ist nicht lösbar, das Kind rät');
+      if (!fragbar && groesster >= TRENNBAR_MIN)
+        ff.push(`„${a}" und „${b}" sind mit ${groesster.toFixed(1)} CIELAB gut `
+          + 'zu trennen, stehen aber auf `fragbar:false` — die Ebene lässt '
+          + 'ein Paar aus, das sie üben könnte');
+      if (!fragbar)
+        for (const seite of [a, b])
+          if (FL.nahDran(seite).has(seite === a ? b : a))
+            ff.push(`\`nahDran("${seite}")\` empfiehlt „${seite === a ? b : a}" `
+              + 'als Ablenker, obwohl das Paar nicht zu trennen ist');
+      gemessen.push({ paar: `${a}/${b}`, abstand: groesster, fragbar });
+    }
+    /* Die Zahl steht im Bericht, nicht nur in der Bedingung: eine
+       Schwelle, die man nie neben ihrem Messwert sieht, faellt eines
+       Tages unter den Tisch, ohne dass es auffaellt. */
+    const fragbare = gemessen.filter(g => g.fragbar).sort((x, y) => x.abstand - y.abstand);
+    const stumm = gemessen.filter(g => !g.fragbar);
+    if (fragbare.length)
+      console.log(`    Verwechslungen, gleich gebaut: engstes gefragtes Paar `
+        + `${fragbare[0].paar} mit ${fragbare[0].abstand.toFixed(1)} CIELAB `
+        + `(nötig 25)${stumm.length ? ' · nur zum Zeigen: '
+          + stumm.map(g => `${g.paar} ${g.abstand.toFixed(1)}`).join(', ') : ''}`);
+  }
 
   /* Vollzaehligkeit gegen `LAENDER`, in BEIDE Richtungen.
    *

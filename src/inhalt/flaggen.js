@@ -1183,9 +1183,28 @@ export const AEHNLICH = [
 export const fragbarePaare = () => AEHNLICH.filter(x => x.fragbar !== false);
 
 /** Zu welchem Land ist DIESES hier zu verwechseln? Fuer die Ablenkerwahl. */
+/* NUR FRAGBARE PAARE (E22).
+ *
+ * `nahDran` sagt der Flaggenebene, welche Flagge sie ABSICHTLICH neben
+ * die gesuchte stellen soll - das ist der Sinn der Ebene: neben Rumaenien
+ * gehoert der Tschad, sonst uebt sie das Leichte.
+ *
+ * Zwei Paare tragen aber `fragbar: false`, weil die Zeichnung den
+ * Unterschied gar nicht traegt: Monaco und Indonesien sind in dieser App
+ * dasselbe SVG, Zeichen fuer Zeichen (sie unterscheiden sich nur im
+ * Seitenverhaeltnis), und Rumaenien und der Tschad liegen 14,1 CIELAB
+ * auseinander - unter den 25, ab denen dieses Verzeichnis eine Aufgabe
+ * ueberhaupt fuer loesbar haelt (E3).
+ *
+ * `fragbarePaare` hat das beachtet, `nahDran` nicht. Heute biss es nicht,
+ * weil beide Paare ueber Kontinente hinweg liegen und die Ebenen nach
+ * Kontinent gehen - Rumaenien und der Tschad treffen sich nie. Das ist
+ * kein Schutz, sondern ein Zufall: das naechste Paar aus demselben
+ * Kontinent haette die Ebene still unbeantwortbar gemacht. */
 export function nahDran(a3){
   const aus = new Set();
   for (const x of AEHNLICH)
-    if (x.paar.includes(a3)) aus.add(x.paar.find(y => y !== a3));
+    if (x.fragbar !== false && x.paar.includes(a3))
+      aus.add(x.paar.find(y => y !== a3));
   return aus;
 }
