@@ -19,6 +19,7 @@
     "vergleich": "node tor/vergleich.mjs",
     "ansicht": "node tor/ansicht.mjs",
     "bilderblatt": "node tools/bilderblatt.mjs",
+    "bilderseite": "node tools/bilderseite.mjs",
     "pwa": "node tor/pwa.mjs",
     "smoke": "node tor/smoke.mjs",
     "tor": "node tools/kette.mjs",

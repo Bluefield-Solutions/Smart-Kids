@@ -18,6 +18,7 @@
 #     ansicht      Bildvergleich
 #     pwa/offline  startet ohne Netz
 #     nachschub    erneuert sich auf einer lahmen Leitung
+#     fremdseite   der Aufruf von /bilder/ laesst das Spiel im Lager
 #     tonleiter    wieviele Stufen das Forscherbuch traegt
 #     vielfalt     wieviele Runden Vorrat jede Ebene traegt — es misst im
 #                  Browser, und der laeuft hier nicht

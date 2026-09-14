@@ -752,6 +752,26 @@ export const PROBEN = [
     an:{ datei:'prototyp/pwa/sw.js', text:"const SIPPE = 'smart-kids-';" },
     sagt:'self.location' },
 
+  /* --- pwa/fremdseite: das Lager gehoert dem Spiel -------------------- */
+  // Zurueck auf "jede Navigation ist die eigene Seite". Dann legt ein
+  // Aufruf von /bilder/ das Bilderblatt unter dem Schluessel
+  // ./index.html ab - und der naechste Start ohne Netz zeigt dem Kind
+  // sechsundachtzig Zeichnungen statt des Spiels.
+  //
+  // Der Eingriff ist leise: bei schnellem Netz zeigt /bilder/ weiterhin
+  // seine 86 Karten, nur das Lager ist danach vergiftet. Genau deshalb
+  // prueft das Tor das LAGER und nicht bloss, was auf dem Schirm steht.
+  { n:'der Service Worker haelt jede Seite fuer seine', tor:'pwa', bauen:true,
+    datei:'prototyp/pwa/sw.js',
+    such:`  if (e.request.mode === 'navigate') {
+    if (istEigeneSeite(new URL(e.request.url))) e.respondWith(seiteHolen(e.request, e));
+    return;
+  }`,
+    ersatz:`  if (e.request.mode === 'navigate') { e.respondWith(seiteHolen(e.request, e)); return; }`,
+    an:{ datei:'prototyp/pwa/sw.js',
+         text:"if (e.request.mode === 'navigate') { e.respondWith(seiteHolen(e.request, e)); return; }" },
+    sagt:'Lager' },
+
   /* --- spielprobe --------------------------------------------------- */
   // Nicht "einen Alias aus den Daten nehmen" - das ist eine erlaubte
   // Datenaenderung, und das Tor prueft zu Recht nur, was DASTEHT. Der

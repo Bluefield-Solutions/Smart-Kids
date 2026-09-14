@@ -7,6 +7,8 @@
  *                  gegangen ist. Dort spielen die Kinder.
  *     /vorschau/   der Zweig `vorschau`, nur durch die schnellen Tore,
  *                  mit dem Wort „Vorschau" unten links im Bild.
+ *     /bilder/     alle Zeichnungen in echten Karten, zum ANSEHEN auf dem
+ *                  Zielgeraet. Kein Spiel, kein Ton, keine Ablage.
  *
  * Aufgerufen wird das IMMER aus dem Standardzweig heraus, von beiden
  * Abläufen: von der Auslieferung und vom Versand der Vorschau. Deshalb
@@ -23,6 +25,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { bilderSeite } from './bilderseite.mjs';
 
 const WURZEL = process.cwd();
 const SEITE = path.join(WURZEL, 'seite');
@@ -95,6 +98,25 @@ fs.mkdirSync(SEITE, { recursive: true });
 
 kopieren(DIST, SEITE, false);
 console.log('  /            aus diesem Baum (volle Torkette)');
+
+/* Die Bilderseite (E19).
+ *
+ * Sie entsteht HIER und nicht im Bau: die App soll sie nicht mittragen -
+ * sie ist ein Arbeitsblatt fuer die Erwachsenen, kein Teil des Spiels.
+ * Ausgeliefert wird sie trotzdem, weil das Zielgeraet der einzige Ort
+ * ist, an dem sich ueber Farbe und Kontrast urteilen laesst: Chromium
+ * hier zeigt den Bildschirm dieses Rechners.
+ *
+ * Sie zieht ihr Stilblatt aus `dist/index.html`, das oben schon nach
+ * `seite/` kopiert wurde - also aus GENAU dem Stand, der unter `/`
+ * liegt. Faellt das Stilblatt aus, wirft `bilderSeite` und die
+ * Auslieferung bleibt stehen; eine Bilderseite ohne Karten waere
+ * schlimmer als keine.
+ */
+const bilder = path.join(SEITE, 'bilder');
+fs.mkdirSync(bilder, { recursive: true });
+fs.writeFileSync(path.join(bilder, 'index.html'), bilderSeite());
+console.log('  /bilder/     alle Zeichnungen in echten Karten');
 
 if (still('rev-parse', '--verify', 'origin/vorschau')) {
   kopieren(ausZweig('vorschau'), path.join(SEITE, 'vorschau'), true);

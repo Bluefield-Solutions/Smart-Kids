@@ -14,6 +14,7 @@ import path from 'node:path';
 import http from 'node:http';
 import os from 'node:os';
 import { starte, zurEbenenwahl, serviere, durchVorlauf } from './chromium.mjs';
+import { bilderSeite } from '../tools/bilderseite.mjs';
 
 const DIST = path.join(process.cwd(), 'dist');
 const fehler = [];
@@ -251,6 +252,82 @@ pruefe(!ohneSw.da,
 console.log(`    Gegenprobe ohne Service Worker: ${ohneSw.da ? 'startet TROTZDEM' : 'startet nicht'}`
   + ` — die Pruefung oben misst wirklich das Lager`);
 await ohne.close(); await ctx.close();
+
+/* --- Tor `fremdseite`: das Lager gehoert dem SPIEL ---------------------
+ *
+ * Seit E19 liegt unter derselben Herkunft eine zweite Seite: `/bilder/`,
+ * alle Zeichnungen in echten Karten, zum Ansehen auf dem Zielgeraet.
+ * Damit gilt zum ersten Mal nicht mehr „jede Seite ist die Seite".
+ *
+ * Der Service Worker hat auf JEDE Navigation geantwortet und die Antwort
+ * unter dem Schluessel `./index.html` abgelegt. Ein einziger Aufruf von
+ * `/bilder/` haette also das Spiel im Lager durch das Bilderblatt
+ * ersetzt - und beim naechsten Start ohne Netz haette das Kind statt des
+ * Spiels sechsundachtzig Zeichnungen bekommen. Kein Tor haette es
+ * gesagt: `offline` ruft nur `/` auf, und dort war alles in Ordnung,
+ * solange niemand die andere Seite besucht hatte.
+ *
+ * Geprueft wird beides, und in dieser Reihenfolge:
+ *   1. liegt ueberhaupt eine Seite im Lager? Ohne das beweist 3. nichts
+ *      (Regel 1 - eine Pruefung gegen ein leeres Lager ist keine).
+ *   2. zeigt `/bilder/` seine Karten, statt vom Spiel verdeckt zu werden?
+ *   3. liegt danach im Lager IMMER NOCH das Spiel?
+ */
+console.log('\n  Tor `fremdseite`');
+{
+  const kopie = fs.mkdtempSync(path.join(os.tmpdir(), 'smartkids-fremdseite-'));
+  fs.cpSync(DIST, kopie, { recursive: true });
+  fs.mkdirSync(path.join(kopie, 'bilder'), { recursive: true });
+  // Die ECHTE Bilderseite, nicht eine Attrappe: sie ist das, was
+  // ausgeliefert wird, und sie bringt ihr Stilblatt aus derselben
+  // gebauten Datei mit.
+  fs.writeFileSync(path.join(kopie, 'bilder', 'index.html'),
+    bilderSeite({ gebaut: path.join(kopie, 'index.html') }));
+
+  const { server: s3, adresse: A3 } = await serviere(kopie, () => true);
+  const ctx3 = await b.newContext({ hasTouch: true, isMobile: true, locale: 'de-DE' });
+  const r = await ctx3.newPage({ viewport: { width: 844, height: 390 } });
+  await r.goto(A3, { waitUntil: 'load' });
+  await r.evaluate(() => navigator.serviceWorker.ready.catch(() => null));
+  // Zweiter Besuch, damit das Spiel wirklich im Lager liegt.
+  await r.goto(A3, { waitUntil: 'load' });
+
+  const kopfAus = async () => r.evaluate(async () => {
+    for (const n of await caches.keys()) {
+      const treffer = await (await caches.open(n)).match('/index.html');
+      if (treffer) return (await treffer.text()).slice(0, 2000);
+    }
+    return '';
+  });
+  const vorher = await kopfAus();
+  pruefe(vorher.length > 0, 'nach zwei Besuchen liegt keine Seite im Lager — '
+    + 'dann beweist die Pruefung darunter nichts');
+
+  /* `/bilder/index.html` und nicht `/bilder/`: der kleine Server dieses
+     Verzeichnisses macht aus `/` eine Datei, aus `/bilder/` aber ein
+     VERZEICHNIS - und damit einen Fehler. Beim ersten Lauf meldete diese
+     Pruefung deshalb „0 Karten", und das sah aus wie der Fehler, den sie
+     sucht. Jede Probe prueft zuerst, ob ihr Eingriff ANGEKOMMEN ist
+     (Regel 10) - fuer eine Pruefung gilt dasselbe.
+     Fuer den Service Worker ist es derselbe Fall: er vergleicht den Pfad
+     mit seinem Geltungsbereich, und `/bilder/index.html` liegt genauso
+     ausserhalb wie `/bilder/`. Pages selbst liefert beide Formen. */
+  await r.goto(A3 + '/bilder/index.html', { waitUntil: 'load' });
+  const karten = await r.evaluate(() => document.querySelectorAll('.engkarte').length);
+  pruefe(karten > 0, `/bilder/ zeigt ${karten} Karten — der Service Worker `
+    + 'hat die fremde Seite durch das Spiel ersetzt');
+
+  const nachher = await kopfAus();
+  const ueberschrieben = /Alle \d+ Zeichnungen/.test(nachher);
+  pruefe(!ueberschrieben, 'der Aufruf von `/bilder/` hat das Spiel im Lager '
+    + 'ueberschrieben — ohne Netz startet jetzt das Bilderblatt statt des Spiels');
+  console.log(`    /bilder/ zeigt ${karten} Karten · im Lager liegt danach `
+    + `${ueberschrieben ? 'DAS BILDERBLATT' : 'weiter das Spiel'}`);
+
+  await ctx3.close();
+  await new Promise(f => s3.close(f));
+  fs.rmSync(kopie, { recursive: true, force: true });
+}
 
 /* --- Tor `nachschub`: erneuert sich die App auf einer MUEDEN Leitung? --
  *

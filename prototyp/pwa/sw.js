@@ -90,9 +90,36 @@ async function stueckHolen(anfrage) {
   return netz;
 }
 
+/* DIE SEITE IST GENAU EINE ADRESSE, NICHT „JEDE AUFRUFBARE" (E19).
+ *
+ * `mode === 'navigate'` heisst nur: jemand ruft eine Seite auf. Es heisst
+ * NICHT, dass es die eigene ist. Solange es unter `/` nur das Spiel gab,
+ * war das dasselbe; seit dort auch `/bilder/` liegt, nicht mehr - und der
+ * Unterschied ist kein Schoenheitsfehler:
+ *
+ *   `seiteHolen` legt JEDE Antwort unter dem Schluessel `./index.html`
+ *   ab. Ein Aufruf von `/bilder/` haette also das Spiel im Lager durch
+ *   das Bilderblatt ERSETZT - und beim naechsten Start ohne Netz haette
+ *   das Kind statt des Spiels sechsundachtzig Zeichnungen bekommen.
+ *   Dazu die Reissleine: bei langsamem Netz waere auf `/bilder/` das
+ *   Spiel erschienen, weil `lager.match('./index.html')` gewinnt.
+ *
+ * Der Geltungsbereich haengt am Ort dieses Service Workers, nicht an
+ * einem geschriebenen Pfad: unter `/` ist es `/`, unter `/vorschau/` ist
+ * es `/vorschau/`. Alles andere geht den gewoehnlichen Weg ins Netz -
+ * `/bilder/` hat kein Lager noetig, es ist ein Arbeitsblatt und kein
+ * Spielzeug fuers Flugzeug.
+ */
+const WURZEL = new URL('./', self.location).pathname;
+const istEigeneSeite = (url) => url.origin === self.location.origin
+  && (url.pathname === WURZEL || url.pathname === WURZEL + 'index.html');
+
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  if (e.request.mode === 'navigate') e.respondWith(seiteHolen(e.request, e));
-  else if (new URL(e.request.url).origin === self.location.origin)
+  if (e.request.mode === 'navigate') {
+    if (istEigeneSeite(new URL(e.request.url))) e.respondWith(seiteHolen(e.request, e));
+    return;
+  }
+  if (new URL(e.request.url).origin === self.location.origin)
     e.respondWith(stueckHolen(e.request));
 });

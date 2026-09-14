@@ -2,8 +2,8 @@
  *
  * Aufruf:
  *   npm run bilderblatt              beide Blätter schreiben
- *   npm run bilderblatt -- --gross   nur das große
- *   npm run bilderblatt -- --karte   nur das in Kartengröße
+ *   npm run bilderblatt -- --quer    nur das im Zielformat
+ *   npm run bilderblatt -- --lang    nur das in der langen Form
  *
  * ---------------------------------------------------------------------
  * WARUM ES DAS GIBT
@@ -28,21 +28,37 @@
  * um eins daneben. Genau die Sorte Zahl, vor der E17 warnt.
  *
  * ---------------------------------------------------------------------
- * ZWEI BLAETTER, UND DAS ZWEITE IST DAS WICHTIGERE
+ * DAS BLATT IST EINE AUFNAHME DER ECHTEN SEITE
  *
- *   bilder-gross.png   150 Punkte je Bild, mit Wort und Wortfeld
- *                      darunter. Dafuer, ob die ZEICHNUNG stimmt -
- *                      sitzt der Henkel an der Tasse, steht das Tier auf
- *                      seinen Beinen.
+ * Bis E18 hat dieses Werkzeug die Karte NACHGEBAUT - 8 Punkte Polster,
+ * 1 Punkt Rand, 14 Punkte Rundung, ein Schatten. Die echte Karte hat
+ * `var(--r3)`, `var(--strich)`, `var(--rund-karte)`, zwei Schatten und
+ * einen Lichtsaum, und im kurzen Querformat ein anderes Polster.
+ * Beurteilt wurde also ein Nachbau - und der Kontrast, auf den es
+ * ankommt, entsteht genau dort: am Rand der Zeichnung gegen das Papier
+ * der Karte.
  *
- *   bilder-karte.png   64 Punkte, dicht an dicht, ohne Beschriftung.
- *                      Dafuer, ob man sie ERKENNT.
+ * Jetzt laedt das Werkzeug `tools/bilderseite.mjs` - dieselbe Seite, die
+ * unter `/bilder/` ausgeliefert wird, mit dem vollstaendigen Stilblatt
+ * der gebauten App. Was hier zweimal dastuende, wuerde einmal veralten
+ * (Regel 6) - also steht es nur noch einmal: keine Kartenfarbe, keine
+ * Rundung und keine Groesse mehr an dieser Stelle.
  *
- * DIE 64 SIND GEMESSEN UND NICHT GEWAEHLT (Regel 5 - jede Zahl traegt
- * ihre Messstelle mit). `.wortbild` ist 76 Punkte breit; im kurzen
- * Querformat, und das IST das Zielgeraet mit 844 x 390, greift
- * `@media (max-height:440px)` und setzt sie auf 64. Wer die Bilder bei
- * 150 Punkten beurteilt, beurteilt etwas, das kein Kind je sieht.
+ * ZWEI BLAETTER, UND DAS ERSTE IST DAS WICHTIGERE
+ *
+ *   bilder-quer.png   Fenster 844 x 390 - das Zielgeraet. Die
+ *                     Medienabfrage greift, die Zeichnungen stehen bei
+ *                     64 Punkten in 104er Karten. Dafuer, ob man sie
+ *                     ERKENNT.
+ *
+ *   bilder-lang.png   Weites Fenster, lange Form: 76 Punkte in 124er
+ *                     Karten - der zweite unterstuetzte Weg. Dafuer, ob
+ *                     die ZEICHNUNG stimmt: sitzt der Henkel an der
+ *                     Tasse, steht das Tier auf seinen Beinen.
+ *
+ * Die Woerter sind auf beiden Blaettern EINGESCHALTET - sonst weiss
+ * hinterher niemand, welche Karte gemeint ist. Wer erkennen WILL, statt
+ * zu pruefen, nimmt die Seite auf dem Geraet und laesst den Schalter aus.
  *
  * ---------------------------------------------------------------------
  * WAS ES NICHT IST
@@ -50,92 +66,70 @@
  * Kein Tor. Es urteilt nicht und es schlaegt nicht an - es macht zwei
  * Bilder und sagt, wo sie liegen. Was daran gut oder schlecht ist, sagt
  * der Blick (Regel 4: kein Tor ersetzt den Blick). Deshalb liegen die
- * Blaetter auch in `blick/` und nicht in `tor/vorbilder/`: ein Vorbild
+ * Blaetter in `blick/` und nicht in `tor/vorbilder/`: ein Vorbild
  * waere eine Zusage, dass sich nichts aendern darf, und hier soll sich
  * etwas aendern.
+ *
+ * Und es ist nicht das Geraet. Chromium zeigt die Farben dieses
+ * Rechners; der Bildschirm des iPhones zeigt seine eigenen. Dafuer gibt
+ * es die ausgelieferte Seite unter `/bilder/`.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import * as EN from '../src/inhalt/englisch.js';
+import { bilderSeite } from './bilderseite.mjs';
 import { starte } from '../tor/chromium.mjs';
 
-const NUR_GROSS = process.argv.includes('--gross');
-const NUR_KARTE = process.argv.includes('--karte');
+const NUR_QUER = process.argv.includes('--quer');
+const NUR_LANG = process.argv.includes('--lang');
 const AUS = path.join(process.cwd(), 'blick');
 
-/* Die Kartengroesse auf dem Zielgeraet. Steht als Zahl hier und im
-   Stilblatt - dort als `@media (max-height:440px) .wortbild{width:64px}`.
-   Zwei Stellen fuer eine Zahl sind eine zuviel; dieses Werkzeug ist
-   aber kein Tor, und eine Ableitung aus dem Stilblatt hiesse, es zu
-   parsen. Wer die Zahl dort aendert, aendert sie hier mit - der Satz
-   unter dem Blatt nennt sie, damit es auffaellt. */
-const KARTE_PUNKTE = 64;
-const GROSS_PUNKTE = 150;
+/* Die beiden Fenster.
+ *
+ * 844 x 390 ist das Zielgeraet (iPhone quer) - die kurze Form.
+ *
+ * Fuer die lange Form muessen BEIDE Bedingungen der Abfrage
+ * `(max-height:440px), (max-width:430px)` danebengehen: hoeher als 440
+ * UND breiter als 430. Der erste Anlauf nahm dafuer 431 Punkte Breite -
+ * gerade eben breit genug - und bekam ein Blatt von 862 x 30766
+ * Bildpunkten: eine einzige Spalte, die niemand ansieht. Schmal ist eben
+ * nicht dasselbe wie lang. Jetzt ein weites Fenster; die lange Form gilt
+ * dort genauso, und alles steht nebeneinander. */
+const FENSTER = {
+  quer: { width: 844, height: 390, hinweis: '844 × 390 — das Zielgerät, kurze Form (64 Punkte)' },
+  lang: { width: 1500, height: 900, hinweis: '1500 × 900 — lange Form (76 Punkte)' },
+};
 
 const gemalt = EN.BILDER.filter(b => b.bild);
+const html = bilderSeite();
 
-/** Ein Bild als SVG, in der Farbtafel des Vorrats. */
-const svg = (b, px) =>
-  `<svg viewBox="${EN.BILD_RAHMEN}" width="${px}" height="${px}">${
-    b.bild.map(s => `<path d="${s.d}" fill="${
-      EN.BILDFARBEN[s.f] || EN.BILDFARBEN.tinte}" fill-rule="evenodd"/>`).join('')
-  }</svg>`;
-
-const blattGross = () => `<div class="blatt gross">${gemalt.map(b => `
-  <figure>${svg(b, GROSS_PUNKTE)}
-    <figcaption><b>${b.wort}</b><span>${EN.gebietTitel(b.gebiet) || b.gebiet}</span></figcaption>
-  </figure>`).join('')}</div>`;
-
-const blattKarte = () => `<div class="blatt karte">${gemalt.map(b => `
-  <div class="engkarte" title="${b.wort}">${svg(b, KARTE_PUNKTE)}</div>`).join('')}</div>`;
-
-const STIL = `
-  body{margin:0;background:#fff;font:13px/1.3 system-ui,sans-serif;color:#233}
-  .blatt{display:flex;flex-wrap:wrap;gap:10px;padding:14px;align-items:flex-start}
-  .blatt.gross{width:1540px}
-  .blatt.karte{width:900px;gap:8px}
-  figure{margin:0;width:${GROSS_PUNKTE}px;text-align:center}
-  figure svg{display:block;border:1px solid #e3e6e8;border-radius:10px}
-  figcaption{padding-top:3px;display:flex;flex-direction:column;line-height:1.15}
-  figcaption b{font-size:12px}
-  figcaption span{font-size:10px;color:#7a848c}
-  /* Derselbe Kasten wie im Spiel: weisse Karte, runde Ecken, Schatten.
-     Ohne ihn saehe man die Zeichnung auf Weiss und damit einen anderen
-     Kontrast als das Kind. */
-  .engkarte{background:#fff;border:1px solid #e3e6e8;border-radius:14px;
-    padding:8px;box-shadow:0 2px 0 #e3e6e8;display:flex}
-  h1{font:600 15px system-ui;margin:0;padding:14px 14px 0}
-  p.messstelle{margin:2px 14px 0;color:#7a848c;font-size:12px}
-`;
-
-const b = await starte();
-const seite = await b.newPage({ deviceScaleFactor: 2 });
+const browser = await starte();
 fs.mkdirSync(AUS, { recursive: true });
 const geschrieben = [];
 
-const machen = async (name, titel, messstelle, inhalt) => {
-  await seite.setContent(`<style>${STIL}</style><h1>${titel}</h1>`
-    + `<p class="messstelle">${messstelle}</p>${inhalt}`);
-  const ziel = path.join(AUS, `${name}.png`);
-  await seite.locator('body').screenshot({ path: ziel });
-  geschrieben.push(ziel);
+const machen = async (name) => {
+  const f = FENSTER[name];
+  const seite = await browser.newPage({
+    viewport: { width: f.width, height: f.height }, deviceScaleFactor: 2 });
+  await seite.setContent(html);
+  /* Die Woerter an: auf einem Blatt zum Nachschlagen muss dranstehen,
+     was gemeint ist. Auf dem Geraet bleiben sie aus. */
+  await seite.locator('#woerter').check();
+  const ziel = path.join(AUS, `bilder-${name}.png`);
+  await seite.screenshot({ path: ziel, fullPage: true });
+  await seite.close();
+  geschrieben.push([ziel, f.hinweis]);
 };
 
-if (!NUR_KARTE)
-  await machen('bilder-gross', `Alle ${gemalt.length} Zeichnungen · ${GROSS_PUNKTE} Punkte`,
-    'Zum Beurteilen der ZEICHNUNG: sitzt jedes Teil an seinem Platz?', blattGross());
-if (!NUR_GROSS)
-  await machen('bilder-karte', `Alle ${gemalt.length} Zeichnungen · ${KARTE_PUNKTE} Punkte`,
-    `Zum Beurteilen der ERKENNBARKEIT. ${KARTE_PUNKTE} Punkte ist die Größe auf `
-    + 'dem Zielgerät (844 × 390 quer, `@media (max-height:440px)`), nicht die '
-    + '76 aus dem Stilblatt.', blattKarte());
-
-await b.close();
+if (!NUR_LANG) await machen('quer');
+if (!NUR_QUER) await machen('lang');
+await browser.close();
 
 const jeFeld = new Map();
 for (const x of gemalt) jeFeld.set(x.gebiet, (jeFeld.get(x.gebiet) || 0) + 1);
 console.log(`\n  Bilderblatt: ${gemalt.length} Zeichnungen aus ${
   EN.BILDER.length} Einträgen (${EN.BILDER.length - gemalt.length} ohne Bild)`);
 console.log(`  ${[...jeFeld].map(([k, n]) => `${EN.gebietTitel(k) || k} ${n}`).join(' · ')}`);
-for (const z of geschrieben) console.log(`  geschrieben: ${path.relative(process.cwd(), z)}`);
+for (const [z, hinweis] of geschrieben)
+  console.log(`  geschrieben: ${path.relative(process.cwd(), z)}  —  ${hinweis}`);
 console.log('');

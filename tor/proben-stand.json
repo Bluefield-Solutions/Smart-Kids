@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-13",
+  "zeit": "2026-09-14",
   "tore": [
     "anker",
     "ansicht",
@@ -272,6 +272,11 @@
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",
       "zeit": "2026-09-10",
       "s": 43
+    },
+    "der Service Worker haelt jede Seite fuer seine": {
+      "commit": "48318cc1c6f1e4fdaebe2159c1ac469d5fba9b42",
+      "zeit": "2026-09-14",
+      "s": 53
     },
     "beim Tippen zählt kein Alias mehr": {
       "commit": "3290e960bb37eb6855ff494b9adaa8ac72f773fb",

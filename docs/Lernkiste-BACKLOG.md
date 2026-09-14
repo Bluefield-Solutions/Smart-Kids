@@ -7705,8 +7705,13 @@ Zwei Blätter, und das zweite ist das wichtigere:
 
 Die 64 sind gemessen und nicht gewählt: `.wortbild` ist 76 Punkte breit,
 aber im kurzen Querformat — und das **ist** das Zielgerät mit 844 × 390 —
-greift `@media (max-height:440px)` und setzt sie auf 64. Wer bei 150
-Punkten urteilt, urteilt über etwas, das kein Kind je sieht.
+greift die Medienabfrage und setzt sie auf 64. Wer bei 150 Punkten
+urteilt, urteilt über etwas, das kein Kind je sieht.
+
+> **Nachgetragen in E19:** hier stand `@media (max-height:440px)`. Die
+> Abfrage heißt `@media (max-height:440px), (max-width:430px)` — 64 Punkte
+> gelten also auch auf einem schmalen Telefon im Hochformat. Für das
+> Zielgerät ändert das nichts, für die Messstelle schon (Regel 5).
 
 Es ist **kein Tor**. Es urteilt nicht und schlägt nicht an; darum liegen
 die Blätter in `blick/` und nicht in `tor/vorbilder/`. Ein Vorbild wäre
@@ -7767,3 +7772,120 @@ den **Blick** (Regel 4). `inhalt` prüft Motive, Blattgrößen und
 ist in keinem Tor formulierbar. Was hilft,
 ist nicht ein neuntes Tor, sondern dass das Ansehen **zwei Minuten
 dauert statt einer Stunde**.
+
+## E19 · Das Blatt aufs Gerät — und der Service Worker, der jede Seite für seine hielt
+
+E18 endete mit einem Satz, der zu leicht dahingesagt war: *„Die 67
+ungesehenen Zeichnungen sind jetzt gesehen — aber nur von mir."* Geurteilt
+wird auf dem iPhone quer. Ein PNG aus Chromium zeigt den Bildschirm
+**dieses Rechners**: sein Farbprofil, sein Gamma, seine Kantenglättung.
+
+Diese Runde bringt das Blatt dorthin, wo geurteilt wird — und hat dabei
+einen Fehler gefunden, der nichts mit Zeichnungen zu tun hat.
+
+### Das Blatt war ein Nachbau
+
+Das Werkzeug aus E18 hat die Karte **nachgebaut**: 8 Punkte Polster,
+1 Punkt Rand, 14 Punkte Rundung, ein Schatten. Die echte `.engkarte` hat
+`var(--r3)`, `var(--strich)`, `var(--rund-karte)`, **zwei** Schatten und
+einen Lichtsaum an der Oberkante — und im kurzen Querformat ein anderes
+Polster.
+
+Das ist nicht Pedanterie. Der Kontrast, auf den es bei einer Zeichnung
+ankommt, entsteht **am Rand der Figur gegen das Papier der Karte**. Wer
+diesen Rand nachbaut, beurteilt seinen eigenen Nachbau. Jede Zahl trägt
+ihre Messstelle mit (Regel 5) — **gemessen woran**, und hier war das
+„woran" falsch.
+
+`tools/bilderseite.mjs` baut nichts mehr nach:
+
+- das **Stilblatt** kommt vollständig aus `dist/index.html`,
+- die **Zeichnung** kommt aus `Englisch.bildSvg` — der Funktion, die sie
+  auch im Spiel zeichnet,
+- die **Größe** kommt aus der Medienabfrage, nicht aus einer Zahl im
+  Werkzeug.
+
+Damit gibt es keine zweite Stelle mehr, die veralten kann (Regel 6). Die
+alte Zahl `64` steht nirgends mehr geschrieben; die Seite sagt selbst,
+welche Form gerade gilt — aus derselben Abfrage wie die App.
+
+`npm run bilderblatt` fotografiert jetzt **diese Seite** in zwei Fenstern:
+844 × 390 (das Zielgerät, kurze Form) und 431 breit (die lange Form). Die
+alten Namen `bilder-gross` / `bilder-karte` sind weg, weil sie eine Größe
+benannten statt eines Geräts.
+
+### Auf dem Gerät: `/bilder/`
+
+Die Seite geht mit nach Pages. Neben `/` (das Spiel) und `/vorschau/`
+liegt jetzt `/bilder/`: alle 86 Zeichnungen in echten Karten, ohne Spiel,
+ohne Ton, ohne Ablage.
+
+**Die Wörter stehen zuerst nicht da.** Wer das Wort liest, erkennt die
+Zeichnung immer — das ist die Falle, in der jede beschriftete Bildabnahme
+sitzt. Erst schauen, dann den Schalter umlegen. (Auf den PNG-Blättern sind
+sie an: dort schlägt man nach.)
+
+### Und dann der eigentliche Fund
+
+Eine zweite Seite unter derselben Herkunft — und der Service Worker kannte
+diesen Fall nicht:
+
+```js
+if (e.request.mode === 'navigate') e.respondWith(seiteHolen(e.request, e));
+```
+
+`mode === 'navigate'` heißt nur: *jemand ruft eine Seite auf*. Es heißt
+nicht, dass es die eigene ist. Und `seiteHolen` legt **jede** Antwort
+unter dem Schlüssel `./index.html` ab.
+
+**Ein einziger Aufruf von `/bilder/` hätte das Spiel im Lager durch das
+Bilderblatt ersetzt.** Beim nächsten Start ohne Netz — im Zug, im Keller,
+im Flugzeug — hätte das Kind statt des Spiels 86 Zeichnungen bekommen.
+Dazu die Reißleine: auf einer müden Leitung hätte `/bilder/` das *Spiel*
+gezeigt, weil `lager.match('./index.html')` das Rennen gewinnt.
+
+Der Fehler ist **leise**. Bei schnellem Netz zeigt `/bilder/` seine 86
+Karten, alles sieht richtig aus, und nur das Lager ist danach vergiftet —
+gemessen in der Gegenprobe: Kartenzahl unverändert 86, im Lager liegt
+danach das Bilderblatt. Ein Tor, das nur auf den Schirm schaut, hätte grün
+gemeldet.
+
+Der Geltungsbereich hängt jetzt am **Ort** des Service Workers, nicht an
+einem geschriebenen Pfad — unter `/` ist es `/`, unter `/vorschau/` ist es
+`/vorschau/`. Alles andere geht den gewöhnlichen Weg ins Netz.
+
+### Das neue Tor `fremdseite`
+
+In `tor/pwa.mjs`, live und nicht als Textvergleich: Spiel installieren,
+zweimal besuchen, dann die **echte** Bilderseite aufrufen und beides
+prüfen —
+
+1. liegt überhaupt eine Seite im Lager? Ohne das beweist 3. nichts;
+2. zeigt `/bilder/` seine Karten, statt vom Spiel verdeckt zu werden?
+3. liegt danach im Lager **immer noch das Spiel**?
+
+Die stehende Gegenprobe baut den Schutz aus und verlangt Rot — sie schlägt
+an (513 Gegenproben insgesamt).
+
+**Beim ersten Lauf meldete das Tor „0 Karten" — und das war es nicht.**
+Der kleine Prüfserver macht aus `/` eine Datei, aus `/bilder/` aber ein
+Verzeichnis, also einen Fehler. Die Prüfung hätte einen Fehler bezeugt,
+den es nicht gab — jede Probe prüft zuerst, ob ihr Eingriff **angekommen**
+ist (Regel 10), und für eine Prüfung gilt dasselbe. Sie
+fragt jetzt `/bilder/index.html`; für den Service Worker ist das derselbe
+Fall, und Pages liefert beide Formen.
+
+### Und eine Notiz zur Arbeitsweise
+
+Der erste volle Lauf war rot: `passt (3/3)` fand eine Kachel nicht. Einzeln
+lief dasselbe Tor grün. Der Grund war **ich** — ich hatte währenddessen
+`bilderblatt` gestartet, also einen neunten Browser auf vier Kerne gelegt,
+während acht schon liefen. Kein Befund über die App, einer über mich.
+Beim zweiten Lauf, ohne Zutun, ist die Kette grün: 19/19 smoke, 7/7 passt,
+78/78 Aufnahmen.
+
+### Was diese Runde nicht ist
+
+Sie ersetzt das Ansehen nicht. Sie legt es nur dorthin, wo es hingehört —
+auf das Gerät, auf dem geurteilt wird (Regel 4). Ob die 86 Zeichnungen
+auf dem iPhone taugen, sagt weiterhin nur ein Blick darauf.
