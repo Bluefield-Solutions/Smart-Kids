@@ -948,21 +948,33 @@ export const BILDER = [
     motiv: 'a single fish seen from the side, with a fan tail and one round eye' },
   { wort: 'hamster',  gebiet: 'tiere',
     bild: [
-      { f:'braun',  d:'M18 14a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm28 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
-      { f:'braun',  d:'M32 14c12 0 21 9 21 21s-9 21-21 21-21-9-21-21 9-21 21-21Z' },
-      { f:'braunDunkel', d:'M38 16c9 3 15 10 15 19 0 12-9 21-21 21 9-3 16-11 16-21 0-8-4-15-10-19Z' },
-      { f:'creme',  d:'M32 32c8 0 14 5 14 11s-6 12-14 12-14-6-14-12 6-11 14-11Z' },
-      { f:'tinte',  d:'M24 26a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm16 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },
-      { f:'rot',    d:'M29 33h6l-3 4Z' },
-      { f:'gelb',   d:'M32 44a4 5 0 1 0 0 10 4 5 0 0 0 0-10Z' },
+      { f:'braunDunkel', d:'M20 12a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm24 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
+      { f:'braun',  d:'M32 12c12 0 20 11 20 24 0 12-9 20-20 20s-20-8-20-20c0-13 8-24 20-24Z' },
+      { f:'braunDunkel', d:'M38 14c9 4 14 12 14 22 0 12-9 20-20 20 9-4 15-12 15-22 0-8-3-15-9-20Z' },
+      { f:'creme',  d:'M15 28a9 10 0 1 0 0 20 9 10 0 0 0 0-20Zm34 0a9 10 0 1 0 0 20 9 10 0 0 0 0-20Z' },
+      { f:'creme',  d:'M32 34c8 0 13 6 13 12 0 6-5 10-13 10s-13-4-13-10c0-6 5-12 13-12Z' },
+      { f:'tinte',  d:'M25 24a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm14 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },
+      { f:'rot',    d:'M29 32h6l-3 4Z' },
+      { f:'gelb',   d:'M32 40a5 7 0 1 0 0 14 5 7 0 0 0 0-14Z' },
+      { f:'gelbDunkel', d:'M32 40a5 7 0 0 1 0 14Z' },
+      { f:'creme',  d:'M25 44a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm14 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z' },
     ],
-    /* DAS MOTIV BESCHREIBT, WAS GEZEICHNET IST, und das war es bis E18
-       nicht: es versprach eine Seitenansicht auf den Hinterbeinen, und
-       gezeichnet ist ein Gesicht von vorn. Wer das Blatt danach neu
-       zeichnen laesst, bekaeme ein anderes Bild als das, das im Spiel
-       steht - und merkt es erst am fertigen Blatt. Die Zeichnung bleibt;
-       sie ist in Ordnung, nur eben eine andere als die beschriebene. */
-    motiv: 'a hamster seen from the front: a round face with small round ears, holding a seed in its cheeks' },
+    /* DER BAER (E20). Das hier war ein rundes Gesicht mit runden Ohren, und
+       genau das IST ein Baer - es gibt keinen zweiten Weg, so etwas zu
+       lesen. Auf dem Bilderblatt bei 64 Punkten sagte es jeder, der
+       hinsah.
+
+       Ein Hamster ist nicht durch Rundheit von einem Baeren zu
+       unterscheiden, sondern durch drei Dinge: Backen, die BREITER sind
+       als der Kopf, winzige Ohren weit oben, und etwas zu fressen in den
+       Vorderpfoten. Die Backen stehen jetzt links und rechts ueber den
+       Umriss hinaus - das ist die Silhouette, an der man ihn erkennt,
+       auch wenn das Bild klein ist.
+
+       Das Motiv wurde in E18 der Zeichnung nachgezogen, statt die
+       Zeichnung dem Motiv. Jetzt stimmen beide wieder ueberein, und zwar
+       auf dem Bild, das gemeint war. */
+    motiv: 'a hamster seen from the front: a round body with tiny ears, cheeks bulging out past the head on both sides, holding a seed in its front paws' },
   { wort: 'horse',    gebiet: 'tiere',
     bild: [
       { f:'braunDunkel', d:'M8 30c-5 3-6 10-4 16h5c-2-6-1-11 2-13Z' },
@@ -986,12 +998,23 @@ export const BILDER = [
       { f:'rot',    d:'M42 40h6l-3 4Z' },
     ],
     motiv: 'a mouse seen from the side, with big round ears and a long thin tail' },
+  /* KEIN `motiv` (E20). Bis hierher stand hier eines - „a child holding a
+     small cat" - und `bildprompt` hat es auf Feld 8 des Tierblattes
+     gesetzt. Wer die Blaetter zeichnen laesst, haette das Bild bekommen,
+     das eine Zeile darueber verboten ist.
+
+     Und das Verbot stimmt, aus einem Grund, der schaerfer ist als der
+     Text daneben: „pet" ist der OBERBEGRIFF zu „cat" und „dog". Ein Kind,
+     das „pet" hoert und auf die Katze tippt, hat nicht falsch geraten -
+     es hat recht, und die App sagt Nein. Das ist mit keiner Zeichnung zu
+     beheben, denn der Zusammenfall liegt in der Bedeutung, nicht im
+     Bild. */
   { wort: 'pet',      gebiet: 'tiere',
-    ohneBild: '„pet" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '
-      + 'eine Katze oder ein Hund - beide stehen schon in dieser Liste. Drei '
-      + 'Karten mit demselben Tier und drei verschiedenen Woertern darunter '
-      + 'machen aus „Lies das Wort" ein Ratespiel.',
-    motiv: 'a child seen from the front holding a small cat in both arms' },
+    ohneBild: '„pet" ist der Oberbegriff zu „cat" und „dog", die beide in '
+      + 'dieser Liste stehen. Wer „pet" hoert und auf die Katze tippt, hat '
+      + 'recht - die App muesste trotzdem Nein sagen. Ein eigenes Bild '
+      + '(etwa ein Kind mit einer Katze auf dem Arm) loest das nicht: der '
+      + 'Zusammenfall liegt in der Bedeutung, nicht in der Zeichnung.' },
   { wort: 'rabbit',   gebiet: 'tiere',
     bild: [
       { f:'creme',  d:'M20 4c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S16 4 20 4Zm24 0c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S40 4 44 4Z' },
@@ -1100,12 +1123,12 @@ export const BILDER = [
        Jetzt ist es, was das Motiv sagt: Keule unten breit, Schwarte
        ueber dem dicken Ende, Knochen oben aus dem schmalen heraus. */
     bild: [
-      { f:'creme',     d:'M29 2h6v16h-6Z' },
+      { f:'creme',     d:'M29 2h6v12h-6Z' },
       { f:'creme',     d:'M27 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm10 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z' },
-      { f:'rot',       d:'M32 14c10 0 18 10 18 23 0 11-8 20-18 20s-18-9-18-20c0-13 8-23 18-23Z' },
-      { f:'rotDunkel', d:'M37 15c8 3 13 12 13 22 0 9-5 16-13 19 5-6 8-13 8-21 0-8-3-15-8-20Z' },
-      { f:'creme',     d:'M17 48a18 20 0 0 0 30 0Z' },
-      { f:'licht',     d:'M22 26c2-4 6-6 8-4 2 1 0 3-2 4-2 1-3 2-4 3-1 2-3 0-2-3Z' },
+      { f:'rot',       d:'M32 10c8 7 16 17 16 27 0 10-7 18-16 18s-16-8-16-18c0-10 8-20 16-27Z' },
+      { f:'rotDunkel', d:'M36 15c6 6 12 14 12 22 0 9-6 16-14 18 5-5 8-11 8-18 0-8-3-16-6-22Z' },
+      { f:'creme',     d:'M16 37c5 5 11 6 16 6s11-1 16-6c0 10-7 18-16 18s-16-8-16-18Z' },
+      { f:'licht',     d:'M24 30c2-4 6-6 8-4 2 1 0 3-2 4-2 1-3 2-4 3-1 2-3 0-2-3Z' },
     ],
     motiv: 'a ham on the bone standing upright, seen from the side, wide at the bottom with a pale rind and the bone sticking out at the narrow top' },
   { wort: 'plum',       gebiet: 'essen',
@@ -1616,12 +1639,18 @@ export const BILDER = [
       { f:'rot',    d:'M52 46a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z' },
     ],
     motiv: 'two balls side by side, one very large and one very small; the small one is solid black, the large one is only an outline' },
+  /* KEIN `motiv` (E20) - aus demselben Grund wie bei „pet", und hier war
+     das alte Motiv besonders verfuehrerisch: eine Katze mit Kaetzchen
+     SIEHT anders aus als die zwei Baelle von „small", also schien die
+     Kollision geloest. Sie ist es nicht. „little" und „small" heissen
+     dasselbe; wer „small" hoert und auf das Kaetzchen tippt, hat recht.
+     Ein anderes Bild verschiebt den Fehler nur dorthin, wo man ihn nicht
+     mehr sieht. */
   { wort: 'little', gebiet: 'gegensaetze',
-    ohneBild: '„little" heisst dasselbe wie „small", und beide bekaemen '
-      + 'dieselbe Zeichnung. Zwei Karten, die gleich aussehen und verschieden '
-      + 'heissen, sind keine Aufgabe - eine davon waere immer falsch, ohne '
-      + 'dass ein Kind einen Fehler gemacht haette.',
-    motiv: 'a grown cat and a kitten side by side, seen from the side; the kitten is solid black, the grown cat is only an outline' },
+    ohneBild: '„little" heisst dasselbe wie „small". Welches Bild es auch '
+      + 'bekaeme - wer das eine Wort hoert und auf die Karte des anderen '
+      + 'tippt, hat recht, und die App muesste Nein sagen. Zwei Karten fuer '
+      + 'eine Bedeutung sind keine Aufgabe, sondern eine Falle.' },
   { wort: 'cold',   gebiet: 'gegensaetze',
     bild: [
       { f:'blau',   d:'M29 2h6v60h-6Z' },

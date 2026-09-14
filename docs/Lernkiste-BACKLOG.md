@@ -7889,3 +7889,95 @@ Beim zweiten Lauf, ohne Zutun, ist die Kette grün: 19/19 smoke, 7/7 passt,
 Sie ersetzt das Ansehen nicht. Sie legt es nur dorthin, wo es hingehört —
 auf das Gerät, auf dem geurteilt wird (Regel 4). Ob die 86 Zeichnungen
 auf dem iPhone taugen, sagt weiterhin nur ein Blick darauf.
+
+## E20 · Der Bär, die Keule — und zwei Bilder, die das Spiel kaputtgemacht hätten
+
+Zwei Ziele, und das zweite ist anders ausgegangen, als ich es vorgeschlagen
+hatte.
+
+### Der Bär
+
+`hamster` war ein rundes Gesicht mit runden Ohren — und **das ist ein Bär**.
+Es gibt keinen zweiten Weg, so etwas zu lesen; auf dem Bilderblatt bei 64
+Punkten sagt es jeder, der hinsieht.
+
+Ein Hamster unterscheidet sich vom Bären nicht durch Rundheit, sondern durch
+drei Dinge: **Backen, die breiter sind als der Kopf**, winzige Ohren weit
+oben, und etwas zu fressen in den Vorderpfoten. Die Backen stehen jetzt
+links und rechts über den Umriss hinaus — das ist die Silhouette, an der man
+ihn auch klein erkennt.
+
+Das Motiv war in E18 der Zeichnung nachgezogen worden statt umgekehrt. Jetzt
+stimmen beide wieder überein, und zwar auf dem Bild, das gemeint war.
+
+### Die Keule, in vier Anläufen
+
+`ham` war in E18 vom Herz zum Ei geworden — besser, aber „eine Keule, die man
+kennen muss". Vier Anläufe:
+
+| Anlauf | was herauskam |
+|---|---|
+| Hals auf rundem Körper | ein **Laborkolben** |
+| Keule, Schwarte als Kreisbogen | Schwarte stand seitlich über das Fleisch hinaus |
+| Schwarte als gerade Sehne | ein weißes **Schälchen** unter dem Roten |
+| Schwarte folgt der Fleischkurve, mit geschwungener Kante | eine Keule |
+
+Der Schritt, der es gelöst hat, ist der letzte: die Schwarte darf **keine
+eigene Form** haben, sie ist der untere Teil derselben Silhouette. Ein
+Kreisbogen und eine Sehne sind beide fremde Geometrie, und man sieht es
+sofort, ohne sagen zu können, woran es liegt.
+
+### Und dann die zwei Wörter ohne Bild
+
+Mein eigener nächster Schritt hieß: *„Die zwei Einträge ohne Bild nachziehen,
+damit ‚Hören und zeigen' auf dem ganzen Vorrat spielbar ist."*
+
+**Das war falsch, und die Daten sagten es schon.** `pet` und `little` tragen
+beide ein `ohneBild` mit dem Grund — und daneben stand jeweils ein `motiv`,
+das genau die Zeichnung beschreibt, die es nicht geben soll. Das Motiv hat
+mich fast überzeugt: ein Kind mit einer Katze auf dem Arm sieht ja *nicht*
+aus wie `cat`, eine Katze mit Kätzchen *nicht* wie die zwei Bälle von
+`small`. Die Kollision schien gelöst.
+
+Sie ist es nicht, und der Grund ist schärfer als der alte Text:
+
+- **`pet` ist der Oberbegriff** zu `cat` und `dog`. Ein Kind, das „pet" hört
+  und auf die Katze tippt, hat **recht** — die App müsste trotzdem Nein
+  sagen.
+- **`little` heißt dasselbe wie `small`.** Wer das eine hört und auf die
+  Karte des anderen tippt, hat recht.
+
+Beides liegt in der **Bedeutung**, nicht im Bild. Keine Zeichnung behebt das;
+eine gute Zeichnung verschiebt den Fehler nur dorthin, wo man ihn nicht mehr
+sieht. Die beiden bleiben also ohne Bild — und ihr `ohneBild` sagt jetzt
+diesen Grund statt des alten.
+
+### Der eigentliche Fund: das Blatt bestellte sie trotzdem
+
+`npm run bildprompt tiere` gab bis heute aus:
+
+```
+ 8. a child seen from the front holding a small cat in both arms
+```
+
+`bildprompt` hat **jedes** Wort des Gebiets aufs Blatt gesetzt, auch die mit
+`ohneBild`. Wer die Blätter zeichnen lässt, bekommt zwei Bilder zurück, die
+nach dem eigenen Datensatz nicht ins Spiel dürfen — und merkt es erst, wenn
+sie dastehen und hübsch sind. Das ist die teuerste Sorte Fehler: einer, der
+erst Arbeit erzeugt und dann weggeworfen werden muss.
+
+Drei Änderungen, die zusammen die Lücke schließen:
+
+1. `bildprompt` nimmt nur noch, was gemalt werden soll.
+2. Die Motive von `pet` und `little` sind **weg**. Ein Motiv ist eine
+   Bestellung, keine Beschreibung — für ein Wort ohne Bild ist es eine
+   Anweisung ohne Adressaten und eine Falle für den Nächsten.
+3. `inhalt` prüft beide Richtungen: ein **gemaltes** Wort ohne Motiv lässt
+   jedes Feld etwas anderes zeichnen, ein **ungemaltes** mit Motiv bestellt,
+   was nicht ins Spiel darf. Dazu eine zweite Prüfung am **Blatt** selbst,
+   denn es gibt zwei Wege zum selben Schaden: ein nachgetragenes Motiv und
+   ein herausgenommener Filter. Der zweite hinterlässt gar kein Motiv — dann
+   stünde auf dem Blatt `undefined`, und niemand sähe, dass dort ein Wort
+   zuviel ist.
+
+Zwei stehende Gegenproben, beide schlagen an (515 insgesamt).

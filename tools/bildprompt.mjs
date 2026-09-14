@@ -65,7 +65,19 @@ const LEER = 'empty — leave this panel completely blank white';
 export function blaetter(){
   const aus = [];
   for (const g of EN.BILDGEBIETE) {
-    const meine = EN.BILDER.filter(b => b.gebiet === g.id);
+    /* NUR, WAS GEMALT WERDEN SOLL (E20).
+     *
+     * Bis hierher stand jedes Wort des Gebiets auf dem Blatt - auch die
+     * beiden, die mit Absicht kein Bild bekommen. Feld 8 des Tierblattes
+     * bestellte „a child holding a small cat" fuer `pet`, und das
+     * Gegensatzblatt bestellte eine Katze mit Kaetzchen fuer `little`.
+     * Wer diese Blaetter zeichnen laesst, bekommt zwei Bilder zurueck,
+     * die nach dem eigenen `ohneBild` nicht ins Spiel duerfen - und
+     * merkt es erst, wenn sie dastehen.
+     *
+     * `ohneBild` traegt den Grund im Klartext. Wer ihn liest, bestellt
+     * nicht. */
+    const meine = EN.BILDER.filter(b => b.gebiet === g.id && !b.ohneBild);
     for (let i = 0; i < meine.length; i += JE_BLATT) {
       const teil = meine.slice(i, i + JE_BLATT);
       const nr = Math.floor(i / JE_BLATT) + 1;

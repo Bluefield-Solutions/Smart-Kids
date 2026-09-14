@@ -2808,15 +2808,35 @@ console.log('\n  Tor `englisch`');
     for (const b of EN.BILDER) {
       if (!gebiete.has(b.gebiet))
         e4.push(`„${b.wort}" liegt auf dem Blatt „${b.gebiet}", das es nicht gibt`);
-      if (!b.motiv || b.motiv.trim().length < 25)
-        e4.push(`„${b.wort}" hat kein beschriebenes Motiv („${b.motiv || ''}") — `
-          + 'ohne Haltung und Ansicht zeichnet jedes Feld etwas anderes');
-      if (motive.has(b.motiv))
-        e4.push(`„${b.wort}" und „${motive.get(b.motiv)}" haben dasselbe Motiv`);
-      else motive.set(b.motiv, b.wort);
+      /* DAS MOTIV IST EINE BESTELLUNG, KEINE BESCHREIBUNG (E20).
+       *
+       * Es geht wortwoertlich in den Prompt, den jemand zeichnen laesst.
+       * Fuer ein Wort mit `ohneBild` ist es damit eine Bestellung fuer
+       * ein Bild, das eine Zeile darueber verboten wird - und genau das
+       * stand hier: `pet` bestellte „a child holding a small cat",
+       * `little` eine Katze mit Kaetzchen. Beide standen auf einem
+       * Blatt, beide waeren gezeichnet worden.
+       *
+       * Also beide Richtungen, und beide sind noetig: ein gemaltes Wort
+       * OHNE Motiv laesst jedes Feld etwas anderes zeichnen, ein
+       * ungemaltes MIT Motiv bestellt, was nicht ins Spiel darf. */
+      if (b.ohneBild) {
+        if (b.motiv)
+          e4.push(`„${b.wort}" hat kein Bild und trotzdem ein Motiv `
+            + `(„${b.motiv}") — das Motiv geht in den Prompt, also `
+            + 'bestellt es eine Zeichnung, die laut `ohneBild` nicht ins '
+            + 'Spiel darf');
+      } else {
+        if (!b.motiv || b.motiv.trim().length < 25)
+          e4.push(`„${b.wort}" hat kein beschriebenes Motiv („${b.motiv || ''}") — `
+            + 'ohne Haltung und Ansicht zeichnet jedes Feld etwas anderes');
+        if (motive.has(b.motiv))
+          e4.push(`„${b.wort}" und „${motive.get(b.motiv)}" haben dasselbe Motiv`);
+        else motive.set(b.motiv, b.wort);
+      }
       /* Das Motiv geht wortwoertlich in einen englischen Prompt. Ein
          deutscher Satz darin faellt dort nicht auf, sondern erst am Bild. */
-      if (/[äöüßÄÖÜ]/.test(b.motiv))
+      if (b.motiv && /[äöüßÄÖÜ]/.test(b.motiv))
         e4.push(`das Motiv zu „${b.wort}" ist nicht englisch: „${b.motiv}"`);
     }
     const blaetter = BP.blaetter();
@@ -2824,6 +2844,21 @@ console.log('\n  Tor `englisch`');
       if (bl.felder.length !== 10)
         e4.push(`das Blatt „${bl.id}" hat ${bl.felder.length} Felder statt zehn — `
           + 'dann stimmt beim Zuschneiden das Raster nicht');
+    /* Und kein ungemaltes Wort steht auf einem Blatt (E20).
+     *
+     * Die Pruefung darueber faengt das Motiv; diese faengt das BLATT.
+     * Beides ist noetig, weil es zwei Wege dorthin gibt: ein Motiv, das
+     * jemand nachtraegt, und ein Filter in `bildprompt`, den jemand
+     * herausnimmt. Der zweite Weg hinterlaesst gar kein Motiv - dann
+     * stuende auf dem Blatt „undefined", und niemand saehe, dass dort
+     * ein Wort zuviel ist. */
+    const ungemalt = new Set(EN.BILDER.filter(b => b.ohneBild).map(b => b.wort));
+    for (const bl of blaetter)
+      for (const w of bl.woerter)
+        if (ungemalt.has(w.wort))
+          e4.push(`„${w.wort}" steht auf dem Blatt „${bl.id}", hat aber `
+            + '`ohneBild` — wer dieses Blatt zeichnen lässt, bekommt eine '
+            + 'Zeichnung zurück, die nicht ins Spiel darf');
 
     if (e4.length) {
       console.log('    ' + e4.join('\n    '));

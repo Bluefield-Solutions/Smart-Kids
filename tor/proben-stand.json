@@ -2318,6 +2318,16 @@
       "zeit": "2026-09-11",
       "s": 4
     },
+    "ein ungemaltes Wort bestellt trotzdem eine Zeichnung": {
+      "commit": "f04fcf6b2a5653316f7fee61818e8e403dc27e0c",
+      "zeit": "2026-09-14",
+      "s": 32
+    },
+    "der Bildplan nimmt auch die ungemalten Wörter aufs Blatt": {
+      "commit": "f04fcf6b2a5653316f7fee61818e8e403dc27e0c",
+      "zeit": "2026-09-14",
+      "s": 31
+    },
     "der Bildvergleich zählt wieder Namen statt Töne": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",

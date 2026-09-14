@@ -7232,11 +7232,37 @@ export const PROBEN = [
    *    loescht. */
   { n:'ein Wort im Bildplan ist weder gezeichnet noch begründet', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    such:"    ohneBild: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '",
-    ersatz:"    /* Anker der Gegenprobe: ohneBild: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere ' */\n"
-      + "    ohneBildX: '„pet\" ist eine Sammelbezeichnung, und jedes Bild dafuer waere '",
+    such:"    ohneBild: '„pet\" ist der Oberbegriff zu „cat\" und „dog\", die beide in '",
+    ersatz:"    /* Anker der Gegenprobe: ohneBild: '„pet\" ist der Oberbegriff zu „cat\" und „dog\", die beide in ' */\n"
+      + "    ohneBildX: '„pet\" ist der Oberbegriff zu „cat\" und „dog\", die beide in '",
     an:{ datei:'src/inhalt/englisch.js', text:'ohneBildX:' },
     sagt:'weder eine Zeichnung noch ein' },
+
+  /* 5b. EIN UNGEMALTES WORT BEKOMMT WIEDER EIN MOTIV (E20). Das Motiv
+   *    geht wortwoertlich in den Prompt, den jemand zeichnen laesst -
+   *    fuer ein Wort mit `ohneBild` bestellt es also eine Zeichnung, die
+   *    nicht ins Spiel darf. Genau so stand es da: „pet" bestellte „a
+   *    child holding a small cat". */
+  { n:'ein ungemaltes Wort bestellt trotzdem eine Zeichnung', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"      + 'Zusammenfall liegt in der Bedeutung, nicht in der Zeichnung.' },",
+    ersatz:"      + 'Zusammenfall liegt in der Bedeutung, nicht in der Zeichnung.',\n"
+      + "    motiv: 'a child seen from the front holding a small cat in both arms' },",
+    an:{ datei:'src/inhalt/englisch.js', text:'holding a small cat in both arms' },
+    sagt:'trotzdem ein Motiv' },
+
+  /* 5c. DAS BLATT NIMMT WIEDER JEDES WORT (E20). Der andere Weg zum
+   *    selben Schaden, und er hinterlaesst kein Motiv: ohne den Filter
+   *    in `bildprompt` steht das ungemalte Wort auf dem Blatt, sein Feld
+   *    traegt `undefined`, und wer das Blatt zeichnen laesst, bekommt
+   *    zwei Bilder zuviel zurueck. Die Probe darueber faengt das nicht -
+   *    sie sieht nur den Datensatz. */
+  { n:'der Bildplan nimmt auch die ungemalten Wörter aufs Blatt', tor:'inhalt',
+    deckt:'englisch', datei:'tools/bildprompt.mjs',
+    such:"    const meine = EN.BILDER.filter(b => b.gebiet === g.id && !b.ohneBild);",
+    ersatz:"    const meine = EN.BILDER.filter(b => b.gebiet === g.id);",
+    an:{ datei:'tools/bildprompt.mjs', text:'filter(b => b.gebiet === g.id);' },
+    sagt:'ohneBild' },
 
   /* 6. DER VERGLEICH ZAEHLT WIEDER NAMEN STATT TOENE. Das war der erste
    *    Anlauf, und er ging still daneben: `rot` und `rotDunkel` liegen
