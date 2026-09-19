@@ -793,6 +793,12 @@ export const NICHT_NEBENEINANDER = [
   { ober: 'bike',   unter: ['ride'],
     warum: 'Nicht der Begriff, sondern das Bild: auf beiden Karten steht '
       + 'ein Fahrrad, auf der einen mit jemandem darauf.' },
+  { ober: 'teacher', unter: ['board'],
+    warum: 'Nicht der Begriff, sondern das Bild - derselbe Grund wie bei '
+      + '„bike"/„ride": auf der Karte zu „teacher" steht eine gruene Tafel '
+      + 'neben der Person, und sie ist dieselbe Tafel wie auf „board". '
+      + 'Gefunden auf dem Bilderblatt, nicht im Text: „class/classroom" '
+      + 'haelt beide laengst fern, die zwei untereinander aber nicht.' },
   { ober: 'class/classroom', unter: ['board', 'chair', 'teacher'],
     warum: 'Das Klassenzimmer enthaelt sie - und die Zeichnung dazu ist '
       + 'eine Tafel mit Tischen, also genau die Tafel von „board".' },
@@ -1124,18 +1130,23 @@ export const BILDER = [
      liegen sie untereinander, und dort soll man sie auseinanderhalten. */
   { wort: 'pet',      gebiet: 'tiere',
     bild: [
-      { f:'braunDunkel', d:'M24 4c8 0 13 5 13 12H11c0-7 5-12 13-12Z' },
-      { f:'creme',  d:'M24 8a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
-      { f:'tinte',  d:'M19 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
-      { f:'gruen',  d:'M24 30c9 0 16 7 16 16v16H8V46c0-9 7-16 16-16Z' },
-      { f:'gruenDunkel', d:'M28 31c7 2 12 8 12 15v16h-8V42c0-5-2-9-4-11Z' },
-      { f:'gruen',  d:'M38 44h16a5 5 0 0 1 0 10H38Z' },
-      { f:'braun',  d:'M50 30a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z' },
-      { f:'braun',  d:'M42 24l3 8-5-1Zm16 0-3 8 5-1Z' },
-      { f:'creme',  d:'M50 38a5 4 0 1 0 0 8 5 4 0 0 0 0-8Z' },
-      { f:'tinte',  d:'M46 35a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+      { f:'braunDunkel', d:'M22 4c8 0 13 5 13 12H9c0-7 5-12 13-12Z' },
+      { f:'creme',  d:'M22 8a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+      { f:'tinte',  d:'M17 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+      { f:'gelb',   d:'M22 30c9 0 16 7 16 16v16H6V46c0-9 7-16 16-16Z' },
+      { f:'gelbDunkel', d:'M26 31c7 2 12 8 12 15v16h-8V42c0-5-2-9-4-11Z' },
+      { f:'gelb',   d:'M34 46h20a5 5 0 0 1 0 10H34Z' },
+      { f:'braun',  d:'M59 39c5 2 6 8 3 12-2 3-6 4-8 2 3 0 5-2 6-5 1-3 0-6-3-7Z' },
+      { f:'braun',  d:'M41 25 38 12l10 6Zm17 0 3-13-10 6Z' },
+      { f:'rot',    d:'M42 23l-1-6 5 3Zm15 0 1-6-5 3Z' },
+      { f:'braun',  d:'M49 20a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z' },
+      { f:'creme',  d:'M49 30a6 5 0 1 0 0 10 6 5 0 0 0 0-10Z' },
+      { f:'tinte',  d:'M45 27a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z' },
+      { f:'tinte',  d:'M47 33h4l-2 3Z' },
+      { f:'rot',    d:'M40 41h18v4H40Z' },
+      { f:'gelb',   d:'M49 44a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z' },
     ],
-    motiv: 'a child seen from the front holding a small cat in one arm, the cat looking out' },
+    motiv: 'a child seen from the front holding a cat in one arm, the cat looking out, with upright pointed ears, a curling tail and a red collar with a round tag' },
   { wort: 'rabbit',   gebiet: 'tiere',
     bild: [
       { f:'creme',  d:'M20 4c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S16 4 20 4Zm24 0c4 0 7 6 7 14s-3 12-7 12-7-4-7-12S40 4 44 4Z' },
@@ -1244,14 +1255,14 @@ export const BILDER = [
        Jetzt ist es, was das Motiv sagt: Keule unten breit, Schwarte
        ueber dem dicken Ende, Knochen oben aus dem schmalen heraus. */
     bild: [
-      { f:'creme',     d:'M29 2h6v12h-6Z' },
-      { f:'creme',     d:'M27 1a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm10 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z' },
-      { f:'rot',       d:'M32 10c8 7 16 17 16 27 0 10-7 18-16 18s-16-8-16-18c0-10 8-20 16-27Z' },
-      { f:'rotDunkel', d:'M36 15c6 6 12 14 12 22 0 9-6 16-14 18 5-5 8-11 8-18 0-8-3-16-6-22Z' },
-      { f:'creme',     d:'M16 37c5 5 11 6 16 6s11-1 16-6c0 10-7 18-16 18s-16-8-16-18Z' },
-      { f:'licht',     d:'M24 30c2-4 6-6 8-4 2 1 0 3-2 4-2 1-3 2-4 3-1 2-3 0-2-3Z' },
+      { f:'creme',     d:'M40 18 51 7l6 6-11 11Z' },
+      { f:'creme',     d:'M52 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6 6a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z' },
+      { f:'rot',       d:'M47 19c3 4 1 9-4 12-4 2-6 6-6 10 0 12-9 21-19 19C9 58 4 50 6 41 8 31 17 26 26 25c7-1 14-9 21-6Z' },
+      { f:'rotDunkel', d:'M41 27c4 6 5 14 3 21-3 8-9 13-16 14 9-3 15-11 15-21 0-5-1-10-2-14Z' },
+      { f:'creme',     d:'M7 47c4 7 13 11 21 8 6-2 10-7 11-13-5 6-12 9-19 9-5 0-9-1-13-4Z' },
+      { f:'licht',     d:'M13 37c2-5 6-8 11-9 2 0 2 3 0 4-4 1-6 3-8 7-1 2-4 1-3-2Z' },
     ],
-    motiv: 'a ham on the bone standing upright, seen from the side, wide at the bottom with a pale rind and the bone sticking out at the narrow top' },
+    motiv: 'a ham on the bone lying at an angle, the round meaty end at the bottom left with a pale rind, narrowing to the upper right where the white bone sticks out' },
   { wort: 'plum',       gebiet: 'essen',
     bild: [
       { f:'lila',   d:'M32 16c10 0 18 9 18 20s-8 22-18 22-18-11-18-22 8-20 18-20Z' },

@@ -8380,3 +8380,125 @@ Ruhe-Prüfung des Fremdgriffs muss belegen, dass sie den Überblendfall
 wirklich aussperrt (Regel 1: eine Prüfung, die nie etwas meldet, ist kein
 Beweis). Bis dahin bleibt der Befund hier stehen — ungeklärt und
 aufgeschrieben, nicht abgehakt.
+
+## E24 · Zwei Zeichnungen, die das Tor durchgelassen hat — und die Elle, die E23 nur halb zusammengelegt hat
+
+Zwei Ziele: **hinsehen** (alle 87 Zeichnungen) und **nachzählen** (wo
+außerhalb von Englisch wählt etwas Ablenker aus?). Das erste hat mehr
+gebracht als das zweite, und das ist selbst der Befund.
+
+### Was der Blick gefunden hat, und die Tore nicht
+
+`npm run bilderblatt` schreibt die 87 Zeichnungen in zwei Fassungen —
+844 × 390 (das Zielgerät, 64 Punkte) und weit (76 Punkte). Beide
+angesehen, dazu die fraglichen Karten einzeln nebeneinander in 200
+Punkten. Drei Befunde, alle bei grünen Toren:
+
+**`ham` war kein Schinken, sondern ein roter Tropfen.** E20 hat das
+Herz ersetzt, E23 die Schwarte nachgezogen — und der Zellvergleich fiel
+brav unter seine Grenze. Er misst aber Zellen, nicht Bedeutung: übrig
+blieb ein **rotes, rundes Ding**, und daneben steht `tomato`, ein rotes,
+rundes Ding. Wer „ham" liest und auf die Tomate tippt, hat nichts
+falsch gemacht. Das ist Regel 4 in Reinform — kein Tor ersetzt den
+Blick, und zwei Runden lang hat das Tor grün gemeldet, während die
+Karte nichts bedeutete.
+
+Jetzt liegt die Keule **schräg**: runder Fleischballen unten links,
+Schwarte am dicken Ende, nach oben rechts verjüngt, weißer Knochen
+heraus. Die Schräge ist der eigentliche Trick — alles andere im Topf
+steht aufrecht und symmetrisch, und eine schräge Silhouette ist schon
+bei 64 Punkten keine Frucht mehr.
+
+**Auf der `pet`-Karte war die Katze ein Teddy.** Das Bild aus E23 hatte
+sie als braune Scheibe mit zwei Stummeln, die wie Hörner standen, und
+das Kind trug **Grün** — wie `father`. Bei 64 Punkten waren `pet` und
+`father` zwei grüne Menschen, einer mit einem braunen Fleck. Ich hatte
+Grün gewählt, um `pet` von `boy` (blau) und `girl` (rot) abzusetzen, und
+dabei den dritten grünen Menschen nicht angesehen.
+
+Jetzt: Pullover **gelb** (die einzige Personenfarbe, die sonst niemand
+trägt), spitze Ohren wie bei `cat`, Schnauze, Nase, ein **rotes
+Halsband mit Marke** und ein Schwanz, der sich am Rand hochrollt. Das
+Halsband ist das Zeichen, das auf keiner anderen Karte vorkommt — und
+es sagt genau das, was „pet" heißt: *jemandes* Tier.
+
+**`board` und `teacher` tragen dieselbe Tafel.** Auf der Karte zu
+„teacher" steht eine grüne Tafel neben der Person, und sie ist die
+Tafel von „board". Die Tafel `NICHT_NEBENEINANDER` hält
+`class/classroom` von beiden fern — die zwei untereinander aber nicht.
+Wer „board" hört und auf die Lehrerin tippt, hat die Tafel gesehen.
+Jetzt stehen sie in der Tafel, mit demselben Grund wie `bike`/`ride`:
+**nicht der Begriff, sondern das Bild.**
+
+Damit sind es 16 Gruppen, 0 verbotene Paare durchgelassen.
+
+### Das Nachzählen: viel geprüft, wenig gefunden — und das ist eine Antwort
+
+Die Frage war: wo außerhalb von Englisch entsteht eine Aufgabe mit zwei
+richtigen Antworten? Es gibt **fünf** Stellen, an denen Antworten
+zusammengestellt werden, und Englisch war nur eine davon:
+
+| Stelle | gefragt | Ergebnis |
+|---|---|---|
+| Rechnen | steht die richtige Zahl zweimal da? | `spielprobe` rechnet **alle neun Vorräte** durch: vier Möglichkeiten, genau eine richtig, keine doppelt, keine außerhalb des Zahlenraums — gedeckt |
+| Hauptstädte | ist ein Ablenker die Hauptstadt? | `inhalt` und `spielprobe` prüfen es in beide Richtungen — gedeckt |
+| „Was ist größer?" | sind beide gleich groß? | eigenes Tor mit Mindestverhältnis — gedeckt |
+| Flaggen je Karte | zwei Flaggen, die man nicht trennen kann? | 1030 Paare gemessen, engstes AUS/NZL mit 4,7 % über einem Boden von 3 % — gedeckt |
+| alle übrigen Ebenen | zwei Karten mit demselben Namen? | **nachgezählt: null.** Gefiltert wird über `id`, nicht über die Antwort — heute trägt aber kein Topf zwei Einträge mit gleichem Namen |
+
+Vier Vermutungen gemessen und vier verworfen. Das ist kein Leerlauf: E21
+hat im Wortschatz 36 Fallen gefunden, und die naheliegende Annahme war,
+dass es anderswo genauso aussieht. Tut es nicht — die anderen Fächer
+haben diese Prüfungen längst, meist seit der Runde, in der sie gebaut
+wurden.
+
+### Was das Nachzählen doch gefunden hat, und beides stammt von mir
+
+**Erstens: die Elle steht immer noch zweimal da.** E23 hat gegen zwei
+Ellen für eine Frage argumentiert und sie zusammengelegt — in der
+`AEHNLICH`-Schleife. Die Rundumprüfung je Karte, zweitausend Zeilen
+weiter oben in derselben Datei, rechnete unverändert mit der Fläche
+allein. Zwei Stellen, dieselbe Frage („kann ein Kind dieses Paar
+auseinanderhalten?"), zwei Rechnungen: genau das, was E23 zu beheben
+antrat, eine Messstelle weiter (Regel 6).
+
+Jetzt gibt es **eine** Funktion `trennung(a, b)`, und beide Stellen
+rufen sie. **Was sich dadurch am Urteil ändert: nichts** — nachgemessen
+sind sich die beiden Ellen heute auf allen 1030 Paaren einig, und
+deshalb hätte auch kein Lauf je etwas gemeldet. Das ist Vorbeugung und
+keine Reparatur, und es gehört so dagesagt.
+
+Die neue Gegenprobe greift deshalb nicht an den Daten an, sondern an
+der **Elle selbst**: nimmt man ihr die Farbroute, fällt Rumänien/Tschad
+mit 0,0 % Fläche unter den Boden, und das Tor verlangt ein
+`fragbar:false` für ein Paar, das man nebeneinander sehr wohl
+unterscheidet. Damit ist die Farbroute tragend und nicht bloß
+vorhanden — eine Prüfung, die nie etwas meldet, ist kein Beweis
+(Regel 1).
+
+**Zweitens: ein Kommentar, der zweimal veraltet ist.** Über der
+Verwechslungsebene stand in `spiel.js`:
+
+> *Aus elf fragbaren Paaren werden so 22 Gegenstände … zwei Paare kann
+> man NICHT fragen (Rumänien/Tschad, Monaco/Indonesien).*
+
+Nachgezählt: **22 Paare, 21 fragbar, eines stumm (Monaco/Indonesien),
+42 Gegenstände.** Alle drei Zahlen falsch. Der Vorrat ist gewachsen,
+und E23 hat Rumänien/Tschad wieder fragbar gemacht — der Kommentar
+blieb beide Male stehen. `npm run doku` liest Dokumente, keine
+Quelltextkommentare; gefunden hat es das Nachzählen.
+
+### Eine Frage, die ich nicht selbst entscheide
+
+Im amtlichen Wortschatz steht **„In front of"** und **„Its"** groß
+geschrieben, mitten in einer sonst durchgehend kleingeschriebenen
+Liste. Die Datei transkribiert die Quelle bewusst treu — sie hält
+sogar deren Nummerierungsfehler fest. Auf der Karte steht damit aber
+ein großes I in einer Präposition, und das ist kein Englisch, das ein
+Kind lernen soll.
+
+Beides ist vertretbar: die Quelle treu wiedergeben, oder auf der Karte
+richtiges Englisch zeigen und die Liste unangetastet lassen. Was ich
+nicht kann, ist nachsehen, ob das die Schreibweise der Behörde ist oder
+mein Abschreibfehler — die PDF liegt hier nicht. Deshalb steht es hier
+als Frage und nicht als Änderung.

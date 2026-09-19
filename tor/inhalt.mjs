@@ -4927,6 +4927,49 @@ console.log('\n  Tor `flaggen`');
 {
   const ff = [];
   const BODEN = 0.03, SOLL = 0.06;
+  /* ZWEI WEGE, EIN PAAR ZU TRENNEN - und jetzt an BEIDEN Messstellen
+   * derselbe (E24).
+   *
+   * `unterschied` zaehlt, wieviel Flaeche ANDERS aussieht. Fuer Rumaenien
+   * und den Tschad sagt es 0,0 %, und fuer Monaco und Indonesien
+   * ebenfalls 0,0 % - obwohl das eine Paar sich im Blauton unterscheidet
+   * und das andere Zeichen fuer Zeichen dasselbe SVG ist. Das Mass KANN
+   * den Farbton nicht sehen; es fragt nach Flaechen. Trennbar ist ein
+   * Paar deshalb, wenn sich genug FLAECHE unterscheidet ODER ein Farbton
+   * weit genug entfernt liegt.
+   *
+   * E22 hat eine zweite Elle danebengestellt, E23 hat sie mit dieser
+   * hier zusammengelegt - aber nur in der `AEHNLICH`-Schleife. Die
+   * Rundumpruefung je Karte, zweitausend Zeilen weiter unten, fragte
+   * weiter allein nach der Flaeche. Zwei Stellen, dieselbe Frage, zwei
+   * Antworten: genau das, was E23 zu beheben angetreten war, eine
+   * Messstelle weiter: was zweimal dasteht, veraltet einmal (Regel 6),
+   * und zwei Ellen fuer eine Frage widersprechen sich sofort.
+   * Gefunden beim Nachzaehlen, nicht von
+   * einem Tor - beide Ellen sind sich heute auf allen 1030 Paaren einig,
+   * und deshalb haette kein Lauf je etwas gemeldet.
+   *
+   * Die Farbschwelle ist gemessen und nicht geraten: der eben noch
+   * wahrnehmbare Unterschied liegt bei rund 2,3 CIELAB; verdoppelt, damit
+   * ein Kind auf einem Telefon Luft hat, sind es 5. Sie gilt HIER und
+   * nicht bei den zehn Farbflecken - dort sind es 25, weil dort aus dem
+   * GEDAECHTNIS getippt wird und nichts danebensteht. Hier stehen beide
+   * Flaggen nebeneinander, 190 Punkte breit (Regel 5: jede Zahl traegt
+   * ihre Messstelle mit). */
+  const TON_MIN = 5;
+  const trennung = (a, b) => {
+    const u = FL.unterschied(a.bau, b.bau);
+    const ma = FL.baumuster(a.bau), mb = FL.baumuster(b.bau);
+    const gleicherBau = ma === mb
+      && (a.bau.farben || []).length === (b.bau.farben || []).length;
+    const ton = gleicherBau && a.bau.farben
+      ? Math.max(...a.bau.farben.map((f, i) => labAbstand(f, b.bau.farben[i])))
+      : Infinity;
+    return { anteil: u.anteil, mittel: u.mittel, ton, ma, mb,
+      trennbar: u.anteil >= BODEN || ton >= TON_MIN,
+      wieWeit: `${(u.anteil * 100).toFixed(1)} % der Fläche`
+        + (Number.isFinite(ton) ? `, Farbton ${ton.toFixed(1)} CIELAB` : '') };
+  };
 
   /* Vollzaehligkeit gegen `LAENDER`, in BEIDE Richtungen.
    *
@@ -5100,14 +5143,14 @@ const FLAGGEN_GEFRAGT = 108;
         if (!FL.flaggeFragbar(liste[i].a3) || !FL.flaggeFragbar(liste[j].a3)) continue;
         const a = FL.flaggeVon(liste[i].a3), b = FL.flaggeVon(liste[j].a3);
         if (!a || !b) continue;
-        const u = FL.unterschied(a.bau, b.bau);
+        const u = trennung(a, b);
         gemessen++;
         const paar = [a.a3, b.a3].sort().join('/');
         if (u.anteil < engste.anteil) engste = { ...u, paar, kont };
-        if (u.anteil < BODEN)
-          ff.push(`${paar} (${kont}): nur ${(u.anteil * 100).toFixed(1)} % der Fläche `
-            + `stehen deutlich anders da (Boden ${BODEN * 100} %) — diese Aufgabe ist `
-            + 'nicht schwer, sondern nicht zu beantworten');
+        if (!u.trennbar)
+          ff.push(`${paar} (${kont}): nur ${u.wieWeit} anders (Boden ${BODEN * 100} % `
+            + `bzw. ${TON_MIN} CIELAB) — diese Aufgabe ist nicht schwer, sondern `
+            + 'nicht zu beantworten');
         else if (u.anteil < SOLL && !aehnlich.has(paar)) unterSoll.push(`${paar} `
           + `(${kont}, ${(u.anteil * 100).toFixed(1)} %)`);
       }
@@ -5158,40 +5201,11 @@ const FLAGGEN_GEFRAGT = 108;
      * Hälfte wäre `fragbar:false` ein Freibrief, mit dem sich jede zu
      * ähnliche Zeichnung stillstellen ließe - und genau dafür ist der
      * Boden nicht da. */
-    /* ZWEI WEGE, EIN PAAR ZU TRENNEN - und die Fläche ist nur der eine
-     * (E23).
-     *
-     * `unterschied` zählt, wieviel Fläche ANDERS aussieht. Für Rumänien
-     * und den Tschad sagt es 0,0 %, und für Monaco und Indonesien
-     * ebenfalls 0,0 % - obwohl das eine Paar sich im Blauton
-     * unterscheidet und das andere Zeichen für Zeichen dasselbe SVG ist.
-     * Das Maß KANN den Farbton nicht sehen; es fragt nach Flächen.
-     *
-     * E22 hat daraufhin eine zweite Elle danebengestellt (CIELAB) - und
-     * damit zwei Prüfungen, die dieselbe Frage verschieden beantworten.
-     * Was zweimal dasteht, veraltet einmal (Regel 6) - und zwei Ellen für
-     * eine Frage veralten nicht einmal, sie widersprechen sich sofort.
-     * Jetzt ist es EINE Prüfung
-     * mit zwei Wegen: trennbar ist ein Paar, wenn sich genug FLÄCHE
-     * unterscheidet ODER ein Farbton weit genug entfernt liegt.
-     *
-     * Die Farbschwelle ist gemessen und nicht geraten: der eben noch
-     * wahrnehmbare Unterschied liegt bei rund 2,3 CIELAB; verdoppelt,
-     * damit ein Kind auf einem Telefon Luft hat, sind es 5. Sie gilt
-     * hier und nicht bei den zehn Farbflecken - dort sind es 25, weil
-     * dort aus dem GEDÄCHTNIS getippt wird und nichts danebensteht.
-     * Hier stehen beide Flaggen nebeneinander, 190 Punkte breit
-     * (Regel 5: jede Zahl trägt ihre Messstelle mit). */
-    const TON_MIN = 5;
-    const u = FL.unterschied(a.bau, b.bau);
-    const gleicherBau = ma === mb
-      && (a.bau.farben || []).length === (b.bau.farben || []).length;
-    const tonAbstand = gleicherBau && a.bau.farben
-      ? Math.max(...a.bau.farben.map((f, i) => labAbstand(f, b.bau.farben[i])))
-      : Infinity;
-    const zuNah = u.anteil < BODEN && tonAbstand < TON_MIN;
-    const wieWeit = `${(u.anteil * 100).toFixed(1)} % der Fläche`
-      + (Number.isFinite(tonAbstand) ? `, Farbton ${tonAbstand.toFixed(1)} CIELAB` : '');
+    /* Trennbar oder nicht: EINE Elle, oben im Block, und dieselbe wie bei
+     * der Rundumpruefung je Karte. Bis E24 stand die Rechnung hier ein
+     * zweites Mal. */
+    const u = trennung(a, b);
+    const zuNah = !u.trennbar, wieWeit = u.wieWeit;
     if (x.fragbar === false) stumm++;
     if (zuNah && x.fragbar !== false)
       ff.push(`${a3a}/${a3b}: nur ${wieWeit} anders (Boden ${BODEN * 100} % `

@@ -2773,14 +2773,24 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    *
    * EIN Gegenstand je Paar und Richtung: „Welche ist Rumaenien?" und
    * „Welche ist der Tschad?" sind zwei Aufgaben, nicht eine - wer die
-   * eine kann, hat die andere noch nicht. Aus elf fragbaren Paaren
-   * werden so 22 Gegenstaende.
+   * eine kann, hat die andere noch nicht. Aus 21 fragbaren Paaren werden
+   * so 42 Gegenstaende.
    *
-   * `fragbarePaare()` und nicht die ganze Liste: zwei Paare kann man
-   * NICHT fragen, weil sie sich in dieser Darstellung um null Prozent
-   * unterscheiden (Rumaenien/Tschad, Monaco/Indonesien). Sie werden im
-   * Vorlauf gezeigt und erklaert, aber nie abgefragt - der Grund steht
-   * bei `AEHNLICH`.
+   * `fragbarePaare()` und nicht die ganze Liste: EIN Paar kann man nicht
+   * fragen - Monaco und Indonesien sind in dieser Darstellung Zeichen
+   * fuer Zeichen dasselbe SVG. Es wird im Vorlauf gezeigt und erklaert,
+   * aber nie abgefragt; der Grund steht bei `AEHNLICH`.
+   *
+   * DIESE ZAHLEN STANDEN ZWEIMAL FALSCH DA (E24). Bis hierher hiess es
+   * „elf fragbare Paare, 22 Gegenstaende" und „zwei Paare kann man nicht
+   * fragen (Rumaenien/Tschad, Monaco/Indonesien)". Der Vorrat war
+   * laengst auf 22 Paare gewachsen, und E23 hat Rumaenien/Tschad wieder
+   * fragbar gemacht, weil die beiden sich sehr wohl im Blauton
+   * unterscheiden - der Kommentar blieb beide Male stehen. Was zweimal
+   * dasteht, veraltet einmal (Regel 6); hier stand die Zahl einmal im
+   * Text und einmal im Vorrat, und veraltet ist der Text. `npm run doku`
+   * liest Dokumente, keine Quelltextkommentare - gefunden hat es das
+   * Nachzaehlen beim Ablenker-Audit.
    *
    * Der Name kommt aus `LAENDER`, wo es einen gibt, und sonst aus
    * `FLAGGEN_EXTRA`: acht dieser Laender haben in dieser App keinen

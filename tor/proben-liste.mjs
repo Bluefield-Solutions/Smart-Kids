@@ -7973,6 +7973,31 @@ export const PROBEN = [
     an:{ datei:'src/inhalt/flaggen.js', text:"ein Dreieck.', fragbar:false }" },
     sagt:'Freibrief' },
 
+  /* 2b. DIE FARBROUTE DER EINEN ELLE FAELLT WEG (E24).
+   *
+   * Trennbar ist ein Paar, wenn sich genug FLAECHE unterscheidet ODER ein
+   * Farbton weit genug entfernt liegt. Bis E23 stand die Flaechenroute
+   * allein, E23 hat die Farbroute danebengestellt - aber nur in der
+   * `AEHNLICH`-Schleife; die Rundumpruefung je Karte rechnete weiter mit
+   * der Flaeche allein. E24 legt beide auf DIESELBE Funktion.
+   *
+   * Diese Probe haelt fest, dass die Farbroute dort wirklich traegt und
+   * nicht bloss dasteht (Regel 1: eine Pruefung, die nie etwas meldet,
+   * ist kein Beweis). Ohne sie faellt Rumaenien/Tschad mit 0,0 % Flaeche
+   * unter den Boden, und das Tor verlangt ein `fragbar:false` fuer ein
+   * Paar, das man nebeneinander sehr wohl unterscheidet - genau der
+   * Fehler, den E23 geheilt hat.
+   *
+   * Eingegriffen wird am TOR und nicht an den Daten: die beiden Proben
+   * darueber drehen an `fragbar`, diese an der Elle selbst. */
+  { n:'die Farbroute faellt aus der Trennbarkeit heraus', tor:'inhalt',
+    deckt:'flaggen', datei:'tor/inhalt.mjs',
+    such:"      trennbar: u.anteil >= BODEN || ton >= TON_MIN,",
+    ersatz:"      trennbar: u.anteil >= BODEN,\n"
+      + "//Anker:      trennbar: u.anteil >= BODEN || ton >= TON_MIN,",
+    an:{ datei:'tor/inhalt.mjs', text:'trennbar: u.anteil >= BODEN,' },
+    sagt:'fragbar:false' },
+
   /* 3. Ein Paar ohne Erklaerung.
    *
    * Der Satz „Luxemburgs Blau ist heller" IST der Inhalt dieser Ebene -
