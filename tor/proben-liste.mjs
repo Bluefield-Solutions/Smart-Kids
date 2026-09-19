@@ -7694,21 +7694,28 @@ export const PROBEN = [
        Jetzt dreht der Eingriff die Schranke UM, statt sie wegzunehmen:
        alle drei Ablenker kommen aus einer ANDEREN Sorte. Damit mischt
        es in 100 von 100 Faellen, und der Nachweis haengt an keiner
-       Ziehung mehr. Die kleinste Auswahl bleibt gross genug - bei einem
-       Bild-Ziel sind es 25 uebrige, gebraucht werden drei.
+       Ziehung mehr.
+       
+       Der Topf muss dabei MIT umgestellt werden, und das war der erste
+       Fehlschlag: bei einem Bild-Ziel ist `topf` der Lesevorrat, und
+       der besteht ZU HUNDERT PROZENT aus Bildern. „Andere Sorte" liess
+       dort null Ablenker uebrig, der Rauchtest meldete „1 Moeglichkeit
+       statt vier" - rot, aber nicht deswegen. Mit `vorratHoeren()`
+       bleiben bei einem Bild-Ziel 25 uebrig (10 Farben, 15 Zahlen),
+       bei einer Farbe 102, bei einer Zahl 97; gebraucht werden drei.
        
        Der Suchtext ist derselbe wie bei den zwei Nachbarproben auf
        `inhalt`; jede rettet ihn WORTWOERTLICH als toten Code hinter dem
        `return`. Vorher spannte er ueber Topfwahl, beide Kommentarbloecke
        und den Filter - und wurde von genau diesen Nachbarn zerrissen. */
     such:"  return andere.slice(0, wieviel);",
-    ersatz:"  return topf.filter(x => x.sorte !== ziel.sorte\n"
+    ersatz:"  return vorratHoeren().filter(x => x.sorte !== ziel.sorte\n"
       + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
       + "    && !verbotenesPaar(ziel.wort, x.wort)).slice(0, wieviel);\n"
       + "  // Anker der Nachbarproben, hinter dem `return` und deshalb tot:\n"
       + "  return andere.slice(0, wieviel);",
     an:{ datei:'src/inhalt/englisch.js',
-         text:'return topf.filter(x => x.sorte !== ziel.sorte' },
+         text:'return vorratHoeren().filter(x => x.sorte !== ziel.sorte' },
     sagt:'mischen' },
 
   /* E17 - und dieselbe Pruefung eine Ebene weiter, fuer die Diktatsaetze.
