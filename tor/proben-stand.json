@@ -1859,7 +1859,7 @@
       "s": 4
     },
     "die Ablenker der Englischebene kommen aus der falschen Sorte": {
-      "commit": "8e74f0b81dcd471d04568506bef4b697da9b262b",
+      "commit": "c734090d938ae83b65c1afc1a7de4abe47fd1514",
       "zeit": "2026-09-19",
       "s": 20
     },
@@ -2329,8 +2329,8 @@
       "s": 33
     },
     "die Ablenker sieben nicht mehr nach Bedeutung": {
-      "commit": "58069561790c32ef9942c280500e0525d3951241",
-      "zeit": "2026-09-14",
+      "commit": "c734090d938ae83b65c1afc1a7de4abe47fd1514",
+      "zeit": "2026-09-19",
       "s": 12
     },
     "ein Paar in der Bedeutungstafel zeigt ins Leere": {

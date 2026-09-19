@@ -8536,3 +8536,45 @@ richtiges Englisch zeigen und die Liste unangetastet lassen. Was ich
 nicht kann, ist nachsehen, ob das die Schreibweise der Behörde ist oder
 mein Abschreibfehler — die PDF liegt hier nicht. Deshalb steht es hier
 als Frage und nicht als Änderung.
+
+### Nachtrag: der fünfte Selbsttreffer, und zwei falsche Auswege
+
+Beim Fahren der Gegenproben fielen zwei durch, die mit dieser Runde
+nichts zu tun hatten: „die Ablenker sieben nicht mehr nach Bedeutung"
+und „die Ablenker der Englischebene kommen aus der falschen Sorte".
+`inhalt` wurde rot — **aber wegen eines fehlenden Ankers**, nicht wegen
+des Befundes. *Rot, aber nicht deswegen*, zum fünften Mal in diesem
+Verzeichnis.
+
+Der Grund lag **seit E21 da** und ist nie aufgefallen, weil die beiden
+Proben seit E20 kein einziges Mal gefahren sind. Drei Proben hingen an
+denselben drei Filterzeilen, und die dritte — „die vier Möglichkeiten
+dürfen die Sorte mischen" — hat einen Suchtext, der über die Topfwahl,
+**beide Kommentarblöcke** und den Filter zusammenhängend spannt. Wer
+den Filter austauscht, zerreißt ihn. Als Kommentar ließ er sich nicht
+retten: er enthält selbst `*/`, und Blockkommentare schachteln in
+JavaScript nicht.
+
+Zwei Auswege probiert, beide gemessen und beide falsch:
+
+1. **Die dritte Probe auf dieselben drei Zeilen stellen.** `smoke` blieb
+   dabei grün — der verengte Eingriff bewies nichts. Ein Eingriff, der
+   nur anders aussieht, ist keiner.
+2. **`verbotenesPaar` stilllegen.** Das Tor **benutzt dieselbe
+   Funktion**, um zu entscheiden, ob ein Paar verboten ist. Wer sie
+   abschaltet, schaltet Wirkung und Messlatte zugleich ab, und das Tor
+   bleibt grün. Wer eine Wirkung misst, darf nicht die Elle mitnehmen.
+
+Der dritte Anlauf hält: beide Proben greifen jetzt die **Rückgabe** an,
+eine Zeile hinter dem geteilten Block — die eine gibt den Topf ohne
+`verbotenesPaar` zurück, die andere ohne die Sortenschranke. Der
+Suchtext überlebt **wortwörtlich als toter Code hinter dem `return`**.
+JavaScript erlaubt das, und ein Kommentar hätte genau die Bytes
+verändert, nach denen der Ankerwächter sucht.
+
+Das ist die eigentliche Lehre dieses Nachtrags, und sie gilt über
+diesen Fall hinaus: **eine Gegenprobe, die nicht gefahren wird, verfällt
+lautlos.** `npm run muster` prüft, ob jede noch einen Gegenstand hat —
+nicht, ob sie noch das meldet, wofür sie steht. Zwischen E20 und heute
+lagen vier Runden, in denen beide grün mitgezählt wurden, ohne etwas zu
+beweisen.
