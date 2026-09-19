@@ -8585,8 +8585,15 @@ beweisen nichts — und der von heute ist einer davon.
 
 Jetzt dreht der Eingriff die Schranke **um**, statt sie wegzunehmen:
 alle drei Ablenker kommen aus einer *anderen* Sorte. Damit mischt es in
-100 von 100 Fällen. Die kleinste Auswahl bleibt groß genug — bei einem
-Bild-Ziel sind 25 übrig, gebraucht werden drei.
+100 von 100 Fällen.
+
+Dabei muss der **Topf mit umgestellt** werden, und das war der erste
+Fehlschlag: bei einem Bild-Ziel ist `topf` der Lesevorrat, und der
+besteht *zu hundert Prozent* aus Bildern. „Andere Sorte" ließ dort null
+Ablenker übrig, und der Rauchtest meldete „1 Möglichkeit statt vier" —
+schon wieder rot, aber nicht deswegen. Mit dem Hörvorrat bleiben bei
+einem Bild-Ziel 25 übrig (10 Farben, 15 Zahlen), bei einer Farbe 102,
+bei einer Zahl 97; gebraucht werden drei.
 
 ### Die Lehre des Nachtrags
 
