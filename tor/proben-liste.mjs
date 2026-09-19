@@ -5781,7 +5781,9 @@ export const PROBEN = [
        schlueg das Tor aus zwei Gruenden an. */
     such:"  return andere.slice(0, wieviel);",
     ersatz:"  return topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort\n"
-      + "    && !verbotenesPaar(ziel.wort, x.wort)).slice(0, wieviel);",
+      + "    && !verbotenesPaar(ziel.wort, x.wort)).slice(0, wieviel);\n"
+      + "  // Anker der Nachbarprobe, hinter dem `return` und deshalb tot:\n"
+      + "  return andere.slice(0, wieviel);",
     an:{ datei:'src/inhalt/englisch.js',
          text:'return topf.filter(x => x.id !== ziel.id && x.wort !== ziel.wort' },
     deckt:'englisch',
@@ -7291,31 +7293,39 @@ export const PROBEN = [
    *    prueft diese Probe. */
   { n:'die Ablenker sieben nicht mehr nach Bedeutung', tor:'inhalt',
     deckt:'englisch', datei:'src/inhalt/englisch.js',
-    /* SEIT E24 GREIFT DIESE PROBE `verbotenesPaar` SELBST AN, NICHT
-       MEHR DIE FILTERZEILE.
+    /* SEIT E24 GREIFT DIESE PROBE DIE RUECKGABE AN, NICHT MEHR DIE
+       FILTERZEILE.
        
        Drei Proben hingen an denselben drei Zeilen, und zwei davon
-       bewiesen dadurch nichts mehr: „die vier Moeglichkeiten duerfen
-       die Sorte mischen" hat einen Suchtext, der ueber die Topfwahl,
-       beide Kommentarbloecke UND den Filter zusammenhaengend spannt.
-       Wer den Filter austauscht, zerreisst ihn - und `inhalt` meldete
-       bei dieser Probe hier den fehlenden Anker der dritten statt des
-       eigenen Befundes: „rot, aber nicht deswegen", zum fuenften Mal in
-       diesem Verzeichnis. Als Kommentar liess sich der lange Suchtext
-       nicht retten: er enthaelt selbst `*_/`, und Blockkommentare
-       schachteln in JavaScript nicht.
+       bewiesen dadurch nichts mehr: „die vier Moeglichkeiten duerfen die
+       Sorte mischen" hat einen Suchtext, der ueber die Topfwahl, beide
+       Kommentarbloecke UND den Filter zusammenhaengend spannt. Wer den
+       Filter austauscht, zerreisst ihn - und `inhalt` meldete hier den
+       fehlenden Anker der dritten statt des eigenen Befundes: „rot, aber
+       nicht deswegen", zum fuenften Mal in diesem Verzeichnis. Als
+       Kommentar liess sich der lange Suchtext nicht retten: er enthaelt
+       selbst `*_/`, und Blockkommentare schachteln in JavaScript nicht.
        
-       Der Ausweg ist, den Eingriff dorthin zu legen, wo er ohnehin
-       hingehoert: die Frage ist, ob nach BEDEUTUNG gesiebt wird, und
-       das entscheidet `verbotenesPaar`. Gibt die Funktion immer `false`
-       zurueck, ist die Tafel wirkungslos - der Filter bleibt stehen und
-       siebt nichts mehr. Gleicher Nachweis, kein geteilter Block. */
-    such:"export function verbotenesPaar(a, b){\n"
-      + "  return !!(VERBOTEN.get(a) && VERBOTEN.get(a).has(b));",
-    ersatz:"export function verbotenesPaar(a, b){\n"
-      + "  if (a || b) return false;\n"
-      + "  return !!(VERBOTEN.get(a) && VERBOTEN.get(a).has(b));",
-    an:{ datei:'src/inhalt/englisch.js', text:'if (a || b) return false;' },
+       UND `verbotenesPaar` STILLZULEGEN WAR AUCH FALSCH - das war der
+       zweite Anlauf, und er ist gemessen: das Tor BENUTZT dieselbe
+       Funktion, um zu entscheiden, ob ein Paar verboten ist. Wer sie
+       abschaltet, schaltet Wirkung und Messlatte zugleich ab, und das
+       Tor bleibt gruen. Wer eine Wirkung misst, darf nicht die Elle
+       mitnehmen.
+       
+       Jetzt steht der Eingriff eine Zeile SPAETER: zurueckgegeben wird
+       derselbe Topf, gesiebt wie gehabt, nur OHNE `verbotenesPaar`. Die
+       Sortenschranke bleibt stehen, sonst schluege das Tor aus zwei
+       Gruenden an. Der Suchtext ueberlebt WORTWOERTLICH als toter Code
+       hinter dem `return` - JavaScript erlaubt das, und ein Kommentar
+       haette die Bytes veraendert. */
+    such:"  return andere.slice(0, wieviel);",
+    ersatz:"  return topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort).slice(0, wieviel);\n"
+      + "  // Anker der Nachbarprobe, hinter dem `return` und deshalb tot:\n"
+      + "  return andere.slice(0, wieviel);",
+    an:{ datei:'src/inhalt/englisch.js',
+         text:'return topf.filter(x => x.sorte === ziel.sorte' },
     sagt:'demselben Recht' },
 
   /* 5e. EIN WORT IN DER TAFEL GIBT ES GAR NICHT (E21). Der leise Fall:
