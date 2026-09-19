@@ -7677,37 +7677,38 @@ export const PROBEN = [
   { n:'die vier Möglichkeiten dürfen die Sorte mischen', tor:'smoke',
     args:['--nur=englisch'],
     deckt:'englisch', datei:'src/inhalt/englisch.js', bauen:true,
-    /* EIN Suchtext ueber BEIDE Stellen samt dem Kommentar dazwischen -
-       eine Probe kennt genau einen Eingriff, und die beiden Zeilen stehen
-       untereinander. Hier muss kein Anker ueberleben: der Waechter in
-       `inhalt` zaehlt den Suchtext im ARBEITSBAUM, und `inhalt` selbst
-       liest die eingegriffene Kopie nicht - anders als bei den Proben,
-       die auf `inhalt` zielen. */
-    such:"    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();\n"
-      + "  /* Gesiebt wird nach dem WORT und nicht nur nach der Kennung (E13).\n"
-      + "     Seit „Hoeren und zeigen\" dieselben Zeichnungen benutzt, gibt es\n"
-      + "     dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -\n"
-      + "     und zwei gleiche Katzen nebeneinander waeren keine Aufgabe, sondern\n"
-      + "     ein Fehler, den das Kind sich selbst erklaeren muesste. */\n"
-      + "  /* Und gesiebt wird nach der BEDEUTUNG (E21). „fruit\" neben „apple\" ist\n"
-      + "     keine Aufgabe, sondern eine Falle: das Kind tippt richtig und bekommt\n"
-      + "     ein Nein. Welche Paare das sind, steht in `NICHT_NEBENEINANDER`\n"
-      + "     samt Grund - hier steht nur die Frage, nicht die Liste. */\n"
-      + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+    /* DER EINGRIFF WAR EIN WUERFELWURF (E24).
+       
+       Bis hierher nahm er die Sortenschranke WEG - und hoffte, dass
+       dann etwas mischt. Nachgerechnet ueber alle 112 Ziele und 200
+       Ziehungen je Ziel: in 37,9 % der Faelle mischt er NICHT. Der
+       Hoervorrat besteht zu 87 von 112 aus Zeichnungen, also sind drei
+       gezogene Ablenker oft alle „bild", und der Rauchtest sieht EINE
+       Aufgabe. Zwei von fuenf Laeufen beweisen nichts - und der von
+       heute ist einer davon.
+       
+       Gemerkt hat es niemand, weil die Probe seit E20 nicht gefahren
+       ist. Der Zaehler in `muster` prueft, ob sie noch einen Gegenstand
+       hat, nicht, ob sie noch etwas meldet.
+       
+       Jetzt dreht der Eingriff die Schranke UM, statt sie wegzunehmen:
+       alle drei Ablenker kommen aus einer ANDEREN Sorte. Damit mischt
+       es in 100 von 100 Faellen, und der Nachweis haengt an keiner
+       Ziehung mehr. Die kleinste Auswahl bleibt gross genug - bei einem
+       Bild-Ziel sind es 25 uebrige, gebraucht werden drei.
+       
+       Der Suchtext ist derselbe wie bei den zwei Nachbarproben auf
+       `inhalt`; jede rettet ihn WORTWOERTLICH als toten Code hinter dem
+       `return`. Vorher spannte er ueber Topfwahl, beide Kommentarbloecke
+       und den Filter - und wurde von genau diesen Nachbarn zerrissen. */
+    such:"  return andere.slice(0, wieviel);",
+    ersatz:"  return topf.filter(x => x.sorte !== ziel.sorte\n"
       + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
-      + "    && !verbotenesPaar(ziel.wort, x.wort));",
-    ersatz:"    : vorratHoeren();\n"
-      + "  const andere = topf.filter(x =>\n"
-      + "    x.id !== ziel.id && x.wort !== ziel.wort\n"
-      + "    && !verbotenesPaar(ziel.wort, x.wort));",
-    /* Der Eingriff nimmt Topfwahl UND Sortenschranke, wie seit je: er
-       misst, ob vier Moeglichkeiten die Sorte mischen duerfen, und dafuer
-       muessen beide fallen. Der erste Anlauf in E21 hat ihn auf die
-       Topfwahl verengt - sauberer gedacht, aber `smoke` blieb gruen, und
-       eine Probe, die nichts beweist, ist keine (Regel 1). Die
-       Bedeutungssiebung bleibt stehen; sie hat ihre eigene Probe. */
+      + "    && !verbotenesPaar(ziel.wort, x.wort)).slice(0, wieviel);\n"
+      + "  // Anker der Nachbarproben, hinter dem `return` und deshalb tot:\n"
+      + "  return andere.slice(0, wieviel);",
     an:{ datei:'src/inhalt/englisch.js',
-         text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
+         text:'return topf.filter(x => x.sorte !== ziel.sorte' },
     sagt:'mischen' },
 
   /* E17 - und dieselbe Pruefung eine Ebene weiter, fuer die Diktatsaetze.

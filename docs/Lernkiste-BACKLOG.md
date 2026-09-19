@@ -8555,15 +8555,11 @@ den Filter austauscht, zerreißt ihn. Als Kommentar ließ er sich nicht
 retten: er enthält selbst `*/`, und Blockkommentare schachteln in
 JavaScript nicht.
 
-Zwei Auswege probiert, beide gemessen und beide falsch:
-
-1. **Die dritte Probe auf dieselben drei Zeilen stellen.** `smoke` blieb
-   dabei grün — der verengte Eingriff bewies nichts. Ein Eingriff, der
-   nur anders aussieht, ist keiner.
-2. **`verbotenesPaar` stilllegen.** Das Tor **benutzt dieselbe
-   Funktion**, um zu entscheiden, ob ein Paar verboten ist. Wer sie
-   abschaltet, schaltet Wirkung und Messlatte zugleich ab, und das Tor
-   bleibt grün. Wer eine Wirkung misst, darf nicht die Elle mitnehmen.
+Ein Ausweg probiert und gemessen verworfen: **`verbotenesPaar`
+stilllegen.** Das Tor **benutzt dieselbe Funktion**, um zu entscheiden,
+ob ein Paar verboten ist. Wer sie abschaltet, schaltet Wirkung und
+Messlatte zugleich ab, und das Tor bleibt grün. Wer eine Wirkung misst,
+darf nicht die Elle mitnehmen.
 
 Der dritte Anlauf hält: beide Proben greifen jetzt die **Rückgabe** an,
 eine Zeile hinter dem geteilten Block — die eine gibt den Topf ohne
@@ -8572,9 +8568,33 @@ Suchtext überlebt **wortwörtlich als toter Code hinter dem `return`**.
 JavaScript erlaubt das, und ein Kommentar hätte genau die Bytes
 verändert, nach denen der Ankerwächter sucht.
 
-Das ist die eigentliche Lehre dieses Nachtrags, und sie gilt über
-diesen Fall hinaus: **eine Gegenprobe, die nicht gefahren wird, verfällt
-lautlos.** `npm run muster` prüft, ob jede noch einen Gegenstand hat —
-nicht, ob sie noch das meldet, wofür sie steht. Zwischen E20 und heute
-lagen vier Runden, in denen beide grün mitgezählt wurden, ohne etwas zu
-beweisen.
+### Und die dritte war überhaupt kein Selbsttreffer, sondern ein Würfelwurf
+
+Zwischendurch habe ich die dritte Probe auf dieselben drei Zeilen
+gestellt — `smoke` blieb grün, und ich habe das meiner Änderung
+zugeschrieben. **Falsch.** Auch *unverändert* schlägt sie nicht an: sie
+ist seit E20 nicht gefahren worden und war schon vorher tot, aus einem
+ganz anderen Grund.
+
+Ihr Eingriff nahm die Sortenschranke **weg** — und hoffte, dass dann
+etwas mischt. Nachgerechnet über alle 112 Ziele und 200 Ziehungen je
+Ziel: **in 37,9 % der Fälle mischt er nicht.** Der Hörvorrat besteht zu
+87 von 112 aus Zeichnungen, drei gezogene Ablenker sind also oft alle
+„bild", und der Rauchtest sieht *eine* Aufgabe. Zwei von fünf Läufen
+beweisen nichts — und der von heute ist einer davon.
+
+Jetzt dreht der Eingriff die Schranke **um**, statt sie wegzunehmen:
+alle drei Ablenker kommen aus einer *anderen* Sorte. Damit mischt es in
+100 von 100 Fällen. Die kleinste Auswahl bleibt groß genug — bei einem
+Bild-Ziel sind 25 übrig, gebraucht werden drei.
+
+### Die Lehre des Nachtrags
+
+**Eine Gegenprobe, die nicht gefahren wird, verfällt lautlos** — und
+zwar auf mehr als eine Art. `npm run muster` prüft, ob jede noch einen
+Gegenstand hat; nicht, ob ihr Eingriff noch ankommt, und schon gar
+nicht, ob er *zuverlässig* ankommt. Von den drei Proben an dieser einen
+Stelle war eine seit E21 durch ihre Nachbarn zerrissen, eine zweite
+ebenso — und die dritte hing seit jeher an einem Würfel, den in E20
+zufällig richtig gefallen war. Vier Runden lang wurden alle drei grün
+mitgezählt.
