@@ -7666,29 +7666,34 @@ export const PROBEN = [
   { n:'die vier Möglichkeiten dürfen die Sorte mischen', tor:'smoke',
     args:['--nur=englisch'],
     deckt:'englisch', datei:'src/inhalt/englisch.js', bauen:true,
-    /* EIN Suchtext ueber BEIDE Stellen samt dem Kommentar dazwischen -
-       eine Probe kennt genau einen Eingriff, und die beiden Zeilen stehen
-       untereinander. Hier muss kein Anker ueberleben: der Waechter in
-       `inhalt` zaehlt den Suchtext im ARBEITSBAUM, und `inhalt` selbst
-       liest die eingegriffene Kopie nicht - anders als bei den Proben,
-       die auf `inhalt` zielen. */
-    such:"    : ziel.sorte === 'bild' ? vorratLesen() : vorratHoeren();\n"
-      + "  /* Gesiebt wird nach dem WORT und nicht nur nach der Kennung (E13).\n"
-      + "     Seit „Hoeren und zeigen\" dieselben Zeichnungen benutzt, gibt es\n"
-      + "     dasselbe Bild unter zwei Kennungen (`en:bild:cat` und `ls:cat`) -\n"
-      + "     und zwei gleiche Katzen nebeneinander waeren keine Aufgabe, sondern\n"
-      + "     ein Fehler, den das Kind sich selbst erklaeren muesste. */\n"
-      + "  /* Und gesiebt wird nach der BEDEUTUNG (E21). „fruit\" neben „apple\" ist\n"
-      + "     keine Aufgabe, sondern eine Falle: das Kind tippt richtig und bekommt\n"
-      + "     ein Nein. Welche Paare das sind, steht in `NICHT_NEBENEINANDER`\n"
-      + "     samt Grund - hier steht nur die Frage, nicht die Liste. */\n"
-      + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+    /* EIN Eingriff, der BEIDES nimmt - Topfwahl und Sortenschranke.
+       
+       BIS E24 SPANNTE DER SUCHTEXT UEBER BEIDE STELLEN samt der
+       Kommentare dazwischen, und das war der fuenfte Selbsttreffer in
+       diesem Verzeichnis: die zwei Proben auf `inhalt`, die dieselben
+       drei Filterzeilen austauschen, retten ihren Anker WORTWOERTLICH
+       als Kommentar - aber eben nicht mehr unmittelbar hinter den
+       Kommentarbloecken. Ein zusammenhaengender Suchtext ueber beides
+       findet sich danach nicht mehr, und `inhalt` meldete bei beiden
+       Proben den fehlenden Anker statt des Befundes: „rot, aber nicht
+       deswegen". Gelegen hat es seit E21 so da und wurde nie bemerkt,
+       weil die beiden Proben seither kein einziges Mal gefahren sind.
+       
+       Jetzt greift diese Probe DIESELBEN drei Zeilen an wie ihre zwei
+       Nachbarn - damit retten deren Ankerkommentare auch ihren
+       Suchtext. Der Eingriff ist derselbe geblieben: `vorratHoeren()`
+       steht anstelle von `topf` (das nimmt die Topfwahl) und die
+       Sortenschranke faellt weg. */
+    such:"  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
       + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
       + "    && !verbotenesPaar(ziel.wort, x.wort));",
-    ersatz:"    : vorratHoeren();\n"
-      + "  const andere = topf.filter(x =>\n"
+    ersatz:"  const andere = vorratHoeren().filter(x =>\n"
       + "    x.id !== ziel.id && x.wort !== ziel.wort\n"
-      + "    && !verbotenesPaar(ziel.wort, x.wort));",
+      + "    && !verbotenesPaar(ziel.wort, x.wort));\n"
+      + "  /* Anker der Nachbarproben:\n"
+      + "  const andere = topf.filter(x => x.sorte === ziel.sorte\n"
+      + "    && x.id !== ziel.id && x.wort !== ziel.wort\n"
+      + "    && !verbotenesPaar(ziel.wort, x.wort)); */",
     /* Der Eingriff nimmt Topfwahl UND Sortenschranke, wie seit je: er
        misst, ob vier Moeglichkeiten die Sorte mischen duerfen, und dafuer
        muessen beide fallen. Der erste Anlauf in E21 hat ihn auf die
@@ -7696,7 +7701,7 @@ export const PROBEN = [
        eine Probe, die nichts beweist, ist keine (Regel 1). Die
        Bedeutungssiebung bleibt stehen; sie hat ihre eigene Probe. */
     an:{ datei:'src/inhalt/englisch.js',
-         text:'  const andere = topf.filter(x =>\n    x.id !== ziel.id' },
+         text:'const andere = vorratHoeren().filter(x =>' },
     sagt:'mischen' },
 
   /* E17 - und dieselbe Pruefung eine Ebene weiter, fuer die Diktatsaetze.
