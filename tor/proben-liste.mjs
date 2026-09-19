@@ -6261,7 +6261,16 @@ export const PROBEN = [
      ein Unterschied ueber dem Boden, und angeschlagen hat stattdessen das
      Paar Nicaragua/El Salvador ueber das SOLL. Rot aus einem anderen
      Grund ist kein Nachweis - eine Pruefung, die nie das meldet, wofuer
-     sie steht, ist kein Beweis (Regel 1). */
+     sie steht, ist kein Beweis (Regel 1).
+     
+     UND SEIT E24 IST DIESE PROBE NOCH ETWAS: der Nachweis, dass das
+     Urteil `imPulk` OHNE die Farbroute rechnet. E24 hat die beiden
+     Ellen zuerst zusammengelegt - und genau diese Probe wurde daraufhin
+     still gruen, weil Kolumbien und Ecuador sich in Gelb und Blau um
+     9,1 CIELAB unterscheiden und das als „trennbar" durchging. Zwei
+     Trikoloren, die nur anders getoent sind, haette ein Kind unter
+     vieren nicht auseinandergehalten. Wer die Farbroute wieder in
+     `imPulk` hineinschreibt, macht diese Probe wieder stumm. */
   { n:'einer Flagge fehlt ihr unterscheidendes Zeichen', tor:'inhalt', deckt:'flaggen',
     datei:'src/inhalt/flaggen.js',
     /* Der Suchtext bleibt als Anker-Kommentar stehen. `inhalt` prueft
@@ -7992,10 +8001,10 @@ export const PROBEN = [
    * darueber drehen an `fragbar`, diese an der Elle selbst. */
   { n:'die Farbroute faellt aus der Trennbarkeit heraus', tor:'inhalt',
     deckt:'flaggen', datei:'tor/inhalt.mjs',
-    such:"      trennbar: u.anteil >= BODEN || ton >= TON_MIN,",
-    ersatz:"      trennbar: u.anteil >= BODEN,\n"
-      + "//Anker:      trennbar: u.anteil >= BODEN || ton >= TON_MIN,",
-    an:{ datei:'tor/inhalt.mjs', text:'trennbar: u.anteil >= BODEN,' },
+    such:"      nebeneinander: genugFlaeche || ton >= TON_MIN,",
+    ersatz:"      nebeneinander: genugFlaeche,\n"
+      + "//Anker:      nebeneinander: genugFlaeche || ton >= TON_MIN,",
+    an:{ datei:'tor/inhalt.mjs', text:'nebeneinander: genugFlaeche,' },
     sagt:'fragbar:false' },
 
   /* 3. Ein Paar ohne Erklaerung.

@@ -4927,35 +4927,50 @@ console.log('\n  Tor `flaggen`');
 {
   const ff = [];
   const BODEN = 0.03, SOLL = 0.06;
-  /* ZWEI WEGE, EIN PAAR ZU TRENNEN - und jetzt an BEIDEN Messstellen
-   * derselbe (E24).
+  /* ZWEI WEGE, EIN PAAR ZU TRENNEN - und ZWEI FRAGEN, die nicht dieselbe
+   * sind. Das ist der zweite Anlauf dieser Runde, und der erste war
+   * falsch (E24).
    *
-   * `unterschied` zaehlt, wieviel Flaeche ANDERS aussieht. Fuer Rumaenien
-   * und den Tschad sagt es 0,0 %, und fuer Monaco und Indonesien
-   * ebenfalls 0,0 % - obwohl das eine Paar sich im Blauton unterscheidet
-   * und das andere Zeichen fuer Zeichen dasselbe SVG ist. Das Mass KANN
-   * den Farbton nicht sehen; es fragt nach Flaechen. Trennbar ist ein
-   * Paar deshalb, wenn sich genug FLAECHE unterscheidet ODER ein Farbton
-   * weit genug entfernt liegt.
+   * `unterschied` zaehlt, wieviel FLAECHE anders aussieht. Fuer Rumaenien
+   * und den Tschad sagt es 0,0 % - obwohl sich ihr Blau um 14,1 CIELAB
+   * unterscheidet. Das Mass KANN den Farbton nicht sehen. E23 hat deshalb
+   * die Farbroute danebengestellt, aber nur in der `AEHNLICH`-Schleife;
+   * die Rundumpruefung je Karte rechnete weiter mit der Flaeche allein.
    *
-   * E22 hat eine zweite Elle danebengestellt, E23 hat sie mit dieser
-   * hier zusammengelegt - aber nur in der `AEHNLICH`-Schleife. Die
-   * Rundumpruefung je Karte, zweitausend Zeilen weiter unten, fragte
-   * weiter allein nach der Flaeche. Zwei Stellen, dieselbe Frage, zwei
-   * Antworten: genau das, was E23 zu beheben angetreten war, eine
-   * Messstelle weiter: was zweimal dasteht, veraltet einmal (Regel 6),
-   * und zwei Ellen fuer eine Frage widersprechen sich sofort.
-   * Gefunden beim Nachzaehlen, nicht von
-   * einem Tor - beide Ellen sind sich heute auf allen 1030 Paaren einig,
-   * und deshalb haette kein Lauf je etwas gemeldet.
+   * Der erste Anlauf hat beide auf DIESELBE Elle gestellt - was zweimal
+   * dasteht, veraltet einmal (Regel 6). Die Gegenprobe „einer Flagge
+   * fehlt ihr unterscheidendes Zeichen" wurde daraufhin still gruen:
+   * nimmt man Ecuador seinen Kondor, ist es Kolumbien, und die beiden
+   * unterscheiden sich in Gelb und Blau um 9,1 CIELAB. Mit der Farbroute
+   * galt das als trennbar, und das Tor liess zwei Trikoloren durchgehen,
+   * die sich nur in der Tonlage unterscheiden.
+   *
+   * ES SIND ZWEI FRAGEN, und deshalb duerfen es zwei Ellen sein:
+   *
+   *   nebeneinander  Die Verwechslungsebene stellt das Paar mit ABSICHT
+   *                  nebeneinander und schreibt dazu, worauf zu achten
+   *                  ist („Luxemburgs Blau ist heller"). Gefragt ist
+   *                  dann nur: gibt es den Unterschied ueberhaupt? Dafuer
+   *                  reicht ein Farbton, der weit genug entfernt liegt.
+   *
+   *   im Pulk        In einer gewoehnlichen Aufgabe stehen vier Flaggen
+   *                  da, ohne ein Wort dazu, und sie muessen nicht
+   *                  einmal nebeneinander liegen. Ein Kind, das nicht
+   *                  WEISS, dass es auf die Tonlage ankommt, sieht
+   *                  zweimal dieselbe Trikolore. Hier zaehlt allein die
+   *                  Flaeche.
+   *
+   * Eine Zahl traegt ihre Messstelle mit (Regel 5) - und eine Schwelle
+   * ihre Frage. Beide Urteile entstehen jetzt in EINER Funktion, damit
+   * sie nebeneinander stehen und niemand wieder eines davon uebersieht;
+   * verschieden heissen sie, damit niemand sie wieder zusammenlegt.
    *
    * Die Farbschwelle ist gemessen und nicht geraten: der eben noch
    * wahrnehmbare Unterschied liegt bei rund 2,3 CIELAB; verdoppelt, damit
-   * ein Kind auf einem Telefon Luft hat, sind es 5. Sie gilt HIER und
-   * nicht bei den zehn Farbflecken - dort sind es 25, weil dort aus dem
-   * GEDAECHTNIS getippt wird und nichts danebensteht. Hier stehen beide
-   * Flaggen nebeneinander, 190 Punkte breit (Regel 5: jede Zahl traegt
-   * ihre Messstelle mit). */
+   * ein Kind auf einem Telefon Luft hat, sind es 5. Sie gilt fuer das
+   * Nebeneinander und nicht bei den zehn Farbflecken - dort sind es 25,
+   * weil dort aus dem GEDAECHTNIS getippt wird und nichts danebensteht.
+   * Hier stehen beide Flaggen nebeneinander, 190 Punkte breit. */
   const TON_MIN = 5;
   const trennung = (a, b) => {
     const u = FL.unterschied(a.bau, b.bau);
@@ -4965,8 +4980,12 @@ console.log('\n  Tor `flaggen`');
     const ton = gleicherBau && a.bau.farben
       ? Math.max(...a.bau.farben.map((f, i) => labAbstand(f, b.bau.farben[i])))
       : Infinity;
+    const genugFlaeche = u.anteil >= BODEN;
     return { anteil: u.anteil, mittel: u.mittel, ton, ma, mb,
-      trennbar: u.anteil >= BODEN || ton >= TON_MIN,
+      // Mit Hinweis danebengestellt: Flaeche ODER Farbton.
+      nebeneinander: genugFlaeche || ton >= TON_MIN,
+      // Wortlos unter vieren: nur die Flaeche.
+      imPulk: genugFlaeche,
       wieWeit: `${(u.anteil * 100).toFixed(1)} % der Fläche`
         + (Number.isFinite(ton) ? `, Farbton ${ton.toFixed(1)} CIELAB` : '') };
   };
@@ -5147,10 +5166,11 @@ const FLAGGEN_GEFRAGT = 108;
         gemessen++;
         const paar = [a.a3, b.a3].sort().join('/');
         if (u.anteil < engste.anteil) engste = { ...u, paar, kont };
-        if (!u.trennbar)
+        if (!u.imPulk)
           ff.push(`${paar} (${kont}): nur ${u.wieWeit} anders (Boden ${BODEN * 100} % `
-            + `bzw. ${TON_MIN} CIELAB) — diese Aufgabe ist nicht schwer, sondern `
-            + 'nicht zu beantworten');
+            + 'der Fläche; der Farbton zählt hier NICHT, weil in einer gewöhnlichen '
+            + 'Aufgabe niemand dazusagt, worauf zu achten ist) — diese Aufgabe ist '
+            + 'nicht schwer, sondern nicht zu beantworten');
         else if (u.anteil < SOLL && !aehnlich.has(paar)) unterSoll.push(`${paar} `
           + `(${kont}, ${(u.anteil * 100).toFixed(1)} %)`);
       }
@@ -5205,7 +5225,7 @@ const FLAGGEN_GEFRAGT = 108;
      * der Rundumpruefung je Karte. Bis E24 stand die Rechnung hier ein
      * zweites Mal. */
     const u = trennung(a, b);
-    const zuNah = !u.trennbar, wieWeit = u.wieWeit;
+    const zuNah = !u.nebeneinander, wieWeit = u.wieWeit;
     if (x.fragbar === false) stumm++;
     if (zuNah && x.fragbar !== false)
       ff.push(`${a3a}/${a3b}: nur ${wieWeit} anders (Boden ${BODEN * 100} % `

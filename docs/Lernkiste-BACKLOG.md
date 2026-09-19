@@ -8384,8 +8384,9 @@ aufgeschrieben, nicht abgehakt.
 ## E24 · Zwei Zeichnungen, die das Tor durchgelassen hat — und die Elle, die E23 nur halb zusammengelegt hat
 
 Zwei Ziele: **hinsehen** (alle 87 Zeichnungen) und **nachzählen** (wo
-außerhalb von Englisch wählt etwas Ablenker aus?). Das erste hat mehr
-gebracht als das zweite, und das ist selbst der Befund.
+außerhalb von Englisch wählt etwas Ablenker aus?). Das erste hat drei
+Befunde gebracht, das zweite zwei — und einen dritten, den ich selbst
+in dieser Runde eingebaut und die Gegenprobe wieder herausgeholt hat.
 
 ### Was der Blick gefunden hat, und die Tore nicht
 
@@ -8454,27 +8455,60 @@ wurden.
 
 ### Was das Nachzählen doch gefunden hat, und beides stammt von mir
 
-**Erstens: die Elle steht immer noch zweimal da.** E23 hat gegen zwei
-Ellen für eine Frage argumentiert und sie zusammengelegt — in der
-`AEHNLICH`-Schleife. Die Rundumprüfung je Karte, zweitausend Zeilen
-weiter oben in derselben Datei, rechnete unverändert mit der Fläche
-allein. Zwei Stellen, dieselbe Frage („kann ein Kind dieses Paar
-auseinanderhalten?"), zwei Rechnungen: genau das, was E23 zu beheben
-antrat, eine Messstelle weiter (Regel 6).
+**Erstens: die Elle stand zweimal da — und der erste Versuch, das zu
+heilen, war falsch.** E23 hat gegen zwei Ellen für eine Frage
+argumentiert und sie zusammengelegt: in der `AEHNLICH`-Schleife. Die
+Rundumprüfung je Karte, zweitausend Zeilen weiter oben in derselben
+Datei, rechnete unverändert mit der Fläche allein. Also habe ich beide
+auf **dieselbe** Funktion gestellt.
 
-Jetzt gibt es **eine** Funktion `trennung(a, b)`, und beide Stellen
-rufen sie. **Was sich dadurch am Urteil ändert: nichts** — nachgemessen
-sind sich die beiden Ellen heute auf allen 1030 Paaren einig, und
-deshalb hätte auch kein Lauf je etwas gemeldet. Das ist Vorbeugung und
-keine Reparatur, und es gehört so dagesagt.
+Die Gegenprobe hat das binnen einer Minute widerlegt. „Einer Flagge
+fehlt ihr unterscheidendes Zeichen" nimmt Ecuador den Kondor — dann
+*ist* Ecuador Kolumbien, und die Aufgabe ist nicht zu beantworten. Nach
+der Zusammenlegung blieb das Tor **grün**:
 
-Die neue Gegenprobe greift deshalb nicht an den Daten an, sondern an
-der **Elle selbst**: nimmt man ihr die Farbroute, fällt Rumänien/Tschad
-mit 0,0 % Fläche unter den Boden, und das Tor verlangt ein
-`fragbar:false` für ein Paar, das man nebeneinander sehr wohl
-unterscheidet. Damit ist die Farbroute tragend und nicht bloß
-vorhanden — eine Prüfung, die nie etwas meldet, ist kein Beweis
-(Regel 1).
+| | Fläche anders | größter Farbabstand |
+|---|---|---|
+| Kolumbien / Ecuador (ohne Kondor) | 0,0 % | **9,1 CIELAB** (Gelb 7,6 · Blau 9,1 · Rot 0,0) |
+| Rumänien / Tschad | 0,0 % | 14,1 CIELAB |
+| Monaco / Indonesien | 0,0 % | 0,0 |
+
+Neun Komma eins liegt über der Schwelle von 5 — also „trennbar", also
+grün. Zwei Trikoloren, die sich nur in der Tonlage unterscheiden, wären
+durchgegangen.
+
+**Es sind zwei Fragen, und deshalb dürfen es zwei Ellen sein.** Das
+hatte ich übersehen, und die Probe hat es gefunden:
+
+- **nebeneinander** — die Verwechslungsebene stellt das Paar mit
+  *Absicht* nebeneinander und schreibt dazu, worauf zu achten ist
+  („Luxemburgs Blau ist heller"). Gefragt ist dann nur: *gibt es den
+  Unterschied überhaupt?* Dafür reicht ein Farbton.
+- **im Pulk** — in einer gewöhnlichen Aufgabe stehen vier Flaggen da,
+  ohne ein Wort dazu, und sie müssen nicht einmal nebeneinander liegen.
+  Wer nicht *weiß*, dass es auf die Tonlage ankommt, sieht zweimal
+  dieselbe Trikolore. Hier zählt allein die Fläche.
+
+Jetzt entstehen **beide Urteile in einer Funktion** — damit sie
+nebeneinander stehen und niemand wieder eines übersieht — und sie
+heißen **verschieden**, damit niemand sie wieder zusammenlegt. Eine
+Zahl trägt ihre Messstelle mit (Regel 5); eine Schwelle trägt ihre
+Frage mit.
+
+Die neue Gegenprobe hängt an der Farbroute des einen Urteils: ohne sie
+fällt Rumänien/Tschad unter den Boden, und das Tor verlangt
+`fragbar:false` für ein Paar, das man sehr wohl unterscheidet. Für das
+andere Urteil ist die Ecuador-Probe der Nachweis — wer die Farbroute
+dort hineinschreibt, macht sie stumm. Damit sind beide Routen tragend
+und nicht bloß vorhanden — eine Prüfung, die nie etwas meldet, ist kein
+Beweis (Regel 1).
+
+**Und das ist der eigentliche Ertrag der Runde.** Nicht die Änderung,
+sondern dass sie *zuerst falsch* war und die stehenden Gegenproben es
+gemeldet haben, bevor irgendetwas ausgeliefert wurde. E23 hat „zwei
+Ellen für eine Frage" als Fehler beschrieben; richtig ist der Satz nur
+mit dem Nachsatz **„für EINE Frage"**. Zwei Ellen für zwei Fragen sind
+kein Fehler, sondern der Unterschied.
 
 **Zweitens: ein Kommentar, der zweimal veraltet ist.** Über der
 Verwechslungsebene stand in `spiel.js`:

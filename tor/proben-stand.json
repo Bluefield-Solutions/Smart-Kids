@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-14",
+  "zeit": "2026-09-19",
   "tore": [
     "anker",
     "ansicht",
@@ -1986,7 +1986,7 @@
     "einer Flagge fehlt ihr unterscheidendes Zeichen": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
-      "s": 4
+      "s": 12
     },
     "eine Flagge zeichnet wieder mit Rechtecken statt mit Pfaden": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
@@ -2339,9 +2339,9 @@
       "s": 32
     },
     "nahDran empfiehlt ein Paar, das gar nicht zu trennen ist": {
-      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
-      "zeit": "2026-09-14",
-      "s": 33
+      "commit": "ab1f182db2adbdd304becb7c843b7b5ffc317cc2",
+      "zeit": "2026-09-19",
+      "s": 21
     },
     "der Bildvergleich zählt wieder Namen statt Töne": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
@@ -2514,14 +2514,19 @@
       "s": 59
     },
     "ein Paar, das man nicht sehen kann, wird trotzdem gefragt": {
-      "commit": "62a51571b240a99949ce9144f845528fc3b25b95",
-      "zeit": "2026-09-14",
-      "s": 35
+      "commit": "ab1f182db2adbdd304becb7c843b7b5ffc317cc2",
+      "zeit": "2026-09-19",
+      "s": 12
     },
     "die Ausnahme wird zum Freibrief": {
-      "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
-      "zeit": "2026-09-11",
-      "s": 5
+      "commit": "ab1f182db2adbdd304becb7c843b7b5ffc317cc2",
+      "zeit": "2026-09-19",
+      "s": 12
+    },
+    "die Farbroute faellt aus der Trennbarkeit heraus": {
+      "commit": "ab1f182db2adbdd304becb7c843b7b5ffc317cc2",
+      "zeit": "2026-09-19",
+      "s": 21
     },
     "ein Verwechslungspaar sagt nicht, woran man es erkennt": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
