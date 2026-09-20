@@ -1577,8 +1577,17 @@ export const PROBEN = [
    * ein Feld, das es nicht gibt. Alle sechzehn Kaesten lesen dann
    * „undefined", der Bildschirm ist heil, und ohne die Wortwache meldet
    * der Rauchtest gruen - genau so, wie es bis heute war. */
+  /* GEFAHREN WIRD DER DURCHGANG UND NICHT DER ENGLISCHABSCHNITT, und das
+     ist gemessen: `--nur=englisch` kommt auf SIEBEN ruhende Bildschirme
+     (5x wahl, 2x sonst) und sieht keinen einzigen Aufgabenbildschirm -
+     der Vorlauf wird dort uebersprungen, die Frage steht nie still. Der
+     Eingriff kam an, und das Tor blieb gruen.
+     Der Durchgang sieht 389 ruhende Bildschirme, davon 333 Aufgaben.
+     Dort schlaegt es an, und der Befund liest sich so:
+       „…al so groß wie Tunesien. undefined Neuer Aufkleber. In Ugan…"
+     Also genau auf einem Bildschirm, den die Buchpruefung nie sieht. */
   { n:'im Vorlauf steht „undefined" unter jedem Bild', tor:'smoke',
-    args:['--nur=englisch'], bauen:true, datei:D,
+    args:['--nur=durchgang'], bauen:true, datei:D,
     such:'          <span>${stueckFuss(x)}</span>',
     ersatz:'          <span>${x.gibtesnicht}</span>',
     an:{ ...DIST, text:'<span>${x.gibtesnicht}</span>' },
@@ -1591,6 +1600,10 @@ export const PROBEN = [
    * ist kein Beweis). */
   { n:'die Wortwache sieht keinen Bildschirm mehr an', tor:'smoke',
     args:['--nur=englisch'], bauen:true, datei:'tor/fremdgriff.mjs',
+    /* Diese hier darf der kurze Abschnitt sein: sie prueft nicht, WAS
+       die Wache findet, sondern DASS sie hinsieht - und sieben Blicke
+       sind so gut wie dreihundertneunundachtzig, wenn es null werden
+       sollen. */
     such:'      G.wortblicke++;',
     ersatz:'      if (true) throw 0;\n      G.wortblicke++;',
     an:{ datei:'tor/fremdgriff.mjs', text:'if (true) throw 0;' },
