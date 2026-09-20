@@ -1565,6 +1565,35 @@ export const PROBEN = [
     ersatz:'const schauPause = (ms) => FLOTT ? Math.min(ms, 901) : ms;',
     an:{ datei:D, text:'Math.min(ms, 901)' },
     sagt:'steht nicht mehr in' },
+  /* --- Die Schreibweise auf der Karte (E25) ---------------------------
+   *
+   * Zwei Gegenproben, weil die Tafel zwei Zusagen macht: sie STELLT
+   * richtig, und sie bleibt dabei eine Tafel fuer Gross- und
+   * Kleinschreibung und wird keine zweite Wortliste.
+   *
+   * 1. Die Anzeige verschwindet aus der Fusszeile. Dann steht auf der
+   *    Karte wieder „In front of" mit grossem I - und kein Tor merkt es,
+   *    weil die Abschrift ja stimmt. */
+  { n:'die Karte zeigt wieder die Schreibweise der Liste', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"export const anzeigeWort = (w) => ANZEIGE[w] || w;",
+    ersatz:"export const anzeigeWort = (w) => w;",
+    an:{ datei:'src/inhalt/englisch.js', text:'anzeigeWort = (w) => w;' },
+    /* Rot wird `inhalt` an der Zeile darunter: die Tafel fuehrt dann
+       „In front of" auf sich selbst, und genau das verbietet sie. So
+       haengt der Nachweis an der WIRKUNG und nicht an der Eintragung. */
+    sagt:'tut nichts' },
+
+  /* 2. Aus der Tafel wird eine Uebersetzung. Ein Eintrag, der nicht nur
+   *    die Schreibweise aendert, ist eine zweite Wortliste im
+   *    Kleinformat - und sie widerspricht der ersten. */
+  { n:'die Anzeigetafel wird zur zweiten Wortliste', tor:'inhalt',
+    deckt:'englisch', datei:'src/inhalt/englisch.js',
+    such:"export const ANZEIGE = { 'In front of': 'in front of' };",
+    ersatz:"export const ANZEIGE = { 'In front of': 'vor' };",
+    an:{ datei:'src/inhalt/englisch.js', text:"'In front of': 'vor'" },
+    sagt:'sondern ein anderes Wort' },
+
   /* --- Die Wortwache (E25) --------------------------------------------
    *
    * „undefined" auf einer Karte ist kein Schoenheitsfehler, sondern eine

@@ -56,6 +56,35 @@ export const WOERTER = [
   'your'
 ];
 
+/* WIE DAS WORT AUF DER KARTE STEHT (E25).
+ *
+ * Die Liste darueber ist eine ABSCHRIFT und bleibt eine: sie beantwortet
+ * die Frage „sind alle 151 abgedeckt?", und dafuer muss sie so dastehen
+ * wie die Quelle - samt deren Nummerierungsfehler, der oben festgehalten
+ * ist. Zwei Eintraege sind dort GROSS geschrieben, mitten in einer sonst
+ * durchgehend kleingeschriebenen Liste: „In front of" und „Its".
+ *
+ * Auf einer Karte ist das etwas anderes als in einer Liste. Dort ist das
+ * Wort das Vorbild, an dem ein Kind lernt, wie man es schreibt - und ein
+ * grosses I in einer Praeposition ist kein Englisch.
+ *
+ * Also beides: die Abschrift bleibt unangetastet, und die ANZEIGE wird
+ * richtiggestellt. Die Tafel ist absichtlich winzig und darf es bleiben
+ * - `inhalt` prueft, dass jeder Schluessel in `WOERTER` steht und dass
+ * sich Schluessel und Anzeige NUR in der Gross- und Kleinschreibung
+ * unterscheiden. Sonst waere hier in zwei Runden eine zweite
+ * Wortliste gewachsen, und die widerspraeche der ersten: was zweimal
+ * dasteht, veraltet einmal (Regel 6).
+ *
+ * „Its" steht NICHT darin, und das ist gemessen: es liegt in `NUR_WORT`,
+ * und daraus wird keine Karte gebaut - die Liste lesen nur Tore. Ein
+ * Eintrag dafuer waere eine Zeile, die nichts tut und beim naechsten
+ * Umbau falsch wird. */
+export const ANZEIGE = { 'In front of': 'in front of' };
+
+/** Das Wort, wie es auf der Karte steht. */
+export const anzeigeWort = (w) => ANZEIGE[w] || w;
+
 /** „Hinzu kommen 15 Zahlen (1-12, 15,30,45)" - aus der Quelle. */
 export const ZAHLEN = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 30, 45];
 

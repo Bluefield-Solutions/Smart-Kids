@@ -3034,6 +3034,30 @@ console.log('\n  Tor `englisch`');
       }
     }
 
+    /* DIE ANZEIGETAFEL DARF KEINE ZWEITE WORTLISTE WERDEN (E25).
+     *
+     * `ANZEIGE` stellt die Schreibweise auf der Karte richtig - die
+     * amtliche Liste schreibt „In front of" gross, und ein grosses I in
+     * einer Praeposition ist kein Englisch. Genau dafuer und fuer nichts
+     * sonst: Schluessel und Anzeige duerfen sich NUR in der Gross- und
+     * Kleinschreibung unterscheiden, und der Schluessel muss es in der
+     * Abschrift geben. Ohne diese drei Zeilen waere die Tafel in zwei
+     * Runden eine zweite Wortliste, die der ersten widerspricht
+     * (Regel 6: was zweimal dasteht, veraltet einmal). */
+    const amtlich = new Set(EN.WOERTER);
+    for (const [schluessel, wie] of Object.entries(EN.ANZEIGE)) {
+      if (!amtlich.has(schluessel))
+        e4.push(`ANZEIGE stellt „${schluessel}" richtig — das Wort steht aber gar `
+          + 'nicht in der amtlichen Liste');
+      if (schluessel.toLowerCase() !== String(wie).toLowerCase())
+        e4.push(`ANZEIGE macht aus „${schluessel}" das Wort „${wie}" — das ist keine `
+          + 'Schreibweise mehr, sondern ein anderes Wort. Die Tafel stellt Groß- und '
+          + 'Kleinschreibung richtig und sonst nichts');
+      if (schluessel === wie)
+        e4.push(`ANZEIGE führt „${schluessel}" auf sich selbst — die Zeile tut nichts `
+          + 'und wird beim nächsten Umbau falsch');
+    }
+
     const blaetter = BP.blaetter();
     for (const bl of blaetter)
       if (bl.felder.length !== 10)
@@ -3060,6 +3084,10 @@ console.log('\n  Tor `englisch`');
       console.error('\n  englisch ROT: der Bildplan für E4 stimmt nicht.');
       process.exit(1);
     }
+    console.log(`    Schreibweise auf der Karte: ${Object.keys(EN.ANZEIGE).length} von `
+      + `${EN.WOERTER.length} Wörtern richtiggestellt (${
+        Object.entries(EN.ANZEIGE).map(([k, v]) => `„${k}" → „${v}"`).join(', ')
+        || 'keines'}) — die Abschrift bleibt unangetastet`);
     const gezeichnet = EN.BILDER.filter(b => b.pfad).length;
     console.log(`    Bildplan (E4): ${EN.BILDER.length} Wörter wollen ein Bild, `
       + `${EN.FARBEN.length} haben eines (der Farbfleck), ${EN.NUR_WORT.length} `

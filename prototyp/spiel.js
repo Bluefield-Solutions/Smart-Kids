@@ -2612,15 +2612,20 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
    zur Rechenaufgabe („3 + 4 = 7"), und dorthin faellt jeder Gegenstand
    durch, der keinen eigenen Zweig hat. Genau das ist hier passiert: im
    Vorlauf stand „= Frankreich" unter der Trikolore. */
+/* `anzeigeWort` und nicht `x.wort`: die amtliche Liste schreibt „In
+   front of" gross, und auf einer Karte ist das Wort das Vorbild, an dem
+   ein Kind lernt, wie man es schreibt (E25). Die Abschrift bleibt
+   unangetastet, nur die Anzeige wird richtiggestellt - die Tafel steht
+   in `englisch.js` und haelt heute genau einen Eintrag. */
 const stueckFuss = (x) => x.flagge ? x.name
-                        : x.bild ? x.wort
+                        : x.bild ? Englisch.anzeigeWort(x.wort)
                         : x.pfad ? x.name : x.zeichenFolge ? x.wort
                         /* Unter dem Lautpaar steht, WORUM es geht - „Das
                            englische th" -, nicht noch einmal ein Wort. Die
                            beiden Woerter stehen schon im Kasten, und ihr
                            Name ist die Stolperstelle. */
                         : x.sorte === 'laut' ? x.stolperName
-                        : x.sorte ? x.wort
+                        : x.sorte ? Englisch.anzeigeWort(x.wort)
                         /* Beim falschen Freund steht die FALLE darunter, nicht
                            die Uebersetzung: der Aufkleber ist das PAAR
                            (`get` gegen `became`), und das Paar ist die ganze
