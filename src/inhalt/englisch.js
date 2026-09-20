@@ -1474,14 +1474,31 @@ export const BILDER = [
       { f:'creme',  d:'M20 20h8v8h-8Zm16 0h8v8h-8Z' },
     ],
     motiv: 'a pair of jeans lying flat, seen from the front, with pockets and a belt loop' },
+  /* LANGE AERMEL, und das ist der ganze Befund (E25).
+     Bis hierher war der Pullover ein UMGEFAERBTES HEMD: derselbe Pfad,
+     zwei Einheiten verschoben („M22 12h20l14 8-6 14…" gegen
+     „M22 10h20l14 8-6 13…"), kurze Aermel, nur rot statt gruen. Bei 64
+     Punkten standen zwei T-Shirts in zwei Farben da, und wer „pullover"
+     hoerte, konnte nur raten. Gefunden auf dem Bilderblatt: der
+     Zellvergleich sieht es nicht, weil er Toene vergleicht und Rot
+     gegen Gruen sehr wohl verschieden ist, und die Pruefung auf
+     verschobene Kopien verlangt fast gleiche Zahlen.
+     Jetzt: langer Aermel nach unten aussen, Buendchen an den
+     Handgelenken, Bund unten, Ripprand am Hals - vier Merkmale, die ein
+     Hemd nicht hat. */
   { wort: 'pullover', gebiet: 'kleidung',
     bild: [
-      { f:'rot',    d:'M22 12h20l14 8-6 14-6-4v28H20V30l-6 4-6-14Z' },
-      { f:'rotDunkel', d:'M42 12l14 8-6 14-6-4v28h-8V12Z' },
-      { f:'creme',  d:'M24 12h16v6H24Z' },
-      { f:'creme',  d:'M20 52h24v6H20Z' },
+      { f:'rot',       d:'M22 14h7l-7 26-7-2Z' },
+      { f:'rot',       d:'M42 14h-7l7 26 7-2Z' },
+      { f:'rot',       d:'M22 14h20v34H22Z' },
+      { f:'rotDunkel', d:'M32 14h10v34H32Z' },
+      { f:'rotDunkel', d:'M42 14h-4l7 26 4-1Z' },
+      { f:'creme',     d:'M15 38l7 2-2 6-7-2Z' },
+      { f:'creme',     d:'M49 38l-7 2 2 6 7-2Z' },
+      { f:'creme',     d:'M22 42h20v6H22Z' },
+      { f:'creme',     d:'M27 14h10v5H27Z' },
     ],
-    motiv: 'a knitted pullover lying flat, seen from the front, arms spread' },
+    motiv: 'a knitted pullover lying flat, seen from the front, with long sleeves, ribbed cuffs, a ribbed hem and a ribbed neckband' },
   /* GRUEN UND NICHT BLAU: neben „jeans" stand hier ein zweites blaues
      Kleidungsstueck, und der Zellvergleich mass beide zu 54 % gleich.
      Jeans sind blau - das ist am Wort; ein Hemd hat jede Farbe, also
@@ -1922,10 +1939,18 @@ export const BILDER = [
       { f:'grauDunkel', d:'M14 40a11 11 0 1 0 0 22 11 11 0 0 0 0-22Zm0 5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z' },
       { f:'grauDunkel', d:'M50 40a11 11 0 1 0 0 22 11 11 0 0 0 0-22Zm0 5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z' },
       { f:'grau',   d:'M14 50h8l8-14h8v4h-6l-6 14h24v4H14Z' },
-      { f:'creme',  d:'M34 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z' },
-      { f:'rot',    d:'M32 20c6 0 10 4 11 9l3 9-6 2-3-7-4 9h-9l-4-9-5 4-4-5 9-8c3-3 7-4 12-4Z' },
+      /* DAS KIND HATTE KEINE BEINE (E25). Der rote Rumpf endete bei 38,
+         der Rahmen liegt bei 36 bis 54 - die Figur schwebte ueber dem
+         Rad, und bei 64 Punkten war es ein roter Fleck auf etwas
+         Grauem. Jetzt sitzt sie: Oberkoerper nach vorn geneigt, Arm zum
+         Lenker, zwei Beine zu den Pedalen. */
+      { f:'creme',      d:'M34 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z' },
+      { f:'blauDunkel', d:'M26 30h7l1 10-7 1Z' },
+      { f:'blauDunkel', d:'M31 30h6l4 8-6 3Z' },
+      { f:'rot',        d:'M27 16h8l2 16H25Z' },
+      { f:'rot',        d:'M33 19l8 12-5 3-8-11Z' },
     ],
-    motiv: 'a child riding a bicycle to the right, seen from the side' },
+    motiv: 'a child riding a bicycle to the right, seen from the side, leaning forward with both hands on the handlebar and both legs reaching the pedals' },
   { wort: 'sports',   gebiet: 'sport',
     bild: [
       { f:'rot',    d:'M18 4h10l6 16h-8Z' },

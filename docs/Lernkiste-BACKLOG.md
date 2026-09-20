@@ -8724,3 +8724,72 @@ der Bestätigung vom 9. September. Nachgemessen kostet *diese* Runde
 0,7 KB (547,4 → 548,1 im Startbündel); die anderen 29 KB sind über E20
 bis E24 gewachsen — Zeichnungen, Tafeln, Begründungen. Gewollt,
 angesehen, bestätigt.
+
+### 3. Der Blick auf alle 87 Zeichnungen — Feld für Feld, bei 64 und bei 200 Punkten
+
+Zehn Felder, drei Blätter, jede Karte einzeln angesehen. Zwei klare
+Befunde, beide hätte kein Tor gefunden:
+
+**`pullover` war ein umgefärbtes Hemd.** Nicht ähnlich — *derselbe
+Pfad*, zwei Einheiten verschoben:
+
+```
+pullover  M22 12h20l14 8-6 14-6-4v28H20V30l-6 4-6-14Z
+shirt     M22 10h20l14 8-6 13-6-3v28H20V28l-6 3-6-13Z
+```
+
+Kurze Ärmel, nur rot statt grün. Bei 64 Punkten standen zwei T-Shirts
+in zwei Farben da, und wer „pullover" hörte, konnte nur raten. Jetzt:
+lange Ärmel, Bündchen an den Handgelenken, Bund unten, Ripprand am
+Hals — vier Merkmale, die ein Hemd nicht hat.
+
+**Auf der `ride`-Karte hatte das Kind keine Beine.** Der rote Rumpf
+endete bei 38, der Rahmen liegt bei 36 bis 54 — die Figur schwebte über
+dem Rad, und bei 64 Punkten war es ein roter Fleck auf etwas Grauem.
+Jetzt sitzt sie: Oberkörper nach vorn geneigt, Arm zum Lenker, zwei
+Beine zu den Pedalen.
+
+#### Warum kein Tor das findet — gemessen, nicht vermutet
+
+Naheliegend wäre eine Prüfung „zwei Zeichnungen teilen einen fast
+gleichen Hauptpfad". Nachgerechnet über alle 3741 Paare, Kriterium
+gleiche Befehlsfolge und höchstens drei Einheiten Abstand:
+
+| | Paare |
+|---|---|
+| vorher | **61** |
+| nachher | **59** |
+
+Von den 61 war **eines** der Fehler. Die anderen sind richtig: `happy`,
+`sad`, `o'clock` und `football` teilen sich einen Kreis; `boy`, `girl`,
+`brother`, `sister` teilen sich einen Kopf; die Kisten auf dem Blatt
+„Wo?" *sollen* gleich sein. Ein Tor, das 59 richtige Paare meldet, um
+eines zu fangen, wird abgeschaltet und nicht gelesen — dieselbe
+Überlegung wie bei der Nachbarschaftsprüfung oben. **Es bleibt beim
+Blick** (Regel 4: kein Tor ersetzt den Blick).
+
+Die zwei verschwundenen Einträge sind übrigens der Beleg, dass die
+Kopie wirklich weg ist.
+
+#### Was liegen bleibt, und warum
+
+Vier Zeichnungen sind schwach, aber nicht falsch — aufgeschrieben statt
+angefasst, damit die nächste Runde entscheiden kann:
+
+- **`eat`** zeigt Besteck, kein Essen. Ein Verb als Gegenstand — aber
+  `drink` macht es genauso (ein Glas), also ist der Vorrat wenigstens in
+  sich stimmig, und die beiden sind auseinanderzuhalten.
+- **`hobby`** ist eine Gitarre, die bei 64 Punkten wie ein Schlüssel
+  aussieht. Es ist ohnehin ein Oberbegriff und steht in der Tafel.
+- **`dress`** ist ein Kegel am Bügel; der Bügel rettet es.
+- **`salad`** liegt auf einem grauen Brett, das wie ein Regal aussieht.
+
+Und **ein neuer Befund aus der neuen Zeichnung**: `ride` liest sich
+jetzt als *Roller*, weil der Lenker hinter der Figur verschwindet. Das
+ist ein anderer, kleinerer Fehler als „der Reiter hat keine Beine" — er
+gehört in die nächste Runde und nicht in eine vierte Schleife an
+derselben Karte.
+
+**Am Vorbild geändert hat sich genau eine Karte**: `quer-englisch-vorlauf`
+zeigt den neuen Pullover, 0,181 % der Bildpunkte. Alles andere steht
+unverändert — auch das ist nachgesehen und nicht angenommen.
