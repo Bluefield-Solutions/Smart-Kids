@@ -162,7 +162,8 @@ export function fremdgriff() {
  * Laeuft in der Seite. Erwartet `window.__fremdgriff`.
  */
 export function griffBeobachter() {
-  window.__griff = { meldungen: [], geprueft: 0, uebersprungen: 0, arten: {}, einmal: [] };
+  window.__griff = { meldungen: [], geprueft: 0, uebersprungen: 0, arten: {},
+                     einmal: [], wortfehler: [], wortblicke: 0 };
   const G = window.__griff;
   const gesehen = new Set();
   /* Ein Befund zaehlt erst, wenn er BLEIBT.
@@ -240,6 +241,47 @@ export function griffBeobachter() {
     G.arten[art] = (G.arten[art] || 0) + 1;
     const marke = (s.className || 'Bildschirm').split(' ').slice(0, 2).join('.');
     if (marke !== letzteMarke) { verdacht.clear(); letzteMarke = marke; }
+
+    /* DIE WORTWACHE: steht hier „undefined"? (E25)
+     *
+     * Sie reitet auf diesem Beobachter mit, und zwar weil er der EINE
+     * Ort ist, der jeden ruhenden Bildschirm sieht - im Rauchtest waren
+     * es zuletzt 273 in einem einzigen Abschnitt. Eine zweite Stelle,
+     * die dasselbe abschreitet, veraltet einmal (Regel 6).
+     *
+     * WARUM ES SIE GIBT. Geprueft wurde „undefined" bis E25 an genau
+     * einer Stelle: auf den Karten im Forscherbuch. Der Vorlauf zeigt
+     * dieselben Aufkleber mit derselben Fusszeile (`stueckFuss`), die
+     * Aufgabenbildschirme zeigen Namen, Fragen und Lobsaetze - und dort
+     * sah niemand hin. In E23 meldete der Fremdgriff einmal nebenbei
+     * „undefined = " auf einem Bildschirm; reproduzieren liess es sich
+     * nicht, und die Luecke stand seitdem im Rueckstandsverzeichnis.
+     *
+     * Ein „undefined" auf einer Karte ist kein Schoenheitsfehler: es ist
+     * eine Aufgabe, die das Kind nicht loesen kann, und sie sieht aus
+     * wie eine gueltige.
+     *
+     * DREI MUSTER, und alle drei heissen „hier stand eine Variable, die
+     * es nicht gibt": `undefined`, `NaN` und `[object Object]`. Gesucht
+     * wird im SICHTBAREN Text - `innerText` und nicht `textContent`, denn
+     * was ausgeblendet ist, steht nicht da. Grossgeschrieben zaehlt mit,
+     * klein geschriebene Fundstellen in Wortmitte nicht: „Undefined" als
+     * englische Vokabel gibt es im Vorrat nicht, „grundefiniert" auch
+     * nicht - aber eine Wortgrenze kostet nichts und faengt den Tag, an
+     * dem doch eines dazukommt. */
+    try {
+      G.wortblicke++;
+      const sichtbar = s.innerText || '';
+      const fund = sichtbar.match(/\b(undefined|NaN|\[object Object\])\b/i);
+      if (fund) {
+        const i = Math.max(0, fund.index - 25);
+        const um = sichtbar.slice(i, fund.index + fund[0].length + 25)
+          .replace(/\s+/g, ' ').trim();
+        const schluessel = `${marke}: ${fund[0]}`;
+        if (!G.wortfehler.some(x => x.schluessel === schluessel) && G.wortfehler.length < 10)
+          G.wortfehler.push({ schluessel, marke, wort: fund[0], um });
+      }
+    } catch { /* innerText kann an einem halb abgebauten Baum werfen */ }
     const jetzt = new Map();
     for (const b of window.__fremdgriff())
       jetzt.set(`${marke}: ${b.schluessel}`, `${marke}: ${b.meldung}`);

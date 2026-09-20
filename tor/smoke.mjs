@@ -205,7 +205,8 @@ const BUCH_GENUTZT_MIN = 70;
  * ist trotzdem ein Befund und keine Schwankung. */
 const MESSTIEFE_MIN = 5;
 /** Wieviele ruhende Bildschirme der Fremdgriff wirklich gesehen hat. */
-const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set() };
+const griffStand = { geprueft: 0, uebersprungen: 0, arten: {}, einmal: new Set(),
+                     wortblicke: 0, worte: new Set() };
 
 /* Wie schnell ist diese Maschine GERADE? (Q25)
  *
@@ -735,6 +736,17 @@ async function neueSeite(viewport, ctx, flott = true, vorlauf = null) {
           griffStand.arten[k] = (griffStand.arten[k] || 0) + v;
         for (const k of g.einmal || []) griffStand.einmal.add(k);
         for (const m of g.meldungen) fehler.push(`Fremdgriff — ${m}`);
+        /* Die Wortwache (E25) erntet an derselben Stelle - eine zweite
+           Erntestelle waere eine zweite Liste, die veraltet. */
+        griffStand.wortblicke += g.wortblicke || 0;
+        for (const w of g.wortfehler || []) {
+          if (griffStand.worte.has(w.schluessel)) continue;
+          griffStand.worte.add(w.schluessel);
+          fehler.push(`Auf „${w.marke}" steht „${w.wort}" im sichtbaren Text: `
+            + `„…${w.um}…" — dort stand eine Variable, die es nicht gibt. `
+            + 'Das Kind sieht eine Aufgabe, die wie eine gültige aussieht '
+            + 'und keine ist');
+        }
       }
     } catch { /* Seite schon weg: dann gibt es nichts zu ernten */ }
     return festSchliessen(...a);
@@ -9444,6 +9456,15 @@ if (TAKT.n) console.log(`  Maschine war langsam:       ${TAKT.n}× nachgefasst, 
  * unterscheiden - eine Pruefung, die nie etwas meldet, beweist nichts
  * (Regel 1), und dieses Verzeichnis hatte den Fall dreimal. Bei null
  * geprueften Bildschirmen ist das deshalb ein FEHLER, kein Hinweis. */
+/* Die Wortwache sagt IHRE Zahl selbst (Regel 5: jede Zahl traegt ihre
+ * Messstelle mit). „Kein „undefined" gefunden" heisst zweierlei - alles
+ * steht richtig da, oder die Wache hat nie hingesehen. Nur die Zahl
+ * daneben trennt die beiden. */
+if (!griffStand.wortblicke && griffStand.geprueft)
+  fehler.push('Die Wortwache hat keinen einzigen Bildschirm angesehen, obwohl der '
+    + `Fremdgriff ${griffStand.geprueft} gesehen hat — sie läuft nicht mit`);
+console.log(`  Wortwache:                  ${griffStand.wortblicke} Blicke, `
+  + `${griffStand.worte.size} Fundstellen („undefined", „NaN", „[object Object]")`);
 console.log(`  Fremdgriff geprüft:         ${griffStand.geprueft} ruhende Bildschirme (`
   + `${Object.entries(griffStand.arten).map(([k, v]) => `${v}× ${k}`).join(', ') || 'keine'})`
   + `, ${griffStand.uebersprungen} in Bewegung übersprungen`);

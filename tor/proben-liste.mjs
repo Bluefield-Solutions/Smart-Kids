@@ -1565,6 +1565,37 @@ export const PROBEN = [
     ersatz:'const schauPause = (ms) => FLOTT ? Math.min(ms, 901) : ms;',
     an:{ datei:D, text:'Math.min(ms, 901)' },
     sagt:'steht nicht mehr in' },
+  /* --- Die Wortwache (E25) --------------------------------------------
+   *
+   * „undefined" auf einer Karte ist kein Schoenheitsfehler, sondern eine
+   * Aufgabe, die das Kind nicht loesen kann - und sie sieht aus wie eine
+   * gueltige. Geprueft wurde es bis E25 an genau EINER Stelle: auf den
+   * Karten im Forscherbuch. Der Vorlauf zeigt dieselben Aufkleber mit
+   * derselben Fusszeile, und dort sah niemand hin.
+   *
+   * Der Eingriff setzt genau dort an: die Fusszeile des Vorlaufs zeigt
+   * ein Feld, das es nicht gibt. Alle sechzehn Kaesten lesen dann
+   * „undefined", der Bildschirm ist heil, und ohne die Wortwache meldet
+   * der Rauchtest gruen - genau so, wie es bis heute war. */
+  { n:'im Vorlauf steht „undefined" unter jedem Bild', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:'          <span>${stueckFuss(x)}</span>',
+    ersatz:'          <span>${x.gibtesnicht}</span>',
+    an:{ ...DIST, text:'<span>${x.gibtesnicht}</span>' },
+    sagt:'steht „undefined" im sichtbaren Text' },
+
+  /* Und die Blindprobe darunter: sieht die Wache ueberhaupt hin? Ohne
+   * diese Zeile laeuft sie mit einem `continue` an der falschen Stelle
+   * leer durch, meldet nie etwas und zaehlt eine Null, die wie eine
+   * Auskunft aussieht (Regel 1: eine Pruefung, die nie etwas meldet,
+   * ist kein Beweis). */
+  { n:'die Wortwache sieht keinen Bildschirm mehr an', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:'tor/fremdgriff.mjs',
+    such:'      G.wortblicke++;',
+    ersatz:'      if (true) throw 0;\n      G.wortblicke++;',
+    an:{ datei:'tor/fremdgriff.mjs', text:'if (true) throw 0;' },
+    sagt:'hat keinen einzigen Bildschirm angesehen' },
+
   /* --- Die Nachbarschaftspruefung (E25) -------------------------------
    *
    * Drei Gegenproben, weil die Pruefung drei Zusagen macht.

@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-19",
+  "zeit": "2026-09-20",
   "tore": [
     "anker",
     "ansicht",
@@ -1719,14 +1719,14 @@
       "s": 11
     },
     "ein Abzeichen wählt nichts aus seinem Vorrat": {
-      "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
-      "zeit": "2026-09-11",
-      "s": 4
+      "commit": "bc8d45d6b286600d0749a8a205724f2f75e7d2d5",
+      "zeit": "2026-09-20",
+      "s": 21
     },
     "ein Abzeichen wählt gleich den ganzen Vorrat": {
-      "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
-      "zeit": "2026-09-11",
-      "s": 4
+      "commit": "bc8d45d6b286600d0749a8a205724f2f75e7d2d5",
+      "zeit": "2026-09-20",
+      "s": 12
     },
     "ein Abzeichen hängt an einer Ebene, die es nicht gibt": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
