@@ -1552,11 +1552,47 @@ export const PROBEN = [
    * Ziel: die eine Zeile in spiel.js aendern, die ZWEI Proben als
    * Suchtext tragen. Damit ist der Eingriff dort, wo im Ernstfall auch
    * gearbeitet wird - und die Liste bleibt unberuehrt. */
+  /* DIESE PROBE ZERREISST MIT ABSICHT, und das ist ihr ganzer Sinn: sie
+     verstellt eine Zeile, die DREI andere Proben als Suchtext benutzen,
+     und weist damit nach, dass der Waechter in `inhalt` ueberhaupt
+     anschlaegt. Die Nachbarschaftspruefung (E25) wuerde sie sonst als
+     Fehler melden - `zerreisstMitAbsicht` nimmt sie aus, und die Zeile
+     im Bericht zaehlt, wie viele Proben das tun. Heute ist es diese
+     eine. */
   { n:'eine Gegenprobe greift ins Leere', tor:'inhalt', deckt:'inhalt', datei:D,
+    zerreisstMitAbsicht:true,
     such:'const schauPause = (ms) => FLOTT ? Math.min(ms, 900) : ms;',
     ersatz:'const schauPause = (ms) => FLOTT ? Math.min(ms, 901) : ms;',
     an:{ datei:D, text:'Math.min(ms, 901)' },
     sagt:'steht nicht mehr in' },
+  /* --- Die Nachbarschaftspruefung (E25) -------------------------------
+   *
+   * Drei Gegenproben, weil die Pruefung drei Zusagen macht.
+   *
+   * 1. SIE SIEHT, WENN EIN EINGRIFF DEN NACHBARN ZERREISST. Der Eingriff
+   *    nimmt der einen Probe, die es mit Absicht tut, ihre Ausnahme -
+   *    dann muss die Pruefung genau das melden. Damit haengt zugleich
+   *    fest, dass die Ausnahme traegt und kein Freibrief ist. */
+  { n:'der Freibrief zum Zerreissen gilt ploetzlich fuer alle', tor:'inhalt',
+    deckt:'inhalt', datei:'tor/inhalt.mjs',
+    such:"        if (q.zerreisstMitAbsicht) { mitAbsicht++; continue; }",
+    ersatz:"        if (false) { mitAbsicht++; continue; }\n"
+      + "//Anker:        if (q.zerreisstMitAbsicht) { mitAbsicht++; continue; }",
+    an:{ datei:'tor/inhalt.mjs', text:'if (false) { mitAbsicht++; continue; }' },
+    sagt:'zerreißt den Suchtext von' },
+
+  /* 3. UND SIE DARF NICHT LEER DURCHLAUFEN. Ein `continue` an der
+   *    falschen Stelle, und sie meldet nie wieder etwas - der Bericht
+   *    schreibt dann eine Null, die wie eine Auskunft aussieht
+   *    (Regel 1: eine Pruefung, die nie etwas meldet, ist kein Beweis). */
+  { n:'die Nachbarschaftspruefung sieht keine Ueberschneidung mehr', tor:'inhalt',
+    deckt:'inhalt', datei:'tor/inhalt.mjs',
+    such:"          if (j + r.such.length <= i || j >= i + q.such.length) continue;",
+    ersatz:"          continue;\n"
+      + "//Anker:          if (j + r.such.length <= i || j >= i + q.such.length) continue;",
+    an:{ datei:'tor/inhalt.mjs', text:'//Anker:          if (j + r.such.length' },
+    sagt:'keine einzige Überschneidung' },
+
   /* Und die Pruefung selbst darf nicht ins Leere greifen: liest sie keine
    * Liste mehr, ist ihr Gruen geschenkt (Regel 5). */
   { n:'die Suchtext-Prüfung liest keine Proben mehr', tor:'inhalt', deckt:'inhalt',
@@ -1928,7 +1964,14 @@ export const PROBEN = [
   { n:'ein Rang fehlt in der Länderliste', tor:'inhalt', deckt:'inhalt',
     datei:'src/inhalt/erdkunde.js',
     such:"    { a3:'POL', name:'Polen', rang:4, nachbarDE:true, aussprache:['polen','pohlen'] },",
-    ersatz:"    { a3:'POL', name:'Polen', rang:99, nachbarDE:true, aussprache:['polen','pohlen'] },",
+    /* Der Suchtext der Nachbarin („eine Aussprachevariante zeigt aufs
+       falsche Land") ist DIESELBE Zeile. Ohne die Rettung darunter
+       meldete `inhalt` bei dieser Probe hier deren fehlenden Anker statt
+       des eigenen Befundes - gefunden von der Nachbarschaftspruefung
+       (E25), nicht von einem Lauf. */
+    ersatz:"    { a3:'POL', name:'Polen', rang:99, nachbarDE:true, aussprache:['polen','pohlen'] },\n"
+      + "/* Anker der Nachbarprobe:\n"
+      + "    { a3:'POL', name:'Polen', rang:4, nachbarDE:true, aussprache:['polen','pohlen'] }, */",
     an:{ datei:'src/inhalt/erdkunde.js', text:"name:'Polen', rang:99" },
     // Ein Rang 99 ist seit D2c keine Bereichsverletzung mehr, sondern
     // eine LUECKE: die Raenge sind je Kontinent lueckenlos 1..n, und ein
@@ -5264,14 +5307,42 @@ export const PROBEN = [
    */
 
   { n:'ein Abzeichen wählt nichts aus seinem Vorrat', tor:'inhalt', deckt:'abzeichen', datei:A,
+    /* Beide Abzeichenproben greifen DIESELBE Zeile an, also rettet jede
+       den Suchtext der anderen als Kommentar dahinter (E25). */
     such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
-    ersatz:'waehlt: (v) => v.filter(x => x.stadtstaatlich) }',
+    ersatz:'waehlt: (v) => v.filter(x => x.stadtstaatlich) }'
+      + '\\n/* Anker der Nachbarprobe: waehlt: (v) => v.filter(x => x.stadtstaat) } */',
     an:{ datei:A, text:'x.stadtstaatlich' }, sagt:'unerreichbar' },
 
   { n:'ein Abzeichen wählt gleich den ganzen Vorrat', tor:'inhalt', deckt:'abzeichen', datei:A,
     such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
-    ersatz:'waehlt: (v) => v.filter(x => !!x) }',
+    ersatz:'waehlt: (v) => v.filter(x => !!x) }'
+      + '\\n/* Anker der Nachbarprobe: waehlt: (v) => v.filter(x => x.stadtstaat) } */',
     an:{ datei:A, text:'v.filter(x => !!x) }' }, sagt:'wählt ALLE' },
+
+  /* DIESE PROBE STEHT HIER UNTEN UND NICHT BEI IHREN ZWEI SCHWESTERN,
+     und das hat einen Grund: sie verstellt den Anker der Abzeichenprobe
+     DARUEBER, und dafuer muss sie IM DATEIINHALT dahinter stehen.
+     `replace` nimmt die erste Fundstelle - stuende diese Probe weiter
+     oben, verstellte ihr Eingriff ihren eigenen Suchtext statt des
+     Ziels. `mehrfach:true` sagt dasselbe noch einmal: den Text gibt es
+     zweimal, einmal am Ziel und einmal in dieser Zeile hier.
+     Rot wird das Tor dann an der SIMULATION - der Ersatz erzeugt
+     `text:'x.gibtesnicht'`, und die Abzeichenprobe kann ihren Anker nie
+     mehr finden. */
+  /* 2. SIE SIEHT, WENN DER EIGENE ANKER NICHT ANKOMMT. Der Eingriff
+   *    verstellt den Anker einer beliebigen Probe so, dass ihr Ersatz
+   *    ihn nicht mehr erzeugt. Ohne diese Pruefung faellt so eine Probe
+   *    erst im vollen Lauf auf, mit „Eingriff nicht angekommen" - und
+   *    das kostet vierzig Minuten statt einer Drittelsekunde. Mir selbst
+   *    in E24 zweimal passiert, beide Male an einem Zeilenumbruch. */
+  { n:'der Anker einer Gegenprobe kann nie zutreffen', tor:'inhalt',
+    deckt:'inhalt', datei:'tor/proben-liste.mjs', mehrfach:true,
+    such:"    an:{ datei:A, text:'x.stadtstaatlich' }, sagt:'unerreichbar' },",
+    ersatz:"    an:{ datei:A, text:'x.gibtesnicht' }, sagt:'unerreichbar' },",
+    an:{ datei:'tor/proben-liste.mjs', text:"text:'x.gibtesnicht'" },
+    sagt:'die Ankunftsprüfung kann nie zutreffen' },
+
 
   /* Und die vierte stille Verfallsart: das Abzeichen haengt an einer
      Ebene, die es nicht gibt. Dann wird es nie gerechnet und fehlt

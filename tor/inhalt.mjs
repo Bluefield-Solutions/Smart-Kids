@@ -641,6 +641,137 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
       }
     }
   }
+  /* --- UND DIE PROBE NEBENAN (E25) -----------------------------------
+   *
+   * Alles darueber prueft EINE Probe fuer sich: steht ihr Suchtext noch
+   * da, steht er genau einmal da, kann ihr Anker ueberhaupt zutreffen.
+   * Was keine dieser Pruefungen sieht: ob mein Eingriff den Suchtext
+   * einer ANDEREN Probe zerreisst.
+   *
+   * Genau das ist in E21 passiert und erst in E24 aufgefallen - drei
+   * Runden und drei Proben spaeter. Drei Gegenproben griffen dieselben
+   * drei Zeilen in `englisch.js` an; eine davon hatte einen Suchtext,
+   * der zusammenhaengend ueber zwei Stellen samt der Kommentare
+   * dazwischen spannte. Wer den Filter austauschte, zerriss ihn - und
+   * das Tor meldete dann nicht den Befund, sondern den fehlenden Anker.
+   * „Rot, aber nicht deswegen", der fuenfte Selbsttreffer in diesem
+   * Verzeichnis.
+   *
+   * Aufgefallen ist es nur, weil die beiden Proben zufaellig einmal
+   * gefahren wurden. Der Zaehler in `muster` prueft, ob eine Probe noch
+   * einen Gegenstand hat - nicht, ob ihr Eingriff ankommt, und schon gar
+   * nicht, ob er den der Nachbarin kaputtmacht.
+   *
+   * ES BRAUCHT DAFUER KEINEN TORLAUF. Der Eingriff ist ein
+   * `String.replace` mit zwei Zeichenketten, und der ersetzt IMMER nur
+   * die erste Fundstelle - auch bei `mehrfach:true`. Also laesst er sich
+   * hier im Kopf ausfuehren: einmal ersetzen, dann nachsehen. Das ist
+   * der Unterschied zwischen einer Pruefung, die 0,3 Sekunden kostet,
+   * und einem vollen Probenlauf von 40 Minuten.
+   *
+   * ZWEI FRAGEN JE PROBE:
+   *
+   *   1. Kommt mein EIGENER Anker an? `an:{text}` muss danach dastehen,
+   *      `an:{fehlt}` muss weg sein. Das faengt den Ersatz, der nicht
+   *      das erzeugt, was der Anker erwartet - mir selbst in dieser
+   *      Runde zweimal passiert, beide Male an einem Zeilenumbruch.
+   *   2. Ueberlebt der Suchtext der NACHBARN? Geprueft wird nur, wo sich
+   *      die Zugriffe wirklich ueberschneiden - was ausserhalb der
+   *      ersetzten Stelle liegt, kann gar nicht betroffen sein. Sonst
+   *      waeren es bei 225 Proben in `spiel.js` fuenfzigtausend
+   *      Textsuchen in einer halben Megabyte.
+   *
+   * Was diese Pruefung NICHT faengt, und das gehoert dazugesagt: einen
+   * Eingriff, der ankommt und trotzdem nichts ausloest. Die dritte der
+   * drei Proben aus E24 war so einer - sie nahm eine Schranke weg und
+   * HOFFTE, dass sich danach etwas mischt; in 37,9 % der Ziehungen tat
+   * es das nicht. Dafuer gibt es nur den Lauf. */
+  {
+    const jeDatei = new Map();
+    for (const q of PROBEN) {
+      if (!q.datei || q.kopie || q.such === undefined) continue;
+      if (!jeDatei.has(q.datei)) jeDatei.set(q.datei, []);
+      jeDatei.get(q.datei).push(q);
+    }
+    let gespielt = 0, gekreuzt = 0, mitAbsicht = 0;
+    for (const [datei, liste] of jeDatei) {
+      if (!fs.existsSync(datei)) continue;
+      const roh = fs.readFileSync(datei, 'utf8');
+      const lage = new Map(liste.map(q => [q, roh.indexOf(q.such)]));
+      for (const q of liste) {
+        const i = lage.get(q);
+        if (i < 0 || q.n === laeuftGerade) continue;
+        const nachher = roh.slice(0, i) + (q.ersatz ?? '') + roh.slice(i + q.such.length);
+        gespielt++;
+        /* 1. Der eigene Anker - aber nur, wenn er in DIESER Datei sitzt.
+              Zeigt er auf `dist/index.html`, entsteht er erst beim Bau
+              und ist hier nicht zu sehen. */
+        const ankerHier = q.an && !q.an.gleichWie && !q.an.regex
+          && (!q.an.datei || q.an.datei === datei);
+        if (ankerHier && q.an.text && !nachher.includes(q.an.text))
+          pruefe(false, `Gegenprobe „${q.n}": nach ihrem Eingriff steht „${
+            q.an.text.replace(/\s+/g, ' ').slice(0, 40)}…" NICHT in ${datei} — `
+            + 'die Ankunftsprüfung kann nie zutreffen, die Probe meldet für immer '
+            + '„Eingriff nicht angekommen"');
+        if (ankerHier && q.an.fehlt && nachher.includes(q.an.fehlt))
+          pruefe(false, `Gegenprobe „${q.n}": nach ihrem Eingriff steht „${
+            q.an.fehlt.replace(/\s+/g, ' ').slice(0, 40)}…" IMMER NOCH in ${datei} — `
+            + 'ihr Anker verlangt aber, dass der Text verschwindet');
+        /* 2. Die Nachbarn - und zwar NUR, wenn diese Probe auf `inhalt`
+              zielt.
+              
+              Jede Probe laeuft in einer eigenen Wegwerf-Kopie, und
+              zwischen zwei Proben wird zurueckgesetzt. Ein zerrissener
+              Nachbaranker ueberlebt den Lauf also gar nicht - er schadet
+              nur INNERHALB desselben Laufs, und das kann er nur, wenn
+              das gepruefte Tor `inhalt` ist: nur dort laeuft der
+              Ankerwaechter, und nur dort liest er den eingegriffenen
+              Baum statt des Arbeitsbaums.
+              
+              Ohne diese Einschraenkung meldet die Pruefung 55 Paare,
+              von denen die allermeisten harmlos sind - zwei Proben, die
+              sich dieselbe Zeile teilen und beide auf `smoke` zielen,
+              stoeren einander nie. Eine Pruefung, die vor allem Falsches
+              meldet, wird abgeschaltet und nicht gelesen. */
+        if (q.tor !== 'inhalt') continue;
+        /* EINE Probe zerreisst mit ABSICHT, und sie muss es: „eine
+           Gegenprobe greift ins Leere" beweist, dass der Waechter
+           daruber ueberhaupt anschlaegt. Ihr Eingriff verstellt eine
+           Zeile, die drei andere Proben als Suchtext benutzen - genau
+           darum geht es. Ein Freibrief ist das nicht: er muss
+           drandstehen, und diese Zeile zaehlt mit, wie viele ihn
+           tragen. */
+        if (q.zerreisstMitAbsicht) { mitAbsicht++; continue; }
+        for (const r of liste) {
+          if (r === q) continue;
+          const j = lage.get(r);
+          if (j < 0) continue;
+          if (j + r.such.length <= i || j >= i + q.such.length) continue;
+          gekreuzt++;
+          if (!nachher.includes(r.such))
+            pruefe(false, `Gegenprobe „${q.n}" zerreißt den Suchtext von „${r.n}" in `
+              + `${datei} — beide greifen dieselbe Stelle an, und nach dem Eingriff der `
+              + 'ersten findet die zweite nichts mehr. Sie wäre dann rot, aber nicht '
+              + 'deswegen: gemeldet würde der fehlende Anker und nicht ihr Befund');
+        }
+      }
+    }
+    /* Und die Blindprobe darunter (Regel 1): sieht diese Pruefung
+       ueberhaupt etwas? Mit einem `continue` an der falschen Stelle
+       laeuft sie leer durch, meldet nie etwas und sieht aus wie eine
+       bestandene Pruefung. Eine feste Zahl waere die naechste, die
+       veraltet - verlangt wird nur, dass es ueberhaupt
+       Ueberschneidungen zu pruefen gab. */
+    pruefe(gespielt > 0, 'die Nachbarschaftsprüfung hat keinen einzigen Eingriff '
+      + 'durchgespielt — sie greift ins Leere');
+    pruefe(gekreuzt > 0, 'die Nachbarschaftsprüfung hat keine einzige Überschneidung '
+      + 'zwischen zwei Gegenproben gesehen — entweder gibt es wirklich keine mehr, '
+      + 'oder die Prüfung sieht nicht hin. Beides gehört nachgesehen');
+    console.log(`    Eingriffe im Kopf durchgespielt: ${gespielt} · `
+      + `${gekreuzt} Überschneidungen zwischen Proben derselben Datei geprüft`
+      + `${mitAbsicht ? ` · ${mitAbsicht} zerreißt mit Absicht` : ''}`);
+  }
+
   /* Eine Probe OHNE Eingriff waere hier unsichtbar: nichts zu pruefen,
      also immer gruen. `kopie` zaehlt mit — die Symbolprobe legt eine Datei
      ueber eine andere, statt Text zu ersetzen. */
