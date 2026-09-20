@@ -1606,20 +1606,34 @@ export const PROBEN = [
    * ein Feld, das es nicht gibt. Alle sechzehn Kaesten lesen dann
    * „undefined", der Bildschirm ist heil, und ohne die Wortwache meldet
    * der Rauchtest gruen - genau so, wie es bis heute war. */
-  /* GEFAHREN WIRD DER DURCHGANG UND NICHT DER ENGLISCHABSCHNITT, und das
-     ist gemessen: `--nur=englisch` kommt auf SIEBEN ruhende Bildschirme
-     (5x wahl, 2x sonst) und sieht keinen einzigen Aufgabenbildschirm -
-     der Vorlauf wird dort uebersprungen, die Frage steht nie still. Der
-     Eingriff kam an, und das Tor blieb gruen.
-     Der Durchgang sieht 389 ruhende Bildschirme, davon 333 Aufgaben.
-     Dort schlaegt es an, und der Befund liest sich so:
-       „…al so groß wie Tunesien. undefined Neuer Aufkleber. In Ugan…"
-     Also genau auf einem Bildschirm, den die Buchpruefung nie sieht. */
-  { n:'im Vorlauf steht „undefined" unter jedem Bild', tor:'smoke',
-    args:['--nur=durchgang'], bauen:true, datei:D,
-    such:'          <span>${stueckFuss(x)}</span>',
-    ersatz:'          <span>${x.gibtesnicht}</span>',
-    an:{ ...DIST, text:'<span>${x.gibtesnicht}</span>' },
+  /* DER EINGRIFF MUSS JEDEN BILDSCHIRM TREFFEN, NICHT IRGENDEINEN -
+     und das ist zweimal gemessen worden.
+     
+     Erster Anlauf: die Fusszeile des Vorlaufs zeigt ein Feld, das es
+     nicht gibt. Im Englischabschnitt blieb das Tor gruen - der kommt
+     auf SIEBEN ruhende Bildschirme und sieht keinen Vorlauf. Also auf
+     den Durchgang umgestellt, und dort schlug es an: 389 ruhende
+     Bildschirme, ein Fund.
+     
+     Zweiter Anlauf, derselbe Eingriff, als Probe gefahren: 224 Blicke,
+     NULL Funde. Der Durchgang sieht je nach Last verschieden viele
+     Bildschirme, und ob ein Vorlauf darunter ruht, ist ein Wuerfelwurf -
+     genau die Verfallsart, an der in E24 schon eine Probe zugrunde
+     ging.
+     
+     Jetzt trifft der Eingriff die Ebenenwahl: der Name auf JEDER Kachel
+     kommt aus einem Feld, das es nicht gibt. Dieser Bildschirm ruht in
+     jedem Abschnitt und in jedem Lauf - selbst der Englischabschnitt
+     mit seinen sieben Blicken sieht fuenf davon. Gemessen meldet er
+     dort sofort:
+       „…it möchtest du anfangen? undefined undefined undefined unde…"
+     Damit haengt der Nachweis an keiner Ziehung mehr, und die Probe ist
+     in einer halben Minute gefahren statt in neun. */
+  { n:'auf jeder Kachel der Ebenenwahl steht „undefined"', tor:'smoke',
+    args:['--nur=englisch'], bauen:true, datei:D,
+    such:'<div class="name">${b.titel}</div>',
+    ersatz:'<div class="name">${b.gibtsnicht}</div>',
+    an:{ ...DIST, text:'<div class="name">${b.gibtsnicht}</div>' },
     sagt:'steht „undefined" im sichtbaren Text' },
 
   /* Und die Blindprobe darunter: sieht die Wache ueberhaupt hin? Ohne

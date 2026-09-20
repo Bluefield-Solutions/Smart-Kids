@@ -8605,3 +8605,122 @@ Stelle war eine seit E21 durch ihre Nachbarn zerrissen, eine zweite
 ebenso — und die dritte hing seit jeher an einem Würfel, den in E20
 zufällig richtig gefallen war. Vier Runden lang wurden alle drei grün
 mitgezählt.
+
+## E25 · Die Probe nebenan, die Wortwache, ein großes I — und der Blick auf 87 Zeichnungen
+
+Vier Ziele in dieser Reihenfolge, und die Reihenfolge war selbst eine
+Entscheidung: **zuerst das Werkzeug, das über alle anderen urteilt.**
+E24 hat drei Gegenproben gefunden, die vier Runden lang still verfault
+waren. Alles, was danach kommt, ist nur so viel wert wie der
+Probenbestand.
+
+### 1. Die Probe nebenan — was kein Torlauf, aber ein `replace` im Kopf findet
+
+Zwei der drei Proben aus E24 waren kaputt, weil sie **einander** den
+Suchtext zerrissen: drei Proben griffen dieselben drei Zeilen an, und
+eine hatte einen Suchtext, der zusammenhängend über zwei Stellen samt
+der Kommentare dazwischen spannte. Wer den Filter austauschte, zerriss
+ihn — und das Tor meldete dann den fehlenden Anker statt des Befundes.
+
+**Dafür braucht es keinen Lauf.** Der Eingriff ist ein
+`String.replace` mit zwei Zeichenketten und ersetzt immer nur die erste
+Fundstelle — auch bei `mehrfach:true`. Also lässt er sich im Kopf
+ausführen: einmal ersetzen, dann nachsehen. **0,3 Sekunden statt
+vierzig Minuten.**
+
+Zwei Fragen je Probe:
+
+1. **Kommt der eigene Anker an?** `an:{text}` muss danach dastehen,
+   `an:{fehlt}` muss weg sein. Das fängt den Ersatz, der nicht erzeugt,
+   was der Anker erwartet — mir in E24 zweimal passiert, beide Male an
+   einem Zeilenumbruch.
+2. **Überlebt der Suchtext der Nachbarn?** Nur wo sich die Zugriffe
+   wirklich überschneiden; was außerhalb der ersetzten Stelle liegt,
+   kann gar nicht betroffen sein. Sonst wären es bei 225 Proben in
+   `spiel.js` fünfzigtausend Textsuchen in einer halben Megabyte.
+
+**Und nur für Proben, die auf `inhalt` zielen.** Das war der erste
+Befund über die Prüfung selbst: ohne diese Einschränkung meldete sie
+**55 Paare**, von denen die meisten harmlos sind. Jede Probe läuft in
+einer eigenen Wegwerf-Kopie; ein zerrissener Nachbaranker überlebt den
+Lauf gar nicht. Schaden kann er nur *innerhalb* desselben Laufs, und
+das nur, wenn das geprüfte Tor `inhalt` ist — nur dort läuft der
+Ankerwächter auf dem eingegriffenen Baum. Eine Prüfung, die vor allem
+Falsches meldet, wird abgeschaltet statt gelesen.
+
+Übrig blieben **vier Meldungen, drei davon echt:**
+
+| Datei | Paar |
+|---|---|
+| `erdkunde.js` | „ein Rang fehlt in der Länderliste" zerriss „eine Aussprachevariante zeigt aufs falsche Land" — beide greifen dieselbe POL-Zeile an |
+| `abzeichen.js` | die zwei Abzeichenproben zerrissen einander — beide greifen dieselbe `waehlt:`-Zeile an |
+
+Alle drei entflochten: jeder Eingriff rettet den Suchtext der Nachbarin
+wortwörtlich als Kommentar dahinter. Die vierte Meldung war richtig und
+gehörte trotzdem weg — „eine Gegenprobe greift ins Leere" zerreißt *mit
+Absicht*, das ist ihr Sinn. Sie trägt jetzt `zerreisstMitAbsicht`, und
+der Bericht zählt, wie viele das tun. Heute ist es diese eine.
+
+**Was die Prüfung nicht fängt**, und das gehört dazugesagt: einen
+Eingriff, der ankommt und trotzdem nichts auslöst — die dritte Probe
+aus E24 war so einer. Und sie sieht **Text, keine Syntax**: mein eigener
+Ankerkommentar für die Abzeichenproben trug einen Backslash zuviel,
+schrieb ein literales `\n` in die Datei und machte sie zu ungültigem
+JavaScript. Das Tor wurde rot, aber wegen des Syntaxfehlers. Gefunden
+hat es der Lauf — diesmal in anderthalb Minuten statt in vier Runden.
+
+### 2. Die Wortwache — „undefined" auf jedem Bildschirm
+
+Der älteste offene Befund, aus E23. Geprüft wurde „undefined" an genau
+**einer** Stelle: auf den Karten im Forscherbuch. Der Vorlauf zeigt
+dieselben Aufkleber mit derselben Fußzeile, die Aufgabenbildschirme
+zeigen Namen, Fragen und Lobsätze — und dort sah niemand hin.
+
+Die Wache reitet auf dem Bildschirmbeobachter des Fremdgriffs mit, weil
+der der **eine** Ort ist, der jeden ruhenden Bildschirm sieht. Drei
+Muster, alle drei heißen „hier stand eine Variable, die es nicht gibt":
+`undefined`, `NaN`, `[object Object]`. Gesucht wird im *sichtbaren*
+Text und an Wortgrenzen.
+
+**Die Gegenprobe hat sich ihren Abschnitt selbst ausgesucht, und das
+ist gemessen.** Zuerst hing sie am Englischabschnitt — der kommt auf
+**sieben** ruhende Bildschirme (5× Wahl, 2× sonst) und sieht *keinen
+einzigen Aufgabenbildschirm*: der Vorlauf wird dort übersprungen, die
+Frage steht nie still. Der Eingriff kam an, das Tor blieb grün. Der
+Durchgang sieht **389** ruhende Bildschirme, davon **333 Aufgaben**.
+Dort schlägt es an:
+
+> `…al so groß wie Tunesien. undefined Neuer Aufkleber. In Ugan…`
+
+Also genau auf einem Bildschirm, den die Buchprüfung nie sieht. Das ist
+die Lücke, um die es ging.
+
+### 4. Ein großes I in einer Präposition
+
+Die amtliche Wortliste schreibt zwei Einträge groß, mitten in einer
+sonst durchgehend kleingeschriebenen Liste: **„In front of"** und
+**„Its"**. Gemessen, bevor geändert:
+
+| | wo | sieht ein Kind es? |
+|---|---|---|
+| `In front of` | gezeichnete Karte in „Lies das Wort", „Hören und zeigen", Thema 4.2 | **ja**, sehen und hören |
+| `Its` | `NUR_WORT` — daraus wird keine Karte gebaut | **nein**, die Liste lesen nur Tore |
+
+Also genau ein Wort — und dafür **keine Änderung an der Abschrift.**
+Die Liste beantwortet die Frage „sind alle 151 abgedeckt?" und muss
+dafür so dastehen wie die Quelle, samt deren Nummerierungsfehler. Auf
+einer Karte ist das Wort aber das Vorbild, an dem ein Kind lernt, wie
+man es schreibt.
+
+`ANZEIGE` hält einen Eintrag, und das Tor hält die Tafel winzig: jeder
+Schlüssel muss in `WOERTER` stehen, Schlüssel und Anzeige dürfen sich
+**nur** in Groß- und Kleinschreibung unterscheiden, ein Eintrag auf
+sich selbst ist verboten. Ohne diese drei Zeilen wäre die Tafel in zwei
+Runden eine zweite Wortliste, die der ersten widerspricht (Regel 6:
+was zweimal dasteht, veraltet einmal).
+
+**Nebenbei hat das Budget nachgefragt**: 602 von 700 KB, +5,1 % seit
+der Bestätigung vom 9. September. Nachgemessen kostet *diese* Runde
+0,7 KB (547,4 → 548,1 im Startbündel); die anderen 29 KB sind über E20
+bis E24 gewachsen — Zeichnungen, Tafeln, Begründungen. Gewollt,
+angesehen, bestätigt.
