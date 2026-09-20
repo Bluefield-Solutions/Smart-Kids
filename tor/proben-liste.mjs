@@ -5311,13 +5311,13 @@ export const PROBEN = [
        den Suchtext der anderen als Kommentar dahinter (E25). */
     such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
     ersatz:'waehlt: (v) => v.filter(x => x.stadtstaatlich) }'
-      + '\\n/* Anker der Nachbarprobe: waehlt: (v) => v.filter(x => x.stadtstaat) } */',
+      + '\n/* Anker der Nachbarprobe: waehlt: (v) => v.filter(x => x.stadtstaat) } */',
     an:{ datei:A, text:'x.stadtstaatlich' }, sagt:'unerreichbar' },
 
   { n:'ein Abzeichen wählt gleich den ganzen Vorrat', tor:'inhalt', deckt:'abzeichen', datei:A,
     such:'waehlt: (v) => v.filter(x => x.stadtstaat) }',
     ersatz:'waehlt: (v) => v.filter(x => !!x) }'
-      + '\\n/* Anker der Nachbarprobe: waehlt: (v) => v.filter(x => x.stadtstaat) } */',
+      + '\n/* Anker der Nachbarprobe: waehlt: (v) => v.filter(x => x.stadtstaat) } */',
     an:{ datei:A, text:'v.filter(x => !!x) }' }, sagt:'wählt ALLE' },
 
   /* DIESE PROBE STEHT HIER UNTEN UND NICHT BEI IHREN ZWEI SCHWESTERN,
