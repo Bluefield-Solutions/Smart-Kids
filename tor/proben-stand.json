@@ -523,6 +523,11 @@
       "zeit": "2026-09-11",
       "s": 4
     },
+    "auf jeder Kachel der Ebenenwahl steht „undefined\"": {
+      "commit": "c622d85a78a3fee3030e7d8a61c523f9ee0fa163",
+      "zeit": "2026-09-20",
+      "s": 40
+    },
     "die Suchtext-Prüfung liest keine Proben mehr": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",

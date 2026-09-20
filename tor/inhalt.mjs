@@ -3056,6 +3056,15 @@ console.log('\n  Tor `englisch`');
       if (schluessel === wie)
         e4.push(`ANZEIGE führt „${schluessel}" auf sich selbst — die Zeile tut nichts `
           + 'und wird beim nächsten Umbau falsch');
+      /* UND DIE WIRKUNG, nicht nur die Eintragung (Regel 1: eine
+         Prüfung, die nie etwas meldet, ist kein Beweis). Ohne diese
+         Zeile wäre die Tafel ein Dokument: man könnte `anzeigeWort`
+         zurückbauen auf `w => w`, und die drei Prüfungen darüber blieben
+         grün — die Tafel stünde weiter da und täte nichts. Genau dieser
+         Fehler ist E22 bei `fragbar:false` unterlaufen. */
+      if (EN.anzeigeWort(schluessel) !== wie)
+        e4.push(`\`anzeigeWort("${schluessel}")\` gibt „${EN.anzeigeWort(schluessel)}" `
+          + `zurück statt „${wie}" — die Tafel ist ein Dokument und keine Wirkung`);
     }
 
     const blaetter = BP.blaetter();

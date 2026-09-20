@@ -1579,10 +1579,13 @@ export const PROBEN = [
     such:"export const anzeigeWort = (w) => ANZEIGE[w] || w;",
     ersatz:"export const anzeigeWort = (w) => w;",
     an:{ datei:'src/inhalt/englisch.js', text:'anzeigeWort = (w) => w;' },
-    /* Rot wird `inhalt` an der Zeile darunter: die Tafel fuehrt dann
-       „In front of" auf sich selbst, und genau das verbietet sie. So
-       haengt der Nachweis an der WIRKUNG und nicht an der Eintragung. */
-    sagt:'tut nichts' },
+    /* ERSTER ANLAUF, UND ER BEWIES NICHTS: ich hatte erwartet, dass die
+       Tafel dann „In front of" auf sich selbst fuehrt. Tut sie nicht -
+       die Tafel bleibt ja unveraendert, nur die Funktion liest sie nicht
+       mehr. `inhalt` blieb gruen, und die Tafel waere ein Dokument
+       gewesen. Das Tor prueft seither die WIRKUNG: `anzeigeWort` muss
+       zurueckgeben, was die Tafel sagt. */
+    sagt:'ein Dokument und keine Wirkung' },
 
   /* 2. Aus der Tafel wird eine Uebersetzung. Ein Eintrag, der nicht nur
    *    die Schreibweise aendert, ist eine zweite Wortliste im
