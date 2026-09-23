@@ -5302,7 +5302,11 @@ export const PROBEN = [
   // Und der Pokal selbst: ohne ihn ist der Test eine Runde ohne Ertrag.
   { n:'der bestandene Test bringt keinen Pokal mehr', tor:'smoke',
     args:['--nur=test'], bauen:true, datei:D,
-    such:'  if (st.test && bestanden) pokalSetzen(st.ebeneId,',
+    /* Nachgezogen in D6: die Probe teilt sich den Endbildschirm mit dem
+       Test, bekommt aber eine NOTE statt eines Pokals - `!st.probe`
+       ist dazugekommen. Ohne den nachgezogenen Suchtext ginge der
+       Eingriff ins Leere und das Tor bliebe stillschweigend gruen. */
+    such:'  if (st.test && !st.probe && bestanden) pokalSetzen(st.ebeneId,',
     ersatz:'  if (false) pokalSetzen(st.ebeneId,',
     an:{ ...DIST, text:'if (false) pokalSetzen(st.ebeneId,' },
     sagt:'Pokal' },

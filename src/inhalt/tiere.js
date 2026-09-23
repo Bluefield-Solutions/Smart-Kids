@@ -485,6 +485,33 @@ export const RAEUME = [
             'schreiben:ziffern', 'schreiben:zahlen'], titel:'Auf der Weide',
     tiere:['schaf', 'esel', 'hund'] },
 
+  /* DER MAERCHENWALD — der Raum der Deutsch-Welt (D6).
+   *
+   * Alle sechzehn Ebenen fuehren hierher: die fuenfzehn
+   * Rechtschreibebenen und die Probe. Dieselbe Ableitung wie beim Riff
+   * und beim Bauernhof - wer EINE davon fertig hat, hat genug von der
+   * Welt gesehen.
+   *
+   * WARUM GERADE DIESE DREI: Einhorn, Drache und Yeti waren die
+   * letzten gemalten Wesen ohne Raum - und „Märchen" steht in der
+   * amtlichen Liste, als Wort mit einem ä ohne Ableitung. Der
+   * Zusammenhang ist damit einmal keiner, der erfunden werden musste:
+   * das Kind sammelt hier genau das, was es schreiben gelernt hat.
+   *
+   * Die Kennungen der fuenfzehn stehen hier ausgeschrieben, obwohl sie
+   * in `deutsch.js` erzeugt werden. Das ist Absicht und kein Versehen
+   * (Regel 3: das Soll kommt aus der Referenz, nicht aus mir): eine
+   * Liste, die sich aus der geprueften Datei selbst holt, wuerde beim
+   * naechsten neuen Phaenomen still mitwachsen, und das Tor merkte
+   * nicht, dass niemand hingesehen hat. */
+  { ebenen:['deutsch:silben', 'deutsch:r-nach-vokal', 'deutsch:ie',
+            'deutsch:mitlautverdopplung', 'deutsch:tz', 'deutsch:ck',
+            'deutsch:silben-h', 'deutsch:verhaertung', 'deutsch:umlautung',
+            'deutsch:flektiert', 'deutsch:umlaut-verhaertung',
+            'deutsch:praeteritum', 'deutsch:haeufig', 'deutsch:ss',
+            'deutsch:merkwoerter', 'deutsch:probe'], titel:'Im Märchenwald',
+    tiere:['einhorn', 'drache', 'yeti'] },
+
   /* DER ERSTE RAUM OHNE EBENE (T6).
    *
    * Ihn oeffnet die SAMMLUNG selbst - wer dreissig Tiere hat, bekommt
@@ -830,6 +857,14 @@ export const KULISSEN = {
   "Am Wasser": {
     ton:'#f8ecd2',
     bild:'<path d="M0 0h160v32H0z" fill="#f6dda6"/><path d="M0 32h160v58H0z" fill="#dcb96e"/><path d="M0 32c30-6 54 6 86 2s44-8 74-2v12H0z" fill="#d2ab5c"/><path d="M0 50c30 6 56-2 88 2s40 4 72 0v38H0z" fill="#e6c682"/><path d="M128 12c8 0 13 5 13 11s-5 11-13 11-13-5-13-11 5-11 13-11z" fill="#f7b850"/><path d="M28 88c-16 0-26-6-26-13s10-13 30-13 34 6 34 13-14 13-38 13z" fill="#6aa8b8"/><path d="M32 74c-14 0-22-2-24-5 4-3 12-5 24-5s22 2 26 5c-4 3-12 5-26 5z" fill="#8fc6d2"/><path d="M14 80c8-2 16-2 24 0-8 2-16 2-24 0zM40 84c8-2 14-2 20 0-6 2-12 2-20 0z" fill="#b6dee6"/><path d="M124 78v-22h3.4v22z" fill="#7a5a34"/><path d="M125.7 60l-9-7 1.6-2 7.4 6zM125.7 62l9-8 1.6 2-9 7z" fill="#7a5a34"/><path d="M108 54c0-5 8-9 18-9s18 4 18 9c0 3-5 4-18 4s-18-1-18-4z" fill="#6f9a52"/><path d="M112 51c3-3 8-4 14-4s11 1 14 4c-4-2-9-3-14-3s-10 1-14 3z" fill="#87b166"/><path d="M74 84l2-9 2 9zM82 88l2-8 2 8zM96 82l2-9 2 9z" fill="#bc9a52"/>' },
+  /* IM MAERCHENWALD - die Kulisse der Deutsch-Welt (D6).
+     Dunkler Himmel, Mond und drei Sterne ueber dem Horizont, links zwei
+     Tannen, rechts eine Burg. In der MITTE steht nichts: dort liegen
+     die neun Plaetze, und ein Platz, auf dem eine Burg steht, ist kein
+     Platz. Das ist die einzige Regel, die alle Kulissen teilen. */
+  "Im Märchenwald": {
+    ton:'#e9e6f6',
+    bild:'<path d="M0 0h160v34H0z" fill="#cfd9f2"/><path d="M0 20h160v14H0z" fill="#dde5f7"/><path d="M24 8c6 0 10 4.5 10 10s-4 10-10 10-10-4.5-10-10 4-10 10-10z" fill="#f8f2cf"/><path d="M52 10c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM86 6c1 0 1.5.7 1.5 1.5S87 9 86 9s-1.5-.7-1.5-1.5S85 6 86 6zM110 14c1 0 1.5.7 1.5 1.5s-.5 1.5-1.5 1.5-1.5-.7-1.5-1.5.5-1.5 1.5-1.5z" fill="#ffffff"/><path d="M0 34c28-10 48 6 74 0s50-12 86 2v10H0z" fill="#8fae7e"/><path d="M0 44h160v46H0z" fill="#a4c491"/><path d="M0 60c30 6 54-6 84-2s48 8 76 4v28H0z" fill="#b2d09c"/><path d="M12.4 64v-12h3.2v12zM28.4 66v-10h3.2v10z" fill="#6b4a2c"/><path d="M14 28c8 0 11 8 11 12.5s-5 5.5-11 5.5-11-2-11-5.5 3-12.5 11-12.5z" fill="#3f7a52"/><path d="M30 36c6 0 9 6 9 9.5s-4 4.5-9 4.5-9-1.5-9-4.5 3-9.5 9-9.5z" fill="#4f8f5f"/><path d="M118 60V28h8v32zM150 60V26h8v34z" fill="#c9c6d6"/><path d="M120 60V34h34v26z" fill="#b9b6c9"/><path d="M122 20l6 8h-12zM154 17l6 9h-12z" fill="#7d5ba6"/><path d="M133 60V48a4 4 0 0 1 8 0v12z" fill="#6b5a44"/><path d="M120 38h4v5h-4zM148 36h4v5h-4zM136 38h4v5h-4z" fill="#f6e08a"/>' },
   /* BEI DEN BLUMEN - die neunte Schwelle (I22). Die erste Kulisse ohne
      Landschaft: ein Beet ist gemacht, keine Gegend. Das passt zu einem
      Raum, den nicht eine Karte oeffnet, sondern das Sammeln selbst. */

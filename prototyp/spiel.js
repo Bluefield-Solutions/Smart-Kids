@@ -1823,6 +1823,26 @@ const EBENEN = [
     titel:'Rechtschreibung', wo:g.titel, farbe:g.farbe,
     art:'deutsch', gruppe:'rechtschreibung', wer:['lea'],
     frageWort:' — woran möchtest du üben?' })),
+
+  /* DIE PROBE (D6) — eine eigene Kachel, immer offen.
+   *
+   * Sie steht NICHT in der Gruppe „Rechtschreibung": sie gehoert nicht
+   * zu den fuenfzehn Ebenen, sie fragt QUER ueber sie hinweg. Die
+   * Deutsch-Welt zeigt damit zwei Kacheln - „Rechtschreibung" und
+   * „Probe" -, und die Etappen zwei und drei haengen ihre Abteilungen
+   * daneben.
+   *
+   * ZWANZIG AUFGABEN AUS ALLEM GELERNTEN, zu den Fehlerwoertern hin
+   * gewichtet. Nicht die zwanzig der letzten Uebungsrunde: die waeren
+   * nach zehn Minuten noch im Kopf, und die Note waere geschenkt. Eine
+   * Probe misst, was BEHALTEN wurde.
+   *
+   * `probe` und nicht `test`: ein Test fragt EINE Ebene vollstaendig ab
+   * und gibt einen Pokal, die Probe fragt zwanzig quer und gibt eine
+   * Note. Beide teilen sich den Endbildschirm, und deshalb steht hier
+   * ein eigenes Feld statt eines zweiten Sinns fuer dasselbe. */
+  { id:'deutsch:probe', ueber:'Deutsch', titel:'Probe', farbe:6,
+    art:'deutsch', wer:['lea'], probe:true },
 ];
 
 /* Die Fachwelten (D4).
@@ -2800,6 +2820,13 @@ function vorrat(ebeneId, stand = Stand, voll = false){
    * Gegenstand erkennen. Ohne sie fiele er dort auf den Rechenkasten
    * durch und zeigte `undefined` - derselbe Weg, den Flagge, Lautpaar
    * und Satzkarte schon einmal gegangen sind. */
+  /* Die Probe zieht aus ALLEN fuenfzehn Ebenen. Welche zwanzig es
+     werden, entscheidet `probeAuswahl` in `starten` - hier steht nur,
+     woraus. */
+  if (art === 'deutsch' && kont === 'probe')
+    return Deutsch.EINHEITEN.map(e => ({
+      ...Deutsch.gegenstandZu(e), lernwort:true,
+      gruppeTitel: (Deutsch.gruppeVon(e.gruppe) || {}).titel || '' }));
   if (art === 'deutsch')
     return Deutsch.einheitenVon(kont).map(e => ({
       ...Deutsch.gegenstandZu(e), lernwort:true,
@@ -3185,13 +3212,56 @@ for (const r of [...Schreiben.vorrat(), ...Schreiben.vorratDiktat(),
   NAMEN[r.id]=r.zeichen;
 
 const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
+/* DIE PROBE HAT KEINEN EIGENEN STAND (D6).
+ *
+ * Der erste Anlauf gab ihr einen - sie ist eine Ebene wie jede andere,
+ * also bekam sie ihren Leitner-Stand unter `deutsch:probe`. Im Bild sah
+ * man, was daran falsch ist: der Endbildschirm zaehlte „0 von 322 im
+ * Buch", und das waren 322 ZUSAETZLICHE Aufkleber neben den 322 der
+ * fuenfzehn Ebenen. Dieselben Woerter, zweimal zu sammeln, mit zwei
+ * Staenden, die auseinanderlaufen.
+ *
+ * Und es waere auch der Sache nach falsch: dass Lea „Abend" in der
+ * Probe richtig geschrieben hat, ist eine Auskunft ueber „Abend" und
+ * nicht ueber die Probe. Sie muss im Fehlerheft ankommen, und das liest
+ * die Staende der Ebenen.
+ *
+ * Also liest die Probe alle fuenfzehn Staende zusammen und schreibt sie
+ * beim Sichern wieder auseinander. Ein Gegenstand weiss, in welche
+ * Ebene er gehoert - `Deutsch.HEIMAT` hat das entschieden, und
+ * `einheitenVon` traegt es. */
+const istProbeEbene = (ebeneId) => !!(EBENEN.find(e => e.id === ebeneId) || {}).probe;
+
 async function standLaden(ebeneId){
+  if (istProbeEbene(ebeneId)) { Stand = await deutschStaende(); return; }
   try { Stand = (await Ablage.hole('fortschritt', standSchluessel(ebeneId))) || Leitner.neuerStand(); }
   catch(e){ Stand = Leitner.neuerStand(); }
 }
 async function standSichern(ebeneId){
+  if (istProbeEbene(ebeneId)) { await deutschStaendeSichern(); gleichlaufBald(); return; }
   try { await Ablage.setze('fortschritt', standSchluessel(ebeneId), Stand); } catch(e){}
   gleichlaufBald();
+}
+
+/** Den gemeinsamen Stand der Probe wieder auf die fuenfzehn Ebenen verteilen. */
+async function deutschStaendeSichern(){
+  const heim = new Map(Deutsch.EINHEITEN.map(e => [e.id, e.gruppe]));
+  const je = {};
+  for (const g of Deutsch.GRUPPEN) je[g.id] = {};
+  for (const [id, wert] of Object.entries(Stand)) {
+    const g = heim.get(id);
+    if (g) je[g][id] = wert;
+  }
+  for (const g of Deutsch.GRUPPEN) {
+    if (!Object.keys(je[g.id]).length) continue;
+    /* Zusammengefuehrt und nicht ueberschrieben: zwischen Laden und
+       Sichern kann auf einem anderen Geraet etwas dazugekommen sein,
+       und die Probe kennt nur die Woerter, die sie gestellt hat. */
+    let alt = {};
+    try { alt = (await Ablage.hole('fortschritt', `${P.id}:deutsch:${g.id}`)) || {}; } catch(e){}
+    try { await Ablage.setze('fortschritt', `${P.id}:deutsch:${g.id}`,
+      { ...alt, ...je[g.id] }); } catch(e){}
+  }
 }
 /* Der Umzug nach Mittelamerika (A6).
  *
@@ -3749,9 +3819,20 @@ function profilwahl(){
  * hiesse zweimal anders gerechnet - genau so sind in diesem Verzeichnis
  * schon zwei Sternformeln entstanden.
  */
+/* EINE PROBE WIRD NICHT GESAMMELT (D6).
+ *
+ * Sie teilt sich ihren Leitner-Stand mit den fuenfzehn Ebenen und ihren
+ * Vorrat auch - alle 322 Woerter. Zaehlte sie mit, stuenden dieselben
+ * Aufkleber zweimal im Buch und die Deutsch-Kachel sagte „0 von 644".
+ * Und der Sache nach ist es auch keine Sammlung: eine Probe schreibt
+ * man, man sammelt sie nicht. */
+const sammeltNicht = (e) => !!e.probe;
+
 async function staende(){
   const aus = [];
   for (const e of meineEbenen()) {
+    if (sammeltNicht(e)) { aus.push({ ...e, gesamt:0, gesammelt:0, gekonnt:0,
+      anteil:0, pokal:null }); continue; }
     let st = {};
     try { st = (await Ablage.hole('fortschritt', `${P.id}:${e.id}`)) || {}; } catch(err){}
     aus.push({ ...e, ...Leitner.fortschritt(vorrat(e.id, st), st),
@@ -4092,6 +4173,93 @@ const testOffen = (b) => testErlaubt(b) && b.gesammelt >= b.gesamt;
  * sechzehn Gegenstaenden dreizehn - man darf dreimal danebenliegen. */
 const BESTANDEN_AB = 0.8;
 
+/* ---------- Die Probe (D6) ------------------------------------------------
+ *
+ * ZWANZIG AUFGABEN. Nicht Leas Sitzungslaenge von acht: eine Probe ist
+ * keine Uebungsrunde, und die Zahl kommt aus der Sache - zwanzig Woerter
+ * ist die Groesse, in der in der dritten Klasse geuebt und abgefragt
+ * wird.
+ */
+const PROBE_LAENGE = 20;
+/* Wieviele davon aus den Fehlerwoertern kommen duerfen. Nicht alle:
+   eine Probe, die nur das Wackelige abfragt, misst nicht, was jemand
+   kann, sondern was der Leitner gerade fuer wackelig haelt - derselbe
+   Satz, der beim Test steht. Die Haelfte ist die Gewichtung, die der
+   Nutzer gewaehlt hat („zu den Fehlerwoertern hin"). */
+const PROBE_FEHLER_ANTEIL = 0.5;
+
+/* BAYERN HAT KEINEN VERBINDLICHEN NOTENSCHLUESSEL FUER DIKTATE.
+ *
+ * Nachgesehen: Art. 52 BayEUG gibt die sechs Notenstufen, § 10 GrSO die
+ * Zahl der Proben und ihre Ankuendigung - den Schluessel setzt die
+ * Lehrerkonferenz. Was hier steht, ist deshalb ein VORSCHLAG und kein
+ * amtliches Mass; er ist im Elternbereich zu aendern.
+ *
+ * Die Zahlen sind die untere Grenze in Prozent, von 1 nach 5 gelesen;
+ * darunter ist es eine 6. */
+const NOTENSCHLUESSEL = [96, 81, 61, 41, 16];
+const notenschluessel = () => (Einst && Einst.notenschluessel) || NOTENSCHLUESSEL;
+/** Welche Note ergibt dieser Anteil? */
+const noteFuer = (anteil) => {
+  const p = anteil * 100, k = notenschluessel();
+  for (let i = 0; i < k.length; i++) if (p >= k[i]) return i + 1;
+  return 6;
+};
+
+/**
+ * Welche zwanzig Woerter die Probe stellt.
+ *
+ * Drei Toepfe, in dieser Reihenfolge:
+ *   FEHLERWOERTER  schon gesehen, sitzt aber noch nicht (Fach 0 oder 1)
+ *   GEUEBT         schon gesehen und weiter oben
+ *   NEU            noch nie drangekommen
+ *
+ * Hoechstens die Haelfte aus dem ersten Topf, der Rest aufgefuellt.
+ * Gemischt wird zum Schluss: kaemen erst zehn wackelige und dann zehn
+ * sichere, waere die Reihenfolge schon die halbe Auskunft.
+ *
+ * DIE STAENDE DER FUENFZEHN EBENEN werden dafuer einzeln gelesen. Der
+ * Leitner-Stand liegt je Ebene in der Ablage; die Probe gehoert keiner
+ * von ihnen und haette sonst nur ihren eigenen, leeren Stand - sie
+ * wuerde bei jedem Lauf zwanzig zufaellige Woerter ziehen und von
+ * Fehlern nichts wissen.
+ */
+async function deutschStaende(){
+  const aus = {};
+  for (const g of Deutsch.GRUPPEN) {
+    let st = {};
+    try { st = (await Ablage.hole('fortschritt', `${P.id}:deutsch:${g.id}`)) || {}; } catch(e){}
+    Object.assign(aus, st);
+  }
+  return aus;
+}
+
+async function probeAuswahl(alle, keim){
+  const staende = await deutschStaende();
+  const fehler = [], geuebt = [], neu = [];
+  for (const g of alle) {
+    const e = staende[g.id];
+    if (!e) neu.push(g);
+    else if ((e.fach ?? 1) <= 1) fehler.push(g);
+    else geuebt.push(g);
+  }
+  const zieh = (topf, n) => mischenMit(topf, keim).slice(0, Math.max(0, n));
+  const ausFehler = zieh(fehler, Math.round(PROBE_LAENGE * PROBE_FEHLER_ANTEIL));
+  const rest = PROBE_LAENGE - ausFehler.length;
+  const ausGeuebt = zieh(geuebt, rest);
+  const ausNeu = zieh(neu, rest - ausGeuebt.length);
+  /* Reicht das immer noch nicht - am allerersten Tag gibt es weder
+     Fehler- noch geuebte Woerter -, wird aus dem ganzen Vorrat
+     aufgefuellt. Eine Probe mit sieben Aufgaben waere keine. */
+  const gewaehlt = [...ausFehler, ...ausGeuebt, ...ausNeu];
+  if (gewaehlt.length < PROBE_LAENGE) {
+    const schon = new Set(gewaehlt.map(x => x.id));
+    gewaehlt.push(...mischenMit(alle.filter(x => !schon.has(x.id)), keim + 1)
+      .slice(0, PROBE_LAENGE - gewaehlt.length));
+  }
+  return mischenMit(gewaehlt, keim + 2);
+}
+
 /** Der Kopf, den beide Wahlbildschirme tragen. Einmal geschrieben. */
 const wahlKopf = (mitte) => kopf({ links: zurueckKnopf(), mitte:`<span class="marke">${mitte}</span>`,
   rechts: zeichenKnopf('buch','buch','Forscherbuch')
@@ -4335,7 +4503,7 @@ async function ebenenwahl(gruppe = null){
           ${silhouette(b.id, b.gruppenKachel)}
           <div class="ueber">${b.ueber}</div>
           <div class="name">${b.titel}</div>
-          <div class="kachelfuss">
+          ${b.probe ? '' : `<div class="kachelfuss">
             <div class="stand">${kleberMarke(b.gesammelt, b.gesamt, true)}${
               /* Der Pokal steht NEBEN dem Aufkleberstand, nicht darueber:
                  beide sagen „was du hier hast", und beide gehoeren damit in
@@ -4343,7 +4511,7 @@ async function ebenenwahl(gruppe = null){
                  Kachel - dort lag er auf der Zahl. */
               b.pokal ? `<span class="pokal" title="Test bestanden">${POKAL}</span>` : ''}</div>
             ${fortschrittBalken(b)}
-          </div>
+          </div>`}
         </button>
         ${b.gruppenKachel ? '' : `
         <button class="knopf rund schau" data-schau="${b.id}"
@@ -5017,6 +5185,12 @@ async function starten(ebeneId, alsTest = false){
    * wackeligen Gegenstaende abfragt, misst nicht, was jemand kann - er
    * misst, was der Leitner gerade fuer wackelig haelt. */
   const testListe = alsTest ? mischenMit(alle, keim) : null;
+  /* Die Probe baut ihre Liste selbst - quer ueber alle fuenfzehn Ebenen
+     und gewichtet zu den Fehlerwoertern hin. Sie kommt VOR `testListe`
+     zum Zug, obwohl sie danach steht: die Probe ist kein Test einer
+     Ebene und hat deshalb `alsTest` nicht gesetzt. */
+  const istProbe = !!eb?.probe;
+  const probeListe = istProbe ? await probeAuswahl(alle, keim) : null;
   /* Welche Abzeichen es VORHER schon gab (D2).
    *
    * Ohne diesen Griff waere ein neues Abzeichen am Ende nicht von einem
@@ -5030,9 +5204,15 @@ async function starten(ebeneId, alsTest = false){
      gesessen haben, und wieviele es im besten Lauf dieser Runde waren.
      Beides gehoert der Sitzung und nicht dem Kind - eine Serie ueber Tage
      waere eine andere Zusage und braucht die Ablage. */
-  Sitzung = { ebeneId, alle, liste: testListe || listeMitBogen, i:0, glatt:0, wie:[],
+  Sitzung = { ebeneId, alle, liste: probeListe || testListe || listeMitBogen,
+              i:0, glatt:0, wie:[],
               serie:0, besteSerie:0, neuSicher:[],
-              aufkleber:0, neueKleber:[], keim, begonnen:Date.now(), test: alsTest,
+              aufkleber:0, neueKleber:[], keim, begonnen:Date.now(),
+              /* `test` traegt den Endbildschirm (Ergebnis statt Fortschritt),
+                 `probe` sagt ihm, dass es eine NOTE gibt statt eines Pokals.
+                 Zwei Felder und nicht eines mit zwei Bedeutungen: der Pokal
+                 gehoert zur Ebene, die Note zur Probe. */
+              test: alsTest || istProbe, probe: istProbe,
               /* ZEITEN JE AUFGABE (I27) - fuer die Erwachsenen.
                  Gemessen wird von der vorigen Antwort bis zu dieser, das
                  Lob dazwischen also mitgezaehlt. Das ist bei jeder
@@ -10161,9 +10341,20 @@ function endschirm(){
    * ueberall sonst: zwei Zaehler fuer dieselbe Sache waeren zwei Zahlen,
    * die eines Tages auseinanderlaufen (F2 und F3 im Stand, beide genau so
    * entstanden). */
-  const bestanden = st.test && st.glatt >= Math.ceil(st.liste.length * BESTANDEN_AB);
-  if (st.test && bestanden) pokalSetzen(st.ebeneId,
+  /* Der POKAL gehoert dem Test einer EBENE, nicht der Probe: sie fragt
+     quer ueber alle fuenfzehn und haette sonst einen Pokal fuer eine
+     Ebene, die es nicht gibt. Sie bekommt stattdessen eine Note. */
+  const bestanden = st.test && !st.probe
+    && st.glatt >= Math.ceil(st.liste.length * BESTANDEN_AB);
+  if (st.test && !st.probe && bestanden) pokalSetzen(st.ebeneId,
     { zeit: Date.now(), richtig: st.glatt, von: st.liste.length });
+  /* DIE NOTE (D6). Gerechnet aus `glatt` - beim ERSTEN Versuch richtig -
+     und damit aus derselben Zahl wie die Sterne. Eine zweite Zaehlung
+     daneben waere die, die eines Tages auseinanderlaeuft.
+     Der Schluessel ist im Elternbereich einstellbar, weil Bayern keinen
+     verbindlichen kennt; die Begruendung steht bei `NOTENSCHLUESSEL`. */
+  const probeAnteil = st.liste.length ? st.glatt / st.liste.length : 0;
+  const note = st.probe ? noteFuer(probeAnteil) : null;
   /* Was ist in DIESER Sitzung dazugekommen (D2)? Hoechstens eines wird
      genannt - zwei Abzeichen auf einmal sind selten, und wer drei Zeilen
      vorgelesen bekommt, hoert bei der dritten nicht mehr zu. */
@@ -10202,18 +10393,32 @@ function endschirm(){
            Geschwister in einer Spalte werden nicht zur Reihe, ohne dass
            alle anderen es auch werden. */''}
       <div class="siegkopf">
-      ${st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
+      ${st.probe ? `<div class="siegsterne notenspiegel"
+             ><div class="note note${note}">${note}</div></div>`
+        : st.test ? `<div class="siegsterne">${bestanden ? POKALGROSS : ''}</div>`
         : ton().siegsterne ? `<div class="siegsterne${ton().feier ? ' feier' : ''}"
              >${sterne(n,56)}</div>` : ''}
       ${/* Die Figur feiert mit (N9) - gross, ueber der Zeile, nur bei den
            Kinderprofilen. Auf dem Endbildschirm ist Platz, und hier ist
            sie am meisten wert: das ist der Augenblick, in dem ein Kind
            jemandem etwas zeigen moechte. */
-        ton().feier ? `<div class="figurgross">${figur('feiert', 64)}</div>` : ''}
-      <div class="gross">${st.test
-        ? (bestanden ? 'Test bestanden!' : 'Noch nicht ganz.') : ton().ende}</div>
+        /* BEI EINER SCHLECHTEN NOTE WIRD NICHT GEFEIERT. Im Bild stand
+           „Note 5" neben einer jubelnden Figur - das ist nicht nur
+           schief, es nimmt der Note ihren Sinn. Ab der Vier bleibt die
+           Figur bei „freut" - dem ruhigen kleinen Laecheln -, statt zu
+           jubeln. Abgeschafft wird sie nicht: ein Kind mit einer Fuenf
+           allein zu lassen ist auch keine Antwort. Es gibt genau drei
+           Stimmungen, und eine vierte dafuer zu zeichnen hiesse, zwei
+           Figuren zu haben. */
+        ton().feier ? `<div class="figurgross">${
+          figur(st.probe && note >= 4 ? 'freut' : 'feiert', 64)}</div>` : ''}
+      <div class="gross">${st.probe ? `Note ${note}`
+        : st.test ? (bestanden ? 'Test bestanden!' : 'Noch nicht ganz.') : ton().ende}</div>
       </div>
-      <div class="unter">${st.test
+      <div class="unter">${st.probe
+        ? `${st.glatt} von ${st.liste.length} richtig — das sind `
+          + `${Math.round(probeAnteil * 100)} %.`
+        : st.test
         ? `${st.glatt} von ${st.liste.length} richtig — ohne Hilfen.`
           + (bestanden ? '' : ` Ab ${Math.ceil(st.liste.length * BESTANDEN_AB)} gibt es den Pokal.`)
         : `${st.glatt} von ${st.liste.length} auf Anhieb richtig.`}</div>
@@ -10640,6 +10845,9 @@ async function forscherbuch(){
   // der leichte Stand haelt Kennung, Name und Anker.
   const staende = [];
   for (const e of meineEbenen()) {
+    // Die Probe sammelt nicht - ihre Woerter stehen schon unter ihren
+    // fuenfzehn Ebenen, und zweimal derselbe Aufkleber ist keiner.
+    if (sammeltNicht(e)) continue;
     let st={}; try{ st=(await Ablage.hole('fortschritt',`${P.id}:${e.id}`))||{}; }catch(err){}
     const alle = vorrat(e.id);
     staende.push({ e, st,

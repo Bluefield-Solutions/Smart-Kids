@@ -46,6 +46,7 @@ import { ALLE as KETTE, OHNE_BROWSER, MIT_BROWSER, BETRIFFT, betroffeneTore } fr
 import * as EN from '../src/inhalt/englisch.js';
 import * as TI from '../src/inhalt/tiere.js';
 import * as FL from '../src/inhalt/flaggen.js';
+import * as DE from '../src/inhalt/deutsch.js';
 import * as BP from '../tools/bildprompt.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
@@ -4708,7 +4709,23 @@ function paareAusBuendel() {
      genau daran verloren und den Lebensraum „In der Stadt" als
      unerreichbar gemeldet. Ein Ausdruck, der an der Einrueckung haengt,
      misst die Einrueckung. */
+  /* DIE ERZEUGTEN EBENEN FEHLTEN HIER (D6).
+   *
+   * Gesammelt wird mit einem Textmuster ueber `spiel.js` - und die
+   * fuenfzehn Rechtschreibebenen stehen dort nicht als Zeile, sie
+   * entstehen aus `Deutsch.GRUPPEN.map(...)`. Das Muster fand sie nicht,
+   * und alles, was diese Menge prueft (Lebensraum, Vorrat, Titel), lief
+   * an ihnen vorbei. Aufgefallen ist es nur, weil die PROBE als Zeile
+   * dasteht und angeschlagen hat: fuenfzehn Ebenen waren unsichtbar,
+   * eine nicht.
+   *
+   * Eine Pruefung, die eine ganze Welt uebersieht, ist kein Beweis
+   * (Regel 1: eine Pruefung, die nie etwas meldet). Die erzeugten
+   * kommen deshalb aus ihrer Quelle dazu - aus `deutsch.js`, nicht aus
+   * `spiel.js`: sonst holte sich das Tor seine Erwartung aus der Datei,
+   * die es prueft. */
   const ebenen = new Set([...spiel.matchAll(/\{ id:'([a-z:]+)',\s+ueber:'/g)].map(m => m[1]));
+  for (const g of DE.GRUPPEN) ebenen.add(`deutsch:${g.id}`);
   /* Die Laenderebenen stehen nicht als Zeile da, sie werden aus den
      Kontinenten ERZEUGT (`id:\`laender:${k}\``). Also kommen ihre
      Kennungen aus derselben Quelle wie im Spiel: den geladenen Karten.
