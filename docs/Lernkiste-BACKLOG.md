@@ -8793,3 +8793,97 @@ derselben Karte.
 **Am Vorbild geändert hat sich genau eine Karte**: `quer-englisch-vorlauf`
 zeigt den neuen Pullover, 0,181 % der Bildpunkte. Alles andere steht
 unverändert — auch das ist nachgesehen und nicht angenommen.
+
+---
+
+## D · Deutsch — Rechtschreibung nach dem bayerischen Grundwortschatz (23.09.2026)
+
+Die fünfte Welt, und die erste, die aus einer **amtlichen Quelle** gebaut ist.
+Der Auftrag, die Entscheidungen und der Aufbau stehen in
+`docs/Lernkiste-KONZEPT-DEUTSCH.md`; hier steht, was die Runde gekostet und
+gefunden hat.
+
+**Etappe 1 von dreien.** Es fehlen: die Wiederholung aus Klasse 1/2 (Etappe 2,
+24 Ebenen, 244 Wörter) und *Sprache untersuchen* (Etappe 3: Wortarten,
+Zeitformen, Satzarten, Satzglieder, eigene Probe).
+
+### Was die Tore gefunden haben
+
+| | |
+|---|---|
+| `regeln` | zweimal angeschlagen: bei „Regel 3" fehlte das Stichwort, dass das Soll aus der **Referenz** kommt, bei „Regel 6", dass was zweimal dasteht einmal **veraltet**. Und ein drittes Mal an dieser Zeile hier, als ich sie schrieb. |
+| `doppelt` | zwei neue Datentabellen ohne Begründung |
+| `schrift` | „←" (U+2190) liegt außerhalb des Schnitts `latin` — dieselbe Falle wie ● und ○ in der PIN-Anzeige (F7) |
+| `inhalt` | die Gegenprobe „der Hörknopf hängt nicht mehr am Profil" fand ihren Suchtext nicht mehr |
+| `inhalt` | dieselbe Meldung für „der bestandene Test bringt keinen Pokal mehr" |
+| `tiere` | die Deutsch-Welt führte in keinen Lebensraum |
+| `tiere` | und der neue Raum hatte keine Kulisse |
+| `budget` | 602 → 632,9 KB von 700 |
+| `doku` | CLAUDE.md kannte das neue Tor `deutsch` nicht |
+| `vielfalt` | sechs Rechtschreibebenen unter zwei Runden Vorrat |
+
+### Was nur der Blick gefunden hat
+
+Sechzehn Aufnahmen auf 844 × 390, und fünf Befunde, die kein Tor gemeldet hat:
+
+1. Die **Deutsch-Kachel stand bildlos** in der Weltenwahl — als einzige von
+   vieren. `silhouette` wird für die Welt ohne Gruppe gerufen, und der neue
+   Zweig deckte nur die Ebenen ab.
+2. „___" in der Lücke, unter einem gestrichelten Rand, der dasselbe sagt.
+3. Nach einem Tipp auf **„Groß" war der Hörknopf weg** — das Neuzeichnen der
+   Tastatur riss die ganze Steuerzeile mit heraus. Auf einem Diktatbildschirm.
+4. Das Getippte stand in **Blassgrau** in der Lücke.
+5. Neben **„Note 5" jubelte die Figur.**
+
+### Ein Befund an der amtlichen Quelle
+
+Die Liste sagt von sich: *„Jedes Wort des Grundwortschatzes ist nur einem
+Übungsschwerpunkt zugeordnet."* Nachgezählt stimmt das **19 Mal nicht.**
+Fünfzehn sind vermutlich gewollt (bei „essen – aßen" steht die Grundform als
+Ausgangspunkt daneben), vier sind echte Doppelungen: **„nie", „zusammen",
+„zu" und „voll"** stehen je zweimal als Lernwort da. `HEIMAT` in
+`src/inhalt/deutsch.js` löst das nach **einem** Satz statt von Fall zu Fall.
+
+### Ein Befund am Tor selbst
+
+`inhalt` sammelt die Ebenen mit einem **Textmuster** über `spiel.js`. Die
+fünfzehn Rechtschreibebenen stehen dort nicht als Zeile — sie entstehen aus
+`Deutsch.GRUPPEN.map(...)`, und das Muster fand sie nicht. Alles, was diese
+Menge prüft, lief an ihnen vorbei. Aufgefallen ist es nur, weil die **Probe**
+als Zeile dasteht und angeschlagen hat: fünfzehn Ebenen waren unsichtbar, eine
+nicht.
+
+### Offen
+
+- **Der Rauchtest kennt die Deutsch-Welt noch nicht.** `WELT_VON` findet sie,
+  aber es gibt keinen Abschnitt, der eine Runde durchspielt. Geprüft ist die
+  Welt im Inhalt, nicht im Spielen.
+- **Die Deutsch-Wand trägt zwei Kacheln** und wirkt leer. Das füllt sich mit
+  Etappe 2 und 3 auf vier.
+- Die fünfzehn Kachelbilder sind **fünf Zeichen**, eines je Prinzip der
+  amtlichen Liste. Das ist begründet und trotzdem karg — ein Blick darauf, ob
+  sie auf dem Gerät auseinanderzuhalten sind, steht aus.
+
+### Die volle Kette ist rot — und zwar an vier verschiedenen Dingen
+
+Sie lief in dieser Runde zum ersten Mal seit Langem. Der schnelle Gang, der
+die **Auslieferung** trägt (`tor:runner` = `npm run tor`), ist grün; rot sind
+`smoke`, `passt` und `ansicht`. Welcher Befund wem gehört, ist **gemessen**:
+`ec9e458` wurde als Arbeitsbaum ausgecheckt und der Rauchtest dort gefahren.
+
+| Befund | Basis `ec6e458` | Urteil |
+|---|---|---|
+| `smoke`: „undefined" im sichtbaren Text („so groß wie Tunesien. undefined") | **auch rot** | **nicht meins.** Der Aufkleber der Ebene „Was ist größer?" (I22) fällt in den Rechenkasten durch und zeigt `${x.frage}`, das ein Paar-Gegenstand nicht hat. Dieselbe Falle, für die Flagge, Lautpaar und Satzkarte je einen eigenen Zweig bekommen haben. Gefunden hat es die **Wortwache** aus E25 — die erste Fundstelle, die sie je gemeldet hat. |
+| `smoke`: `groesser:europa` — der Tipp landet auf „UKR" statt „BLR" | grün | **von mir ausgelöst, nicht verursacht.** Leas neue Welt verschiebt die Aufteilung des Rauchtests auf vier Teile, damit den Sitzungskeim und damit das gezogene Paar. Der Fehler lag latent da. |
+| `smoke`: Leas Rechenzug und die englischen Wörter fehlen | grün | **Folge davon** — der Durchgang bricht bei `groesser:europa` ab. Eine Ursache, drei Meldungen. |
+| `passt`: die Weltbilder schrumpfen (Erdkunde 214 → 127 pt) | — | **meins und angekündigt.** Der E3-Kommentar nennt genau diese zwei Zahlen als Preis der vierten Kachel; Lea zahlt ihn jetzt auch. Bestätigen mit `npm run passt -- --neu`, nach einem Blick. |
+| `passt`: drei Buchkacheln 18 px über den Rand (iPhone SE quer, iPad hoch) | — | **meins.** Der 27. Lebensraum verschiebt das Raster. Auf dem Zielgerät (844 × 390) tritt es nicht auf. |
+| `ansicht`: `quer-welten-lea` 31 %, `quer-buch-*` 0,5 %, `quer-landschaft` 7,4 % | — | **meins und gewollt** — eine Kachel und ein Lebensraum mehr. `--aktualisieren`, nach einem Blick. |
+
+**Und eine Messung, die ich zurücknehmen musste.** Auf den Tipp-Befund hin habe
+ich gemessen, ob jedes Land der Europakarte mit dem Finger erreichbar ist, und
+bekam „vier nicht erreichbar: Luxemburg, Belgien, Dänemark, die Niederlande".
+Das war **falsch**: die App legt für kleine Gebiete Nadelköpfe über die Karte,
+und mein Sieb zählte nur die Pfade. Mit den Nadelköpfen sind es **null**. Die
+Karte ist in Ordnung; der Fehler lag in meiner Messung. Steht hier, weil eine
+zurückgenommene Zahl mehr wert ist als eine, die niemand nachgerechnet hat.
