@@ -128,31 +128,31 @@ export const PROBEN = [
    * Untertore der Reihe nach faehrt und eine Probe, die frueh
    * anschlaegt, die spaeteren gar nicht erst erreicht. */
   { n:'ein Lernwort steht nicht in der amtlichen Liste', tor:'inhalt',
-    deckt:'inhalt', datei:DE,
+    deckt:'deutsch', datei:DE,
     such:"'Boden','Ding','etwas'", ersatz:"'Bohden','Ding','etwas'",
     an:{ datei:DE, text:"'Bohden','Ding','etwas'" },
     sagt:'nicht in der amtlichen Liste' },
 
-  { n:'ein Lückensatz ist zehn Wörter lang', tor:'inhalt', deckt:'inhalt', datei:DS,
+  { n:'ein Lückensatz ist zehn Wörter lang', tor:'inhalt', deckt:'deutsch', datei:DS,
     such:"Boden:['Der Ball liegt auf dem %.'",
     ersatz:"Boden:['Der rote Ball von gestern liegt jetzt auf dem %.'",
     an:{ datei:DS, text:'Der rote Ball von gestern liegt jetzt auf dem' },
     sagt:'länger als neun Wörter' },
 
-  { n:'die Lücke steht am Satzanfang', tor:'inhalt', deckt:'inhalt', datei:DS,
+  { n:'die Lücke steht am Satzanfang', tor:'inhalt', deckt:'deutsch', datei:DS,
     such:"Ding:['Was ist das für ein %?'",
     ersatz:"Ding:['% ist das hier?'",
     an:{ datei:DS, text:"Ding:['% ist das hier?'" },
     sagt:'Lücke am Satzanfang' },
 
   { n:'ein zweites Lernwort derselben Ebene steht im Satz', tor:'inhalt',
-    deckt:'inhalt', datei:DS,
+    deckt:'deutsch', datei:DS,
     such:"etwas:['Ich möchte dir % zeigen.'",
     ersatz:"etwas:['Heute möchte ich dir % zeigen.'",
     an:{ datei:DS, text:'Heute möchte ich dir % zeigen.' },
     sagt:'zweites Lernwort derselben Ebene' },
 
-  { n:'eine Ebene verliert ihre Begründung', tor:'inhalt', deckt:'inhalt', datei:DE,
+  { n:'eine Ebene verliert ihre Begründung', tor:'inhalt', deckt:'deutsch', datei:DE,
     such:"  verhaertung:       'Verlängere das Wort",
     ersatz:"  verhaertungX:      'Verlängere das Wort",
     an:{ datei:DE, text:'verhaertungX' },
@@ -162,7 +162,7 @@ export const PROBEN = [
      schreibt, gibt ihr eine fuenfte Welt - und die Wand fasst gemessen
      vier. Kein anderes Tor zaehlt Welten; ohne diese Probe waere die
      Zusage ein Kommentar. */
-  { n:'ein Profil sieht fünf Welten', tor:'inhalt', deckt:'inhalt', datei:D,
+  { n:'ein Profil sieht fünf Welten', tor:'inhalt', deckt:'deutsch', datei:D,
     such:"    art:'deutsch', gruppe:'rechtschreibung', wer:['lea'],",
     ersatz:"    art:'deutsch', gruppe:'rechtschreibung', wer:['lea','fiona'],",
     an:{ datei:D, text:"wer:['lea','fiona']" },

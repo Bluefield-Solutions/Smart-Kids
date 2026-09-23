@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-20",
+  "zeit": "2026-09-23",
   "tore": [
     "anker",
     "ansicht",
@@ -28,6 +28,7 @@
     "abzeichen",
     "beruehrung",
     "betroffen",
+    "deutsch",
     "doku",
     "englisch",
     "farben",
@@ -43,6 +44,21 @@
     "topologie"
   ],
   "proben": {
+    "ein Lernwort steht nicht in der amtlichen Liste": {
+      "commit": "1ffa8ae5dfef1f9a395badb9580957abff3ed33e",
+      "zeit": "2026-09-23",
+      "s": 23
+    },
+    "ein Lückensatz ist zehn Wörter lang": {
+      "commit": "1ffa8ae5dfef1f9a395badb9580957abff3ed33e",
+      "zeit": "2026-09-23",
+      "s": 14
+    },
+    "die Lücke steht am Satzanfang": {
+      "commit": "1ffa8ae5dfef1f9a395badb9580957abff3ed33e",
+      "zeit": "2026-09-23",
+      "s": 13
+    },
     "zwei Gebiete mit derselben ID": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
