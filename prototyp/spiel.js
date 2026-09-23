@@ -4224,15 +4224,68 @@ const noteFuer = (anteil) => {
  * wuerde bei jedem Lauf zwanzig zufaellige Woerter ziehen und von
  * Fehlern nichts wissen.
  */
-async function deutschStaende(){
+async function deutschStaende(profilId = P && P.id){
   const aus = {};
   for (const g of Deutsch.GRUPPEN) {
     let st = {};
-    try { st = (await Ablage.hole('fortschritt', `${P.id}:deutsch:${g.id}`)) || {}; } catch(e){}
+    try { st = (await Ablage.hole('fortschritt', `${profilId}:deutsch:${g.id}`)) || {}; } catch(e){}
     Object.assign(aus, st);
   }
   return aus;
 }
+
+/* ---------- Das Fehlerheft (D7) -------------------------------------------
+ *
+ * ERST DIE REGELN, DANN DIE WOERTER. Oben ein Balken je
+ * Rechtschreibphaenomen: welche Regel sitzt, welche nicht. Darunter,
+ * aufklappbar, die einzelnen Woerter - mit der letzten Schreibweise, die
+ * Lea dafuer eingetippt hat.
+ *
+ * WARUM IN DIESER REIHENFOLGE: eine Liste von achtzig Woertern sagt
+ * einem Elternteil nichts, was er nicht schon weiss („es hapert"). Ein
+ * Balken je Phaenomen sagt in drei Sekunden, WORAN zu ueben ist - und
+ * erst dann sind die Woerter nuetzlich, naemlich zum Abfragen.
+ *
+ * Die letzte Schreibweise kommt aus dem PROTOKOLL und nicht aus einem
+ * neuen Feld im Leitner-Stand: sie steht dort laengst (`roheingabe`),
+ * und ein zweiter Ort fuer dieselbe Auskunft ist der, der einmal
+ * veraltet.
+ */
+async function deutschFehlerheft(profilId, eintraege){
+  const stand = await deutschStaende(profilId);
+  /* Die letzte FALSCHE Schreibweise je Wort. Rueckwaerts durch das
+     Protokoll: der letzte Eintrag gewinnt, und dann wird nicht weiter
+     gesucht. */
+  const letzte = new Map();
+  for (let i = eintraege.length - 1; i >= 0; i--) {
+    const e = eintraege[i];
+    if (e.profil !== profilId || !String(e.ebene || '').startsWith('deutsch')) continue;
+    if (e.ergebnis !== 'falsch' || !e.roheingabe) continue;
+    if (!letzte.has(e.gebietId)) letzte.set(e.gebietId, e.roheingabe);
+  }
+  return Deutsch.GRUPPEN.map(g => {
+    const woerter = Deutsch.einheitenVon(g.id).map(e => ({
+      wort: e.wort,
+      sitzt: Leitner.istGekonnt(stand, e.id),
+      begonnen: !!stand[e.id],
+      falsch: letzte.get(e.id) || '' }));
+    const sitzt = woerter.filter(w => w.sitzt).length;
+    /* IM HEFT STEHEN NUR WOERTER, DIE SCHON DRAN WAREN.
+       Der erste Anlauf listete alles, was noch nicht sitzt - und das
+       waren am ersten Tag alle 322, also die Wortliste selbst. Ein
+       Fehlerheft, in dem jedes Wort steht, sagt nichts ueber Fehler.
+       `begonnen` heisst: es hat einen Leitner-Eintrag, Lea hat es also
+       mindestens einmal geschrieben. */
+    const inArbeit = woerter.filter(w => w.begonnen && !w.sitzt);
+    return { id:g.id, titel:g.titel, gesamt:woerter.length, sitzt,
+             anteil: woerter.length ? sitzt / woerter.length : 0,
+             offen: inArbeit, woerter };
+  });
+}
+
+/** Wem die Deutsch-Welt gehoert - abgeleitet, nicht hingeschrieben. */
+const deutschProfile = () => [...new Set(EBENEN.filter(e => e.art === 'deutsch')
+  .flatMap(e => e.wer || []))];
 
 async function probeAuswahl(alle, keim){
   const staende = await deutschStaende();
@@ -12113,6 +12166,12 @@ async function elternbereich(){
     return { pr, n: meine.length, a: Protokoll.auswerten(meine, NAMEN) };
   });
   const gespielt = profile.filter(x => x.n);
+  /* Das Fehlerheft je Kind, dem die Deutsch-Welt gehoert. Vor dem
+     Markup, weil es die Ablage liest - der Bildschirm wird in einem
+     Zug gebaut und nicht nachtraeglich gefuellt. */
+  const hefte = [];
+  for (const id of deutschProfile())
+    hefte.push({ pr: PROFILE[id], gruppen: await deutschFehlerheft(id, eintraege) });
 
   const zeile = (z)=>`<tr><td>${z.name}</td>
     <td class="num">${z.n}</td>
@@ -12307,6 +12366,49 @@ async function elternbereich(){
         <span class="unter" id="teilerstand"></span>
       </div>
 
+      <h3 class="gruppe">Deutsch — das Fehlerheft</h3>
+      <p class="unter">Oben steht, welche <strong>Regel</strong> sitzt und welche nicht —
+        das ist die Auskunft, mit der man etwas anfangen kann. Die einzelnen
+        Wörter stehen darunter, aufgeklappt, mit der letzten Schreibweise
+        daneben: die Liste zum Abfragen. Ein Wort gilt als gekonnt, wenn es
+        <strong>dreimal an drei verschiedenen Tagen</strong> richtig war.</p>
+      ${hefte.map(({ pr, gruppen }) => {
+        const gesamt = gruppen.reduce((n, g) => n + g.gesamt, 0);
+        const sitzt = gruppen.reduce((n, g) => n + g.sitzt, 0);
+        return `
+        <p class="unter"><strong>${pr.name}</strong> — ${sitzt} von ${gesamt} Wörtern sitzen.</p>
+        <table class="tab"><thead><tr><th>Rechtschreibung</th>
+          <th class="num">sitzt</th><th class="num">von</th><th></th></tr></thead>
+          <tbody>${gruppen.map(g => `<tr><td>${g.titel}</td>
+            <td class="num">${g.sitzt}</td><td class="num">${g.gesamt}</td>
+            <td><div class="balken klein"><i style="width:${Math.round(g.anteil*100)}%;
+              background:${g.anteil>.7?'var(--gut)':g.anteil>.4?'var(--achtung)':'var(--warn)'}"></i></div></td>
+            </tr>`).join('')}</tbody></table>
+        <details class="fehlerheft"><summary>Die einzelnen Wörter${
+          (() => { const n = gruppen.reduce((x, g) => x + g.offen.length, 0);
+            return n ? ` (${n} in Arbeit)` : ''; })()}</summary>
+          ${gruppen.filter(g => g.offen.length).map(g => `
+            <p class="unter"><strong>${g.titel}</strong></p>
+            <p class="woerterliste">${g.offen.map(w => w.falsch
+              ? `<span class="wortmarke"><b>${w.wort}</b> <em>statt „${w.falsch}“</em></span>`
+              : `<span class="wortmarke">${w.wort}</span>`).join('')}</p>`).join('')
+            || '<p class="unter">Hier war noch nichts dran — oder es sitzt schon alles.</p>'}
+        </details>`; }).join('')}
+
+      <h3 class="gruppe">Notenschlüssel für die Probe</h3>
+      <p class="unter">Bayern kennt <strong>keinen landesweit verbindlichen</strong>
+        Schlüssel für Diktate: Art. 52 BayEUG gibt die sechs Notenstufen, § 10 GrSO
+        Zahl und Ankündigung — den Schlüssel setzt die Lehrerkonferenz. Was hier
+        steht, ist deshalb ein Vorschlag. Eingetragen wird die <em>untere</em>
+        Grenze in Prozent; darunter ist es eine Sechs.</p>
+      <div class="reihe notenregler" style="justify-content:flex-start">
+        ${notenschluessel().map((v, i) => `<label class="notenfeld">${i+1}
+          <input type="number" class="notengrenze" data-note="${i}" min="0" max="100"
+                 step="1" value="${v}" aria-label="untere Grenze für Note ${i+1}"></label>`).join('')}
+        <button class="knopf" id="notenzurueck">Vorschlag</button>
+      </div>
+      <p class="unter" id="notenstand"></p>
+
       <h3 class="gruppe">PIN</h3>
       <p class="unter">Vier Ziffern vor diesem Bereich. Sie ist eine Türklinke,
         kein Schloss — sie hält eine neugierige Achtjährige ab, nicht mehr.
@@ -12412,6 +12514,38 @@ async function elternbereich(){
     schreiben();
     r.oninput = schreiben;
     r.onchange = async ()=>{ Einst.reihenGeteilt = +r.value / 100; await einstSichern(); };
+  }
+  {
+    /* Der Notenschluessel wird beim Verlassen des Feldes geprueft und
+       nicht beim Tippen: wer „8" eintippt, um „81" zu schreiben, soll
+       nicht nach dem ersten Zeichen eine Meldung bekommen.
+       Geprueft wird das EINE, was den Schluessel unbrauchbar machen
+       wuerde: die Grenzen muessen von 1 nach 5 FALLEN. Steht die Vier
+       ueber der Drei, bekaeme dieselbe Leistung zwei Noten. */
+    const felder = [...s.querySelectorAll('.notengrenze')];
+    const stand = s.querySelector('#notenstand');
+    const schreiben = () => {
+      const k = notenschluessel();
+      stand.textContent = k.map((v, i) => `${i+1} ab ${v} %`).join(' · ') + ' · darunter 6';
+    };
+    const uebernehmen = async () => {
+      const werte = felder.map(f => Math.max(0, Math.min(100, Math.round(+f.value || 0))));
+      const faellt = werte.every((v, i) => i === 0 || v < werte[i-1]);
+      if (!faellt) { stand.textContent = 'Die Grenzen müssen von 1 nach 5 kleiner werden.';
+        return; }
+      Einst.notenschluessel = werte;
+      await einstSichern();
+      felder.forEach((f, i) => f.value = werte[i]);
+      schreiben();
+    };
+    felder.forEach(f => f.onchange = uebernehmen);
+    s.querySelector('#notenzurueck').onclick = async () => {
+      Einst.notenschluessel = NOTENSCHLUESSEL.slice();
+      await einstSichern();
+      felder.forEach((f, i) => f.value = NOTENSCHLUESSEL[i]);
+      schreiben();
+    };
+    schreiben();
   }
   s.querySelector('#hsw').onclick=async(e)=>{
     Einst.hauptstadtAuswahl=!Einst.hauptstadtAuswahl; await einstSichern();

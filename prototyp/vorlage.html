@@ -2686,6 +2686,26 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    noch einmal, damit sie auch ohne Lesen ankommt: gruen bis gelb bis
    rot. Sie ist KEINE zweite Auskunft neben der Ziffer, sondern dieselbe
    in einer zweiten Sprache. */
+/* Das Fehlerheft im Elternbereich (D7). Die Woerter stehen als Marken
+   nebeneinander und nicht in einer Tabelle: es sind bis zu dreihundert,
+   und eine Tabelle mit dreihundert Zeilen liest niemand. Nebeneinander
+   sind sie eine Liste zum Abfragen - und das ist ihr Zweck. */
+.fehlerheft{margin-top:var(--r3)}
+.fehlerheft summary{cursor:pointer;font-weight:700;padding:var(--r2) 0}
+.woerterliste{display:flex;flex-wrap:wrap;gap:var(--r2);margin:0 0 var(--r3)}
+.wortmarke{font-family:var(--f-lesen);font-size:var(--s-klein);
+  padding:var(--r1) var(--r2);border-radius:var(--rund-klein);
+  background:var(--warn-h);color:var(--tinte)}
+.wortmarke em{color:var(--tinte-2);font-style:italic}
+/* Die fuenf Grenzen des Notenschluessels. Zahlenfelder und keine Regler:
+   ein Regler mit fuenf Griffen, die einander nicht ueberholen duerfen,
+   ist auf einem Telefon nicht zu bedienen. */
+.notenregler{flex-wrap:wrap;gap:var(--r3)}
+.notenfeld{display:flex;align-items:center;gap:var(--r2);font-weight:700}
+.notenfeld input{width:5.5ch;min-height:44px;text-align:center;
+  font-family:var(--f-lesen);font-size:var(--s1);
+  border:var(--strich) solid var(--linie);border-radius:var(--rund-klein);
+  background:var(--papier);color:var(--tinte)}
 .notenspiegel{display:flex;justify-content:center}
 .note{font-family:var(--f-lesen);font-weight:800;font-size:var(--s5);
   line-height:1;width:1.7em;height:1.7em;border-radius:50%;
