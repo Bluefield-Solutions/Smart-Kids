@@ -30,6 +30,8 @@ import { execSync } from 'node:child_process';
  * `sagt`     ein Stueck der Meldung, die das Tor bringen soll
  * ---------------------------------------------------------------------- */
 export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inhalt/erdkunde.js';
+/** Der amtliche Grundwortschatz und seine Saetze (D1-D3). */
+export const DE = 'src/inhalt/deutsch.js', DS = 'src/inhalt/deutsch-saetze.js';
 /** Die Abzeichentafel (D2). */
 export const A = 'src/inhalt/abzeichen.js';
 /** Die Buchstabenvorlagen samt Erkennung (N2a). */
@@ -114,6 +116,58 @@ export const DIST = { datei: 'dist/index.html' };
  * Wer hier eine Teilmenge einsetzt, faehrt sie EINMAL ohne Eingriff. */
 export const PROBEN = [
   /* --- inhalt ------------------------------------------------------- */
+  /* ---- Das Tor `deutsch` (D8) ------------------------------------------
+   *
+   * Sechs Proben, und jede trifft GENAU EINE Zusage. Das Tor prueft den
+   * amtlichen Grundwortschatz gegen die ausgelesene Liste daneben, die
+   * vier Satzregeln an allen 966 Saetzen, die drei falschen
+   * Schreibweisen je Wort, die Regel je Ebene - und die eine Zusage, an
+   * der die Kachelwand haengt: kein Profil sieht mehr als vier Welten.
+   *
+   * Sie sind HIER eingeordnet und nicht am Ende, weil `inhalt` seine
+   * Untertore der Reihe nach faehrt und eine Probe, die frueh
+   * anschlaegt, die spaeteren gar nicht erst erreicht. */
+  { n:'ein Lernwort steht nicht in der amtlichen Liste', tor:'inhalt',
+    deckt:'inhalt', datei:DE,
+    such:"'Boden','Ding','etwas'", ersatz:"'Bohden','Ding','etwas'",
+    an:{ datei:DE, text:"'Bohden','Ding','etwas'" },
+    sagt:'nicht in der amtlichen Liste' },
+
+  { n:'ein Lückensatz ist zehn Wörter lang', tor:'inhalt', deckt:'inhalt', datei:DS,
+    such:"Boden:['Der Ball liegt auf dem %.'",
+    ersatz:"Boden:['Der rote Ball von gestern liegt jetzt auf dem %.'",
+    an:{ datei:DS, text:'Der rote Ball von gestern liegt jetzt auf dem' },
+    sagt:'länger als neun Wörter' },
+
+  { n:'die Lücke steht am Satzanfang', tor:'inhalt', deckt:'inhalt', datei:DS,
+    such:"Ding:['Was ist das für ein %?'",
+    ersatz:"Ding:['% ist das hier?'",
+    an:{ datei:DS, text:"Ding:['% ist das hier?'" },
+    sagt:'Lücke am Satzanfang' },
+
+  { n:'ein zweites Lernwort derselben Ebene steht im Satz', tor:'inhalt',
+    deckt:'inhalt', datei:DS,
+    such:"etwas:['Ich möchte dir % zeigen.'",
+    ersatz:"etwas:['Heute möchte ich dir % zeigen.'",
+    an:{ datei:DS, text:'Heute möchte ich dir % zeigen.' },
+    sagt:'zweites Lernwort derselben Ebene' },
+
+  { n:'eine Ebene verliert ihre Begründung', tor:'inhalt', deckt:'inhalt', datei:DE,
+    such:"  verhaertung:       'Verlängere das Wort",
+    ersatz:"  verhaertungX:      'Verlängere das Wort",
+    an:{ datei:DE, text:'verhaertungX' },
+    sagt:'hat keine Regel' },
+
+  /* DIE ZUSAGE, AN DER DIE WAND HAENGT. Wer Fiona zu einer Deutschebene
+     schreibt, gibt ihr eine fuenfte Welt - und die Wand fasst gemessen
+     vier. Kein anderes Tor zaehlt Welten; ohne diese Probe waere die
+     Zusage ein Kommentar. */
+  { n:'ein Profil sieht fünf Welten', tor:'inhalt', deckt:'inhalt', datei:D,
+    such:"    art:'deutsch', gruppe:'rechtschreibung', wer:['lea'],",
+    ersatz:"    art:'deutsch', gruppe:'rechtschreibung', wer:['lea','fiona'],",
+    an:{ datei:D, text:"wer:['lea','fiona']" },
+    sagt:'mehr als vier Welten' },
+
   { n:'zwei Gebiete mit derselben ID', tor:'inhalt', deckt:'inhalt', datei:E,
     such:"{ id:'afrika', name:'Afrika'", ersatz:"{ id:'europa', name:'Afrika'",
     an:{ datei:E, text:"{ id:'europa', name:'Afrika'" }, sagt:'doppelte ID' },

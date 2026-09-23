@@ -284,7 +284,7 @@ npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
 Kette: `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `inhalt` · `nachbarn` · `groesser` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `farben` · `englisch` · `tiere` · `flaggen` · `betroffen` · `doku` →
+`schrift` · `symbol` · `farben` · `englisch` · `deutsch` · `tiere` · `flaggen` · `betroffen` · `doku` →
 `budget` · `anker` · `vielfalt` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` · `fremdseite` · `nachschub` · `tonleiter` → `smoke`.
 

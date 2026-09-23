@@ -5521,6 +5521,174 @@ console.log('\n  Tor `betroffen`');
     + 'Tore zurück');
 }
 
+/* ===================================================== Tor `deutsch` ==== *
+ *
+ * Der Grundwortschatz ist AMTLICH, und das Soll kommt deshalb aus der
+ * amtlichen Datei und nicht aus `deutsch.js` (Regel 3: das Soll kommt
+ * aus der Referenz, nicht aus mir). Daneben liegt der ausgelesene
+ * Wortlaut: `docs/referenz/ISB-Grundwortschatz-34.txt`.
+ *
+ * GELESEN WIRD ANDERS, ALS GESCHRIEBEN WURDE. `deutsch.js` ist von Hand
+ * strukturiert - Gruppen, Eintraege, Formen. Das Tor liest denselben
+ * Text mit einem groben Sieb: alles, was wie ein deutsches Wort
+ * aussieht, ohne von Gruppen zu wissen. Beide Wege muessen dieselbe
+ * MENGE ergeben. Waeren es zwei Laeufe desselben Zerlegers, bewiese der
+ * Vergleich nichts (Regel 14: das Modell darf nicht vom Gemessenen
+ * abhaengen).
+ */
+console.log('\n  Tor `deutsch`');
+{
+  const df = [];
+  const roh = fs.readFileSync(new URL('../docs/referenz/ISB-Grundwortschatz-34.txt',
+    import.meta.url), 'utf8');
+  /* Das grobe Sieb. Trennstriche am Zeilenende zusammenziehen, die
+     Fussnoten und den Fliesstext wegwerfen, dann alles nehmen, was wie
+     ein Wort aussieht. Es faengt zu viel - der erklaerende Text steht
+     mit drin -, und genau deshalb wird in EINE Richtung geprueft: jedes
+     Wort aus `deutsch.js` muss in der Referenz stehen. Die
+     Gegenrichtung besorgt die ZAHL darunter. */
+  /* ZWEI ARTEFAKTE DES AUSZUGS werden vorher rueckgaengig gemacht, und
+     beide gehoeren dem PDF und nicht dem Dokument:
+       1. Trennstriche am Zeilenende („Schwieri g-\nkeiten").
+       2. Ein einzelner Buchstabe, den der Satz abgesetzt hat - im
+          Auszug steht „Geschichte, G e-\nsicht", im Dokument steht
+          „Gesicht". Ein Sieb, das daraus zwei Woerter liest, liest das
+          Artefakt und nicht die Liste.
+     Das Muster verlangt einen EINZELNEN Buchstaben als eigenes Wort;
+     deutsche Woerter mit einem Buchstaben gibt es nicht, also faengt es
+     nichts Echtes ein. */
+  const text = roh.replace(/(\p{L})\s*-\s*\n\s*(\p{L})/gu, '$1$2')
+                  .replace(/\s+/g, ' ')
+                  .replace(/(?<=[ ,:(]|^)(\p{L}) (\p{Ll}{2,})/gu, '$1$2');
+  const inReferenz = new Set(text.match(/[\p{L}äöüßÄÖÜ]+/gu) || []);
+  const fehlen = DE.EINHEITEN.filter(e => !inReferenz.has(e.wort));
+  pruefeD(!fehlen.length, `${fehlen.length} Wörter stehen in deutsch.js, aber nicht `
+    + `in der amtlichen Liste: ${fehlen.slice(0, 8).map(e => e.wort).join(', ')}`);
+
+  function pruefeD(b, satz){ if (!b) df.push(satz); }
+
+  /* DIE ZAHLEN, und sie sind die Gegenrichtung: 234 Eintraege in 15
+     Ebenen. Stuende hier eine kleinere Zahl, waere etwas aus der Liste
+     herausgefallen, ohne dass die Richtungspruefung oben etwas merkt -
+     sie sieht nur, was DA ist, nicht was fehlt. */
+  const eintraege = DE.GRUPPEN.reduce((n, g) => n + g.woerter.length, 0);
+  pruefeD(DE.GRUPPEN.length === 15, `${DE.GRUPPEN.length} Ebenen statt 15`);
+  pruefeD(eintraege === 234, `${eintraege} Einträge statt 234`);
+
+  const kennungen = DE.EINHEITEN.map(e => e.id);
+  pruefeD(new Set(kennungen).size === kennungen.length,
+    'eine Lerneinheit kommt zweimal vor — zwei Leitner-Stände für dasselbe Wort');
+
+  /* JEDE EBENE HAT IHRE REGEL, und jedes Merkwort seine Besonderheit.
+     Eine Ebene ohne Regel gibt beim Fehler nur die Loesung - und das ist
+     genau die Hilfe, die nicht traegt. */
+  for (const g of DE.GRUPPEN)
+    if (!g.merk) pruefeD(!!DE.REGELN[g.id], `die Ebene „${g.titel}" hat keine Regel`);
+  for (const e of DE.EINHEITEN.filter(x => x.besonderheit))
+    pruefeD(!!DE.MERKREGELN[e.besonderheit],
+      `„${e.wort}" trägt die Besonderheit „${e.besonderheit}", zu der es keine Regel gibt`);
+  const ohneRegel = DE.EINHEITEN.filter(e => !DE.regelZu(e).includes(e.paar[0]));
+  pruefeD(!ohneRegel.length, `${ohneRegel.length} Begründungen zeigen ihren Beleg nicht `
+    + `(z. B. „${(ohneRegel[0] || {}).wort}")`);
+
+  /* DREI FALSCHE SCHREIBWEISEN je Wort, alle verschieden, keine ist das
+     Wort selbst. Ohne das haette die Wahlstufe drei Karten statt vier
+     oder zweimal dieselbe. */
+  const schlecht = DE.EINHEITEN.filter(e => { const v = DE.verschreiber(e);
+    return v.length !== 3 || new Set(v).size !== 3 || v.includes(e.wort); });
+  pruefeD(!schlecht.length, `${schlecht.length} Wörter haben keine drei sauberen `
+    + `falschen Schreibweisen (z. B. „${(schlecht[0] || {}).wort}")`);
+
+  /* DIE VIER SATZREGELN. Sie stehen im Kopf von `deutsch-saetze.js`, und
+     hier werden sie gemessen - alle 966, nicht als Behauptung daneben. */
+  const wortgrenze = (w) => new RegExp(
+    `(^|[^\\p{L}])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\\p{L}]|$)`, 'iu');
+  const derGruppe = new Map(DE.GRUPPEN.map(g =>
+    [g.id, DE.einheitenVon(g.id).map(e => e.wort)]));
+  let saetze = 0, zuLang = 0, amAnfang = 0, drin = 0, fremd = 0, ohneLuecke = 0, fehlend = 0;
+  for (const e of DE.EINHEITEN) {
+    const liste = DE.saetzeZu(e.wort);
+    if (liste.length !== 3) { fehlend++; continue; }
+    for (const s of liste) {
+      saetze++;
+      if ((s.match(/%/g) || []).length !== 1) { ohneLuecke++; continue; }
+      const woerter = s.split(/\s+/).filter(Boolean);
+      if (woerter.length > 9) zuLang++;
+      if (woerter[0].startsWith('%')) amAnfang++;
+      if (wortgrenze(e.wort).test(s)) drin++;
+      /* Bei den kleinen Woertern im Satz gilt die dritte Satzregel nur
+         innerhalb DERSELBEN Wortfamilie - „dem", „ein", „in", „zu" sind
+         das Bindegewebe jedes deutschen Satzes. Die Begruendung steht im
+         Kopf von `deutsch-saetze.js`; hier steht die Messung. */
+      const eng = e.gruppe === 'flektiert' ? e.paar : derGruppe.get(e.gruppe);
+      for (const w of eng)
+        if (w !== e.wort && wortgrenze(w).test(s)) { fremd++; break; }
+    }
+  }
+  pruefeD(!fehlend, `${fehlend} Wörter haben nicht genau drei Sätze`);
+  pruefeD(!ohneLuecke, `${ohneLuecke} Sätze haben nicht genau eine Lücke`);
+  pruefeD(!zuLang, `${zuLang} Sätze sind länger als neun Wörter`);
+  pruefeD(!amAnfang, `${amAnfang} Sätze haben die Lücke am Satzanfang — `
+    + 'der Satzanfang verrät die Großschreibung');
+  pruefeD(!drin, `${drin} Sätze enthalten ihr eigenes Zielwort`);
+  pruefeD(!fremd, `${fremd} Sätze enthalten ein zweites Lernwort derselben Ebene`);
+
+  /* KEIN PROFIL SIEHT MEHR ALS VIER WELTEN.
+   *
+   * Die Wand fasst gemessen genau vier Kacheln auf 844 x 390. Dass die
+   * fuenfte Welt sie nicht sprengt, haengt an einer einzigen Zusage:
+   * „Schreiben" gehoert Fiona allein, „Deutsch" Lea allein. Wer `wer`
+   * einer Deutschebene erweitert, sprengt die Wand - und saehe es nicht,
+   * denn kein anderes Tor zaehlt Welten.
+   *
+   * GELESEN WIRD MIT EINEM TEXTMUSTER, und das ist hier die Grenze der
+   * Messung: das Tor sieht `art` und `wer`, nicht den gebauten
+   * Bildschirm. Es faengt die Aenderung, die naheliegt (jemanden zu
+   * `wer` hinzuschreiben), und nicht jede denkbare. Die Wand selbst
+   * misst `passt`. */
+  {
+    const spielText = fs.readFileSync(new URL('../prototyp/spiel.js', import.meta.url), 'utf8');
+    const welten = [...spielText.matchAll(/\{ id:'([a-z]+)',\s+name:'[^']+',\s+farbe:\d/g)]
+      .map(m => m[1]);
+    pruefeD(welten.length >= 5, `nur ${welten.length} Welten gefunden — das Muster `
+      + 'trifft nicht mehr, und die Zählung unten beweist nichts');
+    /* Welche Welt eine Ebene traegt: an `art`, wie im Spiel. Was keine
+       `art` hat, ist eine Karte und gehoert zur Erdkunde. */
+    const ARTWELT = { rechnen:'rechnen', schreiben:'schreiben', deutsch:'deutsch',
+      englisch:'englisch', freunde:'englisch', verben:'englisch',
+      praeposition:'englisch', wendungen:'englisch', hoersatz:'englisch' };
+    const jeProfil = {};
+    for (const m of spielText.matchAll(/art:'([a-z]+)'[^}]*?wer:\[([^\]]*)\]/g)) {
+      const welt = ARTWELT[m[1]] || 'erdkunde';
+      for (const w of m[2].split(',').map(x => x.trim().replace(/'/g, '')).filter(Boolean))
+        (jeProfil[w] ??= new Set()).add(welt);
+    }
+    /* Die Kartenebenen haben keine `art` und tragen ihr `wer` anders;
+       sie gehoeren alle zur Erdkunde, und die hat jedes Profil. */
+    for (const s of Object.values(jeProfil)) s.add('erdkunde');
+    const zuViel = Object.entries(jeProfil).filter(([, s]) => s.size > 4);
+    pruefeD(!zuViel.length, `${zuViel.length} Profil(e) sehen mehr als vier Welten: `
+      + zuViel.map(([w, s]) => `${w} (${[...s].join(', ')})`).join(' · ')
+      + ' — die Wand fasst auf 844 × 390 genau vier Kacheln');
+    console.log('    Welten je Profil: ' + Object.entries(jeProfil).sort()
+      .map(([w, s]) => `${w} ${s.size}`).join(' · ') + ' (erlaubt 4)');
+  }
+
+  console.log(`    Grundwortschatz 3/4: ${eintraege} Einträge in ${DE.GRUPPEN.length} Ebenen, `
+    + `${DE.EINHEITEN.length} Lerneinheiten — jede in der amtlichen Liste belegt`);
+  console.log(`    ${saetze} Lückensätze gemessen: höchstens neun Wörter, Lücke nie am `
+    + 'Anfang, kein zweites Lernwort derselben Ebene');
+  console.log(`    ${DE.EINHEITEN.length * 3} falsche Schreibweisen, `
+    + `${Object.keys(DE.HEIMAT).length} Formen mit entschiedener Heimat`);
+
+  if (df.length) {
+    console.log('\n  ' + df.length + ' FEHLER:');
+    console.log('    ✗ ' + df.join('\n    ✗ '));
+    console.error('\n  deutsch ROT: der Grundwortschatz stimmt nicht mit der amtlichen Liste.');
+    process.exit(1);
+  }
+}
+
 // nicht mit und meldete weiter „Alle 7" - dieselbe stille Verjaehrung,
 // gegen die sie geschrieben wurde, nur eine Ebene tiefer.
 const torZahl = (fs.readFileSync(new URL(import.meta.url), 'utf8')
