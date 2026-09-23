@@ -190,3 +190,56 @@ Jede für sich spielbar, jede mit voller Torkette, Push und Auslieferung.
 | **1** | Rechtschreibung 3/4: 15 Ebenen, 234 Wörter, ~700 Sätze, Buchstabentasten, Regelbegründungen, Fehlerheft, Probe Rechtschreibung |
 | **2** | Wiederholung 1/2: 24 Ebenen, 244 Wörter, 244 Sätze |
 | **3** | Sprache untersuchen: Wortarten, Zeitformen, Satzarten, Satzglieder, Probe Sprache untersuchen, Begriffe-Regler |
+
+
+---
+
+## Etappe 1 — gebaut, gemessen, ausgeliefert
+
+Was am 23.09.2026 tatsächlich steht. Die Zahlen sind gezählt, nicht
+geschätzt; das Untertor `deutsch` rechnet sie bei jedem Lauf nach.
+
+| | |
+|---|--:|
+| Gruppen des Grundwortschatzes 3/4 | 25 |
+| davon Ebenen (die elf „nicht-regelhaften" gebündelt) | **15** |
+| Einträge der amtlichen Liste | **234** |
+| Lerneinheiten (jede Form eine) | **322** |
+| Lückensätze, drei je Lerneinheit | **966** |
+| falsche Schreibweisen, drei je Lerneinheit | **966** |
+| Formen mit entschiedener Heimat (Kollisionen der Liste) | 19 |
+
+**Eine Abweichung von der Planung**, und sie steht hier, damit sie nicht
+untergeht: geplant waren „rund 45 Ebenen" über alle drei Etappen. Nachgezählt
+sind es 51 — die Liste 1/2 hat 30 Gruppen, nicht die 26, die ich angenommen
+hatte.
+
+### Was die Tore halten
+
+Das Untertor `deutsch` misst bei jedem Lauf:
+
+- jedes der 322 Lernwörter steht in `docs/referenz/ISB-Grundwortschatz-34.txt`
+  — gelesen mit einem **groben Sieb**, nicht mit demselben Zerleger, der die
+  Daten gebaut hat;
+- 234 Einträge in 15 Ebenen (die Gegenrichtung: was fehlt, fällt an der Zahl auf);
+- alle 966 Sätze gegen die vier Satzregeln;
+- drei verschiedene falsche Schreibweisen je Wort;
+- eine Begründung je Ebene und je Besonderheit, jede mit ihrem Beleg;
+- **kein Profil sieht mehr als vier Welten** (fiona 4 · lea 4 · stephan 3 ·
+  violeta 3).
+
+Sechs stehende Gegenproben halten das fest, alle sechs schlagen gemessen an.
+
+### Was offen bleibt
+
+- **Der Rauchtest kennt die Deutsch-Welt noch nicht.** `WELT_VON` in
+  `tor/chromium.mjs` findet sie, aber es gibt keinen Abschnitt `--nur=deutsch`,
+  der eine Runde durchspielt. Geprüft ist die Welt damit im Inhalt, nicht im
+  Spielen; nachgesehen habe ich sie von Hand, in sechzehn Aufnahmen auf
+  844 × 390.
+- **Die Deutsch-Wand trägt zwei Kacheln** und wirkt dadurch leer. Das füllt
+  sich mit Etappe 2 (Wiederholung 1/2) und 3 (Sprache untersuchen) auf vier.
+- Die Referenz `ISB-Grundwortschatz-34.txt` enthält zwei Artefakte des
+  PDF-Auszugs („Geschichte, G e-⏎sicht" und „n e-⏎ben"). Sie ist **nicht**
+  berichtigt worden — das Tor macht sie beim Lesen rückgängig, damit der Text
+  die Quelle bleibt und nicht meine Abschrift.

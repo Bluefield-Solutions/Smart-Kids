@@ -74,9 +74,32 @@ const RUNDEN_MIN = 2;
  * Dass keines still aus der Tafel faellt, prueft nicht diese Grenze,
  * sondern `inhalt`: dort steht, dass jedes Gebiet mindestens einen
  * Nachbarn hat und dass die Nachbarschaft in beide Richtungen gilt. */
+/* `deutsch:` steht hier, und das ist kein Nachgeben, sondern genau die
+ * Unterscheidung, die der Absatz darueber zieht (D9).
+ *
+ * „Wörter mit tz" hat VIER Woerter, weil der bayerische Grundwortschatz
+ * fuer die Jahrgangsstufen 3 und 4 dort vier fuehrt: Platz, Pfütze,
+ * plötzlich, schützen. Wer diese Ebene „repariert", schreibt Woerter
+ * dazu, die nicht im Grundwortschatz stehen - und dann uebt Lea etwas,
+ * das in ihrer Probe nicht drankommt. Das ist dasselbe wie „vier Laender
+ * in Nordamerika": der Vorrat IST die Welt, und die Welt ist hier eine
+ * amtliche Liste.
+ *
+ * Und es ist auch kein Loch: dass keines der 234 Woerter still
+ * herausfaellt, prueft nicht diese Grenze, sondern das Untertor
+ * `deutsch` - es zaehlt 234 Eintraege in 15 Ebenen nach und verlangt
+ * fuer jedes Wort einen Beleg in der ausgelesenen Liste. Zwei Zahlen,
+ * zwei Tore; diese hier wuerde beim Verlust eines Wortes nicht zucken.
+ *
+ * Sechs der fuenfzehn Ebenen liegen unter zwei Runden: <tz> (4), <ß> (4),
+ * <ck> (7), das silbentrennende <h> (11), Mitlautverdopplung (10) und
+ * die Umlautung (12), bei Leas Sitzung von acht. Dass dieselben vier
+ * Woerter in der naechsten Sitzung wiederkommen, ist hier nicht der
+ * Fehler, sondern die Sache: ein Wort sitzt nach dreimal richtig an
+ * drei verschiedenen Tagen. */
 const WELT = [
   /^kontinente$/, /^bundeslaender$/, /^hauptstaedte(:|$)/, /^nachbarn$/,
-  /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/,
+  /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/, /^deutsch:/,
 ];
 const istWelt = (id) => WELT.some(r => r.test(id));
 

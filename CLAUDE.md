@@ -1,9 +1,16 @@
 # Smart Kids
 
 Lernspiel für zwei Kinder und ihre Eltern, deutsch, als PWA über GitHub
-Pages. Vier Welten: **Erdkunde, Rechnen, Schreiben, Englisch** — die vierte
-seit E3, und sie ist die letzte, die auf das Zielgerät passt (gemessen: die
-Wand fasst genau vier Kacheln).
+Pages. Fünf Welten: **Erdkunde, Rechnen, Schreiben, Englisch, Deutsch** —
+die fünfte seit D4.
+
+**Und die Wand fasst trotzdem nur vier Kacheln** (gemessen auf 844 × 390).
+Das geht auf, weil eine Welt nur dasteht, wenn DIESES Kind Ebenen darin
+hat: „Schreiben" gehört Fiona allein, „Deutsch" Lea allein — die beiden
+stehen nie nebeneinander. Fiona sieht vier, Lea vier, die Eltern drei.
+Das ist eine **Zusage**, keine Nebenwirkung: wer `wer` einer Deutschebene
+erweitert, sprengt die Wand. Das Untertor `deutsch` zählt es je Profil
+nach, und die Gegenprobe „ein Profil sieht fünf Welten" hält es.
 TypeScript-frei bislang: reines ES2022, SVG im DOM, kein Gerüst.
 
 **Diese Datei wird zu Beginn jeder Sitzung gelesen. Sie ist kurz gehalten,
@@ -31,7 +38,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
 | `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
 | `npm run tor:voll` | **wenn Stephan es sagt** | **~12 min** (gemessen 749 s am 11.09., 4 Kerne) | die volle Kette, alle Größen, alle Bildschirme |
-| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 494 Gegenproben. Läuft sonst nirgends mehr |
+| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 532 Gegenproben. Läuft sonst nirgends mehr |
 | Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
 **Die Regel seit P20: der schnelle Gang ist der Standard. Die volle Kette und
@@ -83,7 +90,7 @@ for i in 0 1 2; do node tor/ansicht.mjs --teil=$i/3 & done; wait
 ```
 
 **Die Gegenproben laufen gar nicht mehr von selbst (P20).** Sie prüfen die
-TORE, nicht die App, und alle 494 kosten auf diesem Rechner zwei bis vier
+TORE, nicht die App, und alle 532 kosten auf diesem Rechner zwei bis vier
 Stunden. `rhythmus` stand vorn in der Kette und hat den Lauf erzwungen —
 genau so, wie es gedacht war, und genau das war die Bremse. Der nächtliche
 Lauf auf dem Runner ist abgeschaltet, `rhythmus` ist aus der Kette heraus.
@@ -167,7 +174,8 @@ npm run rhythmus   wie alt die Nachweise sind. Steht seit P20 NICHT mehr in
                    Auskunft. Wer wissen will, ob ein voller Probenlauf
                    fällig wäre, fragt hier; entschieden wird es von
                    Stephan.
-npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen. Läuft
+npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen (532
+                   stehende Gegenproben). Läuft
                    seit P20 NIRGENDS mehr von selbst — weder nachts auf
                    dem Runner noch erzwungen durch eine Frist. Nur auf
                    Zuruf, und für eine einzelne mit ihrem Namen als
@@ -425,7 +433,7 @@ daneben muss ein Wort aus ihrer Überschrift stehen. Vorher zeigten 101 von
 
 ```
 src/inhalt/    was gefragt wird (Kontinente, Länder, Städte, Rechnen,
-               Buchstaben, Englisch)
+               Buchstaben, Englisch, Deutsch)
 src/geo/       gebackene SVG-Pfade, drei Stufen je Ebene
 src/kern/      Leitner, Vergleich, Protokoll
 src/marken/    das Gestaltungssystem - die EINZIGE Stelle mit Zahlenwerten

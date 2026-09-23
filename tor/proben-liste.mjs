@@ -133,6 +133,18 @@ export const PROBEN = [
     an:{ datei:DE, text:"'Bohden','Ding','etwas'" },
     sagt:'nicht in der amtlichen Liste' },
 
+  /* DAS LOCH, DAS DIE AUSNAHME AUFMACHT (D9).
+   *
+   * Seit die Deutschebenen in `vielfalt` als WELT gelten - ihr Vorrat
+   * ist eine amtliche Liste und kann nicht wachsen -, zuckt dieses Tor
+   * nicht mehr, wenn ein Wort still herausfaellt. Gefangen wird das von
+   * der ZAHL im Untertor `deutsch`: 234 Eintraege, 15 Ebenen. Ohne diese
+   * Probe waere das eine Behauptung. */
+  { n:'ein Wort fällt still aus der Liste', tor:'inhalt', deckt:'deutsch', datei:DE,
+    such:"'Platz','Pfütze','plötzlich','schützen'", ersatz:"'Platz','Pfütze','plötzlich'",
+    an:{ datei:DE, fehlt:"'Platz','Pfütze','plötzlich','schützen'" },
+    sagt:'Einträge statt 234' },
+
   { n:'ein Lückensatz ist zehn Wörter lang', tor:'inhalt', deckt:'deutsch', datei:DS,
     such:"Boden:['Der Ball liegt auf dem %.'",
     ersatz:"Boden:['Der rote Ball von gestern liegt jetzt auf dem %.'",
