@@ -2612,6 +2612,76 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
   border-radius:var(--rund-klein);text-align:center;padding:0 var(--r1);
   overflow-wrap:anywhere}
 .aufkleber:not(.da) .wortkleber{background:color-mix(in oklab, var(--linie) 55%, var(--papier));color:var(--tinte-2)}
+/* ---- Deutsch: Rechtschreibung (D5) ------------------------------------
+   Drei Dinge muessen auf 844 x 390 uebereinander passen: der Satz, die
+   Luecke darin und die Buchstabentasten. Gerechnet, nicht geschaetzt -
+   drei Reihen zu 52 Punkten plus die Steuerzeile sind 208, der Satz
+   bekommt zwei Zeilen zu je rund 40, die Kopfzeile 56. Macht 384 von
+   390, und der Ausweg sitzt in der Kopfzeile.
+
+   DIE TASTEN SIND ALPHABETISCH und nicht QWERTZ: eine Achtjaehrige sucht
+   auf einer Schreibmaschinentastatur laenger, als sie zum Schreiben
+   braucht. Zehn je Reihe, damit jede Taste ueber dem Fingermass von 44
+   Punkten bleibt (844/10 = 84). */
+.deutschfeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r4);padding:0 var(--r3) var(--r3);min-height:0}
+/* 52ch und nicht 34: der laengste Satz des ganzen Vorrats hat 49
+   Zeichen (gezaehlt, nicht geschaetzt - „Dieses kleine [Luecke] gehört
+   meiner Schwester." in der Ebene „Silben trennen"). Bei 34ch brach er
+   um, und die zweite Zeile schob die Tastenreihe unter den Rand. Der
+   Satz MUSS in eine Zeile passen; er ist kein Fliesstext, sondern ein
+   Diktat mit einer Luecke darin. */
+.deutschsatz{font-family:var(--f-lesen);font-size:var(--s2);color:var(--tinte);
+  text-align:center;max-width:min(100%,52ch);line-height:1.9;display:block}
+/* Die Luecke ist so breit wie das LAENGSTE Wort der Ebene und nicht wie
+   das gesuchte: ein Kasten, der mit dem Wort waechst, verraet seine
+   Laenge - bei „dem" gegen „diesem" waere das die halbe Antwort.
+   Dieselbe Regel wie bei den falschen Freunden. */
+.deutschsatz .luecke{font-family:var(--f-lesen);font-size:inherit;
+  min-width:var(--luecke,11ch);vertical-align:baseline}
+/* Was Lea GETIPPT hat, steht in voller Tinte. `.luecke` traegt sonst
+   `--tinte-3`, und das ist richtig, solange nichts darin steht - aber
+   das eigene Wort in Blassgrau zu lesen, waehrend man es Buchstabe fuer
+   Buchstabe prueft, ist genau die Stelle, an der man genau hinsehen
+   will. */
+.deutschsatz .luecke.getippt{color:var(--tinte)}
+/* Die vier Schreibweisen beim ERSTEN Treffen. Sie stehen nebeneinander
+   und nicht untereinander: verglichen wird hier, und was verglichen
+   werden soll, muss man in einem Blick sehen. */
+.wahlkarten{display:flex;gap:var(--r3);flex-wrap:wrap;justify-content:center}
+.wahlkarte{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;
+  min-height:60px;padding:var(--r2) var(--r4)}
+/* Was danebenlag, bleibt BLASS stehen und verschwindet nicht - sonst
+   waere die Auswahl beim dritten Anlauf auf zwei geschrumpft und die
+   richtige Karte geschenkt. */
+.wahlkarte.daneben{opacity:.45}
+.tasten{display:flex;flex-direction:column;gap:var(--r2);width:100%;
+  max-width:860px}
+.tastenreihe{display:flex;gap:var(--r2);justify-content:center}
+.taste{font-family:var(--f-lesen);font-size:var(--s2);font-weight:700;
+  color:var(--tinte);background:var(--papier);
+  border:var(--strich) solid var(--linie);border-radius:var(--rund-klein);
+  flex:1 1 0;min-width:0;min-height:52px;cursor:pointer;
+  box-shadow:0 var(--kante) 0 var(--linie)}
+.taste:active{transform:translateY(var(--kante));box-shadow:none}
+.taste:disabled{opacity:.4;cursor:default}
+.tastenreihe.steuerung{gap:var(--r3)}
+.taste.umschalt,.taste.loeschen{flex:0 0 auto;min-width:96px;font-size:var(--s1)}
+.taste.umschalt.an{background:var(--primaer);color:var(--auf-flaeche);
+  border-color:var(--primaer-rand)}
+.tastenreihe.steuerung .knopf{flex:0 0 auto}
+/* Der Ausweg und der Hoerknopf stehen IN der Steuerzeile, nicht in einer
+   eigenen Leiste darunter: dort laegen sie auf 844 x 390 unter dem Rand.
+   Ohne `flex:0 0 auto` zoegen sie sich auf die volle Breite, weil
+   `.taste` daneben `flex:1 1 0` traegt. */
+.tastenreihe.steuerung .leise,
+.tastenreihe.steuerung .nochhoeren{flex:0 0 auto}
+/* Der Aufkleber des Lernworts: dieselbe Bauart wie der Wortkleber der
+   falschen Freunde, nur etwas groesser gesetzt - es ist EIN Wort und
+   kein Satzstueck, und die richtige Schreibung ist das, was man daran
+   sehen soll. */
+.lernwortkleber{font-size:var(--s0)}
+
 /* ---- Schreiben (N2a) --------------------------------------------------
    Die Schreibflaeche ist QUADRATISCH, und das ist keine Geschmacksfrage:
    der Kasten der Vorlage ist 100 x 100, und der Finger wird ueber
@@ -3914,6 +3984,15 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      uebereinander passen - dieselbe Rechnung wie bei der Rechnung. */
   .satzdeutsch{font-size:var(--s1)}
   .satzfeld .satz-eingabe{font-size:var(--s0);min-height:48px}
+  /* Auf 844 x 390 wird der Satz eine Stufe kleiner und die Tastenreihe
+     flacher. Gerechnet: drei Reihen zu 46 plus Steuerzeile 46 plus zwei
+     Satzzeilen zu 34 plus Kopf 56 = 328 von 390 - der Rest ist Luft
+     zwischen den Reihen. */
+  .deutschsatz{font-size:var(--s1);line-height:1.8}
+  .deutschsatz .luecke{font-size:var(--s1)}
+  .taste{min-height:46px;font-size:var(--s1)}
+  .taste.umschalt,.taste.loeschen{min-width:78px;font-size:var(--s0)}
+  .wahlkarte{min-height:52px;font-size:var(--s1)}
   .freundluecke{font-size:var(--s1);line-height:1.9}
   .freundluecke .luecke{font-size:var(--s1)}
   .engkarte{min-height:104px;min-width:104px;padding:var(--r2)}

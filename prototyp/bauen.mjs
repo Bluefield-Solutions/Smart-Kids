@@ -423,6 +423,12 @@ const module = [
   inline(new URL('../src/inhalt/abzeichen.js', import.meta.url), 'Abzeichen'),
   inline(new URL('../src/inhalt/saetze.js', import.meta.url), 'Saetze'),
   inline(new URL('../src/inhalt/englisch.js', import.meta.url), 'Englisch'),
+  /* Die Saetze ZUERST: `deutsch.js` liest sie, und der Inliner wirft den
+     Import weg - er bekommt stattdessen die Zeile unten. Stuende `Deutsch`
+     davor, waere `DeutschSaetze` in seinem Rumpf noch nicht da. */
+  inline(new URL('../src/inhalt/deutsch-saetze.js', import.meta.url), 'DeutschSaetze'),
+  inline(new URL('../src/inhalt/deutsch.js', import.meta.url), 'Deutsch',
+         { 'deutsch-saetze.js': 'const SAETZE = DeutschSaetze.SAETZE;' }),
   inline(new URL('../src/inhalt/tiere.js', import.meta.url), 'Tiere'),
   inline(new URL('../src/inhalt/flaggen.js', import.meta.url), 'Flaggen'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),

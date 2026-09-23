@@ -1908,7 +1908,12 @@ export const PROBEN = [
        auch Lea, weil dort das Wort die Frage ist. Der Eingriff sitzt
        deshalb an der deutschen Haelfte - der englische Zweig darueber
        bliebe stehen, und die Probe traefe sonst zwei Zusagen auf einmal. */
-    such:"  else if (!P.vorlesen) return null;",
+    /* Nachgezogen in D5: der deutsche Zweig hat einen zweiten Ausgang
+       bekommen (`immer`), damit das Diktat seinen Hoerknopf behaelt,
+       obwohl in Leas Profil `vorlesen: false` steht. Der Suchtext musste
+       mitwandern - ohne das waere der Eingriff ins Leere gegangen und
+       das Tor stillschweigend gruen geblieben. */
+    such:"  else if (!P.vorlesen && !immer) return null;",
     ersatz:"  else if (false) return null;",
     an:{ ...DIST, text:'else if (false) return null;' },
     sagt:'hängt nicht am Profil' },

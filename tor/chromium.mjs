@@ -174,6 +174,7 @@ export async function serviere(wurzel, erreichbar = () => true, verzug = () => 0
 const ENGLISCHE_EBENEN = ['englisch', 'freunde', 'verben', 'praeposition',
                           'wendungen', 'hoersatz'];
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
+                                : String(ebene).startsWith('deutsch') ? 'deutsch'
                                 : String(ebene).startsWith('schreiben') ? 'schreiben'
                                 : ENGLISCHE_EBENEN.some(e => String(ebene).startsWith(e))
                                   ? 'englisch'

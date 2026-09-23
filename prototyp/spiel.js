@@ -92,6 +92,12 @@ const ZURUECK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" strok
  */
 const ZEICHEN = {
   buch:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H10a3 3 0 0 1 2 5.2V20a3 3 0 0 0-2-.8H5.5A1.5 1.5 0 0 1 4 17.7z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H14a3 3 0 0 0-2 5.2V20a3 3 0 0 1 2-.8h4.5a1.5 1.5 0 0 0 1.5-1.5z"/>',
+  /* Die Loeschtaste der Buchstabentasten (D5). Gezeichnet und nicht
+     getippt: „←" (U+2190) gibt es im Schnitt „latin" nicht, und ein
+     Zeichen ausserhalb des Schnitts wird vom Geraet ersetzt - auf dem
+     iPhone durch ein anderes, auf dem Schreibtisch durch ein Kaestchen.
+     Genau daran ist die PIN-Anzeige schon einmal gescheitert. */
+  loeschen:'<path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9L3 12z"/><path d="M12 9.5l5 5M17 9.5l-5 5"/>',
   eltern:'<rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
   tonAn:'<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.5 7.5 0 0 1 0 10.8"/>',
   tonAus:'<path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>',
@@ -622,7 +628,7 @@ function ansagen(text){ if (!P || P.vorlesen) vorlesen(text); }
  * eine falsche Aussprache wiederholt, ist schlimmer als keiner: er UEBT
  * sie. Und ohne englische Stimme gibt es ihn gar nicht, sonst waere er ein
  * Knopf, der schweigt - dieselbe Regel wie bei `P.vorlesen`. */
-function nochHoerenKnopf(text, sprache = 'de', zaehlen = false){
+function nochHoerenKnopf(text, sprache = 'de', zaehlen = false, immer = false){
   if (!P || !text) return null;
   /* Wer den Knopf bekommt, haengt an der SPRACHE - und das ist kein
      Sonderfall, sondern derselbe Satz von zwei Seiten: der Knopf steht da,
@@ -632,8 +638,15 @@ function nochHoerenKnopf(text, sprache = 'de', zaehlen = false){
      `vorlesen: false` und braucht ihn trotzdem, sie ist sogar die, die ihn
      am meisten braucht. Ohne englische Stimme gibt es ihn nicht: ein Knopf,
      der schweigt, ist schlimmer als keiner. */
+  /* `immer` ist die eine Ausnahme, und sie hat einen Namen: das DIKTAT
+     (D5). Dort ist der deutsche Satz nicht die Hilfe zur Aufgabe,
+     sondern die Aufgabe selbst - wer ihn nicht noch einmal hoeren kann,
+     muss ihn lesen, und dann ist es kein Diktat mehr. Der Satz zwei
+     Absaetze weiter oben gilt unveraendert: der Knopf steht da, wo er
+     etwas zu wiederholen hat. Hier hat er es auch fuer ein Kind, dem
+     sonst nicht vorgelesen wird. */
   if (sprache === 'en') { if (!englischHoerbar()) return null; }
-  else if (!P.vorlesen) return null;
+  else if (!P.vorlesen && !immer) return null;
   const b = el('button', 'knopf rund nochhoeren', ZEI('nochhoeren', 26));
   b.id = 'nochhoeren';
   b.setAttribute('aria-label', 'Aufgabe noch einmal hören');
@@ -1780,6 +1793,36 @@ const EBENEN = [
    * Zahl, die man sieht, wirkt ohne Strafe. */
   { id:'hoersatz', ueber:'Englisch', titel:'Hören und schreiben', farbe:4,
     art:'hoersatz', wer:['stephan','violeta'] },
+
+  /* DIE RECHTSCHREIBEBENEN (D4) — eine je Phaenomen des amtlichen
+   * Grundwortschatzes 3/4.
+   *
+   * ERZEUGT UND NICHT HINGESCHRIEBEN: die Liste der Phaenomene steht in
+   * `deutsch.js` und kommt von dort aus der amtlichen Datei. Fuenfzehn
+   * Zeilen hier waeren dieselbe Auskunft ein zweites Mal - und die, die
+   * beim naechsten Lehrplan auseinandergeht.
+   *
+   * WARUM EINE EBENE JE PHAENOMEN: die amtliche Liste ordnet jedes Wort
+   * genau EINEM Uebungsschwerpunkt zu und schreibt das ausdruecklich
+   * hin. Damit traegt jede Ebene genau eine Regel - und genau die
+   * bekommt Lea zu sehen, wenn sie ein Wort dieser Ebene falsch
+   * schreibt. Eine Ebene mit drei Regeln haette drei Begruendungen zur
+   * Auswahl und damit keine.
+   *
+   * `gruppe` legt die fuenfzehn hinter EINE Kachel - dieselbe Mechanik
+   * wie bei den acht Laenderkarten und den neun Hauptstadtkarten. Ohne
+   * sie stuenden fuenfzehn Kacheln in der Wand, und die Wand traegt
+   * zwoelf.
+   *
+   * `wer: ['lea']` ist die EINE Stelle, an der steht, dass die Welt
+   * Fiona und den Eltern nicht gehoert. Die Weltenwahl filtert ohnehin
+   * schon nach Ebenen; eine zweite Regel daneben waere dieselbe Auskunft
+   * an zwei Orten. Und sie ist die Zusage, an der die Vier-Kachel-Grenze
+   * haengt - siehe `WELTEN`. */
+  ...Deutsch.GRUPPEN.map(g => ({ id:`deutsch:${g.id}`, ueber:'Klasse 3',
+    titel:'Rechtschreibung', wo:g.titel, farbe:g.farbe,
+    art:'deutsch', gruppe:'rechtschreibung', wer:['lea'],
+    frageWort:' — woran möchtest du üben?' })),
 ];
 
 /* Die Fachwelten (D4).
@@ -1826,6 +1869,24 @@ const WELTEN = [
    * Punkte. Das ist kein Fehler, sondern ein Preis, und einer, den ein
    * Blick beurteilen muss und kein Tor. */
   { id:'englisch',  name:'Englisch', farbe:3 },
+  /* DIE FUENFTE WELT (D4) - und die Zeile darueber sagt, die vierte sei
+   * die letzte gewesen. Beides stimmt, und der Grund ist der Filter in
+   * `weltenwahl`: sichtbar ist eine Welt nur, wenn DIESES Kind Ebenen
+   * darin hat (`.filter(x => x.meine.length)`).
+   *
+   * Nachgezaehlt, Profil fuer Profil:
+   *   Fiona   Erdkunde · Rechnen · Schreiben · Englisch      = 4
+   *   Lea     Erdkunde · Rechnen · Englisch · Deutsch        = 4
+   *   Eltern  Erdkunde · Rechnen · Englisch                  = 3
+   * „Schreiben" gehoert Fiona allein, „Deutsch" Lea allein - die beiden
+   * stehen NIE nebeneinander. Die gemessene Grenze von vier Kacheln auf
+   * 844 x 390 haelt damit, ohne dass der Grundriss angefasst wird.
+   *
+   * DAS IST EINE ZUSAGE UND KEIN ZUFALL. Wer `wer` einer Deutschebene um
+   * Fiona oder ein Elternprofil erweitert, sprengt die Wand - und sieht
+   * es nicht, weil kein Tor eine Welt zaehlt. Deshalb zaehlt `inhalt`
+   * jetzt je Profil nach: hoechstens vier Welten, fuer jeden. */
+  { id:'deutsch',   name:'Deutsch',  farbe:2 },
 ];
 /* Welche Welt zu welcher Aufgabenart gehoert.
  *
@@ -1837,7 +1898,8 @@ const WELTEN = [
 const WELT_VON_ART = { rechnen:'rechnen', schreiben:'schreiben',
                        englisch:'englisch', freunde:'englisch', verben:'englisch',
                        praeposition:'englisch',
-                       wendungen:'englisch', hoersatz:'englisch' };
+                       wendungen:'englisch', hoersatz:'englisch',
+                       deutsch:'deutsch' };
 const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
 let Welt = WELTEN[0].id;
@@ -2059,6 +2121,33 @@ const MATHEBILD = {
  * Deutschland ein Schmier. Ein Wasserzeichen, das man nicht erkennt, ist
  * Dekoration und keine Auskunft.
  */
+/* Die sechs Zeichen der Deutsch-Welt. Derselbe 48-x-24-Kasten und
+ * dieselbe Strichstaerke wie bei den Englischkacheln - eine zweite
+ * Bildsprache in derselben Wand waere ein Bruch, den man sieht, ohne
+ * sagen zu koennen, woran es liegt.
+ *
+ * buch      das aufgeschlagene Buch — die Gruppenkachel
+ * hoeren    zwei Silbenboegen ueber der Zeile: sprich es mit
+ * ableiten  aus dem kleinen Wort wird das grosse: verlaengere
+ * satz      drei Woerter, das mittlere offen: was passt in die Luecke?
+ * gestern   der Pfeil zurueck: setz es in die Vergangenheit
+ * merken    der Zettel mit der geknickten Ecke: das steht so da
+ */
+const DEUTSCHSTRICH = {
+  buch:     '<path d="M4 5h18v15H4Z"/><path d="M26 5h18v15H26Z"/><path d="M24 6v14"/>',
+  hoeren:   '<path d="M6 14q6-9 12 0"/><path d="M26 14q6-9 12 0"/><path d="M4 19h40"/>',
+  ableiten: '<path d="M3 9h7v7H3Z"/><path d="M14 12h9"/><path d="M19 8l4 4-4 4"/>'
+            + '<path d="M28 5h16v15H28Z"/>',
+  satz:     '<path d="M3 8h10v8H3Z"/><path d="M19 8h10v8H19Z" stroke-dasharray="3 3"/>'
+            + '<path d="M35 8h10v8H35Z"/>',
+  gestern:  '<path d="M43 12H9"/><path d="M15 6l-6 6 6 6"/>',
+  merken:   '<path d="M13 4h15l7 7v10H13Z"/><path d="M28 4v7h7"/><path d="M18 15h10"/>',
+};
+const deutschZeichen = (art) => `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
+  preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
+  stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+  stroke-linejoin="round">${DEUTSCHSTRICH[art] || DEUTSCHSTRICH.merken}</svg>`;
+
 function silhouette(ebeneId, gruppe) {
   /* Die Flaggenkachel (F2) zeigt eine ECHTE Flagge - keine gezeichnete
    * Fahne an einem Mast.
@@ -2132,6 +2221,29 @@ function silhouette(ebeneId, gruppe) {
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
       stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
       stroke-linejoin="round">${SATZBILD[ebeneId]}</svg>`;
+  /* DIE RECHTSCHREIBKACHELN (D4) — fuenf Zeichen, nicht fuenfzehn.
+   *
+   * Das Zeichen steht fuer das PRINZIP, unter dem die amtliche Liste die
+   * Gruppe fuehrt, und nicht fuer die Gruppe selbst. Es sagt damit
+   * etwas, das ein Kind gebrauchen kann: WELCHE Strategie hier hilft -
+   * hoeren, ableiten, im Satz entscheiden, in die Vergangenheit setzen,
+   * oder schlicht merken. Fuenfzehn ausgedachte Marken saehen
+   * abwechslungsreicher aus und sagten nichts; welche Gruppe es ist,
+   * steht ohnehin als Wort auf der Kachel.
+   *
+   * Die Zuordnung kommt aus `deutsch.js`, also aus den Ueberschriften
+   * der amtlichen Datei - nicht aus einer Liste hier (Regel 6: was
+   * zweimal dasteht, veraltet einmal). */
+  /* Die WELTKACHEL zuerst. Sie ruft `silhouette('deutsch')` ohne Gruppe,
+     und ohne diese Zeile stand sie BILDLOS in der Weltenwahl - als
+     einzige von vieren. Gesehen im Bild, von keinem Tor gemeldet: die
+     Wand misst Ueberlauf und Groesse, nicht Anwesenheit. */
+  if (ebeneId === 'deutsch' || gruppe === 'rechtschreibung')
+    return deutschZeichen('buch');
+  if (ebeneId.startsWith('deutsch:')) {
+    const g = Deutsch.gruppeVon(ebeneId.split(':')[1]);
+    return deutschZeichen(g ? g.prinzip : 'merken');
+  }
   if (FREUNDEBILD.has(ebeneId))
     return `<svg class="silhouette gezeichnet" viewBox="0 0 48 24"
       preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none"
@@ -2238,7 +2350,8 @@ const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm
   englisch: englischschirm, freunde: freundeschirm, verben: freundeschirm,
   praeposition: freundeschirm,
   flaggen: flaggenschirm,
-  wendungen: satzschirm, hoersatz: satzschirm }[ebeneArt(ebeneId)] || spielschirm);
+  wendungen: satzschirm, hoersatz: satzschirm,
+  deutsch: deutschschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören.
  *
@@ -2580,6 +2693,12 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
      Wendungen der Eltern, nur enger gesetzt. Ohne diesen Zweig fiele er
      auf den Rechenkasten durch und zeigte `undefined` - genau derselbe
      Weg wie bei der Flagge, und aus demselben Grund. */
+  /* DAS LERNWORT (D4). Gesammelt wird das WORT, richtig geschrieben -
+     das ist hier der ganze Gegenstand, und ein erfundenes Symbol daneben
+     haette mit ihm nichts zu tun. Dieselbe Ueberlegung wie bei der
+     Rechenaufgabe: „3 + 4" in einem Kaestchen ist so wiedererkennbar wie
+     ein Kartenumriss. */
+  : x.lernwort   ? `<div class="wortkleber lernwortkleber" style="--ton:${ton}">${x.wort}</div>`
   : x.sorte === 'chunk'
                  ? `<div class="wortkleber satzkleber" style="--ton:${ton}">${x.wort}</div>`
   /* Das Lautpaar (E5) zeigt BEIDE Woerter, nicht eines. Der Vorlauf sagt,
@@ -2617,7 +2736,12 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
    ein Kind lernt, wie man es schreibt (E25). Die Abschrift bleibt
    unangetastet, nur die Anzeige wird richtiggestellt - die Tafel steht
    in `englisch.js` und haelt heute genau einen Eintrag. */
-const stueckFuss = (x) => x.flagge ? x.name
+/* Unter dem Lernwort steht seine EBENE, nicht das Wort noch einmal:
+   „Abend" allein sagt nicht, woran daran zu ueben ist - „Verlängern
+   hilft" schon. Dieselbe Ueberlegung wie beim Lautpaar, unter dem die
+   Stolperstelle steht und nicht wieder ein Wort. */
+const stueckFuss = (x) => x.lernwort ? x.gruppeTitel
+                        : x.flagge ? x.name
                         : x.bild ? Englisch.anzeigeWort(x.wort)
                         : x.pfad ? x.name : x.zeichenFolge ? x.wort
                         /* Unter dem Lautpaar steht, WORUM es geht - „Das
@@ -2659,6 +2783,27 @@ const eigenerRahmen = (pfad) => {
    verdientes Abzeichen ginge wieder verloren. */
 function vorrat(ebeneId, stand = Stand, voll = false){
   const [art, kont] = ebeneId.split(':');
+  /* DEUTSCH: eine Lerneinheit je FORM, nicht je Eintrag der Liste.
+   *
+   * Die amtliche Liste schreibt „Abend - Abende - abends" in eine Zeile,
+   * weil das Paar die Strategie ist. Gelernt werden trotzdem drei
+   * Schreibungen, und jede kann fuer sich sitzen oder nicht - also
+   * bekommt jede ihren eigenen Leitner-Stand. Ein Gegenstand je Zeile
+   * waere ein Stand fuer drei Dinge auf einmal.
+   *
+   * KEINE TIEFE (`voll` wird nicht gefragt). Der Grundwortschatz ist
+   * eine Pflichtliste und keine Leiter: was in der Probe drankommt,
+   * haengt nicht daran, wieviel ein Kind schon kann. Dieselbe
+   * Ueberlegung wie bei „Was ist groesser?".
+   *
+   * `lernwort` ist die Marke, an der Buch, Vorlauf und Endbildschirm den
+   * Gegenstand erkennen. Ohne sie fiele er dort auf den Rechenkasten
+   * durch und zeigte `undefined` - derselbe Weg, den Flagge, Lautpaar
+   * und Satzkarte schon einmal gegangen sind. */
+  if (art === 'deutsch')
+    return Deutsch.einheitenVon(kont).map(e => ({
+      ...Deutsch.gegenstandZu(e), lernwort:true,
+      gruppeTitel: (Deutsch.gruppeVon(e.gruppe) || {}).titel || '' }));
   if (art==='kontinente') {
     const bis = voll ? RUNDEN : (P.id==='fiona' ? kontinentRunde(stand) : RUNDEN);
     return D.kontinente.filter(k=>k.runde<=bis)
@@ -4553,6 +4698,18 @@ function vorlaufSatz(ebeneId){
       : 'Hier steht ein englisches Wort, und du sagst es laut. Es wird '
         + '<strong>nicht bewertet</strong>. Vorlesen kann dir dieses Gerät es leider '
         + 'nicht — ihm fehlt eine englische Stimme.';
+  /* DEUTSCH (D4). Der Satz sagt die drei Dinge, die diese Ebene von
+     allen anderen unterscheiden: der Satz wird VORGELESEN, das erste
+     Mal wird AUSGEWAEHLT statt getippt, und bei einem Fehler kommt
+     zuerst die REGEL. Das dritte ist das wichtigste und das
+     ungewoehnlichste - wer es nicht weiss, wartet auf die Loesung und
+     liest die Begruendung nicht. */
+  if (art === 'deutsch')
+    return 'Ein Satz mit einer Lücke — du hörst ihn, und das fehlende Wort '
+      + 'schreibst du. Beim <strong>ersten Mal</strong> stehen vier Schreibweisen '
+      + 'zur Wahl, danach tippst du selbst. Wenn etwas schiefgeht, kommt erst '
+      + 'die <strong>Regel</strong> und dann die Lösung. Tippe hier ein Wort an, '
+      + 'dann hörst du es.';
   if (art === 'rechnen')
     return `So sehen die Aufgaben aus — hier ein paar davon, `
       + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
@@ -4715,6 +4872,10 @@ async function vorlauf(ebeneId, zurueck = null){
 
 /** Was beim Antippen gesagt wird. Bei den Hauptstädten das PAAR. */
 function vorlaufAnsage(x, ebeneId){
+  /* Das Lernwort wird gesagt und dazu, woran es liegt. Nicht nur das
+     Wort: im Vorlauf ist es zu SEHEN, und wer es nur hoert, weiss noch
+     nicht, was daran schwer ist. */
+  if (x.lernwort) return `${x.wort}. ${x.gruppeTitel}.`;
   // Der englische Gegenstand sagt SEIN Wort, und zwar auf Englisch. Ein
   // deutscher Rahmensatz drumherum („Das heißt blue.") liefe durch die
   // englische Stimme und klänge nach nichts.
@@ -5966,6 +6127,272 @@ function freundeschirm(){
   // Violeta steht `vorlesen: false`, also passiert hier nichts; die Zeile
   // steht trotzdem da, weil die Ebene sonst als einzige gar nicht ansagt.
   ansagen(ziel.satz);
+  return s;
+}
+
+/* ---------- Deutsch: Rechtschreibung (D5) --------------------------------
+ *
+ * Ein Satz mit einer Luecke steht da und wird vorgelesen - das Zielwort
+ * mit. Geschrieben wird nur das eine Wort.
+ *
+ * DER SATZ WIRD IMMER GESPROCHEN, auch fuer Lea, in deren Profil
+ * `vorlesen: false` steht. Das ist kein Versehen und dieselbe Stelle wie
+ * bei „Hoeren und schreiben": der Satz IST die Aufgabe. Ein Diktat, das
+ * man lesen muss, ist kein Diktat.
+ *
+ * EINE LEITER IN ZWEI STUFEN. Beim ERSTEN Treffen mit einem Wort stehen
+ * vier Schreibweisen zur Wahl, danach wird frei getippt. Der Grund ist
+ * nicht Bequemlichkeit: die drei falschen Karten sind genau die Fehler,
+ * die das Phaenomen nahelegt („esen", „eßen", „ehsen"). Wer hier die
+ * richtige antippt, hat die Falle GESEHEN, bevor er in sie tritt. Blind
+ * ein unbekanntes Wort zu tippen prueft, ob man es schon kann, und uebt
+ * nichts.
+ *
+ * DIE REGEL KOMMT VOR DER LOESUNG. Bei jedem Fehlversuch steht die
+ * Begruendung da - mit dem Wortpaar als Beleg -, die Loesung erst beim
+ * dritten. Eine Loesung kann man abschreiben; eine Regel traegt zum
+ * naechsten Wort derselben Ebene.
+ *
+ * GROSS/KLEIN IST EIN EIGENER FEHLER. „abend" statt „Abend" ist falsch
+ * und zaehlt als Fehlversuch - aber es bekommt einen eigenen Satz, denn
+ * es ist ein anderer Fehler als ein falscher Buchstabe, und wer beides
+ * gleich behandelt, sagt dem Kind nicht, woran es lag.
+ *
+ * EIGENE BUCHSTABENTASTEN statt der Tastatur des Geraets. Drei Gruende,
+ * und alle drei sind auf dem Zielgeraet gemessen: die Systemtastatur
+ * deckt im Querformat den halben Bildschirm zu (der Satz waere weg), sie
+ * korrigiert mit, und sie hat auf einem englisch eingestellten Geraet
+ * kein ä, ö, ü, ß. Hier sind die Tasten alphabetisch - eine Achtjaehrige
+ * sucht auf QWERTZ laenger, als sie zum Schreiben braucht.
+ */
+
+/* Alphabetisch, drei Reihen zu zehn. Das Mass kommt vom Zielgeraet:
+   844 Punkte durch zehn sind 84, und damit bleibt jede Taste ueber dem
+   Fingermass von 44. Vier Reihen zu acht waeren breiter und eine Reihe
+   hoeher - 390 Punkte Hoehe haben sie nicht. */
+const TASTENREIHEN = ['abcdefghij', 'klmnopqrst', 'uvwxyzäöüß'];
+/* „ß" hat keine Grossform: `'ß'.toUpperCase()` gibt „SS", also zwei
+   Zeichen aus einer Taste. Das stand hier einen Lauf lang und schrieb
+   „STRASSE" in die Luecke. */
+const grossVon = (b) => b === 'ß' ? 'ß' : b.toUpperCase();
+
+function deutschschirm(){
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false, gross = false, getippt = '';
+
+  /* Welcher der drei Saetze: der Leitner-Stand sagt, zum wievielten Mal
+     das Wort drankommt. Wer noch keinen Stand hat, ist beim ersten Mal -
+     und bekommt deshalb auch die Auswahl statt der Tasten. */
+  const gesehen = Stand[ziel.id] ? (Stand[ziel.id].fach ?? 1) : 0;
+  const saetze = ziel.saetze.length ? ziel.saetze : [`Schreibe das Wort %.`];
+  const satz = saetze[gesehen % saetze.length];
+  const wahlstufe = gesehen === 0 && ziel.falsch.length === 3;
+  const gesprochen = satz.replace('%', ziel.wort);
+  /* Die Breite der Luecke kommt aus der EBENE, nicht aus dem Wort -
+     sonst verriete sie die Loesung. Und nicht aus allen 322 Woertern:
+     mit den elf Zeichen von „erschrecken" lief der Satz auf 844 x 390
+     in zwei Zeilen und schob die Tastenreihe unter den Rand. Gemessen,
+     nicht geschaetzt. */
+  const lueckenBreite = Deutsch.laengstesWort(ziel.gruppe);
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'tippen' });
+  const weiter = () => weiterIn(st);
+
+  /* Die vier Karten werden gemischt - sonst stuende die richtige immer
+     an derselben Stelle, und ein Kind lernt die Stelle statt des Wortes.
+     Gemischt wird mit dem Sitzungskeim und nicht mit `Math.random`, wie
+     ueberall in diesem Verzeichnis: ein Zufallsgenerator ist erst dann
+     einer, wenn es gemessen ist. */
+  const karten = wahlstufe
+    ? mischenMit([ziel.wort, ...ziel.falsch], keimAus(`${st.keim}:${ziel.id}`))
+    : [];
+
+  /* Die leere Luecke ist LEER. Der erste Anlauf schrieb „___" hinein -
+     drei Unterstriche auf der Grundlinie, unter einem gestrichelten
+     Rand, der dasselbe schon sagt. Zwei Zeichen fuer eine Auskunft, und
+     eines davon sass schief. Das geschuetzte Leerzeichen haelt die
+     Zeilenhoehe, damit der Satz beim Fuellen nicht springt. */
+  const LEER = '\u00a0';
+  const lueckeHtml = (inhalt, klasse = '') =>
+    `<span class="luecke${klasse}" id="luecke">${inhalt || LEER}</span>`;
+  const satzHtml = (inhalt, klasse = '') =>
+    satz.replace('%', lueckeHtml(inhalt, klasse));
+
+  /* NUR die Buchstabenreihen - die Steuerzeile steht daneben und nicht
+     darin. Der erste Anlauf zeichnete beides zusammen neu, sobald die
+     Umschalttaste gedrueckt wurde, und riss dabei den Hoerknopf mit
+     heraus: er wird von Hand angehaengt und steht in keiner Vorlage.
+     Ein Kind, das einmal auf „Groß" tippt, konnte den Satz danach nicht
+     mehr hoeren - auf einem Diktatbildschirm. Gesehen im Bild, von
+     keinem Tor gemeldet. */
+  const buchstabenHtml = () => TASTENREIHEN.map(r => `<div class="tastenreihe">${
+      [...r].map(b => { const z = gross ? grossVon(b) : b;
+        return `<button class="taste" data-b="${z}">${z}</button>`; }).join('')
+    }</div>`).join('');
+  const tastenHtml = () => `<div id="buchstaben">${buchstabenHtml()}</div>`
+    /* KEINE Klasse `werkzeug` an dieser Reihe, so verlockend es aussieht.
+       Im Querformat ist `.werkzeug` eine SPALTE (`flex-direction:column`),
+       und die Steuerzeile stand damit 276 Punkte hoch untereinander statt
+       56 nebeneinander. Gemessen, nicht vermutet - im Stilblatt steht der
+       Grund drei Zeilen ueber der Regel. Der Hoerknopf wird deshalb unten
+       von Hand hierher gehaengt. */
+    + `<div class="tastenreihe steuerung">
+         <button class="taste umschalt${gross ? ' an' : ''}" id="umschalt"
+                 aria-pressed="${gross}">Groß</button>
+         <button class="taste loeschen" id="loeschen"
+                 aria-label="löschen">${ZEI('loeschen', 24)}</button>
+         <button class="knopf haupt" id="pruef">Prüfen</button>
+         ${WEISSNICHT_KNOPF}
+       </div>`;
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">Welches Wort fehlt?</div>
+    <div class="deutschfeld">
+      <div class="deutschsatz" id="satz"
+           style="--luecke:${lueckenBreite}ch">${satzHtml('')}</div>
+      ${wahlstufe
+        ? `<div class="wahlkarten" id="wahl">${karten.map(k =>
+            `<button class="knopf wahlkarte" data-wort="${k}">${k}</button>`).join('')}</div>
+           ${WEISSNICHT}`
+        /* IN DER TASTENSTUFE steht der Ausweg IN der Steuerzeile und
+           nicht in einer eigenen Leiste darunter. Gemessen auf
+           844 x 390: mit eigener Leiste lag er bei 424 - vierunddreissig
+           Punkte unter dem Rand, und mit zweizeiligem Satz lag auch
+           „Prüfen" darunter. Der Schreibschirm macht es seit N2a
+           genauso, und `WEISSNICHT_KNOPF` steht genau dafuer neben
+           `WEISSNICHT` (Regel 6: was zweimal dasteht, veraltet einmal -
+           EIN Knopf, zwei Leisten).
+           In der Wahlstufe bleibt die eigene Leiste - dort sind es
+           statt 218 Punkten Tastatur nur 52 Punkte Karten, und der
+           Platz ist da. */
+        : `<div class="tasten" id="tasten">${tastenHtml()}</div>`}
+    </div>`;
+
+  const satzFeld = () => s.querySelector('#satz');
+  const frageFeld = () => s.querySelector('#frage');
+  const ausschalten = () => s.querySelectorAll('.taste, .wahlkarte, #pruef')
+    .forEach(k => k.disabled = true);
+
+  const zeigen = (wort, klasse = '') => { const f = satzFeld();
+    if (f) f.innerHTML = satzHtml(wort, klasse); };
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', getippt, fachVorher);
+    ausschalten();
+    zeigen(ziel.wort, ' gefuellt');
+    const f = frageFeld();
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem: `
+      + `<strong>${ziel.wort}</strong>. ${ziel.regel}</span>`;
+    sagen(`Kein Problem. ${ziel.regel}`);
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function richtig(eingabe){
+    erledigt = beendet(s);
+    const neuerAufkleber = werten(ziel, 'richtig', versuch);
+    kopfNachziehenIn(s);
+    ausschalten();
+    zeigen(eingabe, ' gefuellt');
+    const spruch = lob();
+    /* Die Regel steht AUCH beim Treffer da. Wer „Abend" auf Anhieb
+       richtig schreibt, weiss deshalb noch nicht, WARUM es kein t ist -
+       und genau das braucht er beim naechsten Wort dieser Ebene.
+       Dieselbe Ueberlegung wie bei den falschen Freunden. */
+    lobsatz(s, `<strong>${eingabe}</strong>`, null, spruch, ziel.regel, neuerAufkleber);
+    sagen(`${spruch} ${ziel.regel}`);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function bewerte(roh){
+    if (erledigt) return;
+    if (!roh) { wackelt(s.querySelector('#luecke')); return; }
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (roh === ziel.wort) {
+      protokollieren('richtig', roh, fachVorher);
+      return richtig(roh);
+    }
+    protokollieren('falsch', roh, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    /* GROSS/KLEIN BEKOMMT SEINEN EIGENEN SATZ. Es ist ein Fehler und
+       zaehlt wie jeder andere - aber es ist ein ANDERER Fehler als ein
+       falscher Buchstabe, und ein Kind, das „Nicht ganz" liest, sucht
+       an der falschen Stelle. */
+    const nurGross = roh.toLowerCase() === ziel.wort.toLowerCase();
+    const satzText = nurGross
+      ? `Fast! Achte auf groß und klein. ${ziel.regel}`
+      : `Noch nicht ganz. ${ziel.regel}`;
+    const f = frageFeld();
+    if (f) f.innerHTML = `<span class="fastText">${satzText}</span>`;
+    sagen(satzText);
+    getippt = '';
+    zeigen('');
+  }
+
+  if (wahlstufe) {
+    s.querySelectorAll('.wahlkarte').forEach(k => k.onclick = () => {
+      if (erledigt) return;
+      k.classList.add('gewaehlt');
+      bewerte(k.dataset.wort);
+      /* Eine Karte, die danebenlag, verschwindet nicht - sie bleibt
+         blass stehen. Wer sie wegnimmt, verkleinert die Auswahl bei
+         jedem Fehlversuch, und der dritte Anlauf waere geschenkt. */
+      if (!erledigt) { k.classList.remove('gewaehlt'); k.classList.add('daneben'); }
+    });
+  } else {
+    /* Neu gezeichnet wird NUR das Buchstabenfeld. Die Steuerzeile bleibt
+       stehen, samt dem Hoerknopf, den `nochHoerenKnopf` weiter unten
+       hineinhaengt. */
+    const neuZeichnen = () => {
+      const kasten = s.querySelector('#buchstaben');
+      if (kasten) kasten.innerHTML = buchstabenHtml();
+      const um = s.querySelector('#umschalt');
+      if (um) { um.classList.toggle('an', gross); um.setAttribute('aria-pressed', String(gross)); }
+      binden();
+    };
+    const binden = () => {
+      s.querySelectorAll('.taste[data-b]').forEach(k => k.onclick = () => {
+        if (erledigt) return;
+        getippt += k.dataset.b;
+        /* Nach dem ersten Buchstaben faellt die Umschalttaste zurueck -
+           wie auf jeder Tastatur. Ohne das schriebe Lea „ABEND", sobald
+           sie ein Nomen anfaengt, und muesste die Taste nach jedem
+           Zeichen von Hand loesen. */
+        if (gross) { gross = false; neuZeichnen(); }
+        zeigen(getippt, ' getippt');
+      });
+      const um = s.querySelector('#umschalt');
+      if (um) um.onclick = () => { if (erledigt) return; gross = !gross; neuZeichnen(); };
+      const lo = s.querySelector('#loeschen');
+      if (lo) lo.onclick = () => { if (erledigt) return;
+        getippt = getippt.slice(0, -1); zeigen(getippt, getippt ? ' getippt' : ''); };
+      const pr = s.querySelector('#pruef');
+      if (pr) pr.onclick = () => bewerte(getippt);
+    };
+    binden();
+  }
+
+  ausweg(s, aufloesen);
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+  /* Vorgelesen wird der GANZE Satz mit dem Wort darin - nicht das Wort
+     allein. Ein Wort ohne Satz laesst offen, welche Form gemeint ist
+     („dem" oder „den"), und genau das entscheidet auf der Ebene der
+     kleinen Woerter die Aufgabe. */
+  vorlesen(gesprochen, 'de');
+  const b = nochHoerenKnopf(gesprochen, 'de', true, true);
+  if (b) { const w = s.querySelector('.steuerung') || s.querySelector('.werkzeug');
+    if (w) w.appendChild(b); }
   return s;
 }
 
