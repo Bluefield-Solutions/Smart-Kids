@@ -1526,9 +1526,31 @@ const gewaehlt = (() => {
  * gelandet ist. Und das Urteil unten haelt sich daran: ein Urteil ueber
  * ein Profil, das gar nicht gespielt hat, waere ein Fehlalarm - genau
  * daran ist die erste Zerlegung schon einmal gescheitert. */
-const PROFILE_HIER = TEIL
+/* `--wer=lea`: den Durchgang mit EINEM Profil fahren - wieder nur fuer
+ * `npm run proben`, und aus demselben Grund wie `--kurz`.
+ *
+ * Gemessen (E26): die Gegenprobe „der Diktatsatz wird nicht mehr gesagt"
+ * lief 882 Sekunden. `--sofort` half nicht - im Gegenteil, der zweite
+ * Lauf brauchte 1136 -, und das ist kein Rauschen, sondern die Rechnung:
+ * die Deutsch-Ebenen gehoeren Lea allein, der Abbruch greift also
+ * fruehestens im dritten der vier Profildurchlaeufe, und die drei
+ * anderen spielen vorher vollstaendig durch. Wer den Fehler in EINEM
+ * Profil einbaut, braucht die anderen drei nicht zu spielen.
+ *
+ * Ein Tippfehler darf auch hier nicht still alles ueberspringen - das
+ * waere die leiseste Art, einen Test abzuschalten. Die Pruefung steht
+ * deshalb direkt darunter, bei der fuer `--nur`. */
+const NUR_WER = (process.argv.find(a => a.startsWith('--wer=')) || '')
+  .split('=')[1]?.split(',').map(x => x.trim()).filter(Boolean) || null;
+const PROFILE_HIER = (TEIL
   ? PROFIL_IDS.filter(w => TEIL.stuecke.includes(`durchgang:${w}`))
-  : PROFIL_IDS;
+  : PROFIL_IDS).filter(w => !NUR_WER || NUR_WER.includes(w));
+for (const w of (NUR_WER || []))
+  if (!PROFIL_IDS.includes(w)) {
+    console.error(`\n  smoke: das Profil „${w}" gibt es nicht. `
+      + `Bekannt sind: ${PROFIL_IDS.join(', ')}.\n`);
+    process.exit(2);
+  }
 // Ein Tippfehler im Namen würde sonst ALLES überspringen und grün melden -
 // die stillste Art, einen Test abzuschalten.
 for (const t of (gewaehlt || []))
