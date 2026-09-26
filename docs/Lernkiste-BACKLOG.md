@@ -9016,3 +9016,19 @@ inzwischen neun Arten von Bildschirm auf und dreimal denselben Fehler —
 auslässt". Diesmal stand die Zeile mit der Probe zusammen im selben Commit.
 
 Nach dem Zweig: **207 Ebenen × Profile durchgespielt, Rauchtest grün.**
+
+### Ein Umweg, der sich messen ließ — und eine Vermutung, die falsch war
+
+Die beiden neuen Gegenproben liefen **882 und 340 Sekunden**. Das ist viel für
+eine Probe, also habe ich `--sofort` drangehängt, den vorhandenen Schalter, der
+beim ersten Befund abbricht. Ergebnis: **1136 Sekunden** — langsamer.
+
+Der Grund steht in der Rechnung, nicht im Rauschen: die Deutsch-Ebenen gehören
+**Lea allein**, der Abbruch greift also frühestens im dritten der vier
+Profildurchläufe, und die drei anderen spielen vorher vollständig durch.
+
+Der Durchgang kann jetzt `--wer=lea`: **456 und 202 Sekunden**, beide schlagen
+weiter an. Wie `--kurz` nur für `npm run proben`. Das Urteil am Ende hält sich
+seit jeher an `PROFILE_HIER` — es gab nur keinen Weg, die Liste zu
+verkleinern. Ein unbekannter Profilname bricht ab, statt still alles zu
+überspringen; das ist dieselbe Vorsicht, die bei `--nur=` schon dasteht.
