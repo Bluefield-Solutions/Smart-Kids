@@ -9032,3 +9032,14 @@ weiter an. Wie `--kurz` nur für `npm run proben`. Das Urteil am Ende hält sich
 seit jeher an `PROFILE_HIER` — es gab nur keinen Weg, die Liste zu
 verkleinern. Ein unbekannter Profilname bricht ab, statt still alles zu
 überspringen; das ist dieselbe Vorsicht, die bei `--nur=` schon dasteht.
+
+### Und damit ist die volle Kette grün
+
+Zum ersten Mal seit der Deutsch-Runde: **25 von 25 Läufen grün, 1054 Sekunden
+auf vier Kernen.** Die Tabelle weiter oben in diesem Verzeichnis nannte vier
+rote Dinge — `passt`, `ansicht` und zweimal `smoke`. Alle vier sind zu.
+
+Der Lauf ist dabei länger geworden (749 s am 11.09., 1054 s heute), und zwar
+an einer Stelle: der Durchgang spielt jetzt **207 Ebenen × Profile** statt
+zuvor rund 170 — die sechzehn Deutsch-Ebenen wurden vorher übersprungen, weil
+er an ihnen abbrach. Die Zahl in `CLAUDE.md` ist nachgezogen.

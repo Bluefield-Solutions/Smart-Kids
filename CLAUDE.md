@@ -37,8 +37,8 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 |---|---|---|---|
 | **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
 | `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
-| `npm run tor:voll` | **wenn Stephan es sagt** | **~12 min** (gemessen 749 s am 11.09., 4 Kerne) | die volle Kette, alle Größen, alle Bildschirme |
-| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 532 Gegenproben. Läuft sonst nirgends mehr |
+| `npm run tor:voll` | **wenn Stephan es sagt** | **~18 min** (gemessen 1054 s am 26.09., 4 Kerne; 749 s am 11.09. — der Durchgang spielt inzwischen 207 Ebenen × Profile) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 536 Gegenproben. Läuft sonst nirgends mehr |
 | Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
 **Die Regel seit P20: der schnelle Gang ist der Standard. Die volle Kette und
@@ -134,7 +134,7 @@ was die drei davor gefunden hätten.
 ```
 npm run tor        DER SCHNELLE GANG und die normale Runde: rund 30 s, alle
                    Tore ohne Browser. Er sagt selbst, was er nicht sieht.
-npm run tor:voll   die ganze Kette, rund 12 min auf vier Kernen. Nur auf
+npm run tor:voll   die ganze Kette, rund 18 min auf vier Kernen. Nur auf
                    Zuruf — sie gibt frei, was der schnelle Gang offenlässt.
 npm run tor -- --betroffen
                    dazu die Browsertore, die von den geänderten Dateien
