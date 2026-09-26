@@ -5159,7 +5159,15 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
      * vorgemacht hat: die Gegenprobe „das kleinere Land wird als
      * richtig gewertet" beweist nur dann etwas, wenn der Kurzlauf die
      * Ebene auch aufschlaegt. Sie ist die einzige Art, bei der zwei
-     * Gebiete markiert sind und genau eines die Antwort ist. */
+     * Gebiete markiert sind und genau eines die Antwort ist.
+     *
+     * `deutsch:tz` (D5) ist die ZEHNTE, und sie steht aus demselben
+     * Grund gleich mit hier. Sie ist die einzige Art, auf der der TON
+     * die Aufgabe ist und nicht die Vorlesehilfe - Lea traegt
+     * `vorlesen: false` und hoert den Satz trotzdem. Genau das prueft
+     * der Zweig, und ohne diese Zeile prueft es niemand: die Gegenproben
+     * dazu blieben gruen, weil der Kurzlauf die Ebene nie aufschluege.
+     * `tz` und nicht `probe`: vier Woerter, die kleinste der sechzehn. */
     const zuSpielen = KURZ
       ? da.filter(e => e === 'kontinente' || e.startsWith('hauptstaedte')
                     || e === 'nachbarn' || e === 'groesser:europa'
@@ -5167,7 +5175,8 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
                     || e === 'flaggen:europa' || e === 'flaggen:paare' || e === 'flaggen:karte'
                     || e.startsWith('englisch') || e.startsWith('freunde')
                     || e === 'verben' || e === 'praeposition'
-                    || e === 'wendungen' || e === 'hoersatz')
+                    || e === 'wendungen' || e === 'hoersatz'
+                    || e === 'deutsch:tz')
       : da;
     gespielt[wer] = zuSpielen.length;
     gespieltEnglisch[wer] = zuSpielen.filter(SAGT_ENGLISCH).length;
@@ -5260,7 +5269,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
         + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da .freundluecke, '
         + '.schirm.da .satzfeld, .schirm.da .flaggenkarte, .schirm.da .flaggengross, '
-        + '.schirm.da #legereihe, '
+        + '.schirm.da #legereihe, .schirm.da .deutschfeld, '
         + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
@@ -5332,6 +5341,104 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         await abgeschlossen(p, wer, ebene,
           /Fahre den Buchstaben nach|Fahre sie nach|Schreib ein |Schreib die Zahl /,
           'nachgefahren und geschrieben');
+        continue;
+      }
+      /* Rechtschreibung (D5) - der FUENFTE Zweig ohne Karte, und beim
+       * ersten Lauf, der die Ebenen ueberhaupt erreichte, lief er prompt
+       * in die Zeitueberschreitung: der Durchgang wartete auf ein
+       * `path.ziel`, das es hier nicht gibt. Es ist inzwischen das
+       * VIERTE Mal, dass genau dieser Fehler auftritt - deshalb steht
+       * die Deutsch-Welt jetzt mit in der Wartezeile daneben.
+       *
+       * Gespielt wird der Weg des Kindes: den Satz hoeren, das fehlende
+       * Wort tippen (oder in der ersten Begegnung aus vier Karten
+       * waehlen). Zwei Zusagen haengen daran, und beide sind das, was
+       * ein Diktat ueberhaupt zu einem macht:
+       *
+       *   1. Das Wort steht NICHT im Satz. Sonst ist es Abschreiben.
+       *   2. Der Satz wird GESAGT - auch fuer Lea, deren Profil
+       *      `vorlesen: false` traegt. Auf jedem anderen Bildschirm ist
+       *      der Ton die Vorlesehilfe und haengt am Profil; hier ist er
+       *      die Aufgabe. `nochHoerenKnopf` traegt dafuer seit D5 einen
+       *      vierten Parameter, und geprueft hat ihn bisher nichts.
+       *
+       * Gezaehlt wird der Satz deshalb NICHT in `gehoert`: er geht als
+       * `eigen` an `abgeschlossen` und wird dort abgezogen - dieselbe
+       * Unterscheidung wie bei „Hoeren und schreiben" (E12). */
+      if (await p.$('.schirm.da .deutschfeld')) {
+        const auf = await p.evaluate(() => {
+          const feld = document.querySelector('.schirm.da .deutschfeld');
+          const satz = feld.querySelector('#satz');
+          const luecke = satz?.querySelector('#luecke');
+          const kinder = satz ? [...satz.childNodes] : [];
+          const i = kinder.indexOf(luecke);
+          return {
+            wort: Sitzung?.liste[Sitzung.i]?.wort || '',
+            /* Der Satz OHNE die Luecke, in zwei Stuecken - damit laesst
+               sich nachsehen, ob das Wort irgendwo sonst darin steht. */
+            vor: i < 0 ? '' : kinder.slice(0, i).map(n => n.textContent).join(''),
+            nach: i < 0 ? '' : kinder.slice(i + 1).map(n => n.textContent).join(''),
+            wahl: [...feld.querySelectorAll('.wahlkarte')].map(k => k.dataset.wort),
+            tasten: !!feld.querySelector('#tasten'),
+            knopf: !!document.querySelector('.schirm.da #nochhoeren'),
+            gesagt: (window.__gesagt || []).slice(),
+          };
+        });
+        if (!auf.wort) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt kein Wort`));
+          continue;
+        }
+        const satzOhne = `${auf.vor}${auf.nach}`;
+        /* NICHT `\\b`: das ist eine Grenze zwischen `[A-Za-z0-9_]` und
+           allem anderen, und damit liegt sie bei „über" und „Ärger"
+           mitten IM Wort - die Pruefung waere fuer jedes vierte Lernwort
+           still blind. Die Grenze steht hier als Satz von Zeichen, die
+           zu einem deutschen Wort gehoeren. */
+        const RAND = '[^a-zäöüßA-ZÄÖÜ]';
+        if (new RegExp(`(^|${RAND})${auf.wort}(${RAND}|$)`, 'i').test(satzOhne))
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" steht im Satz `
+            + `(„${satzOhne.trim()}") — ein Diktat, das man ablesen kann, ist keines`));
+        /* Der gesprochene Satz ist der Satz MIT dem Wort darin. Gesucht
+           wird er ueber beide Stuecke und nicht ueber das Wort allein:
+           „Ich gehe nach Hause." enthaelt das Wort auch dann, wenn
+           gerade ein ganz anderer Satz gesagt wurde. */
+        const gesprochen = auf.gesagt.map(x => String(x).trim())
+          .find(x => x.startsWith(auf.vor.trim()) && x.endsWith(auf.nach.trim())
+                  && x.includes(auf.wort));
+        if (!gesprochen)
+          merke('durchgang', new Error(`${wer}/${ebene}: der Satz wurde nicht gesagt — `
+            + `gehört wurde „${auf.gesagt.join(' | ') || 'nichts'}". Ohne Ton ist es `
+            + 'kein Diktat, sondern ein Lückentext'));
+        if (!auf.knopf)
+          merke('durchgang', new Error(`${wer}/${ebene}: kein Hörknopf — der Satz ist `
+            + 'hier die Aufgabe, und wer ihn nicht noch einmal hören kann, muss ihn lesen'));
+        if (auf.wahl.length) {
+          if (!auf.wahl.includes(auf.wort))
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.wort}" steht nicht `
+              + `unter den ${auf.wahl.length} Karten (${auf.wahl.join(', ')})`));
+          await p.click(`.schirm.da .wahlkarte[data-wort="${auf.wort}"]`);
+          wege.add(`${wer}: Wort gewählt`);
+        } else if (auf.tasten) {
+          /* Getippt wird Zeichen fuer Zeichen auf der Bildschirmtastatur -
+             nicht in ein Feld gefuellt. Die Umschalttaste faellt nach
+             jedem Buchstaben von selbst zurueck, also wird vor JEDEM
+             Zeichen nachgesehen, wie sie gerade steht. */
+          for (const z of [...auf.wort]) {
+            const gross = z !== z.toLowerCase();
+            const an = await p.$eval('.schirm.da #umschalt',
+              k => k.getAttribute('aria-pressed') === 'true').catch(() => false);
+            if (gross !== an) await p.click('.schirm.da #umschalt');
+            await p.click(`.schirm.da .taste[data-b="${z}"]`);
+          }
+          await p.click('.schirm.da #pruef');
+          wege.add(`${wer}: Wort geschrieben`);
+        } else {
+          merke('durchgang', new Error(`${wer}/${ebene}: weder Karten noch Tasten`));
+          continue;
+        }
+        await bewertet(p);
+        await abgeschlossen(p, wer, ebene, /(?!)/, `„${auf.wort}" geschrieben`,
+          gesprochen);
         continue;
       }
       /* Englisch: die Aufgabe ohne Karte, ohne Rechnung und ohne Frage.

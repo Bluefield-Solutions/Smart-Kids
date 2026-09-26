@@ -8983,3 +8983,36 @@ die Abzeichenwand nicht ab.
 was das kostet. Die Abzeichenwand würde dann auf der kleinsten Größe rollen
 statt zu schrumpfen — und „das Buch blättert, es rollt nicht" ist eine Zusage,
 die eine eigene Messung verdient, keine Nebenwirkung.
+
+### Und dann war der Rauchtest dran — die Deutsch-Welt wurde nie gespielt
+
+Mit den Bildtoren grün lief die volle Kette weiter als je zuvor, und dort
+stand der nächste Befund: `smoke` brach ab mit
+
+> `durchgang: lea/deutsch:silben: waiting for locator('.schirm.da .karte svg path.ziel')`
+
+Der Durchgang wartete auf eine **Landkarte**. Die Deutsch-Welt hat keine — es
+gibt kein `path.ziel`, auf das man warten könnte. Das stand seit der
+Deutsch-Runde als „offen" im Verzeichnis und war bis dahin **verdeckt**: der
+Durchgang brach vorher an `groesser:europa` ab, und die Ebenen wurden nie
+erreicht. Der Rauchtest ist damit **das vierte Mal** an genau dieser Stelle
+hängengeblieben — Rechnen, Schreiben, Englisch, jetzt Deutsch.
+
+Der Zweig spielt den Weg des Kindes: den Satz hören, das fehlende Wort tippen
+(oder in der ersten Begegnung aus vier Karten wählen). Und er prüft die zwei
+Zusagen, die ein Diktat überhaupt zu einem machen:
+
+1. **Das Wort steht nicht im Satz.** Sonst ist es Abschreiben.
+2. **Der Satz wird gesagt** — auch für Lea, deren Profil `vorlesen: false`
+   trägt. Auf jedem anderen Bildschirm ist der Ton die Vorlesehilfe und hängt
+   am Profil; hier ist er die Aufgabe. `nochHoerenKnopf` trägt dafür seit der
+   Deutsch-Runde einen vierten Parameter — **geprüft hat ihn bisher nichts.**
+
+Zwei stehende Gegenproben halten beides fest. Und damit sie überhaupt etwas
+beweisen, steht `deutsch:tz` jetzt in der **Kurzliste** des Durchgangs: die
+Liste, an der eine neue Ebene unsichtbar wird. Der Kommentar dort zählt
+inzwischen neun Arten von Bildschirm auf und dreimal denselben Fehler —
+„Gegenprobe geschrieben, Gegenprobe beweist nichts, weil diese Zeile die Ebene
+auslässt". Diesmal stand die Zeile mit der Probe zusammen im selben Commit.
+
+Nach dem Zweig: **207 Ebenen × Profile durchgespielt, Rauchtest grün.**

@@ -1,6 +1,6 @@
 {
   "form": 2,
-  "zeit": "2026-09-23",
+  "zeit": "2026-09-26",
   "tore": [
     "anker",
     "ansicht",
@@ -353,6 +353,11 @@
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
       "zeit": "2026-09-11",
       "s": 103
+    },
+    "vier Abzeichen stehen außerhalb der Seite": {
+      "commit": "f9777cd31002191df28f48660b46c5c4741066a1",
+      "zeit": "2026-09-26",
+      "s": 95
     },
     "die Deckung der Vorfahren zählt beim Kontrast nicht": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
@@ -2225,9 +2230,9 @@
       "s": 69
     },
     "die Sammlung fuellt ihre Buchseite nicht mehr": {
-      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
-      "zeit": "2026-09-11",
-      "s": 107
+      "commit": "f9777cd31002191df28f48660b46c5c4741066a1",
+      "zeit": "2026-09-26",
+      "s": 203
     },
     "der Kasten waechst, das Bild bleibt briefmarkengross": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",

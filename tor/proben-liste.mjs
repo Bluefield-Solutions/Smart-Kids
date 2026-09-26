@@ -7039,6 +7039,39 @@ export const PROBEN = [
     an:{ ...DIST, text:'const OHNE_GRUND = new Set([]);' },
     sagt:'noch nicht betreten hat' },
 
+  /* --- Das Diktat (D5, Zweig seit E26) ---------------------------------
+   *
+   * Der Rauchtest hat die Deutsch-Welt bis E26 gar nicht gespielt: er
+   * wartete auf ein `path.ziel`, das es dort nicht gibt, und lief in die
+   * Zeitueberschreitung. Der neue Zweig prueft nicht nur, DASS die Ebene
+   * spielbar ist, sondern die zwei Zusagen, die ein Diktat ausmachen -
+   * und beide haben hier ihre Gegenprobe.
+   *
+   * Beide fahren `--nur=durchgang --kurz`; `deutsch:tz` steht seit
+   * dieser Runde in der Kurzliste, sonst schluege der Kurzlauf die Ebene
+   * nie auf und beide Proben blieben gruen, ohne etwas zu beweisen. */
+
+  // 1. DER SATZ WIRD NICHT MEHR GESAGT. Auf jedem anderen Bildschirm
+  //    haengt der Ton am Profil, und Lea traegt `vorlesen: false`. Hier
+  //    ist der Satz die AUFGABE - ohne ihn steht ein Lueckentext da, den
+  //    man lesen muss, und dann ist es kein Diktat mehr.
+  { n:'der Diktatsatz wird nicht mehr gesagt', tor:'smoke',
+    args:['--nur=durchgang', '--kurz'], bauen:true, datei:D,
+    such:"  vorlesen(gesprochen, 'de');",
+    ersatz:"  vorlesen('', 'de');",
+    an:{ ...DIST, text:"vorlesen('', 'de')" }, sagt:'kein Diktat' },
+
+  // 2. DER HOERKNOPF FAELLT WEG. Er steht auf diesem Bildschirm nur
+  //    wegen des vierten Parameters `immer` - ohne ihn entscheidet
+  //    wieder `P.vorlesen`, und Lea bekaeme ihn nicht. Wer den Satz
+  //    nicht noch einmal hoeren kann, muss ihn lesen.
+  { n:'der Hörknopf am Diktat hängt wieder am Profil', tor:'smoke',
+    args:['--nur=durchgang', '--kurz'], bauen:true, datei:D,
+    such:"nochHoerenKnopf(gesprochen, 'de', true, true)",
+    ersatz:"nochHoerenKnopf(gesprochen, 'de', true, false)",
+    an:{ ...DIST, text:"nochHoerenKnopf(gesprochen, 'de', true, false)" },
+    sagt:'kein Hörknopf' },
+
   /* --- Das Buch (N12) ----------------------------------------------------
    *
    * 1. DIE SAMMLUNG FUELLT IHRE SEITE NICHT MEHR. Zurueck in den
