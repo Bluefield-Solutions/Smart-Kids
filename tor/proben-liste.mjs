@@ -7047,16 +7047,20 @@ export const PROBEN = [
    * spielbar ist, sondern die zwei Zusagen, die ein Diktat ausmachen -
    * und beide haben hier ihre Gegenprobe.
    *
-   * Beide fahren `--nur=durchgang --kurz`; `deutsch:tz` steht seit
-   * dieser Runde in der Kurzliste, sonst schluege der Kurzlauf die Ebene
-   * nie auf und beide Proben blieben gruen, ohne etwas zu beweisen. */
+   * Beide fahren `--nur=durchgang --kurz --sofort`; `deutsch:tz` steht
+   * seit dieser Runde in der Kurzliste, sonst schluege der Kurzlauf die
+   * Ebene nie auf und beide Proben blieben gruen, ohne etwas zu
+   * beweisen. `--sofort` haelt beim ersten Befund an: ohne ihn lief die
+   * erste der beiden 882 Sekunden, weil jede weitere Ebene auf einen
+   * Ton wartet, der nie kommt - und was sie dann noch faende, stuende
+   * schon fest. Gemessen, nicht geschaetzt. */
 
   // 1. DER SATZ WIRD NICHT MEHR GESAGT. Auf jedem anderen Bildschirm
   //    haengt der Ton am Profil, und Lea traegt `vorlesen: false`. Hier
   //    ist der Satz die AUFGABE - ohne ihn steht ein Lueckentext da, den
   //    man lesen muss, und dann ist es kein Diktat mehr.
   { n:'der Diktatsatz wird nicht mehr gesagt', tor:'smoke',
-    args:['--nur=durchgang', '--kurz'], bauen:true, datei:D,
+    args:['--nur=durchgang', '--kurz', '--sofort'], bauen:true, datei:D,
     such:"  vorlesen(gesprochen, 'de');",
     ersatz:"  vorlesen('', 'de');",
     an:{ ...DIST, text:"vorlesen('', 'de')" }, sagt:'kein Diktat' },
@@ -7066,7 +7070,7 @@ export const PROBEN = [
   //    wieder `P.vorlesen`, und Lea bekaeme ihn nicht. Wer den Satz
   //    nicht noch einmal hoeren kann, muss ihn lesen.
   { n:'der Hörknopf am Diktat hängt wieder am Profil', tor:'smoke',
-    args:['--nur=durchgang', '--kurz'], bauen:true, datei:D,
+    args:['--nur=durchgang', '--kurz', '--sofort'], bauen:true, datei:D,
     such:"nochHoerenKnopf(gesprochen, 'de', true, true)",
     ersatz:"nochHoerenKnopf(gesprochen, 'de', true, false)",
     an:{ ...DIST, text:"nochHoerenKnopf(gesprochen, 'de', true, false)" },
