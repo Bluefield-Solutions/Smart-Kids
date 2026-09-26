@@ -1691,6 +1691,32 @@ nicht liest, ist die Kachel damit unbeschriftet`);
         + `(die übrigen sind ${haeufig} hoch)`);
     }
   }
+  /* --- UND DIE ABZEICHENWAND (E26) ------------------------------------
+   *
+   * Das Buch hat vier Kapitel, und dieses Tor sah drei davon an: die
+   * Aufkleberseite, die Raumwand und den geoeffneten Raum. Das vierte
+   * stand seit seinem ersten Tag ungesehen da - gefunden hat es der
+   * Blick, nicht das Tor (Regel 4).
+   *
+   * Gemessen auf 390 x 844: vierzehn Abzeichen in zwei Spalten sind
+   * sieben Reihen und 731 Punkte in 557 verfuegbaren. Vier Abzeichen
+   * standen ausserhalb des Kastens, und `.rollen.buch.kapitel` traegt
+   * `overflow:hidden` - sie waren nicht klein und nicht halb verdeckt,
+   * sie waren NICHT DA, und nichts rollte sie herbei.
+   *
+   * Der volle Stand gehoert dazu, und er steht schon: mit ihm sind
+   * vierzehn Abzeichen im Raster statt der drei, die ein leeres Buch
+   * zeigt - und vierzehn sind der Fall, der ueberlaeuft. */
+  const abzReiter = await p.$('.schirm.da .reiter[data-kap="abzeichen"]');
+  if (abzReiter) {
+    await abzReiter.click();
+    await p.waitForSelector('.schirm.da .abzeichen:not([hidden])');
+    await schau('Forscherbuch (Abzeichen)');
+    const zurueck = await p.$('.schirm.da .reiter[data-kap="tiere"]');
+    if (zurueck) await zurueck.click();
+    await p.waitForSelector('.schirm.da .raumgitter:not([hidden])');
+  }
+
   /* Seit Runde 3 steht zuerst das Raumraster da. Zum Meer fuehrt die
      Zelle - und damit ist auch sie einmal gedrueckt. Der zweite Blick
      (`schau`) gilt dem geoeffneten Raum, wo die Tuer und der Weg

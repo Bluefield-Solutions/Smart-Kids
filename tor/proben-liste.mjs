@@ -928,6 +928,19 @@ export const PROBEN = [
     ersatz:'.aufkleber.da{opacity:1}\n.rollen .aufkleber:first-child{position:relative;left:-500px}',
     an:{ ...DIST, text:'left:-500px' }, sagt:'über den Rand' },
 
+  // Und dasselbe eine Kapitelseite weiter (E26). Das vierte Kapitel des
+  // Buches - die Abzeichenwand - hat dieses Tor nie angesehen; gefunden
+  // hat den Ueberlauf der Blick. Die Probe nimmt die Spaltenbreite
+  // zurueck, die ihn behebt: mit 160 Punkten Mindestbreite sind es auf
+  // 390 Punkten wieder ZWEI Spalten, sieben Reihen, und vier Abzeichen
+  // stehen ausserhalb eines Kastens, der `overflow:hidden` traegt.
+  // `--teil=2/5` ist das iPhone hochkant - die einzige der sieben
+  // Groessen, auf der das Raster ueberhaupt schmal genug dafuer ist.
+  { n:'vier Abzeichen stehen außerhalb der Seite', tor:'passt', args:['--teil=2/5'], bauen:true, datei:V,
+    such:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}',
+    ersatz:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}',
+    an:{ ...DIST, text:'minmax(160px,1fr)' }, sagt:'über den Rand' },
+
   /* --- lesbarkeit --------------------------------------------------- */
   // Die DECKUNG der Vorfahren gehoert in die Kontrastrechnung.
   //
@@ -7037,10 +7050,15 @@ export const PROBEN = [
     args:['--nur=spielen,ablage'], bauen:true, datei:V,
     /* Angefasst wird die letzte Zeile der Auswahlliste, also die
        Deklaration selbst - damit faellt die Fuellung fuer ALLE drei
-       Raster weg, nicht nur fuer eines. */
-    such:"  .buchraster > .abzeichen{min-height:100%;align-content:stretch;",
-    ersatz:"  .buchraster > .abzeichen{min-height:0;align-content:start;",
-    an:{ ...DIST, text:".buchraster > .abzeichen{min-height:0;align-content:start;" },
+       Raster weg, nicht nur fuer eines.
+       Seit E26 endet die Deklaration hier: `grid-auto-rows:1fr` ist aus
+       ihr herausgewandert und steht ohne Abfrage weiter unten, weil der
+       schmale Schirm gleich hohe Reihen genauso braucht. Die Probe nimmt
+       weiterhin weg, was die Seite FUELLT - die Reihen bleiben dabei
+       gleich hoch, nur eben ueber einer Seite, die nicht mehr voll ist. */
+    such:"  .buchraster > .abzeichen{min-height:100%;align-content:stretch}",
+    ersatz:"  .buchraster > .abzeichen{min-height:0;align-content:start}",
+    an:{ ...DIST, text:".buchraster > .abzeichen{min-height:0;align-content:start}" },
     sagt:'ihrer Hoehe' },
 
   /* 2. DER KASTEN WAECHST, DAS BILD NICHT. Die gefaehrlichere Fassung,

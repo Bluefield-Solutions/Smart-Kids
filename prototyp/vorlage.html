@@ -3346,10 +3346,13 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    * ueber die Seite hinaus, bleibt das Rollen als Auffanglinie. Und ob
    * die Aufkleber dabei zu klein werden, sagt kein Geschmack, sondern
    * `beruehrung`: unter 44 Punkten ist ein Griff keiner mehr. */
+  /* `grid-auto-rows:1fr` steht NICHT hier, sondern weiter unten ohne
+     Abfrage - gleich hohe Reihen braucht auch der schmale Schirm
+     (Regel 6: was zweimal dasteht, veraltet einmal). Hier bleibt das,
+     was ohne feste Hoehe keinen Sinn hat. */
   .buchraster > .kleber,
   .buchraster > .raumgitter,
-  .buchraster > .abzeichen{min-height:100%;align-content:stretch;
-    grid-auto-rows:1fr}
+  .buchraster > .abzeichen{min-height:100%;align-content:stretch}
   .buchraster > .kleber .aufkleber,
   .buchraster > .raumgitter .raumzelle,
   .buchraster > .abzeichen .abz{min-height:0}
@@ -4459,6 +4462,38 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Zellen. Mit vier festen Spalten standen daneben zwei leere. */
   .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}
   .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.86)}
+  /* UND DIE ABZEICHENWAND, aus demselben Grund und mit demselben
+     Werkzeug (E26). Gemessen auf 390 x 844: das Raster ist hier 366
+     Punkte breit, und mit einer Mindestbreite von 119 sind das ZWEI
+     Spalten. Vierzehn Abzeichen gehen darin in sieben Reihen auf -
+     731 Punkte in 557 verfuegbaren. Vier Abzeichen („Schule",
+     „Hauptstaedte", „Alphabet", „Minus") standen damit ausserhalb des
+     Kastens, und der Kasten schneidet ab: `.rollen.buch.kapitel` traegt
+     `overflow:hidden`, das Raster rollt auf dieser Breite nicht. Sie
+     waren nicht klein oder halb verdeckt, sie waren NICHT DA.
+     Drei Spalten sind fuenf Reihen: mit dem knapperen Polster (eine
+     Zeile weiter unten) 478 Punkte in 557. Die Zelle wird dabei von
+     177 auf 114 Punkte schmal und von 94 auf 86 Punkte flach - weit
+     ueber den 44, die ein Daumen braucht.
+     104 und nicht 114: `auto-fill` rechnet mit dem Zwischenraum. Die
+     Mindestbreite ist auch hier die Spaltenzahl, rueckwaerts
+     geschrieben - und sie gilt nur bis 560 Punkte Breite, weil das
+     Raster ab 481 Punkten von selbst drei Spalten stellt.
+     Fuenf Reihen tragen fuenfzehn Abzeichen; das sechzehnte braucht
+     eine sechste Reihe (576 in 557) - dann ist hier wieder zu messen.
+     `passt` sieht das Kapitel seit dieser Runde selbst an. */
+  .rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+  /* UND DAS POLSTER, wie eine Zelle weiter oben - und aus demselben
+     nachgemessenen Grund: die schmalere Zelle laesst den Namen
+     zweizeilig werden, und damit waechst die Zelle von 94 auf 110
+     Punkte. Fuenf Reihen sind dann 599 statt 478 - immer noch zwei
+     Abzeichen draussen. Die Spalte allein reicht also NICHT, das ist
+     gemessen und keine Vorsicht.
+     Das Polster und nicht das Zeichen: 44 Punkte Zeichen sind das
+     einzige, was Fiona von einem Abzeichen liest.
+     `.abzeichen` steht mit im Waehler, weil die Zeile fuer alle Abzeichen
+     weiter unten steht und sonst gewinnt - nicht als Verzierung. */
+  .rollen.buch .abzeichen .abz{padding:var(--eng)}
 }
 /* ZWEI ZEILEN, IMMER - fuer die Raumzellen (B15).
    Der Fehler war nicht, DASS ein Name umbricht, sondern dass die Hoehe
@@ -4474,6 +4509,22 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
    der Wand eine Konstante und keine Frage der Schriftrundung mehr. */
 .rollen.buch .raumzelle:not(.ebenenzelle) span{line-height:1.15;min-height:2.3em;
   display:flex;align-items:center;justify-content:center;text-align:center}
+/* UND DIE REIHEN SIND ALLE GLEICH HOCH - auf jedem Schirm.
+   Die Zwei-Zeilen-Regel darueber haelt die Hoehe einer ZELLE fest,
+   solange kein Name drei Zeilen braucht. Mit dem siebenundzwanzigsten
+   Raum brauchen elf davon drei: gemessen auf 700 x 850, sieben Spalten,
+   vier Reihen - und die dritte Reihe enthielt keinen der elf. 99 Punkte
+   gegen 117 in den drei anderen. Welche Reihe waechst, entschied damit
+   allein, wie die Namen auf die Spalten fielen; der achtundzwanzigste
+   Raum haette neu gewuerfelt. Deshalb nicht der Name, sondern die
+   Reihe: `1fr` teilt die Hoehe gleich auf - sind alle Zellen gleich
+   hoch, kann keine Rundung mehr eine Reihe wachsen lassen.
+   Es stand bisher nur im breiten Querformat; dort bleiben `min-height:100%`
+   und `align-content:stretch` zurueck, die ohne feste Hoehe nichts
+   bedeuten. */
+.rollen.buch .kleber,
+.rollen.buch .raumgitter,
+.rollen.buch .abzeichen{grid-auto-rows:1fr}
 /* Auf dem kurzen Querformat ist der Umriss kleiner - dort sind 244
    Punkte Raster da, nicht 600. Zwei Werte und keine Rechnung: welcher
    gilt, entscheidet dieselbe Grenze, die auch die Tonleiter umschaltet. */

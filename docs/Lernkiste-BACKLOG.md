@@ -8887,3 +8887,99 @@ Das war **falsch**: die App legt für kleine Gebiete Nadelköpfe über die Karte
 und mein Sieb zählte nur die Pfade. Mit den Nadelköpfen sind es **null**. Die
 Karte ist in Ordnung; der Fehler lag in meiner Messung. Steht hier, weil eine
 zurückgenommene Zahl mehr wert ist als eine, die niemand nachgerechnet hat.
+
+---
+
+## E26 · Die vier roten Browsertore — und das vierte Kapitel, das kein Tor je angesehen hat (26.09.2026)
+
+Ziel der Runde: den Überlauf aufräumen, den `passt` nach der Deutsch-Welt
+gemeldet hat, und danach die festgehaltenen Größen und die Vorbilder
+nachziehen. Der Überlauf war schnell erledigt. Gefunden hat die Runde etwas
+anderes.
+
+### Der gemeldete Befund: die Raumwand wird von der Schriftrundung hoch
+
+`passt` meldete auf **700 × 850**: *„die 27 Raumzellen sind 2 verschiedene
+Höhen hoch (99 · 117)"*. Gemessen: sieben Spalten, vier Reihen, und **elf der
+27 Raumnamen** brauchen auf dieser Breite drei Zeilen statt zwei. In Reihe 3
+stand zufällig keiner der elf — also war sie 99 hoch und die anderen drei 117.
+
+Das ist B15 zum zweiten Mal, eine Ebene höher. Damals war die Antwort, den
+**Namenskasten** auf zwei Zeilen festzunageln; das hält, solange kein Name drei
+braucht. Mit dem 27. Lebensraum brauchen elf davon drei, und damit hing die
+Höhe der Wand wieder daran, **wie die Namen auf die Spalten fallen** — der 28.
+Raum hätte neu gewürfelt.
+
+Die Antwort ist deshalb nicht der Name, sondern die **Reihe**:
+`grid-auto-rows:1fr` stand schon im Buch, aber nur innerhalb von
+`@media (min-aspect-ratio:8/5)`. Auf dem schmalen Schirm galt es nie. Jetzt
+steht es **einmal**, ohne Abfrage, für alle drei Raster des Buches — und im
+breiten Querformat bleibt nur, was dort eine feste Höhe braucht. Regel 6: was
+zweimal dasteht, veraltet einmal.
+
+Gemessen danach: 390 × 844 alle 27 Zellen 68 hoch, 700 × 850 alle 117,
+844 × 390 alle 59. Und nebenbei fiel dasselbe an der **Abzeichenwand** weg:
+auf 700 × 850 waren ihre Reihen 123 und 104 hoch, jetzt sind alle 123.
+
+Zuvor war „Im Märchenwald" zu **„Im Märchen"** geworden — das längste Wort
+aller anderen 26 Namen hat neun Zeichen, „Märchenwald" hat elf und passte in
+keine 77,5 Punkte breite Spalte. Auch das ist gemessen, nicht geschätzt.
+
+### Was nur der Blick gefunden hat: vier Abzeichen, die nicht da waren
+
+Nach dem Fix habe ich mir die vier Kapitelseiten des Buches angesehen. Auf
+**390 × 844** endete die Abzeichenwand bei **993 Punkten** in einem Kasten, der
+bei **820** aufhört.
+
+- Vierzehn Abzeichen, zwei Spalten, sieben Reihen: **731 Punkte in 557.**
+- `.rollen.buch.kapitel` trägt `overflow:hidden`, das Raster rollt auf dieser
+  Breite nicht — `scrollTop` bleibt auf 0.
+- **„Schule", „Hauptstädte", „Alphabet" und „Minus" waren nicht klein und
+  nicht halb verdeckt. Sie waren nicht da.**
+
+Drei Spalten allein reichten nicht: die schmalere Zelle macht den Namen
+zweizeilig, die Zelle wächst von 94 auf 110, fünf Reihen sind 599 — immer noch
+zwei Abzeichen draußen. Erst **Spalte und Polster zusammen** ergeben 86 Punkte
+je Zelle und **478 in 557**. Beides einzeln reicht nicht; das ist nachgemessen,
+genau wie beim selben Fall an der Raumwand (I15).
+
+### Und der eigentliche Befund: das Tor sah das Kapitel nie an
+
+`passt` kennt das Forscherbuch seit R2 und besucht drei seiner vier Kapitel —
+die Aufkleberseite, die Raumwand, den geöffneten Raum. Die **Abzeichenwand**
+stand seit ihrem ersten Tag ungesehen da. Deshalb war der Überlauf auch kein
+Rückschritt dieser Runde: er war immer da und wurde nur nie gemessen.
+
+Das Kapitel steht jetzt in `tor/passt.mjs` (`Forscherbuch (Abzeichen)`), und
+der Lauf prüft 50 Bildschirme statt 49. Eine stehende Gegenprobe nimmt die
+Spaltenbreite zurück und prüft, dass das Tor dann wirklich anschlägt — auf
+`--teil=2/5`, dem iPhone hochkant, der einzigen der sieben Größen, auf der das
+Raster überhaupt schmal genug dafür ist.
+
+**Fünf Reihen tragen fünfzehn Abzeichen. Das sechzehnte braucht eine sechste
+Reihe (576 in 557) — dann ist hier wieder zu messen.** Diesmal sagt es ein Tor.
+
+### Was das neue Kapitel sofort gemeldet hat — und was davon offen bleibt
+
+Der erste Lauf mit der Abzeichenwand darin hat **vierzehn Hinweise** gebracht,
+alle auf **iPhone SE quer (667 × 375)**, alle dieselbe Zahl:
+
+> `Forscherbuch (Abzeichen): HINWEIS zu klein „Kontinente" — 39 pt`
+
+Alle vierzehn Abzeichen sind dort **39 Punkte hoch**, nötig sind 44. Das ist
+**nicht** diese Runde: auf 667 Punkten Breite greifen die neuen Zeilen gar
+nicht (sie gelten bis 560), und gemessen war die Zelle auch vorher 39. Neu ist
+nur, dass es jemand sieht.
+
+Die Ursache steht seit je im Buch und ist bewusst so gebaut: im breiten Format
+trägt das Raster `min-height:100%` mit `grid-auto-rows:1fr`, und
+`.buchraster > .abzeichen .abz{min-height:0}` nimmt der Zelle ihre
+Mindesthöhe. Fünf Reihen in 229 Punkten sind 39 je Zelle. Der Kommentar
+daneben hat genau das vorhergesehen — *„ob die Aufkleber dabei zu klein
+werden, sagt kein Geschmack, sondern `beruehrung`"* — nur deckt `beruehrung`
+die Abzeichenwand nicht ab.
+
+**Offen (E26a):** `min-height:0` durch `min-height:44px` ersetzen und messen,
+was das kostet. Die Abzeichenwand würde dann auf der kleinsten Größe rollen
+statt zu schrumpfen — und „das Buch blättert, es rollt nicht" ist eine Zusage,
+die eine eigene Messung verdient, keine Nebenwirkung.

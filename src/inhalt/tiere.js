@@ -498,6 +498,19 @@ export const RAEUME = [
    * Zusammenhang ist damit einmal keiner, der erfunden werden musste:
    * das Kind sammelt hier genau das, was es schreiben gelernt hat.
    *
+   * UND ER HEISST „Im Märchen" UND NICHT „Im Märchenwald". Die
+   * Raumkachel im Buch zeigt den Titel ganz (`ohneArtikel` streicht nur
+   * „der/die/das"), und die Spalte ist auf 390 x 844 nur 77,5 Punkte
+   * breit. „Märchenwald" ist ein unteilbares Wort von elf Zeichen und
+   * passt nicht hinein: der Name brauchte DREI Zeilen statt zwei, die
+   * Zelle wurde 82 statt 68 Punkte hoch, und weil sie in derselben
+   * Gitterreihe sitzt wie Bauernhof, Riff und Weide, zog sie die drei
+   * mit. `passt` hat das gemeldet - und zwar nicht als Ueberlauf,
+   * sondern als seine URSACHE („die 27 Raumzellen sind 2 verschiedene
+   * Hoehen hoch"). Das laengste Wort aller anderen Raeume hat NEUN
+   * Zeichen (Bauernhof, Regenwald, Vogelpark, Dschungel, Treppchen).
+   * Gemessen, nicht geschaetzt.
+   *
    * Die Kennungen der fuenfzehn stehen hier ausgeschrieben, obwohl sie
    * in `deutsch.js` erzeugt werden. Das ist Absicht und kein Versehen
    * (Regel 3: das Soll kommt aus der Referenz, nicht aus mir): eine
@@ -509,7 +522,7 @@ export const RAEUME = [
             'deutsch:silben-h', 'deutsch:verhaertung', 'deutsch:umlautung',
             'deutsch:flektiert', 'deutsch:umlaut-verhaertung',
             'deutsch:praeteritum', 'deutsch:haeufig', 'deutsch:ss',
-            'deutsch:merkwoerter', 'deutsch:probe'], titel:'Im Märchenwald',
+            'deutsch:merkwoerter', 'deutsch:probe'], titel:'Im Märchen',
     tiere:['einhorn', 'drache', 'yeti'] },
 
   /* DER ERSTE RAUM OHNE EBENE (T6).
@@ -862,7 +875,7 @@ export const KULISSEN = {
      Tannen, rechts eine Burg. In der MITTE steht nichts: dort liegen
      die neun Plaetze, und ein Platz, auf dem eine Burg steht, ist kein
      Platz. Das ist die einzige Regel, die alle Kulissen teilen. */
-  "Im Märchenwald": {
+  "Im Märchen": {
     ton:'#e9e6f6',
     bild:'<path d="M0 0h160v34H0z" fill="#cfd9f2"/><path d="M0 20h160v14H0z" fill="#dde5f7"/><path d="M24 8c6 0 10 4.5 10 10s-4 10-10 10-10-4.5-10-10 4-10 10-10z" fill="#f8f2cf"/><path d="M52 10c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM86 6c1 0 1.5.7 1.5 1.5S87 9 86 9s-1.5-.7-1.5-1.5S85 6 86 6zM110 14c1 0 1.5.7 1.5 1.5s-.5 1.5-1.5 1.5-1.5-.7-1.5-1.5.5-1.5 1.5-1.5z" fill="#ffffff"/><path d="M0 34c28-10 48 6 74 0s50-12 86 2v10H0z" fill="#8fae7e"/><path d="M0 44h160v46H0z" fill="#a4c491"/><path d="M0 60c30 6 54-6 84-2s48 8 76 4v28H0z" fill="#b2d09c"/><path d="M12.4 64v-12h3.2v12zM28.4 66v-10h3.2v10z" fill="#6b4a2c"/><path d="M14 28c8 0 11 8 11 12.5s-5 5.5-11 5.5-11-2-11-5.5 3-12.5 11-12.5z" fill="#3f7a52"/><path d="M30 36c6 0 9 6 9 9.5s-4 4.5-9 4.5-9-1.5-9-4.5 3-9.5 9-9.5z" fill="#4f8f5f"/><path d="M118 60V28h8v32zM150 60V26h8v34z" fill="#c9c6d6"/><path d="M120 60V34h34v26z" fill="#b9b6c9"/><path d="M122 20l6 8h-12zM154 17l6 9h-12z" fill="#7d5ba6"/><path d="M133 60V48a4 4 0 0 1 8 0v12z" fill="#6b5a44"/><path d="M120 38h4v5h-4zM148 36h4v5h-4zM136 38h4v5h-4z" fill="#f6e08a"/>' },
   /* BEI DEN BLUMEN - die neunte Schwelle (I22). Die erste Kulisse ohne
