@@ -618,6 +618,27 @@ pruefe(new Date().getFullYear() - I.STAND.jahr <= 3,
           + 'welche Stelle verstellt wird, entscheidet ihre Reihenfolge. Entweder enger '
           + 'fassen oder `mehrfach:true` setzen und dazuschreiben, warum');
 
+      /* UND KEIN DOLLAR IM ERSATZ (E34).
+       *
+       * Der Lauf setzte den Ersatz mit `String.replace` ein, und dort
+       * sind `$$`, `$&`, `` $` ``, `$'` und `$1` MUSTER: aus `p.$$eval`
+       * wurde `p.$eval` in der Datei. Der Eingriff kam an - nur ein
+       * anderer als gemeint, und die Probe meldete „rot, aber nicht
+       * deswegen" mit `es.map is not a function`.
+       *
+       * Dieser Waechter hat es nicht gesehen, weil er den Eingriff mit
+       * `slice` zusammensetzt und nicht mit `replace`: zwei Wege,
+       * denselben Eingriff zu machen, und einer hatte ein Muster, das
+       * der andere nicht kannte. Der Lauf setzt jetzt eine Funktion ein,
+       * damit beide Wege wieder zusammenfallen - und hier bleibt die
+       * Pruefung stehen, weil ein Dollar im Ersatz auch dann noch
+       * verwirrt, wenn er nichts mehr anrichtet. */
+      if (typeof p.ersatz === 'string' && /\$[$&`'\d]/.test(p.ersatz))
+        pruefe(false, `Gegenprobe „${p.n}": ihr Ersatz trägt ein Dollar-Muster („${
+          (p.ersatz.match(/\$[$&`'\d]/) || [''])[0]}") — in einem Ersatz für `
+          + '`String.replace` bedeutet das etwas anderes als es dasteht. '
+          + 'Als Zeichenkette ausschreiben oder `ersatzFn` nehmen');
+
       /* Und dasselbe fuer den ANKER, der ein Verschwinden verlangt.
        *
        * `an:{ fehlt:'…' }` heisst „nach dem Eingriff darf dieser Text

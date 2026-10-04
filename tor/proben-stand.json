@@ -346,14 +346,14 @@
       "s": 107
     },
     "die Sammlung öffnet keinen Raum mehr": {
-      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
-      "zeit": "2026-09-11",
-      "s": 107
+      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "zeit": "2026-10-04",
+      "s": 203
     },
     "der zweite Sammlungsraum wird nicht gefahren": {
-      "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
-      "zeit": "2026-09-11",
-      "s": 108
+      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "zeit": "2026-10-04",
+      "s": 102
     },
     "die Schwelle gilt nicht mehr": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
@@ -2739,6 +2739,21 @@
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
       "zeit": "2026-09-11",
       "s": 4
+    },
+    "zwei Raeume oeffnen sich beim selben Stand": {
+      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "zeit": "2026-10-04",
+      "s": 25
+    },
+    "die Bezugsgroesse der Schwellen zaehlt mehr, als zu erreichen ist": {
+      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "zeit": "2026-10-04",
+      "s": 12
+    },
+    "volleRunde misst die eigene Ebene mit": {
+      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "zeit": "2026-10-04",
+      "s": 7
     },
     "die Raumwand faellt auf dem schmalen Schirm auf drei Spalten zurueck": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",

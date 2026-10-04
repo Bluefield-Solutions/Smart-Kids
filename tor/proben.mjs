@@ -849,12 +849,24 @@ for (const p of welche) {
       if (!m) { fertig(rot('Suchtext nicht gefunden')); nichtAngekommen++;
         befunde.push(`${p.n}: der Suchtext steht nicht mehr in ${p.datei} — die Probe zielt ins Leere`);
         wiederherstellen(p.bauen); continue; }
-      neu = alt.replace(p.suchRegex, p.ersatzFn(m));
+      neu = alt.replace(p.suchRegex, () => p.ersatzFn(m));
     } else {
       if (!alt.includes(p.such)) { console.log(rot('Suchtext nicht gefunden')); nichtAngekommen++;
         befunde.push(`${p.n}: „${p.such.slice(0,40)}…" steht nicht mehr in ${p.datei}`);
         wiederherstellen(p.bauen); continue; }
-      neu = alt.replace(p.such, p.ersatz);
+      /* EINGESETZT WIRD ALS FUNKTION UND NICHT ALS ZEICHENKETTE.
+         `String.replace` liest im Ersatz Muster: aus `$$` wird EIN
+         Dollar, `$&` ist der Treffer, `$1` eine Gruppe. Ein Eingriff,
+         der `p.$$eval` einsetzen will, schreibt dann `p.$eval` in die
+         Datei - und der Eingriff KOMMT AN, nur ein anderer als gemeint.
+         Die Probe meldete „rot, aber nicht deswegen": `es.map is not a
+         function`, weil `$eval` ein Element uebergibt und keine Liste.
+         Der Ankerwaechter in `inhalt` hat es nicht gesehen, weil er den
+         Eingriff mit `slice` zusammensetzt und nicht mit `replace` -
+         zwei Wege, denselben Eingriff zu machen (Regel 6). Mit einer
+         Funktion als Ersatz nimmt `replace` die Zeichen, wie sie sind,
+         und beide Wege kommen wieder zusammen. */
+      neu = alt.replace(p.such, () => p.ersatz);
     }
     fs.writeFileSync(imBaum(p.datei), neu);
   }

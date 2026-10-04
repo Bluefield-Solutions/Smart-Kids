@@ -8818,10 +8818,18 @@ export const PROBEN = [
    * und nicht geraten - Fiona hat Gruppen und ist das kuerzeste. */
   { n:'die Gruppenkachel zaehlt als Ebene mit', tor:'smoke',
     args:['--nur=durchgang', '--kurz', '--wer=fiona'], bauen:true, datei:'tor/smoke.mjs',
-    such:"      const hier = await p.$$eval('.schirm.da [data-ebene]',\n"
-      + "        es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));",
-    ersatz:"      const hier = await p.$$eval('.schirm.da [data-ebene]',\n"
-      + "        es => es.map(e => e.dataset.ebene));",
+    /* ANGEFASST WIRD NUR DER RUECKRUF UND NICHT DIE ZEILE MIT `$$eval`.
+       Ein Ersatz mit `$$` darin wird von `String.replace` als Muster
+       gelesen und landet als EIN Dollar in der Datei - aus `p.$$eval`
+       wurde `p.$eval`, und die Probe meldete „rot, aber nicht deswegen".
+       Seit E34 setzt der Lauf eine Funktion ein und `inhalt` schlaegt bei
+       einem Dollar im Ersatz an; dieser Suchtext braucht trotzdem keinen.
+       Eindeutig wird er durch die Zeile darunter: `for (const g of` folgt
+       nur der ERSTEN der drei Sammelstellen. */
+    such:"es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));\n"
+      + "      for (const g of",
+    ersatz:"es => es.map(e => e.dataset.ebene));\n"
+      + "      for (const g of",
     an:{ datei:'tor/smoke.mjs', fehlt:"es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));\n"
       + "      for (const g of" },
     sagt:'steht zweimal in der Liste' },
