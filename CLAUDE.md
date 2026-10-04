@@ -37,7 +37,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 |---|---|---|---|
 | **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
 | `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
-| `npm run tor:voll` | **wenn Stephan es sagt** | **~50 min** (gemessen 3008 s am 04.10., 4 Kerne; 1054 s am 26.09., 749 s am 11.09.) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run tor:voll` | **wenn Stephan es sagt** | gemessen 3008 s am 04.10. (4 Kerne) — **seitdem nicht neu gemessen**, aber Leas Durchgang allein ist danach von 2842 auf 519 s gefallen (E30) | die volle Kette, alle Größen, alle Bildschirme |
 | `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 550 Gegenproben. Läuft sonst nirgends mehr |
 | Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
@@ -134,16 +134,19 @@ was die drei davor gefunden hätten.
 ```
 npm run tor        DER SCHNELLE GANG und die normale Runde: rund 30 s, alle
                    Tore ohne Browser. Er sagt selbst, was er nicht sieht.
-npm run tor:voll   die ganze Kette, rund 50 min auf vier Kernen. Nur auf
-                   Zuruf — sie gibt frei, was der schnelle Gang offenlässt.
-                   DER BODEN IST EIN EINZIGER LAUF: `smoke (3/4)` braucht
-                   2987 der 3008 s, und davon 2600 für LEA allein. Sie
-                   spielt 98 Ebenen, 51 davon Deutsch, und jede Deutsch-
-                   aufgabe wird gehört, geschrieben und bewertet. Die
-                   anderen dreizehn Browserläufe sind längst fertig und
-                   warten. Wer die Kette kürzer haben will, muss DORT
-                   ansetzen und nicht an der Parallelität — die bringt
-                   schon jetzt 4784 s auf 2987 s herunter.
+npm run tor:voll   die ganze Kette. Nur auf Zuruf — sie gibt frei, was
+                   der schnelle Gang offenlässt.
+                   DER BODEN IST EIN EINZIGER LAUF: `smoke (3/4)`. Er
+                   brauchte am 04.10. 2987 der 3008 s, davon 2842 für
+                   LEA allein — und davon waren zwei Drittel WARTEN:
+                   `weitergegangen` kannte die Deutschbildschirme nicht
+                   (acht Sekunden je Ebene), `durchGruppe` riet die
+                   Gruppe (vierzehn je Wiederholungsebene). Beides
+                   behoben, Leas Durchgang gemessen bei 519 s.
+                   Die ganze Kette ist seitdem nicht neu gemessen.
+                   Wer sie weiter kürzen will, liest die Zeile
+                   `Langsamste Ebenen` im Rauchtestbericht — sie sagt,
+                   WO die Zeit liegt, statt dass man es rät.
 npm run tor -- --betroffen
                    dazu die Browsertore, die von den geänderten Dateien
                    erreicht werden können. 14 s bis 200 s. Sie schreibt seit Q40 jeden Lauf VOLLSTÄNDIG

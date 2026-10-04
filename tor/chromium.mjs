@@ -210,6 +210,35 @@ export async function zurEbenenwahl(seite, ebene = 'kontinente') {
   await durchGruppe(seite, ebene);
 }
 
+/* DAS GRUPPENGEDAECHTNIS (E30) - gemessen, nicht vermutet.
+ *
+ * `durchGruppe` probiert Gruppen durch: oeffnen, nachsehen, zurueck. Ein
+ * Fehlversuch kostet sechs Sekunden Frist plus den Rueckweg. Solange die
+ * Deutsch-Welt EINE Gruppe hatte, fiel das niemandem auf; seit E27 und
+ * E29 hat sie VIER, und eine Ebene in der letzten kostet drei
+ * Fehlversuche.
+ *
+ * Gemessen am 04.10. auf dem Zielgeraet: der Weg zu `deutsch12:pf`
+ * brauchte 14,2 s, der zu `deutsch:tz` in derselben Welt 1,4 s. Der
+ * Unterschied ist genau das Durchprobieren. Bei 24 Wiederholungsebenen
+ * und zehn Sprachebenen sind das rund sechseinhalb Minuten je
+ * Rauchtestlauf - fuer eine Auskunft, die nach dem ERSTEN Oeffnen
+ * feststeht.
+ *
+ * Denn wer eine Gruppe aufklappt, sieht ALLE ihre Kacheln. Dieses Wissen
+ * wird hier behalten, statt es wegzuwerfen und beim naechsten Mal wieder
+ * zu erraten.
+ *
+ * ABGELESEN UND NICHT ABGESCHRIEBEN: es waere einfacher gewesen, eine
+ * Tafel `deutsch12: → wiederholung-laute` danebenzulegen. Die veraltet
+ * bei der naechsten Gruppe (Regel 6) - und zwar lautlos, denn sie macht
+ * nicht rot, sie macht langsam. Das Gedaechtnis kann nicht veralten: es
+ * steht nur drin, was auf dem Bildschirm stand.
+ *
+ * Ein falscher Eintrag kostet nichts: die Schleife probiert danach
+ * weiter wie bisher. */
+const GRUPPE_VON = new Map();
+
 /** Steht die Ebene hinter einer Gruppenkachel? Dann diese oeffnen. */
 export async function durchGruppe(seite, ebene) {
   const da = await seite.$(`.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`);
@@ -227,7 +256,11 @@ export async function durchGruppe(seite, ebene) {
    * auf dem Bildschirm steht. Es sind hoechstens zwei. */
   const gruppen = await seite.$$eval('.schirm.da [data-gruppe]',
     els => [...new Set(els.map(e => e.dataset.gruppe))]);
-  for (const g of [...new Set([String(ebene).split(':')[0], ...gruppen])]) {
+  /* Die gemerkte Gruppe ZUERST - vor der Vermutung aus der Kennung und
+     vor der Reihenfolge auf dem Bildschirm. */
+  for (const g of [...new Set([GRUPPE_VON.get(ebene),
+                               String(ebene).split(':')[0], ...gruppen])]) {
+    if (!g) continue;
     if (!(await seite.$(`.schirm.da [data-gruppe="${g}"]`))) continue;
     if (await gruppeOeffnen(seite, g, ebene)) return true;
   }
@@ -249,7 +282,15 @@ async function gruppeOeffnen(seite, gruppe, ebene) {
   const traf = await seite.waitForSelector(
     `.schirm.da [data-ebene="${ebene}"]:not([data-gruppe])`, { timeout: 6000 })
     .catch(() => null);
-  if (traf) { await alleinIm(seite); return true; }
+  if (traf) {
+    await alleinIm(seite);
+    /* Die offene Gruppe zeigt ALLE ihre Kacheln - also wird die ganze
+       Gruppe auf einmal gemerkt und nicht nur die gesuchte Ebene. Ein
+       Oeffnen, 24 Auskuenfte. */
+    for (const id of await seite.$$eval('.schirm.da [data-ebene]',
+      els => els.map(e => e.dataset.ebene))) GRUPPE_VON.set(id, gruppe);
+    return true;
+  }
   /* Falsche Gruppe - zurueck zur Wand, damit die naechste probiert
      werden kann. Ohne den Rueckweg staende der Test in der offenen
      Gruppe und faende dort keine einzige Kachel mehr. */

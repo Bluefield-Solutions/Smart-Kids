@@ -4987,6 +4987,18 @@ const EBENEN_EIGEN = { stephan: ['rechnen:gross', 'hauptstaedte:europa',
  * das nie gespielt wird, ist ein ungeprueftes Profil. */
 /** Was jedes Profil im Durchgang kostet. Die Zahl, nach der geteilt wird. */
 const durchgangZeit = {};
+/* WIE LANGE EINE EBENE BRAUCHT - je Ebene, nicht nur je Profil (E30).
+ *
+ * `Je Profil: lea 2841.9 s` sagt, DASS der Durchgang teuer ist, und
+ * nicht WO. Zweimal hat genau diese Luecke eine Stunde gekostet: einmal
+ * bei `weitergegangen`, das auf jeder Deutschebene acht Sekunden
+ * wartete, und einmal beim Gruppenraten, das jede Wiederholungsebene
+ * vierzehn Sekunden kostete. Beides macht nicht rot, beides macht
+ * langsam - und wonach niemand sucht, das findet auch niemand.
+ *
+ * Die drei langsamsten je Profil stehen jetzt im Bericht. Das ist keine
+ * Grenze und kein Tor: es ist die Messstelle (Regel 5). */
+const ebeneZeit = {};
 if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
   if (abbruch()) break;
   const angefangen = Date.now();
@@ -5220,6 +5232,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * ausgeloest hat. Das kostete einen ganzen Lauf, nur um die Stelle
        * zu finden. */
       letzteEbene = `${wer}/${ebene}`;
+      const ebeneAngefangen = Date.now();
       // Der teuerste Posten ueberhaupt: achtzehn Ebenen mal zwei Profile.
       // Steht der Fehler schon fest, beweisen die restlichen nichts mehr.
       if (abbruch()) break;
@@ -6366,6 +6379,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       await bewertet(p);
       await abgeschlossen(p, wer, ebene, /Wie heißt/, `„${eingabe}" richtig `
         + (z.tippfeld ? 'getippt' : z.weise === 'antippen' ? 'angetippt' : 'gezogen'));
+      ebeneZeit[`${wer}/${ebene}`] = Date.now() - ebeneAngefangen;
     }
     /* --- Steht die Aufgabe im Protokoll mit ihrem Namen? (R7) --------
      *
@@ -6437,6 +6451,19 @@ if (laeuft('durchgang')) {
 console.log(`  Durchgespielt:              ${durchgespielt} Ebenen × Profile, jede richtige Antwort gewertet`);
 console.log(`  Je Profil:                  `
   + Object.entries(durchgangZeit).map(([w, s]) => `${w} ${s} s`).join(' · '));
+{
+  /* Die drei langsamsten JE PROFIL und nicht die drei langsamsten
+     ueberhaupt: sonst steht dort dreimal dasselbe Kind. */
+  const jeWer = {};
+  for (const [k, ms] of Object.entries(ebeneZeit)) {
+    const w = k.split('/')[0];
+    (jeWer[w] || (jeWer[w] = [])).push([k.slice(w.length + 1), ms]);
+  }
+  const zeile = Object.entries(jeWer).map(([w, l]) => `${w} ` + l
+    .sort((a, b) => b[1] - a[1]).slice(0, 3)
+    .map(([e, ms]) => `${e} ${(ms / 1000).toFixed(1)} s`).join(', ')).join(' · ');
+  if (zeile) console.log(`  Langsamste Ebenen:          ${zeile}`);
+}
 console.log(`  Antwortwege:                ${[...wege].sort().join(' · ') || 'KEINE'}`);
 console.log(`  Profile hier:               ${PROFILE_HIER.join(' · ')}`);
 console.log(`  Aufgaben vorgelesen:        Fiona ${gehoert.fiona||0} von ${EBENEN_JE('fiona')}, `

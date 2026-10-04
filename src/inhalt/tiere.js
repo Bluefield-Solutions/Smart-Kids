@@ -522,21 +522,33 @@ export const RAEUME = [
             'deutsch:silben-h', 'deutsch:verhaertung', 'deutsch:umlautung',
             'deutsch:flektiert', 'deutsch:umlaut-verhaertung',
             'deutsch:praeteritum', 'deutsch:haeufig', 'deutsch:ss',
-            'deutsch:merkwoerter', 'deutsch:probe',
-            /* UND DIE ZEHN SPRACHEBENEN DAZU (E29) - nicht gern, aber
-               gemessen: gemalt sind 86 Tiere, und nach „An der Quelle"
-               sind genau ZWEI ohne Raum (der Gorilla, der kein
-               Sammeltier ist, und der Tintenfisch). Ein vierter
-               Deutschraum braucht drei neue Zeichnungen, und die sind
-               eine eigene Runde. Bis dahin fuehren die Sprachebenen in
-               den Raum, der schon da ist - lieber ein Raum, der
-               schneller voll wird, als zehn Ebenen, die nichts
-               hergeben. */
-            'sprache:nomen', 'sprache:verb', 'sprache:adjektiv',
+            'deutsch:merkwoerter', 'deutsch:probe'], titel:'Im Märchen',
+    tiere:['einhorn', 'drache', 'yeti'] },
+
+  /* IM WALD - der Raum von „Sprache untersuchen" (E30).
+   *
+   * E29 hat die zehn Sprachebenen in den Maerchenraum mit
+   * hineingeschrieben, mit der Begruendung, es seien nur noch zwei
+   * gemalte Tiere ohne Raum. DAS WAR FALSCH, und zwar nachgezaehlt
+   * falsch: es sind VIERZIG, davon vierundzwanzig mit `art:'tier'`. Die
+   * Zahl stammte aus dem Kopf und nicht aus der Liste - genau der
+   * Fehler, den Regel 3 meint, nur in die bequeme Richtung.
+   *
+   * Sechsundzwanzig Ebenen in einem Raum mit drei Tieren heisst: wer
+   * die dritte fertig macht, bekommt fuer die restlichen
+   * dreiundzwanzig nichts mehr. Ein Raum ist ein Versprechen auf drei
+   * Tiere; sechsundzwanzig Ebenen daran sind dreiundzwanzig gebrochene.
+   *
+   * DIE MAUS, DER VOGEL, DIE FEDER - und alle drei Woerter stehen im
+   * amtlichen Grundwortschatz, „Wald" auch. Derselbe Zusammenhang wie
+   * bei „An der Quelle": er musste nicht erfunden werden. Und die Feder
+   * ist das, womit geschrieben wird - der Raum gehoert den Ebenen, die
+   * fragen, was ein Wort IST. */
+  { ebenen:['sprache:nomen', 'sprache:verb', 'sprache:adjektiv',
             'sprache:artikel', 'sprache:pronomen', 'sprache:gegenwart',
             'sprache:vergangenheit', 'sprache:zukunft', 'sprache:satzarten',
-            'sprache:satzglieder', 'sprache:probe'], titel:'Im Märchen',
-    tiere:['einhorn', 'drache', 'yeti'] },
+            'sprache:satzglieder', 'sprache:probe'], titel:'Im Wald',
+    tiere:['maus', 'vogel', 'feder'] },
 
   /* AN DER QUELLE - der Raum der Wiederholung 1/2 (E27).
    *
@@ -929,6 +941,42 @@ export const KULISSEN = {
   /* AN DER QUELLE (E27) - Wasser, das aus dem Hang tritt, und ein Hang
      dahinter. Dieselbe Bauweise wie die anderen: Himmel oben, Horizont
      bei 34, die Mitte frei fuer die neun Plaetze. */
+  /* IM WALD (E30) - die Kulisse der Sprachebenen.
+   *
+   * Nadelbaeume an BEIDEN Raendern und nichts dazwischen: in der Mitte
+   * liegen die neun Plaetze, und ein Baum dort waere ein Platz, auf dem
+   * nichts steht. Dieselbe Regel, die alle zehn Kulissen teilen.
+   *
+   * Drei Kronen je Baum, von oben nach unten breiter - so sieht eine
+   * Fichte aus, und mit drei Dreiecken ist sie billiger als mit einem
+   * Umriss. Die Pilze unten in den Ecken geben dem Boden einen
+   * Massstab; ohne sie ist die Flaeche nur gruen. */
+  "Im Wald": {
+    ton:'#e8f1e0',
+    bild:'<path d="M0 0h160v30H0z" fill="#cfe4ef"/>'
+      + '<path d="M0 30h160v60H0z" fill="#9dbd90"/>'
+      + '<path d="M0 30c28-8 48 4 76 0s48-6 84 2v12H0z" fill="#86ad80"/>'
+      + '<path d="M0 60c30 6 54-4 86 0s42 6 74 2v28H0z" fill="#b4d2a2"/>'
+      + '<path d="M14.4 48v-13h3.2v13z" fill="#7a5a38"/>'
+      + '<path d="M16 8l9 13H7z" fill="#4f8a52"/>'
+      + '<path d="M16 16l11 15H5z" fill="#58955a"/>'
+      + '<path d="M16 25l13 17H3z" fill="#62a063"/>'
+      + '<path d="M143.4 52v-15h3.2v15z" fill="#7a5a38"/>'
+      + '<path d="M145 10l9 13h-18z" fill="#48814c"/>'
+      + '<path d="M145 19l11 15h-22z" fill="#518c54"/>'
+      + '<path d="M145 29l13 17h-26z" fill="#5b975d"/>'
+      + '<path d="M33.4 44v-9h2.4v9z" fill="#8a6a44"/>'
+      + '<path d="M34.6 20l7 11h-14z" fill="#5f9a5c"/>'
+      + '<path d="M34.6 28l9 13h-18z" fill="#6aa667"/>'
+      + '<path d="M126.4 46v-9h2.4v9z" fill="#8a6a44"/>'
+      + '<path d="M127.6 24l7 11h-14z" fill="#5f9a5c"/>'
+      + '<path d="M127.6 32l9 13h-18z" fill="#6aa667"/>'
+      + '<path d="M12 80c0-4 3-6 6-6s6 2 6 6z" fill="#c96b60"/>'
+      + '<path d="M16.4 80h3.2v5h-3.2z" fill="#f2e4cf"/>'
+      + '<path d="M138 84c0-3 2-5 5-5s5 2 5 5z" fill="#d88a7c"/>'
+      + '<path d="M141.4 84h2.6v4h-2.6z" fill="#f2e4cf"/>'
+      + '<path d="M54 86c1.4 0 2 .8 2 1.8s-.6 1.8-2 1.8-2-.8-2-1.8.6-1.8 2-1.8z" fill="#f4e07a"/>'
+      + '<path d="M104 82c1.4 0 2 .8 2 1.8s-.6 1.8-2 1.8-2-.8-2-1.8.6-1.8 2-1.8z" fill="#f2a0bc"/>' },
   "An der Quelle": {
     ton:'#e4f1ef',
     bild:'<path d="M0 0h160v34H0z" fill="#cde6ea"/><path d="M0 22h160v12H0z" fill="#dcf0f2"/>'

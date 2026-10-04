@@ -9535,8 +9535,118 @@ nacheinander gegen 2987 s nebeneinander).
 
 ### Offen
 
-- **Ein vierter Deutschraum.** Die zehn Sprachebenen führen in „Im Märchen",
-  den Raum der Rechtschreibung. Nicht gern, aber gemessen: gemalt sind 86 Tiere,
-  und nach „An der Quelle" sind genau zwei ohne Raum. Drei neue Zeichnungen sind
-  eine eigene Runde.
 - **P6 und P7** des Genre-Abgleichs bleiben von Hand beurteilt.
+
+*(Der „vierte Deutschraum" stand hier als offener Punkt mit einer Begründung,
+die nicht stimmte — siehe E30.)*
+
+
+---
+
+## E30 · Vier Nachträge zu E29 — und eine Zahl, die ich mir ausgedacht hatte (04.10.2026)
+
+Vier Punkte aus der Liste nach E29, der Reihe nach abgearbeitet. Der erste
+davon war gar keine Arbeit, sondern eine Korrektur.
+
+### „Zwei Tiere ohne Raum" — es sind vierzig
+
+E29 hat die zehn Sprachebenen in den Märchenraum mit hineingeschrieben, mit
+dieser Begründung: *gemalt sind 86 Tiere, und nach „An der Quelle" sind genau
+zwei ohne Raum*. Nachgezählt sind es **vierzig**, davon vierundzwanzig mit
+`art:'tier'` — Maus, Bär, Vogel, Otter, Hahn, Leopard, Robbe, Bison und
+siebzehn weitere.
+
+Die Zahl kam aus dem Kopf und nicht aus der Liste. Das ist genau der Fehler,
+den Regel 3 meint („das Soll kommt aus der Referenz, nicht aus mir"), nur in
+die bequeme Richtung: sie hat eine Abkürzung gerechtfertigt, statt sie zu
+verhindern. Und sie war in einer Zeile zu prüfen.
+
+Was die Abkürzung gekostet hätte: **sechsundzwanzig Ebenen in einem Raum mit
+drei Tieren.** Wer die dritte Ebene fertig macht, bekommt für die restlichen
+dreiundzwanzig nichts mehr. Ein Raum ist ein Versprechen auf drei Tiere;
+sechsundzwanzig Ebenen daran sind dreiundzwanzig gebrochene.
+
+**„Im Wald"** mit der Maus, dem Vogel und der Feder. Alle drei Wörter stehen
+im amtlichen Grundwortschatz, „Wald" auch — derselbe Zusammenhang wie bei „An
+der Quelle", und er musste wieder nicht erfunden werden. Die Feder ist das,
+womit geschrieben wird; der Raum gehört den Ebenen, die fragen, was ein Wort
+*ist*. Dazu eine Kulisse: Nadelbäume an beiden Rändern, Mitte frei — dort
+liegen die neun Plätze.
+
+### Der Rauchtest: 14 Sekunden je Wiederholungsebene, fürs Raten
+
+`durchGruppe` probiert Gruppen durch: öffnen, nachsehen, zurück. Ein
+Fehlversuch kostet sechs Sekunden Frist plus Rückweg. Solange die Deutsch-Welt
+**eine** Gruppe hatte, fiel das niemandem auf; seit E27 und E29 hat sie
+**vier**.
+
+Gemessen auf dem Zielgerät:
+
+| Weg zur Ebene | vorher | nachher |
+|---|---|---|
+| `deutsch:tz` (erste Gruppe) | 1,4 s | 1,4 s |
+| `deutsch12:pf` (dritte Gruppe) | 14,2 s | 14,2 s *(erste)* · **1,3 s** *(danach)* |
+| `deutsch12:umlautung` (vierte) | 20,7 s | 20,7 s *(erste)* · **1,3 s** *(danach)* |
+
+Der Helfer **merkt sich jetzt, was er beim Öffnen gesehen hat.** Wer eine
+Gruppe aufklappt, sieht alle ihre Kacheln — ein Öffnen, vierundzwanzig
+Auskünfte. Aus 24 × 14 s werden zwei Entdeckungen.
+
+Abgelesen und nicht abgeschrieben: eine Tafel `deutsch12: → wiederholung-laute`
+daneben wäre einfacher gewesen und würde bei der nächsten Gruppe veralten
+(Regel 6) — lautlos, denn sie macht nicht rot, sie macht langsam.
+
+### Und die Messstelle für den Rest
+
+`Je Profil: lea 2841,9 s` sagt, **dass** der Durchgang teuer ist, nicht **wo**.
+Zweimal hat genau diese Lücke eine Stunde gekostet: `weitergegangen`, das auf
+jeder Deutschebene acht Sekunden wartete, und jetzt das Gruppenraten. Beides
+macht nicht rot, beides macht langsam — und wonach niemand sucht, das findet
+auch niemand.
+
+Der Bericht nennt jetzt **die drei langsamsten Ebenen je Profil**. Das ist
+keine Grenze und kein Tor, es ist die Messstelle (Regel 5).
+
+Und sie zahlt sich beim ersten Lauf aus. Leas Durchgang, gemessen mit beiden
+Reparaturen (`weitergegangen` aus E29 und das Gruppengedächtnis):
+
+| | |
+|---|---|
+| vorher | **2841,9 s** |
+| jetzt | **518,8 s** |
+| langsamste Ebene | `laender:europa` **21,7 s** |
+| zweitlangsamste | `hauptstaedte:suedamerika` 3,3 s |
+
+Der nächste Kandidat ist damit benannt, und er ist **keine** Deutschebene — er
+ist die eine Ebene, auf der Lea siebzehn Länder tief spielt. Sechsmal so teuer
+wie die nächste. Ohne die Zeile hätte ich wieder geraten.
+
+Mitgeprüft, und das war der eigentliche Anlass für diesen Lauf: **„Aufgaben
+vorgelesen: Lea 0 von 98"**. E29 hatte hier neun gemeldet, weil das Hörmuster
+`/./` war und damit auch das *Lob* als vorgelesene Aufgabe zählte. Gelobt wird
+jedes Kind, vorgelesen nur, wer es braucht.
+
+### Fünf Bildschirme, die kein Vorbild hatte
+
+`OHNE_KARTE` in `tor/ansicht.mjs` kannte die ganze Deutsch-Welt nicht — fünfzig
+Ebenen, der komplette Grundwortschatz und „Sprache untersuchen", und die
+Bildabnahme hat keinen einzigen ihrer Bildschirme je gesehen. Wer es versucht
+hätte, wäre fünfundzwanzig Sekunden auf eine Landkarte gelaufen.
+
+Neu abgenommen:
+
+- `quer-sprache-wortart` — fünf Knöpfe, ein markiertes **Wort**
+- `quer-sprache-glied` — drei Knöpfe, ein markierter **Satzteil** (breiter als ein Wort)
+- `quer-sprache-satzart` — drei Knöpfe, **keine** Marke: der ganze Satz ist die Frage
+- `quer-begriffe` — der Regler im Elternbereich
+- `quer-sprache-kindlich` — **derselbe** Bildschirm wie `quer-sprache-wortart`, mit umgelegtem Regler
+
+Das letzte Paar ist der Punkt: dass der Regler die Beschriftung im *Spiel*
+umschaltet, stand bisher nur in einer Gegenprobe an den Daten und in einem
+Blick von mir. Jetzt stehen beide Aufnahmen nebeneinander — „Nomen · Verb ·
+Adjektiv" gegen „Namenwort · Tunwort · Wiewort", und sonst alles gleich.
+Verschiebt sich etwas anderes mit, ist es im Vergleich zu sehen (Regel 1: wer
+eine Wirkung misst, schaltet sie zuerst ab).
+
+Dafür kann `ansicht` jetzt eine **Einstellung vorsetzen** (`einst:`) — denselben
+Schlüssel, den die App liest, nicht einen zweiten daneben.

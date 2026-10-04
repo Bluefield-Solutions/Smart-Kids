@@ -521,6 +521,12 @@ const AUFNAHMEN = [
   // Tabellen, um die der Bereich zuletzt gewachsen ist.
   { name:'quer-eltern-tabellen', spiel:null, quer:true, stand:true, protokoll:true,
     wahl:'.schirm.da', tun:'eltern', roll:'Zuletzt geübt' },
+  /* Der Begriffsregler (E30) - der Knopf, der sagt, wohin er fuehrt, und
+     die Zeile darunter, die sagt, wo man steht. Beide kommen aus
+     derselben Begriffstafel; ob sie nebeneinander verstaendlich sind,
+     sagt nur das Bild. */
+  { name:'quer-begriffe', spiel:null, quer:true, stand:true, protokoll:true,
+    wahl:'.schirm.da', tun:'eltern', roll:'Begriffe in' },
   /* Der Vergleich (N1) - der einzige Bildschirm, auf dem zwei Profile
    * nebeneinander stehen. Ob er beantwortet, wer vorn liegt, sagt kein
    * Tor: das sagt das Bild. */
@@ -565,6 +571,34 @@ const AUFNAHMEN = [
    * Und er ist von sich aus stabil: welcher Buchstabe gerade dran ist,
    * steht nirgends - die Aufnahme sieht bei jedem Keim gleich aus. */
   { name:'quer-diktat', spiel:'schreiben:diktat', quer:true, wahl:'.schirm.da' },
+  /* SPRACHE UNTERSUCHEN (E30) - vier Bildschirme, die E29 gebaut und
+   * niemand fotografiert hat. Kein Tor sagt, ob ein Satz mit einer
+   * Marke darin als Aufgabe durchgeht: ob der Unterstrich das Wort
+   * meint und nicht die Zeile, ob fuenf Begriffe nebeneinander auf 844
+   * Punkten ruhig wirken oder gedraengt, ob drei Knoepfe unter einem
+   * Satz zu wenig aussehen. Das ist ein Blick (Regel 4).
+   *
+   * Drei Aufnahmen und nicht eine, weil es drei verschiedene Bildschirme
+   * sind: fuenf Knoepfe mit einem markierten WORT, drei Knoepfe mit
+   * einem markierten SATZTEIL (der breiter ist als ein Wort), und drei
+   * Knoepfe unter einem Satz OHNE Marke - dort ist der ganze Satz die
+   * Frage. Eine Aufnahme davon bezeugt die anderen beiden nicht. */
+  { name:'quer-sprache-wortart', spiel:'sprache:nomen', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
+  { name:'quer-sprache-glied', spiel:'sprache:satzglieder', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
+  { name:'quer-sprache-satzart', spiel:'sprache:satzarten', kind:'lea', quer:true,
+    wahl:'.schirm.da' },
+  /* UND DERSELBE BILDSCHIRM MIT UMGELEGTEM REGLER.
+   *
+   * Dass der Regler im Elternbereich die Beschriftung im SPIEL
+   * umschaltet, stand bisher nur in einer Gegenprobe an den Daten und in
+   * einem Blick von mir. Hier stehen beide Aufnahmen nebeneinander:
+   * „Nomen · Verb · Adjektiv" und „Namenwort · Tunwort · Wiewort", und
+   * sonst alles gleich. Verschiebt sich etwas anderes mit, ist es im
+   * Vergleich zu sehen. */
+  { name:'quer-sprache-kindlich', spiel:'sprache:nomen', kind:'lea', quer:true,
+    einst:{ begriffeKindlich:true }, wahl:'.schirm.da' },
   /* Die Zahlen (N4) - zwei Bildschirme, die es sonst nirgends gibt: der
    * Vorlauf mit den zwanzig Zahlen und ihren Zahlwoertern, und der einzige
    * Aufgabenbildschirm mit ZWEI Schreibfeldern. Welche Zahl drankommt,
@@ -958,6 +992,21 @@ const OHNE_KARTE = {
      gefragt. Ohne ihn wartete die Aufnahme fuenfundzwanzig Sekunden auf
      eine Flaggenkarte, die dort nie kommt, und riss den Lauf ab. */
   'flaggen:karte': '.schirm.da .karte svg',
+  /* DIE DEUTSCH-WELT STAND HIER NICHT (E30) - und damit gab es von
+     keinem ihrer Bildschirme ein Vorbild. Fuenfzig Ebenen, der ganze
+     Grundwortschatz und „Sprache untersuchen", und die Bildabnahme hat
+     keinen einzigen davon je gesehen; wer eine Aufnahme versucht haette,
+     waere fuenfundzwanzig Sekunden auf eine Landkarte gelaufen.
+     `sprache` zeigt zwei verschiedene Bildschirme: sieben Ebenen stellen
+     eine Wahl (`.sprachfeld`), die drei Zeitformen laufen auf dem
+     Diktatbildschirm. Die drei stehen deshalb mit ihrer ganzen Kennung
+     da - dieselbe Stelle und derselbe Grund wie bei `flaggen:karte`. */
+  deutsch:   '.schirm.da .deutschfeld',
+  deutsch12: '.schirm.da .deutschfeld',
+  sprache:   '.schirm.da .sprachfeld',
+  'sprache:gegenwart':     '.schirm.da .deutschfeld',
+  'sprache:vergangenheit': '.schirm.da .deutschfeld',
+  'sprache:zukunft':       '.schirm.da .deutschfeld',
 };
 
 const STIMMEN_NACHBAU = () => {
@@ -1316,6 +1365,28 @@ for (const a of MEINE) {
         };
         auf.onerror = () => nein(auf.error);
       }), { wer: a.kind || 'fiona', art: a.stand });
+      await seite.reload({ waitUntil:'domcontentloaded' });
+      await seite.waitForSelector('[data-profil="fiona"]');
+    } else if (a.einst) {
+      /* EINE EINSTELLUNG VORSETZEN (E30). Der Begriffsregler sitzt im
+         Elternbereich und wirkt im SPIEL; eine Aufnahme, die ihn nur im
+         Elternbereich zeigt, bezeugt den Knopf und nicht die Wirkung
+         (Regel 1: wer eine Wirkung misst, schaltet sie zuerst ab).
+         Gesetzt wird derselbe Schluessel, den die App liest - nicht ein
+         zweiter daneben. */
+      await seite.evaluate((einst) => new Promise((ja, nein) => {
+        const auf = indexedDB.open('lernkiste', 1);
+        auf.onupgradeneeded = () => {
+          for (const l of ['profile','fortschritt','protokoll','einstellungen'])
+            if (!auf.result.objectStoreNames.contains(l)) auf.result.createObjectStore(l);
+        };
+        auf.onsuccess = () => {
+          const t = auf.result.transaction(['einstellungen'], 'readwrite');
+          t.objectStore('einstellungen').put(einst, 'alles');
+          t.oncomplete = ja; t.onerror = () => nein(t.error);
+        };
+        auf.onerror = () => nein(auf.error);
+      }), a.einst);
       await seite.reload({ waitUntil:'domcontentloaded' });
       await seite.waitForSelector('[data-profil="fiona"]');
     } else if (a.stand) {
