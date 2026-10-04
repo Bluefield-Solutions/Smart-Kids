@@ -338,7 +338,10 @@ export function regelZu(einheit){
  * nicht orthografisch, sondern grammatisch, und eine erfundene
  * Falschschreibung ginge an der Sache vorbei.
  */
-const UMFORMUNGEN = {
+/* Auch diese Tafel ist geteilt: wo 1/2 dasselbe Phaenomen uebt - ie,
+   tz, ck, ss, doppelte Mitlaute, Umlautung, Verhaertung -, ist es
+   derselbe Fehler, also dieselbe Zeile. */
+export const UMFORMUNGEN = {
   verhaertung:        [[/d$/,'t'], [/b$/,'p'], [/g$/,'k'], [/d(?=[st])/,'t'],
                        [/b(?=[st])/,'p'], [/g(?=[st])/,'k']],
   umlautung:          [[/äu/,'eu'], [/ä/,'e'], [/Ä/,'E']],
@@ -380,43 +383,64 @@ const UMFORM_MERK = {
    haeufigsten sind. Sie stehen ganz hinten und nicht vorn - ein
    allgemeiner Fehler ist besser als keiner und schlechter als der
    richtige. */
-const NOTFALL = [[/([bdfgklmnprst])([aeiou])/,'$1$1$2'], [/ei/,'ie'], [/ie/,'ei'],
-                 [/([aeiou])/,'$1h'], [/e$/,'']];
+/* Die letzte Reihe, wenn die eigene Tafel keine drei verschiedenen
+   Fassungen hergibt. Sie wird EXPORTIERT, weil die Wiederholung 1/2
+   dieselbe braucht - zwei Fassungen waeren zwei, die getrennt
+   veralten (Regel 6: was zweimal dasteht, veraltet einmal). */
+export const NOTFALL = [[/([bdfgklmnprst])([aeiou])/,'$1$1$2'], [/ei/,'ie'], [/ie/,'ei'],
+                        [/([aeiou])/,'$1h'], [/e$/,'']];
 
 /**
  * Drei falsche Schreibweisen zu einem Wort — immer drei, immer
  * verschieden, nie das Wort selbst.
  */
-export function verschreiber(einheit){
-  const w = einheit.wort;
+/**
+ * DIE MASCHINE dahinter - ein Wort, eine Reihe von Tafeln, drei
+ * verschiedene falsche Schreibweisen.
+ *
+ * Sie steht EINMAL und wird von beiden Abteilungen gerufen. Bis E27
+ * stand sie zweimal da, einmal hier und einmal fuer die Wiederholung
+ * 1/2; `doppelt` hat es beim ersten Lauf gemeldet. Was sich zwischen
+ * den beiden wirklich unterscheidet, sind die TAFELN - und die stehen
+ * weiterhin je Abteilung.
+ *
+ * `vorweg` sind Fassungen, die vor jeder Tafel gelten: bei den kleinen
+ * Woertern im Satz die anderen Formen desselben Eintrags, denn dort ist
+ * die Verwechslung grammatisch und nicht orthografisch.
+ */
+export function verschreiberMit(wort, tafeln, vorweg = []){
   const aus = [];
   const nimm = (k) => {
-    if (!k || k === w || aus.includes(k)) return;
+    if (!k || k === wort || aus.includes(k)) return;
     aus.push(k);
   };
-  /* Die kleinen Woerter im Satz: die anderen Formen desselben Eintrags.
-     Dort ist die Verwechslung grammatisch, nicht orthografisch. */
-  if (einheit.gruppe === 'flektiert')
-    for (const f of einheit.paar) nimm(f);
-  const tafeln = [
-    einheit.besonderheit ? UMFORM_MERK[einheit.besonderheit] : null,
-    UMFORMUNGEN[einheit.gruppe],
-    NOTFALL,
-  ];
+  for (const f of vorweg) nimm(f);
   for (const tafel of tafeln) {
     if (!tafel) continue;
-    for (const [suche, ersatz] of tafel) { if (aus.length >= 3) break; nimm(w.replace(suche, ersatz)); }
+    for (const [suche, ersatz] of tafel) {
+      if (aus.length >= 3) break;
+      nimm(wort.replace(suche, ersatz));
+    }
     if (aus.length >= 3) break;
   }
   /* Letzte Rettung fuer sehr kurze Woerter („Ast", „ab", „ob"): erst den
      Selbstlaut verdoppeln (aab), dann einen Mitlaut. Ohne diesen Zweig
      blieben drei Lerneinheiten bei zwei Ablenkern stehen, und die Wahl
      haette drei Karten statt vier. */
-  for (let i = 0; i < w.length && aus.length < 3; i++)
-    if ('aeiouäöü'.includes(w[i].toLowerCase())) nimm(w.slice(0, i + 1) + w[i] + w.slice(i + 1));
-  for (let i = w.length - 1; i >= 1 && aus.length < 3; i--)
-    nimm(w.slice(0, i) + w[i] + w.slice(i));
+  for (let i = 0; i < wort.length && aus.length < 3; i++)
+    if ('aeiouäöü'.includes(wort[i].toLowerCase()))
+      nimm(wort.slice(0, i + 1) + wort[i] + wort.slice(i + 1));
+  for (let i = wort.length - 1; i >= 1 && aus.length < 3; i--)
+    nimm(wort.slice(0, i) + wort[i] + wort.slice(i));
   return aus.slice(0, 3);
+}
+
+export function verschreiber(einheit){
+  return verschreiberMit(einheit.wort, [
+    einheit.besonderheit ? UMFORM_MERK[einheit.besonderheit] : null,
+    UMFORMUNGEN[einheit.gruppe],
+    NOTFALL,
+  ], einheit.gruppe === 'flektiert' ? einheit.paar : []);
 }
 
 /** Die drei Sätze zu einem Wort. */

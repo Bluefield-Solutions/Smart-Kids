@@ -96,10 +96,18 @@ const RUNDEN_MIN = 2;
  * die Umlautung (12), bei Leas Sitzung von acht. Dass dieselben vier
  * Woerter in der naechsten Sitzung wiederkommen, ist hier nicht der
  * Fehler, sondern die Sache: ein Wort sitzt nach dreimal richtig an
- * drei verschiedenen Tagen. */
+ * drei verschiedenen Tagen.
+ *
+ * `deutsch12:` steht aus demselben Grund daneben (E27), und dort ist es
+ * noch deutlicher: „Wörter mit pf" hat ZWEI Woerter, weil die amtliche
+ * Liste fuer die Jahrgangsstufen 1 und 2 dort zwei fuehrt - Kopf und
+ * Pflanze. Ein drittes gibt es nicht zu holen, es sei denn, man erfindet
+ * eines. Auch hier besorgt das Zaehlen das Untertor `deutsch`: 245
+ * Eintraege in 24 Ebenen, jedes Wort mit Beleg in der ausgelesenen
+ * Liste. */
 const WELT = [
   /^kontinente$/, /^bundeslaender$/, /^hauptstaedte(:|$)/, /^nachbarn$/,
-  /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/, /^deutsch:/,
+  /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/, /^deutsch:/, /^deutsch12:/,
 ];
 const istWelt = (id) => WELT.some(r => r.test(id));
 

@@ -1796,15 +1796,20 @@ nicht liest, ist die Kachel damit unbeschriftet`);
     await p.waitForSelector('.schirm.da [data-gruppe="rechtschreibung"]',
       { timeout: 6000 }).catch(() => {});
     await tipp('.schirm.da [data-gruppe="rechtschreibung"]');
-    /* Gewartet wird auf die ZAHL der Kacheln und nicht auf
+    /* Gewartet wird auf EINE BESTIMMTE Kachel und nicht auf
        `:not([data-gruppe])` wie bei den Laendern: die fuenfzehn Kinder
        dieser Gruppe TRAGEN ihre Gruppe weiter, der Waehler trifft also
        nie zu. Er lief in seine Zeitueberschreitung, `schau` fotografierte
-       die zugeklappte Wand mit zwei Kacheln, und das Tor meldete gruen -
-       eine Messung an einem Bildschirm, den es gar nicht erreicht hatte. */
-    await p.waitForFunction(() =>
-      document.querySelectorAll('.schirm.da .kachel[data-ebene]').length > 2,
-      null, { timeout: 6000 }).catch(() => {});
+       die zugeklappte Wand, und das Tor meldete gruen - eine Messung an
+       einem Bildschirm, den es gar nicht erreicht hatte.
+       Und auch nicht auf die ZAHL der Kacheln: das war der zweite
+       Anlauf, und er hielt genau so lange, bis die Deutsch-Welt mit
+       E27 von zwei Kacheln auf vier wuchs - „mehr als zwei" war dann
+       schon im zugeklappten Zustand wahr. Eine Schwelle, die aus der
+       Zahl der Nachbarn kommt, veraltet mit den Nachbarn.
+       `deutsch:tz` gibt es NUR in der aufgeklappten Gruppe. */
+    await p.waitForSelector('.schirm.da .kachel[data-ebene="deutsch:tz"]',
+      { timeout: 6000 }).catch(() => {});
     /* Dieselbe Vorsicht wie bei der Laendergruppe: gewartet wird, bis
        die Wand FERTIG aufgefaltet ist. Eine Zahl aus der Bewegung
        haette als Ratsche festgehalten, was nie so aussieht. */

@@ -175,23 +175,23 @@
     "dateien": "tor/proben-liste.mjs",
     "token": 637,
     "wo": [
-      "tor/proben-liste.mjs:3251",
-      "tor/proben-liste.mjs:3262",
-      "tor/proben-liste.mjs:3272",
-      "tor/proben-liste.mjs:3281",
-      "tor/proben-liste.mjs:3301",
-      "tor/proben-liste.mjs:3311",
-      "tor/proben-liste.mjs:3322",
-      "tor/proben-liste.mjs:3334",
-      "tor/proben-liste.mjs:3355",
-      "tor/proben-liste.mjs:3394",
-      "tor/proben-liste.mjs:3397",
-      "tor/proben-liste.mjs:3413",
-      "tor/proben-liste.mjs:3417",
-      "tor/proben-liste.mjs:3836",
-      "tor/proben-liste.mjs:3891",
-      "tor/proben-liste.mjs:3903",
-      "tor/proben-liste.mjs:3916"
+      "tor/proben-liste.mjs:3384",
+      "tor/proben-liste.mjs:3395",
+      "tor/proben-liste.mjs:3405",
+      "tor/proben-liste.mjs:3414",
+      "tor/proben-liste.mjs:3434",
+      "tor/proben-liste.mjs:3444",
+      "tor/proben-liste.mjs:3455",
+      "tor/proben-liste.mjs:3467",
+      "tor/proben-liste.mjs:3488",
+      "tor/proben-liste.mjs:3527",
+      "tor/proben-liste.mjs:3530",
+      "tor/proben-liste.mjs:3546",
+      "tor/proben-liste.mjs:3550",
+      "tor/proben-liste.mjs:3969",
+      "tor/proben-liste.mjs:4024",
+      "tor/proben-liste.mjs:4036",
+      "tor/proben-liste.mjs:4049"
     ],
     "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken. — Nachgetragen in P10: die Zahl stieg von 464 auf 637, OHNE dass die Liste länger wurde (213 Zeilen vorher, 213 nachher). Sie stieg, weil eine Zeile WEGFIEL: „die umgekehrte Frage kommt auch für Winzlinge“ wurde zu einem Kommentar, Kommentare zählt das Tor nicht mit, und die beiden gleichförmigen Stränge beiderseits rückten im Tokenstrom zusammen zu EINEM. Gemessen am Baum von b2c65fb: dieselbe Stelle, 423 Token. Diese Kennzahl ist die LÄNGE des längsten gleichförmigen Laufs, nicht die MENGE an Dopplung — an einer Tabelle kann sie deshalb auch dann wachsen, wenn etwas gestrichen wird. Wer sie hier hochsetzt, prüft zuerst die Zeilenzahl der Liste."
   },
@@ -219,10 +219,47 @@
     "warum": "Der Tierplan IST eine Tabelle: eine Zeile je Tier, immer id/name/art/zeichen und darunter ggf. das Bild. 124 Zeilen derselben Form - das ist ihr Zweck. Und die Bilder sind SVG-Pfade aus demselben kleinen Vokabular (`M`, `c`, `s`, `z`, `fill=\"#…\"`), weil sie im selben Stil gezeichnet sind; dass ein Fuchs und eine Eule sich im Tokenstrom aehneln, heisst nicht, dass sie dasselbe Bild sind. Zusammenlegen gaebe es hier nichts: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderes Tier. Die Zahl waechst mit jedem gemalten Tier - wer sie hochsetzt, prueft zuerst, ob wirklich nur Bilder dazugekommen sind und nicht Logik dazwischen."
   },
   {
-    "dateien": "src/inhalt/erdkunde.js · src/inhalt/saetze.js",
-    "token": 493,
+    "dateien": "src/inhalt/deutsch12-saetze.js · src/inhalt/erdkunde.js · src/inhalt/saetze.js",
+    "token": 495,
     "wo": [
-      "src/inhalt/erdkunde.js:580",
+      "src/inhalt/deutsch12-saetze.js:51",
+      "src/inhalt/deutsch12-saetze.js:89",
+      "src/inhalt/deutsch12-saetze.js:92",
+      "src/inhalt/deutsch12-saetze.js:93",
+      "src/inhalt/deutsch12-saetze.js:94",
+      "src/inhalt/deutsch12-saetze.js:95",
+      "src/inhalt/deutsch12-saetze.js:96",
+      "src/inhalt/deutsch12-saetze.js:97",
+      "src/inhalt/deutsch12-saetze.js:98",
+      "src/inhalt/deutsch12-saetze.js:99",
+      "src/inhalt/deutsch12-saetze.js:100",
+      "src/inhalt/deutsch12-saetze.js:101",
+      "src/inhalt/deutsch12-saetze.js:104",
+      "src/inhalt/deutsch12-saetze.js:105",
+      "src/inhalt/deutsch12-saetze.js:106",
+      "src/inhalt/deutsch12-saetze.js:109",
+      "src/inhalt/deutsch12-saetze.js:110",
+      "src/inhalt/deutsch12-saetze.js:111",
+      "src/inhalt/deutsch12-saetze.js:112",
+      "src/inhalt/deutsch12-saetze.js:113",
+      "src/inhalt/deutsch12-saetze.js:116",
+      "src/inhalt/deutsch12-saetze.js:117",
+      "src/inhalt/deutsch12-saetze.js:118",
+      "src/inhalt/deutsch12-saetze.js:119",
+      "src/inhalt/deutsch12-saetze.js:120",
+      "src/inhalt/deutsch12-saetze.js:123",
+      "src/inhalt/deutsch12-saetze.js:124",
+      "src/inhalt/deutsch12-saetze.js:125",
+      "src/inhalt/deutsch12-saetze.js:210",
+      "src/inhalt/deutsch12-saetze.js:213",
+      "src/inhalt/deutsch12-saetze.js:214",
+      "src/inhalt/deutsch12-saetze.js:215",
+      "src/inhalt/deutsch12-saetze.js:216",
+      "src/inhalt/deutsch12-saetze.js:217",
+      "src/inhalt/deutsch12-saetze.js:218",
+      "src/inhalt/deutsch12-saetze.js:219",
+      "src/inhalt/deutsch12-saetze.js:220",
+      "src/inhalt/deutsch12-saetze.js:221",
       "src/inhalt/erdkunde.js:581",
       "src/inhalt/erdkunde.js:581",
       "src/inhalt/erdkunde.js:581",
@@ -246,6 +283,7 @@
       "src/inhalt/erdkunde.js:585",
       "src/inhalt/erdkunde.js:585",
       "src/inhalt/erdkunde.js:585",
+      "src/inhalt/erdkunde.js:588",
       "src/inhalt/saetze.js:75",
       "src/inhalt/saetze.js:78",
       "src/inhalt/saetze.js:79",
@@ -346,7 +384,7 @@
       "src/inhalt/saetze.js:217",
       "src/inhalt/saetze.js:218"
     ],
-    "warum": "Zwei Tafeln, die nach DEMSELBEN Schluessel geordnet sind: `HAUPTSTADT_LAND` (a3 → Hauptstadt) und `SAETZE` (a3 → ein Satz zum Mitnehmen). Was sich gleicht, ist die Folge der 124 Laenderkuerzel - RUS, DEU, GBR, FRA, POL … -, und die gleicht sich, weil es dieselben Laender sind. Genau das ist der Sinn: wer ein Land eintraegt, findet es in jeder Tafel an derselben Stelle wieder. Zusammenlegen waere hier die schlechtere Loesung und nicht die bessere: eine Tafel mit Hauptstadt UND Satz UND Ablenkern je Land waere eine Zeile von 200 Zeichen, in der niemand mehr sieht, was fehlt - und die Tore, die je eine dieser Tafeln gegen ihre Quelle pruefen, muessten sich ihren Teil erst wieder herausschneiden. Die Zahl haengt an der Laenderzahl: 124 Ziele ergeben 497 Token. Wer sie hochsetzt, prueft zuerst, ob wirklich nur Laender dazugekommen sind."
+    "warum": "Die 278 Lückensätze der Wiederholung 1/2 — eine Zeile je Lerneinheit, immer derselbe Bau: Wort, Doppelpunkt, ein Satz in Anführungszeichen. Dass sie formal den Länderzeilen in erdkunde.js und den Satzkarten in saetze.js gleichen, heißt nur, dass alle drei Datentabellen sind. Zusammenlegen gibt es hier nichts — jede Zeile trägt anderen Text; gleich ist allein die Form. Die Zahl misst die LÄNGE des gleichförmigen Laufs, nicht die Menge an Dopplung: sie wächst, wenn Sätze dazukommen. Wer sie hochsetzt, zählt zuerst die Sätze nach — das Untertor `deutsch` rechnet 278 nach und prüft jeden einzelnen gegen die vier Satzregeln."
   },
   {
     "dateien": "tor/bildurteile.mjs",
@@ -384,26 +422,11 @@
     "dateien": "prototyp/spiel.js",
     "token": 269,
     "wo": [
-      "prototyp/spiel.js:1478",
-      "prototyp/spiel.js:1523",
-      "prototyp/spiel.js:1592"
+      "prototyp/spiel.js:1491",
+      "prototyp/spiel.js:1536",
+      "prototyp/spiel.js:1605"
     ],
     "warum": "Die EBENEN-Tafel IST eine Tabelle: jede Zeile hat id/ueber/titel/farbe/art/wer. Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck. DIESER Eintrag hat mit E8 und E9c seinen Gegenstand GEWECHSELT: bis dahin war der laengste gleichfoermige Lauf in dieser Datei das Paar der Umschalter fuer die Antwortweise (125 Token), jetzt sind es die zwei Straenge der Ebenentafel links und rechts der zwei neuen Ebenen (234 Token). Die Zahl ist die LAENGE des laengsten Laufs, nicht die Menge an Dopplung: sie waechst mit jeder neuen Ebene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - der alte Grund kann laengst nicht mehr gelten. Mit I4 kamen drei Rechenebenen dazu — dieselbe Tabelle, nur länger. Mit I8 die Ebene Gestern und heute, und damit 345."
-  },
-  {
-    "dateien": "prototyp/bauen.mjs",
-    "token": 252,
-    "wo": [
-      "prototyp/bauen.mjs:419",
-      "prototyp/bauen.mjs:420",
-      "prototyp/bauen.mjs:421",
-      "prototyp/bauen.mjs:422",
-      "prototyp/bauen.mjs:425",
-      "prototyp/bauen.mjs:426",
-      "prototyp/bauen.mjs:427",
-      "prototyp/bauen.mjs:428"
-    ],
-    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung. — Nachgetragen in F1: `flaggen.js` ist das dreizehnte Modul, und mit ihm ist der gleichfoermige Lauf von 201 auf 235 Token gewachsen. Wieder genau EINE `inline`-Zeile mehr, nachgezaehlt und nicht geschaetzt: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung. — Nachgetragen mit S12: die Regel, wieviel der Tipp wegnimmt, ist ein eigenes Modul (`src/kern/tipp.js`) und damit eine Zeile mehr in dieser Tabelle. Von 235 auf 252 Token, und wieder nur eine Zeile: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung."
   },
   {
     "dateien": "tor/ansicht.mjs",
@@ -413,6 +436,15 @@
       "tor/ansicht.mjs:458"
     ],
     "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8, E9c und E5 sind es 62, und der Lauf ist von 113 ueber 135 und 157 auf 179 Token gewachsen - jede neue Szene verlaengert ihn. — Nachgetragen in E7: die Szene `quer-lesen` ist die naechste Zeile derselben Tabelle, und mit ihr ist der Lauf von 179 auf 201 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste. — Nachgetragen in E5b: `quer-laute-bild` ist die naechste Zeile derselben Tabelle (dieselbe Ebene bei Fiona, mit Bildern statt Buchstaben), und mit ihr ist der Lauf von 201 auf 227 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste."
+  },
+  {
+    "dateien": "src/inhalt/deutsch12-saetze.js",
+    "token": 167,
+    "wo": [
+      "src/inhalt/deutsch12-saetze.js:41",
+      "src/inhalt/deutsch12-saetze.js:147"
+    ],
+    "warum": "Zwei Abschnitte derselben Satztabelle, die der Zähler getrennt findet. Dieselbe Begründung wie beim großen Lauf darüber: eine Zeile je Lerneinheit, gleich ist die Form und nicht der Inhalt."
   },
   {
     "dateien": "src/inhalt/flaggen.js",
@@ -428,6 +460,38 @@
       "src/inhalt/flaggen.js:1175"
     ],
     "warum": "Die AEHNLICH-Tafel IST eine Tabelle: jede Zeile ist ein Paar und ein Satz, und zweiundzwanzig Zeilen mit derselben Form sehen sich aehnlich - das ist ihr Zweck. Dieselbe Lage wie bei EBENEN in spiel.js und EINHEITEN in rechnen.js. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs und waechst mit jedem weiteren Paar; wer sie hochsetzt, sieht zuerst nach, WAS sie jetzt findet - hier waren es bei I12 die drei neuen Paare mitten in der Liste, die zwei bestehende Laeufe zu einem verbunden haben."
+  },
+  {
+    "dateien": "prototyp/bauen.mjs",
+    "token": 159,
+    "wo": [
+      "prototyp/bauen.mjs:419",
+      "prototyp/bauen.mjs:420",
+      "prototyp/bauen.mjs:421",
+      "prototyp/bauen.mjs:422",
+      "prototyp/bauen.mjs:442",
+      "prototyp/bauen.mjs:443",
+      "prototyp/bauen.mjs:444"
+    ],
+    "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung. — Nachgetragen in F1: `flaggen.js` ist das dreizehnte Modul, und mit ihm ist der gleichfoermige Lauf von 201 auf 235 Token gewachsen. Wieder genau EINE `inline`-Zeile mehr, nachgezaehlt und nicht geschaetzt: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung. — Nachgetragen mit S12: die Regel, wieviel der Tipp wegnimmt, ist ein eigenes Modul (`src/kern/tipp.js`) und damit eine Zeile mehr in dieser Tabelle. Von 235 auf 252 Token, und wieder nur eine Zeile: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung."
+  },
+  {
+    "dateien": "src/inhalt/deutsch.js · src/inhalt/deutsch12.js",
+    "token": 157,
+    "wo": [
+      "src/inhalt/deutsch.js:348",
+      "src/inhalt/deutsch12.js:342"
+    ],
+    "warum": "Die Umformungstafeln beider Abteilungen. Was WIRKLICH geteilt werden kann, ist seit E27 geteilt: `NOTFALL`, die neun Zeilen für dieselben Phänomene (ie, tz, ck, ß, doppelte Mitlaute, Umlautung, Verhärtung, Mitsprechen, r nach dem Selbstlaut) und die Maschine `verschreiberMit` stehen einmal in deutsch.js und werden von deutsch12.js geholt. Was hier gleich AUSSIEHT, sind die zehn Buchstabengruppen, die es nur in 1/2 gibt — `[[/sp/, 'schp'], ...]` hat dieselbe Form wie `[[/tz/, 'z'], ...]` und einen anderen Inhalt. Zusammenlegen hieße, verschiedene Rechtschreibfehler in eine Zeile zu zwingen."
+  },
+  {
+    "dateien": "src/inhalt/deutsch12.js",
+    "token": 143,
+    "wo": [
+      "src/inhalt/deutsch12.js:82",
+      "src/inhalt/deutsch12.js:158"
+    ],
+    "warum": "Zwei Gruppen der amtlichen Liste in derselben Datei: `{ id, abteilung, prinzip, titel, amtlich, woerter }`. Die Form ist die Tabelle, der Inhalt sind 24 verschiedene Phänomene mit 245 verschiedenen Wörtern. Die Zahl hängt an der Wortzahl; wer sie hochsetzt, prüft zuerst, ob wirklich nur Wörter dazugekommen sind — geprüft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort dürfen keine dazukommen, die das ISB nicht kennt."
   },
   {
     "dateien": "src/inhalt/abzeichen.js",
@@ -451,8 +515,8 @@
     "dateien": "src/inhalt/deutsch.js",
     "token": 116,
     "wo": [
-      "src/inhalt/deutsch.js:77",
-      "src/inhalt/deutsch.js:98"
+      "src/inhalt/deutsch.js:115",
+      "src/inhalt/deutsch.js:136"
     ],
     "warum": "Die beiden Umformungstafeln für die falschen Schreibweisen (UMFORMUNGEN je Rechtschreibphänomen, UMFORM_MERK je Besonderheit der Merkwörter). Beide sind Listen von Suchen-Ersetzen-Paaren und sehen sich deshalb in der Form gleich; inhaltlich beantworten sie zwei verschiedene Fragen: die eine, welchen Fehler eine STRATEGIE nahelegt („ss\" zu „s\"), die andere, welchen eine SONDERSCHREIBUNG nahelegt („x\" zu „ks\"). Zusammengelegt wären sie eine Tafel mit zwei Bedeutungen, und die Gliederung der amtlichen Liste — die genau diese Trennung zieht — wäre aus den Daten verschwunden."
   },
@@ -461,7 +525,7 @@
     "token": 113,
     "wo": [
       "tor/schreiben.mjs:122",
-      "prototyp/spiel.js:2934"
+      "prototyp/spiel.js:3148"
     ],
     "warum": "Mulberry32, der Würfel mit Saat — im Spiel EINMAL (seit P8) und im Tor noch einmal. Die Fassung im Tor ist Absicht: sie rechnet die Reihenfolge nach, die das Spiel erzeugt, und wäre wertlos, wenn sie dieselbe Funktion aufriefe. Ein Nachrechner, der die geprüfte Funktion benutzt, prüft nichts."
   },
@@ -473,6 +537,18 @@
       "tools/backen-kontinente.mjs:24"
     ],
     "warum": "Zwei Tabellen, die sich nur in der FORM gleichen: der Bildplan (`{ wort, gebiet, motiv }`, 86 Zeilen) und die Kontinentliste (`{ id, name, ne }`, sieben Zeilen). Beide sind Datenzeilen mit drei Feldern und ausgerichteten Werten - mehr haben sie nicht miteinander zu tun, und sie stehen in zwei Verzeichnissen mit verschiedenen Aufgaben (Inhalt und Backwerkzeug). Zusammenlegen waere hier nicht Aufraeumen, sondern das Verknuepfen von Englischvokabeln mit Erdkunde-Rohdaten."
+  },
+  {
+    "dateien": "src/inhalt/deutsch12-saetze.js · src/inhalt/saetze.js",
+    "token": 103,
+    "wo": [
+      "src/inhalt/deutsch12-saetze.js:50",
+      "src/inhalt/deutsch12-saetze.js:88",
+      "src/inhalt/deutsch12-saetze.js:209",
+      "src/inhalt/deutsch12-saetze.js:247",
+      "src/inhalt/saetze.js:74"
+    ],
+    "warum": "Die Kommentarzeilen, mit denen beide Dateien ihre Abschnitte überschreiben (`/* --- Name ---- */`). Eine gemeinsame Überschriftenform ist der Sinn der Sache und keine Dopplung — wer sie zusammenlegte, hätte eine Datei mit Überschriften und zwei ohne."
   },
   {
     "dateien": "src/inhalt/schreiben.js",

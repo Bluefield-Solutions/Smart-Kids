@@ -9189,3 +9189,86 @@ Eine Textur, kein Signal. Es trägt auf 700 × 850 und auf dem iPad, und auf dem
 Telefon trägt die Farbe. **Offen bleibt nichts** — aber falls die Zeichen
 einmal auch auf 844 × 390 lesbar sein sollen, geht das nur über die Höhe der
 Kachel, und die ist dort bis auf dreizehn Punkte ausgereizt.
+
+---
+
+## E27 · Etappe 2 — die Wiederholung 1/2, und drei Dopplungen, die zusammengelegt statt eingetragen wurden (04.10.2026)
+
+244 Wörter standen im Konzeptpapier. Gezählt sind es **245 Einträge, 244
+verschiedene, 278 Lerneinheiten** — und jede Zahl heißt etwas anderes. Das
+Konzeptpapier hatte die verschiedenen Einträge gezählt; was zu lernen ist, sind
+die Lerneinheiten.
+
+| | gezählt |
+|---|---|
+| Gruppen der amtlichen Liste 1/2 | 30 |
+| Ebenen im Spiel | **24** |
+| Einträge · verschiedene | 245 · **244** |
+| Lerneinheiten | **278** |
+| Lückensätze | **278**, einer je Einheit |
+| falsche Schreibweisen | 834 |
+
+### Zwei Abteilungen, und der Schnitt ist gemessen
+
+Auf dem Zielgerät stehen **einundzwanzig** Kacheln ins Bild (sieben je Reihe,
+drei Reihen — nach E26b mit 70 Punkten Kachelhöhe). Vierundzwanzig Ebenen in
+einer Wand wären unten herausgelaufen. Der Schnitt ist deshalb keiner von mir,
+sondern der der Liste: **„Hören und Silben" (17)** und **„Ableiten und Merken"
+(7)**, beide nach ihren amtlichen Überschriften benannt.
+
+Die Deutsch-Welt hat damit **vier Kacheln** statt zwei. Der offene Punkt „die
+Deutsch-Wand trägt zwei Kacheln und wirkt leer" ist erledigt.
+
+### Die Liste widerspricht sich wieder, diesmal zweimal
+
+„suchen" steht unter `<en>` **und** `<ch>`; „spielen" als Grundform von
+„spielen – spielt" unter `<Sp>` und noch einmal unter `<ie>`. `HEIMAT12` löst
+es nach **einem** Satz: ein Wort gehört dorthin, wo seine eigene Schwierigkeit
+liegt.
+
+### Drei Dopplungen — zusammengelegt, nicht eingetragen
+
+`doppelt` meldete beim ersten Lauf fünf Befunde. Drei davon waren **echt**, und
+alle drei sind jetzt eine Stelle statt zweier:
+
+- `verschreiberMit` in `deutsch.js` — die Maschine, die aus einem Wort drei
+  falsche Schreibweisen macht.
+- Die neun Umformungszeilen für Phänomene, die es in beiden Abteilungen gibt.
+- `pruefeSaetze` in `tor/inhalt.mjs` — die vier Satzregeln, einmal geschrieben,
+  mit Satzzahl, Nachbarschaft und Ausnahme als Parameter.
+
+Eingetragen wurden nur die Datentabellen, die sich **allein in der Form**
+gleichen, und jede mit einem Satz, warum.
+
+### Eine Ausnahme, die benannt ist
+
+Für „Wörter, die oft kommen" (45 Wörter: der, und, ist, auf …) gilt die dritte
+Satzregel nicht. Ein Satz ohne ein zweites dieser Wörter wäre kein Satz mehr —
+dieselbe Ausnahme wie bei den kleinen Wörtern in 3/4, und sie steht im Tor und
+nicht als stille Lücke im Zähler.
+
+### Ein eigener Raum: An der Quelle
+
+Die 24 Ebenen führen **nicht** ins Märchen. Dort führen schon sechzehn hinein;
+mit vierzig wäre der Raum nach dem dritten Tag voll und die restlichen
+siebenunddreißig Ebenen gäben nichts mehr. **„An der Quelle"** mit Ente, Elch
+und Eidechse — den letzten drei gemalten Tieren ohne Raum. Und „Quelle" steht
+in der amtlichen Liste 1/2, unter `<Qu>`.
+
+### Und zwei Tore, die ihre eigene Schwelle verlernt hatten
+
+- **`passt`**: die Wartebedingung für die aufgeklappte Rechtschreibgruppe hieß
+  „mehr als zwei Kacheln". Sie hielt genau so lange, bis die Deutsch-Welt von
+  zwei Kacheln auf vier wuchs — dann war sie schon im zugeklappten Zustand
+  wahr, und das Tor maß die falsche Wand. **Gemeldet hat es die Wache, die ich
+  in E26b daneben gestellt hatte** („nur 4 Kacheln — die Gruppe hat sich nicht
+  aufgeklappt"). Eine Schwelle, die aus der Zahl der Nachbarn kommt, veraltet
+  mit den Nachbarn; gewartet wird jetzt auf `deutsch:tz`, das es nur in der
+  aufgeklappten Gruppe gibt.
+- **Die Wortwache** hat „undefined" wiedergefunden — den Befund aus D9, der im
+  nächsten Lauf verschwunden war. Der Grund ist jetzt klar: welche Länderpaare
+  „Was ist größer?" zieht, hängt am Sitzungskeim, und der verschiebt sich bei
+  jeder neuen Welt. **Ein Fehler, der nur jedes dritte Mal erscheint, ist nicht
+  selten — er ist schwer zu sehen.** Der Aufkleber fiel auf den Rechenkasten
+  durch und zeigte `${x.frage}`; er zeigt jetzt beide Ländernamen, wie das
+  Lautpaar. Vierter Gegenstand, dem genau das passiert ist.

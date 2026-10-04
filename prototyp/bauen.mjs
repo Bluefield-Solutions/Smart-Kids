@@ -429,6 +429,16 @@ const module = [
   inline(new URL('../src/inhalt/deutsch-saetze.js', import.meta.url), 'DeutschSaetze'),
   inline(new URL('../src/inhalt/deutsch.js', import.meta.url), 'Deutsch',
          { 'deutsch-saetze.js': 'const SAETZE = DeutschSaetze.SAETZE;' }),
+  /* Und dieselbe Reihenfolge noch einmal fuer die Wiederholung 1/2.
+     `deutsch12.js` liest ZWEI Nachbarn: seine eigenen Saetze und aus
+     `deutsch.js` die geteilten Umformungen samt der Maschine, die sie
+     anwendet - beide stehen deshalb darueber. */
+  inline(new URL('../src/inhalt/deutsch12-saetze.js', import.meta.url), 'Deutsch12Saetze'),
+  inline(new URL('../src/inhalt/deutsch12.js', import.meta.url), 'Deutsch12',
+         { 'deutsch12-saetze.js': 'const SAETZE12 = Deutsch12Saetze.SAETZE12;',
+           'deutsch.js': 'const NOTFALL = Deutsch.NOTFALL, '
+             + 'GETEILT = Deutsch.UMFORMUNGEN, '
+             + 'verschreiberMit = Deutsch.verschreiberMit;' }),
   inline(new URL('../src/inhalt/tiere.js', import.meta.url), 'Tiere'),
   inline(new URL('../src/inhalt/flaggen.js', import.meta.url), 'Flaggen'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),

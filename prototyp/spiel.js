@@ -1847,6 +1847,26 @@ const EBENEN = [
    * und gibt einen Pokal, die Probe fragt zwanzig quer und gibt eine
    * Note. Beide teilen sich den Endbildschirm, und deshalb steht hier
    * ein eigenes Feld statt eines zweiten Sinns fuer dasselbe. */
+  /* DIE WIEDERHOLUNG 1 UND 2 (E27) — zwei Abteilungen, nicht eine.
+   *
+   * Vierundzwanzig Ebenen passen nicht in eine Wand: auf dem Zielgeraet
+   * stehen sieben Kacheln je Reihe und drei Reihen ins Bild, also
+   * einundzwanzig. Der Schnitt ist deshalb keiner von mir, sondern der
+   * der amtlichen Liste selbst - sie fuehrt ihre Gruppen unter drei
+   * Ueberschriften, und die erste traegt siebzehn Ebenen, die beiden
+   * anderen zusammen sieben.
+   *
+   * `art:'deutsch'` und nicht `deutsch12`: es IST derselbe Bildschirm,
+   * derselbe Vorlaufsatz und dasselbe Profil. Die Kennung trennt die
+   * beiden Vorraete (`vorrat` liest sie), die `art` nicht - wer sie
+   * trennte, haette zwei Einweisungen zu pflegen, von denen eine
+   * veraltet. */
+  ...Deutsch12.GRUPPEN12.map(g => ({ id:`deutsch12:${g.id}`, ueber:'Klasse 1 und 2',
+    titel: (Deutsch12.ABTEILUNGEN.find(a => a.id === g.abteilung) || {}).titel,
+    wo:g.titel, farbe:Deutsch.PRINZIP_FARBE[g.prinzip],
+    art:'deutsch', gruppe:`wiederholung-${g.abteilung}`, wer:['lea'],
+    frageWort:' — woran?' })),
+
   { id:'deutsch:probe', ueber:'Deutsch', titel:'Probe', farbe:6,
     art:'deutsch', wer:['lea'], probe:true },
 ];
@@ -2268,6 +2288,15 @@ function silhouette(ebeneId, gruppe) {
     return deutschZeichen('buch');
   if (ebeneId.startsWith('deutsch:')) {
     const g = Deutsch.gruppeVon(ebeneId.split(':')[1]);
+    return deutschZeichen(g ? g.prinzip : 'merken');
+  }
+  /* Und dieselben fuenf Zeichen fuer die Wiederholung - die Prinzipien
+     sind dieselben, also sind es die Bilder auch. Die beiden
+     Gruppenkacheln tragen das Buch, wie „Rechtschreibung" darueber. */
+  if (gruppe === 'wiederholung-laute' || gruppe === 'wiederholung-merken')
+    return deutschZeichen('buch');
+  if (ebeneId.startsWith('deutsch12:')) {
+    const g = Deutsch12.gruppeVon(ebeneId.split(':')[1]);
     return deutschZeichen(g ? g.prinzip : 'merken');
   }
   if (FREUNDEBILD.has(ebeneId))
@@ -2736,6 +2765,20 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
   : x.sorte === 'laut'
                  ? `<div class="wortkleber lautkleber" style="--ton:${ton}"
                       lang="en">${x.wort} · ${x.gegen}</div>`
+  /* DAS LAENDERPAAR von „Was ist groesser?" (I22) - und das ist der
+     VIERTE Gegenstand, der ohne eigene Zeile auf den Rechenkasten
+     durchfiel und `undefined` zeigte. Gemeldet hat es die Wortwache aus
+     E25, einmal, und beim naechsten Lauf war es wieder weg: welche
+     Paare gezogen werden, haengt am Sitzungskeim, und der verschiebt
+     sich bei jeder neuen Welt. Ein Fehler, der nur jedes dritte Mal
+     erscheint, ist keiner, der selten ist - er ist einer, der schwer
+     zu sehen ist.
+     Gezeigt werden BEIDE Namen, wie beim Lautpaar: die Aufgabe IST der
+     Vergleich, und ein Kaestchen mit „Simbabwe" allein waere ein Land
+     und keine Frage. */
+  : x.gross && x.kleinName
+                 ? `<div class="wortkleber paarkleber" style="--ton:${ton}"
+                      >${x.name} · ${x.kleinName}</div>`
   : x.luecke || x.deutsch
                  ? `<div class="wortkleber" style="--ton:${ton}">${x.name}</div>`
   : x.farbton    ? `<div class="farbfleck" style="--farbton:${x.farbton}"></div>`
@@ -2837,6 +2880,13 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     return Deutsch.einheitenVon(kont).map(e => ({
       ...Deutsch.gegenstandZu(e), lernwort:true,
       gruppeTitel: (Deutsch.gruppeVon(e.gruppe) || {}).titel || '' }));
+  /* Die Wiederholung 1/2 (E27). Eigene Kennung, eigener Vorrat, derselbe
+     Bildschirm - und ein Satz je Wort statt drei: die Abteilung soll
+     auffrischen, nicht noch einmal durchnehmen. */
+  if (art === 'deutsch12')
+    return Deutsch12.einheitenVon(kont).map(e => ({
+      ...Deutsch12.gegenstandZu12(e), lernwort:true,
+      gruppeTitel: (Deutsch12.gruppeVon(e.gruppe) || {}).titel || '' }));
   if (art==='kontinente') {
     const bis = voll ? RUNDEN : (P.id==='fiona' ? kontinentRunde(stand) : RUNDEN);
     return D.kontinente.filter(k=>k.runde<=bis)

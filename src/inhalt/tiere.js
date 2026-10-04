@@ -525,6 +525,41 @@ export const RAEUME = [
             'deutsch:merkwoerter', 'deutsch:probe'], titel:'Im Märchen',
     tiere:['einhorn', 'drache', 'yeti'] },
 
+  /* AN DER QUELLE - der Raum der Wiederholung 1/2 (E27).
+   *
+   * Ein EIGENER Raum und nicht die 24 Ebenen dazu ins Maerchen: dort
+   * fuehren schon sechzehn Ebenen hinein, und mit vierzig waere der
+   * Raum nach dem dritten Tag voll und die restlichen siebenunddreissig
+   * Ebenen gaeben nichts mehr. Ein Raum ist ein Versprechen auf drei
+   * Tiere; wer ihn mit vierzig Ebenen fuettert, hat das Versprechen
+   * schon eingeloest, bevor die Haelfte gespielt ist.
+   *
+   * WARUM GERADE DIESE DREI: Ente, Elch und Eidechse waren die letzten
+   * gemalten Tiere ohne Raum - dieselbe Rechnung wie beim Maerchen, nur
+   * eine Etappe spaeter.
+   *
+   * UND WARUM „An der Quelle": „Quelle" steht in der amtlichen Liste
+   * 1/2, unter den Woertern mit <Qu>. Der Zusammenhang ist damit wieder
+   * keiner, der erfunden werden musste - das Kind sammelt hier genau
+   * das, was es schreiben gelernt hat. Das laengste Wort des Namens hat
+   * sechs Zeichen und passt damit in die 77,5 Punkte breite Spalte auf
+   * 390 x 844 (siehe „Im Maerchen" darueber, wo elf Zeichen die ganze
+   * Gitterreihe hoeher gemacht haben).
+   *
+   * AUSGESCHRIEBEN und nicht aus `deutsch12.js` gerechnet, aus
+   * demselben Grund wie darueber: eine Liste, die sich aus der
+   * geprueften Datei selbst holt, wuerde beim naechsten Phaenomen still
+   * mitwachsen, und das Tor merkte nicht, dass niemand hingesehen hat. */
+  { ebenen:['deutsch12:silben', 'deutsch12:er', 'deutsch12:el', 'deutsch12:en',
+            'deutsch12:ei', 'deutsch12:eu', 'deutsch12:ng', 'deutsch12:nk',
+            'deutsch12:sp', 'deutsch12:st', 'deutsch12:ch', 'deutsch12:sch',
+            'deutsch12:pf', 'deutsch12:qu', 'deutsch12:r-nach-vokal',
+            'deutsch12:ie', 'deutsch12:mitlautverdopplung', 'deutsch12:umlautung',
+            'deutsch12:verhaertung', 'deutsch12:haeufig', 'deutsch12:ss',
+            'deutsch12:tz', 'deutsch12:ck', 'deutsch12:merkwoerter'],
+    titel:'An der Quelle',
+    tiere:['ente', 'elch', 'eidechse'] },
+
   /* DER ERSTE RAUM OHNE EBENE (T6).
    *
    * Ihn oeffnet die SAMMLUNG selbst - wer dreissig Tiere hat, bekommt
@@ -878,6 +913,22 @@ export const KULISSEN = {
   "Im Märchen": {
     ton:'#e9e6f6',
     bild:'<path d="M0 0h160v34H0z" fill="#cfd9f2"/><path d="M0 20h160v14H0z" fill="#dde5f7"/><path d="M24 8c6 0 10 4.5 10 10s-4 10-10 10-10-4.5-10-10 4-10 10-10z" fill="#f8f2cf"/><path d="M52 10c1.2 0 1.8.8 1.8 1.8s-.6 1.8-1.8 1.8-1.8-.8-1.8-1.8.6-1.8 1.8-1.8zM86 6c1 0 1.5.7 1.5 1.5S87 9 86 9s-1.5-.7-1.5-1.5S85 6 86 6zM110 14c1 0 1.5.7 1.5 1.5s-.5 1.5-1.5 1.5-1.5-.7-1.5-1.5.5-1.5 1.5-1.5z" fill="#ffffff"/><path d="M0 34c28-10 48 6 74 0s50-12 86 2v10H0z" fill="#8fae7e"/><path d="M0 44h160v46H0z" fill="#a4c491"/><path d="M0 60c30 6 54-6 84-2s48 8 76 4v28H0z" fill="#b2d09c"/><path d="M12.4 64v-12h3.2v12zM28.4 66v-10h3.2v10z" fill="#6b4a2c"/><path d="M14 28c8 0 11 8 11 12.5s-5 5.5-11 5.5-11-2-11-5.5 3-12.5 11-12.5z" fill="#3f7a52"/><path d="M30 36c6 0 9 6 9 9.5s-4 4.5-9 4.5-9-1.5-9-4.5 3-9.5 9-9.5z" fill="#4f8f5f"/><path d="M118 60V28h8v32zM150 60V26h8v34z" fill="#c9c6d6"/><path d="M120 60V34h34v26z" fill="#b9b6c9"/><path d="M122 20l6 8h-12zM154 17l6 9h-12z" fill="#7d5ba6"/><path d="M133 60V48a4 4 0 0 1 8 0v12z" fill="#6b5a44"/><path d="M120 38h4v5h-4zM148 36h4v5h-4zM136 38h4v5h-4z" fill="#f6e08a"/>' },
+  /* AN DER QUELLE (E27) - Wasser, das aus dem Hang tritt, und ein Hang
+     dahinter. Dieselbe Bauweise wie die anderen: Himmel oben, Horizont
+     bei 34, die Mitte frei fuer die neun Plaetze. */
+  "An der Quelle": {
+    ton:'#e4f1ef',
+    bild:'<path d="M0 0h160v34H0z" fill="#cde6ea"/><path d="M0 22h160v12H0z" fill="#dcf0f2"/>'
+      + '<path d="M0 34c22-9 40-13 64-9s46 10 96 4v10H0z" fill="#7fa98c"/>'
+      + '<path d="M0 44h160v46H0z" fill="#9cc2a6"/>'
+      + '<path d="M0 58c26 5 46-5 76-2s50 7 84 3v31H0z" fill="#aed1b6"/>'
+      + '<path d="M96 38c14-6 30-6 44 2 10 6 16 16 20 28H92c-4-12 0-24 4-30z" fill="#8aa5a0"/>'
+      + '<path d="M104 44c10-4 22-4 32 2 7 4 12 11 15 20h-50c-3-9 0-18 3-22z" fill="#9db7b2"/>'
+      + '<path d="M112 62c4 0 6 3 6 6s-2 5-6 5-6-2-6-5 2-6 6-6z" fill="#dcf0f2"/>'
+      + '<path d="M112 72c6 10 14 14 26 16H96c6-4 12-8 16-16z" fill="#bfe3e6"/>'
+      + '<path d="M18 62v-9h2.4v9zM30 66v-7h2.4v7z" fill="#6b4a2c"/>'
+      + '<path d="M19 40c7 0 10 7 10 11s-4 5-10 5-10-1.5-10-5 3-11 10-11z" fill="#4f8f5f"/>'
+      + '<path d="M31 50c5 0 8 5 8 8s-3 4-8 4-8-1-8-4 3-8 8-8z" fill="#5fa06c"/>' },
   /* BEI DEN BLUMEN - die neunte Schwelle (I22). Die erste Kulisse ohne
      Landschaft: ein Beet ist gemacht, keine Gegend. Das passt zu einem
      Raum, den nicht eine Karte oeffnet, sondern das Sammeln selbst. */

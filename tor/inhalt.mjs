@@ -47,6 +47,7 @@ import * as EN from '../src/inhalt/englisch.js';
 import * as TI from '../src/inhalt/tiere.js';
 import * as FL from '../src/inhalt/flaggen.js';
 import * as DE from '../src/inhalt/deutsch.js';
+import * as D12 from '../src/inhalt/deutsch12.js';
 import * as BP from '../tools/bildprompt.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
@@ -4726,6 +4727,7 @@ function paareAusBuendel() {
    * die es prueft. */
   const ebenen = new Set([...spiel.matchAll(/\{ id:'([a-z:]+)',\s+ueber:'/g)].map(m => m[1]));
   for (const g of DE.GRUPPEN) ebenen.add(`deutsch:${g.id}`);
+  for (const g of D12.GRUPPEN12) ebenen.add(`deutsch12:${g.id}`);
   /* Die Laenderebenen stehen nicht als Zeile da, sie werden aus den
      Kontinenten ERZEUGT (`id:\`laender:${k}\``). Also kommen ihre
      Kennungen aus derselben Quelle wie im Spiel: den geladenen Karten.
@@ -5603,35 +5605,54 @@ console.log('\n  Tor `deutsch`');
      hier werden sie gemessen - alle 966, nicht als Behauptung daneben. */
   const wortgrenze = (w) => new RegExp(
     `(^|[^\\p{L}])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\\p{L}]|$)`, 'iu');
+  /**
+   * DIE VIER SATZREGELN, EINMAL GESCHRIEBEN.
+   *
+   * Beide Abteilungen messen dasselbe und unterscheiden sich in drei
+   * Dingen: wie viele Saetze je Wort erwartet werden (drei in 3/4,
+   * einer in 1/2), welche Nachbarn als „zweites Lernwort derselben
+   * Ebene" gelten, und welche Ebene davon ausgenommen ist. Alles drei
+   * steht im Aufruf; die Rechnung steht hier. Bis E27 stand sie zweimal
+   * da, und `doppelt` hat es beim ersten Lauf gemeldet.
+   *
+   * `eng(e)` liefert die Nachbarn - bei den kleinen Woertern in 3/4 nur
+   * die anderen Formen desselben Eintrags, denn „dem", „ein", „in",
+   * „zu" sind das Bindegewebe jedes deutschen Satzes. Gibt es `null`
+   * zurueck, gilt die dritte Regel fuer diese Ebene gar nicht.
+   */
+  const pruefeSaetze = (einheiten, hole, erwartet, eng, was) => {
+    let saetze = 0, zuLang = 0, amAnfang = 0, drin = 0, fremd = 0, ohneLuecke = 0, fehlend = 0;
+    for (const e of einheiten) {
+      const liste = hole(e.wort);
+      if (liste.length !== erwartet) { fehlend++; continue; }
+      for (const s of liste) {
+        saetze++;
+        if ((s.match(/%/g) || []).length !== 1) { ohneLuecke++; continue; }
+        const woerter = s.split(/\s+/).filter(Boolean);
+        if (woerter.length > 9) zuLang++;
+        if (woerter[0].startsWith('%')) amAnfang++;
+        if (wortgrenze(e.wort).test(s)) drin++;
+        const nachbarn = eng(e);
+        if (!nachbarn) continue;
+        for (const w of nachbarn)
+          if (w !== e.wort && wortgrenze(w).test(s)) { fremd++; break; }
+      }
+    }
+    pruefeD(!fehlend, `${fehlend} Wörter${was} haben nicht genau `
+      + `${erwartet === 1 ? 'einen Satz' : 'drei Sätze'}`);
+    pruefeD(!ohneLuecke, `${ohneLuecke} Sätze${was} haben nicht genau eine Lücke`);
+    pruefeD(!zuLang, `${zuLang} Sätze${was} sind länger als neun Wörter`);
+    pruefeD(!amAnfang, `${amAnfang} Sätze${was} haben die Lücke am Satzanfang — `
+      + 'der Satzanfang verrät die Großschreibung');
+    pruefeD(!drin, `${drin} Sätze${was} enthalten ihr eigenes Zielwort`);
+    pruefeD(!fremd, `${fremd} Sätze${was} enthalten ein zweites Lernwort derselben Ebene`);
+    return saetze;
+  };
+
   const derGruppe = new Map(DE.GRUPPEN.map(g =>
     [g.id, DE.einheitenVon(g.id).map(e => e.wort)]));
-  let saetze = 0, zuLang = 0, amAnfang = 0, drin = 0, fremd = 0, ohneLuecke = 0, fehlend = 0;
-  for (const e of DE.EINHEITEN) {
-    const liste = DE.saetzeZu(e.wort);
-    if (liste.length !== 3) { fehlend++; continue; }
-    for (const s of liste) {
-      saetze++;
-      if ((s.match(/%/g) || []).length !== 1) { ohneLuecke++; continue; }
-      const woerter = s.split(/\s+/).filter(Boolean);
-      if (woerter.length > 9) zuLang++;
-      if (woerter[0].startsWith('%')) amAnfang++;
-      if (wortgrenze(e.wort).test(s)) drin++;
-      /* Bei den kleinen Woertern im Satz gilt die dritte Satzregel nur
-         innerhalb DERSELBEN Wortfamilie - „dem", „ein", „in", „zu" sind
-         das Bindegewebe jedes deutschen Satzes. Die Begruendung steht im
-         Kopf von `deutsch-saetze.js`; hier steht die Messung. */
-      const eng = e.gruppe === 'flektiert' ? e.paar : derGruppe.get(e.gruppe);
-      for (const w of eng)
-        if (w !== e.wort && wortgrenze(w).test(s)) { fremd++; break; }
-    }
-  }
-  pruefeD(!fehlend, `${fehlend} Wörter haben nicht genau drei Sätze`);
-  pruefeD(!ohneLuecke, `${ohneLuecke} Sätze haben nicht genau eine Lücke`);
-  pruefeD(!zuLang, `${zuLang} Sätze sind länger als neun Wörter`);
-  pruefeD(!amAnfang, `${amAnfang} Sätze haben die Lücke am Satzanfang — `
-    + 'der Satzanfang verrät die Großschreibung');
-  pruefeD(!drin, `${drin} Sätze enthalten ihr eigenes Zielwort`);
-  pruefeD(!fremd, `${fremd} Sätze enthalten ein zweites Lernwort derselben Ebene`);
+  const saetze = pruefeSaetze(DE.EINHEITEN, DE.saetzeZu, 3,
+    (e) => e.gruppe === 'flektiert' ? e.paar : derGruppe.get(e.gruppe), '');
 
   /* KEIN PROFIL SIEHT MEHR ALS VIER WELTEN.
    *
@@ -5673,6 +5694,93 @@ console.log('\n  Tor `deutsch`');
     console.log('    Welten je Profil: ' + Object.entries(jeProfil).sort()
       .map(([w, s]) => `${w} ${s.size}`).join(' · ') + ' (erlaubt 4)');
   }
+
+  /* ===== UND DASSELBE FUER DIE WIEDERHOLUNG 1/2 (E27) ==================
+   *
+   * Eigene Referenzdatei, eigenes grobes Sieb, dieselbe Rechnung in
+   * beide Richtungen: jedes Wort aus `deutsch12.js` muss in der
+   * amtlichen Liste stehen, und die ZAHLEN sorgen fuer die
+   * Gegenrichtung.
+   *
+   * DREI ARTEFAKTE des Auszugs, und das dritte gibt es in 3/4 nicht:
+   * die Kopf- und Fusszeile des PDF steht MITTEN in der Liste, weil die
+   * Seite zwischen „Pflanze" und „Quelle" umbricht. Ein Sieb, das sie
+   * mitliest, liest das Papier und nicht das Dokument. */
+  const roh12 = fs.readFileSync(new URL('../docs/referenz/ISB-Grundwortschatz-12.txt',
+    import.meta.url), 'utf8');
+  const text12 = roh12
+    .replace(/Erg[^\n]*LehrplanPLUS/g, ' ').replace(/Seite \d+ von \d+/g, ' ')
+    .replace(/(\p{L})\s*-\s*\n\s*(\p{L})/gu, '$1$2')
+    .replace(/\s+/g, ' ')
+    .replace(/(?<=[ ,:(]|^)(\p{L}) (\p{Ll}{2,})/gu, '$1$2');
+  const inReferenz12 = new Set(text12.match(/[\p{L}äöüßÄÖÜ]+/gu) || []);
+  const fehlen12 = D12.EINHEITEN12.filter(e => !inReferenz12.has(e.wort));
+  pruefeD(!fehlen12.length, `${fehlen12.length} Wörter stehen in deutsch12.js, aber nicht `
+    + `in der amtlichen Liste 1/2: ${fehlen12.slice(0, 8).map(e => e.wort).join(', ')}`);
+
+  /* DIE ZAHLEN. 245 Eintraege und 244 verschiedene Schreibungen - der
+     Unterschied ist „suchen", das die Liste zweimal fuehrt. Beide Zahlen
+     stehen hier, weil sie verschiedene Dinge heissen und eine allein die
+     andere verdecken wuerde. */
+  const eintraege12 = D12.GRUPPEN12.reduce((n, g) => n + g.woerter.length, 0);
+  /* Ein EINTRAG ist eine Zeile der Liste („spielen – spielt"), eine FORM
+     ist eine Schreibung darin. 245 Eintraege, davon 244 verschiedene -
+     „suchen" steht zweimal da. Beide Zahlen stehen hier, weil sie
+     verschiedene Dinge heissen und eine allein die andere verdeckt. */
+  const eintragText12 = D12.GRUPPEN12.flatMap(g => g.woerter)
+    .map(x => Array.isArray(x) ? x.join(' – ') : x);
+  pruefeD(D12.GRUPPEN12.length === 24, `${D12.GRUPPEN12.length} Ebenen statt 24 in 1/2`);
+  pruefeD(eintraege12 === 245, `${eintraege12} Einträge statt 245 in 1/2`);
+  pruefeD(new Set(eintragText12).size === 244,
+    `${new Set(eintragText12).size} verschiedene Einträge statt 244 in 1/2`);
+  pruefeD(D12.EINHEITEN12.length === 278,
+    `${D12.EINHEITEN12.length} Lerneinheiten statt 278 in 1/2`);
+
+  /* ZWEI ABTEILUNGEN, und die Aufteilung ist gemessen und nicht gewaehlt:
+     auf dem Zielgeraet stehen einundzwanzig Kacheln ins Bild. Wer eine
+     Ebene aus der kleinen in die grosse Abteilung schiebt, sprengt die
+     Wand - und saehe es nur, wenn `passt` die Wand ansieht. */
+  for (const a12 of D12.ABTEILUNGEN) {
+    const n = D12.GRUPPEN12.filter(g => g.abteilung === a12.id).length;
+    pruefeD(n <= 21, `die Abteilung „${a12.titel}" hat ${n} Ebenen — `
+      + 'auf dem Zielgerät stehen 21 Kacheln ins Bild');
+  }
+  const ohneAbteilung = D12.GRUPPEN12.filter(g =>
+    !D12.ABTEILUNGEN.some(a12 => a12.id === g.abteilung));
+  pruefeD(!ohneAbteilung.length, `${ohneAbteilung.length} Ebenen in 1/2 gehören zu `
+    + 'keiner Abteilung');
+
+  const kennungen12 = D12.EINHEITEN12.map(e => e.id);
+  pruefeD(new Set(kennungen12).size === kennungen12.length,
+    'eine Lerneinheit in 1/2 kommt zweimal vor — zwei Leitner-Stände für dasselbe Wort');
+
+  for (const g of D12.GRUPPEN12)
+    pruefeD(!!D12.REGELN12[g.id], `die Ebene „${g.titel}" in 1/2 hat keine Regel`);
+  const ohneRegel12 = D12.EINHEITEN12.filter(e => !e.regel);
+  pruefeD(!ohneRegel12.length, `${ohneRegel12.length} Lerneinheiten in 1/2 haben keine Regel`);
+
+  const schlecht12 = D12.EINHEITEN12.filter(e => { const v = D12.verschreiber12(e);
+    return v.length !== 3 || new Set(v).size !== 3 || v.includes(e.wort); });
+  pruefeD(!schlecht12.length, `${schlecht12.length} Wörter in 1/2 haben keine drei `
+    + `sauberen falschen Schreibweisen (z. B. „${(schlecht12[0] || {}).wort}")`);
+
+  /* DIE VIER SATZREGELN, noch einmal - und mit EINER Ausnahme, die
+     benannt ist: „Wörter, die oft kommen" sind das Bindegewebe jedes
+     deutschen Satzes („der", „und", „ist", „auf"). Ein Satz ohne ein
+     zweites dieser Woerter waere kein Satz mehr. Dieselbe Ausnahme wie
+     bei den kleinen Woertern in 3/4, und sie steht hier und nicht als
+     stille Luecke im Zaehler. */
+  const derGruppe12 = new Map(D12.GRUPPEN12.map(g =>
+    [g.id, D12.einheitenVon(g.id).map(e => e.wort)]));
+  const s12 = pruefeSaetze(D12.EINHEITEN12, D12.saetzeZu12, 1,
+    (e) => e.gruppe === 'haeufig' ? null : derGruppe12.get(e.gruppe), ' in 1/2');
+
+  console.log(`    Grundwortschatz 1/2: ${eintraege12} Einträge in `
+    + `${D12.GRUPPEN12.length} Ebenen (${D12.ABTEILUNGEN.map(a12 =>
+        `${a12.titel} ${D12.GRUPPEN12.filter(g => g.abteilung === a12.id).length}`).join(' · ')}), `
+    + `${D12.EINHEITEN12.length} Lerneinheiten — jede in der amtlichen Liste belegt`);
+  console.log(`    ${s12} Lückensätze gemessen: höchstens neun Wörter, Lücke nie am `
+    + 'Anfang, kein zweites Lernwort derselben Ebene (außer bei den häufigen Wörtern)');
 
   console.log(`    Grundwortschatz 3/4: ${eintraege} Einträge in ${DE.GRUPPEN.length} Ebenen, `
     + `${DE.EINHEITEN.length} Lerneinheiten — jede in der amtlichen Liste belegt`);

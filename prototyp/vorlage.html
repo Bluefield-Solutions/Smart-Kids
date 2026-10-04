@@ -759,6 +759,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * Wand liefe nach unten heraus. Nachgemessen, nicht vermutet. */
 @media (min-height:441px) and (max-width:780px){
   .wahl.ebenen:has(> :nth-child(15))>*{flex:0 0 150px}
+  /* UND AB SIEBZEHN noch eine Stufe (E27). Die Wiederholung 1/2 bringt
+     siebzehn Ebenen in die Abteilung „Hoeren und Silben" - zwei mehr,
+     als die Zeile darueber traegt. Gemessen auf 700 x 850: mit 150
+     Punkten sind es vier Spalten und FUENF Reihen, die letzte Kachel
+     („Doppelte Mitlaute") lag unter dem Rand. Mit 120 sind es fuenf
+     Spalten (5 x 120 + 4 x 16 = 664 in 668) und vier Reihen.
+     Die Leiter ist damit 240 - 200 - 150 - 120, und jede Sprosse ist an
+     der Zahl gemessen, die sie noetig gemacht hat: elf, fuenfzehn,
+     siebzehn. */
+  .wahl.ebenen:has(> :nth-child(17))>*{flex:0 0 120px}
 }
 /* ---- Die Kachelsprache (R2, Fassung „B · Bild" auf Weiss) -------------
    Auf weissem Grund traegt nicht mehr die Flaeche, sondern der RAND: 26 %
@@ -2477,6 +2487,12 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    leaf" passt in eine Zeile, „wiper · viper" auf dem schmalsten Geraet
    nicht mehr. */
 .lautkleber{font-size:var(--s-klein);line-height:1.25;white-space:normal}
+/* Das Laenderpaar von „Was ist groesser?" (E27) - zwei Namen in einem
+   Kasten, genau wie das Lautpaar darueber. Eigene Zeile und nicht
+   `lautkleber` mitbenutzt: dort steht ein `lang`-Merkmal am Markup, und
+   ein Vorleser, der „Simbabwe" englisch ausspricht, ist schlimmer als
+   keiner. Die Masse sind dieselben, weil die Aufgabe dieselbe Form hat. */
+.paarkleber{font-size:var(--s-klein);line-height:1.25;white-space:normal}
 /* Der Farbfleck traegt IMMER einen dunklen Ring - nicht nur `white`.
    Ein Ring nur ums Weisse waere ein zweites Merkmal, an dem man „white"
    erkennt, ohne die Farbe zu kennen. Er ist rund, weil ein Quadrat auf

@@ -1,0 +1,347 @@
+/**
+ * DIE LUECKENSAETZE DER WIEDERHOLUNG 1/2 — einer je Lerneinheit.
+ *
+ * `%` ist die Luecke. Derselbe Bau und dieselben vier Regeln wie in
+ * `deutsch-saetze.js`, und dasselbe Tor prueft sie:
+ *
+ *   1. Hoechstens neun Woerter.
+ *   2. Das Zielwort steht NIE am Satzanfang.
+ *   3. Kein zweites Lernwort DESSELBEN Phaenomens im Satz.
+ *   4. Nur Woerter aus Leas Welt.
+ *
+ * EINER und nicht drei, und das ist eine Entscheidung aus Runde 13 des
+ * Verhoers: 1/2 ist AUFFRISCHUNG. Wer in der dritten Klasse „Blume"
+ * uebt, braucht nicht drei verschiedene Saetze dafuer - er braucht
+ * einmal die Gelegenheit, es richtig zu schreiben.
+ */
+export const SAETZE12 = {
+  /* --- Silben mitsprechen --------------------------------------------- */
+  Aufgabe:'Diese % ist zu schwer für mich.',
+  Auge:'Mein linkes % tut heute weh.',
+  Auto:'Vor dem Haus steht ein %.',
+  blau:'Der Himmel ist heute ganz %.',
+  Blume:'Auf dem Tisch steht eine %.',
+  'Blüte':'An dem Strauch hängt eine weiße %.',
+  'böse':'Der Nachbar schaut heute sehr % drein.',
+  braun:'Ihr Pferd ist dunkel %.',
+  Brot:'Zum Frühstück esse ich frisches %.',
+  Buch:'Dieses % habe ich schon zweimal gelesen.',
+  bunt:'Ihr Schal ist sehr %.',
+  Dose:'In der % sind noch Bonbons.',
+  Ende:'Am % der Straße wohnt mein Freund.',
+  Ente:'Am Teich sitzt eine %.',
+  Frau:'Die % am Schalter hat uns geholfen.',
+  'Gemüse':'Zum Mittagessen gibt es frisches %.',
+  'grün':'Im Frühling wird die Wiese wieder %.',
+  gut:'Dein Bild sieht wirklich % aus.',
+  Hase:'Hinter dem Zaun sitzt ein %.',
+  Hose:'Meine neue % hat zwei Taschen.',
+  Kiste:'In der % liegen alte Spielsachen.',
+  laut:'Der Nachbar hört Musik viel zu %.',
+  'Löwe':'Im Zoo brüllt der %.',
+  Name:'Wie ist dein voller %?',
+  Oma:'Meine % backt am Sonntag Kuchen.',
+  Opa:'Mein % liest jeden Morgen Zeitung.',
+  Rabe:'Auf dem Dach sitzt ein schwarzer %.',
+  Raupe:'Am Blatt kriecht eine kleine %.',
+  rot:'Ihre Mütze ist leuchtend %.',
+  Salz:'Gib bitte etwas % in die Suppe.',
+  Schaf:'Auf der Weide steht ein weißes %.',
+  Schere:'Die % liegt im obersten Fach.',
+  'schön':'Dein Bild ist wirklich sehr %.',
+  Schule:'Nach der % gehe ich zum Training.',
+  Tante:'Meine % wohnt in der Stadt.',
+  Telefon:'Das % klingelt schon wieder.',
+  Tomate:'Im Beet wächst eine dicke %.',
+  tun:'Was sollen wir jetzt %?',
+  weit:'Der Weg ist mir zu %.',
+  Wolf:'Im Wald heult ein %.',
+  Wolke:'Am Himmel steht nur eine %.',
+
+  /* --- Wörter mit er -------------------------------------------------- */
+  Bruder:'Mein großer % spielt Klavier.',
+  Feder:'Im Gras liegt eine weiße %.',
+  Fenster:'Mach bitte das % zu.',
+  Schwester:'Meine kleine % lernt gerade lesen.',
+  Winter:'Im % liegt hier oft Schnee.',
+
+  /* --- Wörter mit el -------------------------------------------------- */
+  dunkel:'Im Keller ist es sehr %.',
+  Esel:'Auf der Koppel steht ein grauer %.',
+  Gabel:'Die % liegt rechts neben dem Teller.',
+  Nadel:'Im Nähkästchen fehlt eine %.',
+  Nebel:'Am Morgen lag dichter % über dem Feld.',
+  Onkel:'Mein % kommt am Samstag zu Besuch.',
+  Pinsel:'Mit dem % male ich den Himmel.',
+  Wurzel:'Die % des Baumes ist sehr dick.',
+
+  /* --- Wörter mit en -------------------------------------------------- */
+  baden:'Im Sommer gehen wir im See %.',
+  finden:'Wir % den Schlüssel nicht mehr.',
+  haben:'Alle Kinder % heute frei.',
+  holen:'Kannst du bitte die Milch %?',
+  'hören':'Wir % im Garten einen Vogel.',
+  malen:'Die Kinder % mit Kreide.',
+  rechnen:'Im Unterricht % wir jeden Tag.',
+  reden:'Wir % leise im Bus.',
+  Regen:'Der % hat die Straße nass gemacht.',
+  rufen:'Die Kinder % laut nach dem Hund.',
+  'wünschen':'Zum Geburtstag % wir dir alles Gute.',
+
+  /* --- Wörter mit ei -------------------------------------------------- */
+  Ameise:'Über den Weg läuft eine %.',
+  Ei:'Im Nest liegt ein %.',
+  Eis:'Nach dem Essen gibt es %.',
+  fein:'Der Zucker ist sehr %.',
+  klein:'Mein Bruder ist noch %.',
+  leise:'Sprich bitte etwas %.',
+  reisen:'Im Sommer % wir nach Italien.',
+  Seife:'Die % liegt neben dem Waschbecken.',
+  Zeit:'Hast du jetzt kurz %?',
+  zwei:'Auf dem Tisch stehen % Tassen.',
+
+  /* --- Wörter mit eu -------------------------------------------------- */
+  Euro:'Das Heft kostet einen %.',
+  Leute:'Vor dem Kino stehen viele %.',
+  neu:'Mein Fahrrad ist ganz %.',
+
+  /* --- Wörter mit ng -------------------------------------------------- */
+  bringen:'Wir % dir das Buch morgen mit.',
+  eng:'Die neue Jacke ist mir zu %.',
+  Junge:'Der % von nebenan heißt Paul.',
+  Ring:'Am Finger trägt sie einen %.',
+  singen:'Im Chor % wir jeden Mittwoch.',
+
+  /* --- Wörter mit nk -------------------------------------------------- */
+  Bank:'Im Park steht eine grüne %.',
+  danken:'Wir % dir für deine Hilfe.',
+  denken:'Wir % oft an den Urlaub.',
+  krank:'Mein Bruder ist seit gestern %.',
+  trinken:'Nach dem Sport % wir viel Wasser.',
+
+  /* --- Wörter mit sp -------------------------------------------------- */
+  sparen:'Für das Fahrrad muss ich lange %.',
+  spielen:'Nach den Hausaufgaben % wir draußen.',
+  spielt:'Mein Bruder % im Verein Fußball.',
+  Sport:'Am Dienstag haben wir %.',
+  sprechen:'Im Museum % wir leise.',
+  spricht:'Meine Lehrerin % sehr deutlich.',
+
+  /* --- Wörter mit st -------------------------------------------------- */
+  Stein:'Am Ufer liegt ein flacher %.',
+  Stern:'Am Himmel leuchtet ein heller %.',
+  Stunde:'Die erste % fällt heute aus.',
+
+  /* --- Wörter mit ch -------------------------------------------------- */
+  brauchen:'Für das Bild % wir noch Farbe.',
+  hoch:'Der Turm ist sehr %.',
+  leicht:'Die Tasche ist ganz %.',
+  machen:'Was sollen wir am Wochenende %?',
+  suchen:'Wir % den Ball im Gebüsch.',
+  Woche:'Nächste % fahren wir ans Meer.',
+
+  /* --- Wörter mit sch ------------------------------------------------- */
+  frisch:'Das Brot ist noch ganz %.',
+  scheinen:'Morgen soll die Sonne wieder %.',
+  schneiden:'Mit der Schere % wir das Papier.',
+  Tasche:'Meine % ist heute sehr schwer.',
+  Tisch:'Die Lampe steht auf dem %.',
+
+  /* --- Wörter mit pf -------------------------------------------------- */
+  Kopf:'Mein % tut seit gestern weh.',
+  Pflanze:'Am Fenster steht eine grüne %.',
+
+  /* --- Wörter mit qu -------------------------------------------------- */
+  Quelle:'Im Wald entspringt eine kleine %.',
+  Quadrat:'Zeichne bitte ein großes %.',
+  Quatsch:'Du erzählst heute nur %.',
+
+  /* --- r nach dem Selbstlaut ------------------------------------------ */
+  arbeiten:'Meine Eltern % in der Stadt.',
+  antworten:'Bitte % alle Kinder leise.',
+  Birne:'Im Korb liegt eine reife %.',
+  'dürfen':'Wir % heute länger aufbleiben.',
+  darf:'Mein Bruder % noch nicht allein gehen.',
+  Garten:'Hinter dem Haus liegt unser %.',
+  lernen:'Am Nachmittag % wir für die Probe.',
+  Partner:'Such dir für das Spiel einen %.',
+  schwarz:'Ihre neue Jacke ist %.',
+  turnen:'Am Freitag % wir in der Halle.',
+  warten:'Vor dem Kino % wir auf dich.',
+  Wort:'Dieses % kenne ich noch nicht.',
+
+  /* --- Wörter mit ie -------------------------------------------------- */
+  Biene:'Auf der Blüte sitzt eine %.',
+  lieben:'Alle Kinder % diesen Film.',
+  liegen:'Die Hefte % auf dem Pult.',
+  sieben:'Im Korb sind noch % Äpfel.',
+  Wiese:'Hinter dem Hof beginnt die %.',
+  Ziege:'Am Zaun steht eine weiße %.',
+
+  /* --- Doppelte Mitlaute ---------------------------------------------- */
+  alle:'Heute sind % Kinder da.',
+  'Füller':'Mein neuer % schreibt sehr gut.',
+  Himmel:'Am % steht kein Stern.',
+  Klasse:'Unsere % fährt morgen ins Museum.',
+  'können':'Wir % das Lied schon auswendig.',
+  'müssen':'Nach dem Essen % wir aufräumen.',
+  Mutter:'Meine % holt mich um drei ab.',
+  rollen:'Die Bälle % über den Hof.',
+  sollen:'Wir % um acht zu Hause sein.',
+  Sommer:'Im % fahren wir ans Meer.',
+  Sonne:'Heute scheint die % den ganzen Tag.',
+  Wasser:'Im Glas ist kein % mehr.',
+  wollen:'Die Kinder % nach draußen.',
+
+  /* --- Von a zu ä ----------------------------------------------------- */
+  Apfel:'Im Korb liegt ein roter %.',
+  'Äpfel':'Im Korb liegen fünf rote %.',
+  Baum:'Im Hof steht ein alter %.',
+  'Bäume':'Im Park stehen viele hohe %.',
+  Gras:'Auf der Weide wächst hohes %.',
+  'Gräser':'Am Teich stehen lange %.',
+  Haus:'Unser % hat einen roten Zaun.',
+  'Häuser':'An der Straße stehen neue %.',
+  laufen:'Nach der Schule % wir nach Hause.',
+  'läuft':'Mein Hund % über die Wiese.',
+  Maus:'Im Keller raschelt eine %.',
+  'Mäuse':'Im Stroh verstecken sich zwei %.',
+  schlafen:'Im Winter % die Igel lange.',
+  'schläft':'Die Katze % auf dem Sofa.',
+
+  /* --- Verlängern hilft ----------------------------------------------- */
+  Bild:'An der Wand hängt ein großes %.',
+  Bilder:'Im Flur hängen bunte %.',
+  bleiben:'Heute % wir zu Hause.',
+  bleibt:'Mein Bruder % über Nacht hier.',
+  Bub:'Der % von nebenan heißt Max.',
+  Buben:'Zwei % spielen auf dem Hof.',
+  fragen:'Wir % die Lehrerin nach der Lösung.',
+  fragt:'Meine Schwester % immer sehr viel.',
+  Freund:'Mein bester % wohnt gegenüber.',
+  Freunde:'Am Samstag kommen meine %.',
+  geben:'Wir % dir das Heft zurück.',
+  gibt:'Meine Mutter % mir einen Apfel.',
+  gelb:'Die Blume im Beet ist %.',
+  gelbe:'Im Korb liegen drei % Zitronen.',
+  gesund:'Nach einer Woche war er wieder %.',
+  gesunde:'Zum Frühstück esse ich % Sachen.',
+  Hund:'Unser % schläft neben der Tür.',
+  Hunde:'Im Park laufen zwei %.',
+  Kind:'Jedes % bekommt ein Heft.',
+  Kinder:'Auf dem Hof spielen viele %.',
+  Kleid:'Ihr neues % ist sehr hübsch.',
+  Kleider:'Im Schrank hängen bunte %.',
+  leben:'Am Teich % viele Frösche.',
+  lebt:'Meine Oma % in der Stadt.',
+  legen:'Wir % die Hefte auf das Pult.',
+  legt:'Die Henne % jeden Morgen ein Ei.',
+  Pferd:'Auf der Koppel steht ein braunes %.',
+  Pferde:'Im Stall stehen vier %.',
+  sagen:'Wir % der Lehrerin Bescheid.',
+  sagt:'Mein Vater % immer dasselbe.',
+  schreiben:'Im Unterricht % wir eine Geschichte.',
+  schreibt:'Meine Schwester % einen langen Brief.',
+  Tag:'Heute war ein schöner %.',
+  Tage:'Noch drei % bis zu den Ferien.',
+  'üben':'Nach der Schule % wir Klavier.',
+  'übt':'Mein Bruder % jeden Abend Flöte.',
+  Weg:'Der % zum See ist sehr kurz.',
+  Wege:'Durch den Park führen schmale %.',
+  Wind:'Draußen weht ein kalter %.',
+  Winde:'Im Herbst kommen die starken %.',
+  zeigen:'Wir % dir unser neues Haus.',
+  zeigt:'Meine Lehrerin % uns die Karte.',
+
+  /* --- Wörter, die oft kommen -----------------------------------------
+     Diese Ebene ist das Bindegewebe jeder deutschen Satzes: „der", „und",
+     „ist", „auf". Die dritte Satzregel kann hier nicht gelten - ein Satz
+     ohne ein zweites dieser Woerter waere kein Satz mehr. Dieselbe
+     Ausnahme wie bei den kleinen Woertern in 3/4, und das Tor kennt sie. */
+  aber:'Ich wollte kommen, % mir fehlte die Zeit.',
+  als:'Mein Bruder ist größer % ich.',
+  also:'Es regnet, % bleiben wir daheim.',
+  auf:'Das Heft liegt % dem Tisch.',
+  aus:'Die Kinder kommen % der Schule.',
+  bei:'Wir warten % der Haltestelle.',
+  da:'Dein Freund steht schon %.',
+  das:'Wem gehört % rote Fahrrad?',
+  der:'Im Garten bellt % Hund.',
+  des:'Das Dach % Hauses ist neu.',
+  dir:'Ich helfe % gern beim Üben.',
+  dich:'Deine Oma ruft % zum Essen.',
+  die:'Auf der Wiese grasen % Pferde.',
+  doch:'Komm % endlich herein!',
+  du:'Morgen kommst % zu uns.',
+  durch:'Der Weg führt % den Wald.',
+  er:'Nach dem Training geht % heim.',
+  es:'Draußen schneit % schon wieder.',
+  'für':'Der Kuchen ist % meine Oma.',
+  her:'Komm schnell %!',
+  hinter:'Der Ball rollt % den Schrank.',
+  ich:'Heute helfe % beim Backen.',
+  im:'Die Katze schläft % Korb.',
+  in:'Das Buch liegt % meinem Zimmer.',
+  ist:'Mein Fahrrad % kaputt.',
+  ja:'Hast du Hunger? %, sehr!',
+  mit:'Wir fahren % dem Bus.',
+  nach:'Wir gehen % dem Essen spazieren.',
+  nein:'Willst du noch Saft? %, danke!',
+  nicht:'Den Hund darfst du % ärgern.',
+  nun:'Jetzt reicht es %!',
+  oder:'Willst du Saft % Wasser?',
+  schon:'Meine Schwester liest %.',
+  sie:'Nach dem Training geht % nach Hause.',
+  sind:'Alle Kinder % heute pünktlich.',
+  so:'Dein Bild gefällt mir %.',
+  'über':'Die Brücke führt % den Fluss.',
+  um:'Wir treffen uns % drei.',
+  und:'Papier % Kleber liegen bereit.',
+  was:'Sag mir, % du brauchst.',
+  weil:'Wir bleiben daheim, % es regnet.',
+  weiter:'Geh bitte noch ein Stück %.',
+  wer:'Sag mir, % das gemalt hat.',
+  wir:'Morgen fahren % ans Meer.',
+  wo:'Zeig mir, % dein Heft liegt.',
+
+  /* --- Wörter mit ß ---------------------------------------------------- */
+  'Fuß':'Mein rechter % tut weh.',
+  'groß':'Dein Bruder ist schon ziemlich %.',
+
+  /* --- Wörter mit tz --------------------------------------------------- */
+  sitzen:'Im Bus % wir ganz hinten.',
+  sitzt:'Meine Schwester % am Fenster.',
+  Katze:'Auf dem Sofa schläft unsere %.',
+  Satz:'Dieser % ist viel zu lang.',
+  'Sätze':'Schreibe bitte drei kurze %.',
+
+  /* --- Wörter mit ck --------------------------------------------------- */
+  dick:'Das Buch ist sehr %.',
+  backen:'Am Sonntag % wir einen Kuchen.',
+
+  /* --- Wörter zum Merken ----------------------------------------------- */
+  Cent:'Das Bonbon kostet zehn %.',
+  Clown:'Im Zirkus lacht der %.',
+  Computer:'Meine Mutter arbeitet am %.',
+  viel:'Nach dem Sport trinke ich %.',
+  Vase:'Die Blumen stehen in der %.',
+  Vater:'Mein % holt mich vom Training ab.',
+  Vogel:'Auf dem Ast singt ein %.',
+  vor:'Das Fahrrad steht % der Tür.',
+  Baby:'Meine Tante hat ein kleines %.',
+  Hexe:'Im Märchen wohnt eine alte %.',
+  'Frühling':'Im % blühen die ersten Blumen.',
+  gehen:'Nach dem Essen % wir spazieren.',
+  geht:'Meine Schwester % schon zur Schule.',
+  Jahr:'Nächstes % komme ich in die vierte Klasse.',
+  Uhr:'Die % im Flur steht still.',
+  Zahl:'Welche % kommt nach der neun?',
+  zahlen:'An der Kasse % wir bar.',
+  'zählen':'Die Kinder % bis zwanzig.',
+  Zahn:'Mir wackelt ein %.',
+  'Zähne':'Nach dem Essen putze ich die %.',
+  'Mädchen':'Neben mir sitzt ein %.',
+  Hai:'Im großen Becken schwimmt ein %.',
+  Kaiser:'Im Schloss wohnte früher ein %.',
+  Mai:'Im % wird es endlich warm.',
+};

@@ -188,7 +188,7 @@ Jede für sich spielbar, jede mit voller Torkette, Push und Auslieferung.
 | Etappe | Inhalt |
 |---|---|
 | **1** | Rechtschreibung 3/4: 15 Ebenen, 234 Wörter, ~700 Sätze, Buchstabentasten, Regelbegründungen, Fehlerheft, Probe Rechtschreibung |
-| **2** | Wiederholung 1/2: 24 Ebenen, 244 Wörter, 244 Sätze |
+| **2** | Wiederholung 1/2: 24 Ebenen in **zwei** Abteilungen, 245 Einträge, 278 Lerneinheiten, 278 Sätze — **gebaut (E27)** |
 | **3** | Sprache untersuchen: Wortarten, Zeitformen, Satzarten, Satzglieder, Probe Sprache untersuchen, Begriffe-Regler |
 
 
@@ -243,3 +243,82 @@ Sechs stehende Gegenproben halten das fest, alle sechs schlagen gemessen an.
   PDF-Auszugs („Geschichte, G e-⏎sicht" und „n e-⏎ben"). Sie ist **nicht**
   berichtigt worden — das Tor macht sie beim Lesen rückgängig, damit der Text
   die Quelle bleibt und nicht meine Abschrift.
+
+---
+
+## Etappe 2 — gebaut, gemessen (04.10.2026)
+
+Die Zahlen sind gezählt, nicht geschätzt; das Untertor `deutsch` rechnet sie
+bei jedem Lauf nach.
+
+| | gezählt |
+|---|---|
+| Gruppen der amtlichen Liste 1/2 | 30 |
+| davon Ebenen im Spiel | **24** (die sieben „nicht-regelhaften Besonderheiten" sind eine) |
+| Einträge | **245** |
+| verschiedene Einträge | **244** — „suchen" steht zweimal da |
+| Lerneinheiten | **278** — ein Paar wie „gehen – geht" sind zwei |
+| Lückensätze | **278**, einer je Einheit |
+| falsche Schreibweisen | 834, drei je Einheit |
+
+**Das Konzeptpapier sagte „244 Wörter".** Das war die Zahl der verschiedenen
+Einträge, und sie ist richtig — sie heißt nur etwas anderes als „so viel ist zu
+lernen". Beides steht jetzt da.
+
+### Zwei Abteilungen, und der Schnitt ist gemessen
+
+Auf dem Zielgerät (844 × 390) stehen **sieben Kacheln je Reihe und drei Reihen
+ins Bild — einundzwanzig.** Vierundzwanzig Ebenen in einer Wand wären unten
+herausgelaufen, genau wie die Rechtschreibwand in E26b. Der Schnitt ist deshalb
+keiner von mir, sondern der der amtlichen Liste selbst: sie führt ihre Gruppen
+unter drei Überschriften.
+
+| Abteilung | Ebenen | aus der amtlichen Überschrift |
+|---|---|---|
+| **Hören und Silben** | 17 | „Nutzung des phonologischen und des silbischen Prinzips" |
+| **Ableiten und Merken** | 7 | „Nutzung des morphologischen Prinzips" · „Schreibungen, für die nicht auf Strategien zurückgegriffen wird" |
+
+Die Deutsch-Welt hat damit **vier Kacheln** statt zwei: Rechtschreibung, Hören
+und Silben, Ableiten und Merken, Probe. Der Backlog-Eintrag „die Deutsch-Wand
+trägt zwei Kacheln und wirkt leer" ist damit erledigt.
+
+### Die Liste widerspricht sich wieder — diesmal zweimal
+
+Sie sagt von sich: *„Jedes Wort des Grundwortschatzes ist nur einem besonderen
+Übungsschwerpunkt zugeordnet."* Nachgezählt stimmt das hier **zweimal nicht**:
+
+- **„suchen"** steht unter `<en>` **und** unter `<ch>`.
+- **„spielen"** steht als Grundform von „spielen – spielt" unter `<Sp>` und
+  noch einmal für sich unter `<ie>`.
+
+`HEIMAT12` löst das nach **einem** Satz statt von Fall zu Fall: ein Wort gehört
+dorthin, wo seine **eigene** Schwierigkeit liegt. Die Endung -en haben auch
+„brauchen" und „machen"; das `<ch>` in „suchen" ist das, was man sich merken
+muss. Und „spielen – spielt" trägt mehr als „spielen" allein.
+
+### Was geteilt wird statt zweimal dazustehen
+
+`doppelt` hat beim ersten Lauf drei echte Dopplungen gemeldet, und alle drei
+sind **zusammengelegt**, nicht eingetragen:
+
+- die Maschine, die aus einem Wort drei falsche Schreibweisen macht
+  (`verschreiberMit` in `deutsch.js`),
+- die neun Umformungszeilen für Phänomene, die es in beiden Abteilungen gibt
+  (ie, tz, ck, ß, doppelte Mitlaute, Umlautung, Verhärtung, Mitsprechen,
+  r nach dem Selbstlaut),
+- die Prüfung der vier Satzregeln in `tor/inhalt.mjs` (`pruefeSaetze`).
+
+Eingetragen wurden nur die **Datentabellen**, die sich allein in der Form
+gleichen — und jede mit einem Satz, warum.
+
+### Ein eigener Raum: An der Quelle
+
+Die 24 Ebenen führen **nicht** in den Märchenraum. Dort führen schon sechzehn
+hinein; mit vierzig wäre der Raum nach dem dritten Tag voll und die restlichen
+siebenunddreißig Ebenen gäben nichts mehr. Ein Raum ist ein Versprechen auf
+drei Tiere.
+
+**„An der Quelle"** mit Ente, Elch und Eidechse — den letzten drei gemalten
+Tieren ohne Raum. Und „Quelle" steht in der amtlichen Liste 1/2, unter den
+Wörtern mit `<Qu>`: der Zusammenhang ist wieder keiner, der erfunden werden
+musste.
