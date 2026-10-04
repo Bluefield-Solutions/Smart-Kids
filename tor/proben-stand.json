@@ -130,6 +130,11 @@
       "zeit": "2026-10-04",
       "s": 21
     },
+    "eine Wortartebene wird nicht mehr auf die Tiefe geschnitten": {
+      "commit": "5186055768b105e506d413046df65dc3d84e06ac",
+      "zeit": "2026-10-04",
+      "s": 21
+    },
     "der Vorlauf einer Probe legt den ganzen Vorrat aus": {
       "commit": "017f7c7529c24986e6449ae1ffab6d068bfef8c1",
       "zeit": "2026-10-04",
@@ -279,6 +284,11 @@
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
       "zeit": "2026-09-11",
       "s": 108
+    },
+    "ein Lebensraum nennt ein Tier ohne Zeichnung": {
+      "commit": "5186055768b105e506d413046df65dc3d84e06ac",
+      "zeit": "2026-10-04",
+      "s": 19
     },
     "einem vollen Lebensraum fehlt die Kulisse": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
