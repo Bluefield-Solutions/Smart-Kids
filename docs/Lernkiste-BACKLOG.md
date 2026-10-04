@@ -9043,3 +9043,65 @@ Der Lauf ist dabei länger geworden (749 s am 11.09., 1054 s heute), und zwar
 an einer Stelle: der Durchgang spielt jetzt **207 Ebenen × Profile** statt
 zuvor rund 170 — die sechzehn Deutsch-Ebenen wurden vorher übersprungen, weil
 er an ihnen abbrach. Die Zahl in `CLAUDE.md` ist nachgezogen.
+
+---
+
+## E26a · Vierzehn Abzeichen unter dem Fingermaß — und ein Vorschlag von mir, der die falsche Form hatte (04.10.2026)
+
+Offen stand: *„`min-height:0` an `.abz` durch `min-height:44px` ersetzen und
+messen, was das kostet."* Das Messen hat zuerst den Vorschlag erledigt.
+
+### Warum die vorgeschlagene Zeile falsch gewesen wäre
+
+Im breiten Format füllt das Raster seine Seite (`min-height:100%` mit
+`grid-auto-rows:1fr`), und `.buchraster` trägt dort `overflow-y:auto`. Eine
+Untergrenze von 44 hätte die Zellen nicht größer gemacht, sondern **das Raster
+über seinen Kasten hinausgeschoben** — und damit die Wand zum Rollen gebracht.
+
+`passt` zählt einen Vorfahren mit `auto|scroll` ausdrücklich zu den
+abschneidenden: *„`overflow:auto` zählt nicht als Lösung — ein Kind scrollt
+nicht in einer Liste, von der es nicht weiß, dass sie weitergeht."* Der
+Vorschlag hätte einen stillen Fehler in einen lauten verwandelt, ja — aber den
+lauten dann als Lösung ausgegeben. Zwei Dinge, die nicht zusammengehören.
+
+### Was stattdessen zu tun war: die Spaltenzahl
+
+Gemessen auf **667 × 375**, dem kleinsten der sieben Formate: Raster 481 × 229,
+mit 119 Mindestbreite **drei Spalten**, vierzehn Abzeichen also **fünf Reihen**
+— 39 Punkte je Zelle. Vier Spalten sind vier Reihen: **(229 − 3 × 8) / 4 = 51
+Punkte**, die Zelle 114 statt 155 breit.
+
+Dieselbe Mindestbreite, die das Hochformat schon trägt: **104**. Und auf
+**844 × 390, dem Zielgerät, ändert sie nichts** — dort sind 628 Punkte Raster,
+und 104 wie 119 ergeben beide fünf Spalten. Nachgemessen, nicht angenommen;
+eine Zeile, die das Zielgerät anfasst, wäre hier die falsche gewesen.
+
+Beide Engen stehen jetzt in **einem** Block (`max-width:560px, max-height:440px`)
+statt in zwei: dieselbe Zahl, dieselbe Rechnung, nur ein anderes Ergebnis je
+Format. Was zweimal dasteht, veraltet einmal — Regel 6.
+
+| Größe | vorher | nachher |
+|---|---|---|
+| 667 × 375 (kleinstes) | 3 Spalten, **39 pt** | 4 Spalten, **51 pt** |
+| 844 × 390 (Zielgerät) | 5 Spalten, 76 pt | **unverändert** |
+| 390 × 844 | 3 Spalten, 86 pt | unverändert |
+| 700 × 850 · 820 × 1180 · 1180 × 820 | 123 / 104 / 123 pt | unverändert |
+
+### Und der eigentliche Befund: ein Hinweis zum dritten Mal
+
+Der erste Lauf mit dem neuen Kapitel meldete **vierzehn Hinweise**, alle
+„39 pt", alle auf derselben Größe. Vierzehn Zeilen, die ein Mensch überliest,
+weil sie dasselbe sagen.
+
+`passt` kennt dafür eine Liste: `SCHMAL_IST_FEHLER`. Darin stehen der
+**Aufkleber** („stand ein Jahr lang als Hinweis im Bericht") und der **Platz in
+der Landschaft** („dreimal in einer Runde, jedes Mal habe ich es an der eigenen
+Messung gesehen und nicht am Tor"). Das Abzeichen ist der dritte Fall derselben
+Art: vierzehn gleiche Kästen in einem Raster, das seine Höhe aus dem Fenster
+nimmt. Fällt eines unter das Maß, sind nicht vierzehn Gestaltungen getroffen
+worden, **sondern eine Spaltenzahl ist schiefgegangen.**
+
+Es steht jetzt in der Liste. Zwei stehende Gegenproben hängen an derselben
+CSS-Zeile und prüfen die zwei Arten, auf die ein Raster zerbricht:
+**heraushängen** (Hochformat, „über den Rand") und **zusammenrutschen**
+(kleinstes Gerät, „ein Abzeichen muss 44 messen").

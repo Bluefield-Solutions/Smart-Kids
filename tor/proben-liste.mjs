@@ -941,6 +941,24 @@ export const PROBEN = [
     ersatz:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}',
     an:{ ...DIST, text:'minmax(160px,1fr)' }, sagt:'über den Rand' },
 
+  /* Und DIESELBE Zeile, eine Groesse weiter (E26a) - mit einem ganz
+   * anderen Befund. Auf dem kleinsten Geraet faellt nichts heraus: das
+   * Raster fuellt im breiten Format seine Hoehe, also wird nichts
+   * abgeschnitten, sondern alles flach. Fuenf Reihen statt vier sind 39
+   * Punkte je Zelle, noetig sind 44 - und seit dieser Runde ist das ein
+   * FEHLER und kein Hinweis.
+   *
+   * Zwei Proben an einer Zeile, und beide sind noetig: nimmt man die
+   * eine weg, bliebe die Haelfte der Zusage unbewiesen. Es sind zwei
+   * verschiedene Arten, an denen ein Raster zerbricht - heraushaengen
+   * und zusammenrutschen -, und das Tor hat fuer jede eine eigene
+   * Meldung. `--teil=1/5` ist iPhone SE quer. */
+  { n:'alle vierzehn Abzeichen rutschen unter das Fingermaß', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:V,
+    such:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}',
+    ersatz:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}',
+    an:{ ...DIST, text:'minmax(130px,1fr)' }, sagt:'ein Abzeichen muss' },
+
   /* --- lesbarkeit --------------------------------------------------- */
   // Die DECKUNG der Vorfahren gehoert in die Kontrastrechnung.
   //

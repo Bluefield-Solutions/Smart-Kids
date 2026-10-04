@@ -4462,33 +4462,13 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
      Zellen. Mit vier festen Spalten standen daneben zwei leere. */
   .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}
   .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.86)}
-  /* UND DIE ABZEICHENWAND, aus demselben Grund und mit demselben
-     Werkzeug (E26). Gemessen auf 390 x 844: das Raster ist hier 366
-     Punkte breit, und mit einer Mindestbreite von 119 sind das ZWEI
-     Spalten. Vierzehn Abzeichen gehen darin in sieben Reihen auf -
-     731 Punkte in 557 verfuegbaren. Vier Abzeichen („Schule",
-     „Hauptstaedte", „Alphabet", „Minus") standen damit ausserhalb des
-     Kastens, und der Kasten schneidet ab: `.rollen.buch.kapitel` traegt
-     `overflow:hidden`, das Raster rollt auf dieser Breite nicht. Sie
-     waren nicht klein oder halb verdeckt, sie waren NICHT DA.
-     Drei Spalten sind fuenf Reihen: mit dem knapperen Polster (eine
-     Zeile weiter unten) 478 Punkte in 557. Die Zelle wird dabei von
-     177 auf 114 Punkte schmal und von 94 auf 86 Punkte flach - weit
-     ueber den 44, die ein Daumen braucht.
-     104 und nicht 114: `auto-fill` rechnet mit dem Zwischenraum. Die
-     Mindestbreite ist auch hier die Spaltenzahl, rueckwaerts
-     geschrieben - und sie gilt nur bis 560 Punkte Breite, weil das
-     Raster ab 481 Punkten von selbst drei Spalten stellt.
-     Fuenf Reihen tragen fuenfzehn Abzeichen; das sechzehnte braucht
-     eine sechste Reihe (576 in 557) - dann ist hier wieder zu messen.
-     `passt` sieht das Kapitel seit dieser Runde selbst an. */
-  .rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
-  /* UND DAS POLSTER, wie eine Zelle weiter oben - und aus demselben
-     nachgemessenen Grund: die schmalere Zelle laesst den Namen
-     zweizeilig werden, und damit waechst die Zelle von 94 auf 110
-     Punkte. Fuenf Reihen sind dann 599 statt 478 - immer noch zwei
-     Abzeichen draussen. Die Spalte allein reicht also NICHT, das ist
-     gemessen und keine Vorsicht.
+  /* DAS POLSTER DER ABZEICHENZELLE, und nur im Hochformat. Die
+     Spaltenzahl steht weiter unten in einem eigenen Block (E26); hier
+     steht die zweite Haelfte derselben Rechnung, denn die Spalte allein
+     reicht NICHT: die schmalere Zelle laesst den Namen zweizeilig
+     werden, die Zelle waechst von 94 auf 110 Punkte, und fuenf Reihen
+     sind dann 599 statt 478 - immer noch zwei Abzeichen ausserhalb der
+     Seite. Gemessen und keine Vorsicht.
      Das Polster und nicht das Zeichen: 44 Punkte Zeichen sind das
      einzige, was Fiona von einem Abzeichen liest.
      `.abzeichen` steht mit im Waehler, weil die Zeile fuer alle Abzeichen
@@ -4551,6 +4531,51 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .rollen.buch .raumgitter{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}
   .rollen.buch .raumzelle span{font-size:calc(var(--t-name) * 0.78)}
   .rollen.buch .raumzelle .raumzeichen{width:20px;height:20px}
+}
+/* ===== DIE ABZEICHENWAND AUF DEN ENGEN FORMATEN (E26) =====
+ *
+ * EIN Block fuer beide Engen, und das ist der Witz daran: die
+ * Mindestbreite ist dieselbe, die Rechnung dahinter ist dieselbe, und
+ * nur die Zahl der Spalten faellt verschieden aus. Zwei Bloecke waeren
+ * zwei Fassungen, von denen eine beim naechsten Umbau veraltet - was
+ * zweimal dasteht, veraltet einmal (Regel 6).
+ *
+ * SCHMAL UND HOCH, gemessen auf 390 x 844: das Raster ist 366 Punkte
+ * breit, mit 119 Mindestbreite sind das ZWEI Spalten. Vierzehn
+ * Abzeichen gehen darin in sieben Reihen auf - 731 Punkte in 557
+ * verfuegbaren. Vier Abzeichen („Schule", „Hauptstaedte", „Alphabet",
+ * „Minus") standen ausserhalb des Kastens, und der Kasten schneidet ab:
+ * `.rollen.buch.kapitel` traegt `overflow:hidden`, das Raster rollt auf
+ * dieser Breite nicht. Sie waren nicht klein und nicht halb verdeckt,
+ * sie waren NICHT DA. Drei Spalten sind fuenf Reihen: mit dem knapperen
+ * Polster (eine Zeile weiter unten) 478 Punkte in 557. Die Zelle wird
+ * dabei von 177 auf 114 Punkte schmal und von 94 auf 86 flach.
+ * Die Spalte ALLEIN reicht nicht, das ist nachgemessen: die schmalere
+ * Zelle laesst den Namen zweizeilig werden, die Zelle waechst von 94 auf
+ * 110, fuenf Reihen sind 599 - immer noch zwei Abzeichen draussen.
+ * Fuenf Reihen tragen fuenfzehn Abzeichen; das sechzehnte braucht eine
+ * sechste (576 in 557) - dann ist hier wieder zu messen.
+ *
+ * BREIT UND KURZ, gemessen auf 667 x 375, dem kleinsten der sieben
+ * Formate: 481 Punkte breit, 229 hoch, mit 119 Mindestbreite DREI
+ * Spalten und fuenf Reihen. Hier faellt nichts heraus - das Raster
+ * fuellt im breiten Format seine Hoehe (`min-height:100%` mit
+ * `grid-auto-rows:1fr`), also wird nichts abgeschnitten, sondern alles
+ * FLACH: 39 Punkte je Zelle, noetig sind 44. Nicht ein Abzeichen,
+ * sondern alle vierzehn. Vier Spalten sind vier Reihen:
+ * (229 - 3 x 8) / 4 = 51 Punkte, die Zelle 114 statt 155 breit.
+ *
+ * 104 UND NICHT 114: `auto-fill` rechnet mit dem Zwischenraum. Die
+ * Mindestbreite ist auch hier die Spaltenzahl, rueckwaerts geschrieben.
+ * Auf 844 x 390 - dem ZIELGERAET - aendert sie nichts: dort sind 628
+ * Punkte Raster, und 104 wie 119 ergeben beide fuenf Spalten.
+ * Nachgemessen, nicht angenommen; eine Zeile, die das Zielgeraet
+ * anfasst, waere hier die falsche.
+ *
+ * `passt` sieht das Kapitel seit E26 selbst an - und ein Abzeichen unter
+ * 44 Punkten ist dort seit E26a ein FEHLER und kein Hinweis. */
+@media (max-width:560px), (max-height:440px){
+  .rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
 }
 /* Die Zelle, bei der es weitergeht - dieselbe Sprache wie beim offenen
    Kapitelreiter: sie steht auf ihrer Kante und traegt volle Tinte. Kein

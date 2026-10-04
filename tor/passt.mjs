@@ -164,7 +164,24 @@ const SUCHE = () => {
      * Messung gesehen und nicht am Tor. Ein Hinweis, den man nur findet,
      * wenn man ohnehin schon sucht, ist kein Tor - dieselbe Lehre wie
      * bei den Abc-Karten darueber, nur ein Jahr spaeter. */
-    const SCHMAL_IST_FEHLER = { aufkleber: 'ein Aufkleber', platz: 'ein Platz in der Landschaft' };
+    /* Und zum DRITTEN Mal dieselbe Lehre - das ABZEICHEN (E26a).
+     *
+     * Es ist wie die beiden darueber nie aus gutem Grund schmal:
+     * vierzehn gleiche Kaesten in einem Raster, das seine Hoehe aus dem
+     * Fenster nimmt (`min-height:100%` mit `grid-auto-rows:1fr`). Faellt
+     * eines unter das Mass, sind nicht vierzehn Gestaltungen getroffen
+     * worden, sondern eine Spaltenzahl ist schiefgegangen.
+     *
+     * Und genau so kam es: in der Runde, die das Kapitel ueberhaupt erst
+     * in dieses Tor geholt hat, meldete der allererste Lauf VIERZEHN
+     * Hinweise - alle auf 667 x 375, alle „39 pt". Vierzehn Zeilen, die
+     * ein Mensch ueberliest, weil sie dasselbe sagen.
+     *
+     * Dreimal derselbe Weg: Abc-Karten ein Jahr lang als Hinweis, der
+     * Platz in der Landschaft dreimal in einer Runde, jetzt die
+     * Abzeichen. Was aus einem Raster kommt, ist ein FEHLER. */
+    const SCHMAL_IST_FEHLER = { aufkleber: 'ein Aufkleber', platz: 'ein Platz in der Landschaft',
+      abz: 'ein Abzeichen' };
     const hart = Object.keys(SCHMAL_IST_FEHLER).find(k => el.classList.contains(k));
     const schmal = Math.min(eb.width, eb.height);
     if (hart && schmal < 44 - 0.5)
