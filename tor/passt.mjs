@@ -824,6 +824,28 @@ const SUCHE = () => {
                reihen: oben.length };
     }
   }
+  /* UND DIE NAMEN AUF DER ABZEICHENWAND (E28).
+   *
+   * Dieselbe Waisen-Rechnung wie an der Ebenenwahl weiter unten, nur an
+   * einer anderen Stelle - und hier braucht es keine Klone: die vierzehn
+   * Abzeichen stehen wirklich da, jedes mit seinem Namen. Gefunden hat
+   * die drei Waisen auf dem iPad quer der BLICK und nicht dieses Tor;
+   * `.abz .was` stand in keiner seiner Auswahlen.
+   *
+   * Die Grenze ist dieselbe wie dort und steht deshalb auch nur einmal
+   * im Kopf: ein Rest unter einem Fuenftel des Kastens sieht aus wie ein
+   * Fehler. Der Kasten steht in der Meldung mit, damit die Zahl ihre
+   * Messstelle mitbringt. */
+  for (const na of document.querySelectorAll('.schirm.da .abz .was')) {
+    const rg = document.createRange(); rg.selectNodeContents(na);
+    const zeilen = [...rg.getClientRects()].map(x => x.width);
+    if (zeilen.length < 2) continue;
+    const rest = zeilen[zeilen.length - 1];
+    const kasten = na.getBoundingClientRect().width || 1;
+    if (rest / kasten < 0.2) raus.push(`das Abzeichen „${na.textContent.trim()}" `
+      + `bricht mit ${Math.round(rest)} von ${Math.round(kasten)} pt in der letzten `
+      + 'Zeile — ein einzelner Buchstabe sieht aus wie ein Fehler');
+  }
   return { raus, klein, zu, ueber, stempel, material, karte, bewacht, verdeckt,
            beschnitten, zeichen, ohneBild, wand, kleber, album };
 };

@@ -1439,6 +1439,16 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
    BILD: das Zeichen ist das einzige, was Fiona von einem Abzeichen
    liest. */
 .abz svg{flex:0 0 auto;width:44px;height:44px}
+/* `hyphens:auto` STEHT HIER NICHT, und das ist eine Messung und keine
+ * Meinung (E28). Drei Namen brechen auf dem iPad quer mit einem Rest
+ * von neun bis siebzehn Prozent in der zweiten Zeile um - „Stadtstaate"
+ * und ein einzelnes „n". Die naheliegende Antwort waere die Trennung
+ * nach den Regeln der Sprache (`lang="de"` steht am Rumpf). Probiert
+ * und nachgemessen: dieses Chromium bringt kein deutsches
+ * Trennwoerterbuch mit, die Zeile aendert hier NICHTS. Eine Regel, die
+ * auf dem Geraet vielleicht wirkt und in keinem Tor messbar ist, ist
+ * genau die, von der niemand merkt, wenn sie aufhoert zu wirken.
+ * Geholfen hat stattdessen die Spaltenzahl, eine Datei weiter unten. */
 .abz .was{line-height:1.15;font-size:var(--s-klein);font-weight:600;
   overflow-wrap:anywhere}
 /* Was noch fehlt, als ZAHL in der Ecke statt als Satz in der Zeile.
@@ -4641,6 +4651,68 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
  * 44 Punkten ist dort seit E26a ein FEHLER und kein Hinweis. */
 @media (max-width:560px), (max-height:440px){
   .rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+}
+/* ===== UND AUF DEM GROSSEN SCHIRM ANDERSHERUM (E28) =====
+ *
+ * Gemessen auf dem iPad quer (1180 x 820), der einzigen Buchseite, die
+ * beim Blick noch nie gemessen wurde: das Raster ist 1148 Punkte breit,
+ * mit 119 Mindestbreite sind das ACHT Spalten und zwei Reihen. Die
+ * Zelle ist damit 130 breit, der Namenskasten 96 - und drei Namen
+ * passen nicht hinein: „Stadtstaaten" brach mit einem einzelnen „n" in
+ * der zweiten Zeile (10 von 96 Punkten), „Hauptstädte" mit einem „e"
+ * (9), „Bundesländer" mit „er" (17). `passt` sagt ueber Kachelnamen
+ * denselben Satz („ein einzelner Buchstabe in der zweiten Zeile sieht
+ * aus wie ein Fehler"), nur kannte es diese Namen nicht.
+ *
+ * Und das zweite, was der Blick zeigte: unter der Wand blieben 290 der
+ * 820 Punkte leer. Beides zeigt in dieselbe Richtung - WENIGER und
+ * GROESSERE Kacheln.
+ *
+ * 160 ergibt SECHS Spalten (6 x 178 + 5 x 16 = 1148): der Namenskasten
+ * wird 144 statt 96 Punkte breit, und alle vierzehn Namen stehen in
+ * einer Zeile. Drei Reihen statt zwei fuellen ausserdem 123 Punkte
+ * mehr von der Seite.
+ *
+ * `min-width:1000px` und nicht breiter oder schmaler: auf 820 x 1180
+ * (iPad hoch, 788 Punkte Raster) ergaeben 160 nur vier Spalten und vier
+ * Reihen, und dort ist der Name schon heute einzeilig. Nachgemessen,
+ * nicht vermutet. */
+@media (min-width:1000px){
+  .rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+}
+/* ===== UND DAZWISCHEN, IM SCHMALEN FENSTER (E28) =====
+ *
+ * 700 x 850 faellt durch beide Raster: zu breit fuer die 560 und zu
+ * schmal fuer die 1000. Gemessen: 668 Punkte Raster, fuenf Spalten,
+ * Namenskasten 87 - und vier Namen brechen um, zwei davon als WAISE
+ * nach dem Mass, das `passt` an den Kachelnamen anlegt (Rest unter 20
+ * Prozent des Kastens): „Verdoppeln" mit 11 Prozent, „Hauptstädte" mit
+ * 18. „Stadtstaaten" (21) und „Bundesländer" (30) brechen auch, aber
+ * mit genug Rest, dass es wie ein Umbruch aussieht und nicht wie ein
+ * Fehler.
+ *
+ * Vier Spalten sind 155 Punkte Zelle und 121 Namenskasten - alle
+ * vierzehn Namen einzeilig. Der Preis sind VIER Reihen statt drei, und
+ * die passen nur mit flacherer Zelle: 400 Punkte Raster, vier Reihen,
+ * drei Abstaende zu 16 ergeben 88 je Zelle. Das ist doppelt so viel wie
+ * die 44, die ein Daumen braucht.
+ *
+ * Die Zelle muss dafuer ihre Mindesthoehe hergeben: `min-height:56px`
+ * steht an `.abz` und `grid-auto-rows:1fr` kann sie nicht
+ * unterschreiten - hier ist das kein Problem (88 > 56), aber die Zeile
+ * darunter nimmt der Zelle das Polster, sonst passt das Zeichen nicht
+ * mehr neben den Namen.
+ *
+ * UND `min-height:441px` DAZU, denn ohne sie faengt das Band auch das
+ * iPhone SE quer (667 x 375): dort ist das Raster nur 229 Punkte hoch,
+ * vier Reihen sind 39 Punkte je Zelle, und das ist genau der Befund,
+ * den E26a abgeraeumt hat. `passt` hat es beim ersten Lauf nach dieser
+ * Zeile gemeldet - vierzehnmal, einmal je Abzeichen. Ein Band, das nur
+ * die Breite nennt, trifft zwei Geraete, die nichts gemeinsam haben
+ * ausser ihr. */
+@media (min-width:561px) and (max-width:999px) and (min-height:441px){
+  .rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .rollen.buch .abzeichen .abz{padding:var(--eng)}
 }
 /* Die Zelle, bei der es weitergeht - dieselbe Sprache wie beim offenen
    Kapitelreiter: sie steht auf ihrer Kante und traegt volle Tinte. Kein

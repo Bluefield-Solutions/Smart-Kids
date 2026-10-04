@@ -9291,3 +9291,72 @@ hätte nichts bewiesen.
 Sekunden und steht zwischen jeder Änderung und jedem Push. Ich habe ihn
 ausgelassen, weil die Änderung „nur eine Probenliste" war. Regel 15 sagt
 „gepusht ist nicht ausgeliefert" — hier war es genau das.
+
+---
+
+## E28 · Die Abzeichenwand auf dem großen Schirm — zwei Bänder, die niemand gemessen hatte (04.10.2026)
+
+E26a hat vierzehn Abzeichen auf dem **kleinsten** Gerät unter das Fingermaß
+geholt. Was dabei nicht gemessen wurde: dieselbe Wand auf dem **größten**.
+
+Auf dem iPad quer (1180 × 820) ist das Raster 1148 Punkte breit. Mit der
+Mindestbreite von 119 sind das acht Spalten und zwei Reihen; die Zelle ist 130
+breit, der Namenskasten 96 — und drei Namen passen nicht hinein:
+
+| Name | Rest in der zweiten Zeile |
+|---|---|
+| Stadtstaaten | „n", 10 von 96 Punkten |
+| Hauptstädte | „e", 9 |
+| Bundesländer | „er", 17 |
+
+`passt` sagt über **Kachelnamen** denselben Satz — „ein einzelner Buchstabe in
+der zweiten Zeile sieht aus wie ein Fehler" —, nur kannte es diese Namen nicht:
+die Abzeichenseite des Forscherbuchs stand in keinem Besuch. Und das zweite, was
+der Blick zeigte: unter der Wand blieben **290 der 820 Punkte leer**.
+
+Beides zeigt in dieselbe Richtung, und zwar in die, die man nicht erwartet:
+**weniger und größere Kacheln.** 160 Punkte Mindestbreite ergeben sechs Spalten
+(6 × 178 + 5 × 16 = 1148), der Namenskasten wird 144 statt 96, alle vierzehn
+Namen stehen in einer Zeile — und drei Reihen füllen 123 Punkte mehr von der
+Seite.
+
+### Das Band dazwischen, und warum es fast ein zweites E26a geworden wäre
+
+700 × 850 fällt durch beide Raster: zu breit für die 560 des kleinen Bandes, zu
+schmal für die 1000 des großen. Gemessen: 668 Punkte Raster, fünf Spalten,
+Namenskasten 87 — vier Namen brechen um, zwei davon als **Waise** nach dem Maß,
+das `passt` anlegt (Rest unter 20 % des Kastens): „Verdoppeln" mit 11 %,
+„Hauptstädte" mit 18 %.
+
+Vier Spalten lösen es (155 Punkte Zelle, 121 Namenskasten, alle Namen
+einzeilig). Der Preis sind vier Reihen statt drei — und genau daran wäre es
+beinahe gescheitert: das Band `(min-width:561px) and (max-width:999px)` fängt
+**auch das iPhone SE quer** (667 × 375). Dort ist das Raster 229 Punkte hoch,
+vier Reihen sind 39 Punkte je Zelle, und das ist auf den Punkt der Befund, den
+E26a gerade abgeräumt hatte. `passt` hat es beim ersten Lauf nach dieser Zeile
+gemeldet — vierzehnmal, einmal je Abzeichen.
+
+`and (min-height:441px)` macht es ganz. **Ein Band, das nur die Breite nennt,
+trifft zwei Geräte, die nichts gemeinsam haben außer ihr.**
+
+### `hyphens:auto` — eine Messung statt einer Meinung
+
+Die naheliegende Antwort auf einen Umbruch mit neun Prozent Rest ist die
+Silbentrennung nach den Regeln der Sprache; `lang="de"` steht am Rumpf, die
+Zeile wäre ein Dreizeiler gewesen. Probiert und nachgemessen: **dieses Chromium
+bringt kein deutsches Trennwörterbuch mit, die Zeile ändert nichts.**
+
+Sie steht deshalb nicht da, und der Grund steht im Stilblatt. Eine Regel, die
+auf dem Gerät vielleicht wirkt und in keinem Tor messbar ist, ist genau die, von
+der niemand merkt, wenn sie aufhört zu wirken (Regel 1).
+
+### Und eine Gegenprobe, die ohne den Eingriff schon wahr war
+
+Die stehende Probe „vier Abzeichen stehen außerhalb der Seite" schob
+`minmax(160px,1fr)` ins Stilblatt und fragte danach, ob es dort steht. Seit E28
+steht es dort **sowieso** — die Nachfrage war wahr, bevor etwas passiert war.
+`anker` hat es gemeldet, bevor ein Tor lief; die Probe arbeitet jetzt mit 170.
+
+Dieselbe Verfallsart wie bei der Abteilungsprobe eine Runde vorher, nur
+andersherum: dort kam der Eingriff nicht an, hier kam er an und bewies trotzdem
+nichts, weil die Nachfrage ihn nicht von der Wirklichkeit unterscheiden konnte.

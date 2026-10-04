@@ -995,8 +995,12 @@ export const PROBEN = [
   // Groessen, auf der das Raster ueberhaupt schmal genug dafuer ist.
   { n:'vier Abzeichen stehen außerhalb der Seite', tor:'passt', args:['--teil=2/5'], bauen:true, datei:V,
     such:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}',
-    ersatz:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}',
-    an:{ ...DIST, text:'minmax(160px,1fr)' }, sagt:'über den Rand' },
+    /* 170 und nicht 160: seit E28 steht `minmax(160px,1fr)` wirklich im
+       Stilblatt (die Abzeichenwand auf dem grossen Schirm), und eine
+       Nachfrage, deren Text schon OHNE den Eingriff dasteht, ist wahr,
+       bevor etwas passiert ist. `anker` hat es gemeldet. */
+    ersatz:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}',
+    an:{ ...DIST, text:'minmax(170px,1fr)' }, sagt:'über den Rand' },
 
   /* Und DIESELBE Zeile, eine Groesse weiter (E26a) - mit einem ganz
    * anderen Befund. Auf dem kleinsten Geraet faellt nichts heraus: das
