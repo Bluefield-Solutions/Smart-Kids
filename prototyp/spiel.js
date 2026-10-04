@@ -4161,14 +4161,80 @@ function tiereSichern(){
  * Beides zusammen ist moeglich - und dann steht der Lebensraum da, nicht
  * der Gorilla: die Ebene fertig zu haben ist die groessere Nachricht.
  */
+/* WIE LANG DIE BESTE RUNDE DIESES RAUMS IST (E32).
+ *
+ * Gemessen, und es ist die Rechnung, um die es geht: eine fehlerfreie
+ * Runde bringt einen Aufkleber (I27). „Wörter mit pf" hat ZWEI Woerter,
+ * weil die amtliche Liste fuer 1/2 dort zwei fuehrt - die Runde hat also
+ * zwei Aufgaben, und zwei richtige Antworten waren bisher so viel wert
+ * wie acht. Vierzehn der vierundzwanzig Wiederholungsebenen sind kuerzer
+ * als Leas Sitzung.
+ *
+ * Was dabei herauskam: „An der Quelle" haelt 24 Ebenen und 245 amtliche
+ * Woerter - und war fuer SECHS richtige Antworten leer. „Im Wald" mit
+ * elf Ebenen kostete vierundzwanzig. Der Raum mit dem meisten Stoff war
+ * der billigste.
+ *
+ * DIE GRENZE IST DIE BESTE RUNDE, DIE DER RAUM HERGIBT, und nicht eine
+ * gesetzte Zahl. Damit gibt es keine Ausnahme fuer die elf Raeume mit
+ * nur EINER Ebene: dort IST die eigene Runde die beste, die Bedingung
+ * ist dann immer wahr, und fuer Fiona aendert sich nichts - ihre
+ * Laenderrunden sind drei Aufgaben lang, weil `laenderTiefe` es so
+ * will, und sie zahlen weiter.
+ *
+ * Wer eine kurze Ebene spielt, bekommt den Aufkleber also nicht fuer
+ * die Runde, sondern fuers FERTIGWERDEN - der Weg, den es vor I27
+ * allein gab, und der fuer zwei Woerter kurz ist.
+ *
+ * Gerechnet wird einmal je Raum und dann gemerkt: `vorrat` ueber
+ * vierundzwanzig Ebenen bei jedem Endbildschirm waere eine Rechnung fuer
+ * eine Zahl, die sich waehrend einer Sitzung nicht aendert. */
+const BESTE_RUNDE = new Map();
+function volleRunde(st){
+  const r = Tiere.raumZu(st.ebeneId);
+  if (!r || !r.ebenen) return true;
+  const schluessel = `${P.id}:${r.titel}`;
+  if (!BESTE_RUNDE.has(schluessel)) {
+    let groesste = 0;
+    for (const e of r.ebenen) {
+      /* Eine Ebene, deren Vorrat gerade nicht zu haben ist (eine Karte,
+         die noch nicht geladen wurde), zaehlt nicht mit. Sie macht die
+         Grenze dann kleiner und nie groesser - eine Grenze, die an
+         einem Ladezustand haengt, duerfte nicht strenger werden. */
+      try { groesste = Math.max(groesste, vorrat(e).length); } catch (err) {}
+    }
+    BESTE_RUNDE.set(schluessel, Math.min(P.sitzung, groesste || P.sitzung));
+  }
+  return st.liste.length >= BESTE_RUNDE.get(schluessel);
+}
+
 function tierFuer(st){
   if (st.tiere !== undefined) return st.tiere;
   /* Gerechnet auf `st.alle` und `Stand` - genau der Menge, aus der auch
      der Fortschrittsbalken kommt. Zwei Zaehler fuer „ist die Ebene
      fertig" waeren zwei Zahlen, die eines Tages auseinanderlaufen. */
   const f = Leitner.fortschritt(st.alle, Stand);
+  /* JEDE EBENE ZAHLT IHREN ANTEIL AM RAUM, nicht den ganzen Raum (E32).
+   *
+   * Bis hierher gab das Fertigwerden EINER Ebene alle noch offenen Tiere
+   * ihres Raums. Bei einem Raum mit einer Ebene ist das richtig - dort
+   * gibt es nichts anderes, was zahlen koennte. Bei „An der Quelle" mit
+   * vierundzwanzig war es das: „Wörter mit pf" hat zwei Woerter, zwei
+   * richtige Antworten je Wort an zwei Tagen, und der Raum war fuer VIER
+   * richtige Antworten leer. Die restlichen dreiundzwanzig Ebenen gaben
+   * danach nichts mehr.
+   *
+   * Der Anteil ist gerechnet und nicht gesetzt: drei Tiere durch die
+   * Zahl der Ebenen, aufgerundet. Bei einer Ebene sind das drei (alles
+   * bleibt, wie es war), ab drei Ebenen eines - dann fuellen drei
+   * fertige Ebenen den Raum. Was dadurch NICHT passiert: der Raum wird
+   * nicht groesser. Es dauert nur laenger, ihn zu leeren, und das ist
+   * bei vierundzwanzig Ebenen die Sache selbst. */
+  const raum = Tiere.raumZu(st.ebeneId);
+  const anteil = raum && raum.ebenen && raum.ebenen.length
+    ? Math.ceil(raum.tiere.length / raum.ebenen.length) : raum ? raum.tiere.length : 0;
   const neu = (f.gesamt && f.gesammelt === f.gesamt)
-    ? Tiere.raumTiere(st.ebeneId, TierStand.ids) : [];
+    ? Tiere.raumTiere(st.ebeneId, TierStand.ids).slice(0, anteil) : [];
   if (neu.length) {
     TierStand = { ...TierStand, ids: [...TierStand.ids, ...neu.map(t => t.id)] };
     tiereSichern();
@@ -4207,7 +4273,7 @@ function tierFuer(st){
    * fehlerfrei leerspielt, bekommt beim Fertigwerden nichts mehr - und
    * das ist richtig herum. Der Lohn ist nach VORNE gewandert, nicht
    * vermehrt worden. */
-  if (st.glatt === st.liste.length) {
+  if (st.glatt === st.liste.length && volleRunde(st)) {
     const uebrig = Tiere.raumTiere(st.ebeneId, TierStand.ids);
     if (uebrig.length) {
       const eins = uebrig[0];

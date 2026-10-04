@@ -314,6 +314,44 @@ export const PROBEN = [
     an:{ datei:SP, text:"kind:'Adjektiv'" },
     sagt:'heißt in beiden Spalten gleich' },
 
+  /* WAS EIN RAUM KOSTET (E32) - drei Proben, drei verschiedene Stellen.
+
+     Der Befund: „An der Quelle" haelt 24 Ebenen und 245 amtliche Woerter
+     und war fuer VIER richtige Antworten leer, „Im Wald" mit elf Ebenen
+     kostete achtzehn. Der Raum mit dem meisten Stoff war der billigste.
+     Gesehen hat das kein Tor und kein Blick - es sieht auf keinem
+     Bildschirm nach etwas aus. Man merkt es erst nach Wochen an einem
+     Kind, das alle Tiere hat und nichts mehr zu holen. */
+
+  /* 1. Die fehlerfreie Runde zahlt wieder ohne Ruecksicht auf ihre
+        Laenge. Dann ist „Wörter mit pf" mit zwei Aufgaben so viel wert
+        wie eine volle Runde mit acht. */
+  { n:'eine kurze Runde zahlt wieder wie eine volle', tor:'spielprobe', datei:D,
+    such:'if (st.glatt === st.liste.length && volleRunde(st)) {',
+    ersatz:'if (st.glatt === st.liste.length) {',
+    an:{ datei:D, fehlt:'&& volleRunde(st)' },
+    sagt:'so viel wert wie eine volle' },
+
+  /* 2. Das Fertigwerden zahlt wieder den ganzen Raum. Dann leert eine
+        Ebene mit zwei Woertern einen Raum mit vierundzwanzig. */
+  { n:'eine fertige Ebene zahlt wieder den ganzen Raum', tor:'spielprobe', datei:D,
+    such:'Tiere.raumTiere(st.ebeneId, TierStand.ids).slice(0, anteil) : [];',
+    ersatz:'Tiere.raumTiere(st.ebeneId, TierStand.ids) : [];',
+    an:{ datei:D, fehlt:'.slice(0, anteil)' },
+    sagt:'zahlt wieder den ganzen Raum' },
+
+  /* 3. Und die Grenze selbst, angegriffen an den DATEN: wer die drei
+        kleinsten Ebenen von „An der Quelle" noch kleiner macht, drueckt
+        den Preis unter eine volle Runde. Ein Wort je Ebene heisst: drei
+        fertige Ebenen fuer sechs richtige Antworten, bei acht je Runde.
+        Die Probe zeigt damit, dass die Grenze nicht nur dasteht,
+        sondern auch greift. */
+  { n:'drei Ebenen schrumpfen den Preis eines Raums unter eine Runde', tor:'spielprobe',
+    datei:D12, mehrfach:true,
+    suchRegex:/woerter:\['[^']*', '[^']*'\]/g, ersatzFn:(m) => m[0].replace(/, '[^']*'\]/, ']'),
+    an:{ datei:D12, fehlt:"woerter:['Kopf', 'Pflanze']" },
+    sagt:'billiger sein als eine einzige fehlerfreie Runde' },
+
   /* DIE TIEFE EINER SPRACHEBENE (E31).
      Ohne `tiefer()` baut „Nomen" wieder alle 224 Lernwoerter ein. Das
      macht nichts kaputt, das Kind kann jede einzelne Aufgabe loesen -

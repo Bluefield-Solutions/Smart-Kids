@@ -27,6 +27,10 @@ import { DEUTSCHLAND_MITTEL } from '../src/geo/deutschland.mittel.js';
 // nicht aus `prototyp/spiel.js`: das Soll kommt aus der Referenz, nicht
 // aus dem Prueflig (Regel 3). Derselbe Leser wie im Rauchtest.
 import * as PT from './profiltabelle.mjs';
+import * as TI from '../src/inhalt/tiere.js';
+import * as DE from '../src/inhalt/deutsch.js';
+import * as D12 from '../src/inhalt/deutsch12.js';
+import * as SP from '../src/inhalt/sprache.js';
 
 const fehler = [], hinweise = [];
 // Was beim Lesen der Profiltabelle schiefging, gehoert in dieselbe Liste -
@@ -857,6 +861,79 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   }
   console.log(`    Wiedersehen: ${zeigt.join(' · ')}`);
   geprueft += faelle.length;
+}
+
+/* ---------- WAS EIN RAUM KOSTET (E32) ---------------------------------
+ *
+ * Ein Raum haelt drei Tiere. Es gibt zwei Wege dorthin: eine fehlerfreie
+ * Runde bringt eines (I27), und eine fertige Ebene bringt welche. Was
+ * beides zusammen KOSTET, hat nie jemand ausgerechnet - und heraus kam
+ * eine Verkehrung:
+ *
+ *   „An der Quelle" haelt 24 Ebenen und 245 amtliche Woerter und war
+ *   fuer VIER richtige Antworten leer. „Im Wald" mit elf Ebenen kostete
+ *   achtzehn. Der Raum mit dem meisten Stoff war der billigste.
+ *
+ * Der Grund stand in zwei Zeilen von `spiel.js`: „Wörter mit pf" hat
+ * zwei Woerter, also zwei Aufgaben je Runde - und zwei richtige
+ * Antworten waren so viel wert wie acht; und das Fertigwerden EINER
+ * Ebene gab alle noch offenen Tiere ihres Raums, auch wenn er
+ * vierundzwanzig Ebenen hat.
+ *
+ * GEPRUEFT WIRD, DASS BEIDE REGELN IN `spiel.js` STEHEN, und nicht, dass
+ * die Zahl stimmt. Die Zahl ist gerechnet und kann nicht falsch sein;
+ * falsch sein kann nur, dass jemand die Regel wieder herausnimmt - und
+ * das sieht man an keinem Bildschirm, sondern erst nach Wochen an einem
+ * Kind, das alle Tiere hat und nichts mehr zu holen.
+ *
+ * Der Preis steht daneben als Zahl (Regel 5: jede Zahl traegt ihre
+ * Messstelle). Gerechnet mit Leas Sitzung aus der Profiltabelle, also
+ * aus der Referenz und nicht aus dem Prueflig.
+ * --------------------------------------------------------------------- */
+{
+  const spiel = fs.readFileSync('prototyp/spiel.js', 'utf8');
+  if (!/st\.glatt === st\.liste\.length && volleRunde\(st\)/.test(spiel))
+    fehler.push('die fehlerfreie Runde zahlt wieder ohne `volleRunde` — dann ist '
+      + 'eine Runde mit zwei Aufgaben so viel wert wie eine volle');
+  if (!/raumTiere\(st\.ebeneId, TierStand\.ids\)\.slice\(0, anteil\)/.test(spiel))
+    fehler.push('das Fertigwerden einer Ebene zahlt wieder den ganzen Raum — dann '
+      + 'leert eine Ebene mit zwei Wörtern einen Raum mit vierundzwanzig');
+
+  const S = PT.SITZUNG.lea;
+  const gross = {};
+  for (const g of DE.GRUPPEN)        gross[`deutsch:${g.id}`]   = DE.einheitenVon(g.id).length;
+  for (const g of D12.GRUPPEN12)     gross[`deutsch12:${g.id}`] = D12.einheitenVon(g.id).length;
+  for (const e of SP.EBENEN_SPRACHE) gross[`sprache:${e.id}`]   = SP.aufgabenZu(e.id).length;
+  const preise = [];
+  for (const r of TI.RAEUME.filter(x => x.ebenen)) {
+    /* Die Proben zaehlen nicht mit: sie sammeln nichts (`sammeltNicht`),
+       koennen also weder fertig werden noch einen Aufkleber bringen. Sie
+       stehen trotzdem in der Ebenenliste des Raums, weil sie dorthin
+       fuehren - und beim ANTEIL zaehlen sie mit, denn den rechnet
+       `spiel.js` aus `r.ebenen.length`. */
+    const sammelnd = r.ebenen.filter(e => !e.endsWith(':probe'));
+    const n = sammelnd.map(e => gross[e]).filter(x => x !== undefined);
+    if (!n.length || n.length !== sammelnd.length) continue;   // gemischter Raum
+    const sortiert = [...n].sort((a, b) => a - b);
+    const beste = Math.min(S, Math.max(...n));
+    const anteil = Math.ceil(r.tiere.length / r.ebenen.length);
+    const noetig = Math.ceil(r.tiere.length / anteil);
+    const ueberFertig = sortiert.slice(0, noetig).reduce((a, x) => a + x, 0) * 2;
+    const preis = Math.min(ueberFertig, r.tiere.length * beste);
+    preise.push([r.titel, r.ebenen.length, preis, beste]);
+    /* EINE VOLLE RUNDE IST DAS MINDESTE. Drei Tiere fuer weniger Arbeit
+       als EINE fehlerfreie Runde dieses Raums waere kein Lohn mehr,
+       sondern ein Leck - und genau dort lag „An der Quelle" mit vier
+       gegen acht. */
+    if (preis < beste)
+      fehler.push(`„${r.titel}" ist für ${preis} richtige Antworten leer, `
+        + `eine volle Runde dort hat ${beste} — drei Tiere dürfen nicht `
+        + 'billiger sein als eine einzige fehlerfreie Runde');
+  }
+  console.log('    Preis eines Raums (Leas Sitzung ' + S + '): '
+    + preise.sort((a, b) => a[2] - b[2])
+        .map(([t, e, pr]) => `${t} ${pr} (${e} Ebenen)`).join(' · '));
+  geprueft += preise.length;
 }
 
 console.log(`    ${geprueft} Antworten und Zusammenhänge durchgespielt`);
