@@ -346,14 +346,14 @@
       "s": 107
     },
     "die Sammlung öffnet keinen Raum mehr": {
-      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "commit": "2ea9ce2ad8fcd22b6d1f56dd2190b573f689d027",
       "zeit": "2026-10-04",
-      "s": 203
+      "s": 198
     },
     "der zweite Sammlungsraum wird nicht gefahren": {
-      "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
+      "commit": "2ea9ce2ad8fcd22b6d1f56dd2190b573f689d027",
       "zeit": "2026-10-04",
-      "s": 102
+      "s": 101
     },
     "die Schwelle gilt nicht mehr": {
       "commit": "5f4f35b21fbb9c391cd49bafe3fda912fe6cfa4c",
@@ -2754,6 +2754,11 @@
       "commit": "e37e6422bbc3a58d150784f15735553b822b29de",
       "zeit": "2026-10-04",
       "s": 7
+    },
+    "die Gruppenkachel zaehlt als Ebene mit": {
+      "commit": "2ea9ce2ad8fcd22b6d1f56dd2190b573f689d027",
+      "zeit": "2026-10-04",
+      "s": 104
     },
     "die Raumwand faellt auf dem schmalen Schirm auf drei Spalten zurueck": {
       "commit": "4deed8755450639f6e07b37844be6d6d905e1e8a",
