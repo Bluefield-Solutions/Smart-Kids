@@ -107,6 +107,7 @@ import { STAEDTE } from '../src/geo/staedte.js';
    Pruefung, die nur die heutigen sieht, faellt beim naechsten um.
    Dieselbe Ueberlegung wie bei den 124 Tiernamen in `tonleiter`. */
 import { TAFEL as ABZ_TAFEL } from '../src/inhalt/abzeichen.js';
+import * as SP from '../src/inhalt/sprache.js';
 import { hoerAbgleich, GRENZE_NAH } from '../src/vergleich/vergleich.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -1129,10 +1130,20 @@ async function weitergegangen(p, ms = 8000) {
      * dieser Helfer acht Sekunden auf etwas, das dort nie kommt, und der
      * Durchgang liess danach die halbe Runde des Profils aus, ohne zu
      * klagen. */
+    /* `.deutschfeld` und `.sprachfeld` STANDEN HIER NICHT, und das hat
+       nichts kaputtgemacht - es hat nur gekostet. Auf jeder Deutsch-
+       und Sprachebene lief dieser Helfer in seine volle Frist, weil er
+       kein Merkmal kannte, an dem die naechste Aufgabe zu erkennen
+       waere; er meldete danach `false`, und niemand fragte nach.
+       Bei Lea sind das inzwischen 51 Ebenen - acht Sekunden je Ebene,
+       die der Rauchtest wartend verbringt. Dieselbe Falle wie bei
+       `flaggen:karte` zwei Absaetze hoeher, nur teurer: eine Liste von
+       Merkmalen veraltet mit jedem Bildschirm, der dazukommt. */
     return !!(s.querySelector('.karte svg path.ziel') || s.querySelector('.rechnung')
               || s.querySelector('.engkarte') || s.querySelector('.freundluecke')
               || s.querySelector('.satzfeld') || s.querySelector('#nochmal')
               || s.querySelector('#frage .frageflagge')
+              || s.querySelector('.deutschfeld') || s.querySelector('.sprachfeld')
               || s.querySelector('.flaggenkarte') || s.querySelector('.flaggengross'));
   }, null, { timeout: ms }).then(() => true).catch(() => false);
 }
@@ -5291,7 +5302,7 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
       await p.waitForSelector('.schirm.da .karte svg path.ziel, .schirm.da .rechnung, '
         + '.schirm.da .schreibblatt, .schirm.da .engkarte, .schirm.da .freundluecke, '
         + '.schirm.da .satzfeld, .schirm.da .flaggenkarte, .schirm.da .flaggengross, '
-        + '.schirm.da #legereihe, .schirm.da .deutschfeld, '
+        + '.schirm.da #legereihe, .schirm.da .deutschfeld, .schirm.da .sprachfeld, '
         + '.schirm.da #weiter', { timeout: 15000 }).catch(() => {});
       const w = await p.$('.schirm.da #weiter');
       if (w) await p.$eval('.schirm.da #weiter', x => x.click());
@@ -5387,6 +5398,91 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * Gezaehlt wird der Satz deshalb NICHT in `gehoert`: er geht als
        * `eigen` an `abgeschlossen` und wird dort abgezogen - dieselbe
        * Unterscheidung wie bei „Hoeren und schreiben" (E12). */
+      /* Sprache untersuchen (E29) - der SECHSTE Zweig ohne Karte.
+       *
+       * Ein Satz mit einer Marke darin und drei bis fuenf Begriffe zur
+       * Wahl. Gespielt wird der Weg des Kindes: die Marke lesen,
+       * antippen. Drei Zusagen haengen daran, und keine davon prueft ein
+       * anderes Tor am laufenden Spiel:
+       *
+       *   1. Das Markierte steht WIRKLICH im Satz. Sitzt die Marke
+       *      daneben, beantwortet das Kind eine andere Frage als die
+       *      gestellte - und auf dem Bildschirm sieht das aus wie eine
+       *      gueltige Aufgabe. `inhalt` rechnet das an den Daten nach;
+       *      hier wird es am gezeichneten Satz gemessen.
+       *   2. Die Loesung steht unter den Knoepfen. Sonst ist die Aufgabe
+       *      nicht zu loesen, und das sieht aus wie eine zu schwere.
+       *   3. Die EBENE steht nicht auf dem Bildschirm. Sie heisst
+       *      „Nomen", und das ist bei jeder zweiten Aufgabe die Antwort.
+       *      Der Kopf traegt deshalb „Sprache untersuchen" und nicht den
+       *      Ebenentitel - geprueft wird es, weil ein Kopf, der den
+       *      Titel zeigt, ueberall sonst in dieser App richtig waere. */
+      if (await p.$('.schirm.da .sprachfeld')) {
+        const auf = await p.evaluate(() => {
+          const feld = document.querySelector('.schirm.da .sprachfeld');
+          const satz = feld.querySelector('#satz');
+          const marke = satz?.querySelector('.sprachteil');
+          const z = Sitzung?.liste[Sitzung.i] || {};
+          return {
+            loesung: z.loesung || '', teil: z.teil || '',
+            satzText: (satz?.textContent || '').trim(),
+            markeText: (marke?.textContent || '').trim(),
+            wahl: [...feld.querySelectorAll('.wahlkarte')].map(k => k.dataset.wahl),
+            beschriftung: [...feld.querySelectorAll('.wahlkarte')]
+              .map(k => k.textContent.trim()),
+            frage: (document.querySelector('.schirm.da #frage')?.textContent || '').trim(),
+            kopf: (document.querySelector('.schirm.da .marke')?.textContent || '').trim(),
+          };
+        });
+        if (!auf.loesung) {
+          merke('durchgang', new Error(`${wer}/${ebene}: die Sitzung nennt keine Lösung`));
+          continue;
+        }
+        if (!auf.frage)
+          merke('durchgang', new Error(`${wer}/${ebene}: der Bildschirm stellt keine Frage`));
+        /* Bei einer SATZART ist nichts markiert - der ganze Satz ist die
+           Frage. Dort gibt es keine Marke zu pruefen, und eine Pruefung,
+           die dann trotzdem etwas verlangt, meldete bei jeder dritten
+           Ebene einen Fehler, den es nicht gibt. */
+        if (auf.teil) {
+          if (!auf.markeText)
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.teil}" ist nicht `
+              + 'markiert — ohne Marke ist die Frage „was für ein Wort" unbeantwortbar'));
+          else if (auf.markeText !== auf.teil)
+            merke('durchgang', new Error(`${wer}/${ebene}: markiert ist `
+              + `„${auf.markeText}", gefragt ist „${auf.teil}"`));
+          if (!auf.satzText.includes(auf.teil))
+            merke('durchgang', new Error(`${wer}/${ebene}: „${auf.teil}" steht gar nicht `
+              + `in „${auf.satzText}"`));
+        }
+        if (!auf.wahl.includes(auf.loesung))
+          merke('durchgang', new Error(`${wer}/${ebene}: „${auf.loesung}" steht nicht `
+            + `unter den ${auf.wahl.length} Knöpfen (${auf.beschriftung.join(', ')}) — `
+            + 'diese Aufgabe ist nicht zu lösen'));
+        /* Der Ebenentitel waere der Spickzettel. Verglichen wird gegen
+           den Kopf und gegen die Frage, denn beide stehen ueber dem
+           Satz und beide werden angesagt. */
+        const titel = (SP.ebeneSprache(ebene.split(':')[1]) || {}).titel || '';
+        if (titel && (auf.kopf === titel || auf.frage.includes(titel)))
+          merke('durchgang', new Error(`${wer}/${ebene}: „${titel}" steht über dem Satz — `
+            + 'der Ebenentitel ist bei dieser Ebene die Antwort'));
+        await p.click(`.schirm.da .wahlkarte[data-wahl="${auf.loesung}"]`);
+        wege.add(`${wer}: Satzteil bestimmt`);
+        await bewertet(p);
+        /* GEHOERT HEISST: DER SATZ WURDE GESAGT - und nicht: es wurde
+           ueberhaupt etwas gesagt. Der erste Anlauf uebergab `/./` hier,
+           und damit zaehlte das LOB als vorgelesene Aufgabe: „Lea bekam
+           9 Aufgaben vorgelesen, obwohl ihr Profil `vorlesen: false`
+           sagt". Gelobt wird jedes Kind, vorgelesen nur, wer es braucht
+           - ein Muster, das beides nicht unterscheiden kann, misst den
+           Lautsprecher und nicht die Vorlesehilfe.
+           Auf diesem Bildschirm steht der Satz GESCHRIEBEN da und soll
+           gelesen werden; gesagt wird er nur auf Wunsch des Profils. */
+        await abgeschlossen(p, wer, ebene,
+          new RegExp(auf.satzText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+          'den Satzteil bestimmt');
+        continue;
+      }
       if (await p.$('.schirm.da .deutschfeld')) {
         const auf = await p.evaluate(() => {
           const feld = document.querySelector('.schirm.da .deutschfeld');

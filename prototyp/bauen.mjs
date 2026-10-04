@@ -439,6 +439,14 @@ const module = [
            'deutsch.js': 'const NOTFALL = Deutsch.NOTFALL, '
              + 'GETEILT = Deutsch.UMFORMUNGEN, '
              + 'verschreiberMit = Deutsch.verschreiberMit;' }),
+  /* Und „Sprache untersuchen" zuletzt: es liest BEIDE
+     Rechtschreibabteilungen (die Lernwoerter und ihre Saetze), steht
+     also hinter beiden. */
+  inline(new URL('../src/inhalt/sprache.js', import.meta.url), 'Sprache',
+         { 'deutsch.js': 'const EINHEITEN = Deutsch.EINHEITEN, '
+             + 'saetzeZu = Deutsch.saetzeZu;',
+           'deutsch12.js': 'const EINHEITEN12 = Deutsch12.EINHEITEN12, '
+             + 'saetzeZu12 = Deutsch12.saetzeZu12;' }),
   inline(new URL('../src/inhalt/tiere.js', import.meta.url), 'Tiere'),
   inline(new URL('../src/inhalt/flaggen.js', import.meta.url), 'Flaggen'),
   inline(new URL('../src/kern/klang.js', import.meta.url), 'Klang'),

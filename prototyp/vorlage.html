@@ -2678,6 +2678,27 @@ body[data-zieht] .lupenknoepfe{pointer-events:none}
    Diktat mit einer Luecke darin. */
 .deutschsatz{font-family:var(--f-lesen);font-size:var(--s2);color:var(--tinte);
   text-align:center;max-width:min(100%,52ch);line-height:1.9;display:block}
+/* SPRACHE UNTERSUCHEN (E29) - derselbe Kasten und derselbe Satz wie beim
+   Diktat daneben, nur ohne Luecke und mit einer Markierung darin. Eigene
+   Namen und nicht `.deutschfeld` mitbenutzt: dort haengt die Breite der
+   Luecke an einer Marke (`--luecke`), die es hier nicht gibt, und ein
+   Waehler, der zwei Bildschirme traegt, veraltet an dem, den man gerade
+   nicht ansieht.
+   `line-height:1.6` statt 1.9: ohne Luecke muss die Zeile keinen Kasten
+   tragen, und der Satz steht dichter. */
+.sprachfeld{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:safe center;gap:var(--r4);padding:0 var(--r3) var(--r3);min-height:0}
+.sprachsatz{font-family:var(--f-lesen);font-size:var(--s2);color:var(--tinte);
+  text-align:center;max-width:min(100%,52ch);line-height:1.6;display:block}
+/* Die Markierung ist ein UNTERSTRICH und kein Farbbalken: ein gelb
+   hinterlegtes Wort sieht aus wie „hier ist die Antwort", und die Antwort
+   ist genau das, was gesucht wird. Der Strich sagt „dieses Wort meine
+   ich" und sonst nichts. */
+.sprachteil{background:none;color:inherit;font-weight:700;
+  border-bottom:var(--strich-stark) solid var(--knopf-kante)}
+/* Das Satzzeichen kommt erst mit der Aufloesung dazu - bei den Satzarten
+   IST es die Aufloesung. Es traegt deshalb die Farbe der Loesung. */
+.satzzeichen{color:var(--gut);font-size:1.2em}
 /* Die Luecke ist so breit wie das LAENGSTE Wort der Ebene und nicht wie
    das gesuchte: ein Kasten, der mit dem Wort waechst, verraet seine
    Laenge - bei „dem" gegen „diesem" waere das die halbe Antwort.

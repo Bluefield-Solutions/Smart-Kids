@@ -522,7 +522,20 @@ export const RAEUME = [
             'deutsch:silben-h', 'deutsch:verhaertung', 'deutsch:umlautung',
             'deutsch:flektiert', 'deutsch:umlaut-verhaertung',
             'deutsch:praeteritum', 'deutsch:haeufig', 'deutsch:ss',
-            'deutsch:merkwoerter', 'deutsch:probe'], titel:'Im Märchen',
+            'deutsch:merkwoerter', 'deutsch:probe',
+            /* UND DIE ZEHN SPRACHEBENEN DAZU (E29) - nicht gern, aber
+               gemessen: gemalt sind 86 Tiere, und nach „An der Quelle"
+               sind genau ZWEI ohne Raum (der Gorilla, der kein
+               Sammeltier ist, und der Tintenfisch). Ein vierter
+               Deutschraum braucht drei neue Zeichnungen, und die sind
+               eine eigene Runde. Bis dahin fuehren die Sprachebenen in
+               den Raum, der schon da ist - lieber ein Raum, der
+               schneller voll wird, als zehn Ebenen, die nichts
+               hergeben. */
+            'sprache:nomen', 'sprache:verb', 'sprache:adjektiv',
+            'sprache:artikel', 'sprache:pronomen', 'sprache:gegenwart',
+            'sprache:vergangenheit', 'sprache:zukunft', 'sprache:satzarten',
+            'sprache:satzglieder', 'sprache:probe'], titel:'Im Märchen',
     tiere:['einhorn', 'drache', 'yeti'] },
 
   /* AN DER QUELLE - der Raum der Wiederholung 1/2 (E27).

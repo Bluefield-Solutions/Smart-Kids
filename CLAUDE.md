@@ -37,8 +37,8 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 |---|---|---|---|
 | **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
 | `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
-| `npm run tor:voll` | **wenn Stephan es sagt** | **~18 min** (gemessen 1054 s am 26.09., 4 Kerne; 749 s am 11.09. — der Durchgang spielt inzwischen 207 Ebenen × Profile) | die volle Kette, alle Größen, alle Bildschirme |
-| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 544 Gegenproben. Läuft sonst nirgends mehr |
+| `npm run tor:voll` | **wenn Stephan es sagt** | **~50 min** (gemessen 3008 s am 04.10., 4 Kerne; 1054 s am 26.09., 749 s am 11.09.) | die volle Kette, alle Größen, alle Bildschirme |
+| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 550 Gegenproben. Läuft sonst nirgends mehr |
 | Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
 **Die Regel seit P20: der schnelle Gang ist der Standard. Die volle Kette und
@@ -134,8 +134,16 @@ was die drei davor gefunden hätten.
 ```
 npm run tor        DER SCHNELLE GANG und die normale Runde: rund 30 s, alle
                    Tore ohne Browser. Er sagt selbst, was er nicht sieht.
-npm run tor:voll   die ganze Kette, rund 18 min auf vier Kernen. Nur auf
+npm run tor:voll   die ganze Kette, rund 50 min auf vier Kernen. Nur auf
                    Zuruf — sie gibt frei, was der schnelle Gang offenlässt.
+                   DER BODEN IST EIN EINZIGER LAUF: `smoke (3/4)` braucht
+                   2987 der 3008 s, und davon 2600 für LEA allein. Sie
+                   spielt 98 Ebenen, 51 davon Deutsch, und jede Deutsch-
+                   aufgabe wird gehört, geschrieben und bewertet. Die
+                   anderen dreizehn Browserläufe sind längst fertig und
+                   warten. Wer die Kette kürzer haben will, muss DORT
+                   ansetzen und nicht an der Parallelität — die bringt
+                   schon jetzt 4784 s auf 2987 s herunter.
 npm run tor -- --betroffen
                    dazu die Browsertore, die von den geänderten Dateien
                    erreicht werden können. 14 s bis 200 s. Sie schreibt seit Q40 jeden Lauf VOLLSTÄNDIG
@@ -174,7 +182,7 @@ npm run rhythmus   wie alt die Nachweise sind. Steht seit P20 NICHT mehr in
                    Auskunft. Wer wissen will, ob ein voller Probenlauf
                    fällig wäre, fragt hier; entschieden wird es von
                    Stephan.
-npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen (532
+npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen (550
                    stehende Gegenproben). Läuft
                    seit P20 NIRGENDS mehr von selbst — weder nachts auf
                    dem Runner noch erzwungen durch eine Frist. Nur auf
@@ -292,7 +300,7 @@ npm run vielfalt   WIEVIELE RUNDEN, BIS SICH ETWAS WIEDERHOLT? Je Profil
 Kette: `regeln` → `doppelt` → `spielprobe` → `schreiben` → `vergleich` →
 `gleichlauf` → `bauen` →
 `inhalt` · `nachbarn` · `groesser` · `saetze` · `topologie` · `beruehrung` · `marken` · `abzeichen` ·
-`schrift` · `symbol` · `farben` · `englisch` · `deutsch` · `tiere` · `flaggen` · `betroffen` · `doku` →
+`schrift` · `symbol` · `farben` · `englisch` · `deutsch` · `sprache` · `tiere` · `flaggen` · `betroffen` · `doku` →
 `budget` · `anker` · `vielfalt` → `passt` → `lesbarkeit` → `ziehen` → `ansicht` → `pwa` ·
 `offline` · `fremdseite` · `nachschub` · `tonleiter` → `smoke`.
 

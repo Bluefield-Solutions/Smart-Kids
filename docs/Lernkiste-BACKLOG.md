@@ -8803,9 +8803,9 @@ Der Auftrag, die Entscheidungen und der Aufbau stehen in
 `docs/Lernkiste-KONZEPT-DEUTSCH.md`; hier steht, was die Runde gekostet und
 gefunden hat.
 
-**Etappe 1 von dreien.** Es fehlen: die Wiederholung aus Klasse 1/2 (Etappe 2,
-24 Ebenen, 244 Wörter) und *Sprache untersuchen* (Etappe 3: Wortarten,
-Zeitformen, Satzarten, Satzglieder, eigene Probe).
+**Etappe 1 von dreien** — am 04.10.2026 sind alle drei gebaut: die
+Wiederholung aus Klasse 1/2 (Etappe 2, E27: 24 Ebenen, 245 Einträge) und
+*Sprache untersuchen* (Etappe 3, E29: 10 Ebenen, 724 Aufgaben).
 
 ### Was die Tore gefunden haben
 
@@ -9360,3 +9360,183 @@ steht es dort **sowieso** — die Nachfrage war wahr, bevor etwas passiert war.
 Dieselbe Verfallsart wie bei der Abteilungsprobe eine Runde vorher, nur
 andersherum: dort kam der Eingriff nicht an, hier kam er an und bewies trotzdem
 nichts, weil die Nachfrage ihn nicht von der Wirklichkeit unterscheiden konnte.
+
+---
+
+## E29 · Etappe 3: Sprache untersuchen — und der Vorlauf, der seit Etappe 1 322 Karten auslegte (04.10.2026)
+
+Die letzte der drei Deutsch-Etappen. Der LehrplanPLUS führt für die dritte
+Jahrgangsstufe im Lernbereich *Sprache untersuchen* vier Dinge; sie stehen jetzt
+als **zehn Ebenen und eine eigene Probe** da.
+
+| | Aufgaben |
+|---|---|
+| Wortarten (Nomen · Verb · Adjektiv · Artikel · Pronomen) | 224 · 182 · 56 · 9 · 49 |
+| Zeitformen (Gegenwart · Vergangenheit · Zukunft) | 28 · 28 · 28 |
+| Satzarten | 30 |
+| Satzglieder | 90 |
+| **zusammen** | **724** |
+
+### Woher der Stoff kommt — und wo die Zusage nicht einzuhalten war
+
+Das Konzept sagt „dieselben Sätze tragen beide Abteilungen". Für die
+**Wortarten** ist das eingelöst: jede Aufgabe nimmt ein Lernwort aus den 600
+vorhandenen und den Satz, in dem es schon steht. Kein zweiter Satz, kein zweites
+Wort. Die Stelle der Marke kommt dabei aus der **Lücke** und nicht aus einer
+Suche im Satz — „Mein kleiner Finger tut weh" enthält „ein" zweimal, und
+markiert gehört das Wort an seinem Platz.
+
+Für **Satzarten** und **Satzglieder** war sie nicht einzuhalten, und das ist
+gemessen und nicht bequem: von den 1244 vorhandenen Sätzen sind **1136
+Aussagesätze, 100 Fragen und acht Ausrufe**. Eine Ebene, die aus acht Ausrufen
+zieht, fragt achtmal dasselbe; und wer bei dieser Verteilung immer „Aussage"
+tippt, hat 91 %. Satzglieder brauchen außerdem eine Auszeichnung, die kein Satz
+mitbringt — wer sie nachträglich errechnen will, rechnet eine Grammatik nach,
+die er nicht hat. Also eigene Sätze, zehn je Satzart, dreißig Gliedsätze mit
+allen dreien.
+
+### Gefragt wird nach dem Markierten, nicht nach dem Begriff
+
+Nicht „wo ist das Nomen?", sondern „was für ein Wort ist das markierte?". Sonst
+hätte jede Aufgabe der Ebene „Nomen" dieselbe Antwort, und ein Kind lernte, auf
+das zweite Wort zu tippen. **Die Ebene heißt nach dem, woran sie übt, nicht nach
+der Antwort** — eine Nomen-Ebene zeigt deshalb auch Verben und Artikel.
+
+Bei einem Fehler kommt die Erklärung des **gewählten** Begriffs und nicht die
+des richtigen: „Adjektiv: Es sagt, WIE etwas ist. Hier passt das nicht." Das
+sagt, warum die Wahl nicht passt, und verrät die Lösung nicht; die Erklärung des
+richtigen wäre bei fünf Knöpfen die halbe Antwort.
+
+### Der Begriffsregler — zweimal dasselbe, und das ist hier der Gegenstand
+
+Der Lehrplan sagt *Nomen, Verb, Adjektiv*. Viele bayerische dritte Klassen sagen
+noch *Namenwort, Tunwort, Wiewort*. Welches Leas Klasse benutzt, weiß niemand
+von uns sicher — **also schaltet ein Regler im Elternbereich die Beschriftung
+um, statt dass ich rate.** Ab Werk die Fachbegriffe, weil die bis zum Abitur
+gelten.
+
+Eine Tafel und nicht zwei Listen nebeneinander: der Regler wählt die Spalte. Der
+Knopf sagt, wohin er führt („Auf „Namenwort · Tunwort · Wiewort" umstellen"),
+und die drei Wörter darin kommen aus derselben Tafel — wer dort „Wiewort"
+ändert, ändert den Knopf mit.
+
+Die Einstellung sitzt in `Einst` und nicht im Profil: sie ist keine Auskunft über
+ein Kind, sondern darüber, welche Wörter in Leas Klasse fallen.
+
+### Zwei Proben, ein Mechanismus
+
+Die Sprachprobe zieht quer aus allen zehn Ebenen, so wie die Wörterprobe quer
+aus den fünfzehn. Der erste Anlauf schrieb dafür eine zweite Fassung von
+`deutschStaende` mit `EBENEN_SPRACHE` statt `GRUPPEN` — zwanzig Zeilen, die bis
+auf eine gleich sind. Genau die Form, die Regel 6 meint. Jetzt gibt es eine
+Tafel `PROBEN_FELD`: welche Ebenen eine Probe zusammenliest, und woher ein
+Gegenstand weiß, in welche davon er gehört.
+
+Bei Sprache wird diese Heimat **aus `aufgabenZu` selbst gebaut** und nicht aus
+einem Feld am Gegenstand gelesen. Das kostet einen Durchlauf über 724 Aufgaben
+und ist dafür die einzige Auskunft, die nicht auseinanderlaufen kann. Eine
+Kennung zu zerlegen (`sprache:glied:subjekt:3` → welche Ebene?) wäre eine
+Grammatik nebenher, und die veraltet beim ersten neuen Aufgabentyp.
+
+Und die Weiche auf dem Bildschirm hängt am **Gegenstand**, nicht an der Ebene:
+sieben Ebenen stellen eine Wahl, die drei Zeitformen einen Lückensatz und laufen
+auf dem Diktatbildschirm. In der Probe liegen beide Sorten nebeneinander — der
+erste Anlauf lief dort in ein `ziel.wahl is not iterable`, also in einen weißen
+Bildschirm mitten in einer Probe.
+
+### Was der Blick gefunden hat, und kein Tor
+
+**Drei Löcher, und das größte ist nicht von dieser Runde.**
+
+1. Der Sprachgegenstand trug `lernwort:true` — weil damit Buch, Vorlauf und
+   Endbildschirm sofort etwas anzeigten. Sie zeigten `undefined`: ein Lernwort
+   trägt `wort`, ein Sprachgegenstand trägt einen Satz mit einer Marke darin.
+   Das ist die **fünfte** Zeile dieser Art in derselben Datei (D4, E5, E9, I22 —
+   und jetzt E29); jedes Mal fiel ein Gegenstand ohne eigenen Zweig auf den
+   Rechenkasten durch.
+
+2. `WELT_VON` in `tor/chromium.mjs` kannte `sprache:` nicht — dieselbe Zeile, die
+   in `spiel.js` als `WELT_VON_ART` schon einmal gefehlt hatte. Dort landeten
+   sieben Ebenen in der Erdkunde, und die Prüfung „höchstens vier Welten" blieb
+   grün, weil Erdkunde ja eine ist.
+
+3. **Und der Vorlauf.** Er legt aus, was gleich drankommt — für eine Karte
+   sechzehn Bundesländer. Für die **Wörterprobe waren es alle 322 Lernwörter**:
+   drei Reihen zu 108 Spalten, von denen dreizehn ins Bild standen, der Rest
+   rechts hinaus. Die Sprachprobe hätte 724 ausgelegt.
+
+Der dritte Punkt steht seit **Etappe 1** so da. Dass ihn niemand gemeldet hat,
+hat einen Grund, und er ist unangenehm: **es sah nicht nach einem Fehler aus,
+sondern nach einer vollen Wand.** Und `passt` misst dort die kleinste
+Beispielkarte — eine Karte, die rechts aus dem Bild steht, hat immer noch ihre
+vollen 61 Punkte und wird als in Ordnung gemeldet.
+
+Jetzt sind es so viele Karten, wie in einer Runde drankommen (Leas acht).
+`vorlaufVorrat` greift gleichmäßig in die Liste, die Auswahl ist also kein
+Anfangsstück — was der Vorlauf verspricht, ist dann auch, was kommt. Und `passt`
+betritt den Vorlauf beider Proben und **zählt die Karten**, statt sie zu messen.
+
+### Das Untertor `sprache`
+
+Für „Sprache untersuchen" gibt es keine amtliche Liste, gegen die zu rechnen
+wäre — der Lehrplan nennt die Lernbereiche und keine Aufgaben. Gemessen wird
+deshalb nicht der Stoff, sondern die **Form**: dass jeder Bildschirm, den diese
+zehn Ebenen bauen können, einer ist, auf dem eine Antwort möglich ist.
+
+- die Wahl enthält die Lösung (ohne das: 49 Aufgaben ohne richtige Antwort)
+- `vor + markiert + nach` ergibt den Satz, und das Markierte steht genau einmal darin
+- kein `<`, `>` oder `&` — das zerreißt die Marke
+- kein Schlusszeichen in einem Satzartsatz: es **ist** die Antwort
+- zehn Sätze je Satzart, jeder Gliedsatz mit allen dreien
+- höchstens neun Wörter, dieselbe Grenze wie bei den Lückensätzen
+- und jede Ebene hat Vorrat für **zwei Runden** — die Grenze kommt aus Leas
+  Sitzungslänge, die das Tor aus `spiel.js` liest, und nicht als Zahl aus mir
+
+**Was dort nicht steht:** ob die Wortart richtig bestimmt ist. Das rechnet
+`wortartVon` nach, und ein Tor, das dieselbe Rechnung noch einmal macht,
+bezeugt sie, statt sie zu prüfen — eine Prüfung, die nie etwas meldet, ist
+kein Beweis (Regel 1).
+
+**Die eine benannte Ausnahme:** `sprache:artikel` hat neun Aufgaben und damit
+1,1 Runden. Die Begleiter sind eine geschlossene Klasse; ein zehnter ist nicht zu
+holen, es sei denn, man erfindet einen. Sie steht deshalb allein in der
+Ausnahmeliste von `vielfalt` — nicht `/^sprache:/`. Die anderen neun Ebenen
+haben zwischen 3,5 und 28 Runden, dort ist die Grenze scharf und soll es
+bleiben. **Das ist der Unterschied zwischen einer benannten Ausnahme und einem
+Loch.**
+
+### Die Kette ist von 18 auf 50 Minuten gewachsen — und 32 davon waren Warten
+
+`npm run tor:voll` brauchte am 26.09. 1054 s. Beim ersten vollen Lauf dieser
+Runde waren es **4961 s**, und davon lagen 4941 in einem einzigen Lauf:
+`smoke (3/4)`. Die anderen dreizehn Browserläufe waren nach spätestens acht
+Minuten fertig und warteten.
+
+Der Grund war nicht der neue Stoff allein. `weitergegangen()` — der Helfer, der
+nach jeder Antwort darauf wartet, dass die **nächste** Aufgabe steht — kannte
+kein Merkmal des Diktat- und des Sprachbildschirms. Er lief deshalb auf jeder
+dieser Ebenen in seine volle Frist von acht Sekunden, meldete `false`, und
+niemand fragte nach. Bei Lea sind das inzwischen 51 Ebenen.
+
+Mit `.deutschfeld` und `.sprachfeld` in der Liste: **2987 s statt 4941 s** für
+denselben Lauf. Zweiunddreißig Minuten, die der Rauchtest wartend verbracht hat,
+seit die Deutsch-Welt existiert.
+
+Dieselbe Falle wie bei `flaggen:karte` zwei Absätze weiter oben in derselben
+Funktion, nur teurer: **eine Liste von Merkmalen veraltet mit jedem Bildschirm,
+der dazukommt** (Regel 6). Und sie kostet nichts Sichtbares — sie macht nicht
+rot, sie macht langsam, und darum sucht sie niemand.
+
+Was bleibt: 3008 s, davon 2600 für Leas Durchgang allein. Das ist kein Fehler
+mehr, sondern der Preis dafür, dass sie 98 Ebenen hat und jede Deutschaufgabe
+gehört, geschrieben und bewertet wird. Wer die Kette kürzer haben will, muss
+dort ansetzen — an der Parallelität ist nichts mehr zu holen (4784 s
+nacheinander gegen 2987 s nebeneinander).
+
+### Offen
+
+- **Ein vierter Deutschraum.** Die zehn Sprachebenen führen in „Im Märchen",
+  den Raum der Rechtschreibung. Nicht gern, aber gemessen: gemalt sind 86 Tiere,
+  und nach „An der Quelle" sind genau zwei ohne Raum. Drei neue Zeichnungen sind
+  eine eigene Runde.
+- **P6 und P7** des Genre-Abgleichs bleiben von Hand beurteilt.

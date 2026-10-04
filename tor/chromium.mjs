@@ -173,8 +173,17 @@ export async function serviere(wurzel, erreichbar = () => true, verzug = () => 0
  */
 const ENGLISCHE_EBENEN = ['englisch', 'freunde', 'verben', 'praeposition',
                           'wendungen', 'hoersatz'];
+/* `sprache:` gehoert zu DEUTSCH und nicht zur Erdkunde (E29).
+ *
+ * Dieselbe Zeile stand in `spiel.js` als `WELT_VON_ART` und fehlte dort
+ * zuerst - sieben Sprachebenen landeten in der Erdkunde, und das Tor
+ * „höchstens vier Welten" blieb gruen, weil Erdkunde ja eine ist.
+ * Gesehen hat es niemand ausser dem Blick auf die Ebenenwahl, wo die
+ * Sprachprobe nicht stand. Hier faellt derselbe Fehler sofort auf: der
+ * Rauchtest findet die Kachel nicht und bricht ab. */
 export const WELT_VON = (ebene) => String(ebene).startsWith('rechnen') ? 'rechnen'
                                 : String(ebene).startsWith('deutsch') ? 'deutsch'
+                                : String(ebene).startsWith('sprache') ? 'deutsch'
                                 : String(ebene).startsWith('schreiben') ? 'schreiben'
                                 : ENGLISCHE_EBENEN.some(e => String(ebene).startsWith(e))
                                   ? 'englisch'

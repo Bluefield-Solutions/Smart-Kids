@@ -1830,6 +1830,24 @@ const EBENEN = [
     art:'deutsch', gruppe:'rechtschreibung', wer:['lea'],
     frageWort:' — woran?' })),
 
+  /* SPRACHE UNTERSUCHEN (E29) — die zweite Haelfte der Deutsch-Welt.
+   *
+   * Zehn Ebenen in EINER Abteilung: fuenf Wortarten, drei Zeitformen,
+   * Satzarten, Satzglieder. Zehn passen in eine Wand - auf dem
+   * Zielgeraet stehen einundzwanzig Kacheln ins Bild (E27), und hier
+   * sind es zehn.
+   *
+   * ZWEI ARTEN VON BILDSCHIRM, und welche es ist, steht an der Ebene
+   * und nicht in einer Liste daneben: die drei Zeitebenen sind
+   * Lueckensaetze und laufen auf dem Diktatbildschirm, die sieben
+   * anderen sind eine Wahl zwischen Begriffen und laufen auf dem
+   * eigenen. `art` entscheidet, `Sprache.EBENEN_SPRACHE` sagt es. */
+  ...Sprache.EBENEN_SPRACHE.map(g => ({ id:`sprache:${g.id}`, ueber:'Klasse 3',
+    titel:'Sprache untersuchen', wo:g.titel,
+    farbe: g.art === 'wortart' ? 4 : g.art === 'zeit' ? 2 : 6,
+    art: g.art === 'zeit' ? 'deutsch' : 'sprache',
+    gruppe:'sprache', wer:['lea'], frageWort:' — woran?' })),
+
   /* DIE PROBE (D6) — eine eigene Kachel, immer offen.
    *
    * Sie steht NICHT in der Gruppe „Rechtschreibung": sie gehoert nicht
@@ -1867,8 +1885,19 @@ const EBENEN = [
     art:'deutsch', gruppe:`wiederholung-${g.abteilung}`, wer:['lea'],
     frageWort:' — woran?' })),
 
-  { id:'deutsch:probe', ueber:'Deutsch', titel:'Probe', farbe:6,
+  { id:'deutsch:probe', ueber:'Deutsch', titel:'Wörterprobe', farbe:6,
     art:'deutsch', wer:['lea'], probe:true },
+
+  /* UND DIE ZWEITE PROBE (E29). Zwei getrennte, nicht eine gemeinsame -
+     so hat es Runde 9 des Verhoers entschieden, und der Grund steht
+     dort: eine Probe, die Rechtschreibung und Grammatik mischt, sagt
+     bei einer Vier nicht, woran es lag. Zwei Noten sagen es.
+     Die Namen sind kurz und parallel: „Wörterprobe" fragt Woerter,
+     „Sprachprobe" fragt, was ein Wort IST. Beide sind elf Zeichen und
+     passen damit in die Kachel (E26b: ein Name, der die Wand ungleich
+     hoch macht, ist ein Inhaltsfehler). */
+  { id:'sprache:probe', ueber:'Deutsch', titel:'Sprachprobe', farbe:3,
+    art:'sprache', wer:['lea'], probe:true },
 ];
 
 /* Die Fachwelten (D4).
@@ -1945,6 +1974,14 @@ const WELT_VON_ART = { rechnen:'rechnen', schreiben:'schreiben',
                        englisch:'englisch', freunde:'englisch', verben:'englisch',
                        praeposition:'englisch',
                        wendungen:'englisch', hoersatz:'englisch',
+                       /* „Sprache untersuchen" gehoert in die
+                          Deutsch-Welt und nicht in die Rueckfallwelt.
+                          Ohne diese Zeile landeten die sieben
+                          Wahl-Ebenen bei Erdkunde - die Zahl der Welten
+                          blieb dabei vier, also hat auch das Tor nichts
+                          gemerkt. Gesehen hat es die Ebenenwahl: dort
+                          stand die Sprachprobe nicht. */
+                       sprache:'deutsch',
                        deutsch:'deutsch' };
 const weltVon = (e) => WELT_VON_ART[e.art] || 'erdkunde';
 /** Welche Welt zuletzt gewählt wurde — dorthin führt jeder Rückweg. */
@@ -2293,8 +2330,17 @@ function silhouette(ebeneId, gruppe) {
   /* Und dieselben fuenf Zeichen fuer die Wiederholung - die Prinzipien
      sind dieselben, also sind es die Bilder auch. Die beiden
      Gruppenkacheln tragen das Buch, wie „Rechtschreibung" darueber. */
-  if (gruppe === 'wiederholung-laute' || gruppe === 'wiederholung-merken')
+  if (gruppe === 'wiederholung-laute' || gruppe === 'wiederholung-merken'
+      || gruppe === 'sprache')
     return deutschZeichen('buch');
+  /* Die zehn Sprachebenen tragen das Zeichen ihrer ART und nicht ihres
+     Prinzips - Wortarten, Zeiten, Saetze sind drei verschiedene Fragen.
+     Dieselben drei Zeichen, die es schon gibt (E29). */
+  if (ebeneId.startsWith('sprache:')) {
+    const e = Sprache.ebeneSprache(ebeneId.split(':')[1]);
+    return deutschZeichen(!e ? 'merken'
+      : e.art === 'zeit' ? 'gestern' : e.art === 'wortart' ? 'ableiten' : 'satz');
+  }
   if (ebeneId.startsWith('deutsch12:')) {
     const g = Deutsch12.gruppeVon(ebeneId.split(':')[1]);
     return deutschZeichen(g ? g.prinzip : 'merken');
@@ -2406,7 +2452,7 @@ const schirmZu = (ebeneId) => ({ rechnen: rechenschirm, schreiben: schreibschirm
   praeposition: freundeschirm,
   flaggen: flaggenschirm,
   wendungen: satzschirm, hoersatz: satzschirm,
-  deutsch: deutschschirm }[ebeneArt(ebeneId)] || spielschirm);
+  deutsch: deutschschirm, sprache: sprachschirm }[ebeneArt(ebeneId)] || spielschirm);
 
 /** Die Ebenen, die DIESEM Kind gehören.
  *
@@ -2533,7 +2579,15 @@ let P=null, Sitzung=null, Stand={}, Einst={ ton:true, klang:false, abend:false, 
   reihenGeteilt: Rechnen.GETEILT_STANDARD, rechenweise:{},
   // Die Sprechprobe (M4r). Sie gehoert hierher und nicht ins Protokoll:
   // sie sagt nichts ueber ein Kind, sondern ueber dieses Geraet.
-  sprechprobe:[] };
+  sprechprobe:[],
+  /* Welche Woerter die Sprachebenen benutzen (E29): `false` heisst
+     Nomen, Verb, Adjektiv - die Fachbegriffe des Lehrplans. `true`
+     heisst Namenwort, Tunwort, Wiewort.
+     IN DEN EINSTELLUNGEN UND NICHT IM PROFIL: es ist keine Auskunft
+     ueber ein Kind, sondern darueber, welche Woerter in Leas Klasse
+     fallen - dieselbe Ueberlegung wie bei `reihenGeteilt`. Ab Werk die
+     Fachbegriffe, weil die bis zum Abitur gelten. */
+  begriffeKindlich:false };
 
 /* ---------- Aufgabenvorrat ---------------------------------------------- */
 /**
@@ -2754,6 +2808,11 @@ const stueckBild = (x, ton, rahmen, offen = false) =>
      Rechenaufgabe: „3 + 4" in einem Kaestchen ist so wiedererkennbar wie
      ein Kartenumriss. */
   : x.lernwort   ? `<div class="wortkleber lernwortkleber" style="--ton:${ton}">${x.wort}</div>`
+  /* Der Sprachgegenstand (E29) zeigt das MARKIERTE und nicht den ganzen
+     Satz - bei einer Satzart ist beides dasselbe, dort steht der Satz
+     da. `satzkleber` setzt enger, weil „Die Großeltern" breiter ist als
+     ein Lernwort. */
+  : x.sprachteil ? `<div class="wortkleber satzkleber" style="--ton:${ton}">${x.wort}</div>`
   : x.sorte === 'chunk'
                  ? `<div class="wortkleber satzkleber" style="--ton:${ton}">${x.wort}</div>`
   /* Das Lautpaar (E5) zeigt BEIDE Woerter, nicht eines. Der Vorlauf sagt,
@@ -2809,7 +2868,13 @@ const kleberBild = (x, i, ebeneId) => stueckBild(x, `var(${FL[i % 7]})`,
    „Abend" allein sagt nicht, woran daran zu ueben ist - „Verlängern
    hilft" schon. Dieselbe Ueberlegung wie beim Lautpaar, unter dem die
    Stolperstelle steht und nicht wieder ein Wort. */
-const stueckFuss = (x) => x.lernwort ? x.gruppeTitel
+/* UNTER DEM SPRACHGEGENSTAND STEHT NICHTS (E29). Beim Lernwort steht
+   dort seine Ebene („Verlängern hilft") - eine Hilfe, denn die Antwort
+   ist die SCHREIBUNG. Bei „Sprache untersuchen" ist die Ebene die
+   Antwort: unter „Frühling" stuende „Nomen", und der Vorlauf der
+   Sprachprobe waere ein Spickzettel. */
+const stueckFuss = (x) => x.sprachteil ? ''
+                        : x.lernwort ? x.gruppeTitel
                         : x.flagge ? x.name
                         : x.bild ? Englisch.anzeigeWort(x.wort)
                         : x.pfad ? x.name : x.zeichenFolge ? x.wort
@@ -2880,6 +2945,27 @@ function vorrat(ebeneId, stand = Stand, voll = false){
     return Deutsch.einheitenVon(kont).map(e => ({
       ...Deutsch.gegenstandZu(e), lernwort:true,
       gruppeTitel: (Deutsch.gruppeVon(e.gruppe) || {}).titel || '' }));
+  /* SPRACHE UNTERSUCHEN (E29). Die Probe zieht quer aus allen zehn
+     Ebenen, so wie die Woerterprobe quer aus den fuenfzehn - und aus
+     demselben Grund: eine Probe misst, was BEHALTEN wurde. */
+  /* `sprachteil` UND NICHT `lernwort`, und das ist die fuenfte Zeile
+     dieser Art in dieser Datei (D4, E5, E9, I22 - und jetzt E29).
+     Der erste Anlauf setzte `lernwort:true`, weil damit Buch, Vorlauf
+     und Endbildschirm sofort etwas anzeigten. Sie zeigten `undefined`:
+     ein Lernwort traegt `wort`, ein Sprachgegenstand traegt einen Satz
+     mit einer Marke darin. Gesammelt wird hier nicht die Schreibung
+     eines Wortes, sondern die Auskunft, WAS es ist - also ein eigener
+     Gegenstand mit eigenem Zweig, kein geborgtes Feld.
+     `wort` steht trotzdem dabei: es ist das, was auf dem Aufkleber
+     steht, und bei einer Satzart ist das der ganze Satz. */
+  const sprachstueck = (a, titel) => ({ ...a, sprachteil:true,
+    wort: a.teil || a.wort || a.satz, gruppeTitel:titel });
+  if (art === 'sprache' && kont === 'probe')
+    return Sprache.EBENEN_SPRACHE.flatMap(e => Sprache.aufgabenZu(e.id)
+      .map(a => sprachstueck(a, e.titel)));
+  if (art === 'sprache')
+    return Sprache.aufgabenZu(kont).map(a => sprachstueck(a,
+      (Sprache.ebeneSprache(kont) || {}).titel || ''));
   /* Die Wiederholung 1/2 (E27). Eigene Kennung, eigener Vorrat, derselbe
      Bildschirm - und ein Satz je Wort statt drei: die Abteilung soll
      auffrischen, nicht noch einmal durchnehmen. */
@@ -3288,35 +3374,67 @@ const standSchluessel = (ebeneId)=>`${P.id}:${ebeneId}`;
  * `einheitenVon` traegt es. */
 const istProbeEbene = (ebeneId) => !!(EBENEN.find(e => e.id === ebeneId) || {}).probe;
 
+/* ZWEI PROBEN, EIN MECHANISMUS (E29).
+ *
+ * Seit es die Sprachprobe gibt, ist „die Probe" nicht mehr eine. Der
+ * erste Anlauf schrieb daneben eine zweite Fassung von `deutschStaende`
+ * mit `Sprache.EBENEN_SPRACHE` statt `Deutsch.GRUPPEN` - zwanzig Zeilen,
+ * die bis auf eine gleich sind. Genau die Form, die Regel 6 meint: der
+ * Tag, an dem jemand das Zusammenfuehren beim Sichern verbessert, wird
+ * es an einer von zwei Stellen tun.
+ *
+ * Also eine Tafel: welche Ebenen eine Probe zusammenliest, und woher
+ * ein Gegenstand weiss, in welche davon er gehoert.
+ *
+ * `heimat` wird bei Sprache nicht aus einem Feld am Gegenstand gelesen,
+ * sondern aus `aufgabenZu` selbst gebaut. Das kostet einen Durchlauf
+ * ueber knapp vierhundert Aufgaben und ist dafuer die einzige Auskunft,
+ * die nicht auseinanderlaufen kann: wer eine Aufgabe von einer Ebene in
+ * die andere schiebt, schiebt ihre Heimat mit. Eine Kennung zu zerlegen
+ * (`sprache:glied:subjekt:3` → welche Ebene?) waere eine Grammatik
+ * nebenher, und die veraltet beim ersten neuen Aufgabentyp. */
+const PROBEN_FELD = {
+  'deutsch:probe': {
+    ebenen: () => Deutsch.GRUPPEN.map(g => `deutsch:${g.id}`),
+    heimat: () => new Map(Deutsch.EINHEITEN.map(e => [e.id, `deutsch:${e.gruppe}`])),
+  },
+  'sprache:probe': {
+    ebenen: () => Sprache.EBENEN_SPRACHE.map(e => `sprache:${e.id}`),
+    heimat: () => new Map(Sprache.EBENEN_SPRACHE.flatMap(e =>
+      Sprache.aufgabenZu(e.id).map(a => [a.id, `sprache:${e.id}`]))),
+  },
+};
+const probenFeld = (ebeneId) => PROBEN_FELD[ebeneId] || PROBEN_FELD['deutsch:probe'];
+
 async function standLaden(ebeneId){
-  if (istProbeEbene(ebeneId)) { Stand = await deutschStaende(); return; }
+  if (istProbeEbene(ebeneId)) { Stand = await probenStaende(ebeneId); return; }
   try { Stand = (await Ablage.hole('fortschritt', standSchluessel(ebeneId))) || Leitner.neuerStand(); }
   catch(e){ Stand = Leitner.neuerStand(); }
 }
 async function standSichern(ebeneId){
-  if (istProbeEbene(ebeneId)) { await deutschStaendeSichern(); gleichlaufBald(); return; }
+  if (istProbeEbene(ebeneId)) { await probenStaendeSichern(ebeneId); gleichlaufBald(); return; }
   try { await Ablage.setze('fortschritt', standSchluessel(ebeneId), Stand); } catch(e){}
   gleichlaufBald();
 }
 
-/** Den gemeinsamen Stand der Probe wieder auf die fuenfzehn Ebenen verteilen. */
-async function deutschStaendeSichern(){
-  const heim = new Map(Deutsch.EINHEITEN.map(e => [e.id, e.gruppe]));
+/** Den gemeinsamen Stand einer Probe wieder auf ihre Ebenen verteilen. */
+async function probenStaendeSichern(ebeneId){
+  const feld = probenFeld(ebeneId);
+  const heim = feld.heimat();
   const je = {};
-  for (const g of Deutsch.GRUPPEN) je[g.id] = {};
   for (const [id, wert] of Object.entries(Stand)) {
-    const g = heim.get(id);
-    if (g) je[g][id] = wert;
+    const e = heim.get(id);
+    if (!e) continue;
+    (je[e] || (je[e] = {}))[id] = wert;
   }
-  for (const g of Deutsch.GRUPPEN) {
-    if (!Object.keys(je[g.id]).length) continue;
+  for (const [ebene, teil] of Object.entries(je)) {
     /* Zusammengefuehrt und nicht ueberschrieben: zwischen Laden und
        Sichern kann auf einem anderen Geraet etwas dazugekommen sein,
        und die Probe kennt nur die Woerter, die sie gestellt hat. */
     let alt = {};
-    try { alt = (await Ablage.hole('fortschritt', `${P.id}:deutsch:${g.id}`)) || {}; } catch(e){}
-    try { await Ablage.setze('fortschritt', `${P.id}:deutsch:${g.id}`,
-      { ...alt, ...je[g.id] }); } catch(e){}
+    try { alt = (await Ablage.hole('fortschritt', `${P.id}:${ebene}`)) || {}; } catch(e){}
+    try { await Ablage.setze('fortschritt', `${P.id}:${ebene}`,
+      { ...alt, ...teil }); } catch(e){}
   }
 }
 /* Der Umzug nach Mittelamerika (A6).
@@ -4280,15 +4398,17 @@ const noteFuer = (anteil) => {
  * wuerde bei jedem Lauf zwanzig zufaellige Woerter ziehen und von
  * Fehlern nichts wissen.
  */
-async function deutschStaende(profilId = P && P.id){
+async function probenStaende(ebeneId, profilId = P && P.id){
   const aus = {};
-  for (const g of Deutsch.GRUPPEN) {
+  for (const ebene of probenFeld(ebeneId).ebenen()) {
     let st = {};
-    try { st = (await Ablage.hole('fortschritt', `${profilId}:deutsch:${g.id}`)) || {}; } catch(e){}
+    try { st = (await Ablage.hole('fortschritt', `${profilId}:${ebene}`)) || {}; } catch(e){}
     Object.assign(aus, st);
   }
   return aus;
 }
+/** Das Fehlerheft liest die Rechtschreibebenen - nur die. */
+const deutschStaende = (profilId) => probenStaende('deutsch:probe', profilId);
 
 /* ---------- Das Fehlerheft (D7) -------------------------------------------
  *
@@ -4343,8 +4463,8 @@ async function deutschFehlerheft(profilId, eintraege){
 const deutschProfile = () => [...new Set(EBENEN.filter(e => e.art === 'deutsch')
   .flatMap(e => e.wer || []))];
 
-async function probeAuswahl(alle, keim){
-  const staende = await deutschStaende();
+async function probeAuswahl(alle, keim, ebeneId){
+  const staende = await probenStaende(ebeneId);
   const fehler = [], geuebt = [], neu = [];
   for (const g of alle) {
     const e = staende[g.id];
@@ -4805,6 +4925,21 @@ const VORLAUF_JE = (art, ebeneId) =>
   : art === 'englisch' ? 12
   : ['rechnen', 'freunde', 'verben', 'praeposition'].includes(art) ? P.sitzung
   : ['wendungen', 'hoersatz'].includes(art) ? 3
+  /* EINE RUNDE LANG, NICHT DIE GANZE WELT (E29) - und das ist ein
+     Fehler, der seit Etappe 1 dastand und den ich erst gesehen habe,
+     als die Sprachprobe ihn verdreifachte.
+     Die Woerterprobe legte im Vorlauf ALLE 322 Lernwoerter aus: drei
+     Reihen zu 108 Spalten, von denen dreizehn ins Bild stehen, der Rest
+     rechts hinaus. Es sah nicht nach einem Fehler aus, sondern nach
+     einer vollen Wand - deshalb hat es niemand gemeldet, `passt` am
+     wenigsten: dort ist nichts abgeschnitten, was es nicht absichtlich
+     waere, denn das Gitter laeuft nicht ueber, es wird nur schmal.
+     Die Sprachprobe haette 724 gelegt. Jetzt sind es so viele, wie in
+     einer Runde drankommen - was der Vorlauf verspricht („so sehen die
+     Aufgaben aus"), ist dann auch, was kommt. `vorlaufVorrat` greift
+     gleichmaessig in die Liste, die Auswahl ist also kein Anfangsstueck.
+     Dieselbe Zahl wie beim Rechnen, und aus demselben Grund. */
+  : ['deutsch', 'deutsch12', 'sprache'].includes(art) ? P.sitzung
   : null;
 function vorlaufVorrat(ebeneId){
   const alle = vorrat(ebeneId);
@@ -4987,6 +5122,11 @@ function vorlaufSatz(ebeneId){
       + 'zur Wahl, danach tippst du selbst. Wenn etwas schiefgeht, kommt erst '
       + 'die <strong>Regel</strong> und dann die Lösung. Tippe hier ein Wort an, '
       + 'dann hörst du es.';
+  if (art === 'sprache')
+    return 'Ein Satz steht da, und ein Teil davon ist <strong>markiert</strong>. '
+      + 'Du sagst, was für ein Wort oder Satzteil das ist — die Antwort ist '
+      + 'einer der Knöpfe darunter. Hier ein paar der markierten Stellen; '
+      + 'antippen sagt dir den ganzen Satz.';
   if (art === 'rechnen')
     return `So sehen die Aufgaben aus — hier ein paar davon, `
       + `gleich kommen ${P.sitzung}. Antippen sagt dir die Aufgabe und das Ergebnis.`;
@@ -5153,6 +5293,12 @@ function vorlaufAnsage(x, ebeneId){
      Wort: im Vorlauf ist es zu SEHEN, und wer es nur hoert, weiss noch
      nicht, was daran schwer ist. */
   if (x.lernwort) return `${x.wort}. ${x.gruppeTitel}.`;
+  /* Beim Sprachgegenstand wird der SATZ gesagt und nicht das markierte
+     Wort allein: woran eine Wortart zu erkennen ist, steht im Satz
+     („Im Frühling blühen die Blumen"), nicht im Wort. Die Ebene wird
+     nicht mitgesagt - sie ist die Antwort, dieselbe Ueberlegung wie
+     beim Fuss des Aufklebers. */
+  if (x.sprachteil) return x.satz || x.wort;
   // Der englische Gegenstand sagt SEIN Wort, und zwar auf Englisch. Ein
   // deutscher Rahmensatz drumherum („Das heißt blue.") liefe durch die
   // englische Stimme und klänge nach nichts.
@@ -5299,7 +5445,7 @@ async function starten(ebeneId, alsTest = false){
      zum Zug, obwohl sie danach steht: die Probe ist kein Test einer
      Ebene und hat deshalb `alsTest` nicht gesetzt. */
   const istProbe = !!eb?.probe;
-  const probeListe = istProbe ? await probeAuswahl(alle, keim) : null;
+  const probeListe = istProbe ? await probeAuswahl(alle, keim, ebeneId) : null;
   /* Welche Abzeichen es VORHER schon gab (D2).
    *
    * Ohne diesen Griff waere ein neues Abzeichen am Ende nicht von einem
@@ -6684,6 +6830,177 @@ function deutschschirm(){
     if (w) w.appendChild(b); }
   return s;
 }
+
+/**
+ * SPRACHE UNTERSUCHEN — der Bildschirm fuer die sieben Ebenen, die
+ * keine Luecke haben (E29).
+ *
+ * Ein Satz steht da, ein Teil davon ist markiert, und darunter stehen
+ * drei bis fuenf Begriffe zur Wahl. Das ist die Aufgabe, die der
+ * Lehrplan unter „Sprache untersuchen" fuehrt - nicht „schreibe",
+ * sondern „erkenne".
+ *
+ * WARUM NICHT „WO IST DAS NOMEN?": weil dann jede Aufgabe dieser Ebene
+ * dieselbe Antwort haette und ein Kind lernte, auf das zweite Wort zu
+ * tippen. Gefragt wird nach dem MARKIERTEN, und die Ebene heisst nach
+ * dem, woran sie uebt.
+ *
+ * BEI EINEM FEHLER kommt die Erklaerung des GEWAEHLTEN Begriffs und
+ * nicht die des richtigen. „Ein Nomen ist ein Namenwort - davor passt
+ * der, die oder das." Das sagt, warum die Wahl nicht passt, und
+ * verraet die Loesung nicht; die Erklaerung des richtigen waere bei
+ * fuenf Knoepfen die halbe Antwort. Erst beim dritten Versuch loest der
+ * Bildschirm auf - dieselbe Leiter wie beim Diktat.
+ */
+/* Die drei Begriffe, an denen der Regler im Elternbereich zu sehen ist -
+   eine AUSWAHL aus `BEGRIFFE` und keine zweite Liste, die dann einmal
+   veraltet (Regel 6): wer dort „Wiewort" aendert, aendert den Knopf mit.
+   Drei und nicht alle vierzehn, weil „Gegenwart" in beiden Spalten gleich
+   heisst und ein Beispiel, das keinen Unterschied zeigt, keines ist. */
+const BEGRIFFSPROBE = ['nomen', 'verb', 'adjektiv'];
+const begriffsReihe = (kindlich) => BEGRIFFSPROBE
+  .map(id => Sprache.begriff(id, kindlich)).join(' · ');
+/* Der Knopf sagt, wohin er fuehrt, nicht wo man steht - „Rückmeldeton
+   ausschalten" nebenan macht es genauso. */
+const begriffsknopf = () => `Auf „${begriffsReihe(!Einst.begriffeKindlich)}" umstellen`;
+const begriffsbeispiel = () => `Zurzeit steht auf den Knöpfen: ${
+  begriffsReihe(!!Einst.begriffeKindlich)}.`;
+
+function sprachschirm(){
+  /* DIE WEICHE HAENGT AM GEGENSTAND UND NICHT AN DER EBENE - dieselbe
+     Stelle wie bei `englischschirm`, und aus demselben Grund.
+     Sieben der zehn Sprachebenen stellen eine Wahl, die drei Zeitformen
+     einen Lueckensatz; die laufen deshalb auf dem Diktatbildschirm, und
+     in der EBENENLISTE steht das auch so (`art:'deutsch'`).
+     In der SPRACHPROBE liegen beide Sorten nebeneinander - sie zieht
+     quer aus allen zehn. Dort stimmt die Art der Ebene nur noch fuer
+     sieben von zehn Aufgaben, und die anderen drei liefen in ein
+     `ziel.wahl is not iterable`: ein weisser Bildschirm mitten in einer
+     Probe. Gefragt wird deshalb den Gegenstand: wer keine Knoepfe
+     mitbringt, bekommt den Diktatbildschirm. */
+  if (!Sitzung.liste[Sitzung.i].wahl) return deutschschirm();
+  const s = el('div'), st = Sitzung, ziel = st.liste[st.i];
+  const beginn = Date.now();
+  let versuch = 0, erledigt = false;
+  const kindlich = !!Einst.begriffeKindlich;
+  const wort = (id) => Sprache.begriff(id, kindlich);
+
+  const protokollieren = (ergebnis, roh, fachVorher) =>
+    eintragen(st, ziel, { ergebnis, roh, fachVorher, versuch, beginn,
+      eingabeart: 'antippen' });
+  const weiter = () => weiterIn(st);
+
+  /* Gemischt mit dem Sitzungskeim und nicht mit `Math.random`, wie
+     ueberall in diesem Verzeichnis: sonst stuende die richtige Antwort
+     immer an derselben Stelle. */
+  const knoepfe = mischenMit([...ziel.wahl], keimAus(`${st.keim}:${ziel.id}`));
+
+  /* Ohne Entschaerfung, und das ist gemessen statt gehofft: die Saetze
+     sind eigene Daten und tragen kein <, > oder & - das Untertor
+     `sprache` rechnet es bei jedem Lauf nach. Eine Entschaerfung, die
+     nie etwas zu tun hat, waere eine Zeile, von der niemand merkt,
+     wenn sie aufhoert zu wirken. */
+  const satzHtml = () => ziel.teil
+    ? `${ziel.vor}<mark class="sprachteil">${ziel.teil}</mark>${ziel.nach}`
+    : ziel.satz;
+
+  s.innerHTML = aufgabenKopf(st) + `
+    <div class="frage" id="frage">${ziel.frage}</div>
+    <div class="sprachfeld">
+      <div class="sprachsatz" id="satz">${satzHtml()}</div>
+      <div class="wahlkarten" id="wahl">${knoepfe.map(k =>
+        `<button class="knopf wahlkarte" data-wahl="${k}">${wort(k)}</button>`).join('')}</div>
+      ${WEISSNICHT}
+    </div>`;
+
+  const ausschalten = () => s.querySelectorAll('.wahlkarte')
+    .forEach(k => k.disabled = true);
+  const frageFeld = () => s.querySelector('#frage');
+
+  /* Der Satz bekommt am Ende sein Satzzeichen - bei den Satzarten IST
+     das die Aufloesung. Bei den anderen Ebenen gibt es keines zu
+     setzen, und dann bleibt der Satz, wie er war. */
+  const zeichenSetzen = () => {
+    if (!ziel.zeichen) return;
+    const f = s.querySelector('#satz');
+    if (f) f.innerHTML = `${satzHtml()}<strong class="satzzeichen">${ziel.zeichen}</strong>`;
+  };
+
+  function aufloesen(){
+    if (erledigt) return;
+    erledigt = beendet(s);
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    Stand = Leitner.verschieben(Stand, ziel.id, false, Date.now());
+    st.wie[st.i] = 'gezeigt';
+    kopfNachziehenIn(s);
+    protokollieren('gezeigt', '', fachVorher);
+    ausschalten();
+    zeichenSetzen();
+    const f = frageFeld();
+    const satz = `Kein Problem: ${wort(ziel.loesung)}. ${Sprache.BEGRIFFE[ziel.loesung].hilfe}`;
+    if (f) f.innerHTML = `<span class="loesung">Kein Problem: `
+      + `<strong>${wort(ziel.loesung)}</strong>. ${Sprache.BEGRIFFE[ziel.loesung].hilfe}</span>`;
+    sagen(satz);
+    standSichern(st.ebeneId);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function richtig(){
+    erledigt = beendet(s);
+    const neuerAufkleber = werten(ziel, 'richtig', versuch);
+    kopfNachziehenIn(s);
+    ausschalten();
+    zeichenSetzen();
+    const spruch = lob();
+    /* Die Erklaerung steht AUCH beim Treffer da - dieselbe Ueberlegung
+       wie beim Diktat: wer „Nomen" auf Anhieb trifft, weiss deshalb
+       noch nicht, WORAN er es erkannt hat. */
+    lobsatz(s, `<strong>${wort(ziel.loesung)}</strong>`, null, spruch,
+      Sprache.BEGRIFFE[ziel.loesung].hilfe, neuerAufkleber);
+    sagen(`${spruch} ${Sprache.BEGRIFFE[ziel.loesung].hilfe}`);
+    setTimeout(weiter, LOBPAUSE);
+  }
+
+  function bewerte(gewaehlt){
+    if (erledigt) return;
+    versuch++;
+    const fachVorher = Stand[ziel.id]?.fach ?? 1;
+    if (gewaehlt === ziel.loesung) {
+      protokollieren('richtig', gewaehlt, fachVorher);
+      return richtig();
+    }
+    protokollieren('falsch', gewaehlt, fachVorher);
+    klangZu('falsch');
+    if (versuch >= 3) return aufloesen();
+    const satz = `Nicht ganz. ${wort(gewaehlt)}: `
+      + `${Sprache.BEGRIFFE[gewaehlt].hilfe} Hier passt das nicht.`;
+    const f = frageFeld();
+    if (f) f.innerHTML = `<span class="fastText">${satz}</span>`;
+    sagen(satz);
+  }
+
+  s.querySelectorAll('.wahlkarte').forEach(k => k.onclick = () => {
+    if (erledigt) return;
+    k.classList.add('gewaehlt');
+    bewerte(k.dataset.wahl);
+    /* Eine Karte, die danebenlag, bleibt blass stehen - wer sie
+       wegnimmt, verkleinert die Auswahl bei jedem Fehlversuch, und der
+       dritte Anlauf waere geschenkt. */
+    if (!erledigt) { k.classList.remove('gewaehlt'); k.classList.add('daneben'); }
+  });
+
+  ausweg(s, aufloesen);
+  s.querySelector('#zur').onclick = () => zeige(pauseSchirm);
+  /* Der Satz wird vorgelesen, WENN das Profil es will - anders als beim
+     Diktat, wo der Ton die Aufgabe ist. Hier steht der Satz geschrieben
+     da und soll gelesen werden; das Vorlesen ist die Hilfe und haengt
+     deshalb am Profil. */
+  const b = nochHoerenKnopf(ziel.satz, 'de');
+  if (b) { const w = s.querySelector('.wahlkarten');
+    if (w) w.parentNode.appendChild(b); }
+  return s;
+}
+
 
 /* ---------- „Sag es" (E6) ------------------------------------------------
  *
@@ -12347,6 +12664,18 @@ async function elternbereich(){
         <button class="knopf" id="klang">${Einst.klang?'Rückmeldeton ausschalten':'Rückmeldeton einschalten'}</button>
       </div>
 
+      <h3 class="gruppe">Begriffe in „Sprache untersuchen"</h3>
+      <p class="unter">Der LehrplanPLUS sagt <em>Nomen, Verb, Adjektiv</em>. Viele dritte
+        Klassen sagen noch <em>Namenwort, Tunwort, Wiewort</em>. Welches Leas Klasse
+        benutzt, weiß diese App nicht — deshalb steht es hier und wird nicht geraten.
+        <strong>Ab Werk die Fachbegriffe</strong>, weil die bis zum Abitur gelten.
+        <br>Umgeschaltet wird die Beschriftung, nicht der Stoff: dieselben Aufgaben,
+        dieselben Sätze, dieselbe Probe.</p>
+      <div class="reihe" style="justify-content:flex-start">
+        <button class="knopf" id="begriffe">${begriffsknopf()}</button>
+      </div>
+      <p class="unter" id="begriffsbeispiel">${begriffsbeispiel()}</p>
+
       <h3 class="gruppe">Sprachmodus</h3>
       <p class="unter">Die Spracherkennung läuft <strong>nicht auf dem Gerät</strong>.
         Was das Kind sagt, geht zur Erkennung an Apple beziehungsweise den Browserhersteller.
@@ -12553,6 +12882,13 @@ async function elternbereich(){
   s.querySelector('#sprach').onclick=async(e)=>{
     Einst.sprachmodus=!Einst.sprachmodus; await einstSichern();
     e.target.textContent=Einst.sprachmodus?'Sprachmodus ausschalten':'Sprachmodus einschalten'; };
+  /* Der Begriffsregler (E29). Das Beispiel darunter wird mitgezogen -
+     sonst muesste man den Elternbereich verlassen und eine Sprachebene
+     oeffnen, um zu sehen, was der Knopf getan hat. */
+  s.querySelector('#begriffe').onclick=async(e)=>{
+    Einst.begriffeKindlich=!Einst.begriffeKindlich; await einstSichern();
+    e.target.textContent=begriffsknopf();
+    s.querySelector('#begriffsbeispiel').textContent=begriffsbeispiel(); };
   s.querySelector('#klang').onclick=async(e)=>{
     Einst.klang=!Einst.klang; await einstSichern();
     // Zum Anhoeren, ohne den Elternbereich zu verlassen: wer den Schalter

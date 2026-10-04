@@ -189,7 +189,7 @@ Jede für sich spielbar, jede mit voller Torkette, Push und Auslieferung.
 |---|---|
 | **1** | Rechtschreibung 3/4: 15 Ebenen, 234 Wörter, ~700 Sätze, Buchstabentasten, Regelbegründungen, Fehlerheft, Probe Rechtschreibung |
 | **2** | Wiederholung 1/2: 24 Ebenen in **zwei** Abteilungen, 245 Einträge, 278 Lerneinheiten, 278 Sätze — **gebaut (E27)** |
-| **3** | Sprache untersuchen: Wortarten, Zeitformen, Satzarten, Satzglieder, Probe Sprache untersuchen, Begriffe-Regler |
+| **3** | Sprache untersuchen: 10 Ebenen, 724 Aufgaben, Probe Sprache untersuchen, Begriffe-Regler — **gebaut (E29)** |
 
 
 ---
@@ -322,3 +322,73 @@ drei Tiere.
 Tieren ohne Raum. Und „Quelle" steht in der amtlichen Liste 1/2, unter den
 Wörtern mit `<Qu>`: der Zusammenhang ist wieder keiner, der erfunden werden
 musste.
+
+---
+
+## Etappe 3 — gebaut, gemessen (04.10.2026)
+
+Zehn Ebenen und eine eigene Probe. Der LehrplanPLUS führt für die dritte
+Jahrgangsstufe im Lernbereich *Sprache untersuchen* vier Dinge; sie stehen
+jetzt als Daten in `src/inhalt/sprache.js`.
+
+| Ebenengruppe | Ebenen | Aufgaben | woher der Stoff kommt |
+|---|---|---|---|
+| Wortarten | 5 | 520 | aus den 600 Lernwörtern — mit **ihren** Sätzen |
+| Zeitformen | 3 | 84 | aus den Paaren der amtlichen Liste plus Hilfsverbtafel |
+| Satzarten | 1 | 30 | 30 eigene Sätze, zehn je Art |
+| Satzglieder | 1 | 90 | 30 eigene Sätze, jeder mit allen dreien |
+| **zusammen** | **10** | **724** | |
+
+Je Wortart: Nomen 224 · Verb 182 · Adjektiv 56 · Artikel 9 · Pronomen 49.
+
+### Die Zusage „dieselben Sätze" — wo sie gilt und wo nicht
+
+Für die **Wortarten** ist sie eingelöst: jede Aufgabe nimmt ein Lernwort, das
+schon dasteht, und den Satz, in dem es schon steht. Kein zweiter Satz, kein
+zweites Wort. Die Stelle der Marke kommt aus der **Lücke** des Satzes und nicht
+aus einer Suche — „Mein kleiner Finger tut weh" enthält „ein" zweimal.
+
+Für **Satzarten** und **Satzglieder** gilt sie nicht, und der Grund ist
+gemessen: von den 1244 vorhandenen Sätzen sind 1136 Aussagen, 100 Fragen und
+**acht** Ausrufe. Wer bei dieser Verteilung immer „Aussage" tippt, hat 91 %.
+Und Satzglieder brauchen eine Auszeichnung, die kein Satz mitbringt.
+
+### Gefragt wird nach dem Markierten
+
+Nicht „wo ist das Nomen?", sondern „was für ein Wort ist das markierte?". Die
+Ebene heißt nach dem, **woran** sie übt, nicht nach der Antwort — eine
+Nomen-Ebene zeigt deshalb auch Verben und Artikel. Sonst lernt ein Kind, auf
+das zweite Wort zu tippen.
+
+Bei einem Fehler kommt die Erklärung des **gewählten** Begriffs, nicht die des
+richtigen: sie sagt, warum die Wahl nicht passt, und verrät die Lösung nicht.
+Erst beim dritten Versuch löst der Bildschirm auf — dieselbe Leiter wie beim
+Diktat.
+
+### Der Begriffsregler
+
+Der Lehrplan sagt *Nomen, Verb, Adjektiv*; viele bayerische dritte Klassen
+sagen noch *Namenwort, Tunwort, Wiewort*. Welches Leas Klasse benutzt, weiß
+niemand von uns sicher — **ein Regler im Elternbereich schaltet die
+Beschriftung um, statt dass es geraten wird.** Ab Werk die Fachbegriffe, weil
+die bis zum Abitur gelten. Eine Tafel, zwei Spalten; der Regler wählt die
+Spalte, nicht die Liste.
+
+### Zwei Proben, ein Mechanismus
+
+`PROBEN_FELD` in `spiel.js` sagt, welche Ebenen eine Probe zusammenliest und
+woher ein Gegenstand weiß, in welche davon er gehört. Die Wörterprobe liest die
+fünfzehn Rechtschreibebenen, die Sprachprobe die zehn Sprachebenen; beide über
+denselben Code. Die Heimat eines Sprachgegenstands wird dabei aus `aufgabenZu`
+selbst gebaut — die einzige Auskunft, die nicht auseinanderlaufen kann.
+
+Welcher Bildschirm eine Aufgabe trägt, entscheidet der **Gegenstand** und nicht
+die Ebene: wer keine Knöpfe mitbringt, bekommt den Diktatbildschirm. In der
+Probe liegen beide Sorten nebeneinander.
+
+### Der Raum
+
+Die zehn Ebenen führen vorerst in **„Im Märchen"**, den Raum der
+Rechtschreibung — nicht gern, aber gemessen: gemalt sind 86 Tiere, und nach „An
+der Quelle" sind genau zwei ohne Raum. Ein vierter Deutschraum braucht drei
+neue Zeichnungen und ist eine eigene Runde.

@@ -1,5 +1,17 @@
 [
   {
+    "dateien": "src/inhalt/englisch.js",
+    "token": 1059,
+    "wo": [
+      "src/inhalt/englisch.js:1039",
+      "src/inhalt/englisch.js:1088",
+      "src/inhalt/englisch.js:1160",
+      "src/inhalt/englisch.js:1489",
+      "src/inhalt/englisch.js:1546"
+    ],
+    "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt. — Nachgetragen in E4: von 301 auf 1204. Der Bildplan (BILDER) ist die zweite gleichfoermige Tabelle in derselben Datei, 86 Zeilen der Form `{ wort, gebiet, motiv }`, und sie ist mit dem Wortschatz zu EINEM Lauf zusammengewachsen: dazwischen stehen nur Kommentare, und die zaehlt das Tor nicht mit. Zusammenlegen gibt es auch hier nichts - was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderes Motiv. Die Zahl haengt an zwei Zaehlungen: 151 Woerter und 86 Bilder. Wer sie hochsetzt, prueft zuerst, ob wirklich nur Zeilen dazugekommen sind - das Untertor `englisch` rechnet beide Zahlen nach. — Nachgetragen in E17: die WENDUNGEN-Tafel ist von 60 auf 100 Zeilen gewachsen, und der gleichförmige Lauf damit von 683 auf 825 Token. Wieder nur Datenzeilen derselben Form, je Zeile id/gebiet/deutsch/richtig; die Zahl misst die Länge des Laufs, nicht die Menge an Dopplung. Wer sie hochsetzt, zählt zuerst die Wendungen."
+  },
+  {
     "dateien": "src/inhalt/erdkunde.js",
     "token": 960,
     "wo": [
@@ -115,16 +127,7 @@
     "warum": "Die SIEBEN Länderlisten (Q11: Ozeanien ist die siebte). Eine Zeile je Land, immer a3/name/rang/aussprache — Daten, keine Logik. Wer Tschechien einträgt, soll eine Zeile schreiben. Die Zahl wächst mit jeder Karte: 250 bei fünf Listen, 322 bei sieben. Wer sie hier hochsetzt, prüft zuerst, ob wirklich nur eine LISTE dazugekommen ist und nicht Logik. Mit I3 sind es 124 Länder statt 69 — dieselbe Tabelle, nur länger. — Nachgetragen in I16: von 572 auf 968. Die Hauptstadttafel HAUPTSTADT_LAND ist die vierte gleichfoermige Tabelle in dieser Datei (a3 → Stadtname) und mit den Laenderlisten zu EINEM Lauf zusammengewachsen; dazwischen stehen nur Kommentare, und die zaehlt das Tor nicht mit. Zusammenlegen gibt es nichts: die Laenderliste sagt, WAS gefragt wird, die Hauptstadttafel, WIE die Antwort lautet. Wer die Zahl hochsetzt, prueft zuerst, ob wirklich nur Zeilen dazugekommen sind - das Untertor `inhalt` rechnet 123 Hauptstaedte und 121 Ablenkerpaare nach."
   },
   {
-    "dateien": "src/inhalt/englisch.js",
-    "token": 825,
-    "wo": [
-      "src/inhalt/englisch.js:2986",
-      "src/inhalt/englisch.js:3029"
-    ],
-    "warum": "Der verbindliche Wortschatz: 151 Woerter, sechs je Zeile, sonst nichts. Ein gleichfoermiger Lauf von 301 Token ist genau das, was eine Datenliste ist - Wort, Komma, Wort, Komma. Zusammenlegen gibt es hier nicht zu; die Liste ist der Inhalt. Derselbe Fall wie die sieben Laenderlisten in erdkunde.js. Die Zahl ist an die Wortzahl gebunden: 151 Woerter ergeben 301 Token, und wer sie hochsetzt, prueft zuerst, ob wirklich nur Woerter dazugekommen sind - denn geprueft wird die Liste gegen die amtliche Quelle in docs/referenz/, und dort duerfen keine dazukommen, die das ISB nicht kennt. — Nachgetragen in E4: von 301 auf 1204. Der Bildplan (BILDER) ist die zweite gleichfoermige Tabelle in derselben Datei, 86 Zeilen der Form `{ wort, gebiet, motiv }`, und sie ist mit dem Wortschatz zu EINEM Lauf zusammengewachsen: dazwischen stehen nur Kommentare, und die zaehlt das Tor nicht mit. Zusammenlegen gibt es auch hier nichts - was gleich ist, ist die FORM, und der Inhalt ist in jeder Zeile ein anderes Motiv. Die Zahl haengt an zwei Zaehlungen: 151 Woerter und 86 Bilder. Wer sie hochsetzt, prueft zuerst, ob wirklich nur Zeilen dazugekommen sind - das Untertor `englisch` rechnet beide Zahlen nach. — Nachgetragen in E17: die WENDUNGEN-Tafel ist von 60 auf 100 Zeilen gewachsen, und der gleichförmige Lauf damit von 683 auf 825 Token. Wieder nur Datenzeilen derselben Form, je Zeile id/gebiet/deutsch/richtig; die Zahl misst die Länge des Laufs, nicht die Menge an Dopplung. Wer sie hochsetzt, zählt zuerst die Wendungen."
-  },
-  {
-    "dateien": "src/inhalt/englisch.js · src/inhalt/tiere.js",
+    "dateien": "src/inhalt/englisch.js · src/inhalt/sprache.js · src/inhalt/tiere.js",
     "token": 702,
     "wo": [
       "src/inhalt/englisch.js:3455",
@@ -161,6 +164,36 @@
       "src/inhalt/englisch.js:3556",
       "src/inhalt/englisch.js:3559",
       "src/inhalt/englisch.js:3561",
+      "src/inhalt/sprache.js:305",
+      "src/inhalt/sprache.js:306",
+      "src/inhalt/sprache.js:307",
+      "src/inhalt/sprache.js:308",
+      "src/inhalt/sprache.js:309",
+      "src/inhalt/sprache.js:310",
+      "src/inhalt/sprache.js:311",
+      "src/inhalt/sprache.js:312",
+      "src/inhalt/sprache.js:313",
+      "src/inhalt/sprache.js:314",
+      "src/inhalt/sprache.js:315",
+      "src/inhalt/sprache.js:316",
+      "src/inhalt/sprache.js:317",
+      "src/inhalt/sprache.js:318",
+      "src/inhalt/sprache.js:319",
+      "src/inhalt/sprache.js:320",
+      "src/inhalt/sprache.js:321",
+      "src/inhalt/sprache.js:322",
+      "src/inhalt/sprache.js:323",
+      "src/inhalt/sprache.js:324",
+      "src/inhalt/sprache.js:325",
+      "src/inhalt/sprache.js:326",
+      "src/inhalt/sprache.js:327",
+      "src/inhalt/sprache.js:328",
+      "src/inhalt/sprache.js:329",
+      "src/inhalt/sprache.js:353",
+      "src/inhalt/sprache.js:354",
+      "src/inhalt/sprache.js:355",
+      "src/inhalt/sprache.js:356",
+      "src/inhalt/sprache.js:357",
       "src/inhalt/tiere.js:272",
       "src/inhalt/tiere.js:273",
       "src/inhalt/tiere.js:274",
@@ -169,29 +202,29 @@
       "src/inhalt/tiere.js:287",
       "src/inhalt/tiere.js:288"
     ],
-    "warum": "Zwei DATENTABELLEN, die sich nur in der Form gleichen: die zwanzig Saetze zum Selbersagen (E9) tragen id/satz/gebiet/quelle, die Tierzeilen id/name/ton/raum. Eine Tabelle besteht aus gleichfoermigen Zeilen — das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Zusammenlegen hiesse hier, englische Redemittel mit Tierdaten zu verheiraten; die beiden haben ausser der Form nichts gemeinsam. Dieselbe Begruendung wie bei den Laenderlisten in erdkunde.js weiter oben. — Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs, nicht die MENGE an Dopplung: sie waechst, wenn eine Tabelle laenger wird, und faellt nicht, wenn eine andere aufgeraeumt wird. Wer sie hochsetzt, zaehlt zuerst die Zeilen. — Nachgetragen in E7: sechzehn Zeilen des Bildplans haben ein `pfad`-Feld dazubekommen, und der gleichfoermige Lauf ist damit von 687 auf 700 Token gewachsen. Wieder nur Daten und keine Logik: die Zahl misst die LAENGE des Laufs, nicht die Menge an Dopplung. — Nachgetragen in E15: die CHUNKS-Tafel ist um 19 Zeilen gewachsen (20 Sätze zum Selbersagen wurden 39), und der gleichförmige Lauf damit von 687 auf 702 Token. Wieder nur Datenzeilen derselben Form, je Zeile id/gebiet/satz/quelle; die Zahl misst die Länge des Laufs, nicht die Menge an Dopplung. Wer sie hochsetzt, zählt zuerst die Sätze."
+    "warum": "Drei Datentabellen in derselben Form: die Wendungen (id/gebiet/deutsch/richtig), die dreißig Satzglied-Sätze (satz/subjekt/prädikat/objekt) und die Lebensräume (ebenen/titel/tiere). Was sie teilen, ist die FORM einer Zeile mit benannten Feldern — mehr haben Englischwendungen, deutsche Satzglieder und Tierräume nicht miteinander zu tun. Zusammenlegen hieße, drei verschiedene Sachen in eine Tabelle zu zwingen. Die Zahl misst die Länge des gleichförmigen Laufs; wer sie hochsetzt, zählt zuerst nach — das Untertor `sprache` rechnet 30 Satzglied-Sätze und 30 Satzart-Sätze nach."
   },
   {
     "dateien": "tor/proben-liste.mjs",
     "token": 637,
     "wo": [
-      "tor/proben-liste.mjs:3384",
-      "tor/proben-liste.mjs:3395",
-      "tor/proben-liste.mjs:3405",
-      "tor/proben-liste.mjs:3414",
-      "tor/proben-liste.mjs:3434",
-      "tor/proben-liste.mjs:3444",
-      "tor/proben-liste.mjs:3455",
-      "tor/proben-liste.mjs:3467",
-      "tor/proben-liste.mjs:3488",
-      "tor/proben-liste.mjs:3527",
-      "tor/proben-liste.mjs:3530",
-      "tor/proben-liste.mjs:3546",
-      "tor/proben-liste.mjs:3550",
-      "tor/proben-liste.mjs:3969",
-      "tor/proben-liste.mjs:4024",
-      "tor/proben-liste.mjs:4036",
-      "tor/proben-liste.mjs:4049"
+      "tor/proben-liste.mjs:3441",
+      "tor/proben-liste.mjs:3452",
+      "tor/proben-liste.mjs:3462",
+      "tor/proben-liste.mjs:3471",
+      "tor/proben-liste.mjs:3491",
+      "tor/proben-liste.mjs:3501",
+      "tor/proben-liste.mjs:3512",
+      "tor/proben-liste.mjs:3524",
+      "tor/proben-liste.mjs:3545",
+      "tor/proben-liste.mjs:3584",
+      "tor/proben-liste.mjs:3587",
+      "tor/proben-liste.mjs:3603",
+      "tor/proben-liste.mjs:3607",
+      "tor/proben-liste.mjs:4026",
+      "tor/proben-liste.mjs:4081",
+      "tor/proben-liste.mjs:4093",
+      "tor/proben-liste.mjs:4106"
     ],
     "warum": "Die Probenliste IST eine Tabelle: jede Zeile hat n/tor/such/ersatz/an/sagt. Zeilen einer Tabelle sehen sich ähnlich, und das ist ihr Zweck — sie nebeneinander lesen zu können. Zusammenlegen hiesse, sie zu verstecken. — Nachgetragen in P10: die Zahl stieg von 464 auf 637, OHNE dass die Liste länger wurde (213 Zeilen vorher, 213 nachher). Sie stieg, weil eine Zeile WEGFIEL: „die umgekehrte Frage kommt auch für Winzlinge“ wurde zu einem Kommentar, Kommentare zählt das Tor nicht mit, und die beiden gleichförmigen Stränge beiderseits rückten im Tokenstrom zusammen zu EINEM. Gemessen am Baum von b2c65fb: dieselbe Stelle, 423 Token. Diese Kennzahl ist die LÄNGE des längsten gleichförmigen Laufs, nicht die MENGE an Dopplung — an einer Tabelle kann sie deshalb auch dann wachsen, wenn etwas gestrichen wird. Wer sie hier hochsetzt, prüft zuerst die Zeilenzahl der Liste."
   },
@@ -408,6 +441,15 @@
     "warum": "Die Urteilstabelle IST eine Tabelle: je Zeile ein Paar, ein Urteil und der Satz, warum es auf dem Blatt so aussieht. Neunzehn davon lauten „harmlos\", und die Zeilen gleichen sich deshalb in ihrer Form. Zusammenlegen hiesse hier, die Faelle zu Gruppen zu verrechnen - und genau das darf nicht passieren: jede Zeile ist EIN angesehenes Paar, und ihr Wert liegt darin, dass jemand hingesehen hat. Wer sie kuerzt, kuerzt die Eichung."
   },
   {
+    "dateien": "src/inhalt/englisch.js · src/inhalt/sprache.js",
+    "token": 312,
+    "wo": [
+      "src/inhalt/englisch.js:444",
+      "src/inhalt/sprache.js:250"
+    ],
+    "warum": "Die Begriffstafel von „Sprache untersuchen\" (vierzehn Einträge aus fach/kind/hilfe) und eine Vokabeltabelle in englisch.js. Wieder nur die Form: drei benannte Felder je Zeile. Der Inhalt ist hier die deutsche Grammatik und dort englischer Wortschatz."
+  },
+  {
     "dateien": "src/inhalt/rechnen.js",
     "token": 294,
     "wo": [
@@ -436,6 +478,15 @@
       "tor/ansicht.mjs:458"
     ],
     "warum": "Die Szenenliste IST eine Tabelle: jede Zeile hat name/spiel/kind/quer/wahl, und Zeilen einer Tabelle sehen sich aehnlich - das ist ihr Zweck, man soll sie nebeneinander lesen koennen. Dieselbe Begruendung wie bei der Probenliste weiter oben. Die Zahl stieg mit E6 und E9, weil zwei Szenen desselben Bildschirms dazukamen („Sag es\" mit einem Wort, „Sag den Satz\" mit einem Satz); zusammenlegen hiesse, eine der beiden Aufnahmen aufzugeben - und dann saehe niemand mehr, ob die Satzzeile umbricht. Die Zahl ist die LAENGE des laengsten gleichfoermigen Laufs: sie waechst mit jeder Szene, auch wenn nichts doppelt gemeint ist. Wer sie hochsetzt, zaehlt zuerst die Szenen: mit E8, E9c und E5 sind es 62, und der Lauf ist von 113 ueber 135 und 157 auf 179 Token gewachsen - jede neue Szene verlaengert ihn. — Nachgetragen in E7: die Szene `quer-lesen` ist die naechste Zeile derselben Tabelle, und mit ihr ist der Lauf von 179 auf 201 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste. — Nachgetragen in E5b: `quer-laute-bild` ist die naechste Zeile derselben Tabelle (dieselbe Ebene bei Fiona, mit Bildern statt Buchstaben), und mit ihr ist der Lauf von 201 auf 227 Token gewachsen. Eine Zeile je Aufnahme ist der Zweck dieser Liste."
+  },
+  {
+    "dateien": "src/inhalt/sprache.js",
+    "token": 193,
+    "wo": [
+      "src/inhalt/sprache.js:302",
+      "src/inhalt/sprache.js:343"
+    ],
+    "warum": "Die dreißig Satzart-Sätze und die dreißig Satzglied-Sätze in derselben Datei. Beide sind Listen aus `{ satz, … }`, und das ist der Punkt: sie gehören zusammen und sehen deshalb gleich aus. Zusammenlegen gibt es nichts — die einen tragen eine Satzart, die anderen drei Satzglieder, und eine gemeinsame Tabelle hätte bei jedem Eintrag die Hälfte der Felder leer."
   },
   {
     "dateien": "src/inhalt/deutsch12-saetze.js",
@@ -469,9 +520,9 @@
       "prototyp/bauen.mjs:420",
       "prototyp/bauen.mjs:421",
       "prototyp/bauen.mjs:422",
-      "prototyp/bauen.mjs:442",
-      "prototyp/bauen.mjs:443",
-      "prototyp/bauen.mjs:444"
+      "prototyp/bauen.mjs:450",
+      "prototyp/bauen.mjs:451",
+      "prototyp/bauen.mjs:452"
     ],
     "warum": "Die Liste der eingebetteten Module ist eine Tabelle: eine Zeile je Modul, immer `inline(new URL('../src/…'), 'Name')`. Elf Zeilen derselben Form - das ist ihr Zweck. Wer ein Modul sucht, liest eine Zeile; wer eines nachtraegt, schreibt eine. Zusammenlegen gaebe es nichts zusammenzulegen: was gleich ist, ist die FORM, der Inhalt ist in jeder Zeile ein anderer Pfad und ein anderer Name. Die Zahl waechst mit jedem Modul - `englisch.js` (E3) war das elfte und hat sie ueber die Grenze von 100 gehoben. Wer sie hochsetzt, prueft zuerst, ob wirklich nur eine `inline`-Zeile dazugekommen ist und nicht Logik dazwischen. — Nachgetragen in T1: `tiere.js` ist das zwoelfte Modul, und mit ihm ist der gleichfoermige Lauf von 100 auf 201 Token gewachsen. Wieder nur EINE `inline`-Zeile mehr; die Zahl misst die Laenge des Laufs, nicht die Menge an Dopplung. — Nachgetragen in F1: `flaggen.js` ist das dreizehnte Modul, und mit ihm ist der gleichfoermige Lauf von 201 auf 235 Token gewachsen. Wieder genau EINE `inline`-Zeile mehr, nachgezaehlt und nicht geschaetzt: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung. — Nachgetragen mit S12: die Regel, wieviel der Tipp wegnimmt, ist ein eigenes Modul (`src/kern/tipp.js`) und damit eine Zeile mehr in dieser Tabelle. Von 235 auf 252 Token, und wieder nur eine Zeile: die Zahl misst die Laenge des gleichfoermigen Laufs, nicht die Menge an Dopplung."
   },
@@ -525,7 +576,7 @@
     "token": 113,
     "wo": [
       "tor/schreiben.mjs:122",
-      "prototyp/spiel.js:3148"
+      "prototyp/spiel.js:3210"
     ],
     "warum": "Mulberry32, der Würfel mit Saat — im Spiel EINMAL (seit P8) und im Tor noch einmal. Die Fassung im Tor ist Absicht: sie rechnet die Reihenfolge nach, die das Spiel erzeugt, und wäre wertlos, wenn sie dieselbe Funktion aufriefe. Ein Nachrechner, der die geprüfte Funktion benutzt, prüft nichts."
   },
@@ -537,6 +588,15 @@
       "tools/backen-kontinente.mjs:24"
     ],
     "warum": "Zwei Tabellen, die sich nur in der FORM gleichen: der Bildplan (`{ wort, gebiet, motiv }`, 86 Zeilen) und die Kontinentliste (`{ id, name, ne }`, sieben Zeilen). Beide sind Datenzeilen mit drei Feldern und ausgerichteten Werten - mehr haben sie nicht miteinander zu tun, und sie stehen in zwei Verzeichnissen mit verschiedenen Aufgaben (Inhalt und Backwerkzeug). Zusammenlegen waere hier nicht Aufraeumen, sondern das Verknuepfen von Englischvokabeln mit Erdkunde-Rohdaten."
+  },
+  {
+    "dateien": "tor/passt.mjs",
+    "token": 104,
+    "wo": [
+      "tor/passt.mjs:766",
+      "tor/passt.mjs:839"
+    ],
+    "warum": "Die Waisen-Rechnung steht zweimal: einmal für die Kachelnamen an der Ebenenwahl (innerhalb des Kapazitätslaufs) und einmal für die Abzeichennamen im Buch. Beide laufen IM BROWSER und werden je für sich als Funktion hinübergeschickt — eine gemeinsame Hilfsfunktion im Modul könnten sie nicht sehen, denn ein Abschluss überlebt die Serialisierung nicht. Was sich teilen ließ, ist geteilt: die Grenze (ein Fünftel des Kastens) steht als Zahl in beiden und als Satz nur einmal im Kommentar darüber."
   },
   {
     "dateien": "src/inhalt/deutsch12-saetze.js · src/inhalt/saetze.js",

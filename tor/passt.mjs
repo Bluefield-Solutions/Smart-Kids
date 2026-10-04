@@ -1850,6 +1850,61 @@ nicht liest, ist die Kachel damit unbeschriftet`);
     if (await p.$('.schirm.da #zur')) await tipp('.schirm.da #zur');
     await p.waitForSelector('.schirm.da [data-gruppe], .schirm.da [data-welt]',
       { timeout: 6000 }).catch(() => {});
+    /* --- UND DER VORLAUF DER BEIDEN PROBEN (E29) --------------------
+     *
+     * Der Bildschirm, den bis hierher KEIN Tor betreten hat - und der
+     * deshalb seit Etappe 1 kaputt war, ohne dass etwas rot wurde.
+     *
+     * Der Vorlauf legt aus, was gleich drankommt. Fuer eine Karte sind
+     * das sechzehn Bundeslaender, fuer die Woerterprobe waren es ALLE
+     * 322 Lernwoerter: drei Reihen zu 108 Spalten, von denen dreizehn
+     * ins Bild standen. Es sah nicht nach einem Fehler aus, sondern
+     * nach einer vollen Wand - und die Sprachprobe haette 724 gelegt.
+     *
+     * Gemessen wird deshalb die ZAHL der Karten und nicht ihr Aussehen:
+     * eine Karte, die rechts aus dem Bild steht, hat immer noch ihre
+     * vollen 61 Punkte, und `kleber.pt` meldet sie als in Ordnung. Die
+     * Grenze ist das Gitter selbst (drei Reihen zu acht), und sie steht
+     * als Zahl hier, weil `vorlaufGitter` sie aus derselben rechnet. */
+    for (const ebene of ['deutsch:probe', 'sprache:probe']) {
+      /* JEDES MAL VON DER WELTENWAHL AUS, und nicht von dort, wo der
+         vorige Besuch geendet hat. Der erste Anlauf lief weiter, wo er
+         stand - und meldete beim zweiten Durchgang „die Kachel steht
+         nicht auf der Wand", obwohl sie dasteht. Eine Reise, die vom
+         Zustand der vorigen abhaengt, misst die vorige. */
+      for (let k = 0; k < 4 && !(await p.$('.schirm.da [data-welt]')); k++) {
+        if (!(await p.$('.schirm.da #zur'))) break;
+        await tipp('.schirm.da #zur');
+        await p.waitForTimeout(150);
+      }
+      if (!(await p.$('.schirm.da [data-welt]'))) {
+        meldungen.push(`Vorlauf ${ebene}: die Weltenwahl war nicht zu erreichen`);
+        break;
+      }
+      await zurEbenenwahl(p, ebene);
+      if (!(await p.$(`.schirm.da [data-ebene="${ebene}"]`))) {
+        meldungen.push(`Vorlauf ${ebene}: die Kachel steht nicht `
+          + 'auf der Wand — der Vorlauf bleibt ungeprüft'); continue;
+      }
+      await tipp(`.schirm.da [data-ebene="${ebene}"]`);
+      await p.waitForSelector('.schirm.da #los', { timeout: 15000 }).catch(() => {});
+      if (!(await p.$('.schirm.da #los'))) {
+        meldungen.push(`Vorlauf ${ebene}: er ist gar nicht erst erschienen`);
+        continue;
+      }
+      const karten = await p.$$eval('.schirm.da .rollen.vorlauf .aufkleber', l => l.length);
+      if (karten > 24)
+        meldungen.push(`Vorlauf ${ebene}: ${karten} Karten in einem Gitter, `
+          + 'das drei Reihen zu acht fasst — der Rest steht rechts aus dem Bild');
+      await schau(`Vorlauf ${ebene}`);
+      await tipp('.schirm.da #zur');
+      await p.waitForTimeout(200);
+    }
+    for (let k = 0; k < 4 && !(await p.$('.schirm.da [data-welt]')); k++) {
+      if (!(await p.$('.schirm.da #zur'))) break;
+      await tipp('.schirm.da #zur');
+      await p.waitForTimeout(150);
+    }
   } else {
     meldungen.push('Ebenenwahl (Lea): die Deutsch-Welt steht nicht auf dem Schirm — '
       + 'die fünfzehn Rechtschreibebenen sind damit ungeprüft');

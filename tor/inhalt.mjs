@@ -48,6 +48,7 @@ import * as TI from '../src/inhalt/tiere.js';
 import * as FL from '../src/inhalt/flaggen.js';
 import * as DE from '../src/inhalt/deutsch.js';
 import * as D12 from '../src/inhalt/deutsch12.js';
+import * as SP from '../src/inhalt/sprache.js';
 import * as BP from '../tools/bildprompt.mjs';
 import { LAENDER_NORDAMERIKA_FEIN } from '../src/geo/laender-nordamerika.fein.js';
 import { LAENDER_SUEDAMERIKA_FEIN } from '../src/geo/laender-suedamerika.fein.js';
@@ -4728,6 +4729,7 @@ function paareAusBuendel() {
   const ebenen = new Set([...spiel.matchAll(/\{ id:'([a-z:]+)',\s+ueber:'/g)].map(m => m[1]));
   for (const g of DE.GRUPPEN) ebenen.add(`deutsch:${g.id}`);
   for (const g of D12.GRUPPEN12) ebenen.add(`deutsch12:${g.id}`);
+  for (const e of SP.EBENEN_SPRACHE) ebenen.add(`sprache:${e.id}`);
   /* Die Laenderebenen stehen nicht als Zeile da, sie werden aus den
      Kontinenten ERZEUGT (`id:\`laender:${k}\``). Also kommen ihre
      Kennungen aus derselben Quelle wie im Spiel: den geladenen Karten.
@@ -5793,6 +5795,193 @@ console.log('\n  Tor `deutsch`');
     console.log('\n  ' + df.length + ' FEHLER:');
     console.log('    ✗ ' + df.join('\n    ✗ '));
     console.error('\n  deutsch ROT: der Grundwortschatz stimmt nicht mit der amtlichen Liste.');
+    process.exit(1);
+  }
+}
+
+/* ===================================================== Tor `sprache` ==== *
+ *
+ * „Sprache untersuchen" (E29) hat keine amtliche Liste, gegen die zu
+ * rechnen waere - der Lehrplan nennt die vier Lernbereiche und keine
+ * Aufgaben. Gemessen wird deshalb nicht der STOFF, sondern die FORM:
+ * dass jeder Bildschirm, den diese zehn Ebenen bauen koennen, ein
+ * Bildschirm ist, auf dem eine Antwort moeglich ist.
+ *
+ * Das ist die Luecke, in die E29 zweimal gelaufen ist, ohne dass ein Tor
+ * zuckte: `hochNeutral` gab es nicht (ein Satz mit `&` haette die Marke
+ * zerrissen), und `WELT_VON_ART` kannte `sprache` nicht - sieben Ebenen
+ * standen in der Erdkunde, und die Pruefung „hoechstens vier Welten"
+ * blieb gruen, weil Erdkunde ja eine ist.
+ *
+ * WAS HIER NICHT STEHT: ob die Wortart richtig bestimmt ist. „Das Essen"
+ * ist ein Nomen, „essen" ein Verb, und welches von beiden in einem Satz
+ * steht, entscheidet die Grossschreibung - die rechnet `wortartVon`
+ * nach, und ein Tor, das dieselbe Rechnung noch einmal macht, bezeugt
+ * sie, statt sie zu pruefen - eine Pruefung, die nie etwas meldet, ist kein
+ * Beweis (Regel 1). Geprueft wird stattdessen, dass
+ * jedes markierte Wort WIRKLICH an seiner Stelle im Satz steht: faellt
+ * die Zuordnung auseinander, ist das dort zu sehen.
+ */
+console.log('\n  Tor `sprache`');
+{
+  const sf = [];
+  const pruefeS = (b, satz) => { if (!b) sf.push(satz); };
+  const spiel = fs.readFileSync('prototyp/spiel.js', 'utf8');
+
+  /* DIE GRENZE KOMMT AUS LEAS SITZUNG und steht nicht als Zahl hier.
+     Acht Aufgaben je Runde, zwei Runden Vorrat - dieselbe Grenze, die
+     `vielfalt` setzt. Haette ich „mindestens 16" hingeschrieben, waere
+     sie an dem Tag bedeutungslos geworden, an dem Lea eine laengere
+     Sitzung bekommt (Regel 2: anteilig, nie absolut). */
+  const leaSitzung = +(spiel.match(/lea:\s*\{[^}]*?sitzung:\s*(\d+)/) || [])[1];
+  pruefeS(leaSitzung > 0, 'Leas Sitzungslänge steht nicht in spiel.js — '
+    + 'ohne sie ist die Vorratsgrenze geraten');
+  const genug = (leaSitzung || 8) * 2;
+
+  pruefeS(SP.EBENEN_SPRACHE.length === 10,
+    `${SP.EBENEN_SPRACHE.length} Sprachebenen statt zehn`);
+  const arten = new Set(['wortart', 'zeit', 'satzart', 'glied']);
+  const alleKennungen = new Set();
+  let aufgaben = 0;
+
+  for (const e of SP.EBENEN_SPRACHE) {
+    pruefeS(arten.has(e.art), `die Ebene „${e.titel}" hat die unbekannte Art „${e.art}"`);
+    pruefeS(!!SP.BEGRIFFE[e.begriff],
+      `die Ebene „${e.titel}" zeigt auf den Begriff „${e.begriff}", den es nicht gibt`);
+    const a = SP.aufgabenZu(e.id);
+    aufgaben += a.length;
+    /* DIE ARTIKEL SIND EINE GESCHLOSSENE KLASSE. Neun Begleiter stehen im
+       Grundwortschatz, ein zehnter ist nicht zu holen - es sei denn, man
+       erfindet einen. Dieselbe Unterscheidung wie bei „Wörter mit tz":
+       der Vorrat IST die Sache. Benannt und nicht als stille Luecke, und
+       NUR fuer diese eine Ebene: die anderen neun haben zwischen 3,5 und
+       28 Runden, dort ist die Grenze scharf. */
+    if (e.id !== 'artikel')
+      pruefeS(a.length >= genug, `die Ebene „${e.titel}" hat ${a.length} Aufgaben — `
+        + `bei Leas Sitzung von ${leaSitzung} reicht das nicht für zwei Runden (${genug})`);
+    pruefeS(a.length >= 1, `die Ebene „${e.titel}" hat keine einzige Aufgabe`);
+
+    for (const x of a) {
+      pruefeS(!alleKennungen.has(x.id), `die Aufgabenkennung „${x.id}" kommt zweimal vor — `
+        + 'zwei Leitner-Stände für dasselbe');
+      alleKennungen.add(x.id);
+
+      /* NICHTS, WAS DIE MARKE ZERREISST. Die Aufgabe steht als Markup auf
+         dem Bildschirm (`<mark class="sprachteil">`), und ein `&` oder
+         `<` im Satz macht daraus kaputtes HTML. Der erste Anlauf rief
+         dafuer `hochNeutral` auf - eine Funktion, die es in diesem
+         Verzeichnis nicht gibt. Jetzt ist es keine Funktion, sondern
+         eine Bedingung an den Daten: in diesen Saetzen kommt es nicht
+         vor, und wenn doch, sagt es das hier. */
+      const text = [x.satz, x.vor, x.teil, x.nach, x.wort,
+                    ...(x.saetze || []), ...(x.falsch || [])].filter(Boolean).join(' ');
+      pruefeS(!/[<>&]/.test(text), `„${x.id}" enthält < > oder & — das zerreißt die Marke`);
+
+      if (e.art === 'zeit') {
+        /* Die drei Zeitebenen laufen auf dem DIKTATBILDSCHIRM und haben
+           deshalb die Form einer Deutsch-Lerneinheit: ein Wort, ein
+           Lueckensatz, drei falsche Schreibweisen. */
+        pruefeS((x.saetze || []).length === 1, `„${x.id}" hat keinen einzigen Lückensatz`);
+        pruefeS((x.saetze || [])[0] && x.saetze[0].includes('%'),
+          `„${x.id}" hat keine Lücke im Satz`);
+        pruefeS((x.falsch || []).length === 3 && new Set(x.falsch).size === 3
+          && !x.falsch.includes(x.wort),
+          `„${x.id}" hat keine drei saubere falsche Formen (${(x.falsch || []).join(', ')})`);
+        pruefeS(!!x.regel, `„${x.id}" sagt nicht, woran die Zeitform zu erkennen ist`);
+        continue;
+      }
+
+      /* DIE WAHL MUSS DIE LOESUNG ENTHALTEN. Ohne diese Zeile kann eine
+         Ebene einen Bildschirm bauen, auf dem keiner der Knoepfe richtig
+         ist - und das Kind kommt nicht weiter, bis der dritte Versuch
+         auflöst. Drei bis fuenf Knoepfe, nicht mehr: sechs stehen auf
+         844 Punkten nicht in eine Reihe. */
+      pruefeS((x.wahl || []).includes(x.loesung),
+        `„${x.id}" hat die Lösung „${x.loesung}" nicht unter seinen Knöpfen`);
+      pruefeS((x.wahl || []).length >= 3 && x.wahl.length <= 5,
+        `„${x.id}" hat ${(x.wahl || []).length} Knöpfe statt drei bis fünf`);
+      for (const w of x.wahl || [])
+        pruefeS(!!SP.BEGRIFFE[w], `„${x.id}" bietet „${w}" an, wofür es keinen Begriff gibt`);
+
+      /* VOR + MARKIERT + NACH IST DER SATZ. Das ist die Zuordnung
+         selbst: stimmt sie nicht, steht die Marke auf dem falschen Wort,
+         und das Kind beantwortet eine andere Frage als die gestellte. */
+      pruefeS((x.vor || '') + (x.teil || '') + (x.nach || '') === x.satz,
+        `bei „${x.id}" ergibt vor + markiert + nach nicht den Satz: `
+        + `„${(x.vor || '') + (x.teil || '') + (x.nach || '')}" statt „${x.satz}"`);
+
+      /* HOECHSTENS NEUN WOERTER - dieselbe Grenze wie bei den
+         Lueckensaetzen der Rechtschreibung, und aus demselben Grund: auf
+         844 × 390 steht ein zehntes Wort in der dritten Zeile, und die
+         Marke rutscht aus dem Blick. */
+      const n = x.satz.trim().split(/\s+/).length;
+      pruefeS(n <= 9, `„${x.id}" ist ${n} Wörter lang: „${x.satz}"`);
+
+      if (e.art === 'satzart') {
+        /* KEIN SCHLUSSZEICHEN IN DEN DATEN. Es ist die ANTWORT - der
+           Bildschirm setzt es, wenn das Kind richtig geraten hat. Stünde
+           es im Satz, waere jede Aufgabe mit einem Blick gelöst. */
+        pruefeS(!/[.?!]$/.test(x.satz), `„${x.id}" trägt sein Schlusszeichen `
+          + `schon im Satz: „${x.satz}" — das ist die Antwort`);
+        pruefeS(x.zeichen === SP.SATZZEICHEN[x.loesung],
+          `„${x.id}" setzt „${x.zeichen}" statt „${SP.SATZZEICHEN[x.loesung]}"`);
+        pruefeS(x.teil === null, `„${x.id}" markiert einen Teil — bei einer Satzart `
+          + 'ist der ganze Satz die Frage');
+      } else {
+        /* DAS MARKIERTE STEHT GENAU EINMAL IM SATZ. Zweimal heisst: die
+           Marke kann auf dem falschen von beiden sitzen, und welches
+           gemeint war, weiss niemand mehr. Bei den Wortarten ist das
+           abgefangen, weil die Stelle aus der LUECKE kommt und nicht aus
+           einer Suche - geprueft wird es trotzdem, denn genau diese
+           Begruendung ist der Teil, der beim naechsten Aufgabentyp
+           wegfaellt. */
+        const teile = x.satz.split(x.teil).length - 1;
+        pruefeS(teile === 1, `„${x.teil}" steht ${teile}× in „${x.satz}" (${x.id})`);
+      }
+    }
+  }
+
+  /* DIE BEGRIFFE. Der Regler im Elternbereich schaltet die Spalte um;
+     fuer die fuenf Wortarten muss er also auch etwas TUN. Bei
+     „Gegenwart" heissen beide Spalten gleich, das ist kein Fehler
+     sondern der Sprachgebrauch - deshalb gilt die Pruefung nur dort, wo
+     der Lehrplan und die Schule sich unterscheiden. */
+  for (const [id, b] of Object.entries(SP.BEGRIFFE)) {
+    pruefeS(!!b.fach && !!b.kind, `der Begriff „${id}" hat keine zwei Spalten`);
+    pruefeS(!!b.hilfe, `der Begriff „${id}" sagt nicht, woran er zu erkennen ist`);
+  }
+  for (const w of SP.WORTARTEN)
+    pruefeS(SP.BEGRIFFE[w] && SP.BEGRIFFE[w].fach !== SP.BEGRIFFE[w].kind,
+      `„${w}" heißt in beiden Spalten gleich — für diese fünf schaltet der Regler nichts`);
+
+  /* ZEHN SAETZE JE SATZART. Ungleich verteilt waere die Ebene eine
+     Wahrscheinlichkeitsrechnung: wer bei 24 Aussagen und 3 Fragen immer
+     „Aussage" tippt, hat 80 %. */
+  for (const art of SP.SATZARTEN) {
+    const n = SP.SATZARTSAETZE.filter(x => x.art === art).length;
+    pruefeS(n === 10, `${n} Sätze der Art „${art}" statt zehn — `
+      + 'ungleich verteilt wird Raten zur Strategie');
+  }
+  /* UND JEDER GLIEDSATZ HAT ALLE DREI. Sonst traegt ein Satz zwei
+     Aufgaben und der naechste drei, und dieselbe Rechnung gilt. */
+  for (const g of SP.GLIEDSAETZE)
+    for (const glied of SP.SATZGLIEDER)
+      pruefeS(!!g[glied], `„${g.satz}" hat kein ${glied}`);
+
+  console.log(`    Sprache untersuchen: ${SP.EBENEN_SPRACHE.length} Ebenen, `
+    + `${aufgaben} Aufgaben, ${alleKennungen.size} Kennungen — `
+    + SP.EBENEN_SPRACHE.map(e => `${e.titel} ${SP.aufgabenZu(e.id).length}`).join(' · '));
+  console.log(`    Vorrat je Ebene: mindestens ${genug} Aufgaben bei Leas Sitzung von `
+    + `${leaSitzung} (Artikel ausgenommen, geschlossene Klasse mit `
+    + `${SP.aufgabenZu('artikel').length})`);
+  console.log(`    ${Object.keys(SP.BEGRIFFE).length} Begriffe in zwei Spalten, `
+    + `${SP.WORTARTEN.length} davon schaltet der Regler wirklich um`);
+
+  if (sf.length) {
+    console.log('\n  ' + sf.length + ' FEHLER:');
+    console.log('    ✗ ' + sf.join('\n    ✗ '));
+    console.error('\n  sprache ROT: eine Sprachebene baut einen Bildschirm, '
+      + 'auf dem keine Antwort möglich ist.');
     process.exit(1);
   }
 }

@@ -105,9 +105,21 @@ const RUNDEN_MIN = 2;
  * eines. Auch hier besorgt das Zaehlen das Untertor `deutsch`: 245
  * Eintraege in 24 Ebenen, jedes Wort mit Beleg in der ausgelesenen
  * Liste. */
+/* `sprache:artikel` - und ZEHN Ebenen weniger, als man erwarten wuerde.
+ *
+ * Von den zehn Sprachebenen liegt genau EINE unter zwei Runden, und sie
+ * steht deshalb allein hier und nicht ihre ganze Welt: die Begleiter
+ * sind eine GESCHLOSSENE Klasse. Neun stehen im Grundwortschatz, ein
+ * zehnter ist nicht zu holen - es sei denn, man erfindet einen. Die
+ * anderen neun haben zwischen 28 und 224 Aufgaben, bei Leas Sitzung von
+ * acht also 3,5 bis 28 Runden; dort ist die Grenze scharf und soll es
+ * bleiben. Haette ich `/^sprache:/` geschrieben, waere sie fuer alle
+ * zehn aus - das ist der Unterschied zwischen einer benannten Ausnahme
+ * und einem Loch. */
 const WELT = [
   /^kontinente$/, /^bundeslaender$/, /^hauptstaedte(:|$)/, /^nachbarn$/,
   /^laender:/, /^flaggen:(?!paare)/, /^schreiben:/, /^deutsch:/, /^deutsch12:/,
+  /^sprache:artikel$/,
 ];
 const istWelt = (id) => WELT.some(r => r.test(id));
 

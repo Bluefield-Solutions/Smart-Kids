@@ -33,6 +33,7 @@ export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inha
 /** Der amtliche Grundwortschatz und seine Saetze (D1-D3). */
 export const DE = 'src/inhalt/deutsch.js', DS = 'src/inhalt/deutsch-saetze.js';
 export const D12 = 'src/inhalt/deutsch12.js', DS12 = 'src/inhalt/deutsch12-saetze.js';
+export const SP = 'src/inhalt/sprache.js';
 /** Die Abzeichentafel (D2). */
 export const A = 'src/inhalt/abzeichen.js';
 /** Die Buchstabenvorlagen samt Erkennung (N2a). */
@@ -236,6 +237,102 @@ export const PROBEN = [
     ersatz:"    art:'deutsch', gruppe:'rechtschreibung', wer:['lea','fiona'],",
     an:{ datei:D, text:"wer:['lea','fiona']" },
     sagt:'mehr als vier Welten' },
+
+  /* ===== SPRACHE UNTERSUCHEN (E29) ====================================
+   *
+   * Fuenf Proben fuer das neue Untertor, und sie greifen an fuenf
+   * VERSCHIEDENEN Stellen an - nicht fuenfmal dieselbe Zeile mit anderen
+   * Zahlen. Das Tor prueft nicht den Stoff (es gibt keine amtliche Liste
+   * fuer „Sprache untersuchen"), sondern dass jeder Bildschirm, den diese
+   * zehn Ebenen bauen koennen, einer ist, auf dem eine Antwort moeglich
+   * ist. Also greifen die Proben genau das an: die Marke, die Knoepfe,
+   * das Schlusszeichen, die Verteilung, den Regler. */
+
+  /* DAS SCHLUSSZEICHEN IST DIE ANTWORT. Die Ebene „Satzarten" fragt, ob
+     ein Satz Aussage, Frage oder Ausruf ist; steht das Zeichen im Satz,
+     ist jede Aufgabe mit einem Blick geloest. Das waere kein Absturz und
+     kein leerer Bildschirm - es waere eine Ebene, die nichts mehr
+     prueft, und von denen hat dieses Verzeichnis schon fuenf gehabt. */
+  { n:'ein Satzartsatz trägt sein Schlusszeichen schon', tor:'inhalt',
+    deckt:'sprache', datei:SP,
+    such:"{ satz:'Im Garten blüht der Apfelbaum', art:'aussage' }",
+    ersatz:"{ satz:'Im Garten blüht der Apfelbaum.', art:'aussage' }",
+    an:{ datei:SP, text:"Apfelbaum.', art:'aussage'" },
+    sagt:'das ist die Antwort' },
+
+  /* DIE MARKE SITZT AUF DEM SATZ - oder die Aufgabe fragt nach einem
+     Wort, das dort nicht steht. Angegriffen wird die ZUORDNUNG und nicht
+     ein Satz: `teil` wird grossgeschrieben, womit `vor + teil + nach`
+     den Satz nicht mehr ergibt. Das trifft alle 224 Nomenaufgaben auf
+     einmal, und das ist der Punkt - eine Probe, die einen Satz
+     verbiegt, beweist etwas ueber diesen Satz. */
+  { n:'die Marke sitzt nicht mehr auf dem Satz', tor:'inhalt',
+    deckt:'sprache', datei:SP,
+    such:'vor, teil:x.wort, nach,', ersatz:'vor, teil:x.wort.toUpperCase(), nach,',
+    an:{ datei:SP, text:'x.wort.toUpperCase()' },
+    sagt:'ergibt vor + markiert + nach nicht den Satz' },
+
+  /* EIN KNOPF, DER FEHLT. Nimmt man „pronomen" aus der Wahl, bauen 49
+     Aufgaben einen Bildschirm, auf dem KEINE der angebotenen Antworten
+     richtig ist. Das Kind tippt dreimal falsch und bekommt die Loesung
+     vorgesagt - es sieht aus wie eine Ebene, die zu schwer ist, und ist
+     eine, die nicht zu loesen ist. Kein anderes Tor sieht das: der
+     Rauchtest tippt, bis etwas richtig ist, und gibt nach drei
+     Versuchen ebenfalls auf. */
+  { n:'eine Wortart steht nicht unter den Knöpfen', tor:'inhalt',
+    deckt:'sprache', datei:SP,
+    such:"export const WORTARTEN = ['nomen', 'verb', 'adjektiv', 'artikel', 'pronomen'];",
+    ersatz:"export const WORTARTEN = ['nomen', 'verb', 'adjektiv', 'artikel'];",
+    an:{ datei:SP, fehlt:"'artikel', 'pronomen'" },
+    sagt:'nicht unter seinen Knöpfen' },
+
+  /* UNGLEICH VERTEILT WIRD RATEN ZUR STRATEGIE. Zehn Saetze je Satzart,
+     und die Zahl haengt nicht an der Bequemlichkeit: von den 1244
+     vorhandenen Saetzen sind ACHT Ausrufe. Wer die Ebene aus dem
+     vorhandenen Vorrat zoege, haette 1136 Aussagen gegen 8 Ausrufe -
+     dann tippt man immer „Aussage" und hat 91 %. Die Probe dreht einen
+     Satz von „aussage" auf „frage" und prueft, dass schon EINER
+     anschlaegt. */
+  { n:'eine Satzart bekommt einen Satz mehr als die andere', tor:'inhalt',
+    deckt:'sprache', datei:SP,
+    such:"{ satz:'Der Hund schläft unter dem Tisch', art:'aussage' }",
+    ersatz:"{ satz:'Der Hund schläft unter dem Tisch', art:'frage' }",
+    an:{ datei:SP, text:"unter dem Tisch', art:'frage'" },
+    sagt:'ungleich verteilt wird Raten zur Strategie' },
+
+  /* DER REGLER, DER NICHTS SCHALTET. Der Elternbereich stellt zwischen
+     „Nomen, Verb, Adjektiv" und „Namenwort, Tunwort, Wiewort" um.
+     Schreibt jemand in die kindliche Spalte den Fachbegriff, steht der
+     Knopf noch da, das Beispiel darunter aendert sich noch, und die
+     Beschriftung im Spiel bleibt gleich - ein Schalter, der zu wirken
+     SCHEINT. Genau die Verfallsart, gegen die Regel 1 steht: wer eine
+     Wirkung misst, schaltet sie zuerst ab. Hier ist sie abgeschaltet und
+     muss auffallen. */
+  { n:'der Begriffsregler schaltet eine Wortart nicht mehr um', tor:'inhalt',
+    deckt:'sprache', datei:SP,
+    such:"kind:'Wiewort'", ersatz:"kind:'Adjektiv'",
+    an:{ datei:SP, text:"kind:'Adjektiv'" },
+    sagt:'heißt in beiden Spalten gleich' },
+
+  /* DER VORLAUF EINER PROBE (E29) - und das ist die Probe zu einem
+     Fehler, der seit Etappe 1 dastand, ohne dass etwas rot wurde.
+     Ohne die Zeile legt die Woerterprobe alle 322 Lernwoerter aus und
+     die Sprachprobe 724: drei Reihen zu Hunderten von Spalten, von
+     denen dreizehn ins Bild stehen. Es sieht nicht nach einem Fehler
+     aus, sondern nach einer vollen Wand - deshalb hat es der Blick
+     nicht gefunden und `passt` auch nicht: dort wird die KLEINSTE
+     Beispielkarte gemessen, und eine Karte, die rechts aus dem Bild
+     steht, hat immer noch ihre vollen 61 Punkte.
+     Gezaehlt wird deshalb, nicht gemessen - und die Probe nimmt der
+     Zeile genau die beiden Arten, um die es geht. `deutsch12` bleibt
+     stehen: eine Probe, die alles wegnimmt, sagt nicht, welche der
+     drei die Wand sprengt. */
+  { n:'der Vorlauf einer Probe legt den ganzen Vorrat aus', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:D,
+    such:"  : ['deutsch', 'deutsch12', 'sprache'].includes(art) ? P.sitzung",
+    ersatz:"  : ['deutsch12'].includes(art) ? P.sitzung",
+    an:{ ...DIST, fehlt:"'deutsch', 'deutsch12', 'sprache'" },
+    sagt:'der Rest steht rechts aus dem Bild' },
 
   { n:'zwei Gebiete mit derselben ID', tor:'inhalt', deckt:'inhalt', datei:E,
     such:"{ id:'afrika', name:'Afrika'", ersatz:"{ id:'europa', name:'Afrika'",
