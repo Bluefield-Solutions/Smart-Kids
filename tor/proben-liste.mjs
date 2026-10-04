@@ -215,9 +215,15 @@ export const PROBEN = [
      in die grosse Abteilung schiebt, sprengt sie. Gemessen wird das von
      `passt` am Bildschirm - diese Zahl hier faengt es eine Stunde
      frueher, im schnellen Gang. */
+  /* MIT REGEX und nicht mit zwei Zeichenketten: `String.replace` mit
+     zwei Zeichenketten trifft nur die ERSTE Fundstelle, auch bei
+     `mehrfach:true` - und EINE verschobene Ebene macht aus 17 nur 18,
+     bleibt also unter den 21. Erst alle sieben sprengen die Wand, und
+     dafuer braucht es das `g`. Beim ersten Anlauf stand hier die
+     Zeichenkette, und `anker` hat es gemeldet, bevor ein Tor lief. */
   { n:'eine Abteilung bekommt zu viele Ebenen', tor:'inhalt',
     deckt:'deutsch', datei:D12, mehrfach:true,
-    such:"abteilung:'merken'", ersatz:"abteilung:'laute'",
+    suchRegex:/abteilung:'merken'/g, ersatzFn:() => "abteilung:'laute'",
     an:{ datei:D12, fehlt:"abteilung:'merken'" },
     sagt:'stehen 21 Kacheln ins Bild' },
 
