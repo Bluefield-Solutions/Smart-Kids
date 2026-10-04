@@ -32,6 +32,7 @@ import { execSync } from 'node:child_process';
 export const D = 'prototyp/spiel.js', V = 'prototyp/vorlage.html', E = 'src/inhalt/erdkunde.js';
 /** Der amtliche Grundwortschatz und seine Saetze (D1-D3). */
 export const DE = 'src/inhalt/deutsch.js', DS = 'src/inhalt/deutsch-saetze.js';
+export const D12 = 'src/inhalt/deutsch12.js', DS12 = 'src/inhalt/deutsch12-saetze.js';
 /** Die Abzeichentafel (D2). */
 export const A = 'src/inhalt/abzeichen.js';
 /** Die Buchstabenvorlagen samt Erkennung (N2a). */
@@ -169,6 +170,56 @@ export const PROBEN = [
     ersatz:"  verhaertungX:      'Verlängere das Wort",
     an:{ datei:DE, text:'verhaertungX' },
     sagt:'hat keine Regel' },
+
+  /* --- UND DASSELBE FUER DIE WIEDERHOLUNG 1/2 (E27) ---------------------
+   *
+   * Vier Proben, und die vierte ist die wichtigste: sie haelt die
+   * AUSNAHME fest. „Woerter, die oft kommen" ist von der dritten
+   * Satzregel befreit, und eine Ausnahme ohne Gegenprobe ist ein Loch -
+   * sie koennte sich still auf alle Ebenen ausdehnen, und das Tor
+   * bliebe gruen. Dieselbe Rechnung wie bei `vielfalt` in D9. */
+  { n:'ein Lernwort aus 1/2 steht nicht in der amtlichen Liste', tor:'inhalt',
+    deckt:'deutsch', datei:D12,
+    such:"woerter:['Bruder', 'Feder'", ersatz:"woerter:['Brudar', 'Feder'",
+    an:{ datei:D12, text:"woerter:['Brudar', 'Feder'" },
+    sagt:'nicht in der amtlichen Liste 1/2' },
+
+  { n:'ein Wort fällt still aus der Liste 1/2', tor:'inhalt', deckt:'deutsch', datei:D12,
+    such:"woerter:['Quelle', 'Quadrat', 'Quatsch']",
+    ersatz:"woerter:['Quelle', 'Quadrat']",
+    an:{ datei:D12, fehlt:"'Quelle', 'Quadrat', 'Quatsch'" },
+    sagt:'Einträge statt 245' },
+
+  { n:'ein Lückensatz aus 1/2 ist zehn Wörter lang', tor:'inhalt',
+    deckt:'deutsch', datei:DS12,
+    such:"Auge:'Mein linkes % tut heute weh.'",
+    ersatz:"Auge:'Mein linkes % tut mir seit gestern Abend sehr weh.'",
+    an:{ datei:DS12, text:'seit gestern Abend sehr weh' },
+    sagt:'länger als neun Wörter' },
+
+  /* Die Ausnahme selbst: wer sie von „haeufig" auf eine andere Ebene
+     umschreibt, nimmt der dritten Satzregel ihre Wirkung dort - und
+     „Wörter mit ei" hat Saetze, in denen ein zweites ei-Wort steht?
+     Nein, hat es nicht, und genau das ist der Punkt: die Probe dreht
+     die Ausnahme auf eine Ebene, auf der sie NICHTS verdeckt, und
+     prueft, dass die Ebene, die sie verliert, sofort anschlaegt. */
+  { n:'die Ausnahme für die häufigen Wörter wandert', tor:'inhalt',
+    deckt:'deutsch', datei:'tor/inhalt.mjs',
+    such:"(e) => e.gruppe === 'haeufig' ? null : derGruppe12.get(e.gruppe), ' in 1/2');",
+    ersatz:"(e) => e.gruppe === 'ei' ? null : derGruppe12.get(e.gruppe), ' in 1/2');",
+    an:{ datei:'tor/inhalt.mjs', text:"e.gruppe === 'ei' ? null" },
+    sagt:'zweites Lernwort derselben Ebene' },
+
+  /* Und die Grenze, an der die Wand haengt (E27). Einundzwanzig Kacheln
+     stehen auf dem Zielgeraet ins Bild; wer eine Ebene aus der kleinen
+     in die grosse Abteilung schiebt, sprengt sie. Gemessen wird das von
+     `passt` am Bildschirm - diese Zahl hier faengt es eine Stunde
+     frueher, im schnellen Gang. */
+  { n:'eine Abteilung bekommt zu viele Ebenen', tor:'inhalt',
+    deckt:'deutsch', datei:D12, mehrfach:true,
+    such:"abteilung:'merken'", ersatz:"abteilung:'laute'",
+    an:{ datei:D12, fehlt:"abteilung:'merken'" },
+    sagt:'stehen 21 Kacheln ins Bild' },
 
   /* DIE ZUSAGE, AN DER DIE WAND HAENGT. Wer Fiona zu einer Deutschebene
      schreibt, gibt ihr eine fuenfte Welt - und die Wand fasst gemessen
