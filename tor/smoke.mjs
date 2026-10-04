@@ -13,8 +13,18 @@ import { fremdgriff, griffBeobachter } from './fremdgriff.mjs';
 import { sammelbar, RAEUME } from '../src/inhalt/tiere.js';
 /** Alles, was ein Kind sammeln kann - der teuerste Fall fuer die Bank (T4). */
 const ALLE_TIERE = sammelbar().map(t => t.id);
-/** Die Raeume, die die SAMMLUNG oeffnet - aus den Daten, nicht gezaehlt. */
-const AB_RAEUME = RAEUME.filter(r => r.ab);
+/** Die Raeume, die die SAMMLUNG oeffnet - aus den Daten, nicht gezaehlt.
+ *
+ * STAND EINMAL AUF `r.ab` UND WAR DAMIT LEER (E34). Seit die Schwelle ein
+ * Anteil ist, heisst das Feld `anteil`; `r.ab` gab `undefined`, die Liste
+ * war leer, und neun Raummessungen fielen STILL aus - der Rauchtest
+ * meldete gruen mit einer leeren Zeile. Gefunden an genau dieser leeren
+ * Zeile, und das ist Regel 1 in ihrer unangenehmsten Form: eine Pruefung,
+ * die aufhoert zu pruefen, sagt nichts.
+ *
+ * Sortiert nach Anteil: die tieferen Schwellen muessen beim Aufbau des
+ * Standes zuerst kommen. */
+const AB_RAEUME = RAEUME.filter(r => r.anteil).sort((a, b) => a.anteil - b.anteil);
 /* Was die Abzeichen im Buch SAGEN - die Ansage, nicht die Beschriftung.
  *
  * Seit dem Buch-Umbau traegt die Zelle den kurzen Namen („Kontinente"),
@@ -5111,7 +5121,28 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
        * Zusage „jede Ebene ist erreichbar" - sie muss den Schritt also
        * mitgehen, sonst meldete sie ab Q17 einen Fehler, wo keiner ist,
        * und ab der naechsten Gruppe nichts mehr, wo einer waere. */
-      const hier = await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene));
+      /* OHNE DIE GRUPPENKACHELN (E34).
+       *
+       * Eine Gruppenkachel traegt `data-ebene` mit der Kennung ihres
+       * ERSTEN Kindes - sie ist eine Tuer und keine Ebene. Hier stand
+       * `[data-ebene]` ohne Einschraenkung, also kam `laender:europa`
+       * zweimal in die Liste: einmal als Tuer von der Wand, einmal als
+       * Ebene aus der offenen Gruppe.
+       *
+       * Gekostet hat das 20,5 s je Dopplung, und zwar unsichtbar: beim
+       * zweiten Besuch steht die Kennung auf der Wand (als Tuer), der
+       * Durchgang haelt sich deshalb fuer angekommen, klickt die Tuer,
+       * landet in der Gruppe und wartet dann seine volle Frist auf eine
+       * Aufgabe, die dort nicht kommt. Danach laeuft er weiter, als
+       * waere nichts gewesen - die Ebene zaehlt als gespielt und ist es
+       * nicht.
+       *
+       * Gemessen bei Lea: `laender:europa` 21,7 s gegen 2,0 s beim
+       * ersten Mal, `hauptstaedte` 1,6 gegen 2,4. Gefunden hat es die
+       * Zeile `Langsamste Ebenen` aus E30 - ohne sie waere es eine
+       * Ebene, die einfach lange braucht. */
+      const hier = await p.$$eval('.schirm.da [data-ebene]',
+        es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));
       for (const g of await p.$$eval('.schirm.da [data-gruppe]', es => es.map(e => e.dataset.gruppe))) {
         await p.click(`.schirm.da [data-gruppe="${g}"]`);
         // Auf den ZUSTAND warten, nicht auf das Erscheinen einer Kennung:
@@ -5121,11 +5152,26 @@ if (laeuft('durchgang')) for (const wer of PROFILE_HIER) {
         // ist, sind wir wirklich drin.
         await p.waitForFunction(() => document.querySelectorAll('.schirm.da').length === 1
           && !document.querySelector('.schirm.da [data-gruppe]'), null, { timeout: 20000 });
-        hier.push(...await p.$$eval('.schirm.da [data-ebene]', es => es.map(e => e.dataset.ebene)));
+        hier.push(...await p.$$eval('.schirm.da [data-ebene]',
+          es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene)));
         await p.click('.schirm.da #zur');
         await p.waitForFunction(k => document.querySelectorAll('.schirm.da').length === 1
           && !!document.querySelector(`.schirm.da [data-gruppe="${k}"]`), g, { timeout: 20000 });
       }
+      /* UND KEINE KENNUNG ZWEIMAL (E34).
+       *
+       * Die Zeile oben nimmt die Gruppenkacheln heraus - aber dass sie
+       * es tut, darf nicht nur dastehen. Ohne Pruefung ist eine Dopplung
+       * STILL: der Durchgang spielt die Ebene zweimal, wartet beim
+       * zweiten Mal zwanzig Sekunden auf eine Aufgabe, die nicht kommt,
+       * und zaehlt sie trotzdem als gespielt. Nichts wird rot, es wird
+       * nur langsam - die leiseste Verfallsart, die dieses Tor hat.
+       * Gefunden wurde es erst an der Zeile `Langsamste Ebenen`. */
+      const zweimal = [...new Set(hier.filter((e, i) => hier.indexOf(e) !== i))];
+      if (zweimal.length) merke('durchgang',
+        new Error(`${wer}: „${zweimal.join(', ')}" steht zweimal in der Liste `
+          + '— wahrscheinlich zählt eine Gruppenkachel als Ebene mit'));
+
       const fremd = hier.filter(e => WELT_VON(e) !== w);
       if (fremd.length) merke('durchgang',
         new Error(`${wer}: „${fremd.join(', ')}" steht in der Welt „${w}"`));
@@ -8497,8 +8543,31 @@ if (laeuft('landschaft')) try {
      davon abgeschrieben. Als es nur die Tiefsee gab, stand hier ihre
      Schwelle als Zahl und ihre drei Tiere als Liste; der zweite Raum
      haette den ganzen Block ein zweites Mal verlangt (Regel 6). */
+  /* DIE SCHWELLEN KOMMEN AUS DER LAUFENDEN APP (E34).
+   *
+   * Seit E34 ist die Schwelle ein Anteil der Sammlung, die DIESES Kind
+   * erreichen kann - hier also Fionas. Die Zahl hier nachzurechnen waere
+   * dieselbe Rechnung zum zweiten Mal - was zweimal dasteht, veraltet
+   * einmal (Regel 6) - und wuerde den Fall
+   * verfehlen, auf den es ankommt: dass die App eine ANDERE Zahl nimmt
+   * als das Tor. Gefragt wird deshalb die App, mit Fiona angemeldet. */
+  const SCHWELLEN = await (async () => {
+    const z = await neueSeite({ width: 844, height: 390 }, ctx);
+    await z.waitForSelector('[data-profil="fiona"]');
+    await z.click('[data-profil="fiona"]');
+    const aus = await z.evaluate((titel) => titel.map(t =>
+      Tiere.schwelleBei(Tiere.RAEUME.find(r => r.titel === t),
+                        erreichbarFuerMich())),
+      AB_RAEUME.map(r => r.titel));
+    await z.close();
+    return aus;
+  })();
+  if (SCHWELLEN.some(n => !Number.isFinite(n) || n < 1))
+    merke('landschaft', new Error('die App nennt für Fiona keine brauchbaren '
+      + `Schwellen (${SCHWELLEN.join(', ')}) — ohne sie misst dieser `
+      + 'Abschnitt nichts'));
   const abBerichte = [];
-  for (const raum of AB_RAEUME) {
+  for (const [nr, raum] of AB_RAEUME.entries()) {
   const z = await neueSeite({ width: 844, height: 390 }, ctx);
   await z.waitForSelector('[data-profil="fiona"]');
   /* Genau die Schwelle - und keines der Tiere DIESES Raumes.
@@ -8509,8 +8578,8 @@ if (laeuft('landschaft')) try {
      Meldungen sagten „die Sammlung oeffnet X nicht", obwohl sie den
      Obstgarten oeffnete - vollkommen zu Recht. Jetzt stehen sie
      ausdruecklich da (I20). */
-  const SCHWELLE = raum.ab;
-  const tiefer = AB_RAEUME.filter(r => r.ab < raum.ab).flatMap(r => r.tiere);
+  const SCHWELLE = SCHWELLEN[nr];
+  const tiefer = AB_RAEUME.slice(0, nr).flatMap(r => r.tiere);
   const vorRaum = [...tiefer, ...ALLE_TIERE
     .filter(id => !raum.tiere.includes(id) && !tiefer.includes(id))
     .slice(0, SCHWELLE - tiefer.length)];

@@ -689,19 +689,19 @@ export const RAEUME = [
    * naeher als drei beieinander. Drei Tiere Luft bleiben bis zur
    * Obergrenze - genug fuer genau eine weitere, und die braeuchte drei
    * neue Zeichnungen. */
-  { ab: 12,                           titel:'Im Garten',
+  { anteil: 0.25, titel:'Im Garten',
     tiere:['apfel', 'birne', 'erdbeere'] },
-  { ab: 18,                           titel:'Auf dem Markt',
+  { anteil: 0.375, titel:'Auf dem Markt',
     tiere:['melone', 'kiwi', 'ananas'] },
-  { ab: 24,                           titel:'Beim Fest',
+  { anteil: 0.5, titel:'Beim Fest',
     tiere:['weintrauben', 'rosette', 'schleife'] },
-  { ab: 28,                           titel:'Auf dem Treppchen',
+  { anteil: 0.583, titel:'Auf dem Treppchen',
     tiere:['goldmedaille', 'silbermedaille', 'bronzemedaille'] },
-  { ab: 31,                           titel:'Bei den Pokalen',
+  { anteil: 0.646, titel:'Bei den Pokalen',
     tiere:['pokal', 'orden', 'medaille'] },
-  { ab: 35,                           titel:'In der Tiefsee',
+  { anteil: 0.729, titel:'In der Tiefsee',
     tiere:['fisch', 'hai', 'orca'] },
-  { ab: 38,                           titel:'Ein Abend aus',
+  { anteil: 0.792, titel:'Ein Abend aus',
     tiere:['eintrittskarte', 'kinokarte', 'zirkuszelt'] },
 
   /* Der zweite Raum, den die Sammlung selbst oeffnet - und der einzige,
@@ -723,7 +723,7 @@ export const RAEUME = [
    * dreizehn seiner vierzehn Raeume voll hat, kommt mit den drei Tieren
    * der Tiefsee darauf - es verlangt Ausdauer, aber keine
    * Vollstaendigkeit. Bei T7 hiess dieselbe Aussage 36. */
-  { ab: 42,                           titel:'Vor langer Zeit',
+  { anteil: 0.875, titel:'Vor langer Zeit',
     tiere:['tyrannosaurus', 'langhalssaurier', 'mammut'] },
 
   /* BEI DEN BLUMEN - die neunte Schwelle, und sie steht hier, weil die
@@ -741,7 +741,7 @@ export const RAEUME = [
    * das sich bewegt. Das ist der Punkt: der Bildplan haelt achtzehn
    * Pflanzen, und keine einzige war bisher zu holen. Wer bis hierher
    * kommt, hat alles gesammelt, was atmet - und bekommt etwas anderes. */
-  { ab: 45,                           titel:'Bei den Blumen',
+  { anteil: 0.9375, titel:'Bei den Blumen',
     tiere:['tulpe', 'rose', 'sonnenblume'] },
 ];
 
@@ -768,10 +768,57 @@ export const raumZu = (ebeneId) =>
  * auf einmal sind fuer ein sechsjaehriges Kind keine zwei Nachrichten,
  * sondern keine.
  */
-export function raumAbZahl(habe = []) {
+/**
+ * Was ein Kind aus EBENEN holen kann - drei Tiere je Raum, der ihm
+ * gehoert. Die Bezugsgroesse der Schwellen (E34).
+ *
+ * Eine Zeile und nicht drei: das Spiel braucht sie, `inhalt` braucht sie
+ * und der Rauchtest auch. Was zweimal dasteht, veraltet einmal.
+ */
+export const erreichbarAus = (ebenenIds) => {
+  const da = new Set(ebenenIds);
+  /* GEZAEHLT WERDEN DIE TIERE UND NICHT DIE RAEUME MAL DREI. Heute hat
+     jeder Raum drei, und „mal drei" haette dasselbe ergeben - aber als
+     ZAHL IM QUELLTEXT, die der vierte Raum mit vier Tieren still falsch
+     macht. Die Schwellen wuerden dann an einer Bezugsgroesse haengen,
+     die es nicht gibt. */
+  return RAEUME.filter(r => (r.ebenen || []).some(e => da.has(e)))
+    .reduce((n, r) => n + r.tiere.length, 0);
+};
+
+/**
+ * Bei wievielen Tieren sich ein Schwellenraum oeffnet - fuer DIESES Kind.
+ *
+ * Bis E34 stand hier eine feste Zahl, und das war die Verkehrung: die
+ * Schwellen mussten fuer JEDES Profil erreichbar sein, also setzte das
+ * knappste die Grenze. Gemessen hiess das: die Eltern kommen aus Ebenen
+ * auf 48 Tiere und erreichten ihre letzte Schwelle bei 94 % davon - Lea
+ * kommt auf 57 und erreichte sie bei 79 %. Wer mehr uebt, stiess frueher
+ * an die Decke und hatte danach die laengste Strecke ohne Lohn.
+ *
+ * Jetzt ist die Schwelle ein ANTEIL der eigenen Sammlung. Die Anteile
+ * sind so gewaehlt, dass fuer die Eltern dieselben Zahlen herauskommen
+ * wie bisher (12, 18, 24, 28, 31, 35, 38, 42, 45 von 48) - niemand
+ * verliert etwas, und die beiden Kinder bekommen ihre Kurve ueber ihre
+ * eigene Sammlung gestreckt.
+ *
+ * Und die Erreichbarkeit ist damit keine Frage mehr, sondern eine
+ * Eigenschaft: ein Anteil von hoechstens eins liegt nie ueber dem, was
+ * zu holen ist. Geprueft wird deshalb der ANTEIL und nicht mehr die
+ * Zahl.
+ *
+ * Ohne `erreichbar` - im Buch, bevor ein Profil feststeht - gilt der
+ * Bezug des knappsten Profils; das ist die Zahl, die vorher ueberall
+ * stand.
+ */
+export const BEZUG = 48;
+export const schwelleBei = (r, erreichbar) =>
+  Math.max(1, Math.round(r.anteil * (erreichbar || BEZUG)));
+
+export function raumAbZahl(habe = [], erreichbar = 0) {
   const da = new Set(habe);
   for (const r of RAEUME) {
-    if (!r.ab || da.size < r.ab) continue;
+    if (!r.anteil || da.size < schwelleBei(r, erreichbar)) continue;
     const neu = r.tiere.map(tierMit).filter(t => t && t.bild && !da.has(t.id));
     if (neu.length) return { raum: r, neu };
   }
@@ -813,11 +860,11 @@ export function raumTiere(ebeneId, habe = []) {
  * `null` heisst: es ist alles geholt. Auch das ist eine Auskunft, und
  * eine bessere als Schweigen.
  */
-export function naechsteSchwelle(habe = []) {
+export function naechsteSchwelle(habe = [], erreichbar = 0) {
   const da = new Set(habe);
   let naechste = null;
   for (const r of RAEUME) {
-    if (!r.ab) continue;
+    if (!r.anteil) continue;
     /* Ein Raum, dessen Tiere schon alle da sind, ist keine Schwelle mehr
        - auch wenn eine spaetere noch offen ist. Deshalb weiter und nicht
        abbrechen. */
@@ -827,7 +874,7 @@ export function naechsteSchwelle(habe = []) {
        Anlauf schrieb hier `Math.max(1, ...)` und sagte damit „noch ein
        Tier" ueber einen Raum, der laengst zu haben war - eine Zahl, die
        nicht luegen darf, weil ein Kind sie zaehlt. */
-    if (r.ab <= da.size) continue;
+    if (schwelleBei(r, erreichbar) <= da.size) continue;
     /* Und gesucht wird die KLEINSTE offene Schwelle, nicht die erste in
        der Liste. Bis I20 waren es zwei Raeume, und sie standen in der
        richtigen Reihenfolge da - mit acht ist „steht richtig in der
@@ -835,9 +882,11 @@ export function naechsteSchwelle(habe = []) {
        darf. Wer einen Raum an die falsche Stelle setzt, bekaeme sonst
        einen Satz, der eine spaetere Schwelle als naechste ausgibt, und
        nichts waere rot. */
-    if (!naechste || r.ab < naechste.ab) naechste = r;
+    if (!naechste || schwelleBei(r, erreichbar) < schwelleBei(naechste, erreichbar))
+      naechste = r;
   }
-  return naechste ? { raum: naechste, fehlt: naechste.ab - da.size } : null;
+  return naechste
+    ? { raum: naechste, fehlt: schwelleBei(naechste, erreichbar) - da.size } : null;
 }
 
 /** Alles, was ueberhaupt zu sammeln ist: die Tiere der Raeume, gemalt. */

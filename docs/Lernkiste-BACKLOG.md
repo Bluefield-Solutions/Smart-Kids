@@ -9923,3 +9923,145 @@ knappste Profil kommt auf vierzehn Räume, also 42. Deshalb steht hier nichts
 über 42"* — und bei 45 stand schon eine. Die Grenze war mit den Welten
 mitgewachsen, der Satz nicht (Regel 6). Eine Zahl in einem Kommentar sagt, was
 einmal galt; eine gerechnete sagt, was gilt.
+
+---
+
+## E34 · Schwellen als Anteil — und zehn Ebenen, die der Rauchtest zweimal spielte (04.10.2026)
+
+### Der Rauchtest: 20,5 Sekunden je Dopplung, unsichtbar
+
+Die Zeile `Langsamste Ebenen` aus E30 nannte `laender:europa` mit **21,7 s** —
+sechsmal so teuer wie die nächste. Gemessen, wo die Zeit liegt, und sie lag
+vollständig in der **Navigation**:
+
+| | hin | Vorlauf | gesamt |
+|---|---|---|---|
+| `laender:europa` (1. Besuch) | 0,5 s | 0,9 s | **2,0 s** |
+| `laender:europa` (2. Besuch) | **20,5 s** | 20,5 s | **21,7 s** |
+
+Die Ebene wurde **zweimal** gespielt. Eine Gruppenkachel trägt `data-ebene` mit
+der Kennung ihres ersten Kindes — sie ist eine Tür und keine Ebene. Die
+Sammlung der Ebenen las `[data-ebene]` ohne Einschränkung, also kam
+`laender:europa` zweimal in die Liste: einmal als Tür von der Wand, einmal als
+Ebene aus der geöffneten Gruppe.
+
+Und der zweite Besuch kostete, ohne dass es auffiel: die Kennung steht auf der
+Wand (als Tür), der Durchgang hält sich deshalb für angekommen, klickt die Tür,
+landet in der Gruppe — und wartet dann seine volle Frist auf eine Aufgabe, die
+dort nicht kommt. Danach läuft er weiter, **als wäre nichts gewesen. Die Ebene
+zählt als gespielt und ist es nicht.**
+
+| | vorher | nachher |
+|---|---|---|
+| Leas Durchgang | 518,8 s | **445,0 s** |
+| gespielte Ebenen | 109 | **99** |
+| langsamste Ebene | 21,7 s | **3,4 s** |
+
+Ohne die Messstelle aus E30 wäre das eine Ebene, die eben lange braucht.
+
+### Die Schwellen: wer mehr übt, stieß früher an die Decke
+
+E33 hat gemessen, dass die neun Schwellenräume bei 45 enden, während die
+Obergrenze bei 48 liegt — und dass die Grenze **die Eltern** setzen, weil eine
+Schwelle für jedes Profil erreichbar sein muss. Die Folge war eine Verkehrung:
+
+| | aus Ebenen holbar | letzte Schwelle | das sind |
+|---|---|---|---|
+| Stephan · Violeta | 48 | 45 | **94 %** |
+| Fiona | 51 | 45 | 88 % |
+| Lea | 57 | 45 | **79 %** |
+
+**Lea übt am meisten und hatte danach die längste Strecke ohne Lohn.**
+
+Die Schwelle ist jetzt ein **Anteil der eigenen Sammlung** statt einer festen
+Zahl. Die Anteile sind so gewählt, dass für die Eltern dieselben Zahlen
+herauskommen wie bisher — niemand verliert etwas:
+
+| Profil | Schwellen |
+|---|---|
+| Stephan · Violeta (48) | 12 · 18 · 24 · 28 · 31 · 35 · 38 · 42 · 45 |
+| Fiona (51) | 13 · 19 · 26 · 30 · 33 · 37 · 40 · 45 · 48 |
+| Lea (57) | 14 · 21 · 29 · 33 · 37 · 42 · 45 · 50 · **53** |
+
+Die höchste liegt für **jedes** Kind bei 94 % seiner eigenen Sammlung.
+
+Und die Erreichbarkeit ist damit keine Rechnung mehr, sondern eine
+**Eigenschaft**: ein Anteil von höchstens eins liegt nie über dem, was zu holen
+ist. Das Tor prüft deshalb den Anteil und nicht mehr die Zahl — eine Prüfung
+weniger, die veralten kann.
+
+### Was dabei auffiel
+
+Fünf stehende Gegenproben verloren mit dieser Änderung ihren Suchtext, und das
+Tor hat es gemeldet, **bevor eine einzige davon lief** — `inhalt` prüft die
+Probenliste in 0,3 s gegen die Wirklichkeit. Ohne sie wären fünf Proben still
+zu „Eingriff nicht angekommen" geworden, und das sieht aus wie ein bestandenes
+Tor.
+
+### Drei Anläufe für eine Zeile
+
+Die zweite Lohnregel aus E32 („eine fehlerfreie Runde zahlt nur, wenn sie eine
+volle war") hat in dieser Runde dreimal das Falsche gemessen:
+
+| Anlauf | gemessen | was dabei verloren ging |
+|---|---|---|
+| 1 | `st.liste.length` — die **Länge der Runde** | ein Tag, an dem wenig fällig war, galt als halbe Arbeit |
+| 2 | `vorrat()` **aller** Ebenen des Raums | Fionas Kontinente wachsen während der Runde |
+| 3 | der Vorrat der Ebenen **ohne die eigene** | — |
+
+Der zweite Fehler ist der lehrreiche. Fiona spielt vier Kontinente, beantwortet
+alle vier richtig — und **damit** öffnet `kontinentRunde` die nächste Stufe,
+`vorrat()` gibt danach sechs. Gegen sechs gemessen war ihre fehlerfreie Runde zu
+kurz, und „Der Wal für dein Buch" blieb aus.
+
+Gefunden hat beides **nicht ein Tor**, sondern die Bildabnahme: auf `quer-ende`
+verschwand eine Zeile. Danach gefragt hätte niemand.
+
+### Vier Prüfungen, die vorher nicht da waren
+
+Drei der vier Änderungen dieser Runde wären **still** verfallen — keine hätte
+etwas rot gemacht, zwei hätten nur Zeit gekostet. Jede trägt jetzt eine
+Prüfung und eine stehende Gegenprobe (Regel 1):
+
+| Prüfung | Tor | fängt | belegt mit |
+|---|---|---|---|
+| keine zwei Räume beim selben Stand | `inhalt` | Anteile, die bei kleiner Sammlung zusammenfallen | 0,875 = 0,9375 → schlägt für alle vier Profile an |
+| die Bezugsgröße gegen die wirklichen Tiere | `inhalt` | eine Zahl, die nichts bezeichnet, und neun Schwellen daran | sagt 87, zu erreichen sind 60 |
+| `volleRunde` lässt die eigene Ebene aus | `spielprobe` | die Zeile, die drei Anläufe gekostet hat | Zeile entfernt → rot |
+| keine Kennung zweimal im Durchgang | `smoke` | die Gruppenkachel, die als Ebene mitzählt | Filter entfernt → fünf Dopplungen bei **Fiona** |
+
+Die letzte hat gleich etwas Neues gesagt: gemessen war die Dopplung an **Leas**
+Durchgang, betroffen ist auch **Fiona** — `laender:europa`, `bundeslaender`,
+`groesser:afrika`, `flaggen:europa`, `englisch:familie`. Eine Prüfung, die
+vorher nur eine Vermutung war.
+
+### Und eine Prüfung, die aufgehört hatte zu prüfen
+
+Beim Nachsehen fiel im Rauchtest eine **leere Zeile** auf:
+
+```
+  Sammlung öffnet Räume:
+```
+
+`AB_RAEUME` filterte auf `r.ab`. Das Feld heißt seit dieser Runde `anteil` —
+also war die Liste leer, die Schleife lief nullmal, und **neun Raummessungen
+fielen aus**. Der Rauchtest meldete grün. Zwei stehende Gegenproben („die
+Sammlung öffnet keinen Raum mehr", „der zweite Sammlungsraum wird nicht
+gefahren") hätten es gefunden — aber erst im vollen Probenlauf, und bis dahin
+hätte es ausgesehen wie ein bestandenes Tor.
+
+Repariert, und zugleich an die richtige Messstelle gestellt: die neun Schwellen
+kommen jetzt **aus der laufenden App**, mit Fiona angemeldet, statt hier
+nachgerechnet zu werden. Gemessen 13 · 19 · 26 · 30 · 33 · 37 · 40 · 45 · 48 —
+dieselben Zahlen, die `inhalt` auf dem anderen Weg nennt. Zwei Wege, eine Zahl.
+
+### Zweimal dasteht, einmal veraltet (Regel 6)
+
+Zwei Rechnungen sind beim Prüfen zusammengefallen:
+
+- `inhalt` zählte die erreichbaren Räume **selbst**, mit derselben Formel wie
+  das Spiel. Es ruft jetzt `Tiere.erreichbarAus` — verschieden ist nur der
+  Eingang (Ebenen aus dem Quelltext statt aus `meineEbenen()`).
+- `erreichbarAus` rechnete **„Räume mal drei"**. Heute hat jeder Raum drei, und
+  die Zahlen sind unverändert (48 · 51 · 57) — aber der erste Raum mit vier
+  Tieren hätte sie still falsch gemacht. Gezählt werden jetzt die Tiere.

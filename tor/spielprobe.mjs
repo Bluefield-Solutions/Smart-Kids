@@ -896,6 +896,21 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   if (!/st\.glatt === st\.liste\.length && volleRunde\(st\)/.test(spiel))
     fehler.push('die fehlerfreie Runde zahlt wieder ohne `volleRunde` — dann ist '
       + 'eine Runde mit zwei Aufgaben so viel wert wie eine volle');
+  /* UND `volleRunde` MUSS DIE EBENE MESSEN, NICHT DIE RUNDE (E34). Mit
+     `st.liste.length` bestraft die Regel einen Tag, an dem wenig faellig
+     war - das Kind hat dann alles beantwortet, was es gab, und bekommt
+     nichts. Gefunden hat es die Bildabnahme, nicht dieses Tor. */
+  if (!/return st\.alle\.length >= Lohn\.besteRunde\(/.test(spiel))
+    fehler.push('`volleRunde` misst wieder die Länge der RUNDE statt den Vorrat '
+      + 'der Ebene — dann zählt ein Tag, an dem wenig fällig war, als halbe Arbeit');
+  /* UND DIE EIGENE EBENE BLEIBT AUS DER GRENZE. Fionas Kontinente
+     wachsen WAEHREND der Runde: vier richtige Antworten oeffnen die
+     naechste Stufe, `vorrat()` gibt danach sechs. Gegen die eigene,
+     gewachsene Ebene gemessen waere jede fehlerfreie Kontinentrunde zu
+     kurz. Diese Zeile hat drei Anlaeufe gekostet. */
+  if (!/if \(e === st\.ebeneId\) continue;/.test(spiel))
+    fehler.push('`volleRunde` misst die eigene Ebene wieder mit — dann verliert '
+      + 'jede Ebene, deren Vorrat während der Runde wächst, ihren Lohn');
   if (!/raumTiere\(st\.ebeneId, TierStand\.ids\)\.slice\(0, anteil\)/.test(spiel))
     fehler.push('das Fertigwerden einer Ebene zahlt wieder den ganzen Raum — dann '
       + 'leert eine Ebene mit zwei Wörtern einen Raum mit vierundzwanzig');

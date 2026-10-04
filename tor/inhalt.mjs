@@ -4814,11 +4814,16 @@ function paareAusBuendel() {
   const titelGesehen = new Set();
   for (const r of TI.RAEUME) {
     const hatEbenen = Array.isArray(r.ebenen) && r.ebenen.length > 0;
-    if (hatEbenen === !!r.ab)
-      tf.push(`„${r.titel}" hängt ${hatEbenen ? 'an Ebenen UND an einer Zahl'
-        : 'weder an einer Ebene noch an einer Zahl'} — genau eines von beidem`);
-    if (r.ab !== undefined && !(Number.isInteger(r.ab) && r.ab > 0))
-      tf.push(`„${r.titel}" öffnet sich bei „${r.ab}" — das ist keine Anzahl`);
+    if (hatEbenen === !!r.anteil)
+      tf.push(`„${r.titel}" hängt ${hatEbenen ? 'an Ebenen UND an einem Anteil'
+        : 'weder an einer Ebene noch an einem Anteil'} — genau eines von beidem`);
+    /* DER ANTEIL UND NICHT MEHR DIE ZAHL (E34). Ein Anteil ueber eins
+       liegt ueber dem, was ein Kind aus Ebenen holen kann - der Raum
+       stuende im Buch als naechstes Ziel und kaeme nie. Vorher war das
+       eine Rechnung je Profil; jetzt ist es eine Eigenschaft der Zahl. */
+    if (r.anteil !== undefined && !(r.anteil > 0 && r.anteil <= 1))
+      tf.push(`„${r.titel}" öffnet sich bei einem Anteil von „${r.anteil}" — `
+        + 'das muss zwischen null und eins liegen, sonst ist der Raum nie zu holen');
     /* EIN TITEL, EIN RAUM. Vor I15 durften sich zwei Eintraege einen
        Titel teilen (die beiden Hauptstadt-Ebenen taten es), und ihre
        Tierlisten mussten dann von Hand gleich sein. Seit ein Raum eine
@@ -4932,24 +4937,53 @@ function paareAusBuendel() {
       const wer = w ? w[1].replace(/'/g, '').split(',').map(x => x.trim()) : null;
       for (const e of ebenen) if (e.startsWith(`${m[1]}:`)) werVon.set(e, wer);
     }
+    /* ZUERST DIE BEZUGSGROESSE SELBST (E34).
+     *
+     * Jede Schwelle ist ein Anteil von `erreichbarAus` - die Zahl traegt
+     * also alle neun. Nachgerechnet wird sie gegen das, was sie zu sein
+     * behauptet: die TIERE der Raeume, die ueber eine Ebene zu erreichen
+     * sind. Stand hier einmal „Raeume mal drei", und das waere mit dem
+     * ersten Raum mit vier Tieren still falsch geworden - eine
+     * Bezugsgroesse, die nichts bezeichnet, und neun Schwellen daran.
+     *
+     * Ohne Ebenen ist nichts zu holen: die Null muss eine Null bleiben,
+     * sonst griffe im Spiel still der Rueckfall auf `BEZUG`. */
+    const alleTiere = TI.RAEUME.filter(r => (r.ebenen || []).length)
+      .reduce((n, r) => n + r.tiere.length, 0);
+    if (TI.erreichbarAus([...ebenen]) !== alleTiere)
+      tf.push(`die Bezugsgröße der Schwellen sagt ${TI.erreichbarAus([...ebenen])}, `
+        + `über Ebenen zu erreichen sind aber ${alleTiere} Tiere`);
+    if (TI.erreichbarAus([]) !== 0)
+      tf.push('ohne eine einzige Ebene wären schon '
+        + `${TI.erreichbarAus([])} Tiere zu holen — dann greift im Spiel `
+        + 'still der Rückfall auf BEZUG');
     const profile = [...new Set([...werVon.values()].filter(Boolean).flat())];
     const decke = {};
-    for (const r of TI.RAEUME.filter(x => x.ab)) {
+    for (const r of TI.RAEUME.filter(x => x.anteil)) {
       for (const p of profile) {
         /* Ein Raum zaehlt fuer ein Profil, wenn IRGENDEINE seiner
            Ebenen ihm gehoert - der Hof gehoert Fiona ueber
            `rechnen:plusminus`, auch wenn acht der neun Rechenebenen
            nicht ihre sind. */
-        const raeume = new Set(TI.RAEUME
-          .filter(x => (x.ebenen || []).some(e => werVon.get(e) === null
-            || !werVon.has(e) || werVon.get(e).includes(p)))
-          .map(x => x.titel));
-        const holbar = raeume.size * 3;
+        /* GERECHNET WIRD MIT `erreichbarAus` UND NICHT DANEBEN (Regel 6).
+           Die Zaehlung stand hier einmal als eigene Zeile - dieselbe
+           Rechnung wie im Spiel, nur zweimal geschrieben. Das Tor haette
+           dann weiter gestimmt, nachdem die Rechnung im Spiel sich
+           geaendert hat. Verschieden ist nur der EINGANG: hier kommen die
+           Ebenen aus dem Quelltext, im Spiel aus `meineEbenen()`. */
+        const meine = [...ebenen].filter(e => werVon.get(e) === null
+          || !werVon.has(e) || werVon.get(e).includes(p));
+        const holbar = TI.erreichbarAus(meine);
         decke[p] = holbar;
-        if (holbar < r.ab)
-          tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren, ${p} kann aber `
-            + `nur ${holbar} holen (${raeume.size} Räume) — der Raum wäre für `
-            + 'dieses Profil nie zu erreichen');
+        /* ERREICHBARKEIT IST SEIT E34 KEINE RECHNUNG MEHR, sondern eine
+           Eigenschaft: die Schwelle ist ein Anteil der eigenen Sammlung,
+           und ein Anteil von hoechstens eins liegt nie darueber. Die
+           Zeile oben prueft den Anteil; hier bleibt die MESSSTELLE - was
+           jedes Kind holen kann und wo seine Schwellen dann liegen. */
+        if (TI.schwelleBei(r, holbar) > holbar)
+          tf.push(`„${r.titel}" öffnet sich für ${p} bei `
+            + `${TI.schwelleBei(r, holbar)} Tieren, holen kann ${p} aber `
+            + `nur ${holbar} (${holbar / 3} Räume)`);
       }
     }
     /* UND WIEVIEL LUFT BLEIBT (E33).
@@ -4964,20 +4998,35 @@ function paareAusBuendel() {
      * Fehler: dass Platz fuer eine weitere Schwelle ist, heisst nicht,
      * dass etwas kaputt ist - es heisst, dass drei Zeichnungen fehlen,
      * und das ist eine Arbeit und kein Defekt. */
-    const schwellen = TI.RAEUME.filter(x => x.ab).map(x => x.ab).sort((a, b) => a - b);
-    const knapp = Math.min(...Object.values(decke));
-    const hoechste = schwellen[schwellen.length - 1] || 0;
-    const wer = Object.entries(decke).filter(([, n]) => n === knapp).map(([w]) => w);
-    console.log(`    Schwellen: ${schwellen.join(' · ')} — Obergrenze ${knapp} `
-      + `(${wer.join(', ')}, ${knapp / 3} Räume), die höchste bei ${hoechste}, `
-      + `${knapp - hoechste} Tiere Luft`);
-    console.log('      ' + Object.entries(decke).sort((a, b) => b[1] - a[1])
-      .map(([w, n]) => `${w} ${n}`).join(' · ') + ' — eine Schwelle muss für ALLE '
-      + 'erreichbar sein, also setzt das knappste Profil die Grenze');
-    if (knapp - hoechste >= 3)
-      hinweise.push(`es ist Platz für eine weitere Schwelle: die Obergrenze liegt `
-        + `bei ${knapp}, die höchste Schwelle bei ${hoechste}. Drei Zeichnungen, `
-        + 'die noch keinem Raum gehören, würden sie füllen');
+    const schwellen = TI.RAEUME.filter(x => x.anteil).sort((a, b) => a.anteil - b.anteil);
+    console.log('    Schwellen je Profil (Anteil der eigenen Sammlung): '
+      + Object.entries(decke).sort((a, b) => a[1] - b[1])
+        .map(([w, n]) => `${w} ${schwellen.map(r => TI.schwelleBei(r, n)).join('·')} `
+          + `von ${n}`).join('  |  '));
+    /* UND KEINE ZWEI RAEUME OEFFNEN BEIM SELBEN STAND (E34).
+     *
+     * Das ist die Gefahr, die ein ANTEIL mitbringt und eine feste Zahl
+     * nicht hatte: neun Anteile zwischen 0,25 und 0,94 liegen bei einer
+     * grossen Sammlung weit auseinander und bei einer kleinen
+     * aufeinander. Bei zwoelf erreichbaren Tieren fielen 0,875 und
+     * 0,9375 beide auf elf - zwei Tueren gehen gleichzeitig auf, und
+     * `naechsteSchwelle` kann auf eine davon nie zeigen.
+     *
+     * Gemessen ist der engste Abstand drei Tiere (Stephan 42→45,
+     * Fiona 45→48). Die Pruefung schlaegt an, sobald er null wird.
+     * Gegenprobe steht als Probe zum Tor `inhalt`. */
+    for (const [w, n] of Object.entries(decke)) {
+      const zahlen = schwellen.map(r => TI.schwelleBei(r, n));
+      const doppelt = zahlen.filter((x, i) => zahlen.indexOf(x) !== i);
+      if (doppelt.length)
+        tf.push(`für ${w} öffnen zwei Räume beim selben Stand `
+          + `(${[...new Set(doppelt)].join(', ')} Tiere) — auf einen davon `
+          + 'kann der Hinweis „noch N bis …" nie zeigen');
+    }
+    const letzte = schwellen[schwellen.length - 1];
+    console.log(`      die höchste liegt bei ${Math.round(letzte.anteil * 100)} % `
+      + 'der eigenen Sammlung — für jedes Kind gleich, seit sie ein Anteil ist '
+      + 'und keine Zahl');
   }
 
   if (TI.tierMit(TI.GORILLA) === null || !TI.tierMit(TI.GORILLA).bild)
@@ -5007,19 +5056,21 @@ function paareAusBuendel() {
      bekommt den Obstgarten - richtig so, aber es beweist nichts ueber
      den Fruchtstand. Sieben Meldungen auf einmal, und keine davon war
      ein Fehler im Spiel. */
-  for (const r of TI.RAEUME.filter(x => x.ab)) {
-    const tiefer = TI.RAEUME.filter(x => x.ab && x.ab < r.ab).flatMap(x => x.tiere);
+  for (const r of TI.RAEUME.filter(x => x.anteil)) {
+    const ab = TI.schwelleBei(r, TI.BEZUG);
+    const tiefer = TI.RAEUME.filter(x => x.anteil
+      && TI.schwelleBei(x, TI.BEZUG) < ab).flatMap(x => x.tiere);
     const fremd = TI.sammelbar().map(t => t.id)
       .filter(id => !r.tiere.includes(id) && !tiefer.includes(id));
     const stand = (n) => [...tiefer, ...fremd.slice(0, n - tiefer.length)];
-    const knapp = TI.raumAbZahl(stand(r.ab - 1));
+    const knapp = TI.raumAbZahl(stand(ab - 1), TI.BEZUG);
     if (knapp && knapp.raum.titel === r.titel)
-      tf.push(`„${r.titel}" öffnet sich schon bei ${r.ab - 1} Tieren`);
-    const genau = TI.raumAbZahl(stand(r.ab));
+      tf.push(`„${r.titel}" öffnet sich schon bei ${ab - 1} Tieren`);
+    const genau = TI.raumAbZahl(stand(ab), TI.BEZUG);
     if (!genau || genau.raum.titel !== r.titel)
-      tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren nicht`
+      tf.push(`„${r.titel}" öffnet sich bei ${ab} Tieren nicht`
         + (genau ? ` — stattdessen „${genau.raum.titel}"` : ''));
-    const zweitesMal = TI.raumAbZahl([...stand(r.ab), ...r.tiere]);
+    const zweitesMal = TI.raumAbZahl([...stand(ab), ...r.tiere], TI.BEZUG);
     if (zweitesMal && zweitesMal.raum.titel === r.titel)
       tf.push(`„${r.titel}" gibt seine Tiere ein ZWEITES Mal`);
   }
@@ -5040,24 +5091,28 @@ function paareAusBuendel() {
    * keines. */
   {
     const alle = TI.sammelbar().map(t => t.id);
-    const schwellen = TI.RAEUME.filter(r => r.ab).sort((a, b) => a.ab - b.ab);
+    /* GERECHNET WIRD MIT DEM BEZUG (E34). Die Schwelle ist ein Anteil der
+       eigenen Sammlung; ohne Profil gilt der Bezug des knappsten - genau
+       die Zahlen, die vorher fest in den Daten standen. */
+    const schwellen = TI.RAEUME.filter(r => r.anteil).sort((a, b) => a.anteil - b.anteil);
+    const ab = (r) => TI.schwelleBei(r, TI.BEZUG);
     const erste = schwellen[0];
-    const leer = TI.naechsteSchwelle([]);
+    const leer = TI.naechsteSchwelle([], TI.BEZUG);
     if (!erste) tf.push('kein Lebensraum hat mehr eine Schwelle — dann ist auf dem '
       + 'Endbildschirm nichts mehr in Aussicht');
-    else if (!leer || leer.raum.titel !== erste.titel || leer.fehlt !== erste.ab)
-      tf.push(`ohne ein einziges Tier ist „${erste.titel}" nicht in ${erste.ab} Tieren `
+    else if (!leer || leer.raum.titel !== erste.titel || leer.fehlt !== ab(erste))
+      tf.push(`ohne ein einziges Tier ist „${erste.titel}" nicht in ${ab(erste)} Tieren `
         + `in Aussicht, sondern ${leer ? `„${leer.raum.titel}" in ${leer.fehlt}` : 'nichts'}`);
     for (const r of schwellen) {
       /* Derselbe Stand wie oben: alle tieferen Schwellen abgeholt, dazu
          so viele fremde Tiere, dass die Zahl genau stimmt. Ohne das
          nennt `naechsteSchwelle` immer die unterste offene, und jede
          Zeile darunter prüfte denselben Raum. */
-      const tiefer = schwellen.filter(x => x.ab < r.ab).flatMap(x => x.tiere);
+      const tiefer = schwellen.filter(x => x.anteil < r.anteil).flatMap(x => x.tiere);
       const fremd = alle.filter(id => !r.tiere.includes(id) && !tiefer.includes(id));
       const stand = (n) => [...tiefer, ...fremd.slice(0, n - tiefer.length)];
       /* Einen unter der Schwelle: dann fehlt genau eines. */
-      const knapp = TI.naechsteSchwelle(stand(r.ab - 1));
+      const knapp = TI.naechsteSchwelle(stand(ab(r) - 1), TI.BEZUG);
       if (!knapp || knapp.raum.titel !== r.titel)
         tf.push(`einen unter der Schwelle von „${r.titel}" steht `
           + `${knapp ? `„${knapp.raum.titel}"` : 'nichts'} in Aussicht`);
@@ -5067,9 +5122,9 @@ function paareAusBuendel() {
       /* Und AUF der Schwelle, ohne die eigenen Tiere: dieser Raum ist
          faellig, nicht in Aussicht. Wer ihn hier noch nennt, verspricht
          etwas, das schon offen ist. */
-      const drauf = TI.naechsteSchwelle(stand(r.ab));
+      const drauf = TI.naechsteSchwelle(stand(ab(r)), TI.BEZUG);
       if (drauf && drauf.raum.titel === r.titel)
-        tf.push(`„${r.titel}" steht bei ${r.ab} Tieren noch in Aussicht, `
+        tf.push(`„${r.titel}" steht bei ${ab(r)} Tieren noch in Aussicht, `
           + 'obwohl seine Schwelle erreicht ist');
     }
     if (TI.naechsteSchwelle(alle))

@@ -332,10 +332,10 @@ export const PROBEN = [
      Tor die erzeugten Ebenen kennt. */
   { n:'eine Schwelle liegt über dem, was ein Profil holen kann', tor:'inhalt',
     deckt:'tiere', datei:'src/inhalt/tiere.js',
-    such:"{ ab: 45,                           titel:'Bei den Blumen',",
-    ersatz:"{ ab: 50,                           titel:'Bei den Blumen',",
-    an:{ datei:'src/inhalt/tiere.js', text:"{ ab: 50," },
-    sagt:'nie zu erreichen' },
+    such:"{ anteil: 0.9375, titel:'Bei den Blumen',",
+    ersatz:"{ anteil: 1.2, titel:'Bei den Blumen',",
+    an:{ datei:'src/inhalt/tiere.js', text:"{ anteil: 1.2," },
+    sagt:'zwischen null und eins' },
 
   /* WAS EIN RAUM KOSTET (E32) - drei Proben, drei verschiedene Stellen.
 
@@ -933,8 +933,8 @@ export const PROBEN = [
      gespielte Endbildschirm da. */
   { n:'die Sammlung öffnet keinen Raum mehr', tor:'smoke', args:['--nur=landschaft'],
     bauen:true, datei:D,
-    such:"  const ausZahl = Tiere.raumAbZahl(TierStand.ids);",
-    ersatz:"  const ausZahl = null;  //Anker: const ausZahl = Tiere.raumAbZahl(TierStand.ids);",
+    such:"  const ausZahl = Tiere.raumAbZahl(TierStand.ids, erreichbarFuerMich());",
+    ersatz:"  const ausZahl = null;  //Anker: const ausZahl = Tiere.raumAbZahl(TierStand.ids, erreichbarFuerMich());",
     an:{ ...DIST, text:'const ausZahl = null;' },
     sagt:'öffnet „In der Tiefsee" nicht' },
 
@@ -961,7 +961,7 @@ export const PROBEN = [
        Zeilenende und traegt sie nicht. Mit vier Leerzeichen davor haette
        der Eingriff seinen eigenen Anker weggenommen - zwoelftes Mal
        dieselbe Falle. */
-    such:"if (!r.ab || da.size < r.ab) continue;",
+    such:"if (!r.anteil || da.size < schwelleBei(r, erreichbar)) continue;",
     ersatz:"if (!r.ab) continue;  //Anker: if (!r.ab || da.size < r.ab) continue;",
     an:{ datei:'src/inhalt/tiere.js', text:'if (!r.ab) continue;' },
     sagt:'öffnet sich schon bei' },
@@ -8688,9 +8688,9 @@ export const PROBEN = [
    * stand dieselbe Zeile wieder da. */
   { n:'ein Ort steht noch in Aussicht, obwohl seine Schwelle erreicht ist',
     tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
-    such:'    if (r.ab <= da.size) continue;',
-    ersatz:'    if (r.ab <= da.size - 99) continue;',
-    an:{ datei:'src/inhalt/tiere.js', text:'r.ab <= da.size - 99' },
+    such:'    if (schwelleBei(r, erreichbar) <= da.size) continue;',
+    ersatz:'    if (schwelleBei(r, erreichbar) <= da.size - 99) continue;',
+    an:{ datei:'src/inhalt/tiere.js', text:'schwelleBei(r, erreichbar) <= da.size - 99' },
     sagt:'obwohl seine Schwelle erreicht ist' },
 
   /* 2. Der Satz faellt aus.
@@ -8745,10 +8745,86 @@ export const PROBEN = [
    * hier zweimal vergessen worden. */
   { n:'ein Raum oeffnet sich erst hinter der Reichweite des Profils',
     tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
-    such:"  { ab: 38,                           titel:'Ein Abend aus',",
-    ersatz:"  { ab: 999,                          titel:'Ein Abend aus',",
-    an:{ datei:'src/inhalt/tiere.js', text:"{ ab: 999," },
-    sagt:'nie zu erreichen' },
+    such:"  { anteil: 0.792, titel:'Ein Abend aus',",
+    ersatz:"  { anteil: 9.99, titel:'Ein Abend aus',",
+    an:{ datei:'src/inhalt/tiere.js', text:"{ anteil: 9.99," },
+    sagt:'zwischen null und eins' },
+
+  /* 1b. Zwei Raeume gehen beim selben Stand auf.
+   *
+   * Die Gefahr, die ein ANTEIL mitbringt und eine feste Zahl nicht
+   * hatte: 0,875 und 0,9375 liegen bei einer grossen Sammlung weit
+   * auseinander und fallen bei einer kleinen auf dieselbe Zahl. Dann
+   * gehen zwei Tueren gleichzeitig auf, und der Hinweis „noch N bis …"
+   * kann auf eine davon nie zeigen.
+   *
+   * Der Eingriff braucht keine kleine Sammlung: er setzt die beiden
+   * Anteile gleich. Gemessen schlaegt es dann fuer alle vier Profile an
+   * (Lea bei 53, Stephan und Violeta bei 45, Fiona bei 48). */
+  { n:'zwei Raeume oeffnen sich beim selben Stand',
+    tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
+    such:"  { anteil: 0.875, titel:",
+    ersatz:"  { anteil: 0.9375, titel:",
+    an:{ datei:'src/inhalt/tiere.js', text:"{ anteil: 0.9375, titel:" },
+    sagt:'beim selben Stand' },
+
+  /* 1c. Die Bezugsgroesse zaehlt mehr, als zu erreichen ist.
+   *
+   * Jede der neun Schwellen ist ein Anteil von `erreichbarAus` - die
+   * Zahl traegt also alle neun, und sie ist von keiner Seite sichtbar.
+   * `inhalt` rechnet sie deshalb gegen das nach, was sie zu sein
+   * behauptet: die Tiere der Raeume, die ueber eine Ebene zu erreichen
+   * sind.
+   *
+   * Der Eingriff laesst jeden Raum zaehlen, auch die ohne Ebene.
+   * Gemessen sagt die Bezugsgroesse dann 87 statt 60. Nicht angefasst
+   * wird die Summe darunter: ein Eingriff an IHR wuerde zuerst diese
+   * Probe treffen (ihr Suchtext steht dort), und die Meldung waere eine
+   * andere als die, um die es geht. */
+  { n:'die Bezugsgroesse der Schwellen zaehlt mehr, als zu erreichen ist',
+    tor:'inhalt', deckt:'tiere', datei:'src/inhalt/tiere.js',
+    such:"  return RAEUME.filter(r => (r.ebenen || []).some(e => da.has(e)))",
+    ersatz:"  return RAEUME.filter(r => true)",
+    an:{ datei:'src/inhalt/tiere.js', text:'RAEUME.filter(r => true)' },
+    sagt:'Bezugsgröße' },
+
+  /* 1d. `volleRunde` misst die eigene Ebene mit.
+   *
+   * Fionas Kontinente wachsen WAEHREND der Runde: vier richtige
+   * Antworten oeffnen die naechste Stufe, `vorrat()` gibt danach sechs.
+   * Gegen die eigene, gewachsene Ebene gemessen waere jede fehlerfreie
+   * Kontinentrunde zu kurz, und „Der Wal für dein Buch" blieb aus.
+   *
+   * Diese eine Zeile hat drei Anlaeufe gekostet, und gefunden hat sie
+   * nicht ein Tor, sondern die Bildabnahme an `quer-ende`. Seit E34
+   * fragt `spielprobe` danach. */
+  { n:'volleRunde misst die eigene Ebene mit', tor:'spielprobe', datei:D,
+    such:'      if (e === st.ebeneId) continue;\n',
+    ersatz:'',
+    an:{ datei:D, fehlt:'if (e === st.ebeneId) continue;' },
+    sagt:'die eigene Ebene wieder mit' },
+
+  /* 1e. Die Gruppenkachel zaehlt als Ebene mit.
+   *
+   * Eine Gruppenkachel traegt `data-ebene` mit der Kennung ihres ERSTEN
+   * Kindes - sie ist eine Tuer und keine Ebene. Ohne den Filter kommt
+   * die Kennung zweimal in die Liste, der Durchgang spielt sie zweimal,
+   * wartet beim zweiten Mal zwanzig Sekunden auf eine Aufgabe, die nicht
+   * kommt, und zaehlt sie trotzdem als gespielt. Nichts wird rot, es
+   * wird nur langsam.
+   *
+   * Gemessen mit `--wer=fiona`: fuenf gedoppelte Kennungen, und
+   * `laender:europa` steigt von 2,0 auf 21,7 s. Das Profil ist gewaehlt
+   * und nicht geraten - Fiona hat Gruppen und ist das kuerzeste. */
+  { n:'die Gruppenkachel zaehlt als Ebene mit', tor:'smoke',
+    args:['--nur=durchgang', '--kurz', '--wer=fiona'], bauen:true, datei:'tor/smoke.mjs',
+    such:"      const hier = await p.$$eval('.schirm.da [data-ebene]',\n"
+      + "        es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));",
+    ersatz:"      const hier = await p.$$eval('.schirm.da [data-ebene]',\n"
+      + "        es => es.map(e => e.dataset.ebene));",
+    an:{ datei:'tor/smoke.mjs', fehlt:"es => es.filter(e => !e.dataset.gruppe).map(e => e.dataset.ebene));\n"
+      + "      for (const g of" },
+    sagt:'steht zweimal in der Liste' },
 
   /* 2. Die Wand im Buch, schmal und hoch.
    *

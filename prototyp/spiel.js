@@ -4189,6 +4189,18 @@ function tiereSichern(){
  * Gerechnet wird einmal je Raum und dann gemerkt: `vorrat` ueber
  * vierundzwanzig Ebenen bei jedem Endbildschirm waere eine Rechnung fuer
  * eine Zahl, die sich waehrend einer Sitzung nicht aendert. */
+/* Was DIESES Kind aus Ebenen holen kann - die Bezugsgroesse der
+   Schwellen (E34). Einmal je Profil gerechnet: `meineEbenen()` laeuft
+   ueber die ganze Ebenenliste, und die Zahl aendert sich waehrend einer
+   Sitzung nicht. */
+const ERREICHBAR = new Map();
+function erreichbarFuerMich(){
+  if (!P) return 0;
+  if (!ERREICHBAR.has(P.id))
+    ERREICHBAR.set(P.id, Tiere.erreichbarAus(meineEbenen().map(e => e.id)));
+  return ERREICHBAR.get(P.id);
+}
+
 const BESTE_RUNDE = new Map();
 function volleRunde(st){
   const r = Tiere.raumZu(st.ebeneId);
@@ -4197,15 +4209,44 @@ function volleRunde(st){
   if (!BESTE_RUNDE.has(schluessel)) {
     let groesste = 0;
     for (const e of r.ebenen) {
+      /* DIE EIGENE EBENE NICHT - sie steht als `st.alle` schon fest, und
+         zwar mit dem Wert vom BEGINN der Runde.
+         Das ist kein Feinschliff, sondern der Unterschied zwischen
+         zahlen und nicht zahlen: Fionas Kontinente wachsen WAEHREND der
+         Runde. Sie spielt vier, beantwortet alle vier richtig, und damit
+         oeffnet `kontinentRunde` die naechste Stufe - `vorrat()` gibt
+         danach sechs. Gegen sechs gemessen waere ihre fehlerfreie Runde
+         zu kurz gewesen, und „Der Wal für dein Buch" blieb aus.
+         Gefunden hat es die Bildabnahme an `quer-ende`; kein Tor und
+         kein Blick haette danach gesucht. */
+      if (e === st.ebeneId) continue;
       /* Eine Ebene, deren Vorrat gerade nicht zu haben ist (eine Karte,
          die noch nicht geladen wurde), zaehlt nicht mit. Sie macht die
          Grenze dann kleiner und nie groesser - eine Grenze, die an
          einem Ladezustand haengt, duerfte nicht strenger werden. */
       try { groesste = Math.max(groesste, vorrat(e).length); } catch (err) {}
     }
-    BESTE_RUNDE.set(schluessel, Lohn.besteRunde([groesste], P.sitzung));
+    BESTE_RUNDE.set(schluessel, groesste);
   }
-  return st.liste.length >= BESTE_RUNDE.get(schluessel);
+  /* GEMESSEN WIRD DIE EBENE UND NICHT DER TAG (E34).
+   *
+   * Der erste Anlauf verglich die LAENGE DER RUNDE. Das ist falsch, und
+   * zwar an einer Stelle, die kein Tor gesehen haette: eine Runde ist
+   * auch dann kurz, wenn nur wenige Gegenstaende FAELLIG waren - der
+   * Leitner hat an dem Tag eben nicht mehr hergegeben. Das Kind hat
+   * dann alles beantwortet, was es zu beantworten gab, fehlerfrei, und
+   * bekam nichts.
+   *
+   * Gefunden hat es die Bildabnahme: auf `quer-ende` verschwand die
+   * Zeile „Ohne Fehler! Der Wal für dein Buch" - dort steht ein Stand,
+   * bei dem von sechs Kontinenten vier faellig sind.
+   *
+   * Gefragt wird deshalb nach dem VORRAT der Ebene: ist sie gross genug
+   * fuer die beste Runde ihres Raums? „Wörter mit pf" mit zwei Woertern
+   * ist es nicht und war der Anlass; Fionas Kontinente mit vier in der
+   * ersten Runde sind es, denn mehr gibt es dort nicht. */
+  return st.alle.length >= Lohn.besteRunde(
+    [BESTE_RUNDE.get(schluessel), st.alle.length], P.sitzung);
 }
 
 function tierFuer(st){
@@ -4243,7 +4284,7 @@ function tierFuer(st){
      Endbildschirm sind fuer ein sechsjaehriges Kind keine zwei
      Nachrichten, sondern keine; die Schwelle wartet dann bis zum
      naechsten Mal, und sie laeuft nicht weg. */
-  const ausZahl = Tiere.raumAbZahl(TierStand.ids);
+  const ausZahl = Tiere.raumAbZahl(TierStand.ids, erreichbarFuerMich());
   if (ausZahl) {
     TierStand = { ...TierStand, ids: [...TierStand.ids, ...ausZahl.neu.map(t => t.id)] };
     tiereSichern();
@@ -4306,7 +4347,7 @@ function tierFuer(st){
    * Nachrichten auf einem Endbildschirm sind fuer ein sechsjaehriges
    * Kind keine zwei, sondern keine - dieselbe Ueberlegung wie bei T6. */
   if (f.gesamt && f.gesammelt === f.gesamt) {
-    const weiter = Tiere.naechsteSchwelle(TierStand.ids);
+    const weiter = Tiere.naechsteSchwelle(TierStand.ids, erreichbarFuerMich());
     const schon = Tiere.raumZu(st.ebeneId);
     if (schon || weiter) return (st.tiere = { schon, weiter });
   }
