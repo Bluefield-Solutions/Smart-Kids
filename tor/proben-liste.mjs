@@ -959,6 +959,37 @@ export const PROBEN = [
     ersatz:'.rollen.buch .abzeichen{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}',
     an:{ ...DIST, text:'minmax(130px,1fr)' }, sagt:'ein Abzeichen muss' },
 
+  /* --- Die Rechtschreibwand (E26b) ------------------------------------
+   *
+   * Fuenfzehn Ebenen hinter einer Gruppenkachel - die groesste Wand des
+   * Spiels, und `passt` hat sie bis zu dieser Runde nie aufgeklappt.
+   * Beim ersten Lauf danach standen sofort zwei Befunde da, und beide
+   * haben hier ihre Gegenprobe. Es sind zwei verschiedene Engen, und
+   * jede hat ihre eigene Zeile im Stilblatt. */
+
+  // 1. ZU BREIT IM SCHMALEN FENSTER. Ohne die Vierspalten-Stufe sind es
+  //    drei Spalten und fuenf Reihen: 115 Punkte liefen auf 700 x 850
+  //    aus dem Fenster, die letzten drei Kacheln waren nicht zu
+  //    erreichen. `--teil=0/5` faehrt „Fenster schmal" mit.
+  { n:'die Rechtschreibwand läuft im schmalen Fenster unten heraus', tor:'passt',
+    args:['--teil=0/5'], bauen:true, datei:V,
+    such:'  .wahl.ebenen:has(> :nth-child(15))>*{flex:0 0 150px}',
+    ersatz:'  .wahl.ebenen:has(> :nth-child(15))>*{flex:0 0 200px}',
+    an:{ ...DIST, text:':nth-child(15))>*{flex:0 0 200px}' }, sagt:'über den Rand' },
+
+  // 2. ZU HOCH AUF DEM ZIELGERAET MIT LEISTE. Ohne die engere Reihe und
+  //    die flachere Kachel endet die Wand bei 376, und das Telefon
+  //    nimmt sich alles ab 369 fuer den Streifen zum Wischen: drei
+  //    Kacheln sichtbar und nicht zu treffen. `--teil=1/5` ist
+  //    „iPhone quer, Leiste" - die einzige Groesse mit einem sicheren
+  //    Bereich, also die einzige, auf der es ueberhaupt auffaellt.
+  { n:'die letzte Kachelreihe liegt im Streifen des Telefons', tor:'passt',
+    args:['--teil=1/5'], bauen:true, datei:V,
+    such:'  .wahl.ebenen:has(> :nth-child(15)) .kachel{min-height:70px}',
+    ersatz:'  .wahl.ebenen:has(> :nth-child(15)) .kachel{min-height:78px}',
+    an:{ ...DIST, text:':nth-child(15)) .kachel{min-height:78px}' },
+    sagt:'im Bereich des Telefons' },
+
   /* --- lesbarkeit --------------------------------------------------- */
   // Die DECKUNG der Vorfahren gehoert in die Kontrastrechnung.
   //

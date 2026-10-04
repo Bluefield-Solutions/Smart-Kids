@@ -741,6 +741,25 @@ body{background:linear-gradient(168deg,var(--grund) 0%,var(--grund-2) 100%);
  * `passt` klont Kacheln, um die Kapazitaet zu bestimmen - die Regel
  * greift dabei mit. */
 .wahl.ebenen:has(> :nth-child(11))>*{flex-basis:200px}
+/* AB FUENFZEHN EBENEN noch einmal (E26b) - dieselbe Rechnung, eine
+ * Stufe weiter.
+ *
+ * Die Rechtschreibung bringt fuenfzehn Ebenen hinter eine Gruppenkachel,
+ * und das ist die groesste Wand des Spiels. Gemessen auf 700 x 850, dem
+ * schmalen Fenster: mit 200 Punkten Kachelbreite stehen DREI je Reihe,
+ * fuenfzehn Kacheln brauchen damit FUENF Reihen - 115 Punkte liefen aus
+ * dem Fenster, und die letzten drei Kacheln waren nicht zu erreichen.
+ * Mit 150 sind es vier Spalten (4 x 150 + 3 x 16 = 648 in 668) und vier
+ * Reihen: 608 Punkte statt 764.
+ *
+ * In DIESELBE Medienabfrage wie die Dreispalten-Regel darueber und nicht
+ * ohne: auf dem kurzen Querformat gilt der eigene, kleinere Satz, und
+ * eine Zeile von hier wuerde ihn ueberstimmen und die Kacheln dort
+ * BREITER machen - 150 statt 106, vier je Reihe statt sieben, und die
+ * Wand liefe nach unten heraus. Nachgemessen, nicht vermutet. */
+@media (min-height:441px) and (max-width:780px){
+  .wahl.ebenen:has(> :nth-child(15))>*{flex:0 0 150px}
+}
 /* ---- Die Kachelsprache (R2, Fassung „B · Bild" auf Weiss) -------------
    Auf weissem Grund traegt nicht mehr die Flaeche, sondern der RAND: 26 %
    Fuellung aus dem eigenen Ton, 52 % Rand daraus. Und jede Kachel zeigt
@@ -4190,6 +4209,36 @@ code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--linie);
   .wahl.ebenen:has(> :nth-child(13))>*{flex-basis:106px}
   .wahl.ebenen:has(> :nth-child(13)) .kachel{min-height:74px}
   .wahl.ebenen:has(> :nth-child(13)) .kachel .kreis{width:40px;height:40px}
+  /* UND AB FUENFZEHN RUECKEN DIE REIHEN ZUSAMMEN (E26b).
+   *
+   * Die Rechnung darueber ist am iPhone SE quer gemacht (375 hoch, ohne
+   * Leiste) und stimmt dort. Das ZIELGERAET mit seiner Leiste hat 390
+   * Punkte, von denen das Telefon oben und unten je 21 fuer sich nimmt -
+   * 348 bleiben, und das ist WENIGER als die 375 des kleineren Geraets.
+   * Gemessen auf 844 x 390 mit Leiste: die Wand bekommt 237 Punkte
+   * (132 bis 369) und braucht 244. Drei Kacheln der letzten Reihe lagen
+   * 5 Punkte im Streifen zum Wischen - sichtbar und nicht zu treffen.
+   *
+   * Dieselbe Stelle wie beim letzten Mal: die Punkte kommen aus dem
+   * ABSTAND zwischen den Kacheln, nicht aus der Auskunft in ihnen. Eine
+   * Sprosse tiefer (8 auf 4) sind es 3 x 74 + 2 x 4 = 230 in 237, also
+   * sieben Punkte Luft. Die Kachel bleibt 74 x 106 und damit weit ueber
+   * der Fingergrenze.
+   *
+   * Nur die ZEILEN ruecken zusammen, nicht die Spalten: in der Breite
+   * ist nichts eng (702 Punkte Wand in 726 Buehne), und ein engerer
+   * Abstand dort waere Sparen an der falschen Stelle.
+   *
+   * Der Abstand ALLEIN reicht nicht, und das ist nachgemessen statt
+   * geschaetzt: mit 8 auf 4 endete die Wand bei 368 in 369 - EIN Punkt
+   * Luft. Ein Punkt ist keine Luft, sondern eine Wette auf die Rundung
+   * des jeweiligen Chromium; genau daran hat B15 neun Auslieferungen
+   * verloren. Die Kachel geht deshalb dieselbe Sprosse mit: 74 auf 70,
+   * Reihe 72 statt 76, und 3 x 72 + 2 x 4 = 224 in 237. Dreizehn Punkte
+   * Luft, und die Kachel ist mit 70 x 106 immer noch weit ueber der
+   * Fingergrenze. */
+  .wahl.ebenen:has(> :nth-child(15)){row-gap:var(--r1)}
+  .wahl.ebenen:has(> :nth-child(15)) .kachel{min-height:70px}
   /* Die letzte Kachelreihe lag 3 Punkte im Streifen des iPhone. Die vier
      Punkte kommen aus dem Abstand ZWISCHEN den Kacheln, nicht aus der
      Auskunft in ihnen. */

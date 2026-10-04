@@ -1775,6 +1775,59 @@ nicht liest, ist die Kachel damit unbeschriftet`);
   await p.waitForSelector('.schirm.da [data-ebene]');
   await schau('Ebenenwahl (Lea)');
 
+  /* --- UND DIE RECHTSCHREIBGRUPPE (E26b) ------------------------------
+   *
+   * Die fuenfzehn Rechtschreibebenen stehen hinter EINER Kachel. Dieses
+   * Tor hat die Laendergruppe seit je aufgeklappt und diese nie - und
+   * damit ist der Bildschirm mit den MEISTEN Kacheln des ganzen Spiels
+   * (fuenfzehn gegen acht) der einzige, den es nicht gesehen hat. Beim
+   * ersten Blick darauf: die Kachel ist 106 x 74, das Prinzip-Zeichen
+   * darin 22 x 11 - drei Prozent, gegen acht bis siebzehn bei der
+   * Laendergruppe daneben. Gefunden hat das der Blick, nicht das Tor
+   * (Regel 4). Jetzt steht die Zahl als Ratsche fest.
+   *
+   * Nur fuer LEA: die Welt gehoert ihr allein. Derselbe Grund, aus dem
+   * die Ebenenwahl eine Zeile weiter oben ein zweites Mal gefahren wird. */
+  if (await p.$('.schirm.da #zur')) await tipp('.schirm.da #zur');
+  await p.waitForSelector('.schirm.da [data-welt]', { timeout: 6000 }).catch(() => {});
+  const deutschKachel = await p.$('.schirm.da [data-welt="deutsch"]');
+  if (deutschKachel) {
+    await tipp('.schirm.da [data-welt="deutsch"]');
+    await p.waitForSelector('.schirm.da [data-gruppe="rechtschreibung"]',
+      { timeout: 6000 }).catch(() => {});
+    await tipp('.schirm.da [data-gruppe="rechtschreibung"]');
+    /* Gewartet wird auf die ZAHL der Kacheln und nicht auf
+       `:not([data-gruppe])` wie bei den Laendern: die fuenfzehn Kinder
+       dieser Gruppe TRAGEN ihre Gruppe weiter, der Waehler trifft also
+       nie zu. Er lief in seine Zeitueberschreitung, `schau` fotografierte
+       die zugeklappte Wand mit zwei Kacheln, und das Tor meldete gruen -
+       eine Messung an einem Bildschirm, den es gar nicht erreicht hatte. */
+    await p.waitForFunction(() =>
+      document.querySelectorAll('.schirm.da .kachel[data-ebene]').length > 2,
+      null, { timeout: 6000 }).catch(() => {});
+    /* Dieselbe Vorsicht wie bei der Laendergruppe: gewartet wird, bis
+       die Wand FERTIG aufgefaltet ist. Eine Zahl aus der Bewegung
+       haette als Ratsche festgehalten, was nie so aussieht. */
+    await p.waitForFunction(() => {
+      const s = document.querySelector('.schirm.da .kachel .silhouette, '
+        + '.schirm.da .kachel svg');
+      return s && s.getBoundingClientRect().width > 20;
+    }, null, { timeout: 6000 }).catch(() => {});
+    /* Und das Erreichen wird GEMELDET, nicht vorausgesetzt. Eine
+       Messung an der falschen Wand sieht aus wie eine bestandene. */
+    const wieviel = await p.$$eval('.schirm.da .kachel[data-ebene]', l => l.length);
+    if (wieviel < 15)
+      meldungen.push(`Ebenenwahl (Rechtschreibung): nur ${wieviel} Kacheln — `
+        + 'die Gruppe hat sich nicht aufgeklappt, gemessen wurde die falsche Wand');
+    await schau('Ebenenwahl (Rechtschreibung)');
+    if (await p.$('.schirm.da #zur')) await tipp('.schirm.da #zur');
+    await p.waitForSelector('.schirm.da [data-gruppe], .schirm.da [data-welt]',
+      { timeout: 6000 }).catch(() => {});
+  } else {
+    meldungen.push('Ebenenwahl (Lea): die Deutsch-Welt steht nicht auf dem Schirm — '
+      + 'die fünfzehn Rechtschreibebenen sind damit ungeprüft');
+  }
+
   /* --- DER VOLLE ENDBILDSCHIRM (I18) --------------------------------- *
    *
    * Dieses Tor hat den Endbildschirm bis I18 auf KEINER Groesse

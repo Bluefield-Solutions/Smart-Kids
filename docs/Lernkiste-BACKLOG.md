@@ -9105,3 +9105,87 @@ Es steht jetzt in der Liste. Zwei stehende Gegenproben hängen an derselben
 CSS-Zeile und prüfen die zwei Arten, auf die ein Raster zerbricht:
 **heraushängen** (Hochformat, „über den Rand") und **zusammenrutschen**
 (kleinstes Gerät, „ein Abzeichen muss 44 messen").
+
+---
+
+## E26b · Der Blick auf die fünf Prinzip-Zeichen — und die größte Wand des Spiels, die kein Tor je gesehen hat (04.10.2026)
+
+Offen stand: *„Die fünfzehn Kachelbilder sind fünf Zeichen, eines je Prinzip der
+amtlichen Liste. Das ist begründet und trotzdem karg — ein Blick darauf, ob sie
+auf dem Gerät auseinanderzuhalten sind, steht aus."*
+
+Der Blick hat drei Dinge gefunden, und keines davon war das Zeichen selbst.
+
+### 1. Das Zeichen bekommt 3 % der Kachel — die Referenz nebenan 8 bis 17
+
+Gemessen auf dem Zielgerät, im selben Bildschirmtyp, in derselben Größe
+(Regel 3: das Soll kommt aus der Referenz, nicht aus mir):
+
+| | Kachel | Bild | Anteil |
+|---|---|---|---|
+| Ländergruppe (Referenz) | 134 × 112 | 29–65 × **42** | **8–17 %** |
+| Rechtschreibung | 106 × 74 | 22 × **11** | **3 %** |
+
+Elf Punkte Höhe. Bei elf Punkten sagt kein Strich mehr etwas — und die Auskunft
+*welche Strategie hier hilft* hing an genau diesem Kanal. Auf 700 × 850, wo die
+Kachel 150 × 140 misst, sind die Zeichen 68 × 34 und sofort zu lesen: die zwei
+Bögen fürs Hören, der Kasten-Pfeil-Kasten fürs Ableiten, die drei Kästen für
+den Satz, der Pfeil zurück für gestern, das Blatt fürs Merken. Sie sind also
+nicht schlecht gezeichnet. Sie bekommen auf dem Telefon nur keinen Platz.
+
+### 2. Die Farbe war Schmuck — jetzt ist sie der Abrufhinweis
+
+Jede der fünfzehn Gruppen trug ein eigenes `farbe:` von 1 bis 7, reihum
+vergeben. Das ist genau der Fall, den **QS8** bei den Kontinenten abgeräumt
+hat, und die Begründung steht seitdem in `spiel.js`:
+
+> *„Eine gleichbleibende Farbe ist ein Abrufhinweis. Ein Kind, das ‚Afrika ist
+> die rote Form' gelernt hat, findet Afrika auf der Karte wieder — wenn es dort
+> auch rot ist. Ist es das nicht, hat es zwei Dinge gelernt statt einem."*
+
+Angewandt war sie hier nicht. Jetzt kommt die Farbe aus dem **Prinzip**
+(`PRINZIP_FARBE` in `deutsch.js`): sieben grüne „hören", drei rosa „ableiten",
+eine blaue „im Satz", eine sandfarbene „gestern", drei violette „merken". Das
+liest sich auf jeder Größe, auch wenn das Zeichen elf Punkte hoch ist — und
+das Zeichen wiederholt die Auskunft dann, statt sie allein tragen zu müssen.
+
+### 3. Und der eigentliche Befund: `passt` hat die Wand nie aufgeklappt
+
+Die fünfzehn Rechtschreibebenen stehen hinter **einer** Kachel. `passt` klappt
+die Ländergruppe seit jeher auf und diese nie — damit war der Bildschirm mit
+den **meisten Kacheln des ganzen Spiels** (fünfzehn gegen acht) der einzige,
+den es nicht gesehen hat. Derselbe blinde Fleck wie bei der Abzeichenwand in
+E26, zwei Runden hintereinander.
+
+Beim ersten Lauf, in dem das Kapitel drinsteht, standen sofort zwei echte
+Befunde da:
+
+- **700 × 850:** drei Spalten, fünf Reihen — **115 Punkte liefen aus dem
+  Fenster**, die letzten drei Kacheln waren nicht zu erreichen, und der
+  Fassungsstempel lag über einem Namen. Vier Spalten sind vier Reihen: 608
+  Punkte statt 764.
+- **844 × 390 mit Leiste:** die Wand endete bei 376, und das Telefon nimmt
+  sich alles ab 369 für den Streifen zum Wischen — **drei Kacheln sichtbar und
+  nicht zu treffen.** Das Zielgerät hat mit seiner Leiste 348 Punkte und damit
+  *weniger* als die 375 des kleineren iPhone SE, an dem die Stufe „ab dreizehn"
+  gerechnet worden war.
+
+Der engere Reihenabstand allein brachte 368 in 369 — **ein Punkt Luft**. Ein
+Punkt ist keine Luft, sondern eine Wette auf die Schriftrundung; genau daran
+hat B15 neun Auslieferungen verloren. Mit der flacheren Kachel (74 → 70) sind
+es 357 in 369, also dreizehn.
+
+Zwei stehende Gegenproben halten beide Engen fest. Dazu zwei Kleinigkeiten, die
+der Lauf nebenbei gemeldet hat: die Überschrift heißt jetzt
+**„Rechtschreibung — woran?"** statt „… — woran möchtest du üben?" (Hausform,
+wie „Themen — worüber?"), und die Ebene **„Gestern war es so"** heißt
+**„Gestern und heute"** — der alte Name brach auf dem Zielgerät mit 14 von 100
+Punkten in der letzten Zeile um, und ein einzelnes Wort unter einem Namen sieht
+aus wie ein Fehler.
+
+### Was das Zeichen jetzt ist
+
+Eine Textur, kein Signal. Es trägt auf 700 × 850 und auf dem iPad, und auf dem
+Telefon trägt die Farbe. **Offen bleibt nichts** — aber falls die Zeichen
+einmal auch auf 844 × 390 lesbar sein sollen, geht das nur über die Höhe der
+Kachel, und die ist dort bis auf dreizehn Punkte ausgereizt.

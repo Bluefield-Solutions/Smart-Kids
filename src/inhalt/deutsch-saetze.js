@@ -274,7 +274,7 @@ export const SAETZE = {
   Wald:['Im % singen die Vögel.','Wir gehen in den %.','Hinter dem % liegt ein See.'],
   'Wälder':['Die % sind im Herbst bunt.','In Bayern gibt es viele %.','Durch die % führt ein Weg.'],
 
-  /* --- Gestern war es so --------------------------------------------------- */
+  /* --- Gestern und heute --------------------------------------------------- */
   bleiben:['Wir % heute zu Hause.','Möchtest du noch etwas %?','Die Kinder % im Zelt.'],
   blieben:['Wir % gestern zu Hause.','Alle % ganz ruhig.','Sie % eine Woche am Meer.'],
   'aßen':['Wir % gestern Nudeln.','Die Kinder % ihren Nachtisch auf.','Alle % gemeinsam am Tisch.'],

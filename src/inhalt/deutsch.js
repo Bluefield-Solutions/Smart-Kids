@@ -43,8 +43,34 @@ import { SAETZE } from './deutsch-saetze.js';
  * hoeren, ableiten, im Satz entscheiden, in die Vergangenheit setzen,
  * oder schlicht merken.
  */
+/**
+ * Die Farbe der Kachel kommt aus dem PRINZIP und nicht aus der Position.
+ *
+ * Vorher stand an jeder der fuenfzehn Gruppen ein eigenes `farbe:` von
+ * 1 bis 7, reihum vergeben. Das ist genau der Fall, den QS8 bei den
+ * Kontinenten abgeraeumt hat: eine Farbe, die aus der Stelle in einer
+ * Liste kommt, ist Schmuck - eine Farbe, die fuer eine SACHE steht, ist
+ * ein Abrufhinweis. Dort stand es in `spiel.js` aufgeschrieben („ein
+ * Kind, das ‚Afrika ist die rote Form' gelernt hat, findet Afrika auf
+ * der Karte wieder"), hier war es nicht angewandt.
+ *
+ * Der Anlass war ein Blick auf das Zielgeraet (E26b): das Prinzip-
+ * Zeichen bekommt auf der Kachel 22 x 11 Bildpunkte - drei Prozent der
+ * Kachel, gegen acht bis siebzehn bei der Laendergruppe daneben. Bei
+ * elf Punkten Hoehe sagt kein Strich mehr etwas. Die Auskunft, WELCHE
+ * Strategie hier hilft, hing also an einem Kanal, der sie nicht traegt.
+ * Die Farbe traegt sie in jeder Groesse.
+ *
+ * Fuenf Prinzipien, fuenf Toene aus derselben Leiter von sieben, die
+ * das ganze Spiel benutzt. Welche fuenf: nicht nebeneinanderliegende,
+ * damit sieben „hoeren"-Kacheln und drei „merken"-Kacheln als zwei
+ * Gruppen zu sehen sind und nicht als ein Verlauf.
+ */
+export const PRINZIP_FARBE = {
+  hoeren: 3, ableiten: 1, satz: 5, gestern: 2, merken: 7 };
+
 export const GRUPPEN = [
-  { id:'silben', prinzip:'hoeren', titel:'Silben trennen', farbe:1,
+  { id:'silben', prinzip:'hoeren', titel:'Silben trennen',
     amtlich:'Wörter, wenn möglich, nach Schreibsilben am Zeilenende trennen',
     woerter:['Boden','Ding','etwas','Finger','Fisch','Flasche','gegen','gehören',
       'genau','gerade','Geschichte','Gesicht','gleich','Hals','helfen','heute',
@@ -53,49 +79,49 @@ export const GRUPPEN = [
       'sprechen','springen','Stein','tanken','Tasche','Wagen','weinen','Woche',
       'Zeitung'] },
 
-  { id:'r-nach-vokal', prinzip:'hoeren', titel:'r nach dem Selbstlaut', farbe:2,
+  { id:'r-nach-vokal', prinzip:'hoeren', titel:'r nach dem Selbstlaut',
     amtlich:'Wörter mit <r> nach Vokal (vokalisiertes <r>)',
     woerter:['Arm','Dorf','dort','Eltern','Erde','erst','gern','gestern','kurz',
       'merken','morgen','schwer','sofort','stark','Tür','werfen','Wurst'] },
 
-  { id:'ie', prinzip:'hoeren', titel:'Wörter mit ie', farbe:3,
+  { id:'ie', prinzip:'hoeren', titel:'Wörter mit ie',
     amtlich:'Wörter mit <ie>',
     woerter:['Beispiel',['Brief','Briefe'],'geschrieben',['lesen','liest'],
       ['nie','niemals'],['riechen','riecht'],['schieben','schiebt'],'schwierig',
       ['tief','tiefer'],['Tier','Tiere'],'verlieren',['ziehen','zieht'],
       ['zielen','zielt'],'Zwiebel'] },
 
-  { id:'mitlautverdopplung', prinzip:'hoeren', titel:'Doppelte Mitlaute', farbe:4,
+  { id:'mitlautverdopplung', prinzip:'hoeren', titel:'Doppelte Mitlaute',
     amtlich:'Mitlautverdopplung',
     woerter:['dumm','essen','kommen','schlimm','schwimmen','schnell','stellen',
       'vergessen','Zimmer','zusammen'] },
 
-  { id:'tz', prinzip:'hoeren', titel:'Wörter mit tz', farbe:5,
+  { id:'tz', prinzip:'hoeren', titel:'Wörter mit tz',
     amtlich:'Wörter mit <tz>',
     woerter:['Platz','Pfütze','plötzlich','schützen'] },
 
-  { id:'ck', prinzip:'hoeren', titel:'Wörter mit ck', farbe:6,
+  { id:'ck', prinzip:'hoeren', titel:'Wörter mit ck',
     amtlich:'Wörter mit <ck>',
     woerter:[['Glück','glücklich'],['Schreck','erschrecken'],'Stück','verstecken',
       'zurück'] },
 
-  { id:'silben-h', prinzip:'hoeren', titel:'Das h zwischen den Silben', farbe:7,
+  { id:'silben-h', prinzip:'hoeren', titel:'Das h zwischen den Silben',
     amtlich:'Wörter mit silbentrennendem <h>',
     woerter:['blühen','drehen','gehen',['Kuh','Kühe'],['Schuh','Schuhe'],'sehen',
       'stehen',['Zeh','Zehen']] },
 
-  { id:'verhaertung', prinzip:'ableiten', titel:'Verlängern hilft', farbe:1,
+  { id:'verhaertung', prinzip:'ableiten', titel:'Verlängern hilft',
     amtlich:'Verhärtung',
     woerter:[['Abend','Abende','abends'],['Berg','Berge'],['erlauben','erlaubt'],
       ['fremd','fremder'],['Geld','Gelder'],['lieben','liebt'],['liegen','liegt'],
       ['rund','runder'],['steigen','steigt'],['werden','wird']] },
 
-  { id:'umlautung', prinzip:'ableiten', titel:'Von a zu ä', farbe:2,
+  { id:'umlautung', prinzip:'ableiten', titel:'Von a zu ä',
     amtlich:'Umlautung',
     woerter:[['alt','älter'],['Ast','Äste'],['lang','länger'],['laufen','läuft'],
       ['Nacht','Nächte'],['Saft','Säfte']] },
 
-  { id:'flektiert', prinzip:'satz', titel:'Kleine Wörter im Satz', farbe:3,
+  { id:'flektiert', prinzip:'satz', titel:'Kleine Wörter im Satz',
     amtlich:'Flektierte Wörter im Satzzusammenhang richtig schreiben',
     woerter:[['am','an'],['dein','deinem','deinen'],['dem','den'],
       ['dies','diesem','diesen'],['ein','einem','einen'],['euer','eurem','euren'],
@@ -105,13 +131,13 @@ export const GRUPPEN = [
       ['uns','unserem','unseren'],['vom','von'],['welche','welchem','welchen'],
       ['wem','wen'],['zu','zum','zur']] },
 
-  { id:'umlaut-verhaertung', prinzip:'ableiten', titel:'Umlaut und Verlängern', farbe:4,
+  { id:'umlaut-verhaertung', prinzip:'ableiten', titel:'Umlaut und Verlängern',
     amtlich:'Umlautung und Auslautverhärtung, auch miteinander und mit anderen Fällen kombiniert',
     woerter:[['Arzt','Ärzte'],['backen','Bäcker'],['Band','Bänder'],['Hand','Hände'],
       ['kaufen','Verkäufer'],['Land','Länder'],['lassen','lässt'],['Mann','Männer'],
       ['Rad','Räder'],['stark','stärker'],['Wald','Wälder']] },
 
-  { id:'praeteritum', prinzip:'gestern', titel:'Gestern war es so', farbe:5,
+  { id:'praeteritum', prinzip:'gestern', titel:'Gestern und heute',
     amtlich:'Flexions- und Präteritumsformen von Verben richtig schreiben, auf Vokallänge achten',
     woerter:[['bleiben','blieben'],['essen','aßen'],['fallen','fielen'],
       ['geben','gaben'],['gehen','gingen'],['halten','hielten'],['heißen','hießen'],
@@ -123,13 +149,13 @@ export const GRUPPEN = [
       ['schwimmen','schwammen'],['tragen','trugen'],['trinken','tranken'],
       ['vergessen','vergaßen'],['ziehen','zogen']] },
 
-  { id:'haeufig', prinzip:'merken', titel:'Wörter, die oft kommen', farbe:6,
+  { id:'haeufig', prinzip:'merken', titel:'Wörter, die oft kommen',
     amtlich:'Wörter aus dem Häufigkeitswortschatz',
     woerter:['ab','bin','bis','bist','dann','hier','hin','immer','ins','man',
       ['nicht','nichts'],'nie','nur','ob','oft','sehr','voll','wann','warum',
       'wenig','wie','wieder','zu','zuletzt','zusammen'] },
 
-  { id:'ss', prinzip:'merken', titel:'Wörter mit ß', farbe:7,
+  { id:'ss', prinzip:'merken', titel:'Wörter mit ß',
     amtlich:'<ß>',
     woerter:['außer','draußen','heißen','Straße'] },
 
@@ -145,7 +171,7 @@ export const GRUPPEN = [
    * mit, und die Begruendung beim Fehler nennt sie beim Namen. Die
    * Gliederung der Liste steht also weiter in den Daten - nur nicht in
    * der Kachelwand. */
-  { id:'merkwoerter', prinzip:'merken', titel:'Wörter zum Merken', farbe:1,
+  { id:'merkwoerter', prinzip:'merken', titel:'Wörter zum Merken',
     amtlich:'Wörter mit nicht-regelhaften Rechtschreibbesonderheiten',
     merk:true,
     woerter:['Christ','vielleicht','vier','voll','Handy','Fuchs','links','Taxi',

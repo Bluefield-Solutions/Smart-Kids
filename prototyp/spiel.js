@@ -1819,10 +1819,16 @@ const EBENEN = [
    * schon nach Ebenen; eine zweite Regel daneben waere dieselbe Auskunft
    * an zwei Orten. Und sie ist die Zusage, an der die Vier-Kachel-Grenze
    * haengt - siehe `WELTEN`. */
+  /* Die Farbe kommt aus dem PRINZIP, nicht aus der Stelle in der Liste -
+     die Begruendung steht bei `PRINZIP_FARBE` in `deutsch.js` und ist
+     dieselbe wie bei den Kontinenten (QS8): eine Farbe, die fuer eine
+     Sache steht, ist ein Abrufhinweis; eine, die aus der Position kommt,
+     ist Schmuck. Hier traegt sie ausserdem die Auskunft, die das
+     Prinzip-Zeichen auf 22 x 11 Bildpunkten nicht mehr traegt. */
   ...Deutsch.GRUPPEN.map(g => ({ id:`deutsch:${g.id}`, ueber:'Klasse 3',
-    titel:'Rechtschreibung', wo:g.titel, farbe:g.farbe,
+    titel:'Rechtschreibung', wo:g.titel, farbe:Deutsch.PRINZIP_FARBE[g.prinzip],
     art:'deutsch', gruppe:'rechtschreibung', wer:['lea'],
-    frageWort:' — woran möchtest du üben?' })),
+    frageWort:' — woran?' })),
 
   /* DIE PROBE (D6) — eine eigene Kachel, immer offen.
    *
