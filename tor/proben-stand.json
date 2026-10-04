@@ -130,6 +130,21 @@
       "zeit": "2026-10-04",
       "s": 21
     },
+    "eine kurze Runde zahlt wieder wie eine volle": {
+      "commit": "699e03dc7cb6d5daede7ed0e2db789b4da5872cf",
+      "zeit": "2026-10-04",
+      "s": 4
+    },
+    "eine fertige Ebene zahlt wieder den ganzen Raum": {
+      "commit": "699e03dc7cb6d5daede7ed0e2db789b4da5872cf",
+      "zeit": "2026-10-04",
+      "s": 4
+    },
+    "drei Ebenen schrumpfen den Preis eines Raums unter eine Runde": {
+      "commit": "699e03dc7cb6d5daede7ed0e2db789b4da5872cf",
+      "zeit": "2026-10-04",
+      "s": 5
+    },
     "eine Wortartebene wird nicht mehr auf die Tiefe geschnitten": {
       "commit": "5186055768b105e506d413046df65dc3d84e06ac",
       "zeit": "2026-10-04",

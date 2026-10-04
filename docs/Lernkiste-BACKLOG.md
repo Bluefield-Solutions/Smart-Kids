@@ -9747,3 +9747,95 @@ einer stehenden Gegenprobe (552).
 Dazu eine zweite: ohne `tiefer()` baut „Nomen" wieder alle 224 ein. Angegriffen
 wird der **Schnitt** und nicht die Zahl — `TIEFE` ist gerechnet und kann gar
 nicht falsch sein; falsch sein kann nur, dass jemand sie nicht anwendet.
+
+---
+
+## E32 · Was ein Raum kostet — und warum der mit dem meisten Stoff der billigste war (04.10.2026)
+
+Die Frage war die Umkehrung von E31: dort waren Ebenen zu groß, hier sind sie
+zu klein. **Vierzehn der vierundzwanzig Wiederholungsebenen sind kürzer als
+Leas Sitzung**, drei davon haben zwei Wörter.
+
+An der Ebene ist das nicht zu ändern: „Wörter mit pf" hat zwei Wörter, weil die
+amtliche Liste für 1/2 dort zwei führt — Kopf und Pflanze. Ein drittes gibt es
+nicht zu erfinden. Die Frage ist also nicht, ob die Ebene zu klein ist, sondern
+was sie **wert** ist.
+
+### Nachgerechnet
+
+Ein Raum hält drei Tiere. Es gibt zwei Wege dorthin: eine fehlerfreie Runde
+bringt eines (I27), eine fertige Ebene bringt welche. Was beides zusammen
+kostet, hatte nie jemand ausgerechnet:
+
+| Raum | Ebenen | Preis für drei Tiere |
+|---|---|---|
+| An der Quelle | 24 *(245 amtliche Wörter)* | **4 richtige Antworten** |
+| Im Märchen | 16 | 8 |
+| Im Wald | 11 | 18 |
+
+**Der Raum mit dem meisten Stoff war der billigste.** Nachgespielt im Browser:
+zwei Aufgaben in „Wörter mit pf", zwei richtige Antworten —
+
+> Geschafft! · 2 von 2 auf Anhieb richtig. · **Ohne Fehler! Die Ente für dein Buch.**
+
+Zwei Zeilen in `spiel.js` haben das gemacht. Erstens zählte die fehlerfreie
+Runde ohne Rücksicht auf ihre Länge — zwei richtige Antworten waren so viel wert
+wie acht. Zweitens gab das Fertigwerden **einer** Ebene alle noch offenen Tiere
+ihres Raums, auch bei vierundzwanzig Ebenen: „Wörter mit pf" ist nach zwei
+Wörtern mal zwei richtigen Antworten fertig, und damit war der Raum leer.
+
+### Die Grenze ist die beste Runde, die der Raum hergibt
+
+Und nicht eine gesetzte Zahl. Das ist der Punkt, an dem die naheliegende
+Lösung („mindestens acht Aufgaben") falsch gewesen wäre: **elf der zwanzig
+Räume haben nur eine einzige Ebene**, und Fionas Länderrunden sind wegen
+`laenderTiefe` drei Aufgaben lang. Eine feste Zahl hätte ihr den Lohn
+genommen, den I27 ihr gerade erst gegeben hat.
+
+Mit „die beste Runde dieses Raums" braucht es keine Ausnahme: bei einer Ebene
+ist die eigene Runde die beste, die Bedingung ist immer wahr. Nachgemessen:
+
+| | Raum | Runde | beste Runde | |
+|---|---|---|---|---|
+| Fiona | Die Savanne *(1 Ebene)* | 3 | 3 | **zahlt** |
+| Lea | An der Quelle *(24)* | 2 | 8 | zahlt nicht |
+| Lea | An der Quelle *(24)* | 8 | 8 | **zahlt** |
+| Lea | Im Wald *(11)* | 8 | 8 | **zahlt** |
+
+Dazu der **Anteil**: drei Tiere durch die Zahl der Ebenen, aufgerundet. Bei
+einer Ebene sind das drei — alles bleibt, wie es war; ab drei Ebenen eines,
+dann füllen drei fertige Ebenen den Raum. Der Raum wird dadurch nicht größer,
+es dauert nur länger, ihn zu leeren, und das ist bei vierundzwanzig Ebenen die
+Sache selbst.
+
+| Raum | vorher | nachher |
+|---|---|---|
+| An der Quelle | 4 | **12** |
+| Im Märchen | 8 | **24** |
+| Im Wald | 18 | **24** |
+
+Die Verkehrung ist weg. Dass „An der Quelle" noch etwas billiger ist, bleibt —
+seine Ebenen sind wirklich zwei Wörter lang, und das ist die amtliche Liste und
+keine Entscheidung von mir.
+
+Nachgespielt, nachher: zwei Aufgaben fehlerfrei — kein Tier. Acht Aufgaben
+fehlerfrei im selben Raum — „Die Ente für dein Buch."
+
+### Geprüft wird in `spielprobe`, und zwar beides
+
+Das Tor für die Spielregeln verlangt, dass **beide Regeln in `spiel.js`
+stehen**, und rechnet den Preis je Raum nach: *kein Raum darf für weniger
+richtige Antworten leer sein, als eine einzige fehlerfreie Runde dort kostet.*
+Der Preis steht als Zahl daneben, mit seiner Messstelle: gerechnet mit Leas
+Sitzung aus der Profiltabelle (Regel 5).
+
+Geprüft wird die Anwesenheit der Regeln und nicht die Zahl: die Zahl ist
+gerechnet und kann nicht falsch sein. Falsch sein kann nur, dass jemand die
+Regel wieder herausnimmt — und **das sieht man an keinem Bildschirm.** Man
+merkt es erst nach Wochen an einem Kind, das alle Tiere hat und nichts mehr zu
+holen.
+
+Drei stehende Gegenproben (555), an drei verschiedenen Stellen: die
+Rundenlänge, der Anteil und die Grenze selbst. Die dritte greift die **Daten**
+an — sie schrumpft drei Ebenen auf ein Wort — und zeigt damit, dass die Grenze
+nicht nur dasteht, sondern auch anschlägt.

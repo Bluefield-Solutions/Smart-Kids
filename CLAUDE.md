@@ -38,7 +38,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
 | `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
 | `npm run tor:voll` | **wenn Stephan es sagt** | gemessen 3008 s am 04.10. (4 Kerne) — **seitdem nicht neu gemessen**, aber Leas Durchgang allein ist danach von 2842 auf 519 s gefallen (E30) | die volle Kette, alle Größen, alle Bildschirme |
-| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 552 Gegenproben. Läuft sonst nirgends mehr |
+| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 555 Gegenproben. Läuft sonst nirgends mehr |
 | Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
 **Die Regel seit P20: der schnelle Gang ist der Standard. Die volle Kette und
@@ -185,7 +185,7 @@ npm run rhythmus   wie alt die Nachweise sind. Steht seit P20 NICHT mehr in
                    Auskunft. Wer wissen will, ob ein voller Probenlauf
                    fällig wäre, fragt hier; entschieden wird es von
                    Stephan.
-npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen (552
+npm run proben     baut Fehler ein und prüft, ob die Tore anschlagen (555
                    stehende Gegenproben). Läuft
                    seit P20 NIRGENDS mehr von selbst — weder nachts auf
                    dem Runner noch erzwungen durch eine Frist. Nur auf
