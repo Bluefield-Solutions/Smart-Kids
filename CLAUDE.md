@@ -38,7 +38,7 @@ vier Teilen, `passt` und `ansicht` in je drei, zehn davon gleichzeitig.
 | **`npm run tor`** | bei **jeder** Änderung, Standard | **~30 s** | der schnelle Gang: alle Tore ohne Browser, plus Bau, `inhalt`, `budget`, `anker` |
 | `npm run tor -- --betroffen` | wenn du wissen willst, was die Änderung berührt | 14 s bis 200 s | dazu die Browsertore, die von den geänderten Dateien erreicht werden können |
 | `npm run tor:voll` | **wenn Stephan es sagt** | **~18 min** (gemessen 1054 s am 26.09., 4 Kerne; 749 s am 11.09. — der Durchgang spielt inzwischen 207 Ebenen × Profile) | die volle Kette, alle Größen, alle Bildschirme |
-| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 536 Gegenproben. Läuft sonst nirgends mehr |
+| `npm run proben` | **wenn Stephan es sagt** | **2–4 h** | alle 539 Gegenproben. Läuft sonst nirgends mehr |
 | Runner, bei jedem Push | automatisch | ~2 min, ohne dich | der schnelle Gang — und nur bei Grün geht etwas nach `/` |
 
 **Die Regel seit P20: der schnelle Gang ist der Standard. Die volle Kette und
