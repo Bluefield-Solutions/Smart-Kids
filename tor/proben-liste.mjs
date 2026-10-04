@@ -314,6 +314,29 @@ export const PROBEN = [
     an:{ datei:SP, text:"kind:'Adjektiv'" },
     sagt:'heißt in beiden Spalten gleich' },
 
+  /* DIE OBERGRENZE DER SCHWELLEN (E33).
+
+     Eine Schwelle muss fuer JEDES Profil erreichbar sein, und zwar aus
+     EBENEN-Tieren allein - sonst oeffnen die letzten Raeume sich selbst.
+     Das knappste Profil setzt damit die Grenze: Stephan und Violeta
+     kommen auf 16 Raeume, also 48.
+
+     Das Tor hat das jahrelang falsch gerechnet. Sein Muster fand nur
+     Ebenen, die als ZEILE in `spiel.js` stehen; die fuenfzig der
+     Deutsch-Welt entstehen aus `.map(...)`, galten deshalb als „gehoert
+     allen", und die Obergrenze kam mit 57 statt 48 heraus. Eine Schwelle
+     bei 50 waere durchgegangen und fuer Stephan nie zu erreichen
+     gewesen - der Raum stuende im Buch als naechstes Ziel und kaeme nie.
+
+     Die Probe setzt genau diese Schwelle. Sie schlaegt nur an, wenn das
+     Tor die erzeugten Ebenen kennt. */
+  { n:'eine Schwelle liegt über dem, was ein Profil holen kann', tor:'inhalt',
+    deckt:'tiere', datei:'src/inhalt/tiere.js',
+    such:"{ ab: 45,                           titel:'Bei den Blumen',",
+    ersatz:"{ ab: 50,                           titel:'Bei den Blumen',",
+    an:{ datei:'src/inhalt/tiere.js', text:"{ ab: 50," },
+    sagt:'nie zu erreichen' },
+
   /* WAS EIN RAUM KOSTET (E32) - drei Proben, drei verschiedene Stellen.
 
      Der Befund: „An der Quelle" haelt 24 Ebenen und 245 amtliche Woerter

@@ -663,16 +663,32 @@ export const RAEUME = [
    * Profil nach, wieviele Tiere aus EBENEN zu holen sind, und die
    * Raeume mit Schwelle zaehlen dabei nicht mit - sonst hielte sich eine
    * Schwelle an der naechsten fest, und die letzten Raeume waeren ein
-   * Selbstlaeufer ohne eine einzige gelernte Sache dahinter. Das
-   * knappste Profil (Lea, Stephan, Violeta) kommt auf vierzehn Raeume,
-   * also 42. Deshalb steht hier NICHTS ueber 42 - und deshalb liegen die
-   * neuen Schwellen UNTEN, nicht oben. Das ist kein Zugestaendnis: der
-   * lange leere Anfang war der eigentliche Mangel.
+   * Selbstlaeufer ohne eine einzige gelernte Sache dahinter.
    *
-   * Zwoelf, achtzehn, vierundzwanzig, achtundzwanzig, einunddreissig,
-   * achtunddreissig - dazwischen die beiden alten bei 35 und 42. Acht
-   * Schwellen auf 42 Tiere, und keine zwei liegen naeher als drei
-   * beieinander. */
+   * NACHGEMESSEN IN E33, und die Zahlen hier waren veraltet (Regel 6):
+   *
+   *   Lea               19 Raeume → 57
+   *   Fiona             17 Raeume → 51
+   *   Stephan, Violeta  16 Raeume → 48   ← die Obergrenze
+   *
+   * Hier stand „das knappste Profil kommt auf vierzehn Raeume, also 42.
+   * Deshalb steht hier NICHTS ueber 42" - und bei 45 stand schon eine.
+   * Die Grenze war mit den Welten mitgewachsen, der Satz nicht. Jetzt
+   * rechnet `inhalt` sie bei jedem Lauf nach und sagt, wieviel Luft
+   * bleibt; eine Zahl in einem Kommentar sagt nur, was einmal galt.
+   *
+   * DIE GRENZE SETZEN DIE ELTERN. Ihnen fehlen vier Raeume - Schreiben
+   * und die drei der Deutsch-Welt -, und das ist richtig so: sie ueben
+   * weder Handschrift noch den Grundwortschatz. Lea koennte aus Ebenen
+   * 57 Tiere holen und bekommt trotzdem ueber 45 keine Schwelle mehr,
+   * weil eine Schwelle fuer ALLE erreichbar sein muss. Wer das aendern
+   * will, muss eine der beiden Regeln aendern - und das ist eine Frage
+   * an den Nutzer, keine an mich.
+   *
+   * Zwoelf bis fuenfundvierzig, neun Schwellen, und keine zwei liegen
+   * naeher als drei beieinander. Drei Tiere Luft bleiben bis zur
+   * Obergrenze - genug fuer genau eine weitere, und die braeuchte drei
+   * neue Zeichnungen. */
   { ab: 12,                           titel:'Im Garten',
     tiere:['apfel', 'birne', 'erdbeere'] },
   { ab: 18,                           titel:'Auf dem Markt',

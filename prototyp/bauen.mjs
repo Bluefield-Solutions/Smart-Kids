@@ -418,6 +418,7 @@ D.umgebung = Object.fromEntries(KONT_LAENDER.map(([id, roh]) =>
 const module = [
   inline(new URL('../src/vergleich/vergleich.js', import.meta.url), 'Vergleich'),
   inline(new URL('../src/kern/leitner.js', import.meta.url), 'Leitner'),
+  inline(new URL('../src/kern/lohn.js', import.meta.url), 'Lohn'),
   inline(new URL('../src/inhalt/rechnen.js', import.meta.url), 'Rechnen'),
   inline(new URL('../src/inhalt/schreiben.js', import.meta.url), 'Schreiben'),
   inline(new URL('../src/inhalt/abzeichen.js', import.meta.url), 'Abzeichen'),

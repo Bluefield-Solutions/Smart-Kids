@@ -31,6 +31,7 @@ import * as TI from '../src/inhalt/tiere.js';
 import * as DE from '../src/inhalt/deutsch.js';
 import * as D12 from '../src/inhalt/deutsch12.js';
 import * as SP from '../src/inhalt/sprache.js';
+import * as LOHN from '../src/kern/lohn.js';
 
 const fehler = [], hinweise = [];
 // Was beim Lesen der Profiltabelle schiefging, gehoert in dieselbe Liste -
@@ -914,12 +915,12 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
     const sammelnd = r.ebenen.filter(e => !e.endsWith(':probe'));
     const n = sammelnd.map(e => gross[e]).filter(x => x !== undefined);
     if (!n.length || n.length !== sammelnd.length) continue;   // gemischter Raum
-    const sortiert = [...n].sort((a, b) => a - b);
-    const beste = Math.min(S, Math.max(...n));
-    const anteil = Math.ceil(r.tiere.length / r.ebenen.length);
-    const noetig = Math.ceil(r.tiere.length / anteil);
-    const ueberFertig = sortiert.slice(0, noetig).reduce((a, x) => a + x, 0) * 2;
-    const preis = Math.min(ueberFertig, r.tiere.length * beste);
+    /* GERECHNET WIRD MIT `src/kern/lohn.js` - derselben Datei, aus der
+       auch das Spiel seinen Anteil holt. Was zweimal dasteht, veraltet
+       einmal (Regel 6) - und die Fassung im Tor waere die, die dann
+       gruen meldet, was im Spiel anders ausgeht. */
+    const { preis, runde: beste } = LOHN.preisVon({ tiere: r.tiere.length,
+      ebenen: r.ebenen.length, groessen: n, sitzung: S });
     preise.push([r.titel, r.ebenen.length, preis, beste]);
     /* EINE VOLLE RUNDE IST DAS MINDESTE. Drei Tiere fuer weniger Arbeit
        als EINE fehlerfreie Runde dieses Raums waere kein Lohn mehr,
@@ -933,6 +934,20 @@ for (const [kont, liste] of Object.entries(I.LAENDER)) {
   console.log('    Preis eines Raums (Leas Sitzung ' + S + '): '
     + preise.sort((a, b) => a[2] - b[2])
         .map(([t, e, pr]) => `${t} ${pr} (${e} Ebenen)`).join(' · '));
+  /* UND WIEVIELE RAEUME HIER GAR NICHT GEMESSEN WERDEN (E33).
+   *
+   * Der Vorrat einer Flaggen-, Hauptstadt-, Rechen-, Englisch-,
+   * Schreib- oder Vergleichsebene steht nicht als Liste in den Daten -
+   * er entsteht in `vorrat()`, und den gibt es nur im Spiel. Diese
+   * Raeume misst der RAUCHTEST, mit dem echten `vorrat()` und je Profil.
+   *
+   * Die Zahl steht hier, damit nicht wieder dreizehn Raeume still
+   * ungemessen bleiben. Beim ersten Lauf waren es sechs mit mehreren
+   * Ebenen - und einer davon haette dieselbe Verkehrung haben koennen. */
+  const alle = TI.RAEUME.filter(x => x.ebenen).length;
+  console.log(`    ${preise.length} von ${alle} Lebensräumen hier gerechnet — `
+    + `die anderen ${alle - preise.length} haben ihren Vorrat nicht in den Daten `
+    + 'und werden im Rauchtest gemessen (`preis`)');
   geprueft += preise.length;
 }
 

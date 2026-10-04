@@ -9839,3 +9839,87 @@ Drei stehende Gegenproben (555), an drei verschiedenen Stellen: die
 Rundenlänge, der Anteil und die Grenze selbst. Die dritte greift die **Daten**
 an — sie schrumpft drei Ebenen auf ein Wort — und zeigt damit, dass die Grenze
 nicht nur dasteht, sondern auch anschlägt.
+
+---
+
+## E33 · Die siebzehn ungemessenen Räume — und eine Obergrenze, die niemand nachgezählt hat (04.10.2026)
+
+Zwei Schritte, und beide haben etwas anderes ergeben, als in der Frage stand.
+
+### Schritt 1: die siebzehn Räume waren in Ordnung
+
+E32 hat den Preis eines Raums gemessen — aber nur für drei von zwanzig. Für
+Flaggen, Hauptstädte, Rechnen, Englisch, Schreiben und den Größenvergleich
+entsteht der Vorrat erst in `vorrat()`, und den gibt es nur im Spiel.
+
+Also **gefragt statt nachgebaut**: der Rauchtest holt ihn im Browser, je Profil.
+Ein Nachbau in Node wäre eine zweite Wahrheit gewesen, und `spielprobe` sagt im
+Kopf schon, warum das einmal zwölf Tore grün gelassen hat. Die Rechnung selbst
+steht jetzt in `src/kern/lohn.js` — einer Datei, aus der auch das Spiel seinen
+Anteil holt.
+
+**68 Raum × Profil gemessen, keine zweite Verkehrung.** Jeder Preis liegt über
+der besten Runde seines Raums. Die E32-Reparatur hat die siebzehn
+mitrepariert, ohne dass ich es wusste: Fionas „Im Vogelpark" hätte vorher
+**vier** gekostet (kleinste Ebene zwei Flaggen, mal zwei richtige Antworten) und
+kostet jetzt **sechzehn**.
+
+| Profil | Raum | Ebenen | Preis | beste Runde |
+|---|---|---|---|---|
+| Fiona | Im Vogelpark | 10 | 16 | 6 |
+| Lea | An der Quelle | 24 | 12 | 8 |
+| Lea | Im Riff | 12 | 24 | 8 |
+| Stephan | Der Bauernhof | 9 | 36 | 12 |
+
+Ein Ergebnis ohne Befund ist auch eines — und es ist jetzt festgehalten statt
+vermutet.
+
+### Schritt 2: nach 45 öffnet nichts mehr, und das ist keine Fehlverteilung
+
+Die Frage war, warum die letzten 44 Tiere keinen Raum mehr öffnen. Gerechnet:
+
+| Profil | Räume aus Ebenen | Obergrenze für Schwellen |
+|---|---|---|
+| Lea | 19 | 57 |
+| Fiona | 17 | 51 |
+| **Stephan · Violeta** | **16** | **48** |
+
+Die höchste Schwelle liegt bei 45 — **drei unter der Grenze.** Die Schwellen
+sind also längst ausgereizt, und die naheliegende Antwort („zieh sie
+auseinander") wäre falsch gewesen: höher geht nicht.
+
+Denn eine Schwelle muss für **jedes** Profil erreichbar sein, und zwar aus
+Ebenen-Tieren allein — sonst öffnen die letzten Räume sich selbst. Die Grenze
+setzen damit die Eltern: ihnen fehlen vier Räume, Schreiben und die drei der
+Deutsch-Welt. Das ist richtig so, sie üben weder Handschrift noch den
+Grundwortschatz. **Lea könnte 57 holen und bekommt über 45 keine Schwelle mehr,
+weil ihr Vater bei 48 aufhört.**
+
+Wer das ändern will, muss eine der beiden Regeln ändern — und das ist eine
+Frage an den Nutzer, keine an mich.
+
+### Und dabei ist ein Torfehler herausgefallen
+
+Beim Nachrechnen stimmten Tor und Browser nicht überein: das Tor meldete eine
+Obergrenze von **57**, gemessen sind **48**.
+
+Der Grund ist dieselbe Lücke wie bei D6, eine Frage weiter. Das Muster, mit dem
+`inhalt` die Besitzer der Ebenen liest, findet nur Ebenen, die als **Zeile** in
+`spiel.js` stehen. Die fünfzig der Deutsch-Welt entstehen aus `.map(...)` —
+`werVon.has(e)` war für sie falsch, und das heißt in der Zeile darunter „gehört
+allen". Das Tor zählte den Eltern die drei Deutschräume mit.
+
+**Eine Schwelle bei 50 wäre durchgegangen** und für Stephan nie zu erreichen
+gewesen: der Raum stünde im Buch als nächstes Ziel und käme nie. Nachgestellt,
+und das Tor hat geschwiegen.
+
+Jetzt liest es das `wer` aus der erzeugenden Stelle — derselbe Weg, den die
+Ebenenliste für die Kennungen schon geht. Die Zahlen stimmen mit dem Browser
+überein, und eine stehende Gegenprobe (556) setzt die Schwelle auf 50.
+
+Dazu schreibt das Tor die Rechnung bei jedem Lauf hin: Obergrenze, höchste
+Schwelle, verbleibende Luft. Im Kopf von `tiere.js` stand jahrelang *„das
+knappste Profil kommt auf vierzehn Räume, also 42. Deshalb steht hier nichts
+über 42"* — und bei 45 stand schon eine. Die Grenze war mit den Welten
+mitgewachsen, der Satz nicht (Regel 6). Eine Zahl in einem Kommentar sagt, was
+einmal galt; eine gerechnete sagt, was gilt.

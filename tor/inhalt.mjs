@@ -4913,7 +4913,27 @@ function paareAusBuendel() {
       const w = m[0].match(/wer:\[([^\]]*)\]/);
       werVon.set(m[1], w ? w[1].replace(/'/g, '').split(',').map(x => x.trim()) : null);
     }
+    /* UND DIE ERZEUGTEN EBENEN (E33) - dieselbe Luecke wie bei D6, nur
+     * eine Frage weiter.
+     *
+     * Das Muster oben findet Ebenen, die als ZEILE dastehen. Die fuenfzig
+     * der Deutsch-Welt entstehen aus `.map(...)`; es fand sie nicht, und
+     * `werVon.has(e)` war fuer sie falsch - was in der Zeile darunter
+     * heisst „gehoert allen". Damit zaehlte das Tor den ELTERN die drei
+     * Deutschraeume mit und meldete eine Obergrenze von 57, wo im
+     * Browser 48 gemessen sind. Eine Schwelle bei 50 waere
+     * durchgegangen und fuer Stephan nie zu erreichen gewesen.
+     *
+     * Gelesen wird das `wer` aus der ERZEUGENDEN Stelle - derselbe Weg,
+     * den die Ebenenliste oben fuer die Kennungen schon geht. */
+    for (const m of spiel.matchAll(
+      /id:`([a-z0-9]+):\$\{g\.id\}`[\s\S]{0,400}?\}\)\)/g)) {
+      const w = m[0].match(/wer:\[([^\]]*)\]/);
+      const wer = w ? w[1].replace(/'/g, '').split(',').map(x => x.trim()) : null;
+      for (const e of ebenen) if (e.startsWith(`${m[1]}:`)) werVon.set(e, wer);
+    }
     const profile = [...new Set([...werVon.values()].filter(Boolean).flat())];
+    const decke = {};
     for (const r of TI.RAEUME.filter(x => x.ab)) {
       for (const p of profile) {
         /* Ein Raum zaehlt fuer ein Profil, wenn IRGENDEINE seiner
@@ -4925,12 +4945,39 @@ function paareAusBuendel() {
             || !werVon.has(e) || werVon.get(e).includes(p)))
           .map(x => x.titel));
         const holbar = raeume.size * 3;
+        decke[p] = holbar;
         if (holbar < r.ab)
           tf.push(`„${r.titel}" öffnet sich bei ${r.ab} Tieren, ${p} kann aber `
             + `nur ${holbar} holen (${raeume.size} Räume) — der Raum wäre für `
             + 'dieses Profil nie zu erreichen');
       }
     }
+    /* UND WIEVIEL LUFT BLEIBT (E33).
+     *
+     * Die Obergrenze fuer Schwellen ist das knappste Profil - sie waechst
+     * mit jeder Welt, und niemand merkt es. Im Kopf von `tiere.js` stand
+     * jahrelang „vierzehn Raeume, also 42", waehrend eine Schwelle bei 45
+     * dastand und die Grenze laengst bei 48 lag. Eine Zahl in einem
+     * Kommentar sagt, was einmal galt (Regel 6).
+     *
+     * Gerechnet und hingeschrieben, bei jedem Lauf. Ein HINWEIS und kein
+     * Fehler: dass Platz fuer eine weitere Schwelle ist, heisst nicht,
+     * dass etwas kaputt ist - es heisst, dass drei Zeichnungen fehlen,
+     * und das ist eine Arbeit und kein Defekt. */
+    const schwellen = TI.RAEUME.filter(x => x.ab).map(x => x.ab).sort((a, b) => a - b);
+    const knapp = Math.min(...Object.values(decke));
+    const hoechste = schwellen[schwellen.length - 1] || 0;
+    const wer = Object.entries(decke).filter(([, n]) => n === knapp).map(([w]) => w);
+    console.log(`    Schwellen: ${schwellen.join(' · ')} — Obergrenze ${knapp} `
+      + `(${wer.join(', ')}, ${knapp / 3} Räume), die höchste bei ${hoechste}, `
+      + `${knapp - hoechste} Tiere Luft`);
+    console.log('      ' + Object.entries(decke).sort((a, b) => b[1] - a[1])
+      .map(([w, n]) => `${w} ${n}`).join(' · ') + ' — eine Schwelle muss für ALLE '
+      + 'erreichbar sein, also setzt das knappste Profil die Grenze');
+    if (knapp - hoechste >= 3)
+      hinweise.push(`es ist Platz für eine weitere Schwelle: die Obergrenze liegt `
+        + `bei ${knapp}, die höchste Schwelle bei ${hoechste}. Drei Zeichnungen, `
+        + 'die noch keinem Raum gehören, würden sie füllen');
   }
 
   if (TI.tierMit(TI.GORILLA) === null || !TI.tierMit(TI.GORILLA).bild)

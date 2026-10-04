@@ -4203,7 +4203,7 @@ function volleRunde(st){
          einem Ladezustand haengt, duerfte nicht strenger werden. */
       try { groesste = Math.max(groesste, vorrat(e).length); } catch (err) {}
     }
-    BESTE_RUNDE.set(schluessel, Math.min(P.sitzung, groesste || P.sitzung));
+    BESTE_RUNDE.set(schluessel, Lohn.besteRunde([groesste], P.sitzung));
   }
   return st.liste.length >= BESTE_RUNDE.get(schluessel);
 }
@@ -4230,9 +4230,7 @@ function tierFuer(st){
    * fertige Ebenen den Raum. Was dadurch NICHT passiert: der Raum wird
    * nicht groesser. Es dauert nur laenger, ihn zu leeren, und das ist
    * bei vierundzwanzig Ebenen die Sache selbst. */
-  const raum = Tiere.raumZu(st.ebeneId);
-  const anteil = raum && raum.ebenen && raum.ebenen.length
-    ? Math.ceil(raum.tiere.length / raum.ebenen.length) : raum ? raum.tiere.length : 0;
+  const anteil = Lohn.anteilVon(Tiere.raumZu(st.ebeneId));
   const neu = (f.gesamt && f.gesammelt === f.gesamt)
     ? Tiere.raumTiere(st.ebeneId, TierStand.ids).slice(0, anteil) : [];
   if (neu.length) {

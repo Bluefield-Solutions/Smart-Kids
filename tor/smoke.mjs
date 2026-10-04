@@ -108,6 +108,8 @@ import { STAEDTE } from '../src/geo/staedte.js';
    Dieselbe Ueberlegung wie bei den 124 Tiernamen in `tonleiter`. */
 import { TAFEL as ABZ_TAFEL } from '../src/inhalt/abzeichen.js';
 import * as SP from '../src/inhalt/sprache.js';
+import * as LOHN from '../src/kern/lohn.js';
+import { RAEUME as LEBENSRAEUME } from '../src/inhalt/tiere.js';
 import { hoerAbgleich, GRENZE_NAH } from '../src/vergleich/vergleich.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -1402,7 +1404,7 @@ async function loese(p) {
  * Abkürzung, die man versehentlich nimmt, wäre keine Abkürzung.
  */
 const ABSCHNITTE = ['spielen', 'ablage', 'tippen', 'regler', 'ebene4', 'durchgang', 'umgekehrt',
-  'test', 'streu', 'abzeichen', 'landschaft',
+  'test', 'streu', 'abzeichen', 'landschaft', 'preis',
                     'pausen', 'schreiben', 'hinweis', 'sprechen', 'englisch'];
 const BRAUCHT = { ablage: ['spielen'] };
 
@@ -1476,6 +1478,7 @@ const STUECKE = [
   ...PROFIL_IDS.map(w => ({ teile: [`durchgang:${w}`], ms: DURCHGANG_MS[w] ?? 20 })),
   { teile: ['abzeichen'],           ms: 18 },
   { teile: ['landschaft'],          ms: 12 },
+  { teile: ['preis'],               ms: 14 },
   { teile: ['umgekehrt'],           ms: 13 },
   { teile: ['ebene4'],              ms: 11 },
   { teile: ['regler'],              ms: 10 },
@@ -1842,6 +1845,81 @@ if (laeuft('spielen')) try {
 
 /* --- Durchgang 2: NEUE Seite, gleiche Herkunft. Traegt die Ablage? ---- */
 let fortschritt = null;
+/* ---------- WAS JEDER RAUM KOSTET (E33) ---------------------------------
+ *
+ * E32 hat die Rechnung aufgemacht und drei Raeume gemessen - die drei
+ * der Deutsch-Welt, deren Ebenengroessen in den Daten stehen. Die
+ * anderen siebzehn blieben still ungemessen, und das war der Fund
+ * dieser Runde: der Vorrat einer Flaggen-, Hauptstadt-, Rechen-,
+ * Englisch-, Schreib- oder Vergleichsebene entsteht erst in `vorrat()`,
+ * und den gibt es nur im Spiel.
+ *
+ * Hier wird er deshalb GEFRAGT statt nachgebaut - mit dem echten
+ * `vorrat()`, im echten Browser, je Profil. Ein Nachbau in Node waere
+ * eine zweite Wahrheit, und `spielprobe` sagt im Kopf schon, warum das
+ * einmal zwoelf Tore gruen gelassen hat.
+ *
+ * JE PROFIL und nicht einmal: `vorrat()` haengt an `laenderTiefe` und
+ * `kandidaten`. Fionas Laenderrunde ist drei Aufgaben lang, Leas
+ * dreizehn - derselbe Raum kostet die beiden also verschieden viel, und
+ * eine Zahl fuer alle waere fuer niemanden die richtige.
+ *
+ * Geprueft wird die Grenze aus E32: drei Tiere duerfen nicht billiger
+ * sein als EINE fehlerfreie Runde desselben Raums. Gerechnet mit
+ * `src/kern/lohn.js`, derselben Datei, aus der das Spiel seinen Anteil
+ * holt. */
+if (laeuft('preis')) try {
+  const p = await neueSeite({ width: 844, height: 390 }, ctx);
+  await p.waitForSelector('.schirm.da [data-profil]');
+  const zeilen = [], ungemessen = [];
+  for (const wer of PROFILE_HIER) {
+    await p.goto(ADRESSE + '?flott', { waitUntil: 'domcontentloaded' });
+    await p.waitForSelector(`[data-profil="${wer}"]`);
+    await p.click(`[data-profil="${wer}"]`);
+    await p.waitForSelector('.schirm.da [data-welt]', { timeout: 15000 }).catch(() => {});
+    for (const r of LEBENSRAEUME.filter(x => x.ebenen)) {
+      const m = await p.evaluate(async (ebenen) => {
+        const aus = [];
+        for (const e of ebenen) {
+          /* Die Karte erst holen - ohne sie hat jedes Stueck einen
+             leeren Pfad, und `vorrat` gaebe eine Laenge, die es im
+             Spiel nie gibt. Denselben Schritt macht `vorlauf()`. */
+          try { await ebeneLaden(e); aus.push(vorrat(e).length); }
+          catch (x) { aus.push(null); }
+        }
+        return { groessen: aus, sitzung: P.sitzung,
+                 meine: ebenen.filter(e => meineEbenen().some(x => x.id === e)) };
+      }, r.ebenen).catch(() => null);
+      if (!m || !m.meine.length) continue;      // der Raum gehoert diesem Kind nicht
+      const da = m.groessen.filter(x => x !== null && x > 0);
+      if (da.length !== m.groessen.length) {
+        ungemessen.push(`${wer}/${r.titel}`);
+        if (!da.length) continue;
+      }
+      const z = LOHN.preisVon({ tiere: r.tiere.length, ebenen: r.ebenen.length,
+                                groessen: da, sitzung: m.sitzung });
+      if (!z) continue;
+      zeilen.push([wer, r.titel, r.ebenen.length, z.preis, z.runde]);
+      if (z.preis < z.runde)
+        merke('preis', new Error(`${wer}: „${r.titel}" ist für ${z.preis} richtige `
+          + `Antworten leer, eine volle Runde dort hat ${z.runde} — drei Tiere `
+          + 'dürfen nicht billiger sein als eine einzige fehlerfreie Runde'));
+    }
+  }
+  if (!zeilen.length)
+    merke('preis', new Error('kein einziger Lebensraum gemessen — die Rechnung '
+      + 'beweist nichts, wenn sie auf nichts läuft'));
+  const billigste = [...zeilen].sort((a, b) => a[3] - b[3]).slice(0, 6);
+  console.log(`  Preis eines Raums:          ${zeilen.length} Raum×Profil gemessen, `
+    + `die billigsten: ${billigste.map(([w, t, e, pr, ru]) =>
+        `${w}/${t} ${pr} (Runde ${ru}, ${e} Ebenen)`).join(' · ')}`);
+  if (ungemessen.length)
+    console.log(`  Davon unvollständig:        ${ungemessen.length} `
+      + `(${ungemessen.slice(0, 4).join(', ')}${ungemessen.length > 4 ? ' …' : ''}) — `
+      + 'eine Karte war nicht zu laden; die Grenze wird dadurch kleiner, nie strenger');
+  await p.close();
+} catch (e) { merke('preis', e); }
+
 if (laeuft('ablage')) try {
   const p = await neueSeite({ width: 1180, height: 820 }, ctx);
   /* „Heute schon geübt" (A4h) - und zwar NACH einem Neustart.
