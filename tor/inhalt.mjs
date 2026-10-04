@@ -4835,6 +4835,28 @@ function paareAusBuendel() {
           + 'die es in spiel.js nicht gibt — sie waere nie zu öffnen');
     if (r.tiere.length !== 3)
       tf.push(`„${r.titel}" hat ${r.tiere.length} Tiere, nicht drei`);
+    /* UND ALLE DREI MUESSEN GEMALT SEIN (E31).
+     *
+     * `raumTiere` filtert auf `t.bild` - ein Tier ohne Zeichnung faellt
+     * dort stillschweigend heraus. Ein Raum mit drei ungemalten Tieren
+     * gibt deshalb NIE etwas: die fehlerfreie Runde sucht einen
+     * Aufkleber, findet keinen, und der Endbildschirm sagt „Geschafft"
+     * und sonst nichts.
+     *
+     * Genau das ist in E30 passiert. „Im Wald" wurde mit Maus, Vogel und
+     * Feder angelegt - alle drei stehen in `TIERE`, keiner hatte ein
+     * Bild. Gefunden hat es nicht dieses Tor, sondern eine fehlerfreie
+     * Runde im Browser: acht von acht auf Anhieb, kein Tier.
+     *
+     * Die Regel daneben prueft die Gegenrichtung (gemalter Raum ohne
+     * Kulisse) und hat deshalb geschwiegen: bei einem Raum ohne
+     * Zeichnungen ist `voll` falsch, und sie springt gar nicht erst an.
+     * Zwei Richtungen, zwei Pruefungen. */
+    const ungemalt = r.tiere.filter(id => !(TI.tierMit(id) || {}).bild);
+    if (ungemalt.length)
+      tf.push(`„${r.titel}" nennt ${ungemalt.length} Tier(e) ohne Zeichnung `
+        + `(${ungemalt.join(', ')}) — der Raum gibt nie einen Aufkleber, `
+        + 'und der Endbildschirm sagt es nicht');
     for (const id of r.tiere)
       if (!ids.has(id)) tf.push(`„${r.titel}" nennt „${id}", das es im Plan nicht gibt`);
     /* Ein Tier gehoert in EINEN Raum. Zwei Raeume mit demselben Tier
@@ -5860,6 +5882,17 @@ console.log('\n  Tor `sprache`');
       pruefeS(a.length >= genug, `die Ebene „${e.titel}" hat ${a.length} Aufgaben — `
         + `bei Leas Sitzung von ${leaSitzung} reicht das nicht für zwei Runden (${genug})`);
     pruefeS(a.length >= 1, `die Ebene „${e.titel}" hat keine einzige Aufgabe`);
+    /* UND NACH OBEN (E31). Die Grenze ist nicht gesetzt, sondern
+       gerechnet: `SP.TIEFE` ist die groesste Ebene, die eine amtliche
+       Liste hergibt. Geprueft wird deshalb nicht die ZAHL - die kann gar
+       nicht falsch sein -, sondern ob der Schnitt auch wirklich
+       angewendet wurde. Wer einen neuen Aufgabentyp dazuschreibt und
+       `tiefer()` vergisst, baut die naechste 224er-Ebene, und sie sieht
+       bis zum ersten Blick auf den Fortschrittsring aus wie Reichtum. */
+    pruefeS(a.length <= SP.TIEFE, `die Ebene „${e.titel}" hat ${a.length} Aufgaben, `
+      + `tiefer als ${SP.TIEFE} — bei zwei richtigen Antworten je Gegenstand und `
+      + `Leas Sitzung von ${leaSitzung} wären das `
+      + `${Math.ceil(a.length * 2 / leaSitzung)} Sitzungen für EINE Ebene`);
 
     for (const x of a) {
       pruefeS(!alleKennungen.has(x.id), `die Aufgabenkennung „${x.id}" kommt zweimal vor — `
@@ -5971,8 +6004,10 @@ console.log('\n  Tor `sprache`');
   console.log(`    Sprache untersuchen: ${SP.EBENEN_SPRACHE.length} Ebenen, `
     + `${aufgaben} Aufgaben, ${alleKennungen.size} Kennungen — `
     + SP.EBENEN_SPRACHE.map(e => `${e.titel} ${SP.aufgabenZu(e.id).length}`).join(' · '));
-  console.log(`    Vorrat je Ebene: mindestens ${genug} Aufgaben bei Leas Sitzung von `
-    + `${leaSitzung} (Artikel ausgenommen, geschlossene Klasse mit `
+  console.log(`    Vorrat je Ebene: mindestens ${genug} und höchstens ${SP.TIEFE} `
+    + `Aufgaben bei Leas Sitzung von ${leaSitzung} — die Tiefe ist die größte `
+    + 'Ebene, die die amtliche Liste hergibt, nicht eine gesetzte Zahl '
+    + `(Artikel ausgenommen, geschlossene Klasse mit `
     + `${SP.aufgabenZu('artikel').length})`);
   console.log(`    ${Object.keys(SP.BEGRIFFE).length} Begriffe in zwei Spalten, `
     + `${SP.WORTARTEN.length} davon schaltet der Regler wirklich um`);

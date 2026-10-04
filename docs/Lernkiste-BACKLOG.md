@@ -9550,6 +9550,12 @@ davon war gar keine Arbeit, sondern eine Korrektur.
 
 ### „Zwei Tiere ohne Raum" — es sind vierzig
 
+> **Zurückgenommen in E31.** Dieser Absatz ist falsch, und zwar schlimmer als
+> das, was er korrigieren wollte. E29 sprach von **gemalten** Tieren, und davon
+> waren es wirklich zwei. Die vierzig sind alle Einträge der Liste — 38 davon
+> haben nur ein Emoji. Der Abschnitt bleibt stehen, weil die Runde darauf
+> aufgebaut hat; was daraus wurde, steht in E31.
+
 E29 hat die zehn Sprachebenen in den Märchenraum mit hineingeschrieben, mit
 dieser Begründung: *gemalt sind 86 Tiere, und nach „An der Quelle" sind genau
 zwei ohne Raum*. Nachgezählt sind es **vierzig**, davon vierundzwanzig mit
@@ -9650,3 +9656,94 @@ eine Wirkung misst, schaltet sie zuerst ab).
 
 Dafür kann `ansicht` jetzt eine **Einstellung vorsetzen** (`einst:`) — denselben
 Schlüssel, den die App liest, nicht einen zweiten daneben.
+
+---
+
+## E31 · Die Sammel-Ökonomie — und eine Tür, hinter der nichts war (04.10.2026)
+
+Leas Deutschwelt zeigte **0/1324**. Die Frage war, ob das stimmen kann. Die
+Antwort besteht aus zwei Teilen, und der zweite war ein echter Fehler.
+
+### Teil 1: 224 Nomen, um zu zeigen, dass man ein Nomen erkennt
+
+Gemessen, und die Messung liefert gleich das Soll:
+
+| | Ebenen | kleinste | größte | Mittel |
+|---|---|---|---|---|
+| Rechtschreibung 3/4 *(amtliche Liste)* | 15 | 4 | **56** | 21,5 |
+| Wiederholung 1/2 *(amtliche Liste)* | 24 | 2 | 45 | 11,6 |
+| Sprache untersuchen *(von mir gewählt)* | 10 | 9 | **224** | 72,4 |
+
+Die neununddreißig Ebenen, deren Größe aus der **amtlichen Liste** kommt,
+liegen zwischen 2 und 56. Meine zehn gehen bis 224 — das Vierfache. Der
+Lehrplan nennt für „Sprache untersuchen" Lernbereiche und keine Mengen, also
+war die Zahl meine (Regel 3).
+
+**Was sie anrichtet:** ein Gegenstand braucht zwei richtige Antworten bis Fach
+3, dort gibt es den Aufkleber. Leas Sitzung hat acht Aufgaben. Bei 224
+Gegenständen kommt jeder alle rund achtundzwanzig Sitzungen dran — die Ebene
+wäre nach **sechsundfünfzig** Sitzungen voll, mal fünf Wortarten:
+zweihundertachtzig. „Wörter mit tz" ist nach **einer** fertig. Und der
+Fortschrittsring auf der Kachel zeigt das an: ein Balken, der sich in einem
+halben Jahr nicht sichtbar bewegt, ist keiner.
+
+**Warum das bei der Rechtschreibung richtig ist und hier nicht:** dort *ist*
+jedes Wort der Gegenstand — dass „Abend" mit d geschrieben wird, muss man je
+Wort wissen. Hier ist der Gegenstand die Fähigkeit, ein Nomen zu erkennen. Wer
+das an fünfzig Nomen kann, kann es; die anderen 174 beweisen nichts mehr.
+
+`TIEFE` ist deshalb **gerechnet und nicht gesetzt**: die größte Ebene, die eine
+amtliche Liste hergibt. Wächst die Liste, wächst sie mit — eine `56` im
+Quelltext wäre die Zahl, die beim nächsten Grundwortschatz veraltet (Regel 6).
+Geworfen wird nichts weg: die Daten halten weiter alle 224, gespielt wird bis
+zur Tiefe. Dieselbe Unterscheidung wie bei `laenderTiefe`.
+
+| | vorher | nachher |
+|---|---|---|
+| Sprache untersuchen | 724 | **394** |
+| Deutschwelt gesamt | 1324 | **994** |
+| Nomen · Verb · Adjektiv | 224 · 182 · 56 | 56 · 56 · 56 |
+| Satzglieder | 90 | 54 *(18 Sätze × 3)* |
+
+Bei den Satzgliedern werden die **Sätze** gekürzt und nicht die Aufgaben: wer
+jede dritte Aufgabe wegnimmt, nimmt manchem Satz sein Objekt, und dann steht
+„Subjekt" öfter zur Wahl als „Objekt". Gemessen: 18 · 18 · 18.
+
+### Teil 2: „Im Wald" war eine Tür, hinter der nichts war
+
+Die zweite Hälfte des Befunds lautete „1324 Aufkleber gegen sechs Tiere in zwei
+Räumen". Das war schon in der Frage falsch: ein Tier kommt für eine
+**fehlerfreie Runde**, nicht fürs Einsammeln aller Gegenstände. Also
+nachgespielt — acht von acht auf Anhieb in `sprache:satzarten`:
+
+> Geschafft! · 8 von 8 auf Anhieb richtig. · **kein Tier.**
+
+`raumTiere` filtert auf `t.bild`. **Maus, Vogel und Feder stehen in der Liste,
+hatten aber keine Zeichnung.** Der Raum, den E30 angelegt hat, konnte nie etwas
+geben — und der Endbildschirm sagte es nicht, er sagte „Geschafft".
+
+Damit ist auch die E30-Korrektur zurückgenommen: E29 hatte recht. Gemalt sind
+89 Tiere (vorher 86), und ohne Raum waren davon genau **zwei** — der Gorilla,
+der in keinen darf, und der Tintenfisch. Die „vierzig" aus E30 zählten alle
+Einträge, auch die 38, die nur ein Emoji sind.
+
+**Zweimal derselbe Fehler, in beide Richtungen:** aus der Liste gezählt, ohne
+die Eigenschaft zu prüfen, auf die es ankommt. Beim ersten Mal hat es eine
+Begründung geliefert, beim zweiten einen leeren Raum.
+
+Gezeichnet sind jetzt **die Maus, der Vogel und die Feder** — Pfade ohne
+`transform`, eigene Farben, Lichtpunkt im Auge. Dieselbe Runde noch einmal:
+
+> Geschafft! · 8 von 8 auf Anhieb richtig. · **Ohne Fehler! Die Maus für dein Buch.**
+
+### Und das Tor, das beide Richtungen prüft
+
+Es gab eine Prüfung „ein vollständig gemalter Raum ohne Kulisse" — und sie hat
+geschwiegen, denn bei einem Raum **ohne** Zeichnungen ist `voll` falsch, und
+sie springt gar nicht erst an. Die Gegenrichtung fehlte: **ein Raum, dessen
+Tiere nicht gemalt sind, gibt nie einen Aufkleber.** Jetzt steht sie da, mit
+einer stehenden Gegenprobe (552).
+
+Dazu eine zweite: ohne `tiefer()` baut „Nomen" wieder alle 224 ein. Angegriffen
+wird der **Schnitt** und nicht die Zahl — `TIEFE` ist gerechnet und kann gar
+nicht falsch sein; falsch sein kann nur, dass jemand sie nicht anwendet.

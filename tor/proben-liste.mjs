@@ -314,6 +314,25 @@ export const PROBEN = [
     an:{ datei:SP, text:"kind:'Adjektiv'" },
     sagt:'heißt in beiden Spalten gleich' },
 
+  /* DIE TIEFE EINER SPRACHEBENE (E31).
+     Ohne `tiefer()` baut „Nomen" wieder alle 224 Lernwoerter ein. Das
+     macht nichts kaputt, das Kind kann jede einzelne Aufgabe loesen -
+     es macht die Ebene nur unerreichbar: zwei richtige Antworten je
+     Gegenstand, acht je Sitzung, also sechsundfuenfzig Sitzungen fuer
+     EINE Ebene, und der Fortschrittsring bewegt sich ein halbes Jahr
+     lang nicht sichtbar. Genau die Sorte Fehler, die kein Tor meldet
+     und kein Blick findet - man sieht ihn erst nach Wochen, und dann
+     sieht er aus wie Faulheit des Kindes.
+     Angegriffen wird der SCHNITT und nicht die Zahl: `TIEFE` ist
+     gerechnet und kann gar nicht falsch sein. Falsch sein kann nur,
+     dass jemand sie nicht anwendet. */
+  { n:'eine Wortartebene wird nicht mehr auf die Tiefe geschnitten', tor:'inhalt',
+    deckt:'sprache', datei:SP,
+    such:'return tiefer(woerterMit(e.id).filter(x => satzVon(x.wort)))',
+    ersatz:'return (woerterMit(e.id).filter(x => satzVon(x.wort)))',
+    an:{ datei:SP, fehlt:'return tiefer(woerterMit' },
+    sagt:'tiefer als' },
+
   /* DER VORLAUF EINER PROBE (E29) - und das ist die Probe zu einem
      Fehler, der seit Etappe 1 dastand, ohne dass etwas rot wurde.
      Ohne die Zeile legt die Woerterprobe alle 322 Lernwoerter aus und
@@ -728,6 +747,22 @@ export const PROBEN = [
     sagt:'nicht die Ablage' },
 
   /* --- inhalt: die Kulissen (T2) ------------------------------------ */
+  /* UND DIE GEGENRICHTUNG (E31): ein Raum, dessen Tiere nicht GEMALT
+     sind. `raumTiere` filtert auf `t.bild`, ein Tier ohne Zeichnung
+     faellt dort stillschweigend heraus - der Raum gibt nie einen
+     Aufkleber, und der Endbildschirm sagt es nicht. Genau so ist „Im
+     Wald" in E30 entstanden: drei Eintraege, keine Zeichnung, und
+     gefunden hat es erst eine fehlerfreie Runde im Browser.
+     Angegriffen wird ein Tier, das WIRKLICH ungemalt ist („dodo" steht
+     als Emoji in der Liste) - nicht eines, dem man das Bild wegnimmt:
+     dann pruefte die Probe das Wegnehmen und nicht den Raum. */
+  { n:'ein Lebensraum nennt ein Tier ohne Zeichnung', tor:'inhalt',
+    deckt:'tiere', datei:'src/inhalt/tiere.js',
+    such:"tiere:['maus', 'vogel', 'feder'] }",
+    ersatz:"tiere:['maus', 'vogel', 'dodo'] }",
+    an:{ datei:'src/inhalt/tiere.js', text:"tiere:['maus', 'vogel', 'dodo']" },
+    sagt:'ohne Zeichnung' },
+
   /* Ein voller Raum ohne Kulisse: im Buch waere das eine Tuer, hinter der
      nichts ist - und am Bildschirm ein Absturz.
      BEIDE Proben hier tragen ihren Suchtext WOERTLICH in einem Kommentar

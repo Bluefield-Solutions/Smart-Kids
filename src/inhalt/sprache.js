@@ -344,9 +344,23 @@ export const GLIEDSAETZE = [
   { satz:'Die Großeltern besuchen das Museum', subjekt:'Die Großeltern', praedikat:'besuchen', objekt:'das Museum' },
 ];
 
-/** Alle Aufgaben zu den Satzgliedern: je Satz drei, eine je Glied. */
-export const gliedAufgaben = () => GLIEDSAETZE.flatMap((s, i) =>
-  SATZGLIEDER.map(g => ({ id:`glied:${g}:${i}`, satz:s.satz, teil:s[g], glied:g })));
+/** Alle Aufgaben zu den Satzgliedern: je Satz drei, eine je Glied.
+ *
+ * Gekuerzt werden die SAETZE und nicht die Aufgaben: wer jede dritte
+ * Aufgabe wegnimmt, nimmt manchem Satz sein Objekt und manchem sein
+ * Subjekt - und dann steht „Subjekt" oefter zur Wahl als „Objekt". Wer
+ * bei ungleicher Verteilung immer dasselbe tippt, hat recht, ohne etwas
+ * zu wissen; genau dagegen stehen die zehn Saetze je Satzart. */
+export const gliedAufgaben = () => tiefer(
+  /* Die Nummer kommt aus der VOLLEN Liste und nicht aus der gekuerzten.
+     Sonst haette derselbe Satz je nach Tiefe eine andere Kennung - und
+     eine Kennung, die sich aendert, ist ein neuer Gegenstand: Leas
+     Leitner-Stand zu „Der Hund frisst den Knochen" waere beim naechsten
+     Verstellen der Tiefe lautlos weg. */
+  GLIEDSAETZE.map((s, nr) => ({ ...s, nr })),
+  Math.floor(TIEFE / SATZGLIEDER.length)
+).flatMap(s => SATZGLIEDER.map(g =>
+  ({ id:`glied:${g}:${s.nr}`, satz:s.satz, teil:s[g], glied:g })));
 
 /** Alle Aufgaben zu den Satzarten. */
 export const satzartAufgaben = () => SATZARTSAETZE.map((s, i) =>
@@ -359,6 +373,61 @@ export const satzartAufgaben = () => SATZARTSAETZE.map((s, i) =>
  * `wahl` ist die Zahl der Knoepfe auf dem Bildschirm. Fuenf Wortarten
  * sind fuenf Knoepfe; bei drei Satzarten waeren fuenf drei leere.
  * ------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------
+ * WIE TIEF EINE SPRACHEBENE GESPIELT WIRD (E31)
+ *
+ * E29 hat jede Wortartebene aus ALLEN passenden Lernwoertern gebaut.
+ * Gemessen heisst das: „Nomen" hat 224 Aufgaben, „Verb" 182 - und die
+ * neununddreissig Ebenen, deren Groesse aus der AMTLICHEN LISTE kommt,
+ * liegen zwischen 2 und 56. Die groesste von ihnen ist „Kleine Wörter im
+ * Satz" mit 56. Meine Zahlen sind das Vierfache davon, und sie sind
+ * meine: der Lehrplan nennt fuer „Sprache untersuchen" Lernbereiche und
+ * keine Mengen (Regel 3 - das Soll kommt aus der Referenz, nicht aus
+ * mir).
+ *
+ * WAS DIE ZAHL ANRICHTET, und das ist kein Geschmack:
+ *
+ *   Ein Gegenstand braucht ZWEI richtige Antworten bis Fach 3 - dort
+ *   gibt es den Aufkleber. Leas Sitzung hat acht Aufgaben. Bei 224
+ *   Gegenstaenden kommt jeder also rund alle achtundzwanzig Sitzungen
+ *   dran, und die Ebene waere nach SECHSUNDFUENFZIG Sitzungen voll.
+ *   Mal fuenf Wortarten: zweihundertachtzig. „Wörter mit tz" ist nach
+ *   EINER fertig.
+ *
+ *   Und der Ring auf der Kachel zeigt das an. Ein Fortschrittsbalken,
+ *   der sich in einem halben Jahr nicht sichtbar bewegt, ist kein
+ *   Fortschrittsbalken.
+ *
+ * WARUM DAS BEI DER RECHTSCHREIBUNG RICHTIG IST UND HIER NICHT:
+ * dort IST jedes Wort der Gegenstand - dass „Abend" mit d geschrieben
+ * wird, muss man je Wort wissen. Hier ist der Gegenstand die FAEHIGKEIT,
+ * ein Nomen zu erkennen. Wer das an fuenfzig Nomen kann, kann es; die
+ * anderen 174 beweisen nichts mehr.
+ *
+ * DIE GRENZE IST GERECHNET UND NICHT GESETZT. Sie ist die groesste
+ * Ebene, die eine amtliche Liste hergibt - waechst die Liste, waechst
+ * sie mit. Eine Zahl, die hier als `56` stuende, waere die, die beim
+ * naechsten Grundwortschatz veraltet (Regel 6).
+ *
+ * Geworfen wird nichts weg: die Daten halten weiter alle 224, gespielt
+ * wird bis zur Tiefe. Dieselbe Unterscheidung wie bei `laenderTiefe`.
+ * ------------------------------------------------------------------- */
+const groessteEbene = (einheiten) => {
+  const je = {};
+  for (const e of einheiten) je[e.gruppe] = (je[e.gruppe] || 0) + 1;
+  return Math.max(...Object.values(je));
+};
+export const TIEFE = Math.max(groessteEbene(EINHEITEN), groessteEbene(EINHEITEN12));
+
+/* GLEICHMAESSIG GEGRIFFEN und nicht vorne abgeschnitten: die Wortlisten
+   stehen alphabetisch, und die ersten fuenfzig Nomen waeren alle mit A
+   bis D. Derselbe Griff, mit dem der Vorlauf seine Beispiele waehlt. */
+export function tiefer(liste, n = TIEFE) {
+  if (liste.length <= n) return liste;
+  const schritt = liste.length / n;
+  return Array.from({ length: n }, (_, i) => liste[Math.floor(i * schritt)]);
+}
+
 export const EBENEN_SPRACHE = [
   { id:'nomen',        art:'wortart', titel:'Nomen',        begriff:'nomen' },
   { id:'verb',         art:'wortart', titel:'Verb',         begriff:'verb' },
@@ -394,8 +463,13 @@ export function aufgabenZu(ebeneId){
     /* Je Aufgabe ein Wort DIESER Wortart und drei aus anderen - sonst
        hiesse die Antwort achtmal dasselbe. Gemischt wird in `spiel.js`
        mit dem Sitzungskeim; hier steht nur, was zur Wahl steht. */
-    return woerterMit(e.id).map(x => ({ e:x, s:satzVon(x.wort) }))
-      .filter(x => x.s).map(({ e: x, s }) => {
+    /* Gekuerzt wird die WOERTERLISTE und nicht die fertige Aufgabenliste:
+       so steht fest, wieviele Aufgaben herauskommen, auch wenn zu einem
+       Wort kein Satz existiert. Andersherum waere die Tiefe eine
+       Obergrenze und keine Zahl. */
+    return tiefer(woerterMit(e.id).filter(x => satzVon(x.wort)))
+      .map(x => ({ e:x, s:satzVon(x.wort) }))
+      .map(({ e: x, s }) => {
         /* Die Stelle kommt aus der LUECKE und nicht aus einer Suche im
            Satz: „Mein kleiner Finger tut weh" enthaelt „ein" zweimal,
            und markiert gehoert das Wort an seinem Platz, nicht das
