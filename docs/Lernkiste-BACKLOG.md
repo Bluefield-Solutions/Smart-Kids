@@ -9272,3 +9272,22 @@ in der amtlichen Liste 1/2, unter `<Qu>`.
   selten — er ist schwer zu sehen.** Der Aufkleber fiel auf den Rechenkasten
   durch und zeigte `${x.frage}`; er zeigt jetzt beide Ländernamen, wie das
   Lautpaar. Vierter Gegenstand, dem genau das passiert ist.
+
+### Und eine Auslieferung, die rot war — meine eigene
+
+Zwischen dem Bau und der Lieferung habe ich die fünf Gegenproben
+eingecheckt **und gepusht, bevor die Kette danach noch einmal gelaufen war.**
+Auslieferung 294 ist rot geworden.
+
+Der Grund ist kein Zufall, sondern eine Prüfung, die genau dafür da ist:
+`inhalt` sieht sich die Probenliste selbst an und rechnet jeden Eingriff im
+Kopf nach — „einmal ersetzen, dann nachsehen", 0,3 Sekunden statt vierzig
+Minuten. Sie hat gemeldet, was ich falsch gemacht hatte: `String.replace` mit
+zwei Zeichenketten trifft nur die **erste** Fundstelle, auch bei
+`mehrfach:true`, und eine verschobene Ebene macht aus 17 nur 18. Die Probe
+hätte nichts bewiesen.
+
+**Die Lehre ist nicht neu, sie ist meine:** `npm run tor` dauert zwanzig
+Sekunden und steht zwischen jeder Änderung und jedem Push. Ich habe ihn
+ausgelassen, weil die Änderung „nur eine Probenliste" war. Regel 15 sagt
+„gepusht ist nicht ausgeliefert" — hier war es genau das.
